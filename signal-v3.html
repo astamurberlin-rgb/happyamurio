@@ -872,7 +872,7 @@ function makeDemo(){
 
 /* ═══ события ═══ */
 document.addEventListener('click',async e=>{
-  const t=e.target.closest('button,i[data-d],.sw');
+  const t=e.target.closest('button,i[data-d],.sw,.cphead');
   if(t){
     if(t.dataset.view)return switchView(t.dataset.view);
     if(t.tagName==='I'&&t.dataset.d){curDate=t.dataset.d;return renderDay()}
