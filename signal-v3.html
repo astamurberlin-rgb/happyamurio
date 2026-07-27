@@ -59,8 +59,10 @@ nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)
 .cphead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;cursor:pointer;padding:10px 0 4px}
 .cphead h3{font-family:var(--display);font-size:17px;letter-spacing:.03em;margin:0}
 .cphead em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap}
-.cpbody{display:none;background:var(--card);border:1px solid var(--rule-soft);border-radius:3px;padding:12px;margin-top:4px}
-.cp.open .cpbody{display:block}
+.cpwrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease;margin-top:4px}
+.cp.open .cpwrap{grid-template-rows:1fr}
+.cpbody{overflow:hidden;min-height:0}
+.cpinner{background:var(--card);border:1px solid var(--rule-soft);border-radius:3px;padding:12px}
 .late{color:var(--neg)}
 .field{padding:9px 0;border-top:1px solid var(--rule-soft)}
 .field:first-child{border-top:0;padding-top:0}
@@ -70,7 +72,9 @@ nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)
 .seg button{flex:1;background:var(--paper);border:1px solid var(--rule);border-radius:2px;padding:11px 2px;font-family:var(--mono);font-size:15px;cursor:pointer;min-height:44px}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .more{background:none;border:0;color:var(--muted);font-size:12px;font-family:var(--mono);padding:8px 0 0;cursor:pointer;text-decoration:underline}
-.extra{display:none}.extra.on{display:block}
+.exwrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+.exwrap.on{grid-template-rows:1fr}
+.exwrap>div{overflow:hidden;min-height:0}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{border:1px solid var(--rule);background:var(--paper);border-radius:20px;padding:8px 13px;font-size:13px;cursor:pointer;min-height:36px}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
@@ -530,10 +534,11 @@ function renderRail(){
     return`<div class="cp ${filled>=3?'done':''} ${open?'open':''}">
       <div class="cphead" data-toggle="${c.k}"><h3>${c.t}</h3>
         <em class="${lb>6?'late':''}">${filled}/5${lb>6?' · задним числом':' · '+c.hint}</em></div>
-      <div class="cpbody">${CORE.map(m=>segRow(m,v[m.k],c.k)).join('')}
+      <div class="cpwrap"><div class="cpbody"><div class="cpinner">
+        ${CORE.map(m=>segRow(m,v[m.k],c.k)).join('')}
         <button class="more" data-more="${c.k}">подробнее — ${EXTRA[c.k].map(x=>x.t.toLowerCase()).join(', ')}</button>
-        <div class="extra" id="ex-${c.k}">${EXTRA[c.k].map(m=>segRow(m,v[m.k],c.k)).join('')}</div>
-      </div></div>`}).join('');
+        <div class="exwrap" id="ex-${c.k}"><div>${EXTRA[c.k].map(m=>segRow(m,v[m.k],c.k)).join('')}</div></div>
+      </div></div></div></div>`}).join('');
   $('#cpFill').textContent=CP.reduce((a,c)=>a+CORE.filter(m=>(e.cp[c.k]||{})[m.k]).length,0)+'/20'}
 function renderNight(){
   const e=entry(curDate);
@@ -876,7 +881,13 @@ document.addEventListener('click',async e=>{
   if(t){
     if(t.dataset.view)return switchView(t.dataset.view);
     if(t.tagName==='I'&&t.dataset.d){curDate=t.dataset.d;return renderDay()}
-    if(t.dataset.toggle){openCP=openCP===t.dataset.toggle?null:t.dataset.toggle;return renderRail()}
+    if(t.dataset.toggle){
+      const opening=openCP!==t.dataset.toggle;
+      openCP=opening?t.dataset.toggle:null;
+      renderRail();
+      if(opening){const h=$('.cp.open .cphead');if(h)h.scrollIntoView({behavior:'smooth',block:'start'})}
+      return;
+    }
     if(t.dataset.more){const b=$('#ex-'+t.dataset.more);if(b)b.classList.toggle('on');return}
     if(t.dataset.cp&&t.dataset.m){
       const en=entry(curDate),c=en.cp[t.dataset.cp]=en.cp[t.dataset.cp]||{},v=+t.dataset.val;
