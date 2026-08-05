@@ -250,6 +250,103 @@ nav #fab{flex:none;width:78px;padding:0;position:static}
 .fabc svg{width:25px;height:25px;stroke:var(--on-accent);stroke-width:2.5}
 nav #fab:active .fabc{transform:scale(.93)}
 @media(max-width:400px){.cell{width:66px}.thesis{font-size:22px}.field{grid-template-columns:88px 1fr 20px}}
+
+/* ═══════════ ГЛУБИНА v2 · небесно-голубая ═══════════
+   Вставить в конец <style>. Отличие от v1 — кромка:
+   не однотонная обводка, а градиент по периметру. */
+
+/* ─── светлая: день ─── */
+html[data-theme="light"]{
+  --page:linear-gradient(180deg,#63ADF2 0,#3F8FDF 120px,#69AEE8 260px,#A7CFF1 420px,#CBE3F8 600px,#DCEBFA 780px);
+  --bloom:
+    radial-gradient(46% 30% at 12% 2%,  rgba(255,255,255,.85), transparent 68%),
+    radial-gradient(52% 34% at 92% 6%,  rgba(28,104,206,.55),  transparent 70%),
+    radial-gradient(58% 34% at 22% 44%, rgba(0,196,232,.34),   transparent 72%),
+    radial-gradient(50% 32% at 96% 72%, rgba(126,164,255,.40), transparent 72%);
+  --grain-op:.08;--grain-mode:soft-light;
+
+  --glass:rgba(255,255,255,.60);
+  --glass-brd:rgba(255,255,255,.86);          /* остаётся для мелочи: чипы, кнопки */
+  --edge:linear-gradient(158deg,
+      rgba(255,255,255,.98)  0%,
+      rgba(255,255,255,.72) 24%,
+      rgba(255,255,255,.34) 52%,
+      rgba(66,120,190,.30) 100%);
+  --glass-sh:0 1px 1px rgba(10,44,96,.05), 0 10px 26px rgba(10,44,96,.16);
+
+  --accent:#0757C2;--accent-soft:rgba(7,87,194,.14);
+  --pos:#0E7C57;--neg:#C2382C;--auto:#0A6E92;
+  --nav:rgba(255,255,255,.72);--nav-brd:rgba(255,255,255,.9);
+  --nav-sh:0 2px 3px rgba(10,44,96,.06), 0 14px 34px rgba(10,44,96,.20);
+  --fab-sh:0 3px 6px rgba(7,52,120,.28), 0 12px 28px rgba(7,52,120,.42);
+}
+
+/* ─── тёмная: ночное небо ─── */
+html[data-theme="dark"]{
+  --page:linear-gradient(180deg,#12305F 0,#0E2650 140px,#0B1D3E 320px,#08152E 520px,#061024 760px);
+  --bloom:
+    radial-gradient(50% 34% at 82% 4%,  rgba(32,104,255,.75), transparent 70%),
+    radial-gradient(46% 32% at 8% 24%,  rgba(90,110,255,.50), transparent 72%),
+    radial-gradient(60% 38% at 88% 78%, rgba(0,180,255,.40),  transparent 72%),
+    radial-gradient(48% 30% at 4% 96%,  rgba(0,229,255,.30),  transparent 72%);
+  --grain-op:.16;--grain-mode:overlay;
+
+  --glass:rgba(150,195,255,.10);
+  --glass-brd:rgba(170,210,255,.20);
+  --edge:linear-gradient(158deg,
+      rgba(206,232,255,.58)  0%,
+      rgba(170,210,255,.26) 28%,
+      rgba(120,170,235,.11) 56%,
+      rgba(30,70,140,.34)  100%);
+  --glass-sh:0 2px 2px rgba(0,0,0,.25), 0 14px 34px rgba(2,12,32,.55);
+
+  --sheet:rgba(14,32,62,.88);--sheet-brd:rgba(170,210,255,.20);
+  --ink:#EDF3FC;--muted:#9DB3D2;--dim:#6480A8;
+  --rule:rgba(170,210,255,.14);
+  --track:rgba(170,210,255,.16);--thumb:#16294A;
+  --accent:#3ECBFF;--on-accent:#04121F;--accent-soft:rgba(62,203,255,.20);
+  --pos:#3DDCA8;--neg:#FF6B8A;--auto:#8FB4FF;
+  --nav:rgba(10,24,48,.72);--nav-brd:rgba(170,210,255,.16);
+  --nav-sh:0 3px 4px rgba(0,0,0,.30), 0 16px 38px rgba(2,10,26,.60);
+  --fab-sh:0 3px 6px rgba(0,0,0,.35), 0 12px 30px rgba(62,203,255,.34);
+}
+
+/* фон уходит на html, чтобы свет не растягивался по длине страницы */
+body{background:none}
+
+html::before{
+  content:"";position:fixed;inset:-15%;z-index:-1;pointer-events:none;
+  background:var(--bloom);filter:blur(34px) saturate(1.15);
+}
+html::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  opacity:var(--grain-op);mix-blend-mode:var(--grain-mode);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── кромка: градиент по периметру вместо ровной обводки ───
+   верх ловит свет, низ уходит в тень, углы гаснут сами. */
+.glass, #mxBox, .detail{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--glass),var(--glass)) padding-box,
+    var(--edge) border-box;
+}
+nav::before{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--nav),var(--nav)) padding-box,
+    var(--edge) border-box;
+  box-shadow:var(--nav-sh);
+}
+.fabc{box-shadow:var(--fab-sh)}
+
+/* .detail помечает выбранное — вернём ему акцентную рамку поверх кромки */
+.detail{box-shadow:0 0 0 1.5px var(--accent-soft), var(--glass-sh)}
+
+/* иконки чекпоинтов — вектор, размером управляет CSS, не font-size */
+.cpicon svg{width:28px;height:28px;display:block}
+.shead .cpicon svg{width:24px;height:24px}
 </style>
 </style>
 </head>
@@ -409,10 +506,16 @@ async function rawGet(k){if(winStore){try{const r=await window.storage.get(k,fal
 async function rawSet(k,v){if(winStore){try{await window.storage.set(k,v,false);return}catch(e){}}try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}
 const K={days:'signal3:days',tags:'signal3:tags',places:'signal3:places',hyps:'signal3:hyps',cfg:'signal3:cfg',theme:'signal3:theme',key:'signal3:apikey',bak:'signal3:lastBackup'};
 
-const CP=[{k:'wake',t:'Утро',hint:'первые 20 минут',hour:8,icon:'☀️',ph:1},
-  {k:'am',t:'После первой еды',hint:'через 40–90 минут',hour:11,icon:'🍳',ph:2},
-  {k:'pm',t:'После обеда',hint:'через 40–90 минут',hour:16,icon:'🍴',ph:3},
-  {k:'eve',t:'Конец дня',hint:'перед сном',hour:22,icon:'🌙',ph:4}];
+const IC={
+  wake:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Утро"> <defs> <radialGradient id="hdSun" cx="38%" cy="34%" r="72%"> <stop offset="0" stop-color="#FFE9A3"/> <stop offset="55%" stop-color="#FFC53D"/> <stop offset="100%" stop-color="#FF9500"/> </radialGradient> </defs> <g stroke="#FFB020" stroke-width="2.6" stroke-linecap="round"> <path d="M16 3.2v3.4M16 25.4v3.4M28.8 16h-3.4M6.6 16H3.2"/> <path d="M25.05 6.95l-2.4 2.4M9.35 22.65l-2.4 2.4M25.05 25.05l-2.4-2.4M9.35 9.35l-2.4-2.4"/> </g> <circle cx="16" cy="16" r="6.6" fill="url(#hdSun)"/> </svg>',
+  am:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="После завтрака"> <defs> <linearGradient id="hdWhA" x1="0.12" y1="0" x2="0.86" y2="1"> <stop offset="0" stop-color="#FFFFFF"/> <stop offset="52%" stop-color="#F3F7FC"/> <stop offset="100%" stop-color="#DAE3EF"/> </linearGradient> <radialGradient id="hdYkA" cx="33%" cy="29%" r="79%"> <stop offset="0" stop-color="#FFE07A"/> <stop offset="56%" stop-color="#FCA311"/> <stop offset="100%" stop-color="#EC7500"/> </radialGradient> <filter id="hdBlA" x="-45%" y="-45%" width="190%" height="190%"> <feGaussianBlur stdDeviation="1.75"/> </filter> </defs> <path fill="url(#hdWhA)" d="M2.8 17.0C2.8 7.4 10.4 1.6 16 1.6C21.6 1.6 29.2 7.4 29.2 17.0C29.2 24.29 23.29 30.2 16 30.2C8.71 30.2 2.8 24.29 2.8 17.0Z"/> <ellipse cx="17.64" cy="15.07" rx="7.14" ry="6.90" fill="#B98A3C" opacity=".26" filter="url(#hdBlA)"/> <circle cx="16" cy="13.2" r="7.14" fill="url(#hdYkA)"/> <circle cx="12.72" cy="9.69" r="2.22" fill="#FFF0B8" opacity=".62"/> </svg>',
+  pm:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="После обеда"> <defs> <linearGradient id="hdFork" x1="0" y1="0" x2="0" y2="1"> <stop offset="0" stop-color="#A5B4FF"/> <stop offset="100%" stop-color="#6D7BF0"/> </linearGradient> <linearGradient id="hdKnife" x1="0" y1="0" x2="0" y2="1"> <stop offset="0" stop-color="#8EA2FF"/> <stop offset="100%" stop-color="#5C6AE0"/> </linearGradient> </defs> <g fill="url(#hdFork)"> <rect x="5.3" y="4.4" width="2.3" height="7.6" rx="1.15"/> <rect x="9.35" y="4.4" width="2.3" height="7.6" rx="1.15"/> <rect x="13.4" y="4.4" width="2.3" height="7.6" rx="1.15"/> <path d="M5.3 10.6h10.4v1.9a5.2 5.2 0 0 1-5.2 5.2 5.2 5.2 0 0 1-5.2-5.2z"/> <rect x="9.2" y="15.6" width="2.6" height="12.2" rx="1.3"/> </g> <path fill="url(#hdKnife)" d="M21.9 4.2c2.9 1.9 4.4 5.6 4.4 9.2 0 3-1.3 4.9-3.1 5.7v7.4a1.35 1.35 0 0 1-2.7 0V4.9c0-.6.7-1 1.4-.7z"/> </svg>',
+  eve:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Перед сном"> <defs> <linearGradient id="hdMoonT4" gradientUnits="userSpaceOnUse" x1="11" y1="4" x2="18" y2="28"> <stop offset="0" stop-color="#FFE08A"/> <stop offset="26%" stop-color="#F5C245"/> <stop offset="44%" stop-color="#D79BC4"/> <stop offset="60%" stop-color="#A874F0"/> <stop offset="100%" stop-color="#8355EE"/> </linearGradient> </defs> <path fill="url(#hdMoonT4)" d="M14.87 3.65a11.4 11.4 0 0 0 11.26 19.50a12.4 12.4 0 1 1 -11.26 -19.50z"/> </svg>'
+};
+const CP=[{k:'wake',t:'Утро',hint:'первые 20 минут',hour:8,icon:IC.wake,ph:1},
+  {k:'am',t:'После первой еды',hint:'через 40–90 минут',hour:11,icon:IC.am,ph:2},
+  {k:'pm',t:'После обеда',hint:'через 40–90 минут',hour:16,icon:IC.pm,ph:3},
+  {k:'eve',t:'Конец дня',hint:'перед сном',hour:22,icon:IC.eve,ph:4}];
 const SMIN=1,SMAX=7;
 const CORE=[{k:'energy',t:'Энергия',c:'#F0A030'},{k:'clarity',t:'Ясность',c:'#5B7CF0'},
   {k:'mood',t:'Настроение',c:'#5CC96A'},{k:'calm',t:'Спокойствие',c:'#9B6BF5',sub:'7 — тревоги нет'},
@@ -1445,7 +1548,7 @@ function switchView(v){
   try{HYPS=hy?JSON.parse(hy)||[]:[]}catch(e){HYPS=[]}
   try{if(cf)CFG=Object.assign(CFG,JSON.parse(cf))}catch(e){}
   APIKEY=ky||'';LASTBAK=bk||'';
-  THEME=(await rawGet(K.theme))||'auto';applyTheme();
+  THEME=(await rawGet(K.theme))||'light';applyTheme();
   try{if(window.matchMedia)window.matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{if(THEME==='auto')applyTheme()})}catch(e){}
   const scaleTag=await rawGet('signal3:scale');
   if(scaleTag!=='7'){
