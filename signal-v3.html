@@ -347,6 +347,205 @@ nav::before{
 /* иконки чекпоинтов — вектор, размером управляет CSS, не font-size */
 .cpicon svg{width:28px;height:28px;display:block}
 .shead .cpicon svg{width:24px;height:24px}
+
+/* ═══════════ ДОК С ВЫРЕЗОМ ═══════════
+   Форму панели задаёт путь, он же рисует обводку. Радиус
+   скругления углов теперь внутри пути, а не в border-radius. */
+
+nav::before{
+  border-radius:0;
+  border:0;
+  box-shadow:none;
+  clip-path:path(var(--dockPath,"M0 0"));
+  -webkit-clip-path:path(var(--dockPath,"M0 0"));
+  filter:drop-shadow(0 2px 3px rgba(10,44,96,.10)) drop-shadow(0 14px 30px rgba(10,44,96,.22));
+}
+html[data-theme="dark"] nav::before{
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.34)) drop-shadow(0 16px 34px rgba(2,10,26,.60));
+}
+
+/* непрерывный контур: тот же путь, что и обрезка */
+.dockEdge{position:absolute;inset:0;width:100%;height:100%;z-index:1;
+  pointer-events:none;overflow:visible}
+.dockEdge path{fill:none;stroke:url(#dockEdgeGrad);stroke-width:1.2;
+  vector-effect:non-scaling-stroke}
+.dockEdge .s0{stop-color:#FFFFFF;stop-opacity:.98}
+.dockEdge .s1{stop-color:#FFFFFF;stop-opacity:.58}
+.dockEdge .s2{stop-color:#5E8ABE;stop-opacity:.45}
+html[data-theme="dark"] .dockEdge .s0{stop-color:#CEE8FF;stop-opacity:.58}
+html[data-theme="dark"] .dockEdge .s1{stop-color:#AAD2FF;stop-opacity:.24}
+html[data-theme="dark"] .dockEdge .s2{stop-color:#1E468C;stop-opacity:.34}
+
+/* скрим: прячет только то, что попадает в вырез.
+   Полоса ровно по доку плюс короткое перо сверху — текст
+   выше остаётся резким. */
+.dockVeil{position:fixed;left:0;right:0;bottom:0;height:var(--veilH,90px);
+  z-index:39;pointer-events:none}
+.dockVeil b{position:absolute;inset:0;display:block;
+  -webkit-mask-image:linear-gradient(to top,#000 0,#000 calc(100% - var(--veilFade,20px)),transparent 100%);
+          mask-image:linear-gradient(to top,#000 0,#000 calc(100% - var(--veilFade,20px)),transparent 100%)}
+.dockVeil .blur{backdrop-filter:blur(20px) saturate(150%);
+  -webkit-backdrop-filter:blur(20px) saturate(150%)}
+.dockVeil .tint{background:var(--veil-tint)}
+html[data-theme="light"]{--veil-tint:rgba(206,228,250,.34)}
+html[data-theme="dark"]{--veil-tint:rgba(8,20,42,.38)}
+
+/* ═══════════ ПЛЮС СТАНОВИТСЯ КРЕСТИКОМ ═══════════
+   Шторка выходит поверх контента, но док остаётся сверху:
+   кнопка поворачивается на 45° против часовой и закрывает. */
+
+/* док впереди всё время анимации, а не только пока шторка открыта */
+body.dock-front nav{z-index:62}
+body.sheet-open nav button:not(#fab){opacity:.4;pointer-events:none}
+body.sheet-open nav::before{opacity:.92}
+
+.fabc{transition:transform .26s cubic-bezier(.2,.72,.24,1)}
+body.sheet-open .fabc{transform:rotate(-45deg)}
+nav #fab:active .fabc{transform:scale(.93)}
+body.sheet-open nav #fab:active .fabc{transform:rotate(-45deg) scale(.93)}
+
+/* низ шторки уходит под док — возвращаем ему высоту */
+body.sheet-open .sbody{padding-bottom:calc(22px + var(--dockH,84px))}
+
+/* ═══════════ ОЦЕНКИ: СИНЯЯ КАРТА, ПЛАВНЫЕ ШКАЛЫ ═══════════ */
+
+/* карта чекпоинта — синяя, как шапка страницы */
+#sheet.cpsheet{
+  color:#fff;
+  background-image:
+    radial-gradient(46% 32% at 20% 3%,rgba(255,255,255,.34),transparent 70%),
+    linear-gradient(168deg,#5AA3EC 0,#3384DA 32%,#2069C4 66%,#17539F 100%);
+  border-top-color:rgba(255,255,255,.30);
+}
+#sheet.cpsheet .grab i{background:rgba(255,255,255,.55);opacity:1}
+#sheet.cpsheet .shead{border-bottom:0;padding-top:6px;padding-bottom:18px}
+#sheet.cpsheet .shead h3{color:#fff}
+#sheet.cpsheet .note,#sheet.cpsheet small,#sheet.cpsheet .sub{color:rgba(255,255,255,.74)}
+#sheet.cpsheet .chip{color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28)}
+#sheet.cpsheet .chip[aria-pressed="true"]{background:#fff;color:#17539F;border-color:#fff;font-weight:600}
+#sheet.cpsheet .more{color:#fff;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.26)}
+#sheet.cpsheet input[type=text],#sheet.cpsheet input[type=number],
+#sheet.cpsheet textarea,#sheet.cpsheet select{
+  background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.28)}
+#sheet.cpsheet ::placeholder{color:rgba(255,255,255,.55)}
+#sheet.cpsheet .glass{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.24)}
+
+/* ─── строка оценки ─── */
+.fld2{padding:4px 0 20px}
+.f2top{display:flex;align-items:baseline;gap:9px;margin-bottom:12px}
+.f2dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c);
+  box-shadow:0 0 0 3px rgba(90,120,170,.20)}
+.f2name{font-size:16px;font-weight:600;flex:1;color:var(--ink)}
+.f2word{font-size:14px;font-weight:600;color:var(--c);text-align:right;letter-spacing:-.01em}
+.fld2.f2empty .f2word{color:var(--dim);font-weight:500}
+
+.f2sl{position:relative;height:34px;display:flex;align-items:center;touch-action:none}
+.f2sl input[type=range]{position:absolute;inset:0;width:100%;height:100%;
+  opacity:0;margin:0;cursor:pointer;z-index:3}
+.f2track{position:absolute;left:0;right:0;height:8px;border-radius:99px;
+  background:var(--track);overflow:hidden}
+.f2track i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 40%,#fff),var(--c));
+  box-shadow:0 0 14px color-mix(in srgb,var(--c) 60%,transparent)}
+.f2knob{position:absolute;top:50%;width:34px;height:34px;margin-top:-17px;
+  transform:translateX(-50%);border-radius:50%;pointer-events:none;z-index:2;
+  background:linear-gradient(160deg,#ffffff,rgba(255,255,255,.72));
+  border:1px solid rgba(255,255,255,.92);
+  box-shadow:0 2px 4px rgba(6,32,72,.24),0 10px 22px rgba(6,32,72,.28),
+             inset 0 1px 0 rgba(255,255,255,.95)}
+.f2knob i{position:absolute;inset:9px;border-radius:50%;background:var(--c);opacity:.9}
+.fld2.f2empty .f2track i{opacity:.28}
+.fld2.f2empty .f2knob i{opacity:.35}
+
+/* на синей карте: белый текст и полупрозрачный жёлоб */
+#sheet.cpsheet .f2name{color:#fff}
+#sheet.cpsheet .f2track{background:rgba(255,255,255,.22)}
+#sheet.cpsheet .f2track i{background:linear-gradient(90deg,rgba(255,255,255,.55),var(--c))}
+#sheet.cpsheet .f2dot{box-shadow:0 0 0 3px rgba(255,255,255,.18)}
+#sheet.cpsheet .fld2.f2empty .f2word{color:rgba(255,255,255,.6)}
+
+/* ═══════════ ПЕРВЫЙ ЭКРАН В СИНЕЙ СХЕМЕ ═══════════
+   Страница уходит в тот же синий, что и карточка чекпоинта,
+   текст белеет. Всё, что должно остаться светлым — док,
+   импорт и тост — получает свой набор переменных обратно. */
+
+html[data-theme="light"]{
+  --page:linear-gradient(168deg,#5AA3EC 0,#3A88DC 240px,#2069C4 520px,#17539F 820px);
+  --bloom:
+    radial-gradient(46% 30% at 14% 2%,  rgba(255,255,255,.55), transparent 70%),
+    radial-gradient(52% 32% at 92% 8%,  rgba(20,86,180,.55),   transparent 72%),
+    radial-gradient(58% 34% at 20% 46%, rgba(0,170,220,.26),   transparent 74%),
+    radial-gradient(50% 32% at 96% 74%, rgba(96,132,240,.34),  transparent 74%);
+  --grain-op:.10;--grain-mode:overlay;
+
+  --ink:#FFFFFF;
+  --muted:rgba(255,255,255,.74);
+  --dim:rgba(255,255,255,.52);
+  --rule:rgba(255,255,255,.20);
+  --track:rgba(255,255,255,.24);
+  --thumb:#FFFFFF;
+
+  --glass:rgba(255,255,255,.15);
+  --glass-brd:rgba(255,255,255,.34);
+  --edge:linear-gradient(158deg,
+      rgba(255,255,255,.88)  0%,
+      rgba(255,255,255,.42) 30%,
+      rgba(255,255,255,.18) 62%,
+      rgba(255,255,255,.10) 100%);
+  --glass-sh:0 1px 1px rgba(4,26,62,.14), 0 12px 28px rgba(4,26,62,.26);
+
+  --accent:#FFFFFF;--on-accent:#17539F;--accent-soft:rgba(255,255,255,.22);
+  --pos:#6EE7A0;--neg:#FF9EB5;--auto:#C4A6FF;
+  --field:rgba(255,255,255,.14);--icon-bg:rgba(255,255,255,.16);
+  --veil-tint:rgba(24,88,164,.38);
+}
+
+/* док остаётся светлым — значит внутри него палитра прежняя */
+html[data-theme="light"] nav{
+  --ink:#0E2340;--muted:#4E6E92;--dim:#8199B5;
+  --accent:#0757C2;--on-accent:#FFFFFF;
+}
+
+/* импорт и прочие светлые шторки: карточка чекпоинта уходит в синий сама */
+html[data-theme="light"] #sheet:not(.cpsheet){
+  --ink:#0E2340;--muted:#4E6E92;--dim:#8199B5;
+  --rule:rgba(14,35,64,.12);--track:#D2DFEE;
+  --glass:rgba(255,255,255,.70);--glass-brd:rgba(255,255,255,.95);
+  --accent:#0757C2;--on-accent:#FFFFFF;--accent-soft:rgba(7,87,194,.14);
+  --field:rgba(255,255,255,.80);--icon-bg:rgba(14,35,64,.06);
+  --pos:#0E7C57;--neg:#C2382C;--auto:#0A6E92;
+}
+html[data-theme="light"] .toast{--ink:#0E2340}
+
+/* ═══════════ ОБЩЕЕ СТЕКЛО: РАЗДЕЛЫ И ДОК ═══════════
+   Плотность .15, размытие 15, насыщенность 160% —
+   одни и те же числа для карточек и для панели. */
+
+.glass,#mxBox,.detail{
+  backdrop-filter:blur(15px) saturate(160%);
+  -webkit-backdrop-filter:blur(15px) saturate(160%);
+}
+
+html[data-theme="light"]{--nav:rgba(255,255,255,.15);--nav-brd:rgba(255,255,255,.32)}
+html[data-theme="dark"] {--nav:rgba(150,195,255,.12);--nav-brd:rgba(170,210,255,.20)}
+nav::before{
+  backdrop-filter:blur(15px) saturate(160%);
+  -webkit-backdrop-filter:blur(15px) saturate(160%);
+}
+
+/* панель стала прозрачной — значит подписи внутри неё белые,
+   как и везде на синем; прежняя тёмная палитра дока снята */
+html[data-theme="light"] nav{
+  --ink:#FFFFFF;--muted:rgba(255,255,255,.78);--dim:rgba(255,255,255,.55);
+  --accent:#FFFFFF;--on-accent:#17539F;
+}
+/* но кнопка обязана остаться синей: белая на прозрачном пропадёт */
+.fabc{background:linear-gradient(160deg,#4FA6FF,#0B5ECB)}
+.fabc svg{stroke:#FFFFFF}
+
+/* свечение отстаёт от прокрутки — сдвиг задаётся переменной,
+   к псевдоэлементу иначе не подобраться */
+html::before{transform:translate3d(0,var(--bloomY,0px),0)}
 </style>
 </style>
 </head>
@@ -375,7 +574,6 @@ nav::before{
 <div class="wrap">
 
 <section class="view on" id="view-today">
-  <div class="eyebrow"><span>Мои оценки — точки дня</span><span id="cpFill"></span></div>
   <div class="rail" id="rail"></div>
 
   <div class="eyebrow"><span>Тренировка</span></div>
@@ -849,9 +1047,8 @@ function renderRail(){
     return`<button class="cp glass" data-sheet="${c.k}">
       <span class="cpicon">${c.icon}</span>
       <span class="cptext"><h3>${c.t}</h3><small>${c.hint}</small></span>
-      ${filled?`<span class="cpcheck">${filled>=CORE.length?'✓':filled+'/'+CORE.length}</span>`:''}
+      ${filled>=CORE.length?`<span class="cpcheck">✓</span>`:''}
       </button>`}).join('');
-  $('#cpFill').textContent=CP.reduce((a,c)=>a+CORE.filter(m=>(e.cp[c.k]||{})[m.k]).length,0)+'/'+(CP.length*CORE.length);
   renderTrain();
 }
 
@@ -1573,6 +1770,230 @@ function switchView(v){
     }catch(e){}}}
 
   renderDay();renderCounts();
+})();
+</script>
+<script>
+/* ═══════════ ДОК С ВЫРЕЗОМ · геометрия ═══════════
+   Одна строка пути обрезает панель и рисует обводку,
+   поэтому разъехаться они не могут. */
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  var CFG={rn:34, rf:20, peek:0.17, gap:7, R:14, veilFade:20, minFloor:12};
+
+  function once(){
+    var nav=document.querySelector('nav');
+    if(!nav) return null;
+    if(!nav.querySelector('.dockEdge')){
+      var svg=document.createElementNS(NS,'svg');
+      svg.setAttribute('class','dockEdge');
+      svg.setAttribute('preserveAspectRatio','none');
+      svg.setAttribute('aria-hidden','true');
+      svg.innerHTML='<defs><linearGradient id="dockEdgeGrad" x1="0" y1="0" x2="0.9" y2="1">'+
+        '<stop class="s0" offset="0"/><stop class="s1" offset="45%"/><stop class="s2" offset="100%"/>'+
+        '</linearGradient></defs><path/>';
+      nav.appendChild(svg);
+    }
+    if(!document.querySelector('.dockVeil')){
+      var v=document.createElement('div');
+      v.className='dockVeil'; v.setAttribute('aria-hidden','true');
+      v.innerHTML='<b class="blur"></b><b class="tint"></b>';
+      nav.parentNode.insertBefore(v, nav);
+    }
+    return nav;
+  }
+
+  function build(){
+    var nav=once(); if(!nav) return;
+    var W=nav.offsetWidth, H=nav.offsetHeight;
+    if(!W || !H) return;
+
+    var rn=CFG.rn, rf=CFG.rf, R=CFG.R;
+    var rFab=rn-CFG.gap;
+    var cy=rFab*(1-2*CFG.peek);
+
+    // вырез не должен прорезать панель насквозь
+    var floor=H-(cy+rn);
+    if(floor<CFG.minFloor) cy-=(CFG.minFloor-floor);
+
+    var cx=W/2;
+    var span=(rn+rf)*(rn+rf)-(rf-cy)*(rf-cy);
+    var dx=span>0?Math.sqrt(span):rn;
+    var k=rn/(rn+rf);
+    var TlX=cx-dx*k, TrX=cx+dx*k, TY=cy+(rf-cy)*k;
+
+    var d='M'+R+' 0'+
+          'L'+(cx-dx).toFixed(2)+' 0'+
+          (rf>0?'A'+rf+' '+rf+' 0 0 1 '+TlX.toFixed(2)+' '+TY.toFixed(2):'')+
+          'A'+rn+' '+rn+' 0 0 0 '+TrX.toFixed(2)+' '+TY.toFixed(2)+
+          (rf>0?'A'+rf+' '+rf+' 0 0 1 '+(cx+dx).toFixed(2)+' 0':'')+
+          'L'+(W-R)+' 0'+
+          'A'+R+' '+R+' 0 0 1 '+W+' '+R+
+          'L'+W+' '+(H-R)+
+          'A'+R+' '+R+' 0 0 1 '+(W-R)+' '+H+
+          'L'+R+' '+H+
+          'A'+R+' '+R+' 0 0 1 0 '+(H-R)+
+          'L0 '+R+
+          'A'+R+' '+R+' 0 0 1 '+R+' 0Z';
+
+    nav.style.setProperty('--dockPath','"'+d+'"');
+
+    var svg=nav.querySelector('.dockEdge');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.querySelector('path').setAttribute('d',d);
+
+    var fabc=nav.querySelector('.fabc');
+    if(fabc){
+      fabc.style.width=fabc.style.height=(rFab*2)+'px';
+      fabc.style.marginLeft=(-rFab)+'px';
+      fabc.style.top=(cy-rFab)+'px';
+    }
+    var fabBtn=nav.querySelector('#fab');
+    if(fabBtn) fabBtn.style.width=(dx*2+8)+'px';
+
+    var veil=document.querySelector('.dockVeil');
+    if(veil){
+      // полоса начинается там, где начинается вырез: он уходит
+      // выше верхней грани панели на rn-cy
+      var top=nav.getBoundingClientRect().top-Math.max(0,rn-cy);
+      veil.style.setProperty('--veilH',(window.innerHeight-top+CFG.veilFade)+'px');
+      veil.style.setProperty('--veilFade',CFG.veilFade+'px');
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',build);
+  else build();
+  window.addEventListener('resize',build);
+  window.addEventListener('orientationchange',build);
+  if(window.ResizeObserver){
+    var ro=new ResizeObserver(build);
+    var n=document.querySelector('nav'); if(n) ro.observe(n);
+  }
+})();
+</script>
+<script>
+/* ═══════════ ПЛЮС ↔ КРЕСТИК ═══════════
+   Состояние читается со самой шторки, поэтому showSheet и
+   closeSheet править не пришлось — они и так ставят класс on. */
+(function(){
+  var sheet=document.getElementById('sheet'),
+      nav=document.querySelector('nav'),
+      fab=document.getElementById('fab');
+  if(!sheet||!nav||!fab) return;
+
+  function dockH(){
+    document.documentElement.style.setProperty('--dockH',(nav.offsetHeight+16)+'px');
+  }
+  dockH();
+  window.addEventListener('resize',dockH);
+  window.addEventListener('orientationchange',dockH);
+
+  var backTimer=null;
+  function dropFront(){
+    clearTimeout(backTimer); backTimer=null;
+    document.body.classList.remove('dock-front');
+  }
+  sheet.addEventListener('transitionend',function(e){
+    if(e.propertyName==='transform' && !sheet.classList.contains('on')) dropFront();
+  });
+
+  new MutationObserver(function(){
+    var on=sheet.classList.contains('on');
+    document.body.classList.toggle('sheet-open',on);
+    fab.setAttribute('aria-label', on?'Закрыть':'Загрузить отчёты');
+    fab.setAttribute('aria-expanded', on?'true':'false');
+    if(on){
+      clearTimeout(backTimer); backTimer=null;
+      document.body.classList.add('dock-front');
+    }else{
+      // страховка: при закрытии перетаскиванием transition снят,
+      // transitionend не придёт
+      clearTimeout(backTimer);
+      backTimer=setTimeout(dropFront,600);
+    }
+  }).observe(sheet,{attributes:true,attributeFilter:['class']});
+
+  // фаза перехвата: общий делегат ниже по стеку иначе снова откроет импорт
+  document.addEventListener('click',function(e){
+    if(!document.body.classList.contains('sheet-open')) return;
+    if(!(e.target.closest && e.target.closest('#fab'))) return;
+    e.stopPropagation(); e.preventDefault();
+    if(typeof closeSheet==='function') closeSheet();
+  },true);
+})();
+</script>
+<script>
+/* ═══════════ ОЦЕНКИ: ПЛАВНАЯ ШКАЛА СО СЛОВОМ ═══════════
+   Диапазон остался 1–7, поменялся только шаг: было step=1,
+   стало step=any. Старые записи и корреляции не трогаем. */
+(function(){
+  var KNOB=34;
+  var WORDS={
+    energy :['нет сил','вяло','средне','бодро','полон сил'],
+    clarity:['туман','мутно','средне','ясно','кристально'],
+    mood   :['плохо','так себе','ровно','хорошо','отлично'],
+    calm   :['тревожно','неспокойно','ровно','спокойно','безмятежно'],
+    drive  :['не тянет','через силу','средне','тянет','рвусь'],
+    focus  :['рассеян','плыву','средне','собран','как лазер'],
+    _      :['совсем нет','мало','средне','заметно','максимум']
+  };
+  function frac(v){return Math.max(0,Math.min(1,(v-SMIN)/(SMAX-SMIN)))}
+  function word(v,k){var w=WORDS[k]||WORDS._;return w[Math.min(4,Math.floor(frac(v)*5))]}
+  // ручка не должна вылезать за концы жёлоба, поэтому к проценту
+  // добавляется поправка на её собственную ширину
+  function knobLeft(p){return 'calc('+(p*100).toFixed(2)+'% + '+(KNOB/2-p*KNOB).toFixed(2)+'px)'}
+
+  window.segRow=function(m,val,cpk){
+    var c=m.c||'#7A7A85', has=!!val, v=has?val:(SMIN+SMAX)/2, p=frac(v);
+    return '<div class="fld2'+(has?'':' f2empty')+'" style="--c:'+c+'">'+
+      '<div class="f2top"><i class="f2dot"></i><span class="f2name">'+m.t+'</span>'+
+        '<span class="f2word">'+(has?word(v,m.k):'не отмечено')+'</span></div>'+
+      '<div class="f2sl">'+
+        '<div class="f2track"><i style="width:'+(p*100).toFixed(2)+'%"></i></div>'+
+        '<div class="f2knob" style="left:'+knobLeft(p)+'"><i></i></div>'+
+        '<input type="range" min="'+SMIN+'" max="'+SMAX+'" step="any" value="'+v+'" '+
+          'data-cp="'+cpk+'" data-m="'+m.k+'">'+
+      '</div></div>';
+  };
+
+  document.addEventListener('input',function(e){
+    var t=e.target;
+    if(t.type!=='range'||!t.dataset.m) return;
+    var box=t.closest('.fld2'); if(!box) return;
+    var v=+t.value, p=frac(v);
+    box.classList.remove('f2empty');
+    box.querySelector('.f2track i').style.width=(p*100).toFixed(2)+'%';
+    box.querySelector('.f2knob').style.left=knobLeft(p);
+    box.querySelector('.f2word').textContent=word(v,t.dataset.m);
+  });
+
+  // синей делаем только карту чекпоинта: у импорта своя, светлая
+  var sheet=document.getElementById('sheet');
+  if(sheet) new MutationObserver(function(){
+    if(!sheet.classList.contains('on')) return;
+    var isCP=!!sheet.querySelector('#sheetBody .fld2');
+    sheet.classList.toggle('cpsheet', isCP);
+    // заголовок переезжает внутрь прокрутки: иначе он висит
+    // неподвижной полосой, под которую уползает содержимое
+    var head=sheet.querySelector('.shead'), body=sheet.querySelector('.sbody');
+    if(head&&body){
+      if(isCP){ if(head.parentNode!==body) body.insertBefore(head, body.firstChild); }
+      else    { if(head.parentNode===body) sheet.insertBefore(head, body); }
+    }
+  }).observe(sheet,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+<script>
+/* ═══════════ ПАРАЛЛАКС ФОНА ═══════════ */
+(function(){
+  var K=0.06, root=document.documentElement, queued=false;
+  function apply(){
+    root.style.setProperty('--bloomY',(-(window.scrollY||0)*K).toFixed(1)+'px');
+    queued=false;
+  }
+  window.addEventListener('scroll',function(){
+    if(queued) return; queued=true; requestAnimationFrame(apply);
+  },{passive:true});
+  apply();
 })();
 </script>
 </body>
