@@ -283,13 +283,13 @@ html[data-theme="light"]{
 
 /* ─── тёмная: ночное небо ─── */
 html[data-theme="dark"]{
-  --page:linear-gradient(180deg,#12305F 0,#0E2650 140px,#0B1D3E 320px,#08152E 520px,#061024 760px);
+  --page:linear-gradient(180deg,rgb(28,40,98) 0px,rgb(23,32,82) 140px,rgb(18,24,64) 320px,rgb(13,18,47) 520px,rgb(10,13,37) 760px);
   --bloom:
-    radial-gradient(50% 34% at 82% 4%,  rgba(32,104,255,.75), transparent 70%),
-    radial-gradient(46% 32% at 8% 24%,  rgba(90,110,255,.50), transparent 72%),
-    radial-gradient(60% 38% at 88% 78%, rgba(0,180,255,.40),  transparent 72%),
-    radial-gradient(48% 30% at 4% 96%,  rgba(0,229,255,.30),  transparent 72%);
-  --grain-op:.16;--grain-mode:overlay;
+    radial-gradient(66% 46% at 25% 19%, rgba(0,240,214,.44), transparent 78%),
+    radial-gradient(68% 48% at 72% 47%, rgba(168,110,255,.44), transparent 78%),
+    radial-gradient(60% 41% at 29% 75%, rgba(255,72,166,.40), transparent 78%);
+  --bloom-op:1;--bloom-blur:61px;--bloom-sat:1.78;--bloom-bright:1;
+  --grain-op:0;--grain-mode:overlay;
 
   --glass:rgba(150,195,255,.10);
   --glass-brd:rgba(170,210,255,.20);
@@ -316,7 +316,16 @@ body{background:none}
 
 html::before{
   content:"";position:fixed;inset:-15%;z-index:-1;pointer-events:none;
-  background:var(--bloom);filter:blur(34px) saturate(1.15);
+  background:var(--bloom);
+  opacity:calc(var(--bloom-op,1) * var(--bloom-fade,1));
+  filter:blur(var(--bloom-blur,34px)) saturate(1.15) saturate(var(--bloom-sat,1)) brightness(var(--bloom-bright,1));
+  /* доку эта подсветка не положена вообще — розовое пятно
+     'мягкого' варианта стоит почти вплотную к нему (~82% вниз
+     по экрану), и никакой скролл этого не меняет: и пятно,
+     и панель зафиксированы за экраном. Гасим свечение маской
+     до того, как оно доберётся до зоны дока. */
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 60%,transparent 82%);
+          mask-image:linear-gradient(to bottom,#000 0%,#000 60%,transparent 82%);
 }
 html::after{
   content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
@@ -340,6 +349,37 @@ nav::before{
   box-shadow:var(--nav-sh);
 }
 .fabc{box-shadow:var(--fab-sh)}
+
+/* ═══════════ КАРТОЧКИ ЧЕКПОИНТОВ ПАРЯТ ═══════════
+   Тень не вокруг, а только вниз — узкий тёмный контакт для
+   опоры плюс мягкое цветное свечение, в тон своей иконке.
+   Свечение крупнее и мягче тени, поэтому читается как свет,
+   а не как тень другого цвета. */
+.cp.glass{background:rgba(226,230,233,.15);box-shadow:
+    0 2px 3px rgba(4,26,62,.09),
+    0 10px 20px rgba(122,202,255,.28),
+    0 16px 26px rgba(122,202,255,.18)}
+
+html[data-theme="dark"] .cp.glass{box-shadow:
+    0 2px 3px rgba(0,0,0,.30),
+    0 10px 22px rgba(62,203,255,.26),
+    0 18px 30px rgba(62,203,255,.15)}
+html[data-theme="dark"] .cp.glass[data-sheet="wake"]{box-shadow:
+    0 2px 3px rgba(0,0,0,.30),
+    0 10px 22px rgba(255,196,90,.34),
+    0 18px 30px rgba(255,170,60,.20)}
+html[data-theme="dark"] .cp.glass[data-sheet="am"]{box-shadow:
+    0 2px 3px rgba(0,0,0,.30),
+    0 10px 22px rgba(255,175,60,.32),
+    0 18px 30px rgba(240,150,30,.19)}
+html[data-theme="dark"] .cp.glass[data-sheet="pm"]{box-shadow:
+    0 2px 3px rgba(0,0,0,.30),
+    0 10px 22px rgba(150,130,255,.32),
+    0 18px 30px rgba(130,110,245,.19)}
+html[data-theme="dark"] .cp.glass[data-sheet="eve"]{box-shadow:
+    0 2px 3px rgba(0,0,0,.30),
+    0 10px 22px rgba(180,120,250,.34),
+    0 18px 30px rgba(160,100,240,.20)}
 
 /* .detail помечает выбранное — вернём ему акцентную рамку поверх кромки */
 .detail{box-shadow:0 0 0 1.5px var(--accent-soft), var(--glass-sh)}
@@ -414,7 +454,7 @@ body.sheet-open .sbody{padding-bottom:calc(22px + var(--dockH,84px))}
   color:#fff;
   background-image:
     radial-gradient(46% 32% at 20% 3%,rgba(255,255,255,.34),transparent 70%),
-    linear-gradient(168deg,#5AA3EC 0,#3384DA 32%,#2069C4 66%,#17539F 100%);
+    linear-gradient(168deg,#22C8F1 0,#17CCFF 32%,#00AAE4 66%,#0087B6 100%);
   border-top-color:rgba(255,255,255,.30);
 }
 #sheet.cpsheet .grab i{background:rgba(255,255,255,.55);opacity:1}
@@ -422,7 +462,7 @@ body.sheet-open .sbody{padding-bottom:calc(22px + var(--dockH,84px))}
 #sheet.cpsheet .shead h3{color:#fff}
 #sheet.cpsheet .note,#sheet.cpsheet small,#sheet.cpsheet .sub{color:rgba(255,255,255,.74)}
 #sheet.cpsheet .chip{color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28)}
-#sheet.cpsheet .chip[aria-pressed="true"]{background:#fff;color:#17539F;border-color:#fff;font-weight:600}
+#sheet.cpsheet .chip[aria-pressed="true"]{background:#fff;color:#0087B6;border-color:#fff;font-weight:600}
 #sheet.cpsheet .more{color:#fff;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.26)}
 #sheet.cpsheet input[type=text],#sheet.cpsheet input[type=number],
 #sheet.cpsheet textarea,#sheet.cpsheet select{
@@ -470,13 +510,13 @@ body.sheet-open .sbody{padding-bottom:calc(22px + var(--dockH,84px))}
    импорт и тост — получает свой набор переменных обратно. */
 
 html[data-theme="light"]{
-  --page:linear-gradient(168deg,#5AA3EC 0,#3A88DC 240px,#2069C4 520px,#17539F 820px);
+  --page:linear-gradient(168deg,rgb(34,200,241) 0px,rgb(23,204,255) 240px,rgb(0,170,228) 520px,rgb(0,135,182) 820px);
   --bloom:
-    radial-gradient(46% 30% at 14% 2%,  rgba(255,255,255,.55), transparent 70%),
-    radial-gradient(52% 32% at 92% 8%,  rgba(20,86,180,.55),   transparent 72%),
-    radial-gradient(58% 34% at 20% 46%, rgba(0,170,220,.26),   transparent 74%),
-    radial-gradient(50% 32% at 96% 74%, rgba(96,132,240,.34),  transparent 74%);
-  --grain-op:.10;--grain-mode:overlay;
+    radial-gradient(66% 46% at 25% 19%, rgba(0,229,196,.36), transparent 78%),
+    radial-gradient(68% 48% at 72% 47%, rgba(150,90,245,.36), transparent 78%),
+    radial-gradient(60% 41% at 29% 75%, rgba(255,58,148,.32), transparent 78%);
+  --bloom-op:.67;--bloom-blur:70px;--bloom-sat:1.06;--bloom-bright:1.18;
+  --grain-op:0;--grain-mode:overlay;
 
   --ink:#FFFFFF;
   --muted:rgba(255,255,255,.74);
@@ -488,16 +528,16 @@ html[data-theme="light"]{
   --glass:rgba(255,255,255,.15);
   --glass-brd:rgba(255,255,255,.34);
   --edge:linear-gradient(158deg,
-      rgba(255,255,255,.88)  0%,
-      rgba(255,255,255,.42) 30%,
-      rgba(255,255,255,.18) 62%,
+      rgba(255,255,255,.60)  0%,
+      rgba(255,255,255,.34) 38%,
+      rgba(255,255,255,.16) 66%,
       rgba(255,255,255,.10) 100%);
   --glass-sh:0 1px 1px rgba(4,26,62,.14), 0 12px 28px rgba(4,26,62,.26);
 
-  --accent:#FFFFFF;--on-accent:#17539F;--accent-soft:rgba(255,255,255,.22);
-  --pos:#6EE7A0;--neg:#FF9EB5;--auto:#C4A6FF;
+  --accent:#FFFFFF;--on-accent:#00688C;--accent-soft:rgba(255,255,255,.22);
+  --pos:#6EE7A0;--neg:#FF9EB5;--auto:#4B1FA3;
   --field:rgba(255,255,255,.14);--icon-bg:rgba(255,255,255,.16);
-  --veil-tint:rgba(24,88,164,.38);
+  --veil-tint:rgba(0,110,150,.38);
 }
 
 /* док остаётся светлым — значит внутри него палитра прежняя */
@@ -537,7 +577,7 @@ nav::before{
    как и везде на синем; прежняя тёмная палитра дока снята */
 html[data-theme="light"] nav{
   --ink:#FFFFFF;--muted:rgba(255,255,255,.78);--dim:rgba(255,255,255,.55);
-  --accent:#FFFFFF;--on-accent:#17539F;
+  --accent:#FFFFFF;--on-accent:#00688C;
 }
 /* но кнопка обязана остаться синей: белая на прозрачном пропадёт */
 .fabc{background:linear-gradient(160deg,#4FA6FF,#0B5ECB)}
@@ -1983,16 +2023,27 @@ function switchView(v){
 })();
 </script>
 <script>
-/* ═══════════ ПАРАЛЛАКС ФОНА ═══════════ */
+/* ═══════════ ПАРАЛЛАКС ФОНА ═══════════
+   Сила разная по темам — светлая мягче, тёмная заметнее.
+   Свечение висит на экране, а не на странице (position:fixed),
+   поэтому без затухания оно всплывало бы под любой карточкой,
+   докатившейся до его места при скролле — не только у верха.
+   FADE_DIST подобран под то, где заканчивается сам градиент
+   фона: дальше него светиться уже нечему по смыслу. */
 (function(){
-  var K=0.06, root=document.documentElement, queued=false;
+  var K_LIGHT=0.06, K_DARK=0.16, FADE_DIST=820, root=document.documentElement, queued=false;
+  function K(){ return root.getAttribute('data-theme')==='dark' ? K_DARK : K_LIGHT; }
+  function fade(){ return Math.max(0, 1-(window.scrollY||0)/FADE_DIST); }
   function apply(){
-    root.style.setProperty('--bloomY',(-(window.scrollY||0)*K).toFixed(1)+'px');
+    var y=window.scrollY||0;
+    root.style.setProperty('--bloomY',(-y*K()).toFixed(1)+'px');
+    root.style.setProperty('--bloom-fade', fade().toFixed(3));
     queued=false;
   }
   window.addEventListener('scroll',function(){
     if(queued) return; queued=true; requestAnimationFrame(apply);
   },{passive:true});
+  new MutationObserver(apply).observe(root,{attributes:true,attributeFilter:['data-theme']});
   apply();
 })();
 </script>
