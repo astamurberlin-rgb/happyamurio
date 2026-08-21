@@ -2015,13 +2015,12 @@ function switchView(v){
     if(!sheet.classList.contains('on')) return;
     var isCP=!!sheet.querySelector('#sheetBody .fld2');
     sheet.classList.toggle('cpsheet', isCP);
-    // заголовок переезжает внутрь прокрутки: иначе он висит
-    // неподвижной полосой, под которую уползает содержимое
-    var head=sheet.querySelector('.shead'), body=sheet.querySelector('.sbody');
-    if(head&&body){
-      if(isCP){ if(head.parentNode!==body) body.insertBefore(head, body.firstChild); }
-      else    { if(head.parentNode===body) sheet.insertBefore(head, body); }
-    }
+    /* раньше шапка на время cpsheet переезжала внутрь прокрутки —
+       думал, что чиню "залипающую" шапку, а она с самого начала
+       была задумана фиксированной. Свайп вниз для закрытия шторки
+       стартует именно с #grab/#sheetHead — если увести шапку внутрь
+       .sbody, оба перестают надёжно ловиться. Шапка остаётся на
+       месте всегда, красится в синий тем же способом, что и раньше. */
   }).observe(sheet,{attributes:true,attributeFilter:['class']});
 })();
 </script>
