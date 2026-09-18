@@ -155,6 +155,33 @@ textarea{width:100%;min-height:76px;resize:vertical}
   background:rgba(255,255,255,.13);color:#fff;font-size:13px;font-weight:600;padding:0}
 .scrEdit span{font-size:13px;color:var(--muted);flex:1}
 
+/* ── черточка чекпоинта: тянешь вниз — раздел закрывается ── */
+.grip{display:flex;justify-content:center;align-items:center;height:22px;margin:-4px 0 2px;
+  touch-action:none;cursor:grab}
+.grip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)}
+.grip:active i{background:rgba(255,255,255,.75)}
+
+/* ── заставка на время загрузки: то же кольцо со шкалой, что и в чекпоинте ── */
+.splash{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:24px;transition:opacity .32s ease}
+.splash.out{opacity:0;pointer-events:none}
+body.loading .app,body.loading .dock{opacity:0}
+.app,.dock{transition:opacity .34s ease}
+.splashRing{position:relative;width:134px;height:134px}
+.splashRing svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;
+  animation:splashSpin 1.25s cubic-bezier(.5,.12,.4,.9) infinite}
+.splashRing circle{fill:none;stroke-width:10;stroke-linecap:round}
+.splashRing .trk{stroke:rgba(255,255,255,.2)}
+.splashRing .arc{stroke:#fff;stroke-dasharray:74 250;filter:drop-shadow(0 0 7px rgba(255,255,255,.45))}
+.splashKnob{position:absolute;inset:21%;border-radius:50%;
+  background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 8px 22px rgba(4,40,80,.18);
+  animation:splashPulse 1.7s ease-in-out infinite}
+.splashName{font-size:19px;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.92)}
+@keyframes splashSpin{from{transform:rotate(-90deg)}to{transform:rotate(270deg)}}
+@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
+@media (prefers-reduced-motion:reduce){.splashRing svg,.splashKnob{animation:none}}
+
 /* ── кольцо ── */
 .swipeZone{touch-action:pan-y}
 .ringRail{overflow:hidden}
@@ -413,9 +440,17 @@ body.sheet .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
 .flatBox small{display:block;font-size:12px;color:var(--dim);margin-top:6px;line-height:1.45}
 </style>
 </head>
-<body>
+<body class="loading">
 
 <div class="bg"></div><div class="grain"></div>
+
+<div class="splash" id="splash">
+  <div class="splashRing">
+    <svg viewBox="0 0 120 120"><circle class="trk" cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52"/></svg>
+    <div class="splashKnob"></div>
+  </div>
+  <div class="splashName">HappyDay</div>
+</div>
 
 <div class="app">
 
@@ -443,6 +478,7 @@ body.sheet .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
 
   <!-- ЧЕКПОИНТ -->
   <div class="screen" data-screen="ring">
+    <div class="grip" id="cpGrip"><i></i></div>
     <div class="top">
       <h1 id="cpName">Утро</h1>
     </div>
@@ -2300,6 +2336,50 @@ document.getElementById('saveKey').addEventListener('click',function(){
   toast(APIKEY?'Ключ сохранён':'Ключ очищен');
 });
 
+/* ── Закрыть чекпоинт свайпом за черточку.
+   touch-action:none на самой черточке, иначе браузер уводит жест в прокрутку. */
+(function(){
+  var scr=document.querySelector('[data-screen="ring"]'), grip=document.getElementById('cpGrip');
+  if(!scr||!grip) return;
+  var y0=null, dy=0;
+  function closeSheet(){
+    scr.style.transition=''; scr.style.transform='';
+    go('day'); renderDay(); renderLinks();
+  }
+  function start(e){ var t=e.touches?e.touches[0]:e; y0=t.clientY; dy=0; scr.style.transition='none' }
+  function move(e){ if(y0===null) return; var t=e.touches?e.touches[0]:e;
+    dy=Math.max(0,t.clientY-y0); scr.style.transform='translateY('+dy+'px)' }
+  function end(){
+    if(y0===null) return; y0=null;
+    scr.style.transition='transform .26s cubic-bezier(.22,.75,.25,1)';
+    if(dy>70){ scr.style.transform='translateY(110%)'; setTimeout(closeSheet,200) }
+    else { scr.style.transform=''; setTimeout(function(){ scr.style.transition='' },280) }
+  }
+  grip.addEventListener('touchstart',start,{passive:true});
+  grip.addEventListener('touchmove',move,{passive:true});
+  grip.addEventListener('touchend',end);
+  grip.addEventListener('touchcancel',end);
+  grip.addEventListener('mousedown',function(e){
+    start(e);
+    var mm=function(ev){ move(ev) };
+    var mu=function(){ end(); window.removeEventListener('mousemove',mm); window.removeEventListener('mouseup',mu) };
+    window.addEventListener('mousemove',mm); window.addEventListener('mouseup',mu);
+  });
+  grip.addEventListener('click',function(){ if(dy<6) closeSheet() });   // короткий тап тоже закрывает
+})();
+
+/* ── Заставка. Данные читаются из хранилища асинхронно, и до этого
+   момента экран дня пустой — вместо мигающей пустоты крутим кольцо. ── */
+var BOOT_T0=performance.now();
+function hideSplash(){
+  if(!document.body.classList.contains('loading')) return;
+  var s=document.getElementById('splash');
+  document.body.classList.remove('loading');
+  s.classList.add('out');
+  setTimeout(function(){ s.style.display='none' },400);
+}
+setTimeout(hideSplash,4000);   // страховка: что бы ни случилось, заставка уйдёт
+
 /* ═══════════ НАВИГАЦИЯ ═══════════ */
 function go(name){
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.dataset.screen===name) });
@@ -2441,6 +2521,8 @@ function renderAll(){
   document.getElementById('apiKey').value=APIKEY;
   document.getElementById('keyState').textContent=APIKEY?'Ключ сохранён на этом устройстве.':'Ключ не задан.';
   renderAll();
+  /* заставку держим хотя бы полсекунды, иначе она просто моргнёт */
+  setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
 })();
 </script>
 </body>
