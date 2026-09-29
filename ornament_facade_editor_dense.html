@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f4f2">
+<title>Орнамент фасада — мои варианты</title>
+<style>
+:root{--bg:#f4f4f2;--panel:#fff;--text:#252725;--muted:#747771;--line:#dcded7;--accent:#38594e;--soft:#edf3ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1120px;margin:auto;padding:20px max(14px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}h1{font-size:22px;letter-spacing:-.5px;margin:0 0 5px;font-weight:650}.sub,.small{color:var(--muted);font-size:13px;line-height:1.5}.badge{font-size:11px;letter-spacing:1px;color:var(--accent);border:1px solid #bfcfc4;border-radius:20px;padding:7px 10px;white-space:nowrap}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.spacer{flex:1}
+button,select,input{font:inherit}button,select{min-height:44px;border:1px solid var(--line);background:#fff;color:inherit;border-radius:9px;padding:8px 12px;cursor:pointer;touch-action:manipulation}button.active{background:var(--soft);color:#244f3d;border-color:#7e9c8a;box-shadow:inset 0 0 0 1px #7e9c8a}button:hover{background:#f1f4ef}button:active{transform:translateY(1px)}button:disabled{opacity:.35;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #87a896;outline-offset:2px}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.slot{display:flex;align-items:center;gap:12px;text-align:left;padding:8px 14px;font-weight:600}.slot canvas{width:48px;height:48px;flex:none;border-radius:5px}.slot small{display:block;font-weight:400;color:var(--muted);margin-top:3px;font-size:12px}.toolbar{gap:6px}.toolbar button{padding:8px 11px}.brush{display:flex;align-items:center;gap:6px;font-size:13px;margin-left:auto}.brush select{min-width:64px}
+.editor{padding:0;overflow:hidden}.zoombar{padding:10px 12px;display:flex;align-items:center;gap:8px}.zoombar button{padding:7px 11px;flex:none}.zoombar input{min-width:25px;width:100%;accent-color:var(--accent)}#zoomReset{min-width:66px;font-variant-numeric:tabular-nums}
+.viewport{position:relative;height:min(68vh,730px);height:min(68svh,730px);min-height:300px;overflow:hidden;background:#e6e8e2;touch-action:none;overscroll-behavior:contain;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;border-block:1px solid var(--line)}#canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}.viewport.pan #canvas{cursor:grab}.viewport.dragging #canvas{cursor:grabbing}
+.canvasmeta{padding:9px 13px;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}#gestureHint{color:var(--accent)}
+.presets{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.presets button{font-size:13px;flex:1;padding-inline:8px}.label{font-size:12px;color:var(--muted);margin-bottom:7px}.facadehead{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px}.facadehead strong{font-size:14px}#facade{display:block;width:100%;aspect-ratio:2/1;background:#e5e3dd;border-radius:8px}.toggles{margin-bottom:12px}.toggles button{font-size:13px}
+details summary{cursor:pointer;padding:4px 0;font-size:14px}details .row{margin-top:12px}#status{min-height:20px;font-size:12px;line-height:1.5;color:var(--muted);margin-top:10px}#status.error{color:#994931}.hint{padding:0 2px}
+@media(max-width:600px){.wrap{padding-top:12px}header{margin-bottom:12px}h1{font-size:20px}.badge{display:none}.panel{padding:10px;margin-bottom:10px}.editor{padding:0}.slot{gap:7px;padding:7px}.slot canvas{width:42px;height:42px}.slot small{font-size:11px}.toolbar button{flex:1;font-size:13px;white-space:nowrap}.brush{margin-left:0}.toolbar .history{flex:0 0 44px;padding:8px}.zoombar{gap:6px;padding:8px}.zoombar button{padding:6px 9px;font-size:13px}.viewport{height:57vh;height:57svh;min-height:300px}.presets button{min-width:44%}.canvasmeta{font-size:11px}.sub{font-size:12px}.toggles button{flex:1;white-space:nowrap}}
+
+.collections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.collection{padding:0;overflow:hidden;text-align:left}.collection canvas{display:block;width:100%;height:auto;aspect-ratio:2.5}.collection strong,.collection small{display:block;padding:0 10px}.collection strong{font-size:13px;margin-top:10px}.collection small{color:var(--muted);font-size:11px;margin:5px 0 12px;line-height:1.4}.collection-note{margin-top:10px}.facade-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}.facade-controls label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}.facade-controls input,.facade-controls select{width:100%;min-width:0;font-size:15px;color:var(--text);border:1px solid var(--line);border-radius:8px;background:white;min-height:44px;padding:8px}#facade{aspect-ratio:399/45;border:1px solid var(--line)}#facadeDetail{display:block;width:100%;aspect-ratio:2/1;border-radius:8px;border:1px solid var(--line)}.detailhead{margin-top:16px}.detail-position{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:12px;color:var(--muted)}.detail-position input{flex:1;min-width:30px;accent-color:var(--accent)}.facade-note{margin-top:8px;font-size:11px}.slot>span{min-width:0}.slot{font-size:14px}.slot small{line-height:1.3}
+@media(max-width:600px){.collections{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.collection strong{font-size:12px}.collection small{font-size:10px}.facade-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.slot{flex-direction:column;align-items:flex-start;gap:4px;font-size:12px}.slot canvas{width:54px;height:54px}.slot small{font-size:10px}.presets button{min-width:40%}}
+</style>
+<style>
+.draft-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.draft-fields label{display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--muted)}.draft-fields input,.draft-fields select{width:100%;min-width:0;font-size:16px;color:var(--text);background:white;border:1px solid var(--line);border-radius:9px;padding:10px;min-height:44px}.draft-actions{margin-top:12px}.draft-actions .primary{background:var(--accent);color:white;border-color:var(--accent)}#draftStatus{margin-top:10px;min-height:20px}#draftStatus.error{color:#994931}@media(max-width:600px){.draft-fields{grid-template-columns:1fr}.draft-actions button{flex:1;min-width:44%;font-size:13px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+ <header><div><h1>Орнамент фасада</h1><div class="sub">Больше перфорации · меньший раппорт · фасад 39,9 × 4,5 м</div></div><span class="badge">A / B / C · DENSE</span></header>
+ <section class="panel collections-panel"><div class="facadehead"><strong>Плотные варианты · тур, пальма, розетка</strong><span class="small">Чёрное = отверстия</span></div>
+ <div class="collections">
+ <button data-collection="dense_steps" class="collection"><canvas id="collection-dense_steps" width="600" height="240" aria-hidden="true"></canvas><strong>07 · Ступенчатый пояс</strong><small>Тур / пальма / розетка · широкая рамка</small></button>
+ <button data-collection="dense_chain" class="collection"><canvas id="collection-dense_chain" width="600" height="240" aria-hidden="true"></canvas><strong>08 · Резная цепь</strong><small>Тур / пальма / розетка · малые ромбы</small></button>
+ <button data-collection="dense_south" class="collection"><canvas id="collection-dense_south" width="600" height="240" aria-hidden="true"></canvas><strong>09 · Южное кружево</strong><small>Пальма / розетка · плотная плетёнка</small></button>
+ <button data-collection="dense_guard" class="collection"><canvas id="collection-dense_guard" width="600" height="240" aria-hidden="true"></canvas><strong>10 · Горная резьба</strong><small>Тур / розетка · два типа окантовки</small></button>
+ <button data-collection="dense_fine" class="collection"><canvas id="collection-dense_fine" width="600" height="240" aria-hidden="true"></canvas><strong>11 · Мелкая вязь</strong><small>Три мотива · частый ритм</small></button>
+ <button data-collection="dense_carpet" class="collection"><canvas id="collection-dense_carpet" width="600" height="240" aria-hidden="true"></canvas><strong>12 · Плотное полотно</strong><small>Три мотива · самый мелкий повтор</small></button>
+ </div><div class="small collection-note">Основа — выбранные тобой 1B, 5A и 5B. Все тёмные клетки — редактируемая перфорация. Старые рисунки не стираются автоматически.</div>
+ <details id="legacySets"><summary>Прежние шесть наборов · 01–06</summary>
+ <div class="collections" id="collections">
+ <button data-collection="guard" class="collection"><canvas id="collection-guard" width="600" height="240" aria-hidden="true"></canvas><strong>01 · Ночная стража</strong><small>Птица / тур · 2 мотива</small></button>
+ <button data-collection="harvest" class="collection"><canvas id="collection-harvest" width="600" height="240" aria-hidden="true"></canvas><strong>02 · Хлеб и горы</strong><small>Колос / тур / горы · 3 мотива</small></button>
+ <button data-collection="garden" class="collection"><canvas id="collection-garden" width="600" height="240" aria-hidden="true"></canvas><strong>03 · Птицы сада</strong><small>Парные птицы / лоза / розетка · 3 мотива</small></button>
+ <button data-collection="weave" class="collection"><canvas id="collection-weave" width="600" height="240" aria-hidden="true"></canvas><strong>04 · Каменная вязь</strong><small>Плетёнка / ступенчатые рога · 2 мотива</small></button>
+ <button data-collection="south" class="collection"><canvas id="collection-south" width="600" height="240" aria-hidden="true"></canvas><strong>05 · Южный сад</strong><small>Пальма / розетка / лоза · 3 мотива</small></button>
+ <button data-collection="grain" class="collection"><canvas id="collection-grain" width="600" height="240" aria-hidden="true"></canvas><strong>06 · Зерно и ритм</strong><small>Зерно / плетёнка / колос · 3 мотива</small></button>
+ </div></details><div class="small collection-note">Набор заменяет мотивы A/B/C. Кнопка ↶ вернёт твой предыдущий рисунок.</div></section>
+ <section class="panel" aria-label="Мои варианты">
+  <div class="facadehead"><strong>Мои варианты</strong><span id="draftCount" class="small">0 сохранено</span></div>
+  <div class="draft-fields"><label for="draftName">Название варианта<input id="draftName" type="text" maxlength="80" value="Вариант 1" autocomplete="off"></label><label for="draftSelect">Сохранённые черновики<select id="draftSelect"><option value="">Пока нет вариантов</option></select></label></div>
+  <div class="row draft-actions"><button id="draftSaveNew" class="primary">Сохранить новый вариант</button><button id="draftUpdate" disabled>Обновить открытый</button><button id="draftOpen" disabled>Открыть выбранный</button><button id="draftRename" disabled>Переименовать открытый</button><button id="draftBlank">Новый с нуля</button></div>
+  <div id="draftStatus" class="small" role="status" aria-live="polite">Сохраняются все мотивы A/B/C и настройки фасада.</div>
+  <div class="small">Перед открытием другого варианта или началом с нуля несохранённый рисунок сохраняется отдельным черновиком. Черновики хранятся в этом браузере: очистка данных браузера их удалит; между устройствами они не синхронизируются.</div>
+ </section>
+ <section class="panel" aria-label="Мотивы">
+  <div class="slots"><button id="slotA" class="slot active"><canvas id="thumbA" width="96" height="96" aria-hidden="true"></canvas><span>A · <span id="labelA">Птица и колос</span><small>Первый мотив</small></span></button><button id="slotB" class="slot"><canvas id="thumbB" width="96" height="96" aria-hidden="true"></canvas><span>B · <span id="labelB">Тур</span><small>Второй мотив</small></span></button><button id="slotC" class="slot"><canvas id="thumbC" width="96" height="96" aria-hidden="true"></canvas><span>C · <span id="labelC">Колос</span><small id="slotCNote">Третий мотив</small></span></button></div>
+  <details class="presets"><summary>Отдельный мотив в выбранный слот</summary>
+   <div class="small" style="margin-top:12px">Новые мотивы с широкой окантовкой</div>
+   <div class="row"><button data-preset="tur_step">Тур · ступени</button><button data-preset="palm_step">Пальма · ступени</button><button data-preset="rosette_step">Розетка · ступени</button><button data-preset="tur_chain">Тур · резной пояс</button><button data-preset="palm_chain">Пальма · резной пояс</button><button data-preset="rosette_chain">Розетка · резной пояс</button><button data-preset="tur_weave">Тур · плетёнка</button><button data-preset="palm_weave">Пальма · плетёнка</button><button data-preset="rosette_weave">Розетка · плетёнка</button></div>
+   <div class="small" style="margin-top:14px">Прежние мотивы</div><div class="row"><button data-preset="bird">Птица + колос</button><button data-preset="tur">Тур</button><button data-preset="wheat">Колос</button><button data-preset="birds">Парные птицы</button><button data-preset="vine">Лоза</button><button data-preset="rosette">Розетка</button><button data-preset="mountains">Горы</button><button data-preset="knot">Плетёнка</button><button data-preset="horns">Ступенчатые рога</button><button data-preset="palm">Пальма</button><button data-preset="seed">Зерно</button><button data-preset="frame">Пустой ромб</button></div></details>
+ </section>
+ <section class="panel" aria-label="Инструменты"><div class="row toolbar">
+  <button id="draw" class="active">✎ Рисовать</button><button id="erase">⌫ Ластик</button><button id="pan">✋ Рука</button>
+  <label class="brush">Кисть <select id="brush" aria-label="Размер кисти"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="5">5</option><option value="9">9</option></select></label>
+  <button id="undo" class="history" title="Отменить (Ctrl / ⌘ Z)" aria-label="Отменить" disabled>↶</button><button id="redo" class="history" title="Повторить (Ctrl / ⌘ Shift Z)" aria-label="Повторить" disabled>↷</button>
+ </div></section>
+ <section class="panel editor" aria-label="Редактор орнамента">
+  <div class="zoombar"><button id="zoomOut" aria-label="Уменьшить">−</button><input id="zoom" aria-label="Масштаб" type="range" min="50" max="1600" step="1" value="100"><button id="zoomIn" aria-label="Увеличить">+</button><button id="zoomReset" title="Показать рисунок целиком">100%</button><button id="fit">Вписать</button></div>
+  <div id="vp" class="viewport"><canvas id="canvas" aria-label="Холст: один палец рисует, два пальца двигают и меняют масштаб"></canvas></div>
+  <div class="canvasmeta"><span id="gridInfo">121 × 121 клетка</span><span id="gestureHint">1 палец — рисунок · 2 — сдвиг и масштаб</span></div>
+ </section>
+ <section class="panel"><div class="row toggles" style="margin-bottom:0"><button id="symX">↔ Симметрия</button><button id="symY">↕ Симметрия</button><button id="gridToggle" class="active">Сетка</button><button id="diamondToggle">Направляющая</button><button id="clear">С нуля</button></div></section>
+ <section class="panel facade-panel"><div class="facadehead"><strong>Развёртка фасада</strong><span id="facadeDimensions" class="small">39,9 × 4,5 м</span></div>
+ <div class="facade-controls">
+ <label>Длина по осям, м<input id="facadeLength" type="number" min="3" max="120" step=".1" value="39.9"></label>
+ <label>Высота, м<input id="facadeHeight" type="number" min="1" max="15" step=".1" value="4.5"></label>
+ <label>Повтор<select id="repeatMode"><option value="AB">A / B</option><option value="ABC" selected>A / B / C</option><option value="single">Выбранный мотив</option></select></label>
+ <label>Ромбов по длине<select id="diamondColumns"><option value="14">14</option><option value="21">21</option><option value="28">28</option><option value="35">35</option><option value="42" selected>42</option><option value="49">49</option><option value="56">56</option><option value="63">63</option></select></label>
+ <label>Высота ромба, м<input id="diamondHeight" type="number" min=".8" max="6" step=".025" value="1.5"></label>
+ <label>Шаг сетки, мм<select id="holePitch"><option value="10">10</option><option value="12" selected>12</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option></select></label>
+ <label>Отображение<select id="material"><option value="paper">На бумаге</option><option value="bronze" selected>Бронза</option><option value="night">Подсветка</option></select></label>
+ <label>Сторона отверстия / шаг<select id="holeRatio"><option value=".6">60%</option><option value=".76">76%</option><option value=".82">82%</option><option value=".86" selected>86%</option></select></label>
+ </div>
+ <div class="row toggles"><button id="mirror">Зеркалить соседний</button><button id="axes">Оси 1–8</button></div>
+ <canvas id="facade" aria-label="Вся полоса фасада с пропорциями по размерам"></canvas>
+ <div class="facadehead detailhead"><strong>Фрагмент крупнее</strong><span class="small" id="detailInfo">9 × 4,5 м</span></div>
+ <canvas id="facadeDetail" aria-label="Увеличенный фрагмент фасада"></canvas>
+ <label class="detail-position"><span>Место фрагмента</span><input id="detailPosition" type="range" min="0" max="100" value="50" aria-label="Положение увеличенного фрагмента"></label>
+ <div class="small" id="repeatInfo"></div><div class="small facade-note">Процент перфорации — площадь отверстий / площадь всей полосы, а не только рисунка. 39,9 м = 7 пролётов по 5,7 м между осями 1–8; окна и двери не вычтены. Ромбы — рисунок, не границы кассет. Это эскиз: толщину металла и перемычки ещё нужно согласовать перед изготовлением.</div>
+ </section>
+ <section class="panel"><details id="files"><summary>Экспорт и контрольная копия</summary><div class="row"><button id="save">Сделать контрольную копию</button><button id="restore">Вернуть контрольную копию</button><button id="export">Скачать JSON</button><button id="importBtn">Открыть JSON</button><button id="svgExport">SVG мотива</button><button id="facadeExport">SVG фасада</button></div><input id="importFile" type="file" accept=".json,application/json" hidden></details><div id="status" role="status" aria-live="polite">Изменения сохраняются в этом браузере.</div></section>
+ <p class="small hint">Рисуй одним пальцем. Разведи два пальца, чтобы приблизить детали, или двигай ими вместе. В режиме «Рука» холст можно двигать и одним пальцем. «Вписать» возвращает весь рисунок. Для переноса в другой браузер скачай JSON.</p>
+</main>
+<script>
+(() => {
+ 'use strict';
+ const $=s=>document.querySelector(s), c=$('#canvas'), ctx=c.getContext('2d'), vp=$('#vp');
+ const fc=$('#facade'), fctx=fc.getContext('2d');
+ const STORAGE='ornamentABC_session_v4', MANUAL='ornamentABC_manual_v4';
+ const PREVIOUS='ornamentAB_session_v3', PREVIOUS_MANUAL='ornamentAB_manual_v3';
+ const LEGACY='ornamentAB_session_v1', LEGACY_MANUAL='ornamentAB_manual_v1';
+ const DRAFTS='ornamentABC_drafts_v1';
+ let draftId='',displayedDraftId='',draftVault={version:1,next:1,items:[]},draftRaw=null,draftBlocked=false;
+ const DEFAULT_N=121, MIN_ZOOM=.5, MAX_ZOOM=16, HISTORY_LIMIT=50;
+ let N=DEFAULT_N, A, B, C, labels={A:'Тур · резной пояс',B:'Пальма · резной пояс',C:'Розетка · резной пояс'}, slot='A';
+ const defaultFacade=()=>({length:39.9,height:4.5,columns:42,diamondHeight:1.5,pitch:12,ratio:.86,mode:'ABC',material:'bronze',axes:false,position:50});
+ let facade=defaultFacade(), collectionId='dense_chain';
+ let tool='draw', brush=1, symX=false, symY=false, mirror=false, showGrid=true, showDiamond=false;
+ let zoom=1, tx=0, ty=0, fitCell=1, width=0, height=0, dpr=1, initialized=false;
+ let history=[], future=[], stroke=null, phase='idle', gesture=null, panStart=null, lastCell=null;
+ let frame=0, motifDirty=true, previewDirty=true, autoTimer=0, storageFailed=false;
+ const pointers=new Map(), caches={A:document.createElement('canvas'),B:document.createElement('canvas'),C:document.createElement('canvas')};
+ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+ const make=(n=N)=>Array.from({length:n},()=>Array(n).fill(0));
+ const clone=m=>m.map(r=>r.slice());
+ const matrices=()=>({A,B,C});
+ const active=()=>matrices()[slot];
+ const setActive=m=>{if(slot==='A')A=m;else if(slot==='B')B=m;else C=m;};
+ const cell=()=>fitCell*zoom;
+ const snapshot=()=>({N,A:clone(A),B:clone(B),C:clone(C),labels:{...labels},slot,facade:{...facade},collectionId,draftId,mirror,showGrid,showDiamond,symX,symY,tool,brush});
+ const assign=s=>{N=s.N;A=clone(s.A);B=clone(s.B);C=clone(s.C);labels={...s.labels};slot=s.slot;facade={...s.facade};collectionId=s.collectionId||'';draftId=typeof s.draftId==='string'?s.draftId:'';if('mirror' in s){mirror=!!s.mirror;showGrid=s.showGrid!==false;showDiamond=!!s.showDiamond;symX=!!s.symX;symY=!!s.symY;tool=s.tool||'draw';brush=s.brush||1;}};
+ function status(text,error=false){$('#status').textContent=text;$('#status').classList.toggle('error',error);}
+
+ // Editable vector silhouettes sampled into individual square cells.
+ // No embedded images, external assets or network requests are needed.
+ function preset(kind,n=N){
+  if(kind.includes('_'))return densePreset(kind,n);
+  const mask=document.createElement('canvas');mask.width=mask.height=n;
+  const g=mask.getContext('2d',{willReadFrequently:true});g.scale(n/121,n/121);
+  const path=(d,color='#000')=>{g.fillStyle=color;g.fill(new Path2D(d));};
+  const line=(d,w=2,color='#000')=>{g.strokeStyle=color;g.lineWidth=w;g.lineCap='square';g.lineJoin='miter';g.stroke(new Path2D(d));};
+  const reflect=fn=>{fn();g.save();g.translate(121,0);g.scale(-1,1);fn();g.restore();};
+  const cross=(x,y)=>{path(`M${x-1} ${y-3}h2v2h2v2h-2v2h-2v-2h-2v-2h2Z`);};
+  const diamond=(x,y,r)=>path(`M${x} ${y-r}L${x+r} ${y}L${x} ${y+r}L${x-r} ${y}Z`);
+  const wheat=(top,bottom,span)=>{
+   line(`M60.5 ${top}V${bottom}`,1.9);
+   for(let y=top+11;y<bottom-8;y+=6){
+    path(`M59 ${y+4}L${60-span} ${y-span*.8}V${y-5}L59 ${y}Z`);
+    path(`M62 ${y+4}L${61+span} ${y-span*.8}V${y-5}L62 ${y}Z`);
+   }
+   line(`M57 ${top+2}V${top+10}M64 ${top+2}V${top+10}`,1.1);
+   diamond(60.5,top+9,2);
+  };
+  if(kind==='bird'){
+   wheat(17,64,4.7);
+   // Crown, head, arched chest and long feathered tail.
+   path('M70 47V44H72V46H74V44H76V47H78C81 47 82 49 82 51C79 49 76 51 75 54C73 59 77 62 77 66C77 72 72 76 69 80C66 83 68 86 71 89L68 91L64 85L63 81L60 86L57 91L54 97L51 95L55 82L48 94L44 91L51 79L42 88L39 85L48 76C51 73 55 70 58 68C62 69 65 65 67 61L67 57L69 56L68 54L70 53L69 51L71 49H68Z');
+   // Spread wings with angular, separated flight feathers.
+   path('M58 69L49 60L48 57L41 50L35 47L36 51L33 51V54L37 55L32 58V61L38 59L33 64L34 67L41 61L35 69L37 72L44 63L39 74L42 76L47 66L45 78L48 78L52 70L51 77Z');
+   path('M76 68L81 59L85 57L86 55L89 57V61L87 60L88 64L86 67L83 62L85 70L82 72L79 65L81 73L78 75L76 69Z');
+   path('M44 61L46 59L49 62L47 64L49 66L48 68L45 65L43 63Z','#fff');
+   path('M80 61L82 59L84 61L82 63Z','#fff');diamond(76,49,1.05);
+   path('M75 48L77 49L76 50L75 49Z','#fff');
+   line('M65 80L66 87L64 90M69 84L72 90L76 91M64 91H75',1.45);
+   // Side sprigs echo the angular Caucasian embroidery reference.
+   line('M43 85L29 71V58',1.9);
+   path('M29 62L24 57V53L28 57L29 59ZM29 67L34 62H38L32 67ZM29 70L23 65H20L25 70Z');
+   line('M80 85L93 72V58',1.9);
+   path('M93 62L98 57V53L94 57L93 59ZM93 67L88 62H84L90 67ZM93 70L99 65H102L97 70Z');
+   cross(23,61);cross(98,61);cross(38,76);cross(84,77);
+   reflect(()=>{line('M49 47L45 43V34M45 40L41 36H38',1.8);path('M45 37L49 33V36L45 40Z');cross(46,30);});
+   diamond(60.5,98,3.6);diamond(60.5,98,1.5);path('M60.5 96.5L62 98L60.5 99.5L59 98Z','#fff');
+  }else if(kind==='tur'){
+   // Broad hooked horns, split ears and faceted face, matching the supplied tur.
+   reflect(()=>{
+    path('M54 64C51 52 46 40 35 40C25 40 22 48 25 56L29 61C24 50 29 44 36 45C43 46 47 56 48 65Z');
+    path('M50 63C46 50 41 45 35 43C44 45 49 53 52 63Z','#fff');
+    path('M46 65L37 59L40 69L46 73L43 67L40 63L47 68Z');
+    path('M49 68L57 65L60.5 67L60.5 91L54 89L49 84L47 73L51 76L54 83L53 73Z');
+    path('M49 73L54 76L55 80L51 78Z','#fff');
+    path('M46 79L43 88L48 93L48 87L45 90Z');
+   });
+   path('M55 68L60.5 62L66 68L63 76L63 84L60.5 87L58 84L58 76Z');
+   // Carve the eye sockets after joining the forehead so they remain visible.
+   reflect(()=>path('M49 68L57 73L57 83L54 77L51 76Z','#fff'));
+   path('M60.5 68L62.5 71L60.5 74L58.5 71Z','#fff');
+   path('M56 85L60.5 87L65 85L64 87L61.5 89V91H59.5V89L57 87Z','#fff');
+   path('M55 93L60.5 97L66 93L65 98L60.5 102L56 98Z');
+   // Compact crest and stepped branches in the remaining diamond space.
+   diamond(60.5,24,4.2);path('M60.5 22L62.5 24L60.5 26L58.5 24Z','#fff');
+   line('M60.5 29V37M60.5 35L56 31M60.5 35L65 31',1.8);
+   reflect(()=>{line('M34 69L27 66L22 61L22 57',1.6);path('M27 65V59L30 56V60Z');cross(34,72);});
+   line('M46 95L51 100L55 100M75 95L70 100L66 100',1.8);
+  }else if(kind==='wheat'){
+   wheat(19,97,7.2);
+   reflect(()=>{
+    line('M57 90L44 77V58L35 49V42',2.3);
+    path('M44 72L35 65V60L41 62L44 66ZM44 61L50 54V48L46 51L44 55Z');
+    line('M44 78L35 73L29 66L33 62L36 65L34 67',2.5);
+    line('M44 55L35 53L30 48L33 45L37 48',2.2);
+    path('M50 85L46 89L48 93L52 90Z');cross(28,60);
+   });
+   diamond(60.5,100,4);path('M60.5 98L62.5 100L60.5 102L58.5 100Z','#fff');
+  }
+
+  if(kind==='birds'){
+   wheat(19,44,4.5);
+   reflect(()=>{
+    path('M54 44L51 40H47L44 43V49L41 51L35 55L30 57V62L34 60L29 66L31 69L37 64L32 73L35 76L42 66L37 79L41 82L47 69L49 65L47 59L46 53L47 47L50 46L54 48Z');
+    path('M45 53L38 58L36 63L43 58Z','#fff');
+    path('M48 42H50V44H48Z','#fff');
+    line('M45 72V83L49 86M45 83L40 86',1.8);
+    line('M31 53L28 49L32 45H36L33 48',2.5);
+    cross(35,73);
+   });
+   line('M60.5 49V89',2.1);
+   for(const y of [58,68,78])reflect(()=>path(`M59 ${y+3}L53 ${y-2}V${y-6}L59 ${y-1}Z`));
+   diamond(60.5,94,6);path('M60.5 91L63.5 94L60.5 97L57.5 94Z','#fff');
+  }
+  if(kind==='vine'){
+   line('M60.5 24V98',2.8);
+   for(const y of [43,61,79])reflect(()=>{
+    line(`M59 ${y+9}L46 ${y-2}H37V${y-9}H43V${y-5}`,3.1);
+    path(`M52 ${y+1}V${y-8}L47 ${y-13}V${y-5}Z`);
+    path(`M47 ${y+10}H39L34 ${y+5}H42Z`);
+   });
+   diamond(60.5,23,5);path('M60.5 21L62.5 23L60.5 25L58.5 23Z','#fff');
+   diamond(60.5,98,5);cross(25,60);cross(96,60);
+  }
+  if(kind==='rosette'){
+   for(let i=0;i<4;i++){
+    g.save();g.translate(60.5,60.5);g.rotate(i*Math.PI/2);g.translate(-60.5,-60.5);
+    path('M57 52L51 43L54 38L54 29L60.5 22L67 29V38L70 43L64 52L60.5 55Z');
+    path('M60.5 30L63 34L60.5 41L58 34Z','#fff');
+    line('M45 47H37V39H44V44',3.2);
+    g.restore();
+   }
+   diamond(60.5,60.5,9);path('M60.5 55L66 60.5L60.5 66L55 60.5Z','#fff');diamond(60.5,60.5,2.4);
+  }
+  if(kind==='mountains'){
+   path('M26 67L40 45L48 56L60.5 32L76 58L83 49L97 68L87 70H34Z');
+   path('M37 51L40 47L44 53L41 52L39 55Z','#fff');
+   path('M53 48L60.5 36L68 48L63 45L60.5 51L57 46Z','#fff');
+   path('M79 57L83 52L88 59L84 57L82 60Z','#fff');
+   line('M36 75H48L53 80H69L74 75H85',3.3);
+   line('M45 85H53L57 89H65L69 85H76',2.8);
+   diamond(60.5,25,4.2);diamond(60.5,97,3.3);
+   reflect(()=>{line('M32 64V57M32 61L29 58M32 61L35 58',2.1);});
+  }
+  if(kind==='knot'){
+   line('M60.5 29L92 60.5L60.5 92L29 60.5Z',5.5);
+   for(let i=0;i<4;i++){
+    g.save();g.translate(60.5,60.5);g.rotate(i*Math.PI/2);g.translate(-60.5,-60.5);
+    line('M60.5 24V43H76V54H65V47',4.2);
+    path('M57 37H64V41H57Z','#fff');
+    line('M36 52V44H44V50',3.1);
+    g.restore();
+   }
+   diamond(60.5,60.5,8.5);path('M60.5 55L66 60.5L60.5 66L55 60.5Z','#fff');
+  }
+  if(kind==='horns'){
+   line('M60.5 26V97',3.3);
+   for(const y of [49,69,85])reflect(()=>{
+    const reach=y===49?13:y===69?24:10;
+    line(`M59 ${y+8}L${60-reach} ${y-4}H${54-reach}V${y-11}H${61-reach}V${y-7}`,3.4);
+   });
+   diamond(60.5,22,4.5);diamond(60.5,100,3.8);
+   reflect(()=>{cross(26,61);line('M46 38V32H51',2.5);});
+  }
+  if(kind==='palm'){
+   path('M58 94L59 46H62L64 94Z');
+   reflect(()=>{
+    path('M60 44L54 34L54 24L59 32L61 40Z');
+    path('M59 47L49 40L39 38L43 43L50 44L56 48L58 52Z');
+    path('M58 49L43 46L30 51L26 57L36 53L46 51L56 53Z');
+    path('M58 54L45 55L36 65L36 72L42 64L49 60L57 58Z');
+    path('M59 58L51 63L47 73V80L52 72L57 67Z');
+   });
+   for(let y=66;y<91;y+=6)line(`M58 ${y}L63 ${y+2}`,1,'#fff');
+   line('M52 96H70',2.3);diamond(60.5,102,3.5);
+   reflect(()=>{diamond(24,60,3.1);line('M43 82V77H39',2.4);});
+  }
+  if(kind==='seed'){
+   path('M60.5 21L74 37L80 53V67L74 83L60.5 101L47 83L41 67V53L47 37Z');
+   path('M60.5 30L68 41L73 55V66L68 80L60.5 92L53 80L48 66V55L53 41Z','#fff');
+   line('M60.5 36V86',2.4);
+   for(const y of [49,61,73])reflect(()=>path(`M59 ${y+5}L52 ${y-2}V${y-7}L59 ${y}Z`));
+   reflect(()=>{line('M35 55H29V61H35V68',3);diamond(37,74,2.7);});
+  }
+  const pixels=g.getImageData(0,0,n,n).data,m=make(n);
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+   const p=(y*n+x)*4,xx=(x+.5)*121/n,yy=(y+.5)*121/n,d=Math.abs(xx-60.5)+Math.abs(yy-60.5);
+   // Three fully editable stepped perimeter bands. Interior stays separated.
+   const frameCell=(d>=55.3&&d<=58.1)||(d>=51.4&&d<=52.6)||(d>=47.7&&d<=49.7);
+   const ink=pixels[p+3]>95&&pixels[p]<140;
+   m[y][x]=frameCell||(d<45.7&&ink)?1:0;
+  }
+  return m;
+ }
+
+ function densePreset(kind,n=N){
+  const [base,family]=kind.split('_'),source=preset(base,121),out=make(n);
+  const factor=family==='step'?.91:family==='chain'?.82:.77;
+  const mask=document.createElement('canvas');mask.width=mask.height=121;const g=mask.getContext('2d',{willReadFrequently:true});
+  const line=(d,w=3.2)=>{g.lineWidth=w;g.lineJoin='miter';g.lineCap='square';g.stroke(new Path2D(d));};
+  const fill=d=>g.fill(new Path2D(d));
+  const reflect=fn=>{fn();g.save();g.translate(121,0);g.scale(-1,1);fn();g.restore();};
+  // Preserve the chosen positive silhouette. Add substantial secondary sprigs,
+  // not random isolated holes or an inverted background.
+  if(base==='tur'){
+   reflect(()=>{
+    line('M37 86L29 78V64L24 59',3.8);
+    fill('M29 69L35 63L39 63L34 69L29 72ZM29 77L23 72L20 66L26 68L31 73Z');
+    line('M48 38L46 31H50',3.4);
+   });
+   fill('M60.5 16L66 23L64 29L60.5 33L57 29L55 23Z');
+   g.fillStyle='#fff';fill('M60.5 21L62 24L60.5 27L59 24Z');g.fillStyle='#000';
+   reflect(()=>line('M48 96L50 90L54 93',3.2));
+  }else if(base==='palm'){
+   reflect(()=>{
+    fill('M58 73L48 65L39 65L44 70L51 72L58 77Z');
+    fill('M58 83L45 77L37 78L44 83L53 85L59 89Z');
+    fill('M58 94L50 88L44 90L52 96L58 98Z');
+    line('M29 64L26 68L29 73H33',3);
+   });
+  }else if(base==='rosette'){
+   for(let i=0;i<4;i++){
+    g.save();g.translate(60.5,60.5);g.rotate(i*Math.PI/2);g.translate(-60.5,-60.5);
+    line('M39 53V43H43V37H49',3.8);
+    fill('M44 47L49 43L53 48L49 52Z');g.restore();
+   }
+  }
+  const rgba=g.getImageData(0,0,121,121).data,merged=make(121);
+  for(let y=0;y<121;y++)for(let x=0;x<121;x++){
+   const d=Math.abs(x-60)+Math.abs(y-60),p=(y*121+x)*4;
+   merged[y][x]=d<45.7&&(source[y][x]||(rgba[p+3]>110&&rgba[p]<130))?1:0;
+  }
+  const mod=(v,p)=>((v%p)+p)%p;
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+   const xx=(x+.5)*121/n-60.5,yy=(y+.5)*121/n-60.5,d=Math.abs(xx)+Math.abs(yy),t=Math.abs(xx)-Math.abs(yy);
+   let border=false;
+   if(family==='step'){
+    const phase=mod(t,16),track=phase<8?48:52;
+    border=(d>=56&&d<=60)||(d>=41.5&&d<=45)||(d>=47&&d<=54&&((Math.abs(d-track)<2.2)||phase<2||Math.abs(phase-8)<1.5));
+   }else if(family==='chain'){
+    const a=Math.abs(d-49.5),b=Math.abs(mod(t+8,16)-8);
+    border=(d>=57&&d<=60)||(d>=37.5&&d<=42)||(d>=43.5&&d<=55.8&&(a+b<10.3&&a+b>3.0));
+   }else{
+    const a=mod(t+(d-48)*2,18),b=mod(t-(d-48)*2,18);
+    const carved=a<2.6||b<2.6;
+    border=(d>=57&&d<=60)||(d>=35&&d<=40)||(d>=42&&d<=55.5&&!carved);
+   }
+   const sx=Math.round(60+xx/factor),sy=Math.round(60+yy/factor);
+   const core=sx>=0&&sy>=0&&sx<121&&sy<121&&merged[sy][sx];
+   out[y][x]=border||core?1:0;
+  }
+  return out;
+ }
+ const motifNames={bird:'Птица и колос',tur:'Тур',wheat:'Колос',birds:'Парные птицы',vine:'Лоза',rosette:'Розетка',mountains:'Горы',knot:'Плетёнка',horns:'Ступенчатые рога',palm:'Пальма',seed:'Зерно',frame:'Пустой ромб'};
+ for(const base of ['tur','palm','rosette'])for(const family of ['step','chain','weave'])motifNames[base+'_'+family]=motifNames[base]+' · '+{step:'ступени',chain:'резной пояс',weave:'плетёнка'}[family];
+ const collections=[
+  {id:'dense_steps',name:'Ступенчатый пояс',motifs:['tur_step','palm_step','rosette_step'],columns:35,dh:1.5,pitch:12,ratio:.82,dense:true},
+  {id:'dense_chain',name:'Резная цепь',motifs:['tur_chain','palm_chain','rosette_chain'],columns:42,dh:1.5,pitch:12,ratio:.86,dense:true},
+  {id:'dense_south',name:'Южное кружево',motifs:['palm_weave','rosette_weave'],columns:42,dh:1.5,pitch:12,ratio:.86,dense:true},
+  {id:'dense_guard',name:'Горная резьба',motifs:['tur_weave','rosette_chain'],columns:35,dh:1.5,pitch:12,ratio:.86,dense:true},
+  {id:'dense_fine',name:'Мелкая вязь',motifs:['rosette_chain','palm_weave','tur_chain'],columns:49,dh:1.125,pitch:10,ratio:.86,dense:true},
+  {id:'dense_carpet',name:'Плотное полотно',motifs:['tur_weave','palm_weave','rosette_weave'],columns:56,dh:1.125,pitch:10,ratio:.86,dense:true},
+  {id:'guard',name:'Ночная стража',motifs:['bird','tur'],columns:21,dh:3},
+  {id:'harvest',name:'Хлеб и горы',motifs:['wheat','tur','mountains'],columns:21,dh:2.25},
+  {id:'garden',name:'Птицы сада',motifs:['birds','vine','rosette'],columns:28,dh:2.25},
+  {id:'weave',name:'Каменная вязь',motifs:['knot','horns'],columns:28,dh:2.25},
+  {id:'south',name:'Южный сад',motifs:['palm','rosette','vine'],columns:21,dh:3},
+  {id:'grain',name:'Зерно и ритм',motifs:['seed','knot','wheat'],columns:28,dh:2.25}
+ ];
+ A=preset('tur_chain');B=preset('palm_chain');C=preset('rosette_chain');
+
+ function payload(){return {version:4,N,A,B,C,labels,slot,zoom,tool,brush,facade,collectionId,mirror,showGrid,showDiamond,symX,symY,draftId};}
+ const nextDraftName=()=>`Вариант ${draftVault.next}`;
+ const currentDraft=()=>draftVault.items.find(d=>d.id===draftId);
+ function draftMessage(message,error=false){$('#draftStatus').textContent=message;$('#draftStatus').classList.toggle('error',error);}
+ function packDraft(p){
+  const encode=m=>m.map(r=>r.join('')).join('').match(/.{1,4}/g).map(bits=>parseInt(bits.padEnd(4,'0'),2).toString(16)).join('');
+  const {draftId:ignored,A:oldA,B:oldB,C:oldC,...state}=p;return {...JSON.parse(JSON.stringify(state)),A:encode(p.A),B:encode(p.B),C:encode(p.C)};
+ }
+ function unpackDraft(p){
+  if(!p||!Number.isInteger(p.N)||p.N<8||p.N>241)throw Error('Неверный размер черновика');
+  const decode=hex=>{
+   if(typeof hex!=='string'||hex.length!==Math.ceil(p.N*p.N/4)||!/^[0-9a-f]+$/.test(hex))throw Error('Повреждён рисунок');
+   const bits=Array.from(hex,h=>parseInt(h,16).toString(2).padStart(4,'0')).join('');
+   return Array.from({length:p.N},(_,y)=>Array.from({length:p.N},(_,x)=>Number(bits[y*p.N+x])));
+  };
+  return validate({...p,A:decode(p.A),B:decode(p.B),C:decode(p.C)});
+ }
+ function draftSignature(s){return JSON.stringify([s.N,s.A,s.B,s.C,s.labels,s.facade,!!s.mirror]);}
+ function renderDrafts(resetName=false){
+  const select=$('#draftSelect'),chosen=select.value;select.replaceChildren();
+  const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=draftVault.items.length?'Выбери вариант':'Пока нет вариантов';select.appendChild(placeholder);
+  for(const d of draftVault.items){const option=document.createElement('option');option.value=d.id;option.textContent=d.name;select.appendChild(option);}
+  select.value=draftVault.items.some(d=>d.id===chosen)?chosen:currentDraft()?.id||'';
+  $('#draftCount').textContent=`Сохранено: ${draftVault.items.length}`;
+  $('#draftOpen').disabled=!select.value;$('#draftUpdate').disabled=!currentDraft()||draftBlocked;$('#draftRename').disabled=!currentDraft()||draftBlocked;
+  if(resetName){displayedDraftId=draftId;$('#draftName').value=currentDraft()?.name||nextDraftName();}
+ }
+ function loadDrafts(){
+  try{
+   draftRaw=localStorage.getItem(DRAFTS);if(draftRaw){
+    const v=JSON.parse(draftRaw);
+    if(v.version!==1||!Number.isSafeInteger(v.next)||v.next<1||!Array.isArray(v.items))throw Error('Неверный список');
+    const ids=new Set();for(const d of v.items){if(!d||typeof d.id!=='string'||!d.id||ids.has(d.id)||typeof d.name!=='string'||!d.name.trim()||d.name.length>80)throw Error('Неверная запись');ids.add(d.id);unpackDraft(d.project);}
+    draftVault=v;
+   }
+   draftBlocked=false;
+  }catch(e){draftBlocked=true;draftMessage('Не удалось прочитать черновики. Их исходные данные не изменены. Сохранение вариантов пока недоступно.',true);}
+  renderDrafts();
+ }
+ function writeDrafts(next){
+  if(draftBlocked){draftMessage('Сохранение черновиков недоступно. Исходные данные не перезаписаны.',true);return false;}
+  try{
+   if(localStorage.getItem(DRAFTS)!==draftRaw){loadDrafts();draftMessage('Список изменился в другой вкладке. Он обновлён; повтори действие.',true);return false;}
+   const raw=JSON.stringify(next);localStorage.setItem(DRAFTS,raw);draftRaw=raw;draftVault=next;renderDrafts();return true;
+  }catch(e){draftMessage('Не удалось сохранить: браузер запретил запись или закончилось место. Рисунок остаётся на холсте.',true);return false;}
+ }
+ function addDraft(p,name){
+  const number=draftVault.next;let id='draft-'+number;while(draftVault.items.some(d=>d.id===id))id+='-copy';
+  const entry={id,name:(name||nextDraftName()).trim().slice(0,80)||nextDraftName(),updatedAt:Date.now(),project:packDraft(p)};
+  if(!writeDrafts({...draftVault,next:number+1,items:[...draftVault.items,entry]}))return null;
+  return entry;
+ }
+ function protectDraft(){
+  if(draftBlocked){draftMessage('Черновики недоступны. Текущий рисунок оставлен на холсте.',true);return null;}
+  try{if(localStorage.getItem(DRAFTS)!==draftRaw){loadDrafts();draftMessage('Список изменился в другой вкладке. Он обновлён; повтори действие.',true);return null;}}
+  catch(e){draftMessage('Не удалось проверить сохранение. Текущий рисунок оставлен на холсте.',true);return null;}
+  const p=payload(),signature=draftSignature(packDraft(p));
+  if(draftVault.items.some(d=>draftSignature(d.project)===signature))return '';
+  const entry=addDraft(p,nextDraftName());return entry?entry.name:null;
+ }
+ function saveNewDraft(){
+  cancelInteraction();let name=$('#draftName').value.trim();if(currentDraft()?.name===name)name=nextDraftName();
+  const d=addDraft(payload(),name);if(!d)return;draftId=d.id;$('#draftSelect').value=d.id;renderDrafts(true);queueSave();draftMessage(`Сохранён «${d.name}». Можно продолжить рисунок или начать новый.`);
+ }
+ function openDraft(){
+  const id=$('#draftSelect').value;cancelInteraction();const d=draftVault.items.find(d=>d.id===id);if(!d)return;
+  let p;try{p=unpackDraft(d.project);}catch(e){draftMessage('Этот вариант не удалось прочитать. Текущий рисунок не изменён.',true);return;}
+  const protectedName=protectDraft();if(protectedName===null)return;
+  change(()=>{loadState({...p,draftId:id});fit();});$('#draftSelect').value=id;renderDrafts(true);
+  draftMessage(`Открыт «${d.name}».${protectedName?` Предыдущий рисунок сохранён как «${protectedName}».`:''} Доработки сохраняй кнопкой «Обновить открытый».`);
+ }
+ function updateDraft(renameOnly=false){
+  cancelInteraction();const d=currentDraft();if(!d)return;
+  const name=$('#draftName').value.trim().slice(0,80)||d.name;
+  const updated={...d,name,updatedAt:Date.now(),project:renameOnly?d.project:packDraft(payload())};
+  if(!writeDrafts({...draftVault,items:draftVault.items.map(v=>v.id===d.id?updated:v)}))return;
+  renderDrafts(true);queueSave();draftMessage(renameOnly?`Название изменено: «${name}».`:`Доработки сохранены в «${name}».`);
+ }
+ function blankDraft(){
+  cancelInteraction();const protectedName=protectDraft();if(protectedName===null)return;
+  change(()=>{A=make();B=make();C=make();labels={A:'Мой рисунок',B:'Мой рисунок',C:'Мой рисунок'};draftId='';collectionId='';slot='A';fit();});
+  $('#draftSelect').value='';renderDrafts(true);draftMessage(`Новый чистый вариант: все три мотива пусты.${protectedName?` Предыдущий сохранён как «${protectedName}».`:''}`);
+ }
+ function saveAuto(){
+  clearTimeout(autoTimer);
+  try{localStorage.setItem(STORAGE,JSON.stringify(payload()));if(storageFailed)status('Автосохранение снова доступно.');storageFailed=false;}
+  catch(e){storageFailed=true;status('Браузер не разрешил автосохранение. Скачай JSON, чтобы сохранить рисунок.',true);}
+ }
+ function queueSave(){clearTimeout(autoTimer);autoTimer=setTimeout(saveAuto,250);}
+ function validMatrix(m){return Array.isArray(m)&&m.length>=8&&m.length<=241&&m.every(r=>Array.isArray(r)&&r.length===m.length&&r.every(v=>v===0||v===1));}
+ function resample(m,n){return Array.from({length:n},(_,y)=>Array.from({length:n},(_,x)=>m[Math.min(m.length-1,Math.floor((y+.5)*m.length/n))][Math.min(m.length-1,Math.floor((x+.5)*m.length/n))]));}
+ function validate(s){
+  if(!s||typeof s!=='object'||!validMatrix(s.A)||!validMatrix(s.B)||s.A.length!==s.B.length)throw Error('Ожидаются две квадратные сетки A и B из 0 и 1 (8–241 клетка).');
+  if(s.version!==undefined&&![1,2,3,4].includes(s.version))throw Error('Эта версия проекта пока не поддерживается.');
+  if(s.N!==undefined&&s.N!==s.A.length)throw Error('Размер сетки не совпадает с данными проекта.');
+  const n=s.A.length<61?DEFAULT_N:s.A.length;
+  const label=(k,fallback)=>typeof s.labels?.[k]==='string'?s.labels[k].slice(0,40):fallback;
+  if(s.version===4&&(!validMatrix(s.C)||s.C.length!==s.A.length))throw Error('Третий мотив C должен иметь тот же размер, что A и B.');
+  if(s.C!==undefined&&(!validMatrix(s.C)||s.C.length!==s.A.length))throw Error('Неверная сетка третьего мотива.');
+  const f=s.facade&&typeof s.facade==='object'?s.facade:{},defaults=defaultFacade();
+  const number=(key,min,max)=>Number.isFinite(f[key])?clamp(f[key],min,max):defaults[key];
+  const settings={length:number('length',3,120),height:number('height',1,15),columns:[14,21,28,35,42,49,56,63].includes(f.columns)?f.columns:21,diamondHeight:number('diamondHeight',.8,6),pitch:[10,12,15,20,25,30].includes(f.pitch)?f.pitch:15,ratio:[.6,.76,.82,.86].includes(f.ratio)?f.ratio:.76,mode:['AB','ABC','single'].includes(f.mode)?f.mode:(s.version===4?'ABC':s.alternate===false?'single':'AB'),material:['paper','bronze','night'].includes(f.material)?f.material:'bronze',axes:!!f.axes,position:number('position',0,100)};
+  return {...s,N:n,A:resample(s.A,n),B:resample(s.B,n),C:s.C?resample(s.C,n):preset('wheat',n),slot:['A','B','C'].includes(s.slot)?s.slot:'A',labels:{A:label('A','Мой узор'),B:label('B','Мой узор'),C:label('C','Колос')},facade:settings,collectionId:typeof s.collectionId==='string'?s.collectionId:''};
+ }
+ function loadState(s,{restoreZoom=false}={}){
+  const v=validate(s);assign(v);
+  mirror=!!v.mirror;showGrid=v.showGrid!==false;showDiamond=!!v.showDiamond;symX=!!v.symX;symY=!!v.symY;
+  tool=['draw','erase','pan'].includes(v.tool)?v.tool:'draw';brush=[1,2,3,5,9].includes(v.brush)?v.brush:1;
+  zoom=restoreZoom&&Number.isFinite(v.zoom)?clamp(v.zoom,MIN_ZOOM,MAX_ZOOM):1;
+ }
+ function loadAuto(){
+  try{
+   const raw=localStorage.getItem(STORAGE)||localStorage.getItem(PREVIOUS)||localStorage.getItem(LEGACY);
+   if(raw){loadState(JSON.parse(raw));status('Открыт твой последний рисунок. Новые заготовки — над холстом.');}
+  }catch(e){status('Сохранённый проект не прочитан. Исходные данные оставлены в браузере; открыты заготовки.',true);}
+ }
+ function pushHistory(before){history.push(before);if(history.length>HISTORY_LIMIT)history.shift();future=[];}
+ function change(fn,message){cancelInteraction();const before=snapshot();fn();pushHistory(before);motifDirty=true;previewDirty=true;requestDraw();updateUI();queueSave();if(message)status(message);}
+ function undo(){cancelInteraction();if(!history.length)return;future.push(snapshot());const s=history.pop(),oldN=N;assign(s);if(N!==oldN)fit();motifDirty=true;previewDirty=true;requestDraw();updateUI();queueSave();}
+ function redo(){cancelInteraction();if(!future.length)return;history.push(snapshot());const s=future.pop(),oldN=N;assign(s);if(N!==oldN)fit();motifDirty=true;previewDirty=true;requestDraw();updateUI();queueSave();}
+
+ function resize(){
+  const oldCell=cell(),cx=width?(width/2-tx)/oldCell:N/2,cy=height?(height/2-ty)/oldCell:N/2;
+  width=vp.clientWidth;height=vp.clientHeight;
+  if(!width||!height)return;
+  dpr=Math.min(window.devicePixelRatio||1,3);c.width=Math.round(width*dpr);c.height=Math.round(height*dpr);
+  fitCell=(Math.min(width,height)-24)/N;
+  tx=width/2-cx*cell();ty=height/2-cy*cell();
+  if(!initialized){tx=(width-N*cell())/2;ty=(height-N*cell())/2;initialized=true;}
+  resizeFacadeCanvases();
+  if(phase!=='idle')cancelInteraction();
+  previewDirty=true;requestDraw();updateUI();
+ }
+ function fit(){zoom=1;fitCell=(Math.min(width,height)-24)/N;tx=(width-N*cell())/2;ty=(height-N*cell())/2;requestDraw();updateUI();queueSave();}
+ function constrain(){const s=N*cell();tx=clamp(tx,40-s,width-40);ty=clamp(ty,40-s,height-40);}
+ function zoomAt(value,p={x:width/2,y:height/2}){const wx=(p.x-tx)/cell(),wy=(p.y-ty)/cell();zoom=clamp(value,MIN_ZOOM,MAX_ZOOM);tx=p.x-wx*cell();ty=p.y-wy*cell();constrain();requestDraw();updateUI();queueSave();}
+ function buildCaches(){
+  fieldCache=null;
+  for(const k of ['A','B','C']){const cc=caches[k];cc.width=cc.height=N*6;const g=cc.getContext('2d'),m=matrices()[k];g.fillStyle='#252725';for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(m[y][x])g.fillRect(x*6+.55,y*6+.55,4.9,4.9);}
+  for(const k of ['A','B','C']){const cv=$('#thumb'+k),g=cv.getContext('2d');g.fillStyle='#fbfaf6';g.fillRect(0,0,96,96);g.drawImage(caches[k],2,2,92,92);}
+ }
+ function draw(){
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#e6e8e2';ctx.fillRect(0,0,width,height);
+  const s=cell(),side=s*N;ctx.fillStyle='#fffefb';ctx.fillRect(tx,ty,side,side);
+  const x0=clamp(Math.floor(-tx/s),0,N),x1=clamp(Math.ceil((width-tx)/s),0,N),y0=clamp(Math.floor(-ty/s),0,N),y1=clamp(Math.ceil((height-ty)/s),0,N);
+  ctx.save();ctx.beginPath();ctx.rect(tx,ty,side,side);ctx.clip();
+  const gap=Math.min(s*.105,1.4),m=active();ctx.fillStyle='#252725';
+  for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)if(m[y][x])ctx.fillRect(tx+x*s+gap,ty+y*s+gap,s-gap*2,s-gap*2);
+  if(showGrid&&s>=4){
+   ctx.lineWidth=1/dpr;ctx.strokeStyle='rgba(58,76,60,.16)';ctx.beginPath();
+   for(let x=x0;x<=x1;x++){ctx.moveTo(tx+x*s,ty+y0*s);ctx.lineTo(tx+x*s,ty+y1*s);}for(let y=y0;y<=y1;y++){ctx.moveTo(tx+x0*s,ty+y*s);ctx.lineTo(tx+x1*s,ty+y*s);}ctx.stroke();
+   if(s>=8){ctx.strokeStyle='rgba(58,76,60,.21)';ctx.beginPath();for(let x=Math.ceil(x0/10)*10;x<=x1;x+=10){ctx.moveTo(tx+x*s,ty);ctx.lineTo(tx+x*s,ty+side);}for(let y=Math.ceil(y0/10)*10;y<=y1;y+=10){ctx.moveTo(tx,ty+y*s);ctx.lineTo(tx+side,ty+y*s);}ctx.stroke();}
+  }
+  if(showDiamond){ctx.strokeStyle='#bd6b41';ctx.lineWidth=1.2;ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(tx+side/2,ty+s);ctx.lineTo(tx+side-s,ty+side/2);ctx.lineTo(tx+side/2,ty+side-s);ctx.lineTo(tx+s,ty+side/2);ctx.closePath();ctx.stroke();}
+  ctx.restore();ctx.strokeStyle='rgba(38,51,40,.17)';ctx.lineWidth=1;ctx.strokeRect(tx-.5,ty-.5,side+1,side+1);
+ }
+
+ let fieldCache=null,fieldKey='';
+ const palette={paper:{background:'#f5f1e6',hole:'#282b25',axis:'#736c5d'},bronze:{background:'#b98a53',hole:'#28231d',axis:'#735838'},night:{background:'#332b23',hole:'#edbd72',axis:'#977d56'}};
+ const modulo=(n,m)=>((n%m)+m)%m;
+ function makeField(mats,f,selected='A',reflectMotifs=false,start=0,span=f.length){
+  const size=mats.A.length,p=f.pitch/1000,cols=Math.ceil(f.length/p),rows=Math.ceil(f.height/p),dw=f.length/f.columns,dh=f.diamondHeight;
+  const first=Math.max(0,Math.floor(start/p)),last=Math.min(cols,Math.ceil((start+span)/p));
+  const ids=f.mode==='ABC'?['A','B','C']:f.mode==='AB'?['A','B']:[selected];
+  const points=new Uint32Array(Math.max(0,last-first)*rows);let count=0;
+  for(let y=0;y<rows;y++){
+   const yy=(y+.5)*p;if(yy>=f.height)continue;
+   const baseRow=Math.floor(yy/dh*2),baseV=yy/dh-baseRow/2,baseOffset=baseRow%2?0:.5;
+   for(let x=first;x<last;x++){
+    const xx=(x+.5)*p;if(xx>=f.length)continue;
+    let row=baseRow,col=Math.round(xx/dw-baseOffset),u=xx/dw-(col+baseOffset),v=baseV;
+    if(Math.abs(u)+Math.abs(v)>.5){row++;const off=row%2?0:.5;col=Math.round(xx/dw-off);u=xx/dw-(col+off);v=yy/dh-row/2;}
+    let gx=clamp(Math.floor((u+.5)*size),0,size-1),gy=clamp(Math.floor((v+.5)*size),0,size-1);
+    if(reflectMotifs&&modulo(col+row,2))gx=size-1-gx;
+    const id=ids[modulo(col+row,ids.length)];
+    if(mats[id][gy][gx])points[count++]=y*cols+x;
+   }
+  }
+  return {points:points.subarray(0,count),cols,rows,pitch:p, count};
+ }
+ function renderField(g,w,h,field,f,start=0,span=f.length){
+  const colors=palette[f.material]||palette.bronze,sx=w/span,sy=h/f.height,p=field.pitch,side=p*f.ratio;
+  g.clearRect(0,0,w,h);g.fillStyle=colors.background;g.fillRect(0,0,w,h);g.fillStyle=colors.hole;
+  for(const index of field.points){
+   const col=index%field.cols,row=Math.floor(index/field.cols),x=(col+.5)*p,y=(row+.5)*p;
+   if(x+side/2<start||x-side/2>start+span)continue;
+   g.fillRect((x-side/2-start)*sx,(y-side/2)*sy,side*sx,side*sy);
+  }
+  if(f.axes){
+   g.strokeStyle=colors.axis;g.lineWidth=Math.max(1,w/1500);g.setLineDash([w/170,w/170]);g.beginPath();
+   for(let i=0;i<=7;i++){const x=(f.length*i/7-start)*sx;if(x>=0&&x<=w){g.moveTo(x,0);g.lineTo(x,h);}}
+   g.stroke();g.setLineDash([]);
+  }
+ }
+ function resizeFacadeCanvases(){
+  const fw=fc.getBoundingClientRect().width||width||800,fh=fw*facade.height/facade.length;
+  const cw=Math.round(fw*dpr),ch=Math.max(2,Math.round(fh*dpr));
+  if(fc.width!==cw)fc.width=cw;if(fc.height!==ch)fc.height=ch;fc.style.aspectRatio=facade.length+'/'+facade.height;
+  const dc=$('#facadeDetail'),dw=dc.getBoundingClientRect().width||fw;
+  if(dc.width!==Math.round(dw*dpr))dc.width=Math.round(dw*dpr);
+  if(dc.height!==Math.round(dw*dpr/2))dc.height=Math.round(dw*dpr/2);
+ }
+ function drawFacade(){
+  resizeFacadeCanvases();
+  const key=JSON.stringify([N,facade.length,facade.height,facade.columns,facade.diamondHeight,facade.pitch,facade.mode,slot,mirror]);
+  if(!fieldCache||key!==fieldKey){fieldCache=makeField(matrices(),facade,slot,mirror);fieldKey=key;}
+  renderField(fctx,fc.width,fc.height,fieldCache,facade);
+  const dc=$('#facadeDetail'),span=Math.min(facade.length,facade.height*2),start=(facade.length-span)*facade.position/100;
+  if(facade.length<facade.height*2){dc.height=Math.round(dc.width*facade.height/span);dc.style.aspectRatio=span+'/'+facade.height;}else dc.style.aspectRatio='2/1';
+  renderField(dc.getContext('2d'),dc.width,dc.height,fieldCache,facade,start,span);
+  const fixed=n=>n.toLocaleString('ru-RU',{maximumFractionDigits:2}),dw=facade.length/facade.columns,area=fieldCache.count*(fieldCache.pitch*facade.ratio)**2/(facade.length*facade.height)*100;
+  $('#facadeDimensions').textContent=`${fixed(facade.length)} × ${fixed(facade.height)} м`;
+  $('#detailInfo').textContent=`${fixed(start)}–${fixed(start+span)} м · высота ${fixed(facade.height)} м`;
+  $('#repeatInfo').textContent=`Ромб ${fixed(dw)} × ${fixed(facade.diamondHeight)} м · квадрат ${fixed(facade.pitch*facade.ratio)} мм · шаг ${facade.pitch} мм · перфорация поля ≈ ${fixed(area)}%`;
+ }
+ function renderCollections(legacy=false){
+  for(const item of collections.filter(item=>legacy?!item.dense:item.dense)){
+   const f={...defaultFacade(),columns:item.columns,diamondHeight:item.dh,pitch:item.pitch||15,ratio:item.ratio||.76,mode:item.motifs.length===3?'ABC':'AB'};
+   const mats={A:preset(item.motifs[0],121),B:preset(item.motifs[1],121),C:preset(item.motifs[2]||'wheat',121)},cv=$('#collection-'+item.id);
+   const span=f.height*cv.width/cv.height,field=makeField(mats,f,'A',false,0,span);
+   renderField(cv.getContext('2d'),cv.width,cv.height,field,f,0,span);
+  }
+ }
+ function useCollection(id){
+  const item=collections.find(v=>v.id===id);if(!item)return;
+  change(()=>{
+   A=preset(item.motifs[0]);B=preset(item.motifs[1]);C=preset(item.motifs[2]||'wheat');
+   labels={A:motifNames[item.motifs[0]],B:motifNames[item.motifs[1]],C:motifNames[item.motifs[2]||'wheat']};slot='A';
+   facade={...facade,mode:item.motifs.length===3?'ABC':'AB',columns:item.columns,diamondHeight:item.dh,pitch:item.pitch||15,ratio:item.ratio||.76};collectionId=id;mirror=false;
+  },`Выбран набор «${item.name}». Мотивы можно править по отдельности.`);
+ }
+ function facadeSvg(){
+  // The same physical grid is used for the screen and vector output: all holes stay square.
+  const field=makeField(matrices(),facade,slot,mirror),p=facade.pitch,side=p*facade.ratio;
+  const num=n=>Number(n.toFixed(3)),commands=[];
+  for(const index of field.points){const x=(index%field.cols+.5)*p-side/2,y=(Math.floor(index/field.cols)+.5)*p-side/2;commands.push(`M${num(x)} ${num(y)}h${num(side)}v${num(side)}h-${num(side)}z`);}
+  const w=num(facade.length*1000),h=num(facade.height*1000);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${w} ${h}"><title>Ornament facade ${w} x ${h} mm</title><desc>Concept pattern. Dimensions between axes. Window and door openings are not subtracted. Square hole grid ${p} mm.</desc><defs><clipPath id="field"><rect width="${w}" height="${h}"/></clipPath></defs><path clip-path="url(#field)" fill="#252725" d="${commands.join('')}"/></svg>`;
+ }
+ function requestDraw(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;if(motifDirty){buildCaches();motifDirty=false;previewDirty=true;}draw();if(previewDirty&&phase==='idle'){drawFacade();previewDirty=false;}});}
+ function toggle(id,on){$(id).classList.toggle('active',on);$(id).setAttribute('aria-pressed',String(on));}
+ function updateUI(){
+  for(const k of ['A','B','C']){toggle('#slot'+k,slot===k);$('#label'+k).textContent=labels[k];}
+  for(const k of ['draw','erase','pan'])toggle('#'+k,tool===k);
+  for(const [id,value] of [['symX',symX],['symY',symY],['mirror',mirror],['gridToggle',showGrid],['diamondToggle',showDiamond]])toggle('#'+id,value);
+  $('#zoom').value=Math.round(zoom*100);$('#zoomReset').textContent=Math.round(zoom*100)+'%';$('#brush').value=brush;
+  $('#gridInfo').textContent=`${N} × ${N} клетка${showGrid&&cell()<4?' · приблизь, чтобы увидеть сетку':''}`;
+  $('#undo').disabled=!history.length;$('#redo').disabled=!future.length;
+  for(const b of document.querySelectorAll('[data-collection]')){const on=b.dataset.collection===collectionId;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));}
+  $('#slotCNote').textContent=facade.mode==='ABC'?'Третий мотив':'Сейчас вне повтора';
+  const controls={facadeLength:'length',facadeHeight:'height',repeatMode:'mode',diamondColumns:'columns',diamondHeight:'diamondHeight',holePitch:'pitch',material:'material',holeRatio:'ratio',detailPosition:'position'};
+  for(const [id,key]of Object.entries(controls))if(document.activeElement!==$('#'+id))$('#'+id).value=facade[key];
+  toggle('#axes',facade.axes);
+  $('#draftUpdate').disabled=!currentDraft()||draftBlocked;$('#draftRename').disabled=!currentDraft()||draftBlocked;
+  if(displayedDraftId!==draftId){displayedDraftId=draftId;$('#draftSelect').value=currentDraft()?.id||'';renderDrafts(true);}
+
+  vp.classList.toggle('pan',tool==='pan');vp.classList.toggle('dragging',phase==='pan'||phase==='gesture');
+  $('#gestureHint').textContent=phase==='gesture'?'Два пальца · масштаб и сдвиг':'1 палец — рисунок · 2 — сдвиг и масштаб';
+ }
+
+ function localPoint(e){const r=c.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top,type:e.pointerType};}
+ function gridPoint(p){return {x:clamp(Math.floor((p.x-tx)/cell()),-N,2*N),y:clamp(Math.floor((p.y-ty)/cell()),-N,2*N)};}
+ function dab(x,y){
+  const m=active(),v=tool==='erase'?0:1,start=-Math.floor((brush-1)/2),end=start+brush;
+  const put=(xx,yy)=>{if(xx>=0&&yy>=0&&xx<N&&yy<N&&m[yy][xx]!==v){m[yy][xx]=v;stroke.changed=true;}};
+  for(let j=start;j<end;j++)for(let i=start;i<end;i++){const xx=x+i,yy=y+j;put(xx,yy);if(symX)put(N-1-xx,yy);if(symY)put(xx,N-1-yy);if(symX&&symY)put(N-1-xx,N-1-yy);}
+ }
+ function paint(p){
+  if(!stroke)return;const next=gridPoint(p),prev=lastCell||next;
+  let x=prev.x,y=prev.y,dx=Math.abs(next.x-x),sx=x<next.x?1:-1,dy=-Math.abs(next.y-y),sy=y<next.y?1:-1,err=dx+dy;
+  for(;;){dab(x,y);if(x===next.x&&y===next.y)break;const e=err*2;if(e>=dy){err+=dy;x+=sx;}if(e<=dx){err+=dx;y+=sy;}}
+  lastCell=next;motifDirty=true;requestDraw();
+ }
+ function finishStroke(commit){
+  if(!stroke)return;
+  if(commit&&stroke.changed){pushHistory(stroke.before);collectionId='';queueSave();}
+  else if(!commit){assign(stroke.before);motifDirty=true;previewDirty=true;requestDraw();}
+  stroke=null;lastCell=null;updateUI();
+ }
+ function startGesture(){
+  finishStroke(false);panStart=null;
+  const ps=[...pointers.values()],p=ps[0],q=ps[1];if(!q)return;
+  const mid={x:(p.x+q.x)/2,y:(p.y+q.y)/2};
+  gesture={distance:Math.max(1,Math.hypot(p.x-q.x,p.y-q.y)),zoom,world:{x:(mid.x-tx)/cell(),y:(mid.y-ty)/cell()}};
+  phase='gesture';updateUI();
+ }
+ function moveGesture(){
+  const [p,q]=[...pointers.values()];if(!p||!q||!gesture)return;
+  const mid={x:(p.x+q.x)/2,y:(p.y+q.y)/2},distance=Math.max(1,Math.hypot(p.x-q.x,p.y-q.y));
+  zoom=clamp(gesture.zoom*distance/gesture.distance,MIN_ZOOM,MAX_ZOOM);
+  tx=mid.x-gesture.world.x*cell();ty=mid.y-gesture.world.y*cell();constrain();requestDraw();updateUI();
+ }
+ function cancelInteraction(){
+  finishStroke(false);const ids=[...pointers.keys()];pointers.clear();phase='idle';gesture=null;panStart=null;lastCell=null;
+  for(const id of ids){try{if(vp.hasPointerCapture(id))vp.releasePointerCapture(id);}catch(e){}}
+  updateUI();
+ }
+ vp.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();
+  const p=localPoint(e);pointers.set(e.pointerId,p);try{vp.setPointerCapture(e.pointerId);}catch(err){}
+  if(pointers.size>=2){startGesture();return;}
+  if(phase==='afterGesture')return;
+  if(tool==='pan'){phase='pan';panStart={...p,tx,ty};updateUI();return;}
+  phase='draw';stroke={before:snapshot(),changed:false};lastCell=null;paint(p);
+ },{passive:false});
+ vp.addEventListener('pointermove',e=>{
+  if(!pointers.has(e.pointerId))return;e.preventDefault();const p=localPoint(e);pointers.set(e.pointerId,p);
+  if(phase==='gesture'){moveGesture();return;}
+  if(phase==='pan'&&panStart){tx=panStart.tx+p.x-panStart.x;ty=panStart.ty+p.y-panStart.y;constrain();requestDraw();return;}
+  if(phase==='draw'&&pointers.size===1){const events=e.getCoalescedEvents?.()||[];for(const ev of events)paint(localPoint(ev));paint(p);}
+ },{passive:false});
+ function endPointer(e,cancelled=false){
+  if(!pointers.has(e.pointerId))return;e.preventDefault();
+  if(phase==='draw'){if(!cancelled)paint(localPoint(e));finishStroke(!cancelled);}
+  const wasGesture=phase==='gesture'||phase==='afterGesture';pointers.delete(e.pointerId);
+  if(pointers.size>=2)startGesture();else if(pointers.size&&wasGesture){phase='afterGesture';gesture=null;}else if(!pointers.size){phase='idle';gesture=null;panStart=null;queueSave();}
+  try{if(vp.hasPointerCapture(e.pointerId))vp.releasePointerCapture(e.pointerId);}catch(err){}requestDraw();updateUI();
+ }
+ vp.addEventListener('pointerup',e=>endPointer(e),{passive:false});
+ vp.addEventListener('pointercancel',e=>endPointer(e,true),{passive:false});
+ vp.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))endPointer(e,true);});
+ vp.addEventListener('contextmenu',e=>e.preventDefault());
+ // Safari's native gesture must not also zoom the page over the drawing surface.
+ for(const name of ['gesturestart','gesturechange','gestureend'])vp.addEventListener(name,e=>e.preventDefault(),{passive:false});
+ vp.addEventListener('wheel',e=>{e.preventDefault();if(pointers.size)return;zoomAt(zoom*Math.exp(-e.deltaY*.002),localPoint(e));},{passive:false});
+ window.addEventListener('blur',cancelInteraction);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelInteraction();saveAuto();}});
+ window.addEventListener('pagehide',()=>{cancelInteraction();saveAuto();});
+
+ for(const k of ['A','B','C'])$('#slot'+k).onclick=()=>{cancelInteraction();slot=k;previewDirty=true;requestDraw();updateUI();queueSave();};
+ for(const k of ['draw','erase','pan'])$('#'+k).onclick=()=>{cancelInteraction();tool=k;updateUI();queueSave();};
+ $('#brush').onchange=e=>{brush=Number(e.target.value);queueSave();};
+ $('#symX').onclick=()=>{symX=!symX;updateUI();queueSave();};$('#symY').onclick=()=>{symY=!symY;updateUI();queueSave();};
+ $('#undo').onclick=undo;$('#redo').onclick=redo;
+ $('#clear').onclick=()=>change(()=>{setActive(make());labels[slot]='Мой рисунок';collectionId='';},'Чистый холст. Предыдущий рисунок можно вернуть кнопкой ↶.');
+ document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>change(()=>{const k=b.dataset.preset;setActive(preset(k));labels[slot]=motifNames[k];collectionId='';},'Заготовка вставлена. Каждую клетку можно изменить; ↶ вернёт прошлый рисунок.'));
+ $('#mirror').onclick=()=>{mirror=!mirror;previewDirty=true;requestDraw();updateUI();queueSave();};
+ document.querySelectorAll('[data-collection]').forEach(b=>b.onclick=()=>useCollection(b.dataset.collection));
+ let legacyRendered=false;$('#legacySets').addEventListener('toggle',()=>{if($('#legacySets').open&&!legacyRendered){renderCollections(true);legacyRendered=true;}});
+ const facadeInputs={facadeLength:['length',3,120],facadeHeight:['height',1,15],diamondColumns:['columns',14,63],diamondHeight:['diamondHeight',.8,6],holePitch:['pitch',10,30],holeRatio:['ratio',.6,.86]};
+ for(const [id,[key,min,max]]of Object.entries(facadeInputs))$('#'+id).onchange=e=>{
+  const number=Number(e.target.value);if(!Number.isFinite(number)||e.target.value===''){e.target.value=facade[key];return;}
+  facade[key]=clamp(number,min,max);e.target.value=facade[key];previewDirty=true;requestDraw();updateUI();queueSave();
+ };
+ for(const [id,key]of [['repeatMode','mode'],['material','material']])$('#'+id).onchange=e=>{facade[key]=e.target.value;previewDirty=true;requestDraw();updateUI();queueSave();};
+ $('#detailPosition').oninput=e=>{facade.position=clamp(Number(e.target.value),0,100);previewDirty=true;requestDraw();queueSave();};
+ $('#axes').onclick=()=>{facade.axes=!facade.axes;previewDirty=true;requestDraw();updateUI();queueSave();};
+ $('#facadeExport').onclick=()=>{download(new Blob([facadeSvg()],{type:'image/svg+xml'}),'ornament-facade.svg');status('SVG развёртки подготовлен в миллиметрах. Окна и двери в поле пока не вычтены.');};
+
+ $('#gridToggle').onclick=()=>{showGrid=!showGrid;requestDraw();updateUI();queueSave();};$('#diamondToggle').onclick=()=>{showDiamond=!showDiamond;requestDraw();updateUI();queueSave();};
+ $('#zoom').oninput=e=>zoomAt(Number(e.target.value)/100);$('#zoomIn').onclick=()=>zoomAt(zoom*1.25);$('#zoomOut').onclick=()=>zoomAt(zoom/1.25);$('#zoomReset').onclick=fit;$('#fit').onclick=fit;
+ window.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||e.target.isContentEditable)return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();}});
+ $('#save').onclick=()=>{try{localStorage.setItem(MANUAL,JSON.stringify(payload()));saveAuto();status('Контрольная копия сохранена в этом браузере. Для переноса скачай JSON.');}catch(e){status('Сохранение недоступно. Скачай JSON — в нём будут все мотивы.',true);}};
+ $('#restore').onclick=()=>{try{const raw=localStorage.getItem(MANUAL)||localStorage.getItem(PREVIOUS_MANUAL)||localStorage.getItem(LEGACY_MANUAL);if(!raw){status('Контрольной копии пока нет. Сначала нажми «Сохранить».');return;}const s=validate(JSON.parse(raw));change(()=>{loadState(s);fit();},'Сохранённый рисунок восстановлен. Действие можно отменить.');}catch(e){status('Не удалось восстановить копию: '+e.message,true);}};
+ function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+ $('#export').onclick=()=>{download(new Blob([JSON.stringify(payload())],{type:'application/json'}),'ornament-project.json');status('JSON подготовлен: все мотивы и настройки. Сохрани файл в загрузках.');};
+ $('#importBtn').onclick=()=>$('#importFile').click();
+ $('#importFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>3*1024*1024)throw Error('Файл больше 3 МБ.');const s=validate(JSON.parse(await f.text()));change(()=>{loadState(s);fit();},'Проект открыт. Импорт можно отменить кнопкой ↶.');}catch(err){status('JSON не открыт: '+err.message,true);}finally{e.target.value='';}};
+ $('#svgExport').onclick=()=>{let cells='';const m=active();for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(m[y][x])cells+=`<rect x="${x+.1}" y="${y+.1}" width=".8" height=".8"/>`;const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${N} ${N}" width="${N*10}" height="${N*10}"><title>Ornament ${slot}</title><g fill="#252725">${cells}</g></svg>`;download(new Blob([svg],{type:'image/svg+xml'}),`ornament-${slot}.svg`);status('SVG выбранного мотива подготовлен: отдельный квадрат для каждой перфорации.');};
+ $('#draftSaveNew').onclick=saveNewDraft;$('#draftOpen').onclick=openDraft;$('#draftUpdate').onclick=()=>updateDraft();$('#draftRename').onclick=()=>updateDraft(true);$('#draftBlank').onclick=blankDraft;
+ $('#draftSelect').onchange=()=>{$('#draftOpen').disabled=!$('#draftSelect').value;};
+ loadDrafts();
+ loadAuto();renderCollections();updateUI();resize();
+ renderDrafts(true);
+ if('ResizeObserver' in window){new ResizeObserver(resize).observe(vp);}else window.addEventListener('resize',resize);
+})();
+</script>
+</body>
+</html>
