@@ -960,6 +960,12 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 .mlWarn .mlHead .st{border-color:#FFD9A6;background:rgba(255,196,120,.22)}
 .mlWarn .mlHead .st svg{stroke:#FFE3BF}
 .mlHead .nm{flex:1;min-width:0}
+.mlRow{display:flex;align-items:stretch}
+.mlRow .mlHead{flex:1;min-width:0;padding-left:2px}
+.mlFav{flex:none;width:50px;padding:0 0 0 10px;border:0;background:none;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mlFav svg{width:23px;height:23px;fill:none;stroke:rgba(255,255,255,.75);stroke-width:1.9;stroke-linejoin:round;transition:transform .15s}
+.mlFav:active svg{transform:scale(.86)}
+.mlFav.on svg{fill:#FFC53D;stroke:#FFC53D}
 .mlHead .nm b{display:block;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mlHead .nm small{display:block;font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mlHead .w{flex:none;text-align:right;font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums}
@@ -1403,6 +1409,11 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
     <div class="eyebrow"><span>Аккаунт</span></div>
     <div class="card clBox" id="clBox"></div>
     <p class="note">Один вход для HappyDay, Meal и Sport — так отдельные иконки на экране «Домой» видят данные друг друга. Пароль — ещё и ключ шифрования: на сервер уходит только зашифрованное, прочитать там не может никто. Забудешь пароль — пропадёт только облачная копия, записи в телефоне останутся.</p>
+
+    <div class="eyebrow"><span>Резервная копия</span></div>
+    <div class="chips"><button class="chip" id="bkOut">Выгрузить дневник</button><button class="chip" id="bkIn">Загрузить из файла</button></div>
+    <input type="file" id="bkFile" class="vh" accept="application/json,.json" tabindex="-1" aria-hidden="true">
+    <p class="note">Весь дневник Meal одним файлом: записи, свои продукты и меры, разделы, счётчики, избранное, рецепты. На телефоне — «Поделиться» → «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть. <span id="bkWhen"></span></p>
 
     <div class="eyebrow"><span>Счётчики</span></div>
     <div id="setTaps" class="mlSet"></div>
@@ -2066,6 +2077,8 @@ function porFix(f){
   Object.keys(f.porOwn||{}).forEach(function(u){ if(!own[u]) delete f.por[u] });
   f.porOwn=Object.assign({},f.own);
 }
+/* мера по умолчанию: своя мера человека — первой, иначе штука, иначе первая мера продукта */
+function defUnit(f){ if(!f||!f.por) return 'г'; var o=Object.keys(f.own||{}); if(o.length) return o[0]; return f.por['шт']?'шт':(Object.keys(f.por)[0]||'г') }
 function gramsFor(fid,q,u){
   var f=fid?FOODS[fid]:null, per=(f&&f.por&&f.por[u])||DEF[u]||1;
   return Math.round(q*per*10)/10;
@@ -2147,9 +2160,10 @@ function parseText(text){
     if(line.u===null){
       var keys=f?Object.keys(f.por):[];
       if(line.q===null){
-        if(keys.length){ line.q=1; line.u=f.por['шт']?'шт':keys[0] }
+        if(keys.length){ line.q=1; line.u=defUnit(f) }
         else { line.q=100; line.u='г' }
-      } else if(line.q<=10&&f&&f.por['шт']) line.u='шт';
+      } else if(line.q<=10&&f&&f.por['шт']) line.u='шт';   // «2 помидора» — штуки, даже если есть своя мера
+      else if(line.q<=10&&f&&Object.keys(f.own||{}).length) line.u=defUnit(f);
       else line.u='г';
     }
     if(line.q===null) line.q=1;
@@ -2167,7 +2181,7 @@ function parsePortion(str,fid){
     var n=numOf(t); if(n!==null){ q=(q||0)+n; return }
     var un=unitOf(t); if(un&&!u) u=un;
   });
-  if(!u){ var keys=f?Object.keys(f.por):[]; u=keys.length&&(q===null||q<=10)?(f.por['шт']?'шт':keys[0]):'г' }
+  if(!u){ var keys=f?Object.keys(f.por):[]; u=keys.length&&(q===null||q<=10)?(q!==null&&f.por['шт']?'шт':defUnit(f)):'г' }
   if(q===null) q=u==='г'?100:1;
   if(u==='кг'){ q*=1000; u='г' } if(u==='мл') u='г'; if(u==='л'){ q*=1000; u='г' }
   return {q:q,u:u};
@@ -2396,6 +2410,7 @@ function renderCoverSet(){
 }
 function renderSettings(){
   renderCoverSet();
+  if(typeof bkPaint==='function') bkPaint();
   document.getElementById('setGoals').innerHTML=GOALS.map(function(G,i){
     var v=goalOf(G.k);
     return rowCard('<span class="nm"><b>'+G.t+'</b><small>'+(v?fmt(v)+' '+G.u+' в день':'не задано')+'</small></span>'+penBtn('g'+i));
@@ -2798,9 +2813,13 @@ function lineHTML(l,where){
   var sub=where==='m'?(l.from==='photo'?'с фото'+(src?' · '+src:''):l.from==='recipe'?'из рецепта'+(src?' · '+src:''):l.raw?'«'+l.raw+'»'+(src?' · '+src:''):src):((l.t?l.t+' · ':'')+(l.tap?'счётчик':src));
   var kc=f?Math.round(f.k*l.g/100)+' ккал':'';
   var h='<div class="card mlItem'+(warn?' mlWarn':'')+'" data-id="'+escH(l.id)+'" data-w="'+where+'">'+
-    '<button class="mlHead" data-act="open" aria-expanded="'+open+'"><span class="st" aria-hidden="true">'+(warn?WARNI:CHECKI)+'</span>'+
+    /* слева — звёздочка «в избранное» (птичка пользы не несла); у строки, где продукт не найден, — значок вопроса */
+    (warn?'<button class="mlHead" data-act="open" aria-expanded="'+open+'"><span class="st" aria-hidden="true">'+WARNI+'</span>':
+      (function(){ var on=!!(f&&(DB.favs||[]).indexOf(f.id)>=0);
+        return '<div class="mlRow"><button class="mlFav'+(on?' on':'')+'" data-act="fav" aria-pressed="'+on+'" aria-label="'+(on?'Убрать из избранного':'В избранное')+': '+escH(name)+'">'+STARI+'</button>'+
+          '<button class="mlHead" data-act="open" aria-expanded="'+open+'">' })())+
     '<span class="nm"><b>'+escH(name)+'</b><small>'+escH(sub)+'</small></span>'+
-    '<span class="w">'+escH(amtShort(l))+(kc?'<small>'+kc+'</small>':'')+'</span></button>';
+    '<span class="w">'+escH(amtShort(l))+(kc?'<small>'+kc+'</small>':'')+'</span></button>'+(warn?'':'</div>');
   if(st==='pick'){
     h+='<div class="mlAsk"><p>Какой именно?</p><div class="chips">'+l.alts.map(function(id){
       return '<button class="chip" data-act="alt" data-fid="'+escH(id)+'">'+escH(FOODS[id].n)+'</button>';
@@ -2836,10 +2855,11 @@ function varFid(code){
 /* меры: граммы · меры продукта · ложки · свои меры человека · «+ Своя мера» — лентой */
 var UFORM=null;   // открытая форма своей меры: {w,id}
 function unitList(f){
-  var L=['г'], por=(f&&f.por)||{};
-  Object.keys(por).forEach(function(u){ if(!(f.own||{})[u]) L.push(u) });
+  /* свои меры — первыми: раз человек завёл меру, он ею и пользуется */
+  var por=(f&&f.por)||{}, L=Object.keys((f&&f.own)||{});
+  L.push('г');
+  Object.keys(por).forEach(function(u){ if(L.indexOf(u)<0) L.push(u) });
   ['ч. л.','ст. л.'].forEach(function(u){ if(L.indexOf(u)<0) L.push(u) });
-  Object.keys((f&&f.own)||{}).forEach(function(u){ if(L.indexOf(u)<0) L.push(u) });
   return L;
 }
 function unitG(f,u){ return (f&&f.por&&f.por[u])||DEF[u]||1 }
@@ -2920,6 +2940,14 @@ function onAct(ev){
   var b=ev.target.closest('[data-act]'); if(!b||b.tagName==='INPUT'||b.tagName==='LABEL') return;
   var card=b.closest('.mlItem'); if(!card) return;
   var w=card.dataset.w, id=card.dataset.id, l=lineOf(w,id), act=b.dataset.act; if(!l) return;
+  if(act==='fav'){
+    var ff=FOODS[l.fid]; if(!ff) return;
+    if(String(ff.id).indexOf('bls:')===0&&typeof blsUse==='function') blsUse(ff.id);
+    DB.favs=DB.favs||[]; var fi=DB.favs.indexOf(ff.id);
+    if(fi>=0) DB.favs.splice(fi,1); else DB.favs.unshift(ff.id);
+    save(); rer(w); toast(fi>=0?'Убрано из избранного':'В избранном: '+ff.n,function(){ var j=DB.favs.indexOf(ff.id); if(fi>=0){ if(j<0) DB.favs.splice(fi,0,ff.id) } else if(j>=0) DB.favs.splice(j,1); save(); rer(w) });
+    return;
+  }
   if(act==='open'){
     if((l.st||'ok')!=='ok') return;
     if(w==='m') M.open=M.open===id?null:id; else SOPEN=SOPEN===id?null:id;
@@ -3067,7 +3095,7 @@ function applyFind(fid){
     if(l){ setFood(l,fid); if(w==='m') M.open=l.id; else SOPEN=l.id }
   } else if(w==='s'){
     /* строка поиска в разделе: сразу в дневник, в этот раздел; время — сейчас, если день сегодняшний */
-    var pk=Object.keys(f.por||{}), pu=f.por&&f.por['шт']?'шт':(pk[0]||'г'), pq=pu==='г'?100:1, S=sec(SECK), e=day(curDate);
+    var pk=Object.keys(f.por||{}), pu=defUnit(f), pq=pu==='г'?100:1, S=sec(SECK), e=day(curDate);
     var it={id:'i'+Date.now().toString(36)+(++SEQ),sec:SECK,fid:fid,q:pq,u:pu,g:gramsFor(fid,pq,pu),t:curDate===todayISO()?nowHM():null,said:''};
     e.items.push(it); SOPEN=it.id; FIND={where:'s',mode:'add',q:''};
     save(); renderSec(); renderDay();
@@ -3076,7 +3104,7 @@ function applyFind(fid){
     toast('Добавлено в «'+(S?S.t:'')+'»: '+f.n,function(){ e.items=e.items.filter(function(x){ return x.id!==it.id }); save(); renderSec(); renderDay() });
     return;
   } else {
-    var keys=Object.keys(f.por||{}), u=f.por&&f.por['шт']?'шт':(keys[0]||'г'), q=u==='г'?100:1;
+    var keys=Object.keys(f.por||{}), u=defUnit(f), q=u==='г'?100:1;
     var nl={id:'l'+(++SEQ),raw:'',q:q,u:u,g:gramsFor(fid,q,u),fid:fid,alts:[],st:'ok',name:''};
     M.lines.push(nl); M.open=nl.id;
   }
@@ -3288,6 +3316,45 @@ function renderAll(){
   if(document.querySelector('[data-screen="match"]').classList.contains('on')) renderMatch();
   if(chatOpen()) renderChat();
 }
+/* резервная копия дневника файлом — как «Выгрузить JSON» в HappyDay */
+var BK_PREV='hdm_db_prev_v1', BK_UNDO='hdm_bk_undo';
+function bkDays(db){ var n=0; Object.keys((db&&db.days)||{}).forEach(function(d){ if(((db.days[d]||{}).items||[]).length) n++ }); return n }
+function bkDate(t){ var d=new Date(t); return isNaN(d)?'':d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) }
+function bkPaint(){ var el=document.getElementById('bkWhen'); if(el) el.textContent=DB.bkAt?'Последняя выгрузка — '+bkDate(DB.bkAt)+'.':'Выгрузок ещё не было.' }
+function bkExport(){
+  DB.bkAt=Date.now();
+  var data={app:'happy-meal',v:1,at:new Date(DB.bkAt).toISOString(),days:bkDays(DB),db:DB};
+  jrShareBlob('happy-meal-'+todayISO()+'.json',new Blob([JSON.stringify(data)],{type:'application/json'}),'application/json','Копия дневника передана');
+  save(); bkPaint();
+}
+function bkRead(file){
+  var r=new FileReader();
+  r.onload=function(){
+    var o=null; try{ o=JSON.parse(r.result) }catch(e){}
+    var db=o&&o.db&&o.db.days?o.db:(o&&o.days&&o.sections?o:null);
+    if(!db||(o.app&&o.app!=='happy-meal')){ jrToastLong(o&&o.app?'Это копия другого приложения, не Happy Meal':'Это не копия дневника Happy Meal'); return }
+    var n=bkDays(db), when=o.at?bkDate(o.at):'';
+    confirmBox('Заменить дневник копией'+(when?' от '+when:'')+'? В ней дней с записями: '+n+'. Нынешний дневник сохранится — его можно вернуть.','Заменить').then(async function(ok){
+      if(!ok) return;
+      clearTimeout(saveT);
+      try{ await rawSet(BK_PREV,JSON.stringify(DB)); await rawSet(K.db,JSON.stringify(db)); sessionStorage.setItem(BK_UNDO,'1') }catch(e){ jrToastLong('Не получилось загрузить: '+e.message); return }
+      location.reload();
+    });
+  };
+  r.onerror=function(){ jrToastLong('Файл не прочитался') };
+  r.readAsText(file);
+}
+document.getElementById('bkOut').addEventListener('click',bkExport);
+document.getElementById('bkIn').addEventListener('click',function(){ var f=document.getElementById('bkFile'); f.value=''; f.click() });
+document.getElementById('bkFile').addEventListener('change',function(e){ var f=e.target.files&&e.target.files[0]; if(f) bkRead(f) });
+function bkAfterLoad(){
+  var u=null; try{ u=sessionStorage.getItem(BK_UNDO); sessionStorage.removeItem(BK_UNDO) }catch(e){}
+  if(!u) return;
+  toast('Дневник загружен из копии',async function(){
+    var prev=await rawGet(BK_PREV); if(!prev) return;
+    clearTimeout(saveT); await rawSet(K.db,prev); location.reload();
+  });
+}
 (async function init(){
   try{
     var raw=await rawGet(K.db);
@@ -3306,6 +3373,7 @@ function renderAll(){
         if(Array.isArray(o.jrFav)) DB.jrFav=o.jrFav;
         if(o.bls&&typeof o.bls==='object') DB.bls=o.bls;
         if(o.units&&typeof o.units==='object') DB.units=o.units;
+        if(o.bkAt) DB.bkAt=o.bkAt;
       }
     }
   }catch(e){}
@@ -3315,6 +3383,7 @@ function renderAll(){
   linkWrite();          // сводка для HappyDay — и по записям, сделанным до этой версии
   if(clOn()) clPush();  // и в облако — для отдельной иконки HappyDay
   syncInput(true);
+  bkAfterLoad();
   setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
 })();
 
