@@ -1916,9 +1916,15 @@ var BASE=[
   ['cof','Кофе чёрный','кофе черный эспрессо американо',1,0.1,0,0,{'чашка':200},'BLS','N410100'],
   ['tea','Чай зелёный','чай зеленый',0,0.1,0,0,{'чашка':250},'BLS','N610100'],
   ['cfm','Кофе с молоком','кофе молоком латте',38,2,2,3,{'чашка':250},'Мои'],
-  ['fig','Инжир свой ×1,2','инжир',89,1,0.4,23,{'шт':50},'Мои']
+  ['fig','Инжир свой ×1,2','инжир',89,1,0.4,23,{'шт':50},'Мои'],
+  /* зелени нет в BLS 4.0 — по USDA FoodData Central (Dill weed, fresh · Spearmint, fresh · Coriander leaves, raw) */
+  ['dil','Укроп свежий','укроп укропа',43,3.5,1.1,7,{'пучок':30,'веточка':2,'ст. л.':3},'USDA'],
+  ['mnt','Мята свежая','мята мяты',44,3.3,0.7,8.4,{'пучок':30,'веточка':1,'ст. л.':3},'USDA'],
+  ['cil','Кинза свежая','кинза кинзы кориандр',23,2.1,0.5,3.7,{'пучок':30,'веточка':2,'ст. л.':3},'USDA']
 ];
 var FOODS={}, LIST=[], WORDS=[];
+/* продукты BLS, найденные из фразы, но ещё не записанные: видны в «Подобрано», в библиотеку не попадают */
+var BLS_TMP={};
 function rebuildLib(){
   FOODS={}; LIST=[]; WORDS=[];
   BASE.forEach(function(r){
@@ -1935,6 +1941,7 @@ function rebuildLib(){
   LIST.forEach(function(f){ (f.src==='BLS'&&f.id.indexOf('bls:')===0?f.w.slice(0,1):f.w).forEach(function(w){
     if(w.length>2&&WORDS.indexOf(w)<0){ if(f.src==='Мои') WORDS.unshift(w); else WORDS.push(w) }
   }) });
+  Object.keys(BLS_TMP).forEach(function(id){ if(!FOODS[id]) FOODS[id]=BLS_TMP[id]; else delete BLS_TMP[id] });
 }
 function newFood(n,k,p,f,c){
   var same=(DB.foods||[]).filter(function(x){ return x.n.toLowerCase()===n.toLowerCase() })[0];
@@ -1949,7 +1956,7 @@ function newFood(n,k,p,f,c){
    На правилах, без модели: строки по запятым, точкам, «и», «потом»; в строке —
    количество цифрой или словом, единица, остальное — название. «Нет, …» правит
    прошлую строку. Сравнение по началу слова: «творога» находит «творог». */
-var DEF={'г':1,'кг':1000,'мл':1,'л':1000,'шт':100,'ст. л.':15,'ч. л.':5,'стакан':250,'чашка':250,'ломтик':30,'щепотка':0.5,'мерка':30};
+var DEF={'г':1,'кг':1000,'мл':1,'л':1000,'шт':100,'ст. л.':15,'ч. л.':5,'стакан':250,'чашка':250,'ломтик':30,'щепотка':0.5,'мерка':30,'зубчик':5,'пучок':30,'веточка':2,'долька':10,'тарелка':300};
 var NUM={'один':1,'одна':1,'одну':1,'одно':1,'два':2,'две':2,'три':3,'четыре':4,'пять':5,'шесть':6,'семь':7,'восемь':8,
   'девять':9,'десять':10,'пятнадцать':15,'двадцать':20,'тридцать':30,'сорок':40,'пятьдесят':50,'шестьдесят':60,
   'семьдесят':70,'восемьдесят':80,'девяносто':90,'сто':100,'двести':200,'триста':300,'четыреста':400,'пятьсот':500,
@@ -1979,6 +1986,11 @@ function unitOf(t){
   if(/^(ломт|кусо|кусок)/.test(t)) return 'ломтик';
   if(/^щепотк/.test(t)) return 'щепотка';
   if(/^мерк/.test(t)) return 'мерка';
+  if(/^зубч/.test(t)) return 'зубчик';
+  if(/^пуч(о|к)/.test(t)) return 'пучок';
+  if(/^вет(о|оч|ки|к)/.test(t)) return 'веточка';
+  if(/^долек|^дольк/.test(t)) return 'долька';
+  if(/^тарел/.test(t)) return 'тарелка';
   return null;
 }
 function numOf(t){
@@ -2051,6 +2063,11 @@ function parseText(text){
     var sc=match(food);
     var line={id:'l'+(++SEQ),raw:ch.trim().replace(/#/g,','),q:q,u:u,fid:null,alts:[],st:'none',
               name:food.join(' '),explicit:(q!==null||u!==null)};
+    if(!sc.length&&typeof blsSearch==='function'&&BLS_ST==='ok'){
+      var bc=blsSearch(food.join(' '),3);
+      if(bc.length){ bc.forEach(function(c){ var id='bls:'+c; if(!FOODS[id]){ var o=blsFoodObj(c); o.tmp=1; FOODS[id]=o; BLS_TMP[id]=o } });
+        line.alts=bc.map(function(c){ return 'bls:'+c }); line.fid=line.alts[0]; line.st='ok'; line.bls=1 }
+    }
     if(sc.length){
       line.alts=sc.slice(0,3).map(function(x){ return x.id });
       var amb=sc.length>1&&(sc[0].s-sc[1].s)<=0.31;
@@ -2095,7 +2112,8 @@ function nutOf(x){ var f=x.fid&&FOODS[x.fid], m=(x.g||0)/100; return f?{k:f.k*m,
 function sumOf(list){ return list.reduce(function(a,x){ var n=nutOf(x); a.k+=n.k; a.p+=n.p; a.f+=n.f; a.c+=n.c; return a },{k:0,p:0,f:0,c:0}) }
 /* подпись единицы по числу: 1 стакан, 2 стакана, 5 стаканов, 0,5 стакана */
 var UFORMS={'стакан':['стакан','стакана','стаканов'],'чашка':['чашка','чашки','чашек'],'ломтик':['ломтик','ломтика','ломтиков'],
-  'щепотка':['щепотка','щепотки','щепоток'],'мерка':['мерка','мерки','мерок']};
+  'щепотка':['щепотка','щепотки','щепоток'],'мерка':['мерка','мерки','мерок'],'зубчик':['зубчик','зубчика','зубчиков'],
+  'пучок':['пучок','пучка','пучков'],'веточка':['веточка','веточки','веточек'],'долька':['долька','дольки','долек'],'тарелка':['тарелка','тарелки','тарелок']};
 function uWord(q,u){ var f=UFORMS[u]; if(!f) return u; return Math.round(q)!==q?f[1]:ruPlural(q,f) }
 function amtShort(l){ return l.u==='г'?fmt(l.g)+' г':fmt(l.q)+' '+uWord(l.q,l.u) }
 function portTxt(c){ return fmt(c.q)+' '+uWord(c.q,c.u) }
@@ -2706,7 +2724,7 @@ function renderMatch(){
 function lineHTML(l,where){
   var st=l.st||'ok', f=l.fid&&FOODS[l.fid], open=(where==='m'?M.open:SOPEN)===l.id, warn=st==='pick'||st==='none';
   var name=st==='pick'?cap(l.name)+' — какой?':f?f.n:cap(l.name||'Продукт');
-  var src=f?(f.src==='Мои'?'мой продукт':f.b?'из базы BLS':'примерно'):(st==='none'?'нет в библиотеке':'');
+  var src=f?(f.src==='Мои'?'мой продукт':f.b?'из базы BLS':f.src==='USDA'?'по USDA':'примерно'):(st==='none'?'нет в библиотеке':'');
   var sub=where==='m'?(l.from==='photo'?'с фото'+(src?' · '+src:''):l.from==='recipe'?'из рецепта'+(src?' · '+src:''):l.raw?'«'+l.raw+'»'+(src?' · '+src:''):src):((l.t?l.t+' · ':'')+(l.tap?'счётчик':src));
   var kc=f?Math.round(f.k*l.g/100)+' ккал':'';
   var h='<div class="card mlItem'+(warn?' mlWarn':'')+'" data-id="'+escH(l.id)+'" data-w="'+where+'">'+
@@ -2972,6 +2990,7 @@ document.getElementById('mlSave').addEventListener('click',function(){
   if(M.mode==='recipe'){ saveRecipe(); return }
   var ls=M.lines;
   if(!ls.length||ls.some(function(l){ return l.st==='pick'||l.st==='none' })) return;
+  ls.forEach(function(l){ if(String(l.fid).indexOf('bls:')===0&&FOODS[l.fid]&&FOODS[l.fid].tmp) blsUse(l.fid) });
   var e=day(curDate), t=M.t||null, S=sec(M.sec);
   var add=ls.map(function(l){ var x={id:'i'+Date.now().toString(36)+(++SEQ),sec:M.sec,fid:l.fid,q:l.q,u:l.u,g:l.g,t:t,said:l.raw||''}; if(t&&M.tm) x.tm=1; return x });
   e.items=e.items.concat(add); save();
@@ -4234,7 +4253,7 @@ function blsFoodObj(code){
 }
 /* выбрали продукт из базы — запоминаем его (название и Б/Ж/У), чтобы дневник видел его всегда */
 function blsUse(id){
-  if(FOODS[id]) return FOODS[id];
+  if(FOODS[id]&&!FOODS[id].tmp) return FOODS[id];
   var code=String(id).replace(/^bls:/,'');
   if(!BLS_BY[code]) return null;
   var m=blsMac(code);
@@ -4260,6 +4279,7 @@ function blsQueryToks(q){
     return alts;
   });
 }
+var BLS_HEAD=/^(мясо|филе|ножки|грудка|бедро|окорок|фарш|печень)$/;
 function blsScoreTok(i,alts){
   var W=BLS_W[i], best=0, first=false, at=[];
   for(var a=0;a<alts.length;a++){
@@ -4268,11 +4288,14 @@ function blsScoreTok(i,alts){
       var w=W[j], v=0;
       if(w===t) v=3;
       else if(w.indexOf(t)===0) v=t.length>=3?2.2:1.2;
-      else if(t.length>=4&&w.length>=4){ var n=Math.min(t.length,w.length), L=0; while(L<n&&t[L]===w[L]) L++; if(L>=4&&L>=Math.min(5,n-1)) v=1.6 }
+      else if(t.length>=4&&w.length>=4){ var n=Math.min(t.length,w.length), L=0; while(L<n&&t[L]===w[L]) L++;
+        /* падеж: общий корень от 3 букв, разница — только в окончании (утку → утка, имбирём → имбирь) — почти как точное */
+        if(L>=3&&L>=Math.max(t.length,w.length)-2) v=1.7;
+        else if(L>=4&&L>=Math.min(5,n-1)) v=1.6 }
       if(!v&&t.length>=5&&w.indexOf(t)>0) v=1;
       if(a>0) v*=0.9;
       if(v&&at.indexOf(j)<0) at.push(j);
-      if(v>best){ best=v; first=j===0 }
+      if(v>best){ best=v; first=j===0||(j===1&&BLS_HEAD.test(W[0])) }
     }
   }
   if(!best&&alts[0].length>=3&&BLS_X[i].indexOf(alts[0])>=0) best=1;
@@ -4280,19 +4303,22 @@ function blsScoreTok(i,alts){
 }
 /* слова, которые не мешают: способ приготовления, жирность, предлоги. Лишние «настоящие» слова — минус:
    на «гречка» выше «Гречка варёная», чем «Гречка продел (дроблёная)» */
-var BLS_GEN={}, BLS_GENP=['сыр','варен','заморож','обжар','жарен','тушен','припущ','запеч','консерв','маринов','сушен','копчен','солен','пошир','приготов','бланшир','отвар'];
-('с со в во на из и без для до не менее более от жира сухом веществе гриле пару жидкости духовке фритюре панировке маринаде блюдо гарнир').split(' ').forEach(function(w){ BLS_GEN[w]=1 });
+var BLS_GEN={}, BLS_GENP=['сыр','варен','заморож','обжар','жарен','тушен','припущ','запеч','консерв','маринов','сушен','копчен','солен','пошир','приготов','бланшир','отвар','свеж','зелен'];
+('корень с со в во на из и без для до не менее более от жира сухом веществе гриле пару жидкости духовке фритюре панировке маринаде блюдо гарнир').split(' ').forEach(function(w){ BLS_GEN[w]=1 });
 function blsGeneric(w){ return /^\d/.test(w)||w==='%'||BLS_GEN[w]||BLS_GENP.some(function(p){ return w.indexOf(p)===0 }) }
+/* сухое и концентраты: порошок, кубики, сушёное, растворимое — опускаем, если в запросе этого нет */
+var BLS_DRY=/^(порош|кубик|сушен|сух|раствор|концентр|инстант)/;
 function blsSearch(q,max){
   if(BLS_ST!=='ok') return [];
   var toks=blsQueryToks(q); if(!toks.length) return [];
-  var out=[];
+  var qDry=blsWordsOf(q).some(function(w){ return BLS_DRY.test(w) }), out=[];
   for(var i=0;i<BLS_W.length;i++){
     var s=0, first=false, ok=true, used={};
     for(var k=0;k<toks.length;k++){ var r=blsScoreTok(i,toks[k]); if(!r.s){ ok=false; break } s+=r.s; r.at.forEach(function(j){ used[j]=1 }); if(k===0&&r.first) first=true }
     if(!ok) continue;
     var W=BLS_W[i], pen=0;
     for(var j=0;j<W.length;j++) if(!used[j]) pen+=blsGeneric(W[j])?0.03:0.3;
+    if(!qDry) for(var j2=0;j2<W.length;j2++) if(BLS_DRY.test(W[j2])){ pen+=0.8; break }
     s+=(first?1.5:0)-pen;
     out.push({i:i,s:s});
   }
