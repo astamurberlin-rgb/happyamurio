@@ -969,16 +969,31 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 .mlAsk .chips{gap:8px}
 .mlAsk .chip{padding:9px 15px;font-size:14px}
 .mlEd{padding:2px 16px 16px;border-top:1px solid rgba(255,255,255,.2)}
-.mlW{display:flex;align-items:center;gap:10px;margin-top:14px}
+.mlW{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:14px}
 .mlW .tpStp{height:46px}
 .mlW .tpStp .v{min-width:124px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 6px}
 .mlW .v input{width:48px;padding:0;margin:0;border:0;border-radius:0;background:none;color:#fff;font-family:inherit;font-size:17px;font-weight:800;text-align:right;-webkit-appearance:none;appearance:none;-moz-appearance:textfield}
 .mlW .v input::-webkit-inner-spin-button,.mlW .v input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .mlW .v input:focus{outline:none;text-decoration:underline}
-.mlW .v i{font-style:normal;font-size:15px;font-weight:700}
-.mlEq{font-size:14px;font-weight:700;color:var(--muted)}
-.mlUnits{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.mlUnits .chip{padding:8px 14px;font-size:13.5px}
+.mlW .v i{font-style:normal;font-size:15px;font-weight:700;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.mlEq{font-size:14px;font-weight:700;color:var(--muted);white-space:nowrap}
+.mlUnits{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:12px -16px 0;padding:0 16px 2px;scroll-padding:0 16px}
+.mlUnits::-webkit-scrollbar{display:none}
+.mlUnits .chip{flex:none;padding:8px 14px;font-size:13.5px;white-space:nowrap}
+.mlUnits .chip small{font-size:12px;font-weight:600;opacity:.72;margin-left:3px}
+.mlUnits .chip.own{border-style:solid;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.mlUnits .chip.own::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:2px;opacity:.8}
+.mlUForm{display:grid;grid-template-columns:1fr 108px;gap:8px;margin-top:12px}
+.mlUForm input[type=text],.mlUForm input[type=number]{width:100%;min-height:46px;box-sizing:border-box;font:inherit;font-size:16px;color:#fff;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4);border-radius:14px;padding:0 13px}
+.mlUForm input::placeholder{color:rgba(255,255,255,.6)}
+.mlUForm input:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.22)}
+.mlUForm .g{position:relative;display:block}
+.mlUForm .g input{padding-right:30px}
+.mlUForm .g i{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-style:normal;font-weight:700;opacity:.75;pointer-events:none}
+.mlUBtns{grid-column:1/-1;display:flex;gap:8px}
+.mlUNote{grid-column:1/-1;margin:0;font-size:12.5px;opacity:.75}
+.mlUDel{display:block;margin:10px 0 0;padding:4px 0;background:none;border:0;color:#fff;font:inherit;font-size:13.5px;font-weight:600;opacity:.8;text-decoration:underline;text-underline-offset:3px}
 .mlActs{display:flex;gap:9px;margin-top:14px}
 .mlActs .btn{flex:1;min-height:46px}
 
@@ -1865,6 +1880,7 @@ var DB={
   taps:[{k:'egg',t:'Яйцо',fid:'egg',q:1,u:'шт'},{k:'cfm',t:'Кофе с молоком',fid:'cfm',q:1,u:'чашка'},{k:'wal',t:'Грецкие орехи',fid:'wal',q:5,u:'шт'}],
   foods:[],            // мои продукты: {id,n,w,k,p,f,c,por,src:'Мои'}
   bls:{},              // продукты из базы BLS, которые выбирали: код → {n,k,p,f,c}
+  units:{},            // свои меры человека: id продукта → {«моя тарелка»: 450}
   days:{},             // days[дата].items: [{id,sec,fid,q,u,g,t,said,tap}]
   favs:[],             // избранное: ключи продуктов, свежие сверху
   pick:'all',          // что показывает список «Добавить своё»: all | recent | fav
@@ -1945,7 +1961,7 @@ var BLS_TMP={};
 function rebuildLib(){
   FOODS={}; LIST=[]; WORDS=[];
   BASE.forEach(function(r){
-    var o={id:r[0],n:r[1],w:r[2].split(' '),k:r[3],p:r[4],f:r[5],c:r[6],por:r[7],src:r[8],b:r[9]||null};
+    var o={id:r[0],n:r[1],w:r[2].split(' '),k:r[3],p:r[4],f:r[5],c:r[6],por:Object.assign({},r[7]),src:r[8],b:r[9]||null};
     FOODS[o.id]=o; LIST.push(o);
   });
   (DB.foods||[]).forEach(function(o){ FOODS[o.id]=o; LIST.push(o) });
@@ -1959,6 +1975,7 @@ function rebuildLib(){
     if(w.length>2&&WORDS.indexOf(w)<0){ if(f.src==='Мои') WORDS.unshift(w); else WORDS.push(w) }
   }) });
   Object.keys(BLS_TMP).forEach(function(id){ if(!FOODS[id]) FOODS[id]=BLS_TMP[id]; else delete BLS_TMP[id] });
+  Object.keys(FOODS).forEach(function(id){ porFix(FOODS[id]) });
 }
 function newFood(n,k,p,f,c){
   var same=(DB.foods||[]).filter(function(x){ return x.n.toLowerCase()===n.toLowerCase() })[0];
@@ -1973,7 +1990,7 @@ function newFood(n,k,p,f,c){
    На правилах, без модели: строки по запятым, точкам, «и», «потом»; в строке —
    количество цифрой или словом, единица, остальное — название. «Нет, …» правит
    прошлую строку. Сравнение по началу слова: «творога» находит «творог». */
-var DEF={'г':1,'кг':1000,'мл':1,'л':1000,'шт':100,'ст. л.':15,'ч. л.':5,'стакан':250,'чашка':250,'ломтик':30,'щепотка':0.5,'мерка':30,'зубчик':5,'пучок':30,'веточка':2,'долька':10,'тарелка':300};
+var DEF={'г':1,'кг':1000,'мл':1,'л':1000,'шт':100,'ст. л.':15,'ч. л.':5,'стакан':250,'чашка':250,'ломтик':30,'щепотка':0.5,'мерка':30,'зубчик':5,'пучок':30,'веточка':2,'долька':10,'тарелка':300,'головка':45,'горсть':30};
 var NUM={'один':1,'одна':1,'одну':1,'одно':1,'два':2,'две':2,'три':3,'четыре':4,'пять':5,'шесть':6,'семь':7,'восемь':8,
   'девять':9,'десять':10,'пятнадцать':15,'двадцать':20,'тридцать':30,'сорок':40,'пятьдесят':50,'шестьдесят':60,
   'семьдесят':70,'восемьдесят':80,'девяносто':90,'сто':100,'двести':200,'триста':300,'четыреста':400,'пятьсот':500,
@@ -2008,11 +2025,46 @@ function unitOf(t){
   if(/^вет(о|оч|ки|к)/.test(t)) return 'веточка';
   if(/^долек|^дольк/.test(t)) return 'долька';
   if(/^тарел/.test(t)) return 'тарелка';
+  if(/^головк/.test(t)) return 'головка';
+  if(/^горст/.test(t)) return 'горсть';
   return null;
 }
 function numOf(t){
   if(/^\d+(#\d+)?$/.test(t)) return parseFloat(t.replace('#','.'));
   return Object.prototype.hasOwnProperty.call(NUM,t)?NUM[t]:null;
+}
+/* меры порций: у продукта свои (por), к ним — типичные по названию, затем свои меры человека (DB.units) */
+var PORG=[
+  [/^соль/,{'щепотка':0.5,'ч. л.':6}],
+  [/^чеснок|чеснока/,{'зубчик':5,'головка':45}],
+  [/^соль|^перец (черн|черн|бел|душист)|молот|^специ|^приправ|^корица|^паприка|^куркума|^карри|^мускат|^тмин|^кориандр|^зира|сушен/,{'щепотка':0.5}],
+  [/^(хлеб|батон|багет|булк|булочк|тост|лаваш)/,{'ломтик':30}],
+  [/^сыр(?! творож)|^моцарелл|^пармезан|^гауд|^эмментал|^сулугун|^брынз|^фет/,{'ломтик':20}],
+  [/^(колбас|ветчин|салями|бекон|сервелат)/,{'ломтик':15}],
+  [/^(чипс|орех|миндал|фисташ|фундук|кешью|арахис|семечк|семена|изюм|курага|сухофрукт)/,{'горсть':30}],
+  [/^(суп|бульон|борщ|щи |солянк|окрошк|уха)/,{'тарелка':300}],
+  [/^(молоко|кефир|ряженк|айран|сок |сок,|компот|морс|квас|вода|лимонад|напиток|какао|смузи|пиво|вино)/,{'стакан':250}],
+  [/^(чай|кофе)/,{'чашка':250}],
+  [/^(рис|гречк|гречнев|овсян|хлопья|крупа|мука|сахар)/,{'стакан':200}],
+  [/^мед|^мед /,{'ч. л.':8,'ст. л.':21}],
+  [/^(масло (растит|олив|подсолн|рапс|льнян|кокос)|масло,? растит)/,{'ч. л.':4.5,'ст. л.':13}]
+];
+var PORX=[[/^(помидор|томат)(?!.*(паст|соус|сок|пюре|кетчуп|суш))/,'шт',120],[/^огур(ец|цы)(?!.*салат)/,'шт',120],[/^яблок/,'шт',180],
+  [/^банан/,'шт',120],[/^апельсин(?!.*сок)/,'шт',200],[/^мандарин/,'шт',70],[/^лимон(?!ад)/,'шт',100],[/^груш/,'шт',170],[/^киви/,'шт',75],
+  [/^персик/,'шт',150],[/^авокадо/,'шт',170],[/^картофел(?!.*(чипс|пюре|фри))/,'шт',150],[/^лук (репч|ре?пчат)|^лук,? сыр|^лук репчатый/,'шт',80],
+  [/^морков(?!.*сок)/,'шт',80],[/^перец (сладк|болгар)/,'шт',160],[/^яйц|^яйцо/,'шт',55],[/^кабач/,'шт',300],[/^баклажан/,'шт',300]];
+function porFix(f){
+  if(!f) return;
+  f.por=f.por||{};
+  if(!f.porG){ var n=norm(f.n||'').replace(/ё/g,'е');
+    PORX.forEach(function(r){ if(r[0].test(n)&&!f.por[r[1]]) f.por[r[1]]=r[2] });
+    PORG.forEach(function(r){ if(r[0].test(n)) Object.keys(r[1]).forEach(function(u){ if(!f.por[u]) f.por[u]=r[1][u] }) });
+    f.porG=1 }
+  var own=(DB.units||{})[f.id]||{}; f.own={};
+  Object.keys(own).forEach(function(u){ f.por[u]=own[u]; f.own[u]=1 });
+  /* убранные свои меры уходят и из продукта */
+  Object.keys(f.porOwn||{}).forEach(function(u){ if(!own[u]) delete f.por[u] });
+  f.porOwn=Object.assign({},f.own);
 }
 function gramsFor(fid,q,u){
   var f=fid?FOODS[fid]:null, per=(f&&f.por&&f.por[u])||DEF[u]||1;
@@ -2130,7 +2182,8 @@ function sumOf(list){ return list.reduce(function(a,x){ var n=nutOf(x); a.k+=n.k
 /* подпись единицы по числу: 1 стакан, 2 стакана, 5 стаканов, 0,5 стакана */
 var UFORMS={'стакан':['стакан','стакана','стаканов'],'чашка':['чашка','чашки','чашек'],'ломтик':['ломтик','ломтика','ломтиков'],
   'щепотка':['щепотка','щепотки','щепоток'],'мерка':['мерка','мерки','мерок'],'зубчик':['зубчик','зубчика','зубчиков'],
-  'пучок':['пучок','пучка','пучков'],'веточка':['веточка','веточки','веточек'],'долька':['долька','дольки','долек'],'тарелка':['тарелка','тарелки','тарелок']};
+  'пучок':['пучок','пучка','пучков'],'веточка':['веточка','веточки','веточек'],'долька':['долька','дольки','долек'],'тарелка':['тарелка','тарелки','тарелок'],
+  'головка':['головка','головки','головок'],'горсть':['горсть','горсти','горстей']};
 function uWord(q,u){ var f=UFORMS[u]; if(!f) return u; return Math.round(q)!==q?f[1]:ruPlural(q,f) }
 function amtShort(l){ return l.u==='г'?fmt(l.g)+' г':fmt(l.q)+' '+uWord(l.q,l.u) }
 function portTxt(c){ return fmt(c.q)+' '+uWord(c.q,c.u) }
@@ -2777,18 +2830,57 @@ function varHTML(l){
 function varFid(code){
   var own=LIST.filter(function(f){ return f.b===code&&f.id.indexOf('bls:')!==0 })[0];
   if(own) return own.id;
-  var id='bls:'+code; if(!FOODS[id]&&typeof blsUse==='function') blsUse(id);
+  var id='bls:'+code; if(typeof blsUse==='function') blsUse(id);
   return FOODS[id]?id:null;
 }
+/* меры: граммы · меры продукта · ложки · свои меры человека · «+ Своя мера» — лентой */
+var UFORM=null;   // открытая форма своей меры: {w,id}
+function unitList(f){
+  var L=['г'], por=(f&&f.por)||{};
+  Object.keys(por).forEach(function(u){ if(!(f.own||{})[u]) L.push(u) });
+  ['ч. л.','ст. л.'].forEach(function(u){ if(L.indexOf(u)<0) L.push(u) });
+  Object.keys((f&&f.own)||{}).forEach(function(u){ if(L.indexOf(u)<0) L.push(u) });
+  return L;
+}
+function unitG(f,u){ return (f&&f.por&&f.por[u])||DEF[u]||1 }
 function edHTML(l){
-  var f=FOODS[l.fid], units=['г'].concat(f?Object.keys(f.por||{}):[]);
-  return '<div class="mlEd"><div class="mlW"><div class="tpStp"><button data-act="minus" aria-label="Меньше">−</button>'+
+  var f=FOODS[l.fid], units=unitList(f), own=(f&&f.own)||{};
+  var fo=UFORM&&UFORM.id===l.id;
+  var h='<div class="mlEd"><div class="mlW"><div class="tpStp"><button data-act="minus" aria-label="Меньше">−</button>'+
     '<label class="v"><input type="number" inputmode="decimal" step="any" data-act="qty" value="'+(Math.round(l.q*10)/10)+'" aria-label="Сколько, '+escH(l.u)+'"><i>'+escH(uWord(l.q,l.u))+'</i></label>'+
-    '<button data-act="plus" aria-label="Больше">+</button></div>'+(l.u!=='г'?'<span class="mlEq">= '+Math.round(l.g)+' г</span>':'')+'</div>'+
-    (units.length>1?'<div class="mlUnits">'+units.map(function(u){ var on=u===l.u;
-      return '<button class="chip'+(on?' on':'')+'" data-act="unit" data-u="'+escH(u)+'" aria-pressed="'+on+'">'+
-        (u==='г'?'граммы':escH('1 '+u+' = '+fmt(f.por[u])+' г'))+'</button>' }).join('')+'</div>':'')+
-    '<div class="mlActs"><button class="btn" data-act="replace">Заменить</button><button class="btn warn" data-act="del">Убрать</button></div></div>';
+    '<button data-act="plus" aria-label="Больше">+</button></div>'+(l.u!=='г'?'<span class="mlEq">= '+fmt(l.g)+' г</span>':'')+'</div>'+
+    '<div class="mlUnits" role="group" aria-label="Мера">'+units.map(function(u){ var on=u===l.u;
+      return '<button class="chip'+(on?' on':'')+(own[u]?' own':'')+'" data-act="unit" data-u="'+escH(u)+'" aria-pressed="'+on+'">'+
+        (u==='г'?'граммы':escH(u)+' <small>'+fmt(unitG(f,u))+' г</small>')+'</button>' }).join('')+
+      '<button class="chip add" data-act="uadd" aria-expanded="'+fo+'">+ Своя мера</button></div>';
+  if(fo) h+='<div class="mlUForm"><input type="text" data-act="uname" maxlength="24" placeholder="Название: моя тарелка, кружка в кафе…" aria-label="Название меры">'+
+    '<label class="g"><input type="number" inputmode="decimal" step="any" data-act="ugram" placeholder="450" aria-label="Сколько граммов"><i>г</i></label>'+
+    '<div class="mlUBtns"><button class="btn" data-act="ucancel">Отмена</button><button class="btn solid" data-act="usave">Сохранить в продукт</button></div>'+
+    '<p class="mlUNote">Мера запомнится у «'+escH(f?f.n:'')+'» только у тебя.</p></div>';
+  else if(own[l.u]) h+='<button class="mlUDel" data-act="udel">Убрать мою меру «'+escH(l.u)+'»</button>';
+  return h+'<div class="mlActs"><button class="btn" data-act="replace">Заменить</button><button class="btn warn" data-act="del">Убрать</button></div></div>';
+}
+function unitsReveal(){ document.querySelectorAll('.mlUnits').forEach(function(u){ var a=u.querySelector('.chip.on'); if(!a) return;
+  if(a.offsetLeft+a.offsetWidth>u.scrollLeft+u.clientWidth||a.offsetLeft<u.scrollLeft) u.scrollLeft=Math.max(0,a.offsetLeft-16) }) }
+function unitSave(card,l){
+  var f=FOODS[l.fid]; if(!f) return;
+  var n=String(card.querySelector('[data-act="uname"]').value||'').trim().replace(/\s+/g,' ').toLowerCase();
+  var g=parseFloat(String(card.querySelector('[data-act="ugram"]').value||'').replace(',','.'));
+  if(!n){ toast('Напиши название меры'); return false }
+  if(!(g>0)){ toast('Сколько граммов в «'+n+'»?'); return false }
+  if(n==='г'||n==='граммы'){ toast('Такое название уже занято'); return false }
+  DB.units=DB.units||{}; DB.units[f.id]=DB.units[f.id]||{}; DB.units[f.id][n]=Math.round(g*10)/10;
+  if(f.id.indexOf('bls:')===0&&typeof blsUse==='function') blsUse(f.id);   // продукт из базы — запоминаем и его
+  rebuildLib(); l.u=n; l.q=1; l.g=gramsFor(l.fid,1,n); UFORM=null; save();
+  toast('Мера «'+n+'» = '+fmt(g)+' г — у продукта «'+f.n+'»');
+  return true;
+}
+function unitDel(l){
+  var f=FOODS[l.fid]; if(!f||!DB.units||!DB.units[f.id]) return;
+  var u=l.u, g=DB.units[f.id][u];
+  delete DB.units[f.id][u]; if(!Object.keys(DB.units[f.id]).length) delete DB.units[f.id];
+  l.q=Math.round(l.g); l.u='г'; l.g=l.q; rebuildLib(); save();
+  toast('Мера «'+u+'» убрана',function(){ DB.units[f.id]=DB.units[f.id]||{}; DB.units[f.id][u]=g; rebuildLib(); save(); renderAll() });
 }
 
 /* строки: в шторке «Подобрано» — черновик, в разделе — записи дня */
@@ -2799,7 +2891,7 @@ function keep(w){ if(w!=='m') save() }
 function setFood(l,fid){
   var f=FOODS[fid];
   l.fid=fid; l.st='ok';
-  if(l.u!=='г'&&!(f.por&&f.por[l.u])){ l.q=l.g; l.u='г' }
+  if(l.u!=='г'&&!(f.por&&f.por[l.u])&&!DEF[l.u]){ l.q=l.g; l.u='г' }
   l.g=gramsFor(fid,l.q,l.u);
 }
 function stepLine(l,dir){
@@ -2825,21 +2917,29 @@ function onAct(ev){
   if(meal){ M.sec=meal.dataset.meal; M.man=true; renderMatch(); return }
   var fa=ev.target.closest('[data-fact]');
   if(fa){ onFind(fa); return }
-  var b=ev.target.closest('[data-act]'); if(!b||b.tagName==='INPUT') return;
+  var b=ev.target.closest('[data-act]'); if(!b||b.tagName==='INPUT'||b.tagName==='LABEL') return;
   var card=b.closest('.mlItem'); if(!card) return;
   var w=card.dataset.w, id=card.dataset.id, l=lineOf(w,id), act=b.dataset.act; if(!l) return;
   if(act==='open'){
     if((l.st||'ok')!=='ok') return;
     if(w==='m') M.open=M.open===id?null:id; else SOPEN=SOPEN===id?null:id;
-    FIND=null; rer(w); return;
+    FIND=null; UFORM=null; rer(w); unitsReveal(); return;
   }
-  if(act==='alt'){ var af=b.dataset.fid; if(!FOODS[af]&&typeof blsUse==='function') blsUse(af); if(!FOODS[af]) return; setFood(l,af); if(w==='m') M.open=id }
+  if(act==='alt'){ var af=b.dataset.fid; if(String(af).indexOf('bls:')===0&&typeof blsUse==='function') blsUse(af); if(!FOODS[af]) return; setFood(l,af); if(w==='m') M.open=id }
   else if(act==='var'){ var vf=varFid(b.dataset.code); if(!vf) return; var sl=b.closest('.mlVar').scrollLeft; setFood(l,vf);
     keep(w); rer(w);
     var nv=document.querySelector('.mlItem[data-w="'+w+'"][data-id="'+id+'"] .mlVar'); if(nv) nv.scrollLeft=sl;
     return }
   else if(act==='minus'||act==='plus') stepLine(l,act==='plus'?1:-1);
-  else if(act==='unit') setUnit(l,b.dataset.u);
+  else if(act==='unit'){ var ul=b.closest('.mlUnits').scrollLeft; setUnit(l,b.dataset.u); UFORM=null; keep(w); rer(w);
+    var nu=document.querySelector('.mlItem[data-w="'+w+'"][data-id="'+id+'"] .mlUnits'); if(nu) nu.scrollLeft=ul; return }
+  else if(act==='uadd'){ UFORM=UFORM&&UFORM.id===id?null:{w:w,id:id}; rer(w);
+    var nf=document.querySelector('.mlItem[data-w="'+w+'"][data-id="'+id+'"]');
+    if(nf){ var ux=nf.querySelector('.mlUnits'); if(ux) ux.scrollLeft=ux.scrollWidth; var ni=nf.querySelector('[data-act="uname"]'); if(ni) ni.focus() }
+    return }
+  else if(act==='ucancel'){ UFORM=null; rer(w); return }
+  else if(act==='usave'){ if(!unitSave(card,l)) return; keep(w); rer(w); unitsReveal(); return }
+  else if(act==='udel'){ unitDel(l); keep(w); rer(w); unitsReveal(); return }
   else if(act==='del'){ removeLine(w,id); return }
   else if(act==='replace'){ FIND={where:w,mode:'replace',id:id,q:(l.st||'ok')==='ok'?'':(l.name||'')}; rer(w); focusFind(); return }
   else if(act==='own'){ createOwn(l.name||'',function(food){ setFood(l,food.id); if(w==='m') M.open=l.id; keep(w); rer(w) }); return }
@@ -2950,7 +3050,7 @@ function onFind(b){
   if(act==='cancel'){ FIND=null; rer(w); return }
   if(act==='recent'||act==='favs'){ var m=act==='recent'?'recent':'fav'; DB.pick=DB.pick===m?'all':m; save(); paintFind(); return }
   if(act==='star'){
-    var id=b.dataset.fid, i; if(!FOODS[id]&&typeof blsUse==='function') blsUse(id); if(!FOODS[id]) return;
+    var id=b.dataset.fid, i; if(String(id).indexOf('bls:')===0&&typeof blsUse==='function') blsUse(id); if(!FOODS[id]) return;
     DB.favs=DB.favs||[]; i=DB.favs.indexOf(id);
     if(i>=0) DB.favs.splice(i,1); else DB.favs.unshift(id);
     save(); paintFind(); toast(i>=0?'Убрано из избранного':'В избранном: '+FOODS[id].n); return;
@@ -2960,7 +3060,7 @@ function onFind(b){
 }
 function applyFind(fid){
   if(!FIND) return;
-  if(!FOODS[fid]&&typeof blsUse==='function') blsUse(fid);
+  if(String(fid).indexOf('bls:')===0&&typeof blsUse==='function') blsUse(fid);
   var w=FIND.where, f=FOODS[fid]; if(!f) return;
   if(FIND.mode==='replace'){
     var l=lineOf(w,FIND.id);
@@ -3205,6 +3305,7 @@ function renderAll(){
         if(o.cover==='two') DB.cover='two';
         if(Array.isArray(o.jrFav)) DB.jrFav=o.jrFav;
         if(o.bls&&typeof o.bls==='object') DB.bls=o.bls;
+        if(o.units&&typeof o.units==='object') DB.units=o.units;
       }
     }
   }catch(e){}
@@ -4266,12 +4367,15 @@ function blsMac(code){
 /* продукт из базы как строка поиска — в библиотеку не кладём, пока его не выбрали */
 function blsFoodObj(code){
   var m=blsMac(code);
-  return {id:'bls:'+code,n:blsName(code),w:[],k:m.k,p:m.p,f:m.f,c:m.c,por:{},src:'BLS',b:code,fromBls:true};
+  var o={id:'bls:'+code,n:blsName(code),w:[],k:m.k,p:m.p,f:m.f,c:m.c,por:{},src:'BLS',b:code,fromBls:true};
+  if(typeof porFix==='function') porFix(o);
+  return o;
 }
 /* выбрали продукт из базы — запоминаем его (название и Б/Ж/У), чтобы дневник видел его всегда */
 function blsUse(id){
-  if(FOODS[id]&&!FOODS[id].tmp) return FOODS[id];
   var code=String(id).replace(/^bls:/,'');
+  /* уже в библиотеке — свой продукт или запомненный из базы; иначе запоминаем (даже если он виден в поиске) */
+  if(FOODS[id]&&!FOODS[id].tmp&&(String(id).indexOf('bls:')!==0||(DB.bls||{})[code])) return FOODS[id];
   if(!BLS_BY[code]) return null;
   var m=blsMac(code);
   DB.bls=DB.bls||{}; DB.bls[code]={n:blsName(code),k:m.k,p:m.p,f:m.f,c:m.c};
@@ -4285,6 +4389,12 @@ function blsRefreshCache(){
     var m=blsMac(code), x=DB.bls[code], n=blsName(code);
     if(x.n!==n||x.k!==m.k||x.p!==m.p||x.f!==m.f||x.c!==m.c){ DB.bls[code]={n:n,k:m.k,p:m.p,f:m.f,c:m.c}; ch=true }
   });
+  /* записи из базы, которые раньше не запомнились (поиск в разделе, до 24 октября) — запоминаем, чтобы дневник видел их и без файла базы */
+  var need={};
+  Object.keys(DB.days||{}).forEach(function(d){ ((DB.days[d]||{}).items||[]).forEach(function(x){ if(x&&String(x.fid).indexOf('bls:')===0) need[x.fid.slice(4)]=1 }) });
+  (DB.favs||[]).concat(Object.keys(DB.units||{})).forEach(function(id){ if(String(id).indexOf('bls:')===0) need[id.slice(4)]=1 });
+  (DB.taps||[]).forEach(function(c){ if(c&&String(c.fid).indexOf('bls:')===0) need[c.fid.slice(4)]=1 });
+  Object.keys(need).forEach(function(code){ if(BLS_BY[code]&&!(DB.bls||{})[code]){ var m=blsMac(code); DB.bls=DB.bls||{}; DB.bls[code]={n:blsName(code),k:m.k,p:m.p,f:m.f,c:m.c}; ch=true } });
   if(ch){ rebuildLib(); save() }
 }
 /* поиск: каждое слово запроса должно найтись — по началу слова в русском названии (с синонимами),
