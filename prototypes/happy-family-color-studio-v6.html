@@ -74,7 +74,7 @@ const defaults={
 function clone(o){return JSON.parse(JSON.stringify(o))}
 const store=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE))||{}}catch(e){return {}}})();
 const states={},custom={};APP_ORDER.forEach(k=>{const saved=store.states?.[k]||{};states[k]=Object.assign(clone(defaults[k]),saved);states[k].base=saved.base||clone(defaults[k].base);states[k].glows=saved.glows||clone(defaults[k].glows);if(!states[k].wallpaper)states[k].wallpaper='none';custom[k]=store.custom?.[k]||[]});
-let selected='day', layerIndex=0,selectedPreset=-1,previewFull=false;
+let selected='meal', layerIndex=0,selectedPreset=-1,previewFull=false;
 let favorites=Array.isArray(store.favorites)?store.favorites:['swim','strength','bike','run','yoga','bars'];
 const $=id=>document.getElementById(id);function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({states,custom,favorites}))}catch(e){}}
 function rgba(hex,a){const v=hex.replace('#','');return 'rgba('+parseInt(v.slice(0,2),16)+','+parseInt(v.slice(2,4),16)+','+parseInt(v.slice(4,6),16)+','+Number(a).toFixed(3)+')'}
