@@ -2016,7 +2016,7 @@ function sim(a,b){
   if(a===b) return 2;
   var n=Math.min(a.length,b.length), L=0;
   while(L<n&&a[L]===b[L]) L++;
-  return (L>=3&&L>=Math.min(5,n-1))?1:0;
+  return (L>=3&&L>=Math.min(5,n-1)&&L>=Math.max(a.length,b.length)-4)?1:0;
 }
 function unitOf(t){
   if(/^(г|гр|грамм|грамма|граммов)$/.test(t)) return 'г';
@@ -2083,15 +2083,17 @@ function gramsFor(fid,q,u){
   var f=fid?FOODS[fid]:null, per=(f&&f.por&&f.por[u])||DEF[u]||1;
   return Math.round(q*per*10)/10;
 }
-function match(tokens){
+function matchWord(q){ return typeof blsGeneric==='function'&&blsGeneric(q) }
+function match(tokens,loose){
   var sc=[];
   LIST.forEach(function(f){
-    var s=0, used={};
+    var s=0, used={}, miss=0;
     tokens.forEach(function(q){
       var best=0, bi=-1;
       f.w.forEach(function(w,i){ var v=sim(q,w); if(v>best){ best=v; bi=i } });
-      s+=best; if(best>0) used[bi]=1;
+      s+=best; if(best>0) used[bi]=1; else if(!matchWord(q)) miss++;
     });
+    if(miss&&!loose) return;      // «лук репчатый» не подходит к «Лук зелёный»: слово «репчатый» ни с чем не совпало
     if(s>0){ s-=0.3*(f.w.length-Object.keys(used).length); sc.push({id:f.id,s:s}) }
   });
   sc.sort(function(a,b){ return b.s-a.s });
@@ -2145,10 +2147,12 @@ function parseText(text){
     var sc=match(food);
     var line={id:'l'+(++SEQ),raw:ch.trim().replace(/#/g,','),q:q,u:u,fid:null,alts:[],st:'none',
               name:food.join(' '),explicit:(q!==null||u!==null)};
+    var loose=false;
     if(!sc.length&&typeof blsSearch==='function'&&BLS_ST==='ok'){
       var bc=blsSearch(food.join(' '),3);
       if(bc.length){ bc.forEach(function(c){ var id='bls:'+c; if(!FOODS[id]){ var o=blsFoodObj(c); o.tmp=1; FOODS[id]=o; BLS_TMP[id]=o } });
         line.alts=bc.map(function(c){ return 'bls:'+c }); line.fid=line.alts[0]; line.st='ok'; line.bls=1 }
+      else { sc=match(food,true); loose=sc.length>0 }   // ни в библиотеке целиком, ни в BLS — берём хоть частичное совпадение, как раньше
     }
     if(sc.length){
       line.alts=sc.slice(0,3).map(function(x){ return x.id });
@@ -2998,10 +3002,16 @@ function searchLib(q){
   var mine=LIST.filter(function(f){ return f.src==='Мои' });
   if(!q) return mine.concat(LIST.filter(function(f){ return f.src!=='Мои' })).slice(0,12);
   var toks=q.split(/[^a-zа-я0-9%]+/).filter(Boolean);
+  /* как BLS: подходит продукт, где нашлось КАЖДОЕ слово запроса (слово — по началу слова; последнее может быть недописано) */
   var lib=LIST.map(function(f){
-    var n=norm(f.n), s=0;
-    toks.forEach(function(t){ if(n.indexOf(t)>=0) s+=2; else if(f.w.some(function(w){ return w.indexOf(t)===0||sim(t,w) })) s+=1 });
-    return {f:f,s:s+(f.src==='Мои'?0.5:0)};
+    var s=0, ok=true;
+    toks.forEach(function(t){
+      var v=0;
+      f.w.forEach(function(w){ var x=w===t?3:w.indexOf(t)===0?2:sim(t,w)?1:0; if(x>v) v=x });
+      if(!v&&norm(f.n).split(/[^a-zа-я0-9%]+/).some(function(w){ return w.indexOf(t)===0 })) v=2;
+      if(!v) ok=false; s+=v;
+    });
+    return ok?{f:f,s:s+(f.src==='Мои'?0.5:0)}:{f:f,s:0};
   }).filter(function(x){ return x.s>=1 }).sort(function(a,b){ return b.s-a.s }).slice(0,12).map(function(x){ return x.f });
   /* дальше — база BLS: то, чего ещё нет в библиотеке */
   if(typeof blsSearch!=='function') return lib;
@@ -4487,7 +4497,7 @@ function blsScoreTok(i,alts){
       else if(t.length>=4&&w.length>=4){ var n=Math.min(t.length,w.length), L=0; while(L<n&&t[L]===w[L]) L++;
         /* падеж: общий корень от 3 букв, разница — только в окончании (утку → утка, имбирём → имбирь) — почти как точное */
         if(L>=3&&L>=Math.max(t.length,w.length)-2) v=1.7;
-        else if(L>=4&&L>=Math.min(5,n-1)) v=1.6 }
+        else if(L>=4&&L>=Math.min(5,n-1)&&L>=Math.max(t.length,w.length)-4) v=1.6 }
       if(!v&&t.length>=5&&w.indexOf(t)>0) v=1;
       if(a>0) v*=0.9;
       if(v&&at.indexOf(j)<0) at.push(j);
