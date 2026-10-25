@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#00A8F5">
+<meta name="theme-color" content="#963452">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Meal">
@@ -1295,6 +1295,35 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
 #rcList .rcFav{left:17px;top:17px;width:34px;height:34px}
 #rcList .rcFav svg{width:20px;height:20px}
 #rcFavs .rcItem{margin-top:0}
+
+/* ── v21: кольцо энергии — общий виджет Meal и Sport (energy-ring.md, 25 октября) ──
+   Карточка: слева кольцо, справа четыре строки той же высоты; поля 16 px, промежуток 16 px.
+   Кольцо обрезано по видимой дуге: высота min(146 px, 36vw), ширина = высота × 200/186. Кнопка в центре — стеклянная, как .mlKnob. */
+.card.erCard{--ringH:min(146px,36vw);--ringW:calc(var(--ringH) * 200 / 186);display:grid;grid-template-columns:var(--ringW) minmax(0,1fr);
+  column-gap:16px;align-items:center;padding:16px;margin-bottom:22px;border-radius:26px}
+.erRing{position:relative;width:var(--ringW);height:var(--ringH);-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.erRing[role=button]{cursor:pointer;touch-action:manipulation}
+.erRing:focus{outline:none}
+.erRing:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:24px}
+.erRing svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.erKnob{position:absolute;left:15%;top:16.13%;width:70%;height:75.27%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;pointer-events:none;color:#fff;
+  background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 2px 4px rgba(4,40,80,.14),0 10px 24px rgba(4,40,80,.2),inset 0 1px 0 rgba(255,255,255,.5)}
+.erKnob b{font-size:calc(var(--ringH) * .18);font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.erKnob.long b{font-size:calc(var(--ringH) * .155)}
+.erKnob small{margin-top:3px;font-size:calc(var(--ringH) * .078);font-weight:600;color:rgba(255,255,255,.82);white-space:nowrap}
+.erRows{min-width:0;height:var(--ringH);display:flex;flex-direction:column;justify-content:space-between}
+.erR{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:6px;font-size:var(--erF,12.5px);font-weight:600;line-height:1.2;color:#fff}
+.erDot{width:8px;height:8px;border-radius:50%}
+.erR span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.erR b{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.erBar{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden}
+.erBar i{display:block;height:100%;border-radius:3px}
+.erBar.no{visibility:hidden}
+.erMiss{grid-column:1/-1;margin:12px 0 0;font-size:11.5px;font-weight:600;line-height:1.3;color:#FFE3BF}
+.jrW .card.erCard{margin-bottom:0}
 /* блок «Аккаунт»: вход для связи между иконками */
 .clBox input[type=email],.clBox input[type=password]{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;
   border:1px solid var(--glassBrd);background:rgba(255,255,255,.14);color:#fff;border-radius:12px;padding:11px 12px;font-size:16px;
@@ -1316,6 +1345,11 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
   background:radial-gradient(circle at 32% 20%,color-mix(in srgb,#730074 59.4%, white) 0%,#730074 56%,color-mix(in srgb,#730074 75%, black) 100%)!important;
   box-shadow:0 6px 14px #2a184844,0 0 25px color-mix(in srgb,#730074 50%, transparent)!important;
 }
+
+/* Happy Meal v20 — Bordeaux / cherry palette; matches the approved #730074 center FAB */
+:root { --base:#812c4b; }
+body { background:radial-gradient(ellipse 80% 41% at 93% 15%, rgba(243,124,165,.40) 0%, transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%, rgba(157,87,174,.38) 0%, transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)!important; }
+body>.bg { inset:0!important; filter:none!important; animation:none!important; background:radial-gradient(ellipse 80% 41% at 93% 15%, rgba(243,124,165,.40) 0%, transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%, rgba(157,87,174,.38) 0%, transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)!important; }
 </style>
 </head>
 <body class="loading">
@@ -1353,8 +1387,8 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
       </div>
     </div>
 
-    <!-- КБЖУ за день: как кольцо HappyDay — в центре калории, вокруг дорожка по Б/Ж/У, справа граммы -->
-    <div class="card mlKb" id="mlKb"></div>
+    <!-- кольцо энергии (общий виджет Meal и Sport): слева кольцо, справа четыре строки; нажатие — съедено → баланс → потрачено -->
+    <div class="card erCard" id="mlKb"></div>
     <p class="note mlKbHint" id="mlKbHint">Микрофон внизу: нажми — скажи, что съел. Удерживай — ещё «Написать» и «Фото».</p>
 
     <div id="mlSecs" class="mlSecs"></div>
@@ -1419,7 +1453,7 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
       <label>С <input type="date" id="jrFrom"></label>
       <label>по <input type="date" id="jrTo"></label>
     </div>
-    <div class="jrTiles" id="jrTiles"></div>
+    <div class="jrW" id="jrTiles"></div>
     <div class="eyebrow"><span>Избранное</span></div>
     <div class="card jrList" id="jrMine"></div>
     <div class="eyebrow jrSortRow"><span>Показатели</span><div id="jrSort"></div></div>
@@ -1937,7 +1971,7 @@ var DB={
   days:{},             // days[дата].items: [{id,sec,fid,q,u,g,t,said,tap}]
   favs:[],             // избранное: ключи продуктов, свежие сверху
   pick:'all',          // что показывает список «Добавить своё»: all | recent | fav
-  goals:{k:'',p:'',f:'',c:''},  // цели на день: пусто — цели нет (норм по умолчанию нет)
+  goals:{k:'',p:'',f:'',c:'',fib:''},  // цели на день: пусто — цели нет (норм по умолчанию нет)
   recipes:[],          // мои рецепты: {id, t, lines:[{fid,q,u,g}], ts}
   fmt:1
 };
@@ -2414,55 +2448,78 @@ function autoSec(){ return secAt(new Date().getHours()) }
 var saveT=null;
 function save(){ clearTimeout(saveT); saveT=setTimeout(function(){ rawSet(K.db,JSON.stringify(DB)); linkWrite() },220) }
 
-/* ═══════════ КБЖУ ЗА ДЕНЬ ═══════════
-   Как кольцо HappyDay: в центре стеклянная кнопка с калориями, вокруг — дуга с тем же
-   вырезом снизу и круглыми концами, что у плавной шкалы. Цвета — доля энергии из белков,
-   жиров и углеводов (4/9/4 ккал на грамм). Есть цель по калориям — дуга горит до неё,
-   дальше светлая дорожка; цели нет — горит вся, по составу. Справа граммы; цель по нутриенту — полоска. */
-var MAC=[{k:'p',t:'Белки',e:4},{k:'f',t:'Жиры',e:9},{k:'c',t:'Углеводы',e:4}];
+/* ═══════════ КОЛЬЦО ЭНЕРГИИ НА ГЛАВНОМ ═══════════
+   Общий виджет Meal и Sport (energy-ring.md, утверждён 25 октября; рисует ring.js). Нажатие на кружок — по кругу:
+   съедено → баланс → потрачено → съедено. «Съедено»: дуга съеденного, строки Б, Ж, У и клетчатка «съедено/цель».
+   «Баланс»: обе дуги, в кружке баланс со знаком; строки Запас или Сжечь, Шаги до цели, Ходьба, Белка до цели.
+   «Потрачено»: дуга потраченного; строки Покой, Тренировки, Шаги, Время.
+   Потраченное — из сводки Happy Sport в hd_link_sport_v1: {v:1, app:'sport', at, goals:{steps, wo, min, rest},
+   days:{'ГГГГ-ММ-ДД':{k — потрачено всего, ккал; rest — покой, ккал; wo — тренировки, ккал; steps — шаги; min — тренировки, мин}}}.
+   Сводки нет — в кружке и строках прочерк. Полный круг — цель по калориям из «Целей на день», нет цели — 3000.
+   Цели строк — из «Целей на день» (клетчатка — тоже); нет цели — число без полоски. */
+var ER_MODE='eat', ER_SPORT=null, ER_TOLD=false, SPORT_LINK_KEY='hd_link_sport_v1';
 function gTxt(v){ return v>=10?String(Math.round(v)):fmt(v) }
 function goalOf(k){ var v=parseFloat(String((DB.goals||{})[k]||'').replace(',','.')); return v>0?v:0 }
-/* геометрия кольца HappyDay: viewBox 240, R 92, толщина 16, вырез 64°, поворот 122° */
-var KR=92, KGAP=64, KCIRC=2*Math.PI*KR, KTRACK=KCIRC*(360-KGAP)/360, KG=8;
-function kr(x){ return Math.round(x*100)/100 }
-/* отрезок по видимой длине (с круглыми концами по 8): vs — начало, vl — длина */
-function kSeg(vs,vl,cls){
-  return '<circle class="'+cls+'" cx="120" cy="120" r="'+KR+'" stroke-dasharray="'+kr(Math.max(.01,vl-16))+' '+kr(KCIRC)+'" stroke-dashoffset="'+kr(-(vs+8))+'"/>';
+async function erSportLoad(){
+  var o=null; try{ var raw=await rawGet(SPORT_LINK_KEY); o=raw?JSON.parse(raw):null }catch(e){}
+  ER_SPORT=o&&o.days&&typeof o.days==='object'?o:null;
 }
-/* сколько отрезков или точек отдать каждому нутриенту: по долям, остаток — большим долям */
-function ringKb(has,frac,sh){
-  var svg='<svg viewBox="0 0 240 240" aria-hidden="true">', TV=KTRACK+16, on=has?frac*TV:0;
-  if(on>0){
-    var k=sh.filter(function(x){ return x>0 }).length, avail=on-KG*(k-1), pos=-8;
-    sh.forEach(function(x,i){ if(x<=0) return; var L=Math.max(16,avail*x); svg+=kSeg(pos,L,'ks c'+MAC[i].k); pos+=L+KG });
-    if(frac<1&&TV-8-pos>16) svg+=kSeg(pos,TV-8-pos,'kt');
-  } else svg+=kSeg(-8,TV,'kt');
-  return svg+'</svg>';
+function erSportDay(iso){ var d=ER_SPORT&&ER_SPORT.days[iso]; return d&&typeof d==='object'&&parseFloat(d.k)>=0?d:null }
+function erSportVal(d,k){ var v=d?parseFloat(d[k]):NaN; return v>=0?v:null }
+function erSportGoal(k){ var g=ER_SPORT&&ER_SPORT.goals?parseFloat(ER_SPORT.goals[k]):0; return g>0?g:0 }
+/* клетчатка за день — из BLS по коду продукта; база не открылась или ни у одного продукта нет данных — прочерк */
+function dayFib(list){
+  if(!list.length) return 0;
+  if(typeof BLS_ST==='undefined'||BLS_ST!=='ok') return null;
+  var s=0, any=false;
+  list.forEach(function(x){ var f=x.fid&&FOODS[x.fid]; if(!f||!f.b||!BLS_BY[f.b]) return; var v=blsVal(f.b,'fib'); if(v!=null){ s+=v*(x.g||0)/100; any=true } });
+  return any?s:null;
 }
+function erGoalRow(h,name,v,g,u){ return erRowHTML(h,name,v==null?'—':gTxt(v)+(g?'/'+gTxt(g):'')+' '+u,v!=null&&g?v/g:null) }
+function erSportRow(h,name,v,g,u){ return erRowHTML(h,name,v==null?'—':erNum(v)+(g?'/'+erNum(g):'')+(u?' '+u:''),v!=null&&g?v/g:null) }
+var ER_NEXT={eat:'bal',bal:'spent',spent:'eat'}, ER_CAP={eat:'съедено',bal:'баланс',spent:'потрачено'};
 function kbjuHTML(){
-  var it=day(curDate).items, has=it.length>0, s=sumOf(it), gk=goalOf('k');
-  var en=MAC.map(function(m){ return s[m.k]*m.e }), enT=en.reduce(function(a,b){ return a+b },0);
-  var sh=en.map(function(x){ return enT?x/enT:0 });
-  var frac=!has||enT<=0?0:gk?Math.min(1,s.k/gk):1;
-  if(enT<=0) has=has&&s.k>0;
-  var kc=Math.round(s.k), over=gk&&s.k>gk?Math.round(s.k-gk):0;
-  var sub=gk?'из '+Math.round(gk)+' ккал':'ккал';
-  var aria=has?kc+' ккал'+(gk?' из '+Math.round(gk):'')+'; '+MAC.map(function(m){ return m.t.toLowerCase()+' '+gTxt(s[m.k])+' г' }).join(', '):'Сегодня пока пусто';
-  var rows=MAC.map(function(m,i){
-    var g=goalOf(m.k), v=s[m.k], pc=enT?Math.round(en[i]/enT*100):0;
-    var val=has?'<b>'+gTxt(v)+(g?'<small> / '+gTxt(g)+'</small>':'')+' г</b>':'<b class="no">—</b>';
-    return '<div class="mlKbR'+(g?' goal':'')+'"><span class="mlSw d'+m.k+'" aria-hidden="true"></span><span class="nm">'+m.t+'</span>'+val+
-      (!g&&has?'<small class="pc">'+pc+'%</small>':'')+
-      (g?'<span class="bar" aria-hidden="true"><i class="d'+m.k+'" style="width:'+(has?Math.min(100,v/g*100):0).toFixed(1)+'%"></i></span>':'')+'</div>';
-  }).join('');
-  return '<div class="mlKbRing" role="img" aria-label="'+escH(aria)+'">'+ringKb(has,frac,sh)+
-    '<div class="mlKnob"><b>'+(has?kc:'—')+'</b><small>'+sub+'</small>'+(over?'<small class="ov">+'+over+' сверх</small>':'')+'</div></div>'+
-    '<div class="mlKbRows">'+rows+'</div>';
+  var it=day(curDate).items, s=sumOf(it), gk=goalOf('k'), sp=erSportDay(curDate), spent=sp?parseFloat(sp.k):null, M=ER_MODE;
+  var rows, big, arcs, say;
+  if(M==='eat'){
+    var fib=dayFib(it);
+    arcs=['eat']; big=Math.round(s.k); say='Съедено '+big+' ккал';
+    rows=erGoalRow(ER_HUE.pink,'Белки',s.p,goalOf('p'),'г')+erGoalRow(ER_HUE.violet,'Жиры',s.f,goalOf('f'),'г')+
+         erGoalRow(ER_HUE.blue,'Углеводы',s.c,goalOf('c'),'г')+erGoalRow(ER_HUE.teal,'Клетчатка',fib,goalOf('fib'),'г');
+  } else if(M==='spent'){
+    arcs=['spent']; big=spent==null?'—':Math.round(spent); say=spent==null?'Потраченного пока нет — оно придёт из Happy Sport':'Потрачено '+big+' ккал';
+    rows=erSportRow(ER_HUE.violet,'Покой',erSportVal(sp,'rest'),erSportGoal('rest'))+erSportRow(ER_HUE.pink,'Тренировки',erSportVal(sp,'wo'),erSportGoal('wo'))+
+         erSportRow(ER_HUE.blue,'Шаги',erSportVal(sp,'steps'),erSportGoal('steps'))+erSportRow(ER_HUE.teal,'Время, мин',erSportVal(sp,'min'),erSportGoal('min'));
+  } else {
+    var d=spent==null?null:s.k-spent, st=erSportVal(sp,'steps'), gs=erSportGoal('steps'), gp=goalOf('p'), wk=st==null?0:st/100+Math.max(0,d)/5;
+    arcs=['eat','spent']; big=d==null?'—':erSigned(d); say=d==null?'Баланса пока нет — потраченное придёт из Happy Sport':'Баланс '+big+' ккал';
+    rows=erRowHTML(ER_HUE.teal,d!=null&&d>=0?'Сжечь':'Запас',d==null?'—':erNum(Math.abs(d))+' ккал',d==null?null:(Math.max(s.k,spent)>0?Math.min(s.k,spent)/Math.max(s.k,spent):0))+
+         erRowHTML(ER_HUE.blue,'Шаги до цели',st==null||!gs?'—':st>=gs?'есть':erNum(gs-st),st!=null&&gs?st/gs:null)+
+         erRowHTML(ER_HUE.violet,'Ходьба',d==null?'—':d>0?'+'+Math.round(d/5)+' мин':'не нужно',d!=null&&st!=null&&wk>0?(st/100)/wk:null)+
+         erRowHTML(ER_HUE.pink,'Белка до цели',gp?(s.p>=gp?'есть':gTxt(gp-s.p)+' г'):'—',gp?s.p/gp:null);
+  }
+  return '<div class="erRing" role="button" tabindex="0" aria-label="'+escH(say+'. Нажми — '+ER_CAP[ER_NEXT[M]])+'">'+
+    erRingHTML({eat:s.k,spent:spent,arcs:arcs,full:gk||3000,big:big,cap:ER_CAP[M]})+'</div><div class="erRows">'+rows+'</div>';
 }
+function erNext(key){
+  ER_MODE=ER_NEXT[ER_MODE];
+  var el=document.getElementById('mlKb'); el.innerHTML=kbjuHTML(); erFit(el);
+  if(key){ var r=el.querySelector('.erRing'); if(r) r.focus({preventScroll:true}) }          // с клавиатуры фокус остаётся на кольце
+  if(ER_MODE!=='eat'&&!erSportDay(curDate)&&!ER_TOLD){ ER_TOLD=true; toast('Потраченное придёт из Happy Sport') }
+}
+document.getElementById('mlKb').addEventListener('click',function(e){ if(e.target.closest('.erRing')) erNext(false) });
+document.getElementById('mlKb').addEventListener('keydown',function(e){
+  if((e.key==='Enter'||e.key===' ')&&e.target.closest('.erRing')){ e.preventDefault(); erNext(true) }
+});
+/* сводку Sport — при запуске и когда приложение снова на экране */
+function erRedraw(){ var el=document.getElementById('mlKb'); if(el.firstChild){ el.innerHTML=kbjuHTML(); erFit(el) } }
+erSportLoad().then(function(){ if(ER_SPORT) erRedraw() });
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') erSportLoad().then(erRedraw) });
+erWatch('mlKb');
 function renderDay(){
   document.getElementById('dateBtn').value=curDate;
   document.getElementById('dateText').textContent=ruDate(curDate);
-  document.getElementById('mlKb').innerHTML=kbjuHTML();
+  document.getElementById('mlKb').innerHTML=kbjuHTML(); erFit(document.getElementById('mlKb'));
   document.getElementById('mlKbHint').hidden=day(curDate).items.length>0;
   document.getElementById('mlSecs').innerHTML=DB.sections.map(function(S){
     var it=itemsOf(S.k), s=sumOf(it);
@@ -2607,7 +2664,7 @@ function editFoodKind(i){
   });
 }
 function rowCard(inner){ return '<div class="card" style="margin-bottom:8px;padding:0"><div class="swipeInner">'+inner+'</div></div>' }
-var GOALS=[{k:'k',t:'Калории',u:'ккал'},{k:'p',t:'Белки',u:'г'},{k:'f',t:'Жиры',u:'г'},{k:'c',t:'Углеводы',u:'г'}];
+var GOALS=[{k:'k',t:'Калории',u:'ккал'},{k:'p',t:'Белки',u:'г'},{k:'f',t:'Жиры',u:'г'},{k:'c',t:'Углеводы',u:'г'},{k:'fib',t:'Клетчатка',u:'г'}];
 function renderCoverSet(){
   var el=document.getElementById('setCover'); if(!el) return;
   var cur=DB.cover==='two'?'two':'one';
@@ -2738,6 +2795,125 @@ document.querySelector('[data-screen="settings"] .tierBadges').addEventListener(
 document.getElementById('tierOk').addEventListener('click',closeTier);
 document.getElementById('tierWrap').addEventListener('click',function(e){ if(e.target===this) closeTier() });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeTier() });
+
+/* ═══════════ КОЛЬЦО ЭНЕРГИИ — общий виджет Meal и Sport ═══════════
+   Утверждено 25 октября (energy-ring.md, прототип — вариант 6). Карточка: слева кольцо, справа четыре строки
+   «сколько/цель» с полосками. Геометрия как у колец HappyDay: радиус 92, толщина 16, вырез 64° снизу, поворот 122°;
+   кольцо обрезано по видимой дуге (viewBox 20 20 200 186). Дуга — градиент «по шкале»: цвет привязан к месту
+   на кольце (к числу), три цвета, середина держится полосой 30 %, переход в OKLCH коротким путём по кругу оттенков.
+   Рисуется короткими отрезками (1,5°, заход 0,8° против швов), прозрачность — маской того же рисунка.
+   За границы кольца дуга не выходит: при переборе кольцо заполнено, дальше говорят цифры. */
+var ER_SWEEP=296, ER_R=92, ER_UID=0;
+var ER_EAT={c0:'#00FFFF',cm:'#0061FE',c1:'#FD59FF',mw:30,a0:57,a1:75,s0:59,s1:85};      // съедено
+var ER_SPENT={c0:'#FD59FF',cm:'#7C5CFF',c1:'#00FFFF',mw:30,a0:64,a1:89,s0:17,s1:45};    // потрачено — лежит сверху
+/* оттенки строк — одной светлоты и насыщенности (OKLCH), различается только тон */
+var ER_HUE={pink:350,violet:305,blue:262,teal:180};
+function erClamp(v,a,b){ return Math.max(a,Math.min(b,v)) }
+function erN(v){ return Math.round(v*100)/100 }
+function erRgb(h){ return [1,3,5].map(function(i){ return parseInt(h.slice(i,i+2),16)/255 }) }
+function erLin(c){ return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4) }
+function erGam(c){ return c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055 }
+function erLch(hex){
+  var c=erRgb(hex), r=erLin(c[0]), g=erLin(c[1]), b=erLin(c[2]);
+  var l=Math.cbrt(0.4122214708*r+0.5363325363*g+0.0514459929*b);
+  var m=Math.cbrt(0.2119034982*r+0.6806995451*g+0.1073969566*b);
+  var s=Math.cbrt(0.0883024619*r+0.2817188376*g+0.6299787005*b);
+  var L=0.2104542553*l+0.7936177850*m-0.0040720468*s, A=1.9779984951*l-2.4285922050*m+0.4505937099*s, B=0.0259040371*l+0.7827717662*m-0.8086757660*s;
+  return {L:L,C:Math.sqrt(A*A+B*B),h:Math.atan2(B,A)};
+}
+function erLabLin(L,a,b){
+  var l=L+0.3963377774*a+0.2158037573*b, m=L-0.1055613458*a-0.0638541728*b, s=L-0.0894841775*a-1.2914855480*b;
+  l=l*l*l; m=m*m*m; s=s*s*s;
+  return [4.0767416621*l-3.3077115913*m+0.2309699292*s, -1.2684380046*l+2.6097574011*m-0.3413193965*s, -0.0041960863*l-0.7034186147*m+1.7076147010*s];
+}
+function erHex(L,C,h){
+  var lin, i=0;
+  while(true){                                   // вне sRGB — убавляем насыщенность, пока цвет не поместится
+    lin=erLabLin(L,C*Math.cos(h),C*Math.sin(h));
+    if(i++>14||lin.every(function(v){ return v>=-0.001&&v<=1.001 })) break;
+    C*=0.9;
+  }
+  return '#'+lin.map(function(v){ return ('0'+Math.round(erClamp(erGam(erClamp(v,0,1)),0,1)*255).toString(16)).slice(-2) }).join('').toUpperCase();
+}
+var ER_LUTS={};
+function erLut(c0,c1){
+  var key=c0+c1; if(ER_LUTS[key]) return ER_LUTS[key];
+  var out=[], A=erLch(c0), B=erLch(c1), h0=A.h, h1=B.h, i, t, dh;
+  if(A.C<0.03) h0=h1; if(B.C<0.03) h1=h0;
+  dh=h1-h0; while(dh>Math.PI) dh-=2*Math.PI; while(dh<-Math.PI) dh+=2*Math.PI;
+  for(i=0;i<=64;i++){ t=i/64; out.push(c0===c1?c0:erHex(A.L+(B.L-A.L)*t,A.C+(B.C-A.C)*t,h0+dh*t)) }
+  out[0]=c0; out[64]=c1;
+  return (ER_LUTS[key]=out);
+}
+/* переход идёт только между s0 и s1 (% круга): до s0 — цвет начала, после s1 — цвет конца; середина держится полосой mw % */
+function erColAt(L,t){
+  var a=L.s0/100, b=L.s1/100;
+  t=erClamp(b>a?(t-a)/(b-a):(t>=a?1:0),0,1);
+  var h=erClamp(L.mw/200,0,0.45);
+  if(t<0.5-h) return erLut(L.c0,L.cm)[Math.round(t/(0.5-h)*64)];
+  if(t>0.5+h) return erLut(L.cm,L.c1)[Math.round((t-0.5-h)/(0.5-h)*64)];
+  return L.cm;
+}
+function erAlphaAt(L,t){ return erClamp((L.a0+(L.a1-L.a0)*erClamp(t,0,1))/100,0,1) }
+function erGrey(a){ var v=('0'+Math.round(a*255).toString(16)).slice(-2); return '#'+v+v+v }
+function erTone(h,L){ return erHex(L,0.12,h*Math.PI/180) }
+/* дуга по центру трубки; длина и начало — в градусах */
+function erArc(w,deg,stroke,start,cap){
+  if(deg<=0) return '';
+  var k=2*Math.PI*ER_R/360, circ=2*Math.PI*ER_R;
+  return '<circle cx="120" cy="120" r="'+ER_R+'" fill="none" stroke="'+stroke+'" stroke-width="'+w+'" stroke-linecap="'+(cap||'round')+
+    '" stroke-dasharray="'+erN(Math.max(0.01,deg*k))+' '+erN(circ)+'"'+(start?' stroke-dashoffset="'+erN(-start*k)+'"':'')+'/>';
+}
+/* слой: дуга из коротких отрезков, у каждого свой цвет по месту на кольце; прозрачность — маской */
+function erLayer(c,L,len){
+  if(len<=0.05) return '';
+  var cnt=Math.max(1,Math.ceil(len/1.5)), sl=len/cnt, i, a, ext, mid, segs='', msk='';
+  for(i=0;i<cnt;i++){
+    a=i*sl; ext=Math.min(sl+0.8,len-a); mid=a+sl/2;
+    segs+=erArc(16,ext,erColAt(L,mid/ER_SWEEP),a,'butt');
+    msk+=erArc(16,ext,erGrey(erAlphaAt(L,mid/len)),a,'butt');
+  }
+  segs+=erArc(16,0.01,erColAt(L,0),0)+erArc(16,0.01,erColAt(L,len/ER_SWEEP),len);           // круглые концы
+  msk+=erArc(16,0.01,erGrey(erAlphaAt(L,0)),0)+erArc(16,0.01,erGrey(erAlphaAt(L,1)),len);
+  var id='er'+c.id+'a'+(c.k++);
+  c.defs+='<mask id="'+id+'" maskUnits="userSpaceOnUse" x="-20" y="-20" width="280" height="280">'+msk+'</mask>';
+  return '<g mask="url(#'+id+')">'+segs+'</g>';
+}
+/* o: eat, spent — ккал (null — нет данных), arcs — какие дуги ('eat', 'spent' или обе), full — полный круг, big и cap — в кружке */
+function erRingHTML(o){
+  var c={id:++ER_UID,defs:'',k:0}, body='';
+  (o.arcs||[]).forEach(function(key){
+    var v=key==='eat'?o.eat:o.spent; if(v==null) return;
+    body+=erLayer(c,key==='eat'?ER_EAT:ER_SPENT,erClamp(v/o.full,0,1)*ER_SWEEP);
+  });
+  var big=String(o.big);
+  return '<svg viewBox="20 20 200 186" aria-hidden="true"><defs>'+c.defs+'</defs><g transform="rotate(122 120 120)">'+
+    erArc(16,ER_SWEEP,'rgba(255,255,255,.2)',0)+'<g style="isolation:isolate">'+body+'</g></g></svg>'+
+    '<div class="erKnob'+(big.length>=5?' long':'')+'"><b>'+escH(big)+'</b><small>'+escH(o.cap)+'</small></div>';
+}
+/* строка справа: точка, подпись, «сколько/цель»; под строкой полоска до цели (6 px).
+   Полоска — от светлого к чуть более тёмному того же тона; с 85 % цели и за ней конец темнеет сильнее. bar: null — без полоски */
+function erRowHTML(h,name,val,bar){
+  var b='<span class="erBar no" aria-hidden="true"></span>';
+  if(bar!=null){
+    var r=Math.max(0,bar), w=Math.min(1,r)*100, dk=erClamp((r-0.85)/0.35,0,1);
+    b='<span class="erBar" aria-hidden="true"><i style="width:'+erN(w)+'%;background:linear-gradient(90deg,'+erTone(h,0.86)+','+erTone(h,0.72-0.16*dk)+')"></i></span>';
+  }
+  return '<div class="erR"><i class="erDot" style="background:'+erTone(h,0.8)+'" aria-hidden="true"></i><span>'+escH(name)+'</span><b>'+escH(val)+'</b>'+b+'</div>';
+}
+/* строки не помещаются (узкий экран, на iPhone шрифт шире) — шрифт всех строк карточки меньше на полпикселя, до 11 px;
+   дальше подпись обрезается многоточием. Пересчёт — после отрисовки и когда меняется размер (экран открылся, телефон повернули) */
+function erFit(box){
+  var rows=box&&box.querySelector('.erRows'); if(!rows||!rows.clientWidth) return;
+  var f=12.5, L=rows.querySelectorAll('.erR>span:not(.erBar)');
+  function over(){ for(var i=0;i<L.length;i++) if(L[i].scrollWidth>L[i].clientWidth+0.5) return true; return false }
+  rows.style.removeProperty('--erF');
+  while(f>11&&over()){ f-=0.5; rows.style.setProperty('--erF',f+'px') }
+}
+var ER_RO=typeof ResizeObserver==='function'?new ResizeObserver(function(es){ es.forEach(function(e){ erFit(e.target) }) }):null;
+function erWatch(id){ var el=document.getElementById(id); if(el&&ER_RO) ER_RO.observe(el) }
+function erNum(v){ return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,' ') }
+function erSigned(d){ d=Math.round(d); return d>0?'+'+d:d<0?'−'+(-d):'0' }
 
 
 /* ═══════════ ДИАЛОГ «ЧТО СЪЕЛ» ═══════════
@@ -3623,6 +3799,7 @@ function bkAfterLoad(){
         if(Array.isArray(o.recipes)) DB.recipes=o.recipes;
         if(o.cover==='two') DB.cover='two';
         if(Array.isArray(o.jrFav)) DB.jrFav=o.jrFav;
+        if(Array.isArray(o.rfav)) DB.rfav=o.rfav;
         if(o.bls&&typeof o.bls==='object') DB.bls=o.bls;
         if(o.units&&typeof o.units==='object') DB.units=o.units;
         if(o.bkAt) DB.bkAt=o.bkAt;
@@ -4371,6 +4548,25 @@ function jrTileCap(x,v,pct){
   if(pct==null) return 'норма не задана';
   return Math.round(pct)+'% · из '+jrNum(jrNorm(x))+'\u00a0'+x.u;
 }
+/* виджет как на главном (кольцо энергии), но за период: в кружке — калории, в строках — белки, жиры, углеводы, клетчатка
+   «в среднем/норма»; за неделю, месяц и свой период — в среднем за день по дням с записями, за один день — съеденное.
+   Норма — своя из «Целей на день», иначе рекомендуемая; нет нормы — число без полоски. Полный круг — цель по калориям, нет — 3000.
+   Нажатие ничего не переключает: баланс и потраченное — на главном (25 октября, Астамур). */
+var JR_HUE={p:'pink',f:'violet',c:'blue',fib:'teal'};
+erWatch('jrTiles');
+function jrKcal(){ return JR_DATA?JR_DATA.mac.k:2170*jrFactor('k') }          // в примере — из Б/Ж/У и клетчатки примера
+function jrWidgetHTML(){
+  var r=jrRange(), one=r.a===r.b, k=jrKcal(), fibV=jrV(JR_MAC[3],'fib'), mt=fibV!=null?jrMissTxt('fib'):'';
+  var rows=JR_MAC.map(function(x){
+    var v=jrV(x,x.id), n=jrNorm(x);
+    return erRowHTML(ER_HUE[JR_HUE[x.id]],x.t,v==null?'—':gTxt(v)+(n?'/'+gTxt(n):'')+'\u00a0'+x.u,v!=null&&n?v/n:null);
+  }).join('');
+  var say=(one?'Съедено ':'В среднем за день ')+Math.round(k)+' ккал; '+JR_MAC.map(function(x){
+    var v=jrV(x,x.id), n=jrNorm(x); return x.t.toLowerCase()+' '+(v==null?'нет данных':gTxt(v)+(n?' из '+gTxt(n):'')+' '+x.u) }).join(', ');
+  return '<div class="card erCard"><div class="erRing" role="img" aria-label="'+escH(say)+'">'+
+    erRingHTML({eat:k,arcs:['eat'],full:goalOf('k')||3000,big:Math.round(k),cap:one?'съедено':'в среднем'})+'</div>'+
+    '<div class="erRows">'+rows+'</div>'+(mt?'<p class="erMiss">Клетчатка: '+mt+'</p>':'')+'</div>';
+}
 var JR_CAL='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="4"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>';
 
 function renderJournal(){
@@ -4381,12 +4577,7 @@ function renderJournal(){
   var rg=document.getElementById('jrRange');
   rg.hidden=!(JR_PER==='custom'&&JR_RNG_OPEN);
   if(JR_PER==='custom'){ var r=jrRange(); document.getElementById('jrFrom').value=r.a; document.getElementById('jrTo').value=r.b }
-  document.getElementById('jrTiles').innerHTML=JR_MAC.map(function(x){
-    var v=jrV(x,x.id), pct=jrPctOf(x,x.id);
-    return '<div class="card jrTile"><div class="jrTl"><i class="jrDot" style="background:'+x.c+'"></i><span>'+escH(x.t)+'</span></div>'+
-      '<div class="jrTv">'+(v==null?'—':jrNum(v)+'<small>\u00a0'+x.u+'</small>')+'</div>'+jrMeter(pct==null?0:pct,x,x.c)+
-      '<div class="jrTc">'+jrTileCap(x,v,pct)+'</div>'+(x.id==='fib'&&v!=null&&jrMissTxt('fib')?'<div class="jrTm">'+jrMissTxt('fib')+'</div>':'')+'</div>';
-  }).join('');
+  document.getElementById('jrTiles').innerHTML=jrWidgetHTML(); erFit(document.getElementById('jrTiles'));
   var F=jrFav();
   document.getElementById('jrMine').innerHTML=F.length?jrRows(F,'fav'):
     '<p class="jrEmpty">Смахни любой показатель влево и нажми звёздочку — он появится здесь.</p>';
@@ -5090,6 +5281,7 @@ function blsRerender(){
   try{
     function on(n){ return document.querySelector('[data-screen="'+n+'"]').classList.contains('on') }
     if(on('journal')) renderJournal();
+    if(on('day')) erRedraw();                       // клетчатка — из базы
     if(FIND){ paintFind(); return }                 // идёт поиск — поле не пересобираем, клавиатура не прячется
     if(on('match')) renderMatch();
     if(SECK&&on('sec')) renderSec();
@@ -5138,7 +5330,7 @@ function jrCompute(r){
     d=jrIsoAdd(d,1);
   }
   if(!days) return null;
-  var o={days:days,items:all,noBls:noBls,kav:kav,mac:{p:mac.p/days,f:mac.f/days,c:mac.c/days,fib:has.fib?mac.fib/days:null},v:{},miss:{},missN:missN};
+  var o={days:days,items:all,noBls:noBls,kav:kav,mac:{k:totK/days,p:mac.p/days,f:mac.f/days,c:mac.c/days,fib:has.fib?mac.fib/days:null},v:{},miss:{},missN:missN};
   ids.forEach(function(id){ o.v[id]=has[id]?v[id]/days:null });
   Object.keys(miss).forEach(function(id){ o.miss[id]=totK>0?miss[id]/totK:0 });
   return o;
@@ -5154,10 +5346,10 @@ function jrMissWho(id){
   return 'Без данных: '+L.slice(0,4).join(', ')+(L.length>4?' и ещё '+(L.length-4):'')+' — '+jrMissPct(id)+' % калорий за период. На самом деле съедено больше.';
 }
 function jrRefresh(){ JR_DATA=jrCompute(jrRange()) }
-/* своя норма: пока только Б, Ж, У из «Целей на день»; в примере — как в макете */
+/* своя норма: пока только Б, Ж, У и клетчатка из «Целей на день»; в примере — как в макете */
 function jrOwn(x){
   if(!JR_DATA) return x.own!=null?x.own:null;
-  if(x.mac&&(x.id==='p'||x.id==='f'||x.id==='c')){ var g=parseFloat(String((DB.goals||{})[x.id]||'').replace(',','.')); return g>0?g:null }
+  if(x.mac){ var g=parseFloat(String((DB.goals||{})[x.id]||'').replace(',','.')); return g>0?g:null }
   return null;
 }
 function jrModeTxt(){ return JR_DATA?'':' · пример' }
