@@ -40,6 +40,44 @@
 .st-caption{font-size:11px;color:#aca9c0;line-height:1.45;margin:8px 0 0}
 .st-section-label{font-size:12px;font-weight:750;margin:18px 0 10px}
 @media(max-width:450px){.st-extra-grid{grid-template-columns:1fr}}
+
+/* Studio v11 layout: sticky phone rail and collapsing editor */
+.preview-dock{position:sticky!important;top:0;z-index:80;isolation:isolate;margin-bottom:6px!important;padding-bottom:8px!important}
+.preview-dock .topbar{margin-bottom:6px}
+.preview-dock .phones{padding-top:3px;padding-bottom:5px}
+.preview-dock .phone{height:clamp(280px,41svh,465px)!important}
+@media(max-width:710px){
+ .preview-dock{padding-top:calc(6px + env(safe-area-inset-top))!important}
+ .preview-dock .phone{height:clamp(275px,43svh,450px)!important}
+ .tabs button{font-size:11px!important;padding:8px 9px!important}
+}
+.studio{display:flex!important;flex-direction:column;gap:12px;max-width:1150px}
+.studio-group{background:#27243bbb;border:1px solid #ffffff22;border-radius:19px;overflow:hidden}
+.studio-group>summary{list-style:none;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:800}
+.studio-group>summary::-webkit-details-marker{display:none}
+.studio-group>summary:focus-visible{outline:2px solid #c9b9ff;outline-offset:-3px}
+.group-chevron{font-size:20px;color:#b2a9df;transition:transform .2s}
+.studio-group[open] .group-chevron{transform:rotate(180deg)}
+.group-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;padding:2px 12px 14px}
+.group-body>.panel{min-width:0;margin:0}
+.group-body>.panel:only-child{grid-column:1/-1}
+@media(max-width:820px){.group-body{grid-template-columns:1fr}}
+.shared-wrap{max-width:1150px;margin:0 auto 13px;border-radius:18px;background:#252239e8;border:1px solid #ffffff29;padding:13px 14px}
+.shared-head strong{display:block;font-size:13px}.shared-head small{display:block;font-size:11px;color:#aaa5c7;margin-top:5px;line-height:1.5}
+.shared-save{display:flex;gap:8px;margin-top:10px}
+.shared-save input{flex:1;min-width:0;background:#ffffff14;border:1px solid #ffffff34;border-radius:10px;color:#fff;padding:10px}
+.shared-save button{border:0;border-radius:10px;background:#8e77df;color:#fff;padding:10px;font-size:12px;font-weight:750}
+.shared-rail{display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x mandatory;margin-top:11px;padding-bottom:6px}
+.shared-empty{color:#aba5c3;font-size:11px;padding:12px 0}
+.shared-card{flex:0 0 120px;scroll-snap-align:start;position:relative;padding:6px;min-height:108px;text-align:left;color:#fff;border:1px solid #ffffff2b;background:#ffffff0f;border-radius:12px}
+.shared-card.selected{border-color:#c4b0ff;box-shadow:inset 0 0 0 1px #c4b0ff}
+.shared-thumb{height:71px;border-radius:9px;margin-bottom:6px;position:relative;overflow:hidden}
+.shared-mini{position:absolute;left:7px;bottom:6px;display:flex;gap:4px}
+.shared-mini span{width:11px;height:11px;border:1px solid #ffffffa4;border-radius:50%;box-shadow:0 1px 4px #0005}
+.shared-caption{display:block;font-size:10px;padding-right:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shared-delete{position:absolute;top:0;right:0;border:0;border-radius:0 11px 0 7px;background:#3d234bcc;color:white;padding:5px 7px;font-size:12px}
+.st-field input[type=color]{height:35px;width:100%;background:transparent;border:1px solid #ffffff3b;padding:1px;border-radius:9px}
+@media(max-width:480px){.shared-save{flex-wrap:wrap}.shared-save button{flex:1}}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Day + Meal + Sport</h1><p>Дизайн-студия для трёх приложений. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><button class="chipbutton" id="fullPreview">Скрыть настройки</button></header>
@@ -50,28 +88,37 @@
     <section class="phone-wrap" data-phone="sport"><div class="phone" id="phone-sport"><div class="phone-inner"><iframe title="Главная Happy Sport v2, только визуальное превью"  sandbox="allow-scripts" scrolling="no" tabindex="-1" loading="eager"></iframe><span class="watermark">SPORT</span></div></div></section>
   </div></div>
 
-  <main class="studio" id="studio">
-    <section class="panel"><div class="panel-head"><h2>Пресеты · <span id="presetApp">Day</span></h2><button class="smallbtn" id="reset">↺ Сброс</button></div><div class="preset-grid" id="presetGrid"></div><div class="save-row"><input id="presetName" placeholder="Название своего варианта" maxlength="28" aria-label="Имя пресета"><button id="savePreset">＋ Сохранить</button></div><p class="muted" style="margin:11px 0 0">Сохраняются в браузере на этом устройстве, не в GitHub. Для переноса сделай резервную копию.</p><div class="backup-row"><button class="smallbtn" id="exportConfig">↓ Скачать настройки</button><button class="smallbtn" id="importConfig">↑ Восстановить</button><input id="importConfigFile" type="file" accept=".json,application/json" hidden aria-label="Загрузить настройки из JSON"></div></section>
-    <section class="panel"><div class="panel-head"><h2>Цвет · <span id="layerName">Верх фона</span></h2><span class="muted">свайпайте слои ↔</span></div><div class="layers" id="layers"></div><div class="edit-main"><input class="color-pick" type="color" id="colorPicker" aria-label="Точный цвет выбранного слоя"><div class="controlset"><label class="ctl">Насыщенность <input type="range" min="0" max="100" id="saturation"><output id="satValue"></output></label><label class="ctl">Светлота <input type="range" min="0" max="100" id="lightness"><output id="lightValue"></output></label><label class="ctl" id="opacityRow">Свечение <input type="range" min="0" max="100" id="opacity"><output id="opacityValue"></output></label><label class="ctl" id="xRow">По горизонтали <input type="range" min="-30" max="130" id="glowX"><output id="xValue"></output></label><label class="ctl" id="yRow">По вертикали <input type="range" min="-40" max="130" id="glowY"><output id="yValue"></output></label></div></div><div class="palette" id="palette"></div><label class="direction">Наклон градиента <input type="range" min="90" max="240" id="angle"><output id="angleValue"></output></label><div class="actions"><button class="action primary" id="copyCSS">Скопировать CSS</button><button class="action" id="copyAll">Скопировать оба</button></div><div class="code" id="code"></div></section>
-    <section class="panel wallpaper-panel"><div class="panel-head"><h2>Обои</h2><span class="muted">Day / Meal</span></div><p class="muted">Узор поверх выбранного градиента.</p><div class="wallpaper-grid" id="wallpaperGrid"></div>
+  <section class="shared-wrap" id="savedThemes" aria-label="Общие сохранённые темы">
+<div class="shared-head"><div><strong>Мои варианты оформления</strong><small>Общая галерея для Day · Meal · Sport. Один тап по миниатюре применяет тему ко всем трём.</small></div></div>
+<div class="shared-save"><input id="sharedName" type="text" maxlength="30" placeholder="Имя новой темы"><button id="sharedSave" type="button">＋ Сохранить для всех</button></div>
+<div class="shared-rail" id="sharedRail"><span class="shared-empty">Здесь появятся твои сохранённые варианты.</span></div></section><main class="studio" id="studio">
+<details class="studio-group" data-group="palette" open><summary><span>🎨 Палитры и обои</span><span class="group-chevron">⌄</span></summary><div class="group-body"><section class="panel"><div class="panel-head"><h2>Цвет · <span id="layerName">Верх фона</span></h2><span class="muted">свайпайте слои ↔</span></div><div class="layers" id="layers"></div><div class="edit-main"><input class="color-pick" type="color" id="colorPicker" aria-label="Точный цвет выбранного слоя"><div class="controlset"><label class="ctl">Яркость фона <input type="range" min="45" max="160" step="1" id="saturation"><output id="satValue"></output></label><label class="ctl">Насыщенность фона <input type="range" min="0" max="180" step="1" id="lightness"><output id="lightValue"></output></label><label class="ctl" id="opacityRow">Свечение <input type="range" min="0" max="100" id="opacity"><output id="opacityValue"></output></label><label class="ctl" id="xRow">По горизонтали <input type="range" min="-30" max="130" id="glowX"><output id="xValue"></output></label><label class="ctl" id="yRow">По вертикали <input type="range" min="-40" max="130" id="glowY"><output id="yValue"></output></label></div></div><div class="palette" id="palette"></div><label class="direction">Наклон градиента <input type="range" min="90" max="240" id="angle"><output id="angleValue"></output></label><div class="actions"><button class="action primary" id="copyCSS">Скопировать CSS</button><button class="action" id="copyAll">Скопировать все три</button></div><div class="code" id="code"></div></section><section class="panel wallpaper-panel"><div class="panel-head"><h2>Обои</h2><span class="muted">Все три</span></div><p class="muted">Узор поверх выбранного градиента.</p><div class="wallpaper-grid" id="wallpaperGrid"></div>
 <div class="st-section-label">Своё изображение</div>
 <div class="st-tool-row"><button id="wpUpload" type="button">＋ Загрузить фото</button><button id="wpRemove" type="button">Удалить</button><input id="wpFile" type="file" accept="image/*" hidden></div>
 <div class="st-photo-preview" id="wpPreview">Фото не выбрано</div>
 <label class="st-field" style="margin-top:13px"><span>Непрозрачность изображения <output id="wpAlphaOut">55%</output></span><input id="wpAlpha" type="range" min="0" max="100" step="5" value="55"></label>
-<p class="st-caption">Фото ложится поверх градиента, 0% — скрыто, 100% — полностью видно. Автоматически уменьшается для сохранения в браузере.</p></section>
-  <section class="panel button-panel" id="buttonPanel">
-<div class="panel-head"><h2>Главная кнопка · Meal</h2><span class="muted">цвет отдельно от фона</span></div>
-<p class="muted" style="margin:0 0 12px">При выборе палитры кнопка получает подходящий цвет. Можно заменить его вручную.</p>
-<div class="button-grid" id="buttonGrid"></div>
-<div class="button-editor"><label class="button-main-demo" aria-label="Предпросмотр главной кнопки"><span class="sample-fab" id="sampleFab"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="2.5" width="6" height="12" rx="3"></rect><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 18v3M8 21h8"/></svg></span></label>
-<div class="button-editor-controls"><label class="button-row">Точный оттенок <input id="buttonColor" type="color" aria-label="Точный оттенок кнопки"/><span id="buttonHex">#6a55d1</span></label>
-<label class="button-row">Свечение <input id="buttonShine" type="range" min="0" max="100" step="1"/><output id="shineValue">30%</output></label><button class="action" id="copyButton">Копировать CSS кнопки</button></div></div></section>
-<section class="panel" id="extraButtons"><div class="panel-head"><h2>Непрозрачность кнопок</h2><span class="muted">Day / Meal</span></div>
+<p class="st-caption">Фото ложится поверх градиента, 0% — скрыто, 100% — полностью видно. Автоматически уменьшается для сохранения в браузере.</p></section><section class="panel"><div class="panel-head"><h2>Палитры · <span id="presetApp">Day</span></h2><button class="smallbtn" id="reset">↺ Сброс</button></div><div class="preset-grid" id="presetGrid"></div><div class="save-row"><input id="presetName" placeholder="Название своего варианта" maxlength="28" aria-label="Имя пресета"><button id="savePreset">＋ В общую ленту</button></div><p class="muted" style="margin:11px 0 0">Общая тема применяется ко всем трём приложениям. Копию настроек можно скачать.</p><div class="backup-row"><button class="smallbtn" id="exportConfig">↓ Скачать настройки</button><button class="smallbtn" id="importConfig">↑ Восстановить</button><input id="importConfigFile" type="file" accept=".json,application/json" hidden aria-label="Загрузить настройки из JSON"></div></section></div></details>
+<details class="studio-group" data-group="glass" open><summary><span>🧩 Карточки и кнопки</span><span class="group-chevron">⌄</span></summary><div class="group-body"><section class="panel" id="glassPanel"><div class="panel-head"><h2>Стеклянные карточки и плашки</h2><span class="muted">свой стиль поверх фона</span></div>
+<p class="st-caption">Отдельный редактор заливки, границ, размытия и скругления карточек.</p>
+<div class="st-extra-grid" style="margin-top:14px">
+<label class="st-field"><span>Цвет карточек</span><input type="color" id="glassColor" value="#ffffff"></label>
+<label class="st-field"><span>Цвет границ</span><input type="color" id="borderColor" value="#ffffff"></label>
+<label class="st-field"><span>Заливка <output id="glassAlphaOut">18%</output></span><input type="range" id="glassAlpha" min="0" max="95" step="1"></label>
+<label class="st-field"><span>Граница <output id="borderAlphaOut">36%</output></span><input type="range" id="borderAlpha" min="0" max="100" step="1"></label>
+<label class="st-field"><span>Размытие <output id="glassBlurOut">12px</output></span><input type="range" id="glassBlur" min="0" max="28" step="1"></label>
+<label class="st-field"><span>Скругление <output id="cornerRadiusOut">22px</output></span><input type="range" id="cornerRadius" min="4" max="38" step="1"></label></div>
+<div class="st-tool-row"><button id="resetGlass" type="button">↺ Сбросить стекло</button></div></section><section class="panel" id="extraButtons"><div class="panel-head"><h2>Непрозрачность кнопок</h2><span class="muted">Все три</span></div>
 <div class="st-extra-grid">
 <label class="st-field"><span>Обычные кнопки <output id="stButtonAlphaOut">100%</output></span><input id="stButtonAlpha" type="range" min="35" max="100" step="5"></label>
 <label class="st-field"><span>Центральная кнопка <output id="stFabAlphaOut">100%</output></span><input id="stFabAlpha" type="range" min="35" max="100" step="5"></label>
-</div><p class="st-caption">Прозрачность всей кнопки, включая значок и текст. При 100% исходный вид.</p></section>
-<section class="panel" id="extraFonts"><div class="panel-head"><h2>Редактор шрифтов</h2><span class="muted">Живое превью</span></div>
+</div><p class="st-caption">Прозрачность всей кнопки, включая значок и текст. При 100% исходный вид.</p></section><section class="panel button-panel" id="buttonPanel">
+<div class="panel-head"><h2>Центральная кнопка · <span id="buttonApp">Meal</span></h2><span class="muted">цвет отдельно от фона</span></div>
+<p class="muted" style="margin:0 0 12px">Цвет главной кнопки, её градиент и свечение.</p>
+<div class="button-grid" id="buttonGrid"></div>
+<div class="button-editor"><label class="button-main-demo" aria-label="Предпросмотр главной кнопки"><span class="sample-fab" id="sampleFab"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="2.5" width="6" height="12" rx="3"></rect><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 18v3M8 21h8"/></svg></span></label>
+<div class="button-editor-controls"><label class="button-row">Точный оттенок <input id="buttonColor" type="color" aria-label="Точный оттенок кнопки"/><span id="buttonHex">#6a55d1</span></label>
+<label class="button-row">Свечение <input id="buttonShine" type="range" min="0" max="100" step="1"/><output id="shineValue">30%</output></label><button class="action" id="copyButton">Копировать CSS кнопки</button></div></div></section></div></details>
+<details class="studio-group" data-group="fonts"><summary><span>🔤 Шрифты</span><span class="group-chevron">⌄</span></summary><div class="group-body"><section class="panel" id="extraFonts"><div class="panel-head"><h2>Редактор шрифтов</h2><span class="muted">Живое превью</span></div>
 <div class="st-extra-grid">
 <label class="st-field"><span>Гарнитура</span><select id="stFont"><option value="system">Системный · SF / Segoe</option><option value="rounded">Rounded</option><option value="serif">С засечками</option><option value="georgia">Georgia</option><option value="mono">Моноширинный</option></select></label>
 <label class="st-field"><span>Вес заголовков</span><select id="stWeight"><option value="500">Medium 500</option><option value="600">SemiBold 600</option><option value="700">Bold 700</option><option value="800">ExtraBold 800</option></select></label>
@@ -81,7 +128,7 @@
 <label class="st-field"><span>Высота строки <output id="stLineHeightOut"></output></span><input id="stLineHeight" type="range" min="1" max="2" step=".05"></label></div>
 <div class="st-tool-row"><button id="stResetFont" type="button">↺ Сбросить шрифт</button><button id="stCopyFont" type="button">Копировать CSS</button></div>
 <p class="st-caption">Без загрузки внешних шрифтов. Настройки меняют только внешний вид превью, исходные приложения остаются без изменений.</p>
-</section></main>
+</section></div></details></main>
 </div><div class="toast" id="toast"></div>
 <script>
 (function(){'use strict';
