@@ -141,13 +141,14 @@ const defaults={
  meal:{angle:160,wallpaper:'none',base:['#25cdd4','#1ac7e6','#339ce9','#527be5','#6d58d0'],glows:[g('#71ecb3',.40,5,14,70,42),g('#ffb3e2',.27,95,36,75,46)]},
  sport:{angle:165,wallpaper:'none',base:['#8c75db','#8275e8','#478bf0','#3989ed','#5a53cc'],glows:[g('#ff8fd2',.32,95,20,76,38),g('#9e77fb',.33,7,-10,66,36)],buttonColor:'#6450c3',buttonShine:30}
 };
-const EXTRA_DEFAULT={wallpaperData:'',wallpaperAlpha:55,buttonAlpha:100,fabAlpha:100,fontFamily:'system',fontWeight:700,textSize:15,titleSize:29,spacing:0,lineHeight:1.4};
+const EXTRA_DEFAULT={wallpaperData:'',wallpaperAlpha:55,buttonAlpha:100,fabAlpha:100,fontFamily:'system',fontWeight:700,textSize:15,titleSize:29,spacing:0,lineHeight:1.4,brightness:100,saturationBoost:100,glassColor:'#ffffff',borderColor:'#ffffff',glassAlpha:18,borderAlpha:36,glassBlur:12,cornerRadius:22};
 const FONT_STACKS={system:'-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif',rounded:'ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif',serif:'ui-serif,Georgia,serif',georgia:'Georgia,"Times New Roman",serif',mono:'ui-monospace,Menlo,Consolas,monospace'};
 function normalizeExtra(st){
  for(const [k,v] of Object.entries(EXTRA_DEFAULT))if(st[k]===undefined)st[k]=v;
  if(!FONT_STACKS[st.fontFamily])st.fontFamily='system';
  if(![500,600,700,800].includes(+st.fontWeight))st.fontWeight=700;
- for(const [key,min,max,defaultV] of [['wallpaperAlpha',0,100,55],['buttonAlpha',35,100,100],['fabAlpha',35,100,100],['textSize',12,19,15],['titleSize',22,38,29],['spacing',-1,2,0],['lineHeight',1,2,1.4]]){const v=Number(st[key]);st[key]=Number.isFinite(v)?Math.min(max,Math.max(min,v)):defaultV;}
+ for(const [key,min,max,defaultV] of [['wallpaperAlpha',0,100,55],['buttonAlpha',35,100,100],['fabAlpha',35,100,100],['textSize',12,19,15],['titleSize',22,38,29],['spacing',-1,2,0],['lineHeight',1,2,1.4],['brightness',45,160,100],['saturationBoost',0,180,100],['glassAlpha',0,95,18],['borderAlpha',0,100,36],['glassBlur',0,28,12],['cornerRadius',4,38,22]]){const v=Number(st[key]);st[key]=Number.isFinite(v)?Math.min(max,Math.max(min,v)):defaultV;}
+ if(!/^#[0-9a-f]{6}$/i.test(st.glassColor))st.glassColor='#ffffff';if(!/^#[0-9a-f]{6}$/i.test(st.borderColor))st.borderColor='#ffffff';
  if(typeof st.wallpaperData!=='string'||!/^data:image\/(webp|jpeg|png);base64,/i.test(st.wallpaperData)||st.wallpaperData.length>1500000)st.wallpaperData='';
  if(st.wallpaper==='custom'&&!st.wallpaperData)st.wallpaper='none';
 }
@@ -168,6 +169,14 @@ function themeCSS(st){
  if(st.titleSize!==29)css.push('h1,.top h1{font-size:'+st.titleSize+'px!important}');
  if(st.buttonAlpha!==100)css.push('button:not(.fab):not(#fab),[role=button]{opacity:'+(st.buttonAlpha/100).toFixed(2)+'!important}');
  if(st.fabAlpha!==100)css.push('.fab,#fab{opacity:'+(st.fabAlpha/100).toFixed(2)+'!important}');
+ if(st.glassColor!=='#ffffff'||st.glassAlpha!==18||st.borderColor!=='#ffffff'||st.borderAlpha!==36||st.glassBlur!==12||st.cornerRadius!==22){
+ const c=st.glassColor,b=st.borderColor;
+ const color=(hex,a)=>'rgba('+[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)).join(',')+','+a.toFixed(3)+')';
+ const glass=color(c,st.glassAlpha/100),border=color(b,st.borderAlpha/100);
+ css.push(':root{--glass:'+glass+';--glassBrd:'+border+';--line:'+border+';--radius:'+st.cornerRadius+'px;}');
+ css.push('.card,.rowcard,.pin,.energy,.datePill,.date-pill,.sheet,.glass,.dock-bg,.panel-card{background-color:'+glass+'!important;border-color:'+border+'!important;backdrop-filter:blur('+st.glassBlur+'px)!important;-webkit-backdrop-filter:blur('+st.glassBlur+'px)!important;}');
+ css.push('.card,.rowcard,.pin,.energy,.sheet{border-radius:'+st.cornerRadius+'px!important;}');
+ }
  return css.join('\n');
 }
 const wallpaperCache={day:'',meal:'',sport:''},wallpaperJobs={day:0,meal:0,sport:0};
@@ -190,13 +199,28 @@ function clone(o){return JSON.parse(JSON.stringify(o))}
 const store=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE)||localStorage.getItem('happy-family-color-studio-v8')||localStorage.getItem('happy-family-color-studio-v7')||localStorage.getItem('happy-family-color-studio-v5'))||{}}catch(e){return {}}})();
 const states={},custom={};APP_ORDER.forEach(k=>{const saved=store.states?.[k]||{};states[k]=Object.assign(clone(defaults[k]),saved);states[k].base=saved.base||clone(defaults[k].base);states[k].glows=saved.glows||clone(defaults[k].glows);if(!states[k].wallpaper)states[k].wallpaper='none';normalizeExtra(states[k]);custom[k]=store.custom?.[k]||[]});
 let selected=APP_ORDER.includes(store.ui?.active)?store.ui.active:'meal',activePreview=selected,layerIndex=0,selectedPreset=-1,previewFull=false;
+let sharedPresets=Array.isArray(store.sharedPresets)?store.sharedPresets.slice(0,20).filter(x=>x&&x.name&&x.state&&Array.isArray(x.state.base)):[];
+let activeShared=typeof store.ui?.sharedId==='string'?store.ui.sharedId:'';
+const groupStatus=(store.ui?.openGroups&&typeof store.ui.openGroups==='object')?store.ui.openGroups:{palette:true,glass:true,fonts:false};
+
 if(!states.meal.buttonColor)states.meal.buttonColor='#dc719e';if(!states.sport.buttonColor)states.sport.buttonColor='#6450c3';if(states.meal.buttonShine==null)states.meal.buttonShine=36;
 
-const $=id=>document.getElementById(id);function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({states,custom}));return true}catch(e){toast('Память браузера заполнена. Экспортируй настройки.');return false}}
+const $=id=>document.getElementById(id);function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({states,custom,sharedPresets,ui:{active:selected,sharedId:activeShared,openGroups:groupStatus}}));return true}catch(e){toast('Память браузера заполнена. Экспортируй настройки.');return false}}
 function rgba(hex,a){const v=hex.replace('#','');return 'rgba('+parseInt(v.slice(0,2),16)+','+parseInt(v.slice(2,4),16)+','+parseInt(v.slice(4,6),16)+','+Number(a).toFixed(3)+')'}
 function gradient(s){return 'radial-gradient(ellipse '+s.glows[0].w+'% '+s.glows[0].h+'% at '+s.glows[0].x+'% '+s.glows[0].y+'%, '+rgba(s.glows[0].color,s.glows[0].opacity)+' 0%, transparent 84%),radial-gradient(ellipse '+s.glows[1].w+'% '+s.glows[1].h+'% at '+s.glows[1].x+'% '+s.glows[1].y+'%, '+rgba(s.glows[1].color,s.glows[1].opacity)+' 0%, transparent 84%),linear-gradient('+s.angle+'deg,'+s.base.map((v,i)=>v+' '+baseStops[i]+'%').join(',')+')'}
+
+function shiftChannel(hex,brightness,saturation){
+ const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+ const gray=rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+ return '#'+rgb.map(c=>Math.round(Math.min(255,Math.max(0,(gray+(c-gray)*saturation/100)*brightness/100))).toString(16).padStart(2,'0')).join('');
+}
+function gradientAdjusted(s){
+ if((s.brightness??100)===100&&(s.saturationBoost??100)===100)return gradient(s);
+ const b=s.brightness??100,z=s.saturationBoost??100;
+ return gradient({...s,base:s.base.map(c=>shiftChannel(c,b,z)),glows:s.glows.map(o=>({...o,color:shiftChannel(o.color,b,z)}))});
+}
 function wallpaperLayer(key){return wallpapers[key]?.layer||''}
-function backgroundFor(s,k){const w=s.wallpaper==='custom'&&k&&wallpaperCache[k]?'url("'+wallpaperCache[k]+'") center center / cover no-repeat':wallpaperLayer(s.wallpaper);return w?w+','+gradient(s):gradient(s)}
+function backgroundFor(s,k){const w=s.wallpaper==='custom'&&k&&wallpaperCache[k]?'url("'+wallpaperCache[k]+'") center center / cover no-repeat':wallpaperLayer(s.wallpaper);return w?w+','+gradientAdjusted(s):gradientAdjusted(s)}
 function css(k){let b=backgroundFor(states[k],k);return '/* Happy '+k.toUpperCase()+' — background */\nbody {\n  background: '+b.replaceAll('),', '),\n    ')+';\n}\n\n'+themeCSS(states[k])+(k==='meal'?'\n\n'+buttonCSS():'')}
 function getLayer(){let s=states[selected];return layerIndex<5?s.base[layerIndex]:s.glows[layerIndex-5].color}
 function setLayer(c){let s=states[selected];if(layerIndex<5)s.base[layerIndex]=c;else s.glows[layerIndex-5].color=c;selectedPreset=-1;afterChange()}
@@ -246,9 +270,9 @@ function showCode(){
  const st=states[selected];
  $('code').textContent=st.wallpaper==='custom'?'Фото обоев сохранено. Полный CSS с изображением можно скопировать кнопкой «Скопировать CSS».\n'+themeCSS(st):css(selected);
 }
-function drawControls(){const s=states[selected],gl=layerIndex>4,c=getLayer(),hsl=hexToHSL(c);$('layerName').textContent=layerTitles[layerIndex];$('colorPicker').value=c;$('saturation').value=Math.round(hsl[1]);$('satValue').textContent=Math.round(hsl[1])+'%';$('lightness').value=Math.round(hsl[2]);$('lightValue').textContent=Math.round(hsl[2])+'%';for(const id of ['opacityRow','xRow','yRow'])$(id).style.display=gl?'grid':'none';if(gl){const v=s.glows[layerIndex-5];$('opacity').value=Math.round(v.opacity*100);$('opacityValue').textContent=Math.round(v.opacity*100)+'%';$('glowX').value=v.x;$('xValue').textContent=v.x+'%';$('glowY').value=v.y;$('yValue').textContent=v.y+'%'}$('angle').value=s.angle;$('angleValue').textContent=s.angle+'°';showCode()}
-function afterChange(){persist();applyTo(selected);drawLayers();drawControls();drawWallpapers();drawButtons();createPresets();drawExtras()}
-function draw(){normalizeExtra(states[selected]);document.querySelectorAll('[data-preview]').forEach(x=>x.classList.toggle('on',x.dataset.preview===activePreview));document.querySelectorAll('[data-phone]').forEach(x=>x.classList.toggle('active',x.dataset.phone===activePreview));$('studio').hidden=previewFull;$('presetApp').textContent=selected.charAt(0).toUpperCase()+selected.slice(1);createPresets();drawLayers();drawControls();drawWallpapers();drawButtons();drawExtras();APP_ORDER.forEach(applyTo)}
+function drawControls(){const s=states[selected],gl=layerIndex>4,c=getLayer();$('layerName').textContent=layerTitles[layerIndex];$('colorPicker').value=c;$('saturation').value=s.brightness;$('satValue').textContent=s.brightness+'%';$('lightness').value=s.saturationBoost;$('lightValue').textContent=s.saturationBoost+'%';for(const id of ['opacityRow','xRow','yRow'])$(id).style.display=gl?'grid':'none';if(gl){const v=s.glows[layerIndex-5];$('opacity').value=Math.round(v.opacity*100);$('opacityValue').textContent=Math.round(v.opacity*100)+'%';$('glowX').value=v.x;$('xValue').textContent=v.x+'%';$('glowY').value=v.y;$('yValue').textContent=v.y+'%'}$('angle').value=s.angle;$('angleValue').textContent=s.angle+'°';showCode()}
+function afterChange(){activeShared='';persist();applyTo(selected);drawLayers();drawControls();drawWallpapers();drawButtons();createPresets();drawExtras();drawGlass();drawShared()}
+function draw(){normalizeExtra(states[selected]);document.querySelectorAll('[data-preview]').forEach(x=>x.classList.toggle('on',x.dataset.preview===activePreview));document.querySelectorAll('[data-phone]').forEach(x=>x.classList.toggle('active',x.dataset.phone===activePreview));$('studio').hidden=previewFull;$('presetApp').textContent=selected.charAt(0).toUpperCase()+selected.slice(1);createPresets();drawLayers();drawControls();drawWallpapers();drawButtons();drawExtras();drawGlass();drawShared();APP_ORDER.forEach(applyTo)}
 function scrollPhoneTo(k,behavior='smooth'){const rail=$('phones'),el=document.querySelector('[data-phone="'+k+'"]');if(!rail||!el)return;rail.scrollTo({left:el.offsetLeft-rail.offsetLeft-(rail.clientWidth-el.offsetWidth)/2,behavior})}
 function chooseApp(k,scroll=true){if(!PREVIEW_ORDER.includes(k))return;activePreview=k;selected=k;layerIndex=0;selectedPreset=-1;persist();draw();if(scroll&&matchMedia('(max-width:710px)').matches)scrollPhoneTo(k,'smooth')}
 function drawButtons(){const p=$('buttonPanel');if(!p)return;p.hidden=false;let st=states[selected];const c=st.buttonColor||'#6755d6',shine=st.buttonShine??30;
@@ -274,6 +298,10 @@ function drawWallpapers(){
   el.append(b);
  }
 }
+function drawGlass(){
+ const st=states[selected];for(const k of ['glassColor','borderColor'])$(k).value=st[k];
+ for(const [k,u] of [['glassAlpha','%'],['borderAlpha','%'],['glassBlur',' px'],['cornerRadius',' px']]){$(k).value=st[k];$(k+'Out').textContent=st[k]+u}
+}
 function drawExtras(){
  const st=states[selected];
  for(const [id,key,unit] of [['wpAlpha','wallpaperAlpha','%'],['stButtonAlpha','buttonAlpha','%'],['stFabAlpha','fabAlpha','%'],['stTextSize','textSize',' px'],['stTitleSize','titleSize',' px'],['stSpacing','spacing',' px'],['stLineHeight','lineHeight','']]){
@@ -287,13 +315,17 @@ function drawExtras(){
  $('wpRemove').disabled=!st.wallpaperData;
 }
 function updateExtra(key,value){
- const st=states[selected],old=st[key];st[key]=value;selectedPreset=-1;
- if(!persist()){st[key]=old;drawExtras();return}drawExtras();applyTo(selected);
+ const st=states[selected],old=st[key];st[key]=value;selectedPreset=-1;activeShared='';
+ if(!persist()){st[key]=old;drawExtras();drawGlass();return}drawExtras();drawGlass();applyTo(selected);
  showCode();
  if(key==='wallpaperAlpha')composeWallpaper(selected);
 }
 
 function bind(){
+ for(const k of ['glassAlpha','borderAlpha','glassBlur','cornerRadius'])$(k).oninput=e=>updateExtra(k,Number(e.target.value));
+ for(const k of ['glassColor','borderColor'])$(k).oninput=e=>updateExtra(k,e.target.value);
+ $('resetGlass').onclick=()=>{for(const k of ['glassColor','borderColor','glassAlpha','borderAlpha','glassBlur','cornerRadius'])states[selected][k]=EXTRA_DEFAULT[k];selectedPreset=-1;afterChange()};
+
  $('wpUpload').onclick=()=>$('wpFile').click();
  $('wpFile').onchange=async ev=>{if(ev.target.files?.[0])await uploadWallpaper(ev.target.files[0]);ev.target.value=''};
  $('wpRemove').onclick=()=>{const st=states[selected];st.wallpaperData='';st.wallpaper='none';wallpaperCache[selected]='';++wallpaperJobs[selected];selectedPreset=-1;afterChange();toast('Обои удалены')};
@@ -304,7 +336,7 @@ function bind(){
  $('stCopyFont').onclick=()=>copy(themeCSS(states[selected]));
  document.querySelectorAll('[data-preview]').forEach(b=>b.onclick=()=>chooseApp(b.dataset.preview));document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>chooseApp(b.dataset.pick));$('prev').onclick=()=>chooseApp(PREVIEW_ORDER[Math.max(0,PREVIEW_ORDER.indexOf(activePreview)-1)]);$('next').onclick=()=>chooseApp(PREVIEW_ORDER[Math.min(PREVIEW_ORDER.length-1,PREVIEW_ORDER.indexOf(activePreview)+1)]);
 const ph=$('phones');let scrollEnd;ph.addEventListener('scroll',()=>{if(!matchMedia('(max-width:710px)').matches)return;clearTimeout(scrollEnd);scrollEnd=setTimeout(()=>{const center=ph.getBoundingClientRect().left+ph.clientWidth/2;let best='day',score=Infinity;document.querySelectorAll('[data-phone]').forEach(n=>{const b=n.getBoundingClientRect(),dist=Math.abs(b.left+b.width/2-center);if(dist<score){score=dist;best=n.dataset.phone}});if(best!==activePreview)chooseApp(best,false)},90)},{passive:true});
-$('colorPicker').oninput=e=>setLayer(e.target.value);for(const id of ['saturation','lightness'])$(id).oninput=e=>{const hsl=hexToHSL(getLayer());hsl[id==='saturation'?1:2]=Number(e.target.value);setLayer(hslToHex(...hsl))};for(const [id,prop,fac] of [['opacity','opacity',.01],['glowX','x',1],['glowY','y',1]])$(id).oninput=e=>{states[selected].glows[layerIndex-5][prop]=Number(e.target.value)*fac;selectedPreset=-1;afterChange()};$('angle').oninput=e=>{states[selected].angle=Number(e.target.value);selectedPreset=-1;afterChange()};
+$('colorPicker').oninput=e=>setLayer(e.target.value);$('saturation').oninput=e=>{states[selected].brightness=Number(e.target.value);selectedPreset=-1;afterChange()};$('lightness').oninput=e=>{states[selected].saturationBoost=Number(e.target.value);selectedPreset=-1;afterChange()};for(const [id,prop,fac] of [['opacity','opacity',.01],['glowX','x',1],['glowY','y',1]])$(id).oninput=e=>{states[selected].glows[layerIndex-5][prop]=Number(e.target.value)*fac;selectedPreset=-1;afterChange()};$('angle').oninput=e=>{states[selected].angle=Number(e.target.value);selectedPreset=-1;afterChange()};
 const p=$('palette');['#9773e3','#ff9dd2','#5a93f4','#3e75e4','#6ed9d9','#53bfae','#f0a779','#ffd29b','#ce98ef','#7785f3','#6b55c9','#7ed6ff'].forEach(c=>{const b=document.createElement('button');b.style.background=c;b.title=c;b.onclick=()=>setLayer(c);p.append(b)});
 $('savePreset').onclick=()=>{const name=$('presetName').value.trim();if(!name){toast('Напиши название пресета');$('presetName').focus();return}custom[selected].push({name,state:clone(states[selected])});$('presetName').value='';selectedPreset=schemes[selected].length+custom[selected].length-1;persist();createPresets();toast('Пресет сохранён')};$('reset').onclick=()=>{states[selected]=clone(defaults[selected]);normalizeExtra(states[selected]);wallpaperCache[selected]='';++wallpaperJobs[selected];selectedPreset=0;persist();draw()};$('copyCSS').onclick=()=>copy(css(selected));$('copyAll').onclick=()=>copy(APP_ORDER.map(css).join('\n\n'));$('buttonColor').oninput=e=>{states[selected].buttonColor=e.target.value;selectedPreset=-1;afterChange()};$('buttonShine').oninput=e=>{states[selected].buttonShine=Number(e.target.value);selectedPreset=-1;afterChange()};$('copyButton').onclick=()=>copy(buttonCSS());$('exportConfig').onclick=exportConfig;$('importConfig').onclick=()=>$('importConfigFile').click();$('importConfigFile').onchange=async e=>{if(e.target.files?.[0])await importConfig(e.target.files[0]);e.target.value=''};
 $('fullPreview').onclick=()=>{previewFull=!previewFull;$('studio').hidden=previewFull;$('fullPreview').textContent=previewFull?'Показать настройки':'Скрыть настройки';document.querySelectorAll('.phone').forEach(e=>e.style.height='')};
