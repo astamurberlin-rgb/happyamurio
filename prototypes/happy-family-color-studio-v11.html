@@ -350,7 +350,7 @@ function saveSharedPreset(name){
  const item={id:'theme-'+Date.now()+'-'+Math.floor(Math.random()*1000),name,state:clone(states[selected])};
  sharedPresets.push(item);activeShared=item.id;
  if(!persist()){sharedPresets.pop();activeShared='';return}
- $('sharedName').value='';$('presetName').value='';drawShared();toast('Тема добавлена в общую галерею');
+ $('sharedName').value='';$('presetName').value='';applyShared(item.id);toast('Тема сохранена и применена ко всем трём');
 }
 function applyShared(id){
  const item=sharedPresets.find(p=>p.id===id);if(!item)return;
