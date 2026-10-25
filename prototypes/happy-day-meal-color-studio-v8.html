@@ -107,7 +107,13 @@ function themeCSS(st){
  const family=FONT_STACKS[st.fontFamily]||FONT_STACKS.system;
  const css=['/* Happy Studio: editable visual styles */'];
  if(st.fontFamily!=='system')css.push('html,body,button,input,textarea,select{font-family:'+family+'!important}');
- if(st.textSize!==15)css.push('body{font-size:'+st.textSize+'px!important}');
+ if(st.textSize!==15){
+  const scale=st.textSize/15;
+  css.push('body{font-size:'+st.textSize+'px!important}');
+  for(const [selector,base] of [['.datePill',13.5],['.eyebrow',13],['.note',12.5],['.rowcard b',16],['.rowcard small',12],['.chip',14],['.kv',14.5],['.kv span',13.5],['.btn',14],['.cNam',16],['.tval',19],['.trName',15.5],['.trVal',13],['.tpT',17],['.tpNm',15.5],['.tpAmt',15],['.eT',15],['.eD',14.5],['.scrRow button',13],['.fieldrow',14.5]]){
+   css.push(selector+'{font-size:'+(base*scale).toFixed(2)+'px!important}');
+  }
+ }
  if(st.lineHeight!==1.4)css.push('body{line-height:'+st.lineHeight+'!important}');
  if(st.spacing!==0)css.push('body{letter-spacing:'+st.spacing+'px!important}h1,h2,h3{letter-spacing:'+st.spacing+'px!important}');
  if(st.fontWeight!==700)css.push('h1,h2,h3,.top h1{font-weight:'+st.fontWeight+'!important}');
