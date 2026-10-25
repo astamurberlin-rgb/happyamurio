@@ -1,0 +1,12 @@
+{
+  "name": "Happy Family Color Studio",
+  "short_name": "Happy Studio",
+  "description": "Visual editor for Happy Day, Happy Meal and Happy Sport",
+  "id": "/happyamurio/prototypes/happy-family-color-studio-v11.html",
+  "start_url": "./happy-family-color-studio-v11.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#17162b",
+  "theme_color": "#17162b",
+  "lang": "ru"
+}
