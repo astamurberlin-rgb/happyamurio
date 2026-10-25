@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#15162a"><title>Happy Family Studio v11 · Day / Meal / Sport</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Studio">
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#15162a"><title>Happy Family Studio v11 · Day / Meal / Sport</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Studio"><meta name="theme-color" content="#17162b"><link rel="manifest" href="./happy-family-studio.webmanifest">
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#f6f5ff;color-scheme:dark;background:#161527;font-synthesis:none}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse 70% 55% at 9% -6%,#6851ad46,transparent 82%),radial-gradient(ellipse 58% 42% at 95% 12%,#4069a039,transparent 80%),#161527}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #93c5fd;outline-offset:3px}button:disabled{opacity:.38;cursor:default}
@@ -416,6 +416,7 @@ async function importConfig(file){
  }catch(err){toast('Не удалось восстановить: '+(err.message||'ошибка файла'))}
 }
 function copy(text){if(navigator.clipboard?.writeText){navigator.clipboard.writeText(text).then(()=>toast('CSS скопирован')).catch(()=>fallbackCopy(text))}else fallbackCopy(text)}function fallbackCopy(t){const area=document.createElement('textarea');area.value=t;area.style.position='fixed';area.style.opacity='0';document.body.append(area);area.select();try{document.execCommand('copy');toast('CSS скопирован')}catch(e){toast('Не удалось скопировать CSS')}area.remove()}
-initFrames();bind();restoreGroups();draw();for(const k of APP_ORDER)if(states[k].wallpaper==='custom')composeWallpaper(k);setTimeout(()=>{if(matchMedia('(max-width:710px)').matches)scrollPhoneTo('meal','instant')},150);
+initFrames();bind();restoreGroups();draw();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./happy-family-studio-sw.js').catch(()=>{}))}for(const k of APP_ORDER)if(states[k].wallpaper==='custom')composeWallpaper(k);setTimeout(()=>{if(matchMedia('(max-width:710px)').matches)scrollPhoneTo('meal','instant')},150);
 })();
 </script></body></html>
