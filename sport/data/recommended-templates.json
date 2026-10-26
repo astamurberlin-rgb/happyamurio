@@ -1,0 +1,495 @@
+[
+  {
+    "id": "rec-full-body",
+    "title": "Всё тело · Full body",
+    "kind": "gym",
+    "sport": "gym",
+    "description": "Ноги, жим, тяга и корпус в одной тренировке.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "walking",
+        "warmup",
+        1
+      ],
+      [
+        "dumbbell-goblet-squat",
+        "main",
+        3
+      ],
+      [
+        "dumbbell-bench-press",
+        "main",
+        3
+      ],
+      [
+        "cable-lat-pulldown",
+        "main",
+        3
+      ],
+      [
+        "dumbbell-rdl",
+        "main",
+        3
+      ],
+      [
+        "forearm-plank",
+        "main",
+        2
+      ],
+      [
+        "shoulder-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "dumbbell-goblet-squat": {
+        "reps": 10
+      },
+      "dumbbell-bench-press": {
+        "reps": 10
+      },
+      "cable-lat-pulldown": {
+        "reps": 10
+      },
+      "dumbbell-rdl": {
+        "reps": 10
+      },
+      "forearm-plank": {
+        "seconds": 30
+      }
+    }
+  },
+  {
+    "id": "rec-base-a",
+    "title": "База A · 5×5",
+    "kind": "gym",
+    "sport": "gym",
+    "description": "Присед, жим лёжа, тяга штанги. Чередуется с базой B.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "walking",
+        "warmup",
+        1
+      ],
+      [
+        "barbell-back-squat",
+        "warmup",
+        2
+      ],
+      [
+        "barbell-bench-press",
+        "warmup",
+        2
+      ],
+      [
+        "barbell-row",
+        "warmup",
+        1
+      ],
+      [
+        "barbell-back-squat",
+        "main",
+        5
+      ],
+      [
+        "barbell-bench-press",
+        "main",
+        5
+      ],
+      [
+        "barbell-row",
+        "main",
+        5
+      ],
+      [
+        "shoulder-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "barbell-back-squat": {
+        "reps": 5
+      },
+      "barbell-bench-press": {
+        "reps": 5
+      },
+      "barbell-row": {
+        "reps": 5
+      }
+    },
+    "pair": "rec-base-b"
+  },
+  {
+    "id": "rec-base-b",
+    "title": "База B · 5×5",
+    "kind": "gym",
+    "sport": "gym",
+    "description": "Присед и жим стоя — 5×5, становая тяга — 1×5. Чередуется с базой A.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "walking",
+        "warmup",
+        1
+      ],
+      [
+        "barbell-back-squat",
+        "warmup",
+        2
+      ],
+      [
+        "barbell-overhead-press",
+        "warmup",
+        2
+      ],
+      [
+        "barbell-deadlift",
+        "warmup",
+        2
+      ],
+      [
+        "barbell-back-squat",
+        "main",
+        5
+      ],
+      [
+        "barbell-overhead-press",
+        "main",
+        5
+      ],
+      [
+        "barbell-deadlift",
+        "main",
+        1
+      ],
+      [
+        "shoulder-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "barbell-back-squat": {
+        "reps": 5
+      },
+      "barbell-overhead-press": {
+        "reps": 5
+      },
+      "barbell-deadlift": {
+        "reps": 5
+      }
+    },
+    "pair": "rec-base-a"
+  },
+  {
+    "id": "rec-legs",
+    "title": "Ноги",
+    "kind": "gym",
+    "sport": "gym",
+    "description": "Присед, задняя поверхность бедра и голени.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "walking",
+        "warmup",
+        1
+      ],
+      [
+        "barbell-back-squat",
+        "main",
+        3
+      ],
+      [
+        "machine-seated-curl",
+        "main",
+        3
+      ],
+      [
+        "machine-leg-extension",
+        "main",
+        3
+      ],
+      [
+        "machine-standing-calf",
+        "main",
+        3
+      ],
+      [
+        "quadriceps-stretch",
+        "cooldown",
+        1
+      ],
+      [
+        "calf-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "barbell-back-squat": {
+        "reps": 10
+      },
+      "machine-seated-curl": {
+        "reps": 10
+      },
+      "machine-leg-extension": {
+        "reps": 10
+      },
+      "machine-standing-calf": {
+        "reps": 10
+      }
+    }
+  },
+  {
+    "id": "rec-chest",
+    "title": "Грудь",
+    "kind": "gym",
+    "sport": "gym",
+    "description": "Жимы и сведение рук.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "walking",
+        "warmup",
+        1
+      ],
+      [
+        "barbell-bench-press",
+        "warmup",
+        2
+      ],
+      [
+        "barbell-bench-press",
+        "main",
+        3
+      ],
+      [
+        "dumbbell-incline-press",
+        "main",
+        3
+      ],
+      [
+        "cable-chest-fly",
+        "main",
+        3
+      ],
+      [
+        "chest-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "barbell-bench-press": {
+        "reps": 10
+      },
+      "dumbbell-incline-press": {
+        "reps": 10
+      },
+      "cable-chest-fly": {
+        "reps": 10
+      }
+    }
+  },
+  {
+    "id": "rec-shoulders",
+    "title": "Плечи",
+    "kind": "gym",
+    "sport": "gym",
+    "description": "Жим вверх, средняя и задняя дельты.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "walking",
+        "warmup",
+        1
+      ],
+      [
+        "dumbbell-seated-press",
+        "warmup",
+        2
+      ],
+      [
+        "dumbbell-seated-press",
+        "main",
+        3
+      ],
+      [
+        "dumbbell-lateral-raise",
+        "main",
+        3
+      ],
+      [
+        "machine-reverse-fly",
+        "main",
+        3
+      ],
+      [
+        "shoulder-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "dumbbell-seated-press": {
+        "reps": 10
+      },
+      "dumbbell-lateral-raise": {
+        "reps": 10
+      },
+      "machine-reverse-fly": {
+        "reps": 10
+      }
+    }
+  },
+  {
+    "id": "rec-back",
+    "title": "Спина",
+    "kind": "gym",
+    "sport": "gym",
+    "description": "Вертикальная и горизонтальная тяга.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "walking",
+        "warmup",
+        1
+      ],
+      [
+        "cable-seated-row",
+        "warmup",
+        2
+      ],
+      [
+        "cable-lat-pulldown",
+        "main",
+        3
+      ],
+      [
+        "cable-seated-row",
+        "main",
+        3
+      ],
+      [
+        "dumbbell-single-arm-row",
+        "main",
+        3
+      ],
+      [
+        "shoulder-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "cable-lat-pulldown": {
+        "reps": 10
+      },
+      "cable-seated-row": {
+        "reps": 10
+      },
+      "dumbbell-single-arm-row": {
+        "reps": 10
+      }
+    }
+  },
+  {
+    "id": "rec-swim",
+    "title": "Плавание",
+    "kind": "sea",
+    "sport": "swimming",
+    "description": "Разминка на берегу, плавание и спокойная заминка.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "thoracic-rotation",
+        "warmup",
+        1
+      ],
+      [
+        "shoulder-stretch",
+        "warmup",
+        1
+      ],
+      [
+        "swimming",
+        "main",
+        1
+      ],
+      [
+        "walking",
+        "cooldown",
+        1
+      ],
+      [
+        "calf-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "swimming": {
+        "seconds": 1200
+      }
+    }
+  },
+  {
+    "id": "rec-bars",
+    "title": "Турники",
+    "kind": "bars",
+    "sport": "bars",
+    "description": "Подтягивания, отжимания и корпус.",
+    "recommended": true,
+    "favorite": false,
+    "items": [
+      [
+        "jumping-jack",
+        "warmup",
+        1
+      ],
+      [
+        "pull-up",
+        "main",
+        3
+      ],
+      [
+        "push-up",
+        "main",
+        3
+      ],
+      [
+        "hanging-knee-raise",
+        "main",
+        3
+      ],
+      [
+        "shoulder-stretch",
+        "cooldown",
+        1
+      ]
+    ],
+    "targets": {
+      "pull-up": {
+        "reps": 8
+      },
+      "push-up": {
+        "reps": 10
+      },
+      "hanging-knee-raise": {
+        "reps": 10
+      }
+    }
+  }
+]

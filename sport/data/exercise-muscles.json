@@ -1,0 +1,511 @@
+{
+  "squat": [
+    "legs",
+    "glutes"
+  ],
+  "forward-lunge": [
+    "legs",
+    "glutes"
+  ],
+  "reverse-lunge": [
+    "legs",
+    "glutes"
+  ],
+  "side-lunge": [
+    "legs",
+    "glutes"
+  ],
+  "split-squat": [
+    "legs",
+    "glutes"
+  ],
+  "single-leg-bridge": [
+    "legs",
+    "glutes"
+  ],
+  "glute-bridge": [
+    "legs",
+    "glutes"
+  ],
+  "chair-stand": [
+    "legs",
+    "glutes"
+  ],
+  "step-up": [
+    "legs",
+    "glutes"
+  ],
+  "wall-sit": [
+    "legs",
+    "glutes"
+  ],
+  "barbell-back-squat": [
+    "legs",
+    "glutes"
+  ],
+  "barbell-front-squat": [
+    "legs",
+    "glutes"
+  ],
+  "barbell-sumo-deadlift": [
+    "legs",
+    "glutes"
+  ],
+  "barbell-rdl": [
+    "legs",
+    "glutes"
+  ],
+  "barbell-hip-thrust": [
+    "legs",
+    "glutes"
+  ],
+  "trap-bar-deadlift": [
+    "legs",
+    "glutes"
+  ],
+  "dumbbell-goblet-squat": [
+    "legs",
+    "glutes"
+  ],
+  "dumbbell-split-squat": [
+    "legs",
+    "glutes"
+  ],
+  "dumbbell-reverse-lunge": [
+    "legs",
+    "glutes"
+  ],
+  "dumbbell-step-up": [
+    "legs",
+    "glutes"
+  ],
+  "dumbbell-rdl": [
+    "legs",
+    "glutes"
+  ],
+  "kettlebell-goblet-squat": [
+    "legs",
+    "glutes"
+  ],
+  "kettlebell-deadlift": [
+    "legs",
+    "glutes"
+  ],
+  "kettlebell-swing": [
+    "legs",
+    "glutes"
+  ],
+  "machine-leg-press": [
+    "legs",
+    "glutes"
+  ],
+  "machine-hack-squat": [
+    "legs",
+    "glutes"
+  ],
+  "smith-squat": [
+    "legs",
+    "glutes"
+  ],
+  "machine-hip-abduction": [
+    "legs",
+    "glutes"
+  ],
+  "machine-hip-adduction": [
+    "legs",
+    "glutes"
+  ],
+  "cable-hip-extension": [
+    "legs",
+    "glutes"
+  ],
+  "band-lateral-walk": [
+    "legs",
+    "glutes"
+  ],
+  "calf-raise": [
+    "legs"
+  ],
+  "single-leg-calf-raise": [
+    "legs"
+  ],
+  "machine-leg-extension": [
+    "legs"
+  ],
+  "machine-seated-curl": [
+    "legs"
+  ],
+  "machine-lying-curl": [
+    "legs"
+  ],
+  "machine-standing-calf": [
+    "legs"
+  ],
+  "machine-seated-calf": [
+    "legs"
+  ],
+  "ankle-knee-to-wall": [
+    "legs"
+  ],
+  "quadriceps-stretch": [
+    "legs"
+  ],
+  "calf-stretch": [
+    "legs"
+  ],
+  "single-leg-balance": [
+    "legs"
+  ],
+  "barbell-deadlift": [
+    "legs",
+    "glutes",
+    "back"
+  ],
+  "back-extension": [
+    "back"
+  ],
+  "push-up": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "knee-push-up": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "wall-push-up": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "incline-push-up": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "dip": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "weighted-dip": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "barbell-bench-press": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "barbell-incline-press": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "dumbbell-bench-press": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "dumbbell-incline-press": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "machine-chest-press": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "smith-bench-press": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "machine-assisted-dip": [
+    "chest",
+    "shoulders",
+    "arms"
+  ],
+  "dumbbell-fly": [
+    "chest"
+  ],
+  "machine-chest-fly": [
+    "chest"
+  ],
+  "cable-chest-fly": [
+    "chest"
+  ],
+  "barbell-close-grip-press": [
+    "arms",
+    "chest"
+  ],
+  "pull-up": [
+    "back",
+    "arms"
+  ],
+  "chin-up": [
+    "back",
+    "arms"
+  ],
+  "neutral-pull-up": [
+    "back",
+    "arms"
+  ],
+  "weighted-pull-up": [
+    "back",
+    "arms"
+  ],
+  "band-pull-up": [
+    "back",
+    "arms"
+  ],
+  "inverted-row": [
+    "back",
+    "arms"
+  ],
+  "suspension-row": [
+    "back",
+    "arms"
+  ],
+  "barbell-row": [
+    "back",
+    "arms"
+  ],
+  "dumbbell-single-arm-row": [
+    "back",
+    "arms"
+  ],
+  "dumbbell-chest-supported-row": [
+    "back",
+    "arms"
+  ],
+  "machine-row": [
+    "back",
+    "arms"
+  ],
+  "machine-assisted-pull-up": [
+    "back",
+    "arms"
+  ],
+  "cable-lat-pulldown": [
+    "back",
+    "arms"
+  ],
+  "cable-seated-row": [
+    "back",
+    "arms"
+  ],
+  "cable-straight-arm-pulldown": [
+    "back",
+    "arms"
+  ],
+  "band-row": [
+    "back",
+    "arms"
+  ],
+  "wide-pull-up": [
+    "back",
+    "arms"
+  ],
+  "barbell-overhead-press": [
+    "shoulders",
+    "arms"
+  ],
+  "dumbbell-seated-press": [
+    "shoulders",
+    "arms"
+  ],
+  "dumbbell-standing-press": [
+    "shoulders",
+    "arms"
+  ],
+  "machine-shoulder-press": [
+    "shoulders",
+    "arms"
+  ],
+  "band-overhead-press": [
+    "shoulders",
+    "arms"
+  ],
+  "dumbbell-lateral-raise": [
+    "shoulders"
+  ],
+  "cable-lateral-raise": [
+    "shoulders"
+  ],
+  "dumbbell-rear-fly": [
+    "shoulders",
+    "back"
+  ],
+  "machine-reverse-fly": [
+    "shoulders",
+    "back"
+  ],
+  "cable-face-pull": [
+    "shoulders",
+    "back"
+  ],
+  "band-pull-apart": [
+    "shoulders",
+    "back"
+  ],
+  "barbell-curl": [
+    "arms"
+  ],
+  "ez-triceps-extension": [
+    "arms"
+  ],
+  "dumbbell-curl": [
+    "arms"
+  ],
+  "dumbbell-hammer-curl": [
+    "arms"
+  ],
+  "dumbbell-overhead-extension": [
+    "arms"
+  ],
+  "cable-triceps-pushdown": [
+    "arms"
+  ],
+  "cable-overhead-extension": [
+    "arms"
+  ],
+  "cable-curl": [
+    "arms"
+  ],
+  "band-curl": [
+    "arms"
+  ],
+  "dead-hang": [
+    "arms"
+  ],
+  "crunch": [
+    "core"
+  ],
+  "reverse-crunch": [
+    "core"
+  ],
+  "dead-bug": [
+    "core"
+  ],
+  "forearm-plank": [
+    "core"
+  ],
+  "side-plank": [
+    "core"
+  ],
+  "hanging-knee-raise": [
+    "core"
+  ],
+  "hanging-leg-raise": [
+    "core"
+  ],
+  "ab-wheel": [
+    "core"
+  ],
+  "machine-crunch": [
+    "core"
+  ],
+  "cable-pallof-press": [
+    "core"
+  ],
+  "cable-crunch": [
+    "core"
+  ],
+  "flat-leg-raise": [
+    "core"
+  ],
+  "bird-dog": [
+    "back",
+    "core",
+    "glutes"
+  ],
+  "dumbbell-farmer-carry": [
+    "core",
+    "arms"
+  ],
+  "mountain-climber": [
+    "core",
+    "legs"
+  ],
+  "jumping-jack": [
+    "legs",
+    "glutes",
+    "shoulders"
+  ],
+  "burpee": [
+    "legs",
+    "glutes",
+    "chest",
+    "shoulders",
+    "arms",
+    "core"
+  ],
+  "cat-cow": [
+    "back",
+    "core"
+  ],
+  "thoracic-rotation": [
+    "back",
+    "core"
+  ],
+  "hip-90-90": [
+    "legs",
+    "glutes"
+  ],
+  "hip-flexor-stretch": [
+    "legs",
+    "glutes"
+  ],
+  "hamstring-stretch": [
+    "legs",
+    "glutes"
+  ],
+  "walking": [
+    "legs",
+    "glutes"
+  ],
+  "running": [
+    "legs",
+    "glutes"
+  ],
+  "cycling": [
+    "legs",
+    "glutes"
+  ],
+  "elliptical": [
+    "legs",
+    "glutes"
+  ],
+  "chest-stretch": [
+    "chest",
+    "shoulders"
+  ],
+  "shoulder-stretch": [
+    "shoulders"
+  ],
+  "aerobics": [
+    "legs",
+    "glutes",
+    "core"
+  ],
+  "rowing": [
+    "back",
+    "legs",
+    "glutes",
+    "arms",
+    "core"
+  ],
+  "swimming": [
+    "back",
+    "shoulders",
+    "chest",
+    "arms",
+    "core",
+    "legs",
+    "glutes"
+  ]
+}

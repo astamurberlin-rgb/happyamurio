@@ -1,0 +1,682 @@
+[
+  {
+    "id": "sport:01_barbell",
+    "src": "sport-icons/base/01_barbell.png",
+    "label": "Штанга",
+    "title": "Штанга",
+    "group": "base",
+    "number": 1
+  },
+  {
+    "id": "sport:02_dumbbells",
+    "src": "sport-icons/base/02_dumbbells.png",
+    "label": "Гантели",
+    "title": "Гантели",
+    "group": "base",
+    "number": 2
+  },
+  {
+    "id": "sport:03_kettlebell",
+    "src": "sport-icons/base/03_kettlebell.png",
+    "label": "Гиря",
+    "title": "Гиря",
+    "group": "base",
+    "number": 3
+  },
+  {
+    "id": "sport:04_cable_machine",
+    "src": "sport-icons/base/04_cable_machine.png",
+    "label": "Блочный тренажёр",
+    "title": "Блочный тренажёр",
+    "group": "base",
+    "number": 4
+  },
+  {
+    "id": "sport:05_resistance_band",
+    "src": "sport-icons/base/05_resistance_band.png",
+    "label": "Резинка",
+    "title": "Резинка",
+    "group": "base",
+    "number": 5
+  },
+  {
+    "id": "sport:06_strength_machine",
+    "src": "sport-icons/base/06_strength_machine.png",
+    "label": "Силовой тренажёр",
+    "title": "Силовой тренажёр",
+    "group": "base",
+    "number": 6
+  },
+  {
+    "id": "sport:07_pullup_bar_rings",
+    "src": "sport-icons/base/07_pullup_bar_rings.png",
+    "label": "Турник и кольца",
+    "title": "Турник и кольца",
+    "group": "base",
+    "number": 7
+  },
+  {
+    "id": "sport:08_parallel_bars",
+    "src": "sport-icons/base/08_parallel_bars.png",
+    "label": "Брусья",
+    "title": "Брусья",
+    "group": "base",
+    "number": 8
+  },
+  {
+    "id": "sport:09_bodyweight_pushup",
+    "src": "sport-icons/base/09_bodyweight_pushup.png",
+    "label": "Отжимания",
+    "title": "Отжимания",
+    "group": "base",
+    "number": 9
+  },
+  {
+    "id": "sport:10_running",
+    "src": "sport-icons/base/10_running.png",
+    "label": "Бег",
+    "title": "Бег",
+    "group": "base",
+    "number": 10
+  },
+  {
+    "id": "sport:11_walking",
+    "src": "sport-icons/base/11_walking.png",
+    "label": "Ходьба",
+    "title": "Ходьба",
+    "group": "base",
+    "number": 11
+  },
+  {
+    "id": "sport:12_bicycle",
+    "src": "sport-icons/base/12_bicycle.png",
+    "label": "Велосипед",
+    "title": "Велосипед",
+    "group": "base",
+    "number": 12
+  },
+  {
+    "id": "sport:13_elliptical_trainer",
+    "src": "sport-icons/base/13_elliptical_trainer.png",
+    "label": "Эллипс",
+    "title": "Эллипс",
+    "group": "base",
+    "number": 13
+  },
+  {
+    "id": "sport:14_swimming",
+    "src": "sport-icons/base/14_swimming.png",
+    "label": "Плавание",
+    "title": "Плавание",
+    "group": "base",
+    "number": 14
+  },
+  {
+    "id": "sport:15_stretching",
+    "src": "sport-icons/base/15_stretching.png",
+    "label": "Растяжка",
+    "title": "Растяжка",
+    "group": "base",
+    "number": 15
+  },
+  {
+    "id": "sport:16_yoga_pilates",
+    "src": "sport-icons/base/16_yoga_pilates.png",
+    "label": "Йога и пилатес",
+    "title": "Йога и пилатес",
+    "group": "base",
+    "number": 16
+  },
+  {
+    "id": "sport:17_aerobics_hiit",
+    "src": "sport-icons/base/17_aerobics_hiit.png",
+    "label": "Аэробика",
+    "title": "Аэробика",
+    "group": "base",
+    "number": 17
+  },
+  {
+    "id": "sport:18_warmup",
+    "src": "sport-icons/base/18_warmup.png",
+    "label": "Разминка",
+    "title": "Разминка",
+    "group": "base",
+    "number": 18
+  },
+  {
+    "id": "sport:19_football",
+    "src": "sport-icons/base/19_football.png",
+    "label": "Футбол",
+    "title": "Футбол",
+    "group": "base",
+    "number": 19
+  },
+  {
+    "id": "sport:20_basketball",
+    "src": "sport-icons/base/20_basketball.png",
+    "label": "Баскетбол",
+    "title": "Баскетбол",
+    "group": "base",
+    "number": 20
+  },
+  {
+    "id": "sport:21_volleyball",
+    "src": "sport-icons/base/21_volleyball.png",
+    "label": "Волейбол",
+    "title": "Волейбол",
+    "group": "base",
+    "number": 21
+  },
+  {
+    "id": "sport:22_tennis",
+    "src": "sport-icons/base/22_tennis.png",
+    "label": "Теннис",
+    "title": "Теннис",
+    "group": "base",
+    "number": 22
+  },
+  {
+    "id": "sport:23_table_tennis",
+    "src": "sport-icons/base/23_table_tennis.png",
+    "label": "Настольный теннис",
+    "title": "Настольный теннис",
+    "group": "base",
+    "number": 23
+  },
+  {
+    "id": "sport:24_badminton",
+    "src": "sport-icons/base/24_badminton.png",
+    "label": "Бадминтон",
+    "title": "Бадминтон",
+    "group": "base",
+    "number": 24
+  },
+  {
+    "id": "sport:25_padel_squash",
+    "src": "sport-icons/base/25_padel_squash.png",
+    "label": "Падел и сквош",
+    "title": "Падел и сквош",
+    "group": "base",
+    "number": 25
+  },
+  {
+    "id": "sport:26_boxing",
+    "src": "sport-icons/base/26_boxing.png",
+    "label": "Бокс",
+    "title": "Бокс",
+    "group": "base",
+    "number": 26
+  },
+  {
+    "id": "sport:27_climbing",
+    "src": "sport-icons/base/27_climbing.png",
+    "label": "Скалолазание",
+    "title": "Скалолазание",
+    "group": "base",
+    "number": 27
+  },
+  {
+    "id": "sport:28_skis",
+    "src": "sport-icons/base/28_skis.png",
+    "label": "Лыжи",
+    "title": "Лыжи",
+    "group": "base",
+    "number": 28
+  },
+  {
+    "id": "sport:29_snowboard",
+    "src": "sport-icons/base/29_snowboard.png",
+    "label": "Сноуборд",
+    "title": "Сноуборд",
+    "group": "base",
+    "number": 29
+  },
+  {
+    "id": "sport:30_skates_rollers",
+    "src": "sport-icons/base/30_skates_rollers.png",
+    "label": "Коньки и ролики",
+    "title": "Коньки и ролики",
+    "group": "base",
+    "number": 30
+  },
+  {
+    "id": "sport:31_kayak_water_sport",
+    "src": "sport-icons/base/31_kayak_water_sport.png",
+    "label": "Каяк",
+    "title": "Каяк",
+    "group": "base",
+    "number": 31
+  },
+  {
+    "id": "sport:32_surfing",
+    "src": "sport-icons/base/32_surfing.png",
+    "label": "Сёрфинг",
+    "title": "Сёрфинг",
+    "group": "base",
+    "number": 32
+  },
+  {
+    "id": "sport:33_dancing",
+    "src": "sport-icons/base/33_dancing.png",
+    "label": "Танцы",
+    "title": "Танцы",
+    "group": "base",
+    "number": 33
+  },
+  {
+    "id": "sport:34_hiking_trekking",
+    "src": "sport-icons/base/34_hiking_trekking.png",
+    "label": "Походы",
+    "title": "Походы",
+    "group": "base",
+    "number": 34
+  },
+  {
+    "id": "sport:35_adaptive_sport",
+    "src": "sport-icons/base/35_adaptive_sport.png",
+    "label": "Адаптивный спорт",
+    "title": "Адаптивный спорт",
+    "group": "base",
+    "number": 35
+  },
+  {
+    "id": "sport:36_sneakers",
+    "src": "sport-icons/base/36_sneakers.png",
+    "label": "Кроссовки",
+    "title": "Кроссовки",
+    "group": "base",
+    "number": 36
+  },
+  {
+    "id": "sport:37_other_activity",
+    "src": "sport-icons/base/37_other_activity.png",
+    "label": "Другая активность",
+    "title": "Другая активность",
+    "group": "base",
+    "number": 37
+  },
+  {
+    "id": "sport:09_bodyweight_f_dark",
+    "src": "sport-icons/people/09_bodyweight_f_dark.png",
+    "label": "Отжимания",
+    "title": "Отжимания — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 9
+  },
+  {
+    "id": "sport:09_bodyweight_f_light",
+    "src": "sport-icons/people/09_bodyweight_f_light.png",
+    "label": "Отжимания",
+    "title": "Отжимания — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 9
+  },
+  {
+    "id": "sport:09_bodyweight_m_dark",
+    "src": "sport-icons/people/09_bodyweight_m_dark.png",
+    "label": "Отжимания",
+    "title": "Отжимания — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 9
+  },
+  {
+    "id": "sport:09_bodyweight_m_light",
+    "src": "sport-icons/people/09_bodyweight_m_light.png",
+    "label": "Отжимания",
+    "title": "Отжимания — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 9
+  },
+  {
+    "id": "sport:10_running_f_dark",
+    "src": "sport-icons/people/10_running_f_dark.png",
+    "label": "Бег",
+    "title": "Бег — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 10
+  },
+  {
+    "id": "sport:10_running_f_light",
+    "src": "sport-icons/people/10_running_f_light.png",
+    "label": "Бег",
+    "title": "Бег — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 10
+  },
+  {
+    "id": "sport:10_running_m_dark",
+    "src": "sport-icons/people/10_running_m_dark.png",
+    "label": "Бег",
+    "title": "Бег — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 10
+  },
+  {
+    "id": "sport:10_running_m_light",
+    "src": "sport-icons/people/10_running_m_light.png",
+    "label": "Бег",
+    "title": "Бег — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 10
+  },
+  {
+    "id": "sport:11_walking_f_dark",
+    "src": "sport-icons/people/11_walking_f_dark.png",
+    "label": "Ходьба",
+    "title": "Ходьба — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 11
+  },
+  {
+    "id": "sport:11_walking_f_light",
+    "src": "sport-icons/people/11_walking_f_light.png",
+    "label": "Ходьба",
+    "title": "Ходьба — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 11
+  },
+  {
+    "id": "sport:11_walking_m_dark",
+    "src": "sport-icons/people/11_walking_m_dark.png",
+    "label": "Ходьба",
+    "title": "Ходьба — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 11
+  },
+  {
+    "id": "sport:11_walking_m_light",
+    "src": "sport-icons/people/11_walking_m_light.png",
+    "label": "Ходьба",
+    "title": "Ходьба — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 11
+  },
+  {
+    "id": "sport:14_swimming_f_dark",
+    "src": "sport-icons/people/14_swimming_f_dark.png",
+    "label": "Плавание",
+    "title": "Плавание — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 14
+  },
+  {
+    "id": "sport:14_swimming_f_light",
+    "src": "sport-icons/people/14_swimming_f_light.png",
+    "label": "Плавание",
+    "title": "Плавание — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 14
+  },
+  {
+    "id": "sport:14_swimming_m_dark",
+    "src": "sport-icons/people/14_swimming_m_dark.png",
+    "label": "Плавание",
+    "title": "Плавание — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 14
+  },
+  {
+    "id": "sport:14_swimming_m_light",
+    "src": "sport-icons/people/14_swimming_m_light.png",
+    "label": "Плавание",
+    "title": "Плавание — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 14
+  },
+  {
+    "id": "sport:15_stretching_f_dark",
+    "src": "sport-icons/people/15_stretching_f_dark.png",
+    "label": "Растяжка",
+    "title": "Растяжка — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 15
+  },
+  {
+    "id": "sport:15_stretching_f_light",
+    "src": "sport-icons/people/15_stretching_f_light.png",
+    "label": "Растяжка",
+    "title": "Растяжка — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 15
+  },
+  {
+    "id": "sport:15_stretching_m_dark",
+    "src": "sport-icons/people/15_stretching_m_dark.png",
+    "label": "Растяжка",
+    "title": "Растяжка — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 15
+  },
+  {
+    "id": "sport:15_stretching_m_light",
+    "src": "sport-icons/people/15_stretching_m_light.png",
+    "label": "Растяжка",
+    "title": "Растяжка — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 15
+  },
+  {
+    "id": "sport:16_yoga_f_dark",
+    "src": "sport-icons/people/16_yoga_f_dark.png",
+    "label": "Йога и пилатес",
+    "title": "Йога и пилатес — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 16
+  },
+  {
+    "id": "sport:16_yoga_f_light",
+    "src": "sport-icons/people/16_yoga_f_light.png",
+    "label": "Йога и пилатес",
+    "title": "Йога и пилатес — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 16
+  },
+  {
+    "id": "sport:16_yoga_m_dark",
+    "src": "sport-icons/people/16_yoga_m_dark.png",
+    "label": "Йога и пилатес",
+    "title": "Йога и пилатес — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 16
+  },
+  {
+    "id": "sport:16_yoga_m_light",
+    "src": "sport-icons/people/16_yoga_m_light.png",
+    "label": "Йога и пилатес",
+    "title": "Йога и пилатес — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 16
+  },
+  {
+    "id": "sport:17_aerobics_f_dark",
+    "src": "sport-icons/people/17_aerobics_f_dark.png",
+    "label": "Аэробика",
+    "title": "Аэробика — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 17
+  },
+  {
+    "id": "sport:17_aerobics_f_light",
+    "src": "sport-icons/people/17_aerobics_f_light.png",
+    "label": "Аэробика",
+    "title": "Аэробика — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 17
+  },
+  {
+    "id": "sport:17_aerobics_m_dark",
+    "src": "sport-icons/people/17_aerobics_m_dark.png",
+    "label": "Аэробика",
+    "title": "Аэробика — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 17
+  },
+  {
+    "id": "sport:17_aerobics_m_light",
+    "src": "sport-icons/people/17_aerobics_m_light.png",
+    "label": "Аэробика",
+    "title": "Аэробика — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 17
+  },
+  {
+    "id": "sport:18_warmup_f_dark",
+    "src": "sport-icons/people/18_warmup_f_dark.png",
+    "label": "Разминка",
+    "title": "Разминка — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 18
+  },
+  {
+    "id": "sport:18_warmup_f_light",
+    "src": "sport-icons/people/18_warmup_f_light.png",
+    "label": "Разминка",
+    "title": "Разминка — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 18
+  },
+  {
+    "id": "sport:18_warmup_m_dark",
+    "src": "sport-icons/people/18_warmup_m_dark.png",
+    "label": "Разминка",
+    "title": "Разминка — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 18
+  },
+  {
+    "id": "sport:18_warmup_m_light",
+    "src": "sport-icons/people/18_warmup_m_light.png",
+    "label": "Разминка",
+    "title": "Разминка — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 18
+  },
+  {
+    "id": "sport:27_climbing_f_dark",
+    "src": "sport-icons/people/27_climbing_f_dark.png",
+    "label": "Скалолазание",
+    "title": "Скалолазание — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 27
+  },
+  {
+    "id": "sport:27_climbing_f_light",
+    "src": "sport-icons/people/27_climbing_f_light.png",
+    "label": "Скалолазание",
+    "title": "Скалолазание — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 27
+  },
+  {
+    "id": "sport:27_climbing_m_dark",
+    "src": "sport-icons/people/27_climbing_m_dark.png",
+    "label": "Скалолазание",
+    "title": "Скалолазание — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 27
+  },
+  {
+    "id": "sport:27_climbing_m_light",
+    "src": "sport-icons/people/27_climbing_m_light.png",
+    "label": "Скалолазание",
+    "title": "Скалолазание — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 27
+  },
+  {
+    "id": "sport:32_surfing_f_dark",
+    "src": "sport-icons/people/32_surfing_f_dark.png",
+    "label": "Сёрфинг",
+    "title": "Сёрфинг — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 32
+  },
+  {
+    "id": "sport:32_surfing_f_light",
+    "src": "sport-icons/people/32_surfing_f_light.png",
+    "label": "Сёрфинг",
+    "title": "Сёрфинг — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 32
+  },
+  {
+    "id": "sport:32_surfing_m_dark",
+    "src": "sport-icons/people/32_surfing_m_dark.png",
+    "label": "Сёрфинг",
+    "title": "Сёрфинг — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 32
+  },
+  {
+    "id": "sport:32_surfing_m_light",
+    "src": "sport-icons/people/32_surfing_m_light.png",
+    "label": "Сёрфинг",
+    "title": "Сёрфинг — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 32
+  },
+  {
+    "id": "sport:33_dancing_f_dark",
+    "src": "sport-icons/people/33_dancing_f_dark.png",
+    "label": "Танцы",
+    "title": "Танцы — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 33
+  },
+  {
+    "id": "sport:33_dancing_f_light",
+    "src": "sport-icons/people/33_dancing_f_light.png",
+    "label": "Танцы",
+    "title": "Танцы — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 33
+  },
+  {
+    "id": "sport:33_dancing_m_dark",
+    "src": "sport-icons/people/33_dancing_m_dark.png",
+    "label": "Танцы",
+    "title": "Танцы — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 33
+  },
+  {
+    "id": "sport:33_dancing_m_light",
+    "src": "sport-icons/people/33_dancing_m_light.png",
+    "label": "Танцы",
+    "title": "Танцы — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 33
+  },
+  {
+    "id": "sport:35_adaptive_f_dark",
+    "src": "sport-icons/people/35_adaptive_f_dark.png",
+    "label": "Адаптивный спорт",
+    "title": "Адаптивный спорт — женщина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 35
+  },
+  {
+    "id": "sport:35_adaptive_f_light",
+    "src": "sport-icons/people/35_adaptive_f_light.png",
+    "label": "Адаптивный спорт",
+    "title": "Адаптивный спорт — женщина, светлый оттенок кожи",
+    "group": "people",
+    "number": 35
+  },
+  {
+    "id": "sport:35_adaptive_m_dark",
+    "src": "sport-icons/people/35_adaptive_m_dark.png",
+    "label": "Адаптивный спорт",
+    "title": "Адаптивный спорт — мужчина, тёмный оттенок кожи",
+    "group": "people",
+    "number": 35
+  },
+  {
+    "id": "sport:35_adaptive_m_light",
+    "src": "sport-icons/people/35_adaptive_m_light.png",
+    "label": "Адаптивный спорт",
+    "title": "Адаптивный спорт — мужчина, светлый оттенок кожи",
+    "group": "people",
+    "number": 35
+  }
+]

@@ -1,0 +1,25 @@
+import {readFile} from 'node:fs/promises';
+import {createContext,runInContext} from 'node:vm';
+import assert from 'node:assert/strict';
+const source=await readFile(new URL('../src/set-rest.js',import.meta.url),'utf8');
+const c=createContext({state:{active:{exercises:[{sets:[{reps:10,done:true},{reps:8,done:false}]}]}},document:{addEventListener(){}},persist(){},icon:()=>'',esc:s=>s,durationText:s=>s+' сек'});
+runInContext(await readFile(new URL('../src/set-countdown.js',import.meta.url),'utf8'),c);
+runInContext(source,c);
+runInContext(await readFile(new URL('../src/set-time.js',import.meta.url),'utf8'),c);
+assert.deepEqual(Array.from(runInContext('addSetRest(0)',c)),[0,1]);
+assert.equal(c.state.active.exercises[0].sets.length,2);
+assert.equal(c.state.active.exercises[0].sets[0].restSeconds,undefined);
+assert.equal(c.state.active.exercises[0].sets[1].restSeconds,60);
+runInContext('addSetRest(0)',c);
+assert.equal(c.state.active.exercises[0].sets.length,2,'A second tap must not create a set or duplicate a rest');
+assert.equal(runInContext('editSetRest(0,1,90)',c),true);
+for(const value of ['',-1,0,1.5,3601,'wrong']){c.value=value;assert.equal(runInContext('editSetRest(0,1,value)',c),false)}
+assert.equal(c.state.active.exercises[0].sets[1].restSeconds,90);
+const restored=JSON.parse(JSON.stringify(c.state.active));
+assert.equal(restored.exercises[0].sets[1].restSeconds,90,'A rest remains attached through persistence');
+c.fixture=restored.exercises[0].sets[1];
+assert.match(runInContext('renderReadRest(fixture)',c),/90 сек/);
+runInContext('removeSetRest(0,1)',c);
+assert.equal(c.state.active.exercises[0].sets[1].restSeconds,undefined);
+assert.equal(c.state.active.exercises[0].sets[1].reps,8);
+console.log('Passed: rests attach to the preceding set, validation, persistence, history and removal without changing set counts.');
