@@ -1,4 +1,4 @@
-const CACHE='happy-studio-v1-20261025';
+const CACHE='happy-studio-v2-20261026-carousel';
 const PAGE='./studio.html';
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll([PAGE,'./happy-family-studio.webmanifest'])).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>(k.startsWith('happy-family-studio-')||k.startsWith('happy-studio-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
