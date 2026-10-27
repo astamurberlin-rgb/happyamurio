@@ -257,7 +257,7 @@ function previewSource(key){
 const frameReady={day:false,meal:false,sport:false};
 function packet(k){const st=states[k];return {kind:"HAPPY_COLOR_STUDIO",key:k,bg:backgroundFor(st,k),uiCSS:themeCSS(st),buttonColor:st.buttonColor||"#6755d6",buttonShine:st.buttonShine??30}}
 function notify(k){const f=document.querySelector('[data-phone="'+k+'"] iframe');if(f?.contentWindow)f.contentWindow.postMessage(packet(k),'*')}
-function initFrames(){for(const k of PREVIEW_ORDER){const f=document.querySelector('[data-phone="'+k+'"] iframe');f.addEventListener('load',()=>{frameReady[k]=true;notify(k)});if(k==='sport'){f.src='./happy-sport-color-preview-v1.html';}else{f.srcdoc=previewSource(k);}}window.addEventListener('message',e=>{if(e.data?.kind==='HAPPY_COLOR_STUDIO_READY'&&PREVIEW_ORDER.includes(e.data.key)){frameReady[e.data.key]=true;notify(e.data.key)}})}
+function initFrames(){for(const k of PREVIEW_ORDER){const f=document.querySelector('[data-phone="'+k+'"] iframe');f.addEventListener('load',()=>{frameReady[k]=true;notify(k)});if(k==='sport'){f.src='./happy-sport-color-preview-v2.html';}else{f.srcdoc=previewSource(k);}}window.addEventListener('message',e=>{if(e.data?.kind==='HAPPY_COLOR_STUDIO_READY'&&PREVIEW_ORDER.includes(e.data.key)){frameReady[e.data.key]=true;notify(e.data.key)}})}
 function applyTo(k){const bg=backgroundFor(states[k],k),phone=$('phone-'+k);if(!phone)return;phone.style.background=bg;phone.querySelector('.phone-inner').style.background=bg;notify(k)}
 function toast(text){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),1700)}
 function createPresets(){const el=$('presetGrid');el.innerHTML='';let list=[...(schemes[selected]||[
