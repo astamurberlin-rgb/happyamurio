@@ -1,6 +1,8 @@
 # happyamurio
 
-HappyDay и Happy Meal — прототипы приложений Astamur.
+Happy Day, Happy Meal и Happy Sport — приложения Astamur.
+
+[Карта приложений и постоянные адреса](APPS.md) · [Где хранятся данные](DATA-STORAGE.md)
 
 © 2026 Astamur. Все права защищены. Код, тексты и дизайн в этом репозитории нельзя копировать и использовать без разрешения автора.
 

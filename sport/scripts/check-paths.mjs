@@ -6,7 +6,7 @@ const repo = new URL('../../', import.meta.url);
 const origin = 'https://astamurberlin-rgb.github.io';
 const prefix = '/happyamurio/';
 const pages = ['sport/index.html', 'sport/exercises/pull-up.html',
-  'happyday-v50_1.html', 'happyday-meal-v22.html'];
+  'day/index.html', 'meal/index.html', 'happyday-v50_1.html', 'happyday-meal-v22.html'];
 const checked = new Set();
 const failures = [];
 async function check(ref, page) {
