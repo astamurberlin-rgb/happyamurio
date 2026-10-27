@@ -5,11 +5,11 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.1 |
-| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22 |
-| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 35 |
+| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.2 |
+| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.1 |
+| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36 |
 
-`shared/apps.json` — карта стартовых файлов и версий. Версии также видны в настройках приложений.
+`shared/apps.json` — карта стартовых файлов и версий. Название, версия и дата обновления видны в самом низу настроек каждого приложения.
 `shared/` предназначена для общего кода. В этом шаге вход и синхронизация ещё не вынесены
 из приложений: это отдельная миграция с проверкой совместимости.
 
