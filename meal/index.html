@@ -1345,8 +1345,8 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .mlW:has([data-act="time"]) .tpStp .v{min-width:64px;padding-inline:6px}
 .mlW:has([data-act="time"]) .tpStp button{width:36px;flex:none}
 .mlW:has([data-act="time"]) .tpStp input{max-width:7ch}
-.mlSectionTime{gap:6px;font-size:20px;height:44px;min-width:112px;letter-spacing:0;color:#fff}
-.mlSectionTime svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mlSectionTime{flex:none;justify-content:center;min-width:0;height:auto;gap:8px;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff;font-size:13.5px;font-weight:600;letter-spacing:0;line-height:normal;font-variant-numeric:tabular-nums;cursor:pointer}
+.mlSectionTime svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .mlSectionTime:disabled{opacity:.55}
 [data-screen="sec"]>.top h1{min-width:0;overflow-wrap:anywhere}
 #mealTimeDialog .askBox{max-width:360px}
@@ -1446,7 +1446,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <!-- ПОДОБРАНО: шторка снизу с черточкой -->
   <div class="screen mlSheet" data-screen="match">
     <div class="grip" data-grip aria-label="Закрыть"><i></i></div>
-    <div class="top"><h1 id="mlTitle">Подобрано</h1><label class="mlTime" id="mlTimeBox"><b id="mlTimeTxt">—:—</b><input type="time" id="mlTime" aria-label="Время приёма"></label></div>
+    <div class="top"><h1 id="mlTitle">Подобрано</h1><button class="datePill mlSectionTime" id="mlTimeBox" aria-label="Изменить время приёма пищи"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8v5.6l3.8 2.2"/></svg><b id="mlTimeTxt">—:—</b></button></div>
     <div class="mlRcName" id="mlRcNameBox" hidden><label class="vh" for="mlRcName">Название рецепта</label><input type="text" id="mlRcName" placeholder="Название рецепта" autocomplete="off" autocapitalize="sentences" spellcheck="false"></div>
     <div class="mlMeals" id="mlMeals" role="group" aria-label="Куда записать"></div>
     <div id="mlList"></div>
@@ -1457,7 +1457,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <!-- РАЗДЕЛ: что записано -->
   <div class="screen mlSheet" data-screen="sec">
     <div class="grip" data-grip aria-label="Закрыть"><i></i></div>
-    <div class="top"><h1 id="secName">Раздел</h1><button class="mlTime mlSectionTime" id="secTimeButton" aria-label="Изменить время всего приёма пищи"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8v5.6l3.8 2.2"/></svg><b id="secTimeText">—:—</b></button></div>
+    <div class="top"><h1 id="secName">Раздел</h1><button class="datePill mlSectionTime" id="secTimeButton" aria-label="Изменить время всего приёма пищи"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8v5.6l3.8 2.2"/></svg><b id="secTimeText">—:—</b></button></div>
     <div class="mlTot" id="secTot"></div>
     <div id="secFind"></div>
     <div id="secItems"></div>
@@ -1542,7 +1542,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.3"><div>Happy Meal · v22.3</div><small>Обновлено 27.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.4"><div>Happy Meal · v22.4</div><small>Обновлено 27.10.2026</small></footer>
   </div>
 
 </div>
@@ -1584,7 +1584,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <!-- полоса шторки «Подобрано»: вне прокрутки, иначе на iPhone не держится над доком -->
 <div class="mlSaveBar" id="mlSaveBar"><button class="btn solid mlGo" id="mlSave">Добавить в дневник</button></div>
 
-<div class="ask" id="mealTimeDialog" role="dialog" aria-modal="true" aria-labelledby="mealTimeTitle"><div class="askBox"><h3 id="mealTimeTitle">Время продукта</h3><input class="happy-input" type="time" step="60" id="mealTimeInput" aria-label="Время"><p class="happy-note" id="mealTimeHint"></p><p class="happy-note happy-error" id="mealTimeError" role="status"></p><div class="happy-actions" style="margin-top:16px"><button class="happy-button" id="mealTimeCancel">Отмена</button><button class="happy-button primary" id="mealTimeSave">Сохранить</button></div></div></div>
+<div class="ask" id="mealTimeDialog" role="dialog" aria-modal="true" aria-labelledby="mealTimeTitle"><div class="askBox"><h3 id="mealTimeTitle">Время продукта</h3><input class="happy-input" type="text" inputmode="numeric" maxlength="5" placeholder="ЧЧ:ММ" autocomplete="off" id="mealTimeInput" aria-label="Время"><p class="happy-note" id="mealTimeHint"></p><p class="happy-note happy-error" id="mealTimeError" role="status"></p><div class="happy-actions" style="margin-top:16px"><button class="happy-button" id="mealTimeCancel">Отмена</button><button class="happy-button primary" id="mealTimeSave">Сохранить</button></div></div></div>
 <div class="ask" id="askWrap">
   <div class="askBox">
     <h3 id="askTitle"></h3>
@@ -3325,7 +3325,6 @@ function renderMatch(){
   var ni=document.getElementById('mlRcName'); if(rec&&document.activeElement!==ni) ni.value=M.name||'';
   var clock=mlLastTime(M.lines,M.t,M.tm).t||mlNormTime(M.t);
   document.getElementById('mlTimeTxt').textContent=clock||'—:—';
-  document.getElementById('mlTime').value=clock||'';
   document.getElementById('mlTimeBox').classList.toggle('none',!clock);
   document.getElementById('mlMeals').innerHTML=DB.sections.map(function(S){
     var on=S.k===M.sec;
@@ -3435,9 +3434,9 @@ function edHTML(l,where){
   var h='<div class="mlEd"><div class="mlW"><div class="tpStp"><button data-act="minus" aria-label="Меньше">−</button>'+
     '<label class="v"><input type="number" inputmode="decimal" step="any" data-act="qty" value="'+(Math.round(l.q*10)/10)+'" style="width:'+qtyW(Math.round(l.q*10)/10)+'" aria-label="Сколько, '+escH(l.u)+'"><i>'+escH(STEP_SHORT[l.u]||uLab(l.fid,l.q,l.u))+'</i></label>'+
     '<button data-act="plus" aria-label="Больше">+</button></div>'+(l.u!=='г'?'<span class="mlEq">= '+fmt(l.g)+' г'+(f&&f.porNote&&(l.u==='шт'||l.u==='маленький'||l.u==='большой'||l.u.indexOf('г ')===0)?' '+escH(f.porNote):'')+'</span>':'')+
-    '<span class="mlIcoA"><button class="mlIco" data-act="replace" aria-label="Заменить продукт">'+REPLI+'</button>'+
-    '<button class="mlIco del" data-act="del" aria-label="Удалить продукт">'+BINI+'</button>'+
-    (where==='s'||M.mode!=='recipe'?'<button class="mlIco" data-act="time" aria-label="Изменить время продукта">'+CLOCKI+'</button>':'')+'</span></div>'+
+    '<span class="mlIcoA">'+(where==='s'||M.mode!=='recipe'?'<button class="mlIco" data-act="time" aria-label="Изменить время продукта">'+CLOCKI+'</button>':'')+
+    '<button class="mlIco" data-act="replace" aria-label="Заменить продукт">'+REPLI+'</button>'+
+    '<button class="mlIco del" data-act="del" aria-label="Удалить продукт">'+BINI+'</button></span></div>'+
     '<div class="mlUnits" role="group" aria-label="Мера">'+units.map(function(u){ var on=u===l.u;
       return '<button class="chip'+(on?' on':'')+(own[u]?' own':'')+'" data-act="unit" data-u="'+escH(u)+'" aria-pressed="'+on+'">'+
         (u==='г'?'граммы':u.indexOf('г ')===0?escH(unitName(f,u)):escH(unitName(f,u))+' <small>'+fmt(unitG(f,u))+' г</small>')+'</button>' }).join('')+
@@ -3451,7 +3450,7 @@ function edHTML(l,where){
 }
 /* в поле с числом — коротко, чтобы значки остались в строке */
 var STEP_SHORT={'г с кожурой':'г с кож.','кончик ножа':'кончик','маленький початок':'мал.','большой початок':'бол.'};
-var REPLI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.2 12a7.2 7.2 0 1 1-2.1-5.1"/><path d="M19.4 4.3v4.4H15"/></svg>';
+var REPLI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 0 1 13.5-5.5L20 7M20 3v4h-4M20 14A8 8 0 0 1 6.5 19.5L4 17M4 21v-4h4"/></svg>';
 var BINI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.6 7V5.2c0-.6.4-1 1-1h2.8c.6 0 1 .4 1 1V7"/><path d="M6.6 7l.8 11.6c.1 1 .9 1.7 1.8 1.7h5.6c1 0 1.7-.7 1.8-1.7L17.4 7"/><path d="M10.2 10.8v5.6M13.8 10.8v5.6"/></svg>';
 function unitsReveal(){ document.querySelectorAll('.mlUnits').forEach(function(u){ var a=u.querySelector('.chip.on'); if(!a) return;
   if(a.offsetLeft+a.offsetWidth>u.scrollLeft+u.clientWidth||a.offsetLeft<u.scrollLeft) u.scrollLeft=Math.max(0,a.offsetLeft-16) }) }
@@ -3722,13 +3721,15 @@ function createOwn(name,cb){
   });
 }
 /* время приёма: сменил — раздел подстраивается, если его не выбирали руками */
-document.getElementById('mlTime').addEventListener('change',function(){
-  M.t=mlNormTime(this.value); M.tm=!!M.t;
-  if(M.t)mlStamp(M.lines,M.t);else M.lines.forEach(function(l){delete l.t;delete l.tm});   // время поставлено руками — HappyDay увидит это как «вручную»
-  if(M.t&&!M.man) M.sec=secAt(+M.t.slice(0,2));
-  renderMatch();
+document.getElementById('mlTimeBox').addEventListener('click',function(){
+  var draft=M,date=curDate;
+  mealTimeDialog('Время приёма пищи',mlLastTime(M.lines,M.t,M.tm).t,true).then(function(t){
+    if(!t||M!==draft||curDate!==date)return;
+    M.t=t;M.tm=true;mlStamp(M.lines,t);
+    if(!M.man)M.sec=secAt(+t.slice(0,2));
+    renderMatch();
+  });
 });
-document.getElementById('mlTime').addEventListener('click',function(){ if(this.showPicker) try{ this.showPicker() }catch(_){} });
 document.getElementById('mlAddOwn').addEventListener('click',function(){
   FIND={where:'m',mode:'add',q:''}; renderMatch(); focusFind();
 });
@@ -3757,9 +3758,9 @@ function mealTimeDialog(title,value,all){
     var wrap=document.getElementById('mealTimeDialog'),input=document.getElementById('mealTimeInput'),error=document.getElementById('mealTimeError'),prior=document.activeElement;
     document.getElementById('mealTimeTitle').textContent=title;
     document.getElementById('mealTimeHint').textContent=all?'Это время будет проставлено всем продуктам этого приёма пищи.':'Меняется время только этого продукта.';
-    input.value=mlNormTime(value)||nowHM();error.textContent='';wrap.classList.add('on');input.focus();
+    input.value=mlNormTime(value)||nowHM();error.textContent='';wrap.classList.add('on');input.focus();input.select();
     function done(value){wrap.classList.remove('on');wrap.onclick=null;wrap.onkeydown=null;document.getElementById('mealTimeSave').onclick=null;document.getElementById('mealTimeCancel').onclick=null;if(prior&&document.contains(prior))prior.focus();resolve(value)}
-    function saveTime(){var t=mlNormTime(input.value);if(!t){error.textContent='Укажи время в формате ЧЧ:ММ';return}done(t)}
+    function saveTime(){var raw=input.value.trim();if(/^\d{4}$/.test(raw))raw=raw.slice(0,2)+':'+raw.slice(2);var t=mlNormTime(raw);if(!t){error.textContent='Укажи время в формате ЧЧ:ММ';return}done(t)}
     document.getElementById('mealTimeSave').onclick=saveTime;
     document.getElementById('mealTimeCancel').onclick=function(){done(null)};
     wrap.onclick=function(e){if(e.target===wrap)done(null)};
