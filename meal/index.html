@@ -1431,7 +1431,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 
     <!-- кольцо энергии (общий виджет Meal и Sport): слева кольцо, справа четыре строки; нажатие — съедено → баланс → потрачено -->
     <div class="card erCard" id="mlKb"></div>
-    <p class="note mlKbHint" id="mlKbHint">Микрофон внизу: нажми — скажи, что съел. Удерживай — ещё «Написать» и «Фото».</p>
+    <p class="note mlKbHint" id="mlKbHint">Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото».</p>
 
     <div id="mlSecs" class="mlSecs"></div>
     <div id="mlTaps"></div>
@@ -1543,7 +1543,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.6"><div>Happy Meal · v22.6</div><small>Обновлено 27.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.7"><div>Happy Meal · v22.7</div><small>Обновлено 27.10.2026</small></footer>
   </div>
 
 </div>
@@ -1556,7 +1556,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <span class="gap"></span>
   <button class="tab" data-go="recipes"><svg viewBox="0 0 24 24"><path d="M3.6 18V5.1a2.6 2.6 0 0 1 2.6-2.6h14.2V18Z"/><path d="M3.6 18a2.6 2.6 0 0 0 2.6 2.6h14.2v-2.6"/><path d="M7.3 2.6v15.3"/><g transform="translate(13.85 10.4) scale(.9)"><path d="M-3.35 1.7A2.35 2.35 0 0 1-2.85-3.05 3.05 3.05 0 0 1 2.85-3.05 2.35 2.35 0 0 1 3.35 1.7Z" fill="currentColor" stroke="none"/><rect x="-3.35" y="2.75" width="6.7" height="2.2" rx=".9" fill="currentColor" stroke="none"/></g></svg><span>Рецепты</span></button>
   <button class="tab" data-go="settings"><svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z"/><circle cx="12" cy="12" r="3.3"/></svg><span>Настройки</span></button>
-  <button class="fab" id="fab" aria-label="Сказать, что съел. Удерживай — написать или фото" aria-haspopup="true" aria-expanded="false"><svg class="icMic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><svg class="icX" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg class="icStop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2.2" style="fill:#fff;stroke:none"/></svg></button>
+  <button class="fab" id="fab" aria-label="Записать еду. Удерживай — написать или фото" aria-haspopup="true" aria-expanded="false"><svg class="icMic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><svg class="icX" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg class="icStop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2.2" style="fill:#fff;stroke:none"/></svg></button>
 </div>
 
 <!-- удержание микрофона: сверху вылетают «Написать» и «Фото» -->
@@ -3108,7 +3108,7 @@ function fitTA(){ if(!TA.value){ TA.style.height=''; return } TA.style.height='a
 function syncInput(noSug){
   var v=TA.value;
   document.body.classList.toggle('typed',!!v.trim());
-  document.getElementById('mlMic').setAttribute('aria-label',REC?'Стоп':v.trim()?'Отправить':'Сказать');
+  document.getElementById('mlMic').setAttribute('aria-label',REC?'Стоп':v.trim()?'Отправить':'Диктовка через клавиатуру');
   var list=(noSug||document.activeElement!==TA)?[]:suggest(v);
   document.getElementById('mlSug').innerHTML=list.map(function(s){
     return '<button class="chip" data-word="'+escH(s.word)+'">'+escH(s.label)+'</button>';
@@ -3127,7 +3127,7 @@ document.getElementById('mlSug').addEventListener('click',function(e){
   TA.value=TA.value.replace(/\S*$/,b.dataset.word)+' ';
   TA.focus(); syncInput();
 });
-/* правая кнопка как в Телеграме: пусто — микрофон, есть текст — отправить, идёт запись — стоп */
+/* Пустое поле — подсказка о диктовке клавиатурой; свой текст — отправить. */
 document.getElementById('mlMic').addEventListener('click',function(){
   if(REC){ stopRec(); return }
   if(TA.value.trim()){ sendText(); return }
@@ -3146,7 +3146,7 @@ function msgHTML(m){
   return '<div class="mlMsg me'+(m.live?' live':'')+'" data-mid="'+escH(m.id)+'"><div class="mlB">'+
     (m.kind==='voice'?'<span class="k">'+MICI+(m.live?'слушаю':'голос')+'</span>':'')+'<span class="tx">'+escH(m.text)+'</span></div></div>';
 }
-var HELLO={meal:'Что съел? Скажи, напиши или сфотографируй — можно по частям, я соберу всё в список.',
+var HELLO={meal:'Привет, давай запишем еду.',
   recipe:'Подскажу рецепт или соберу твой. Спроси: «быстрый завтрак с творогом» — или продиктуй состав: «салат: огурец 150 г, помидоры 200 г, ложка масла».'};
 function renderChat(){
   var rec=D.kind==='recipe', n=rec?D.draft.lines.length:D.lines.length, live=D.msgs.some(function(m){ return m.live });
@@ -3229,48 +3229,15 @@ document.getElementById('chatClear').addEventListener('click',function(){
   setTimeout(function(){ if(D!==old) dropChat(old) },5000);
 });
 
-/* ═══════════ ГОЛОС ═══════════
-   Имитация: заготовленные фразы идут в сообщение по словам. В рабочей версии на iPhone
-   диктовка — микрофон клавиатуры iOS в строке «Написать» (в приложении с экрана «Домой»
-   распознавание речи браузера недоступно). */
-var REC=null, RI=0, RIR=0, RT0=0;
-var DICTR=[
-  'Посоветуй быстрый завтрак с творогом.',
-  'Мой салат: огурец двести грамм, помидоры двести, ложка оливкового масла и фета пятьдесят грамм.',
-  'Без масла. Огурцов два.'
-];
-var DICT=[
-  'Так, взвешиваю… творог двести грамм, сверху ложка мёда, и ещё банан. А, и кофе с молоком.',
-  'На обед: гречка двести пятьдесят грамм, куриная грудка сто пятьдесят, два огурца и ложка оливкового масла.',
-  'Овсянка пятьдесят грамм. Молоко — стакан. Нет, полстакана. Черника сто грамм. Щепотка корицы.'
-];
-function recClock(){ var s=Math.floor((Date.now()-RT0)/1000); document.getElementById('mlRecT').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0') }
+/* ═══════════ ДИКТОВКА ═══════════
+   Открытие микрофона не создаёт сообщений и продуктов. Пользователь диктует
+   собственный текст через микрофон клавиатуры и явно отправляет его. */
+var REC=null;
 function startRec(){
-  if(REC) return;
-  TA.blur();
-  var m={id:'m'+(++D.seq),who:'me',kind:'voice',text:'',live:true};
-  D.msgs.push(m);
-  var words=(D.kind==='recipe'?DICTR[RIR++%DICTR.length]:DICT[RI++%DICT.length]).split(' '), i=0;
-  RT0=Date.now(); recClock();
-  document.body.classList.add('rec');
-  renderChat(); syncInput(true);
-  REC=setInterval(function(){
-    i++; m.text=words.slice(0,i).join(' ');
-    var el=document.querySelector('[data-mid="'+m.id+'"] .tx'); if(el) el.textContent=m.text;
-    recClock(); toBottom();
-    if(i>=words.length) stopRec();
-  },170);
+  TA.focus();syncInput();
+  toast('Для диктовки нажми микрофон на клавиатуре');
 }
-function stopRec(){
-  if(!REC) return;
-  clearInterval(REC); REC=null;
-  document.body.classList.remove('rec');
-  syncInput(true);
-  var m=D.msgs.filter(function(x){ return x.live })[0]; if(!m) return;
-  m.live=false;
-  if(!m.text.trim()){ D.msgs.splice(D.msgs.indexOf(m),1); renderChat(); return }
-  botSay(respond(m),380);
-}
+function stopRec(){ REC=null;document.body.classList.remove('rec');syncInput(true) }
 
 /* ═══════════ ФОТО ═══════════
    Снимок уходит в диалог; что на нём — имитация: три заготовленные тарелки по кругу.
@@ -3894,8 +3861,7 @@ function openChat(mode,kind){
   closeFan();
   kind=kind||'meal';
   if(!chatOpen()||D.kind!==kind){ setChat(kind); FIND=null; SECK=null; SOPEN=null; go('chat') }
-  if(mode==='voice') startRec();
-  else if(mode==='text'){ TA.focus(); syncInput() }
+  if(mode==='voice'||mode==='text'){ TA.focus(); syncInput() }
   else if(mode==='photo') PH.click();
 }
 function fabTap(){
