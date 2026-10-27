@@ -48,3 +48,14 @@ ui.M.mode='recipe';assert.ok(!ui.lineHTML({id:'x',fid:'food',q:100,g:100,u:'г'}
 ui.M={mode:'diary',open:'x',lines:[{id:'x'},{id:'y'}]};ui.FIND=null;ui.renderMatch=()=>{};ui.toast=(text,undo)=>{ui.undo=undo};
 runInContext(meal.slice(meal.indexOf('function removeLine('),meal.indexOf('\nfunction onAct(')),ui);ui.removeLine('m','x');assert.equal(ui.M.lines.length,1);ui.undo();assert.equal(ui.M.lines[0].id,'x');ui.removeLine('m','x');ui.M={lines:[]};ui.undo();assert.equal(ui.M.lines.length,0);
 console.log('Passed: per-product/bulk times, defaults, midnight and validation, JSON retention, Meal summary → Day journal including snacks/custom sections, legacy summaries, assistant result deletion in all states and safe undo.');
+
+// Input masking rejects impossible hours/minutes while typing, inserts colon, allows deletion.
+for(const [raw,deleting,want] of [['',false,''],['0',false,'0'],['09',false,'09:'],['093',false,'09:3'],['0930',false,'09:30'],['23:59',false,'23:59'],['25',false,null],['2600',false,null],['35',false,null],['126',false,null],['12345',false,null],['09',true,'09']])assert.equal(c.mlTimeMask(raw,deleting),want);
+// Three counter presses remain three independently editable entries, even within the same minute.
+const counter=createContext({DB:{days:{}},curDate:'2026-10-27',SEQ:0,tapDef:()=>({fid:'coffee',q:1,u:'чашка',t:'Кофе'}),todayISO:()=> '2026-10-27',autoSec:()=> 'dn',nowHM:()=> '19:00',gramsFor:()=>150,save:()=>{},renderDay:()=>{},toast:()=>{},sec:k=>({k,t:k}),portTxt:()=> '1 чашка'});
+counter.day=d=>counter.DB.days[d]||(counter.DB.days[d]={items:[]});
+runInContext(meal.slice(meal.indexOf('function tapAdd('),meal.indexOf('function tapUndo(')),counter);
+for(let i=0;i<3;i++)counter.tapAdd('coffee');
+const cups=counter.day('2026-10-27').items;assert.equal(cups.length,3);assert.equal(new Set(cups.map(x=>x.id)).size,3);assert.ok(cups.every(x=>x.q===1&&x.sec==='dn'));
+c.mlStamp([cups[0]],'09:00');cups[0].sec='am';assert.equal(cups[1].t,'19:00');assert.equal(cups[1].sec,'dn');
+console.log('Passed: live time mask bounds/colon/deletion; counter portions stay separate and can move independently.');

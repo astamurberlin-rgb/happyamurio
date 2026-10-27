@@ -1352,6 +1352,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 #mealTimeDialog .askBox{max-width:360px}
 #mealTimeInput{font-size:24px;min-height:54px;font-variant-numeric:tabular-nums}
 #mealTimeDialog .happy-note{margin-top:12px}
+.mealTimeSectionBox{display:block;margin-top:16px;font-size:14px}.mealTimeSectionBox[hidden]{display:none}.mealTimeSectionBox select{display:block;width:100%;margin-top:6px}.mealTimeSectionBox option{color:#222;background:#fff}
 @media(max-width:360px){.mlW:has([data-act="time"]){row-gap:10px}.mlW:has([data-act="time"]) .tpStp{flex-basis:100%;justify-content:space-between}.mlW:has([data-act="time"]) .tpStp .v{flex:1}.mlW:has([data-act="time"]) .mlIcoA{margin-left:auto}}
 
 /* HAPPY_SHARED_STYLE_START */
@@ -1542,7 +1543,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.4"><div>Happy Meal · v22.4</div><small>Обновлено 27.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.5"><div>Happy Meal · v22.5</div><small>Обновлено 27.10.2026</small></footer>
   </div>
 
 </div>
@@ -1584,7 +1585,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <!-- полоса шторки «Подобрано»: вне прокрутки, иначе на iPhone не держится над доком -->
 <div class="mlSaveBar" id="mlSaveBar"><button class="btn solid mlGo" id="mlSave">Добавить в дневник</button></div>
 
-<div class="ask" id="mealTimeDialog" role="dialog" aria-modal="true" aria-labelledby="mealTimeTitle"><div class="askBox"><h3 id="mealTimeTitle">Время продукта</h3><input class="happy-input" type="text" inputmode="numeric" maxlength="5" placeholder="ЧЧ:ММ" autocomplete="off" id="mealTimeInput" aria-label="Время"><p class="happy-note" id="mealTimeHint"></p><p class="happy-note happy-error" id="mealTimeError" role="status"></p><div class="happy-actions" style="margin-top:16px"><button class="happy-button" id="mealTimeCancel">Отмена</button><button class="happy-button primary" id="mealTimeSave">Сохранить</button></div></div></div>
+<div class="ask" id="mealTimeDialog" role="dialog" aria-modal="true" aria-labelledby="mealTimeTitle"><div class="askBox"><h3 id="mealTimeTitle">Время продукта</h3><input class="happy-input" type="text" inputmode="numeric" maxlength="5" placeholder="ЧЧ:ММ" autocomplete="off" aria-describedby="mealTimeError" id="mealTimeInput" aria-label="Время"><label id="mealTimeSectionBox" class="mealTimeSectionBox">Приём пищи<select class="happy-input" id="mealTimeSection" aria-label="Приём пищи"></select></label><p class="happy-note" id="mealTimeHint"></p><p class="happy-note happy-error" id="mealTimeError" role="status"></p><div class="happy-actions" style="margin-top:16px"><button class="happy-button" id="mealTimeCancel">Отмена</button><button class="happy-button primary" id="mealTimeSave">Сохранить</button></div></div></div>
 <div class="ask" id="askWrap">
   <div class="askBox">
     <h3 id="askTitle"></h3>
@@ -2746,6 +2747,11 @@ function mlEntryTime(line,fallback,manual){
   var own=mlNormTime(line.t),t=own||mlNormTime(fallback);
   return {t:t,tm:!!t&&(own?!!line.tm:!!manual)};
 }
+function mlTimeMask(value,deleting){
+  var digits=String(value||'').replace(/[^0-9]/g,'');
+  if(digits.length>4||digits.length>0&&+digits[0]>2||digits.length>1&&+digits.slice(0,2)>23||digits.length>2&&+digits[2]>5)return null;
+  return digits.length<2?digits:digits.slice(0,2)+(digits.length===2&&deleting?'':':'+digits.slice(2));
+}
 /* MEAL_TIME_MODEL_END */
 
 function r1(x){ return Math.round(x*10)/10 }
@@ -3349,6 +3355,7 @@ function lineHTML(l,where){
   var clock=where==='m'&&M.mode!=='recipe'?mlEntryTime(l,M.t,M.tm).t:where==='s'?mlNormTime(l.t):null;
   if(where==='m'&&clock)sub=clock+' · '+sub;
   if(clock&&l.tm)sub+=' · время вручную';
+  if(where==='m'&&l.sec&&sec(l.sec))sub+=' · '+sec(l.sec).t;
   var kc=f?Math.round(f.k*l.g/100)+' ккал':'';
   var h='<div class="card mlItem'+(warn?' mlWarn':'')+'" data-id="'+escH(l.id)+'" data-w="'+where+'">'+
     /* слева — звёздочка «в избранное» (птичка пользы не несла); у строки, где продукт не найден, — значок вопроса */
@@ -3513,7 +3520,7 @@ function removeLine(w,id){
 }
 function onAct(ev){
   var meal=ev.target.closest('[data-meal]');
-  if(meal){ M.sec=meal.dataset.meal; M.man=true; renderMatch(); return }
+  if(meal){ M.sec=meal.dataset.meal; M.lines.forEach(function(l){delete l.sec}); M.man=true; renderMatch(); return }
   var fa=ev.target.closest('[data-fact]');
   if(fa){ onFind(fa); return }
   var b=ev.target.closest('[data-act]'); if(!b||b.tagName==='INPUT'||b.tagName==='LABEL') return;
@@ -3723,9 +3730,9 @@ function createOwn(name,cb){
 /* время приёма: сменил — раздел подстраивается, если его не выбирали руками */
 document.getElementById('mlTimeBox').addEventListener('click',function(){
   var draft=M,date=curDate;
-  mealTimeDialog('Время приёма пищи',mlLastTime(M.lines,M.t,M.tm).t,true).then(function(t){
-    if(!t||M!==draft||curDate!==date)return;
-    M.t=t;M.tm=true;mlStamp(M.lines,t);
+  mealTimeDialog('Время приёма пищи',mlLastTime(M.lines,M.t,M.tm).t,true).then(function(result){
+    if(!result||M!==draft||curDate!==date)return;
+    var t=result.t;M.t=t;M.tm=true;mlStamp(M.lines,t);
     if(!M.man)M.sec=secAt(+t.slice(0,2));
     renderMatch();
   });
@@ -3740,7 +3747,7 @@ document.getElementById('mlSave').addEventListener('click',function(){
   if(!ls.length||ls.some(function(l){ return l.st==='pick'||l.st==='none' })) return;
   ls.forEach(function(l){ if(String(l.fid).indexOf('bls:')===0&&FOODS[l.fid]&&FOODS[l.fid].tmp) blsUse(l.fid) });
   var e=day(curDate), t=M.t||null, S=sec(M.sec);
-  var add=ls.map(function(l){ var clock=mlEntryTime(l,t,M.tm),x={id:'i'+Date.now().toString(36)+(++SEQ),sec:M.sec,fid:l.fid,q:l.q,u:l.u,g:l.g,t:clock.t,said:l.raw||''}; if(clock.tm)x.tm=1; return x });
+  var add=ls.map(function(l){ var clock=mlEntryTime(l,t,M.tm),x={id:'i'+Date.now().toString(36)+(++SEQ),sec:l.sec||M.sec,fid:l.fid,q:l.q,u:l.u,g:l.g,t:clock.t,said:l.raw||''}; if(clock.tm)x.tm=1; return x });
   e.items=e.items.concat(add); save();
   TA.value=''; syncInput(true);
   if(M.fromChat){ var sq=CH.meal.seq; dropChat(CH.meal); CH.meal=newChat('meal'); CH.meal.seq=sq; if(D.kind==='meal') D=CH.meal }
@@ -3753,33 +3760,41 @@ document.getElementById('mlSave').addEventListener('click',function(){
 });
 
 var CLOCKI='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8v5.6l3.8 2.2"/></svg>';
-function mealTimeDialog(title,value,all){
+function mealTimeDialog(title,value,all,section){
   return new Promise(function(resolve){
     var wrap=document.getElementById('mealTimeDialog'),input=document.getElementById('mealTimeInput'),error=document.getElementById('mealTimeError'),prior=document.activeElement;
+    var picker=document.getElementById('mealTimeSection'),box=document.getElementById('mealTimeSectionBox'),accepted=mlNormTime(value)||nowHM(),before=null;
     document.getElementById('mealTimeTitle').textContent=title;
-    document.getElementById('mealTimeHint').textContent=all?'Это время будет проставлено всем продуктам этого приёма пищи.':'Меняется время только этого продукта.';
-    input.value=mlNormTime(value)||nowHM();error.textContent='';wrap.classList.add('on');input.focus();input.select();
-    function done(value){wrap.classList.remove('on');wrap.onclick=null;wrap.onkeydown=null;document.getElementById('mealTimeSave').onclick=null;document.getElementById('mealTimeCancel').onclick=null;if(prior&&document.contains(prior))prior.focus();resolve(value)}
-    function saveTime(){var raw=input.value.trim();if(/^\d{4}$/.test(raw))raw=raw.slice(0,2)+':'+raw.slice(2);var t=mlNormTime(raw);if(!t){error.textContent='Укажи время в формате ЧЧ:ММ';return}done(t)}
+    box.hidden=all;picker.innerHTML=DB.sections.map(function(s){return '<option value="'+escH(s.k)+'">'+escH(s.t)+'</option>'}).join('');picker.value=section||'';
+    document.getElementById('mealTimeHint').textContent=all?'Это время будет проставлено всем продуктам этого приёма пищи.':'Время и приём пищи меняются только у этой записи.';
+    input.value=accepted;error.textContent='';wrap.classList.add('on');input.focus();input.select();
+    input.onbeforeinput=function(){before={start:input.selectionStart,end:input.selectionEnd}};
+    input.oninput=function(e){
+      var cursor=input.selectionStart,digitsBefore=input.value.slice(0,cursor).replace(/[^0-9]/g,'').length,next=mlTimeMask(input.value,String(e.inputType||'').indexOf('delete')===0);
+      if(next===null){input.value=accepted;error.textContent='Часы: 00–23, минуты: 00–59';if(before)input.setSelectionRange(before.start,before.end);return}
+      accepted=next;input.value=next;error.textContent='';var pos=digitsBefore+(digitsBefore>=2&&next.indexOf(':')>=0?1:0);input.setSelectionRange(pos,pos);
+    };
+    function done(value){wrap.classList.remove('on');wrap.onclick=null;wrap.onkeydown=null;input.oninput=null;input.onbeforeinput=null;document.getElementById('mealTimeSave').onclick=null;document.getElementById('mealTimeCancel').onclick=null;if(prior&&document.contains(prior))prior.focus();resolve(value)}
+    function saveTime(){var t=mlNormTime(input.value);if(!t){error.textContent='Укажи время полностью: ЧЧ:ММ';input.focus();return}if(!all&&!sec(picker.value)){error.textContent='Выбери приём пищи';return}done({t:t,sec:all?null:picker.value})}
     document.getElementById('mealTimeSave').onclick=saveTime;
     document.getElementById('mealTimeCancel').onclick=function(){done(null)};
     wrap.onclick=function(e){if(e.target===wrap)done(null)};
-    wrap.onkeydown=function(e){if(e.key==='Escape'){e.preventDefault();done(null)}else if(e.key==='Enter'){e.preventDefault();saveTime()}else if(e.key==='Tab'){var nodes=[input,document.getElementById('mealTimeCancel'),document.getElementById('mealTimeSave')],i=nodes.indexOf(document.activeElement);if(e.shiftKey&&i===0){e.preventDefault();nodes[2].focus()}else if(!e.shiftKey&&i===2){e.preventDefault();input.focus()}}};
+    wrap.onkeydown=function(e){if(e.key==='Escape'){e.preventDefault();done(null)}else if(e.key==='Enter'&&e.target!==picker){e.preventDefault();saveTime()}else if(e.key==='Tab'){var nodes=[input].concat(all?[]:[picker]).concat([document.getElementById('mealTimeCancel'),document.getElementById('mealTimeSave')]),i=nodes.indexOf(document.activeElement);if(e.shiftKey&&i===0){e.preventDefault();nodes[nodes.length-1].focus()}else if(!e.shiftKey&&i===nodes.length-1){e.preventDefault();input.focus()}}};
   });
 }
 function editProductTime(where,id){
   var line=lineOf(where,id);if(!line||where==='m'&&M.mode==='recipe')return;
   var date=curDate,draft=M,value=mlEntryTime(line,where==='m'?M.t:null,where==='m'&&M.tm).t;
-  mealTimeDialog('Время продукта',value,false).then(function(t){
-    if(!t||curDate!==date||where==='m'&&M!==draft||lineOf(where,id)!==line)return;
-    mlStamp([line],t);keep(where);rer(where);toast('Время продукта: '+t);
+  mealTimeDialog('Время продукта',value,false,line.sec||(where==='m'?M.sec:SECK)).then(function(result){
+    if(!result||curDate!==date||where==='m'&&M!==draft||lineOf(where,id)!==line)return;
+    mlStamp([line],result.t);line.sec=result.sec;keep(where);rer(where);toast(result.t+' → '+sec(result.sec).t);
   });
 }
 function editSectionTime(){
   var date=curDate,key=SECK,items=itemsOf(key);if(!items.length)return;
-  mealTimeDialog('Время приёма пищи',mlLastTime(items).t,true).then(function(t){
-    if(!t||curDate!==date||SECK!==key)return;
-    mlStamp(itemsOf(key),t);save();renderSec();renderDay();toast('Время всего приёма: '+t);
+  mealTimeDialog('Время приёма пищи',mlLastTime(items).t,true).then(function(result){
+    if(!result||curDate!==date||SECK!==key)return;
+    mlStamp(itemsOf(key),result.t);save();renderSec();renderDay();toast('Время всего приёма: '+result.t);
   });
 }
 
