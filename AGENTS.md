@@ -11,3 +11,5 @@
 - Проверки: `npm --prefix sport run build`, `npm --prefix sport run check`, `node scripts/check-layout.mjs`.
 - При выпуске обновить видимую версию и `shared/apps.json`. История версий — Git.
 - Небольшие исправления обозначать номером после точки: например, Sport v36.1, затем v36.2.
+- Общие элементы интерфейса менять в `shared/happy-ui.css` и `shared/happy-ui.js`, образец — Happy Meal. Затем `node scripts/sync-shared-ui.mjs` и сборка Sport. Проверить `node scripts/check-shared-ui.mjs`.
+- Общие функции сохраняют одинаковые названия и порядок: аккаунт, резервная копия, связанные приложения; версия всегда в самом низу. Иконка настроек — шестерёнка.

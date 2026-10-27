@@ -45,18 +45,14 @@ async function syncSportCloud(){
 }
 function paintHappyAccount(){
   const box=$('#happy-account');if(!box)return;
-  const connected=clOn();
-  box.innerHTML=connected?`<strong>${esc(CL.s.email)}</strong><p class="account-status">Общий аккаунт Happy Day, Meal и Sport</p><div class="sheet-actions"><button class="button" data-happy="sync" ${sportCloudBusy?'disabled':''}>Обновить связь</button><button class="button" data-happy="out">Выйти</button></div>`:
-  `<p class="account-status">Войди с той же почтой и паролем, что в Happy Day или Happy Meal.</p><form id="happy-signin"><label class="field">Почта<input name="email" type="email" autocomplete="username" required></label><label class="field">Пароль<input name="password" type="password" autocomplete="current-password" required></label><button class="button" type="button" data-happy="password">Показать пароль</button><button class="button primary" ${CL.busy?'disabled':''}>${CL.busy?'Входим…':'Войти в Happy'}</button></form><p class="fineprint">Первый вход? <a href="../day/#settings" style="color:white">Создать общий аккаунт в Happy Day</a></p>`;
-  const status=CL.busy?'Проверяем аккаунт…':sportCloudBusy?'Передаём сводку…':sportSyncError||CL.err||(connected?(sportLastCloud?'Сводка передана · '+new Date(sportLastCloud).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'Сводка ожидает синхронизации'):'На этом устройстве тренировки уже доступны в связанных Day и Meal. Для других устройств нужен вход.');
-  box.insertAdjacentHTML('beforeend',`<p class="sync-state ${sportSyncError||CL.err?'error':''}" role="status">${esc(status)}</p>`);
+  box.innerHTML=HappyUI.account({sport:true,connected:clOn(),email:CL.s?.email,secondary:HappyUI.lastText(sportLastCloud||CL.last),busy:CL.busy,
+    error:sportSyncError||CL.err,message:sportCloudBusy?'Обновляем связь…':CL.msg,draft:HappyUI.draft(box)});
 }
-document.addEventListener('submit',async e=>{
-  if(e.target.id!=='happy-signin')return;e.preventDefault();
-  if(CL.busy)return;const f=new FormData(e.target);const email=String(f.get('email')),password=String(f.get('password'));CL.busy=true;CL.err='';paintHappyAccount();
-  try{const result=await clSignIn(String(f.get('email')).trim().toLowerCase(),String(f.get('password')),'in');if(result!=='ok')throw new Error('Подтверди почту по ссылке из письма');await syncSportCloud()}catch(err){CL.err=err.message}finally{CL.busy=false;paintHappyAccount();const form=$('#happy-signin');if(form){form.elements.email.value=email;form.elements.password.value=password}}
-});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-happy]');if(!b)return;if(b.dataset.happy==='password'){const input=$('#happy-signin [name=password]');input.type=input.type==='password'?'text':'password';b.textContent=input.type==='password'?'Показать пароль':'Скрыть пароль';return}if(b.dataset.happy==='out'){clSignOut();sportLastCloud=0;sportSyncError='';paintHappyAccount()}else syncSportCloud()});
+function sportAuthDo(action){
+  if(action==='out'){sportLastCloud=0;sportSyncError=''}
+  return HappyUI.act(action,{state:CL,box:()=>$('#happy-account'),signIn:clSignIn,signOut:clSignOut,paint:paintHappyAccount,afterSignIn:syncSportCloud,refresh:syncSportCloud});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-happy]');if(b)sportAuthDo(b.dataset.happy)});
 window.addEventListener('storage',async e=>{if(e.key===CL_KEY){CL.s=null;CL.ck=null;CL.kraw=null;await clLoad();paintHappyAccount()}});
 window.addEventListener('online',syncSportCloud);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSportCloud()});

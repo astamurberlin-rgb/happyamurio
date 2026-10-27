@@ -5,13 +5,14 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.2 |
-| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.1 |
-| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.1 |
+| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.3 |
+| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.2 |
+| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.2 |
 
 `shared/apps.json` — карта стартовых файлов и версий. Название, версия и дата обновления видны в самом низу настроек каждого приложения.
-`shared/` предназначена для общего кода. В этом шаге вход и синхронизация ещё не вынесены
-из приложений: это отдельная миграция с проверкой совместимости.
+`shared/happy-ui.css` и `shared/happy-ui.js` задают общие кнопки, поля и форму аккаунта.
+Все настройки начинаются с блоков «Аккаунт», «Резервная копия», «Связанные приложения».
+Правила оформления: [shared/README.md](shared/README.md). Серверные операции и хранение остаются в приложениях.
 
 `meal-data/` — публичные справочники продуктов, `meal-img/` — иллюстрации еды.
 Они пока остаются в корне для совместимости со старыми версиями; новая Meal использует `../meal-data/` и `../meal-img/`.
@@ -32,7 +33,9 @@
 Использовать отдельные ветки задач, не перезаписывать чужие файлы и не делать force push.
 Перед слиянием проверить изменения коллег. Версии хранить в Git, при выпуске ставить теги вида `meal-v23`.
 GitHub Pages публикует корень `main`; новые папки работают под префиксом `/happyamurio/`.
-Для Sport выполнить `npm --prefix sport run build` и `npm --prefix sport run check`.
+Перед сборкой выполнить `node scripts/sync-shared-ui.mjs`. Затем для Sport выполнить
+`npm --prefix sport run build` и `npm --prefix sport run check`.
+Общие элементы проверить командой `node scripts/check-shared-ui.mjs`.
 Для всех приложений выполнить `node scripts/check-layout.mjs`.
 Коммитить исходники Sport вместе с результатом сборки; его `index.html` вручную не править.
 
