@@ -1,3 +1,4 @@
+import './check-transfer.mjs';
 import {readFile,readdir} from 'node:fs/promises';
 import {Script,createContext,runInContext} from 'node:vm';
 import assert from 'node:assert/strict';

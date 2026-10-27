@@ -31,10 +31,11 @@ const recommendations=await read('data/recommended-templates.json');JSON.parse(r
 const muscles=await read('data/exercise-muscles.json');JSON.parse(muscles);
 const library=(await read('src/library-v2.js')).replace('__RECOMMENDED_TEMPLATES__',()=>recommendations.replaceAll('</','<\\/')).replace('__EXERCISE_MUSCLES__',()=>muscles);
 const energyJs=await read('src/energy-widget.js'),energyCss=await read('src/energy-widget.css');
+const dataTransfer=await read('src/data-transfer.js');
 const html = template
   .replace('</style>',()=>css+energyCss+'\n</style>')
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sportIcons,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,link,cloud,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs].join('\n'))
+  .replace('__APP__', () => [sportIcons,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,link,cloud,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,dataTransfer].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`);
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);

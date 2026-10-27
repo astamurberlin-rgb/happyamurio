@@ -16,7 +16,7 @@ async function clLoad(){
   }catch(e){ CL.s=null; CL.ck=null; CL.kraw=null }
   finally{ CL.ready=true }
 }
-function clStore(){ rawSet(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0})) }
+function clStore(){ try{localStorage.setItem(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0}))}catch{CL.err='Браузер не сохраняет вход. Разреши хранение данных сайта.'} }
 /* понятные слова вместо ответов сервера */
 function clErrText(j,st){
   var m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
@@ -33,7 +33,7 @@ function clErrText(j,st){
 }
 async function clAuth(path,body){
   var r;
-  try{ r=await fetch(CLOUD.url+'/auth/v1/'+path,{method:'POST',headers:{'apikey':CLOUD.key,'Content-Type':'application/json'},body:JSON.stringify(body)}) }
+  try{ r=await fetch(CLOUD.url+'/auth/v1/'+path,{signal:AbortSignal.timeout(20000),method:'POST',headers:{'apikey':CLOUD.key,'Content-Type':'application/json'},body:JSON.stringify(body)}) }
   catch(e){ throw new Error(clErrText(null,0)) }
   var j=null; try{ j=await r.json() }catch(e){}
   if(!r.ok) throw new Error(clErrText(j,r.status));
@@ -52,6 +52,7 @@ async function clDerive(pw,uid){
 }
 /* mode: 'in' — войти, 'up' — создать аккаунт; ответ: 'ok' | 'confirm' (надо подтвердить почту) */
 async function clSignIn(email,pw,mode){
+  email=email.trim().toLowerCase();
   var j=mode==='up'?await clAuth('signup',{email:email,password:pw})
                    :await clAuth('token?grant_type=password',{email:email,password:pw});
   if(!j||!j.access_token) return 'confirm';
@@ -61,7 +62,7 @@ async function clSignIn(email,pw,mode){
 function clSignOut(){
   var t=CL.s&&CL.s.at;
   CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; clStore();
-  if(t) fetch(CLOUD.url+'/auth/v1/logout',{method:'POST',headers:{'apikey':CLOUD.key,'Authorization':'Bearer '+t}}).catch(function(){});
+  if(t) fetch(CLOUD.url+'/auth/v1/logout?scope=local',{method:'POST',headers:{'apikey':CLOUD.key,'Authorization':'Bearer '+t}}).catch(function(){});
 }
 async function clToken(force){
   if(!CL.s) throw new Error('Нет входа');
