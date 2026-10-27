@@ -10,3 +10,4 @@
 - Sites не синхронизируется автоматически: сверять с main до и после работы.
 - Проверки: `npm --prefix sport run build`, `npm --prefix sport run check`, `node scripts/check-layout.mjs`.
 - При выпуске обновить видимую версию и `shared/apps.json`. История версий — Git.
+- Небольшие исправления обозначать номером после точки: например, Sport v36.1, затем v36.2.
