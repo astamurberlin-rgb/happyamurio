@@ -5,8 +5,8 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.3 |
-| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.2 |
+| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.4 |
+| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.3 |
 | Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.2 |
 
 `shared/apps.json` — карта стартовых файлов и версий. Название, версия и дата обновления видны в самом низу настроек каждого приложения.
@@ -37,6 +37,7 @@ GitHub Pages публикует корень `main`; новые папки ра�
 `npm --prefix sport run build` и `npm --prefix sport run check`.
 Общие элементы проверить командой `node scripts/check-shared-ui.mjs`.
 Для всех приложений выполнить `node scripts/check-layout.mjs`.
+Для времени питания и связки с журналом Day выполнить `node scripts/check-meal-times.mjs`.
 Коммитить исходники Sport вместе с результатом сборки; его `index.html` вручную не править.
 
 Sites — отдельная рабочая копия и отдельный домен, автоматического обмена с GitHub нет.
@@ -56,7 +57,13 @@ Sites — отдельная рабочая копия и отдельный д�
 
 Проверены локальные пути, ресурсы, сборка Sport и существующие автоматические проверки.
 Day и Meal перенесены из main с исправлением путей, стартовых адресов и меткой версии.
-Логика дневников и обмена не менялась; старые копии из Sites не использовались.
+При переносе логика дневников и обмена не менялась; старые копии из Sites не использовались.
+
+Meal v22.3 позволяет менять время одного продукта или всех продуктов раздела.
+Время раздела — последнее время продукта; сводка сохраняет его в `sec[k].t`,
+прежние `t0` и `t1` остаются для совместимости. Day v50.4 использует это время
+в ленте и CSV, включая перекусы и свои разделы. Старые сводки читаются с откатом
+на `t1`, затем `t0`. Проверка использует искусственные данные без входа в аккаунт.
 
 У Meal v22 и Sport v35 пока различается локальный формат обмена виджета:
 Meal публикует `hd_link_meal_v1`, Sport ожидает дополненную сводку

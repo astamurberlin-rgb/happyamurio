@@ -1203,7 +1203,7 @@ a.btn{display:inline-block;text-decoration:none}
       <p class="note" id="mealState" style="margin:0 0 10px;color:var(--muted)"></p>
 
     </div>
-    <p class="note">Завтрак, обед и ужин связаны с одноимёнными разделами Happy Meal: время первой еды и калории приходят оттуда сами. Записи в Meal за день есть, а раздел пуст — приём отмечается как пропущенный. Отметки и теги здесь от этого не меняются.</p>
+    <p class="note">Завтрак, обед и ужин связаны с одноимёнными разделами Happy Meal: время приёма пищи и калории приходят оттуда сами. По умолчанию это последнее время продукта; вручную его можно изменить в Meal. Перекусы и свои разделы Meal тоже видны в ленте журнала. Записи в Meal за день есть, а раздел пуст — приём отмечается как пропущенный. Отметки и теги здесь от этого не меняются.</p>
 
 
 
@@ -1213,7 +1213,7 @@ a.btn{display:inline-block;text-decoration:none}
       <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
       <p class="note" id="keyState"></p>
     </div>
-    <footer class="app-version happy-version" data-app-version="50.3"><div>Happy Day · v50.3</div><small>Обновлено 27.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="50.4"><div>Happy Day · v50.4</div><small>Обновлено 27.10.2026</small></footer>
   </div>
 
 </div>
@@ -1522,7 +1522,8 @@ function save(){
    Meal пишет сводку по дням под общий ключ сайта; HappyDay её только читает и держит
    копию в DB.mealLink — для анализа и выгрузки. В Meal отсюда ничего не пишется.
    Пары разделов: Завтрак, Обед, Ужин (ключи am, pm, dn).
-   Приём был — время первой еды (кофе, чай, вода не в счёт) и калории.
+   Приём был — время раздела из Meal (по умолчанию последнее время продукта) и калории.
+   Напитки сами по себе не считаются приёмом пищи.
    В Meal за день есть еда, а раздел пуст — «пропущен»; сегодня — только когда уже
    записан следующий приём, иначе «ещё не было». В Meal за день нет еды — неизвестно,
    а не «не ел». Отметки и теги разделов от этого не меняются. */
@@ -1539,12 +1540,40 @@ function mealState(d,k){
   return 'wait';
 }
 function mealOf(d,k){ var D=mealDay(d); return (D&&D.sec&&D.sec[k])||{} }
+/* DAY_MEAL_TIME_START */
+function mealRecordTime(facts){
+  var m=facts||{},values=[m.t,m.t1,m.t0];
+  for(var i=0;i<values.length;i++){var v=String(values[i]||'').match(/^(\d{1,2}):(\d{2})$/);if(v&&+v[1]<24&&+v[2]<60)return ('0'+(+v[1])).slice(-2)+':'+v[2]}
+  return '';
+}
+function mealExtras(d){
+  var D=mealDay(d);if(!D)return [];
+  var sections=D.sec||{},names={},groups={};
+  ((DB.mealLink&&DB.mealLink.secs)||[]).forEach(function(s){names[s.k]=s.t});
+  Object.keys(sections).forEach(function(k){if(MEAL_SECS.indexOf(k)<0&&sections[k].food)groups[k]=sections[k]});
+  (D.ev||[]).forEach(function(e){
+    if(MEAL_SECS.indexOf(e.s)>=0||sections[e.s])return;
+    var g=groups[e.s]||(groups[e.s]={food:true,k:0,t:''});g.k+=e.k||0;
+    var t=mealRecordTime(e);if(t&&(!g.t||t>g.t))g.t=t;
+  });
+  return Object.keys(groups).map(function(k){return {key:k,title:names[k]||'Приём пищи',facts:groups[k],t:mealRecordTime(groups[k])}});
+}
+function mealJournalEntries(d){
+  var names={};((DB.mealLink&&DB.mealLink.secs)||[]).forEach(function(s){names[s.k]=s.t});
+  return MEAL_SECS.map(function(k){
+    var facts=mealOf(d,k);if(!facts.food)return null;
+    var section=DB.sections.filter(function(s){return s.k===k})[0];
+    return {key:k,title:section?section.t:names[k]||'Приём пищи',facts:facts,t:mealRecordTime(facts)};
+  }).filter(Boolean).concat(mealExtras(d));
+}
+/* DAY_MEAL_TIME_END */
+
 /* строка под названием раздела на экране дня; пусто — остаётся обычная подсказка */
 function mealLine(d,s){
   var st=mealState(d,s.k); if(st!=='ate'&&st!=='skip') return '';
   var m=mealOf(d,s.k);
   if(st==='skip') return (MEAL_GEN[s.t]?'пропущен':'пропуск')+(m.dr?' · только напитки':'');
-  return (m.t0?'еда в '+m.t0:'еда, время не указано')+(m.k?' · '+Math.round(m.k)+' ккал':'');
+  return (mealRecordTime(m)?'еда в '+mealRecordTime(m):'еда, время не указано')+(m.k?' · '+Math.round(m.k)+' ккал':'');
 }
 function mealMin(t){ var p=String(t||'').split(':'); return p.length===2?(+p[0])*60+(+p[1]):null }
 /* строка в шторке раздела: когда ел и через сколько после еды стоит оценка */
@@ -1554,8 +1583,8 @@ function paintCpMeal(){
   if(st){
     var m=mealOf(curDate,s.k), g=MEAL_GEN[s.t];
     if(st==='ate'){
-      txt='Happy Meal: '+(m.t0?'еда в '+m.t0:'время еды не указано')+(m.k?' · '+Math.round(m.k)+' ккал':'');
-      var cp=(day(curDate).cp||{})[s.k], a=mealMin(m.t0), b=cp?mealMin(cp.time):null;
+      txt='Happy Meal: '+(mealRecordTime(m)?'еда в '+mealRecordTime(m):'время еды не указано')+(m.k?' · '+Math.round(m.k)+' ккал':'');
+      var cp=(day(curDate).cp||{})[s.k], a=mealMin(mealRecordTime(m)), b=cp?mealMin(cp.time):null;
       if(a!=null&&b!=null) txt+=b>=a?' · оценка через '+(b-a)+' мин':' · оценка до еды';
     } else if(st==='skip') txt='Happy Meal: '+(g?s.t.toLowerCase()+' пропущен':'«'+s.t+'» пропущен')+(m.dr?' — были только напитки':'');
     else txt='Happy Meal: '+(g?g+' пока нет':'записей пока нет');
@@ -1619,7 +1648,7 @@ function paintMealSet(){
   var L=DB.mealLink, n=L&&L.days?Object.keys(L.days).filter(function(d){ return L.days[d].food }).length:0, txt;
   if(MEAL_SEEN&&L){
     var at=new Date(L.at), when=isoOf(at)===todayISO()?'сегодня в '+String(at.getHours()).padStart(2,'0')+':'+String(at.getMinutes()).padStart(2,'0'):ruDate(isoOf(at));
-    txt='Связано'+(L.src==='cloud'?' через аккаунт':'')+'. Время первой еды и калории завтрака, обеда и ужина приходят из Happy Meal сами. Дней с едой: '+n+', сводка Meal от '+when+'.';
+    txt='Связано'+(L.src==='cloud'?' через аккаунт':'')+'. Время приёмов пищи и калории приходят из Happy Meal сами. Дней с едой: '+n+', сводка Meal от '+when+'.';
   } else if(L) txt='Сейчас данных Happy Meal не видно — в разделах остаются последние полученные (дней с едой: '+n+').';
   else txt='Данных Happy Meal здесь пока нет. Если Meal — отдельная иконка на экране «Домой», войди в один и тот же аккаунт здесь и в Meal (блок «Аккаунт» выше).';
   el.textContent=txt;
@@ -3414,15 +3443,15 @@ function jEvents(d){
   function add(t,o){ o.t=t||''; o.m=t?(t.indexOf('\n')>0?hmMin(t.split('\n')[0]):hmMin(t)):1e4+L.length; L.push(o) }
   var sc=slCalc(e.sleep);
   if(sc&&!sc.man&&sc.w) add(sc.w,{dot:'#8FD0FF',title:'Подъём',sub:'сон '+durTxt(sc.asl)+' · отбой '+sc.b,src:['Health','hk']});
+  mealJournalEntries(d).forEach(function(x){add(x.t,{dot:'#7CE3C9',title:x.title,sub:x.facts.k?Math.round(x.facts.k)+' ккал':'приём пищи',src:['Meal','meal']})});
   DB.sections.forEach(function(s,si){
     var c=(e.cp||{})[s.k]||{}, st=secTime(d,s.k), pills=[], isMeal=MEAL_SECS.indexOf(s.k)>=0, mm=isMeal?mealOf(d,s.k):{};
-    if(isMeal&&mealState(d,s.k)==='ate') add(mm.t0||'',{dot:'#7CE3C9',title:s.t,sub:mm.k?Math.round(mm.k)+' ккал':'приём пищи',src:['Meal','meal']});
     scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') pills.push(m.t+' — '+jWord(m,c[m.k])) });
     var nS=pills.length, tg=Object.keys(c.tags||{}).filter(function(t){ return c.tags[t] });
     pills=pills.concat(tg);
     if(!pills.length) return;
     var sub=[nS?nS+' '+ruPlural(nS,['оценка','оценки','оценок']):'', tg.length?tg.length+' '+ruPlural(tg.length,['тег','тега','тегов']):''].filter(Boolean).join(' · ');
-    var a=mealMin(mm.t0), b=st?mealMin(st.t):null;
+    var a=mealMin(mealRecordTime(mm)), b=st?mealMin(st.t):null;
     if(isMeal&&a!=null&&b!=null&&b>=a) sub='через '+durRu(b-a)+' после еды';
     add(st?st.t:'',{dot:si===0?'#7CE3C9':'#FFD166',title:si>0&&isMeal&&s.w?jCap(s.w):s.t,sub:sub,pills:pills});
   });
@@ -3464,8 +3493,8 @@ function feedHTML(d,ev){
 function dayLine(d){
   var e=DB.days[d]||{}, c=slCalc(e.sleep), p1=[], p2=[];
   if(c&&c.asl) p1.push('сон '+durTxt(c.asl));
-  var meals=MEAL_SECS.filter(function(k){ return mealState(d,k)==='ate' }), kc=meals.reduce(function(a,k){ return a+(mealOf(d,k).k||0) },0);
-  if(meals.length) p1.push(meals.length+' '+ruPlural(meals.length,['приём','приёма','приёмов'])+(kc?' · '+Math.round(kc).toLocaleString('ru-RU')+' ккал':''));
+  var meals=mealJournalEntries(d),mealCount=meals.length,kc=meals.reduce(function(sum,x){return sum+(x.facts.k||0)},0);
+  if(mealCount) p1.push(mealCount+' '+ruPlural(mealCount,['приём','приёма','приёмов'])+(kc?' · '+Math.round(kc).toLocaleString('ru-RU')+' ккал':''));
   var acc={};
   DB.sections.forEach(function(s){ var cp=(e.cp||{})[s.k]||{};
     scalesOf(s.k).forEach(function(m){ if(typeof cp[m.k]==='number'){ (acc[m.k]||(acc[m.k]={m:m,v:[]})).v.push(cp[m.k]) } }) });
@@ -3608,7 +3637,8 @@ function jrCsvText(sel){
       DB.sections.forEach(function(s){ var cp=(e.cp||{})[s.k]||{}, st=secTime(d,s.k);
         scalesOf(s.k).forEach(function(m){ if(typeof cp[m.k]==='number') row(d,st?st.t:'',s.t,m.t,n1(cp[m.k]),isStep(m)?'от '+numTxt(m,m.lo)+' до '+numTxt(m,m.hi):'из '+SMAX,jWord(m,cp[m.k])) });
         Object.keys(cp.tags||{}).forEach(function(g){ if(cp.tags[g]) row(d,st?st.t:'',s.t,'Тег',g) });
-        if(MEAL_SECS.indexOf(s.k)>=0&&mealState(d,s.k)==='ate'){ var mm=mealOf(d,s.k); row(d,mm.t0||'','Еда · Happy Meal',s.t,mm.k?Math.round(mm.k):'','ккал') } });
+      });
+      mealJournalEntries(d).forEach(function(x){row(d,x.t,'Еда · Happy Meal',x.title,x.facts.k?Math.round(x.facts.k):'','ккал')});
       DB.taps.forEach(function(c){ (((e.taps||{})[c.k])||[]).forEach(function(x){ row(d,x.t||'','Счётчики',c.t,x.n||1,'раз') }) });
       DB.counters.forEach(function(c){ var L=cntLogOf(e,c.k);
         if(L.length) L.forEach(function(x){ row(d,x.s||'','Занятия',c.t,Math.round(x.m||0),'мин',x.s&&x.e?x.s+'–'+x.e:'') });

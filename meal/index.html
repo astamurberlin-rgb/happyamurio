@@ -1337,6 +1337,23 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
 :root { --base:#812c4b; }
 body { background:radial-gradient(ellipse 80% 41% at 93% 15%, rgba(243,124,165,.40) 0%, transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%, rgba(157,87,174,.38) 0%, transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)!important; }
 body>.bg { inset:0!important; filter:none!important; animation:none!important; background:radial-gradient(ellipse 80% 41% at 93% 15%, rgba(243,124,165,.40) 0%, transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%, rgba(157,87,174,.38) 0%, transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)!important; }
+
+/* Product and whole-meal timestamps; compact circular controls remain beside quantity. */
+.mlDraftRemove{margin-right:12px;margin-left:2px}
+.mlItem>.mlRow>.mlHead{flex:1;min-width:0;width:auto}
+.mlW:has([data-act="time"]) .tpStp{flex:0 1 auto;min-width:0}
+.mlW:has([data-act="time"]) .tpStp .v{min-width:64px;padding-inline:6px}
+.mlW:has([data-act="time"]) .tpStp button{width:36px;flex:none}
+.mlW:has([data-act="time"]) .tpStp input{max-width:7ch}
+.mlSectionTime{gap:6px;font-size:20px;height:44px;min-width:112px;letter-spacing:0;color:#fff}
+.mlSectionTime svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mlSectionTime:disabled{opacity:.55}
+[data-screen="sec"]>.top h1{min-width:0;overflow-wrap:anywhere}
+#mealTimeDialog .askBox{max-width:360px}
+#mealTimeInput{font-size:24px;min-height:54px;font-variant-numeric:tabular-nums}
+#mealTimeDialog .happy-note{margin-top:12px}
+@media(max-width:360px){.mlW:has([data-act="time"]){row-gap:10px}.mlW:has([data-act="time"]) .tpStp{flex-basis:100%;justify-content:space-between}.mlW:has([data-act="time"]) .tpStp .v{flex:1}.mlW:has([data-act="time"]) .mlIcoA{margin-left:auto}}
+
 /* HAPPY_SHARED_STYLE_START */
 /* Shared Happy controls. Happy Meal is the visual reference. */
 .happy-settings{--happy-line:rgba(255,255,255,.36);--happy-glass:rgba(255,255,255,.17);--happy-muted:rgba(255,255,255,.82);font-size:15px;line-height:1.5}
@@ -1440,7 +1457,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <!-- РАЗДЕЛ: что записано -->
   <div class="screen mlSheet" data-screen="sec">
     <div class="grip" data-grip aria-label="Закрыть"><i></i></div>
-    <div class="top"><h1 id="secName">Раздел</h1></div>
+    <div class="top"><h1 id="secName">Раздел</h1><button class="mlTime mlSectionTime" id="secTimeButton" aria-label="Изменить время всего приёма пищи"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8v5.6l3.8 2.2"/></svg><b id="secTimeText">—:—</b></button></div>
     <div class="mlTot" id="secTot"></div>
     <div id="secFind"></div>
     <div id="secItems"></div>
@@ -1500,7 +1517,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="eyebrow"><span>Разделы</span></div>
     <div id="setSecs" class="mlSet"></div>
     <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить раздел</button></div>
-    <p class="note">Завтрак, обед и ужин — пары разделов HappyDay: время первой еды и калории уходят туда сами, пустой раздел там отмечается как пропущенный приём. Перекус уходит отдельными событиями, каждое со своим временем. Кофе, чай и вода приём пищи не открывают. Эти разделы можно переименовать, но не убрать. Карандаш — название и иконка. Минус убирает свой раздел, если в нём нет записей.</p>
+    <p class="note">Время и калории каждого приёма пищи, включая перекусы и свои разделы, появляются в журнале Happy Day сами. По умолчанию берётся последнее время продукта. Часы в шапке меняют время всех продуктов раздела, часы в карточке — одного продукта. Кофе, чай и вода сами по себе приём пищи не открывают. Завтрак, обед и ужин связаны с одноимёнными разделами Day; пустой раздел там отмечается как пропущенный приём. Эти разделы можно переименовать, но не убрать. Карандаш — название и иконка. Минус убирает свой раздел, если в нём нет записей.</p>
 
     <div class="eyebrow"><span>Счётчики</span></div>
     <div id="setTaps" class="mlSet"></div>
@@ -1525,7 +1542,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.2"><div>Happy Meal · v22.2</div><small>Обновлено 27.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.3"><div>Happy Meal · v22.3</div><small>Обновлено 27.10.2026</small></footer>
   </div>
 
 </div>
@@ -1567,6 +1584,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <!-- полоса шторки «Подобрано»: вне прокрутки, иначе на iPhone не держится над доком -->
 <div class="mlSaveBar" id="mlSaveBar"><button class="btn solid mlGo" id="mlSave">Добавить в дневник</button></div>
 
+<div class="ask" id="mealTimeDialog" role="dialog" aria-modal="true" aria-labelledby="mealTimeTitle"><div class="askBox"><h3 id="mealTimeTitle">Время продукта</h3><input class="happy-input" type="time" step="60" id="mealTimeInput" aria-label="Время"><p class="happy-note" id="mealTimeHint"></p><p class="happy-note happy-error" id="mealTimeError" role="status"></p><div class="happy-actions" style="margin-top:16px"><button class="happy-button" id="mealTimeCancel">Отмена</button><button class="happy-button primary" id="mealTimeSave">Сохранить</button></div></div></div>
 <div class="ask" id="askWrap">
   <div class="askBox">
     <h3 id="askTitle"></h3>
@@ -2633,6 +2651,7 @@ function renderDay(){
   document.getElementById('mlSecs').innerHTML=DB.sections.map(function(S){
     var it=itemsOf(S.k), s=sumOf(it);
     var sub=it.length?it.length+' '+ruPlural(it.length,['продукт','продукта','продуктов']):'пока пусто';
+    var clock=mlLastTime(it).t;if(clock)sub+=' · '+clock;
     return '<button class="card rowcard" data-sec="'+escH(S.k)+'"><span class="ic">'+secIc(S)+'</span>'+
       '<span><b>'+escH(S.t)+'</b><small>'+sub+'</small></span>'+
       (it.length?'<span class="sum">'+Math.round(s.k)+' ккал</span>':'')+'</button>';
@@ -2691,9 +2710,9 @@ function secHint(S){
    Meal — источник: что и когда съедено. После каждого сохранения пишет сводку по дням
    под общий ключ сайта (одно хранилище браузера); HappyDay её только читает.
    Пары разделов: Завтрак, Обед, Ужин ↔ те же разделы HappyDay (по ключам am, pm, dn).
-   Приём пищи в разделе — самая ранняя запись еды: время из шапки «Подобрано» (вручную)
-   или время записи (по умолчанию). Напитки — кофе, чай, вода — приём не открывают.
-   Перекус и свои разделы — отдельные события, каждое со своим временем.
+   Время приёма в разделе — последнее время продукта. Ручное время раздела
+   проставляется всем его продуктам; отдельный продукт можно исправить независимо. Напитки — кофе, чай, вода — приём не открывают.
+   Перекус и свои разделы — отдельные приёмы в журнале, каждый со временем раздела.
    Пропуск и «день не записан» считает HappyDay: ему видно, какой сегодня день. */
 var LINK_KEY='hd_link_meal_v1';
 var HD_PAIR={am:1,pm:1,dn:1};
@@ -2706,13 +2725,37 @@ function isDrink(fid){
   /* BLS: N1 вода, N4 кофе, N6 и N7 чай — напиток всегда; соки, лимонады — только без калорий */
   return /^N[1467]/.test(b)||(f.k||0)<=5;
 }
+/* MEAL_TIME_MODEL_START */
+function mlNormTime(value){
+  var m=String(value||'').match(/^(\d{1,2}):(\d{2})$/);
+  return m&&+m[1]<24&&+m[2]<60?('0'+(+m[1])).slice(-2)+':'+m[2]:null;
+}
+function mlLastTime(items,fallback,manual){
+  var best={t:null,src:null};
+  (items||[]).forEach(function(x){
+    var own=mlNormTime(x.t),t=own||mlNormTime(fallback),hand=own?!!x.tm:!!manual;
+    if(t&&(!best.t||t>best.t||t===best.t&&hand)) best={t:t,src:hand?'hand':'auto'};
+  });
+  return best;
+}
+function mlStamp(items,value){
+  var t=mlNormTime(value);if(!t)return false;
+  (items||[]).forEach(function(x){x.t=t;x.tm=1});return true;
+}
+function mlEntryTime(line,fallback,manual){
+  var own=mlNormTime(line.t),t=own||mlNormTime(fallback);
+  return {t:t,tm:!!t&&(own?!!line.tm:!!manual)};
+}
+/* MEAL_TIME_MODEL_END */
+
 function r1(x){ return Math.round(x*10)/10 }
 function byT(a,b){ return a.t<b.t?-1:a.t>b.t?1:0 }
 function linkFacts(items){
   var food=items.filter(function(x){ return !isDrink(x.fid) }), s=sumOf(items);
   var o={food:food.length>0,n:food.length,dr:items.length-food.length,k:r1(s.k),p:r1(s.p),f:r1(s.f),c:r1(s.c)};
   var timed=food.filter(function(x){ return x.t }).sort(byT);
-  if(timed.length){ o.t0=timed[0].t; o.src=timed[0].tm?'hand':'auto'; o.t1=timed[timed.length-1].t }
+  if(timed.length){ o.t0=timed[0].t; o.t1=timed[timed.length-1].t }
+  var last=mlLastTime(items);if(last.t){o.t=last.t;o.src=last.src}
   return o;
 }
 function linkSummary(){
@@ -2721,8 +2764,8 @@ function linkSummary(){
     var it=(DB.days[d].items||[]).filter(function(x){ return x.fid });
     if(!it.length) return;
     var s=sumOf(it), D={food:it.some(function(x){ return !isDrink(x.fid) }),k:r1(s.k),p:r1(s.p),f:r1(s.f),c:r1(s.c),sec:{},ev:[]};
-    Object.keys(HD_PAIR).forEach(function(k){
-      var li=it.filter(function(x){ return x.sec===k });
+    DB.sections.forEach(function(section){
+      var k=section.k,li=it.filter(function(x){ return x.sec===k });
       if(li.length) D.sec[k]=linkFacts(li);
     });
     /* перекус и свои разделы: записи еды с одним временем — одно событие */
@@ -3280,9 +3323,10 @@ function renderMatch(){
   document.getElementById('mlMeals').hidden=rec;
   document.getElementById('mlRcNameBox').hidden=!rec;
   var ni=document.getElementById('mlRcName'); if(rec&&document.activeElement!==ni) ni.value=M.name||'';
-  document.getElementById('mlTimeTxt').textContent=M.t||'—:—';
-  document.getElementById('mlTime').value=M.t||'';
-  document.getElementById('mlTimeBox').classList.toggle('none',!M.t);
+  var clock=mlLastTime(M.lines,M.t,M.tm).t||mlNormTime(M.t);
+  document.getElementById('mlTimeTxt').textContent=clock||'—:—';
+  document.getElementById('mlTime').value=clock||'';
+  document.getElementById('mlTimeBox').classList.toggle('none',!clock);
   document.getElementById('mlMeals').innerHTML=DB.sections.map(function(S){
     var on=S.k===M.sec;
     return '<button class="chip'+(on?' on':'')+'" data-meal="'+escH(S.k)+'" aria-pressed="'+on+'">'+escH(S.t)+'</button>';
@@ -3303,15 +3347,19 @@ function lineHTML(l,where){
   var name=st==='pick'?cap(l.name)+' — какой?':f?f.n:cap(l.name||'Продукт');
   var src=f?(f.src==='Мои'?'мой продукт':f.kav?f.kav:f.b?'из базы BLS':f.src==='USDA'?'по USDA':f.src==='этикетка'?'по типичной этикетке':f.src==='оценка'?'оценка':'примерно'):(st==='none'?'нет в библиотеке':'');
   var sub=where==='m'?(l.from==='photo'?'с фото'+(src?' · '+src:''):l.from==='recipe'?'из рецепта'+(src?' · '+src:''):l.raw?'«'+l.raw+'»'+(src?' · '+src:''):src):((l.t?l.t+' · ':'')+(l.tap?'счётчик':src));
+  var clock=where==='m'&&M.mode!=='recipe'?mlEntryTime(l,M.t,M.tm).t:where==='s'?mlNormTime(l.t):null;
+  if(where==='m'&&clock)sub=clock+' · '+sub;
+  if(clock&&l.tm)sub+=' · время вручную';
   var kc=f?Math.round(f.k*l.g/100)+' ккал':'';
   var h='<div class="card mlItem'+(warn?' mlWarn':'')+'" data-id="'+escH(l.id)+'" data-w="'+where+'">'+
     /* слева — звёздочка «в избранное» (птичка пользы не несла); у строки, где продукт не найден, — значок вопроса */
-    (warn?'<button class="mlHead" data-act="open" aria-expanded="'+open+'"><span class="st" aria-hidden="true">'+WARNI+'</span>':
+    (warn?'<div class="mlRow"><button class="mlHead" data-act="open" aria-expanded="'+open+'"><span class="st" aria-hidden="true">'+WARNI+'</span>':
       (function(){ var on=!!(f&&(DB.favs||[]).indexOf(f.id)>=0);
         return '<div class="mlRow"><button class="mlFav'+(on?' on':'')+'" data-act="fav" aria-pressed="'+on+'" aria-label="'+(on?'Убрать из избранного':'В избранное')+': '+escH(name)+'">'+STARI+'</button>'+
           '<button class="mlHead" data-act="open" aria-expanded="'+open+'">' })())+
     '<span class="nm"><b>'+escH(name)+'</b><small>'+escH(sub)+'</small></span>'+
-    '<span class="w">'+escH(amtShort(l))+(kc?'<small>'+kc+'</small>':'')+'</span></button>'+(warn?'':'</div>');
+    '<span class="w">'+escH(amtShort(l))+(kc?'<small>'+kc+'</small>':'')+'</span></button>'+
+    (where==='m'&&(warn||!open)?'<button class="mlIco del mlDraftRemove" data-act="del" aria-label="Удалить продукт">'+BINI+'</button>':'')+'</div>';
   if(st==='pick'){
     h+='<div class="mlAsk"><p>Какой именно?</p><div class="chips">'+l.alts.map(function(id){
       return '<button class="chip" data-act="alt" data-fid="'+escH(id)+'">'+escH(FOODS[id].n)+'</button>';
@@ -3323,10 +3371,10 @@ function lineHTML(l,where){
     h+='<div class="mlAsk"><p>'+(sug.length?'Нашёл в базе BLS — какой?':noBls?'Нет в библиотеке. База BLS здесь не открылась — она на сайте':'Нет в библиотеке')+'</p><div class="chips">'+
       sug.map(function(code){ return '<button class="chip bls" data-act="alt" data-fid="bls:'+escH(code)+'">'+escH(blsName(code))+'</button>' }).join('')+
       '<button class="chip" data-act="replace">'+(sug.length?'Другое…':'Найти')+'</button>'+
-      '<button class="chip" data-act="own">Создать своё</button><button class="chip" data-act="del">Убрать</button></div></div>';
+      '<button class="chip" data-act="own">Создать своё</button>'+(where==='m'?'':'<button class="chip" data-act="del">Убрать</button>')+'</div></div>';
   } else {
     if(where==='m'||open) h+=varHTML(l)+famHTML(l);
-    if(open) h+=edHTML(l);
+    if(open) h+=edHTML(l,where);
   }
   return h+'</div>';
 }
@@ -3381,14 +3429,15 @@ function unitList(f,cur){
 /* подпись меры на кнопке: у плодов с размерами «шт» — это «средний»; «г с кожурой» — вес на весах */
 function unitName(f,u){ return u==='шт'&&f&&f.berry?'ягода':u==='шт'&&f&&f.por&&f.por['большой']?'средний':u.indexOf('г ')===0?u.slice(2):u }
 function unitG(f,u){ return (f&&f.por&&f.por[u])||DEF[u]||1 }
-function edHTML(l){
+function edHTML(l,where){
   var f=FOODS[l.fid], units=unitList(f,l.u), own=(f&&f.own)||{};
   var fo=UFORM&&UFORM.id===l.id;
   var h='<div class="mlEd"><div class="mlW"><div class="tpStp"><button data-act="minus" aria-label="Меньше">−</button>'+
     '<label class="v"><input type="number" inputmode="decimal" step="any" data-act="qty" value="'+(Math.round(l.q*10)/10)+'" style="width:'+qtyW(Math.round(l.q*10)/10)+'" aria-label="Сколько, '+escH(l.u)+'"><i>'+escH(STEP_SHORT[l.u]||uLab(l.fid,l.q,l.u))+'</i></label>'+
     '<button data-act="plus" aria-label="Больше">+</button></div>'+(l.u!=='г'?'<span class="mlEq">= '+fmt(l.g)+' г'+(f&&f.porNote&&(l.u==='шт'||l.u==='маленький'||l.u==='большой'||l.u.indexOf('г ')===0)?' '+escH(f.porNote):'')+'</span>':'')+
     '<span class="mlIcoA"><button class="mlIco" data-act="replace" aria-label="Заменить продукт">'+REPLI+'</button>'+
-    '<button class="mlIco del" data-act="del" aria-label="Убрать">'+BINI+'</button></span></div>'+
+    '<button class="mlIco del" data-act="del" aria-label="Удалить продукт">'+BINI+'</button>'+
+    (where==='s'||M.mode!=='recipe'?'<button class="mlIco" data-act="time" aria-label="Изменить время продукта">'+CLOCKI+'</button>':'')+'</span></div>'+
     '<div class="mlUnits" role="group" aria-label="Мера">'+units.map(function(u){ var on=u===l.u;
       return '<button class="chip'+(on?' on':'')+(own[u]?' own':'')+'" data-act="unit" data-u="'+escH(u)+'" aria-pressed="'+on+'">'+
         (u==='г'?'граммы':u.indexOf('г ')===0?escH(unitName(f,u)):escH(unitName(f,u))+' <small>'+fmt(unitG(f,u))+' г</small>')+'</button>' }).join('')+
@@ -3453,7 +3502,9 @@ function setUnit(l,u){
   else { l.u=u; l.q=1; l.g=gramsFor(l.fid,1,u) }
 }
 function removeLine(w,id){
-  if(w==='m'){ M.lines=M.lines.filter(function(x){ return x.id!==id }); if(M.open===id) M.open=null; renderMatch(); return }
+  if(w==='m'){ var draft=M,idx=M.lines.findIndex(function(x){return x.id===id});if(idx<0)return;
+    var removed=M.lines.splice(idx,1)[0];if(M.open===id)M.open=null;if(FIND&&FIND.where==='m'&&FIND.id===id)FIND=null;renderMatch();
+    toast('Продукт убран из подбора',function(){if(M!==draft)return;draft.lines.splice(idx,0,removed);renderMatch()});return }
   var e=day(curDate), idx=-1;
   e.items.forEach(function(x,i){ if(x.id===id) idx=i });
   if(idx<0) return;
@@ -3504,6 +3555,7 @@ function onAct(ev){
   else if(act==='usave'){ if(!unitSave(card,l)) return; keep(w); rer(w); unitsReveal(); return }
   else if(act==='udel'){ unitDel(l); keep(w); rer(w); unitsReveal(); return }
   else if(act==='del'){ removeLine(w,id); return }
+  else if(act==='time'){ editProductTime(w,id); return }
   else if(act==='replace'){ FIND={where:w,mode:'replace',id:id,q:(l.st||'ok')==='ok'?'':(l.name||'')}; rer(w); focusFind(); return }
   else if(act==='own'){ createOwn(l.name||'',function(food){ setFood(l,food.id); if(w==='m') M.open=l.id; keep(w); rer(w) }); return }
   keep(w); rer(w);
@@ -3671,7 +3723,8 @@ function createOwn(name,cb){
 }
 /* время приёма: сменил — раздел подстраивается, если его не выбирали руками */
 document.getElementById('mlTime').addEventListener('change',function(){
-  M.t=this.value||null; M.tm=!!M.t;   // время поставлено руками — HappyDay увидит это как «вручную»
+  M.t=mlNormTime(this.value); M.tm=!!M.t;
+  if(M.t)mlStamp(M.lines,M.t);else M.lines.forEach(function(l){delete l.t;delete l.tm});   // время поставлено руками — HappyDay увидит это как «вручную»
   if(M.t&&!M.man) M.sec=secAt(+M.t.slice(0,2));
   renderMatch();
 });
@@ -3686,7 +3739,7 @@ document.getElementById('mlSave').addEventListener('click',function(){
   if(!ls.length||ls.some(function(l){ return l.st==='pick'||l.st==='none' })) return;
   ls.forEach(function(l){ if(String(l.fid).indexOf('bls:')===0&&FOODS[l.fid]&&FOODS[l.fid].tmp) blsUse(l.fid) });
   var e=day(curDate), t=M.t||null, S=sec(M.sec);
-  var add=ls.map(function(l){ var x={id:'i'+Date.now().toString(36)+(++SEQ),sec:M.sec,fid:l.fid,q:l.q,u:l.u,g:l.g,t:t,said:l.raw||''}; if(t&&M.tm) x.tm=1; return x });
+  var add=ls.map(function(l){ var clock=mlEntryTime(l,t,M.tm),x={id:'i'+Date.now().toString(36)+(++SEQ),sec:M.sec,fid:l.fid,q:l.q,u:l.u,g:l.g,t:clock.t,said:l.raw||''}; if(clock.tm)x.tm=1; return x });
   e.items=e.items.concat(add); save();
   TA.value=''; syncInput(true);
   if(M.fromChat){ var sq=CH.meal.seq; dropChat(CH.meal); CH.meal=newChat('meal'); CH.meal.seq=sq; if(D.kind==='meal') D=CH.meal }
@@ -3698,13 +3751,46 @@ document.getElementById('mlSave').addEventListener('click',function(){
   });
 });
 
+var CLOCKI='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8v5.6l3.8 2.2"/></svg>';
+function mealTimeDialog(title,value,all){
+  return new Promise(function(resolve){
+    var wrap=document.getElementById('mealTimeDialog'),input=document.getElementById('mealTimeInput'),error=document.getElementById('mealTimeError'),prior=document.activeElement;
+    document.getElementById('mealTimeTitle').textContent=title;
+    document.getElementById('mealTimeHint').textContent=all?'Это время будет проставлено всем продуктам этого приёма пищи.':'Меняется время только этого продукта.';
+    input.value=mlNormTime(value)||nowHM();error.textContent='';wrap.classList.add('on');input.focus();
+    function done(value){wrap.classList.remove('on');wrap.onclick=null;wrap.onkeydown=null;document.getElementById('mealTimeSave').onclick=null;document.getElementById('mealTimeCancel').onclick=null;if(prior&&document.contains(prior))prior.focus();resolve(value)}
+    function saveTime(){var t=mlNormTime(input.value);if(!t){error.textContent='Укажи время в формате ЧЧ:ММ';return}done(t)}
+    document.getElementById('mealTimeSave').onclick=saveTime;
+    document.getElementById('mealTimeCancel').onclick=function(){done(null)};
+    wrap.onclick=function(e){if(e.target===wrap)done(null)};
+    wrap.onkeydown=function(e){if(e.key==='Escape'){e.preventDefault();done(null)}else if(e.key==='Enter'){e.preventDefault();saveTime()}else if(e.key==='Tab'){var nodes=[input,document.getElementById('mealTimeCancel'),document.getElementById('mealTimeSave')],i=nodes.indexOf(document.activeElement);if(e.shiftKey&&i===0){e.preventDefault();nodes[2].focus()}else if(!e.shiftKey&&i===2){e.preventDefault();input.focus()}}};
+  });
+}
+function editProductTime(where,id){
+  var line=lineOf(where,id);if(!line||where==='m'&&M.mode==='recipe')return;
+  var date=curDate,draft=M,value=mlEntryTime(line,where==='m'?M.t:null,where==='m'&&M.tm).t;
+  mealTimeDialog('Время продукта',value,false).then(function(t){
+    if(!t||curDate!==date||where==='m'&&M!==draft||lineOf(where,id)!==line)return;
+    mlStamp([line],t);keep(where);rer(where);toast('Время продукта: '+t);
+  });
+}
+function editSectionTime(){
+  var date=curDate,key=SECK,items=itemsOf(key);if(!items.length)return;
+  mealTimeDialog('Время приёма пищи',mlLastTime(items).t,true).then(function(t){
+    if(!t||curDate!==date||SECK!==key)return;
+    mlStamp(itemsOf(key),t);save();renderSec();renderDay();toast('Время всего приёма: '+t);
+  });
+}
+
 /* ═══════════ РАЗДЕЛ: что записано ═══════════ */
 function openSec(k){ SECK=k; SOPEN=null; FIND=null; document.getElementById('mlFindM').innerHTML=''; go('sec'); renderSec() }
 function renderSec(){
   if(!SECK) return;
   var S=sec(SECK); if(!S){ closeSheet(); return }
   document.getElementById('secName').textContent=S.t;
-  var it=itemsOf(SECK), s=sumOf(it);
+  var it=itemsOf(SECK), s=sumOf(it),clock=mlLastTime(it).t;
+  document.getElementById('secTimeText').textContent=clock||'—:—';
+  document.getElementById('secTimeButton').disabled=!it.length;
   document.getElementById('secTot').innerHTML=it.length?'<span>'+Math.round(s.k)+' ккал</span><span>Б '+fmt(s.p)+'</span><span>Ж '+fmt(s.f)+'</span><span>У '+fmt(s.c)+'</span>':'';
   document.getElementById('secItems').innerHTML=it.length?it.map(function(x){ return lineHTML(x,'s') }).join(''):
     '<p class="mlEmpty">Здесь пока пусто. Найди продукт в строке выше — или нажми микрофон внизу и скажи, что съел.</p>';
@@ -3713,6 +3799,7 @@ function renderSec(){
   document.getElementById('secFind').innerHTML=top?findHTML():'';
   document.getElementById('mlFindS').innerHTML=top?'':findHTML();
 }
+document.getElementById('secTimeButton').addEventListener('click',editSectionTime);
 document.getElementById('mlSecs').addEventListener('click',function(e){
   var b=e.target.closest('[data-sec]'); if(b) openSec(b.dataset.sec);
 });
