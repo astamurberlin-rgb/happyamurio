@@ -6,7 +6,7 @@
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
 | Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.4 |
-| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.5 |
+| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.6 |
 | Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.2 |
 
 `shared/apps.json` — карта стартовых файлов и версий. Название, версия и дата обновления видны в самом низу настроек каждого приложения.
