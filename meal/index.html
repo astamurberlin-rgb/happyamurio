@@ -1393,6 +1393,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
+<link rel="stylesheet" href="report.css?v=22.8">
 </head>
 <body class="loading">
 
@@ -1495,19 +1496,20 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       <label>С <input type="date" id="jrFrom"></label>
       <label>по <input type="date" id="jrTo"></label>
     </div>
+    <div class="mr-journal-actions"><button class="happy-button primary" id="mealReportOpen">Поделиться отчётом</button><button class="happy-button" id="mealCsvExport">Выгрузить CSV</button></div>
     <div class="jrW" id="jrTiles"></div>
     <div class="eyebrow"><span>Избранное</span></div>
     <div class="card jrList" id="jrMine"></div>
     <div class="eyebrow jrSortRow"><span>Показатели</span><div id="jrSort"></div></div>
     <div class="jrGroups" id="jrGroups"></div>
     <p class="note" id="jrNote"></p>
-    <div class="jrExp"><button class="btn" id="jrExpImg">Сохранить картинкой</button><button class="btn" id="jrExpCsv">Выгрузить CSV</button></div>
   </div>
 
   <!-- НАСТРОЙКИ -->
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1><div class="tierBadges"><button class="tierBadge pro" data-tier="pro" aria-label="PRO — заметка на потом">PRO</button><button class="tierBadge gold" data-tier="gold" aria-label="GOLD — заметка на потом">GOLD</button></div></div>
     <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button><button class="happy-button" id="bkIn">Загрузить из файла</button></div><input type="file" id="bkFile" accept="application/json,.json" hidden><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты и рецепты. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="bkWhen"></p></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day/">Happy Day</a><a class="happy-button" href="../sport/">Happy Sport</a></div></div></section>
+    <h2 class="happy-heading">Экспорт и отчёты</h2><div class="happy-card"><button class="happy-button" id="mealReportSettings">Поделиться отчётом или выгрузить CSV</button><p class="happy-note">Период и состав отчёта выбираются перед сохранением. PDF, PNG, печать и полный CSV с продуктами и нутриентами.</p></div>
     <h2 class="happy-heading">Настройки питания</h2>
 
 
@@ -1543,7 +1545,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.7"><div>Happy Meal · v22.7</div><small>Обновлено 27.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.8"><div>Happy Meal · v22.8</div><small>Обновлено 27.10.2026</small></footer>
   </div>
 
 </div>
@@ -1610,13 +1612,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <div class="icLayer" id="icLayer" role="dialog" aria-modal="true" aria-labelledby="icLayerT">
   <div class="icHead"><button class="icBack" data-back>Назад</button><b id="icLayerT">Иконка</b><span></span></div>
   <div class="icScroll" id="icoScroll"><div id="icoCells"></div></div>
-</div>
-
-<!-- журнал картинкой: просмотр, «Поделиться» или долгое нажатие — «Сохранить в Фото» -->
-<div class="jrShot" id="jrShot" hidden>
-  <div class="jrShotBar"><button class="mini" id="jrShotClose">Готово</button><b>Журнал картинкой</b><button class="mini" id="jrShotShare">Поделиться</button></div>
-  <p class="jrShotHint">Или нажми на картинку и удерживай — «Сохранить в Фото».</p>
-  <div class="jrShotBody" id="jrShotBody"><img id="jrShotImg" alt="Журнал картинкой"></div>
 </div>
 
 <!-- PRO и GOLD: пока только заметка на потом -->
@@ -2149,6 +2144,9 @@ var BASE=[
 var FOODS={}, LIST=[], WORDS=[];
 /* продукты BLS, найденные из фразы, но ещё не записанные: видны в «Подобрано», в библиотеку не попадают */
 var BLS_TMP={};
+function cookingName(name){
+  return String(name).replace(/((?:обжар|жар|туш|запеч|припущ|приготов)[^,;()]*?)без жира/gi,'$1без масла');
+}
 function rebuildLib(){
   FOODS={}; LIST=[]; WORDS=[];
   BASE.forEach(function(r){
@@ -2161,7 +2159,7 @@ function rebuildLib(){
   (DB.foods||[]).forEach(function(o){ FOODS[o.id]=o; LIST.push(o) });
   /* продукты из базы BLS, которые уже выбирали, — тоже в библиотеке: фраза их находит */
   Object.keys(DB.bls||{}).forEach(function(code){
-    var x=DB.bls[code], o={id:'bls:'+code,n:x.n,w:norm(x.n).split(/[^a-zа-я0-9%]+/).filter(function(w){ return w.length>1 }),
+    var x=DB.bls[code], name=cookingName(x.n), o={id:'bls:'+code,n:name,w:norm(name).split(/[^a-zа-я0-9%]+/).filter(function(w){ return w.length>1 }),
       k:x.k,p:x.p,f:x.f,c:x.c,por:{},src:'BLS',b:code};
     if(typeof kavPor==='function') kavPor(o);          // блюдо кавказской кухни: свои меры порции и кухня
     FOODS[o.id]=o; LIST.push(o);
@@ -4851,8 +4849,6 @@ JR_SCR.addEventListener('click',function(e){
   }
   b=e.target.closest('[data-sort]');
   if(b){ JR_SORT=b.dataset.sort; JR_ROW=null; renderJournal(); return }
-  if(e.target.closest('#jrExpImg')){ jrMakeImage(); return }
-  if(e.target.closest('#jrExpCsv')){ jrExportCsv(); return }
   var g=e.target.closest('[data-jg]');
   if(g){ JR_OPEN[g.dataset.jg]=!JR_OPEN[g.dataset.jg]; renderJournal(); return }
   var r=e.target.closest('[data-jr]');
@@ -4899,166 +4895,6 @@ function jrShareBlob(name,blob,type,okMsg){
 }
 function jrFileStem(){ var r=jrRange(); return 'happy-meal-zhurnal-'+(r.a===r.b?r.b:r.a+'_'+r.b) }
 
-/* CSV: все показатели выбранного периода, разделитель «;», десятичная запятая — открывается в Excel и Numbers */
-function jrExportCsv(){
-  function cell(s){ s=String(s==null?'':s); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s }
-  function num(n){ return n==null?'':String(Math.round(n*100)/100).replace('.',',') }
-  jrRefresh();
-  var per=jrPeriodTxt()+jrModeTxt(), out=[['Период','Раздел','Показатель','Съедено','Единица','Норма','Чья норма','% нормы','Норма — предел'].join(';')];
-  function line(sec,id,x){
-    var v=jrV(x,id), n=jrNorm(x), pct=(n&&v!=null)?v/n*100:null;
-    out.push([per,sec,x.t,num(v),x.u,num(n),n==null?'':(jrOwn(x)!=null?'своя':'рекомендуемая'+(x.src?' ('+x.src+')':'')),pct==null?'':Math.round(pct),x.lim?'да':''].map(cell).join(';'));
-  }
-  JR_MAC.forEach(function(x){ line('Основное',x.id,x) });
-  JR_GROUPS.forEach(function(g){ g.rows.forEach(function(r){ if(!Array.isArray(r)) line(g.t,r,JR_N[r]) }) });
-  var blob=new Blob(['﻿'+out.join('\r\n')],{type:'text/csv'});
-  jrShareBlob(jrFileStem()+'.csv',blob,'text/csv');
-}
-
-/* Картинка страницы — как отчёт у умных весов: все разделы раскрыты, без футера.
-   Рисуем сами на холсте из тех же данных — так стекло, цвета и шкалы выходят как в приложении. */
-var JR_FONT='system-ui,-apple-system,"Segoe UI",Roboto,sans-serif', JR_IMG=null;
-function jrRR(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath() }
-function jrReport(c,draw,H){
-  var W=390,P=20,CW=W-2*P,y=24,MUT='rgba(255,255,255,.72)',DIM='rgba(255,255,255,.5)';
-  function f(w,s){ c.font=w+' '+s+'px '+JR_FONT }
-  function txt(s,x,yy,col,al){ if(!draw) return; c.fillStyle=col||'#fff'; c.textAlign=al||'left'; c.fillText(s,x,yy) }
-  function fit(s,maxW){ if(c.measureText(s).width<=maxW) return s; while(s.length>2&&c.measureText(s+'…').width>maxW) s=s.slice(0,-1); return s+'…' }
-  function card(x,yy,w,h){
-    if(!draw) return;
-    c.save(); c.shadowColor='rgba(4,40,80,.16)'; c.shadowBlur=24; c.shadowOffsetY=10;
-    jrRR(c,x,yy,w,h,22); c.fillStyle='rgba(255,255,255,.16)'; c.fill(); c.restore();
-    jrRR(c,x+.5,yy+.5,w-1,h-1,22); c.strokeStyle='rgba(255,255,255,.34)'; c.lineWidth=1; c.stroke();
-  }
-  function meter(x,yy,w,h,pct,fill,track){
-    if(!draw) return;
-    c.save(); jrRR(c,x,yy,w,h,h/2); c.fillStyle=track; c.fill(); c.clip();
-    var fw=Math.max(0,Math.min(100,pct))/100*w; if(fw>0){ jrRR(c,x,yy,Math.max(fw,h),h,h/2); c.fillStyle=fill; c.fill() }
-    c.restore();
-  }
-  function star(x,yy,s,col){
-    if(!draw) return;
-    c.save(); c.translate(x,yy); c.scale(s/24,s/24); c.fillStyle=col; c.fill(new Path2D(JR_STAR_D)); c.restore();
-  }
-  function warn(x,yy){
-    if(!draw) return;
-    c.save(); c.translate(x,yy); c.scale(13/24,13/24);
-    c.fillStyle='#fab219'; c.fill(new Path2D('M12 3.5L2.8 19.5h18.4z'));
-    c.strokeStyle='#1d3557'; c.lineWidth=2.2; c.lineCap='round'; c.stroke(new Path2D('M12 9.5v4.6M12 16.9v.2')); c.restore();
-  }
-  function okIcon(x,yy,on){
-    if(!draw) return;
-    c.save(); c.translate(x,yy); c.scale(22/24,22/24);
-    if(on){ c.beginPath(); c.arc(12,12,10,0,Math.PI*2); c.fillStyle='#fff'; c.fill(); c.strokeStyle='#0C6FA8'; c.lineWidth=2.4 }
-    else { c.beginPath(); c.arc(12,12,9.2,0,Math.PI*2); c.strokeStyle='rgba(255,255,255,.72)'; c.lineWidth=1.8; c.stroke(); c.lineWidth=2 }
-    c.lineCap='round'; c.lineJoin='round'; c.stroke(new Path2D(JR_OK_D)); c.restore();
-  }
-  function rowH(id){ var x=JR_N[id]; return x.ch?34:(jrHasN(x)?66:42) }
-  function listH(list){ var h=4; list.forEach(function(r,i){ h+=Array.isArray(r)?(i?30:26):rowH(r) }); return h }
-  function rows(list,x0,y0,ctx){
-    var yy=y0+2, first=true;
-    list.forEach(function(r){
-      if(Array.isArray(r)){ yy+=first?12:14; f('700',12); txt(r[0],x0+16,yy+10,DIM); yy+=first?14:16; first=true; return }
-      var x=JR_N[r], h=rowH(r), v=jrV(x,r), pct=jrPctOf(x,r), hasN=jrHasN(x), ch=x.ch, ix=x0+16+(ch?16:0), iw=CW-32-(ch?16:0);
-      if(!first&&draw){ c.fillStyle=ch?'rgba(255,255,255,.09)':'rgba(255,255,255,.16)'; c.fillRect(x0+16+(ch?16:0),yy,CW-32-(ch?16:0),1) }
-      first=false;
-      var ty=yy+(ch?23:28), val=v==null?'—':jrNum(v)+'\u00a0'+x.u, slot=x.np||ctx==='aa', vr=x0+CW-16-(slot?30:0);
-      f(ch?'500':'700',ch?14:15); var vw=c.measureText(val).width+(slot?30:0); txt(val,vr,ty,ch?'rgba(255,255,255,.86)':'#fff','right');
-      if(jrHasChk(x)) okIcon(x0+CW-16-22,ty-16,pct>=100);
-      f(ch?'500':'600',ch?14:15);
-      var fav=jrIsFav(r)&&ctx!=='fav', nm=fit(x.t,iw-vw-14-(fav?20:0));
-      txt(nm,ix,ty,ch?'rgba(255,255,255,.86)':'#fff');
-      if(fav) star(ix+c.measureText(nm).width+6,ty-11.5,13,MUT);
-      if(hasN){
-        var over=x.lim&&pct>100, cap=jrCapTxt(x,pct);
-        f('600',12.5); var cw=Math.max(112,c.measureText(cap).width+(over?17:0));
-        meter(ix,ty+12,iw-cw-12,6,pct,over?'#fab219':'rgba(255,255,255,.94)','rgba(255,255,255,.24)');
-        txt(cap,x0+CW-16,ty+19,over?'#fff':MUT,'right');
-        if(over) warn(x0+CW-16-c.measureText(cap).width-17,ty+8);
-      }
-      yy+=h;
-    });
-  }
-  /* фон */
-  if(draw){
-    var g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#16C3F6'); g.addColorStop(.5,'#00A8F5'); g.addColorStop(1,'#1A9BF2');
-    c.fillStyle=g; c.fillRect(0,0,W,H);
-    [[.18,.03,'rgba(70,253,252,.42)'],[.85,.08,'rgba(3,222,234,.36)'],[.12,.30,'rgba(188,97,254,.22)'],[.88,.45,'rgba(253,147,253,.20)'],
-     [.25,.62,'rgba(70,253,252,.26)'],[.80,.80,'rgba(188,97,254,.18)'],[.30,.95,'rgba(70,253,252,.24)']].forEach(function(b){
-      var rg=c.createRadialGradient(b[0]*W,b[1]*H,0,b[0]*W,b[1]*H,W*.75); rg.addColorStop(0,b[2]); rg.addColorStop(1,'rgba(0,0,0,0)');
-      c.fillStyle=rg; c.fillRect(0,0,W,H);
-    });
-  }
-  /* шапка */
-  f('800',27); txt('Журнал',P,y+26);
-  f('700',13); txt('Happy Meal',W-P,y+22,MUT,'right');
-  f('600',14); txt(fit(jrPeriodTxt()+jrModeTxt(),CW),P,y+50,MUT);
-  y+=72;
-  /* плитки */
-  var tw=(CW-11)/2;
-  JR_MAC.forEach(function(x,i){
-    var tx=P+(i%2)*(tw+11), ty=y+Math.floor(i/2)*(120+11), v=jrV(x,x.id), pct=jrPctOf(x,x.id);
-    card(tx,ty,tw,120);
-    if(draw){ c.beginPath(); c.arc(tx+18.5,ty+24,5.5,0,Math.PI*2); c.fillStyle='rgba(255,255,255,.85)'; c.fill();
-      c.beginPath(); c.arc(tx+18.5,ty+24,4.5,0,Math.PI*2); c.fillStyle=x.c; c.fill() }
-    f('700',14); txt(x.t,tx+30,ty+29);
-    f('800',30); var vs=v==null?'—':jrNum(v); txt(vs,tx+14,ty+66); var vw=c.measureText(vs).width;
-    if(v!=null){ f('700',16); txt('\u00a0'+x.u,tx+14+vw,ty+66) }
-    meter(tx+14,ty+78,tw-28,7,pct==null?0:pct,x.c,jrTint(x.c));
-    f('600',12.5); txt(jrTileCap(x,v,pct),tx+14,ty+104,MUT);
-  });
-  y+=2*120+11;
-  function section(title,list,ctx){
-    y+=24; f('700',13); txt(title,P+2,y+12,MUT); y+=23;
-    var h=listH(list); card(P,y,CW,h); rows(list,P,y,ctx); y+=h;
-  }
-  var F=jrFav();
-  if(F.length) section('Избранное',F,'fav');
-  if(JR_SORT==='def'){ var S=jrSorted(); section('От дефицита к избытку',S.t,'def'); section('Пределы',S.l,'lim') }
-  else {
-    y+=10;
-    JR_GROUPS.forEach(function(gr){
-      y+=12; var h=52+listH(gr.rows)+6;
-      card(P,y,CW,h); f('700',16); txt(gr.t,P+16,y+32);
-      if(draw){ c.fillStyle='rgba(255,255,255,.16)'; c.fillRect(P+16,y+52,CW-32,1) }
-      rows(gr.rows,P,y+52,gr.k); y+=h;
-    });
-  }
-  y+=26; f('500',12); txt(JR_DATA?'Состав — BLS 4.0, Max Rubner-Institut (2025).':'Пример: цифры не из дневника.',W/2,y,DIM,'center');
-  y+=16; txt('Прочерк — в базе нет данных.',W/2,y,DIM,'center');
-  y+=20; txt('Happy Meal · '+ruDate(todayISO())+' '+todayISO().slice(0,4),W/2,y,DIM,'center');
-  return y+28;
-}
-var JR_BUSY=false;
-function jrMakeImage(){
-  if(JR_BUSY) return; JR_BUSY=true; toast('Собираю картинку…');
-  setTimeout(jrMakeImage2,30);
-}
-function jrMakeImage2(){
-  jrRefresh();
-  var m=document.createElement('canvas').getContext('2d'), H=Math.ceil(jrReport(m,false,0));
-  /* у iPhone предел холста ~16 млн точек: масштаб подбираем, чтобы влезть */
-  var k=Math.max(1.5,Math.min(3,Math.floor(Math.sqrt(15.5e6/(390*H))*100)/100));
-  var cv=document.createElement('canvas'); cv.width=Math.round(390*k); cv.height=Math.round(H*k);
-  var c=cv.getContext('2d'); c.scale(k,k); c.textBaseline='alphabetic';
-  jrReport(c,true,H);
-  cv.toBlob(function(b){
-    JR_BUSY=false; document.getElementById('toast').classList.remove('on');
-    if(!b){ jrToastLong('Картинку собрать не вышло — попробуй ещё раз'); return }
-    JR_IMG=b;
-    var img=document.getElementById('jrShotImg');
-    if(img._u) URL.revokeObjectURL(img._u);
-    img._u=URL.createObjectURL(b); img.src=img._u;
-    document.getElementById('jrShotShare').hidden=!navigator.share;
-    document.getElementById('jrShot').hidden=false;
-    document.getElementById('jrShotBody').scrollTop=0;
-  },'image/jpeg',.9);
-}
-document.getElementById('jrShotClose').addEventListener('click',function(){ document.getElementById('jrShot').hidden=true });
-document.getElementById('jrShotShare').addEventListener('click',function(){
-  if(JR_IMG) jrShareBlob(jrFileStem()+'.jpg',JR_IMG,'image/jpeg','Картинка передана');
-});
-
 /* ═══════════ BLS 4.0: база состава продуктов ═══════════
    Файл meal-data/bls40.json лежит рядом со страницей на сайте и грузится в фоне при старте:
    7 140 продуктов, названия на русском (перевод Happy Meal), немецком и английском, 76 показателей на 100 г.
@@ -5099,6 +4935,8 @@ function blsReady(d){
     d.keys.forEach(function(k,i){ BLS_KI[k]=i });
     BLS_GRP={}; BLS_GM={};
     d.f.forEach(function(r,i){
+      r[1]=cookingName(r[1]);
+      if(r[0]==='X651013')r[1]='Картофель жареный без лука';
       BLS_BY[r[0]]=r; BLS_W[i]=blsWordsOf(r[1]); BLS_X[i]=(r[2]+' '+r[3]).toLowerCase();
       var g=d.grp?d.grp[i]:null; if(g!=null){ BLS_GRP[r[0]]=g; (BLS_GM[g]=BLS_GM[g]||[]).push(r[0]) }
     });
@@ -5244,7 +5082,7 @@ function blsFamily(code){
   list.sort(function(a,b){ return a.fat-b.fat||a.label.length-b.label.length });
   return {title:cut?'Часть туши':cheese?'Жирность в сухом веществе':'Жирность',list:list};
 }
-function blsName(code){ var r=BLS_BY[code]; return r?r[1]:(DB.bls&&DB.bls[code]?DB.bls[code].n:code) }
+function blsName(code){ var r=BLS_BY[code]; return cookingName(r?r[1]:(DB.bls&&DB.bls[code]?DB.bls[code].n:code)) }
 function blsMac(code){
   function r1(x){ return x==null?0:Math.round(x*10)/10 }
   return {k:Math.round(blsVal(code,'kcal')||0),p:r1(blsVal(code,'prot')),f:r1(blsVal(code,'fat')),c:r1(blsVal(code,'carb'))};
@@ -5284,7 +5122,7 @@ function blsRefreshCache(){
   if(ch){ rebuildLib(); save() }
 }
 /* слова-условия: «без кожи», «с кожей», «без сахара» — продукт с противоположным отвергается */
-var COND_W=/^(кож|кост|жир|сахар|сол|кожур|шкур|косточ|глютен|кофеин|газ|молок|сливк|масл|майонез|соус|подлив|глазур)/;
+var COND_W=/^(кож|кост|жир|сахар|сол|кожур|шкур|косточ|глютен|кофеин|газ|молок|сливк|масл|майонез|соус|подлив|глазур|лук)/;
 function blsConds(words){
   var c=[];
   words.forEach(function(w,i){ var nx=words[i+1]; if((w==='без'||w==='с'||w==='со')&&nx&&COND_W.test(nx)) c.push({neg:w==='без',w:nx}) });
@@ -5306,7 +5144,7 @@ function fatInName(n,dry){
   var a=parseFloat(m[1].replace(',','.')), b=m[2]?parseFloat(m[2].replace(',','.')):a;
   return (a+b)/2;
 }
-/* номер части названия по запятым для каждого слова: «Картофель очищенный, обжаренный без жира» → 0 0 1 1 1 */
+/* номер части названия по запятым для каждого слова: «Картофель очищенный, обжаренный без масла» → 0 0 1 1 1 */
 var BLS_SEG={};
 function blsSegs(i){
   if(BLS_SEG[i]) return BLS_SEG[i];
@@ -5378,7 +5216,7 @@ function blsScoreTok(i,alts,partial){
    способ приготовления, если его нет в запросе, — небольшой (без способа — сырое, решение Астамура, 24 октября);
    копчёное, солёное, консервы — больше; блюдо, соус, панировка, начинка — сильнее всего */
 var BLS_GEN={}, BLS_GENP=['свеж','натурал'];
-('корень с со в во на из и без для до по не менее более от жира сухом веществе пару жидкости рассола').split(' ').forEach(function(w){ BLS_GEN[w]=1 });
+('корень с со в во на из и без для до по не менее более от жира масла сухом веществе пару жидкости рассола').split(' ').forEach(function(w){ BLS_GEN[w]=1 });
 function blsGeneric(w){ return /^\d/.test(w)||w==='%'||BLS_GEN[w]||W_RAW.test(w)||BLS_GENP.some(function(p){ return w.indexOf(p)===0 }) }
 /* сухое и концентраты: порошок, кубики, сушёное, растворимое — опускаем, если в запросе этого нет */
 var BLS_DRY=/^(порош|кубик|сушен|сух(?!офрукт)|раствор|концентр|инстант)/;
@@ -5455,6 +5293,7 @@ function blsSearch(q,max,o){
     if(o.fat!=null){ var code=BLS.f[i][0], fv=fatInName(BLS.f[i][1],o.fatDry); if(fv==null) fv=blsVal(code,'fat');
       if(fv!=null){ var dd=Math.abs(fv-o.fat); s+=0.8*Math.exp(-dd)-Math.min(dd,20)*0.05 } }
     s+=fw-pen-mpen;
+    if(BLS.f[i][0]==='X651013'&&qw.some(function(w){return /^картоф|^картош/.test(w)})&&qw.some(function(w){return /^жарен/.test(w)})&&!qw.some(function(w){return /^(масл|лук|фритюр|шпик|бекон|яйц|сладк)/.test(w)}))s+=1;
     if(KAV_DF[i]) s+=0.05;                                                       // вариант по умолчанию: лодочка с маслом и яйцом, сулугуни молодой
     if(qGen&&String(BLS.f[i][0]).charAt(0)==='Z'&&!KAV_PR[i]) s-=1;                          // запрос — обычный продукт: блюда ниже продуктов
     var procHead=PROC.test(W[0])&&!qProc.length&&String(BLS.f[i][0]).charAt(0)!=='Z';   // «Рулетики из баклажанов» — это и есть блюдо
@@ -5704,5 +5543,6 @@ document.addEventListener('click',function(ev){
 });
 
 </script>
+<script src="report.js?v=22.8"></script>
 </body>
 </html>

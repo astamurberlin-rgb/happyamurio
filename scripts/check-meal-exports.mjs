@@ -1,0 +1,25 @@
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
+const ctx=vm.createContext({Blob,TextEncoder});
+vm.runInContext(await read('meal/report.js'),ctx);
+const m=ctx.MealReport,bls=JSON.parse(await read('meal-data/bls40.json')),fs=m.fields(bls.keys);
+assert.equal(fs.length,76);assert.deepEqual(new Set(fs.map(x=>x.key)),new Set(bls.keys));
+const by=Object.fromEntries(bls.f.map(x=>[x[0],x])),readVal=(code,key)=>by[code]?.[4+bls.keys.indexOf(key)]??null;
+const range={a:'2026-01-01',b:'2026-10-27'},foods={salmon:{n:'Лосось',k:180,p:19.9,f:11.2,c:0,b:'T410100',src:'BLS'},own:{n:'=TEST; "свой"\nпродукт',k:100,p:10,f:2,c:5,src:'Мои'}};
+const db={sections:[{k:'am',t:'Завтрак'},{k:'sn',t:'Перекус'}],days:{'2026-10-27':{items:[{id:'a',sec:'am',fid:'salmon',g:150,q:150,u:'г',t:'09:30',tm:1},{id:'b',sec:'sn',fid:'own',g:50,q:1,u:'порция',t:'15:00'},{id:'c',sec:'sn',fid:'own',g:50,q:1,u:'порция',t:'15:00'}]},'2026-01-01':{items:[{id:'d',sec:'am',fid:'salmon',g:100,q:100,u:'г'}]},'2025-12-31':{items:[{fid:'salmon',g:100}]}}};
+const rows=m.records(db,foods,range,readVal,bls.keys);assert.equal(rows.length,4);assert.equal(rows[0].date,'2026-01-01');assert.equal(rows[1].manual,true);assert.equal(rows[1].values.kcal,270);assert.equal(rows[1].values.prot,29.85);assert.equal(rows[1].values.epa,1045.5);assert.equal(rows[1].values.dha,1672.5);assert.equal(rows[2].values.vA,null);assert.equal(rows[2].values.carb,2.5);assert.equal(rows[1].values.carb,0);
+const totals=m.aggregate(rows,fs);assert.equal(totals.kcal.value,550);assert.equal(totals.epa.known,2);assert.equal(totals.epa.total,4);assert.equal(totals.epa.value,1742.5);
+const csv=m.csv(rows,fs);assert.ok(csv.startsWith('\uFEFFДата;'));assert.ok(csv.includes('Масса, г'));assert.ok(csv.includes('ЭПК (EPA), мг [epa]'));assert.ok(csv.includes('29,85'));assert.ok(csv.includes('"\'=TEST; ""свой""\nпродукт"'));assert.equal((csv.match(/2026-10-27;Перекус/g)||[]).length,2);assert.equal(m.records(db,foods,{a:'2026-10-26',b:'2026-10-26'},readVal).length,0);
+assert.throws(()=>m.records(db,foods,{a:'2026-02-30',b:'2026-10-27'},readVal));assert.throws(()=>m.records(db,foods,{a:'bad',b:'bad'},readVal));assert.throws(()=>m.records(db,foods,{a:'2026-10-27',b:'2026-01-01'},readVal));
+const o={summary:true,foods:true,time:true,energy:true,macros:true,groups:{vit:true,min:true,aa:true,fat:true,carb:true,phy:true,etc:true}};
+const pages=m.reportPages(rows,fs,o);assert.ok(pages.length>1);assert.equal(pages.flat().filter(x=>x.kind==='food').length,4);assert.equal(pages.flat().filter(x=>x.kind==='nutrient').length,72);assert.ok(pages.flat().every(b=>b.y>=270&&b.y+b.h<=1560));
+const hidden=m.reportPages(rows,fs,{summary:true,foods:false,time:false,energy:false,macros:false,groups:{}});assert.equal(hidden.flat().filter(x=>x.kind==='food').length,0);assert.equal(hidden[0][0].energy,false);assert.equal(hidden[0][0].macros,false);
+const long=m.reportPages(Array.from({length:200},(_,i)=>({...rows[1],id:String(i),name:'Длинное название продукта '.repeat(5)})),fs,o);assert.equal(long.flat().filter(x=>x.kind==='food').length,200);assert.ok(long.flat().every(b=>b.y+b.h<=1560));
+const pdf=m.pdf([new Uint8Array([255,216,255,217]),new Uint8Array([255,216,255,217])],1240,1754),bytes=new Uint8Array(await pdf.arrayBuffer()),text=new TextDecoder().decode(bytes);assert.equal(pdf.type,'application/pdf');assert.ok(text.includes('/Count 2'));assert.ok(text.includes('/MediaBox [0 0 595.28 841.89]'));
+const start=Number(text.match(/startxref\n(\d+)/)[1]);assert.equal(text.slice(start,start+4),'xref');const lines=text.slice(start).split('\n');for(let i=1;i<9;i++){const at=Number(lines[2+i].slice(0,10));assert.ok(new TextDecoder().decode(bytes.slice(at,at+12)).startsWith(i+' 0 obj'))}
+const html=await read('meal/index.html'),names=vm.createContext({});vm.runInContext(html.slice(html.indexOf('function cookingName('),html.indexOf('function rebuildLib(')),names);
+assert.equal(names.cookingName('Яйцо, жаренное без жира'),'Яйцо, жаренное без масла');assert.equal(names.cookingName('Мясо, тушённое без жира'),'Мясо, тушённое без масла');assert.equal(names.cookingName('Свинина без жира и сухожилий, сырая'),'Свинина без жира и сухожилий, сырая');assert.equal(names.cookingName('Свинина для жаркого (лопатка без жира и шкуры), сырая'),'Свинина для жаркого (лопатка без жира и шкуры), сырая');
+const left=bls.f.map(r=>names.cookingName(r[1])).filter(n=>/(?:обжар|туш[её]н|жаренн|запеч)[^,;()]*без жира/i.test(n));assert.equal(left.length,0);
+console.log('Passed: 76 nutrient columns, portion scaling and units, zeros vs missing data, date range, separate portions, CSV quoting/formula safety, report selection and pagination, PDF structure, cooking terminology.');
