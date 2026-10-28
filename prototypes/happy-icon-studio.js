@@ -47,8 +47,9 @@ function refreshCharacterOptions(){
 
 let manifest={reviewIds:[],planned:[]},items=[],filtered=[],selected='sport:07_pullup_bar_rings';
 let app='sport',filterStatus='all',mode='light',iconSize=68,mediaDb=null,toastTimer,editingId=null,replaceObjectUrl=null,editorExpanded=false;
-let state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+let state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{},placements:{}};
 let selectedCharacter='all',editingCategory='',editingCharacter='';
+let scopeKind='category',scopeKey='strength',exercises=[],editingScope='',draftScopeKind='category',draftScopeKey='',draftAsset=null,editorLibraryMode='category',editorGroup='all';
 const media={};
 /* Normalized preview pixels, never the original PNG. Keeps illustrations
    centered even when a source image contains asymmetric transparent margins. */
@@ -122,11 +123,11 @@ function initIconEvents(){
 
 function notify(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
 function readState(){
-  const defaults={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+  const defaults={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{},placements:{}};
   try{
     const d=JSON.parse(localStorage.getItem(KEY)||'{}');
     const obj=Object.assign({},defaults,d);
-    for(const key of ['status','notes','overrides','categoryNames','characterProfiles','characterAssignments','categoryAssignments','iconMeta'])
+    for(const key of ['status','notes','overrides','categoryNames','characterProfiles','characterAssignments','categoryAssignments','iconMeta','placements'])
       if(!obj[key]||typeof obj[key]!=='object'||Array.isArray(obj[key]))obj[key]={};
     for(const key of ['custom','categories','characters'])if(!Array.isArray(obj[key]))obj[key]=[];
     return obj;
@@ -166,10 +167,12 @@ function mediaClear(){return new Promise(resolve=>{if(!mediaDb){resolve();return
 function mediaDelete(id){return new Promise(resolve=>{if(!mediaDb){resolve();return;}try{const tx=mediaDb.transaction('images','readwrite');tx.objectStore('images').delete(id);tx.oncomplete=()=>resolve();tx.onerror=()=>resolve();}catch(e){resolve();}});}
 function fileAsDataUrl(file){return new Promise((resolve,reject)=>{const r=new FileReader;r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Файл не прочитан'));r.readAsDataURL(file);});}
 async function loadMedia(){
-  const ids=state.custom.map(x=>x.id).concat(Object.keys(state.overrides||{}).filter(id=>state.overrides[id]?.kind==='upload').map(id=>'replace:'+id));
+  const ids=state.custom.map(x=>x.id)
+    .concat(Object.keys(state.overrides||{}).filter(id=>state.overrides[id]?.kind==='upload').map(id=>'replace:'+id))
+    .concat(Object.entries(state.placements||{}).filter(([key,v])=>v?.kind==='upload').map(([key])=>'placement:'+key));
   for(const id of ids){const saved=await mediaGet(id);if(typeof saved==='string'&&/^data:image\/(png|webp|jpeg);base64,/.test(saved))media[id]=saved;}
 }
-function setupOptions(){refreshCategoryOptions();refreshCharacterOptions();}
+function setupOptions(){refreshCategoryOptions();refreshCharacterOptions();renderScopeOptions();}
 async function start(){
   setupOptions();state=readState();mediaDb=await openDb();await loadMedia();initIconEvents();bind();
   const compact=window.matchMedia('(max-width:850px)').matches;
@@ -177,9 +180,15 @@ async function start(){
   $('stats-details').open=!compact;
   $('filter-details').open=!compact;
   try{
-    const [catalogResponse,manifestResponse]=await Promise.all([fetch('../sport/sport-icons/catalog.json',{cache:'no-cache'}),fetch('./happy-icon-studio-manifest.json',{cache:'no-cache'})]);
+    const [catalogResponse,manifestResponse,exerciseResponse]=await Promise.all([fetch('../sport/sport-icons/catalog.json',{cache:'no-cache'}),fetch('./happy-icon-studio-manifest.json',{cache:'no-cache'}),fetch('../sport/data/seed.json',{cache:'no-cache'})]);
     if(!catalogResponse.ok||!manifestResponse.ok)throw new Error('HTTP '+catalogResponse.status+' / '+manifestResponse.status);
     const catalog=await catalogResponse.json();manifest=await manifestResponse.json();
+    if(exerciseResponse.ok){
+      const source=await exerciseResponse.json();
+      exercises=(Array.isArray(source.exercises)?source.exercises:[])
+        .filter(x=>x&&typeof x.id==='string'&&typeof x.name==='string')
+        .map(x=>({id:x.id,name:x.name,category:x.category||''}));
+    }
     if(!Array.isArray(catalog)||!Array.isArray(manifest.planned))throw new Error('Некорректный каталог');
     items=catalog.map(c=>({
       id:c.id,label:c.label,title:c.title,number:c.number,
@@ -202,7 +211,7 @@ async function start(){
         if(found)c.characterId=found.id;
       }
     }
-    refreshCharacterOptions();refreshCategoryOptions();
+    refreshCharacterOptions();refreshCategoryOptions();renderScopeOptions();
     if(!allItems().some(i=>i.id===selected))selected=allItems()[0]?.id;
     render();
   }catch(e){$('icon-grid').innerHTML='<div class="empty" style="display:block;grid-column:1/-1">Не удалось открыть каталог PNG. Запусти студию с GitHub Pages. <a href="../sport/sport-icons/catalog.json">Проверить источник ↗</a></div>';$('results-count').textContent='Ошибка загрузки';notify('Ошибка загрузки каталога: '+e.message);}
@@ -322,7 +331,7 @@ function renderDetail(){
   $('size-slider').addEventListener('input',e=>{iconSize=Number(e.target.value);$('size-value').textContent=iconSize+' px';$('inspector-content').querySelector('.preview-stack').style.setProperty('--icon-size',iconSize+'px');});
   document.querySelectorAll('[data-scene]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.scene;renderDetail();}));
 }
-function render(){renderStats();renderTaxonomy();renderGrid();renderDetail();}
+function render(){renderStats();renderTaxonomy();renderGrid();renderScopeOptions();renderDetail();}
 function setLibraryExpanded(expanded){
   $('library-body').hidden=!expanded;
   $('toggle-library').setAttribute('aria-expanded',String(expanded));
@@ -409,7 +418,7 @@ function bind(){
   $('import-file').addEventListener('change',importAll);
   $('reset-btn').addEventListener('click',async()=>{
     if(!window.confirm('Сбросить локальные изменения, включая категории, имена и профили персонажей, статусы и свои файлы? GitHub останется без изменений.'))return;
-    state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+    state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{},placements:{}};
     selectedCharacter='all';
     Object.keys(media).forEach(k=>delete media[k]);Object.keys(normalizedIcons).forEach(k=>delete normalizedIcons[k]);
     await mediaClear();saveState();selected='sport:07_pullup_bar_rings';refreshCategoryOptions();refreshCharacterOptions();render();notify('Локальные изменения сброшены');
@@ -591,11 +600,18 @@ async function importAll(e){
         src:safeUrl(c.src||''),status:['done','review','todo'].includes(c.status)?c.status:'todo'};
       const ix=state.custom.findIndex(x=>x.id===clean.id);if(ix>=0)state.custom[ix]=clean;else state.custom.push(clean);
     }
+    if(d.placements&&typeof d.placements==='object'&&!Array.isArray(d.placements))
+      for(const [key,v] of Object.entries(d.placements)){
+        if(!/^(category|exercise):[a-z0-9:_-]{1,120}$/i.test(key)||!v||typeof v!=='object')continue;
+        if(v.kind==='catalog'&&typeof v.id==='string')state.placements[key]={kind:'catalog',id:v.id.slice(0,150)};
+        if(v.kind==='url'&&typeof v.url==='string'&&safeUrl(v.url))state.placements[key]={kind:'url',url:safeUrl(v.url)};
+        if(v.kind==='upload')state.placements[key]={kind:'upload'};
+      }
     if(data.media&&typeof data.media==='object')for(const [id,value] of Object.entries(data.media)){
-      if(!(id.startsWith('custom:')||id.startsWith('replace:'))||typeof value!=='string'||value.length>7500000||!/^data:image\/(png|webp|jpeg);base64,/.test(value))continue;
+      if(!(id.startsWith('custom:')||id.startsWith('replace:')||id.startsWith('placement:'))||typeof value!=='string'||value.length>7500000||!/^data:image\/(png|webp|jpeg);base64,/.test(value))continue;
       if(await mediaPut(id,value)){media[id]=value;delete normalizedIcons[id.startsWith('replace:')?id.slice(8):id];}
     }
-    saveState();refreshCategoryOptions();refreshCharacterOptions();selectedCharacter='all';render();notify('Импорт выполнен: категории, персонажи, иконки и заметки объединены');
+    saveState();refreshCategoryOptions();refreshCharacterOptions();selectedCharacter='all';render();notify('Импорт выполнен: категории, персонажи и назначения объединены');
   }catch(err){notify('Не получилось импортировать: '+err.message);}finally{e.target.value='';}
 }
 start();
