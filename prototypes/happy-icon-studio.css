@@ -146,3 +146,22 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit;
   .replacement-methods{gap:8px 12px}
   .replace-footer{flex-wrap:wrap}
 }
+
+/* An explicit edit action on every catalog tile, without nested buttons. */
+.icon-tile-shell{position:relative;display:flex;min-width:0;min-height:0}
+.icon-tile-shell .icon-tile{width:100%;height:100%;min-width:0}
+.icon-tile-shortcut{
+  position:absolute;right:17px;top:18px;z-index:2;
+  width:30px;height:30px;display:grid;place-items:center;
+  border-radius:11px;border:1px solid #ffffffa5;background:#f7f7ffee;
+  color:#595ab5;font-size:16px;font-weight:700;box-shadow:0 2px 8px #34307435;
+}
+.icon-tile-shortcut:hover{background:#fff;transform:scale(1.04)}
+.icon-edit-target{position:relative}
+.icon-edit-target::after{
+  content:"✎";font-size:11px;font-weight:700;
+  position:absolute;right:0;bottom:0;width:21px;height:21px;
+  border:1px solid #ffffff85;border-radius:9px;display:grid;place-items:center;
+  color:#5753af;background:#fffffff0;box-shadow:0 2px 6px #34307426;
+}
+@media(max-width:560px){.icon-tile-shortcut{right:16px;top:16px}}
