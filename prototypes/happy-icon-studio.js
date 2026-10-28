@@ -298,39 +298,56 @@ function renderGrid(){
 function previewImage(i,cls){
   return '<button type="button" class="'+cls+' icon-edit-target" data-edit-preview="1" aria-label="Редактировать изображение '+esc(i.label)+'" title="Нажми, чтобы заменить иконку">'+imageMarkup(i)+'</button>';
 }
-function renderDetail(){
-  const i=findItem(selected);
-  if(!i){$('inspector-content').innerHTML='<p class="hint">Выбери иконку из библиотеки.</p>';return;}
-  const st=statusOf(i),src=imageOf(i),note=noteOf(i),meta=iconMeta(i);
-  $('inspector-content').innerHTML=
-    '<div class="inspector-top"><button class="inspector-thumb icon-edit-target" type="button" data-edit-preview="1" aria-label="Заменить изображение '+esc(currentLabel(i))+'">'+imageMarkup(i)+'</button><div><div class="inspector-name">'+esc(currentLabel(i))+'</div><div class="inspector-id">'+esc(i.id)+'</div><span class="icon-status status-'+st+'"><i class="status-dot"></i>'+esc(LABELS[st])+'</span></div></div>'+
-    '<div class="scene-picker"><span>Предпросмотр карточек Sport</span><div class="switch-row"><button type="button" class="'+(mode==='light'?'on':'')+'" data-scene="light">День</button><button type="button" class="'+(mode==='night'?'on':'')+'" data-scene="night">Ночь</button></div></div>'+
-    '<div class="preview-stack" style="--icon-size:'+iconSize+'px"><div class="sport-scene '+(mode==='night'?'night':'')+'"><p class="scene-label">Happy Sport · карточка тренировки</p><div class="workout-card">'+previewImage(i,'workout-image')+'<div><h3>'+esc(currentLabel(i))+'</h3><p>Тренировка · 45 мин</p><span class="workout-tag">Начать</span></div></div></div>'+
-    '<div class="sport-scene '+(mode==='night'?'night':'')+'" style="min-height:auto;padding:13px"><p class="scene-label">Happy Sport · строка библиотеки</p><div class="mini-list">'+previewImage(i,'row-image')+'<div><strong>'+esc(currentLabel(i))+'</strong><small>'+esc(categoryName(categoryOf(i)))+'</small></div><span class="arr">›</span></div></div></div>'+
-    '<div class="preview-settings"><div class="size-line"><span>Размер иконки · без растягивания</span><strong id="size-value">'+iconSize+' px</strong></div><input type="range" id="size-slider" min="38" max="100" value="'+iconSize+'" step="2" aria-label="Размер иконки"></div>'+
-    '<div class="slot-actions"><button type="button" class="button light" id="replace-image-btn">⇄ Заменить изображение</button></div>'+
-    '<details class="edit-disclosure" id="edit-panel" '+(editorExpanded?'open':'')+'><summary>Статус и заметки · редактировать</summary><div class="detail-fields"><label><span>Статус</span><select id="detail-status"><option value="done" '+(st==='done'?'selected':'')+'>Готово · файл создан</option><option value="review" '+(st==='review'?'selected':'')+'>Кандидат · на утверждение</option><option value="todo" '+(st==='todo'?'selected':'')+'>Не сделано · в планах</option></select></label>'+
-    '<label><span>Категория</span><select id="detail-category">'+allCategories().map(c=>'<option value="'+esc(c.id)+'" '+(categoryOf(i)===c.id?'selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></label>'+
-    '<label><span>Персонаж</span><select id="detail-character"><option value="">Без персонажа</option>'+allCharacters().map(c=>'<option value="'+esc(c.id)+'" '+(iconCharacterId(i)===c.id?'selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></label>'+
-    '<label><span>Вид спорта / дисциплина</span><input id="detail-sport" maxlength="100" value="'+esc(meta.sport)+'" placeholder="Например, теннис"></label>'+
-    '<label><span>Упражнение / действие</span><input id="detail-exercise" maxlength="120" value="'+esc(meta.exercise)+'" placeholder="Например, подтягивания"></label>'+
-    '<label><span>Заметки и правки</span><textarea id="detail-note" rows="3" placeholder="Что исправить перед утверждением…">'+esc(note)+'</textarea></label>'+
-    '<div class="detail-bottom"><button type="button" class="button light" id="save-detail">Сохранить правки</button><button type="button" class="button" id="copy-id">Скопировать ID</button></div></div></details>'+
-    '<div class="source-line">Изображение: '+(src&&!src.startsWith('data:')?'<a href="'+esc(src)+'" target="_blank" rel="noopener">Открыть изображение ↗</a>':src?'Локально загруженное изображение':'Пока нет файла')+'<div class="inspector-section">'+(state.overrides[i.id]?'Заменено в этой позиции · локально · исходник GitHub сохранён':esc(i.origin==='github'?'Исходный файл из GitHub':i.origin==='plan'?'Позиция из плана':"Локально добавленная позиция"))+'</div></div>';
-  $('replace-image-btn').addEventListener('click',()=>openReplaceDialog(i.id));
-  $('edit-panel').addEventListener('toggle',e=>{editorExpanded=e.target.open;});
-  $('detail-status').addEventListener('change',e=>{state.status[i.id]=e.target.value;saveState();renderStats();renderGrid();notify('Статус обновлён в этом браузере');});
-  $('save-detail').addEventListener('click',()=>{
-    state.notes[i.id]=$('detail-note').value;
-    state.categoryAssignments[i.id]=$('detail-category').value;
-    state.characterAssignments[i.id]=$('detail-character').value;
-    state.iconMeta[i.id]={sport:$('detail-sport').value.trim().slice(0,100),exercise:$('detail-exercise').value.trim().slice(0,120)};
-    saveState();renderTaxonomy();renderGrid();renderDetail();notify('Привязки, упражнения и заметки сохранены');
+
+function scopeChoices(kind){
+  return kind==='exercise'?exercises.map(e=>({id:e.id,label:e.name,sub:e.category})):allCategories().map(c=>({id:c.id,label:c.name}));
+}
+function scopeIdentifier(kind,key){return kind+':'+key;}
+function renderScopeOptions(){
+  const options=scopeChoices(scopeKind);
+  if(!options.some(x=>x.id===scopeKey))scopeKey=options[0]?.id||'';
+  $('scope-label').textContent=scopeKind==='category'?'Вид спорта / категория':'Конкретное упражнение';
+  $('scope-select').innerHTML=options.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.label)+'</option>').join('');
+  $('scope-select').value=scopeKey;
+  document.querySelectorAll('[data-scope-kind]').forEach(b=>{
+    b.classList.toggle('active',b.dataset.scopeKind===scopeKind);
+    b.setAttribute('aria-pressed',String(b.dataset.scopeKind===scopeKind));
   });
-  $('copy-id').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(i.id);notify('ID скопирован');}catch(e){notify(i.id);}});
-  $('size-slider').addEventListener('input',e=>{iconSize=Number(e.target.value);$('size-value').textContent=iconSize+' px';$('inspector-content').querySelector('.preview-stack').style.setProperty('--icon-size',iconSize+'px');});
+}
+function defaultScopeItem(kind,key){
+  if(kind!=='category')return null;
+  return allItems().find(i=>categoryOf(i)===key&&i.variant==='base'&&rawImageOf(i))||null;
+}
+function placedItem(kind,key){
+  const placement=state.placements[scopeIdentifier(kind,key)];
+  if(placement?.kind==='catalog')return findItem(placement.id)||null;
+  if(placement?.kind==='url'&&safeUrl(placement.url))
+    return {id:'placement:'+scopeIdentifier(kind,key),label:'Свой вариант',category:'other',src:safeUrl(placement.url)};
+  if(placement?.kind==='upload'&&media['placement:'+scopeIdentifier(kind,key)])
+    return {id:'placement:'+scopeIdentifier(kind,key),label:'Свой вариант',category:'other',src:''};
+  return defaultScopeItem(kind,key);
+}
+function scopeLabel(kind,key){return scopeChoices(kind).find(x=>x.id===key)?.label||'Не выбрано';}
+function renderDetail(){
+  const position=scopeIdentifier(scopeKind,scopeKey);
+  const assigned=!!state.placements[position],item=placedItem(scopeKind,scopeKey);
+  const display=item||{id:'empty:'+position,label:'Иконка не выбрана',category:scopeKind==='category'?scopeKey:'other',src:''};
+  const label=scopeLabel(scopeKind,scopeKey);
+  const text=assigned?'Назначена вручную':item?'Предложена из библиотеки':'Пока без изображения';
+  $('inspector-content').innerHTML=
+    '<div class="inspector-top"><button class="inspector-thumb icon-edit-target" type="button" data-edit-preview="1" aria-label="Редактировать назначение и изображение">'+imageMarkup(display)+'</button><div class="inspector-top-copy"><div class="inspector-name">'+esc(label)+'</div><div class="inspector-id">'+esc(scopeKind==='category'?'Вид спорта':'Упражнение')+' · '+esc(text)+'</div><span class="icon-status status-'+(assigned?'review':'done')+'"><i class="status-dot"></i>'+esc(item?currentLabel(item):'Выбрать изображение')+'</span></div></div>'+
+    '<div class="scene-picker"><span>Превью · Happy Sport</span><div class="switch-row"><button type="button" class="'+(mode==='light'?'on':'')+'" data-scene="light">День</button><button type="button" class="'+(mode==='night'?'on':'')+'" data-scene="night">Ночь</button></div></div>'+
+    '<div class="preview-stack" style="--icon-size:'+iconSize+'px"><div class="sport-scene '+(mode==='night'?'night':'')+'"><p class="scene-label">Карточка · '+esc(scopeKind==='category'?'Вид спорта':'Упражнение')+'</p><div class="workout-card">'+previewImage(display,'workout-image')+'<div><h3>'+esc(label)+'</h3><p>'+esc(item?currentLabel(item):'Изображение не назначено')+'</p><span class="workout-tag">Открыть редактор</span></div></div></div>'+
+    '<div class="sport-scene '+(mode==='night'?'night':'')+'" style="min-height:auto;padding:13px"><p class="scene-label">Компактная строка библиотеки</p><div class="mini-list">'+previewImage(display,'row-image')+'<div><strong>'+esc(label)+'</strong><small>'+esc(item?currentLabel(item):'Без изображения')+'</small></div><span class="arr">›</span></div></div></div>'+
+    '<div class="preview-settings"><div class="size-line"><span>Размер · без растягивания</span><strong id="size-value">'+iconSize+' px</strong></div><input type="range" id="size-slider" min="38" max="100" value="'+iconSize+'" step="2" aria-label="Размер изображения"></div>';
+  $('size-slider').addEventListener('input',e=>{
+    iconSize=Number(e.target.value);
+    $('size-value').textContent=iconSize+' px';
+    $('inspector-content').querySelector('.preview-stack').style.setProperty('--icon-size',iconSize+'px');
+  });
   document.querySelectorAll('[data-scene]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.scene;renderDetail();}));
 }
+
 function render(){renderStats();renderTaxonomy();renderGrid();renderScopeOptions();renderDetail();}
 function setLibraryExpanded(expanded){
   $('library-body').hidden=!expanded;
