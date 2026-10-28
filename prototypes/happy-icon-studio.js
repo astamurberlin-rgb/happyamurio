@@ -195,8 +195,10 @@ async function start(){
     /* Older local custom entries used a free-text character string.
        Connect only exact, known names to stable IDs; never guess a person. */
     for(const c of state.custom){
+      if(c.characterId==='char:denis')c.characterId='char:daniel';
+      if(c.characterId==='char:daniel'&&/^(Денис|Denis)\s*[·—–:]\s*/i.test(c.label||''))c.label=c.label.replace(/^(Денис|Denis)\s*[·—–:]\s*/i,'');
       if(!c.characterId&&c.character){
-        const found=allCharacters().find(p=>p.name===c.character);
+        const found=allCharacters().find(p=>p.name===c.character||(p.aliases||[]).includes(c.character));
         if(found)c.characterId=found.id;
       }
     }
@@ -583,7 +585,7 @@ async function importAll(e){
     if(Array.isArray(d.custom))for(const c of d.custom){
       if(typeof c.id!=='string'||!c.id.startsWith('custom:')||typeof c.label!=='string')continue;
       const clean={id:c.id.slice(0,100),label:c.label.slice(0,110),category:allCategories().some(x=>x.id===c.category)?c.category:'other',
-        characterId:characterById(c.characterId)?.id||(allCharacters().find(x=>x.name===c.character)?.id||''),
+        characterId:(c.characterId==='char:denis'?'char:daniel':characterById(c.characterId)?.id)||(allCharacters().find(x=>x.name===c.character||(x.aliases||[]).includes(c.character))?.id||''),
         sport:String(c.sport||'').slice(0,100),exercise:String(c.exercise||'').slice(0,120),
         note:String(c.note||'').slice(0,700),variant:'planned',origin:'custom',
         src:safeUrl(c.src||''),status:['done','review','todo'].includes(c.status)?c.status:'todo'};
