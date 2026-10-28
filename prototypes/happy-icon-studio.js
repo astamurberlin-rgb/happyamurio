@@ -21,6 +21,75 @@ let manifest={reviewIds:[],planned:[]},items=[],filtered=[],selected='sport:07_p
 let app='sport',filterStatus='all',mode='light',iconSize=68,mediaDb=null,toastTimer;
 let state={status:{},notes:{},custom:[]};
 const media={};
+/* Normalized preview pixels, never the original PNG. Keeps illustrations
+   centered even when a source image contains asymmetric transparent margins. */
+const normalizedIcons=Object.create(null);
+const FRAME=256;
+function normalizedPixels(img){
+  try{
+    const w=img.naturalWidth,h=img.naturalHeight;
+    if(!w||!h)return null;
+    const source=document.createElement('canvas');
+    source.width=FRAME;source.height=FRAME;
+    const sx=FRAME/Math.max(w,h),dw=w*sx,dh=h*sx;
+    const ctx=source.getContext('2d',{willReadFrequently:true});
+    if(!ctx)return null;
+    ctx.clearRect(0,0,FRAME,FRAME);
+    ctx.drawImage(img,(FRAME-dw)/2,(FRAME-dh)/2,dw,dh);
+    const px=ctx.getImageData(0,0,FRAME,FRAME).data;
+    let left=FRAME,top=FRAME,right=-1,bottom=-1;
+    for(let y=0;y<FRAME;y++){
+      for(let x=0;x<FRAME;x++){
+        if(px[(y*FRAME+x)*4+3]<=12)continue;
+        if(x<left)left=x;if(x>right)right=x;
+        if(y<top)top=y;if(y>bottom)bottom=y;
+      }
+    }
+    if(right<left||bottom<top)return null;
+    const boxW=right-left+1,boxH=bottom-top+1;
+    const scale=Math.min(FRAME*.82/boxW,FRAME*.82/boxH);
+    const final=document.createElement('canvas');
+    final.width=FRAME;final.height=FRAME;
+    const dc=final.getContext('2d');
+    if(!dc)return null;
+    dc.imageSmoothingEnabled=true;dc.imageSmoothingQuality='high';
+    const outW=boxW*scale,outH=boxH*scale;
+    dc.drawImage(source,left,top,boxW,boxH,(FRAME-outW)/2,(FRAME-outH)/2,outW,outH);
+    return final.toDataURL('image/png');
+  }catch(error){return null;} /* External images may deny canvas pixel access. */
+}
+function readyIcon(img){if(img&&img.dataset)img.dataset.iconReady='1';}
+function onIconLoad(img){
+  const id=img.dataset.iconKey;
+  if(!id)return;
+  if(img.dataset.iconStage==='normalized'||img.dataset.iconStage==='fallback'){readyIcon(img);return;}
+  if(img.dataset.iconStage!=='original')return;
+  const data=normalizedIcons[id]||normalizedPixels(img);
+  if(data){
+    normalizedIcons[id]=data;
+    img.dataset.iconStage='normalized';
+    img.src=data;
+  }else{
+    img.dataset.iconStage='fallback';
+    readyIcon(img);
+  }
+}
+function initIconEvents(){
+  document.addEventListener('load',ev=>{
+    const img=ev.target;
+    if(img instanceof HTMLImageElement&&img.dataset.iconKey)onIconLoad(img);
+  },true);
+  document.addEventListener('error',ev=>{
+    const img=ev.target;
+    if(!(img instanceof HTMLImageElement)||!img.dataset.iconKey)return;
+    if(img.dataset.iconStage==='normalized'){
+      const original=findItem(img.dataset.iconKey);
+      img.dataset.iconStage='fallback';
+      if(original&&imageOf(original)){img.src=imageOf(original);return;}
+    }
+    readyIcon(img);
+  },true);
+}
 
 function notify(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
 function readState(){try{const d=JSON.parse(localStorage.getItem(KEY)||'{}');return {status:d.status&&typeof d.status==='object'?d.status:{},notes:d.notes&&typeof d.notes==='object'?d.notes:{},custom:Array.isArray(d.custom)?d.custom:[]};}catch(e){return {status:{},notes:{},custom:[]};}}
@@ -33,7 +102,11 @@ function statusOf(i){return ['done','review','todo'].includes(state.status[i.id]
 function noteOf(i){return Object.prototype.hasOwnProperty.call(state.notes,i.id)?state.notes[i.id]:(i.note||'');}
 function imageOf(i){return media[i.id]||(i.src?safeUrl(i.src):'');}
 function currentLabel(i){return i.label+(i.character?' · '+i.character:'');}
-function imageMarkup(i,cls){const src=imageOf(i);return src?'<img class="'+(cls||'')+'" src="'+esc(src)+'" alt="'+esc(i.label)+'" loading="lazy" decoding="async">':'<span class="placeholder-sign" aria-hidden="true">'+esc(SYMBOLS[i.category]||'+')+'</span>';}
+function imageMarkup(i,cls){
+  const src=normalizedIcons[i.id]||imageOf(i);
+  const stage=normalizedIcons[i.id]?'normalized':'original';
+  return src?'<img class="'+(cls||'')+'" data-icon-key="'+esc(i.id)+'" data-icon-stage="'+stage+'" data-icon-ready="0" src="'+esc(src)+'" alt="'+esc(i.label)+'" loading="lazy" decoding="async">':'<span class="placeholder-sign" aria-hidden="true">'+esc(SYMBOLS[i.category]||'+')+'</span>';
+}
 function openDb(){return new Promise(resolve=>{if(!window.indexedDB){resolve(null);return;}try{const q=indexedDB.open('happy-icon-studio-images-v1',1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains('images'))q.result.createObjectStore('images');};q.onsuccess=()=>resolve(q.result);q.onerror=()=>resolve(null);}catch(e){resolve(null);}});}
 function mediaGet(id){return new Promise(resolve=>{if(!mediaDb){resolve(null);return;}try{const r=mediaDb.transaction('images','readonly').objectStore('images').get(id);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>resolve(null);}catch(e){resolve(null);}});}
 function mediaPut(id,value){return new Promise(resolve=>{if(!mediaDb){resolve(false);return;}try{const tx=mediaDb.transaction('images','readwrite');tx.objectStore('images').put(value,id);tx.oncomplete=()=>resolve(true);tx.onerror=()=>resolve(false);}catch(e){resolve(false);}});}
@@ -45,7 +118,7 @@ function setupOptions(){
   $('new-category').value='strength';
 }
 async function start(){
-  setupOptions();state=readState();mediaDb=await openDb();await loadMedia();bind();
+  setupOptions();state=readState();mediaDb=await openDb();await loadMedia();initIconEvents();bind();
   try{
     const [catalogResponse,manifestResponse]=await Promise.all([fetch('../sport/sport-icons/catalog.json',{cache:'no-cache'}),fetch('./happy-icon-studio-manifest.json',{cache:'no-cache'})]);
     if(!catalogResponse.ok||!manifestResponse.ok)throw new Error('HTTP '+catalogResponse.status+' / '+manifestResponse.status);
@@ -133,7 +206,7 @@ function bind(){
   }));
   $('icon-grid').addEventListener('click',e=>{
     const button=e.target.closest('[data-id]');if(!button)return;selected=button.dataset.id;renderGrid();renderDetail();
-    if(matchMedia('(max-width:850px)').matches)$('inspector').scrollIntoView({behavior:'smooth',block:'start'});
+    /* Keep the current scroll position: automatic jumping displaced icons on iPhone. */
   });
   $('add-btn').addEventListener('click',()=>{$('add-form').reset();$('new-category').value='strength';$('add-dialog').showModal();});
   $('add-cancel').addEventListener('click',()=>$('add-dialog').close());
@@ -143,7 +216,7 @@ function bind(){
   $('import-file').addEventListener('change',importAll);
   $('reset-btn').addEventListener('click',async()=>{
     if(!window.confirm('Сбросить локальные статусы, заметки и добавленные позиции? Файлы в GitHub останутся без изменений.'))return;
-    state={status:{},notes:{},custom:[]};Object.keys(media).forEach(k=>delete media[k]);await mediaClear();saveState();selected='sport:07_pullup_bar_rings';render();notify('Локальные изменения сброшены');
+    state={status:{},notes:{},custom:[]};Object.keys(media).forEach(k=>delete media[k]);Object.keys(normalizedIcons).forEach(k=>delete normalizedIcons[k]);await mediaClear();saveState();selected='sport:07_pullup_bar_rings';render();notify('Локальные изменения сброшены');
   });
 }
 async function onAdd(ev){
@@ -185,7 +258,7 @@ async function importAll(e){
     }
     if(data.media&&typeof data.media==='object')for(const [id,value] of Object.entries(data.media)){
       if(!id.startsWith('custom:')||typeof value!=='string'||value.length>7500000||!/^data:image\/(png|webp|jpeg);base64,/.test(value))continue;
-      if(await mediaPut(id,value))media[id]=value;
+      if(await mediaPut(id,value)){media[id]=value;delete normalizedIcons[id];}
     }
     saveState();render();notify('Импорт выполнен: данные объединены с локальными');
   }catch(err){notify('Не получилось импортировать: '+err.message);}finally{e.target.value='';}
