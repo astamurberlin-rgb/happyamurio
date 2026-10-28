@@ -174,7 +174,7 @@ function renderGrid(){
   $('results-count').textContent='Показано '+filtered.length+' из '+allItems().length+' · '+new Set(filtered.map(i=>i.category)).size+' категорий';
   $('empty').hidden=filtered.length!==0;
   $('icon-grid').innerHTML=filtered.map(i=>{
-    const s=statusOf(i);return '<button type="button" class="icon-tile '+(selected===i.id?'is-active':'')+'" data-id="'+esc(i.id)+'" aria-label="'+esc(currentLabel(i)+', '+LABELS[s])+'" aria-pressed="'+String(selected===i.id)+'"><span class="icon-media '+(imageOf(i)?'':'placeholder')+'">'+imageMarkup(i)+'</span><span class="icon-status status-'+s+'"><i class="status-dot"></i>'+esc(LABELS[s])+'</span><span class="icon-name" title="'+esc(i.label)+'">'+esc(i.label)+'</span><span class="icon-sub">'+esc(i.character||categoryName(i.category))+'</span></button>';
+    const s=statusOf(i);return '<div class="icon-tile-shell"><button type="button" class="icon-tile '+(selected===i.id?'is-active':'')+'" data-id="'+esc(i.id)+'" aria-label="'+esc(currentLabel(i)+', '+LABELS[s])+'" aria-pressed="'+String(selected===i.id)+'"><span class="icon-media '+(imageOf(i)?'':'placeholder')+'">'+imageMarkup(i)+'</span><span class="icon-status status-'+s+'"><i class="status-dot"></i>'+esc(LABELS[s])+'</span><span class="icon-name" title="'+esc(i.label)+'">'+esc(i.label)+'</span><span class="icon-sub">'+esc(i.character||categoryName(i.category))+'</span></button><button type="button" class="icon-tile-shortcut" data-edit-id="'+esc(i.id)+'" aria-label="Заменить изображение '+esc(i.label)+'" title="Заменить изображение">✎</button></div>';
   }).join('');
 }
 function previewImage(i,cls){
@@ -257,6 +257,8 @@ function bind(){
   $('replace-form').addEventListener('submit',onReplace);
   $('replace-reset').addEventListener('click',restoreOriginal);
   $('icon-grid').addEventListener('click',e=>{
+    const edit=e.target.closest('[data-edit-id]');
+    if(edit){selected=edit.dataset.editId;renderGrid();renderDetail();openReplaceDialog(selected);return;}
     const button=e.target.closest('[data-id]');if(!button)return;selected=button.dataset.id;renderGrid();renderDetail();
     if(window.matchMedia('(max-width:850px)').matches)reveal('preview');
   });
