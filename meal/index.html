@@ -1393,7 +1393,9 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="report.css?v=22.9">
+<link rel="stylesheet" href="report.css?v=22.10-test.1">
+<link rel="stylesheet" href="user-products.css?v=22.10-test.1">
+<script src="../shared/meal-products-model.js?v=1"></script>
 </head>
 <body class="loading">
 
@@ -1497,6 +1499,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="card jrList" id="jrMine"></div>
     <div class="eyebrow jrSortRow"><span>Показатели</span><div id="jrSort"></div></div>
     <div class="jrGroups" id="jrGroups"></div>
+    <div id="jrCustomProperties"></div>
     <p class="note" id="jrNote"></p>
     <div class="mr-journal-actions"><button class="happy-button primary" id="mealReportOpen">Выгрузить отчёт</button><button class="happy-button" id="mealReportPrint">Печать</button><a class="happy-button" id="mealCsvExport" role="button" aria-disabled="true">Выгрузить CSV</a></div><p class="happy-note" id="mealExportStatus" role="status"></p>
   </div>
@@ -1524,8 +1527,9 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <p class="note">Для того, что ешь каждый день: одно нажатие — одна порция в раздел по времени.</p>
 
     <div class="eyebrow"><span>Мои продукты</span></div>
+    <div class="happy-actions" style="margin-bottom:12px"><button class="happy-button" id="addOwnProduct">Создать свой продукт</button></div>
     <div id="setFoods" class="mlSet"></div>
-    <p class="note">Появляются здесь, когда создаёшь продукт в шторке «Подобрано». Карандаш — еда это или напиток: напиток, как кофе, не открывает приём пищи. Встроенные продукты — по базе BLS 4.0.</p>
+    <p class="note">Создай свой продукт с нуля или копию из карточки продукта. Карандаш открывает состав, название и свойства. Напиток, как кофе, не открывает приём пищи. Встроенные продукты — по базе BLS 4.0.</p>
 
 
 
@@ -1541,7 +1545,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.9"><div>Happy Meal · v22.9</div><small>Обновлено 28.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.10-test.1"><div>Happy Meal · v22.10-test.1</div><small>Обновлено 28.10.2026</small></footer>
   </div>
 
 </div>
@@ -2549,7 +2553,7 @@ function parsePortion(str,fid){
 function sec(k){ return DB.sections.filter(function(s){ return s.k===k })[0] }
 function day(d){ if(!DB.days[d]) DB.days[d]={items:[]}; var e=DB.days[d]; if(!e.items) e.items=[]; return e }
 function itemsOf(k){ return day(curDate).items.filter(function(x){ return x.sec===k }) }
-function nutOf(x){ var f=x.fid&&FOODS[x.fid], m=(x.g||0)/100; return f?{k:f.k*m,p:f.p*m,f:f.f*m,c:f.c*m}:{k:0,p:0,f:0,c:0} }
+function nutOf(x){ var f=MealProducts.forItem(x,FOODS,DB), m=(x.g||0)/100; return f?{k:f.k*m,p:f.p*m,f:f.f*m,c:f.c*m}:{k:0,p:0,f:0,c:0} }
 function sumOf(list){ return list.reduce(function(a,x){ var n=nutOf(x); a.k+=n.k; a.p+=n.p; a.f+=n.f; a.c+=n.c; return a },{k:0,p:0,f:0,c:0}) }
 /* подпись единицы по числу: 1 стакан, 2 стакана, 5 стаканов, 0,5 стакана */
 var UFORMS={'стакан':['стакан','стакана','стаканов'],'чашка':['чашка','чашки','чашек'],'ломтик':['ломтик','ломтика','ломтиков'],
@@ -2568,7 +2572,7 @@ function portTxt(c){ return fmt(c.q)+' '+uWord(c.q,c.u) }
 function secAt(h){ var want=h<11?'am':h<16?'pm':h<21?'dn':'sn'; return sec(want)?want:(DB.sections[0]&&DB.sections[0].k) }
 function autoSec(){ return secAt(new Date().getHours()) }
 var saveT=null;
-function save(){ clearTimeout(saveT); saveT=setTimeout(function(){ rawSet(K.db,JSON.stringify(DB)); linkWrite() },220) }
+function save(){ MealProducts.snapshotItems(DB,FOODS); clearTimeout(saveT); saveT=setTimeout(function(){ saveT=null; rawSet(K.db,JSON.stringify(DB)); linkWrite() },220) }
 
 /* ═══════════ КОЛЬЦО ЭНЕРГИИ НА ГЛАВНОМ ═══════════
    Общий виджет Meal и Sport (energy-ring.md, утверждён 25 октября; рисует ring.js). Нажатие на кружок — по кругу:
@@ -2592,9 +2596,8 @@ function erSportGoal(k){ var g=ER_SPORT&&ER_SPORT.goals?parseFloat(ER_SPORT.goal
 /* клетчатка за день — из BLS по коду продукта; база не открылась или ни у одного продукта нет данных — прочерк */
 function dayFib(list){
   if(!list.length) return 0;
-  if(typeof BLS_ST==='undefined'||BLS_ST!=='ok') return null;
   var s=0, any=false;
-  list.forEach(function(x){ var f=x.fid&&FOODS[x.fid]; if(!f||!f.b||!BLS_BY[f.b]) return; var v=blsVal(f.b,'fib'); if(v!=null){ s+=v*(x.g||0)/100; any=true } });
+  list.forEach(function(x){var f=MealProducts.forItem(x,FOODS,DB),v=MealProducts.value(f,'fib',blsVal);if(v!=null){s+=v*(x.g||0)/100;any=true}});
   return any?s:null;
 }
 function erGoalRow(h,name,v,g,u){ return erRowHTML(h,name,v==null?'—':gTxt(v)+(g?'/'+gTxt(g):'')+' '+u,v!=null&&g?v/g:null) }
@@ -2780,7 +2783,8 @@ function linkSummary(){
       .sort(function(a,b){ var x=a.t||'99', y=b.t||'99'; return x<y?-1:x>y?1:0 });
     days[d]=D;
   });
-  return {v:1,app:'meal',at:Date.now(),secs:DB.sections.map(function(S){ return {k:S.k,t:S.t} }),days:days};
+  return {v:1,app:'meal',at:Date.now(),secs:DB.sections.map(function(S){ return {k:S.k,t:S.t} }),days:days,
+    nutrition:MealProducts.exchange(DB,FOODS,typeof MealReport==='object'?MealReport.fields(typeof BLS==='object'&&BLS?BLS.keys:null):[],blsVal)};
 }
 var CL_APP='meal', CL_T=null, CL_DIRTY=false, CL_LAST=null;
 function linkWrite(){
@@ -2839,7 +2843,7 @@ function renderSettings(){
     return rowCard(minusBtn('t'+i)+'<span class="nm"><b>'+escH(c.t)+'</b><small>порция '+escH(portTxt(c))+(f?' · '+escH(f.n):'')+'</small></span>'+penBtn('t'+i));
   }).join(''):'<p class="mlEmpty">Счётчиков пока нет.</p>';
   document.getElementById('setFoods').innerHTML=(DB.foods||[]).length?DB.foods.map(function(f,i){
-    return rowCard(minusBtn('f'+i)+'<span class="nm"><b>'+escH(f.n)+'</b><small>'+(f.drink?'напиток · ':'')+'на 100 г: '+Math.round(f.k)+' ккал · Б '+fmt(f.p)+' · Ж '+fmt(f.f)+' · У '+fmt(f.c)+'</small></span>'+penBtn('f'+i));
+    return rowCard(minusBtn('f'+i)+'<span class="nm"><b>'+escH(f.n)+'</b><small>'+(f.drink?'напиток · ':'')+'на 100 г: '+(f.k==null?'—':Math.round(f.k))+' ккал · Б '+(f.p==null?'—':fmt(f.p))+' · Ж '+(f.f==null?'—':fmt(f.f))+' · У '+(f.c==null?'—':fmt(f.c))+'</small></span>'+penBtn('f'+i));
   }).join(''):'<p class="mlEmpty">Своих продуктов пока нет.</p>';
   clPaint();
 }
@@ -2847,7 +2851,7 @@ document.querySelector('[data-screen="settings"]').addEventListener('click',func
   var r=ev.target.closest('[data-ren]'), d=ev.target.closest('[data-del]');
   var id=(r&&r.dataset.ren)||(d&&d.dataset.del); if(!id) return;
   var kind=id.charAt(0), i=+id.slice(1);
-  if(r){ if(kind==='s') editSec(i); else if(kind==='t') editTap(i); else if(kind==='g') editGoal(i); else if(kind==='f') editFoodKind(i) }
+  if(r){ if(kind==='s') editSec(i); else if(kind==='t') editTap(i); else if(kind==='g') editGoal(i); else if(kind==='f') MealProductEditor.edit(DB.foods[i]) }
   else { if(kind==='s') delSec(i); else if(kind==='t') delTap(i); else if(kind==='f') delFood(i) }
 });
 /* цель: число или пусто (пусто — без цели) */
@@ -2907,8 +2911,8 @@ function delTap(i){
 function delFood(i){
   var f=DB.foods[i];
   var used=Object.keys(DB.days).some(function(d){ return (DB.days[d].items||[]).some(function(x){ return x.fid===f.id }) })||
-           DB.taps.some(function(c){ return c.fid===f.id });
-  if(used){ toast('Продукт есть в дневнике или в счётчике — его не убрать'); return }
+           DB.taps.some(function(c){ return c.fid===f.id })||(DB.recipes||[]).some(function(r){return (r.lines||[]).some(function(l){return l.fid===f.id})});
+  if(used){ toast('Продукт есть в дневнике, счётчике или рецепте — его не убрать'); return }
   confirmBox('Убрать «'+f.n+'» из своих продуктов?','Убрать').then(function(ok){
     if(!ok) return; DB.foods.splice(i,1); rebuildLib(); save(); renderAll();
   });
@@ -3309,7 +3313,7 @@ function renderMatch(){
   b.textContent=bad?'Осталось решить: '+bad:(rec?'Сохранить в мои рецепты':'Добавить в дневник')+(n?' · '+n:'');
 }
 function lineHTML(l,where){
-  var st=l.st||'ok', f=l.fid&&FOODS[l.fid], open=(where==='m'?M.open:SOPEN)===l.id, warn=st==='pick'||st==='none';
+  var st=l.st||'ok', f=MealProducts.forItem(l,FOODS,DB), open=(where==='m'?M.open:SOPEN)===l.id, warn=st==='pick'||st==='none';
   var name=st==='pick'?cap(l.name)+' — какой?':f?f.n:cap(l.name||'Продукт');
   var src=f?(f.src==='Мои'?'мой продукт':f.kav?f.kav:f.b?'из базы BLS':f.src==='USDA'?'по USDA':f.src==='этикетка'?'по типичной этикетке':f.src==='оценка'?'оценка':'примерно'):(st==='none'?'нет в библиотеке':'');
   var sub=where==='m'?(l.from==='photo'?'с фото'+(src?' · '+src:''):l.from==='recipe'?'из рецепта'+(src?' · '+src:''):l.raw?'«'+l.raw+'»'+(src?' · '+src:''):src):((l.t?l.t+' · ':'')+(l.tap?'счётчик':src));
@@ -3317,7 +3321,7 @@ function lineHTML(l,where){
   if(where==='m'&&clock)sub=clock+' · '+sub;
   if(clock&&l.tm)sub+=' · время вручную';
   if(where==='m'&&l.sec&&sec(l.sec))sub+=' · '+sec(l.sec).t;
-  var kc=f?Math.round(f.k*l.g/100)+' ккал':'';
+  var kc=f?(f.k==null?'—':Math.round(f.k*l.g/100))+' ккал':'';
   var h='<div class="card mlItem'+(warn?' mlWarn':'')+'" data-id="'+escH(l.id)+'" data-w="'+where+'">'+
     /* слева — звёздочка «в избранное» (птичка пользы не несла); у строки, где продукт не найден, — значок вопроса */
     (warn?'<div class="mlRow"><button class="mlHead" data-act="open" aria-expanded="'+open+'"><span class="st" aria-hidden="true">'+WARNI+'</span>':
@@ -3455,7 +3459,7 @@ var _renderSec0=renderSec; renderSec=function(){ _renderSec0.apply(this,argument
 function keep(w){ if(w!=='m') save() }
 function setFood(l,fid){
   var f=FOODS[fid];
-  l.fid=fid; l.st='ok';
+  delete l.productSnapshot; delete l.productRevision; l.fid=fid; l.st='ok';
   if(l.u!=='г'&&!(f.por&&f.por[l.u])&&!DEF[l.u]){ l.q=l.g; l.u='г' }
   l.g=gramsFor(fid,l.q,l.u);
 }
@@ -3614,7 +3618,8 @@ function resHTML(q,res){
     if(f.fromBls&&f.kav&&!hk){ hk=true; sub='<p class="mlResSub">Кавказская кухня · черновик</p>' }
     else if(f.fromBls&&!f.kav&&!hd){ hd=true; sub='<p class="mlResSub">Из базы BLS</p>' }
     return sub+'<div class="mlResRow"><button class="mlResPick" data-fact="pick" data-fid="'+escH(f.id)+'"><span>'+escH(f.n)+'</span>'+
-      '<small>'+Math.round(f.k)+' ккал / 100 г'+(f.src==='Мои'?' · мой':f.kav?' · '+escH(f.kav.replace(/ кухня$/,'')):'')+'</small></button>'+
+      '<small>'+(f.k==null?'—':Math.round(f.k))+' ккал / 100 г'+(f.src==='Мои'?' · мой':f.kav?' · '+escH(f.kav.replace(/ кухня$/,'')):'')+'</small></button>'+
+      '<button class="up-info" data-fact="facts" data-fid="'+escH(f.id)+'" aria-label="Информация о продукте '+escH(f.n)+'">'+INFOI+'</button>'+
       '<button class="mlStarS'+(on?' on':'')+'" data-fact="star" data-fid="'+escH(f.id)+'" aria-pressed="'+on+'" aria-label="'+(on?'Убрать из избранного':'В избранное')+'">'+STARI+'</button></div>';
   }).join('');
   if(!res.length&&!has) h='<p class="mlEmpty">'+(mode==='recent'?'Здесь появится то, что уже добавлено в дневник.':
@@ -3665,6 +3670,7 @@ function onFind(b){
     if(i>=0) DB.favs.splice(i,1); else DB.favs.unshift(id);
     save(); paintFind(); toast(i>=0?'Убрано из избранного':'В избранном: '+FOODS[id].n); return;
   }
+  if(act==='facts'){var fid=b.dataset.fid;if(!FOODS[fid]&&fid.indexOf('bls:')===0)bindTmp(fid.slice(4));MealControls.product({fid:fid,g:100});return}
   if(act==='pick'){ applyFind(b.dataset.fid); return }
   if(act==='new'){ createOwn(FIND.q||'',function(food){ applyFind(food.id) }) }
 }
@@ -3692,16 +3698,8 @@ function applyFind(fid){
   }
   FIND=null; keep(w); rer(w);
 }
-function createOwn(name,cb){
-  ask2('Свой продукт','название',cap(String(name||'').trim()),'на 100 г: ккал Б Ж У — через пробел, можно пусто','').then(function(r){
-    if(!r) return;
-    var n=(r.a||'').trim(); if(!n) return;
-    var x=(r.b||'').replace(/,/g,'.').match(/\d+(\.\d+)?/g)||[];
-    var food=newFood(cap(n),+x[0]||0,+x[1]||0,+x[2]||0,+x[3]||0);
-    toast('«'+food.n+'» — в «Моих продуктах»');
-    cb(food);
-  });
-}
+function createOwn(name,cb){ MealProductEditor.create(cap(String(name||'').trim()),cb) }
+
 /* время приёма: сменил — раздел подстраивается, если его не выбирали руками */
 document.getElementById('mlTimeBox').addEventListener('click',function(){
   var draft=M,date=curDate;
@@ -4001,10 +3999,17 @@ function bkAfterLoad(){
         if(o.bls&&typeof o.bls==='object') DB.bls=o.bls;
         if(o.units&&typeof o.units==='object') DB.units=o.units;
         if(o.bkAt) DB.bkAt=o.bkAt;
+        if(Array.isArray(o.propertyDefs)) DB.propertyDefs=o.propertyDefs;
+        if(o.productSnapshots&&typeof o.productSnapshots==='object')DB.productSnapshots=o.productSnapshots;
+        if(o.productsVersion) DB.productsVersion=o.productsVersion;
+        DB.productToolsPro=!!o.productToolsPro;
       }
     }
   }catch(e){}
+  var migrated=MealProducts.migrate(DB);
+  if(migrated.changed){await rawSet('hdm_products_before_v1',JSON.stringify(DB));DB=migrated.db;await rawSet(K.db,JSON.stringify(DB))}
   rebuildLib();
+  if(!migrated.readOnly&&MealProducts.snapshotItems(DB,FOODS))await rawSet(K.db,JSON.stringify(DB));
   try{ await clLoad() }catch(e){}
   renderAll();
   linkWrite();          // сводка для HappyDay — и по записям, сделанным до этой версии
@@ -4789,6 +4794,7 @@ function renderJournal(){
         '<svg class="go" viewBox="0 0 24 24"><path d="'+(on?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>'+(on?'<div class="jrGb">'+jrRows(g.rows,g.k)+'</div>':'')+'</div>';
     }).join('');
   }
+  if(window.MealProductEditor)MealProductEditor.renderJournalProperties();
   if(window.MealReport&&MealReport.refreshJournalCsv)MealReport.refreshJournalCsv();
 }
 
@@ -5344,15 +5350,20 @@ function jrCompute(r){
     if(it.length){
       days++;
       it.forEach(function(x){
-        var f=x.fid&&FOODS[x.fid]; if(!f) return;
+        var f=MealProducts.forItem(x,FOODS,DB); if(!f) return;
         var m=(x.g||0)/100, kc=Math.max(0,(f.k||0)*m); all++; totK+=kc;
         mac.p+=(f.p||0)*m; mac.f+=(f.f||0)*m; mac.c+=(f.c||0)*m;
         function lack(id){ if(!kc||(id!=='fib'&&!JR_BLS[id])) return; miss[id]=(miss[id]||0)+kc; var L=missN[id]=missN[id]||[]; if(L.indexOf(f.n)<0) L.push(f.n) }
         var code=f.b;
-        if(!code||BLS_ST!=='ok'||!BLS_BY[code]){ noBls++; lack('fib'); ids.forEach(lack); return }
-        if(code.charAt(0)==='Z') kav++;
-        var fb=blsVal(code,'fib'); if(fb!=null){ mac.fib+=fb*m; has.fib=1 } else lack('fib');
-        ids.forEach(function(id){ var val=jrBlsOf(code,id); if(val!=null){ v[id]=(v[id]||0)+val*m; has[id]=1 } else lack(id) });
+        if(!f.composition&&(!code||BLS_ST!=='ok'||!BLS_BY[code]))noBls++;
+        if(code&&code.charAt(0)==='Z')kav++;
+        var fb=MealProducts.value(f,'fib',blsVal);if(fb!=null){mac.fib+=fb*m;has.fib=1}else lack('fib');
+        ids.forEach(function(id){
+          var key=JR_BLS[id],val=null;
+          if(Array.isArray(key)){var vals=key.map(function(k){return MealProducts.value(f,k,blsVal)});if(vals.every(function(v){return v!=null}))val=vals.reduce(function(a,b){return a+b},0)}
+          else if(key)val=MealProducts.value(f,key,blsVal);
+          if(val!=null){v[id]=(v[id]||0)+val*m;has[id]=1}else lack(id);
+        });
       });
     }
     d=jrIsoAdd(d,1);
@@ -5384,9 +5395,10 @@ function jrModeTxt(){ return JR_DATA?'':' · пример' }
 function jrNoteTxt(){
   if(!JR_DATA) return 'Пример — так выглядит день с записями. Запиши еду в «Дневнике», и здесь будет её состав.';
   var t='Состав — по базе BLS 4.0 (Max Rubner-Institut, 2025)'+(JR_DATA.kav?' и «Кавказской кухне» Happy Meal (черновик)':'')+'. ';
-  if(BLS_ST==='fail') t='База состава здесь не открылась — витамины и минералы появятся на сайте. Сейчас — только белки, жиры и углеводы. ';
+  if(BLS_ST==='fail') t='База BLS здесь не открылась. Используется доступный сохранённый состав, в том числе пользовательский. ';
   else if(BLS_ST==='loading'||BLS_ST==='idle') t='База состава загружается… ';
-  else if(JR_DATA.noBls) t+='Свои продукты считаются только по белкам, жирам и углеводам. ';
+  else if(JR_DATA.noBls) t+='У части продуктов нет полного состава. ';
+  if((DB.foods||[]).some(function(f){return !!f.composition}))t+='Учтён сохранённый состав пользовательских продуктов. При неполном составе итог включает только известные значения. ';
   return t+'Прочерк — в базе нет данных. «Нет данных у N % еды» — на продукты без этого показателя пришлось N % калорий, и съедено его больше, чем видно. Норма — своя из Настроек, иначе рекомендуемая.';
 }
 
@@ -5532,6 +5544,6 @@ document.addEventListener('click',function(ev){
 });
 
 </script>
-<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.9"></script><script src="controls.js?v=22.9"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
+<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.10-test.1"></script><script src="controls.js?v=22.10-test.1"></script><script src="user-products.js?v=22.10-test.1"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
 </body>
 </html>

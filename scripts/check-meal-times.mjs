@@ -3,8 +3,10 @@ import {createContext,runInContext} from 'node:vm';
 import assert from 'node:assert/strict';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
 const meal=await read('meal/index.html'),day=await read('day/index.html');
+const products=await read('shared/meal-products-model.js');
 const marked=(s,a,b)=>s.slice(s.indexOf(a)+a.length,s.indexOf(b));
 const c=createContext({});runInContext(marked(meal,'/* MEAL_TIME_MODEL_START */','/* MEAL_TIME_MODEL_END */'),c);
+runInContext(products,c);c.FOODS={};c.blsVal=()=>null;
 for(const [input,expected] of [['0:00','00:00'],['9:05','09:05'],['23:59','23:59'],['24:00',null],['12:60',null],['9:5',null],['bad',null]])assert.equal(c.mlNormTime(input),expected);
 const lines=[{id:'a',fid:'food',q:100,g:100,t:'09:00'},{id:'b',fid:'food',q:50,g:50,t:'10:30'},{id:'c',fid:'water',q:200,g:200,t:'11:00',tm:1}];
 assert.equal(c.mlLastTime(lines).t,'11:00');assert.equal(c.mlLastTime(lines).src,'hand');
@@ -39,6 +41,7 @@ runInContext(day.slice(day.indexOf('function dayLine('),day.indexOf('\nfunction 
 d.DB.mealLink.days['2026-10-27']={food:true,sec:{am:{food:true,t0:'07:00',t1:'09:30',k:100}},ev:[{s:'sn',t:'15:00',k:20},{s:'sn',t:'16:00',k:30}]};events=d.jEvents('2026-10-27');assert.equal(events.find(x=>x.title==='Завтрак').t,'09:30');assert.equal(events.find(x=>x.title==='Перекус').t,'16:00');assert.equal(events.filter(x=>x.title==='Перекус').length,1);
 // Real result cards expose immediate removal for all parser states, not only expanded cards.
 const ui=createContext({M:{mode:'diary',open:null,t:'12:00',lines:[]},SOPEN:null,DB:{favs:[]},FOODS:{food:{id:'food',n:'Яблоко',k:100,src:'Мои'}},WARNI:'warn',STARI:'star',BINI:'bin',INFOI:'info',REPLI:'replace',CLOCKI:'clock',cap:x=>x,escH:String,amtShort:()=> '100 г',varHTML:()=>'',famHTML:()=>'',unitList:()=>['г'],UFORM:null,qtyW:()=> '4ch',STEP_SHORT:{},uLab:()=> 'г',unitName:(_,u)=>u,fmt:String});
+runInContext(products,ui);
 runInContext(marked(meal,'/* MEAL_TIME_MODEL_START */','/* MEAL_TIME_MODEL_END */'),ui);
 runInContext(meal.slice(meal.indexOf('function edHTML('),meal.indexOf('/* в поле с числом')),ui);
 runInContext(meal.slice(meal.indexOf('function lineHTML('),meal.indexOf('/* как приготовлено:')),ui);

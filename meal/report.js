@@ -40,13 +40,14 @@
     (db.sections||[]).forEach(function(s){names[s.k]=s.t});
     Object.keys(db.days||{}).filter(function(d){return d>=range.a&&d<=range.b}).sort().forEach(function(d){
       ((db.days[d]||{}).items||[]).forEach(function(item,index){
-        var food=foods[item.fid],grams=finite(item.g),values={};
+        var food=root.MealProducts?root.MealProducts.forItem(item,foods,db):foods[item.fid],grams=finite(item.g),values={},statuses={};
         fs.forEach(function(f){
           var v=null;
-          if(food){v=macro[f.key]?finite(food[macro[f.key]]):food.b?finite(readValue(food.b,f.key)):null}
+          if(food){v=root.MealProducts?root.MealProducts.value(food,f.key,readValue):macro[f.key]?finite(food[macro[f.key]]):food.b?finite(readValue(food.b,f.key)):null}
+          var field=root.MealProducts&&root.MealProducts.fieldFor(food,f.key);statuses[f.key]=field?field.status:v==null?'missing':'value';
           values[f.key]=v==null||grams==null?null:v*grams/100;
         });
-        out.push({date:d,section:names[item.sec]||item.sec||'Без раздела',sectionKey:item.sec||'',id:item.id||'',foodId:item.fid||'',name:food?food.n:(item.name||item.fid||'Неизвестный продукт'),grams:grams,quantity:finite(item.q),unit:item.u||'',time:/^([01]\d|2[0-3]):[0-5]\d$/.test(item.t||'')?item.t:'',manual:!!item.tm,source:food?(food.src||''):'нет данных',nutrientSource:food&&food.b?(String(food.b).charAt(0)==='Z'?'Happy Meal · Кавказская кухня':'BLS 4.0'):'нет данных',code:food&&food.b||'',values:values,index:index});
+        out.push({date:d,section:names[item.sec]||item.sec||'Без раздела',sectionKey:item.sec||'',id:item.id||'',foodId:item.fid||'',name:food?food.n:(item.name||item.fid||'Неизвестный продукт'),grams:grams,quantity:finite(item.q),unit:item.u||'',time:/^([01]\d|2[0-3]):[0-5]\d$/.test(item.t||'')?item.t:'',manual:!!item.tm,source:food?(food.src||''):'нет данных',nutrientSource:food&&food.composition?'Пользовательский состав · версия '+(food.revision||0):food&&food.b?(String(food.b).charAt(0)==='Z'?'Happy Meal · Кавказская кухня':'BLS 4.0'):'нет данных',code:food&&food.b||'',values:values,statuses:statuses,index:index});
       });
     });
     return out.sort(function(a,b){return a.date.localeCompare(b.date)||(a.time||'99:99').localeCompare(b.time||'99:99')||a.index-b.index});
@@ -62,7 +63,7 @@
   }
   function csv(rows,fs){
     var columns=['Дата','Приём пищи','Продукт','Масса, г','Количество','Мера','Время','Время вручную','Источник калорий и БЖУ','Источник остальных нутриентов','Код состава','ID записи','ID продукта'].concat(fs.map(function(f){return f.title+', '+f.unit+' ['+f.key+']'}));
-    return '\uFEFF'+[columns.map(csvCell).join(';')].concat(rows.map(function(r){return [r.date,r.section,r.name,r.grams,r.quantity,r.unit,r.time,r.manual?'да':'нет',r.source,r.nutrientSource,r.code,r.id,r.foodId].concat(fs.map(function(f){return r.values[f.key]})).map(csvCell).join(';')})).join('\r\n')+'\r\n';
+    return '\uFEFF'+[columns.map(csvCell).join(';')].concat(rows.map(function(r){return [r.date,r.section,r.name,r.grams,r.quantity,r.unit,r.time,r.manual?'да':'нет',r.source,r.nutrientSource,r.code,r.id,r.foodId].concat(fs.map(function(f){return r.statuses&&r.statuses[f.key]==='not_detected'?'не обнаружено':r.values[f.key]})).map(csvCell).join(';')})).join('\r\n')+'\r\n';
   }
   function wrap(text,max){
     var out=[],line='';String(text).split(/\s+/).forEach(function(word){
