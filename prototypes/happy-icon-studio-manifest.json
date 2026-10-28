@@ -21,7 +21,7 @@
     },
     {
       "id": "plan:luigi-adaptive",
-      "label": "Луиджи · адаптивный спорт",
+      "label": "адаптивный спорт",
       "category": "adaptive",
       "note": "Новый персонаж на спортивной коляске, плоский 2.2D стиль",
       "characterId": "char:luigi",
@@ -30,7 +30,7 @@
     },
     {
       "id": "plan:aslan-archery",
-      "label": "Аслан · современный лучник",
+      "label": "современный лучник",
       "category": "games",
       "note": "Марокканец; современная спортивная стрельба из лука, не средневековая",
       "characterId": "char:aslan",
@@ -39,7 +39,7 @@
     },
     {
       "id": "plan:aslan-triathlon",
-      "label": "Аслан · триатлон",
+      "label": "триатлон",
       "category": "cardio",
       "note": "Персонаж Аслан в современном виде спорта",
       "characterId": "char:aslan",
@@ -48,7 +48,7 @@
     },
     {
       "id": "plan:aiko-skating",
-      "label": "Айко · фигурное катание",
+      "label": "фигурное катание",
       "category": "winter",
       "note": "Подогнать к общему плоскому стилю и рамке",
       "characterId": "char:aiko",
@@ -57,7 +57,7 @@
     },
     {
       "id": "plan:aiko-rollers",
-      "label": "Айко · ролики",
+      "label": "ролики",
       "category": "winter",
       "note": "Сохранить пропорцию персонажа на общем холсте",
       "characterId": "char:aiko",
@@ -66,7 +66,7 @@
     },
     {
       "id": "plan:aiko-padel",
-      "label": "Айко · падел",
+      "label": "падел",
       "category": "games",
       "note": "Привести иллюстрацию к единому стилю",
       "characterId": "char:aiko",
