@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "updated": "2026-10-28",
+  "source": "sport/sport-icons/catalog.json",
+  "notes": "Statuses reflect work stages. Existing PNGs are technically created, not necessarily approved. Editing in browser is local until exported and committed.",
+  "reviewIds": [
+    "sport:07_pullup_bar_rings",
+    "sport:25_padel_squash",
+    "sport:30_skates_rollers",
+    "sport:35_adaptive_sport"
+  ],
+  "planned": [
+    {
+      "id": "plan:pullup-bar",
+      "label": "Турники · без колец",
+      "category": "strength",
+      "character": "",
+      "note": "Заменить вариант с кольцами на турник; сохранить общую внутреннюю рамку"
+    },
+    {
+      "id": "plan:luigi-adaptive",
+      "label": "Луиджи · адаптивный спорт",
+      "category": "adaptive",
+      "character": "Луиджи",
+      "note": "Новый персонаж на спортивной коляске, плоский 2.2D стиль"
+    },
+    {
+      "id": "plan:aslan-archery",
+      "label": "Аслан · современный лучник",
+      "category": "games",
+      "character": "Аслан",
+      "note": "Марокканец; современная спортивная стрельба из лука, не средневековая"
+    },
+    {
+      "id": "plan:aslan-triathlon",
+      "label": "Аслан · триатлон",
+      "category": "cardio",
+      "character": "Аслан",
+      "note": "Персонаж Аслан в современном виде спорта"
+    },
+    {
+      "id": "plan:aiko-skating",
+      "label": "Айко · фигурное катание",
+      "category": "winter",
+      "character": "Айко",
+      "note": "Подогнать к общему плоскому стилю и рамке"
+    },
+    {
+      "id": "plan:aiko-rollers",
+      "label": "Айко · ролики",
+      "category": "winter",
+      "character": "Айко",
+      "note": "Сохранить пропорцию персонажа на общем холсте"
+    },
+    {
+      "id": "plan:aiko-padel",
+      "label": "Айко · падел",
+      "category": "games",
+      "character": "Айко",
+      "note": "Привести иллюстрацию к единому стилю"
+    }
+  ]
+}
