@@ -212,15 +212,76 @@ function renderStats(){
     ['◈',c.total,'Всего позиций'],['✓',c.done,'Готово по статусу'],['◌',c.review,'На утверждение'],['＋',c.todo,'Ещё не сделано']
   ].map(x=>'<div class="stat"><span class="stat-icon">'+x[0]+'</span><div><strong>'+x[1]+'</strong><span>'+x[2]+'</span></div></div>').join('');
 }
+
+function renderTaxonomy(){
+  const icons=allItems();
+  $('taxonomy-categories').innerHTML=
+    '<button type="button" class="taxonomy-item '+($('category').value==='all'?'on':'')+'" data-tax-category="all"><span>Все</span><small>'+icons.length+'</small></button>'+
+    allCategories().map(c=>{
+      const count=icons.filter(item=>categoryOf(item)===c.id).length;
+      return '<div class="taxonomy-entry"><button type="button" class="taxonomy-item '+($('category').value===c.id?'on':'')+'" data-tax-category="'+esc(c.id)+'"><span>'+esc(c.name)+'</span><small>'+count+'</small></button><button type="button" class="taxonomy-edit" data-edit-category="'+esc(c.id)+'" aria-label="Переименовать '+esc(c.name)+'" title="Переименовать категорию">✎</button></div>';
+    }).join('');
+  $('taxonomy-characters').innerHTML=
+    '<button type="button" class="taxonomy-item '+(selectedCharacter==='all'?'on':'')+'" data-tax-character="all"><span>Все</span><small>'+icons.length+'</small></button>'+
+    allCharacters().map(c=>{
+      const count=icons.filter(item=>iconCharacterId(item)===c.id).length;
+      return '<div class="taxonomy-entry"><button type="button" class="taxonomy-item '+(selectedCharacter===c.id?'on':'')+'" data-tax-character="'+esc(c.id)+'"><span>'+esc(c.name)+'</span><small>'+count+'</small></button><button type="button" class="taxonomy-edit" data-edit-character="'+esc(c.id)+'" aria-label="Профиль '+esc(c.name)+'" title="Редактировать персонажа">✎</button></div>';
+    }).join('');
+}
+function splitTags(value){return String(value||'').split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean).slice(0,50);}
+function openCategory(id=''){
+  editingCategory=id;
+  $('category-form').reset();
+  $('category-dialog-title').textContent=id?'Переименовать категорию':'Новая категория';
+  if(id)$('category-name').value=categoryName(id);
+  $('category-dialog').showModal();
+}
+function saveCategory(e){
+  e.preventDefault();const name=$('category-name').value.trim();
+  if(!name)return;
+  if(editingCategory)state.categoryNames[editingCategory]=name.slice(0,65);
+  else state.categories.push({id:'cat:user:'+Date.now().toString(36),name:name.slice(0,65)});
+  saveState();refreshCategoryOptions();$('category-dialog').close();render();
+  notify(editingCategory?'Категория переименована во всех связанных иконках':'Категория добавлена');
+}
+function openCharacter(id=''){
+  editingCharacter=id;$('character-form').reset();
+  const c=characterById(id);
+  $('character-dialog-title').textContent=c?'Профиль '+c.name:'Новый персонаж';
+  $('character-dialog-id').textContent=id;
+  if(c){
+    $('character-name').value=c.name;
+    $('character-profile').value=c.profile||'';
+    $('character-sports').value=(c.sports||[]).join('\n');
+    $('character-exercises').value=(c.exercises||[]).join('\n');
+  }
+  $('character-dialog').showModal();
+}
+function saveCharacter(e){
+  e.preventDefault();const name=$('character-name').value.trim();if(!name)return;
+  const value={name:name.slice(0,70),profile:$('character-profile').value.trim().slice(0,800),sports:splitTags($('character-sports').value),exercises:splitTags($('character-exercises').value)};
+  if(editingCharacter){
+    const index=state.characters.findIndex(c=>c.id===editingCharacter);
+    if(index>=0)state.characters[index]=Object.assign({},state.characters[index],value);
+    else state.characterProfiles[editingCharacter]=value;
+  }else{
+    const id='char:user:'+Date.now().toString(36);
+    state.characters.push(Object.assign({id},value));
+    selectedCharacter=id;
+  }
+  saveState();refreshCharacterOptions();$('character-dialog').close();render();
+  notify(editingCharacter?'Имя и профиль обновлены во всех связанных позициях':'Новый персонаж добавлен');
+}
+
 function renderGrid(){
   const q=$('search').value.trim().toLocaleLowerCase('ru'),cat=$('category').value,variant=$('variant').value,sort=$('sort').value;
-  filtered=allItems().filter(i=>(!q||(i.label+' '+i.title+' '+i.character+' '+i.id+' '+categoryName(i.category)).toLocaleLowerCase('ru').includes(q))&&(cat==='all'||i.category===cat)&&(variant==='all'||(variant==='planned'?['planned'].includes(i.variant):i.variant===variant))&&(filterStatus==='all'||statusOf(i)===filterStatus));
-  const rank={done:0,review:1,todo:2},categoryOrder=CATEGORIES.map(x=>x[0]);
-  filtered.sort((a,b)=>sort==='name'?a.label.localeCompare(b.label,'ru'):sort==='status'?(rank[statusOf(a)]-rank[statusOf(b)]||a.label.localeCompare(b.label,'ru')):categoryOrder.indexOf(a.category)-categoryOrder.indexOf(b.category)||a.label.localeCompare(b.label,'ru')||a.id.localeCompare(b.id));
-  $('results-count').textContent='Показано '+filtered.length+' из '+allItems().length+' · '+new Set(filtered.map(i=>i.category)).size+' категорий';
+  filtered=allItems().filter(i=>(!q||(currentLabel(i)+' '+(i.title||'')+' '+i.id+' '+categoryName(categoryOf(i))+' '+iconMeta(i).sport+' '+iconMeta(i).exercise).toLocaleLowerCase('ru').includes(q))&&(cat==='all'||categoryOf(i)===cat)&&(selectedCharacter==='all'||iconCharacterId(i)===selectedCharacter)&&(variant==='all'||(variant==='planned'?i.variant==='planned':i.variant===variant))&&(filterStatus==='all'||statusOf(i)===filterStatus));
+  const rank={done:0,review:1,todo:2},categoryOrder=allCategories().map(x=>x.id);
+  filtered.sort((a,b)=>sort==='name'?currentLabel(a).localeCompare(currentLabel(b),'ru'):sort==='status'?(rank[statusOf(a)]-rank[statusOf(b)]||currentLabel(a).localeCompare(currentLabel(b),'ru')):categoryOrder.indexOf(categoryOf(a))-categoryOrder.indexOf(categoryOf(b))||currentLabel(a).localeCompare(currentLabel(b),'ru')||a.id.localeCompare(b.id));
+  $('results-count').textContent='Показано '+filtered.length+' из '+allItems().length+' · '+new Set(filtered.map(i=>categoryOf(i))).size+' категорий';
   $('empty').hidden=filtered.length!==0;
   $('icon-grid').innerHTML=filtered.map(i=>{
-    const s=statusOf(i);return '<div class="icon-tile-shell"><button type="button" class="icon-tile '+(selected===i.id?'is-active':'')+'" data-id="'+esc(i.id)+'" aria-label="'+esc(currentLabel(i)+', '+LABELS[s])+'" aria-pressed="'+String(selected===i.id)+'"><span class="icon-media '+(imageOf(i)?'':'placeholder')+'">'+imageMarkup(i)+'</span><span class="icon-status status-'+s+'"><i class="status-dot"></i>'+esc(LABELS[s])+'</span><span class="icon-name" title="'+esc(i.label)+'">'+esc(i.label)+'</span><span class="icon-sub">'+esc(i.character||categoryName(i.category))+'</span></button><button type="button" class="icon-tile-shortcut" data-edit-id="'+esc(i.id)+'" aria-label="Заменить изображение '+esc(i.label)+'" title="Заменить изображение">✎</button></div>';
+    const s=statusOf(i);return '<div class="icon-tile-shell"><button type="button" class="icon-tile '+(selected===i.id?'is-active':'')+'" data-id="'+esc(i.id)+'" aria-label="'+esc(currentLabel(i)+', '+LABELS[s])+'" aria-pressed="'+String(selected===i.id)+'"><span class="icon-media '+(imageOf(i)?'':'placeholder')+'">'+imageMarkup(i)+'</span><span class="icon-status status-'+s+'"><i class="status-dot"></i>'+esc(LABELS[s])+'</span><span class="icon-name" title="'+esc(currentLabel(i))+'">'+esc(currentLabel(i))+'</span><span class="icon-sub">'+esc(categoryName(categoryOf(i)))+'</span></button><button type="button" class="icon-tile-shortcut" data-edit-id="'+esc(i.id)+'" aria-label="Заменить изображение '+esc(i.label)+'" title="Заменить изображение">✎</button></div>';
   }).join('');
 }
 function previewImage(i,cls){
