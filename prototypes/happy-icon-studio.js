@@ -267,7 +267,7 @@ function saveCharacter(e){
   }else{
     const id='char:user:'+Date.now().toString(36);
     state.characters.push(Object.assign({id},value));
-    selectedCharacter=id;
+    selectedCharacter='all';
   }
   saveState();refreshCharacterOptions();$('character-dialog').close();render();
   notify(editingCharacter?'Имя и профиль обновлены во всех связанных позициях':'Новый персонаж добавлен');
@@ -543,16 +543,57 @@ async function importAll(e){
         delete normalizedIcons[id];
       }
     }
+    /* v1.3 taxonomy. Preserve stable IDs and import older v1 backups unchanged. */
+    if(Array.isArray(d.categories))for(const c of d.categories.slice(0,200)){
+      if(!c||typeof c.id!=='string'||!/^cat:user:[a-z0-9-]+$/i.test(c.id)||typeof c.name!=='string')continue;
+      const clean={id:c.id.slice(0,110),name:c.name.trim().slice(0,65)};
+      const index=state.categories.findIndex(x=>x.id===clean.id);
+      if(index<0)state.categories.push(clean);else state.categories[index]=clean;
+    }
+    if(d.categoryNames&&typeof d.categoryNames==='object'&&!Array.isArray(d.categoryNames))
+      for(const [id,name] of Object.entries(d.categoryNames)){
+        if((CATEGORIES.some(x=>x[0]===id)||state.categories.some(x=>x.id===id))&&typeof name==='string')state.categoryNames[id]=name.slice(0,65);
+      }
+    if(Array.isArray(d.characters))for(const c of d.characters.slice(0,100)){
+      if(!c||typeof c.id!=='string'||!/^char:user:[a-z0-9-]+$/i.test(c.id)||typeof c.name!=='string')continue;
+      const clean={id:c.id.slice(0,110),name:c.name.slice(0,70),profile:String(c.profile||'').slice(0,800),
+        sports:Array.isArray(c.sports)?c.sports.filter(x=>typeof x==='string').slice(0,50).map(x=>x.slice(0,120)):[],
+        exercises:Array.isArray(c.exercises)?c.exercises.filter(x=>typeof x==='string').slice(0,50).map(x=>x.slice(0,120)):[]};
+      const index=state.characters.findIndex(x=>x.id===clean.id);
+      if(index<0)state.characters.push(clean);else state.characters[index]=clean;
+    }
+    if(d.characterProfiles&&typeof d.characterProfiles==='object'&&!Array.isArray(d.characterProfiles))
+      for(const [id,c] of Object.entries(d.characterProfiles)){
+        if(!characterById(id)||!c||typeof c.name!=='string')continue;
+        state.characterProfiles[id]={name:c.name.slice(0,70),profile:String(c.profile||'').slice(0,800),
+          sports:Array.isArray(c.sports)?c.sports.filter(x=>typeof x==='string').slice(0,50).map(x=>x.slice(0,120)):[],
+          exercises:Array.isArray(c.exercises)?c.exercises.filter(x=>typeof x==='string').slice(0,50).map(x=>x.slice(0,120)):[]};
+      }
+    if(d.characterAssignments&&typeof d.characterAssignments==='object'&&!Array.isArray(d.characterAssignments))
+      for(const [id,cid] of Object.entries(d.characterAssignments))
+        if(typeof cid==='string'&&(!cid||characterById(cid))&&/^(sport:|plan:|custom:)/.test(id))state.characterAssignments[id]=cid;
+    if(d.categoryAssignments&&typeof d.categoryAssignments==='object'&&!Array.isArray(d.categoryAssignments))
+      for(const [id,cat] of Object.entries(d.categoryAssignments))
+        if(typeof cat==='string'&&allCategories().some(x=>x.id===cat)&&/^(sport:|plan:|custom:)/.test(id))state.categoryAssignments[id]=cat;
+    if(d.iconMeta&&typeof d.iconMeta==='object'&&!Array.isArray(d.iconMeta))
+      for(const [id,meta] of Object.entries(d.iconMeta)){
+        if(!meta||typeof meta!=='object'||!/^(sport:|plan:|custom:)/.test(id))continue;
+        state.iconMeta[id]={sport:String(meta.sport||'').slice(0,100),exercise:String(meta.exercise||'').slice(0,120)};
+      }
     if(Array.isArray(d.custom))for(const c of d.custom){
       if(typeof c.id!=='string'||!c.id.startsWith('custom:')||typeof c.label!=='string')continue;
-      const clean={id:c.id.slice(0,100),label:c.label.slice(0,110),category:CATEGORIES.some(x=>x[0]===c.category)?c.category:'other',character:String(c.character||'').slice(0,60),note:String(c.note||'').slice(0,700),variant:'planned',origin:'custom',src:safeUrl(c.src||''),status:['done','review','todo'].includes(c.status)?c.status:'todo'};
+      const clean={id:c.id.slice(0,100),label:c.label.slice(0,110),category:allCategories().some(x=>x.id===c.category)?c.category:'other',
+        characterId:characterById(c.characterId)?.id||(allCharacters().find(x=>x.name===c.character)?.id||''),
+        sport:String(c.sport||'').slice(0,100),exercise:String(c.exercise||'').slice(0,120),
+        note:String(c.note||'').slice(0,700),variant:'planned',origin:'custom',
+        src:safeUrl(c.src||''),status:['done','review','todo'].includes(c.status)?c.status:'todo'};
       const ix=state.custom.findIndex(x=>x.id===clean.id);if(ix>=0)state.custom[ix]=clean;else state.custom.push(clean);
     }
     if(data.media&&typeof data.media==='object')for(const [id,value] of Object.entries(data.media)){
       if(!(id.startsWith('custom:')||id.startsWith('replace:'))||typeof value!=='string'||value.length>7500000||!/^data:image\/(png|webp|jpeg);base64,/.test(value))continue;
       if(await mediaPut(id,value)){media[id]=value;delete normalizedIcons[id.startsWith('replace:')?id.slice(8):id];}
     }
-    saveState();render();notify('Импорт выполнен: данные объединены с локальными');
+    saveState();refreshCategoryOptions();refreshCharacterOptions();selectedCharacter='all';render();notify('Импорт выполнен: категории, персонажи, иконки и заметки объединены');
   }catch(err){notify('Не получилось импортировать: '+err.message);}finally{e.target.value='';}
 }
 start();
