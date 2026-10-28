@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#7567de">
 <meta name="description" content="Happy Icon Studio — единая рабочая библиотека иконок Sport, Meal и Day">
-<title>Happy Icon Studio · v1.3</title>
-<link rel="stylesheet" href="./happy-icon-studio.css?v=1.3">
+<title>Happy Icon Studio · v1.4</title>
+<link rel="stylesheet" href="./happy-icon-studio.css?v=1.4">
 </head>
 <body class="theme-sport">
 <div class="aurora aurora-one"></div><div class="aurora aurora-two"></div>
 <div class="shell">
   <header class="header">
     <a class="brand" href="./studio.html" title="Открыть Happy Color Studio"><span class="brand-symbol">✳</span><span><strong>happy</strong><small>Design studios</small></span></a>
-    <div class="header-right"><a class="header-link" href="./happy-family-color-studio-v12.html">◉ Color Studio</a><span class="version-pill">Icon Studio · v1.3</span></div>
+    <div class="header-right"><a class="header-link" href="./happy-family-color-studio-v12.html">◉ Color Studio</a><span class="version-pill">Icon Studio · v1.4</span></div>
   </header>
   <section class="intro"><div class="eyebrow">Библиотека визуальных ассетов / 28.10.2026</div><h1>Happy <em>Icon</em> Studio<span class="spark">✦</span></h1><p>Собираем изображения в одном месте, сверяем варианты и сразу видим их в интерфейсе Happy.</p></section>
   <nav class="app-tabs" aria-label="Приложения">
@@ -22,7 +22,19 @@
     <button class="app-tab" data-app="day" type="button">☼ <span>Day</span></button>
   </nav>
   <section id="sport-view" class="view">
-    <div class="quick-nav"><button id="to-preview" type="button" class="button light">◉ К превью</button><button id="to-library" type="button" class="button">▦ Выбрать иконку</button></div>
+    <aside class="inspector glass" id="inspector">
+      <div class="panel-header"><div><div class="eyebrow">Примерочная · Happy Sport</div><h2>Назначение иконок</h2></div><span class="live-mark"><i></i> Preview</span></div>
+      <div class="preview-picker">
+        <div class="scope-tabs" role="group" aria-label="Выбор вида назначения">
+          <button class="scope-tab active" type="button" data-scope-kind="category">Виды спорта</button>
+          <button class="scope-tab" type="button" data-scope-kind="exercise">Упражнения</button>
+        </div>
+        <label class="scope-choice"><span id="scope-label">Выбрать категорию</span><select id="scope-select" aria-label="Выбрать позицию для иконки"></select></label>
+      </div>
+      <p class="preview-tap-hint">Нажми на иконку в карточке, чтобы открыть полноэкранный редактор назначения и выбрать изображение.</p>
+      <div id="inspector-content"><p class="hint">Загрузка назначений…</p></div>
+    </aside>
+    <div class="quick-nav"><button id="to-preview" type="button" class="button light">◉ Превью</button><button id="to-library" type="button" class="button">▦ Библиотека</button></div>
 
     <section class="taxonomy glass" id="taxonomy">
       <div class="taxonomy-title"><div><div class="eyebrow">Структура библиотеки</div><h2>Категории и персонажи</h2></div><span class="taxonomy-note">Редактируемые группы · постоянные ID</span></div>
@@ -39,7 +51,7 @@
       <p class="taxonomy-caption">Переименование меняет подписи во всех связанных иконках без изменения их файлов. Нажми на группу, чтобы отфильтровать библиотеку, или на ✎ для редактирования.</p>
     </section>
     <details id="stats-details" class="collapsible-stats" open><summary>Сводка коллекции <span>Показать / скрыть</span></summary><div class="stats" id="stats" aria-label="Статусы иконок"></div></details>
-    <div class="layout">
+    <div class="library-layout">
       <main class="library glass" id="library-panel">
         <div class="panel-header"><div><div class="eyebrow">Коллекция / Happy Sport</div><h2>Иконки</h2></div><div class="panel-actions"><button id="toggle-library" class="button" type="button" aria-controls="library-body" aria-expanded="true">▴ Свернуть</button><button id="add-btn" class="button light" type="button">＋ Добавить</button></div></div>
         <div id="library-body">
@@ -54,11 +66,6 @@
         <div id="empty" class="empty" hidden>Ничего не найдено. Измени фильтры или добавь новую иконку.</div>
         </div>
       </main>
-      <aside class="inspector glass" id="inspector">
-        <div class="panel-header"><div><div class="eyebrow">Примерочная / Happy Sport</div><h2>Как выглядит в карточке</h2></div><span class="live-mark"><i></i> Preview</span></div>
-        <p class="preview-tap-hint">Нажми на рисунок, чтобы заменить его. Статус и заметки — ниже.</p>
-        <div id="inspector-content"><p class="hint">Выбери иконку из библиотеки.</p></div>
-      </aside>
     </div>
   </section>
   <section id="other-view" class="view" hidden>
@@ -107,22 +114,50 @@
     <div class="modal-foot"><button type="submit" class="button light">Сохранить персонажа</button></div>
   </form>
 </dialog>
-<dialog id="replace-dialog" class="modal">
-  <form id="replace-form" class="modal-body" method="dialog">
-    <div class="panel-header"><div><div class="eyebrow">Редактирование изображения позиции</div><h2 id="replace-title">Заменить иконку</h2><small id="replace-id" class="replacement-id"></small></div><button id="replace-cancel" class="icon-close" type="button" aria-label="Закрыть">×</button></div>
-    <p class="hint">Заменится только изображение в выбранной позиции. Название и постоянный ID сохраняются; исходный PNG в GitHub не удаляется.</p>
-    <fieldset class="replacement-methods"><legend>Откуда взять изображение</legend>
-      <label><input type="radio" name="replace-method" value="catalog" checked> Из библиотеки</label>
-      <label><input type="radio" name="replace-method" value="upload"> Загрузить файл</label>
-      <label><input type="radio" name="replace-method" value="url"> По ссылке</label>
-    </fieldset>
-    <div class="replacement-source" id="replacement-catalog"><label>Иконка-кандидат<select id="replace-existing"></select></label><span class="hint">Можно взять уже загруженный вариант другого персонажа или вида спорта.</span></div>
-    <div class="replacement-source" id="replacement-upload" hidden><label>PNG, WebP или JPEG до 5 МБ<input id="replace-file" type="file" accept="image/png,image/webp,image/jpeg"></label></div>
-    <div class="replacement-source" id="replacement-url" hidden><label>HTTPS-ссылка на изображение<input id="replace-url" type="url" placeholder="https://…/icon.png"></label></div>
-    <div class="replacement-sample" id="replace-sample" aria-live="polite"></div>
-    <div class="modal-foot replace-footer"><button id="replace-reset" type="button" class="button">↺ Исходная</button><button type="submit" class="button light">Сохранить замену</button></div>
+<dialog id="replace-dialog" class="placement-editor">
+  <form id="replace-form" method="dialog" class="placement-sheet">
+    <header class="placement-top">
+      <div><div class="eyebrow">Happy Icon Studio · Редактор</div><h2 id="replace-title">Назначение иконки</h2></div>
+      <button id="replace-cancel" class="icon-close" type="button" aria-label="Закрыть">×</button>
+    </header>
+    <div class="placement-scroll">
+      <section class="placement-section">
+        <div class="placement-section-title"><h3>Где используется</h3><small id="replace-id"></small></div>
+        <div class="scope-tabs" role="group" aria-label="Тип назначения в редакторе">
+          <button type="button" class="scope-tab" data-edit-kind="category">Вид спорта</button>
+          <button type="button" class="scope-tab" data-edit-kind="exercise">Упражнение</button>
+        </div>
+        <label class="scope-choice"><span>Позиция</span><select id="editor-target-select" aria-label="Выбрать новое назначение"></select></label>
+      </section>
+      <section class="placement-section placement-active">
+        <h3>Выбранная иконка</h3>
+        <div id="replace-sample" class="replacement-hero"></div>
+        <p class="hint" id="placement-help">Нажми на миниатюру ниже, чтобы выбрать изображение для этой позиции.</p>
+      </section>
+      <section class="placement-section">
+        <div class="placement-section-title"><h3>Выбрать из библиотеки</h3><small>Карусель вариантов</small></div>
+        <div class="library-switch" role="group">
+          <button type="button" class="library-mode active" data-library-mode="category">Категории</button>
+          <button type="button" class="library-mode" data-library-mode="character">Персонажи</button>
+        </div>
+        <div id="editor-groups" class="editor-groups" aria-label="Фильтры библиотеки"></div>
+        <div id="editor-carousel" class="editor-carousel" aria-label="Варианты изображений"></div>
+        <p id="editor-empty" class="hint" hidden>В этой группе пока нет готовых изображений.</p>
+      </section>
+      <details id="editor-own" class="edit-disclosure">
+        <summary>＋ Добавить свой вариант</summary>
+        <div class="own-options">
+          <label>Загрузить PNG / WebP / JPEG<input id="replace-file" type="file" accept="image/png,image/webp,image/jpeg"></label>
+          <label>Или HTTPS-ссылка<input id="replace-url" type="url" placeholder="https://…/icon.png"></label>
+        </div>
+      </details>
+    </div>
+    <footer class="placement-bottom">
+      <button id="replace-reset" type="button" class="button">↺ Сбросить</button>
+      <button type="submit" class="button light">Сохранить назначение</button>
+    </footer>
   </form>
 </dialog>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="./happy-icon-studio.js?v=1.3" defer></script>
+<script src="./happy-icon-studio.js?v=1.4" defer></script>
 </body></html>
