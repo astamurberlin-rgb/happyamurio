@@ -69,7 +69,7 @@ function counts(){const vals=allItems().map(statusOf);return {total:vals.length,
 function renderStats(){
   const c=counts();$('sport-total').textContent=c.total||'—';
   $('stats').innerHTML=[
-    ['◈',c.total,'Всего позиций'],['✓',c.done,'Созданные PNG'],['◌',c.review,'На утверждение'],['＋',c.todo,'Ещё не сделано']
+    ['◈',c.total,'Всего позиций'],['✓',c.done,'Готово по статусу'],['◌',c.review,'На утверждение'],['＋',c.todo,'Ещё не сделано']
   ].map(x=>'<div class="stat"><span class="stat-icon">'+x[0]+'</span><div><strong>'+x[1]+'</strong><span>'+x[2]+'</span></div></div>').join('');
 }
 function renderGrid(){
