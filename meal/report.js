@@ -21,6 +21,19 @@
     return out;
   }
   function validDate(s){var d=new Date(s+'T12:00:00Z');return /^\d{4}-\d{2}-\d{2}$/.test(s)&&Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===s}
+  function copyRange(r){return {a:r.a,b:r.b}}
+  function calendarDays(month,today){
+    if(!/^\d{4}-\d{2}$/.test(month)||!validDate(month+'-01'))throw new Error('Неверный месяц');
+    var first=new Date(month+'-01T12:00:00Z'),offset=(first.getUTCDay()+6)%7,count=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate(),days=[];
+    for(var i=0;i<offset;i++)days.push(null);
+    for(var day=1;day<=count;day++){var iso=month+'-'+String(day).padStart(2,'0');days.push({date:iso,day:day,disabled:iso>today})}
+    while(days.length%7)days.push(null);return days;
+  }
+  function pickDate(r,date,edge){
+    if(!validDate(date))throw new Error('Неверная дата');
+    if(edge==='a')return {a:date,b:r.b<date?date:r.b,edge:'b'};
+    return date<r.a?{a:date,b:r.a,edge:'b'}:{a:r.a,b:date,edge:'b'};
+  }
   function records(db,foods,range,readValue,keys){
     if(!validDate(range.a)||!validDate(range.b)||range.a>range.b)throw new Error('Проверь начало и конец периода');
     var fs=fields(keys),names={},out=[],macro={kcal:'k',prot:'p',fat:'f',carb:'c'};
@@ -66,6 +79,7 @@
       }
       block.y=y;block.h=height;pages[pages.length-1].push(block);y+=height;
     }
+    if(options.widget)add({kind:'widget'},700);
     if(options.summary)add({kind:'summary',totals:totals,days:days,count:rows.length,energy:options.energy,macros:options.macros},options.macros?286:200);
     if(options.foods){
       var last='';rows.forEach(function(r){
@@ -94,7 +108,7 @@
     var xref=length;put('xref\n0 '+offsets.length+'\n0000000000 65535 f \n');for(var i=1;i<offsets.length;i++)put(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
     put('trailer\n<< /Size '+offsets.length+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');return new Blob(parts,{type:'application/pdf'});
   }
-  var model={fields:fields,records:records,aggregate:aggregate,csv:csv,wrap:wrap,reportPages:reportPages,pdf:pdf,groups:GROUPS};
+  var model={fields:fields,records:records,aggregate:aggregate,csv:csv,wrap:wrap,reportPages:reportPages,pdf:pdf,groups:GROUPS,copyRange:copyRange,calendarDays:calendarDays,pickDate:pickDate};
   root.MealReport=model;
   if(!root.document)return;
 
@@ -105,39 +119,39 @@
   function status(text){el('mrStatus').textContent=text}
   function currentRows(range){return records(root.DB,root.FOODS,range,root.blsVal,root.BLS&&root.BLS.keys)}
   function currentFields(){return fields(root.BLS&&root.BLS.keys)}
-  function range(){return {a:el('mrFrom').value,b:el('mrTo').value}}
-  function selected(){var o={groups:{}};['summary','foods','time','energy','macros'].forEach(function(k){o[k]=el('mr-'+k).checked});GROUPS.forEach(function(g){o.groups[g[0]]=el('mr-'+g[0]).checked});return o}
+  function range(){return copyRange(state.range||root.jrRange())}
+  function selected(){var o={groups:{}};['widget','summary','foods','time','energy','macros'].forEach(function(k){o[k]=el('mr-'+k).checked});GROUPS.forEach(function(g){o.groups[g[0]]=el('mr-'+g[0]).checked});return o}
   function fileLink(id,name,blob){if(state.files[id])URL.revokeObjectURL(state.files[id]);state.files[id]=null;var a=el(id);a.removeAttribute('href');a.removeAttribute('download');a.setAttribute('aria-disabled','true');if(!blob)return;var url=URL.createObjectURL(id==='mrPdf'?new Blob([blob],{type:'application/octet-stream'}):blob);state.files[id]=url;a.href=url;if(id!=='mrPdfView')a.download=name;a.removeAttribute('aria-disabled')}
   function clearOutput(){state.job++;state.pages=[];state.pdf=null;state.urls.forEach(URL.revokeObjectURL);state.urls=[];['mrPdf','mrPdfView','mrPng'].forEach(function(id){fileLink(id,'',null)});el('mrPreview').hidden=true;el('mrActions').hidden=true;el('mrPageImage').removeAttribute('src');el('mrPrintPages').replaceChildren()}
   function ensure(){
     if(overlay)return;
     overlay=doc.createElement('section');overlay.id='mealReport';overlay.className='meal-report';overlay.hidden=true;overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','mrTitle');
-    overlay.innerHTML='<div class="mr-shell"><header class="mr-head"><div><small>Happy Meal</small><h1 id="mrTitle">Отчёт о питании</h1></div><button class="happy-button" id="mrClose">Закрыть</button></header>'+ 
-      '<div id="mrConfig"><section class="happy-card"><h2>Период</h2><div class="mr-dates"><label>С<input class="happy-input" id="mrFrom" type="date"></label><label>По<input class="happy-input" id="mrTo" type="date"></label></div><button class="happy-button" id="mrAllDates">Весь дневник</button></section>'+ 
-      '<section class="happy-card"><h2>Включить в отчёт</h2><div class="mr-checks">'+[['summary','Итоги за период',true],['foods','Продукты и граммовки',true],['time','Время записей',true],['energy','Калории',true],['macros','Белки, жиры, углеводы',true]].map(function(x){return '<label><input id="mr-'+x[0]+'" type="checkbox"'+(x[2]?' checked':'')+'>'+x[1]+'</label>'}).join('')+'</div><div class="mr-nutrients"><h3>Нутриенты</h3><label><input id="mrAllNutrients" type="checkbox">Выбрать все нутриенты</label><div class="mr-checks">'+GROUPS.map(function(g){return '<label><input id="mr-'+g[0]+'" type="checkbox">'+g[1]+'</label>'}).join('')+'</div></div></section>'+ 
-      '<p class="happy-note">В PDF, PNG и печать попадут только отмеченные данные. CSV всегда содержит все продукты и доступные нутриенты за выбранный период. Пустая ячейка — нет данных, а не ноль. Файлы формируются на устройстве.</p>'+ 
-      '<div class="happy-actions"><button class="happy-button primary" id="mrBuild">Подготовить отчёт</button><a class="happy-button" id="mrCsv" aria-disabled="true">Сохранить полный CSV</a></div></div>'+ 
-      '<p class="happy-note" role="status" id="mrStatus"></p><section id="mrPreview" hidden><div class="mr-page-nav"><button class="happy-button" id="mrPrev" aria-label="Предыдущая страница">←</button><span id="mrPageCount"></span><button class="happy-button" id="mrNext" aria-label="Следующая страница">→</button></div><img id="mrPageImage" alt="Предпросмотр отчёта о питании"></section>'+ 
+    overlay.innerHTML='<div class="mr-shell"><header class="mr-head"><div><small>Happy Meal</small><h1 id="mrTitle">Отчёт о питании</h1></div><button class="happy-button" id="mrClose">Закрыть</button></header>'+
+      '<div id="mrConfig"><p class="mr-fixed-period" id="mrPeriod"></p>'+
+      '<section class="happy-card"><h2>Включить в отчёт</h2><div class="mr-checks">'+[['widget','Виджет как в журнале',true],['summary','Итоги за период',true],['foods','Продукты и граммовки',true],['time','Время записей',true],['energy','Калории',true],['macros','Белки, жиры, углеводы',true]].map(function(x){return '<label><input id="mr-'+x[0]+'" type="checkbox"'+(x[2]?' checked':'')+'>'+x[1]+'</label>'}).join('')+'</div><div class="mr-nutrients"><h3>Нутриенты</h3><label><input id="mrAllNutrients" type="checkbox">Выбрать все нутриенты</label><div class="mr-checks">'+GROUPS.map(function(g){return '<label><input id="mr-'+g[0]+'" type="checkbox">'+g[1]+'</label>'}).join('')+'</div></div></section>'+
+      '<p class="happy-note">В отчёт и печать попадут только отмеченные данные за период журнала. Изменить период можно в журнале. Файлы формируются на устройстве.</p>'+
+      '<div class="happy-actions"><button class="happy-button primary" id="mrBuild">Подготовить отчёт</button></div></div>'+
+      '<p class="happy-note" role="status" id="mrStatus"></p><section id="mrPreview" hidden><div class="mr-page-nav"><button class="happy-button" id="mrPrev" aria-label="Предыдущая страница">←</button><span id="mrPageCount"></span><button class="happy-button" id="mrNext" aria-label="Следующая страница">→</button></div><img id="mrPageImage" alt="Предпросмотр отчёта о питании"></section>'+
       '<div id="mrActions" class="happy-actions" hidden><a class="happy-button primary" id="mrPdf">Сохранить PDF</a><a class="happy-button" id="mrPdfView" target="_blank" rel="noopener">Открыть PDF</a><a class="happy-button" id="mrPng" aria-disabled="true">PNG этой страницы</a><button class="happy-button" id="mrPrint">Печать</button><button class="happy-button" id="mrShare">Отправить PDF</button></div></div>';
     doc.body.appendChild(overlay);var print=doc.createElement('div');print.id='mrPrintPages';doc.body.appendChild(print);
     el('mrClose').onclick=close;
-    el('mrAllDates').onclick=function(){var dates=Object.keys(root.DB.days||{}).filter(function(d){return ((root.DB.days[d]||{}).items||[]).length}).sort();if(!dates.length){status('В дневнике пока нет записей');return}el('mrFrom').value=dates[0];el('mrTo').value=dates[dates.length-1];clearOutput();prepareCsv()};
     el('mrAllNutrients').onchange=function(){var checked=this.checked;GROUPS.forEach(function(g){el('mr-'+g[0]).checked=checked});clearOutput();status('')};
-    overlay.addEventListener('change',function(e){if(e.target.id==='mrAllNutrients')return;clearOutput();status('');if(e.target.id==='mrFrom'||e.target.id==='mrTo')prepareCsv();var n=GROUPS.filter(function(g){return el('mr-'+g[0]).checked}).length;el('mrAllNutrients').checked=n===GROUPS.length;el('mrAllNutrients').indeterminate=n>0&&n<GROUPS.length});
+    overlay.addEventListener('change',function(e){if(e.target.id==='mrAllNutrients')return;clearOutput();status('');var n=GROUPS.filter(function(g){return el('mr-'+g[0]).checked}).length;el('mrAllNutrients').checked=n===GROUPS.length;el('mrAllNutrients').indeterminate=n>0&&n<GROUPS.length});
     overlay.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();close()}else if(e.key==='Tab'){var nodes=Array.from(overlay.querySelectorAll('button,input,a[href]')).filter(function(x){return !x.disabled&&x.getClientRects().length}),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&doc.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&doc.activeElement===last){e.preventDefault();first.focus()}}});
     el('mrBuild').onclick=build;
     el('mrPrev').onclick=function(){showPage(state.index-1)};el('mrNext').onclick=function(){showPage(state.index+1)};
     el('mrShare').onclick=sharePdf;el('mrPrint').onclick=printReport;
   }
-  function open(){ensure();state.prior=doc.activeElement;clearOutput();var r=root.jrRange();el('mrFrom').value=r.a;el('mrTo').value=r.b;status('');overlay.hidden=false;state.outside=Array.from(doc.body.children).filter(function(n){return n!==overlay&&n.id!=='mrPrintPages'}).map(function(n){var was=n.inert;n.inert=true;return [n,was]});doc.body.classList.add('meal-report-open');el('mrClose').focus();prepareCsv()}
-  function close(){clearOutput();state.csvJob=(state.csvJob||0)+1;fileLink('mrCsv','',null);overlay.hidden=true;state.outside.forEach(function(x){x[0].inert=x[1]});state.outside=[];doc.body.classList.remove('meal-report-open');if(state.prior&&doc.contains(state.prior))state.prior.focus()}
+  function open(mode){if(!doc.querySelector('[data-screen="journal"].on'))root.go('journal');doc.dispatchEvent(new Event('happy-show-journal'));state.widgetReady=root.mealWidgetImage();ensure();state.mode=mode==='print'?'print':'report';state.prior=doc.activeElement;clearOutput();state.range=copyRange(root.jrRange());el('mrTitle').textContent=state.mode==='print'?'Печать отчёта':'Отчёт о питании';el('mrBuild').textContent=state.mode==='print'?'Печатать выбранные данные':'Подготовить отчёт';el('mrPeriod').textContent='Период журнала: '+root.jrRangeTxt(state.range);status('');overlay.hidden=false;state.outside=Array.from(doc.body.children).filter(function(n){return n!==overlay&&n.id!=='mrPrintPages'}).map(function(n){var was=n.inert;n.inert=true;return [n,was]});doc.body.classList.add('meal-report-open');el('mrClose').focus()}
+  function close(){clearOutput();overlay.hidden=true;state.outside.forEach(function(x){x[0].inert=x[1]});state.outside=[];doc.body.classList.remove('meal-report-open');if(state.prior&&doc.contains(state.prior))state.prior.focus()}
   function stem(){var r=state.range||range();return 'happy-meal-'+r.a+(r.a===r.b?'':'_'+r.b)}
-  async function prepareCsv(){
-    var job=state.csvJob=(state.csvJob||0)+1;fileLink('mrCsv','',null);
+  async function prepareJournalCsv(){
+    var job=state.csvJob=(state.csvJob||0)+1,r=copyRange(root.jrRange());fileLink('mealCsvExport','',null);
+    function say(text){el('mealExportStatus').textContent=text}
     try{
-      var tries=0;while(root.BLS_ST==='loading'||root.BLS_ST==='idle'){if(job!==state.csvJob)return;if(tries++>100)throw new Error('База состава ещё загружается. Повтори открытие отчёта через несколько секунд.');status('Загружается база состава для полного CSV…');await new Promise(function(resolve){setTimeout(resolve,100)})}
-      if(job!==state.csvJob)return;var r=range(),rows=currentRows(r);if(!rows.length){status('За этот период нет записей для выгрузки');return}var fs=currentFields();fileLink('mrCsv','happy-meal-'+r.a+'_'+r.b+'.csv',new Blob([csv(rows,fs)],{type:'text/csv;charset=utf-8'}));status('CSV готов: '+rows.length+' записей, '+fs.length+' столбцов состава. Пустая ячейка — нет данных.'+(root.BLS_ST!=='ok'?' База недоступна: сейчас выгрузятся только сохранённые калории и БЖУ.':''));
-    }catch(e){if(job===state.csvJob)status(e.message)}
+      var tries=0;while(root.BLS_ST==='loading'||root.BLS_ST==='idle'){if(job!==state.csvJob)return;if(tries++>100)throw new Error('База состава ещё загружается. Повтори выбор периода через несколько секунд.');say('Загружается база состава для CSV…');await new Promise(function(resolve){setTimeout(resolve,100)})}
+      if(job!==state.csvJob)return;var rows=currentRows(r);if(!rows.length){say('За выбранный период нет записей для CSV');return}var fs=currentFields(),link=el('mealCsvExport');fileLink('mealCsvExport','happy-meal-'+r.a+'_'+r.b+'.csv',new Blob([csv(rows,fs)],{type:'text/csv;charset=utf-8'}));link.dataset.from=r.a;link.dataset.to=r.b;link.title='Все продукты и нутриенты: '+root.jrRangeTxt(r);say('CSV за выбранный период: '+rows.length+' записей. Пустая ячейка — нет данных.'+(root.BLS_ST!=='ok'?' База недоступна: только сохранённые калории и БЖУ.':''));
+    }catch(e){if(job===state.csvJob)say(e.message)}
   }
   var W=1240,H=1754;
   function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
@@ -151,6 +165,7 @@
     text(r.a===r.b?r.a:r.a+' — '+r.b,72,183,28,500,'#fff');
     text('ЛИЧНЫЙ ОТЧЁТ',W-72,65,22,600,'#f3dce5','right');
     blocks.forEach(function(b){var y=b.y;
+      if(b.kind==='widget'){if(state.widgetImage){var im=state.widgetImage,ww=1050,hh=ww*im.height/im.width;if(hh>650){hh=650;ww=hh*im.width/im.height}c.drawImage(im,(W-ww)/2,y+15,ww,hh)}return}
       if(b.kind==='heading'){text(b.title,76,y+52,29,700,'#77334f');return}
       if(b.kind==='summary'){
         card(y,b.h-16,'#eee3e8');text('ИТОГИ ЗА ПЕРИОД',92,y+46,22,700,'#77334f');
@@ -181,15 +196,15 @@
     clearOutput();var job=state.job;el('mrBuild').disabled=true;
     try{
       var r=range(),rows=currentRows(r),o=selected();if(!rows.length)throw new Error('За этот период нет записей. Пример из журнала не выгружается.');
-      if(!o.summary&&!o.foods&&!GROUPS.some(function(g){return o.groups[g[0]]}))throw new Error('Отметь итоги, продукты или группу нутриентов');
+      if(!o.widget&&!o.summary&&!o.foods&&!GROUPS.some(function(g){return o.groups[g[0]]}))throw new Error('Отметь итоги, продукты или группу нутриентов');
       if(root.BLS_ST!=='ok'&&GROUPS.some(function(g){return o.groups[g[0]]}))throw new Error('Дождись загрузки базы состава для отчёта с нутриентами');
-      var pages=reportPages(rows,currentFields(),o),images=[];state.range=r;state.options=o;
+      state.widgetImage=o.widget?await state.widgetReady:null;if(o.widget&&!state.widgetImage)throw new Error('Не удалось подготовить виджет. Открой журнал и повтори.');if(job!==state.job)return;var pages=reportPages(rows,currentFields(),o),images=[];state.range=r;state.options=o;
       for(var i=0;i<pages.length;i++){
         if(job!==state.job)return;status('Готовлю страницу '+(i+1)+' из '+pages.length+'…');
         var cv=renderPage(pages[i],i,pages.length,r),blob=await canvasBlob(cv,'image/jpeg',.93),bytes=new Uint8Array(await blob.arrayBuffer());cv.width=0;cv.height=0;
         if(job!==state.job)return;images.push(bytes);state.urls.push(URL.createObjectURL(blob));await new Promise(function(resolve){setTimeout(resolve,0)});
       }
-      if(job!==state.job)return;state.pages=pages;state.pdf=pdf(images,W,H);fileLink('mrPdf',stem()+'.pdf',state.pdf);fileLink('mrPdfView','',state.pdf);showPage(0);el('mrActions').hidden=false;el('mrShare').hidden=!navigator.share;status('Отчёт готов. '+pages.length+' стр. PNG сохраняет открытую страницу, PDF — весь отчёт.');
+      if(job!==state.job)return;state.pages=pages;state.pdf=pdf(images,W,H);fileLink('mrPdf',stem()+'.pdf',state.pdf);fileLink('mrPdfView','',state.pdf);showPage(0);el('mrActions').hidden=false;el('mrShare').hidden=!navigator.share;status('Отчёт готов. '+pages.length+' стр. PNG сохраняет открытую страницу, PDF — весь отчёт.');if(state.mode==='print')await printReport();
     }catch(e){if(job===state.job)status(e.message||'Не удалось подготовить отчёт')}finally{el('mrBuild').disabled=false}
   }
   function showPage(index){if(!state.pages.length)return;state.index=Math.max(0,Math.min(index,state.pages.length-1));el('mrPageImage').src=state.urls[state.index];el('mrPageImage').alt='Отчёт о питании, страница '+(state.index+1)+' из '+state.pages.length;el('mrPageCount').textContent=(state.index+1)+' / '+state.pages.length;el('mrPrev').disabled=state.index===0;el('mrNext').disabled=state.index===state.pages.length-1;el('mrPreview').hidden=false;preparePng()}
@@ -204,6 +219,9 @@
     try{await Promise.all(state.urls.map(function(url){return new Promise(function(resolve,reject){var img=new Image();img.onload=resolve;img.onerror=reject;img.src=url;container.appendChild(img)})}));root.print()}catch(e){status('Не удалось подготовить печать. Сохрани PDF и распечатай его.')}
   }
   doc.getElementById('mealReportOpen').addEventListener('click',open);
-  doc.getElementById('mealCsvExport').addEventListener('click',open);
+  doc.getElementById('mealReportShare').addEventListener('click',open);
+  doc.getElementById('mealReportPrint').addEventListener('click',function(){open('print')});
+  model.refreshJournalCsv=prepareJournalCsv;
+  if(doc.querySelector('[data-screen="journal"].on'))prepareJournalCsv();
   var settings=doc.getElementById('mealReportSettings');if(settings)settings.addEventListener('click',open);
 })(typeof globalThis!=='undefined'?globalThis:this);

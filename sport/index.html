@@ -208,6 +208,8 @@ body{width:100%;max-width:100%;overflow-x:clip}
 .icon-group-title{grid-column:1/-1;font-size:13px;margin:14px 0 3px}
 .workout-icon-picker{max-height:50dvh;overflow:auto;overscroll-behavior:contain}
 @media(max-width:360px){.active-workout>.set-card{padding:16px 4px}.active-workout .set-card h3{font-size:18px}.set-rows{--set-control:36px;--set-gap:4px}.set-row .set-metric input{font-size:19px}.set-row .set-unit{font-size:8px}.set-row .set-metric+.set-metric{padding-left:4px}.set-rows .set-rest{grid-template-columns:minmax(0,1fr) minmax(80px,1fr) repeat(2,var(--set-control))}.set-rest .rest-label{font-size:13px}.set-rest .set-metric input{font-size:19px}.set-rest .set-unit{font-size:9px}.set-actions .set-add{font-size:13px}.workout-icon-options{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.hm-output{margin:20px 0}.hm-embed .dock,.hm-embed #dock,.hm-embed #active-banner{display:none!important}.hm-embed .app{padding-top:0;padding-bottom:15px;max-width:760px}.hm-embed #page{padding-top:0}#hmPrint{display:none}
+@media print{@page{size:A4 landscape;margin:12mm}body>*:not(#hmPrint){display:none!important}#hmPrint{display:block!important;color:#222;background:white}#hmPrint .body-viz{max-width:300px;margin:auto}#hmPrint .body-chart{width:220px;height:300px}#hmPrint .measurement-grid-wrap{overflow:visible}#hmPrint .measurement-grid{font-size:11px;width:100%;color:#222}#hmPrint button{display:none}#hmPrint th,#hmPrint td{color:#222!important;background:white!important;border-bottom:1px solid #ddd;position:static!important}#hmPrint .comparison-note{display:none}}
 .happy-energy{--trk:#ffffff33;--rin:#fff;--rin2:#ffffffd1;--he-ring-h:min(146px,36vw);padding:16px!important;backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}.happy-energy .he-layout{display:grid;grid-template-columns:calc(var(--he-ring-h)*200/186) minmax(0,1fr);gap:16px;align-items:center;width:100%}.happy-energy .he-plate{position:relative;width:calc(var(--he-ring-h)*200/186);height:var(--he-ring-h);padding:0;border:0;background:transparent;overflow:visible}.happy-energy .he-plate svg{position:absolute;inset:0;width:100%;height:100%;transform:none;display:block;overflow:visible}.he-knob{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;color:#fff;background:radial-gradient(circle at 38% 30%,#ffffff61,#ffffff1f 60%,#ffffff0f);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 4px #04285024,0 10px 24px #04285033,inset 0 1px 0 #ffffff80}.he-knob b{font-size:calc(var(--he-ring-h)*.18);font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}.he-knob.long b{font-size:calc(var(--he-ring-h)*.155)}.he-knob small{margin-top:3px;font-size:calc(var(--he-ring-h)*.078);font-weight:600;color:var(--rin2);white-space:nowrap}.happy-energy .he-center{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:0;cursor:pointer;border-radius:24px;touch-action:manipulation}.he-info{height:var(--he-ring-h);min-width:0;display:flex;flex-direction:column;justify-content:space-between}.he-metric{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:5px;font-size:11px;font-weight:600;line-height:1.2;color:#ffffffd1}.he-dot{width:8px;height:8px;border-radius:50%}.he-metric>span:not(.he-bar){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.he-metric b{font:inherit;color:white;white-space:nowrap;font-variant-numeric:tabular-nums}.he-bar{grid-column:1/-1;display:block;height:5px;border-radius:3px;background:#ffffff38;overflow:hidden}.he-bar i{display:block;height:100%;border-radius:3px}#mlKb.happy-energy{display:block}@media(max-width:360px){.happy-energy .he-layout{gap:10px}.he-metric{font-size:10px;column-gap:4px}}
 /* Shared Happy controls. Happy Meal is the visual reference. */
 .happy-settings{--happy-line:rgba(255,255,255,.36);--happy-glass:rgba(255,255,255,.17);--happy-muted:rgba(255,255,255,.82);font-size:15px;line-height:1.5}
@@ -3508,6 +3510,7 @@ function exerciseSportIcon(e){const text=((e.name||'')+' '+(e.category||'')+' '+
 
 'use strict';
 const SEED=JSON.parse(document.getElementById('seed-data').textContent),KEY='happy-sport-prototype-v1';
+const SPORT_MEASURE_EMBED=new URLSearchParams(location.search).get('embed')==='measurements';
 const clone=x=>JSON.parse(JSON.stringify(x));
 let state;try{state=JSON.parse(localStorage.getItem(KEY)||'null')}catch{};
 if(!state||state.version!==1)state={version:1,workouts:clone(SEED.workouts),measurements:clone(SEED.measurements),customExercises:[],templates:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},demoPulse:false};
@@ -3519,7 +3522,7 @@ function localNow(){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Mos
 function dayNow(){return localNow().slice(0,10)}
 function secondsBetween(a,b){return Math.round((new Date(b)-new Date(a))/1000)}
 function durationText(sec){sec=Math.max(0,Number(sec)||0);const m=Math.floor(sec/60),h=Math.floor(m/60);return h?`${h} ч ${m%60} мин`:m?`${m} мин`:`${Math.round(sec)} сек`}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{toast('Браузер не сохранил данные. Выгрузи копию в профиле.')}}
+function persist(){if(SPORT_MEASURE_EMBED)return;try{localStorage.setItem(KEY,JSON.stringify(state))}catch{toast('Браузер не сохранил данные. Выгрузи копию в профиле.')}}
 function toast(text,undo=null){clearTimeout(toastTimer);undoAction=undo;$('#toast-root').innerHTML=`<div class="toast"><span>${esc(text)}</span>${undo?'<button data-action="undo">Отменить</button>':''}</div>`;toastTimer=setTimeout(()=>{$('#toast-root').innerHTML='';undoAction=null},6000)}
 function goto(v){closeSheet();view=v;render();window.scrollTo({top:0,behavior:'instant'})}
 function renderTop(title,date=true){return `<header class="top"><div><div class="brand">happy sport</div><h1>${title}</h1></div>${date?`<label class="date-pill">${icon('calendar-blank')}<span>${dateLabel(selectedDate)}</span><input aria-label="День дневника" type="date" value="${selectedDate}" id="day-picker"></label>`:''}</header>`}
@@ -3539,7 +3542,7 @@ const baseTemplates=[{id:'sea',title:'Плавание в море',kind:'sea',d
 const templates=()=>[...baseTemplates.map(t=>state.templateOverrides?.[t.id]||t),...state.templates];
 function renderTemplates(){return `<p class="sheet-info">Шаблон задаёт порядок. Веса, подходы и упражнения можно менять прямо во время тренировки.</p>${templates().map(t=>`<article class="card template-card"><div class="row">${icon(kindIcon(t.kind))}<div class="grow"><h3>${esc(t.title)}</h3><small class="muted">${esc(t.description||`${t.items.length} упражнений · мой шаблон`)}</small></div></div><button class="button" data-action="preview-template" data-id="${esc(t.id)}">Открыть тренировку ${icon('caret-right')}</button></article>`).join('')}<button class="button dashed" data-action="new-template">${icon('plus')} Создать тренировку</button>`}
 function renderActivities(){return `<p class="sheet-info">57 видов активности. Можно вести упражнения внутри тренировки или записать время и дистанцию.</p><div class="exercise-list">${SEED.activities.map(a=>`<button class="card exercise-card" data-action="activity-start" data-id="${esc(a.id)}"><span class="placeholder">${icon(a.category==='aquatic'?'waves':'person-simple')}</span><span class="grow"><h3>${esc(a.name_ru)}</h3><small>Свободная тренировка</small></span>${icon('plus')}</button>`).join('')}</div>`}
-function renderJournal(){return renderTop(journalTab==='measurements'?'Замеры':'Журнал',false)+`<div class="segmented"><button data-action="journal-tab" data-id="workouts" class="${journalTab==='workouts'?'selected':''}">Тренировки</button><button data-action="journal-tab" data-id="measurements" class="${journalTab==='measurements'?'selected':''}">Замеры</button></div>`+(journalTab==='measurements'?renderMeasurements():renderHistory())}
+function renderJournal(){return renderTop('Журнал',false)+`<div class="segmented"><button data-action="journal-tab" data-id="workouts" class="${journalTab==='workouts'?'selected':''}">Журнал</button><button data-action="journal-tab" data-id="measurements" class="${journalTab==='measurements'?'selected':''}">Замеры тела</button></div>`+(journalTab==='measurements'?renderMeasurements():renderHistory())}
 function renderHistory(){const filtered=state.workouts.filter(w=>historyFilter==='all'||w.kind===historyFilter).sort((a,b)=>b.start.localeCompare(a.start));let month='';const recent=state.workouts.filter(w=>w.start.startsWith(dayNow().slice(0,7)));return `<div class="card"><div class="row between"><h3>${new Date(dayNow()+'T12:00').toLocaleDateString('ru-RU',{month:'long'})}</h3><span class="badge">Твоя история</span></div><div class="summary-numbers"><div><strong>${recent.length}</strong><small>тренировок</small></div><div><strong>${durationText(recent.reduce((s,w)=>s+w.duration,0))}</strong><small>по записям</small></div></div></div><div class="section-title"><h2>История</h2><button class="text-btn" data-action="past">${icon('plus')} Добавить</button></div><div class="chips">${[['all','Все'],['gym','Зал'],['sea','Море'],['bars','Турники']].map(([k,t])=>`<button data-action="history-filter" data-id="${k}" class="${historyFilter===k?'selected':''}">${t}</button>`).join('')}</div><div class="stack">${filtered.map(w=>{const m=w.start.slice(0,7);let head='';if(m!==month){month=m;head=`<div class="month-label">${new Date(m+'-01T12:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div>`}return head+workoutCard(w,true)}).join('')||'<div class="empty">Пока нет тренировок этого вида.</div>'}</div>`}
 const MF=[['neck','Шея'],['shoulders','Плечи'],['chest','Грудь'],['underChest','Под грудью'],['bicepsR','Бицепс · правый'],['bicepsL','Бицепс · левый'],['forearmR','Предплечье · правое'],['forearmL','Предплечье · левое'],['upperAbs','Верх живота'],['waist','Талия'],['lowerAbs','Низ живота'],['hips','Бёдра'],['thighR','Бедро · правое'],['thighL','Бедро · левое'],['calfR','Голень · правая'],['calfL','Голень · левая'],['weight','Вес']];
 function measurePair(){const sorted=[...state.measurements].sort((a,b)=>a.date.localeCompare(b.date)),cur=sorted.find(m=>m.date===measureDate)||sorted.at(-1),past=sorted.filter(m=>m.date<cur.date);let old;if(period==='first')old=past[0];else if(period==='previous')old=past.at(-1);else{const d=new Date(cur.date+'T12:00');d.setMonth(d.getMonth()-(period==='month'?1:3));old=[...past].reverse().find(x=>x.date<=d.toISOString().slice(0,10))||past[0]}return {cur,old:old||cur}}
@@ -3832,6 +3835,7 @@ function sportTrack(workouts,previous,now=Date.now()){
 /* Reuse Happy's account and encrypted app_sync protocol. Local summaries work offline. */
 let sportCloudBusy=false,sportSyncTimer,sportSyncError='',sportLastCloud=0;
 function writeSportLink(){
+  if(SPORT_MEASURE_EMBED)return null;
   state.sportLink=sportTrack(state.workouts,state.sportLink);
   const owner=state.sportOwner||'local';let cached=null;try{cached=JSON.parse(localStorage.getItem(SPORT_LINK_KEY))}catch{}
   const summary={...sportMerge(cached?.owner===owner?cached:null,state.sportLink),owner};
@@ -3850,7 +3854,7 @@ async function putSportConditional(summary,expected){
   return !!result?.length;
 }
 async function syncSportCloud(){
-  if(!CL.ready||!clOn()||sportCloudBusy)return;
+  if(SPORT_MEASURE_EMBED||!CL.ready||!clOn()||sportCloudBusy)return;
   if(state.sportOwner&&state.sportOwner!==CL.s.uid){sportSyncError='Эти записи связаны с другим аккаунтом Happy. Войди в него для синхронизации.';paintHappyAccount();return}
   sportCloudBusy=true;sportSyncError='';paintHappyAccount();
   const uid=CL.s.uid;
@@ -5375,7 +5379,7 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button><button class="happy-button" data-transfer="import">Загрузить из файла</button></div><input type="file" id="sport-backup-file" accept=".json,application/json" hidden><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека. Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" data-transfer="undo" ${localStorage.getItem(SPORT_BACKUP_PREV)?'':'disabled'}>Вернуть дневник до загрузки</button></div><div class="happy-backup-cloud"><b>Облачная копия</b><p class="happy-note" style="margin:8px 0 12px">Полный резерв сохраняется и восстанавливается вручную. Для чтения нужен тот же пароль аккаунта.</p><div class="happy-actions"><button class="happy-button" data-transfer="upload" ${sportTransferBusy?'disabled':''}>Сохранить в облако</button><button class="happy-button" data-transfer="download" ${sportTransferBusy?'disabled':''}>Восстановить из облака</button></div><p class="happy-note" id="sport-transfer-status" role="status"></p></div></div>`)+`<footer class="app-version happy-version" data-app-version="36.2"><div>Happy Sport · v36.2</div><small>Обновлено 27.10.2026</small></footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button><button class="happy-button" data-transfer="import">Загрузить из файла</button></div><input type="file" id="sport-backup-file" accept=".json,application/json" hidden><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека. Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" data-transfer="undo" ${localStorage.getItem(SPORT_BACKUP_PREV)?'':'disabled'}>Вернуть дневник до загрузки</button></div><div class="happy-backup-cloud"><b>Облачная копия</b><p class="happy-note" style="margin:8px 0 12px">Полный резерв сохраняется и восстанавливается вручную. Для чтения нужен тот же пароль аккаунта.</p><div class="happy-actions"><button class="happy-button" data-transfer="upload" ${sportTransferBusy?'disabled':''}>Сохранить в облако</button><button class="happy-button" data-transfer="download" ${sportTransferBusy?'disabled':''}>Восстановить из облака</button></div><p class="happy-note" id="sport-transfer-status" role="status"></p></div></div>`)+`<footer class="app-version happy-version" data-app-version="36.3"><div>Happy Sport · v36.3</div><small>Обновлено 28.10.2026</small></footer>`};
 function sportTransferStatus(t){const el=$('#sport-transfer-status');if(el)el.textContent=t;else toast(t)}
 async function sportCloudBackup(action){
   if(sportTransferBusy)return;
@@ -5409,6 +5413,85 @@ document.addEventListener('click',async e=>{
   }catch(err){toast(err.message)}
 });
 document.addEventListener('change',async e=>{if(e.target.id!=='sport-backup-file')return;const file=e.target.files?.[0];if(!file)return;try{if(file.size>20000000)throw new Error('JSON больше 20 МБ');sportPreviewRestore(JSON.parse(await file.text()))}catch(err){toast(err instanceof SyntaxError?'Файл не является корректным JSON':err.message)}});
+
+/* Per-date revisions and deletion markers for Happy body measurements. */
+(function(root){
+'use strict';
+function validDate(d){return /^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d+'T12:00:00Z'))&&new Date(d+'T12:00:00Z').toISOString().slice(0,10)===d}
+function valid(r){return r&&validDate(r.date)&&Number.isSafeInteger(r.rev)&&r.rev>=0&&(r.deleted===true||r.values&&typeof r.values==='object'&&!Array.isArray(r.values)&&Object.values(r.values).every(n=>typeof n==='number'&&Number.isFinite(n)&&n>=1&&n<=500))}
+function merge(a,b){var out=new Map();for(var r of [...(a?.records||[]),...(b?.records||[])]){if(!valid(r))continue;var old=out.get(r.date);if(!old||r.rev>old.rev||r.rev===old.rev&&(r.deleted||JSON.stringify(r)>JSON.stringify(old)))out.set(r.date,r)}return {v:1,records:[...out.values()].sort((a,b)=>a.date.localeCompare(b.date))}}
+function visible(d){return (d?.records||[]).filter(r=>!r.deleted).map(r=>({date:r.date,values:{...r.values},source:r.source||'Мой замер',note:r.note||''}))}
+function changes(before,after,doc,now){var records=[],old=new Map(before.map(r=>[r.date,r])),next=new Map(after.map(r=>[r.date,r])),revs=new Map((doc?.records||[]).map(r=>[r.date,r.rev]));for(var date of new Set([...old.keys(),...next.keys()])){var a=old.get(date),b=next.get(date);if(JSON.stringify(a)===JSON.stringify(b))continue;records.push(b?{...b,rev:Math.max(now,(revs.get(date)||0)+1)}:{date,deleted:true,rev:Math.max(now,(revs.get(date)||0)+1)})}return merge(doc,{records})}
+root.HappyMeasurements={validDate,valid,merge,visible,changes};
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+/* One body-measurement journal, also embedded by Day and Meal. */
+const HM=HappyMeasurements, HM_PREFIX='happy-measurements-v1:',HM_MIGRATED='happy-measurements-migrated-v1';
+let hmOwner=null,hmDoc={v:1,records:[]},hmBaseline=[],hmBusy=false,hmTimer,hmStatus='',hmGeneration=0;
+const hmLegacy={owner:state.sportOwner||'local',records:JSON.parse(JSON.stringify(state.measurements)),trash:JSON.parse(JSON.stringify(state.measurementTrash||[]))};
+const hmCopy=x=>JSON.parse(JSON.stringify(x));
+function hmRead(owner){try{const d=JSON.parse(localStorage.getItem(HM_PREFIX+owner)||'null');if(d&&d.v!==1)throw new Error('Неизвестный формат замеров');return HM.merge(d,null)}catch(e){if(e instanceof SyntaxError)throw new Error('Не удалось прочитать замеры. Сохрани резервную копию.');throw e}}
+function hmSave(d){localStorage.setItem(HM_PREFIX+hmOwner,JSON.stringify(d));hmDoc=d;state.measurements=HM.visible(d);hmBaseline=hmCopy(state.measurements)}
+function hmSelect(){
+ const owner=CL.s?.uid||'local';if(owner===hmOwner)return;
+ hmGeneration++;hmOwner=null;state.measurements=[];hmBaseline=[];hmDoc=hmRead(owner);
+ // Migrate old Sport data exactly once, to its recorded owner. Unowned data stays local.
+ if(!localStorage.getItem(HM_MIGRATED)){
+  const legacyOwner=hmLegacy.owner,legacy=HM.changes([],hmLegacy.records,hmRead(legacyOwner),Date.now());localStorage.setItem(HM_PREFIX+legacyOwner+':trash',JSON.stringify(hmLegacy.trash));
+  localStorage.setItem(HM_PREFIX+legacyOwner,JSON.stringify(legacy));localStorage.setItem(HM_MIGRATED,'1');if(owner===legacyOwner)hmDoc=legacy;
+ }
+ state.measurementTrash=JSON.parse(localStorage.getItem(HM_PREFIX+owner+':trash')||'[]');hmOwner=owner;hmSave(hmDoc);oldPersist();hmStatus=owner==='local'?'Замеры на этом устройстве. Войди в Happy для синхронизации.':'Обновляем общие замеры…';
+}
+const hmPersist=persist;
+persist=function(){
+ if(hmOwner){localStorage.setItem(HM_PREFIX+hmOwner+':trash',JSON.stringify(state.measurementTrash||[]));const d=hmRead(hmOwner),updated=HM.changes(hmBaseline,state.measurements,d,Date.now());hmSave(updated)}
+ hmPersist();clearTimeout(hmTimer);hmTimer=setTimeout(hmSync,1000);
+};
+async function hmPut(d,expected,uid,key){
+ if(CL.s?.uid!==uid||hmOwner!==uid)throw new Error('Аккаунт изменился');
+ const iv=crypto.getRandomValues(new Uint8Array(12)),aad=clUtf(uid+'|sport|measurements'),data=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad},key,clUtf(JSON.stringify(d))));
+ if(CL.s?.uid!==uid||hmOwner!==uid)throw new Error('Аккаунт изменился');
+ const row={user_id:uid,app:'sport',kind:'measurements',v:1,iv:clB64(iv),data:clB64(data),at:d.at};
+ const result=expected==null?await clRest('POST','?on_conflict=user_id,app,kind',row,'resolution=ignore-duplicates,return=representation'):await clRest('PATCH','?app=eq.sport&kind=eq.measurements&at=eq.'+expected,row,'return=representation');return !!result?.length;
+}
+async function hmSync(){
+ if(!CL.ready)return;try{const owner=hmOwner;hmSelect();if(owner!==hmOwner)hmRender()}catch(e){hmStatus=e.message;hmPaint();return}if(hmBusy||!clOn()){hmPaint();return}
+ const uid=hmOwner,key=CL.ck,generation=hmGeneration;hmBusy=true;hmStatus='Синхронизация…';hmPaint();
+ try{for(let i=0;i<4;i++){
+  const before=await clAt('sport','measurements'),remote=await clGet('sport','measurements'),after=await clAt('sport','measurements');
+  if(hmGeneration!==generation||CL.s?.uid!==uid)return;if(before!==after)continue;
+  if(remote&&(remote.v!==1||!Array.isArray(remote.records)||!remote.records.every(HM.valid)))throw new Error('Неизвестный формат общих замеров');
+  const local=hmRead(uid),merged=HM.merge(remote,local);
+  // A matching server snapshot needs no new write.
+  if(remote&&JSON.stringify(merged.records)===JSON.stringify(remote.records)){hmSave(merged);oldPersist();hmStatus='Все замеры синхронизированы';hmRender();return}
+  merged.at=Math.max(Date.now(),(after||0)+1);if(!await hmPut(merged,after,uid,key))continue;
+  if(hmGeneration!==generation||CL.s?.uid!==uid)return;
+  // Keep edits made during the request; next pass uploads them.
+  hmSave(HM.merge(merged,hmRead(uid)));oldPersist();hmStatus='Все замеры синхронизированы';hmRender();return;
+ }throw new Error('Замеры изменились на другом устройстве. Повторим синхронизацию.')}catch(e){if(hmGeneration===generation)hmStatus='Сохранено на устройстве. '+(e.message||'Нет связи с сервером')}finally{hmBusy=false;hmPaint()}
+}
+function hmRender(){if(journalTab==='measurements'&&view==='journal'&&!document.querySelector('#measure-form'))render()}
+function hmPaint(){const n=document.getElementById('hmStatus');if(n)n.textContent=hmStatus}
+const hmMeasurements=renderMeasurements;
+renderMeasurements=function(){
+ if(!hmOwner)return '<p class="fineprint">Загружаем замеры профиля…</p>';
+ const local=hmOwner&&hmOwner!=='local'?hmRead('local'):null;
+ return `<p class="fineprint" id="hmStatus" role="status">${esc(hmStatus)}</p>${local?.records.some(r=>!r.deleted)?'<button class="button" data-hm="claim">Добавить локальные замеры в этот профиль</button>':''}`+hmMeasurements()+`<div class="happy-actions hm-output"><button class="happy-button" data-hm="print">Печать замеров</button><button class="happy-button" data-hm="csv">Выгрузить CSV</button></div>`;
+};
+function hmCsv(){const fields=[...new Set(state.measurements.flatMap(r=>Object.keys(r.values)))],cell=v=>'"'+String(v??'').replaceAll('"','""')+'"',text='\uFEFF'+[['Дата',...fields.map(k=>(MF.find(x=>x[0]===k)?.[1]||k)+(k==='weight'?', кг':', см'))],...state.measurements.map(r=>[r.date,...fields.map(k=>r.values[k])])].map(r=>r.map(cell).join(';')).join('\r\n');const a=document.createElement('a'),url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.href=url;a.download='happy-measurements.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+function hmPrint(){if(!state.measurements.length){toast('Пока нет замеров');return}let n=document.getElementById('hmPrint');if(!n){n=document.createElement('section');n.id='hmPrint';document.body.appendChild(n)}const {cur,old}=measurePair();n.innerHTML='<h1>Happy · Замеры тела</h1>'+document.querySelector('.body-viz').outerHTML+measurementHistoryTable(cur,old);window.print()}
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-hm]');if(!b)return;if(b.dataset.hm==='csv')hmCsv();if(b.dataset.hm==='print')hmPrint();if(b.dataset.hm==='claim'&&hmOwner!=='local'){const local=hmRead('local'),same=new Set(hmDoc.records.map(r=>r.date)),add=HM.visible(local).filter(r=>!same.has(r.date));if(!add.length){toast('На эти даты в профиле уже есть замеры. Они сохранены.');return}state.measurements.push(...add);persist();render();toast('Локальные замеры добавлены; совпадающие даты сохранены в профиле')}});
+window.addEventListener('storage',ev=>{if(ev.key===CL_KEY){clLoad().then(()=>{hmSync();hmRender()})}else if(ev.key===HM_PREFIX+hmOwner){try{hmSave(hmRead(hmOwner));oldPersist();hmRender()}catch(e){hmStatus=e.message;hmPaint()}}});
+window.addEventListener('online',hmSync);document.addEventListener('visibilitychange',()=>{if(!document.hidden)hmSync()});setInterval(()=>{if(!document.hidden)hmSync()},15000);
+// Account controls can update the session without a storage event in this document.
+const hmAuthDo=sportAuthDo;sportAuthDo=async function(action){await hmAuthDo(action);await hmSync();hmRender()};
+clLoad().then(()=>{hmSync();hmRender()});
+const hmEmbed=new URLSearchParams(location.search).get('embed')==='measurements';
+if(hmEmbed){
+ document.body.classList.add('hm-embed');const renderNormal=render;
+ render=function(){baseView='journal';view='journal';journalTab='measurements';renderNormal();const top=document.querySelector('#page>.top'),tabs=document.querySelector('#page>.segmented');if(top)top.remove();if(tabs)tabs.remove();parent.postMessage({type:'happy-measurements-height',height:document.documentElement.scrollHeight},location.origin)};
+ baseView='journal';view='journal';journalTab='measurements';render();new ResizeObserver(()=>parent.postMessage({type:'happy-measurements-height',height:document.documentElement.scrollHeight},location.origin)).observe(document.getElementById('page'));
+}
 
 </script><!-- Phosphor Icons license
 MIT License

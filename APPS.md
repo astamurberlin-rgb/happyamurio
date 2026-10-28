@@ -5,9 +5,9 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.4 |
-| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.8 |
-| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.2 |
+| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.5 |
+| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.9 |
+| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.3 |
 
 `shared/apps.json` — карта стартовых файлов и версий. Название, версия и дата обновления видны в самом низу настроек каждого приложения.
 `shared/happy-ui.css` и `shared/happy-ui.js` задают общие кнопки, поля и форму аккаунта.
@@ -101,3 +101,19 @@ PDF содержит растровые страницы; CSV остаётся �
 
 Общий журнал замеров и юридические согласия отложены. Эта версия не меняет
 синхронизацию, аккаунты, серверные схемы или подключение внешнего AI-сервиса.
+
+Meal v22.9: свой период задаётся календарём с черновиком «От/До» и применением.
+Отчёт, печать и CSV используют только период журнала; кнопки внизу, share рядом с периодом.
+Первой галочкой отчёта выбирается изображение текущего виджета. Кнопка информации
+продукта открывает все 76 нутриентов с переключателем порция / 100 г.
+
+Day v50.5 / Meal v22.9 / Sport v36.3: общие замеры открываются из журнала.
+Day и Meal встраивают тот же интерфейс Sport (`?embed=measurements`), а не его копии.
+`shared/measurements-model.js` — слияние дат и маркеров удаления,
+`sport/src/measurements-shared.js` — профиль, миграция и автоматическая зашифрованная
+синхронизация через существующую строку `app_sync` sport/measurements. Серверная схема
+не менялась. Даты со старых устройств объединяются, изменение одной даты выбирается
+по ревизии; при одновременной правке одной даты остаётся более поздняя правка.
+Проверки: `node scripts/check-measurements-shared.mjs` плюс прежний набор.
+Сквозная работа с реальным аккаунтом и отдельными iOS-иконками требует проверки
+на устройстве пользователя; проверены локальные приложения и моделируемый сервер.

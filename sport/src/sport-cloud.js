@@ -1,6 +1,7 @@
 /* Reuse Happy's account and encrypted app_sync protocol. Local summaries work offline. */
 let sportCloudBusy=false,sportSyncTimer,sportSyncError='',sportLastCloud=0;
 function writeSportLink(){
+  if(SPORT_MEASURE_EMBED)return null;
   state.sportLink=sportTrack(state.workouts,state.sportLink);
   const owner=state.sportOwner||'local';let cached=null;try{cached=JSON.parse(localStorage.getItem(SPORT_LINK_KEY))}catch{}
   const summary={...sportMerge(cached?.owner===owner?cached:null,state.sportLink),owner};
@@ -19,7 +20,7 @@ async function putSportConditional(summary,expected){
   return !!result?.length;
 }
 async function syncSportCloud(){
-  if(!CL.ready||!clOn()||sportCloudBusy)return;
+  if(SPORT_MEASURE_EMBED||!CL.ready||!clOn()||sportCloudBusy)return;
   if(state.sportOwner&&state.sportOwner!==CL.s.uid){sportSyncError='Эти записи связаны с другим аккаунтом Happy. Войди в него для синхронизации.';paintHappyAccount();return}
   sportCloudBusy=true;sportSyncError='';paintHappyAccount();
   const uid=CL.s.uid;

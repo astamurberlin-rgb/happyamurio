@@ -1393,7 +1393,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="report.css?v=22.8">
+<link rel="stylesheet" href="report.css?v=22.9">
 </head>
 <body class="loading">
 
@@ -1489,27 +1489,23 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <div class="screen" data-screen="journal">
     <div class="top jrTop">
       <h1>Журнал</h1>
-      <div id="jrPer"></div>
+      <div class="jr-period-row"><div id="jrPer"></div><button class="happy-button jr-share" id="mealReportShare" aria-label="Поделиться отчётом за выбранный период"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15V3m-4 4 4-4 4 4M7 10H5v11h14V10h-2"/></svg></button></div>
     </div>
     <p class="jrPerTxt" id="jrPerTxt"></p>
-    <div class="card jrRange" id="jrRange" hidden>
-      <label>С <input type="date" id="jrFrom"></label>
-      <label>по <input type="date" id="jrTo"></label>
-    </div>
-    <div class="mr-journal-actions"><button class="happy-button primary" id="mealReportOpen">Поделиться отчётом</button><button class="happy-button" id="mealCsvExport">Выгрузить CSV</button></div>
     <div class="jrW" id="jrTiles"></div>
     <div class="eyebrow"><span>Избранное</span></div>
     <div class="card jrList" id="jrMine"></div>
     <div class="eyebrow jrSortRow"><span>Показатели</span><div id="jrSort"></div></div>
     <div class="jrGroups" id="jrGroups"></div>
     <p class="note" id="jrNote"></p>
+    <div class="mr-journal-actions"><button class="happy-button primary" id="mealReportOpen">Выгрузить отчёт</button><button class="happy-button" id="mealReportPrint">Печать</button><a class="happy-button" id="mealCsvExport" role="button" aria-disabled="true">Выгрузить CSV</a></div><p class="happy-note" id="mealExportStatus" role="status"></p>
   </div>
 
   <!-- НАСТРОЙКИ -->
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1><div class="tierBadges"><button class="tierBadge pro" data-tier="pro" aria-label="PRO — заметка на потом">PRO</button><button class="tierBadge gold" data-tier="gold" aria-label="GOLD — заметка на потом">GOLD</button></div></div>
     <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button><button class="happy-button" id="bkIn">Загрузить из файла</button></div><input type="file" id="bkFile" accept="application/json,.json" hidden><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты и рецепты. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="bkWhen"></p></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day/">Happy Day</a><a class="happy-button" href="../sport/">Happy Sport</a></div></div></section>
-    <h2 class="happy-heading">Экспорт и отчёты</h2><div class="happy-card"><button class="happy-button" id="mealReportSettings">Поделиться отчётом или выгрузить CSV</button><p class="happy-note">Период и состав отчёта выбираются перед сохранением. PDF, PNG, печать и полный CSV с продуктами и нутриентами.</p></div>
+    <h2 class="happy-heading">Экспорт и отчёты</h2><div class="happy-card"><button class="happy-button" id="mealReportSettings">Открыть отчёт</button><p class="happy-note">Период выбирается в журнале, состав отчёта — перед сохранением. CSV находится в конце журнала. PDF, PNG, печать и полный CSV с продуктами и нутриентами.</p></div>
     <h2 class="happy-heading">Настройки питания</h2>
 
 
@@ -1545,7 +1541,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.8"><div>Happy Meal · v22.8</div><small>Обновлено 27.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.9"><div>Happy Meal · v22.9</div><small>Обновлено 28.10.2026</small></footer>
   </div>
 
 </div>
@@ -3408,6 +3404,7 @@ function edHTML(l,where){
     '<button data-act="plus" aria-label="Больше">+</button></div>'+(l.u!=='г'?'<span class="mlEq">= '+fmt(l.g)+' г'+(f&&f.porNote&&(l.u==='шт'||l.u==='маленький'||l.u==='большой'||l.u.indexOf('г ')===0)?' '+escH(f.porNote):'')+'</span>':'')+
     '<span class="mlIcoA">'+(where==='s'||M.mode!=='recipe'?'<button class="mlIco" data-act="time" aria-label="Изменить время продукта">'+CLOCKI+'</button>':'')+
     '<button class="mlIco" data-act="replace" aria-label="Заменить продукт">'+REPLI+'</button>'+
+    '<button class="mlIco" data-act="info" aria-label="Информация о продукте">'+INFOI+'</button>'+
     '<button class="mlIco del" data-act="del" aria-label="Удалить продукт">'+BINI+'</button></span></div>'+
     '<div class="mlUnits" role="group" aria-label="Мера">'+units.map(function(u){ var on=u===l.u;
       return '<button class="chip'+(on?' on':'')+(own[u]?' own':'')+'" data-act="unit" data-u="'+escH(u)+'" aria-pressed="'+on+'">'+
@@ -3422,6 +3419,7 @@ function edHTML(l,where){
 }
 /* в поле с числом — коротко, чтобы значки остались в строке */
 var STEP_SHORT={'г с кожурой':'г с кож.','кончик ножа':'кончик','маленький початок':'мал.','большой початок':'бол.'};
+var INFOI='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/></svg>';
 var REPLI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 0 1 13.5-5.5L20 7M20 3v4h-4M20 14A8 8 0 0 1 6.5 19.5L4 17M4 21v-4h4"/></svg>';
 var BINI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.6 7V5.2c0-.6.4-1 1-1h2.8c.6 0 1 .4 1 1V7"/><path d="M6.6 7l.8 11.6c.1 1 .9 1.7 1.8 1.7h5.6c1 0 1.7-.7 1.8-1.7L17.4 7"/><path d="M10.2 10.8v5.6M13.8 10.8v5.6"/></svg>';
 function unitsReveal(){ document.querySelectorAll('.mlUnits').forEach(function(u){ var a=u.querySelector('.chip.on'); if(!a) return;
@@ -3526,6 +3524,7 @@ function onAct(ev){
   else if(act==='usave'){ if(!unitSave(card,l)) return; keep(w); rer(w); unitsReveal(); return }
   else if(act==='udel'){ unitDel(l); keep(w); rer(w); unitsReveal(); return }
   else if(act==='del'){ removeLine(w,id); return }
+  else if(act==='info'){ MealControls.product(l); return }
   else if(act==='time'){ editProductTime(w,id); return }
   else if(act==='replace'){ FIND={where:w,mode:'replace',id:id,q:(l.st||'ok')==='ok'?'':(l.name||'')}; rer(w); focusFind(); return }
   else if(act==='own'){ createOwn(l.name||'',function(food){ setFood(l,food.id); if(w==='m') M.open=l.id; keep(w); rer(w) }); return }
@@ -3535,7 +3534,7 @@ function onAct(ev){
 function qtyW(v){ return (Math.max(1,String(v==null?'':v).length)+0.7)+'ch' }
 function restoreQty(t){
   var card=t.closest('.mlItem'),l=card&&lineOf(card.dataset.w,card.dataset.id);if(!l)return;
-  t.value=Math.round(l.q*10)/10;t.style.width=qtyW(t.value);
+  t.value=Number.isFinite(l.q)?Math.round(l.q*10)/10:100;t.style.width=qtyW(t.value);
 }
 function onGrams(ev){
   var t=ev.target; if(t.dataset.act!=='qty') return;
@@ -3549,6 +3548,7 @@ function onGrams(ev){
   var scr=document.querySelector('[data-screen="'+n+'"]');
   scr.addEventListener('click',onAct);
   scr.addEventListener('change',onGrams);
+  scr.addEventListener('pointerdown',function(ev){var t=ev.target;if(t.dataset&&t.dataset.act==='qty'){t.value='';t.style.width=qtyW(3)}});
   scr.addEventListener('focusin',function(ev){
     var t=ev.target;if(t.dataset&&t.dataset.act==='qty')t.value='';
   });
@@ -4630,7 +4630,7 @@ var JR_GROUPS=[
 var JR_OPEN={vit:true}, JR_ROW=null, JR_SWOPEN=null;
 
 /* ── период: сегодня, 7 дней, 30 дней или свой. За несколько дней — в среднем за день ── */
-var JR_PER='today', JR_RNG=null, JR_RNG_OPEN=false;
+var JR_PER='today', JR_RNG=null;
 function jrIsoAdd(iso,d){ var t=new Date(iso+'T12:00:00'); t.setDate(t.getDate()+d); return isoOf(t) }
 function jrRange(){
   var t=todayISO();
@@ -4772,9 +4772,6 @@ function renderJournal(){
   document.getElementById('jrPer').innerHTML=jrSeg('per',[['today','Сегодня'],['week','Неделя'],['month','Месяц'],['custom',JR_CAL,'Свой период']],JR_PER);
   document.getElementById('jrPerTxt').textContent=jrPeriodTxt()+jrModeTxt();
   document.getElementById('jrNote').textContent=jrNoteTxt();
-  var rg=document.getElementById('jrRange');
-  rg.hidden=!(JR_PER==='custom'&&JR_RNG_OPEN);
-  if(JR_PER==='custom'){ var r=jrRange(); document.getElementById('jrFrom').value=r.a; document.getElementById('jrTo').value=r.b }
   document.getElementById('jrTiles').innerHTML=jrWidgetHTML(); erFit(document.getElementById('jrTiles'));
   var F=jrFav();
   document.getElementById('jrMine').innerHTML=F.length?jrRows(F,'fav'):
@@ -4792,6 +4789,7 @@ function renderJournal(){
         '<svg class="go" viewBox="0 0 24 24"><path d="'+(on?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>'+(on?'<div class="jrGb">'+jrRows(g.rows,g.k)+'</div>':'')+'</div>';
     }).join('');
   }
+  if(window.MealReport&&MealReport.refreshJournalCsv)MealReport.refreshJournalCsv();
 }
 
 /* ── свайп строки влево: открывает звёздочку; одна открытая строка за раз ── */
@@ -4844,7 +4842,7 @@ JR_SCR.addEventListener('click',function(e){
   var b=e.target.closest('[data-per]');
   if(b){
     var p=b.dataset.per;
-    if(p==='custom') JR_RNG_OPEN=JR_PER==='custom'?!JR_RNG_OPEN:true; else JR_RNG_OPEN=false;
+    if(p==='custom'){ MealReport.openPeriod(); return }
     JR_PER=p; JR_ROW=null; renderJournal(); return;
   }
   b=e.target.closest('[data-sort]');
@@ -4857,15 +4855,6 @@ JR_SCR.addEventListener('click',function(e){
 JR_SCR.addEventListener('keydown',function(e){
   if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-jr]')){ e.preventDefault(); e.target.click() }
 });
-['jrFrom','jrTo'].forEach(function(idn){
-  document.getElementById(idn).addEventListener('change',function(){
-    var a=document.getElementById('jrFrom').value, b=document.getElementById('jrTo').value, t=todayISO();
-    if(!a||!b) return;
-    if(b>t) b=t; if(a>b){ var s=a; a=b; b=s }
-    JR_RNG={a:a,b:b}; renderJournal();
-  });
-});
-
 /* ═══ выгрузка ═══
    Как в HappyDay: на телефоне — «Поделиться» (Файлы, AirDrop, почта); на компьютере — скачивание.
    Где сохранить нельзя (предпросмотр внутри другого приложения), так и пишем. */
@@ -5543,6 +5532,6 @@ document.addEventListener('click',function(ev){
 });
 
 </script>
-<script src="report.js?v=22.8"></script>
+<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.9"></script><script src="controls.js?v=22.9"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
 </body>
 </html>
