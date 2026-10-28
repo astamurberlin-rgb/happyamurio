@@ -408,24 +408,62 @@ function bind(){
   $('to-preview').addEventListener('click',()=>reveal('preview'));
   $('to-library').addEventListener('click',()=>reveal('library'));
   $('toggle-library').addEventListener('click',()=>setLibraryExpanded($('library-body').hidden));
+  document.querySelectorAll('[data-scope-kind]').forEach(b=>b.addEventListener('click',()=>{
+    scopeKind=b.dataset.scopeKind;scopeKey=scopeChoices(scopeKind)[0]?.id||'';
+    renderScopeOptions();renderDetail();
+  }));
+  $('scope-select').addEventListener('change',e=>{scopeKey=e.target.value;renderDetail();});
   $('inspector-content').addEventListener('click',e=>{
-    if(e.target.closest('[data-edit-preview]'))openReplaceDialog(selected);
+    if(e.target.closest('[data-edit-preview]'))openReplaceDialog();
   });
   $('replace-cancel').addEventListener('click',()=>$('replace-dialog').close());
   $('replace-dialog').addEventListener('close',()=>{
     if(replaceObjectUrl){URL.revokeObjectURL(replaceObjectUrl);replaceObjectUrl=null;}
   });
-  document.querySelectorAll('[name="replace-method"]').forEach(r=>r.addEventListener('change',refreshReplaceMethod));
-  $('replace-existing').addEventListener('change',renderReplaceSample);
-  $('replace-file').addEventListener('change',renderReplaceSample);
-  $('replace-url').addEventListener('input',renderReplaceSample);
+  document.querySelectorAll('[data-edit-kind]').forEach(b=>b.addEventListener('click',()=>{
+    draftScopeKind=b.dataset.editKind;draftScopeKey=scopeChoices(draftScopeKind)[0]?.id||'';
+    renderEditorTargets();renderReplaceSample();
+  }));
+  $('editor-target-select').addEventListener('change',e=>{
+    draftScopeKey=e.target.value;renderEditorTargets();renderReplaceSample();
+  });
+  document.querySelectorAll('[data-library-mode]').forEach(b=>b.addEventListener('click',()=>{
+    editorLibraryMode=b.dataset.libraryMode;editorGroup='all';renderEditorGroups();renderEditorCarousel();
+  }));
+  $('editor-groups').addEventListener('click',e=>{
+    const b=e.target.closest('[data-editor-group]');if(!b)return;
+    editorGroup=b.dataset.editorGroup;renderEditorGroups();renderEditorCarousel();
+  });
+  $('editor-carousel').addEventListener('click',e=>{
+    const b=e.target.closest('[data-candidate-id]');if(!b)return;
+    draftAsset={kind:'catalog',id:b.dataset.candidateId};
+    $('replace-file').value='';$('replace-url').value='';
+    if(replaceObjectUrl){URL.revokeObjectURL(replaceObjectUrl);replaceObjectUrl=null;}
+    renderEditorCarousel();renderReplaceSample();
+  });
+  $('replace-file').addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    if(!['image/png','image/webp','image/jpeg'].includes(file.type)||file.size>5*1024*1024){notify('PNG, WebP или JPEG до 5 МБ');return;}
+    if(replaceObjectUrl)URL.revokeObjectURL(replaceObjectUrl);
+    replaceObjectUrl=URL.createObjectURL(file);
+    draftAsset={kind:'upload'};
+    $('replace-url').value='';
+    renderEditorCarousel();renderReplaceSample();
+  });
+  $('replace-url').addEventListener('change',e=>{
+    const value=safeUrl(e.target.value.trim());
+    if(!value||!value.startsWith('https:')){notify('Укажи корректную HTTPS-ссылку');return;}
+    draftAsset={kind:'url',url:value};
+    $('replace-file').value='';
+    if(replaceObjectUrl){URL.revokeObjectURL(replaceObjectUrl);replaceObjectUrl=null;}
+    renderEditorCarousel();renderReplaceSample();
+  });
   $('replace-form').addEventListener('submit',onReplace);
   $('replace-reset').addEventListener('click',restoreOriginal);
   $('icon-grid').addEventListener('click',e=>{
     const edit=e.target.closest('[data-edit-id]');
-    if(edit){selected=edit.dataset.editId;renderGrid();renderDetail();openReplaceDialog(selected);return;}
-    const button=e.target.closest('[data-id]');if(!button)return;selected=button.dataset.id;renderGrid();renderDetail();
-    if(window.matchMedia('(max-width:850px)').matches)reveal('preview');
+    if(edit){selected=edit.dataset.editId;renderGrid();openReplaceDialog(selected);return;}
+    const button=e.target.closest('[data-id]');if(!button)return;selected=button.dataset.id;renderGrid();openReplaceDialog(selected);
   });
   $('add-btn').addEventListener('click',()=>{$('add-form').reset();refreshCategoryOptions();refreshCharacterOptions();$('new-category').value='strength';$('add-dialog').showModal();});
   $('add-cancel').addEventListener('click',()=>$('add-dialog').close());
