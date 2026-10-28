@@ -16,10 +16,39 @@ const LABELS={done:'Готово · PNG',review:'Кандидат',todo:'Не с
 const SYMBOLS={strength:'▰',cardio:'↗',water:'≈',games:'◈',winter:'✳',wellness:'✦',outdoor:'⌁',adaptive:'◉',other:'+'};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const categoryName=id=>(CATEGORIES.find(x=>x[0]===id)||['other','Другое'])[1];
+const categoryName=id=>{
+  const entry=state.categories.find(c=>c.id===id);
+  return state.categoryNames[id]||entry?.name||CATEGORIES.find(x=>x[0]===id)?.[1]||'Другое';
+};
+function allCategories(){return CATEGORIES.map(x=>({id:x[0],name:categoryName(x[0])})).concat(state.categories.map(x=>({id:x.id,name:categoryName(x.id)})));}
+function allCharacters(){
+  return (manifest.characters||[]).concat(state.characters).map(c=>Object.assign({},c,state.characterProfiles[c.id]||{}));
+}
+function characterById(id){return allCharacters().find(c=>c.id===id);}
+function iconCharacterId(i){
+  return Object.prototype.hasOwnProperty.call(state.characterAssignments,i.id)?state.characterAssignments[i.id]:(i.characterId||'');
+}
+function characterName(i){return characterById(iconCharacterId(i))?.name||'';}
+function categoryOf(i){return state.categoryAssignments[i.id]||i.category||'other';}
+function iconMeta(i){return Object.assign({sport:i.sport||'',exercise:i.exercise||''},state.iconMeta[i.id]||{});}
+function refreshCategoryOptions(){
+  for(const id of ['category','new-category']){
+    const sel=$(id),old=sel.value;
+    sel.innerHTML=(id==='category'?'<option value="all">Все категории</option>':'')+allCategories().map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');
+    if([...sel.options].some(o=>o.value===old))sel.value=old;
+    else if(id==='new-category')sel.value='strength';
+  }
+}
+function refreshCharacterOptions(){
+  const select=$('new-character'),old=select.value;
+  select.innerHTML='<option value="">Без персонажа</option>'+allCharacters().map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>').join('');
+  if([...select.options].some(o=>o.value===old))select.value=old;
+}
+
 let manifest={reviewIds:[],planned:[]},items=[],filtered=[],selected='sport:07_pullup_bar_rings';
 let app='sport',filterStatus='all',mode='light',iconSize=68,mediaDb=null,toastTimer,editingId=null,replaceObjectUrl=null,editorExpanded=false;
-let state={status:{},notes:{},custom:[],overrides:{}};
+let state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+let selectedCharacter='all',editingCategory='',editingCharacter='';
 const media={};
 /* Normalized preview pixels, never the original PNG. Keeps illustrations
    centered even when a source image contains asymmetric transparent margins. */
@@ -92,7 +121,17 @@ function initIconEvents(){
 }
 
 function notify(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
-function readState(){try{const d=JSON.parse(localStorage.getItem(KEY)||'{}');return {status:d.status&&typeof d.status==='object'?d.status:{},notes:d.notes&&typeof d.notes==='object'?d.notes:{},custom:Array.isArray(d.custom)?d.custom:[],overrides:d.overrides&&typeof d.overrides==='object'&&!Array.isArray(d.overrides)?d.overrides:{}};}catch(e){return {status:{},notes:{},custom:[],overrides:{}};}}
+function readState(){
+  const defaults={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+  try{
+    const d=JSON.parse(localStorage.getItem(KEY)||'{}');
+    const obj=Object.assign({},defaults,d);
+    for(const key of ['status','notes','overrides','categoryNames','characterProfiles','characterAssignments','categoryAssignments','iconMeta'])
+      if(!obj[key]||typeof obj[key]!=='object'||Array.isArray(obj[key]))obj[key]={};
+    for(const key of ['custom','categories','characters'])if(!Array.isArray(obj[key]))obj[key]=[];
+    return obj;
+  }catch(error){return defaults;}
+}
 function saveState(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){notify('Не удалось сохранить в браузере. Экспортируй JSON.');}}
 function categoryFor(n){return Object.keys(CATEGORY_MAP).find(k=>CATEGORY_MAP[k].includes(Number(n)))||'other';}
 function safeUrl(s){if(!s)return '';try{const u=new URL(s,location.href);if(u.protocol==='https:'||u.origin===location.origin&&u.protocol==='http:')return u.href;}catch(e){}return '';}
@@ -114,7 +153,7 @@ function imageOf(i){
   }
   return rawImageOf(i);
 }
-function currentLabel(i){return i.label+(i.character?' · '+i.character:'');}
+function currentLabel(i){const name=characterName(i);return name?name+' · '+i.label:i.label;}
 function imageMarkup(i,cls){
   const src=normalizedIcons[i.id]||imageOf(i);
   const stage=normalizedIcons[i.id]?'normalized':'original';
@@ -130,10 +169,7 @@ async function loadMedia(){
   const ids=state.custom.map(x=>x.id).concat(Object.keys(state.overrides||{}).filter(id=>state.overrides[id]?.kind==='upload').map(id=>'replace:'+id));
   for(const id of ids){const saved=await mediaGet(id);if(typeof saved==='string'&&/^data:image\/(png|webp|jpeg);base64,/.test(saved))media[id]=saved;}
 }
-function setupOptions(){
-  for(const id of ['category','new-category']){$(id).innerHTML=(id==='category'?'<option value="all">Все виды</option>':'')+CATEGORIES.map(([val,label])=>'<option value="'+val+'">'+esc(label)+'</option>').join('');}
-  $('new-category').value='strength';
-}
+function setupOptions(){refreshCategoryOptions();refreshCharacterOptions();}
 async function start(){
   setupOptions();state=readState();mediaDb=await openDb();await loadMedia();initIconEvents();bind();
   const compact=window.matchMedia('(max-width:850px)').matches;
@@ -148,13 +184,23 @@ async function start(){
     items=catalog.map(c=>({
       id:c.id,label:c.label,title:c.title,number:c.number,
       category:categoryFor(c.number),variant:c.group,origin:'github',
-      src:'../sport/'+c.src,character:'',
+      src:'../sport/'+c.src,characterId:'',sport:c.label,exercise:'',
       status:manifest.reviewIds.includes(c.id)?'review':'done',
       note:manifest.reviewIds.includes(c.id)?'Есть PNG в GitHub, но требуется сравнение с новым вариантом.':'Файл существует в GitHub. Это не означает окончательное художественное утверждение.'
     })).concat(manifest.planned.map(p=>({
       id:p.id,label:p.label,category:p.category||'other',variant:'planned',origin:'plan',
-      character:p.character||'',src:'',status:'todo',note:p.note||''
+      characterId:p.characterId||'',sport:p.sport||'',exercise:p.exercise||'',
+      src:'',status:'todo',note:p.note||''
     })));
+    /* Older local custom entries used a free-text character string.
+       Connect only exact, known names to stable IDs; never guess a person. */
+    for(const c of state.custom){
+      if(!c.characterId&&c.character){
+        const found=allCharacters().find(p=>p.name===c.character);
+        if(found)c.characterId=found.id;
+      }
+    }
+    refreshCharacterOptions();refreshCategoryOptions();
     if(!allItems().some(i=>i.id===selected))selected=allItems()[0]?.id;
     render();
   }catch(e){$('icon-grid').innerHTML='<div class="empty" style="display:block;grid-column:1/-1">Не удалось открыть каталог PNG. Запусти студию с GitHub Pages. <a href="../sport/sport-icons/catalog.json">Проверить источник ↗</a></div>';$('results-count').textContent='Ошибка загрузки';notify('Ошибка загрузки каталога: '+e.message);}
@@ -203,7 +249,7 @@ function renderDetail(){
   $('size-slider').addEventListener('input',e=>{iconSize=Number(e.target.value);$('size-value').textContent=iconSize+' px';$('inspector-content').querySelector('.preview-stack').style.setProperty('--icon-size',iconSize+'px');});
   document.querySelectorAll('[data-scene]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.scene;renderDetail();}));
 }
-function render(){renderStats();renderGrid();renderDetail();}
+function render(){renderStats();renderTaxonomy();renderGrid();renderDetail();}
 function setLibraryExpanded(expanded){
   $('library-body').hidden=!expanded;
   $('toggle-library').setAttribute('aria-expanded',String(expanded));
