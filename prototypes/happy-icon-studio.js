@@ -353,7 +353,27 @@ function switchApp(next){
 function bind(){
   document.querySelectorAll('[data-app]').forEach(b=>b.addEventListener('click',()=>switchApp(b.dataset.app)));
   $('search').addEventListener('input',renderGrid);
-  ['category','variant','sort'].forEach(id=>$(id).addEventListener('change',renderGrid));
+  ['category','variant','sort'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='category')renderTaxonomy();renderGrid();}));
+  $('add-category').addEventListener('click',()=>openCategory());
+  $('category-cancel').addEventListener('click',()=>$('category-dialog').close());
+  $('category-form').addEventListener('submit',saveCategory);
+  $('taxonomy-categories').addEventListener('click',e=>{
+    const edit=e.target.closest('[data-edit-category]');
+    if(edit){openCategory(edit.dataset.editCategory);return;}
+    const chip=e.target.closest('[data-tax-category]');if(!chip)return;
+    $('category').value=chip.dataset.taxCategory;
+    renderTaxonomy();renderGrid();setLibraryExpanded(true);reveal('library');
+  });
+  $('add-character').addEventListener('click',()=>openCharacter());
+  $('character-cancel').addEventListener('click',()=>$('character-dialog').close());
+  $('character-form').addEventListener('submit',saveCharacter);
+  $('taxonomy-characters').addEventListener('click',e=>{
+    const edit=e.target.closest('[data-edit-character]');
+    if(edit){openCharacter(edit.dataset.editCharacter);return;}
+    const chip=e.target.closest('[data-tax-character]');if(!chip)return;
+    selectedCharacter=chip.dataset.taxCharacter;
+    renderTaxonomy();renderGrid();setLibraryExpanded(true);reveal('library');
+  });
   document.querySelectorAll('[data-status]').forEach(b=>b.addEventListener('click',()=>{
     filterStatus=b.dataset.status;document.querySelectorAll('[data-status]').forEach(el=>el.classList.toggle('active',el===b));renderGrid();
   }));
@@ -379,15 +399,18 @@ function bind(){
     const button=e.target.closest('[data-id]');if(!button)return;selected=button.dataset.id;renderGrid();renderDetail();
     if(window.matchMedia('(max-width:850px)').matches)reveal('preview');
   });
-  $('add-btn').addEventListener('click',()=>{$('add-form').reset();$('new-category').value='strength';$('add-dialog').showModal();});
+  $('add-btn').addEventListener('click',()=>{$('add-form').reset();refreshCategoryOptions();refreshCharacterOptions();$('new-category').value='strength';$('add-dialog').showModal();});
   $('add-cancel').addEventListener('click',()=>$('add-dialog').close());
   $('add-form').addEventListener('submit',onAdd);
   $('export-btn').addEventListener('click',exportAll);
   $('import-btn').addEventListener('click',()=>$('import-file').click());
   $('import-file').addEventListener('change',importAll);
   $('reset-btn').addEventListener('click',async()=>{
-    if(!window.confirm('Сбросить локальные статусы, заметки и добавленные позиции? Файлы в GitHub останутся без изменений.'))return;
-    state={status:{},notes:{},custom:[],overrides:{}};Object.keys(media).forEach(k=>delete media[k]);Object.keys(normalizedIcons).forEach(k=>delete normalizedIcons[k]);await mediaClear();saveState();selected='sport:07_pullup_bar_rings';render();notify('Локальные изменения сброшены');
+    if(!window.confirm('Сбросить локальные изменения, включая категории, имена и профили персонажей, статусы и свои файлы? GitHub останется без изменений.'))return;
+    state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+    selectedCharacter='all';
+    Object.keys(media).forEach(k=>delete media[k]);Object.keys(normalizedIcons).forEach(k=>delete normalizedIcons[k]);
+    await mediaClear();saveState();selected='sport:07_pullup_bar_rings';refreshCategoryOptions();refreshCharacterOptions();render();notify('Локальные изменения сброшены');
   });
 }
 
@@ -480,7 +503,8 @@ async function onReplace(ev){
 
 async function onAdd(ev){
   ev.preventDefault();const title=$('new-name').value.trim(),cat=$('new-category').value;
-  const url=$('new-url').value.trim(),file=$('new-file').files[0],character=$('new-character').value.trim(),note=$('new-note').value.trim();
+  const url=$('new-url').value.trim(),file=$('new-file').files[0],characterId=$('new-character').value,note=$('new-note').value.trim();
+  const sport=$('new-sport').value.trim().slice(0,100),exercise=$('new-exercise').value.trim().slice(0,120);
   if(!title)return;
   if(url&&!safeUrl(url)){notify('Нужна корректная HTTPS-ссылка на изображение');return;}
   if(file&&(!['image/png','image/webp','image/jpeg'].includes(file.type)||file.size>5*1024*1024)){notify('PNG, JPEG или WebP размером до 5 МБ');return;}
@@ -491,10 +515,10 @@ async function onAdd(ev){
     try{const data=await fileAsDataUrl(file);if(!await mediaPut(id,data)){notify('Не удалось сохранить файл локально');return;}media[id]=data;src='';}
     catch(e){notify('Ошибка чтения изображения');return;}
   }
-  state.custom.push({id,label:title,category:cat,character,note,variant:'planned',origin:'custom',src,status:src||file?'review':'todo'});
+  state.custom.push({id,label:title,category:cat,characterId,sport,exercise,note,variant:'planned',origin:'custom',src,status:src||file?'review':'todo'});
   saveState();selected=id;$('add-dialog').close();
   $('search').value='';$('category').value='all';$('variant').value='all';filterStatus='all';document.querySelectorAll('[data-status]').forEach(el=>el.classList.toggle('active',el.dataset.status==='all'));
-  switchApp('sport');render();notify('Добавлено в библиотеку · сохранено локально');
+  selectedCharacter='all';setLibraryExpanded(true);switchApp('sport');render();notify('Добавлено в библиотеку · сохранено локально');
 }
 async function exportAll(){
   const payload={format:'happy-icon-studio',schemaVersion:1,exportedAt:new Date().toISOString(),repository:REPO,state,media};
