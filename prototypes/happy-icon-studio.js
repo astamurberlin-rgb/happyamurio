@@ -49,7 +49,7 @@ let manifest={reviewIds:[],planned:[]},items=[],filtered=[],selected='sport:07_p
 let app='sport',filterStatus='all',mode='light',iconSize=68,mediaDb=null,toastTimer,editingId=null,replaceObjectUrl=null,editorExpanded=false;
 let state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{},placements:{}};
 let selectedCharacter='all',editingCategory='',editingCharacter='';
-let scopeKind='category',scopeKey='strength',exercises=[],editingScope='',draftScopeKind='category',draftScopeKey='',draftAsset=null,editorLibraryMode='category',editorGroup='all';
+let scopeKind='category',scopeKey='sport:01_barbell',exercises=[],editingScope='',draftScopeKind='category',draftScopeKey='',draftAsset=null,editorLibraryMode='category',editorGroup='all';
 const media={};
 /* Normalized preview pixels, never the original PNG. Keeps illustrations
    centered even when a source image contains asymmetric transparent margins. */
@@ -300,14 +300,26 @@ function previewImage(i,cls){
 }
 
 function scopeChoices(kind){
-  return kind==='exercise'?exercises.map(e=>({id:e.id,label:e.name,sub:e.category})):allCategories().map(c=>({id:c.id,label:c.name}));
+  if(kind==='exercise')return exercises.map(e=>({id:e.id,label:e.name,sub:e.category}));
+  return allItems().filter(i=>i.variant==='base').map(i=>({id:i.id,label:i.label,sub:categoryName(categoryOf(i))}));
+}
+function scopeOptionMarkup(kind){
+  const groups=new Map();
+  for(const c of scopeChoices(kind)){
+    const key=c.sub||'Другое';
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(c);
+  }
+  return Array.from(groups.entries()).map(([name,opts])=>
+    '<optgroup label="'+esc(name)+'">'+opts.map(o=>'<option value="'+esc(o.id)+'">'+esc(o.label)+'</option>').join('')+'</optgroup>'
+  ).join('');
 }
 function scopeIdentifier(kind,key){return kind+':'+key;}
 function renderScopeOptions(){
   const options=scopeChoices(scopeKind);
   if(!options.some(x=>x.id===scopeKey))scopeKey=options[0]?.id||'';
   $('scope-label').textContent=scopeKind==='category'?'Вид спорта / категория':'Конкретное упражнение';
-  $('scope-select').innerHTML=options.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.label)+'</option>').join('');
+  $('scope-select').innerHTML=scopeOptionMarkup(scopeKind);
   $('scope-select').value=scopeKey;
   document.querySelectorAll('[data-scope-kind]').forEach(b=>{
     b.classList.toggle('active',b.dataset.scopeKind===scopeKind);
@@ -316,7 +328,7 @@ function renderScopeOptions(){
 }
 function defaultScopeItem(kind,key){
   if(kind!=='category')return null;
-  return allItems().find(i=>categoryOf(i)===key&&i.variant==='base'&&rawImageOf(i))||null;
+  return findItem(key)||null;
 }
 function placedItem(kind,key){
   const placement=state.placements[scopeIdentifier(kind,key)];
@@ -481,7 +493,7 @@ function editorScopeId(){return scopeIdentifier(draftScopeKind,draftScopeKey);}
 function renderEditorTargets(){
   const choices=scopeChoices(draftScopeKind);
   if(!choices.some(x=>x.id===draftScopeKey))draftScopeKey=choices[0]?.id||'';
-  $('editor-target-select').innerHTML=choices.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.label)+'</option>').join('');
+  $('editor-target-select').innerHTML=scopeOptionMarkup(draftScopeKind);
   $('editor-target-select').value=draftScopeKey;
   document.querySelectorAll('[data-edit-kind]').forEach(b=>{
     b.classList.toggle('active',b.dataset.editKind===draftScopeKind);
