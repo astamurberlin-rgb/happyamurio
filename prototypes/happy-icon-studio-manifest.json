@@ -1,8 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "updated": "2026-10-28",
   "source": "sport/sport-icons/catalog.json",
-  "notes": "Statuses reflect work stages. Existing PNGs are technically created, not necessarily approved. Editing in browser is local until exported and committed.",
+  "notes": "Statuses reflect work stages. Existing PNGs are technically created, not necessarily approved. Editing in browser is local until exported and committed. Character and category IDs are stable; names are editable display labels.",
   "reviewIds": [
     "sport:07_pullup_bar_rings",
     "sport:25_padel_squash",
@@ -14,50 +14,105 @@
       "id": "plan:pullup-bar",
       "label": "Турники · без колец",
       "category": "strength",
-      "character": "",
-      "note": "Заменить вариант с кольцами на турник; сохранить общую внутреннюю рамку"
+      "note": "Заменить вариант с кольцами на турник; сохранить общую внутреннюю рамку",
+      "characterId": null,
+      "sport": "",
+      "exercise": ""
     },
     {
       "id": "plan:luigi-adaptive",
       "label": "Луиджи · адаптивный спорт",
       "category": "adaptive",
-      "character": "Луиджи",
-      "note": "Новый персонаж на спортивной коляске, плоский 2.2D стиль"
+      "note": "Новый персонаж на спортивной коляске, плоский 2.2D стиль",
+      "characterId": "char:luigi",
+      "sport": "Адаптивный спорт",
+      "exercise": ""
     },
     {
       "id": "plan:aslan-archery",
       "label": "Аслан · современный лучник",
       "category": "games",
-      "character": "Аслан",
-      "note": "Марокканец; современная спортивная стрельба из лука, не средневековая"
+      "note": "Марокканец; современная спортивная стрельба из лука, не средневековая",
+      "characterId": "char:aslan",
+      "sport": "Стрельба из лука",
+      "exercise": ""
     },
     {
       "id": "plan:aslan-triathlon",
       "label": "Аслан · триатлон",
       "category": "cardio",
-      "character": "Аслан",
-      "note": "Персонаж Аслан в современном виде спорта"
+      "note": "Персонаж Аслан в современном виде спорта",
+      "characterId": "char:aslan",
+      "sport": "Триатлон",
+      "exercise": ""
     },
     {
       "id": "plan:aiko-skating",
       "label": "Айко · фигурное катание",
       "category": "winter",
-      "character": "Айко",
-      "note": "Подогнать к общему плоскому стилю и рамке"
+      "note": "Подогнать к общему плоскому стилю и рамке",
+      "characterId": "char:aiko",
+      "sport": "Фигурное катание",
+      "exercise": ""
     },
     {
       "id": "plan:aiko-rollers",
       "label": "Айко · ролики",
       "category": "winter",
-      "character": "Айко",
-      "note": "Сохранить пропорцию персонажа на общем холсте"
+      "note": "Сохранить пропорцию персонажа на общем холсте",
+      "characterId": "char:aiko",
+      "sport": "Ролики",
+      "exercise": ""
     },
     {
       "id": "plan:aiko-padel",
       "label": "Айко · падел",
       "category": "games",
-      "character": "Айко",
-      "note": "Привести иллюстрацию к единому стилю"
+      "note": "Привести иллюстрацию к единому стилю",
+      "characterId": "char:aiko",
+      "sport": "Падел",
+      "exercise": ""
+    }
+  ],
+  "characters": [
+    {
+      "id": "char:daniel",
+      "name": "Дэниел",
+      "profile": "Персонаж для силовых тренировок в спортзале.",
+      "sports": [
+        "Тренажёрный зал"
+      ],
+      "exercises": []
+    },
+    {
+      "id": "char:aiko",
+      "name": "Айко",
+      "profile": "Персонаж для фигурного катания, роликов и ракеточных видов спорта.",
+      "sports": [
+        "Фигурное катание",
+        "Ролики",
+        "Падел"
+      ],
+      "exercises": []
+    },
+    {
+      "id": "char:aslan",
+      "name": "Аслан",
+      "profile": "Современный спортсмен из Марокко.",
+      "sports": [
+        "Стрельба из лука",
+        "Триатлон"
+      ],
+      "exercises": []
+    },
+    {
+      "id": "char:luigi",
+      "name": "Луиджи",
+      "profile": "Персонаж для адаптивных видов спорта.",
+      "sports": [
+        "Адаптивный спорт"
+      ],
+      "exercises": []
     }
   ]
 }
