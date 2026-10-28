@@ -165,3 +165,47 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit;
   color:#5753af;background:#fffffff0;box-shadow:0 2px 6px #34307426;
 }
 @media(max-width:560px){.icon-tile-shortcut{right:16px;top:16px}}
+
+/* v1.3 — one taxonomy/navigation surface with stable identity cards */
+.taxonomy{padding:19px 21px;margin-bottom:15px}
+.taxonomy-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 16px}
+.taxonomy-title h2{font-size:21px;line-height:1.2;margin:4px 0 0;letter-spacing:-.45px}
+.taxonomy-note{font-size:10px;color:#fffc}
+.taxonomy-columns{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.taxonomy-group{background:#ffffff0e;border:1px solid #ffffff2f;border-radius:17px;min-width:0;padding:12px}
+.taxonomy-group-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.taxonomy-group h3{font-size:13px;letter-spacing:.1px;font-weight:730;margin:0}
+.taxonomy-add{font-size:11px;min-height:34px;padding:7px 10px;border-radius:11px;white-space:nowrap}
+.taxonomy-items{display:flex;flex-wrap:wrap;align-items:stretch;gap:7px}
+.taxonomy-entry{display:flex;align-items:center;min-width:0;border-radius:13px;background:#ffffff15;border:1px solid #ffffff40}
+.taxonomy-item{display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:39px;max-width:220px;border:1px solid #ffffff4c;background:#ffffff15;color:#fff;border-radius:12px;padding:7px 11px;font-size:12px;font-weight:680;text-align:left}
+.taxonomy-entry>.taxonomy-item{border:0;background:transparent;max-width:180px;padding-right:5px}
+.taxonomy-item.on{background:#fff;color:#555fb3;border-color:#fff}
+.taxonomy-entry:has(.taxonomy-item.on){background:#ffffffdd;border-color:#fff}
+.taxonomy-entry .taxonomy-item.on{background:transparent}
+.taxonomy-item span{overflow-wrap:anywhere}
+.taxonomy-item small{font-weight:740;font-size:10px;opacity:.7;white-space:nowrap}
+.taxonomy-edit{flex:0 0 auto;margin:0 6px 0 0;display:grid;place-items:center;width:27px;height:27px;border:1px solid #ffffff40;border-radius:9px;background:#ffffff16;color:#fff;font-size:13px}
+.taxonomy-entry:has(.taxonomy-item.on) .taxonomy-edit{color:#5761b6;border-color:#7781c066}
+.taxonomy-caption{font-size:10px;color:#fffc;line-height:1.5;margin:13px 3px 0}
+.detail-fields input{display:block;width:100%;margin-top:7px;padding:10px 11px;min-height:39px;background:#ffffff22;border:1px solid #ffffff4e;color:#fff;font-size:12px;border-radius:11px}
+.detail-fields input::placeholder{color:#ffffffa3}
+.modal-body label textarea{display:block;width:100%;margin-top:7px;min-height:80px;resize:vertical;border-radius:12px;background:#ffffff1b;border:1px solid #ffffff51;color:#fff;font-size:12px;line-height:1.5;padding:11px}
+.modal-body label textarea::placeholder{color:#fff8}
+#filter-details .select-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:850px){
+  .taxonomy{padding:14px;margin-bottom:11px}
+  .taxonomy-columns{grid-template-columns:1fr;gap:11px}
+  .taxonomy-group{padding:11px}
+  .taxonomy-items{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:7px;padding-bottom:5px;scrollbar-width:thin;scroll-snap-type:x proximity}
+  .taxonomy-entry{flex:0 0 auto;max-width:250px;scroll-snap-align:start}
+  .taxonomy-item{flex:0 0 auto;scroll-snap-align:start}
+  .taxonomy-title h2{font-size:18px}
+}
+@media(max-width:560px){
+  .taxonomy-note{display:none}
+  .taxonomy-title{margin-bottom:12px}
+  .taxonomy-group-head{margin-bottom:7px}
+  .taxonomy-caption{font-size:10px}
+  #filter-details .select-row label:last-child{grid-column:auto}
+}
