@@ -26,3 +26,64 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit;
 @media(max-width:850px){.layout{grid-template-columns:1fr}.inspector{position:static}.stats{grid-template-columns:repeat(2,1fr)}.other-layout{grid-template-columns:1fr}.other-preview{max-width:500px}.icon-grid{grid-template-columns:repeat(auto-fill,minmax(134px,1fr))}}
 @media(max-width:560px){.shell{padding:0 12px 25px}.header{min-height:66px}.header-link{font-size:11px}.version-pill{display:none}.brand-symbol{width:34px;height:34px;font-size:22px}.brand strong{font-size:19px}.intro{padding:24px 3px 23px}.intro h1{letter-spacing:-1.9px;font-size:38px}.intro p{font-size:12px}.app-tab{flex:1;min-width:0;padding:12px 5px;border-radius:14px 14px 0 0;font-size:13px;gap:5px}.stats{gap:7px}.stat{min-height:65px;padding:9px 10px;gap:9px}.stat-icon{width:33px;height:33px;font-size:16px}.stat strong{font-size:20px}.stat span:last-child{font-size:10px}.panel-header h2{font-size:18px}.panel-header{gap:7px}.library,.inspector{padding:14px;border-radius:21px}.select-row{grid-template-columns:1fr 1fr}.select-row label:last-child{grid-column:1/-1}.icon-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.icon-media{height:118px}.icon-tile{padding:9px}.results-line{margin:16px 1px 11px}.footer{display:block;padding:17px}.footer-actions{justify-content:stretch;margin-top:12px}.footer-actions .button{flex:1 1 auto}.other-layout{padding:18px;gap:15px}.modal-body{padding:17px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Fixed icon slots v1.1: never stretch an image to fill a changing card.
+   The JS prepares artwork on the same centered, transparent 256px canvas,
+   so different source paddings can't push subjects off the center line. */
+.icon-media,
+.inspector-thumb,
+.workout-image,
+.row-image{
+  position:relative;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  justify-content:center;
+  overflow:hidden;
+  flex-shrink:0;
+  isolation:isolate;
+}
+.icon-media img,
+.inspector-thumb img,
+.workout-image img,
+.row-image img{
+  position:relative;
+  display:block;
+  margin:0 auto;
+  object-fit:contain;
+  object-position:center;
+  transform:none;
+  flex:none;
+  aspect-ratio:1;
+  opacity:0;
+  transition:opacity .12s ease-out;
+}
+.icon-media img[data-icon-ready="1"],
+.inspector-thumb img[data-icon-ready="1"],
+.workout-image img[data-icon-ready="1"],
+.row-image img[data-icon-ready="1"]{opacity:1}
+.icon-media{min-width:0;min-height:118px}
+.icon-media img{width:94px;height:94px;max-width:90%;max-height:90%}
+.inspector-thumb{width:71px;min-width:71px;height:71px;flex:0 0 71px}
+.inspector-thumb img{width:63px;height:63px;max-width:90%;max-height:90%}
+.workout-card{min-width:0;overflow:hidden}
+.workout-card .workout-image{
+  width:94px;height:94px;flex:0 0 94px;
+  min-width:94px;min-height:94px;
+}
+.workout-card .workout-image img{
+  width:var(--icon-size,68px);
+  height:var(--icon-size,68px);
+  max-width:94px;max-height:94px;
+}
+.workout-card>div:last-child{min-width:0;flex:1 1 0}
+.workout-card h3,.workout-card p{overflow-wrap:anywhere}
+.row-image{width:58px;height:58px;flex:0 0 58px}
+.row-image img{
+  width:var(--icon-size,68px);
+  height:var(--icon-size,68px);
+  max-width:58px;max-height:58px;
+}
+.mini-list{min-width:0}
+.mini-list>div{min-width:0}
+.mini-list strong,.mini-list small{overflow-wrap:anywhere}
