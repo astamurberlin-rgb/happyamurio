@@ -82,7 +82,11 @@
       "sports": [
         "Тренажёрный зал"
       ],
-      "exercises": []
+      "exercises": [],
+      "aliases": [
+        "Денис",
+        "Denis"
+      ]
     },
     {
       "id": "char:aiko",
