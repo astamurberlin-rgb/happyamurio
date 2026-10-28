@@ -407,7 +407,7 @@ async function importAll(e){
     }
     if(data.media&&typeof data.media==='object')for(const [id,value] of Object.entries(data.media)){
       if(!(id.startsWith('custom:')||id.startsWith('replace:'))||typeof value!=='string'||value.length>7500000||!/^data:image\/(png|webp|jpeg);base64,/.test(value))continue;
-      if(await mediaPut(id,value)){media[id]=value;delete normalizedIcons[id];}
+      if(await mediaPut(id,value)){media[id]=value;delete normalizedIcons[id.startsWith('replace:')?id.slice(8):id];}
     }
     saveState();render();notify('Импорт выполнен: данные объединены с локальными');
   }catch(err){notify('Не получилось импортировать: '+err.message);}finally{e.target.value='';}
