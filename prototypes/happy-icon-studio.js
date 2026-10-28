@@ -47,8 +47,9 @@ function refreshCharacterOptions(){
 
 let manifest={reviewIds:[],planned:[]},items=[],filtered=[],selected='sport:07_pullup_bar_rings';
 let app='sport',filterStatus='all',mode='light',iconSize=68,mediaDb=null,toastTimer,editingId=null,replaceObjectUrl=null,editorExpanded=false;
-let state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+let state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{},placements:{}};
 let selectedCharacter='all',editingCategory='',editingCharacter='';
+let scopeKind='category',scopeKey='sport:01_barbell',exercises=[],editingScope='',draftScopeKind='category',draftScopeKey='',draftAsset=null,editorLibraryMode='category',editorGroup='all';
 const media={};
 /* Normalized preview pixels, never the original PNG. Keeps illustrations
    centered even when a source image contains asymmetric transparent margins. */
@@ -122,11 +123,11 @@ function initIconEvents(){
 
 function notify(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
 function readState(){
-  const defaults={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+  const defaults={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{},placements:{}};
   try{
     const d=JSON.parse(localStorage.getItem(KEY)||'{}');
     const obj=Object.assign({},defaults,d);
-    for(const key of ['status','notes','overrides','categoryNames','characterProfiles','characterAssignments','categoryAssignments','iconMeta'])
+    for(const key of ['status','notes','overrides','categoryNames','characterProfiles','characterAssignments','categoryAssignments','iconMeta','placements'])
       if(!obj[key]||typeof obj[key]!=='object'||Array.isArray(obj[key]))obj[key]={};
     for(const key of ['custom','categories','characters'])if(!Array.isArray(obj[key]))obj[key]=[];
     return obj;
@@ -166,10 +167,12 @@ function mediaClear(){return new Promise(resolve=>{if(!mediaDb){resolve();return
 function mediaDelete(id){return new Promise(resolve=>{if(!mediaDb){resolve();return;}try{const tx=mediaDb.transaction('images','readwrite');tx.objectStore('images').delete(id);tx.oncomplete=()=>resolve();tx.onerror=()=>resolve();}catch(e){resolve();}});}
 function fileAsDataUrl(file){return new Promise((resolve,reject)=>{const r=new FileReader;r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Файл не прочитан'));r.readAsDataURL(file);});}
 async function loadMedia(){
-  const ids=state.custom.map(x=>x.id).concat(Object.keys(state.overrides||{}).filter(id=>state.overrides[id]?.kind==='upload').map(id=>'replace:'+id));
+  const ids=state.custom.map(x=>x.id)
+    .concat(Object.keys(state.overrides||{}).filter(id=>state.overrides[id]?.kind==='upload').map(id=>'replace:'+id))
+    .concat(Object.entries(state.placements||{}).filter(([key,v])=>v?.kind==='upload').map(([key])=>'placement:'+key));
   for(const id of ids){const saved=await mediaGet(id);if(typeof saved==='string'&&/^data:image\/(png|webp|jpeg);base64,/.test(saved))media[id]=saved;}
 }
-function setupOptions(){refreshCategoryOptions();refreshCharacterOptions();}
+function setupOptions(){refreshCategoryOptions();refreshCharacterOptions();renderScopeOptions();}
 async function start(){
   setupOptions();state=readState();mediaDb=await openDb();await loadMedia();initIconEvents();bind();
   const compact=window.matchMedia('(max-width:850px)').matches;
@@ -177,9 +180,15 @@ async function start(){
   $('stats-details').open=!compact;
   $('filter-details').open=!compact;
   try{
-    const [catalogResponse,manifestResponse]=await Promise.all([fetch('../sport/sport-icons/catalog.json',{cache:'no-cache'}),fetch('./happy-icon-studio-manifest.json',{cache:'no-cache'})]);
+    const [catalogResponse,manifestResponse,exerciseResponse]=await Promise.all([fetch('../sport/sport-icons/catalog.json',{cache:'no-cache'}),fetch('./happy-icon-studio-manifest.json',{cache:'no-cache'}),fetch('../sport/data/seed.json',{cache:'no-cache'})]);
     if(!catalogResponse.ok||!manifestResponse.ok)throw new Error('HTTP '+catalogResponse.status+' / '+manifestResponse.status);
     const catalog=await catalogResponse.json();manifest=await manifestResponse.json();
+    if(exerciseResponse.ok){
+      const source=await exerciseResponse.json();
+      exercises=(Array.isArray(source.exercises)?source.exercises:[])
+        .filter(x=>x&&typeof x.id==='string'&&typeof x.name==='string')
+        .map(x=>({id:x.id,name:x.name,category:x.category||''}));
+    }
     if(!Array.isArray(catalog)||!Array.isArray(manifest.planned))throw new Error('Некорректный каталог');
     items=catalog.map(c=>({
       id:c.id,label:c.label,title:c.title,number:c.number,
@@ -202,7 +211,7 @@ async function start(){
         if(found)c.characterId=found.id;
       }
     }
-    refreshCharacterOptions();refreshCategoryOptions();
+    refreshCharacterOptions();refreshCategoryOptions();renderScopeOptions();
     if(!allItems().some(i=>i.id===selected))selected=allItems()[0]?.id;
     render();
   }catch(e){$('icon-grid').innerHTML='<div class="empty" style="display:block;grid-column:1/-1">Не удалось открыть каталог PNG. Запусти студию с GitHub Pages. <a href="../sport/sport-icons/catalog.json">Проверить источник ↗</a></div>';$('results-count').textContent='Ошибка загрузки';notify('Ошибка загрузки каталога: '+e.message);}
@@ -283,46 +292,75 @@ function renderGrid(){
   $('results-count').textContent='Показано '+filtered.length+' из '+allItems().length+' · '+new Set(filtered.map(i=>categoryOf(i))).size+' категорий';
   $('empty').hidden=filtered.length!==0;
   $('icon-grid').innerHTML=filtered.map(i=>{
-    const s=statusOf(i);return '<div class="icon-tile-shell"><button type="button" class="icon-tile '+(selected===i.id?'is-active':'')+'" data-id="'+esc(i.id)+'" aria-label="'+esc(currentLabel(i)+', '+LABELS[s])+'" aria-pressed="'+String(selected===i.id)+'"><span class="icon-media '+(imageOf(i)?'':'placeholder')+'">'+imageMarkup(i)+'</span><span class="icon-status status-'+s+'"><i class="status-dot"></i>'+esc(LABELS[s])+'</span><span class="icon-name" title="'+esc(currentLabel(i))+'">'+esc(currentLabel(i))+'</span><span class="icon-sub">'+esc(categoryName(categoryOf(i)))+'</span></button><button type="button" class="icon-tile-shortcut" data-edit-id="'+esc(i.id)+'" aria-label="Заменить изображение '+esc(i.label)+'" title="Заменить изображение">✎</button></div>';
+    const s=statusOf(i);return '<div class="icon-tile-shell"><button type="button" class="icon-tile '+(selected===i.id?'is-active':'')+'" data-id="'+esc(i.id)+'" aria-label="'+esc(currentLabel(i)+', '+LABELS[s])+'" aria-pressed="'+String(selected===i.id)+'"><span class="icon-media '+(imageOf(i)?'':'placeholder')+'">'+imageMarkup(i)+'</span><span class="icon-status status-'+s+'"><i class="status-dot"></i>'+esc(LABELS[s])+'</span><span class="icon-name" title="'+esc(currentLabel(i))+'">'+esc(currentLabel(i))+'</span><span class="icon-sub">'+esc(categoryName(categoryOf(i)))+'</span></button></div>';
   }).join('');
 }
 function previewImage(i,cls){
   return '<button type="button" class="'+cls+' icon-edit-target" data-edit-preview="1" aria-label="Редактировать изображение '+esc(i.label)+'" title="Нажми, чтобы заменить иконку">'+imageMarkup(i)+'</button>';
 }
-function renderDetail(){
-  const i=findItem(selected);
-  if(!i){$('inspector-content').innerHTML='<p class="hint">Выбери иконку из библиотеки.</p>';return;}
-  const st=statusOf(i),src=imageOf(i),note=noteOf(i),meta=iconMeta(i);
-  $('inspector-content').innerHTML=
-    '<div class="inspector-top"><button class="inspector-thumb icon-edit-target" type="button" data-edit-preview="1" aria-label="Заменить изображение '+esc(currentLabel(i))+'">'+imageMarkup(i)+'</button><div><div class="inspector-name">'+esc(currentLabel(i))+'</div><div class="inspector-id">'+esc(i.id)+'</div><span class="icon-status status-'+st+'"><i class="status-dot"></i>'+esc(LABELS[st])+'</span></div></div>'+
-    '<div class="scene-picker"><span>Предпросмотр карточек Sport</span><div class="switch-row"><button type="button" class="'+(mode==='light'?'on':'')+'" data-scene="light">День</button><button type="button" class="'+(mode==='night'?'on':'')+'" data-scene="night">Ночь</button></div></div>'+
-    '<div class="preview-stack" style="--icon-size:'+iconSize+'px"><div class="sport-scene '+(mode==='night'?'night':'')+'"><p class="scene-label">Happy Sport · карточка тренировки</p><div class="workout-card">'+previewImage(i,'workout-image')+'<div><h3>'+esc(currentLabel(i))+'</h3><p>Тренировка · 45 мин</p><span class="workout-tag">Начать</span></div></div></div>'+
-    '<div class="sport-scene '+(mode==='night'?'night':'')+'" style="min-height:auto;padding:13px"><p class="scene-label">Happy Sport · строка библиотеки</p><div class="mini-list">'+previewImage(i,'row-image')+'<div><strong>'+esc(currentLabel(i))+'</strong><small>'+esc(categoryName(categoryOf(i)))+'</small></div><span class="arr">›</span></div></div></div>'+
-    '<div class="preview-settings"><div class="size-line"><span>Размер иконки · без растягивания</span><strong id="size-value">'+iconSize+' px</strong></div><input type="range" id="size-slider" min="38" max="100" value="'+iconSize+'" step="2" aria-label="Размер иконки"></div>'+
-    '<div class="slot-actions"><button type="button" class="button light" id="replace-image-btn">⇄ Заменить изображение</button></div>'+
-    '<details class="edit-disclosure" id="edit-panel" '+(editorExpanded?'open':'')+'><summary>Статус и заметки · редактировать</summary><div class="detail-fields"><label><span>Статус</span><select id="detail-status"><option value="done" '+(st==='done'?'selected':'')+'>Готово · файл создан</option><option value="review" '+(st==='review'?'selected':'')+'>Кандидат · на утверждение</option><option value="todo" '+(st==='todo'?'selected':'')+'>Не сделано · в планах</option></select></label>'+
-    '<label><span>Категория</span><select id="detail-category">'+allCategories().map(c=>'<option value="'+esc(c.id)+'" '+(categoryOf(i)===c.id?'selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></label>'+
-    '<label><span>Персонаж</span><select id="detail-character"><option value="">Без персонажа</option>'+allCharacters().map(c=>'<option value="'+esc(c.id)+'" '+(iconCharacterId(i)===c.id?'selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></label>'+
-    '<label><span>Вид спорта / дисциплина</span><input id="detail-sport" maxlength="100" value="'+esc(meta.sport)+'" placeholder="Например, теннис"></label>'+
-    '<label><span>Упражнение / действие</span><input id="detail-exercise" maxlength="120" value="'+esc(meta.exercise)+'" placeholder="Например, подтягивания"></label>'+
-    '<label><span>Заметки и правки</span><textarea id="detail-note" rows="3" placeholder="Что исправить перед утверждением…">'+esc(note)+'</textarea></label>'+
-    '<div class="detail-bottom"><button type="button" class="button light" id="save-detail">Сохранить правки</button><button type="button" class="button" id="copy-id">Скопировать ID</button></div></div></details>'+
-    '<div class="source-line">Изображение: '+(src&&!src.startsWith('data:')?'<a href="'+esc(src)+'" target="_blank" rel="noopener">Открыть изображение ↗</a>':src?'Локально загруженное изображение':'Пока нет файла')+'<div class="inspector-section">'+(state.overrides[i.id]?'Заменено в этой позиции · локально · исходник GitHub сохранён':esc(i.origin==='github'?'Исходный файл из GitHub':i.origin==='plan'?'Позиция из плана':"Локально добавленная позиция"))+'</div></div>';
-  $('replace-image-btn').addEventListener('click',()=>openReplaceDialog(i.id));
-  $('edit-panel').addEventListener('toggle',e=>{editorExpanded=e.target.open;});
-  $('detail-status').addEventListener('change',e=>{state.status[i.id]=e.target.value;saveState();renderStats();renderGrid();notify('Статус обновлён в этом браузере');});
-  $('save-detail').addEventListener('click',()=>{
-    state.notes[i.id]=$('detail-note').value;
-    state.categoryAssignments[i.id]=$('detail-category').value;
-    state.characterAssignments[i.id]=$('detail-character').value;
-    state.iconMeta[i.id]={sport:$('detail-sport').value.trim().slice(0,100),exercise:$('detail-exercise').value.trim().slice(0,120)};
-    saveState();renderTaxonomy();renderGrid();renderDetail();notify('Привязки, упражнения и заметки сохранены');
+
+function scopeChoices(kind){
+  if(kind==='exercise')return exercises.map(e=>({id:e.id,label:e.name,sub:e.category}));
+  return allItems().filter(i=>i.variant==='base').map(i=>({id:i.id,label:i.label,sub:categoryName(categoryOf(i))}));
+}
+function scopeOptionMarkup(kind){
+  const groups=new Map();
+  for(const c of scopeChoices(kind)){
+    const key=c.sub||'Другое';
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(c);
+  }
+  return Array.from(groups.entries()).map(([name,opts])=>
+    '<optgroup label="'+esc(name)+'">'+opts.map(o=>'<option value="'+esc(o.id)+'">'+esc(o.label)+'</option>').join('')+'</optgroup>'
+  ).join('');
+}
+function scopeIdentifier(kind,key){return kind+':'+key;}
+function renderScopeOptions(){
+  const options=scopeChoices(scopeKind);
+  if(!options.some(x=>x.id===scopeKey))scopeKey=options[0]?.id||'';
+  $('scope-label').textContent=scopeKind==='category'?'Вид спорта / категория':'Конкретное упражнение';
+  $('scope-select').innerHTML=scopeOptionMarkup(scopeKind);
+  $('scope-select').value=scopeKey;
+  document.querySelectorAll('[data-scope-kind]').forEach(b=>{
+    b.classList.toggle('active',b.dataset.scopeKind===scopeKind);
+    b.setAttribute('aria-pressed',String(b.dataset.scopeKind===scopeKind));
   });
-  $('copy-id').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(i.id);notify('ID скопирован');}catch(e){notify(i.id);}});
-  $('size-slider').addEventListener('input',e=>{iconSize=Number(e.target.value);$('size-value').textContent=iconSize+' px';$('inspector-content').querySelector('.preview-stack').style.setProperty('--icon-size',iconSize+'px');});
+}
+function defaultScopeItem(kind,key){
+  if(kind!=='category')return null;
+  return findItem(key)||null;
+}
+function placedItem(kind,key){
+  const placement=state.placements[scopeIdentifier(kind,key)];
+  if(placement?.kind==='catalog')return findItem(placement.id)||null;
+  if(placement?.kind==='url'&&safeUrl(placement.url))
+    return {id:'placement:'+scopeIdentifier(kind,key),label:'Свой вариант',category:'other',src:safeUrl(placement.url)};
+  if(placement?.kind==='upload'&&media['placement:'+scopeIdentifier(kind,key)])
+    return {id:'placement:'+scopeIdentifier(kind,key),label:'Свой вариант',category:'other',src:''};
+  return defaultScopeItem(kind,key);
+}
+function scopeLabel(kind,key){return scopeChoices(kind).find(x=>x.id===key)?.label||'Не выбрано';}
+function renderDetail(){
+  const position=scopeIdentifier(scopeKind,scopeKey);
+  const assigned=!!state.placements[position],item=placedItem(scopeKind,scopeKey);
+  const display=item||{id:'empty:'+position,label:'Иконка не выбрана',category:scopeKind==='category'?scopeKey:'other',src:''};
+  const label=scopeLabel(scopeKind,scopeKey);
+  const text=assigned?'Назначена вручную':item?'Предложена из библиотеки':'Пока без изображения';
+  $('inspector-content').innerHTML=
+    '<div class="inspector-top"><button class="inspector-thumb icon-edit-target" type="button" data-edit-preview="1" aria-label="Редактировать назначение и изображение">'+imageMarkup(display)+'</button><div class="inspector-top-copy"><div class="inspector-name">'+esc(label)+'</div><div class="inspector-id">'+esc(scopeKind==='category'?'Вид спорта':'Упражнение')+' · '+esc(text)+'</div><span class="icon-status status-'+(assigned?'review':'done')+'"><i class="status-dot"></i>'+esc(item?currentLabel(item):'Выбрать изображение')+'</span></div></div>'+
+    '<div class="scene-picker"><span>Превью · Happy Sport</span><div class="switch-row"><button type="button" class="'+(mode==='light'?'on':'')+'" data-scene="light">День</button><button type="button" class="'+(mode==='night'?'on':'')+'" data-scene="night">Ночь</button></div></div>'+
+    '<div class="preview-stack" style="--icon-size:'+iconSize+'px"><div class="sport-scene '+(mode==='night'?'night':'')+'"><p class="scene-label">Карточка · '+esc(scopeKind==='category'?'Вид спорта':'Упражнение')+'</p><div class="workout-card">'+previewImage(display,'workout-image')+'<div><h3>'+esc(label)+'</h3><p>'+esc(item?currentLabel(item):'Изображение не назначено')+'</p><span class="workout-tag">Открыть редактор</span></div></div></div>'+
+    '<div class="sport-scene '+(mode==='night'?'night':'')+'" style="min-height:auto;padding:13px"><p class="scene-label">Компактная строка библиотеки</p><div class="mini-list">'+previewImage(display,'row-image')+'<div><strong>'+esc(label)+'</strong><small>'+esc(item?currentLabel(item):'Без изображения')+'</small></div><span class="arr">›</span></div></div></div>'+
+    '<div class="preview-settings"><div class="size-line"><span>Размер · без растягивания</span><strong id="size-value">'+iconSize+' px</strong></div><input type="range" id="size-slider" min="38" max="100" value="'+iconSize+'" step="2" aria-label="Размер изображения"></div>';
+  $('size-slider').addEventListener('input',e=>{
+    iconSize=Number(e.target.value);
+    $('size-value').textContent=iconSize+' px';
+    $('inspector-content').querySelector('.preview-stack').style.setProperty('--icon-size',iconSize+'px');
+  });
   document.querySelectorAll('[data-scene]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.scene;renderDetail();}));
 }
-function render(){renderStats();renderTaxonomy();renderGrid();renderDetail();}
+
+function render(){renderStats();renderTaxonomy();renderGrid();renderScopeOptions();renderDetail();}
 function setLibraryExpanded(expanded){
   $('library-body').hidden=!expanded;
   $('toggle-library').setAttribute('aria-expanded',String(expanded));
@@ -379,27 +417,61 @@ function bind(){
   document.querySelectorAll('[data-status]').forEach(b=>b.addEventListener('click',()=>{
     filterStatus=b.dataset.status;document.querySelectorAll('[data-status]').forEach(el=>el.classList.toggle('active',el===b));renderGrid();
   }));
-  $('to-preview').addEventListener('click',()=>reveal('preview'));
-  $('to-library').addEventListener('click',()=>reveal('library'));
   $('toggle-library').addEventListener('click',()=>setLibraryExpanded($('library-body').hidden));
+  document.querySelectorAll('[data-scope-kind]').forEach(b=>b.addEventListener('click',()=>{
+    scopeKind=b.dataset.scopeKind;scopeKey=scopeChoices(scopeKind)[0]?.id||'';
+    renderScopeOptions();renderDetail();
+  }));
+  $('scope-select').addEventListener('change',e=>{scopeKey=e.target.value;renderDetail();});
   $('inspector-content').addEventListener('click',e=>{
-    if(e.target.closest('[data-edit-preview]'))openReplaceDialog(selected);
+    if(e.target.closest('[data-edit-preview]'))openReplaceDialog();
   });
   $('replace-cancel').addEventListener('click',()=>$('replace-dialog').close());
   $('replace-dialog').addEventListener('close',()=>{
     if(replaceObjectUrl){URL.revokeObjectURL(replaceObjectUrl);replaceObjectUrl=null;}
   });
-  document.querySelectorAll('[name="replace-method"]').forEach(r=>r.addEventListener('change',refreshReplaceMethod));
-  $('replace-existing').addEventListener('change',renderReplaceSample);
-  $('replace-file').addEventListener('change',renderReplaceSample);
-  $('replace-url').addEventListener('input',renderReplaceSample);
+  document.querySelectorAll('[data-edit-kind]').forEach(b=>b.addEventListener('click',()=>{
+    draftScopeKind=b.dataset.editKind;draftScopeKey=scopeChoices(draftScopeKind)[0]?.id||'';
+    renderEditorTargets();renderReplaceSample();
+  }));
+  $('editor-target-select').addEventListener('change',e=>{
+    draftScopeKey=e.target.value;renderEditorTargets();renderReplaceSample();
+  });
+  document.querySelectorAll('[data-library-mode]').forEach(b=>b.addEventListener('click',()=>{
+    editorLibraryMode=b.dataset.libraryMode;editorGroup='all';renderEditorGroups();renderEditorCarousel();
+  }));
+  $('editor-groups').addEventListener('click',e=>{
+    const b=e.target.closest('[data-editor-group]');if(!b)return;
+    editorGroup=b.dataset.editorGroup;renderEditorGroups();renderEditorCarousel();
+  });
+  $('editor-carousel').addEventListener('click',e=>{
+    const b=e.target.closest('[data-candidate-id]');if(!b)return;
+    draftAsset={kind:'catalog',id:b.dataset.candidateId};
+    $('replace-file').value='';$('replace-url').value='';
+    if(replaceObjectUrl){URL.revokeObjectURL(replaceObjectUrl);replaceObjectUrl=null;}
+    renderEditorCarousel();renderReplaceSample();
+  });
+  $('replace-file').addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    if(!['image/png','image/webp','image/jpeg'].includes(file.type)||file.size>5*1024*1024){notify('PNG, WebP или JPEG до 5 МБ');return;}
+    if(replaceObjectUrl)URL.revokeObjectURL(replaceObjectUrl);
+    replaceObjectUrl=URL.createObjectURL(file);
+    draftAsset={kind:'upload'};
+    $('replace-url').value='';
+    renderEditorCarousel();renderReplaceSample();
+  });
+  $('replace-url').addEventListener('change',e=>{
+    const value=safeUrl(e.target.value.trim());
+    if(!value||!value.startsWith('https:')){notify('Укажи корректную HTTPS-ссылку');return;}
+    draftAsset={kind:'url',url:value};
+    $('replace-file').value='';
+    if(replaceObjectUrl){URL.revokeObjectURL(replaceObjectUrl);replaceObjectUrl=null;}
+    renderEditorCarousel();renderReplaceSample();
+  });
   $('replace-form').addEventListener('submit',onReplace);
   $('replace-reset').addEventListener('click',restoreOriginal);
   $('icon-grid').addEventListener('click',e=>{
-    const edit=e.target.closest('[data-edit-id]');
-    if(edit){selected=edit.dataset.editId;renderGrid();renderDetail();openReplaceDialog(selected);return;}
-    const button=e.target.closest('[data-id]');if(!button)return;selected=button.dataset.id;renderGrid();renderDetail();
-    if(window.matchMedia('(max-width:850px)').matches)reveal('preview');
+    const button=e.target.closest('[data-id]');if(!button)return;selected=button.dataset.id;renderGrid();openReplaceDialog(selected);
   });
   $('add-btn').addEventListener('click',()=>{$('add-form').reset();refreshCategoryOptions();refreshCharacterOptions();$('new-category').value='strength';$('add-dialog').showModal();});
   $('add-cancel').addEventListener('click',()=>$('add-dialog').close());
@@ -409,98 +481,129 @@ function bind(){
   $('import-file').addEventListener('change',importAll);
   $('reset-btn').addEventListener('click',async()=>{
     if(!window.confirm('Сбросить локальные изменения, включая категории, имена и профили персонажей, статусы и свои файлы? GitHub останется без изменений.'))return;
-    state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{}};
+    state={status:{},notes:{},custom:[],overrides:{},categories:[],categoryNames:{},characters:[],characterProfiles:{},characterAssignments:{},categoryAssignments:{},iconMeta:{},placements:{}};
     selectedCharacter='all';
     Object.keys(media).forEach(k=>delete media[k]);Object.keys(normalizedIcons).forEach(k=>delete normalizedIcons[k]);
     await mediaClear();saveState();selected='sport:07_pullup_bar_rings';refreshCategoryOptions();refreshCharacterOptions();render();notify('Локальные изменения сброшены');
   });
 }
 
-function openReplaceDialog(id){
-  const i=findItem(id);if(!i)return;
-  editingId=i.id;
+
+function editorScopeId(){return scopeIdentifier(draftScopeKind,draftScopeKey);}
+function renderEditorTargets(){
+  const choices=scopeChoices(draftScopeKind);
+  if(!choices.some(x=>x.id===draftScopeKey))draftScopeKey=choices[0]?.id||'';
+  $('editor-target-select').innerHTML=scopeOptionMarkup(draftScopeKind);
+  $('editor-target-select').value=draftScopeKey;
+  document.querySelectorAll('[data-edit-kind]').forEach(b=>{
+    b.classList.toggle('active',b.dataset.editKind===draftScopeKind);
+    b.setAttribute('aria-pressed',String(b.dataset.editKind===draftScopeKind));
+  });
+  $('replace-id').textContent=draftScopeKind==='category'?'Вид спорта':'Упражнение';
+  $('replace-title').textContent=scopeLabel(draftScopeKind,draftScopeKey);
+}
+function openReplaceDialog(iconId){
+  editingScope=scopeIdentifier(scopeKind,scopeKey);
+  draftScopeKind=scopeKind;draftScopeKey=scopeKey;
+  const placement=state.placements[editingScope];
+  const current=placedItem(scopeKind,scopeKey);
+  draftAsset=placement?Object.assign({},placement):current?{kind:'catalog',id:current.id}:null;
+  if(iconId&&findItem(iconId))draftAsset={kind:'catalog',id:iconId};
+  editorLibraryMode='category';editorGroup='all';
   $('replace-form').reset();
-  $('replace-title').textContent=i.label;
-  $('replace-id').textContent=i.id;
-  const sources=allItems().filter(x=>x.id!==id&&rawImageOf(x));
-  $('replace-existing').innerHTML='<option value="">Выбери иконку…</option>'+sources.map(x=>'<option value="'+esc(x.id)+'">'+esc(currentLabel(x)+' · '+categoryName(x.category))+'</option>').join('');
-  const value=state.overrides[id];
-  if(value){
-    const radio=$('replace-form').querySelector('[name="replace-method"][value="'+value.kind+'"]');
-    if(radio)radio.checked=true;
-    if(value.kind==='catalog')$('replace-existing').value=value.sourceId;
-    if(value.kind==='url')$('replace-url').value=value.url||'';
-  }
-  refreshReplaceMethod();
+  renderEditorTargets();renderEditorGroups();renderEditorCarousel();renderReplaceSample();
   $('replace-dialog').showModal();
 }
-function refreshReplaceMethod(){
-  const type=$('replace-form').querySelector('[name="replace-method"]:checked')?.value||'catalog';
-  for(const k of ['catalog','upload','url'])$('replacement-'+k).hidden=type!==k;
-  renderReplaceSample();
+function renderEditorGroups(){
+  const groups=editorLibraryMode==='category'?allCategories().map(x=>({id:x.id,name:x.name})):allCharacters().map(x=>({id:x.id,name:x.name}));
+  $('editor-groups').innerHTML=
+    '<button type="button" class="editor-group '+(editorGroup==='all'?'active':'')+'" data-editor-group="all">Все</button>'+
+    groups.map(c=>'<button type="button" class="editor-group '+(editorGroup===c.id?'active':'')+'" data-editor-group="'+esc(c.id)+'">'+esc(c.name)+'</button>').join('');
+  document.querySelectorAll('[data-library-mode]').forEach(b=>{
+    b.classList.toggle('active',b.dataset.libraryMode===editorLibraryMode);
+    b.setAttribute('aria-pressed',String(b.dataset.libraryMode===editorLibraryMode));
+  });
+}
+function renderEditorCarousel(){
+  let sources=allItems().filter(i=>Boolean(imageOf(i)));
+  if(editorGroup!=='all'){
+    sources=sources.filter(i=>editorLibraryMode==='category'?categoryOf(i)===editorGroup:iconCharacterId(i)===editorGroup);
+  }
+  sources.sort((a,b)=>categoryName(categoryOf(a)).localeCompare(categoryName(categoryOf(b)),'ru')||currentLabel(a).localeCompare(currentLabel(b),'ru'));
+  $('editor-empty').hidden=sources.length>0;
+  $('editor-carousel').innerHTML=sources.map(i=>
+    '<button type="button" class="editor-option '+(draftAsset?.kind==='catalog'&&draftAsset.id===i.id?'selected':'')+'" data-candidate-id="'+esc(i.id)+'" aria-pressed="'+String(draftAsset?.kind==='catalog'&&draftAsset.id===i.id)+'">'+
+    '<span class="editor-option-image">'+imageMarkup(i)+'</span><span class="editor-option-label">'+esc(currentLabel(i))+'</span></button>'
+  ).join('');
 }
 function renderReplaceSample(){
-  const type=$('replace-form').querySelector('[name="replace-method"]:checked')?.value||'catalog';
-  let src='',title='Здесь появится выбранное изображение';
-  if(type==='catalog'){
-    const i=findItem($('replace-existing').value);
-    if(i){src=rawImageOf(i);title='Кандидат: '+i.label;}
+  const box=$('replace-sample');
+  let src='',name='Иконка не выбрана';
+  if(draftAsset?.kind==='catalog'){
+    const item=findItem(draftAsset.id);
+    if(item){src=imageOf(item);name=currentLabel(item);}
+  }else if(draftAsset?.kind==='url'){
+    src=safeUrl(draftAsset.url);name='Свой вариант по ссылке';
+  }else if(draftAsset?.kind==='upload'){
+    src=replaceObjectUrl||media['placement:'+editingScope]||'';
+    name='Загруженный вариант';
   }
-  if(type==='url'){src=safeUrl($('replace-url').value);if(src)title='Кандидат по ссылке';}
-  if(replaceObjectUrl){URL.revokeObjectURL(replaceObjectUrl);replaceObjectUrl=null;}
-  if(type==='upload'){
-    const file=$('replace-file').files[0];
-    if(file&&['image/png','image/webp','image/jpeg'].includes(file.type)){replaceObjectUrl=URL.createObjectURL(file);src=replaceObjectUrl;title='Кандидат: '+file.name;}
-  }
-  $('replace-sample').replaceChildren();
+  box.replaceChildren();
+  const imgBox=document.createElement('div');imgBox.className='replacement-hero-art';
   if(src){
-    const img=document.createElement('img');
-    img.src=src;img.alt=title;
-    $('replace-sample').append(img);
+    const img=document.createElement('img');img.src=src;img.alt=name;
+    imgBox.append(img);
+  }else{
+    const ph=document.createElement('span');ph.className='placeholder-sign';ph.textContent='+';imgBox.append(ph);
   }
-  const label=document.createElement('span');label.textContent=title;$('replace-sample').append(label);
+  const info=document.createElement('div');
+  const title=document.createElement('strong');title.textContent=name;
+  const target=document.createElement('span');target.textContent='Для: '+scopeLabel(draftScopeKind,draftScopeKey);
+  info.append(title,target);box.append(imgBox,info);
 }
 async function restoreOriginal(){
-  if(!editingId)return;
-  delete state.overrides[editingId];
-  delete normalizedIcons[editingId];
-  const key='replace:'+editingId;
-  delete media[key];await mediaDelete(key);
-  saveState();$('replace-dialog').close();render();notify('Исходное изображение восстановлено в этой позиции');
+  const key=editorScopeId();
+  delete state.placements[key];delete normalizedIcons['placement:'+key];
+  delete media['placement:'+key];await mediaDelete('placement:'+key);
+  saveState();$('replace-dialog').close();
+  scopeKind=draftScopeKind;scopeKey=draftScopeKey;
+  render();notify('Назначение сброшено: показан исходный вариант');
 }
 async function onReplace(ev){
   ev.preventDefault();
-  const id=editingId,i=findItem(id);if(!i)return;
-  const type=$('replace-form').querySelector('[name="replace-method"]:checked')?.value||'catalog';
-  const key='replace:'+id;let override=null;
-  if(type==='catalog'){
-    const source=findItem($('replace-existing').value);
-    if(!source||source.id===id||!rawImageOf(source)){notify('Сначала выбери иконку-кандидата');return;}
-    override={kind:'catalog',sourceId:source.id};
-  }else if(type==='url'){
-    const raw=$('replace-url').value.trim(),url=safeUrl(raw);
-    if(!raw||!url||!url.startsWith('https:')){notify('Укажи корректную HTTPS-ссылку');return;}
-    override={kind:'url',url};
-  }else{
+  if(!draftScopeKey||!draftAsset){notify('Выбери изображение из карусели');return;}
+  const target=editorScopeId(),old=editingScope;
+  if(draftAsset.kind==='upload'){
     const file=$('replace-file').files[0];
-    if(!file||!['image/png','image/webp','image/jpeg'].includes(file.type)||file.size>5*1024*1024){
-      notify('Выбери PNG, WebP или JPEG не больше 5 МБ');return;
-    }
-    if(!mediaDb){notify('Локальное хранилище изображений недоступно');return;}
-    try{
-      const data=await fileAsDataUrl(file);
-      if(!await mediaPut(key,data)){notify('Не удалось сохранить изображение');return;}
-      media[key]=data;
-    }catch(error){notify('Не удалось прочитать изображение');return;}
-    override={kind:'upload'};
+    if(!mediaDb){notify('Хранилище изображений недоступно');return;}
+    if(file&&['image/png','image/webp','image/jpeg'].includes(file.type)&&file.size<=5*1024*1024){
+      try{
+        const value=await fileAsDataUrl(file);
+        if(!await mediaPut('placement:'+target,value)){notify('Не удалось сохранить изображение');return;}
+        media['placement:'+target]=value;
+      }catch(error){notify('Не удалось прочитать файл');return;}
+    }else if(state.placements[editingScope]?.kind==='upload'&&media['placement:'+editingScope]){
+      const oldImage=media['placement:'+editingScope];
+      if(!await mediaPut('placement:'+target,oldImage)){notify('Не удалось перенести изображение');return;}
+      media['placement:'+target]=oldImage;
+    }else{notify('Выбери PNG, WebP или JPEG до 5 МБ');return;}
+  }else{
+    if(draftAsset.kind==='catalog'&&!findItem(draftAsset.id)){notify('Выбранная иконка не найдена');return;}
+    if(draftAsset.kind==='url'&&!safeUrl(draftAsset.url)){notify('Нужна рабочая HTTPS-ссылка');return;}
+    delete media['placement:'+target];await mediaDelete('placement:'+target);
   }
-  state.overrides[id]=override;
-  state.status[id]='review';
-  delete normalizedIcons[id];
-  if(type!=='upload'){delete media[key];await mediaDelete(key);}
+  state.placements[target]=Object.assign({},draftAsset);
+  delete normalizedIcons['placement:'+target];
+  if(old!==target&&state.placements[old]){
+    delete state.placements[old];
+    delete normalizedIcons['placement:'+old];
+    delete media['placement:'+old];await mediaDelete('placement:'+old);
+  }
   saveState();
+  scopeKind=draftScopeKind;scopeKey=draftScopeKey;
   $('replace-dialog').close();
-  render();notify('Изображение заменено в позиции '+i.label+' · ожидает утверждения');
+  render();
+  notify('Назначение сохранено для '+scopeLabel(scopeKind,scopeKey));
 }
 
 async function onAdd(ev){
@@ -591,11 +694,18 @@ async function importAll(e){
         src:safeUrl(c.src||''),status:['done','review','todo'].includes(c.status)?c.status:'todo'};
       const ix=state.custom.findIndex(x=>x.id===clean.id);if(ix>=0)state.custom[ix]=clean;else state.custom.push(clean);
     }
+    if(d.placements&&typeof d.placements==='object'&&!Array.isArray(d.placements))
+      for(const [key,v] of Object.entries(d.placements)){
+        if(!/^(category|exercise):[a-z0-9:_-]{1,120}$/i.test(key)||!v||typeof v!=='object')continue;
+        if(v.kind==='catalog'&&typeof v.id==='string')state.placements[key]={kind:'catalog',id:v.id.slice(0,150)};
+        if(v.kind==='url'&&typeof v.url==='string'&&safeUrl(v.url))state.placements[key]={kind:'url',url:safeUrl(v.url)};
+        if(v.kind==='upload')state.placements[key]={kind:'upload'};
+      }
     if(data.media&&typeof data.media==='object')for(const [id,value] of Object.entries(data.media)){
-      if(!(id.startsWith('custom:')||id.startsWith('replace:'))||typeof value!=='string'||value.length>7500000||!/^data:image\/(png|webp|jpeg);base64,/.test(value))continue;
+      if(!(id.startsWith('custom:')||id.startsWith('replace:')||id.startsWith('placement:'))||typeof value!=='string'||value.length>7500000||!/^data:image\/(png|webp|jpeg);base64,/.test(value))continue;
       if(await mediaPut(id,value)){media[id]=value;delete normalizedIcons[id.startsWith('replace:')?id.slice(8):id];}
     }
-    saveState();refreshCategoryOptions();refreshCharacterOptions();selectedCharacter='all';render();notify('Импорт выполнен: категории, персонажи, иконки и заметки объединены');
+    saveState();refreshCategoryOptions();refreshCharacterOptions();selectedCharacter='all';render();notify('Импорт выполнен: категории, персонажи и назначения объединены');
   }catch(err){notify('Не получилось импортировать: '+err.message);}finally{e.target.value='';}
 }
 start();
