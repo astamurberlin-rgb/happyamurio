@@ -405,8 +405,6 @@ function bind(){
   document.querySelectorAll('[data-status]').forEach(b=>b.addEventListener('click',()=>{
     filterStatus=b.dataset.status;document.querySelectorAll('[data-status]').forEach(el=>el.classList.toggle('active',el===b));renderGrid();
   }));
-  $('to-preview').addEventListener('click',()=>reveal('preview'));
-  $('to-library').addEventListener('click',()=>reveal('library'));
   $('toggle-library').addEventListener('click',()=>setLibraryExpanded($('library-body').hidden));
   document.querySelectorAll('[data-scope-kind]').forEach(b=>b.addEventListener('click',()=>{
     scopeKind=b.dataset.scopeKind;scopeKey=scopeChoices(scopeKind)[0]?.id||'';
@@ -567,15 +565,18 @@ async function onReplace(ev){
   const target=editorScopeId(),old=editingScope;
   if(draftAsset.kind==='upload'){
     const file=$('replace-file').files[0];
-    if(!file||!['image/png','image/webp','image/jpeg'].includes(file.type)||file.size>5*1024*1024){
-      notify('Выбери PNG, WebP или JPEG до 5 МБ');return;
-    }
     if(!mediaDb){notify('Хранилище изображений недоступно');return;}
-    try{
-      const value=await fileAsDataUrl(file);
-      if(!await mediaPut('placement:'+target,value)){notify('Не удалось сохранить изображение');return;}
-      media['placement:'+target]=value;
-    }catch(error){notify('Не удалось прочитать файл');return;}
+    if(file&&['image/png','image/webp','image/jpeg'].includes(file.type)&&file.size<=5*1024*1024){
+      try{
+        const value=await fileAsDataUrl(file);
+        if(!await mediaPut('placement:'+target,value)){notify('Не удалось сохранить изображение');return;}
+        media['placement:'+target]=value;
+      }catch(error){notify('Не удалось прочитать файл');return;}
+    }else if(state.placements[editingScope]?.kind==='upload'&&media['placement:'+editingScope]){
+      const oldImage=media['placement:'+editingScope];
+      if(!await mediaPut('placement:'+target,oldImage)){notify('Не удалось перенести изображение');return;}
+      media['placement:'+target]=oldImage;
+    }else{notify('Выбери PNG, WebP или JPEG до 5 МБ');return;}
   }else{
     if(draftAsset.kind==='catalog'&&!findItem(draftAsset.id)){notify('Выбранная иконка не найдена');return;}
     if(draftAsset.kind==='url'&&!safeUrl(draftAsset.url)){notify('Нужна рабочая HTTPS-ссылка');return;}
