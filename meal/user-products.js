@@ -77,8 +77,23 @@ function portionsHTML(){
 function syncPortions(){
  var next=Object.create(null);Object.keys(session.draft.por).forEach(function(old,i){var input=e('upPortionLabel'+i);if(!input)return;var name=input.value.trim(),grams=P.number(e('upPortion'+i).value);if(!name||name==='г'||name.length>80||['__proto__','prototype','constructor'].includes(name)||!(grams>0))throw Error('Проверь название и массу порции');if(Object.keys(next).some(function(k){return P.norm(k)===P.norm(name)}))throw Error('Названия порций должны отличаться');next[name]=grams;if(session.draft.defU===old)session.draft.defU=name;});session.draft.por=next;
 }
-function copyHTML(){return '<button class="happy-button" data-up="back">‹ К продукту</button><section class="happy-card up-card"><h3>Скопировать свойства из…</h3><p class="happy-note">Состав и источники будут заменены. Название, заметки и свои порции сохранятся.</p>'+label('Найти исходный продукт',input('upCopyQ',session.copyQuery,'type="search" placeholder="Например, вишня"'))+'<div id="upCopyResults">'+copyResults()+'</div><p id="upCopyPicked" class="happy-note"></p><button class="happy-button primary up-wide" id="upCopyApply" data-up="copy-apply" disabled>Скопировать состав и источники</button></section>'}
-function copyResults(){session.copyResults=session.copyQuery.trim()?root.searchLib(session.copyQuery).filter(function(f){return f.id!==session.draft.id}):[];return session.copyResults.slice(0,25).map(function(f){return '<button class="happy-button up-library-row" data-up="copy-pick" data-id="'+esc(f.id)+'">'+esc(f.n)+'</button>'}).join('')||(session.copyQuery?'<p class="happy-note">Ничего не найдено</p>':'')}
+function copyHTML(){
+ var picked=session.copySelected;
+ return '<button class="happy-button up-back" data-up="back">‹ К продукту</button>'+
+ (picked?'<section class="happy-card up-card up-copy-picked" id="upCopyPicked" tabindex="-1"><div class="up-copy-heading"><small>Выбран исходный продукт</small><h3>'+esc(picked.n)+'</h3><p class="happy-note">'+(picked.k==null?'—':num(picked.k))+' ккал / 100 г · '+esc(picked.src||'Библиотека')+'</p></div><div class="mlCorrectionActions mlIcoA"><button class="mlIco" data-up="copy-info" aria-label="Информация о выбранном продукте" aria-expanded="'+!!session.copyDetails+'">'+root.INFOI+'</button><button class="mlIco" data-up="copy-clear" aria-label="Убрать выбранный продукт"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7"/></svg></button></div>'+(session.copyDetails?'<div class="up-source-facts">'+root.MealControls.factsHTML(picked,100,'На 100 г')+'</div>':'')+'</section>':'')+
+ '<section class="happy-card up-card"><h3>Скопировать свойства из…</h3>'+label('Найти исходный продукт',input('upCopyQ',session.copyQuery,'type="search" placeholder="Найти: творог, банан…" autocomplete="off"'))+'<div class="mlRes" id="upCopyResults">'+copyResults()+'</div></section>'+
+ '<footer class="up-footer up-copy-footer"><button class="happy-button" data-up="back">Отмена</button><button class="happy-button primary" id="upCopyApply" data-up="copy-apply" '+(picked?'':'disabled')+'>Скопировать состав</button></footer>';
+}
+function copyResults(){
+ session.copyResults=session.copyQuery.trim()?root.searchLib(session.copyQuery).filter(function(f){return f.id!==session.draft.id}):[];
+ if(!session.copyQuery.trim())return '';
+ if(!session.copyResults.length)return '<p class="mlEmpty">Продукт не найден</p>';
+ return root.resHTML('',session.copyResults.slice(0,25)).replace(/data-fact="pick"/g,'data-up="copy-pick"').replace(/data-fact="facts"/g,'data-up="copy-result-info"').replace(/data-fact="star"/g,'data-up="copy-star"');
+}
+function selectCopySource(id,details){
+ var food=session.copyResults.find(function(f){return f.id===id});if(!food)throw Error('Обнови поиск и выбери продукт');
+ session.copySelected=food;session.copyDetails=!!details;render();var picked=e('upCopyPicked');picked.focus();if(picked.scrollIntoView)picked.scrollIntoView({block:'start',behavior:'smooth'});
+}
 function copyComposition(){
  var food=session.copySelected;if(!food)throw Error('Выбери исходный продукт');if(food.b&&root.BLS_ST!=='ok')throw Error('Дождись загрузки базы состава');
  var info=food.copiedFrom&&food.copiedFrom.sourceInfo;
@@ -139,8 +154,8 @@ function addProperty(def,value){
 }
 function change(ev){
  if(!session||session.saving)return;var t=ev.target;
- if(t.id==='upCopyQ'){session.copyQuery=t.value;e('upCopyResults').innerHTML=copyResults();return}
- if(t.id==='upLibraryQ'){session.query=t.value;e('upLibraryResults').innerHTML=libraryResults();return}
+ if(t.id==='upCopyQ'){if(ev.type!=='input')return;session.copyQuery=t.value;e('upCopyResults').innerHTML=copyResults();return}
+ if(t.id==='upLibraryQ'){if(ev.type!=='input')return;session.query=t.value;e('upLibraryResults').innerHTML=libraryResults();return}
  if(t.id==='upFilter'){session.filter=t.value;e('upFields').innerHTML=fieldsHTML();return}
  if(t.id==='upPro'&&ev.type==='change'){session.pro=t.checked;render();return}
  var props={upName:'n',upVariety:'variety',upRegion:'region',upState:'state',upDescription:'description',upNotes:'notes',upDrink:'drink'};
@@ -206,8 +221,11 @@ function click(ev){
    if(act==='discard')close(true);
    if(act==='stay')e('upLeave').hidden=true;
    if(act==='save')save();
-   if(act==='copy-from'){session.view='copy';session.copyQuery='';session.copyResults=[];session.copySelected=null;render();e('upCopyQ').focus()}
-   if(act==='copy-pick'){session.copySelected=session.copyResults.find(function(f){return f.id===b.dataset.id});e('upCopyPicked').textContent='Выбрано: '+session.copySelected.n;e('upCopyApply').disabled=false}
+   if(act==='copy-from'){session.view='copy';session.copyQuery='';session.copyResults=[];session.copySelected=null;session.copyDetails=false;render();e('upCopyQ').focus()}
+   if(act==='copy-pick'||act==='copy-result-info')selectCopySource(b.dataset.fid||b.dataset.id,act==='copy-result-info');
+   if(act==='copy-info'){session.copyDetails=!session.copyDetails;render()}
+   if(act==='copy-clear'){session.copySelected=null;session.copyDetails=false;render();e('upCopyQ').focus()}
+   if(act==='copy-star'){var id=b.dataset.fid;if(String(id).indexOf('bls:')===0)root.blsUse(id);root.DB.favs=root.DB.favs||[];var i=root.DB.favs.indexOf(id);if(i<0)root.DB.favs.unshift(id);else root.DB.favs.splice(i,1);root.save();e('upCopyResults').innerHTML=copyResults()}
    if(act==='copy-apply')copyComposition();
    if(act==='portion-add'){var name=e('upPortionName').value.trim(),grams=P.number(e('upPortionGrams').value);if(!name||name.length>80||name==='г'||['__proto__','prototype','constructor'].includes(name))throw Error('Укажи название порции, например «горсть»');if(!(grams>0))throw Error('Масса порции должна быть больше нуля');if(Object.keys(session.draft.por).some(function(k){return P.norm(k)===P.norm(name)}))throw Error('Такая порция уже есть. Измени её массу выше.');session.draft.por[name]=grams;render()}
    if(act==='portion-update')render();
