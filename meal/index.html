@@ -1393,9 +1393,9 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="report.css?v=22.10-test.2">
-<link rel="stylesheet" href="user-products.css?v=22.10-test.2">
-<script src="../shared/meal-products-model.js?v=1"></script>
+<link rel="stylesheet" href="report.css?v=22.10-test.3">
+<link rel="stylesheet" href="user-products.css?v=22.10-test.3">
+<script src="../shared/meal-products-model.js?v=22.10-test.3"></script>
 </head>
 <body class="loading">
 
@@ -1470,7 +1470,9 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 
   <!-- РЕЦЕПТЫ (макет): свои рецепты и подборки идей -->
   <div class="screen" data-screen="recipes">
-    <div class="top rcHdr"><h1>Рецепты</h1><button class="rcAdd" id="rcNew" aria-label="Создать свой рецепт"><span>Создать свой<br>рецепт</span><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i></button></div>
+    <div class="top rcHdr"><h1>Библиотека</h1><button class="rcAdd" id="rcNew" aria-label="Создать свой рецепт"><span>Создать свой<br>рецепт</span><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i></button></div>
+    <button class="happy-button up-library-create" id="libraryCreateProduct">Создать продукт <span aria-hidden="true">＋</span></button>
+    <div id="libraryOwnProducts"></div>
     <div class="eyebrow" id="rcMineEb" hidden><span>Мои рецепты</span></div>
     <div id="rcMine"></div>
     <div class="eyebrow" id="rcFavEb" hidden><span>Избранное</span></div>
@@ -1545,7 +1547,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.10-test.2"><div>Happy Meal · v22.10-test.2</div><small>Обновлено 28.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.10-test.3"><div>Happy Meal · v22.10-test.3</div><small>Обновлено 29.10.2026</small></footer>
   </div>
 
 </div>
@@ -1556,7 +1558,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <button class="tab on" data-go="day"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg><span>Дневник</span></button>
   <button class="tab" data-go="journal"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="mlCarCut" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><g transform="translate(18.60 14.20) rotate(16) scale(1.22)" fill="#000" stroke="#000" stroke-width="2.46" stroke-linejoin="round"><path d="M-2.6 .5C-2.6-1 2.6-1 2.6 .5L.45 7C.25 7.6-.25 7.6-.45 7Z"/><path d="M-.2-.6C-1.9-1-2.9-2.3-2.7-3.9-1.1-3.6-.2-2.4-.2-.6Z"/><path d="M.2-.6C1.9-1 2.9-2.3 2.7-3.9 1.1-3.6.2-2.4.2-.6Z"/></g></mask></defs><rect x="2.70" y="1.70" width="14.80" height="19.20" rx="3" mask="url(#mlCarCut)"/><path d="M6.30 6.70h6.80M6.30 10.70h4.60M6.30 14.70h2.40" stroke-width="2.3" mask="url(#mlCarCut)"/><g transform="translate(18.60 14.20) rotate(16) scale(1.22)"><path d="M-2.6 .5C-2.6-1 2.6-1 2.6 .5L.45 7C.25 7.6-.25 7.6-.45 7Z" fill="currentColor" stroke="currentColor" stroke-width="0.68"/><path d="M-.2-.6C-1.9-1-2.9-2.3-2.7-3.9-1.1-3.6-.2-2.4-.2-.6Z" fill="currentColor" stroke="none"/><path d="M.2-.6C1.9-1 2.9-2.3 2.7-3.9 1.1-3.6.2-2.4.2-.6Z" fill="currentColor" stroke="none"/></g></svg><span>Журнал</span></button>
   <span class="gap"></span>
-  <button class="tab" data-go="recipes"><svg viewBox="0 0 24 24"><path d="M3.6 18V5.1a2.6 2.6 0 0 1 2.6-2.6h14.2V18Z"/><path d="M3.6 18a2.6 2.6 0 0 0 2.6 2.6h14.2v-2.6"/><path d="M7.3 2.6v15.3"/><g transform="translate(13.85 10.4) scale(.9)"><path d="M-3.35 1.7A2.35 2.35 0 0 1-2.85-3.05 3.05 3.05 0 0 1 2.85-3.05 2.35 2.35 0 0 1 3.35 1.7Z" fill="currentColor" stroke="none"/><rect x="-3.35" y="2.75" width="6.7" height="2.2" rx=".9" fill="currentColor" stroke="none"/></g></svg><span>Рецепты</span></button>
+  <button class="tab" data-go="recipes"><svg viewBox="0 0 24 24"><path d="M3.6 18V5.1a2.6 2.6 0 0 1 2.6-2.6h14.2V18Z"/><path d="M3.6 18a2.6 2.6 0 0 0 2.6 2.6h14.2v-2.6"/><path d="M7.3 2.6v15.3"/><g transform="translate(13.85 10.4) scale(.9)"><path d="M-3.35 1.7A2.35 2.35 0 0 1-2.85-3.05 3.05 3.05 0 0 1 2.85-3.05 2.35 2.35 0 0 1 3.35 1.7Z" fill="currentColor" stroke="none"/><rect x="-3.35" y="2.75" width="6.7" height="2.2" rx=".9" fill="currentColor" stroke="none"/></g></svg><span>Библиотека</span></button>
   <button class="tab" data-go="settings"><svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z"/><circle cx="12" cy="12" r="3.3"/></svg><span>Настройки</span></button>
   <button class="fab" id="fab" aria-label="Записать еду. Удерживай — написать или фото" aria-haspopup="true" aria-expanded="false"><svg class="icMic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg><svg class="icX" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg class="icStop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2.2" style="fill:#fff;stroke:none"/></svg></button>
 </div>
@@ -2298,7 +2300,7 @@ var PORX=[[/^лимон(?!ад)/,'шт',100],
 function porFix(f){
   if(!f) return;
   f.por=f.por||{};
-  if(!f.porG){ var n=norm(f.n||'').replace(/ё/g,'е');
+  if(!f.porG&&!f.composition){ var n=norm(f.n||'').replace(/ё/g,'е');
     PORX.forEach(function(r){ if(r[0].test(n)&&!f.por[r[1]]) f.por[r[1]]=r[2] });
     PORS.forEach(function(r){ if(!r[0].test(n)) return; if(!f.por['маленький']) f.por['маленький']=r[1]; if(!f.por['шт']) f.por['шт']=r[2]; if(!f.por['большой']) f.por['большой']=r[3]; if(r[4]) f.porNote=r[4] });
     PORW.forEach(function(r){ if(r[0].test(n)&&!f.por[r[1]]) f.por[r[1]]=r[2] });
@@ -4336,6 +4338,7 @@ function recipeNut(r){
 var SPARK='<svg viewBox="0 0 24 24"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>';
 function renderRecipes(){
   renderMine(); renderFavs();
+  if(window.MealProductEditor) MealProductEditor.renderLibrary();
   document.getElementById('rcGrid').innerHTML=COLS.map(function(c){
     return '<button class="rcTile" data-col="'+c.k+'"><span class="pic">'+coverSVG(c)+'</span><b>'+escH(c.t)+'</b></button>';
   }).join('')+'<button class="rcTile ai" data-ai><span class="pic"><span class="aiIc">'+SPARK+'</span></span><b>Советы ИИ</b></button>';
@@ -5550,6 +5553,6 @@ document.addEventListener('click',function(ev){
 });
 
 </script>
-<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.10-test.2"></script><script src="controls.js?v=22.10-test.2"></script><script src="user-products.js?v=22.10-test.2"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
+<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.10-test.3"></script><script src="controls.js?v=22.10-test.3"></script><script src="user-products.js?v=22.10-test.3"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
 </body>
 </html>

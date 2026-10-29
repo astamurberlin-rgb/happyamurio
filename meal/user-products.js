@@ -29,7 +29,7 @@ function mount(){
  box.addEventListener('click',click);box.addEventListener('input',change);box.addEventListener('change',change);
  box.addEventListener('toggle',function(ev){if(ev.target.dataset.group)session.open[ev.target.dataset.group]=ev.target.open},true);
  box.addEventListener('keydown',function(ev){
-   if(ev.key==='Escape'){ev.preventDefault();if(session.view==='library'){session.view='edit';render()}else close()}
+   if(ev.key==='Escape'){ev.preventDefault();if(session.view!=='edit'){session.view='edit';render()}else close()}
    if(ev.key==='Tab'){var nodes=Array.from(box.querySelectorAll('button,input,select,textarea,a[href],summary')).filter(function(n){return !n.disabled&&n.getClientRects().length}),a=nodes[0],b=nodes[nodes.length-1];if(ev.shiftKey&&doc.activeElement===a){ev.preventDefault();b.focus()}else if(!ev.shiftKey&&doc.activeElement===b){ev.preventDefault();a.focus()}}
  });
 }
@@ -43,23 +43,27 @@ async function open(food,options){
  try{draft=P.fromFood(food,food?catalog():null,root.blsVal,{copy:!!options.copy,name:options.name||'',sourceInfo:sourceInfo});if(food&&options.copy){draft.por=Object.assign({},draft.por,(root.DB.units||{})[food.id]||{});draft.drink=!!root.isDrink(food.id)}}
  catch(ex){root.toast(ex.message);return}
  session={draft:draft,initial:P.clone(draft),original:options.copy?null:food,expected:draft.revision||0,cb:options.onSave,pro:!!root.DB.productToolsPro,view:'edit',query:'',filter:'',selected:[],open:{main:true},undo:null,saving:false};
+ draft.por=Object.assign({},draft.por,(root.DB.units||{})[draft.id]||{});draft.porG=1;delete draft.porOwn;delete draft.own;session.initial=P.clone(draft);
  mount();render();e('upClose').focus();
 }
 function render(){
  var s=session,f=s.draft;
- box.innerHTML='<div class="up-shell"><header class="up-head"><div><small>HAPPY MEAL · МОИ ПРОДУКТЫ</small><h2 id="upTitle">'+(s.view==='library'?'Добавить свойство':s.original?'Редактировать продукт':'Свой продукт')+'</h2></div><button class="happy-button up-close" id="upClose" aria-label="Закрыть редактор">×</button></header>'+
+ box.innerHTML='<div class="up-shell"><header class="up-head"><div><small>HAPPY MEAL · МОИ ПРОДУКТЫ</small><h2 id="upTitle">'+(s.view==='library'?'Добавить свойство':s.view==='copy'?'Копирование состава':s.view==='share'?'Поделиться':s.original?'Редактировать продукт':'Свой продукт')+'</h2></div><button class="happy-button up-close" id="upClose" aria-label="Закрыть редактор">×</button></header>'+
  '<div id="upLeave" class="happy-card up-leave" hidden><p>Сохранить изменения перед выходом?</p><div class="happy-actions"><button class="happy-button primary" data-up="save">Сохранить</button><button class="happy-button" data-up="discard">Выйти без сохранения</button><button class="happy-button" id="upLeaveStay" data-up="stay">Продолжить</button></div></div>'+
  '<p class="happy-note" id="upStatus" role="status" aria-live="polite"></p>'+
- (s.view==='library'?libraryHTML():editorHTML())+'</div>';
+ (s.view==='library'?libraryHTML():s.view==='copy'?copyHTML():s.view==='share'?shareHTML():editorHTML())+'</div>';
 }
 function editorHTML(){
  var s=session,f=s.draft,c=f.composition;
- return '<section class="happy-card up-card">'+label('Название',input('upName',f.n,'maxlength="200" autocomplete="off"'))+
+ return '<section class="happy-card up-card">'+label('Название продукта',input('upName',f.n,'maxlength="200" autocomplete="off"'))+
+ '<button class="happy-button up-wide" data-up="copy-from">Скопировать свойства из…</button>'+
  '<div class="up-grid">'+label('Сорт',input('upVariety',f.variety,'maxlength="150"'))+label('Регион происхождения',input('upRegion',f.region,'maxlength="150"'))+'</div>'+
  label('Состояние продукта',input('upState',f.state,'placeholder="Сырой, варёный, замороженный…" maxlength="150"'))+
  label('Описание','<textarea class="happy-input" id="upDescription" rows="2" maxlength="3000">'+esc(f.description)+'</textarea>')+
+ label('Заметки','<textarea class="happy-input" id="upNotes" rows="3" maxlength="5000" placeholder="Наблюдения, особенности сорта, как измеряли порцию…">'+esc(f.notes||'')+'</textarea>')+
  '<label class="up-check"><input type="checkbox" id="upDrink" '+(f.drink?'checked':'')+'>Это напиток</label>'+
  (f.copiedFrom?'<p class="happy-note">Основа: '+esc(f.copiedFrom.name)+' · '+esc(f.copiedFrom.source)+'<br>Самостоятельная копия. Показатели другого продукта требуют проверки.</p>':'')+'</section>'+
+ portionsHTML()+'<button class="happy-button up-wide up-share" data-up="share">Поделиться / печать</button>'+
  '<section class="happy-card up-card"><h3>Нутриенты и свойства</h3><div class="up-basis">'+label('Масса основы, г',input('upBasis',num(c.basisGrams),'inputmode="decimal"'))+'<button class="happy-button" data-up="basis">Пересчитать</button></div><p class="happy-note">Все значения ниже — на '+esc(num(c.basisGrams))+' г. Смена основы пересчитывает значения, сохраняя состав на 100 г.</p><p class="up-macros" id="upMacros">'+macroText()+'</p>'+
  label('Найти показатель',input('upFilter',s.filter,'type="search" placeholder="Витамин C, белки…"'))+
  '<div id="upFields">'+fieldsHTML()+'</div><button class="happy-button up-wide" data-up="library">+ Добавить свойство</button>'+
@@ -67,6 +71,25 @@ function editorHTML(){
  '<p class="happy-note">«Нет данных» и «Не обнаружено» хранятся отдельно и не прибавляются к итогу как ноль.</p></section>'+
  proHTML()+'<footer class="up-footer"><button class="happy-button" data-up="cancel">Отмена</button><button class="happy-button primary" data-up="save">Сохранить продукт</button></footer><p class="happy-note up-tail">Записанные порции сохраняют состав на момент добавления.</p>';
 }
+function portionsHTML(){
+ return '<section class="happy-card up-card"><h3>Свои порции</h3><p class="happy-note">Масса одной порции в граммах. Уже записанная еда сохраняет прежнюю массу.</p>'+Object.keys(session.draft.por).map(function(name,i){return '<div class="up-portion">'+label('Название',input('upPortionLabel'+i,name,'maxlength="80"'))+label('Масса, г',input('upPortion'+i,num(session.draft.por[name]),'inputmode="decimal"'))+'<button class="happy-button" data-up="portion-update" data-index="'+i+'" data-name="'+esc(name)+'" aria-label="Применить массу: '+esc(name)+'">✓</button><button class="happy-button" data-up="portion-remove" data-name="'+esc(name)+'" aria-label="Удалить порцию: '+esc(name)+'">×</button></div>'}).join('')+'<div class="up-grid">'+label('Название порции',input('upPortionName','','maxlength="80" placeholder="Горсть, чашка…"'))+label('Масса, г',input('upPortionGrams','','inputmode="decimal"'))+'</div><button class="happy-button up-wide" data-up="portion-add">+ Добавить порцию</button></section>';
+}
+function syncPortions(){
+ var next=Object.create(null);Object.keys(session.draft.por).forEach(function(old,i){var input=e('upPortionLabel'+i);if(!input)return;var name=input.value.trim(),grams=P.number(e('upPortion'+i).value);if(!name||name==='г'||name.length>80||['__proto__','prototype','constructor'].includes(name)||!(grams>0))throw Error('Проверь название и массу порции');if(Object.keys(next).some(function(k){return P.norm(k)===P.norm(name)}))throw Error('Названия порций должны отличаться');next[name]=grams;if(session.draft.defU===old)session.draft.defU=name;});session.draft.por=next;
+}
+function copyHTML(){return '<button class="happy-button" data-up="back">‹ К продукту</button><section class="happy-card up-card"><h3>Скопировать свойства из…</h3><p class="happy-note">Состав и источники будут заменены. Название, заметки и свои порции сохранятся.</p>'+label('Найти исходный продукт',input('upCopyQ',session.copyQuery,'type="search" placeholder="Например, вишня"'))+'<div id="upCopyResults">'+copyResults()+'</div><p id="upCopyPicked" class="happy-note"></p><button class="happy-button primary up-wide" id="upCopyApply" data-up="copy-apply" disabled>Скопировать состав и источники</button></section>'}
+function copyResults(){session.copyResults=session.copyQuery.trim()?root.searchLib(session.copyQuery).filter(function(f){return f.id!==session.draft.id}):[];return session.copyResults.slice(0,25).map(function(f){return '<button class="happy-button up-library-row" data-up="copy-pick" data-id="'+esc(f.id)+'">'+esc(f.n)+'</button>'}).join('')||(session.copyQuery?'<p class="happy-note">Ничего не найдено</p>':'')}
+function copyComposition(){
+ var food=session.copySelected;if(!food)throw Error('Выбери исходный продукт');if(food.b&&root.BLS_ST!=='ok')throw Error('Дождись загрузки базы состава');
+ var info=food.copiedFrom&&food.copiedFrom.sourceInfo;
+ if(food.b){var kav=root.kavOf&&root.kavOf(food.b);info=kav?{source:root.KAV&&root.KAV.src,record:P.clone(kav),code:food.b}:{source:root.BLS&&root.BLS.src,url:root.BLS&&root.BLS.url,version:root.BLS&&root.BLS.v,code:food.b}}
+ var copied=P.fromFood(food,catalog(),root.blsVal,{copy:true,sourceInfo:info});session.draft.composition=copied.composition;session.draft.copiedFrom=copied.copiedFrom;P.project(session.draft);session.view='edit';session.filter='';session.selected=[];render();
+}
+function reportBody(){var f=session.draft;return '<h1>'+esc(f.n||'Свой продукт')+'</h1><p>'+[f.variety,f.region,f.state].filter(Boolean).map(esc).join(' · ')+'</p>'+(f.description?'<h2>Описание</h2><p>'+esc(f.description)+'</p>':'')+(f.notes?'<h2>Заметки</h2><p>'+esc(f.notes)+'</p>':'')+'<h2>Порции</h2><p>'+Object.keys(f.por).map(function(k){return esc(k)+' = '+num(f.por[k])+' г'}).join('; ')+'</p><h2>Состав на '+num(f.composition.basisGrams)+' г</h2><table><thead><tr><th>Показатель</th><th>Значение</th><th>Происхождение и источник</th></tr></thead><tbody>'+f.composition.fields.map(function(x){return '<tr><td>'+esc(x.name)+'</td><td>'+(x.status==='value'?num(x.value)+' '+esc(x.unit):esc(STATUS[x.status]))+'</td><td>'+esc(ORIGIN[x.origin])+(x.source?'<br>'+esc(x.source):'')+(x.measuredAt?'<br>'+esc(x.measuredAt):'')+(x.lab?'<br>'+esc(x.lab):'')+(x.method?'<br>'+esc(x.method):'')+(x.notes?'<br>'+esc(x.notes):'')+'</td></tr>'}).join('')+'</tbody></table><p>Happy Meal · '+(dirty()?'Черновик, изменения не сохранены':'Сохранённая карточка')+'</p>'}
+function reportDocument(){return '<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(session.draft.n)+'</title><style>body{font:15px system-ui,sans-serif;color:#222;max-width:900px;margin:24px auto;padding:16px}h1{overflow-wrap:anywhere}p{white-space:pre-wrap}table{border-collapse:collapse;width:100%;table-layout:fixed}th,td{text-align:left;vertical-align:top;padding:10px 5px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}th:nth-child(2){width:22%}thead{display:table-header-group}tr{break-inside:avoid}@page{size:A4;margin:14mm}</style><body>'+reportBody()+'</body></html>'}
+function shareHTML(){return '<button class="happy-button" data-up="back">‹ К продукту</button><div class="happy-actions up-share-actions"><button class="happy-button" data-up="share-file">Поделиться карточкой</button><button class="happy-button" data-up="print">Печать / PDF</button></div><p class="happy-note">Предпросмотр текущих данных. Для PDF выбери сохранение в меню печати.</p><article class="up-report">'+reportBody()+'</article>'}
+function printProduct(){var frame=doc.createElement('iframe');frame.title='Печать продукта';frame.className='up-print-frame';frame.onload=function(){try{frame.contentWindow.focus();frame.contentWindow.print()}catch(ex){error('Печать недоступна в этом окне. Открой Happy Meal в Safari.')}};frame.srcdoc=reportDocument();box.appendChild(frame)}
+function renderOwnLibrary(){var node=e('libraryOwnProducts');if(!node)return;var foods=root.DB.foods||[];node.innerHTML=foods.length?'<div class="eyebrow"><span>Мои продукты</span></div>'+foods.map(function(f){return '<button class="happy-button up-own-product" data-own-product="'+esc(f.id)+'"><span>'+esc(f.n)+'<small>Порций: '+Object.keys(f.por||{}).length+' · Мои</small></span><span aria-hidden="true">›</span></button>'}).join(''):''}
 function macroText(){var f=session.draft;return ['kcal','prot','fat','carb'].map(function(k,i){var v=P.value(f,k);return ['Ккал','Б','Ж','У'][i]+' '+(v==null?'—':num(v))}).join(' · ')+' / 100 г'}
 function rowHTML(f){
  var idx=session.draft.composition.fields.indexOf(f),selected=session.selected.includes(f.key),units=f.kind==='standard'?Array.from(new Set([f.canonicalUnit].concat(P.unitFactor(f.unit,'г')!=null?['г','мг','мкг']:[]))):null;
@@ -96,7 +119,7 @@ function proHTML(){
 function historyHTML(){
  var history=session.original&&session.original.history||[];
  if(!history.length)return '<p class="happy-note">Изменения появятся после сохранения продукта.</p>';
- var names={n:'Название',variety:'Сорт',region:'Регион',state:'Состояние',description:'Описание',drink:'Напиток',por:'Меры порции',basisGrams:'Масса основы'};
+ var names={n:'Название',variety:'Сорт',region:'Регион',state:'Состояние',description:'Описание',notes:'Заметки',drink:'Напиток',por:'Меры порции',basisGrams:'Масса основы'};
  function show(x){if(x==null)return '—';if(typeof x==='object'&&x.name)return x.name+': '+(x.status==='value'?num(x.value)+' '+x.unit:STATUS[x.status])+' · '+ORIGIN[x.origin]+(x.source?' · '+x.source:'')+(x.measuredAt?' · '+x.measuredAt:'')+(x.notes?' · '+x.notes:'');return typeof x==='object'?JSON.stringify(x):String(x)}
  return history.slice().reverse().map(function(h){return '<details class="up-history"><summary>Версия '+h.revision+' · '+esc(new Date(h.at).toLocaleString('ru-RU'))+'</summary>'+h.changes.map(function(c){return '<p><b>'+esc(names[c.path]||(c.after||c.before||{}).name||c.path)+'</b><br>'+esc(show(c.before))+' → '+esc(show(c.after))+'</p>'}).join('')+'</details>'}).join('');
 }
@@ -116,10 +139,11 @@ function addProperty(def,value){
 }
 function change(ev){
  if(!session||session.saving)return;var t=ev.target;
+ if(t.id==='upCopyQ'){session.copyQuery=t.value;e('upCopyResults').innerHTML=copyResults();return}
  if(t.id==='upLibraryQ'){session.query=t.value;e('upLibraryResults').innerHTML=libraryResults();return}
  if(t.id==='upFilter'){session.filter=t.value;e('upFields').innerHTML=fieldsHTML();return}
  if(t.id==='upPro'&&ev.type==='change'){session.pro=t.checked;render();return}
- var props={upName:'n',upVariety:'variety',upRegion:'region',upState:'state',upDescription:'description',upDrink:'drink'};
+ var props={upName:'n',upVariety:'variety',upRegion:'region',upState:'state',upDescription:'description',upNotes:'notes',upDrink:'drink'};
  if(props[t.id]){session.draft[props[t.id]]=t.id==='upDrink'?t.checked:t.value;return}
  var row=t.closest('[data-field]');if(!row||!t.dataset.row)return;
  var f=session.draft.composition.fields.find(function(x){return x.key===row.dataset.field}),key=t.dataset.row;if(!f)return;
@@ -147,6 +171,7 @@ async function save(){
  if(session.saving)return;
  var s=session;
  try{
+   if(s.view==='edit')syncPortions();
    if(box.querySelector('[aria-invalid="true"]'))throw Error('Исправь отмеченное числовое значение');
    if(e('upBasis')&&P.number(e('upBasis').value)!==s.draft.composition.basisGrams)throw Error('Нажми «Пересчитать», чтобы применить массу основы');
    P.validate(s.draft);s.saving=true;box.querySelectorAll('[data-up="save"]').forEach(function(b){b.disabled=true});
@@ -157,6 +182,7 @@ async function save(){
    var base=root.saveT?P.clone(root.DB):(stored||root.DB);
    if(stored){base.foods=stored.foods||[];base.propertyDefs=stored.propertyDefs||[]}
    var next=P.upsert(base,s.draft,{expectedRevision:s.expected});next.db.productToolsPro=s.pro;
+   if(next.db.units)delete next.db.units[s.draft.id];
    P.snapshotItems(next.db,Object.assign({},root.FOODS,{[next.food.id]:next.food}));
    clearTimeout(root.saveT);root.saveT=null;await persist(next.db);root.DB=next.db;root.rebuildLib();root.linkWrite();
    var callback=s.cb,food=root.FOODS[next.food.id];close(true);root.renderAll();if(doc.querySelector('[data-screen="journal"].on'))root.renderJournal();root.toast('«'+food.n+'» сохранён');if(callback)callback(food);
@@ -175,10 +201,20 @@ function click(ev){
  var act=b.dataset.up;if(!act)return;
  try{
    error('');
+   if(session.view==='edit'&&!['cancel','discard','stay','portion-remove'].includes(act))syncPortions();
    if(act==='cancel')close();
    if(act==='discard')close(true);
    if(act==='stay')e('upLeave').hidden=true;
    if(act==='save')save();
+   if(act==='copy-from'){session.view='copy';session.copyQuery='';session.copyResults=[];session.copySelected=null;render();e('upCopyQ').focus()}
+   if(act==='copy-pick'){session.copySelected=session.copyResults.find(function(f){return f.id===b.dataset.id});e('upCopyPicked').textContent='Выбрано: '+session.copySelected.n;e('upCopyApply').disabled=false}
+   if(act==='copy-apply')copyComposition();
+   if(act==='portion-add'){var name=e('upPortionName').value.trim(),grams=P.number(e('upPortionGrams').value);if(!name||name.length>80||name==='г'||['__proto__','prototype','constructor'].includes(name))throw Error('Укажи название порции, например «горсть»');if(!(grams>0))throw Error('Масса порции должна быть больше нуля');if(Object.keys(session.draft.por).some(function(k){return P.norm(k)===P.norm(name)}))throw Error('Такая порция уже есть. Измени её массу выше.');session.draft.por[name]=grams;render()}
+   if(act==='portion-update')render();
+   if(act==='portion-remove'){delete session.draft.por[b.dataset.name];if(session.draft.defU===b.dataset.name)delete session.draft.defU;render()}
+   if(act==='share'){session.view='share';render()}
+   if(act==='share-file'){var html=reportDocument();root.jrShareBlob('happy-meal-product.html',new Blob([html],{type:'text/html'}),'text/html','Карточка передана')}
+   if(act==='print')printProduct();
    if(act==='library'){session.view='library';session.query='';render();e('upLibraryQ').focus()}
    if(act==='back'){session.view='edit';render()}
    if(act==='basis'){session.draft=P.rebase(session.draft,P.number(e('upBasis').value));render()}
@@ -203,6 +239,8 @@ function renderJournalProperties(){
  var list=Object.values(sums);node.hidden=!list.length;
  node.innerHTML=list.length?'<div class="eyebrow"><span>Пользовательские свойства</span></div><section class="happy-card"><p class="happy-note">'+(range.a===range.b?'За день':'В среднем за день с записями')+' · свойства учитываются отдельно. Частичный итог включает только известные значения.</p>'+list.map(function(p){return '<div class="up-journal-property"><span>'+esc(p.name)+'<small>'+(p.mapsTo?'Сопоставлено: '+esc(p.mapsTo):'Без сопоставления')+(p.missing?' · нет данных: '+p.missing+' порц.':'')+(p.notDetected?' · не обнаружено: '+p.notDetected+' порц.':'')+'</small></span><b>'+(p.value==null?p.notDetected?'Не обнаружено':'—':num(p.value/days)+' '+esc(p.unit))+'</b></div>'}).join('')+'</section>':'';
 }
-root.MealProductEditor={create:function(name,callback){return open(null,{name:name,onSave:callback})},edit:function(food){return open(food)},copy:function(food,callback){return open(food,{copy:true,onSave:callback})},renderJournalProperties:renderJournalProperties};
+root.MealProductEditor={create:function(name,callback){return open(null,{name:name,onSave:callback})},edit:function(food){return open(food)},copy:function(food,callback){return open(food,{copy:true,onSave:callback})},renderJournalProperties:renderJournalProperties,renderLibrary:renderOwnLibrary};
+if(e('libraryCreateProduct'))e('libraryCreateProduct').addEventListener('click',function(){root.MealProductEditor.create('')});
+if(e('libraryOwnProducts'))e('libraryOwnProducts').addEventListener('click',function(ev){var b=ev.target.closest('[data-own-product]');if(b&&root.FOODS[b.dataset.ownProduct])root.MealControls.product({fid:b.dataset.ownProduct,g:100})});
 doc.getElementById('addOwnProduct').addEventListener('click',function(){root.MealProductEditor.create('')});
 })(window);

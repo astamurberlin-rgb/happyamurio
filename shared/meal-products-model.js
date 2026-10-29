@@ -36,7 +36,7 @@ function fromFood(food,fields,readBls,options){
    out.composition.fields.forEach(function(f){f.copiedFrom={productId:food.id,productName:food.n,field:clone(f)};f.origin='copied'});
  }else if(!out.id){out.id=uid('u:');out.n=options.name||'';out.revision=0;out.history=[];out.createdAt=at}
  delete out.b;delete out.tmp;delete out.fromBls;delete out.kav;delete out.req;
- out.src='Мои';out.por=out.por||{};out.variety=out.variety||'';out.region=out.region||'';out.state=out.state||'';out.description=out.description||'';
+ out.src='Мои';out.por=out.por||{};out.variety=out.variety||'';out.region=out.region||'';out.state=out.state||'';out.description=out.description||'';out.notes=out.notes||'';
  return project(out);
 }
 function project(food){Object.keys(MACRO).forEach(function(k){food[MACRO[k]]=value(food,k)});food.w=norm([food.n,food.variety,food.region,food.state].join(' ')).split(/[^a-zа-я0-9%]+/).filter(Boolean);return food}
@@ -48,6 +48,7 @@ function rebase(food,grams){
 function validate(food){
  if(!food.id||!String(food.n||'').trim())throw Error('Укажи название продукта');
  if(food.n.length>200)throw Error('Название: не более 200 символов');
+ Object.entries(food.por||{}).forEach(function(x){if(!x[0].trim()||x[0].length>80||x[0]==='г'||!(x[1]>0)||!Number.isFinite(x[1]))throw Error('Проверь название и массу порции');});
  var c=food.composition;if(!c||c.version!==1||!(c.basisGrams>0)||!Number.isFinite(c.basisGrams))throw Error('Проверь массу основы');
  var keys=new Set(),targets=new Set();
  c.fields.forEach(function(f){
@@ -64,7 +65,7 @@ function validate(food){
  });return true;
 }
 function changes(before,after){
- var out=[];['n','variety','region','state','description','drink','por'].forEach(function(k){if(JSON.stringify(before&&before[k])!==JSON.stringify(after[k]))out.push({path:k,before:clone(before&&before[k])??null,after:clone(after[k])??null})});
+ var out=[];['n','variety','region','state','description','notes','drink','por'].forEach(function(k){if(JSON.stringify(before&&before[k])!==JSON.stringify(after[k]))out.push({path:k,before:clone(before&&before[k])??null,after:clone(after[k])??null})});
  var a=before&&before.composition,b=after.composition;
  if(!a||a.basisGrams!==b.basisGrams)out.push({path:'basisGrams',before:a?a.basisGrams:null,after:b.basisGrams});
  var old={},fresh={};(a?a.fields:[]).forEach(function(f){old[f.key]=f});b.fields.forEach(function(f){fresh[f.key]=f});
