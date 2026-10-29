@@ -1,0 +1,23 @@
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const html=await readFile(new URL('../meal/index.html',import.meta.url),'utf8');
+const marked=(a,b)=>html.slice(html.indexOf(a)+a.length,html.indexOf(b));
+const item={id:'one',sec:'pm',fid:'cherry',q:150,u:'г',g:150,t:'12:00',productRevision:'cherry@1'},other={id:'two',sec:'pm',fid:'cherry',q:60,u:'г',g:60,t:'12:10'};
+const c=vm.createContext({DB:{sections:[{k:'pm',t:'Обед'},{k:'dn',t:'Ужин'},{k:'custom',t:'После прогулки'}],days:{'2026-10-28':{items:[item,other]}}},curDate:'2026-10-28',M:{mode:'diary',sec:'pm',t:'12:00',lines:[]},FOODS:{cherry:{id:'cherry',por:{},k:69},apple:{id:'apple',por:{},k:58}},BLS_BY:{TEST:{}},DEF:{г:1}});
+c.lineOf=(where,id)=>(where==='m'?c.M.lines:c.DB.days[c.curDate].items).find(x=>x.id===id);c.sec=k=>c.DB.sections.find(s=>s.k===k);c.gramsFor=(_id,q)=>q;c.blsUse=id=>{c.FOODS[id]={id,por:{}}};
+vm.runInContext(marked('/* MEAL_TIME_MODEL_START */','/* MEAL_TIME_MODEL_END */'),c);
+vm.runInContext(html.slice(html.indexOf('function setFood('),html.indexOf('function stepLine(')),c);
+vm.runInContext(marked('/* MEAL_CORRECTION_MODEL_START */','/* MEAL_CORRECTION_MODEL_END */'),c);
+const beforeOther=JSON.stringify(other),ctx={date:c.curDate,item,draft:c.M};
+c.applyProductCorrection('s','one',{sec:'dn',time:'22:00'},ctx);
+assert.equal(item.sec,'dn');assert.equal(item.t,'22:00');assert.equal(item.tm,1);assert.equal(item.fid,'cherry');assert.equal(item.productRevision,'cherry@1');assert.equal(item.g,150);assert.equal(JSON.stringify(other),beforeOther);assert.equal(c.DB.days[c.curDate].items.length,2);
+c.applyProductCorrection('s','one',{sec:'custom',time:'21:15',fid:'apple'},ctx);
+assert.equal(item.sec,'custom');assert.equal(item.fid,'apple');assert.equal(item.productRevision,undefined);assert.equal(item.id,'one');assert.equal(item.g,150);assert.equal(item.t,'21:15');
+for(const change of [{sec:'pm',time:'25:00',fid:'cherry'},{sec:'missing',time:'21:00',fid:'cherry'},{sec:'pm',time:'21:00',fid:'missing'},{sec:'pm',time:'',fid:'cherry'}]){const before=JSON.stringify(item);assert.throws(()=>c.applyProductCorrection('s','one',change,ctx));assert.equal(JSON.stringify(item),before)}
+assert.throws(()=>c.applyProductCorrection('s','one',{sec:'pm',time:'21:00'},{...ctx,date:'2026-10-27'}),/изменилась/);
+const draft={id:'draft',fid:'cherry',q:100,u:'г',g:100};c.M.lines=[draft];
+c.applyProductCorrection('m','draft',{sec:'dn',time:'09:05'},{date:c.curDate,item:draft,draft:c.M});assert.equal(draft.sec,'dn');assert.equal(draft.t,'09:05');assert.equal(c.DB.days[c.curDate].items.length,2);
+const untimed={id:'untimed',fid:'cherry',q:100,u:'г',g:100};c.M.lines=[untimed];c.M.t=null;c.applyProductCorrection('m','untimed',{sec:'pm',time:''},{date:c.curDate,item:untimed,draft:c.M});assert.equal(untimed.t,undefined);
+c.M.mode='recipe';const ingredient={id:'ing',fid:'cherry',q:100,u:'г',g:100};c.M.lines=[ingredient];c.applyProductCorrection('m','ing',{fid:'apple',sec:'dn',time:'22:00'},{date:c.curDate,item:ingredient,draft:c.M});assert.equal(ingredient.fid,'apple');assert.equal(ingredient.sec,undefined);assert.equal(ingredient.t,undefined);
+console.log('Passed: correction moves only the selected entry into built-in/custom meals; time and replacement apply together; no duplicates or mass changes; unchanged snapshots survive timing edits; replacement clears snapshot; invalid/stale drafts cannot partially mutate; new meal drafts and recipes remain distinct.');
