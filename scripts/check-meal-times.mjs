@@ -46,7 +46,8 @@ runInContext(marked(meal,'/* MEAL_TIME_MODEL_START */','/* MEAL_TIME_MODEL_END *
 runInContext(meal.slice(meal.indexOf('function edHTML('),meal.indexOf('/* в поле с числом')),ui);
 runInContext(meal.slice(meal.indexOf('function lineHTML('),meal.indexOf('/* как приготовлено:')),ui);
 for(const st of ['ok','pick','none']){const html=ui.lineHTML({id:'x',fid:st==='ok'?'food':null,name:'Яблоко',st,alts:['food'],q:100,g:100,u:'г'},'m');assert.ok(html.includes('mlDraftRemove'));assert.equal((html.match(/data-act="del"/g)||[]).length,1);}
-ui.M.open='x';let html=ui.lineHTML({id:'x',fid:'food',q:100,g:100,u:'г',t:'09:15',tm:1},'m');assert.ok(html.includes('data-act="time"'));assert.ok(html.includes('09:15'));assert.equal((html.match(/data-act="del"/g)||[]).length,1);
+ui.M.open='x';let html=ui.lineHTML({id:'x',fid:'food',q:100,g:100,u:'г',t:'09:15',tm:1},'m');assert.ok(!html.includes('data-act="time"'));assert.ok(html.includes('aria-label="Корректировать продукт"'));assert.ok(html.includes('09:15'));assert.equal((html.match(/data-act="del"/g)||[]).length,1);
+assert.ok(html.indexOf('mlQuantityRow')<html.indexOf('class="mlUnits"'));assert.ok(html.indexOf('class="mlUnits"')<html.indexOf('mlCorrectionActions'));assert.equal((html.match(/class="mlIco/g)||[]).length,3);
 ui.M.mode='recipe';assert.ok(!ui.lineHTML({id:'x',fid:'food',q:100,g:100,u:'г'},'m').includes('data-act="time"'));
 ui.M={mode:'diary',open:'x',lines:[{id:'x'},{id:'y'}]};ui.FIND=null;ui.renderMatch=()=>{};ui.toast=(text,undo)=>{ui.undo=undo};
 runInContext(meal.slice(meal.indexOf('function removeLine('),meal.indexOf('\nfunction onAct(')),ui);ui.removeLine('m','x');assert.equal(ui.M.lines.length,1);ui.undo();assert.equal(ui.M.lines[0].id,'x');ui.removeLine('m','x');ui.M={lines:[]};ui.undo();assert.equal(ui.M.lines.length,0);

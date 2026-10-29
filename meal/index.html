@@ -1393,8 +1393,8 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="report.css?v=22.10-test.1">
-<link rel="stylesheet" href="user-products.css?v=22.10-test.1">
+<link rel="stylesheet" href="report.css?v=22.10-test.2">
+<link rel="stylesheet" href="user-products.css?v=22.10-test.2">
 <script src="../shared/meal-products-model.js?v=1"></script>
 </head>
 <body class="loading">
@@ -1545,7 +1545,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.10-test.1"><div>Happy Meal · v22.10-test.1</div><small>Обновлено 28.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.10-test.2"><div>Happy Meal · v22.10-test.2</div><small>Обновлено 28.10.2026</small></footer>
   </div>
 
 </div>
@@ -3401,24 +3401,24 @@ function unitList(f,cur){
 function unitName(f,u){ return u==='шт'&&f&&f.berry?'ягода':u==='шт'&&f&&f.por&&f.por['большой']?'средний':u.indexOf('г ')===0?u.slice(2):u }
 function unitG(f,u){ return (f&&f.por&&f.por[u])||DEF[u]||1 }
 function edHTML(l,where){
-  var f=FOODS[l.fid], units=unitList(f,l.u), own=(f&&f.own)||{};
+  var f=MealProducts.forItem(l,FOODS,DB), units=unitList(FOODS[l.fid]||f,l.u), own=((FOODS[l.fid]||f)&&((FOODS[l.fid]||f).own))||{};
   var fo=UFORM&&UFORM.id===l.id;
-  var h='<div class="mlEd"><div class="mlW"><div class="tpStp"><button data-act="minus" aria-label="Меньше">−</button>'+
-    '<label class="v"><input type="number" inputmode="decimal" step="any" data-act="qty" value="'+(Math.round(l.q*10)/10)+'" style="width:'+qtyW(Math.round(l.q*10)/10)+'" aria-label="Сколько, '+escH(l.u)+'"><i>'+escH(STEP_SHORT[l.u]||uLab(l.fid,l.q,l.u))+'</i></label>'+
-    '<button data-act="plus" aria-label="Больше">+</button></div>'+(l.u!=='г'?'<span class="mlEq">= '+fmt(l.g)+' г'+(f&&f.porNote&&(l.u==='шт'||l.u==='маленький'||l.u==='большой'||l.u.indexOf('г ')===0)?' '+escH(f.porNote):'')+'</span>':'')+
-    '<span class="mlIcoA">'+(where==='s'||M.mode!=='recipe'?'<button class="mlIco" data-act="time" aria-label="Изменить время продукта">'+CLOCKI+'</button>':'')+
-    '<button class="mlIco" data-act="replace" aria-label="Заменить продукт">'+REPLI+'</button>'+
-    '<button class="mlIco" data-act="info" aria-label="Информация о продукте">'+INFOI+'</button>'+
-    '<button class="mlIco del" data-act="del" aria-label="Удалить продукт">'+BINI+'</button></span></div>'+
+  var h='<div class="mlEd"><div class="mlW mlQuantityRow"><div class="tpStp"><button data-act="minus" aria-label="Меньше">−</button>'+
+    '<label class="v"><span class="mlQtyMain"><input type="number" inputmode="decimal" step="any" data-act="qty" value="'+(Math.round(l.q*10)/10)+'" style="width:'+qtyW(Math.round(l.q*10)/10)+'" aria-label="Сколько, '+escH(l.u)+'"><i>'+escH(STEP_SHORT[l.u]||uLab(l.fid,l.q,l.u))+'</i></span>'+
+    (l.u!=='г'?'<small class="mlInlineEq">= '+fmt(l.g)+' г'+(f&&f.porNote&&(l.u==='шт'||l.u==='маленький'||l.u==='большой'||l.u.indexOf('г ')===0)?' '+escH(f.porNote):'')+'</small>':'')+'</label>'+
+    '<button data-act="plus" aria-label="Больше">+</button></div></div>'+
     '<div class="mlUnits" role="group" aria-label="Мера">'+units.map(function(u){ var on=u===l.u;
       return '<button class="chip'+(on?' on':'')+(own[u]?' own':'')+'" data-act="unit" data-u="'+escH(u)+'" aria-pressed="'+on+'">'+
-        (u==='г'?'граммы':u.indexOf('г ')===0?escH(unitName(f,u)):escH(unitName(f,u))+' <small>'+fmt(unitG(f,u))+' г</small>')+'</button>' }).join('')+
+        (u==='г'?'граммы':u.indexOf('г ')===0?escH(unitName(f,u)):escH(unitName(f,u))+' <small>'+fmt(unitG(FOODS[l.fid]||f,u))+' г</small>')+'</button>' }).join('')+
       '<button class="chip add" data-act="uadd" aria-expanded="'+fo+'">+ Своя мера</button></div>';
   if(fo) h+='<div class="mlUForm"><input type="text" data-act="uname" maxlength="24" placeholder="Название: моя тарелка, кружка в кафе…" aria-label="Название меры">'+
     '<label class="g"><input type="number" inputmode="decimal" step="any" data-act="ugram" placeholder="450" aria-label="Сколько граммов"><i>г</i></label>'+
     '<div class="mlUBtns"><button class="btn" data-act="ucancel">Отмена</button><button class="btn solid" data-act="usave">Сохранить в продукт</button></div>'+
     '<p class="mlUNote">Мера запомнится у «'+escH(f?f.n:'')+'» только у тебя.</p></div>';
   else if(own[l.u]) h+='<button class="mlUDel" data-act="udel">Убрать мою меру «'+escH(l.u)+'»</button>';
+  h+='<div class="mlCorrectionActions mlIcoA"><button class="mlIco" data-act="replace" aria-label="Корректировать продукт">'+REPLI+'</button>'+
+    '<button class="mlIco" data-act="info" aria-label="Информация о продукте">'+INFOI+'</button>'+
+    '<button class="mlIco del" data-act="del" aria-label="Удалить продукт">'+BINI+'</button></div>';
   return h+'</div>';
 }
 /* в поле с числом — коротко, чтобы значки остались в строке */
@@ -3529,8 +3529,7 @@ function onAct(ev){
   else if(act==='udel'){ unitDel(l); keep(w); rer(w); unitsReveal(); return }
   else if(act==='del'){ removeLine(w,id); return }
   else if(act==='info'){ MealControls.product(l); return }
-  else if(act==='time'){ editProductTime(w,id); return }
-  else if(act==='replace'){ FIND={where:w,mode:'replace',id:id,q:(l.st||'ok')==='ok'?'':(l.name||'')}; rer(w); focusFind(); return }
+  else if(act==='replace'){ MealControls.correct(w,id); return }
   else if(act==='own'){ createOwn(l.name||'',function(food){ setFood(l,food.id); if(w==='m') M.open=l.id; keep(w); rer(w) }); return }
   keep(w); rer(w);
 }
@@ -3755,14 +3754,21 @@ function mealTimeDialog(title,value,all,section){
     wrap.onkeydown=function(e){if(e.key==='Escape'){e.preventDefault();done(null)}else if(e.key==='Enter'&&e.target!==picker){e.preventDefault();saveTime()}else if(e.key==='Tab'){var nodes=[input].concat(all?[]:[picker]).concat([document.getElementById('mealTimeCancel'),document.getElementById('mealTimeSave')]),i=nodes.indexOf(document.activeElement);if(e.shiftKey&&i===0){e.preventDefault();nodes[nodes.length-1].focus()}else if(!e.shiftKey&&i===nodes.length-1){e.preventDefault();input.focus()}}};
   });
 }
-function editProductTime(where,id){
-  var line=lineOf(where,id);if(!line||where==='m'&&M.mode==='recipe')return;
-  var date=curDate,draft=M,value=mlEntryTime(line,where==='m'?M.t:null,where==='m'&&M.tm).t;
-  mealTimeDialog('Время продукта',value,false,line.sec||(where==='m'?M.sec:SECK)).then(function(result){
-    if(!result||curDate!==date||where==='m'&&M!==draft||lineOf(where,id)!==line)return;
-    mlStamp([line],result.t);line.sec=result.sec;keep(where);rer(where);toast(result.t+' → '+sec(result.sec).t);
-  });
+/* MEAL_CORRECTION_MODEL_START */
+function applyProductCorrection(where,id,change,context){
+  var item=lineOf(where,id);if(!item)throw new Error('Запись больше недоступна');
+  if(context&&(context.date!==curDate||context.item!==item||where==='m'&&context.draft!==M))throw new Error('Запись изменилась. Открой корректировку заново.');
+  var timed=where==='s'||M.mode!=='recipe',time=String(change.time||'').trim(),fid=change.fid||item.fid;
+  if(timed){
+    if(!sec(change.sec))throw new Error('Выбери существующий приём пищи');
+    if(time&&!mlNormTime(time)||!time&&mlEntryTime(item,where==='m'?M.t:null,where==='m'&&M.tm).t)throw new Error('Укажи время полностью: ЧЧ:ММ');
+  }
+  if(!FOODS[fid]&&!(String(fid).indexOf('bls:')===0&&typeof BLS_BY==='object'&&BLS_BY[String(fid).slice(4)]))throw new Error('Выбери продукт из библиотеки');
+  if(fid!==item.fid){if(String(fid).indexOf('bls:')===0)blsUse(fid);if(!FOODS[fid])throw new Error('Продукт недоступен');setFood(item,fid)}
+  if(timed){item.sec=change.sec;if(time)mlStamp([item],mlNormTime(time))}
+  return item;
 }
+/* MEAL_CORRECTION_MODEL_END */
 function editSectionTime(){
   var date=curDate,key=SECK,items=itemsOf(key);if(!items.length)return;
   mealTimeDialog('Время приёма пищи',mlLastTime(items).t,true).then(function(result){
@@ -5544,6 +5550,6 @@ document.addEventListener('click',function(ev){
 });
 
 </script>
-<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.10-test.1"></script><script src="controls.js?v=22.10-test.1"></script><script src="user-products.js?v=22.10-test.1"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
+<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.10-test.2"></script><script src="controls.js?v=22.10-test.2"></script><script src="user-products.js?v=22.10-test.2"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
 </body>
 </html>
