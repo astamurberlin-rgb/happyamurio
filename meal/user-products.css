@@ -17,3 +17,5 @@
 .up-editor .mlRes .mlResPick{flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;white-space:normal;overflow-wrap:anywhere;text-align:left}.up-editor .mlRes .mlResPick small{max-width:100%;white-space:normal;font-size:12px}.up-editor .mlRes .up-info{width:44px;min-height:44px;padding:0;justify-content:center}
 
 .up-copy-title{display:flex;align-items:center;gap:12px;margin-top:6px}.up-copy-title h3{flex:1;min-width:0;margin:0}.up-copy-title .mlIco{flex:none}
+
+.up-copy-footer{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}

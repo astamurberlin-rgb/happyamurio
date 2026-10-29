@@ -79,8 +79,7 @@ function syncPortions(){
 }
 function copyHTML(){
  var picked=session.copySelected;
- return '<button class="happy-button up-back" data-up="back">‹ К продукту</button>'+
- (picked?'<section class="happy-card up-card up-copy-picked" id="upCopyPicked" tabindex="-1"><div class="up-copy-heading"><small>Выбран исходный продукт</small><div class="up-copy-title"><h3>'+esc(picked.n)+'</h3><button class="mlIco" data-up="copy-info" aria-label="Информация о выбранном продукте" aria-expanded="'+!!session.copyDetails+'">'+root.INFOI+'</button></div><p class="happy-note">'+(picked.k==null?'—':num(picked.k))+' ккал / 100 г · '+esc(picked.src||'Библиотека')+'</p></div>'+(session.copyDetails?'<div class="up-source-facts">'+root.MealControls.factsHTML(picked,100,'На 100 г')+'</div>':'')+'</section>':
+ return (picked?'<section class="happy-card up-card up-copy-picked" id="upCopyPicked" tabindex="-1"><div class="up-copy-heading"><small>Выбран исходный продукт</small><div class="up-copy-title"><h3>'+esc(picked.n)+'</h3><button class="mlIco" data-up="copy-info" aria-label="Информация о выбранном продукте" aria-expanded="'+!!session.copyDetails+'">'+root.INFOI+'</button></div><p class="happy-note">'+(picked.k==null?'—':num(picked.k))+' ккал / 100 г · '+esc(picked.src||'Библиотека')+'</p></div>'+(session.copyDetails?'<div class="up-source-facts">'+root.MealControls.factsHTML(picked,100,'На 100 г')+'</div>':'')+'</section>':
  '<section class="happy-card up-card"><h3>Скопировать свойства из…</h3>'+label('Найти исходный продукт',input('upCopyQ',session.copyQuery,'type="search" placeholder="Найти: творог, банан…" autocomplete="off"'))+'<div class="mlRes" id="upCopyResults">'+copyResults()+'</div></section>')+
  '<footer class="up-footer up-copy-footer"><button class="happy-button" data-up="back">Отмена</button><button class="happy-button primary" id="upCopyApply" data-up="copy-apply" '+(picked?'':'disabled')+'>Скопировать состав</button></footer>';
 }
