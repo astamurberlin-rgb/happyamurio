@@ -2765,21 +2765,80 @@ body{width:100%;max-width:100%;overflow-x:clip}
 }
 </script>
 <script>
+/* A diary belongs to one account. Legacy local journals remain recoverable. */
+(function(root){
+  'use strict';
+  function create(app, options){
+    var o=options||{},store,authKey='hd_cloud_v1';
+    try{store=o.storage||root.localStorage}catch(e){}
+    function get(k){try{return store?store.getItem(k):null}catch(e){return null}}
+    function parse(v){try{return JSON.parse(v)}catch(e){return null}}
+    function uid(v){return typeof v==='string'&&v?v:'local'}
+    var saved=parse(get(authKey)),owner=uid(saved&&saved.s&&saved.s.uid);
+    var marker='happy-profile-legacy-owner:'+app,legacy=get(marker);
+    if(legacy===null){
+      legacy=owner;
+      if(app==='sport'){
+        var old=parse(get('happy-sport-prototype-v1'));
+        if(old&&old.sportOwner)legacy=uid(old.sportOwner);
+      }
+      // If ownership cannot be recorded, leave legacy data untouched.
+      try{store.setItem(marker,legacy)}catch(e){legacy=null}
+    }
+    var changing=false;
+    function key(k){return k===authKey||owner==='local'?k:'happy-user:'+encodeURIComponent(owner)+':'+k}
+    function eligible(k){return k!==authKey&&owner!=='local'&&legacy===owner}
+    function getSync(k){
+      var physical=key(k),v=get(physical);
+      if(v===null&&eligible(k)){
+        v=get(k);
+        if(v!==null){try{store.setItem(physical,v)}catch(e){}}
+      }
+      return v;
+    }
+    async function read(k,readBase,writeBase){
+      var physical=key(k),v=await readBase(physical);
+      if(v==null&&eligible(k)){
+        v=await readBase(k);
+        if(v!=null){try{await writeBase(physical,v)}catch(e){}}
+      }
+      return v;
+    }
+    async function write(k,v,writeBase){return writeBase(key(k),v)}
+    function matches(value){return !changing&&uid(value)===owner}
+    function changed(value){
+      if(uid(value)===owner)return false;
+      changing=true;
+      if(o.reload)o.reload();else if(root.location)root.location.reload();
+      return true;
+    }
+    if(root.addEventListener)root.addEventListener('storage',function(e){
+      if(e.key!==authKey)return;
+      var s=parse(e.newValue);changed(s&&s.s&&s.s.uid);
+    });
+    return {owner:owner,key:key,getSync:getSync,read:read,write:write,matches:matches,changed:changed};
+  }
+  root.HappyProfiles={create:create};
+})(globalThis);
+
+var HappyProfile=HappyProfiles.create("sport");
 /* Presentation and form interaction only. Auth and diary storage stay in each app. */
 (function(root){
   'use strict';
   function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function draft(box){
     var email=box&&box.querySelector('[name="email"]'),password=box&&box.querySelector('[name="password"]');
-    return {email:email?email.value:'',password:password?password.value:'',visible:!!(password&&password.type==='text')};
+    var name=box&&box.querySelector('[name="display_name"]');
+    return {name:name?name.value:'',email:email?email.value:'',password:password?password.value:'',visible:!!(password&&password.type==='text')};
   }
   function button(attr,action,text,primary,disabled,submit){return '<button class="happy-button'+(primary?' primary':'')+'" type="button" '+attr+'="'+action+'"'+(disabled?' disabled':'')+(submit?' data-happy-ui-submit':'')+'>'+esc(text)+'</button>'}
   function account(options){
     var o=options||{},d=o.draft||{},attr=o.sport?'data-happy':'data-cl',html='';
     if(o.connected){
-      html='<b class="happy-account-name">'+esc(o.email||'Аккаунт Happy')+'</b><span class="happy-account-status">'+esc(o.secondary||'Вход выполнен')+'</span><div class="happy-actions">'+button(attr,'sync','Обновить связь',true,o.busy)+button(attr,'out','Выйти',false,o.busy)+'</div>';
+      html='<b class="happy-account-name">'+esc(o.name||o.email||'Аккаунт Happy')+'</b><span class="happy-account-status">'+esc(o.secondary||'Вход выполнен')+'</span><div class="happy-actions">'+button(attr,'sync','Обновить связь',true,o.busy)+button(attr,'out','Выйти',false,o.busy)+'</div>';
     }else{
-      html='<input class="happy-input" type="email" id="clEmail" name="email" aria-label="Почта" placeholder="Почта" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" value="'+esc(d.email)+'">'+
+      html='<input class="happy-input" type="text" name="display_name" aria-label="Имя профиля" placeholder="Имя нового профиля, например Amurio" autocomplete="nickname" maxlength="60" value="'+esc(d.name)+'">'+
+        '<input class="happy-input" type="email" id="clEmail" name="email" aria-label="Почта" placeholder="Почта" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" value="'+esc(d.email)+'">'+
         '<div class="happy-password"><input class="happy-input" type="'+(d.visible?'text':'password')+'" id="clPw" name="password" aria-label="Пароль" placeholder="Пароль, от 8 знаков" autocomplete="current-password" value="'+esc(d.password)+'"><button class="happy-password-toggle" type="button" data-happy-ui="password" aria-label="'+(d.visible?'Скрыть пароль':'Показать пароль')+'" aria-pressed="'+!!d.visible+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>'+
         '<div class="happy-actions">'+button(attr,'in','Войти',true,o.busy,true)+button(attr,'up','Создать аккаунт',false,o.busy)+'</div>';
     }
@@ -2790,7 +2849,13 @@ body{width:100%;max-width:100%;overflow-x:clip}
   async function act(action,adapter){
     var a=adapter,state=a.state;
     if(state.busy)return;
-    if(action==='out'){a.signOut();state.msg='Выход выполнен. Записи на устройстве сохранены.';a.paint();return}
+    if(action==='out'){
+      state.busy=true;state.err='';a.paint();
+      try{await a.signOut();state.msg='Выход выполнен. Записи на устройстве сохранены.'}
+      catch(e){state.err=e.message||String(e)}
+      finally{state.busy=false;a.paint()}
+      return;
+    }
     if(action==='sync'){
       state.busy=true;state.err='';a.paint();
       try{await a.refresh()}catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}
@@ -2802,12 +2867,13 @@ body{width:100%;max-width:100%;overflow-x:clip}
     if(!pw||(action==='up'&&pw.length<8)){state.err=action==='up'?'Для нового аккаунта нужен пароль от 8 знаков':'Введи пароль';a.paint();return}
     state.busy=true;state.err='';state.msg='';a.paint();
     try{
-      var result=await a.signIn(email,pw,action);
+      var result=await a.signIn(email,pw,action,d.name.trim());
+      if(result==='reload')return;
       if(result==='confirm'){state.msg='Аккаунт создан. Подтверди почту по ссылке из письма, затем нажми «Войти».';return}
       await a.afterSignIn();
     }catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}
   }
-  function note(){return '<p class="happy-note">Один аккаунт для Happy Day, Happy Meal и Happy Sport. Сохрани пароль: он нужен для чтения облачных копий. Полная синхронизация дневников пока в разработке.</p>'}
+  function note(){return '<p class="happy-note">Один аккаунт для Happy Day, Happy Meal и Happy Sport. Сохрани пароль: он нужен для чтения облачных копий. Дневник каждого аккаунта хранится отдельно. После входа загрузи его JSON. Полная синхронизация дневников пока в разработке.</p>'}
   function lastText(value){return value?'Связь обновлена в '+new Date(value).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'Вход выполнен'}
   root.HappyUI={escape:esc,draft:draft,account:account,act:act,accountNote:note,lastText:lastText};
   if(typeof document!=='undefined'){
@@ -3515,10 +3581,10 @@ function workoutIconOptions(kind,selected){const option=(id,label,title=label)=>
 function exerciseSportIcon(e){const text=((e.name||'')+' '+(e.category||'')+' '+(Array.isArray(e.equipment)?e.equipment.join(' '):e.equipment||'')).toLowerCase();const matches=[[/плаван/,14],[/растяж|мобил/,15],[/йога|пилатес/,16],[/гантел/,2],[/штанг/,1],[/гир[яеи]/,3],[/блок|кроссовер/,4],[/резин|эспандер/,5],[/брусь/,8],[/подтяг|турник|перекладин/,7],[/тренаж[её]р/,6],[/велосипед/,12],[/эллип/,13],[/бег/,10],[/ходьб/,11],[/скакал|размин/,18],[/отжим/,9]];return baseSportIcon(matches.find(([re])=>re.test(text))?.[1]||37)}
 
 'use strict';
-const SEED=JSON.parse(document.getElementById('seed-data').textContent),KEY='happy-sport-prototype-v1';
+const SEED=JSON.parse(document.getElementById('seed-data').textContent),KEY=globalThis.HappyProfile?HappyProfile.key('happy-sport-prototype-v1'):'happy-sport-prototype-v1';
 const SPORT_MEASURE_EMBED=new URLSearchParams(location.search).get('embed')==='measurements';
 const clone=x=>JSON.parse(JSON.stringify(x));
-let state;try{state=JSON.parse(localStorage.getItem(KEY)||'null')}catch{};
+let state;try{state=JSON.parse((globalThis.HappyProfile?HappyProfile.getSync('happy-sport-prototype-v1'):localStorage.getItem(KEY))||'null')}catch{};
 if(!state||state.version!==1)state={version:1,workouts:clone(SEED.workouts),measurements:clone(SEED.measurements),customExercises:[],templates:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},demoPulse:false};
 let view='diary',journalTab='workouts',libraryTab='exercises',libraryScope='all',category='all',query='',selectedDate=dayNow(),detailId=null,measureDate=dayNow(),period='first',amplify=3,historyFilter='all',sheetKind='',undoAction=null,toastTimer,priorFocus;
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n).toLocaleString('ru-RU',{maximumFractionDigits:1}),icon=n=>sportIconMarkup(n)||SEED.icons[n]||SEED.icons['barbell'];
@@ -3711,7 +3777,7 @@ var CL={s:null,ck:null,kraw:null,busy:false,err:'',msg:'',last:0,ready:false};
 function clB64(u8){ var s=''; for(var i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s) }
 function clUnb64(t){ var s=atob(t), u=new Uint8Array(s.length); for(var i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u }
 function clUtf(t){ return new TextEncoder().encode(t) }
-function clOn(){ return !!(CL.s&&CL.ck) }
+function clOn(){ return !!(CL.s&&CL.ck)&&(!globalThis.HappyProfile||HappyProfile.matches(CL.s.uid)) }
 async function clLoad(){
   try{
     var raw=await rawGet(CL_KEY); if(!raw) return;
@@ -3720,7 +3786,7 @@ async function clLoad(){
   }catch(e){ CL.s=null; CL.ck=null; CL.kraw=null }
   finally{ CL.ready=true }
 }
-function clStore(){ try{localStorage.setItem(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0}))}catch{CL.err='Браузер не сохраняет вход. Разреши хранение данных сайта.'} }
+async function clStore(){ try{localStorage.setItem(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0}))}catch{CL.err='Браузер не сохраняет вход. Разреши хранение данных сайта.'} }
 /* понятные слова вместо ответов сервера */
 function clErrText(j,st){
   var m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
@@ -3745,7 +3811,7 @@ async function clAuth(path,body){
 }
 function clSes(j,old){
   return {at:j.access_token,rt:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,
-          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email)};
+          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email),name:(j.user&&j.user.user_metadata&&j.user.user_metadata.display_name)||(old&&old.name)||''};
 }
 async function clDerive(pw,uid){
   var base=await crypto.subtle.importKey('raw',clUtf(pw),'PBKDF2',false,['deriveKey']);
@@ -3755,18 +3821,25 @@ async function clDerive(pw,uid){
   CL.ck=await crypto.subtle.importKey('raw',clUnb64(CL.kraw),{name:'AES-GCM'},false,['encrypt','decrypt']);
 }
 /* mode: 'in' — войти, 'up' — создать аккаунт; ответ: 'ok' | 'confirm' (надо подтвердить почту) */
-async function clSignIn(email,pw,mode){
+async function clSignIn(email,pw,mode,name){
+  if(typeof persist==='function')persist();
+  if(typeof state!=='undefined'&&typeof KEY!=='undefined'&&!SPORT_MEASURE_EMBED){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){throw new Error('Не удалось сохранить дневник. Сначала выгрузи JSON-копию.')}}
   email=email.trim().toLowerCase();
-  var j=mode==='up'?await clAuth('signup',{email:email,password:pw})
+  var j=mode==='up'?await clAuth('signup',{email:email,password:pw,data:{display_name:String(name||'').trim().slice(0,60)}})
                    :await clAuth('token?grant_type=password',{email:email,password:pw});
   if(!j||!j.access_token) return 'confirm';
   CL.s=clSes(j); await clDerive(pw,CL.s.uid);
-  CL.err=''; clStore(); return 'ok';
+  CL.err=''; await clStore();
+  if(globalThis.HappyProfile&&HappyProfile.changed(CL.s.uid))return 'reload';
+  return 'ok';
 }
-function clSignOut(){
+async function clSignOut(){
+  if(typeof persist==='function')persist();
+  if(typeof state!=='undefined'&&typeof KEY!=='undefined'&&!SPORT_MEASURE_EMBED){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){throw new Error('Не удалось сохранить дневник. Сначала выгрузи JSON-копию.')}}
   var t=CL.s&&CL.s.at;
-  CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; clStore();
+  CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; await clStore();
   if(t) fetch(CLOUD.url+'/auth/v1/logout?scope=local',{method:'POST',headers:{'apikey':CLOUD.key,'Authorization':'Bearer '+t}}).catch(function(){});
+  if(globalThis.HappyProfile)HappyProfile.changed(null);
 }
 async function clToken(force){
   if(!CL.s) throw new Error('Нет входа');
@@ -3776,11 +3849,15 @@ async function clToken(force){
   CL.s=clSes(j,CL.s); clStore(); return CL.s.at;
 }
 async function clRest(method,query,body,prefer,again){
+  var requestUid=CL.s&&CL.s.uid;
+  if(globalThis.HappyProfile&&!HappyProfile.matches(requestUid))throw new Error('Аккаунт изменился. Открой приложение снова.');
   var t=await clToken(), r;
+  if(!CL.s||CL.s.uid!==requestUid)throw new Error('Аккаунт изменился');
   var h={'apikey':CLOUD.key,'Authorization':'Bearer '+t,'Content-Type':'application/json'};
   if(prefer) h['Prefer']=prefer;
   try{ r=await fetch(CLOUD.url+'/rest/v1/app_sync'+query,{method:method,headers:h,body:body?JSON.stringify(body):undefined}) }
   catch(e){ throw new Error(clErrText(null,0)) }
+  if(!CL.s||CL.s.uid!==requestUid||(globalThis.HappyProfile&&!HappyProfile.matches(requestUid)))throw new Error('Аккаунт изменился');
   if(r.status===401&&!again){ await clToken(true); return clRest(method,query,body,prefer,true) }
   if(!r.ok){ var j=null; try{ j=await r.json() }catch(e){} throw new Error(clErrText(j,r.status)) }
   if(r.status===204) return null;
@@ -3816,7 +3893,7 @@ async function clGet(app,kind){
 }
 
 /* Shared summary, independent of rendering. Stable IDs make edits replace entries. */
-const SPORT_LINK_KEY='hd_link_sport_v1';
+const SPORT_LINK_KEY=globalThis.HappyProfile?HappyProfile.key('hd_link_sport_v1'):'hd_link_sport_v1';
 function sportFacts(w){return {id:w.id,title:w.title,kind:w.kind,start:w.start,end:w.end,duration:Math.max(0,+w.duration||0),energyKcal:!w.demo&&Number.isFinite(w.energyKcal)?w.energyKcal:null}}
 function sportMerge(a,b){
   const byId=new Map();
@@ -3886,7 +3963,7 @@ async function syncSportCloud(){
 }
 function paintHappyAccount(){
   const box=$('#happy-account');if(!box)return;
-  box.innerHTML=HappyUI.account({sport:true,connected:clOn(),email:CL.s?.email,secondary:HappyUI.lastText(sportLastCloud||CL.last),busy:CL.busy,
+  box.innerHTML=HappyUI.account({sport:true,connected:clOn(),name:CL.s?.name,email:CL.s?.email,secondary:HappyUI.lastText(sportLastCloud||CL.last),busy:CL.busy,
     error:sportSyncError||CL.err,message:sportCloudBusy?'Обновляем связь…':CL.msg,draft:HappyUI.draft(box)});
 }
 function sportAuthDo(action){
@@ -5327,7 +5404,7 @@ function nutrition(){if(meal){const d=day(curDate),tot=sumOf(d.items);return {..
 function mealPayload(o){return JSON.stringify({v:o.v,secs:o.secs,days:o.days,goals:o.goals||{}})}
 function enrichedMealSummary(original){const sum=original();sum.owner=owner();sum.goals={...(DB.goals||{})};for(const d of new Set([...Object.keys(DB.days||{}),curDate]))if(!sum.days[d])sum.days[d]={k:0,p:0,f:0,c:0};const previous=mealCache();sum.at=previous&&mealPayload(previous)===mealPayload(sum)?previous.at:Math.max(Date.now(),Number(previous?.at||0)+1);return sum}
 function acceptMeal(o,uid){if(owner()!==uid||o?.v!==1||!o.days)return;const local=mealCache();if(local&&Number(local.at)>Number(o.at||0))return;remoteMeal={...o,owner:uid};localStorage.setItem(sharedKey(),JSON.stringify(remoteMeal))}
-function facts(){const food=nutrition();let workouts=[];if(!meal)workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());else try{const o=JSON.parse(localStorage.getItem('hd_link_sport_v1'));if(o?.owner===owner())workouts=(o.records||[]).filter(w=>!w.deleted&&w.start?.slice(0,10)===date())}catch{}return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
+function facts(){const food=nutrition();let workouts=[];if(!meal)workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());else try{const o=JSON.parse(localStorage.getItem(globalThis.HappyProfile?HappyProfile.key('hd_link_sport_v1'):'hd_link_sport_v1'));if(o?.owner===owner())workouts=(o.records||[]).filter(w=>!w.deleted&&w.start?.slice(0,10)===date())}catch{}return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
 function number(v){return v==null?'—':Math.round(v).toLocaleString('ru-RU')}
 const hues={pink:350,violet:305,blue:262,teal:180};
 function metricRow(color,name,value,unit,goal,progress){const h=hues[color],tone=(l)=>lchHex(l,.12,h*Math.PI/180);const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?number(value)+(g?'/'+number(g):'')+(unit?' '+unit:''):'—';return `<div class="he-metric"><i class="he-dot" style="background:${tone(.8)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(.86)},${tone(.72-.16*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
@@ -5344,7 +5421,7 @@ window.addEventListener('storage',()=>{remoteMeal=null;paint()});window.addEvent
 
 /* Full journal transfer. Account/session/keys are never included in backups. */
 const SPORT_BACKUP_PREV=KEY+'-before-import';
-const sportDataFields=['version','workouts','measurements','customExercises','templates','active','energy','demoPulse','exerciseOverrides','favoriteExercises','measurementTrash','templateOverrides'];
+const sportDataFields=['importedHistory','version','workouts','measurements','customExercises','templates','active','energy','demoPulse','exerciseOverrides','favoriteExercises','measurementTrash','templateOverrides'];
 let sportTransferBusy=false,sportPendingRestore=null;
 function sportBackup(){const data={};for(const k of sportDataFields)if(state[k]!==undefined)data[k]=clone(state[k]);return {app:'Happy Sport',version:1,exportedAt:new Date().toISOString(),data}}
 function sportValidateBackup(input){
@@ -5385,7 +5462,7 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button><button class="happy-button" data-transfer="import">Загрузить из файла</button></div><input type="file" id="sport-backup-file" accept=".json,application/json" hidden><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека. Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" data-transfer="undo" ${localStorage.getItem(SPORT_BACKUP_PREV)?'':'disabled'}>Вернуть дневник до загрузки</button></div><div class="happy-backup-cloud"><b>Облачная копия</b><p class="happy-note" style="margin:8px 0 12px">Полный резерв сохраняется и восстанавливается вручную. Для чтения нужен тот же пароль аккаунта.</p><div class="happy-actions"><button class="happy-button" data-transfer="upload" ${sportTransferBusy?'disabled':''}>Сохранить в облако</button><button class="happy-button" data-transfer="download" ${sportTransferBusy?'disabled':''}>Восстановить из облака</button></div><p class="happy-note" id="sport-transfer-status" role="status"></p></div></div>`)+`<footer class="app-version happy-version" data-app-version="36.4"><div>Happy Sport · v36.4</div><small>Обновлено 29.10.2026</small></footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button><button class="happy-button" data-transfer="import">Загрузить из файла</button></div><input type="file" id="sport-backup-file" accept=".json,application/json" hidden><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека. Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" data-transfer="undo" ${localStorage.getItem(SPORT_BACKUP_PREV)?'':'disabled'}>Вернуть дневник до загрузки</button></div><div class="happy-backup-cloud"><b>Облачная копия</b><p class="happy-note" style="margin:8px 0 12px">Полный резерв сохраняется и восстанавливается вручную. Для чтения нужен тот же пароль аккаунта.</p><div class="happy-actions"><button class="happy-button" data-transfer="upload" ${sportTransferBusy?'disabled':''}>Сохранить в облако</button><button class="happy-button" data-transfer="download" ${sportTransferBusy?'disabled':''}>Восстановить из облака</button></div><p class="happy-note" id="sport-transfer-status" role="status"></p></div></div>`)+`<footer class="app-version happy-version" data-app-version="36.5"><div>Happy Sport · v36.5</div><small>Обновлено 29.10.2026</small></footer>`};
 function sportTransferStatus(t){const el=$('#sport-transfer-status');if(el)el.textContent=t;else toast(t)}
 async function sportCloudBackup(action){
   if(sportTransferBusy)return;

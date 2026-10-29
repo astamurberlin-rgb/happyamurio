@@ -1,5 +1,5 @@
 /* Shared summary, independent of rendering. Stable IDs make edits replace entries. */
-const SPORT_LINK_KEY='hd_link_sport_v1';
+const SPORT_LINK_KEY=globalThis.HappyProfile?HappyProfile.key('hd_link_sport_v1'):'hd_link_sport_v1';
 function sportFacts(w){return {id:w.id,title:w.title,kind:w.kind,start:w.start,end:w.end,duration:Math.max(0,+w.duration||0),energyKcal:!w.demo&&Number.isFinite(w.energyKcal)?w.energyKcal:null}}
 function sportMerge(a,b){
   const byId=new Map();

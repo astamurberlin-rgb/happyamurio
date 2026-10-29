@@ -46,7 +46,7 @@ async function syncSportCloud(){
 }
 function paintHappyAccount(){
   const box=$('#happy-account');if(!box)return;
-  box.innerHTML=HappyUI.account({sport:true,connected:clOn(),email:CL.s?.email,secondary:HappyUI.lastText(sportLastCloud||CL.last),busy:CL.busy,
+  box.innerHTML=HappyUI.account({sport:true,connected:clOn(),name:CL.s?.name,email:CL.s?.email,secondary:HappyUI.lastText(sportLastCloud||CL.last),busy:CL.busy,
     error:sportSyncError||CL.err,message:sportCloudBusy?'Обновляем связь…':CL.msg,draft:HappyUI.draft(box)});
 }
 function sportAuthDo(action){

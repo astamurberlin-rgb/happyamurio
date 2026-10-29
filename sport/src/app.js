@@ -1,8 +1,8 @@
 'use strict';
-const SEED=JSON.parse(document.getElementById('seed-data').textContent),KEY='happy-sport-prototype-v1';
+const SEED=JSON.parse(document.getElementById('seed-data').textContent),KEY=globalThis.HappyProfile?HappyProfile.key('happy-sport-prototype-v1'):'happy-sport-prototype-v1';
 const SPORT_MEASURE_EMBED=new URLSearchParams(location.search).get('embed')==='measurements';
 const clone=x=>JSON.parse(JSON.stringify(x));
-let state;try{state=JSON.parse(localStorage.getItem(KEY)||'null')}catch{};
+let state;try{state=JSON.parse((globalThis.HappyProfile?HappyProfile.getSync('happy-sport-prototype-v1'):localStorage.getItem(KEY))||'null')}catch{};
 if(!state||state.version!==1)state={version:1,workouts:clone(SEED.workouts),measurements:clone(SEED.measurements),customExercises:[],templates:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},demoPulse:false};
 let view='diary',journalTab='workouts',libraryTab='exercises',libraryScope='all',category='all',query='',selectedDate=dayNow(),detailId=null,measureDate=dayNow(),period='first',amplify=3,historyFilter='all',sheetKind='',undoAction=null,toastTimer,priorFocus;
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n).toLocaleString('ru-RU',{maximumFractionDigits:1}),icon=n=>sportIconMarkup(n)||SEED.icons[n]||SEED.icons['barbell'];

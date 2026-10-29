@@ -1216,7 +1216,7 @@ a.btn{display:inline-block;text-decoration:none}
       <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
       <p class="note" id="keyState"></p>
     </div>
-    <footer class="app-version happy-version" data-app-version="50.6"><div>Happy Day · v50.6</div><small>Обновлено 29.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="50.7"><div>Happy Day · v50.7</div><small>Обновлено 29.10.2026</small></footer>
   </div>
 
 </div>
@@ -1305,6 +1305,64 @@ a.btn{display:inline-block;text-decoration:none}
 </div>
 <div class="toast" id="toast"></div>
 
+<script id="happy-profile-storage">
+/* A diary belongs to one account. Legacy local journals remain recoverable. */
+(function(root){
+  'use strict';
+  function create(app, options){
+    var o=options||{},store,authKey='hd_cloud_v1';
+    try{store=o.storage||root.localStorage}catch(e){}
+    function get(k){try{return store?store.getItem(k):null}catch(e){return null}}
+    function parse(v){try{return JSON.parse(v)}catch(e){return null}}
+    function uid(v){return typeof v==='string'&&v?v:'local'}
+    var saved=parse(get(authKey)),owner=uid(saved&&saved.s&&saved.s.uid);
+    var marker='happy-profile-legacy-owner:'+app,legacy=get(marker);
+    if(legacy===null){
+      legacy=owner;
+      if(app==='sport'){
+        var old=parse(get('happy-sport-prototype-v1'));
+        if(old&&old.sportOwner)legacy=uid(old.sportOwner);
+      }
+      // If ownership cannot be recorded, leave legacy data untouched.
+      try{store.setItem(marker,legacy)}catch(e){legacy=null}
+    }
+    var changing=false;
+    function key(k){return k===authKey||owner==='local'?k:'happy-user:'+encodeURIComponent(owner)+':'+k}
+    function eligible(k){return k!==authKey&&owner!=='local'&&legacy===owner}
+    function getSync(k){
+      var physical=key(k),v=get(physical);
+      if(v===null&&eligible(k)){
+        v=get(k);
+        if(v!==null){try{store.setItem(physical,v)}catch(e){}}
+      }
+      return v;
+    }
+    async function read(k,readBase,writeBase){
+      var physical=key(k),v=await readBase(physical);
+      if(v==null&&eligible(k)){
+        v=await readBase(k);
+        if(v!=null){try{await writeBase(physical,v)}catch(e){}}
+      }
+      return v;
+    }
+    async function write(k,v,writeBase){return writeBase(key(k),v)}
+    function matches(value){return !changing&&uid(value)===owner}
+    function changed(value){
+      if(uid(value)===owner)return false;
+      changing=true;
+      if(o.reload)o.reload();else if(root.location)root.location.reload();
+      return true;
+    }
+    if(root.addEventListener)root.addEventListener('storage',function(e){
+      if(e.key!==authKey)return;
+      var s=parse(e.newValue);changed(s&&s.s&&s.s.uid);
+    });
+    return {owner:owner,key:key,getSync:getSync,read:read,write:write,matches:matches,changed:changed};
+  }
+  root.HappyProfiles={create:create};
+})(globalThis);
+
+var HappyProfile=HappyProfiles.create("day");</script>
 <script id="happy-shared-ui">
 /* Presentation and form interaction only. Auth and diary storage stay in each app. */
 (function(root){
@@ -1312,15 +1370,17 @@ a.btn{display:inline-block;text-decoration:none}
   function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function draft(box){
     var email=box&&box.querySelector('[name="email"]'),password=box&&box.querySelector('[name="password"]');
-    return {email:email?email.value:'',password:password?password.value:'',visible:!!(password&&password.type==='text')};
+    var name=box&&box.querySelector('[name="display_name"]');
+    return {name:name?name.value:'',email:email?email.value:'',password:password?password.value:'',visible:!!(password&&password.type==='text')};
   }
   function button(attr,action,text,primary,disabled,submit){return '<button class="happy-button'+(primary?' primary':'')+'" type="button" '+attr+'="'+action+'"'+(disabled?' disabled':'')+(submit?' data-happy-ui-submit':'')+'>'+esc(text)+'<\/button>'}
   function account(options){
     var o=options||{},d=o.draft||{},attr=o.sport?'data-happy':'data-cl',html='';
     if(o.connected){
-      html='<b class="happy-account-name">'+esc(o.email||'Аккаунт Happy')+'<\/b><span class="happy-account-status">'+esc(o.secondary||'Вход выполнен')+'<\/span><div class="happy-actions">'+button(attr,'sync','Обновить связь',true,o.busy)+button(attr,'out','Выйти',false,o.busy)+'<\/div>';
+      html='<b class="happy-account-name">'+esc(o.name||o.email||'Аккаунт Happy')+'<\/b><span class="happy-account-status">'+esc(o.secondary||'Вход выполнен')+'<\/span><div class="happy-actions">'+button(attr,'sync','Обновить связь',true,o.busy)+button(attr,'out','Выйти',false,o.busy)+'<\/div>';
     }else{
-      html='<input class="happy-input" type="email" id="clEmail" name="email" aria-label="Почта" placeholder="Почта" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" value="'+esc(d.email)+'">'+
+      html='<input class="happy-input" type="text" name="display_name" aria-label="Имя профиля" placeholder="Имя нового профиля, например Amurio" autocomplete="nickname" maxlength="60" value="'+esc(d.name)+'">'+
+        '<input class="happy-input" type="email" id="clEmail" name="email" aria-label="Почта" placeholder="Почта" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" value="'+esc(d.email)+'">'+
         '<div class="happy-password"><input class="happy-input" type="'+(d.visible?'text':'password')+'" id="clPw" name="password" aria-label="Пароль" placeholder="Пароль, от 8 знаков" autocomplete="current-password" value="'+esc(d.password)+'"><button class="happy-password-toggle" type="button" data-happy-ui="password" aria-label="'+(d.visible?'Скрыть пароль':'Показать пароль')+'" aria-pressed="'+!!d.visible+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><\/svg><\/button><\/div>'+
         '<div class="happy-actions">'+button(attr,'in','Войти',true,o.busy,true)+button(attr,'up','Создать аккаунт',false,o.busy)+'<\/div>';
     }
@@ -1331,7 +1391,13 @@ a.btn{display:inline-block;text-decoration:none}
   async function act(action,adapter){
     var a=adapter,state=a.state;
     if(state.busy)return;
-    if(action==='out'){a.signOut();state.msg='Выход выполнен. Записи на устройстве сохранены.';a.paint();return}
+    if(action==='out'){
+      state.busy=true;state.err='';a.paint();
+      try{await a.signOut();state.msg='Выход выполнен. Записи на устройстве сохранены.'}
+      catch(e){state.err=e.message||String(e)}
+      finally{state.busy=false;a.paint()}
+      return;
+    }
     if(action==='sync'){
       state.busy=true;state.err='';a.paint();
       try{await a.refresh()}catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}
@@ -1343,12 +1409,13 @@ a.btn{display:inline-block;text-decoration:none}
     if(!pw||(action==='up'&&pw.length<8)){state.err=action==='up'?'Для нового аккаунта нужен пароль от 8 знаков':'Введи пароль';a.paint();return}
     state.busy=true;state.err='';state.msg='';a.paint();
     try{
-      var result=await a.signIn(email,pw,action);
+      var result=await a.signIn(email,pw,action,d.name.trim());
+      if(result==='reload')return;
       if(result==='confirm'){state.msg='Аккаунт создан. Подтверди почту по ссылке из письма, затем нажми «Войти».';return}
       await a.afterSignIn();
     }catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}
   }
-  function note(){return '<p class="happy-note">Один аккаунт для Happy Day, Happy Meal и Happy Sport. Сохрани пароль: он нужен для чтения облачных копий. Полная синхронизация дневников пока в разработке.<\/p>'}
+  function note(){return '<p class="happy-note">Один аккаунт для Happy Day, Happy Meal и Happy Sport. Сохрани пароль: он нужен для чтения облачных копий. Дневник каждого аккаунта хранится отдельно. После входа загрузи его JSON. Полная синхронизация дневников пока в разработке.<\/p>'}
   function lastText(value){return value?'Связь обновлена в '+new Date(value).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'Вход выполнен'}
   root.HappyUI={escape:esc,draft:draft,account:account,act:act,accountNote:note,lastText:lastText};
   if(typeof document!=='undefined'){
@@ -1371,14 +1438,16 @@ a.btn{display:inline-block;text-decoration:none}
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};
 var winStore = typeof window!=='undefined' && window.storage && typeof window.storage.get==='function';
-async function rawGet(k){
+async function rawBaseGet(k){
   if(winStore){ try{ var r=await window.storage.get(k,false); return r?r.value:null }catch(e){} }
   try{ return localStorage.getItem(k) }catch(e){ return mem[k]!==undefined?mem[k]:null }
 }
-async function rawSet(k,v){
+async function rawBaseSet(k,v){
   if(winStore){ try{ await window.storage.set(k,v,false); return }catch(e){} }
-  try{ localStorage.setItem(k,v) }catch(e){ mem[k]=v }
+  try{ localStorage.setItem(k,v) }catch(e){ mem[k]=v; throw new Error('Не удалось сохранить: память сайта заполнена или недоступна. Выгрузи JSON, прежде чем закрывать приложение.') }
 }
+async function rawGet(k){return HappyProfile.read(k,rawBaseGet,rawBaseSet)}
+function rawSet(k,v){var p=HappyProfile.write(k,v,rawBaseSet);p.catch(function(e){try{toastLong(e.message)}catch(ignore){}});return p}
 /* Рабочая копия. Демо на том же домене держит свои ключи и эти записи не видит. */
 var DEMO=false;
 var K={db:'hd_db_v1', cfg:'hd_cfg_v1', key:'hd_key_v1', backup:'hd_backup_v1'};
@@ -1670,7 +1739,7 @@ function mealPoll(){
 }
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') mealPoll() });
 window.addEventListener('pageshow',function(ev){ if(ev.persisted) mealPoll() });
-window.addEventListener('storage',function(ev){ if(ev.key===MEAL_KEY) mealPoll() });
+window.addEventListener('storage',function(ev){ if(ev.key===HappyProfile.key(MEAL_KEY)) mealPoll() });
 /* для «Связей»: пропуск приёма — отметка «Без завтрака» и т. п.
    Код «Связей» живёт в своём модуле, поэтому здесь только то, что видно отовсюду. */
 function mealFeats(){
@@ -1697,7 +1766,7 @@ var CL={s:null,ck:null,kraw:null,busy:false,err:'',msg:'',last:0,ready:false};
 function clB64(u8){ var s=''; for(var i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s) }
 function clUnb64(t){ var s=atob(t), u=new Uint8Array(s.length); for(var i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u }
 function clUtf(t){ return new TextEncoder().encode(t) }
-function clOn(){ return !!(CL.s&&CL.ck) }
+function clOn(){ return !!(CL.s&&CL.ck)&&(!globalThis.HappyProfile||HappyProfile.matches(CL.s.uid)) }
 async function clLoad(){
   try{
     var raw=await rawGet(CL_KEY); if(!raw) return;
@@ -1706,7 +1775,7 @@ async function clLoad(){
   }catch(e){ CL.s=null; CL.ck=null; CL.kraw=null }
   finally{ CL.ready=true }
 }
-function clStore(){ rawSet(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0})) }
+async function clStore(){ return rawSet(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0})) }
 /* понятные слова вместо ответов сервера */
 function clErrText(j,st){
   var m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
@@ -1731,7 +1800,7 @@ async function clAuth(path,body){
 }
 function clSes(j,old){
   return {at:j.access_token,rt:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,
-          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email)};
+          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email),name:(j.user&&j.user.user_metadata&&j.user.user_metadata.display_name)||(old&&old.name)||''};
 }
 async function clDerive(pw,uid){
   var base=await crypto.subtle.importKey('raw',clUtf(pw),'PBKDF2',false,['deriveKey']);
@@ -1741,17 +1810,23 @@ async function clDerive(pw,uid){
   CL.ck=await crypto.subtle.importKey('raw',clUnb64(CL.kraw),{name:'AES-GCM'},false,['encrypt','decrypt']);
 }
 /* mode: 'in' — войти, 'up' — создать аккаунт; ответ: 'ok' | 'confirm' (надо подтвердить почту) */
-async function clSignIn(email,pw,mode){
-  var j=mode==='up'?await clAuth('signup',{email:email,password:pw})
+async function clSignIn(email,pw,mode,name){
+  await rawSet(K.db,JSON.stringify(DB));
+  await rawSet(K.cfg,JSON.stringify(CFG));
+  var j=mode==='up'?await clAuth('signup',{email:email,password:pw,data:{display_name:String(name||'').trim().slice(0,60)}})
                    :await clAuth('token?grant_type=password',{email:email,password:pw});
   if(!j||!j.access_token) return 'confirm';
   CL.s=clSes(j); await clDerive(pw,CL.s.uid);
-  CL.err=''; clStore(); return 'ok';
+  CL.err=''; await clStore();
+  if(globalThis.HappyProfile&&HappyProfile.changed(CL.s.uid))return 'reload';
+  return 'ok';
 }
-function clSignOut(){
+async function clSignOut(){
+  await rawSet(K.db,JSON.stringify(DB));
   var t=CL.s&&CL.s.at;
-  CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; clStore();
+  CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; await clStore();
   if(t) fetch(CLOUD.url+'/auth/v1/logout',{method:'POST',headers:{'apikey':CLOUD.key,'Authorization':'Bearer '+t}}).catch(function(){});
+  if(globalThis.HappyProfile)HappyProfile.changed(null);
 }
 async function clToken(force){
   if(!CL.s) throw new Error('Нет входа');
@@ -1761,11 +1836,15 @@ async function clToken(force){
   CL.s=clSes(j,CL.s); clStore(); return CL.s.at;
 }
 async function clRest(method,query,body,prefer,again){
+  var requestUid=CL.s&&CL.s.uid;
+  if(globalThis.HappyProfile&&!HappyProfile.matches(requestUid))throw new Error('Аккаунт изменился. Открой приложение снова.');
   var t=await clToken(), r;
+  if(!CL.s||CL.s.uid!==requestUid)throw new Error('Аккаунт изменился');
   var h={'apikey':CLOUD.key,'Authorization':'Bearer '+t,'Content-Type':'application/json'};
   if(prefer) h['Prefer']=prefer;
   try{ r=await fetch(CLOUD.url+'/rest/v1/app_sync'+query,{method:method,headers:h,body:body?JSON.stringify(body):undefined}) }
   catch(e){ throw new Error(clErrText(null,0)) }
+  if(!CL.s||CL.s.uid!==requestUid||(globalThis.HappyProfile&&!HappyProfile.matches(requestUid)))throw new Error('Аккаунт изменился');
   if(r.status===401&&!again){ await clToken(true); return clRest(method,query,body,prefer,true) }
   if(!r.ok){ var j=null; try{ j=await r.json() }catch(e){} throw new Error(clErrText(j,r.status)) }
   if(r.status===204) return null;
@@ -1809,7 +1888,7 @@ function clWhen(ms){
 function clEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
 function clPaint(){
   var el=document.getElementById('clBox'); if(!el) return;
-  el.innerHTML=HappyUI.account({connected:clOn(),email:CL.s&&CL.s.email,secondary:HappyUI.lastText(CL.last),busy:CL.busy,error:CL.err,message:CL.msg,draft:HappyUI.draft(el)});
+  el.innerHTML=HappyUI.account({connected:clOn(),name:CL.s&&CL.s.name,email:CL.s&&CL.s.email,secondary:HappyUI.lastText(CL.last),busy:CL.busy,error:CL.err,message:CL.msg,draft:HappyUI.draft(el)});
   var note=document.querySelector('[data-happy-account-note]'); if(note) note.innerHTML=HappyUI.accountNote();
 }
 function clDo(act){
@@ -3331,7 +3410,7 @@ function slSeg(sl){
 function slCalc(sl){
   if(!sl) return null;
   var sg=slSeg(sl);
-  if(!sg.length) return sl.min?{asl:sl.min,man:true}:null;
+  if(!sg.length) return sl.min?{asl:sl.min,man:true,summaryOnly:!!sl.summaryOnly,src:sl.from||'вручную',b:sl.b,w:sl.w,naps:sl.naps||null}:null;
   var m={A:0,R:0,C:0,D:0}, i0=-1, i1=-1, wk=0, bed=0;
   sg.forEach(function(o,i){ m[o.x]+=o.s; bed+=o.s; if(o.x!=='A'){ if(i0<0) i0=i; i1=i } });
   sg.forEach(function(o,i){ if(o.x==='A'&&i>i0&&i<i1&&o.s>=300) wk++ });
@@ -3378,7 +3457,7 @@ function sleepDayHTML(d){
     c=slOf(last); d=last; note='за эту ночь нет — последняя, на '+ruDate(last);
   }
   var u=slUsual(d), h='<div class="jCard"><div class="jBig">'+durTxt(c.asl)+'</div>';
-  if(c.man) return {cnt:note||'вручную',h:h+'<p class="jMut" style="margin:4px 0 0">сон без стадий — записан вручную'+(u?' · обычно '+durTxt(u):'')+'</p></div>'};
+  if(c.man) return {cnt:note||'вручную',h:h+'<p class="jMut" style="margin:4px 0 0">'+(c.summaryOnly?'сон из '+escH(c.src)+' · без последовательности стадий':'сон без стадий — записан вручную')+''+(u?' · обычно '+durTxt(u):'')+'</p></div>'};
   h+='<p class="jMut" style="margin:4px 0 0">отбой '+c.b+' · подъём '+c.w+(u?' · обычно '+durTxt(u):'')+'</p>'+lanesHTML(c)+
     '<p class="jMut" style="margin:10px 0 0">'+stagesLine(c,c.wk)+'</p>';
   (c.naps||[]).forEach(function(n){ var nc=slCalc(n); if(nc&&nc.asl>=5) h+='<p class="jMut" style="margin:6px 0 0">дневной сон '+n.b+'–'+n.w+' · '+durTxt(nc.asl)+'</p>' });
@@ -3630,7 +3709,7 @@ function jrCsvText(sel){
     var e=DB.days[d]; if(!e) return;
     if(sel.now) (e.now||[]).forEach(function(x){ if(x.k) row(d,x.t,'Как ты сейчас',x.n,x.w,'',(x.v+1)+' из 5'); else row(d,x.t,'Как ты сейчас','Тег',x.g) });
     if(sel.sleep){ var c=slCalc(e.sleep);
-      if(c&&c.asl){ row(d,c.b||'','Сон','Сон всего',Math.round(c.asl),'мин',c.man?'вручную':'отбой '+c.b+', подъём '+c.w+', '+c.src);
+      if(c&&c.asl){ row(d,c.b||'','Сон','Сон всего',Math.round(c.asl),'мин',c.man?(c.summaryOnly?c.src+' · без последовательности стадий':'вручную'):'отбой '+c.b+', подъём '+c.w+', '+c.src);
         if(!c.man){ ['D','C','R','A'].forEach(function(k){ row(d,'','Сон',ST[k].t,Math.round(c[k]),'мин') }); row(d,'','Сон','Пробуждения от 5 мин',c.wk,'раз') }
         (c.naps||[]).forEach(function(nn){ var nc=slCalc(nn); if(nc&&nc.asl) row(d,nn.b,'Сон','Дневной сон',Math.round(nc.asl),'мин',nn.b+'–'+nn.w) }) } }
     if(sel.wo) (e.wo||[]).forEach(function(w){ row(d,w.s,'Тренировки',woName(w),w.min!=null?Math.round(w.min):'','мин',[w.e?w.s+'–'+w.e:'', w.kcal?w.kcal+' ккал':'', woSrcTxt(w)].filter(Boolean).join(', ')) });
@@ -3696,7 +3775,7 @@ function jrPrintMake(sel){
         head('Сон',c?c.src:'');
         card(function(){ if(!c){ para('За эту ночь данных о сне нет.',IN,14,500,MUT,CW); return }
           y+=30; txt(durTxt(c.asl),IN,y,30,800);
-          if(c.man){ para('записан вручную',IN,13,500,MUT,CW); return }
+          if(c.man){ para(c.summaryOnly?c.src+' · без последовательности стадий':'записан вручную',IN,13,500,MUT,CW); return }
           var u=slUsual(r.a); para('отбой '+c.b+' · подъём '+c.w+(u?' · обычно '+durTxt(u):''),IN,13,500,MUT,CW);
           y+=10; var lx=IN+96, lw=CW-96, x0=0;
           ST_ORD.forEach(function(k,i){ var yy=y+i*22; txt(ST[k].t,IN,yy+12,11.5,600,MUT); rr(lx,yy,lw,15,4,'rgba(255,255,255,.08)') });
@@ -4847,7 +4926,7 @@ document.getElementById('impJson').addEventListener('change',function(){
         if(m) await keepPrev();
         await rawSet(K.db,JSON.stringify(o.db));
         if(o.cfg) await rawSet(K.cfg,JSON.stringify(o.cfg));
-        try{ sessionStorage.setItem(K_UNDO,m?'load':'load0') }catch(e){}
+        try{ sessionStorage.setItem(HappyProfile.key(K_UNDO),m?'load':'load0') }catch(e){}
       }catch(e){ toastLong('Не получилось загрузить: '+(e.message||e)); return }
       location.reload();
     });
@@ -4863,7 +4942,7 @@ async function bkSwap(){
   try{
     await keepPrev();
     await rawSet(K.db,prev);
-    try{ sessionStorage.setItem(K_UNDO,'back') }catch(e){}
+    try{ sessionStorage.setItem(HappyProfile.key(K_UNDO),'back') }catch(e){}
   }catch(e){ toastLong('Не получилось вернуть: '+(e.message||e)); return }
   location.reload();
 }
@@ -4887,7 +4966,7 @@ document.getElementById('bkBack').addEventListener('click',function(){
 });
 /* после перезапуска: подсказка с «Вернуть»; true — если подсказка была */
 function bkAfterLoad(){
-  var u=null; try{ u=sessionStorage.getItem(K_UNDO); sessionStorage.removeItem(K_UNDO) }catch(e){}
+  var u=null; try{ u=sessionStorage.getItem(HappyProfile.key(K_UNDO)); sessionStorage.removeItem(HappyProfile.key(K_UNDO)) }catch(e){}
   if(!u) return false;
   setTimeout(function(){
     var msg=u==='back'?'Прежний дневник на месте':'Дневник загружен из копии';
@@ -5706,6 +5785,7 @@ function renderAll(){
       if(o&&o.days&&!o.fmt&&!hasRecords(o.days)) o={days:{}};
       if(o&&o.days){
         DB.days=o.days;
+        if(o.importedHistory&&typeof o.importedHistory==='object')DB.importedHistory=o.importedHistory;
         if(o.sections&&o.sections.length){
           DB.sections=o.sections;
           // записи старого формата: шкалы были общие — раздаём всем разделам
