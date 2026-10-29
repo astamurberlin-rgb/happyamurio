@@ -50,3 +50,9 @@ await cp(new URL('src/exercises',root),new URL('exercises',root),{recursive:true
 await cp(new URL('src/sport-icons',root),new URL('dist/sport-icons',root),{recursive:true});
 await cp(new URL('src/exercises',root),new URL('dist/exercises',root),{recursive:true});
 console.log('Sport built.');
+
+// App installation assets travel with both published Sport outputs.
+for (const directory of ['', 'dist/']) {
+  await cp(new URL('src/app-icons',root),new URL(directory+'app-icons',root),{recursive:true});
+  await cp(new URL('src/manifest.webmanifest',root),new URL(directory+'manifest.webmanifest',root));
+}

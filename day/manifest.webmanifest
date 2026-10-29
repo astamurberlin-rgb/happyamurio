@@ -1,1 +1,24 @@
-{"name":"HappyDay","short_name":"HappyDay","start_url":"./","display":"standalone","background_color":"#00A8F5","theme_color":"#00A8F5","icons":[{"src":"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDI0IiBoZWlnaHQ9IjEwMjQiIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiIGZpbGw9Im5vbmUiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJpY29uLXRpdGxlIGljb24tZGVzY3JpcHRpb24iPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iYmFja2dyb3VuZCIgeDE9IjUxMiIgeTE9IjAiIHgyPSI1MTIiIHkyPSIxMDI0IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iIzA4QjRGQyIvPjxzdG9wIG9mZnNldD0iMC40OCIgc3RvcC1jb2xvcj0iIzA3QjhGQyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzA3QUVGQyIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJyaW5nLWZpbGwiIHgxPSI1MTIiIHkxPSIxMDgiIHgyPSI1MTIiIHkyPSI4ODgiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjNTNFOEZDIi8+PHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiM1NUU5RkMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM1MUUxRkMiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYnV0dG9uLWZpbGwiIHgxPSIzOTAiIHkxPSIyMjUiIHgyPSI2MzQiIHkyPSI3NjkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjNDVDNEZDIi8+PHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiMzQ0JERkMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyRkI1RkMiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYnV0dG9uLXJpbSIgeDE9IjQyMCIgeTE9IjIyNSIgeDI9IjYwNCIgeTI9Ijc2OSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNCN0YzRkYiIHN0b3Atb3BhY2l0eT0iMC44MiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0E5RURGRiIgc3RvcC1vcGFjaXR5PSIwLjYiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iY2FwLWZpbGwiIHgxPSIzNzIiIHkxPSIxMzciIHgyPSI2NTIiIHkyPSIxODQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjRTU4M0Y3Ii8+PHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiNFOTdFRjgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNFNDgyRjUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCBpZD0iaWNvbi1iYWNrZ3JvdW5kIiB3aWR0aD0iMTAyNCIgaGVpZ2h0PSIxMDI0IiBmaWxsPSJ1cmwoI2JhY2tncm91bmQpIi8+PGcgaWQ9ImdhdWdlIj48Y2lyY2xlIGlkPSJnYXVnZS10cmFjayIgY3g9IjUxMiIgY3k9IjQ5NyIgcj0iMzYyIiBzdHJva2U9InVybCgjcmluZy1maWxsKSIgc3Ryb2tlLXdpZHRoPSI1NiIvPjxwYXRoIGlkPSJnYXVnZS1jYXAiIGQ9Ik0gMzcyIDE2My4xNjggQSAzNjIgMzYyIDAgMCAxIDY1MiAxNjMuMTY4IiBzdHJva2U9InVybCgjY2FwLWZpbGwpIiBzdHJva2Utd2lkdGg9IjU2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PGNpcmNsZSBpZD0iYnV0dG9uIiBjeD0iNTEyIiBjeT0iNDk3IiByPSIyNzEiIGZpbGw9InVybCgjYnV0dG9uLWZpbGwpIiBzdHJva2U9InVybCgjYnV0dG9uLXJpbSkiIHN0cm9rZS13aWR0aD0iMi41Ii8+PGcgaWQ9ImZhY2UiIGZpbGw9IiNGRkZGRkYiPjxlbGxpcHNlIGlkPSJleWUtbGVmdCIgY3g9IjQyOCIgY3k9IjQ0MyIgcng9IjMwIiByeT0iNTQiLz48ZWxsaXBzZSBpZD0iZXllLXJpZ2h0IiBjeD0iNTk2IiBjeT0iNDQzIiByeD0iMzAiIHJ5PSI1NCIvPjxwYXRoIGlkPSJzbWlsZSIgZD0iTSAzODYgNTkyIEEgMTU3LjggMTU3LjggMCAwIDAgNjM4IDU5MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjU2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L2c+PC9zdmc+","sizes":"1024x1024","type":"image/svg+xml","purpose":"any maskable"}],"id":"./","scope":"./"}
+{
+  "name": "HappyDay",
+  "short_name": "HappyDay",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#00A8F5",
+  "theme_color": "#00A8F5",
+  "icons": [
+    {
+      "src": "./app-icons/happy-day-20261029-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./app-icons/happy-day-20261029-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "id": "./",
+  "scope": "./"
+}
