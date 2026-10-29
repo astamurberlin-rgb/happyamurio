@@ -7,7 +7,7 @@ var CL={s:null,ck:null,kraw:null,busy:false,err:'',msg:'',last:0,ready:false};
 function clB64(u8){ var s=''; for(var i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s) }
 function clUnb64(t){ var s=atob(t), u=new Uint8Array(s.length); for(var i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u }
 function clUtf(t){ return new TextEncoder().encode(t) }
-function clOn(){ return !!(CL.s&&CL.ck) }
+function clOn(){ return !!(CL.s&&CL.ck)&&(!globalThis.HappyProfile||HappyProfile.matches(CL.s.uid)) }
 async function clLoad(){
   try{
     var raw=await rawGet(CL_KEY); if(!raw) return;
@@ -16,7 +16,7 @@ async function clLoad(){
   }catch(e){ CL.s=null; CL.ck=null; CL.kraw=null }
   finally{ CL.ready=true }
 }
-function clStore(){ try{localStorage.setItem(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0}))}catch{CL.err='Браузер не сохраняет вход. Разреши хранение данных сайта.'} }
+async function clStore(){ try{localStorage.setItem(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0}))}catch{CL.err='Браузер не сохраняет вход. Разреши хранение данных сайта.'} }
 /* понятные слова вместо ответов сервера */
 function clErrText(j,st){
   var m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
@@ -41,7 +41,7 @@ async function clAuth(path,body){
 }
 function clSes(j,old){
   return {at:j.access_token,rt:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,
-          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email)};
+          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email),name:(j.user&&j.user.user_metadata&&j.user.user_metadata.display_name)||(old&&old.name)||''};
 }
 async function clDerive(pw,uid){
   var base=await crypto.subtle.importKey('raw',clUtf(pw),'PBKDF2',false,['deriveKey']);
@@ -51,18 +51,25 @@ async function clDerive(pw,uid){
   CL.ck=await crypto.subtle.importKey('raw',clUnb64(CL.kraw),{name:'AES-GCM'},false,['encrypt','decrypt']);
 }
 /* mode: 'in' — войти, 'up' — создать аккаунт; ответ: 'ok' | 'confirm' (надо подтвердить почту) */
-async function clSignIn(email,pw,mode){
+async function clSignIn(email,pw,mode,name){
+  if(typeof persist==='function')persist();
+  if(typeof state!=='undefined'&&typeof KEY!=='undefined'&&!SPORT_MEASURE_EMBED){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){throw new Error('Не удалось сохранить дневник. Сначала выгрузи JSON-копию.')}}
   email=email.trim().toLowerCase();
-  var j=mode==='up'?await clAuth('signup',{email:email,password:pw})
+  var j=mode==='up'?await clAuth('signup',{email:email,password:pw,data:{display_name:String(name||'').trim().slice(0,60)}})
                    :await clAuth('token?grant_type=password',{email:email,password:pw});
   if(!j||!j.access_token) return 'confirm';
   CL.s=clSes(j); await clDerive(pw,CL.s.uid);
-  CL.err=''; clStore(); return 'ok';
+  CL.err=''; await clStore();
+  if(globalThis.HappyProfile&&HappyProfile.changed(CL.s.uid))return 'reload';
+  return 'ok';
 }
-function clSignOut(){
+async function clSignOut(){
+  if(typeof persist==='function')persist();
+  if(typeof state!=='undefined'&&typeof KEY!=='undefined'&&!SPORT_MEASURE_EMBED){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){throw new Error('Не удалось сохранить дневник. Сначала выгрузи JSON-копию.')}}
   var t=CL.s&&CL.s.at;
-  CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; clStore();
+  CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; await clStore();
   if(t) fetch(CLOUD.url+'/auth/v1/logout?scope=local',{method:'POST',headers:{'apikey':CLOUD.key,'Authorization':'Bearer '+t}}).catch(function(){});
+  if(globalThis.HappyProfile)HappyProfile.changed(null);
 }
 async function clToken(force){
   if(!CL.s) throw new Error('Нет входа');
@@ -72,11 +79,15 @@ async function clToken(force){
   CL.s=clSes(j,CL.s); clStore(); return CL.s.at;
 }
 async function clRest(method,query,body,prefer,again){
+  var requestUid=CL.s&&CL.s.uid;
+  if(globalThis.HappyProfile&&!HappyProfile.matches(requestUid))throw new Error('Аккаунт изменился. Открой приложение снова.');
   var t=await clToken(), r;
+  if(!CL.s||CL.s.uid!==requestUid)throw new Error('Аккаунт изменился');
   var h={'apikey':CLOUD.key,'Authorization':'Bearer '+t,'Content-Type':'application/json'};
   if(prefer) h['Prefer']=prefer;
   try{ r=await fetch(CLOUD.url+'/rest/v1/app_sync'+query,{method:method,headers:h,body:body?JSON.stringify(body):undefined}) }
   catch(e){ throw new Error(clErrText(null,0)) }
+  if(!CL.s||CL.s.uid!==requestUid||(globalThis.HappyProfile&&!HappyProfile.matches(requestUid)))throw new Error('Аккаунт изменился');
   if(r.status===401&&!again){ await clToken(true); return clRest(method,query,body,prefer,true) }
   if(!r.ok){ var j=null; try{ j=await r.json() }catch(e){} throw new Error(clErrText(j,r.status)) }
   if(r.status===204) return null;

@@ -19,9 +19,14 @@ for(const [app,config] of Object.entries(apps)){
  const base=new URL(config.entry,'https://astamurberlin-rgb.github.io/happyamurio/');
  for(const k of ['id','start_url','scope'])assert.equal(new URL(manifest[k],base).pathname,`/happyamurio/${app}/`);
  // Check the actual storage adapter with pre-existing records, without booting the app.
- const adapter=html.slice(html.indexOf('var mem={};'),html.indexOf('async function rawSet'));
+ const adapterStart=html.indexOf('var mem={};');
+ const adapterEnd=html.indexOf('\n',html.indexOf('function rawSet(k,v)',adapterStart));
+ assert.ok(adapterStart>=0&&adapterEnd>adapterStart,`${app}: storage adapter missing`);
+ const adapter=html.slice(adapterStart,adapterEnd);
  const existing=JSON.stringify({preserved:'existing diary',days:{'2026-10-26':{value:7}}});
  const context=vm.createContext({window:{},localStorage:{getItem:k=>k===expectedKeys[app]?existing:null}});
+ vm.runInContext(await read('shared/profile-storage.js'),context);
+ vm.runInContext(`var HappyProfile=HappyProfiles.create(${JSON.stringify(app)})`,context);
  vm.runInContext(adapter,context);
  assert.equal(await context.rawGet(expectedKeys[app]),existing,`${app}: existing diary unreadable`);
 }
