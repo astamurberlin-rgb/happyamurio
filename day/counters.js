@@ -11,11 +11,11 @@
     const now=values();Object.keys(now).forEach(id=>{if(!H.same(now[id],baseline[id]))engine.update('events',now[id])});
     Object.keys(baseline).forEach(id=>{if(!now[id])engine.update('events',{id,cid:baseline[id].cid,date:baseline[id].date,deleted:true})});
     const present=new Set(root.DB.taps.filter(c=>c.mealCounterId).map(c=>c.mealCounterId));
-    Object.keys(definitions).forEach(id=>{if(!present.has(id)){engine.update('definitions',{...definitions[id],deleted:true});delete definitions[id]}});
+    Object.keys(definitions).forEach(id=>{if(!present.has(id)){engine.update('definitions',{...definitions[id],targets:{day:false,sport:H.linked(definitions[id],'sport')}});delete definitions[id]}});
     baseline=now;root.DB.mealCounters=engine.document();
   }
   function apply(doc){applying=true;try{
-    const active=doc.definitions.filter(d=>!d.deleted),ids=new Set(doc.definitions.map(d=>d.id));
+    const active=doc.definitions.filter(d=>H.linked(d,'day')),ids=new Set(doc.definitions.map(d=>d.id));
     root.DB.taps=root.DB.taps.filter(c=>!c.mealCounterId||!ids.has(c.mealCounterId)||active.some(d=>d.id===c.mealCounterId));
     definitions={};active.forEach(d=>{let c=root.DB.taps.find(c=>c.mealCounterId===d.id);if(!c){c={k:'meal-'+d.id};root.DB.taps.push(c)}Object.assign(c,{t:d.title,step:1,mealCounterId:d.id,mealPortion:d.q+' '+d.u+' · '+d.g+' г'});definitions[d.id]=clone(d)});
     const known=new Set(doc.events.map(e=>e.id));Object.values(root.DB.days).forEach(day=>Object.keys(day.taps||{}).forEach(k=>{day.taps[k]=day.taps[k].filter(x=>!known.has(x.counterEventId))}));

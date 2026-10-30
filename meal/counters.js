@@ -65,7 +65,7 @@
       if(c.mealCounterId){item.counterEventId='serving:'+H.id();item.counterFood=clone(definitions[c.mealCounterId]?.food||foodSnapshot(c.fid))}
       root.day(root.curDate).items.push(item);root.save();root.renderDay();root.toast(c.t+' +'+root.portTxt(c));
     };
-    const oldTaps=root.tapsHTML;root.tapsHTML=function(){let html=oldTaps();root.DB.taps.forEach(c=>{const before='<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(root.portTxt(c))+'</small>';const note=ready(c)?root.portTxt(c)+(c.mealCounterId?' · Happy Day':''):'Выбрать продукт';html=html.replace(before,'<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(note)+'</small>')});return html+'<p class="happy-note food-counter-status" id="foodCounterStatus" role="status">'+esc(engine?engine.status():'')+'</p>'};
+    const oldTaps=root.tapsHTML;root.tapsHTML=function(){let html=oldTaps();root.DB.taps.forEach(c=>{const before='<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(root.portTxt(c))+'</small>';const note=ready(c)?root.portTxt(c)+(c.mealCounterId?' · '+['day','sport'].filter(a=>H.linked(definitions[c.mealCounterId],a)).map(a=>a==='day'?'Day':'Sport').join(' · '):''):'Выбрать продукт';html=html.replace(before,'<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(note)+'</small>')});return html+'<p class="happy-note food-counter-status" id="foodCounterStatus" role="status">'+esc(engine?engine.status():'')+'</p>'};
     document.getElementById('mlTaps').addEventListener('click',e=>{const b=e.target.closest('[data-tinfo]');if(!b)return;e.stopImmediatePropagation();edit(root.DB.taps.findIndex(c=>c.k===b.dataset.tinfo))},true);
     try{engine=H.create({owner:owner(),currentOwner,backup:root.DB.mealCounters,apply,capture,status,online:root.clOn,
       get:()=>H.transport().get(),put:(...a)=>H.transport().put(...a)});}catch(e){root.toast(e.message)}
@@ -76,7 +76,7 @@
     dialog.addEventListener('click',e=>{const b=e.target.closest('[data-fc]');if(!b)return;const act=b.dataset.fc;
       if(act==='close')close();if(act==='choose'){const f=draft.results.find(f=>f.id===b.dataset.id);if(!f)return;draft.fid=f.id;draft.food=clone(f);draft.q=f.por&&Object.keys(f.por).length?1:100;draft.u=root.defUnit(f);draft.title=f.n;render();}
       if(act==='change'){draft.fid=null;render()}
-      if(act==='save')commit(false);if(act==='day')commit(true);
+      if(act==='save')commit();
     });
     dialog.addEventListener('input',e=>{if(e.target.id==='fcSearch'){draft.query=e.target.value;results();return}if(['fcQuantity','fcUnit','fcPortionName','fcPortionGrams','fcName'].includes(e.target.id))preview()});
     dialog.addEventListener('change',e=>{if(e.target.id==='fcUnit'){draft.u=e.target.value;const box=$('fcCustom');if(box)box.hidden=draft.u!=='__custom';preview()}});
@@ -90,7 +90,8 @@
     dialog.innerHTML='<div class="fc-shell"><header><h2 id="fcTitle">'+(c?'Счётчик':'Новый счётчик')+'</h2><button class="happy-button" data-fc="close">Закрыть</button></header>'+
       (!d.fid?'<label>Продукт из библиотеки<input class="happy-input" id="fcSearch" type="search" autocomplete="off" placeholder="Название продукта" value="'+esc(d.query)+'"></label>'+(c?'<p class="happy-note">Выбери точный продукт для этого счётчика. Прежние записи сохранятся.</p>':'')+'<div id="fcResults"></div>':
       '<div class="happy-card"><h3>'+esc(f.n)+'</h3><button class="happy-button" data-fc="change">Выбрать другой продукт</button></div><label>Название счётчика<input class="happy-input" id="fcName" maxlength="100" value="'+esc(d.title)+'"></label><div class="fc-grid"><label>Количество<input class="happy-input" id="fcQuantity" inputmode="decimal" value="'+esc(d.q)+'"></label><label>Порция<select class="happy-input" id="fcUnit">'+['г',...Object.keys(f.por||{}).filter(x=>x!=='г')].map(u=>'<option value="'+esc(u)+'"'+(u===d.u?' selected':'')+'>'+esc(u)+'</option>').join('')+'<option value="__custom">Своя порция…</option></select></label></div><div class="fc-grid" id="fcCustom" hidden><label>Название порции<input class="happy-input" id="fcPortionName" maxlength="40" placeholder="Моя чашка"></label><label>Масса одной порции, г<input class="happy-input" id="fcPortionGrams" inputmode="decimal" placeholder="Например, 200"></label></div><p id="fcPreview" class="happy-note"></p>')+
-      '<p id="fcError" class="happy-note happy-error" role="status"></p><footer class="fc-actions"><button class="happy-button primary" data-fc="save"'+(!d.fid?' disabled':'')+'>'+(c?'Сохранить':'Создать')+'</button><button class="happy-button" data-fc="day"'+(!d.fid?' disabled':'')+'>'+(c&&c.mealCounterId?'Сохранить в Happy Day':'Добавить в Happy Day')+'</button></footer><p class="happy-note">'+(c&&c.mealCounterId?'Связан с Happy Day: порции и нажатия общие.':'«Добавить в Happy Day» создаёт счётчик в обоих приложениях. Для обмена между устройствами нужен один аккаунт Happy.')+'</p></div>';
+      (d.fid?'<div class="happy-card"><h3>Синхронизация счётчика</h3>'+['day','sport'].map(a=>'<label class="fc-sync-row"><span>Happy '+(a==='day'?'Day':'Sport')+'</span><input type="checkbox" role="switch" id="fcSync-'+a+'"'+(H.linked(definitions[c&&c.mealCounterId],a)?' checked':'')+'></label>').join('')+'<p class="happy-note">Выключи связь, чтобы скрыть счётчик в выбранном приложении. Записанные порции сохранятся.</p></div>':'')+
+      '<p id="fcError" class="happy-note happy-error" role="status"></p><footer class="fc-actions"><button class="happy-button primary" data-fc="save"'+(!d.fid?' disabled':'')+'>'+(c?'Сохранить':'Создать')+'</button></footer><p class="happy-note">Для связи между приложениями войди в один аккаунт Happy. Нажатия будут общими.</p></div>';
     if(!d.fid){results();$('fcSearch').focus()}else{preview();$('fcQuantity').focus()}
   }
   function results(){if(!draft||draft.fid||!$('fcResults'))return;draft.results=root.searchLib(draft.query).slice(0,35);
@@ -102,7 +103,8 @@
     const g=Math.round(q*per*1000)/1000;if(g<=0||g>1000000)throw new Error('Проверь массу порции.');return {q,u:unit,g,custom,per};
   }
   function preview(){if(!draft||!draft.fid)return;try{const p=portion(),k=draft.food.k;$('fcPreview').textContent=p.q+' '+p.u+' = '+p.g+' г'+(k==null?'':' · '+Math.round(k*p.g/100)+' ккал');$('fcError').textContent=''}catch(e){$('fcPreview').textContent='';$('fcError').textContent=e.message}}
-  function commit(link){try{
+  function commit(){try{
+    const targets={day:!!$('fcSync-day')?.checked,sport:!!$('fcSync-sport')?.checked},link=targets.day||targets.sport;
     const p=portion(),title=$('fcName').value.trim();if(!title)throw new Error('Укажи название счётчика.');
     let c=root.DB.taps.find(c=>c.k===draft.key);if(root.nameTaken(root.DB.taps,title,c?root.DB.taps.indexOf(c):undefined))throw new Error('Счётчик с таким названием уже есть.');
     if((link||c&&c.mealCounterId)&&!engine)throw new Error('Связь со счётчиками пока недоступна. Перезагрузи приложение.');
@@ -110,10 +112,10 @@
     if(p.custom){root.DB.units[f.id]=root.DB.units[f.id]||{};root.DB.units[f.id][p.u]=p.per;root.porFix(f)}
     if(!c){c={k:'p'+H.id()};root.DB.taps.push(c)}Object.assign(c,{t:title,fid:f.id,q:p.q,u:p.u,g:p.g,libraryConfirmed:true});
     if(link||c.mealCounterId){if(!c.mealCounterId)c.mealCounterId=H.id();
-      const def={id:c.mealCounterId,title:c.t,fid:c.fid,q:c.q,u:c.u,g:c.g,food:foodSnapshot(c.fid)};engine.update('definitions',def);definitions[def.id]=def;
+      const def={id:c.mealCounterId,title:c.t,fid:c.fid,q:c.q,u:c.u,g:c.g,food:foodSnapshot(c.fid),targets};engine.update('definitions',def);definitions[def.id]=def;
       Object.keys(root.DB.days).forEach(date=>(root.DB.days[date].items||[]).filter(x=>x.tap===c.k).forEach(x=>{if(!x.counterEventId)x.originId=x.id;if(!x.counterFood&&root.FOODS[x.fid])x.counterFood=foodSnapshot(x.fid)}));
     }
-    root.save();if(engine)apply(engine.document());const shared=!!c.mealCounterId;close();root.renderAll();root.toast(shared?'Счётчик добавлен в Happy Day · нажатия общие':'Счётчик сохранён');
+    root.save();if(engine)apply(engine.document());const shared=!!c.mealCounterId;close();root.renderAll();root.toast(shared?'Счётчик сохранён · связь обновляется':'Счётчик сохранён');if(engine)engine.sync();
   }catch(e){$('fcError').textContent=e.message}}
   root.HappyMealCounters={init,edit,ready,capture,apply};
 })(globalThis);

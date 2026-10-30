@@ -73,3 +73,25 @@ assert.ok(!envelope.data.includes('Яйцо'));assert.equal(envelope.user_id,'te
 assert.deepEqual(copy((await transport.get()).doc),copy(base));assert.equal(await transport.put(base,99,101),false);assert.equal(await transport.put(base,100,101),true);
 transportContext.CL.s.uid='other-owner';await assert.rejects(()=>transport.get(),/Аккаунт изменился/);
 console.log('Passed: explicit food validation, distinct servings, bidirectional Day/Meal counts and deletion, idempotent replay, no unrelated counters changed, concurrent/offline merge, tombstones, pending recovery, CAS retries and account isolation.');
+
+// Targets are independent; hiding and restoring Day retains every serving.
+let targets=H.patch(day.DB.mealCounters,'definitions',{...def,targets:{day:false,sport:true}},'targets');
+day.HappyDayCounters.apply(targets);assert.equal(day.DB.taps.some(t=>t.mealCounterId===def.id),false);
+assert.equal(H.linked(targets.definitions[0],'sport'),true);assert.equal(H.linked(targets.definitions[0],'day'),false);
+const servings=targets.events.filter(e=>!e.deleted).length;
+targets=H.patch(targets,'definitions',{...def,targets:{day:true,sport:false}},'targets');
+day.HappyDayCounters.apply(targets);assert.equal(day.DB.taps.filter(t=>t.mealCounterId===def.id).length,1);
+meal.HappyMealCounters.apply(targets);assert.equal(meal.day(meal.curDate).items.length,servings);
+assert.equal(H.linked(def,'day'),true);assert.equal(H.linked(def,'sport'),false);
+console.log('Passed independent Day/Sport links, legacy migration, hide/show with retained servings.');
+// Sport adapter consumes the same document and contributes one shared serving.
+const sportStore=storage();const both=H.patch(targets,'definitions',{...def,targets:{day:true,sport:true}},'both');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(both));
+const sport=context({document,localStorage:sportStore,CL:{s:null,ready:true},HappyProfile:{owner:'local'},state:{customCounters:[]},selectedDate:'2026-10-30',dayNow:()=> '2026-10-30',clOn:()=>false,oldPersist(){},persist(){},renderDiary:()=>'',esc:String,icon:()=>'',toast(){}});
+vm.runInContext(await read('sport/src/food-counters.js'),sport);sport.changeSportFood(def.id,true,true);
+assert.equal(sport.state.foodCounters.events.filter(e=>!e.deleted).length,servings+1);
+meal.HappyMealCounters.apply(sport.state.foodCounters);day.HappyDayCounters.apply(sport.state.foodCounters);
+assert.equal(meal.day(meal.curDate).items.length,servings+1);assert.equal(day.day(day.curDate).taps[dk].length,servings+1);
+sport.changeSportFood(def.id,true,false);meal.HappyMealCounters.apply(sport.state.foodCounters);assert.equal(meal.day(meal.curDate).items.length,servings);
+const hidden=H.patch(sport.state.foodCounters,'definitions',{...def,targets:{day:true,sport:false}},'off');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(hidden));
+assert.throws(()=>sport.changeSportFood(def.id,true,true),/отключена/);assert.equal(sport.sportFoodDefinitions().length,0);
+console.log('Passed Sport → Meal → Day portions and undo, and no additions after disabling Sport.');

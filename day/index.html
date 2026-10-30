@@ -997,7 +997,7 @@ a.btn{display:inline-block;text-decoration:none}
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="../shared/food-counters.css?v=1">
+<link rel="stylesheet" href="../shared/food-counters.css?v=2">
 </head>
 <body class="loading">
 
@@ -1217,7 +1217,7 @@ a.btn{display:inline-block;text-decoration:none}
       <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
       <p class="note" id="keyState"></p>
     </div>
-    <footer class="app-version happy-version" data-app-version="50.11"><div>Happy Day · v50.11</div><small>Обновлено 30.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="50.12"><div>Happy Day · v50.12</div><small>Обновлено 30.10.2026</small></footer>
   </div>
 
 </div>
@@ -1484,8 +1484,8 @@ var HappyProfile=HappyProfiles.create("day");</script>
   }
 })(globalThis);
 </script>
-<script src="../shared/food-counters.js?v=1"></script>
-<script src="counters.js?v=1"></script>
+<script src="../shared/food-counters.js?v=2"></script>
+<script src="counters.js?v=2"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};
@@ -5855,6 +5855,7 @@ function renderAll(){
            висеть в днях без хозяина. */
         if(o.counters&&o.counters.length) DB.counters=o.counters;
         if(Array.isArray(o.taps)) DB.taps=o.taps;
+        if(o.mealCounters) DB.mealCounters=o.mealCounters;
         if(o.tagIc&&typeof o.tagIc==='object') DB.tagIc=o.tagIc;
         if(o.tagFix) DB.tagFix=true;
         if(o.mealLink&&o.mealLink.days) DB.mealLink=o.mealLink;

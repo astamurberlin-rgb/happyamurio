@@ -15,6 +15,7 @@
     return d.definitions.every(x=>base(x)&&(x.deleted||(text(x.title)&&text(x.fid)&&positive(x.q)&&positive(x.g)&&text(x.u)&&x.food&&x.food.id===x.fid&&text(x.food.n))))&&
       d.events.every(x=>base(x)&&text(x.cid)&&validDate(x.date)&&(x.deleted||(x.item&&text(x.item.fid)&&positive(x.item.q)&&positive(x.item.g)&&text(x.item.u)&&(x.item.t==null||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.item.t)))));
   }
+  function linked(d,app){return !!d&&!d.deleted&&(d.targets?d.targets[app]===true:app==='day')}
   function check(d){if(d&&!valid(d))throw new Error('Не удалось прочитать общие счётчики. Сохранённые данные не изменены.');return d||empty()}
   function compare(a,b){return a.rev-b.rev||String(a.writer).localeCompare(String(b.writer))||(Number(!!a.deleted)-Number(!!b.deleted))||JSON.stringify(a).localeCompare(JSON.stringify(b))}
   function merge(a,b){
@@ -91,5 +92,5 @@
       }
     };
   }
-  root.HappyFoodCounters={copy,empty,id,valid,merge,patch,same,create,transport};
+  root.HappyFoodCounters={linked,copy,empty,id,valid,merge,patch,same,create,transport};
 })(globalThis);

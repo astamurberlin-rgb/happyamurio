@@ -12,3 +12,5 @@
 .fc-result b,.fc-result small{display:block}.fc-result b{font-weight:500}.fc-result small{margin-top:5px;opacity:.7;font-size:13px}
 .food-counter-status{font-size:12px;line-height:1.5;margin:8px 8px 16px;opacity:.8}
 .tpNm .fc-day-portion{display:block;font-size:12px;opacity:.75;margin-top:5px;font-weight:400}
+
+.fc-sync-row{display:flex;justify-content:space-between;align-items:center;min-height:48px;gap:16px}.fc-sync-row input{appearance:none;width:44px;height:26px;border-radius:20px;background:#ffffff38;position:relative;cursor:pointer;flex:none}.fc-sync-row input:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .15s}.fc-sync-row input:checked{background:#9472e6}.fc-sync-row input:checked:before{transform:translateX(18px)}

@@ -38,10 +38,11 @@ async function readShared(name){
 }
 const profiles=await readFile(new URL('../shared/profile-storage.js',root),'utf8');
 const [sharedCss,sharedJs]=await Promise.all([readShared('happy-ui.css'),readShared('happy-ui.js')]);
+const foodCounters=await readShared('food-counters.js'),sportFoodCounters=await read('src/food-counters.js');
 const html = template
   .replace('</style>',()=>css+energyCss+sharedCss+'\n</style>')
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [profiles,'var HappyProfile=HappyProfiles.create("sport");',sharedJs,sportIcons,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,link,cloud,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,dataTransfer,measurementModel,measurementShared].join('\n'))
+  .replace('__APP__', () => [profiles,'var HappyProfile=HappyProfiles.create("sport");',sharedJs,sportIcons,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,link,cloud,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,dataTransfer,measurementModel,measurementShared,foodCounters,sportFoodCounters].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`);
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);

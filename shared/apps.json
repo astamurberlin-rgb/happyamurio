@@ -1,14 +1,14 @@
 {
   "day": {
     "entry": "day/index.html",
-    "version": "50.11"
+    "version": "50.12"
   },
   "meal": {
     "entry": "meal/index.html",
-    "version": "22.14"
+    "version": "22.15"
   },
   "sport": {
     "entry": "sport/index.html",
-    "version": "36.6"
+    "version": "36.7"
   }
 }

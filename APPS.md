@@ -5,9 +5,9 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.11 |
-| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.14 |
-| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.6 |
+| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.12 |
+| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.15 |
+| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
 [CHANGELOG.md](CHANGELOG.md) — общий журнал выпущенных обновлений с проверками и ограничениями.
 [LIBRARIES.md](LIBRARIES.md) — общий каталог справочников, новых записей и статусов для приложений Happy (предложения не считать выпущенными).
