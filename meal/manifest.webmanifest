@@ -7,13 +7,13 @@
   "theme_color": "#00A8F5",
   "icons": [
     {
-      "src": "./app-icons/happy-meal-20261029-192.png",
+      "src": "./app-icons/happy-meal-20261030-waist-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./app-icons/happy-meal-20261029-512.png",
+      "src": "./app-icons/happy-meal-20261030-waist-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
