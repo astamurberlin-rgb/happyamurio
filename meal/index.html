@@ -1397,6 +1397,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 /* HAPPY_SHARED_STYLE_END */
 </style>
 <link rel="stylesheet" href="report.css?v=22.9">
+<link rel="stylesheet" href="../shared/food-counters.css?v=1">
 </head>
 <body class="loading">
 
@@ -1545,7 +1546,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
-    <footer class="app-version happy-version" data-app-version="22.13"><div>Happy Meal · v22.13</div><small>Обновлено 30.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.14"><div>Happy Meal · v22.14</div><small>Обновлено 30.10.2026</small></footer>
   </div>
 
 </div>
@@ -1832,6 +1833,8 @@ var HappyProfile=HappyProfiles.create("meal");</script>
   }
 })(globalThis);
 </script>
+<script src="../shared/food-counters.js?v=1"></script>
+<script src="counters.js?v=1"></script>
 <script>
 var mem={};
 var winStore = typeof window!=='undefined' && window.storage && typeof window.storage.get==='function';
@@ -2699,7 +2702,7 @@ function parsePortion(str,fid){
 function sec(k){ return DB.sections.filter(function(s){ return s.k===k })[0] }
 function day(d){ if(!DB.days[d]) DB.days[d]={items:[]}; var e=DB.days[d]; if(!e.items) e.items=[]; return e }
 function itemsOf(k){ return day(curDate).items.filter(function(x){ return x.sec===k }) }
-function nutOf(x){ var f=x.fid&&FOODS[x.fid], m=(x.g||0)/100; return f?{k:f.k*m,p:f.p*m,f:f.f*m,c:f.c*m}:{k:0,p:0,f:0,c:0} }
+function nutOf(x){ var f=x.counterFood||(x.fid&&FOODS[x.fid]), m=(x.g||0)/100; return f?{k:f.k*m,p:f.p*m,f:f.f*m,c:f.c*m}:{k:0,p:0,f:0,c:0} }
 function sumOf(list){ return list.reduce(function(a,x){ var n=nutOf(x); a.k+=n.k; a.p+=n.p; a.f+=n.f; a.c+=n.c; return a },{k:0,p:0,f:0,c:0}) }
 /* подпись единицы по числу: 1 стакан, 2 стакана, 5 стаканов, 0,5 стакана */
 var UFORMS={'стакан':['стакан','стакана','стаканов'],'чашка':['чашка','чашки','чашек'],'ломтик':['ломтик','ломтика','ломтиков'],
@@ -2742,9 +2745,8 @@ function erSportGoal(k){ var g=ER_SPORT&&ER_SPORT.goals?parseFloat(ER_SPORT.goal
 /* клетчатка за день — из BLS по коду продукта; база не открылась или ни у одного продукта нет данных — прочерк */
 function dayFib(list){
   if(!list.length) return 0;
-  if(typeof BLS_ST==='undefined'||BLS_ST!=='ok') return null;
   var s=0, any=false;
-  list.forEach(function(x){ var f=x.fid&&FOODS[x.fid]; if(!f||!f.b||!BLS_BY[f.b]) return; var v=blsVal(f.b,'fib'); if(v!=null){ s+=v*(x.g||0)/100; any=true } });
+  list.forEach(function(x){ var f=x.counterFood||(x.fid&&FOODS[x.fid]); if(!f)return; var v=f.counterValues?f.counterValues.fib:f.b&&BLS_ST==='ok'&&BLS_BY[f.b]?blsVal(f.b,'fib'):null; if(v!=null){ s+=v*(x.g||0)/100; any=true } });
   return any?s:null;
 }
 function erGoalRow(h,name,v,g,u){ return erRowHTML(h,name,v==null?'—':gTxt(v)+(g?'/'+gTxt(g):'')+' '+u,v!=null&&g?v/g:null) }
@@ -3035,20 +3037,8 @@ function delSec(i){
   if(DB.sections.length<2){ toast('Нужен хотя бы один раздел'); return }
   confirmBox('Убрать раздел «'+S.t+'»?','Убрать').then(function(ok){ if(!ok) return; DB.sections.splice(i,1); save(); renderAll() });
 }
-function editTap(i){
-  var c=i>=0?DB.taps[i]:null;
-  ask2(c?'Счётчик':'Новый счётчик','продукт, например: яйцо',c?c.t:'','порция: 1 шт, 30 г, чашка',c?portTxt(c):'').then(function(r){
-    if(!r) return;
-    var t=(r.a||'').trim(); if(!t) return;
-    if(nameTaken(DB.taps,t,i>=0?i:undefined)){ dupWarn(t); return }
-    var sc=match(tokensOf(t)), fid=sc.length?sc[0].id:newFood(cap(t),0,0,0,0).id;
-    var pr=parsePortion(r.b,fid);
-    var o={k:c?c.k:'p'+Date.now().toString(36),t:cap(t),fid:fid,q:pr.q,u:pr.u};
-    if(c) DB.taps[i]=o; else DB.taps.push(o);
-    save(); renderAll();
-    toast(c?'Счётчик сохранён':'Счётчик «'+o.t+'» — '+FOODS[fid].n+', '+portTxt(o));
-  });
-}
+function editTap(i){ return HappyMealCounters.edit(i); }
+
 function delTap(i){
   var c=DB.taps[i];
   confirmBox('Убрать счётчик «'+c.t+'»? Записанные порции останутся в дневнике.','Убрать').then(function(ok){
@@ -4139,6 +4129,7 @@ function bkAfterLoad(){
       var o=JSON.parse(raw);
       if(o&&o.days){
         DB.days=o.days;
+        if(o.mealCounters)DB.mealCounters=o.mealCounters;
         if(o.importedHistory&&typeof o.importedHistory==='object')DB.importedHistory=o.importedHistory;
         if(o.sections&&o.sections.length) DB.sections=o.sections;
         if(Array.isArray(o.taps)) DB.taps=o.taps;
@@ -4158,6 +4149,7 @@ function bkAfterLoad(){
   }catch(e){}
   rebuildLib();
   try{ await clLoad() }catch(e){}
+  HappyMealCounters.init();
   renderAll();
   linkWrite();          // сводка для HappyDay — и по записям, сделанным до этой версии
   if(clOn()) clPush();  // и в облако — для отдельной иконки HappyDay
@@ -5496,10 +5488,14 @@ function jrCompute(r){
     if(it.length){
       days++;
       it.forEach(function(x){
-        var f=x.fid&&FOODS[x.fid]; if(!f) return;
+        var f=x.counterFood||(x.fid&&FOODS[x.fid]); if(!f) return;
         var m=(x.g||0)/100, kc=Math.max(0,(f.k||0)*m); all++; totK+=kc;
         mac.p+=(f.p||0)*m; mac.f+=(f.f||0)*m; mac.c+=(f.c||0)*m;
         function lack(id){ if(!kc||(id!=='fib'&&!JR_BLS[id])) return; miss[id]=(miss[id]||0)+kc; var L=missN[id]=missN[id]||[]; if(L.indexOf(f.n)<0) L.push(f.n) }
+        if(f.counterValues){
+          var cv=f.counterValues,fb=cv.fib;if(fb!=null){mac.fib+=fb*m;has.fib=1}else lack('fib');
+          ids.forEach(function(id){var key=JR_BLS[id],val=cv[key];if(Array.isArray(key))val=key.every(function(k){return cv[k]!=null})?key.reduce(function(s,k){return s+cv[k]},0):null;if(val!=null){v[id]=(v[id]||0)+val*m;has[id]=1}else lack(id)});return;
+        }
         var code=f.b;
         if(!code||BLS_ST!=='ok'||!BLS_BY[code]){ noBls++; lack('fib'); ids.forEach(lack); return }
         if(code.charAt(0)==='Z') kav++;
@@ -5693,6 +5689,6 @@ document.addEventListener('click',function(ev){
 });
 
 </script>
-<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.9"></script><script src="controls.js?v=22.9"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
+<script src="widget-image.js?v=22.9"></script><script src="report.js?v=22.14"></script><script src="controls.js?v=22.14"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
 </body>
 </html>

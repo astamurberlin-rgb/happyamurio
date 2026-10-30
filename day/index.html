@@ -997,6 +997,7 @@ a.btn{display:inline-block;text-decoration:none}
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
+<link rel="stylesheet" href="../shared/food-counters.css?v=1">
 </head>
 <body class="loading">
 
@@ -1216,7 +1217,7 @@ a.btn{display:inline-block;text-decoration:none}
       <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
       <p class="note" id="keyState"></p>
     </div>
-    <footer class="app-version happy-version" data-app-version="50.10"><div>Happy Day · v50.10</div><small>Обновлено 30.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="50.11"><div>Happy Day · v50.11</div><small>Обновлено 30.10.2026</small></footer>
   </div>
 
 </div>
@@ -1483,6 +1484,8 @@ var HappyProfile=HappyProfiles.create("day");</script>
   }
 })(globalThis);
 </script>
+<script src="../shared/food-counters.js?v=1"></script>
+<script src="counters.js?v=1"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};
@@ -5834,6 +5837,7 @@ function renderAll(){
       if(o&&o.days&&!o.fmt&&!hasRecords(o.days)) o={days:{}};
       if(o&&o.days){
         DB.days=o.days;
+        if(o.mealCounters)DB.mealCounters=o.mealCounters;
         if(o.importedHistory&&typeof o.importedHistory==='object')DB.importedHistory=o.importedHistory;
         if(o.sections&&o.sections.length){
           DB.sections=o.sections;
@@ -5863,6 +5867,7 @@ function renderAll(){
   await fmtCheck();                  // версия старше записей — только читаем
   try{ await syncMeal() }catch(e){}
   try{ await clLoad() }catch(e){}
+  if(window.HappyDayCounters) HappyDayCounters.init();
   MEAL_READY=true;
   document.getElementById('cfgWeight').value=CFG.weight!=null?CFG.weight:'';
   document.getElementById('cfgKcal').value=CFG.kcal!=null?CFG.kcal:'';

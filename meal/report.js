@@ -40,10 +40,10 @@
     (db.sections||[]).forEach(function(s){names[s.k]=s.t});
     Object.keys(db.days||{}).filter(function(d){return d>=range.a&&d<=range.b}).sort().forEach(function(d){
       ((db.days[d]||{}).items||[]).forEach(function(item,index){
-        var food=foods[item.fid],grams=finite(item.g),values={};
+        var food=item.counterFood||foods[item.fid],grams=finite(item.g),values={};
         fs.forEach(function(f){
           var v=null;
-          if(food){v=macro[f.key]?finite(food[macro[f.key]]):food.b?finite(readValue(food.b,f.key)):null}
+          if(food){v=food.counterValues&&Object.prototype.hasOwnProperty.call(food.counterValues,f.key)?finite(food.counterValues[f.key]):macro[f.key]?finite(food[macro[f.key]]):food.b?finite(readValue(food.b,f.key)):null}
           values[f.key]=v==null||grams==null?null:v*grams/100;
         });
         out.push({date:d,section:names[item.sec]||item.sec||'Без раздела',sectionKey:item.sec||'',id:item.id||'',foodId:item.fid||'',name:food?food.n:(item.name||item.fid||'Неизвестный продукт'),grams:grams,quantity:finite(item.q),unit:item.u||'',time:/^([01]\d|2[0-3]):[0-5]\d$/.test(item.t||'')?item.t:'',manual:!!item.tm,source:food?(food.src||''):'нет данных',nutrientSource:food&&food.b?(String(food.b).charAt(0)==='Z'?'Happy Meal · Кавказская кухня':'BLS 4.0'):'нет данных',code:food&&food.b||'',values:values,index:index});

@@ -5,8 +5,8 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.10 |
-| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.13 |
+| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.11 |
+| Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.14 |
 | Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.6 |
 
 [CHANGELOG.md](CHANGELOG.md) — общий журнал выпущенных обновлений с проверками и ограничениями.
@@ -120,3 +120,5 @@ Day и Meal встраивают тот же интерфейс Sport (`?embed=m
 Проверки: `node scripts/check-measurements-shared.mjs` плюс прежний набор.
 Сквозная работа с реальным аккаунтом и отдельными iOS-иконками требует проверки
 на устройстве пользователя; проверены локальные приложения и моделируемый сервер.
+
+Meal 22.14 / Day 50.11: общие продуктовые счётчики, поиск продукта и собственные порции. Проверка: `node scripts/check-food-counters.mjs`. «Добавить в Happy Day» связывает счётчик; новые нажатия и отмена передаются в обе стороны. Несвязанные счётчики Day остаются самостоятельными. Детали хранения и границы проверки — в DATA-STORAGE и CHANGELOG.
