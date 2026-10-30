@@ -10,5 +10,11 @@
   "sport": {
     "entry": "sport/index.html",
     "version": "36.7"
+  },
+  "colorStudio": {
+    "entry": "prototypes/happy-family-color-studio-v12.html",
+    "version": "12.1",
+    "kind": "studio",
+    "storageKey": "happy-family-color-studio-v11"
   }
 }

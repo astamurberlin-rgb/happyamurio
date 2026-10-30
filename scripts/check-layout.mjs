@@ -8,13 +8,13 @@ const expectedKeys={day:'hd_db_v1',meal:'hdm_db_v1',sport:'happy-sport-prototype
 let scripts=0;
 for(const [app,config] of Object.entries(apps)){
  const html=await read(config.entry);
- assert.ok(html.includes(expectedKeys[app]),`${app}: storage key changed`);
+ assert.ok(html.includes(expectedKeys[app]||config.storageKey),`${app}: storage key changed`);
  assert.ok(html.includes(`data-app-version="${config.version}"`),`${app}: version mismatch`);
  for(const m of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)){
   if (/type=["']application\/json["']/.test(m[0].split('>')[0])) JSON.parse(m[1]);
   else {new vm.Script(m[1],{filename:config.entry});scripts++;}
  }
- if(app==='sport')continue;
+ if(app==='sport'||config.kind==='studio')continue;
  const manifest=JSON.parse(await read(`${app}/manifest.webmanifest`));
  const base=new URL(config.entry,'https://astamurberlin-rgb.github.io/happyamurio/');
  for(const k of ['id','start_url','scope'])assert.equal(new URL(manifest[k],base).pathname,`/happyamurio/${app}/`);

@@ -50,7 +50,7 @@ function shapeDock(){
 (()=>{const custom=document.createElement('style');custom.id='theme-overrides';document.head.append(custom);
 window.addEventListener('message',event=>{const d=event.data;if(!d||d.kind!=='HAPPY_COLOR_STUDIO'||d.key!=='sport')return;
 if(typeof d.bg==='string'&&d.bg.length<1800000){document.documentElement.style.setProperty('background',d.bg,'important');document.body.style.setProperty('background','transparent','important')}
-if(typeof d.uiCSS==='string'&&d.uiCSS.length<8000)custom.textContent=d.uiCSS;
+if(typeof d.uiCSS==='string'&&d.uiCSS.length<1800000)custom.textContent=d.uiCSS;
 if(/^#[0-9a-f]{6}$/i.test(d.buttonColor||'')){document.documentElement.style.setProperty('--violet',d.buttonColor);const fab=document.getElementById('sport-fab');fab.style.background='radial-gradient(circle at 32% 20%,color-mix(in srgb,'+d.buttonColor+' 53%,white),'+d.buttonColor+' 75%)'}
 });document.getElementById('today').textContent=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long'});shapeDock();window.addEventListener('resize',shapeDock);if(typeof ResizeObserver!=='undefined'){new ResizeObserver(shapeDock).observe(document.getElementById('dock'));}parent.postMessage({kind:'HAPPY_COLOR_STUDIO_READY',key:'sport'},'*');})();
 </script></body></html>

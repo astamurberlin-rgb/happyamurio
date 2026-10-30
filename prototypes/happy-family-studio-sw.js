@@ -1,9 +1,10 @@
-const CACHE='happy-studio-v2-20261026-carousel';
-const PAGE='./studio.html';
-self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll([PAGE,'./happy-family-studio.webmanifest'])).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>(k.startsWith('happy-family-studio-')||k.startsWith('happy-studio-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{
- const url=new URL(e.request.url);
- if(e.request.method!=='GET'||e.request.mode!=='navigate'||url.pathname!=='/happyamurio/prototypes/studio.html')return;
- e.respondWith(fetch(e.request).then(async r=>{if(r.ok){const c=await caches.open(CACHE);c.put(PAGE,r.clone())}return r}).catch(()=>caches.match(PAGE)));
+const CACHE='happy-studio-v12.1-gradients';
+const ASSETS=['./studio.html','./happy-family-color-studio-v12.html','./happy-sport-color-preview-v2.html','./happy-family-studio.webmanifest','../shared/happy-gradients.js?v=1','../shared/happy-gradient-editor.js?v=1','../shared/happy-gradient-editor.css?v=1'];
+const allowed=new Set(ASSETS.map(path=>new URL(path,self.location.href).pathname));
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>(key.startsWith('happy-family-studio-')||key.startsWith('happy-studio-'))&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{
+ const url=new URL(event.request.url);
+ if(event.request.method!=='GET'||url.origin!==self.location.origin||!allowed.has(url.pathname))return;
+ event.respondWith(fetch(event.request).then(response=>{if(response.ok)event.waitUntil(caches.open(CACHE).then(cache=>cache.put(event.request,response.clone())));return response;}).catch(()=>caches.match(event.request,{ignoreSearch:true})));
 });
