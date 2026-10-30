@@ -998,6 +998,8 @@ a.btn{display:inline-block;text-decoration:none}
 /* HAPPY_SHARED_STYLE_END */
 </style>
 <link rel="stylesheet" href="../shared/food-counters.css?v=2">
+<link rel="stylesheet" href="./energy-widget.css?v=50.13">
+<link rel="stylesheet" href="./selfcare.css?v=50.13">
 </head>
 <body class="loading">
 
@@ -1034,10 +1036,10 @@ a.btn{display:inline-block;text-decoration:none}
       </div>
     </div>
 
-    <div class="eyebrow nwEb"><span>Как ты сейчас</span></div>
-    <section class="nwWg" aria-label="Как ты сейчас">
+    <div class="eyebrow nwEb"><span>Дневник активности</span></div>
+    <section class="nwWg" aria-label="Дневник активности">
       <div class="nwRail" id="nwRail" role="group" aria-label="Шкалы: налево — тяжёлые, направо — светлые"></div>
-      <div class="nwTags" id="nwTags" role="group" aria-label="Что сейчас"></div>
+      <div id="nwTags" hidden></div>
     </section>
     <div id="dayList"></div>
 
@@ -1051,7 +1053,7 @@ a.btn{display:inline-block;text-decoration:none}
 
   <!-- ЧЕКПОИНТ -->
   <div class="screen" data-screen="ring">
-    <div class="grip" id="cpGrip"><i></i></div>
+    <div class="grip" id="cpGrip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>
     <div class="top">
       <h1 id="cpName">Утро</h1>
       <span class="datePill cpTimeP" id="cpRow">
@@ -1175,7 +1177,7 @@ a.btn{display:inline-block;text-decoration:none}
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1></div>
     <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><label class="happy-button" role="button" tabindex="0">Загрузить из файла<input type="file" id="impJson" accept=".json" hidden></label></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="backupAge"></p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" id="expCsv">Выгрузить CSV</button><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><div class="bkPrev" id="bkPrev" hidden><p class="happy-note" id="bkPrevTxt"></p><div class="happy-actions"><button class="happy-button" id="bkBack">Вернуть дневник до загрузки</button></div></div></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../meal/">Happy Meal</a><a class="happy-button" href="../sport/">Happy Sport</a></div></div></section>
-    <h2 class="happy-heading">Настройки дневника</h2>
+    <h2 class="happy-heading" id="daySectionSettingsHeading">Разделы дня</h2>
 
 
     <div class="eyebrow"><span>Разделы</span></div>
@@ -1217,7 +1219,7 @@ a.btn{display:inline-block;text-decoration:none}
       <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
       <p class="note" id="keyState"></p>
     </div>
-    <footer class="app-version happy-version" data-app-version="50.12"><div>Happy Day · v50.12</div><small>Обновлено 30.10.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="50.13"><div>Happy Day · v50.13</div><small>Обновлено 30.10.2026</small></footer>
   </div>
 
 </div>
@@ -1486,6 +1488,9 @@ var HappyProfile=HappyProfiles.create("day");</script>
 </script>
 <script src="../shared/food-counters.js?v=2"></script>
 <script src="counters.js?v=2"></script>
+<script src="./selfcare-core.js?v=50.13"></script>
+<script src="./energy-widget.js?v=50.13"></script>
+<script src="./selfcare-ui.js?v=50.13"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};
@@ -1513,7 +1518,7 @@ var K_FMT=KP+'fmt_v1', K_PREV=KP+'db_prev_v1', K_PREVAT=KP+'db_prev_at_v1',
    Версия, которая знает формат старее записанного, ничего не сохраняет — иначе затёрла бы
    то, чего не понимает (так бывает, если открыть старую ссылку). Защита — с v48:
    v47 и раньше о ней не знают. Меняется устройство записей — FMT растёт. */
-var FMT=47, RO=false, roSaid=0;
+var FMT=49, RO=false, roSaid=0;
 async function fmtCheck(){
   var f=0; try{ f=+(await rawGet(K_FMT))||0 }catch(e){}
   if(f>FMT) RO=true;
@@ -1612,8 +1617,9 @@ function isoOf(d){
 function todayISO(){ return isoOf(new Date()) }
 var curDate=todayISO();
 
-function sec(k){ return DB.sections.filter(function(x){return x.k===k})[0] }
+function sec(k){ if(k==='care_current')return SelfCare.checkinSection();return DB.sections.filter(function(x){return x.k===k})[0] }
 function scalesOf(k){
+  if(k==='care_current')return SelfCare.checkinScales();
   var S=sec(k); if(!S) return [];
   return (S.scales||[]).map(function(mk){
     return DB.metrics.filter(function(m){return m.k===mk})[0];
@@ -1630,6 +1636,8 @@ function day(d){
   if(!e.cp) e.cp={}; if(!e.tags) e.tags={}; if(!e.screen) e.screen={}; if(!e.num) e.num={};
   return e;
 }
+function ringDay(){return SelfCare.isCheckin()?SelfCare.checkinDay():day(curDate)}
+function saveRing(){if(SelfCare.isCheckin())SelfCare.saveCheckin();else save()}
 var saveT=null;
 function save(){
   if(RO){ roWarn(); return }
@@ -1723,6 +1731,7 @@ function paintCpMeal(){
    первой записи. Сон — day.sleep: {min, wake, src}; вручную — только длительность. */
 function firstSec(){ return DB.sections[0]&&DB.sections[0].k }
 function secTime(d,k){
+  if(k==='care_current')return SelfCare.checkinTime();
   var e=DB.days[d]||{}, c=(e.cp||{})[k]||{}, sl=e.sleep;
   if(c.time&&c.tm==='m') return {t:c.time,src:'manual'};
   var sw=sl&&(sl.w||sl.wake);
@@ -1748,11 +1757,11 @@ document.getElementById('cpRow').addEventListener('change',function(ev){
   var t=ev.target, v=t.value;
   if(t.id!=='cpTimeIn') return;
   if(lockGuard()){ paintCpRow(); return }
-  var e=day(curDate), c=e.cp[curSec]||(e.cp[curSec]={});
+  var e=ringDay(), c=e.cp[curSec]||(e.cp[curSec]={});
   if(v){ if(c.tm!=='m'&&c.time) c.t0=c.time; c.time=v; c.tm='m' }
   else { if(c.t0) c.time=c.t0; else delete c.time; delete c.t0; delete c.tm;
          if(!Object.keys(c).length) delete e.cp[curSec] }
-  save(); paintCpMeal();
+  saveRing(); paintCpMeal();
 });
 
 /* сводка из Meal → копия в DB; true — если что-то поменялось */
@@ -2079,6 +2088,8 @@ function dupWarn(what){ toast('Такое название уже есть: '+wh
 
 function isLocked(d){ return !!day(d||curDate).locked }
 function lockGuard(){
+  if(RO){roWarn();return true;}
+  if(SelfCare.checkinReadOnly()){toast('Сохранённая отметка');return true;}
   if(!isLocked()) return false;
   toast('День закрыт — открой замок, чтобы менять');
   return true;
@@ -2267,7 +2278,7 @@ var PEN='<svg class="pen" viewBox="0 0 24 24"><path d="M4 20h4L20 8l-4-4L4 16z"/
    дня, и раздел открывался с тегами прошлого раздела: нажатие записывало
    чужой тег в открытый раздел. */
 function renderCpTags(){
-  var e=day(curDate);
+  var e=ringDay();
   document.getElementById('cpTags').innerHTML = tagsOf(curSec).map(function(t){
     var on=((e.cp[curSec]||{}).tags||{})[t];
     var ti=tagIcHTML(t);
@@ -2376,6 +2387,7 @@ function dayReport(d){
   if(tp.length) L.push('Счётчики: '+tp.join('; '));
   var cn=DB.counters.map(function(c){ var v=cntVal(e,c.k); return v?c.t+' '+durTxt(v):null }).filter(Boolean);
   if(cn.length) L.push('Занятия: '+cn.join('; '));
+  SelfCare.journalEvents(d).forEach(function(x){L.push(x.title+' · '+x.t+' · '+x.sub)});
   if(e.note) L.push('Заметка: '+e.note);
   if(!L.length) return '';
   return ['HappyDay · '+ruDate(d)+' '+d.slice(0,4)].concat(L).join('\n');
@@ -2854,12 +2866,12 @@ document.addEventListener('click',function(ev){
     if(lockGuard()) return;
     /* на экране чужие теги — перерисовать и ничего не записывать */
     if(tagsOf(curSec).indexOf(c.dataset.tag)<0){ renderCpTags(); return }
-    var e=day(curDate);
+    var e=ringDay();
     if(!e.cp[curSec]) e.cp[curSec]={};
     if(!e.cp[curSec].tags) e.cp[curSec].tags={};
     var tg=e.cp[curSec].tags;
     tg[c.dataset.tag] = !tg[c.dataset.tag];
-    save(); renderDay(); renderLinks();
+    saveRing(); renderDay(); renderLinks();
   }
   var n=ev.target.closest('[data-newtag]');
   if(n){
@@ -2873,11 +2885,11 @@ document.addEventListener('click',function(ev){
       if(r.ic) DB.tagIc[t]=r.ic;
       var S=sec(curSec);
       if(S){ S.tags=S.tags||[]; if(S.tags.indexOf(t)<0) S.tags.push(t) }
-      var e=day(curDate);
+      var e=ringDay();
       if(!e.cp[curSec]) e.cp[curSec]={};
       if(!e.cp[curSec].tags) e.cp[curSec].tags={};
       e.cp[curSec].tags[t]=true;
-      save(); renderDay(); renderData();
+      saveRing(); renderDay(); renderData();
     });
   }
   var g=ev.target.closest('[data-go-screen]');
@@ -2977,7 +2989,7 @@ function paint(i){
   if(i===undefined) i=cur;
   if(i>=CURS.length) return;
   var m=CURS[i], w=ringAt(i);
-  var raw=(day(curDate).cp[curSec]||{})[m.k];
+  var raw=(ringDay().cp[curSec]||{})[m.k];
   var word=paintRing(w,m,raw);
   var vEl=w.querySelector('.kv'), hEl=w.querySelector('.kh');
   if(word==null){ vEl.textContent='Нажми'; vEl.style.fontSize='26px'; hEl.textContent='и держи'; }
@@ -3062,11 +3074,11 @@ var dragIdx=null, dragY=0, dragV=0, dragS=0, orig=null;
 var STEP_MS=650, STEP_PX=48;   // по делениям: шаг при удержании и при ведении пальцем
 /* как было до касания: чтобы короткий случайный автонабор можно было отменить */
 function snapshot(){
-  var c=day(curDate).cp[curSec];
+  var c=ringDay().cp[curSec];
   orig={idx:cur, hadCp:!!c, hadTime:!!(c&&c.time), v:c?c[CURS[cur].k]:undefined};
 }
 function restore(){
-  var e=day(curDate), c=e.cp[curSec]; if(!orig||!c) return;
+  var e=ringDay(), c=e.cp[curSec]; if(!orig||!c) return;
   if(!orig.hadCp){ delete e.cp[curSec]; return }
   var k=CURS[orig.idx].k;
   if(orig.v==null) delete c[k]; else c[k]=orig.v;
@@ -3074,6 +3086,7 @@ function restore(){
 }
 function switchTo(i){
   cur=Math.max(0,Math.min(CURS.length-1,i));
+  if(CURS[cur])SelfCare.rememberScale(CURS[cur].k);
   lastSwitch=performance.now(); renderFacts(); paint();
 }
 function knobAt(i){ var w=ringAt(i); return w?w.querySelector('.knob'):null }
@@ -3086,7 +3099,7 @@ function begin(){
   if(raf||cur>=CURS.length) return false;
   if(lockGuard()) return false;
   fillIdx=cur;
-  var m=CURS[fillIdx], e=day(curDate);
+  var m=CURS[fillIdx], e=ringDay();
   if(!e.cp[curSec]) e.cp[curSec]={};
   if(!e.cp[curSec].time){ e.cp[curSec].time=nowHM(); paintCpMeal() }   // когда событие случилось
   var raw=e.cp[curSec][m.k], st=isStep(m);
@@ -3118,16 +3131,16 @@ function end(){
   cancelAnimationFrame(raf); raf=null;
   var i=fillIdx; fillIdx=null;
   ringAt(i).querySelector('.knob').classList.remove('press');
-  var raw=(day(curDate).cp[curSec]||{})[CURS[i].k];
+  var raw=(ringDay().cp[curSec]||{})[CURS[i].k];
   if(raw!=null) nextDir(i,raw);
-  save(); paint(i);
+  saveRing(); paint(i);
 }
 /* вертикальный ход: автонабор останавливается, дальше шкала идёт за пальцем */
 function toDrag(y){
   if(pend){ clearTimeout(pend); pend=null }
   if(raf){ cancelAnimationFrame(raf); raf=null; fillIdx=null }   // без разворота: ведение — не автонабор
   if(lockGuard()){ gest='side'; unpress(); paint(cur); return }           // закрытый день: листать можно
-  var m=CURS[cur], e=day(curDate);
+  var m=CURS[cur], e=ringDay();
   if(!e.cp[curSec]) e.cp[curSec]={};
   if(!e.cp[curSec].time){ e.cp[curSec].time=nowHM(); paintCpMeal() }
   dragIdx=cur; dragY=y; dragV=pctOf(e.cp[curSec][m.k]); if(dragV==null) dragV=0;
@@ -3137,7 +3150,7 @@ function toDrag(y){
   dragTo(y);
 }
 function dragTo(y){
-  var m=CURS[dragIdx], c=day(curDate).cp[curSec];
+  var m=CURS[dragIdx], c=ringDay().cp[curSec];
   if(isStep(m)){   // по делениям: шаг на каждые STEP_PX
     c[m.k]=Math.max(m.lo,Math.min(m.hi, dragS+Math.round((dragY-y)/STEP_PX)));
     paint(dragIdx); return;
@@ -3182,7 +3195,7 @@ function gEnd(){
   if(g==='pend'){
     unpress();
     // слишком короткий тап: значение не тронули, но направление развернули
-    var m0=CURS[cur], raw0=(day(curDate).cp[curSec]||{})[m0.k];
+    var m0=CURS[cur], raw0=(ringDay().cp[curSec]||{})[m0.k];
     if(raw0!=null){
       if(!(isStep(m0)&&(raw0<=m0.lo||raw0>=m0.hi))) flipDir(cur);   // у края оно и так внутрь
       paint(cur);
@@ -3191,7 +3204,7 @@ function gEnd(){
     end(); unpress(); paint(cur);
   } else if(g==='drag'){
     var i=dragIdx; dragIdx=null;
-    unpress(); save(); paint(i);                // ведение направление не трогает
+    unpress(); saveRing(); paint(i);                // ведение направление не трогает
   } else unpress();
   return !(g==='auto'||g==='drag'||g==='done');
 }
@@ -3230,7 +3243,7 @@ zone.addEventListener('touchend',function(e){
   if(Math.abs(dx)>SWIPE_MIN&&Math.abs(dx)>Math.abs(dy)*1.5) switchTo(cur+(dx<0?1:-1));
 },{passive:true});
 zone.addEventListener('touchcancel',function(){
-  if(gest==='drag'){ var i=dragIdx; dragIdx=null; gest=null; unpress(); save(); paint(i) }
+  if(gest==='drag'){ var i=dragIdx; dragIdx=null; gest=null; unpress(); saveRing(); paint(i) }
   else { if(pend){ clearTimeout(pend); pend=null } if(raf) end(); gest=null; unpress() }
   sx=null;
 });
@@ -3291,38 +3304,8 @@ function nwFresh(d,x){
   var a=hmMin(nowHM())-hmMin(x.t); return a>=0&&a<NW_TAG_MIN;
 }
 function nwRaw(m,x){ return x?SMIN+(Math.min(x.v,m.w.length-1)+1)/m.w.length*(SMAX-SMIN):null }   // дуга — до слова включительно
-function renderNow(){
-  var rail=document.getElementById('nwRail'), tg=document.getElementById('nwTags'); if(!rail) return;
-  var L=nwList(), C=nwCfg(), sig=L.map(function(x){ return x.k+':'+x.t }).join('|')+'#'+C.tags.join('|');
-  if(sig!==NW.sig){
-    var sl=rail.scrollLeft;
-    rail.innerHTML=L.map(function(m,i){
-      return '<div class="nwSl" data-i="'+i+'"><div class="ringWrap nwR" data-k="'+escH(m.k)+'">'+ringSvg({w:m.w},'nwg'+i)+
-        '<button class="knob" data-nk="'+escH(m.k)+'"><b></b></button></div>'+
-        '<div class="nwRn" data-hold="k:'+escH(m.k)+'">'+escH(m.t)+'</div></div>' }).join('')+
-      '<div class="nwSl" data-i="'+L.length+'"><button class="nwAdd" id="nwAdd" aria-label="Добавить свою шкалу">+</button><div class="nwRn">Своя шкала</div></div>';
-    tg.innerHTML=C.tags.map(function(g){ return '<button class="nwChip" data-g="'+escH(g)+'" data-hold="g:'+escH(g)+'">'+escH(g)+'</button>' }).join('')+
-      '<button class="nwChip add" id="nwTagAdd">+ Тег</button>';
-    NW.sig=sig; rail.scrollLeft=sl;
-  }
-  nwPaint();
-}
-function nwPaint(){
-  var last=nwLast(curDate);
-  document.querySelectorAll('#nwRail .nwR').forEach(function(w){
-    var m=nwSc(w.dataset.k); if(!m) return;
-    var x=last.v[m.k], kb=w.querySelector('.knob'), word=x?(m.w[x.v]||x.w):null;
-    paintRing(w,{w:m.w},nwRaw(m,x));
-    kb.querySelector('b').textContent=word||'—';
-    kb.classList.toggle('empty',!word);
-    kb.setAttribute('aria-label',m.t+': '+(word||'не отмечено')+'. Нажми — следующее слово');
-  });
-  document.querySelectorAll('#nwTags [data-g]').forEach(function(b){
-    var x=last.g[b.dataset.g], on=!!x&&nwFresh(curDate,x);
-    b.classList.toggle('on',on); b.setAttribute('aria-pressed',on);
-  });
-  nwSide();
-}
+function renderNow(){ SelfCare.renderNow(); }
+function nwPaint(){ SelfCare.renderNow(); }
 function nwSide(){
   var r=document.getElementById('nwRail'); if(!r||!r.children.length) return;
   var mid=r.scrollLeft+r.clientWidth/2, best=0, bd=1e9;
@@ -3390,36 +3373,6 @@ function nwRemove(h){
     save(); renderNow(); nwSide();
   });
 }
-(function(){
-  var rail=document.getElementById('nwRail'), tags=document.getElementById('nwTags'), raf=0, x0=0, y0=0;
-  rail.addEventListener('scroll',function(){ if(raf) return; raf=requestAnimationFrame(function(){ raf=0; nwSide() }) },{passive:true});
-  rail.addEventListener('click',function(ev){
-    if(NW_HELD){ NW_HELD=false; return }
-    var sl=ev.target.closest('.nwSl'); if(!sl) return;
-    var i=+sl.dataset.i;
-    if(i!==NW.idx){ nwGo(i,true); return }
-    if(ev.target.closest('#nwAdd')){ nwAddScale(); return }
-    var kb=ev.target.closest('[data-nk]'); if(kb) nwBump(kb.dataset.nk);
-  });
-  tags.addEventListener('click',function(ev){
-    if(NW_HELD){ NW_HELD=false; return }
-    if(ev.target.closest('#nwTagAdd')){ nwAddTag(); return }
-    var b=ev.target.closest('[data-g]'); if(b) nwTag(b.dataset.g);
-  });
-  function stop(){ clearTimeout(NW_HOLD); NW_HOLD=null }
-  [rail,tags].forEach(function(el){
-    el.addEventListener('pointerdown',function(ev){
-      var h=ev.target.closest('[data-hold]'); stop(); NW_HELD=false; if(!h) return;
-      x0=ev.clientX; y0=ev.clientY;
-      NW_HOLD=setTimeout(function(){ NW_HELD=true; NW_HOLD=null; nwRemove(h.dataset.hold) },600);
-    });
-    el.addEventListener('pointermove',function(ev){ if(NW_HOLD&&(Math.abs(ev.clientX-x0)>8||Math.abs(ev.clientY-y0)>8)) stop() });
-    ['pointerup','pointercancel','pointerleave'].forEach(function(n){ el.addEventListener(n,stop) });
-    el.addEventListener('contextmenu',function(ev){ if(ev.target.closest('[data-hold]')) ev.preventDefault() });
-  });
-  window.addEventListener('resize',function(){ nwGo(NW.idx,false) });
-})();
-
 /* ═══════════ ЖУРНАЛ ═══════════
    По согласованному макету: шапка с датой; Сегодня · Неделя · Месяц · свой период;
    блоки Сон, Тренировки, Осознанность; ниже «Лента дня» (за день) или «Дни» (за период);
@@ -3526,7 +3479,10 @@ function sleepPerHTML(r){
       jBars(ds,cs.map(function(c){ return c&&c.asl?c.asl:0 }),'Сон')+'</div>'};
 }
 /* ── тренировки: из Apple Health (Strong, «Фитнес», «Здоровье») ── */
-function woOf(d){ return ((DB.days[d]||{}).wo)||[] }
+function woOf(d){
+  var local=((DB.days[d]||{}).wo)||[], strong=HappyCare.activity(SelfCare.data(),d).workouts;
+  return local.concat(strong.filter(function(w){return !local.some(function(x){return x.id===w.id||(x.s===w.start.slice(11,16)&&Math.abs((x.min||0)-w.duration/60)<.1)})}).map(function(w){return {id:w.id,t:w.title,s:w.start.slice(11,16),e:w.end?w.end.slice(11,16):'',min:w.duration/60,src:['Happy Strong'],strongId:w.id}}));
+}
 function woName(w){ return w.t+(w.name?' · '+w.name:'') }
 function woSrcTxt(w){ return (w.src||[]).map(function(s){ return s==='Фитнес'?'часы':s }).join(', ') }
 function woSub(w){ return [w.min?durTxt(w.min):'', w.kcal?w.kcal+' ккал':'', woSrcTxt(w)].filter(Boolean).join(' · ') }
@@ -3534,7 +3490,7 @@ function woDayHTML(d){
   var L=woOf(d);
   if(L.length) return {cnt:L.length>1?L.length+' '+ruPlural(L.length,['тренировка','тренировки','тренировок']):'',
     h:'<div class="jCard">'+L.map(function(w){ return '<div class="jWo"><div class="jWoT"><b>'+escH(woName(w))+'</b><span class="jMut">'+(w.e?w.s+'–'+w.e:'с '+w.s)+'</span></div>'+
-      '<div class="jMut" style="margin-top:2px">'+escH(woSub(w))+'</div></div>' }).join('')+'</div>'};
+      '<div class="jMut" style="margin-top:2px">'+escH(woSub(w))+'</div>'+(w.strongId?'<a class="care-workout-link" href="https://astamurberlin-rgb.github.io/happyamurio/sport/?workout='+encodeURIComponent(w.strongId)+'" target="_blank" rel="noopener">Открыть запись в Happy Strong ↗</a>':'')+'</div>' }).join('')+'</div>'};
   var x=Object.keys(DB.days).filter(function(k){ return k<d&&woOf(k).length }).sort().pop(), w=x&&woOf(x)[woOf(x).length-1];
   return {cnt:'',h:jEmpty((d===todayISO()?'Сегодня':'В этот день')+' тренировок нет'+(w?'. Последняя — '+ruDate(x)+': '+escH(woName(w).toLowerCase())+(w.min?', '+durTxt(w.min):''):'')+'.')};
 }
@@ -3552,7 +3508,8 @@ function woPerHTML(r){
 function secTxt(sec){ return sec<60?'меньше минуты':durTxt(sec/60) }
 function mindParts(d){
   var e=DB.days[d]||{}, o={}, m=e.mind;
-  if(m&&m.sec>0) o['HappyDay']=m.sec;
+  var practiceMinutes=HappyCare.readDay(DB,d).practices.reduce(function(n,x){return n+x.minutes},0);
+  if(practiceMinutes>0) o['Практики']=practiceMinutes*60;
   (e.mindx||[]).forEach(function(x){ if(x.sec>0) o[x.src||'Другое']=(o[x.src||'Другое']||0)+x.sec });
   return o;
 }
@@ -3560,7 +3517,7 @@ function mindSum(o){ var s=0; for(var k in o) s+=o[k]; return s }
 function partsTxt(o,div){ var ks=Object.keys(o); if(ks.length===1&&!div) return ks[0]; return Object.keys(o).sort(function(a,b){ return o[b]-o[a] }).map(function(k){ return k+' '+secTxt(o[k]/(div||1)) }).join(' · ') }
 function mindDayHTML(d){
   var o=mindParts(d), s=mindSum(o);
-  if(!s) return {cnt:'',h:jEmpty((d===todayISO()?'Сегодня':'В этот день')+' времени осознанности нет. Считается время в HappyDay и сессии других приложений из Apple Health.')};
+  if(!s) return {cnt:'',h:jEmpty((d===todayISO()?'Сегодня':'В этот день')+' времени осознанности нет. Считаются сохранённые практики и сессии других приложений из Apple Health.')};
   return {cnt:'',h:'<div class="jCard"><span class="jBig">'+secTxt(s)+'</span> <span class="jMut">'+escH(partsTxt(o))+'</span></div>'};
 }
 function mindPerHTML(r){
@@ -3608,19 +3565,20 @@ function jEvents(d){
   (e.mindx||[]).forEach(function(x){ add(x.s,{dot:'#B8F2A0',title:'Осознанность',sub:(x.src||'другое приложение')+' · '+secTxt(x.sec),src:['Health','hk']}) });
   if(e.note&&String(e.note).trim()){ var nt=String(e.note).trim();
     add('',{dot:'#FFFFFF',title:'Заметка',sub:nt.length>60?nt.slice(0,58)+'…':nt,quote:nt.length>60?nt:''}) }
+  L=L.concat(SelfCare.journalEvents(d));
   L.sort(function(x,y){ return x.m-y.m });
   return L;
 }
 function feedHTML(d,ev){
   if(!ev.length) return jEmpty('В этот день записей нет.');
   return '<div class="jFeed"><ol>'+ev.map(function(o,i){
-    var id=d+'|'+i, can=!!((o.pills&&o.pills.length)||o.quote), on=can&&!!JR_OPEN[id];
+    var id=d+'|'+i, can=!!(o.careKind||(o.pills&&o.pills.length)||o.quote), on=can&&!!JR_OPEN[id];
     var inner='<span class="jTh"><b>'+escH(o.title)+'</b>'+(o.src?'<span class="jSrc '+o.src[1]+'">'+o.src[0]+'</span>':'')+'</span>'+
       (o.sub?'<span class="jSub">'+escH(o.sub)+'</span>':'')+
       (on&&o.pills&&o.pills.length?'<span class="jPills">'+o.pills.map(function(p){ return '<span class="jPill">'+escH(p)+'</span>' }).join('')+'</span>':'')+
       (on&&o.quote?'<span class="jSub" style="margin-top:8px;white-space:pre-wrap">'+escH(o.quote)+'</span>':'');
     var tm='<span class="jTm">'+(o.t||'—')+'</span><span class="jDot" style="background:'+o.dot+'"></span>';
-    return '<li>'+(can?'<button class="jEv" data-ev="'+id+'" aria-expanded="'+on+'">':'<div class="jEv" style="cursor:default">')+tm+
+    return '<li>'+(can?'<button class="jEv" '+(o.careKind?'data-care-event="'+escH(JSON.stringify({kind:o.careKind,id:o.careId||'',date:d,additionId:o.additionId||''}))+'"':'data-ev="'+id+'"')+' aria-expanded="'+on+'">':'<div class="jEv" style="cursor:default">')+tm+
       '<span class="jT'+(on?' open':'')+'">'+inner+'</span>'+(can?'</button>':'</div>')+'</li>' }).join('')+'</ol></div>';
 }
 /* строка дня для периода */
@@ -3647,7 +3605,7 @@ function daysHTML(r){
     if(!ln.l1&&!ln.l2) ln.l1=ev.length+' '+ruPlural(ev.length,['запись','записи','записей']);
     rows.push('<li class="jD'+(on?' open':'')+'"><button class="jDrow" data-dd="'+d+'" aria-expanded="'+on+'"><span class="jDn"><small>'+WD_S[dt.getDay()]+'</small><b>'+dt.getDate()+'</b></span>'+
       '<span class="jDl"><b>'+escH(ln.l1||ln.l2)+'</b>'+(ln.l1&&ln.l2?'<span>'+escH(ln.l2)+'</span>':'')+'</span></button>'+
-      (on?'<ul class="jDev">'+ev.map(function(o){ return '<li><i style="background:'+o.dot+'"></i><b>'+(o.t?o.t.split('\n')[0]:'—')+'</b><span>'+escH(o.title+(o.sub?' · '+o.sub:'')+(o.src?' · '+o.src[0]:''))+'</span></li>' }).join('')+'</ul>':'')+'</li>');
+      (on?'<ul class="jDev">'+ev.map(function(o){ return '<li><i style="background:'+o.dot+'"></i><b>'+(o.t?o.t.split('\n')[0]:'—')+'</b>'+(o.careKind?'<button class="care-period-link" data-care-event="'+escH(JSON.stringify({kind:o.careKind,id:o.careId||'',date:d,additionId:o.additionId||''}))+'">':'<span>')+escH(o.title+(o.sub?' · '+o.sub:'')+(o.src?' · '+o.src[0]:''))+(o.careKind?'</button>':'</span>')+'</li>' }).join('')+'</ul>':'')+'</li>');
   });
   return {cnt:rows.length?jrRangeTxt(r):'',h:rows.length?'<ol class="jDays">'+rows.join('')+'</ol>':jEmpty('За этот период записей нет.')};
 }
@@ -3706,7 +3664,7 @@ function jrNowLast(r){
 function jrOpts(kind){
   var r=jrRange(), one=JR_PER==='today', nl=jrNowLast(r), wn=0;
   jrDates(r).forEach(function(d){ wn+=woOf(d).length });
-  if(kind==='csv') return [['now','Как ты сейчас','шкалы и теги со временем'],['sleep','Сон','отбой, подъём, стадии'],['wo','Тренировки','вид, время, ккал'],
+  if(kind==='csv') return [['now','Самочувствие и дневник','отметки, записи и дополнения'],['sleep','Сон','отбой, подъём, стадии'],['wo','Тренировки','вид, время, ккал'],
     ['mind','Осознанность','HappyDay и другие приложения'],['rec','Записи дня','оценки разделов, теги, еда, счётчики, заметки']];
   return [['now','Как ты сейчас',nl?'кольцо с главного экрана: '+nl.x.n+' — '+nl.x.w:'кольца с главного экрана'],
     ['sleep','Сон',one?'ночь со стадиями':'средний сон и ночи'],
@@ -3758,14 +3716,16 @@ function jrCsvText(sel){
   function n1(x){ return String(Math.round(x*10)/10).replace('.',',') }
   function row(d,t,a,b,v,u,x){ rows.push([d,t||'',a,b||'',v==null?'':v,u||'',x||'']) }
   jrDates(r).forEach(function(d){
-    var e=DB.days[d]; if(!e) return;
+    var e=DB.days[d]||{};
+    if(sel.now||sel.rec) SelfCare.journalEvents(d).filter(function(x){return x.careKind==='mood'||x.careKind==='entry'}).forEach(function(x){row(d,x.t,x.title,'',x.sub)});
     if(sel.now) (e.now||[]).forEach(function(x){ if(x.k) row(d,x.t,'Как ты сейчас',x.n,x.w,'',(x.v+1)+' из 5'); else row(d,x.t,'Как ты сейчас','Тег',x.g) });
     if(sel.sleep){ var c=slCalc(e.sleep);
       if(c&&c.asl){ row(d,c.b||'','Сон','Сон всего',Math.round(c.asl),'мин',c.man?(c.summaryOnly?c.src+' · без последовательности стадий':'вручную'):'отбой '+c.b+', подъём '+c.w+', '+c.src);
         if(!c.man){ ['D','C','R','A'].forEach(function(k){ row(d,'','Сон',ST[k].t,Math.round(c[k]),'мин') }); row(d,'','Сон','Пробуждения от 5 мин',c.wk,'раз') }
         (c.naps||[]).forEach(function(nn){ var nc=slCalc(nn); if(nc&&nc.asl) row(d,nn.b,'Сон','Дневной сон',Math.round(nc.asl),'мин',nn.b+'–'+nn.w) }) } }
+    if(sel.wo) HappyCare.activity(DB.selfCare,d).workouts.forEach(function(w){row(d,w.start.slice(11,16),'Активность · Happy Strong',w.title,n1(w.duration/60),'мин')});
     if(sel.wo) (e.wo||[]).forEach(function(w){ row(d,w.s,'Тренировки',woName(w),w.min!=null?Math.round(w.min):'','мин',[w.e?w.s+'–'+w.e:'', w.kcal?w.kcal+' ккал':'', woSrcTxt(w)].filter(Boolean).join(', ')) });
-    if(sel.mind){ if(e.mind&&e.mind.sec>0) row(d,'','Осознанность','HappyDay',n1(e.mind.sec/60),'мин','заходов: '+e.mind.n);
+    if(sel.mind){ (e.care?.practices||[]).forEach(function(x){row(d,x.time,'Осознанность',x.name,n1(x.minutes),'мин')});
       (e.mindx||[]).forEach(function(x){ row(d,x.s,'Осознанность',x.src||'другое',n1(x.sec/60),'мин') }) }
     if(sel.rec){
       DB.sections.forEach(function(s){ var cp=(e.cp||{})[s.k]||{}, st=secTime(d,s.k);
@@ -4937,6 +4897,7 @@ document.getElementById('expCsv').addEventListener('click',function(){
       rows.push(r.join(','));
     });
   });
+  Object.keys(DB.days).concat((DB.selfCare.strong?.workouts||[]).map(function(w){return w.start.slice(0,10)})).filter(function(d,i,a){return a.indexOf(d)===i}).sort().forEach(function(d){SelfCare.journalEvents(d).forEach(function(x){var row=Array(head.length).fill('');row[0]=d;row[1]=x.title;row[2]=x.t;row[row.length-1]=x.sub;rows.push(row.map(q).join(','))})});
   download('happyday-'+todayISO()+'.csv', rows.join('\n'), 'text/csv');
 });
 /* ── Загрузка копии ──
@@ -5118,8 +5079,7 @@ function renderTaps(){
     }).join('')+'</div>';
 }
 
-function renderSections(){
-  document.getElementById('secList').innerHTML = '<div class="secListInner">'+DB.sections.map(function(S,si){
+function sectionMarkup(S,si){
     var sc=(S.scales||[]), tg=(S.tags||[]);
     var body =
       '<div class="subTitle">Шкалы — порядок задаёт порядок колец</div>'+
@@ -5145,25 +5105,26 @@ function renderSections(){
       swipeRow('S'+si,
         '<span class="ic">'+secIc(S)+'</span>'+
         '<span class="nm"><b>'+S.t+'</b>'+(S.h?'<small>'+S.h+'</small>':'')+'</span>'+
-        penBtn('S'+si)+dragH(),
-        true)+
+        penBtn('S'+si)+(si<0?'':dragH()),
+        si>=0)+
       '<div class="secBody">'+body+'</div></div>';
-  }).join('')+'</div>';
 }
-
+function renderSections(){
+ document.getElementById('secList').innerHTML='<div class="secListInner">'+DB.sections.map(sectionMarkup).join('')+'</div>';
+ SelfCare.renderCheckinSettings();
+}
+function settingsSection(si){return si===-1?SelfCare.checkinSection():DB.sections[si]}
 
 /* ── Перетаскивание за ручку ──
    Тянем только за ручку: остальная часть строки остаётся под свайп,
    иначе два горизонтально-вертикальных жеста дрались бы на одной строке.
    Соседи расступаются на высоту строки, порядок фиксируется при отпускании. */
-(function(){
+function bindSectionDrag(host){
   var d=null;
-  var hosts=[document.getElementById('secList'), document.getElementById('cntList'), document.getElementById('tapList')];
 
   function rowsOf(list){
     return Array.prototype.filter.call(list.children, function(x){ return x.hasAttribute('data-drag') });
   }
-  hosts.forEach(function(host){
   host.addEventListener('touchstart',function(e){
     var h=e.target.closest('.dragH'); if(!h) return;
     var row=h.closest('[data-drag]'); if(!row) return;
@@ -5205,15 +5166,15 @@ function renderSections(){
   }
   host.addEventListener('touchend',done);
   host.addEventListener('touchcancel',done);
-  });
-})();
+}
+[document.getElementById('secList'),document.getElementById('cntList'),document.getElementById('tapList')].forEach(bindSectionDrag);
 
 function commitDrag(kind, from, to){
   var arr;
   if(kind==='cnt') arr=DB.counters;
   else if(kind==='tap') arr=DB.taps;
   else if(kind==='sec') arr=DB.sections;
-  else arr=DB.sections[+kind.split(':')[1]].scales;
+  else arr=settingsSection(+kind.split(':')[1]).scales;
   if(!arr || to<0 || to>=arr.length) return;
   arr.splice(to,0,arr.splice(from,1)[0]);
   save();
@@ -5221,7 +5182,7 @@ function commitDrag(kind, from, to){
 }
 
 
-document.getElementById('secList').addEventListener('click',function(e){
+function sectionSettingsClick(e,host){
   var t=e.target;
 
   // разворачивание — только если строка не сдвинута свайпом
@@ -5243,7 +5204,8 @@ document.getElementById('secList').addEventListener('click',function(e){
   var ren=t.closest('[data-ren]'), del=t.closest('[data-del]');
   if(ren) handleRen(ren.dataset.ren);
   if(del) handleDel(del.dataset.del);
-});
+}
+document.getElementById('secList').addEventListener('click',function(e){sectionSettingsClick(e,this)});
 
 function parseId(id){
   var kind=id[0], rest=id.slice(1).split(':');
@@ -5260,7 +5222,7 @@ function handleRen(id){
     });
     return;
   }
-  var q=parseId(id), S=DB.sections[q.si];
+  var q=parseId(id), S=settingsSection(q.si);
   if(q.kind==='S'){
     editItem({title:'Раздел', name:S.t, sub:S.h||'', ic:S.ic||DEF_IC[S.k]||null, layer:'Иконка раздела',
       check:function(t){ return !t?'Напиши название раздела':nameTaken(DB.sections,t,q.si)?'Такое название уже есть: '+t:'' }
@@ -5331,10 +5293,11 @@ function handleDel(id){
     });
     return;
   }
-  var q=parseId(id), S=DB.sections[q.si];
+  var q=parseId(id), S=settingsSection(q.si);
   if(!S) return;
   var msg, act;
   if(q.kind==='S'){
+    if(q.si<0)return;
     msg='Убрать раздел «'+S.t+'»? Записи по нему останутся в данных.';
     act=function(){
       DB.sections.splice(q.si,1);
@@ -5358,7 +5321,7 @@ function handleDel(id){
    плавно или по делениям, — на одном экране. Готовую шкалу из других разделов можно взять там же. */
 function addScaleTo(si){ openScaleEd(null,si) }
 function addTagTo(si){
-  var S=DB.sections[si];
+  var S=settingsSection(si);
   editItem({title:'Новый тег', layer:'Иконка тега',
     check:function(t){ return !t?'Напиши название тега':nameTaken(S.tags||[],t)?'Такой тег в разделе уже есть':'' }
   }).then(function(r){
@@ -5468,7 +5431,7 @@ document.getElementById('saveKey').addEventListener('click',function(){
   var y0=null, dy=0;
   function closeSheet(){
     scr.style.transition=''; scr.style.transform='';
-    go('day'); renderDay(); renderLinks();
+    SelfCare.closeCurrent();renderDay();renderLinks();
   }
   function start(e){ var t=e.touches?e.touches[0]:e; y0=t.clientY; dy=0; scr.style.transition='none' }
   function move(e){ if(y0===null) return; var t=e.touches?e.touches[0]:e;
@@ -5489,6 +5452,7 @@ document.getElementById('saveKey').addEventListener('click',function(){
     var mu=function(){ end(); window.removeEventListener('mousemove',mm); window.removeEventListener('mouseup',mu) };
     window.addEventListener('mousemove',mm); window.addEventListener('mouseup',mu);
   });
+  grip.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();closeSheet()}});
   grip.addEventListener('click',function(){ if(dy<6) closeSheet() });   // короткий тап тоже закрывает
 })();
 
@@ -5525,7 +5489,7 @@ setTimeout(function(){ hideSplash(true) },4000);   // страховка: что
    стоит шкала. Есть отметки и меняется диапазон — пересчёт только с согласия. */
 var SCE=null;                                      // рабочая копия, пока окно открыто
 var SC_TOP={'0':[1,10],'1':[2,10],'mid':[1,5]};    // пределы «до N» / «±N»
-function scUse(k){ return DB.sections.filter(function(S){return (S.scales||[]).indexOf(k)>=0}).map(function(S){return S.t}) }
+function scUse(k){ return DB.sections.concat([SelfCare.checkinSection()]).filter(function(S){return (S.scales||[]).indexOf(k)>=0}).map(function(S){return S.t}) }
 function scRecs(k){
   var n=0, first=null;
   Object.keys(DB.days).sort().forEach(function(d){ var cp=(DB.days[d]||{}).cp||{};
@@ -5609,7 +5573,7 @@ function renderScaleEd(){
   }
   /* новая шкала: можно взять готовую из других разделов — с её настройками и записями */
   if(e.isNew){
-    var S=DB.sections[e.si]||{}, free=DB.metrics.filter(function(x){ return (S.scales||[]).indexOf(x.k)<0 });
+    var S=settingsSection(e.si)||{}, free=DB.metrics.filter(function(x){ return (S.scales||[]).indexOf(x.k)<0 });
     if(free.length) h+='<div class="subTitle">Или взять готовую — с её настройками</div><div class="scChips">'+
       free.map(function(x){ return '<button class="chip" data-reuse="'+escH(x.k)+'">'+escH(x.t)+'</button>' }).join('')+'</div>';
   }
@@ -5659,7 +5623,7 @@ function scErr(msg){ SCE.err=msg; var p=document.getElementById('scErr'); if(p) 
   document.getElementById('scEdScroll').scrollTop=0 }
 /* поставить шкалу в раздел и закрыть окно */
 function scAddTo(si,k){
-  var S=DB.sections[si], m=metricByKey(k); if(!S||!m) return;
+  var S=settingsSection(si), m=metricByKey(k); if(!S||!m) return;
   S.scales=S.scales||[];
   if(S.scales.indexOf(k)<0) S.scales.push(k);
   save(); closeScaleEd();
@@ -5678,7 +5642,7 @@ function applyScaleEd(force){
   var same=DB.metrics.filter(function(x){ return x.k!==e.k&&String(x.t).trim().toLowerCase()===t.toLowerCase() })[0];
   if(same){
     if(!e.isNew){ scErr('Такое название уже есть: '+t); return }
-    var S=DB.sections[e.si];
+    var S=settingsSection(e.si);
     if((S.scales||[]).indexOf(same.k)>=0){ scErr('В разделе «'+S.t+'» такая шкала уже есть'); return }
     confirmBox('Шкала «'+same.t+'» уже есть. Добавить её в «'+S.t+'» с её настройками?','Добавить')
       .then(function(ok){ if(ok) scAddTo(e.si,same.k) });
@@ -5713,10 +5677,13 @@ document.getElementById('scEd').addEventListener('click',function(ev){
 
 /* ═══════════ НАВИГАЦИЯ ═══════════ */
 function go(name){
+  SelfCare.onNavigate(name);
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.dataset.screen===name) });
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name) });
-  document.body.classList.toggle('sheet',name==='ring');
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name||(name.startsWith('care-settings-')&&t.dataset.go==='settings')) });
+  document.body.classList.toggle('sheet',name==='ring'||name.startsWith('care-'));
   if(name==='ring'){ renderFacts(); CURS.forEach(function(_,i){ paint(i) }) }
+  if(name==='day') renderNow();
+  if(name==='settings') SelfCare.renderSettings();
   if(name==='trends') renderTrends();
   if(name==='links') renderLinks();
   if(name==='data') renderData();
@@ -5745,6 +5712,7 @@ function openSection(k){
 document.getElementById('fab').addEventListener('click',function(){
   if(document.getElementById('tapWrap').classList.contains('on')){ closeTaps(); return }
   if(document.getElementById('impWrap').classList.contains('on')){ closeImport(); return }
+  if(SelfCare.closeCurrent())return;
   if(document.body.classList.contains('sheet')){ go('day'); renderDay(); renderLinks(); return }
   openImport();
 });
@@ -5817,7 +5785,7 @@ window.addEventListener('orientationchange',dockPath);
 function hasRecords(days){
   return Object.keys(days||{}).some(function(d){ var e=days[d]||{};
     return Object.keys(e.cp||{}).length||Object.keys(e.cnt||{}).length||Object.keys(e.taps||{}).length||
-      Object.keys(e.tags||{}).length||!!e.note||!!e.locked;
+      Object.keys(e.tags||{}).length||!!e.note||!!e.locked||!!(e.now||[]).length||!!(e.care&&(e.care.checkins.length||e.care.events.length||e.care.practices.length));
   });
 }
 function renderAll(){
@@ -5860,6 +5828,7 @@ function renderAll(){
         if(o.tagFix) DB.tagFix=true;
         if(o.mealLink&&o.mealLink.days) DB.mealLink=o.mealLink;
         if(o.nowCfg&&Array.isArray(o.nowCfg.sc)&&o.nowCfg.sc.length) DB.nowCfg=o.nowCfg;
+        if(o.selfCare&&typeof o.selfCare==='object') DB.selfCare=o.selfCare;
       }
     }
     var c=await rawGet(K.cfg); if(c) CFG=JSON.parse(c);
@@ -5875,6 +5844,7 @@ function renderAll(){
   document.getElementById('cfgProt').value=CFG.prot!=null?CFG.prot:'';
   document.getElementById('apiKey').value=APIKEY;
   document.getElementById('keyState').textContent=APIKEY?'Ключ сохранён на этом устройстве.':'Ключ не задан.';
+  SelfCare.init();
   renderAll();
   paintMealSet();
   syncMealCloud().then(function(ch){ onMealSync(ch) });   // свежая сводка Meal с сервера — без ожидания
@@ -5883,7 +5853,7 @@ function renderAll(){
   if(RO) setTimeout(roWarn,1500);
   else if(!undone) setTimeout(bkNag,2600);
   MIND.ready=true; mindBegin();      // время в HappyDay — с этой минуты
-  setTimeout(function(){ nwGo(1,false) },80);   // виджет стартует со второй шкалы
+  setTimeout(function(){ SelfCare.center(false) },80);   // виджет стартует со второй шкалы
   /* заставку держим хотя бы полсекунды, иначе она просто моргнёт */
   setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
 })();

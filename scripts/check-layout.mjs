@@ -6,6 +6,7 @@ const read=p=>readFile(new URL(p,root),'utf8');
 const apps=JSON.parse(await read('shared/apps.json'));
 const expectedKeys={day:'hd_db_v1',meal:'hdm_db_v1',sport:'happy-sport-prototype-v1'};
 let scripts=0;
+for(const name of ['selfcare-core.js','selfcare-ui.js','energy-widget.js'])new vm.Script(await read('day/'+name),{filename:'day/'+name});
 for(const [app,config] of Object.entries(apps)){
  const html=await read(config.entry);
  assert.ok(html.includes(expectedKeys[app]||config.storageKey),`${app}: storage key changed`);

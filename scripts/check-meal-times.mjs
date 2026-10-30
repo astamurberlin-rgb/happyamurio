@@ -26,7 +26,7 @@ assert.equal(facts.t,'11:00');assert.equal(facts.src,'hand');assert.equal(facts.
 assert.equal(summary.days['2026-10-27'].sec.sn.t,'16:00');
 c.mlStamp(c.DB.days['2026-10-27'].items.filter(x=>x.sec==='am'),'08:15');summary=c.linkSummary();assert.equal(summary.days['2026-10-27'].sec.am.t,'08:15');
 // Consume that same payload using Day's real timeline, without unrelated sleep/mood/training data.
-const d=createContext({DB:{mealLink:JSON.parse(JSON.stringify(summary)),days:{},sections:[{k:'am',t:'Завтрак'},{k:'pm',t:'Обед'},{k:'dn',t:'Ужин'}],taps:[],counters:[]},MEAL_SECS:['am','pm','dn'],todayISO:()=> '2026-10-27',slCalc:()=>null,secTime:()=>null,scalesOf:()=>[],hmMin:t=>+t.slice(0,2)*60+(+t.slice(3)),ruPlural:(n,a)=>a[0],woOf:()=>[],mindSum:()=>0,mindParts:()=>[]});
+const d=createContext({SelfCare:{journalEvents:()=>[]},DB:{mealLink:JSON.parse(JSON.stringify(summary)),days:{},sections:[{k:'am',t:'Завтрак'},{k:'pm',t:'Обед'},{k:'dn',t:'Ужин'}],taps:[],counters:[]},MEAL_SECS:['am','pm','dn'],todayISO:()=> '2026-10-27',slCalc:()=>null,secTime:()=>null,scalesOf:()=>[],hmMin:t=>+t.slice(0,2)*60+(+t.slice(3)),ruPlural:(n,a)=>a[0],woOf:()=>[],mindSum:()=>0,mindParts:()=>[]});
 runInContext(day.match(/function mealDay\(d\)\{[^\n]+\}/)[0],d);
 runInContext(day.slice(day.indexOf('function mealState('),day.indexOf('\nfunction mealOf(')),d);
 runInContext(day.match(/function mealOf\(d,k\)\{[^\n]+\}/)[0],d);

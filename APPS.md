@@ -5,7 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.12 |
+| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.13 |
 | Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.15 |
 | Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -122,3 +122,5 @@ Day и Meal встраивают тот же интерфейс Sport (`?embed=m
 на устройстве пользователя; проверены локальные приложения и моделируемый сервер.
 
 Meal 22.14 / Day 50.11: общие продуктовые счётчики, поиск продукта и собственные порции. Проверка: `node scripts/check-food-counters.mjs`. «Добавить в Happy Day» связывает счётчик; новые нажатия и отмена передаются в обе стороны. Несвязанные счётчики Day остаются самостоятельными. Детали хранения и границы проверки — в DATA-STORAGE и CHANGELOG.
+
+Day 50.13: карусель дневника активности, независимые отметки самочувствия, текстовые дневники с дополнениями, цели и расписание осознанности, экран активности с виджетом энергии. Перенос из отдельного прототипа Sites поверх main; актуальные счётчики, аккаунт и иконка сохранены. Прототип остаётся отдельным местом доработки.
