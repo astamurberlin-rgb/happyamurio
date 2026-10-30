@@ -41,7 +41,7 @@ async function clAuth(path,body){
 }
 function clSes(j,old){
   return {at:j.access_token,rt:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,
-          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email),name:(j.user&&j.user.user_metadata&&j.user.user_metadata.display_name)||(old&&old.name)||''};
+          uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email),name:j.user?String((j.user.user_metadata||{}).display_name||''):((old&&old.name)||'')};
 }
 async function clDerive(pw,uid){
   var base=await crypto.subtle.importKey('raw',clUtf(pw),'PBKDF2',false,['deriveKey']);

@@ -5,8 +5,8 @@ const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8
 const source=await read('shared/happy-ui.js'),css=await read('shared/happy-ui.css');new Script(source);
 const context=createContext({Date});runInContext(source,context);const ui=context.HappyUI;
 const draft={email:'test@example.invalid',password:'test-only-password',visible:false};
-const html=ui.account({draft});assert.ok(html.includes('data-cl="up"'));assert.ok(html.includes('data-happy-ui-submit'));assert.ok(!html.includes('width:100%'));
-assert.ok(ui.account({sport:true,draft}).includes('data-happy="up"'));
+const html=ui.account({draft});assert.ok(html.includes('data-cl="register"'));assert.ok(html.includes('data-happy-ui-submit'));assert.ok(!html.includes('width:100%'));
+assert.ok(ui.account({sport:true,draft}).includes('data-happy="register"'));
 assert.ok(!ui.account({draft:{email:'"><script>bad()</script>',password:'"&'}}).includes('<script>bad()'));
 const connected=ui.account({connected:true,email:'<b>name</b>'});assert.ok(connected.includes('&lt;b&gt;name&lt;/b&gt;'));assert.ok(!connected.includes('name="password"'));
 function fixture(overrides={}){
