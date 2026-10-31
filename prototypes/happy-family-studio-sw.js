@@ -1,5 +1,5 @@
-const CACHE='happy-studio-v12.1-gradients';
-const ASSETS=['./studio.html','./happy-family-color-studio-v12.html','./happy-sport-color-preview-v2.html','./happy-family-studio.webmanifest','../shared/happy-gradients.js?v=1','../shared/happy-gradient-editor.js?v=1','../shared/happy-gradient-editor.css?v=1'];
+const CACHE='happy-studio-v12.2-palettes';
+const ASSETS=['./color-workspace.js?v=12.2','./color-workspace.css?v=12.2','./studio.html','./happy-family-color-studio-v12.html','./happy-sport-color-preview-v2.html','./happy-family-studio.webmanifest','../shared/happy-gradients.js?v=1','../shared/happy-gradient-editor.js?v=1','../shared/happy-gradient-editor.css?v=1'];
 const allowed=new Set(ASSETS.map(path=>new URL(path,self.location.href).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>(key.startsWith('happy-family-studio-')||key.startsWith('happy-studio-'))&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
