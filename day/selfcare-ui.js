@@ -31,7 +31,7 @@ async function transact(fn){
 function init(){
  data();if(ready)return;ready=true;
  const app=document.querySelector('.app');
- ['diary','entry','mind','activity','settings-state','settings-diary','settings-mood','settings-activity','settings-mind'].forEach(k=>{const s=document.createElement('section');s.className='screen care-screen';s.dataset.screen='care-'+k;app.appendChild(s);});
+ ['updates','diary','entry','mind','activity','settings-state','settings-diary','settings-mood','settings-activity','settings-mind'].forEach(k=>{const s=document.createElement('section');s.className='screen care-screen';s.dataset.screen='care-'+k;app.appendChild(s);});
  const settings=document.createElement('section');settings.className='care-settings';settings.id='careSettings';
  $('daySectionSettingsHeading').before(settings);
  document.addEventListener('click',click);
@@ -47,12 +47,12 @@ function init(){
  rail.addEventListener('touchmove',e=>{const t=e.touches[0];if(Math.abs(t.clientY-touchY)>Math.abs(t.clientX-touchX)&&e.cancelable)e.preventDefault();},{passive:false});
  bindSettingsOrder();
  window.addEventListener('resize',()=>center(false));
- document.querySelector('.nwWg').setAttribute('aria-label','Дневник активности');
+ document.querySelector('.nwWg').setAttribute('aria-label','Сейчас');
  rail.setAttribute('aria-label','Кнопки-виджеты дневника');
  $('nwTags').hidden=true;
  const config=document.createElement('div');config.id='careSectionConfig';block('settings-mood').append(config);
  config.addEventListener('click',e=>sectionSettingsClick(e,config));bindSectionDrag(config);
- bindCareNavigation();
+ bindCareNavigation();initNowSave();
  renderSettings();
 }
 function header(title,parent='day',date=true){
@@ -72,33 +72,58 @@ function bindCareNavigation(){
  document.addEventListener('pointerup',()=>finish(false));document.addEventListener('pointercancel',()=>finish(true));
  document.addEventListener('keydown',e=>{if(e.target.matches('.care-grip')&&['Enter',' '].includes(e.key)){e.preventDefault();closeCurrent();}});
 }
-function onNavigate(name){if(session&&!session.readOnly&&CURS[cur])rememberScale(CURS[cur].k);if(session&&(name!=='ring'||curSec!==CURRENT)){session=null;if(curSec===CURRENT)curSec=DB.sections[0]?.k||'wake';}}
+function onNavigate(name){document.body.classList.toggle("now-editing",name==="ring"&&isCheckin()&&!session.readOnly);updateNowSave();if(session&&!session.readOnly&&CURS[cur])rememberScale(CURS[cur].k);if(session&&(name!=='ring'||curSec!==CURRENT)){session=null;if(curSec===CURRENT)curSec=DB.sections[0]?.k||'wake';}}
 function checkinSection(){return data().checkinSection;}
 function isCheckin(){return !!session&&curSec===CURRENT;}
 function checkinReadOnly(){return isCheckin()&&session.readOnly;}
 function checkinDay(){return {cp:{[CURRENT]:session.checkpoint}};}
 function checkinScales(){return session?.readOnly?Object.values(session.defs):checkinSection().scales.map(k=>DB.metrics.find(m=>m.k===k)).filter(Boolean);}
 function checkinTime(){return isCheckin()?{t:session.checkpoint.time,src:'manual'}:null;}
-function saveCheckin(){
- if(!isCheckin()||session.readOnly||!guard(session.date))return;
- session.checkpoint.time=session.checkpoint.time||nowHM();
- C.saveSectionCheckin(DB,session.date,session.id,session.checkpoint,DB.metrics,checkinSection());
- save();
+function saveCheckin(){ updateNowSave(); }
+let undoNow=null;
+function updateNowSave(){
+ const b=document.getElementById('nowSave');if(!b)return;
+ b.disabled=busy||!session||!(checkinSection().scales.some(k=>Number.isFinite(session.checkpoint[k]))||Object.values(session.checkpoint.tags||{}).some(Boolean));
 }
+async function submitNow(){
+ if(busy||!isCheckin()||session.readOnly||!guard(session.date))return;
+ const draft=C.copy(session);let record;
+ const ok=await transact(()=>{record=C.saveSectionCheckin(DB,draft.date,draft.id,draft.checkpoint,DB.metrics,checkinSection());if(!record)throw Error('Сначала отметь самочувствие или тег');});
+ if(!ok){updateNowSave();return;}
+ undoNow=draft;go('day');renderDay();document.getElementById('nowNotice').hidden=false;
+}
+async function undoNowSave(){
+ if(busy||!undoNow||!guard(undoNow.date))return;
+ const draft=C.copy(undoNow);
+ const ok=await transact(()=>{const list=C.dayData(DB,draft.date).checkins;const i=list.findIndex(x=>x.id===draft.id);if(i>=0)list.splice(i,1);});
+ if(!ok)return;
+ undoNow=null;document.getElementById('nowNotice').hidden=true;curDate=draft.date;
+ session=draft;curSec=CURRENT;buildTracks();cur=Math.max(0,CURS.findIndex(m=>m.k===data().settings.activeScale));renderCpTags();$('cpName').textContent='Сейчас';paintCpMeal();go('ring');updateNowSave();
+}
+function initNowSave(){
+ const b=document.createElement('button');b.id='nowSave';b.className='now-save';b.textContent='Сохранить';b.onclick=submitNow;document.body.append(b);
+ const n=document.createElement('div');n.id='nowNotice';n.className='now-notice';n.hidden=true;n.setAttribute('role','status');n.innerHTML='<span>Запись сохранена в журнал</span><button type="button">Отменить</button>';n.querySelector('button').onclick=undoNowSave;document.body.append(n);
+}
+
 function openMood(recordId,returnTo='day'){
+ document.getElementById('nowNotice').hidden=true;
  const record=recordId?C.readDay(DB,curDate).checkins.find(x=>x.id===recordId):null;
  const checkpoint={time:record?.time||nowHM(),tags:C.copy(record?.tags||{})},defs=C.copy(record?.metricDefs||{});
  if(record){Object.assign(checkpoint,record.metricValues||{});const old={feeling:['Самочувствие',-3,3],joy:['Радость',0,4],strain:['Напряжение',0,4]};for(const [key,value]of Object.entries(record.values||{})){const d=old[key];if(d){defs[key]={k:key,t:d[0],lo:d[1],hi:d[2],w:[],neg:key==='strain'};checkpoint[key]=value;}}}
  session={id:record?.id||C.uid(),date:curDate,checkpoint,defs,readOnly:!!record,returnTo};curSec=CURRENT;cur=0;
- buildTracks();if(!record)cur=Math.max(0,CURS.findIndex(m=>m.k===data().settings.activeScale));renderCpTags();$('cpName').textContent='Самочувствие';paintCpMeal();go('ring');document.querySelector('[data-screen="ring"]').scrollTop=0;
+ buildTracks();if(!record)cur=Math.max(0,CURS.findIndex(m=>m.k===data().settings.activeScale));renderCpTags();$('cpName').textContent='Сейчас';paintCpMeal();go('ring');document.querySelector('[data-screen="ring"]').scrollTop=0;
 }
 function open(kind,id,parent){
  init();if(['mind','mood','diary','activity'].includes(kind)&&!id)rememberActive(kind);if(kind==='mood'){openMood(id,parent||'day');return;}
- if(kind.startsWith('settings-'))renderSettingsPage(kind.slice(9));
+ if(kind==='updates')renderUpdates();
+ else if(kind.startsWith('settings-'))renderSettingsPage(kind.slice(9));
  else if(kind==='diary')renderDiary();else if(kind==='entry'){currentEntry=id;renderEntry();}else if(kind==='mind')renderMind();else if(kind==='activity')renderActivity();
  go('care-'+kind);block(kind).scrollTop=0;
  if(parent){const grip=block(kind).querySelector('[data-care-close]');if(grip)grip.dataset.careClose=parent;}
  if(kind==='activity'&&data().strong?.source==='cloud'&&Date.now()-data().strong.updatedAt>60000)refreshStrong();
+}
+function renderUpdates(){
+ block('updates').innerHTML=header('История обновлений','settings',false)+'<p class="care-help">Happy Day</p>'+(root.HappyDayReleases||[]).map(r=>'<article class="card release-card"><h2>'+h(r.title)+'</h2><time datetime="'+h(r.date)+'">'+h(r.date.split('-').reverse().join('.'))+'</time><ul>'+r.changes.map(t=>'<li>'+h(t)+'</li>').join('')+'</ul></article>').join('');
 }
 function rememberActive(key){if(!key)return;active=key;const s=data().settings;if(s.active!==key){s.active=key;if(!RO)save();}}
 function rememberScale(key){if(!isCheckin()||session.readOnly)return;const s=data().settings;if(s.activeScale!==key){s.activeScale=key;if(!RO)save();}}
@@ -176,7 +201,7 @@ function renderSettings(){
  if(!ready)return;const s=data().settings;
  const names={state:'Текущее состояние',diary:'Дневник',mood:'Самочувствие',activity:'Активность',mind:'Осознанность'};
  const order=s.settingsOrder||['state',...s.order];
- $('careSettings').innerHTML='<div class="eyebrow"><span>Настройки дневника активности</span></div><div class="care-function-list">'+order.map(k=>'<div class="card care-function-row" data-care-function="'+k+'"><button class="care-function-open" data-care-open="settings-'+k+'"><span>'+names[k]+'</span>'+CHEV+'</button>'+(k==='state'?'':'<label class="care-switch"><input type="checkbox" data-care-visible="'+k+'" aria-label="Показывать '+titles[k]+'"'+(!s.hidden.includes(k)?' checked':'')+'><i></i></label>')+'<button class="dragH care-function-drag" aria-label="Переместить '+names[k]+'" title="Перетащи или используй стрелки вверх и вниз"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 12h16M4 16h16"/></svg></button></div>').join('')+'</div>';
+ $('careSettings').innerHTML='<div class="eyebrow"><span>Настройки «Сейчас»</span></div><div class="care-function-list">'+order.map(k=>'<div class="card care-function-row" data-care-function="'+k+'"><button class="care-function-open" data-care-open="settings-'+k+'"><span>'+names[k]+'</span>'+CHEV+'</button>'+(k==='state'?'':'<label class="care-switch"><input type="checkbox" data-care-visible="'+k+'" aria-label="Показывать '+titles[k]+'"'+(!s.hidden.includes(k)?' checked':'')+'><i></i></label>')+'<button class="dragH care-function-drag" aria-label="Переместить '+names[k]+'" title="Перетащи или используй стрелки вверх и вниз"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 12h16M4 16h16"/></svg></button></div>').join('')+'</div>';
 }
 function moveFunction(key,to){
  const s=data().settings,order=s.settingsOrder.slice(),from=order.indexOf(key);if(RO||from<0||to<0||to>=order.length||from===to)return;

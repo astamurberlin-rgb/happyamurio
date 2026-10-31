@@ -8,12 +8,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="HappyDay">
 <title>HappyDay</title>
-<link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261030-v3-cap-32.png">
-<link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261030-v3-cap-48.png">
-<link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261030-v3-cap-152.png">
-<link rel="apple-touch-icon" sizes="167x167" href="./app-icons/happy-day-20261030-v3-cap-167.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-day-20261030-v3-cap-180.png">
-<link rel="manifest" href="./manifest.webmanifest?v=20261030-v3">
+<link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
+<link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="./app-icons/happy-day-20261031-v4-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-day-20261031-v4-180.png">
+<link rel="manifest" href="./manifest.webmanifest?v=20261031-v4">
 <style>
 :root{
   --base:#00A8F5;
@@ -998,8 +998,11 @@ a.btn{display:inline-block;text-decoration:none}
 /* HAPPY_SHARED_STYLE_END */
 </style>
 <link rel="stylesheet" href="../shared/food-counters.css?v=2">
-<link rel="stylesheet" href="./energy-widget.css?v=50.13">
-<link rel="stylesheet" href="./selfcare.css?v=50.13">
+<link rel="stylesheet" href="./energy-widget.css?v=50.14">
+<link rel="stylesheet" href="./selfcare.css?v=50.14">
+<link rel="stylesheet" href="./arc-motion.css?v=1.0">
+<script defer src="./arc-motion.js?v=1.1"></script>
+<script defer src="./arc-home.js?v=1.0"></script>
 </head>
 <body class="loading">
 
@@ -1036,8 +1039,8 @@ a.btn{display:inline-block;text-decoration:none}
       </div>
     </div>
 
-    <div class="eyebrow nwEb"><span>Дневник активности</span></div>
-    <section class="nwWg" aria-label="Дневник активности">
+    <div class="eyebrow nwEb"><span>Сейчас</span></div>
+    <section class="nwWg" aria-label="Сейчас">
       <div class="nwRail" id="nwRail" role="group" aria-label="Шкалы: налево — тяжёлые, направо — светлые"></div>
       <div id="nwTags" hidden></div>
     </section>
@@ -1219,7 +1222,9 @@ a.btn{display:inline-block;text-decoration:none}
       <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
       <p class="note" id="keyState"></p>
     </div>
-    <footer class="app-version happy-version" data-app-version="50.13"><div>Happy Day · v50.13</div><small>Обновлено 30.10.2026</small></footer>
+    <div class="card"><a class="arc-studio-link" href="./arc-studio/"><span>Студия дуг<br><small>Цвет, свет и движение главной кнопки</small></span><span aria-hidden="true">↗</span></a></div>
+    <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
+    <footer class="app-version happy-version" data-app-version="50.14"><div>Happy Day · v50.14</div><small>Обновлено 31.10.2026</small></footer>
   </div>
 
 </div>
@@ -1488,9 +1493,10 @@ var HappyProfile=HappyProfiles.create("day");</script>
 </script>
 <script src="../shared/food-counters.js?v=2"></script>
 <script src="counters.js?v=2"></script>
-<script src="./selfcare-core.js?v=50.13"></script>
-<script src="./energy-widget.js?v=50.13"></script>
-<script src="./selfcare-ui.js?v=50.13"></script>
+<script src="./selfcare-core.js?v=50.14"></script>
+<script src="./energy-widget.js?v=50.14"></script>
+<script src="./release-notes.js?v=50.14"></script>
+<script src="./selfcare-ui.js?v=50.14"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};

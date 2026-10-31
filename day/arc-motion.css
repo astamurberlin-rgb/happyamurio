@@ -1,0 +1,4 @@
+/* Decorative light lives on the existing 92 / 16 / 64° track. Values stay in the SVG above it. */
+.ringWrap>.arc-motion{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.arc-studio-link{display:flex;align-items:center;justify-content:space-between;color:var(--ink);text-decoration:none;min-height:48px;font-weight:700}
+.arc-studio-link small{font-size:12px;font-weight:400;color:var(--muted)}
