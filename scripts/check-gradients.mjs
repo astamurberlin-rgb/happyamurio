@@ -39,7 +39,7 @@ assert.notEqual(G.sample(G.normalize({...monochrome,type:'curved',bend:70}),0,0)
 const invalid=G.normalize({angle:Infinity,stops:[{color:'url(javascript:bad)',position:-9},{color:'#ffffff',position:140}]});
 assert(!G.css(invalid).includes('javascript'));assert.equal(invalid.stops[0].position,0);assert.equal(invalid.stops[1].position,100);
 for(const file of ['prototypes/happy-family-color-studio-v12.html','prototypes/studio.html']){
- const html=read(file);assert(html.includes('data-app-version="12.1"'));
+ const html=read(file);assert(html.includes('data-app-version="'+JSON.parse(read('shared/apps.json')).colorStudio.version+'"'));
  for(const script of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))new vm.Script(script[1],{filename:file});
  for(const module of ['happy-gradients.js','happy-gradient-editor.js','happy-gradient-editor.css'])assert(html.includes('../shared/'+module+'?v=1'));
 }
