@@ -1,0 +1,11 @@
+.reference-intro{font-size:12px;line-height:1.6;color:#c8c0dc;max-width:680px;margin:4px 0 18px}
+.reference-heading{font-size:13px;font-weight:650;color:#eee8fa;margin:24px 0 12px}.reference-heading:first-of-type{margin-top:0}
+.reference-grid{display:grid;gap:14px}.reference-grid-regular{grid-template-columns:repeat(4,minmax(0,1fr))}.reference-grid-night{grid-template-columns:repeat(3,minmax(0,1fr))}
+.reference-card{display:flex;flex-direction:column;gap:0;min-width:0;padding:7px 7px 12px;border:1px solid #ffffff25;border-radius:17px;background:#ffffff06;color:#f8f4ff;text-align:left;transition:border-color .15s,background .15s}
+.reference-card:hover{border-color:#d2baff9c;background:#ffffff0c}.reference-card[aria-pressed=true]{border-color:#d9c9ff;box-shadow:0 0 0 1px #d9c9ff;background:#bba0fa18}.reference-card:focus-visible{outline:3px solid #d9c9ff;outline-offset:3px}
+.reference-swatch{position:relative;display:block;aspect-ratio:1;width:100%;border-radius:11px;overflow:hidden;border:1px solid #ffffff18}
+.reference-badge{position:absolute;top:9px;left:9px;max-width:calc(100% - 18px);padding:5px 8px;border:1px solid #ffffff24;border-radius:20px;background:#180d3299;color:#fff;font-size:10px;line-height:1.3;backdrop-filter:blur(12px)}
+.reference-accents{position:absolute;left:10px;bottom:10px;display:flex;gap:6px;padding:5px;border-radius:20px;background:#120c2940}.reference-accents i{display:block;width:15px;height:15px;border-radius:50%;border:1px solid #ffffff9c}
+.reference-card strong{font-size:13px;font-weight:650;line-height:1.4;padding:11px 4px 4px}.reference-card small{font-size:11px;line-height:1.5;color:#c6bed8;padding:0 4px;overflow-wrap:anywhere}.reference-status{font-size:12px;line-height:1.5;color:#ddc8ff;min-height:18px;margin:12px 0 0}
+@media(min-width:900px){.reference-grid{gap:16px}.reference-grid-night{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.reference-grid-regular,.reference-grid-night{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.reference-card strong{font-size:12px}.reference-badge{top:7px;left:7px;padding:4px 6px;font-size:9px}.reference-card small{font-size:10px}}

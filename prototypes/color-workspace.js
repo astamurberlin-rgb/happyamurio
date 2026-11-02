@@ -7,7 +7,7 @@
   {id:'happy-family',name:'Happy · три приложения',colors:['#00A8F5','#7CE3C9','#5A50D1','#FF9500'],note:'Основные цвета Happy'},
   {id:'blue-hour',name:'Синий час',colors:['#142E4F','#1E3A60','#315479','#86B7DF','#B7D7F2'],note:'Холодная палитра'},
   {id:'sea-sunset',name:'Морской закат',colors:['#6542C5','#9570DD','#FFD396','#6486CC','#2759B2'],note:'Тёплый свет и море'}
- ];
+ ].concat((root.HappyReferenceThemes?.themes||[]).map(t=>({id:t.id,name:t.name,colors:t.colors,note:t.mode==='night'?'Ночная тема · общая для Happy':'Цветная тема · общая для Happy'})));
  function validate(value){
   if(value==null)return {palettes:[],layout:{order:[],open:{}}};
   if(typeof value!=='object'||Array.isArray(value))throw Error('Некорректные настройки панелей');
@@ -54,6 +54,7 @@
   const ids=['background','wallpapers','presets','glass','opacity','button','fonts'];
   source.forEach((panel,i)=>{const title=panel.querySelector('h2');wrap(panel,ids[i],title,ids[i]==='background');const head=panel.querySelector('.panel-head');if(head&&!head.children.length)head.remove();});
   container.querySelectorAll(':scope > details[data-group]').forEach(n=>n.remove());
+  const references=document.getElementById('referenceThemes');wrap(references,'reference-themes','Общие темы · 7 схем',true);
   const themes=document.getElementById('savedThemes');wrap(themes,'themes','Мои варианты оформления');themes.querySelector('.shared-head strong')?.remove();
   const library=el('section','panel palette-library');library.append(el('p','palette-library-intro','Наборы цветов для фона и кнопок. Свои палитры сохраняются на этом устройстве и в JSON-копии настроек.'));
   const actions=el('div','palette-actions');actions.append(button('＋ Создать палитру',()=>edit(null),'primary'),button('Из текущего фона',()=>edit(null,options.readColors('background'))),button('Из текущей кнопки',()=>edit(null,options.readColors('button'))));library.append(actions,el('h3','palette-subtitle','Наборы Happy'));
@@ -62,8 +63,8 @@
   const editor=el('div','palette-editor');editor.hidden=true;library.append(editor);
   const status=el('p','palette-status');status.setAttribute('aria-live','polite');library.append(status);
   wrap(library,'palettes','Палитры цветов',true);
-  function applyOrder(){for(const id of data.layout.order)if(panels.has(id))container.append(panels.get(id));for(const id of ids.concat('themes','palettes'))if(!data.layout.order.includes(id))container.append(panels.get(id));}
-  function restore(value){const next=validate(value);data=next;applyOrder();for(const [id,p] of panels)p.open=data.layout.open[id]??['background','palettes'].includes(id);selected=null;draft=null;selection.hidden=true;editor.hidden=true;render();}
+  function applyOrder(){if(!data.layout.order.includes('reference-themes'))container.prepend(panels.get('reference-themes'));for(const id of data.layout.order)if(panels.has(id))container.append(panels.get(id));for(const id of ids.concat('themes','palettes'))if(!data.layout.order.includes(id))container.append(panels.get(id));}
+  function restore(value){const next=validate(value);data=next;applyOrder();for(const [id,p] of panels)p.open=data.layout.open[id]??['reference-themes','background','palettes'].includes(id);selected=null;draft=null;selection.hidden=true;editor.hidden=true;render();}
   function choose(p){selected=p;render();selection.replaceChildren(el('strong','',p.name));selection.hidden=false;const swatches=el('div','palette-swatches');for(const color of p.colors){const b=button('',()=>{navigator.clipboard?.writeText(color).then(()=>{status.textContent=color+' скопирован'},()=>{status.textContent=color});status.textContent=color},'');b.style.background=color;b.title=color;b.setAttribute('aria-label','Скопировать '+color);swatches.append(b)}selection.append(swatches);
    const row=el('div','palette-actions');row.append(button('Применить к фону',()=>{options.applyColors('background',p.colors);status.textContent='Палитра применена к фону выбранного превью.'},'primary'),button('Применить к кнопке',()=>{options.applyColors('button',p.colors);status.textContent='Палитра применена к кнопке выбранного превью.'}));selection.append(row);}
   function render(){for(const [grid,items,custom] of [[builtinGrid,BUILT_INS,false],[userGrid,data.palettes,true]]){grid.replaceChildren();for(const p of items){const card=el('div','palette-card'+(p.id===selected?.id?' selected':''));const pick=button('',()=>choose(p),'');pick.setAttribute('aria-label','Выбрать палитру '+p.name);const square=el('span','palette-square');for(const color of p.colors){const stripe=el('i');stripe.style.background=color;square.append(stripe)}pick.append(square,el('span','palette-card-name',p.name),el('small','',p.note||'Цветов: '+p.colors.length));card.append(pick);const row=el('div','palette-card-actions');row.append(button(custom?'Изменить':'Создать копию',()=>edit(custom?p:null,p.colors),''));if(custom)row.append(button('Удалить',()=>{const before=copy(data.palettes);data.palettes=data.palettes.filter(x=>x.id!==p.id);if(!persist()){data.palettes=before;return}if(selected?.id===p.id){selected=null;selection.hidden=true}render();status.replaceChildren(document.createTextNode('Палитра удалена. '),button('Отменить',()=>{const current=data.palettes;data.palettes=before;if(!persist()){data.palettes=current;return}render();status.textContent='Палитра восстановлена'}));},''));card.append(row);grid.append(card)}}}

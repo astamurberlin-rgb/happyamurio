@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="ru" data-app-version="12.2"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#15162a"><title>Happy Color Studio v12.2 · Day / Meal / Sport</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Studio"><meta name="theme-color" content="#17162b"><link rel="manifest" href="./happy-family-studio.webmanifest">
-<link rel="stylesheet" href="../shared/happy-gradient-editor.css?v=1"><script src="../shared/happy-gradients.js?v=1"></script><script src="../shared/happy-gradient-editor.js?v=1"></script><link rel="stylesheet" href="./color-workspace.css?v=12.2"><script src="./color-workspace.js?v=12.2"></script><style>
+<html lang="ru" data-app-version="12.3"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#15162a"><title>Happy Color Studio v12.3 · Day / Meal / Sport</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Studio"><meta name="theme-color" content="#17162b"><link rel="manifest" href="./happy-family-studio.webmanifest">
+<link rel="stylesheet" href="../shared/happy-gradient-editor.css?v=1"><script src="../shared/happy-gradients.js?v=1"></script><script src="../shared/happy-gradient-editor.js?v=1"></script><link rel="stylesheet" href="./color-workspace.css?v=12.3"><script src="../shared/happy-reference-themes.js?v=1"></script><script src="./color-workspace.js?v=12.3"></script><link rel="stylesheet" href="./reference-themes.css?v=1"><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#f6f5ff;color-scheme:dark;background:#161527;font-synthesis:none}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse 70% 55% at 9% -6%,#6851ad46,transparent 82%),radial-gradient(ellipse 58% 42% at 95% 12%,#4069a039,transparent 80%),#161527}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #93c5fd;outline-offset:3px}button:disabled{opacity:.38;cursor:default}
 .shell{max-width:1500px;margin:auto;padding:20px clamp(13px,3vw,34px) 38px}.head{display:flex;align-items:start;justify-content:space-between;gap:12px;margin-bottom:10px}.eyebrow{font-weight:800;font-size:10px;letter-spacing:.19em;color:#9d9ab5}.head h1{font-size:clamp(21px,3.3vw,30px);letter-spacing:-.65px;margin:5px 0 6px}.head p{font-size:12px;color:#9d9ab5;margin:0;line-height:1.45}.chipbutton{background:#ffffff13;border:1px solid #ffffff22;border-radius:13px;color:white;padding:9px 12px;white-space:nowrap;font-size:12px}
@@ -87,6 +87,7 @@
     <section class="phone-wrap" data-phone="sport"><div class="phone" id="phone-sport"><div class="phone-inner"><iframe title="Главный экран Happy Sport — демонстрационное превью" sandbox="allow-scripts" scrolling="no" loading="lazy"></iframe><span class="watermark">SPORT</span></div></div></section>
   </div></div>
 
+  <section class="panel" id="referenceThemes" aria-label="Семь общих цветовых схем"></section>
   <section class="shared-wrap" id="savedThemes" aria-label="Общие сохранённые темы">
 <div class="shared-head"><div><strong>Мои варианты оформления</strong><small>Общая галерея тем Happy. Один тап по миниатюре применяет оформление ко всем предпросмотрам.</small></div></div>
 <div class="shared-save"><input id="sharedName" type="text" maxlength="30" placeholder="Имя новой темы"><button id="sharedSave" type="button">＋ Сохранить для всех</button></div>
@@ -100,6 +101,9 @@
 <details class="studio-group" data-group="glass" open><summary><span>🧩 Карточки и кнопки</span><span class="group-chevron">⌄</span></summary><div class="group-body"><section class="panel" id="glassPanel"><div class="panel-head"><h2>Стеклянные карточки и плашки</h2><span class="muted">свой стиль поверх фона</span></div>
 <p class="st-caption">Отдельный редактор заливки, границ, размытия и скругления карточек.</p>
 <div class="st-extra-grid" style="margin-top:14px">
+<label class="st-field"><span>Основной текст</span><input type="color" id="themeTextColor" value="#ffffff"></label>
+<label class="st-field"><span>Подписи</span><input type="color" id="themeMutedColor" value="#e8dff2"></label>
+<label class="st-field"><span>Заголовок экрана</span><input type="color" id="themeHeadingColor" value="#ffffff"></label>
 <label class="st-field"><span>Цвет карточек</span><input type="color" id="glassColor" value="#ffffff"></label>
 <label class="st-field"><span>Цвет границ</span><input type="color" id="borderColor" value="#ffffff"></label>
 <label class="st-field"><span>Заливка <output id="glassAlphaOut">18%</output></span><input type="range" id="glassAlpha" min="0" max="95" step="1"></label>
@@ -125,11 +129,12 @@
 <label class="st-field"><span>Высота строки <output id="stLineHeightOut"></output></span><input id="stLineHeight" type="range" min="1" max="2" step=".05"></label></div>
 <div class="st-tool-row"><button id="stResetFont" type="button">↺ Сбросить шрифт</button><button id="stCopyFont" type="button">Копировать CSS</button></div>
 <p class="st-caption">Без загрузки внешних шрифтов. Настройки меняют только внешний вид превью, исходные приложения остаются без изменений.</p>
-</section></div></details></main><p class="st-caption" style="text-align:center;margin:24px">Happy Color Studio · v12.2 · 31.10.2026</p>
+</section></div></details></main><p class="st-caption" style="text-align:center;margin:24px">Happy Color Studio · v12.3 · 02.11.2026</p>
 </div><div class="toast" id="toast"></div>
 <script>
 (function(){'use strict';
-const G=window.HappyGradients;let backgroundEditor,buttonEditor,workspace;
+const G=window.HappyGradients;let backgroundEditor,buttonEditor,workspace,referenceGallery;
+const referenceThemes=window.HappyReferenceThemes.themes;
 const APP_ORDER=['day','meal','sport'],PREVIEW_ORDER=['day','meal','sport'],STORAGE='happy-family-color-studio-v11';
 const baseStops=[0,17,50,76,100],layerTitles=['Верх 0%','Переход 17%','Центр 50%','Низ 76%','Основание','Свечение 1','Свечение 2'];
 const wallpapers={none:{label:'Без',layer:''},dots:{label:'Точки',layer:'radial-gradient(circle at 1.4px 1.4px, rgba(255,255,255,.14) 1.2px, transparent 1.45px) 0 0/18px 18px'},mesh:{label:'Сетка',layer:'linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px) 0 0/22px 22px,linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px) 0 0/22px 22px'},stripes:{label:'Полосы',layer:'repeating-linear-gradient(135deg, rgba(255,255,255,.06) 0 8px, rgba(255,255,255,0) 8px 16px)'},soft:{label:'Пятна',layer:'radial-gradient(circle at 18% 24%, rgba(255,255,255,.10) 0 3%, transparent 8%),radial-gradient(circle at 78% 16%, rgba(255,255,255,.08) 0 4%, transparent 9%),radial-gradient(circle at 60% 82%, rgba(255,255,255,.08) 0 3%, transparent 8%)'},spark:{label:'Искры',layer:'radial-gradient(circle at 12% 16%, rgba(255,255,255,.18) 0 1px, transparent 2px),radial-gradient(circle at 72% 24%, rgba(255,255,255,.17) 0 1px, transparent 2px),radial-gradient(circle at 45% 72%, rgba(255,255,255,.15) 0 1px, transparent 2px),radial-gradient(circle at 86% 80%, rgba(255,255,255,.15) 0 1px, transparent 2px) 0 0/90px 90px'}};
@@ -179,6 +184,7 @@ function themeCSS(st){
  css.push('.card,.rowcard,.pin,.energy,.datePill,.date-pill,.sheet,.glass,.dock-bg,.panel-card{background-color:'+glass+'!important;border-color:'+border+'!important;backdrop-filter:blur('+st.glassBlur+'px)!important;-webkit-backdrop-filter:blur('+st.glassBlur+'px)!important;}');
  css.push('.card,.rowcard,.pin,.energy,.sheet{border-radius:'+st.cornerRadius+'px!important;}');
  }
+ css.push(HappyReferenceThemes.uiCSS(st));
  return css.join('\n');
 }
 const wallpaperCache={day:'',meal:'',sport:''},wallpaperJobs={day:0,meal:0,sport:0};
@@ -300,6 +306,7 @@ function drawWallpapers(){
 }
 function drawGlass(){
  const st=states[selected];for(const k of ['glassColor','borderColor'])$(k).value=st[k];
+ for(const k of ['themeTextColor','themeMutedColor','themeHeadingColor'])$(k).value=/^#[0-9a-f]{6}$/i.test(st[k]||'')?st[k]:(k==='themeMutedColor'?'#e8dff2':'#ffffff');
  for(const [k,u] of [['glassAlpha','%'],['borderAlpha','%'],['glassBlur',' px'],['cornerRadius',' px']]){$(k).value=st[k];$(k+'Out').textContent=st[k]+u}
 }
 function drawExtras(){
@@ -316,13 +323,14 @@ function drawExtras(){
 }
 function updateExtra(key,value){
  const st=states[selected],old=st[key];st[key]=value;selectedPreset=-1;activeShared='';
- if(!persist()){st[key]=old;drawExtras();drawGlass();return}drawExtras();drawGlass();applyTo(selected);
+ if(!persist()){st[key]=old;drawExtras();drawGlass();return}drawExtras();drawGlass();drawShared();applyTo(selected);
  showCode();
  if(key==='wallpaperAlpha')composeWallpaper(selected);
 }
 
 
 function drawShared(){
+ referenceGallery?.select(activeShared);
  const rail=$('sharedRail');rail.innerHTML='';
  if(!sharedPresets.length){const e=document.createElement('span');e.className='shared-empty';e.textContent='Здесь появятся твои сохранённые варианты.';rail.append(e);return}
  for(const item of sharedPresets){
@@ -347,7 +355,7 @@ function saveSharedPreset(name){
  $('sharedName').value='';$('presetName').value='';applyShared(item.id);toast('Тема сохранена и применена ко всем предпросмотрам');
 }
 function applyShared(id){
- const item=sharedPresets.find(p=>p.id===id);if(!item)return;
+ const item=referenceThemes.find(p=>p.id===id)||sharedPresets.find(p=>p.id===id);if(!item)return;
  const before=Object.fromEntries(APP_ORDER.map(k=>[k,clone(states[k])]));
  for(const k of APP_ORDER){states[k]=clone(item.state);normalizeExtra(states[k])}
  activeShared=id;selectedPreset=-1;
@@ -366,7 +374,7 @@ function restoreGroups(){
 function bind(){
  $('sharedSave').onclick=()=>saveSharedPreset($('sharedName').value);
  for(const k of ['glassAlpha','borderAlpha','glassBlur','cornerRadius'])$(k).oninput=e=>updateExtra(k,Number(e.target.value));
- for(const k of ['glassColor','borderColor'])$(k).oninput=e=>updateExtra(k,e.target.value);
+ for(const k of ['glassColor','borderColor','themeTextColor','themeMutedColor','themeHeadingColor'])$(k).oninput=e=>{if(k.startsWith('theme')&&!states[selected].themeTextColor)states[selected].themeTextColor='#ffffff';updateExtra(k,e.target.value);drawShared()};
  $('resetGlass').onclick=()=>{for(const k of ['glassColor','borderColor','glassAlpha','borderAlpha','glassBlur','cornerRadius'])states[selected][k]=EXTRA_DEFAULT[k];selectedPreset=-1;afterChange()};
 
  $('wpUpload').onclick=()=>$('wpFile').click();
@@ -379,7 +387,7 @@ function bind(){
  $('stCopyFont').onclick=()=>copy(themeCSS(states[selected]));
 
 const ph=$('phones');let scrollEnd;ph.addEventListener('scroll',()=>{clearTimeout(scrollEnd);scrollEnd=setTimeout(()=>{const center=ph.getBoundingClientRect().left+ph.clientWidth/2;let best='day',score=Infinity;document.querySelectorAll('[data-phone]').forEach(n=>{const b=n.getBoundingClientRect(),dist=Math.abs(b.left+b.width/2-center);if(dist<score){score=dist;best=n.dataset.phone}});if(best!==selected)selectPreview(best)},90)},{passive:true});
-$('savePreset').onclick=()=>saveSharedPreset($('presetName').value);$('reset').onclick=()=>{states[selected]=clone(defaults[selected]);normalizeExtra(states[selected]);wallpaperCache[selected]='';++wallpaperJobs[selected];selectedPreset=0;persist();draw()};$('copyCSS').onclick=()=>copy(css(selected));$('copyAll').onclick=()=>copy(APP_ORDER.map(css).join('\n\n'));$('buttonTextColor').oninput=e=>{states[selected].buttonTextColor=e.target.value;afterChange()};$('copyButton').onclick=()=>copy(buttonCSS());$('exportConfig').onclick=exportConfig;$('importConfig').onclick=()=>$('importConfigFile').click();$('importConfigFile').onchange=async e=>{if(e.target.files?.[0])await importConfig(e.target.files[0]);e.target.value=''};
+$('savePreset').onclick=()=>saveSharedPreset($('presetName').value);$('reset').onclick=()=>{states[selected]=clone(defaults[selected]);normalizeExtra(states[selected]);wallpaperCache[selected]='';++wallpaperJobs[selected];selectedPreset=0;activeShared='';persist();draw()};$('copyCSS').onclick=()=>copy(css(selected));$('copyAll').onclick=()=>copy(APP_ORDER.map(css).join('\n\n'));$('buttonTextColor').oninput=e=>{states[selected].buttonTextColor=e.target.value;afterChange()};$('copyButton').onclick=()=>copy(buttonCSS());$('exportConfig').onclick=exportConfig;$('importConfig').onclick=()=>$('importConfigFile').click();$('importConfigFile').onchange=async e=>{if(e.target.files?.[0])await importConfig(e.target.files[0]);e.target.value=''};
 $('fullPreview').onclick=()=>{previewFull=!previewFull;$('studio').hidden=previewFull;workspace.setVisible(!previewFull);$('fullPreview').textContent=previewFull?'Показать настройки':'Скрыть настройки';document.querySelectorAll('.phone').forEach(e=>e.style.height='')};
 }
 function exportConfig(){
@@ -412,6 +420,7 @@ async function importConfig(file){
 function copy(text){if(navigator.clipboard?.writeText){navigator.clipboard.writeText(text).then(()=>toast('CSS скопирован')).catch(()=>fallbackCopy(text))}else fallbackCopy(text)}function fallbackCopy(t){const area=document.createElement('textarea');area.value=t;area.style.position='fixed';area.style.opacity='0';document.body.append(area);area.select();try{document.execCommand('copy');toast('CSS скопирован')}catch(e){toast('Не удалось скопировать CSS')}area.remove()}
 backgroundEditor=HappyGradientEditor.mount($('backgroundGradientEditor'),states[selected].backgroundGradient,m=>{states[selected].backgroundGradient=m;syncLegacy(states[selected]);selectedPreset=-1;afterChange()});
 buttonEditor=HappyGradientEditor.mount($('buttonGradientEditor'),states[selected].buttonGradient,m=>{states[selected].buttonGradient=m;states[selected].buttonColor=G.colors(m)[0].color;states[selected].buttonShine=0;selectedPreset=-1;afterChange()});
+referenceGallery=HappyReferenceThemes.mount($('referenceThemes'),applyShared);
 workspace=HappyColorWorkspace.mount({
  container:$('studio'),saved:store.workspace,notify:toast,persist,
  readColors(target){return [...new Set(G.colors(states[selected][target==='button'?'buttonGradient':'backgroundGradient']).map(s=>s.color))].slice(0,8).flatMap((c,i,a)=>a.length===1?[c,c]:[c]);},
