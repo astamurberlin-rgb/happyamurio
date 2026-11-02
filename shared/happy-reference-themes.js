@@ -9,8 +9,8 @@
  function theme(id,name,mode,note,colors,angle,lights,accent,ui={}){
   const backgroundGradient=G.normalize({type:'linear',angle,stops:colors.map((color,i)=>({color,position:[0,17,50,76,100][i]})),glow:lights[0],extraGlow:lights[1]});
   const state={angle,base:colors.slice(),glows:lights.map(g=>({color:g.color,opacity:g.strength/100,x:g.x,y:g.y,w:g.radius,h:g.radius})),backgroundGradient,
-   wallpaper:'none',wallpaperData:'',brightness:100,saturationBoost:100,buttonColor:accent[0],buttonShine:36,buttonAlpha:100,fabAlpha:100,
-   buttonGradient:G.normalize({type:'radial',x:32,y:20,radius:100,stops:[{color:mix(accent[0],255,.406),position:0},{color:accent[0],position:56},{color:mix(accent[0],0,.25),position:100}]}),buttonTextColor:'#ffffff',
+   wallpaper:'none',wallpaperData:'',brightness:100,saturationBoost:100,buttonColor:accent[0],buttonShine:mode==='night'?12:36,buttonAlpha:100,fabAlpha:100,
+   buttonGradient:G.normalize({type:'radial',x:32,y:20,radius:100,stops:[{color:mix(accent[0],255,mode==='night'?.10:.406),position:0},{color:accent[0],position:56},{color:mix(accent[0],0,.25),position:100}]}),buttonTextColor:'#ffffff',
    glassColor:'#ffffff',glassAlpha:18,borderColor:'#ffffff',borderAlpha:36,glassBlur:12,cornerRadius:22,themeMode:mode};
   return {id:'happy-ref-'+id+'-v1',name,mode,note,colors:[...new Set([...colors,...lights.map(g=>g.color)])].slice(0,8),state};
  }
@@ -36,15 +36,15 @@
   theme('lagoon','Лагуна','regular','Мята и изумруд переходят в глубину моря.',
    ['#40c7b8','#2bb79b','#148e80','#056175','#04355b'],177,
    [glow('#24bd77',100,18,96,55),glow('#0872ab',0,84,66,25)],['#086293'],{glassColor:'#063345',textColor:'#f1fffc',mutedColor:'#d1eee8',headingColor:'#073b43',buttonTextColor:'#06383b'}),
-  theme('night-bay','Ночная бухта','night','Бирюзовый отблеск и янтарный свет на тёмном берегу.',
-   ['#561547','#38233c','#4e2732','#271e23','#101819'],90,
-   [glow('#1b98a3',17,13,55,90),glow('#f39c59',42,85,68,94)],['#b75926'],{glassColor:'#101e25',textColor:'#eef8f7',mutedColor:'#c3dedc',buttonTextColor:'#142b30'}),
-  theme('midnight-iris','Полуночный ирис','night','Сливовая тень, ирисовое свечение и коралловый край.',
-   ['#22092b','#3c0757','#740f86','#a91e5b','#dc6d83'],113,
-   [glow('#b962ed',54,48,55,90),glow('#f2908d',85,98,64,82)],['#bf3e6a'],{glassColor:'#200e2d',mutedColor:'#e4cdeb'}),
-  theme('neon-night','Неоновая ночь','night','Электрический синий, фиолетовый и розовое свечение.',
-   ['#4924f0','#5918d9','#730b9f','#610675','#880c8a'],132,
-   [glow('#edabe9',99,0,61,94),glow('#c777ec',0,100,63,83)],['#950ca7'],{glassColor:'#1b1038',mutedColor:'#dfd3f6'})
+  theme('night-bay','Ночная бухта','night','Почти чёрный берег, тихий бирюзовый и угасающий янтарный отблеск.',
+   ['#080d12','#0b1419','#11171a','#111214','#080b0e'],90,
+   [glow('#23484c',17,13,55,24),glow('#69412b',42,85,68,18)],['#623d29'],{glassColor:'#101e25',textColor:'#eef8f7',mutedColor:'#c3dedc',buttonTextColor:'#142b30'}),
+  theme('midnight-iris','Полуночный ирис','night','Чернильная слива с едва заметным ирисовым и винным светом.',
+   ['#090910','#100c18','#171020','#1d1020','#21131e'],113,
+   [glow('#513865',54,48,55,22),glow('#67404a',85,98,64,18)],['#633047'],{glassColor:'#200e2d',mutedColor:'#e4cdeb'}),
+  theme('neon-night','Неоновая ночь','night','Почти чёрный индиго с приглушённым сине-фиолетовым ореолом.',
+   ['#0b0c1b','#101027','#17102b','#180e22','#1d1027'],132,
+   [glow('#5a3a65',99,0,61,20),glow('#383974',0,100,63,22)],['#492f65'],{glassColor:'#1b1038',mutedColor:'#dfd3f6'})
  ];
  // Only validated optional tokens affect previews; old user themes keep their appearance.
  function uiCSS(st){
@@ -82,5 +82,5 @@
   const status=document.createElement('p');status.className='reference-status';status.setAttribute('aria-live','polite');host.append(status);
   return {select(id){for(const [key,b] of buttons)b.setAttribute('aria-pressed',String(key===id));const item=themes.find(t=>t.id===id);status.textContent=item?'Выбрано: '+item.name+' · Day, Meal и Sport':'';}};
  }
- root.HappyReferenceThemes={version:2,themes,uiCSS,mount,copy};
+ root.HappyReferenceThemes={version:3,themes,uiCSS,mount,copy};
 })(typeof window!=='undefined'?window:globalThis);
