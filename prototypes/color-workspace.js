@@ -7,7 +7,7 @@
   {id:'happy-family',name:'Happy · три приложения',colors:['#00A8F5','#7CE3C9','#5A50D1','#FF9500'],note:'Основные цвета Happy'},
   {id:'blue-hour',name:'Синий час',colors:['#142E4F','#1E3A60','#315479','#86B7DF','#B7D7F2'],note:'Холодная палитра'},
   {id:'sea-sunset',name:'Морской закат',colors:['#6542C5','#9570DD','#FFD396','#6486CC','#2759B2'],note:'Тёплый свет и море'}
- ].concat((root.HappyReferenceThemes?.themes||[]).map(t=>({id:t.id,name:t.name,colors:t.colors,note:t.mode==='night'?'Ночная тема · общая для Happy':'Цветная тема · общая для Happy'})));
+ ].concat((root.HappyReferenceThemes?.themes||[]).map(t=>({id:t.id,name:t.name,colors:t.colors,note:t.mode==='night'?'Ночная тема · общая для Happy':t.mode==='basic'?'Основная тема · общая для Happy':'Цветная тема · общая для Happy'})));
  function validate(value){
   if(value==null)return {palettes:[],layout:{order:[],open:{}}};
   if(typeof value!=='object'||Array.isArray(value))throw Error('Некорректные настройки панелей');
@@ -54,7 +54,7 @@
   const ids=['background','wallpapers','presets','glass','opacity','button','fonts'];
   source.forEach((panel,i)=>{const title=panel.querySelector('h2');wrap(panel,ids[i],title,ids[i]==='background');const head=panel.querySelector('.panel-head');if(head&&!head.children.length)head.remove();});
   container.querySelectorAll(':scope > details[data-group]').forEach(n=>n.remove());
-  const references=document.getElementById('referenceThemes');wrap(references,'reference-themes','Общие темы · 7 схем',true);
+  const references=document.getElementById('referenceThemes');wrap(references,'reference-themes','Общие темы · 10 вариантов',true);
   const themes=document.getElementById('savedThemes');wrap(themes,'themes','Мои варианты оформления');themes.querySelector('.shared-head strong')?.remove();
   const library=el('section','panel palette-library');library.append(el('p','palette-library-intro','Наборы цветов для фона и кнопок. Свои палитры сохраняются на этом устройстве и в JSON-копии настроек.'));
   const actions=el('div','palette-actions');actions.append(button('＋ Создать палитру',()=>edit(null),'primary'),button('Из текущего фона',()=>edit(null,options.readColors('background'))),button('Из текущей кнопки',()=>edit(null,options.readColors('button'))));library.append(actions,el('h3','palette-subtitle','Наборы Happy'));
