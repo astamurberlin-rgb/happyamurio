@@ -54,6 +54,7 @@ node scripts/check-measurements-model.mjs
 node scripts/check-measurements-regressions.mjs
 node scripts/check-measurements-shared.mjs
 node scripts/check-measurements-synthetic.mjs
+node scripts/check-measurements-two-clients.mjs
 node scripts/check-account-profile.mjs
 node scripts/check-profile-storage.mjs
 node scripts/check-gradients.mjs
@@ -66,6 +67,12 @@ scenarios, 15 real-adapter regression scenarios, and 20 separate reference-model
 scenarios. Seven additional counter checks cover offline recovery, failed reads,
 CAS exhaustion, account changes, stopping, local storage failure, and malformed
 remote documents. The original counter suite includes the stale-Day-button test.
+
+The additional six-scenario two-client suite runs two actual adapters with
+separate storage against encrypted in-memory server rows. Five scenarios verify
+current-candidate behavior. The sixth deliberately reproduces an incompatible
+legacy/new-client combination; it is not a successful compatibility test.
+See [the mixed-version result](sync-mixed-version-check-20261106.md).
 
 Real-adapter tests execute repository code with AES-GCM and an in-memory REST
 substitute, including interrupted migration, repeated edits during all four
@@ -82,8 +89,11 @@ source/build consistency, local paths, UI, exports, timing, and diary regression
   read/write, loss of network, reload, concurrent changes, account switch, and
   mixed old/new clients. RLS, real authentication, and actual network transport
   have not been exercised by this checkpoint.
-- Old clients can still use the previous conflict algorithm. Upgrade compatible
-  consumers together and verify before importing historical data.
+- Old clients use the previous conflict algorithm. The new two-client suite
+  confirms repeated resurrection/deletion oscillation with the unmodified
+  Meal Sites v12 client. Upgrade compatible consumers together and verify before
+  importing historical data; publishing only one side is not safe evidence of
+  completed synchronization.
 - Measurement conflicts resolve per date, not per field. Simultaneous independent
   field edits on the same date do not combine automatically.
 - Recovery trash still has a separate multi-tab stale-write risk. Correcting
