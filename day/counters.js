@@ -28,7 +28,7 @@
   function init(){if(root.RO)return;
     baseSave=root.save;root.save=function(){try{capture()}catch(e){root.toast(e.message)}baseSave()};
     const oldAdd=root.tapAdd;root.tapAdd=function(k){const c=root.tapDef(k);if(!c||!c.mealCounterId)return oldAdd(k);if(root.lockGuard())return;
-      try{if(!engine)throw new Error('Связь со счётчиками недоступна. Перезагрузи приложение.');engine.refresh();const d=engine.document().definitions.find(d=>d.id===c.mealCounterId&&!d.deleted);if(!d)return;
+      try{if(!engine)throw new Error('Связь со счётчиками недоступна. Перезагрузи приложение.');engine.refresh();const d=engine.document().definitions.find(d=>d.id===c.mealCounterId&&H.linked(d,'day'));if(!d)return;
         const t=root.curDate===root.todayISO()?root.nowHM():null,h=t?Number(t.slice(0,2)):12,sec=h<11?'am':h<16?'pm':h<21?'dn':'sn';
         engine.update('events',{id:'serving:'+H.id(),cid:d.id,date:root.curDate,item:{fid:d.fid,q:d.q,u:d.u,g:d.g,t,sec,counterFood:clone(d.food)}});
         apply(engine.document());root.toast(d.title+' +'+d.q+' '+d.u+' · Happy Meal');

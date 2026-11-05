@@ -3,14 +3,16 @@ const HM=HappyMeasurements, HM_PREFIX='happy-measurements-v1:',HM_MIGRATED='happ
 let hmOwner=null,hmDoc={v:1,records:[]},hmBaseline=[],hmBusy=false,hmTimer,hmStatus='',hmGeneration=0;
 const hmLegacy={owner:state.sportOwner||'local',records:JSON.parse(JSON.stringify(state.measurements)),trash:JSON.parse(JSON.stringify(state.measurementTrash||[]))};
 const hmCopy=x=>JSON.parse(JSON.stringify(x));
-function hmRead(owner){try{const d=JSON.parse(localStorage.getItem(HM_PREFIX+owner)||'null');if(d&&d.v!==1)throw new Error('Неизвестный формат замеров');return HM.merge(d,null)}catch(e){if(e instanceof SyntaxError)throw new Error('Не удалось прочитать замеры. Сохрани резервную копию.');throw e}}
+function hmRead(owner){try{const raw=localStorage.getItem(HM_PREFIX+owner);if(raw===null)return HM.merge(null,null);const d=JSON.parse(raw);if(!d||d.v!==1||!Array.isArray(d.records)||!d.records.every(HM.valid))throw new Error('Неизвестный формат замеров. Сохрани резервную копию.');return HM.merge(d,null)}catch(e){if(e instanceof SyntaxError)throw new Error('Не удалось прочитать замеры. Сохрани резервную копию.');throw e}}
 function hmSave(d){localStorage.setItem(HM_PREFIX+hmOwner,JSON.stringify(d));hmDoc=d;state.measurements=HM.visible(d);hmBaseline=hmCopy(state.measurements)}
 function hmSelect(){
  const owner=CL.s?.uid||'local';if(owner===hmOwner)return;
  hmGeneration++;hmOwner=null;state.measurements=[];hmBaseline=[];hmDoc=hmRead(owner);
  // Migrate old Sport data exactly once, to its recorded owner. Unowned data stays local.
  if(!localStorage.getItem(HM_MIGRATED)){
-  const legacyOwner=hmLegacy.owner,legacy=HM.changes([],hmLegacy.records,hmRead(legacyOwner),Date.now());localStorage.setItem(HM_PREFIX+legacyOwner+':trash',JSON.stringify(hmLegacy.trash));
+  const legacyOwner=hmLegacy.owner,existing=hmRead(legacyOwner),occupied=new Set(existing.records.map(r=>r.date));
+  const additions=hmLegacy.records.filter(r=>!occupied.has(r.date)),legacy=HM.changes([],additions,existing,Date.now());
+  if(localStorage.getItem(HM_PREFIX+legacyOwner+':trash')===null)localStorage.setItem(HM_PREFIX+legacyOwner+':trash',JSON.stringify(hmLegacy.trash));
   localStorage.setItem(HM_PREFIX+legacyOwner,JSON.stringify(legacy));localStorage.setItem(HM_MIGRATED,'1');if(owner===legacyOwner)hmDoc=legacy;
  }
  state.measurementTrash=JSON.parse(localStorage.getItem(HM_PREFIX+owner+':trash')||'[]');hmOwner=owner;hmSave(hmDoc);oldPersist();hmStatus=owner==='local'?'Замеры на этом устройстве. Войди в Happy для синхронизации.':'Обновляем общие замеры…';
@@ -40,7 +42,9 @@ async function hmSync(){
   merged.at=Math.max(Date.now(),(after||0)+1);if(!await hmPut(merged,after,uid,key))continue;
   if(hmGeneration!==generation||CL.s?.uid!==uid)return;
   // Keep edits made during the request; next pass uploads them.
-  hmSave(HM.merge(merged,hmRead(uid)));oldPersist();hmStatus='Все замеры синхронизированы';hmRender();return;
+  const latest=HM.merge(merged,hmRead(uid));hmSave(latest);oldPersist();
+  if(JSON.stringify(latest.records)!==JSON.stringify(merged.records))continue;
+  hmStatus='Все замеры синхронизированы';hmRender();return;
  }throw new Error('Замеры изменились на другом устройстве. Повторим синхронизацию.')}catch(e){if(hmGeneration===generation)hmStatus='Сохранено на устройстве. '+(e.message||'Нет связи с сервером')}finally{hmBusy=false;hmPaint()}
 }
 function hmRender(){if(journalTab==='measurements'&&view==='journal'&&!document.querySelector('#measure-form'))render()}

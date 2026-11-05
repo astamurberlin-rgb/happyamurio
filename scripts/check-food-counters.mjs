@@ -95,3 +95,14 @@ sport.changeSportFood(def.id,true,false);meal.HappyMealCounters.apply(sport.stat
 const hidden=H.patch(sport.state.foodCounters,'definitions',{...def,targets:{day:true,sport:false}},'off');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(hidden));
 assert.throws(()=>sport.changeSportFood(def.id,true,true),/отключена/);assert.equal(sport.sportFoodDefinitions().length,0);
 console.log('Passed Sport → Meal → Day portions and undo, and no additions after disabling Sport.');
+// Regression: a stale Day button must not add after Meal disables its target.
+const beforeDisabled=copy(day.DB.mealCounters);
+const disabledDay=H.patch(beforeDisabled,'definitions',{...def,targets:{day:false,sport:true}},'disable-day');
+diaryStore.setItem('happy-food-counters-v1:local',JSON.stringify(disabledDay));
+const beforeCount=disabledDay.events.filter(e=>!e.deleted).length;
+day.tapAdd(dk);
+const afterDoc=JSON.parse(diaryStore.getItem('happy-food-counters-v1:local'));
+assert.equal(afterDoc.events.filter(e=>!e.deleted).length,beforeCount,'Day must reject a stale button after Day target disabled');
+assert.equal(day.DB.taps.some(t=>t.k===dk),false);
+assert.equal(H.linked(afterDoc.definitions.find(d=>d.id===def.id),'sport'),true);
+console.log('Passed stale Day button rejection after unlink, with servings and Sport link preserved.');
