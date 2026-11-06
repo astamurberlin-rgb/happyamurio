@@ -162,6 +162,9 @@ UI or account login alone does not make all existing storage one shared record s
    A subsequent [source-only journal-context patch](sync-sport-journal-candidate-20261106.md)
    implements that bounded form fix, with synthetic tests and explicit release
    limits. It is not a built or deployed application.
+   The next [recovery/CSV follow-up](sync-sport-recovery-build-20261106.md) provides
+   a locally built and checked combined candidate, still without deployment or
+   cross-app acceptance claims.
 2. Use **one measurement authority**. The lowest migration-risk first stage keeps
    Sport's journal authoritative. A narrowly scoped authenticated **read-only**
    projection for Day can display measurements and their source status without

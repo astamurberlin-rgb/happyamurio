@@ -1,0 +1,80 @@
+{
+  "base_commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+  "status": "locally-built-unreleased-candidate",
+  "patch_strategy": "Apply combined.patch to a clean exact base, not on top of the preceding patch.",
+  "artifacts": [
+    {
+      "path": "check-independent.mjs",
+      "bytes": 8037,
+      "sha256": "ba04f74d82f733b4fe9db4a0f8c3e195564b17faa80fe0e918ea382960e7d285"
+    },
+    {
+      "path": "check-measurement-fix.mjs",
+      "bytes": 10853,
+      "sha256": "35528e573e28e5753a16c71a9ff37bdfa3ed8a6c8a9227593536db8eb2951117"
+    },
+    {
+      "path": "check-recovery-csv.mjs",
+      "bytes": 10573,
+      "sha256": "b35df07396782e3ed7dfaa89ffd8ec947fa58c81a9f84c0d5a97d6d79ab3c462"
+    },
+    {
+      "path": "combined.patch",
+      "bytes": 34921,
+      "sha256": "2d874b77327eb078b479d73487910eb9ca793a4dd40a8062a5fe8c82f4cfa9cc"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "sport/src/measurements-shared.js",
+      "base_sha256": "bf1b318b9f935db99988558b63dff275a554bf42407f78fade6b298e3eedb609",
+      "candidate_sha256": "358e44afa1bb0464896615eb0fd486ad4c02229916746e82c11ff72c055b9136"
+    },
+    {
+      "path": "sport/src/measurements-v2.js",
+      "base_sha256": "48ad57d12834840f70083401a488ebbe42a66beaebf34dca886f73f589fc135f",
+      "candidate_sha256": "cd2a11bac7444874c38b08bbb3179e4881b59d89b52de299839cd805dfcc4cee"
+    },
+    {
+      "path": "sport/scripts/check-automatic-integration.mjs",
+      "base_sha256": "f8119b4abdb448c7057d6b9b28875bb76c8d286da072a9d32351f39048677f7a",
+      "candidate_sha256": "dee79d720d8df21ccb45536d79c0bbcf6ae58d44c11ee897021831572ace7b89"
+    },
+    {
+      "path": "sport/scripts/check-clean-shell.mjs",
+      "base_sha256": "4d7f37dca513191be8505b9b51b9e062a683fb41b771c1e86bf043b732e0f259",
+      "candidate_sha256": "aab6de1c6140764bf5658e3009d91fce6fd6665c8c599379d41113a42dc0c580"
+    },
+    {
+      "path": "sport/scripts/check.mjs",
+      "base_sha256": "d772124434951e624f2fcd08e0fc99a5978450b3da5ae274300de4d69e2e41db",
+      "candidate_sha256": "cd3d0874e272306f95e929824fa2c5b69b8a4028fa8f60fa41b30c0f3d40a23d"
+    }
+  ],
+  "generated_html_sha256": "f68775d7ac8fb6b9eaaa9bc2718fa2cb2466c7a2740a41767b84db52469fb319",
+  "generated_html_paths": [
+    "sport/index.html",
+    "sport/dist/index.html",
+    "dist/index.html",
+    "dist/sport/index.html"
+  ],
+  "checks": {
+    "form_cases": 36,
+    "recovery_csv_cases": 49,
+    "independent_additional_cases": 12,
+    "automatic_aes_cases": 33,
+    "scheduler_cases": 22,
+    "full_repository_check": "passed",
+    "local_build": "passed",
+    "patch_applies_to_base": "passed",
+    "original_checkout_clean": true,
+    "real_backend_calls": 0
+  },
+  "not_tested": [
+    "visual browser",
+    "iPhone or PWA",
+    "live accounts or RLS",
+    "real cross-origin exchange",
+    "production deployment"
+  ]
+}

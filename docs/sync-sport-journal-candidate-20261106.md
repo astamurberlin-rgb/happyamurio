@@ -5,6 +5,10 @@ This is not a replacement app and has not been built or published. The earlier
 dedicated-channel candidate and this patch target different storage contracts.
 See the [source audit](sync-deployed-contracts-20261106.md) before using either.
 
+Follow-up: [recovery, CSV and local build](sync-sport-recovery-build-20261106.md)
+now adds those repairs and a checked build in a separate combined-patch folder.
+This document and its original artifacts describe the earlier source-only stage.
+
 ## Saved artifacts and target
 
 The patch targets Sport source commit
