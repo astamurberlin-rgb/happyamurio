@@ -26,7 +26,7 @@
 
 ## Icon Studio
 
-Happy Icon Studio **2.15**: https://astamurberlin-rgb.github.io/happyamurio/icon-studio/
+Happy Icon Studio **2.16**: https://astamurberlin-rgb.github.io/happyamurio/icon-studio/
 Исходники и статика находятся в `icon-studio/`, проверки — `icon-studio/checks/`. Это публикация Sites v20; старый `prototypes/happy-icon-studio.html` перенаправляет на новый адрес. Правки Sites переносятся экспортом/импортом JSON, автоматически между доменами не синхронизируются. Сначала сохранить существующие GitHub-правки и закрыть старые вкладки v1.4.
 
 ## Старые ссылки и версии

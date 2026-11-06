@@ -7,7 +7,7 @@ import crypto from 'node:crypto';
 const dist=path.resolve(import.meta.dirname,'..');
 const code=fs.readFileSync(path.join(dist,'app-icons.js'),'utf8');
 const manifest=JSON.parse(fs.readFileSync(path.join(dist,'data/app-icon-library.json')));
-assert.deepEqual(manifest.apps.map(app=>app.id),['day','meal','sport','studio','color']);
+assert.deepEqual(manifest.apps.map(app=>app.id),['day','meal','sport','studio','color','notes']);
 for(const app of manifest.apps)for(const file of app.materials){
   assert(fs.existsSync(path.join(dist,file.src)),`Missing material ${file.src}`);
   assert.equal(fs.statSync(path.join(dist,file.src)).size,file.size);

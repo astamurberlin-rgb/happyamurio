@@ -82,7 +82,7 @@
               <button type="button" id="ic-center">По центру · 100%</button>
             </div></details>
           </section>
-          <p class="ic-version">Happy Icon Studio · v2.15</p>
+          <p class="ic-version">Happy Icon Studio · v2.16</p>
         </div>
       </aside>
     </div>`;

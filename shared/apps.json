@@ -19,7 +19,7 @@
   },
   "iconStudio": {
     "entry": "icon-studio/index.html",
-    "version": "2.15",
+    "version": "2.16",
     "kind": "studio",
     "storageKey": "happy_icon_studio_v1",
     "storageScript": "icon-studio/studio.js"

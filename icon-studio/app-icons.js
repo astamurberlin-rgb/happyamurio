@@ -2,7 +2,7 @@
 'use strict';
 (() => {
   const KEY = 'happy_icon_studio_app_icons_v1';
-  const APP_IDS = ['day', 'meal', 'sport', 'studio', 'color'];
+  const APP_IDS = ['day', 'meal', 'sport', 'studio', 'color', 'notes'];
   const ROLES = {reference:'Визуализация',background:'Фон',foreground:'Силуэт',document:'Документ'};
   const MAX_FILE = 8 * 1024 * 1024;
   const MAX_TOTAL = 40 * 1024 * 1024;

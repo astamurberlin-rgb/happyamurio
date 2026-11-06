@@ -706,6 +706,111 @@
           "title": "С каплей под r"
         }
       ]
+    },
+    {
+      "id": "notes",
+      "name": "Notes · Файлы Happy",
+      "masterId": "notes-flat-2026-11-06",
+      "notes": "Значок страницы «Файлы»: чёрная пластина с прорезанной рукописной надписью notes, сквозь прорезь виден градиент от фиолетового к оранжево-розовому. Слои на холсте 1024 × 1024, есть вариант «трафарет» (градиент + пластина). Пакет подготовлен для Apple Icon Composer, нативный .icon ещё предстоит собрать на Mac.",
+      "materials": [
+        {
+          "id": "notes-flat-2026-11-06",
+          "name": "05_notes_flat_1024.png",
+          "src": "./assets/app-icons/notes/05_notes_flat_1024.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 102110
+        },
+        {
+          "id": "notes-background",
+          "name": "01_background_black_1024.png",
+          "src": "./assets/app-icons/notes/01_background_black_1024.png",
+          "role": "background",
+          "type": "image/png",
+          "size": 4547
+        },
+        {
+          "id": "notes-gradient-layer",
+          "name": "02_notes_gradient_1024.png",
+          "src": "./assets/app-icons/notes/02_notes_gradient_1024.png",
+          "role": "foreground",
+          "type": "image/png",
+          "size": 118905
+        },
+        {
+          "id": "notes-vector-mask",
+          "name": "02_notes_shape_1024.svg",
+          "src": "./assets/app-icons/notes/02_notes_shape_1024.svg",
+          "role": "foreground",
+          "type": "image/svg+xml",
+          "size": 6991
+        },
+        {
+          "id": "notes-gradient-fill",
+          "name": "03_gradient_fill_1024.png",
+          "src": "./assets/app-icons/notes/03_gradient_fill_1024.png",
+          "role": "background",
+          "type": "image/png",
+          "size": 4953
+        },
+        {
+          "id": "notes-stencil-plate",
+          "name": "04_stencil_plate_1024.png",
+          "src": "./assets/app-icons/notes/04_stencil_plate_1024.png",
+          "role": "foreground",
+          "type": "image/png",
+          "size": 113075
+        },
+        {
+          "id": "notes-ios-home",
+          "name": "06_web_icon_180.png",
+          "src": "./assets/app-icons/notes/06_web_icon_180.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 11219
+        },
+        {
+          "id": "notes-pwa-192",
+          "name": "06_web_icon_192.png",
+          "src": "./assets/app-icons/notes/06_web_icon_192.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 12136
+        },
+        {
+          "id": "notes-pwa-512",
+          "name": "06_web_icon_512.png",
+          "src": "./assets/app-icons/notes/06_web_icon_512.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 43237
+        },
+        {
+          "id": "notes-guide",
+          "name": "README_RU.md",
+          "src": "./assets/app-icons/notes/README_RU.md",
+          "role": "document",
+          "type": "text/markdown",
+          "size": 2817
+        },
+        {
+          "id": "notes-pack",
+          "name": "Happy_Notes_Apple_Composer.zip",
+          "src": "./assets/app-icons/notes/Happy_Notes_Apple_Composer.zip",
+          "role": "document",
+          "type": "application/zip",
+          "size": 389037
+        }
+      ],
+      "revision": 1,
+      "previousMasterIds": [],
+      "variants": [
+        {
+          "id": "notes-flat-2026-11-06",
+          "version": 1,
+          "title": "Трафарет с градиентом"
+        }
+      ]
     }
   ]
 }
