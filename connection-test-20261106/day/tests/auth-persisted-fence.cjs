@@ -1,0 +1,23 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),crypto=require('node:crypto').webcrypto;
+const html=fs.readFileSync(__dirname+'/../dist/day/index.html','utf8');
+const profileSource=html.match(/<script id="happy-profile-storage">([\s\S]*?)<\/script>/)[1].split('var HappyProfile=')[0];
+function deferred(){let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return {promise,resolve,reject};}
+function fixture(){const mem=new Map(),writes=[],events=[];let reloads=0,pauses=0;const editor={value:'unsaved editor text'};
+ const c=vm.createContext({JSON,Date,crypto,Uint8Array,TextEncoder,TextDecoder,CL_KEY:'hd_cloud_v1',CL:{s:{uid:'A',at:'old-access',rt:'old-refresh',exp:1},ck:{},kraw:'synthetic-key',authGeneration:'generation-one',last:0},HappyAuthReadOnly:{phase:'existing-account-read-only',assertAllowed(){}},localStorage:{getItem:k=>mem.get(k)??null,setItem:(k,v)=>mem.set(k,v)},addEventListener:(type,fn)=>{if(type==='storage')events.push(fn)},location:{reload(){reloads++}},rawSet:async(k,v)=>{writes.push(v);mem.set(k,v);}});
+ vm.runInContext(html.slice(html.indexOf('function clTestPolicy('),html.indexOf('function clB64(')),c);
+ mem.set('hd_cloud_v1',JSON.stringify({s:c.CL.s,k:c.CL.kraw,g:c.CL.authGeneration,last:0}));c.CL.authFence=c.clPersistedFence();
+ vm.runInContext(profileSource,c);c.HappyProfile=c.HappyProfiles.create('day',{pause:()=>{pauses++}});
+ vm.runInContext(html.slice(html.indexOf('async function clStore('),html.indexOf('/* понятные слова')),c);
+ vm.runInContext(html.slice(html.indexOf('function clSes('),html.indexOf('async function clDerive(')),c);
+ vm.runInContext(html.slice(html.indexOf('async function clToken('),html.indexOf('async function clRest(')),c);
+ function change(edit){const a=JSON.parse(mem.get('hd_cloud_v1'));edit(a);mem.set('hd_cloud_v1',JSON.stringify(a));return mem.get('hd_cloud_v1');}
+ return {c,mem,writes,change,get reloads(){return reloads;},get pauses(){return pauses;},editor,event(key,newValue){events.forEach(fn=>fn({key,newValue}));}};
+}
+const response=()=>({access_token:'renewed-access',refresh_token:'renewed-refresh',expires_in:3600,user:{id:'A'}});
+test('actual token refresh persists one valid new session and permits subsequent reads',async()=>{const d=fixture();d.c.clAuth=async()=>response();assert.equal(await d.c.clToken(true),'renewed-access');assert.equal(d.writes.length,1);assert.equal(d.c.clAssertStoredSession(),d.c.CL.authFence);assert.equal(JSON.parse(d.mem.get('hd_cloud_v1')).g,'generation-one');});
+test('late refresh success cannot revive cleared auth or overwrite same-UID persisted relogin/key/generation',async()=>{for(const mutate of [a=>a.s.at='new-login',a=>a.s.rt='new-refresh',a=>a.k='new-key',a=>a.g='generation-two',null]){const d=fixture(),gate=deferred();d.c.clAuth=()=>gate.promise;const p=d.c.clToken(true);if(mutate)d.change(mutate);else d.mem.clear();const newer=d.mem.get('hd_cloud_v1');gate.resolve(response());await assert.rejects(p,/Аккаунт изменился/);assert.equal(d.mem.get('hd_cloud_v1'),newer);assert.equal(d.writes.length,0);}});
+test('late old refresh failure cannot clear newer persisted session',async()=>{const d=fixture(),gate=deferred();d.c.clAuth=()=>gate.promise;const p=d.c.clToken(true);const newer=d.change(a=>{a.s.at='new-login';a.g='generation-two'});gate.reject(Error('Вход устарел'));await assert.rejects(p,/Аккаунт изменился/);assert.equal(d.mem.get('hd_cloud_v1'),newer);assert.equal(d.writes.length,0);assert.equal(d.c.CL.s.uid,'A');});
+test('actual clStore rejects old-tab profile/last-seen write after persisted auth replacement',async()=>{const d=fixture(),newer=d.change(a=>a.g='generation-two');d.c.CL.last=55;d.c.CL.s.name='metadata only';await assert.rejects(d.c.clStore(),/Устаревшая сессия/);assert.equal(d.mem.get('hd_cloud_v1'),newer);assert.equal(d.writes.length,0);});
+test('external auth/clear pauses without reload or unsaved-editor loss and invalidates owner immediately',()=>{for(const change of [a=>a.s.at='new',a=>a.s.rt='new',a=>a.k='new',a=>a.g='new',null]){const d=fixture();if(change)d.event('hd_cloud_v1',d.change(change));else {d.mem.clear();d.event(null,null);}assert.equal(d.reloads,0);assert.equal(d.pauses,1);assert.equal(d.editor.value,'unsaved editor text');assert.equal(d.c.HappyProfile.matches('A'),false);}});
+test('metadata-only auth write does not invalidate active profile',()=>{const d=fixture();d.event('hd_cloud_v1',d.change(a=>{a.last=999;a.s.name='same account metadata'}));assert.equal(d.reloads,0);assert.equal(d.c.HappyProfile.matches('A'),true);});

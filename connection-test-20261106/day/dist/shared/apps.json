@@ -1,0 +1,20 @@
+{
+  "day": {
+    "entry": "day/index.html",
+    "version": "51.15-test"
+  },
+  "meal": {
+    "entry": "meal/index.html",
+    "version": "22.15"
+  },
+  "sport": {
+    "entry": "sport/index.html",
+    "version": "36.7"
+  },
+  "colorStudio": {
+    "entry": "prototypes/happy-family-color-studio-v12.html",
+    "version": "12.2",
+    "kind": "studio",
+    "storageKey": "happy-family-color-studio-v11"
+  }
+}

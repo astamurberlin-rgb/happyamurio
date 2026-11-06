@@ -1,0 +1,21 @@
+REPRO fixed: {"recoveryChars":301591,"liveChars":200299,"status":"uploaded"}
+✔ 100 KB plus 10 edits stays bounded and uploaded (original reviewer workload) (477.535164ms)
+LONG_UPLOAD: {"edits":250,"maxRecoveryChars":301600,"finalRecoveryChars":301600}
+✔ 250 successive 100 KB edits keep syncing with two acknowledged checkpoints (6394.365543ms)
+ALTERNATING: {"edits":120,"restores":120,"maxRecoveryChars":502427,"finalA":402263,"finalB":502427}
+✔ 120 alternating device edits/restores rotate only acknowledged history (5970.255781ms)
+✔ unresolved conflict bytes and each preserved unique pair remain pinned at cap (44.062939ms)
+✔ capacity preflight fails before adding backup or writing cloud, preserving ordinary-save room (10.876702ms)
+✔ headroom reserve accounts for next DB growth, not only the backup bytes (4.94532ms)
+✔ stale temporary probe is removed on next ordinary save and startup, leaving all recovery checkpoints (4.949407ms)
+✔ post-commit compaction failure keeps current data and pending recovery; later retry acknowledges safely (4.543511ms)
+✔ uncertain cloud outcome is pinned until a fresh read confirms that exact upload (5.726565ms)
+✔ legacy archive conversion preserves all unresolved snapshots but drops duplicated revision tokens (10.518841ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13055.375035
