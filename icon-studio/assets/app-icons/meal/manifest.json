@@ -1,0 +1,96 @@
+{
+  "name": "Happy Meal",
+  "date": "2026-10-29",
+  "canvas": [
+    1024,
+    1024
+  ],
+  "nativeIconBuilt": false,
+  "files": [
+    {
+      "path": "01_background_lime_cyan_1024.png",
+      "bytes": 615458,
+      "sha256": "a80fd0ff3339ac59bd50f92a1cb6f642725f8b498f5e3662ac1282b5ef33fd8a",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "02_dan_black_cutout_1024.png",
+      "bytes": 174067,
+      "sha256": "edec9d4d74a770c34b84ce73a2d740c7903cac795b2dfc7b309488c141064863",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "03_approved_flat_1024.png",
+      "bytes": 631729,
+      "sha256": "be3804f53354f2e1b98404fc61d65c9e842f9203153607872bef2bb34212f46a",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "04_layers_preview_1024.png",
+      "bytes": 583867,
+      "sha256": "5b7cdaa46cbbdc8b40d00f319c703a1864b2ec1a3ccc238e98b95b21105cf67b",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "README_RU.md",
+      "bytes": 3670,
+      "sha256": "d59c9d17798a561c4f5f924044395c5b02c7fab629e57b86d8a4291782c67245"
+    },
+    {
+      "path": "sources/approved_main_1254.png",
+      "bytes": 1087122,
+      "sha256": "80e5b185357dfd01c6d55f5975c56f793621fd8a6f9e7ebd4edc889b84392c8a",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "sources/background_source_1254.png",
+      "bytes": 1193828,
+      "sha256": "89fb1f1ec33bf9eb57b8f5bbdc86279f219aaa8735f747d462700e7b5cdc123c",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "sources/dan_color_source_1254.png",
+      "bytes": 1634406,
+      "sha256": "67846e38fabf89ac665a76ad9db98142e4b2148770c9395ceceb932e2f873b46",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "sources/dan_cutout_source_1254.png",
+      "bytes": 297769,
+      "sha256": "393bed3d2c85a027092b115710a109d8a012207aa6aad5fcebc5372526cf8aab",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    }
+  ]
+}
