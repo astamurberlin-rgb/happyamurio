@@ -84,6 +84,8 @@ console.log('Passed: planned calendar times, alarm, Cyrillic folding and escaped
  const mc=createContext({console,Date,Math,Number,FormData:class{constructor(form){this.entries=form.entries}get(k){return this.entries[k]??null}},document:{addEventListener:(event,fn,capture)=>{if(capture)(handlers[event]??=[]).push(fn)}}});
  runInContext(`var state={measurements:[]},period='first',measureDate='',renderMeasurements=()=>'',persistCount=0;var persisted=null;function persist(){persistCount++;persisted=JSON.parse(JSON.stringify(state))}function toast(){}function render(){}function closeSheet(){}function goto(){}function dateLabel(d){return d}function dayNow(){return '2026-10-24'}var journalTab;var errorNode={textContent:''};function $(s){return errorNode}`,mc);
  runInContext(app.slice(app.indexOf('const MF='),app.indexOf('function bodyPath')),mc);
+ runInContext(await readFile(new URL('../../shared/measurements-model.js',import.meta.url),'utf8'),mc);
+ runInContext('function openSheet(){}function icon(){return \'\'}',mc);
  runInContext(source,mc);
  const records=[{date:'2020-01-01',values:{bicepsL:30,bicepsR:31,forearmR:30},note:'original note',source:'original'},{date:'2020-01-04',values:{bicepsL:30,bicepsR:30.5}}];
  mc.state.measurements=structuredClone(records);
@@ -97,10 +99,11 @@ console.log('Passed: planned calendar times, alarm, Cyrillic folding and escaped
  assert.equal(mc.state.measurements[0].values.forearmR,30);assert.equal(mc.state.measurements[0].values.forearmL,undefined);
  runInContext("removeMeasurement('2020-01-01');state.measurements.push({date:'2020-01-01',values:{bicepsL:50}});restoreMeasurement(state.measurementTrash[1].id)",mc);
  assert.equal(mc.state.measurements[0].values.bicepsL,50);assert.equal(mc.state.measurementTrash.length,2);
- const submit=handlers.submit.at(-1),form={id:'measure-form',dataset:{originalDate:'2020-01-01'},entries:{date:'2020-01-02',bicepsL:'32',bicepsR:'33',forearmL:'28',forearmR:'29'}};
+ runInContext("measureForm(true,'2020-01-01')",mc);
+ const submit=handlers.submit.at(-1),form={id:'measure-form',dataset:{originalDate:'2020-01-01',formToken:runInContext('measurementFormBaseline.token',mc)},entries:{date:'2020-01-02',bicepsL:'32',bicepsR:'33',forearmL:'28',forearmR:'29'}};
  submit({target:form,preventDefault(){},stopImmediatePropagation(){}});
  assert.equal(mc.state.measurements[0].date,'2020-01-02');assert.equal(mc.state.measurements[0].values.bicepsL,32);assert.equal(mc.state.measurements[0].values.bicepsR,33);assert.equal(mc.state.measurements[0].values.forearmL,28);
- mc.state.measurements.push({date:'2020-01-03',values:{bicepsL:41}});form.dataset.originalDate='2020-01-02';form.entries.date='2020-01-03';
+ mc.state.measurements.push({date:'2020-01-03',values:{bicepsL:41}});form.dataset.originalDate='2020-01-02';form.entries.date='2020-01-03';runInContext("measureForm(true,'2020-01-02')",mc);form.dataset.formToken=runInContext('measurementFormBaseline.token',mc);
  submit({target:form,preventDefault(){},stopImmediatePropagation(){}});
  assert.equal(mc.state.measurements.length,2);assert.equal(mc.state.measurements[1].values.bicepsL,41);
  console.log('Passed: measurement removal/restore, empty state, conflict protection, paired fields and date edits.');

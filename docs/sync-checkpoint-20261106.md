@@ -30,7 +30,12 @@ policy, account, or data changes were made.
    whole array. Delete/restore callbacks refresh current local state; malformed
    recovery bytes are preserved, and interrupted saves retain a recovery copy.
    See [the recovery follow-up](sync-recovery-followup-20261106.md) for scope.
-6. Day rechecks the current Day link after refreshing a food counter. A stale
+6. Editing a measurement preserves additional numeric fields from the latest
+   local record, including fields not present in the form. Stale forms and
+   profile changes are rejected. Unknown CSV fields have no guessed unit.
+   The original 17 visible fields and ordinary labels are unchanged. See
+   [the field-preservation follow-up](sync-field-preservation-20261106.md).
+7. Day rechecks the current Day link after refreshing a food counter. A stale
    button cannot add a serving after Meal has disabled that Day link. Existing
    servings and the independent Sport link are preserved.
 
@@ -57,6 +62,7 @@ node scripts/check-food-counter-offline-boundaries.mjs
 node scripts/check-measurements-model.mjs
 node scripts/check-measurements-regressions.mjs
 node scripts/check-measurements-recovery.mjs
+node scripts/check-measurements-fields.mjs
 node scripts/check-measurements-shared.mjs
 node scripts/check-measurements-synthetic.mjs
 node scripts/check-measurements-two-clients.mjs
@@ -69,7 +75,8 @@ node scripts/check-selfcare.cjs
 
 All listed checks pass. Added measurement checks cover 15 merge-contract
 scenarios, 15 real-adapter regression scenarios, 16 local recovery scenarios,
-and 20 separate reference-model scenarios. Seven additional counter checks cover offline recovery, failed reads,
+nine form/extension scenarios, and 20 separate reference-model scenarios. Seven
+additional counter checks cover offline recovery, failed reads,
 CAS exhaustion, account changes, stopping, local storage failure, and malformed
 remote documents. The original counter suite includes the stale-Day-button test.
 
@@ -99,6 +106,9 @@ source/build consistency, local paths, UI, exports, timing, and diary regression
   Meal Sites v12 client. Upgrade compatible consumers together and verify before
   importing historical data; publishing only one side is not safe evidence of
   completed synchronization.
+- Old forms also discard additional numeric fields when editing a date. The
+  candidate preserves these fields, but cannot make legacy clients safe. No
+  new muscle-state controls are enabled before a separate design review.
 - Measurement conflicts resolve per date, not per field. Simultaneous independent
   field edits on the same date do not combine automatically.
 - Recovery changes now preserve sequential updates from stale tabs and failed
