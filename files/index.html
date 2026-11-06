@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-app-version="1.0">
+<html lang="ru" data-app-version="1.1">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -7,6 +7,10 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <title>Файлы Happy</title>
+<link rel="icon" type="image/png" sizes="32x32" href="./app-icons/notes-32.png?v=1.1">
+<link rel="icon" type="image/png" sizes="192x192" href="./app-icons/notes-192.png?v=1.1">
+<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/notes-180.png?v=1.1">
+<meta name="apple-mobile-web-app-title" content="Notes">
 <style>
 :root{
   /* Layout: sticky glass header, a row of file chips, then one light reading card (about 70 characters wide) over the Happy Meal gradient */
@@ -187,7 +191,7 @@ body{
   </main>
   <footer class="foot">
     <button class="link-btn" id="forget" type="button" hidden>Забыть ключ на этом устройстве</button>
-    <span>Файлы Happy · v1.0 · 6 ноября 2026</span>
+    <span>Файлы Happy · v1.1 · 6 ноября 2026</span>
   </footer>
 </div>
 
@@ -269,8 +273,7 @@ body{
     if (!h) return;
     const k = new URLSearchParams(h).get("key");
     if (!k) return;
-    setKey(k);
-    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* keep hash */ }
+    setKey(k);  // the key stays in the address so “Add to Home Screen” keeps it
   }
 
   function groupRank(folder) {
