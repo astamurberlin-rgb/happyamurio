@@ -32,3 +32,9 @@ Still required before all-three-app implementation: the complete exact Meal v12
 source, schema-only review of actual backend constraints/grants, crypto compatibility,
 size/contention measurements, and an isolated test environment. No credentials,
 SQL, personal-data processing, deployment or new common runtime was introduced.
+
+## Read-only prototype follow-up
+
+An [offline Sport-to-Day reader](sync-day-sport-readonly-20261106.md) now exercises
+the first transition contract on synthetic encrypted data. It is not connected to
+Day and does not introduce a common runtime, second writer or migration.

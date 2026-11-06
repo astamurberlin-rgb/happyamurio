@@ -1,0 +1,13 @@
+✔ exact Day/Sport derivation interoperates only for the actual same key (306.342762ms)
+✔ actual Day guard permits fixed Sport journal GET but denies all Sport write methods (1.972157ms)
+✔ Day persisted auth fence rejects owner, access, refresh, key, expiry, generation and cleared auth before storage event (5.024428ms)
+✔ Sport source validator accepts duplicate/impossible dates, nulls/outside old range, extension keys and opaque recovery (1.790143ms)
+✔ vendored validator and all pure dependency excerpts exactly match the audited Sport source (0.704279ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 396.21546

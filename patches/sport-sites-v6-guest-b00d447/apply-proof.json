@@ -1,0 +1,11 @@
+{
+  "clean_base_commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+  "patch_apply_check": "passed",
+  "patch_applied_without_credentials": true,
+  "rebuild": "passed",
+  "candidate_files_matching_rebuilt_applycheck": 661,
+  "changed_or_missing": [],
+  "unexpected_files": [],
+  "pristine_base": true,
+  "prior_source_checkpoint_hashes_and_full_dist_preserved": true
+}

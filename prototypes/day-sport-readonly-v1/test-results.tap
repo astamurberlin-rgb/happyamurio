@@ -1,0 +1,400 @@
+TAP version 13
+# Subtest: fixed GET, exact owner/namespace/select, no body/cookies/cache/redirect/refresh
+ok 1 - fixed GET, exact owner/namespace/select, no body/cookies/cache/redirect/refresh
+  ---
+  duration_ms: 21.384916
+  type: 'test'
+  ...
+# Subtest: lossless live projection: zero/null/negative/>500/extension fields/duplicate/impossible dates/order
+ok 2 - lossless live projection: zero/null/negative/>500/extension fields/duplicate/impossible dates/order
+  ---
+  duration_ms: 2.44024
+  type: 'test'
+  ...
+# Subtest: semantically parsed -0 is not coerced by projection normalization
+ok 3 - semantically parsed -0 is not coerced by projection normalization
+  ---
+  duration_ms: 1.546205
+  type: 'test'
+  ...
+# Subtest: missing row, valid empty, read failure, unauthenticated and idle remain distinct
+ok 4 - missing row, valid empty, read failure, unauthenticated and idle remain distinct
+  ---
+  duration_ms: 2.73903
+  type: 'test'
+  ...
+# Subtest: opaque trash is accepted intact by journal but never exposed: null
+ok 5 - opaque trash is accepted intact by journal but never exposed: null
+  ---
+  duration_ms: 1.280436
+  type: 'test'
+  ...
+# Subtest: opaque trash is accepted intact by journal but never exposed: []
+ok 6 - opaque trash is accepted intact by journal but never exposed: []
+  ---
+  duration_ms: 1.234396
+  type: 'test'
+  ...
+# Subtest: opaque trash is accepted intact by journal but never exposed: [{"date":"2026-11-06","values":{"weight":0}},{"opaque":{"x":0}}]
+ok 7 - opaque trash is accepted intact by journal but never exposed: [{"date":"2026-11-06","values":{"weight":0}},{"opaque":{"x":0}}]
+  ---
+  duration_ms: 1.368738
+  type: 'test'
+  ...
+# Subtest: opaque trash is accepted intact by journal but never exposed: {"unexpected":true}
+ok 8 - opaque trash is accepted intact by journal but never exposed: {"unexpected":true}
+  ---
+  duration_ms: 1.333075
+  type: 'test'
+  ...
+# Subtest: opaque trash is accepted intact by journal but never exposed: "opaque recovery"
+ok 9 - opaque trash is accepted intact by journal but never exposed: "opaque recovery"
+  ---
+  duration_ms: 1.31929
+  type: 'test'
+  ...
+# Subtest: opaque trash is accepted intact by journal but never exposed: 0
+ok 10 - opaque trash is accepted intact by journal but never exposed: 0
+  ---
+  duration_ms: 1.099695
+  type: 'test'
+  ...
+# Subtest: absence of trash is not a deletion/tombstone, merge or fallback request
+ok 11 - absence of trash is not a deletion/tombstone, merge or fallback request
+  ---
+  duration_ms: 1.113355
+  type: 'test'
+  ...
+# Subtest: reject row owner
+ok 12 - reject row owner
+  ---
+  duration_ms: 0.747244
+  type: 'test'
+  ...
+# Subtest: reject row namespace
+ok 13 - reject row namespace
+  ---
+  duration_ms: 0.707585
+  type: 'test'
+  ...
+# Subtest: reject row legacy kind
+ok 14 - reject row legacy kind
+  ---
+  duration_ms: 0.750108
+  type: 'test'
+  ...
+# Subtest: reject row version
+ok 15 - reject row version
+  ---
+  duration_ms: 0.973334
+  type: 'test'
+  ...
+# Subtest: reject row timestamp
+ok 16 - reject row timestamp
+  ---
+  duration_ms: 0.700243
+  type: 'test'
+  ...
+# Subtest: reject row fractional timestamp
+ok 17 - reject row fractional timestamp
+  ---
+  duration_ms: 0.764861
+  type: 'test'
+  ...
+# Subtest: reject row IV
+ok 18 - reject row IV
+  ---
+  duration_ms: 0.604559
+  type: 'test'
+  ...
+# Subtest: reject row cipher base64
+ok 19 - reject row cipher base64
+  ---
+  duration_ms: 1.152664
+  type: 'test'
+  ...
+# Subtest: reject row empty cipher
+ok 20 - reject row empty cipher
+  ---
+  duration_ms: 0.831801
+  type: 'test'
+  ...
+# Subtest: reject row short cipher
+ok 21 - reject row short cipher
+  ---
+  duration_ms: 0.727785
+  type: 'test'
+  ...
+# Subtest: reject row oversize cipher
+ok 22 - reject row oversize cipher
+  ---
+  duration_ms: 17.490488
+  type: 'test'
+  ...
+# Subtest: reject ambiguous/non-array rows null
+ok 23 - reject ambiguous/non-array rows null
+  ---
+  duration_ms: 1.911785
+  type: 'test'
+  ...
+# Subtest: reject ambiguous/non-array rows {}
+ok 24 - reject ambiguous/non-array rows {}
+  ---
+  duration_ms: 4.218926
+  type: 'test'
+  ...
+# Subtest: reject ambiguous/non-array rows [{},{}]
+ok 25 - reject ambiguous/non-array rows [{},{}]
+  ---
+  duration_ms: 0.552972
+  type: 'test'
+  ...
+# Subtest: reject snapshot wrong app
+ok 26 - reject snapshot wrong app
+  ---
+  duration_ms: 1.152524
+  type: 'test'
+  ...
+# Subtest: reject snapshot old alias
+ok 27 - reject snapshot old alias
+  ---
+  duration_ms: 1.446076
+  type: 'test'
+  ...
+# Subtest: reject snapshot envelope version
+ok 28 - reject snapshot envelope version
+  ---
+  duration_ms: 0.987916
+  type: 'test'
+  ...
+# Subtest: reject snapshot missing data
+ok 29 - reject snapshot missing data
+  ---
+  duration_ms: 1.472625
+  type: 'test'
+  ...
+# Subtest: reject snapshot inner version
+ok 30 - reject snapshot inner version
+  ---
+  duration_ms: 1.087346
+  type: 'test'
+  ...
+# Subtest: reject snapshot measurements missing
+ok 31 - reject snapshot measurements missing
+  ---
+  duration_ms: 0.836949
+  type: 'test'
+  ...
+# Subtest: reject snapshot malformed date
+ok 32 - reject snapshot malformed date
+  ---
+  duration_ms: 0.895227
+  type: 'test'
+  ...
+# Subtest: reject snapshot string measurement
+ok 33 - reject snapshot string measurement
+  ---
+  duration_ms: 0.905673
+  type: 'test'
+  ...
+# Subtest: reject snapshot object value
+ok 34 - reject snapshot object value
+  ---
+  duration_ms: 0.837139
+  type: 'test'
+  ...
+# Subtest: reject snapshot array values
+ok 35 - reject snapshot array values
+  ---
+  duration_ms: 1.004811
+  type: 'test'
+  ...
+# Subtest: reject snapshot invalid unrelated workout
+ok 36 - reject snapshot invalid unrelated workout
+  ---
+  duration_ms: 0.893544
+  type: 'test'
+  ...
+# Subtest: reject snapshot invalid energy
+ok 37 - reject snapshot invalid energy
+  ---
+  duration_ms: 0.891481
+  type: 'test'
+  ...
+# Subtest: reject snapshot invalid optional food counters
+ok 38 - reject snapshot invalid optional food counters
+  ---
+  duration_ms: 0.934756
+  type: 'test'
+  ...
+# Subtest: reject snapshot invalid timer
+ok 39 - reject snapshot invalid timer
+  ---
+  duration_ms: 0.698821
+  type: 'test'
+  ...
+# Subtest: reject snapshot too many measurements
+ok 40 - reject snapshot too many measurements
+  ---
+  duration_ms: 270.740094
+  type: 'test'
+  ...
+# Subtest: reserved extension key is rejected rather than stripped: __proto__
+ok 41 - reserved extension key is rejected rather than stripped: __proto__
+  ---
+  duration_ms: 2.743426
+  type: 'test'
+  ...
+# Subtest: reserved extension key is rejected rather than stripped: constructor
+ok 42 - reserved extension key is rejected rather than stripped: constructor
+  ---
+  duration_ms: 0.977926
+  type: 'test'
+  ...
+# Subtest: reserved extension key is rejected rather than stripped: prototype
+ok 43 - reserved extension key is rejected rather than stripped: prototype
+  ---
+  duration_ms: 1.395239
+  type: 'test'
+  ...
+# Subtest: real AES rejects wrong key, wrong AAD, tampering and invalid decrypted JSON
+ok 44 - real AES rejects wrong key, wrong AAD, tampering and invalid decrypted JSON
+  ---
+  duration_ms: 3.609875
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on owner switch
+ok 45 - clears prior projection immediately via getState on owner switch
+  ---
+  duration_ms: 1.261587
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on session replacement
+ok 46 - clears prior projection immediately via getState on session replacement
+  ---
+  duration_ms: 0.899884
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on access token mutation
+ok 47 - clears prior projection immediately via getState on access token mutation
+  ---
+  duration_ms: 1.423521
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on refresh token mutation
+ok 48 - clears prior projection immediately via getState on refresh token mutation
+  ---
+  duration_ms: 1.0838
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on generation ABA
+ok 49 - clears prior projection immediately via getState on generation ABA
+  ---
+  duration_ms: 1.133816
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on persisted auth change
+ok 50 - clears prior projection immediately via getState on persisted auth change
+  ---
+  duration_ms: 0.927064
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on logout
+ok 51 - clears prior projection immediately via getState on logout
+  ---
+  duration_ms: 1.718675
+  type: 'test'
+  ...
+# Subtest: clears prior projection immediately via getState on token expiry
+ok 52 - clears prior projection immediately via getState on token expiry
+  ---
+  duration_ms: 0.789447
+  type: 'test'
+  ...
+# Subtest: key replacement clears already visible state
+ok 53 - key replacement clears already visible state
+  ---
+  duration_ms: 1.22972
+  type: 'test'
+  ...
+# Subtest: late old-account response cannot restore state after logout
+ok 54 - late old-account response cannot restore state after logout
+  ---
+  duration_ms: 0.814275
+  type: 'test'
+  ...
+# Subtest: newer request wins even when transport ignores abort
+ok 55 - newer request wins even when transport ignores abort
+  ---
+  duration_ms: 0.685181
+  type: 'test'
+  ...
+# Subtest: late body completion is fenced
+ok 56 - late body completion is fenced
+  ---
+  duration_ms: 1.408369
+  type: 'test'
+  ...
+# Subtest: late decrypt and digest are each fenced on key/session change
+ok 57 - late decrypt and digest are each fenced on key/session change
+  ---
+  duration_ms: 2.335403
+  type: 'test'
+  ...
+# Subtest: failed refresh-free read clears old projection and never returns last good data
+ok 58 - failed refresh-free read clears old projection and never returns last good data
+  ---
+  duration_ms: 1.076439
+  type: 'test'
+  ...
+# Subtest: invalidate/dispose clear data; late request cannot repopulate; dispose prevents requests
+ok 59 - invalidate/dispose clear data; late request cannot repopulate; dispose prevents requests
+  ---
+  duration_ms: 1.579416
+  type: 'test'
+  ...
+# Subtest: oversize stream is cancelled before full body collection
+ok 60 - oversize stream is cancelled before full body collection
+  ---
+  duration_ms: 1.162609
+  type: 'test'
+  ...
+# Subtest: body/HTTP 204/HTTP 500/401 never masquerade as empty or missing
+ok 61 - body/HTTP 204/HTTP 500/401 never masquerade as empty or missing
+  ---
+  duration_ms: 1.459074
+  type: 'test'
+  ...
+# Subtest: invalid identity/profile/fences/expired token reject before GET
+ok 62 - invalid identity/profile/fences/expired token reject before GET
+  ---
+  duration_ms: 2.324897
+  type: 'test'
+  ...
+# Subtest: overall deadline bounds a hung fetch; its late success cannot replace a newer read
+ok 63 - overall deadline bounds a hung fetch; its late success cannot replace a newer read
+  ---
+  duration_ms: 16.31475
+  type: 'test'
+  ...
+# Subtest: overall deadline bounds a hung body; ignored abort/late body is fenced
+ok 64 - overall deadline bounds a hung body; ignored abort/late body is fenced
+  ---
+  duration_ms: 16.242862
+  type: 'test'
+  ...
+# Subtest: overall deadline covers decrypt and digest, including late non-abortable completion
+ok 65 - overall deadline covers decrypt and digest, including late non-abortable completion
+  ---
+  duration_ms: 32.643321
+  type: 'test'
+  ...
+1..65
+# tests 65
+# suites 0
+# pass 65
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 541.720545

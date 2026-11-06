@@ -1,0 +1,22 @@
+✔ lossless measurement projection retains finite/null/extras and exposes no unrelated or trash data (14.371517ms)
+✔ strict row validation rejects owner/namespace/version/revision/IV/cipher metadata and ambiguous responses (5.509046ms)
+✔ full current envelope gate rejects flat, alias, unknown versions, invalid other journal sections, reserved fields (10.986476ms)
+✔ missing, empty, auth, crypto, HTTP, malformed content and cancelled reads remain distinct (3.686485ms)
+✔ all pinned context changes at async fetch completion suppress plaintext state (4.498867ms)
+✔ stream, decrypt and digest await races are fenced (3.615749ms)
+✔ newer read and disposal cannot be overwritten by a late successful old read (0.951912ms)
+✔ getState clears cache before storage events, but retained snapshots are explicitly not revocable (1.087126ms)
+✔ server and crypto errors are sanitized and a failed refresh does not retain previous projection (1.218292ms)
+✔ negative zero and source occurrence order survive parsing and projection (1.363691ms)
+✔ bounded response rejects oversize stream rather than truncating or rendering partial data (3.565573ms)
+✔ deadline bounds fetch, stream, decrypt and digest even when abort is ignored; late results cannot overwrite timeout (63.835024ms)
+✔ deadline with changed owner reports unavailable rather than stale timeout or empty (10.614186ms)
+✔ cancelled hung operation is bounded and cannot leak an unhandled late rejection (10.84353ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 221.657541

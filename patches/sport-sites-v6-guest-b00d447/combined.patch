@@ -1,0 +1,512 @@
+diff --git a/sport/scripts/check-automatic-integration.mjs b/sport/scripts/check-automatic-integration.mjs
+--- a/sport/scripts/check-automatic-integration.mjs
++++ b/sport/scripts/check-automatic-integration.mjs
+@@ -1,18 +1,20 @@
+ import {fileURLToPath} from 'node:url';
+ import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';import {webcrypto} from 'node:crypto';
+-const base=fileURLToPath(new URL('../../',import.meta.url));const src=n=>fs.readFileSync(base+'/sport/src/'+n,'utf8');
++const base=process.argv[2]||fileURLToPath(new URL('../../',import.meta.url));const src=n=>fs.readFileSync(base+'/sport/src/'+n,'utf8');
+ const fixture={version:1,workouts:[{id:'synthetic-workout',title:'Synthetic',start:'2026-01-01T10:00',end:'2026-01-01T10:30',duration:1800,exercises:[{id:'synthetic-exercise',name:'Fixture',sets:[{weight:15,reps:10}]}]}],measurements:[],customExercises:[],templates:[],energy:{burn:0,intake:0,steps:0,training:0,minutes:0},favoriteExercises:[]};
+ const blank=()=>({...structuredClone(fixture),workouts:[]});
+ const shared=()=>({row:null,key:null,kraw:null,writes:0,requests:[],beforeWrite:null,afterWrite:null});
+ class FakeEvent{constructor(action='create-confirm'){this.isTrusted=true;this.type='click';this.target={closest:selector=>selector==='[data-controlled="create-confirm"]'?button:selector==='[data-controlled]'?{dataset:{controlled:action}}:null}}}const button={dataset:{controlled:'create-confirm'}};
+ async function env(o={}){
+  const remote=o.remote||shared();if(!remote.key){remote.key=await webcrypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);remote.kraw=Buffer.from(await webcrypto.subtle.exportKey('raw',remote.key)).toString('base64')}
+- const session={uid:'synthetic-owner',at:'synthetic-token',rt:'synthetic-refresh',exp:Date.now()+3600000};let reads=0,closed=0,opened=0,reloads=0,editorOpen=false,clock=Date.now(),timerId=0,timers=new Map(),release=null,reachedResolve,pauseStage=null,quota=false;let reached;
++ const session={uid:'synthetic-owner',at:'synthetic-token',rt:'synthetic-refresh',exp:Date.now()+3600000};let reads=0,closed=0,opened=0,reloads=0,editorOpen=false,clock=Date.now(),timerId=0,timers=new Map(),release=null,reachedResolve,pauseStage=null,quota=false,profileFault=null;let reached;
+  const pause=async stage=>{if(pauseStage===stage){pauseStage=null;reachedResolve();await new Promise(r=>release=r)}};
+- const store=o.store||new Map([['auth_readonly_hd_cloud_v1',JSON.stringify({s:session,k:remote.kraw})]]),events={};
+- const storage={get length(){return store.size},key:i=>[...store.keys()][i]??null,getItem:k=>store.get(k)??null,setItem:(k,v)=>{if(quota&&(k.endsWith(':reserve')||k.endsWith(':controlled-sync-v3')))throw Error('Synthetic Quota');store.set(k,String(v))},removeItem:k=>store.delete(k)};
++ const store=o.store||new Map(o.guest?[]:[['auth_readonly_hd_cloud_v1',JSON.stringify({s:session,k:remote.kraw})]]),events={};
++ const nodes=Object.fromEntries(['sport-auto-status','sport-journal-status','sport-auto-detail','sport-controlled-status','sport-auto-confirm','sport-auto-restart','sport-readonly-banner'].map(id=>[id,{textContent:'',hidden:true,dataset:{}}]));
++ const profileKey='auth-readonly-happy-sport-prototype-v1:profile:'+(o.guest?'local':'synthetic-owner');
++ const storage={get length(){return store.size},key:i=>[...store.keys()][i]??null,getItem:k=>{if(k===profileKey&&profileFault==='read')throw Error('Synthetic profile read failure');return store.get(k)??null},setItem:(k,v)=>{if(k===profileKey&&profileFault==='write')throw Error('Synthetic profile write failure');if(k===profileKey&&profileFault==='drop')return;if(quota&&(k.endsWith(':reserve')||k.endsWith(':controlled-sync-v3')))throw Error('Synthetic Quota');store.set(k,String(v))},removeItem:k=>store.delete(k)};
+  class ClockDate extends Date{static now(){return clock}};
+- const s={Request,Response,URL,AbortSignal,AbortController,Event:FakeEvent,Date:ClockDate,setTimeout:(fn,ms)=>{const id=++timerId;timers.set(id,{fn,ms});return id},clearTimeout:id=>timers.delete(id),queueMicrotask,TextEncoder,TextDecoder,btoa,atob,crypto:webcrypto,console,location:{reload(){reloads++},origin:'https://synthetic.invalid',href:'https://synthetic.invalid/sport/'},navigator:{onLine:true},HappyUI:{},SPORT_MEASURE_EMBED:false,sportJournalStatus:'',persist(){vm.runInContext('SportProfiles.save(state)',c)},render(){},window:{addEventListener(name,fn){(events['window:'+name]??=[]).push(fn)}},document:{hidden:false,activeElement:null,querySelector:()=>editorOpen?{textContent:'editor'}:null,addEventListener(name,fn){(events[name]??=[]).push(fn)},contains:x=>x===button,getElementById:id=>['sport-controlled-exported','sport-controlled-empty'].includes(id)?{checked:true}:null},SportWriterLock:{held:true},localStorage:storage,clone:structuredClone,state:structuredClone(o.data||fixture),renderProfile:()=>'',sportRORequireGuard(){},sportTransferStatus(){},openSheet(){opened++;editorOpen=true},closeSheet(){closed++;editorOpen=false},goto(){},toast(){},esc:String,
++ const s={Request,Response,URL,AbortSignal,AbortController,Event:FakeEvent,Date:ClockDate,setTimeout:(fn,ms)=>{const id=++timerId;timers.set(id,{fn,ms});return id},clearTimeout:id=>timers.delete(id),queueMicrotask,TextEncoder,TextDecoder,btoa,atob,crypto:webcrypto,console,location:{reload(){reloads++},origin:'https://synthetic.invalid',href:'https://synthetic.invalid/sport/'},navigator:{onLine:true},HappyUI:{},SPORT_MEASURE_EMBED:false,sportJournalStatus:'',persist(){vm.runInContext('SportProfiles.save(state)',c)},render(){},window:{addEventListener(name,fn){(events['window:'+name]??=[]).push(fn)}},document:{hidden:false,activeElement:null,querySelector:()=>editorOpen?{textContent:'editor'}:null,addEventListener(name,fn){(events[name]??=[]).push(fn)},contains:x=>x===button,getElementById:id=>['sport-controlled-exported','sport-controlled-empty'].includes(id)?{checked:true}:nodes[id]||null},SportWriterLock:{held:true},localStorage:storage,clone:structuredClone,state:structuredClone(o.data||fixture),renderProfile:()=>'',sportRORequireGuard(){},sportTransferStatus(){},openSheet(){opened++;editorOpen=true},closeSheet(){closed++;editorOpen=false},goto(){},toast(){},esc:String,
+  fetch:async(input,init)=>{
+   const req=input instanceof Request?input:new Request(input,init),u=new URL(req.url);
+   if(req.method==='GET'){reads++;await pause('GET'+reads);return new Response(JSON.stringify(remote.row?[remote.row]:[]),{status:200,headers:{'Content-Type':'application/json'}})}
+@@ -22,18 +24,18 @@
+    await pause('WRITE');if(remote.afterWrite)await remote.afterWrite(req,row);return new Response(JSON.stringify(eligible?[remote.row]:[]),{status:200,headers:{'Content-Type':'application/json'}})
+   }throw Error('Unexpected synthetic route '+req.method)
+  }};
+- s.globalThis=s;const c=vm.createContext(s);for(const n of ['readonly-guard.js','profile-store.js','happy-auth.js','data-transfer.js','controlled-journal.js','controlled-ledger.js','controlled-cas.js','controlled-sync-ui.js'])vm.runInContext(src(n),c,{filename:n});c.CL.s=session;c.CL.ck=remote.key;c.CL.kraw=remote.kraw;c.CL.ready=true;c.state.sportOwner=session.uid;
++ s.globalThis=s;const c=vm.createContext(s);for(const n of ['readonly-guard.js','profile-store.js','happy-auth.js','data-transfer.js','controlled-journal.js','controlled-ledger.js','controlled-cas.js','controlled-sync-ui.js'])vm.runInContext(src(n),c,{filename:n});c.CL.s=o.guest?null:session;c.CL.ck=o.guest?null:remote.key;c.CL.kraw=o.guest?null:remote.kraw;c.CL.ready=!o.authLoading;if(!o.guest)c.state.sportOwner=session.uid;
+  vm.runInContext('globalThis.engine=sportCtrlEngine;globalThis.canonical=SportControlled.canonical;globalThis.cas=SportControlledCAS;globalThis.ctx=sportCtrlCapture;globalThis.ledger=()=>sportCtrlLoad(sportCtrlCapture(false));globalThis.saveState=()=>SportProfiles.save(state)',c);
+  c.saveState();for(const name of ['automatic-sync.js','automatic-sync-ui.js'])vm.runInContext(src(name),c,{filename:name});vm.runInContext('globalThis.auto=sportAutomatic;globalThis.autoEngine=sportAutoEngine',c);
+  const call=(method,...args)=>c.SportReadOnlyTest.createOnClick(new FakeEvent(),d=>c.engine[method](d,...args));
+- return {c,events,store,remote,storage,timers,tick(ms){clock+=ms},editor(value){editorOpen=value},quota:value=>quota=value,arm(stage){pauseStage=stage;reached=new Promise(r=>reachedResolve=r);return reached},release:()=>release(),prepare:mode=>vm.runInContext(`sportCtrlPrepare(${JSON.stringify(mode||'save')})`,c),restore:async(confirm=true)=>c.engine.restore(await c.engine.previewRestore(),confirm),uiClick:action=>events.click.at(-1)(new FakeEvent(action)),get reloads(){return reloads},get closed(){return closed},get opened(){return opened},get reads(){return reads},run:consent=>call('upload',consent),retry:()=>call('retry'),ledger:()=>JSON.parse(JSON.stringify(c.ledger())),consent:()=>{const l=c.ledger();return {empty:true,digest:null,iv:l.baseline?.row.iv,removed:c.cas.clears(l.baseline?.data||{},c.state)}}};
++ return {c,events,store,remote,storage,timers,nodes,profileFault:value=>profileFault=value,tick(ms){clock+=ms},editor(value){editorOpen=value},quota:value=>quota=value,arm(stage){pauseStage=stage;reached=new Promise(r=>reachedResolve=r);return reached},release:()=>release(),prepare:mode=>vm.runInContext(`sportCtrlPrepare(${JSON.stringify(mode||'save')})`,c),restore:async(confirm=true)=>c.engine.restore(await c.engine.previewRestore(),confirm),uiClick:action=>events.click.at(-1)(new FakeEvent(action)),get reloads(){return reloads},get closed(){return closed},get opened(){return opened},get reads(){return reads},run:consent=>call('upload',consent),retry:()=>call('retry'),ledger:()=>JSON.parse(JSON.stringify(c.ledger())),consent:()=>{const l=c.ledger();return {empty:true,digest:null,iv:l.baseline?.row.iv,removed:c.cas.clears(l.baseline?.data||{},c.state)}}};
+ }
+-let n=0;async function test(name,fn){await fn();n++;console.log('PASS '+name)}
++let n=0;async function test(name,fn){if(process.env.SPORT_CASE_FILTER&&!name.includes(process.env.SPORT_CASE_FILTER))return;await fn();n++;console.log('PASS '+name)}
+ await test('owned login nonempty auto creates without Save or click',async()=>{const e=await env();assert.equal((await e.c.auto.run()).status,'saved');assert.equal(e.remote.writes,1);assert.equal(e.ledger().auto.phase,'saved');assert.equal(e.ledger().baseline.data.workouts[0].id,'synthetic-workout')});
+ await test('clean new owner context automatically restores favorite after login',async()=>{const remote=shared(),a=await env({remote,data:{...blank(),favoriteExercises:['genuine-choice']}});await a.c.auto.run();const b=await env({remote,data:blank()});assert.equal((await b.c.auto.run()).status,'saved');assert.deepEqual(Array.from(b.c.state.favoriteExercises),['genuine-choice']);assert.equal(b.c.state.workouts.length,0);assert.equal(remote.writes,1)});
+ await test('default fields and unused timer do not block fresh restore',async()=>{const remote=shared(),a=await env({remote});await a.c.auto.run();const defaults={...blank(),planningVersion:1,schedules:[],occurrences:{},exerciseGroups:[],archivedExercises:[],floatingTimerEnabled:false,foodCounters:{v:1,definitions:[],events:[]},freeTimer:{mode:'stopwatch',metrics:[],sessions:{stopwatch:{elapsed:0,anchor:0,running:false,laps:[],rows:[{target:0}],resultId:null},timer:{elapsed:0,anchor:0,running:false,laps:[],rows:[{target:60}],resultId:null}}}};const b=await env({remote,data:defaults});assert.equal((await b.c.auto.run()).status,'saved');assert.equal(b.c.state.workouts.length,1)});
+ for(const pref of [{lastRestSeconds:90},{floatingTimerEnabled:true}])await test('meaningful preference is not implicitly replaced '+JSON.stringify(pref),async()=>{const remote=shared(),a=await env({remote});await a.c.auto.run();const b=await env({remote,data:{...blank(),...pref}});assert.equal((await b.c.auto.run()).status,'conflict');assert.equal(b.c.state.workouts.length,0);for(const k in pref)assert.equal(b.c.state[k],pref[k]);assert.ok(b.ledger().held)});
+-await test('guest identity never claims own local records',async()=>{const e=await env();e.c.CL.s=null;e.c.CL.ck=null;assert.equal((await e.c.auto.run()).status,'local');assert.equal(e.remote.writes,0)});
++await test('lost authenticated session is not a guest or a saved result',async()=>{const e=await env();e.c.CL.s=null;e.c.CL.ck=null;assert.equal((await e.c.auto.run()).status,'error');assert.equal(e.remote.writes,0);assert.match(e.nodes['sport-auto-detail'].textContent,/Нет активного собственного профиля/)});
+ await test('ordinary persisted edit automatically CAS saves next revision',async()=>{const e=await env();await e.c.auto.run();e.c.state.workouts[0].title='Genuine edit';e.c.saveState();await Promise.resolve();assert.equal(e.c.auto.phase,'dirty');assert.equal(e.ledger().auto.phase,'dirty');assert.equal((await e.c.auto.run()).status,'saved');assert.equal(e.remote.writes,2);assert.equal(e.remote.requests.at(-1).method,'PATCH')});
+ await test('memory-only edit cannot dispatch before verified local save',async()=>{const e=await env();e.c.state.workouts[0].title='Unsaved';assert.equal((await e.c.auto.run()).status,'error');assert.equal(e.remote.writes,0)});
+ await test('offline persisted edits survive reload and automatically save on online',async()=>{const remote=shared(),a=await env({remote});a.c.navigator.onLine=false;a.c.auto.connectivity(false);a.c.state.workouts[0].title='Offline';a.c.saveState();await Promise.resolve();await a.c.auto.run();assert.equal(remote.writes,0);const b=await env({remote,store:a.store,data:a.c.state});b.c.auto.connectivity(true);assert.equal((await b.c.auto.run()).status,'saved');assert.equal(b.ledger().baseline.data.workouts[0].title,'Offline')});
+@@ -65,4 +67,102 @@
+  const remote=shared(),a=await env({remote});await a.c.auto.run();const b=await env({remote,data:{...blank(),profile:{displayName:'Synthetic local preference'}}});await b.c.auto.run();assert.equal(b.c.state.profile.displayName,'Synthetic local preference');assert.equal(b.c.state.workouts.length,1);
+ });
+ await test('auth refresh does not discard an open unsaved editor',async()=>{const e=await env();await e.c.auto.run();e.editor(true);for(const fn of e.events['window:storage']||[])fn({key:'auth_readonly_hd_cloud_v1'});assert.equal(e.reloads,0);assert.equal((await e.c.auto.run()).status,'stopped');assert.equal(vm.runInContext('sportAutoPhase',e.c),'restart');});
+-console.log(JSON.stringify({automaticCases:n,realNetworkCalls:0,realCrypto:true,syntheticOnly:true}));
++// Measurement edit uses the real owner writer and unchanged automatic AES/CAS pipeline.
++await test('measurement form commit queues full journal AES CAS with extensions preserved',async()=>{
++ const initial={...structuredClone(fixture),measurements:[{date:'2026-01-01',values:{weight:70,extraNull:null,extraNegative:-5,extraLarge:900},source:'Synthetic',note:''}]};
++ const e=await env({data:initial});await e.c.auto.run();
++ e.c.FormData=class{constructor(form){this.fields=form.fields}get(k){return this.fields[k]??null}};
++ e.c.$=()=>({textContent:''});e.c.icon=()=>'';e.c.dayNow=()=> '2026-01-01';
++ const app=src('app.js'),measure=src('measurements-v2.js');
++ vm.runInContext(app.split('\n').find(x=>x.startsWith('const MF=')),e.c);
++ vm.runInContext(measure.slice(measure.indexOf('const measurementGroups='),measure.indexOf('function measurementValue')),e.c);
++ vm.runInContext(measure.slice(measure.indexOf('let measurementEditContext='),measure.indexOf('function removeMeasurement')),e.c);
++ vm.runInContext(measure.slice(measure.indexOf("document.addEventListener('submit'"),measure.lastIndexOf('render();')),e.c);
++ vm.runInContext("measureForm(true,'2026-01-01')",e.c);
++ const token=vm.runInContext('measurementEditContext.token',e.c);
++ e.events.submit.at(-1)({target:{id:'measure-form',dataset:{originalDate:'2026-01-01',editToken:token},fields:{date:'2026-01-01',weight:'71'}},preventDefault(){},stopImmediatePropagation(){}});
++ await Promise.resolve();assert.equal(e.c.auto.phase,'dirty');assert.equal((await e.c.auto.run()).status,'saved');
++ assert.equal(e.remote.requests.at(-1).method,'PATCH');assert.equal(e.remote.requests.at(-1).row.kind,'journal');
++ const saved=e.ledger().baseline.data;assert.equal(saved.measurements[0].values.weight,71);assert.equal(saved.measurements[0].values.extraNull,null);assert.equal(saved.measurements[0].values.extraNegative,-5);assert.equal(saved.measurements[0].values.extraLarge,900);assert.deepEqual(saved.workouts,initial.workouts);
++});
++// Recovery uses the actual owner writer and unchanged full-journal AES/CAS path.
++for(const count of [1,2])await test('measurement recovery AES path with '+count+' records',async()=>{
++ const records=Array.from({length:count},(_,i)=>({date:'2026-01-0'+(i+1),values:{weight:70+i,unknownNull:null,unknownNegative:-2,unknownLarge:900},note:'Synthetic metadata'}));
++ const e=await env({data:{...structuredClone(fixture),measurements:records,measurementTrash:[]}});await e.c.auto.run();e.c.icon=()=>'';e.c.dateLabel=x=>x;e.c.dayNow=()=> '2026-01-01';
++ const measure=src('measurements-v2.js');vm.runInContext(src('app.js').split('\n').find(x=>x.startsWith('const MF=')),e.c);
++ vm.runInContext(measure.slice(measure.indexOf('const measurementGroups='),measure.indexOf('function measurementValue')),e.c);
++ vm.runInContext(measure.slice(measure.indexOf('let measurementEditContext='),measure.indexOf("document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const action=b.dataset.action;")),e.c);
++ vm.runInContext("measureForm(true,'2026-01-01');removeMeasurement('2026-01-01',measurementEditContext.token)",e.c);
++ await Promise.resolve();assert.equal(e.c.auto.phase,'dirty');
++ if(count===1){assert.equal((await e.c.auto.run()).status,'confirmation');assert.equal(e.remote.writes,1);assert.equal(e.ledger().auto.action,'save');assert.equal(e.c.state.measurements.length,0);assert.deepEqual(JSON.parse(JSON.stringify(e.c.state.measurementTrash[0].record)),records[0]);return}
++ assert.equal((await e.c.auto.run()).status,'saved');let saved=e.ledger().baseline.data;assert.equal(saved.measurements.length,1);assert.deepEqual(saved.measurementTrash[0].record,records[0]);assert.deepEqual(saved.workouts,fixture.workouts);
++ vm.runInContext('openMeasurementTrash();const entryFixture=measurementTrashContext.entries[0];restoreMeasurement(entryFixture.id,{context:measurementTrashContext.context,entry:entryFixture})',e.c);
++ await Promise.resolve();assert.equal(e.c.auto.phase,'dirty');assert.equal((await e.c.auto.run()).status,'confirmation');assert.equal(e.remote.writes,2);const consent=e.consent();consent.digest=await vm.runInContext('sportCtrlDigest(sportValidateBackup(sportBackup()))',e.c);await e.run(consent);assert.equal((await e.c.auto.run()).status,'saved');saved=e.ledger().baseline.data;assert.deepEqual(saved.measurements,records);assert.deepEqual(saved.measurementTrash,[]);assert.deepEqual(saved.workouts,fixture.workouts);assert.equal(e.remote.writes,3);for(const request of e.remote.requests.slice(1)){assert.equal(request.method,'PATCH');assert.equal(request.row.kind,'journal')}
++});
++for(const guest of [false,true])await test('lifecycle stop is neutral rather than guest/saved for '+(guest?'guest':'owner'),async()=>{
++ const e=await env({guest});await e.c.auto.run();const writes=e.remote.writes;
++ for(const fn of e.events['window:pagehide'])fn({});assert.equal(e.c.auto.phase,'stopped');assert.equal((await e.c.auto.run()).status,'stopped');e.c.auto.notifyEdit();e.c.auto.request('visible',0);assert.equal(e.remote.writes,writes);assert.equal(e.c.auto.phase,'stopped');
++ assert.equal(e.nodes['sport-auto-status'].textContent,'Синхронизация приостановлена');assert.doesNotMatch(e.nodes['sport-auto-detail'].textContent,/Сохранено|Синхронизировано|Локальный режим/);assert.equal(e.nodes['sport-auto-restart'].hidden,false);
++ await e.events.click.at(-1)({target:{closest:()=>({dataset:{auto:'check'}})}});assert.equal(e.reloads,1);
++});
++// Guest status is tested through the real profile writer, onSave microtask,
++// scheduler and UI adapter. No real fetch/account/storage is available here.
++function assertGuest(e){
++ assert.equal(e.c.auto.phase,'local');
++ assert.match(e.nodes['sport-auto-status'].textContent,/Локальный режим/);
++ assert.match(e.nodes['sport-auto-detail'].textContent,/облачная синхронизация выключена/);
++ for(const id of ['sport-auto-status','sport-auto-detail','sport-controlled-status','sport-journal-status'])assert.doesNotMatch(e.nodes[id].textContent,/Сохранено|Синхронизировано|остановлена|Нет активного/);
++ assert.equal(e.nodes['sport-readonly-banner'].dataset.attention,'false');
++ assert.equal(e.remote.writes,0);assert.equal(e.reads,0);
++ assert.equal([...e.store.keys()].some(k=>k.includes('controlled-sync-v3')),false);
++ assert.equal(e.store.has('auth_readonly_hd_cloud_v1'),false);
++}
++await test('guest status initial blank journal is neutral and has no cloud ledger',async()=>{const e=await env({guest:true,data:blank()});assert.equal((await e.c.auto.run()).status,'local');assertGuest(e)});
++await test('guest status persisted mutation stays local after onSave and repeated checks',async()=>{
++ const e=await env({guest:true});await e.c.auto.run();
++ e.c.state.measurements.push({date:'2026-01-01',values:{weight:71,extension:null},note:'Synthetic guest'});e.c.saveState();await Promise.resolve();assertGuest(e);
++ const key=vm.runInContext('SportProfiles.key()',e.c),saved=JSON.parse(e.store.get(key));assert.equal(saved.measurements[0].values.weight,71);assert.equal(saved.sportOwner,undefined);
++ for(let i=0;i<3;i++){e.c.auto.request('user-check',0);await e.c.auto.run();assertGuest(e)}
++ const b=await env({guest:true,store:e.store,data:saved});await b.c.auto.run();assertGuest(b);assert.deepEqual(b.c.state.measurements,saved.measurements);
++});
++await test('guest status stays local across connectivity and editor events',async()=>{
++ const e=await env({guest:true});await e.c.auto.run();
++ for(const online of [false,true,true]){e.c.navigator.onLine=online;e.c.auto.connectivity(online);await e.c.auto.run();assertGuest(e)}
++ e.c.openSheet('synthetic editor');e.c.closeSheet();await e.c.auto.run();assertGuest(e);
++});
++await test('guest status waits for authentication initialization instead of asserting local',async()=>{
++ const e=await env({guest:true,authLoading:true});assert.equal((await e.c.auto.run()).status,'checking');e.c.auto.notifyEdit();assert.equal(e.c.auto.phase,'checking');assert.equal(e.remote.writes,0);assert.equal(e.reads,0);
++ e.c.CL.ready=true;await e.c.auto.run();assertGuest(e);
++});
++await test('guest status notification does not prove an unsaved edit was saved',async()=>{
++ const e=await env({guest:true});await e.c.auto.run();e.c.state.workouts[0].title='Unsaved guest edit';e.c.auto.notifyEdit();assert.equal(e.c.auto.phase,'error');assert.match(e.nodes['sport-auto-detail'].textContent,/ещё не сохранены/);assert.equal((await e.c.auto.run()).status,'error');assert.equal(e.remote.writes,0);
++});
++for(const failure of ['write','drop','read'])await test('guest status keeps local persistence '+failure+' failure visible',async()=>{
++ const e=await env({guest:true});await e.c.auto.run();e.c.state.workouts[0].title='Failed guest edit';e.profileFault(failure);
++ assert.throws(()=>e.c.saveState());e.c.auto.notifyEdit();assert.equal(e.c.auto.phase,'error');assert.equal((await e.c.auto.run()).status,'error');assert.equal(e.nodes['sport-readonly-banner'].dataset.attention,'true');assert.doesNotMatch(e.nodes['sport-auto-status'].textContent,/Сохранено|Локальный режим/);assert.equal(e.remote.writes,0);assert.equal(e.reads,0);
++ e.profileFault(null);e.c.saveState();await Promise.resolve();assertGuest(e);
++});
++for(const owner of [undefined,'another-synthetic-owner'])await test('guest status does not classify authenticated unowned data '+String(owner)+' as a guest',async()=>{
++ const e=await env();if(owner===undefined)delete e.c.state.sportOwner;else e.c.state.sportOwner=owner;
++ assert.equal((await e.c.auto.run()).status,'error');e.c.auto.notifyEdit();assert.equal(e.c.auto.phase,'error');assert.equal(e.remote.writes,0);assert.equal(e.reads,0);
++});
++await test('guest status never accepts foreign data inside a guest view',async()=>{
++ const e=await env({guest:true});e.c.state.sportOwner='another-synthetic-owner';assert.equal((await e.c.auto.run()).status,'error');e.c.auto.notifyEdit();assert.equal(e.c.auto.phase,'error');assert.equal(e.remote.writes,0);
++});
++await test('guest status preserves writer lock and guard failures',async()=>{
++ for(const fault of ['lock','guard','embed']){const e=await env({guest:true});if(fault==='lock')e.c.SportWriterLock.held=false;if(fault==='guard')e.c.sportRORequireGuard=()=>{throw Error('Synthetic guard failure')};if(fault==='embed')e.c.SportWriterLock.embed=true;assert.equal((await e.c.auto.run()).status,'error');e.c.auto.notifyEdit();assert.equal(e.c.auto.phase,'error');assert.equal(e.remote.writes,0);assert.equal(e.reads,0)}
++});
++await test('guest status does not turn logout into local success in the stale owner view',async()=>{
++ const e=await env();await e.c.auto.run();e.editor(true);e.c.CL.s=null;e.c.CL.ck=null;e.c.CL.kraw=null;e.store.set('auth_readonly_hd_cloud_v1',JSON.stringify({s:null,k:null}));
++ assert.equal((await e.c.auto.run()).status,'error');assert.equal(e.remote.writes,1);assert.match(e.nodes['sport-auto-detail'].textContent,/Аккаунт изменился/);
++ for(const fn of e.events['window:storage'])fn({key:'auth_readonly_hd_cloud_v1'});assert.equal((await e.c.auto.run()).status,'stopped');assert.equal(e.nodes['sport-auto-restart'].hidden,false);assert.equal(e.reloads,0);
++ const guest=await env({guest:true,data:blank()});await guest.c.auto.run();assertGuest(guest);
++});
++await test('guest status preserves genuine authenticated preflight failures',async()=>{
++ for(const fault of ['auth','offline','guard']){const e=await env();e.c.clToken=async()=>{throw Error(fault==='offline'?'Synthetic network timeout':'Synthetic auth denied')};if(fault==='guard')e.c.sportRORequireGuard=()=>{throw Error('Synthetic guard denied')};assert.equal((await e.c.auto.run()).status,fault==='offline'?'offline':'error');assert.equal(e.remote.writes,0);assert.equal(e.reads,0);assert.doesNotMatch(e.nodes['sport-auto-status'].textContent,/Сохранено|Локальный режим/)}
++});
++await test('guest status preserves expired-session failure during preflight',async()=>{
++ const e=await env();e.c.clToken=async()=>{e.c.CL.s=null;e.c.CL.ck=null;e.c.CL.kraw=null;e.store.set('auth_readonly_hd_cloud_v1',JSON.stringify({s:null,k:null}));throw Error('Synthetic session expired')};
++ assert.equal((await e.c.auto.run()).status,'error');assert.match(e.nodes['sport-auto-detail'].textContent,/Synthetic session expired/);assert.equal(e.remote.writes,0);assert.equal(e.reads,0);
++});
++console.log(JSON.stringify({automaticCases:n,realNetworkCalls:0,realCrypto:true,syntheticOnly:true,measurementFormIntegrated:true}));
+diff --git a/sport/scripts/check-clean-shell.mjs b/sport/scripts/check-clean-shell.mjs
+--- a/sport/scripts/check-clean-shell.mjs
++++ b/sport/scripts/check-clean-shell.mjs
+@@ -9,16 +9,16 @@
+ const nodes=Object.fromEntries(['sport-auto-status','sport-journal-status','sport-auto-detail','sport-controlled-status','sport-auto-confirm','sport-auto-restart','sport-readonly-banner'].map(id=>[id,{textContent:'',hidden:true,dataset:{}}]));
+ const ctx=vm.createContext({document:{getElementById:id=>nodes[id]},sportAutoPhase:'local',sportAutoMessage:'',sportJournalStatus:'',esc:String,renderProfile:()=>'<div>Existing user features</div><button>Загрузить из файла</button><p>Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека. Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p>'});
+ vm.runInContext(ui.slice(ui.indexOf('const sportAutoTexts='),ui.indexOf('const sportAutomatic=')),ctx);
+-for(const phase of ['checking','dirty','saving','saved','offline','retry-needed','unknown','recovery-full','conflict','confirmation','restoring','waiting','empty','local','restart','error']){
++for(const phase of ['checking','dirty','saving','saved','offline','retry-needed','unknown','recovery-full','conflict','confirmation','restoring','waiting','empty','local','stopped','restart','error']){
+  vm.runInContext(`sportAutoPaint(${JSON.stringify(phase)})`,ctx);assert.ok(nodes['sport-auto-status'].textContent);if(phase!=='saved')assert.doesNotMatch(nodes['sport-auto-status'].textContent,/Сохранено в облаке/);
+- assert.equal(nodes['sport-auto-confirm'].hidden,phase!=='confirmation');assert.equal(nodes['sport-auto-restart'].hidden,phase!=='restart');
++ assert.equal(nodes['sport-auto-confirm'].hidden,phase!=='confirmation');assert.equal(nodes['sport-auto-restart'].hidden,!['restart','stopped'].includes(phase));
+ }
+ vm.runInContext(ui.slice(ui.indexOf('const sportAutoProfile='),ui.indexOf('HappyUI.accountNote=')),ctx);
+-for(const phase of ['confirmation','restart','saved']){ctx.sportAutoPhase=phase;const page=vm.runInContext('renderProfile()',ctx);assert.match(page,/Existing user features/);assert.match(page,/Восстановить JSON-копию/);assert.match(page,/не добавляет историю/);assert.match(page,/<details class="sport-sync-diagnostics">/);assert.match(page,/обмен с Day и Meal/);assert.match(page,/Icon Studio/);assert.match(page,/реальный аккаунт/);assert.match(page,/Сначала выгрузи текущий дневник/);assert.equal(/id="sport-auto-confirm"[^>]* hidden/.test(page),phase!=='confirmation');assert.equal(/id="sport-auto-restart"[^>]* hidden/.test(page),phase!=='restart');}
++for(const phase of ['confirmation','restart','stopped','saved']){ctx.sportAutoPhase=phase;const page=vm.runInContext('renderProfile()',ctx);assert.match(page,/Existing user features/);assert.match(page,/Восстановить JSON-копию/);assert.match(page,/не добавляет историю/);assert.match(page,/<details class="sport-sync-diagnostics">/);assert.match(page,/обмен с Day и Meal/);assert.match(page,/Icon Studio/);assert.match(page,/реальный аккаунт/);assert.match(page,/Сначала выгрузи текущий дневник/);assert.equal(/id="sport-auto-confirm"[^>]* hidden/.test(page),phase!=='confirmation');assert.equal(/id="sport-auto-restart"[^>]* hidden/.test(page),!['restart','stopped'].includes(phase));}
+ const mctx=vm.createContext({SportReadOnlyTest:{ready:true},renderMeasurements:()=>'<div>Measurement journal</div>'});
+ vm.runInContext(measure.slice(measure.indexOf('const hmMeasurements='),measure.indexOf('function hmCsv()')),mctx);const mout=vm.runInContext('renderMeasurements()',mctx);assert.match(mout,/Measurement journal/);assert.match(mout,/data-hm="print"/);assert.match(mout,/data-hm="csv"/);assert.doesNotMatch(mout,/data-hm="claim"/);
+ assert.match(measure,/async function hmSync\(\)\{\s*if\(globalThis.SportReadOnlyTest\)/);
+-let downloads=0,prints=0,stale=false;const exports=vm.createContext({SportProfiles:{assertOwner(){if(stale)throw Error('Changed owner')}},toast(){},state:{measurements:[{date:'2026-01-01',values:{weight:70}}]},MF:[['weight','Вес']],Blob,URL:{createObjectURL:()=> 'blob:synthetic',revokeObjectURL(){}},setTimeout(){},measurePair:()=>({cur:null,old:null}),measurementHistoryTable:()=>'<table>Synthetic only</table>',window:{print(){prints++}},document:{createElement:()=>({click(){downloads++}}),getElementById:()=>null,body:{appendChild(){}},querySelector:()=>({outerHTML:'<div>Body chart</div>'})}});
++let downloads=0,prints=0,stale=false;const exports=vm.createContext({CL:{s:null},SportProfiles:{owner:'local',assertOwner(){if(stale)throw Error('Changed owner')}},toast(){},state:{measurements:[{date:'2026-01-01',values:{weight:70}}]},MF:[['weight','Вес']],Blob,URL:{createObjectURL:()=> 'blob:synthetic',revokeObjectURL(){}},setTimeout(){},measurePair:()=>({cur:null,old:null}),measurementHistoryTable:()=>'<table>Synthetic only</table>',window:{print(){prints++}},document:{createElement:()=>({click(){downloads++}}),getElementById:()=>null,body:{appendChild(){}},querySelector:()=>({outerHTML:'<div>Body chart</div>'})}});
+ vm.runInContext(measure.slice(measure.indexOf('function hmExportAllowed()'),measure.indexOf("document.addEventListener('click',ev=>")),exports);vm.runInContext('hmCsv();hmPrint()',exports);assert.equal(downloads,1);assert.equal(prints,1);stale=true;vm.runInContext('hmCsv();hmPrint()',exports);assert.equal(downloads,1);assert.equal(prints,1);
+ console.log('PASS measurement exports use local snapshot only and stale account blocks both download and print.');
+-console.log('PASS clean shell: 16 honest status states, Settings exception controls/limitations, first-script guard and local-only measurement exports retained.');
++console.log('PASS clean shell: 17 honest status states, Settings exception controls/limitations, first-script guard and local-only measurement exports retained.');
+diff --git a/sport/scripts/check-measurement-input-events.mjs b/sport/scripts/check-measurement-input-events.mjs
+new file mode 100644
+--- /dev/null
++++ b/sport/scripts/check-measurement-input-events.mjs
+@@ -0,0 +1,34 @@
++import {fileURLToPath} from 'node:url';import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
++const root=process.argv[2]||fileURLToPath(new URL('../../',import.meta.url));
++const read=n=>fs.readFileSync(root+'/sport/src/'+n,'utf8');const edit=read('measurements-v2.js');
++const MF=read('app.js').split('\n').find(x=>x.startsWith('const MF='));
++const data=()=>({version:1,sportOwner:'synthetic-owner',workouts:[],measurements:[{date:'2026-01-01',values:{weight:70,waist:80,extraNull:null,extraZero:0,extraNegative:-2,extraLarge:501,muscleRelaxedSynthetic:42,muscleFlexedSynthetic:43},source:'Synthetic',note:'Keep metadata'}],customExercises:[],templates:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},measurementTrash:[],profile:{displayName:'Synthetic'},exerciseNotes:{fixture:'Retain'}});
++const copy=x=>JSON.parse(JSON.stringify(x));
++function env({guest=false}={}){
++ const initial=data();if(guest)delete initial.sportOwner;
++ const store=new Map(),session=guest?null:{uid:'synthetic-owner',at:'synthetic-token'},auth='auth_readonly_hd_cloud_v1',key='auth-readonly-happy-sport-prototype-v1:profile:'+(guest?'local':'synthetic-owner');
++ store.set(auth,JSON.stringify({s:session}));store.set(key,JSON.stringify(initial));store.set('auth-readonly-happy-sport-prototype-v1:profile:migrated','1');
++ let undo=null,messages=[],fail=false,uncertain=false,saves=0,callbacks=0,success=0,html='',error={textContent:''};const listeners={},eventHandlers={};
++ const storage={getItem:k=>store.get(k)??null,setItem(k,v){if(k===key){if(fail)throw Error('Synthetic quota');saves++;store.set(k,uncertain?'{}':String(v));}else store.set(k,String(v));},removeItem:k=>store.delete(k)};
++ const c=vm.createContext({localStorage:storage,SportWriterLock:{held:true,embed:false},SPORT_MEASURE_EMBED:false,CL:{s:session,ck:{}},clStoredGeneration:()=>store.get(auth),sportAutoGeneration:0,state:copy(initial),clone:copy,console,FormData:class{constructor(form){this.f=form.fields}get(k){return Object.hasOwn(this.f,k)?this.f[k]:null}},Event:class{constructor(type,options){this.type=type;Object.assign(this,options)}},document:{addEventListener:(name,fn)=>{listeners[name]=fn;(eventHandlers[name]??=[]).push(fn)}},$:()=>error,dayNow:()=> '2026-01-01',icon:()=>'',measurePair:()=>({cur:{date:'2026-01-01'}}),openSheet:(title,value)=>html=value,toast:(t,fn)=>{messages.push(t);if(fn)undo=fn;if(t==='Замер сохранён'||t==='Замер восстановлен'||t.endsWith(' удалён'))success++},closeSheet(){},dateLabel:x=>x,goto(){},render(){}});
++ vm.runInContext(read('profile-store.js'),c);
++ const transfer=read('data-transfer.js');vm.runInContext(transfer.slice(transfer.indexOf('const sportDataFields'),transfer.indexOf('function sportBackupInfo')),c);
++ vm.runInContext(MF,c);vm.runInContext(edit.slice(edit.indexOf('const measurementGroups='),edit.indexOf('function measurementValue')),c);
++ vm.runInContext(edit.slice(edit.indexOf('let measurementEditContext='),edit.indexOf("document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const action=b.dataset.action;" )),c);
++ vm.runInContext(edit.slice(edit.indexOf("document.addEventListener('submit'"),edit.lastIndexOf('render();')),c);
++ c.signal=()=>callbacks++;vm.runInContext('SportProfiles.onSave(()=>queueMicrotaskSignal());function queueMicrotaskSignal(){signal()}',c);
++ return {c,store,key,auth,eventHandlers,get messages(){return messages},undo(){undo?.()},remove(f){c.formFixture=f;vm.runInContext('removeMeasurement(formFixture.dataset.originalDate,formFixture.dataset.editToken)',c)},recovery(){vm.runInContext('openMeasurementTrash()',c);return vm.runInContext('({context:measurementTrashContext.context,entry:measurementTrashContext.entries[0]})',c)},restore(r){c.recoveryFixture=r;vm.runInContext('restoreMeasurement(recoveryFixture.entry.id,recoveryFixture)',c)},get saves(){return saves},get callbacks(){return callbacks},get success(){return success},get error(){return error.textContent},get html(){return html},fail:v=>fail=v,uncertain:v=>uncertain=v,
++ open(date='2026-01-01',isEdit=true){vm.runInContext(`measureForm(${isEdit},${JSON.stringify(date)})`,c);const values=c.state.measurements.find(x=>x.date===date)?.values||{},fields=Object.fromEntries(vm.runInContext('MF.map(x=>x[0])',c).map(k=>[k,String(values[k]??'')]));return {id:'measure-form',dataset:{originalDate:isEdit?date:'',editToken:html.match(/data-edit-token="(\d+)"/)?.[1]},fields:{...fields,date}};},
++ submit(form,patch={}){Object.assign(form.fields,patch);listeners.submit({target:form,preventDefault(){},stopImmediatePropagation(){}});},saved:()=>JSON.parse(store.get(key)),capture:()=>copy(c.state)};
++}
++let passed=0;function test(name,run){run();passed++;console.log('PASS '+name)}
++function withEvents(){const e=env();vm.runInContext(read('quick-value-input.js'),e.c);e.fire=(type,input,key)=>{const event={type,target:input,key,preventDefault(){},stopImmediatePropagation(){this.stopped=true}};for(const fn of e.eventHandlers[type]||[]){fn(event);if(event.stopped)break}};e.input=(form,name,measurement=true)=>({get value(){return form.fields[name]},set value(v){form.fields[name]=v},readOnly:false,disabled:false,dataset:{},matches:()=>true,closest:selector=>measurement&&selector==='#measure-form'?form:null,dispatchEvent(event){e.fire(event.type,this)},blur(){e.fire('focusout',this)}});return e}
++test('real focus/input/change/focusout/submit sequence clears known waist while date and weight change',()=>{const e=withEvents();e.c.state.measurements[0].values=Object.fromEntries(vm.runInContext('MF.map((x,i)=>[x[0],50+i])',e.c));e.c.state.measurements[0].values.extensionNull=null;e.c.state.measurements[0].date='2026-01-02';const f=e.open('2026-01-02'),waist=e.input(f,'waist');e.fire('focusin',waist);assert.equal(waist.value,'59');waist.value='';e.fire('input',waist);e.fire('change',waist);e.fire('focusout',waist);assert.equal(waist.value,'');e.submit(f,{date:'2026-01-03',weight:'72.5'});assert.equal(e.success,1);assert.equal(e.saved().measurements[0].date,'2026-01-03');assert.equal(e.saved().measurements[0].values.weight,72.5);assert.ok(!Object.hasOwn(e.saved().measurements[0].values,'waist'));assert.equal(e.saved().measurements[0].values.extensionNull,null);assert.equal(e.open('2026-01-03').fields.waist,'')});
++test('focus then blur without editing does not clear a measurement',()=>{const e=withEvents(),f=e.open(),w=e.input(f,'waist');e.fire('focusin',w);e.fire('focusout',w);assert.equal(w.value,'80');e.submit(f);assert.equal(e.saved().measurements[0].values.waist,80)});
++test('keyboard submit with focused blank clears measurement',()=>{const e=withEvents(),f=e.open(),w=e.input(f,'waist');e.fire('focusin',w);w.value='';e.fire('input',w);e.submit(f);assert.ok(!Object.hasOwn(e.saved().measurements[0].values,'waist'))});
++test('workout numeric blank on blur still cancels edit',()=>{const e=withEvents(),f={fields:{weight:'80'}},w=e.input(f,'weight',false);e.fire('focusin',w);assert.equal(w.value,'');e.fire('change',w);e.fire('focusout',w);assert.equal(w.value,'80')});
++test('workout Escape still restores original',()=>{const e=withEvents(),f={fields:{weight:'80'}},w=e.input(f,'weight',false);e.fire('focusin',w);w.value='90';e.fire('input',w);e.fire('keydown',w,'Escape');assert.equal(w.value,'80')});
++for(const value of ['0','501','NaN'])test('measurement constraints unchanged after event sequence '+value,()=>{const e=withEvents(),f=e.open(),w=e.input(f,'waist');e.fire('focusin',w);w.value=value;e.fire('input',w);e.fire('change',w);e.fire('focusout',w);e.submit(f);assert.equal(e.saves,0)});
++for(const reason of ['badInput','rangeUnderflow','rangeOverflow','stepMismatch'])test('native '+reason+' refuses submit rather than clearing',()=>{const e=withEvents(),f=e.open(),w=e.input(f,'waist');e.fire('focusin',w);w.value='';e.fire('input',w);f.checkValidity=()=>false;const before=e.capture();e.submit(f);assert.equal(e.saves,0);assert.deepEqual(e.capture(),before)});
++for(const flag of ['readOnly','disabled'])test('workout '+flag+' is untouched',()=>{const e=withEvents(),f={fields:{weight:'80'}},w=e.input(f,'weight',false);w[flag]=true;e.fire('focusin',w);assert.equal(w.value,'80');e.fire('focusout',w);assert.equal(w.value,'80')});
++console.log(JSON.stringify({passed,failed:0,syntheticOnly:true,realNetworkCalls:0,eventSequence:true}));
+diff --git a/sport/scripts/check.mjs b/sport/scripts/check.mjs
+--- a/sport/scripts/check.mjs
++++ b/sport/scripts/check.mjs
+@@ -1,3 +1,4 @@
++import './check-measurement-input-events.mjs';
+ import './check-history-library.mjs';
+ import './check-clean-shell.mjs';
+ import './check-automatic-integration.mjs';
+@@ -102,26 +103,31 @@
+ {
+  const source=await read('src/measurements-v2.js'), app=await read('src/app.js');
+  const handlers={};
+- const mc=createContext({console,Date,Math,Number,FormData:class{constructor(form){this.entries=form.entries}get(k){return this.entries[k]??null}},document:{addEventListener:(event,fn,capture)=>{if(capture)(handlers[event]??=[]).push(fn)}}});
+- runInContext(`var state={measurements:[]},period='first',measureDate='',renderMeasurements=()=>'',persistCount=0;var persisted=null;function persist(){persistCount++;persisted=JSON.parse(JSON.stringify(state))}function toast(){}function render(){}function closeSheet(){}function goto(){}function dateLabel(d){return d}function dayNow(){return '2026-10-24'}var journalTab;var errorNode={textContent:''};function $(s){return errorNode}`,mc);
++ const fixtureStore=new Map();
++ const mc=createContext({console,Date,Math,Number,localStorage:{getItem:k=>fixtureStore.get(k)??null,setItem:(k,v)=>fixtureStore.set(k,String(v)),removeItem:k=>fixtureStore.delete(k)},SportWriterLock:{held:true,embed:false},SPORT_MEASURE_EMBED:false,CL:{s:null,ck:null},clStoredGeneration:()=>null,sportAutoGeneration:0,clone:x=>JSON.parse(JSON.stringify(x)),icon:()=>'',openSheet(){},FormData:class{constructor(form){this.entries=form.entries}get(k){return this.entries[k]??null}},document:{addEventListener:(event,fn,capture)=>{if(capture)(handlers[event]??=[]).push(fn)}}});
++ runInContext(`var state={version:1,workouts:[],measurements:[],customExercises:[],templates:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},profile:{}},period='first',measureDate='',renderMeasurements=()=>'',persistCount=0;var persisted=null;function persist(){persistCount++;persisted=JSON.parse(JSON.stringify(state))}function toast(){}function render(){}function closeSheet(){}function goto(){}function dateLabel(d){return d}function dayNow(){return '2026-10-24'}var journalTab;var errorNode={textContent:''};function $(s){return errorNode}`,mc);
++ runInContext(await read('src/profile-store.js'),mc);
++ const transfer=await read('src/data-transfer.js');runInContext(transfer.slice(transfer.indexOf('const sportDataFields'),transfer.indexOf('function sportBackupInfo')),mc);
+  runInContext(app.slice(app.indexOf('const MF='),app.indexOf('function bodyPath')),mc);
+  runInContext(source,mc);
++ runInContext(`function removeFixture(date){measureForm(true,date);removeMeasurement(date,measurementEditContext.token);persisted=SportProfiles.read(SportProfiles.key())}function restoreFixture(index=0){openMeasurementTrash();const entry=measurementTrashContext.entries[index];restoreMeasurement(entry.id,{context:measurementTrashContext.context,entry})}`,mc);
+  const records=[{date:'2020-01-01',values:{bicepsL:30,bicepsR:31,forearmR:30},note:'original note',source:'original'},{date:'2020-01-04',values:{bicepsL:30,bicepsR:30.5}}];
+  mc.state.measurements=structuredClone(records);
+- runInContext("removeMeasurement('2020-01-01')",mc);
++ runInContext("removeFixture('2020-01-01')",mc);
+  assert.equal(mc.state.measurements.length,1);assert.equal(mc.persisted.measurementTrash[0].record.note,'original note');
+- runInContext('restoreMeasurement(state.measurementTrash[0].id)',mc);
++ runInContext('restoreFixture(0)',mc);
+  assert.deepEqual(JSON.parse(JSON.stringify(mc.state.measurements)),records);
+- runInContext("removeMeasurement('2020-01-01');removeMeasurement('2020-01-04')",mc);
++ runInContext("removeFixture('2020-01-01');removeFixture('2020-01-04')",mc);
+  assert.equal(runInContext('measurePair().cur',mc),null);
+- runInContext('restoreMeasurement(state.measurementTrash[0].id)',mc);
++ runInContext('restoreFixture(0)',mc);
+  assert.equal(mc.state.measurements[0].values.forearmR,30);assert.equal(mc.state.measurements[0].values.forearmL,undefined);
+- runInContext("removeMeasurement('2020-01-01');state.measurements.push({date:'2020-01-01',values:{bicepsL:50}});restoreMeasurement(state.measurementTrash[1].id)",mc);
++ runInContext("removeFixture('2020-01-01');state.measurements.push({date:'2020-01-01',values:{bicepsL:50}});restoreFixture(1)",mc);
+  assert.equal(mc.state.measurements[0].values.bicepsL,50);assert.equal(mc.state.measurementTrash.length,2);
+- const submit=handlers.submit.at(-1),form={id:'measure-form',dataset:{originalDate:'2020-01-01'},entries:{date:'2020-01-02',bicepsL:'32',bicepsR:'33',forearmL:'28',forearmR:'29'}};
++ runInContext("measureForm(true,'2020-01-01')",mc);
++ const submit=handlers.submit.at(-1),form={id:'measure-form',dataset:{originalDate:'2020-01-01',editToken:runInContext('measurementEditContext.token',mc)},entries:{date:'2020-01-02',bicepsL:'32',bicepsR:'33',forearmL:'28',forearmR:'29'}};
+  submit({target:form,preventDefault(){},stopImmediatePropagation(){}});
+  assert.equal(mc.state.measurements[0].date,'2020-01-02');assert.equal(mc.state.measurements[0].values.bicepsL,32);assert.equal(mc.state.measurements[0].values.bicepsR,33);assert.equal(mc.state.measurements[0].values.forearmL,28);
+- mc.state.measurements.push({date:'2020-01-03',values:{bicepsL:41}});form.dataset.originalDate='2020-01-02';form.entries.date='2020-01-03';
++ mc.state.measurements.push({date:'2020-01-03',values:{bicepsL:41}});runInContext("measureForm(true,'2020-01-02')",mc);form.dataset.originalDate='2020-01-02';form.dataset.editToken=runInContext('measurementEditContext.token',mc);form.entries.date='2020-01-03';
+  submit({target:form,preventDefault(){},stopImmediatePropagation(){}});
+  assert.equal(mc.state.measurements.length,2);assert.equal(mc.state.measurements[1].values.bicepsL,41);
+  console.log('Passed: measurement removal/restore, empty state, conflict protection, paired fields and date edits.');
+diff --git a/sport/src/automatic-sync-ui.js b/sport/src/automatic-sync-ui.js
+--- a/sport/src/automatic-sync-ui.js
++++ b/sport/src/automatic-sync-ui.js
+@@ -1,7 +1,14 @@
+ /* The automatic writer owns no global fetch bypass. One boot-only binding. */
+ let sportAutoNeedsReload=false,sportAutoGeneration=0,sportAutoEditorGeneration=0,sportAutoApplying=false,sportAutoMessage='Проверяем журнал аккаунта…',sportAutoPhase='checking';
+ function sportAutoReady(){return !!(CL.ready&&clOn()&&SportWriterLock.held&&!SportWriterLock.embed&&SportProfiles.owner!=='local'&&SportProfiles.owner===CL.s.uid&&state.sportOwner===CL.s.uid)}
+-function sportAutoSaved(){SportProfiles.assertOwner();const saved=SportProfiles.read(SportProfiles.key());if(!saved||saved.sportOwner!==SportProfiles.owner||!SportControlledCAS.same(sportValidateBackup({app:'Happy Sport',version:1,data:saved}),sportBackup().data))throw Error('Изменения ещё не сохранены на устройстве. Облачная отправка остановлена.');}
++function sportAutoInactive(){
++ sportRORequireGuard();SportProfiles.assertOwner();
++ if(!SportWriterLock.held||SportWriterLock.embed)throw Error('Нет права записи полного журнала в этой вкладке');
++ if(!CL.ready)return 'checking';
++ if(SportProfiles.owner==='local'&&!CL.s&&!CL.ck&&!CL.kraw&&(!state.sportOwner||state.sportOwner==='local'))return 'local';
++ throw Error('Нет активного собственного профиля для синхронизации. Проверь вход и принадлежность журнала.');
++}
++function sportAutoSaved(){SportProfiles.assertOwner();const saved=SportProfiles.read(SportProfiles.key());if(!saved||(saved.sportOwner||'local')!==SportProfiles.owner||!SportControlledCAS.same(sportValidateBackup({app:'Happy Sport',version:1,data:saved}),sportBackup().data))throw Error('Изменения ещё не сохранены на устройстве. Облачная отправка остановлена.');}
+ function sportAutoCanRestore(){return !document.hidden&&!state.active&&!Object.values(state.freeTimer?.sessions||{}).some(s=>s.running)&&!document.querySelector('#modal-root .sheet, #modal-root form, #modal-root [role="dialog"]')&&!document.querySelector('#modal-root')?.textContent?.trim()&&!document.querySelector('#panel-root')?.textContent?.trim()&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)}
+ function sportAutoCapture(includeLocal=false,purpose='observe'){
+  sportRORequireGuard();SportProfiles.assertOwner();if(!sportAutoReady())throw Error('Нет активного собственного профиля для синхронизации');
+@@ -23,18 +30,18 @@
+  local:()=>{sportAutoSaved();return clone(state)},apply:(p,c)=>{sportAutoApplying=true;try{sportCtrlApply(p,c,sportAutoCheck)}finally{sportAutoApplying=false}}
+ };
+ const sportAutoEngine=SportControlledCAS.create(sportAutoAdapters);
+-const sportAutoTexts={checking:'Проверяем облачную версию…',dirty:'Изменения сохранены на устройстве. Ожидают отправки.',saving:'Сохраняем в облаке и проверяем ответ…',saved:'Синхронизировано. Текущая версия подтверждена чтением сервера.',offline:'Нет связи. Изменения остаются на устройстве и будут проверены при подключении.','retry-needed':'Отправка не подтверждена. Автоматические повторы остановлены; чтение результата продолжается. В настройках можно повторить тот же пакет вручную.',unknown:'Результат отправки ещё не подтверждён. Проверяем сохранённую попытку без замены данных.','recovery-full':'Первый конфликт защищён, а резерв для нового занят. Текущий журнал остаётся здесь, новая облачная версия остаётся на сервере. Выгрузи дневник и резерв перед выбором.',conflict:'Конфликт версий. Локальные и облачные данные не перезаписаны. Выбери копию в настройках.',confirmation:'Удаление последних записей требует подтверждения. Локальные изменения сохранены.',restoring:'Восстанавливаем облачный журнал с резервной копией…',waiting:'Обновление ждёт завершения редактирования или текущей тренировки.',empty:'Пока нет записей. Новые записи будут сохраняться автоматически.',local:'Локальный журнал. Для облачной синхронизации войди существующим аккаунтом.',restart:'Сохранённый профиль изменился в другой вкладке. Синхронизация остановлена. Заверши или скопируй открытый черновик, выгрузи локальный дневник и обнови профиль.',error:'Синхронизация остановлена. Выгрузи дневник и проверь сообщение в настройках.'};
+-const sportAutoCompactTexts={checking:'Проверяем сохранение…',dirty:'Сохранено на устройстве · ждёт отправки',saving:'Сохраняем…',saved:'Сохранено в облаке · проверено',offline:'Без связи · данные на устройстве','retry-needed':'Сохранение требует проверки',unknown:'Проверяем результат отправки…','recovery-full':'Нужен выбор · резерв защищён',conflict:'Конфликт копий · нужен выбор',confirmation:'Удаление ждёт подтверждения',restoring:'Восстанавливаем журнал…',waiting:'Синхронизация ждёт завершения редактирования',empty:'Новых записей пока нет',local:'На этом устройстве',restart:'Профиль изменился · нужен перезапуск',error:'Синхронизация остановлена'};
++const sportAutoTexts={checking:'Проверяем облачную версию…',dirty:'Изменения сохранены на устройстве. Ожидают отправки.',saving:'Сохраняем в облаке и проверяем ответ…',saved:'Синхронизировано. Текущая версия подтверждена чтением сервера.',offline:'Нет связи. Изменения остаются на устройстве и будут проверены при подключении.','retry-needed':'Отправка не подтверждена. Автоматические повторы остановлены; чтение результата продолжается. В настройках можно повторить тот же пакет вручную.',unknown:'Результат отправки ещё не подтверждён. Проверяем сохранённую попытку без замены данных.','recovery-full':'Первый конфликт защищён, а резерв для нового занят. Текущий журнал остаётся здесь, новая облачная версия остаётся на сервере. Выгрузи дневник и резерв перед выбором.',conflict:'Конфликт версий. Локальные и облачные данные не перезаписаны. Выбери копию в настройках.',confirmation:'Удаление последних записей требует подтверждения. Локальные изменения сохранены.',restoring:'Восстанавливаем облачный журнал с резервной копией…',waiting:'Обновление ждёт завершения редактирования или текущей тренировки.',empty:'Пока нет записей. Новые записи будут сохраняться автоматически.',local:'Локальный режим: облачная синхронизация выключена. Для неё войди существующим аккаунтом. Гостевые записи не переносятся автоматически.',stopped:'Синхронизация приостановлена в этой вкладке. Чтобы продолжить, обнови страницу.',restart:'Сохранённый профиль изменился в другой вкладке. Синхронизация остановлена. Заверши или скопируй открытый черновик, выгрузи локальный дневник и обнови профиль.',error:'Синхронизация остановлена. Выгрузи дневник и проверь сообщение в настройках.'};
++const sportAutoCompactTexts={checking:'Проверяем сохранение…',dirty:'Сохранено на устройстве · ждёт отправки',saving:'Сохраняем…',saved:'Сохранено в облаке · проверено',offline:'Без связи · данные на устройстве','retry-needed':'Сохранение требует проверки',unknown:'Проверяем результат отправки…','recovery-full':'Нужен выбор · резерв защищён',conflict:'Конфликт копий · нужен выбор',confirmation:'Удаление ждёт подтверждения',restoring:'Восстанавливаем журнал…',waiting:'Синхронизация ждёт завершения редактирования',empty:'Новых записей пока нет',local:'Локальный режим · без облака',stopped:'Синхронизация приостановлена',restart:'Профиль изменился · нужен перезапуск',error:'Синхронизация остановлена'};
+ function sportAutoPaint(phase,error=''){
+  sportAutoPhase=phase;sportAutoMessage=sportAutoTexts[phase]||sportAutoTexts.error;if(error&&phase==='error')sportAutoMessage+=' '+error;
+  sportJournalStatus=sportAutoMessage;
+  for(const id of ['sport-journal-status','sport-auto-detail','sport-controlled-status']){const el=document.getElementById(id);if(el)el.textContent=sportAutoMessage;}
+  const compact=document.getElementById('sport-auto-status');if(compact)compact.textContent=sportAutoCompactTexts[phase]||sportAutoCompactTexts.error;
+- const strip=document.getElementById('sport-readonly-banner');if(strip)strip.dataset.attention=String(['conflict','confirmation','restart','error','recovery-full','retry-needed'].includes(phase));
+- const b=document.getElementById('sport-auto-confirm');if(b)b.hidden=phase!=='confirmation';const reload=document.getElementById('sport-auto-restart');if(reload)reload.hidden=phase!=='restart';
++ const strip=document.getElementById('sport-readonly-banner');if(strip)strip.dataset.attention=String(['conflict','confirmation','restart','stopped','error','recovery-full','retry-needed'].includes(phase));
++ const b=document.getElementById('sport-auto-confirm');if(b)b.hidden=phase!=='confirmation';const reload=document.getElementById('sport-auto-restart');if(reload)reload.hidden=!['restart','stopped'].includes(phase);
+ }
+ const sportAutomatic=SportReadOnlyTest.bindJournalController(dispatch=>SportAutoSync.create({
+- ...sportAutoAdapters,engine:sportAutoEngine,dispatch,ready:sportAutoReady,prepare:sportAutoPrepare,ensureSaved:sportAutoSaved,canRestore:sportAutoCanRestore,
++ ...sportAutoAdapters,engine:sportAutoEngine,dispatch,ready:sportAutoReady,inactive:sportAutoInactive,prepare:sportAutoPrepare,ensureSaved:sportAutoSaved,canRestore:sportAutoCanRestore,
+  online:()=>navigator.onLine!==false,schedule:(fn,ms)=>setTimeout(fn,ms),cancel:id=>clearTimeout(id),paint:sportAutoPaint,
+  afterRestore:()=>{if(sportAutoCanRestore())render()}
+ }));
+@@ -54,7 +61,7 @@
+ sportJournalAccountChanged=function(){if(SportProfiles.current()===SportProfiles.owner)return false;sportAutoRestart(true);return true;};
+ window.addEventListener('pagehide',()=>{++sportAutoGeneration;sportAutomatic.stop()});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)sportAutomatic.request('visible')});
+-document.addEventListener('click',async event=>{const a=event.target.closest?.('[data-auto]')?.dataset.auto;if(a==='confirm'){try{const c=sportAutoCapture(),l=sportCtrlLoad(c,sportAutoCheck);if(l.auto?.action==='restore')await sportCtrlPrepareRestore();else await sportCtrlPrepare()}catch(e){toast(e.message)}}if(a==='settings')goto('profile');if(a==='reload')location.reload();if(a==='check'){if(sportAutoPhase==='restart')location.reload();else sportAutomatic.request('user-check',0)}});
++document.addEventListener('click',async event=>{const a=event.target.closest?.('[data-auto]')?.dataset.auto;if(a==='confirm'){try{const c=sportAutoCapture(),l=sportCtrlLoad(c,sportAutoCheck);if(l.auto?.action==='restore')await sportCtrlPrepareRestore();else await sportCtrlPrepare()}catch(e){toast(e.message)}}if(a==='settings')goto('profile');if(a==='reload')location.reload();if(a==='check'){if(['restart','stopped'].includes(sportAutoPhase))location.reload();else sportAutomatic.request('user-check',0)}});
+ const sportAutoManualResult=sportCtrlResult;sportCtrlResult=async function(r,c){const text=await sportAutoManualResult(r,c);sportAutomatic.request('manual-result',0);return text.replace('Следующие изменения сохраняются только отдельным нажатием.','Следующие изменения сохраняются автоматически.');};
+ const sportAutoProfile=renderProfile;renderProfile=function(){return sportAutoProfile()
+  .replace('При входе облачная копия только читается. Ничего не заменяется автоматически. Восстановление ниже требует подтверждения и сначала сохраняет резерв. Ручное сохранение проверяет подтверждённую версию. Конфликт остановит отправку; удаление последних записей требует отдельного подтверждения.','При входе чистый журнал восстанавливается автоматически с резервированием. Изменения автоматически сохраняются по проверенной версии. При конфликте или очистке последнего раздела нужен твой выбор.')
+@@ -67,9 +74,9 @@
+  .replace('Автосинхронизация выключена. Каждое сохранение или восстановление подтверждается отдельно.','Изменения сохраняются автоматически. Подтверждение нужно только при конфликте или очистке последнего раздела.')
+  .replace('Обычные изменения, включая удаление, сначала сохраняются на устройстве. Отправляй их отдельной кнопкой «Сохранить в облаке». Конфликт не заменяет другую версию. Для проверки на другом устройстве или в приватной вкладке Safari войди и явно восстанови облачную копию; исходную вкладку не очищай.','Сначала изменения надёжно сохраняются на устройстве, затем автоматически отправляются в облако. На чистом устройстве журнал восстановится после входа. Конфликт не перезаписывает данные. Исходную вкладку не очищай.')
+  .replace('Повтор отправляет только прежний сохранённый пакет после проверки сервера. Автосинхронизация и связь сводок, общих замеров и счётчиков выключены.','При обрыве связи проверяется прежняя попытка, затем повторяется только тот же пакет. Сводки и отдельный обмен общими замерами и счётчиками выключены.')
+- +`<div class="happy-card"><b>Статус синхронизации</b><p class="happy-note" id="sport-auto-detail" role="status">${esc(sportAutoMessage)}</p><div class="happy-actions"><button class="happy-button" data-auto="check">Проверить сейчас</button><button type="button" class="happy-button" id="sport-auto-restart" data-auto="reload" ${sportAutoPhase==='restart'?'':'hidden'}>Обновить профиль</button><button type="button" class="happy-button" id="sport-auto-confirm" data-auto="confirm" ${sportAutoPhase==='confirmation'?'':'hidden'}>Посмотреть и подтвердить удаление</button></div><details class="sport-sync-diagnostics"><summary>О синхронизации и этой сборке</summary><p class="happy-note">Это отдельная версия Sport; используется реальный аккаунт. Сначала выгрузи текущий дневник перед переносом со старого адреса. Код и адрес прежнего сайта не меняются; облачный журнал аккаунта общий.</p><p class="happy-note">Автоматически сохраняется полный журнал Sport. Отдельный обмен с Day и Meal, сводки, общие замеры и счётчики отключены. Локальные гостевые записи не присваиваются аккаунту. Создание и редактирование аккаунта, общие счётчики Meal и Icon Studio здесь недоступны; свои счётчики Sport работают локально.</p><p class="happy-note">Статус «Сохранено в облаке · проверено» появляется только после чтения и расшифровки текущей отправленной версии. Конфликт останавливает автоматическую замену. Неподтверждённая отправка могла уже сохраниться: сначала проверяется результат, затем допустим повтор того же пакета. Нехватка места останавливает новую отправку.</p></details></div>`};
++ +`<div class="happy-card"><b>Статус синхронизации</b><p class="happy-note" id="sport-auto-detail" role="status">${esc(sportAutoMessage)}</p><div class="happy-actions"><button class="happy-button" data-auto="check">Проверить сейчас</button><button type="button" class="happy-button" id="sport-auto-restart" data-auto="reload" ${['restart','stopped'].includes(sportAutoPhase)?'':'hidden'}>Обновить профиль</button><button type="button" class="happy-button" id="sport-auto-confirm" data-auto="confirm" ${sportAutoPhase==='confirmation'?'':'hidden'}>Посмотреть и подтвердить удаление</button></div><details class="sport-sync-diagnostics"><summary>О синхронизации и этой сборке</summary><p class="happy-note">Это отдельная версия Sport; используется реальный аккаунт. Сначала выгрузи текущий дневник перед переносом со старого адреса. Код и адрес прежнего сайта не меняются; облачный журнал аккаунта общий.</p><p class="happy-note">Автоматически сохраняется полный журнал Sport. Отдельный обмен с Day и Meal, сводки, общие замеры и счётчики отключены. Локальные гостевые записи не присваиваются аккаунту. Создание и редактирование аккаунта, общие счётчики Meal и Icon Studio здесь недоступны; свои счётчики Sport работают локально.</p><p class="happy-note">Статус «Сохранено в облаке · проверено» появляется только после чтения и расшифровки текущей отправленной версии. Конфликт останавливает автоматическую замену. Неподтверждённая отправка могла уже сохраниться: сначала проверяется результат, затем допустим повтор того же пакета. Нехватка места останавливает новую отправку.</p></details></div>`};
+ HappyUI.accountNote=()=>'<p class="happy-note">Войди существующим аккаунтом для зашифрованного сохранения и восстановления журнала. Локальные гостевые записи не переносятся автоматически. Создание новых аккаунтов здесь недоступно. Перед переносом сохрани копию дневника; пароль нужен для расшифровки.</p>';
+-sportAutoPaint(sportAutoReady()?'checking':'local');
++try{sportAutoPaint(sportAutoReady()?'checking':sportAutoInactive())}catch(e){sportAutoPaint('error',e.message)}
+ // Flush only the app\'s initialized owner state through its ordinary safe writer.
+ // Autosync independently verifies persisted bytes before every candidate.
+ if(!SPORT_MEASURE_EMBED){persist();sportAutomatic.request('boot',0)}
+diff --git a/sport/src/automatic-sync.js b/sport/src/automatic-sync.js
+--- a/sport/src/automatic-sync.js
++++ b/sport/src/automatic-sync.js
+@@ -19,9 +19,12 @@
+   function read(c){d.check(c);return d.load(c)}
+   function write(c,fn){const l=read(c),next=fn(l);d.check(c);d.save(c,next);d.check(c);return next}
+   function paint(p,error=''){phase=p;lastError=error;d.paint?.(p,error)}
++  // Only the adapter can distinguish a real guest from a lost/foreign session.
++  // Local mode is not cloud success, and still requires a verified local snapshot.
++  function inactive(){const p=d.inactive();if(p==='local')d.ensureSaved();paint(p);return {status:p}}
+   function status(c,p,extra={}){write(c,l=>({...l,auto:{...meta(l),...extra,phase:p}}));paint(p);return {status:p}}
+   function request(reason='check',delay=600){if(stopped)return;if(running){again=true;queuedDelay=Math.min(queuedDelay,delay);return;}if(timer!==null)d.cancel(timer);timer=d.schedule(()=>{timer=null;run().catch(()=>{})},delay)}
+-  function notifyEdit(){if(stopped)return;try{const c=d.capture(false,'observe');d.ensureSaved();write(c,l=>({...l,auto:{...meta(l),phase:'dirty'}}));paint('dirty');request('edit')}catch(e){paint('error',e.message)}}
++  function notifyEdit(){if(stopped)return;try{if(!d.ready())return inactive();const c=d.capture(false,'observe');d.ensureSaved();write(c,l=>({...l,auto:{...meta(l),phase:'dirty'}}));paint('dirty');request('edit')}catch(e){paint('error',e.message)}}
+   function connectivity(value){const changed=value!==online;online=value;if(stopped)return;try{const c=d.capture(false,'observe');write(c,l=>{const a=meta(l);return {...l,auto:{...a,epoch:a.epoch+(value&&(changed||a.offline)?1:0),offline:!value,phase:value?'dirty':'offline'}}});if(value&&changed)request('online',0);if(!value)paint('offline')}catch{}}
+   async function current(c){const value=copy(d.snapshot().data);d.ensureSaved();const digest=await d.digest(value);d.check(c);if(!same(value,d.snapshot().data))throw Object.assign(Error('Локальная версия изменилась во время проверки'),{code:'local_changed'});return {data:value,digest}}
+   async function verified(c){const cur=await current(c),l=read(c);return status(c,l.baseline&&cur.digest===l.baseline.digest&&!l.pending?'saved':'dirty',{verifiedAt:now()})}
+@@ -43,7 +46,7 @@
+   async function run(){
+    if(stopped)return {status:'stopped'};if(running){again=true;return {status:phase}}running=true;let c=null;
+    try{
+-    if(!d.ready()){paint('local');return {status:'local'}}
++    if(!d.ready())return inactive();
+     if(!online||!d.online()){c=d.capture(false,'observe');return status(c,'offline')}
+     c=d.capture(false,'observe');await d.prepare();if(stopped)return {status:'stopped'};c=d.capture(false,'observe');d.ensureSaved();
+     if(d.engine.busy){paint('waiting');again=true;return {status:'waiting'}}
+@@ -90,10 +93,10 @@
+       const a=meta(l),r=a.retry;if(r?.id===l.pending.id&&r.epoch===a.epoch&&r.used>=2)return status(c,'retry-needed');const readFailures=a.readFailures?.epoch===a.epoch?a.readFailures.count:0;status(c,'unknown',{readFailures:{epoch:a.epoch,count:readFailures+1}});if(readFailures<2&&(!r||r.id!==l.pending.id||r.epoch!==a.epoch||r.used<2))request('uncertain',Math.max(1000,(r?.nextAt||0)-now()));return {status:'unknown'}
+      }
+      const offline=!online||!d.online()||e.name==='TypeError'||/связи|network|offline|fetch|timeout/i.test(e.message);status(c,offline?'offline':'error');paint(offline?'offline':'error',e.message);return {status:phase};
+-    }catch{paint('local','Сеанс изменился. Синхронизация остановлена.');return {status:'local'}}
++    }catch{paint('error',e.message);return {status:'error'}}
+    }finally{running=false;if(again&&!stopped){again=false;const delay=Number.isFinite(queuedDelay)?queuedDelay:800;queuedDelay=Infinity;request('queued',delay)}}
+   }
+-  function stop(){stopped=true;if(timer!==null)d.cancel(timer);timer=null;paint('local','Синхронизация остановлена в этой вкладке.')}
++  function stop(){stopped=true;if(timer!==null)d.cancel(timer);timer=null;paint('stopped')}
+   return Object.freeze({request,run,notifyEdit,connectivity,stop,get phase(){return phase},get busy(){return running},get error(){return lastError}});
+  }
+  return {create,pristine};
+diff --git a/sport/src/measurements-shared.js b/sport/src/measurements-shared.js
+--- a/sport/src/measurements-shared.js
++++ b/sport/src/measurements-shared.js
+@@ -57,8 +57,8 @@
+  const local=hmOwner&&hmOwner!=='local'?hmRead('local'):null;
+  return `<p class="fineprint" id="hmStatus" role="status">${esc(hmStatus)}</p>${local?.records.some(r=>!r.deleted)?'<button class="button" data-hm="claim">Добавить локальные замеры в этот профиль</button>':''}`+hmMeasurements()+`<div class="happy-actions hm-output"><button class="happy-button" data-hm="print">Печать замеров</button><button class="happy-button" data-hm="csv">Выгрузить CSV</button></div>`;
+ };
+-function hmExportAllowed(){try{SportProfiles.assertOwner();return true}catch(e){toast(e.message||'Профиль изменился. Обнови страницу перед выгрузкой.');return false}}
+-function hmCsv(){if(!hmExportAllowed())return;const fields=[...new Set(state.measurements.flatMap(r=>Object.keys(r.values)))],cell=v=>'"'+String(v??'').replaceAll('"','""')+'"',text='\uFEFF'+[['Дата',...fields.map(k=>(MF.find(x=>x[0]===k)?.[1]||k)+(k==='weight'?', кг':', см'))],...state.measurements.map(r=>[r.date,...fields.map(k=>r.values[k])])].map(r=>r.map(cell).join(';')).join('\r\n');const a=document.createElement('a'),url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.href=url;a.download='happy-measurements.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000)}
++function hmExportAllowed(){try{SportProfiles.assertOwner();if((CL.s?.uid||'local')!==SportProfiles.owner||(SportProfiles.owner!=='local'&&state.sportOwner!==SportProfiles.owner))throw Error('Журнал не принадлежит текущему профилю. Открой профиль заново.');return true}catch(e){toast(e.message||'Профиль изменился. Обнови страницу перед выгрузкой.');return false}}
++function hmCsv(){if(!hmExportAllowed())return;const fields=[...new Set(state.measurements.flatMap(r=>Object.keys(r.values)))],cell=v=>{let text=String(v??'');if(typeof v==='string'&&/^[\s\u0000-\u001f]*[=+@-]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"'},text='\uFEFF'+[['Дата',...fields.map(k=>{const field=MF.find(x=>x[0]===k);return field?field[1]+(k==='weight'?', кг':', см'):'Дополнительное поле: '+k})],...state.measurements.map(r=>[r.date,...fields.map(k=>r.values[k])])].map(r=>r.map(cell).join(';')).join('\r\n');const a=document.createElement('a'),url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.href=url;a.download='happy-measurements.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+ function hmPrint(){if(!hmExportAllowed())return;if(!state.measurements.length){toast('Пока нет замеров');return}let n=document.getElementById('hmPrint');if(!n){n=document.createElement('section');n.id='hmPrint';document.body.appendChild(n)}const {cur,old}=measurePair();n.innerHTML='<h1>Happy · Замеры тела</h1>'+document.querySelector('.body-viz').outerHTML+measurementHistoryTable(cur,old);window.print()}
+ document.addEventListener('click',ev=>{const b=ev.target.closest('[data-hm]');if(!b)return;if(b.dataset.hm==='csv')hmCsv();if(b.dataset.hm==='print')hmPrint();if(b.dataset.hm==='claim'&&hmOwner!=='local'){const local=hmRead('local'),same=new Set(hmDoc.records.map(r=>r.date)),add=HM.visible(local).filter(r=>!same.has(r.date));if(!add.length){toast('На эти даты в профиле уже есть замеры. Они сохранены.');return}state.measurements.push(...add);persist();render();toast('Локальные замеры добавлены; совпадающие даты сохранены в профиле')}});
+ window.addEventListener('storage',ev=>{if(globalThis.SportReadOnlyTest)return;if(ev.key===CL_KEY){clLoad().then(()=>{hmSync();hmRender()})}else if(ev.key===HM_PREFIX+hmOwner){try{hmSave(hmRead(hmOwner));oldPersist();hmRender()}catch(e){hmStatus=e.message;hmPaint()}}});
+diff --git a/sport/src/measurements-v2.js b/sport/src/measurements-v2.js
+--- a/sport/src/measurements-v2.js
++++ b/sport/src/measurements-v2.js
+@@ -27,14 +27,104 @@
+ const previousMeasurements=renderMeasurements;
+ renderMeasurements=function(){const {cur,old}=measurePair();if(!cur)return '<div class="card empty">Пока нет замеров.</div><button class="button" data-action="add-measure">Добавить замер</button>'+deletedMeasurementButton();const wrapper=document.createElement('div');wrapper.innerHTML=previousMeasurements();const date=wrapper.querySelector('#measure-date');if(date)date.parentElement.innerHTML=`${icon('calendar-blank')}<span>Последние · ${dateLabel(cur.date)}</span>`;wrapper.querySelector('.measure-table').outerHTML=measurementHistoryTable(cur,old);wrapper.querySelector('[data-action=changes]')?.remove();wrapper.querySelectorAll('.comparison-note').forEach(n=>n.remove());const edit=wrapper.querySelector('[data-action=edit-measure]');if(edit){edit.dataset.action='edit-measurements-table';edit.textContent='Редактирование'}const svg=wrapper.querySelector('.body-chart');svg.innerHTML=svg.innerHTML.replaceAll('#61cce8','#00ccdf').replaceAll('#e385d0','#f12ce5').replaceAll('#6a7dce','#5843e4');svg.setAttribute('aria-label',`Схематическое сравнение ${old.date} и ${cur.date}. ${amplify===3?'Разница усилена втрое':'Разница без усиления'}`);wrapper.querySelectorAll('.amplify button').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.id)===amplify)));return wrapper.innerHTML+deletedMeasurementButton()};
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;if(b.dataset.action==='period')comparisonDate=null;if(b.dataset.action==='compare-date'){comparisonDate=b.dataset.id;const scroll=$('.measurement-grid-wrap')?.scrollLeft||0;e.preventDefault();e.stopImmediatePropagation();render();$('.measurement-grid-wrap').scrollLeft=scroll}},true);
++let measurementEditContext=null,measurementEditSerial=0;
++function measurementEditCapture(){
++ SportProfiles.assertOwner();
++ if(SPORT_MEASURE_EMBED)throw Error('Открой Sport отдельно для редактирования замеров.');
++ if(SportProfiles.owner!=='local'&&state.sportOwner!==SportProfiles.owner)throw Error('Журнал не принадлежит текущему профилю. Открой профиль заново.');
++ if((CL.s?.uid||'local')!==SportProfiles.owner)throw Error('Профиль или сеанс изменился. Открой замер заново.');
++ return {owner:SportProfiles.owner,uid:CL.s?.uid||'local',session:CL.s,token:CL.s?.at,key:CL.ck,keyRaw:CL.kraw,stored:clStoredGeneration(),generation:sportAutoGeneration};
++}
++function measurementEditCheck(context){
++ const current=measurementEditCapture();
++ if(!context||Object.keys(current).some(key=>current[key]!==context[key]))throw Error('Профиль или сеанс изменился. Открой замер заново.');
++}
+ measureForm=function(edit=false,date=null){
++ let context;try{context=measurementEditCapture()}catch(e){toast(e.message);return}
+  const record=edit?state.measurements.find(m=>m.date===(date||measurePair().cur?.date)):null;
+  if(edit&&!record){toast('Замер не найден');return}
++ measurementEditContext={context,token:String(++measurementEditSerial),date:record?.date||'',values:clone(record?.values||{}),record:record?clone(record):null};
+  const input=(key,label)=>`<label class="field">${label}<input name="${key}" aria-label="${MF.find(x=>x[0]===key)?.[1]||label}, ${key==='weight'?'кг':'см'}" type="number" min="1" max="500" step=".1" inputmode="decimal" value="${record?.values[key]??''}" placeholder="—"></label>`;
+- openSheet(edit?'Редактирование':'Новый замер',`<form id="measure-form" data-original-date="${record?.date||''}"><label class="field">Дата<input name="date" type="date" required value="${record?.date||dayNow()}"></label><div class="measurement-fields">${measurementGroups.map(g=>g.keys.length===1?input(g.keys[0],g.name+', '+(g.keys[0]==='weight'?'кг':'см')):`<fieldset class="paired-fields"><legend>${g.name}, см</legend><div class="twocol">${input(g.keys[0],'Левая')}${input(g.keys[1],'Правая')}</div></fieldset>`).join('')}</div><div id="form-error" class="form-error" role="alert"></div><button class="button primary" type="submit">${icon('check')} Сохранить замер</button>${record?`<button class="button measurement-delete" type="button" data-action="delete-measure-date" data-id="${record.date}">${icon('trash')} Удалить замер</button>`:''}</form>`)
++ openSheet(edit?'Редактирование':'Новый замер',`<form id="measure-form" data-edit-token="${measurementEditContext.token}" data-original-date="${record?.date||''}"><label class="field">Дата<input name="date" type="date" required value="${record?.date||dayNow()}"></label><div class="measurement-fields">${measurementGroups.map(g=>g.keys.length===1?input(g.keys[0],g.name+', '+(g.keys[0]==='weight'?'кг':'см')):`<fieldset class="paired-fields"><legend>${g.name}, см</legend><div class="twocol">${input(g.keys[0],'Левая')}${input(g.keys[1],'Правая')}</div></fieldset>`).join('')}</div><div id="form-error" class="form-error" role="alert"></div><button class="button primary" type="submit">${icon('check')} Сохранить замер</button>${record?`<button class="button measurement-delete" type="button" data-action="delete-measure-date" data-id="${record.date}">${icon('trash')} Удалить замер</button>`:''}</form>`)
+ };
+-function removeMeasurement(date){const i=state.measurements.findIndex(m=>m.date===date);if(i<0)return;const record=state.measurements.splice(i,1)[0];state.measurementTrash??=[];const entry={id:'measure-deleted-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),record};state.measurementTrash.push(entry);comparisonDate=null;persist();closeSheet();journalTab='measurements';goto('journal');toast('Замер за '+dateLabel(date)+' удалён',()=>restoreMeasurement(entry.id))}
+-function restoreMeasurement(id){const i=state.measurementTrash?.findIndex(x=>x.id===id)??-1;if(i<0)return;const entry=state.measurementTrash[i];if(state.measurements.some(m=>m.date===entry.record.date)){toast('На эту дату уже есть замер. Сначала измени его дату.');return}state.measurements.push(entry.record);state.measurements.sort((a,b)=>a.date.localeCompare(b.date));state.measurementTrash.splice(i,1);persist();closeSheet();journalTab='measurements';goto('journal');toast('Замер восстановлен')}
+-document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const action=b.dataset.action;if(!['edit-measurements-table','edit-measure-date','delete-measure-date','measurement-trash','restore-measurement'].includes(action))return;e.preventDefault();e.stopImmediatePropagation();if(action==='edit-measurements-table'){const {cur,old}=measurePair();if(cur)openSheet('Редактирование',measurementColumns(cur,[...state.measurements].filter(m=>m.date<cur.date).sort((a,b)=>b.date.localeCompare(a.date)),old.date));return}if(action==='edit-measure-date')measureForm(true,b.dataset.id);if(action==='delete-measure-date')removeMeasurement(b.dataset.id);if(action==='restore-measurement')restoreMeasurement(b.dataset.id);if(action==='measurement-trash')openSheet('Удалённые замеры',`<p class="sheet-info">Удалённый замер можно восстановить.</p>${state.measurementTrash.map(x=>`<div class="deleted-measure-row"><b>${dateLabel(x.record.date)}</b><button class="text-btn" data-action="restore-measurement" data-id="${x.id}">Восстановить</button></div>`).join('')}`)},true);
+-document.addEventListener('submit',e=>{const form=e.target;if(form.id!=='measure-form')return;e.preventDefault();e.stopImmediatePropagation();const f=new FormData(form),date=String(f.get('date')||''),originalDate=form.dataset.originalDate,values={};for(const [key] of MF){const raw=f.get(key);if(raw!=null&&String(raw).trim()!=='')values[key]=Number(raw)}const error=t=>{$('#form-error').textContent=t};if(!Object.keys(values).length){error('Внеси хотя бы один замер.');return}if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){error('Укажи дату замера.');return}if(Object.values(values).some(n=>!Number.isFinite(n)||n<1||n>500)){error('Значение должно быть от 1 до 500.');return}if(state.measurements.some(m=>m.date===date&&m.date!==originalDate)){error('На эту дату уже есть замер. Открой его для исправления или выбери другую дату.');return}const old=state.measurements.find(m=>m.date===originalDate);const record={...(old||{source:'Мой замер',note:''}),date,values};if(originalDate)state.measurements=state.measurements.filter(m=>m.date!==originalDate);state.measurements.push(record);state.measurements.sort((a,b)=>a.date.localeCompare(b.date));comparisonDate=null;persist();journalTab='measurements';goto('journal');toast('Замер сохранён')},true);
++let measurementTrashContext=null,measurementTrashSerial=0;
++function measurementRecoveryError(error){toast(error.message||'Изменение не сохранено. Сохрани резервную копию перед перезапуском.');}
++function measurementRecoveryCommit(next,context){
++ sportValidateBackup({app:'Happy Sport',version:1,data:next});
++ measurementEditCheck(context);
++ // Keep both the live journal and recovery untouched until verified local persistence.
++ SportProfiles.save(next);
++ state=next;measurementEditContext=null;measurementTrashContext=null;comparisonDate=null;
++}
++function removeMeasurement(date,token){try{
++ const baseline=measurementEditContext;
++ if(!baseline||baseline.token!==token||baseline.date!==date)throw Error('Форма устарела. Открой замер заново.');
++ measurementEditCheck(baseline.context);
++ const matches=state.measurements.filter(m=>m.date===date);
++ if(matches.length!==1||JSON.stringify(matches[0])!==JSON.stringify(baseline.record))throw Error('Замер изменён или неоднозначен. Открой его заново.');
++ const next=clone(state),record=next.measurements.splice(next.measurements.findIndex(m=>m.date===date),1)[0];
++ const entry={id:'measure-deleted-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),record};
++ next.measurementTrash??=[];
++ if(next.measurementTrash.some(x=>x.id===entry.id))throw Error('Не удалось создать уникальную запись восстановления. Повтори удаление.');
++ next.measurementTrash.push(entry);measurementRecoveryCommit(next,baseline.context);
++ const recovery={context:measurementEditCapture(),entry:clone(entry)};
++ closeSheet();journalTab='measurements';goto('journal');toast('Замер за '+dateLabel(date)+' удалён',()=>restoreMeasurement(entry.id,recovery));
++ }catch(error){measurementRecoveryError(error)}
++}
++function restoreMeasurement(id,recovery){try{
++ if(!recovery||recovery.entry.id!==id)throw Error('Список устарел. Открой удалённые замеры заново.');
++ measurementEditCheck(recovery.context);
++ const matches=(state.measurementTrash||[]).filter(x=>x.id===id),entry=matches[0];
++ if(matches.length!==1||JSON.stringify(entry)!==JSON.stringify(recovery.entry))throw Error('Удалённый замер изменён. Открой список заново.');
++ if(state.measurements.some(m=>m.date===entry.record.date))throw Error('На эту дату уже есть замер. Сначала измени его дату.');
++ const next=clone(state);next.measurements.push(clone(entry.record));next.measurements.sort((a,b)=>a.date.localeCompare(b.date));next.measurementTrash=next.measurementTrash.filter(x=>x.id!==id);
++ measurementRecoveryCommit(next,recovery.context);
++ closeSheet();journalTab='measurements';goto('journal');toast('Замер восстановлен');
++ }catch(error){measurementRecoveryError(error)}
++}
++function openMeasurementTrash(){try{
++ const context=measurementEditCapture(),token=String(++measurementTrashSerial),entries=clone(state.measurementTrash||[]);
++ measurementTrashContext={context,token,entries};
++ openSheet('Удалённые замеры',`<p class="sheet-info">Удалённый замер можно восстановить.</p>${entries.map((x,i)=>`<div class="deleted-measure-row"><b>${dateLabel(x.record.date)}</b><button class="text-btn" data-action="restore-measurement" data-trash-token="${token}" data-trash-index="${i}">Восстановить</button></div>`).join('')}`);
++ }catch(error){measurementRecoveryError(error)}
++}
++document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const action=b.dataset.action;if(!['edit-measurements-table','edit-measure-date','delete-measure-date','measurement-trash','restore-measurement'].includes(action))return;e.preventDefault();e.stopImmediatePropagation();if(action==='edit-measurements-table'){const {cur,old}=measurePair();if(cur)openSheet('Редактирование',measurementColumns(cur,[...state.measurements].filter(m=>m.date<cur.date).sort((a,b)=>b.date.localeCompare(a.date)),old.date));return}if(action==='edit-measure-date')measureForm(true,b.dataset.id);if(action==='delete-measure-date')removeMeasurement(b.dataset.id,b.closest('#measure-form')?.dataset.editToken);if(action==='restore-measurement'){const baseline=measurementTrashContext,entry=baseline?.entries[b.dataset.trashIndex];restoreMeasurement(entry?.id,baseline&&baseline.token===b.dataset.trashToken&&entry?{context:baseline.context,entry}:null)}if(action==='measurement-trash')openMeasurementTrash()},true);
++document.addEventListener('submit',e=>{
++ const form=e.target;if(form.id!=='measure-form')return;e.preventDefault();e.stopImmediatePropagation();
++ const error=t=>{$('#form-error').textContent=t};
++ try{
++  const baseline=measurementEditContext;
++  if(!baseline||form.dataset.editToken!==baseline.token||form.dataset.originalDate!==baseline.date)throw Error('Форма устарела. Открой замер заново.');
++  measurementEditCheck(baseline.context);
++  // Native number inputs expose malformed text as an empty value. Never treat
++  // badInput, range or step violations as an intentional clear, even on synthetic submit.
++  if(form.checkValidity&&!form.checkValidity())throw Error('Проверь дату и числовые значения замеров.');
++  const f=new FormData(form),date=String(f.get('date')||''),originalDate=baseline.date;
++  const matches=state.measurements.filter(m=>m.date===originalDate),old=originalDate?matches[0]:null;
++  if(originalDate&&matches.length!==1)throw Error('Замер изменён или неоднозначен. Открой журнал заново.');
++  // Extensions come from the latest record. Only displayed controls can clear fields.
++  const values={...(old?.values||{})};
++  for(const [key] of MF){
++   const raw=f.get(key);if(raw===null)continue;
++   if(old&&(Object.hasOwn(old.values,key)!==Object.hasOwn(baseline.values,key)||old.values[key]!==baseline.values[key]))throw Error('Замер изменён. Открой его заново перед правкой.');
++   const text=String(raw).trim();
++   // Untouched nulls and legacy numeric values retain their original representation.
++   if(old&&text===String(baseline.values[key]??''))continue;
++   if(text===''){delete values[key];continue;}
++   const value=Number(text);if(!Number.isFinite(value)||value<1||value>500)throw Error('Значение должно быть от 1 до 500.');
++   values[key]=value;
++  }
++  if(!Object.keys(values).length)throw Error('Внеси хотя бы один замер.');
++  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error('Укажи дату замера.');
++  if(state.measurements.some(m=>m.date===date&&m!==old))throw Error('На эту дату уже есть замер. Открой его для исправления или выбери другую дату.');
++  const record={...(old||{source:'Мой замер',note:''}),date,values},next=clone(state);
++  next.measurements=state.measurements.filter(m=>m!==old).map(clone);next.measurements.push(record);next.measurements.sort((a,b)=>a.date.localeCompare(b.date));
++  sportValidateBackup({app:'Happy Sport',version:1,data:next});
++  measurementEditCheck(baseline.context);
++  // persist() swallows storage errors. Use its existing verified owner writer directly;
++  // onSave still queues the unchanged automatic journal controller after this turn.
++  SportProfiles.save(next);
++  state=next;measurementEditContext=null;comparisonDate=null;journalTab='measurements';goto('journal');toast('Замер сохранён');
++ }catch(err){error(err.message||'Замер не сохранён. Оставь форму открытой и сохрани резервную копию.');}
++},true);
+ render();
+diff --git a/sport/src/quick-value-input.js b/sport/src/quick-value-input.js
+--- a/sport/src/quick-value-input.js
++++ b/sport/src/quick-value-input.js
+@@ -1,6 +1,8 @@
+ /* Tap to replace; leaving a blank field cancels the edit. */
+ const quickValueEdits=new WeakMap();
+-function isQuickValueInput(el){return el?.matches?.('input[type=number],input[data-set-time],input[data-plan-value=seconds],input[data-plan-rest],input[data-player-preset],input[data-rest-pill-time],input[name=duration],input[name=workSeconds],input[name=restSeconds],input[data-completed-time],input[data-template-target=seconds],input[data-player-record=seconds],input[data-player-distance],input[data-player-weight],input[data-player-reps],input[data-free-value],input[data-free-target]')&&!el.readOnly&&!el.disabled;}
++// Measurement forms use native input editing: an explicit blank clears a field on submit.
++// Do not apply workout tap-to-replace/blank-cancels behavior to these controls.
++function isQuickValueInput(el){if(el?.closest?.('#measure-form'))return false;return el?.matches?.('input[type=number],input[data-set-time],input[data-plan-value=seconds],input[data-plan-rest],input[data-player-preset],input[data-rest-pill-time],input[name=duration],input[name=workSeconds],input[name=restSeconds],input[data-completed-time],input[data-template-target=seconds],input[data-player-record=seconds],input[data-player-distance],input[data-player-weight],input[data-player-reps],input[data-free-value],input[data-free-target]')&&!el.readOnly&&!el.disabled;}
+ function restoreQuickValue(input,edit){input.value=edit.original;edit.cancelled=true;input.dispatchEvent(new Event('input',{bubbles:true}));}
+ document.addEventListener('focusin',event=>{const input=event.target;if(!isQuickValueInput(input))return;quickValueEdits.set(input,{original:input.value,changed:false,cancelled:false});input.value='';},true);
+ document.addEventListener('input',event=>{const edit=quickValueEdits.get(event.target);if(edit&&event.target.value==='')event.stopImmediatePropagation();},true);

@@ -1,0 +1,25 @@
+{
+  "reviewDate": "2026-11-06",
+  "nodeVersion": "v24.22.1",
+  "scope": "Offline synthetic pure-reader review; no production UI/account/backend acceptance",
+  "sourceCommits": {
+    "day": "386ebc402e5fdc37310920304bf167086c30f342",
+    "sport": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f"
+  },
+  "results": {
+    "independentReaderTests": 14,
+    "independentSourceTests": 5,
+    "independentTotal": 19,
+    "authorTests": 65,
+    "failed": 0,
+    "sourceCheckoutsClean": true
+  },
+  "sha256": {
+    "day-sport-readonly-prototype-20261106/src/sport-journal-validator.mjs": "3a6aaeb95ff075ead41ee7275e4825a1c453e2c500b4a20529c0aa35175e2599",
+    "day-sport-readonly-prototype-20261106/src/sport-measurement-reader.mjs": "4ccde664463a559e56cf8e25faef781a51c39795d5c639be1c35748eb54443bf",
+    "day-sport-readonly-prototype-20261106/test/fixtures.mjs": "4c703d61de28528fe143b4bfeed196a57ceb34cc59e53dbd291839d78d39d0c6",
+    "day-sport-readonly-prototype-20261106/test/reader.test.mjs": "6a58b840d4f34a78dfd45bb49480231d62ebd1d5dc44b2893637506d1954187c",
+    "day-sport-reader-review-20261106/prototype-adversarial.test.mjs": "c633b6033fdb131b5e910c063a518d1f69ecdc5be74952382176739fcff5f48a",
+    "day-sport-reader-review-20261106/source-contract.test.mjs": "4de55840e57f9cc7e5fd0a4c8f85c295979727338fafd0ecb838f2905d3bb9c4"
+  }
+}

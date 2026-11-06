@@ -1,0 +1,128 @@
+{
+  "status": "offline-unconnected-prototype",
+  "date": "2026-11-06",
+  "sources": [
+    {
+      "app": "day",
+      "commit": "386ebc402e5fdc37310920304bf167086c30f342",
+      "path": "dist/day/index.html",
+      "sha256": "e9c403fcde68067189302f933470d162c238e1df6868dece5dff2c0415141c23",
+      "bytes": 517529
+    },
+    {
+      "app": "day",
+      "commit": "386ebc402e5fdc37310920304bf167086c30f342",
+      "path": "dist/day/auth-read-only.js",
+      "sha256": "e90af174bb18f4e733361a073a040e2774b5ba105d1a81ebee5331e0c597b38f",
+      "bytes": 8718
+    },
+    {
+      "app": "day",
+      "commit": "386ebc402e5fdc37310920304bf167086c30f342",
+      "path": "dist/day/day-journal-sync.js",
+      "sha256": "a25c6965b1ccc99190c9635764bd68ac55b01c6f0ca3b5834e3093637f8b5de4",
+      "bytes": 69993
+    },
+    {
+      "app": "day",
+      "commit": "386ebc402e5fdc37310920304bf167086c30f342",
+      "path": "dist/shared/measurements-host.js",
+      "sha256": "bc7eb9648282545c4e75026885a78a689320bf83e7a8acf388c826f175ca2263",
+      "bytes": 3223
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "sport/src/happy-auth.js",
+      "sha256": "60a2b5b7afd457d0778cf8df1b503479c083dfc2fbd86f7f44925c392686d394",
+      "bytes": 9343
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "sport/src/data-transfer.js",
+      "sha256": "4c34a8bffca1ed3299709bcdd3caeae040c20a43bf24442562f5f83b2236c93b",
+      "bytes": 18496
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "sport/src/controlled-sync-ui.js",
+      "sha256": "1bc184ba47d25e9aa3a56f12314f029cc49365bbfed5def4f359329177c1c6c1",
+      "bytes": 18556
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "sport/src/automatic-sync-ui.js",
+      "sha256": "307a20a08d5e45890e474fb04a9cfd8d5f27c6af23fc305d87b5f69c1e1c697d",
+      "bytes": 20056
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "sport/src/measurements-shared.js",
+      "sha256": "bf1b318b9f935db99988558b63dff275a554bf42407f78fade6b298e3eedb609",
+      "bytes": 9965
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "sport/src/free-timer.js",
+      "sha256": "f9b47729d6fd0657e5671bdb01b0f7455252554a9b019481c2359bfe18b7efd4",
+      "bytes": 15316
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "sport/src/exercise-player.js",
+      "sha256": "40929adf5e924aad3fb689206d35dec4db9de4d9c9132c88df0e18e56c2a1e67",
+      "bytes": 44413
+    },
+    {
+      "app": "sport",
+      "commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+      "path": "shared/food-counters.js",
+      "sha256": "94cdff47ba95358cbe0b2528cbb7c9e6669b8037d4253b4eb08625439ba05de4",
+      "bytes": 8635
+    }
+  ],
+  "validatorExtraction": [
+    {
+      "path": "sport/src/data-transfer.js",
+      "ranges": [
+        "const sportDataFields declaration",
+        "function sportValidateBackup through before sportBackupInfo"
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "sport/src/free-timer.js",
+      "ranges": [
+        "function validateFreeTimer through before freeSession"
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "sport/src/exercise-player.js",
+      "ranges": [
+        "parsePlayerMetric declaration",
+        "parsePlayerDistance declaration"
+      ],
+      "unchanged": true
+    },
+    {
+      "path": "shared/food-counters.js",
+      "ranges": [
+        "const number through before function linked"
+      ],
+      "unchanged": true
+    }
+  ],
+  "wrapperChanges": [
+    "Added module scope and ES export",
+    "Supplied pure JSON clone",
+    "Wrapped food-counter validation helpers in const HappyFoodCounters = (() => { ...; return {valid}; })()",
+    "Discard validator result; validate original parsed snapshot then expose only original measurement values"
+  ]
+}

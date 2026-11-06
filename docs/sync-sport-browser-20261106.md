@@ -106,3 +106,11 @@ node "$PATCH_DIR/check-independent.mjs" .
 The [common-profile/records proposal](shared-profile-records-plan-20261106.md) is
 separate design work, not a feature introduced by this patch. Release and any real
 migration still require the missing compatibility and acceptance checks.
+
+## Follow-up checkpoint
+
+The [guest-status follow-up](sync-sport-guest-status-20261106.md) fixes the misleading
+guest banner and adds explicit lifecycle-stop status. Its browser evidence also
+clarifies the preview boundary: a CSP-only on-disk mirror proof does not prove
+complete equality of the served runtime DOM, because the managed preview can
+inject its own live-reload script. No console-clean or packet-capture claim is made.

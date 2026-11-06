@@ -1,0 +1,27 @@
+✔ lossless measurement projection retains finite/null/extras and exposes no unrelated or trash data (15.294685ms)
+✔ strict row validation rejects owner/namespace/version/revision/IV/cipher metadata and ambiguous responses (4.526819ms)
+✔ full current envelope gate rejects flat, alias, unknown versions, invalid other journal sections, reserved fields (4.86703ms)
+✔ missing, empty, auth, crypto, HTTP, malformed content and cancelled reads remain distinct (3.204239ms)
+✔ all pinned context changes at async fetch completion suppress plaintext state (3.525844ms)
+✔ stream, decrypt and digest await races are fenced (3.09747ms)
+✔ newer read and disposal cannot be overwritten by a late successful old read (0.894555ms)
+✔ getState clears cache before storage events, but retained snapshots are explicitly not revocable (0.834826ms)
+✔ server and crypto errors are sanitized and a failed refresh does not retain previous projection (1.148618ms)
+✔ negative zero and source occurrence order survive parsing and projection (1.159384ms)
+✔ bounded response rejects oversize stream rather than truncating or rendering partial data (3.72291ms)
+✔ deadline bounds fetch, stream, decrypt and digest even when abort is ignored; late results cannot overwrite timeout (62.691819ms)
+✔ deadline with changed owner reports unavailable rather than stale timeout or empty (10.398011ms)
+✔ cancelled hung operation is bounded and cannot leak an unhandled late rejection (10.998134ms)
+✔ exact Day/Sport derivation interoperates only for the actual same key (277.338039ms)
+✔ actual Day guard permits fixed Sport journal GET but denies all Sport write methods (2.184726ms)
+✔ Day persisted auth fence rejects owner, access, refresh, key, expiry, generation and cleared auth before storage event (6.955452ms)
+✔ Sport source validator accepts duplicate/impossible dates, nulls/outside old range, extension keys and opaque recovery (2.01381ms)
+✔ vendored validator and all pure dependency excerpts exactly match the audited Sport source (0.890389ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 388.287466

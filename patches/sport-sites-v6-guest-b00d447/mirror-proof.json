@@ -1,0 +1,24 @@
+{
+  "candidate_sport_sha256": "c1c463d7840db9bd9044b91befad018f05ce89613e93648d2f95132ade131069",
+  "qa_sport_sha256": "25b212d6b5a8479e06da2a247e988cfb011e20a9612b87a89d27e3a1915201ce",
+  "reconstructed_sha256": "c1c463d7840db9bd9044b91befad018f05ce89613e93648d2f95132ade131069",
+  "qa_only_added_first_csp": true,
+  "protective_csp": "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; connect-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; object-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'; base-uri 'none'\">",
+  "method": "Raw bytes compared after removing exactly the single inserted first-head CSP meta. Candidate not edited.",
+  "scope": "On-disk Sport HTML only; not full equality of served DOM or network response.",
+  "candidate_after_qa_sha256": "c1c463d7840db9bd9044b91befad018f05ce89613e93648d2f95132ade131069",
+  "generated_entry_copies": [
+    "sport/index.html",
+    "sport/dist/index.html",
+    "dist/index.html",
+    "dist/sport/index.html"
+  ],
+  "all_generated_copies_match": true,
+  "served_runtime_difference": {
+    "managed_preview_injected_live_reload": true,
+    "observed_dom_excerpt": "var socket = new WebSocket(address); socket.onmessage = function(msg) { if (msg.data == 'reload') window.location.reload(); else if (msg.data == 'refreshcss') refreshCSS(); };",
+    "blocked_error": "Прямые записи отключены. Журнал Sport сохраняется только через защищённую проверку версии.",
+    "source_line_evidence": "Stored QA HTML has 9556 lines. Error originates at the injected WebSocket line 9577 via blocked transport constructor at line 693. No preview URL retained.",
+    "network_protection_relaxed": false
+  }
+}

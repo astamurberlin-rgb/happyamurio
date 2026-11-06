@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "driver": "Chromium UI through an isolated managed preview",
+  "candidate_sport_sha256": "c1c463d7840db9bd9044b91befad018f05ce89613e93648d2f95132ade131069",
+  "checks": [
+    {
+      "scenario": "empty_storage_gate",
+      "status": "pass",
+      "evidence": "Before app boot: localStorageLength=0, sessionStorageLength=0, anyExistingStorage=false. No pre-existing data was read or deleted."
+    },
+    {
+      "scenario": "protective_csp",
+      "status": "pass",
+      "evidence": "First CSP meta in app DOM has connect-src none, external resources excluded, worker-src/frame-src/form-action none. Diagnostic fetch produced connect-src securitypolicyviolation."
+    },
+    {
+      "scenario": "initial_guest_status",
+      "status": "pass",
+      "evidence": "After initial checking phase, banner becomes «Локальный режим · без облака»."
+    },
+    {
+      "scenario": "settings_guest_status",
+      "status": "pass",
+      "evidence": "Detail reads «Локальный режим: облачная синхронизация выключена. Для неё войди существующим аккаунтом. Гостевые записи не переносятся автоматически.»"
+    },
+    {
+      "scenario": "guest_check_now",
+      "status": "pass",
+      "evidence": "Check now before mutations and after all mutations/navigation preserves the explicit local-only banner/detail."
+    },
+    {
+      "scenario": "guest_native_save",
+      "status": "pass",
+      "evidence": "Saved synthetic date 2026-02-02, weight 71, waist 81. Values appear; status remains local-only, not cloud-saved or sync-stopped."
+    },
+    {
+      "scenario": "edit_date_and_clear",
+      "status": "pass",
+      "evidence": "Changed date to 2026-02-03 and weight to 72.5, explicitly cleared waist. Empty DOM waist confirmed before save; final table contains weight only."
+    },
+    {
+      "scenario": "reopen_cleared_field",
+      "status": "pass",
+      "evidence": "Reopened form shows date 2026-02-03, weight 72.5, waist empty."
+    },
+    {
+      "scenario": "discard_unsaved_edit",
+      "status": "pass",
+      "evidence": "Changed weight to 90 then closed form without save. Subsequent reload/reopen retains 72.5."
+    },
+    {
+      "scenario": "reload_persisted_values",
+      "status": "pass",
+      "evidence": "After real tab reload: date 2026-02-03, weight 72.5, waist empty, local-only banner."
+    },
+    {
+      "scenario": "native_invalid_values",
+      "status": "pass",
+      "evidence": "0: rangeUnderflow with visible browser warning; 501: rangeOverflow; 71.25: stepMismatch. Each Save leaves form open/value intact. Close/reopen retains stored 72.5."
+    },
+    {
+      "scenario": "delete_and_trash_reload",
+      "status": "pass",
+      "evidence": "Delete produces empty journal and trash count 1 with local-only status. Reload retains trash and no active measurement."
+    },
+    {
+      "scenario": "restore_from_trash",
+      "status": "pass",
+      "evidence": "Restore returns 2026-02-03 weight 72.5 and local-only status."
+    },
+    {
+      "scenario": "undo_once",
+      "status": "pass",
+      "evidence": "A second delete followed by immediate visible Undo restores the single record. The earlier expired Undo attempt was not counted as success."
+    },
+    {
+      "scenario": "real_navigation_back",
+      "status": "pass",
+      "evidence": "Navigated from Sport to QA diagnostic page and used real browser Back. Sport started through initial checking/default home, then returned local-only. No synthetic pagehide dispatch."
+    },
+    {
+      "scenario": "bfcache_stopped_reload",
+      "status": "not_established",
+      "evidence": "Real Back looked like a fresh app boot. No persisted BFCache signal was available; performance is undefined in read-only browser inspection. Stopped/reload lifecycle remains offline-only coverage, not an actual-browser pass."
+    },
+    {
+      "scenario": "console_review",
+      "status": "observed_with_caveats",
+      "evidence": "Console contains extension metadata errors and deliberate transport-block error caused by managed-preview injected live-reload new WebSocket(address). No clean-console claim; not evidence of cloud upload failure."
+    },
+    {
+      "scenario": "owned_cleanup",
+      "status": "pass",
+      "evidence": "Marker verified. Removed exactly 4 owned synthetic keys; localStorageLength=0, sessionStorageLength=0, anyStorageRemaining=false. Closed only the QA-created tab."
+    },
+    {
+      "scenario": "preview_shutdown",
+      "status": "pass",
+      "evidence": "sites-preview stop and sites-preview status both reported stopped."
+    },
+    {
+      "scenario": "candidate_hash_unchanged",
+      "status": "pass",
+      "evidence": "All four generated Sport entry HTML hashes equal the frozen candidate hash after QA. QA did not edit candidate source/build files."
+    }
+  ],
+  "offline_tests": {
+    "scope": "Separate offline implementation tests, not counted as real browser cases."
+  },
+  "not_executed": [
+    "Live backend/cloud sync, auth/login, real user data, cross-app exchange, migrations.",
+    "Quota/readback failure injection, corrupted local store, authenticated owner/session changes.",
+    "Full earlier portable browser suite, all 17 fields roundtrip, extension metadata/export roundtrip, date collisions.",
+    "Real Safari/iPhone/PWA, mobile viewport, confirmed BFCache stopped/reload path."
+  ],
+  "tooling_observations": [
+    "First automated click after edit had no visible effect and no validation error; after inspecting valid form and screenshot, a second click saved. Not established as an application defect.",
+    "One read-only browser return was interrupted by a temporary execution connection failure. Current UI was inspected before continuing.",
+    "First Undo target had expired and returned Node is detached from document; no mutation occurred. A later immediate native Undo sequence passed."
+  ],
+  "safety": {
+    "initial_storage_empty": true,
+    "synthetic_only": true,
+    "auth_session_created": false,
+    "site_created_or_deployed": false,
+    "external_connections_allowed": false,
+    "candidate_modified": false,
+    "stored_mirror_csp_only": true,
+    "served_dom_csp_only": false,
+    "owned_keys_removed": 4,
+    "local_storage_length_after_cleanup": 0,
+    "session_storage_length_after_cleanup": 0,
+    "qa_tab_closed": true,
+    "preview_stopped": true,
+    "screenshots_uploaded": false,
+    "security_denials_or_bypasses": false
+  }
+}

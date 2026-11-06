@@ -1,0 +1,8 @@
+{
+  "name": "happy-day-sport-readonly-offline-prototype",
+  "private": true,
+  "version": "0.0.0-offline",
+  "type": "module",
+  "scripts": {"test": "node --test test/*.test.mjs", "check": "node --check src/sport-measurement-reader.mjs && node --check src/sport-journal-validator.mjs && node --test test/*.test.mjs"},
+  "engines": {"node": ">=22"}
+}

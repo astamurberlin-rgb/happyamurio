@@ -1,0 +1,101 @@
+{
+  "base_commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+  "status": "frozen-locally-built-offline-checked-unreleased",
+  "patch_strategy": "Apply combined.patch directly to the clean exact base, never over an earlier patch.",
+  "changed_files": [
+    {
+      "path": "sport/scripts/check-automatic-integration.mjs",
+      "base_sha256": "f8119b4abdb448c7057d6b9b28875bb76c8d286da072a9d32351f39048677f7a",
+      "candidate_sha256": "b28f533a0a69a8754fc4a38383587d28d0dc20c62b5a2d0b584376f7e682f270"
+    },
+    {
+      "path": "sport/scripts/check-clean-shell.mjs",
+      "base_sha256": "4d7f37dca513191be8505b9b51b9e062a683fb41b771c1e86bf043b732e0f259",
+      "candidate_sha256": "d999a4cd0a8faca3e89a28dcb374f5ef986689d8ab0cdb6a8e329132f67b1c5d"
+    },
+    {
+      "path": "sport/scripts/check-measurement-input-events.mjs",
+      "base_sha256": null,
+      "candidate_sha256": "26d0c5ab7b50f689bdbf553f40b7cc869cea4acaee6f0b3116d3856d8237ea5a"
+    },
+    {
+      "path": "sport/scripts/check.mjs",
+      "base_sha256": "d772124434951e624f2fcd08e0fc99a5978450b3da5ae274300de4d69e2e41db",
+      "candidate_sha256": "44b1472387c9700f63efd120eebcd6fd4bfbaae14e66aaa08459d79d2ab8acc3"
+    },
+    {
+      "path": "sport/src/automatic-sync-ui.js",
+      "base_sha256": "307a20a08d5e45890e474fb04a9cfd8d5f27c6af23fc305d87b5f69c1e1c697d",
+      "candidate_sha256": "9411a9bda0c301737a66eeed61815ad863cdadd31675b462b736c166ccc992b3"
+    },
+    {
+      "path": "sport/src/automatic-sync.js",
+      "base_sha256": "3eef4eb7152a93c63f3b20f481d7c37028f7236387d6e19502908414d6f01378",
+      "candidate_sha256": "eb7c0441f1b9e4a075f615c89b0b0478b466ae79fa511574f3024cee443cacfa"
+    },
+    {
+      "path": "sport/src/measurements-shared.js",
+      "base_sha256": "bf1b318b9f935db99988558b63dff275a554bf42407f78fade6b298e3eedb609",
+      "candidate_sha256": "358e44afa1bb0464896615eb0fd486ad4c02229916746e82c11ff72c055b9136"
+    },
+    {
+      "path": "sport/src/measurements-v2.js",
+      "base_sha256": "48ad57d12834840f70083401a488ebbe42a66beaebf34dca886f73f589fc135f",
+      "candidate_sha256": "5b362b6fb3ca5d4122f917d4b8e3396bf82757281feea81eaf20ecb6b05a7d8b"
+    },
+    {
+      "path": "sport/src/quick-value-input.js",
+      "base_sha256": "6d9f20810f600e01dfa33f7d38afc912018cf77ae3def6786b6228b1ae111b12",
+      "candidate_sha256": "95cb619080508226caaba4cb4c06b54ed2fc69efb0b58c7cfd680b4b5563fa14"
+    }
+  ],
+  "incremental_files_since_browser_candidate": [
+    "sport/src/automatic-sync.js",
+    "sport/src/automatic-sync-ui.js",
+    "sport/scripts/check-automatic-integration.mjs",
+    "sport/scripts/check-clean-shell.mjs"
+  ],
+  "patch_sha256": "6665c455d3ed29836ee8c7e5141fc525ba4a51699e3b40991c47224a07bcf96f",
+  "generated_html_sha256": "c1c463d7840db9bd9044b91befad018f05ce89613e93648d2f95132ade131069",
+  "generated_html_paths": [
+    "sport/index.html",
+    "sport/dist/index.html",
+    "dist/index.html",
+    "dist/sport/index.html"
+  ],
+  "checks": {
+    "build": "passed",
+    "full_repository_check": "passed",
+    "aes_automatic_integration": 50,
+    "new_guest_and_lifecycle_cases": 17,
+    "existing_mislabeled_session_case_corrected": 1,
+    "scheduler": 22,
+    "clean_shell_status_states": 17,
+    "event_sequence": 14,
+    "form": 36,
+    "recovery_csv": 49,
+    "independent_additional": 12,
+    "regression_before_fix": "expected failure: error instead of local after saved guest mutation",
+    "apply_to_exact_base": "passed",
+    "applied_rebuild_matching_all_candidate_files": 661,
+    "source_base_pristine": true,
+    "prior_candidate_source_checkpoint_and_full_dist_preserved": true,
+    "browser": "Selected real Chromium guest flows passed; see browser-results.json for exact scope and gaps",
+    "additional_postwrite_readback_uncertainty": 1
+  },
+  "verification_scope": {
+    "synthetic_data_only": true,
+    "real_network_calls": 0,
+    "new_auth_backend_schema_or_settings": false,
+    "separate_shared_measurement_counter_or_link_engine_enabled": false,
+    "deployed": false
+  },
+  "known_limits": [
+    "Real Chromium guest spot checks passed; BFCache stopped/reload, authenticated faults and complete automated browser suite were not established.",
+    "No real accounts, cloud exchange, iPhone/Safari/PWA, RLS or cross-app acceptance tests.",
+    "Local mode describes cloud availability, not proof of permanent storage or backup. Failed ordinary local writes still use the existing toast; a subsequent scheduler check detects a journal snapshot mismatch or read failure.",
+    "A discarded/corrupt session that boots as a fresh guest cannot recover prior owner identity from no evidence; prior owner data stays in its separate namespace.",
+    "Native imported known-field range/step constraints remain unchanged.",
+    "Existing whole-category clear confirmation and shared-transport exclusions remain."
+  ]
+}
