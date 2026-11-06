@@ -1,0 +1,11 @@
+.exercise-context-title{font-size:28px!important;line-height:1.15;overflow-wrap:anywhere}
+.exercise-context-tabs{display:flex;gap:4px;width:100%;margin:0 0 20px;border-bottom:1px solid #ffffff45}
+.exercise-context-tabs [role=tab]{flex:1;min-width:0;min-height:44px;padding:9px 3px;background:none;border:0;border-bottom:2px solid transparent;color:inherit;font-size:13px;font-weight:650;white-space:nowrap}
+.exercise-context-tabs [aria-selected=true]{border-bottom-color:currentColor}
+.exercise-context-tabs [aria-selected=false]{opacity:.7}
+.exercise-context-panel[hidden],#exercise-config-form[hidden]{display:none!important}
+.sheet:has(.exercise-context-tabs) .exercise-title-input{font-size:18px!important}
+.sheet:has(.exercise-context-tabs) .exercise-title-label>span{font-size:11px}
+.exercise-context-panel{min-width:0;padding:0 0 16px}
+.exercise-context-panel .local-instruction-frame{height:60dvh;min-height:280px}
+@media(max-width:360px){.exercise-context-tabs [role=tab]{font-size:12px}.exercise-context-title{font-size:26px!important}}

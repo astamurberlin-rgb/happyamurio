@@ -1,0 +1,24 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const read=name=>fs.readFileSync(new URL('../'+name,import.meta.url),'utf8');
+const html=read('src/app.template.html'),ui=read('src/automatic-sync-ui.js'),measure=read('src/measurements-shared.js');
+const strip=html.match(/<aside id="sport-readonly-banner"[\s\S]*?<\/aside>/)?.[0];
+assert.ok(strip);assert.doesNotMatch(strip,/ТЕСТ|реальный аккаунт|выгрузи|#fff0c3/);assert.match(strip,/sport-auto-status/);assert.match(strip,/data-auto="settings"/);
+assert.match(html,/<title>Happy Sport<\/title>/);assert.match(html,/#sport-auto-restart\[hidden\],#sport-auto-confirm\[hidden\]\{display:none!important\}/);assert.ok(html.indexOf('__READONLY_GUARD__')<html.indexOf('id="seed-data"'));for(const policy of ["form-action 'none'","worker-src 'none'","frame-src 'none'"])assert.ok(html.includes(policy));
+const nodes=Object.fromEntries(['sport-auto-status','sport-journal-status','sport-auto-detail','sport-controlled-status','sport-auto-confirm','sport-auto-restart','sport-readonly-banner'].map(id=>[id,{textContent:'',hidden:true,dataset:{}}]));
+const ctx=vm.createContext({document:{getElementById:id=>nodes[id]},sportAutoPhase:'local',sportAutoMessage:'',sportJournalStatus:'',esc:String,renderProfile:()=>'<div>Existing user features</div><button>Загрузить из файла</button><p>Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека. Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p>'});
+vm.runInContext(ui.slice(ui.indexOf('const sportAutoTexts='),ui.indexOf('const sportAutomatic=')),ctx);
+for(const phase of ['checking','dirty','saving','saved','offline','retry-needed','unknown','recovery-full','conflict','confirmation','restoring','waiting','empty','local','stopped','restart','error']){
+ vm.runInContext(`sportAutoPaint(${JSON.stringify(phase)})`,ctx);assert.ok(nodes['sport-auto-status'].textContent);if(phase!=='saved')assert.doesNotMatch(nodes['sport-auto-status'].textContent,/Сохранено в облаке/);
+ assert.equal(nodes['sport-auto-confirm'].hidden,phase!=='confirmation');assert.equal(nodes['sport-auto-restart'].hidden,!['restart','stopped'].includes(phase));
+}
+vm.runInContext(ui.slice(ui.indexOf('const sportAutoProfile='),ui.indexOf('HappyUI.accountNote=')),ctx);
+for(const phase of ['confirmation','restart','stopped','saved']){ctx.sportAutoPhase=phase;const page=vm.runInContext('renderProfile()',ctx);assert.match(page,/Existing user features/);assert.match(page,/Восстановить JSON-копию/);assert.match(page,/не добавляет историю/);assert.match(page,/<details class="sport-sync-diagnostics">/);assert.match(page,/обмен с Day и Meal/);assert.match(page,/Icon Studio/);assert.match(page,/реальный аккаунт/);assert.match(page,/Сначала выгрузи текущий дневник/);assert.equal(/id="sport-auto-confirm"[^>]* hidden/.test(page),phase!=='confirmation');assert.equal(/id="sport-auto-restart"[^>]* hidden/.test(page),!['restart','stopped'].includes(phase));}
+const mctx=vm.createContext({SportReadOnlyTest:{ready:true},renderMeasurements:()=>'<div>Measurement journal</div>'});
+vm.runInContext(measure.slice(measure.indexOf('const hmMeasurements='),measure.indexOf('function hmCsv()')),mctx);const mout=vm.runInContext('renderMeasurements()',mctx);assert.match(mout,/Measurement journal/);assert.match(mout,/data-hm="print"/);assert.match(mout,/data-hm="csv"/);assert.doesNotMatch(mout,/data-hm="claim"/);
+assert.match(measure,/async function hmSync\(\)\{\s*if\(globalThis.SportReadOnlyTest\)/);
+let downloads=0,prints=0,stale=false;const exports=vm.createContext({CL:{s:null},SportProfiles:{owner:'local',assertOwner(){if(stale)throw Error('Changed owner')}},toast(){},state:{measurements:[{date:'2026-01-01',values:{weight:70}}]},MF:[['weight','Вес']],Blob,URL:{createObjectURL:()=> 'blob:synthetic',revokeObjectURL(){}},setTimeout(){},measurePair:()=>({cur:null,old:null}),measurementHistoryTable:()=>'<table>Synthetic only</table>',window:{print(){prints++}},document:{createElement:()=>({click(){downloads++}}),getElementById:()=>null,body:{appendChild(){}},querySelector:()=>({outerHTML:'<div>Body chart</div>'})}});
+vm.runInContext(measure.slice(measure.indexOf('function hmExportAllowed()'),measure.indexOf("document.addEventListener('click',ev=>")),exports);vm.runInContext('hmCsv();hmPrint()',exports);assert.equal(downloads,1);assert.equal(prints,1);stale=true;vm.runInContext('hmCsv();hmPrint()',exports);assert.equal(downloads,1);assert.equal(prints,1);
+console.log('PASS measurement exports use local snapshot only and stale account blocks both download and print.');
+console.log('PASS clean shell: 17 honest status states, Settings exception controls/limitations, first-script guard and local-only measurement exports retained.');
