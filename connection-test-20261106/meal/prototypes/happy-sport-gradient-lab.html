@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#8171df">
+<title>Happy Sport · лаборатория цвета</title>
+<style>
+  :root { color-scheme:dark; --ink:#fff; --violet:#796fdb; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; height:100%; overflow:hidden; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:var(--ink); background:#477fea; }
+  .preview { position:fixed; inset:0; min-height:100dvh; background:linear-gradient(165deg,#7c6ddf 0%,#7777e7 11%,#458bed 31%,#388cee 73%,#5952cc 100%); transition:background .15s ease; }
+  .preview::before { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 18%); }
+  .watermark { position:absolute; left:22px; top:calc(28px + env(safe-area-inset-top)); font-size:11px; font-weight:800; letter-spacing:.17em; color:rgba(255,255,255,.55); user-select:none; pointer-events:none; }
+  .panel {
+    position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom));
+    max-width:450px; margin:0 auto; z-index:3; padding:17px 17px 14px;
+    border:1px solid rgba(255,255,255,.28); background:rgba(24,23,81,.65);
+    border-radius:24px; box-shadow:0 20px 65px rgba(21,18,65,.28);
+    backdrop-filter:blur(25px) saturate(130%); -webkit-backdrop-filter:blur(25px) saturate(130%);
+    transition:transform .25s ease,opacity .25s ease;
+  }
+  .panel.closed { transform:translateY(calc(100% + 55px)); opacity:0; pointer-events:none; }
+  .panelHead { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:14px; }
+  .panelHead h1 { font-size:17px; margin:0; letter-spacing:-.35px; }
+  .panelHead p { font-size:11px; color:rgba(255,255,255,.69); margin:5px 0 0; }
+  button { color:inherit; cursor:pointer; font:inherit; -webkit-user-select:none; user-select:none; }
+  button:focus-visible,input:focus-visible { outline:2px solid white; outline-offset:3px; }
+  .hide { flex:none; border:1px solid rgba(255,255,255,.3); background:rgba(255,255,255,.12); border-radius:999px; font-size:12px; padding:9px 13px; }
+  .presets { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-bottom:13px; }
+  .preset { border:1px solid rgba(255,255,255,.24); border-radius:13px; background:rgba(255,255,255,.07); display:grid; gap:5px; place-items:center; font-size:10.5px; padding:10px 3px 8px; min-height:53px; }
+  .preset[aria-pressed="true"] { border-color:rgba(255,255,255,.9); background:rgba(255,255,255,.22); font-weight:750; }
+  .swatch { width:19px; height:19px; border-radius:50%; border:1px solid rgba(255,255,255,.36); box-shadow:0 2px 7px rgba(0,0,0,.16); }
+  .control { margin:11px 1px; }
+  .controlHead { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; font-size:12px; }
+  .controlHead label { font-weight:650; color:rgba(255,255,255,.92); }
+  .controlHead output { color:#ffe4fa; font-size:11px; font-variant-numeric:tabular-nums; }
+  input[type=range] { width:100%; height:24px; margin:0; appearance:none; -webkit-appearance:none; background:transparent; cursor:pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height:5px; background:rgba(255,255,255,.29); border-radius:99px; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:21px; height:21px; border-radius:50%; background:#fff; border:4px solid #e09ae9; margin-top:-8px; box-shadow:0 2px 7px #2116504d; }
+  input[type=range]::-moz-range-track { height:5px; background:rgba(255,255,255,.29); border-radius:99px; }
+  input[type=range]::-moz-range-thumb { width:15px; height:15px; border-radius:50%; background:#fff; border:4px solid #e09ae9; }
+  .buttons { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+  .action { border:1px solid rgba(255,255,255,.3); border-radius:13px; padding:12px 9px; background:rgba(255,255,255,.12); font-size:12px; font-weight:750; }
+  .action.primary { background:#fff; color:#443baf; border-color:#fff; }
+  .reopen { position:fixed; z-index:4; right:19px; bottom:calc(23px + env(safe-area-inset-bottom));
+    background:rgba(28,21,90,.7); padding:13px 18px; border:1px solid rgba(255,255,255,.38); border-radius:99px;
+    backdrop-filter:blur(15px); font-size:13px; font-weight:760; box-shadow:0 6px 22px #1a175044; }
+  .toast { position:fixed; top:calc(18px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:5;
+    background:rgba(25,19,81,.91); border:1px solid rgba(255,255,255,.24); border-radius:99px;
+    padding:10px 16px; font-size:12px; white-space:nowrap; max-width:93vw; text-align:center; pointer-events:none; }
+  .sample { position:fixed; left:24px; right:24px; top:32%; text-align:center; user-select:none; pointer-events:none; opacity:0; transition:opacity .2s; }
+  .sample.on { opacity:1; }
+  .sample span { display:block; font-size:12px; text-transform:uppercase; letter-spacing:.15em; font-weight:800; opacity:.82; }
+  .sample strong { display:block; font-size:34px; letter-spacing:-1px; margin-top:8px; }
+  .textToggle { position:fixed; top:calc(24px + env(safe-area-inset-top)); right:17px; z-index:2; border:1px solid rgba(255,255,255,.28); border-radius:99px;
+    font-size:11px; padding:8px 11px; background:rgba(35,25,90,.18); backdrop-filter:blur(8px); }
+  @media(max-height:690px) { .panel { padding:13px 15px 10px; } .presets { margin-bottom:8px; } .control { margin:8px 1px; } }
+</style>
+</head>
+<body>
+<main id="preview" class="preview" aria-label="Живой предпросмотр градиента Happy Sport">
+  <div class="watermark">HAPPY SPORT · ФОН</div>
+  <div id="sample" class="sample"><span>Каталог упражнений</span><strong>Подтягивания</strong></div>
+</main>
+<button id="textToggle" class="textToggle" aria-pressed="false">Aa · Текст</button>
+<section id="panel" class="panel" aria-label="Настройка цветового фона">
+  <div class="panelHead">
+    <div><h1>Палитра Happy Sport</h1><p>Выбери оттенок, не меняя основной интерфейс</p></div>
+    <button id="hide" class="hide" aria-label="Скрыть панель для просмотра фона">Скрыть ↑</button>
+  </div>
+  <div class="presets" role="group" aria-label="Готовые варианты фона">
+    <button class="preset" data-preset="cool" aria-pressed="false"><span class="swatch" style="background:linear-gradient(145deg,#6a7de4,#448bea)"></span>Холодный</button>
+    <button class="preset" data-preset="lavender" aria-pressed="true"><span class="swatch" style="background:linear-gradient(145deg,#9477e4,#468cf0)"></span>Лаванда</button>
+    <button class="preset" data-preset="glow" aria-pressed="false"><span class="swatch" style="background:linear-gradient(145deg,#c283d7,#498ef2)"></span>Отблеск</button>
+    <button class="preset" data-preset="warm" aria-pressed="false"><span class="swatch" style="background:linear-gradient(145deg,#dc8cc9,#6476ed)"></span>Теплее</button>
+  </div>
+  <div class="control">
+    <div class="controlHead"><label for="pink">Розовый оттенок</label><output id="pinkValue">24%</output></div>
+    <input id="pink" type="range" min="0" max="60" step="1" value="24" />
+  </div>
+  <div class="control">
+    <div class="controlHead"><label for="transition">Где начинается синий</label><output id="transitionValue">31%</output></div>
+    <input id="transition" type="range" min="18" max="54" step="1" value="31" />
+  </div>
+  <div class="control">
+    <div class="controlHead"><label for="pinkY">Розовый выше / ниже</label><output id="pinkYValue">−10%</output></div>
+    <input id="pinkY" type="range" min="-25" max="28" step="1" value="-10" />
+  </div>
+  <div class="buttons">
+    <button class="action" id="reset">Вернуть выбранный</button>
+    <button class="action primary" id="copy">Скопировать CSS</button>
+  </div>
+</section>
+<button id="reopen" class="reopen" hidden>🎨 Настроить цвет</button>
+<div id="toast" class="toast" role="status" hidden></div>
+<script>
+(() => {
+  const presets={
+    cool:{pink:10,transition:23,pinkY:-19, top:'#7275df',middle:'#717eec',blue:'#398fef'},
+    lavender:{pink:24,transition:31,pinkY:-10,top:'#8171df',middle:'#777be8',blue:'#448dec'},
+    glow:{pink:37,transition:35,pinkY:-4,top:'#8c75db',middle:'#8275e8',blue:'#478bf0'},
+    warm:{pink:49,transition:40,pinkY:7,top:'#9472d8',middle:'#8675ec',blue:'#538aee'}
+  };
+  let preset='lavender';
+  const $=id=>document.getElementById(id);
+  const copyState = () => ({pink:+$('pink').value,transition:+$('transition').value,pinkY:+$('pinkY').value,...['top','middle','blue'].reduce((acc,k)=>(acc[k]=presets[preset][k],acc),{})});
+  function cssFor(s){
+    const a=(s.pink/100*.8).toFixed(3);
+    const t=s.transition;
+    const mid=Math.max(9,Math.min(17,Math.round(t*.40)));
+    const end=Math.max(t+8,76);
+    return `radial-gradient(ellipse 76% 38% at 95% ${s.pinkY}%, rgba(255,143,210,${a}) 0%, transparent 84%),\nradial-gradient(ellipse 66% 36% at 7% -10%, rgba(158,119,251,0.33) 0%, transparent 84%),\nlinear-gradient(165deg, ${s.top} 0%, ${s.middle} ${mid}%, ${s.blue} ${t}%, #3989ed ${end}%, #5a53cc 100%)`;
+  }
+  function render(){
+    const state=copyState();
+    $('preview').style.background=cssFor(state);
+    $('pinkValue').textContent=state.pink+'%';
+    $('transitionValue').textContent=state.transition+'%';
+    $('pinkYValue').textContent=(state.pinkY>0?'+':state.pinkY<0?'−':'')+Math.abs(state.pinkY)+'%';
+    document.querySelectorAll('[data-preset]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.preset===preset)));
+    document.querySelector('meta[name="theme-color"]').content=state.top;
+  }
+  function setPreset(name){
+    preset=name;
+    for(const field of ['pink','transition','pinkY'])$(field).value=presets[preset][field];
+    render();
+  }
+  document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>setPreset(b.dataset.preset)));
+  for(const id of ['pink','transition','pinkY'])$(id).addEventListener('input',render);
+  $('reset').addEventListener('click',()=>setPreset(preset));
+  $('hide').addEventListener('click',()=>{$('panel').classList.add('closed');$('reopen').hidden=false;});
+  $('reopen').addEventListener('click',()=>{$('panel').classList.remove('closed');$('reopen').hidden=true;});
+  $('textToggle').addEventListener('click',()=>{const on=$('sample').classList.toggle('on');$('textToggle').setAttribute('aria-pressed',String(on));});
+  let toastTimer;
+  function toast(msg){clearTimeout(toastTimer);$('toast').textContent=msg;$('toast').hidden=false;toastTimer=setTimeout(()=>$('toast').hidden=true,2300);}
+  $('copy').addEventListener('click',async()=>{
+    const css=`/* Happy Sport — background */\nbody {\n  background: ${cssFor(copyState()).replaceAll('\n','\n    ')};\n}`;
+    try{await navigator.clipboard.writeText(css);toast('CSS скопирован');}
+    catch(e){
+      try{const el=document.createElement('textarea');el.value=css;el.style.position='fixed';el.style.opacity='0';document.body.append(el);el.select();const ok=document.execCommand('copy');el.remove();toast(ok?'CSS скопирован':'Не удалось скопировать: открой страницу в Safari');}
+      catch(x){toast('Копирование недоступно в этом просмотрщике');}
+    }
+  });
+  render();
+})();
+</script>
+</body>
+</html>

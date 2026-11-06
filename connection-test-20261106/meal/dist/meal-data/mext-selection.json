@@ -1,0 +1,5278 @@
+{
+  "families": {
+    "oats": {
+      "ru": "Овсяные хлопья",
+      "en": "Oatmeal"
+    },
+    "barley-pressed": {
+      "ru": "Ячмень плющеный",
+      "en": "Pressed barley"
+    },
+    "quinoa": {
+      "ru": "Киноа",
+      "en": "Quinoa"
+    },
+    "wheat-flour-low": {
+      "ru": "Мука пшеничная с низким содержанием белка",
+      "en": "Low-protein wheat flour"
+    },
+    "wheat-flour-medium": {
+      "ru": "Мука пшеничная со средним содержанием белка",
+      "en": "Medium-protein wheat flour"
+    },
+    "wheat-flour-high": {
+      "ru": "Мука пшеничная с высоким содержанием белка",
+      "en": "High-protein wheat flour"
+    },
+    "white-bread": {
+      "ru": "Хлеб белый",
+      "en": "White bread"
+    },
+    "baguette": {
+      "ru": "Багет",
+      "en": "French bread"
+    },
+    "rye-bread": {
+      "ru": "Хлеб ржаной",
+      "en": "Rye bread"
+    },
+    "wholegrain-bread": {
+      "ru": "Хлеб цельнозерновой",
+      "en": "Whole-wheat bread"
+    },
+    "bagel": {
+      "ru": "Бейгл",
+      "en": "Bagel"
+    },
+    "udon": {
+      "ru": "Лапша удон",
+      "en": "Udon noodles"
+    },
+    "somen": {
+      "ru": "Лапша сомэн или хиямуги",
+      "en": "Somen or hiyamugi noodles"
+    },
+    "ramen-noodles": {
+      "ru": "Лапша для рамена",
+      "en": "Chinese-style ramen noodles"
+    },
+    "instant-ramen": {
+      "ru": "Рамен быстрого приготовления",
+      "en": "Instant ramen"
+    },
+    "pasta": {
+      "ru": "Макароны",
+      "en": "Pasta"
+    },
+    "gyoza-wrappers": {
+      "ru": "Тесто для гёдза",
+      "en": "Gyoza wrappers"
+    },
+    "panko": {
+      "ru": "Сухари панко",
+      "en": "Panko breadcrumbs"
+    },
+    "rice-brown": {
+      "ru": "Рис бурый",
+      "en": "Brown rice"
+    },
+    "rice-japonica": {
+      "ru": "Рис белый японский",
+      "en": "White japonica rice"
+    },
+    "rice-indica": {
+      "ru": "Рис белый индика",
+      "en": "White indica rice"
+    },
+    "rice-glutinous": {
+      "ru": "Рис клейкий",
+      "en": "Glutinous rice"
+    },
+    "rice-red": {
+      "ru": "Рис красный",
+      "en": "Red rice"
+    },
+    "rice-black": {
+      "ru": "Рис чёрный",
+      "en": "Black rice"
+    },
+    "onigiri-plain": {
+      "ru": "Онигири без начинки",
+      "en": "Plain rice ball"
+    },
+    "rice-flour": {
+      "ru": "Мука рисовая",
+      "en": "Rice flour"
+    },
+    "rice-flour-brown": {
+      "ru": "Мука из бурого риса",
+      "en": "Brown rice flour"
+    },
+    "rice-noodles": {
+      "ru": "Лапша рисовая бифун",
+      "en": "Rice vermicelli"
+    },
+    "rice-paper": {
+      "ru": "Рисовая бумага",
+      "en": "Rice paper"
+    },
+    "rice-koji": {
+      "ru": "Рис кодзи",
+      "en": "Rice koji"
+    },
+    "mochi": {
+      "ru": "Моти без начинки",
+      "en": "Plain mochi rice cake"
+    },
+    "buckwheat-flour": {
+      "ru": "Мука гречневая",
+      "en": "Buckwheat flour"
+    },
+    "buckwheat": {
+      "ru": "Крупа гречневая",
+      "en": "Hulled buckwheat"
+    },
+    "soba": {
+      "ru": "Лапша соба",
+      "en": "Soba noodles"
+    },
+    "shirataki": {
+      "ru": "Лапша ширатаки",
+      "en": "Shirataki noodles"
+    },
+    "sweet-potato-peeled": {
+      "ru": "Батат очищенный",
+      "en": "Sweet potato, peeled"
+    },
+    "taro": {
+      "ru": "Таро",
+      "en": "Taro"
+    },
+    "potato-skin": {
+      "ru": "Картофель с кожурой",
+      "en": "Potato, skin on"
+    },
+    "potato-peeled": {
+      "ru": "Картофель очищенный",
+      "en": "Potato, peeled"
+    },
+    "tapioca-starch": {
+      "ru": "Крахмал тапиоковый",
+      "en": "Tapioca starch"
+    },
+    "potato-starch": {
+      "ru": "Крахмал картофельный",
+      "en": "Potato starch"
+    },
+    "corn-starch": {
+      "ru": "Крахмал кукурузный",
+      "en": "Corn starch"
+    },
+    "tapioca-pearls": {
+      "ru": "Шарики тапиоки",
+      "en": "Tapioca pearls"
+    },
+    "mung-vermicelli": {
+      "ru": "Фунчоза из маша",
+      "en": "Mung bean vermicelli"
+    },
+    "brown-cane-sugar": {
+      "ru": "Сахар тростниковый нерафинированный",
+      "en": "Unrefined cane sugar"
+    },
+    "sugar": {
+      "ru": "Сахар белый",
+      "en": "White sugar"
+    },
+    "honey": {
+      "ru": "Мёд",
+      "en": "Honey"
+    },
+    "maple-syrup": {
+      "ru": "Сироп кленовый",
+      "en": "Maple syrup"
+    },
+    "adzuki": {
+      "ru": "Фасоль адзуки",
+      "en": "Adzuki beans"
+    },
+    "kidney-beans": {
+      "ru": "Фасоль обыкновенная",
+      "en": "Common beans"
+    },
+    "mature-peas": {
+      "ru": "Горох зрелый",
+      "en": "Mature peas"
+    },
+    "soybeans-yellow": {
+      "ru": "Соевые бобы жёлтые",
+      "en": "Yellow soybeans"
+    },
+    "soybeans-black": {
+      "ru": "Соевые бобы чёрные",
+      "en": "Black soybeans"
+    },
+    "kinako": {
+      "ru": "Мука кинако из обжаренной сои",
+      "en": "Kinako roasted soybean flour"
+    },
+    "tofu": {
+      "ru": "Тофу",
+      "en": "Tofu"
+    },
+    "natto": {
+      "ru": "Натто",
+      "en": "Natto"
+    },
+    "okara": {
+      "ru": "Окара, соевый жмых",
+      "en": "Okara, soybean pulp"
+    },
+    "soy-milk": {
+      "ru": "Соевое молоко",
+      "en": "Soy milk"
+    },
+    "tempeh": {
+      "ru": "Темпе",
+      "en": "Tempeh"
+    },
+    "chickpeas": {
+      "ru": "Нут",
+      "en": "Chickpeas"
+    },
+    "mung-beans": {
+      "ru": "Маш",
+      "en": "Mung beans"
+    },
+    "lentils": {
+      "ru": "Чечевица",
+      "en": "Lentils"
+    },
+    "almonds": {
+      "ru": "Миндаль",
+      "en": "Almonds"
+    },
+    "cashew": {
+      "ru": "Кешью",
+      "en": "Cashew nuts"
+    },
+    "pumpkin-seeds": {
+      "ru": "Семечки тыквенные очищенные",
+      "en": "Pumpkin seeds, shelled"
+    },
+    "chestnut-japanese": {
+      "ru": "Каштаны японские очищенные",
+      "en": "Japanese chestnuts, shelled and peeled"
+    },
+    "chestnut-chinese": {
+      "ru": "Каштаны китайские очищенные",
+      "en": "Chinese chestnuts, shelled and peeled"
+    },
+    "walnuts": {
+      "ru": "Орехи грецкие очищенные",
+      "en": "Walnuts, shelled"
+    },
+    "sesame": {
+      "ru": "Кунжут",
+      "en": "Sesame seeds"
+    },
+    "chia": {
+      "ru": "Семена чиа",
+      "en": "Chia seeds"
+    },
+    "pistachio": {
+      "ru": "Фисташки очищенные",
+      "en": "Pistachios, shelled"
+    },
+    "pine-nuts": {
+      "ru": "Кедровые орехи очищенные",
+      "en": "Pine nuts, shelled"
+    },
+    "peanuts": {
+      "ru": "Арахис очищенный",
+      "en": "Peanuts, shelled"
+    },
+    "flax": {
+      "ru": "Семена льна",
+      "en": "Flax seeds"
+    },
+    "asparagus": {
+      "ru": "Спаржа",
+      "en": "Asparagus"
+    },
+    "green-beans": {
+      "ru": "Фасоль стручковая",
+      "en": "Green beans"
+    },
+    "edamame": {
+      "ru": "Эдамаме, бобы без стручков",
+      "en": "Edamame beans, shelled"
+    },
+    "green-peas": {
+      "ru": "Горошек зелёный",
+      "en": "Green peas"
+    },
+    "okra": {
+      "ru": "Бамия",
+      "en": "Okra"
+    },
+    "turnip-skin": {
+      "ru": "Репа с кожурой",
+      "en": "Turnip, skin on"
+    },
+    "pumpkin-western": {
+      "ru": "Тыква крупноплодная",
+      "en": "Winter squash, western type"
+    },
+    "cauliflower": {
+      "ru": "Капуста цветная",
+      "en": "Cauliflower"
+    },
+    "cabbage": {
+      "ru": "Капуста белокочанная",
+      "en": "Cabbage"
+    },
+    "red-cabbage": {
+      "ru": "Капуста краснокочанная",
+      "en": "Red cabbage"
+    },
+    "cucumber": {
+      "ru": "Огурец",
+      "en": "Cucumber"
+    },
+    "kale": {
+      "ru": "Капуста кейл",
+      "en": "Kale"
+    },
+    "burdock": {
+      "ru": "Корень лопуха гобо",
+      "en": "Burdock root, gobo"
+    },
+    "komatsuna": {
+      "ru": "Капуста комацуна",
+      "en": "Komatsuna"
+    },
+    "shiso": {
+      "ru": "Листья сисо",
+      "en": "Shiso leaves"
+    },
+    "ginger": {
+      "ru": "Имбирь очищенный",
+      "en": "Ginger, peeled"
+    },
+    "zucchini": {
+      "ru": "Цукини",
+      "en": "Zucchini"
+    },
+    "celery": {
+      "ru": "Сельдерей черешковый",
+      "en": "Celery"
+    },
+    "daikon-skin": {
+      "ru": "Дайкон с кожурой",
+      "en": "Daikon, skin on"
+    },
+    "daikon-peeled": {
+      "ru": "Дайкон очищенный",
+      "en": "Daikon, peeled"
+    },
+    "bamboo-shoots": {
+      "ru": "Побеги бамбука",
+      "en": "Bamboo shoots"
+    },
+    "onion": {
+      "ru": "Лук репчатый",
+      "en": "Onion"
+    },
+    "red-onion": {
+      "ru": "Лук красный",
+      "en": "Red onion"
+    },
+    "bok-choy": {
+      "ru": "Капуста пак-чой",
+      "en": "Bok choy"
+    },
+    "sweet-corn": {
+      "ru": "Кукуруза сахарная, зёрна",
+      "en": "Sweet corn kernels"
+    },
+    "tomato": {
+      "ru": "Помидор",
+      "en": "Tomato"
+    },
+    "cherry-tomato": {
+      "ru": "Помидор черри",
+      "en": "Cherry tomato"
+    },
+    "eggplant": {
+      "ru": "Баклажан",
+      "en": "Eggplant"
+    },
+    "garlic-chives": {
+      "ru": "Лук душистый, нира",
+      "en": "Garlic chives"
+    },
+    "carrot-skin": {
+      "ru": "Морковь с кожурой",
+      "en": "Carrot, skin on"
+    },
+    "carrot-peeled": {
+      "ru": "Морковь очищенная",
+      "en": "Carrot, peeled"
+    },
+    "garlic": {
+      "ru": "Чеснок",
+      "en": "Garlic"
+    },
+    "green-onion": {
+      "ru": "Лук зелёный",
+      "en": "Green onion"
+    },
+    "napa-cabbage": {
+      "ru": "Капуста пекинская",
+      "en": "Napa cabbage"
+    },
+    "basil": {
+      "ru": "Базилик",
+      "en": "Basil"
+    },
+    "parsley": {
+      "ru": "Петрушка",
+      "en": "Parsley"
+    },
+    "radish": {
+      "ru": "Редис",
+      "en": "Radish"
+    },
+    "beet": {
+      "ru": "Свёкла",
+      "en": "Beetroot"
+    },
+    "green-pepper": {
+      "ru": "Перец сладкий зелёный",
+      "en": "Green sweet pepper"
+    },
+    "red-pepper": {
+      "ru": "Перец сладкий красный",
+      "en": "Red sweet pepper"
+    },
+    "yellow-pepper": {
+      "ru": "Перец сладкий жёлтый",
+      "en": "Yellow sweet pepper"
+    },
+    "broccoli": {
+      "ru": "Брокколи",
+      "en": "Broccoli"
+    },
+    "spinach": {
+      "ru": "Шпинат",
+      "en": "Spinach"
+    },
+    "brussels-sprouts": {
+      "ru": "Капуста брюссельская",
+      "en": "Brussels sprouts"
+    },
+    "mung-sprouts": {
+      "ru": "Ростки маша",
+      "en": "Mung bean sprouts"
+    },
+    "leek": {
+      "ru": "Лук-порей",
+      "en": "Leek"
+    },
+    "iceberg-lettuce": {
+      "ru": "Салат айсберг",
+      "en": "Iceberg lettuce"
+    },
+    "romaine-lettuce": {
+      "ru": "Салат романо",
+      "en": "Romaine lettuce"
+    },
+    "arugula": {
+      "ru": "Руккола",
+      "en": "Arugula"
+    },
+    "lotus-root": {
+      "ru": "Корень лотоса",
+      "en": "Lotus root"
+    },
+    "wasabi": {
+      "ru": "Васаби, корневище",
+      "en": "Wasabi rhizome"
+    },
+    "avocado": {
+      "ru": "Авокадо, мякоть",
+      "en": "Avocado flesh"
+    },
+    "apricot": {
+      "ru": "Абрикос без косточки",
+      "en": "Apricot, pitted"
+    },
+    "strawberry": {
+      "ru": "Клубника",
+      "en": "Strawberry"
+    },
+    "fig": {
+      "ru": "Инжир",
+      "en": "Fig"
+    },
+    "umeboshi": {
+      "ru": "Умэбоси, солёные плоды умэ",
+      "en": "Umeboshi, salted Japanese apricot"
+    },
+    "green-olives": {
+      "ru": "Оливки зелёные",
+      "en": "Green olives"
+    },
+    "black-olives": {
+      "ru": "Оливки чёрные",
+      "en": "Black olives"
+    },
+    "sweet-persimmon": {
+      "ru": "Хурма сладкая очищенная, без семян",
+      "en": "Sweet persimmon, peeled and seeded"
+    },
+    "dried-persimmon": {
+      "ru": "Хурма сушёная",
+      "en": "Dried persimmon"
+    },
+    "satsuma": {
+      "ru": "Мандарин уншиу (сатсума) очищенный",
+      "en": "Satsuma mandarin, peeled"
+    },
+    "navel-orange": {
+      "ru": "Апельсин навел, мякоть",
+      "en": "Navel orange flesh"
+    },
+    "kumquat": {
+      "ru": "Кумкват с кожурой",
+      "en": "Kumquat, peel on"
+    },
+    "white-grapefruit": {
+      "ru": "Грейпфрут белый, мякоть",
+      "en": "White grapefruit flesh"
+    },
+    "pink-grapefruit": {
+      "ru": "Грейпфрут розовый, мякоть",
+      "en": "Pink grapefruit flesh"
+    },
+    "yuzu-peel": {
+      "ru": "Цедра юдзу",
+      "en": "Yuzu peel"
+    },
+    "yuzu-juice": {
+      "ru": "Сок юдзу",
+      "en": "Yuzu juice"
+    },
+    "lime-juice": {
+      "ru": "Сок лайма",
+      "en": "Lime juice"
+    },
+    "lemon": {
+      "ru": "Лимон",
+      "en": "Lemon"
+    },
+    "green-kiwi": {
+      "ru": "Киви зелёный, мякоть",
+      "en": "Green kiwifruit flesh"
+    },
+    "gold-kiwi": {
+      "ru": "Киви золотой, мякоть",
+      "en": "Gold kiwifruit flesh"
+    },
+    "coconut-water": {
+      "ru": "Кокосовая вода",
+      "en": "Coconut water"
+    },
+    "coconut-milk": {
+      "ru": "Кокосовое молоко",
+      "en": "Coconut milk"
+    },
+    "cherry-japanese": {
+      "ru": "Черешня японская без косточек",
+      "en": "Japanese sweet cherries, pitted"
+    },
+    "cherry-american": {
+      "ru": "Черешня американская без косточек",
+      "en": "American sweet cherries, pitted"
+    },
+    "pomegranate": {
+      "ru": "Гранат, мякоть без семян",
+      "en": "Pomegranate flesh, seeds removed"
+    },
+    "watermelon": {
+      "ru": "Арбуз красный, мякоть",
+      "en": "Red watermelon flesh"
+    },
+    "plum-japanese": {
+      "ru": "Слива японская без косточки",
+      "en": "Japanese plum, pitted"
+    },
+    "prune": {
+      "ru": "Слива домашняя без косточки",
+      "en": "European prune plum, pitted"
+    },
+    "nashi-pear": {
+      "ru": "Груша японская наси очищенная, без сердцевины",
+      "en": "Japanese nashi pear, peeled and cored"
+    },
+    "pear-european": {
+      "ru": "Груша европейская очищенная, без сердцевины",
+      "en": "European pear, peeled and cored"
+    },
+    "dates": {
+      "ru": "Финики без косточек",
+      "en": "Dates, pitted"
+    },
+    "pineapple": {
+      "ru": "Ананас, мякоть",
+      "en": "Pineapple flesh"
+    },
+    "banana": {
+      "ru": "Банан очищенный",
+      "en": "Banana, peeled"
+    },
+    "papaya": {
+      "ru": "Папайя спелая, мякоть",
+      "en": "Ripe papaya flesh"
+    },
+    "loquat": {
+      "ru": "Мушмула японская, мякоть",
+      "en": "Loquat flesh"
+    },
+    "grapes": {
+      "ru": "Виноград",
+      "en": "Grapes"
+    },
+    "blueberry": {
+      "ru": "Голубика",
+      "en": "Blueberries"
+    },
+    "mango": {
+      "ru": "Манго, мякоть",
+      "en": "Mango flesh"
+    },
+    "muskmelon": {
+      "ru": "Дыня мускусная тепличная, мякоть",
+      "en": "Greenhouse muskmelon flesh"
+    },
+    "white-peach": {
+      "ru": "Персик белый очищенный, без косточки",
+      "en": "White-fleshed peach, peeled and pitted"
+    },
+    "yellow-peach": {
+      "ru": "Персик жёлтый очищенный, без косточки",
+      "en": "Yellow-fleshed peach, peeled and pitted"
+    },
+    "nectarine": {
+      "ru": "Нектарин очищенный, без косточки",
+      "en": "Nectarine, peeled and pitted"
+    },
+    "lychee": {
+      "ru": "Личи очищенный без косточки",
+      "en": "Lychee, peeled and pitted"
+    },
+    "raspberry": {
+      "ru": "Малина",
+      "en": "Raspberry"
+    },
+    "apple": {
+      "ru": "Яблоко без сердцевины",
+      "en": "Apple, cored"
+    },
+    "enoki": {
+      "ru": "Грибы эноки",
+      "en": "Enoki mushrooms"
+    },
+    "shiitake-sawdust": {
+      "ru": "Грибы шиитаке, выращенные на опилках",
+      "en": "Shiitake mushrooms, sawdust-grown"
+    },
+    "shiitake-dried": {
+      "ru": "Грибы шиитаке сушёные",
+      "en": "Dried shiitake mushrooms"
+    },
+    "bunashimeji": {
+      "ru": "Грибы буна-симэдзи",
+      "en": "Bunashimeji mushrooms"
+    },
+    "nameko": {
+      "ru": "Грибы намэко",
+      "en": "Nameko mushrooms"
+    },
+    "king-oyster": {
+      "ru": "Грибы эринги",
+      "en": "King oyster mushrooms"
+    },
+    "oyster-mushroom": {
+      "ru": "Грибы вешенки",
+      "en": "Oyster mushrooms"
+    },
+    "maitake": {
+      "ru": "Грибы майтаке",
+      "en": "Maitake mushrooms"
+    },
+    "button-mushroom": {
+      "ru": "Шампиньоны",
+      "en": "Button mushrooms"
+    },
+    "aosa": {
+      "ru": "Водоросли аоса",
+      "en": "Aosa green seaweed"
+    },
+    "aonori": {
+      "ru": "Водоросли аонори",
+      "en": "Aonori green seaweed"
+    },
+    "nori": {
+      "ru": "Водоросли нори",
+      "en": "Nori seaweed"
+    },
+    "makombu": {
+      "ru": "Водоросли ма-комбу",
+      "en": "Ma-kombu kelp"
+    },
+    "agar": {
+      "ru": "Агар",
+      "en": "Agar"
+    },
+    "wakame": {
+      "ru": "Водоросли вакаме",
+      "en": "Wakame seaweed"
+    },
+    "sardine-japanese": {
+      "ru": "Сардина японская",
+      "en": "Japanese sardine"
+    },
+    "sardine-canned": {
+      "ru": "Сардина японская консервированная",
+      "en": "Canned Japanese sardine"
+    },
+    "eel-japanese-farmed": {
+      "ru": "Угорь японский выращенный",
+      "en": "Japanese eel, farmed"
+    },
+    "skipjack": {
+      "ru": "Тунец полосатый, скипджек",
+      "en": "Skipjack tuna"
+    },
+    "pink-salmon": {
+      "ru": "Горбуша",
+      "en": "Pink salmon"
+    },
+    "coho-farmed": {
+      "ru": "Кижуч выращенный",
+      "en": "Coho salmon, farmed"
+    },
+    "chum-salmon": {
+      "ru": "Кета",
+      "en": "Chum salmon"
+    },
+    "chum-roe": {
+      "ru": "Икра кеты",
+      "en": "Chum salmon roe"
+    },
+    "atlantic-salmon-farmed-skin": {
+      "ru": "Лосось атлантический выращенный, с кожей",
+      "en": "Atlantic salmon, farmed, skin on"
+    },
+    "atlantic-salmon-farmed-skinless": {
+      "ru": "Лосось атлантический выращенный, без кожи",
+      "en": "Atlantic salmon, farmed, skinless"
+    },
+    "rainbow-trout-seafarmed": {
+      "ru": "Форель радужная морского разведения, с кожей",
+      "en": "Rainbow trout, sea-farmed, skin on"
+    },
+    "sockeye": {
+      "ru": "Нерка",
+      "en": "Sockeye salmon"
+    },
+    "chinook": {
+      "ru": "Чавыча",
+      "en": "Chinook salmon"
+    },
+    "chub-mackerel": {
+      "ru": "Скумбрия японская",
+      "en": "Chub mackerel"
+    },
+    "atlantic-mackerel": {
+      "ru": "Скумбрия атлантическая",
+      "en": "Atlantic mackerel"
+    },
+    "mackerel-canned": {
+      "ru": "Скумбрия консервированная",
+      "en": "Canned mackerel"
+    },
+    "saury-skin": {
+      "ru": "Сайра, мясо с кожей",
+      "en": "Pacific saury, flesh with skin"
+    },
+    "saury-skinless": {
+      "ru": "Сайра, филе без кожи",
+      "en": "Pacific saury, skinless fillet"
+    },
+    "saury-preserved": {
+      "ru": "Сайра",
+      "en": "Pacific saury"
+    },
+    "alaska-pollock": {
+      "ru": "Минтай",
+      "en": "Alaska pollock"
+    },
+    "pacific-cod": {
+      "ru": "Треска тихоокеанская",
+      "en": "Pacific cod"
+    },
+    "pacific-herring": {
+      "ru": "Сельдь тихоокеанская",
+      "en": "Pacific herring"
+    },
+    "yellowfin-tuna": {
+      "ru": "Тунец желтопёрый",
+      "en": "Yellowfin tuna"
+    },
+    "bluefin-wild-lean": {
+      "ru": "Тунец тихоокеанский синий дикий, нежирная часть",
+      "en": "Pacific bluefin tuna, wild, lean flesh"
+    },
+    "bluefin-wild-fatty": {
+      "ru": "Тунец тихоокеанский синий дикий, жирная часть",
+      "en": "Pacific bluefin tuna, wild, fatty flesh"
+    },
+    "bluefin-farmed-lean": {
+      "ru": "Тунец тихоокеанский синий выращенный, нежирная часть",
+      "en": "Pacific bluefin tuna, farmed, lean flesh"
+    },
+    "albacore": {
+      "ru": "Тунец длиннопёрый, альбакор",
+      "en": "Albacore tuna"
+    },
+    "bigeye-lean": {
+      "ru": "Тунец большеглазый, нежирная часть",
+      "en": "Bigeye tuna, lean flesh"
+    },
+    "bigeye-fatty": {
+      "ru": "Тунец большеглазый, жирная часть",
+      "en": "Bigeye tuna, fatty flesh"
+    },
+    "tuna-canned-light": {
+      "ru": "Тунец желтопёрый консервированный, хлопья",
+      "en": "Canned yellowfin tuna, flakes"
+    },
+    "tuna-canned-white": {
+      "ru": "Тунец длиннопёрый консервированный, хлопья",
+      "en": "Canned albacore tuna, flakes"
+    },
+    "northern-prawn": {
+      "ru": "Креветка северная очищенная",
+      "en": "Northern prawn, shelled"
+    },
+    "argentine-red-shrimp": {
+      "ru": "Креветка аргентинская красная очищенная",
+      "en": "Argentine red shrimp, shelled"
+    },
+    "kuruma-farmed": {
+      "ru": "Креветка курума выращенная очищенная",
+      "en": "Kuruma prawn, farmed, shelled"
+    },
+    "whiteleg-farmed": {
+      "ru": "Креветка ваннамей выращенная очищенная",
+      "en": "Whiteleg shrimp, farmed, shelled"
+    },
+    "black-tiger-farmed": {
+      "ru": "Креветка чёрная тигровая выращенная очищенная",
+      "en": "Black tiger prawn, farmed, shelled"
+    },
+    "snow-crab": {
+      "ru": "Краб-стригун, мясо",
+      "en": "Snow crab meat"
+    },
+    "king-crab": {
+      "ru": "Краб камчатский, мясо",
+      "en": "Red king crab meat"
+    },
+    "flying-squid": {
+      "ru": "Кальмар тихоокеанский",
+      "en": "Japanese flying squid"
+    },
+    "common-octopus": {
+      "ru": "Осьминог обыкновенный, с кожей",
+      "en": "Common octopus, skin on"
+    },
+    "wagyu-ribeye-fat": {
+      "ru": "Говядина вагю, рибай с жиром",
+      "en": "Wagyu beef, rib loin with fat"
+    },
+    "wagyu-tenderloin": {
+      "ru": "Говядина вагю, вырезка без видимого жира",
+      "en": "Wagyu beef, lean tenderloin"
+    },
+    "beef-imported-ribeye": {
+      "ru": "Говядина импортная, рибай с жиром",
+      "en": "Imported beef, rib loin with fat"
+    },
+    "beef-imported-tenderloin": {
+      "ru": "Говядина импортная, вырезка без видимого жира",
+      "en": "Imported beef, lean tenderloin"
+    },
+    "ground-beef": {
+      "ru": "Фарш говяжий",
+      "en": "Ground beef"
+    },
+    "pork-tenderloin": {
+      "ru": "Свинина, вырезка без видимого жира",
+      "en": "Pork, lean tenderloin"
+    },
+    "ground-pork": {
+      "ru": "Фарш свиной",
+      "en": "Ground pork"
+    },
+    "chashu": {
+      "ru": "Свинина тясю",
+      "en": "Chashu roast pork"
+    },
+    "chicken-breast-skin": {
+      "ru": "Грудка цыплёнка с кожей",
+      "en": "Chicken breast, skin on"
+    },
+    "chicken-breast-skinless": {
+      "ru": "Грудка цыплёнка без кожи",
+      "en": "Chicken breast, skinless"
+    },
+    "chicken-thigh-skin": {
+      "ru": "Бедро цыплёнка с кожей",
+      "en": "Chicken thigh, skin on"
+    },
+    "chicken-thigh-skinless": {
+      "ru": "Бедро цыплёнка без кожи",
+      "en": "Chicken thigh, skinless"
+    },
+    "chicken-tenderloin": {
+      "ru": "Малое филе цыплёнка",
+      "en": "Chicken tenderloin"
+    },
+    "ground-chicken": {
+      "ru": "Фарш куриный",
+      "en": "Ground chicken"
+    },
+    "quail-eggs": {
+      "ru": "Яйцо перепелиное без скорлупы",
+      "en": "Quail egg, shell removed"
+    },
+    "hen-eggs": {
+      "ru": "Яйцо куриное без скорлупы",
+      "en": "Hen egg, shell removed"
+    },
+    "hen-yolk": {
+      "ru": "Желток куриного яйца",
+      "en": "Hen egg yolk"
+    },
+    "hen-white": {
+      "ru": "Белок куриного яйца",
+      "en": "Hen egg white"
+    },
+    "tamagoyaki": {
+      "ru": "Омлет японский",
+      "en": "Japanese rolled omelette"
+    },
+    "milk": {
+      "ru": "Молоко коровье",
+      "en": "Cow's milk"
+    },
+    "milk-powder": {
+      "ru": "Молоко сухое",
+      "en": "Milk powder"
+    },
+    "evaporated-milk": {
+      "ru": "Молоко концентрированное",
+      "en": "Evaporated milk"
+    },
+    "condensed-milk": {
+      "ru": "Молоко сгущённое",
+      "en": "Condensed milk"
+    },
+    "dairy-cream": {
+      "ru": "Сливки молочные",
+      "en": "Dairy cream"
+    },
+    "yogurt": {
+      "ru": "Йогурт без добавок",
+      "en": "Plain yogurt"
+    },
+    "cottage-cheese": {
+      "ru": "Творог зернёный",
+      "en": "Cottage cheese"
+    },
+    "camembert": {
+      "ru": "Сыр камамбер",
+      "en": "Camembert cheese"
+    },
+    "cream-cheese": {
+      "ru": "Сыр сливочный",
+      "en": "Cream cheese"
+    },
+    "gouda": {
+      "ru": "Сыр гауда",
+      "en": "Gouda cheese"
+    },
+    "cheddar": {
+      "ru": "Сыр чеддер",
+      "en": "Cheddar cheese"
+    },
+    "parmesan": {
+      "ru": "Сыр пармезан",
+      "en": "Parmesan cheese"
+    },
+    "olive-oil": {
+      "ru": "Масло оливковое",
+      "en": "Olive oil"
+    },
+    "sesame-oil": {
+      "ru": "Масло кунжутное",
+      "en": "Sesame oil"
+    },
+    "rice-bran-oil": {
+      "ru": "Масло рисовых отрубей",
+      "en": "Rice bran oil"
+    },
+    "soybean-oil": {
+      "ru": "Масло соевое",
+      "en": "Soybean oil"
+    },
+    "rapeseed-oil": {
+      "ru": "Масло рапсовое",
+      "en": "Rapeseed oil"
+    },
+    "sunflower-oil": {
+      "ru": "Масло подсолнечное",
+      "en": "Sunflower oil"
+    },
+    "coconut-oil": {
+      "ru": "Масло кокосовое",
+      "en": "Coconut oil"
+    },
+    "peanut-oil": {
+      "ru": "Масло арахисовое",
+      "en": "Peanut oil"
+    },
+    "butter": {
+      "ru": "Масло сливочное сладкосливочное",
+      "en": "Sweet cream butter"
+    },
+    "soy-sauce": {
+      "ru": "Соевый соус",
+      "en": "Soy sauce"
+    },
+    "table-salt": {
+      "ru": "Соль поваренная",
+      "en": "Table salt"
+    },
+    "rice-vinegar": {
+      "ru": "Уксус рисовый",
+      "en": "Rice vinegar"
+    },
+    "apple-vinegar": {
+      "ru": "Уксус яблочный",
+      "en": "Apple vinegar"
+    },
+    "dashi-katsuo": {
+      "ru": "Бульон даси из кацуобуси",
+      "en": "Katsuobushi dashi stock"
+    },
+    "dashi-kombu": {
+      "ru": "Бульон даси из комбу",
+      "en": "Kombu dashi stock"
+    },
+    "dashi-katsuo-kombu": {
+      "ru": "Бульон даси из кацуобуси и комбу",
+      "en": "Katsuobushi and kombu dashi stock"
+    },
+    "dashi-shiitake": {
+      "ru": "Бульон из шиитаке",
+      "en": "Shiitake mushroom stock"
+    },
+    "chicken-stock": {
+      "ru": "Бульон из куриной тушки",
+      "en": "Chicken carcass stock"
+    },
+    "miso-rice": {
+      "ru": "Мисо рисовое",
+      "en": "Rice miso"
+    },
+    "miso-barley": {
+      "ru": "Мисо ячменное",
+      "en": "Barley miso"
+    },
+    "miso-soy": {
+      "ru": "Мисо соевое",
+      "en": "Soybean miso"
+    },
+    "sushi-vinegar": {
+      "ru": "Заправка уксусная для суши",
+      "en": "Seasoned sushi vinegar"
+    }
+  },
+  "foods": [
+    {
+      "code": "01004",
+      "family": "oats",
+      "variant": {
+        "ru": "сухие",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "01006",
+      "family": "barley-pressed",
+      "variant": {
+        "ru": "сухой",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "01170",
+      "family": "barley-pressed",
+      "variant": {
+        "ru": "варёный",
+        "en": "cooked"
+      }
+    },
+    {
+      "code": "01167",
+      "family": "quinoa",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01015",
+      "family": "wheat-flour-low",
+      "variant": {
+        "ru": "первого сорта по MEXT",
+        "en": "first grade in MEXT"
+      }
+    },
+    {
+      "code": "01018",
+      "family": "wheat-flour-medium",
+      "variant": {
+        "ru": "первого сорта по MEXT",
+        "en": "first grade in MEXT"
+      }
+    },
+    {
+      "code": "01020",
+      "family": "wheat-flour-high",
+      "variant": {
+        "ru": "первого сорта по MEXT",
+        "en": "first grade in MEXT"
+      }
+    },
+    {
+      "code": "01023",
+      "family": "wheat-flour-high",
+      "variant": {
+        "ru": "цельнозерновая",
+        "en": "wholemeal"
+      }
+    },
+    {
+      "code": "01026",
+      "family": "white-bread",
+      "variant": {
+        "ru": "обычный",
+        "en": "plain"
+      }
+    },
+    {
+      "code": "01174",
+      "family": "white-bread",
+      "variant": {
+        "ru": "поджаренный",
+        "en": "toasted"
+      }
+    },
+    {
+      "code": "01031",
+      "family": "baguette",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01032",
+      "family": "rye-bread",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01208",
+      "family": "wholegrain-bread",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01148",
+      "family": "bagel",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01038",
+      "family": "udon",
+      "variant": {
+        "ru": "свежая",
+        "en": "fresh, uncooked"
+      }
+    },
+    {
+      "code": "01039",
+      "family": "udon",
+      "variant": {
+        "ru": "варёная из свежей",
+        "en": "boiled from fresh"
+      }
+    },
+    {
+      "code": "01041",
+      "family": "udon",
+      "variant": {
+        "ru": "сушёная",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "01042",
+      "family": "udon",
+      "variant": {
+        "ru": "варёная из сушёной",
+        "en": "boiled from dried"
+      }
+    },
+    {
+      "code": "01043",
+      "family": "somen",
+      "variant": {
+        "ru": "сушёная",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "01044",
+      "family": "somen",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "01047",
+      "family": "ramen-noodles",
+      "variant": {
+        "ru": "свежая",
+        "en": "fresh, uncooked"
+      }
+    },
+    {
+      "code": "01048",
+      "family": "ramen-noodles",
+      "variant": {
+        "ru": "варёная из свежей",
+        "en": "boiled from fresh"
+      }
+    },
+    {
+      "code": "01050",
+      "family": "ramen-noodles",
+      "variant": {
+        "ru": "сушёная",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "01051",
+      "family": "ramen-noodles",
+      "variant": {
+        "ru": "варёная из сушёной",
+        "en": "boiled from dried"
+      }
+    },
+    {
+      "code": "01057",
+      "family": "instant-ramen",
+      "variant": {
+        "ru": "лапша обжаренная, сухой с приправами",
+        "en": "fried noodles, dry with seasonings"
+      }
+    },
+    {
+      "code": "01058",
+      "family": "instant-ramen",
+      "variant": {
+        "ru": "лапша необжаренная, сухой с приправами",
+        "en": "non-fried noodles, dry with seasonings"
+      }
+    },
+    {
+      "code": "01198",
+      "family": "instant-ramen",
+      "variant": {
+        "ru": "лапша обжаренная, готовый с бульоном и приправами",
+        "en": "fried noodles, prepared including broth and seasonings"
+      }
+    },
+    {
+      "code": "01199",
+      "family": "instant-ramen",
+      "variant": {
+        "ru": "лапша необжаренная, готовый с бульоном и приправами",
+        "en": "non-fried noodles, prepared including broth and seasonings"
+      }
+    },
+    {
+      "code": "01200",
+      "family": "instant-ramen",
+      "variant": {
+        "ru": "в стакане, сёю, готовый с бульоном и приправами",
+        "en": "cup ramen, soy sauce flavour, prepared including broth and seasonings"
+      }
+    },
+    {
+      "code": "01201",
+      "family": "instant-ramen",
+      "variant": {
+        "ru": "в стакане, сио, готовый с бульоном и приправами",
+        "en": "cup ramen, salt flavour, prepared including broth and seasonings"
+      }
+    },
+    {
+      "code": "01063",
+      "family": "pasta",
+      "variant": {
+        "ru": "сухие",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "01064",
+      "family": "pasta",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "01074",
+      "family": "gyoza-wrappers",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01079",
+      "family": "panko",
+      "variant": {
+        "ru": "сухие",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "01080",
+      "family": "rice-brown",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01085",
+      "family": "rice-brown",
+      "variant": {
+        "ru": "варёный",
+        "en": "cooked"
+      }
+    },
+    {
+      "code": "01090",
+      "family": "rice-brown",
+      "variant": {
+        "ru": "жидкая каша на воде",
+        "en": "rice porridge, cooked in water"
+      }
+    },
+    {
+      "code": "01083",
+      "family": "rice-japonica",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01088",
+      "family": "rice-japonica",
+      "variant": {
+        "ru": "варёный",
+        "en": "cooked"
+      }
+    },
+    {
+      "code": "01093",
+      "family": "rice-japonica",
+      "variant": {
+        "ru": "жидкая каша на воде",
+        "en": "rice porridge, cooked in water"
+      }
+    },
+    {
+      "code": "01152",
+      "family": "rice-indica",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01168",
+      "family": "rice-indica",
+      "variant": {
+        "ru": "варёный",
+        "en": "cooked"
+      }
+    },
+    {
+      "code": "01151",
+      "family": "rice-glutinous",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01154",
+      "family": "rice-glutinous",
+      "variant": {
+        "ru": "варёный",
+        "en": "cooked"
+      }
+    },
+    {
+      "code": "01181",
+      "family": "rice-red",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01183",
+      "family": "rice-red",
+      "variant": {
+        "ru": "варёный",
+        "en": "cooked"
+      }
+    },
+    {
+      "code": "01182",
+      "family": "rice-black",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01184",
+      "family": "rice-black",
+      "variant": {
+        "ru": "варёный",
+        "en": "cooked"
+      }
+    },
+    {
+      "code": "01111",
+      "family": "onigiri-plain",
+      "variant": {
+        "ru": "с солью",
+        "en": "salted"
+      }
+    },
+    {
+      "code": "01112",
+      "family": "onigiri-plain",
+      "variant": {
+        "ru": "обжаренный с соевым соусом",
+        "en": "grilled with soy sauce"
+      }
+    },
+    {
+      "code": "01114",
+      "family": "rice-flour",
+      "variant": {
+        "ru": "дзёсинко",
+        "en": "joshinko"
+      }
+    },
+    {
+      "code": "01158",
+      "family": "rice-flour",
+      "variant": {
+        "ru": "обычная",
+        "en": "plain"
+      }
+    },
+    {
+      "code": "01157",
+      "family": "rice-flour-brown",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01115",
+      "family": "rice-noodles",
+      "variant": {
+        "ru": "сухая",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "01169",
+      "family": "rice-paper",
+      "variant": {
+        "ru": "сухая",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "01116",
+      "family": "rice-koji",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01117",
+      "family": "mochi",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01122",
+      "family": "buckwheat-flour",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "01126",
+      "family": "buckwheat",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "01127",
+      "family": "soba",
+      "variant": {
+        "ru": "свежая",
+        "en": "fresh, uncooked"
+      }
+    },
+    {
+      "code": "01128",
+      "family": "soba",
+      "variant": {
+        "ru": "варёная из свежей",
+        "en": "boiled from fresh"
+      }
+    },
+    {
+      "code": "01129",
+      "family": "soba",
+      "variant": {
+        "ru": "сушёная",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "01130",
+      "family": "soba",
+      "variant": {
+        "ru": "варёная из сушёной",
+        "en": "boiled from dried"
+      }
+    },
+    {
+      "code": "02005",
+      "family": "shirataki",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "02006",
+      "family": "sweet-potato-peeled",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "02007",
+      "family": "sweet-potato-peeled",
+      "variant": {
+        "ru": "на пару",
+        "en": "steamed"
+      }
+    },
+    {
+      "code": "02008",
+      "family": "sweet-potato-peeled",
+      "variant": {
+        "ru": "запечённый",
+        "en": "baked"
+      }
+    },
+    {
+      "code": "02010",
+      "family": "taro",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "02011",
+      "family": "taro",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "02063",
+      "family": "potato-skin",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "02064",
+      "family": "potato-skin",
+      "variant": {
+        "ru": "приготовленный в микроволновке",
+        "en": "microwaved"
+      }
+    },
+    {
+      "code": "02017",
+      "family": "potato-peeled",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "02019",
+      "family": "potato-peeled",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "02018",
+      "family": "potato-peeled",
+      "variant": {
+        "ru": "на пару",
+        "en": "steamed"
+      }
+    },
+    {
+      "code": "02066",
+      "family": "potato-peeled",
+      "variant": {
+        "ru": "приготовленный в микроволновке",
+        "en": "microwaved"
+      }
+    },
+    {
+      "code": "02067",
+      "family": "potato-peeled",
+      "variant": {
+        "ru": "фри, приготовленный из сырого картофеля",
+        "en": "French fries, from raw potatoes"
+      }
+    },
+    {
+      "code": "02028",
+      "family": "tapioca-starch",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "02034",
+      "family": "potato-starch",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "02035",
+      "family": "corn-starch",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "02038",
+      "family": "tapioca-pearls",
+      "variant": {
+        "ru": "сухие",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "02057",
+      "family": "tapioca-pearls",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "02039",
+      "family": "mung-vermicelli",
+      "variant": {
+        "ru": "сухая",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "02061",
+      "family": "mung-vermicelli",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "03001",
+      "family": "brown-cane-sugar",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "03005",
+      "family": "sugar",
+      "variant": {
+        "ru": "песок",
+        "en": "granulated"
+      }
+    },
+    {
+      "code": "03022",
+      "family": "honey",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "03023",
+      "family": "maple-syrup",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "04001",
+      "family": "adzuki",
+      "variant": {
+        "ru": "сухая",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "04002",
+      "family": "adzuki",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "04003",
+      "family": "adzuki",
+      "variant": {
+        "ru": "консервированная в сахарном сиропе, с жидкостью",
+        "en": "canned in syrup, including liquid"
+      }
+    },
+    {
+      "code": "04007",
+      "family": "kidney-beans",
+      "variant": {
+        "ru": "сухая",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "04008",
+      "family": "kidney-beans",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "04012",
+      "family": "mature-peas",
+      "variant": {
+        "ru": "сухой",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "04013",
+      "family": "mature-peas",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "04023",
+      "family": "soybeans-yellow",
+      "variant": {
+        "ru": "сухие, Япония",
+        "en": "dry, Japan-grown"
+      }
+    },
+    {
+      "code": "04024",
+      "family": "soybeans-yellow",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "04028",
+      "family": "soybeans-yellow",
+      "variant": {
+        "ru": "консервированные в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "04081",
+      "family": "soybeans-yellow",
+      "variant": {
+        "ru": "на пару",
+        "en": "steamed"
+      }
+    },
+    {
+      "code": "04077",
+      "family": "soybeans-black",
+      "variant": {
+        "ru": "сухие",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "04106",
+      "family": "soybeans-black",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "04029",
+      "family": "kinako",
+      "variant": {
+        "ru": "из цельных жёлтых бобов",
+        "en": "whole yellow beans"
+      }
+    },
+    {
+      "code": "04032",
+      "family": "tofu",
+      "variant": {
+        "ru": "твёрдый момэн",
+        "en": "firm momen"
+      }
+    },
+    {
+      "code": "04033",
+      "family": "tofu",
+      "variant": {
+        "ru": "шёлковый кинугоси",
+        "en": "silken kinugoshi"
+      }
+    },
+    {
+      "code": "04034",
+      "family": "tofu",
+      "variant": {
+        "ru": "мягкий",
+        "en": "soft"
+      }
+    },
+    {
+      "code": "04038",
+      "family": "tofu",
+      "variant": {
+        "ru": "обжаренный якидофу",
+        "en": "grilled yakidofu"
+      }
+    },
+    {
+      "code": "04039",
+      "family": "tofu",
+      "variant": {
+        "ru": "обжаренный в масле ацуагэ",
+        "en": "deep-fried thick atsuage"
+      }
+    },
+    {
+      "code": "04040",
+      "family": "tofu",
+      "variant": {
+        "ru": "обжаренный в масле абураагэ",
+        "en": "deep-fried thin aburaage"
+      }
+    },
+    {
+      "code": "04042",
+      "family": "tofu",
+      "variant": {
+        "ru": "сублимированный",
+        "en": "freeze-dried"
+      }
+    },
+    {
+      "code": "04087",
+      "family": "tofu",
+      "variant": {
+        "ru": "сублимированный, восстановленный и варёный",
+        "en": "freeze-dried, rehydrated and boiled"
+      }
+    },
+    {
+      "code": "04046",
+      "family": "natto",
+      "variant": {
+        "ru": "из цельных бобов",
+        "en": "whole beans"
+      }
+    },
+    {
+      "code": "04047",
+      "family": "natto",
+      "variant": {
+        "ru": "из дроблёных бобов",
+        "en": "chopped beans"
+      }
+    },
+    {
+      "code": "04051",
+      "family": "okara",
+      "variant": {
+        "ru": "свежая",
+        "en": "fresh"
+      }
+    },
+    {
+      "code": "04089",
+      "family": "okara",
+      "variant": {
+        "ru": "сушёная",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "04052",
+      "family": "soy-milk",
+      "variant": {
+        "ru": "без добавок",
+        "en": "plain"
+      }
+    },
+    {
+      "code": "04053",
+      "family": "soy-milk",
+      "variant": {
+        "ru": "с добавками, промышленное",
+        "en": "adjusted"
+      }
+    },
+    {
+      "code": "04063",
+      "family": "tempeh",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "04065",
+      "family": "chickpeas",
+      "variant": {
+        "ru": "сухой",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "04066",
+      "family": "chickpeas",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "04071",
+      "family": "mung-beans",
+      "variant": {
+        "ru": "сухой",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "04072",
+      "family": "mung-beans",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "04073",
+      "family": "lentils",
+      "variant": {
+        "ru": "сухая",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "04094",
+      "family": "lentils",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "05001",
+      "family": "almonds",
+      "variant": {
+        "ru": "сушёный",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "05040",
+      "family": "almonds",
+      "variant": {
+        "ru": "обжаренный без соли",
+        "en": "roasted, unsalted"
+      }
+    },
+    {
+      "code": "05005",
+      "family": "cashew",
+      "variant": {
+        "ru": "обжаренный в масле, с приправами",
+        "en": "fried and seasoned"
+      }
+    },
+    {
+      "code": "05006",
+      "family": "pumpkin-seeds",
+      "variant": {
+        "ru": "обжаренные, с приправами",
+        "en": "roasted and seasoned"
+      }
+    },
+    {
+      "code": "05010",
+      "family": "chestnut-japanese",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "05011",
+      "family": "chestnut-japanese",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "05013",
+      "family": "chestnut-chinese",
+      "variant": {
+        "ru": "жареные амагу́ри",
+        "en": "roasted amaguri"
+      }
+    },
+    {
+      "code": "05014",
+      "family": "walnuts",
+      "variant": {
+        "ru": "обжаренные",
+        "en": "roasted"
+      }
+    },
+    {
+      "code": "05017",
+      "family": "sesame",
+      "variant": {
+        "ru": "сушёный",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "05018",
+      "family": "sesame",
+      "variant": {
+        "ru": "обжаренный",
+        "en": "roasted"
+      }
+    },
+    {
+      "code": "05019",
+      "family": "sesame",
+      "variant": {
+        "ru": "очищенный",
+        "en": "hulled"
+      }
+    },
+    {
+      "code": "05042",
+      "family": "sesame",
+      "variant": {
+        "ru": "паста",
+        "en": "paste"
+      }
+    },
+    {
+      "code": "05046",
+      "family": "chia",
+      "variant": {
+        "ru": "сухие",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "05026",
+      "family": "pistachio",
+      "variant": {
+        "ru": "обжаренные, с приправами",
+        "en": "roasted and seasoned"
+      }
+    },
+    {
+      "code": "05032",
+      "family": "pine-nuts",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "05033",
+      "family": "pine-nuts",
+      "variant": {
+        "ru": "обжаренные",
+        "en": "roasted"
+      }
+    },
+    {
+      "code": "05034",
+      "family": "peanuts",
+      "variant": {
+        "ru": "крупный, сушёный",
+        "en": "large type, dried"
+      }
+    },
+    {
+      "code": "05035",
+      "family": "peanuts",
+      "variant": {
+        "ru": "обжаренный",
+        "en": "roasted"
+      }
+    },
+    {
+      "code": "05037",
+      "family": "peanuts",
+      "variant": {
+        "ru": "паста",
+        "en": "butter"
+      }
+    },
+    {
+      "code": "05041",
+      "family": "flax",
+      "variant": {
+        "ru": "обжаренные",
+        "en": "roasted"
+      }
+    },
+    {
+      "code": "06007",
+      "family": "asparagus",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06008",
+      "family": "asparagus",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06010",
+      "family": "green-beans",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06011",
+      "family": "green-beans",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06015",
+      "family": "edamame",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06016",
+      "family": "edamame",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06017",
+      "family": "edamame",
+      "variant": {
+        "ru": "замороженные",
+        "en": "frozen"
+      }
+    },
+    {
+      "code": "06023",
+      "family": "green-peas",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06024",
+      "family": "green-peas",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06025",
+      "family": "green-peas",
+      "variant": {
+        "ru": "замороженный",
+        "en": "frozen"
+      }
+    },
+    {
+      "code": "06026",
+      "family": "green-peas",
+      "variant": {
+        "ru": "консервированный в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "06032",
+      "family": "okra",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06033",
+      "family": "okra",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06036",
+      "family": "turnip-skin",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06037",
+      "family": "turnip-skin",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06048",
+      "family": "pumpkin-western",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06049",
+      "family": "pumpkin-western",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06332",
+      "family": "pumpkin-western",
+      "variant": {
+        "ru": "запечённая",
+        "en": "baked"
+      }
+    },
+    {
+      "code": "06054",
+      "family": "cauliflower",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06055",
+      "family": "cauliflower",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06061",
+      "family": "cabbage",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06062",
+      "family": "cabbage",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06064",
+      "family": "red-cabbage",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06065",
+      "family": "cucumber",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06080",
+      "family": "kale",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06084",
+      "family": "burdock",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06085",
+      "family": "burdock",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06086",
+      "family": "komatsuna",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06087",
+      "family": "komatsuna",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06095",
+      "family": "shiso",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06103",
+      "family": "ginger",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06105",
+      "family": "ginger",
+      "variant": {
+        "ru": "сладкий маринованный гари",
+        "en": "sweet pickled gari"
+      }
+    },
+    {
+      "code": "06116",
+      "family": "zucchini",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06119",
+      "family": "celery",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06132",
+      "family": "daikon-skin",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06133",
+      "family": "daikon-skin",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06134",
+      "family": "daikon-peeled",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06135",
+      "family": "daikon-peeled",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06149",
+      "family": "bamboo-shoots",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06150",
+      "family": "bamboo-shoots",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06151",
+      "family": "bamboo-shoots",
+      "variant": {
+        "ru": "консервированные в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "06153",
+      "family": "onion",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06155",
+      "family": "onion",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06156",
+      "family": "red-onion",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06160",
+      "family": "bok-choy",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06161",
+      "family": "bok-choy",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06175",
+      "family": "sweet-corn",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06176",
+      "family": "sweet-corn",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06180",
+      "family": "sweet-corn",
+      "variant": {
+        "ru": "консервированная",
+        "en": "canned"
+      }
+    },
+    {
+      "code": "06182",
+      "family": "tomato",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06184",
+      "family": "tomato",
+      "variant": {
+        "ru": "консервированный без соли",
+        "en": "canned, no added salt"
+      }
+    },
+    {
+      "code": "06370",
+      "family": "tomato",
+      "variant": {
+        "ru": "сушёный",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "06183",
+      "family": "cherry-tomato",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06191",
+      "family": "eggplant",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06192",
+      "family": "eggplant",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06207",
+      "family": "garlic-chives",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06208",
+      "family": "garlic-chives",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06212",
+      "family": "carrot-skin",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06213",
+      "family": "carrot-skin",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06214",
+      "family": "carrot-peeled",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06215",
+      "family": "carrot-peeled",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06223",
+      "family": "garlic",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06227",
+      "family": "green-onion",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06233",
+      "family": "napa-cabbage",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06234",
+      "family": "napa-cabbage",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06236",
+      "family": "napa-cabbage",
+      "variant": {
+        "ru": "кимчи",
+        "en": "kimchi"
+      }
+    },
+    {
+      "code": "06238",
+      "family": "basil",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06239",
+      "family": "parsley",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06240",
+      "family": "radish",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06243",
+      "family": "beet",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06244",
+      "family": "beet",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06245",
+      "family": "green-pepper",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06246",
+      "family": "green-pepper",
+      "variant": {
+        "ru": "обжаренный в масле",
+        "en": "stir-fried in oil"
+      }
+    },
+    {
+      "code": "06247",
+      "family": "red-pepper",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06248",
+      "family": "red-pepper",
+      "variant": {
+        "ru": "обжаренный в масле",
+        "en": "stir-fried in oil"
+      }
+    },
+    {
+      "code": "06249",
+      "family": "yellow-pepper",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06263",
+      "family": "broccoli",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06264",
+      "family": "broccoli",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06395",
+      "family": "broccoli",
+      "variant": {
+        "ru": "приготовленная в микроволновке",
+        "en": "microwaved"
+      }
+    },
+    {
+      "code": "06396",
+      "family": "broccoli",
+      "variant": {
+        "ru": "запечённая",
+        "en": "baked"
+      }
+    },
+    {
+      "code": "06267",
+      "family": "spinach",
+      "variant": {
+        "ru": "сырой, среднегодовые данные",
+        "en": "raw, annual average"
+      }
+    },
+    {
+      "code": "06268",
+      "family": "spinach",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06269",
+      "family": "spinach",
+      "variant": {
+        "ru": "замороженный",
+        "en": "frozen"
+      }
+    },
+    {
+      "code": "06283",
+      "family": "brussels-sprouts",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06284",
+      "family": "brussels-sprouts",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06291",
+      "family": "mung-sprouts",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06292",
+      "family": "mung-sprouts",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06308",
+      "family": "leek",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06309",
+      "family": "leek",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06312",
+      "family": "iceberg-lettuce",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06316",
+      "family": "romaine-lettuce",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06319",
+      "family": "arugula",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06317",
+      "family": "lotus-root",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "06318",
+      "family": "lotus-root",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "06322",
+      "family": "wasabi",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07006",
+      "family": "avocado",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07007",
+      "family": "apricot",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07008",
+      "family": "apricot",
+      "variant": {
+        "ru": "сушёный",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "07012",
+      "family": "strawberry",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07015",
+      "family": "fig",
+      "variant": {
+        "ru": "сырой, без кожицы",
+        "en": "raw, peeled"
+      }
+    },
+    {
+      "code": "07016",
+      "family": "fig",
+      "variant": {
+        "ru": "сушёный",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "07022",
+      "family": "umeboshi",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "07037",
+      "family": "green-olives",
+      "variant": {
+        "ru": "солёные",
+        "en": "salted"
+      }
+    },
+    {
+      "code": "07038",
+      "family": "black-olives",
+      "variant": {
+        "ru": "солёные",
+        "en": "salted"
+      }
+    },
+    {
+      "code": "07049",
+      "family": "sweet-persimmon",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07051",
+      "family": "dried-persimmon",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "07027",
+      "family": "satsuma",
+      "variant": {
+        "ru": "дольки с плёнками, сырой",
+        "en": "segments with membranes, raw"
+      }
+    },
+    {
+      "code": "07029",
+      "family": "satsuma",
+      "variant": {
+        "ru": "мякоть без плёнок, сырой",
+        "en": "pulp without membranes, raw"
+      }
+    },
+    {
+      "code": "07035",
+      "family": "satsuma",
+      "variant": {
+        "ru": "консервированный в лёгком сиропе, только мякоть",
+        "en": "canned in light syrup, solids only"
+      }
+    },
+    {
+      "code": "07040",
+      "family": "navel-orange",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07056",
+      "family": "kumquat",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07062",
+      "family": "white-grapefruit",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07164",
+      "family": "pink-grapefruit",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07142",
+      "family": "yuzu-peel",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07143",
+      "family": "yuzu-juice",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07145",
+      "family": "lime-juice",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07155",
+      "family": "lemon",
+      "variant": {
+        "ru": "целый с кожурой, сырой",
+        "en": "whole with peel, raw"
+      }
+    },
+    {
+      "code": "07156",
+      "family": "lemon",
+      "variant": {
+        "ru": "сок, сырой",
+        "en": "juice, raw"
+      }
+    },
+    {
+      "code": "07054",
+      "family": "green-kiwi",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07168",
+      "family": "gold-kiwi",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07157",
+      "family": "coconut-water",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "07158",
+      "family": "coconut-milk",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "07070",
+      "family": "cherry-japanese",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07071",
+      "family": "cherry-american",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07073",
+      "family": "pomegranate",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07077",
+      "family": "watermelon",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07080",
+      "family": "plum-japanese",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07081",
+      "family": "prune",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07082",
+      "family": "prune",
+      "variant": {
+        "ru": "чернослив",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "07088",
+      "family": "nashi-pear",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07091",
+      "family": "pear-european",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07096",
+      "family": "dates",
+      "variant": {
+        "ru": "сушёные",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "07097",
+      "family": "pineapple",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07102",
+      "family": "pineapple",
+      "variant": {
+        "ru": "консервированный в густом сиропе, с жидкостью",
+        "en": "canned in heavy syrup, including liquid"
+      }
+    },
+    {
+      "code": "07107",
+      "family": "banana",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07108",
+      "family": "banana",
+      "variant": {
+        "ru": "сушёный",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "07109",
+      "family": "papaya",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07114",
+      "family": "loquat",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07115",
+      "family": "loquat",
+      "variant": {
+        "ru": "консервированная в густом сиропе, с жидкостью",
+        "en": "canned in heavy syrup, including liquid"
+      }
+    },
+    {
+      "code": "07116",
+      "family": "grapes",
+      "variant": {
+        "ru": "без кожицы и косточек, сырой",
+        "en": "skin and seeds removed, raw"
+      }
+    },
+    {
+      "code": "07178",
+      "family": "grapes",
+      "variant": {
+        "ru": "с кожицей, сырой",
+        "en": "skin on, raw"
+      }
+    },
+    {
+      "code": "07117",
+      "family": "grapes",
+      "variant": {
+        "ru": "изюм",
+        "en": "raisins"
+      }
+    },
+    {
+      "code": "07124",
+      "family": "blueberry",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07132",
+      "family": "mango",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07179",
+      "family": "mango",
+      "variant": {
+        "ru": "сушёное",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "07134",
+      "family": "muskmelon",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07136",
+      "family": "white-peach",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07184",
+      "family": "yellow-peach",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07140",
+      "family": "nectarine",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07144",
+      "family": "lychee",
+      "variant": {
+        "ru": "сырой, замороженный образец MEXT",
+        "en": "raw, frozen MEXT sample"
+      }
+    },
+    {
+      "code": "07146",
+      "family": "raspberry",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "07148",
+      "family": "apple",
+      "variant": {
+        "ru": "очищенное, сырое",
+        "en": "peeled, raw"
+      }
+    },
+    {
+      "code": "07176",
+      "family": "apple",
+      "variant": {
+        "ru": "с кожурой, сырое",
+        "en": "skin on, raw"
+      }
+    },
+    {
+      "code": "07180",
+      "family": "apple",
+      "variant": {
+        "ru": "с кожурой, запечённое",
+        "en": "skin on, baked"
+      }
+    },
+    {
+      "code": "08001",
+      "family": "enoki",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08002",
+      "family": "enoki",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08039",
+      "family": "shiitake-sawdust",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08040",
+      "family": "shiitake-sawdust",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08013",
+      "family": "shiitake-dried",
+      "variant": {
+        "ru": "сухие",
+        "en": "dry"
+      }
+    },
+    {
+      "code": "08014",
+      "family": "shiitake-dried",
+      "variant": {
+        "ru": "восстановленные и варёные",
+        "en": "rehydrated and boiled"
+      }
+    },
+    {
+      "code": "08016",
+      "family": "bunashimeji",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08017",
+      "family": "bunashimeji",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08020",
+      "family": "nameko",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08021",
+      "family": "nameko",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08025",
+      "family": "king-oyster",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08048",
+      "family": "king-oyster",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08049",
+      "family": "king-oyster",
+      "variant": {
+        "ru": "запечённые",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "08026",
+      "family": "oyster-mushroom",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08027",
+      "family": "oyster-mushroom",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08028",
+      "family": "maitake",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08029",
+      "family": "maitake",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08030",
+      "family": "maitake",
+      "variant": {
+        "ru": "сушёные",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "08031",
+      "family": "button-mushroom",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "08032",
+      "family": "button-mushroom",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "08033",
+      "family": "button-mushroom",
+      "variant": {
+        "ru": "консервированные в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "09001",
+      "family": "aosa",
+      "variant": {
+        "ru": "сушёные",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "09002",
+      "family": "aonori",
+      "variant": {
+        "ru": "сушёные",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "09003",
+      "family": "nori",
+      "variant": {
+        "ru": "сушёные",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "09004",
+      "family": "nori",
+      "variant": {
+        "ru": "поджаренные сухие",
+        "en": "toasted, dry"
+      }
+    },
+    {
+      "code": "09005",
+      "family": "nori",
+      "variant": {
+        "ru": "с приправами",
+        "en": "seasoned"
+      }
+    },
+    {
+      "code": "09017",
+      "family": "makombu",
+      "variant": {
+        "ru": "сушёные",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "09056",
+      "family": "makombu",
+      "variant": {
+        "ru": "варёные",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "09028",
+      "family": "agar",
+      "variant": {
+        "ru": "готовое желе",
+        "en": "prepared jelly"
+      }
+    },
+    {
+      "code": "09049",
+      "family": "agar",
+      "variant": {
+        "ru": "порошок сухой",
+        "en": "dry powder"
+      }
+    },
+    {
+      "code": "09039",
+      "family": "wakame",
+      "variant": {
+        "ru": "сырые",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "09040",
+      "family": "wakame",
+      "variant": {
+        "ru": "сушёные",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "09041",
+      "family": "wakame",
+      "variant": {
+        "ru": "сушёные, восстановленные",
+        "en": "dried, rehydrated"
+      }
+    },
+    {
+      "code": "09060",
+      "family": "wakame",
+      "variant": {
+        "ru": "сушёные, восстановленные и варёные",
+        "en": "dried, rehydrated and boiled"
+      }
+    },
+    {
+      "code": "09044",
+      "family": "wakame",
+      "variant": {
+        "ru": "нарезанные сушёные",
+        "en": "cut and dried"
+      }
+    },
+    {
+      "code": "10047",
+      "family": "sardine-japanese",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10048",
+      "family": "sardine-japanese",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10049",
+      "family": "sardine-japanese",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10060",
+      "family": "sardine-canned",
+      "variant": {
+        "ru": "в воде, без жидкости",
+        "en": "in water, drained"
+      }
+    },
+    {
+      "code": "10061",
+      "family": "sardine-canned",
+      "variant": {
+        "ru": "с приправами, без жидкости",
+        "en": "seasoned, drained"
+      }
+    },
+    {
+      "code": "10062",
+      "family": "sardine-canned",
+      "variant": {
+        "ru": "в томатном соусе, без жидкости",
+        "en": "in tomato sauce, drained"
+      }
+    },
+    {
+      "code": "10063",
+      "family": "sardine-canned",
+      "variant": {
+        "ru": "в масле, с жидкостью",
+        "en": "in oil, including liquid"
+      }
+    },
+    {
+      "code": "10067",
+      "family": "eel-japanese-farmed",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10069",
+      "family": "eel-japanese-farmed",
+      "variant": {
+        "ru": "на гриле без соуса",
+        "en": "grilled without sauce"
+      }
+    },
+    {
+      "code": "10070",
+      "family": "eel-japanese-farmed",
+      "variant": {
+        "ru": "кабаяки, на гриле с соусом",
+        "en": "kabayaki, grilled with sauce"
+      }
+    },
+    {
+      "code": "10086",
+      "family": "skipjack",
+      "variant": {
+        "ru": "сырой, весенний улов",
+        "en": "raw, spring catch"
+      }
+    },
+    {
+      "code": "10087",
+      "family": "skipjack",
+      "variant": {
+        "ru": "сырой, осенний улов",
+        "en": "raw, autumn catch"
+      }
+    },
+    {
+      "code": "10091",
+      "family": "skipjack",
+      "variant": {
+        "ru": "кацуобуси, сушёный копчёный",
+        "en": "katsuobushi, dried and smoked"
+      }
+    },
+    {
+      "code": "10092",
+      "family": "skipjack",
+      "variant": {
+        "ru": "стружка кацуобуси",
+        "en": "katsuobushi flakes"
+      }
+    },
+    {
+      "code": "10126",
+      "family": "pink-salmon",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10127",
+      "family": "pink-salmon",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10129",
+      "family": "pink-salmon",
+      "variant": {
+        "ru": "консервированная в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "10130",
+      "family": "coho-farmed",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10131",
+      "family": "coho-farmed",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10134",
+      "family": "chum-salmon",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10135",
+      "family": "chum-salmon",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10136",
+      "family": "chum-salmon",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10139",
+      "family": "chum-salmon",
+      "variant": {
+        "ru": "солёная",
+        "en": "salted"
+      }
+    },
+    {
+      "code": "10143",
+      "family": "chum-salmon",
+      "variant": {
+        "ru": "консервированная в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "10140",
+      "family": "chum-roe",
+      "variant": {
+        "ru": "икура",
+        "en": "ikura"
+      }
+    },
+    {
+      "code": "10144",
+      "family": "atlantic-salmon-farmed-skin",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10433",
+      "family": "atlantic-salmon-farmed-skin",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10434",
+      "family": "atlantic-salmon-farmed-skin",
+      "variant": {
+        "ru": "на пару",
+        "en": "steamed"
+      }
+    },
+    {
+      "code": "10145",
+      "family": "atlantic-salmon-farmed-skin",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10438",
+      "family": "atlantic-salmon-farmed-skinless",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10439",
+      "family": "atlantic-salmon-farmed-skinless",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10440",
+      "family": "atlantic-salmon-farmed-skinless",
+      "variant": {
+        "ru": "на пару",
+        "en": "steamed"
+      }
+    },
+    {
+      "code": "10442",
+      "family": "atlantic-salmon-farmed-skinless",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10146",
+      "family": "rainbow-trout-seafarmed",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10147",
+      "family": "rainbow-trout-seafarmed",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10149",
+      "family": "sockeye",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10150",
+      "family": "sockeye",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10151",
+      "family": "sockeye",
+      "variant": {
+        "ru": "копчёная",
+        "en": "smoked"
+      }
+    },
+    {
+      "code": "10152",
+      "family": "chinook",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10153",
+      "family": "chinook",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10154",
+      "family": "chub-mackerel",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10155",
+      "family": "chub-mackerel",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10156",
+      "family": "chub-mackerel",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10158",
+      "family": "atlantic-mackerel",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10159",
+      "family": "atlantic-mackerel",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10160",
+      "family": "atlantic-mackerel",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10164",
+      "family": "mackerel-canned",
+      "variant": {
+        "ru": "в воде, без жидкости",
+        "en": "in water, drained"
+      }
+    },
+    {
+      "code": "10165",
+      "family": "mackerel-canned",
+      "variant": {
+        "ru": "с мисо, с жидкостью",
+        "en": "in miso, including liquid"
+      }
+    },
+    {
+      "code": "10166",
+      "family": "mackerel-canned",
+      "variant": {
+        "ru": "с приправами, без жидкости",
+        "en": "seasoned, drained"
+      }
+    },
+    {
+      "code": "10173",
+      "family": "saury-skin",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10174",
+      "family": "saury-skin",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10407",
+      "family": "saury-skinless",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10175",
+      "family": "saury-preserved",
+      "variant": {
+        "ru": "распластанная, сушёная",
+        "en": "split and dried"
+      }
+    },
+    {
+      "code": "10176",
+      "family": "saury-preserved",
+      "variant": {
+        "ru": "сушёная с мирином",
+        "en": "mirin-seasoned, dried"
+      }
+    },
+    {
+      "code": "10177",
+      "family": "saury-preserved",
+      "variant": {
+        "ru": "консервированная с приправами, без жидкости",
+        "en": "canned seasoned, drained"
+      }
+    },
+    {
+      "code": "10178",
+      "family": "saury-preserved",
+      "variant": {
+        "ru": "консервированная кабаяки, с жидкостью",
+        "en": "canned kabayaki, including liquid"
+      }
+    },
+    {
+      "code": "10199",
+      "family": "alaska-pollock",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10200",
+      "family": "alaska-pollock",
+      "variant": {
+        "ru": "сурими",
+        "en": "surimi"
+      }
+    },
+    {
+      "code": "10205",
+      "family": "pacific-cod",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10206",
+      "family": "pacific-cod",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10208",
+      "family": "pacific-cod",
+      "variant": {
+        "ru": "солёная",
+        "en": "salted"
+      }
+    },
+    {
+      "code": "10209",
+      "family": "pacific-cod",
+      "variant": {
+        "ru": "сушёная",
+        "en": "dried"
+      }
+    },
+    {
+      "code": "10218",
+      "family": "pacific-herring",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10221",
+      "family": "pacific-herring",
+      "variant": {
+        "ru": "копчёная",
+        "en": "smoked"
+      }
+    },
+    {
+      "code": "10252",
+      "family": "yellowfin-tuna",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10253",
+      "family": "bluefin-wild-lean",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10254",
+      "family": "bluefin-wild-fatty",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10450",
+      "family": "bluefin-farmed-lean",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10451",
+      "family": "bluefin-farmed-lean",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10452",
+      "family": "bluefin-farmed-lean",
+      "variant": {
+        "ru": "на пару",
+        "en": "steamed"
+      }
+    },
+    {
+      "code": "10454",
+      "family": "bluefin-farmed-lean",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10255",
+      "family": "albacore",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10425",
+      "family": "bigeye-lean",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10426",
+      "family": "bigeye-fatty",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10260",
+      "family": "tuna-canned-light",
+      "variant": {
+        "ru": "в воде, с жидкостью",
+        "en": "in water, including liquid"
+      }
+    },
+    {
+      "code": "10263",
+      "family": "tuna-canned-light",
+      "variant": {
+        "ru": "в масле, с жидкостью",
+        "en": "in oil, including liquid"
+      }
+    },
+    {
+      "code": "10261",
+      "family": "tuna-canned-white",
+      "variant": {
+        "ru": "в воде, с жидкостью",
+        "en": "in water, including liquid"
+      }
+    },
+    {
+      "code": "10264",
+      "family": "tuna-canned-white",
+      "variant": {
+        "ru": "в масле, с жидкостью",
+        "en": "in oil, including liquid"
+      }
+    },
+    {
+      "code": "10319",
+      "family": "northern-prawn",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10467",
+      "family": "argentine-red-shrimp",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10468",
+      "family": "argentine-red-shrimp",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10469",
+      "family": "argentine-red-shrimp",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10321",
+      "family": "kuruma-farmed",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10322",
+      "family": "kuruma-farmed",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10323",
+      "family": "kuruma-farmed",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10415",
+      "family": "whiteleg-farmed",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10329",
+      "family": "black-tiger-farmed",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10335",
+      "family": "snow-crab",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10336",
+      "family": "snow-crab",
+      "variant": {
+        "ru": "варёное",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10337",
+      "family": "snow-crab",
+      "variant": {
+        "ru": "консервированное в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "10338",
+      "family": "king-crab",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10339",
+      "family": "king-crab",
+      "variant": {
+        "ru": "варёное",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10340",
+      "family": "king-crab",
+      "variant": {
+        "ru": "консервированное в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "10345",
+      "family": "flying-squid",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10346",
+      "family": "flying-squid",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "10347",
+      "family": "flying-squid",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "10361",
+      "family": "common-octopus",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "10362",
+      "family": "common-octopus",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "11011",
+      "family": "wagyu-ribeye-fat",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11249",
+      "family": "wagyu-ribeye-fat",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "11248",
+      "family": "wagyu-ribeye-fat",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11029",
+      "family": "wagyu-tenderloin",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11067",
+      "family": "beef-imported-ribeye",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11269",
+      "family": "beef-imported-ribeye",
+      "variant": {
+        "ru": "варёная",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "11268",
+      "family": "beef-imported-ribeye",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11085",
+      "family": "beef-imported-tenderloin",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11089",
+      "family": "ground-beef",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11272",
+      "family": "ground-beef",
+      "variant": {
+        "ru": "приготовленный на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11140",
+      "family": "pork-tenderloin",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11278",
+      "family": "pork-tenderloin",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11163",
+      "family": "ground-pork",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11280",
+      "family": "ground-pork",
+      "variant": {
+        "ru": "приготовленный на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11195",
+      "family": "chashu",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "11219",
+      "family": "chicken-breast-skin",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11287",
+      "family": "chicken-breast-skin",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11220",
+      "family": "chicken-breast-skinless",
+      "variant": {
+        "ru": "сырая",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11288",
+      "family": "chicken-breast-skinless",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11221",
+      "family": "chicken-thigh-skin",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11223",
+      "family": "chicken-thigh-skin",
+      "variant": {
+        "ru": "варёное",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "11222",
+      "family": "chicken-thigh-skin",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11224",
+      "family": "chicken-thigh-skinless",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11226",
+      "family": "chicken-thigh-skinless",
+      "variant": {
+        "ru": "варёное",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "11225",
+      "family": "chicken-thigh-skinless",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11227",
+      "family": "chicken-tenderloin",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11229",
+      "family": "chicken-tenderloin",
+      "variant": {
+        "ru": "варёное",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "11228",
+      "family": "chicken-tenderloin",
+      "variant": {
+        "ru": "на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "11230",
+      "family": "ground-chicken",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "11291",
+      "family": "ground-chicken",
+      "variant": {
+        "ru": "приготовленный на гриле",
+        "en": "grilled"
+      }
+    },
+    {
+      "code": "12002",
+      "family": "quail-eggs",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "12003",
+      "family": "quail-eggs",
+      "variant": {
+        "ru": "консервированное в воде",
+        "en": "canned in water"
+      }
+    },
+    {
+      "code": "12004",
+      "family": "hen-eggs",
+      "variant": {
+        "ru": "сырое",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "12005",
+      "family": "hen-eggs",
+      "variant": {
+        "ru": "варёное",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "12006",
+      "family": "hen-eggs",
+      "variant": {
+        "ru": "пашот",
+        "en": "poached"
+      }
+    },
+    {
+      "code": "12021",
+      "family": "hen-eggs",
+      "variant": {
+        "ru": "жареное",
+        "en": "fried"
+      }
+    },
+    {
+      "code": "12022",
+      "family": "hen-eggs",
+      "variant": {
+        "ru": "скрэмбл",
+        "en": "scrambled"
+      }
+    },
+    {
+      "code": "12010",
+      "family": "hen-yolk",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "12011",
+      "family": "hen-yolk",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "12014",
+      "family": "hen-white",
+      "variant": {
+        "ru": "сырой",
+        "en": "raw"
+      }
+    },
+    {
+      "code": "12015",
+      "family": "hen-white",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "12018",
+      "family": "tamagoyaki",
+      "variant": {
+        "ru": "толстый тамагояки",
+        "en": "thick tamagoyaki"
+      }
+    },
+    {
+      "code": "12019",
+      "family": "tamagoyaki",
+      "variant": {
+        "ru": "дасимаки, с бульоном даси",
+        "en": "dashimaki, with dashi"
+      }
+    },
+    {
+      "code": "13003",
+      "family": "milk",
+      "variant": {
+        "ru": "цельное",
+        "en": "whole"
+      }
+    },
+    {
+      "code": "13005",
+      "family": "milk",
+      "variant": {
+        "ru": "пониженной жирности",
+        "en": "low-fat"
+      }
+    },
+    {
+      "code": "13006",
+      "family": "milk",
+      "variant": {
+        "ru": "обезжиренное",
+        "en": "skimmed"
+      }
+    },
+    {
+      "code": "13009",
+      "family": "milk-powder",
+      "variant": {
+        "ru": "цельное",
+        "en": "whole"
+      }
+    },
+    {
+      "code": "13010",
+      "family": "milk-powder",
+      "variant": {
+        "ru": "обезжиренное",
+        "en": "skimmed"
+      }
+    },
+    {
+      "code": "13012",
+      "family": "evaporated-milk",
+      "variant": {
+        "ru": "без сахара",
+        "en": "unsweetened"
+      }
+    },
+    {
+      "code": "13013",
+      "family": "condensed-milk",
+      "variant": {
+        "ru": "с сахаром",
+        "en": "sweetened"
+      }
+    },
+    {
+      "code": "13014",
+      "family": "dairy-cream",
+      "variant": {
+        "ru": "обычные",
+        "en": "plain"
+      }
+    },
+    {
+      "code": "13017",
+      "family": "dairy-cream",
+      "variant": {
+        "ru": "взбитые с сахаром",
+        "en": "whipped with sugar"
+      }
+    },
+    {
+      "code": "13025",
+      "family": "yogurt",
+      "variant": {
+        "ru": "из цельного молока",
+        "en": "whole-milk"
+      }
+    },
+    {
+      "code": "13053",
+      "family": "yogurt",
+      "variant": {
+        "ru": "пониженной жирности",
+        "en": "low-fat"
+      }
+    },
+    {
+      "code": "13054",
+      "family": "yogurt",
+      "variant": {
+        "ru": "обезжиренный",
+        "en": "non-fat"
+      }
+    },
+    {
+      "code": "13033",
+      "family": "cottage-cheese",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "13034",
+      "family": "camembert",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "13035",
+      "family": "cream-cheese",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "13036",
+      "family": "gouda",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "13037",
+      "family": "cheddar",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "13038",
+      "family": "parmesan",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14001",
+      "family": "olive-oil",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14002",
+      "family": "sesame-oil",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14003",
+      "family": "rice-bran-oil",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14005",
+      "family": "soybean-oil",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14008",
+      "family": "rapeseed-oil",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14011",
+      "family": "sunflower-oil",
+      "variant": {
+        "ru": "высоколинолевое",
+        "en": "high-linoleic"
+      }
+    },
+    {
+      "code": "14013",
+      "family": "coconut-oil",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14014",
+      "family": "peanut-oil",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "14017",
+      "family": "butter",
+      "variant": {
+        "ru": "солёное",
+        "en": "salted"
+      }
+    },
+    {
+      "code": "14018",
+      "family": "butter",
+      "variant": {
+        "ru": "несолёное",
+        "en": "unsalted"
+      }
+    },
+    {
+      "code": "17007",
+      "family": "soy-sauce",
+      "variant": {
+        "ru": "койкути, тёмный",
+        "en": "koikuchi, dark"
+      }
+    },
+    {
+      "code": "17086",
+      "family": "soy-sauce",
+      "variant": {
+        "ru": "койкути, с пониженным содержанием соли",
+        "en": "koikuchi, reduced salt"
+      }
+    },
+    {
+      "code": "17008",
+      "family": "soy-sauce",
+      "variant": {
+        "ru": "усукути, светлый",
+        "en": "usukuchi, light"
+      }
+    },
+    {
+      "code": "17009",
+      "family": "soy-sauce",
+      "variant": {
+        "ru": "тамари",
+        "en": "tamari"
+      }
+    },
+    {
+      "code": "17012",
+      "family": "table-salt",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17016",
+      "family": "rice-vinegar",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17018",
+      "family": "apple-vinegar",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17019",
+      "family": "dashi-katsuo",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17020",
+      "family": "dashi-kombu",
+      "variant": {
+        "ru": "холодное настаивание",
+        "en": "cold infusion"
+      }
+    },
+    {
+      "code": "17132",
+      "family": "dashi-kombu",
+      "variant": {
+        "ru": "варёный",
+        "en": "boiled"
+      }
+    },
+    {
+      "code": "17021",
+      "family": "dashi-katsuo-kombu",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17022",
+      "family": "dashi-shiitake",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17024",
+      "family": "chicken-stock",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17044",
+      "family": "miso-rice",
+      "variant": {
+        "ru": "сладкое",
+        "en": "sweet"
+      }
+    },
+    {
+      "code": "17045",
+      "family": "miso-rice",
+      "variant": {
+        "ru": "светлое солёное",
+        "en": "light-coloured, salty"
+      }
+    },
+    {
+      "code": "17046",
+      "family": "miso-rice",
+      "variant": {
+        "ru": "красное солёное",
+        "en": "red, salty"
+      }
+    },
+    {
+      "code": "17047",
+      "family": "miso-barley",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17048",
+      "family": "miso-soy",
+      "variant": {
+        "ru": "",
+        "en": ""
+      }
+    },
+    {
+      "code": "17102",
+      "family": "sushi-vinegar",
+      "variant": {
+        "ru": "для нигири",
+        "en": "for nigiri"
+      }
+    },
+    {
+      "code": "17103",
+      "family": "sushi-vinegar",
+      "variant": {
+        "ru": "для роллов маки",
+        "en": "for maki rolls"
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {webcrypto} from 'node:crypto';
+const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
+const data=JSON.parse(await read('meal-data/usda-sr-legacy.json'));
+const c=vm.createContext({crypto:webcrypto,Intl,console,DB:{days:{},foods:[],favs:[],catalogLang:'ru'},FOODS:{},LIST:[],escH:String});
+c.window=c;
+for(const file of ['shared/meal-products-model.js','meal/report.js','meal/sources.js','meal/usda.js','meal/catalog.js','meal/controls.js'])vm.runInContext(await read(file),c);
+const {MealCatalog:C,MealUSDA:U,MealProducts:P,MealReport:R}=c;
+assert.equal(U.ingest(data),7793);C.append(c.DB,c.FOODS,c.LIST);assert.equal(c.LIST.length,7793);
+assert.ok(Object.getOwnPropertyDescriptor(c.LIST[0],'composition').get,'composition remains lazy after append');
+assert.equal(U.legacyReplacement('dil'),'usda:172233');assert.equal(U.legacyReplacement('bbf'),null);
+for(const f of c.LIST)assert.equal(P.validate(f),true);
+const paprika=c.LIST.find(f=>f.names.en==='Spices, paprika');assert.ok(paprika);
+for(const query of ['паприка','paprika'])assert.ok(C.search(query,c.LIST).some(f=>f.id===paprika.id));
+const cayenne=c.LIST.find(f=>f.names.en==='Spices, pepper, red or cayenne'),chili=c.LIST.find(f=>f.names.en==='Spices, chili powder');assert.ok(cayenne&&chili);assert.notEqual(cayenne.id,chili.id);
+assert.ok(C.search('перец черный',c.LIST).some(f=>f.names.en==='Spices, pepper, black'));
+assert.equal(P.value(paprika,'carb'),null);assert.equal(paprika.c,null);assert.equal(P.value(paprika,'vA'),null);assert.equal(P.value(paprika,'vE'),null);
+assert.match(U.carbHTML(paprika,100),/54 г/);assert.match(c.MealControls.factsHTML(paprika,50,'Порция'),/27 г/);assert.match(C.infoHTML(paprika),/USDA/);assert.doesNotMatch(C.infoHTML(paprika),/расчётный рецепт/);assert.match(C.sourceFooter(paprika),/SR Legacy/);
+c.DB.foodSources={USDA:false};assert.equal(C.search('paprika',c.LIST).length,0);assert.ok(c.FOODS[paprika.id]);c.DB.foodSources={};
+const copy=P.fromFood(paprika,R.fields(),()=>null,{copy:true,sourceInfo:paprika.sourceInfo});assert.equal(P.validate(copy),true);assert.equal(copy.catalogSource,undefined);assert.equal(copy.copiedFrom.code,paprika.catalogCode);P.fieldFor(copy,'kcal').value=1;assert.notEqual(P.value(paprika,'kcal'),1);
+const item={id:'test-usda-only',fid:paprika.id,sec:'dn',g:50,q:50,u:'г',t:'18:00'};c.DB.days={'2026-11-01':{items:[item]}};c.DB.favs=[paprika.id];C.cacheUsed(c.DB,c.FOODS);P.snapshotItems(c.DB,c.FOODS);const saved=JSON.parse(JSON.stringify(c.DB));assert.equal(C.totalText([item],'carb',0),'—');assert.equal(C.coverage([item],'carb').missing,1);
+const rows=R.records(saved,c.FOODS,{a:'2026-11-01',b:'2026-11-01'},()=>null);assert.match(rows[0].nutrientSource,/USDA · SR Legacy/);assert.equal(rows[0].values.carb,null);assert.equal(rows[0].values.kcal,141);assert.equal(rows[0].code,paprika.catalogCode);
+c.FOODS[paprika.id].composition.fields.find(f=>f.key==='kcal').value=1;assert.equal(P.value(P.forItem(item,c.FOODS,saved),'kcal'),282);
+const offline=vm.createContext({crypto:webcrypto,Intl,DB:saved,FOODS:{},LIST:[]});for(const file of ['shared/meal-products-model.js','meal/report.js','meal/usda.js','meal/catalog.js'])vm.runInContext(await read(file),offline);offline.MealCatalog.append(saved,offline.FOODS,offline.LIST);assert.equal(offline.MealProducts.value(offline.FOODS[paprika.id],'kcal'),282);assert.match(offline.MealUSDA.carbHTML(offline.FOODS[paprika.id],100),/54 г/);
+// No eager references saved: only used favourite and diary snapshot are persisted.
+assert.equal(Object.keys(saved.referenceFoods).length,1);assert.equal(Object.keys(saved.productSnapshots).length,1);
+// Loading errors preserve cached reference foods and remain retryable.
+const failure=vm.createContext({DB:{},fetch:async()=>({ok:false}),Promise,Intl});vm.runInContext(await read('meal/usda.js'),failure);assert.equal(await failure.MealUSDA.load(),0);assert.equal(failure.MealUSDA.status(),'fail');
+console.log('Passed USDA UI: 7,793 valid records; lazy composition; RU/EN spices; source switch; distinct cayenne/chili seasoning; real total carbohydrate displayed separately; source facts/export; independent copy and historical snapshots; offline favourite; retryable fetch failure.');

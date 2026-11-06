@@ -1,0 +1,17 @@
+.mc-source-pills{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}.mc-source-pills .chip{flex:none;min-height:44px}.mc-source-body{margin:0 0 16px;padding:18px;line-height:1.6}.mc-source-body h3{margin:0 0 12px}.mc-source-body p{font-size:14px}.mc-source-body a,.mc-catalog-info a{color:inherit;text-decoration:underline;text-underline-offset:3px}.mc-catalog-info{margin-bottom:18px;padding:16px}.mc-source-tag{font-size:12px;font-weight:700;letter-spacing:.02em}.mc-catalog-info .mc-names>div{display:block;padding:10px 0}.mc-catalog-info .mc-names dt{font-size:11px;opacity:.75}.mc-catalog-info .mc-names dd{white-space:normal;text-align:left;overflow-wrap:anywhere;margin:4px 0 0;line-height:1.5}.mc-catalog-info details{margin-top:16px;font-size:14px;line-height:1.6}.mc-catalog-info summary{min-height:44px;cursor:pointer}.mc-catalog-info li{margin:6px 0}.mc-catalog-info .happy-note{line-height:1.6}.mc-catalog-variants{margin:12px 0 0;padding:4px 0 8px;overflow-x:auto;display:flex;gap:8px}.mc-catalog-variants .chip{min-height:44px;flex:none;white-space:nowrap}.mc-product .happy-card+.happy-card{margin-top:16px}.mc-product .mc-head h2{overflow-wrap:anywhere}.up-source-facts .mc-catalog-info{margin-top:16px}
+.mc-library{margin:20px 0;padding:16px}.mc-library>summary{min-height:44px;cursor:pointer;font-size:18px;font-weight:700}.mc-library>summary span{display:block;font-weight:400;font-size:12px;opacity:.75;margin:5px 0 14px}.mc-library-food{width:100%;border:0;border-top:1px solid #ffffff30;background:transparent;color:inherit;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:12px;padding:14px 0;font:inherit;font-weight:600;min-height:64px}.mc-library-food>span:first-child{min-width:0;overflow-wrap:anywhere}.mc-library-food small{display:block;font-weight:400;font-size:12px;opacity:.8;margin-top:6px}.mc-library-food svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8}.mc-catalog-add{width:100%;margin-bottom:14px;min-height:48px}
+
+.mc-source-help{margin:0 0 16px}
+.mc-source-head{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px}
+.mc-source-head label{min-width:0;flex:1;cursor:pointer}
+.mc-source-head strong{display:block;font-size:16px;line-height:1.35;overflow-wrap:anywhere}
+.mc-source-head small{display:block;margin-top:4px;font-size:12px;line-height:1.4;color:rgba(255,255,255,.8)}
+.mc-source-body details{margin-top:10px;border-top:1px solid rgba(255,255,255,.18);font-size:14px}
+.mc-source-body summary{padding-top:12px;min-height:44px;cursor:pointer;font-weight:600}
+.mc-source-body details p{margin:8px 0 12px}
+.mc-source-body a{overflow-wrap:anywhere}
+.meal-transfer>.happy-card{margin-bottom:22px}
+.meal-transfer .happy-actions{display:grid;grid-template-columns:1fr}
+.meal-transfer .happy-button{width:100%}
+
+.mc-source-head>div{flex:1;min-width:0}.mc-source-head h3{margin:0;font-size:20px}.mc-source-head .happy-switch{flex-shrink:0;align-self:center;margin:0}.mc-source-head{margin-bottom:18px}.mc-source-pills .chip{white-space:nowrap}.mc-source-pills .chip:disabled{opacity:.4;cursor:not-allowed}

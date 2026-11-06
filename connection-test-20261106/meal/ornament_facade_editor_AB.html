@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Орнамент фасада — A/B</title>
+<style>
+:root{
+  --bg:#f4f4f2; --panel:#ffffff; --text:#1f2328; --muted:#73777d; --line:#d9d9d6; --accent:#2f6fed;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.wrap{max-width:1100px;margin:auto;padding:14px}
+h1{font-size:20px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button,select,input{font:inherit}
+button{min-height:44px;border:1px solid var(--line);background:white;border-radius:10px;padding:8px 12px}
+button.active{outline:2px solid var(--accent);background:#eef4ff}
+button:active{transform:translateY(1px)}
+.spacer{flex:1}
+.zoomrow{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center}
+.viewport{overflow:auto;max-height:72vh;border:1px solid var(--line);border-radius:12px;background:#fff;overscroll-behavior:contain}
+canvas{display:block;touch-action:none}
+#facade{width:100%;min-width:600px}
+.scroll{overflow-x:auto}
+.small{font-size:13px;color:var(--muted)}
+input[type=range]{width:100%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:640px){
+  .wrap{padding:10px}
+  .grid2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Орнамент фасада — A/B</h1>
+  <div class="sub">Мотив A и мотив B чередуются шахматкой. B по умолчанию — тур.</div>
+
+  <div class="panel">
+    <div class="row">
+      <button id="slotA">A · Птица / колос</button>
+      <button id="slotB" class="active">B · Тур</button>
+      <span class="spacer"></span>
+      <button id="save">Сохранить</button>
+      <button id="restore">Вернуть</button>
+      <button id="export">Выгрузить JSON</button>
+      <button id="importBtn">Загрузить JSON</button>
+      <input id="importFile" type="file" accept="application/json" hidden>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <button id="draw" class="active">✎ Рисовать</button>
+      <button id="erase">⌫ Стирать</button>
+      <button id="pan">✋ Рука</button>
+      <button id="symX">↔ Симметрия</button>
+      <button id="symY">↕ Симметрия</button>
+      <button id="undo">↶ Отмена</button>
+      <button id="clear">Очистить</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="zoomrow">
+      <button id="zoomOut">−</button>
+      <input id="zoom" type="range" min="100" max="400" step="25" value="175">
+      <button id="zoomIn">+</button>
+      <button id="zoomReset">175%</button>
+    </div>
+    <div class="small" style="margin-top:8px">На телефоне удобно: 200–300% + режим «Рука».</div>
+  </div>
+
+  <div class="panel">
+    <div id="vp" class="viewport"><canvas id="canvas"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <button id="alternate" class="active">A/B шахматкой</button>
+      <button id="mirror" class="active">Зеркалить соседний</button>
+      <button id="gridToggle" class="active">Сетка</button>
+      <button id="diamondToggle" class="active">Ромбовые направляющие</button>
+    </div>
+  </div>
+
+  <div class="panel scroll">
+    <canvas id="facade"></canvas>
+  </div>
+
+  <div class="small">Автосохранение идёт в браузере. JSON можно прислать мне обратно — я смогу продолжить работу с твоего узора.</div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const c=$('#canvas'), ctx=c.getContext('2d');
+  const fc=$('#facade'), fctx=fc.getContext('2d');
+  const vp=$('#vp');
+  const N=31, dpr=Math.min(window.devicePixelRatio||1,2);
+  const make=()=>Array.from({length:N},()=>Array(N).fill(0));
+  let A=make(), B=make(), slot='B', tool='draw', symX=false, symY=false;
+  let zoom=1.75, down=false, panMode=false, lastPan=null, history=[];
+  let alternate=true, mirror=true, showGrid=true, showDiamond=true;
+
+  const set=(m,x,y,v=1)=>{ if(x>=0&&y>=0&&x<N&&y<N) m[y][x]=v; };
+  const line=(m,x1,y1,x2,y2)=>{
+    let dx=Math.abs(x2-x1), sx=x1<x2?1:-1, dy=-Math.abs(y2-y1), sy=y1<y2?1:-1, er=dx+dy;
+    while(true){ set(m,x1,y1); if(x1===x2&&y1===y2) break; let e=2*er; if(e>=dy){er+=dy;x1+=sx} if(e<=dx){er+=dx;y1+=sy} }
+  };
+  function tour(){
+    const m=make();
+    // left horn + head outline
+    line(m,12,9,9,6); line(m,9,6,6,4); line(m,6,4,4,4); line(m,4,4,3,6);
+    line(m,11,10,9,8); line(m,9,8,7,6); line(m,7,6,5,6);
+    line(m,11,11,8,10); line(m,8,10,10,13);
+    line(m,12,10,11,15); line(m,11,15,13,19); line(m,13,19,15,21);
+    for(let y=10;y<=17;y++) set(m,15,y);
+    set(m,14,10); set(m,16,10); set(m,14,17); set(m,16,17);
+    set(m,14,18); set(m,15,19); set(m,16,18);
+    set(m,14,20); set(m,16,20); set(m,15,21); set(m,15,22);
+    for(let y=0;y<N;y++) for(let x=0;x<15;x++) if(m[y][x]) m[y][N-1-x]=1;
+    // forehead diamond
+    set(m,15,10); set(m,14,11); set(m,16,11); set(m,15,12);
+    return m;
+  }
+  B=tour();
+
+  const active=()=>slot==='A'?A:B;
+  const clone=m=>m.map(r=>r.slice());
+
+  function autosave(){
+    try{ localStorage.setItem('ornamentAB_session_v1',JSON.stringify({A,B,slot,zoom,alternate,mirror,showGrid,showDiamond,symX,symY})); }catch(e){}
+  }
+  function loadAuto(){
+    try{
+      const s=JSON.parse(localStorage.getItem('ornamentAB_session_v1'));
+      if(s){ A=s.A||A; B=s.B||B; slot=s.slot||slot; zoom=s.zoom||zoom; alternate=s.alternate!==false; mirror=s.mirror!==false; showGrid=s.showGrid!==false; showDiamond=s.showDiamond!==false; symX=!!s.symX; symY=!!s.symY; }
+    }catch(e){}
+  }
+
+  function resize(){
+    const base=Math.max(300,Math.min(vp.clientWidth-18,700)), s=base*zoom;
+    c.style.width=s+'px'; c.style.height=s+'px'; c.width=Math.round(s*dpr); c.height=Math.round(s*dpr);
+    const fw=Math.max(600,document.querySelector('.scroll').clientWidth-16), fh=fw/1.65;
+    fc.width=Math.round(fw*dpr); fc.height=Math.round(fh*dpr); fc.style.height=fh+'px';
+    draw(); drawFacade(); updateUI();
+  }
+
+  function draw(){
+    const w=c.width, s=w/N, m=active();
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,w);
+    if(showGrid){
+      ctx.strokeStyle='rgba(50,50,50,.14)'; ctx.lineWidth=1;
+      for(let i=0;i<=N;i++){ let p=i*s; ctx.beginPath();ctx.moveTo(p,0);ctx.lineTo(p,w);ctx.stroke(); ctx.beginPath();ctx.moveTo(0,p);ctx.lineTo(w,p);ctx.stroke(); }
+    }
+    if(showDiamond){
+      ctx.save(); ctx.strokeStyle='rgba(0,0,0,.28)'; ctx.setLineDash([6*dpr,6*dpr]);
+      const d=s; ctx.beginPath(); ctx.moveTo(w/2,d); ctx.lineTo(w-d,w/2); ctx.lineTo(w/2,w-d); ctx.lineTo(d,w/2); ctx.closePath(); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.fillStyle='#232323';
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++) if(m[y][x]) ctx.fillRect(x*s+1*dpr,y*s+1*dpr,s-2*dpr,s-2*dpr);
+  }
+
+  function tile(m,x0,y0,w,h,flip){
+    fctx.fillStyle='#f2efe8'; fctx.fillRect(x0,y0,w,h);
+    const cw=w/N,ch=h/N; fctx.fillStyle='#232323';
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++) if(m[y][x]){
+      const xx=flip?N-1-x:x;
+      fctx.fillRect(x0+xx*cw+.35*dpr,y0+y*ch+.35*dpr,Math.max(1,cw-.7*dpr),Math.max(1,ch-.7*dpr));
+    }
+    fctx.strokeStyle='rgba(30,30,30,.25)'; fctx.strokeRect(x0,y0,w,h);
+  }
+
+  function drawFacade(){
+    const cols=6,rows=3,w=fc.width,h=fc.height,p=14*dpr,cw=(w-p*2)/cols,ch=(h-p*2)/rows;
+    fctx.fillStyle='#d9d6cf'; fctx.fillRect(0,0,w,h);
+    for(let r=0;r<rows;r++) for(let x=0;x<cols;x++){
+      const odd=(r+x)%2, m=alternate?(odd?B:A):active();
+      tile(m,p+x*cw,p+r*ch,cw,ch,mirror&&odd);
+    }
+  }
+
+  function pos(e){
+    const r=c.getBoundingClientRect();
+    return {x:Math.floor((e.clientX-r.left)/r.width*N),y:Math.floor((e.clientY-r.top)/r.height*N)};
+  }
+  function paint(e){
+    const p=pos(e), m=active(); if(p.x<0||p.y<0||p.x>=N||p.y>=N)return;
+    const pts=[[p.x,p.y]];
+    if(symX) pts.push([N-1-p.x,p.y]);
+    if(symY) pts.push([p.x,N-1-p.y]);
+    if(symX&&symY) pts.push([N-1-p.x,N-1-p.y]);
+    pts.forEach(([x,y])=>m[y][x]=tool==='erase'?0:1);
+    draw(); drawFacade(); autosave();
+  }
+
+  c.addEventListener('pointerdown',e=>{
+    down=true; c.setPointerCapture(e.pointerId);
+    if(panMode){ lastPan={x:e.clientX,y:e.clientY,l:vp.scrollLeft,t:vp.scrollTop}; return; }
+    history.push({slot,data:clone(active())}); paint(e);
+  });
+  c.addEventListener('pointermove',e=>{
+    if(!down)return;
+    if(panMode&&lastPan){ vp.scrollLeft=lastPan.l-(e.clientX-lastPan.x); vp.scrollTop=lastPan.t-(e.clientY-lastPan.y); return; }
+    paint(e);
+  });
+  c.addEventListener('pointerup',()=>{down=false;lastPan=null});
+  c.addEventListener('pointercancel',()=>{down=false;lastPan=null});
+
+  function tog(id,on){ $(id).classList.toggle('active',on); }
+  function updateUI(){
+    tog('#slotA',slot==='A'); tog('#slotB',slot==='B'); tog('#draw',tool==='draw'&&!panMode); tog('#erase',tool==='erase'&&!panMode); tog('#pan',panMode);
+    tog('#symX',symX); tog('#symY',symY); tog('#alternate',alternate); tog('#mirror',mirror); tog('#gridToggle',showGrid); tog('#diamondToggle',showDiamond);
+    $('#zoom').value=Math.round(zoom*100); $('#zoomReset').textContent=Math.round(zoom*100)+'%';
+  }
+
+  $('#slotA').onclick=()=>{slot='A';draw();updateUI();autosave()};
+  $('#slotB').onclick=()=>{slot='B';draw();updateUI();autosave()};
+  $('#draw').onclick=()=>{tool='draw';panMode=false;updateUI()};
+  $('#erase').onclick=()=>{tool='erase';panMode=false;updateUI()};
+  $('#pan').onclick=()=>{panMode=!panMode;updateUI()};
+  $('#symX').onclick=()=>{symX=!symX;updateUI();autosave()};
+  $('#symY').onclick=()=>{symY=!symY;updateUI();autosave()};
+  $('#undo').onclick=()=>{const h=history.pop();if(!h)return; if(h.slot==='A')A=h.data; else B=h.data; slot=h.slot; draw();drawFacade();updateUI();autosave()};
+  $('#clear').onclick=()=>{history.push({slot,data:clone(active())}); if(slot==='A')A=make();else B=make();draw();drawFacade();autosave()};
+  $('#alternate').onclick=()=>{alternate=!alternate;drawFacade();updateUI();autosave()};
+  $('#mirror').onclick=()=>{mirror=!mirror;drawFacade();updateUI();autosave()};
+  $('#gridToggle').onclick=()=>{showGrid=!showGrid;draw();updateUI();autosave()};
+  $('#diamondToggle').onclick=()=>{showDiamond=!showDiamond;draw();updateUI();autosave()};
+
+  $('#zoom').oninput=e=>{zoom=Number(e.target.value)/100;resize();autosave()};
+  $('#zoomIn').onclick=()=>{zoom=Math.min(4,zoom+.25);resize();autosave()};
+  $('#zoomOut').onclick=()=>{zoom=Math.max(1,zoom-.25);resize();autosave()};
+  $('#zoomReset').onclick=()=>{zoom=1.75;resize();vp.scrollLeft=0;vp.scrollTop=0;autosave()};
+
+  $('#save').onclick=()=>{try{localStorage.setItem('ornamentAB_manual_v1',JSON.stringify({A,B,slot,zoom,alternate,mirror,showGrid,showDiamond,symX,symY}))}catch(e){}};
+  $('#restore').onclick=()=>{try{const s=JSON.parse(localStorage.getItem('ornamentAB_manual_v1'));if(s){A=s.A;B=s.B;slot=s.slot||'B';zoom=s.zoom||1.75;alternate=s.alternate!==false;mirror=s.mirror!==false;showGrid=s.showGrid!==false;showDiamond=s.showDiamond!==false;symX=!!s.symX;symY=!!s.symY;resize();}}catch(e){}};
+
+  $('#export').onclick=()=>{
+    const blob=new Blob([JSON.stringify({version:1,A,B,slot,zoom,alternate,mirror,showGrid,showDiamond,symX,symY},null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download='ornament-project.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  };
+  $('#importBtn').onclick=()=>$('#importFile').click();
+  $('#importFile').onchange=async e=>{
+    const f=e.target.files?.[0]; if(!f)return;
+    try{const s=JSON.parse(await f.text());A=s.A||A;B=s.B||B;slot=s.slot||'B';zoom=s.zoom||1.75;alternate=s.alternate!==false;mirror=s.mirror!==false;showGrid=s.showGrid!==false;showDiamond=s.showDiamond!==false;symX=!!s.symX;symY=!!s.symY;resize();autosave();}catch(err){alert('Не удалось открыть JSON');}
+    e.target.value='';
+  };
+
+  loadAuto();
+  window.addEventListener('resize',resize);
+  resize();
+})();
+</script>
+</body>
+</html>

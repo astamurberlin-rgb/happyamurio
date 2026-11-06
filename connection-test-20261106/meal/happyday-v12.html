@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="ru" data-theme="aurora">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#00A8F5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HappyDay">
+<title>HappyDay</title>
+<style>
+:root{
+  --base:#00A8F5;
+  --ink:#fff; --muted:rgba(255,255,255,.72); --dim:rgba(255,255,255,.45);
+  --glass:rgba(255,255,255,.16); --glassBrd:rgba(255,255,255,.34);
+  --fab:#5A50D1;
+  --dockBg:rgba(233,243,253,.92); --dockInk:#2C3E66; --dockAccent:#5A50D1;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink);background:var(--base);-webkit-user-select:none;user-select:none}
+
+.bg{position:fixed;inset:-20%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(42% 26% at 18% 14%, rgba(70,253,252,.62), transparent 70%),
+    radial-gradient(38% 24% at 84% 20%, rgba(3,222,234,.55), transparent 72%),
+    radial-gradient(46% 28% at 12% 52%, rgba(188,97,254,.40), transparent 72%),
+    radial-gradient(40% 26% at 88% 62%, rgba(253,147,253,.34), transparent 72%),
+    radial-gradient(50% 30% at 30% 88%, rgba(70,253,252,.42), transparent 74%),
+    var(--base);
+  filter:blur(46px) saturate(1.15);animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-3%,2%,0) scale(1.07)}}
+@media (prefers-reduced-motion:reduce){.bg{animation:none}}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.app{position:fixed;inset:0;display:flex;flex-direction:column}
+.screen{flex:1;min-height:0;overflow-y:auto;display:none;
+  padding:calc(14px + env(safe-area-inset-top)) 20px 130px}
+.screen.on{display:block}
+.screen::-webkit-scrollbar{display:none}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 22px}
+.top h1{margin:0;font-size:27px;font-weight:800;letter-spacing:-.02em}
+.top .when{text-align:right;font-size:17px;font-weight:600;line-height:1.15}
+.top .when small{display:block;font-size:12.5px;color:var(--muted);font-weight:500;margin-top:3px}
+.dateBtn{border:1px solid var(--glassBrd);background:var(--glass);color:#fff;border-radius:999px;
+  padding:9px 14px;font-size:13.5px;font-weight:600;font-family:inherit;
+  -webkit-appearance:none;appearance:none;min-width:150px;text-align:center}
+.dateBtn::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8}
+
+.eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:13px;font-weight:700;color:var(--muted);margin:24px 2px 11px}
+.eyebrow button{border:0;background:none;color:#fff;font-size:12.5px;font-weight:600;text-decoration:underline;opacity:.85}
+.note{font-size:12.5px;color:var(--dim);line-height:1.55;margin:10px 2px 0}
+
+.card{display:block;width:100%;text-align:left;color:#fff;padding:15px 16px;margin-bottom:11px;border-radius:22px;
+  background:var(--glass);border:1px solid var(--glassBrd);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14)}
+.rowcard{display:flex;align-items:center;gap:14px}
+.rowcard .ic{width:32px;height:32px;flex:none;display:grid;place-items:center}
+.rowcard .ic svg{width:100%;height:100%}
+.rowcard b{display:block;font-size:16px;font-weight:600}
+.rowcard small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.go{margin-left:auto;width:17px;height:17px;flex:none;fill:none;stroke:rgba(255,255,255,.6);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tick{margin-left:auto;font-size:15px;font-weight:700;flex:none}
+.act{margin-left:auto;display:flex;gap:7px;flex:none}
+.mini{border:1px solid var(--glassBrd);background:rgba(255,255,255,.12);color:#fff;
+  border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600}
+.mini.warn{background:rgba(255,120,150,.22);border-color:rgba(255,150,175,.5)}
+.mini:disabled{opacity:.45}
+
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:500;
+  background:var(--glass);border:1px solid var(--glassBrd);color:#fff;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.chip.on{background:rgba(255,255,255,.9);color:#0C6FA8;border-color:#fff;font-weight:700}
+.chip.add{background:none;border-style:dashed}
+
+.kv{display:flex;justify-content:space-between;gap:12px;padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.14);font-size:14.5px}
+.kv:last-child{border-bottom:0}
+.kv b{font-weight:600}
+.kv span{color:var(--muted);font-family:var(--mono);font-size:13.5px}
+.fieldrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.14);font-size:14.5px}
+.fieldrow:last-child{border-bottom:0}
+input[type=text],input[type=number],input[type=password],input[type=date],textarea,select{
+  border:1px solid var(--glassBrd);background:rgba(255,255,255,.14);color:#fff;
+  border-radius:12px;padding:10px 12px;font-size:14px;font-family:inherit}
+input[type=number]{width:94px;text-align:right;font-family:var(--mono)}
+textarea{width:100%;min-height:76px;resize:vertical}
+::placeholder{color:rgba(255,255,255,.5)}
+.btn{border:1px solid var(--glassBrd);background:var(--glass);color:#fff;
+  border-radius:14px;padding:11px 16px;font-size:14px;font-weight:600}
+.btn.solid{background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
+.btn.warn{background:rgba(255,110,140,.24);border-color:rgba(255,150,175,.5)}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.scrHead{display:flex;align-items:center;gap:12px}
+.scrLbl{flex:1;font-size:14.5px;font-weight:600}
+.scrHead input{width:104px;font-family:inherit;font-weight:600}
+.scrRow{display:flex;align-items:center;gap:8px;margin-top:12px}
+.scrRow button{flex:none;min-width:52px;border:1px solid var(--glassBrd);
+  background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:9px 0;
+  font-size:13.5px;font-weight:600}
+.scrNow{flex:1;text-align:center;font-size:15px;font-weight:600;color:var(--muted)}
+.scrEdit span{font-size:13px;color:var(--muted);flex:1}
+
+/* ── кольцо ── */
+.swipeZone{touch-action:pan-y}
+.ringRail{overflow:hidden}
+.ringTrack{display:flex;will-change:transform;transition:transform .38s cubic-bezier(.22,.75,.25,1)}
+.ringSlide{flex:0 0 100%;display:grid;place-items:center}
+.ringWrap{position:relative;width:min(280px,76vw);aspect-ratio:1}
+.ringWrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:rotate(122deg)}
+.ringWrap circle{fill:none;stroke-width:16;stroke-linecap:round}
+.trk{stroke:rgba(255,255,255,.20)}
+.fill{filter:drop-shadow(0 0 7px rgba(255,255,255,.45))}
+.knob{position:absolute;inset:21%;border-radius:50%;border:0;display:grid;place-items:center;
+  touch-action:pan-y;
+  background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 2px 4px rgba(4,40,80,.14),0 18px 40px rgba(4,40,80,.22),inset 0 1px 0 rgba(255,255,255,.5);
+  color:#fff;transition:transform .14s ease}
+.knob.press{transform:scale(.965)}
+.knob b{display:block;font-size:26px;font-weight:700;letter-spacing:-.01em}
+.knob small{display:block;font-size:11.5px;color:rgba(255,255,255,.72);margin-top:3px;font-weight:500}
+.addRing{position:absolute;inset:21%;border-radius:50%;border:2px dashed rgba(255,255,255,.5);
+  background:rgba(255,255,255,.08);display:grid;place-items:center;color:#fff;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.addRing b{display:block;font-size:38px;font-weight:300;line-height:1}
+.addRing small{display:block;font-size:12.5px;color:rgba(255,255,255,.75);margin-top:6px;font-weight:500}
+
+.facts{position:relative;overflow:hidden;margin:26px 0 4px;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);
+          mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+.factTrack{display:flex;will-change:transform;transition:transform .38s cubic-bezier(.22,.75,.25,1)}
+.factTrack button{flex:0 0 50%;padding:10px 6px;border:0;background:none;color:var(--dim);
+  font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:color .3s,font-size .3s,opacity .3s;opacity:.55}
+.factTrack button.on{color:#fff;font-size:21px;font-weight:800;letter-spacing:-.01em;opacity:1}
+.factTrack button .pen{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;margin-left:7px;opacity:0;transition:opacity .3s;vertical-align:-1px}
+.factTrack button.on .pen{opacity:.7}
+.factLine{height:1px;background:rgba(255,255,255,.26);margin:14px 0 0}
+.swipeHint{text-align:center;font-size:11.5px;color:var(--dim);margin:10px 0 0}
+
+/* ── тренды ── */
+.tr{margin-bottom:22px}
+.trTop{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
+.trDot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c)}
+.trName{flex:1;font-size:15.5px;font-weight:600}
+.trVal{font-size:13px;color:var(--muted);font-family:var(--mono)}
+.bars{display:flex;align-items:flex-end;gap:6px;height:76px}
+.bars i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.3));min-height:3px}
+.bars i.none{background:rgba(255,255,255,.14)}
+.days{display:flex;gap:6px;margin-top:7px}
+.days span{flex:1;text-align:center;font-size:10px;color:var(--dim)}
+
+/* ── связи ── */
+.scale{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin:0 0 12px 120px}
+.pair{display:flex;align-items:center;margin-bottom:15px}
+.pairKey{flex:0 0 120px;font-size:12.5px;line-height:1.3;padding-right:8px}
+.pairKey i{display:block;font-style:normal;font-size:10.5px;color:var(--dim);margin-top:2px}
+.track{flex:1;position:relative;height:22px}
+.zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.28)}
+.stem{position:absolute;top:10px;height:2px;border-radius:1px;background:rgba(255,255,255,.85)}
+.dot{position:absolute;top:5px;width:12px;height:12px;border-radius:50%;margin-left:-6px;background:#fff;
+  box-shadow:0 0 12px rgba(255,255,255,.7)}
+.dot.weak{background:transparent;border:1.5px solid rgba(255,255,255,.45);box-shadow:none}
+.rho{position:absolute;top:3px;font-size:11px;font-family:var(--mono);color:#fff}
+.rho.weak{color:var(--dim)}
+.waitRow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:16px;margin-bottom:9px;
+  background:rgba(255,255,255,.10);border:1px dashed var(--glassBrd);font-size:13px}
+.waitRow span{margin-left:auto;font-size:11.5px;color:var(--dim);font-family:var(--mono)}
+.strip{display:flex;gap:3px;margin-bottom:6px}
+.strip i{flex:1;height:26px;border-radius:3px;background:rgba(255,255,255,.15)}
+.strip i.f{background:rgba(255,255,255,.85)}
+.strip i.p{background:rgba(255,255,255,.45)}
+
+/* ══════════ ФУТЕР — НЕ МЕНЯТЬ ══════════ */
+.dock{position:fixed;left:14px;right:14px;bottom:calc(8px + env(safe-area-inset-bottom));
+  height:66px;z-index:10;
+  display:grid;grid-template-columns:1fr 1fr var(--gapW,74px) 1fr 1fr;align-items:center}
+.dockBg{position:absolute;inset:0;z-index:0;background:var(--dockBg);
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  clip-path:path(var(--dockPath,"M0 0"));-webkit-clip-path:path(var(--dockPath,"M0 0"));
+  filter:drop-shadow(0 3px 5px rgba(8,50,100,.10)) drop-shadow(0 16px 36px rgba(8,50,100,.20))}
+.dockEdge{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;overflow:visible}
+.dockEdge path{fill:none;stroke:rgba(255,255,255,.92);stroke-width:1.2;vector-effect:non-scaling-stroke}
+.tab{position:relative;z-index:2;min-width:0;display:grid;place-items:center;gap:3px;border:0;background:none;
+  font-size:10.5px;color:#2C3E66;opacity:.62;font-weight:600;padding:0 2px}
+.tab.on{opacity:1;color:#5A50D1}
+.tab span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.gap{min-width:0}
+.fab{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:60px;height:60px;border-radius:50%;border:0;display:grid;place-items:center;
+  background:radial-gradient(circle at 36% 28%, #7B6FE8, var(--fab) 70%);
+  box-shadow:0 4px 8px rgba(40,32,120,.30),0 14px 30px rgba(40,32,120,.40);
+  transition:transform .22s cubic-bezier(.2,.7,.3,1)}
+.fab svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
+body.sheet .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
+/* ══════════ КОНЕЦ ФУТЕРА ══════════ */
+
+.ask{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+  padding:24px;background:rgba(4,40,80,.45);backdrop-filter:blur(8px)}
+.ask.on{display:flex}
+.askBox{width:100%;max-width:400px;border-radius:24px;padding:20px;
+  background:linear-gradient(180deg,rgba(86,205,252,.97),rgba(40,178,248,.97));border:1px solid rgba(255,255,255,.5);
+  box-shadow:0 20px 50px rgba(4,30,70,.45)}
+.askBox h3{margin:0 0 14px;font-size:17px;font-weight:700}
+.askBox input{width:100%;font-size:16px}
+.askRow{display:flex;gap:9px;margin-top:14px}
+.imp{position:fixed;inset:0;z-index:8;pointer-events:none}
+.imp.on{pointer-events:auto}
+.impScrim{position:absolute;inset:0;background:rgba(4,40,80,.18);opacity:0;transition:opacity .3s}
+.imp.on .impScrim{opacity:1}
+.impSheet{position:absolute;left:0;right:0;bottom:0;
+  padding:22px 20px calc(112px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(86,205,252,.96),rgba(40,178,248,.96));
+  border-top:1px solid rgba(255,255,255,.55);
+  backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+  box-shadow:0 -8px 30px rgba(4,40,80,.18);
+  border-radius:26px 26px 0 0;
+  transform:translateY(102%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
+.imp.on .impSheet{transform:translateY(0)}
+.impSheet h3{margin:0 0 14px;font-size:18px;font-weight:800}
+.drop{display:block;text-align:center;padding:26px 18px;border-radius:18px;
+  border:2px dashed rgba(255,255,255,.65);background:rgba(255,255,255,.18)}
+.drop b{display:block;font-size:16px;font-weight:700;margin-bottom:6px}
+.drop span{display:block;font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.5}
+.askRow button{flex:1}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:104px;z-index:60;
+  background:rgba(12,60,110,.92);color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;
+  opacity:0;pointer-events:none;transition:opacity .2s;max-width:86vw;text-align:center}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="bg"></div><div class="grain"></div>
+
+<div class="app">
+
+  <!-- ДЕНЬ -->
+  <div class="screen on" data-screen="day">
+    <div class="top">
+      <h1>HappyDay</h1>
+      <div><input type="date" class="dateBtn" id="dateBtn"></div>
+    </div>
+
+    <div id="dayList"></div>
+
+    <div class="card" id="screenBox" style="margin-top:22px"></div>
+
+    <div class="eyebrow"><span>Заметка</span></div>
+    <textarea id="note" placeholder="Только необычное: болезнь, перелёт, новая добавка."></textarea>
+  </div>
+
+  <!-- ЧЕКПОИНТ -->
+  <div class="screen" data-screen="ring">
+    <div class="top">
+      <h1 id="cpName">Утро</h1>
+      <div class="when" id="cpWhen"></div>
+    </div>
+    <div class="swipeZone" id="swipeZone">
+      <div class="ringRail"><div class="ringTrack" id="ringTrack"></div></div>
+      <div class="facts" id="facts"><div class="factTrack" id="factTrack"></div></div>
+    </div>
+    <div class="factLine"></div>
+    <p class="swipeHint">листай вбок · жми по названию, чтобы переименовать</p>
+    <div class="eyebrow"><span>Что было</span></div>
+    <div class="chips" id="cpTags"></div>
+  </div>
+
+  <!-- ТРЕНДЫ -->
+  <div class="screen" data-screen="trends">
+    <div class="top"><h1>Тренды</h1><div class="when">7 дней<small id="trendSub"></small></div></div>
+    <div id="trendList" style="margin-top:18px"></div>
+  </div>
+
+  <!-- СВЯЗИ -->
+  <div class="screen" data-screen="links">
+    <div class="top"><h1>Связи</h1><div class="when" id="nDays"></div></div>
+    <div class="eyebrow"><span>Покрытие данных</span></div>
+    <div class="strip" id="strip"></div>
+    <p class="note" id="stripNote"></p>
+    <div class="eyebrow"><span>Что связано</span></div>
+    <p class="note" id="linkHead"></p>
+    <div class="scale"><span>−1</span><span>0</span><span>+1</span></div>
+    <div id="linkList"></div>
+    <div id="waitBlock"></div>
+  </div>
+
+  <!-- ДАННЫЕ -->
+  <div class="screen" data-screen="data">
+    <div class="top"><h1>Данные</h1><button class="mini" data-go-screen="settings">назад</button></div>
+    <div class="eyebrow"><span>Сводка</span></div>
+    <div class="card" id="summaryBox"></div>
+    <div class="eyebrow"><span>Из трекеров</span></div>
+    <div class="card" id="trackerBox"></div>
+    <div class="eyebrow"><span>Резерв</span><span class="mono" id="backupAge"></span></div>
+    <div class="card">
+      <p class="note" style="margin:0">Выгружай раз в неделю. Данные живут в браузере и пропадут, если очистить его.</p>
+      <div class="btnrow">
+        <button class="btn solid" id="expJson">Выгрузить JSON</button>
+        <button class="btn" id="expCsv">CSV</button>
+        <label class="btn">Загрузить JSON<input type="file" id="impJson" accept=".json" hidden></label>
+        <button class="btn warn" id="wipe">Стереть всё</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- НАСТРОЙКИ -->
+  <div class="screen" data-screen="settings">
+    <div class="top"><h1>Настройки</h1></div>
+
+    <div class="eyebrow"><span>Точки дня</span></div>
+    <div id="secList"></div>
+    <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить точку</button></div>
+
+    <div class="eyebrow"><span>Мои ощущения</span></div>
+    <div id="metricList"></div>
+    <div class="chips" style="margin-top:4px"><button class="chip add" id="addMetric">Добавить ощущение</button></div>
+    <p class="note">Каждое ощущение ищет связи наравне со встроенными. Чем больше метрик, тем строже поправка на множественность — лишние лучше убирать.</p>
+
+    <div class="eyebrow"><span>Пороги под тебя</span></div>
+    <div class="card">
+      <div class="fieldrow"><span>Вес, кг</span><input type="number" id="cfgWeight"></div>
+      <div class="fieldrow"><span>Цель по калориям</span><input type="number" id="cfgKcal"></div>
+      <div class="fieldrow"><span>Белок, г/кг</span><input type="number" id="cfgProt" step="0.1"></div>
+    </div>
+
+    <div class="eyebrow"><span>Данные и резерв</span></div>
+    <button class="card rowcard" data-go-screen="data">
+      <span class="ic"><svg viewBox="0 0 32 32" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"><ellipse cx="16" cy="8" rx="10" ry="4"/><path d="M6 8v16c0 2.2 4.5 4 10 4s10-1.8 10-4V8"/></svg></span>
+      <span><b>Данные из трекеров</b><small>сводка, каталог отметок, выгрузка</small></span>
+      <svg class="go" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+
+    <div class="eyebrow"><span>Доступ к модели</span></div>
+    <div class="card">
+      <p class="note" style="margin:0 0 10px">Нужен для разбора отчётов со скриншотов.</p>
+      <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
+      <p class="note" id="keyState"></p>
+    </div>
+  </div>
+
+</div>
+
+<div class="dock">
+  <div class="dockBg"></div>
+  <svg class="dockEdge" id="dockEdge" preserveAspectRatio="none"><path></path></svg>
+  <button class="tab on" data-go="day"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg><span>День</span></button>
+  <button class="tab" data-go="trends"><svg viewBox="0 0 24 24"><path d="M4 18V9M9 18V5M14 18v-6M19 18v-9"/></svg><span>Тренды</span></button>
+  <span class="gap"></span>
+  <button class="tab" data-go="links"><svg viewBox="0 0 24 24"><circle cx="7" cy="15" r="3"/><circle cx="17" cy="8" r="3"/><path d="M9.5 13.5l5-4"/></svg><span>Связи</span></button>
+  <button class="tab" data-go="settings"><svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z"/><circle cx="12" cy="12" r="3.3"/></svg><span>Настройки</span></button>
+  <button class="fab" id="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+
+<div class="imp" id="impWrap">
+  <div class="impScrim"></div>
+  <div class="impSheet">
+    <h3>Загрузить отчёты</h3>
+    <label class="drop" id="dropZone">
+      <b>Выбрать файлы</b>
+      <span>Cronometer, Sleep Cycle, Экранное время — PDF или скриншоты, можно несколько сразу.</span>
+      <input type="file" id="impFiles" accept="image/*,.pdf" multiple hidden>
+    </label>
+    <p class="note" id="impState"></p>
+  </div>
+</div>
+
+<div class="ask" id="askWrap">
+  <div class="askBox">
+    <h3 id="askTitle"></h3>
+    <input type="text" id="askInput" autocomplete="off">
+    <div class="askRow">
+      <button class="btn" id="askNo">Отмена</button>
+      <button class="btn solid" id="askYes">Готово</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════ ХРАНИЛИЩЕ ═══════════ */
+var mem={};
+var winStore = typeof window!=='undefined' && window.storage && typeof window.storage.get==='function';
+async function rawGet(k){
+  if(winStore){ try{ var r=await window.storage.get(k,false); return r?r.value:null }catch(e){} }
+  try{ return localStorage.getItem(k) }catch(e){ return mem[k]!==undefined?mem[k]:null }
+}
+async function rawSet(k,v){
+  if(winStore){ try{ await window.storage.set(k,v,false); return }catch(e){} }
+  try{ localStorage.setItem(k,v) }catch(e){ mem[k]=v }
+}
+var K={db:'hd_db_v1', cfg:'hd_cfg_v1', key:'hd_key_v1', backup:'hd_backup_v1'};
+
+/* ═══════════ МОДЕЛЬ ═══════════ */
+var MIN_OBS=14, SMIN=1, SMAX=7;
+var DEFAULT_W=['совсем нет','мало','средне','заметно','очень'];
+var PALETTE=['#FFD166','#7CE3C9','#BC61FE','#8FD0FF','#FF9ECB','#46FDFC','#FFB4A2','#B8F2A0'];
+
+var DB={
+  sections:[
+    {k:'wake',t:'Утро',h:'первые 20 минут',fixed:true},
+    {k:'am',t:'После первой еды',h:'через 40–90 минут',fixed:false},
+    {k:'pm',t:'После обеда',h:'через 40–90 минут',fixed:true},
+    {k:'eve',t:'Перед сном',h:'конец дня',fixed:true}
+  ],
+  metrics:[
+    {k:'energy',t:'Энергия',    built:true,c:'#FFD166',w:['нет сил','вяло','средне','бодро','полон сил']},
+    {k:'mood',  t:'Настроение', built:true,c:'#7CE3C9',w:['плохо','так себе','ровно','хорошо','отлично']},
+    {k:'focus', t:'Внимание',   built:true,c:'#BC61FE',w:['рассеян','плыву','средне','собран','как лазер']},
+    {k:'calm',  t:'Спокойствие',built:true,c:'#8FD0FF',w:['тревожно','неспокойно','ровно','спокойно','безмятежно']},
+    {k:'drive', t:'Мотивация',  built:true,c:'#FF9ECB',w:['не тянет','через силу','средне','тянет','рвусь']}
+  ],
+  tags:['Душ утром','Кофе натощак','Зарядка','Поздний ужин','Экран перед сном'],
+  days:{}
+};
+var CFG={weight:null,kcal:null,prot:null};
+var APIKEY='';
+
+function todayISO(){ var d=new Date(); return d.toISOString().slice(0,10) }
+var curDate=todayISO();
+
+function day(d){
+  if(!DB.days[d]) DB.days[d]={cp:{},tags:{},train:null,screen:{},note:'',num:{}};
+  var e=DB.days[d];
+  if(!e.cp) e.cp={}; if(!e.tags) e.tags={}; if(!e.screen) e.screen={}; if(!e.num) e.num={};
+  return e;
+}
+var saveT=null;
+function save(){
+  clearTimeout(saveT);
+  saveT=setTimeout(function(){ rawSet(K.db, JSON.stringify(DB)) },220);
+}
+/* Своё окно ввода: системный prompt() во встроенных браузерах
+   часто заблокирован и молча возвращает пустоту — из-за этого
+   не работали ни свои теги, ни переименование. */
+function ask(title,value){
+  return new Promise(function(res){
+    var w=document.getElementById('askWrap'),
+        i=document.getElementById('askInput');
+    document.getElementById('askTitle').textContent=title;
+    i.value=value||'';
+    w.classList.add('on');
+    setTimeout(function(){ i.focus(); i.select() },40);
+    function done(v){
+      w.classList.remove('on');
+      document.getElementById('askYes').onclick=null;
+      document.getElementById('askNo').onclick=null;
+      i.onkeydown=null;
+      res(v);
+    }
+    document.getElementById('askYes').onclick=function(){ done(i.value) };
+    document.getElementById('askNo').onclick=function(){ done(null) };
+    i.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); done(i.value) } };
+    w.onclick=function(e){ if(e.target===w) done(null) };
+  });
+}
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('on') },1900);
+}
+function ruDate(iso){
+  var M=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  var d=new Date(iso+'T00:00:00');
+  return d.getDate()+' '+M[d.getMonth()];
+}
+
+/* ═══════════ ИКОНКИ ═══════════ */
+var IC={
+ wake:'<svg viewBox="0 0 32 32"><defs><radialGradient id="s1" cx="38%" cy="34%" r="72%"><stop offset="0" stop-color="#FFE9A3"/><stop offset="55%" stop-color="#FFC53D"/><stop offset="100%" stop-color="#FF9500"/></radialGradient></defs><g stroke="#FFCF6B" stroke-width="2.6" stroke-linecap="round"><path d="M16 3.2v3.4M16 25.4v3.4M28.8 16h-3.4M6.6 16H3.2"/><path d="M25.05 6.95l-2.4 2.4M9.35 22.65l-2.4 2.4M25.05 25.05l-2.4-2.4M9.35 9.35l-2.4-2.4"/></g><circle cx="16" cy="16" r="6.6" fill="url(#s1)"/></svg>',
+ am:'<svg viewBox="0 0 32 32"><defs><linearGradient id="w1" x1=".12" y1="0" x2=".86" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="52%" stop-color="#F3F7FC"/><stop offset="100%" stop-color="#DAE3EF"/></linearGradient><radialGradient id="y1" cx="33%" cy="29%" r="79%"><stop offset="0" stop-color="#FFE07A"/><stop offset="56%" stop-color="#FCA311"/><stop offset="100%" stop-color="#EC7500"/></radialGradient></defs><path fill="url(#w1)" d="M16 4.5C22.63 4.5 28 10.99 28 19C28 24.52 22.63 29 16 29C9.37 29 4 24.52 4 19C4 10.99 9.37 4.5 16 4.5Z"/><circle cx="16" cy="13.2" r="7.14" fill="url(#y1)"/><circle cx="12.8" cy="9.9" r="2.2" fill="#FFF0B8" opacity=".62"/></svg>',
+ pm:'<svg viewBox="0 0 32 32"><g fill="#C9D6FF"><rect x="5.3" y="4.4" width="2.3" height="7.6" rx="1.15"/><rect x="9.35" y="4.4" width="2.3" height="7.6" rx="1.15"/><rect x="13.4" y="4.4" width="2.3" height="7.6" rx="1.15"/><path d="M5.3 10.6h10.4v1.9a5.2 5.2 0 0 1-5.2 5.2 5.2 5.2 0 0 1-5.2-5.2z"/><rect x="9.2" y="15.6" width="2.6" height="12.2" rx="1.3"/><path d="M21.9 4.2c2.9 1.9 4.4 5.6 4.4 9.2 0 3-1.3 4.9-3.1 5.7v7.4a1.35 1.35 0 0 1-2.7 0V4.9c0-.6.7-1 1.4-.7z"/></g></svg>',
+ eve:'<svg viewBox="0 0 32 32"><defs><linearGradient id="m1" gradientUnits="userSpaceOnUse" x1="11" y1="4" x2="18" y2="28"><stop offset="0" stop-color="#FFE08A"/><stop offset="26%" stop-color="#F5C245"/><stop offset="44%" stop-color="#D79BC4"/><stop offset="60%" stop-color="#A874F0"/><stop offset="100%" stop-color="#8355EE"/></linearGradient></defs><path fill="url(#m1)" d="M10.98 5.36a11.4 11.4 0 0 0 15.66 15.66 12.4 12.4 0 1 1-15.66-15.66z"/></svg>',
+ dot:'<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="9" fill="rgba(255,255,255,.75)"/></svg>'
+};
+var CHEV='<svg class="go" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>';
+var PEN='<svg class="pen" viewBox="0 0 24 24"><path d="M4 20h4L20 8l-4-4L4 16z"/></svg>';
+
+/* ═══════════ ЭКРАН ДНЯ ═══════════ */
+var curSec='wake';
+function renderDay(){
+  var e=day(curDate);
+  document.getElementById('dateBtn').value = curDate;
+
+
+  document.getElementById('dayList').innerHTML = DB.sections.map(function(s){
+    return '<button class="card rowcard" data-open="'+s.k+'"><span class="ic">'+(IC[s.k]||IC.dot)+'</span>'+
+      '<span><b>'+s.t+'</b><small>'+s.h+'</small></span></button>';
+  }).join('');
+
+  var tagsHTML = DB.tags.map(function(t){
+    var on=((e.cp[curSec]||{}).tags||{})[t];
+    return '<button class="chip'+(on?' on':'')+'" data-tag="'+t+'">'+t+'</button>';
+  }).join('') + '<button class="chip add" data-newtag>Свой тег</button>';
+  document.getElementById('cpTags').innerHTML = tagsHTML;
+
+  var tot=screenTotal(e);
+  document.getElementById('screenBox').innerHTML =
+    '<div class="scrHead"><span class="scrLbl">Экранное время</span>'+
+      '<input type="number" id="scrExact" value="'+(tot!=null?tot:'')+'" placeholder="мин"></div>'+
+    '<div class="scrRow">'+
+      '<button data-add="-15">-15</button><button data-add="-5">-5</button>'+
+      '<span class="scrNow">'+(tot!=null?hhmm(tot):'')+'</span>'+
+      '<button data-add="5">+5</button><button data-add="15">+15</button>'+
+    '</div>';
+
+  document.getElementById('note').value = e.note||'';
+}
+
+document.getElementById('dateBtn').addEventListener('change',function(){
+  if(!this.value) return;
+  curDate=this.value; renderAll();
+});
+document.getElementById('note').addEventListener('input',function(){
+  day(curDate).note=this.value; save();
+});
+function hhmm(m){
+  m=Math.max(0,Math.round(m));
+  var h=Math.floor(m/60), r=m%60;
+  return h ? (h+' ч '+(r?r+' мин':'')).trim() : r+' мин';
+}
+/* одно общее число за день; старые записи с четырьмя полями суммируем */
+function screenTotal(e){
+  if(e.screen.total!=null) return e.screen.total;
+  var legacy=['before12','mid','after19','social']
+    .map(function(k){ return e.screen[k] })
+    .filter(function(v){ return v!=null });
+  if(!legacy.length) return null;
+  return legacy.reduce(function(a,b){ return a+b },0);
+}
+document.getElementById('screenBox').addEventListener('click',function(ev){
+  var b=ev.target.closest('[data-add]'); if(!b) return;
+  var e=day(curDate), cur=screenTotal(e)||0;
+  e.screen.total=Math.max(0,cur+ +b.dataset.add);
+  save(); renderDay();
+});
+document.getElementById('screenBox').addEventListener('input',function(ev){
+  var i=ev.target.closest('#scrExact'); if(!i) return;
+  day(curDate).screen.total = i.value==='' ? null : Math.max(0,+i.value);
+  save();
+});
+
+document.addEventListener('click',function(ev){
+  var c=ev.target.closest('[data-tag]');
+  if(c){
+    var e=day(curDate);
+    if(!e.cp[curSec]) e.cp[curSec]={};
+    if(!e.cp[curSec].tags) e.cp[curSec].tags={};
+    var tg=e.cp[curSec].tags;
+    tg[c.dataset.tag] = !tg[c.dataset.tag];
+    save(); renderDay(); renderLinks();
+  }
+  var n=ev.target.closest('[data-newtag]');
+  if(n){
+    ask('Название отметки').then(function(raw){
+      var t=(raw||'').trim();
+      if(!t) return;
+      if(DB.tags.indexOf(t)<0) DB.tags.push(t);
+      var e=day(curDate);
+      if(!e.cp[curSec]) e.cp[curSec]={};
+      if(!e.cp[curSec].tags) e.cp[curSec].tags={};
+      e.cp[curSec].tags[t]=true;
+      save(); renderDay(); renderData();
+    });
+  }
+  var g=ev.target.closest('[data-go-screen]');
+  if(g) go(g.dataset.goScreen);
+});
+
+/* ═══════════ КОЛЬЦА ═══════════ */
+var R=92, SW=16, GAP=64;
+var CIRC=2*Math.PI*R, TRACK=CIRC*(360-GAP)/360;
+var RATE=100/3000, HOLD_MIN=40;
+var cur=0;
+var ringTrack=document.getElementById('ringTrack');
+var factTrack=document.getElementById('factTrack');
+
+function pctOf(val){ return val==null?null:(val-SMIN)/(SMAX-SMIN)*100 }
+function valOf(pct){ return SMIN + pct/100*(SMAX-SMIN) }
+
+function ringHTML(i){
+  return '<div class="ringSlide"><div class="ringWrap">'+
+    '<svg viewBox="0 0 240 240">'+
+      '<defs><linearGradient id="prog'+i+'" x1="0" y1="0" x2="1" y2="1">'+
+        '<stop offset="0" stop-color="#FD93FD"/><stop offset="30%" stop-color="#BC61FE"/>'+
+        '<stop offset="62%" stop-color="#46FDFC"/><stop offset="100%" stop-color="#7CE3C9"/>'+
+      '</linearGradient></defs>'+
+      '<circle class="trk" cx="120" cy="120" r="'+R+'" stroke-dasharray="'+TRACK+' '+(CIRC-TRACK)+'"/>'+
+      '<circle class="fill" cx="120" cy="120" r="'+R+'" stroke="url(#prog'+i+')" stroke-dasharray="0 '+CIRC+'"/>'+
+    '</svg>'+
+    '<button class="knob"><span><b class="kv">Нажми</b><small class="kh">и держи</small></span></button>'+
+  '</div></div>';
+}
+var ADD_HTML='<div class="ringSlide"><div class="ringWrap">'+
+  '<button class="addRing" id="addRing"><span><b>+</b><small>своё ощущение</small></span></button>'+
+'</div></div>';
+
+function buildTracks(){
+  ringTrack.innerHTML = DB.metrics.map(function(_,i){return ringHTML(i)}).join('') + ADD_HTML;
+  factTrack.innerHTML = DB.metrics.map(function(m,i){
+    return '<button data-f="'+i+'">'+m.t+PEN+'</button>';
+  }).join('') + '<button data-f="'+DB.metrics.length+'">Своё ощущение</button>';
+}
+function ringAt(i){ return ringTrack.children[i].querySelector('.ringWrap') }
+
+function paint(i){
+  if(i===undefined) i=cur;
+  if(i>=DB.metrics.length) return;
+  var m=DB.metrics[i], w=ringAt(i);
+  var raw=(day(curDate).cp[curSec]||{})[m.k];
+  var pct=pctOf(raw);
+  w.querySelector('.fill').setAttribute('stroke-dasharray',(TRACK*(pct||0)/100)+' '+CIRC);
+  var vEl=w.querySelector('.kv'), hEl=w.querySelector('.kh');
+  if(pct==null){ vEl.textContent='Нажми'; vEl.style.fontSize='26px'; hEl.textContent='и держи'; }
+  else{
+    vEl.textContent=m.w[Math.min(4,Math.floor(pct/100*5))];
+    vEl.style.fontSize='21px';
+    hEl.textContent=(dirOf(i)>0?'ещё раз — вниз':'ещё раз — вверх');
+  }
+}
+var dirs={};
+function dirOf(i){ var k=curSec+'|'+DB.metrics[i].k; if(dirs[k]===undefined) dirs[k]=1; return dirs[k] }
+function flipDir(i){ var k=curSec+'|'+DB.metrics[i].k; dirs[k]=dirOf(i)>0?-1:1 }
+
+function renderFacts(){
+  var box=document.getElementById('facts'), itemW=box.clientWidth/2;
+  factTrack.style.transform='translateX('+(box.clientWidth/2-itemW/2-cur*itemW)+'px)';
+  factTrack.querySelectorAll('button').forEach(function(b,i){ b.classList.toggle('on',i===cur) });
+  ringTrack.style.transform='translateX('+(-cur*100)+'%)';
+}
+window.addEventListener('resize',renderFacts);
+
+var PRESS_DELAY=80, MOVE_TOL=10, SETTLE=340, SWIPE_MIN=52;
+var pend=null, lastSwitch=0, sx=null, sy=null;
+function switchTo(i){
+  cur=Math.max(0,Math.min(DB.metrics.length,i));
+  lastSwitch=performance.now(); renderFacts(); paint();
+}
+
+var raf=null,t0=0,v0=0,startedEmpty=false,fillIdx=null;
+function begin(){
+  if(raf||cur>=DB.metrics.length) return;
+  fillIdx=cur;
+  var m=DB.metrics[fillIdx], e=day(curDate);
+  if(!e.cp[curSec]) e.cp[curSec]={};
+  var raw=e.cp[curSec][m.k];
+  t0=performance.now(); v0=pctOf(raw)||0; startedEmpty=(raw==null);
+  ringAt(fillIdx).querySelector('.knob').classList.add('press');
+  (function step(now){
+    var dt=now-t0;
+    if(dt>=HOLD_MIN){
+      var moved=(dt-HOLD_MIN)*RATE;
+      var pct = startedEmpty ? Math.min(100,moved) : Math.max(0,Math.min(100, v0 + dirOf(fillIdx)*moved));
+      e.cp[curSec][m.k]=Math.round(valOf(pct)*100)/100;
+      paint(fillIdx);
+    }
+    raf=requestAnimationFrame(step);
+  })(performance.now());
+}
+function end(){
+  if(!raf) return;
+  cancelAnimationFrame(raf); raf=null;
+  var i=fillIdx; fillIdx=null;
+  ringAt(i).querySelector('.knob').classList.remove('press');
+  var raw=(day(curDate).cp[curSec]||{})[DB.metrics[i].k];
+  if(raw!=null) flipDir(i);
+  save(); paint(i);
+}
+/* iOS после касания досылает синтетические mousedown/mouseup.
+   Они запускали второй цикл набора и разворачивали направление
+   обратно — поэтому каждое нажатие снова шло вперёд. Как только
+   был хоть один touch, мышь игнорируем совсем. */
+var touchUsed=false;
+ringTrack.addEventListener('mousedown',function(e){
+  if(touchUsed) return;
+  if(e.target.closest('.knob')) begin();
+});
+window.addEventListener('mouseup',function(){ if(!touchUsed) end() });
+
+var zone=document.getElementById('swipeZone');
+zone.addEventListener('touchstart',function(e){
+  touchUsed=true;
+  var t=e.touches[0]; sx=t.clientX; sy=t.clientY;
+  if(e.target.closest && e.target.closest('.knob') && performance.now()-lastSwitch>SETTLE){
+    pend=setTimeout(function(){ pend=null; begin() },PRESS_DELAY);
+  }
+},{passive:true});
+zone.addEventListener('touchmove',function(e){
+  if(sx===null||!pend) return;
+  var t=e.touches[0];
+  if(Math.abs(t.clientX-sx)>MOVE_TOL||Math.abs(t.clientY-sy)>MOVE_TOL){ clearTimeout(pend); pend=null }
+},{passive:true});
+zone.addEventListener('touchend',function(e){
+  var wasTapOnKnob = !!pend;
+  if(pend){ clearTimeout(pend); pend=null }
+  var wasFilling=!!raf;
+  if(wasFilling) end();
+  else if(wasTapOnKnob && cur<DB.metrics.length){
+    // слишком короткий тап: значение не тронули, но направление развернули
+    var raw0=(day(curDate).cp[curSec]||{})[DB.metrics[cur].k];
+    if(raw0!=null){ flipDir(cur); paint(cur) }
+  }
+  if(sx===null) return;
+  var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+  sx=null;
+  if(wasFilling) return;
+  if(Math.abs(dx)>SWIPE_MIN&&Math.abs(dx)>Math.abs(dy)*1.5) switchTo(cur+(dx<0?1:-1));
+},{passive:true});
+zone.addEventListener('touchcancel',function(){
+  if(pend){ clearTimeout(pend); pend=null }
+  if(raf) end();
+  sx=null;
+});
+
+factTrack.addEventListener('click',function(e){
+  var b=e.target.closest('[data-f]'); if(!b) return;
+  var i=+b.dataset.f;
+  if(i!==cur){ switchTo(i); return }
+  if(i>=DB.metrics.length) return;
+  ask('Название ощущения',DB.metrics[i].t).then(function(raw){
+    var name=(raw||'').trim();
+    if(!name) return;
+    DB.metrics[i].t=name; save(); refreshMetrics();
+  });
+});
+function addMetric(){
+  ask('Что отслеживаем? Например: тяжесть в теле').then(function(raw){
+    var name=(raw||'').trim();
+    if(!name) return;
+    DB.metrics.push({k:'u'+Date.now(),t:name,built:false,
+      c:PALETTE[DB.metrics.length%PALETTE.length], w:DEFAULT_W.slice()});
+    save(); refreshMetrics(); switchTo(DB.metrics.length-1);
+    toast('Добавлено · войдёт в анализ после '+MIN_OBS+' дней');
+  });
+}
+ringTrack.addEventListener('click',function(e){ if(e.target.closest('#addRing')) addMetric() });
+document.getElementById('addMetric').addEventListener('click',addMetric);
+function refreshMetrics(){
+  buildTracks(); renderFacts();
+  DB.metrics.forEach(function(_,i){ paint(i) });
+  renderMetrics(); renderTrends(); renderLinks(); renderDay();
+}
+
+/* ═══════════ СТАТИСТИКА ═══════════ */
+function rank(a){
+  var idx=a.map(function(v,i){return [v,i]}).sort(function(x,y){return x[0]-y[0]});
+  var r=new Array(a.length), i=0;
+  while(i<idx.length){
+    var j=i; while(j+1<idx.length && idx[j+1][0]===idx[i][0]) j++;
+    var avg=(i+j)/2+1;
+    for(var k=i;k<=j;k++) r[idx[k][1]]=avg;
+    i=j+1;
+  }
+  return r;
+}
+function pearson(x,y){
+  var n=x.length,mx=0,my=0,i;
+  for(i=0;i<n;i++){mx+=x[i];my+=y[i]} mx/=n;my/=n;
+  var sx=0,sy=0,sxy=0;
+  for(i=0;i<n;i++){var dx=x[i]-mx,dy=y[i]-my;sx+=dx*dx;sy+=dy*dy;sxy+=dx*dy}
+  return (sx&&sy)?sxy/Math.sqrt(sx*sy):0;
+}
+function spearman(x,y){ return pearson(rank(x),rank(y)) }
+function erf(x){
+  var s=x<0?-1:1; x=Math.abs(x);
+  var t=1/(1+0.3275911*x);
+  var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return s*y;
+}
+function pFromRho(rho,n){
+  if(n<6) return 1;
+  var r=Math.max(-0.999999,Math.min(0.999999,rho));
+  var z=0.5*Math.log((1+r)/(1-r))*Math.sqrt(n-3);
+  return 2*(1-0.5*(1+erf(Math.abs(z)/Math.SQRT2)));
+}
+function bhMark(items,q){
+  var s=items.slice().sort(function(a,b){return a.p-b.p});
+  var m=s.length,kmax=-1;
+  for(var i=0;i<m;i++) if(s[i].p<=(i+1)/m*q) kmax=i;
+  s.forEach(function(it,i){ it.sig=i<=kmax });
+  return s;
+}
+
+/* дневное значение метрики = среднее по всем точкам дня */
+function metricDay(e,mk){
+  var vals=[];
+  DB.sections.forEach(function(s){
+    var v=(e.cp[s.k]||{})[mk];
+    if(v!=null) vals.push(v);
+  });
+  if(!vals.length) return null;
+  return vals.reduce(function(a,b){return a+b},0)/vals.length;
+}
+function contextVars(){
+  return [
+    {t:'Экранное время', get:function(e){ return screenTotal(e) }}
+  ].concat(DB.tags.map(function(tag){
+    return {t:tag, get:function(e){
+      var hit=0;
+      DB.sections.forEach(function(sec){
+        if(((e.cp[sec.k]||{}).tags||{})[tag]) hit=1;
+      });
+      if(!hit && e.tags && e.tags[tag]) hit=1;   // записи старого формата
+      return hit;
+    }};
+  }));
+}
+function obsOf(mk){
+  return Object.keys(DB.days).filter(function(d){ return metricDay(DB.days[d],mk)!=null }).length;
+}
+
+/* ═══════════ ТРЕНДЫ ═══════════ */
+function lastDays(n){
+  var out=[],d=new Date(curDate+'T00:00:00');
+  for(var i=n-1;i>=0;i--){
+    var x=new Date(d); x.setDate(d.getDate()-i);
+    out.push(x.toISOString().slice(0,10));
+  }
+  return out;
+}
+function renderTrends(){
+  var week=lastDays(7);
+  var names=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  document.getElementById('trendSub').textContent = 'до '+ruDate(curDate);
+  document.getElementById('trendList').innerHTML = DB.metrics.map(function(m){
+    var series=week.map(function(d){ return DB.days[d]?metricDay(DB.days[d],m.k):null });
+    var has=series.filter(function(v){return v!=null});
+    var avg=has.length?(has.reduce(function(a,b){return a+b},0)/has.length).toFixed(1)+' из '+SMAX:'нет данных';
+    return '<div class="tr" style="--c:'+m.c+'">'+
+      '<div class="trTop"><i class="trDot"></i><span class="trName">'+m.t+'</span><span class="trVal">'+avg+'</span></div>'+
+      '<div class="bars">'+series.map(function(v){
+        var h = v==null?4:Math.max(6,(v-SMIN)/(SMAX-SMIN)*100);
+        return '<i class="'+(v==null?'none':'')+'" style="height:'+h+'%"></i>';
+      }).join('')+'</div>'+
+      '<div class="days">'+week.map(function(d){
+        return '<span>'+names[new Date(d+'T00:00:00').getDay()]+'</span>';
+      }).join('')+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+/* ═══════════ СВЯЗИ ═══════════ */
+function renderLinks(){
+  var dates=Object.keys(DB.days).sort();
+  document.getElementById('nDays').innerHTML = dates.length+' дней<small>в базе</small>';
+
+  var last=lastDays(21);
+  document.getElementById('strip').innerHTML = last.map(function(d){
+    var e=DB.days[d];
+    if(!e) return '<i></i>';
+    var n=0,tot=DB.sections.length*DB.metrics.length;
+    DB.sections.forEach(function(s){
+      DB.metrics.forEach(function(m){ if((e.cp[s.k]||{})[m.k]!=null) n++ });
+    });
+    return '<i class="'+(n>=tot?'f':(n?'p':''))+'"></i>';
+  }).join('');
+  document.getElementById('stripNote').textContent =
+    'Последние 3 недели. Светлый — день заполнен полностью, полупрозрачный — частично.';
+
+  var ready=DB.metrics.filter(function(m){ return obsOf(m.k)>=MIN_OBS });
+  var waiting=DB.metrics.filter(function(m){ return obsOf(m.k)<MIN_OBS });
+  var ctx=contextVars();
+
+  var items=[];
+  ready.forEach(function(m){
+    ctx.forEach(function(c){
+      var xs=[],ys=[];
+      dates.forEach(function(d){
+        var e=DB.days[d];
+        var a=metricDay(e,m.k), b=c.get(e);
+        if(a!=null&&b!=null){ ys.push(a); xs.push(b) }
+      });
+      if(xs.length<MIN_OBS) return;
+      var uniq={}; xs.forEach(function(v){uniq[v]=1});
+      if(Object.keys(uniq).length<2) return;      // нет разброса — считать нечего
+      var rho=spearman(xs,ys);
+      items.push({m:m,c:c,rho:rho,n:xs.length,p:pFromRho(rho,xs.length)});
+    });
+  });
+
+  document.getElementById('linkHead').textContent = items.length
+    ? 'Метрик в анализе: '+ready.length+' · сравнений: '+items.length+
+      '. Спирмен, поправка Бенджамини–Хохберга q<0,05 — чем больше метрик, тем строже порог.'
+    : 'Пока не из чего считать: нужно минимум '+MIN_OBS+' дней с заполненными оценками и хотя бы одна отметка, которая меняется день ото дня.';
+
+  if(items.length){
+    bhMark(items,0.05);
+    items.sort(function(a,b){ return Math.abs(b.rho)-Math.abs(a.rho) });
+    document.getElementById('linkList').innerHTML = items.slice(0,10).map(function(r){
+      var pos=50+r.rho*50, left=Math.min(50,pos), width=Math.abs(r.rho)*50;
+      return '<div class="pair">'+
+        '<div class="pairKey">'+r.c.t+'<i>→ '+r.m.t.toLowerCase()+' · n='+r.n+'</i></div>'+
+        '<div class="track"><div class="zero"></div>'+
+          (r.sig?'<div class="stem" style="left:'+left+'%;width:'+width+'%"></div>':'')+
+          '<div class="dot'+(r.sig?'':' weak')+'" style="left:'+pos+'%"></div>'+
+          '<div class="rho'+(r.sig?'':' weak')+'" style="left:'+(r.rho<0?'2':'84')+'%">'+
+            (r.rho<0?'−':'')+Math.abs(r.rho).toFixed(2).slice(1)+'</div>'+
+        '</div></div>';
+    }).join('') + '<p class="note">Полые точки не прошли поправку — это ещё не находка.</p>';
+  } else {
+    document.getElementById('linkList').innerHTML='';
+  }
+
+  document.getElementById('waitBlock').innerHTML = waiting.length
+    ? '<div class="eyebrow"><span>Копят данные</span></div>' + waiting.map(function(m){
+        return '<div class="waitRow"><b>'+m.t+'</b><span>'+obsOf(m.k)+' из '+MIN_OBS+'</span></div>';
+      }).join('') + '<p class="note">На коротком ряду совпадение слишком легко принять за закономерность, поэтому до '+MIN_OBS+' дней связь не считается.</p>'
+    : '';
+}
+
+/* ═══════════ ДАННЫЕ ═══════════ */
+function renderData(){
+  var dates=Object.keys(DB.days).sort();
+  var filledDays=dates.filter(function(d){
+    var e=DB.days[d], n=0;
+    DB.sections.forEach(function(s){ DB.metrics.forEach(function(m){ if((e.cp[s.k]||{})[m.k]!=null) n++ }) });
+    return n>0;
+  }).length;
+  document.getElementById('summaryBox').innerHTML =
+    '<div class="kv"><b>Дней в базе</b><span>'+dates.length+'</span></div>'+
+    '<div class="kv"><b>Из них с оценками</b><span>'+filledDays+'</span></div>'+
+    '<div class="kv"><b>Метрик</b><span>'+DB.metrics.length+'</span></div>'+
+    '<div class="kv"><b>Точек дня</b><span>'+DB.sections.length+'</span></div>'+
+    '<div class="kv"><b>Отметок</b><span>'+DB.tags.length+'</span></div>';
+
+  var e=day(curDate);
+  document.getElementById('trackerBox').innerHTML =
+    '<div class="kv"><b>Экранное время</b><span>'+
+      (screenTotal(e)!=null?hhmm(screenTotal(e)):'—')+'</span></div>';
+
+
+  rawGet(K.backup).then(function(v){
+    document.getElementById('backupAge').textContent = v ? 'последняя: '+v : 'ещё не делал';
+  });
+}
+
+function download(name,text,type){
+  var b=new Blob([text],{type:type||'application/json'});
+  var u=URL.createObjectURL(b), a=document.createElement('a');
+  a.href=u; a.download=name; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(u) },1500);
+  rawSet(K.backup, ruDate(todayISO()));
+  renderData();
+}
+document.getElementById('expJson').addEventListener('click',function(){
+  download('happyday-'+todayISO()+'.json', JSON.stringify({db:DB,cfg:CFG},null,2));
+  toast('Выгружено');
+});
+document.getElementById('expCsv').addEventListener('click',function(){
+  var head=['date','section'].concat(DB.metrics.map(function(m){return m.k}))
+    .concat(['screen_min','tags','note']);
+  var rows=[head.join(',')];
+  Object.keys(DB.days).sort().forEach(function(d){
+    var e=DB.days[d];
+    DB.sections.forEach(function(s){
+      var v=e.cp[s.k]||{};
+      var tg=Object.keys(v.tags||{}).filter(function(t){return v.tags[t]}).join('; ');
+      var r=[d,s.k].concat(DB.metrics.map(function(m){return v[m.k]!=null?v[m.k]:''}))
+        .concat([screenTotal(e)!=null?screenTotal(e):'',
+                 '"'+tg+'"','"'+String(e.note||'').replace(/"/g,'""')+'"']);
+      rows.push(r.join(','));
+    });
+  });
+  download('happyday-'+todayISO()+'.csv', rows.join('\n'), 'text/csv');
+  toast('Выгружено');
+});
+document.getElementById('impJson').addEventListener('change',function(){
+  var f=this.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var o=JSON.parse(r.result);
+      if(!o.db||!o.db.days) throw 0;
+      DB=o.db; if(o.cfg) CFG=o.cfg;
+      save(); renderAll(); toast('Загружено');
+    }catch(e){ toast('Файл не подходит') }
+  };
+  r.readAsText(f);
+});
+document.getElementById('wipe').addEventListener('click',function(){
+  if(!confirm('Стереть все записи? Это необратимо. Сначала выгрузи JSON.')) return;
+  if(!confirm('Точно? Данные восстановить будет нельзя.')) return;
+  DB.days={}; save(); renderAll(); toast('Стёрто');
+});
+
+/* ═══════════ НАСТРОЙКИ ═══════════ */
+function renderSections(){
+  document.getElementById('secList').innerHTML = DB.sections.map(function(s,i){
+    return '<div class="card rowcard"><span class="ic">'+(IC[s.k]||IC.dot)+'</span>'+
+      '<span><b>'+s.t+'</b><small>'+s.h+'</small></span>'+
+      '<span class="act">'+
+        '<button class="mini" data-secren="'+i+'">переименовать</button>'+
+        (s.fixed?'<button class="mini" disabled>нельзя убрать</button>'
+                :'<button class="mini warn" data-secdel="'+i+'">убрать</button>')+
+      '</span></div>';
+  }).join('');
+}
+document.getElementById('secList').addEventListener('click',function(e){
+  var ren=e.target.closest('[data-secren]'), del=e.target.closest('[data-secdel]');
+  if(ren){
+    var i=+ren.dataset.secren;
+    ask('Название точки',DB.sections[i].t).then(function(raw){
+      var n=(raw||'').trim();
+      if(!n) return;
+      DB.sections[i].t=n; save(); renderSections(); renderDay(); renderLinks();
+    });
+    return;
+  }
+  if(del){
+    var j=+del.dataset.secdel;
+    if(!confirm('Убрать точку «'+DB.sections[j].t+'»? Записи по ней останутся в данных.')) return;
+    DB.sections.splice(j,1);
+    if(!DB.sections.filter(function(s){return s.k===curSec}).length) curSec=DB.sections[0].k;
+    save();
+  }
+  if(ren||del){ renderSections(); renderDay(); renderLinks() }
+});
+document.getElementById('addSec').addEventListener('click',function(){
+  ask('Название точки дня').then(function(raw){
+    var n=(raw||'').trim();
+    if(!n) return;
+    DB.sections.push({k:'s'+Date.now(),t:n,h:'своё время',fixed:false});
+    save(); renderSections(); renderDay();
+  });
+});
+
+function renderMetrics(){
+  document.getElementById('metricList').innerHTML = DB.metrics.map(function(m,i){
+    var n=obsOf(m.k);
+    return '<div class="card rowcard"><span class="ic">'+
+      '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="9" fill="'+m.c+'"/></svg></span>'+
+      '<span><b>'+m.t+'</b><small>'+(n>=MIN_OBS?'в анализе · '+n+' дней':'копит данные · '+n+' из '+MIN_OBS)+'</small></span>'+
+      '<span class="act"><button class="mini" data-mren="'+i+'">переименовать</button>'+
+      (m.built?'':'<button class="mini warn" data-mdel="'+i+'">убрать</button>')+'</span></div>';
+  }).join('');
+}
+document.getElementById('metricList').addEventListener('click',function(e){
+  var ren=e.target.closest('[data-mren]'), del=e.target.closest('[data-mdel]');
+  if(ren){
+    var i=+ren.dataset.mren;
+    ask('Название ощущения',DB.metrics[i].t).then(function(raw){
+      var n=(raw||'').trim();
+      if(!n) return;
+      DB.metrics[i].t=n; save(); refreshMetrics();
+    });
+    return;
+  }
+  if(del){
+    var j=+del.dataset.mdel;
+    if(!confirm('Убрать «'+DB.metrics[j].t+'»? Отметки останутся в данных, но из анализа уйдёт.')) return;
+    DB.metrics.splice(j,1);
+    if(cur>DB.metrics.length) cur=DB.metrics.length;
+    save();
+  }
+  if(ren||del) refreshMetrics();
+});
+
+['cfgWeight','cfgKcal','cfgProt'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',function(){
+    CFG[id.replace('cfg','').toLowerCase()] = this.value===''?null:+this.value;
+    rawSet(K.cfg, JSON.stringify(CFG));
+  });
+});
+document.getElementById('saveKey').addEventListener('click',function(){
+  APIKEY=document.getElementById('apiKey').value.trim();
+  rawSet(K.key, APIKEY);
+  document.getElementById('keyState').textContent = APIKEY?'Ключ сохранён на этом устройстве.':'Ключ не задан.';
+  toast(APIKEY?'Ключ сохранён':'Ключ очищен');
+});
+
+/* ═══════════ НАВИГАЦИЯ ═══════════ */
+function go(name){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.dataset.screen===name) });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name) });
+  document.body.classList.toggle('sheet',name==='ring');
+  if(name==='ring'){ renderFacts(); DB.metrics.forEach(function(_,i){ paint(i) }) }
+  if(name==='trends') renderTrends();
+  if(name==='links') renderLinks();
+  if(name==='data') renderData();
+  if(name==='settings'){ renderSections(); renderMetrics() }
+}
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){ go(t.dataset.go) });
+});
+document.getElementById('dayList').addEventListener('click',function(e){
+  var b=e.target.closest('[data-open]'); if(!b) return;
+  openSection(b.dataset.open);
+});
+function openSection(k){
+  var s=DB.sections.filter(function(x){return x.k===k})[0]; if(!s) return;
+  curSec=k; cur=0;
+  document.getElementById('cpName').textContent=s.t;
+  document.getElementById('cpWhen').innerHTML=s.h+'<small>'+ruDate(curDate)+'</small>';
+  go('ring');
+}
+document.getElementById('fab').addEventListener('click',function(){
+  if(document.getElementById('impWrap').classList.contains('on')){ closeImport(); return }
+  if(document.body.classList.contains('sheet')){ go('day'); renderDay(); renderLinks(); return }
+  openImport();
+});
+function openImport(){
+  document.getElementById('impState').textContent =
+    (APIKEY?'ключ сохранён':'нужен ключ — вкладка «Настройки»')+' · день: '+ruDate(curDate);
+  document.getElementById('impWrap').classList.add('on');
+  document.body.classList.add('sheet');   // кнопка поворачивается в крестик
+}
+document.querySelector('.impScrim').addEventListener('click',function(){
+  closeImport();
+});
+function closeImport(){
+  document.getElementById('impWrap').classList.remove('on');
+  document.body.classList.remove('sheet');
+}
+document.getElementById('impFiles').addEventListener('change',function(){
+  var n=this.files.length;
+  if(!n) return;
+  document.getElementById('impState').textContent =
+    'Выбрано файлов: '+n+'. Разбор появится, когда подключим модель.';
+  toast('Файлов: '+n);
+});
+
+
+/* ── ЯМКА В ФУТЕРЕ ──
+   Вырез и его обводка строятся из одной строки пути, поэтому
+   совпадают всегда. Сопряжение rf сглаживает стык прямой грани
+   и дуги — без него на переходе виден излом. */
+var DOCK={rn:37, rf:20, peek:.17, gap:7, R:24, minFloor:11};
+function dockPath(){
+  var dock=document.querySelector('.dock');
+  var W=dock.offsetWidth, H=dock.offsetHeight;
+  if(!W||!H) return;
+  var rn=DOCK.rn, rf=DOCK.rf, R=DOCK.R, rFab=rn-DOCK.gap;
+  var cy=rFab*(1-2*DOCK.peek);
+  var floor=H-(cy+rn);
+  if(floor<DOCK.minFloor) cy-=(DOCK.minFloor-floor);
+  var cx=W/2;
+  var dx=Math.sqrt(Math.max(0,(rn+rf)*(rn+rf)-(rf-cy)*(rf-cy)))||rn;
+  var k=rn/(rn+rf), TlX=cx-dx*k, TrX=cx+dx*k, TY=cy+(rf-cy)*k;
+  var d='M'+R+' 0'+
+    'L'+(cx-dx).toFixed(2)+' 0'+
+    'A'+rf+' '+rf+' 0 0 1 '+TlX.toFixed(2)+' '+TY.toFixed(2)+
+    'A'+rn+' '+rn+' 0 0 0 '+TrX.toFixed(2)+' '+TY.toFixed(2)+
+    'A'+rf+' '+rf+' 0 0 1 '+(cx+dx).toFixed(2)+' 0'+
+    'L'+(W-R)+' 0'+
+    'A'+R+' '+R+' 0 0 1 '+W+' '+R+
+    'L'+W+' '+(H-R)+
+    'A'+R+' '+R+' 0 0 1 '+(W-R)+' '+H+
+    'L'+R+' '+H+
+    'A'+R+' '+R+' 0 0 1 0 '+(H-R)+
+    'L0 '+R+
+    'A'+R+' '+R+' 0 0 1 '+R+' 0Z';
+  document.querySelector('.dockBg').style.setProperty('--dockPath','"'+d+'"');
+  var svg=document.getElementById('dockEdge');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.querySelector('path').setAttribute('d',d);
+  var fab=document.getElementById('fab');
+  fab.style.width=fab.style.height=(rFab*2)+'px';
+  fab.style.left='50%';
+  fab.style.top=cy+'px';
+  fab.style.transform='translate(-50%,-50%)';
+  dock.style.setProperty('--gapW',Math.round(rFab*2+14)+'px');
+}
+window.addEventListener('resize',dockPath);
+window.addEventListener('orientationchange',dockPath);
+
+/* ═══════════ СТАРТ ═══════════ */
+function renderAll(){
+  buildTracks(); renderFacts();
+  renderDay(); renderTrends(); renderLinks(); renderData();
+  renderSections(); renderMetrics(); dockPath();
+}
+(async function init(){
+  try{
+    var raw=await rawGet(K.db);
+    if(raw){
+      var o=JSON.parse(raw);
+      if(o&&o.days){
+        DB.days=o.days;
+        if(o.sections&&o.sections.length) DB.sections=o.sections;
+        if(o.metrics&&o.metrics.length) DB.metrics=o.metrics;
+        if(o.tags&&o.tags.length) DB.tags=o.tags;
+      }
+    }
+    var c=await rawGet(K.cfg); if(c) CFG=JSON.parse(c);
+    APIKEY=(await rawGet(K.key))||'';
+  }catch(e){}
+  document.getElementById('cfgWeight').value=CFG.weight!=null?CFG.weight:'';
+  document.getElementById('cfgKcal').value=CFG.kcal!=null?CFG.kcal:'';
+  document.getElementById('cfgProt').value=CFG.prot!=null?CFG.prot:'';
+  document.getElementById('apiKey').value=APIKEY;
+  document.getElementById('keyState').textContent=APIKEY?'Ключ сохранён на этом устройстве.':'Ключ не задан.';
+  renderAll();
+})();
+</script>
+</body>
+</html>

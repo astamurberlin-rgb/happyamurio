@@ -1,0 +1,13 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const c=vm.createContext({});vm.runInContext(fs.readFileSync(new URL('../meal/backup-model.js',import.meta.url),'utf8'),c);const B=c.MealBackup,clone=x=>JSON.parse(JSON.stringify(x));
+const base={sections:[{k:'am',t:'Завтрак'}],days:{'2026-10-29':{items:[{id:'a',fid:'coffee',sec:'am',g:250,t:'10:00'}]}},foods:[],goals:{k:2000},importedHistory:{nutrition:{daily:[{Date:'2026-10-28',energy:'100'}],servings:[{Day:'2026-10-28',food:'coffee'},{Day:'2026-10-28',food:'coffee'}]}}};
+const input=clone(base);input.days['2026-10-29'].items[0].t='09:00';input.days['2026-10-29'].items.push({id:'b',fid:'coffee',sec:'am',g:250,t:null});input.goals.k=1800;input.importedHistory.nutrition.daily.push({Date:'2026-10-29',energy:'200'});
+const snapshot=JSON.stringify(base),result=B.merge(base,input);assert.equal(result.stats.added,1);assert.equal(result.stats.conflicts,1);assert.equal(result.db.goals.k,2000);assert.equal(result.db.days['2026-10-29'].items[0].t,'10:00');assert.equal(result.db.importedHistory.nutrition.daily.length,2);assert.equal(result.db.importedHistory.nutrition.servings.length,2);assert.equal(JSON.stringify(base),snapshot);
+assert.equal(B.merge(result.db,input).stats.added,0);assert.equal(B.merge(result.db,input).db.importedHistory.nutrition.servings.length,2);
+const moved=clone(base);moved.days['2026-10-30']=moved.days['2026-10-29'];delete moved.days['2026-10-29'];assert.equal(B.merge(moved,base).stats.added,0);
+const empty={sections:[],days:{},foods:[]};assert.deepEqual(clone(B.hydrate(empty,B.parse({app:'happy-meal',v:1,db:base}).db)).importedHistory,base.importedHistory);
+assert.deepEqual(clone(B.parse(JSON.stringify({app:'happy-meal',v:1,db:result.db})).db),clone(result.db));
+for(const broken of [{app:'happy-day',db:base},{app:'happy-meal',v:99,db:base},{app:'happy-meal',db:{sections:[],days:[]}},'{"__proto__":{}}'])assert.throws(()=>B.parse(broken));
+const duplicated=clone(base);duplicated.days['2026-10-29'].items.push(clone(duplicated.days['2026-10-29'].items[0]));assert.throws(()=>B.parse({db:duplicated}));
+const conflict=clone(input);conflict.foods=[{id:'coffee',n:'Coffee',k:80}];const own=clone(base);own.foods=[{id:'coffee',n:'Coffee',k:50}];assert.throws(()=>B.merge(own,conflict));assert.equal(own.days['2026-10-29'].items.length,1);
+console.log('Passed: add without duplicates, preserve edits/settings, moved IDs, archive round-trip and equal servings, reject malformed/foreign/future files and nutrient conflicts without mutation.');

@@ -1,0 +1,3641 @@
+{
+  "version": 1,
+  "checked": "2026-10-31",
+  "sources": {
+    "usda": {
+      "title": "USDA FoodData Central, SR Legacy (2018)",
+      "url": "https://fdc.nal.usda.gov/download-datasets/",
+      "dataUrl": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip"
+    },
+    "raspberry-trial": {
+      "title": "NC State / Cornell: сортовые испытания малины, 2023–2024",
+      "url": "https://smallfruits.org/2026/03/evaluating-raspberry-cultivars-for-north-carolina-markets/"
+    },
+    "blackberry-trial": {
+      "title": "University of Missouri: масса ягод ежевики, 2017–2018",
+      "url": "https://ipm.missouri.edu/mpg/2019/6/blackberryUpdate/"
+    },
+    "gooseberry": {
+      "title": "USDA ARS: крыжовник Jeanne, около 5 г",
+      "url": "https://www.ars.usda.gov/news-events/news/research-news/2006/new-quotjeannequot-gooseberry-resists-diseases/"
+    },
+    "blueberry-trial": {
+      "title": "Alabama Extension: масса голубики по сортам, 2024",
+      "url": "https://www.aces.edu/blog/topics/crop-production/research-update-assessment-of-rabbiteye-blueberry-cultivars/"
+    },
+    "fried-eggs": {
+      "title": "USDA CSFII 1985–1986, manual of food codes, p.431",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400530/pdf/8586/csfii85_4days_codebook.pdf"
+    }
+  },
+  "foods": [
+    {
+      "fdcId": 167746,
+      "description": "Lemons, raw, without peel",
+      "portions": [
+        {
+          "id": "81882",
+          "fdc_id": "167746",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sections",
+          "gram_weight": "212",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81883",
+          "fdc_id": "167746",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit (2-1/8\" dia)",
+          "gram_weight": "58",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81884",
+          "fdc_id": "167746",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit (2-3/8\" dia)",
+          "gram_weight": "84",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81885",
+          "fdc_id": "167746",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "wedge or slice (1/8 of one 2-1/8\" dia lemon)",
+          "gram_weight": "7",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81886",
+          "fdc_id": "167746",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "58",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 167755,
+      "description": "Raspberries, raw",
+      "portions": [
+        {
+          "id": "81905",
+          "fdc_id": "167755",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "123",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81906",
+          "fdc_id": "167755",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "pint as purchased, yields",
+          "gram_weight": "312",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81907",
+          "fdc_id": "167755",
+          "seq_num": "3",
+          "amount": "10",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "raspberries",
+          "gram_weight": "19",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 167762,
+      "description": "Strawberries, raw",
+      "portions": [
+        {
+          "id": "81919",
+          "fdc_id": "167762",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, halves",
+          "gram_weight": "152",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81920",
+          "fdc_id": "167762",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, pureed",
+          "gram_weight": "232",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81921",
+          "fdc_id": "167762",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "166",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81922",
+          "fdc_id": "167762",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole",
+          "gram_weight": "144",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81923",
+          "fdc_id": "167762",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "extra large (1-5/8\" dia)",
+          "gram_weight": "27",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81924",
+          "fdc_id": "167762",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (1-3/8\" dia)",
+          "gram_weight": "18",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81925",
+          "fdc_id": "167762",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (1-1/4\" dia)",
+          "gram_weight": "12",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81926",
+          "fdc_id": "167762",
+          "seq_num": "8",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "pint as purchased, yields",
+          "gram_weight": "357",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81927",
+          "fdc_id": "167762",
+          "seq_num": "9",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (1\" dia)",
+          "gram_weight": "7",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "81928",
+          "fdc_id": "167762",
+          "seq_num": "10",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "147",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 168153,
+      "description": "Kiwifruit, green, raw",
+      "portions": [
+        {
+          "id": "82566",
+          "fdc_id": "168153",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "180",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "82567",
+          "fdc_id": "168153",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit (2\" dia)",
+          "gram_weight": "69",
+          "data_points": "75",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "82568",
+          "fdc_id": "168153",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "148",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 168155,
+      "description": "Limes, raw",
+      "portions": [
+        {
+          "id": "82570",
+          "fdc_id": "168155",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit (2\" dia)",
+          "gram_weight": "67",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "82571",
+          "fdc_id": "168155",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "67",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 168176,
+      "description": "Feijoa, raw",
+      "portions": [
+        {
+          "id": "82610",
+          "fdc_id": "168176",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, pureed",
+          "gram_weight": "243",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "82611",
+          "fdc_id": "168176",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit without peel",
+          "gram_weight": "42",
+          "data_points": "61",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "82612",
+          "fdc_id": "168176",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup 1/2\" chunks",
+          "gram_weight": "205",
+          "data_points": "3",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 168211,
+      "description": "Kiwifruit, ZESPRI SunGold, raw",
+      "portions": [
+        {
+          "id": "82676",
+          "fdc_id": "168211",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit",
+          "gram_weight": "81",
+          "data_points": "100",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 168409,
+      "description": "Cucumber, with peel, raw",
+      "portions": [
+        {
+          "id": "83049",
+          "fdc_id": "168409",
+          "seq_num": "1",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup slices",
+          "gram_weight": "52",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "83050",
+          "fdc_id": "168409",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cucumber (8-1/4\")",
+          "gram_weight": "301",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169097,
+      "description": "Oranges, raw, all commercial varieties",
+      "portions": [
+        {
+          "id": "84227",
+          "fdc_id": "169097",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sections",
+          "gram_weight": "180",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84228",
+          "fdc_id": "169097",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (3-1/16\" dia)",
+          "gram_weight": "184",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84229",
+          "fdc_id": "169097",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (2-3/8\" dia)",
+          "gram_weight": "96",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84230",
+          "fdc_id": "169097",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit (2-5/8\" dia)",
+          "gram_weight": "131",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169105,
+      "description": "Tangerines, (mandarin oranges), raw",
+      "portions": [
+        {
+          "id": "84247",
+          "fdc_id": "169105",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sections",
+          "gram_weight": "195",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84248",
+          "fdc_id": "169105",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (2-1/4\" dia)",
+          "gram_weight": "76",
+          "data_points": "4",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84249",
+          "fdc_id": "169105",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (2-1/2\" dia)",
+          "gram_weight": "88",
+          "data_points": "4",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84250",
+          "fdc_id": "169105",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (2-3/4\" dia)",
+          "gram_weight": "120",
+          "data_points": "4",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84251",
+          "fdc_id": "169105",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "109",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169118,
+      "description": "Pears, raw",
+      "portions": [
+        {
+          "id": "84272",
+          "fdc_id": "169118",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, slices",
+          "gram_weight": "140",
+          "data_points": "96",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84273",
+          "fdc_id": "169118",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, cubes",
+          "gram_weight": "161",
+          "data_points": "6",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84274",
+          "fdc_id": "169118",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "148",
+          "data_points": "64",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84275",
+          "fdc_id": "169118",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium",
+          "gram_weight": "178",
+          "data_points": "65",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84276",
+          "fdc_id": "169118",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "230",
+          "data_points": "125",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84277",
+          "fdc_id": "169118",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "166",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169145,
+      "description": "Beets, raw",
+      "portions": [
+        {
+          "id": "84325",
+          "fdc_id": "169145",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "136",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84326",
+          "fdc_id": "169145",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "beet (2\" dia)",
+          "gram_weight": "82",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169228,
+      "description": "Eggplant, raw",
+      "portions": [
+        {
+          "id": "84474",
+          "fdc_id": "169228",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, cubes",
+          "gram_weight": "82",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84475",
+          "fdc_id": "169228",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "eggplant, peeled (yield from 1-1/4 lb)",
+          "gram_weight": "458",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84476",
+          "fdc_id": "169228",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "eggplant, unpeeled (approx 1-1/4 lb)",
+          "gram_weight": "548",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169230,
+      "description": "Garlic, raw",
+      "portions": [
+        {
+          "id": "84478",
+          "fdc_id": "169230",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "136",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84479",
+          "fdc_id": "169230",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "tsp",
+          "gram_weight": "2.8",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84480",
+          "fdc_id": "169230",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "clove",
+          "gram_weight": "3",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84481",
+          "fdc_id": "169230",
+          "seq_num": "4",
+          "amount": "3",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cloves",
+          "gram_weight": "9",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169251,
+      "description": "Mushrooms, white, raw",
+      "portions": [
+        {
+          "id": "84526",
+          "fdc_id": "169251",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, pieces or slices",
+          "gram_weight": "70",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84527",
+          "fdc_id": "169251",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole",
+          "gram_weight": "96",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84528",
+          "fdc_id": "169251",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "23",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84529",
+          "fdc_id": "169251",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium",
+          "gram_weight": "18",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84530",
+          "fdc_id": "169251",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice",
+          "gram_weight": "6",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84531",
+          "fdc_id": "169251",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "10",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84532",
+          "fdc_id": "169251",
+          "seq_num": "7",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup pieces",
+          "gram_weight": "35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169276,
+      "description": "Radishes, raw",
+      "portions": [
+        {
+          "id": "84582",
+          "fdc_id": "169276",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup slices",
+          "gram_weight": "116",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84583",
+          "fdc_id": "169276",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (1\" to 1-1/4\" dia)",
+          "gram_weight": "9",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84584",
+          "fdc_id": "169276",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (3/4\" to 1\" dia)",
+          "gram_weight": "4.5",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84585",
+          "fdc_id": "169276",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice",
+          "gram_weight": "1",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84586",
+          "fdc_id": "169276",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "2",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84587",
+          "fdc_id": "169276",
+          "seq_num": "6",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup slices",
+          "gram_weight": "58",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169291,
+      "description": "Squash, summer, zucchini, includes skin, raw",
+      "portions": [
+        {
+          "id": "84607",
+          "fdc_id": "169291",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "124",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84608",
+          "fdc_id": "169291",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "113",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84609",
+          "fdc_id": "169291",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "323",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84610",
+          "fdc_id": "169291",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium",
+          "gram_weight": "196",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84611",
+          "fdc_id": "169291",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice",
+          "gram_weight": "9.9",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84612",
+          "fdc_id": "169291",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "118",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169422,
+      "description": "Nuts, cashew nuts, oil roasted, with salt added",
+      "portions": [
+        {
+          "id": "84835",
+          "fdc_id": "169422",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole",
+          "gram_weight": "129",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84836",
+          "fdc_id": "169422",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, halves and pieces",
+          "gram_weight": "129",
+          "data_points": "21",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "84837",
+          "fdc_id": "169422",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (18 kernels)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169908,
+      "description": "Loquats, raw",
+      "portions": [
+        {
+          "id": "85646",
+          "fdc_id": "169908",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, cubed",
+          "gram_weight": "149",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85647",
+          "fdc_id": "169908",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "20",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85648",
+          "fdc_id": "169908",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium",
+          "gram_weight": "16",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85649",
+          "fdc_id": "169908",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "13.6",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169910,
+      "description": "Mangos, raw",
+      "portions": [
+        {
+          "id": "85651",
+          "fdc_id": "169910",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup pieces",
+          "gram_weight": "165",
+          "data_points": "3",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85652",
+          "fdc_id": "169910",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit without refuse",
+          "gram_weight": "336",
+          "data_points": "12",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169913,
+      "description": "Mulberries, raw",
+      "portions": [
+        {
+          "id": "85662",
+          "fdc_id": "169913",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "140",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85663",
+          "fdc_id": "169913",
+          "seq_num": "2",
+          "amount": "10",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit",
+          "gram_weight": "15",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169914,
+      "description": "Nectarines, raw",
+      "portions": [
+        {
+          "id": "85664",
+          "fdc_id": "169914",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup slices",
+          "gram_weight": "143",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85665",
+          "fdc_id": "169914",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (2-1/3\" dia)",
+          "gram_weight": "129",
+          "data_points": "31",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85666",
+          "fdc_id": "169914",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (2-1/2\" dia)",
+          "gram_weight": "142",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85667",
+          "fdc_id": "169914",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (2-3/4\" dia)",
+          "gram_weight": "156",
+          "data_points": "25",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85668",
+          "fdc_id": "169914",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "140",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169928,
+      "description": "Peaches, yellow, raw",
+      "portions": [
+        {
+          "id": "85697",
+          "fdc_id": "169928",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup slices",
+          "gram_weight": "154",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85698",
+          "fdc_id": "169928",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (2-1/2\" dia)",
+          "gram_weight": "130",
+          "data_points": "20",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85699",
+          "fdc_id": "169928",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (2-2/3\" dia)",
+          "gram_weight": "150",
+          "data_points": "20",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85700",
+          "fdc_id": "169928",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (2-3/4\" dia)",
+          "gram_weight": "175",
+          "data_points": "20",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85701",
+          "fdc_id": "169928",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "extra large (3\" dia)",
+          "gram_weight": "224",
+          "data_points": "20",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85702",
+          "fdc_id": "169928",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "147",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169941,
+      "description": "Persimmons, japanese, raw",
+      "portions": [
+        {
+          "id": "85724",
+          "fdc_id": "169941",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit (2-1/2\" dia)",
+          "gram_weight": "168",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169949,
+      "description": "Plums, raw",
+      "portions": [
+        {
+          "id": "85734",
+          "fdc_id": "169949",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "165",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85735",
+          "fdc_id": "169949",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "fruit (2-1/8\" dia)",
+          "gram_weight": "66",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85736",
+          "fdc_id": "169949",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "151",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 169998,
+      "description": "Corn, sweet, yellow, raw",
+      "portions": [
+        {
+          "id": "85846",
+          "fdc_id": "169998",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "145",
+          "data_points": "5",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85847",
+          "fdc_id": "169998",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "ear, large (7-3/4\" to 9\" long) yields",
+          "gram_weight": "143",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85848",
+          "fdc_id": "169998",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "ear, medium (6-3/4\" to 7-1/2\" long) yields",
+          "gram_weight": "102",
+          "data_points": "3",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85849",
+          "fdc_id": "169998",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "ear, small (5-1/2\" to 6-1/2\" long)",
+          "gram_weight": "73",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170000,
+      "description": "Onions, raw",
+      "portions": [
+        {
+          "id": "85855",
+          "fdc_id": "170000",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "160",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85856",
+          "fdc_id": "170000",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "115",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85857",
+          "fdc_id": "170000",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "tbsp chopped",
+          "gram_weight": "10",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85858",
+          "fdc_id": "170000",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "150",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85859",
+          "fdc_id": "170000",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice, large (1/4\" thick)",
+          "gram_weight": "38",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85860",
+          "fdc_id": "170000",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (2-1/2\" dia)",
+          "gram_weight": "110",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85861",
+          "fdc_id": "170000",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice, medium (1/8\" thick)",
+          "gram_weight": "14",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85862",
+          "fdc_id": "170000",
+          "seq_num": "8",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "70",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85863",
+          "fdc_id": "170000",
+          "seq_num": "9",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice, thin",
+          "gram_weight": "9",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85864",
+          "fdc_id": "170000",
+          "seq_num": "10",
+          "amount": "10",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "rings",
+          "gram_weight": "60",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170026,
+      "description": "Potatoes, flesh and skin, raw",
+      "portions": [
+        {
+          "id": "85917",
+          "fdc_id": "170026",
+          "seq_num": "1",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, diced",
+          "gram_weight": "75",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85918",
+          "fdc_id": "170026",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "Potato large (3\" to 4-1/4\" dia)",
+          "gram_weight": "369",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85919",
+          "fdc_id": "170026",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "Potato medium (2-1/4\" to 3-1/4\" dia)",
+          "gram_weight": "213",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "85920",
+          "fdc_id": "170026",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "Potato small (1-3/4\" to 2-1/2\" dia)",
+          "gram_weight": "170",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170108,
+      "description": "Peppers, sweet, red, raw",
+      "portions": [
+        {
+          "id": "86062",
+          "fdc_id": "170108",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "149",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86063",
+          "fdc_id": "170108",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "92",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86064",
+          "fdc_id": "170108",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "tablespoon",
+          "gram_weight": "9.3",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86065",
+          "fdc_id": "170108",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (2-1/4 per pound, approx 3-3/4\" long, 3\" dia.)",
+          "gram_weight": "164",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86066",
+          "fdc_id": "170108",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (approx 2-3/4\" long, 2-1/2 dia.)",
+          "gram_weight": "119",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86067",
+          "fdc_id": "170108",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "74",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86068",
+          "fdc_id": "170108",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "ring (3\" dia., 1/4\" thick)",
+          "gram_weight": "10",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170114,
+      "description": "Potatoes, boiled, cooked in skin, flesh, with salt",
+      "portions": [
+        {
+          "id": "86083",
+          "fdc_id": "170114",
+          "seq_num": "1",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "78",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86084",
+          "fdc_id": "170114",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "potato (2-1/2\" dia, sphere)",
+          "gram_weight": "136",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170178,
+      "description": "Nuts, macadamia nuts, raw",
+      "portions": [
+        {
+          "id": "86182",
+          "fdc_id": "170178",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole or halves",
+          "gram_weight": "134",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86183",
+          "fdc_id": "170178",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (10-12 kernels)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170182,
+      "description": "Nuts, pecans",
+      "portions": [
+        {
+          "id": "86188",
+          "fdc_id": "170182",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "109",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86189",
+          "fdc_id": "170182",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, halves",
+          "gram_weight": "99",
+          "data_points": "18",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86190",
+          "fdc_id": "170182",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (19 halves)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170184,
+      "description": "Nuts, pistachio nuts, raw",
+      "portions": [
+        {
+          "id": "86192",
+          "fdc_id": "170184",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "123",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86193",
+          "fdc_id": "170184",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (49 kernels)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86194",
+          "fdc_id": "170184",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "kernel",
+          "gram_weight": "0.7",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170187,
+      "description": "Nuts, walnuts, english",
+      "portions": [
+        {
+          "id": "86201",
+          "fdc_id": "170187",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "117",
+          "data_points": "12",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86202",
+          "fdc_id": "170187",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, ground",
+          "gram_weight": "80",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86203",
+          "fdc_id": "170187",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, in shell, edible yield (7 nuts)",
+          "gram_weight": "28",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86204",
+          "fdc_id": "170187",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup shelled (50 halves)",
+          "gram_weight": "100",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86205",
+          "fdc_id": "170187",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup pieces or chips",
+          "gram_weight": "120",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86206",
+          "fdc_id": "170187",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (14 halves)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170393,
+      "description": "Carrots, raw",
+      "portions": [
+        {
+          "id": "86555",
+          "fdc_id": "170393",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup chopped",
+          "gram_weight": "128",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86556",
+          "fdc_id": "170393",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup grated",
+          "gram_weight": "110",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86557",
+          "fdc_id": "170393",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup strips or slices",
+          "gram_weight": "122",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86558",
+          "fdc_id": "170393",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (7-1/4\" to 8-/1/2\" long)",
+          "gram_weight": "72",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86559",
+          "fdc_id": "170393",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium",
+          "gram_weight": "61",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86560",
+          "fdc_id": "170393",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (5-1/2\" long)",
+          "gram_weight": "50",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86561",
+          "fdc_id": "170393",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice",
+          "gram_weight": "3",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86562",
+          "fdc_id": "170393",
+          "seq_num": "8",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "strip large (3\" long)",
+          "gram_weight": "7",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86563",
+          "fdc_id": "170393",
+          "seq_num": "9",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "strip medium",
+          "gram_weight": "4",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170427,
+      "description": "Peppers, sweet, green, raw",
+      "portions": [
+        {
+          "id": "86623",
+          "fdc_id": "170427",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "149",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86624",
+          "fdc_id": "170427",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "92",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86625",
+          "fdc_id": "170427",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "tbsp",
+          "gram_weight": "9.3",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86626",
+          "fdc_id": "170427",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (2-1/4 per lb, approx 3-3/4\" long, 3\" dia)",
+          "gram_weight": "164",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86627",
+          "fdc_id": "170427",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (approx 2-3/4\" long, 2-1/2\" dia)",
+          "gram_weight": "119",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86628",
+          "fdc_id": "170427",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "ring (3\" dia, 1/4\" thick)",
+          "gram_weight": "10",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86629",
+          "fdc_id": "170427",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "74",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86630",
+          "fdc_id": "170427",
+          "seq_num": "8",
+          "amount": "10",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "strips",
+          "gram_weight": "27",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170457,
+      "description": "Tomatoes, red, ripe, raw, year round average",
+      "portions": [
+        {
+          "id": "86681",
+          "fdc_id": "170457",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup cherry tomatoes",
+          "gram_weight": "149",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86682",
+          "fdc_id": "170457",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped or sliced",
+          "gram_weight": "180",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86683",
+          "fdc_id": "170457",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "Italian tomato",
+          "gram_weight": "62",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86684",
+          "fdc_id": "170457",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cherry",
+          "gram_weight": "17",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86685",
+          "fdc_id": "170457",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large whole (3\" dia)",
+          "gram_weight": "182",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86686",
+          "fdc_id": "170457",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium whole (2-3/5\" dia)",
+          "gram_weight": "123",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86687",
+          "fdc_id": "170457",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice, medium (1/4\" thick)",
+          "gram_weight": "20",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86688",
+          "fdc_id": "170457",
+          "seq_num": "8",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "plum tomato",
+          "gram_weight": "62",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86689",
+          "fdc_id": "170457",
+          "seq_num": "9",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small whole (2-2/5\" dia)",
+          "gram_weight": "91",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86690",
+          "fdc_id": "170457",
+          "seq_num": "10",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice, thick/large (1/2\" thick)",
+          "gram_weight": "27",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86691",
+          "fdc_id": "170457",
+          "seq_num": "11",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "wedge (1/4 of medium tomato)",
+          "gram_weight": "31",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86692",
+          "fdc_id": "170457",
+          "seq_num": "12",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "slice, thin/small",
+          "gram_weight": "15",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86693",
+          "fdc_id": "170457",
+          "seq_num": "13",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "148",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170567,
+      "description": "Nuts, almonds",
+      "portions": [
+        {
+          "id": "86863",
+          "fdc_id": "170567",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole",
+          "gram_weight": "143",
+          "data_points": "23",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86864",
+          "fdc_id": "170567",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "92",
+          "data_points": "4",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86865",
+          "fdc_id": "170567",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, slivered",
+          "gram_weight": "108",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86866",
+          "fdc_id": "170567",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, ground",
+          "gram_weight": "95",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86867",
+          "fdc_id": "170567",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (23 whole kernels)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86868",
+          "fdc_id": "170567",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "almond",
+          "gram_weight": "1.2",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170569,
+      "description": "Nuts, brazilnuts, dried, unblanched",
+      "portions": [
+        {
+          "id": "86872",
+          "fdc_id": "170569",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole",
+          "gram_weight": "133",
+          "data_points": "15",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86873",
+          "fdc_id": "170569",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "kernel",
+          "gram_weight": "5",
+          "data_points": "59",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86874",
+          "fdc_id": "170569",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (6 kernels)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170581,
+      "description": "Nuts, hazelnuts or filberts",
+      "portions": [
+        {
+          "id": "86896",
+          "fdc_id": "170581",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "115",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86897",
+          "fdc_id": "170581",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, ground",
+          "gram_weight": "75",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86898",
+          "fdc_id": "170581",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole",
+          "gram_weight": "135",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86899",
+          "fdc_id": "170581",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (21 whole kernels)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86900",
+          "fdc_id": "170581",
+          "seq_num": "5",
+          "amount": "10",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "nuts",
+          "gram_weight": "14",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 170591,
+      "description": "Nuts, pine nuts, dried",
+      "portions": [
+        {
+          "id": "86915",
+          "fdc_id": "170591",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "135",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86916",
+          "fdc_id": "170591",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz (167 kernels)",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "86917",
+          "fdc_id": "170591",
+          "seq_num": "3",
+          "amount": "10",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "nuts",
+          "gram_weight": "1.7",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 171287,
+      "description": "Egg, whole, raw, fresh",
+      "portions": [
+        {
+          "id": "88374",
+          "fdc_id": "171287",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "50",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "88375",
+          "fdc_id": "171287",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "extra large",
+          "gram_weight": "56",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "88376",
+          "fdc_id": "171287",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "jumbo",
+          "gram_weight": "63",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "88377",
+          "fdc_id": "171287",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup (4.86 large eggs)",
+          "gram_weight": "243",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "88378",
+          "fdc_id": "171287",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium",
+          "gram_weight": "44",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "88379",
+          "fdc_id": "171287",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small",
+          "gram_weight": "38",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 171688,
+      "description": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+      "portions": [
+        {
+          "id": "89190",
+          "fdc_id": "171688",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, quartered or chopped",
+          "gram_weight": "125",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89191",
+          "fdc_id": "171688",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup slices",
+          "gram_weight": "109",
+          "data_points": "60",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89192",
+          "fdc_id": "171688",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (3-1/4\" dia)",
+          "gram_weight": "223",
+          "data_points": "113",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89193",
+          "fdc_id": "171688",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (3\" dia)",
+          "gram_weight": "182",
+          "data_points": "113",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89194",
+          "fdc_id": "171688",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (2-3/4\" dia)",
+          "gram_weight": "149",
+          "data_points": "113",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89195",
+          "fdc_id": "171688",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "extra small (2-1/2\" dia)",
+          "gram_weight": "101",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89196",
+          "fdc_id": "171688",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "242",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 171697,
+      "description": "Apricots, raw",
+      "portions": [
+        {
+          "id": "89209",
+          "fdc_id": "171697",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, halves",
+          "gram_weight": "155",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89210",
+          "fdc_id": "171697",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "165",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89211",
+          "fdc_id": "171697",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "apricot",
+          "gram_weight": "35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 171705,
+      "description": "Avocados, raw, all commercial varieties",
+      "portions": [
+        {
+          "id": "89223",
+          "fdc_id": "171705",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, cubes",
+          "gram_weight": "150",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89224",
+          "fdc_id": "171705",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, pureed",
+          "gram_weight": "230",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89225",
+          "fdc_id": "171705",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "146",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89226",
+          "fdc_id": "171705",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "avocado, NS as to Florida or California",
+          "gram_weight": "201",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89227",
+          "fdc_id": "171705",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA Serving",
+          "gram_weight": "50",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 171711,
+      "description": "Blueberries, raw",
+      "portions": [
+        {
+          "id": "89238",
+          "fdc_id": "171711",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "148",
+          "data_points": "12",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89239",
+          "fdc_id": "171711",
+          "seq_num": "2",
+          "amount": "50",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "berries",
+          "gram_weight": "68",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 171719,
+      "description": "Cherries, sweet, raw",
+      "portions": [
+        {
+          "id": "89254",
+          "fdc_id": "171719",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, with pits, yields",
+          "gram_weight": "138",
+          "data_points": "20",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89255",
+          "fdc_id": "171719",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, without pits",
+          "gram_weight": "154",
+          "data_points": "20",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89256",
+          "fdc_id": "171719",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cherry",
+          "gram_weight": "8.2",
+          "data_points": "40",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89257",
+          "fdc_id": "171719",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "140",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 171722,
+      "description": "Cranberries, raw",
+      "portions": [
+        {
+          "id": "89260",
+          "fdc_id": "171722",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "110",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "89261",
+          "fdc_id": "171722",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, whole",
+          "gram_weight": "100",
+          "data_points": "12",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 172186,
+      "description": "Egg, whole, cooked, poached",
+      "portions": [
+        {
+          "id": "90049",
+          "fdc_id": "172186",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "50",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 172189,
+      "description": "Egg, duck, whole, fresh, raw",
+      "portions": [
+        {
+          "id": "90055",
+          "fdc_id": "172189",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "egg",
+          "gram_weight": "70",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 172190,
+      "description": "Egg, goose, whole, fresh, raw",
+      "portions": [
+        {
+          "id": "90056",
+          "fdc_id": "172190",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "egg",
+          "gram_weight": "144",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 172191,
+      "description": "Egg, quail, whole, fresh, raw",
+      "portions": [
+        {
+          "id": "90057",
+          "fdc_id": "172191",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "egg",
+          "gram_weight": "9",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 172192,
+      "description": "Egg, turkey, whole, fresh, raw",
+      "portions": [
+        {
+          "id": "90058",
+          "fdc_id": "172192",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "egg",
+          "gram_weight": "79",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173021,
+      "description": "Figs, raw",
+      "portions": [
+        {
+          "id": "91820",
+          "fdc_id": "173021",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (2-1/2\" dia)",
+          "gram_weight": "64",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "91821",
+          "fdc_id": "173021",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (2-1/4\" dia)",
+          "gram_weight": "50",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "91822",
+          "fdc_id": "173021",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (1-1/2\" dia)",
+          "gram_weight": "40",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173030,
+      "description": "Gooseberries, raw",
+      "portions": [
+        {
+          "id": "91835",
+          "fdc_id": "173030",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "150",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173033,
+      "description": "Grapefruit, raw, pink and red and white, all areas",
+      "portions": [
+        {
+          "id": "91838",
+          "fdc_id": "173033",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup sections, with juice",
+          "gram_weight": "230",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "91839",
+          "fdc_id": "173033",
+          "seq_num": "2",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (approx 4-1/2\" dia)",
+          "gram_weight": "166",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "91840",
+          "fdc_id": "173033",
+          "seq_num": "3",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (approx 4\" dia)",
+          "gram_weight": "128",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "91841",
+          "fdc_id": "173033",
+          "seq_num": "4",
+          "amount": "0.5",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (approx 3-1/2\" dia)",
+          "gram_weight": "100",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173423,
+      "description": "Egg, whole, cooked, fried",
+      "portions": [
+        {
+          "id": "92497",
+          "fdc_id": "173423",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "46",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173424,
+      "description": "Egg, whole, cooked, hard-boiled",
+      "portions": [
+        {
+          "id": "92498",
+          "fdc_id": "173424",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, chopped",
+          "gram_weight": "136",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "92499",
+          "fdc_id": "173424",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "tbsp",
+          "gram_weight": "8.5",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "92500",
+          "fdc_id": "173424",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large",
+          "gram_weight": "50",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173944,
+      "description": "Bananas, raw",
+      "portions": [
+        {
+          "id": "93511",
+          "fdc_id": "173944",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, mashed",
+          "gram_weight": "225",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "93512",
+          "fdc_id": "173944",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup, sliced",
+          "gram_weight": "150",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "93513",
+          "fdc_id": "173944",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "extra small (less than 6\" long)",
+          "gram_weight": "81",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "93514",
+          "fdc_id": "173944",
+          "seq_num": "4",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "small (6\" to 6-7/8\" long)",
+          "gram_weight": "101",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "93515",
+          "fdc_id": "173944",
+          "seq_num": "5",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "medium (7\" to 7-7/8\" long)",
+          "gram_weight": "118",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "93516",
+          "fdc_id": "173944",
+          "seq_num": "6",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "large (8\" to 8-7/8\" long)",
+          "gram_weight": "136",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "93517",
+          "fdc_id": "173944",
+          "seq_num": "7",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "extra large (9\" or longer)",
+          "gram_weight": "152",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "93518",
+          "fdc_id": "173944",
+          "seq_num": "8",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "126",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173946,
+      "description": "Blackberries, raw",
+      "portions": [
+        {
+          "id": "93521",
+          "fdc_id": "173946",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "144",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173963,
+      "description": "Currants, european black, raw",
+      "portions": [
+        {
+          "id": "93544",
+          "fdc_id": "173963",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "112",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 173964,
+      "description": "Currants, red and white, raw",
+      "portions": [
+        {
+          "id": "93545",
+          "fdc_id": "173964",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "112",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 174262,
+      "description": "Peanuts, all types, dry-roasted, with salt",
+      "portions": [
+        {
+          "id": "94041",
+          "fdc_id": "174262",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "oz",
+          "gram_weight": "28.35",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "94042",
+          "fdc_id": "174262",
+          "seq_num": "2",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "peanut",
+          "gram_weight": "1",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    },
+    {
+      "fdcId": 174683,
+      "description": "Grapes, red or green (European type, such as Thompson seedless), raw",
+      "portions": [
+        {
+          "id": "94748",
+          "fdc_id": "174683",
+          "seq_num": "1",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "cup",
+          "gram_weight": "151",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "94749",
+          "fdc_id": "174683",
+          "seq_num": "2",
+          "amount": "10",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "grapes",
+          "gram_weight": "49",
+          "data_points": "24",
+          "footnote": "",
+          "min_year_acquired": ""
+        },
+        {
+          "id": "94750",
+          "fdc_id": "174683",
+          "seq_num": "3",
+          "amount": "1",
+          "measure_unit_id": "9999",
+          "portion_description": "",
+          "modifier": "NLEA serving",
+          "gram_weight": "126",
+          "data_points": "",
+          "footnote": "",
+          "min_year_acquired": ""
+        }
+      ]
+    }
+  ]
+}
