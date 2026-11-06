@@ -1,0 +1,68 @@
+{
+  "base_commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+  "status": "locally-built-browser-spot-checked-unreleased",
+  "patch_strategy": "Apply combined.patch directly to a clean exact base, not over earlier patches.",
+  "changed_files": [
+    {
+      "path": "sport/src/measurements-shared.js",
+      "base_sha256": "bf1b318b9f935db99988558b63dff275a554bf42407f78fade6b298e3eedb609",
+      "candidate_sha256": "358e44afa1bb0464896615eb0fd486ad4c02229916746e82c11ff72c055b9136"
+    },
+    {
+      "path": "sport/src/measurements-v2.js",
+      "base_sha256": "48ad57d12834840f70083401a488ebbe42a66beaebf34dca886f73f589fc135f",
+      "candidate_sha256": "5b362b6fb3ca5d4122f917d4b8e3396bf82757281feea81eaf20ecb6b05a7d8b"
+    },
+    {
+      "path": "sport/src/quick-value-input.js",
+      "base_sha256": "6d9f20810f600e01dfa33f7d38afc912018cf77ae3def6786b6228b1ae111b12",
+      "candidate_sha256": "95cb619080508226caaba4cb4c06b54ed2fc69efb0b58c7cfd680b4b5563fa14"
+    },
+    {
+      "path": "sport/scripts/check-automatic-integration.mjs",
+      "base_sha256": "f8119b4abdb448c7057d6b9b28875bb76c8d286da072a9d32351f39048677f7a",
+      "candidate_sha256": "dee79d720d8df21ccb45536d79c0bbcf6ae58d44c11ee897021831572ace7b89"
+    },
+    {
+      "path": "sport/scripts/check-clean-shell.mjs",
+      "base_sha256": "4d7f37dca513191be8505b9b51b9e062a683fb41b771c1e86bf043b732e0f259",
+      "candidate_sha256": "aab6de1c6140764bf5658e3009d91fce6fd6665c8c599379d41113a42dc0c580"
+    },
+    {
+      "path": "sport/scripts/check-measurement-input-events.mjs",
+      "base_sha256": null,
+      "candidate_sha256": "26d0c5ab7b50f689bdbf553f40b7cc869cea4acaee6f0b3116d3856d8237ea5a"
+    },
+    {
+      "path": "sport/scripts/check.mjs",
+      "base_sha256": "d772124434951e624f2fcd08e0fc99a5978450b3da5ae274300de4d69e2e41db",
+      "candidate_sha256": "44b1472387c9700f63efd120eebcd6fd4bfbaae14e66aaa08459d79d2ab8acc3"
+    }
+  ],
+  "patch_sha256": "933b88b16e416a6cf2cb431499e784dda067c94832ccf162d92045d027fdcd4a",
+  "generated_html_sha256": "e65cdb2c88fea064d2179f81e90b5a32bb27e1e0c764b808f275f381748e692c",
+  "generated_html_paths": [
+    "sport/index.html",
+    "sport/dist/index.html",
+    "dist/index.html",
+    "dist/sport/index.html"
+  ],
+  "checks": {
+    "event_sequence": 14,
+    "form": 36,
+    "recovery_csv": 49,
+    "independent_additional": 12,
+    "aes_automatic_integration": 33,
+    "scheduler": 22,
+    "full_repository_check": "passed",
+    "build": "passed",
+    "independent_review": "passed",
+    "browser": "See browser-results.json for per-case build applicability; not a full automated-suite pass",
+    "source_clean": true
+  },
+  "known_limits": [
+    "guest sync status can be misleading",
+    "native imported known-field range/step constraints",
+    "no real mobile/PWA/auth/RLS/cross-app validation"
+  ]
+}

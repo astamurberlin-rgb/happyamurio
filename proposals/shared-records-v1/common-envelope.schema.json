@@ -1,0 +1,344 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "owner_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_epoch": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "document_revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "operation_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "number",
+            "operation_id"
+          ],
+          "additionalProperties": false
+        },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "locale": {
+              "type": "string",
+              "minLength": 1
+            },
+            "time_zone": {
+              "type": "string",
+              "minLength": 1
+            },
+            "units": {
+              "type": "object",
+              "properties": {
+                "length": {
+                  "enum": [
+                    "cm",
+                    "in"
+                  ]
+                },
+                "mass": {
+                  "enum": [
+                    "kg",
+                    "lb"
+                  ]
+                }
+              },
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "app_preferences": {
+          "type": "object",
+          "properties": {
+            "day": {
+              "type": "object"
+            },
+            "meal": {
+              "type": "object"
+            },
+            "sport": {
+              "type": "object"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "revision",
+        "preferences",
+        "app_preferences"
+      ],
+      "additionalProperties": false
+    },
+    "records": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "record_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_app": {
+            "enum": [
+              "day",
+              "meal",
+              "sport"
+            ]
+          },
+          "payload_schema_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "revision": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "operation_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "number",
+              "operation_id"
+            ],
+            "additionalProperties": false
+          },
+          "provenance": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "source_app": {
+                    "enum": [
+                      "day",
+                      "meal",
+                      "sport"
+                    ]
+                  },
+                  "method": {
+                    "const": "created"
+                  },
+                  "creation_operation_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "source_app",
+                  "method",
+                  "creation_operation_id"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "source_app": {
+                    "enum": [
+                      "day",
+                      "meal",
+                      "sport"
+                    ]
+                  },
+                  "method": {
+                    "const": "imported"
+                  },
+                  "source_namespace": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "legacy_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "import_batch": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "source_app",
+                  "method",
+                  "source_namespace",
+                  "legacy_ref",
+                  "import_batch"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "record_type",
+          "source_app",
+          "payload_schema_version",
+          "revision",
+          "provenance",
+          "payload"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "tombstones": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "record_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "operation_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "number",
+              "operation_id"
+            ],
+            "additionalProperties": false
+          },
+          "prior_record_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "recovery_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "record_type",
+          "revision",
+          "prior_record_revision",
+          "recovery_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "migration": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "manifest_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "checkpoint_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "state": {
+              "enum": [
+                "staged",
+                "active",
+                "read_only"
+              ]
+            }
+          },
+          "required": [
+            "manifest_ref",
+            "checkpoint_ref",
+            "state"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "operation_receipts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "request_digest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "checkpoint_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "request_digest",
+          "result_revision",
+          "checkpoint_ref"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "owner_id",
+    "authority_epoch",
+    "document_revision",
+    "profile",
+    "records",
+    "tombstones",
+    "migration",
+    "operation_receipts"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Proposed common Happy snapshot; not a deployed API"
+}

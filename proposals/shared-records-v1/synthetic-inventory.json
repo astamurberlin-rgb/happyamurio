@@ -1,0 +1,80 @@
+{
+  "synthetic_only": true,
+  "source_count": 7,
+  "occurrences": [
+    {
+      "ref": "synthetic-0",
+      "classification": "supported",
+      "payload": {
+        "date": "2030-01-02",
+        "values": {
+          "waist": 80
+        }
+      }
+    },
+    {
+      "ref": "synthetic-1",
+      "classification": "preserve_extension",
+      "payload": {
+        "date": "2030-01-03",
+        "values": {
+          "unknown": 0,
+          "nullable": null,
+          "outsideOldRange": 501,
+          "negative": -1
+        }
+      }
+    },
+    {
+      "ref": "synthetic-2",
+      "classification": "quarantine_invalid_calendar",
+      "payload": {
+        "date": "2030-02-31",
+        "values": {
+          "waist": 80
+        }
+      }
+    },
+    {
+      "ref": "synthetic-3",
+      "classification": "duplicate_candidate",
+      "duplicate_group": "synthetic-group-A",
+      "payload": {
+        "date": "2030-01-02",
+        "values": {
+          "waist": 80
+        }
+      }
+    },
+    {
+      "ref": "synthetic-4",
+      "classification": "unowned",
+      "payload": {
+        "date": "2030-01-04",
+        "values": {
+          "waist": 80
+        }
+      }
+    },
+    {
+      "ref": "synthetic-5",
+      "classification": "legacy_trash_requires_review",
+      "payload": {
+        "date": "2030-01-05",
+        "values": {
+          "waist": 80
+        }
+      }
+    },
+    {
+      "ref": "synthetic-6",
+      "classification": "unsupported_type",
+      "payload": {
+        "type": "future.synthetic",
+        "content": {
+          "preserve": true
+        }
+      }
+    }
+  ]
+}

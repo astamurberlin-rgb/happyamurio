@@ -1,0 +1,8 @@
+{
+  "original_sha256": "f68775d7ac8fb6b9eaaa9bc2718fa2cb2466c7a2740a41767b84db52469fb319",
+  "fixed_sha256": "e65cdb2c88fea064d2179f81e90b5a32bb27e1e0c764b808f275f381748e692c",
+  "qa_fixed_sha256": "1d6dc9d0ee53648db94d25e854477d76c278cc604b2f941b2850b0bf28856f21",
+  "old_qa_only_added_first_csp": true,
+  "fixed_qa_only_added_first_csp": true,
+  "protective_csp": "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; connect-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; object-src 'none'; frame-src 'none'; worker-src 'none'; form-action 'none'; base-uri 'none'\">"
+}

@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-06",
+  "driver": "Chromium UI spot checks on a protected private preview",
+  "baseline_sha256": "f68775d7ac8fb6b9eaaa9bc2718fa2cb2466c7a2740a41767b84db52469fb319",
+  "repaired_sha256": "e65cdb2c88fea064d2179f81e90b5a32bb27e1e0c764b808f275f381748e692c",
+  "automated_portable_harness": {
+    "status": "not_executed",
+    "planned_cases": 15,
+    "reason": "Separate automated browser process failed before app load; it is not equivalent to the executed UI spot checks"
+  },
+  "checks": [
+    {
+      "scenario": "empty_guest",
+      "status": "pass",
+      "build": "baseline",
+      "evidence": "Empty guest UI showed no measurements. Initial diagnostic localStorage/sessionStorage lengths were both zero; no values read."
+    },
+    {
+      "scenario": "all_17_controls_save",
+      "status": "pass",
+      "build": "both",
+      "evidence": "Baseline values50..66 visible and reloaded; repaired build all17 persisted in subsequently downloaded trash record."
+    },
+    {
+      "scenario": "reload_saved_values",
+      "status": "pass",
+      "build": "both",
+      "evidence": "Baseline all17 survived reload; repaired72.5 and cleared waist survived reload."
+    },
+    {
+      "scenario": "edit_date_move",
+      "status": "pass",
+      "build": "both",
+      "evidence": "Date moved without duplicate; edited weight retained."
+    },
+    {
+      "scenario": "explicit_known_field_clear",
+      "status": "fail",
+      "build": "baseline",
+      "evidence": "waist59 -> empty DOM -> Save -> reopen59, reproduced twice."
+    },
+    {
+      "scenario": "explicit_known_field_clear",
+      "status": "pass",
+      "build": "repaired",
+      "evidence": "waist81 -> empty -> weight72.5 -> date2026-02-03 -> Save/reopen/reload remains empty. Downloaded JSON omits waist."
+    },
+    {
+      "scenario": "close_reopen_unsaved",
+      "status": "pass",
+      "build": "both",
+      "evidence": "Baseline90 discarded back to72.5; repaired malformed edit discarded back to72.5."
+    },
+    {
+      "scenario": "hidden_extensions_roundtrip",
+      "status": "pass",
+      "build": "both",
+      "evidence": "Downloaded JSON retains synthetic-extension:0, nullable:null, formula-like quoted key:12 after visible-field edit/reload; repaired also after clearing waist."
+    },
+    {
+      "scenario": "delete_trash_reload_restore",
+      "status": "pass",
+      "build": "baseline",
+      "evidence": "Empty journal + trash1; reload; Restore shows original values."
+    },
+    {
+      "scenario": "undo_once",
+      "status": "pass",
+      "build": "baseline",
+      "evidence": "Delete -> Undo restores one record; Undo control disappears."
+    },
+    {
+      "scenario": "undo_twice_stale_closure",
+      "status": "not_executed",
+      "build": "none",
+      "evidence": "No second Undo UI control. Stale closure injection not available through read-only browser evaluation."
+    },
+    {
+      "scenario": "save_date_collision",
+      "status": "pass",
+      "build": "repaired",
+      "evidence": "Edit2026-02-04 to occupied02-03 refused; both records remain."
+    },
+    {
+      "scenario": "restore_date_collision",
+      "status": "pass",
+      "build": "repaired",
+      "evidence": "Delete02-04; add new02-04 weight99; restore refused; new99 remains and original all17 retained in trash."
+    },
+    {
+      "scenario": "stale_trash_list",
+      "status": "not_executed",
+      "build": "none",
+      "evidence": "No runtime state mutation injection used."
+    },
+    {
+      "scenario": "quota_readback_failure",
+      "status": "not_executed",
+      "build": "none",
+      "evidence": "Full Playwright injection harness could not launch; Available browser inspection is read-only."
+    },
+    {
+      "scenario": "stale_form_session_owner",
+      "status": "not_executed",
+      "build": "none",
+      "evidence": "No session or owner changes injected; no account used."
+    },
+    {
+      "scenario": "csv_real_download",
+      "status": "pass",
+      "build": "baseline",
+      "evidence": "Downloaded CSV files; BOM efbbbf, semicolon parsing, quoted key with semicolon and doubled quote decoded correctly. Formula-like extension header starts with Дополнительное поле:, not =."
+    },
+    {
+      "scenario": "native_imported_step_limit",
+      "status": "known_limitation",
+      "build": "both",
+      "evidence": "Imported weight71.25 gives stepMismatch=true and blocks untouched Save. Repaired input remains71.25; no silent normalization."
+    },
+    {
+      "scenario": "native_min_max_step",
+      "status": "pass",
+      "build": "repaired",
+      "evidence": "0 -> rangeUnderflow;501 -> rangeOverflow;71.25 -> stepMismatch. Save leaves form open and value intact."
+    },
+    {
+      "scenario": "malformed_exponent_not_clear",
+      "status": "pass",
+      "build": "repaired",
+      "evidence": "Typing1e gives badInput=true,value=\"\"; Save blocked; close/reopen retains persisted72.5."
+    },
+    {
+      "scenario": "browser_back_forward",
+      "status": "pass",
+      "build": "repaired",
+      "evidence": "Navigate to diagnostic page, Back, Forward, Back; journal returns with dates02-03/02-04 and72.5/99."
+    },
+    {
+      "scenario": "guest_sync_banner",
+      "status": "known_issue",
+      "build": "baseline",
+      "evidence": "After guest mutations banner may say sync stopped; settings says no active owned profile. Reload/navigation returns local-only. Repaired not specifically requalified."
+    },
+    {
+      "scenario": "mobile_viewport_iphone_pwa",
+      "status": "not_executed",
+      "build": "none",
+      "evidence": "Available browser driver exposes no viewport mutation; no real iPhone/Safari/PWA test."
+    },
+    {
+      "scenario": "csp_blocking",
+      "status": "pass",
+      "build": "qa_wrapper",
+      "evidence": "First CSP meta read from app DOM contains connect-src none; diagnostic local fetch attempt raises securitypolicyviolation connect-src."
+    },
+    {
+      "scenario": "synthetic_cleanup",
+      "status": "pass",
+      "build": "qa_wrapper",
+      "evidence": "Owned marker validated; only app namespaces and marker removed. UI reports cleanupCompleted true, anyStorageRemaining false. Tab closed; preview stopped."
+    }
+  ],
+  "limitations": [
+    "No live backend, migration, real accounts, cloud upload or deployment tested.",
+    "Network capture not available; CSP DOM + securitypolicyviolation evidence only, not a packet trace.",
+    "Console query returned unrelated browser-extension errors; no clean-console assertion.",
+    "No screenshot or private launch logs included in this sanitized report."
+  ],
+  "safety": {
+    "initial_storage_empty": true,
+    "auth_session_created": false,
+    "production_source_modified_by_qa": false,
+    "qa_fixture_marker_removed": true,
+    "remaining_storage_after_cleanup": false,
+    "preview_stopped": true
+  }
+}

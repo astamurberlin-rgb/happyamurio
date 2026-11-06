@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "owner_id": "synthetic-owner-A",
+  "authority_epoch": 1,
+  "document_revision": 4,
+  "profile": {
+    "revision": {
+      "number": 1,
+      "operation_id": "synthetic-op-profile"
+    },
+    "preferences": {
+      "locale": "ru",
+      "time_zone": "Etc/UTC",
+      "units": {
+        "length": "cm",
+        "mass": "kg"
+      }
+    },
+    "app_preferences": {}
+  },
+  "records": {
+    "synthetic-record-A": {
+      "id": "synthetic-record-A",
+      "record_type": "measurement",
+      "source_app": "sport",
+      "payload_schema_version": 1,
+      "revision": {
+        "number": 2,
+        "operation_id": "synthetic-op-create"
+      },
+      "provenance": {
+        "source_app": "sport",
+        "source_namespace": "sport/journal",
+        "legacy_ref": "measurements:synthetic-snapshot:occurrence-0",
+        "import_batch": "synthetic-batch-A",
+        "method": "imported"
+      },
+      "payload": {
+        "date": "2030-01-02",
+        "values": {
+          "waist": 80,
+          "unknownExtension": 0,
+          "unknownNullable": null
+        },
+        "units": {
+          "waist": "cm"
+        }
+      }
+    }
+  },
+  "tombstones": {
+    "synthetic-record-B": {
+      "id": "synthetic-record-B",
+      "record_type": "measurement",
+      "revision": {
+        "number": 4,
+        "operation_id": "synthetic-op-delete"
+      },
+      "prior_record_revision": 3,
+      "recovery_ref": "synthetic-checkpoint-B"
+    }
+  },
+  "migration": {
+    "manifest_ref": "synthetic-manifest-A",
+    "checkpoint_ref": "synthetic-checkpoint-A",
+    "state": "staged"
+  },
+  "operation_receipts": {
+    "synthetic-op-profile": {
+      "request_digest": "synthetic-digest-1",
+      "result_revision": 1,
+      "checkpoint_ref": "synthetic-checkpoint-1"
+    },
+    "synthetic-op-create": {
+      "request_digest": "synthetic-digest-2",
+      "result_revision": 2,
+      "checkpoint_ref": "synthetic-checkpoint-2"
+    },
+    "synthetic-op-delete": {
+      "request_digest": "synthetic-digest-4",
+      "result_revision": 4,
+      "checkpoint_ref": "synthetic-checkpoint-4"
+    },
+    "synthetic-op-B-create": {
+      "request_digest": "synthetic-digest-3",
+      "result_revision": 3,
+      "checkpoint_ref": "synthetic-checkpoint-3"
+    }
+  }
+}

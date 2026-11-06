@@ -1,0 +1,15 @@
+{
+  "proposal_checks_passed": 28,
+  "network_calls": 0,
+  "scope": "JSON Schema and listed semantic invariants on synthetic fixtures only",
+  "not_tested": [
+    "production adapters",
+    "CAS transport",
+    "server fencing",
+    "encryption",
+    "live RLS",
+    "migration",
+    "devices",
+    "full Meal source"
+  ]
+}

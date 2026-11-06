@@ -1,0 +1,19 @@
+{
+  "synthetic_only": true,
+  "entries": [
+    {
+      "owner": "synthetic-owner-A",
+      "source_namespace": "sport/journal",
+      "source_collection": "measurements",
+      "legacy_id": "synthetic-legacy-1",
+      "common_id": "synthetic-measurement-1"
+    },
+    {
+      "owner": "synthetic-owner-A",
+      "source_namespace": "sport/journal",
+      "source_collection": "workouts",
+      "legacy_id": "synthetic-legacy-1",
+      "common_id": "synthetic-workout-1"
+    }
+  ]
+}

@@ -10,6 +10,10 @@ access changes, imports or deployment were involved. Data in all tests are
 fictional. The original source checkout remains clean. No Site credential was
 used in this stage.
 
+Follow-up: [real browser checks](sync-sport-browser-20261106.md) found a numeric
+focus/blur interaction that prevented clearing a field. A separate combined patch
+repairs it and passes the browser retest. This report describes the earlier build.
+
 ## Completed changes
 
 **Deletion and recovery.** Both handlers now construct a separate next journal
