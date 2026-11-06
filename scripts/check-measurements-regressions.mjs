@@ -90,7 +90,7 @@ await test('migration preserves current values and imports only missing dates', 
 });
 
 await test('migration preserves existing recovery trash', async () => {
-  const trash = [{ id: 'fictional-deleted-entry', date }];
+  const trash = [{ id: 'fictional-deleted-entry', record: { date, values: { weight: 80 } } }];
   const f = await fixture({ migrated: false, local: documentOf(), trash });
   f.run('hmSelect()'); assert.deepEqual(JSON.parse(f.storage.get(prefix + 'owner-a:trash')), trash);
 });

@@ -26,7 +26,11 @@ policy, account, or data changes were made.
 4. Edits made during upload are reconciled and uploaded before reporting that
    all measurements are synchronized. The bounded retry loop remains; exhausted
    attempts report pending synchronization rather than success.
-5. Day rechecks the current Day link after refreshing a food counter. A stale
+5. Recovery entries are reconciled by immutable ID rather than replacing a stale
+   whole array. Delete/restore callbacks refresh current local state; malformed
+   recovery bytes are preserved, and interrupted saves retain a recovery copy.
+   See [the recovery follow-up](sync-recovery-followup-20261106.md) for scope.
+6. Day rechecks the current Day link after refreshing a food counter. A stale
    button cannot add a serving after Meal has disabled that Day link. Existing
    servings and the independent Sport link are preserved.
 
@@ -52,6 +56,7 @@ node scripts/check-food-counters.mjs
 node scripts/check-food-counter-offline-boundaries.mjs
 node scripts/check-measurements-model.mjs
 node scripts/check-measurements-regressions.mjs
+node scripts/check-measurements-recovery.mjs
 node scripts/check-measurements-shared.mjs
 node scripts/check-measurements-synthetic.mjs
 node scripts/check-measurements-two-clients.mjs
@@ -63,8 +68,8 @@ node scripts/check-selfcare.cjs
 ```
 
 All listed checks pass. Added measurement checks cover 15 merge-contract
-scenarios, 15 real-adapter regression scenarios, and 20 separate reference-model
-scenarios. Seven additional counter checks cover offline recovery, failed reads,
+scenarios, 15 real-adapter regression scenarios, 16 local recovery scenarios,
+and 20 separate reference-model scenarios. Seven additional counter checks cover offline recovery, failed reads,
 CAS exhaustion, account changes, stopping, local storage failure, and malformed
 remote documents. The original counter suite includes the stale-Day-button test.
 
@@ -96,9 +101,10 @@ source/build consistency, local paths, UI, exports, timing, and diary regression
   completed synchronization.
 - Measurement conflicts resolve per date, not per field. Simultaneous independent
   field edits on the same date do not combine automatically.
-- Recovery trash still has a separate multi-tab stale-write risk. Correcting
-  that requires an explicit restore/delete model; this patch only avoids
-  overwriting existing trash during initial migration.
+- Recovery changes now preserve sequential updates from stale tabs and failed
+  delete/restore writes. Truly interleaved localStorage read/modify/write
+  operations are not atomic, and legacy clients still use the old behavior.
+  Recovery entries remain local-only, not synchronized across origins/devices.
 - The adapter still uses localStorage without transactional multi-tab write-ahead
   storage. The reference model's stronger persistence behavior must not be
   attributed to the real adapter.
