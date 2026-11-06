@@ -73,5 +73,8 @@ on the strength of these checks.
 
 The wire model still resolves conflicts by entire date. Local stale-form rejection
 is not field-level merge across devices. localStorage is still not transactional
-across tabs. Exact deployed Day/Sport source reconciliation and an authorized
-clean test account remain prerequisites for a real cross-app verification.
+across tabs. The subsequent [exact-source audit](sync-deployed-contracts-20261106.md)
+confirms a different active sport/journal contract in current Sport. This form
+fix needs a surgical adaptation there; replacing the whole adapter is unsafe.
+An authorized clean test account and a reviewed single-authority integration
+remain prerequisites for a real cross-app verification.

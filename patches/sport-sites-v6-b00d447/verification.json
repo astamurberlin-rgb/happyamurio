@@ -1,0 +1,49 @@
+{
+  "status": "unreleased-source-only",
+  "base_commit": "b00d4474a79f43a0bd64f23b71556f6a7409fe9f",
+  "site_version": 6,
+  "artifacts": [
+    {
+      "path": "check-measurement-fix.mjs",
+      "bytes": 10853,
+      "sha256": "35528e573e28e5753a16c71a9ff37bdfa3ed8a6c8a9227593536db8eb2951117"
+    },
+    {
+      "path": "measurement-preservation.patch",
+      "bytes": 15214,
+      "sha256": "4b882867c51f1f11e1f1fe64c64483dab2ee8370d8fc9f9737d2f33a2ab8d954"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "sport/src/measurements-v2.js",
+      "base_sha256": "48ad57d12834840f70083401a488ebbe42a66beaebf34dca886f73f589fc135f",
+      "candidate_sha256": "42a4c8b75c693ab1fefc130c133992a9404d0112a36ceb08c8b9e06ee91b427d"
+    },
+    {
+      "path": "sport/scripts/check-automatic-integration.mjs",
+      "base_sha256": "f8119b4abdb448c7057d6b9b28875bb76c8d286da072a9d32351f39048677f7a",
+      "candidate_sha256": "c7aadf93ab7bb2f938c91c9b07bd6600ee89e4b80a785a3049bcc7619eb2b7f5"
+    }
+  ],
+  "tests": {
+    "targeted": 36,
+    "automatic_integration": 31,
+    "scheduler": 22,
+    "failed": 0,
+    "real_network_calls": 0,
+    "independent_review": "passed",
+    "syntax": "passed",
+    "patch_applies_to_base": "passed",
+    "original_source_clean": true
+  },
+  "not_performed": [
+    "build",
+    "deployment",
+    "real accounts",
+    "personal imports",
+    "live RLS or transport",
+    "browser or PWA",
+    "cross-origin acceptance"
+  ]
+}

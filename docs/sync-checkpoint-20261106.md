@@ -10,6 +10,9 @@ Based on `astamurberlin-rgb/happyamurio` main commit
 verified against GitHub blob hashes before editing. Only task files are changed.
 Separate Sites builds have not been replaced or synchronized into this branch.
 Newer Sites journal/UI adapters must not be overwritten by older GitHub versions.
+The subsequent [exact-source audit](sync-deployed-contracts-20261106.md) now
+confirms that current Sport uses sport/journal and Day opens a separate Sport
+link. The dedicated-channel fixes below are not a drop-in deployed-app upgrade.
 
 No personal diaries, measurements, health exports, account credentials, or tokens
 are included. All test data are fictional. No production or Supabase schema,
@@ -95,8 +98,11 @@ source/build consistency, local paths, UI, exports, timing, and diary regression
 
 ## Remaining work before release or historical-data import
 
-- Reconcile exact current Day, Meal, and Sport deployment sources and newer
-  journal changes. Do not replace whole Sites applications with this branch.
+- Exact Day/Sport source reconciliation is now documented in the
+  [deployed-contract audit](sync-deployed-contracts-20261106.md); fresh Meal
+  metadata matches the preserved v12 fixture's source. Current Sport journal
+  authority and the dedicated-channel candidate remain different protocols.
+  Design one authority and safe transition. Do not replace whole Sites apps.
 - Test with an authorized separate test account across two browsers/devices:
   read/write, loss of network, reload, concurrent changes, account switch, and
   mixed old/new clients. RLS, real authentication, and actual network transport
@@ -121,5 +127,6 @@ source/build consistency, local paths, UI, exports, timing, and diary regression
 - Keep old installations and browser storage until migration and recovery are
   verified. No historical measurements were imported here.
 
-Recommended next step: review this isolated patch, reconcile exact deployed
-sources, then run the controlled cross-app test before release.
+Recommended next step: review the exact-source audit, adapt the narrow
+preservation fix to current Sport, and settle the single-authority boundary
+before controlled cross-app testing or release.

@@ -63,6 +63,12 @@ but their exact Day/Sport source bytes were not retrieved in this follow-up.
 The archived report is not a fresh source audit or permission to activate a new
 channel. The GitHub checkpoint must not replace whole deployed applications.
 
+Update: the later [exact-source audit](sync-deployed-contracts-20261106.md) has
+now read Day and Sport and confirmed Sport's active journal authority. Fresh
+Meal USDA Site metadata and successful deployment status still identify v12 and
+the fixture's exact source SHA. This strengthens the fixture's provenance, but
+does not turn its simulated adapter result into a live cross-app test.
+
 Before release: obtain permitted exact deployment sources, reconcile channels
 without losing journal fields, test with an authorized clean account, and verify
 rollback and mixed-version handling. Existing personal profiles are not empty
