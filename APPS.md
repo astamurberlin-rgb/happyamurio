@@ -26,8 +26,8 @@
 
 ## Icon Studio
 
-Happy Icon Studio **2.16**: https://astamurberlin-rgb.github.io/happyamurio/icon-studio/
-Исходники и статика находятся в `icon-studio/`, проверки — `icon-studio/checks/`. Это публикация Sites v20; старый `prototypes/happy-icon-studio.html` перенаправляет на новый адрес. Правки Sites переносятся экспортом/импортом JSON, автоматически между доменами не синхронизируются. Сначала сохранить существующие GitHub-правки и закрыть старые вкладки v1.4.
+Happy Icon Studio **2.17**: https://astamurberlin-rgb.github.io/happyamurio/icon-studio/
+Исходники и статика находятся в `icon-studio/`, проверки — `icon-studio/checks/`. Это публикация Sites v20; старый `prototypes/happy-icon-studio.html` перенаправляет на новый адрес. Правки Sites переносятся экспортом/импортом JSON, автоматически между доменами не синхронизируются. Сначала сохранить существующие GitHub-правки и закрыть старые вкладки v1.4. С 2.17 в шапке есть кнопка входа в аккаунт Happy, общая с Color Studio. Файл `icon-studio/happy-studio-account.js` — точная копия `shared/happy-studio-account.js`. При переносе из Sites нужно сохранить его и подключение в `index.html`, проверка — `node scripts/check-studio-account.mjs`.
 
 ## Старые ссылки и версии
 

@@ -1,4 +1,4 @@
-const CACHE='happy-studio-v12.7-cloud';
+const CACHE='happy-studio-v12.8-header-account';
 const ASSETS=['../shared/happy-reference-themes.js?v=3','./reference-themes.css?v=2','./color-workspace.js?v=12.5','./color-workspace.css?v=12.5','./studio.html','./happy-family-color-studio-v12.html','./happy-sport-color-preview-v2.html','./happy-family-studio.webmanifest','../shared/happy-gradients.js?v=1','../shared/happy-gradient-editor.js?v=1','../shared/happy-gradient-editor.css?v=1'];
 const allowed=new Set(ASSETS.map(path=>new URL(path,self.location.href).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));

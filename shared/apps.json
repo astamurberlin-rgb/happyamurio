@@ -13,13 +13,13 @@
   },
   "colorStudio": {
     "entry": "prototypes/happy-family-color-studio-v12.html",
-    "version": "12.7",
+    "version": "12.8",
     "kind": "studio",
     "storageKey": "happy-family-color-studio-v11"
   },
   "iconStudio": {
     "entry": "icon-studio/index.html",
-    "version": "2.16",
+    "version": "2.17",
     "kind": "studio",
     "storageKey": "happy_icon_studio_v1",
     "storageScript": "icon-studio/studio.js"
