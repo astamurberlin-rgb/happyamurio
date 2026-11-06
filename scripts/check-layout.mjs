@@ -9,7 +9,8 @@ let scripts=0;
 for(const name of ['selfcare-core.js','selfcare-ui.js','energy-widget.js'])new vm.Script(await read('day/'+name),{filename:'day/'+name});
 for(const [app,config] of Object.entries(apps)){
  const html=await read(config.entry);
- assert.ok(html.includes(expectedKeys[app]||config.storageKey),`${app}: storage key changed`);
+ const storageSource=config.storageScript ? await read(config.storageScript) : html;
+ assert.ok(storageSource.includes(expectedKeys[app]||config.storageKey),`${app}: storage key changed`);
  assert.ok(html.includes(`data-app-version="${config.version}"`),`${app}: version mismatch`);
  for(const m of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)){
   if (/type=["']application\/json["']/.test(m[0].split('>')[0])) JSON.parse(m[1]);
@@ -31,11 +32,11 @@ for(const [app,config] of Object.entries(apps)){
  vm.runInContext(adapter,context);
  assert.equal(await context.rawGet(expectedKeys[app]),existing,`${app}: existing diary unreadable`);
 }
-for(const [old,app] of [['happyday-v50_1.html','day'],['happyday-meal-v22.html','meal']]){
+for(const [old,app] of [['happyday-v50_1.html','day'],['happyday-meal-v22.html','meal'],['prototypes/happy-icon-studio.html','icon-studio']]){
  const html=await read(old);const code=/<script>([\s\S]*?)<\/script>/.exec(html)[1];
  let target;
  vm.runInNewContext(code,{location:{search:'?test=1',hash:'#settings',replace:url=>target=url}});
- assert.equal(target,`./${app}/?test=1#settings`);
+ assert.equal(target,`${app==='icon-studio'?'..':'.'}/${app}/?test=1#settings`);
 }
 assert.ok((await read('day/index.html')).includes('href="../meal/"'));
 assert.ok((await read('meal/index.html')).includes('href="../day/"'));

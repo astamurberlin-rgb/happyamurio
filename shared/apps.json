@@ -16,5 +16,12 @@
     "version": "12.5",
     "kind": "studio",
     "storageKey": "happy-family-color-studio-v11"
+  },
+  "iconStudio": {
+    "entry": "icon-studio/index.html",
+    "version": "2.15",
+    "kind": "studio",
+    "storageKey": "happy_icon_studio_v1",
+    "storageScript": "icon-studio/studio.js"
   }
 }

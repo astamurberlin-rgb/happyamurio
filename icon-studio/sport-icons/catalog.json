@@ -1,0 +1,422 @@
+[
+  {
+    "id": "sport:01_barbell",
+    "src": "sport-icons/base/01_barbell.png",
+    "label": "Штанга",
+    "title": "Штанга",
+    "group": "base",
+    "number": 1,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:02_dumbbells",
+    "src": "sport-icons/base/02_dumbbells.png",
+    "label": "Гантели",
+    "title": "Гантели",
+    "group": "base",
+    "number": 2,
+    "characterId": "char:kim"
+  },
+  {
+    "id": "sport:03_kettlebell",
+    "src": "sport-icons/base/03_kettlebell.png",
+    "label": "Гиря",
+    "title": "Гиря",
+    "group": "base",
+    "number": 3,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:04_cable_machine",
+    "src": "sport-icons/base/04_cable_machine.png",
+    "label": "Блочный тренажёр",
+    "title": "Блочный тренажёр",
+    "group": "base",
+    "number": 4,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:05_resistance_band",
+    "src": "sport-icons/base/05_resistance_band.png",
+    "label": "Резинка",
+    "title": "Резинка",
+    "group": "base",
+    "number": 5,
+    "characterId": "char:rima"
+  },
+  {
+    "id": "sport:06_strength_machine",
+    "src": "",
+    "label": "Силовой тренажёр",
+    "title": "Силовой тренажёр",
+    "group": "base",
+    "number": 6,
+    "characterId": ""
+  },
+  {
+    "id": "sport:07_pullup_bar_rings",
+    "src": "sport-icons/base/07_pullup_bar_rings.png",
+    "label": "Турник",
+    "title": "Турник",
+    "group": "base",
+    "number": 7,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:08_parallel_bars",
+    "src": "sport-icons/base/08_parallel_bars.png",
+    "label": "Брусья",
+    "title": "Брусья",
+    "group": "base",
+    "number": 8,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:09_bodyweight_pushup",
+    "src": "sport-icons/base/09_bodyweight_pushup.png",
+    "label": "Отжимания",
+    "title": "Отжимания",
+    "group": "base",
+    "number": 9,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:10_running",
+    "src": "sport-icons/base/10_running.png",
+    "label": "Бег",
+    "title": "Бег",
+    "group": "base",
+    "number": 10,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:11_walking",
+    "src": "sport-icons/base/11_walking.png",
+    "label": "Ходьба",
+    "title": "Ходьба",
+    "group": "base",
+    "number": 11,
+    "characterId": "char:rima"
+  },
+  {
+    "id": "sport:12_bicycle",
+    "src": "sport-icons/base/12_bicycle.png",
+    "label": "Велосипед",
+    "title": "Велосипед",
+    "group": "base",
+    "number": 12,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:13_elliptical_trainer",
+    "src": "",
+    "label": "Эллипс",
+    "title": "Эллипс",
+    "group": "base",
+    "number": 13,
+    "characterId": ""
+  },
+  {
+    "id": "sport:14_swimming",
+    "src": "sport-icons/base/14_swimming.png",
+    "label": "Плавание",
+    "title": "Плавание",
+    "group": "base",
+    "number": 14,
+    "characterId": "char:rima"
+  },
+  {
+    "id": "sport:15_stretching",
+    "src": "sport-icons/base/15_stretching.png",
+    "label": "Растяжка",
+    "title": "Растяжка",
+    "group": "base",
+    "number": 15,
+    "characterId": "char:rima"
+  },
+  {
+    "id": "sport:16_yoga_pilates",
+    "src": "sport-icons/base/16_yoga_pilates.png",
+    "label": "Йога и пилатес",
+    "title": "Йога и пилатес",
+    "group": "base",
+    "number": 16,
+    "characterId": "char:rima"
+  },
+  {
+    "id": "sport:17_aerobics_hiit",
+    "src": "sport-icons/base/17_aerobics_hiit.png",
+    "label": "Аэробика",
+    "title": "Аэробика",
+    "group": "base",
+    "number": 17,
+    "characterId": "char:kim"
+  },
+  {
+    "id": "sport:18_warmup",
+    "src": "",
+    "label": "Разминка",
+    "title": "Разминка",
+    "group": "base",
+    "number": 18,
+    "characterId": "char:rima"
+  },
+  {
+    "id": "sport:19_football",
+    "src": "sport-icons/base/19_football.png",
+    "label": "Футбол",
+    "title": "Футбол",
+    "group": "base",
+    "number": 19,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:20_basketball",
+    "src": "sport-icons/base/20_basketball.png",
+    "label": "Баскетбол",
+    "title": "Баскетбол",
+    "group": "base",
+    "number": 20,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:21_volleyball",
+    "src": "sport-icons/base/21_volleyball.png",
+    "label": "Волейбол",
+    "title": "Волейбол",
+    "group": "base",
+    "number": 21,
+    "characterId": "char:kim"
+  },
+  {
+    "id": "sport:22_tennis",
+    "src": "sport-icons/base/22_tennis.png",
+    "label": "Теннис",
+    "title": "Теннис",
+    "group": "base",
+    "number": 22,
+    "characterId": "char:aiko"
+  },
+  {
+    "id": "sport:23_table_tennis",
+    "src": "sport-icons/base/23_table_tennis.png",
+    "label": "Настольный теннис",
+    "title": "Настольный теннис",
+    "group": "base",
+    "number": 23,
+    "characterId": "char:aiko"
+  },
+  {
+    "id": "sport:24_badminton",
+    "src": "sport-icons/base/24_badminton.png",
+    "label": "Бадминтон",
+    "title": "Бадминтон",
+    "group": "base",
+    "number": 24,
+    "characterId": "char:kim"
+  },
+  {
+    "id": "sport:25_padel_squash",
+    "src": "sport-icons/base/25_padel_squash.png",
+    "label": "Падел и сквош",
+    "title": "Падел и сквош",
+    "group": "base",
+    "number": 25,
+    "aliases": [
+      "plan:aiko-padel"
+    ],
+    "characterId": "char:aiko"
+  },
+  {
+    "id": "sport:26_boxing",
+    "src": "sport-icons/base/26_boxing.png",
+    "label": "Бокс",
+    "title": "Бокс",
+    "group": "base",
+    "number": 26,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:27_climbing",
+    "src": "sport-icons/base/27_climbing.png",
+    "label": "Скалолазание",
+    "title": "Скалолазание",
+    "group": "base",
+    "number": 27,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:28_skis",
+    "src": "sport-icons/base/28_skis.png",
+    "label": "Лыжи",
+    "title": "Лыжи",
+    "group": "base",
+    "number": 28,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:29_snowboard",
+    "src": "sport-icons/base/29_snowboard.png",
+    "label": "Сноуборд",
+    "title": "Сноуборд",
+    "group": "base",
+    "number": 29,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:30_skates_rollers",
+    "src": "sport-icons/base/30_skates_rollers.png",
+    "label": "Ролики",
+    "title": "Ролики",
+    "group": "base",
+    "number": 30,
+    "aliases": [
+      "plan:aiko-rollers"
+    ],
+    "characterId": "char:aiko"
+  },
+  {
+    "id": "sport:31_kayak_water_sport",
+    "src": "sport-icons/base/31_kayak_water_sport.png",
+    "label": "Каяк",
+    "title": "Каяк",
+    "group": "base",
+    "number": 31,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:32_surfing",
+    "src": "sport-icons/base/32_surfing.png",
+    "label": "Сёрфинг",
+    "title": "Сёрфинг",
+    "group": "base",
+    "number": 32,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:33_dancing",
+    "src": "sport-icons/base/33_dancing.png",
+    "label": "Танцы",
+    "title": "Танцы",
+    "group": "base",
+    "number": 33,
+    "characterId": "char:daniel"
+  },
+  {
+    "id": "sport:34_hiking_trekking",
+    "src": "sport-icons/base/34_hiking_trekking.png",
+    "label": "Походы",
+    "title": "Походы",
+    "group": "base",
+    "number": 34,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:35_adaptive_sport",
+    "src": "sport-icons/base/35_adaptive_sport.png",
+    "label": "Адаптивный спорт",
+    "title": "Адаптивный спорт",
+    "group": "base",
+    "number": 35,
+    "aliases": [
+      "plan:luigi-adaptive"
+    ],
+    "characterId": "char:luigi"
+  },
+  {
+    "id": "sport:36_sneakers",
+    "src": "",
+    "label": "Кроссовки",
+    "title": "Кроссовки",
+    "group": "base",
+    "number": 36,
+    "characterId": ""
+  },
+  {
+    "id": "sport:37_other_activity",
+    "src": "",
+    "label": "Другая активность",
+    "title": "Другая активность",
+    "group": "base",
+    "number": 37,
+    "characterId": ""
+  },
+  {
+    "id": "sport:38_archery",
+    "src": "sport-icons/base/38_archery.png",
+    "label": "Стрельба из лука",
+    "title": "Стрельба из лука",
+    "group": "base",
+    "number": 38,
+    "aliases": [
+      "plan:aslan-archery"
+    ],
+    "characterId": "char:aslan"
+  },
+  {
+    "id": "sport:39_equestrian",
+    "src": "sport-icons/base/39_equestrian.png",
+    "label": "Верховая езда",
+    "title": "Верховая езда",
+    "group": "base",
+    "number": 39,
+    "characterId": "char:aslan"
+  },
+  {
+    "id": "sport:40_biathlon",
+    "src": "sport-icons/base/40_biathlon.png",
+    "label": "Биатлон",
+    "title": "Биатлон",
+    "group": "base",
+    "number": 40,
+    "characterId": "char:aslan"
+  },
+  {
+    "id": "sport:41_leg_press",
+    "src": "sport-icons/base/41_leg_press.png",
+    "label": "Жим ногами",
+    "title": "Жим ногами",
+    "group": "base",
+    "number": 41,
+    "characterId": "char:rima"
+  },
+  {
+    "id": "sport:42_fishing",
+    "src": "sport-icons/base/42_fishing.png",
+    "label": "Рыбалка",
+    "title": "Рыбалка",
+    "group": "base",
+    "number": 42,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:43_sailing",
+    "src": "sport-icons/base/43_sailing.png",
+    "label": "Парусный спорт",
+    "title": "Парусный спорт",
+    "group": "base",
+    "number": 43,
+    "characterId": "char:sven"
+  },
+  {
+    "id": "sport:44_figure_skating",
+    "src": "sport-icons/base/44_figure_skating.png",
+    "label": "Фигурное катание",
+    "title": "Фигурное катание",
+    "group": "base",
+    "number": 44,
+    "aliases": [
+      "plan:aiko-skating"
+    ],
+    "characterId": "char:aiko"
+  },
+  {
+    "id": "sport:45_treadmill",
+    "src": "sport-icons/base/45_treadmill.png",
+    "label": "Беговая дорожка",
+    "title": "Беговая дорожка",
+    "group": "base",
+    "number": 45,
+    "characterId": "char:kim"
+  }
+]

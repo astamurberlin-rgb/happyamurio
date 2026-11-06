@@ -24,6 +24,11 @@
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
 
+## Icon Studio
+
+Happy Icon Studio **2.15**: https://astamurberlin-rgb.github.io/happyamurio/icon-studio/
+Исходники и статика находятся в `icon-studio/`, проверки — `icon-studio/checks/`. Это публикация Sites v20; старый `prototypes/happy-icon-studio.html` перенаправляет на новый адрес. Правки Sites переносятся экспортом/импортом JSON, автоматически между доменами не синхронизируются. Сначала сохранить существующие GitHub-правки и закрыть старые вкладки v1.4.
+
 ## Старые ссылки и версии
 
 `happyday-v50_1.html` и `happyday-meal-v22.html` теперь перенаправляют на постоянные адреса,
