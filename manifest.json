@@ -1,0 +1,61 @@
+{
+  "schema": "happy.food-libraries.v1",
+  "revision": "2026-11-07.1",
+  "updated": "2026-11-07",
+  "libraries": {
+    "bls": {
+      "version": "BLS 4.0 · 2025",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/bls40.json",
+      "encoding": "json",
+      "bytes": 3566643,
+      "sha256": "8b76c33ab6baece6e9c8d0501ad9e20424acb153c758ecdb4f3fb05eef31e35f",
+      "foodCount": 7140
+    },
+    "kav": {
+      "version": "2026-10-25",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/kav.json",
+      "encoding": "json",
+      "bytes": 70262,
+      "sha256": "8ad37bdb26ebec0c99615e506968965dea403cffa95538235dd12889cacdd2b2",
+      "foodCount": 103
+    },
+    "mext": {
+      "version": "2023 supplement · 2026-03-27",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/mext2023.json",
+      "encoding": "json",
+      "bytes": 9134037,
+      "sha256": "27354a9ce7e305824d2fb9d3fbae85b69b00ec38cae8cb523cf78dd12fa646bc",
+      "foodCount": 520
+    },
+    "mextSelection": {
+      "version": "1",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/mext-selection.json",
+      "encoding": "json",
+      "bytes": 111046,
+      "sha256": "27db6a93103f600f18a5749760925569e620751aabc433488de80b09cabc2984"
+    },
+    "portions": {
+      "version": "2026-10-31",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/portion-sources.json",
+      "encoding": "json",
+      "bytes": 98586,
+      "sha256": "dc503a160db7cfab97ffec132a8d0a5f04669e825afadf64a5d25bfd62644468"
+    },
+    "usda": {
+      "version": "SR Legacy · April 2018",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/usda-sr-legacy.json.gz",
+      "encoding": "gzip",
+      "bytes": 15922487,
+      "sha256": "2fb25ebb266524ab4a1b564097ca54a5f56ecca29306a5667908b4abb7be2201",
+      "foodCount": 7793
+    },
+    "uzbek": {
+      "version": "1.7.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/uzbek-recipes.json.gz",
+      "encoding": "gzip",
+      "bytes": 4100614,
+      "sha256": "e4bd5ea48be681010c39aa55353db01ce8fdf34e14e3e613142e9407be4d04f5",
+      "foodCount": 53
+    }
+  }
+}
