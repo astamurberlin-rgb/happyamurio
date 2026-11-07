@@ -12,7 +12,7 @@
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
-Служебная страница **Файлы** (`files/index.html`, версия 1.4): https://astamurberlin-rgb.github.io/happyamurio/files/ — просмотр общих Markdown-файлов из Supabase (`ai_shared.documents`: дневник питания, упражнения, инструкция для ИИ). Данные читаются при открытии через функцию Supabase `files` по ключу из ссылки `#key=…`; ключ хранится только в ссылке и браузере устройства, в репозиторий не попадает. Это не приложение: в `shared/apps.json` не входит.
+Служебная страница **Файлы** (`files/index.html`, версия 1.5): https://astamurberlin-rgb.github.io/happyamurio/files/ — просмотр общих Markdown-файлов из Supabase (`ai_shared.documents`: дневник питания, упражнения, инструкция для ИИ). Данные читаются при открытии через функцию Supabase `files` по ключу из ссылки `#key=…`; ключ хранится только в ссылке и браузере устройства, в репозиторий не попадает. Это не приложение: в `shared/apps.json` не входит.
 
 [CHANGELOG.md](CHANGELOG.md) — общий журнал выпущенных обновлений с проверками и ограничениями.
 [LIBRARIES.md](LIBRARIES.md) — общий каталог справочников, новых записей и статусов для приложений Happy (предложения не считать выпущенными).
