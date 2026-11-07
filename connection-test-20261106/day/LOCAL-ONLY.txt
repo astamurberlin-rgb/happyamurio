@@ -1,3 +1,0 @@
-Local-only automatic-sync work derived from 43bb05dcae346f3b31e3b98b9f8a2ffdaac8a626. Not published. Do not deploy without separate review and authorization.
-
-Frozen verification: 213/213 current aggregate tests passed. See tests/auto-all-results.txt. 17 script syntax checks passed; hosting manifest unchanged. Native browser/live backend are separate review gates.

@@ -1,3 +1,0 @@
-:root{--glass:rgba(255,255,255,.16);--border:rgba(255,255,255,.34);--muted:rgba(255,255,255,.72);--purple:#5A50D1;--dockBg:rgba(233,243,253,.92)}
-:root{--base:#8c75db;--sport-background:radial-gradient(ellipse 76% 38% at 95% 20%,rgba(255,143,210,.320) 0%,transparent 84%),radial-gradient(ellipse 66% 36% at 7% -10%,rgba(158,119,251,.33) 0%,transparent 84%),linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%)}
-body{background:#8c75db}.bg{inset:0;background:var(--sport-background);filter:none}.panel-screen,.sheet{background:var(--sport-background);background-attachment:fixed}.panel-screen:before{display:none}.sheet .grip{background:transparent}
