@@ -1,0 +1,22 @@
+{
+  "version": "1.10.1",
+  "deliveryRevision": "1.10.1-meal23.1",
+  "foodCount": 60,
+  "bytes": 5802882,
+  "gzipBytes": 672120,
+  "sha256": "b584bfbb561c6a69708fe318297f73d15ae9ce0e8d617a6576364711f83da116",
+  "sourceSha256": "13325820db2559e1b7cc4fd7e984b56a936d410073f64747e2ccf4e7fb1fe98b",
+  "preservedPrevious53Compositions": true,
+  "preservedAll60CompositionsAnd125Portions": true,
+  "nishaldaCompleteValues": false,
+  "privateLocatorsRemoved": 168,
+  "blsAttributionsClarified": 66,
+  "integrationTestsPassed": 9,
+  "startupTestsPassed": true,
+  "canonicalArithmeticChecks": {
+    "known": 1841,
+    "unknown": 2719,
+    "portionFields": 9500,
+    "negativeTestsPassed": 7
+  }
+}
