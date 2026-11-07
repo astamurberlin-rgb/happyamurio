@@ -1,6 +1,6 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-07.1",
+  "revision": "2026-11-07.2",
   "updated": "2026-11-07",
   "libraries": {
     "bls": {
@@ -51,10 +51,10 @@
     },
     "uzbek": {
       "version": "1.7.0",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/uzbek-recipes.json.gz",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/b91cde66108f46a0de736ff58743aa1bdece58e9/data/uzbek-recipes.json.gz",
       "encoding": "gzip",
-      "bytes": 4100614,
-      "sha256": "e4bd5ea48be681010c39aa55353db01ce8fdf34e14e3e613142e9407be4d04f5",
+      "bytes": 4100030,
+      "sha256": "6afb6342144e59951e5dc38207674aa976dca34e29053577eea0155061ebad3a",
       "foodCount": 53
     }
   }
