@@ -12,7 +12,7 @@
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
-Служебная страница **Файлы** (`files/index.html`, версия 1.6): https://astamurberlin-rgb.github.io/happyamurio/files/ — просмотр общих Markdown-файлов из Supabase (`ai_shared.documents`: дневник питания, упражнения, инструкция для ИИ). Данные читаются при открытии через функцию Supabase `files` по ключу из ссылки `#key=…`; ключ хранится только в ссылке и браузере устройства, в репозиторий не попадает. Это не приложение: в `shared/apps.json` не входит.
+Служебная страница **Файлы** (`files/index.html`, версия 1.7): https://astamurberlin-rgb.github.io/happyamurio/files/ — просмотр общих Markdown-файлов из Supabase (`ai_shared.documents`: дневник питания, упражнения, инструкция для ИИ). Данные читаются при открытии через функцию Supabase `files` по ключу из ссылки `#key=…`; ключ хранится только в ссылке и браузере устройства, в репозиторий не попадает. Это не приложение: в `shared/apps.json` не входит.
 
 [CHANGELOG.md](CHANGELOG.md) — общий журнал выпущенных обновлений с проверками и ограничениями.
 [LIBRARIES.md](LIBRARIES.md) — общий каталог справочников, новых записей и статусов для приложений Happy (предложения не считать выпущенными).
@@ -49,7 +49,7 @@
 
 ## Icon Studio
 
-Happy Icon Studio **2.17**: https://astamurberlin-rgb.github.io/happyamurio/icon-studio/
+Happy Icon Studio **2.18**: https://astamurberlin-rgb.github.io/happyamurio/icon-studio/
 Исходники и статика находятся в `icon-studio/`, проверки — `icon-studio/checks/`. Это публикация Sites v20; старый `prototypes/happy-icon-studio.html` перенаправляет на новый адрес. Правки Sites переносятся экспортом/импортом JSON, автоматически между доменами не синхронизируются. Сначала сохранить существующие GitHub-правки и закрыть старые вкладки v1.4. С 2.17 в шапке есть кнопка входа в аккаунт Happy, общая с Color Studio. Файл `icon-studio/happy-studio-account.js` — точная копия `shared/happy-studio-account.js`. При переносе из Sites нужно сохранить его и подключение в `index.html`, проверка — `node scripts/check-studio-account.mjs`.
 
 ## Старые ссылки и версии

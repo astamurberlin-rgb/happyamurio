@@ -237,7 +237,8 @@
         'meal-softserve-warm-20261102':['meal-softserve-warm-bg-20261102','meal-softserve-warm-fg-20261102'],
         'meal-softserve-cool-20261102':['meal-softserve-cool-bg-20261102','meal-softserve-cool-fg-20261102'],
         'sport-approved':['sport-background','sport-foreground'],
-        'studio-flat-2026-11-01':['studio-background','studio-foreground']
+        'studio-flat-2026-11-01':['studio-background','studio-foreground'],
+        'notes-v3-flat-2026-11-07':['notes-v3-background','notes-v3-stencil']
       };
       const pair=pairs[master?.id], all=materials(id);
       if(pair && pair.every(key=>all.some(file=>file.id===key)))return {masterId:record.masterId,backgroundMode:'original',backgroundSourceId:pair[0],sourceId:pair[1]};

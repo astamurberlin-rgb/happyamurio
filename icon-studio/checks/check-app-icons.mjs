@@ -180,3 +180,28 @@ for(const [variant,bg,fg] of [
   assert.equal(editor.backgroundSourceId,bg); assert.equal(editor.sourceId,fg);
 }
 console.log('PASS: soft-serve variants open with their corresponding layers.');
+
+// Notes version 2 (7 Nov 2026): the flat stencil icon becomes the default master for records still on version 1,
+// custom masters and user notes stay, and version 1 remains in the history with its own files.
+{
+  const fresh=runtime();await fresh.api.ready;
+  const snap=copy(await fresh.api.exportSnapshot());
+  assert.equal(snap.apps.notes.masterId,'notes-v3-flat-2026-11-07');
+  for(const id of ['notes-flat-2026-11-06','notes-v3-flat-2026-11-07']) assert(fresh.grid.innerHTML.includes('data-variant-id="'+id+'"'),'Notes variant '+id);
+  for(const id of ['notes-flat-2026-11-06','notes-stencil-plate','notes-pack','notes-v3-flat-2026-11-07','notes-v3-flat-svg','notes-v3-background','notes-v3-background-svg','notes-v3-stencil','notes-v3-stencil-svg','notes-v3-ios-home','notes-v3-pwa-192','notes-v3-pwa-512','notes-v3-guide','notes-v3-pack'])
+    assert(snap.apps.notes.materials.some(file=>file.id===id),'Notes material '+id);
+  const editor=await fresh.api.editorInitial('notes');
+  assert.equal(editor.backgroundSourceId,'notes-v3-background');assert.equal(editor.sourceId,'notes-v3-stencil');
+  const saved=JSON.parse(storage.get('happy_icon_studio_app_icons_v1'));
+  saved.notes.seedRevision=1;saved.notes.masterId='notes-flat-2026-11-06';saved.notes.notes='Моя заметка к Notes';
+  storage.set('happy_icon_studio_app_icons_v1',JSON.stringify(saved));
+  const promoted=runtime();await promoted.api.ready;
+  const promotedSnap=copy(await promoted.api.exportSnapshot());
+  assert.equal(promotedSnap.apps.notes.masterId,'notes-v3-flat-2026-11-07');
+  assert.equal(promotedSnap.apps.notes.notes,'Моя заметка к Notes');
+  saved.notes.seedRevision=1;saved.notes.masterId='custom-notes-master';
+  storage.set('happy_icon_studio_app_icons_v1',JSON.stringify(saved));
+  const kept=runtime();await kept.api.ready;
+  assert.equal((await kept.api.exportSnapshot()).apps.notes.masterId,'custom-notes-master');
+  console.log('PASS: Notes version 2 is the default, version 1 stays in history, custom masters and notes survive, the editor opens the matching layers.');
+}
