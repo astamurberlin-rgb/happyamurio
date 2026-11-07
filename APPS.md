@@ -9,7 +9,8 @@
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
+| Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
+| Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
 Служебная страница **Файлы** (`files/index.html`, версия 1.4): https://astamurberlin-rgb.github.io/happyamurio/files/ — просмотр общих Markdown-файлов из Supabase (`ai_shared.documents`: дневник питания, упражнения, инструкция для ИИ). Данные читаются при открытии через функцию Supabase `files` по ключу из ссылки `#key=…`; ключ хранится только в ссылке и браузере устройства, в репозиторий не попадает. Это не приложение: в `shared/apps.json` не входит.
 
@@ -160,3 +161,12 @@ Meal 22.14 / Day 50.11: общие продуктовые счётчики, по
 
 Day 50.13: карусель дневника активности, независимые отметки самочувствия, текстовые дневники с дополнениями, цели и расписание осознанности, экран активности с виджетом энергии. Перенос из отдельного прототипа Sites поверх main; актуальные счётчики, аккаунт и иконка сохранены. Прототип остаётся отдельным местом доработки.
 
+
+
+## Happy Sport · Update 37 · 07.11.2026
+
+Отдельная согласованная страница: https://astamurberlin-rgb.github.io/happyamurio/sport-37/ . Исходник — проверенная владельцем сборка Sites 36.30, коммит `cf8dea4f26ff8e05cb786594e6aae154391e9557`, Sites v11. Владелец подтвердил автоматическую синхронизацию между Safari, Brave и Chrome без очистки Safari. Это подтверждение исходной сборки; публикация на GitHub использует новый origin и требует входа тем же аккаунтом.
+
+Исполняемый код, общие стили, иконки, упражнения, справочники и исходные проверки закреплены внутри `sport-37/`. Сборка: `node sport-37/scripts/build-release.mjs`; проверки: `npm --prefix sport-37/sport run check`. Прежний `sport/`, Day, Meal и студии не изменены. Происхождение и контрольные суммы — `sport-37/SOURCE-PROVENANCE.json`. Публичная метка — **Happy Sport · Update 37**; папка `sport-37/sport/` содержит исходники и промежуточную сборку. Основной вход выпуска — `sport-37/index.html`.
+
+Код облачного обмена и ключи сохранены из согласованной версии. Регистрация, общий обмен сводками/замерами/счётчиками и Icon Studio остаются ограничены как в исходной сборке. Кнопки связанных приложений ведут на закреплённые информационные страницы этого выпуска. Этот перенос не включает новые возможности связи трёх приложений и не меняет Sites.
