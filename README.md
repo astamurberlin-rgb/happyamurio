@@ -4,9 +4,9 @@ This dedicated branch contains public reference data only. Do not merge it into 
 
 ## Current Uzbek library
 
-Version **1.10.1**, public delivery **1.10.1-meal23.1**, 60 cards (not 60 complete nutritional analyses), released 2026-11-07. All previous 53 canonical compositions and IDs are preserved. All 60 source-release compositions, numeric/null fields and 125 canonical portions are unchanged. The six historical salt fields remain unknown. Nishalda is a partial-information card: its full canonical nutrients stay null, while the source notes explicitly identify the known subtotal and conditional range.
+Version **1.10.1**, public delivery **1.10.1-meal23.2**, 60 cards (not 60 complete nutritional analyses), released 2026-11-07. All previous 53 canonical compositions and IDs are preserved. All 60 source-release compositions, numeric/null fields and 125 canonical portions are unchanged. The six historical salt fields remain unknown. Nishalda is a partial-information card: its full canonical nutrients stay null, while the source notes explicitly identify the known subtotal and conditional range.
 
-The distribution package adds the Nishalda catalogs metadata required by the unchanged Update 23 loader and aliases the ingredient source IDs/notes for its current detail view. Private artifact/page locators are omitted. The original standalone release has SHA-256 13325820db2559e1b7cc4fd7e984b56a936d410073f64747e2ccf4e7fb1fe98b. The manifest contains the public delivery hash; it is intentionally different because of metadata-only adaptations and compact encoding.
+The distribution package adds Nishalda search words derived from its existing names and aliases and the catalogs metadata required by the unchanged Update 23 loader and aliases the ingredient source IDs/notes for its current detail view. Private artifact/page locators are omitted. The original standalone release has SHA-256 13325820db2559e1b7cc4fd7e984b56a936d410073f64747e2ccf4e7fb1fe98b. The manifest contains the public delivery hash; it is intentionally different because of metadata-only adaptations and compact encoding.
 
 BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS), Version 4.0, Karlsruhe. The official [FAQ, question 17](https://www.blsdb.de/faq) permits free use, including application/software development. Unsupported CC BY labels for BLS in the source archive are clarified in this delivery; this does not relicense separate research articles. Source names, public references, calculation assumptions and unknowns are retained. USDA FoodData Central / SR Legacy is public-domain source data; recipe adaptations and translations are Happy Meal.
 
@@ -20,6 +20,6 @@ USDA and Uzbek collections use lossless gzip. Decode before parsing JSON; manife
 
 ## Validation
 
-Data validation reproduced 1841 known canonical values and checked 2719 nulls and 9500 fields of 125 portions. Nine integration tests cover all 60 cards, repeated ingest/append, Nishalda missing totals and explanatory text, prior records, journal snapshots, invalid identities, gzip/hash/length verification, retry after integrity/network errors and URL restrictions. The unchanged Update 23 startup test also passed. See data/uzbek-1.10.1-validation.json.
+Data validation reproduced 1841 known canonical values and checked 2719 nulls and 9500 fields of 125 portions. Ten integration tests cover all 60 cards, repeated ingest/append, Nishalda missing totals and explanatory text, prior records, journal snapshots, invalid identities, gzip/hash/length verification, retry after integrity/network errors and URL restrictions. The unchanged Update 23 startup test also passed. See data/uzbek-1.10.1-validation.json.
 
 No accounts, credentials, personal recipes, journals, database writes, or application-code changes are included.
