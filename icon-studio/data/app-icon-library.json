@@ -710,8 +710,8 @@
     {
       "id": "notes",
       "name": "Notes · Файлы Happy",
-      "masterId": "notes-flat-2026-11-06",
-      "notes": "Значок страницы «Файлы»: чёрная пластина с прорезанной рукописной надписью notes, сквозь прорезь виден градиент от фиолетового к оранжево-розовому. Слои на холсте 1024 × 1024, есть вариант «трафарет» (градиент + пластина). Пакет подготовлен для Apple Icon Composer, нативный .icon ещё предстоит собрать на Mac.",
+      "masterId": "notes-v3-flat-2026-11-07",
+      "notes": "7 ноября 2026: основной вариант — версия 2, плоская рукописная надпись notes (линия одной толщины, без теней). Трафарет: чёрная пластина с прорезанными буквами поверх радиального градиента розовый → фиолетовый → синий → бирюзовый. Контур перерисован и сглажен, слово по центру. Слои, SVG и архив для Apple Icon Composer приложены. Версия 1 (вертикальный градиент, тень края прорези) сохранена как история. Нативный .icon ещё не собирался на Mac.",
       "materials": [
         {
           "id": "notes-flat-2026-11-06",
@@ -800,15 +800,110 @@
           "role": "document",
           "type": "application/zip",
           "size": 389037
+        },
+        {
+          "id": "notes-v3-flat-2026-11-07",
+          "name": "v3_03_notes_flat_1024.png",
+          "src": "./assets/app-icons/notes/v3_03_notes_flat_1024.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 62380
+        },
+        {
+          "id": "notes-v3-flat-svg",
+          "name": "v3_03_notes_flat.svg",
+          "src": "./assets/app-icons/notes/v3_03_notes_flat.svg",
+          "role": "reference",
+          "type": "image/svg+xml",
+          "size": 19426
+        },
+        {
+          "id": "notes-v3-background",
+          "name": "v3_01_background_gradient_1024.png",
+          "src": "./assets/app-icons/notes/v3_01_background_gradient_1024.png",
+          "role": "background",
+          "type": "image/png",
+          "size": 141184
+        },
+        {
+          "id": "notes-v3-background-svg",
+          "name": "v3_01_background_gradient.svg",
+          "src": "./assets/app-icons/notes/v3_01_background_gradient.svg",
+          "role": "background",
+          "type": "image/svg+xml",
+          "size": 505
+        },
+        {
+          "id": "notes-v3-stencil",
+          "name": "v3_02_stencil_plate_1024.png",
+          "src": "./assets/app-icons/notes/v3_02_stencil_plate_1024.png",
+          "role": "foreground",
+          "type": "image/png",
+          "size": 30305
+        },
+        {
+          "id": "notes-v3-stencil-svg",
+          "name": "v3_02_stencil_plate.svg",
+          "src": "./assets/app-icons/notes/v3_02_stencil_plate.svg",
+          "role": "foreground",
+          "type": "image/svg+xml",
+          "size": 18967
+        },
+        {
+          "id": "notes-v3-ios-home",
+          "name": "v3_04_web_icon_180.png",
+          "src": "./assets/app-icons/notes/v3_04_web_icon_180.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 10135
+        },
+        {
+          "id": "notes-v3-pwa-192",
+          "name": "v3_04_web_icon_192.png",
+          "src": "./assets/app-icons/notes/v3_04_web_icon_192.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 11091
+        },
+        {
+          "id": "notes-v3-pwa-512",
+          "name": "v3_04_web_icon_512.png",
+          "src": "./assets/app-icons/notes/v3_04_web_icon_512.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 38613
+        },
+        {
+          "id": "notes-v3-guide",
+          "name": "README_V3_RU.md",
+          "src": "./assets/app-icons/notes/README_V3_RU.md",
+          "role": "document",
+          "type": "text/markdown",
+          "size": 3170
+        },
+        {
+          "id": "notes-v3-pack",
+          "name": "Happy_Notes_v3_Apple_Composer.zip",
+          "src": "./assets/app-icons/notes/Happy_Notes_v3_Apple_Composer.zip",
+          "role": "document",
+          "type": "application/zip",
+          "size": 301202
         }
       ],
-      "revision": 1,
-      "previousMasterIds": [],
+      "revision": 2,
+      "previousMasterIds": [
+        "notes-flat-2026-11-06"
+      ],
       "variants": [
         {
           "id": "notes-flat-2026-11-06",
           "version": 1,
           "title": "Трафарет с градиентом"
+        },
+        {
+          "id": "notes-v3-flat-2026-11-07",
+          "version": 2,
+          "title": "Плоская надпись · радиальный градиент"
         }
       ]
     }
