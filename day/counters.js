@@ -19,7 +19,7 @@
     root.DB.taps=root.DB.taps.filter(c=>!c.mealCounterId||!ids.has(c.mealCounterId)||active.some(d=>d.id===c.mealCounterId));
     definitions={};active.forEach(d=>{let c=root.DB.taps.find(c=>c.mealCounterId===d.id);if(!c){c={k:'meal-'+d.id};root.DB.taps.push(c)}Object.assign(c,{t:d.title,step:1,mealCounterId:d.id,mealPortion:d.q+' '+d.u+' · '+d.g+' г'});definitions[d.id]=clone(d)});
     const known=new Set(doc.events.map(e=>e.id));Object.values(root.DB.days).forEach(day=>Object.keys(day.taps||{}).forEach(k=>{day.taps[k]=day.taps[k].filter(x=>!known.has(x.counterEventId))}));
-    baseline={};doc.events.filter(e=>!e.deleted).sort((a,b)=>(a.created||a.rev)-(b.created||b.rev)||a.id.localeCompare(b.id)).forEach(e=>{const c=root.DB.taps.find(c=>c.mealCounterId===e.cid),k=c?c.k:'meal-'+e.cid,day=root.day(e.date);day.taps=day.taps||{};day.taps[k]=day.taps[k]||[];
+    baseline={};doc.events.filter(e=>!e.deleted&&active.some(d=>d.id===e.cid)).sort((a,b)=>(a.created||a.rev)-(b.created||b.rev)||a.id.localeCompare(b.id)).forEach(e=>{const c=root.DB.taps.find(c=>c.mealCounterId===e.cid),k=c?c.k:'meal-'+e.cid,day=root.day(e.date);day.taps=day.taps||{};day.taps[k]=day.taps[k]||[];
       day.taps[k].push({t:e.item.t||null,n:1,counterEventId:e.id});const b=clone(e);delete b.rev;delete b.writer;baseline[e.id]=b;
     });
     root.DB.mealCounters=clone(doc);baseSave();if(root.renderAll)root.renderAll();if(root.renderTapSheet)root.renderTapSheet();
@@ -41,5 +41,12 @@
     try{engine=H.create({owner:owner(),currentOwner,backup:root.DB.mealCounters,apply,capture,status,online:root.clOn,get:()=>H.transport().get(),put:(...a)=>H.transport().put(...a)})}catch(e){root.toast(e.message)}
     const after=root.clAfterIn;root.clAfterIn=function(){if(engine)engine.sync();return after&&after()};
   }
-  root.HappyDayCounters={init,capture,apply};
+  async function confirmForExit(){
+    if(!engine){if(root.DB.mealCounters?.definitions?.length||root.DB.mealCounters?.events?.length)throw Error('Общие счётчики ещё не подтверждены.');return;}
+    capture();const doc=engine.document();
+    if(!doc.definitions.length&&!doc.events.length)return;
+    await engine.sync();const latest=await H.transport().get(), now=engine.document();
+    if(!latest||!H.same(H.merge(latest.doc,now),latest.doc))throw Error('Общие счётчики ещё не подтверждены.');
+  }
+  root.HappyDayCounters={init,capture,apply,confirmForExit};
 })(globalThis);

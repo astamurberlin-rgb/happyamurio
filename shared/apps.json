@@ -1,7 +1,13 @@
 {
   "day": {
     "entry": "day/index.html",
-    "version": "50.14"
+    "version": "52",
+    "sharedDirectory": "day/shared",
+    "links": {
+      "meal": false,
+      "sport": "https://sport-auth-readonly-20261104.amuramore.chatgpt.site/"
+    },
+    "download": "day/Happy-Day-52.html"
   },
   "meal": {
     "entry": "meal/index.html",

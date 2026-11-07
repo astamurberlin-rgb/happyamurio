@@ -2,7 +2,9 @@ import {readFile} from 'node:fs/promises';
 import {createContext,runInContext,Script} from 'node:vm';
 import assert from 'node:assert/strict';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
-const source=await read('shared/happy-ui.js'),css=await read('shared/happy-ui.css');new Script(source);
+const apps=JSON.parse(await read('shared/apps.json'));
+for(const directory of new Set(['shared',...Object.values(apps).map(app=>app.sharedDirectory).filter(Boolean)])){
+const source=await read(directory+'/happy-ui.js');new Script(source);
 const context=createContext({Date});runInContext(source,context);const ui=context.HappyUI;
 const draft={email:'test@example.invalid',password:'test-only-password',visible:false};
 const html=ui.account({draft});assert.ok(html.includes('data-cl="register"'));assert.ok(html.includes('data-happy-ui-submit'));assert.ok(!html.includes('width:100%'));
@@ -21,11 +23,14 @@ f=fixture({signIn:async()=>{throw Error('Нет сети')}});await ui.act('in',
 f=fixture();f.fields.password.value='short';await ui.act('up',f.adapter);assert.ok(!f.calls.some(Array.isArray));await ui.act('in',f.adapter);assert.ok(f.calls.some(Array.isArray));
 f=fixture();f.state.busy=true;await ui.act('in',f.adapter);assert.equal(f.calls.length,0);
 f=fixture();await ui.act('sync',f.adapter);assert.ok(f.calls.includes('refresh'));await ui.act('out',f.adapter);assert.ok(f.calls.includes('out'));
+}
 for(const app of ['day','meal']){
+ const directory=apps[app].sharedDirectory||'shared';
+ const css=await read(directory+'/happy-ui.css'),source=await read(directory+'/happy-ui.js');
  const page=await read(app+'/index.html');assert.ok(page.includes(css));assert.ok(page.includes(source.replaceAll('</','<\\/')));
  const order=[...page.matchAll(/<section[^>]*data-happy-section="([^"]+)"/g)].map(m=>m[1]);assert.deepEqual(order,['account','backup','links']);
  const ids=[...page.matchAll(/\bid="([^"\s<>]+)"/g)].map(m=>m[1]).filter(id=>!id.includes('+'));
  for(const id of app==='day'?['clBox','expJson','impJson','expCsv','wipe','backupAge','bkPrev','bkBack']:['clBox','bkIn','bkOut','bkFile','bkWhen'])assert.equal(ids.filter(x=>x===id).length,1,app+': duplicate/missing '+id);
 }
-const sport=await read('sport/index.html');assert.ok(sport.includes(css));assert.ok(sport.includes(source));
+const sport=await read('sport/index.html');assert.ok(sport.includes(await read('shared/happy-ui.css')));assert.ok(sport.includes(await read('shared/happy-ui.js')));
 console.log('Passed: shared account UI, escaped input, login/signup/confirmation, duplicate submit guard, offline errors and draft retention; same components and settings order in all apps; backup controls retained once.');

@@ -1,0 +1,34 @@
+/* Only the new picker is styled here. App skins are opt-in and removable. */
+.happy-appearance-entry{margin:18px 0 22px}
+.happy-appearance-entry button{width:100%;text-align:left;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.happy-appearance-entry small{font-size:12px;opacity:.85;text-align:right}
+#happy-appearance-dialog{box-sizing:border-box;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--ha-line);border-radius:22px;background:var(--ha-bg);background-color:var(--ha-base);color:var(--ha-ink);font-family:inherit;box-shadow:0 20px 70px #0008;overflow:hidden}
+#happy-appearance-dialog::backdrop{background:#080b18aa;backdrop-filter:blur(5px)}
+#happy-appearance-dialog .ha-layout{display:flex;flex-direction:column;max-height:calc(100dvh - 34px)}
+#happy-appearance-dialog .ha-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 8px;flex:none}
+#happy-appearance-dialog h2{font-size:20px;margin:0;color:var(--ha-ink)}
+#happy-appearance-dialog button{font:inherit;cursor:pointer;touch-action:manipulation;min-height:44px}
+#happy-appearance-dialog .ha-close{border:1px solid var(--ha-line);background:var(--ha-glass);border-radius:12px;color:var(--ha-ink);padding:8px 12px}
+#happy-appearance-dialog .ha-body{overflow-y:auto;overscroll-behavior:contain;padding:4px 18px 16px;min-height:0;-webkit-overflow-scrolling:touch}
+#happy-appearance-dialog p{font-size:13px;line-height:1.45;color:var(--ha-ink);margin:8px 0 14px}
+#happy-appearance-dialog fieldset{border:0;margin:0;padding:0;min-width:0}
+#happy-appearance-dialog legend{font-size:14px;font-weight:700;margin:14px 0 9px}
+#happy-appearance-dialog .ha-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#happy-appearance-dialog .ha-choice{display:flex;position:relative;gap:9px;align-items:center;padding:10px;border:1px solid var(--ha-line);border-radius:14px;background:var(--ha-glass);color:var(--ha-ink);cursor:pointer;min-height:54px;line-height:1.3}
+#happy-appearance-dialog .ha-choice:has(input:checked){border:2px solid var(--ha-focus);padding:9px;background:var(--ha-glass)}
+#happy-appearance-dialog .ha-choice:focus-within{outline:3px solid var(--ha-focus);outline-offset:2px}
+#happy-appearance-dialog input{accent-color:var(--ha-focus);width:18px;height:18px;flex:none;margin:0}
+#happy-appearance-dialog .ha-theme{display:flex;flex-direction:column;gap:7px;min-width:0;flex:1;font-size:13px;font-weight:600}
+#happy-appearance-dialog .ha-swatch{display:block;height:62px;border-radius:9px;border:1px solid #ffffff30}
+#happy-appearance-dialog .ha-actions{padding:12px 18px max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--ha-line);display:flex;gap:10px;flex:none}
+#happy-appearance-dialog .ha-actions button{flex:1;border-radius:12px;border:1px solid var(--ha-line);padding:10px;color:var(--ha-ink);background:var(--ha-glass)}
+#happy-appearance-dialog .ha-actions .ha-apply{background:var(--ha-button);background-color:var(--ha-button-color);color:var(--ha-button-text);border-color:var(--ha-line);text-shadow:0 1px 3px #0008;font-weight:700}
+#happy-appearance-dialog button:focus-visible{outline:3px solid var(--ha-focus);outline-offset:2px}
+#happy-appearance-dialog .ha-error{color:#ffd6dd;margin:0;padding:0 18px 8px}
+#happy-appearance-dialog [hidden]{display:none!important}
+@media(max-width:359px){#happy-appearance-dialog .ha-grid{gap:7px}#happy-appearance-dialog .ha-body{padding:4px 12px 12px}#happy-appearance-dialog .ha-choice{padding:8px;gap:6px}#happy-appearance-dialog .ha-choice:has(input:checked){padding:7px}}
+
+#happy-appearance-dialog .ha-head,#happy-appearance-dialog .ha-actions{background:var(--ha-glass);backdrop-filter:blur(12px)}
+#happy-appearance-dialog .ha-preview-status{font-weight:700;padding:8px 10px;background:var(--ha-glass);border-radius:10px}
+#happy-appearance-dialog .ha-error{background:var(--ha-glass);color:var(--ha-ink);font-weight:700}
+#happy-appearance-dialog #happy-appearance-help,#happy-appearance-dialog legend{background:var(--ha-glass);padding:8px 10px;border-radius:10px}

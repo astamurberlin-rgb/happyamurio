@@ -27,7 +27,7 @@ for(const [app,config] of Object.entries(apps)){
  const adapter=html.slice(adapterStart,adapterEnd);
  const existing=JSON.stringify({preserved:'existing diary',days:{'2026-10-26':{value:7}}});
  const context=vm.createContext({window:{},localStorage:{getItem:k=>k===expectedKeys[app]?existing:null}});
- vm.runInContext(await read('shared/profile-storage.js'),context);
+ vm.runInContext(await read((config.sharedDirectory||'shared')+'/profile-storage.js'),context);
  vm.runInContext(`var HappyProfile=HappyProfiles.create(${JSON.stringify(app)})`,context);
  vm.runInContext(adapter,context);
  assert.equal(await context.rawGet(expectedKeys[app]),existing,`${app}: existing diary unreadable`);
@@ -38,6 +38,10 @@ for(const [old,app] of [['happyday-v50_1.html','day'],['happyday-meal-v22.html',
  vm.runInNewContext(code,{location:{search:'?test=1',hash:'#settings',replace:url=>target=url}});
  assert.equal(target,`${app==='icon-studio'?'..':'.'}/${app}/?test=1#settings`);
 }
-assert.ok((await read('day/index.html')).includes('href="../meal/"'));
+const dayPage=await read('day/index.html');
+if(apps.day.links?.meal===false){
+ assert.ok(dayPage.includes('Переход в Meal в этой версии недоступен.'));
+ assert.ok(!dayPage.includes('href="../meal/"'));
+}else assert.ok(dayPage.includes('href="../meal/"'));
 assert.ok((await read('meal/index.html')).includes('href="../day/"'));
 console.log(`Passed: ${scripts} scripts parse; permanent app paths, versions, install URLs, existing Day/Meal storage reads and legacy redirects.`);

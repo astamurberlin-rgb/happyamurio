@@ -1,10 +1,12 @@
 import {readFile,writeFile} from 'node:fs/promises';
 const root=new URL('../',import.meta.url);
-const css=await readFile(new URL('shared/happy-ui.css',root),'utf8');
-const js=await readFile(new URL('shared/happy-ui.js',root),'utf8');
-const profiles=await readFile(new URL('shared/profile-storage.js',root),'utf8');
-const history=await readFile(new URL('shared/imported-history.js',root),'utf8');
+const apps=JSON.parse(await readFile(new URL('shared/apps.json',root),'utf8'));
 for(const app of ['day','meal']){
+ const directory=apps[app].sharedDirectory||'shared';
+ const css=await readFile(new URL(directory+'/happy-ui.css',root),'utf8');
+ const js=await readFile(new URL(directory+'/happy-ui.js',root),'utf8');
+ const profiles=await readFile(new URL(directory+'/profile-storage.js',root),'utf8');
+ const history=await readFile(new URL(directory+'/imported-history.js',root),'utf8');
  const path=new URL(app+'/index.html',root);let html=await readFile(path,'utf8');
  const style='/* HAPPY_SHARED_STYLE_START */\n'+css+'/* HAPPY_SHARED_STYLE_END */';
  const script='<script id="happy-shared-ui">\n'+js.replaceAll('</','<\\/')+'</script>';

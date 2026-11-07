@@ -19,8 +19,9 @@
       direction:Number(c.direction)===-1?-1:1,scope:['mood','all','mind','diary','activity'].includes(c.scope)?c.scope:DEFAULT.scope,
       centerOnly:c.centerOnly!==false,playing:c.playing!==false};
   }
-  function read(){try{return normalize(JSON.parse(localStorage.getItem(KEY))||DEFAULT);}catch(_){return normalize(DEFAULT);}}
-  function write(config){const c=normalize(config);localStorage.setItem(KEY,JSON.stringify(c));root.dispatchEvent(new CustomEvent('happy-arc-style',{detail:c}));return c;}
+  function ownerKey(){if(root.HappyProfile)return root.HappyProfile.key(KEY);const uid=JSON.parse(localStorage.getItem('hd_cloud_v1')||'null')?.s?.uid;return typeof uid==='string'&&uid?'happy-user:'+encodeURIComponent(uid)+':'+KEY:KEY;}
+  function read(){try{return normalize(root.DB?.accountPreferences?.arc||JSON.parse(localStorage.getItem(ownerKey()))||DEFAULT);}catch(_){return normalize(DEFAULT);}}
+  function write(config){const c=normalize(config);const key=ownerKey(),raw=JSON.stringify(c);localStorage.setItem(key,raw);if(key!==KEY)localStorage.setItem(key+':pending',raw);root.DayAccountData?.appearance('arc',c);root.dispatchEvent(new CustomEvent('happy-arc-style',{detail:c}));return c;}
   function preset(id){const p=PRESETS.find(p=>p.id===id)||PRESETS[1];return normalize({...DEFAULT,...p,mode:p.id});}
   const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
   const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
