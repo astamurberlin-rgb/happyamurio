@@ -1,7 +1,7 @@
 /* Full Meal journal, encrypted on the signed-in device. Existing app_sync RLS only. */
 (function(root){
 'use strict';
-const M=root.MealJournalModel;let owner,key,writer,doc,baseline={},ready=false,busy=false,again=false,timer,status='',last=0,paused=false;
+const M=root.MealJournalModel;let owner,key,writer,doc,baseline={},ready=false,busy=false,again=false,timer,status='',paused=false;
 const id=()=>root.HappyFoodCounters.id();
 async function unpack(bytes){
  if(bytes[0]!==31||bytes[1]!==139)return bytes;
@@ -14,13 +14,14 @@ const ownerCurrent=()=>ready&&!paused&&root.HappyProfile.matches(owner)&&((root.
 const current=()=>ownerCurrent()&&!(root.MealAuthFence&&root.MealAuthFence.pending);
 function paint(){const n=document.getElementById('mealJournalStatus');if(n)n.textContent=status}
 function state(s){status=s;paint()}
+function pendingState(){state(root.clOn()?'Синхронизация…':'Сохранено на устройстве')}
 function read(){let d=M.empty(owner);for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(key+':pending:'))d=M.merge(d,JSON.parse(localStorage.getItem(k)),owner)}return d}
 function keep(d){doc=d;root.DB.__journalSync=M.copy(d)}
 function queue(){clearTimeout(timer);timer=setTimeout(sync,900)}
 function capture(){
  if(!ready)throw Error('Сохранение журнала недоступно. Выгрузи JSON перед закрытием.');if(!ownerCurrent())throw Error('Аккаунт изменился. Открой приложение снова.');
  const next=M.flatten(root.DB),base=M.merge(doc,read(),owner),p=M.patch(baseline,next,base,writer+':'+id());
- if(p.records.length){localStorage.setItem(key+':pending:'+id(),JSON.stringify(p));keep(M.merge(base,p,owner));queue()}else keep(base);
+ if(p.records.length){localStorage.setItem(key+':pending:'+id(),JSON.stringify(p));keep(M.merge(base,p,owner));pendingState();queue()}else keep(base);
  baseline=next;root.DB.__journalBaseline=M.copy(baseline);
 }
 function inPlace(next){
@@ -60,19 +61,19 @@ function transport(){
  }};
 }
 async function sync(){
- if(!current())return;if(busy){again=true;return}busy=true;
+ if(!current())return;if(busy){again=true;return}busy=true;pendingState();
  try{
  const generation=root.MealAuthFence&&root.MealAuthFence.generation,ck=root.CL.ck;
  const check=()=>{if(!current()||(root.MealAuthFence&&root.MealAuthFence.generation)!==generation||root.CL.ck!==ck)throw Error('Вход изменился во время обмена');};
- await accept(null,check);check();if(!root.clOn()){state('Журнал сохранён на устройстве. Войди в Happy для облачной копии.');return}
- state('Синхронизация полного журнала…');const t=transport();
+ await accept(null,check);check();if(!root.clOn()){state('Сохранено на устройстве');return}
+ state('Синхронизация…');const t=transport();
  for(let i=0;i<4;i++){
  const remote=await t.get();check();if(!current())return;await accept(remote&&remote.doc,check);check();if(!current())return;const next=M.copy(doc);
- if(remote&&M.stable(next)===M.stable(remote.doc)){clean(next);last=Date.now();state('Полный журнал синхронизирован · '+root.clWhen(last));return}
- if(!await t.put(next,remote)){check();continue;}check();if(!current())return;clean(next);await accept(next,check);check();last=Date.now();
- if(M.stable(doc)!==M.stable(next)){again=true;state('Сохранено · отправляем новые записи…')}else state('Полный журнал синхронизирован · '+root.clWhen(last));return;
+ if(remote&&M.stable(next)===M.stable(remote.doc)){clean(next);state('Синхронизировано');return}
+ if(!await t.put(next,remote)){check();continue;}check();if(!current())return;clean(next);await accept(next,check);check();
+ if(M.stable(doc)!==M.stable(next)){again=true;state('Синхронизация…')}else state('Синхронизировано');return;
  }again=true;throw Error('Журнал изменился на другом устройстве; повторяем обмен.');
- }catch(e){state('Облачный журнал не обновлён. '+(e.message||'Обмен повторится при появлении сети.'))}finally{busy=false;if(again){again=false;queue()}}
+ }catch(e){state('Не удалось синхронизировать')}finally{busy=false;if(again){again=false;queue()}}
 }
 function prepare(next){if(root.MealSources)root.MealSources.prepareTestImport(next,root.DB,root.MEAL_SOURCE_DEFAULTS_RELEASE);return prepareLocal(next)}
 function prepareLocal(next){
@@ -84,9 +85,9 @@ function initialize(hadSaved){
  owner=root.HappyProfile.owner;key='happy-meal-journal-v1:'+owner;writer=id();
  const embedded=root.DB.__journalSync;doc=M.merge(read(),embedded&&embedded.owner===owner?embedded:null,owner);
  const localSeed=M.seed(root.DB,owner);doc=M.merge(doc,localSeed,owner);
- baseline=embedded&&embedded.owner===owner?(root.DB.__journalBaseline||M.visible(embedded)):M.flatten(root.DB);ready=true;capture();keep(doc);
+ baseline=embedded&&embedded.owner===owner?(root.DB.__journalBaseline||M.visible(embedded)):M.flatten(root.DB);ready=true;pendingState();capture();keep(doc);
  root.addEventListener('online',sync);root.addEventListener('focus',sync);
- root.addEventListener('storage',e=>{if(e.key===key||(e.key||'').startsWith(key+':pending:')){accept(null).catch(e=>state(e.message));queue()}});
+ root.addEventListener('storage',e=>{if(e.key===key||(e.key||'').startsWith(key+':pending:')){pendingState();accept(null).catch(e=>state(e.message));queue()}});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){try{capture();root.rawSet(root.K.db,JSON.stringify(root.DB))}catch(e){state(e.message)}}else sync()});
  setInterval(()=>{if(!document.hidden)sync()},15000);queue();
 }

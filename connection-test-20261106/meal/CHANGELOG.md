@@ -1,3 +1,10 @@
+## 2026-11-07 · Meal 22.11-usda-test.14 · кандидат, не опубликован
+
+- Одна компактная строка статуса внутри карточки аккаунта, под кнопками профиля. Убрана дублирующая отметка времени обмена сводками над кнопками.
+- Новая правка сразу меняет статус на «Синхронизация…», включая ожидание отправки. «Синхронизировано» появляется после подтверждения облачного журнала; более поздние правки остаются в ожидании. Ошибка и локальное хранение обозначены отдельными короткими статусами.
+- Выход из аккаунта, схема хранения, алгоритм объединения и облачная база не изменены. Дополнительные кнопки, диалоги и ожидание при выходе не добавлялись.
+- Проверки и ограничения: пройдены check-meal-journal (включая новые сценарии статуса), check-meal-storage, check-account-profile, check-shared-ui, check-meal-times, check-meal-exports, check-layout; сборка и проверки Sport также пройдены. Проверка реального Safari/PWA и полная готовность к публичному выпуску этим изменением не подтверждаются; ограничения кандидата .13 остаются.
+
 ## 2026-11-06 · Meal 22.11-usda-test.13 · LOCAL RELEASE STAGING, NOT PUBLISHED
 
 - Scope: Owner/auth guards and single-runtime Meal summary publisher sequencing, using the accepted r3 runtime. Embedded Day/Sport and sport/measurements writer are byte-identical to baseline and NOT covered by this certification.

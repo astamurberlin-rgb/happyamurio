@@ -1420,7 +1420,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <script src="backup-model.js?v=22.11-test.17"></script>
 <script src="local-store.js?v=22.11-test.17"></script>
 <script src="journal-model.js?v=22.11-test.17"></script>
-<script src="journal-sync.js?v=22.11-test.17"></script>
+<script src="journal-sync.js?v=22.11-usda-test.14"></script>
 <script src="../shared/meal-products-model.js?v=22.11-usda-test.9"></script>
 <link rel="stylesheet" href="catalog.css?v=22.11-test.17">
 <link rel="stylesheet" href="../shared/food-counters.css?v=3">
@@ -1575,7 +1575,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <section class="screen" data-screen="updates"><div class="grip" data-grip role="button" tabindex="0" aria-label="Закрыть историю обновлений"><i></i></div><div class="top"><h1>История обновлений</h1></div><div id="releaseHistory"></div></section>
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1><div class="tierBadges"><button class="tierBadge pro" data-tier="pro" aria-label="PRO — заметка на потом">PRO</button><button class="tierBadge gold" data-tier="gold" aria-label="GOLD — заметка на потом">GOLD</button></div></div>
-    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div><p id="mealJournalStatus" class="happy-note" role="status">Подготовка журнала…</p></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day/">Happy Day</a><a class="happy-button" href="../sport/">Happy Sport</a></div></div></section>
+    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card"><div id="clBox"></div><p id="mealJournalStatus" class="happy-note" role="status" aria-live="polite" aria-atomic="true">Подготовка синхронизации…</p></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day/">Happy Day</a><a class="happy-button" href="../sport/">Happy Sport</a></div></div></section>
     <h2 class="happy-heading">Настройки питания</h2>
 
 
@@ -1613,7 +1613,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <!--/PHOTO-->
     <section class="happy-section meal-transfer" data-happy-section="exports"><h2 class="happy-heading">Отчёты и выгрузки</h2><div class="happy-card"><button class="happy-button" id="mealReportSettings">Открыть отчёт</button><p class="happy-note">Период выбирается в журнале, состав отчёта — перед сохранением. CSV находится в конце журнала. PDF, PNG, печать и полный CSV с продуктами и нутриентами.</p></div><section class="happy-section" data-happy-section="backup"><h3 class="happy-heading">Резервная копия</h3><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button><button class="happy-button" id="bkIn">Загрузить из файла</button></div><input type="file" id="bkFile" accept="application/json,.json" hidden><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты и рецепты. На телефоне выбери «Сохранить в Файлы». При загрузке выбери дополнение без дублей или полную замену. Архив Cronometer тоже сохраняется. Перед импортом создаётся копия для отмены.</p><p class="happy-note" id="bkWhen"></p><button class="happy-button" id="bkRestore" hidden>Вернуть дневник до импорта</button></div></section></section>
     <div class="card"><button class="release-link" id="openReleaseHistory"><b>История обновлений</b><small>Что нового в Happy Meal · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="22.11-usda-test.13"><div>Happy Meal · v22.11-usda-test.13</div><small>Обновлено 06.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="22.11-usda-test.14"><div>Happy Meal · v22.11-usda-test.14</div><small>Обновлено 07.11.2026</small></footer>
   </div>
 
 </div>
@@ -5905,7 +5905,7 @@ function clWhen(ms){
 function clEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
 function clPaint(){
   var el=document.getElementById('clBox'); if(!el) return;
-  el.innerHTML=HappyUI.account({connected:clOn(),name:CL.s&&CL.s.name,email:CL.s&&CL.s.email,secondary:HappyUI.lastText(CL.last),busy:CL.busy,error:CL.err,message:CL.msg,draft:HappyUI.draft(el)});
+  el.innerHTML=HappyUI.account({connected:clOn(),name:CL.s&&CL.s.name,email:CL.s&&CL.s.email,busy:CL.busy,error:CL.err,message:CL.msg,draft:HappyUI.draft(el)});
   var note=document.querySelector('[data-happy-account-note]'); if(note) note.innerHTML=HappyUI.accountNote().replace("Полная синхронизация дневников пока в разработке.","В этой версии полный журнал Meal синхронизируется после входа. Day и Sport обновляются отдельно.");
 }
 function clDo(act){
@@ -5923,7 +5923,7 @@ document.addEventListener('click',function(ev){
 <script src="uzbek.js?v=22.11-usda-test.9"></script>
 <script src="user-products.js?v=22.11-test.6"></script><script src="../shared/measurements-host.js?v=1" data-journal="journal"></script>
 
-<script src="release-notes.js?v=22.11-usda-test.13"></script>
+<script src="release-notes.js?v=22.11-usda-test.14"></script>
 <script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
 (function(root){
  'use strict';

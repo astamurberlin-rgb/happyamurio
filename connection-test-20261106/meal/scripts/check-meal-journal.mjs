@@ -18,11 +18,34 @@ function client(s,{db=initial(),store=storage(),owner='u',sourceDefaults=false}=
  if(sourceDefaults){c.MEAL_SOURCE_DEFAULTS_RELEASE='22.11-usda-test.9';vm.runInContext(sourceModule,c)}
  vm.runInContext(model,c);vm.runInContext(engine,c);c.MealJournal.init(true);return {c,store,events,status:()=>nodes.mealJournalStatus.textContent,sync:()=>c.MealJournal.sync(),capture:()=>c.MealJournal.capture(),add:(id,g=100,date='2026-10-31')=>{(c.DB.days[date]??={items:[]}).items.push(entry(id,g));c.MealJournal.capture()},del:id=>{for(const d of Object.values(c.DB.days))d.items=d.items.filter(i=>i.id!==id);c.MealJournal.capture()},count:()=>Object.values(c.DB.days).reduce((n,d)=>n+d.items.length,0)};
 }
+// The profile status must stop claiming cloud confirmation at the moment of an edit.
+const statusServer=server(),statusClient=client(statusServer);
+await statusClient.sync();assert.equal(statusClient.status(),'Синхронизировано');
+const confirmedWrites=statusServer.puts;statusClient.add('status-first');
+assert.equal(statusServer.puts,confirmedWrites);assert.equal(statusClient.status(),'Синхронизация…');
+// An edit arriving while a write is pending is not covered by that write's confirmation.
+let releaseStatusWrite,notifyStatusWrite;
+const statusWriteGate=new Promise(r=>releaseStatusWrite=r),statusWriteStarted=new Promise(r=>notifyStatusWrite=r);
+statusClient.c.clRest=async(...args)=>{if(args[0]!=='GET'){notifyStatusWrite();await statusWriteGate}return statusServer.rest(...args)};
+const statusWork=statusClient.sync();await statusWriteStarted;statusClient.add('status-during-write');releaseStatusWrite();await statusWork;
+assert.equal(statusClient.status(),'Синхронизация…');await statusClient.sync();assert.equal(statusClient.status(),'Синхронизировано');
+const statusOther=client(statusServer);await statusOther.sync();assert.equal(statusOther.count(),2);
+statusServer.offline=true;statusClient.add('status-offline');await statusClient.sync();assert.equal(statusClient.status(),'Не удалось синхронизировать');
+statusServer.offline=false;await statusClient.sync();assert.equal(statusClient.status(),'Синхронизировано');await statusOther.sync();assert.equal(statusOther.count(),3);
+// A guest must never be shown a cloud confirmation.
+const localStatus=client(server(),{owner:'local'});localStatus.c.CL.s=null;localStatus.c.HappyProfile.matches=u=>u==='local';
+localStatus.add('local-status');assert.equal(localStatus.status(),'Сохранено на устройстве');await localStatus.sync();assert.equal(localStatus.status(),'Сохранено на устройстве');
+// The status remains inside the profile card, below the existing account controls.
+const page=await readFile(new URL('../meal/index.html',import.meta.url),'utf8');
+assert.equal([...page.matchAll(/id="mealJournalStatus"/g)].length,1);
+assert.match(page,/<section[^>]*data-happy-section="account">[^]*?<div class="happy-card"><div id="clBox"><\/div><p id="mealJournalStatus"[^>]*role="status"[^>]*>[^<]*<\/p><\/div>/);
+assert.ok(!page.includes('secondary:HappyUI.lastText(CL.last)'));
+console.log('Passed profile status: immediate pending, in-flight edits, confirmation only after upload, offline retry, guest local-only label, single status below profile controls.');
 const s=server(),a=client(s),b=client(s);a.add('a');b.add('b');await Promise.all([a.sync(),b.sync()]);await a.sync();await b.sync();assert.equal(a.count(),2);assert.equal(b.count(),2);assert.ok(!s.row.data.includes('egg'));assert.equal(s.row.user_id,'u');
 // Idempotent replay, no needless encrypted writes.
 const n=s.puts;await a.sync();assert.equal(s.puts,n);
 // Offline deletion then stale client must not resurrect it.
-s.offline=true;a.del('a');await a.sync();assert.match(a.status(),/offline/);s.offline=false;await a.sync();await b.sync();assert.equal(b.count(),1);
+s.offline=true;a.del('a');await a.sync();assert.equal(a.status(),'Не удалось синхронизировать');s.offline=false;await a.sync();await b.sync();assert.equal(b.count(),1);
 const stale=client(s,{db:{...initial(),days:{'2026-10-31':{items:[entry('a')]}}}});await stale.sync();assert.equal(stale.count(),1);assert.equal(stale.c.DB.days['2026-10-31'].items[0].id,'b');
 // Offline reload uses durable write-ahead operations even with stale DB snapshot.
 s.offline=true;b.add('offline');const reload=client(s,{db:initial(),store:b.store});s.offline=false;await reload.sync();assert.equal(reload.count(),2);
@@ -44,7 +67,7 @@ assert.throws(()=>b.c.MealJournalModel.merge(b.c.MealJournal.document(),{v:1,own
 const replacement=initial();replacement.days['2026-10-29']={items:[entry('replacement')]};const prepared=b.c.MealJournal.prepare(replacement);const imported=client(s,{db:prepared,store:b.store});await imported.sync();assert.equal(imported.count(),1);assert.equal(imported.c.DB.days['2026-10-29'].items[0].id,'replacement');
 const original=initial();original.days['2026-10-31']={items:[entry('restored')]};const restored=imported.c.MealJournal.prepare(original);const undo=client(s,{db:restored,store:imported.store});await undo.sync();assert.equal(undo.count(),1);assert.equal(undo.c.DB.days['2026-10-31'].items[0].id,'restored');
 // Wrong key must fail closed without replacing unreadable cloud history.
-const wrong=client(s);wrong.c.CL.ck=await webcrypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);const oldRow=copy(s.row);await wrong.sync();assert.match(wrong.status(),/расшифровать/);assert.deepEqual(s.row,oldRow);
+const wrong=client(s);wrong.c.CL.ck=await webcrypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);const oldRow=copy(s.row);await wrong.sync();assert.equal(wrong.status(),'Не удалось синхронизировать');assert.deepEqual(s.row,oldRow);
 const M=b.c.MealJournalModel,base=initial();base.days['2026-10-31']={items:[entry('x'),entry('y')]};const seeded=M.seed(base,'u');
 const removed=copy(base);removed.days['2026-10-31'].items.shift();const edited=copy(base);edited.days['2026-10-31'].items[1].g=222;
 const delPatch=M.patch(M.flatten(base),M.flatten(removed),seeded,'a',2000),editPatch=M.patch(M.flatten(base),M.flatten(edited),seeded,'b',1000);
@@ -54,7 +77,7 @@ console.log('Passed: initial INSERT race, CAS merge, independent same-day adds, 
 
 // Synthetic package larger than legacy localStorage and encrypted row capacity.
 const capacityServer=server(),capacityDB=initial();capacityDB.days['2026-10-31']={items:[entry('capacity')]};capacityDB.synthetic='nutrient-source-snapshot '.repeat(280000);
-assert.ok(JSON.stringify(capacityDB).length>6000000);const capacity=client(capacityServer,{db:capacityDB});await capacity.sync();assert.match(capacity.status(),/синхронизирован/);assert.ok(capacityServer.row.data.length<4000000);const capacityReload=client(capacityServer);await capacityReload.sync();assert.equal(capacityReload.c.DB.synthetic,capacityDB.synthetic);assert.equal(capacityReload.count(),1);
+assert.ok(JSON.stringify(capacityDB).length>6000000);const capacity=client(capacityServer,{db:capacityDB});await capacity.sync();assert.equal(capacity.status(),'Синхронизировано');assert.ok(capacityServer.row.data.length<4000000);const capacityReload=client(capacityServer);await capacityReload.sync();assert.equal(capacityReload.c.DB.synthetic,capacityDB.synthetic);assert.equal(capacityReload.count(),1);
 console.log('Passed synthetic >6MB compressed/encrypted transport and new-device restore within 4M row limit.');
 
 // Release9 source defaults exercise the actual encrypted sync engine, not just pure merges.
