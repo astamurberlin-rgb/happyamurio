@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-app-version="1.5">
+<html lang="ru" data-app-version="1.6">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -32,6 +32,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
+body{overflow-x:clip}
 body{
   min-height:100%;
   font-family:var(--font);
@@ -62,20 +63,23 @@ body{
 .top h1{margin:0;line-height:0}
 .logo{display:block;height:46px;width:auto;overflow:visible;
   filter:drop-shadow(0 1px 1px rgba(20,6,40,.30)) drop-shadow(0 4px 10px rgba(20,6,40,.18))}
-.status{margin:0 0 0 2px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.status[data-tone="error"]{color:#ffe3bf}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 /* Home-screen mode only: keeps text from sliding under the clock; zero height in a browser tab */
 .safe-top{position:fixed;top:0;left:0;right:0;z-index:4;height:env(safe-area-inset-top);pointer-events:none;
   background:rgba(0,140,220,.30);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 
 .ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 10px);z-index:5;
-  display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  display:flex;align-items:center;gap:10px;padding:8px 16px 8px 14px;border-radius:20px;
   background:rgba(255,255,255,.94);color:#0c6fa8;font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;
   box-shadow:0 6px 18px rgba(4,40,80,.18);transform:translate3d(-50%,0,0);opacity:0;pointer-events:none}
 .ptr.settle,.top.settle,.wrap.settle{transition:transform .25s ease,opacity .25s ease}
 .ptr-icon{flex:0 0 auto;width:15px;height:15px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;
   transform:rotate(calc(var(--turn,0) * 300deg))}
 .ptr[data-phase="busy"] .ptr-icon{animation:ptr-spin .8s linear infinite}
+.ptr-lines{display:grid;gap:1px}
+.ptr-sub{font-size:11px;font-weight:500;line-height:14px;color:#56668a;font-variant-numeric:tabular-nums}
+.ptr-sub:empty{display:none}
+.ptr[data-phase="error"]{color:var(--fresh)}
 @keyframes ptr-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.ptr.settle,.top.settle,.wrap.settle{transition:none}.ptr[data-phase="busy"] .ptr-icon{animation:none}}
 
@@ -89,9 +93,10 @@ body{
 }
 .btn.primary{background:rgba(255,255,255,.92);color:#0c6fa8;border-color:#fff}
 .btn[disabled]{opacity:.55;cursor:progress}
-.btn:focus-visible,.chip:focus-visible,.paper-btn:focus-visible,.link-btn:focus-visible,.md a:focus-visible,.key-input:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.btn:focus-visible,.chip:focus-visible,.link-btn:focus-visible,.md a:focus-visible,.key-input:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
-.wrap{display:grid;gap:14px;padding:14px 0 calc(32px + env(safe-area-inset-bottom))}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:14px 0 calc(32px + env(safe-area-inset-bottom))}
+.wrap > *{min-width:0}
 
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 16px 6px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
@@ -106,7 +111,6 @@ body{
 }
 .chip[aria-current="true"]{background:rgba(255,255,255,.92);border-color:#fff;color:#0c6fa8}
 .chip-name{font-size:15px;font-weight:700;line-height:1.3}
-.chip-meta{font-size:12px;opacity:.85;font-variant-numeric:tabular-nums}
 .pill{justify-self:start;display:inline-block;margin-top:4px;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;color:var(--fresh);background:var(--fresh-soft)}
 
 .paper{
@@ -117,17 +121,22 @@ body{
   box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);
 }
 .paper-inner{max-width:70ch;margin:0 auto}
-.paper-head{display:grid;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--paper-line)}
-.paper-meta{display:grid;gap:2px;font-size:13px;color:var(--paper-muted);font-variant-numeric:tabular-nums}
-.paper-path{font-family:var(--mono);font-size:12px;overflow-wrap:anywhere}
-.paper-actions{display:flex;flex-wrap:wrap;gap:8px}
-.paper-btn{
-  min-height:40px;padding:8px 14px;border-radius:14px;
-  border:1px solid var(--paper-line);background:#fff;color:var(--accent);
-  font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+.paper-actions{float:right;display:flex;gap:6px;margin:-4px -6px 8px 14px}
+.icon-btn{
+  display:inline-grid;place-items:center;width:40px;height:40px;padding:0;border-radius:12px;
+  border:1px solid var(--paper-line);background:#fff;color:var(--accent);cursor:pointer;
+  -webkit-appearance:none;appearance:none;transition:background-color .15s ease,color .15s ease;
 }
+.icon-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.icon-btn .i-done{display:none}
+.icon-btn.ok{color:#1f8a4c;background:#eaf8ef}
+.icon-btn.ok .i-main{display:none}
+.icon-btn.ok .i-done{display:block}
+.icon-btn.fail{color:var(--fresh);background:var(--fresh-soft)}
+.icon-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.md{font-size:17px;line-height:1.6;overflow-wrap:break-word}
+.md{font-size:17px;line-height:1.6;overflow-wrap:anywhere}
+.md > :first-child{margin-top:2px}
 .md h1,.md h2,.md h3,.md h4{line-height:1.25;text-wrap:balance;color:var(--paper-ink)}
 .md h1{font-size:24px;font-weight:750;margin:18px 0 10px;letter-spacing:-.01em}
 .md h2{font-size:19px;font-weight:700;margin:28px 0 10px;padding-top:16px;border-top:1px solid var(--paper-line)}
@@ -186,10 +195,10 @@ body{
 <div class="grain" aria-hidden="true"></div>
 
 <div class="safe-top" aria-hidden="true"></div>
-<div class="ptr" id="ptr" aria-hidden="true"><span class="ptr-icon"></span><span id="ptr-text">Потяни, чтобы обновить</span></div>
+<div class="ptr" id="ptr" aria-hidden="true"><span class="ptr-icon"></span><span class="ptr-lines"><span id="ptr-text">Потяни, чтобы обновить</span><span class="ptr-sub" id="ptr-sub"></span></span></div>
 <header class="top">
   <h1><svg class="logo" viewBox="126 254 772 380" role="img" aria-label="Notes"><defs><linearGradient id="notes-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7642FF"/><stop offset=".34" stop-color="#DC46BE"/><stop offset=".68" stop-color="#FF6880"/><stop offset="1" stop-color="#FF9646"/></linearGradient></defs><path fill="url(#notes-grad)" fill-rule="evenodd" d="M891.00 525.75L888.75 510.50L886.00 498.00L882.50 488.75L873.00 468.50L869.75 458.50L868.00 440.25L867.75 412.50L866.00 405.50L862.25 399.25L856.75 394.25L852.50 392.00L845.50 390.25L840.75 390.25L835.75 391.25L830.25 393.75L827.50 395.75L822.50 401.25L820.25 405.50L818.75 410.75L818.50 429.25L757.00 518.50L754.50 522.75L753.75 526.25L750.50 528.00L747.50 531.00L733.25 548.50L721.00 562.25L711.25 571.75L695.25 584.75L684.25 592.00L675.50 596.25L669.75 598.00L664.75 598.75L661.50 598.50L658.25 597.25L655.50 595.25L654.00 593.25L651.75 584.00L650.25 574.50L649.75 568.00L650.00 555.50L651.00 546.75L652.75 538.25L669.75 526.50L682.00 517.00L697.75 502.75L710.75 489.75L723.25 475.00L729.75 465.25L733.25 457.75L734.75 453.25L736.50 442.75L736.50 434.75L735.00 425.75L732.25 418.75L730.00 415.50L727.25 412.75L722.25 409.75L705.00 404.00L700.00 403.25L694.50 403.25L687.00 404.50L679.50 407.00L674.00 410.00L664.75 416.50L657.75 422.50L651.25 429.00L643.75 437.75L637.00 447.00L633.00 453.50L624.50 469.75L619.50 480.75L614.00 494.25L607.75 512.00L603.50 527.50L601.50 538.25L600.50 548.25L600.50 557.00L587.25 572.00L574.25 584.50L566.50 589.75L559.75 593.25L550.50 596.75L549.25 596.25L548.75 591.75L549.00 582.25L551.25 570.25L555.75 554.50L578.50 488.75L610.25 404.25L611.25 403.75L615.50 403.50L623.25 404.00L628.75 405.50L651.25 413.25L655.50 414.25L661.25 414.00L665.00 412.50L667.50 411.00L670.25 408.50L672.25 404.75L672.50 400.00L670.50 395.00L668.50 392.00L666.50 390.00L663.25 388.00L652.00 385.00L640.25 383.50L632.75 383.50L620.75 385.25L617.75 385.00L631.50 349.75L654.25 294.50L655.75 288.00L655.75 283.25L654.50 277.50L652.25 272.75L649.00 268.50L645.25 265.25L640.25 262.50L635.00 261.00L628.50 260.75L621.25 262.50L617.00 264.75L612.50 268.50L609.25 272.75L597.25 301.25L570.25 368.25L559.00 382.25L549.00 393.25L532.25 396.25L528.75 398.25L524.50 402.00L523.25 404.75L523.50 408.00L525.75 411.00L528.50 412.50L522.00 417.50L516.00 421.25L507.50 424.75L496.75 427.00L486.75 427.25L485.00 426.75L482.50 421.00L478.00 415.75L474.75 413.50L469.25 411.00L466.00 408.25L459.50 405.75L453.75 404.50L441.25 404.50L427.75 406.50L415.50 409.75L411.25 411.50L402.50 416.25L394.50 422.75L381.00 436.75L368.25 452.50L357.75 467.50L347.25 486.00L341.25 500.25L335.75 519.50L332.50 536.25L330.75 553.75L319.50 569.25L312.50 577.25L300.25 587.75L291.00 593.50L290.50 593.25L290.00 590.25L289.75 580.50L292.00 569.50L304.25 532.50L308.50 518.25L321.25 482.25L324.00 473.00L326.50 462.00L327.25 456.50L327.00 441.25L325.00 431.25L321.50 422.25L315.75 413.25L311.50 409.00L306.00 405.00L300.50 402.50L295.00 401.25L289.50 401.25L283.25 403.00L280.75 404.25L277.50 406.75L268.00 409.00L262.75 410.75L255.75 414.00L247.50 418.75L239.25 425.00L234.25 429.75L234.25 420.00L232.25 411.75L229.25 406.00L224.25 400.75L218.75 397.50L211.75 395.75L207.00 395.75L203.00 396.50L199.50 397.75L196.00 399.75L191.00 404.25L188.00 408.75L186.00 413.75L184.75 420.50L171.00 434.50L165.25 441.25L137.50 479.25L136.25 482.25L135.25 487.00L135.25 490.25L136.00 492.25L137.75 494.25L140.50 495.50L143.00 495.50L148.75 492.75L152.50 489.75L168.50 467.00L176.75 456.25L177.00 456.50L170.00 482.00L150.25 540.50L133.50 593.50L132.50 598.50L132.50 603.75L133.25 608.00L134.50 611.50L138.00 617.25L141.75 621.00L145.00 623.25L151.00 625.75L155.25 626.50L159.75 626.50L164.00 625.75L170.00 623.25L173.25 621.00L177.00 617.25L180.75 611.00L197.75 557.00L218.25 496.25L221.75 484.50L226.75 464.75L238.75 450.75L247.75 441.75L253.25 437.00L257.75 433.75L264.75 429.75L274.75 426.00L275.25 426.25L277.00 432.50L278.00 439.25L278.00 446.75L276.50 455.50L273.00 468.00L260.25 504.00L254.75 522.25L245.50 549.25L242.00 562.00L240.50 571.25L240.50 582.75L241.25 588.50L243.75 598.00L246.75 604.75L251.50 611.75L256.00 616.25L259.50 618.75L263.50 620.75L268.75 622.25L274.75 622.50L280.50 621.00L285.50 618.00L288.75 614.25L293.75 612.50L305.75 606.00L319.50 595.50L328.25 587.00L331.50 583.25L332.00 583.50L332.25 585.75L333.75 590.50L337.25 598.25L341.75 604.75L346.50 609.75L352.00 614.00L358.25 617.25L363.50 619.00L368.50 620.00L378.75 619.75L383.75 618.50L387.50 617.00L402.25 613.25L414.25 607.75L429.25 598.50L444.00 586.75L452.50 578.50L458.00 572.25L463.00 565.50L468.50 556.50L475.50 542.50L480.25 531.00L487.50 508.50L489.75 499.25L492.00 486.50L492.50 481.00L492.50 464.75L491.50 454.00L490.00 445.75L501.00 444.75L508.75 443.25L514.00 441.75L522.00 438.50L529.75 434.25L535.75 430.00L544.50 423.00L551.50 416.50L551.75 417.25L529.50 476.75L511.75 527.50L504.00 552.00L500.25 569.00L499.75 573.00L499.75 586.50L501.50 595.75L504.50 603.25L508.75 609.75L513.50 614.75L518.25 618.00L525.50 621.00L529.50 621.75L535.25 621.75L539.00 621.00L544.25 618.75L548.00 616.00L560.25 612.75L571.75 607.50L579.25 603.25L585.50 598.75L591.50 593.50L602.50 582.00L603.00 582.25L605.75 592.50L608.50 599.00L614.00 607.50L617.00 610.75L623.00 615.25L627.75 617.75L632.00 619.25L637.00 620.25L648.50 620.25L661.25 617.50L676.75 615.00L684.50 612.25L692.00 608.50L698.25 604.75L707.50 598.25L724.25 584.50L733.75 575.25L747.75 559.50L763.50 540.25L765.25 535.50L768.25 533.50L771.75 529.50L821.00 457.75L823.25 467.00L825.25 472.50L836.00 495.75L839.50 506.75L842.00 526.25L842.25 534.75L841.00 544.50L838.25 553.00L834.75 559.50L828.00 569.00L818.75 579.50L805.25 593.50L802.25 595.75L798.25 597.75L793.75 599.25L789.75 599.75L781.25 598.75L774.25 596.75L768.75 593.50L762.50 587.50L760.50 584.75L759.25 581.75L761.75 577.50L766.00 572.25L768.50 567.25L769.75 563.50L769.75 560.00L768.75 557.50L767.00 555.75L764.50 554.75L761.25 555.00L757.50 557.00L753.00 560.00L746.75 567.25L742.25 575.25L741.00 580.50L741.50 586.50L744.25 593.00L749.25 600.00L755.00 605.75L763.50 611.75L772.00 615.25L780.25 617.00L790.75 618.00L807.75 620.75L820.50 621.00L825.75 620.25L832.75 618.25L841.25 614.25L852.75 606.50L863.00 597.75L875.50 584.25L884.00 571.75L887.75 563.50L890.75 552.00L891.50 546.00L891.50 531.50ZM472.00 448.75L473.50 456.50L474.50 467.00L474.50 478.75L472.75 491.75L470.00 503.50L465.00 519.75L459.25 534.25L452.00 548.75L446.75 557.00L440.25 565.00L433.25 572.00L422.75 580.75L413.00 587.50L401.75 593.75L391.75 597.50L389.25 597.75L388.00 597.25L386.00 595.50L382.75 591.25L381.50 588.75L380.00 583.00L379.50 572.00L380.75 553.75L384.00 534.25L387.75 519.75L392.00 507.75L400.25 491.25L409.25 477.00L420.00 462.25L430.00 450.50L433.50 445.50L441.25 440.25L443.25 439.50L451.00 445.00L459.25 448.25L464.50 449.25L470.25 449.25ZM715.50 426.75L716.75 428.50L718.00 432.75L718.50 437.00L718.25 443.00L716.25 451.25L712.00 459.50L704.25 469.75L693.00 482.00L677.25 497.00L668.00 505.00L662.50 509.00L662.25 508.50L672.00 485.50L679.00 471.50L683.00 464.75L690.25 454.25L697.25 445.75L704.00 438.50L706.75 434.50L714.25 426.75Z"/></svg></h1>
-  <p class="status" id="status" aria-live="polite">Загружаю…</p>
+  <p class="sr-only" id="status" aria-live="polite">Загружаю…</p>
 </header>
 
 <div class="wrap">
@@ -202,7 +211,7 @@ body{
   </main>
   <footer class="foot">
     <button class="link-btn" id="forget" type="button" hidden>Забыть ключ на этом устройстве</button>
-    <span>Файлы Happy · v1.5 · 7 ноября 2026</span>
+    <span>Файлы Happy · v1.6 · 7 ноября 2026</span>
   </footer>
 </div>
 
@@ -225,6 +234,7 @@ body{
     wrap: document.querySelector(".wrap"),
     ptr: document.getElementById("ptr"),
     ptrText: document.getElementById("ptr-text"),
+    ptrSub: document.getElementById("ptr-sub"),
     chips: document.getElementById("chips"),
     main: document.getElementById("main"),
     forget: document.getElementById("forget")
@@ -236,8 +246,6 @@ body{
   };
 
   const fmtTime = new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit" });
-  const fmtDay = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short" });
-  const fmtFull = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
   function readRaw(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function writeRaw(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* optional */ } }
@@ -262,15 +270,6 @@ body{
     if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return few;
     return many;
   }
-  function when(d) {
-    if (!d) return "";
-    const now = new Date();
-    const diff = Math.round((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
-    if (diff === 0) return "сегодня " + fmtTime.format(d);
-    if (diff === 1) return "вчера " + fmtTime.format(d);
-    return fmtDay.format(d) + " " + fmtTime.format(d);
-  }
-
   function keyFromText(text) {
     const t = String(text || "").trim();
     if (!t) return "";
@@ -367,10 +366,7 @@ body{
       const b = el("button", "chip");
       b.type = "button";
       b.setAttribute("aria-current", d.path === state.currentPath ? "true" : "false");
-      b.append(
-        el("span", "chip-name", d.short),
-        el("span", "chip-meta", [d.group, when(d.updatedAt), d.updatedBy].filter(Boolean).join(" · "))
-      );
+      b.append(el("span", "chip-name", d.short));
       const badge = state.badges.get(d.path);
       if (badge) b.append(el("span", "pill", badge));
       b.addEventListener("click", () => select(d.path));
@@ -401,14 +397,35 @@ body{
   }
 
   function flash(button, ok, okText) {
-    const label = button.textContent;
-    button.textContent = ok ? okText : "Не получилось скопировать";
-    setTimeout(() => { button.textContent = label; }, 2200);
+    const label = button.dataset.label || (button.dataset.label = button.getAttribute("aria-label") || "");
+    button.classList.remove("ok", "fail");
+    button.classList.add(ok ? "ok" : "fail");
+    button.setAttribute("aria-label", ok ? okText : "Не получилось скопировать");
+    clearTimeout(button._flashTimer);
+    button._flashTimer = setTimeout(() => {
+      button.classList.remove("ok", "fail");
+      button.setAttribute("aria-label", label);
+    }, 1600);
   }
   function copy(text, button, okText) {
     try {
       navigator.clipboard.writeText(text).then(() => flash(button, true, okText), () => flash(button, false));
     } catch (e) { flash(button, false); }
+  }
+
+  const ICONS = {
+    copy: '<rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M15 9V5.5A2.5 2.5 0 0 0 12.5 3h-7A2.5 2.5 0 0 0 3 5.5v7A2.5 2.5 0 0 0 5.5 15H9"/>',
+    link: '<path d="M10 14a4.5 4.5 0 0 0 6.36 0l3.18-3.18a4.5 4.5 0 0 0-6.36-6.36L12 5.64"/><path d="M14 10a4.5 4.5 0 0 0-6.36 0l-3.18 3.18a4.5 4.5 0 0 0 6.36 6.36l1.18-1.18"/>',
+    done: '<path d="M5 12.5l4.5 4.5L19 7.5"/>'
+  };
+  function iconButton(name, label) {
+    const b = el("button", "icon-btn");
+    b.type = "button";
+    b.title = label;
+    b.setAttribute("aria-label", label);
+    b.innerHTML = '<svg class="i-main" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>'
+      + '<svg class="i-done" viewBox="0 0 24 24" aria-hidden="true">' + ICONS.done + '</svg>';
+    return b;
   }
 
   function keyCard(message) {
@@ -479,28 +496,17 @@ body{
     }
     const paper = el("article", "paper");
     const inner = el("div", "paper-inner");
-    const head = el("div", "paper-head");
-    const meta = el("div", "paper-meta");
-    meta.append(
-      el("span", "paper-path", d.path),
-      el("span", null, [d.updatedAt ? "изменён " + fmtFull.format(d.updatedAt) : "", d.updatedBy, "версия " + d.version].filter(Boolean).join(" · "))
-    );
-    const badge = state.badges.get(d.path);
-    if (badge) meta.append(el("span", "pill", badge === "новый" ? "новый с прошлого просмотра" : "изменён с прошлого просмотра"));
     const actions = el("div", "paper-actions");
-    const copyText = el("button", "paper-btn", "Копировать текст");
-    copyText.type = "button";
+    const copyText = iconButton("copy", "Скопировать текст");
     copyText.addEventListener("click", () => copy(d.content, copyText, "Текст скопирован"));
-    const copyLink = el("button", "paper-btn", "Ссылка для ИИ");
-    copyLink.type = "button";
+    const copyLink = iconButton("link", "Скопировать ссылку для ИИ");
     copyLink.addEventListener("click", () => {
       const k = getKey() || "";
       const url = API + "/" + d.path.split("/").map(encodeURIComponent).join("/") + "?key=" + encodeURIComponent(k);
       copy(url, copyLink, "Ссылка скопирована");
     });
     actions.append(copyText, copyLink);
-    head.append(meta, actions);
-    inner.append(head, renderMarkdown(d.content));
+    inner.append(actions, renderMarkdown(d.content));
     paper.append(inner);
     main.append(paper);
   }
@@ -565,7 +571,7 @@ body{
   }
 
   // Pull to refresh: at the very top of the page drag down and release past the threshold.
-  const PTR_SHOW = 70, PTR_MAX = 120, PTR_HOLD = 64;
+  const PTR_SHOW = 70, PTR_MAX = 120, PTR_HOLD = 72;
   const ptr = { tracking: false, active: false, x: 0, y: 0, pull: 0 };
   function ptrPaint(distance, phase) {
     ptr.pull = distance;
@@ -575,7 +581,10 @@ body{
     els.ptr.style.opacity = phase ? String(Math.min(1, distance / 40)) : "0";
     els.ptr.style.setProperty("--turn", String(Math.min(1, distance / PTR_SHOW)));
     els.ptr.dataset.phase = phase;
-    els.ptrText.textContent = phase === "busy" ? "Обновляю…" : phase === "ready" ? "Отпусти, чтобы обновить" : "Потяни, чтобы обновить";
+    els.ptrText.textContent = phase === "busy" ? "Обновляю…" : phase === "error" ? "Не удалось обновить"
+      : phase === "ready" ? "Отпусти, чтобы обновить" : "Потяни, чтобы обновить";
+    els.ptrSub.textContent = phase === "busy" || !state.loadedAt ? ""
+      : (phase === "error" ? "данные от " : "обновлено в ") + fmtTime.format(state.loadedAt);
   }
   function ptrSettle(on) {
     for (const n of [els.ptr, els.top, els.wrap]) n.classList.toggle("settle", on);
@@ -584,7 +593,11 @@ body{
     ptrSettle(true);
     if (refresh && ptr.pull >= PTR_SHOW && !state.loading) {
       ptrPaint(PTR_HOLD, "busy");
-      load().finally(() => setTimeout(() => ptrPaint(0, ""), 300));
+      load().finally(() => {
+        const failed = !!state.error && state.docs.length > 0;
+        if (failed) ptrPaint(PTR_HOLD, "error");
+        setTimeout(() => ptrPaint(0, ""), failed ? 2500 : 300);
+      });
     } else {
       ptrPaint(0, "");
     }
