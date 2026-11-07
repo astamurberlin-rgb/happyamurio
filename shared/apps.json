@@ -15,8 +15,22 @@
     }
   },
   "meal": {
-    "entry": "meal/index.html",
-    "version": "22.16"
+    "entry": "meal-23/index.html",
+    "version": "23",
+    "name": "Happy Meal · Update 23",
+    "sharedDirectory": "meal-23/shared",
+    "accountScript": "meal-23/account-ui.js",
+    "settingsSections": [
+      "account",
+      "links",
+      "exports",
+      "backup"
+    ],
+    "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
+    "previous": {
+      "entry": "meal/index.html",
+      "version": "22.16"
+    }
   },
   "sport": {
     "entry": "sport/index.html",

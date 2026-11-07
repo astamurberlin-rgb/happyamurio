@@ -44,6 +44,9 @@ if(apps.day.links?.meal===false){
  assert.ok(!dayPage.includes('href="../meal/"'));
 }else assert.ok(dayPage.includes('href="../meal/"'));
 assert.ok((await read('meal/index.html')).includes('href="../day/"'));
+assert.ok((await read(apps.meal.entry)).includes('href="../day-52/"'));
+assert.ok((await read(apps.meal.previous.entry)).includes(`data-app-version="${apps.meal.previous.version}"`));
+assert.notEqual(apps.meal.entry,apps.meal.previous.entry);
 const previousDay=await read(apps.day.previous.entry);
 assert.ok(previousDay.includes(`data-app-version="${apps.day.previous.version}"`));
 assert.notEqual(apps.day.entry,apps.day.previous.entry);

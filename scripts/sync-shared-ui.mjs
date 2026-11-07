@@ -4,7 +4,7 @@ const apps=JSON.parse(await readFile(new URL('shared/apps.json',root),'utf8'));
 for(const app of ['day','meal']){
  const directory=apps[app].sharedDirectory||'shared';
  const css=await readFile(new URL(directory+'/happy-ui.css',root),'utf8');
- const js=await readFile(new URL(directory+'/happy-ui.js',root),'utf8');
+ const js=await readFile(new URL(apps[app].accountScript||directory+'/happy-ui.js',root),'utf8');
  const profiles=await readFile(new URL(directory+'/profile-storage.js',root),'utf8');
  const history=await readFile(new URL(directory+'/imported-history.js',root),'utf8');
  const path=new URL(apps[app].entry,root);let html=await readFile(path,'utf8');
