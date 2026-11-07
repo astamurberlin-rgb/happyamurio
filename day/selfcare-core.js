@@ -107,12 +107,12 @@ function saveSectionCheckin(db,date,id,checkpoint,metrics,section){
  const metricValues={},metricDefs={};
  for(const key of section.scales||[]){const m=metrics.find(x=>x.k===key),v=checkpoint[key];if(!m||!finite(v))continue;metricValues[key]=v;metricDefs[key]=copy(m);}
  const tags=Object.fromEntries(Object.entries(checkpoint.tags||{}).filter(([,v])=>v));
- if(!Object.keys(metricValues).length&&!Object.keys(tags).length&&!String(checkpoint.note||'').trim())return null;
+ if(!Object.keys(metricValues).length&&!Object.keys(tags).length)return null;
  validTime(checkpoint.time);
  const list=dayData(db,date).checkins,previous=list.find(x=>x.id===id);
- const record={id,time:checkpoint.time,values:{},metricValues,metricDefs,tags,note:String(checkpoint.note||''),createdAt:previous?.createdAt||Date.now()};
+ const record={id,time:checkpoint.time,values:{},metricValues,metricDefs,tags,note:'',createdAt:previous?.createdAt||Date.now()};
  if(previous)Object.assign(previous,record);else list.push(record);
- return previous||record;
+ return record;
 }
 function addEntry(db,date,time,title,text,bookId){
  validTime(time);

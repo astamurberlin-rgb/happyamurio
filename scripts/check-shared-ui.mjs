@@ -27,7 +27,7 @@ f=fixture();await ui.act('sync',f.adapter);assert.ok(f.calls.includes('refresh')
 for(const app of ['day','meal']){
  const directory=apps[app].sharedDirectory||'shared';
  const css=await read(directory+'/happy-ui.css'),source=await read(directory+'/happy-ui.js');
- const page=await read(app+'/index.html');assert.ok(page.includes(css));assert.ok(page.includes(source.replaceAll('</','<\\/')));
+ const page=await read(apps[app].entry);assert.ok(page.includes(css));assert.ok(page.includes(source.replaceAll('</','<\\/')));
  const order=[...page.matchAll(/<section[^>]*data-happy-section="([^"]+)"/g)].map(m=>m[1]);assert.deepEqual(order,['account','backup','links']);
  const ids=[...page.matchAll(/\bid="([^"\s<>]+)"/g)].map(m=>m[1]).filter(id=>!id.includes('+'));
  for(const id of app==='day'?['clBox','expJson','impJson','expCsv','wipe','backupAge','bkPrev','bkBack']:['clBox','bkIn','bkOut','bkFile','bkWhen'])assert.equal(ids.filter(x=>x===id).length,1,app+': duplicate/missing '+id);

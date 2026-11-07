@@ -5,7 +5,8 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 52 |
+| Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
+| Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
 | Happy Sport | `sport/src/`, публичные справочники `sport/data/`; затем сборка | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -26,9 +27,11 @@
 
 ## Happy Day · Update 52
 
-Основной `day/index.html` перенесён из опубликованного Happy Day 51.18-test (Sites v2, исходный коммит `77b90bad576ec8b1b1a504428cfd499330347df7`). Метка выпуска — **52**. Проверенные зависимости этой сборки находятся в `day/shared/`; общие зависимости Meal и Sport не заменены. При синхронизации встроенного UI для Day используется именно `day/shared/`.
+Отдельный `day-52/index.html` перенесён из опубликованного Happy Day 51.18-test (Sites v2, исходный коммит `77b90bad576ec8b1b1a504428cfd499330347df7`). Метка выпуска — **52**. Проверенные зависимости этой сборки находятся в `day-52/shared/`; общие зависимости Meal и Sport не заменены. При синхронизации встроенного UI для Day используется именно `day-52/shared/`.
 
-Самостоятельный HTML: `day/Happy-Day-52.html`. Пересборка: `python3 scripts/build-day-standalone.py`. Проверки аккаунтов и профилей: `node --test day/tests/*.test.cjs`. Происхождение и контрольные суммы исходных файлов — `day/SOURCE-PROVENANCE.json`.
+Самостоятельный HTML: `day-52/Happy-Day-52.html`. Пересборка: `python3 scripts/build-day-standalone.py`. Проверки аккаунтов и профилей: `node --test day-52/tests/*.test.cjs`. Происхождение и контрольные суммы исходных файлов — `day-52/SOURCE-PROVENANCE.json`.
+
+По прямому запросу владельца Update 52 публикуется отдельно от старой страницы. `day/` восстановлен точно из последнего успешного выпуска `e1e6597`; его внутренняя метка — 50.14. У 52 собственные URL и scope установки; общий аккаунт и прежние ключи дневника сохранены. Новые правки Day выполняются в `day-52/`.
 
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
 

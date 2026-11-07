@@ -1,17 +1,13 @@
 <!doctype html>
-<html data-happy-appearance-app="day" lang="ru" data-theme="aurora">
+<html lang="ru" data-theme="aurora">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
-<script id="hd-auth-transport" src="./auth-read-only.js?v=52"></script>
-<script src="./day-sport-lifecycle.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#00A8F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Day">
-<link rel="preload" href="./fonts/mplus-rounded-1c-bold-latin-cyrillic.woff" as="font" type="font/woff" crossorigin>
-<title>Happy Day · Update 52</title>
+<meta name="apple-mobile-web-app-title" content="HappyDay">
+<title>HappyDay</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -19,13 +15,6 @@
 <link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-day-20261031-v4-180.png">
 <link rel="manifest" href="./manifest.webmanifest?v=20261031-v4">
 <style>
-.day-sync-bar{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 7px) 20px 7px;background:var(--glass);border-bottom:1px solid var(--glassBrd)}
-#day-auto-status{flex:1;min-width:0;margin:0;font-size:12px;line-height:1.4;color:var(--ink)}
-#day-auto-status[data-state="conflict"],#day-auto-status[data-state="pending-confirm"],#day-auto-status[data-state="blocked"],#day-auto-status[data-state="auth-paused"]{font-weight:700}
-.day-sync-bar button{flex:none;font-size:11px;padding:5px 10px}
-.happy-settings details.happy-card>summary{cursor:pointer;font-weight:600;line-height:1.5}
-.happy-settings details.happy-card[open]>summary{margin-bottom:12px}
-
 :root{
   --base:#00A8F5;
   --ink:#fff; --muted:rgba(255,255,255,.72); --dim:rgba(255,255,255,.45);
@@ -1008,49 +997,12 @@ a.btn{display:inline-block;text-decoration:none}
 .screen.happy-settings{width:100%;max-width:460px;margin-inline:auto}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="./shared/food-counters.css?v=2">
+<link rel="stylesheet" href="../shared/food-counters.css?v=2">
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
-<link rel="stylesheet" href="./selfcare.css?v=51.14-test">
+<link rel="stylesheet" href="./selfcare.css?v=50.14">
 <link rel="stylesheet" href="./arc-motion.css?v=1.0">
-<script defer src="./arc-motion.js?v=52"></script>
+<script defer src="./arc-motion.js?v=1.1"></script>
 <script defer src="./arc-home.js?v=1.0"></script>
-<link rel="stylesheet" href="./section-wheel.css?v=51.14-test">
-<style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
-.happy-appearance-entry{margin:18px 0 22px}
-.happy-appearance-entry button{width:100%;text-align:left;display:flex;justify-content:space-between;gap:12px;align-items:center}
-.happy-appearance-entry small{font-size:12px;opacity:.85;text-align:right}
-#happy-appearance-dialog{box-sizing:border-box;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--ha-line);border-radius:22px;background:var(--ha-bg);background-color:var(--ha-base);color:var(--ha-ink);font-family:inherit;box-shadow:0 20px 70px #0008;overflow:hidden}
-#happy-appearance-dialog::backdrop{background:#080b18aa;backdrop-filter:blur(5px)}
-#happy-appearance-dialog .ha-layout{display:flex;flex-direction:column;max-height:calc(100dvh - 34px)}
-#happy-appearance-dialog .ha-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 8px;flex:none}
-#happy-appearance-dialog h2{font-size:20px;margin:0;color:var(--ha-ink)}
-#happy-appearance-dialog button{font:inherit;cursor:pointer;touch-action:manipulation;min-height:44px}
-#happy-appearance-dialog .ha-close{border:1px solid var(--ha-line);background:var(--ha-glass);border-radius:12px;color:var(--ha-ink);padding:8px 12px}
-#happy-appearance-dialog .ha-body{overflow-y:auto;overscroll-behavior:contain;padding:4px 18px 16px;min-height:0;-webkit-overflow-scrolling:touch}
-#happy-appearance-dialog p{font-size:13px;line-height:1.45;color:var(--ha-ink);margin:8px 0 14px}
-#happy-appearance-dialog fieldset{border:0;margin:0;padding:0;min-width:0}
-#happy-appearance-dialog legend{font-size:14px;font-weight:700;margin:14px 0 9px}
-#happy-appearance-dialog .ha-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#happy-appearance-dialog .ha-choice{display:flex;position:relative;gap:9px;align-items:center;padding:10px;border:1px solid var(--ha-line);border-radius:14px;background:var(--ha-glass);color:var(--ha-ink);cursor:pointer;min-height:54px;line-height:1.3}
-#happy-appearance-dialog .ha-choice:has(input:checked){border:2px solid var(--ha-focus);padding:9px;background:var(--ha-glass)}
-#happy-appearance-dialog .ha-choice:focus-within{outline:3px solid var(--ha-focus);outline-offset:2px}
-#happy-appearance-dialog input{accent-color:var(--ha-focus);width:18px;height:18px;flex:none;margin:0}
-#happy-appearance-dialog .ha-theme{display:flex;flex-direction:column;gap:7px;min-width:0;flex:1;font-size:13px;font-weight:600}
-#happy-appearance-dialog .ha-swatch{display:block;height:62px;border-radius:9px;border:1px solid #ffffff30}
-#happy-appearance-dialog .ha-actions{padding:12px 18px max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--ha-line);display:flex;gap:10px;flex:none}
-#happy-appearance-dialog .ha-actions button{flex:1;border-radius:12px;border:1px solid var(--ha-line);padding:10px;color:var(--ha-ink);background:var(--ha-glass)}
-#happy-appearance-dialog .ha-actions .ha-apply{background:var(--ha-button);background-color:var(--ha-button-color);color:var(--ha-button-text);border-color:var(--ha-line);text-shadow:0 1px 3px #0008;font-weight:700}
-#happy-appearance-dialog button:focus-visible{outline:3px solid var(--ha-focus);outline-offset:2px}
-#happy-appearance-dialog .ha-error{color:#ffd6dd;margin:0;padding:0 18px 8px}
-#happy-appearance-dialog [hidden]{display:none!important}
-@media(max-width:359px){#happy-appearance-dialog .ha-grid{gap:7px}#happy-appearance-dialog .ha-body{padding:4px 12px 12px}#happy-appearance-dialog .ha-choice{padding:8px;gap:6px}#happy-appearance-dialog .ha-choice:has(input:checked){padding:7px}}
-
-#happy-appearance-dialog .ha-head,#happy-appearance-dialog .ha-actions{background:var(--ha-glass);backdrop-filter:blur(12px)}
-#happy-appearance-dialog .ha-preview-status{font-weight:700;padding:8px 10px;background:var(--ha-glass);border-radius:10px}
-#happy-appearance-dialog .ha-error{background:var(--ha-glass);color:var(--ha-ink);font-weight:700}
-#happy-appearance-dialog #happy-appearance-help,#happy-appearance-dialog legend{background:var(--ha-glass);padding:8px 10px;border-radius:10px}
-</style>
-<link rel="stylesheet" href="./day-sport-view.css">
 </head>
 <body class="loading">
 
@@ -1072,9 +1024,6 @@ a.btn{display:inline-block;text-decoration:none}
 </div>
 
 <div class="app">
-<div class="day-sync-bar"><p id="day-auto-status" role="status" aria-live="polite">Проверяем дневник…</p><button type="button" class="mini" data-go-screen="settings" aria-label="Открыть настройки синхронизации">Настройки</button></div>
-<aside id="day-auth-pause" hidden style="padding:12px;background:#fff0d5;color:#4d3000"><b>Вход изменился в другой вкладке. Эта копия приостановлена.</b><p>Экран и незавершённый текст оставлены на месте. Сначала сохрани или скопируй текст из редактора. JSON включает только уже записанные данные. В другой аккаунт ничего не переносится.</p><label><input type="checkbox" id="day-auth-restart-ready"> Я сохранил или скопировал незавершённый текст</label><button type="button" id="day-auth-restart" disabled>Перезапустить с новым входом</button></aside>
-
 
   <!-- ДЕНЬ -->
   <div class="screen on" data-screen="day">
@@ -1230,7 +1179,7 @@ a.btn{display:inline-block;text-decoration:none}
   <!-- НАСТРОЙКИ -->
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1></div>
-    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><label class="happy-button" role="button" tabindex="0">Загрузить из файла<input type="file" id="impJson" accept=".json" hidden></label></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="backupAge"></p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" id="expCsv">Выгрузить CSV</button><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><div class="bkPrev" id="bkPrev" hidden><p class="happy-note" id="bkPrevTxt"></p><div class="happy-actions"><button class="happy-button" id="bkBack">Вернуть дневник до загрузки</button></div></div></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><span class="happy-note">Переход в Meal в этой версии недоступен.</span><a class="happy-button" href="https://sport-auth-readonly-20261104.amuramore.chatgpt.site/" target="_blank" rel="noopener">Sport</a><p class="happy-note">Sport открывается отдельно. Войди тем же аккаунтом; переход сам по себе не переносит записи.</p></div></div></section>
+    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><label class="happy-button" role="button" tabindex="0">Загрузить из файла<input type="file" id="impJson" accept=".json" hidden></label></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="backupAge"></p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" id="expCsv">Выгрузить CSV</button><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><div class="bkPrev" id="bkPrev" hidden><p class="happy-note" id="bkPrevTxt"></p><div class="happy-actions"><button class="happy-button" id="bkBack">Вернуть дневник до загрузки</button></div></div></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../meal/">Happy Meal</a><a class="happy-button" href="../sport/">Happy Sport</a></div></div></section>
     <h2 class="happy-heading" id="daySectionSettingsHeading">Разделы дня</h2>
 
 
@@ -1269,13 +1218,13 @@ a.btn{display:inline-block;text-decoration:none}
 
     <div class="eyebrow"><span>Доступ к модели</span></div>
     <div class="card">
-      <p class="note" style="margin:0 0 10px">Внешний API и разбор скриншотов недоступны в этой версии. API-ключ вводить не нужно.</p>
-      <div style="display:flex;gap:8px"><input type="password" id="apiKey" disabled aria-disabled="true" autocomplete="off" placeholder="API недоступен" style="flex:1"><button class="btn" id="saveKey" disabled aria-disabled="true">Отключено</button></div>
+      <p class="note" style="margin:0 0 10px">Нужен для разбора отчётов со скриншотов.</p>
+      <div style="display:flex;gap:8px"><input type="password" id="apiKey" placeholder="sk-ant-…" style="flex:1"><button class="btn" id="saveKey">Сохранить</button></div>
       <p class="note" id="keyState"></p>
     </div>
     <div class="card"><a class="arc-studio-link" href="./arc-studio/"><span>Студия дуг<br><small>Цвет, свет и движение главной кнопки</small></span><span aria-hidden="true">↗</span></a></div>
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="52"><div>Happy Day · Update 52</div><small>Аккаунты и личные дневники · 07.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="50.14"><div>Happy Day · v50.14</div><small>Обновлено 31.10.2026</small></footer>
   </div>
 
 </div>
@@ -1377,8 +1326,7 @@ a.btn{display:inline-block;text-decoration:none}
     var saved=parse(get(authKey)),owner=uid(saved&&saved.s&&saved.s.uid);
     var marker='happy-profile-legacy-owner:'+app,legacy=get(marker);
     if(legacy===null){
-      // A current login is not evidence that an unowned legacy diary belongs to it.
-      legacy='local';
+      legacy=owner;
       if(app==='sport'){
         var old=parse(get('happy-sport-prototype-v1'));
         if(old&&old.sportOwner)legacy=uid(old.sportOwner);
@@ -1386,8 +1334,7 @@ a.btn{display:inline-block;text-decoration:none}
       // If ownership cannot be recorded, leave legacy data untouched.
       try{store.setItem(marker,legacy)}catch(e){legacy=null}
     }
-    function authIdentity(value){var a=parse(value);return JSON.stringify(a&&a.s?{uid:a.s.uid,at:a.s.at,rt:a.s.rt,exp:a.s.exp,k:a.k,g:a.g||null}:{uid:null,g:a&&a.g||null});}
-    var changing=false,observedAuth=authIdentity(get(authKey));
+    var changing=false;
     function key(k){return k===authKey||owner==='local'?k:'happy-user:'+encodeURIComponent(owner)+':'+k}
     function eligible(k){return k!==authKey&&owner!=='local'&&legacy===owner}
     function getSync(k){
@@ -1408,19 +1355,15 @@ a.btn{display:inline-block;text-decoration:none}
     }
     async function write(k,v,writeBase){return writeBase(key(k),v)}
     function matches(value){return !changing&&uid(value)===owner}
-    function changed(value,force,external){
-      if(!force&&uid(value)===owner)return false;
+    function changed(value){
+      if(uid(value)===owner)return false;
       changing=true;
-      if(external){if(o.pause)o.pause();else if(root.dispatchEvent&&root.Event)root.dispatchEvent(new root.Event('happy-profile-paused'));return true;}
       if(o.reload)o.reload();else if(root.location)root.location.reload();
       return true;
     }
     if(root.addEventListener)root.addEventListener('storage',function(e){
-      if(e.key===null){changed(null,true,true);return;}
       if(e.key!==authKey)return;
-      var next=authIdentity(e.newValue);if(next===observedAuth)return;observedAuth=next;
-      if(root.CL&&next===authIdentity(JSON.stringify({s:root.CL.s,k:root.CL.kraw,g:root.CL.authGeneration})))return;
-      var s=parse(e.newValue);changed(s&&s.s&&s.s.uid,true,true);
+      var s=parse(e.newValue);changed(s&&s.s&&s.s.uid);
     });
     return {owner:owner,key:key,getSync:getSync,read:read,write:write,matches:matches,changed:changed};
   }
@@ -1443,17 +1386,14 @@ var HappyProfile=HappyProfiles.create("day");</script>
   function repaint(){if(typeof root.clPaint==='function')root.clPaint();else if(typeof root.paintHappyAccount==='function')root.paintHappyAccount()}
   function session(){return root.CL&&root.CL.s}
   async function profileRequest(method,name,retry){
-    var s=session();if(!s)throw Error('Сначала войди в аккаунт');var uid=s.uid,key=root.CL.ck,generation=root.CL.authGeneration;
-    function guard(){if(!session()||session().uid!==uid||root.CL.ck!==key||root.CL.authGeneration!==generation||!root.HappyProfile?.matches(uid))throw Error('Аккаунт изменился. Открой профиль снова.');if(root.clAssertStoredSession)root.clAssertStoredSession();}
-    guard();
+    var s=session();if(!s)throw Error('Сначала войди в аккаунт');var uid=s.uid;
     var token=await root.clToken(!!retry);
-    guard();
+    if(!session()||session().uid!==uid)throw Error('Аккаунт изменился. Открой профиль снова.');
     var r;try{r=await root.fetch(root.CLOUD.url+'/auth/v1/user',{method:method,headers:{apikey:root.CLOUD.key,Authorization:'Bearer '+token,'Content-Type':'application/json'},signal:AbortSignal.timeout(20000),body:method==='PUT'?JSON.stringify({data:{display_name:name}}):undefined})}
     catch(e){throw Error('Не удалось связаться с сервером. Проверь интернет и повтори.')}
-    guard();
+    if(!session()||session().uid!==uid)throw Error('Аккаунт изменился. Открой профиль снова.');
     if(r.status===401&&!retry)return profileRequest(method,name,true);
     var user;try{user=await r.json()}catch(e){}
-    guard();
     if(!r.ok)throw Error(typeof root.clErrText==='function'?root.clErrText(user,r.status):'Не удалось сохранить профиль');
     if(!user||user.id!==uid)throw Error('Не удалось проверить профиль');
     return user;
@@ -1500,7 +1440,6 @@ var HappyProfile=HappyProfiles.create("day");</script>
   }
   async function act(action,a){
     var state=a.state;if(state.busy)return;
-    if(typeof root.clInvalidateMealRead==='function')root.clInvalidateMealRead();
     if(action==='register'||action==='login'){mode=action==='register'?'signup':'login';state.err='';state.msg='';a.paint();return}
     if(action==='edit-profile'||action==='cancel-profile'){
       editing=action==='edit-profile';editDraft=editing?(state.s&&state.s.name||''):null;state.err='';state.msg='';a.paint();return;
@@ -1527,11 +1466,11 @@ var HappyProfile=HappyProfiles.create("day");</script>
     try{
       var result=await a.signIn(email,pw,action,action==='up'?d.name.trim():'');
       if(result==='reload')return;
-      if(result==='confirm'){mode='login';var field=a.box()?.querySelector('[name="password"]');if(field)field.value='';state.msg='Подтверди почту по ссылке в письме, затем вернись сюда и войди. Если аккаунт уже существует, используй его пароль.';return}
+      if(result==='confirm'){mode='login';state.msg='Подтверди почту по ссылке из письма, если оно пришло, затем нажми «Войти». Если аккаунт уже есть, используй его пароль.';return}
       mode='login';profileAt=0;await a.afterSignIn();
     }catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}
   }
-  function note(){return '<p class="happy-note">После входа дневник аккаунта сохраняется автоматически. Статус над приложением показывает состояние синхронизации.<\/p><details class="happy-card"><summary>Возможности аккаунта и обмена<\/summary><p class="happy-note">Создай аккаунт с почтой и паролем или войди в существующий. У каждого пользователя свой зашифрованный дневник, настройки и счётчики. Для смены пользователя сначала выйди из текущего аккаунта. Гостевые записи не присваиваются аккаунту. Локальные копии с других адресов автоматически не переносятся.<\/p><\/details>'}
+  function note(){return '<p class="happy-note">Один аккаунт и общее имя для Happy Day, Happy Meal и Happy Sport. Создай аккаунт один раз, затем входи с той же почтой и паролем. Сохрани пароль: он нужен для чтения облачных копий. Полная синхронизация дневников пока в разработке.<\/p>'}
   function lastText(value){return value?'Связь обновлена в '+new Date(value).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'Вход выполнен'}
   root.HappyUI={escape:esc,draft:draft,account:account,act:act,accountNote:note,lastText:lastText,refreshProfile:refreshProfile,saveProfile:saveProfile};
   if(typeof document!=='undefined'){
@@ -1552,20 +1491,12 @@ var HappyProfile=HappyProfiles.create("day");</script>
   }
 })(globalThis);
 </script>
-<script id="hd-food-adapter" src="./shared/food-counters.js?v=52"></script>
-<script src="counters.js?v=52"></script>
-<script src="./selfcare-core.js?v=51.14-test"></script>
+<script src="../shared/food-counters.js?v=2"></script>
+<script src="counters.js?v=2"></script>
+<script src="./selfcare-core.js?v=50.14"></script>
 <script src="./energy-widget.js?v=50.14"></script>
-<script src="./release-notes.js?v=52"></script>
-<script src="./selfcare-ui.js?v=51.14-test"></script>
-<script src="./snapshot-sync.js?v=local-nov4"></script>
-<script src="./day-test-create.js?v=52"></script>
-<script src="./day-auto-sync.js?v=52"></script>
-<script src="./day-diagnostic.js?v=20261104-readonly-comparison"></script>
-<script src="./day-passive-plan.js?v=20261104-local-time"></script>
-<script src="./day-account-profile.js?v=52"></script>
-<script src="./day-account-data.js?v=52"></script>
-<script id="hd-journal-adapter" src="./day-journal-sync.js?v=52"></script>
+<script src="./release-notes.js?v=50.14"></script>
+<script src="./selfcare-ui.js?v=50.14"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};
@@ -1575,17 +1506,11 @@ async function rawBaseGet(k){
   try{ return localStorage.getItem(k) }catch(e){ return mem[k]!==undefined?mem[k]:null }
 }
 async function rawBaseSet(k,v){
-  var finishSportAuth=k==='hd_cloud_v1'?(globalThis.DaySportLifecycle?DaySportLifecycle.beginAuth():function(){}):function(){};try{
-  async function write(){
-    if(winStore){ try{ await window.storage.set(k,v,false); return }catch(e){} }
-    try{ localStorage.setItem(k,v) }catch(e){ mem[k]=v; throw new Error('Не удалось сохранить: память сайта заполнена или недоступна. Выгрузи JSON, прежде чем закрывать приложение.') }
-  }
-  return await (window.DayJournal?DayJournal.writeLocal(k,v,write):write());
-
-  }finally{finishSportAuth();}
+  if(winStore){ try{ await window.storage.set(k,v,false); return }catch(e){} }
+  try{ localStorage.setItem(k,v) }catch(e){ mem[k]=v; throw new Error('Не удалось сохранить: память сайта заполнена или недоступна. Выгрузи JSON, прежде чем закрывать приложение.') }
 }
 async function rawGet(k){return HappyProfile.read(k,rawBaseGet,rawBaseSet)}
-function rawSet(k,v){var p=HappyProfile.write(k,v,rawBaseSet);p.then(function(){if(window.DayJournal)DayJournal.changed(k)},function(e){try{toastLong(e.message)}catch(ignore){}});return p}
+function rawSet(k,v){var p=HappyProfile.write(k,v,rawBaseSet);p.catch(function(e){try{toastLong(e.message)}catch(ignore){}});return p}
 /* Рабочая копия. Демо на том же домене держит свои ключи и эти записи не видит. */
 var DEMO=false;
 var K={db:'hd_db_v1', cfg:'hd_cfg_v1', key:'hd_key_v1', backup:'hd_backup_v1'};
@@ -1685,7 +1610,6 @@ var DB={
   fmt:FMT,
   days:{}
 };
-if(window.DayJournal)DayJournal.rememberDefaults(DB);
 var CFG={weight:null,kcal:null,prot:null};
 var APIKEY='';
 
@@ -1722,7 +1646,6 @@ function ringDay(){return SelfCare.isCheckin()?SelfCare.checkinDay():day(curDate
 function saveRing(){if(SelfCare.isCheckin())SelfCare.saveCheckin();else save()}
 var saveT=null;
 function save(){
-  if(globalThis.DayJournal?.touch)DayJournal.touch();
   if(RO){ roWarn(); return }
   clearTimeout(saveT);
   saveT=setTimeout(async function(){
@@ -1906,38 +1829,20 @@ function mealSeries(k,dates){ return dates.map(function(d){ var st=mealState(iso
    CL_APP — какое это приложение ('day' | 'meal' | 'sport'); clAfterIn() — что делать после входа. */
 var CLOUD={url:'https://geqziziycpclhnucnsyx.supabase.co',key:'sb_publishable_I8tmZHGlz7CJn9SavbApCg_gg1G890r'};
 var CL_KEY='hd_cloud_v1', CL_ITER=600000;
-var CL={s:null,ck:null,kraw:null,busy:false,err:'',msg:'',last:0,ready:false,authGeneration:null,authFence:JSON.stringify({uid:null,g:null})};
-function clTestPolicy(){var p=globalThis.HappyAuthReadOnly;if(!p||p.phase!=='existing-account-read-only'||typeof p.assertAllowed!=='function')throw Error('Защита синхронизации не загрузилась. Вход и облачные запросы остановлены. Перезагрузи страницу.');return p;}
-function clAuthFence(raw){var a=typeof raw==='string'?JSON.parse(raw):raw;return JSON.stringify(a&&a.s?{uid:a.s.uid,at:a.s.at,rt:a.s.rt,exp:a.s.exp,k:a.k,g:a.g||null}:{uid:null,g:a&&a.g||null});}
-function clPersistedFence(){return clAuthFence(localStorage.getItem(CL_KEY));}
-function clMemoryFence(){return clAuthFence({s:CL.s,k:CL.kraw,g:CL.authGeneration});}
-function clAssertStoredSession(){if(clPersistedFence()!==CL.authFence||clMemoryFence()!==CL.authFence)throw Error('Сохранённый вход изменился в другой вкладке. Перезагрузи приложение.');return CL.authFence;}
-function clNewGeneration(){return Array.from(crypto.getRandomValues(new Uint8Array(16)),x=>x.toString(16).padStart(2,'0')).join('');}
+var CL={s:null,ck:null,kraw:null,busy:false,err:'',msg:'',last:0,ready:false};
 function clB64(u8){ var s=''; for(var i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s) }
 function clUnb64(t){ var s=atob(t), u=new Uint8Array(s.length); for(var i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u }
 function clUtf(t){ return new TextEncoder().encode(t) }
 function clOn(){ return !!(CL.s&&CL.ck)&&(!globalThis.HappyProfile||HappyProfile.matches(CL.s.uid)) }
 async function clLoad(){
-  var finishSportAuth=(globalThis.DaySportLifecycle?DaySportLifecycle.beginAuth():function(){});try{
   try{
-    var raw=await rawGet(CL_KEY);CL.authFence=clAuthFence(raw);if(!raw)return;
-    var o=JSON.parse(raw);CL.authGeneration=o.g||null; CL.s=o.s||null; CL.last=o.last||0; CL.kraw=o.k||null;
+    var raw=await rawGet(CL_KEY); if(!raw) return;
+    var o=JSON.parse(raw); CL.s=o.s||null; CL.last=o.last||0; CL.kraw=o.k||null;
     if(CL.kraw) CL.ck=await crypto.subtle.importKey('raw',clUnb64(CL.kraw),{name:'AES-GCM'},false,['encrypt','decrypt']);
-    if(clPersistedFence()!==CL.authFence)throw Error('Вход изменился во время загрузки.');
-    if(CL.s&&!CL.authGeneration){CL.authGeneration=clNewGeneration();await clStore();}
   }catch(e){ CL.s=null; CL.ck=null; CL.kraw=null }
   finally{ CL.ready=true }
-
-  }finally{finishSportAuth();}
 }
-async function clStore(){
-  var finishSportAuth=(globalThis.DaySportLifecycle?DaySportLifecycle.beginAuth():function(){});try{
-  var expected=CL.authFence;if(clPersistedFence()!==expected)throw Error('Сохранённый вход изменился. Устаревшая сессия не записана.');
-  var value=JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0,g:CL.authGeneration}),next=clAuthFence(value),write=rawSet(CL_KEY,value);CL.authFence=next;
-  try{await write;if(clPersistedFence()!==next)throw Error('Сохранённый вход изменился во время записи.');}catch(e){if(CL.authFence===next&&clPersistedFence()===expected)CL.authFence=expected;throw e;}
-
-  }finally{finishSportAuth();}
-}
+async function clStore(){ return rawSet(CL_KEY,JSON.stringify({s:CL.s,k:CL.kraw,last:CL.last||0})) }
 /* понятные слова вместо ответов сервера */
 function clErrText(j,st){
   var m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
@@ -1948,14 +1853,11 @@ function clErrText(j,st){
   if(/signups? (are )?(not allowed|disabled)/i.test(m)) return 'Новые аккаунты сейчас закрыты';
   if(/address .*invalid|invalid email|email_address_invalid/i.test(m)) return 'Почта записана с ошибкой';
   if(/password/i.test(m)) return 'Пароль не подходит: нужно хотя бы 8 знаков';
-  if(/email.*not.*authorized|email_address_not_authorized/i.test(m)) return 'Сервис пока не может отправить письмо на этот адрес. Нужна настройка отправки писем владельцем приложения.';
-  if(/error sending|email.*send/i.test(m)) return 'Не удалось отправить письмо подтверждения. Попробуй позже.';
   if(st===429) return 'Слишком много попыток — подожди минуту';
   if(!st) return 'Нет связи с сервером — попробую позже';
   return m||('Сервер ответил ошибкой '+st);
 }
 async function clAuth(path,body){
-  clTestPolicy().assertAllowed(CLOUD.url+'/auth/v1/'+path,{method:'POST'});
   var r;
   try{ r=await fetch(CLOUD.url+'/auth/v1/'+path,{method:'POST',headers:{'apikey':CLOUD.key,'Content-Type':'application/json'},body:JSON.stringify(body)}) }
   catch(e){ throw new Error(clErrText(null,0)) }
@@ -1968,127 +1870,52 @@ function clSes(j,old){
           uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email),name:j.user?String((j.user.user_metadata||{}).display_name||''):((old&&old.name)||'')};
 }
 async function clDerive(pw,uid){
-  var finishSportAuth=(globalThis.DaySportLifecycle?DaySportLifecycle.beginAuth():function(){});try{
   var base=await crypto.subtle.importKey('raw',clUtf(pw),'PBKDF2',false,['deriveKey']);
   var k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:clUtf('happyday-sync-v1:'+uid),iterations:CL_ITER,hash:'SHA-256'},
     base,{name:'AES-GCM',length:256},true,['encrypt','decrypt']);
   CL.kraw=clB64(new Uint8Array(await crypto.subtle.exportKey('raw',k)));
   CL.ck=await crypto.subtle.importKey('raw',clUnb64(CL.kraw),{name:'AES-GCM'},false,['encrypt','decrypt']);
-
-  }finally{finishSportAuth();}
 }
 /* mode: 'in' — войти, 'up' — создать аккаунт; ответ: 'ok' | 'confirm' (надо подтвердить почту) */
 async function clSignIn(email,pw,mode,name){
-  var finishSportAuth=(globalThis.DaySportLifecycle?DaySportLifecycle.beginAuth():function(){});try{
-  if(clOn())throw Error('Сначала выйди из текущего аккаунта, затем войди другим пользователем.');
-  clTestPolicy().assertAllowed(CLOUD.url+'/auth/v1/'+(mode==='up'?'signup':'token?grant_type=password'),{method:'POST'});
   await rawSet(K.db,JSON.stringify(DB));
   await rawSet(K.cfg,JSON.stringify(CFG));
-  if(window.DayJournal)DayJournal.invalidate();
-  var authAtStart=CL.authFence;if(clPersistedFence()!==authAtStart)throw Error('Сохранённый вход изменился. Перезагрузи приложение.');
   var j=mode==='up'?await clAuth('signup',{email:email,password:pw,data:{display_name:String(name||'').trim().slice(0,60)}})
                    :await clAuth('token?grant_type=password',{email:email,password:pw});
   if(!j||!j.access_token) return 'confirm';
-  if(clPersistedFence()!==authAtStart||CL.authFence!==authAtStart)throw Error('Вход изменился во время авторизации.');
   CL.s=clSes(j); await clDerive(pw,CL.s.uid);
-  if(clPersistedFence()!==authAtStart)throw Error('Вход изменился во время подготовки ключа.');
-  CL.authGeneration=clNewGeneration();CL.err=''; await clStore();if(globalThis.DayJournal?.authChanged)DayJournal.authChanged();
+  CL.err=''; await clStore();
   if(globalThis.HappyProfile&&HappyProfile.changed(CL.s.uid))return 'reload';
   return 'ok';
-
-  }finally{finishSportAuth();}
 }
 async function clSignOut(){
-  clTestPolicy().assertAllowed(CLOUD.url+'/auth/v1/logout?scope=local',{method:'POST'});
-  const owner=CL.s?.uid,key=CL.ck,generation=CL.authGeneration;
-  function checkAccount(){
-    const fence=clAssertStoredSession();
-    if(!owner || !key || CL.s?.uid!==owner || CL.ck!==key ||
-        CL.authGeneration!==generation || !HappyProfile.matches(owner))throw Error('Аккаунт изменился.');
-    return fence;
-  }
-  checkAccount();
-  clearTimeout(saveT);
-  if(typeof MIND!=='undefined' && MIND.on)mindEnd();
-  window.DayAccountData?.captureGoals();window.DayAccountData?.captureTime();
-  await rawSet(K.db,JSON.stringify(DB));await rawSet(K.cfg,JSON.stringify(CFG));
-  let verifiedRevision=null;
-  try{
-    if(!window.DayJournal?.confirmProfileForExit)throw Error('Модуль профиля недоступен.');
-    let deadline;
-    async function verifyCurrentSession(){
-      verifiedRevision=await DayJournal.confirmProfileForExit();
-      if(window.HappyDayCounters?.confirmForExit)await HappyDayCounters.confirmForExit();
-    }
-    async function verifyExit(){
-      await clToken(); // Renew a nearly expired token before starting a fenced read.
-      const checkedFence=checkAccount();
-      try{await verifyCurrentSession();}
-      catch(error){
-        if(checkAccount()===checkedFence)throw error;
-        // A refresh during verification invalidated that attempt. Read again under the new fence.
-        await verifyCurrentSession();
-      }
-    }
-    try{await Promise.race([verifyExit(),new Promise((_,reject)=>{deadline=setTimeout(()=>reject(Error('Сервер пока не ответил.')),15000);})]);}
-    finally{clearTimeout(deadline);}
-    if(verifiedRevision!==HappySnapshotSync.stable(DayJournal.capture()))throw Error('Во время проверки появились изменения.');
-  }catch(error){
-    checkAccount();
-    const text='Сервер не подтвердил все изменения. '+(error.message||'')+' Можно остаться в профиле и повторить после восстановления сети. При выходе сейчас неподтверждённые данные останутся только на этом устройстве.';
-    if(!await confirmBox(text,'Выйти с локальной копией'))throw Error('Ты остался в профиле, локальные записи сохранены.');
-    checkAccount();
-    await rawSet(K.db,JSON.stringify(DB));
-  }
-  checkAccount();
-  const finish=globalThis.DaySportLifecycle?DaySportLifecycle.beginAuth():function(){};
-  try{
-    DayJournal.invalidate();const t=CL.s.at;
-    CL.s=null;CL.ck=null;CL.kraw=null;CL.authGeneration=clNewGeneration();CL.err='';CL.last=0;await clStore();
-    if(t)fetch(CLOUD.url+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey:CLOUD.key,Authorization:'Bearer '+t}}).catch(function(){});
-    HappyProfile.changed(null);
-  }finally{finish();}
+  await rawSet(K.db,JSON.stringify(DB));
+  var t=CL.s&&CL.s.at;
+  CL.s=null; CL.ck=null; CL.kraw=null; CL.err=''; CL.last=0; await clStore();
+  if(t) fetch(CLOUD.url+'/auth/v1/logout',{method:'POST',headers:{'apikey':CLOUD.key,'Authorization':'Bearer '+t}}).catch(function(){});
+  if(globalThis.HappyProfile)HappyProfile.changed(null);
 }
 async function clToken(force){
-  clTestPolicy();clAssertStoredSession();
   if(!CL.s) throw new Error('Нет входа');
   if(!force&&Date.now()<CL.s.exp-60000) return CL.s.at;
-  var finishSportAuth=(globalThis.DaySportLifecycle?DaySportLifecycle.beginAuth():function(){});try{
-  var request=CL.s,requestUid=request.uid,requestRefresh=request.rt,requestKey=CL.ck,requestFence=CL.authFence;
-  function stillCurrent(){return CL.s===request&&CL.s.uid===requestUid&&CL.s.rt===requestRefresh&&CL.ck===requestKey&&CL.authFence===requestFence&&clPersistedFence()===requestFence&&(!globalThis.HappyProfile||HappyProfile.matches(requestUid))}
-  try{ var j=await clAuth('token?grant_type=refresh_token',{refresh_token:requestRefresh}) }
-  catch(e){
-    // A late old-session failure must never sign out a newer account/session.
-    if(!stillCurrent())throw new Error('Аккаунт изменился. Повтори проверку дневника.');
-    if(/устарел|Неверная/.test(e.message)){CL.s=null;CL.ck=null;CL.kraw=null;await clStore()}
-    throw e;
-  }
-  // A late success must never revive logout or replace a newer sign-in/refresh.
-  if(!stillCurrent())throw new Error('Аккаунт изменился. Повтори проверку дневника.');
-  var next=clSes(j,request);
-  if(!next.at||next.uid!==requestUid)throw new Error('Не удалось проверить обновлённый вход.');
-  CL.s=next;await clStore();if(globalThis.DayJournal?.authChanged)DayJournal.authChanged();return CL.s.at;
-  }finally{finishSportAuth();}
+  try{ var j=await clAuth('token?grant_type=refresh_token',{refresh_token:CL.s.rt}) }
+  catch(e){ if(/устарел|Неверная/.test(e.message)){ CL.s=null; CL.ck=null; CL.kraw=null; clStore() } throw e }
+  CL.s=clSes(j,CL.s); clStore(); return CL.s.at;
 }
-async function clRest(method,query,body,prefer,again,contextGuard){
-  clTestPolicy().assertAllowed(CLOUD.url+'/rest/v1/app_sync'+query,{method:method});
-  if(contextGuard)contextGuard();
+async function clRest(method,query,body,prefer,again){
   var requestUid=CL.s&&CL.s.uid;
   if(globalThis.HappyProfile&&!HappyProfile.matches(requestUid))throw new Error('Аккаунт изменился. Открой приложение снова.');
-  var t=await clToken(), r;clAssertStoredSession();
-  if(contextGuard)contextGuard();
+  var t=await clToken(), r;
   if(!CL.s||CL.s.uid!==requestUid)throw new Error('Аккаунт изменился');
   var h={'apikey':CLOUD.key,'Authorization':'Bearer '+t,'Content-Type':'application/json'};
   if(prefer) h['Prefer']=prefer;
   try{ r=await fetch(CLOUD.url+'/rest/v1/app_sync'+query,{method:method,headers:h,body:body?JSON.stringify(body):undefined}) }
   catch(e){ throw new Error(clErrText(null,0)) }
-  clAssertStoredSession();
   if(!CL.s||CL.s.uid!==requestUid||(globalThis.HappyProfile&&!HappyProfile.matches(requestUid)))throw new Error('Аккаунт изменился');
-  if(contextGuard)contextGuard();
-  if(r.status===401&&!again){ await clToken(true); if(contextGuard)contextGuard(); return clRest(method,query,body,prefer,true,contextGuard) }
+  if(r.status===401&&!again){ await clToken(true); return clRest(method,query,body,prefer,true) }
   if(!r.ok){ var j=null; try{ j=await r.json() }catch(e){} throw new Error(clErrText(j,r.status)) }
   if(r.status===204) return null;
-  var txt=await r.text();clAssertStoredSession();if(contextGuard)contextGuard();return txt?JSON.parse(txt):null;
+  var txt=await r.text(); return txt?JSON.parse(txt):null;
 }
 function clAad(app,kind){ return clUtf(CL.s.uid+'|'+app+'|'+kind) }
 /* положить свою сводку: зашифровать на телефоне и заменить прошлую */
@@ -2102,23 +1929,21 @@ async function clPut(app,kind,obj,at){
   CL.last=Date.now(); CL.err=''; clStore(); return true;
 }
 /* время чужой сводки на сервере — без скачивания самой сводки */
-async function clAt(app,kind,contextGuard){
+async function clAt(app,kind){
   if(!clOn()) return null;
-  var guard=contextGuard||await clMealReadReady();guard();
-  var a=await clRest('GET','?select=at&app=eq.'+app+'&kind=eq.'+kind,null,null,false,guard);guard();
+  var a=await clRest('GET','?select=at&app=eq.'+app+'&kind=eq.'+kind);
   return a&&a[0]?a[0].at:null;
 }
 /* взять чужую сводку и расшифровать; не тот ключ (меняли пароль) — понятная ошибка */
-async function clGet(app,kind,contextGuard){
+async function clGet(app,kind){
   if(!clOn()) return null;
-  var guard=contextGuard||await clMealReadReady();guard();
-  var uid=CL.s.uid,key=CL.ck;
-  var a=await clRest('GET','?select=v,iv,data,at&app=eq.'+app+'&kind=eq.'+kind,null,null,false,guard);guard();
+  var a=await clRest('GET','?select=v,iv,data,at&app=eq.'+app+'&kind=eq.'+kind);
   if(!a||!a[0]) return null;
   var pt;
-  try{pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:clUnb64(a[0].iv),additionalData:clUtf(uid+'|'+app+'|'+kind)},key,clUnb64(a[0].data))}
-  catch(e){guard();throw new Error('Сводку на сервере не расшифровать — её записали с другим паролем. Обновится, когда соседнее приложение запишет новую')}
-  guard();var value=JSON.parse(new TextDecoder().decode(pt));guard();return value;
+  try{ pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:clUnb64(a[0].iv),additionalData:clAad(app,kind)},CL.ck,clUnb64(a[0].data)) }
+  catch(e){ throw new Error('Сводку на сервере не расшифровать — её записали с другим паролем. Обновится, когда соседнее приложение запишет новую') }
+  CL.last=Date.now(); CL.err=''; clStore();
+  return JSON.parse(new TextDecoder().decode(pt));
 }
 
 /* ── блок «Аккаунт» в Настройках ── */
@@ -2145,87 +1970,19 @@ document.addEventListener('click',function(ev){
 
 var CL_APP='day';
 /* сводка Meal из облака — для отдельной иконки: берём, если она новее той, что уже есть */
-/* Meal summary reads are scoped to one settled auth context and request. */
-function clMealReadContext(){
-  var session=CL.s,key=CL.ck,profile=globalThis.HappyProfile,fence=CL.authFence;
-  var lifecycle=globalThis.DaySportLifecycle,transition=lifecycle&&lifecycle.snapshot();
-  var uid=session&&session.uid,kraw=CL.kraw,authGeneration=CL.authGeneration;
-  function guard(){
-    var now=lifecycle&&lifecycle.snapshot();
-    if(!session||!key||!profile||profile!==globalThis.HappyProfile||profile.owner!==uid||!profile.matches(uid)||
-       CL.s!==session||CL.s.uid!==uid||CL.ck!==key||CL.kraw!==kraw||CL.authGeneration!==authGeneration||CL.authFence!==fence||
-       !lifecycle||lifecycle!==globalThis.DaySportLifecycle||!transition||!now||transition.failed!==false||now.failed!==false||
-       transition.pending!==0||now.pending!==0||now.generation!==transition.generation)throw Error('Контекст чтения сводки изменился');
-    clTestPolicy();clAssertStoredSession();
-  }
-  guard();return guard;
-}
-async function clMealReadReady(){
-  var guard=clMealReadContext(),owner=CL.s.uid,key=CL.ck,profile=globalThis.HappyProfile,authGeneration=CL.authGeneration;
-  await clToken();
-  if(!CL.s||CL.s.uid!==owner||CL.ck!==key||globalThis.HappyProfile!==profile||CL.authGeneration!==authGeneration)throw Error('Контекст чтения сводки изменился');
-  return clMealReadContext();
-}
-function mealSummaryValid(o){
-  var object=function(x){return !!x&&typeof x==='object'&&!Array.isArray(x)};
-  var time=function(x){return x==null||typeof x==='string'&&/^([01]?\d|2[0-3]):[0-5]\d$/.test(x)};
-  var safeKey=function(k){return k!=='__proto__'&&k!=='constructor'&&k!=='prototype'};
-  function facts(x){
-    if(!object(x))return false;
-    if('food' in x&&typeof x.food!=='boolean')return false;
-    for(var k of ['k','p','f','c'])if(k in x&&x[k]!==null&&(typeof x[k]!=='number'||!Number.isFinite(x[k])))return false;
-    for(var k of ['n','dr'])if(k in x&&(!Number.isSafeInteger(x[k])||x[k]<0))return false;
-    for(var k of ['t','t0','t1'])if(k in x&&!time(x[k]))return false;
-    if('src' in x&&x.src!==null&&typeof x.src!=='string')return false;
-    return true;
-  }
-  if(!object(o)||o.v!==1||!Number.isSafeInteger(o.at)||o.at<0||!object(o.days)||!Array.isArray(o.secs))return false;
-  if(!o.secs.every(function(s){return object(s)&&typeof s.k==='string'&&!!s.k&&safeKey(s.k)&&typeof s.t==='string'}))return false;
-  return Object.keys(o.days).every(function(date){
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return false;
-    var dt=new Date(date+'T12:00:00Z');if(isNaN(dt)||dt.toISOString().slice(0,10)!==date)return false;
-    var d=o.days[date];if(!facts(d))return false;
-    if('sec' in d&&(!object(d.sec)||!Object.keys(d.sec).every(function(k){return safeKey(k)&&facts(d.sec[k])})))return false;
-    if('ev' in d&&(!Array.isArray(d.ev)||!d.ev.every(function(e){return facts(e)&&typeof e.s==='string'&&!!e.s&&safeKey(e.s)})))return false;
-    return true;
-  });
-}
-var mealCloudRequestGeneration=0;
-function clInvalidateMealRead(){return ++mealCloudRequestGeneration}
 async function syncMealCloud(){
-  var generation=clInvalidateMealRead(),guard=null,db=DB,preflight=false;
-  function current(){try{if(generation!==mealCloudRequestGeneration||DB!==db||!guard)return false;guard();return true}catch(e){return false}}
-  if(!clOn())return false;
+  if(!clOn()) return false;
   try{
-    // Refresh may legitimately replace session/fence. Settle it before pinning the read.
-    var owner=CL.s.uid,key=CL.ck,profile=globalThis.HappyProfile,authGeneration=CL.authGeneration;
-    var session=CL.s,fence=CL.authFence,kraw=CL.kraw;
-    var initial=clMealReadContext();guard=initial;initial();
-    preflight=true;await clToken();preflight=false;
-    if(generation!==mealCloudRequestGeneration||!CL.s||CL.s.uid!==owner||CL.ck!==key||globalThis.HappyProfile!==profile||CL.authGeneration!==authGeneration)return false;
-    guard=clMealReadContext();
-    var context=function(){if(generation!==mealCloudRequestGeneration||DB!==db)throw Error('Чтение сводки заменено новым запросом');guard()};
-    var at=await clAt('meal','link',context);context();
-    if(at!=null&&(!Number.isSafeInteger(at)||at<0))throw Error('Некорректное время сводки Meal');
-    if(!at||(DB.mealLink&&DB.mealLink.at>=at)){if(at)MEAL_SEEN=true;CL.err='';return false}
-    var o=await clGet('meal','link',context);context();
-    if(!o)return false;
-    if(!mealSummaryValid(o))throw Error('Некорректная сводка Meal. Сохранённые данные не изменены.');
-    if(DB.mealLink&&DB.mealLink.at>=o.at)return false;
-    context();
-    DB.mealLink={v:1,at:o.at,secs:o.secs,days:o.days,src:'cloud'};
-    MEAL_SEEN=true;CL.last=Date.now();CL.err='';
-    save();return true;
-  }catch(e){
-    // A failed refresh may finish its own lifecycle bracket without changing auth.
-    // Re-pin only the error display, never a fetched result, for that unchanged identity.
-    if(preflight&&generation===mealCloudRequestGeneration&&DB===db&&CL.s===session&&CL.ck===key&&CL.kraw===kraw&&CL.authFence===fence&&CL.authGeneration===authGeneration&&globalThis.HappyProfile===profile){
-      try{guard=clMealReadContext()}catch(ignore){}
-    }
-    if(current())CL.err=e.message||String(e);return false;
-  }
+    var at=await clAt('meal','link');
+    if(at) MEAL_SEEN=true;
+    if(!at||(DB.mealLink&&DB.mealLink.at>=at)){ CL.err=''; return false }
+    var o=await clGet('meal','link');
+    if(!o||o.v!==1||!o.days) return false;
+    DB.mealLink={v:1,at:o.at,secs:o.secs||[],days:o.days,src:'cloud'};
+    save(); return true;
+  }catch(e){ CL.err=e.message||String(e); return false }
 }
-function clAfterIn(){ return syncMealCloud().then(function(ch){ onMealSync(ch); clPaint(); if(window.DayJournal){DayJournal.authChanged();return DayJournal.run()} }) }
+function clAfterIn(){ return syncMealCloud().then(function(ch){ onMealSync(ch); clPaint() }) }
 /* Своё окно ввода: системный prompt() во встроенных браузерах
    часто заблокирован и молча возвращает пустоту — из-за этого
    не работали ни свои теги, ни переименование. */
@@ -3130,7 +2887,7 @@ document.addEventListener('click',function(ev){
     }).then(function(r){
       if(!r) return;
       var t=r.t;
-      if(curSec!=='care_current'&&DB.tags.indexOf(t)<0) DB.tags.push(t);
+      if(DB.tags.indexOf(t)<0) DB.tags.push(t);
       if(r.ic) DB.tagIc[t]=r.ic;
       var S=sec(curSec);
       if(S){ S.tags=S.tags||[]; if(S.tags.indexOf(t)<0) S.tags.push(t) }
@@ -3241,7 +2998,7 @@ function paint(i){
   var raw=(ringDay().cp[curSec]||{})[m.k];
   var word=paintRing(w,m,raw);
   var vEl=w.querySelector('.kv'), hEl=w.querySelector('.kh');
-  if(word==null){ vEl.textContent='Нажми'; vEl.style.fontSize='26px'; hEl.textContent=SelfCare.isCheckin()?'или удерживай':'и держи'; }
+  if(word==null){ vEl.textContent='Нажми'; vEl.style.fontSize='26px'; hEl.textContent='и держи'; }
   else{
     if(word!==vEl.textContent && (gest==='auto'||gest==='drag')){
       vEl.classList.add('tick'); setTimeout(function(){ vEl.classList.remove('tick') },120);
@@ -3324,7 +3081,7 @@ var STEP_MS=650, STEP_PX=48;   // по делениям: шаг при удер�
 /* как было до касания: чтобы короткий случайный автонабор можно было отменить */
 function snapshot(){
   var c=ringDay().cp[curSec];
-  orig={dirty:SelfCare.checkinDirty(),idx:cur, hadCp:!!c, hadTime:!!(c&&c.time), v:c?c[CURS[cur].k]:undefined};
+  orig={idx:cur, hadCp:!!c, hadTime:!!(c&&c.time), v:c?c[CURS[cur].k]:undefined};
 }
 function restore(){
   var e=ringDay(), c=e.cp[curSec]; if(!orig||!c) return;
@@ -3353,7 +3110,6 @@ function begin(){
   if(!e.cp[curSec].time){ e.cp[curSec].time=nowHM(); paintCpMeal() }   // когда событие случилось
   var raw=e.cp[curSec][m.k], st=isStep(m);
   t0=performance.now(); v0=pctOf(raw)||0; startedEmpty=(raw==null);
-  if(SelfCare.isCheckin()&&startedEmpty){e.cp[curSec][m.k]=mZero(m);saveRing();}
   /* по делениям: с пустой — сразу ноль, дальше шаг каждые STEP_MS; с отмеченной — сразу шаг */
   var s0=st?(startedEmpty?mZero(m):Math.round(raw)):0;
   if(st&&startedEmpty) setDirI(fillIdx,1);
@@ -3364,12 +3120,12 @@ function begin(){
       if(st){
         var n=Math.floor((dt-HOLD_MIN)/STEP_MS);
         var sv=Math.max(m.lo,Math.min(m.hi, s0+dirOf(fillIdx)*(startedEmpty?n:n+1)));
-        if(e.cp[curSec][m.k]!==sv){ e.cp[curSec][m.k]=sv; if(SelfCare.isCheckin()&&!SelfCare.checkinDirty())saveRing(); paint(fillIdx) }
+        if(e.cp[curSec][m.k]!==sv){ e.cp[curSec][m.k]=sv; paint(fillIdx) }
       } else {
         var moved=(dt-HOLD_MIN)*RATE;
         var pct = startedEmpty ? Math.min(100,moved) : Math.max(0,Math.min(100, v0 + dirOf(fillIdx)*moved));
         e.cp[curSec][m.k]=Math.round(valOf(pct)*100)/100;
-        if(SelfCare.isCheckin()&&!SelfCare.checkinDirty())saveRing();paint(fillIdx);
+        paint(fillIdx);
       }
     }
     raf=requestAnimationFrame(step);
@@ -3403,16 +3159,16 @@ function dragTo(y){
   var m=CURS[dragIdx], c=ringDay().cp[curSec];
   if(isStep(m)){   // по делениям: шаг на каждые STEP_PX
     c[m.k]=Math.max(m.lo,Math.min(m.hi, dragS+Math.round((dragY-y)/STEP_PX)));
-    if(SelfCare.isCheckin()&&!SelfCare.checkinDirty())saveRing();paint(dragIdx); return;
+    paint(dragIdx); return;
   }
   var pct=Math.max(0,Math.min(100, dragV+(dragY-y)/PX_FULL*100));
   c[m.k]=Math.round(valOf(pct)*100)/100;
-  if(SelfCare.isCheckin()&&!SelfCare.checkinDirty())saveRing();paint(dragIdx);
+  paint(dragIdx);
 }
 
 function gStart(x,y,onKnob){
   sx=x; sy=y; gest=null;
-  if(!onKnob || cur>=CURS.length || (!SelfCare.isCheckin()&&performance.now()-lastSwitch<=SETTLE)) return;
+  if(!onKnob || cur>=CURS.length || performance.now()-lastSwitch<=SETTLE) return;
   gest='pend'; snapshot();
   var k=knobAt(cur); if(k) k.classList.add('press');
   pend=setTimeout(function(){
@@ -3430,7 +3186,7 @@ function gMove(x,y){
     // вбок: до автонабора — листание; короткий автонабор отменяем и тоже листаем
     if(pend){ clearTimeout(pend); pend=null }
     if(gest==='auto' && performance.now()-t0<REVERT_MS){
-      cancelAnimationFrame(raf); raf=null; fillIdx=null; restore();if(SelfCare.isCheckin())SelfCare.restoreCheckinDirty(orig.dirty); gest='side';
+      cancelAnimationFrame(raf); raf=null; fillIdx=null; restore(); gest='side';
     } else if(gest==='auto'){ end(); gest='done' }
     else gest='side';
     unpress(); paint(cur);
@@ -3444,14 +3200,7 @@ function gEnd(){
   if(pend){ clearTimeout(pend); pend=null }
   if(g==='pend'){
     unpress();
-    // В unified check-in короткое нажатие тоже задаёт значение (первое — ноль/минимум).
-    if(SelfCare.isCheckin()&&!lockGuard()){
-      var tm=CURS[cur],tc=ringDay().cp[curSec],previous=tc[tm.k];
-      tc[tm.k]=isStep(tm)?(previous==null?mZero(tm):Math.max(tm.lo,Math.min(tm.hi,previous+dirOf(cur)))):(previous==null?SMIN:Math.max(SMIN,Math.min(SMAX,previous+dirOf(cur)*(SMAX-SMIN)/4)));
-      if(!tc.time)tc.time=nowHM();if(tc[tm.k]>=mHi(tm))setDirI(cur,-1);else if(tc[tm.k]<=mLo(tm))setDirI(cur,1);
-      saveRing();paint(cur);return false;
-    }
-    // Старый режим разделов сохраняет прежнюю механику направления.
+    // слишком короткий тап: значение не тронули, но направление развернули
     var m0=CURS[cur], raw0=(ringDay().cp[curSec]||{})[m0.k];
     if(raw0!=null){
       if(!(isStep(m0)&&(raw0<=m0.lo||raw0>=m0.hi))) flipDir(cur);   // у края оно и так внутрь
@@ -3747,7 +3496,7 @@ function woDayHTML(d){
   var L=woOf(d);
   if(L.length) return {cnt:L.length>1?L.length+' '+ruPlural(L.length,['тренировка','тренировки','тренировок']):'',
     h:'<div class="jCard">'+L.map(function(w){ return '<div class="jWo"><div class="jWoT"><b>'+escH(woName(w))+'</b><span class="jMut">'+(w.e?w.s+'–'+w.e:'с '+w.s)+'</span></div>'+
-      '<div class="jMut" style="margin-top:2px">'+escH(woSub(w))+'</div>'+(w.strongId?'<a class="care-workout-link" href="https://sport-auth-readonly-20261104.amuramore.chatgpt.site/?workout='+encodeURIComponent(w.strongId)+'" target="_blank" rel="noopener">Открыть запись в Sport ↗</a>':'')+'</div>' }).join('')+'</div>'};
+      '<div class="jMut" style="margin-top:2px">'+escH(woSub(w))+'</div>'+(w.strongId?'<a class="care-workout-link" href="https://astamurberlin-rgb.github.io/happyamurio/sport/?workout='+encodeURIComponent(w.strongId)+'" target="_blank" rel="noopener">Открыть запись в Happy Strong ↗</a>':'')+'</div>' }).join('')+'</div>'};
   var x=Object.keys(DB.days).filter(function(k){ return k<d&&woOf(k).length }).sort().pop(), w=x&&woOf(x)[woOf(x).length-1];
   return {cnt:'',h:jEmpty((d===todayISO()?'Сегодня':'В этот день')+' тренировок нет'+(w?'. Последняя — '+ruDate(x)+': '+escH(woName(w).toLowerCase())+(w.min?', '+durTxt(w.min):''):'')+'.')};
 }
@@ -3774,11 +3523,8 @@ function mindSum(o){ var s=0; for(var k in o) s+=o[k]; return s }
 function partsTxt(o,div){ var ks=Object.keys(o); if(ks.length===1&&!div) return ks[0]; return Object.keys(o).sort(function(a,b){ return o[b]-o[a] }).map(function(k){ return k+' '+secTxt(o[k]/(div||1)) }).join(' · ') }
 function mindDayHTML(d){
   var o=mindParts(d), s=mindSum(o);
-  var sources=window.DayAccountData?.relatedTime(d)||[];
-  var otherTime=sources.length?'<p class="jMut">Время в Day по устройствам: '+sources.map(secTxt).map(escH).join(' · ')+'</p>':'';
-  if(!s&&sources.length)return {cnt:'',h:otherTime};
   if(!s) return {cnt:'',h:jEmpty((d===todayISO()?'Сегодня':'В этот день')+' времени осознанности нет. Считаются сохранённые практики и сессии других приложений из Apple Health.')};
-  return {cnt:'',h:'<div class="jCard"><span class="jBig">'+secTxt(s)+'</span> <span class="jMut">'+escH(partsTxt(o))+'</span></div>'+otherTime};
+  return {cnt:'',h:'<div class="jCard"><span class="jBig">'+secTxt(s)+'</span> <span class="jMut">'+escH(partsTxt(o))+'</span></div>'};
 }
 function mindPerHTML(r){
   var ds=jrDates(r), tot={}, vals=ds.map(function(d){ var o=mindParts(d); for(var k in o) tot[k]=(tot[k]||0)+o[k]; return mindSum(o)/60 }), n=vals.filter(Boolean).length;
@@ -3799,7 +3545,7 @@ function jEvents(d){
     var c=(e.cp||{})[s.k]||{}, st=secTime(d,s.k), pills=[], isMeal=MEAL_SECS.indexOf(s.k)>=0, mm=isMeal?mealOf(d,s.k):{};
     scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') pills.push(m.t+' — '+jWord(m,c[m.k])) });
     var nS=pills.length, tg=Object.keys(c.tags||{}).filter(function(t){ return c.tags[t] });
-    pills=pills.concat(tg); if(c.note)pills.push(c.note);
+    pills=pills.concat(tg);
     if(!pills.length) return;
     var sub=[nS?nS+' '+ruPlural(nS,['оценка','оценки','оценок']):'', tg.length?tg.length+' '+ruPlural(tg.length,['тег','тега','тегов']):''].filter(Boolean).join(' · ');
     var a=mealMin(mealRecordTime(mm)), b=st?mealMin(st.t):null;
@@ -4168,16 +3914,16 @@ function healthImport(o){
    страница на экране; без касаний 3 минуты — заход закрывается (засчитано до последнего
    касания плюс 3 минуты), следующее касание открывает новый. Заход пишется в день начала:
    day.mind={sec, n, ss:[['08:12',95],…]}; идущий заход обновляется каждые 30 секунд. */
-var MIND_IDLE=180000, MIND={on:false,t0:0,last:0,d:null,i:-1,ready:false},MIND_PAUSED=0;
+var MIND_IDLE=180000, MIND={on:false,t0:0,last:0,d:null,i:-1,ready:false};
 function mindBegin(){
-  if(!MIND.ready||MIND.on||MIND_PAUSED||RO||document.visibilityState==='hidden') return;
+  if(!MIND.ready||MIND.on||RO||document.visibilityState==='hidden') return;
   var d=todayISO(), e=day(d), m=e.mind||(e.mind={sec:0,n:0,ss:[]});
   if(m.ss.length>=300) m.ss.shift();
   m.ss.push([nowHM(),0]); m.n=m.ss.length;
   MIND={on:true,t0:Date.now(),last:Date.now(),d:d,i:m.ss.length-1,ready:true};
 }
 function mindTick(){
-  if(!MIND.on||MIND_PAUSED) return;
+  if(!MIND.on) return;
   var m=(DB.days[MIND.d]||{}).mind; if(!m||!m.ss[MIND.i]){ MIND.on=false; return }
   m.ss[MIND.i][1]=Math.max(0,Math.round((Math.min(Date.now(),MIND.last+MIND_IDLE)-MIND.t0)/1000));
   m.sec=m.ss.reduce(function(a,x){ return a+x[1] },0); m.n=m.ss.length;
@@ -4189,21 +3935,9 @@ function mindEnd(){
   if(m.ss[MIND.i]&&m.ss[MIND.i][1]<5){ m.ss.splice(MIND.i,1); m.n=m.ss.length; m.sec=m.ss.reduce(function(a,x){ return a+x[1] },0) }
   saveNow();
 }
-// Replacement never lets an old session index edit another snapshot's sessions.
-globalThis.HappyMindCollector={pauseForReplacement:function(){
-  var previousDB=DB,previous={...MIND},done=false;mindTick();var localMind=previous.d?JSON.stringify(DB.days[previous.d]?.mind):null;MIND_PAUSED++;MIND.on=false;
-  return function(){if(done)return;done=true;MIND_PAUSED=Math.max(0,MIND_PAUSED-1);if(!HappyProfile.matches(HappyProfile.owner)){MIND.on=false;MIND.ready=false;return;}
-    if(DB===previousDB){MIND=previous;return;}
-    // Resume only an exact preserved local array, never an imported session at
-    // the same numeric index. Reset the collector object even in this case.
-    if(previous.on&&localMind!==null&&JSON.stringify(DB.days[previous.d]?.mind)===localMind&&DB.days[previous.d]?.mind?.ss?.[previous.i]){MIND={...previous};return;}
-    MIND={on:false,t0:0,last:Date.now(),d:null,i:-1,ready:previous.ready};mindBegin();
-  };
-}};
-window.addEventListener('happy-profile-paused',function(){MIND.on=false;MIND.ready=false;});
 /* записать сразу, без ожидания: страница может уснуть, как только уйдёт с экрана */
 function saveNow(){
-  if(RO) return; window.DayAccountData?.captureTime(); clearTimeout(saveT);
+  if(RO) return; clearTimeout(saveT);
   fmtCheck().then(function(f){ if(RO) return; if(f<FMT) rawSet(K_FMT,String(FMT)); rawSet(K.db,JSON.stringify(DB)) });
 }
 ['pointerdown','touchstart','keydown','wheel'].forEach(function(ev){
@@ -4215,7 +3949,7 @@ window.addEventListener('pagehide',mindEnd);
 setInterval(function(){
   if(!MIND.on) return;
   if(Date.now()-MIND.last>MIND_IDLE){ mindEnd(); return }
-  mindTick(); window.DayAccountData?.captureTime(); save();
+  mindTick(); save();
 },30000);
 
 /* ═══════════ СВЯЗИ ═══════════
@@ -5208,9 +4942,9 @@ document.getElementById('impJson').addEventListener('change',function(){
       if(!ok) return;
       clearTimeout(saveT);
       try{
-        await keepPrev();
-        if(window.DayJournal)await DayJournal.replaceLocal(JSON.stringify(o.db));else await rawSet(K.db,JSON.stringify(o.db));
-        if(o.cfg)try{await rawSet(K.cfg,JSON.stringify(o.cfg))}catch(e){toastLong('Дневник загружен. Настройки не сохранились: '+(e.message||e))}
+        if(m) await keepPrev();
+        await rawSet(K.db,JSON.stringify(o.db));
+        if(o.cfg) await rawSet(K.cfg,JSON.stringify(o.cfg));
         try{ sessionStorage.setItem(HappyProfile.key(K_UNDO),m?'load':'load0') }catch(e){}
       }catch(e){ toastLong('Не получилось загрузить: '+(e.message||e)); return }
       location.reload();
@@ -5226,7 +4960,7 @@ async function bkSwap(){
   clearTimeout(saveT);
   try{
     await keepPrev();
-    if(window.DayJournal)await DayJournal.replaceLocal(prev);else await rawSet(K.db,prev);
+    await rawSet(K.db,prev);
     try{ sessionStorage.setItem(HappyProfile.key(K_UNDO),'back') }catch(e){}
   }catch(e){ toastLong('Не получилось вернуть: '+(e.message||e)); return }
   location.reload();
@@ -5685,12 +5419,14 @@ document.getElementById('addSec').addEventListener('click',function(){
 ['cfgWeight','cfgKcal','cfgProt'].forEach(function(id){
   document.getElementById(id).addEventListener('input',function(){
     CFG[id.replace('cfg','').toLowerCase()] = this.value===''?null:+this.value;
-    if(window.DayAccountData){DayAccountData.captureGoals();save();}
     rawSet(K.cfg, JSON.stringify(CFG));
   });
 });
 document.getElementById('saveKey').addEventListener('click',function(){
-  toast('Внешний API и сохранение ключа недоступны.');
+  APIKEY=document.getElementById('apiKey').value.trim();
+  rawSet(K.key, APIKEY);
+  document.getElementById('keyState').textContent = APIKEY?'Ключ сохранён на этом устройстве.':'Ключ не задан.';
+  toast(APIKEY?'Ключ сохранён':'Ключ очищен');
 });
 
 /* ── Закрыть чекпоинт свайпом за черточку.
@@ -5947,7 +5683,6 @@ document.getElementById('scEd').addEventListener('click',function(ev){
 
 /* ═══════════ НАВИГАЦИЯ ═══════════ */
 function go(name){
-  if(globalThis.DaySportMeasurements)DaySportMeasurements.navigate(name);
   SelfCare.onNavigate(name);
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.dataset.screen===name) });
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name||(name.startsWith('care-settings-')&&t.dataset.go==='settings')) });
@@ -5967,7 +5702,19 @@ document.getElementById('dayList').addEventListener('click',function(e){
   var b=e.target.closest('[data-open]'); if(!b) return;
   openSection(b.dataset.open);
 });
-function openSection(k){SelfCare.openSection(k);}
+function openSection(k){
+  var s=DB.sections.filter(function(x){return x.k===k})[0]; if(!s) return;
+  curSec=k; cur=0;
+  buildTracks();     // иначе на экране остаются шкалы прошлого раздела,
+                     // а значения пишутся в текущий
+  renderCpTags();    // то же с тегами
+  document.getElementById('cpName').textContent=s.t;
+  paintCpMeal();          // и строка времени и сна
+  /* Время отметки по-прежнему пишется при заполнении — оно нужно,
+     чтобы знать, что было раньше. Но показывать его здесь незачем:
+     часы есть в телефоне, дата на главном экране. */
+  go('ring');
+}
 document.getElementById('fab').addEventListener('click',function(){
   if(document.getElementById('tapWrap').classList.contains('on')){ closeTaps(); return }
   if(document.getElementById('impWrap').classList.contains('on')){ closeImport(); return }
@@ -6061,10 +5808,8 @@ function renderAll(){
       var o=JSON.parse(raw);
       /* База прежней версии, где нет ни одной записи: терять нечего,
          поэтому разделы, шкалы и счётчики берутся по умолчанию. */
-      // Preserve legacy and unknown journal fields; empty-looking days can hide other history.
+      if(o&&o.days&&!o.fmt&&!hasRecords(o.days)) o={days:{}};
       if(o&&o.days){
-        // Retain forward-compatible owned fields before known-field normalization.
-        Object.keys(o).forEach(function(k){if(!['__proto__','prototype','constructor'].includes(k))DB[k]=o[k]});
         DB.days=o.days;
         if(o.mealCounters)DB.mealCounters=o.mealCounters;
         if(o.importedHistory&&typeof o.importedHistory==='object')DB.importedHistory=o.importedHistory;
@@ -6090,11 +5835,10 @@ function renderAll(){
         if(o.mealLink&&o.mealLink.days) DB.mealLink=o.mealLink;
         if(o.nowCfg&&Array.isArray(o.nowCfg.sc)&&o.nowCfg.sc.length) DB.nowCfg=o.nowCfg;
         if(o.selfCare&&typeof o.selfCare==='object') DB.selfCare=o.selfCare;
-        if(o.__dayJournalSync) DB.__dayJournalSync=o.__dayJournalSync;
       }
     }
     var c=await rawGet(K.cfg); if(c) CFG=JSON.parse(c);
-    APIKEY=''; // Phase 1 never loads or uses a model API key.
+    APIKEY=(await rawGet(K.key))||'';
   }catch(e){}
   await fmtCheck();                  // версия старше записей — только читаем
   try{ await syncMeal() }catch(e){}
@@ -6105,18 +5849,9 @@ function renderAll(){
   document.getElementById('cfgKcal').value=CFG.kcal!=null?CFG.kcal:'';
   document.getElementById('cfgProt').value=CFG.prot!=null?CFG.prot:'';
   document.getElementById('apiKey').value=APIKEY;
-  document.getElementById('keyState').textContent='Внешний API и сохранение ключа недоступны.';
+  document.getElementById('keyState').textContent=APIKEY?'Ключ сохранён на этом устройстве.':'Ключ не задан.';
   SelfCare.init();
   renderAll();
-  if(window.DayAccountData) {
-    if(HappyProfile.owner!=='local' && DB.accountPreferences?.theme===undefined) {
-      try{var previousTheme=JSON.parse(await rawGet('happy-day-appearance-v1')||'null');
-        if(previousTheme?.version===1&&typeof previousTheme.presetId==='string'&&previousTheme.presetId)(DB.accountPreferences||={}).theme=previousTheme.presetId;}catch(e){}
-    }
-    DayAccountData.begin();
-  }
-  if(window.DayJournal) DayJournal.start();
-  if(window.DayAccountData && HappyProfile.owner!=='local') save();
   paintMealSet();
   syncMealCloud().then(function(ch){ onMealSync(ch) });   // свежая сводка Meal с сервера — без ожидания
   setTimeout(checkMisplaced,1700);   // после заставки
@@ -6129,261 +5864,6 @@ function renderAll(){
   setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
 })();
 </script>
-<script type="module" src="./day-sport-bootstrap.mjs"></script>
-<script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
-(function(root){
- 'use strict';
- const copy=v=>JSON.parse(JSON.stringify(v));
- const clamp=(v,min,max,fallback=min)=>Number.isFinite(Number(v))?Math.max(min,Math.min(max,Number(v))):fallback;
- const hex=(v,f='#1e3a60')=>/^#[0-9a-f]{6}$/i.test(v||'')?v.toLowerCase():f;
- const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
- const toHex=a=>'#'+a.map(v=>Math.round(clamp(v,0,255)).toString(16).padStart(2,'0')).join('');
- function adjust(color,brightness=100,saturation=100,hue=0){
-  let c=rgb(hex(color)).map(v=>v/255),max=Math.max(...c),min=Math.min(...c),d=max-min,l=(max+min)/2;
-  let h=0,s=d?d/(1-Math.abs(2*l-1)):0;
-  if(d){h=max===c[0]?((c[1]-c[2])/d)%6:max===c[1]?(c[2]-c[0])/d+2:(c[0]-c[1])/d+4;h*=60;}
-  h=(h+Number(hue)+720)%360;
-  if(hue){const a=s*Math.min(l,1-l);c=[0,8,4].map(n=>{const k=(n+h/30)%12;return l-a*Math.max(-1,Math.min(k-3,9-k,1));});}
-  const gray=c[0]*.2126+c[1]*.7152+c[2]*.0722;
-  return toHex(c.map(v=>(gray+(v-gray)*saturation/100)*brightness/100*255));
- }
- function normalize(input={}){
-  const a=input&&typeof input==='object'?input:{};
-  const stops=(Array.isArray(a.stops)&&a.stops.length>=2?a.stops:[{color:'#1e3a60',position:0},{color:'#315479',position:100}]).slice(0,8).map((s,i,all)=>({
-   color:hex(s?.color),position:clamp(s?.position,0,100,i*100/(all.length-1)),brightness:clamp(s?.brightness,0,200,100),saturation:clamp(s?.saturation,0,200,100),hue:clamp(s?.hue,-180,180,0)
-  }));
-  const g=a.glow||{};
-  return {type:['solid','linear','curved','radial','conic'].includes(a.type)?a.type:'linear',angle:clamp(a.angle,0,360,180),bend:clamp(a.bend,-100,100,35),x:clamp(a.x,0,100,50),y:clamp(a.y,0,100,50),radius:clamp(a.radius,5,150,75),brightness:clamp(a.brightness,0,200,100),saturation:clamp(a.saturation,0,200,100),stops,extraGlow:a.extraGlow?normalize({glow:a.extraGlow}).glow:null,
-   glow:{enabled:g.enabled===true,color:hex(g.color,'#dcecff'),x:clamp(g.x,0,100,25),y:clamp(g.y,0,100,15),radius:clamp(g.radius,5,150,55),strength:clamp(g.strength,0,100,25),brightness:clamp(g.brightness,0,200,100),saturation:clamp(g.saturation,0,200,100),hue:clamp(g.hue,-180,180,0)}};
- }
- function colors(input){const m=normalize(input);return m.stops.map(s=>({...s,color:adjust(adjust(s.color,s.brightness,s.saturation,s.hue),m.brightness,m.saturation)})).sort((a,b)=>a.position-b.position);}
- function fromLegacy(s={}){const old=(g)=>g?{enabled:g.opacity>0,color:g.color,x:g.x,y:g.y,radius:Math.max(g.w||60,g.h||60),strength:(g.opacity||0)*100}:undefined;return normalize({type:'linear',angle:s.angle??165,brightness:s.brightness??100,saturation:s.saturationBoost??100,glow:old(s.glows?.[0]),extraGlow:old(s.glows?.[1]),stops:(s.base||['#1e3a60','#315479']).map((color,i,a)=>({color,position:a.length===5?[0,17,50,76,100][i]:i*100/(a.length-1)}))});}
- function sample(m,x,y){
-  const angle=m.angle*Math.PI/180,sn=Math.sin(angle),cs=Math.cos(angle),span=Math.abs(sn)+Math.abs(cs)||1;
-  let t=.5+((x-.5)*sn-(y-.5)*cs)/span;
-  if(m.type==='solid')t=m.stops[0].position/100;
-  if(m.type==='curved')t+=m.bend/100*2*Math.pow((x-.5)*cs+(y-.5)*sn,2);
-  if(m.type==='radial')t=Math.hypot(x-m.x/100,y-m.y/100)/(m.radius/100);
-  if(m.type==='conic')t=((Math.atan2(x-m.x/100,-(y-m.y/100))*180/Math.PI-m.angle+720)%360)/360;
-  return clamp(t,0,1);
- }
- function interpolate(stops,t){const p=t*100;let a=stops[0],b=stops[stops.length-1];if(p<=a.position)return rgb(a.color);if(p>=b.position)return rgb(b.color);for(let i=1;i<stops.length;i++)if(p<=stops[i].position){a=stops[i-1];b=stops[i];break;}const q=(p-a.position)/(b.position-a.position||1),ar=rgb(a.color),br=rgb(b.color);return ar.map((v,i)=>v+(br[i]-v)*q);}
- function paint(ctx,input,width,height){
-  const m=normalize(input),stops=colors(m),pixels=ctx.createImageData(width,height),g=m.glow;
-  const glows=[m.extraGlow,m.glow].filter(g=>g?.enabled).map(g=>({...g,rgb:rgb(adjust(adjust(g.color,g.brightness,g.saturation,g.hue),m.brightness,m.saturation))}));
-  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
-   const nx=x/(width-1||1),ny=y/(height-1||1),c=m.type==='solid'?rgb(stops[0].color):interpolate(stops,sample(m,nx,ny));
-   for(const g of glows){const alpha=Math.max(0,1-Math.hypot(nx-g.x/100,ny-g.y/100)/(g.radius/100))*g.strength/100;for(let k=0;k<3;k++)c[k]=c[k]*(1-alpha)+g.rgb[k]*alpha;}
-   const i=(y*width+x)*4;for(let k=0;k<3;k++)pixels.data[i+k]=Math.round(c[k]);pixels.data[i+3]=255;
-  }ctx.putImageData(pixels,0,0);return ctx.canvas;
- }
- const cache=new Map();
- function imageURL(input,size=192){const m=normalize(input),key=JSON.stringify([m,size]);if(cache.has(key))return cache.get(key);const c=document.createElement('canvas');c.width=c.height=size;paint(c.getContext('2d'),m,size,size);const url=c.toDataURL('image/png');if(cache.size>24)cache.delete(cache.keys().next().value);cache.set(key,url);return url;}
- function css(input){
-  const m=normalize(input),list=colors(m).map(s=>s.color+' '+s.position+'%').join(',');
-  if(m.type==='curved')return 'url("'+imageURL(m)+'") center / 100% 100% no-repeat';
-  let base=m.type==='solid'?colors(m)[0].color:m.type==='radial'?'radial-gradient(ellipse '+m.radius+'% '+m.radius+'% at '+m.x+'% '+m.y+'%,'+list+')':m.type==='conic'?'conic-gradient(from '+m.angle+'deg at '+m.x+'% '+m.y+'%,'+list+')':'linear-gradient('+m.angle+'deg,'+list+')';
-  for(const g of [m.extraGlow,m.glow].filter(g=>g?.enabled)){const c=rgb(adjust(adjust(g.color,g.brightness,g.saturation,g.hue),m.brightness,m.saturation));const glow='radial-gradient(ellipse '+g.radius+'% '+g.radius+'% at '+g.x+'% '+g.y+'%,rgba('+c.join(',')+','+g.strength/100+') 0%,rgba('+c.join(',')+',0) 100%)';base=glow+','+(/^#[0-9a-f]{6}$/i.test(base)?'linear-gradient('+base+','+base+')':base);}return base;
- }
- const blueHour={id:'happy-blue-hour-v1',name:'Синий час',state:{angle:180,wallpaper:'none',base:['#1e3a60','#1f3c62','#223f65','#254369','#29496f'],glows:[{color:'#b7d7f2',opacity:0,x:20,y:10,w:70,h:50},{color:'#7c9fca',opacity:0,x:80,y:70,w:70,h:50}],brightness:100,saturationBoost:100,buttonColor:'#86b7df',buttonShine:0,glassColor:'#8aa4c7',glassAlpha:18,borderColor:'#d6e6f6',borderAlpha:30,glassBlur:12,cornerRadius:22,buttonGradient:normalize({type:'solid',stops:[{color:'#86b7df',position:0},{color:'#86b7df',position:100}]}),buttonTextColor:'#142e4f'}};
- root.HappyGradients={normalize,colors,adjust,fromLegacy,paint,css,imageURL,copy,blueHour,sample,interpolate};
-})(typeof window!=='undefined'?window:globalThis);
-
-/* Happy Family reference collection · 02 November 2026.
-   Original editable gradients inspired by supplied colour references.
-   Built-ins are separate from the user's 20 saved themes and never overwrite them. */
-(function(root){'use strict';
- const G=root.HappyGradients,HEX=/^#[0-9a-f]{6}$/i;
- const copy=value=>JSON.parse(JSON.stringify(value));
- const mix=(hex,target,amount)=>'#'+[1,3,5].map(i=>Math.round(parseInt(hex.slice(i,i+2),16)*(1-amount)+target*amount).toString(16).padStart(2,'0')).join('');
- const glow=(color,x,y,radius,strength)=>({enabled:true,color,x,y,radius,strength});
- function theme(id,name,mode,note,colors,angle,lights,accent,ui={}){
-  const backgroundGradient=G.normalize({type:'linear',angle,stops:colors.map((color,i)=>({color,position:[0,17,50,76,100][i]})),glow:lights[0],extraGlow:lights[1]});
-  const state={angle,base:colors.slice(),glows:lights.map(g=>({color:g.color,opacity:g.strength/100,x:g.x,y:g.y,w:g.radius,h:g.radius})),backgroundGradient,
-   wallpaper:'none',wallpaperData:'',brightness:100,saturationBoost:100,buttonColor:accent[0],buttonShine:mode==='night'?12:36,buttonAlpha:100,fabAlpha:100,
-   buttonGradient:G.normalize({type:'radial',x:32,y:20,radius:100,stops:[{color:mix(accent[0],255,mode==='night'?.10:.406),position:0},{color:accent[0],position:56},{color:mix(accent[0],0,.25),position:100}]}),buttonTextColor:'#ffffff',
-   glassColor:'#ffffff',glassAlpha:18,borderColor:'#ffffff',borderAlpha:36,glassBlur:12,cornerRadius:22,themeMode:mode};
-  return {id:'happy-ref-'+id+'-v1',name,mode,note,colors:[...new Set([...colors,...lights.map(g=>g.color)])].slice(0,8),state};
- }
- const themes=[
-  theme('mint','Мята','basic','Свежая мята, бирюза и мягкое сиреневое основание.',
-   ['#5cd2b0','#4dc8c5','#3bb8d4','#609ed8','#7976ce'],165,
-   [glow('#a7fac5',16,10,76,43),glow('#a7baff',91,28,71,32)],['#329a9b']),
-  theme('bordeaux','Бордо','basic','Основной бордово-вишнёвый фон Happy Meal.',
-   ['#963452','#983252','#812c4b','#632749','#462747'],165,
-   [glow('#f37ca5',93,15,80,40),glow('#9d57ae',6,-8,73,38)],['#730074']),
-  theme('sport','Фиолетовый бриз','basic','Основной фиолетово-синий фон Happy Sport.',
-   ['#8c75db','#8275e8','#478bf0','#3989ed','#5a53cc'],165,
-   [glow('#ff8fd2',95,20,76,32),glow('#9e77fb',7,-10,66,33)],['#6450c3']),
-  theme('golden-sunset','Золотой закат','regular','Фиолетовое небо, розовый свет и тёплое золото.',
-   ['#35205e','#652568','#a03d78','#df8d7c','#ffc977'],172,
-   [glow('#ffdf87',78,93,66,90),glow('#ff984b',4,89,57,53)],['#e78c24'],{glassColor:'#35213e',mutedColor:'#f2dfe6'}),
-  theme('orchid','Орхидея','regular','Мягкий сиреневый свет на сливовом фоне.',
-   ['#982bb7','#a037ad','#810d91','#650778','#59096c'],165,
-   [glow('#efb0e9',100,7,95,94),glow('#ab40d1',8,6,61,25)],['#850c9e'],{glassColor:'#350d42',mutedColor:'#f1d3f0'}),
-  theme('amethyst','Аметист','regular','Насыщенный фиолетовый с малиновым отблеском.',
-   ['#7520b3','#7c159f','#74028d','#61077c','#50066c'],176,
-   [glow('#d887d3',100,4,83,86),glow('#ae008d',100,65,72,24)],['#79049b'],{glassColor:'#290d3b',mutedColor:'#e8cff2'}),
-  theme('lagoon','Лагуна','regular','Мята и изумруд переходят в глубину моря.',
-   ['#40c7b8','#2bb79b','#148e80','#056175','#04355b'],177,
-   [glow('#24bd77',100,18,96,55),glow('#0872ab',0,84,66,25)],['#086293'],{glassColor:'#063345',textColor:'#f1fffc',mutedColor:'#d1eee8',headingColor:'#073b43',buttonTextColor:'#06383b'}),
-  theme('night-bay','Ночная бухта','night','Почти чёрный берег, тихий бирюзовый и угасающий янтарный отблеск.',
-   ['#080d12','#0b1419','#11171a','#111214','#080b0e'],90,
-   [glow('#23484c',17,13,55,24),glow('#69412b',42,85,68,18)],['#623d29'],{glassColor:'#101e25',textColor:'#eef8f7',mutedColor:'#c3dedc',buttonTextColor:'#142b30'}),
-  theme('midnight-iris','Полуночный ирис','night','Чернильная слива с едва заметным ирисовым и винным светом.',
-   ['#090910','#100c18','#171020','#1d1020','#21131e'],113,
-   [glow('#513865',54,48,55,22),glow('#67404a',85,98,64,18)],['#633047'],{glassColor:'#200e2d',mutedColor:'#e4cdeb'}),
-  theme('neon-night','Неоновая ночь','night','Почти чёрный индиго с приглушённым сине-фиолетовым ореолом.',
-   ['#0b0c1b','#101027','#17102b','#180e22','#1d1027'],132,
-   [glow('#5a3a65',99,0,61,20),glow('#383974',0,100,63,22)],['#492f65'],{glassColor:'#1b1038',mutedColor:'#dfd3f6'})
- ];
- // Only validated optional tokens affect previews; old user themes keep their appearance.
- function uiCSS(st){
-  if(!HEX.test(st.themeTextColor||''))return '';
-  const text=st.themeTextColor,muted=HEX.test(st.themeMutedColor||'')?st.themeMutedColor:text;
-  const heading=HEX.test(st.themeHeadingColor||'')?st.themeHeadingColor:text;
-  const glass=HEX.test(st.glassColor||'')?st.glassColor:'#201329';
-  const accent=HEX.test(st.buttonColor||'')?st.buttonColor:text;
-  const rgb=[1,3,5].map(i=>parseInt(glass.slice(i,i+2),16)).join(',');
-  return ':root{--ink:'+text+';--muted:'+muted+';--dim:'+muted+';--dockBg:rgba('+rgb+',.94);--dockInk:'+text+';--dockAccent:'+accent+';color-scheme:'+(st.themeMode==='night'?'dark':'normal')+';}'+
-   'body,.card,.rowcard,.pin,.energy,.datePill,.date-pill,.sheet,.glass,.section-row,.voice,.latest{color:'+text+'!important;}'+
-   '.top h1{color:'+heading+'!important;}'+
-   '.metric small,.energy-legend,.balance span,.section-row small,.latest small,.rowcard small,.note{color:'+muted+'!important;}'+
-   '.note{background-color:rgba('+rgb+',.72);padding:8px 10px;border-radius:10px;}'+
-   '.dock .tab{color:'+muted+'!important;}.dock .tab.on{color:'+accent+'!important;}'+
-   '.action.primary{background:'+G.css(st.buttonGradient)+'!important;color:'+st.buttonTextColor+'!important;}';
- }
- function mount(host,onSelect){
-  const buttons=new Map();host.replaceChildren();
-  const intro=document.createElement('p');intro.className='reference-intro';intro.textContent='Одна схема для Day, Meal и Sport. Нажми, чтобы увидеть её сразу во всех трёх превью. Любую схему можно изменить и сохранить как свой вариант.';host.append(intro);
-  for(const [mode,label] of [['basic','Основные · 3'],['regular','На выбор · 4'],['night','Ночные · 3']]){
-   const heading=document.createElement('h3');heading.className='reference-heading';heading.textContent=label;host.append(heading);
-   const grid=document.createElement('div');grid.className='reference-grid reference-grid-'+mode;
-   for(const item of themes.filter(t=>t.mode===mode)){
-    const button=document.createElement('button');button.type='button';button.className='reference-card';button.dataset.themeId=item.id;
-    button.setAttribute('aria-label','Применить тему «'+item.name+'» ко всем трём превью');button.setAttribute('aria-pressed','false');
-    const swatch=document.createElement('span');swatch.className='reference-swatch';swatch.style.background=G.css(item.state.backgroundGradient);
-    const badge=document.createElement('span');badge.className='reference-badge';badge.textContent=mode==='night'?'Ночная':'Day · Meal · Sport';swatch.append(badge);
-    const accents=document.createElement('span');accents.className='reference-accents';
-    for(const color of [item.state.buttonColor,item.state.themeTextColor||'#ffffff',item.state.glassColor]){const dot=document.createElement('i');dot.style.background=color;accents.append(dot);}swatch.append(accents);
-    const name=document.createElement('strong');name.textContent=item.name;const note=document.createElement('small');note.textContent=item.note;
-    button.append(swatch,name,note);button.onclick=()=>onSelect(item.id);grid.append(button);buttons.set(item.id,button);
-   }host.append(grid);
-  }
-  const status=document.createElement('p');status.className='reference-status';status.setAttribute('aria-live','polite');host.append(status);
-  return {select(id){for(const [key,b] of buttons)b.setAttribute('aria-pressed',String(key===id));const item=themes.find(t=>t.id===id);status.textContent=item?'Выбрано: '+item.name+' · Day, Meal и Sport':'';}};
- }
- root.HappyReferenceThemes={version:3,themes,uiCSS,mount,copy};
-})(typeof window!=='undefined'?window:globalThis);
-
-
-/* Happy appearance picker v2. Live preview is transactional. Presets: Color Studio 12.5, collection v3.
-   Only a validated ID is stored. No diary/auth writes or default migration. */
-(function(root){'use strict';
- const G=root.HappyGradients,R=root.HappyReferenceThemes;
- if(!G||!R)return;
- const themes=R.themes||R.items;
- if(!Array.isArray(themes)||themes.length!==10)return;
- const app=document.documentElement.dataset.happyAppearanceApp;
- if(!['day','meal','sport'].includes(app))return;
- const key='happy-'+app+'-appearance-v1';
- let current='',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
- const valid=id=>id===''||themes.some(t=>t.id===id);
- const name=id=>themes.find(t=>t.id===id)?.name||'По умолчанию · исходное';
- const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
- function skin(id){
-  let style=document.getElementById('happy-appearance-skin');
-  if(!id){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
-  const t=themes.find(t=>t.id===id);if(!t)return;
-  const s=t.state,bg=G.css(s.backgroundGradient),button=G.css(s.buttonGradient),shine=Number(s.buttonShine);
-  const shadow=shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(s.buttonColor,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40';
-  // Studio's default glass tokens deliberately retain each application's glass.
-  // No optional legacy ui arguments are promoted to active theme tokens.
-  let css='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';--fab:'+G.colors(s.buttonGradient)[0].color+';}';
-  css+=' .fab,#fab,.dockFab,.mic-fab,.mlMic,#sport-fab,#nowSave{background:'+button+'!important;background-blend-mode:normal!important;box-shadow:'+shadow+'!important;filter:none!important;color:'+s.buttonTextColor+'!important;}';
-  css+=' .fab::before,.fab::after,.dockFab::before,.dockFab::after,.mic-fab::before,.mic-fab::after,#nowSave::before,#nowSave::after{background:none!important;box-shadow:none!important;}';
-  css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';
-  if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
-  document.documentElement.dataset.happyAppearance=id;
- }
- function labels(){document.querySelectorAll('[data-happy-appearance-label]').forEach(el=>{el.textContent=name(current)});}
- function entry(){
-  document.querySelectorAll('[data-happy-section="account"]').forEach(account=>{
-   if(account.nextElementSibling?.classList.contains('happy-appearance-entry'))return;
-   const section=document.createElement('section');section.className='happy-section happy-appearance-entry';section.dataset.happySection='appearance';
-   const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.happyAppearanceOpen='';b.setAttribute('aria-haspopup','dialog');
-   const title=document.createElement('span');title.textContent='Выбрать оформление';const label=document.createElement('small');label.dataset.happyAppearanceLabel='';label.textContent=name(current);b.append(title,label);section.append(b);account.after(section);
-  });
- }
- function paintDialog(id){
-  if(!dialog)return;
-  const preset=themes.find(t=>t.id===id),st=preset?.state;
-  const back=document.querySelector('body>.bg'),fab=document.querySelector('#nowSave,.fab,.dockFab,.mlMic,#sport-fab');
-  const bg=st?G.css(st.backgroundGradient):(back?getComputedStyle(back).backgroundImage:getComputedStyle(document.documentElement).backgroundImage);
-  const button=st?G.css(st.buttonGradient):(fab?getComputedStyle(fab).backgroundImage:'none');
-  const base=st?.base?.[2]||getComputedStyle(document.documentElement).getPropertyValue('--base').trim()||'#ffffff';
-  // Neutral contrast treatment only; the actual palette/gradients are the approved preset.
-  const luminance=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
-  const light=st?['happy-ref-mint-v1','happy-ref-sport-v1'].includes(id):false;
-  dialog.style.setProperty('--ha-bg',bg);
-  dialog.style.setProperty('--ha-base',base);
-  dialog.style.setProperty('--ha-ink',light?'#101828':'#ffffff');
-  dialog.style.setProperty('--ha-glass',light?'rgba(255,255,255,.38)':'rgba(0,0,0,.50)');
-  dialog.style.setProperty('--ha-line',light?'rgba(16,24,40,.48)':'rgba(255,255,255,.55)');
-  dialog.style.setProperty('--ha-focus',light?'#101828':'#ffffff');
-  dialog.style.setProperty('--ha-button',button);
-  dialog.style.setProperty('--ha-button-color',st?.buttonColor||(fab?getComputedStyle(fab).backgroundColor:base));
-  dialog.style.setProperty('--ha-button-text',st?(luminance(st.buttonColor)>.183?'#101828':st.buttonTextColor):(fab?getComputedStyle(fab).color:'#ffffff'));
-  dialog.dataset.previewPreset=id||'original';
- }
- function preview(id){
-  if(!valid(id))return;previewId=id;skin(id);paintDialog(id);
-  if(dialog){dialog.querySelectorAll('input').forEach(x=>x.checked=x.value===id);const status=dialog.querySelector('.ha-preview-status');status.textContent=id===current?'Сохранённое оформление: '+name(current):'Предпросмотр: '+name(id)+' · ещё не сохранено';}
- }
- function close(){if(busy)return;skin(current);previewId=null;if(dialog?.open)dialog.close();opener?.focus();}
- function open(button){
-  if(!ready||busy)return;opener=button;
-  if(!dialog){
-   dialog=document.createElement('dialog');dialog.id='happy-appearance-dialog';dialog.setAttribute('aria-labelledby','happy-appearance-title');dialog.setAttribute('aria-describedby','happy-appearance-help');
-   dialog.innerHTML='<div class="ha-layout"><header class="ha-head"><h2 id="happy-appearance-title">Выбрать оформление<\/h2><button type="button" class="ha-close" aria-label="Закрыть без изменений">Закрыть<\/button><\/header><div class="ha-body"><p id="happy-appearance-help">Нажми на тему — увидишь её сразу. «Применить» сохранит выбор, «Отмена» вернёт прежний вид.<\/p><p class="ha-preview-status" role="status" aria-live="polite"><\/p><fieldset><legend>Оформление приложения<\/legend><label class="ha-choice"><input type="radio" name="happy-appearance" value=""><span>По умолчанию · исходное<\/span><\/label><div class="ha-grid" style="margin-top:10px"><\/div><\/fieldset><\/div><p class="ha-error" role="alert" hidden><\/p><footer class="ha-actions"><button type="button" class="ha-cancel">Отмена<\/button><button type="button" class="ha-apply">Применить<\/button><\/footer><\/div>';
-   const grid=dialog.querySelector('.ha-grid');themes.forEach(t=>{const label=document.createElement('label');label.className='ha-choice';const radio=document.createElement('input');radio.type='radio';radio.name='happy-appearance';radio.value=t.id;const text=document.createElement('span');text.className='ha-theme';const swatch=document.createElement('span');swatch.className='ha-swatch';swatch.style.background=G.css(t.state.backgroundGradient);swatch.setAttribute('aria-hidden','true');const title=document.createElement('span');title.textContent=t.name;text.append(swatch,title);label.append(radio,text);grid.append(label)});
-   document.body.append(dialog);
-   dialog.querySelector('.ha-close').addEventListener('click',close);dialog.querySelector('.ha-cancel').addEventListener('click',close);
-   dialog.addEventListener('change',e=>{if(!busy&&e.target.matches('input[name="happy-appearance"]')){dialog.querySelector('.ha-error').hidden=true;preview(e.target.value)}});
-   const isOutside=e=>{const r=dialog.getBoundingClientRect();return e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom};
-   dialog.addEventListener('pointerdown',e=>{outsideStart=e.target===dialog&&isOutside(e)?{id:e.pointerId,x:e.clientX,y:e.clientY}:null});
-   dialog.addEventListener('pointercancel',()=>{outsideStart=null});
-   dialog.addEventListener('pointerup',e=>{const p=outsideStart;outsideStart=null;if(p&&p.id===e.pointerId&&e.target===dialog&&isOutside(e)&&Math.hypot(e.clientX-p.x,e.clientY-p.y)<8)close()});
-   dialog.addEventListener('close',()=>{if(!dialog.open){skin(current);previewId=null;outsideStart=null}});
-   dialog.addEventListener('cancel',e=>{e.preventDefault();close()});
-   dialog.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopImmediatePropagation();e.preventDefault();close()}},true);
-   dialog.querySelector('.ha-apply').addEventListener('click',async()=>{
-    if(busy)return;const id=dialog.querySelector('input:checked')?.value;if(!valid(id))return;
-    if(id===current){close();return;}busy=true;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=true);
-    const error=dialog.querySelector('.ha-error');error.hidden=true;
-    try{await root.rawSet(key,JSON.stringify({version:1,presetId:id}));current=id;root.DayAccountData?.appearance('theme',id);skin(id);labels();busy=false;close();}
-    catch(e){preview(current);error.textContent='Не удалось сохранить оформление. Возвращён прежний вид. Выбери тему и попробуй ещё раз.';error.hidden=false;}
-    finally{busy=false;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=false);}
-   });
-  }
-  dialog.querySelectorAll('input').forEach(x=>x.checked=x.value===current);dialog.querySelector('.ha-error').hidden=true;
-  preview(current);dialog.showModal();dialog.querySelector('input:checked').focus();
- }
- document.addEventListener('click',e=>{const b=e.target.closest?.('[data-happy-appearance-open]');if(b)open(b)});
- function accountTheme(){
-  const id=root.DB?.accountPreferences?.theme;
-  if(valid(id)){current=id;skin(id);labels();}
- }
- root.addEventListener('happy-profile-appearance',accountTheme);
- async function init(){
-  try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;skin(current)}}catch(e){}
-  if(root.DB?.accountPreferences?.theme!==undefined)accountTheme();
-  ready=true;entry();labels();
-  new MutationObserver(entry).observe(document.body,{childList:true,subtree:true});
- }
- root.HappyAppearance={init,skin,themes,get selected(){return current},get previewed(){return previewId},get ready(){return ready}};
- init();
-})(globalThis);
-</script>
+<script src="../shared/measurements-host.js?v=1" data-journal="trends"></script>
 </body>
 </html>

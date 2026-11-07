@@ -1,13 +1,18 @@
 {
   "day": {
-    "entry": "day/index.html",
+    "entry": "day-52/index.html",
     "version": "52",
-    "sharedDirectory": "day/shared",
+    "sharedDirectory": "day-52/shared",
     "links": {
       "meal": false,
       "sport": "https://sport-auth-readonly-20261104.amuramore.chatgpt.site/"
     },
-    "download": "day/Happy-Day-52.html"
+    "download": "day-52/Happy-Day-52.html",
+    "previous": {
+      "entry": "day/index.html",
+      "version": "50.14",
+      "sourceCommit": "e1e6597fe97f5c0acb06239e6e61bd1de88a2e91"
+    }
   },
   "meal": {
     "entry": "meal/index.html",

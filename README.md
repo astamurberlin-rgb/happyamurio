@@ -2,6 +2,8 @@
 
 Happy Day, Happy Meal и Happy Sport — приложения Astamur.
 
+[Happy Day · Update 52](https://astamurberlin-rgb.github.io/happyamurio/day-52/) · [Предыдущий Happy Day](https://astamurberlin-rgb.github.io/happyamurio/day/)
+
 [История обновлений](CHANGELOG.md) · [Карта приложений и постоянные адреса](APPS.md) · [Где хранятся данные](DATA-STORAGE.md)
 
 © 2026 Astamur. Все права защищены. Код, тексты и дизайн в этом репозитории нельзя копировать и использовать без разрешения автора.

@@ -7,8 +7,8 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT
-ORIGIN = 'https://astamurberlin-rgb.github.io/happyamurio/day'
-OUT = DIST / 'day' / 'Happy-Day-52.html'
+ORIGIN = 'https://astamurberlin-rgb.github.io/happyamurio/day-52'
+OUT = DIST / 'day-52' / 'Happy-Day-52.html'
 dependencies = set()
 
 def data_url(data, mime):
@@ -70,8 +70,8 @@ def package(p):
     text = re.sub(r'<style([^>]*)>(.*?)</style>', lambda m: '<style' + m.group(1) + '>' + css(m.group(2), p.parent) + '</style>', text, flags=re.S)
     return text
 
-text = package(DIST / 'day/index.html')
-studio = package(DIST / 'day/arc-studio/index.html')
+text = package(DIST / 'day-52/index.html')
+studio = package(DIST / 'day-52/arc-studio/index.html')
 studio = studio.replace('href="../"', 'href="#" data-close-studio')
 studio += '<script>document.addEventListener("click",function(e){if(e.target.closest("[data-close-studio]")){e.preventDefault();parent.postMessage("happy-day-close-studio","*")}})</script>'
 text = text.replace('href="./arc-studio/"', 'href="#arc-studio" data-open-studio')

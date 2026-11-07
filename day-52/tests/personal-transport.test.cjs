@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const test=require('node:test'),assert=require('node:assert/strict');
 const code=fs.readFileSync(path.join(__dirname,'../auth-read-only.js'),'utf8');
 const uid='11111111-1111-4111-8111-111111111111';
-const base='https://astamurberlin-rgb.github.io/happyamurio/day/';
+const base='https://astamurberlin-rgb.github.io/happyamurio/day-52/';
 const page=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 const counterSource=page.match(/<script id="hd-food-adapter" src="([^"]+)"/)[1];
 function setup(bundled=false,owner=uid){

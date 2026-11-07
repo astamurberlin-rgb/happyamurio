@@ -6,7 +6,7 @@ const read=p=>readFile(new URL(p,root),'utf8');
 const apps=JSON.parse(await read('shared/apps.json'));
 const expectedKeys={day:'hd_db_v1',meal:'hdm_db_v1',sport:'happy-sport-prototype-v1'};
 let scripts=0;
-for(const name of ['selfcare-core.js','selfcare-ui.js','energy-widget.js'])new vm.Script(await read('day/'+name),{filename:'day/'+name});
+for(const name of ['selfcare-core.js','selfcare-ui.js','energy-widget.js'])new vm.Script(await read(apps.day.entry.replace('index.html',name)),{filename:apps.day.entry.replace('index.html',name)});
 for(const [app,config] of Object.entries(apps)){
  const html=await read(config.entry);
  const storageSource=config.storageScript ? await read(config.storageScript) : html;
@@ -17,9 +17,9 @@ for(const [app,config] of Object.entries(apps)){
   else {new vm.Script(m[1],{filename:config.entry});scripts++;}
  }
  if(app==='sport'||config.kind==='studio')continue;
- const manifest=JSON.parse(await read(`${app}/manifest.webmanifest`));
+ const manifest=JSON.parse(await read(config.entry.replace('index.html','manifest.webmanifest')));
  const base=new URL(config.entry,'https://astamurberlin-rgb.github.io/happyamurio/');
- for(const k of ['id','start_url','scope'])assert.equal(new URL(manifest[k],base).pathname,`/happyamurio/${app}/`);
+ for(const k of ['id','start_url','scope'])assert.equal(new URL(manifest[k],base).pathname,new URL('./',base).pathname);
  // Check the actual storage adapter with pre-existing records, without booting the app.
  const adapterStart=html.indexOf('var mem={};');
  const adapterEnd=html.indexOf('\n',html.indexOf('function rawSet(k,v)',adapterStart));
@@ -38,10 +38,13 @@ for(const [old,app] of [['happyday-v50_1.html','day'],['happyday-meal-v22.html',
  vm.runInNewContext(code,{location:{search:'?test=1',hash:'#settings',replace:url=>target=url}});
  assert.equal(target,`${app==='icon-studio'?'..':'.'}/${app}/?test=1#settings`);
 }
-const dayPage=await read('day/index.html');
+const dayPage=await read(apps.day.entry);
 if(apps.day.links?.meal===false){
  assert.ok(dayPage.includes('Переход в Meal в этой версии недоступен.'));
  assert.ok(!dayPage.includes('href="../meal/"'));
 }else assert.ok(dayPage.includes('href="../meal/"'));
 assert.ok((await read('meal/index.html')).includes('href="../day/"'));
+const previousDay=await read(apps.day.previous.entry);
+assert.ok(previousDay.includes(`data-app-version="${apps.day.previous.version}"`));
+assert.notEqual(apps.day.entry,apps.day.previous.entry);
 console.log(`Passed: ${scripts} scripts parse; permanent app paths, versions, install URLs, existing Day/Meal storage reads and legacy redirects.`);

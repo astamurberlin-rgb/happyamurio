@@ -1,8 +1,8 @@
 # Happy Day · Update 52
 
-Версия опубликованного [Happy Day 51.18-test](https://happy-day-astamur-test.amuramore.chatgpt.site), перенесённая в GitHub по запросу владельца 7 ноября 2026 года.
+Отдельная GitHub-версия опубликованного [Happy Day 51.18-test](https://happy-day-astamur-test.amuramore.chatgpt.site), перенесённая в GitHub по запросу владельца 7 ноября 2026 года.
 
-- Приложение: https://astamurberlin-rgb.github.io/happyamurio/day/
+- Приложение: https://astamurberlin-rgb.github.io/happyamurio/day-52/
 - Самостоятельный HTML: [Happy-Day-52.html](Happy-Day-52.html).
 - Исходная публикация: Sites v2, коммит `77b90bad576ec8b1b1a504428cfd499330347df7`.
 
@@ -12,14 +12,14 @@
 
 ## Разработка
 
-Основная точка входа — `day/index.html`. Зависимости данной сборки закреплены в `day/shared/`, чтобы не заменять зависимости Meal и Sport. `profile-storage.js` восстановлен из фактически исполняемого блока исходного HTML: файл в исходном `dist/shared/` отставал от него. Защита смены профиля и гостевых данных сохранена. Канал счётчиков проверяет точный новый путь `day/shared/food-counters.js`.
+Основная точка входа — `day-52/index.html`. Зависимости данной сборки закреплены в `day-52/shared/`, чтобы не заменять зависимости Meal и Sport. `profile-storage.js` восстановлен из фактически исполняемого блока исходного HTML: файл в исходном `dist/shared/` отставал от него. Защита смены профиля и гостевых данных сохранена. Канал счётчиков проверяет точный новый путь `day-52/shared/food-counters.js`.
 
 Из корня репозитория:
 
 ```sh
 node scripts/sync-shared-ui.mjs
 python3 scripts/build-day-standalone.py
-node --test day/tests/*.test.cjs
+node --test day-52/tests/*.test.cjs
 node scripts/check-layout.mjs
 node scripts/check-shared-ui.mjs
 npm --prefix sport run build
@@ -27,3 +27,5 @@ npm --prefix sport run check
 ```
 
 `SOURCE-PROVENANCE.json` фиксирует исходные и итоговые контрольные суммы. После последующих изменений сборку и проверки нужно повторить; суммы описывают именно первоначальный перенос Update 52.
+
+Предыдущая опубликованная сборка сохранена без изменения в `day/`. Установка Update 52 использует собственный manifest id/scope `/happyamurio/day-52/`; ключи дневника и аккаунт сохранены.

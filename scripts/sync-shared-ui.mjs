@@ -7,7 +7,7 @@ for(const app of ['day','meal']){
  const js=await readFile(new URL(directory+'/happy-ui.js',root),'utf8');
  const profiles=await readFile(new URL(directory+'/profile-storage.js',root),'utf8');
  const history=await readFile(new URL(directory+'/imported-history.js',root),'utf8');
- const path=new URL(app+'/index.html',root);let html=await readFile(path,'utf8');
+ const path=new URL(apps[app].entry,root);let html=await readFile(path,'utf8');
  const style='/* HAPPY_SHARED_STYLE_START */\n'+css+'/* HAPPY_SHARED_STYLE_END */';
  const script='<script id="happy-shared-ui">\n'+js.replaceAll('</','<\\/')+'</script>';
  html=html.includes('/* HAPPY_SHARED_STYLE_START */')?html.replace(/\/\* HAPPY_SHARED_STYLE_START \*\/[\s\S]*?\/\* HAPPY_SHARED_STYLE_END \*\//,()=>style):html.replace('</style>',()=>style+'\n</style>');

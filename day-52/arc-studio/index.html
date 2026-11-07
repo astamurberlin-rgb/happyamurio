@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101e2c"><title>Студия дуг · Happy Day</title>
+  <meta name="description" content="Цвет, свет и движение дуги главной кнопки Happy Day. Отдельная студия прототипа.">
+  <link rel="stylesheet" href="./studio.css?v=1.1"><script defer src="../arc-motion.js?v=1.1"></script><script defer src="./studio.js?v=1.1"></script>
+</head>
+<body>
+<header class="site-header"><a class="brand" href="../"><span class="brand-mark" aria-hidden="true"></span>Happy Day<span class="brand-divider">/</span><span class="brand-page">Студия</span></a><a class="quiet-link" href="../">Открыть Happy Day <span aria-hidden="true">↗</span></a></header>
+<main>
+  <div class="intro"><div><p class="eyebrow">ЦВЕТ · СВЕТ · ДВИЖЕНИЕ</p><h1>Студия дуг<span>.</span></h1><p class="lede">Чуть больше жизни вокруг привычной кнопки.</p></div><span class="prototype-badge"><i></i> Только прототип</span></div>
+  <div class="workspace">
+    <aside class="preview-column">
+      <div class="preview-top"><span class="eyebrow">ПРЕДПРОСМОТР</span><button id="pause" class="icon-button" aria-pressed="false"><span aria-hidden="true">Ⅱ</span> Пауза</button></div>
+      <div class="preview-card" id="previewCard">
+        <div class="preview-app-header"><strong>HappyDay</strong><span>Дневник активности</span></div>
+        <div class="preview-carousel">
+          <div class="ghost-ring left" aria-hidden="true"></div><div class="ghost-ring right" aria-hidden="true"></div>
+          <div class="ringWrap" id="mainRing"><canvas aria-hidden="true" id="mainCanvas"></canvas><svg id="dataRing" viewBox="0 0 240 240" aria-hidden="true"></svg><button class="knob" id="previewButton" aria-label="Выбрать следующую кнопку для предпросмотра"><strong>Отметить<br>самочувствие</strong></button></div>
+        </div>
+        <div class="preview-ring-label" id="ringLabel">Самочувствие</div>
+        <div class="preview-sections"><div><span aria-hidden="true">☀️</span><p><b>Утро</b><small>первые 20 минут</small></p></div><div><span aria-hidden="true">🍳</span><p><b>Завтрак</b><small>через 40–90 минут после еды</small></p></div></div>
+        <div class="preview-caption"><span class="live-dot"></span><span id="liveLabel">Цветовой поток · 16 с</span></div>
+      </div>
+      <div class="preview-options"><span>Кнопка</span><div class="segments" id="functionPicker" aria-label="Кнопка для предпросмотра"><button data-function="mood" aria-pressed="true">Самочувствие</button><button data-function="mind" aria-pressed="false">Осознанность</button><button data-function="diary" aria-pressed="false">Дневник</button><button data-function="activity" aria-pressed="false">Активность</button></div></div>
+      <div class="preview-options"><span>Пример заполнения <small>только для просмотра</small></span><div class="segments" id="progressPicker" aria-label="Пример заполнения"><button data-progress="0" aria-pressed="true">Пусто</button><button data-progress=".5" aria-pressed="false">50%</button><button data-progress="1" aria-pressed="false">100%</button></div></div>
+      <p class="geometry-note">Исходный размер кнопки и дуги.<br>Нажатие на круг меняет кнопку в предпросмотре.</p>
+    </aside>
+    <div class="editor">
+      <section class="panel variants-panel" aria-labelledby="variantsTitle"><div class="section-heading"><h2 id="variantsTitle"><span>01</span> Характер движения</h2><span class="section-tag">5 вариантов</span></div><div class="variants" id="variants"></div></section>
+      <section class="panel" aria-labelledby="gradientTitle"><div class="section-heading"><h2 id="gradientTitle"><span>02</span> Градиент</h2><button class="text-button" id="reverseColors">Развернуть цвета ↔</button></div>
+        <div class="gradient-bar" id="gradientBar" aria-hidden="true"></div>
+        <div class="color-stops" id="colorStops"></div>
+        <div class="palettes" aria-label="Готовые палитры"><button data-palette="mint"><i style="--palette:linear-gradient(90deg,#73e8b4,#ffa17c,#b199ff)"></i>Мята · персик · лаванда</button><button data-palette="ocean"><i style="--palette:linear-gradient(90deg,#55dfd6,#67adff,#c4b0ff)"></i>Океан</button><button data-palette="pearl"><i style="--palette:linear-gradient(90deg,#92ddd1,#f4fffa,#c3d5ff)"></i>Жемчуг</button></div>
+        <div class="range-row"><label for="intensity">Яркость света <output id="intensityValue">62%</output></label><input id="intensity" type="range" min="0" max="100" value="62"><div class="range-ends"><span>Едва заметно</span><span>Выразительно</span></div></div>
+        <div class="range-row"><label for="softness">Мягкость перехода <output id="softnessValue">76%</output></label><input id="softness" type="range" min="0" max="100" value="76"></div>
+      </section>
+      <section class="panel" aria-labelledby="motionTitle"><div class="section-heading"><h2 id="motionTitle"><span>03</span> Ритм</h2><span class="section-tag" id="motionHint">Без рывков</span></div>
+        <div class="range-row first"><label for="duration">Один цикл <output id="durationValue">16 с</output></label><input id="duration" type="range" min="4" max="40" step="1" value="16"><div class="range-ends"><span id="durationMin">Быстрее · 4 с</span><span>Спокойнее · 40 с</span></div></div>
+        <div id="breathControls" hidden>
+          <div class="range-row"><label for="breathDepth">Глубина дыхания <output id="breathDepthValue">52%</output></label><input id="breathDepth" type="range" min="0" max="100" value="52"><div class="range-ends"><span>Почти постоянно</span><span>Полное затухание</span></div></div>
+          <div class="palettes" aria-label="Сравнить дыхание"><button data-breath="soft">Мягко · 10 с</button><button data-breath="medium">Заметно · 4 с</button><button data-breath="fast">Быстро · 2 с</button></div>
+        </div>
+        <div class="setting-line"><span>Направление</span><div class="segments" id="directionPicker" aria-label="Направление движения"><button data-direction="1" aria-pressed="true">↻ По часовой</button><button data-direction="-1" aria-pressed="false">↺ Против</button></div></div>
+        <p class="reduced-note" id="reducedNote" hidden>На устройстве включено уменьшение движения. Дуга показана без анимации.</p>
+      </section>
+      <section class="panel apply-panel" aria-labelledby="applyTitle"><div class="section-heading"><h2 id="applyTitle"><span>04</span> В прототипе</h2></div>
+        <label class="select-row" for="scope">Применить к кнопке<select id="scope"><option value="mood">Самочувствие</option><option value="mind">Осознанность</option><option value="diary">Дневник</option><option value="activity">Активность</option><option value="all">Все кнопки</option></select></label>
+        <label class="switch-row"><span>Двигать только центральную дугу<small>Боковые кнопки остаются спокойными</small></span><input id="centerOnly" type="checkbox" role="switch" checked><i aria-hidden="true"></i></label>
+        <div class="apply-actions"><button id="apply" class="primary-button">Применить в прототипе <span aria-hidden="true">↗</span></button><button id="reset" class="secondary-button">Исходная дуга</button></div>
+        <p class="save-status" id="saveStatus" role="status" aria-live="polite">Настройки применяются на этом устройстве.</p>
+      </section>
+      <section class="panel saved-panel" aria-labelledby="savedTitle"><div class="section-heading"><h2 id="savedTitle">Мои варианты</h2><span class="section-tag">На этом устройстве</span></div>
+        <form id="saveForm"><label class="sr-only" for="presetName">Название варианта</label><input id="presetName" maxlength="48" placeholder="Название варианта" required><button type="submit" class="secondary-button">Сохранить</button></form><div id="savedPresets" class="saved-presets"></div>
+        <div class="file-actions"><button id="export" class="text-button">↓ Скачать настройки</button><label class="text-button file-label">↑ Загрузить настройки<input id="import" type="file" accept="application/json,.json"></label></div><p id="fileStatus" role="status" class="save-status"></p>
+      </section>
+    </div>
+  </div>
+  <footer>Happy Day <span>·</span> Студия дуг 1.1 <span>·</span> Happy Day 50.14<a href="../">К приложению ↗</a></footer>
+</main>
+<a href="#previewCard" id="mobilePeek" class="mobile-peek" aria-label="Вернуться к полному предпросмотру" hidden><span class="peek-art"><canvas id="peekCanvas" aria-hidden="true"></canvas><svg id="peekData" viewBox="0 0 240 240" aria-hidden="true"></svg><i></i></span><span><small>ПРЕДПРОСМОТР</small><b id="peekLabel">Цветовой поток</b><em>К полному размеру ↑</em></span></a>
+</body></html>
