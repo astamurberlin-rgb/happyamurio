@@ -13,6 +13,8 @@ async function check(ref, page) {
   const url = new URL(ref, origin + prefix + page);
   if (url.origin !== origin) return;
   if (!url.pathname.startsWith(prefix)) {
+    // Update 38.1: shared immutable asset libraries live at the repository root.
+    if(url.pathname.startsWith('/happyamurio/assets/')){const rel='../'+decodeURIComponent(url.pathname.slice('/happyamurio/'.length));if(checked.has(rel))return;checked.add(rel);try{assert.ok((await stat(new URL(rel,repo))).isFile())}catch{failures.push(`${page}: missing library file ${ref}`)}return;}
     // Update 38: linked apps open the published sibling releases on the same origin.
     const siblings={'/happyamurio/day-52/':'../day-52/index.html','/happyamurio/meal-23/':'../meal-23/index.html'};
     if(siblings[url.pathname]){try{assert.ok((await stat(new URL(siblings[url.pathname],repo))).isFile())}catch{failures.push(`${page}: linked release missing: ${ref}`)}return;}
@@ -35,17 +37,19 @@ for (const page of pages) {
   for (const match of html.matchAll(/(?:src|href)\s*=\s*(["'])(.*?)\1/g)) await check(match[2], page);
   for (const match of html.matchAll(/(["'])((?:\.?\.?\/)?[a-zA-Z0-9_/-]+\.(?:json|html|js|css|png|jpg|jpeg|svg|webp|woff2?)(?:[?#][^"']*)?)\1/g)) {if(/\.download\s*=\s*$/.test(html.slice(Math.max(0,match.index-40),match.index)))continue;await check(match[2], page);}
 }
-const catalog = JSON.parse(await readFile(new URL('sport/src/sport-icons/catalog.json', repo), 'utf8'));
+const library='/happyamurio/assets/sport-icons/v1/';
+const catalog = JSON.parse(await readFile(new URL('../assets/sport-icons/v1/catalog.json', repo), 'utf8'));
 assert.ok(catalog.length>=85,'Existing icon catalog retained');
 assert.equal(new Set(catalog.map(item => item.id)).size, catalog.length);
+const built = await readFile(new URL('sport/index.html', repo), 'utf8');
 for (const item of catalog) {
-  await check(item.src, 'sport/index.html');
-  const source = await readFile(new URL('sport/src/' + item.src, repo));
-  const deployed = await readFile(new URL('sport/' + item.src, repo));
-  assert.ok(source.equals(deployed), `Stale deployed icon: ${item.src}`);
+  assert.ok(!item.src.startsWith('/')&&!item.src.includes('..'),'library-relative src: '+item.src);
+  await check(library + item.src, 'sport/index.html');
+  assert.ok(built.includes(JSON.stringify(library + item.src)), `Built page misses library icon: ${item.src}`);
 }
+assert.ok(!built.includes('"sport-icons/'), 'No release-local icon paths remain');
 assert.equal(await readFile(new URL('sport/index.html', repo), 'utf8'),
   await readFile(new URL('sport/dist/index.html', repo), 'utf8'), 'Stale Pages build');
 assert.equal(failures.length, 0, failures.join('\n'));
-console.log(`Passed: ${checked.size} local paths across Sport, Day and Meal; ${catalog.length} icons; GitHub Pages prefix; deployed build matches source output.`);
+console.log(`Passed: ${checked.size} local paths across Sport, Day and Meal; ${catalog.length} icons from the shared library; GitHub Pages prefix; deployed build matches source output.`);
 if (process.argv.includes('--list')) console.log([...checked].sort().join('\n'));

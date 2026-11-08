@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createContext,runInContext} from 'node:vm';
 
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
-const catalog=await read('src/sport-icons/catalog.json');
+const catalog=await read('../../assets/sport-icons/v1/catalog.json');
 const stored={'placement:exercise:machine-leg-press':'data:image/png;base64,AA=='};
 const handlers={},documentHandlers={};let snapshot=JSON.stringify({placements:{'exercise:machine-leg-press':{kind:'upload'}},overrides:{},custom:[]}),rendered=0,editing=false;
 const db={objectStoreNames:{contains:()=>true},close(){},transaction(){return{objectStore(){return{get(id){const req={};queueMicrotask(()=>{req.result=stored[id];req.onsuccess?.()});return req}}}}}};

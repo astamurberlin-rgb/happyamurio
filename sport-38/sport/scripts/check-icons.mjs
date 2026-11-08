@@ -4,7 +4,7 @@ import {createContext,runInContext} from 'node:vm';
 
 const root=new URL('../',import.meta.url);
 const read=path=>readFile(new URL(path,root),'utf8');
-const catalog=JSON.parse(await read('src/sport-icons/catalog.json'));
+const catalog=JSON.parse(await read('../../assets/sport-icons/v1/catalog.json'));
 const studio=JSON.parse(await read('../prototypes/happy-icon-studio-manifest.json'));
 for(const p of studio.planned.filter(x=>x.catalogId))assert.ok(catalog.find(x=>x.id===p.catalogId)?.aliases?.includes(p.id),'Missing Studio alias: '+p.id);
 const context=createContext({URL,location:{href:'https://example.test/sport/',origin:'https://example.test'},SEED:{icons:{'calendar-blank':'calendar',waves:'waves',barbell:'barbell'}},kindIcon:k=>({sea:'waves',bars:'person-simple',gym:'barbell'}[k]||'barbell')});

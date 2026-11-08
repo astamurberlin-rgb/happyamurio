@@ -55,6 +55,10 @@ try{
  await page.evaluate(()=>goto('diary'));await page.waitForTimeout(400);
  const diary=await page.evaluate(()=>({counters:!!document.getElementById('sport-food-counters'),status:document.querySelector('#sport-food-counters [role="status"]')?.textContent.trim()}));
  assert.equal(diary.counters,true,'counters section in the diary');
+ // Update 38.1: every catalog icon is served from the shared library and actually loads.
+ const catalog=JSON.parse(await readFile(new URL('../../assets/sport-icons/v1/catalog.json',import.meta.url),'utf8'));
+ const icons=await page.evaluate(async urls=>{const out=[];for(const u of urls){const ok=await new Promise(r=>{const i=new Image();i.onload=()=>r(i.naturalWidth===512&&i.naturalHeight===512);i.onerror=()=>r(false);i.src=u});if(!ok)out.push(u)}return {checked:urls.length,failed:out}},catalog.map(i=>`/happyamurio/assets/sport-icons/v1/${i.src}`));
+ assert.deepEqual(icons.failed,[],'library icons load');
  assert.deepEqual(errors,[],'no page errors');
- console.log(JSON.stringify({passed:true,release:name,sections:s.sections.map(x=>x.id),counterStatus:diary.status,pageErrors:0}));
+ console.log(JSON.stringify({passed:true,release:name,sections:s.sections.map(x=>x.id),counterStatus:diary.status,libraryIcons:icons.checked,pageErrors:0}));
 }finally{await browser?.close();server.close();}

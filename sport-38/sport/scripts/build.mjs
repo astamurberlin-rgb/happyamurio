@@ -21,7 +21,10 @@ const [css,refinements,navIcons,dock,auth,link,cloud]=await Promise.all([
 ]);
 JSON.parse(navIcons);
 const planning=await read('src/planning.js'),scheduleModel=await read('src/schedule-model.js'),scheduleCalendarJs=await read('src/schedule-calendar.js'),catalogGroups=await read('src/catalog-groups.js'),planFact=await read('src/plan-fact.js');
-const sportCatalog=await read('src/sport-icons/catalog.json');
+// Update 38.1: exercise icons live once in the shared, immutable library assets/sport-icons/v1/ (repo root).
+// The catalog is embedded with absolute src paths; no icon files are copied into the release.
+const SPORT_ICON_LIBRARY='/happyamurio/assets/sport-icons/v1/';
+const sportCatalog=JSON.stringify(JSON.parse(await readFile(new URL('../../assets/sport-icons/v1/catalog.json',root),'utf8')).map(item=>({...item,src:SPORT_ICON_LIBRARY+item.src})));
 const sportIcons=(await read('src/sport-icons.js')).replace('__SPORT_ICON_CATALOG__',()=>sportCatalog);
 const setTime=await read('src/set-time.js');
 const rests=await read('src/set-rest.js'),countdown=await read('src/set-countdown.js'),setSwipe=await read('src/set-swipe.js');
@@ -63,9 +66,7 @@ const html = template
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);
 await writeFile(new URL('index.html', root), html);
-await cp(new URL('src/sport-icons',root),new URL('sport-icons',root),{recursive:true});
 await cp(new URL('src/exercises',root),new URL('exercises',root),{recursive:true});
-await cp(new URL('src/sport-icons',root),new URL('dist/sport-icons',root),{recursive:true});
 await cp(new URL('src/exercises',root),new URL('dist/exercises',root),{recursive:true});
 console.log('Sport built.');
 

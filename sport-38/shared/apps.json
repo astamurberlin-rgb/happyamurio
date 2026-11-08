@@ -9,7 +9,7 @@
   },
   "sport": {
     "entry": "sport-38/index.html",
-    "version": "38",
+    "version": "38.1",
     "name": "Happy Sport · Update 38",
     "sharedDirectory": "sport-38/shared",
     "sourceDirectory": "sport-38/sport/src",
@@ -28,6 +28,7 @@
       "entry": "sport-37/index.html",
       "version": "37",
       "sourceCommit": "cf8dea4f26ff8e05cb786594e6aae154391e9557"
-    }
+    },
+    "iconLibrary": "assets/sport-icons/v1"
   }
 }
