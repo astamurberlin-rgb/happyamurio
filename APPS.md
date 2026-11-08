@@ -9,7 +9,7 @@
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.1 |
+| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.2 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -23,7 +23,7 @@
 Целевая структура настроек (согласована 08.11.2026, первым реализована в Sport 38): «Аккаунт» → «Приложение» → «Данные» → «Связанные приложения» → скрытый «Для разработчика» → история обновлений и версия. Day 52 и Meal 23 пока сохраняют прежний порядок «Аккаунт», «Резервная копия», «Связанные приложения»; переход — в их следующих выпусках.
 Правила оформления: [shared/README.md](shared/README.md). Серверные операции и хранение остаются в приложениях.
 
-`meal-data/` — публичные справочники продуктов, `meal-img/` — иллюстрации еды. `assets/sport-icons/v1/` — общая неизменяемая библиотека картинок занятий Sport (с 38.1), один адрес для всех выпусков.
+`meal-data/` — публичные справочники продуктов, `meal-img/` — иллюстрации еды. `assets/sport-icons/v1/` — общая неизменяемая библиотека картинок занятий Sport (с 38.1), один адрес для всех выпусков. `assets/exercise-library/v1/` — общий справочник упражнений, оборудования и групп мышц Sport (с 38.2), встраивается при сборке; `sport/data/` старых выпусков остаётся как есть.
 Они остаются в корне для прежних версий. Update 23 получает пищевые базы из отдельной ветки `meal-libraries`; иллюстрации и исполняемые зависимости закреплены в `meal-23/`.
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
@@ -175,6 +175,8 @@ Day 50.13: карусель дневника активности, незави�
 Опубликовано 08.11.2026 (main `c38cab5`, размещение GitHub Pages подтверждено). Владелец подтвердил на реальном аккаунте: счётчики работают и синхронизируются между Meal 23 и Sport 38. Отображение тех же порций в Day 52 отдельно не подтверждено.
 
 **38.1 (08.11.2026):** картинки занятий берутся из общей библиотеки `assets/sport-icons/v1/` по постоянному адресу `/happyamurio/assets/sport-icons/v1/`; копии иконок внутри выпуска удалены (−68 МБ), `id` и номера иконок прежние, сохранённый выбор в тренировках не меняется. Веб-размер 512 px; мастера — в Icon Studio.
+
+**38.2 (08.11.2026):** справочник упражнений (137), оборудования (23) и групп мышц вынесен в общую библиотеку `assets/exercise-library/v1/` и встраивается при сборке (`sport/scripts/seed.mjs`); `id`, названия и история прежние. У восьми упражнений на блоке появилась рукоять (`handles` в библиотеке): выбирается в настройках упражнения внутри тренировки, хранится на упражнении этой тренировки (`handle`), показывается в заголовке, в записи тренировки и в колонке истории; подходы и нагрузка не пересчитываются.
 
 ## Happy Sport · Update 37 · 07.11.2026
 

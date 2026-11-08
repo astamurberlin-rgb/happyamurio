@@ -1,0 +1,30 @@
+{
+ "schema": "happy.exercise-library.v1",
+ "version": "1.0",
+ "generated": "2026-11-08",
+ "source": "sport-38/sport/data/seed.json + exercise-muscles.json (Happy Sport · Update 38.1)",
+ "counts": {
+  "exercises": 137,
+  "equipment": 23,
+  "muscleEntries": 137,
+  "withHandles": 8
+ },
+ "files": [
+  {
+   "path": "exercises.json",
+   "size": 48512,
+   "sha256": "e4f7862d26b8eb493be1ec16bbb2e0282e7319256efc0e4774a920606af99a06"
+  },
+  {
+   "path": "equipment.json",
+   "size": 976,
+   "sha256": "5082160d28bd6d6a56e8141302d5078e1cca8362c9e665bc583a0a81d0e978f8"
+  },
+  {
+   "path": "exercise-muscles.json",
+   "size": 6515,
+   "sha256": "2177220ddbfd1b4d6121f889a179db98b196629d08ec681bd3aeb4f044ddb8b7"
+  }
+ ],
+ "rules": "ids are stable and never removed or renamed; the folder only grows; releases record the manifest version and file hashes they were built from"
+}

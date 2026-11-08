@@ -1,13 +1,15 @@
 import { readFile, mkdir, writeFile, cp } from 'node:fs/promises';
+import { loadSeed, loadLibrary, EXERCISE_LIBRARY_URL } from './seed.mjs';
 
 const root = new URL('../', import.meta.url);
-const [template, seedText, app, license] = await Promise.all([
+const [template, app, license] = await Promise.all([
   readFile(new URL('src/app.template.html', root), 'utf8'),
-  readFile(new URL('data/seed.json', root), 'utf8'),
   readFile(new URL('src/app.js', root), 'utf8'),
   readFile(new URL('PHOSPHOR-LICENSE.txt', root), 'utf8'),
 ]);
-const seed=JSON.parse(seedText);
+// Update 38.2: exercises/equipment/muscles are embedded from the shared exercise library (see scripts/seed.mjs).
+const seed=await loadSeed(),exerciseLibrary=await loadLibrary();
+const seedText=JSON.stringify({...seed,exerciseLibrary:{url:EXERCISE_LIBRARY_URL,version:exerciseLibrary.manifest.version,generated:exerciseLibrary.manifest.generated}});
 for (const field of ['workouts','measurements','rawMeasurements']) {
   if (seed[field]?.length) throw new Error('Публичная сборка не должна содержать личные записи: '+field);
 }
@@ -31,7 +33,7 @@ const rests=await read('src/set-rest.js'),countdown=await read('src/set-countdow
 const pause=await read('src/workout-pause.js'),exerciseHistory=await read('src/exercise-history.js'),workoutIdentity=await read('src/workout-identity.js');
 const measurements=await read('src/measurements-v2.js'),measurementModel=await readShared('measurements-model.js'),measurementShared=await read('src/measurements-shared.js');
 const recommendations=await read('data/recommended-templates.json');JSON.parse(recommendations);
-const muscles=await read('data/exercise-muscles.json');JSON.parse(muscles);
+const muscles=JSON.stringify(exerciseLibrary.muscles);
 const library=(await read('src/library-v2.js')).replace('__RECOMMENDED_TEMPLATES__',()=>recommendations.replaceAll('</','<\\/')).replace('__EXERCISE_MUSCLES__',()=>muscles);
 const energyJs=await read('src/energy-widget.js'),energyCss=await read('src/energy-widget.css');
 const dataTransfer=await read('src/data-transfer.js'),profileStore=await read('src/profile-store.js'),journalCloud=await read('src/journal-cloud.js'),profileLock=await read('src/profile-lock.js'),recoveryVault=await read('src/recovery-vault.js');

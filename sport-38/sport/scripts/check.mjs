@@ -138,12 +138,12 @@ console.log('Passed: server compare-and-swap collision handling and pointer swip
 
 // Catalog templates remain independent from user copies and transfer real set targets.
 {
- const rec=JSON.parse(await read('data/recommended-templates.json')),seed=JSON.parse(await read('data/seed.json'));
+ const rec=JSON.parse(await read('data/recommended-templates.json')),seed=await (await import('./seed.mjs')).loadSeed();
  const ids=new Set(seed.exercises.map(e=>e.id));
  assert.equal(new Set(rec.map(t=>t.id)).size,rec.length);
  for(const t of rec){assert.equal(t.favorite,false);assert.ok(['warmup','main','cooldown'].every(p=>t.items.some(i=>i[1]===p)));for(const [id,,count] of t.items){assert.ok(ids.has(id),id);assert.ok(count>0&&count<=50)}}
  const lc=createContext({console,Date,Math,document:{addEventListener(){}}});
- lc.muscleMap=JSON.parse(await read('data/exercise-muscles.json'));
+ lc.muscleMap=await (await import('./seed.mjs')).loadMuscles();
  for(const e of seed.exercises)assert.ok(lc.muscleMap[e.id]?.length,'Missing muscle groups: '+e.id);
  lc.recommendations=rec;lc.SEED=seed;
  runInContext(`var baseTemplates=[{id:'personal',title:'Мой шаблон',kind:'gym',items:[]}],state={templates:[],active:null},libraryTab='exercises',query='',baseView='library';var templates=()=>[...baseTemplates,...state.templates],clone=x=>JSON.parse(JSON.stringify(x)),filteredExercises=()=>[{id:'swimming'},{id:'barbell-row'}],renderLibrary=()=>'',renderTemplateItems=()=>'',renderTemplateCard=()=>'',assignExercise=()=>{},editTemplate=()=>{},customExercise=()=>{},exercise=()=>null,render=()=>{},persist=()=>{};function startWorkout(id){if(state.active)return;const t=templates().find(t=>t.id===id);state.active={exercises:t.items.map(([id,phase,n])=>({id,phase,sets:Array.from({length:n},()=>({reps:10,seconds:0,done:false}))}))}}`,lc);

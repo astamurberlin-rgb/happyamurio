@@ -9,7 +9,7 @@ for(const file of manifest.release_files){
  assert.equal(createHash('sha256').update(bytes).digest('hex'),file.sha256,file.path+' checksum');
 }
 const html=await readFile(new URL('index.html',root),'utf8');
-assert.ok(html.includes('data-app-version="38.1"'));assert.ok(html.includes('/happyamurio/assets/sport-icons/v1/'));assert.ok(!html.includes('"sport-icons/'));
+assert.ok(html.includes('data-app-version="38.2"'));assert.ok(html.includes('"exerciseLibrary":{"url":"/happyamurio/assets/exercise-library/v1/"'));assert.ok(html.includes('"handles":['));assert.ok(html.includes('/happyamurio/assets/sport-icons/v1/'));assert.ok(!html.includes('"sport-icons/'));
 assert.ok(html.includes('Happy Sport · Update 38'));
 const install=JSON.parse(await readFile(new URL('manifest.webmanifest',root),'utf8'));
 const url=new URL(manifest.github_pages_url);

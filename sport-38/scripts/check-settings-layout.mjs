@@ -59,6 +59,29 @@ try{
  const catalog=JSON.parse(await readFile(new URL('../../assets/sport-icons/v1/catalog.json',import.meta.url),'utf8'));
  const icons=await page.evaluate(async urls=>{const out=[];for(const u of urls){const ok=await new Promise(r=>{const i=new Image();i.onload=()=>r(i.naturalWidth===512&&i.naturalHeight===512);i.onerror=()=>r(false);i.src=u});if(!ok)out.push(u)}return {checked:urls.length,failed:out}},catalog.map(i=>`/happyamurio/assets/sport-icons/v1/${i.src}`));
  assert.deepEqual(icons.failed,[],'library icons load');
+ // Update 38.2: the exercise library is embedded; a cable exercise offers a handle, the choice shows in the heading and in history.
+ const handle=await page.evaluate(()=>{
+  const lib=SEED.exerciseLibrary,push=exercise('cable-triceps-pushdown');
+  if(state.active)return {error:'active workout already present'};
+  startWorkout();pickExercise('cable-triceps-pushdown');const ei=state.active.exercises.findIndex(e=>e.id==='cable-triceps-pushdown');
+  openExerciseEditor('cable-triceps-pushdown',ei);
+  const select=document.querySelector('#exercise-config-form select[name="handle"]');if(!select)return {error:'no handle select'};
+  const options=[...select.options].map(o=>o.value);select.value='Канат';
+  document.getElementById('exercise-config-form').requestSubmit();
+  const heading=[...document.querySelectorAll('.exercise-collapse')].map(b=>b.textContent.trim());
+  const stored=state.active.exercises[ei].handle;
+  // finish the set so the workout lands in history, then read the history header for the handle label
+  state.active.exercises[ei].sets.forEach(s=>{s.done=true;s.reps=10;s.weight=20});
+  const w={...clone(state.active),end:localNow()};state.workouts.push(w);state.active=null;persist();
+  openExerciseHistory('cable-triceps-pushdown');const history=document.querySelector('#modal-root')?.textContent||document.body.textContent;
+  closeSheet();goto('diary');
+  return {lib,push:!!push,handles:push?.handles,options,heading,stored,historyHasHandle:history.includes('Канат')};
+ });
+ assert.equal(handle.error,undefined,'handle flow: '+handle.error);
+ assert.equal(handle.lib.url,'/happyamurio/assets/exercise-library/v1/');assert.ok(handle.push,'library exercise resolved');
+ assert.deepEqual(handle.options,['','Канат','Прямая рукоять','V-рукоять','Обратный хват']);
+ assert.equal(handle.stored,'Канат');assert.ok(handle.heading.some(t=>t.includes('Разгибание рук вниз на блоке · Канат')),'heading shows the handle: '+handle.heading.join(' | '));
+ assert.equal(handle.historyHasHandle,true,'history column shows the handle');
  assert.deepEqual(errors,[],'no page errors');
- console.log(JSON.stringify({passed:true,release:name,sections:s.sections.map(x=>x.id),counterStatus:diary.status,libraryIcons:icons.checked,pageErrors:0}));
+ console.log(JSON.stringify({passed:true,release:name,sections:s.sections.map(x=>x.id),counterStatus:diary.status,libraryIcons:icons.checked,exerciseLibrary:handle.lib.version,handle:handle.stored,pageErrors:0}));
 }finally{await browser?.close();server.close();}

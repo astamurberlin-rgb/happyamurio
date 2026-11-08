@@ -9,12 +9,20 @@ import assert from 'node:assert/strict';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
 const plain=x=>JSON.parse(JSON.stringify(x));
 const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
-const seed=JSON.parse(await read('data/seed.json'));
-const muscles=JSON.parse(await read('data/exercise-muscles.json'));
+import {loadSeed,loadMuscles} from './seed.mjs';
+const seed=await loadSeed();
+const muscles=await loadMuscles();
 const expectedIds=['machine-plate-loaded-seated-calf','machine-independent-lever-row','dumbbell-bilateral-simultaneous-row','dumbbell-incline-chest-supported-reverse-fly'];
 const old=seed.exercises.slice(0,133),added=seed.exercises.slice(133);
-assert.equal(hash(old),'c443eadb91c811de1bfb11ccb3d4054f2d1815659d1f2cb3ab4cadbf75ddd415','All original 133 definitions, order and values remain unchanged');
-assert.equal(hash({...seed,exercises:[]}),'48ee79e10637e19d4bc8b1d0a08a787e31ed5a65188ae08ef58c47e497f9df17','All non-exercise seed content remains unchanged');
+// Update 38.2: the only deliberate change to the original definitions is the optional `handles` list (рукоять) on
+// cable exercises in the shared library. Everything else — ids, order, names, profiles, load basis — stays byte-identical.
+const withoutHandles=list=>list.map(({handles,...e})=>e);
+assert.equal(hash(withoutHandles(old)),'c443eadb91c811de1bfb11ccb3d4054f2d1815659d1f2cb3ab4cadbf75ddd415','All original 133 definitions, order and values remain unchanged (apart from handles)');
+const handled=seed.exercises.filter(e=>e.handles);
+assert.deepEqual(handled.map(e=>e.id).sort(),['cable-crunch','cable-curl','cable-lat-pulldown','cable-overhead-extension','cable-pallof-press','cable-seated-row','cable-straight-arm-pulldown','cable-triceps-pushdown'],'Handles exist only on the reviewed cable exercises');
+for(const e of handled)assert.ok(Array.isArray(e.handles)&&e.handles.length>=2&&e.handles.every(h=>typeof h==='string'&&h.trim()&&h.length<=60)&&new Set(e.handles).size===e.handles.length,'Handle list is a short unique list of labels: '+e.id);
+const {exercises:_x,equipment:_q,...rest}=seed;
+assert.equal(hash({exercises:[],workouts:rest.workouts,measurements:rest.measurements,activities:rest.activities,equipment:seed.equipment,icons:rest.icons,rawMeasurements:rest.rawMeasurements}),'48ee79e10637e19d4bc8b1d0a08a787e31ed5a65188ae08ef58c47e497f9df17','All non-exercise seed content (incl. equipment from the library) remains unchanged');
 assert.deepEqual(added.map(e=>e.id),expectedIds,'Only the four currently approved additions exist');
 assert.equal(hash(added.slice(0,3)),'d484d073dec169e0a4bb726601db54dc2558c42c967cf6f9ee2ddc2571eed7ee','The first three reviewed additions remain exactly unchanged');
 assert.equal(hash(Object.fromEntries(Object.entries(muscles).filter(([id])=>!expectedIds.includes(id)))),'9ab5d6a29681da18df70eb218e63734f7e3921edc08a24b83c803bee387e29b2','All old muscle-map entries remain unchanged');

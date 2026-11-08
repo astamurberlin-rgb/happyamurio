@@ -2,7 +2,7 @@ import {readFile} from 'node:fs/promises';
 import {createContext,runInContext} from 'node:vm';
 import assert from 'node:assert/strict';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
-const source=await read('src/data-transfer.js'),seed=JSON.parse(await read('data/seed.json'));
+const source=await read('src/data-transfer.js'),seed=await (await import('./seed.mjs')).loadSeed();
 const saved=new Map(),c=createContext({console,KEY:'test',clone:x=>JSON.parse(JSON.stringify(x)),renderProfile:()=>'',document:{addEventListener(){}},localStorage:{getItem:k=>saved.get(k)||null,setItem:(k,v)=>saved.set(k,v)},sportCloudBusy:false,clearTimeout(){},sportSyncTimer:null,persist(){},goto(){},toast(){}});
 c.state={version:1,workouts:[{id:'fixture',title:'Test',start:'2026-10-01T10:00',end:'2026-10-01T11:00',duration:3600,exercises:[{id:'fixture-ex',name:'Test',sets:[{weight:10,reps:2,done:true}]}]}],measurements:[{date:'2026-10-01',values:{waist:90}}],templates:[],customExercises:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},demoPulse:false,sportOwner:'owner',sportLink:{private:'summary'}};
 c.state.exerciseNotes={'fixture-ex':'Закреплённая заметка'};c.state.lastRestSeconds=45;c.state.exerciseChanges=[{id:'rename-1',exerciseId:'fixture-ex',oldName:'Test',newName:'New name',at:'2026-10-28T15:00:00'}];

@@ -1,12 +1,42 @@
 {
   "app": "Happy Sport",
-  "update": "38.1",
+  "update": "38.2",
   "source_release": "sport-37 (Happy Sport · Update 37)",
   "source_commit_of_update_37": "cf8dea4f26ff8e05cb786594e6aae154391e9557",
-  "source_commit": "9ce7f95e91b351210209e76bd8af8d9f21d25697",
+  "source_commit": "e541a3c2b7df9e1848dccbdac6911a39bffe53f5",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-38/",
   "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
+  "exercise_library": {
+    "schema": "happy.exercise-library.v1",
+    "version": "1.0",
+    "generated": "2026-11-08",
+    "source": "sport-38/sport/data/seed.json + exercise-muscles.json (Happy Sport · Update 38.1)",
+    "counts": {
+      "exercises": 137,
+      "equipment": 23,
+      "muscleEntries": 137,
+      "withHandles": 8
+    },
+    "files": [
+      {
+        "path": "exercises.json",
+        "size": 48512,
+        "sha256": "e4f7862d26b8eb493be1ec16bbb2e0282e7319256efc0e4774a920606af99a06"
+      },
+      {
+        "path": "equipment.json",
+        "size": 976,
+        "sha256": "5082160d28bd6d6a56e8141302d5078e1cca8362c9e665bc583a0a81d0e978f8"
+      },
+      {
+        "path": "exercise-muscles.json",
+        "size": 6515,
+        "sha256": "2177220ddbfd1b4d6121f889a179db98b196629d08ec681bd3aeb4f044ddb8b7"
+      }
+    ],
+    "rules": "ids are stable and never removed or renamed; the folder only grows; releases record the manifest version and file hashes they were built from"
+  },
   "changed_source_files": [
     "README.md",
     "scripts/build-preview.mjs",
@@ -45,8 +75,8 @@
     },
     {
       "path": "README.md",
-      "size": 6416,
-      "sha256": "bcc7c88a271d101f42ef2fa8fc135f8cc43acdbe39a327a629c1d75832fea274"
+      "size": 7124,
+      "sha256": "e89f31d4e9749acfcc056ff3c149ef2dec537c7647fe91dc5c4fcca49d18188b"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -84,19 +114,14 @@
       "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
     },
     {
-      "path": "data/exercise-muscles.json",
-      "size": 7325,
-      "sha256": "175d3e350dcee2fbf14ebc98e7979cb1ddb791310034aaac6f1715a0a323b84f"
-    },
-    {
       "path": "data/recommended-templates.json",
       "size": 8464,
       "sha256": "4be42b1d6aab7d94da1be429dba9827df4437215661f0cc92448129e31cd634a"
     },
     {
       "path": "data/seed.json",
-      "size": 107865,
-      "sha256": "c3c24660dddec961aff17ea312d63ced87402f3fb806a5d97715644690168926"
+      "size": 49252,
+      "sha256": "0d301c796e9676f8555e4068155689385048bd69ecae52d037e415779ebe4d6b"
     },
     {
       "path": "day/index.html",
@@ -110,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 971935,
-      "sha256": "a0ac09e2b6e9e586e693b995888f3c6e3bfcb50d7052dca42da0087e3d293fb5"
+      "size": 952158,
+      "sha256": "ddd68c942d3bf1b2b9b014bce9b43b2afb1bd3f4581c6da97c4ba498591268e2"
     },
     {
       "path": "manifest.webmanifest",
@@ -145,18 +170,18 @@
     },
     {
       "path": "scripts/check-settings-layout.mjs",
-      "size": 7506,
-      "sha256": "62f7260ae7b7868fe1cf86b36acd86315f61fecdf2a9f0a29d016bcda96049ad"
+      "size": 9690,
+      "sha256": "ba54519a5d1d03adf0af135ffcd2d89adb01c38a1b9fbacfdd134c987975988f"
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 1162,
-      "sha256": "e065f13ade3da64c547b9d16fd573b941ea6eb072a1b6f623f173c8da4ce390c"
+      "size": 1298,
+      "sha256": "fcfd9a64d0e2ed00485e202c95af7801a3e2c73b6a4088c6fd1b240c449425e8"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 3163,
-      "sha256": "aced26c89173dc7f1f801bbc6eca5d59d9f7554bc667d4373120ad0e589167fa"
+      "size": 3277,
+      "sha256": "28d2ed37601b33bfbbc8fa124c09bc77af1e8c8aa1ecedbd72c2e750304658ba"
     },
     {
       "path": "shared/README.md",
@@ -165,8 +190,8 @@
     },
     {
       "path": "shared/apps.json",
-      "size": 785,
-      "sha256": "3f94814878c736f7983d2424e79e7b99a26bd35dc5e93bc2a3a64d979cc08210"
+      "size": 838,
+      "sha256": "2ce56f5bc2f1d926fc5fedc39200bdd60061db993222d61731d2e5f75bb3ea6e"
     },
     {
       "path": "shared/food-counters.js",
@@ -219,19 +244,14 @@
       "sha256": "b5b1f1da112d18ea2147decfd48ddc1bf2b5aeb6c265381579340e95b15a2bb2"
     },
     {
-      "path": "sport/data/exercise-muscles.json",
-      "size": 7325,
-      "sha256": "175d3e350dcee2fbf14ebc98e7979cb1ddb791310034aaac6f1715a0a323b84f"
-    },
-    {
       "path": "sport/data/recommended-templates.json",
       "size": 8464,
       "sha256": "4be42b1d6aab7d94da1be429dba9827df4437215661f0cc92448129e31cd634a"
     },
     {
       "path": "sport/data/seed.json",
-      "size": 107865,
-      "sha256": "c3c24660dddec961aff17ea312d63ced87402f3fb806a5d97715644690168926"
+      "size": 49252,
+      "sha256": "0d301c796e9676f8555e4068155689385048bd69ecae52d037e415779ebe4d6b"
     },
     {
       "path": "sport/package.json",
@@ -240,13 +260,13 @@
     },
     {
       "path": "sport/scripts/build-strong-native-fixture.mjs",
-      "size": 8110,
-      "sha256": "7be67fb53f7f23eee2de8d9e0a2514b855e63cc5700d21b4b0b1e223874a1506"
+      "size": 8093,
+      "sha256": "59cc155a475b94b0effe8cb8f5db063450d9360fa29b643565cd367ed09e8a60"
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 7530,
-      "sha256": "75ac37f7b6f5b30fc8df5ee26e2f913f36864eb76da31e0cd68a4d1de4547c95"
+      "size": 7837,
+      "sha256": "661511c7fe9127ae4bfd917b792e1649b3d14af58967ed0cf8aab8c9c4a97979"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
@@ -320,8 +340,8 @@
     },
     {
       "path": "sport/scripts/check-history-library.mjs",
-      "size": 12008,
-      "sha256": "46ef25c76ee9b1c1717d28bbc33f843139699f970f48687ec5c2c9b2e869a105"
+      "size": 13148,
+      "sha256": "4428423550f130d8cf3784d580c642fc7d4073765c1bc2791778a93ec58b1cb8"
     },
     {
       "path": "sport/scripts/check-history-pause.mjs",
@@ -390,8 +410,8 @@
     },
     {
       "path": "sport/scripts/check-schedule-catalog.mjs",
-      "size": 5192,
-      "sha256": "e895fa73b3d178b3c6ec6fab809028b4974e78ed62b369690d11750009550c5b"
+      "size": 5158,
+      "sha256": "2528ff9581be99b31725757833fce96894c350e7aefe69318bbb3b3ceca06246"
     },
     {
       "path": "sport/scripts/check-set-plan.mjs",
@@ -410,8 +430,8 @@
     },
     {
       "path": "sport/scripts/check-strong-native-mappings.mjs",
-      "size": 28359,
-      "sha256": "b44f038c21bef79f5189293cc069c91ecae44ab52b277b976d58496fa74706ff"
+      "size": 28324,
+      "sha256": "be1cbc5eefb46aa21d7b460168ea5a68c162d210b4d4785009e7436f1a9b2a1c"
     },
     {
       "path": "sport/scripts/check-studio-bridge.mjs",
@@ -450,8 +470,8 @@
     },
     {
       "path": "sport/scripts/check-transfer.mjs",
-      "size": 6042,
-      "sha256": "a620126268709529891a62279d1b174067173102996a1da3b928d43d9e725945"
+      "size": 6047,
+      "sha256": "3e9fef31cf50843224640fe9d8f07aaac3dfa532abf7eeaba2fbae4bb561fa47"
     },
     {
       "path": "sport/scripts/check-workout-interactions.mjs",
@@ -465,8 +485,13 @@
     },
     {
       "path": "sport/scripts/check.mjs",
-      "size": 17724,
-      "sha256": "c75a34fd90c484ee09a3d7132c29bd2a0927cd231475b6e3571d435bc547d5bb"
+      "size": 17725,
+      "sha256": "1a56be95564814e3e2483bf1169b32b488f8be9cea6c1b2fdaf65340b7c531e3"
+    },
+    {
+      "path": "sport/scripts/seed.mjs",
+      "size": 2110,
+      "sha256": "6666dea975b29f38853c6a665aaad1e5812e4da65470b250c454194bbe593044"
     },
     {
       "path": "sport/src/app-icons/happy-sport-20261029-152.png",
@@ -505,8 +530,8 @@
     },
     {
       "path": "sport/src/app.js",
-      "size": 70474,
-      "sha256": "9065b859dfb7e8b70f3e22869bf8fd266cdbfa85812c47416822d23b9d2ad356"
+      "size": 70506,
+      "sha256": "c676ecb38f5207d87ee58c702d8efd93f8557d0189a351d8e8df1d140a0b031e"
     },
     {
       "path": "sport/src/app.template.html",
@@ -551,7 +576,7 @@
     {
       "path": "sport/src/data-transfer.js",
       "size": 18500,
-      "sha256": "914ed88743f30ddde8f2cc1fafdc0697687a9708c2a1e616e551d0f88103483e"
+      "sha256": "02cfcca458a699c50fd290b6a9e060a23bb0dfb86cd42c06704a3d1aff32252c"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -570,8 +595,8 @@
     },
     {
       "path": "sport/src/exercise-config.js",
-      "size": 25991,
-      "sha256": "27095afbfd6bffb6692fe225d547b6ac4fdef54f92876c9c91db80a82f716e1e"
+      "size": 27530,
+      "sha256": "6d52b3272d3e07239fade96d16d992dd0db8698563e50830075821c1bddc9343"
     },
     {
       "path": "sport/src/exercise-context.css",
@@ -590,8 +615,8 @@
     },
     {
       "path": "sport/src/exercise-history.js",
-      "size": 6147,
-      "sha256": "fe171477a56ae40051d66a89dff1f1a460dcec38362e56b5cd2252a2570e13ff"
+      "size": 6343,
+      "sha256": "0d9f067bab164dc782f42c2bf29c67eeb0be9c35a357d8388a939dc04a4e7e6c"
     },
     {
       "path": "sport/src/exercise-player.js",
@@ -720,8 +745,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 11317,
-      "sha256": "d80abc66ce92be637f5bd96417518dd0c4380bdbc30ed72527461a21987005a1"
+      "size": 12045,
+      "sha256": "b0fac9bab3551073e10fcdfbffd6e509ddb77b4a7b2d5d3f3a3a7aadd3805230"
     },
     {
       "path": "sport/src/rest-pill.js",

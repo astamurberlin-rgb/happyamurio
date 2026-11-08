@@ -6,7 +6,7 @@ import {createHash,webcrypto} from 'node:crypto';
 const code=await fs.readFile(new URL('../src/strong-native-mappings.js',import.meta.url),'utf8');
 const ctx=vm.createContext({});vm.runInContext(code,ctx);
 const resolve=ctx.StrongNativeMappings.resolve;
-const library=JSON.parse(await fs.readFile(new URL('../data/seed.json',import.meta.url),'utf8')).exercises;
+const library=(await (await import('./seed.mjs')).loadSeed()).exercises;
 const copy=x=>JSON.parse(JSON.stringify(x));
 const canonical=x=>Array.isArray(x)?x.map(canonical):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])])):x;
 const digest=async x=>createHash('sha256').update(JSON.stringify(canonical(x))).digest('hex');

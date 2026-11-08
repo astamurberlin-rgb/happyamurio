@@ -18,6 +18,11 @@ function exerciseTimerConfig(e){
   const t=e?.timerConfig||exercise(e?.id)?.timerConfig||{};
   return {...(Array.isArray(t.program)&&t.program.length?{program:t.program.slice(0,50).map(r=>({workSeconds:Math.max(1,Math.min(86400,Math.round(Number(r.workSeconds)||60))),restSeconds:Math.max(0,Math.min(3600,Math.round(Number(r.restSeconds)||0)))}))}:{}),lapSlots:Math.max(1,Math.min(50,Number(t.lapSlots)||1)),mode:['countdown','intervals','stopwatch'].includes(t.mode)?t.mode:'countdown',workSeconds:Number(t.workSeconds)>0?Math.min(86400,Math.round(t.workSeconds)):60,restSeconds:Number(t.restSeconds)>=0?Math.min(3600,Math.round(t.restSeconds)):30,rounds:Number(t.rounds)>0?Math.min(50,Math.round(t.rounds)):3};
 }
+// Update 38.2 · handle (рукоять): a label on the exercise instance inside a workout, offered by the library (`handles`).
+// It never changes sets, load or history aggregation.
+function exerciseHandles(e){const d=exercise(e?.id);const list=Array.isArray(d?.handles)?d.handles:Array.isArray(e?.handles)?e.handles:[];return list.filter(h=>typeof h==='string'&&h.trim()).map(h=>h.trim()).slice(0,12)}
+function exerciseHandle(e){return typeof e?.handle==='string'&&e.handle.trim()?e.handle.trim().slice(0,60):''}
+function exerciseDisplayName(e){const h=exerciseHandle(e);return (e?.name||'')+(h?' · '+h:'')}
 function exerciseOriginalName(e){return SEED.exercises.find(x=>x.id===e?.id)?.name||e?.originalName||e?.name||''}
 function exercisePinnedNote(id){return typeof state.exerciseNotes?.[id]==='string'?state.exerciseNotes[id]:null}
 
@@ -118,6 +123,7 @@ function openExerciseEditor(id,ei=null){
   openSheet(e?'Настроить упражнение':'Создать упражнение',`<form id="exercise-config-form" data-id="${esc(e?.id||'')}" data-ei="${ei??''}" data-initial-plan="${esc(JSON.stringify(draft.sets))}" data-add-active="${addToActive}" data-scope="${active?'active':'library'}" data-workout-id="${active?esc(state.active.id):''}">
     <div class="exercise-title-row"><label class="exercise-title-label"><span>Название · нажми, чтобы изменить</span><input class="exercise-title-input" name="name" required maxlength="120" value="${esc(active?.name||e?.name||'')}" placeholder="Название упражнения"></label></div>
     ${active?`<nav class="local-exercise-links" aria-label="Об этом упражнении"><button type="button" class="text-btn" data-action="local-exercise-history" data-id="${esc(id)}">История</button><button type="button" class="text-btn" data-action="local-exercise-instructions" data-id="${esc(id)}">Инструкция</button></nav>`:''}
+    ${active&&exerciseHandles(active).length?`<label class="field exercise-handle-field">Рукоять<select name="handle" aria-label="Рукоять"><option value="">Не указана</option>${exerciseHandles(active).map(h=>`<option value="${esc(h)}" ${exerciseHandle(active)===h?'selected':''}>${esc(h)}</option>`).join('')}${exerciseHandle(active)&&!exerciseHandles(active).includes(exerciseHandle(active))?`<option value="${esc(exerciseHandle(active))}" selected>${esc(exerciseHandle(active))}</option>`:''}</select></label><p class="fineprint">Рукоять — пометка для этой тренировки и истории. Подходы и нагрузка не пересчитываются.</p>`:''}
     <fieldset class="metric-switches"><legend>Что записываем</legend>${metricOrder().map(key=>`<label><input type="checkbox" name="metrics" value="${key}" ${metrics.includes(key)?'checked':''}><span>${metricName(key)}</span></label>`).join('')}</fieldset>
     <p class="fineprint">Показатели можно сочетать. Время: задано — обратный отсчёт; 0:00 — секундомер.</p>
     ${setPlanMarkup(draft)}
@@ -168,7 +174,9 @@ function saveExerciseEditor(form,mode){
   // Session settings never write to the catalog, another occurrence, or a completed workout.
   let next;
   if(localOnly){
-    Object.assign(active,{name,metrics:clone(metrics),timerConfig:clone(timer),timerDistanceEnabled:metrics.includes('distance')});next=active;
+    Object.assign(active,{name,metrics:clone(metrics),timerConfig:clone(timer),timerDistanceEnabled:metrics.includes('distance')});
+    const handle=String(f.get('handle')||'').trim().slice(0,60);if(handle&&exerciseHandles(active).concat(exerciseHandle(active)).includes(handle))active.handle=handle;else delete active.handle;
+    next=active;
   }else next=saveExerciseDefinition(id,entry,mode,ei);
   if(active){if(planChanged)active.sets=clone(draft.sets);active.defaultRestSeconds=lastRest;if(state.active.countdown?.ei===ei&&planChanged)state.active.countdown=null;if(state.active.exercisePlayer?.ei===ei&&playerChanged)state.active.exercisePlayer=null;}
   if(lastRest!=null)state.lastRestSeconds=lastRest;

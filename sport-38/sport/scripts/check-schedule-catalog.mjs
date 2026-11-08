@@ -26,7 +26,7 @@ const ics=run('scheduleCalendar(s,new Date("2026-10-29T12:00:00Z"))');
 assert.ok(ics.includes('BEGIN:VTIMEZONE'));assert.ok(ics.includes('RRULE:FREQ=WEEKLY;BYDAY=MO,TH;UNTIL='));assert.ok(ics.includes('EXDATE;TZID=Europe/Berlin:20261105T180000'));assert.ok(ics.includes('RECURRENCE-ID;TZID=Europe/Berlin:20261029T180000'));assert.ok(ics.includes('TRIGGER:-PT30M'));assert.ok(ics.includes('SUMMARY:Турники\\, тест'));assert.ok(ics.split('\r\n').every(x=>Buffer.byteLength(x)<=75));
 assert.equal((ics.match(/UID:weekly@happy-sport/g)||[]).length,2,'Master and changed instances keep the same UID');
 // Only catalog model functions are needed: DOM handlers are tested through the preview.
-const seed=JSON.parse(await readFile(new URL('../data/seed.json',import.meta.url),'utf8'));ctx.seed=seed;
+const seed=await (await import('./seed.mjs')).loadSeed();ctx.seed=seed;
 run(`var librarySports=[['all','Все'],['bars','Турники'],['gym','Зал']],librarySport='all',exerciseSports=e=>['gym'],allExercises=()=>seed.exercises,exercise=id=>allExercises().find(x=>x.id===id);state.customExercises=[];state.exerciseOverrides={};`);
 const groups=await read('catalog-groups');run(groups.slice(0,groups.indexOf('const editorBeforeGroups')));
 run("var g=saveExerciseGroup(null,'Моя гимнастика','gymnastics');var child=saveExerciseGroup(null,'Сила',g.id)");

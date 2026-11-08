@@ -4,7 +4,7 @@ const root=fileURLToPath(new URL('../../',import.meta.url));const html=fs.readFi
 const input=structuredClone(source);for(const w of input.workouts)for(const e of w.exercises)e.name='Bench Press (Barbell)';
 const original={...structuredClone(current),sportOwner:'qa-strong-owner',customExercises:[],favoriteExercises:[]};
 const blank={version:1,workouts:[],measurements:[],customExercises:[],templates:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},demoPulse:false};
-const library=JSON.parse(fs.readFileSync(root+'/sport/data/seed.json','utf8')).exercises;
+const library=(await (await import('./seed.mjs')).loadSeed()).exercises;
 const variants=[['Seated Calf Raise (Plate Loaded)','machine-plate-loaded-seated-calf'],['Iso-Lateral Row (Machine)','machine-independent-lever-row'],['Bent Over Row (Dumbbell)','dumbbell-bilateral-simultaneous-row'],['Reverse Fly (Dumbbell)','dumbbell-incline-chest-supported-reverse-fly']].filter(([,id])=>library.some(e=>e.id===id));
 for(const [i,[name]] of variants.entries())input.workouts[i].exercises[0].name=name;
 const canonical=x=>Array.isArray(x)?x.map(canonical):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])])):x;
