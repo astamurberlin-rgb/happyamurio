@@ -1,0 +1,10 @@
+# GitHub Pages serves the release roots (sport-38/index.html, sport-38/sport-icons/, …).
+# Intermediate Sport build outputs are produced locally by `node sport-NN/scripts/build-release.mjs`
+# and are not committed: they tripled the size of every Sport release (08.11.2026).
+sport-*/dist/
+sport-*/sport/dist/
+sport-*/sport/sport-icons/
+sport-*/sport/exercises/
+sport-*/sport/app-icons/
+sport-*/sport/index.html
+sport-*/sport/manifest.webmanifest

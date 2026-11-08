@@ -1,14 +1,16 @@
 /* Rewrites SOURCE-PROVENANCE.json for this release: origin facts plus size and SHA-256 of every file inside the
    release directory (the manifest itself excluded). Run after the final build; verify-release.mjs checks the result. */
-import {readFile,writeFile,readdir,stat} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 const root=new URL('../',import.meta.url),rootPath=fileURLToPath(root);
 const previous=JSON.parse(await readFile(new URL('SOURCE-PROVENANCE.json',root),'utf8'));
-async function walk(dir,prefix=''){const out=[];for(const entry of (await readdir(new URL(dir,root),{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){const rel=prefix+entry.name;if(entry.isDirectory())out.push(...await walk(dir+entry.name+'/',rel+'/'));else if(rel!=='SOURCE-PROVENANCE.json')out.push(rel);}return out}
+// Only files that are committed count as release files: intermediate build outputs (dist/, sport/dist/, copied icons)
+// are ignored by .gitignore since 08.11.2026 and are rebuilt locally by build-release.mjs.
+const tracked=execSync('git ls-files -z .',{cwd:rootPath}).toString().split('\0').filter(Boolean).map(p=>p.replace(/^\.\//,'')).filter(p=>p!=='SOURCE-PROVENANCE.json').sort();
 const files=[];
-for(const path of await walk('./')){const bytes=await readFile(new URL(path,root));files.push({path,size:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
+for(const path of tracked){const bytes=await readFile(new URL(path,root));files.push({path,size:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
 // The base this release was derived from: main at the time sport-37 was copied (not the release commit itself).
 let sourceCommit=previous.update==='38'?previous.source_commit:null;try{sourceCommit=sourceCommit||execSync('git rev-parse origin/main',{cwd:rootPath,encoding:'utf8'}).trim()}catch{sourceCommit=sourceCommit||previous.source_commit}
 const manifest={
