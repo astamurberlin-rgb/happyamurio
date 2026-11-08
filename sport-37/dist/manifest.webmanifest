@@ -1,6 +1,6 @@
 {
-  "name": "Happy Sport · Update 37",
-  "short_name": "Sport 37",
+  "name": "Happy Sport · Update 37.1",
+  "short_name": "Sport 37.1",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -9,13 +9,13 @@
   "theme_color": "#00A8F5",
   "icons": [
     {
-      "src": "./app-icons/happy-sport-20261029-192.png",
+      "src": "./app-icons/happy-sport-20261108-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./app-icons/happy-sport-20261029-512.png",
+      "src": "./app-icons/happy-sport-20261108-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
