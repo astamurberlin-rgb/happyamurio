@@ -1,6 +1,6 @@
 {
   "app": "Happy Sport",
-  "update": "37",
+  "update": "37.1",
   "source_version": "36.30",
   "source_commit": "cf8dea4f26ff8e05cb786594e6aae154391e9557",
   "source_site_version": 11,
@@ -10,6 +10,8 @@
   "changed_source_files": [
     "README.md",
     "scripts/build-preview.mjs",
+    "scripts/build-release.mjs",
+    "scripts/verify-release.mjs",
     "shared/apps.json",
     "sport/dist/index.html",
     "sport/dist/manifest.webmanifest",
@@ -17,6 +19,13 @@
     "sport/manifest.webmanifest",
     "sport/scripts/check-clean-shell.mjs",
     "sport/scripts/check-paths.mjs",
+    "sport/src/app-icons/happy-sport-20261108-152.png",
+    "sport/src/app-icons/happy-sport-20261108-167.png",
+    "sport/src/app-icons/happy-sport-20261108-180.png",
+    "sport/src/app-icons/happy-sport-20261108-192.png",
+    "sport/src/app-icons/happy-sport-20261108-32.png",
+    "sport/src/app-icons/happy-sport-20261108-48.png",
+    "sport/src/app-icons/happy-sport-20261108-512.png",
     "sport/src/app.template.html",
     "sport/src/data-transfer.js",
     "sport/src/manifest.webmanifest",
@@ -1798,43 +1807,43 @@
     },
     {
       "path": "README.md",
-      "size": 3437,
-      "sha256": "7b72647321911628f9aac12beaf2101d1c985b882ca440dbcec23bad82b76a9b"
+      "size": 4801,
+      "sha256": "a7b5cc4c79d03e3f2b1517a72bbe9906c6b3db1def40cb212fc31656e8a51453"
     },
     {
-      "path": "app-icons/happy-sport-20261029-152.png",
-      "size": 23900,
-      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+      "path": "app-icons/happy-sport-20261108-152.png",
+      "size": 23202,
+      "sha256": "19342206cb7fa1c6d200bc151e5e564116e06802ba98b72e365bca7c34558a20"
     },
     {
-      "path": "app-icons/happy-sport-20261029-167.png",
-      "size": 27714,
-      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+      "path": "app-icons/happy-sport-20261108-167.png",
+      "size": 27063,
+      "sha256": "9b7242c595696b42488c6385162946e080bf66f1094b4fa86d5273950327de5a"
     },
     {
-      "path": "app-icons/happy-sport-20261029-180.png",
-      "size": 31267,
-      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+      "path": "app-icons/happy-sport-20261108-180.png",
+      "size": 30512,
+      "sha256": "0f977187315c88a29b8f313ddf0c6bffa4dcd633c7883f85673df3f2f9452e2e"
     },
     {
-      "path": "app-icons/happy-sport-20261029-192.png",
-      "size": 34916,
-      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+      "path": "app-icons/happy-sport-20261108-192.png",
+      "size": 34061,
+      "sha256": "d51d3e607675ca0bbf7a3b0e0af853a748a5309007999c8c9c0fbb5ca173837f"
     },
     {
-      "path": "app-icons/happy-sport-20261029-32.png",
-      "size": 2515,
-      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+      "path": "app-icons/happy-sport-20261108-32.png",
+      "size": 1973,
+      "sha256": "94c0f0bfdb19ca66e536625f07b021f305e82c68024a9f89503a37c3ce88ae54"
     },
     {
-      "path": "app-icons/happy-sport-20261029-48.png",
-      "size": 4355,
-      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+      "path": "app-icons/happy-sport-20261108-48.png",
+      "size": 3723,
+      "sha256": "9967ac746ce50ef95dab22b58156ef05b36c88fd241076fb58bff656c690c311"
     },
     {
-      "path": "app-icons/happy-sport-20261029-512.png",
-      "size": 210488,
-      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+      "path": "app-icons/happy-sport-20261108-512.png",
+      "size": 209065,
+      "sha256": "e05f9c7e619fbde5f5097eac1fc429edc97a0e4432fd33c40ac3134d0449a7d8"
     },
     {
       "path": "data/exercise-muscles.json",
@@ -1857,39 +1866,39 @@
       "sha256": "886bf2d7b380a7b4a405418085e677f05846490c18936e71092753b978959dc5"
     },
     {
-      "path": "dist/app-icons/happy-sport-20261029-152.png",
-      "size": 23900,
-      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+      "path": "dist/app-icons/happy-sport-20261108-152.png",
+      "size": 23202,
+      "sha256": "19342206cb7fa1c6d200bc151e5e564116e06802ba98b72e365bca7c34558a20"
     },
     {
-      "path": "dist/app-icons/happy-sport-20261029-167.png",
-      "size": 27714,
-      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+      "path": "dist/app-icons/happy-sport-20261108-167.png",
+      "size": 27063,
+      "sha256": "9b7242c595696b42488c6385162946e080bf66f1094b4fa86d5273950327de5a"
     },
     {
-      "path": "dist/app-icons/happy-sport-20261029-180.png",
-      "size": 31267,
-      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+      "path": "dist/app-icons/happy-sport-20261108-180.png",
+      "size": 30512,
+      "sha256": "0f977187315c88a29b8f313ddf0c6bffa4dcd633c7883f85673df3f2f9452e2e"
     },
     {
-      "path": "dist/app-icons/happy-sport-20261029-192.png",
-      "size": 34916,
-      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+      "path": "dist/app-icons/happy-sport-20261108-192.png",
+      "size": 34061,
+      "sha256": "d51d3e607675ca0bbf7a3b0e0af853a748a5309007999c8c9c0fbb5ca173837f"
     },
     {
-      "path": "dist/app-icons/happy-sport-20261029-32.png",
-      "size": 2515,
-      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+      "path": "dist/app-icons/happy-sport-20261108-32.png",
+      "size": 1973,
+      "sha256": "94c0f0bfdb19ca66e536625f07b021f305e82c68024a9f89503a37c3ce88ae54"
     },
     {
-      "path": "dist/app-icons/happy-sport-20261029-48.png",
-      "size": 4355,
-      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+      "path": "dist/app-icons/happy-sport-20261108-48.png",
+      "size": 3723,
+      "sha256": "9967ac746ce50ef95dab22b58156ef05b36c88fd241076fb58bff656c690c311"
     },
     {
-      "path": "dist/app-icons/happy-sport-20261029-512.png",
-      "size": 210488,
-      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+      "path": "dist/app-icons/happy-sport-20261108-512.png",
+      "size": 209065,
+      "sha256": "e05f9c7e619fbde5f5097eac1fc429edc97a0e4432fd33c40ac3134d0449a7d8"
     },
     {
       "path": "dist/data/exercise-muscles.json",
@@ -1918,13 +1927,13 @@
     },
     {
       "path": "dist/index.html",
-      "size": 955108,
-      "sha256": "f07a56e8fdfd4d8b615c023e0da01fbe72afc9a5d8b9759445dc512c53afa9a7"
+      "size": 955739,
+      "sha256": "61449c83a06a8cc24c72c33338a74b656a77967f81469d1879a89731fef14508"
     },
     {
       "path": "dist/manifest.webmanifest",
-      "size": 518,
-      "sha256": "d2bb21d56c7630a1ef60775c44d523977e26b46b0d70691003a01de401d2f230"
+      "size": 522,
+      "sha256": "28ab46c691f337536e339d2129cd03ea2579d154edc9766292cfcd1cb2f3e60a"
     },
     {
       "path": "dist/meal/index.html",
@@ -1937,39 +1946,39 @@
       "sha256": "478f8a56ad3756351d429b3f4812d91cbdad35ae65c46be86f67cb57e7b8e1b6"
     },
     {
-      "path": "dist/sport/app-icons/happy-sport-20261029-152.png",
-      "size": 23900,
-      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+      "path": "dist/sport/app-icons/happy-sport-20261108-152.png",
+      "size": 23202,
+      "sha256": "19342206cb7fa1c6d200bc151e5e564116e06802ba98b72e365bca7c34558a20"
     },
     {
-      "path": "dist/sport/app-icons/happy-sport-20261029-167.png",
-      "size": 27714,
-      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+      "path": "dist/sport/app-icons/happy-sport-20261108-167.png",
+      "size": 27063,
+      "sha256": "9b7242c595696b42488c6385162946e080bf66f1094b4fa86d5273950327de5a"
     },
     {
-      "path": "dist/sport/app-icons/happy-sport-20261029-180.png",
-      "size": 31267,
-      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+      "path": "dist/sport/app-icons/happy-sport-20261108-180.png",
+      "size": 30512,
+      "sha256": "0f977187315c88a29b8f313ddf0c6bffa4dcd633c7883f85673df3f2f9452e2e"
     },
     {
-      "path": "dist/sport/app-icons/happy-sport-20261029-192.png",
-      "size": 34916,
-      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+      "path": "dist/sport/app-icons/happy-sport-20261108-192.png",
+      "size": 34061,
+      "sha256": "d51d3e607675ca0bbf7a3b0e0af853a748a5309007999c8c9c0fbb5ca173837f"
     },
     {
-      "path": "dist/sport/app-icons/happy-sport-20261029-32.png",
-      "size": 2515,
-      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+      "path": "dist/sport/app-icons/happy-sport-20261108-32.png",
+      "size": 1973,
+      "sha256": "94c0f0bfdb19ca66e536625f07b021f305e82c68024a9f89503a37c3ce88ae54"
     },
     {
-      "path": "dist/sport/app-icons/happy-sport-20261029-48.png",
-      "size": 4355,
-      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+      "path": "dist/sport/app-icons/happy-sport-20261108-48.png",
+      "size": 3723,
+      "sha256": "9967ac746ce50ef95dab22b58156ef05b36c88fd241076fb58bff656c690c311"
     },
     {
-      "path": "dist/sport/app-icons/happy-sport-20261029-512.png",
-      "size": 210488,
-      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+      "path": "dist/sport/app-icons/happy-sport-20261108-512.png",
+      "size": 209065,
+      "sha256": "e05f9c7e619fbde5f5097eac1fc429edc97a0e4432fd33c40ac3134d0449a7d8"
     },
     {
       "path": "dist/sport/data/exercise-muscles.json",
@@ -1993,13 +2002,13 @@
     },
     {
       "path": "dist/sport/index.html",
-      "size": 955108,
-      "sha256": "f07a56e8fdfd4d8b615c023e0da01fbe72afc9a5d8b9759445dc512c53afa9a7"
+      "size": 955739,
+      "sha256": "61449c83a06a8cc24c72c33338a74b656a77967f81469d1879a89731fef14508"
     },
     {
       "path": "dist/sport/manifest.webmanifest",
-      "size": 518,
-      "sha256": "d2bb21d56c7630a1ef60775c44d523977e26b46b0d70691003a01de401d2f230"
+      "size": 522,
+      "sha256": "28ab46c691f337536e339d2129cd03ea2579d154edc9766292cfcd1cb2f3e60a"
     },
     {
       "path": "dist/sport/sport-icons/README.md",
@@ -2958,13 +2967,13 @@
     },
     {
       "path": "index.html",
-      "size": 955108,
-      "sha256": "f07a56e8fdfd4d8b615c023e0da01fbe72afc9a5d8b9759445dc512c53afa9a7"
+      "size": 955739,
+      "sha256": "61449c83a06a8cc24c72c33338a74b656a77967f81469d1879a89731fef14508"
     },
     {
       "path": "manifest.webmanifest",
-      "size": 518,
-      "sha256": "d2bb21d56c7630a1ef60775c44d523977e26b46b0d70691003a01de401d2f230"
+      "size": 522,
+      "sha256": "28ab46c691f337536e339d2129cd03ea2579d154edc9766292cfcd1cb2f3e60a"
     },
     {
       "path": "meal/index.html",
@@ -2988,13 +2997,13 @@
     },
     {
       "path": "scripts/build-release.mjs",
-      "size": 496,
-      "sha256": "62681d991750809ee4f254354327eac3bfe57f5db6f7cfe2e6cedc151ef4463a"
+      "size": 498,
+      "sha256": "464c172961e7010b866b8068fec65a03c58e4dd554608c22d558d9b134103ad4"
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 1053,
-      "sha256": "72d2ff43bd3c8950e7c8713d748877a0411388131ad3d14a9c27f594339abaf0"
+      "size": 1059,
+      "sha256": "9cb719a19371a7a4717653d77a591df8a69224166760649e019413ceb0e7e283"
     },
     {
       "path": "shared/README.md",
@@ -3003,8 +3012,8 @@
     },
     {
       "path": "shared/apps.json",
-      "size": 254,
-      "sha256": "3ea8d85df87c7c3a72fdc8ff3f9bccc66e743b3897015b746ae029341db94ed0"
+      "size": 258,
+      "sha256": "2b6be23c2b0f85a32647b8fb3eb9fb9c9b25dfe2498a974e58a94d0a907d4dbd"
     },
     {
       "path": "shared/food-counters.js",
@@ -3057,39 +3066,39 @@
       "sha256": "b5b1f1da112d18ea2147decfd48ddc1bf2b5aeb6c265381579340e95b15a2bb2"
     },
     {
-      "path": "sport/app-icons/happy-sport-20261029-152.png",
-      "size": 23900,
-      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+      "path": "sport/app-icons/happy-sport-20261108-152.png",
+      "size": 23202,
+      "sha256": "19342206cb7fa1c6d200bc151e5e564116e06802ba98b72e365bca7c34558a20"
     },
     {
-      "path": "sport/app-icons/happy-sport-20261029-167.png",
-      "size": 27714,
-      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+      "path": "sport/app-icons/happy-sport-20261108-167.png",
+      "size": 27063,
+      "sha256": "9b7242c595696b42488c6385162946e080bf66f1094b4fa86d5273950327de5a"
     },
     {
-      "path": "sport/app-icons/happy-sport-20261029-180.png",
-      "size": 31267,
-      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+      "path": "sport/app-icons/happy-sport-20261108-180.png",
+      "size": 30512,
+      "sha256": "0f977187315c88a29b8f313ddf0c6bffa4dcd633c7883f85673df3f2f9452e2e"
     },
     {
-      "path": "sport/app-icons/happy-sport-20261029-192.png",
-      "size": 34916,
-      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+      "path": "sport/app-icons/happy-sport-20261108-192.png",
+      "size": 34061,
+      "sha256": "d51d3e607675ca0bbf7a3b0e0af853a748a5309007999c8c9c0fbb5ca173837f"
     },
     {
-      "path": "sport/app-icons/happy-sport-20261029-32.png",
-      "size": 2515,
-      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+      "path": "sport/app-icons/happy-sport-20261108-32.png",
+      "size": 1973,
+      "sha256": "94c0f0bfdb19ca66e536625f07b021f305e82c68024a9f89503a37c3ce88ae54"
     },
     {
-      "path": "sport/app-icons/happy-sport-20261029-48.png",
-      "size": 4355,
-      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+      "path": "sport/app-icons/happy-sport-20261108-48.png",
+      "size": 3723,
+      "sha256": "9967ac746ce50ef95dab22b58156ef05b36c88fd241076fb58bff656c690c311"
     },
     {
-      "path": "sport/app-icons/happy-sport-20261029-512.png",
-      "size": 210488,
-      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+      "path": "sport/app-icons/happy-sport-20261108-512.png",
+      "size": 209065,
+      "sha256": "e05f9c7e619fbde5f5097eac1fc429edc97a0e4432fd33c40ac3134d0449a7d8"
     },
     {
       "path": "sport/data/exercise-muscles.json",
@@ -3107,39 +3116,39 @@
       "sha256": "c3c24660dddec961aff17ea312d63ced87402f3fb806a5d97715644690168926"
     },
     {
-      "path": "sport/dist/app-icons/happy-sport-20261029-152.png",
-      "size": 23900,
-      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+      "path": "sport/dist/app-icons/happy-sport-20261108-152.png",
+      "size": 23202,
+      "sha256": "19342206cb7fa1c6d200bc151e5e564116e06802ba98b72e365bca7c34558a20"
     },
     {
-      "path": "sport/dist/app-icons/happy-sport-20261029-167.png",
-      "size": 27714,
-      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+      "path": "sport/dist/app-icons/happy-sport-20261108-167.png",
+      "size": 27063,
+      "sha256": "9b7242c595696b42488c6385162946e080bf66f1094b4fa86d5273950327de5a"
     },
     {
-      "path": "sport/dist/app-icons/happy-sport-20261029-180.png",
-      "size": 31267,
-      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+      "path": "sport/dist/app-icons/happy-sport-20261108-180.png",
+      "size": 30512,
+      "sha256": "0f977187315c88a29b8f313ddf0c6bffa4dcd633c7883f85673df3f2f9452e2e"
     },
     {
-      "path": "sport/dist/app-icons/happy-sport-20261029-192.png",
-      "size": 34916,
-      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+      "path": "sport/dist/app-icons/happy-sport-20261108-192.png",
+      "size": 34061,
+      "sha256": "d51d3e607675ca0bbf7a3b0e0af853a748a5309007999c8c9c0fbb5ca173837f"
     },
     {
-      "path": "sport/dist/app-icons/happy-sport-20261029-32.png",
-      "size": 2515,
-      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+      "path": "sport/dist/app-icons/happy-sport-20261108-32.png",
+      "size": 1973,
+      "sha256": "94c0f0bfdb19ca66e536625f07b021f305e82c68024a9f89503a37c3ce88ae54"
     },
     {
-      "path": "sport/dist/app-icons/happy-sport-20261029-48.png",
-      "size": 4355,
-      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+      "path": "sport/dist/app-icons/happy-sport-20261108-48.png",
+      "size": 3723,
+      "sha256": "9967ac746ce50ef95dab22b58156ef05b36c88fd241076fb58bff656c690c311"
     },
     {
-      "path": "sport/dist/app-icons/happy-sport-20261029-512.png",
-      "size": 210488,
-      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+      "path": "sport/dist/app-icons/happy-sport-20261108-512.png",
+      "size": 209065,
+      "sha256": "e05f9c7e619fbde5f5097eac1fc429edc97a0e4432fd33c40ac3134d0449a7d8"
     },
     {
       "path": "sport/dist/exercises/pull-up.html",
@@ -3148,13 +3157,13 @@
     },
     {
       "path": "sport/dist/index.html",
-      "size": 955108,
-      "sha256": "f07a56e8fdfd4d8b615c023e0da01fbe72afc9a5d8b9759445dc512c53afa9a7"
+      "size": 955739,
+      "sha256": "61449c83a06a8cc24c72c33338a74b656a77967f81469d1879a89731fef14508"
     },
     {
       "path": "sport/dist/manifest.webmanifest",
-      "size": 518,
-      "sha256": "d2bb21d56c7630a1ef60775c44d523977e26b46b0d70691003a01de401d2f230"
+      "size": 522,
+      "sha256": "28ab46c691f337536e339d2129cd03ea2579d154edc9766292cfcd1cb2f3e60a"
     },
     {
       "path": "sport/dist/sport-icons/README.md",
@@ -3638,13 +3647,13 @@
     },
     {
       "path": "sport/index.html",
-      "size": 955108,
-      "sha256": "f07a56e8fdfd4d8b615c023e0da01fbe72afc9a5d8b9759445dc512c53afa9a7"
+      "size": 955739,
+      "sha256": "61449c83a06a8cc24c72c33338a74b656a77967f81469d1879a89731fef14508"
     },
     {
       "path": "sport/manifest.webmanifest",
-      "size": 518,
-      "sha256": "d2bb21d56c7630a1ef60775c44d523977e26b46b0d70691003a01de401d2f230"
+      "size": 522,
+      "sha256": "28ab46c691f337536e339d2129cd03ea2579d154edc9766292cfcd1cb2f3e60a"
     },
     {
       "path": "sport/package.json",
@@ -3673,8 +3682,8 @@
     },
     {
       "path": "sport/scripts/check-clean-shell.mjs",
-      "size": 6599,
-      "sha256": "4fc513c16c4d754dff9cd2941000b63a8e9ce7ec2071ad8cf0362017b3339aec"
+      "size": 6602,
+      "sha256": "134d04b3af529d4c2f670bc2f03f742866de3c2240035abfa442833c5861f5a5"
     },
     {
       "path": "sport/scripts/check-controlled-cas.mjs",
@@ -4347,39 +4356,39 @@
       "sha256": "6668ab433510fa12706485fdb1b37000cd50794a87d3dfb49b72d0046f9fe317"
     },
     {
-      "path": "sport/src/app-icons/happy-sport-20261029-152.png",
-      "size": 23900,
-      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+      "path": "sport/src/app-icons/happy-sport-20261108-152.png",
+      "size": 23202,
+      "sha256": "19342206cb7fa1c6d200bc151e5e564116e06802ba98b72e365bca7c34558a20"
     },
     {
-      "path": "sport/src/app-icons/happy-sport-20261029-167.png",
-      "size": 27714,
-      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+      "path": "sport/src/app-icons/happy-sport-20261108-167.png",
+      "size": 27063,
+      "sha256": "9b7242c595696b42488c6385162946e080bf66f1094b4fa86d5273950327de5a"
     },
     {
-      "path": "sport/src/app-icons/happy-sport-20261029-180.png",
-      "size": 31267,
-      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+      "path": "sport/src/app-icons/happy-sport-20261108-180.png",
+      "size": 30512,
+      "sha256": "0f977187315c88a29b8f313ddf0c6bffa4dcd633c7883f85673df3f2f9452e2e"
     },
     {
-      "path": "sport/src/app-icons/happy-sport-20261029-192.png",
-      "size": 34916,
-      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+      "path": "sport/src/app-icons/happy-sport-20261108-192.png",
+      "size": 34061,
+      "sha256": "d51d3e607675ca0bbf7a3b0e0af853a748a5309007999c8c9c0fbb5ca173837f"
     },
     {
-      "path": "sport/src/app-icons/happy-sport-20261029-32.png",
-      "size": 2515,
-      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+      "path": "sport/src/app-icons/happy-sport-20261108-32.png",
+      "size": 1973,
+      "sha256": "94c0f0bfdb19ca66e536625f07b021f305e82c68024a9f89503a37c3ce88ae54"
     },
     {
-      "path": "sport/src/app-icons/happy-sport-20261029-48.png",
-      "size": 4355,
-      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+      "path": "sport/src/app-icons/happy-sport-20261108-48.png",
+      "size": 3723,
+      "sha256": "9967ac746ce50ef95dab22b58156ef05b36c88fd241076fb58bff656c690c311"
     },
     {
-      "path": "sport/src/app-icons/happy-sport-20261029-512.png",
-      "size": 210488,
-      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+      "path": "sport/src/app-icons/happy-sport-20261108-512.png",
+      "size": 209065,
+      "sha256": "e05f9c7e619fbde5f5097eac1fc429edc97a0e4432fd33c40ac3134d0449a7d8"
     },
     {
       "path": "sport/src/app.js",
@@ -4388,8 +4397,8 @@
     },
     {
       "path": "sport/src/app.template.html",
-      "size": 22027,
-      "sha256": "3b56f6a375742a54845a89541b31306a1ed6b50bc53979906140a6198b767e70"
+      "size": 22029,
+      "sha256": "fcee5917e3d8f0154338cd3819ecc346c66d7cabae976232470c6a984efc1090"
     },
     {
       "path": "sport/src/automatic-sync-ui.js",
@@ -4428,8 +4437,8 @@
     },
     {
       "path": "sport/src/data-transfer.js",
-      "size": 18496,
-      "sha256": "f28634ec0110b5f8828d67052ddbc4dafbbe51b5c774652940a51f1ae544c410"
+      "size": 18500,
+      "sha256": "b1c0c653750011558e4475628e81cd9518889cc0eb95896ff9c37eb746d50c86"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -4513,8 +4522,8 @@
     },
     {
       "path": "sport/src/manifest.webmanifest",
-      "size": 518,
-      "sha256": "d2bb21d56c7630a1ef60775c44d523977e26b46b0d70691003a01de401d2f230"
+      "size": 522,
+      "sha256": "28ab46c691f337536e339d2129cd03ea2579d154edc9766292cfcd1cb2f3e60a"
     },
     {
       "path": "sport/src/measurements-shared.js",
@@ -4598,8 +4607,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 9710,
-      "sha256": "67fe5943bf3c2dcd2ff444f97fe61913dceb99bf0f915a5788e2103b9f879de8"
+      "size": 10335,
+      "sha256": "3d0a288daea9f5ad48e51ce6e5513aa94e21b1cf7a19fb27132c1cabbab1f103"
     },
     {
       "path": "sport/src/rest-pill.js",
@@ -5655,6 +5664,13 @@
       "path": "sport-icons/people/35_adaptive_m_light.png",
       "size": 100991,
       "sha256": "6668ab433510fa12706485fdb1b37000cd50794a87d3dfb49b72d0046f9fe317"
+    }
+  ],
+  "revisions": [
+    {
+      "update": "37.1",
+      "date": "2026-11-08",
+      "note": "App icon replaced (white glass on the bright gradient) by direct instruction of the owner. No code, storage keys, sync or data changed. Previous icon files 20261029 removed from the release; they remain in Git history."
     }
   ]
 }

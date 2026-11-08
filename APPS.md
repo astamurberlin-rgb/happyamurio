@@ -9,7 +9,7 @@
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
+| Happy Sport · Update 37.1 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37.1 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
 Служебная страница **Файлы** (`files/index.html`, версия 1.7): https://astamurberlin-rgb.github.io/happyamurio/files/ — просмотр общих Markdown-файлов из Supabase (`ai_shared.documents`: дневник питания, упражнения, инструкция для ИИ). Данные читаются при открытии через функцию Supabase `files` по ключу из ссылки `#key=…`; ключ хранится только в ссылке и браузере устройства, в репозиторий не попадает. Это не приложение: в `shared/apps.json` не входит.
@@ -170,3 +170,7 @@ Day 50.13: карусель дневника активности, незави�
 Исполняемый код, общие стили, иконки, упражнения, справочники и исходные проверки закреплены внутри `sport-37/`. Сборка: `node sport-37/scripts/build-release.mjs`; проверки: `npm --prefix sport-37/sport run check`. Прежний `sport/`, Day, Meal и студии не изменены. Происхождение и контрольные суммы — `sport-37/SOURCE-PROVENANCE.json`. Публичная метка — **Happy Sport · Update 37**; папка `sport-37/sport/` содержит исходники и промежуточную сборку. Основной вход выпуска — `sport-37/index.html`.
 
 Код облачного обмена и ключи сохранены из согласованной версии. Регистрация, общий обмен сводками/замерами/счётчиками и Icon Studio остаются ограничены как в исходной сборке. Кнопки связанных приложений ведут на закреплённые информационные страницы этого выпуска. Этот перенос не включает новые возможности связи трёх приложений и не меняет Sites.
+
+### Update 37.1 · 08.11.2026
+
+По прямому указанию владельца иконка заменена в опубликованном Update 37 без нового адреса: белое стекло на ярком градиенте (`sport-37/app-icons/happy-sport-20261108-*.png`). Подпись внизу настроек — **Happy Sport · Update 37.1**, обновлено 08.11.2026; запись есть в «Что нового». Код, ключи хранения, синхронизация и данные не менялись. Исходные слои в Icon Studio не менялись. Новая иконка на экране «Домой» появляется после удаления прежней и повторного добавления из Safari.
