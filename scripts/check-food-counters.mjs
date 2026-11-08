@@ -3,7 +3,10 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
-const source=await read('shared/food-counters.js');
+// The root module serves the earlier day/ and meal/ pages. Since Sport Update 38 the reference for new
+// releases is day-52/shared/food-counters.js (write verified by re-reading the row); release copies must match it.
+const SOURCE=process.env.FOOD_COUNTERS_SOURCE||'shared/food-counters.js';
+const source=await read(SOURCE);
 const copy=x=>JSON.parse(JSON.stringify(x));
 function storage(){const map=new Map();return {get length(){return map.size},key:i=>[...map.keys()][i],getItem:k=>map.get(k)??null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k)}}
 function context(extra={}){const c=vm.createContext({crypto:webcrypto,Date,TextEncoder,TextDecoder,setTimeout:()=>1,clearTimeout(){},setInterval(){},...extra});vm.runInContext(source,c);return c}
@@ -95,3 +98,10 @@ sport.changeSportFood(def.id,true,false);meal.HappyMealCounters.apply(sport.stat
 const hidden=H.patch(sport.state.foodCounters,'definitions',{...def,targets:{day:true,sport:false}},'off');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(hidden));
 assert.throws(()=>sport.changeSportFood(def.id,true,true),/отключена/);assert.equal(sport.sportFoodDefinitions().length,0);
 console.log('Passed Sport → Meal → Day portions and undo, and no additions after disabling Sport.');
+if(!process.env.FOOD_COUNTERS_SOURCE){
+ const {execFileSync}=await import('node:child_process');
+ const reference='day-52/shared/food-counters.js';
+ for(const copy of ['sport-38/shared/food-counters.js'])assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
+ execFileSync(process.execPath,[new URL(import.meta.url).pathname],{stdio:'inherit',env:{...process.env,FOOD_COUNTERS_SOURCE:reference}});
+ console.log('Passed: reference module '+reference+' runs the same suite; release copies are identical to it.');
+}

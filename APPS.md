@@ -9,6 +9,7 @@
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
+| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -19,7 +20,7 @@
 
 `shared/apps.json` — карта стартовых файлов и версий. Название, версия и дата обновления видны в самом низу настроек каждого приложения.
 `shared/happy-ui.css` и `shared/happy-ui.js` задают общие кнопки, поля и форму аккаунта.
-Все настройки начинаются с блоков «Аккаунт», «Резервная копия», «Связанные приложения».
+Целевая структура настроек (согласована 08.11.2026, первым реализована в Sport 38): «Аккаунт» → «Приложение» → «Данные» → «Связанные приложения» → скрытый «Для разработчика» → история обновлений и версия. Day 52 и Meal 23 пока сохраняют прежний порядок «Аккаунт», «Резервная копия», «Связанные приложения»; переход — в их следующих выпусках.
 Правила оформления: [shared/README.md](shared/README.md). Серверные операции и хранение остаются в приложениях.
 
 `meal-data/` — публичные справочники продуктов, `meal-img/` — иллюстрации еды.
@@ -162,6 +163,14 @@ Meal 22.14 / Day 50.11: общие продуктовые счётчики, по
 Day 50.13: карусель дневника активности, независимые отметки самочувствия, текстовые дневники с дополнениями, цели и расписание осознанности, экран активности с виджетом энергии. Перенос из отдельного прототипа Sites поверх main; актуальные счётчики, аккаунт и иконка сохранены. Прототип остаётся отдельным местом доработки.
 
 
+
+## Happy Sport · Update 38 · 08.11.2026
+
+Отдельная согласованная страница: https://astamurberlin-rgb.github.io/happyamurio/sport-38/ . Исходник — `sport-37/` из main `9ce7f95`; код синхронизации журнала не менялся. Сборка: `node sport-38/scripts/build-release.mjs`; проверки: `npm --prefix sport-38/sport run check`, `node sport-38/scripts/check-settings-layout.mjs` (headless Chrome), `node scripts/check-food-counters.mjs`. Происхождение и контрольные суммы — `sport-38/SOURCE-PROVENANCE.json`.
+
+Общие счётчики продуктов теперь работают во всех трёх приложениях: переключатель «Happy Sport» у счётчика в Meal 23 записывал `targets.sport` и раньше — Sport его игнорировал из-за другого локального ключа и запрета записи. Sport 38 читает тот же документ (`happy-food-counters-v1:<uid>`, `app_sync` app=meal/kind=counters) и пишет в него только через второй узкий канал `readonly-guard.js` (`bindCounterController`, CAS по `at`+`iv`). Меняется только Sport; Meal 23 и Day 52 не трогались. Копия счётчиков не включается в облачный журнал `sport/journal`. Эталон модуля `food-counters.js` для новых выпусков — `day-52/shared/food-counters.js`; корневая `shared/food-counters.js` остаётся для `day/` 50.14 и `meal/` 22.16 и не меняется.
+
+Настройки перестроены по целевой структуре (см. выше) последним слоем `settings-layout.js`; служебные проверки синхронизации, резерв синхронизации, диагностика сборки и импорт истории Strong — в скрытом разделе «Для разработчика» (долгое нажатие на строку версии). Кнопки связанных приложений открывают `day-52/` и `meal-23/`. Обмен сводками тренировок, общими замерами и Icon Studio по-прежнему не включён; сквозная проверка счётчиков на реальном аккаунте выполняется владельцем после публикации.
 
 ## Happy Sport · Update 37 · 07.11.2026
 
