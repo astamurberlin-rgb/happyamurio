@@ -4,11 +4,13 @@
 
 Что нового в 25: подключена библиотека десертов 1.0 (данные ChatGPT, 09.11.2026; ветка `meal-libraries`, manifest id `desserts`, `data/DESSERTS.md`). Адаптер `desserts.js`: 30 собственных карточек (`hmdessert:*` — этикетки производителей, две расчётные модели, расчёт по рецепту) становятся продуктами каталога `HM-DESSERT` в базе «Десерты» (`sources.js`, переключатель в настройках); 67 записей с ID BLS / USDA / кавказской / узбекской библиотек получают принадлежность к коллекции у существующей карточки (слово «десерт» в поиске, русское название для USDA, отметка в карточке) — второго продукта на один ID нет. Неизвестное — не ноль; `less_than` — граница («< 0,5 г»); углеводы этикеток США и USDA 1005 — отдельной строкой; порции только из источника. Черновики набора (7) не подключены.
 
-Проверки: `node meal-25/checks/check-desserts.mjs` (адаптер на реальном файле библиотеки), `node meal-25/checks/check-startup.mjs`, общие `check-layout`, `check-shared-ui`, `check-food-counters`, `check-meal-times`, `check-meal-exports`, `check-shared`; смоук в headless Chrome с реальными файлами библиотек.
+Также в 25: вход узнаётся по аккаунту и ключу, а не по токену (`identity`, `clIdentity`, `clGuard` без `at`/`rt`/`exp`); обновление токена — одно на операцию (`clRefreshing`), свежий вход того же аккаунта из другого окна принимается (`clAdoptStored`, storage-событие) — ложные «Вход изменился во время операции» ушли, смена аккаунта или ключа по-прежнему останавливает запись (`checks/check-auth-identity.mjs`). В списке счётчиков подпись строки — только порция, без «· Day · Sport». Кнопки «Happy Day» / «Happy Sport» открывают новое окно.
+
+Проверки: `node meal-25/checks/check-auth-identity.mjs`, `node meal-25/checks/check-desserts.mjs` (адаптер на реальном файле библиотеки), `node meal-25/checks/check-startup.mjs`, общие `check-layout`, `check-shared-ui`, `check-food-counters`, `check-meal-times`, `check-meal-exports`, `check-shared`; смоук в headless Chrome с реальными файлами библиотек.
 
 Прежний README выпуска 24 — ниже без изменений.
 
-— Claude · 09.11.2026 14:45
+— Claude · 09.11.2026 15:43
 
 ---
 

@@ -1576,7 +1576,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <section class="screen" data-screen="updates"><div class="grip" data-grip role="button" tabindex="0" aria-label="Закрыть историю обновлений"><i></i></div><div class="top"><h1>История обновлений</h1></div><div id="releaseHistory"></div></section>
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1><div class="tierBadges" hidden></div><!-- Update 24: заглушки PRO / GOLD убраны из шапки настроек (идея — в реестре) --></div>
-    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card"><div id="clBox"></div><p id="mealJournalStatus" class="happy-note" role="status" aria-live="polite" aria-atomic="true">Подготовка синхронизации…</p></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day-53/">Happy Day</a><a class="happy-button" href="../sport-38/">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
+    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card"><div id="clBox"></div><p id="mealJournalStatus" class="happy-note" role="status" aria-live="polite" aria-atomic="true">Подготовка синхронизации…</p></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day-53/" target="_blank" rel="noopener">Happy Day</a><a class="happy-button" href="../sport-38/" target="_blank" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
     <h2 class="happy-heading">Настройки питания</h2>
 
 
@@ -1723,7 +1723,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       try{store.setItem(marker,legacy)}catch(e){legacy=null}
     }
     var changing=false;
-    function identity(v){var a=parse(v);return JSON.stringify(a&&a.s?{uid:a.s.uid,at:a.s.at,rt:a.s.rt,exp:a.s.exp,k:a.k}:{uid:null});}
+    function identity(v){var a=parse(v);return JSON.stringify(a&&a.s?{uid:a.s.uid,k:a.k}:{uid:null});}   // Update 25: личность входа — аккаунт и ключ; обновление токена тем же аккаунтом не смена входа
     var observed=identity(get(authKey));
     function assertCurrent(){if(root.CL&&root.CL.ready&&!(root.MealAuthFence&&root.MealAuthFence.localOnlyOwner)&&identity(get(authKey))!==identity(JSON.stringify({s:root.CL.s,k:root.CL.kraw})))throw Error('Вход изменился в другом окне');if(changing||uid((parse(get(authKey))||{}).s&&parse(get(authKey)).s.uid)!==owner)throw Error('Аккаунт изменился. Открой приложение снова.');}
     function key(k){return k===authKey||owner==='local'?k:'happy-user:'+encodeURIComponent(owner)+':'+k}
@@ -1752,6 +1752,8 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     }
     if(root.addEventListener)root.addEventListener('storage',function(e){
       if(e.key!==null&&e.key!==authKey)return;
+      // Update 25: тот же аккаунт и ключ, но свежий токен из другого окна — берём его, это не смена входа
+      if(e.key!==null&&root.CL&&root.CL.s&&!changing){var fresh=parse(e.newValue);if(fresh&&fresh.s&&fresh.s.uid===root.CL.s.uid&&fresh.k===root.CL.kraw&&fresh.s.at&&fresh.s.at!==root.CL.s.at)root.CL.s=fresh.s;}
       var next=identity(e.newValue);if(e.key!==null&&next===observed)return;observed=next;
       if(e.key!==null&&root.CL&&next===identity(JSON.stringify({s:root.CL.s,k:root.CL.kraw})))return;
       changing=true;if(root.MealAuthFence)++root.MealAuthFence.generation;
@@ -5773,14 +5775,15 @@ function clUtf(t){ return new TextEncoder().encode(t) }
 function clOn(){try{if(!CL.ready)return false;clRequire(clContext());return true}catch(e){return false}}
 
 /* Private candidate: explicit auth context; no profile/schema migration. */
-function clIdentity(raw){var a=JSON.parse(raw||'null');return JSON.stringify(a&&a.s?{uid:a.s.uid,at:a.s.at,rt:a.s.rt,exp:a.s.exp,k:a.k}:{uid:null});}
+function clIdentity(raw){var a=JSON.parse(raw||'null');return JSON.stringify(a&&a.s?{uid:a.s.uid,k:a.k}:{uid:null});}   // Update 25: аккаунт и ключ, без токена
 function clDisk(){if(typeof winStore!=='undefined'&&winStore)throw Error('Вход через это встроенное хранилище пока не поддерживается безопасно. Локальный журнал не изменён.');return localStorage.getItem(CL_KEY);}
 function clContext(allowPending){
  if(!allowPending&&MealAuthFence.pending)throw Error('Дождись завершения изменения входа.');
  var s=CL.s;return {generation:MealAuthFence.generation,s:s,uid:s&&s.uid,at:s&&s.at,rt:s&&s.rt,exp:s&&s.exp,key:CL.ck,kraw:CL.kraw,disk:clIdentity(clDisk())};
 }
 function clGuard(c,allowPending){
- var s=CL.s;if(!c||c.generation!==MealAuthFence.generation||(!allowPending&&MealAuthFence.pending)||s!==c.s||(s&&s.uid)!==c.uid||(s&&s.at)!==c.at||(s&&s.rt)!==c.rt||(s&&s.exp)!==c.exp||CL.ck!==c.key||CL.kraw!==c.kraw||clIdentity(clDisk())!==c.disk)throw Error('Аккаунт или ключ изменились. Повтори действие.');
+ // Update 25: сравниваем аккаунт, ключ и поколение входа; сам токен (at/rt/exp) может обновиться во время операции — это тот же вход
+ var s=CL.s;if(!c||c.generation!==MealAuthFence.generation||(!allowPending&&MealAuthFence.pending)||(s&&s.uid)!==c.uid||CL.ck!==c.key||CL.kraw!==c.kraw||clIdentity(clDisk())!==c.disk)throw Error('Аккаунт или ключ изменились. Повтори действие.');
 }
 function clRequire(c){
  clGuard(c);if(!c.s||!c.key||!HappyProfile.matches(c.uid)||HappyProfile.owner!==c.uid||c.disk!==clIdentity(JSON.stringify({s:c.s,k:c.kraw})))throw Error('Вход не подтверждён. Локальный журнал сохранён отдельно.');
@@ -5858,13 +5861,26 @@ async function clSignOut(){
   if(c.at)fetch(CLOUD.url+'/auth/v1/logout',{method:'POST',headers:{apikey:CLOUD.key,Authorization:'Bearer '+c.at}}).catch(function(){});
  }finally{action.finish();}
 }
+var clRefreshing=null;
+/* Update 25: одно обновление токена за раз — параллельные операции ждут его и берут свежий контекст, а не считают смену токена сменой входа.
+   Если токен уже обновило другое окно тем же аккаунтом и ключом, берём сохранённый вход вместо выхода из аккаунта. */
+function clAdoptStored(c){var a=JSON.parse(clDisk()||'null');if(a&&a.s&&a.s.uid===c.uid&&a.k===c.kraw&&a.s.at&&a.s.at!==c.at){CL.s=a.s;return true}return false}
 async function clTokenContext(force,c){
- clRequire(c);if(!force&&Date.now()<c.exp-60000)return {token:c.at,context:c};
- var j;try{j=await clAuth('token?grant_type=refresh_token',{refresh_token:c.rt})}catch(e){
-  clGuard(c);if(/устарел|Неверная/.test(e.message)){clPersist(c,null,null,null,0);++MealAuthFence.generation;HappyProfile.changed(null);}throw e;
+ clRequire(c);var live=clContext();if(live.uid===c.uid&&live.at!==c.at)c=live;
+ if(!force&&Date.now()<c.exp-60000)return {token:c.at,context:c};
+ if(!clRefreshing){
+  clRefreshing=(async function(){
+   var j;try{j=await clAuth('token?grant_type=refresh_token',{refresh_token:c.rt})}catch(e){
+    clGuard(c);if(clAdoptStored(c))return;
+    if(/устарел|Неверная/.test(e.message)){clPersist(c,null,null,null,0);++MealAuthFence.generation;HappyProfile.changed(null);}throw e;
+   }
+   clRequire(c);var next=clSes(j,c.s);if(!next.at||next.uid!==c.uid)throw Error('Не удалось проверить обновлённый вход.');
+   clPersist(c,next,c.key,c.kraw,CL.last);
+  })();
+  clRefreshing.finally(function(){clRefreshing=null});
  }
- clRequire(c);var next=clSes(j,c.s);if(!next.at||next.uid!==c.uid)throw Error('Не удалось проверить обновлённый вход.');
- clPersist(c,next,c.key,c.kraw,CL.last);return {token:next.at,context:clContext()};
+ await clRefreshing;
+ var fresh=clContext();clRequire(fresh);if(fresh.uid!==c.uid)throw Error('Аккаунт изменился. Повтори действие.');return {token:fresh.at,context:fresh};
 }
 async function clToken(force){return (await clTokenContext(force,clContext())).token;}
 async function clRest(method,query,body,prefer,again,pinned,completion,operationGuard){

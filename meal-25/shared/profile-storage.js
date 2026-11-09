@@ -24,7 +24,7 @@
       try{store.setItem(marker,legacy)}catch(e){legacy=null}
     }
     var changing=false;
-    function identity(v){var a=parse(v);return JSON.stringify(a&&a.s?{uid:a.s.uid,at:a.s.at,rt:a.s.rt,exp:a.s.exp,k:a.k}:{uid:null});}
+    function identity(v){var a=parse(v);return JSON.stringify(a&&a.s?{uid:a.s.uid,k:a.k}:{uid:null});}   // Update 25: личность входа — аккаунт и ключ; обновление токена тем же аккаунтом не смена входа
     var observed=identity(get(authKey));
     function assertCurrent(){if(root.CL&&root.CL.ready&&!(root.MealAuthFence&&root.MealAuthFence.localOnlyOwner)&&identity(get(authKey))!==identity(JSON.stringify({s:root.CL.s,k:root.CL.kraw})))throw Error('Вход изменился в другом окне');if(changing||uid((parse(get(authKey))||{}).s&&parse(get(authKey)).s.uid)!==owner)throw Error('Аккаунт изменился. Открой приложение снова.');}
     function key(k){return k===authKey||owner==='local'?k:'happy-user:'+encodeURIComponent(owner)+':'+k}
@@ -53,6 +53,8 @@
     }
     if(root.addEventListener)root.addEventListener('storage',function(e){
       if(e.key!==null&&e.key!==authKey)return;
+      // Update 25: тот же аккаунт и ключ, но свежий токен из другого окна — берём его, это не смена входа
+      if(e.key!==null&&root.CL&&root.CL.s&&!changing){var fresh=parse(e.newValue);if(fresh&&fresh.s&&fresh.s.uid===root.CL.s.uid&&fresh.k===root.CL.kraw&&fresh.s.at&&fresh.s.at!==root.CL.s.at)root.CL.s=fresh.s;}
       var next=identity(e.newValue);if(e.key!==null&&next===observed)return;observed=next;
       if(e.key!==null&&root.CL&&next===identity(JSON.stringify({s:root.CL.s,k:root.CL.kraw})))return;
       changing=true;if(root.MealAuthFence)++root.MealAuthFence.generation;

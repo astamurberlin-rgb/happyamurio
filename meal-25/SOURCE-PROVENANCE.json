@@ -20,7 +20,11 @@
   "sources.js: source DESSERT «Десерты · коллекция» (on by default), sourceOf HM-DESSERT, compare order",
   "catalog.js: append chain + desserts, infoHTML/footer dispatch and membership note, amount() shows less_than bounds as «< N», settings body and pill, switch-on load",
   "index.html: desserts.js, status/retry for DESSERT in empty-search state, version 25, cache-busting ?v=25",
-  "checks/check-desserts.mjs: adapter against the real library file"
+  "checks/check-desserts.mjs: adapter against the real library file",
+  "auth identity = uid + key (identity/clIdentity/clGuard without at/rt/exp); single-flight token refresh (clRefreshing), adoption of a fresher same-account session from storage (clAdoptStored, storage event)",
+  "counters.js: row subtitle shows the portion only (no «· Day · Sport»)",
+  "linked-app buttons open in a new window (target=_blank)",
+  "checks/check-auth-identity.mjs"
  ],
  "userVerification": "pending (owner, iPhone)",
  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
@@ -32,8 +36,8 @@
   },
   {
    "path": "README.md",
-   "size": 7687,
-   "sha256": "5e5b69fec9e9c61e582a8bfbfef0e1af163e8d47c46afea2c88357db512f56e5"
+   "size": 8581,
+   "sha256": "ee6240fea186d92bf04f89df02c789592ecd2bfcc1ccc98685712480dbf1f2d7"
   },
   {
    "path": "account-ui.js",
@@ -206,6 +210,11 @@
    "sha256": "696fbad8335f38d274e2a921de8592402bc741f46113f23dd3e22b0e5481db8b"
   },
   {
+   "path": "checks/check-auth-identity.mjs",
+   "size": 4625,
+   "sha256": "bb42d5f9a14c991160464aee505a13d41e7bd85023677aae476db54d4e5d03d3"
+  },
+  {
    "path": "checks/check-desserts.mjs",
    "size": 12181,
    "sha256": "dc9e4b7be7f4f59f98c34a96e261a926c2c2648f5d5c2891ca0e0186764f69eb"
@@ -222,8 +231,8 @@
   },
   {
    "path": "counters.js",
-   "size": 18330,
-   "sha256": "b617f0b9aafc7bb79a5105552e6fdf5bc878368300d2908e4cbdc4d955bfc5cb"
+   "size": 18307,
+   "sha256": "87fc37108a0b6da2146cfb3050f4207736c1c379b1b320e92087b437cba34a7e"
   },
   {
    "path": "desserts.js",
@@ -237,8 +246,8 @@
   },
   {
    "path": "index.html",
-   "size": 598895,
-   "sha256": "3989e31516db1dd61dba8c12f6e7d52026eaca7e6b335f09879679a3c05dd770"
+   "size": 600702,
+   "sha256": "65cbc91dbd870637ae8003759b9fe44b3a9d6d96638a74510ded0392844ef4b1"
   },
   {
    "path": "journal-model.js",
@@ -422,8 +431,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 16267,
-   "sha256": "db439e4f3deb78320c9950f4746add83b14bfef5cea17d5cfa0fffeb2337b762"
+   "size": 17367,
+   "sha256": "fa72a0c59e08b2f0d4883a68b193a97ce8473a0de76297b82aefb0ea042af288"
   },
   {
    "path": "report.css",
@@ -507,8 +516,8 @@
   },
   {
    "path": "shared/profile-storage.js",
-   "size": 4367,
-   "sha256": "37787382b5b953144558e020c193a271ee7c91f164ac8c3ed1ca6ba1dc6aa3e7"
+   "size": 4890,
+   "sha256": "1087edf22e5045a13a8c2bff00520e2eca3be9a9a3ad3bc494c4a5e05cd5cb34"
   },
   {
    "path": "shared/release-notes.js",

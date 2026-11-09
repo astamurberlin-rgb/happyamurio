@@ -49,7 +49,7 @@
 - Sport: `npm --prefix sport-NN/sport run check`; для настроек — `node sport-NN/scripts/check-settings-layout.mjs` (headless Chrome); происхождение — `verify-release` по `SOURCE-PROVENANCE.json`.
 - Meal: `node scripts/check-meal-times.mjs` (время питания и связка с журналом Day), `node scripts/check-meal-exports.mjs` (CSV, отчёты, названия способов приготовления).
 - Day: `node --test day-53/tests/*.test.cjs`; самостоятельный HTML — `python3 scripts/build-day-standalone.py day-53`; смоук в headless Chrome — страница, настройки, подвал, ссылки, без ошибок.
-- Meal: `node meal-25/checks/check-startup.mjs`, `node meal-25/checks/check-desserts.mjs` (адаптер библиотеки десертов на реальном файле из `meal-libraries`); смоук в headless Chrome с файлами библиотек.
+- Meal: `node meal-25/checks/check-startup.mjs`, `node meal-25/checks/check-auth-identity.mjs` (вход по аккаунту и ключу, не по токену), `node meal-25/checks/check-desserts.mjs` (адаптер библиотеки десертов на реальном файле из `meal-libraries`); смоук в headless Chrome с файлами библиотек.
 
 ## Общий интерфейс и настройки
 
