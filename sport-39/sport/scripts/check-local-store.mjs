@@ -31,13 +31,13 @@ function fakeIndexedDB(options={}){
      transaction(storeName,mode){
       assert.ok(stores.has(storeName),'store exists');const t={error:null,oncomplete:null,onerror:null,onabort:null};const ops=[];
       const store={
-       get:k=>{const r={result:undefined,error:null};ops.push(()=>{r.result=data.has(k)?data.get(k):undefined});return r},
+       get:k=>{const r={result:undefined,error:null,onsuccess:null};ops.push(()=>{r.result=data.has(k)?data.get(k):undefined;r.onsuccess?.({target:r})});return r},
        getAll:()=>{const r={result:[]};ops.push(()=>{r.result=[...data.keys()].sort().map(k=>data.get(k))});return r},
        getAllKeys:()=>{const r={result:[]};ops.push(()=>{r.result=[...data.keys()].sort()});return r},
        put:(v,k)=>{assert.equal(mode,'readwrite');const r={};ops.push(()=>{if(failPut(k,v))throw Object.assign(Error('synthetic quota'),{name:'QuotaExceededError'});data.set(k,v)});return r},
        delete:k=>{assert.equal(mode,'readwrite');const r={};ops.push(()=>{data.delete(k)});return r}
       };
-      setTimeout(()=>{try{for(const op of ops)op();t.oncomplete?.({target:t})}catch(e){t.error=e;t.onabort?.({target:t})}},0);
+      setTimeout(()=>{try{for(let i=0;i<ops.length;i++)ops[i]();t.oncomplete?.({target:t})}catch(e){t.error=e;t.onabort?.({target:t})}},0);
       return {objectStore:()=>store,get error(){return t.error},set oncomplete(f){t.oncomplete=f},set onerror(f){t.onerror=f},set onabort(f){t.onabort=f}};
      }};
     r.result=db;if(!options.existing)r.onupgradeneeded?.({target:r});r.onsuccess?.({target:r});
@@ -120,6 +120,26 @@ await test('another tab\'s write reaches this tab through BroadcastChannel and t
  a.sportStorage.setItem(PREFIX+':profile:u1','from-a');await a.SportLocalStore.flush();
  for(let i=0;i<5&&!seen.length;i++)await tick();
  assert.deepEqual(seen,[PREFIX+':profile:u1']);assert.equal(b.sportStorage.getItem(PREFIX+':profile:u1'),'from-a');
+});
+await test('writeMerged: a save that lands after another tab\'s is merged inside the transaction, cache and listeners follow',async()=>{
+ const shared=new Map([[PREFIX+':profile:u1',JSON.stringify({version:1,workouts:[{id:'a',title:'A'}]})]]);
+ const c=realm({storage:fakeStorage(),indexedDB:fakeIndexedDB({existing:true,data:shared})});await c.SportLocalStore.open();
+ const expected=c.sportStorage.getItem(PREFIX+':profile:u1');
+ // Another tab commits first (directly into the store, as its own transaction would).
+ shared.set(PREFIX+':profile:u1',JSON.stringify({version:1,workouts:[{id:'a',title:'A'},{id:'b',title:'B'}]}));
+ const seen=[];c.SportLocalStore.onChange(k=>seen.push(k));
+ const mine=JSON.stringify({version:1,workouts:[{id:'a',title:'A renamed'}]});
+ const merge=(base,local,remote)=>{const l=JSON.parse(local),r=JSON.parse(remote);return JSON.stringify({version:1,workouts:[...l.workouts,...r.workouts.filter(w=>!l.workouts.some(x=>x.id===w.id))]})};
+ const stored=await c.SportLocalStore.writeMerged(PREFIX+':profile:u1',mine,expected,merge);
+ assert.deepEqual(JSON.parse(stored).workouts.map(w=>w.id+':'+w.title),['a:A renamed','b:B'],'both tabs\' changes stored');
+ assert.equal(shared.get(PREFIX+':profile:u1'),stored,'IndexedDB holds the merged value');assert.equal(c.sportStorage.getItem(PREFIX+':profile:u1'),stored,'cache follows');
+ for(let i=0;i<5&&!seen.length;i++)await tick();assert.deepEqual(seen,[PREFIX+':profile:u1'],'listener told about the merged result');
+ // No concurrent write: the value is stored as is, no merge call.
+ let calls=0;const plain=JSON.stringify({version:1,workouts:[]});const out=await c.SportLocalStore.writeMerged(PREFIX+':profile:u1',plain,stored,()=>{calls++;return 'x'});
+ assert.equal(out,plain);assert.equal(calls,0);assert.equal(shared.get(PREFIX+':profile:u1'),plain);
+ // localStorage backend: same contract, synchronously.
+ const ls=fakeStorage({[PREFIX+':profile:u1']:'remote'});const d=realm({storage:ls});await d.SportLocalStore.open();
+ const r=await d.SportLocalStore.writeMerged(PREFIX+':profile:u1','mine','expected',(b,l,rm)=>b+'|'+l+'|'+rm);assert.equal(r,'expected|mine|remote');assert.equal(ls.getItem(PREFIX+':profile:u1'),'expected|mine|remote');
 });
 await test('the sync ledger runs unchanged on top of the facade and no longer sees a 4 MiB origin budget',async()=>{
  const ls=fakeStorage({'day-journal':'d'.repeat(2*1024*1024)});const idb=fakeIndexedDB();const c=realm({storage:ls,indexedDB:idb});

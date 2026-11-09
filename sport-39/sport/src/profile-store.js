@@ -45,7 +45,13 @@ const SportProfiles=(()=>{
     save(data){if(typeof SportWriterLock!=='undefined'&&SportWriterLock.embed)throw Error('Замеры не записывают полный журнал Sport');assertOwner();sportStorage.removeItem(key()+':journal-recovery-v2:headroom-probe');
       // Update 39.1: a journal written by another tab since we last looked is merged in, not refused.
       const stored=sportStorage.getItem(key());let merged=null;if(stored!==observed){const m=merge(observed,data,stored);if(m.changed){merged=m.data;data=m.data;}}
-      const raw=JSON.stringify({...data,...(owner==='local'?{}:{sportOwner:owner})});sportStorage.setItem(key(),raw);if(sportStorage.getItem(key())!==raw)throw Error('Сохранение журнала не прошло проверку');observed=raw;for(const fn of listeners){try{fn()}catch{}};return merged;},
+      const raw=JSON.stringify({...data,...(owner==='local'?{}:{sportOwner:owner})});
+      // The write itself is compare-and-merge inside the IndexedDB transaction: a save by another tab that landed in the
+      // same instant is merged there, and the tabs learn the stored result through the storage channel (adopt).
+      const expected=stored;
+      if(typeof SportLocalStore!=='undefined'&&SportLocalStore.writeMerged)SportLocalStore.writeMerged(key(),raw,expected,(baseRaw,localRaw,remoteRaw)=>{const m=merge(baseRaw,JSON.parse(localRaw),remoteRaw);return JSON.stringify({...m.data,...(owner==='local'?{}:{sportOwner:owner})})});
+      else sportStorage.setItem(key(),raw);
+      if(sportStorage.getItem(key())!==raw)throw Error('Сохранение журнала не прошло проверку');observed=raw;for(const fn of listeners){try{fn()}catch{}};return merged;},
     adopt,get observedRaw(){return observed},
     recoveryKey(suffix){return key()+suffix}
   };

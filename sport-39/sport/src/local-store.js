@@ -23,7 +23,7 @@ const SportLocalStore=(()=>{
    let t;try{t=db.transaction(STORE,mode)}catch(e){reject(e);return}
    const store=t.objectStore(STORE);let req=null;
    try{req=fn(store)}catch(e){reject(e);return}
-   t.oncomplete=()=>resolve(req&&'result' in req?req.result:undefined);
+   t.oncomplete=()=>resolve(req&&req.outcome!==undefined?req:(req&&'result' in req?req.result:undefined));
    t.onerror=t.onabort=()=>reject(t.error||Error('IndexedDB: запись не прошла'));
   });
  }
@@ -45,8 +45,9 @@ const SportLocalStore=(()=>{
   get length(){return keys().length},
   key(i){return keys()[i]??null},
   getItem(k){if(backend==='indexedDB'&&owned(k))return cache.has(k)?cache.get(k):null;return base().getItem(k)},
-  setItem(k,v){v=String(v);if(backend==='indexedDB'&&owned(k)){cache.set(k,v);enqueue(s=>s.put(v,k));broadcast(k);return}base().setItem(k,v)},
-  removeItem(k){if(backend==='indexedDB'&&owned(k)){cache.delete(k);enqueue(s=>s.delete(k));broadcast(k);return}base().removeItem(k)},
+  // Other tabs are told only after the write is committed: they re-read the key from IndexedDB.
+  setItem(k,v){v=String(v);if(backend==='indexedDB'&&owned(k)){cache.set(k,v);enqueue(s=>s.put(v,k)).then(()=>broadcast(k),()=>{});return}base().setItem(k,v)},
+  removeItem(k){if(backend==='indexedDB'&&owned(k)){cache.delete(k);enqueue(s=>s.delete(k)).then(()=>broadcast(k),()=>{});return}base().removeItem(k)},
   clear(){throw Error('SportLocalStore: очистка всего хранилища не поддерживается')}
  };
  function keys(){
@@ -78,6 +79,27 @@ const SportLocalStore=(()=>{
   ls.setItem(MARK,'1');migrated={copied:names.length,verified:true};
  }
  function flush(){return queue.then(()=>{if(lastError){const e=lastError;lastError=null;throw e}})}
+ /* Update 39.1 · compare-and-merge write for the journal. Two live tabs may save within the same instant, before the
+    channel message of the other reaches them; the IndexedDB transaction is where their writes serialize. Inside it
+    the current value is read: if it is not what this tab last saw (`expected`), `mergeRaw(expected, value, current)`
+    decides what is stored, the cache takes that result and listeners learn about it. Returns a promise of the stored raw. */
+ function writeMerged(k,value,expected,mergeRaw){
+  value=String(value);
+  if(backend!=='indexedDB'||!owned(k)){const ls=base();const current=ls.getItem(k);let out=value;if(current!==null&&current!==expected&&current!==value){try{out=String(mergeRaw(expected,value,current))}catch{out=value}}ls.setItem(k,out);return Promise.resolve(out)}
+  cache.set(k,value);
+  const run=enqueue(store=>{
+   const req=store.get(k);
+   req.onsuccess=()=>{
+    const current=req.result===undefined?null:String(req.result);let out=value;
+    if(current!==null&&current!==expected&&current!==value){try{out=String(mergeRaw(expected,value,current))}catch{out=value}}
+    store.put(out,k);
+    if(out!==value){cache.set(k,out);Promise.resolve().then(()=>notify(k));}
+    req.outcome=out;
+   };
+   return req;
+  }).then(req=>{broadcast(k);return req&&req.outcome!==undefined?req.outcome:(cache.has(k)?cache.get(k):value)},()=>value);
+  return run;
+ }
  async function open(factory=globalThis.indexedDB){
   if(opened)return opened;
   opened=(async()=>{
@@ -98,6 +120,6 @@ const SportLocalStore=(()=>{
   let bytes=0;if(backend==='indexedDB')for(const [k,v] of cache)bytes+=2*(k.length+v.length);
   return {backend,keys:backend==='indexedDB'?cache.size:keys().filter(owned).length,bytes,pendingWrites:pending,migrated,error:lastError?String(lastError.message||lastError):null};
  }
- return {open,storage,flush,refresh,diagnostics,onChange(fn){listeners.add(fn);return()=>listeners.delete(fn)},get backend(){return backend},get ready(){return !!opened},PREFIX,MARK,owned};
+ return {open,storage,flush,refresh,writeMerged,diagnostics,onChange(fn){listeners.add(fn);return()=>listeners.delete(fn)},get backend(){return backend},get ready(){return !!opened},PREFIX,MARK,owned};
 })();
 var sportStorage=SportLocalStore.storage;
