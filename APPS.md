@@ -11,6 +11,7 @@
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
+| Happy Meal · Update 27 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27 |
 | Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
@@ -73,6 +74,12 @@
 По прямому запросу владельца Update 52 публикуется отдельно от старой страницы. `day/` восстановлен точно из последнего успешного выпуска `e1e6597`; его внутренняя метка — 50.14. У 52 собственные URL и scope установки; общий аккаунт и прежние ключи дневника сохранены. Для следующего согласованного апдейта Day каталог `day-52/` служит исходной версией; работу и публикацию выполнять в новом каталоге выпуска.
 
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
+
+## Happy Meal · Update 27 · 10.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-27/ . Исходник — `meal-26/` (26.1, main `9280726`); дневник, вход, синхронизация, настройки и библиотеки не менялись. `search-names.js`: 44 десерта BLS находятся по русским поисковым названиям (82 фразы — в индексе BLS, без новых карточек и марок), 15 записей USDA получили русские названия в локализованном слое самой USDA (не зависят от коллекции «Десерты»). Проверки: `node meal-27/checks/check-search-names.mjs`, `check-startup`, `check-auth-identity`, `check-desserts`, общие проверки, смоук в headless Chrome с реальными библиотеками. Происхождение — `meal-27/SOURCE-PROVENANCE.json`.
+
+— Claude · 10.11.2026 00:45
 
 ## Happy Meal · Update 26 · 09.11.2026
 
