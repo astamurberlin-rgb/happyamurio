@@ -64,8 +64,18 @@ test('genuine budget failure preserves pending, held and all other keys',()=>{
 test('native probe failure keeps compact recovery and removes probe',()=>{
  const e=env();e.ledger.save(original);const before=e.map.get('ledger');e.fault('quota');assert.throws(()=>e.ledger.save(candidate),e=>e.code==='storage_quota');assert.equal(e.map.get('ledger'),before);assert.equal(e.map.has('ledger:reserve'),false);
 });
-test('unrelated occupied storage remains counted in the total budget',()=>{
- const e=env();e.ledger.save(original);e.map.set('other','z'.repeat(2*1024*1024));assert.throws(()=>e.ledger.save(candidate),e=>e.code==='storage_budget');assert.deepEqual(cp(e.ledger.load()),original);assert.equal(e.map.get('other').length,2*1024*1024);
+test('an explicit total budget still counts unrelated occupied storage',()=>{
+ const e=env(original,{totalBudget:4*1024*1024});e.ledger.save(original);e.map.set('other','z'.repeat(2*1024*1024));assert.throws(()=>e.ledger.save(candidate),e=>e.code==='storage_budget');assert.deepEqual(cp(e.ledger.load()),original);assert.equal(e.map.get('other').length,2*1024*1024);
+});
+test('38.7: other apps on the origin do not block Sport while the browser accepts the headroom probe',()=>{
+ // Owner's device 09.11.2026: 3,53 MB used by everyone, Sport ledger 0,52 MB, next 0,88 MB → the old 4 MiB rule refused; the probe (real quota) passes.
+ const e=env();e.ledger.save(original);e.map.set('other','z'.repeat(1024*1024));
+ e.ledger.save(candidate);assert.deepEqual(cp(e.ledger.export()),candidate);assert.equal(e.map.get('other').length,1024*1024);assert.ok(e.probes>0,'headroom probe performed');
+ assert.equal(e.ledger.diagnostics().lastFailure,null);assert.equal(e.ledger.limits.totalBudget,Infinity);
+});
+test('38.7: a genuinely full browser is still reported as storage_quota and leaves the ledger intact',()=>{
+ const e=env();e.ledger.save(original);const before=e.map.get('ledger');e.map.set('other','z'.repeat(Math.floor((3.9*1048576-e.used())/2)));
+ assert.throws(()=>e.ledger.save(candidate),e=>e.code==='storage_quota');assert.equal(e.map.get('ledger'),before);assert.equal(e.map.has('ledger:reserve'),false);assert.deepEqual(cp(e.ledger.load()),original);
 });
 test('different owner is refused before writing',()=>{
  const e=env(),before=e.map.get('ledger');assert.throws(()=>e.ledger.save({...candidate,uid:'different'}));assert.equal(e.map.get('ledger'),before);

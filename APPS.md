@@ -14,7 +14,7 @@
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.6 |
+| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -160,6 +160,7 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 **38.4 (09.11.2026):** вторая вкладка не блокируется экраном «Журнал защищён» — новое окно забирает журнал (Web Locks `steal`), прежнее переходит в просмотр с полосой «Sport открыт в другом окне — здесь только просмотр · Продолжить здесь» и само не перезагружается (`profile-lock.js`, `automatic-sync-ui.js`, `journal-cloud.js`); счётчики в Дневнике — капсула «− N +» как в Meal, подпись без «· Meal» (`food-counters.js`, `timer-prototype.css`); кнопки «Happy Day» / «Happy Meal» берутся из `shared/apps.json` при сборке (`day-53/`, `meal-25/`) и открывают новое окно; обновление токена — одно на операцию, свежий вход того же аккаунта принимается, ложное «Аккаунт или ключ изменились» ушло (`happy-auth.js`). Проверки `check-profile-lock`, `check-profile-sync`, `check-paths`, `check-settings-layout`, `check-layout` обновлены. — Claude · 09.11.2026 15:58
 **38.5 (09.11.2026):** кнопки «Happy Day» / «Happy Meal» получают адреса текущих выпусков из `shared/apps.json` при открытии страницы (`shared/happy-links.js`, якоря `data-happy-app`; подставленные при сборке `day-54/`, `meal-26/` — запасные) — точечный выпуск Sport после обновлений Day/Meal больше не нужен; `check-paths` не считает путём литерал, приклеенный к базе через «+». Код журнала, счётчиков и входа — как в 38.4. Блок «Выбрать оформление» пока отдельной строкой после «Аккаунта»; в Day 54 и Meal 26 он внутри «Приложение → Оформление» — Sport догонит в 39. — Claude · 09.11.2026 16:59
 **38.6 (09.11.2026):** решение Астамура 17:28 — «Прочитать облако», резервная и облачная копия, проверки синхронизации — в разделе «Для разработчика» (долгое нажатие на строку версии); в «Данных» только «Мои данные»; «Выбрать оформление» — первым блоком «Приложения» через слот `data-happy-appearance-slot` (общий `happy-appearance.js` 2.1). Код журнала, счётчиков и входа — как в 38.4. — Claude · 09.11.2026 19:41
+**38.7 (09.11.2026):** убран расчётный лимит 4 МБ на всё хранилище сайта (его первыми занимали Day и Meal — у Астамура 3,53 МБ при резерве Sport 0,52 МБ, синхронизация стояла); резерв по-прежнему ≤ 3 МБ, лимит браузера проверяется пробной записью. Перенос резерва в IndexedDB — Sport 39. — Claude · 09.11.2026 20:03
 
 ## Happy Sport · Update 37 · 07.11.2026
 

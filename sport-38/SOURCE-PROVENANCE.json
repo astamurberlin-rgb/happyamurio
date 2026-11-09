@@ -1,11 +1,11 @@
 {
   "app": "Happy Sport",
-  "update": "38.6",
+  "update": "38.7",
   "source_release": "sport-37 (Happy Sport · Update 37)",
   "source_commit_of_update_37": "cf8dea4f26ff8e05cb786594e6aae154391e9557",
   "source_commit": "b292b2b0b6b7f6660e1ca40152817d3cf2499160",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-38/",
-  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot; 38.7 (owner device 19:55: «резерв достиг лимита» with 3,53 MB used by all apps on the origin): the 4 MiB origin-wide budget is dropped — the ledger keeps its 3 MiB cap and the real browser quota is checked by the headroom probe",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -75,8 +75,8 @@
     },
     {
       "path": "README.md",
-      "size": 9565,
-      "sha256": "3027920408237678e413cc67f68b6e7ece70248d01ab2b29d6025ed72005529f"
+      "size": 10567,
+      "sha256": "492efd8a9080df0722cdb926c93f0d7ccb6b7b6227c856e786800fd222ec08ab"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -135,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 967506,
-      "sha256": "826586d2ce6a363dc642d35291a0b5928078f748fa2a64cb1a426cec033e683f"
+      "size": 969507,
+      "sha256": "8b534e67bea92ebd828ae9a9d7be1a14d371d8c4f52d87f4ba15d8f2aea9a6b8"
     },
     {
       "path": "manifest.webmanifest",
@@ -175,13 +175,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 2255,
-      "sha256": "171fb403e7cd2f3a845795881051764ea1770175677f0a6d5c3be1e8fc644c30"
+      "size": 2340,
+      "sha256": "aa96fe43d76e23b4a21f35f31a7160fa057eb8bbb396c9c2712c5ff5406f7d79"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 4104,
-      "sha256": "86bc43ac0bc54d405959ba564c935fbaa73e271955504b0d2a4ab52f29556115"
+      "size": 4355,
+      "sha256": "a0dab8dfdd27a2d80b2b135a2b51a7ab0bb47f95aa29532bf492b64d226be4c8"
     },
     {
       "path": "shared/README.md",
@@ -365,8 +365,8 @@
     },
     {
       "path": "sport/scripts/check-ledger-storage.mjs",
-      "size": 7812,
-      "sha256": "dbd73c10833de0f59b8998d0cdf760f172db3eb28fc14beea96b543a68b3fe2b"
+      "size": 8942,
+      "sha256": "43f8dc3e4b895800ebd068c011a0c2e9788a138d921c59715f82a069f4520620"
     },
     {
       "path": "sport/scripts/check-measurement-input-events.mjs",
@@ -550,8 +550,8 @@
     },
     {
       "path": "sport/src/automatic-sync-ui.js",
-      "size": 25376,
-      "sha256": "f373c4a9b45c3a0cf8068426ea8e3b5195d2302c59ad670c31fcc56ee9449693"
+      "size": 25789,
+      "sha256": "f81d09f9d48b73ec6a8868005fc8dcf43d718cd999003fdb91cb34b80d035e6c"
     },
     {
       "path": "sport/src/automatic-sync.js",
@@ -575,8 +575,8 @@
     },
     {
       "path": "sport/src/controlled-ledger.js",
-      "size": 5853,
-      "sha256": "3fa6a5a38969ca86f4b7502920a12cd1645bbb3062a53fb15e3fda76ae7d0766"
+      "size": 6376,
+      "sha256": "7dd34179d1d24229d39d636d70fc23965eebdc4b1abb692da3dcaa42ec3d8ca2"
     },
     {
       "path": "sport/src/controlled-sync-ui.js",
@@ -586,7 +586,7 @@
     {
       "path": "sport/src/data-transfer.js",
       "size": 18761,
-      "sha256": "138b1fb0c9efb1787ceed4b89c2b007815c5343b73cae988dcbcb122d5343be5"
+      "sha256": "d01af74204b35d2050e728dc70da55bbdbdb11231c46edd8b19f8beac46c109f"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -740,8 +740,8 @@
     },
     {
       "path": "sport/src/recovery-vault.js",
-      "size": 5051,
-      "sha256": "55be844d50546b69c85397489041a5493a9b0da3d405c76d5ce0cb95032fc1f3"
+      "size": 5187,
+      "sha256": "8e498966a85ac6bb35f9ac73c164168402b566d7a0eb45df02f5f79d21faf3fe"
     },
     {
       "path": "sport/src/refinements.css",
@@ -755,8 +755,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 15151,
-      "sha256": "af85b56b1912aefc1a980763f8f5e2589ae0b262850f555760653cf4136e6c09"
+      "size": 16080,
+      "sha256": "67073b25d61c401181436c39ac458bb9e0a1d8e13bd49c8436a4980d458e4e03"
     },
     {
       "path": "sport/src/rest-pill.js",

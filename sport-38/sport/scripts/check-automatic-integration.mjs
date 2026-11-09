@@ -275,10 +275,15 @@ await test('storage quota cannot block readback of an uncertain accepted packet 
  e.quota(true);const reads=e.reads;assert.equal((await e.c.auto.run()).status,'error');assert.ok(e.reads>reads);assert.equal(e.remote.writes,1);assert.ok(e.ledger().pending);
  e.quota(false);assert.equal((await e.c.auto.run()).status,'saved');assert.equal(e.remote.writes,1);assert.equal(e.ledger().pending,null);
 });
-await test('storage real budget overflow stays unsent with readable settings diagnostics',async()=>{
+await test('storage 38.7: other apps on the origin do not block Sport; a real browser quota failure stays unsent with readable diagnostics',async()=>{
  const e=await env();await e.c.auto.run();e.store.set('unrelated-data','x'.repeat(2*1024*1024));e.c.state.workouts[0].title='Still local';e.c.saveState();await Promise.resolve();
- assert.equal((await e.c.auto.run()).status,'error');assert.equal(e.remote.writes,1);assert.equal(e.c.state.workouts[0].title,'Still local');assert.equal(e.ledger().pending,null);
- const diagnostic=vm.runInContext('sportStorageDiagnosticText()',e.c);assert.match(diagnostic,/внутренний лимит/);assert.match(diagnostic,/МБ/);assert.ok(!diagnostic.includes('synthetic-token'));assert.ok(!diagnostic.includes('Still local'));
- e.store.delete('unrelated-data');assert.equal((await e.c.auto.run()).status,'saved');assert.equal(e.remote.writes,2);
+ // Neighbours' data (Day, Meal) is not Sport's budget: the save proceeds while the browser accepts the headroom probe.
+ assert.equal((await e.c.auto.run()).status,'saved');assert.equal(e.remote.writes,2);assert.equal(e.c.state.workouts[0].title,'Still local');assert.equal(e.ledger().pending,null);
+ // A browser that really refuses the write: nothing is sent, the ledger stays intact, the diagnostics name the browser.
+ const set=e.storage.setItem;e.storage.setItem=(k,v)=>{if(k.endsWith(':reserve')||k.endsWith(':controlled-sync-v3'))throw Object.assign(Error('Synthetic native capacity'),{name:'QuotaExceededError'});return set(k,v)};
+ e.c.state.workouts[0].title='Still local 2';e.c.saveState();await Promise.resolve();
+ assert.equal((await e.c.auto.run()).status,'error');assert.equal(e.remote.writes,2);assert.equal(e.c.state.workouts[0].title,'Still local 2');
+ const diagnostic=vm.runInContext('sportStorageDiagnosticText()',e.c);assert.match(diagnostic,/браузер отклонил/);assert.match(diagnostic,/МБ/);assert.ok(!diagnostic.includes('synthetic-token'));assert.ok(!diagnostic.includes('Still local'));
+ e.storage.setItem=set;e.store.delete('unrelated-data');assert.equal((await e.c.auto.run()).status,'saved');assert.equal(e.remote.writes,3);
 });
 console.log(JSON.stringify({automaticCases:n,realNetworkCalls:0,realCrypto:true,syntheticOnly:true,measurementFormIntegrated:true}));

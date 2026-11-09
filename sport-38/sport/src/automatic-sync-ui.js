@@ -45,7 +45,8 @@ function sportStorageDiagnosticText(){
   if(!sportCtrlStore)return 'Диагностика хранилища появится после проверки аккаунта.';
   const s=sportCtrlStore.diagnostics(),mb=n=>(n/1048576).toFixed(2).replace('.',',')+' МБ',f=s.lastFailure;
   let text='Хранилище этого браузера: '+mb(s.usedBytes)+'. Резерв синхронизации: '+mb(s.ledgerBytes)+' (без уплотнения '+mb(s.logicalBytes)+').';
-  if(f)text+=' Причина: '+(f.code==='storage_quota'?'браузер отклонил сохранение':'превышен внутренний лимит приложения')+'. Для следующего резерва: '+mb(f.nextLedgerBytes)+' из '+mb(f.ledgerLimit)+'; с остальными данными и запасом: '+mb(f.usedBytes-f.ledgerBytes+f.nextLedgerBytes+f.reserveBytes)+' из '+mb(f.totalLimit)+'.';
+  if(f)text+=' Причина: '+(f.code==='storage_quota'?'браузер отклонил сохранение (хранилище сайта заполнено)':'резерв превысил внутренний лимит')+'. Для следующего резерва: '+mb(f.nextLedgerBytes)+' из '+mb(f.ledgerLimit)+'; с остальными данными и запасом: '+mb(f.usedBytes-f.ledgerBytes+f.nextLedgerBytes+f.reserveBytes)+(Number.isFinite(f.totalLimit)?' из '+mb(f.totalLimit):' (лимит браузера проверяется пробной записью)')+'.';
+  else text+=' Лимит резерва: '+mb(s.ledgerLimit)+'; общий объём сайта ограничивает браузер (с 38.7 — проверка пробной записью, а не расчётным лимитом 4 МБ).';
   return text;
  }catch{return 'Не удалось прочитать размер локального резерва. Текущий дневник не изменён.';}
 }

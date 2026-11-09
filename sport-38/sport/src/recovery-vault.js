@@ -8,7 +8,8 @@ const SportRecovery=(()=>{
   const content=x=>JSON.stringify(stable(x?.data||x));
   const bytes=s=>2*String(s||'').length;
   const empty=()=>({v:2,blobs:{},history:[],beforeCloud:null,conflict:null});
-  function create({storage,key,current,historyLimit=2,maxBytes=1536*1024,totalBudget=4*1024*1024,reserveBytes=512*1024}){
+  // Update 38.7: the origin is shared with Day and Meal; the browser's real quota is checked by the headroom probe, not by a 4 MiB guess.
+  function create({storage,key,current,historyLimit=2,maxBytes=1536*1024,totalBudget=Infinity,reserveBytes=512*1024}){
     const probeKey=key+':headroom-probe';
     function clearProbe(){storage.removeItem(probeKey)}
     clearProbe();

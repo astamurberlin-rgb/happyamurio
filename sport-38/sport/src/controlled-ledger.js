@@ -38,7 +38,12 @@ const SportControlledLedger=(()=>{
   const result=visit(stored.root,pool.length).value;if(result?.uid!==stored.uid)throw corrupt();
   return copy(result); // Separate each restored snapshot; no shared mutable references.
  }
- function create({storage,key,uid,current,maxBytes=3*1024*1024,totalBudget=4*1024*1024,historyLimit=2}){
+ /* Update 38.7: the origin's localStorage is shared with Day and Meal, and their data is not Sport's to budget.
+    The former 4 MiB total was a guess at the browser quota and starved Sport once the neighbours grew (owner's
+    device, 09.11.2026: 3,53 MB used by everyone, Sport's own ledger 0,52 MB). The real limit is checked by the
+    headroom probe below (QuotaExceededError → storage_quota); the ledger keeps its own 3 MiB cap. A finite
+    totalBudget stays available for tests and for a future explicit policy. */
+ function create({storage,key,uid,current,maxBytes=3*1024*1024,totalBudget=Infinity,historyLimit=2}){
   const probe=key+':reserve';storage.removeItem(probe);let lastFailure=null;
   function empty(){return {v:3,uid,baseline:null,pending:null,held:null,history:[],legacy:null}}
   function validate(v){if(v.v!==3||v.uid!==uid||!Array.isArray(v.history))throw corrupt();return v}
