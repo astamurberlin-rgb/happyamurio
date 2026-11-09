@@ -1,8 +1,7 @@
-/* One full-journal writer per origin, acquired BEFORE migration or app boot.
- * A second tab cannot edit or sync. Browser releases the lock when this page closes.
- * Measurement embeds have a separate store and never write the full Sport journal.
+/* Boot path of Sport. Up to 38.x one tab held a full-journal Web Lock; since 39.1 every tab writes and the tabs
+ * merge (see the end of this file). Measurement embeds have a separate store and never write the full journal.
  */
-var SportWriterLock={held:false,embed:new URLSearchParams(location.search).get('embed')==='measurements'};
+var SportWriterLock={held:true,embed:new URLSearchParams(location.search).get('embed')==='measurements'};
 var sportReadOnlyGeneration=0,sportReadOnlyActive=false;
 function sportBootBlocked(message){
   sportReadOnlyActive=true;++sportReadOnlyGeneration;
@@ -52,40 +51,10 @@ window.addEventListener?.('storage',event=>{if(sportReadOnlyActive&&(event.key==
    synchronous read in the app already sees the cache. If IndexedDB is unavailable the facade stays on localStorage. */
 function sportStartApp(){if(!globalThis.SportReadOnlyTest?.ready){sportBootBlocked('Защита чтения не запустилась. Вход и приложение отключены; записи не изменены. Обнови страницу.');return;}
   SportLocalStore.open().catch(()=>'localStorage').then(()=>{sportReadOnlyActive=false;++sportReadOnlyGeneration;const script=document.createElement('script');script.textContent=document.getElementById('sport-app-source').textContent;document.body.appendChild(script);});}
-if(SportWriterLock.embed)sportStartApp();
-else if(!navigator.locks?.request)sportBootBlocked('В этой вкладке недоступна безопасная запись журнала. Запись и синхронизация отключены; данные не изменены. Для работы открой Sport отдельно в обновлённом браузере.');
-else {
-  const LOCK='auth-readonly-happy-sport-full-journal-writer-v1';
-  // Update 38.3: the lock is released on pagehide (back/forward cache). On return the page
-  // takes the lock again in place instead of reloading.
-  // Update 38.4: a second tab is never blocked — it takes the journal over (Web Locks `steal`);
-  // the tab that loses the lock stops writing and shows a banner with «Продолжить здесь».
-  // Whichever tab the owner is looking at owns the journal; stale in-memory data never writes back.
-  function sportLockLost(){
-    if(sportReadOnlyActive)return;
-    SportWriterLock.held=false;sportReadOnlyActive=true;++sportReadOnlyGeneration;
-    if(document.getElementById('sport-lock-banner'))return;
-    const bar=document.createElement('div');bar.id='sport-lock-banner';bar.className='sport-lock-banner';bar.setAttribute('role','status');
-    const text=document.createElement('span');text.textContent='Sport открыт в другом окне — здесь только просмотр.';
-    const resume=document.createElement('button');resume.type='button';resume.className='button';resume.textContent='Продолжить здесь';resume.addEventListener('click',()=>location.reload());
-    bar.append(text,resume);document.body.appendChild(bar);
-  }
-  function holdLock(onHeld){
-    return navigator.locks.request(LOCK,{mode:'exclusive',steal:true},async lock=>{
-      if(!lock){onHeld(false);return;}
-      SportWriterLock.held=true;onHeld(true);
-      await new Promise(resolve=>window.addEventListener('pagehide',()=>{SportWriterLock.held=false;resolve()},{once:true}));
-    }).catch(error=>{
-      if(error&&error.name==='AbortError'&&SportWriterLock.held){sportLockLost();return;}
-      throw error;
-    });
-  }
-  window.addEventListener('pageshow',event=>{
-    if(!event.persisted||SportWriterLock.held||sportReadOnlyActive)return;
-    holdLock(held=>{if(!held)location.reload()}).catch(()=>location.reload());
-  });
-  holdLock(held=>{
-    if(!held){sportBootBlocked('Не удалось получить право записи журнала. Нажми «Повторить открытие».');return;}
-    sportStartApp();
-  }).catch(()=>sportBootBlocked('Не удалось защитить запись журнала. Закрой другие вкладки Sport и повтори. Данные не изменены.'));
-}
+/* Update 39.1 (owner, 09.11.2026): no exclusive writer any more — every tab boots as a writer and the tabs merge
+   their journals through the storage facade (profile-store.js adopt/save, BroadcastChannel in local-store.js).
+   The former Web Lock, the «Журнал защищён» screen and the «Sport открыт в другом окне» banner are gone. Web Locks,
+   when the browser has them, only serialize automatic sync runs (automatic-sync-ui.js); without them the cloud
+   compare-and-swap still protects the journal. */
+SportWriterLock.held=true;
+sportStartApp();

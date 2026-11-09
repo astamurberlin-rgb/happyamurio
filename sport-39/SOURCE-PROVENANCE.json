@@ -135,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 978504,
-      "sha256": "722bfde2371ff385e66c895a3bbf4cf0cbf143061c74e17330257fbf57f11189"
+      "size": 981191,
+      "sha256": "5b4c87db54f65229004c2ea2720e44804cfc81d02d3a31b06279090c4f0066cb"
     },
     {
       "path": "manifest.webmanifest",
@@ -175,8 +175,8 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 2509,
-      "sha256": "2a76a9a0b2c53c2f8fd39f2e133977db6f0a332ef9b9d4b47353117c247d59fd"
+      "size": 2650,
+      "sha256": "0a081ec4be0f39c3f70bb76d1fc3e520ee4a8663a458e3011d5e90a5e694812c"
     },
     {
       "path": "scripts/write-provenance.mjs",
@@ -275,8 +275,8 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 8604,
-      "sha256": "354d4c243d870f1ce08a7341bd7399f1a579f70c34f37271eb0ff65aa75f7351"
+      "size": 8653,
+      "sha256": "f3b110e0b7a709957ac2929fb32b98ecce2cf510319c30317ecb2b19c7287447"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
@@ -390,13 +390,13 @@
     },
     {
       "path": "sport/scripts/check-profile-lock.mjs",
-      "size": 11403,
-      "sha256": "e511053195c06d08541c0e6ca84ba6c54a53ecf2f63a83017abc9679629dc97b"
+      "size": 10833,
+      "sha256": "b1e98757d511207dfaa133d19c4014933fbb05a8c3a09618da5c274238281a30"
     },
     {
       "path": "sport/scripts/check-profile-sync.mjs",
-      "size": 21958,
-      "sha256": "1c175433f3a7c0b3a4102712eaa4390a307c334e362b67fdb70ab7373c3cfa8e"
+      "size": 24611,
+      "sha256": "0dd3622caa2585638ecc2ff2ea13f06f29b2cbafb182ef87a50a0958caaaf95a"
     },
     {
       "path": "sport/scripts/check-readonly-transport.mjs",
@@ -545,8 +545,8 @@
     },
     {
       "path": "sport/src/app.js",
-      "size": 70506,
-      "sha256": "c676ecb38f5207d87ee58c702d8efd93f8557d0189a351d8e8df1d140a0b031e"
+      "size": 70823,
+      "sha256": "5dde038c2e0a6d6966b5c44a31cbbf7b6dc3fc98445411ea97f269a3de527634"
     },
     {
       "path": "sport/src/app.template.html",
@@ -555,13 +555,13 @@
     },
     {
       "path": "sport/src/automatic-sync-ui.js",
-      "size": 26617,
-      "sha256": "36a4edc9ae76c1e89835e7ef41a33f02519d60593d2d312f1eb9fe29f353969c"
+      "size": 27267,
+      "sha256": "a795a5c83f297fb25f0a9e6887327b6c9b9d83b892fd596c8bbf17d4c086adf1"
     },
     {
       "path": "sport/src/automatic-sync.js",
-      "size": 12216,
-      "sha256": "daa948e9e15604e0195b994b5ee179a60cdc47c2275765dbbfd9d97a92241270"
+      "size": 12733,
+      "sha256": "df5ea8f534056a02c0f560dd46342f9a8ca220ae4d129154d1e9d7374eee0d28"
     },
     {
       "path": "sport/src/catalog-groups.js",
@@ -674,6 +674,11 @@
       "sha256": "5126ce9f9c78d0fefbbfbcb297ee419e2d6cf0f189cc1897a0028d0146d9f2e8"
     },
     {
+      "path": "sport/src/live-tabs.js",
+      "size": 2328,
+      "sha256": "718a2c6c6502e08a08c9d45d0f54a57802c7fb12df7757acb5697abed9218ee6"
+    },
+    {
       "path": "sport/src/local-store.js",
       "size": 6228,
       "sha256": "5aeb83b03668d9f467883361bceb4f51b1cd4f0af87a5ba2db66c1714382806b"
@@ -720,13 +725,13 @@
     },
     {
       "path": "sport/src/profile-lock.js",
-      "size": 8027,
-      "sha256": "6ec1517fe038c3f8852754fe171bc68acb9ba34614fa352a6b843fb8385b9221"
+      "size": 5802,
+      "sha256": "28660e47532c6c73d7c3872dc5b8508b7156b78dd72bee01d5f0e7289ada5c5c"
     },
     {
       "path": "sport/src/profile-store.js",
-      "size": 3209,
-      "sha256": "eb0994b2bc75165e06896a80608ef3dbc84590de0ca730d962cbfbd451420634"
+      "size": 4825,
+      "sha256": "4e420d7fdd6171fd1fd58b58b06a6c77e6dcc41ade03316cf16cbf519f58fd81"
     },
     {
       "path": "sport/src/quick-value-input.js",
@@ -865,8 +870,8 @@
     },
     {
       "path": "sport/src/timer-prototype.css",
-      "size": 23363,
-      "sha256": "a27bd705df10496601a77379af9f2ad7ab354e1f47fa2dda65f3a72cef69e610"
+      "size": 22846,
+      "sha256": "a3777464e2c19980801792ba5670151ce2a035cbf16540418c7a7d1175faa00c"
     },
     {
       "path": "sport/src/workout-identity.js",

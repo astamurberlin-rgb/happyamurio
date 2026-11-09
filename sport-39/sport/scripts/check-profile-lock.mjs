@@ -19,20 +19,15 @@ function page({supported=true,search='',guardReady=true}={}){
  const context=createContext({SportReadOnlyTest:guardReady?{ready:true}:undefined,URLSearchParams,location:{search,reload(){}},navigator:{locks:supported?locks:null},window:{addEventListener:(n,f)=>events[n]=f},document:{getElementById:id=>id==='page'?page:id==='sport-lock-banner'?(elements.find(n=>n.id==='sport-lock-banner')||null):{textContent:'SYNTHETIC APP'},createElement:tag=>({tag,style:{},children:[],listeners:{},addEventListener(n,f){this.listeners[n]=f},setAttribute(k,v){this[k]=v},append(...c){this.children.push(...c)}}),body:{appendChild:node=>elements.push(node)}}});runInContext(source,context);return {context,events,elements,page};
 }
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
-const a=page();await tick();assert.equal(a.elements.length,1);assert.equal(a.context.SportWriterLock.held,true);
-// A second tab boots and takes the journal over; the first tab stops writing and shows the banner instead of a blocked screen.
-const b=page();await tick();assert.equal(b.elements.length,1);assert.equal(b.context.SportWriterLock.held,true);
-assert.equal(a.context.SportWriterLock.held,false);assert.equal(a.context.sportReadOnlyActive,true);
-const banner=a.elements.find(n=>n.id==='sport-lock-banner');assert.ok(banner,'banner in the tab that lost the journal');
-assert.match(banner.children[0].textContent,/другом окне/);assert.equal(banner.children[1].textContent,'Продолжить здесь');
-assert.equal(a.page.children.length,0,'app content stays visible: no blocked screen');
-a.events.pagehide();await tick();assert.equal(a.context.SportWriterLock.held,false);assert.equal(held(),true,'tab B still holds the journal');
-const c=page();await tick();assert.equal(c.elements.length,1);assert.equal(b.context.sportReadOnlyActive,true,'tab B loses the journal to tab C');
-c.events.pagehide();await tick();assert.equal(held(),false);
-const old=page({supported:false});assert.equal(old.elements.length,0);assert.match(old.page.children[1].textContent,/недоступна/);
-// Update 39: the embed boots after the storage facade opens (one task later).
+// Update 39.1: every tab boots as a writer — no lock, no «Журнал защищён», no banner; tabs merge through the storage facade.
+const a=page();await tick();assert.equal(a.elements.length,1,'tab A boots');assert.equal(a.context.SportWriterLock.held,true);
+const b=page();await tick();assert.equal(b.elements.length,1,'tab B boots too');assert.equal(b.context.SportWriterLock.held,true);
+assert.equal(a.context.SportWriterLock.held,true,'tab A keeps writing');assert.equal(a.context.sportReadOnlyActive,false);
+assert.equal(a.elements.find(n=>n.id==='sport-lock-banner'),undefined,'no banner anywhere');assert.equal(a.page.children.length,0,'no blocked screen');
+assert.equal(held(),false,'no exclusive writer lock is taken');
+const old=page({supported:false});await tick();assert.equal(old.elements.length,1,'a browser without Web Locks boots as well');assert.equal(old.page.children.length,0);
 const embed=page({search:'?embed=measurements'});await tick();assert.equal(embed.elements.length,1);assert.equal(held(),false);
-console.log('Passed: full-journal Web Lock precedes boot/migration; a second tab takes the journal over with a viewer banner in the previous one (38.4), unsupported-browser blocking, lifecycle release, and separate measurement embed path.');
+console.log('Passed: 39.1 live tabs — every tab boots as a writer without a lock, banner or blocked screen; browsers without Web Locks boot; separate measurement embed path.');
 // No-Web-Locks fallback exports only the saved active profile, without app boot or writes.
 {
  const data={version:1,sportOwner:'A',workouts:[{id:'A-private'}]},saved=new Map([['auth_readonly_hd_cloud_v1',JSON.stringify({s:{uid:'A'}})],['auth-readonly-happy-sport-prototype-v1:profile:A',JSON.stringify(data)],['auth-readonly-happy-sport-prototype-v1',JSON.stringify({version:1,sportOwner:'B',workouts:[{id:'B-private'}]})]]);
@@ -81,5 +76,5 @@ for(const change of ['replaced','deleted','owner-changed','version-changed','cor
 }
 console.log('Passed: delayed fallback logout/account/session/key/refresh fences, fresh journal validation, storage-clear and detached-button invalidation, A→B→A generation fence, and pre-download revocation.');
 
-const unsafe=page({guardReady:false});await new Promise(resolve=>setImmediate(resolve));assert.equal(unsafe.elements.length,0);assert.match(unsafe.page.children[1].textContent,/Защита чтения/);unsafe.events.pagehide();await new Promise(resolve=>setImmediate(resolve));
+const unsafe=page({guardReady:false});await new Promise(resolve=>setImmediate(resolve));assert.equal(unsafe.elements.length,0);assert.match(unsafe.page.children[1].textContent,/Защита чтения/);// 39.1: no pagehide lock handler any more
 console.log('Passed: absent or failed read-only guard prevents all app boot and authentication.');

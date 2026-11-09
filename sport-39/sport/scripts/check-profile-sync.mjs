@@ -3,7 +3,7 @@ import {createContext,runInContext} from 'node:vm';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 const read=p=>readFile(new URL('../src/'+p,import.meta.url),'utf8');
-const [localStore,profiles,journal,transfer,auth,recovery]=await Promise.all(['local-store.js','profile-store.js','journal-cloud.js','data-transfer.js','happy-auth.js','recovery-vault.js'].map(read));
+const [localStore,profiles,journal,transfer,auth,recovery,controlledJournal,controlledCas]=await Promise.all(['local-store.js','profile-store.js','journal-cloud.js','data-transfer.js','happy-auth.js','recovery-vault.js','controlled-journal.js','controlled-cas.js'].map(read));
 const KEY='auth-readonly-happy-sport-prototype-v1',copy=x=>JSON.parse(JSON.stringify(x));
 const blank=()=>({version:1,workouts:[],measurements:[],customExercises:[],templates:[],active:null,energy:{burn:0,intake:0,steps:0,training:0,minutes:0},demoPulse:false});
 const workout=id=>({id,title:'Fixture '+id,start:'2026-11-01T10:00',end:'2026-11-01T10:30',duration:1800,exercises:[{id:'x',name:'Exercise',sets:[{weight:20,reps:10,done:true}]}]});
@@ -11,7 +11,7 @@ function env({owner='A',legacy=null,entries=new Map()}={}){
  const saved=entries;if(owner)saved.set('auth_readonly_hd_cloud_v1',JSON.stringify({s:{uid:owner}}));else saved.delete('auth_readonly_hd_cloud_v1');if(legacy)saved.set(KEY,JSON.stringify(legacy));
  const document={addEventListener(){},querySelector(){return null}};
  const c=createContext({console,KEY,clone:copy,Date,TextEncoder,TextDecoder,btoa,atob,crypto:webcrypto,document,setInterval(){},setTimeout(){},clearTimeout(){},location:{reload(){}},localStorage:{getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,String(v)),removeItem:k=>saved.delete(k),key:i=>[...saved.keys()][i]??null,get length(){return saved.size}},renderProfile:()=>'',render(){},toast(){},goto(){},persist(){},writeSportLink(){},oldPersist(){},paintHappyAccount(){},sportCloudBusy:false,sportSyncTimer:null,SPORT_MEASURE_EMBED:false,fetch(){throw Error('Real network forbidden')},CL:{s:owner?{uid:owner}:null,ck:{}}});
- runInContext(localStore,c);runInContext(profiles,c);runInContext("function clAssertContext(uid,key){if(CL.s?.uid!==uid||CL.ck!==key)throw Error('Аккаунт или ключ изменились')}",c);runInContext('var state=SportProfiles.load()||'+JSON.stringify(blank()),c);runInContext(transfer,c);runInContext(recovery,c);runInContext(journal,c);return {c,saved,run:s=>runInContext(s,c)};
+ runInContext(localStore,c);runInContext(controlledJournal,c);runInContext(controlledCas,c);runInContext(profiles,c);runInContext("function clAssertContext(uid,key){if(CL.s?.uid!==uid||CL.ck!==key)throw Error('Аккаунт или ключ изменились')}",c);runInContext('var state=SportProfiles.load()||'+JSON.stringify(blank()),c);runInContext(transfer,c);runInContext(recovery,c);runInContext(journal,c);return {c,saved,run:s=>runInContext(s,c)};
 }
 // Migration preserves the exact original and separates local / A / B before rendering.
 {
@@ -22,7 +22,32 @@ function env({owner='A',legacy=null,entries=new Map()}={}){
  const again=env({owner:'A',entries:a.saved});assert.equal(again.run('state.workouts[0].id'),'private-A');
  const guest=env({owner:'A',legacy:{...blank(),workouts:[workout('guest')]}});assert.equal(guest.run('state.workouts.length'),0);assert.equal(guest.run("SportProfiles.read(SportProfiles.key('local')).workouts[0].id"),'guest');
  const corrupt=env({entries:new Map([[KEY,'{bad']])});assert.ok(corrupt.run('SportProfiles.error'));assert.throws(()=>corrupt.run('SportProfiles.save(state)'));assert.equal(corrupt.saved.get(KEY),'{bad');
- const tabs=env();tabs.run('SportProfiles.save(state)');tabs.saved.set(tabs.run('SportProfiles.key()'),JSON.stringify({...blank(),workouts:[workout('other-tab')]}));assert.throws(()=>tabs.run('SportProfiles.save(state)'),/другой вкладке/);
+ // Update 39.1: a journal stored by another tab is merged on save (records by id), not refused.
+ {const tabs=env();tabs.run('SportProfiles.save(state)');const key=tabs.run('SportProfiles.key()');
+  tabs.saved.set(key,JSON.stringify({...blank(),sportOwner:'A',workouts:[workout('other-tab')]}));
+  tabs.run("state.workouts.push("+JSON.stringify(workout('this-tab'))+")");
+  const merged=tabs.run('JSON.stringify(SportProfiles.save(state))');
+  const stored=JSON.parse(tabs.saved.get(key));
+  assert.deepEqual(stored.workouts.map(w=>w.id).sort(),['other-tab','this-tab'],'both tabs\' workouts kept');
+  assert.deepEqual(JSON.parse(merged).workouts.map(w=>w.id).sort(),['other-tab','this-tab'],'save returns the merged journal for the caller to adopt');
+  assert.equal(tabs.run('SportProfiles.observedRaw'),tabs.saved.get(key),'observed follows the write');
+  tabs.run('state=JSON.parse('+JSON.stringify(merged)+')');// the app adopts the merged journal returned by save (persist())
+  // adopt(): another tab stored a new workout; this tab's in-memory journal gains it and keeps its own unsaved edit.
+  tabs.saved.set(key,JSON.stringify({...stored,workouts:[...stored.workouts,workout('third')]}));
+  tabs.run("state.workouts.push("+JSON.stringify(workout('local-unsaved'))+")");
+  const adopted=JSON.parse(tabs.run('JSON.stringify(SportProfiles.adopt(clone(state)))'));
+  assert.equal(adopted.changed,true);assert.deepEqual(adopted.data.workouts.map(w=>w.id).sort(),['local-unsaved','other-tab','third','this-tab']);assert.deepEqual(adopted.conflicts,[]);
+  assert.equal(JSON.parse(tabs.run('JSON.stringify(SportProfiles.adopt(clone(state)))')).changed,false,'nothing new → no change');
+  // the same field changed differently in two tabs: this tab's value wins, the conflict is reported.
+  tabs.run('state.workouts=JSON.parse(JSON.stringify('+JSON.stringify(adopted.data.workouts)+'));SportProfiles.save(state)');
+  const base=JSON.parse(tabs.saved.get(key));const remote={...base,workouts:base.workouts.map(w=>w.id==='this-tab'?{...w,title:'Renamed elsewhere'}:w)};tabs.saved.set(key,JSON.stringify(remote));
+  tabs.run("state.workouts.find(w=>w.id==='this-tab').title='Renamed here'");
+  const r=JSON.parse(tabs.run('JSON.stringify(SportProfiles.adopt(clone(state)))'));
+  assert.equal(r.data.workouts.find(w=>w.id==='this-tab').title,'Renamed here');assert.ok(r.conflicts.length>=1,'conflict reported');
+  // another account's journal in the cell is never merged in.
+  tabs.saved.set(key,JSON.stringify({...blank(),sportOwner:'B',workouts:[workout('foreign')]}));
+  const f=JSON.parse(tabs.run('JSON.stringify(SportProfiles.adopt(clone(state)))'));assert.equal(f.changed,false);assert.ok(!f.data.workouts.some(w=>w.id==='foreign'));
+ }
 }
 function transport(e,data){let remote=data?{app:'Happy Sport',version:1,data:copy(data)}:null,at=data?100:null,writes=0,collisions=0,readError=null;
  e.c.clAt=async()=>{if(readError)throw Error(readError);return at};e.c.clGet=async()=>copy(remote);e.c.clGetVersion=async()=>{const revision=await e.c.clAt(),value=await e.c.clGet();return value?{value,at:revision,iv:'fixture-iv-'+revision}:null};e.c.sportJournalPut=async backup=>{writes++;if(collisions-- >0)return null;remote=copy(backup);at=(at||0)+1;return at};
@@ -64,7 +89,7 @@ function transport(e,data){let remote=data?{app:'Happy Sport',version:1,data:cop
 {
  const e=env();e.run(auth);e.run("CL.s={uid:'A',at:'fake-access',rt:'fake-refresh',exp:0};CL.ck={}");let requests=0;e.c.clAuth=async()=>{e.c.CL.s={uid:'B'};e.saved.set('auth_readonly_hd_cloud_v1',JSON.stringify({s:{uid:'B'}}));return {access_token:'fixture',user:{id:'A'}}};e.c.fetch=async()=>{requests++;throw Error('Unexpected')};await assert.rejects(()=>e.run("clRest('GET','?select=at')"),/Аккаунт/);assert.equal(requests,0);assert.equal(e.c.CL.s.uid,'B');
 }
-console.log('Passed: profile isolation/migration, legacy preservation, corrupt/quota fail-closed, multi-tab fence, full journal restore, idempotence, offline no-overwrite, CAS retries, conflicts, in-flight edits/account switch, and auth token race fencing.');
+console.log('Passed: profile isolation/migration, legacy preservation, corrupt/quota fail-closed, multi-tab merge on save and adopt (39.1), full journal restore, idempotence, offline no-overwrite, CAS retries, conflicts, in-flight edits/account switch, and auth token race fencing.');
 // A populated journal is never replaced by an empty snapshot in either direction.
 for(const direction of ['download','upload']){
  const e=env(),full={...blank(),workouts:[workout('keep')]};e.c.state=copy(full);const t=transport(e,full);assert.equal(await e.run('syncSportJournal()'),true);

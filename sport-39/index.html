@@ -553,7 +553,7 @@ body:has(.overlay:not(:empty)) #free-timer-root{visibility:hidden}
 .free-timer-hint{position:absolute;left:20%;right:20%;bottom:-22px;font-size:11px;text-align:center;color:var(--muted)}
 @media(max-width:360px){.exercise-mode-stack{width:116px}.exercise-mode-row small{font-size:10px}.exercise-player .player-inner-switches{width:128px}.exercise-player .player-inner-switches .player-mode-switch{min-height:26px}.exercise-player .player-inner-switches .player-mode-switch small{font-size:10px}.exercise-player .player-face-center{gap:5px;inset:18% 15%}.exercise-player .player-face-center strong{font-size:22px}}
 
-.sport-food-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0}.sport-food-row+ .sport-food-row{border-top:1px solid #ffffff26}.sport-food-row small{display:block;opacity:.65;margin-top:4px;font-size:12px}/* Update 38.4: «− N +» капсулой, как в Happy Meal */.sport-food-pill{display:grid;grid-template-columns:46px 52px 46px;align-items:stretch;height:44px;border:1px solid #ffffff73;border-radius:999px;overflow:hidden;background:#ffffff1f}.sport-food-pill>*{display:flex;align-items:center;justify-content:center;min-height:0;height:100%}.sport-food-pill button{border:0;border-radius:0;background:transparent;color:#fff;font-size:22px;line-height:1;padding:0;min-height:44px}.sport-food-pill button:first-child{border-right:1px solid #ffffff59}.sport-food-pill button:last-child{border-left:1px solid #ffffff59}.sport-food-pill button:disabled{opacity:.35}.sport-food-pill strong{font-size:17px;text-align:center}.sport-lock-banner{position:fixed;top:0;left:0;right:0;z-index:1200;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:#17122bf0;color:#fff;font-size:14px;line-height:1.3;box-shadow:0 2px 12px #0006}.sport-lock-banner>span{flex:1 1 auto;min-width:0}.sport-lock-banner>.button{flex:0 0 auto;width:auto;min-height:38px;padding:0 14px;margin:0;font-size:13px;border-radius:19px;color:#fff;background:#ffffff26;border-color:#ffffff66}
+.sport-food-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0}.sport-food-row+ .sport-food-row{border-top:1px solid #ffffff26}.sport-food-row small{display:block;opacity:.65;margin-top:4px;font-size:12px}/* Update 38.4: «− N +» капсулой, как в Happy Meal */.sport-food-pill{display:grid;grid-template-columns:46px 52px 46px;align-items:stretch;height:44px;border:1px solid #ffffff73;border-radius:999px;overflow:hidden;background:#ffffff1f}.sport-food-pill>*{display:flex;align-items:center;justify-content:center;min-height:0;height:100%}.sport-food-pill button{border:0;border-radius:0;background:transparent;color:#fff;font-size:22px;line-height:1;padding:0;min-height:44px}.sport-food-pill button:first-child{border-right:1px solid #ffffff59}.sport-food-pill button:last-child{border-left:1px solid #ffffff59}.sport-food-pill button:disabled{opacity:.35}.sport-food-pill strong{font-size:17px;text-align:center}
 /* Shared numeric entry. Names, search, selects and cards retain their design. */
 .sport-metric-input{position:relative;display:inline-flex!important;align-items:baseline!important;gap:6px!important;min-width:0;max-width:100%;width:100%;padding:0!important;margin:0!important;border:0!important;border-bottom:1px solid #ffffff80!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:inherit;font-variant-numeric:tabular-nums;overflow:visible!important}
 .sport-metric-input input,.active-workout .set-row .sport-metric-input input,.plan-set-field .sport-metric-input input,.player-round-row .sport-metric-input input{appearance:textfield;-moz-appearance:textfield;flex:1 1 auto;min-width:0!important;max-width:100%;width:100%!important;min-height:44px!important;height:auto!important;margin:0!important;padding:8px 0 6px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;outline:0!important;color:inherit;font:inherit;font-size:20px!important;line-height:1.25!important;text-align:right;font-variant-numeric:tabular-nums}
@@ -951,7 +951,11 @@ function clearSportMetricError(input){input?.removeAttribute?.('aria-invalid');i
 function sportDurationValue(seconds){const n=Math.max(0,Number(seconds)||0),ticks=Math.round(n*100),whole=Math.floor(ticks/100);return Math.floor(whole/60)+':'+String(whole%60).padStart(2,'0')+(ticks%100?'.'+String(ticks%100).padStart(2,'0'):'');}
 document.addEventListener('input',event=>clearSportMetricError(event.target));
 
-/* Account-scoped local journal. The legacy slot is retained untouched for recovery. */
+/* Account-scoped local journal. The legacy slot is retained untouched for recovery.
+ * Update 39.1 (owner, 09.11.2026): every tab is a writer. A journal changed by another tab is not an error any
+ * more — it is merged three ways (what this tab last saw → what this tab has → what the other tab stored) with
+ * SportControlledCAS.mergeData: record lists merge by id, a field changed differently in two tabs of the same
+ * user keeps this tab's value (the user acted here last). Other tabs adopt the stored journal the same way. */
 const SportProfiles=(()=>{
   const legacy='auth-readonly-happy-sport-prototype-v1',prefix=legacy+':profile:',session='auth_readonly_hd_cloud_v1';
   const read=k=>{const raw=sportStorage.getItem(k);return raw?JSON.parse(raw):null};
@@ -972,10 +976,30 @@ const SportProfiles=(()=>{
     }
     observed=sportStorage.getItem(key());initiallyAbsent=observed===null;
   }catch(e){blocked=true;error='Не удалось открыть сохранённый журнал. Исходная копия сохранена: '+e.message}
-  function assertOwner(){if(typeof SportWriterLock!=='undefined'&&!SportWriterLock.held&&!SportWriterLock.embed)throw Error('Sport открыт в другом окне — здесь только просмотр. Нажми «Продолжить здесь».');if(blocked)throw Error(error);if(current()!==owner)throw Error('Аккаунт изменился. Перезагрузи страницу перед редактированием.');if(sportStorage.getItem(key())!==observed)throw Error('Журнал изменился в другой вкладке. Выгрузи текущие изменения в JSON, затем обнови страницу.');}
+  function assertOwner(){if(blocked)throw Error(error);if(current()!==owner)throw Error('Аккаунт изменился. Перезагрузи страницу перед редактированием.');}
+  const parse=raw=>{try{return raw?JSON.parse(raw):null}catch{return null}};
+  // Three-way merge of journal objects; without a usable base or merge engine the local copy wins.
+  function merge(baseRaw,local,remoteRaw){
+    const remote=parse(remoteRaw),base=parse(baseRaw);
+    if(!remote||remote.version!==1||(remote.sportOwner&&remote.sportOwner!==owner))return {data:local,conflicts:[],changed:false};
+    if(typeof SportControlledCAS==='undefined'||!SportControlledCAS.mergeData)return {data:local,conflicts:['merge-unavailable'],changed:false};
+    const r=SportControlledCAS.mergeData(base&&base.version===1?base:null,local,remote);
+    if(!r||!r.ok&&!r.data)return {data:local,conflicts:(r&&r.conflicts)||['merge-failed'],changed:false};
+    return {data:r.data,conflicts:r.conflicts||[],changed:JSON.stringify(r.data)!==JSON.stringify(local)};
+  }
+  /* Another tab stored a newer journal: merge it with this tab's `local` (in-memory state) and return the result.
+     Call with the current in-memory journal; the caller replaces its state with `data` when `changed`. */
+  function adopt(local){
+    const stored=sportStorage.getItem(key());if(stored===observed)return {data:local,conflicts:[],changed:false};
+    const out=merge(observed,local,stored);observed=stored;return out;
+  }
   return {get initiallyAbsent(){return initiallyAbsent},onSave(fn){listeners.add(fn);return ()=>listeners.delete(fn)},get owner(){return owner},get error(){return error},key,current,read,assertOwner,
     load(){if(blocked)return null;try{const data=read(key());if(data&&(data.version!==1||(data.sportOwner&&data.sportOwner!==owner)))throw Error('Журнал принадлежит другому профилю или имеет неизвестный формат');return data}catch(e){blocked=true;error=e.message;return null}},
-    save(data){if(typeof SportWriterLock!=='undefined'&&SportWriterLock.embed)throw Error('Замеры не записывают полный журнал Sport');assertOwner();sportStorage.removeItem(key()+':journal-recovery-v2:headroom-probe');const raw=JSON.stringify({...data,...(owner==='local'?{}:{sportOwner:owner})});sportStorage.setItem(key(),raw);if(sportStorage.getItem(key())!==raw)throw Error('Сохранение журнала не прошло проверку');observed=raw;for(const fn of listeners){try{fn()}catch{}};},
+    save(data){if(typeof SportWriterLock!=='undefined'&&SportWriterLock.embed)throw Error('Замеры не записывают полный журнал Sport');assertOwner();sportStorage.removeItem(key()+':journal-recovery-v2:headroom-probe');
+      // Update 39.1: a journal written by another tab since we last looked is merged in, not refused.
+      const stored=sportStorage.getItem(key());let merged=null;if(stored!==observed){const m=merge(observed,data,stored);if(m.changed){merged=m.data;data=m.data;}}
+      const raw=JSON.stringify({...data,...(owner==='local'?{}:{sportOwner:owner})});sportStorage.setItem(key(),raw);if(sportStorage.getItem(key())!==raw)throw Error('Сохранение журнала не прошло проверку');observed=raw;for(const fn of listeners){try{fn()}catch{}};return merged;},
+    adopt,get observedRaw(){return observed},
     recoveryKey(suffix){return key()+suffix}
   };
 })();
@@ -997,7 +1021,11 @@ function localNow(){return new Intl.DateTimeFormat('sv-SE',{timeZone:state?.acti
 function dayNow(){return localNow().slice(0,10)}
 function secondsBetween(a,b){return Math.round((new Date(b)-new Date(a))/1000)}
 function durationText(sec){sec=Math.max(0,Number(sec)||0);const m=Math.floor(sec/60),h=Math.floor(m/60);return h?`${h} ч ${m%60} мин`:m?`${m} мин`:`${Math.round(sec)} сек`}
-function persist(){if(SPORT_MEASURE_EMBED)return;try{SportProfiles.save(state)}catch(e){toast(e.message||'Браузер не сохранил данные. Выгрузи копию в профиле.')}}
+function persist(){if(SPORT_MEASURE_EMBED)return;try{
+  // Update 39.1: save() merges a journal another tab stored meanwhile and returns the merged journal — adopt it here.
+  const merged=SportProfiles.save(state);
+  if(merged){for(const k of Object.keys(state))if(!Object.hasOwn(merged,k))delete state[k];Object.assign(state,merged);if(typeof sportAfterMerge==='function')sportAfterMerge();}
+}catch(e){toast(e.message||'Браузер не сохранил данные. Выгрузи копию в профиле.')}}
 function toast(text,undo=null){clearTimeout(toastTimer);undoAction=undo;$('#toast-root').innerHTML=`<div class="toast"><span>${esc(text)}</span>${undo?'<button data-action="undo">Отменить</button>':''}</div>`;toastTimer=setTimeout(()=>{$('#toast-root').innerHTML='';undoAction=null},6000)}
 function goto(v){closeSheet();view=v;render();window.scrollTo({top:0,behavior:'instant'})}
 function renderTop(title,date=true){return `<header class="top"><div><div class="brand">happy sport</div><h1>${title}</h1></div>${date?`<label class="date-pill">${icon('calendar-blank')}<span>${dateLabel(selectedDate)}</span><input aria-label="День дневника" type="date" value="${selectedDate}" id="day-picker"></label>`:''}</header>`}
@@ -5103,8 +5131,13 @@ const SportAutoSync=(()=>{
    return null;
   }
   async function finishOutcome(c,result){d.check(c);if(result.status==='verified'||result.status==='unchanged')return verified(c);if(result.status==='conflict'){const obs=await d.engine.probe();d.check(c);const merged=await combine(c,obs.remote);if(merged)return merged;return conflict(c,obs.remote,'Одни и те же данные изменены по-разному. Обе копии сохранены; нужен выбор.')}if(result.status!=='restore-ready')request('unconfirmed-result',1500);return status(c,result.status==='restore-ready'?'waiting':'unknown')}
+  let exclusiveHeld=false;
   async function run(){
-   if(stopped)return {status:'stopped'};if(running){again=true;return {status:phase}}running=true;let c=null;
+   if(stopped)return {status:'stopped'};if(running){again=true;return {status:phase}}
+   // Update 39.1: with several live tabs only one of them runs a sync at a time (d.exclusive = Web Lock, ifAvailable).
+   // A tab that finds the lock taken keeps its phase; the other tab's ledger write reaches it through the storage channel.
+   if(d.exclusive&&!exclusiveHeld){let ran=false,result;await d.exclusive(async()=>{exclusiveHeld=true;try{ran=true;result=await run()}finally{exclusiveHeld=false}});if(ran)return result;request('busy-elsewhere',5000);return {status:phase};}
+   running=true;let c=null;
    try{
     if(!d.ready())return inactive();
     if(!online||!d.online()){c=d.capture(false,'observe');return status(c,'offline')}
@@ -5174,7 +5207,7 @@ function sportAutoInactive(){
  if(SportProfiles.owner==='local'&&!CL.s&&!CL.ck&&!CL.kraw&&(!state.sportOwner||state.sportOwner==='local'))return 'local';
  throw Error('Нет активного собственного профиля для синхронизации. Проверь вход и принадлежность журнала.');
 }
-function sportAutoSaved(){SportProfiles.assertOwner();const saved=SportProfiles.read(SportProfiles.key());if(!saved||(saved.sportOwner||'local')!==SportProfiles.owner||!SportControlledCAS.same(sportValidateBackup({app:'Happy Sport',version:1,data:saved}),sportBackup().data))throw Error('Изменения ещё не сохранены на устройстве. Облачная отправка остановлена.');}
+function sportAutoSaved(){SportProfiles.assertOwner();if(typeof sportAdoptExternal==='function')sportAdoptExternal();const saved=SportProfiles.read(SportProfiles.key());if(!saved||(saved.sportOwner||'local')!==SportProfiles.owner||!SportControlledCAS.same(sportValidateBackup({app:'Happy Sport',version:1,data:saved}),sportBackup().data))throw Error('Изменения ещё не сохранены на устройстве. Облачная отправка остановлена.');}
 function sportAutoCanMerge(){return !document.hidden&&!document.querySelector('#modal-root .sheet, #modal-root form, #modal-root [role="dialog"]')&&!document.querySelector('#modal-root')?.textContent?.trim()&&!document.querySelector('#panel-root form, #panel-root [contenteditable="true"], #panel-root input:not([readonly]):not([disabled]), #panel-root textarea:not([readonly]):not([disabled]), #panel-root select:not([disabled])')&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)}
 function sportAutoCanRestore(){return sportAutoCanMerge()&&!state.active&&!Object.values(state.freeTimer?.sessions||{}).some(s=>s.running)}
 function sportAutoCanApply(data){return (!state.active||SportControlledCAS.same(state.active,data.active)||(!data.active&&data.workouts?.some(w=>w.id===state.active.id)&&SportControlledCAS.same(state.active,sportCtrlStore?.load()?.baseline?.data?.active)))&&(!Object.values(state.freeTimer?.sessions||{}).some(s=>s.running)||SportControlledCAS.same(state.freeTimer,data.freeTimer))}
@@ -5239,6 +5272,8 @@ function sportAutoPaint(phase,error=''){
 const sportAutomatic=SportReadOnlyTest.bindJournalController(dispatch=>SportAutoSync.create({
  ...sportAutoAdapters,engine:sportAutoEngine,dispatch,ready:sportAutoReady,inactive:sportAutoInactive,prepare:sportAutoPrepare,ensureSaved:sportAutoSaved,canRestore:sportAutoCanRestore,canMerge:sportAutoCanMerge,
  online:()=>navigator.onLine!==false,schedule:(fn,ms)=>setTimeout(fn,ms),cancel:id=>clearTimeout(id),paint:sportAutoPaint,
+ // Update 39.1: one sync run per account across tabs; the ledger is re-read from IndexedDB once the lock is ours.
+ exclusive:fn=>{const locks=navigator.locks;const body=async()=>{try{await SportLocalStore.refresh(sportCtrlLedgerKey())}catch{}return fn()};if(!locks||typeof locks.request!=='function')return body();return locks.request('happy-sport-sync:'+SportProfiles.owner,{ifAvailable:true},lock=>lock?body():undefined)},
  afterRestore:()=>{if(sportAutoCanMerge())render()}
 }));
 let sportAutoObserved=SportControlled.canonical(sportBackup().data);
@@ -5253,7 +5288,9 @@ const sportAutoClose=closeSheet;closeSheet=function(...args){++sportAutoEditorGe
 const sportAutoGoto=goto;goto=function(...args){++sportAutoEditorGeneration;return sportAutoGoto(...args)};
 window.addEventListener('offline',()=>sportAutomatic.connectivity(false));window.addEventListener('online',()=>sportAutomatic.connectivity(true));
 function sportAutoRestart(authChanged){if(!sportAutoNeedsReload){sportAutoNeedsReload=true;++sportAutoGeneration;sportAutomatic.stop();}sportAutoPaint('restart');if(authChanged&&sportAutoCanRestore()&&SportWriterLock.held&&(typeof sportReadOnlyActive==='undefined'||!sportReadOnlyActive))location.reload();}/* Update 38.4: вкладка без права записи (журнал в другом окне) не перезагружается сама */
-window.addEventListener('storage',event=>{if(event.key==null||event.key===CL_KEY||event.key===SportProfiles.key()||event.key===sportCtrlLedgerKey())sportAutoRestart(event.key==null||event.key===CL_KEY)});
+// Update 39.1: journal and ledger live in IndexedDB and are merged between tabs; only the sign-in cell (or a cleared storage) restarts the scheduler.
+window.addEventListener('storage',event=>{if(event.key==null||event.key===CL_KEY)sportAutoRestart(true)});
+SportLocalStore.onChange(key=>{if(key===sportCtrlLedgerKey())sportAutomatic.request('remote-ledger',300)});
 sportJournalAccountChanged=function(){if(SportProfiles.current()===SportProfiles.owner)return false;sportAutoRestart(true);return true;};
 window.addEventListener('pagehide',()=>{++sportAutoGeneration;sportAutomatic.stop()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sportAutomatic.request('visible')});
@@ -5278,6 +5315,41 @@ try{sportAutoPaint(sportAutoReady()?'checking':sportAutoInactive())}catch(e){spo
 // Flush only the app\'s initialized owner state through its ordinary safe writer.
 // Autosync independently verifies persisted bytes before every candidate.
 if(!SPORT_MEASURE_EMBED){persist();sportAutomatic.request('boot',0)}
+
+/* Update 39.1 · live tabs. Every Sport tab writes; a journal stored by another tab is merged into this tab's
+ * in-memory state (profile-store.js adopt → SportControlledCAS.mergeData: record lists by id, this tab's value for a
+ * field changed in both) and the screen is redrawn — unless a sheet is open or a workout is being edited, then the
+ * redraw waits for the sheet to close. Triggers: the storage channel (local-store.js BroadcastChannel), the tab
+ * becoming visible or focused, and every automatic-sync step (sportAutoSaved). No banners, no reloads. */
+let sportAdoptPending=false,sportAdoptBusy=false;
+function sportAdoptExternal(){
+  if(typeof SPORT_MEASURE_EMBED!=='undefined'&&SPORT_MEASURE_EMBED)return false;
+  if(sportAdoptBusy||typeof state==='undefined'||!state)return false;
+  sportAdoptBusy=true;
+  try{
+    const result=SportProfiles.adopt(clone(state));
+    if(!result.changed)return false;
+    const next=result.data;
+    for(const k of Object.keys(state))if(!Object.hasOwn(next,k))delete state[k];
+    Object.assign(state,next);
+    if(typeof sportAutoObserved!=='undefined')sportAutoObserved=SportControlled.canonical(sportBackup().data);
+    if(sheetKind||document.querySelector('#modal-root .sheet'))sportAdoptPending=true;else render();
+    return true;
+  }catch(e){return false}
+  finally{sportAdoptBusy=false}
+}
+function sportAdoptAfterSheet(){if(!sportAdoptPending)return;sportAdoptPending=false;try{render()}catch{}}
+/* persist() merged another tab's journal into state: redraw now, or after the open sheet closes. */
+function sportAfterMerge(){if(typeof sportAutoObserved!=='undefined')sportAutoObserved=SportControlled.canonical(sportBackup().data);if(sheetKind||document.querySelector('#modal-root .sheet'))sportAdoptPending=true;else render();}
+(()=>{
+  const key=SportProfiles.key();
+  SportLocalStore.onChange(k=>{if(k===key)sportAdoptExternal()});
+  const poke=()=>{SportLocalStore.refresh(key).then(()=>sportAdoptExternal()).catch(()=>sportAdoptExternal())};
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)poke()});
+  window.addEventListener('focus',poke);
+  window.addEventListener('pageshow',event=>{if(event.persisted)poke()});
+  const liveClose=closeSheet;closeSheet=function(...args){const r=liveClose(...args);sportAdoptAfterSheet();return r};
+})();
 
 /* Strong native additive import. Browser-only pure planning and fenced local transaction.
  * No parser, auth, persistence, network, raw archive, or cloud-success claim is embedded.
@@ -5993,11 +6065,10 @@ const SportLocalStore=(()=>{
 })();
 var sportStorage=SportLocalStore.storage;
 
-/* One full-journal writer per origin, acquired BEFORE migration or app boot.
- * A second tab cannot edit or sync. Browser releases the lock when this page closes.
- * Measurement embeds have a separate store and never write the full Sport journal.
+/* Boot path of Sport. Up to 38.x one tab held a full-journal Web Lock; since 39.1 every tab writes and the tabs
+ * merge (see the end of this file). Measurement embeds have a separate store and never write the full journal.
  */
-var SportWriterLock={held:false,embed:new URLSearchParams(location.search).get('embed')==='measurements'};
+var SportWriterLock={held:true,embed:new URLSearchParams(location.search).get('embed')==='measurements'};
 var sportReadOnlyGeneration=0,sportReadOnlyActive=false;
 function sportBootBlocked(message){
   sportReadOnlyActive=true;++sportReadOnlyGeneration;
@@ -6047,43 +6118,13 @@ window.addEventListener?.('storage',event=>{if(sportReadOnlyActive&&(event.key==
    synchronous read in the app already sees the cache. If IndexedDB is unavailable the facade stays on localStorage. */
 function sportStartApp(){if(!globalThis.SportReadOnlyTest?.ready){sportBootBlocked('Защита чтения не запустилась. Вход и приложение отключены; записи не изменены. Обнови страницу.');return;}
   SportLocalStore.open().catch(()=>'localStorage').then(()=>{sportReadOnlyActive=false;++sportReadOnlyGeneration;const script=document.createElement('script');script.textContent=document.getElementById('sport-app-source').textContent;document.body.appendChild(script);});}
-if(SportWriterLock.embed)sportStartApp();
-else if(!navigator.locks?.request)sportBootBlocked('В этой вкладке недоступна безопасная запись журнала. Запись и синхронизация отключены; данные не изменены. Для работы открой Sport отдельно в обновлённом браузере.');
-else {
-  const LOCK='auth-readonly-happy-sport-full-journal-writer-v1';
-  // Update 38.3: the lock is released on pagehide (back/forward cache). On return the page
-  // takes the lock again in place instead of reloading.
-  // Update 38.4: a second tab is never blocked — it takes the journal over (Web Locks `steal`);
-  // the tab that loses the lock stops writing and shows a banner with «Продолжить здесь».
-  // Whichever tab the owner is looking at owns the journal; stale in-memory data never writes back.
-  function sportLockLost(){
-    if(sportReadOnlyActive)return;
-    SportWriterLock.held=false;sportReadOnlyActive=true;++sportReadOnlyGeneration;
-    if(document.getElementById('sport-lock-banner'))return;
-    const bar=document.createElement('div');bar.id='sport-lock-banner';bar.className='sport-lock-banner';bar.setAttribute('role','status');
-    const text=document.createElement('span');text.textContent='Sport открыт в другом окне — здесь только просмотр.';
-    const resume=document.createElement('button');resume.type='button';resume.className='button';resume.textContent='Продолжить здесь';resume.addEventListener('click',()=>location.reload());
-    bar.append(text,resume);document.body.appendChild(bar);
-  }
-  function holdLock(onHeld){
-    return navigator.locks.request(LOCK,{mode:'exclusive',steal:true},async lock=>{
-      if(!lock){onHeld(false);return;}
-      SportWriterLock.held=true;onHeld(true);
-      await new Promise(resolve=>window.addEventListener('pagehide',()=>{SportWriterLock.held=false;resolve()},{once:true}));
-    }).catch(error=>{
-      if(error&&error.name==='AbortError'&&SportWriterLock.held){sportLockLost();return;}
-      throw error;
-    });
-  }
-  window.addEventListener('pageshow',event=>{
-    if(!event.persisted||SportWriterLock.held||sportReadOnlyActive)return;
-    holdLock(held=>{if(!held)location.reload()}).catch(()=>location.reload());
-  });
-  holdLock(held=>{
-    if(!held){sportBootBlocked('Не удалось получить право записи журнала. Нажми «Повторить открытие».');return;}
-    sportStartApp();
-  }).catch(()=>sportBootBlocked('Не удалось защитить запись журнала. Закрой другие вкладки Sport и повтори. Данные не изменены.'));
-}
+/* Update 39.1 (owner, 09.11.2026): no exclusive writer any more — every tab boots as a writer and the tabs merge
+   their journals through the storage facade (profile-store.js adopt/save, BroadcastChannel in local-store.js).
+   The former Web Lock, the «Журнал защищён» screen and the «Sport открыт в другом окне» banner are gone. Web Locks,
+   when the browser has them, only serialize automatic sync runs (automatic-sync-ui.js); without them the cloud
+   compare-and-swap still protects the journal. */
+SportWriterLock.held=true;
+sportStartApp();
 </script><!-- Phosphor Icons license
 MIT License
 

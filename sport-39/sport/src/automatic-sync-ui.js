@@ -8,7 +8,7 @@ function sportAutoInactive(){
  if(SportProfiles.owner==='local'&&!CL.s&&!CL.ck&&!CL.kraw&&(!state.sportOwner||state.sportOwner==='local'))return 'local';
  throw Error('Нет активного собственного профиля для синхронизации. Проверь вход и принадлежность журнала.');
 }
-function sportAutoSaved(){SportProfiles.assertOwner();const saved=SportProfiles.read(SportProfiles.key());if(!saved||(saved.sportOwner||'local')!==SportProfiles.owner||!SportControlledCAS.same(sportValidateBackup({app:'Happy Sport',version:1,data:saved}),sportBackup().data))throw Error('Изменения ещё не сохранены на устройстве. Облачная отправка остановлена.');}
+function sportAutoSaved(){SportProfiles.assertOwner();if(typeof sportAdoptExternal==='function')sportAdoptExternal();const saved=SportProfiles.read(SportProfiles.key());if(!saved||(saved.sportOwner||'local')!==SportProfiles.owner||!SportControlledCAS.same(sportValidateBackup({app:'Happy Sport',version:1,data:saved}),sportBackup().data))throw Error('Изменения ещё не сохранены на устройстве. Облачная отправка остановлена.');}
 function sportAutoCanMerge(){return !document.hidden&&!document.querySelector('#modal-root .sheet, #modal-root form, #modal-root [role="dialog"]')&&!document.querySelector('#modal-root')?.textContent?.trim()&&!document.querySelector('#panel-root form, #panel-root [contenteditable="true"], #panel-root input:not([readonly]):not([disabled]), #panel-root textarea:not([readonly]):not([disabled]), #panel-root select:not([disabled])')&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)}
 function sportAutoCanRestore(){return sportAutoCanMerge()&&!state.active&&!Object.values(state.freeTimer?.sessions||{}).some(s=>s.running)}
 function sportAutoCanApply(data){return (!state.active||SportControlledCAS.same(state.active,data.active)||(!data.active&&data.workouts?.some(w=>w.id===state.active.id)&&SportControlledCAS.same(state.active,sportCtrlStore?.load()?.baseline?.data?.active)))&&(!Object.values(state.freeTimer?.sessions||{}).some(s=>s.running)||SportControlledCAS.same(state.freeTimer,data.freeTimer))}
@@ -73,6 +73,8 @@ function sportAutoPaint(phase,error=''){
 const sportAutomatic=SportReadOnlyTest.bindJournalController(dispatch=>SportAutoSync.create({
  ...sportAutoAdapters,engine:sportAutoEngine,dispatch,ready:sportAutoReady,inactive:sportAutoInactive,prepare:sportAutoPrepare,ensureSaved:sportAutoSaved,canRestore:sportAutoCanRestore,canMerge:sportAutoCanMerge,
  online:()=>navigator.onLine!==false,schedule:(fn,ms)=>setTimeout(fn,ms),cancel:id=>clearTimeout(id),paint:sportAutoPaint,
+ // Update 39.1: one sync run per account across tabs; the ledger is re-read from IndexedDB once the lock is ours.
+ exclusive:fn=>{const locks=navigator.locks;const body=async()=>{try{await SportLocalStore.refresh(sportCtrlLedgerKey())}catch{}return fn()};if(!locks||typeof locks.request!=='function')return body();return locks.request('happy-sport-sync:'+SportProfiles.owner,{ifAvailable:true},lock=>lock?body():undefined)},
  afterRestore:()=>{if(sportAutoCanMerge())render()}
 }));
 let sportAutoObserved=SportControlled.canonical(sportBackup().data);
@@ -87,7 +89,9 @@ const sportAutoClose=closeSheet;closeSheet=function(...args){++sportAutoEditorGe
 const sportAutoGoto=goto;goto=function(...args){++sportAutoEditorGeneration;return sportAutoGoto(...args)};
 window.addEventListener('offline',()=>sportAutomatic.connectivity(false));window.addEventListener('online',()=>sportAutomatic.connectivity(true));
 function sportAutoRestart(authChanged){if(!sportAutoNeedsReload){sportAutoNeedsReload=true;++sportAutoGeneration;sportAutomatic.stop();}sportAutoPaint('restart');if(authChanged&&sportAutoCanRestore()&&SportWriterLock.held&&(typeof sportReadOnlyActive==='undefined'||!sportReadOnlyActive))location.reload();}/* Update 38.4: вкладка без права записи (журнал в другом окне) не перезагружается сама */
-window.addEventListener('storage',event=>{if(event.key==null||event.key===CL_KEY||event.key===SportProfiles.key()||event.key===sportCtrlLedgerKey())sportAutoRestart(event.key==null||event.key===CL_KEY)});
+// Update 39.1: journal and ledger live in IndexedDB and are merged between tabs; only the sign-in cell (or a cleared storage) restarts the scheduler.
+window.addEventListener('storage',event=>{if(event.key==null||event.key===CL_KEY)sportAutoRestart(true)});
+SportLocalStore.onChange(key=>{if(key===sportCtrlLedgerKey())sportAutomatic.request('remote-ledger',300)});
 sportJournalAccountChanged=function(){if(SportProfiles.current()===SportProfiles.owner)return false;sportAutoRestart(true);return true;};
 window.addEventListener('pagehide',()=>{++sportAutoGeneration;sportAutomatic.stop()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)sportAutomatic.request('visible')});

@@ -55,8 +55,13 @@ const SportAutoSync=(()=>{
    return null;
   }
   async function finishOutcome(c,result){d.check(c);if(result.status==='verified'||result.status==='unchanged')return verified(c);if(result.status==='conflict'){const obs=await d.engine.probe();d.check(c);const merged=await combine(c,obs.remote);if(merged)return merged;return conflict(c,obs.remote,'Одни и те же данные изменены по-разному. Обе копии сохранены; нужен выбор.')}if(result.status!=='restore-ready')request('unconfirmed-result',1500);return status(c,result.status==='restore-ready'?'waiting':'unknown')}
+  let exclusiveHeld=false;
   async function run(){
-   if(stopped)return {status:'stopped'};if(running){again=true;return {status:phase}}running=true;let c=null;
+   if(stopped)return {status:'stopped'};if(running){again=true;return {status:phase}}
+   // Update 39.1: with several live tabs only one of them runs a sync at a time (d.exclusive = Web Lock, ifAvailable).
+   // A tab that finds the lock taken keeps its phase; the other tab's ledger write reaches it through the storage channel.
+   if(d.exclusive&&!exclusiveHeld){let ran=false,result;await d.exclusive(async()=>{exclusiveHeld=true;try{ran=true;result=await run()}finally{exclusiveHeld=false}});if(ran)return result;request('busy-elsewhere',5000);return {status:phase};}
+   running=true;let c=null;
    try{
     if(!d.ready())return inactive();
     if(!online||!d.online()){c=d.capture(false,'observe');return status(c,'offline')}

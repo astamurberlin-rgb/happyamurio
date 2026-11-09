@@ -15,7 +15,11 @@ function localNow(){return new Intl.DateTimeFormat('sv-SE',{timeZone:state?.acti
 function dayNow(){return localNow().slice(0,10)}
 function secondsBetween(a,b){return Math.round((new Date(b)-new Date(a))/1000)}
 function durationText(sec){sec=Math.max(0,Number(sec)||0);const m=Math.floor(sec/60),h=Math.floor(m/60);return h?`${h} ч ${m%60} мин`:m?`${m} мин`:`${Math.round(sec)} сек`}
-function persist(){if(SPORT_MEASURE_EMBED)return;try{SportProfiles.save(state)}catch(e){toast(e.message||'Браузер не сохранил данные. Выгрузи копию в профиле.')}}
+function persist(){if(SPORT_MEASURE_EMBED)return;try{
+  // Update 39.1: save() merges a journal another tab stored meanwhile and returns the merged journal — adopt it here.
+  const merged=SportProfiles.save(state);
+  if(merged){for(const k of Object.keys(state))if(!Object.hasOwn(merged,k))delete state[k];Object.assign(state,merged);if(typeof sportAfterMerge==='function')sportAfterMerge();}
+}catch(e){toast(e.message||'Браузер не сохранил данные. Выгрузи копию в профиле.')}}
 function toast(text,undo=null){clearTimeout(toastTimer);undoAction=undo;$('#toast-root').innerHTML=`<div class="toast"><span>${esc(text)}</span>${undo?'<button data-action="undo">Отменить</button>':''}</div>`;toastTimer=setTimeout(()=>{$('#toast-root').innerHTML='';undoAction=null},6000)}
 function goto(v){closeSheet();view=v;render();window.scrollTo({top:0,behavior:'instant'})}
 function renderTop(title,date=true){return `<header class="top"><div><div class="brand">happy sport</div><h1>${title}</h1></div>${date?`<label class="date-pill">${icon('calendar-blank')}<span>${dateLabel(selectedDate)}</span><input aria-label="День дневника" type="date" value="${selectedDate}" id="day-picker"></label>`:''}</header>`}
