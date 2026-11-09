@@ -1,11 +1,11 @@
 {
   "app": "Happy Sport",
-  "update": "38.2",
+  "update": "38.3",
   "source_release": "sport-37 (Happy Sport · Update 37)",
   "source_commit_of_update_37": "cf8dea4f26ff8e05cb786594e6aae154391e9557",
-  "source_commit": "e541a3c2b7df9e1848dccbdac6911a39bffe53f5",
+  "source_commit": "49635c3e8f2c0b1aec788dd912db8c0193aeb71d",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-38/",
-  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -135,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 952158,
-      "sha256": "ddd68c942d3bf1b2b9b014bce9b43b2afb1bd3f4581c6da97c4ba498591268e2"
+      "size": 956639,
+      "sha256": "55a89270109720424b937218d621db541198311ff784cccc58a348237eeadc9c"
     },
     {
       "path": "manifest.webmanifest",
@@ -175,13 +175,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 1298,
-      "sha256": "fcfd9a64d0e2ed00485e202c95af7801a3e2c73b6a4088c6fd1b240c449425e8"
+      "size": 1494,
+      "sha256": "1f32db840006470bc28aa0bba11580f08b3f4e6eff88b666350ede9f2590d463"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 3277,
-      "sha256": "28d2ed37601b33bfbbc8fa124c09bc77af1e8c8aa1ecedbd72c2e750304658ba"
+      "size": 3435,
+      "sha256": "0dd2d61392901752e6f2049a7ccefeb62d258280e7635f65d2e595dcd557701e"
     },
     {
       "path": "shared/README.md",
@@ -239,6 +239,11 @@
       "sha256": "7b2c6ce3286513a71c7d4657106726c72c0701be2d55cb0893c50b68accd3660"
     },
     {
+      "path": "shared/release-notes.js",
+      "size": 3156,
+      "sha256": "0d811d0efdd6254d5e993bd245ac971e6ab1fb5194a8273363efe2bb7520c089"
+    },
+    {
       "path": "sport/PHOSPHOR-LICENSE.txt",
       "size": 1071,
       "sha256": "b5b1f1da112d18ea2147decfd48ddc1bf2b5aeb6c265381579340e95b15a2bb2"
@@ -265,8 +270,8 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 7837,
-      "sha256": "661511c7fe9127ae4bfd917b792e1649b3d14af58967ed0cf8aab8c9c4a97979"
+      "size": 7912,
+      "sha256": "8b4bb2a7c1abfc640f9c2ee2a9a9aeabad081bfe632457677f5f9e18437c82a3"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
@@ -575,8 +580,8 @@
     },
     {
       "path": "sport/src/data-transfer.js",
-      "size": 18500,
-      "sha256": "02cfcca458a699c50fd290b6a9e060a23bb0dfb86cd42c06704a3d1aff32252c"
+      "size": 18762,
+      "sha256": "893b31032cf5e639b6c921a66c4b27606b6a8af04c40b4501e9f8a3a43be3767"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -700,8 +705,8 @@
     },
     {
       "path": "sport/src/profile-lock.js",
-      "size": 5896,
-      "sha256": "83ce31be8ebc5ba6d0c64a3638742afd9f61e1f12c4616dcf90c200ff7292530"
+      "size": 6431,
+      "sha256": "dba01d4fa9dde55f96ce5f0bb69fa18112f47798753404514b74959a8197f68e"
     },
     {
       "path": "sport/src/profile-store.js",
@@ -745,8 +750,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 12045,
-      "sha256": "b0fac9bab3551073e10fcdfbffd6e509ddb77b4a7b2d5d3f3a3a7aadd3805230"
+      "size": 12572,
+      "sha256": "2aa3af4f0080089c41dc3c5a7d4cd93e6fa65ef54919d170d356075a793530d9"
     },
     {
       "path": "sport/src/rest-pill.js",

@@ -9,8 +9,8 @@ for(const file of manifest.release_files){
  assert.equal(createHash('sha256').update(bytes).digest('hex'),file.sha256,file.path+' checksum');
 }
 const html=await readFile(new URL('index.html',root),'utf8');
-assert.ok(html.includes('data-app-version="38.2"'));assert.ok(html.includes('"exerciseLibrary":{"url":"/happyamurio/assets/exercise-library/v1/"'));assert.ok(html.includes('"handles":['));assert.ok(html.includes('/happyamurio/assets/sport-icons/v1/'));assert.ok(!html.includes('"sport-icons/'));
-assert.ok(html.includes('Happy Sport · Update 38'));
+assert.ok(html.includes('data-app-version="38.3"'));assert.ok(html.includes('"exerciseLibrary":{"url":"/happyamurio/assets/exercise-library/v1/"'));assert.ok(html.includes('"handles":['));assert.ok(html.includes('/happyamurio/assets/sport-icons/v1/'));assert.ok(!html.includes('"sport-icons/'));
+assert.ok(html.includes('Happy Sport · Update 38'));assert.ok(html.includes('HappyReleaseNotes'),'shared release notes module embedded');assert.ok(html.includes('"author": "Claude"')||html.includes('"author":"Claude"'),'38.3 entry carries author');
 const install=JSON.parse(await readFile(new URL('manifest.webmanifest',root),'utf8'));
 const url=new URL(manifest.github_pages_url);
 for(const key of ['id','start_url','scope'])assert.equal(new URL(install[key],url).pathname,url.pathname);

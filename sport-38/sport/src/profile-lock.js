@@ -49,10 +49,24 @@ window.addEventListener?.('storage',event=>{if(sportReadOnlyActive&&(event.key==
 function sportStartApp(){if(!globalThis.SportReadOnlyTest?.ready){sportBootBlocked('Защита чтения не запустилась. Вход и приложение отключены; записи не изменены. Обнови страницу.');return;}sportReadOnlyActive=false;++sportReadOnlyGeneration;const script=document.createElement('script');script.textContent=document.getElementById('sport-app-source').textContent;document.body.appendChild(script);}
 if(SportWriterLock.embed)sportStartApp();
 else if(!navigator.locks?.request)sportBootBlocked('В этой вкладке недоступна безопасная запись журнала. Запись и синхронизация отключены; данные не изменены. Для работы открой Sport отдельно в обновлённом браузере.');
-else navigator.locks.request('auth-readonly-happy-sport-full-journal-writer-v1',{mode:'exclusive',ifAvailable:true},async lock=>{
-  if(!lock){sportBootBlocked('Sport уже открыт в другой вкладке. Чтобы не перезаписать записи, закрой её и нажми «Повторить открытие».');return;}
-  SportWriterLock.held=true;
-  const closed=new Promise(resolve=>window.addEventListener('pagehide',()=>{SportWriterLock.held=false;resolve()},{once:true}));
-  window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
-  sportStartApp();await closed;
-}).catch(()=>sportBootBlocked('Не удалось защитить запись журнала. Закрой другие вкладки Sport и повтори. Данные не изменены.'));
+else {
+  const LOCK='auth-readonly-happy-sport-full-journal-writer-v1';
+  // Update 38.3: the lock is released on pagehide (back/forward cache). On return the page
+  // takes the lock again in place instead of reloading; a reload happens only when another
+  // tab holds the journal, so the «Журнал защищён» screen stays accurate.
+  function holdLock(onHeld){
+    return navigator.locks.request(LOCK,{mode:'exclusive',ifAvailable:true},async lock=>{
+      if(!lock){onHeld(false);return;}
+      SportWriterLock.held=true;onHeld(true);
+      await new Promise(resolve=>window.addEventListener('pagehide',()=>{SportWriterLock.held=false;resolve()},{once:true}));
+    });
+  }
+  window.addEventListener('pageshow',event=>{
+    if(!event.persisted||SportWriterLock.held||sportReadOnlyActive)return;
+    holdLock(held=>{if(!held)location.reload()}).catch(()=>location.reload());
+  });
+  holdLock(held=>{
+    if(!held){sportBootBlocked('Sport уже открыт в другой вкладке. Чтобы не перезаписать записи, закрой её и нажми «Повторить открытие».');return;}
+    sportStartApp();
+  }).catch(()=>sportBootBlocked('Не удалось защитить запись журнала. Закрой другие вкладки Sport и повтори. Данные не изменены.'));
+}

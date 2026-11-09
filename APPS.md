@@ -9,7 +9,7 @@
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.2 |
+| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.3 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -99,6 +99,8 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 **38.1 (08.11.2026):** картинки занятий берутся из общей библиотеки `assets/sport-icons/v1/` по постоянному адресу `/happyamurio/assets/sport-icons/v1/`; копии иконок внутри выпуска удалены (−68 МБ), `id` и номера иконок прежние, сохранённый выбор в тренировках не меняется. Веб-размер 512 px; мастера — в Icon Studio.
 
 **38.2 (08.11.2026):** справочник упражнений (137), оборудования (23) и групп мышц вынесен в общую библиотеку `assets/exercise-library/v1/` и встраивается при сборке (`sport/scripts/seed.mjs`); `id`, названия и история прежние. У восьми упражнений на блоке появилась рукоять (`handles` в библиотеке): выбирается в настройках упражнения внутри тренировки, хранится на упражнении этой тренировки (`handle`), показывается в заголовке, в записи тренировки и в колонке истории; подходы и нагрузка не пересчитываются.
+
+**38.3 (09.11.2026):** возврат «Назад» из кэша браузера не перезагружает страницу — блокировка записи берётся заново (`profile-lock.js`); история обновлений рисуется общим модулем `shared/release-notes.js` с автором и временем записи (H117), строка версии внизу настроек показывает дату, время и автора. — Claude · 09.11.2026 12:15
 
 ## Happy Sport · Update 37 · 07.11.2026
 
