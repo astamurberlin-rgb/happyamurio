@@ -75,7 +75,7 @@ const sportAutoOpen=openSheet;openSheet=function(...args){++sportAutoEditorGener
 const sportAutoClose=closeSheet;closeSheet=function(...args){++sportAutoEditorGeneration;const result=sportAutoClose(...args);sportAutomatic.request('editor-close');return result};
 const sportAutoGoto=goto;goto=function(...args){++sportAutoEditorGeneration;return sportAutoGoto(...args)};
 window.addEventListener('offline',()=>sportAutomatic.connectivity(false));window.addEventListener('online',()=>sportAutomatic.connectivity(true));
-function sportAutoRestart(authChanged){if(!sportAutoNeedsReload){sportAutoNeedsReload=true;++sportAutoGeneration;sportAutomatic.stop();}sportAutoPaint('restart');if(authChanged&&sportAutoCanRestore())location.reload();}
+function sportAutoRestart(authChanged){if(!sportAutoNeedsReload){sportAutoNeedsReload=true;++sportAutoGeneration;sportAutomatic.stop();}sportAutoPaint('restart');if(authChanged&&sportAutoCanRestore()&&SportWriterLock.held&&(typeof sportReadOnlyActive==='undefined'||!sportReadOnlyActive))location.reload();}/* Update 38.4: вкладка без права записи (журнал в другом окне) не перезагружается сама */
 window.addEventListener('storage',event=>{if(event.key==null||event.key===CL_KEY||event.key===SportProfiles.key()||event.key===sportCtrlLedgerKey())sportAutoRestart(event.key==null||event.key===CL_KEY)});
 sportJournalAccountChanged=function(){if(SportProfiles.current()===SportProfiles.owner)return false;sportAutoRestart(true);return true;};
 window.addEventListener('pagehide',()=>{++sportAutoGeneration;sportAutomatic.stop()});

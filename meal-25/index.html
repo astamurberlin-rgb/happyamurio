@@ -5877,7 +5877,7 @@ async function clTokenContext(force,c){
    clRequire(c);var next=clSes(j,c.s);if(!next.at||next.uid!==c.uid)throw Error('Не удалось проверить обновлённый вход.');
    clPersist(c,next,c.key,c.kraw,CL.last);
   })();
-  clRefreshing.finally(function(){clRefreshing=null});
+  var run=clRefreshing;run.then(function(){if(clRefreshing===run)clRefreshing=null},function(){if(clRefreshing===run)clRefreshing=null});
  }
  await clRefreshing;
  var fresh=clContext();clRequire(fresh);if(fresh.uid!==c.uid)throw Error('Аккаунт изменился. Повтори действие.');return {token:fresh.at,context:fresh};

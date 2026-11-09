@@ -5,13 +5,13 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day · Update 53.1 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.1 |
+| Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.3 |
+| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.4 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -29,13 +29,13 @@
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
 
-## Happy Day · Update 53.1 · 09.11.2026
+## Happy Day · Update 53.2 · 09.11.2026
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-53/ . Исходник — `day-52/` (main `7ca5f3c`); код дневника, аккаунтов и синхронизации не менялся. Самостоятельный HTML: `day-53/Happy-Day-53.html` (`python3 scripts/build-day-standalone.py day-53`). Проверки: `node --test day-53/tests/*.test.cjs`, `check-layout`, `check-shared-ui`, `check-food-counters`. Происхождение и контрольные суммы — `day-53/SOURCE-PROVENANCE.json`.
 
-Вход Day хранится в собственной ячейке `happy-auth:day` (решение владельца 09.11: раздельный вход в каждое приложение); прежний вход из `hd_cloud_v1` копируется при первом открытии, сама ячейка `hd_cloud_v1` остаётся для Meal 23 и Day 52. Кнопки «Happy Meal» / «Happy Sport» открывают `meal-24/` (с 53.1 — Meal 24 вышел после Day 53) и `sport-38/`. Ежедневное напоминание о JSON-копии отключено. «Студия дуг» убрана из настроек — отдельная страница `prototypes/arc-studio/`. История обновлений и строка версии — общий модуль `shared/release-notes.js` (автор и время записи, H117). Структура настроек пока прежняя (Аккаунт → Резервная копия → Связанные приложения); переход на целевую — следующим выпуском. 53.1 (09.11, 14:12) — только ссылка на `meal-24/`, запись в истории обновлений, строка версии.
+Вход Day хранится в собственной ячейке `happy-auth:day` (решение владельца 09.11: раздельный вход в каждое приложение); прежний вход из `hd_cloud_v1` копируется при первом открытии, сама ячейка `hd_cloud_v1` остаётся для Meal 23 и Day 52. Кнопки «Happy Meal» / «Happy Sport» открывают `meal-24/` (с 53.1 — Meal 24 вышел после Day 53) и `sport-38/`. Ежедневное напоминание о JSON-копии отключено. «Студия дуг» убрана из настроек — отдельная страница `prototypes/arc-studio/`. История обновлений и строка версии — общий модуль `shared/release-notes.js` (автор и время записи, H117). Структура настроек пока прежняя (Аккаунт → Резервная копия → Связанные приложения); переход на целевую — следующим выпуском. 53.1 (09.11, 14:12) — только ссылка на `meal-24/`. 53.2 (09.11, 15:58) — кнопки «Happy Meal» / «Happy Sport» → `meal-25/`, `sport-38/`, в новом окне; личность входа по токену остаётся до Day 54.
 
-— Claude · 09.11.2026 14:12
+— Claude · 09.11.2026 15:58
 
 ## Happy Day · Update 52
 
@@ -51,9 +51,9 @@
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-25/ . Исходник — `meal-24/` (main `e49d05b`); дневник, вход, синхронизация, счётчики и отчёты не менялись. Проверки: `node meal-25/checks/check-desserts.mjs`, `node meal-25/checks/check-startup.mjs`, общие `check-layout`, `check-shared-ui`, `check-food-counters`, `check-meal-times`, `check-meal-exports`, `check-shared`. Происхождение и контрольные суммы — `meal-25/SOURCE-PROVENANCE.json`.
 
-Подключена библиотека десертов 1.0 (данные ChatGPT 09.11.2026, ветка `meal-libraries`, manifest id `desserts`): база «Десерты» в переключателе пищевых баз — 30 карточек этикеток и расчётных моделей; 67 десертов из BLS, USDA, кавказской и узбекской библиотек остаются в своих базах с принадлежностью к коллекции (слово «десерт» в поиске, русские названия у 15 записей USDA). Неизвестное — не ноль, «менее» — граница, углеводы этикеток США — отдельной строкой. Черновики набора (7) не подключены. Структура настроек — прежняя (как в 24).
+Подключена библиотека десертов 1.0 (данные ChatGPT 09.11.2026, ветка `meal-libraries`, manifest id `desserts`): база «Десерты» в переключателе пищевых баз — 30 карточек этикеток и расчётных моделей; 67 десертов из BLS, USDA, кавказской и узбекской библиотек остаются в своих базах с принадлежностью к коллекции (слово «десерт» в поиске, русские названия у 15 записей USDA). Неизвестное — не ноль, «менее» — граница, углеводы этикеток США — отдельной строкой. Черновики набора (7) не подключены. Вход узнаётся по аккаунту и ключу, не по токену; обновление токена одно на операцию. Подпись счётчика — только порция. Кнопки «Happy Day» / «Happy Sport» — в новом окне. Структура настроек — прежняя (как в 24).
 
-— Claude · 09.11.2026 14:50
+— Claude · 09.11.2026 15:58
 
 ## Happy Meal · Update 24 · 09.11.2026
 
@@ -127,6 +127,8 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 **38.2 (08.11.2026):** справочник упражнений (137), оборудования (23) и групп мышц вынесен в общую библиотеку `assets/exercise-library/v1/` и встраивается при сборке (`sport/scripts/seed.mjs`); `id`, названия и история прежние. У восьми упражнений на блоке появилась рукоять (`handles` в библиотеке): выбирается в настройках упражнения внутри тренировки, хранится на упражнении этой тренировки (`handle`), показывается в заголовке, в записи тренировки и в колонке истории; подходы и нагрузка не пересчитываются.
 
 **38.3 (09.11.2026):** возврат «Назад» из кэша браузера не перезагружает страницу — блокировка записи берётся заново (`profile-lock.js`); история обновлений рисуется общим модулем `shared/release-notes.js` с автором и временем записи (H117), строка версии внизу настроек показывает дату, время и автора. — Claude · 09.11.2026 12:15
+
+**38.4 (09.11.2026):** вторая вкладка не блокируется экраном «Журнал защищён» — новое окно забирает журнал (Web Locks `steal`), прежнее переходит в просмотр с полосой «Sport открыт в другом окне — здесь только просмотр · Продолжить здесь» и само не перезагружается (`profile-lock.js`, `automatic-sync-ui.js`, `journal-cloud.js`); счётчики в Дневнике — капсула «− N +» как в Meal, подпись без «· Meal» (`food-counters.js`, `timer-prototype.css`); кнопки «Happy Day» / «Happy Meal» берутся из `shared/apps.json` при сборке (`day-53/`, `meal-25/`) и открывают новое окно; обновление токена — одно на операцию, свежий вход того же аккаунта принимается, ложное «Аккаунт или ключ изменились» ушло (`happy-auth.js`). Проверки `check-profile-lock`, `check-profile-sync`, `check-paths`, `check-settings-layout`, `check-layout` обновлены. — Claude · 09.11.2026 15:58
 
 ## Happy Sport · Update 37 · 07.11.2026
 

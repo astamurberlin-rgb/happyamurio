@@ -41,7 +41,9 @@ try{
  assert.deepEqual(s.sections.find(x=>x.id==='data').labels,['Мои данные','Резервная копия','Облачная копия']);
  assert.equal(s.sections.find(x=>x.id==='developer').hidden,true,'developer section hidden by default');
  assert.equal(s.unmapped,0,'every settings block is mapped');assert.equal(s.footerLast,true,'version line is the last element');assert.equal(s.outsideSettings,0,'nothing rendered after the settings container');
- assert.deepEqual(s.links,['/happyamurio/day-52/','/happyamurio/meal-23/']);
+ // Update 38.4: linked-app buttons follow shared/apps.json (current Day and Meal release directories).
+ const happyApps=JSON.parse(await readFile(new URL('../../shared/apps.json',import.meta.url),'utf8')),releaseDir=app=>'/happyamurio/'+happyApps[app].entry.split('/')[0]+'/';
+ assert.deepEqual(s.links,[releaseDir('day'),releaseDir('meal')]);
  for(const b of ['Прочитать облачный журнал','Проверить результат без записи','Повторить прежнюю попытку','Выгрузить резерв синхронизации','Выбрать историю','Скрыть раздел'])assert.ok(s.devButtons.includes(b),'developer section holds: '+b);
  // Long press on the version line opens the section; the hide button closes it; a short tap does nothing.
  const footer=await page.$('footer.happy-version');await footer.scrollIntoViewIfNeeded();await page.waitForTimeout(300);

@@ -67,17 +67,34 @@ function clSignOut(){
 function clAssertUser(uid){if(CL.s?.uid!==uid||(typeof SportProfiles!=='undefined'&&SportProfiles.current()!==uid))throw new Error('Аккаунт изменился — повтори действие после входа')}
 function clStoredGeneration(){const saved=JSON.parse(localStorage.getItem(CL_KEY)||'null');return JSON.stringify([saved?.s?.uid,saved?.s?.rt,saved?.k])}
 function clAssertContext(uid,key){clAssertUser(uid);const stored=JSON.parse(localStorage.getItem(CL_KEY)||'null');if(CL.ck!==key||(stored?.k!=null&&stored.k!==CL.kraw))throw new Error('Ключ аккаунта изменился — повтори действие после входа')}
+/* Update 38.4: одно обновление токена за раз — параллельные операции ждут его. Смена самого токена тем же аккаунтом
+   и ключом (в том числе из другого окна) — не смена входа: свежий вход из ячейки принимается вместо выхода из аккаунта. */
+let clRefreshing=null;
+function clAdoptStored(uid,key){const saved=JSON.parse(localStorage.getItem(CL_KEY)||'null');if(saved?.s?.uid===uid&&saved.s.at&&saved.k===CL.kraw&&CL.ck===key&&saved.s.at!==CL.s?.at){CL.s=saved.s;return true}return false}
 async function clToken(force,uid=CL.s?.uid){
   if(!CL.s)throw new Error('Нет входа');
   clAssertUser(uid);if(!force&&Date.now()<CL.s.exp-60000)return CL.s.at;
-  const old=CL.s,rt=old.rt,key=CL.ck,storedGeneration=clStoredGeneration();
-  const unchanged=()=>CL.s===old&&CL.s?.uid===uid&&CL.s?.rt===rt&&CL.ck===key&&clStoredGeneration()===storedGeneration&&
-    (typeof SportProfiles==='undefined'||SportProfiles.current()===uid);
-  let j;
-  try{j=await clAuth('token?grant_type=refresh_token',{refresh_token:rt})}
-  catch(e){if(unchanged()&&/устарел|Неверная/.test(e.message)){CL.s=null;CL.ck=null;CL.kraw=null;clStore()}throw e}
-  if(!unchanged())throw new Error('Аккаунт или ключ изменились — повтори действие после входа');
-  CL.s=clSes(j,old);clStore();return CL.s.at;
+  if(!clRefreshing){
+    const old=CL.s,rt=old.rt,key=CL.ck;
+    // Тот же вход: аккаунт и ключ в памяти и в ячейке не менялись (сам токен может быть уже обновлён другим окном — это не смена входа).
+    const sameLogin=()=>{if(CL.s?.uid!==uid||CL.ck!==key||(typeof SportProfiles!=='undefined'&&SportProfiles.current()!==uid))return false;const saved=JSON.parse(localStorage.getItem(CL_KEY)||'null');return !!saved?.s&&saved.s.uid===uid&&(saved.k==null||saved.k===CL.kraw)};
+    clRefreshing=(async()=>{
+      if(clAdoptStored(uid,key))return;
+      let j;
+      try{j=await clAuth('token?grant_type=refresh_token',{refresh_token:rt})}
+      catch(e){
+        if(!sameLogin())throw new Error('Аккаунт или ключ изменились — повтори действие после входа');
+        if(clAdoptStored(uid,key)||(CL.s!==old&&CL.s?.at))return;   // вход того же аккаунта уже обновлён (другим окном или здесь) — поздняя ошибка старого токена не применяется
+        if(/устарел|Неверная/.test(e.message)){CL.s=null;CL.ck=null;CL.kraw=null;clStore()}throw e;
+      }
+      if(!sameLogin())throw new Error('Аккаунт или ключ изменились — повтори действие после входа');
+      if(CL.s!==old&&CL.s?.at)return;
+      CL.s=clSes(j,old);clStore();
+    })();
+    const run=clRefreshing;run.then(()=>{if(clRefreshing===run)clRefreshing=null},()=>{if(clRefreshing===run)clRefreshing=null});
+  }
+  await clRefreshing;
+  clAssertUser(uid);if(!CL.s?.at)throw new Error('Нет входа');return CL.s.at;
 }
 async function clRest(method,query,body,prefer,again,uid=CL.s?.uid,contextGuard,signal){
   const key=CL.ck,guard=contextGuard||(()=>clAssertContext(uid,key));

@@ -17,7 +17,9 @@ if (!template.includes('__SEED__') || !template.includes('__APP__')) {
   throw new Error('В шаблоне отсутствуют места для данных или приложения.');
 }
 const read=path=>readFile(new URL(path,root),'utf8');
-const [css,refinements,navIcons,dock,auth,link,cloud]=await Promise.all([
+// Update 38.4: linked-app buttons take the current Day/Meal release directories from shared/apps.json at build time and open a new window.
+const happyApps=JSON.parse(await readFile(new URL('../../shared/apps.json',root),'utf8')),releaseDir=app=>happyApps[app].entry.split('/')[0];
+const [css,refinementsSource,navIcons,dock,auth,link,cloud]=await Promise.all([
   read('src/refinements.css'),read('src/refinements.js'),read('src/nav-icons.json'),read('src/dock-shape.js'),
   read('src/happy-auth.js'),read('src/sport-link.js'),read('src/sport-cloud.js')
 ]);
@@ -41,6 +43,7 @@ const releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await
 const iconStudioBridge=await read('src/icon-studio-bridge.js');
 const setPlan=await read('src/set-plan.js'),freeTimerJs=await read('src/free-timer.js');
 const quickValueInput=await read('src/quick-value-input.js'),restPill=await read('src/rest-pill.js');
+const refinements=refinementsSource.replace('__HAPPY_DAY_DIR__',()=>releaseDir('day')).replace('__HAPPY_MEAL_DIR__',()=>releaseDir('meal'));
 const exerciseConfig=await read('src/exercise-config.js'),exercisePlayer=await read('src/exercise-player.js'),experienceCss=await read('src/exercise-experience.css'),timerPrototypeCss=await read('src/timer-prototype.css');
 async function readShared(name){
   try{return await readFile(new URL('../shared/'+name,root),'utf8')}

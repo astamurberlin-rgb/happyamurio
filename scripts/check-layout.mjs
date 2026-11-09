@@ -54,6 +54,10 @@ assert.ok((await read('meal/index.html')).includes('href="../day/"'));
  const mealPage=await read(apps.meal.entry),dayDir=apps.day.entry.split('/')[0],sportDir=apps.sport.entry.split('/')[0];
  assert.ok(mealPage.includes(`href="../${dayDir}/"`),'meal: Day link matches apps.json');
  assert.ok(mealPage.includes(`href="../${sportDir}/"`),'meal: Sport link matches apps.json');}
+{// Update 38.4: Sport's linked-app buttons point at the current Day and Meal release directories and open a new window.
+ const sportPage=await read(apps.sport.entry),dayDir=apps.day.entry.split('/')[0],mealDir=apps.meal.entry.split('/')[0];
+ assert.ok(sportPage.includes(`href="/happyamurio/${dayDir}/" target="_blank"`),'sport: Day link matches apps.json');
+ assert.ok(sportPage.includes(`href="/happyamurio/${mealDir}/" target="_blank"`),'sport: Meal link matches apps.json');}
 assert.ok((await read(apps.meal.previous.entry)).includes(`data-app-version="${apps.meal.previous.version}"`));
 assert.notEqual(apps.meal.entry,apps.meal.previous.entry);
 const previousDay=await read(apps.day.previous.entry);

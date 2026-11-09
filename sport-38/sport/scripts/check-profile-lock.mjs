@@ -2,19 +2,35 @@ import {readFile} from 'node:fs/promises';
 import {createContext,runInContext} from 'node:vm';
 import assert from 'node:assert/strict';
 const source=await readFile(new URL('../src/profile-lock.js',import.meta.url),'utf8');
-let held=false;
-const locks={async request(name,options,fn){assert.equal(options.ifAvailable,true);if(held)return fn(null);held=true;try{return await fn({name})}finally{held=false}}};
+// Update 38.4: Web Locks with `steal` — a new request takes the lock over and the previous holder's request rejects with AbortError.
+let holder=null;const held=()=>holder!==null;
+const locks={request(name,options,fn){
+ assert.equal(options.mode,'exclusive');assert.equal(options.steal,true);
+ const previous=holder;
+ return new Promise((resolve,reject)=>{
+  const mine={reject};holder=mine;
+  if(previous)previous.reject(Object.assign(new Error('Lock broken by another request with the "steal" option'),{name:'AbortError'}));
+  Promise.resolve().then(()=>fn({name})).then(v=>{if(holder===mine)holder=null;resolve(v)},e=>{if(holder===mine)holder=null;reject(e)});
+ });
+}};
 function page({supported=true,search='',guardReady=true}={}){
  const events={},elements=[],page={children:[],replaceChildren(){this.children=[]},append(...c){this.children.push(...c)}};
- const context=createContext({SportReadOnlyTest:guardReady?{ready:true}:undefined,URLSearchParams,location:{search,reload(){}},navigator:{locks:supported?locks:null},window:{addEventListener:(n,f)=>events[n]=f},document:{getElementById:id=>id==='page'?page:{textContent:'SYNTHETIC APP'},createElement:tag=>({tag,style:{},addEventListener(){}}),body:{appendChild:node=>elements.push(node)}}});runInContext(source,context);return {context,events,elements,page};
+ const context=createContext({SportReadOnlyTest:guardReady?{ready:true}:undefined,URLSearchParams,location:{search,reload(){}},navigator:{locks:supported?locks:null},window:{addEventListener:(n,f)=>events[n]=f},document:{getElementById:id=>id==='page'?page:id==='sport-lock-banner'?(elements.find(n=>n.id==='sport-lock-banner')||null):{textContent:'SYNTHETIC APP'},createElement:tag=>({tag,style:{},children:[],listeners:{},addEventListener(n,f){this.listeners[n]=f},setAttribute(k,v){this[k]=v},append(...c){this.children.push(...c)}}),body:{appendChild:node=>elements.push(node)}}});runInContext(source,context);return {context,events,elements,page};
 }
-const a=page();assert.equal(a.elements.length,1);assert.equal(a.context.SportWriterLock.held,true);
-const b=page();assert.equal(b.elements.length,0);assert.match(b.page.children[1].textContent,/другой вкладке/);
-a.events.pagehide();await new Promise(resolve=>setImmediate(resolve));assert.equal(held,false);assert.equal(a.context.SportWriterLock.held,false);
-const c=page();assert.equal(c.elements.length,1);c.events.pagehide();await new Promise(resolve=>setImmediate(resolve));
+const tick=()=>new Promise(resolve=>setImmediate(resolve));
+const a=page();await tick();assert.equal(a.elements.length,1);assert.equal(a.context.SportWriterLock.held,true);
+// A second tab boots and takes the journal over; the first tab stops writing and shows the banner instead of a blocked screen.
+const b=page();await tick();assert.equal(b.elements.length,1);assert.equal(b.context.SportWriterLock.held,true);
+assert.equal(a.context.SportWriterLock.held,false);assert.equal(a.context.sportReadOnlyActive,true);
+const banner=a.elements.find(n=>n.id==='sport-lock-banner');assert.ok(banner,'banner in the tab that lost the journal');
+assert.match(banner.children[0].textContent,/другом окне/);assert.equal(banner.children[1].textContent,'Продолжить здесь');
+assert.equal(a.page.children.length,0,'app content stays visible: no blocked screen');
+a.events.pagehide();await tick();assert.equal(a.context.SportWriterLock.held,false);assert.equal(held(),true,'tab B still holds the journal');
+const c=page();await tick();assert.equal(c.elements.length,1);assert.equal(b.context.sportReadOnlyActive,true,'tab B loses the journal to tab C');
+c.events.pagehide();await tick();assert.equal(held(),false);
 const old=page({supported:false});assert.equal(old.elements.length,0);assert.match(old.page.children[1].textContent,/недоступна/);
-const embed=page({search:'?embed=measurements'});assert.equal(embed.elements.length,1);assert.equal(held,false);
-console.log('Passed: full-journal Web Lock precedes boot/migration, secondary-tab and unsupported-browser blocking, lifecycle release, and separate measurement embed path.');
+const embed=page({search:'?embed=measurements'});assert.equal(embed.elements.length,1);assert.equal(held(),false);
+console.log('Passed: full-journal Web Lock precedes boot/migration; a second tab takes the journal over with a viewer banner in the previous one (38.4), unsupported-browser blocking, lifecycle release, and separate measurement embed path.');
 // No-Web-Locks fallback exports only the saved active profile, without app boot or writes.
 {
  const data={version:1,sportOwner:'A',workouts:[{id:'A-private'}]},saved=new Map([['auth_readonly_hd_cloud_v1',JSON.stringify({s:{uid:'A'}})],['auth-readonly-happy-sport-prototype-v1:profile:A',JSON.stringify(data)],['auth-readonly-happy-sport-prototype-v1',JSON.stringify({version:1,sportOwner:'B',workouts:[{id:'B-private'}]})]]);
@@ -63,5 +79,5 @@ for(const change of ['replaced','deleted','owner-changed','version-changed','cor
 }
 console.log('Passed: delayed fallback logout/account/session/key/refresh fences, fresh journal validation, storage-clear and detached-button invalidation, A→B→A generation fence, and pre-download revocation.');
 
-const unsafe=page({guardReady:false});assert.equal(unsafe.elements.length,0);assert.match(unsafe.page.children[1].textContent,/Защита чтения/);unsafe.events.pagehide();await new Promise(resolve=>setImmediate(resolve));
+const unsafe=page({guardReady:false});await new Promise(resolve=>setImmediate(resolve));assert.equal(unsafe.elements.length,0);assert.match(unsafe.page.children[1].textContent,/Защита чтения/);unsafe.events.pagehide();await new Promise(resolve=>setImmediate(resolve));
 console.log('Passed: absent or failed read-only guard prevents all app boot and authentication.');

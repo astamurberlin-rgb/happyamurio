@@ -116,7 +116,9 @@ for(const failure of [false,true])for(const change of ['logout','account','key',
    expectedSession=e.c.CL.s;expectedKey=e.c.CL.ck;
    if(failure)throw Error('Неверная почта или пароль');return {access_token:'late',refresh_token:'late',user:{id:'A'}};
  };
- await assert.rejects(()=>e.run('clToken(true)'));assert.equal(e.c.CL.s,expectedSession);assert.equal(e.c.CL.ck,expectedKey);
+ // Update 38.4: a newer same-account session is kept and used; a late refresh neither overwrites it nor signs the account out.
+ if(change==='session')assert.equal(await e.run('clToken(true)'),'new');else await assert.rejects(()=>e.run('clToken(true)'));
+ assert.equal(e.c.CL.s,expectedSession);assert.equal(e.c.CL.ck,expectedKey);
 }
 // Direct journal transport carries the immutable IV revision, rejecting same-timestamp ABA.
 {

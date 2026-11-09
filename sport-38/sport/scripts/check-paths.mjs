@@ -16,7 +16,8 @@ async function check(ref, page) {
     // Update 38.1: shared immutable asset libraries live at the repository root.
     if(url.pathname.startsWith('/happyamurio/assets/')){const rel='../'+decodeURIComponent(url.pathname.slice('/happyamurio/'.length));if(checked.has(rel))return;checked.add(rel);try{assert.ok((await stat(new URL(rel,repo))).isFile())}catch{failures.push(`${page}: missing library file ${ref}`)}return;}
     // Update 38: linked apps open the published sibling releases on the same origin.
-    const siblings={'/happyamurio/day-52/':'../day-52/index.html','/happyamurio/meal-23/':'../meal-23/index.html'};
+    // Update 38.4: the linked releases are the current Day/Meal entries from shared/apps.json (filled at build time).
+    const apps=JSON.parse(await readFile(new URL('../shared/apps.json',repo),'utf8')),siblings={};for(const app of ['day','meal']){const dir=apps[app].entry.split('/')[0];siblings['/happyamurio/'+dir+'/']='../'+dir+'/index.html';}
     if(siblings[url.pathname]){try{assert.ok((await stat(new URL(siblings[url.pathname],repo))).isFile())}catch{failures.push(`${page}: linked release missing: ${ref}`)}return;}
     if(['/day/','/meal/','/prototypes/happy-icon-studio.html'].includes(url.pathname))return;
     failures.push(`${page}: path escapes project prefix: ${ref}`); return;

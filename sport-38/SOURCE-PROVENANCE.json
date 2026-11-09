@@ -1,11 +1,11 @@
 {
   "app": "Happy Sport",
-  "update": "38.3",
+  "update": "38.4",
   "source_release": "sport-37 (Happy Sport · Update 37)",
   "source_commit_of_update_37": "cf8dea4f26ff8e05cb786594e6aae154391e9557",
-  "source_commit": "49635c3e8f2c0b1aec788dd912db8c0193aeb71d",
+  "source_commit": "e49d05b524ef8d92f86b62a69f7fe221eeadd987",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-38/",
-  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -75,8 +75,8 @@
     },
     {
       "path": "README.md",
-      "size": 7124,
-      "sha256": "e89f31d4e9749acfcc056ff3c149ef2dec537c7647fe91dc5c4fcca49d18188b"
+      "size": 8503,
+      "sha256": "6767db0833dc138c4b98f90799631d5dea6f408dfc881deb0b30775cf280a998"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -135,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 956639,
-      "sha256": "55a89270109720424b937218d621db541198311ff784cccc58a348237eeadc9c"
+      "size": 962742,
+      "sha256": "9770f9cfb738233b84f26d4c0d5c8887a1fd6a01993aa1936c938ee707e90243"
     },
     {
       "path": "manifest.webmanifest",
@@ -170,18 +170,18 @@
     },
     {
       "path": "scripts/check-settings-layout.mjs",
-      "size": 9690,
-      "sha256": "ba54519a5d1d03adf0af135ffcd2d89adb01c38a1b9fbacfdd134c987975988f"
+      "size": 9958,
+      "sha256": "f210368a50e7807ad9e4be851d239088f3077821f09e3c54f8a126c888c35970"
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 1494,
-      "sha256": "1f32db840006470bc28aa0bba11580f08b3f4e6eff88b666350ede9f2590d463"
+      "size": 1927,
+      "sha256": "dc405035e2311caf75af0da76c1926e500b81ba51026629df744badcc4c562a0"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 3435,
-      "sha256": "0dd2d61392901752e6f2049a7ccefeb62d258280e7635f65d2e595dcd557701e"
+      "size": 3756,
+      "sha256": "c295f6d6f83873cce73c3027624af2a288c15e3ed77b44abbeb8763b1170befc"
     },
     {
       "path": "shared/README.md",
@@ -270,8 +270,8 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 7912,
-      "sha256": "8b4bb2a7c1abfc640f9c2ee2a9a9aeabad081bfe632457677f5f9e18437c82a3"
+      "size": 8341,
+      "sha256": "652239cc063edfb724ef2ba06b5de3331c222e5e0bf211dae0df69531c0050ca"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
@@ -370,8 +370,8 @@
     },
     {
       "path": "sport/scripts/check-paths.mjs",
-      "size": 3980,
-      "sha256": "e0d26d3100c4358e2e733b3f98913222f3bceb4fbac838ffe8b330a3161f5553"
+      "size": 4214,
+      "sha256": "c6d55baeb44a7e3c5910e8be477cc4b32e7d0196bf75721e2f49556073adc156"
     },
     {
       "path": "sport/scripts/check-player-controls.mjs",
@@ -380,13 +380,13 @@
     },
     {
       "path": "sport/scripts/check-profile-lock.mjs",
-      "size": 9575,
-      "sha256": "ef9fbbcc5c5e23b7637c84d3984d38dcabf222202a8300a9c7a475fdafa84293"
+      "size": 11109,
+      "sha256": "a6bd8a92c8298a5c39ed84ccbf746055675ba5a896fc24cb2388a9f96e9b47bc"
     },
     {
       "path": "sport/scripts/check-profile-sync.mjs",
-      "size": 21697,
-      "sha256": "fc08b23fac53110bd4836979c8d596f8c8e1fc2a177c92011e6873c619068805"
+      "size": 21903,
+      "sha256": "34102d0d6d7d76941536562e395087f247da954aa3701812bd6faa5e3b2e669f"
     },
     {
       "path": "sport/scripts/check-readonly-transport.mjs",
@@ -545,8 +545,8 @@
     },
     {
       "path": "sport/src/automatic-sync-ui.js",
-      "size": 25139,
-      "sha256": "1a5719387d0f7d4f1792b6272aef3b3e12fd10bf4e184205e49cb986389e6735"
+      "size": 25376,
+      "sha256": "f373c4a9b45c3a0cf8068426ea8e3b5195d2302c59ad670c31fcc56ee9449693"
     },
     {
       "path": "sport/src/automatic-sync.js",
@@ -581,7 +581,7 @@
     {
       "path": "sport/src/data-transfer.js",
       "size": 18762,
-      "sha256": "893b31032cf5e639b6c921a66c4b27606b6a8af04c40b4501e9f8a3a43be3767"
+      "sha256": "5c2778d3237af49378643aeb790da2c46ecb54f14f7893c7e7229c195a6e3996"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -635,8 +635,8 @@
     },
     {
       "path": "sport/src/food-counters.js",
-      "size": 8364,
-      "sha256": "660739ec8e095495ba6d75cbab334fefecf9f59ce64439ddd8b79ea57c208749"
+      "size": 8545,
+      "sha256": "9f737c79ef08349d550dbede0b06540940bdbb2fd0e587cc4796631aa5058ec3"
     },
     {
       "path": "sport/src/free-timer.js",
@@ -645,8 +645,8 @@
     },
     {
       "path": "sport/src/happy-auth.js",
-      "size": 9343,
-      "sha256": "60a2b5b7afd457d0778cf8df1b503479c083dfc2fbd86f7f44925c392686d394"
+      "size": 11104,
+      "sha256": "6f31d6eb4ecc0ac9a4852b4fbced694d5694ce5352fe580d5e3584764182a61b"
     },
     {
       "path": "sport/src/icon-studio-bridge.js",
@@ -655,8 +655,8 @@
     },
     {
       "path": "sport/src/journal-cloud.js",
-      "size": 12561,
-      "sha256": "8300bc7de5fa0379623d93101c268fd87d38e35d82839d2faa9cab87813c873a"
+      "size": 12798,
+      "sha256": "6e43939f2e05661dfad1ec48fad6a0115123bcd4bd840cda011829f21977ef6f"
     },
     {
       "path": "sport/src/library-v2.js",
@@ -705,13 +705,13 @@
     },
     {
       "path": "sport/src/profile-lock.js",
-      "size": 6431,
-      "sha256": "dba01d4fa9dde55f96ce5f0bb69fa18112f47798753404514b74959a8197f68e"
+      "size": 7454,
+      "sha256": "fc09c08bad83ad4e175bd423bf1f1b33b519e4737636ee0070b7d048d71755ff"
     },
     {
       "path": "sport/src/profile-store.js",
-      "size": 3174,
-      "sha256": "dc8adcf5f726abb67fdac2b3a28570a6ab6ce367bf9c26967e12dd541400dfd0"
+      "size": 3209,
+      "sha256": "d3d6d59110db138c2a6533610cadfb348124ba88c2bb731cbf2ced1d45b587e1"
     },
     {
       "path": "sport/src/quick-value-input.js",
@@ -745,13 +745,13 @@
     },
     {
       "path": "sport/src/refinements.js",
-      "size": 19091,
-      "sha256": "763c52d7a030cd76ce628329385a33c1be880e664219d54d643c63492662d825"
+      "size": 19175,
+      "sha256": "8730b6181a262433b271150ada01ad2f0bc03ac0b38fb24157799d23056a5267"
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 12572,
-      "sha256": "2aa3af4f0080089c41dc3c5a7d4cd93e6fa65ef54919d170d356075a793530d9"
+      "size": 14042,
+      "sha256": "40df02c8856d81345bbb3066908a70d2afff3207a97e42122bf7311e6c10dff6"
     },
     {
       "path": "sport/src/rest-pill.js",
@@ -850,8 +850,8 @@
     },
     {
       "path": "sport/src/timer-prototype.css",
-      "size": 22266,
-      "sha256": "c8445af063a069387f094c71cca72df9803685a2870c38f90346947ea471ced4"
+      "size": 23363,
+      "sha256": "a27bd705df10496601a77379af9f2ad7ab354e1f47fa2dda65f3a72cef69e610"
     },
     {
       "path": "sport/src/workout-identity.js",

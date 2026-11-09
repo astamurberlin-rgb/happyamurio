@@ -52,13 +52,27 @@ else if(!navigator.locks?.request)sportBootBlocked('В этой вкладке �
 else {
   const LOCK='auth-readonly-happy-sport-full-journal-writer-v1';
   // Update 38.3: the lock is released on pagehide (back/forward cache). On return the page
-  // takes the lock again in place instead of reloading; a reload happens only when another
-  // tab holds the journal, so the «Журнал защищён» screen stays accurate.
+  // takes the lock again in place instead of reloading.
+  // Update 38.4: a second tab is never blocked — it takes the journal over (Web Locks `steal`);
+  // the tab that loses the lock stops writing and shows a banner with «Продолжить здесь».
+  // Whichever tab the owner is looking at owns the journal; stale in-memory data never writes back.
+  function sportLockLost(){
+    if(sportReadOnlyActive)return;
+    SportWriterLock.held=false;sportReadOnlyActive=true;++sportReadOnlyGeneration;
+    if(document.getElementById('sport-lock-banner'))return;
+    const bar=document.createElement('div');bar.id='sport-lock-banner';bar.className='sport-lock-banner';bar.setAttribute('role','status');
+    const text=document.createElement('span');text.textContent='Sport открыт в другом окне — здесь только просмотр.';
+    const resume=document.createElement('button');resume.type='button';resume.className='button';resume.textContent='Продолжить здесь';resume.addEventListener('click',()=>location.reload());
+    bar.append(text,resume);document.body.appendChild(bar);
+  }
   function holdLock(onHeld){
-    return navigator.locks.request(LOCK,{mode:'exclusive',ifAvailable:true},async lock=>{
+    return navigator.locks.request(LOCK,{mode:'exclusive',steal:true},async lock=>{
       if(!lock){onHeld(false);return;}
       SportWriterLock.held=true;onHeld(true);
       await new Promise(resolve=>window.addEventListener('pagehide',()=>{SportWriterLock.held=false;resolve()},{once:true}));
+    }).catch(error=>{
+      if(error&&error.name==='AbortError'&&SportWriterLock.held){sportLockLost();return;}
+      throw error;
     });
   }
   window.addEventListener('pageshow',event=>{
@@ -66,7 +80,7 @@ else {
     holdLock(held=>{if(!held)location.reload()}).catch(()=>location.reload());
   });
   holdLock(held=>{
-    if(!held){sportBootBlocked('Sport уже открыт в другой вкладке. Чтобы не перезаписать записи, закрой её и нажми «Повторить открытие».');return;}
+    if(!held){sportBootBlocked('Не удалось получить право записи журнала. Нажми «Повторить открытие».');return;}
     sportStartApp();
   }).catch(()=>sportBootBlocked('Не удалось защитить запись журнала. Закрой другие вкладки Sport и повтори. Данные не изменены.'));
 }

@@ -97,6 +97,7 @@ function sportJournalAccountChanged(){
   if(SportProfiles.current()===SportProfiles.owner)return false;
   // Reload resets cached views, timers and independent measurement/counter engines.
   // All old-page writes are fenced by the captured storage owner until navigation completes.
+  if(!SportWriterLock.held||(typeof sportReadOnlyActive!=='undefined'&&sportReadOnlyActive))return true;   // Update 38.4: окно без права записи только смотрит, само не перезагружается
   clearTimeout(sportSyncTimer);location.reload();return true;
 }
 const sportJournalProfile=renderProfile;

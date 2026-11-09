@@ -1,10 +1,10 @@
 {
- "release": "Happy Day Update 53.1",
+ "release": "Happy Day Update 53.2",
  "date": "2026-11-09",
  "source_release": "day-52 (Happy Day Update 52)",
  "source_commit": "7ca5f3cfd5e8c04f1a80f86a2948967cffc64432",
  "source_app_version": "52",
- "destination_app_version": "53.1",
+ "destination_app_version": "53.2",
  "adaptations": [
   "sign-in cell happy-auth:day with one-time copy from hd_cloud_v1 (profile-storage.js, CL_KEY, auth-read-only.js, arc-motion.js, day-sport-view.mjs)",
   "linked-app buttons → ../meal-24/ (53.1; 53 pointed to ../meal-23/) and ../sport-38/; workout links → ../sport-38/",
@@ -16,13 +16,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-53.html",
-   "size": 3571327,
-   "sha256": "288f2837bf295c4cf7e3f3f7897cdf1f81ae6d2a7c81973ba92ae7acdfa8d179"
+   "size": 3571919,
+   "sha256": "21e4101b7b0e0c26da839e6f0fa39615f9f864445208031682d0a18bf549a781"
   },
   {
    "path": "README.md",
-   "size": 2234,
-   "sha256": "b43e9248845905c7c7c284bce751fb5c64653180ec363fb0507ac216d565cd45"
+   "size": 2423,
+   "sha256": "39510a1ce459452b7facfafb7d5999ff477ca91b2934f22afdd64a541076e15b"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -246,18 +246,18 @@
   },
   {
    "path": "index.html",
-   "size": 528238,
-   "sha256": "ea4be0818ee9785dcb73ef417c2f909d3c0ae6ada44b8bc16f5555fe8ca09a97"
+   "size": 528270,
+   "sha256": "5e7242981818b6e22f3991941ca8db7b71b25aeeeb18f5d122ce2e1ed9f4bba5"
   },
   {
    "path": "manifest.webmanifest",
    "size": 515,
-   "sha256": "88d80b0faa7d45a49132f3726227ada8c91ce7def586f6c6a1fffa3ae7652739"
+   "sha256": "c04c8bbdbff137751637c4ac21c51ec291c0accd975fd8d66c0d56eb268707dc"
   },
   {
    "path": "release-notes.js",
-   "size": 15049,
-   "sha256": "24d19673dd04bc7193012ba0a600b36a1bc088899969c2b1b7569dd0ab8a8c7b"
+   "size": 15469,
+   "sha256": "e0da3f5a7b2ac1ecd455e439d7e9c44a95539c4c9b19630e676232441aee0e7b"
   },
   {
    "path": "section-wheel.css",
@@ -417,6 +417,11 @@
    "version": "53.1",
    "date": "2026-11-09",
    "change": "Happy Meal button → ../meal-24/ (Meal 24 was released after Day 53); release note 53.1 with author and time; nothing else changed"
+  },
+  {
+   "version": "53.2",
+   "date": "2026-11-09",
+   "change": "Happy Meal / Happy Sport buttons → ../meal-25/ and ../sport-38/ in a new window (target=_blank); release note 53.2; nothing else changed"
   }
  ]
 }
