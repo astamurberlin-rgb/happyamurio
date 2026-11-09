@@ -1,11 +1,11 @@
 {
   "app": "Happy Sport",
-  "update": "38.4",
+  "update": "38.5",
   "source_release": "sport-37 (Happy Sport · Update 37)",
   "source_commit_of_update_37": "cf8dea4f26ff8e05cb786594e6aae154391e9557",
-  "source_commit": "e49d05b524ef8d92f86b62a69f7fe221eeadd987",
+  "source_commit": "c7075e42c51b3b85d48029bb4fbd66a89d22e15c",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-38/",
-  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js)",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -75,8 +75,8 @@
     },
     {
       "path": "README.md",
-      "size": 8503,
-      "sha256": "6767db0833dc138c4b98f90799631d5dea6f408dfc881deb0b30775cf280a998"
+      "size": 9565,
+      "sha256": "3027920408237678e413cc67f68b6e7ece70248d01ab2b29d6025ed72005529f"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -135,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 962742,
-      "sha256": "9770f9cfb738233b84f26d4c0d5c8887a1fd6a01993aa1936c938ee707e90243"
+      "size": 965044,
+      "sha256": "5a13aaee742b25e85fa63622838a0202668829a798d722e2f699d0c976131f83"
     },
     {
       "path": "manifest.webmanifest",
@@ -175,13 +175,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 1927,
-      "sha256": "dc405035e2311caf75af0da76c1926e500b81ba51026629df744badcc4c562a0"
+      "size": 2067,
+      "sha256": "ab8b1725f2a386d15cb8d5197cb08ff8c1208498f430112268a4a214cc38df2e"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 3756,
-      "sha256": "c295f6d6f83873cce73c3027624af2a288c15e3ed77b44abbeb8763b1170befc"
+      "size": 3877,
+      "sha256": "d53bcf8beaf01e9ad2b6e39457242ecc1a4cca3f89225c3c3e1d87fe11415ab3"
     },
     {
       "path": "shared/README.md",
@@ -212,6 +212,11 @@
       "path": "shared/happy-gradients.js",
       "size": 6546,
       "sha256": "d6cac534f3d0cdfa9c5ed3c1d67f10e6d4212c99fbffecd72346b3e3cf510c61"
+    },
+    {
+      "path": "shared/happy-links.js",
+      "size": 1850,
+      "sha256": "4b85d0f744bb3bf5590c01943f743ccc04d671386a621ede79076cf36cf1bad4"
     },
     {
       "path": "shared/happy-reference-themes.js",
@@ -270,8 +275,8 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 8341,
-      "sha256": "652239cc063edfb724ef2ba06b5de3331c222e5e0bf211dae0df69531c0050ca"
+      "size": 8398,
+      "sha256": "a802bd16038d8657782f93ea321618548c8f7187c08cc1b68774e91abdc9c98a"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
@@ -370,8 +375,8 @@
     },
     {
       "path": "sport/scripts/check-paths.mjs",
-      "size": 4214,
-      "sha256": "c6d55baeb44a7e3c5910e8be477cc4b32e7d0196bf75721e2f49556073adc156"
+      "size": 4477,
+      "sha256": "61f147ad411f085de17fef253d11090e4b5d946051e8c0ad61a81d7f77f2ae04"
     },
     {
       "path": "sport/scripts/check-player-controls.mjs",
@@ -581,7 +586,7 @@
     {
       "path": "sport/src/data-transfer.js",
       "size": 18762,
-      "sha256": "5c2778d3237af49378643aeb790da2c46ecb54f14f7893c7e7229c195a6e3996"
+      "sha256": "aed714038873d093d4bef769cd157463c4b92a0bb87a99374590112b3269fbf9"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -745,13 +750,13 @@
     },
     {
       "path": "sport/src/refinements.js",
-      "size": 19175,
-      "sha256": "8730b6181a262433b271150ada01ad2f0bc03ac0b38fb24157799d23056a5267"
+      "size": 19218,
+      "sha256": "92734be699db9886a933a7cc90964f66f989321550f374df6e5156f39e56c540"
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 14042,
-      "sha256": "40df02c8856d81345bbb3066908a70d2afff3207a97e42122bf7311e6c10dff6"
+      "size": 14450,
+      "sha256": "8e406032fa256212d10ff67555895f29926f1634b7b0fbee26dd920189a804d8"
     },
     {
       "path": "sport/src/rest-pill.js",

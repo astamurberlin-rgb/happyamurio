@@ -1,42 +1,52 @@
 {
   "day": {
-    "entry": "day-53/index.html",
-    "version": "53.2",
-    "sharedDirectory": "day-53/shared",
+    "entry": "day-54/index.html",
+    "version": "54",
+    "sharedDirectory": "day-54/shared",
     "links": {
-      "meal": "meal-25/",
+      "meal": "meal-26/",
       "sport": "sport-38/"
     },
-    "download": "day-53/Happy-Day-53.html",
+    "download": "day-54/Happy-Day-54.html",
     "previous": {
-      "entry": "day-52/index.html",
-      "version": "52",
-      "sourceCommit": "7ca5f3cfd5e8c04f1a80f86a2948967cffc64432"
+      "entry": "day-53/index.html",
+      "version": "53.2",
+      "sourceCommit": "c7075e42c51b3b85d48029bb4fbd66a89d22e15c"
     },
-    "name": "Happy Day · Update 53.2",
+    "name": "Happy Day · Update 54",
     "earlier": {
       "entry": "day/index.html",
       "version": "50.14",
       "sourceCommit": "e1e6597fe97f5c0acb06239e6e61bd1de88a2e91"
-    }
-  },
-  "meal": {
-    "entry": "meal-25/index.html",
-    "version": "25",
-    "name": "Happy Meal · Update 25",
-    "sharedDirectory": "meal-25/shared",
-    "accountScript": "meal-25/account-ui.js",
+    },
     "settingsSections": [
       "account",
+      "app",
+      "data",
       "links",
-      "exports",
-      "backup"
+      "developer",
+      "version"
+    ]
+  },
+  "meal": {
+    "entry": "meal-26/index.html",
+    "version": "26",
+    "name": "Happy Meal · Update 26",
+    "sharedDirectory": "meal-26/shared",
+    "accountScript": "meal-26/account-ui.js",
+    "settingsSections": [
+      "account",
+      "app",
+      "data",
+      "links",
+      "developer",
+      "version"
     ],
     "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
     "previous": {
-      "entry": "meal-24/index.html",
-      "version": "24",
-      "sourceCommit": "e49d05b524ef8d92f86b62a69f7fe221eeadd987"
+      "entry": "meal-25/index.html",
+      "version": "25",
+      "sourceCommit": "c7075e42c51b3b85d48029bb4fbd66a89d22e15c"
     },
     "earlier": {
       "entry": "meal/index.html",
@@ -45,7 +55,7 @@
   },
   "sport": {
     "entry": "sport-38/index.html",
-    "version": "38.4",
+    "version": "38.5",
     "name": "Happy Sport · Update 38",
     "sharedDirectory": "sport-38/shared",
     "sourceDirectory": "sport-38/sport/src",

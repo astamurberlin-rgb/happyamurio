@@ -22,7 +22,7 @@
 
 - Перед работой получить свежий `main`, прочитать `APPS.md` и `DATA-STORAGE.md`. Работать в отдельной ветке задачи; не затирать параллельные изменения, не делать force push; перед слиянием проверить изменения коллег.
 - Теги не ставятся (решение владельца от 08.11.2026): выпуск опознаётся по имени апдейта в каталоге, в приложении, в `shared/apps.json`, в `APPS.md` и в `SOURCE-PROVENANCE.json` выпуска.
-- Актуальные входы: `day-53/index.html` (53.2), `meal-25/index.html`, `sport-38/index.html` (38.4); `day/`, `day-52/`, `meal/`, `meal-23/`, `meal-24/`, `sport/`, `sport-37/` — сохранённые прежние версии.
+- Актуальные входы: `day-54/index.html`, `meal-26/index.html`, `sport-38/index.html` (38.5); `day/`, `day-52/`, `day-53/`, `meal/`, `meal-23/`, `meal-24/`, `meal-25/`, `sport/`, `sport-37/` — сохранённые прежние версии.
 - Старые HTML в корне — исторические файлы или переходы; не развивать их как текущие версии.
 - Сохранять постоянные URL, ключи хранилища и пользовательские записи. Изменения схемы требуют миграции.
 - Личные выгрузки и журналы, токены и ключи нельзя коммитить. Публичные справочники не являются дневниками.
@@ -48,14 +48,14 @@
 - Общие: `node scripts/sync-shared.mjs` (эталоны общих файлов → выпуски, по `shared/shared-files.json`) → `node scripts/sync-shared-ui.mjs` → сборка Sport выпуска → `node scripts/check-shared.mjs`, `node scripts/check-shared-ui.mjs`, `node scripts/check-layout.mjs`, `node scripts/check-food-counters.mjs`.
 - Sport: `npm --prefix sport-NN/sport run check`; для настроек — `node sport-NN/scripts/check-settings-layout.mjs` (headless Chrome); происхождение — `verify-release` по `SOURCE-PROVENANCE.json`.
 - Meal: `node scripts/check-meal-times.mjs` (время питания и связка с журналом Day), `node scripts/check-meal-exports.mjs` (CSV, отчёты, названия способов приготовления).
-- Day: `node --test day-53/tests/*.test.cjs`; самостоятельный HTML — `python3 scripts/build-day-standalone.py day-53`; смоук в headless Chrome — страница, настройки, подвал, ссылки, без ошибок.
-- Meal: `node meal-25/checks/check-startup.mjs`, `node meal-25/checks/check-auth-identity.mjs` (вход по аккаунту и ключу, не по токену), `node meal-25/checks/check-desserts.mjs` (адаптер библиотеки десертов на реальном файле из `meal-libraries`); смоук в headless Chrome с файлами библиотек.
+- Day: `node --test day-54/tests/*.test.cjs`; самостоятельный HTML — `python3 scripts/build-day-standalone.py day-54`; смоук в headless Chrome — страница, настройки, подвал, ссылки, без ошибок.
+- Meal: `node meal-26/checks/check-startup.mjs`, `node meal-26/checks/check-auth-identity.mjs` (вход по аккаунту и ключу, не по токену), `node meal-26/checks/check-desserts.mjs` (адаптер библиотеки десертов на реальном файле из `meal-libraries`); смоук в headless Chrome с файлами библиотек.
 
 ## Общий интерфейс и настройки
 
 - Общие элементы менять в `shared/happy-ui.css` и `shared/happy-ui.js`, образец — Happy Meal. Затем `node scripts/sync-shared-ui.mjs` и сборка Sport. Правила геометрии и сборки — `shared/README.md`.
 - Общие модули фундамента (`release-notes.js`, `happy-status.js`, далее `happy-auth.js`, `happy-shell`) живут в корневом `shared/` и копируются в выпуски `sync-shared.mjs`; эталоны и известные расхождения — `shared/shared-files.json`.
-- Целевая структура настроек (согласована владельцем 08.11.2026, первой реализована в Sport 38): Аккаунт → Приложение → Данные → Связанные приложения → скрытый «Для разработчика» (долгое нажатие на строку версии) → история обновлений и версия в самом низу. Единые названия: «Выгрузить дневник», «Загрузить дневник», «Вернуть дневник до загрузки». Day и Meal переходят на неё в своих следующих выпусках; до этого сохраняют порядок аккаунт, резервная копия, связанные приложения. Иконка настроек — шестерёнка.
+- Целевая структура настроек (согласована владельцем 08.11.2026, первой реализована в Sport 38): Аккаунт → Приложение → Данные → Связанные приложения → скрытый «Для разработчика» (долгое нажатие на строку версии) → история обновлений и версия в самом низу. Единые названия: «Выгрузить дневник», «Загрузить дневник», «Вернуть дневник до загрузки». Day 54 и Meal 26 перешли на неё 09.11.2026 (разметка экрана настроек, скрытый раздел — `shared/happy-settings-developer.js`); ссылки на соседние приложения — `shared/happy-links.js` по `shared/apps.json`. Иконка настроек — шестерёнка.
 
 ## Общие библиотеки
 

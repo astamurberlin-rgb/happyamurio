@@ -11,6 +11,24 @@
       ]
     },
     {
+      "name": "happy-links.js",
+      "reference": "shared/happy-links.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
+      "name": "happy-settings-developer.js",
+      "reference": "shared/happy-settings-developer.js",
+      "apps": [
+        "day",
+        "meal"
+      ],
+      "todo": "у Sport свой settings-layout.js"
+    },
+    {
       "name": "happy-status.js",
       "reference": "shared/happy-status.js",
       "apps": [],
@@ -64,7 +82,7 @@
         "meal",
         "sport"
       ],
-      "todo": "эталон перенести в shared/ (в корне файла нет)"
+      "todo": "эталон перенести в shared/ (в корне файла нет); встроенные копии в index.html отличаются от файла: Day/Meal — слот data-happy-appearance-slot в entry() (Day 54, Meal 26), у Day ещё тема аккаунта; при переносе эталона внести слот в файл"
     },
     {
       "name": "happy-appearance.css",
@@ -105,7 +123,7 @@
         "sport"
       ],
       "divergent": true,
-      "todo": "три версии (day-53, meal-25 = корень, sport-38) — объединить в следующих выпусках"
+      "todo": "три версии (day-54, meal-26 = корень, sport-38) — объединить в следующих выпусках"
     },
     {
       "name": "happy-ui.css",
@@ -116,7 +134,7 @@
         "sport"
       ],
       "divergent": true,
-      "todo": "meal-25 отличается от остальных"
+      "todo": "meal-26 отличается от остальных"
     },
     {
       "name": "profile-storage.js",
@@ -149,7 +167,7 @@
       ],
       "divergent": true,
       "frozenRoot": true,
-      "todo": "meal-25 отличается"
+      "todo": "meal-26 отличается"
     }
   ]
 }

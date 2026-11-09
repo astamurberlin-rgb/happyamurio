@@ -1,4 +1,4 @@
-import {readFile} from 'node:fs/promises';
+import {readFile,stat as statFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 const root=new URL('../',import.meta.url);
@@ -55,9 +55,10 @@ assert.ok((await read('meal/index.html')).includes('href="../day/"'));
  assert.ok(mealPage.includes(`href="../${dayDir}/"`),'meal: Day link matches apps.json');
  assert.ok(mealPage.includes(`href="../${sportDir}/"`),'meal: Sport link matches apps.json');}
 {// Update 38.4: Sport's linked-app buttons point at the current Day and Meal release directories and open a new window.
- const sportPage=await read(apps.sport.entry),dayDir=apps.day.entry.split('/')[0],mealDir=apps.meal.entry.split('/')[0];
- assert.ok(sportPage.includes(`href="/happyamurio/${dayDir}/" target="_blank"`),'sport: Day link matches apps.json');
- assert.ok(sportPage.includes(`href="/happyamurio/${mealDir}/" target="_blank"`),'sport: Meal link matches apps.json');}
+ // Update 38.5: static hrefs are the build-time fallback (must name existing release directories); the live address comes from apps.json via shared/happy-links.js.
+ const sportPage=await read(apps.sport.entry);
+ for(const app of ['day','meal']){const m=sportPage.match(new RegExp(`href="/happyamurio/([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'sport: '+app+' link carries data-happy-app');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'sport: '+app+' fallback link names an existing release');}
+ assert.ok(sportPage.includes('HappyLinks'),'sport: happy-links module embedded');}
 assert.ok((await read(apps.meal.previous.entry)).includes(`data-app-version="${apps.meal.previous.version}"`));
 assert.notEqual(apps.meal.entry,apps.meal.previous.entry);
 const previousDay=await read(apps.day.previous.entry);

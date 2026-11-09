@@ -39,7 +39,7 @@ const muscles=JSON.stringify(exerciseLibrary.muscles);
 const library=(await read('src/library-v2.js')).replace('__RECOMMENDED_TEMPLATES__',()=>recommendations.replaceAll('</','<\\/')).replace('__EXERCISE_MUSCLES__',()=>muscles);
 const energyJs=await read('src/energy-widget.js'),energyCss=await read('src/energy-widget.css');
 const dataTransfer=await read('src/data-transfer.js'),profileStore=await read('src/profile-store.js'),journalCloud=await read('src/journal-cloud.js'),profileLock=await read('src/profile-lock.js'),recoveryVault=await read('src/recovery-vault.js');
-const releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await read('src/release-notes.js'),templatePicker=await read('src/template-picker.js');
+const happyLinks=await readShared('happy-links.js'),releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await read('src/release-notes.js'),templatePicker=await read('src/template-picker.js');
 const iconStudioBridge=await read('src/icon-studio-bridge.js');
 const setPlan=await read('src/set-plan.js'),freeTimerJs=await read('src/free-timer.js');
 const quickValueInput=await read('src/quick-value-input.js'),restPill=await read('src/rest-pill.js');
@@ -66,7 +66,7 @@ const html = template
   .replace('__READONLY_GUARD__',()=>readOnlyGuard)
   .replace('__PROFILE_LOCK__',()=>profileLock)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sharedJs,sportIcons,metricField,profileStore,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,readOnlyAuth,link,cloud,scheduleModel,scheduleCalendarJs,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,dataTransfer,setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,measurementModel,measurementShared,freeTimerJs,foodCounters,sportFoodCounters,releaseNotesShared,releaseNotes,templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,recoveryVault,journalCloud,readOnlyUI,controlledJournal,controlledLedger,controlledCAS,controlledSyncUI,automaticSync,automaticUI,strongNativeCore,strongNativeMappings,strongNativeUI,settingsLayout].join('\n'))
+  .replace('__APP__', () => [sharedJs,sportIcons,metricField,profileStore,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,readOnlyAuth,link,cloud,scheduleModel,scheduleCalendarJs,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,dataTransfer,setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,measurementModel,measurementShared,freeTimerJs,foodCounters,sportFoodCounters,releaseNotesShared,happyLinks,releaseNotes,templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,recoveryVault,journalCloud,readOnlyUI,controlledJournal,controlledLedger,controlledCAS,controlledSyncUI,automaticSync,automaticUI,strongNativeCore,strongNativeMappings,strongNativeUI,settingsLayout].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`);
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);

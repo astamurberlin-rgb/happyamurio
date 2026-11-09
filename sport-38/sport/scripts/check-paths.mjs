@@ -36,7 +36,10 @@ for (const page of pages) {
   // Covers rendered attributes, template-generated links, catalog images and
   // relative URL literals used by fetch/iframes in these self-contained apps.
   for (const match of html.matchAll(/(?:src|href)\s*=\s*(["'])(.*?)\1/g)) await check(match[2], page);
-  for (const match of html.matchAll(/(["'])((?:\.?\.?\/)?[a-zA-Z0-9_/-]+\.(?:json|html|js|css|png|jpg|jpeg|svg|webp|woff2?)(?:[?#][^"']*)?)\1/g)) {if(/\.download\s*=\s*$/.test(html.slice(Math.max(0,match.index-40),match.index)))continue;await check(match[2], page);}
+  for (const match of html.matchAll(/(["'])((?:\.?\.?\/)?[a-zA-Z0-9_/-]+\.(?:json|html|js|css|png|jpg|jpeg|svg|webp|woff2?)(?:[?#][^"']*)?)\1/g)) {if(/\.download\s*=\s*$/.test(html.slice(Math.max(0,match.index-40),match.index)))continue;
+    // Update 38.5: a literal glued to a base with «+» (shared/happy-links.js: BASE+'shared/apps.json') is resolved at run time against /happyamurio/, not against this page.
+    if(/\+\s*$/.test(html.slice(Math.max(0,match.index-3),match.index)))continue;
+    await check(match[2], page);}
 }
 const library='/happyamurio/assets/sport-icons/v1/';
 const catalog = JSON.parse(await readFile(new URL('../assets/sport-icons/v1/catalog.json', repo), 'utf8'));
