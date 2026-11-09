@@ -12,7 +12,9 @@ for(const app of ['day','meal']){
  const script='<script id="happy-shared-ui">\n'+js.replaceAll('</','<\\/')+'</script>';
  html=html.includes('/* HAPPY_SHARED_STYLE_START */')?html.replace(/\/\* HAPPY_SHARED_STYLE_START \*\/[\s\S]*?\/\* HAPPY_SHARED_STYLE_END \*\//,()=>style):html.replace('</style>',()=>style+'\n</style>');
  html=html.includes('<script id="happy-shared-ui">')?html.replace(/<script id="happy-shared-ui">[\s\S]*?<\/script>/,()=>script):html.replace('<script>',()=>script+'\n<script>');
- const profileScript='<script id="happy-profile-storage">\n'+profiles.replaceAll('</','<\\/')+'\nvar HappyProfile=HappyProfiles.create("'+app+'");</script>';
+ // apps.json <app>.profileOptions — extra options literal for HappyProfiles.create (Day 56: {storage:dayStorage}, the IndexedDB facade).
+ const profileOptions=apps[app].profileOptions?','+apps[app].profileOptions:'';
+ const profileScript='<script id="happy-profile-storage">\n'+profiles.replaceAll('</','<\\/')+'\nvar HappyProfile=HappyProfiles.create("'+app+'"'+profileOptions+');</script>';
  html=html.includes('<script id="happy-profile-storage">')?html.replace(/<script id="happy-profile-storage">[\s\S]*?<\/script>/,()=>profileScript):html.replace('<script id="happy-shared-ui">',()=>profileScript+'\n<script id="happy-shared-ui">');
  if(app==='meal')html=html.replace(/<script id="happy-imported-history">[\s\S]*?<\/script>/,()=>'<script id="happy-imported-history">\n'+history.replaceAll('</','<\\/')+'</script>');
  await writeFile(path,html);

@@ -27,6 +27,9 @@ for(const [app,config] of Object.entries(apps)){
  const adapter=html.slice(adapterStart,adapterEnd);
  const existing=JSON.stringify({preserved:'existing diary',days:{'2026-10-26':{value:7}}});
  const context=vm.createContext({window:{},localStorage:{getItem:k=>k===expectedKeys[app]?existing:null}});
+ // Day 56+: the journal adapter reads through the IndexedDB facade; without indexedDB it is plain localStorage.
+ const facade=config.entry.replace('index.html','day-local-store.js');
+ if(app==='day'&&await read(facade).then(()=>true,()=>false))vm.runInContext(await read(facade),context);
  vm.runInContext(await read((config.sharedDirectory||'shared')+'/profile-storage.js'),context);
  vm.runInContext(`var HappyProfile=HappyProfiles.create(${JSON.stringify(app)})`,context);
  vm.runInContext(adapter,context);

@@ -1,92 +1,93 @@
 {
-  "day": {
-    "entry": "day-55/index.html",
-    "version": "55",
-    "sharedDirectory": "day-55/shared",
-    "links": {
-      "meal": "meal-26/",
-      "sport": "sport-39/"
-    },
-    "download": "day-55/Happy-Day-55.html",
-    "previous": {
-      "entry": "day-54/index.html",
-      "version": "54.1",
-      "sourceCommit": "5a9ca1252601270b51350832a4cf81f282da231d"
-    },
-    "name": "Happy Day · Update 55",
-    "earlier": {
-      "entry": "day/index.html",
-      "version": "50.14",
-      "sourceCommit": "e1e6597fe97f5c0acb06239e6e61bd1de88a2e91"
-    },
-    "settingsSections": [
-      "account",
-      "app",
-      "links",
-      "developer",
-      "version"
-    ]
+ "day": {
+  "entry": "day-56/index.html",
+  "version": "56",
+  "sharedDirectory": "day-56/shared",
+  "links": {
+   "meal": "meal-26/",
+   "sport": "sport-39/"
   },
-  "meal": {
-    "entry": "meal-26/index.html",
-    "version": "26.1",
-    "name": "Happy Meal · Update 26",
-    "sharedDirectory": "meal-26/shared",
-    "accountScript": "meal-26/account-ui.js",
-    "settingsSections": [
-      "account",
-      "app",
-      "data",
-      "links",
-      "developer",
-      "version"
-    ],
-    "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
-    "previous": {
-      "entry": "meal-25/index.html",
-      "version": "25",
-      "sourceCommit": "c7075e42c51b3b85d48029bb4fbd66a89d22e15c"
-    },
-    "earlier": {
-      "entry": "meal/index.html",
-      "version": "22.16"
-    }
+  "download": "day-56/Happy-Day-56.html",
+  "previous": {
+   "entry": "day-55/index.html",
+   "version": "55",
+   "sourceCommit": "824ac21285deaf616c0d3289e40e8a89041bc651"
   },
-  "sport": {
-    "entry": "sport-39/index.html",
-    "version": "39.1",
-    "name": "Happy Sport · Update 39",
-    "sharedDirectory": "sport-39/shared",
-    "sourceDirectory": "sport-39/sport/src",
-    "sourceRelease": "sport-38",
-    "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0",
-    "settingsSections": [
-      "account",
-      "app",
-      "data",
-      "links",
-      "developer",
-      "version"
-    ],
-    "previous": {
-      "entry": "sport-38/index.html",
-      "version": "38.7",
-      "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0"
-    },
-    "iconLibrary": "assets/sport-icons/v1",
-    "exerciseLibrary": "assets/exercise-library/v1"
+  "name": "Happy Day · Update 56",
+  "earlier": {
+   "entry": "day/index.html",
+   "version": "50.14",
+   "sourceCommit": "e1e6597fe97f5c0acb06239e6e61bd1de88a2e91"
   },
-  "colorStudio": {
-    "entry": "prototypes/happy-family-color-studio-v12.html",
-    "version": "12.8",
-    "kind": "studio",
-    "storageKey": "happy-family-color-studio-v11"
+  "settingsSections": [
+   "account",
+   "app",
+   "links",
+   "developer",
+   "version"
+  ],
+  "profileOptions": "{storage:dayStorage}"
+ },
+ "meal": {
+  "entry": "meal-26/index.html",
+  "version": "26.1",
+  "name": "Happy Meal · Update 26",
+  "sharedDirectory": "meal-26/shared",
+  "accountScript": "meal-26/account-ui.js",
+  "settingsSections": [
+   "account",
+   "app",
+   "data",
+   "links",
+   "developer",
+   "version"
+  ],
+  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
+  "previous": {
+   "entry": "meal-25/index.html",
+   "version": "25",
+   "sourceCommit": "c7075e42c51b3b85d48029bb4fbd66a89d22e15c"
   },
-  "iconStudio": {
-    "entry": "icon-studio/index.html",
-    "version": "2.18",
-    "kind": "studio",
-    "storageKey": "happy_icon_studio_v1",
-    "storageScript": "icon-studio/studio.js"
+  "earlier": {
+   "entry": "meal/index.html",
+   "version": "22.16"
   }
+ },
+ "sport": {
+  "entry": "sport-39/index.html",
+  "version": "39.1",
+  "name": "Happy Sport · Update 39",
+  "sharedDirectory": "sport-39/shared",
+  "sourceDirectory": "sport-39/sport/src",
+  "sourceRelease": "sport-38",
+  "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0",
+  "settingsSections": [
+   "account",
+   "app",
+   "data",
+   "links",
+   "developer",
+   "version"
+  ],
+  "previous": {
+   "entry": "sport-38/index.html",
+   "version": "38.7",
+   "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0"
+  },
+  "iconLibrary": "assets/sport-icons/v1",
+  "exerciseLibrary": "assets/exercise-library/v1"
+ },
+ "colorStudio": {
+  "entry": "prototypes/happy-family-color-studio-v12.html",
+  "version": "12.8",
+  "kind": "studio",
+  "storageKey": "happy-family-color-studio-v11"
+ },
+ "iconStudio": {
+  "entry": "icon-studio/index.html",
+  "version": "2.18",
+  "kind": "studio",
+  "storageKey": "happy_icon_studio_v1",
+  "storageScript": "icon-studio/studio.js"
+ }
 }
