@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Day">
 <link rel="preload" href="./fonts/mplus-rounded-1c-bold-latin-cyrillic.woff" as="font" type="font/woff" crossorigin>
-<title>Happy Day · Update 53</title>
+<title>Happy Day · Update 53.1</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -1230,7 +1230,7 @@ a.btn{display:inline-block;text-decoration:none}
   <!-- НАСТРОЙКИ -->
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1></div>
-    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><label class="happy-button" role="button" tabindex="0">Загрузить из файла<input type="file" id="impJson" accept=".json" hidden></label></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="backupAge"></p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" id="expCsv">Выгрузить CSV</button><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><div class="bkPrev" id="bkPrev" hidden><p class="happy-note" id="bkPrevTxt"></p><div class="happy-actions"><button class="happy-button" id="bkBack">Вернуть дневник до загрузки</button></div></div></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../meal-23/" rel="noopener">Happy Meal</a><a class="happy-button" href="../sport-38/" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
+    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="clBox"></div><div data-happy-account-note></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2><div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><label class="happy-button" role="button" tabindex="0">Загрузить из файла<input type="file" id="impJson" accept=".json" hidden></label></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="backupAge"></p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" id="expCsv">Выгрузить CSV</button><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><div class="bkPrev" id="bkPrev" hidden><p class="happy-note" id="bkPrevTxt"></p><div class="happy-actions"><button class="happy-button" id="bkBack">Вернуть дневник до загрузки</button></div></div></div></section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../meal-24/" rel="noopener">Happy Meal</a><a class="happy-button" href="../sport-38/" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
     <h2 class="happy-heading" id="daySectionSettingsHeading">Разделы дня</h2>
 
 
@@ -1275,7 +1275,7 @@ a.btn{display:inline-block;text-decoration:none}
     </div>
     
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="53"><div>Happy Day · Update 53</div><small>Обновлено 09.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="53.1"><div>Happy Day · Update 53.1</div><small>Обновлено 09.11.2026</small></footer>
   </div>
 
 </div>
@@ -1561,8 +1561,8 @@ var HappyProfile=HappyProfiles.create("day");</script>
 <script src="./selfcare-core.js?v=51.14-test"></script>
 <script src="./energy-widget.js?v=50.14"></script>
 <script src="./shared/release-notes.js?v=53"></script>
-<script src="./release-notes.js?v=53"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 53')}catch(e){}</script>
+<script src="./release-notes.js?v=53.1"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 53.1')}catch(e){}</script>
 <script src="./selfcare-ui.js?v=51.14-test"></script>
 <script src="./snapshot-sync.js?v=local-nov4"></script>
 <script src="./day-test-create.js?v=53"></script>

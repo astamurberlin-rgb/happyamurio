@@ -1,13 +1,13 @@
 {
- "release": "Happy Day Update 53",
+ "release": "Happy Day Update 53.1",
  "date": "2026-11-09",
  "source_release": "day-52 (Happy Day Update 52)",
  "source_commit": "7ca5f3cfd5e8c04f1a80f86a2948967cffc64432",
  "source_app_version": "52",
- "destination_app_version": "53",
+ "destination_app_version": "53.1",
  "adaptations": [
   "sign-in cell happy-auth:day with one-time copy from hd_cloud_v1 (profile-storage.js, CL_KEY, auth-read-only.js, arc-motion.js, day-sport-view.mjs)",
-  "linked-app buttons → ../meal-23/ and ../sport-38/; workout links → ../sport-38/",
+  "linked-app buttons → ../meal-24/ (53.1; 53 pointed to ../meal-23/) and ../sport-38/; workout links → ../sport-38/",
   "daily backup toast (bkNag) disabled",
   "Arc Studio removed from settings; page moved to prototypes/arc-studio/",
   "shared/release-notes.js embedded; version footer shows date, time and author",
@@ -16,13 +16,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-53.html",
-   "size": 3570883,
-   "sha256": "723b7f050a300b97c7658fc88a034da0a60ec37015ae6af7abdd6c9d048436be"
+   "size": 3571327,
+   "sha256": "288f2837bf295c4cf7e3f3f7897cdf1f81ae6d2a7c81973ba92ae7acdfa8d179"
   },
   {
    "path": "README.md",
-   "size": 2114,
-   "sha256": "f9b5a95d5e4b65bd305652e79e436a994745af6a49fd4157fa3167a0c7cea807"
+   "size": 2234,
+   "sha256": "b43e9248845905c7c7c284bce751fb5c64653180ec363fb0507ac216d565cd45"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -246,18 +246,18 @@
   },
   {
    "path": "index.html",
-   "size": 528228,
-   "sha256": "9a03216c45b15381a728def9ca6c75b5c2d4b7e1bb6835de2b9132519213b652"
+   "size": 528238,
+   "sha256": "ea4be0818ee9785dcb73ef417c2f909d3c0ae6ada44b8bc16f5555fe8ca09a97"
   },
   {
    "path": "manifest.webmanifest",
-   "size": 513,
-   "sha256": "d6056aa9f459eea64aa9b91cf6445ed8d63bb6147601483ab3f5a6c26fa10c6c"
+   "size": 515,
+   "sha256": "88d80b0faa7d45a49132f3726227ada8c91ce7def586f6c6a1fffa3ae7652739"
   },
   {
    "path": "release-notes.js",
-   "size": 14724,
-   "sha256": "b9d9b19524624e4ecf42b56a3f52fc77560d1c06134bea9dd258a88e43ba3f6c"
+   "size": 15049,
+   "sha256": "24d19673dd04bc7193012ba0a600b36a1bc088899969c2b1b7569dd0ab8a8c7b"
   },
   {
    "path": "section-wheel.css",
@@ -411,5 +411,12 @@
  "day_52_provenance": {
   "source_commit": "77b90bad576ec8b1b1a504428cfd499330347df7",
   "source_app_version": "51.18-test"
- }
+ },
+ "point_releases": [
+  {
+   "version": "53.1",
+   "date": "2026-11-09",
+   "change": "Happy Meal button → ../meal-24/ (Meal 24 was released after Day 53); release note 53.1 with author and time; nothing else changed"
+  }
+ ]
 }

@@ -1,10 +1,10 @@
 {
   "day": {
     "entry": "day-53/index.html",
-    "version": "53",
+    "version": "53.1",
     "sharedDirectory": "day-53/shared",
     "links": {
-      "meal": "meal-23/",
+      "meal": "meal-24/",
       "sport": "sport-38/"
     },
     "download": "day-53/Happy-Day-53.html",
@@ -13,7 +13,7 @@
       "version": "52",
       "sourceCommit": "7ca5f3cfd5e8c04f1a80f86a2948967cffc64432"
     },
-    "name": "Happy Day · Update 53",
+    "name": "Happy Day · Update 53.1",
     "earlier": {
       "entry": "day/index.html",
       "version": "50.14",

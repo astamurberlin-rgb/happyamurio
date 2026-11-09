@@ -10,6 +10,13 @@
 в основной репозиторий; дата внутри старой версии приложения может отличаться.
 Текущие версии и адреса: [APPS.md](APPS.md). Хранение данных: [DATA-STORAGE.md](DATA-STORAGE.md). Правила: [AGENTS.md](AGENTS.md).
 
+## 09.11.2026 — Happy Day · Update 53.1 · кнопка «Happy Meal» ведёт на Meal 24
+
+- Точечный выпуск в том же каталоге `day-53/`: кнопка «Happy Meal» в настройках открывает `../meal-24/` (Meal 24 вышел после Day 53, в 53 ссылка вела на `meal-23/`). Запись 53.1 в истории обновлений с автором и временем; строка версии — 53.1. `shared/apps.json`: `day.links.meal` → `meal-24/`, версия 53.1. Самостоятельный `Happy-Day-53.html` пересобран. Больше ничего не менялось.
+- Проверки: `node --test day-53/tests/*.test.cjs` (23), `check-layout` (ссылки Day сверены с `apps.json`), `check-shared-ui`, `check-food-counters`, `check-shared`.
+
+— Claude · 09.11.2026 14:12
+
 ## 09.11.2026 · Фундамент общих модулей: манифест, sync-shared, check-shared, словарь статусов · документация и инструменты
 
 - `shared/shared-files.json` — эталоны общих файлов и какие выпуски должны держать их побайтные копии; записи `divergent` — известный долг (сейчас 6: `happy-ui.js` в трёх версиях, `happy-ui.css`, `profile-storage.js`, `measurements-host.js`, `food-counters.css`). Корневые `food-counters.*` и `measurements-host.js` загружают опубликованные `day/` и `meal/` — отмечены `frozenRoot`, эталон у них в каталоге выпуска.
