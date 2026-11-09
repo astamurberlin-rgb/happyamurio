@@ -11,7 +11,7 @@
 | `day/` | Предыдущий Happy Day 50.14 |
 | `day-52/`, `day-53/` | Отдельные Happy Day Update 52 и Update 53 (с 53 — собственная ячейка входа `happy-auth:day`) |
 | `meal/` | Прежний Happy Meal 22.16 |
-| `meal-23/` | Отдельный Happy Meal Update 23 и его закреплённые зависимости |
+| `meal-23/`, `meal-24/` | Отдельные Happy Meal Update 23 и Update 24 с закреплёнными зависимостями (с 24 — собственная ячейка входа `happy-auth:meal`) |
 | `sport/` | Прежний Happy Sport 36.7, исходники и сборка |
 | `sport-37/`, `sport-38/` | Отдельные выпуски Happy Sport Update 37 и Update 38 с закреплёнными зависимостями |
 | `shared/` | Карта приложений и место для будущих общих компонентов |

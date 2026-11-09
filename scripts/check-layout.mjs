@@ -50,7 +50,10 @@ if(apps.day.links?.meal===false){
  assert.ok(!dayPage.includes('chatgpt.site'),'day: no Sites test addresses');
 }
 assert.ok((await read('meal/index.html')).includes('href="../day/"'));
-assert.ok((await read(apps.meal.entry)).includes('href="../day-52/"'));
+{// Update 24: Meal's linked-app buttons point at the current Day and Sport release directories.
+ const mealPage=await read(apps.meal.entry),dayDir=apps.day.entry.split('/')[0],sportDir=apps.sport.entry.split('/')[0];
+ assert.ok(mealPage.includes(`href="../${dayDir}/"`),'meal: Day link matches apps.json');
+ assert.ok(mealPage.includes(`href="../${sportDir}/"`),'meal: Sport link matches apps.json');}
 assert.ok((await read(apps.meal.previous.entry)).includes(`data-app-version="${apps.meal.previous.version}"`));
 assert.notEqual(apps.meal.entry,apps.meal.previous.entry);
 const previousDay=await read(apps.day.previous.entry);

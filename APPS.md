@@ -8,6 +8,7 @@
 | Happy Day · Update 53 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
+| Happy Meal · Update 24 | `meal-24/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-24/ | 24 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.3 |
@@ -45,6 +46,14 @@
 По прямому запросу владельца Update 52 публикуется отдельно от старой страницы. `day/` восстановлен точно из последнего успешного выпуска `e1e6597`; его внутренняя метка — 50.14. У 52 собственные URL и scope установки; общий аккаунт и прежние ключи дневника сохранены. Для следующего согласованного апдейта Day каталог `day-52/` служит исходной версией; работу и публикацию выполнять в новом каталоге выпуска.
 
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
+
+## Happy Meal · Update 24 · 09.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-24/ . Исходник — `meal-23/` (main `5656edc`); дневник, синхронизация, библиотеки и отчёты не менялись. Проверки: `node meal-24/checks/check-startup.mjs`, `check-layout`, `check-shared-ui`, `check-food-counters` (копия эталона Day 52), `check-meal-times`, `check-meal-exports`. Происхождение и контрольные суммы — `meal-24/SOURCE-PROVENANCE.json`.
+
+Вход Meal — в собственной ячейке `happy-auth:meal` (раздельный вход, решение владельца 09.11); прежний вход из `hd_cloud_v1` копируется при первом открытии. Общие счётчики: одна кнопка на один счётчик — дубли сливаются при применении общего документа, порции сохраняются; модуль `food-counters.js` — эталон Day 52. Кнопки «Happy Day» / «Happy Sport» открывают `day-53/` и `sport-38/`. Тексты ошибок называют причину (вход обновился / нет места / журнал не прочитан), без «Выгрузи JSON»; заглушки PRO / GOLD убраны из шапки настроек. История обновлений и строка версии — общий модуль `shared/release-notes.js` (H117). Структура настроек пока прежняя; переход на целевую — следующим выпуском. Встроенные замеры по-прежнему через собственную копию Sport 36.26 (`meal-24/sport/`).
+
+— Claude · 09.11.2026 12:40
 
 ## Happy Meal · Update 23
 

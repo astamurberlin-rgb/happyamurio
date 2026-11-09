@@ -101,7 +101,7 @@ console.log('Passed Sport → Meal → Day portions and undo, and no additions a
 if(!process.env.FOOD_COUNTERS_SOURCE){
  const {execFileSync}=await import('node:child_process');
  const reference='day-52/shared/food-counters.js';
- for(const copy of ['sport-38/shared/food-counters.js'])assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
+ for(const copy of ['sport-38/shared/food-counters.js','meal-24/shared/food-counters.js'])assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
  execFileSync(process.execPath,[new URL(import.meta.url).pathname],{stdio:'inherit',env:{...process.env,FOOD_COUNTERS_SOURCE:reference}});
  console.log('Passed: reference module '+reference+' runs the same suite; release copies are identical to it.');
 }
