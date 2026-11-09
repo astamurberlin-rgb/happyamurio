@@ -1,5 +1,5 @@
 {
- "release": "Happy Meal Update 26",
+ "release": "Happy Meal Update 26.1",
  "date": "2026-11-09",
  "entry": "meal-26/index.html",
  "source": {
@@ -37,8 +37,8 @@
   },
   {
    "path": "README.md",
-   "size": 11085,
-   "sha256": "81045ffaf496cf147395e22e8c5d463ae343caf9df7b32ab3c1f59a3aacd12de"
+   "size": 12031,
+   "sha256": "8a11ce58ce80d874043d4fd960ffc64748fb43188d040f3c0baa6cbef4a27058"
   },
   {
    "path": "account-ui.js",
@@ -247,8 +247,8 @@
   },
   {
    "path": "index.html",
-   "size": 602914,
-   "sha256": "f39b3bf472164f21433e25ac3760d77bb0cdba8cee359bfb1cac276d64c2ac35"
+   "size": 603993,
+   "sha256": "e15025adbfbf3ac3e0fb8ba9c4890c7c76bcb211c4b9b86dbbdff9387be65d05"
   },
   {
    "path": "journal-model.js",
@@ -267,8 +267,8 @@
   },
   {
    "path": "manifest.webmanifest",
-   "size": 541,
-   "sha256": "53548e4b2e0dad01355ddb2160516e5bfb02a16d3df9c8b154359ba61a730aea"
+   "size": 543,
+   "sha256": "e3a57131bafb97630636f6be1dcab5c2b0ebad6216b43ebb2db2e1b41d9ce364"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",
@@ -432,8 +432,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 18713,
-   "sha256": "cdbf81473ca8828f020bff444b969b6ac8bb218a3ef06862eba2ae746df8d9e9"
+   "size": 19225,
+   "sha256": "499457a398bb5bc687bbdc46a9c8c750758a86d3cf28625c196901c215728712"
   },
   {
    "path": "report.css",
@@ -472,8 +472,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 10530,
-   "sha256": "bb831cb2f1a02ae7eb5ed068a2e77808455c5362b5091ded498173e85625ef71"
+   "size": 11020,
+   "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
   },
   {
    "path": "shared/happy-gradients.js",
@@ -1739,5 +1739,17 @@
    "author": "ChatGPT",
    "date": "2026-11-09"
   }
- }
+ },
+ "pointReleases": [
+  {
+   "version": "26.1",
+   "date": "2026-11-09",
+   "changes": [
+    "index.html: backup card (bkOut/bkIn/bkFile/bkWhen/bkRestore) moved from «Данные» into the hidden developer section under «Резервная копия»; «Данные» keeps «Отчёты»",
+    "index.html: «Обновить связь» hidden inside the account card (CSS), developer-section button #mealDeveloperSync runs the same clDo(\"sync\") (requires a session)",
+    "shared/happy-appearance.js 2.1 (slot support) — reference now shared/happy-appearance.js; embedded module equals the file",
+    "cache busters ?v=26.1, manifest Update 26.1, release note 26.1, README"
+   ]
+  }
+ ]
 }

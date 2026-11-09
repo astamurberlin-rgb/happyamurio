@@ -76,13 +76,13 @@
     },
     {
       "name": "happy-appearance.js",
-      "reference": "day-53/shared/happy-appearance.js",
+      "reference": "shared/happy-appearance.js",
       "apps": [
         "day",
         "meal",
         "sport"
       ],
-      "todo": "эталон перенести в shared/ (в корне файла нет); встроенные копии в index.html отличаются от файла: Day/Meal — слот data-happy-appearance-slot в entry() (Day 54, Meal 26), у Day ещё тема аккаунта; при переносе эталона внести слот в файл"
+      "todo": "встроенные копии в index.html Day/Meal отличаются от файла только экранированием </ и (Day) темой аккаунта; Sport встраивает файл при сборке"
     },
     {
       "name": "happy-appearance.css",

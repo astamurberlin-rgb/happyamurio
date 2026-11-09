@@ -1,4 +1,4 @@
-/* Happy appearance picker v2. Live preview is transactional. Presets: Color Studio 12.5, collection v3.
+/* Happy appearance picker v2.1 — slot data-happy-appearance-slot (Day 54.1 / Meal 26.1 / Sport 38.6). Live preview is transactional. Presets: Color Studio 12.5, collection v3.
    Only a validated ID is stored. No diary/auth writes or default migration. */
 (function(root){'use strict';
  const G=root.HappyGradients,R=root.HappyReferenceThemes;
@@ -29,11 +29,15 @@
  }
  function labels(){document.querySelectorAll('[data-happy-appearance-label]').forEach(el=>{el.textContent=name(current)});}
  function entry(){
+  const button=()=>{const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.happyAppearanceOpen='';b.setAttribute('aria-haspopup','dialog');
+   const title=document.createElement('span');title.textContent='Выбрать оформление';const label=document.createElement('small');label.dataset.happyAppearanceLabel='';label.textContent=name(current);b.append(title,label);return b;};
+  // Settings structure (AGENTS.md): the picker lives under «Приложение → Оформление» when the page provides a slot, as in Sport.
+  document.querySelectorAll('[data-happy-appearance-slot]').forEach(slot=>{if(!slot.querySelector('[data-happy-appearance-open]'))slot.append(button())});
+  if(document.querySelector('[data-happy-appearance-slot]'))return;
   document.querySelectorAll('[data-happy-section="account"]').forEach(account=>{
    if(account.nextElementSibling?.classList.contains('happy-appearance-entry'))return;
    const section=document.createElement('section');section.className='happy-section happy-appearance-entry';section.dataset.happySection='appearance';
-   const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.happyAppearanceOpen='';b.setAttribute('aria-haspopup','dialog');
-   const title=document.createElement('span');title.textContent='Выбрать оформление';const label=document.createElement('small');label.dataset.happyAppearanceLabel='';label.textContent=name(current);b.append(title,label);section.append(b);account.after(section);
+   section.append(button());account.after(section);
   });
  }
  function paintDialog(id){

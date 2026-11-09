@@ -1,7 +1,7 @@
 {
   "day": {
     "entry": "day-54/index.html",
-    "version": "54",
+    "version": "54.1",
     "sharedDirectory": "day-54/shared",
     "links": {
       "meal": "meal-26/",
@@ -22,7 +22,6 @@
     "settingsSections": [
       "account",
       "app",
-      "data",
       "links",
       "developer",
       "version"
@@ -30,7 +29,7 @@
   },
   "meal": {
     "entry": "meal-26/index.html",
-    "version": "26",
+    "version": "26.1",
     "name": "Happy Meal · Update 26",
     "sharedDirectory": "meal-26/shared",
     "accountScript": "meal-26/account-ui.js",
@@ -55,7 +54,7 @@
   },
   "sport": {
     "entry": "sport-38/index.html",
-    "version": "38.5",
+    "version": "38.6",
     "name": "Happy Sport · Update 38",
     "sharedDirectory": "sport-38/shared",
     "sourceDirectory": "sport-38/sport/src",

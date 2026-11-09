@@ -3,7 +3,9 @@
    This is the LAST layer over renderProfile: it takes the composed screen and regroups known blocks by stable
    markers (section ids, element ids, data-attributes), without changing their markup or handlers. Developer-only
    blocks are rendered inside a hidden section that opens with a long press on the version line. Any block this
-   layer does not recognise stays visible under «Приложение» and is flagged with data-settings-unmapped. */
+   layer does not recognise stays visible under «Приложение» and is flagged with data-settings-unmapped.
+   Update 38.6 (owner, 09.11.2026): everything service-like is hidden — the cloud read button, backup and cloud
+   copy, sync diagnostics — and the appearance picker sits first under «Приложение» in a data-happy-appearance-slot. */
 const SPORT_DEV_FLAG='sport-settings-developer-v1';
 let sportDevVisible=(()=>{try{return sessionStorage.getItem(SPORT_DEV_FLAG)==='1'}catch{return false}})();
 function sportDevToggle(on){sportDevVisible=on;try{if(on)sessionStorage.setItem(SPORT_DEV_FLAG,'1');else sessionStorage.removeItem(SPORT_DEV_FLAG)}catch{}}
@@ -23,16 +25,20 @@ function sportSettingsLayout(html){
  let pendingLabel=null;
  for(let i=0;i<nodes.length;i++){
   const n=nodes[i];
-  if(n.matches('section[data-happy-section="account"]')){place('account',...unwrap(n));continue;}
-  if(n.matches('section[data-happy-section="appearance"]')){place('app',label('Оформление'),...unwrap(n));continue;}
+  if(n.matches('section[data-happy-section="account"]')){
+   const sync=n.querySelector('[data-happy="sync"]');
+   if(sync){const card=document.createElement('div');card.className='happy-card';const actions=document.createElement('div');actions.className='happy-actions';actions.append(sync);const note=document.createElement('p');note.className='happy-note';note.textContent='Перечитать облачный журнал вручную. Обычно не нужно: обмен идёт сам после входа.';card.append(actions,note);place('developer',label('Аккаунт и синхронизация'),card);}
+   place('account',...unwrap(n));continue;
+  }
+  if(n.matches('section[data-happy-section="appearance"]')){place('app',...unwrap(n));continue;}
   if(n.matches('section[data-happy-section="backup"]')){
    const card=n.querySelector(':scope>.happy-card');
    if(card){
     const cloud=card.querySelector(':scope>.happy-backup-cloud');
     const upload=card.querySelector('[data-transfer="import"]');if(upload&&/JSON|файла/.test(text(upload)))upload.textContent='Загрузить дневник';
-    place('data',label('Резервная копия'),card);
-    if(cloud){cloud.remove();const cloudCard=document.createElement('div');cloudCard.className='happy-card';for(const child of [...cloud.children])if(!(child.tagName==='B'&&text(child)==='Облачная копия'))cloudCard.append(child);place('data',label('Облачная копия'),cloudCard);}
-   }else place('data',...unwrap(n));
+    place('developer',label('Резервная копия'),card);
+    if(cloud){cloud.remove();const cloudCard=document.createElement('div');cloudCard.className='happy-card';for(const child of [...cloud.children])if(!(child.tagName==='B'&&text(child)==='Облачная копия'))cloudCard.append(child);place('developer',label('Облачная копия'),cloudCard);}
+   }else place('developer',label('Резервная копия'),...unwrap(n));
    continue;
   }
   if(n.matches('section[data-happy-section="links"]')){place('links',...unwrap(n));continue;}
@@ -61,7 +67,8 @@ function sportSettingsLayout(html){
  }
  if(pendingLabel)place('app',label(pendingLabel));
  // Blocks inside a group are (label, cards…) runs; order them the same way in every release.
- const order={app:['Оформление','Библиотека','Таймер','Датчики','Настройки тренировок','Иконки'],data:['Мои данные','Резервная копия','Облачная копия']};
+ const slot=document.createElement('div');slot.className='happy-appearance-entry';slot.setAttribute('data-happy-appearance-slot','');groups.app.unshift(label('Оформление'),slot);
+ const order={app:['Оформление','Библиотека','Таймер','Датчики','Настройки тренировок','Иконки'],data:['Мои данные'],developer:['Аккаунт и синхронизация','Резервная копия','Облачная копия']};
  for(const group of Object.keys(order)){
   const runs=[];for(const n of groups[group]){if(n.matches('.settings-section')||!runs.length)runs.push([n]);else runs.at(-1).push(n);}
   const rank=run=>{const i=order[group].indexOf(run[0].matches('.settings-section')?text(run[0]):'');return i<0?order[group].length:i};

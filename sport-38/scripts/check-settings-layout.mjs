@@ -36,9 +36,20 @@ try{
    devButtons:[...document.querySelectorAll('[data-happy-section="developer"] button')].map(b=>b.textContent.trim()),links:[...document.querySelectorAll('[data-happy-section="links"] a')].map(a=>a.getAttribute('href'))};
  });
  let s=await read();
- assert.deepEqual(s.sections.map(x=>x.id),['account','appearance','app','data','links','developer','version'],'section order');
- assert.deepEqual(s.sections.find(x=>x.id==='app').labels,['Библиотека','Таймер','Датчики','Иконки']);
- assert.deepEqual(s.sections.find(x=>x.id==='data').labels,['Мои данные','Резервная копия','Облачная копия']);
+ // Update 38.6: no separate «appearance» section — the picker is the first block under «Приложение».
+ assert.deepEqual(s.sections.map(x=>x.id),['account','app','data','links','developer','version'],'section order');
+ assert.deepEqual(s.sections.find(x=>x.id==='app').labels,['Оформление','Библиотека','Таймер','Датчики','Иконки']);
+ assert.equal(await page.evaluate(()=>document.querySelectorAll('[data-happy-appearance-open]').length),1,'one appearance picker');
+ assert.equal(await page.evaluate(()=>!!document.querySelector('[data-happy-section="app"] [data-happy-appearance-slot] [data-happy-appearance-open]')),true,'picker inside the slot under «Приложение»');
+ // Update 38.6 (owner): backups, cloud copy and the cloud read button are developer blocks; «Данные» keeps only the counts.
+ assert.deepEqual(s.sections.find(x=>x.id==='data').labels,['Мои данные']);
+ {const dev=s.sections.find(x=>x.id==='developer').labels.filter(l=>['Аккаунт и синхронизация','Резервная копия','Облачная копия'].includes(l));
+  // Signed out (this check) the account card has no cloud read button, so its developer label is absent; the order is fixed either way.
+  assert.deepEqual(dev,dev.includes('Аккаунт и синхронизация')?['Аккаунт и синхронизация','Резервная копия','Облачная копия']:['Резервная копия','Облачная копия']);}
+ assert.equal(await page.evaluate(()=>document.querySelectorAll('[data-happy="sync"]').length===document.querySelectorAll('[data-happy-section="developer"] [data-happy="sync"]').length),true,'every cloud read button lives in the developer section');
+ {// Signed in: the account card renders «Прочитать облако» — the layout must move it to the developer section as well.
+  const moved=await page.evaluate(()=>{const html=sportSettingsLayout('<div class="happy-settings"><section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card"><div class="happy-actions"><button data-happy="sync">Прочитать облако</button><button data-happy="out">Выйти</button></div></div></section><footer class="happy-version"></footer></div>');const t=document.createElement('template');t.innerHTML=html;return {account:!!t.content.querySelector('[data-happy-section="account"] [data-happy="sync"]'),developer:!!t.content.querySelector('[data-happy-section="developer"] [data-happy="sync"]'),label:t.content.querySelector('[data-happy-section="developer"] .settings-section')?.textContent,out:!!t.content.querySelector('[data-happy-section="account"] [data-happy="out"]')}});
+  assert.deepEqual(moved,{account:false,developer:true,label:'Аккаунт и синхронизация',out:true},'signed-in account card: cloud read button moved, sign-out stays');}
  assert.equal(s.sections.find(x=>x.id==='developer').hidden,true,'developer section hidden by default');
  assert.equal(s.unmapped,0,'every settings block is mapped');assert.equal(s.footerLast,true,'version line is the last element');assert.equal(s.outsideSettings,0,'nothing rendered after the settings container');
  // Update 38.4: linked-app buttons follow shared/apps.json (current Day and Meal release directories).

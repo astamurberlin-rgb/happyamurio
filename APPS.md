@@ -5,15 +5,15 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day · Update 54 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54 |
+| Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
-| Happy Meal · Update 26 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26 |
+| Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.5 |
+| Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.6 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
 
@@ -37,6 +37,8 @@
 
 Настройки — по единой структуре Happy (`AGENTS.md`): Аккаунт → Приложение (оформление, настройки «Сейчас», разделы дня, счётчики, теги с временем, пороги, связь с питанием) → Данные (резервная копия, CSV, данные из трекеров) → Связанные приложения → «Для разработчика» (скрыт; блок «Доступ к модели»; долгое нажатие 1,2 с на строку версии — `shared/happy-settings-developer.js`) → история обновлений и версия. Разметка переставлена, id и обработчики прежние; кнопка «Выбрать оформление» — в слоте `data-happy-appearance-slot` под «Оформление». Кнопки резервной копии названы как в Meal и Sport. Кнопки «Happy Meal» / «Happy Sport» получают адреса текущих выпусков из `shared/apps.json` при открытии (`shared/happy-links.js`, якоря `data-happy-app`), статический href `meal-26/`, `sport-38/` — запасной; открываются в новом окне. Личность входа пока по токену — Day 55 вместе с проверками входа.
 
+
+**54.1 (09.11.2026 19:41, решение Астамура 17:28):** служебное спрятано в раздел «Для разработчика»: «Возможности аккаунта и обмена», «Синхронизация и восстановление», «Диагностика синхронизации», «Время на устройстве и архивы», «Обновить связь», резервная копия, CSV, данные из трекеров. В «Аккаунте» — вход и строка состояния; раздел «Данные» в Day не показывается. Код дневника и входа не менялся.
 — Claude · 09.11.2026 16:59
 
 ## Happy Day · Update 53.2 · 09.11.2026
@@ -63,6 +65,8 @@
 
 Настройки — по единой структуре Happy (`AGENTS.md`): Аккаунт (вход, строка состояния) → Приложение (оформление, цели на день, разделы, счётчики, мои продукты, пищевые базы) → Данные (отчёты, резервная копия) → Связанные приложения → «Для разработчика» (скрыт; обложки подборок прототипа; долгое нажатие 1,2 с на строку версии — `shared/happy-settings-developer.js`) → история обновлений и версия. Разметка экрана настроек переставлена, id и обработчики прежние; кнопка «Выбрать оформление» — в слоте `data-happy-appearance-slot` под «Оформление». Кнопки резервной копии — «Выгрузить дневник» / «Загрузить дневник» / «Вернуть дневник до загрузки». Кнопки «Happy Day» / «Happy Sport» получают адреса текущих выпусков из `shared/apps.json` при открытии (`shared/happy-links.js`), статический href `day-54/`, `sport-38/` — запасной.
 
+
+**26.1 (09.11.2026 19:41, решение Астамура 17:28):** резервная копия и «Обновить связь» — в разделе «Для разработчика»; в «Данных» остались отчёты. Встроенный модуль оформления совпадает с `shared/happy-appearance.js` 2.1.
 — Claude · 09.11.2026 16:59
 
 ## Happy Meal · Update 25 · 09.11.2026
@@ -148,6 +152,7 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 
 **38.4 (09.11.2026):** вторая вкладка не блокируется экраном «Журнал защищён» — новое окно забирает журнал (Web Locks `steal`), прежнее переходит в просмотр с полосой «Sport открыт в другом окне — здесь только просмотр · Продолжить здесь» и само не перезагружается (`profile-lock.js`, `automatic-sync-ui.js`, `journal-cloud.js`); счётчики в Дневнике — капсула «− N +» как в Meal, подпись без «· Meal» (`food-counters.js`, `timer-prototype.css`); кнопки «Happy Day» / «Happy Meal» берутся из `shared/apps.json` при сборке (`day-53/`, `meal-25/`) и открывают новое окно; обновление токена — одно на операцию, свежий вход того же аккаунта принимается, ложное «Аккаунт или ключ изменились» ушло (`happy-auth.js`). Проверки `check-profile-lock`, `check-profile-sync`, `check-paths`, `check-settings-layout`, `check-layout` обновлены. — Claude · 09.11.2026 15:58
 **38.5 (09.11.2026):** кнопки «Happy Day» / «Happy Meal» получают адреса текущих выпусков из `shared/apps.json` при открытии страницы (`shared/happy-links.js`, якоря `data-happy-app`; подставленные при сборке `day-54/`, `meal-26/` — запасные) — точечный выпуск Sport после обновлений Day/Meal больше не нужен; `check-paths` не считает путём литерал, приклеенный к базе через «+». Код журнала, счётчиков и входа — как в 38.4. Блок «Выбрать оформление» пока отдельной строкой после «Аккаунта»; в Day 54 и Meal 26 он внутри «Приложение → Оформление» — Sport догонит в 39. — Claude · 09.11.2026 16:59
+**38.6 (09.11.2026):** решение Астамура 17:28 — «Прочитать облако», резервная и облачная копия, проверки синхронизации — в разделе «Для разработчика» (долгое нажатие на строку версии); в «Данных» только «Мои данные»; «Выбрать оформление» — первым блоком «Приложения» через слот `data-happy-appearance-slot` (общий `happy-appearance.js` 2.1). Код журнала, счётчиков и входа — как в 38.4. — Claude · 09.11.2026 19:41
 
 ## Happy Sport · Update 37 · 07.11.2026
 

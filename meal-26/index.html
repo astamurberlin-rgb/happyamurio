@@ -7,13 +7,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Meal">
-<title>Happy Meal · Update 26</title>
+<title>Happy Meal · Update 26.1</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-meal-20261102-softserve-cool-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-meal-20261102-softserve-cool-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-meal-20261102-softserve-cool-152.png">
 <link rel="apple-touch-icon" sizes="167x167" href="./app-icons/happy-meal-20261102-softserve-cool-167.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-meal-20261102-softserve-cool-180.png?v=26">
-<link rel="manifest" href="./manifest.webmanifest?v=26">
+<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-meal-20261102-softserve-cool-180.png?v=26.1">
+<link rel="manifest" href="./manifest.webmanifest?v=26.1">
 <style>
 :root{
   --base:#00A8F5;
@@ -1413,21 +1413,21 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 @media(prefers-reduced-motion:reduce){.happy-switch,.happy-switch::after{transition:none}}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="report.css?v=26">
-<link rel="stylesheet" href="user-products.css?v=26">
-<script src="food-libraries.js?v=26"></script>
-<script src="portions.js?v=26"></script>
-<script src="sources.js?v=26"></script>
-<script src="backup-model.js?v=26"></script>
-<script src="local-store.js?v=26"></script>
-<script src="journal-model.js?v=26"></script>
-<script src="journal-sync.js?v=26"></script>
-<script src="./shared/meal-products-model.js?v=26"></script>
-<link rel="stylesheet" href="catalog.css?v=26">
-<link rel="stylesheet" href="./shared/food-counters.css?v=26">
-<link rel="stylesheet" href="release-notes.css?v=26">
+<link rel="stylesheet" href="report.css?v=26.1">
+<link rel="stylesheet" href="user-products.css?v=26.1">
+<script src="food-libraries.js?v=26.1"></script>
+<script src="portions.js?v=26.1"></script>
+<script src="sources.js?v=26.1"></script>
+<script src="backup-model.js?v=26.1"></script>
+<script src="local-store.js?v=26.1"></script>
+<script src="journal-model.js?v=26.1"></script>
+<script src="journal-sync.js?v=26.1"></script>
+<script src="./shared/meal-products-model.js?v=26.1"></script>
+<link rel="stylesheet" href="catalog.css?v=26.1">
+<link rel="stylesheet" href="./shared/food-counters.css?v=26.1">
+<link rel="stylesheet" href="release-notes.css?v=26.1">
 <style id="meal-settings-structure">/* Update 26: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
-.happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}</style>
+.happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}[data-happy-section="account"] [data-cl="sync"]{display:none}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
 .happy-appearance-entry{margin:18px 0 22px}
 .happy-appearance-entry button{width:100%;text-align:left;display:flex;justify-content:space-between;gap:12px;align-items:center}
@@ -1608,23 +1608,25 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <section class="happy-section" data-happy-section="data"><h2 class="happy-heading">Данные</h2>
     <div class="eyebrow"><span>Отчёты</span></div>
     <div class="happy-card"><button class="happy-button" id="mealReportSettings">Открыть отчёт</button><p class="happy-note">Период выбирается в журнале, состав отчёта — перед сохранением. CSV находится в конце журнала. PDF, PNG, печать и полный CSV с продуктами и нутриентами.</p></div>
-    <div class="eyebrow"><span>Резервная копия</span></div>
-    <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button><button class="happy-button" id="bkIn">Загрузить дневник</button></div><input type="file" id="bkFile" accept="application/json,.json" hidden><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты и рецепты. На телефоне выбери «Сохранить в Файлы». При загрузке выбери дополнение без дублей или полную замену. Архив Cronometer тоже сохраняется. Перед импортом создаётся копия для отмены.</p><p class="happy-note" id="bkWhen"></p><button class="happy-button" id="bkRestore" hidden>Вернуть дневник до загрузки</button></div>
     </section>
     <section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day-54/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><a class="happy-button" href="../sport-38/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
     <section class="happy-section" data-happy-section="developer" hidden><h2 class="happy-heading">Для разработчика</h2>
+    <div class="eyebrow"><span>Аккаунт и синхронизация</span></div>
+    <div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" id="mealDeveloperSync">Обновить связь</button></div><p class="happy-note">Перечитать профиль и облачный дневник вручную. Обычно не нужно: обмен идёт сам после входа.</p></div>
+    <div class="eyebrow"><span>Резервная копия</span></div>
+    <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button><button class="happy-button" id="bkIn">Загрузить дневник</button></div><input type="file" id="bkFile" accept="application/json,.json" hidden><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты и рецепты. На телефоне выбери «Сохранить в Файлы». При загрузке выбери дополнение без дублей или полную замену. Архив Cronometer тоже сохраняется. Перед импортом создаётся копия для отмены.</p><p class="happy-note" id="bkWhen"></p><button class="happy-button" id="bkRestore" hidden>Вернуть дневник до загрузки</button></div>
     <!--PHOTO-->
     <div class="eyebrow"><span>Обложки подборок</span></div>
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
     <div class="happy-actions"><button type="button" class="happy-button" data-settings-developer="hide">Скрыть раздел</button></div>
-    <p class="note">Служебные блоки прототипа. Раздел открывается долгим нажатием на строку версии внизу.</p>
+    <p class="note">Служебные блоки. Раздел открывается долгим нажатием на строку версии внизу.</p>
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="release-link" id="openReleaseHistory"><b>История обновлений</b><small>Что нового в Happy Meal · версии и изменения</small></button></div>
     <p class="note mlCopy">© 2026 Astamur. Все права защищены.</p>
-    <footer class="app-version happy-version" data-app-version="26" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Meal · Update 26</div><small>Обновлено 09.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="26.1" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Meal · Update 26.1</div><small>Обновлено 09.11.2026</small></footer>
     </section>
   </div>
 
@@ -1919,8 +1921,8 @@ var HappyProfile=HappyProfiles.create("meal");</script>
   root.HappyHistory={meal:meal};
 })(globalThis);
 </script>
-<script src="./shared/food-counters.js?v=26"></script>
-<script src="counters.js?v=26"></script>
+<script src="./shared/food-counters.js?v=26.1"></script>
+<script src="counters.js?v=26.1"></script>
 <script>
 // Initialize auth guards before the first asynchronous journal read.
 var CL={s:null,ck:null,kraw:null,busy:false,err:'',msg:'',last:0,ready:false};
@@ -5942,18 +5944,25 @@ document.addEventListener('click',function(ev){
   if(!b||!box||!box.contains(b)) return;
   clDo(b.dataset.cl);
 });
+/* Update 26.1: «Обновить связь» живёт в разделе для разработчика; в карточке аккаунта кнопка скрыта стилем. */
+document.addEventListener('click',function(ev){
+  var b=ev.target.closest&&ev.target.closest('#mealDeveloperSync');
+  if(!b)return;
+  if(!CL.s){if(typeof toast==='function')toast('Сначала войди в аккаунт');return}
+  clDo('sync');
+});
 
 </script>
-<script src="widget-image.js?v=26"></script><script src="report.js?v=26"></script><script src="controls.js?v=26"></script><script src="usda.js?v=26"></script><script src="catalog.js?v=26"></script>
-<script src="uzbek.js?v=26"></script>
-<script src="desserts.js?v=26"></script>
-<script src="user-products.js?v=26"></script><script src="./shared/measurements-host.js?v=26" data-journal="journal"></script>
+<script src="widget-image.js?v=26.1"></script><script src="report.js?v=26.1"></script><script src="controls.js?v=26.1"></script><script src="usda.js?v=26.1"></script><script src="catalog.js?v=26.1"></script>
+<script src="uzbek.js?v=26.1"></script>
+<script src="desserts.js?v=26.1"></script>
+<script src="user-products.js?v=26.1"></script><script src="./shared/measurements-host.js?v=26.1" data-journal="journal"></script>
 
-<script src="./shared/release-notes.js?v=26"></script>
-<script src="release-notes.js?v=26"></script>
-<script src="./shared/happy-links.js?v=26"></script>
-<script src="./shared/happy-settings-developer.js?v=26"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 26')}catch(e){}</script>
+<script src="./shared/release-notes.js?v=26.1"></script>
+<script src="release-notes.js?v=26.1"></script>
+<script src="./shared/happy-links.js?v=26.1"></script>
+<script src="./shared/happy-settings-developer.js?v=26.1"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 26.1')}catch(e){}</script>
 <script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
 (function(root){
  'use strict';
@@ -6101,7 +6110,7 @@ document.addEventListener('click',function(ev){
 })(typeof window!=='undefined'?window:globalThis);
 
 
-/* Happy appearance picker v2. Live preview is transactional. Presets: Color Studio 12.5, collection v3.
+/* Happy appearance picker v2.1 — slot data-happy-appearance-slot (Day 54.1 / Meal 26.1 / Sport 38.6). Live preview is transactional. Presets: Color Studio 12.5, collection v3.
    Only a validated ID is stored. No diary/auth writes or default migration. */
 (function(root){'use strict';
  const G=root.HappyGradients,R=root.HappyReferenceThemes;

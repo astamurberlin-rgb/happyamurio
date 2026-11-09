@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
-<script id="hd-auth-transport" src="./auth-read-only.js?v=54"></script>
+<script id="hd-auth-transport" src="./auth-read-only.js?v=54.1"></script>
 <script src="./day-sport-lifecycle.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#00A8F5">
@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Day">
 <link rel="preload" href="./fonts/mplus-rounded-1c-bold-latin-cyrillic.woff" as="font" type="font/woff" crossorigin>
-<title>Happy Day · Update 54</title>
+<title>Happy Day · Update 54.1</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -1012,11 +1012,11 @@ a.btn{display:inline-block;text-decoration:none}
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
 <link rel="stylesheet" href="./selfcare.css?v=51.14-test">
 <link rel="stylesheet" href="./arc-motion.css?v=1.0">
-<script defer src="./arc-motion.js?v=54"></script>
+<script defer src="./arc-motion.js?v=54.1"></script>
 <script defer src="./arc-home.js?v=1.0"></script>
 <link rel="stylesheet" href="./section-wheel.css?v=51.14-test">
 <style id="day-settings-structure">/* Update 54: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
-.happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}</style>
+.happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}[data-happy-section="account"] [data-cl="sync"]{display:none}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
 .happy-appearance-entry{margin:18px 0 22px}
 .happy-appearance-entry button{width:100%;text-align:left;display:flex;justify-content:space-between;gap:12px;align-items:center}
@@ -1267,12 +1267,13 @@ a.btn{display:inline-block;text-decoration:none}
     </div>
     <p class="note">Завтрак, обед и ужин связаны с одноимёнными разделами Happy Meal: время приёма пищи и калории приходят оттуда сами. По умолчанию это последнее время продукта; вручную его можно изменить в Meal. Перекусы и свои разделы Meal тоже видны в ленте журнала. Записи в Meal за день есть, а раздел пуст — приём отмечается как пропущенный. Отметки и теги здесь от этого не меняются.</p>
     </section>
-    <section class="happy-section" data-happy-section="data"><h2 class="happy-heading">Данные</h2>
-    <div class="eyebrow"><span>Резервная копия</span></div>
-    <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><label class="happy-button" role="button" tabindex="0">Загрузить дневник<input type="file" id="impJson" accept=".json" hidden></label></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="backupAge"></p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" id="expCsv">Выгрузить CSV</button><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><div class="bkPrev" id="bkPrev" hidden><p class="happy-note" id="bkPrevTxt"></p><div class="happy-actions"><button class="happy-button" id="bkBack">Вернуть дневник до загрузки</button></div></div></div>
-    </section>
     <section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../meal-26/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a><a class="happy-button" href="../sport-38/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
     <section class="happy-section" data-happy-section="developer" hidden><h2 class="happy-heading">Для разработчика</h2>
+    <div class="eyebrow"><span>Аккаунт и синхронизация</span></div>
+    <div class="happy-card" id="dayDeveloperAccount"><div class="happy-actions"><button type="button" class="happy-button" id="dayDeveloperSync">Обновить связь</button></div><p class="happy-note">Перечитать профиль и облачные копии вручную. Обычно не нужно: обмен идёт сам после входа.</p></div>
+    <div id="dayDeveloperSyncTools"></div>
+    <div class="eyebrow"><span>Резервная копия</span></div>
+    <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><label class="happy-button" role="button" tabindex="0">Загрузить дневник<input type="file" id="impJson" accept=".json" hidden></label></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загрузка заменяет дневник копией; нынешний сохраняется, и его можно вернуть.</p><p class="happy-note" id="backupAge"></p><div class="happy-actions" style="margin-top:12px"><button class="happy-button" id="expCsv">Выгрузить CSV</button><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><div class="bkPrev" id="bkPrev" hidden><p class="happy-note" id="bkPrevTxt"></p><div class="happy-actions"><button class="happy-button" id="bkBack">Вернуть дневник до загрузки</button></div></div></div>
     <div class="eyebrow"><span>Доступ к модели</span></div>
     <div class="card">
       <p class="note" style="margin:0 0 10px">Внешний API и разбор скриншотов недоступны в этой версии. API-ключ вводить не нужно.</p>
@@ -1284,7 +1285,7 @@ a.btn{display:inline-block;text-decoration:none}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="54" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 54</div><small>Обновлено 09.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="54.1" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 54.1</div><small>Обновлено 09.11.2026</small></footer>
     </section>
   </div>
 
@@ -1566,24 +1567,24 @@ var HappyProfile=HappyProfiles.create("day");</script>
   }
 })(globalThis);
 </script>
-<script id="hd-food-adapter" src="./shared/food-counters.js?v=54"></script>
-<script src="counters.js?v=54"></script>
+<script id="hd-food-adapter" src="./shared/food-counters.js?v=54.1"></script>
+<script src="counters.js?v=54.1"></script>
 <script src="./selfcare-core.js?v=51.14-test"></script>
 <script src="./energy-widget.js?v=50.14"></script>
-<script src="./shared/release-notes.js?v=54"></script>
-<script src="./release-notes.js?v=54"></script>
-<script src="./shared/happy-links.js?v=54"></script>
-<script src="./shared/happy-settings-developer.js?v=54"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 54')}catch(e){}</script>
+<script src="./shared/release-notes.js?v=54.1"></script>
+<script src="./release-notes.js?v=54.1"></script>
+<script src="./shared/happy-links.js?v=54.1"></script>
+<script src="./shared/happy-settings-developer.js?v=54.1"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 54.1')}catch(e){}</script>
 <script src="./selfcare-ui.js?v=51.14-test"></script>
 <script src="./snapshot-sync.js?v=local-nov4"></script>
-<script src="./day-test-create.js?v=54"></script>
-<script src="./day-auto-sync.js?v=54"></script>
+<script src="./day-test-create.js?v=54.1"></script>
+<script src="./day-auto-sync.js?v=54.1"></script>
 <script src="./day-diagnostic.js?v=20261104-readonly-comparison"></script>
 <script src="./day-passive-plan.js?v=20261104-local-time"></script>
-<script src="./day-account-profile.js?v=54"></script>
-<script src="./day-account-data.js?v=54"></script>
-<script id="hd-journal-adapter" src="./day-journal-sync.js?v=54"></script>
+<script src="./day-account-profile.js?v=54.1"></script>
+<script src="./day-account-data.js?v=54.1"></script>
+<script id="hd-journal-adapter" src="./day-journal-sync.js?v=54.1"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};
@@ -2149,7 +2150,7 @@ function clEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/
 function clPaint(){
   var el=document.getElementById('clBox'); if(!el) return;
   el.innerHTML=HappyUI.account({connected:clOn(),name:CL.s&&CL.s.name,email:CL.s&&CL.s.email,secondary:HappyUI.lastText(CL.last),busy:CL.busy,error:CL.err,message:CL.msg,draft:HappyUI.draft(el)});
-  var note=document.querySelector('[data-happy-account-note]'); if(note) note.innerHTML=HappyUI.accountNote();
+  var note=document.querySelector('[data-happy-account-note]'); if(note) note.innerHTML=HappyUI.accountNote();var noteDetails=note.querySelector('details'),devAccount=document.getElementById('dayDeveloperSyncTools');if(noteDetails&&devAccount)devAccount.append(noteDetails);
 }
 function clDo(act){
   return HappyUI.act(act,{state:CL,box:function(){return document.getElementById('clBox')},signIn:clSignIn,signOut:clSignOut,paint:clPaint,
@@ -2159,6 +2160,13 @@ document.addEventListener('click',function(ev){
   var b=ev.target.closest&&ev.target.closest('[data-cl]'), box=document.getElementById('clBox');
   if(!b||!box||!box.contains(b)) return;
   clDo(b.dataset.cl);
+});
+/* Update 54.1: «Обновить связь» живёт в разделе для разработчика; в карточке аккаунта кнопка скрыта стилем. */
+document.addEventListener('click',function(ev){
+  var b=ev.target.closest&&ev.target.closest('#dayDeveloperSync');
+  if(!b)return;
+  if(!CL.s){if(typeof toast==='function')toast('Сначала войди в аккаунт');return}
+  clDo('sync');
 });
 
 var CL_APP='day';
@@ -6295,7 +6303,7 @@ function renderAll(){
 })(typeof window!=='undefined'?window:globalThis);
 
 
-/* Happy appearance picker v2. Live preview is transactional. Presets: Color Studio 12.5, collection v3.
+/* Happy appearance picker v2.1 — slot data-happy-appearance-slot (Day 54.1 / Meal 26.1 / Sport 38.6). Live preview is transactional. Presets: Color Studio 12.5, collection v3.
    Only a validated ID is stored. No diary/auth writes or default migration. */
 (function(root){'use strict';
  const G=root.HappyGradients,R=root.HappyReferenceThemes;

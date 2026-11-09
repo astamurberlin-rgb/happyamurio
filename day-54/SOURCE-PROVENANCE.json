@@ -1,10 +1,10 @@
 {
- "release": "Happy Day Update 54",
+ "release": "Happy Day Update 54.1",
  "date": "2026-11-09",
  "source_release": "day-53 (Happy Day Update 53.2)",
  "source_commit": "c7075e42c51b3b85d48029bb4fbd66a89d22e15c",
  "source_app_version": "53.2",
- "destination_app_version": "54",
+ "destination_app_version": "54.1",
  "adaptations": [
   "settings screen rebuilt to the shared structure (AGENTS.md): <section data-happy-section> account → app (appearance slot, «Сейчас» settings inserted by selfcare-ui.js before the hidden anchor #daySectionSettingsHeading, day sections, counters, timed tags, thresholds, Meal link) → data (backup, CSV, tracker imports) → links → developer (hidden: «Доступ к модели») → version; element ids and handlers unchanged",
   "appearance picker placed into [data-happy-appearance-slot] under «Оформление» (entry() of the embedded happy-appearance-module prefers the slot)",
@@ -16,13 +16,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-54.html",
-   "size": 3582193,
-   "sha256": "b19d4eee62257462cac93d3e04bb1afb118c83698ab78ecfe4048420f1aa38a9"
+   "size": 3584785,
+   "sha256": "e7f2dd1f2d1c4ee22f845345e24c52f0c53a91f8d2bbe90c09a58fd7fcff8917"
   },
   {
    "path": "README.md",
-   "size": 4773,
-   "sha256": "8bf071e9fac43ecc7e444db03b8308a7a973b33867f09438efb7fd3ed544959c"
+   "size": 6084,
+   "sha256": "2602f322127bfc58cff39a3cf92b54711db6a8de55d871a817cd766808c69991"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -181,8 +181,8 @@
   },
   {
    "path": "day-journal-sync.js",
-   "size": 78277,
-   "sha256": "51720ba387c7c963ea531438813aeec3bd16aef8adb150d6a7b9a096342f03f9"
+   "size": 78591,
+   "sha256": "9712d1bea27fb654a7c1929c654e76a42552238bbe13bc361c91695fc96015cc"
   },
   {
    "path": "day-passive-plan.js",
@@ -246,18 +246,18 @@
   },
   {
    "path": "index.html",
-   "size": 530735,
-   "sha256": "e1e5be83967e0ca211be517dfc2ae2e0da04b6f35007e3af524e94ac0fc844a7"
+   "size": 531905,
+   "sha256": "8ee4c9991093cc327abb1a498654c276d416b5a2ac8bd388b9b604d7df13d546"
   },
   {
    "path": "manifest.webmanifest",
-   "size": 513,
-   "sha256": "548dd3df895c1413c214c3bf8279a17c99aaa96ad94cc6ca74b085481ce61ce6"
+   "size": 515,
+   "sha256": "e7867aefec03eee487df1825183b6bb20a55857815343060d0a50cffc8500c47"
   },
   {
    "path": "release-notes.js",
-   "size": 16813,
-   "sha256": "f0ceca96986eaf382752ad5903289e717521831bdd65fd40e665d6f39d748f99"
+   "size": 17588,
+   "sha256": "4a0248b684b0be689239c0dff002dade90cce53eb6654045e4d143133d836bc4"
   },
   {
    "path": "section-wheel.css",
@@ -306,8 +306,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 10530,
-   "sha256": "bb831cb2f1a02ae7eb5ed068a2e77808455c5362b5091ded498173e85625ef71"
+   "size": 11020,
+   "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
   },
   {
    "path": "shared/happy-gradient-editor.css",
@@ -434,5 +434,17 @@
    }
   ]
  },
- "point_releases": []
+ "point_releases": [
+  {
+   "version": "54.1",
+   "date": "2026-11-09",
+   "changes": [
+    "index.html: «Данные» section removed from the visible structure; backup card (expJson/impJson/backupAge/expCsv/trackers/bkPrev/bkBack) lives in the hidden developer section under «Резервная копия»; shared/apps.json day.settingsSections without data",
+    "day-journal-sync.js: status line and guest recovery stay in the account card; «Синхронизация и восстановление», «Диагностика синхронизации», «Время на устройстве и архивы» are appended to #dayDeveloperSyncTools (developer section); HappyUI.accountNote() details «Возможности аккаунта и обмена» moved there too",
+    "index.html: «Обновить связь» hidden inside the account card (CSS), developer-section button #dayDeveloperSync runs the same clDo(\"sync\") (requires a session)",
+    "shared/happy-appearance.js 2.1 (slot support) — reference now shared/happy-appearance.js",
+    "cache busters ?v=54.1, manifest Update 54.1, release note 54.1, README; standalone Happy-Day-54.html rebuilt"
+   ]
+  }
+ ]
 }

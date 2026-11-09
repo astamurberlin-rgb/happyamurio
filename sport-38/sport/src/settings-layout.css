@@ -9,3 +9,5 @@
 .happy-settings section[data-happy-section="developer"] .happy-card{border-style:dashed}
 .happy-settings section[data-happy-section="developer"] .happy-card+.happy-card{margin-top:12px}
 .happy-settings section[data-happy-section="version"]{margin-bottom:0}
+/* Update 38.6: the appearance picker sits in a slot under «Приложение → Оформление». */
+.happy-settings [data-happy-appearance-slot]{margin:0 0 18px}

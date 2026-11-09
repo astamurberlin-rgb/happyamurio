@@ -1,11 +1,11 @@
 {
   "app": "Happy Sport",
-  "update": "38.5",
+  "update": "38.6",
   "source_release": "sport-37 (Happy Sport · Update 37)",
   "source_commit_of_update_37": "cf8dea4f26ff8e05cb786594e6aae154391e9557",
-  "source_commit": "c7075e42c51b3b85d48029bb4fbd66a89d22e15c",
+  "source_commit": "b292b2b0b6b7f6660e1ca40152817d3cf2499160",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-38/",
-  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js)",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -135,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 965044,
-      "sha256": "5a13aaee742b25e85fa63622838a0202668829a798d722e2f699d0c976131f83"
+      "size": 967506,
+      "sha256": "826586d2ce6a363dc642d35291a0b5928078f748fa2a64cb1a426cec033e683f"
     },
     {
       "path": "manifest.webmanifest",
@@ -170,18 +170,18 @@
     },
     {
       "path": "scripts/check-settings-layout.mjs",
-      "size": 9958,
-      "sha256": "f210368a50e7807ad9e4be851d239088f3077821f09e3c54f8a126c888c35970"
+      "size": 12539,
+      "sha256": "5beeb91019120ccb0d4a01585ab744684b86534d814eb3ea508668ac6fcde2d9"
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 2067,
-      "sha256": "ab8b1725f2a386d15cb8d5197cb08ff8c1208498f430112268a4a214cc38df2e"
+      "size": 2255,
+      "sha256": "171fb403e7cd2f3a845795881051764ea1770175677f0a6d5c3be1e8fc644c30"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 3877,
-      "sha256": "d53bcf8beaf01e9ad2b6e39457242ecc1a4cca3f89225c3c3e1d87fe11415ab3"
+      "size": 4104,
+      "sha256": "86bc43ac0bc54d405959ba564c935fbaa73e271955504b0d2a4ab52f29556115"
     },
     {
       "path": "shared/README.md",
@@ -205,8 +205,8 @@
     },
     {
       "path": "shared/happy-appearance.js",
-      "size": 10530,
-      "sha256": "bb831cb2f1a02ae7eb5ed068a2e77808455c5362b5091ded498173e85625ef71"
+      "size": 11020,
+      "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
     },
     {
       "path": "shared/happy-gradients.js",
@@ -585,8 +585,8 @@
     },
     {
       "path": "sport/src/data-transfer.js",
-      "size": 18762,
-      "sha256": "aed714038873d093d4bef769cd157463c4b92a0bb87a99374590112b3269fbf9"
+      "size": 18761,
+      "sha256": "138b1fb0c9efb1787ceed4b89c2b007815c5343b73cae988dcbcb122d5343be5"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -755,8 +755,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 14450,
-      "sha256": "8e406032fa256212d10ff67555895f29926f1634b7b0fbee26dd920189a804d8"
+      "size": 15151,
+      "sha256": "af85b56b1912aefc1a980763f8f5e2589ae0b262850f555760653cf4136e6c09"
     },
     {
       "path": "sport/src/rest-pill.js",
@@ -800,13 +800,13 @@
     },
     {
       "path": "sport/src/settings-layout.css",
-      "size": 1076,
-      "sha256": "f37230d4d31d5eb2f1e64897e1a7471337bc888be1c73b58e33a674a8d55f6e2"
+      "size": 1251,
+      "sha256": "c4bfe1c3247a55d51467d0cc5ccf3325ea9f7c55f69f05bd164a84e26dc4d4fe"
     },
     {
       "path": "sport/src/settings-layout.js",
-      "size": 8860,
-      "sha256": "fe8f5815ab69995a21538f3b86bbeab4a03e858ae2a046266c55d92ff5aa9798"
+      "size": 9957,
+      "sha256": "07f48bcc4bf10201ab14800d74208dd64b1c17876c1dd8264d29219b1376fd22"
     },
     {
       "path": "sport/src/sport-cloud.js",
