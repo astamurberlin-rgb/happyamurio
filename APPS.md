@@ -14,6 +14,7 @@
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
+| Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
@@ -140,6 +141,14 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 Подробности прежних выпусков Meal 22.x и Day 50.x, которые раньше лежали здесь, перенесены в `CHANGELOG.md`, раздел «Подробности прежних выпусков».
 
 <small>— Claude · 09.11.2026 11:45</small>
+
+## Happy Sport · Update 39 · 09.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/sport-39/ . Исходники `sport-39/sport/src/` (из `sport-38/` 38.7, main `6ac5339`), сборка `node sport-39/scripts/build-release.mjs`, проверки `npm --prefix sport-39/sport run check` (+ `check-local-store.mjs`), `check-settings-layout.mjs`, `verify-release.mjs`. Происхождение — `sport-39/SOURCE-PROVENANCE.json`.
+
+Журнал, резерв синхронизации, резерв восстановления, копия до импорта и исходная копия прототипа переехали из localStorage в IndexedDB `happy-sport-private-v1` через синхронный фасад `sport/src/local-store.js` (`sportStorage`), открываемый до запуска приложения; перенос при первом открытии с проверкой чтением и освобождением localStorage; при недоступной IndexedDB — остаёмся в localStorage. Движок синхронизации ждёт `flush()` перед отправкой; уведомления между вкладками — BroadcastChannel. Ключи входа и общие с Day/Meal (счётчики, замеры, сводки) — по-прежнему в localStorage. Вторая вкладка пока по правилу 38.4; живые вкладки — 39.1. Подробности — `sport-39/README.md`.
+
+— Claude · 09.11.2026 20:31
 
 ## Happy Sport · Update 38 · 08.11.2026
 

@@ -1,0 +1,11 @@
+/* A single Sport measurement view in every Happy journal. Same origin, same account. */
+(function(){
+'use strict';var script=document.currentScript,screen=document.querySelector('[data-screen="'+script.dataset.journal+'"]');if(!screen)return;
+var tabs=document.createElement('div');tabs.className='happy-measurement-tabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label','Раздел журнала');tabs.innerHTML='<button type="button" aria-pressed="true">Журнал</button><button type="button" aria-pressed="false">Замеры тела</button>';
+var content=document.createElement('div');content.className='happy-journal-content';while(screen.firstChild)content.appendChild(screen.firstChild);screen.append(tabs,content);
+var panel=document.createElement('section');panel.hidden=true;screen.appendChild(panel);var frame=null;
+tabs.querySelectorAll('button').forEach((b,i)=>b.addEventListener('click',function(){tabs.querySelectorAll('button').forEach((x,k)=>x.setAttribute('aria-pressed',String(k===i)));content.hidden=!!i;panel.hidden=!i;if(i&&!frame){frame=document.createElement('iframe');frame.title='Единые замеры тела Happy';frame.src=new URL('../sport/?embed=measurements',script.src).href;frame.className='happy-measurement-frame';panel.appendChild(frame)}}));
+document.addEventListener('happy-show-journal',()=>tabs.querySelector('button').click());
+window.addEventListener('message',function(ev){if(ev.origin!==location.origin||!frame||ev.source!==frame.contentWindow||ev.data?.type!=='happy-measurements-height')return;var h=Number(ev.data.height);if(Number.isFinite(h)&&h>0)frame.style.height=Math.max(560,Math.min(12000,h))+'px'});
+var style=document.createElement('style');style.textContent='.happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}.happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:#5c4598;font-weight:600}.happy-measurement-frame{width:100%;height:760px;border:0;border-radius:22px;display:block}.happy-journal-content[hidden]{display:none!important}';document.head.appendChild(style);
+})();

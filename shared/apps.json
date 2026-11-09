@@ -5,7 +5,7 @@
     "sharedDirectory": "day-55/shared",
     "links": {
       "meal": "meal-26/",
-      "sport": "sport-38/"
+      "sport": "sport-39/"
     },
     "download": "day-55/Happy-Day-55.html",
     "previous": {
@@ -53,16 +53,15 @@
     }
   },
   "sport": {
-    "entry": "sport-38/index.html",
-    "version": "38.7",
-    "name": "Happy Sport · Update 38",
-    "sharedDirectory": "sport-38/shared",
-    "sourceDirectory": "sport-38/sport/src",
-    "sourceRelease": "sport-37",
-    "sourceCommit": "9ce7f95e91b351210209e76bd8af8d9f21d25697",
+    "entry": "sport-39/index.html",
+    "version": "39",
+    "name": "Happy Sport · Update 39",
+    "sharedDirectory": "sport-39/shared",
+    "sourceDirectory": "sport-39/sport/src",
+    "sourceRelease": "sport-38",
+    "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0",
     "settingsSections": [
       "account",
-      "appearance",
       "app",
       "data",
       "links",
@@ -70,9 +69,9 @@
       "version"
     ],
     "previous": {
-      "entry": "sport-37/index.html",
-      "version": "37",
-      "sourceCommit": "cf8dea4f26ff8e05cb786594e6aae154391e9557"
+      "entry": "sport-38/index.html",
+      "version": "38.7",
+      "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0"
     },
     "iconLibrary": "assets/sport-icons/v1",
     "exerciseLibrary": "assets/exercise-library/v1"

@@ -22,7 +22,7 @@
 
 - Перед работой получить свежий `main`, прочитать `APPS.md` и `DATA-STORAGE.md`. Работать в отдельной ветке задачи; не затирать параллельные изменения, не делать force push; перед слиянием проверить изменения коллег.
 - Теги не ставятся (решение владельца от 08.11.2026): выпуск опознаётся по имени апдейта в каталоге, в приложении, в `shared/apps.json`, в `APPS.md` и в `SOURCE-PROVENANCE.json` выпуска.
-- Актуальные входы: `day-55/index.html`, `meal-26/index.html` (26.1), `sport-38/index.html` (38.7); `day/`, `day-52/`, `day-53/`, `day-54/`, `meal/`, `meal-23/`, `meal-24/`, `meal-25/`, `sport/`, `sport-37/` — сохранённые прежние версии.
+- Актуальные входы: `day-55/index.html`, `meal-26/index.html` (26.1), `sport-39/index.html`; `day/`, `day-52/`, `day-53/`, `day-54/`, `meal/`, `meal-23/`, `meal-24/`, `meal-25/`, `sport/`, `sport-37/`, `sport-38/` — сохранённые прежние версии.
 - Старые HTML в корне — исторические файлы или переходы; не развивать их как текущие версии.
 - Сохранять постоянные URL, ключи хранилища и пользовательские записи. Изменения схемы требуют миграции.
 - Личные выгрузки и журналы, токены и ключи нельзя коммитить. Публичные справочники не являются дневниками.
@@ -46,7 +46,7 @@
 ## Проверки
 
 - Общие: `node scripts/sync-shared.mjs` (эталоны общих файлов → выпуски, по `shared/shared-files.json`) → `node scripts/sync-shared-ui.mjs` → сборка Sport выпуска → `node scripts/check-shared.mjs`, `node scripts/check-shared-ui.mjs`, `node scripts/check-layout.mjs`, `node scripts/check-food-counters.mjs`.
-- Sport: `npm --prefix sport-NN/sport run check`; для настроек — `node sport-NN/scripts/check-settings-layout.mjs` (headless Chrome); происхождение — `verify-release` по `SOURCE-PROVENANCE.json`.
+- Sport: `npm --prefix sport-NN/sport run check` (с 39 — включая `check-local-store.mjs`, фасад IndexedDB); для настроек — `node sport-NN/scripts/check-settings-layout.mjs` (headless Chrome); происхождение — `verify-release` по `SOURCE-PROVENANCE.json`. Хранилище Sport с 39: ключи с префиксом `auth-readonly-happy-sport-prototype-v1` — только через `sportStorage` (`sport/src/local-store.js`), не через `localStorage` напрямую; ключи, которые читают Day и Meal, остаются в localStorage.
 - Meal: `node scripts/check-meal-times.mjs` (время питания и связка с журналом Day), `node scripts/check-meal-exports.mjs` (CSV, отчёты, названия способов приготовления).
 - Day: `node --test day-55/tests/*.test.cjs` (в том числе `auth-identity.test.cjs` — вход по аккаунту и ключу); самостоятельный HTML — `python3 scripts/build-day-standalone.py day-55`; смоук в headless Chrome — страница, настройки, подвал, ссылки, без ошибок.
 - Meal: `node meal-26/checks/check-startup.mjs`, `node meal-26/checks/check-auth-identity.mjs` (вход по аккаунту и ключу, не по токену), `node meal-26/checks/check-desserts.mjs` (адаптер библиотеки десертов на реальном файле из `meal-libraries`); смоук в headless Chrome с файлами библиотек.
