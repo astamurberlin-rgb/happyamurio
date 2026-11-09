@@ -1,11 +1,11 @@
 {
   "app": "Happy Sport",
-  "update": "39",
+  "update": "39.1",
   "source_release": "sport-38 (Happy Sport · Update 38.7)",
   "source_commit_of_update_38": "b292b2b0b6b7f6660e1ca40152817d3cf2499160",
-  "source_commit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0",
+  "source_commit": "36006b27dc1eb472db23fc22365dec99464aef74",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-39/",
-  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot; 38.7 (owner device 19:55: «резерв достиг лимита» with 3,53 MB used by all apps on the origin): the 4 MiB origin-wide budget is dropped — the ledger keeps its 3 MiB cap and the real browser quota is checked by the headroom probe; 2026-11-09 39 (owner 20:11 «Ты можешь это сделать? — Да»): journal-scale keys move from localStorage to IndexedDB through a synchronous facade (local-store.js) with verified migration; the 5 MB origin box shared with Day and Meal is no longer the limit of Sport",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot; 38.7 (owner device 19:55: «резерв достиг лимита» with 3,53 MB used by all apps on the origin): the 4 MiB origin-wide budget is dropped — the ledger keeps its 3 MiB cap and the real browser quota is checked by the headroom probe; 2026-11-09 39 (owner 20:11 «Ты можешь это сделать? — Да»): journal-scale keys move from localStorage to IndexedDB through a synchronous facade (local-store.js) with verified migration; the 5 MB origin box shared with Day and Meal is no longer the limit of Sport; 39.1: live tabs — every tab writes, journals merge three ways between tabs (profile-store adopt/save), one automatic sync run per account (Web Lock ifAvailable), no writer lock, banner or blocked screen",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -75,8 +75,8 @@
     },
     {
       "path": "README.md",
-      "size": 17265,
-      "sha256": "c2f0a5cd11cd42a8dbe40c3c8f3822c777040a90875bde6ed012889e94f0121b"
+      "size": 21816,
+      "sha256": "5e33128c0f9e96971fe4eb24c82423392cfde78d3cc72c8da880ce2cc0936a6a"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -135,8 +135,8 @@
     },
     {
       "path": "index.html",
-      "size": 981191,
-      "sha256": "5b4c87db54f65229004c2ea2720e44804cfc81d02d3a31b06279090c4f0066cb"
+      "size": 984251,
+      "sha256": "812ef5c89e236f21d0b2b442b0d95f0bfb6f822bb92ec233e36214ac360df067"
     },
     {
       "path": "manifest.webmanifest",
@@ -175,13 +175,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 2650,
-      "sha256": "0a081ec4be0f39c3f70bb76d1fc3e520ee4a8663a458e3011d5e90a5e694812c"
+      "size": 2652,
+      "sha256": "3e33a3f30f5c30b7366d45bddb42d78341f47b8aa6ecd37687b1db13da3dbefc"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 4653,
-      "sha256": "db9eeedadd2d1c2c9aaad234eee297b08451a973068ee0d7ba70c6a2f911c175"
+      "size": 4861,
+      "sha256": "c3ba2c6c969d9d2ab59b57861171a0ca9a067ad33c9be2d825c2ce4324c9c255"
     },
     {
       "path": "shared/README.md",
@@ -370,8 +370,8 @@
     },
     {
       "path": "sport/scripts/check-local-store.mjs",
-      "size": 11778,
-      "sha256": "74e71ffa00c7b4c402319a7a289138c2211bcd7b31faeedd11f9f56a730e9d84"
+      "size": 14065,
+      "sha256": "23c6ba1e78f81d1980f3a19e1829193621cd0a4c6f271976131cc4a3adbaa707"
     },
     {
       "path": "sport/scripts/check-measurement-input-events.mjs",
@@ -590,8 +590,8 @@
     },
     {
       "path": "sport/src/data-transfer.js",
-      "size": 18757,
-      "sha256": "f1ba3498b8b00fbac95d52fe5fbf41c55426c3b71a9927d33c271dd0ac8d30df"
+      "size": 18761,
+      "sha256": "921eea46bbf21c3027e25815e48f5af48a45636ad9bc4cddbb73245e576b4eae"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -680,8 +680,8 @@
     },
     {
       "path": "sport/src/local-store.js",
-      "size": 6228,
-      "sha256": "5aeb83b03668d9f467883361bceb4f51b1cd4f0af87a5ba2db66c1714382806b"
+      "size": 7814,
+      "sha256": "d87fdac10c41fa190a3ada23e6a6ab34429ac68856d465dcb83be69f15b63704"
     },
     {
       "path": "sport/src/manifest.webmanifest",
@@ -730,8 +730,8 @@
     },
     {
       "path": "sport/src/profile-store.js",
-      "size": 4825,
-      "sha256": "4e420d7fdd6171fd1fd58b58b06a6c77e6dcc41ade03316cf16cbf519f58fd81"
+      "size": 5396,
+      "sha256": "32d90792bd02885b618cb60b34cb1d86e5cb7d3432fbfe710f1ef29ffb7240c5"
     },
     {
       "path": "sport/src/quick-value-input.js",
@@ -770,8 +770,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 17110,
-      "sha256": "cf84b22e04d66f3a47712d31cdf9d76be32cfdd51768f7f237dc732ac4a6a41b"
+      "size": 18009,
+      "sha256": "eea1a146f6365d1a94149f69e5eab2f1a3565ea2625ae35d71ca4b2ef4994adc"
     },
     {
       "path": "sport/src/rest-pill.js",

@@ -14,7 +14,7 @@
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39 |
+| Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.1 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
@@ -148,6 +148,8 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 
 Журнал, резерв синхронизации, резерв восстановления, копия до импорта и исходная копия прототипа переехали из localStorage в IndexedDB `happy-sport-private-v1` через синхронный фасад `sport/src/local-store.js` (`sportStorage`), открываемый до запуска приложения; перенос при первом открытии с проверкой чтением и освобождением localStorage; при недоступной IndexedDB — остаёмся в localStorage. Движок синхронизации ждёт `flush()` перед отправкой; уведомления между вкладками — BroadcastChannel. Ключи входа и общие с Day/Meal (счётчики, замеры, сводки) — по-прежнему в localStorage. Вторая вкладка пока по правилу 38.4; живые вкладки — 39.1. Подробности — `sport-39/README.md`.
 
+
+**39.1 (09.11.2026):** живые вкладки — каждое окно Sport пишет, журналы сливаются между окнами трёхсторонне (`profile-store.js` `save`/`adopt`, `live-tabs.js`), одно поле, изменённое по-разному, остаётся за окном последнего действия; экран «Журнал защищён», Web Lock писателя и полоса «Sport открыт в другом окне» удалены; автосинхронизация — одним окном на аккаунт (Web Lock `happy-sport-sync:<uid>`, `ifAvailable`). Проверено двумя вкладками в headless Chrome с настоящей IndexedDB. — Claude · 09.11.2026 20:50
 — Claude · 09.11.2026 20:31
 
 ## Happy Sport · Update 38 · 08.11.2026
