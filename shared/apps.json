@@ -1,19 +1,19 @@
 {
  "day": {
-  "entry": "day-56/index.html",
-  "version": "56",
-  "sharedDirectory": "day-56/shared",
+  "entry": "day-57/index.html",
+  "version": "57",
+  "sharedDirectory": "day-57/shared",
   "links": {
    "meal": "meal-27/",
    "sport": "sport-39/"
   },
-  "download": "day-56/Happy-Day-56.html",
+  "download": "day-57/Happy-Day-57.html",
   "previous": {
-   "entry": "day-55/index.html",
-   "version": "55",
-   "sourceCommit": "824ac21285deaf616c0d3289e40e8a89041bc651"
+   "entry": "day-56/index.html",
+   "version": "56",
+   "sourceCommit": "9280726e7dd358d8ac436ffd99432874d82ba8e8"
   },
-  "name": "Happy Day · Update 56",
+  "name": "Happy Day · Update 57",
   "earlier": {
    "entry": "day/index.html",
    "version": "50.14",

@@ -5,6 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
+| Happy Day · Update 57 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57 |
 | Happy Day · Update 56 | `day-56/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-56/ | 56 |
 | Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
 | Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
@@ -34,6 +35,12 @@
 Они остаются в корне для прежних версий. Update 23 получает пищевые базы из отдельной ветки `meal-libraries`; иллюстрации и исполняемые зависимости закреплены в `meal-23/`.
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
+
+## Happy Day · Update 57 · 10.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-57/ . Исходник — `day-56/` (main `9280726`). Самостоятельный HTML: `day-57/Happy-Day-57.html`. Живые вкладки: журнал, записанный другой вкладкой, принимается или сливается без сообщений (`reconcile` в `day-journal-sync.js`). Шапка без статуса и кнопки настроек; состояние синхронизации — строка под кнопками аккаунта; «Связь обновлена» убрана. Исправлено ложное «Вход изменился в другой вкладке» (ошибка 56). Хранилище — как в 56. Проверки: `node --test day-57/tests/*.test.cjs` (46), общие проверки, смоук двух вкладок в headless Chrome.
+
+— Claude · 10.11.2026 01:25
 
 ## Happy Day · Update 56 · 10.11.2026
 
