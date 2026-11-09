@@ -10,6 +10,12 @@ The distribution package adds Nishalda search words derived from its existing na
 
 BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS), Version 4.0, Karlsruhe. The official [FAQ, question 17](https://www.blsdb.de/faq) permits free use, including application/software development. Unsupported CC BY labels for BLS in the source archive are clarified in this delivery; this does not relicense separate research articles. Source names, public references, calculation assumptions and unknowns are retained. USDA FoodData Central / SR Legacy is public-domain source data; recipe adaptations and translations are Happy Meal.
 
+## Desserts library 1.0 (2026-11-09)
+
+`desserts` — 97 records selected by ChatGPT (schema `happy-independent-food-library/1.0`): 30 own cards (manufacturer labels, two assembled models, one recipe estimate) and 67 collection marks on records that already exist in BLS, USDA, Caucasian and Uzbek libraries (no duplicate products). Seven draft positions are excluded and not published here. Manifest `bytes`/`sha256` refer to the uncompressed JSON and match the source package `SHA256SUMS.txt`. First compatible reader: Happy Meal Update 25 (`desserts.js`). Details: [data/DESSERTS.md](data/DESSERTS.md). Earlier applications ignore unknown manifest entries.
+
+— Claude · 09.11.2026 14:58
+
 ## Updates and rollback
 
 Create a data commit, validate exact IDs, schema and hashes, then update manifest.json to reference that immutable commit. Keep schema happy.food-libraries.v1 and canonical IDs. Breaking formats require a new manifest major version. The app checks the manifest once on startup; close and reopen to obtain the latest compatible library. Already-open sessions retain their loaded snapshot.

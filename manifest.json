@@ -1,7 +1,7 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-07.4",
-  "updated": "2026-11-07",
+  "revision": "2026-11-09.1",
+  "updated": "2026-11-09",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
@@ -58,6 +58,21 @@
       "sha256": "34bdc855b5514125dbddaf0b9865021ef69ad4e9a03c36efb70add67612f36cf",
       "foodCount": 60,
       "knownPropertiesPartialCards": 1
+    },
+    "desserts": {
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/00f4b5a7b974863019f489a1b0dd4337a4de855f/data/desserts-1.0.json.gz",
+      "encoding": "gzip",
+      "bytes": 3287563,
+      "sha256": "a1e0b41433a7622527b0b9c700db84c0708a472db8f0da7b15565e92579efaa9",
+      "foodCount": 97,
+      "ownCards": 30,
+      "collectionMarks": 67,
+      "schema": "happy-independent-food-library/1.0",
+      "author": "ChatGPT",
+      "date": "2026-11-09",
+      "notes": "data/DESSERTS.md",
+      "firstReader": "Happy Meal Update 25"
     }
   }
 }
