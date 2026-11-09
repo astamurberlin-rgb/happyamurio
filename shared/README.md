@@ -54,3 +54,13 @@ Color Studio сохраняет прежние ключи для обоих вх
 сам выбор темы меняет предпросмотры, не дневники приложений. Базовая тема добавляется
 в общую галерею без замены выбранного пользователем оформления.
 Проверка движка: `node scripts/check-gradients.mjs`.
+
+## Фундамент общих модулей · 09.11.2026
+
+Эталоны и копии в выпусках описаны в `shared-files.json`; `node scripts/sync-shared.mjs` копирует эталоны в `shared/` текущих выпусков (из `apps.json`), `node scripts/check-shared.mjs` проверяет побайтное совпадение (записи `divergent` — известный долг, предупреждение). Корневые `food-counters.*` и `measurements-host.js` загружают опубликованные `day/` и `meal/` — их не менять; эталон таких файлов лежит в каталоге выпуска.
+
+- `release-notes.js` — одна история обновлений для трёх приложений: формат записи `{version, label, date, time, author, changes}`, рендер `HappyReleaseNotes.render(list)` и строка версии `HappyReleaseNotes.footer(list, label)` с датой, временем и автором. Подключён в Sport 38.3, Day 53, Meal 24.
+- `happy-status.js` — словарь статусов: `HappyStatus.text('offline')`, `HappyStatus.apply(el,'cloud')`. Одни слова на одно состояние во всех приложениях, без «JSON» в пользовательских текстах. Подключается вместе с общей оболочкой.
+- Впереди: `happy-auth.js` (один код входа с ключом `happy-auth:<app>`), `happy-shell` (шапка, вкладки, центральная кнопка, настройки по `AGENTS.md`).
+
+<small>— Claude · 09.11.2026 12:55</small>

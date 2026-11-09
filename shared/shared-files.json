@@ -1,0 +1,155 @@
+{
+  "_": "Манифест общих файлов Happy (с 09.11.2026). reference — эталонная копия; apps — какие текущие выпуски (каталоги из shared/apps.json) должны содержать побайтно такую же копию в своём shared/. divergent — копии пока разошлись: check-shared предупреждает, а не падает, sync-shared их не трогает. frozenRoot — корневой shared/<name> загружают опубликованные старые страницы day/ и meal/ прямо с сайта, поэтому эталон лежит не в корне.",
+  "files": [
+    {
+      "name": "release-notes.js",
+      "reference": "shared/release-notes.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
+      "name": "happy-status.js",
+      "reference": "shared/happy-status.js",
+      "apps": [],
+      "todo": "подключается в выпусках вместе с общей оболочкой"
+    },
+    {
+      "name": "happy-gradients.js",
+      "reference": "shared/happy-gradients.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
+      "name": "measurements-model.js",
+      "reference": "shared/measurements-model.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
+      "name": "imported-history.js",
+      "reference": "shared/imported-history.js",
+      "apps": [
+        "day",
+        "meal"
+      ]
+    },
+    {
+      "name": "happy-gradient-editor.js",
+      "reference": "shared/happy-gradient-editor.js",
+      "apps": [
+        "day"
+      ]
+    },
+    {
+      "name": "happy-gradient-editor.css",
+      "reference": "shared/happy-gradient-editor.css",
+      "apps": [
+        "day"
+      ]
+    },
+    {
+      "name": "happy-appearance.js",
+      "reference": "day-53/shared/happy-appearance.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "todo": "эталон перенести в shared/ (в корне файла нет)"
+    },
+    {
+      "name": "happy-appearance.css",
+      "reference": "day-53/shared/happy-appearance.css",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "todo": "эталон перенести в shared/ (в корне файла нет)"
+    },
+    {
+      "name": "happy-reference-themes.js",
+      "reference": "day-53/shared/happy-reference-themes.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "todo": "корневой shared/ отстал от выпусков; обновить корень, когда его перестанут грузить старые страницы"
+    },
+    {
+      "name": "food-counters.js",
+      "reference": "day-52/shared/food-counters.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "frozenRoot": true
+    },
+    {
+      "name": "happy-ui.js",
+      "reference": "shared/happy-ui.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "divergent": true,
+      "todo": "три версии (day-53, meal-24 = корень, sport-38) — объединить в следующих выпусках"
+    },
+    {
+      "name": "happy-ui.css",
+      "reference": "shared/happy-ui.css",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "divergent": true,
+      "todo": "meal-24 отличается от остальных"
+    },
+    {
+      "name": "profile-storage.js",
+      "reference": "day-53/shared/profile-storage.js",
+      "apps": [
+        "day",
+        "meal"
+      ],
+      "divergent": true,
+      "todo": "у Meal своя версия с проверками входа (fence); объединить вместе с shared/happy-auth.js"
+    },
+    {
+      "name": "measurements-host.js",
+      "reference": "shared/measurements-host.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "divergent": true,
+      "frozenRoot": true,
+      "todo": "day-53 отличается"
+    },
+    {
+      "name": "food-counters.css",
+      "reference": "shared/food-counters.css",
+      "apps": [
+        "day",
+        "meal"
+      ],
+      "divergent": true,
+      "frozenRoot": true,
+      "todo": "meal-24 отличается"
+    }
+  ]
+}
