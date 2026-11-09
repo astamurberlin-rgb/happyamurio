@@ -9,7 +9,7 @@
 | Папка | Содержимое |
 | --- | --- |
 | `day/` | Предыдущий Happy Day 50.14 |
-| `day-52/` | Отдельный Happy Day Update 52 |
+| `day-52/`, `day-53/` | Отдельные Happy Day Update 52 и Update 53 (с 53 — собственная ячейка входа `happy-auth:day`) |
 | `meal/` | Прежний Happy Meal 22.16 |
 | `meal-23/` | Отдельный Happy Meal Update 23 и его закреплённые зависимости |
 | `sport/` | Прежний Happy Sport 36.7, исходники и сборка |

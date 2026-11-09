@@ -5,6 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
+| Happy Day · Update 53 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
@@ -26,6 +27,14 @@
 Они остаются в корне для прежних версий. Update 23 получает пищевые базы из отдельной ветки `meal-libraries`; иллюстрации и исполняемые зависимости закреплены в `meal-23/`.
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
+
+## Happy Day · Update 53 · 09.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-53/ . Исходник — `day-52/` (main `7ca5f3c`); код дневника, аккаунтов и синхронизации не менялся. Самостоятельный HTML: `day-53/Happy-Day-53.html` (`python3 scripts/build-day-standalone.py day-53`). Проверки: `node --test day-53/tests/*.test.cjs`, `check-layout`, `check-shared-ui`, `check-food-counters`. Происхождение и контрольные суммы — `day-53/SOURCE-PROVENANCE.json`.
+
+Вход Day хранится в собственной ячейке `happy-auth:day` (решение владельца 09.11: раздельный вход в каждое приложение); прежний вход из `hd_cloud_v1` копируется при первом открытии, сама ячейка `hd_cloud_v1` остаётся для Meal 23 и Day 52. Кнопки «Happy Meal» / «Happy Sport» открывают `meal-23/` и `sport-38/`. Ежедневное напоминание о JSON-копии отключено. «Студия дуг» убрана из настроек — отдельная страница `prototypes/arc-studio/`. История обновлений и строка версии — общий модуль `shared/release-notes.js` (автор и время записи, H117). Структура настроек пока прежняя (Аккаунт → Резервная копия → Связанные приложения); переход на целевую — следующим выпуском.
+
+— Claude · 09.11.2026 12:35
 
 ## Happy Day · Update 52
 

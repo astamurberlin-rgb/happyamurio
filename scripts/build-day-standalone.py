@@ -5,10 +5,16 @@ import html
 import mimetypes
 import re
 
+import json
+import sys
+
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT
-ORIGIN = 'https://astamurberlin-rgb.github.io/happyamurio/day-52'
-OUT = DIST / 'day-52' / 'Happy-Day-52.html'
+# Release directory: argument (e.g. day-53) or the current Day entry from shared/apps.json.
+RELEASE = sys.argv[1] if len(sys.argv) > 1 else json.loads((ROOT / 'shared/apps.json').read_text())['day']['entry'].split('/')[0]
+VERSION = RELEASE.split('-')[1] if '-' in RELEASE else RELEASE
+ORIGIN = 'https://astamurberlin-rgb.github.io/happyamurio/' + RELEASE
+OUT = DIST / RELEASE / ('Happy-Day-' + VERSION + '.html')
 dependencies = set()
 
 def data_url(data, mime):
@@ -70,12 +76,18 @@ def package(p):
     text = re.sub(r'<style([^>]*)>(.*?)</style>', lambda m: '<style' + m.group(1) + '>' + css(m.group(2), p.parent) + '</style>', text, flags=re.S)
     return text
 
-text = package(DIST / 'day-52/index.html')
-studio = package(DIST / 'day-52/arc-studio/index.html')
+text = package(DIST / RELEASE / 'index.html')
+text = text.replace('href="../Happy-Day-' + VERSION + '.html"', 'href="' + ORIGIN + '/Happy-Day-' + VERSION + '.html"')
+STUDIO = DIST / RELEASE / 'arc-studio/index.html'
+if not STUDIO.is_file():
+    # Update 53: the Arc Studio is a separate page (prototypes/arc-studio/), not part of the app bundle.
+    OUT.write_text(text)
+    print(f'Built {OUT.name}: {OUT.stat().st_size:,} bytes, {len(dependencies)} embedded source assets (no studio)')
+    sys.exit(0)
+studio = package(STUDIO)
 studio = studio.replace('href="../"', 'href="#" data-close-studio')
 studio += '<script>document.addEventListener("click",function(e){if(e.target.closest("[data-close-studio]")){e.preventDefault();parent.postMessage("happy-day-close-studio","*")}})</script>'
 text = text.replace('href="./arc-studio/"', 'href="#arc-studio" data-open-studio')
-text = text.replace('href="../Happy-Day-52.html"', 'href="' + ORIGIN + '/Happy-Day-52.html"')
 overlay = '''
 <dialog id="standalone-studio" style="position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;border:0;padding:0;background:#101e2c">
 <iframe title="Студия дуг" style="border:0;width:100%;height:100%" id="standalone-studio-frame"></iframe></dialog>

@@ -42,7 +42,13 @@ const dayPage=await read(apps.day.entry);
 if(apps.day.links?.meal===false){
  assert.ok(dayPage.includes('Переход в Meal в этой версии недоступен.'));
  assert.ok(!dayPage.includes('href="../meal/"'));
-}else assert.ok(dayPage.includes('href="../meal/"'));
+}else{
+ // Update 53: the linked-app buttons point at the release directories named in apps.json (meal-23/, sport-38/).
+ const mealLink=apps.day.links?.meal||'meal/',sportLink=apps.day.links?.sport||'sport/';
+ assert.ok(dayPage.includes(`href="../${mealLink}"`),'day: Meal link matches apps.json');
+ if(!/^https?:/.test(sportLink))assert.ok(dayPage.includes(`href="../${sportLink}"`),'day: Sport link matches apps.json');
+ assert.ok(!dayPage.includes('chatgpt.site'),'day: no Sites test addresses');
+}
 assert.ok((await read('meal/index.html')).includes('href="../day/"'));
 assert.ok((await read(apps.meal.entry)).includes('href="../day-52/"'));
 assert.ok((await read(apps.meal.previous.entry)).includes(`data-app-version="${apps.meal.previous.version}"`));
