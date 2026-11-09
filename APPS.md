@@ -5,6 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
+| Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
 | Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
@@ -30,6 +31,12 @@
 Они остаются в корне для прежних версий. Update 23 получает пищевые базы из отдельной ветки `meal-libraries`; иллюстрации и исполняемые зависимости закреплены в `meal-23/`.
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
+
+## Happy Day · Update 55 · 09.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-55/ . Исходник — `day-54/` (54.1). Самостоятельный HTML: `day-55/Happy-Day-55.html`. Вход узнаётся по аккаунту и ключу, а не по токену (как Meal 25 и Sport 38.4): обновление токена в другой вкладке принимается, ложные «Сохранённый вход изменился» ушли; токен обновляется по одному — в вкладке и между вкладками (Web Lock). Сторожа операций сравнивают аккаунт, ключ и поколение входа. Тесты: `node --test day-55/tests/*.test.cjs` (35, из них 12 новых `auth-identity.test.cjs`). Настройки и всё остальное — как в 54.1. Происхождение — `day-55/SOURCE-PROVENANCE.json`.
+
+— Claude · 09.11.2026 19:54
 
 ## Happy Day · Update 54 · 09.11.2026
 
