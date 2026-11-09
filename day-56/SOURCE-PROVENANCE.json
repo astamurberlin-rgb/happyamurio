@@ -1,6 +1,6 @@
 {
  "release": "Happy Day Update 56",
- "date": "2026-11-09",
+ "date": "2026-11-10",
  "source_release": "day-55 (Happy Day Update 55)",
  "source_commit": "824ac21285deaf616c0d3289e40e8a89041bc651",
  "source_app_version": "55",
@@ -18,12 +18,12 @@
   {
    "path": "Happy-Day-56.html",
    "size": 3612683,
-   "sha256": "e236761d1ce14a34392a27bd53df6f2f5b40908cf9e22b136ba1940a7ceff49d"
+   "sha256": "5e08b65f74d5a31a7edc7591eae74c402d3f06072fe3ec8297706c0566746887"
   },
   {
    "path": "README.md",
    "size": 15148,
-   "sha256": "74a89b47f9ad0e2fb09d0757487b6da2d180bde179f1763f1d3e0d4c165b80b0"
+   "sha256": "823a11e92f0bc85f9a712abb347abcd9fa5f562c76be91ab6eed42e70e4c72a7"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -263,7 +263,7 @@
   {
    "path": "release-notes.js",
    "size": 19089,
-   "sha256": "101c6052af0ab67fb45ae96c3936b1110ca1460501ae86c500e737a539434083"
+   "sha256": "3be41f8b665eac8dc3603be5b3c8d2fd6f58ccda6abf37078db15143fca14f1a"
   },
   {
    "path": "section-wheel.css",

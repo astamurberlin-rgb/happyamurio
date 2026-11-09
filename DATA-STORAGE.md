@@ -133,13 +133,13 @@ Sites и GitHub Pages используют разные локальные хр�
 
 Регистрационное письмо и сквозная работа с реальным новым аккаунтом не проверялись при переносе. Исходные ограничения связи с Meal и Sport сохранены; сама публикация не означает завершения общей синхронизации трёх приложений.
 
-## Happy Day · Update 56 · 09.11.2026
+## Happy Day · Update 56 · 10.11.2026
 
 Журнал Day переехал из localStorage в IndexedDB `happy-day-private-v1` (хранилище `values`) — по тому же приёму, что Sport 39: синхронный фасад `day-local-store.js` (`DayLocalStore`, `dayStorage`) с кэшем, загружаемым до первого чтения, очередью записей и `flush()`. Переезжают ключи `hd_db_v1`, `hd_db_prev_v1`, `hd_db_prev_at_v1`, `hd_backup_v1`, `hd_backup_at_v1`, `hd_bk_nag_v1`, `hd_journal_safety_v1`, `hd_test_journal_create_v1`, `hd_journal_auto_v1` в каждой области аккаунта (`happy-user:<uid>:…`) и без префикса. В localStorage остаются `happy-auth:day`, `hd_cfg_v1`, `hd_fmt_v1`, `hd_cloud_v1`, `hd_link_meal_v1`, `hd_link_sport_v1`, `hd_profile_source_v1`, `happy-profile-legacy-owner:day`, стиль дуг, замеры и общие счётчики — их читают Meal и Sport или они малы. Формат документов, шифрование и облачная строка `app_sync` day/journal не изменились.
 
 Перенос при первом открытии Day 56: ключи копируются в IndexedDB, перечитываются и сравниваются, затем удаляются из localStorage; маркер `happy-day-store:indexeddb-v1`. Копия, уже лежащая в IndexedDB, главнее; отличающаяся копия из localStorage архивируется под `<ключ>:localstorage-copy:<время>`. Для каждой области с перенесённым журналом в localStorage остаётся `hd_fmt_v1` = 56: прежние выпуски Day на том же origin (`day-55/` … `day/`) открываются «старше записей» — не сохраняют, не синхронизируют и просят открыть последнюю версию; это их штатная защита формата с v48. Если дневник переехал, а IndexedDB в окне недоступна, Day 56 ничего не загружает, не сохраняет и не отправляет (`DayLocalStore.blocked`) — пустой дневник не выдаётся за настоящий. Внутри каждого Web Lock адаптер перечитывает ключи из IndexedDB после захвата и ждёт `flush()` перед освобождением; «страховочная копия сохранена» говорится только после фиксации в IndexedDB. Проба места в localStorage в IndexedDB не выполняется (оценка `navigator.storage.estimate()`, настоящий ответ даёт сама запись). Общий localStorage сайта (~5 МБ на все три приложения) после Day 56 почти свободен.
 
-— Claude · 09.11.2026 21:25
+— Claude · 10.11.2026 00:37
 
 ## Happy Meal · Update 23 · 07.11.2026
 

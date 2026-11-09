@@ -34,11 +34,11 @@
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
 
-## Happy Day · Update 56 · 09.11.2026
+## Happy Day · Update 56 · 10.11.2026
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-56/ . Исходник — `day-55/` (55, main `824ac21`). Самостоятельный HTML: `day-56/Happy-Day-56.html`. Журнал Day — в IndexedDB `happy-day-private-v1` через синхронный фасад `day-local-store.js` (`DayLocalStore`/`dayStorage`), как Meal (с 23) и Sport (с 39); перенос из localStorage при первом открытии с проверкой, маркер `happy-day-store:indexeddb-v1`; в localStorage остаются вход, настройки, номер формата, ссылки для Meal/Sport, замеры и счётчики. Прежние выпуски Day на этом адресе после переноса открываются только для чтения (`hd_fmt_v1` = 56) и просят открыть последнюю версию. Вход, синхронизация и настройки — как в 55. Проверки: `node --test day-56/tests/*.test.cjs` (46), `check-layout`, `check-shared-ui`, `check-shared`, `check-food-counters`, смоук в headless Chrome (перенос, две вкладки, старая версия, окно без IndexedDB). Происхождение — `day-56/SOURCE-PROVENANCE.json`.
 
-— Claude · 09.11.2026 21:25
+— Claude · 10.11.2026 00:37
 
 ## Happy Day · Update 55 · 09.11.2026
 
