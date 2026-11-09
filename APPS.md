@@ -79,7 +79,7 @@
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-27/ . Исходник — `meal-26/` (26.1, main `9280726`); дневник, вход, синхронизация, настройки и библиотеки не менялись. `search-names.js`: 44 десерта BLS находятся по русским поисковым названиям (82 фразы — в индексе BLS, без новых карточек и марок), 15 записей USDA получили русские названия в локализованном слое самой USDA (не зависят от коллекции «Десерты»). Проверки: `node meal-27/checks/check-search-names.mjs`, `check-startup`, `check-auth-identity`, `check-desserts`, общие проверки, смоук в headless Chrome с реальными библиотеками. Происхождение — `meal-27/SOURCE-PROVENANCE.json`.
 
-— Claude · 10.11.2026 00:45
+— Claude · 10.11.2026 00:50
 
 ## Happy Meal · Update 26 · 09.11.2026
 
