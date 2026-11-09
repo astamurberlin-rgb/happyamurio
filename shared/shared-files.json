@@ -105,7 +105,7 @@
         "sport"
       ],
       "divergent": true,
-      "todo": "три версии (day-53, meal-24 = корень, sport-38) — объединить в следующих выпусках"
+      "todo": "три версии (day-53, meal-25 = корень, sport-38) — объединить в следующих выпусках"
     },
     {
       "name": "happy-ui.css",
@@ -116,7 +116,7 @@
         "sport"
       ],
       "divergent": true,
-      "todo": "meal-24 отличается от остальных"
+      "todo": "meal-25 отличается от остальных"
     },
     {
       "name": "profile-storage.js",
@@ -149,7 +149,7 @@
       ],
       "divergent": true,
       "frozenRoot": true,
-      "todo": "meal-24 отличается"
+      "todo": "meal-25 отличается"
     }
   ]
 }

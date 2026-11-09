@@ -8,7 +8,7 @@
 | Happy Day · Update 53.1 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.1 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
-| Happy Meal · Update 24 | `meal-24/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-24/ | 24 |
+| Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.3 |
@@ -46,6 +46,14 @@
 По прямому запросу владельца Update 52 публикуется отдельно от старой страницы. `day/` восстановлен точно из последнего успешного выпуска `e1e6597`; его внутренняя метка — 50.14. У 52 собственные URL и scope установки; общий аккаунт и прежние ключи дневника сохранены. Для следующего согласованного апдейта Day каталог `day-52/` служит исходной версией; работу и публикацию выполнять в новом каталоге выпуска.
 
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
+
+## Happy Meal · Update 25 · 09.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-25/ . Исходник — `meal-24/` (main `e49d05b`); дневник, вход, синхронизация, счётчики и отчёты не менялись. Проверки: `node meal-25/checks/check-desserts.mjs`, `node meal-25/checks/check-startup.mjs`, общие `check-layout`, `check-shared-ui`, `check-food-counters`, `check-meal-times`, `check-meal-exports`, `check-shared`. Происхождение и контрольные суммы — `meal-25/SOURCE-PROVENANCE.json`.
+
+Подключена библиотека десертов 1.0 (данные ChatGPT 09.11.2026, ветка `meal-libraries`, manifest id `desserts`): база «Десерты» в переключателе пищевых баз — 30 карточек этикеток и расчётных моделей; 67 десертов из BLS, USDA, кавказской и узбекской библиотек остаются в своих базах с принадлежностью к коллекции (слово «десерт» в поиске, русские названия у 15 записей USDA). Неизвестное — не ноль, «менее» — граница, углеводы этикеток США — отдельной строкой. Черновики набора (7) не подключены. Структура настроек — прежняя (как в 24).
+
+— Claude · 09.11.2026 14:50
 
 ## Happy Meal · Update 24 · 09.11.2026
 

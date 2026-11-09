@@ -22,7 +22,7 @@
 
 - Перед работой получить свежий `main`, прочитать `APPS.md` и `DATA-STORAGE.md`. Работать в отдельной ветке задачи; не затирать параллельные изменения, не делать force push; перед слиянием проверить изменения коллег.
 - Теги не ставятся (решение владельца от 08.11.2026): выпуск опознаётся по имени апдейта в каталоге, в приложении, в `shared/apps.json`, в `APPS.md` и в `SOURCE-PROVENANCE.json` выпуска.
-- Актуальные входы: `day-53/index.html`, `meal-24/index.html`, `sport-38/index.html`; `day/`, `day-52/`, `meal/`, `meal-23/`, `sport/`, `sport-37/` — сохранённые прежние версии.
+- Актуальные входы: `day-53/index.html`, `meal-25/index.html` (после публикации; до неё — `meal-24/`), `sport-38/index.html`; `day/`, `day-52/`, `meal/`, `meal-23/`, `meal-24/`, `sport/`, `sport-37/` — сохранённые прежние версии.
 - Старые HTML в корне — исторические файлы или переходы; не развивать их как текущие версии.
 - Сохранять постоянные URL, ключи хранилища и пользовательские записи. Изменения схемы требуют миграции.
 - Личные выгрузки и журналы, токены и ключи нельзя коммитить. Публичные справочники не являются дневниками.
@@ -49,7 +49,7 @@
 - Sport: `npm --prefix sport-NN/sport run check`; для настроек — `node sport-NN/scripts/check-settings-layout.mjs` (headless Chrome); происхождение — `verify-release` по `SOURCE-PROVENANCE.json`.
 - Meal: `node scripts/check-meal-times.mjs` (время питания и связка с журналом Day), `node scripts/check-meal-exports.mjs` (CSV, отчёты, названия способов приготовления).
 - Day: `node --test day-53/tests/*.test.cjs`; самостоятельный HTML — `python3 scripts/build-day-standalone.py day-53`; смоук в headless Chrome — страница, настройки, подвал, ссылки, без ошибок.
-- Meal: `node meal-24/checks/check-startup.mjs`.
+- Meal: `node meal-25/checks/check-startup.mjs`, `node meal-25/checks/check-desserts.mjs` (адаптер библиотеки десертов на реальном файле из `meal-libraries`); смоук в headless Chrome с файлами библиотек.
 
 ## Общий интерфейс и настройки
 
@@ -63,4 +63,4 @@
 - Справочник упражнений, оборудования и групп мышц Sport — `assets/exercise-library/v1/` (`exercises.json`, `equipment.json`, `exercise-muscles.json`, `manifest.json` с хешами). Выпуск встраивает её при сборке через `sport/scripts/seed.mjs`; в `sport/data/seed.json` упражнений больше нет. `id` устойчивы и не удаляются; папка только растёт с обновлением манифеста, несовместимая схема — новая папка `v2/`. Проверки читают справочник только через `seed.mjs`.
 - `food-counters.js`: эталон для новых выпусков — `day-52/shared/food-counters.js` (копия в `day-53/shared/` совпадает); копии выпусков должны совпадать с ним побайтно (`node scripts/check-food-counters.mjs`). Корневой `shared/food-counters.js` обслуживает `day/` и `meal/` и не меняется; `meal-23/shared/` — прежняя базовая версия, не трогать.
 
-— Claude · 09.11.2026 12:55 (sync-shared / check-shared, фундамент); 12:40 (актуальные входы: Meal 24); 12:35 (Day 53); 11:40 (H116: правила собраны в один файл из `AGENTS.md`, `APPS.md` и `shared/README.md`; смысл правил не менялся, добавлен раздел «Совместная работа»)
+— Claude · 09.11.2026 14:50 (входы и проверки Meal 25); 12:55 (sync-shared / check-shared, фундамент); 12:40 (актуальные входы: Meal 24); 12:35 (Day 53); 11:40 (H116: правила собраны в один файл из `AGENTS.md`, `APPS.md` и `shared/README.md`; смысл правил не менялся, добавлен раздел «Совместная работа»)

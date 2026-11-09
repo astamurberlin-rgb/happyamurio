@@ -21,11 +21,11 @@
     }
   },
   "meal": {
-    "entry": "meal-24/index.html",
-    "version": "24",
-    "name": "Happy Meal · Update 24",
-    "sharedDirectory": "meal-24/shared",
-    "accountScript": "meal-24/account-ui.js",
+    "entry": "meal-25/index.html",
+    "version": "25",
+    "name": "Happy Meal · Update 25",
+    "sharedDirectory": "meal-25/shared",
+    "accountScript": "meal-25/account-ui.js",
     "settingsSections": [
       "account",
       "links",
@@ -34,8 +34,9 @@
     ],
     "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
     "previous": {
-      "entry": "meal-23/index.html",
-      "version": "23"
+      "entry": "meal-24/index.html",
+      "version": "24",
+      "sourceCommit": "e49d05b524ef8d92f86b62a69f7fe221eeadd987"
     },
     "earlier": {
       "entry": "meal/index.html",
