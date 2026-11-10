@@ -14,7 +14,7 @@ for(const path of tracked){const bytes=await readFile(new URL(path,root));files.
 // The base this release was derived from: main when the lab branch sport-lab was cut (not the release commit itself).
 let sourceCommit=previous.update==='40'?previous.source_commit:'c94464d29767702f45f4df2026c5cdcc158cb3ee';try{sourceCommit=sourceCommit||execSync('git rev-parse origin/main',{cwd:rootPath,encoding:'utf8'}).trim()}catch{sourceCommit=sourceCommit||previous.source_commit}
 const manifest={
- app:'Happy Sport',update:'40',
+ app:'Happy Sport',update:'40.1',
  source_release:'sport-39 (Happy Sport · Update 39.2) through the lab copy sport-lab/ (branch sport-lab, 10.11.2026)',source_commit_of_update_39:'36006b27dc1eb472db23fc22365dec99464aef74',source_commit_of_update_38:'b292b2b0b6b7f6660e1ca40152817d3cf2499160',
  source_commit:sourceCommit,
  github_pages_url:'https://astamurberlin-rgb.github.io/happyamurio/sport-40/',
@@ -23,7 +23,7 @@ const manifest={
  exercise_library:JSON.parse(await readFile(new URL('../assets/exercise-library/v1/manifest.json',root),'utf8')),
  changed_source_files:["README.md", "scripts/build-preview.mjs", "scripts/build-release.mjs", "scripts/check-families.mjs", "scripts/verify-release.mjs", "scripts/write-provenance.mjs", "sport/scripts/build.mjs", "sport/scripts/check-clean-shell.mjs", "sport/scripts/check-exercise-context.mjs", "sport/scripts/check-food-counters-sport.mjs", "sport/scripts/check-paths.mjs", "sport/scripts/check-player-controls.mjs", "sport/scripts/check-readonly.mjs", "sport/scripts/check-timer-prototype.mjs", "sport/scripts/exercise-media.mjs", "sport/scripts/seed.mjs", "sport/src/app.js", "sport/src/app.template.html", "sport/src/audit-simplify.css", "sport/src/audit-simplify.js", "sport/src/data-transfer.js", "sport/src/exercise-config.js", "sport/src/exercise-context.js", "sport/src/exercise-families.js", "sport/src/exercise-history.js", "sport/src/exercise-player.js", "sport/src/exercises/pull-up.html", "sport/src/free-timer.js", "sport/src/library-v2.js", "sport/src/manifest.webmanifest", "sport/src/metric-field.css", "sport/src/plan-fact.js", "sport/src/planning.js", "sport/src/refinements.js", "sport/src/release-notes.js", "sport/src/rest-pill.js", "sport/src/set-plan.js", "sport/src/workout-interactions.js"],
  exercise_media:'/happyamurio/assets/exercise-media/v1/',
- unchanged_journal_sync_code_verified:true,
+ unchanged_journal_sync_code_verified:false,journal_sync_change:'40.1: mergeData device keys; verified() releases held auto-conflict into history',
  release_files:files
 };
 await writeFile(new URL('SOURCE-PROVENANCE.json',root),JSON.stringify(manifest,null,2)+'\n');

@@ -2,6 +2,7 @@ import './check-measurement-input-events.mjs';
 import './check-history-library.mjs';
 import './check-clean-shell.mjs';
 import './check-automatic-integration.mjs';
+import './check-device-settings-merge.mjs';
 import './check-automatic-scheduler.mjs';
 import './check-controlled-cas.mjs';
 import './check-ledger-storage.mjs';
