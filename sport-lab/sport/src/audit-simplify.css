@@ -77,3 +77,5 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .library-search-row{margin-bottom:8px}
 .sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:none}
+/* Аудит п. 23: пустая «История» — одна строка, без переключателя сортировки. */
+.history-empty{margin:24px 4px;text-align:center;color:rgba(255,255,255,.72);font-size:15px}

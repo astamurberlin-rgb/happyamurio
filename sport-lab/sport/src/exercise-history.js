@@ -12,8 +12,8 @@ function exerciseHistoryEntries(id){const kind=exerciseHistoryKind(id);return st
 function sortedExerciseHistory(entries,mode){return [...entries].sort((a,b)=>{if(mode==='date')return b.start.localeCompare(a.start);const k=mode==='best'?'score':'duration',x=a[k],y=b[k];if(x==null&&y!=null)return 1;if(y==null&&x!=null)return -1;return (y??0)-(x??0)||b.start.localeCompare(a.start)})}
 function exerciseHistoryBest(entry,kind){if(entry.best==null)return '—';return kind==='time'?durationText(entry.best):fmt(entry.best)+' '+({weight:'кг',assisted:'кг помощи',distance:'м',reps:'повт.'}[kind])}
 function exerciseHistoryBody(id,mode){const all=exerciseHistoryEntries(id),entries=sortedExerciseHistory(all,mode),kind=exerciseHistoryKind(id),timed=isTimed({id});
- const tabs=`<div class="segmented history-modes" role="group" aria-label="Порядок истории">${[['date','По дате'],['best','Результат'],['duration','Длительность']].map(([k,t])=>`<button data-action="sort-exercise-history" data-mode="${k}" class="${mode===k?'selected':''}" aria-pressed="${mode===k}">${t}</button>`).join('')}</div>`;
- if(!entries.length)return tabs+'<p class="sheet-info">Для этого упражнения пока нет выполненных подходов в журнале.</p>';
+ if(!entries.length)return '<p class="history-empty">Записей ещё не было.</p>';
+ const tabs=entries.length<2?'':`<div class="segmented history-modes" role="group" aria-label="Порядок истории">${[['date','По дате'],['best','Результат'],['duration','Длительность']].map(([k,t])=>`<button data-action="sort-exercise-history" data-mode="${k}" class="${mode===k?'selected':''}" aria-pressed="${mode===k}">${t}</button>`).join('')}</div>`;
  const rows=[['Подходы',r=>String(r.sets.length)],[(kind==='weight'?'Макс. вес':kind==='assisted'?'Мин. помощь':kind==='distance'?'Макс. дистанция':kind==='time'?'Макс. время':'Макс. повторения'),r=>exerciseHistoryBest(r,kind)]];
  if(all.some(r=>r.duration!=null))rows.push(['Общее время',r=>r.duration==null?'—':durationText(r.duration)]);
  if(all.some(r=>r.distance!=null))rows.push(['Дистанция',r=>r.distance==null?'—':fmt(r.distance)+' м']);
