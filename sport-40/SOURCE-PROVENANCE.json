@@ -95,8 +95,8 @@
     },
     {
       "path": "README.md",
-      "size": 40601,
-      "sha256": "89df900f9ec4dfb493369d5d8f166d0ed98c4752c1e6f784d03616f1c0c2072c"
+      "size": 44070,
+      "sha256": "63991df5af0617f3bc9e11db42f97ca426e92dd69b44f885abf7806081b608a0"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -160,8 +160,8 @@
     },
     {
       "path": "index.html",
-      "size": 1042490,
-      "sha256": "e261526bdae175034fb97ba47064692daec6f65e1b9d1fbcb4593f5cc9e5f8b6"
+      "size": 1044378,
+      "sha256": "08fc772b78d86215c8743b4692c59ad4d3792540de2bb1aba5348e4cd6c9e16d"
     },
     {
       "path": "manifest.webmanifest",
@@ -820,8 +820,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 22787,
-      "sha256": "ae7954ef37fe0e0dca8f513dd1febf8ba19d7f649047ef38cd70f17109da82bc"
+      "size": 24675,
+      "sha256": "60c6581f87ac0aae97fe608ad9c69422f14cd1e98452a5d21755218dd2431c66"
     },
     {
       "path": "sport/src/rest-pill.js",
