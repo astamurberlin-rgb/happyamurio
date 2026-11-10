@@ -10,4 +10,4 @@ const page=(title,text,link='')=>`<!doctype html><html lang="ru"><meta charset="
 await writeFile(new URL('../dist/day/index.html',import.meta.url),page('Happy Day','Day откроется по отдельному адресу. Войди тем же аккаунтом. Сохранение и восстановление выполняются в каждом приложении отдельно; обмен журналами между приложениями отключён.','<a href="/happyamurio/day-52/">Открыть Happy Day · Update 52</a>'));
 await writeFile(new URL('../dist/meal/index.html',import.meta.url),page('Happy Meal','Счётчики продуктов Meal синхронизируются с этой версией Sport через общий аккаунт Happy. Открой Happy Meal · Update 23 и войди тем же аккаунтом.','<a href="/happyamurio/meal-23/">Открыть Happy Meal</a>'));
 await writeFile(new URL('../dist/prototypes/happy-icon-studio.html',import.meta.url),page('Icon Studio','Icon Studio в этой версии недоступна. Назначения иконок прежнего сайта не изменяются.'));
-console.log('Sport Update 39 built. Automatic owner journal CAS/restore and the shared Meal counter row; other cloud writes disabled.');
+console.log('Sport Update 40 built. Automatic owner journal CAS/restore and the shared Meal counter row; other cloud writes disabled.');

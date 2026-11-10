@@ -18,7 +18,7 @@ const requests=[];let server=null;
 const key=await webcrypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
 const timers=[];
 const c=createContext({console,URL,Request,Headers,AbortSignal,TextEncoder,TextDecoder,crypto:webcrypto,btoa,atob,Date,JSON,Math,localStorage,
- location:{origin:'https://sport-test.invalid',href:'https://sport-test.invalid/sport-39/'},navigator:{onLine:true},
+ location:{origin:'https://sport-test.invalid',href:'https://sport-test.invalid/sport-40/'},navigator:{onLine:true},
  document:{addEventListener(){},getElementById:()=>null,hidden:false},addEventListener(){},setTimeout:(fn,ms)=>{timers.push(fn);return timers.length},clearTimeout(){},setInterval(){},
  XMLHttpRequest:class {open(){}},WebSocket:class {},EventSource:class {},Worker:class {},SharedWorker:class {},
  CLOUD:{url:'https://geqziziycpclhnucnsyx.supabase.co',key:'anon-fixture'},

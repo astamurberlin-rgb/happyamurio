@@ -1,6 +1,6 @@
 /* Lab 10.11.2026 · Browser check of the pull-up family: one library card, five pills, the chosen pill is what gets
    added; neutral-pull-up is a card of its own; exercises without a picture show the placeholder. Needs Chrome and Playwright; serve the repository at /happyamurio/ and pass the address:
-   node scripts/lab-check-families.mjs http://127.0.0.1:8765/happyamurio/sport-lab/ */
+   node scripts/check-families.mjs http://127.0.0.1:8765/happyamurio/sport-40/ */
 import { createRequire } from 'node:module';
 import assert from 'node:assert/strict';
 const require = createRequire(process.env.PLAYWRIGHT_ROOT || '/opt/npm-tools/node_modules/');
@@ -9,7 +9,7 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME || '/
 const page = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })).newPage();
 const logs = [];
 page.on('pageerror', e => logs.push('pageerror: ' + String(e).slice(0, 300)));
-await page.goto(process.argv[2] || 'http://127.0.0.1:8765/happyamurio/sport-lab/', { waitUntil: 'load' });
+await page.goto(process.argv[2] || 'http://127.0.0.1:8765/happyamurio/sport-40/', { waitUntil: 'load' });
 await page.waitForTimeout(1200);
 const title = () => page.$eval('.exercise-context-title', e => e.textContent);
 const lib = async q => { await page.getByText('Библиотека', { exact: true }).last().click(); await page.waitForTimeout(300); await page.fill('#library-search', q); await page.waitForTimeout(400);

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 // Resolve under the GitHub Pages project prefix, not the domain root.
 const repo = new URL('../../', import.meta.url);
 const origin = 'https://astamurberlin-rgb.github.io';
-const prefix = '/happyamurio/sport-39/';
+const prefix = '/happyamurio/sport-40/';
 const pages = ['sport/index.html', 'sport/exercises/pull-up.html'];
 const checked = new Set();
 const failures = [];
