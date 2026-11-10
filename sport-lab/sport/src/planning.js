@@ -14,7 +14,7 @@ function templateSchedule(id){return state.schedules.find(s=>s.templateId===id&&
    Field names and values are unchanged, so saving and the old schedules work as before. */
 function planZoneName(zone){try{const part=(n)=>new Intl.DateTimeFormat('ru-RU',{timeZone:zone,timeZoneName:n}).formatToParts(new Date()).find(p=>p.type==='timeZoneName')?.value||'';return part('longGeneric').split(',')[0]+' · '+part('shortOffset')}catch{return zone}}
 function scheduleFields(s){
- const date=s?.startDate||plusDays(dayNow(),1),mode=s?.mode||'none',phoneZone=scheduleZone(),zone=s?.timeZone||phoneZone,otherZone=zone!==phoneZone;
+ const date=s?.startDate||(String(localNow()).slice(11,16)<(s?.time||'18:00')?dayNow():plusDays(dayNow(),1)),mode=s?.mode||'none',phoneZone=scheduleZone(),zone=s?.timeZone||phoneZone,otherZone=zone!==phoneZone;
  const radio=(value,label)=>`<label><input type="radio" name="scheduleMode" value="${value}" ${mode===value?'checked':''}><span>${label}</span></label>`;
  return `<section class="plan-fields"><label class="plan-toggle"><input type="checkbox" name="favorite" checked>Показывать на главной</label><details class="schedule-disclosure"><summary>${s?'Расписание настроено · изменить':'Добавить в расписание'}</summary>`
  +`<div class="plan-group"><div class="plan-repeat" role="radiogroup" aria-label="Повтор">${radio('once','Один раз')}${radio('weekly','По дням недели')}<input type="radio" name="scheduleMode" value="none" ${mode==='none'?'checked':''} hidden aria-hidden="true" tabindex="-1"></div>`
