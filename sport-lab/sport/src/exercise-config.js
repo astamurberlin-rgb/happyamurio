@@ -172,7 +172,7 @@ function saveExerciseEditor(form,mode){
   // Lab 10.11.2026 17:05 (comment «в режиме тренировки … поправить длительность перерыва не могу»): when the only change
   // is the length of the rest that is running now, the running rest takes the new length and keeps going.
   const liveRestOnly=!!(localOnly&&planChanged&&liveCountdown?.kind==='rest'&&liveCountdown.ei===ei&&(()=>{try{const before=JSON.parse(form.dataset.initialPlan||'null');if(!Array.isArray(before)||!before[liveCountdown.si])return false;before[liveCountdown.si].restSeconds=draft.sets[liveCountdown.si]?.restSeconds;return JSON.stringify(before)===JSON.stringify(draft.sets)}catch{return false}})());
-  if(localOnly&&((livePlayer?.ei===ei&&livePlayer.running&&(playerChanged||!metrics.includes('seconds')))||(liveCountdown?.ei===ei&&liveCountdown.running&&planChanged&&!liveRestOnly)))throw new Error('Сначала нажми STOP у работающего таймера, затем измени его время или подходы.');
+  if(localOnly&&((livePlayer?.ei===ei&&livePlayer.running&&(playerChanged||!metrics.includes('seconds')))||(liveCountdown?.ei===ei&&liveCountdown.running&&planChanged&&!liveRestOnly)))throw new Error('Сначала останови таймер кнопкой «Стоп», затем измени его время или подходы.');
   if(form.dataset.scope==='add')return addConfiguredExercise(id,entry,String(f.get('addDestination')||'current'),form);
   // Session settings never write to the catalog, another occurrence, or a completed workout.
   let next;

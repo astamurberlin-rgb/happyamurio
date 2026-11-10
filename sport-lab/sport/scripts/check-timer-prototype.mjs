@@ -22,14 +22,14 @@ run('playerNow=()=>now');
 assert.equal(run('playerCanAddRound(playerPreview(0))'),false,'No lap before a stopwatch starts');
 assert.equal(run('addPlayerRound(0)'),false);
 assert.match(run('exercisePlayerBody(0)'),/Круг 1/);
-assert.match(run('exercisePlayerBody(0)'),/>START</);
+assert.match(run('exercisePlayerBody(0)'),/>Старт</);
 assert.equal(run('playerDisplay(0,true)'),'00:00.00');
 assert.equal(run('playerDisplay(125.43,true)'),'02:05.43');
 assert.equal(run('playerDisplay(3600.01,true)'),'01:00:00.01');
 
 run("toggleExercisePlayer(0,now);now='2026-10-29T12:00:05.125'");
 assert.equal(run('playerCanAddRound(state.active.exercisePlayer)'),true);
-assert.match(run('exercisePlayerBody(0)'),/>STOP</);
+assert.match(run('exercisePlayerBody(0)'),/>Стоп</);
 assert.equal(run('addPlayerRound(0,now)'),true);
 run("now='2026-10-29T12:00:12.600';addPlayerRound(0,now);pauseExercisePlayer(now)");
 assert.equal(run('playerCanAddRound(state.active.exercisePlayer)'),true,'A paused stopwatch can retain its laps');

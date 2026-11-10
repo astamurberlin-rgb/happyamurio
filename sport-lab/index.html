@@ -717,6 +717,40 @@ body:has(.overlay:not(:empty)) #free-timer-root{visibility:hidden}
 .happy-settings section[data-happy-section="version"]{margin-bottom:0}
 /* Update 38.6: the appearance picker sits in a slot under «Приложение → Оформление». */
 .happy-settings [data-happy-appearance-slot]{margin:0 0 18px}
+/* Lab 10.11.2026 18:50 · Аудит интерфейса, решения «Да» (номера — как на странице аудита). Loaded last. */
+/* 9. Bottom of the workout: «Добавить упражнение», note, «Завершить тренировку». The rest is in «⋯». */
+.active-workout>[data-action="save-template"],.active-workout>.discard-active{display:none!important}
+.workout-finish-card>p,.workout-finish-card>small{display:none!important}
+.workout-more{flex:none;width:44px;height:44px;margin-left:auto;margin-right:8px;display:grid;place-items:center;border-radius:50%;border:1px solid #ffffff55;background:#ffffff1c;color:#fff}
+.workout-overview .current-bar{gap:0}
+/* 3. «Добавить» from the library: destination and button first, setup folded. */
+#exercise-config-form[data-scope="add"] .exercise-save-actions{margin-top:4px}
+.add-more,.metrics-fold{margin-top:14px;border-top:1px solid #ffffff30;padding-top:4px}
+.add-more>summary,.metrics-fold>summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer}
+.metrics-fold>.metric-switches{margin-top:6px}
+/* 4. Rename: a pencil beside the heading. */
+.rename-exercise{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:none;border:0;color:#fff}
+.rename-exercise .icon{width:20px;height:20px;fill:none;stroke:currentColor}
+.sheet-top:has(.rename-exercise){display:flex;align-items:flex-start;gap:4px}
+/* 6. Home schedule: link to the rest. */
+.schedule-more{display:block;width:100%;min-height:44px;text-align:center;font-size:13px;font-weight:650}
+/* 18. One schedule row on a workout card. */
+.plan-line{display:grid!important;grid-template-columns:24px 1fr 20px;align-items:center;gap:12px;min-height:56px}
+.plan-line .icon{width:22px;height:22px;fill:none;stroke:currentColor}
+/* 20. Settings explanations behind «Подробнее». */
+.happy-more{margin:6px 0 4px}
+.happy-more>summary{min-height:44px;display:flex;align-items:center;font-size:13px;font-weight:600;cursor:pointer;opacity:.9}
+/* 27. Setting title and its explanation on two lines. */
+.setting-row>span>small{display:block;margin-top:2px}
+/* 29. Target time as text on the workout card. */
+.template-target-text{margin:6px 0 0;font-size:13px;opacity:.85}
+/* 30. The placeholder stays quiet next to real pictures. */
+img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
+/* 22. Touch targets at least 44×44 (the drawing stays the same size). */
+.plan-remove,.set-plan-editor [aria-label^="Убрать"],.section-title .text-btn,.workout-share,.exercise-technique,.note-pin,.toast button{min-width:44px;min-height:44px}
+.section-title .text-btn,.workout-share,.exercise-technique{display:inline-grid;place-items:center}
+.rest-separator{min-height:44px!important}
+.workout-summary-header .text-btn{min-height:44px}
 
 </style></head><body><script>/* Narrow transport boundary: journal sync plus (Update 38) the shared food-counter row. Loaded before any app/auth/storage code. */
 (function(root){
@@ -1129,7 +1163,7 @@ function templateItemRow(item=['','main',1]){const draft=setPlanFromItem(item);r
 function editTemplate(id,fromActive=false){const t=templates().find(t=>t.id===id),w=fromActive?state.active:null;openSheet(t?'Изменить тренировку':'Новая тренировка',`<form id="template-form" data-id="${esc(id||'')}"><label class="field">Название<input name="title" required maxlength="100" value="${esc(t?.title||w?.title||'')}" placeholder="Моя тренировка"></label><label class="field">Вид<select name="kind">${[['gym','Зал'],['sea','Море'],['bars','Турники'],['cardio','Кардио']].map(([v,n])=>`<option value="${v}" ${(t?.kind||w?.kind)===v?'selected':''}>${n}</option>`).join('')}</select></label><div id="template-items">${templateEditorItems(t,w).map(templateItemRow).join('')}</div><button class="button dashed" type="button" data-action="add-template-item">${icon('plus')} Упражнение</button><button class="button primary" type="submit" style="margin-top:14px">${icon('check')} Сохранить тренировку</button></form>`)}
 function measureForm(edit=false){const {cur}=measurePair();openSheet(edit?'Исправить замеры':'Новый замер',`<form id="measure-form"><label class="field">Дата<input name="date" type="date" required value="${edit?cur.date:dayNow()}"></label><p class="sheet-info">Заполни только то, что измерил. Остальное останется пустым.</p><div class="twocol">${MF.map(([k,n])=>`<label class="field">${n}, ${k==='weight'?'кг':'см'}<input name="${k}" type="number" min="1" max="500" step=".1" inputmode="decimal" value="${edit&&cur.values[k]!=null?cur.values[k]:''}" placeholder="—"></label>`).join('')}</div><div id="form-error" class="form-error" role="alert"></div><button class="button primary" type="submit">${icon('check')} Сохранить замер</button></form>`)}
 function energyForm(){const e=state.energy;openSheet('Баланс энергии',`<p class="sheet-info">Пример общего дня Happy Sport и Happy Meal. Меняй цифры — обе дуги обновляются на одной шкале. Реальная синхронизация пока не подключена.</p><form id="energy-form"><div class="twocol">${[['burn','Общий расход, ккал'],['intake','Потреблено, ккал'],['steps','Шаги'],['training','На тренировке, ккал'],['minutes','Активность, мин']].map(([k,n])=>`<label class="field">${n}<input name="${k}" type="number" min="0" max="${k==='steps'?100000:10000}" step="1" required value="${e[k]}"></label>`).join('')}</div><p class="sheet-info">Энергия тренировки — часть расхода. Повторно её не прибавляем. Цвета не обозначают «хорошо» или «плохо».</p><div id="form-error" class="form-error"></div><button class="button primary" type="submit">Показать на главной</button></form>`)}
-function voiceSheet(){openSheet('Записать словами',`<p class="sheet-info">${state.active?'Добавим к текущей тренировке: '+esc(state.active.title):'Начнём свободную тренировку и запишем подходы.'}</p><textarea class="voice-area" id="voice-text" aria-label="Текст записи" placeholder="Жим лёжа 60 кг, 3 подхода по 10"></textarea><div class="voice-examples"><button data-action="example" data-text="Жим лёжа 60 кг, 3 подхода по 10">Жим 60 × 10</button><button data-action="example" data-text="Подтягивания 3 подхода по 8">Подтягивания</button><button data-action="example" data-text="Заметка: сегодня было легко">Заметка</button></div><div id="voice-feedback" class="feedback" role="status"></div><div id="voice-choice"></div><div class="twocol"><button class="button" data-action="record-voice">${icon('microphone')} Диктовать</button><button class="button primary" data-action="parse-voice">${icon('check')} Записать</button></div><p class="fineprint">В прототипе — разбор простых фраз. Произвольный ИИ и ответы о технике ещё не подключены. Можно использовать диктовку клавиатуры.</p>`,'voice')}
+function voiceSheet(){openSheet('Записать словами',`<p class="sheet-info">${state.active?'Добавим к текущей тренировке: '+esc(state.active.title):'Начнём свободную тренировку и запишем подходы.'}</p><textarea class="voice-area" id="voice-text" aria-label="Текст записи" placeholder="Жим лёжа 60 кг, 3 подхода по 10"></textarea><div class="voice-examples"><button data-action="example" data-text="Жим лёжа 60 кг, 3 подхода по 10">Жим 60 × 10</button><button data-action="example" data-text="Подтягивания 3 подхода по 8">Подтягивания</button><button data-action="example" data-text="Заметка: сегодня было легко">Заметка</button></div><div id="voice-feedback" class="feedback" role="status"></div><div id="voice-choice"></div><div class="twocol"><button class="button" data-action="record-voice">${icon('microphone')} Диктовать</button><button class="button primary" data-action="parse-voice">${icon('check')} Записать</button></div>`,'voice')}
 function parseVoice(forced){const raw=$('#voice-text').value.trim();let text=raw.toLowerCase().replaceAll('ё','е').replaceAll(',','.');const words={один:1,одна:1,два:2,две:2,три:3,четыре:4,пять:5,шесть:6,семь:7,восемь:8,девять:9,десять:10,одиннадцать:11,двенадцать:12,тринадцать:13,четырнадцать:14,пятнадцать:15,шестнадцать:16,семнадцать:17,восемнадцать:18,девятнадцать:19,двадцать:20,тридцать:30,сорок:40,пятьдесят:50,шестьдесят:60,семьдесят:70,восемьдесят:80,девяносто:90,сто:100};text=text.replace(/[а-я]+/g,w=>words[w]??w);if(!raw)return;const err=t=>{$('#voice-feedback').textContent=t};if(/^заметка\s*:/.test(text)){if(!state.active)startWorkout();const old=state.active.notes;state.active.notes+=(old?'\n':'')+raw.replace(/^заметка\s*:/i,'').trim();persist();closeSheet();goto('active');toast('Заметка сохранена',()=>{state.active.notes=old;persist();render()});return}
 let candidates=[];if(forced)candidates=[exercise(forced)];else if(/подтяг/.test(text))candidates=[exercise('pull-up')];else if(/отжим/.test(text))candidates=[exercise('push-up')];else if(/присед/.test(text)&&/штанг/.test(text))candidates=[exercise('barbell-back-squat')];else if(/жим.*леж/.test(text))candidates=[exercise(/гантел/.test(text)?'dumbbell-bench-press':'barbell-bench-press')];else if(/жим/.test(text))candidates=[exercise('barbell-bench-press'),exercise('barbell-incline-press'),exercise('barbell-overhead-press')];else candidates=allExercises().filter(e=>[e.name,...e.aliases].some(n=>n.length>3&&text.includes(n.toLowerCase().replaceAll('ё','е'))));
 if(candidates.length!==1){$('#voice-choice').innerHTML=`<label class="field">${candidates.length?'Какое упражнение?':'Выбери упражнение для этой записи'}<select id="voice-exercise"><option value="">Выбрать…</option>${(candidates.length?candidates:allExercises()).map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></label>`;err('Числа не записаны. Уточни упражнение и нажми «Записать».');return}
@@ -3124,7 +3158,7 @@ function saveExerciseEditor(form,mode){
   // Lab 10.11.2026 17:05 (comment «в режиме тренировки … поправить длительность перерыва не могу»): when the only change
   // is the length of the rest that is running now, the running rest takes the new length and keeps going.
   const liveRestOnly=!!(localOnly&&planChanged&&liveCountdown?.kind==='rest'&&liveCountdown.ei===ei&&(()=>{try{const before=JSON.parse(form.dataset.initialPlan||'null');if(!Array.isArray(before)||!before[liveCountdown.si])return false;before[liveCountdown.si].restSeconds=draft.sets[liveCountdown.si]?.restSeconds;return JSON.stringify(before)===JSON.stringify(draft.sets)}catch{return false}})());
-  if(localOnly&&((livePlayer?.ei===ei&&livePlayer.running&&(playerChanged||!metrics.includes('seconds')))||(liveCountdown?.ei===ei&&liveCountdown.running&&planChanged&&!liveRestOnly)))throw new Error('Сначала нажми STOP у работающего таймера, затем измени его время или подходы.');
+  if(localOnly&&((livePlayer?.ei===ei&&livePlayer.running&&(playerChanged||!metrics.includes('seconds')))||(liveCountdown?.ei===ei&&liveCountdown.running&&planChanged&&!liveRestOnly)))throw new Error('Сначала останови таймер кнопкой «Стоп», затем измени его время или подходы.');
   if(form.dataset.scope==='add')return addConfiguredExercise(id,entry,String(f.get('addDestination')||'current'),form);
   // Session settings never write to the catalog, another occurrence, or a completed workout.
   let next;
@@ -3273,7 +3307,7 @@ function playerRowName(e,mode,index){return playerRowDetail(e,mode,index).name||
 function playerCornerTab(action,ei,corner,label,options={}){
   return `<button type="button" class="player-corner-tab player-corner-${corner} ${options.className||''}" data-action="${action}" data-ei="${ei}" aria-label="${esc(options.ariaLabel||label)}" ${options.pressed==null?'':`aria-pressed="${options.pressed}"`} ${options.disabled?'disabled':''}><svg viewBox="0 0 116 94" preserveAspectRatio="none" aria-hidden="true"><path d="M9 1H107Q115 1 115 9V39Q115 44 109 46C69 49 27 70 7 90Q1 94 1 87V9Q1 1 9 1Z"/></svg><span>${label}</span></button>`;
 }
-function playerSwitch(ei,distance,checked){return `<label class="player-mode-switch ${distance?'player-distance-switch':''}"><small>${distance?'Дистанция':checked?'Таймер':'Секундомер'}</small><input type="checkbox" role="switch" ${distance?'data-player-distance-mode':'data-player-mode'}="${ei}" aria-label="${distance?'Записывать дистанцию круга':'Таймер с обратным отсчётом'}" ${checked?'checked':''} ${!distance&&state.active?.exercisePlayer?.ei===ei&&state.active.exercisePlayer.running?'disabled':''}><span class="player-mode-track" aria-hidden="true"><span class="player-mode-thumb"></span></span></label>`;}
+function playerSwitch(ei,distance,checked){return `<label class="player-mode-switch ${distance?'player-distance-switch':''}"><small>${distance?'Дистанция':'Обратный отсчёт'}</small><input type="checkbox" role="switch" ${distance?'data-player-distance-mode':'data-player-mode'}="${ei}" aria-label="${distance?'Записывать дистанцию круга':'Таймер с обратным отсчётом'}" ${checked?'checked':''} ${!distance&&state.active?.exercisePlayer?.ei===ei&&state.active.exercisePlayer.running?'disabled':''}><span class="player-mode-track" aria-hidden="true"><span class="player-mode-thumb"></span></span></label>`;}
 function playerMetricControls(e,ei,down){return `<div class="player-inner-switches">${playerSwitch(ei,false,down)}</div>`}
 function parsePlayerMetric(value,key){const n=parsePlayerDistance(value);if(n==null)return n;return n<={distance:1000000,weight:2000,reps:10000}[key]&&(key!=='reps'||Number.isInteger(n))?n:undefined;}
 function playerMetricFields(e,row,key){return `<div class="player-row-metrics">${['distance','weight','reps'].filter(k=>exerciseHasMetric(e,k)).map(k=>k==='distance'?playerDistanceField(row[k],`data-player-distance="${key}"`,row.name):`<label class="player-distance-field sport-metric-input"><input type="text" inputmode="decimal" data-player-${k}="${key}" value="${row[k]??''}" placeholder="—" aria-label="${metricName(k)}: ${esc(row.name)}"><span class="sport-metric-unit">${k==='weight'?'кг':'повт.'}</span></label>`).join('')}</div>`}
@@ -3319,7 +3353,7 @@ function exercisePlayerBody(ei){
   const e=state.active?.exercises[ei];if(!e)return '';
   const p=playerPreview(ei),s=exercisePlayerStatus(p),running=p.running&&!workoutIsPaused(state.active),down=p.mode!=='stopwatch',rows=playerLiveRows(ei);
   return `<div class="exercise-player ${s.phase==='rest'?'rest-phase':''}" data-player-ei="${ei}"><div class="player-exercise-heading"><p class="player-exercise-name">${esc(e.name)}</p></div><div class="player-face">${playerDial(p,s)}<div class="player-face-center"><strong data-player-time data-hours="${s.remaining>=3600}" role="timer">${playerDisplay(s.remaining,true)}</strong>${playerMetricControls(e,ei,down)}</div></div>
-  <div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="player-toggle" data-ei="${ei}" aria-label="${running?'Приостановить':'Запустить'} плеер упражнения"><span>${running?'STOP':'START'}</span></button><button type="button" class="timer-round-text" data-action="player-new-round" data-ei="${ei}" aria-label="${down?'Добавить таймер':'Добавить круг'}" ${!playerCanAddRound(p)?'disabled':''}><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>
+  <div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="player-toggle" data-ei="${ei}" aria-label="${running?'Приостановить':'Запустить'} плеер упражнения"><span>${running?'Стоп':'Старт'}</span></button><button type="button" class="timer-round-text" data-action="player-new-round" data-ei="${ei}" aria-label="${down?'Добавить таймер':'Добавить круг'}" ${!playerCanAddRound(p)?'disabled':''}><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>
   ${timerWheelTrigger('exercise',ei)}
   ${playerView.history?`<div class="timer-history-controls"><button class="text-btn" data-action="player-history" data-ei="${ei}">Текущие круги</button><button class="text-btn" data-action="player-edit" data-ei="${ei}" aria-pressed="${playerView.editing}">${playerView.editing?'Готово':'Правки'}</button></div>`:''}
   <div class="player-round-list">${playerView.history?playerHistoryMarkup(ei,rows):rows.map((row,i)=>playerCurrentRow(ei,row,i,p)).join('')}</div></div>`;
@@ -3477,7 +3511,7 @@ function refreshExercisePlayer(at=playerNow()){
   if(!root||Number(root.dataset.playerEi)!==p.ei)return;
   const time=root.querySelector('[data-player-time]');if(time){time.textContent=playerDisplay(s.remaining,true);time.dataset.hours=String(s.remaining>=3600);}
   root.classList.toggle('rest-phase',s.phase==='rest');const progress=root.querySelector('.dial-progress');if(progress)progress.innerHTML=fullPlayerArc(s.progress);
-  const start=root.querySelector('[data-action=player-toggle]');if(start){const running=p.running&&!workoutIsPaused(state.active),label=start.querySelector('span');if(label)label.textContent=running?'STOP':'START';start.setAttribute('aria-label',(running?'Приостановить':'Запустить')+' плеер упражнения');}
+  const start=root.querySelector('[data-action=player-toggle]');if(start){const running=p.running&&!workoutIsPaused(state.active),label=start.querySelector('span');if(label)label.textContent=running?'Стоп':'Старт';start.setAttribute('aria-label',(running?'Приостановить':'Запустить')+' плеер упражнения');}
   for(const input of root.querySelectorAll('[data-player-preset]')){input.readOnly=!!p.setIndices;const [,index,key]=input.dataset.playerPreset.split(',');if(document.activeElement!==input)input.value=sportDurationValue(playerRoundRemaining(p,Number(index),key,at));}
   const mode=root.querySelector('[data-player-mode]');if(mode)mode.disabled=!!p.running;
   const add=root.querySelector('[data-action=player-new-round]');if(add)add.disabled=!playerCanAddRound(p);
@@ -3874,7 +3908,7 @@ function freeSwitch(key,label,checked){return `<label class="player-mode-switch"
 function freeCorner(action,corner,label){return playerCornerTab('free-'+action,0,corner,label);}
 function freeTimerBody(){
  const d=freeTimer(),s=freeSession(),status=freeStatus(),down=d.mode==='timer',result=freeResultRows();
- return `<div class="exercise-player free-player" data-free-timer><div class="player-exercise-heading"><p class="player-exercise-name">${down?'Таймер':'Секундомер'}</p></div><div class="player-face">${playerDial({},status)}<div class="player-face-center"><strong data-free-time role="timer">${playerDisplay(status.remaining,true)}</strong><div class="player-inner-switches">${freeSwitch('mode',down?'Таймер':'Секундомер',down)}</div></div></div><div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="free-toggle"><span>${s.running?'STOP':'START'}</span></button><button type="button" class="timer-round-text" data-action="free-add"><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>${timerWheelTrigger('free')}<p class="free-timer-hint">${s.resultId?'Результат уже в журнале':''}</p><div class="player-round-list">${s.rows.map((row,i)=>`<div class="player-round-row"><span>${down?'Таймер':'Круг'} ${i+1}</span><div class="player-row-metrics">${d.metrics.map(k=>`<label class="player-distance-field sport-metric-input"><input data-free-value="${k}" data-index="${i}" type="text" inputmode="decimal" value="${row[k]??''}" placeholder="—" aria-label="${metricName(k)} ${i+1}"><span class="sport-metric-unit">${{distance:'м',weight:'кг',reps:'повт.'}[k]}</span></label>`).join('')}</div>${down?sportMetricInput(`data-free-target="${i}" type="text" inputmode="text" value="${sportDurationValue(row.target)}" aria-label="Время таймера ${i+1}" ${s.running||s.elapsed>0?'readonly':''}`,'м:с'):`<b data-free-lap="${i}">${playerDisplay(result[i]?.seconds||0,true)}</b>`}</div>`).join('')}</div></div>`;
+ return `<div class="exercise-player free-player" data-free-timer><div class="player-exercise-heading"><p class="player-exercise-name">${down?'Таймер':'Секундомер'}</p></div><div class="player-face">${playerDial({},status)}<div class="player-face-center"><strong data-free-time role="timer">${playerDisplay(status.remaining,true)}</strong><div class="player-inner-switches">${freeSwitch('mode','Обратный отсчёт',down)}</div></div></div><div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="free-toggle"><span>${s.running?'Стоп':'Старт'}</span></button><button type="button" class="timer-round-text" data-action="free-add"><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>${timerWheelTrigger('free')}<p class="free-timer-hint">${s.resultId?'Результат уже в журнале':''}</p><div class="player-round-list">${s.rows.map((row,i)=>`<div class="player-round-row"><span>${down?'Таймер':'Круг'} ${i+1}</span><div class="player-row-metrics">${d.metrics.map(k=>`<label class="player-distance-field sport-metric-input"><input data-free-value="${k}" data-index="${i}" type="text" inputmode="decimal" value="${row[k]??''}" placeholder="—" aria-label="${metricName(k)} ${i+1}"><span class="sport-metric-unit">${{distance:'м',weight:'кг',reps:'повт.'}[k]}</span></label>`).join('')}</div>${down?sportMetricInput(`data-free-target="${i}" type="text" inputmode="text" value="${sportDurationValue(row.target)}" aria-label="Время таймера ${i+1}" ${s.running||s.elapsed>0?'readonly':''}`,'м:с'):`<b data-free-lap="${i}">${playerDisplay(result[i]?.seconds||0,true)}</b>`}</div>`).join('')}</div></div>`;
 }
 function openFreeTimer(){freeTimer();openSheet('Таймер',freeTimerBody(),'exercise-player');}
 function renderFreeTimer(){const root=document.querySelector('[data-free-timer]');if(root){const scroll=root.scrollTop;root.outerHTML=freeTimerBody();document.querySelector('[data-free-timer]').scrollTop=scroll;}}
@@ -4422,7 +4456,7 @@ const sportIconBeforeFamilies=exerciseSportIcon;
 exerciseSportIcon=function(e){if(sportStudioExerciseIcon(e.id))return sportIconBeforeFamilies(e);if(exerciseMediaUrl(e.id))return 'media:'+e.id;const found=sportIconBeforeFamilies(e);return found===baseSportIcon(37)&&exerciseMediaUrl('placeholder')?'media:placeholder':found};
 const iconMarkupBeforeFamilies=sportIconMarkup;
 sportIconMarkup=function(name){
- if(typeof name==='string'&&name.startsWith('media:')){const src=exerciseMediaUrl(name.slice(6));if(src)return `<img class="icon sport-icon" src="${sportIconEscape(src)}" alt="" width="64" height="64" loading="lazy" decoding="async">`}
+ if(typeof name==='string'&&name.startsWith('media:')){const src=exerciseMediaUrl(name.slice(6));if(src)return `<img class="icon sport-icon${name==='media:placeholder'?' is-placeholder':''}" src="${sportIconEscape(src)}" alt="" width="64" height="64" loading="lazy" decoding="async">`}
  return iconMarkupBeforeFamilies(name);
 };
 
@@ -6202,6 +6236,121 @@ function sportSettingsLayout(html){
  document.addEventListener('contextmenu',e=>{if(e.target.closest?.('[data-settings-developer="toggle"]'))e.preventDefault();});
  document.addEventListener('click',e=>{if(!e.target.closest?.('[data-settings-developer="hide"]'))return;sportDevToggle(false);render();});
 })();
+
+/* Lab 10.11.2026 18:50 · Аудит интерфейса, решения Астамура «Да» (страница аудита, пункты 1, 3, 4, 6, 9, 10, 11, 15, 18,
+   19, 20, 22, 24, 25, 26, 27, 29, 30). Loaded last: it only reshapes what the earlier modules render; saving logic is
+   untouched. Numbers below are the numbers on the audit page. */
+
+// 1. The pulse card shows only while the pulse demo is on (Settings → Пульс). Without a sensor it was a dash and a scale.
+const pulseCardBeforeAudit=pulseCard;
+pulseCard=function(){return state.demoPulse?pulseCardBeforeAudit():''};
+
+// 15. Library rows name the muscle groups instead of the same «Тренажёрный зал · Турники» on every row.
+const exerciseCardBeforeAudit=exerciseCard;
+exerciseCard=function(e,action='exercise-detail'){
+ const html=exerciseCardBeforeAudit(e,action),names=Object.fromEntries(muscleGroups),muscles=(typeof exerciseMuscles==='function'?exerciseMuscles(e):[]).map(k=>names[k]).filter(Boolean);
+ if(!muscles.length)return html;
+ const line=(e.familyNote?e.familyNote+' · ':'')+muscles.join(' · ').toLowerCase().replace(/^./,c=>c.toUpperCase())+(e.scope==='user'?' · Моё':'');
+ return html.replace(/<small>[\s\S]*?<\/small>/,()=>`<small>${esc(line)}</small>`);
+};
+
+// 26. Month headings without «г.» and with a capital letter: «Ноябрь 2026».
+const toLocaleDateStringBeforeAudit=Date.prototype.toLocaleDateString;
+Date.prototype.toLocaleDateString=function(locale,options){
+ const text=toLocaleDateStringBeforeAudit.call(this,locale,options);
+ if(options&&options.month==='long'&&options.year&&!options.day)return text.replace(/\s*г\.$/,'').replace(/^./,c=>c.toUpperCase());
+ return text;
+};
+// 26. Times in date fields to the minute.
+ruClockText=function(time){return String(time||'').slice(0,5)};
+
+// 19. A new workout starts with its name and «+ Упражнение»: no empty exercise slot, no «Вид».
+// «Вид» follows the chosen picture (swimming → море, bar and bodyweight → турники, running and cycling → кардио).
+function kindFromWorkoutIcon(id){
+ const n=Number((/sport:(\d+)_/.exec(String(id||''))||[])[1]);
+ if(n===14)return 'sea';if([7,8,9].includes(n))return 'bars';if([10,11,12,13,17,45].includes(n))return 'cardio';return n?'gym':'';
+}
+document.addEventListener('submit',e=>{
+ const form=e.target;if(form.id!=='template-form'||form.dataset.id)return;
+ const kind=kindFromWorkoutIcon(form.elements.icon?.value);if(kind&&form.elements.kind)form.elements.kind.value=kind;
+},true);
+
+// 18. On a workout card the schedule is one row («10 ноября · 18:30 · 60 мин») that opens the plan; calendar and
+// sharing live inside it.
+nextPlanCard=function(t){
+ if(!t)return '';const s=templateSchedule(t.id);
+ const when=s?(s.mode==='weekly'?s.days.map(d=>scheduleWeekdays.find(x=>x[0]===d)?.[1]).join(' · '):dateLabel(s.startDate))+' · '+s.time+' · '+s.minutes+' мин':'';
+ return `<div class="section-title"><h2>Расписание</h2></div><button class="card section-row plan-line" data-action="plan-template" data-id="${esc(t.id)}">${icon('calendar-blank')}<b>${s?esc(when):'Добавить в расписание'}</b>${icon('caret-right')}</button>`;
+};
+
+// 6. Home: today and the next three planned sessions; the rest behind «Всё расписание».
+let auditScheduleOpen=false;
+// 9. Workout: «Сохранить в мои» and «Удалить черновик» move into «⋯» beside «Завершить».
+// 29. Workout card: the target time is text, not an input (it is edited in «Редактировать»).
+const renderBeforeAudit=render;
+render=function(){
+ renderBeforeAudit();
+ const rows=[...document.querySelectorAll('#page .occurrence-row')];
+ if(rows.length>4&&!auditScheduleOpen){rows.slice(4).forEach(r=>r.style.display='none');rows[3].insertAdjacentHTML('afterend',`<button class="text-btn schedule-more" data-action="schedule-all">Всё расписание · ещё ${rows.length-4}</button>`);}
+ const bar=document.querySelector('.workout-overview .current-bar');
+ if(bar&&!bar.querySelector('.workout-more'))bar.querySelector('[data-action="finish"]')?.insertAdjacentHTML('beforebegin',`<button type="button" class="workout-more" data-action="workout-more" aria-label="Ещё действия с тренировкой"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg></button>`);
+ for(const box of document.querySelectorAll('.template-exercise .template-targets')){
+  const values=[...box.querySelectorAll('input')].filter(i=>i.value&&i.value!=='0:00'&&i.value!=='0').map(i=>(i.closest('label')?.firstChild?.textContent||'').trim()+' '+i.value);
+  box.outerHTML=values.length?`<p class="template-target-text">${esc(values.join(' · '))}</p>`:'';
+ }
+ auditSettingsNotes();
+};
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="schedule-all"],[data-action="workout-more"]');if(!b)return;
+ e.stopImmediatePropagation();
+ if(b.dataset.action==='schedule-all'){auditScheduleOpen=true;render();return;}
+ openSheet('Тренировка',`<div class="sheet-actions"><button class="button" data-action="save-template">${icon('copy')} Сохранить в «Мои тренировки»</button><button class="button" data-action="discard-active">${icon('trash')} Удалить черновик</button></div>`);
+},true);
+
+// 20. Settings: long explanations fold into «Подробнее».
+function auditSettingsNotes(){
+ for(const p of document.querySelectorAll('#page .happy-note')){
+  if(p.closest('details')||p.textContent.trim().length<120)continue;
+  const d=document.createElement('details');d.className='happy-more';d.innerHTML='<summary>Подробнее</summary>';p.before(d);d.append(p);
+ }
+}
+
+// 3, 4, 10, 11. The exercise card form, reshaped when it opens.
+function auditExerciseForm(form){
+ if(form.dataset.audit)return;form.dataset.audit='1';
+ // 11. Explanations under the buttons go.
+ for(const p of form.querySelectorAll(':scope > .fineprint'))if(/^(Изменения относятся|Настройки применятся|Сохранение обновит|Показатели можно сочетать)/.test(p.textContent.trim()))p.remove();
+ // 10. «Что записываем» becomes one line «Показатели: повторения» that opens the switches.
+ const metrics=form.querySelector('.metric-switches');
+ if(metrics&&!metrics.closest('details')){
+  const d=document.createElement('details');d.className='metrics-fold';d.innerHTML='<summary></summary>';metrics.before(d);d.append(metrics);
+  const paint=()=>{d.querySelector('summary').textContent='Показатели: '+([...metrics.querySelectorAll('input:checked')].map(i=>i.nextElementSibling?.textContent.trim().toLowerCase()).join(', ')||'не выбраны')};
+  paint();metrics.addEventListener('change',paint);
+ }
+ // 4. The name is written once, in the heading; the pencil beside it opens the field.
+ const title=form.closest('.sheet')?.querySelector('.sheet-top h2'),row=form.querySelector('.exercise-title-row'),input=form.querySelector('.exercise-title-input');
+ if(title&&row&&input){
+  row.hidden=true;
+  if(!title.parentElement.querySelector('.rename-exercise'))title.insertAdjacentHTML('afterend',`<button type="button" class="rename-exercise" aria-label="Переименовать упражнение">${icon('pencil-simple')}</button>`);
+  title.parentElement.querySelector('.rename-exercise').onclick=()=>{row.hidden=!row.hidden;if(!row.hidden){input.focus();input.select();}};
+  input.addEventListener('input',()=>{if(input.value.trim())title.textContent=input.value});
+ }
+ // 3. «Добавить» from the library: where to add and the button first, the setup folded below.
+ if(form.dataset.scope==='add'){
+  const actions=form.querySelector('.exercise-save-actions');
+  if(actions&&!form.querySelector('.add-more')){
+   const more=document.createElement('details');more.className='add-more';more.innerHTML='<summary>Настроить перед добавлением</summary>';
+   for(const el of [...form.children])if(el!==actions&&el!==row&&!el.classList.contains('form-error')&&el.id!=='exercise-config-error')more.append(el);
+   form.append(actions,form.querySelector('#exercise-config-error')||'',more);
+  }
+ }
+}
+new MutationObserver(()=>{const f=document.getElementById('exercise-config-form');if(f)auditExerciseForm(f);
+ const t=document.getElementById('template-form');
+ if(t&&!t.dataset.audit){t.dataset.audit='1';
+  if(!t.dataset.id){{const k=t.querySelector('select[name=kind]')?.closest('label');if(k)k.style.display='none';};for(const row of t.querySelectorAll('.template-item'))if(!row.querySelector('[name=exerciseId]')?.value)row.remove();}
+ }
+}).observe(document.getElementById('modal-root'),{childList:true,subtree:true});
 
 </script>
 <script>/* Update 39: Sport's journal-scale keys (journal, profiles, sync ledger, recovery vault, backups —

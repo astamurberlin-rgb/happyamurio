@@ -64,7 +64,7 @@ assert.deepEqual(JSON.parse(run('JSON.stringify(state.active)')),beforeBlocked,'
 assert.equal(blocked.checked,true);assert.equal(blocked.disabled,true);
 clickAction('player-toggle');assert.equal(run('state.active.exercisePlayer.running'),false,'Normal STOP unlocks switching');
 for(const fn of handlers.change)fn({target:{dataset:{playerMode:'0'},checked:false}});
-assert.match(root.html,/Секундомер/);assert.match(root.html,/00:00.00/);
+assert.match(root.html,/Обратный отсчёт<\/small><input type="checkbox" role="switch" data-player-mode="0"[^>]*  >/);assert.match(root.html,/00:00.00/);
 for(const fn of handlers.change)fn({target:{dataset:{playerMode:'0'},checked:true}});
 assert.equal(run('state.active.exercisePlayer.elapsed'),30,'Switching modes retains the prior session');
 assert.equal(run('state.active.exercisePlayer.running'),false);

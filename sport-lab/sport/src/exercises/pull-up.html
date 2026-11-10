@@ -347,7 +347,7 @@ variantBar.innerHTML = FAMILY.variants.map(v => `<button class="variantChip" typ
 function applyMedia(){
   const own = MEDIA[selected]?.frames || {};
   for(const k of frameKeys){ const src = own[k] || sharedFrames[k]; if(imgs[k].getAttribute('src') !== src) imgs[k].setAttribute('src', src); }
-  document.getElementById('variantHelp').hidden = frameKeys.every(k => own[k]);
+  document.getElementById('variantHelp').hidden = true; // Lab 10.11.2026 18:50 (аудит, п. 24): рабочая пометка не показывается
   cropFrameEdges();
 }
 function updateVariant(notify = true, reveal = true){

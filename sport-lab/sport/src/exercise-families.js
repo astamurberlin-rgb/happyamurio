@@ -44,7 +44,7 @@ const sportIconBeforeFamilies=exerciseSportIcon;
 exerciseSportIcon=function(e){if(sportStudioExerciseIcon(e.id))return sportIconBeforeFamilies(e);if(exerciseMediaUrl(e.id))return 'media:'+e.id;const found=sportIconBeforeFamilies(e);return found===baseSportIcon(37)&&exerciseMediaUrl('placeholder')?'media:placeholder':found};
 const iconMarkupBeforeFamilies=sportIconMarkup;
 sportIconMarkup=function(name){
- if(typeof name==='string'&&name.startsWith('media:')){const src=exerciseMediaUrl(name.slice(6));if(src)return `<img class="icon sport-icon" src="${sportIconEscape(src)}" alt="" width="64" height="64" loading="lazy" decoding="async">`}
+ if(typeof name==='string'&&name.startsWith('media:')){const src=exerciseMediaUrl(name.slice(6));if(src)return `<img class="icon sport-icon${name==='media:placeholder'?' is-placeholder':''}" src="${sportIconEscape(src)}" alt="" width="64" height="64" loading="lazy" decoding="async">`}
  return iconMarkupBeforeFamilies(name);
 };
 
