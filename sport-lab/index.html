@@ -730,13 +730,13 @@ body:has(.overlay:not(:empty)) #free-timer-root{visibility:hidden}
 .metrics-fold>.metric-switches{margin-top:6px}
 /* 4. Rename: a pencil beside the heading. */
 .rename-exercise{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:none;border:0;color:#fff}
-.rename-exercise .icon{width:20px;height:20px;fill:none;stroke:currentColor}
+.rename-exercise .icon{width:20px;height:20px;fill:currentColor}
 .sheet-top:has(.rename-exercise){display:flex;align-items:flex-start;gap:4px}
 /* 6. Home schedule: link to the rest. */
 .schedule-more{display:block;width:100%;min-height:44px;text-align:center;font-size:13px;font-weight:650}
 /* 18. One schedule row on a workout card. */
 .plan-line{display:grid!important;grid-template-columns:24px 1fr 20px;align-items:center;gap:12px;min-height:56px}
-.plan-line .icon{width:22px;height:22px;fill:none;stroke:currentColor}
+.plan-line .icon{width:22px;height:22px;fill:currentColor}
 /* 20. Settings explanations behind «Подробнее». */
 .happy-more{margin:6px 0 4px}
 .happy-more>summary{min-height:44px;display:flex;align-items:center;font-size:13px;font-weight:600;cursor:pointer;opacity:.9}
@@ -751,6 +751,50 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .section-title .text-btn,.workout-share,.exercise-technique{display:inline-grid;place-items:center}
 .rest-separator{min-height:44px!important}
 .workout-summary-header .text-btn{min-height:44px}
+/* Lab 10.11.2026 19:20 · Решения по «Обсудим». */
+/* 2. Set on one line: «1 подход», value, tick. */
+.active-workout .set-row.metrics-1{display:grid!important;grid-template-columns:auto minmax(0,1fr) 44px!important;align-items:center!important;column-gap:12px!important;row-gap:0!important}
+.active-workout .set-row.metrics-1>.set-number{grid-column:1!important;grid-row:1!important;align-self:center;margin:0!important;white-space:nowrap}
+.active-workout .set-row.metrics-1>:not(.set-number):not(.done){grid-column:2!important;grid-row:1!important}
+.active-workout .set-row.metrics-1>.done{grid-column:3!important;grid-row:1!important}
+/* 2. Rest: thin pale line, green fill while it runs, time at the right; tap opens the steps. */
+.active-workout .rest-separator.rest-line{display:flex!important;align-items:center;gap:10px;min-height:44px!important;margin:0!important;padding:0 2px!important;opacity:.6;color:#fff;background:none;border:0;width:100%}
+.active-workout .rest-separator.rest-line::before,.active-workout .rest-separator.rest-line::after{content:none!important;display:none!important}
+.rest-line.running,.rest-line.open{opacity:1}
+.rest-line-track{flex:1;height:3px;border-radius:3px;background:#ffffff40;overflow:hidden}
+.rest-line-fill{display:block;height:100%;width:0;border-radius:3px;background:#8ef0c4;transition:width .2s linear}
+.rest-line.done .rest-line-fill{background:#ffffff70}
+.rest-line-time{flex:none;font-size:12px;font-variant-numeric:tabular-nums}
+.rest-line-edit{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:0 0 8px}
+.rest-line-edit button{min-height:44px;border-radius:14px;border:1px solid #ffffff55;background:#ffffff1c;color:#fff;font-weight:650}
+.rest-line-edit b{font-size:20px;font-variant-numeric:tabular-nums;min-width:64px;text-align:center}
+/* 5. Search and a round filter button. */
+.library-search-row{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:10px;align-items:center}
+.library-search-row .library-search{margin:0!important}
+.library-filter-toggle{position:relative;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;border:1px solid #ffffff55;background:#ffffff1c;color:#fff}
+.library-filter-toggle .icon{width:22px;height:22px;fill:currentColor}
+.library-filter-toggle[aria-expanded="true"]{background:#fff;color:#4b3bc2}
+.library-filter-toggle.has-active::after{content:"";position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:#ff7eb6;border:2px solid #fff}
+.library-filter-box{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.library-filter-box[hidden]{display:none!important}
+/* 13. Counters as in Day and Meal. */
+#sport-food-counters{margin-top:18px}
+.tpSec{padding:16px 16px 4px}
+.tpT{margin:0 0 4px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
+.tpT + .tpItem{border-top:0}
+.tpNm{flex:1;min-width:0;padding:12px 0;color:#fff;font-size:15.5px;font-weight:600;text-align:left}
+.tpNm b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tpNm small{display:block;margin-top:2px;font-size:12.5px;font-weight:600;color:var(--muted,rgba(255,255,255,.75))}
+.tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
+.tpStp button{width:46px;padding:0;border:0;background:none;color:#fff;font:inherit;font-size:20px;font-weight:600;line-height:1}
+.tpStp button:disabled{opacity:.45}
+.tpStp button:active{background:rgba(255,255,255,.22)}
+.tpStp .v{min-width:50px;padding:0 8px;display:grid;place-items:center;font-size:16.5px;font-weight:800;font-variant-numeric:tabular-nums;border-left:1px solid rgba(255,255,255,.4);border-right:1px solid rgba(255,255,255,.4)}
+.tpStp .v.tpZero{color:rgba(255,255,255,.55);font-weight:700}
+.tpAdd{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:none;color:rgba(255,255,255,.88);font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
+.tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.library-search-row{margin-bottom:8px}
 
 </style></head><body><script>/* Narrow transport boundary: journal sync plus (Update 38) the shared food-counter row. Loaded before any app/auth/storage code. */
 (function(root){
@@ -1250,7 +1294,7 @@ function openPanel(panel){closeSheet();if(activePanel()?.type===panel.type&&acti
 goto=function(v){closeSheet();if(v==='active'||v==='detail'){panelStack=[];openPanel({type:v,id:v==='detail'?detailId:'active'});return}baseView=v==='settings'?'profile':v;panelStack=[];view=baseView;currentExerciseId=null;render();window.scrollTo({top:0,behavior:'instant'})};
 backTop=function(title){return `<h1 class="view-title">${esc(title)}</h1>`};
 renderTop=function(title,date=true){return `<header class="top"><h1>${esc(title)}</h1>${date?`<label class="date-pill">${navAssets.day}<span>${dateLabel(selectedDate)}</span><input aria-label="День дневника" type="date" value="${selectedDate}" id="day-picker"></label>`:''}</header>`};
-nav=function(){const chosen=baseView;$('#dock').innerHTML='<div class="dockBg" id="dockBg"></div><svg class="dockEdge" id="dockEdge" preserveAspectRatio="none" aria-hidden="true"><path></path></svg>'+[['diary','day','Дневник'],['journal','trends','Журнал'],null,['library','catalog','Библиотека'],['profile','settings','Настройки']].map(i=>i?`<button class="tab ${chosen===i[0]?'on':''}" data-action="navigate" data-view="${i[0]}" aria-current="${chosen===i[0]?'page':'false'}">${navAssets[i[1]]}<span>${i[2]}</span></button>`:'<span class="gap"></span>').join('')+`<button class="dockFab" id="sport-fab" data-action="voice" aria-label="Записать голосом или текстом">${icon('microphone')}</button>`;shapeDock();$('#active-banner').innerHTML=state.active&&!panelStack.length?`<div class="active-banner"><span class="row">${icon('timer')}<b style="font-size:12px">${esc(state.active.title)}</b></span><button data-action="resume">Продолжить</button></div>`:''};
+nav=function(){const chosen=baseView;$('#dock').innerHTML='<div class="dockBg" id="dockBg"></div><svg class="dockEdge" id="dockEdge" preserveAspectRatio="none" aria-hidden="true"><path></path></svg>'+[['diary','day','Тренировки'],['journal','trends','Журнал'],null,['library','catalog','Библиотека'],['profile','settings','Настройки']].map(i=>i?`<button class="tab ${chosen===i[0]?'on':''}" data-action="navigate" data-view="${i[0]}" aria-current="${chosen===i[0]?'page':'false'}">${navAssets[i[1]]}<span>${i[2]}</span></button>`:'<span class="gap"></span>').join('')+`<button class="dockFab" id="sport-fab" data-action="voice" aria-label="Записать голосом или текстом">${icon('microphone')}</button>`;shapeDock();$('#active-banner').innerHTML=state.active&&!panelStack.length?`<div class="active-banner"><span class="row">${icon('timer')}<b style="font-size:12px">${esc(state.active.title)}</b></span><button data-action="resume">Продолжить</button></div>`:''};
 const legacyDiary=renderDiary;
 renderDiary=function(){const html=legacyDiary().replaceAll(icon('caret-right'),'');const p=document.createElement('div');p.innerHTML=html;p.querySelector('h1').textContent='Тренировки';const pins=p.querySelector('.pin-grid');if(pins){pins.className='section-list';pins.innerHTML=[['sea','waves','Плавание в море'],['gym','barbell','Тренажёрный зал'],['bars','person-simple','Турники']].map(([k,i,t])=>{const all=state.workouts.filter(w=>w.kind===k).sort((a,b)=>b.start.localeCompare(a.start)),today=all.filter(w=>w.start.slice(0,10)===selectedDate);return `<button class="card section-row" data-action="sport-section" data-id="${k}"><span class="symbol">${icon(i)}</span><span><b>${t}</b><small>${today.length?today.length+' · '+durationText(today.reduce((n,w)=>n+w.duration,0)):all.length?'Последняя · '+dateLabel(all[0].start.slice(0,10)):'Пока нет записей'}</small></span></button>`}).join('')}p.querySelectorAll('svg.icon').forEach(el=>{if(el.outerHTML===icon('caret-right'))el.remove()});const firstTitle=p.querySelector('.section-title');if(firstTitle)firstTitle.querySelector('h2').textContent='Мои разделы';return p.innerHTML};
 const legacyWorkoutCard=workoutCard;
@@ -6299,6 +6343,7 @@ render=function(){
   box.outerHTML=values.length?`<p class="template-target-text">${esc(values.join(' · '))}</p>`:'';
  }
  auditSettingsNotes();
+ if(typeof auditLibraryFilters==='function'&&baseView==='library'&&!activePanel())auditLibraryFilters();
 };
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action="schedule-all"],[data-action="workout-more"]');if(!b)return;
@@ -6351,6 +6396,68 @@ new MutationObserver(()=>{const f=document.getElementById('exercise-config-form'
   if(!t.dataset.id){{const k=t.querySelector('select[name=kind]')?.closest('label');if(k)k.style.display='none';};for(const row of t.querySelectorAll('.template-item'))if(!row.querySelector('[name=exerciseId]')?.value)row.remove();}
  }
 }).observe(document.getElementById('modal-root'),{childList:true,subtree:true});
+
+/* Lab 10.11.2026 19:20 · Решения по пунктам «Обсудим» (2, 5, 13, 14, 16). */
+
+// 2. Rest between sets: a thin pale line, a green fill while the rest runs. A tap opens «−15 с / время / +15 с»;
+// a swipe still deletes the rest. The set keeps its «1 подход» label, on the same line as its value and tick.
+let auditRestOpen='';
+renderSetRest=function(s,ei,si,name){
+ const seconds=displayedRestSeconds(s);if(seconds==null)return '';const key=ei+','+si,open=auditRestOpen===key,planned=setRestSeconds(s);
+ return swipeSetRow('rest',ei,si,`<button type="button" class="rest-separator rest-line${open?' open':''}" data-action="rest-line" data-ei="${ei}" data-si="${si}" aria-expanded="${open}" aria-label="Перерыв после подхода ${si+1}: ${esc(name)}. Нажми, чтобы изменить время"><span class="rest-line-track"><span class="rest-line-fill" data-rest-fill="${key}"></span></span><span class="rest-line-time" data-rest-line="${key}">${countdownTime(seconds)}</span></button>${open&&planned!=null?`<div class="rest-line-edit"><button type="button" data-action="rest-step" data-step="-15" data-ei="${ei}" data-si="${si}" aria-label="Перерыв на 15 секунд короче">−15 с</button><b>${countdownTime(planned)}</b><button type="button" data-action="rest-step" data-step="15" data-ei="${ei}" data-si="${si}" aria-label="Перерыв на 15 секунд длиннее">+15 с</button></div>`:''}`);
+};
+function auditRestStep(ei,si,delta){
+ const s=state.active?.exercises[ei]?.sets[si],cur=setRestSeconds(s);if(cur==null)return;
+ const next=Math.max(5,Math.min(3600,cur+delta)),t=state.active.countdown;
+ s.restSeconds=next;state.lastRestSeconds=next;
+ if(t&&t.kind==='rest'&&t.ei===ei&&t.si===si&&!t.finished&&typeof applyLiveRestLength==='function')applyLiveRestLength(t,next);
+ persist();render();
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="rest-line"],[data-action="rest-step"]');if(!b)return;
+ e.preventDefault();e.stopImmediatePropagation();const ei=Number(b.dataset.ei),si=Number(b.dataset.si);
+ if(b.dataset.action==='rest-line'){const key=ei+','+si;auditRestOpen=auditRestOpen===key?'':key;render();}
+ else auditRestStep(ei,si,Number(b.dataset.step));
+},true);
+setInterval(()=>{
+ const fills=document.querySelectorAll('[data-rest-fill]');if(!fills.length)return;
+ const c=typeof engineRestContext==='function'?engineRestContext():null;
+ for(const f of fills){
+  const [ei,si]=f.dataset.restFill.split(',').map(Number),s=state.active?.exercises[ei]?.sets[si],live=c&&c.ei===ei&&c.si===si;
+  const pct=live?Math.max(0,Math.min(100,c.progress)):s?.restDone?100:0,line=f.closest('.rest-line');
+  f.style.width=pct+'%';line?.classList.toggle('running',!!live);line?.classList.toggle('done',!live&&!!s?.restDone);
+ }
+},200);
+
+// 5, 16. Library filters hide behind a round filter button beside the search; «Мои тренировки» has search only.
+let auditFiltersOpen=false;
+function auditLibraryFilters(){
+ const search=document.querySelector('#page .library-search');if(!search)return;
+ const blocks=[...document.querySelectorAll('#page .library-search ~ *')].filter(el=>el.matches('.library-sport,.library-filters,.catalog-group-filter,label,.row')&&el.querySelector('select'));
+ if(!blocks.length)return;
+ const templatesTab=libraryTab==='templates';
+ const box=document.createElement('div');box.className='library-filter-box';box.hidden=templatesTab||!auditFiltersOpen;blocks[0].before(box);blocks.forEach(b=>box.append(b));
+ if(templatesTab)return;
+ const manage=box.querySelector('[aria-label="Управлять группами"]');if(manage)manage.innerHTML=icon('pencil-simple'); // not a second filter icon
+ const active=[...box.querySelectorAll('select')].some(s=>s.selectedIndex>0);
+ const row=document.createElement('div');row.className='library-search-row';search.before(row);row.append(search);
+ row.insertAdjacentHTML('beforeend',`<button type="button" class="library-filter-toggle${active?' has-active':''}" data-action="library-filters" aria-expanded="${auditFiltersOpen}" aria-label="Фильтры${active?' (выбраны)':''}">${icon('sliders-horizontal')}</button>`);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action="library-filters"]');if(!b)return;e.stopImmediatePropagation();auditFiltersOpen=!auditFiltersOpen;render();},true);
+
+// 13. Counters look like in Day and Meal: a card «Счётчики», rows «название — минус, число, плюс», «Новый счётчик».
+// No explanations. While there is no counter yet, an example «Вода» stands in; its first «+» creates it for real.
+sportFoodHTML=function(){
+ const rows=[...sportFoodDefinitions().map(d=>[d,true]),...(state.customCounters||[]).map(d=>[d,false])];
+ if(!rows.length)rows.push([{id:'example-water',title:'Вода',unit:'стакан, 250 мл',events:[]},false]);
+ const item=([c,shared])=>{const n=shared?sportFoodEvents(c.id).length:(c.events||[]).filter(e=>e.date===selectedDate).length,sub=shared?`${c.q} ${c.u} · ${c.g} г`:c.unit||'';
+  return `<div class="tpItem"><div class="tpNm"><b>${esc(c.title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div><div class="tpStp" role="group" aria-label="${esc(c.title)}"><button type="button" data-action="food-minus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Убрать: ${esc(c.title)}" ${n?'':'disabled'}>−</button><span class="v${n?'':' tpZero'}">${n}</span><button type="button" data-action="food-plus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Добавить: ${esc(c.title)}">+</button></div></div>`};
+ return `<section id="sport-food-counters"><div class="card tpSec"><h2 class="tpT">Счётчики</h2>${rows.map(item).join('')}<button type="button" class="tpAdd" data-action="food-create"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Новый счётчик</button></div></section>`;
+};
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="food-plus"][data-id="example-water"]');if(!b)return;
+ state.customCounters=state.customCounters||[];const c={id:HappyFoodCounters.id(),title:'Вода',unit:'стакан, 250 мл',events:[]};state.customCounters.push(c);b.dataset.id=c.id;
+},true);
 
 </script>
 <script>/* Update 39: Sport's journal-scale keys (journal, profiles, sync ledger, recovery vault, backups —

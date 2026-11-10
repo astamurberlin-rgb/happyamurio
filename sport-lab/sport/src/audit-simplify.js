@@ -60,6 +60,7 @@ render=function(){
   box.outerHTML=values.length?`<p class="template-target-text">${esc(values.join(' · '))}</p>`:'';
  }
  auditSettingsNotes();
+ if(typeof auditLibraryFilters==='function'&&baseView==='library'&&!activePanel())auditLibraryFilters();
 };
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action="schedule-all"],[data-action="workout-more"]');if(!b)return;
@@ -112,3 +113,65 @@ new MutationObserver(()=>{const f=document.getElementById('exercise-config-form'
   if(!t.dataset.id){{const k=t.querySelector('select[name=kind]')?.closest('label');if(k)k.style.display='none';};for(const row of t.querySelectorAll('.template-item'))if(!row.querySelector('[name=exerciseId]')?.value)row.remove();}
  }
 }).observe(document.getElementById('modal-root'),{childList:true,subtree:true});
+
+/* Lab 10.11.2026 19:20 · Решения по пунктам «Обсудим» (2, 5, 13, 14, 16). */
+
+// 2. Rest between sets: a thin pale line, a green fill while the rest runs. A tap opens «−15 с / время / +15 с»;
+// a swipe still deletes the rest. The set keeps its «1 подход» label, on the same line as its value and tick.
+let auditRestOpen='';
+renderSetRest=function(s,ei,si,name){
+ const seconds=displayedRestSeconds(s);if(seconds==null)return '';const key=ei+','+si,open=auditRestOpen===key,planned=setRestSeconds(s);
+ return swipeSetRow('rest',ei,si,`<button type="button" class="rest-separator rest-line${open?' open':''}" data-action="rest-line" data-ei="${ei}" data-si="${si}" aria-expanded="${open}" aria-label="Перерыв после подхода ${si+1}: ${esc(name)}. Нажми, чтобы изменить время"><span class="rest-line-track"><span class="rest-line-fill" data-rest-fill="${key}"></span></span><span class="rest-line-time" data-rest-line="${key}">${countdownTime(seconds)}</span></button>${open&&planned!=null?`<div class="rest-line-edit"><button type="button" data-action="rest-step" data-step="-15" data-ei="${ei}" data-si="${si}" aria-label="Перерыв на 15 секунд короче">−15 с</button><b>${countdownTime(planned)}</b><button type="button" data-action="rest-step" data-step="15" data-ei="${ei}" data-si="${si}" aria-label="Перерыв на 15 секунд длиннее">+15 с</button></div>`:''}`);
+};
+function auditRestStep(ei,si,delta){
+ const s=state.active?.exercises[ei]?.sets[si],cur=setRestSeconds(s);if(cur==null)return;
+ const next=Math.max(5,Math.min(3600,cur+delta)),t=state.active.countdown;
+ s.restSeconds=next;state.lastRestSeconds=next;
+ if(t&&t.kind==='rest'&&t.ei===ei&&t.si===si&&!t.finished&&typeof applyLiveRestLength==='function')applyLiveRestLength(t,next);
+ persist();render();
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="rest-line"],[data-action="rest-step"]');if(!b)return;
+ e.preventDefault();e.stopImmediatePropagation();const ei=Number(b.dataset.ei),si=Number(b.dataset.si);
+ if(b.dataset.action==='rest-line'){const key=ei+','+si;auditRestOpen=auditRestOpen===key?'':key;render();}
+ else auditRestStep(ei,si,Number(b.dataset.step));
+},true);
+setInterval(()=>{
+ const fills=document.querySelectorAll('[data-rest-fill]');if(!fills.length)return;
+ const c=typeof engineRestContext==='function'?engineRestContext():null;
+ for(const f of fills){
+  const [ei,si]=f.dataset.restFill.split(',').map(Number),s=state.active?.exercises[ei]?.sets[si],live=c&&c.ei===ei&&c.si===si;
+  const pct=live?Math.max(0,Math.min(100,c.progress)):s?.restDone?100:0,line=f.closest('.rest-line');
+  f.style.width=pct+'%';line?.classList.toggle('running',!!live);line?.classList.toggle('done',!live&&!!s?.restDone);
+ }
+},200);
+
+// 5, 16. Library filters hide behind a round filter button beside the search; «Мои тренировки» has search only.
+let auditFiltersOpen=false;
+function auditLibraryFilters(){
+ const search=document.querySelector('#page .library-search');if(!search)return;
+ const blocks=[...document.querySelectorAll('#page .library-search ~ *')].filter(el=>el.matches('.library-sport,.library-filters,.catalog-group-filter,label,.row')&&el.querySelector('select'));
+ if(!blocks.length)return;
+ const templatesTab=libraryTab==='templates';
+ const box=document.createElement('div');box.className='library-filter-box';box.hidden=templatesTab||!auditFiltersOpen;blocks[0].before(box);blocks.forEach(b=>box.append(b));
+ if(templatesTab)return;
+ const manage=box.querySelector('[aria-label="Управлять группами"]');if(manage)manage.innerHTML=icon('pencil-simple'); // not a second filter icon
+ const active=[...box.querySelectorAll('select')].some(s=>s.selectedIndex>0);
+ const row=document.createElement('div');row.className='library-search-row';search.before(row);row.append(search);
+ row.insertAdjacentHTML('beforeend',`<button type="button" class="library-filter-toggle${active?' has-active':''}" data-action="library-filters" aria-expanded="${auditFiltersOpen}" aria-label="Фильтры${active?' (выбраны)':''}">${icon('sliders-horizontal')}</button>`);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action="library-filters"]');if(!b)return;e.stopImmediatePropagation();auditFiltersOpen=!auditFiltersOpen;render();},true);
+
+// 13. Counters look like in Day and Meal: a card «Счётчики», rows «название — минус, число, плюс», «Новый счётчик».
+// No explanations. While there is no counter yet, an example «Вода» stands in; its first «+» creates it for real.
+sportFoodHTML=function(){
+ const rows=[...sportFoodDefinitions().map(d=>[d,true]),...(state.customCounters||[]).map(d=>[d,false])];
+ if(!rows.length)rows.push([{id:'example-water',title:'Вода',unit:'стакан, 250 мл',events:[]},false]);
+ const item=([c,shared])=>{const n=shared?sportFoodEvents(c.id).length:(c.events||[]).filter(e=>e.date===selectedDate).length,sub=shared?`${c.q} ${c.u} · ${c.g} г`:c.unit||'';
+  return `<div class="tpItem"><div class="tpNm"><b>${esc(c.title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div><div class="tpStp" role="group" aria-label="${esc(c.title)}"><button type="button" data-action="food-minus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Убрать: ${esc(c.title)}" ${n?'':'disabled'}>−</button><span class="v${n?'':' tpZero'}">${n}</span><button type="button" data-action="food-plus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Добавить: ${esc(c.title)}">+</button></div></div>`};
+ return `<section id="sport-food-counters"><div class="card tpSec"><h2 class="tpT">Счётчики</h2>${rows.map(item).join('')}<button type="button" class="tpAdd" data-action="food-create"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Новый счётчик</button></div></section>`;
+};
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action="food-plus"][data-id="example-water"]');if(!b)return;
+ state.customCounters=state.customCounters||[];const c={id:HappyFoodCounters.id(),title:'Вода',unit:'стакан, 250 мл',events:[]};state.customCounters.push(c);b.dataset.id=c.id;
+},true);
