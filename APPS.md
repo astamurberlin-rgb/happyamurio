@@ -5,19 +5,19 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day · Update 57.1 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.1 |
+| Happy Day · Update 57.2 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.2 |
 | Happy Day · Update 56 | `day-56/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-56/ | 56 |
 | Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
 | Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
-| Happy Meal · Update 27 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27 |
+| Happy Meal · Update 27.1 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.1 |
 | Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.1 |
+| Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.2 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
 | Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
@@ -38,7 +38,7 @@
 
 ## Happy Day · Update 57 · 10.11.2026
 
-**57.1 (10.11.2026 10:55, тот же каталог `day-57/`):** свой тег при отметке самочувствия («Утро» и др.) записывается в сам раздел и не пропадает при снятии выбора (`SelfCare.addCheckinTag`).
+**57.2 (10.11.2026 11:30):** строка под «Выйти» — «Подождите, идёт синхронизация…». **57.1 (10.11.2026 10:55, тот же каталог `day-57/`):** свой тег при отметке самочувствия («Утро» и др.) записывается в сам раздел и не пропадает при снятии выбора (`SelfCare.addCheckinTag`).
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-57/ . Исходник — `day-56/` (main `9280726`). Самостоятельный HTML: `day-57/Happy-Day-57.html`. Живые вкладки: журнал, записанный другой вкладкой, принимается или сливается без сообщений (`reconcile` в `day-journal-sync.js`). Шапка без статуса и кнопки настроек; состояние синхронизации — строка под кнопками аккаунта; «Связь обновлена» убрана. Исправлено ложное «Вход изменился в другой вкладке» (ошибка 56). Хранилище — как в 56. Проверки: `node --test day-57/tests/*.test.cjs` (46), общие проверки, смоук двух вкладок в headless Chrome.
 
@@ -85,6 +85,8 @@
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
 
 ## Happy Meal · Update 27 · 10.11.2026
+
+**27.1 (10.11.2026 11:30, тот же каталог `meal-27/`):** разделы «· Cronometer» (и любые с `imported`) — только в днях с их записями; строка под «Выйти» одна; выход ждёт облако до 15 с; молчаливый повтор записи на устройство.
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-27/ . Исходник — `meal-26/` (26.1, main `9280726`); дневник, вход, синхронизация, настройки и библиотеки не менялись. `search-names.js`: 44 десерта BLS находятся по русским поисковым названиям (82 фразы — в индексе BLS, без новых карточек и марок), 15 записей USDA получили русские названия в локализованном слое самой USDA (не зависят от коллекции «Десерты»). Проверки: `node meal-27/checks/check-search-names.mjs`, `check-startup`, `check-auth-identity`, `check-desserts`, общие проверки, смоук в headless Chrome с реальными библиотеками. Происхождение — `meal-27/SOURCE-PROVENANCE.json`.
 
@@ -167,6 +169,8 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 
 ## Happy Sport · Update 39 · 09.11.2026
 
+**39.2 (10.11.2026 11:30, тот же каталог `sport-39/`):** строка под «Выйти» — «Подождите, идёт синхронизация…»; «Выйти» ждёт облако до 15 с (`sportFlushBeforeExit`).
+
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/sport-39/ . Исходники `sport-39/sport/src/` (из `sport-38/` 38.7, main `6ac5339`), сборка `node sport-39/scripts/build-release.mjs`, проверки `npm --prefix sport-39/sport run check` (+ `check-local-store.mjs`), `check-settings-layout.mjs`, `verify-release.mjs`. Происхождение — `sport-39/SOURCE-PROVENANCE.json`.
 
 Журнал, резерв синхронизации, резерв восстановления, копия до импорта и исходная копия прототипа переехали из localStorage в IndexedDB `happy-sport-private-v1` через синхронный фасад `sport/src/local-store.js` (`sportStorage`), открываемый до запуска приложения; перенос при первом открытии с проверкой чтением и освобождением localStorage; при недоступной IndexedDB — остаёмся в localStorage. Движок синхронизации ждёт `flush()` перед отправкой; уведомления между вкладками — BroadcastChannel. Ключи входа и общие с Day/Meal (счётчики, замеры, сводки) — по-прежнему в localStorage. Вторая вкладка пока по правилу 38.4; живые вкладки — 39.1. Подробности — `sport-39/README.md`.
@@ -203,3 +207,5 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 Исполняемый код, общие стили, иконки, упражнения, справочники и исходные проверки закреплены внутри `sport-37/`. Сборка: `node sport-37/scripts/build-release.mjs`; проверки: `npm --prefix sport-37/sport run check`. Прежний `sport/`, Day, Meal и студии не изменены. Происхождение и контрольные суммы — `sport-37/SOURCE-PROVENANCE.json`. Публичная метка — **Happy Sport · Update 37**; папка `sport-37/sport/` содержит исходники и промежуточную сборку. Основной вход выпуска — `sport-37/index.html`.
 
 Код облачного обмена и ключи сохранены из согласованной версии. Регистрация, общий обмен сводками/замерами/счётчиками и Icon Studio остаются ограничены как в исходной сборке. Кнопки связанных приложений ведут на закреплённые информационные страницы этого выпуска. Этот перенос не включает новые возможности связи трёх приложений и не меняет Sites.
+
+— Claude · 10.11.2026 11:30 (Day 57.2, Meal 27.1, Sport 39.2)

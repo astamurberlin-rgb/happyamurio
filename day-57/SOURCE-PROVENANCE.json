@@ -1,10 +1,10 @@
 {
- "release": "Happy Day Update 57.1",
+ "release": "Happy Day Update 57.2",
  "date": "2026-11-10",
  "source_release": "day-56 (Happy Day Update 56)",
  "source_commit": "9280726e7dd358d8ac436ffd99432874d82ba8e8",
  "source_app_version": "56",
- "destination_app_version": "57.1",
+ "destination_app_version": "57.2",
  "adaptations": [
   "day-journal-sync.js: live tabs — reconcile()/adoptExternal()/settle(): a journal written by another tab is adopted or three-way merged (HappyDayProfileData.merge) inside the journal lock; same-field tab conflicts resolve to the acting tab without a variant; triggers: facade change, focus/pageshow/visibilitychange, withLock, writeLocal",
   "day-journal-sync.js: sync line #day-sync-line under the account buttons; long status moved to the developer section; guest-recovery card shown only when guest records exist",
@@ -15,8 +15,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-57.html",
-   "size": 3628137,
-   "sha256": "11b928b08b2ce32a736cf42e1994d8eb0ab176ea54370cbc651d56ec11233e5c"
+   "size": 3629086,
+   "sha256": "d33a2f995ecfcd71f191da5bc6d480aba312bef280fb73cf63546d0fd58b1e13"
   },
   {
    "path": "README.md",
@@ -180,8 +180,8 @@
   },
   {
    "path": "day-journal-sync.js",
-   "size": 92099,
-   "sha256": "d4c22ecb71b5e5e21b8ef4b4b2a90caea757d1d8b6054e9cc3f81b598b6e3356"
+   "size": 92193,
+   "sha256": "aa1d408fadcd5eb5941c4a7a410826e07dc83ed03124348009823034276897d1"
   },
   {
    "path": "day-local-store.js",
@@ -250,8 +250,8 @@
   },
   {
    "path": "index.html",
-   "size": 538246,
-   "sha256": "476e5c0eea11da33a8f2d5590c1f8d0acabc380497dbebb88a0456c3df3dcc6e"
+   "size": 538551,
+   "sha256": "d28066f7b5258f80583f0d0302d414de179a10ed403fe9db7304048da06a8911"
   },
   {
    "path": "manifest.webmanifest",
@@ -260,8 +260,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 20522,
-   "sha256": "62aa681d23639539e8f7b9d1f7ee331a2c8677bcacd7341dbc340c35d321a985"
+   "size": 20913,
+   "sha256": "1eb50b1a79e1b1650c668b9a3a2dd11b29871989411905af61c52349be5ee521"
   },
   {
    "path": "section-wheel.css",
@@ -350,8 +350,8 @@
   },
   {
    "path": "shared/happy-ui.js",
-   "size": 12129,
-   "sha256": "c499212621a2b250ad9bf0234f96acf9020a056d36a3cc27ab6b3f92031fc9c9"
+   "size": 12434,
+   "sha256": "089850813216324c3336258d4105b15b8c2fd29e8c0362e67b8446f9fb3c55f5"
   },
   {
    "path": "shared/imported-history.js",
@@ -440,6 +440,15 @@
     "selfcare-ui.js: addCheckinTag() writes a custom tag into the real section (or the check-in list for «Текущие отметки») — checkinSection() rebuilds its tag list on every call, so a tag added to its copy lived only while selected",
     "index.html: «Свой тег» handler in check-in mode calls SelfCare.addCheckinTag(t) and save(); cache busters ?v=57.1, selfcare-ui.js?v=57.1, footer and release note 57.1",
     "tests/checkin-tag.test.cjs (4 tests); standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.1"
+   ]
+  },
+  {
+   "version": "57.2",
+   "date": "2026-11-10",
+   "changes": [
+    "day-journal-sync.js: sync line under the account buttons «Подождите, идёт синхронизация…» instead of «Синхронизация…»",
+    "shared/happy-ui.js: while «Выйти» waits for the cloud (confirmProfileForExit) the card shows «Подождите, идёт синхронизация…» instead of «Подожди…»",
+    "cache busters ?v=57.2, footer and release note 57.2; standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.2"
    ]
   }
  ]

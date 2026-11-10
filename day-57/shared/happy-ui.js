@@ -63,10 +63,11 @@
         '<div class="happy-password"><input class="happy-input" type="'+(d.visible?'text':'password')+'" id="clPw" name="password" aria-label="Пароль" placeholder="'+(mode==='signup'?'Пароль, от 8 знаков':'Пароль')+'" autocomplete="'+(mode==='signup'?'new-password':'current-password')+'" value="'+esc(d.password)+'"><button class="happy-password-toggle" type="button" data-happy-ui="password" aria-label="'+(d.visible?'Скрыть пароль':'Показать пароль')+'" aria-pressed="'+!!d.visible+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>'+
         '<div class="happy-actions">'+(mode==='signup'?button(attr,'up','Создать аккаунт',true,o.busy,true)+button(attr,'login','Уже есть аккаунт',false,o.busy):button(attr,'in','Войти',true,o.busy,true)+button(attr,'register','Создать аккаунт',false,o.busy))+'</div>';
     }
-    var message=o.busy?'Подожди…':o.error||o.message||'';
+    var message=o.busy?(busyText||'Подожди…'):o.error||o.message||'';
     if(message)html+='<p class="happy-note'+(o.error&&!o.busy?' happy-error':'')+'" role="status">'+esc(message)+'</p>';
     return '<div class="happy-account" data-happy-account>'+html+'</div>';
   }
+  var OUT_BUSY='Подождите, идёт синхронизация…',busyText='';
   async function act(action,a){
     var state=a.state;if(state.busy)return;
     if(typeof root.clInvalidateMealRead==='function')root.clInvalidateMealRead();
@@ -79,9 +80,10 @@
       try{await saveProfile(name);editing=false;state.msg='Имя сохранено для всех приложений Happy.'}catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}return;
     }
     if(action==='out'){
-      state.busy=true;state.err='';a.paint();
+      /* Выход ждёт, пока записи уйдут в облако: под кнопками — «Подождите, идёт синхронизация…» */
+      state.busy=true;state.err='';busyText=OUT_BUSY;a.paint();
       try{await a.signOut();editing=false;mode='login';profileAt=0;profileUid=null;++profileRevision;state.msg='Выход выполнен. Записи на устройстве сохранены.'}
-      catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}return;
+      catch(e){state.err=e.message||String(e)}finally{state.busy=false;busyText='';a.paint()}return;
     }
     if(action==='sync'){
       state.busy=true;state.err='';state.msg='';a.paint();

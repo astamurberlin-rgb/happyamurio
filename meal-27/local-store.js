@@ -17,12 +17,27 @@ async function get(k,legacy){
  if(localStorage.getItem(marker(k)))throw Error('Сохранённый журнал временно недоступен. Не очищай данные браузера.');
  return legacy?legacy():localStorage.getItem(k);
 }
-async function set(k,value){
+function storageError(e){const x=e instanceof Error?e:Error(e&&e.message||'Не удалось сохранить журнал');x.storage=true;return x}
+async function setOnce(k,value){
  const db=await open();localStorage.setItem(marker(k),'1');
- return new Promise((resolve,reject)=>{const tx=db.transaction('values','readwrite'),store=tx.objectStore('values'),read=store.get(k);let saved;
+ return new Promise((resolve,reject)=>{let tx,saved;
+ try{tx=db.transaction('values','readwrite')}catch(e){reject(storageError(e));return}
+ const store=tx.objectStore('values'),read=store.get(k);
  read.onsuccess=()=>{try{saved=mergeValue(k,read.result,value);store.put(saved,k)}catch(e){tx.abort();reject(e)}};
- tx.oncomplete=()=>resolve(saved);tx.onerror=tx.onabort=()=>reject(tx.error||Error('Не удалось сохранить журнал'));
+ tx.oncomplete=()=>resolve(saved);
+ // Request errors bubble here before tx.error is set: take the request's own error.
+ tx.onerror=ev=>reject(storageError((ev&&ev.target&&ev.target.error)||tx.error));tx.onabort=()=>reject(storageError(tx.error));
  });
+}
+/* Meal 27.1: a write the browser refused (Safari with many tabs, a closed connection) is retried quietly on a fresh
+   connection; the journal patch is already in localStorage, so nothing is lost while we retry. */
+async function set(k,value){
+ let last;
+ for(let attempt=0;attempt<3;attempt++){
+  try{return await setOnce(k,value)}
+  catch(e){if(!e||!e.storage)throw e;last=e;try{const db=await opening;db&&db.close()}catch(_){}opening=null;await new Promise(r=>setTimeout(r,250*(attempt+1)))}
+ }
+ throw last;
 }
 root.MealLocalStore={handles,get,set,mergeValue};
 })(globalThis);

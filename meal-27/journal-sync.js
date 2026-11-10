@@ -14,7 +14,11 @@ const ownerCurrent=()=>ready&&!paused&&root.HappyProfile.matches(owner)&&((root.
 const current=()=>ownerCurrent()&&!(root.MealAuthFence&&root.MealAuthFence.pending);
 function paint(){const n=document.getElementById('mealJournalStatus');if(n)n.textContent=status}
 function state(s){status=s;paint()}
-function pendingState(){state(root.clOn()?'Синхронизация…':'Сохранено на устройстве')}
+function settled(){state(SYNCED);if(root.CL&&root.CL.err&&typeof root.clErrText==='function'&&root.CL.err===root.clErrText(null,0)){root.CL.err='';if(typeof root.clPaint==='function')root.clPaint()}}
+/* Meal 27.1: тексты строки под «Выйти» — те же, что в Day и Sport. */
+const SYNCING='Подождите, идёт синхронизация…',SYNCED='Синхронизировано',OFFLINE='Нет связи · записи сохранены на устройстве';
+const offlineError=e=>root.navigator&&root.navigator.onLine===false||(e&&(e.name==='TypeError'||/связи|сети|network|fetch|offline|timeout|Failed/i.test(e.message||'')));
+function pendingState(){state(root.clOn()?SYNCING:'Сохранено на устройстве')}
 function read(){let d=M.empty(owner);for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(key+':pending:'))d=M.merge(d,JSON.parse(localStorage.getItem(k)),owner)}return d}
 function keep(d){doc=d;root.DB.__journalSync=M.copy(d)}
 function queue(){clearTimeout(timer);timer=setTimeout(sync,900)}
@@ -66,14 +70,14 @@ async function sync(){
  const generation=root.MealAuthFence&&root.MealAuthFence.generation,ck=root.CL.ck;
  const check=()=>{if(!current()||(root.MealAuthFence&&root.MealAuthFence.generation)!==generation||root.CL.ck!==ck)throw Error('Вход изменился во время обмена');};
  await accept(null,check);check();if(!root.clOn()){state('Сохранено на устройстве');return}
- state('Синхронизация…');const t=transport();
+ state(SYNCING);const t=transport();
  for(let i=0;i<4;i++){
  const remote=await t.get();check();if(!current())return;await accept(remote&&remote.doc,check);check();if(!current())return;const next=M.copy(doc);
- if(remote&&M.stable(next)===M.stable(remote.doc)){clean(next);state('Синхронизировано');return}
+ if(remote&&M.stable(next)===M.stable(remote.doc)){clean(next);settled();return}
  if(!await t.put(next,remote)){check();continue;}check();if(!current())return;clean(next);await accept(next,check);check();
- if(M.stable(doc)!==M.stable(next)){again=true;state('Синхронизация…')}else state('Синхронизировано');return;
+ if(M.stable(doc)!==M.stable(next)){again=true;state(SYNCING)}else settled();return;
  }again=true;throw Error('Журнал изменился на другом устройстве; повторяем обмен.');
- }catch(e){state('Не удалось синхронизировать')}finally{busy=false;if(again){again=false;queue()}}
+ }catch(e){state(offlineError(e)?OFFLINE:'Не удалось синхронизировать')}finally{busy=false;if(again){again=false;queue()}}
 }
 function prepare(next){if(root.MealSources)root.MealSources.prepareTestImport(next,root.DB,root.MEAL_SOURCE_DEFAULTS_RELEASE);return prepareLocal(next)}
 function prepareLocal(next){
@@ -91,7 +95,18 @@ function initialize(hadSaved){
  document.addEventListener('visibilitychange',()=>{if(document.hidden){try{capture();root.rawSet(root.K.db,JSON.stringify(root.DB))}catch(e){state(e.message)}}else sync()});
  setInterval(()=>{if(!document.hidden)sync()},15000);queue();
 }
+/* Meal 27.1: «Выйти» ждёт, пока записи уйдут в облако (до ms). true — подтверждено сервером. */
+async function flush(ms=15000){
+ if(!ready||!root.clOn())return false;const deadline=Date.now()+ms;
+ try{capture()}catch(_){return false}
+ while(Date.now()<deadline){
+  if(root.navigator&&root.navigator.onLine===false){state(OFFLINE);return false}
+  if(!busy){clearTimeout(timer);await sync();if(status===SYNCED&&!busy&&!again)return true}
+  await new Promise(r=>setTimeout(r,400));
+ }
+ return status===SYNCED;
+}
 function preferJournal(itemId,rev){const r=doc&&doc.records.find(r=>r.id===JSON.stringify(['item',itemId]));return !!r&&r.rev>rev}
 function init(hadSaved){try{initialize(hadSaved)}catch(e){ready=false;state('Облачная синхронизация недоступна: '+e.message+'. Записи сохраняются на устройстве.')}}
-root.MealJournal={pause:()=>{paused=true},resume:()=>{paused=false;queue()},init,capture,sync,prepare,prepareLocal,paint,preferJournal,transport,document:()=>M.copy(doc),status:()=>status};
+root.MealJournal={pause:()=>{paused=true},resume:()=>{paused=false;queue()},init,capture,sync,flush,prepare,prepareLocal,paint,preferJournal,transport,document:()=>M.copy(doc),status:()=>status};
 })(globalThis);

@@ -14,7 +14,7 @@ for(const path of tracked){const bytes=await readFile(new URL(path,root));files.
 // The base this release was derived from: main at the time sport-37 was copied (not the release commit itself).
 let sourceCommit=previous.update==='38'?previous.source_commit:null;try{sourceCommit=sourceCommit||execSync('git rev-parse origin/main',{cwd:rootPath,encoding:'utf8'}).trim()}catch{sourceCommit=sourceCommit||previous.source_commit}
 const manifest={
- app:'Happy Sport',update:'39.1',
+ app:'Happy Sport',update:'39.2',
  source_release:'sport-38 (Happy Sport · Update 38.7)',source_commit_of_update_38:previous.update?.startsWith('38')?previous.source_commit:previous.source_commit_of_update_38,
  source_commit:sourceCommit,
  github_pages_url:'https://astamurberlin-rgb.github.io/happyamurio/sport-39/',

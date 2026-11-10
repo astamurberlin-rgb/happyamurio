@@ -565,7 +565,7 @@ function paintPassive(){
  const note=document.createElement('p');note.className='happy-note';note.textContent='Ниже неизменные истории на момент исходной сверки. Новые секунды текущего сеанса сохраняются отдельно на этом устройстве; эти две версии не складываются.';box.append(note);
  for(const source of archive.sources){const details=document.createElement('details'),summary=document.createElement('summary'),pre=document.createElement('pre');summary.textContent=source.source==='local'?'История с устройства при исходной сверке':'Прежняя облачная история';pre.textContent=JSON.stringify(source.mindByDate,null,2);pre.style.whiteSpace='pre-wrap';pre.style.overflowWrap='anywhere';details.append(summary,pre);box.append(details);}
 }
-/* Update 57: one small line under the account buttons — «Синхронизация…» → «Синхронизировано · 01:07». */
+/* Update 57: one small line under the account buttons — «Подождите, идёт синхронизация…» (57.2) → «Синхронизировано · 01:07». */
 let syncedAt=0;
 function lineText(){
  const signed=typeof clOn==='function'&&clOn();if(!signed)return '';
@@ -574,9 +574,9 @@ function lineText(){
  const settled=['saved','current','restored','uploaded','empty'].includes(statusCode)||(statusCode==='other-tab'&&done());
  if(settled){if(!syncedAt)syncedAt=Date.now();return 'Синхронизировано'+time(syncedAt);}
  syncedAt=0;
- if(['idle','checking','dirty','saving','readback','retryable','other-tab'].includes(statusCode))return 'Синхронизация…';
+ if(['idle','checking','dirty','saving','readback','retryable','other-tab'].includes(statusCode))return 'Подождите, идёт синхронизация…';
  if(statusCode==='offline')return 'Нет связи · записи сохранены на устройстве';
- if(statusCode==='unavailable')return 'Синхронизация…';
+ if(statusCode==='unavailable')return 'Подождите, идёт синхронизация…';
  return 'Синхронизация остановлена · подробности в разделе для разработчика';
 }
 function paintLine(){const el=document.getElementById('day-sync-line');if(el){const t=lineText();if(el.textContent!==t)el.textContent=t;el.hidden=!t;}}

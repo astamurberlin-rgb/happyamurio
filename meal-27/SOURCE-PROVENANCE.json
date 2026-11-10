@@ -1,5 +1,5 @@
 {
- "release": "Happy Meal Update 27",
+ "release": "Happy Meal Update 27.1",
  "date": "2026-11-10",
  "entry": "meal-27/index.html",
  "source": {
@@ -29,8 +29,8 @@
   },
   {
    "path": "account-ui.js",
-   "size": 11202,
-   "sha256": "b13b827170913e22352e9dab4b69f675472bccb372b3a117ae6cf998fa7f99b5"
+   "size": 11304,
+   "sha256": "4570b44f21c3b26855320bfd2a485193ee051147d8e317baf2b7be75c3ca3977"
   },
   {
    "path": "app-icons/happy-meal-20261029-152.png",
@@ -219,8 +219,8 @@
   },
   {
    "path": "controls.js",
-   "size": 16926,
-   "sha256": "6aa5cd0e1daf39db4eb7d48c173b71108950cbcaf9207e184484aad43f910a56"
+   "size": 16984,
+   "sha256": "14a38c084ea04724b686e29aa44852a32d6560e8e51127a3ea538a40681f262a"
   },
   {
    "path": "counters.js",
@@ -239,8 +239,8 @@
   },
   {
    "path": "index.html",
-   "size": 604485,
-   "sha256": "4fcab42981e2584a2944fe9a1a2637ccdec9391cca4dfdc26d4f86b3ce71fee4"
+   "size": 606957,
+   "sha256": "7d7c95379ba6ef596bc67d35b8d90fab7fa684ae9db962b241796eb8474bc389"
   },
   {
    "path": "journal-model.js",
@@ -249,13 +249,13 @@
   },
   {
    "path": "journal-sync.js",
-   "size": 9662,
-   "sha256": "4ed573120cea6ba5d72bd91ed2709826dae6f178b5d38fd6e586805ef8bb618c"
+   "size": 10813,
+   "sha256": "fe804ba4c3d882d4c9a300e1d3fce347f0df1838d28fbcfa33d0ef7496bfad75"
   },
   {
    "path": "local-store.js",
-   "size": 2545,
-   "sha256": "6f098a6d16b0883b8b979191ebeda09aba0a685931f0544de35d94b9b2e4adee"
+   "size": 3376,
+   "sha256": "b0562e051b6445f1b1f15efce36590e8fb5198ecbdb819dcae0a12c9801f955c"
   },
   {
    "path": "manifest.webmanifest",
@@ -424,8 +424,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 20013,
-   "sha256": "10eda6c0b3081660af72d21f6599a57924e9d7387ad5e2e3d449e57f5ac0c3f6"
+   "size": 21204,
+   "sha256": "615dd66358b34c920dc38498bc8b11069d50b790150dfaf6f03447f7f15d1571"
   },
   {
    "path": "report.css",
@@ -1737,5 +1737,17 @@
    "date": "2026-11-09"
   }
  },
- "pointReleases": []
+ "pointReleases": [
+  {
+   "version": "27.1",
+   "date": "2026-11-10",
+   "changes": [
+    "index.html: sectionsForDate() — sections imported from another app (flag imported or title «· Cronometer») show only on days that have records in them; controls.js «Переместить в» lists the day's sections",
+    "journal-sync.js: status texts «Подождите, идёт синхронизация…» / «Синхронизировано» / «Нет связи · записи сохранены на устройстве»; flush() — sign-out waits up to 15 s for the journal; a stale network error clears once the journal is confirmed",
+    "index.html clPaint: after sign-in a background «Нет связи с сервером» is not shown next to the sync line; account note without technical text (account-ui.js)",
+    "local-store.js: a refused IndexedDB write is retried on a fresh connection (3 attempts); index.html rawSet: storage errors retried quietly every 5 s, a message only after 30 s",
+    "cache busters ?v=27.1, footer and release note 27.1; shared/apps.json meal.version 27.1"
+   ]
+  }
+ ]
 }

@@ -7,13 +7,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Meal">
-<title>Happy Meal · Update 27</title>
+<title>Happy Meal · Update 27.1</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-meal-20261102-softserve-cool-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-meal-20261102-softserve-cool-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-meal-20261102-softserve-cool-152.png">
 <link rel="apple-touch-icon" sizes="167x167" href="./app-icons/happy-meal-20261102-softserve-cool-167.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-meal-20261102-softserve-cool-180.png?v=27">
-<link rel="manifest" href="./manifest.webmanifest?v=27">
+<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-meal-20261102-softserve-cool-180.png?v=27.1">
+<link rel="manifest" href="./manifest.webmanifest?v=27.1">
 <style>
 :root{
   --base:#00A8F5;
@@ -1413,19 +1413,19 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 @media(prefers-reduced-motion:reduce){.happy-switch,.happy-switch::after{transition:none}}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="report.css?v=27">
-<link rel="stylesheet" href="user-products.css?v=27">
-<script src="food-libraries.js?v=27"></script>
-<script src="portions.js?v=27"></script>
-<script src="sources.js?v=27"></script>
-<script src="backup-model.js?v=27"></script>
-<script src="local-store.js?v=27"></script>
-<script src="journal-model.js?v=27"></script>
-<script src="journal-sync.js?v=27"></script>
-<script src="./shared/meal-products-model.js?v=27"></script>
-<link rel="stylesheet" href="catalog.css?v=27">
-<link rel="stylesheet" href="./shared/food-counters.css?v=27">
-<link rel="stylesheet" href="release-notes.css?v=27">
+<link rel="stylesheet" href="report.css?v=27.1">
+<link rel="stylesheet" href="user-products.css?v=27.1">
+<script src="food-libraries.js?v=27.1"></script>
+<script src="portions.js?v=27.1"></script>
+<script src="sources.js?v=27.1"></script>
+<script src="backup-model.js?v=27.1"></script>
+<script src="local-store.js?v=27.1"></script>
+<script src="journal-model.js?v=27.1"></script>
+<script src="journal-sync.js?v=27.1"></script>
+<script src="./shared/meal-products-model.js?v=27.1"></script>
+<link rel="stylesheet" href="catalog.css?v=27.1">
+<link rel="stylesheet" href="./shared/food-counters.css?v=27.1">
+<link rel="stylesheet" href="release-notes.css?v=27.1">
 <style id="meal-settings-structure">/* Update 26: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
 .happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}[data-happy-section="account"] [data-cl="sync"]{display:none}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
@@ -1626,7 +1626,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="release-link" id="openReleaseHistory"><b>История обновлений</b><small>Что нового в Happy Meal · версии и изменения</small></button></div>
     <p class="note mlCopy">© 2026 Astamur. Все права защищены.</p>
-    <footer class="app-version happy-version" data-app-version="27" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Meal · Update 26.1</div><small>Обновлено 09.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="27.1" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Meal · Update 26.1</div><small>Обновлено 09.11.2026</small></footer>
     </section>
   </div>
 
@@ -1836,10 +1836,11 @@ var HappyProfile=HappyProfiles.create("meal");</script>
         '<div class="happy-password"><input class="happy-input" type="'+(d.visible?'text':'password')+'" id="clPw" name="password" aria-label="Пароль" placeholder="'+(mode==='signup'?'Пароль, от 8 знаков':'Пароль')+'" autocomplete="'+(mode==='signup'?'new-password':'current-password')+'" value="'+esc(d.password)+'"><button class="happy-password-toggle" type="button" data-happy-ui="password" aria-label="'+(d.visible?'Скрыть пароль':'Показать пароль')+'" aria-pressed="'+!!d.visible+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><\/svg><\/button><\/div>'+
         '<div class="happy-actions">'+(mode==='signup'?button(attr,'up','Создать аккаунт',true,o.busy,true)+button(attr,'login','Уже есть аккаунт',false,o.busy):button(attr,'in','Войти',true,o.busy,true)+button(attr,'register','Создать аккаунт',false,o.busy))+'<\/div>';
     }
-    var message=o.busy?'Подожди…':o.error||o.message||'';
+    var message=o.busy?(busyText||'Подожди…'):o.error||o.message||'';
     if(message)html+='<p class="happy-note'+(o.error&&!o.busy?' happy-error':'')+'" role="status">'+esc(message)+'<\/p>';
     return '<div class="happy-account" data-happy-account>'+html+'<\/div>';
   }
+  var OUT_BUSY='Подождите, идёт синхронизация…',busyText='';
   async function act(action,a){
     var state=a.state;if(state.busy)return;
     if(action==='register'||action==='login'){mode=action==='register'?'signup':'login';state.err='';state.msg='';a.paint();return}
@@ -1851,9 +1852,10 @@ var HappyProfile=HappyProfiles.create("meal");</script>
       try{await saveProfile(name);editing=false;state.msg='Имя сохранено для всех приложений Happy.'}catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}return;
     }
     if(action==='out'){
-      state.busy=true;state.err='';a.paint();
+      /* Выход ждёт, пока записи уйдут в облако: под кнопками — «Подождите, идёт синхронизация…» */
+      state.busy=true;state.err='';busyText=OUT_BUSY;a.paint();
       try{await a.signOut();editing=false;mode='login';profileAt=0;profileUid=null;++profileRevision;state.msg='Выход выполнен. Записи на устройстве сохранены.'}
-      catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}return;
+      catch(e){state.err=e.message||String(e)}finally{state.busy=false;busyText='';a.paint()}return;
     }
     if(action==='sync'){
       state.busy=true;state.err='';state.msg='';a.paint();
@@ -1872,7 +1874,7 @@ var HappyProfile=HappyProfiles.create("meal");</script>
       mode='login';profileAt=0;await a.afterSignIn();
     }catch(e){state.err=e.message||String(e)}finally{state.busy=false;a.paint()}
   }
-  function note(){return '<p class="happy-note">Один аккаунт и общее имя для Happy Day, Happy Meal и Happy Sport. Создай аккаунт один раз, затем входи с той же почтой и паролем. Сохрани пароль: он нужен для чтения облачных копий. Полная синхронизация дневников пока в разработке.<\/p>'}
+  function note(){return '<p class="happy-note">Один аккаунт и одно имя для Happy Day, Happy Meal и Happy Sport. Сохрани пароль: без него облачные записи не прочитать.<\/p>'}
   function lastText(value){return value?'Связь обновлена в '+new Date(value).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'Вход выполнен'}
   root.HappyUI={escape:esc,draft:draft,account:account,act:act,accountNote:note,lastText:lastText,refreshProfile:refreshProfile,saveProfile:saveProfile};
   if(typeof document!=='undefined'){
@@ -1921,8 +1923,8 @@ var HappyProfile=HappyProfiles.create("meal");</script>
   root.HappyHistory={meal:meal};
 })(globalThis);
 </script>
-<script src="./shared/food-counters.js?v=27"></script>
-<script src="counters.js?v=27"></script>
+<script src="./shared/food-counters.js?v=27.1"></script>
+<script src="counters.js?v=27.1"></script>
 <script>
 // Initialize auth guards before the first asynchronous journal read.
 var CL={s:null,ck:null,kraw:null,busy:false,err:'',msg:'',last:0,ready:false};
@@ -1940,7 +1942,21 @@ async function rawBaseSet(k,v){
   try{ localStorage.setItem(k,v) }catch(e){ mem[k]=v; throw new Error('Не удалось сохранить на устройстве: память браузера заполнена или недоступна. Записи в облаке не пострадали; освободи место и повтори.') }
 }
 async function rawGet(k){return HappyProfile.read(k,rawBaseGet,rawBaseSet)}
-function rawSet(k,v){var p=HappyProfile.write(k,v,rawBaseSet);p.catch(function(e){try{jrToastLong(e.message)}catch(ignore){}});return p}
+/* Meal 27.1: если браузер не дал записать на устройство — повторяем молча; сообщаем, только если не получается дольше 30 с */
+var RAW_RETRY={pending:{},since:0,timer:null,told:false};
+function rawSet(k,v){var guard=HappyProfile.fence(),p=HappyProfile.write(k,v,rawBaseSet);p.then(function(){ rawRetryDone(k) },function(e){ if(e&&e.storage){ e.quiet=true; rawRetryLater(k,v,guard) } else { try{jrToastLong(e.message)}catch(ignore){} } });return p}
+function rawRetryDone(k){ delete RAW_RETRY.pending[k]; if(!Object.keys(RAW_RETRY.pending).length){ RAW_RETRY.since=0; RAW_RETRY.told=false } }
+function rawRetryLater(k,v,guard){
+  RAW_RETRY.pending[k]={v:v,guard:guard}; if(!RAW_RETRY.since) RAW_RETRY.since=Date.now();
+  if(!RAW_RETRY.told&&Date.now()-RAW_RETRY.since>30000){ RAW_RETRY.told=true; try{jrToastLong('Не получается сохранить записи на этом устройстве. Закрой лишние вкладки Happy Meal и обнови страницу.')}catch(ignore){} }
+  clearTimeout(RAW_RETRY.timer);
+  RAW_RETRY.timer=setTimeout(function(){
+    Object.keys(RAW_RETRY.pending).forEach(function(key){ var x=RAW_RETRY.pending[key];
+      try{ x.guard() }catch(e){ delete RAW_RETRY.pending[key]; return }      // профиль сменился — чужое не дописываем
+      rawSet(key,key===K.db?JSON.stringify(DB):x.v);
+    });
+  },5000);
+}
 /* Своё окно ввода: системный prompt() во встроенных браузерах
    часто заблокирован и молча возвращает пустоту — из-за этого
    не работали ни свои теги, ни переименование. */
@@ -2803,9 +2819,17 @@ function parsePortion(str,fid){
 
 /* ═══════════ ДЕНЬ ═══════════ */
 // Retain historical definitions, hide dated legacy sections on later empty days.
+/* Meal 27.1: разделы, перенесённые из другого приложения (Cronometer и др.), — только для прошлых дней:
+   виден там, где в нём есть записи, и не появляется в новых днях. Признак — imported у раздела
+   или подпись «· Cronometer» (так названы разделы перенесённого дневника). */
+function importedSection(s){ return !!(s&&(s.imported||/·\s*Cronometer\s*$/i.test(String(s.t||'')))) }
 function sectionsForDate(date){
   var items=(DB.days[date]&&DB.days[date].items)||[];
-  return DB.sections.filter(function(s){return !s.visibleBefore||date<s.visibleBefore||items.some(function(i){return i.sec===s.k})});
+  function used(s){ return items.some(function(i){return i.sec===s.k}) }
+  return DB.sections.filter(function(s){
+    if(importedSection(s)) return used(s);
+    return !s.visibleBefore||date<s.visibleBefore||used(s);
+  });
 }
 function sec(k){ return DB.sections.filter(function(s){ return s.k===k })[0] }
 function day(d){ if(!DB.days[d]) DB.days[d]={items:[]}; var e=DB.days[d]; if(!e.items) e.items=[]; return e }
@@ -2832,7 +2856,7 @@ function portTxt(c){ return fmt(c.q)+' '+uWord(c.q,c.u) }
 function secAt(h){ var want=h<11?'am':h<16?'pm':h<21?'dn':'sn'; return sec(want)?want:(DB.sections[0]&&DB.sections[0].k) }
 function autoSec(){ return secAt(new Date().getHours()) }
 var saveT=null;
-function save(){ if(typeof MealCatalog!=='undefined') MealCatalog.cacheUsed(DB,FOODS); MealProducts.snapshotItems(DB,FOODS); clearTimeout(saveT); try{MealJournal.capture()}catch(e){jrToastLong(e.message);return} var savedGuard=HappyProfile.fence();saveT=setTimeout(async function(){saveT=null;try{savedGuard();await rawSet(K.db,JSON.stringify(DB));savedGuard();linkWrite()}catch(e){jrToastLong(e.message)}},220) }
+function save(){ if(typeof MealCatalog!=='undefined') MealCatalog.cacheUsed(DB,FOODS); MealProducts.snapshotItems(DB,FOODS); clearTimeout(saveT); try{MealJournal.capture()}catch(e){jrToastLong(e.message);return} var savedGuard=HappyProfile.fence();saveT=setTimeout(async function(){saveT=null;try{savedGuard();await rawSet(K.db,JSON.stringify(DB));savedGuard();linkWrite()}catch(e){if(!e||!e.quiet)jrToastLong(e.message)}},220) }
 
 /* ═══════════ КОЛЬЦО ЭНЕРГИИ НА ГЛАВНОМ ═══════════
    Общий виджет Meal и Sport (energy-ring.md, утверждён 25 октября; рисует ring.js). Нажатие на кружок — по кругу:
@@ -5871,6 +5895,8 @@ async function clSignIn(email,pw,mode,name){
  }finally{action.finish();}
 }
 async function clSignOut(){
+ /* Meal 27.1: сначала дождаться, пока журнал уйдёт в облако (до 15 с); без сети записи остаются на устройстве и уйдут после входа */
+ try{await MealJournal.flush(15000)}catch(e){}
  var action=clBegin(),c=action.context;
  try{MealJournal.capture();await rawSet(K.db,JSON.stringify(DB));clGuard(c,true);
   clPersist(c,null,null,null,0);CL.err='';HappyProfile.changed(null);
@@ -5935,8 +5961,10 @@ function clWhen(ms){
 function clEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
 function clPaint(){
   var el=document.getElementById('clBox'); if(!el) return;
-  el.innerHTML=HappyUI.account({connected:clOn(),name:CL.s&&CL.s.name,email:CL.s&&CL.s.email,busy:CL.busy,error:CL.err,message:CL.msg,draft:HappyUI.draft(el)});
-  var note=document.querySelector('[data-happy-account-note]'); if(note) note.innerHTML=HappyUI.accountNote().replace("Полная синхронизация дневников пока в разработке.","В этой версии полный журнал Meal синхронизируется после входа. Day и Sport обновляются отдельно.");
+  /* Meal 27.1: после входа о связи говорит одна строка под кнопками (MealJournal) — «Нет связи с сервером» рядом с ней не показываем */
+  var netErr=clOn()&&CL.err===clErrText(null,0);
+  el.innerHTML=HappyUI.account({connected:clOn(),name:CL.s&&CL.s.name,email:CL.s&&CL.s.email,busy:CL.busy,error:netErr?'':CL.err,message:CL.msg,draft:HappyUI.draft(el)});
+  var note=document.querySelector('[data-happy-account-note]'); if(note) note.innerHTML=HappyUI.accountNote();
 }
 function clDo(act){
   return HappyUI.act(act,{state:CL,box:function(){return document.getElementById('clBox')},signIn:clSignIn,signOut:clSignOut,paint:clPaint,
@@ -5956,16 +5984,16 @@ document.addEventListener('click',function(ev){
 });
 
 </script>
-<script src="widget-image.js?v=27"></script><script src="report.js?v=27"></script><script src="controls.js?v=27"></script><script src="search-names.js?v=27"></script><script src="usda.js?v=27"></script><script src="catalog.js?v=27"></script>
-<script src="uzbek.js?v=27"></script>
-<script src="desserts.js?v=27"></script>
-<script src="user-products.js?v=27"></script><script src="./shared/measurements-host.js?v=27" data-journal="journal"></script>
+<script src="widget-image.js?v=27.1"></script><script src="report.js?v=27.1"></script><script src="controls.js?v=27.1"></script><script src="search-names.js?v=27.1"></script><script src="usda.js?v=27.1"></script><script src="catalog.js?v=27.1"></script>
+<script src="uzbek.js?v=27.1"></script>
+<script src="desserts.js?v=27.1"></script>
+<script src="user-products.js?v=27.1"></script><script src="./shared/measurements-host.js?v=27.1" data-journal="journal"></script>
 
-<script src="./shared/release-notes.js?v=27"></script>
-<script src="release-notes.js?v=27"></script>
-<script src="./shared/happy-links.js?v=27"></script>
-<script src="./shared/happy-settings-developer.js?v=27"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 27')}catch(e){}</script>
+<script src="./shared/release-notes.js?v=27.1"></script>
+<script src="release-notes.js?v=27.1"></script>
+<script src="./shared/happy-links.js?v=27.1"></script>
+<script src="./shared/happy-settings-developer.js?v=27.1"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 27.1')}catch(e){}</script>
 <script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
 (function(root){
  'use strict';
