@@ -5,7 +5,7 @@
   "sharedDirectory": "day-57/shared",
   "links": {
    "meal": "meal-27/",
-   "sport": "sport-39/"
+   "sport": "sport-40/"
   },
   "download": "day-57/Happy-Day-57.html",
   "previous": {
@@ -54,13 +54,13 @@
   }
  },
  "sport": {
-  "entry": "sport-39/index.html",
-  "version": "39.2",
-  "name": "Happy Sport · Update 39",
-  "sharedDirectory": "sport-39/shared",
-  "sourceDirectory": "sport-39/sport/src",
-  "sourceRelease": "sport-38",
-  "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0",
+  "entry": "sport-40/index.html",
+  "version": "40",
+  "name": "Happy Sport · Update 40",
+  "sharedDirectory": "sport-40/shared",
+  "sourceDirectory": "sport-40/sport/src",
+  "sourceRelease": "sport-39",
+  "sourceCommit": "c94464d29767702f45f4df2026c5cdcc158cb3ee",
   "settingsSections": [
    "account",
    "app",
@@ -70,12 +70,13 @@
    "version"
   ],
   "previous": {
-   "entry": "sport-38/index.html",
-   "version": "38.7",
-   "sourceCommit": "6ac53396702a96c5cfb937d1c51b1f5cc30508d0"
+   "entry": "sport-39/index.html",
+   "version": "39.2",
+   "sourceCommit": "c94464d29767702f45f4df2026c5cdcc158cb3ee"
   },
   "iconLibrary": "assets/sport-icons/v1",
-  "exerciseLibrary": "assets/exercise-library/v1"
+  "exerciseLibrary": "assets/exercise-library/v1",
+  "exerciseMedia": "assets/exercise-media/v1"
  },
  "colorStudio": {
   "entry": "prototypes/happy-family-color-studio-v12.html",

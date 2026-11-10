@@ -1,0 +1,30 @@
+/* Rewrites SOURCE-PROVENANCE.json for this release: origin facts plus size and SHA-256 of every file inside the
+   release directory (the manifest itself excluded). Run after the final build; verify-release.mjs checks the result. */
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {execSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+const root=new URL('../',import.meta.url),rootPath=fileURLToPath(root);
+const previous=JSON.parse(await readFile(new URL('SOURCE-PROVENANCE.json',root),'utf8'));
+// Only files that are committed count as release files: intermediate build outputs (dist/, sport/dist/, copied icons)
+// are ignored by .gitignore since 08.11.2026 and are rebuilt locally by build-release.mjs.
+const tracked=execSync('git ls-files -z .',{cwd:rootPath}).toString().split('\0').filter(Boolean).map(p=>p.replace(/^\.\//,'')).filter(p=>p!=='SOURCE-PROVENANCE.json').sort();
+const files=[];
+for(const path of tracked){const bytes=await readFile(new URL(path,root));files.push({path,size:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
+// The base this release was derived from: main when the lab branch sport-lab was cut (not the release commit itself).
+let sourceCommit=previous.update==='40'?previous.source_commit:'c94464d29767702f45f4df2026c5cdcc158cb3ee';try{sourceCommit=sourceCommit||execSync('git rev-parse origin/main',{cwd:rootPath,encoding:'utf8'}).trim()}catch{sourceCommit=sourceCommit||previous.source_commit}
+const manifest={
+ app:'Happy Sport',update:'40',
+ source_release:'sport-39 (Happy Sport · Update 39.2) through the lab copy sport-lab/ (branch sport-lab, 10.11.2026)',source_commit_of_update_39:'36006b27dc1eb472db23fc22365dec99464aef74',source_commit_of_update_38:'b292b2b0b6b7f6660e1ca40152817d3cf2499160',
+ source_commit:sourceCommit,
+ github_pages_url:'https://astamurberlin-rgb.github.io/happyamurio/sport-40/',
+ agreed_by_owner:'2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot; 38.7 (owner device 19:55: «резерв достиг лимита» with 3,53 MB used by all apps on the origin): the 4 MiB origin-wide budget is dropped — the ledger keeps its 3 MiB cap and the real browser quota is checked by the headroom probe; 2026-11-09 39 (owner 20:11 «Ты можешь это сделать? — Да»): journal-scale keys move from localStorage to IndexedDB through a synchronous facade (local-store.js) with verified migration; the 5 MB origin box shared with Day and Meal is no longer the limit of Sport; 39.1: live tabs — every tab writes, journals merge three ways between tabs (profile-store adopt/save), one automatic sync run per account (Web Lock ifAvailable), no writer lock, banner or blocked screen; 2026-11-10 39.2: sign-out waits for the journal; 2026-11-10 40 (owner 21:27 «в main выпускай под 40»): the lab — pull-up family with grip pills, placeholder picture, schedule form, one-tap finish, fact-only journal record, interface audit decisions (yes / discussed), history tab always present, journal switch as in Day and Meal',
+ icon_library:'/happyamurio/assets/sport-icons/v1/',
+ exercise_library:JSON.parse(await readFile(new URL('../assets/exercise-library/v1/manifest.json',root),'utf8')),
+ changed_source_files:["README.md", "scripts/build-preview.mjs", "scripts/build-release.mjs", "scripts/check-families.mjs", "scripts/verify-release.mjs", "scripts/write-provenance.mjs", "sport/scripts/build.mjs", "sport/scripts/check-clean-shell.mjs", "sport/scripts/check-exercise-context.mjs", "sport/scripts/check-food-counters-sport.mjs", "sport/scripts/check-paths.mjs", "sport/scripts/check-player-controls.mjs", "sport/scripts/check-readonly.mjs", "sport/scripts/check-timer-prototype.mjs", "sport/scripts/exercise-media.mjs", "sport/scripts/seed.mjs", "sport/src/app.js", "sport/src/app.template.html", "sport/src/audit-simplify.css", "sport/src/audit-simplify.js", "sport/src/data-transfer.js", "sport/src/exercise-config.js", "sport/src/exercise-context.js", "sport/src/exercise-families.js", "sport/src/exercise-history.js", "sport/src/exercise-player.js", "sport/src/exercises/pull-up.html", "sport/src/free-timer.js", "sport/src/library-v2.js", "sport/src/manifest.webmanifest", "sport/src/metric-field.css", "sport/src/plan-fact.js", "sport/src/planning.js", "sport/src/refinements.js", "sport/src/release-notes.js", "sport/src/rest-pill.js", "sport/src/set-plan.js", "sport/src/workout-interactions.js"],
+ exercise_media:'/happyamurio/assets/exercise-media/v1/',
+ unchanged_journal_sync_code_verified:true,
+ release_files:files
+};
+await writeFile(new URL('SOURCE-PROVENANCE.json',root),JSON.stringify(manifest,null,2)+'\n');
+console.log('SOURCE-PROVENANCE.json: '+files.length+' files, source commit '+sourceCommit);
