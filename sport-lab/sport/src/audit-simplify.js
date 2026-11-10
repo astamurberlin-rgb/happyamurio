@@ -184,3 +184,9 @@ selectExerciseContextTab=function(key,focus=false){
  if(sheet&&exerciseContext.form?.isConnected)sheet.dataset.ctxTab=key;
  return result;
 };
+/* Журнал как в Day и Meal: переключатель «Журнал / Замеры тела» первым, под ним заголовок «Журнал»;
+   на «Замерах тела» заголовка нет — тот же вид, что Day и Meal встраивают из Sport. */
+renderJournal=function(){
+ const tab=(id,label)=>`<button data-action="journal-tab" data-id="${id}" class="${journalTab===id?'selected':''}" aria-pressed="${journalTab===id}">${label}</button>`;
+ return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():renderTop('Журнал',false)+renderHistory());
+};

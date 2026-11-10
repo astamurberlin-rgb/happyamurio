@@ -798,6 +798,12 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:none}
 /* Аудит п. 23: пустая «История» — одна строка, без переключателя сортировки. */
 .history-empty{margin:24px 4px;text-align:center;color:rgba(255,255,255,.72);font-size:15px}
+/* Переключатели — капсулой (скругление в половину высоты), как в Day и Meal. */
+.segmented,.segmented button{border-radius:999px}
+/* «Журнал / Замеры тела» — те же размеры и цвета, что .happy-measurement-tabs в shared/measurements-host.js Day и Meal. */
+#page>.journal-switch{gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;margin:8px 0 20px}
+#page>.journal-switch button{font-size:14px;font-weight:400;padding:10px 8px;color:inherit;box-shadow:none}
+#page>.journal-switch button.selected{background:#fffffff0;color:#5c4598;font-weight:600;box-shadow:none}
 
 </style></head><body><script>/* Narrow transport boundary: journal sync plus (Update 38) the shared food-counter row. Loaded before any app/auth/storage code. */
 (function(root){
@@ -6469,6 +6475,12 @@ selectExerciseContextTab=function(key,focus=false){
  const result=selectTabBeforeAudit(key,focus),sheet=exerciseContext?.sheet;
  if(sheet&&exerciseContext.form?.isConnected)sheet.dataset.ctxTab=key;
  return result;
+};
+/* Журнал как в Day и Meal: переключатель «Журнал / Замеры тела» первым, под ним заголовок «Журнал»;
+   на «Замерах тела» заголовка нет — тот же вид, что Day и Meal встраивают из Sport. */
+renderJournal=function(){
+ const tab=(id,label)=>`<button data-action="journal-tab" data-id="${id}" class="${journalTab===id?'selected':''}" aria-pressed="${journalTab===id}">${label}</button>`;
+ return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():renderTop('Журнал',false)+renderHistory());
 };
 
 </script>
