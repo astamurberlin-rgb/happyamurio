@@ -1,5 +1,5 @@
 import { readFile, mkdir, writeFile, cp } from 'node:fs/promises';
-import { loadSeed, loadLibrary, loadMedia, EXERCISE_LIBRARY_URL, EXERCISE_MEDIA_VERSION } from './seed.mjs';
+import { loadSeed, loadLibrary, loadMedia, loadMediaPlaceholder, EXERCISE_LIBRARY_URL, EXERCISE_MEDIA_VERSION } from './seed.mjs';
 
 const root = new URL('../', import.meta.url);
 const [template, app, license] = await Promise.all([
@@ -13,8 +13,8 @@ const seed=await loadSeed(),exerciseLibrary=await loadLibrary();
 // can be opened outside GitHub Pages. A release build keeps the permanent /happyamurio/assets/ addresses.
 const LAB=process.env.HAPPY_SPORT_LAB==='1',assetBase=LAB?'./assets/':'/happyamurio/assets/';
 const EXERCISE_MEDIA_LIBRARY=assetBase+'exercise-media/'+EXERCISE_MEDIA_VERSION+'/';
-const exerciseMediaItems=await loadMedia();
-const seedText=JSON.stringify({...seed,exerciseLibrary:{url:EXERCISE_LIBRARY_URL,version:exerciseLibrary.manifest.version,generated:exerciseLibrary.manifest.generated},exerciseFamilies:exerciseLibrary.families,exerciseMedia:{base:EXERCISE_MEDIA_LIBRARY,items:exerciseMediaItems}});
+const exerciseMediaItems=await loadMedia(),exerciseMediaPlaceholder=await loadMediaPlaceholder();
+const seedText=JSON.stringify({...seed,exerciseLibrary:{url:EXERCISE_LIBRARY_URL,version:exerciseLibrary.manifest.version,generated:exerciseLibrary.manifest.generated},exerciseFamilies:exerciseLibrary.families,exerciseCards:exerciseLibrary.cards,exerciseMedia:{base:EXERCISE_MEDIA_LIBRARY,items:exerciseMediaItems,placeholder:exerciseMediaPlaceholder&&{...exerciseMediaPlaceholder,cover:EXERCISE_MEDIA_LIBRARY+exerciseMediaPlaceholder.cover}}});
 for (const field of ['workouts','measurements','rawMeasurements']) {
   if (seed[field]?.length) throw new Error('Публичная сборка не должна содержать личные записи: '+field);
 }
@@ -90,16 +90,19 @@ await writeFile(new URL('dist/index.html', root), html);
 await writeFile(new URL('index.html', root), html);
 // Lab 10.11.2026: an exercise page takes its text from the family in the library and its pictures from the media
 // library; both are embedded here, so the page keeps working offline and never carries its own copy of the text.
-for(const family of exerciseLibrary.families.filter(f=>f.page)){
+// A card of its own (other equipment, families.json «cards») gets a page of its own from the same source: the family's
+// phases and breathing, one variant and no pills; the file is named by the exercise id.
+const cardPages=exerciseLibrary.cards.map(c=>{const family=exerciseLibrary.families.find(f=>f.id===c.techniqueFrom);return {...family,id:c.exerciseId,name:c.name,baseExerciseId:c.exerciseId,single:true,file:c.exerciseId,variants:[{exerciseId:c.exerciseId,pill:'',name:c.name,grip:c.grip,accent:c.accent,...(c.note?{note:c.note}:{})}],retiredExerciseIds:[]}});
+for(const family of [...exerciseLibrary.families.filter(f=>f.page),...cardPages]){
   const source=await read('src/exercises/'+family.page+'.html');
   if(!source.includes('__EXERCISE_FAMILY__')||!source.includes('__EXERCISE_MEDIA__'))throw new Error('Exercise page has no places for family data: '+family.page);
   const pageBase=(LAB?'../assets/':'/happyamurio/assets/')+'exercise-media/'+EXERCISE_MEDIA_VERSION+'/',media={};
   for(const v of family.variants){const item=exerciseMediaItems[v.exerciseId];if(item?.frames)media[v.exerciseId]={frames:Object.fromEntries(Object.entries(item.frames).map(([k,path])=>[k,pageBase+path]))}}
   const inline=value=>JSON.stringify(value).replaceAll('</','<\\/');
   // The page shows the full name of the chosen variant when it is opened on its own.
-  const pageFamily={...family,variants:family.variants.map(v=>({...v,fullName:v.name||exerciseLibrary.exercises.find(e=>e.id===v.exerciseId)?.name||family.name}))};
+  const {file,...pageSource}=family,pageFamily={...pageSource,variants:family.variants.map(v=>({...v,fullName:v.name||exerciseLibrary.exercises.find(e=>e.id===v.exerciseId)?.name||family.name}))};
   const page=source.replace('__EXERCISE_FAMILY__',()=>inline(pageFamily)).replace('__EXERCISE_MEDIA__',()=>inline(media));
-  for(const directory of ['exercises/','dist/exercises/']){await mkdir(new URL(directory,root),{recursive:true});await writeFile(new URL(directory+family.page+'.html',root),page)}
+  for(const directory of ['exercises/','dist/exercises/']){await mkdir(new URL(directory,root),{recursive:true});await writeFile(new URL(directory+(family.file||family.page)+'.html',root),page)}
 }
 console.log('Sport built.');
 

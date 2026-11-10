@@ -17,10 +17,12 @@ for(const entry of (await readdir(mediaRoot,{withFileTypes:true})).filter(e=>e.i
 }
 const previous=JSON.parse(await readFile(new URL('catalog.json',mediaRoot),'utf8'));
 const same=JSON.stringify(previous.items)===JSON.stringify(items);
-const catalog={schema:'happy.exercise-media.v1',generated:same?previous.generated:new Date().toISOString().slice(0,10),items};
+// The placeholder (Daniel sitting, lab 10.11.2026 15:51) is kept by hand in catalog.json and carried over as it is.
+const catalog={schema:'happy.exercise-media.v1',generated:same?previous.generated:new Date().toISOString().slice(0,10),items,...(previous.placeholder?{placeholder:previous.placeholder}:{})};
 if(process.argv.includes('--check')){if(!same)throw new Error('catalog.json не совпадает с папками: запусти node sport/scripts/exercise-media.mjs')}
 else await writeFile(new URL('catalog.json',mediaRoot),JSON.stringify(catalog,null,1)+'\n');
 for(const family of library.families){
   console.log(family.name+':');
   for(const v of family.variants){const item=items.find(i=>i.exerciseId===v.exerciseId)||{};const missing=[!item.cover&&'cover',...frames.filter(k=>!item.frames?.[k])].filter(Boolean);console.log('  '+v.exerciseId.padEnd(18)+v.pill.padEnd(26)+(missing.length?'нет: '+missing.join(', '):'все картинки на месте'))}
 }
+for(const card of library.cards||[]){const item=items.find(i=>i.exerciseId===card.exerciseId)||{};const missing=[!item.cover&&'cover',...frames.filter(k=>!item.frames?.[k])].filter(Boolean);console.log(card.name+' (своя карточка):\n  '+card.exerciseId.padEnd(18)+''.padEnd(26)+(missing.length?'нет: '+missing.join(', '):'все картинки на месте'))}

@@ -2,10 +2,10 @@
    Data: SEED.exerciseFamilies (exercise library, families.json) and SEED.exerciseMedia (exercise media library).
    A variant stays a separate exercise with its own stable id and its own history; the family only groups them:
    one card in the library, one pill per variant in the instructions, and the chosen pill is what gets added. */
-const exerciseFamilies=SEED.exerciseFamilies||[],exerciseMedia=SEED.exerciseMedia||{base:'',items:{}};
+const exerciseFamilies=SEED.exerciseFamilies||[],exerciseCards=SEED.exerciseCards||[],exerciseMedia=SEED.exerciseMedia||{base:'',items:{}};
 const retiredFamilyIds=new Set(exerciseFamilies.flatMap(f=>f.retiredExerciseIds||[]));
 function exerciseFamily(id){return exerciseFamilies.find(f=>f.variants.some(v=>v.exerciseId===id)||(f.retiredExerciseIds||[]).includes(id))}
-function exerciseMediaUrl(id,key='cover'){const item=exerciseMedia.items?.[id],path=key==='cover'?item?.cover:item?.frames?.[key];return path?exerciseMedia.base+path:''}
+function exerciseMediaUrl(id,key='cover'){if(id==='placeholder')return exerciseMedia.placeholder?.cover||''; /* embedded with its full library address */const item=exerciseMedia.items?.[id],path=key==='cover'?item?.cover:item?.frames?.[key];return path?exerciseMedia.base+path:''}
 function familyVariantCount(n,noun){const word=n%10===1&&n%100!==11?'вариант':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'варианта':'вариантов';return n+' '+word+(noun?' '+noun:'')}
 
 // Retired ids (earlier duplicates) stay resolvable in old workouts, but search and pickers no longer offer them.
@@ -31,8 +31,11 @@ exerciseCard=function(e,action='exercise-detail'){const html=cardBeforeFamilies(
 
 // Pictures: an exercise with its own cover in the media library shows it instead of the sport icon.
 // A picture assigned by hand in Icon Studio still wins.
+// Lab 10.11.2026 15:51: an exercise without a picture of its own shows the placeholder (Daniel sitting on the floor);
+// exercises whose sport icon already shows the exercise itself (keepSportIcon: the pull-ups) keep it.
+const keepSportIcon=new Set(exerciseMedia.placeholder?.keepSportIcon||[]);
 const sportIconBeforeFamilies=exerciseSportIcon;
-exerciseSportIcon=function(e){return !sportStudioExerciseIcon(e.id)&&exerciseMediaUrl(e.id)?'media:'+e.id:sportIconBeforeFamilies(e)};
+exerciseSportIcon=function(e){if(sportStudioExerciseIcon(e.id))return sportIconBeforeFamilies(e);if(exerciseMediaUrl(e.id))return 'media:'+e.id;if(!keepSportIcon.has(e.id)&&exerciseMediaUrl('placeholder'))return 'media:placeholder';return sportIconBeforeFamilies(e)};
 const iconMarkupBeforeFamilies=sportIconMarkup;
 sportIconMarkup=function(name){
  if(typeof name==='string'&&name.startsWith('media:')){const src=exerciseMediaUrl(name.slice(6));if(src)return `<img class="icon sport-icon" src="${sportIconEscape(src)}" alt="" width="64" height="64" loading="lazy" decoding="async">`}
@@ -57,7 +60,10 @@ window.addEventListener('message',e=>{
  if(!frame||e.origin!==self.origin||!e.data||typeof e.data.type!=='string')return; // self.origin: also right when the viewer frames the app without an origin
  if(e.data.type==='happy-sport.exercise-height'){const h=Number(e.data.height);if(h>200&&h<6000&&frame.classList.contains('local-instruction-frame'))frame.style.height=Math.ceil(h)+'px';return}
  const c=exerciseContext;if(!c||!c.form.isConnected||c.context!=='library'||!c.panels.instructions.contains(frame))return;
- const id=e.data.exerciseId,family=exerciseFamily(c.id);if(!family||!family.variants.some(v=>v.exerciseId===id)||!exercise(id))return;
+ const id=e.data.exerciseId,family=exerciseFamily(c.id);
+ // A card of its own has no pills: «Добавить в тренировку» opens Add for this exercise.
+ if(!family&&id===c.id&&exerciseCards.some(x=>x.exerciseId===id)){if(e.data.type==='happy-sport.exercise-add')selectExerciseContextTab('configure',true);return}
+ if(!family||!family.variants.some(v=>v.exerciseId===id)||!exercise(id))return;
  if(e.data.type==='happy-sport.exercise-variant')selectFamilyVariant(id);
  else if(e.data.type==='happy-sport.exercise-add'){selectFamilyVariant(id);selectExerciseContextTab('configure',true)}
 });

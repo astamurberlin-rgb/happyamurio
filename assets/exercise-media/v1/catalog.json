@@ -1,5 +1,19 @@
 {
  "schema": "happy.exercise-media.v1",
  "generated": "2026-11-10",
- "items": []
+ "items": [],
+ "placeholder": {
+  "cover": "placeholder.png",
+  "keepSportIcon": [
+   "pull-up",
+   "wide-pull-up",
+   "pull-up-narrow",
+   "chin-up",
+   "chin-up-narrow",
+   "neutral-pull-up",
+   "weighted-pull-up",
+   "pull-up-wide",
+   "chin-up-wide"
+  ]
+ }
 }

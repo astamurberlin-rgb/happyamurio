@@ -2,11 +2,13 @@
 let baseView='diary',panelStack=[],currentExerciseId=null;
 // Lab 10.11.2026: the pull-up family (library families.json) names the variants; the four ids generated below stay as they are.
 const pullFamily=(SEED.exerciseFamilies||[]).find(f=>f.id==='pull-ups');
-const pullVariantIds=[...new Set(['pull-up','chin-up','pull-up-narrow','pull-up-wide','chin-up-narrow','chin-up-wide',...(pullFamily?pullFamily.variants.map(v=>v.exerciseId):[])])];
+// Lab 10.11.2026 15:51: exercises on other equipment (families.json «cards», e.g. neutral-pull-up) have a page of their own.
+const pullCards=(SEED.exerciseCards||[]).filter(c=>c.techniqueFrom==='pull-ups');
+const pullVariantIds=[...new Set(['pull-up','chin-up','pull-up-narrow','pull-up-wide','chin-up-narrow','chin-up-wide',...(pullFamily?pullFamily.variants.map(v=>v.exerciseId):[]),...pullCards.map(c=>c.exerciseId)])];
 for(const base of ['pull-up','chin-up'])for(const width of ['narrow','wide']){const ex=SEED.exercises.find(e=>e.id===base);if(ex&&!SEED.exercises.some(e=>e.id===base+'-'+width))SEED.exercises.push({...clone(ex),id:base+'-'+width,name:ex.name+' · '+(width==='narrow'?'узкий':'широкий')+' хват',aliases:[...(ex.aliases||[]),width==='narrow'?'узкий хват':'широкий хват']})}
 // Full names of the variants for workouts and history; the earlier name stays as a search synonym.
-if(pullFamily)for(const v of pullFamily.variants){const ex=SEED.exercises.find(e=>e.id===v.exerciseId);if(!ex)continue;ex.aliases=[...new Set([...(ex.aliases||[]),...(v.aliases||[]),...(v.name&&ex.name!==v.name?[ex.name.toLowerCase()]:[])])];if(v.name)ex.name=v.name}
-function pullFrameUrl(id){const current={'pull-up-wide':'wide-pull-up','chin-up-wide':'chin-up'}[id]||id;return './exercises/pull-up.html?variant='+encodeURIComponent(current)}
+for(const v of [...(pullFamily?pullFamily.variants:[]),...pullCards]){const ex=SEED.exercises.find(e=>e.id===v.exerciseId);if(!ex)continue;ex.aliases=[...new Set([...(ex.aliases||[]),...(v.aliases||[]),...(v.name&&ex.name!==v.name?[ex.name.toLowerCase()]:[])])];if(v.name)ex.name=v.name}
+function pullFrameUrl(id){const current={'pull-up-wide':'wide-pull-up','chin-up-wide':'chin-up'}[id]||id,page=pullCards.some(c=>c.exerciseId===current)?current:'pull-up';return './exercises/'+page+'.html?variant='+encodeURIComponent(current)}
 const navAssets=__NAV_ICONS__;
 const oldProfile=renderProfile,oldPersist=persist,oldExerciseDetails=showExercise;
 document.querySelector('.app').insertAdjacentHTML('afterend','<div id="panel-root"></div>');

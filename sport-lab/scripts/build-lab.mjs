@@ -14,4 +14,5 @@ for(const item of icons){await mkdir(new URL('assets/sport-icons/v1/'+item.src.s
 const media=JSON.parse(await readFile(new URL('../assets/exercise-media/v1/catalog.json',root),'utf8'));
 for(const item of media.items)for(const path of [item.cover,...Object.values(item.frames||{})].filter(Boolean)){await mkdir(new URL('assets/exercise-media/v1/'+path.split('/')[0]+'/',out),{recursive:true});await cp(new URL('../assets/exercise-media/v1/'+path,root),new URL('assets/exercise-media/v1/'+path,out))}
 run('scripts/build-release.mjs');
+if(media.placeholder?.cover){await mkdir(new URL('assets/exercise-media/v1/',out),{recursive:true});await cp(new URL('../assets/exercise-media/v1/'+media.placeholder.cover,root),new URL('assets/exercise-media/v1/'+media.placeholder.cover,out))}
 console.log('Lab copy built: '+fileURLToPath(out));

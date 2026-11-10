@@ -2,13 +2,14 @@
  "schema": "happy.exercise-library.v1",
  "version": "1.1",
  "generated": "2026-11-10",
- "source": "sport-38/sport/data/seed.json + exercise-muscles.json (Happy Sport · Update 38.1); families.json — Sport lab 10.11.2026 (pull-up family, six grip variants)",
+ "source": "sport-38/sport/data/seed.json + exercise-muscles.json (Happy Sport · Update 38.1); families.json — Sport lab 10.11.2026 (pull-up family, five grip variants; neutral-pull-up is a card of its own)",
  "counts": {
   "exercises": 137,
   "equipment": 23,
   "muscleEntries": 137,
   "withHandles": 8,
-  "families": 1
+  "families": 1,
+  "familyCards": 1
  },
  "files": [
   {
@@ -28,8 +29,8 @@
   },
   {
    "path": "families.json",
-   "size": 3071,
-   "sha256": "6e3581d46085bd00a43c9566e41551055e1fdf6a5b2ff0bc6dd0fb3c11695648"
+   "size": 3124,
+   "sha256": "4267b5c0c0d0900d7cb8cfc35cb362c73622603f722df58c9944af9dd1d79636"
   }
  ],
  "rules": "ids are stable and never removed or renamed; the folder only grows; releases record the manifest version and file hashes they were built from"

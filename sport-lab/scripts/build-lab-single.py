@@ -43,6 +43,8 @@ for item in data['exerciseMedia']['items'].values():
     if item.get('cover'): item['cover'] = data_uri(media_root / item['cover'], 160)
     for key, path in (item.get('frames') or {}).items():
         frames_by_path[path] = data_uri(media_root / path); item['frames'][key] = frames_by_path[path]
+placeholder = data['exerciseMedia'].get('placeholder')
+if placeholder and placeholder.get('cover'): placeholder['cover'] = data_uri(media_root / placeholder['cover'].rsplit('/', 1)[-1], 160)
 data['exerciseMedia']['base'] = ''
 html = html[:seed.start(2)] + json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/') + html[seed.end(2):]
 
