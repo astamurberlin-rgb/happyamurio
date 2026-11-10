@@ -82,6 +82,18 @@ function bindCareNavigation(){
 }
 function onNavigate(name){if(name!=='ring'){cancelWheelSpeech();stopWheelMotion();shownWheel=null;$('sectionWheel')?.classList.remove('wheel-visible');}if(session&&!session.readOnly)stashWheel();document.body.classList.toggle('wheel-editing',name==='ring'&&!!session&&!session.readOnly); document.body.classList.toggle("now-editing",name==="ring"&&isCheckin()&&!session.readOnly);updateNowSave();if(session&&!session.readOnly&&CURS[cur])rememberScale(CURS[cur].k);if(session&&(name!=='ring'||curSec!==CURRENT)){session=null;if(curSec===CURRENT)curSec=DB.sections[0]?.k||'wake';}}
 function checkinSection(){if(session?.readOnly)return {...data().checkinSection,t:session.sectionTitle||'Сейчас',scales:Object.keys(session.defs||{}),tags:Object.keys(session.checkpoint.tags||{})};const section=session?.target&&DB.sections.find(x=>x.k===session.target);const raw=section?{...section,k:CURRENT}:data().checkinSection,base={...raw,scales:[...raw.scales],tags:[...new Set([...raw.tags,...Object.keys(session?.checkpoint?.tags||{}).filter(k=>session.checkpoint.tags[k])])]};if(!session?.travelling)return base;return {...base,scales:[...new Set([...base.scales,...Object.keys(session.checkpoint).filter(k=>Number.isFinite(session.checkpoint[k])&&[...DB.metrics,...Object.values(session.defs||{})].some(m=>m.k===k))])],tags:[...new Set([...base.tags,...Object.keys(session.checkpoint.tags||{}).filter(k=>session.checkpoint.tags[k])])]};}
+/* Свой тег в режиме «Отметить самочувствие»: checkinSection() каждый раз собирает список заново,
+   поэтому тег, добавленный в его копию, жил только пока был отмечен. Записываем в настоящий список —
+   в раздел, на который открыта отметка (Утро…), иначе в «Текущие отметки». */
+function addCheckinTag(tag){
+ if(!session)return false;
+ const section=session.target&&DB.sections.find(x=>x.k===session.target);
+ const holder=section||data().checkinSection;
+ if(!Array.isArray(holder.tags))holder.tags=[];
+ if(!holder.tags.includes(tag))holder.tags.push(tag);
+ if(section&&!DB.tags.includes(tag))DB.tags.push(tag);
+ return true;
+}
 function isCheckin(){return !!session&&curSec===CURRENT;}
 function checkinReadOnly(){return isCheckin()&&session.readOnly;}
 function checkinDay(){return {cp:{[CURRENT]:session.checkpoint}};}
@@ -411,5 +423,5 @@ function journalEvents(date){const d=C.readDay(DB,date),entries=data().entries;
  return d.checkins.map(x=>({t:x.time,m:hmMin(x.time),dot:'#7CE3C9',title:x.sectionTitle||'Самочувствие',sub:(x.sourceSectionTitle?'Форма: '+x.sourceSectionTitle+' · ':'')+checkinText(x),careKind:'mood',careId:x.id,careDate:date})).concat(d.events.map(x=>({t:x.time,m:hmMin(x.time),dot:'#BC61FE',title:x.type==='diary-appended'?'Дополнен дневник':'Запись в дневнике',sub:entries.find(e=>e.id===x.entryId)?.title||x.title,careKind:'entry',careId:x.entryId,careDate:date,additionId:x.additionId})),d.practices.map(x=>({t:x.time,m:hmMin(x.time),dot:'#46FDFC',title:'Осознанность',sub:x.name+' · '+num(x.minutes)+' мин',careKind:'mind',careDate:date})),C.activity(data(),date).workouts.map(w=>({t:w.start.slice(11,16),m:hmMin(w.start.slice(11,16)),dot:'#FFE19A',title:'Активность · Happy Strong',sub:w.title+' · '+num(w.duration/60)+' мин',careKind:'activity',careId:w.id,careDate:date})));
 }
 function journalOpen(kind,id,date,additionId){curDate=date;open(kind,id,'trends');if(additionId)$('addition-'+additionId)?.scrollIntoView({block:'center'});}
-root.SelfCare={openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale};
+root.SelfCare={openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,addCheckinTag,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale};
 })(window);

@@ -1,7 +1,7 @@
 {
  "day": {
   "entry": "day-57/index.html",
-  "version": "57",
+  "version": "57.1",
   "sharedDirectory": "day-57/shared",
   "links": {
    "meal": "meal-27/",
@@ -13,7 +13,7 @@
    "version": "56",
    "sourceCommit": "9280726e7dd358d8ac436ffd99432874d82ba8e8"
   },
-  "name": "Happy Day · Update 57",
+  "name": "Happy Day · Update 57.1",
   "earlier": {
    "entry": "day/index.html",
    "version": "50.14",

@@ -1,10 +1,10 @@
 {
- "release": "Happy Day Update 57",
+ "release": "Happy Day Update 57.1",
  "date": "2026-11-10",
  "source_release": "day-56 (Happy Day Update 56)",
  "source_commit": "9280726e7dd358d8ac436ffd99432874d82ba8e8",
  "source_app_version": "56",
- "destination_app_version": "57",
+ "destination_app_version": "57.1",
  "adaptations": [
   "day-journal-sync.js: live tabs — reconcile()/adoptExternal()/settle(): a journal written by another tab is adopted or three-way merged (HappyDayProfileData.merge) inside the journal lock; same-field tab conflicts resolve to the acting tab without a variant; triggers: facade change, focus/pageshow/visibilitychange, withLock, writeLocal",
   "day-journal-sync.js: sync line #day-sync-line under the account buttons; long status moved to the developer section; guest-recovery card shown only when guest records exist",
@@ -15,13 +15,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-57.html",
-   "size": 3626145,
-   "sha256": "201244bbee35ae71b4f1d1b8f1ffa2d0c57dd484b4c8b92d22750500d1c10b70"
+   "size": 3628137,
+   "sha256": "11b928b08b2ce32a736cf42e1994d8eb0ab176ea54370cbc651d56ec11233e5c"
   },
   {
    "path": "README.md",
-   "size": 18122,
-   "sha256": "327913e837f9eb1c5dd945ce1e5b37185a049c46370eb26fbadac7947455393a"
+   "size": 18506,
+   "sha256": "ffb720c03f38ad24f0146e1d410965772b78aa935a76b04ea66ba2aa80a507aa"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -250,8 +250,8 @@
   },
   {
    "path": "index.html",
-   "size": 537932,
-   "sha256": "741abd69d9758cc6bbc494355194c486ee4c1d2176acf3440b48f901cb023a53"
+   "size": 538246,
+   "sha256": "476e5c0eea11da33a8f2d5590c1f8d0acabc380497dbebb88a0456c3df3dcc6e"
   },
   {
    "path": "manifest.webmanifest",
@@ -260,8 +260,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 20093,
-   "sha256": "76a94fae93eaf27d16f6760a09b94d911bb9dbde5445e2d5a4ae1508bdee763c"
+   "size": 20522,
+   "sha256": "62aa681d23639539e8f7b9d1f7ee331a2c8677bcacd7341dbc340c35d321a985"
   },
   {
    "path": "section-wheel.css",
@@ -275,8 +275,8 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 67626,
-   "sha256": "327d8d9a452814df89796b0d2cc2b8a365ab8b20e446cd980d51194fb5e062c0"
+   "size": 68472,
+   "sha256": "1cf1f3f26b26eed4b7cec3e6756927bc087fa9882a7d265dbf9cfa1ba59aa303"
   },
   {
    "path": "selfcare.css",
@@ -432,5 +432,15 @@
  "database_modified": false,
  "destination_url": "https://astamurberlin-rgb.github.io/happyamurio/day-57/",
  "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-56/",
- "point_releases": []
+ "point_releases": [
+  {
+   "version": "57.1",
+   "date": "2026-11-10",
+   "changes": [
+    "selfcare-ui.js: addCheckinTag() writes a custom tag into the real section (or the check-in list for «Текущие отметки») — checkinSection() rebuilds its tag list on every call, so a tag added to its copy lived only while selected",
+    "index.html: «Свой тег» handler in check-in mode calls SelfCare.addCheckinTag(t) and save(); cache busters ?v=57.1, selfcare-ui.js?v=57.1, footer and release note 57.1",
+    "tests/checkin-tag.test.cjs (4 tests); standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.1"
+   ]
+  }
+ ]
 }
