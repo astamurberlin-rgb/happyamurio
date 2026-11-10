@@ -17,7 +17,7 @@
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40 |
+| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.1 |
 | Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.2 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
@@ -170,11 +170,13 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 
 ## Happy Sport · Update 40 · 10.11.2026
 
+**40.1 (10.11.2026 22:40, тот же каталог `sport-40/`):** настройки устройства (`floatingTimerEnabled`, `freeTimer`, `lastRestSeconds`, `demoPulse`) не останавливают синхронизацию журнала; улаженный автоматический конфликт освобождает резерв (`held` → `history`). Причина — случай 09–10.11: журнал не уходил в облако из-за разного положения переключателя «Плавающая кнопка таймера».
+
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/sport-40/ . Собран из лаборатории — копии `sport-39/` (ветка `sport-lab`), в которую перед выпуском перенесены правки 39.2; основа — main `c94464d`. Исходники `sport-40/sport/src/`, сборка `node sport-40/scripts/build-release.mjs`, проверки `npm --prefix sport-40/sport run check`, `node sport-40/scripts/check-settings-layout.mjs`, `node sport-40/scripts/check-families.mjs <адрес>`, `node sport-40/scripts/verify-release.mjs`. Что нового — README выпуска и `CHANGELOG.md`: интерфейс по аудиту 10.11, семейство «Подтягивания» с вариантами хвата, расписание, завершение в одно нажатие, запись журнала только с фактом, переключатель журнала как в Day и Meal.
 
 Журнал, ключи хранения, аккаунт и облачный документ `sport/journal` — как в 39 (код синхронизации не менялся): записи из 39 открываются в 40 без переноса. Общие библиотеки: в `assets/exercise-library/v1/` добавлен `families.json`; новая папка `assets/exercise-media/v1/` — заглушка и места под картинки вариантов упражнений. `sport-39/` сохранён как прежний выпуск.
 
-— Claude · 10.11.2026 21:40
+— Claude · 10.11.2026 21:40; 22:40 (40.1)
 
 ## Happy Sport · Update 39 · 09.11.2026
 

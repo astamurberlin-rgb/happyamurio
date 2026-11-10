@@ -231,7 +231,9 @@ await test('recheck old protected conflict can merge later independent plans whi
  const remote=shared(),a=await env({remote});await a.c.auto.run();const b=await env({remote,data:blank()});await b.c.auto.run();b.c.autoEngine.merge=undefined;
  addPlanForm(a,'gym','Зал');addPlanForm(b,'football','Футбол');await a.c.auto.run();assert.equal((await b.c.auto.run()).status,'conflict');const held=b.ledger().held;
  addPlanForm(a,'tennis','Теннис');await a.c.auto.run();assert.equal((await b.c.auto.run()).status,'recovery-full');b.c.state.active=streetDraft();b.c.saveState();
- const upgraded=await env({remote,store:b.store,data:b.c.state});await settle(upgraded,a);for(const e of [a,upgraded]){assert.equal(e.c.state.schedules.length,3);assert.equal(e.c.auto.phase,'saved');}assert.deepEqual(upgraded.ledger().held,held);
+ const upgraded=await env({remote,store:b.store,data:b.c.state});await settle(upgraded,a);for(const e of [a,upgraded]){assert.equal(e.c.state.schedules.length,3);assert.equal(e.c.auto.phase,'saved');}
+ // Update 40.1: the resolved conflict frees its slot; its backup moves to the ledger history.
+ assert.equal(upgraded.ledger().held,null);assert.ok(upgraded.ledger().history.some(h=>h.kind==='auto-conflict'&&JSON.stringify(h.localBackup)===JSON.stringify(held.localBackup)),'backup of the resolved conflict is kept in history');
 });
 await test('recheck acknowledged active draft accepts a remote schedule without replacing live references',async()=>{
  const remote=shared(),a=await env({remote,data:{...fixture,active:streetDraft()}});await a.c.auto.run();const b=await env({remote,data:blank()});await b.c.auto.run();const activeRef=b.c.state.active;addPlanForm(a,'gym','Зал');await settle(a,b);assert.equal(b.c.state.schedules.length,1);assert.equal(b.c.state.active,activeRef);assert.equal(b.c.auto.phase,'saved');
@@ -267,8 +269,10 @@ await test('storage large legacy reserve merges schedule template and completed 
  addPlanForm(a,'football','Футбол');await a.c.auto.run();addPlanForm(b,'calves','Икры');
  b.c.state.templates.push({id:'synthetic-calves-template',title:'Икры',kind:'gym',items:[]});b.c.state.workouts.push({...structuredClone(fixture.workouts[0]),id:'synthetic-calves-completed',title:'Икры'});b.c.saveState();
  await settle(b,a);for(const e of [a,b]){assert.equal(e.c.auto.phase,'saved');assert.equal(e.c.state.schedules.length,2);assert.ok(e.c.state.templates.some(t=>t.id==='synthetic-calves-template'));assert.equal(e.c.state.workouts.length,91);assert.equal(e.ledger().pending,null);}
- assert.deepEqual(b.ledger().held,held);assert.equal(JSON.parse(b.store.get(key)).v,4);assert.ok(peak<4*1024*1024);
- const reloaded=await env({remote,store:b.store,data:b.c.state});addPlanForm(a,'badminton','Бадминтон');await settle(a,reloaded);assert.equal(reloaded.c.auto.phase,'saved');assert.equal(reloaded.c.state.schedules.length,3);assert.deepEqual(reloaded.ledger().held,held);
+ /* Update 40.1: after a confirmed sync the old conflict slot is free; its backup is the newest history entry. */
+ const kept=l=>l.held===null&&l.history.some(h=>h.kind==='auto-conflict'&&JSON.stringify(h.localBackup)===JSON.stringify(held.localBackup));
+ assert.ok(kept(b.ledger()));assert.equal(JSON.parse(b.store.get(key)).v,4);assert.ok(peak<4*1024*1024);
+ const reloaded=await env({remote,store:b.store,data:b.c.state});addPlanForm(a,'badminton','Бадминтон');await settle(a,reloaded);assert.equal(reloaded.c.auto.phase,'saved');assert.equal(reloaded.c.state.schedules.length,3);assert.equal(reloaded.ledger().held,null);
 });
 await test('storage quota cannot block readback of an uncertain accepted packet or cause duplicate dispatch',async()=>{
  const e=await env();e.remote.afterWrite=()=>{throw Error('Synthetic timeout after acceptance')};await e.c.auto.run();assert.equal(e.remote.writes,1);assert.ok(e.ledger().pending);e.remote.afterWrite=null;

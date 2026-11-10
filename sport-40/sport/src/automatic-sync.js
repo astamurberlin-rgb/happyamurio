@@ -30,7 +30,10 @@ const SportAutoSync=(()=>{
   function notifyEdit(){if(stopped)return;try{if(!d.ready())return inactive();const c=d.capture(false,'observe');d.ensureSaved();d.check(c);paint('dirty');request('edit')}catch(e){paint('error',e.message)}}
   function connectivity(value){const changed=value!==online;online=value;if(stopped)return;try{const c=d.capture(false,'observe');write(c,l=>{const a=meta(l);return {...l,auto:{...a,epoch:a.epoch+(value&&(changed||a.offline)?1:0),offline:!value,phase:value?'dirty':'offline'}}});if(value&&changed)request('online',0);if(!value)paint('offline')}catch{}}
   async function current(c){const value=copy(d.snapshot().data);d.ensureSaved();const digest=await d.digest(value);d.check(c);if(!same(value,d.snapshot().data))throw Object.assign(Error('Локальная версия изменилась во время проверки'),{code:'local_changed'});return {data:value,digest}}
-  async function verified(c){const cur=await current(c),l=read(c);return status(c,l.baseline&&cur.digest===l.baseline.digest&&!l.pending?'saved':'dirty',{verifiedAt:now()})}
+  // Update 40.1: once the device and the cloud agree again, the copy kept for an automatic conflict moves to the
+  // ledger history (the device's journal before the conflict stays recoverable) and the slot is free. It used to stay
+  // forever, and the next conflict then stopped at «резерв занят» (recovery-full).
+  async function verified(c){const cur=await current(c),l=read(c),saved=!!(l.baseline&&cur.digest===l.baseline.digest&&!l.pending);if(saved&&l.held?.kind==='auto-conflict')write(c,x=>({...x,held:null,history:[...x.history,{kind:'auto-conflict',localBackup:x.held.localBackup,beforeRow:x.held.expected||null,remoteRow:x.held.row}]}));return status(c,saved?'saved':'dirty',{verifiedAt:now()})}
   function conflict(c,r,why){
    const initial=read(c),target=initial.pending?.conflictRemote||(!initial.pending?initial.held:null);
    if(target&&r&&(!same(target.row,r.row)||target.digest!==r.digest)){status(c,'recovery-full');paint('recovery-full');return {status:'recovery-full'};}

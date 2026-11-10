@@ -1,6 +1,6 @@
 {
   "app": "Happy Sport",
-  "update": "40",
+  "update": "40.1",
   "source_release": "sport-39 (Happy Sport · Update 39.2) through the lab copy sport-lab/ (branch sport-lab, 10.11.2026)",
   "source_commit_of_update_39": "36006b27dc1eb472db23fc22365dec99464aef74",
   "source_commit_of_update_38": "b292b2b0b6b7f6660e1ca40152817d3cf2499160",
@@ -86,7 +86,8 @@
     "sport/src/workout-interactions.js"
   ],
   "exercise_media": "/happyamurio/assets/exercise-media/v1/",
-  "unchanged_journal_sync_code_verified": true,
+  "unchanged_journal_sync_code_verified": false,
+  "journal_sync_change": "40.1: mergeData device keys; verified() releases held auto-conflict into history",
   "release_files": [
     {
       "path": "LIBRARY-HISTORY-SCOPE.md",
@@ -95,8 +96,8 @@
     },
     {
       "path": "README.md",
-      "size": 44070,
-      "sha256": "63991df5af0617f3bc9e11db42f97ca426e92dd69b44f885abf7806081b608a0"
+      "size": 44506,
+      "sha256": "0474490dd81f81a0a6608d512ad4a8373c238cf9cc0daa114443a88c86b40794"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -160,8 +161,8 @@
     },
     {
       "path": "index.html",
-      "size": 1044378,
-      "sha256": "08fc772b78d86215c8743b4692c59ad4d3792540de2bb1aba5348e4cd6c9e16d"
+      "size": 1046233,
+      "sha256": "9a6e16633be072223f7110d06cdd0c718a5b92f04b2699dfa999f3868d78802c"
     },
     {
       "path": "manifest.webmanifest",
@@ -205,13 +206,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 3117,
-      "sha256": "c28c906874aabec9acdbd23f3efec069bfc848acdaf00efe116fad4fa9172298"
+      "size": 3234,
+      "sha256": "c86445367be54d644162fd3ed5ef09ed51e2f6437d005bcc6408431a1c99742e"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 5773,
-      "sha256": "f4e7cd2872776f33d8fae1110046bc39d0de09b6848ba4e52ad12e83adfd00af"
+      "size": 5879,
+      "sha256": "38c44a14f6e5f4760274276fdf306a386253074390ef0c1e4c938861e863d7aa"
     },
     {
       "path": "shared/README.md",
@@ -305,13 +306,13 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 13498,
-      "sha256": "3d78be2a6f1cc06c6d4991d1c884d0aa7034d181be00b7cf03344c7b331a2c2d"
+      "size": 13500,
+      "sha256": "69f050823fc2323e7f528fb42cd097a45a810d1481608929801f3f39b37de621"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
-      "size": 49524,
-      "sha256": "264e30e8ee773fd6fbf89a18519826f7b9a8b576bc2b058cee14731a6f76dc8d"
+      "size": 50047,
+      "sha256": "30d82ea00ff099a70965e10a13e195fbe4bccc45f7358f831a151d4b63fcc51a"
     },
     {
       "path": "sport/scripts/check-automatic-scheduler.mjs",
@@ -352,6 +353,11 @@
       "path": "sport/scripts/check-counter-channel.mjs",
       "size": 6093,
       "sha256": "f8a9b5a95d53e9456ba92d0a54a6670de2f0f767f3da06d80f84e3834d944b64"
+    },
+    {
+      "path": "sport/scripts/check-device-settings-merge.mjs",
+      "size": 3220,
+      "sha256": "640f28d28edb338068a7547ce35a899ab6647efabb6945362ab60b0d3f31bf60"
     },
     {
       "path": "sport/scripts/check-energy.mjs",
@@ -530,8 +536,8 @@
     },
     {
       "path": "sport/scripts/check.mjs",
-      "size": 17809,
-      "sha256": "aaeb2d51ad7b2c79ff6cb8bb0501413f6d9746ff428a914b62f2e040ec7d34b8"
+      "size": 17853,
+      "sha256": "d6862fb7bf7a87caa89b412dd7f849de4706360becc4729fbf360fe0561d95be"
     },
     {
       "path": "sport/scripts/exercise-media.mjs",
@@ -605,8 +611,8 @@
     },
     {
       "path": "sport/src/automatic-sync.js",
-      "size": 12733,
-      "sha256": "df5ea8f534056a02c0f560dd46342f9a8ca220ae4d129154d1e9d7374eee0d28"
+      "size": 13281,
+      "sha256": "7e7b134cc963652579fbc1b1627fc77e570735b9222da6fb7fc7617ea936ee3e"
     },
     {
       "path": "sport/src/catalog-groups.js",
@@ -615,8 +621,8 @@
     },
     {
       "path": "sport/src/controlled-cas.js",
-      "size": 16986,
-      "sha256": "ad647ba8675a79b990e8925fa936ac6db5857acba1fa67b3615526c7fd32d888"
+      "size": 17400,
+      "sha256": "903b9ecf01dc4118f42fa9bb80ec75713994f0c036c36ca540ca16d64e3bf2c1"
     },
     {
       "path": "sport/src/controlled-journal.js",
@@ -635,8 +641,8 @@
     },
     {
       "path": "sport/src/data-transfer.js",
-      "size": 18757,
-      "sha256": "07965ab5ee799587aaafe995827c4c327fdfa34ca94cac357d391a925f9b2d52"
+      "size": 18761,
+      "sha256": "997ab318db41c5f49f5795b112fd7f21d707be853ddd388386dea4b4c65d0949"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -820,8 +826,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 24675,
-      "sha256": "60c6581f87ac0aae97fe608ad9c69422f14cd1e98452a5d21755218dd2431c66"
+      "size": 25564,
+      "sha256": "e25474e5dc7bf8594a1d0837553d9ed250fcb503646fd5575b43271100e96e24"
     },
     {
       "path": "sport/src/rest-pill.js",
