@@ -249,7 +249,9 @@ const MEDIA = __EXERCISE_MEDIA__;
 // Embedded as an inline document (single-file lab copy) the page gets its query from the embedder.
 const params = new URLSearchParams(window.HAPPY_PAGE_QUERY ?? location.search);
 // Opened on its own, the page carries the card's background and title itself.
-const standalone = window.parent === window;
+// Inside the Sport app the page always gets ?context=…; a viewer that frames the page by itself (Claude, a browser
+// preview) passes nothing, so the page must bring its own background — otherwise white letters land on white.
+const standalone = window.parent === window || !params.has('context');
 if(standalone) document.documentElement.classList.add('standalone');
 const context = ['library','active'].includes(params.get('context')) ? params.get('context') : 'library';
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
