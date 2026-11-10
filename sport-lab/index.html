@@ -4293,6 +4293,21 @@ document.addEventListener('pointerup',event=>endExerciseSwipe(event));document.a
 window.addEventListener('click',event=>{if(Date.now()<exerciseSwipeClickUntil&&event.target.closest('[data-action=collapse-exercise]')){event.preventDefault();event.stopImmediatePropagation();return;}const b=event.target.closest('[data-action=delete-workout-exercise]');if(!b)return;event.preventDefault();event.stopImmediatePropagation();const undo=deleteWorkoutExercise(Number(b.dataset.ei));if(undo){render();toast('Упражнение убрано из тренировки',undo);}},true);
 document.addEventListener('keydown',event=>{const card=event.target.closest('[data-exercise-card].is-collapsed');if(!card||!event.target.matches('.exercise-collapse'))return;if(['Delete','Backspace'].includes(event.key)){event.preventDefault();setExerciseSwipeOpen(card,true);card.querySelector('.exercise-swipe-delete')?.focus();}if(event.key==='Escape')setExerciseSwipeOpen(card,false);});
 
+/* Lab 10.11.2026 17:20 (Астамур: «после «Завершить тренировку» ещё раз окно «Завершить и сохранить» — одного раза
+   хватит, правки сделаю в журнале»): «Завершить» saves at once. The same form is built and submitted, so every step of
+   saving stays as it was (rest and timer capture, completion «Выполнено», link to the schedule, icon); the window just
+   never shows. Name, time, note and completion are edited in the journal record. The toast offers «Отменить» for a
+   mistaken tap: the record is removed and the workout runs on. */
+if(typeof showWorkoutForm==='function'){
+ const formBeforeQuickFinish=showWorkoutForm;
+ showWorkoutForm=function(mode,id){
+  formBeforeQuickFinish(mode,id);if(mode!=='finish')return;
+  const form=document.getElementById('workout-form'),before=state.active&&clone(state.active);if(!form||!before)return;
+  form.requestSubmit();if(state.active)return; // the form refused: its error stays visible in the window
+  toast('Тренировка сохранена в журнале',()=>{if(state.active)return;state.workouts=state.workouts.filter(w=>w.id!==before.id);state.active=before;persist();goto('active');});
+ };
+}
+
 /* One retained editor, three context tabs. Tab changes never mutate or stop a workout. */
 let exerciseContext=null;
 function exerciseContextInstructions(id,context='library'){
