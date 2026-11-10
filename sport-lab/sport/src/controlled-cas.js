@@ -7,15 +7,19 @@ const SportControlledCAS=(()=>{
  function mergeData(base,local,remote){
   const missing=Symbol('missing'),conflicts=[],recordKeys={workouts:'id',measurements:'date',measurementTrash:'id',customExercises:'id',templates:'id',schedules:'id',customCounters:'id',exerciseGroups:'id',exerciseChanges:'id'};
   const sets=new Set(['favoriteExercises','archivedExercises']),planning=new Set(['schedules','templates','templateOverrides','occurrences','planningVersion']);
+  // Update 40.1: settings and timer state of a device are not journal records. When both sides changed one of them,
+  // the device that is merging now keeps its value — a switch can never stop the journal from synchronising.
+  const device=new Set(['floatingTimerEnabled','freeTimer','lastRestSeconds','demoPulse']);
   const equal=(a,b)=>a===missing||b===missing?a===b:same(a,b),clone=x=>x===missing?missing:copy(x),object=x=>x!==missing&&x!==null&&typeof x==='object'&&!Array.isArray(x);
   if(!base){
    // A pre-existing unsynchronised plan can be combined additively, but unknown
    // preferences/history are never treated as a clean or acknowledged baseline.
-   for(const k of new Set([...Object.keys(local),...Object.keys(remote)]))if(!planning.has(k)&&!same(local[k],remote[k]))return {ok:false,conflicts:[k]};
-   base=copy(local);for(const k of planning)delete base[k];
+   for(const k of new Set([...Object.keys(local),...Object.keys(remote)]))if(!planning.has(k)&&!device.has(k)&&!same(local[k],remote[k]))return {ok:false,conflicts:[k]};
+   base=copy(local);for(const k of planning)delete base[k];for(const k of device)delete base[k];
   }
   function merge(b,l,r,path){
    if(equal(l,r))return clone(l);if(equal(l,b))return clone(r);if(equal(r,b))return clone(l);
+   if(device.has(path))return clone(l);
    const key=recordKeys[path],isSet=sets.has(path);
    if((key||isSet)&&Array.isArray(l)&&Array.isArray(r)&&(b===missing||Array.isArray(b))){
     const lists=[b===missing?[]:b,l,r],maps=lists.map(a=>new Map(a.map(v=>[isSet?v:v?.[key],v])));
