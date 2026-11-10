@@ -795,6 +795,7 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .tpAdd{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:none;color:rgba(255,255,255,.88);font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
 .tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .library-search-row{margin-bottom:8px}
+.sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:none}
 
 </style></head><body><script>/* Narrow transport boundary: journal sync plus (Update 38) the shared food-counter row. Loaded before any app/auth/storage code. */
 (function(root){
@@ -6458,6 +6459,15 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action="food-plus"][data-id="example-water"]');if(!b)return;
  state.customCounters=state.customCounters||[];const c={id:HappyFoodCounters.id(),title:'Вода',unit:'стакан, 250 мл',events:[]};state.customCounters.push(c);b.dataset.id=c.id;
 },true);
+
+// 4 (fix 10.11.2026 19:30): the pencil renames only where the name field is — the «Настроить» / «Добавить» tab.
+// On «Инструкции» and «История» it did nothing, so it is hidden there.
+const selectTabBeforeAudit=selectExerciseContextTab;
+selectExerciseContextTab=function(key,focus=false){
+ const result=selectTabBeforeAudit(key,focus),sheet=exerciseContext?.sheet;
+ if(sheet&&exerciseContext.form?.isConnected)sheet.dataset.ctxTab=key;
+ return result;
+};
 
 </script>
 <script>/* Update 39: Sport's journal-scale keys (journal, profiles, sync ledger, recovery vault, backups —

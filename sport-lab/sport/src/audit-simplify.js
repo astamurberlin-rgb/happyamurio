@@ -175,3 +175,12 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action="food-plus"][data-id="example-water"]');if(!b)return;
  state.customCounters=state.customCounters||[];const c={id:HappyFoodCounters.id(),title:'Вода',unit:'стакан, 250 мл',events:[]};state.customCounters.push(c);b.dataset.id=c.id;
 },true);
+
+// 4 (fix 10.11.2026 19:30): the pencil renames only where the name field is — the «Настроить» / «Добавить» tab.
+// On «Инструкции» and «История» it did nothing, so it is hidden there.
+const selectTabBeforeAudit=selectExerciseContextTab;
+selectExerciseContextTab=function(key,focus=false){
+ const result=selectTabBeforeAudit(key,focus),sheet=exerciseContext?.sheet;
+ if(sheet&&exerciseContext.form?.isConnected)sheet.dataset.ctxTab=key;
+ return result;
+};
