@@ -59,7 +59,7 @@ function paintHappyAccount(){
 }
 function sportAuthDo(action){
   if(action==='out'){sportLastCloud=0;sportSyncError=''}
-  return HappyUI.act(action,{state:CL,box:()=>$('#happy-account'),signIn:clSignIn,signOut:()=>{clSignOut();sportJournalAccountChanged()},paint:paintHappyAccount,afterSignIn:()=>{if(!sportJournalAccountChanged())return syncSportCloud()},refresh:syncSportCloud});
+  return HappyUI.act(action,{state:CL,box:()=>$('#happy-account'),signIn:clSignIn,signOut:async()=>{if(typeof sportFlushBeforeExit==='function'){try{await sportFlushBeforeExit()}catch{}}clSignOut();sportJournalAccountChanged()},paint:paintHappyAccount,afterSignIn:()=>{if(!sportJournalAccountChanged())return syncSportCloud()},refresh:syncSportCloud});
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-happy]');if(b)sportAuthDo(b.dataset.happy)});
 window.addEventListener('storage',async e=>{if(e.key===CL_KEY){if(sportJournalAccountChanged())return;CL.s=null;CL.ck=null;CL.kraw=null;await clLoad();paintHappyAccount()}});

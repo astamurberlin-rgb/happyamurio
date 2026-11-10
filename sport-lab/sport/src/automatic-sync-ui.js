@@ -39,7 +39,8 @@ const sportAutoAdapters={...sportCtrlAdapters,
 const sportAutoEngine=SportControlledCAS.create(sportAutoAdapters);
 const sportAutoTexts={checking:'Проверяем облачную версию…',dirty:'Изменения сохранены на устройстве. Ожидают отправки.',saving:'Сохраняем в облаке и проверяем ответ…',saved:'Синхронизировано. Текущая версия подтверждена чтением сервера.',offline:'Нет связи. Изменения остаются на устройстве и будут проверены при подключении.','retry-needed':'Отправка не подтверждена. Автоматические повторы остановлены; чтение результата продолжается. В настройках можно повторить тот же пакет вручную.',unknown:'Результат отправки ещё не подтверждён. Проверяем сохранённую попытку без замены данных.','recovery-full':'Первый конфликт защищён, а резерв для нового занят. Текущий журнал остаётся здесь, новая облачная версия остаётся на сервере. Выгрузи дневник и резерв перед выбором.',conflict:'Конфликт версий. Локальные и облачные данные не перезаписаны. Выбери копию в настройках.',confirmation:'Удаление последних записей требует подтверждения. Локальные изменения сохранены.',restoring:'Восстанавливаем облачный журнал с резервной копией…',waiting:'Обновление ждёт завершения редактирования или текущей тренировки.',empty:'Пока нет записей. Новые записи будут сохраняться автоматически.',local:'Локальный режим: облачная синхронизация выключена. Для неё войди существующим аккаунтом. Гостевые записи не переносятся автоматически.',stopped:'Синхронизация приостановлена в этой вкладке. Чтобы продолжить, обнови страницу.',restart:'Сохранённый профиль изменился в другой вкладке. Синхронизация остановлена. Заверши или скопируй открытый черновик, выгрузи локальный дневник и обнови профиль.',error:'Синхронизация остановлена. Выгрузи дневник и проверь сообщение в настройках.'};
 const sportAutoCompactTexts={checking:'Проверяем сохранение…',dirty:'Сохранено на устройстве · ждёт отправки',saving:'Сохраняем…',saved:'Сохранено в облаке · проверено',offline:'Без связи · данные на устройстве','retry-needed':'Сохранение требует проверки',unknown:'Проверяем результат отправки…','recovery-full':'Нужен выбор · резерв защищён',conflict:'Конфликт копий · нужен выбор',confirmation:'Удаление ждёт подтверждения',restoring:'Восстанавливаем журнал…',waiting:'Синхронизация ждёт завершения редактирования',empty:'Новых записей пока нет',local:'Локальный режим · без облака',stopped:'Синхронизация приостановлена',restart:'Профиль изменился · нужен перезапуск',error:'Синхронизация остановлена'};
-function sportProfileSyncText(phase){return ({checking:'Синхронизация…',dirty:'Синхронизация…',saving:'Синхронизация…',restoring:'Синхронизация…',saved:'Синхронизировано',empty:'Синхронизировано · журнал пока пуст',local:'На устройстве · войди для синхронизации',offline:'Нет связи · изменения на устройстве',unknown:'Проверяем результат синхронизации…',waiting:'Синхронизация после завершения редактирования',conflict:'Есть конфликт изменений · обе копии сохранены',confirmation:'Нужно подтвердить удаление',restart:'Нужно обновить профиль',stopped:'Синхронизация приостановлена','retry-needed':'Не удалось подтвердить синхронизацию','recovery-full':'Есть неразрешённый конфликт · резерв сохранён',error:'Не удалось синхронизировать'})[phase]||'Не удалось синхронизировать';}
+const SPORT_SYNCING='Подождите, идёт синхронизация…';
+function sportProfileSyncText(phase){return ({checking:SPORT_SYNCING,dirty:SPORT_SYNCING,saving:SPORT_SYNCING,restoring:SPORT_SYNCING,saved:'Синхронизировано',empty:'Синхронизировано · журнал пока пуст',local:'На устройстве · войди для синхронизации',offline:'Нет связи · изменения на устройстве',unknown:'Проверяем результат синхронизации…',waiting:'Синхронизация после завершения редактирования',conflict:'Есть конфликт изменений · обе копии сохранены',confirmation:'Нужно подтвердить удаление',restart:'Нужно обновить профиль',stopped:'Синхронизация приостановлена','retry-needed':'Не удалось подтвердить синхронизацию','recovery-full':'Есть неразрешённый конфликт · резерв сохранён',error:'Не удалось синхронизировать'})[phase]||'Не удалось синхронизировать';}
 function sportStorageBackendText(){
  // Update 39: journal-scale keys live in IndexedDB; localStorage of the site is shared with Day and Meal.
  try{
@@ -77,6 +78,19 @@ const sportAutomatic=SportReadOnlyTest.bindJournalController(dispatch=>SportAuto
  exclusive:fn=>{const locks=navigator.locks;const body=async()=>{try{await SportLocalStore.refresh(sportCtrlLedgerKey())}catch{}return fn()};if(!locks||typeof locks.request!=='function')return body();return locks.request('happy-sport-sync:'+SportProfiles.owner,{ifAvailable:true},lock=>lock?body():undefined)},
  afterRestore:()=>{if(sportAutoCanMerge())render()}
 }));
+/* Update 39.2: «Выйти» ждёт, пока журнал уйдёт в облако (до 15 с). Без сети или при остановке синхронизации —
+   выход сразу: записи остаются на устройстве этого аккаунта и уйдут после следующего входа. */
+async function sportFlushBeforeExit(ms=15000){
+ if(!CL.s)return false;const deadline=Date.now()+ms,done=['saved','empty','local'],wait=['checking','dirty','saving','unknown','restoring'];
+ if(done.includes(sportAutomatic.phase)&&!sportAutomatic.busy)return true;
+ sportAutomatic.request('exit',0);
+ while(Date.now()<deadline){
+  await new Promise(r=>setTimeout(r,400));
+  const phase=sportAutomatic.phase;if(sportAutomatic.busy)continue;
+  if(done.includes(phase))return true;if(!wait.includes(phase))return false;
+ }
+ return false;
+}
 let sportAutoObserved=SportControlled.canonical(sportBackup().data);
 SportProfiles.onSave(()=>{
  if(sportAutoApplying)return;
