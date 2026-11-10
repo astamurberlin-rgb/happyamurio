@@ -11,6 +11,12 @@ function familyVariantCount(n,noun){const word=n%10===1&&n%100!==11?'вариа�
 // Retired ids (earlier duplicates) stay resolvable in old workouts, but search and pickers no longer offer them.
 const matchesBeforeFamilies=matches;
 matches=function(e,q){return !retiredFamilyIds.has(e.id)&&matchesBeforeFamilies(e,q)};
+// Lab 10.11.2026 16:55: «разминка» / «разогрев» and «заминка» find the warm-up and cool-down exercises (the library's
+// «Разминка» and «Заминка» filters, exerciseSports in library-v2.js) — their names do not contain these words.
+const phaseSearchWords={warmup:['разминка','разогрев','warm-up','warmup'],cooldown:['заминка','cool-down','cooldown']};
+function phaseSearch(q){const word=String(q||'').trim().toLowerCase().replaceAll('ё','е');if(word.length<4||/\s/.test(word))return null;return Object.keys(phaseSearchWords).find(k=>phaseSearchWords[k].some(w=>w.startsWith(word)||word.startsWith(w.slice(0,6))))||null}
+const matchesBeforePhases=matches;
+matches=function(e,q){if(matchesBeforePhases(e,q))return true;const phase=phaseSearch(q);return !!(phase&&e?.id&&!retiredFamilyIds.has(e.id)&&typeof exerciseSports==='function'&&exerciseSports(e).includes(phase))};
 
 // Library list: one card per family. It opens on the variant the search named, otherwise on a favourite or the base.
 const filteredBeforeFamilies=filteredExercises;
@@ -31,11 +37,11 @@ exerciseCard=function(e,action='exercise-detail'){const html=cardBeforeFamilies(
 
 // Pictures: an exercise with its own cover in the media library shows it instead of the sport icon.
 // A picture assigned by hand in Icon Studio still wins.
-// Lab 10.11.2026 15:51: an exercise without a picture of its own shows the placeholder (Daniel sitting on the floor);
-// exercises whose sport icon already shows the exercise itself (keepSportIcon: the pull-ups) keep it.
-const keepSportIcon=new Set(exerciseMedia.placeholder?.keepSportIcon||[]);
+// Lab 10.11.2026 16:55: the placeholder (Daniel sitting on the floor) only replaces the generic fallback — the sneakers
+// of «Другое занятие» that an exercise gets when neither its name nor its category matches a picture (own exercises,
+// new library entries). Every picture the app finds by name or category stays as it was.
 const sportIconBeforeFamilies=exerciseSportIcon;
-exerciseSportIcon=function(e){if(sportStudioExerciseIcon(e.id))return sportIconBeforeFamilies(e);if(exerciseMediaUrl(e.id))return 'media:'+e.id;if(!keepSportIcon.has(e.id)&&exerciseMediaUrl('placeholder'))return 'media:placeholder';return sportIconBeforeFamilies(e)};
+exerciseSportIcon=function(e){if(sportStudioExerciseIcon(e.id))return sportIconBeforeFamilies(e);if(exerciseMediaUrl(e.id))return 'media:'+e.id;const found=sportIconBeforeFamilies(e);return found===baseSportIcon(37)&&exerciseMediaUrl('placeholder')?'media:placeholder':found};
 const iconMarkupBeforeFamilies=sportIconMarkup;
 sportIconMarkup=function(name){
  if(typeof name==='string'&&name.startsWith('media:')){const src=exerciseMediaUrl(name.slice(6));if(src)return `<img class="icon sport-icon" src="${sportIconEscape(src)}" alt="" width="64" height="64" loading="lazy" decoding="async">`}

@@ -169,7 +169,10 @@ function saveExerciseEditor(form,mode){
   const localOnly=form.dataset.scope==='active'||ei!=null;
   if(localOnly&&(!active||active.id!==id||(form.dataset.workoutId&&form.dataset.workoutId!==state.active.id)))throw new Error('Тренировка изменилась. Открой настройки упражнения заново.');
   const livePlayer=state.active?.exercisePlayer,liveCountdown=state.active?.countdown;
-  if(localOnly&&((livePlayer?.ei===ei&&livePlayer.running&&(playerChanged||!metrics.includes('seconds')))||(liveCountdown?.ei===ei&&liveCountdown.running&&planChanged)))throw new Error('Сначала нажми STOP у работающего таймера, затем измени его время или подходы.');
+  // Lab 10.11.2026 17:05 (comment «в режиме тренировки … поправить длительность перерыва не могу»): when the only change
+  // is the length of the rest that is running now, the running rest takes the new length and keeps going.
+  const liveRestOnly=!!(localOnly&&planChanged&&liveCountdown?.kind==='rest'&&liveCountdown.ei===ei&&(()=>{try{const before=JSON.parse(form.dataset.initialPlan||'null');if(!Array.isArray(before)||!before[liveCountdown.si])return false;before[liveCountdown.si].restSeconds=draft.sets[liveCountdown.si]?.restSeconds;return JSON.stringify(before)===JSON.stringify(draft.sets)}catch{return false}})());
+  if(localOnly&&((livePlayer?.ei===ei&&livePlayer.running&&(playerChanged||!metrics.includes('seconds')))||(liveCountdown?.ei===ei&&liveCountdown.running&&planChanged&&!liveRestOnly)))throw new Error('Сначала нажми STOP у работающего таймера, затем измени его время или подходы.');
   if(form.dataset.scope==='add')return addConfiguredExercise(id,entry,String(f.get('addDestination')||'current'),form);
   // Session settings never write to the catalog, another occurrence, or a completed workout.
   let next;
@@ -178,7 +181,7 @@ function saveExerciseEditor(form,mode){
     const handle=String(f.get('handle')||'').trim().slice(0,60);if(handle&&exerciseHandles(active).concat(exerciseHandle(active)).includes(handle))active.handle=handle;else delete active.handle;
     next=active;
   }else next=saveExerciseDefinition(id,entry,mode,ei);
-  if(active){if(planChanged)active.sets=clone(draft.sets);active.defaultRestSeconds=lastRest;if(state.active.countdown?.ei===ei&&planChanged)state.active.countdown=null;if(state.active.exercisePlayer?.ei===ei&&playerChanged)state.active.exercisePlayer=null;}
+  if(active){if(planChanged)active.sets=clone(draft.sets);active.defaultRestSeconds=lastRest;if(liveRestOnly)applyLiveRestLength(state.active.countdown,draft.sets[state.active.countdown.si].restSeconds);else if(state.active.countdown?.ei===ei&&planChanged)state.active.countdown=null;if(state.active.exercisePlayer?.ei===ei&&playerChanged)state.active.exercisePlayer=null;}
   if(lastRest!=null)state.lastRestSeconds=lastRest;
   if(!e&&form.dataset.addActive==='true'&&state.active)state.active.exercises.push(prepareWorkoutExercise({id:next.id,name:next.name,phase:'main',notes:'',sets:next.defaultSets.map(setPlanCopy),defaultRestSeconds:lastRest},true));
   persist();closeSheet();render();toast(localOnly?'Настройки сохранены только для этой тренировки':mode==='copy'?'Создано отдельное упражнение. Прежняя история сохранена.':'Настройки сохранены'+(e&&e.name!==name?' · история остаётся с упражнением':''));return next;
@@ -208,3 +211,8 @@ document.addEventListener('click',e=>{
     state.active={...clone(src),occurrenceId:null,plannedStart:null,timeZone:scheduleZone(),id:'local-'+Date.now(),start:localNow(),end:'',duration:0,source:'Моя запись',warnings:[],notes:'',countdown:null,exercisePlayer:null,pauses:[],exercises:src.exercises.map(repeatWorkoutExercise)};persist();goto('active');
   }
 },true);
+
+// Lab 10.11.2026 17:05: a new planned length for the rest that is running. The rest's total is what came before a
+// pause or an earlier change (restElapsedBefore) plus the current segment, so the segment gets the rest of the new total.
+// A total shorter than what has already passed ends the rest on the next tick, as when the time runs out.
+function applyLiveRestLength(t,seconds){if(!t||t.kind!=='rest'||!Number.isInteger(seconds)||seconds<1)return;if(t.finished)return;t.duration=Math.max(1,seconds-(t.restElapsedBefore||0));}

@@ -77,15 +77,21 @@ console.log('текущая тренировка:', active); assert.deepEqual(ac
 // 7. old duplicate ids are not offered but still resolve
 assert.equal(await page.evaluate(() => exercise('pull-up-wide')?.id), 'pull-up-wide');
 assert.equal(await page.evaluate(() => allExercises().filter(e => matches(e, 'широкий хват')).map(e => e.id).join()), 'wide-pull-up'); assert.equal(await page.evaluate(() => allExercises().filter(e => matches(e, 'узкий хват')).map(e => e.id).sort().join()), 'chin-up-narrow,pull-up-narrow');
-// 8. library pictures: the pull-ups keep their own picture, the rest without a picture show the placeholder
-const pics = await page.evaluate(() => Object.fromEntries(['pull-up','neutral-pull-up','weighted-pull-up','band-pull-up','barbell-back-squat','bodyweight-squat'].filter(id => exercise(id)).map(id => [id, exerciseSportIcon(exercise(id))])));
+// 8. library pictures: every picture found by name or category stays; only the generic «Другое занятие» sneakers
+//    (no match) become the placeholder
+const pics = await page.evaluate(() => Object.fromEntries(['pull-up','neutral-pull-up','band-pull-up','barbell-back-squat','squat','plank'].filter(id => exercise(id)).map(id => [id, exerciseSportIcon(exercise(id))])));
 console.log('картинки:', JSON.stringify(pics));
-for(const id of ['pull-up','neutral-pull-up','weighted-pull-up']) assert.notEqual(pics[id], 'media:placeholder', id);
-for(const [id, v] of Object.entries(pics)) if(!['pull-up','neutral-pull-up','weighted-pull-up'].includes(id)) assert.equal(v, 'media:placeholder', id);
-cards = await lib('присед');
+for(const id of ['pull-up','neutral-pull-up','band-pull-up','barbell-back-squat']) assert.notEqual(pics[id], 'media:placeholder', id);
+assert.equal(pics['band-pull-up'], 'sport:05_resistance_band');
+for(const id of ['squat','plank']) if(pics[id]) assert.equal(pics[id], 'media:placeholder', id);
+assert.ok(!(await page.evaluate(() => allExercises().some(e => exerciseSportIcon(e) === 'sport:37_other_activity'))), 'no sneakers left in the library');
+cards = await lib('мёртвый жук');
 const srcs = await page.$$eval('#library-results .sport-thumbnail img', els => els.map(e => e.getAttribute('src')));
-assert.ok(srcs.length && srcs.every(s => /placeholder\.png$/.test(s)), 'squats show the placeholder');
+assert.ok(srcs.length && srcs.every(s => /placeholder\.png$/.test(s)), 'dead bug shows the placeholder');
 assert.ok(await page.$eval('#library-results .sport-thumbnail img', e => e.complete && e.naturalWidth === 512), 'placeholder loads');
+// 9. «разминка» / «заминка» find warm-up and cool-down exercises
+cards = await lib('Разминка'); console.log('Разминка →', cards.length); assert.ok(cards.length >= 3, 'warm-up search');
+cards = await lib('заминка'); console.log('заминка →', cards.length); assert.ok(cards.length >= 3, 'cool-down search');
 assert.deepEqual(logs, []);
 console.log('ALL OK');
 await browser.close();

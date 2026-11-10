@@ -88,3 +88,21 @@ setInterval(refreshRestLines,250);
 document.addEventListener('submit',event=>{if(event.target.id==='workout-form'&&event.target.dataset.mode==='finish'){captureRestActual(state.active?.countdown);if(state.active?.exercisePlayer)syncExercisePlayer();}},true);
 
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&event.target.closest?.('.floating-rest-pill')){event.preventDefault();event.stopImmediatePropagation();dismissRestWidget();}},true);
+
+/* Lab 10.11.2026 17:15 (comment: the current-workout bar sometimes slips under the dock and cannot be pressed; the
+   timers get in the way): the floating parts stack from the bottom with 12 px between them — dock → current workout →
+   rest → other timers (the free timer). The bar used to stand at a fixed 90 px, which on an iPhone with a home
+   indicator (safe area) put it partly under the dock; the free timer stood at a fixed height over the rest. */
+function stackFloating(){
+ try{
+  const dock=document.getElementById('dock'),height=window.innerHeight;if(!dock||!dock.getClientRects().length)return;
+  const above=el=>Math.round(height-el.getBoundingClientRect().top+12)+'px',shown=el=>el&&el.getClientRects().length;
+  const banner=document.querySelector('.active-banner');
+  if(shown(banner)&&banner.style.bottom!==above(dock))banner.style.bottom=above(dock);
+  refreshRestPillPosition();
+  const free=document.getElementById('free-timer-root');if(!free)return;
+  const top=[dock,banner,document.querySelector('#rest-pill-root .floating-rest-pill')].filter(shown).sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top)[0];
+  if(free.style.bottom!==above(top))free.style.bottom=above(top);
+ }catch{}
+}
+setInterval(stackFloating,100);

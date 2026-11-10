@@ -41,3 +41,44 @@
 .set-add-plus{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px}
 .active-workout .set-swipe[data-swipe-kind="set"]>.swipe-delete{top:auto;bottom:18px;height:44px;min-height:44px;max-height:44px;padding:2px 4px;gap:1px}
 .player-mode-switch:has(input:disabled){opacity:.5;cursor:not-allowed}
+/* Lab 10.11.2026 16:58 (comment «косо криво дисплей таймера отдыха»): the rest clock is one centred column — the
+   label over the digits, the digits in the middle of the pill, the underline exactly under the digits. The «м:с»
+   unit is hidden here: a ticking clock reads as minutes:seconds. */
+.floating-rest-pill>.floating-rest-clock{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:auto!important;height:auto!important;min-width:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:1px!important}
+.floating-rest-clock>span:first-child{position:static!important;transform:none!important;right:auto!important;top:auto!important;width:auto!important;margin:0!important;font-size:11px!important;line-height:13px!important;text-align:center!important;white-space:nowrap!important}
+.floating-rest-clock>.sport-metric-input{display:block!important;width:auto!important;gap:0!important}
+.floating-rest-clock>.sport-metric-input>.sport-metric-unit{display:none!important}
+.floating-rest-clock .sport-metric-input input{display:block!important;width:5ch!important;height:34px!important;min-height:34px!important;padding:0!important;font-size:28px!important;line-height:34px!important;text-align:center!important;font-variant-numeric:tabular-nums!important;letter-spacing:-.4px}
+/* Lab 10.11.2026 16:55: native date/time fields with a Russian line over them (planning.js, ruDateField). */
+.ru-date{position:relative;display:block;min-width:0;width:100%}
+.ru-date>input{width:100%;color:transparent!important;-webkit-text-fill-color:transparent!important}
+.ru-date>input::-webkit-datetime-edit,.ru-date>input::-webkit-date-and-time-value{opacity:0}
+.ru-date-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 12px;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Lab 10.11.2026 17:05: «Добавить в расписание» as two calm groups (when · details) and a row of actions. */
+.plan-group{margin-top:12px;padding:14px;border:1px solid #ffffff30;border-radius:20px;background:#ffffff12}
+.plan-repeat{display:flex;gap:3px;padding:4px;border:1px solid var(--line);border-radius:15px;background:rgba(0,97,172,.12)}
+.plan-repeat label{position:relative;flex:1;min-width:0}
+.plan-repeat input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.plan-repeat span{display:grid;place-items:center;min-height:38px;padding:0 6px;border-radius:11px;font-size:12px;font-weight:650;white-space:nowrap}
+.plan-repeat input:checked+span{background:rgba(244,251,255,.96);color:#176b98;box-shadow:0 2px 7px #12426b20}
+.plan-repeat input:focus-visible+span{outline:2px solid #fff;outline-offset:1px}
+.plan-group #plan-inputs .schedule-weekdays{margin:14px 0 4px}
+.plan-group .schedule-date-grid{margin-top:14px}
+.plan-group .schedule-date-grid .field,.plan-fields .plan-group .field{margin:0}
+.plan-group .schedule-end,.plan-group .plan-zone{margin-top:12px!important}
+.plan-zone-note{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;margin:10px 2px 0;font-size:11px;line-height:1.5;color:var(--muted)}
+.plan-zone-note .text-btn,.plan-remove{padding:0;min-height:0;font-size:11px;font-weight:650;text-decoration:underline;text-underline-offset:2px;background:none;border:0;color:#fff}
+.plan-details{padding-top:4px;padding-bottom:4px}
+.plan-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;font-size:14px;font-weight:600;border-bottom:1px solid #ffffff24}
+.plan-row>.sport-metric-input{width:96px!important;flex:0 0 96px}
+.plan-row>select{flex:0 1 auto;width:auto;max-width:62%;padding:9px 12px;font-size:13px}
+.plan-details .plan-note{margin:12px 0 10px!important}
+.plan-note textarea{min-height:64px;resize:vertical}
+.plan-fields .plan-share{grid-template-columns:1fr 1fr;margin-top:14px}
+.plan-fields .plan-share .button{min-height:48px;font-size:13px;padding:10px 8px}
+.plan-fields>details>.fineprint{margin:10px 2px 0}
+.plan-zone[hidden],#plan-inputs[hidden]{display:none!important}
+/* Lab 10.11.2026 17:10 (comment «если упражнений мало страница вниз опускается и её закрывает клавиатура»): a sheet
+   with an exercise search keeps its full height whatever the number of results, so the search stays at the top and
+   the keyboard never covers it. */
+.sheet:has(#picker-search),.sheet:has(#template-picker-search){height:calc(100dvh - 48px);max-height:calc(100dvh - 48px)}

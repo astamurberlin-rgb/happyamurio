@@ -54,15 +54,14 @@ export async function loadMedia(){
   }
   return media;
 }
-/* Lab 10.11.2026 15:51: the library placeholder — Daniel sitting on the floor — for exercises without a picture of their
-   own. catalog.json names the file and the exercises whose sport icon already shows the exercise itself. */
+/* Lab 10.11.2026: the library placeholder — Daniel sitting on the floor — shown instead of the generic «Другое занятие»
+   sneakers, i.e. only where the app finds no picture by name or category. catalog.json names the file. */
 export async function loadMediaPlaceholder(){
   let catalog;try{catalog=await json(new URL('catalog.json',mediaRoot))}catch(e){if(e.code==='ENOENT')return null;throw e}
   const p=catalog.placeholder;if(!p)return null;
   if(!/^[a-z0-9-]+\.(png|webp)$/.test(p.cover||''))throw new Error('Exercise media placeholder path is not allowed: '+p.cover);
   await readFile(new URL(p.cover,mediaRoot));
-  if(!Array.isArray(p.keepSportIcon)||p.keepSportIcon.some(id=>typeof id!=='string'))throw new Error('Exercise media placeholder: keepSportIcon must list exercise ids');
-  return {cover:p.cover,keepSportIcon:p.keepSportIcon};
+  return {cover:p.cover};
 }
 export async function loadSeed(){
   const base=await json(new URL('data/seed.json',sportRoot)),library=await loadLibrary();
