@@ -16,6 +16,12 @@ BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS),
 
 — Claude · 09.11.2026 14:58
 
+## Supplements catalog 1.0.0 (2026-11-11)
+
+`supplements` — 31 unbranded supplement templates for Happy Meal Update 29 and later (schema `happy.supplements.templates.v1`): names, components mapped to Meal substance IDs, and for 29 templates a sourced example of one open label (serving basis, amounts, link, quote, check date). Examples are not dose recommendations; `null` means unknown, not zero. Templates by Mikhalych (ChatGPT) with Astamur; released as a standalone library by Claude. Personal variants and intake records are not stored here: they live in the account document (`app_sync` meal/supplements). Details: `data/SUPPLEMENTS.md`.
+
+— Claude · 11.11.2026 23:55
+
 ## Updates and rollback
 
 Create a data commit, validate exact IDs, schema and hashes, then update manifest.json to reference that immutable commit. Keep schema happy.food-libraries.v1 and canonical IDs. Breaking formats require a new manifest major version. The app checks the manifest once on startup; close and reopen to obtain the latest compatible library. Already-open sessions retain their loaded snapshot.

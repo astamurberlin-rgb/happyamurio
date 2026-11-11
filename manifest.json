@@ -1,7 +1,7 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-09.1",
-  "updated": "2026-11-09",
+  "revision": "2026-11-11.1",
+  "updated": "2026-11-11",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
@@ -73,6 +73,14 @@
       "date": "2026-11-09",
       "notes": "data/DESSERTS.md",
       "firstReader": "Happy Meal Update 25"
+    },
+    "supplements": {
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/447bd1d4b85240353b4f41dd85f09ee63ff3ba9f/data/supplements-1.0.json",
+      "encoding": "json",
+      "bytes": 41327,
+      "sha256": "3988688b28587a48dba86c39c8d65a1730702474a7e11015ce03ba496a2f5af1",
+      "templateCount": 31
     }
   }
 }
