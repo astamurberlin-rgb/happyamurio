@@ -123,6 +123,59 @@ def phone(browser, name=None):
     return ctx
 
 
+REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
+_lib_files = {}
+
+
+def _lib_file(path):
+    if path not in _lib_files:
+        import subprocess
+        _lib_files[path] = subprocess.run(["git", "show", "origin/meal-libraries:" + path], cwd=REPO, capture_output=True, check=True).stdout
+    return _lib_files[path]
+
+
+def libraries(ctx, state=None, hold=None):
+    """Каталоги Meal (meal-libraries) — из ветки origin/meal-libraries этого репозитория, без сети
+    (git fetch --depth=1 origin meal-libraries:refs/remotes/origin/meal-libraries).
+    state["offline"] = True — как без интернета: запросы к каталогам обрываются.
+    hold — множество имён файлов: такие запросы не отвечаются сразу, а кладутся в state["held"] (для отмены)."""
+    state = state if state is not None else {}
+    state.setdefault("log", [])
+
+    def serve(route, request):
+        url = request.url
+        state["log"].append(url[len(LIBS):][:90])
+        if state.get("offline"):
+            return route.abort("internetdisconnected")
+        if url.startswith(LIBS + "meal-libraries/manifest.json"):
+            body = _lib_file("manifest.json")
+        elif "/data/" in url:
+            name = url.split("/data/")[1].split("?")[0]
+            if hold and name in hold:
+                state.setdefault("held", []).append(route)
+                return None
+            body = _lib_file("data/" + name)
+        else:
+            return route.fulfill(status=404, body="")
+        return route.fulfill(status=200, body=body, headers={"access-control-allow-origin": "*", "content-type": "application/octet-stream", "content-length": str(len(body))})
+    ctx.route(LIBS + "**", serve)
+    if hold:
+        # запрос, который страница отменила, пока он «висел», Playwright завершает отменой — это не ошибка сценария
+        import asyncio
+        loop = asyncio.get_event_loop()
+        default = loop.get_exception_handler()
+        def quiet(lp, context):
+            if isinstance(context.get("exception"), asyncio.CancelledError):
+                return
+            if default:
+                default(lp, context)
+            else:
+                lp.default_exception_handler(context)
+        loop.set_exception_handler(quiet)
+    return state
+
+
 def finish(name, out, checks):
     """Записать результат в HAPPY_OUT/<name>.json, напечатать проверки и вернуть код возврата."""
     out["checks"] = [("PASS " if ok else "FAIL ") + title for title, ok in checks]

@@ -16,7 +16,7 @@ with sync_playwright() as p:
     sport.fill('#happy-account input[type="email"]',EMAIL);sport.fill('#happy-account input[name="password"]',PW);sport.click('#happy-account [data-happy="in"]');sport.wait_for_timeout(9000)
     sport.evaluate("""()=>{const d=selectedDate;state.workouts.push({id:'local-phone-1',timeZone:'Europe/Moscow',title:'Проверка',kind:'gym',icon:null,start:d+'T10:00:00',end:d+'T10:30:00',duration:1800,notes:'',source:'Моя запись',demo:false,exercises:[],warnings:[]});persist();render()}""")
     out["summary_uploaded"]=bool(wait_for(sport,lambda:(UID,"sport","link") in rows,40))
-    meal=page_of("meal","meal-27/index.html");meal.wait_for_timeout(5000)
+    meal=page_of("meal","meal-28/index.html");meal.wait_for_timeout(5000)
     meal.evaluate("()=>go('settings')");meal.wait_for_timeout(700);meal.fill("#clEmail",EMAIL);meal.fill("#clPw",PW);meal.click('#clBox [data-cl="in"]');meal.wait_for_timeout(11000)
     meal.evaluate("()=>go('day')");meal.wait_for_timeout(600)
     out["meal_spent"]=er(meal,"потрачено")["rows"][-1]

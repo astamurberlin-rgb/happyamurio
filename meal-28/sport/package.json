@@ -1,0 +1,14 @@
+{
+  "name": "happy-sport",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Личный прототип Happy Sport: дневник тренировок, библиотека упражнений и замеры.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs && node scripts/check-paths.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

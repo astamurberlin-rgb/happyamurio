@@ -238,7 +238,7 @@ ok('разбор строки из хранилища не бросает оши
 
 // Ключ в области аккаунта должен совпадать с тем, что строит profile-storage.js в Day и Meal: иначе Sport положит
 // сводку туда, где соседи её не ищут.
-for(const copy of ['day-57/shared/profile-storage.js','meal-27/shared/profile-storage.js']){
+for(const copy of ['day-57/shared/profile-storage.js','meal-27/shared/profile-storage.js','meal-28/shared/profile-storage.js']){
  const source=await readFile(new URL(copy,root),'utf8');
  for(const [app,cell] of [['day','happy-auth:day'],['meal','happy-auth:meal']]){
   for(const uid of [null,'00000000-0000-4000-8000-000000000001','имя с пробелом/и:знаками']){

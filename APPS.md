@@ -12,6 +12,7 @@
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
+| Happy Meal · Update 28 (в ветке `meal-28`, не опубликован) | `meal-28/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-28/ | 28 |
 | Happy Meal · Update 27.4 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.4 |
 | Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
@@ -90,6 +91,12 @@
 По прямому запросу владельца Update 52 публикуется отдельно от старой страницы. `day/` восстановлен точно из последнего успешного выпуска `e1e6597`; его внутренняя метка — 50.14. У 52 собственные URL и scope установки; общий аккаунт и прежние ключи дневника сохранены. Для следующего согласованного апдейта Day каталог `day-52/` служит исходной версией; работу и публикацию выполнять в новом каталоге выпуска.
 
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
+
+## Happy Meal · Update 28 · 11.11.2026 (в ветке `meal-28`, не опубликован)
+
+Отдельная страница после публикации: https://astamurberlin-rgb.github.io/happyamurio/meal-28/ . Исходник — `meal-27/` (27.4, ветка `meal-27-4-times`, коммит `7a95be6`); дневник, вход, синхронизация, ключи хранения, сводки и время приёма — как в 27.4. Перенос из прототипа магазина Михалыча и Астамура (Sites 46, сделан от Meal 27, main `26d39f7`) — только его разница с Meal 27: «Сборники» (магазин каталогов, «Мои рецепты», «Мои продукты», общий поиск, страница каталога со списком блюд), тестовая покупка как в прототипе, настройки «Каталоги» — карусель карточек; настоящая загрузка каталогов на телефон и открытие выпуска без интернета (`food-libraries.js`, `catalog-offline.js`, `sw.js`). БАДы — с Meal 29. Подробно — `meal-28/README.md`, `CHANGELOG.md`.
+
+— Claude · 11.11.2026 22:55
 
 ## Happy Meal · Update 27 · 10.11.2026
 

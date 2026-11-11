@@ -41,7 +41,7 @@ with sync_playwright() as p:
 
     # ── устройство B: Meal ──
     B = device("B")
-    meal = page_of(B, "meal", "meal-27/index.html")
+    meal = page_of(B, "meal", "meal-28/index.html")
     meal.wait_for_timeout(5000)
     out["B_meal_guest_spent"] = er(meal, "потрачено")
     meal.evaluate("()=>go('settings')")
@@ -104,7 +104,7 @@ with sync_playwright() as p:
     # ── устройство C: гость ничего не спрашивает у облака и чужого не видит ──
     C = device("C")
     mark = len(log)
-    guest_meal = page_of(C, "guest-meal", "meal-27/index.html")
+    guest_meal = page_of(C, "guest-meal", "meal-28/index.html")
     guest_meal.wait_for_timeout(5000)
     out["C_guest_meal_spent"] = er(guest_meal, "потрачено")
     guest_sport = page_of(C, "guest-sport", "sport-40/index.html")
