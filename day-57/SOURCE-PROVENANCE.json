@@ -15,13 +15,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-57.html",
-   "size": 3666721,
-   "sha256": "faa716bed773397b85ad412814cc310f2bd7ddf2964758828c8de065bb9f0eda"
+   "size": 3688370,
+   "sha256": "8f3ca075c87cd231f2b53d9637e7f086bc8b6fc1a7161dd46fd7ac7d598f38b4"
   },
   {
    "path": "README.md",
-   "size": 21690,
-   "sha256": "8bfaaf28a43efc4236f98630343853169fa8c36532ba118ba9f5bd863f9ffc5a"
+   "size": 22717,
+   "sha256": "57ae79d6c2087bfc3e2d21145cf8cfc559572ae882879aa543378d48deaf69c6"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -165,8 +165,8 @@
   },
   {
    "path": "day-account-profile.js",
-   "size": 7458,
-   "sha256": "aa6d358cd3de827f665cf1b18f91ec5fea79e8d28d91313e8e10dbb59bea96a7"
+   "size": 11237,
+   "sha256": "97ccc00cf9ff4adf046bdf88fa89b15b3dc3a288137058083d1160770fbb2348"
   },
   {
    "path": "day-auto-sync.js",
@@ -250,8 +250,8 @@
   },
   {
    "path": "index.html",
-   "size": 541358,
-   "sha256": "5b3f72b86c804c017a84cbcb9082775110c7480b84ddcd0c4059e22526067bc8"
+   "size": 544631,
+   "sha256": "d942053b505f5a836c7943b13fbd55bddab3c8937e1c10646dab7224f64f82a3"
   },
   {
    "path": "manifest.webmanifest",
@@ -260,8 +260,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 23210,
-   "sha256": "7daeb1286bdb39f15d6a4b01f3a1a16ddd03447d140f885735933d7f04c8343c"
+   "size": 24677,
+   "sha256": "1fb071033df93ec8596326888990974e04b4c4cfcabc730c772b6112de69fb4e"
   },
   {
    "path": "section-wheel.css",
@@ -270,13 +270,13 @@
   },
   {
    "path": "selfcare-core.js",
-   "size": 13969,
-   "sha256": "19934b97433de275cb8611cad9fd5ad709b5921222c163e8d720ba5d5303473e"
+   "size": 18583,
+   "sha256": "4fc4364b35bfc390ba7af95bec59c0e0d526b5c50ba474f0f0edd8080e39c005"
   },
   {
    "path": "selfcare-ui.js",
-   "size": 74713,
-   "sha256": "1c563f42662f9cc9d886bff90806db4b046bebd7a7ade6cc7faac6754707097f"
+   "size": 78636,
+   "sha256": "d5affa6ab26025acdffc18f0bbf8664b1b876e81b684af5de26118390177325e"
   },
   {
    "path": "selfcare.css",
@@ -429,6 +429,11 @@
    "sha256": "c3aad5244be8df913254a275ad83369a85098fec2083f0d4f391a44c6d567790"
   },
   {
+   "path": "tests/meal-start.test.cjs",
+   "size": 5076,
+   "sha256": "e2521520a6280b3b1aae113340610d59b2e57d59ed9fe7e3aaa88dea5485fd3a"
+  },
+  {
    "path": "tests/multi-account.test.cjs",
    "size": 5671,
    "sha256": "dfac5e8f16c4a4d87bbab39795ebff3051f8197cf5d0f69d212ff22949485c40"
@@ -442,6 +447,11 @@
    "path": "tests/quiet-account.test.cjs",
    "size": 2751,
    "sha256": "4011a0cfa8decf7a48822ea15150160a5791a46db8de6231f5e9505462b8bed4"
+  },
+  {
+   "path": "tests/section-times.test.cjs",
+   "size": 7208,
+   "sha256": "e335a82f559afcacb2f743204d9e77937c03bb67a11b927ede716f616b748c22"
   },
   {
    "path": "tests/sport-summary.test.cjs",

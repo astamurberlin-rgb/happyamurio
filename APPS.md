@@ -5,7 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day · Update 57.5 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.5 |
+| Happy Day · Update 57.6 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.6 |
 | Happy Day · Update 56 | `day-56/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-56/ | 56 |
 | Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
 | Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
@@ -47,7 +47,9 @@
 
 **57.5 (11.11.2026 17:43, тот же каталог `day-57/`):** порции со счётчиков попадают в «съедено» кольца энергии сразу: итог из сводки Meal дополняется нажатиями, которые Meal ещё не посчитал, по документу счётчиков устройства (`mealFood` в `selfcare-ui.js`, правило — `shared/happy-summaries.js`; нужна сводка Meal 27.3). Кольцо на открытом экране «Активность» обновляется само. Проверка — `day-57/tests/counters-eaten.test.cjs`.
 
-— Claude · 10.11.2026 01:28; 11.11.2026 11:41 (57.3); 15:48 (57.4); 16:18 (публикация); 17:33 (57.5); 17:43 (публикация)
+**57.6 (11.11.2026, тот же каталог `day-57/`; в ветке, не опубликован):** раздел дня сохраняется сам, у шкал и тегов своё время, прежнее значение шкалы — отметка в журнале; кнопка «Отметить самочувствие» — каждое «Сохранить» новая запись; при сведении версий побеждает поставленное позже; начало Завтрака, Обеда и Ужина — первый продукт из Meal.
+
+— Claude · 10.11.2026 01:28; 11.11.2026 11:41 (57.3); 15:48 (57.4); 16:18 (публикация); 17:33 (57.5); 17:43 (публикация); 19:24 (57.6)
 
 ## Happy Day · Update 56 · 10.11.2026
 

@@ -118,6 +118,53 @@ function saveSectionCheckin(db,date,id,checkpoint,metrics,section){
  if(previous)Object.assign(previous,record);else list.push(record);
  return previous||record;
 }
+/* 57.6 — раздел дня сохраняется сам, у каждой шкалы и тега своё время (решение владельца 11.11.2026).
+   Раздел cp[k]: значения шкал, tags, note, time (первая отметка), tm/t0 (ручное время) и новые поля:
+   at[шкала] = {t:'ЧЧ:ММ', ms} — когда поставлено текущее значение; tagAt[тег] = 'ЧЧ:ММ' — когда тег поставлен;
+   log = [{id,k,v,t,ms}] — прежние значения шкал, которые поменяли позже: каждое остаётся записью в журнале.
+   editSection применяет к сохранённому разделу (stored — может уже содержать правки другого устройства) только
+   то, что человек поменял за этот заход (edited против base — раздел в момент открытия). visit — память захода:
+   время первой правки каждой шкалы и тега, чтобы ведение пальцем не плодило записей и возврат к прежнему
+   значению отменял запись. Неизменённые шкалы и теги сохраняют своё время. */
+const SECTION_FIELDS=new Set(['time','tm','t0','tags','note','at','tagAt','log']);
+function sectionScales(...list){const keys=new Set();for(const o of list)if(o&&typeof o==='object')for(const k of Object.keys(o))if(!SECTION_FIELDS.has(k)&&finite(o[k]))keys.add(k);return [...keys];}
+function sectionTags(o){return Object.keys(o?.tags||{}).filter(t=>o.tags[t]);}
+function editSection(stored,base,edited,visit,now){
+ base=base||{};edited=edited||{};
+ const out=stored&&typeof stored==='object'?copy(stored):{};
+ out.at=Object.assign({},out.at);out.tagAt=Object.assign({},out.tagAt);out.log=Array.isArray(out.log)?out.log.slice():[];out.tags=Object.assign({},out.tags);
+ visit.at=visit.at||{};visit.tags=visit.tags||{};
+ const was=k=>base.at?.[k]||(base.time?{t:base.time,ms:0}:null);
+ for(const k of sectionScales(base,edited,visit.at)){
+  const id=visit.id+':'+k,b=finite(base[k])?base[k]:null,e=finite(edited[k])?edited[k]:null;
+  if(e!==b){
+   if(!visit.at[k])visit.at[k]={t:now.t,ms:now.ms};
+   if(b!==null&&!out.log.some(x=>x.id===id)){const w=was(k);out.log.push({id,k,v:b,t:w?.t||'',ms:w?.ms||0});}
+   if(e!==null){out[k]=e;out.at[k]=copy(visit.at[k]);}else{delete out[k];delete out.at[k];}
+  }else if(visit.at[k]){
+   delete visit.at[k];out.log=out.log.filter(x=>x.id!==id);
+   if(b!==null){out[k]=b;if(base.at?.[k])out.at[k]=copy(base.at[k]);else delete out.at[k];}else{delete out[k];delete out.at[k];}
+  }
+ }
+ for(const t of new Set([...sectionTags(base),...sectionTags(edited),...Object.keys(visit.tags)])){
+  const b=!!base.tags?.[t],e=!!edited.tags?.[t];
+  if(b!==e){if(!visit.tags[t])visit.tags[t]=now.t;if(e){out.tags[t]=true;out.tagAt[t]=visit.tags[t];}else{delete out.tags[t];delete out.tagAt[t];}}
+  else if(visit.tags[t]){delete visit.tags[t];if(b){out.tags[t]=true;if(base.tagAt?.[t])out.tagAt[t]=base.tagAt[t];else delete out.tagAt[t];}else{delete out.tags[t];delete out.tagAt[t];}}
+ }
+ for(const t of Object.keys(out.tags))if(!out.tags[t]){delete out.tags[t];delete out.tagAt[t];}
+ if(String(edited.note||'')!==String(base.note||'')){visit.note=true;if(String(edited.note||'').trim())out.note=String(edited.note);else delete out.note;}
+ else if(visit.note){delete visit.note;if(base.note)out.note=base.note;else delete out.note;}
+ // Ручное время раздела (tm='m', прежнее в t0): поставили, сменили или стёрли за этот заход; возврат — как было.
+ if(edited.tm==='m'&&(edited.time!==base.time||base.tm!=='m')){visit.clock=true;out.time=edited.time;out.tm='m';if(edited.t0)out.t0=edited.t0;else delete out.t0;}
+ else if(base.tm==='m'&&edited.tm!=='m'){visit.clock=true;if(edited.time)out.time=edited.time;else delete out.time;delete out.tm;delete out.t0;}
+ else if(visit.clock){delete visit.clock;for(const f of ['time','tm','t0'])if(base[f]!=null)out[f]=base[f];else delete out[f];}
+ const has=sectionScales(out).length||sectionTags(out).length||String(out.note||'').trim()||out.log.length;
+ if(!has)return null;
+ if(!out.time)out.time=visit.first||(visit.first=now.t);
+ for(const k of ['at','tagAt','tags'])if(!Object.keys(out[k]).length)delete out[k];
+ if(!out.log.length)delete out.log;
+ return out;
+}
 function addEntry(db,date,time,title,text,bookId){
  validTime(time);
  if(!text.trim())throw Error('Добавь текст записи');
@@ -180,6 +227,6 @@ function activity(c,date,extra){
  }
  return {plans,workouts,goal:plans.reduce((n,x)=>n+x.minutes,0),minutes:workouts.reduce((n,x)=>n+x.duration/60,0),connected:!!s.updatedAt||summary};
 }
-const api={clamp,finite,copy,uid,iso,init,rememberPlan,plan,scheduled,mindGoal,dayData,readDay,magnitude,mood,addCheckin,saveSectionCheckin,addEntry,appendEntry,diaryProgress,addPractice,mindMinutes,progress,validTime,strongSnapshot,activity,sportDay:null};
+const api={clamp,finite,copy,uid,iso,init,rememberPlan,plan,scheduled,mindGoal,dayData,readDay,magnitude,mood,addCheckin,saveSectionCheckin,editSection,sectionScales,addEntry,appendEntry,diaryProgress,addPractice,mindMinutes,progress,validTime,strongSnapshot,activity,sportDay:null};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.HappyCare=api;
 })(typeof window!=='undefined'?window:globalThis);

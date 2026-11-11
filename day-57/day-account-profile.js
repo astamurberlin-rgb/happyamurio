@@ -14,6 +14,7 @@
   const property = (obj,k) => object(obj) && Object.hasOwn(obj,k) ? obj[k] : absent;
   const choice = v => v === absent ? {present:false} : {present:true,value:copy(v)};
   const safeKey = k => !['__proto__','prototype','constructor'].includes(k);
+  const sectionPath = p => p.length===4 && p[0]==='days' && typeof p[1]==='string' && p[2]==='cp' && typeof p[3]==='string';
 
   function mergeOrder(left,right,base) {
     const common = left.filter(k => right.includes(k));
@@ -77,6 +78,7 @@
         record(path,[choice(l),choice(r)]);return copy(r);
       }
       if(path.at(-1)==='passiveMindArchive'){record(path,[choice(l),choice(r)]);return copy(r);}
+      if(sectionPath(path)&&object(l)&&object(r)&&(b===absent||object(b)))return section(path,b,l,r,d);
       if(object(l)&&object(r)&&(b===absent||object(b))) {
         const out={};
         for(const k of new Set([...Object.keys(l),...Object.keys(r),...(object(b)?Object.keys(b):[])])) {
@@ -110,6 +112,50 @@
         if(path.at(-1)==='note' && (l===''||r===''))return copy(l===''?r:l);
       }
       record(path,[choice(l),choice(r)]);return copy(r);
+    }
+    /* 57.6 — раздел дня (days/<дата>/cp/<раздел>). Шкалу поменяли на двух устройствах — побеждает значение,
+       поставленное позже (at[шкала].ms); второе не теряется и не ждёт выбора: оно ложится в log раздела отдельной
+       отметкой со своим временем, как любое прежнее значение. Теги — да/нет: при общей основе они не спорят;
+       время тега — самое раннее из известных (тег не переставлялся). Время раздела: ручное главнее, иначе раньшее. */
+    function section(path,b,l,r,d) {
+      const out={},bb=object(b)?b:{},at={},log=[];
+      const norm=o=>Object.fromEntries(Object.entries(o.tags||{}).filter(([,v])=>v));
+      const stamp=(o,k)=>o.at?.[k]||(o.time?{t:o.time,ms:0}:null);
+      const fields=new Set(['time','tm','t0','tags','note','at','tagAt','log']);
+      const scale=k=>!fields.has(k)&&[bb,l,r].some(o=>typeof o[k]==='number');
+      for(const k of new Set([...Object.keys(l),...Object.keys(r),...Object.keys(bb)])) {
+        if(!safeKey(k))throw Error('Недопустимое поле профиля.');
+        if(fields.has(k))continue;
+        if(!scale(k)){const v=choose([...path,k],property(b,k),property(l,k),property(r,k),property(d,k));if(v!==absent)out[k]=v;continue;}
+        const lv=property(l,k),rv=property(r,k),bv=property(b,k);let win;
+        if(equal(lv,rv))win=equal(l.at?.[k],r.at?.[k])||!r.at?.[k]?l:!l.at?.[k]?r:((l.at[k].ms||0)<=(r.at[k].ms||0)?l:r);
+        else if(hasBase&&equal(lv,bv))win=r;
+        else if(hasBase&&equal(rv,bv))win=l;
+        else {
+          const ls=stamp(l,k),rs=stamp(r,k);win=(ls?.ms||0)>(rs?.ms||0)?l:r;
+          const lose=win===l?r:l,lost=property(lose,k),ts=stamp(lose,k);
+          if(typeof lost==='number')log.push({id:'merge:'+k+':'+(ts?.ms||0)+':'+lost,k,v:lost,t:ts?.t||'',ms:ts?.ms||0});
+        }
+        const v=property(win,k);if(v!==absent){out[k]=copy(v);if(win.at?.[k])at[k]=copy(win.at[k]);}
+      }
+      if(Object.keys(at).length)out.at=at;
+      const tags=choose([...path,'tags'],object(b)?norm(bb):absent,norm(l),norm(r),absent);
+      if(object(tags)&&Object.keys(tags).length){
+        out.tags=tags;const tagAt={};
+        for(const t of Object.keys(tags)){const x=[l,r,bb].map(o=>o.tagAt?.[t]).filter(v=>typeof v==='string'&&v);if(x.length)tagAt[t]=x.sort()[0];}
+        if(Object.keys(tagAt).length)out.tagAt=tagAt;
+      }
+      const note=choose([...path,'note'],property(b,'note'),property(l,'note'),property(r,'note'),property(d,'note'));
+      if(note!==absent)out.note=note;
+      const clock=o=>({time:o.time,tm:o.tm,t0:o.t0}),cl=clock(l),cr=clock(r),cb=clock(bb);let c;
+      if(equal(cl,cr))c=cl;else if(hasBase&&equal(cl,cb))c=cr;else if(hasBase&&equal(cr,cb))c=cl;
+      else if((l.tm==='m')!==(r.tm==='m'))c=l.tm==='m'?cl:cr;
+      else c=!cl.time?cr:!cr.time?cl:(String(cl.time)<=String(cr.time)?cl:cr);
+      for(const f of ['time','tm','t0'])if(c[f]!==undefined)out[f]=c[f];
+      const merged=choose([...path,'log'],Array.isArray(bb.log)?bb.log:absent,Array.isArray(l.log)?l.log:[],Array.isArray(r.log)?r.log:[],absent);
+      const all=(Array.isArray(merged)?merged:[]).concat(log.filter(x=>!(Array.isArray(merged)&&merged.some(y=>y.id===x.id))));
+      if(all.length)out.log=all;
+      return out;
     }
     const result=choose([],hasBase?base:absent,local,remote,defaults);
     if(variants.size)result[archiveKey]=Object.fromEntries([...variants].sort(([a],[b])=>a.localeCompare(b)));

@@ -125,7 +125,7 @@ function bindCareNavigation(){
  document.addEventListener('pointerup',()=>finish(false));document.addEventListener('pointercancel',()=>finish(true));
  document.addEventListener('keydown',e=>{if(e.target.matches('.care-grip,#cpGrip')&&['Enter',' '].includes(e.key)){e.preventDefault();closeCurrent();}});
 }
-function onNavigate(name){if(name!=='ring'){cancelWheelSpeech();stopWheelMotion();shownWheel=null;$('sectionWheel')?.classList.remove('wheel-visible');}if(session&&!session.readOnly)stashWheel();document.body.classList.toggle('wheel-editing',name==='ring'&&!!session&&!session.readOnly); document.body.classList.toggle("now-editing",name==="ring"&&isCheckin()&&!session.readOnly);updateNowSave();if(session&&!session.readOnly&&CURS[cur])rememberScale(CURS[cur].k);if(session&&(name!=='ring'||curSec!==CURRENT)){session=null;if(curSec===CURRENT)curSec=DB.sections[0]?.k||'wake';}}
+function onNavigate(name){if(name!=='ring'&&session?.autosave)commitSection(session);if(name!=='ring'){cancelWheelSpeech();stopWheelMotion();shownWheel=null;$('sectionWheel')?.classList.remove('wheel-visible');}if(session&&!session.readOnly)stashWheel();document.body.classList.toggle('wheel-editing',name==='ring'&&!!session&&!session.readOnly); document.body.classList.toggle("now-editing",name==="ring"&&isCheckin()&&!session.readOnly);updateNowSave();if(session&&!session.readOnly&&CURS[cur])rememberScale(CURS[cur].k);if(session&&(name!=='ring'||curSec!==CURRENT)){session=null;if(curSec===CURRENT)curSec=DB.sections[0]?.k||'wake';}}
 function checkinSection(){if(session?.readOnly)return {...data().checkinSection,t:session.sectionTitle||'Сейчас',scales:Object.keys(session.defs||{}),tags:Object.keys(session.checkpoint.tags||{})};const section=session?.target&&DB.sections.find(x=>x.k===session.target);const raw=section?{...section,k:CURRENT}:data().checkinSection,base={...raw,scales:[...raw.scales],tags:[...new Set([...raw.tags,...Object.keys(session?.checkpoint?.tags||{}).filter(k=>session.checkpoint.tags[k])])]};if(!session?.travelling)return base;return {...base,scales:[...new Set([...base.scales,...Object.keys(session.checkpoint).filter(k=>Number.isFinite(session.checkpoint[k])&&[...DB.metrics,...Object.values(session.defs||{})].some(m=>m.k===k))])],tags:[...new Set([...base.tags,...Object.keys(session.checkpoint.tags||{}).filter(k=>session.checkpoint.tags[k])])]};}
 /* Свой тег в режиме «Отметить самочувствие»: checkinSection() каждый раз собирает список заново,
    поэтому тег, добавленный в его копию, жил только пока был отмечен. Записываем в настоящий список —
@@ -143,10 +143,29 @@ function isCheckin(){return !!session&&curSec===CURRENT;}
 function checkinReadOnly(){return isCheckin()&&session.readOnly;}
 function checkinDay(){return {cp:{[CURRENT]:session.checkpoint}};}
 function checkinScales(){return session?.readOnly?Object.values(session.defs):checkinSection().scales.map(k=>session?.defs?.[k]||DB.metrics.find(m=>m.k===k)).filter(Boolean);}
-function checkinTime(){return isCheckin()?{t:session.checkpoint.time,src:'manual'}:null;}
+function checkinTime(){if(!isCheckin())return null;if(session.autosave&&typeof root.secStartOf==='function')return root.secStartOf(session.date,session.target,session.checkpoint);return {t:session.checkpoint.time,src:'manual'};}
 function checkinDirty(){return !!session?.dirty;}
-function restoreCheckinDirty(value){if(!session)return;session.dirty=value;if(value)stashWheel();else{delete data().wheelDrafts?.[session.date]?.[wheelDraftKey(session)];save();}updateNowSave();}
-function saveCheckin(){ if(session&&!session.readOnly){session.dirty=true;stashWheel();} updateNowSave(); }
+function restoreCheckinDirty(value){if(!session)return;if(session.autosave){scheduleSection();return;}session.dirty=value;if(value)stashWheel();else{delete data().wheelDrafts?.[session.date]?.[wheelDraftKey(session)];save();}updateNowSave();}
+function saveCheckin(){ if(session?.autosave){scheduleSection();return;} if(session&&!session.readOnly){session.dirty=true;stashWheel();} updateNowSave(); }
+/* 57.6: раздел, открытый с экрана дня, пишется сам — через 0,4 с после последней правки и сразу при уходе с экрана. */
+let sectionTimer=0;
+function scheduleSection(){if(!session?.autosave||session.readOnly)return;clearTimeout(sectionTimer);const s=session;sectionTimer=setTimeout(()=>commitSection(s),400);}
+async function commitSection(s){
+ clearTimeout(sectionTimer);if(!s?.autosave||s.readOnly)return true;
+ if(busy){sectionTimer=setTimeout(()=>commitSection(s),200);return false;}
+ if(RO||s.date>todayISO()||DB.days[s.date]?.locked)return false;
+ const edited=C.copy(s.checkpoint);
+ return transact(()=>{const d=day(s.date);d.cp=d.cp||{};const next=C.editSection(d.cp[s.target],s.baseline,edited,s.visit,{t:nowHM(),ms:Date.now()});if(next)d.cp[s.target]=next;else delete d.cp[s.target];const w=data().wheelDrafts?.[s.date];if(w&&w[s.target]&&!w[s.target].travelling)delete w[s.target];});
+}
+function toNewRecord(s){
+ const baseline=s.baseline||{},cp=s.checkpoint||{},entered={time:cp.time||nowHM(),tags:{}};
+ for(const m of DB.metrics)if(Number.isFinite(cp[m.k])&&cp[m.k]!==baseline[m.k])entered[m.k]=cp[m.k];
+ for(const [tag,value]of Object.entries(cp.tags||{}))if(value&&value!==baseline.tags?.[tag])entered.tags[tag]=true;
+ if(cp.note&&cp.note!==baseline.note)entered.note=cp.note;
+ s.defs=Object.fromEntries(DB.metrics.map(m=>[m.k,C.copy(m)]));s.originKey=s.target||CURRENT;s.originTitle=DB.sections.find(x=>x.k===s.target)?.t||'Сейчас';
+ s.checkpoint=entered;s.id=C.uid();s.travelling=true;s.baseline={};
+ s.dirty=Object.keys(entered.tags).length>0||!!entered.note||DB.metrics.some(m=>Number.isFinite(entered[m.k]));
+}
 let undoNow=null;
 function wheelHasEntry(){return !!session&&(checkinSection().scales.some(k=>Number.isFinite(session.checkpoint[k]))||Object.values(session.checkpoint.tags||{}).some(Boolean)||!!String(session.checkpoint.note||'').trim());}
 function updateNowSave(){
@@ -159,7 +178,7 @@ async function submitNow(){
  if(!guard(session.date))return;
  if(shownWheel!==session){const original=session;fontWaiting=true;updateNowSave();const ok=await wheelFontReady;fontWaiting=false;if(session!==original){updateNowSave();return;}if(!ok){toastLong('Не удалось загрузить шрифт колеса. Обнови страницу.');updateNowSave();return;}shownWheel=session;const existing=$('sectionWheel')?.querySelector('.wheel-disc');if(existing)delete existing.dataset.clearanceKey;renderWheel();const a=wheelItems(),i=a.findIndex(s=>s.k===wheelDestinationKey()),angle=-i*360/a.length;paintWheelMotion(angle+18,58);$('sectionWheel').classList.add('wheel-visible');animateWheelMotion(angle,0,420);wheelRevealing=wheelMoving;updateNowSave();return;}
  if(session.travelling){await saveTravellingCheckin();return;}
- if(session.target){await saveWheelSection();return;}
+ if(session.target){toNewRecord(session);await saveTravellingCheckin();return;}   // 57.6: «Сохранить» значения раздела не заменяет — только новая запись
  const original=session,draft=C.copy(session);let record;pendingWheel={session:original,value:JSON.stringify(draft.checkpoint)};
  const ok=await transact(()=>{record=C.saveSectionCheckin(DB,draft.date,draft.id,draft.checkpoint,DB.metrics,checkinSection());if(!record)throw Error('Сначала отметь самочувствие или тег');record.note=draft.checkpoint.note||'';delete data().wheelDrafts?.[draft.date]?.[CURRENT];});
  pendingWheel=null;if(!ok){updateNowSave();return;}
@@ -291,7 +310,7 @@ async function saveWheelSection(){
 }
 function dictateWheel(){
  const Speech=root.SpeechRecognition||root.webkitSpeechRecognition;if(!Speech){toastLong('Голосовой ввод недоступен в этом браузере. Отметь шкалу или тег — появится «Сохранить».');return;}
- if(recognition)return;const target=session;recognition=new Speech();const engine=recognition;recognition.lang='ru-RU';recognition.onresult=e=>{if(recognition!==engine)return;target.checkpoint.note=(target.checkpoint.note?target.checkpoint.note+'\n':'')+e.results[0][0].transcript;target.dirty=true;const d=data();d.wheelDrafts=d.wheelDrafts||{};d.wheelDrafts[target.date]=d.wheelDrafts[target.date]||{};d.wheelDrafts[target.date][wheelDraftKey(target)]=C.copy(target);save();if(session===target)updateNowSave();toastLong('Диктовка добавлена в черновик: '+(DB.sections.find(s=>s.k===target.target)?.t||'Сейчас'));};recognition.onerror=()=>toast('Не удалось распознать речь');recognition.onend=()=>{if(recognition===engine)recognition=null;};try{recognition.start();}catch(e){recognition=null;toast('Голосовой ввод недоступен');}
+ if(recognition)return;const target=session;recognition=new Speech();const engine=recognition;recognition.lang='ru-RU';recognition.onresult=e=>{if(recognition!==engine)return;target.checkpoint.note=(target.checkpoint.note?target.checkpoint.note+'\n':'')+e.results[0][0].transcript;if(target.autosave){if(session===target){const note=$('wheelNote');if(note)note.value=target.checkpoint.note;}commitSection(target);toast('Заметка добавлена');return;}target.dirty=true;const d=data();d.wheelDrafts=d.wheelDrafts||{};d.wheelDrafts[target.date]=d.wheelDrafts[target.date]||{};d.wheelDrafts[target.date][wheelDraftKey(target)]=C.copy(target);save();if(session===target)updateNowSave();toastLong('Диктовка добавлена в черновик: '+(DB.sections.find(s=>s.k===target.target)?.t||'Сейчас'));};recognition.onerror=()=>toast('Не удалось распознать речь');recognition.onend=()=>{if(recognition===engine)recognition=null;};try{recognition.start();}catch(e){recognition=null;toast('Голосовой ввод недоступен');}
 }
 
 function openMood(recordId,returnTo='day',explicitKey=null){
@@ -300,7 +319,23 @@ function openMood(recordId,returnTo='day',explicitKey=null){
  const record=recordId?C.readDay(DB,curDate).checkins.find(x=>x.id===recordId):null;
  const checkpoint={time:record?.time||nowHM(),note:record?.note||'',tags:C.copy(record?.tags||{})},defs=C.copy(record?.metricDefs||{});
  if(record){Object.assign(checkpoint,record.metricValues||{});const old={feeling:['Самочувствие',-3,3],joy:['Радость',0,4],strain:['Напряжение',0,4]};for(const [key,value]of Object.entries(record.values||{})){const d=old[key];if(d){defs[key]={k:key,t:d[0],lo:d[1],hi:d[2],w:[],neg:key==='strain'};checkpoint[key]=value;}}}
- session={id:record?.id||C.uid(),date:curDate,checkpoint,defs,readOnly:!!record,returnTo,sectionTitle:record?.sectionTitle,sourceSectionTitle:record?.sourceSectionTitle}; if(!record){const key=explicitKey||defaultWheelSection();const saved=(!explicitKey&&data().wheelDrafts?.[curDate]?.care_travelling)||data().wheelDrafts?.[curDate]?.[key];session=saved?C.copy(saved):{...session,target:key===CURRENT?null:key,checkpoint:C.copy(DB.days[curDate]?.cp?.[key]||{time:nowHM(),tags:{}}),dirty:false};delete session.destination;if(!session.baseline)session.baseline=C.copy(DB.days[curDate]?.cp?.[session.target]||{});session.returnTo=returnTo;}shownWheel=null;stopWheelMotion();curSec=CURRENT;cur=0;
+ session={id:record?.id||C.uid(),date:curDate,checkpoint,defs,readOnly:!!record,returnTo,sectionTitle:record?.sectionTitle,sourceSectionTitle:record?.sourceSectionTitle}; if(!record){
+  /* 57.6 (решение владельца 11.11.2026). Вход через раздел дня (explicitKey) — раздел сохраняется сам, без «Сохранить»;
+     у каждой шкалы и тега своё время (C.editSection). Кнопка «Отметить самочувствие» — каждое «Сохранить» новая
+     запись в журнал с выбранным разделом; значения раздела она не меняет и форма открывается пустой. */
+  const key=explicitKey||defaultWheelSection(),drafts=data().wheelDrafts?.[curDate]||{};
+  if(explicitKey&&key!==CURRENT){
+   const stored=C.copy(DB.days[curDate]?.cp?.[key]||{}),old=drafts[key];
+   session={...session,target:key,checkpoint:Object.keys(stored).length?C.copy(stored):{tags:{}},baseline:stored,autosave:true,visit:{id:C.uid(),at:{},tags:{}},dirty:false};
+   if(old&&!old.travelling&&old.checkpoint)session.checkpoint=C.copy(old.checkpoint);   // несохранённый черновик 57.5 — сохраняется сразу
+  }else{
+   const saved=(!explicitKey&&drafts.care_travelling)||drafts[key];
+   session=saved?C.copy(saved):{...session,target:key===CURRENT?null:key,checkpoint:{time:nowHM(),tags:{}},baseline:{},dirty:false};
+   if(session.target&&!session.travelling)toNewRecord(session);
+  }
+  delete session.destination;if(!session.baseline)session.baseline={};session.returnTo=returnTo;
+  if(session.autosave&&drafts[key]&&!drafts[key].travelling)scheduleSection();
+ }shownWheel=null;stopWheelMotion();curSec=CURRENT;cur=0;
  let recordNote=$('careRecordNote');if(!recordNote){recordNote=document.createElement('p');recordNote.id='careRecordNote';recordNote.className='care-help';recordNote.style.whiteSpace='pre-wrap';$('cpTags').after(recordNote);}recordNote.hidden=!record;recordNote.textContent=record?[(record.sourceSectionTitle?'Форма: '+record.sourceSectionTitle:''),record.note||''].filter(Boolean).join('\n'):'';buildTracks();if(!record)cur=Math.max(0,CURS.findIndex(m=>m.k===data().settings.activeScale));renderCpTags();$('cpName').textContent=record?(record.sectionTitle||'Сейчас'):checkinSection().t;paintCpMeal();go('ring');updateNowSave();document.querySelector('[data-screen="ring"]').scrollTop=0;
 }
 function open(kind,id,parent){
@@ -489,9 +524,12 @@ function journalEvents(date){const d=C.readDay(DB,date),entries=data().entries;
 function journalOpen(kind,id,date,additionId){curDate=date;open(kind,id,'trends');if(additionId)$('addition-'+additionId)?.scrollIntoView({block:'center'});}
 sportRead();
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')sportPoll();});
+/* 57.6: свернули приложение посреди правки раздела — записать сразу */
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&session?.autosave)commitSection(session);});
+addEventListener('pagehide',function(){if(session?.autosave)commitSection(session);});
 window.addEventListener('storage',function(e){if(root.HappyProfile&&e.key===root.HappyProfile.key(SPORT_KEY)&&sportRead())sportRepaint();});
 /* после запуска вход ещё загружается — спросим облако чуть позже и ещё раз, если не успел; после входа — сразу */
 setTimeout(sportPoll,2500);setTimeout(sportPoll,9000);
 {const afterSignIn=root.clAfterIn;root.clAfterIn=function(){sportPoll();return afterSignIn&&afterSignIn.apply(this,arguments);};}
-root.SelfCare={sportPoll,mealChanged,openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,addCheckinTag,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale};
+root.SelfCare={sportPoll,mealChanged,openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,addCheckinTag,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale,sessionTarget:()=>session?.target||null,flushSection:()=>session?.autosave?commitSection(session):true};
 })(window);
