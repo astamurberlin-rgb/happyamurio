@@ -8,3 +8,5 @@ sport-*/sport/exercises/
 sport-*/sport/app-icons/
 sport-*/sport/index.html
 sport-*/sport/manifest.webmanifest
+# Python cache next to the browser scenarios (scripts/browser/)
+__pycache__/
