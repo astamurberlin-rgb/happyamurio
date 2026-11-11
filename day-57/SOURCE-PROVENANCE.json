@@ -16,12 +16,12 @@
   {
    "path": "Happy-Day-57.html",
    "size": 3666721,
-   "sha256": "e3e2bc9410f308330585c26964571c8aeeab930c4426c3781f20bf27a415cbc0"
+   "sha256": "faa716bed773397b85ad412814cc310f2bd7ddf2964758828c8de065bb9f0eda"
   },
   {
    "path": "README.md",
-   "size": 21737,
-   "sha256": "05eacb838978aac534da9eb5698b4880e45d55408de40d33a83626778ca001f1"
+   "size": 21690,
+   "sha256": "8bfaaf28a43efc4236f98630343853169fa8c36532ba118ba9f5bd863f9ffc5a"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -261,7 +261,7 @@
   {
    "path": "release-notes.js",
    "size": 23210,
-   "sha256": "910f3df058638bdbc90a1fc8b421d1f4634dc4489335075a7fcaea4b3eb6f7f0"
+   "sha256": "7daeb1286bdb39f15d6a4b01f3a1a16ddd03447d140f885735933d7f04c8343c"
   },
   {
    "path": "section-wheel.css",
