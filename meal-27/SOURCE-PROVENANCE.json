@@ -24,8 +24,8 @@
   },
   {
    "path": "README.md",
-   "size": 17925,
-   "sha256": "8973d9aaee8e796f2bd52c27e2b716ab5723f3789ee3f6de8a7d94be515f8702"
+   "size": 18687,
+   "sha256": "2a16ee6eeeffdb0abdd69f7fe344691397b24493f32b3ea19bdb413648ada648"
   },
   {
    "path": "account-ui.js",
@@ -208,6 +208,11 @@
    "sha256": "dc9e4b7be7f4f59f98c34a96e261a926c2c2648f5d5c2891ca0e0186764f69eb"
   },
   {
+   "path": "checks/check-meal-first-time.mjs",
+   "size": 4473,
+   "sha256": "84bdf59e6cb7f29ab614745ede08d9b71777ef833cd1a307f1dc6000ec5c7a6b"
+  },
+  {
    "path": "checks/check-search-names.mjs",
    "size": 6345,
    "sha256": "9ef33bff74357c1e1686dfaa4ff719031a8c4f920e9925e9c3e51af17897cf9c"
@@ -224,8 +229,8 @@
   },
   {
    "path": "controls.js",
-   "size": 16984,
-   "sha256": "14a38c084ea04724b686e29aa44852a32d6560e8e51127a3ea538a40681f262a"
+   "size": 17165,
+   "sha256": "21d8315df491244b07347642ea8ffd38fc18234dd8d22d40902642891249c328"
   },
   {
    "path": "counters.js",
@@ -244,8 +249,8 @@
   },
   {
    "path": "index.html",
-   "size": 612780,
-   "sha256": "0fc11d3d4b21ae2eadfbb50d4d848d1e3507ece1bdb8d85e8f0804f68b228cd7"
+   "size": 614868,
+   "sha256": "e9670c46e954e12a77990ab9ed69b5412cc71bce9a33a627ff57405ae5c90b1a"
   },
   {
    "path": "journal-model.js",
@@ -429,8 +434,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 22220,
-   "sha256": "6523391d6ece3c2169d7f4c6a174ccaf4bb7ae5a8d355c5f8e01e3cf4b8dd05e"
+   "size": 22878,
+   "sha256": "b63ae7d7c81dd239e622535c6e01b8b9dd1d325d6d073b80d5855b2eea80d370"
   },
   {
    "path": "report.css",

@@ -12,7 +12,7 @@
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
-| Happy Meal · Update 27.3 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.3 |
+| Happy Meal · Update 27.4 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.4 |
 | Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
@@ -101,7 +101,9 @@
 
 **27.3 (11.11.2026 17:43, тот же каталог `meal-27/`):** сводка Meal называет порции со счётчиков, которые уже вошли в итог дня (`counters:1`, `days[дата].cs`), и записи счётчиков, по которым Meal решил сам (`skipped`), — по ним Sport и Day прибавляют к «съедено» нажатия, которые Meal ещё не посчитал, и не считают дважды. Сам Meal считает день как раньше. Проверка — `meal-27/checks/check-sport-summary.mjs` (группа 5).
 
-— Claude · 10.11.2026 00:50; 11.11.2026 15:48 (27.2); 16:18 (публикация); 17:33 (27.3); 17:43 (публикация)
+**27.4 (11.11.2026, тот же каталог `meal-27/`; в ветке, не опубликован):** время приёма пищи — самый ранний продукт; время продукта и всего приёма набирается поверх прежнего.
+
+— Claude · 10.11.2026 00:50; 11.11.2026 15:48 (27.2); 16:18 (публикация); 17:33 (27.3); 17:43 (публикация); 20:05 (27.4)
 
 ## Happy Meal · Update 26 · 09.11.2026
 
