@@ -33,7 +33,7 @@ with sync_playwright() as p:
         page.wait_for_timeout(900)
 
     # ── 1. Meal: общий счётчик с продуктом из встроенной библиотеки, связь с Day и Sport ──
-    meal = page_of("meal", "meal-28/index.html")
+    meal = page_of("meal", MEAL + "index.html")
     meal.wait_for_timeout(5000)
     meal.evaluate("()=>editTap(-1)")
     meal.fill('#fcSearch', 'яйцо')
@@ -88,7 +88,7 @@ with sync_playwright() as p:
     out["doc_before_meal"] = sport.evaluate(DOC)
 
     # ── 4. Meal открыли: он считает те же три порции; у соседей число не удваивается ──
-    meal = page_of("meal", "meal-28/index.html")
+    meal = page_of("meal", MEAL + "index.html")
     meal.wait_for_timeout(5500)
     out["meal_eaten_3"] = er(meal, "съедено")
     out["meal_summary_after"] = meal.evaluate(MEAL_LINK)
@@ -109,7 +109,7 @@ with sync_playwright() as p:
     out["day_eaten_after_minus"] = he(day, "careEnergy", "съедено")["big"]
 
     # ── 6. В Meal добавили обычную еду (не счётчик): у всех — еда и порции вместе ──
-    meal = page_of("meal", "meal-28/index.html")
+    meal = page_of("meal", MEAL + "index.html")
     meal.wait_for_timeout(5500)
     out["meal_eaten_after_minus"] = er(meal, "съедено")["knob"]
     meal.evaluate("()=>{day(curDate).items.push({id:'i'+HappyFoodCounters.id(),sec:'am',fid:'egg',q:2,u:'шт',g:110,t:nowHM()});save();renderDay()}")
@@ -126,7 +126,7 @@ with sync_playwright() as p:
     out["doc_final"] = sport.evaluate(DOC)
 
     # ── 7. В Meal убрали порцию счётчика («−» в самом Meal): у соседей она тоже уходит ──
-    meal = page_of("meal", "meal-28/index.html")
+    meal = page_of("meal", MEAL + "index.html")
     meal.wait_for_timeout(5500)
     out["meal_before_undo"] = er(meal, "съедено")["knob"]
     meal.evaluate("()=>tapUndo(DB.taps.find(c=>c.mealCounterId).k)")

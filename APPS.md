@@ -12,6 +12,7 @@
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
+| Happy Meal · Update 29 | `meal-29/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-29/ (после публикации) | 29 |
 | Happy Meal · Update 28 | `meal-28/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-28/ | 28 |
 | Happy Meal · Update 27.4 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.4 |
 | Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
@@ -91,6 +92,12 @@
 По прямому запросу владельца Update 52 публикуется отдельно от старой страницы. `day/` восстановлен точно из последнего успешного выпуска `e1e6597`; его внутренняя метка — 50.14. У 52 собственные URL и scope установки; общий аккаунт и прежние ключи дневника сохранены. Для следующего согласованного апдейта Day каталог `day-52/` служит исходной версией; работу и публикацию выполнять в новом каталоге выпуска.
 
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
+
+## Happy Meal · Update 29 · 12.11.2026
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-29/ — **в ветке `meal-29`, не опубликовано**. Исходник — `meal-28/` (main `e308495`). БАДы из прототипа Михалыча и Астамура (H068, H072): каталог `supplements` в `meal-libraries` (31 шаблон, скачивается для работы без интернета), «Мои добавки» в «Сборниках», свои варианты и приёмы — документ аккаунта `app_sync` meal/supplements (`supplements-store.js`; журнал Meal не менялся), строки БАДов в дне, разделе, журнале, CSV и отчёте. Приём пищи открывает калорийность: больше 4 ккал на 100 г или 100 мл; БАДы — порошок больше 4 ккал за приём; «Голодание прервано» — первая запись с калориями. Сводка для Day и Sport — с калориями и БЖУ БАДов, формат прежний. Подробно — `meal-29/README.md`, хранение — `DATA-STORAGE.md`.
+
+— Claude · 12.11.2026 00:30
 
 ## Happy Meal · Update 28 · 11.11.2026
 

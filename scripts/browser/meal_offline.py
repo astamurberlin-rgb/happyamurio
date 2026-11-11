@@ -1,9 +1,11 @@
-"""Meal 28: каталоги без интернета. Один телефон, гость, придуманные записи; каталоги — из ветки meal-libraries
+"""Meal 28: каталоги без интернета (с Meal 29 — и каталог БАДов: скачивается и открывается без сети). Один телефон, гость, придуманные записи; каталоги — из ветки meal-libraries
 этого репозитория (сеть не нужна). Настройки → Каталоги: кнопка «Скачать» у пяти каталогов (у «Моих продуктов» её нет),
 скачивание BLS до «Скачано»; отмена посреди узбекской кухни ничего не оставляет; «убрать» и «Вернуть» в подсказке;
 затем телефон без интернета: Meal открывается (копия выпуска, sw.js), BLS ищется, запись дня сохраняется и видна
 после перезапуска; нескачанный USDA без сети просто не открывается, без ошибок на странице. Снова в сети — всё как было."""
 from common import *
+
+V = MEAL.strip("/").split("-")[1]   # номер выпуска: meal-29/ → 29
 
 out, errors, checks = {}, [], []
 
@@ -23,16 +25,16 @@ with sync_playwright() as p:
     net = libraries(ctx, hold={"uzbek-recipes-1.10.1-meal23.2.json.gz"})
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
-    meal.goto(BASE + "meal-28/index.html")
+    meal.goto(BASE + MEAL + "index.html")
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&!!navigator.serviceWorker.controller"), 25)
-    check("Meal 28 открыт, BLS из сети, копия выпуска подключена (service worker)", meal.evaluate("()=>BLS_ST==='ok'&&!!navigator.serviceWorker.controller"))
+    check("Meal открыт, BLS из сети, копия выпуска подключена (service worker)", meal.evaluate("()=>BLS_ST==='ok'&&!!navigator.serviceWorker.controller"))
     meal.locator('.tab[data-go="settings"]').click()
     meal.locator('#mealSources').scroll_into_view_if_needed()
     meal.wait_for_timeout(500)
-    caps = {i: meal.evaluate(CAPTION, i) for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN"]}
+    caps = {i: meal.evaluate(CAPTION, i) for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN", "SUPP"]}
     out["captions"] = caps
-    check("«Скачать» у BLS, USDA, MEXT, Happy Meal и десертов; у «Моих продуктов» кнопки нет", all(caps[i] == "Скачать" for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT"]) and caps["OWN"] is None)
-    check("в карусели шесть карточек каталогов, свитч — «Подключено»", meal.evaluate("()=>document.querySelectorAll('.mc-source-carousel > .mc-source-body').length") == 6
+    check("«Скачать» у BLS, USDA, MEXT, Happy Meal, десертов и БАДов; у «Моих продуктов» кнопки нет", all(caps[i] == "Скачать" for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "SUPP"]) and caps["OWN"] is None)
+    check("в карусели семь карточек каталогов, свитч — «Подключено»", meal.evaluate("()=>document.querySelectorAll('.mc-source-carousel > .mc-source-body').length") == 7
           and meal.evaluate("()=>document.querySelector('[data-source-slide=\"BLS\"] .mc-switch-control .mc-control-caption').textContent") == "Подключено")
     meal.locator('[data-catalog-download="BLS"]').click()
     seen_loading = wait_for(meal, lambda: meal.evaluate(CAPTION, "BLS") in ("Отменить", "Скачано"), 5, 50)
@@ -40,6 +42,9 @@ with sync_playwright() as p:
     out["bls_note"] = meal.evaluate(NOTE, "BLS")
     check("BLS скачан: «Скачано», «На телефоне · 3,4 МБ»", meal.evaluate(CAPTION, "BLS") == "Скачано" and "3,4 МБ" in (out["bls_note"] or ""))
     check("файл BLS и список скачанного — на телефоне", any(x.startswith("bls40.json") for x in meal.evaluate(SAVED)))
+    meal.locator('[data-catalog-download="SUPP"]').click()
+    wait_for(meal, lambda: meal.evaluate(CAPTION, "SUPP") == "Скачано", 20)
+    check("каталог БАДов скачан: «Скачано», файл на телефоне", meal.evaluate(CAPTION, "SUPP") == "Скачано" and any(x.startswith("supplements-") for x in meal.evaluate(SAVED)))
     meal.screenshot(path=SHOTS + "meal_offline-1-saved.png")
     # отмена посреди каталога из двух файлов: kav приходит, узбекская кухня «висит» — нажимаем «Отменить»
     meal.locator('[data-catalog-download="HM"]').click()
@@ -67,8 +72,10 @@ with sync_playwright() as p:
     ctx.set_offline(True)
     meal.reload()
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST!=='loading'&&BLS_ST!=='idle'"), 25)
-    check("без интернета Meal открывается: Happy Meal · Update 28", "Update 28" in meal.title())
+    check("без интернета Meal открывается: Happy Meal · Update " + V, "Update " + V in meal.title())
     check("без интернета BLS из скачанного: «яблоко» находится", meal.evaluate("()=>BLS_ST") == "ok" and len(meal.evaluate("()=>searchLib('яблоко')")) > 0)
+    wait_for(meal, lambda: meal.evaluate("()=>typeof HappySupplementsLibrary!=='undefined'&&HappySupplementsLibrary.state!=='loading'"), 10)
+    check("без интернета каталог БАДов — из скачанного: 31 шаблон", meal.evaluate("()=>HappySupplementsLibrary.state==='ok'&&HappySupplementsLibrary.templates.length===31"))
     meal.evaluate("""()=>{const fid=Object.keys(FOODS).find(k=>FOODS[k]&&FOODS[k].k>50&&!isDrink(k));day(curDate).items.push({id:'offline1',sec:'pm',fid,q:120,u:'г',g:120,t:'13:00'});save()}""")
     meal.wait_for_timeout(1500)
     meal.reload()
@@ -91,7 +98,7 @@ with sync_playwright() as p:
     meal.reload()
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'"), 25)
     out["caches"] = meal.evaluate("async()=>await caches.keys()")
-    check("снова в сети: всё открывается; у выпуска своя копия happy-meal-28-shell-28", meal.evaluate("()=>BLS_ST") == "ok" and "happy-meal-28-shell-28" in out["caches"])
+    check("снова в сети: всё открывается; у выпуска своя копия happy-meal-" + V + "-shell-" + V, meal.evaluate("()=>BLS_ST") == "ok" and "happy-meal-%s-shell-%s" % (V, V) in out["caches"])
     check("на странице нет ошибок", not errors)
     out["errors"] = errors
     out["library_requests"] = net["log"][:40]

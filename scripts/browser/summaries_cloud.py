@@ -41,7 +41,7 @@ with sync_playwright() as p:
 
     # ── устройство B: Meal ──
     B = device("B")
-    meal = page_of(B, "meal", "meal-28/index.html")
+    meal = page_of(B, "meal", MEAL + "index.html")
     meal.wait_for_timeout(5000)
     out["B_meal_guest_spent"] = er(meal, "потрачено")
     meal.evaluate("()=>go('settings')")
@@ -104,7 +104,7 @@ with sync_playwright() as p:
     # ── устройство C: гость ничего не спрашивает у облака и чужого не видит ──
     C = device("C")
     mark = len(log)
-    guest_meal = page_of(C, "guest-meal", "meal-28/index.html")
+    guest_meal = page_of(C, "guest-meal", MEAL + "index.html")
     guest_meal.wait_for_timeout(5000)
     out["C_guest_meal_spent"] = er(guest_meal, "потрачено")
     guest_sport = page_of(C, "guest-sport", "sport-40/index.html")
@@ -138,7 +138,7 @@ checks = {
  "Sport: после перезагрузки снова «потрачено»": out["A_after_reload"]["cap"] == "потрачено",
  "Гость: к облаку не обращается": out["C_guest_requests"] == [],
  "Гость в Meal: чужих тренировок не видит": "Время, мин —" in out["C_guest_meal_spent"]["rows"],
- "В облако записаны только свои строки": sorted(out["rows"], key=lambda s: s.split()[0]) and all(s.split()[0] in ("day/journal", "meal/journal", "meal/link", "sport/journal", "sport/link", "meal/counters") for s in out["rows"]),
+ "В облако записаны только свои строки": sorted(out["rows"], key=lambda s: s.split()[0]) and all(s.split()[0] in ("day/journal", "meal/journal", "meal/link", "sport/journal", "sport/link", "meal/counters", "meal/supplements") for s in out["rows"]),
  "Сводка Sport записана ровно один раз": out["all_writes"].get("POST sport/link → stored") == 1 and not any(k.startswith("PATCH sport/link") for k in out["all_writes"]),
  "Ошибок на страницах нет": out["errors"] == [],
 }

@@ -7,7 +7,10 @@
 Настройка через переменные окружения:
   HAPPY_BASE   — адрес сайта с префиксом /happyamurio/ (по умолчанию локальный сервер из run.sh);
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
-  HAPPY_CHROME — путь к Chrome.
+  HAPPY_CHROME — путь к Chrome;
+  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-29/);
+  HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
+                 origin/meal-libraries-supplements).
 """
 import json, os, sys, time
 from urllib.parse import urlsplit, parse_qs
@@ -125,18 +128,40 @@ def phone(browser, name=None):
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
+# Актуальный выпуск Meal для сценариев (HAPPY_MEAL — другой, например meal-28/)
+MEAL = os.environ.get("HAPPY_MEAL", "meal-29/")
 _lib_files = {}
+
+
+def _lib_ref():
+    """Ветка каталогов: HAPPY_LIBRARIES_REF, иначе origin/meal-libraries; пока каталог БАДов не влит в неё
+    (до выпуска Meal 29) — origin/meal-libraries-supplements, где он есть."""
+    import json
+    import subprocess
+    if os.environ.get("HAPPY_LIBRARIES_REF"):
+        return os.environ["HAPPY_LIBRARIES_REF"]
+    for ref in ("origin/meal-libraries", "origin/meal-libraries-supplements"):
+        try:
+            raw = subprocess.run(["git", "show", ref + ":manifest.json"], cwd=REPO, capture_output=True, check=True).stdout
+            if "supplements" in json.loads(raw).get("libraries", {}):
+                return ref
+        except Exception:
+            pass
+    return "origin/meal-libraries"
+
+
+LIB_REF = _lib_ref()
 
 
 def _lib_file(path):
     if path not in _lib_files:
         import subprocess
-        _lib_files[path] = subprocess.run(["git", "show", "origin/meal-libraries:" + path], cwd=REPO, capture_output=True, check=True).stdout
+        _lib_files[path] = subprocess.run(["git", "show", LIB_REF + ":" + path], cwd=REPO, capture_output=True, check=True).stdout
     return _lib_files[path]
 
 
 def libraries(ctx, state=None, hold=None):
-    """Каталоги Meal (meal-libraries) — из ветки origin/meal-libraries этого репозитория, без сети
+    """Каталоги Meal (meal-libraries) — из ветки LIB_REF этого репозитория, без сети
     (git fetch --depth=1 origin meal-libraries:refs/remotes/origin/meal-libraries).
     state["offline"] = True — как без интернета: запросы к каталогам обрываются.
     hold — множество имён файлов: такие запросы не отвечаются сразу, а кладутся в state["held"] (для отмены)."""

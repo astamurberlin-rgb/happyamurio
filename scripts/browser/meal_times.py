@@ -1,4 +1,4 @@
-"""Meal 27.4 (с Meal 28 — проверяется на meal-28/): время продукта и время приёма. Один телефон, гость (без аккаунта и сети), касания как на телефоне.
+"""Meal 27.4 (проверяется на актуальном выпуске Meal — common.MEAL): время продукта и время приёма. Один телефон, гость (без аккаунта и сети), касания как на телефоне.
 В «Корректировке» нажал на поле времени и набрал новое поверх старого — время принято; продукт стал раньше всех —
 время всего приёма сдвинулось на него (раздел, главный экран, сводка для Day, Day); продукт позже — время приёма не
 меняется; напиток раньше еды приём не открывает; время всего приёма набирается так же и проставляется всем продуктам.
@@ -18,7 +18,7 @@ with sync_playwright() as p:
     ctx.route(BACKEND + "/**", lambda route, request: (requests.append(request.method + ' ' + request.url[:120]), route.abort())[1])
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
-    meal.goto(BASE + "meal-28/index.html")
+    meal.goto(BASE + MEAL + "index.html")
     meal.wait_for_timeout(5000)
     meal.evaluate("""()=>{const fid=Object.keys(FOODS).find(k=>FOODS[k]&&FOODS[k].k>50&&!isDrink(k));const drink=Object.keys(FOODS).find(k=>isDrink(k));
       const e=day(curDate);e.items.push({id:'tA',sec:'pm',fid,q:100,u:'г',g:100,t:'13:00'},{id:'tB',sec:'pm',fid,q:50,u:'г',g:50,t:'13:30'});

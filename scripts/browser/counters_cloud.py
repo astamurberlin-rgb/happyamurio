@@ -42,7 +42,7 @@ with sync_playwright() as p:
         page.wait_for_timeout(pause)
 
     def meal_in(ctx):
-        meal = page_of(ctx, "meal", "meal-28/index.html")
+        meal = page_of(ctx, "meal", MEAL + "index.html")
         meal.wait_for_timeout(5000)
         if not meal.evaluate("()=>clOn()"):
             meal.evaluate("()=>go('settings')")

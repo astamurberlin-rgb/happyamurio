@@ -1,4 +1,4 @@
-"""Meal 28: «Сборники» и настройки каталогов. Один телефон, гость, касания; каталоги — из ветки meal-libraries
+"""Meal 28: «Сборники» и настройки каталогов (с Meal 29 — и каталог «БАДы», пилюля «Мои добавки»). Один телефон, гость, касания; каталоги — из ветки meal-libraries
 этого репозитория. Meal открывается на дне; вкладка «Сборники»: пилюли, шесть карточек магазина без БАДов, цена;
 страница узбекской кухни — 60 блюд, плов 255,4 ккал; тестовая покупка — «Куплено» в магазине и карточка в «Моих
 рецептах»; десерты в «Моих продуктах» со свитчем, который выключает каталог и в настройках; поиск по каталогам и
@@ -19,7 +19,7 @@ with sync_playwright() as p:
     libraries(ctx)
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
-    meal.goto(BASE + "meal-28/index.html")
+    meal.goto(BASE + MEAL + "index.html")
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&typeof MealUzbek!=='undefined'"), 25)
     meal.wait_for_timeout(1500)
     check("Meal открывается на дне, не на магазине", meal.evaluate("()=>document.querySelector('.tab.on').dataset.go") == "day")
@@ -29,10 +29,10 @@ with sync_playwright() as p:
     meal.wait_for_timeout(600)
     pills = meal.evaluate("()=>[...document.querySelectorAll('[data-cc-route]')].map(b=>b.textContent+(b.getAttribute('aria-pressed')==='true'?'*':''))")
     out["pills"] = pills
-    check("пилюли: Магазин (выбран) · Мои рецепты · Мои продукты", pills == ["Магазин*", "Мои рецепты", "Мои продукты"])
+    check("пилюли: Магазин (выбран) · Мои рецепты · Мои продукты · Мои добавки", pills == ["Магазин*", "Мои рецепты", "Мои продукты", "Мои добавки"])
     cards = meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid .cc-card')].map(c=>c.querySelector('b').textContent+' | '+c.querySelector('.cc-price').textContent)")
     out["shop"] = cards
-    check("магазин: шесть каталогов, цена «2 евро», БАДов нет", len(cards) == 6 and all(c.endswith("| 2 евро") for c in cards) and not any("БАД" in c for c in cards))
+    check("магазин: семь каталогов, первый — БАДы, цена «2 евро»", len(cards) == 7 and cards[0].startswith("БАДы") and all(c.endswith("| 2 евро") for c in cards))
     check("обложки загрузились", meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid img')].every(i=>i.complete&&i.naturalWidth>0)"))
     meal.screenshot(path=SHOTS + "meal_shop-1-shop.png")
     meal.locator('#ccShopGrid [data-cc-open="UZBEK"]').tap()
@@ -56,7 +56,7 @@ with sync_playwright() as p:
     meal.locator('#ccShopGrid [data-cc-open="DESSERT"]').tap()
     meal.wait_for_timeout(400)
     check("страница десертов: 97 карточек", meal.locator(".cc-detail-inline .cc-food").count() == 97)
-    meal.locator(".cc-buy-bottom .cc-buy button").tap()
+    meal.locator(".cc-detail-inline .cc-buy-bottom .cc-buy button").tap()
     meal.wait_for_timeout(300)
     meal.locator('[data-cc-route="products"]').tap()
     meal.wait_for_timeout(400)
@@ -82,7 +82,7 @@ with sync_playwright() as p:
     labels = meal.evaluate("()=>[...document.querySelectorAll('.eyebrow span')].map(s=>s.textContent)")
     check("в настройках «Каталоги», «Пищевых баз» нет", "Каталоги" in labels and "Пищевые базы" not in labels)
     order = meal.evaluate("()=>[...document.querySelectorAll('.mc-source-carousel > .mc-source-body')].map(c=>c.dataset.sourceSlide)")
-    check("карусель: BLS, USDA, MEXT, Happy Meal, десерты, мои продукты", order == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN"])
+    check("карусель: BLS, USDA, MEXT, Happy Meal, десерты, мои продукты, БАДы", order == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN", "SUPP"])
     meal.evaluate("()=>{const c=document.querySelector('.mc-source-carousel');c.scrollLeft=c.children[1].offsetLeft-c.children[0].offsetLeft}")
     meal.wait_for_timeout(500)
     more = meal.locator('[data-source-more="USDA"]')
