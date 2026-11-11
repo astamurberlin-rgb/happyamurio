@@ -153,7 +153,8 @@
       else c=!cl.time?cr:!cr.time?cl:(String(cl.time)<=String(cr.time)?cl:cr);
       for(const f of ['time','tm','t0'])if(c[f]!==undefined)out[f]=c[f];
       const merged=choose([...path,'log'],Array.isArray(bb.log)?bb.log:absent,Array.isArray(l.log)?l.log:[],Array.isArray(r.log)?r.log:[],absent);
-      const all=(Array.isArray(merged)?merged:[]).concat(log.filter(x=>!(Array.isArray(merged)&&merged.some(y=>y.id===x.id))));
+      const seen=new Set(),all=(Array.isArray(merged)?merged:[]).concat(log.filter(x=>!(Array.isArray(merged)&&merged.some(y=>y.id===x.id))))
+        .filter(x=>{const key=x.k+'|'+x.v+'|'+(x.ms||0)+'|'+(x.t||'');if(seen.has(key))return false;seen.add(key);return true;});   // одна прежняя отметка с двух устройств — одна строка
       if(all.length)out.log=all;
       return out;
     }

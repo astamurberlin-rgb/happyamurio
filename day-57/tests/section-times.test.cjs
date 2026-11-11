@@ -94,3 +94,17 @@ test('синхронизация: правка на одном устройст�
  assert.equal(pm.mood,4);assert.deepEqual(pm.at.mood,at('15:00',9));assert.ok(!pm.log);
  assert.equal(pm.time,'12:40');assert.equal(pm.tm,'m');
 });
+
+test('пример владельца: 6 в 9:00 синхронизировано; телефон 7 в 9:30, компьютер 5 в 9:40 — в разделе 5, в журнале 6 и 7 по одному разу',()=>{
+ const first=C.editSection(null,{},{mood:6,tags:{}},visit('v0'),at('09:00',1000)),base={days:{d:{cp:{am:first}}}};
+ const phone={days:{d:{cp:{am:C.editSection(first,structuredClone(first),{...structuredClone(first),mood:7},visit('vp'),at('09:30',3000))}}}};
+ const computer={days:{d:{cp:{am:C.editSection(first,structuredClone(first),{...structuredClone(first),mood:5},visit('vc'),at('09:40',4000))}}}};
+ for(const [l,r] of [[phone,computer],[computer,phone]]){
+  const am=merge(base,l,r).days.d.cp.am;
+  assert.equal(am.mood,5);assert.equal(am.at.mood.t,'09:40');
+  assert.deepEqual(am.log.map(x=>[x.v,x.t]).sort(),[[6,'09:00'],[7,'09:30']]);
+ }
+ // Телефон получил итог и снова сводится с компьютером — строк не прибавляется.
+ const once=merge(base,phone,computer);
+ assert.equal(merge(base,once,computer).days.d.cp.am.log.length,2);
+});

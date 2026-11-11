@@ -128,6 +128,8 @@ function saveSectionCheckin(db,date,id,checkpoint,metrics,section){
    значению отменял запись. Неизменённые шкалы и теги сохраняют своё время. */
 const SECTION_FIELDS=new Set(['time','tm','t0','tags','note','at','tagAt','log']);
 function sectionScales(...list){const keys=new Set();for(const o of list)if(o&&typeof o==='object')for(const k of Object.keys(o))if(!SECTION_FIELDS.has(k)&&finite(o[k]))keys.add(k);return [...keys];}
+/* Одна и та же прежняя отметка (шкала, значение, когда поставлена) — одна строка журнала, даже если её сохранили в log оба устройства. */
+const logKey=x=>x.k+'|'+x.v+'|'+(x.ms||0)+'|'+(x.t||'');
 function sectionTags(o){return Object.keys(o?.tags||{}).filter(t=>o.tags[t]);}
 function editSection(stored,base,edited,visit,now){
  base=base||{};edited=edited||{};
@@ -139,7 +141,7 @@ function editSection(stored,base,edited,visit,now){
   const id=visit.id+':'+k,b=finite(base[k])?base[k]:null,e=finite(edited[k])?edited[k]:null;
   if(e!==b){
    if(!visit.at[k])visit.at[k]={t:now.t,ms:now.ms};
-   if(b!==null&&!out.log.some(x=>x.id===id)){const w=was(k);out.log.push({id,k,v:b,t:w?.t||'',ms:w?.ms||0});}
+   if(b!==null&&!out.log.some(x=>x.id===id)){const w=was(k),mark={id,k,v:b,t:w?.t||'',ms:w?.ms||0};if(!out.log.some(x=>logKey(x)===logKey(mark)))out.log.push(mark);}
    if(e!==null){out[k]=e;out.at[k]=copy(visit.at[k]);}else{delete out[k];delete out.at[k];}
   }else if(visit.at[k]){
    delete visit.at[k];out.log=out.log.filter(x=>x.id!==id);

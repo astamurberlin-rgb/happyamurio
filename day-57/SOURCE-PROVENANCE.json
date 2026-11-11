@@ -15,8 +15,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-57.html",
-   "size": 3688370,
-   "sha256": "8f3ca075c87cd231f2b53d9637e7f086bc8b6fc1a7161dd46fd7ac7d598f38b4"
+   "size": 3689170,
+   "sha256": "2f39fd75dd16215b1bd2a423cdc7da9b3f5cdb2d711dc41016073e4e9d90d997"
   },
   {
    "path": "README.md",
@@ -165,8 +165,8 @@
   },
   {
    "path": "day-account-profile.js",
-   "size": 11237,
-   "sha256": "97ccc00cf9ff4adf046bdf88fa89b15b3dc3a288137058083d1160770fbb2348"
+   "size": 11482,
+   "sha256": "b3b87bafb7cfc671d683db756ce3b211b600d8a18640b992975c274e72f84a64"
   },
   {
    "path": "day-auto-sync.js",
@@ -270,8 +270,8 @@
   },
   {
    "path": "selfcare-core.js",
-   "size": 18583,
-   "sha256": "4fc4364b35bfc390ba7af95bec59c0e0d526b5c50ba474f0f0edd8080e39c005"
+   "size": 18938,
+   "sha256": "18af491e2daa99a5521590e01370aed7b7f4ab15b11cd490db6f67231950a603"
   },
   {
    "path": "selfcare-ui.js",
@@ -450,8 +450,8 @@
   },
   {
    "path": "tests/section-times.test.cjs",
-   "size": 7208,
-   "sha256": "e335a82f559afcacb2f743204d9e77937c03bb67a11b927ede716f616b748c22"
+   "size": 8336,
+   "sha256": "daade942266ff5312d2f1e4bb6d4cc83809efde9c629154bad297ea59bd1cef3"
   },
   {
    "path": "tests/sport-summary.test.cjs",
