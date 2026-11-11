@@ -1,7 +1,7 @@
 {
  "release": "Happy Meal Update 29",
  "date": "2026-11-12",
- "published": "не опубликован (ветка meal-29)",
+ "published": "12.11.2026 02:51 по слову Астамура (02:00–02:01), вместе с Day 57.7 и Sport 40.5; каталог БАДов — в meal-libraries (df8d8d0)",
  "entry": "meal-29/index.html",
  "source": {
   "release": "meal-28 (Happy Meal Update 28, опубликован 11.11.2026 23:07)",
@@ -57,8 +57,8 @@
   },
   {
    "path": "README.md",
-   "size": 34818,
-   "sha256": "75a18121fd6d396ea50dd7c5612e510e68937464db1e04de6825ac7afcb72ceb"
+   "size": 35052,
+   "sha256": "b3da90b9d4b070350e4871832c73697effe57c8c8f1d812c375bd377ee8d9de7"
   },
   {
    "path": "account-ui.js",
@@ -513,7 +513,7 @@
   {
    "path": "release-notes.js",
    "size": 26104,
-   "sha256": "bd98baadd5f46e0ccbcaea2eb74d390503634935a6e1368958f3638e34e07bfe"
+   "sha256": "2fb3920b5b725761992aa8ec388e1eca8e80c30f76753df7371d80ad8bdbfb35"
   },
   {
    "path": "report.css",
