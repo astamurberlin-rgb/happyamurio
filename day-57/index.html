@@ -6207,7 +6207,7 @@ function renderAll(){
   setTimeout(checkMisplaced,1700);   // после заставки
   var undone=bkAfterLoad();          // только что загрузили копию или вернули прежний
   if(RO) setTimeout(roWarn,1500);
-  else if(!undone) setTimeout(bkNag,2600);
+  /* 57.3: напоминание о копии (bkNag) не вызывается — дневник аккаунта сохраняется в облаке сам */
   MIND.ready=true; mindBegin();      // время в HappyDay — с этой минуты
   setTimeout(function(){ SelfCare.center(false) },80);   // виджет стартует со второй шкалы
   /* заставку держим хотя бы полсекунды, иначе она просто моргнёт */

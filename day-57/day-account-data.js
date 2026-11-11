@@ -83,7 +83,7 @@
     if(!section)return;
     let panel=doc.getElementById('profile-conflicts');
     if(!panel&&!Object.keys(conflicts).length)return;
-    if(!panel){panel=doc.createElement('details');panel.id='profile-conflicts';panel.className='happy-card';section.append(panel);}
+    if(!panel){panel=doc.createElement('details');panel.id='profile-conflicts';panel.className='happy-card';/* 57.3: служебный блок — в «Для разработчика» */(doc.getElementById('dayDeveloperSyncTools')||section).append(panel);}
     const ids=Object.keys(conflicts);panel.hidden=!ids.length;
     const revision=JSON.stringify(conflicts);if(renderedConflicts===revision&&panel.childElementCount)return;renderedConflicts=revision;
     const summary=doc.createElement('summary');summary.textContent='Разные версии записей · '+ids.length;
