@@ -14,10 +14,14 @@
     Object.keys(definitions).forEach(id=>{if(!present.has(id)){engine.update('definitions',{...definitions[id],targets:{day:false,sport:H.linked(definitions[id],'sport')}});delete definitions[id]}});
     baseline=now;root.DB.mealCounters=engine.document();
   }
+  /* 57.7: подпись порции из Meal 29 (portionText): у добавки — «2 капсулы» без условных граммов (вес капсулы
+     обычно неизвестен); у продуктов и у описаний из прежних Meal — как раньше, «q u · g г» */
+  function portionText(d){return typeof d.portionText==='string'&&d.portionText.trim()&&d.portionText.length<=80?d.portionText.trim():null}
+  function portion(d){return portionText(d)||d.q+' '+d.u+' · '+d.g+' г'}
   function apply(doc){applying=true;try{
     const active=doc.definitions.filter(d=>H.linked(d,'day')),ids=new Set(doc.definitions.map(d=>d.id));
     root.DB.taps=root.DB.taps.filter(c=>!c.mealCounterId||!ids.has(c.mealCounterId)||active.some(d=>d.id===c.mealCounterId));
-    definitions={};active.forEach(d=>{let c=root.DB.taps.find(c=>c.mealCounterId===d.id);if(!c){c={k:'meal-'+d.id};root.DB.taps.push(c)}Object.assign(c,{t:d.title,step:1,mealCounterId:d.id,mealPortion:d.q+' '+d.u+' · '+d.g+' г'});definitions[d.id]=clone(d)});
+    definitions={};active.forEach(d=>{let c=root.DB.taps.find(c=>c.mealCounterId===d.id);if(!c){c={k:'meal-'+d.id};root.DB.taps.push(c)}Object.assign(c,{t:d.title,step:1,mealCounterId:d.id,mealPortion:portion(d)});definitions[d.id]=clone(d)});
     const known=new Set(doc.events.map(e=>e.id));Object.values(root.DB.days).forEach(day=>Object.keys(day.taps||{}).forEach(k=>{day.taps[k]=day.taps[k].filter(x=>!known.has(x.counterEventId))}));
     baseline={};doc.events.filter(e=>!e.deleted&&active.some(d=>d.id===e.cid)).sort((a,b)=>(a.created||a.rev)-(b.created||b.rev)||a.id.localeCompare(b.id)).forEach(e=>{const c=root.DB.taps.find(c=>c.mealCounterId===e.cid),k=c?c.k:'meal-'+e.cid,day=root.day(e.date);day.taps=day.taps||{};day.taps[k]=day.taps[k]||[];
       day.taps[k].push({t:e.item.t||null,n:1,counterEventId:e.id});const b=clone(e);delete b.rev;delete b.writer;baseline[e.id]=b;
@@ -33,7 +37,7 @@
       try{if(!engine)throw new Error('Связь со счётчиками недоступна. Перезагрузи приложение.');engine.refresh();const d=engine.document().definitions.find(d=>d.id===c.mealCounterId&&!d.deleted);if(!d)return;
         const t=root.curDate===root.todayISO()?root.nowHM():null,h=t?Number(t.slice(0,2)):12,sec=h<11?'am':h<16?'pm':h<21?'dn':'sn';
         engine.update('events',{id:'serving:'+H.id(),cid:d.id,date:root.curDate,item:{fid:d.fid,q:d.q,u:d.u,g:d.g,t,sec,counterFood:clone(d.food)}});
-        apply(engine.document());root.toast(d.title+' +'+d.q+' '+d.u+' · Happy Meal');
+        apply(engine.document());root.toast(d.title+' +'+(portionText(d)||d.q+' '+d.u)+' · Happy Meal');
       }catch(e){root.toast(e.message)}
     };
     const html=root.tapsHTML;root.tapsHTML=function(e){let result=html(e);root.DB.taps.filter(c=>c.mealCounterId).forEach(c=>{

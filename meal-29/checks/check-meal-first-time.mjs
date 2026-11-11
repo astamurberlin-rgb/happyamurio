@@ -102,8 +102,59 @@ rows=[row('2026-11-11','','10:00',{kcal:120},true,true)];sum=c.linkSummary();
 assert.equal(sum.days['2026-11-11'].food,true,'протеин «без приёма» — день с едой');assert.equal(sum.days['2026-11-11'].k,82+120);
 delete c.HappySupplementNutrition;
 
+// Meal 29 · счётчик добавки (решение Астамура 12.11.2026 01:48): добавка в счётчике — запись еды с продуктом-добавкой
+// (supplement-counters.js). Состав — на 100 условных граммов; масса капсулы неизвестна — грамм условный и не показывается.
+// Приём пищи и голодание — по правилу БАДов за нажатую порцию, «напитком» в сводке Day запись не считается.
+for(const f of ['../substances.js','../supplements-model.js','../supplement-counters.js'])vm.runInContext(await readFile(new URL(f,import.meta.url),'utf8'),c);
+const SC=c.MealSupplementCounters,plain=x=>JSON.parse(JSON.stringify(x));
+const fish=SC.food({id:'fish',name:'Рыбий жир',basis:{quantity:1,unit:'капсула',gramsPerUnit:null},components:[{id:'k',name:'Энергия',substanceId:'kcal',amount:9,unit:'ккал'},{id:'f',name:'Жиры',substanceId:'fat',amount:1,unit:'г'},{id:'e',name:'EPA',substanceId:'epa',amount:180,unit:'мг'},{id:'x',name:'Своё',customId:'custom:x',custom:true,amount:5,unit:'мг'}],measures:[],revision:3});
+assert.deepEqual([fish.id,fish.k,fish.f,fish.supplement.massUnknown,plain(fish.por),fish.supplement.revision],['supp:fish',900,100,true,{'капсула':1},3],'капсула без массы: 1 условный грамм, состав на 100 условных граммов');
+assert.equal(fish.counterValues.epa,18000,'EPA 180 мг на капсулу → 18 000 мг на 100 условных граммов');
+const powder=SC.food({id:'whey',name:'Протеин',basis:{quantity:30,unit:'г',gramsPerUnit:null},components:[{id:'k',name:'Энергия',substanceId:'kcal',amount:114,unit:'ккал'},{id:'p',name:'Белки',substanceId:'prot',amount:22,unit:'г'}],measures:[{id:'m',name:'мерная ложка',amount:30}],revision:1});
+assert.deepEqual([powder.k,powder.p,powder.supplement.massUnknown,plain(powder.por),plain(SC.units(powder))],[380,22/30*100,false,{'мерная ложка':30},['мерная ложка','г']],'порошок: граммы настоящие, мерная ложка 30 г');
+const vitD=SC.food({id:'d3',name:'Витамин D3',basis:{quantity:1,unit:'капсула',gramsPerUnit:null},components:[{id:'d',name:'D3',substanceId:'vD',amount:1000,unit:'МЕ'}],measures:[],revision:1});
+assert.deepEqual([vitD.k,vitD.counterValues.vD],[null,2500],'витамин D: 1000 МЕ = 25 мкг на капсулу, калорий нет');
+const tablet=SC.food({id:'tab',name:'Шипучая таблетка',basis:{quantity:1,unit:'таблетка',gramsPerUnit:3.5},components:[{id:'k',name:'Энергия',substanceId:'kcal',amount:20,unit:'ккал'}],measures:[],opensMeal:true,revision:1});
+assert.deepEqual([tablet.supplement.massUnknown,tablet.por['таблетка'],tablet.supplement.opensMeal],[false,3.5,true],'таблетка 3,5 г — граммы настоящие; свой выбор «открывает»');
+assert.equal(Math.round(tablet.k*100)/100,571.43,'масса таблетки известна: 20 ккал на 3,5 г — 571,43 ккал на 100 г');
+const magnesium=SC.food({id:'mg3',name:'Магний',basis:{quantity:3,unit:'капсула',gramsPerUnit:null},components:[{id:'m',name:'Магний',substanceId:'mg',amount:400,unit:'мг'}],measures:[],revision:1});
+assert.equal(Math.round(magnesium.counterValues.mg*10)/10,13333.3,'состав этикетки на 3 капсулы → на одну капсулу и на 100 условных граммов');
+assert.equal(Math.round(SC.portion(magnesium,{q:1,u:'капсула',g:1}).components[0].amount*100)/100,133.33,'одна капсула из «на 3 капсулы» — треть');
+assert.equal(SC.counterLabel(fish,2,'капсула',2),'2 капсулы','условные граммы в подписи порции не показываются');
+assert.equal(SC.counterLabel(powder,1,'мерная ложка',30),'1 мерная ложка · 30 г');assert.equal(SC.counterLabel(powder,30,'г',30),'30 г');
+assert.equal(SC.portionText(5,'капсула'),'5 капсул');assert.equal(SC.portionText(1.5,'таблетка'),'1,5 таблетки');assert.equal(SC.portionText(21,'капсула'),'21 капсула');
+assert.deepEqual(plain(SC.portion(fish,{q:2,u:'капсула',g:2}).components.map(x=>x.amount)),[18,2,360,10],'состав на нажатую порцию: две капсулы');
+assert.equal(SC.portion(fish,{q:2,u:'капсула',g:2}).grams,null,'масса не указана — в выгрузке пусто, не 2 г');
+Object.assign(FOODS,{'supp:fish':fish,'supp:whey':powder,'supp:d3':vitD,'supp:tab':tablet});
+const tap=(fid,q,u,g,t,extra)=>({fid,q,u,g,t,tap:'c',...(extra||{})});
+const fish2=tap('supp:fish',2,'капсула',2,'07:00'),scoop=tap('supp:whey',1,'мерная ложка',30,'08:15'),d3=tap('supp:d3',1,'капсула',1,'06:45'),fizzy=tap('supp:tab',1,'таблетка',3.5,'09:00');
+assert.deepEqual([c.mlOpens(fish2),c.mlBreaksFast(fish2)],[false,true],'2 капсулы рыбьего жира со счётчика: 18 ккал — голодание прервано, приём не открыт');
+assert.deepEqual([c.mlOpens(scoop),c.mlBreaksFast(scoop)],[true,true],'мерная ложка протеина со счётчика открывает приём');
+assert.deepEqual([c.mlOpens(d3),c.mlBreaksFast(d3)],[false,false],'витамин D без калорий — ни приёма, ни голодания (не «еда без калорийности»)');
+assert.deepEqual([c.mlOpens(fizzy),c.mlBreaksFast(fizzy)],[true,true],'свой выбор в варианте сильнее формы');
+assert.deepEqual([c.mlOpens(tap('supp:fish',0.3,'капсула',0.3,'07:00')),c.mlBreaksFast(tap('supp:fish',0.3,'капсула',0.3,'07:00'))],[false,false],'треть капсулы — 2,7 ккал, ничего');
+// снимок в самой записи (counterFood) сильнее копии в библиотеке: Day и Sport присылают его вместе с нажатием
+const own=tap('other:id',2,'капсула',2,'07:00',{counterFood:fish});c.MealProducts.forItem=(x,foods)=>x.counterFood||foods[x.fid];
+assert.equal(c.mlBreaksFast(own),true,'продукт-добавка из самой записи');
+c.DB={days:{'2026-11-12':{items:[d3,{fid:'coffee',t:'06:30'},fish2,{fid:'soup',t:'13:00'}]}}};c.supplementRows=()=>[];
+assert.deepEqual(plain(c.mlFastBreak('2026-11-12')),{t:'07:00',name:'Рыбий жир'},'голодание прервал рыбий жир со счётчика, не витамин D и не кофе');
+assert.equal(c.mlFirstTime(c.mlIntakeItems([fish2,{fid:'soup',t:'13:00'}],[]),null,false,c.mlNotOpening).t,'13:00','капсулы со счётчика приём не открывают');
+// сводка для Day: капсулы со счётчика — не «только напитки» и не еда; калории — как у записи
+c.DB={sections:[{k:'am',t:'Завтрак'}],days:{'2026-11-13':{items:[Object.assign({id:'f1',sec:'am'},fish2)]},'2026-11-14':{items:[Object.assign({id:'p1',sec:'am'},scoop),Object.assign({id:'c1',sec:'am'},{fid:'coffee',t:'07:00',g:200})]}}};
+c.sumOf=list=>list.reduce((a,x)=>{const f=c.MealProducts.forItem(x,FOODS);a.k+=(f.k||0)*(x.g==null?1:x.g/100);return a},{k:0,p:0,f:0,c:0});
+sum=c.linkSummary();
+assert.deepEqual([sum.days['2026-11-13'].food,sum.days['2026-11-13'].sec.am.dr,sum.days['2026-11-13'].sec.am.food,Math.round(sum.days['2026-11-13'].k)],[false,0,false,18],'только капсулы со счётчика: 18 ккал, приёма пищи нет, «напитков» нет');
+assert.deepEqual([sum.days['2026-11-14'].sec.am.food,sum.days['2026-11-14'].sec.am.t,sum.days['2026-11-14'].sec.am.dr],[true,'08:15',1],'протеин со счётчика открыл завтрак; кофе — напиток');
+
+// Запуск Meal переводит свои продукты без состава в состав продукта (migrate) — продукт-добавку счётчика не трогает:
+// её состав этикетки остаётся в counterValues, иначе витамины и EPA пропали бы из журнала.
+{const pm=vm.createContext({});pm.globalThis=pm;vm.runInContext(await readFile(new URL('../shared/meal-products-model.js',import.meta.url),'utf8'),pm);
+ const r=pm.MealProducts.migrate({productsVersion:1,propertyDefs:[],foods:[JSON.parse(JSON.stringify(fish)),{id:'u1',n:'Свой',k:100,p:1,f:1,c:1,por:{}}],days:{}});
+ assert.equal(r.db.foods[0].composition,undefined,'продукт-добавка без перевода');assert.equal(r.db.foods[0].counterValues.epa,18000);assert.ok(r.db.foods[1].composition,'обычный свой продукт переводится, как раньше');
+ assert.equal(pm.MealProducts.value(r.db.foods[0],'epa'),18000,'значение читается из состава этикетки');}
+
 // На экранах Meal время приёма считает новая функция, прежняя «последнее время» больше не вызывается.
 assert.equal((html.match(/mlLastTime\(/g)||[]).length,1,'mlLastTime остаётся только определением');
 assert.ok(!/mlFirstTime\([^)]*isDrink\)/.test(html),'время приёма нигде не считается по старому правилу напитков');
 assert.ok(!/id="mealTimeInput"[^>]*maxlength|maxlength="5"[^>]*id="mealTimeInput"/.test(html),'у поля времени нет ограничения в 5 знаков');
-console.log('Passed: время приёма — первое, что его открывает (раньше — сдвигает, позже — нет); открывает запись больше 4 ккал, напиток или нет, «без калорий» (≤ 4 на 100) — никогда, без калорийности — как раньше; БАДы: порошок больше 4 ккал открывает, капсулы — нет, но прерывают голодание; «Голодание прервано» — первая запись с калориями; правило вариантов (форма, свой выбор, по БЖУ); сводка для Day с калориями БАДов; набор поверх полного времени.');
+console.log('Passed: счётчик добавки — запись еды с продуктом-добавкой, правило БАДов, подписи без условных граммов; время приёма — первое, что его открывает (раньше — сдвигает, позже — нет); открывает запись больше 4 ккал, напиток или нет, «без калорий» (≤ 4 на 100) — никогда, без калорийности — как раньше; БАДы: порошок больше 4 ккал открывает, капсулы — нет, но прерывают голодание; «Голодание прервано» — первая запись с калориями; правило вариантов (форма, свой выбор, по БЖУ); сводка для Day с калориями БАДов; набор поверх полного времени.');

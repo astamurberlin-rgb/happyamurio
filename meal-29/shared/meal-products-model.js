@@ -105,7 +105,8 @@ function snapshotItems(db,foods){
 function migrate(db){
  if(db.productsVersion>1)return {db:clone(db),changed:false,readOnly:true};
  var out=clone(db),changed=false;
- (out.foods||[]).forEach(function(f,i){if(!f.composition&&!f.b){out.foods[i]=fromFood(f);out.foods[i].revision=f.revision||0;changed=true}});
+ // Meal 29: продукт-добавка счётчика (supplement-counters.js) хранит состав этикетки в counterValues — не переводить
+ (out.foods||[]).forEach(function(f,i){if(!f.composition&&!f.b&&!f.supplement){out.foods[i]=fromFood(f);out.foods[i].revision=f.revision||0;changed=true}});
  if(out.productsVersion!==1){out.productsVersion=1;changed=true}if(!Array.isArray(out.propertyDefs)){out.propertyDefs=[];changed=true}
  return {db:out,changed:changed};
 }

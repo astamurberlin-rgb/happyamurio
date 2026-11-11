@@ -1,7 +1,7 @@
 {
  "day": {
   "entry": "day-57/index.html",
-  "version": "57.6",
+  "version": "57.7",
   "sharedDirectory": "day-57/shared",
   "links": {
    "meal": "meal-29/",
@@ -13,7 +13,7 @@
    "version": "56",
    "sourceCommit": "9280726e7dd358d8ac436ffd99432874d82ba8e8"
   },
-  "name": "Happy Day · Update 57.6",
+  "name": "Happy Day · Update 57.7",
   "earlier": {
    "entry": "day/index.html",
    "version": "50.14",
@@ -55,8 +55,8 @@
  },
  "sport": {
   "entry": "sport-40/index.html",
-  "version": "40.4",
-  "name": "Happy Sport · Update 40.4",
+  "version": "40.5",
+  "name": "Happy Sport · Update 40.5",
   "sharedDirectory": "sport-40/shared",
   "sourceDirectory": "sport-40/sport/src",
   "sourceRelease": "sport-39",

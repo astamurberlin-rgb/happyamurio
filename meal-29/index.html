@@ -1953,6 +1953,7 @@ var HappyProfile=HappyProfiles.create("meal");</script>
 })(globalThis);
 </script>
 <script src="./shared/food-counters.js?v=29"></script>
+<script src="supplement-counters.js?v=29"></script>
 <script src="counters.js?v=29"></script>
 <script>
 // Initialize auth guards before the first asynchronous journal read.
@@ -2444,7 +2445,7 @@ function rebuildLib(){
     var o={id:r[0],n:r[1],w:w,req:req.length?req:null,k:r[3],p:r[4],f:r[5],c:r[6],por:Object.assign({},r[7]),src:r[8],b:r[9]||null};
     FOODS[o.id]=o; LIST.push(o);
   });
-  (DB.foods||[]).forEach(function(o){ FOODS[o.id]=o; LIST.push(o) });
+  (DB.foods||[]).forEach(function(o){ FOODS[o.id]=o; if(!o.supplement) LIST.push(o) });   // Meal 29: продукт-добавка счётчика — не в поиске еды
   /* продукты из базы BLS, которые уже выбирали, — тоже в библиотеке: фраза их находит */
   Object.keys(DB.bls||{}).forEach(function(code){
     var x=DB.bls[code], name=cookingName(x.n), o={id:'bls:'+code,n:name,w:norm(name).split(/[^a-zа-я0-9%]+/).filter(function(w){ return w.length>1 }),
@@ -2464,7 +2465,7 @@ function rebuildLib(){
   Object.keys(FOODS).forEach(function(id){ porFix(FOODS[id]) });
 }
 function newFood(n,k,p,f,c){
-  var same=(DB.foods||[]).filter(function(x){ return x.n.toLowerCase()===n.toLowerCase() })[0];
+  var same=(DB.foods||[]).filter(function(x){ return !x.supplement&&x.n.toLowerCase()===n.toLowerCase() })[0];
   if(same) return same;
   var o={id:'u'+HappyFoodCounters.id(),n:n,w:norm(n).split(/[^a-zа-я0-9%]+/).filter(Boolean),
          k:k||0,p:p||0,f:f||0,c:c||0,por:{},src:'Мои'};
@@ -2591,6 +2592,7 @@ var PORX=[[/^лимон(?!ад)/,'шт',100],
 function porFix(f){
   if(!f) return;
   f.por=f.por||{};
+  if(f.supplement){ f.own={}; f.porOwn={}; return }   // Meal 29: у продукта-добавки меры только из «Мои добавки»
   if(!f.porG&&!f.composition){ var n=norm(f.n||'').replace(/ё/g,'е');
     if(typeof MealPortions==='undefined'||(MealPortions.rawLike(f)&&!/^яйц/.test(n))){
     PORX.forEach(function(r){ if(r[0].test(n)&&!f.por[r[1]]) f.por[r[1]]=r[2] });
@@ -2889,8 +2891,8 @@ var UFORMS={'стакан':['стакан','стакана','стаканов'],
 function uWord(q,u){ var f=UFORMS[u]; if(!f) return u; return Math.round(q)!==q?f[1]:ruPlural(q,f) }
 /* «1 средний» вместо «1 шт» у плодов с размерами, «10 ягод» у ягод */
 function uLab(fid,q,u){ var f=fid&&FOODS[fid], n=(u.indexOf('г ')!==0&&typeof unitName==='function')?unitName(f,u):u; return uWord(q,n) }
-function amtShort(l){ return l.u==='г'?fmt(l.g)+' г':fmt(l.q)+' '+uLab(l.fid,l.q,l.u) }
-function portTxt(c){ return fmt(c.q)+' '+uWord(c.q,c.u) }
+function amtShort(l){ if(mlSuppFood(l)) return MealSupplementCounters.portionText(l.q,l.u); return l.u==='г'?fmt(l.g)+' г':fmt(l.q)+' '+uLab(l.fid,l.q,l.u) }
+function portTxt(c){ if(c&&typeof MealSupplementCounters!=='undefined'&&MealSupplementCounters.of(c.food||FOODS[c.fid])) return MealSupplementCounters.portionText(c.q,c.u); return fmt(c.q)+' '+uWord(c.q,c.u) }
 /* раздел по времени: до 11 — завтрак, до 16 — обед, до 21 — ужин, дальше — перекус */
 function secAt(h){ var want=h<11?'am':h<16?'pm':h<21?'dn':'sn'; return sec(want)?want:(DB.sections[0]&&DB.sections[0].k) }
 function autoSec(){ return secAt(new Date().getHours()) }
@@ -3125,10 +3127,14 @@ function mlTimeRestart(input,ev){
    первая запись, которая открывает приём, или БАД больше 4 ккал за приём. */
 function mlFoodKcal(x){var f=MealProducts.forItem(x,FOODS,DB)||FOODS[x.fid],k=f&&f.k;return typeof k==='number'&&isFinite(k)&&k>=0?k:null}
 function mlEntryKcal(x){var k=mlFoodKcal(x),g=x&&x.g;return k!=null&&typeof g==='number'&&isFinite(g)&&g>=0?k*g/100:null}
-function mlOpensFood(x){var k=mlFoodKcal(x);if(k==null)return !isDrink(x.fid);if(k<=4)return false;var e=mlEntryKcal(x);return e==null||e>4}
+/* счётчик добавки (supplement-counters.js): запись еды с продуктом-добавкой — правило БАДов за нажатую порцию.
+   mlSuppFood — продукт-добавка записи или null (и для подписи порции, редактора и журнала) */
+function mlSuppFood(l){ if(!l||l.sup||typeof MealSupplementCounters==='undefined') return null; var f=MealProducts.forItem(l,FOODS,DB)||FOODS[l.fid]; return MealSupplementCounters.of(f) }
+function mlSuppRule(x){var f=mlSuppFood(x);return f?MealSupplementCounters.mealRule(f,x):null}
+function mlOpensFood(x){var r=mlSuppRule(x);if(r)return !!r.opensMeal;var k=mlFoodKcal(x);if(k==null)return !isDrink(x.fid);if(k<=4)return false;var e=mlEntryKcal(x);return e==null||e>4}
 function mlOpens(x){return x&&x.sup?!!x.sup.opensMeal:mlOpensFood(x)}
 function mlNotOpening(fid,x){return !mlOpens(x||{fid:fid})}
-function mlBreaksFast(x){return x&&x.sup?!!x.sup.breaksFast:mlOpensFood(x)}
+function mlBreaksFast(x){if(x&&x.sup)return !!x.sup.breaksFast;var r=mlSuppRule(x);return r?!!r.breaksFast:mlOpensFood(x)}
 /* записи дня вместе с приёмами БАДов — для времени приёма и сводки (sup — строка HappySupplementNutrition) */
 function mlIntakeItems(items,rows){return (items||[]).concat((rows||[]).map(function(r){return {t:r.time||null,tm:r.manual?1:0,sup:r,fid:null}}))}
 function mlFastBreak(date){
@@ -3161,7 +3167,7 @@ function byT(a,b){ return a.t<b.t?-1:a.t>b.t?1:0 }
 function linkFacts(items,rows){
   /* Meal 29: «еда» — то, что открывает приём (больше 4 ккал на 100 г/мл; БАДы — см. mlOpens); калории и БЖУ — с БАДами */
   var all=mlIntakeItems(items,rows), food=all.filter(mlOpens), s=linkSum(items,rows);
-  var o={food:food.length>0,n:food.length,dr:items.filter(function(x){ return !mlOpensFood(x) }).length,k:r1(s.k),p:r1(s.p),f:r1(s.f),c:r1(s.c)};   // dr — напитки без калорий (Day: «только напитки»), БАДы не в счёт
+  var o={food:food.length>0,n:food.length,dr:items.filter(function(x){ return !mlSuppFood(x)&&!mlOpensFood(x) }).length,k:r1(s.k),p:r1(s.p),f:r1(s.f),c:r1(s.c)};   // dr — напитки без калорий (Day: «только напитки»), БАДы не в счёт
   var timed=food.filter(function(x){ return x.t }).sort(byT);
   if(timed.length){ o.t0=timed[0].t; o.t1=timed[timed.length-1].t }
   var first=mlFirstTime(all,null,false,mlNotOpening);if(first.t){o.t=first.t;o.src=first.src}   // 27.4: время приёма — первый продукт
@@ -3355,7 +3361,8 @@ function renderSettings(){
     var f=FOODS[c.fid];
     return rowCard(minusBtn('t'+i)+'<span class="nm"><b>'+escH(c.t)+'</b><small>порция '+escH(portTxt(c))+(f?' · '+escH(f.n):'')+'</small></span>'+penBtn('t'+i));
   }).join(''):'<p class="mlEmpty">Счётчиков пока нет.</p>';
-  document.getElementById('setFoods').innerHTML=(DB.foods||[]).length?DB.foods.map(function(f,i){
+  document.getElementById('setFoods').innerHTML=(DB.foods||[]).some(function(f){ return !f.supplement })?DB.foods.map(function(f,i){
+    if(f.supplement) return '';   // Meal 29: добавки — в «Мои добавки»
     return rowCard(minusBtn('f'+i)+'<span class="nm"><b>'+escH(f.n)+'</b><small>'+(f.drink?'напиток · ':'')+'на 100 г: '+(f.k==null?'—':Math.round(f.k))+' ккал · Б '+(f.p==null?'—':fmt(f.p))+' · Ж '+(f.f==null?'—':fmt(f.f))+' · У '+(f.c==null?'—':fmt(f.c))+'</small></span>'+penBtn('f'+i));
   }).join(''):'<p class="mlEmpty">Своих продуктов пока нет.</p>';
   clPaint();
@@ -3816,7 +3823,7 @@ function renderMatch(){
 function lineHTML(l,where){
   var st=l.st||'ok', f=MealProducts.forItem(l,FOODS,DB), open=(where==='m'?M.open:SOPEN)===l.id, warn=st==='pick'||st==='none';
   var name=st==='pick'?cap(l.name)+' — какой?':f?(typeof MealCatalog!=='undefined'?MealCatalog.name(f):f.n):cap(l.name||'Продукт');
-  var src=f?(f.src==='Мои'?'мой продукт':f.src==='этикетка'?'по типичной этикетке':f.src==='оценка'?'оценка':''):(st==='none'?'нет в библиотеке':'');
+  var src=f?(f.supplement?'добавка':f.src==='Мои'?'мой продукт':f.src==='этикетка'?'по типичной этикетке':f.src==='оценка'?'оценка':''):(st==='none'?'нет в библиотеке':'');
   var sub=where==='m'?(l.from==='photo'?'с фото'+(src?' · '+src:''):l.from==='recipe'?'из рецепта'+(src?' · '+src:''):l.raw?'«'+l.raw+'»'+(src?' · '+src:''):src):[l.t,l.tap?'счётчик':src].filter(Boolean).join(' · ');
   var clock=where==='m'&&M.mode!=='recipe'?mlEntryTime(l,M.t,M.tm).t:where==='s'?mlNormTime(l.t):null;
   if(where==='m'&&clock)sub=[clock,sub].filter(Boolean).join(' · ');
@@ -3905,17 +3912,19 @@ function unitName(f,u){ var label=typeof MealPortions!=='undefined'&&MealPortion
 function unitG(f,u){ return (f&&f.por&&f.por[u])||DEF[u]||1 }
 function unitWeightLabel(f,u){return (typeof MealPortions!=='undefined'&&MealPortions.approximate(f,u)?'≈ ':'')+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(unitG(f,u))}
 function edHTML(l,where){
-  var f=MealProducts.forItem(l,FOODS,DB), units=unitList(FOODS[l.fid]||f,l.u), own=((FOODS[l.fid]||f)&&((FOODS[l.fid]||f).own))||{};
+  /* Meal 29: запись со счётчика добавки — меры добавки, без условных граммов и без «своей меры» */
+  var sp=mlSuppFood(l), sm=sp&&sp.supplement.massUnknown;
+  var f=MealProducts.forItem(l,FOODS,DB), units=sp?MealSupplementCounters.units(sp,l.u):unitList(FOODS[l.fid]||f,l.u), own=sp?{}:((FOODS[l.fid]||f)&&((FOODS[l.fid]||f).own))||{};
   var pf=FOODS[l.fid]||f,approx=typeof MealPortions!=='undefined'?MealPortions:null;
   var fo=UFORM&&UFORM.id===l.id;
   var h='<div class="mlEd"><div class="mlW mlQuantityRow"><div class="tpStp"><button data-act="minus" aria-label="Меньше">−</button>'+
-    '<label class="v"><span class="mlQtyMain"><input type="number" inputmode="decimal" step="any" data-act="qty" value="'+(Math.round(l.q*10)/10)+'" style="width:'+qtyW(Math.round(l.q*10)/10)+'" aria-label="Сколько, '+escH(l.u)+'"><i>'+escH(STEP_SHORT[l.u]||uLab(l.fid,l.q,l.u))+'</i></span>'+
-    (l.u!=='г'?'<small class="mlInlineEq">= '+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(l.g)+' г'+(f&&f.porNote&&(l.u==='шт'||l.u==='маленький'||l.u==='большой'||l.u.indexOf('г ')===0)?' '+escH(f.porNote):'')+'</small>':'')+'</label>'+
+    '<label class="v"><span class="mlQtyMain"><input type="number" inputmode="decimal" step="any" data-act="qty" value="'+(Math.round(l.q*10)/10)+'" style="width:'+qtyW(Math.round(l.q*10)/10)+'" aria-label="Сколько, '+escH(l.u)+'"><i>'+escH(sp?MealSupplementCounters.unitWord(l.q,l.u):STEP_SHORT[l.u]||uLab(l.fid,l.q,l.u))+'</i></span>'+
+    (l.u!=='г'&&!sm?'<small class="mlInlineEq">= '+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(l.g)+' г'+(f&&f.porNote&&(l.u==='шт'||l.u==='маленький'||l.u==='большой'||l.u.indexOf('г ')===0)?' '+escH(f.porNote):'')+'</small>':'')+'</label>'+
     '<button data-act="plus" aria-label="Больше">+</button></div></div>'+
     '<div class="mlUnits" role="group" aria-label="Мера">'+units.map(function(u){ var on=u===l.u;
       return '<button class="chip'+(on?' on':'')+(own[u]?' own':'')+'" data-act="unit" data-u="'+escH(u)+'" aria-pressed="'+on+'">'+
-        (u==='г'?'граммы':u.indexOf('г ')===0?escH(unitName(pf,u)):escH(unitName(pf,u))+' <small>'+unitWeightLabel(pf,u)+' г</small>')+'</button>' }).join('')+
-      '<button class="chip add" data-act="uadd" aria-expanded="'+fo+'">+ Своя мера</button></div>';
+        (u==='г'?'граммы':sp?escH(u)+(sm||!(sp.por[u]>0)?'':' <small>'+fmt(sp.por[u])+' г</small>'):u.indexOf('г ')===0?escH(unitName(pf,u)):escH(unitName(pf,u))+' <small>'+unitWeightLabel(pf,u)+' г</small>')+'</button>' }).join('')+
+      (sp?'':'<button class="chip add" data-act="uadd" aria-expanded="'+fo+'">+ Своя мера</button>')+'</div>';
   if(approx&&approx.note(pf))h+='<p class="mlUNote">'+escH(approx.note(pf))+'</p>';
   if(fo) h+='<div class="mlUForm"><input type="text" data-act="uname" maxlength="24" placeholder="Название: моя тарелка, кружка в кафе…" aria-label="Название меры">'+
     '<label class="g"><input type="number" inputmode="decimal" step="any" data-act="ugram" placeholder="450" aria-label="Сколько граммов"><i>г</i></label>'+
@@ -4034,7 +4043,7 @@ function onAct(ev){
   else if(act==='usave'){ if(!unitSave(card,l)) return; keep(w); rer(w); unitsReveal(); return }
   else if(act==='udel'){ unitDel(l); keep(w); rer(w); unitsReveal(); return }
   else if(act==='del'){ removeLine(w,id); return }
-  else if(act==='info'){ MealControls.correct(w,id); return }
+  else if(act==='info'){ var sf=mlSuppFood(l); if(sf&&sf.supplement.variantId&&MealSupplementCounters.openVariant(sf.supplement.variantId)) return; MealControls.correct(w,id); return }   // Meal 29: добавка — карточка в «Мои добавки»
   else if(act==='replace'){ MealControls.correct(w,id); return }
   else if(act==='own'){ createOwn(l.name||'',function(food){ setFood(l,food.id); if(w==='m') M.open=l.id; keep(w); rer(w) }); return }
   keep(w); rer(w);
@@ -5959,12 +5968,13 @@ function jrCompute(r){
     var e=DB.days[d],it=e&&e.items||[],rows=byDate[d]||[];if(!it.length&&!rows.length)return;days++;
       it.forEach(function(x){
       var f=MealProducts.forItem(x,FOODS,DB);all++;if(!f){missingK++;omegaCoverage.missing++;return;}
-        sources[f.catalogSource||f.src||'нет данных']=1;
-      var m=(x.g||0)/100,energyKnown=typeof f.k==='number'&&Number.isFinite(f.k)&&f.k>=0&&typeof x.g==='number'&&Number.isFinite(x.g)&&x.g>=0&&Number.isFinite(f.k*m),kc=energyKnown?f.k*m:0;if(energyKnown){totK+=kc;foodK+=kc;knownK++}else missingK++;
+        sources[f.supplement?'Добавки · сохранённая этикетка':f.catalogSource||f.src||'нет данных']=1;if(f.supplement)supplementCount++;
+      var m=(x.g||0)/100,energyKnown=typeof f.k==='number'&&Number.isFinite(f.k)&&f.k>=0&&typeof x.g==='number'&&Number.isFinite(x.g)&&x.g>=0&&Number.isFinite(f.k*m),kc=energyKnown?f.k*m:0;if(energyKnown){totK+=kc;if(!f.supplement)foodK+=kc;knownK++}else missingK++;
         ['p','f','c'].forEach(function(k){if(f[k]!=null)knownMacros[k]++;else missingMacros[k]++});
       mac.p+=(f.p||0)*m;mac.f+=(f.f||0)*m;mac.c+=(f.c||0)*m;
-      function lack(id){if(!kc||(id!=='fib'&&!JR_BLS[id]))return;miss[id]=(miss[id]||0)+kc;var L=missN[id]=missN[id]||[];if(L.indexOf(f.n)<0)L.push(f.n)}
-      var code=f.b;if(!f.composition&&(!code||BLS_ST!=='ok'||!BLS_BY[code]))noBls++;if(code&&code.charAt(0)==='Z')kav++;
+      function lack(id){if(f.supplement){if(id==='fib'||JR_BLS[id])supplementMissing[id]=(supplementMissing[id]||0)+1;return}   // Meal 29: счётчик добавки — как приём добавки
+        if(!kc||(id!=='fib'&&!JR_BLS[id]))return;miss[id]=(miss[id]||0)+kc;var L=missN[id]=missN[id]||[];if(L.indexOf(f.n)<0)L.push(f.n)}
+      var code=f.b;if(!f.composition&&!f.supplement&&(!code||BLS_ST!=='ok'||!BLS_BY[code]))noBls++;if(code&&code.charAt(0)==='Z')kav++;
         var fb=MealProducts.value(f,'fib',blsVal);if(fb!=null){mac.fib+=fb*m;has.fib=1}else lack('fib');
       ids.forEach(function(id){var key=JR_BLS[id],val=null;
           if(Array.isArray(key)){var vals=key.map(function(k){return MealProducts.value(f,k,blsVal)});if(vals.every(function(v){return v!=null}))val=vals.reduce(function(a,b){return a+b},0)}

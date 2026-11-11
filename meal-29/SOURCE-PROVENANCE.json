@@ -24,7 +24,8 @@
   "sources.js: источник SUPP (переключатель «БАДы»); отметки неизвестных каталогов сохраняются; catalog.js: карточка «БАДы» в настройках; food-libraries.js: SUPP скачивается для работы без интернета",
   "report.js: БАДы в CSV и отчёте (полный список веществ только в выгрузках, ссылка на BLS в отчёте сохранена)",
   "images/supplements.jpg (из обложки прототипа, 900×675, 51 КБ); sw.js: копия выпуска meal-29/ с обложкой БАДов",
-  "checks/check-supplements-store.mjs (новая); check-meal-first-time.mjs, check-shop.mjs, check-sport-summary.mjs — под Meal 29"
+  "checks/check-supplements-store.mjs (новая); check-meal-first-time.mjs, check-shop.mjs, check-sport-summary.mjs — под Meal 29",
+  "supplement-counters.js (новый): счётчик добавки — запись еды с продуктом-добавкой supp:<вариант> (состав этикетки на 100 условных граммов, massUnknown, portionText для Day 57.7 и Sport 40.5); counters.js: поиск своих добавок и шаблонов каталога, меры добавки, сохранение шаблона в «Мои добавки» (supplements.js: saveTemplate); index.html: продукт-добавка не в поиске еды и «Моих продуктах», подписи порций, правка записи без условных граммов, правило приёма для записей со счётчика, журнал; report.js, supplement-nutrition.js, user-products.js, shared/meal-products-model.js (migrate не трогает продукт-добавку)"
  ],
  "userVerification": "pending (owner, iPhone)",
  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
@@ -56,8 +57,8 @@
   },
   {
    "path": "README.md",
-   "size": 32427,
-   "sha256": "948a95d7b6d54a7e33dcf1365710515f1e47b55d09736a0f6d8c34e61184876a"
+   "size": 34818,
+   "sha256": "75a18121fd6d396ea50dd7c5612e510e68937464db1e04de6825ac7afcb72ceb"
   },
   {
    "path": "account-ui.js",
@@ -256,8 +257,8 @@
   },
   {
    "path": "checks/check-meal-first-time.mjs",
-   "size": 15662,
-   "sha256": "75af12d892646aa655786261a517d9ab0c88b503937db46c8b54e0d8445c98d2"
+   "size": 25087,
+   "sha256": "e7e2c10df4174d40230cdc740b5b23b84e57908d60cd138c2651af7be1f73e5f"
   },
   {
    "path": "checks/check-search-names.mjs",
@@ -301,8 +302,8 @@
   },
   {
    "path": "counters.js",
-   "size": 18307,
-   "sha256": "87fc37108a0b6da2146cfb3050f4207736c1c379b1b320e92087b437cba34a7e"
+   "size": 24502,
+   "sha256": "5af0fd67f3c833a41f835440aadf745b645d60ac1983315319a45d3fc1090a9a"
   },
   {
    "path": "desserts.js",
@@ -326,8 +327,8 @@
   },
   {
    "path": "index.html",
-   "size": 636593,
-   "sha256": "350c06e2acd0849e1ca5598d5caa49e6174a4ff238939f9ddf18f8e3428a91fe"
+   "size": 638974,
+   "sha256": "86495e51a287a94556ebfafb29e5385871451dd206fe28412f08a3bf5596a440"
   },
   {
    "path": "journal-model.js",
@@ -511,8 +512,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 25644,
-   "sha256": "e557cacfed228862225cbe303e193c5e23d69c5cf934622aa2be4486be2b7891"
+   "size": 26104,
+   "sha256": "bd98baadd5f46e0ccbcaea2eb74d390503634935a6e1368958f3638e34e07bfe"
   },
   {
    "path": "report.css",
@@ -521,8 +522,8 @@
   },
   {
    "path": "report.js",
-   "size": 33021,
-   "sha256": "ab33d4c99250ed29457f563786c7b43a8c4265673b612399763379d1b09ec8de"
+   "size": 33843,
+   "sha256": "6ec58aa71ad6ee373b165ac30a751212c18c69aaae4321febd839bca3a900859"
   },
   {
    "path": "search-names.js",
@@ -601,8 +602,8 @@
   },
   {
    "path": "shared/meal-products-model.js",
-   "size": 13164,
-   "sha256": "98ec38484ee3469d3157f380e600579219afa1d5846f593ffcd34e1d0d17949c"
+   "size": 13354,
+   "sha256": "e61d03c4ca5a3f6e34725723c666f51e0bc08966f19c78a06e8c97379f5d2290"
   },
   {
    "path": "shared/measurements-host.js",
@@ -1800,9 +1801,14 @@
    "sha256": "ec6e38d46ba0be8d0ea828e1fce88d367eaa86525a80c947f66ec5d0d35751ac"
   },
   {
+   "path": "supplement-counters.js",
+   "size": 12130,
+   "sha256": "ac854df8e66fe6d45c27e72f264dd0656528cc207eab4318539b30ed302aa66c"
+  },
+  {
    "path": "supplement-nutrition.js",
-   "size": 10373,
-   "sha256": "ad7409bd56bf4bb3a99b296e8efae691bfe7f114dffb3e17a4823617b9dcd829"
+   "size": 10941,
+   "sha256": "c6b9ea8fd525e673d5e0733c09b8d46162e2572cc920ea2075dc498315a1a1cc"
   },
   {
    "path": "supplements-library.js",
@@ -1831,8 +1837,8 @@
   },
   {
    "path": "supplements.js",
-   "size": 52604,
-   "sha256": "ca7f796ccf4737f5c01838a8c63171199bd98d5812e6650e00a008c7f4529b3f"
+   "size": 53824,
+   "sha256": "813779bd4891604d74a4110691e478f6901c02eb38ae6d732d114becf8696306"
   },
   {
    "path": "sw.js",
@@ -1851,8 +1857,8 @@
   },
   {
    "path": "user-products.js",
-   "size": 41830,
-   "sha256": "03f2c67bb37c3a9460bc7fef5196c67316e72a702a700a37b14f74985c521f76"
+   "size": 41972,
+   "sha256": "af53f0d8291a3abc9f205fec116a138fa23284ce244dd6ce839a0ba5dce71ef6"
   },
   {
    "path": "uzbek.js",

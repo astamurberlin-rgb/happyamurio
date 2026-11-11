@@ -77,5 +77,14 @@ await assert.rejects(runInContext("sportFoodPut({v:2},null,Date.now())",c),/Ак
 await assert.rejects(runInContext("sportFoodPut({v:1,definitions:[],events:[]},5,3,'AAAAAAAAAAAAAAAA')",c),/подтверждённая версия/);
 assert.equal(requests.length,before);
 // Embedded measurements mode does not start the engine.
+// 40.5: подпись порции из Meal 29 (portionText): у добавки «2 капсулы» без условных граммов; у продукта и у
+// описаний из прежних Meal — как раньше «q u · g г»; пустая, не текст или слишком длинная подпись не берётся.
+assert.equal(g("sportPortionText({q:2,u:'капсула',g:2,portionText:'2 капсулы'})"),'2 капсулы');
+assert.equal(g("sportPortionText({q:1,u:'шт',g:55})"),'1 шт · 55 г');
+assert.equal(g("sportPortionText({q:1,u:'шт',g:55,portionText:''})"),'1 шт · 55 г');
+assert.equal(g("sportPortionText({q:1,u:'шт',g:55,portionText:7})"),'1 шт · 55 г');
+assert.equal(g("sportPortionText({q:1,u:'шт',g:55,portionText:'д'.repeat(81)})"),'1 шт · 55 г');
+assert.ok(g("sportCounterRow({id:'x',title:'Рыбий жир',q:2,u:'капсула',g:2,portionText:'2 капсулы'},true)").includes('<small>2 капсулы</small>'),'row shows the Meal label');
+{const audit=await read('src/audit-simplify.js');assert.ok(audit.includes('sub=shared?sportPortionText(c)')&&!audit.includes('sub=shared?`${c.q} ${c.u} · ${c.g} г`'),'the counters card of the interface audit uses the same label');}
 runInContext("sportFoodEngine=null;SportWriterLock.embed=true;initSportFoodCounters()",c);assert.equal(g('sportFoodEngine'),null);
 console.log(JSON.stringify({passed:true,channelRequests:requests.length,legacyKeyKept:store.has(legacyKey),journalCopyUntouched:c.state.foodCounters===null,realCrypto:true,realNetworkCalls:0}));

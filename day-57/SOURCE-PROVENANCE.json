@@ -1,10 +1,10 @@
 {
- "release": "Happy Day Update 57.5",
+ "release": "Happy Day Update 57.7",
  "date": "2026-11-10",
  "source_release": "day-56 (Happy Day Update 56)",
  "source_commit": "9280726e7dd358d8ac436ffd99432874d82ba8e8",
  "source_app_version": "56",
- "destination_app_version": "57.5",
+ "destination_app_version": "57.7",
  "adaptations": [
   "day-journal-sync.js: live tabs — reconcile()/adoptExternal()/settle(): a journal written by another tab is adopted or three-way merged (HappyDayProfileData.merge) inside the journal lock; same-field tab conflicts resolve to the acting tab without a variant; triggers: facade change, focus/pageshow/visibilitychange, withLock, writeLocal",
   "day-journal-sync.js: sync line #day-sync-line under the account buttons; long status moved to the developer section; guest-recovery card shown only when guest records exist",
@@ -15,13 +15,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-57.html",
-   "size": 3689170,
-   "sha256": "be1b0b23a76654881ea24dcfde711d8721c869b10575d7b37eb5ce3bb88661c0"
+   "size": 3690474,
+   "sha256": "e4ac84e9f461549ac837ad91aebca0a185644b883f0415268f65ee6db6157041"
   },
   {
    "path": "README.md",
-   "size": 22662,
-   "sha256": "5bc01239b560d7902c58b216aaf5ab0a353f4a18a26a41ef925988a837e03402"
+   "size": 23387,
+   "sha256": "fae16150981d3562b98b19a49d5c27c1a85d7ecb42606469124ebba070113d19"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -155,8 +155,8 @@
   },
   {
    "path": "counters.js",
-   "size": 5817,
-   "sha256": "99a4255c5d492910fa74c0d3cd6c835832f526b9571f089327495fa65000319b"
+   "size": 6359,
+   "sha256": "80df8fc19734daf36975ffd5c17bd9a8a945b8641e142082ec8ba68789d300a6"
   },
   {
    "path": "day-account-data.js",
@@ -251,7 +251,7 @@
   {
    "path": "index.html",
    "size": 544631,
-   "sha256": "d942053b505f5a836c7943b13fbd55bddab3c8937e1c10646dab7224f64f82a3"
+   "sha256": "f73853d6a4c5caf9e84bfbc59381f737752869774f0fa8d277e799f71ee64135"
   },
   {
    "path": "manifest.webmanifest",
@@ -260,8 +260,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 24677,
-   "sha256": "389d4e9e50aaa663c8584bbdc6b501b0936b6e1328149adbf002e5cd36b938aa"
+   "size": 25111,
+   "sha256": "8cabe6078626dac109106ac8e583a3052242df991d052273d0d094348cc11515"
   },
   {
    "path": "section-wheel.css",
@@ -409,6 +409,11 @@
    "sha256": "986b1bfd9f03ce8172bc8b3e14a1b1528df4f4854a5d9410aaaba867b908d640"
   },
   {
+   "path": "tests/counter-portion.test.cjs",
+   "size": 2399,
+   "sha256": "a776524de8c76244cfa0e404ab2fed844eda7a139521c19fe0acc26bdf6d5186"
+  },
+  {
    "path": "tests/counters-eaten.test.cjs",
    "size": 10693,
    "sha256": "03d938b42848f78c1e0b1efe59500e15fcd03db1da62d75eb3c944d774608b5d"
@@ -517,6 +522,23 @@
     "counters.js: apply() calls SelfCare.mealChanged after the counters document changes",
     "shared/happy-summaries.js: meal.day(summary,date,counters), meal.serving, compact copy keeps cs and skipped (shared file, same bytes in Meal and Sport)",
     "tests/counters-eaten.test.cjs (new, 8 tests); tests/sport-summary.test.cjs follows mealLinkCopy",
+    "standalone Happy-Day-57.html rebuilt"
+   ]
+  },
+  {
+   "version": "57.6",
+   "date": "2026-11-11",
+   "changes": [
+    "published 11.11.2026 19:40 (main a8dd06b); details — CHANGELOG.md, entry Day 57.6 (this list was not updated at that time)"
+   ]
+  },
+  {
+   "version": "57.7",
+   "date": "2026-11-12",
+   "changes": [
+    "counters.js: the portion label of a shared counter comes from the Meal definition (portionText, Meal 29: a supplement counter shows «2 капсулы» without nominal grams); foods and definitions from older Meal as before (q u · g г); the tap message uses the same label",
+    "index.html: cache busters ?v=57.7, title and footer 57.7; release-notes.js: entry 57.7",
+    "tests/counter-portion.test.cjs (new, 3 tests)",
     "standalone Happy-Day-57.html rebuilt"
    ]
   }

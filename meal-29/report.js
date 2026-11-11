@@ -50,6 +50,10 @@
           values[f.key]=v==null||grams==null?null:v*grams/100;
         });
         out.push({date:d,section:names[item.sec]||item.sec||'Без раздела',sectionKey:item.sec||'',id:item.id||'',foodId:item.fid||'',name:food?food.n:(item.name||item.fid||'Неизвестный продукт'),grams:grams,quantity:finite(item.q),unit:item.u||'',time:/^([01]\d|2[0-3]):[0-5]\d$/.test(item.t||'')?item.t:'',manual:!!item.tm,source:food?(food.src||''):'нет данных',nutrientSource:nativeReference?(nativeReference.kind==='KAV'?'Happy Meal · Кавказская кухня':'BLS 4.0'):food&&food.catalogSource?(food.catalogSource==='USDA'?'USDA · SR Legacy · апрель 2018':food.catalogSource==='MEXT'?'MEXT · 2023, исправления 27.03.2026':food.catalogSource==='HM-UZ'&&food.sourceInfo?food.sourceInfo.source+' · оценка без калибровки потерь':'Happy Meal · расчёт по MEXT'):food&&food.composition?'Пользовательский состав · версия '+(food.revision||0):food&&food.b?(String(food.b).charAt(0)==='Z'?'Happy Meal · Кавказская кухня':'BLS 4.0'):'нет данных',code:food&&(food.catalogCode||food.b)||'',values:values,statuses:statuses,index:index});
+        // Meal 29: порция со счётчика добавки — строка добавки: состав этикетки на порцию, без условных граммов
+        var sc=root.MealSupplementCounters,sf=sc&&sc.of(food),sp=sf&&sc.portion(sf,item);
+        if(sp){var row=out[out.length-1],ss=sf.supplement;row.kind='supplement';row.grams=sp.grams;row.components=sp.components;row.unmapped=sp.components.filter(function(c){return !c.substanceId}).map(function(c){return Object.assign({},c)});row.issues=[];
+          row.source=ss.source||'Этикетка добавки · источник не указан';row.nutrientSource='Сохранённый состав добавки · версия '+(ss.revision||0)+' · счётчик';row.code='';row.foodId=ss.variantId||item.fid||'';}
       });
     });
     if(root.HappySupplementNutrition)out=out.concat(root.HappySupplementNutrition.nutritionRows(range,undefined,fs,db.sections));

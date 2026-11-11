@@ -1,12 +1,12 @@
 {
   "app": "Happy Sport",
-  "update": "40.4",
+  "update": "40.5",
   "source_release": "sport-39 (Happy Sport · Update 39.2) through the lab copy sport-lab/ (branch sport-lab, 10.11.2026)",
   "source_commit_of_update_39": "36006b27dc1eb472db23fc22365dec99464aef74",
   "source_commit_of_update_38": "b292b2b0b6b7f6660e1ca40152817d3cf2499160",
   "source_commit": "c94464d29767702f45f4df2026c5cdcc158cb3ee",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-40/",
-  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot; 38.7 (owner device 19:55: «резерв достиг лимита» with 3,53 MB used by all apps on the origin): the 4 MiB origin-wide budget is dropped — the ledger keeps its 3 MiB cap and the real browser quota is checked by the headroom probe; 2026-11-09 39 (owner 20:11 «Ты можешь это сделать? — Да»): journal-scale keys move from localStorage to IndexedDB through a synchronous facade (local-store.js) with verified migration; the 5 MB origin box shared with Day and Meal is no longer the limit of Sport; 39.1: live tabs — every tab writes, journals merge three ways between tabs (profile-store adopt/save), one automatic sync run per account (Web Lock ifAvailable), no writer lock, banner or blocked screen; 2026-11-10 39.2: sign-out waits for the journal; 2026-11-10 40 (owner 21:27 «в main выпускай под 40»): the lab — pull-up family with grip pills, placeholder picture, schedule form, one-tap finish, fact-only journal record, interface audit decisions (yes / discussed), history tab always present, journal switch as in Day and Meal",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot; 38.7 (owner device 19:55: «резерв достиг лимита» with 3,53 MB used by all apps on the origin): the 4 MiB origin-wide budget is dropped — the ledger keeps its 3 MiB cap and the real browser quota is checked by the headroom probe; 2026-11-09 39 (owner 20:11 «Ты можешь это сделать? — Да»): journal-scale keys move from localStorage to IndexedDB through a synchronous facade (local-store.js) with verified migration; the 5 MB origin box shared with Day and Meal is no longer the limit of Sport; 39.1: live tabs — every tab writes, journals merge three ways between tabs (profile-store adopt/save), one automatic sync run per account (Web Lock ifAvailable), no writer lock, banner or blocked screen; 2026-11-10 39.2: sign-out waits for the journal; 2026-11-10 40 (owner 21:27 «в main выпускай под 40»): the lab — pull-up family with grip pills, placeholder picture, schedule form, one-tap finish, fact-only journal record, interface audit decisions (yes / discussed), history tab always present, journal switch as in Day and Meal; 2026-11-12 40.5 (owner 02:00–02:01 «Выпустить все вместе», «доделать все и выпустить»): the portion label of a Meal 29 supplement counter comes from Meal",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -106,6 +106,7 @@
   "journal_sync_change": "40.1: mergeData device keys; verified() releases held auto-conflict into history",
   "account_change": "40.2: sign-up and the display name pass the transport boundary (readonly-guard.js, readonly-auth.js); journal sync code unchanged since 40.1",
   "summary_change": "40.3: workout summary (app=sport, kind=link) is the projection of the journal, stored under hd_link_sport_v1 in the account area and sent through a third narrow channel after the journal is confirmed (summary-exchange.js); Meal summary is read for the energy ring; journal sync code unchanged since 40.1",
+  "portion_label_change": "40.5: the portion label of a shared counter comes from the Meal definition (portionText, Meal 29: a supplement counter shows «2 капсулы» without nominal grams); foods and definitions from older Meal as before (q u · g g); no storage, cloud or summary changes",
   "counters_change": "40.4: counter servings reach the energy ring at once — the Meal summary (Meal 27.3, counters:1) names the servings already in the day total, the rest is added from the counters document on the device (shared/happy-summaries.js); the compact copy of the Meal summary moved to happy-energy-meal-v2:<owner>; the Meal summary is asked from the cloud as soon as the session is restored; no new cloud writes, journal sync code unchanged since 40.1",
   "release_files": [
     {
@@ -115,8 +116,8 @@
     },
     {
       "path": "README.md",
-      "size": 47966,
-      "sha256": "e4695df73c0bd49231ae76069a155cae4a8ff7915c932a19f5b2809bf17f42ce"
+      "size": 48391,
+      "sha256": "1528db16352b800bad03dd7eaae258748742de3eed9af53fd30654c35adb092e"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -180,8 +181,8 @@
     },
     {
       "path": "index.html",
-      "size": 1076010,
-      "sha256": "0f2284b4508e8a6c5f9ad162db61443632212214c1cb61d56a96e4cf3e98bb08"
+      "size": 1076863,
+      "sha256": "18b14515ae32fd544b7072939d8a9324978cd14c2a9f6eaaa85bbca80faa9d2c"
     },
     {
       "path": "manifest.webmanifest",
@@ -225,13 +226,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 4781,
-      "sha256": "e806266bfc46e8d28bc9b76d2edc980b93450d7fc8f43486909b62342bb03ce4"
+      "size": 5106,
+      "sha256": "e0f6000d155ce4cb906fb955420eb68e61c2bfd87390911f09b1a5a4602e224f"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 7365,
-      "sha256": "86da37e9fe028d50f7ace67e4a429b361bb5d5c02aa6e6f2779c0b65d3c799e1"
+      "size": 7857,
+      "sha256": "6ed22e61147bf9a30347ec4d8b269a59b9d911ad9cb63b82c134fa9f7471bf0f"
     },
     {
       "path": "shared/README.md",
@@ -331,7 +332,7 @@
     {
       "path": "sport/scripts/build.mjs",
       "size": 13778,
-      "sha256": "14aee0787197958019e8d49863b4ec9f463cf0835e3cdc034a067bb87e18e08d"
+      "sha256": "e71e377c135c5974407bd02bb39e79217cac77f77c89c8d2493be758928aa256"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
@@ -400,8 +401,8 @@
     },
     {
       "path": "sport/scripts/check-food-counters-sport.mjs",
-      "size": 7848,
-      "sha256": "541c84e8d0f4426e68ff10be530ded7f51d8fad3cee5456e15a699fecf572fb1"
+      "size": 9122,
+      "sha256": "dd47bfc0ab457e3fcbffc803de431ecd71760efa194ff8a4028cbadeb308047a"
     },
     {
       "path": "sport/scripts/check-free-timer.mjs",
@@ -635,8 +636,8 @@
     },
     {
       "path": "sport/src/audit-simplify.js",
-      "size": 16792,
-      "sha256": "80ac0960dbde75e14010388bc08fbff7bb570448ef24a1afd3398d739e0b09f5"
+      "size": 16895,
+      "sha256": "9a64a372097419a92ac81c9f8fea98ba80c8bfce9be161546e185513837af918"
     },
     {
       "path": "sport/src/automatic-sync-ui.js",
@@ -676,7 +677,7 @@
     {
       "path": "sport/src/data-transfer.js",
       "size": 18761,
-      "sha256": "b1e45a5b196f9152379ae32b8d8d4c8ebef6c81c1261c6690dd7d282ed3d5b32"
+      "sha256": "8d722d50e2c77c9a6361dd8d9273e945437f7c48eda086d432360f1ccba5b26d"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -735,8 +736,8 @@
     },
     {
       "path": "sport/src/food-counters.js",
-      "size": 8992,
-      "sha256": "7ee37ba2fb15c14f9832167738a4b434a62d2048a7b294895852c6cc5ba2843b"
+      "size": 9332,
+      "sha256": "b75d26f1fa0cb0b2792691332413a54dd667cff4788ebb6acc8ffdb02c537187"
     },
     {
       "path": "sport/src/free-timer.js",
@@ -860,8 +861,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 27291,
-      "sha256": "33827ce3bf5dced4b3bc0fa860128121a790c0ad656ec005acebd6dd3d90dd31"
+      "size": 27701,
+      "sha256": "90d4e1655b1b7a42814957a7114930445c1f611996bf28611e7d462c6c906c20"
     },
     {
       "path": "sport/src/rest-pill.js",

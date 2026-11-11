@@ -5,7 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day · Update 57.6 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.6 |
+| Happy Day · Update 57.7 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.7 |
 | Happy Day · Update 56 | `day-56/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-56/ | 56 |
 | Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
 | Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
@@ -19,7 +19,7 @@
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.4 |
+| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.5 |
 | Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.2 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
@@ -51,7 +51,9 @@
 
 **57.6 (11.11.2026 19:40, тот же каталог `day-57/`):** раздел дня сохраняется сам, у шкал и тегов своё время, прежнее значение шкалы — отметка в журнале; кнопка «Отметить самочувствие» — каждое «Сохранить» новая запись; при сведении версий побеждает поставленное позже; начало Завтрака, Обеда и Ужина — первый продукт из Meal.
 
-— Claude · 10.11.2026 01:28; 11.11.2026 11:41 (57.3); 15:48 (57.4); 16:18 (публикация); 17:33 (57.5); 17:43 (публикация); 19:24 (57.6); 19:40 (публикация)
+**57.7 (12.11.2026 ЧЧ:ММ, тот же каталог `day-57/`):** счётчики добавок из Meal 29 — подпись порции из описания счётчика (`portionText`): «2 капсулы» без условных граммов; у продуктов и у описаний из прежних Meal — как раньше. Хранение, облако и сводки не менялись.
+
+— Claude · 10.11.2026 01:28; 11.11.2026 11:41 (57.3); 15:48 (57.4); 16:18 (публикация); 17:33 (57.5); 17:43 (публикация); 19:24 (57.6); 19:40 (публикация); 12.11.2026 ЧЧ:ММ (57.7, публикация)
 
 ## Happy Day · Update 56 · 10.11.2026
 
@@ -97,7 +99,9 @@
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-29/ — **в ветке `meal-29`, не опубликовано**. Исходник — `meal-28/` (main `e308495`). БАДы из прототипа Михалыча и Астамура (H068, H072): каталог `supplements` в `meal-libraries` (31 шаблон, скачивается для работы без интернета), «Мои добавки» в «Сборниках», свои варианты и приёмы — документ аккаунта `app_sync` meal/supplements (`supplements-store.js`; журнал Meal не менялся), строки БАДов в дне, разделе, журнале, CSV и отчёте. Приём пищи открывает запись больше 4 ккал (вода, чёрный кофе, чай без сахара — никогда); БАДы — порошок больше 4 ккал за приём; «Голодание прервано» — первая запись с калориями. «Выгрузить дневник» — и с добавками. Сводка для Day и Sport — с калориями и БЖУ БАДов, формат прежний. Подробно — `meal-29/README.md`, хранение — `DATA-STORAGE.md`.
 
-— Claude · 12.11.2026 00:30; 01:35 (приём — по калориям записи; добавки в «Выгрузить дневник»)
+**Счётчики добавок** (Астамур 12.11 01:48): «Новый счётчик» находит свои добавки и шаблоны каталога; добавка в счётчике — запись еды с продуктом-добавкой `supp:<вариант>` (`supplement-counters.js`), состав на 100 условных граммов, граммы без известной массы не показываются; связь с Day 57.7 и Sport 40.5 — как у продуктов, подпись порции — `portionText`.
+
+— Claude · 12.11.2026 00:30; 01:35 (приём — по калориям записи; добавки в «Выгрузить дневник»); ЧЧ:ММ (счётчики добавок)
 
 ## Happy Meal · Update 28 · 11.11.2026
 
@@ -206,7 +210,9 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 
 **40.4 (11.11.2026 17:43, тот же каталог `sport-40/`):** порции со счётчиков попадают в «съедено» кольца энергии сразу после нажатия: итог из сводки Meal (27.3) дополняется нажатиями, которые Meal ещё не посчитал, по документу счётчиков устройства; изменение счётчиков перерисовывает кольцо. Короткая копия сводки Meal — под новым ключом `happy-energy-meal-v2:<аккаунт>`. Сводка Meal спрашивается у облака сразу после восстановления входа. Записей в облако не прибавилось. Проверка — `sport/scripts/check-energy.mjs` (группы 6–8).
 
-— Claude · 10.11.2026 21:40; 22:40 (40.1); 11.11.2026 11:41 (40.2); 15:48 (40.3); 16:18 (публикация); 17:33 (40.4); 17:43 (публикация)
+**40.5 (12.11.2026 ЧЧ:ММ, тот же каталог `sport-40/`):** счётчики добавок из Meal 29 — подпись порции из описания счётчика (`portionText`): «2 капсулы» без условных граммов (`food-counters.js`, карточка «Счётчики» в `audit-simplify.js`); у продуктов — как раньше. Хранение, облако и сводки не менялись.
+
+— Claude · 10.11.2026 21:40; 22:40 (40.1); 11.11.2026 11:41 (40.2); 15:48 (40.3); 16:18 (публикация); 17:33 (40.4); 17:43 (публикация); 12.11.2026 ЧЧ:ММ (40.5, публикация)
 
 ## Happy Sport · Update 39 · 09.11.2026
 

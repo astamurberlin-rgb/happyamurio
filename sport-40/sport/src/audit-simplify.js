@@ -167,7 +167,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action="li
 sportFoodHTML=function(){
  const rows=[...sportFoodDefinitions().map(d=>[d,true]),...(state.customCounters||[]).map(d=>[d,false])];
  if(!rows.length)rows.push([{id:'example-water',title:'Вода',unit:'стакан, 250 мл',events:[]},false]);
- const item=([c,shared])=>{const n=shared?sportFoodEvents(c.id).length:(c.events||[]).filter(e=>e.date===selectedDate).length,sub=shared?`${c.q} ${c.u} · ${c.g} г`:c.unit||'';
+ const item=([c,shared])=>{const n=shared?sportFoodEvents(c.id).length:(c.events||[]).filter(e=>e.date===selectedDate).length,sub=shared?sportPortionText(c):c.unit||'';   // 40.5: подпись порции из Meal (у добавки — без условных граммов)
   return `<div class="tpItem"><div class="tpNm"><b>${esc(c.title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div><div class="tpStp" role="group" aria-label="${esc(c.title)}"><button type="button" data-action="food-minus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Убрать: ${esc(c.title)}" ${n?'':'disabled'}>−</button><span class="v${n?'':' tpZero'}">${n}</span><button type="button" data-action="food-plus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Добавить: ${esc(c.title)}">+</button></div></div>`};
  return `<section id="sport-food-counters"><div class="card tpSec"><h2 class="tpT">Счётчики</h2>${rows.map(item).join('')}<button type="button" class="tpAdd" data-action="food-create"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Новый счётчик</button></div></section>`;
 };
