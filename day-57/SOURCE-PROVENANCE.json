@@ -1,10 +1,10 @@
 {
- "release": "Happy Day Update 57.2",
+ "release": "Happy Day Update 57.3",
  "date": "2026-11-10",
  "source_release": "day-56 (Happy Day Update 56)",
  "source_commit": "9280726e7dd358d8ac436ffd99432874d82ba8e8",
  "source_app_version": "56",
- "destination_app_version": "57.2",
+ "destination_app_version": "57.3",
  "adaptations": [
   "day-journal-sync.js: live tabs — reconcile()/adoptExternal()/settle(): a journal written by another tab is adopted or three-way merged (HappyDayProfileData.merge) inside the journal lock; same-field tab conflicts resolve to the acting tab without a variant; triggers: facade change, focus/pageshow/visibilitychange, withLock, writeLocal",
   "day-journal-sync.js: sync line #day-sync-line under the account buttons; long status moved to the developer section; guest-recovery card shown only when guest records exist",
@@ -15,13 +15,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-57.html",
-   "size": 3629086,
-   "sha256": "d33a2f995ecfcd71f191da5bc6d480aba312bef280fb73cf63546d0fd58b1e13"
+   "size": 3631210,
+   "sha256": "4e6914b3bb6a07a791837dc286dec851a47c856dfeec1346e03c3542530baa10"
   },
   {
    "path": "README.md",
-   "size": 18506,
-   "sha256": "ffb720c03f38ad24f0146e1d410965772b78aa935a76b04ea66ba2aa80a507aa"
+   "size": 19595,
+   "sha256": "5deba9da8ee9c9914993f6ac1f0498e74d84fd20e22a1c3742b3c094cee7bb25"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -160,8 +160,8 @@
   },
   {
    "path": "day-account-data.js",
-   "size": 6056,
-   "sha256": "0f0895114f05e62b2f50941aac2acc2c5c397282adfc1d9c53efab1891f5ddc3"
+   "size": 6185,
+   "sha256": "1cca2378302add9a0136a71ff5ba8e64e1ae553a89cf05c508899d4df8191c28"
   },
   {
    "path": "day-account-profile.js",
@@ -180,8 +180,8 @@
   },
   {
    "path": "day-journal-sync.js",
-   "size": 92193,
-   "sha256": "aa1d408fadcd5eb5941c4a7a410826e07dc83ed03124348009823034276897d1"
+   "size": 92197,
+   "sha256": "58c2306a24590d0ce5117eb36ea6807307c4796ee5413a0fc88e587c14900246"
   },
   {
    "path": "day-local-store.js",
@@ -250,8 +250,8 @@
   },
   {
    "path": "index.html",
-   "size": 538551,
-   "sha256": "d28066f7b5258f80583f0d0302d414de179a10ed403fe9db7304048da06a8911"
+   "size": 538675,
+   "sha256": "291c36bcbb24cd811e39e810ef3317a0d2534261cba3b8ac97f16fba96fe5036"
   },
   {
    "path": "manifest.webmanifest",
@@ -260,8 +260,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 20913,
-   "sha256": "1eb50b1a79e1b1650c668b9a3a2dd11b29871989411905af61c52349be5ee521"
+   "size": 21609,
+   "sha256": "dc39fd207c676e11c1c26c93f0d414ba931832f98a1cf9d8ed52356d6db9dd70"
   },
   {
    "path": "section-wheel.css",
@@ -275,8 +275,8 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 68472,
-   "sha256": "1cf1f3f26b26eed4b7cec3e6756927bc087fa9882a7d265dbf9cfa1ba59aa303"
+   "size": 69139,
+   "sha256": "f694fca3cbc18445794d2063f09794a31419adca8dfb515861b6a5c3dab11134"
   },
   {
    "path": "selfcare.css",
@@ -449,6 +449,17 @@
     "day-journal-sync.js: sync line under the account buttons «Подождите, идёт синхронизация…» instead of «Синхронизация…»",
     "shared/happy-ui.js: while «Выйти» waits for the cloud (confirmProfileForExit) the card shows «Подождите, идёт синхронизация…» instead of «Подожди…»",
     "cache busters ?v=57.2, footer and release note 57.2; standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.2"
+   ]
+  },
+  {
+   "version": "57.3",
+   "date": "2026-11-11",
+   "changes": [
+    "index.html: the backup reminder bkNag() is no longer called after load (Day 53 removed only the visibilitychange call)",
+    "day-journal-sync.js, day-account-data.js: the guest-records card and «Разные версии записей» are created in the developer section (#dayDeveloperSyncTools), not in the account section",
+    "selfcare-ui.js: «Открыть Sport ↗» on the Activity screen points to the current Sport release (data-happy-app=\"sport\", shared/happy-links.js); the test-build address of 04.11 is removed",
+    "tests/quiet-account.test.cjs: the three points above are pinned by a test",
+    "cache busters ?v=57.3, footer and release note 57.3; standalone Happy-Day-57.html rebuilt"
    ]
   }
  ]

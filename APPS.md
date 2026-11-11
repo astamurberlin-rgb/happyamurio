@@ -5,7 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day · Update 57.2 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.2 |
+| Happy Day · Update 57.3 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.3 |
 | Happy Day · Update 56 | `day-56/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-56/ | 56 |
 | Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
 | Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
@@ -17,7 +17,7 @@
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.1 |
+| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.2 |
 | Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.2 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
@@ -39,11 +39,11 @@
 
 ## Happy Day · Update 57 · 10.11.2026
 
-**57.2 (10.11.2026 11:30):** строка под «Выйти» — «Подождите, идёт синхронизация…». **57.1 (10.11.2026 10:55, тот же каталог `day-57/`):** свой тег при отметке самочувствия («Утро» и др.) записывается в сам раздел и не пропадает при снятии выбора (`SelfCare.addCheckinTag`).
+**57.3 (11.11.2026, тот же каталог `day-57/`):** напоминание о копии дневника при открытии не вызывается; «Разные версии записей» и «записи без входа» — в разделе «Для разработчика»; «Открыть Sport ↗» на экране «Активность» ведёт на текущий Sport (`data-happy-app="sport"`, адрес из `shared/apps.json`). Тест `day-57/tests/quiet-account.test.cjs`. **57.2 (10.11.2026 11:30):** строка под «Выйти» — «Подождите, идёт синхронизация…». **57.1 (10.11.2026 10:55, тот же каталог `day-57/`):** свой тег при отметке самочувствия («Утро» и др.) записывается в сам раздел и не пропадает при снятии выбора (`SelfCare.addCheckinTag`).
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-57/ . Исходник — `day-56/` (main `9280726`). Самостоятельный HTML: `day-57/Happy-Day-57.html`. Живые вкладки: журнал, записанный другой вкладкой, принимается или сливается без сообщений (`reconcile` в `day-journal-sync.js`). Шапка без статуса и кнопки настроек; состояние синхронизации — строка под кнопками аккаунта; «Связь обновлена» убрана. Исправлено ложное «Вход изменился в другой вкладке» (ошибка 56). Хранилище — как в 56. Проверки: `node --test day-57/tests/*.test.cjs` (46), общие проверки, смоук двух вкладок в headless Chrome.
 
-— Claude · 10.11.2026 01:28
+— Claude · 10.11.2026 01:28; 11.11.2026 11:25 (57.3)
 
 ## Happy Day · Update 56 · 10.11.2026
 
@@ -170,13 +170,13 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 
 ## Happy Sport · Update 40 · 10.11.2026
 
-**40.1 (10.11.2026 22:40, тот же каталог `sport-40/`):** настройки устройства (`floatingTimerEnabled`, `freeTimer`, `lastRestSeconds`, `demoPulse`) не останавливают синхронизацию журнала; улаженный автоматический конфликт освобождает резерв (`held` → `history`). Причина — случай 09–10.11: журнал не уходил в облако из-за разного положения переключателя «Плавающая кнопка таймера».
+**40.2 (11.11.2026, тот же каталог `sport-40/`):** первый этап снятия тестового режима (решение Астамура 11.11 11:08): в «Аккаунте» Sport работают «Создать аккаунт» и «Изменить имя», как в Day и Meal. Граница запросов `readonly-guard.js` пропускает регистрацию и смену имени (только `{data:{display_name}}` с токеном текущего входа); пароль и почта по-прежнему закрыты. Запись журнала и счётчиков не менялась; обмен замерами и сводкой, диктовка и внешние ссылки — следующие этапы. **40.1 (10.11.2026 22:40, тот же каталог `sport-40/`):** настройки устройства (`floatingTimerEnabled`, `freeTimer`, `lastRestSeconds`, `demoPulse`) не останавливают синхронизацию журнала; улаженный автоматический конфликт освобождает резерв (`held` → `history`). Причина — случай 09–10.11: журнал не уходил в облако из-за разного положения переключателя «Плавающая кнопка таймера».
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/sport-40/ . Собран из лаборатории — копии `sport-39/` (ветка `sport-lab`), в которую перед выпуском перенесены правки 39.2; основа — main `c94464d`. Исходники `sport-40/sport/src/`, сборка `node sport-40/scripts/build-release.mjs`, проверки `npm --prefix sport-40/sport run check`, `node sport-40/scripts/check-settings-layout.mjs`, `node sport-40/scripts/check-families.mjs <адрес>`, `node sport-40/scripts/verify-release.mjs`. Что нового — README выпуска и `CHANGELOG.md`: интерфейс по аудиту 10.11, семейство «Подтягивания» с вариантами хвата, расписание, завершение в одно нажатие, запись журнала только с фактом, переключатель журнала как в Day и Meal.
 
 Журнал, ключи хранения, аккаунт и облачный документ `sport/journal` — как в 39 (код синхронизации не менялся): записи из 39 открываются в 40 без переноса. Общие библиотеки: в `assets/exercise-library/v1/` добавлен `families.json`; новая папка `assets/exercise-media/v1/` — заглушка и места под картинки вариантов упражнений. `sport-39/` сохранён как прежний выпуск.
 
-— Claude · 10.11.2026 21:40; 22:40 (40.1)
+— Claude · 10.11.2026 21:40; 22:40 (40.1); 11.11.2026 11:25 (40.2)
 
 ## Happy Sport · Update 39 · 09.11.2026
 

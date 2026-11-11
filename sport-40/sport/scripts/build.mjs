@@ -73,7 +73,7 @@ const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappi
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 40.1'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 40.2'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}

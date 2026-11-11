@@ -5,7 +5,17 @@
  const backend='https://geqziziycpclhnucnsyx.supabase.co';
  const nativeFetch=root.fetch?.bind(root),NativeRequest=root.Request;
  if(!nativeFetch||!NativeRequest)throw Error('Браузер не поддерживает безопасный режим чтения');
- const allow=request=>{
+ /* Update 40.2: the shared display name, as in Day and Meal. PUT /auth/v1/user passes only with exactly
+    {data:{display_name}} (60 characters at most) and the token of the signed-in session; a password, an e-mail
+    or any other field is refused, so the key that decrypts the journal cannot be changed from here. */
+ const profileName=(u,m,keys,request,init)=>{
+  if(u.pathname!=='/auth/v1/user'||m!=='PUT'||keys.length)return false;
+  let body;try{body=JSON.parse(init&&init.body)}catch(_){return false}
+  if(!body||typeof body!=='object'||Object.keys(body).join(',')!=='data'||!body.data||typeof body.data!=='object'||Object.keys(body.data).join(',')!=='display_name'||typeof body.data.display_name!=='string'||body.data.display_name.length>60)return false;
+  const session=root.CL&&root.CL.s;
+  return !!session&&typeof session.at==='string'&&!!session.at&&request.headers.get('authorization')==='Bearer '+session.at;
+ };
+ const allow=(request,init)=>{
   const u=new URL(request.url),m=request.method.toUpperCase();
   if(u.username||u.password)throw Error(message);
   if(u.origin===backend){
@@ -13,7 +23,9 @@
    const authToken=u.pathname==='/auth/v1/token'&&m==='POST'&&keys.length===1&&keys[0]==='grant_type'&&['password','refresh_token'].includes(u.searchParams.get('grant_type'));
    const logout=u.pathname==='/auth/v1/logout'&&m==='POST'&&keys.length===1&&keys[0]==='scope'&&u.searchParams.get('scope')==='local';
    const read=(u.pathname==='/rest/v1/app_sync'||u.pathname==='/auth/v1/user')&&['GET','HEAD'].includes(m);
-   if(authToken||logout||read)return;
+   // Update 40.2: creating an account, as in Day and Meal — the plain sign-up call only, without parameters in the address.
+   const signup=u.pathname==='/auth/v1/signup'&&m==='POST'&&keys.length===0;
+   if(authToken||logout||read||signup||profileName(u,m,keys,request,init))return;
   }else if(u.origin===location.origin&&['GET','HEAD'].includes(m)&&/\.(json|svg|png|webp|jpg|css|js|woff2?)$/i.test(u.pathname)&&!/(?:auth|rest|api)/i.test(u.pathname))return;
   throw Error(message);
  };
@@ -21,7 +33,7 @@
   if(!NativeRequest||!nativeFetch)throw Error(message);
   const request=new NativeRequest(typeof input==='string'?new URL(input,location.href).href:input,{...init,redirect:'error'});
   if([...request.headers.keys()].some(k=>/^(x-http-method|x-method|x-http-method-override|x-method-override)$/i.test(k)))throw Error(message);
-  allow(request);return nativeFetch(request);
+  allow(request,init);return nativeFetch(request);
  }catch(e){return Promise.reject(e)}};
  Object.defineProperty(root,'fetch',{value:guardedFetch,writable:false,configurable:false});
  const blocked=function(){throw Error(message)};

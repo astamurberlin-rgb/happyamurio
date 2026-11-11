@@ -20,7 +20,7 @@ sportPreviewRestore=function(input){sportROPreviewContext=null;return sportROPre
 sportCloudBackup=async function(action){
  if(action!=='download'){sportTransferStatus(SportReadOnlyTest.message);return;}
  if(sportTransferBusy||sportROReading){sportTransferStatus('Дождись завершения чтения');return;}
- if(!clOn()){sportTransferStatus('Сначала войди существующим аккаунтом Happy');return;}
+ if(!clOn()){sportTransferStatus('Сначала войди в аккаунт Happy');return;}
  const uid=CL.s.uid,key=CL.ck,generation=clStoredGeneration();sportTransferBusy=true;
  try{
   sportJournalCheck(uid,key);const snapshot=await clGetVersion('sport','journal');sportJournalCheck(uid,key);

@@ -10,10 +10,14 @@ runInContext(guard+'\n'+auth+'\n'+fences,c);
 const run=s=>runInContext(s,c);
 const origin=run('CLOUD.url');
 for(const method of ['POST','PUT','PATCH','DELETE','OPTIONS']){await assert.rejects(run(`fetch('${origin}/rest/v1/app_sync',{method:'${method}',body:'{}'})`));await assert.rejects(run(`clRest('${method}','?app=eq.sport')`));}
-for(const path of ['/auth/v1/signup','/auth/v1/user','/rest/v1/rpc/write','/storage/v1/object/test','/auth/v1/recover'])await assert.rejects(run(`fetch('${origin}${path}',{method:'POST',body:'{}'})`));
+for(const path of ['/auth/v1/user','/rest/v1/rpc/write','/storage/v1/object/test','/auth/v1/recover','/auth/v1/admin/users','/auth/v1/signup?redirect_to=https://evil.invalid'])await assert.rejects(run(`fetch('${origin}${path}',{method:'POST',body:'{}'})`));
+for(const path of ['recover','admin/users','otp','verify','token?grant_type=id_token'])await assert.rejects(run(`clAuth('${path}',{})`));
 for(const app of ['sport','meal'])for(const kind of ['journal','link','measurements','counters'])await assert.rejects(run(`clPut('${app}','${kind}',{})`));
-await assert.rejects(run("clSignIn('fixture@example.invalid','synthetic','up')"));
 assert.equal(requests.length,0);
+// Update 40.2: account creation works as in Day and Meal — exactly one plain sign-up call; without a session in the answer it asks to confirm the e-mail.
+assert.equal(await run("clSignIn('fixture@example.invalid','synthetic-only-password','up','Fixture')"),'confirm');
+assert.equal(requests.length,1);assert.equal(requests[0].method,'POST');assert.match(requests[0].url,/auth\/v1\/signup$/);assert.equal(run('CL.s'),null);
+await assert.rejects(run("clSignIn('fixture@example.invalid','synthetic','recover')"));assert.equal(requests.length,1);requests.length=0;
 await run('clLoad()');assert.equal(requests.length,0);
 // Existing-account authentication reaches only the mock issuing service. No real account.
 response={access_token:'synthetic-at',refresh_token:'synthetic-rt',expires_in:3600,user:{id:'fixture-owner',email:'fixture@example.invalid'}};
@@ -21,8 +25,15 @@ await run("clSignIn('fixture@example.invalid','synthetic-only-password','in')");
 assert.equal(requests.length,1);assert.equal(requests[0].method,'POST');assert.match(requests[0].url,/auth\/v1\/token\?grant_type=password$/);
 response=[];await run("clRest('GET','?select=at&app=eq.sport&kind=eq.journal')");
 assert.equal(requests.at(-1).method,'GET');assert.ok(requests.every(r=>r.redirect==='error'));
-assert.doesNotMatch(run('HappyUI.account({})'),/register|edit-profile/);
-console.log('Passed: phase1 real-auth code against mock transport allows existing-account login and GET; rejects every data write verb/kind, signup and auth mutation before dispatch; redirects fail closed.');
+assert.match(run('HappyUI.account({})'),/data-happy="register"/);assert.match(run('HappyUI.account({})'),/data-happy="edit-profile"/);
+// Update 40.2: the shared display name — only {data:{display_name}} with the token of the signed-in session.
+const put=(body,headers={Authorization:'Bearer synthetic-at','Content-Type':'application/json'},query='')=>run(`fetch('${origin}/auth/v1/user${query}',{method:'PUT',headers:${JSON.stringify(headers)},body:${JSON.stringify(body)}})`);
+const before=requests.length;await put(JSON.stringify({data:{display_name:'Имя'}}));assert.equal(requests.length,before+1);assert.equal(requests.at(-1).method,'PUT');assert.match(requests.at(-1).url,/auth\/v1\/user$/);
+await put(JSON.stringify({data:{display_name:''}}));assert.equal(requests.length,before+2);
+for(const bad of [{password:'new-password'},{email:'other@example.invalid'},{data:{display_name:'x'},password:'p'},{data:{display_name:'x',role:'admin'}},{data:{display_name:'я'.repeat(61)}},{data:{display_name:7}},{data:null},[],null])await assert.rejects(put(JSON.stringify(bad)));
+await assert.rejects(put('not json'));await assert.rejects(put(JSON.stringify({data:{display_name:'x'}}),{Authorization:'Bearer other-token'}));await assert.rejects(put(JSON.stringify({data:{display_name:'x'}}),{}));await assert.rejects(put(JSON.stringify({data:{display_name:'x'}}),undefined,'?redirect=1'));
+assert.equal(requests.length,before+2);
+console.log('Passed: real-auth code against mock transport allows login, account creation, the display name and GET; rejects every data write verb/kind, password/e-mail changes and other auth mutations before dispatch; redirects fail closed.');
 // Run the original early-entry functions; callbacks captured before late wrappers
 // must route to the reader instead of reaching original mutation or shared merge code.
 let reads=0;

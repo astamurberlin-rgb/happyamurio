@@ -14,8 +14,21 @@ await check('journal GET',backend+'/rest/v1/app_sync?app=eq.sport&kind=eq.journa
 await check('journal HEAD',backend+'/rest/v1/app_sync',{method:'HEAD'},true);
 await check('static relative','../sport/data/seed.json',{},true);
 for(const method of ['POST','PATCH','PUT','DELETE','OPTIONS'])await check('blocked data '+method,backend+'/rest/v1/app_sync',{method},false);
-for(const path of ['/auth/v1/signup','/auth/v1/recover','/auth/v1/admin/users','/rest/v1/app_sync/','/rest/v1/rpc/app_sync','/rest/v1/%61pp_sync'])await check('blocked '+path,backend+path,{method:'POST'},false);
+for(const path of ['/auth/v1/recover','/auth/v1/admin/users','/rest/v1/app_sync/','/rest/v1/rpc/app_sync','/rest/v1/%61pp_sync'])await check('blocked '+path,backend+path,{method:'POST'},false);
+// Update 40.2: account creation and the display name, as in Day and Meal — nothing wider.
+await check('signup',backend+'/auth/v1/signup',{method:'POST',body:'{"email":"synthetic@example.invalid","password":"dummy"}'},true);
+await check('signup with a parameter',backend+'/auth/v1/signup?redirect_to=https://evil.invalid',{method:'POST',body:'{}'},false);
+await check('signup GET',backend+'/auth/v1/signup',{},false);
+await check('profile PUT without a session',backend+'/auth/v1/user',{method:'PUT',headers:{Authorization:'Bearer synthetic-at'},body:'{"data":{"display_name":"x"}}'},false);
+sandbox.CL={s:{at:'synthetic-at'}};
 await check('profile PUT',backend+'/auth/v1/user',{method:'PUT'},false);
+await check('profile name',backend+'/auth/v1/user',{method:'PUT',headers:{Authorization:'Bearer synthetic-at'},body:'{"data":{"display_name":"Имя"}}'},true);
+await check('profile password',backend+'/auth/v1/user',{method:'PUT',headers:{Authorization:'Bearer synthetic-at'},body:'{"password":"new"}'},false);
+await check('profile name plus password',backend+'/auth/v1/user',{method:'PUT',headers:{Authorization:'Bearer synthetic-at'},body:'{"data":{"display_name":"x"},"password":"new"}'},false);
+await check('profile e-mail',backend+'/auth/v1/user',{method:'PUT',headers:{Authorization:'Bearer synthetic-at'},body:'{"email":"other@example.invalid"}'},false);
+await check('profile foreign token',backend+'/auth/v1/user',{method:'PUT',headers:{Authorization:'Bearer other'},body:'{"data":{"display_name":"x"}}'},false);
+await check('profile POST',backend+'/auth/v1/user',{method:'POST',headers:{Authorization:'Bearer synthetic-at'},body:'{"data":{"display_name":"x"}}'},false);
+sandbox.CL=undefined;
 await check('duplicate grant',backend+'/auth/v1/token?grant_type=password&grant_type=refresh_token',{method:'POST'},false);
 await check('global logout',backend+'/auth/v1/logout?scope=global',{method:'POST'},false);
 await check('foreign origin','https://evil.invalid/rest/v1/app_sync',{},false);

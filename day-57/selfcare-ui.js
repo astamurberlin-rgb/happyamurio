@@ -4,7 +4,12 @@ const C=root.HappyCare;
 const titles={mind:'Осознанность',mood:'Отметить самочувствие',diary:'Дневник',activity:'Активность'};
 const icons={mood:'+',mind:'<svg viewBox="0 0 24 24"><path d="M12 20V12M12 16C4 17 3 10 3 5c6 0 9 4 9 9M12 14c0-7 3-10 9-10 0 7-2 11-9 11"/></svg>',diary:'<svg viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v15h15v-7M7 8h5M7 12h3M14 11l6-6 2 2-6 6-3 1z"/></svg>'};
 icons.activity='<span class="aiko-activity-icon"></span>';
-const STRONG_URL='https://sport-auth-readonly-20261104.amuramore.chatgpt.site/';
+/* 57.3: «Открыть Sport ↗» ведёт на текущий выпуск Sport. Адрес подставляет shared/happy-links.js из shared/apps.json
+   (как у кнопки «Happy Sport» в настройках); ниже — запасной, если список выпусков не загрузился. Раньше здесь стоял
+   адрес тестовой сборки от 04.11. */
+const STRONG_URL='https://astamurberlin-rgb.github.io/happyamurio/sport-40/';
+let strongLinks=null;
+function strongLink(){try{if(!root.HappyLinks)return;strongLinks=strongLinks||root.HappyLinks.load();strongLinks.then(function(apps){if(apps)root.HappyLinks.apply(apps)})}catch(e){}}
 const h=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const $=id=>document.getElementById(id);
 const num=v=>(Math.round(v*10)/10).toLocaleString('ru-RU');
@@ -325,7 +330,8 @@ function activityFacts(){
 function paintEnergy(){const el=$('careEnergy');if(el)el.innerHTML=HappyDayEnergy.render(activityFacts(),data().activitySettings.mode,data().activitySettings.scale);}
 function renderActivity(){
  const c=data(),a=C.activity(c,curDate);
- block('activity').innerHTML=header('Активность')+'<section class="card happy-energy" id="careEnergy" aria-label="Энергия и активность"></section><div class="eyebrow">Расписание</div>'+a.plans.map(p=>'<div class="card"><b>'+h(p.start.slice(11,16))+' · '+h(p.title)+'</b><p class="care-help">'+p.minutes+' мин · '+(a.workouts.some(w=>w.templateId===p.templateId&&w.plannedStart===p.start)?'выполнено':'план')+'</p>'+(p.note?'<p class="care-long">'+h(p.note)+'</p>':'')+'</div>').join('')+(a.plans.length?'':empty('На этот день тренировок в расписании нет.'))+'<div class="card"><h2>Happy Strong</h2><p class="care-help">Sport открывается отдельно. Войди тем же аккаунтом; переход сам по себе не переносит записи.</p><a class="btn solid care-external" href="'+STRONG_URL+'" target="_blank" rel="noopener">Открыть Sport ↗</a></div>';
+ block('activity').innerHTML=header('Активность')+'<section class="card happy-energy" id="careEnergy" aria-label="Энергия и активность"></section><div class="eyebrow">Расписание</div>'+a.plans.map(p=>'<div class="card"><b>'+h(p.start.slice(11,16))+' · '+h(p.title)+'</b><p class="care-help">'+p.minutes+' мин · '+(a.workouts.some(w=>w.templateId===p.templateId&&w.plannedStart===p.start)?'выполнено':'план')+'</p>'+(p.note?'<p class="care-long">'+h(p.note)+'</p>':'')+'</div>').join('')+(a.plans.length?'':empty('На этот день тренировок в расписании нет.'))+'<div class="card"><h2>Happy Strong</h2><p class="care-help">Sport открывается отдельно. Войди тем же аккаунтом; переход сам по себе не переносит записи.</p><a class="btn solid care-external" href="'+STRONG_URL+'" data-happy-app="sport" target="_blank" rel="noopener">Открыть Sport ↗</a></div>';
+ strongLink();
  paintEnergy();
 }
 function strongSettings(){const s=data().strong;
