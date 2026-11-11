@@ -3,7 +3,8 @@
 раздела (порошок 114 ккал — открывает приём, 08:15), рыбий жир «без приёма» через «Мои добавки» (капсулы — приём не
 открывают, но прерывают голодание, 07:00). В облаке — отдельная строка meal/supplements, шифр без открытого текста;
 журнал Meal не трогается. Устройство B — Meal: после входа видны оба приёма и свой вариант; правка количества уходит
-в облако и приходит на A. Устройство B — Day: «съедено» с калориями БАДов, завтрак отмечен, время — 08:15."""
+в облако и приходит на A. Устройство B — Day: «съедено» с калориями БАДов, завтрак отмечен, время — 08:15.
+В конце на A: «Выгрузить дневник» — в файле и добавки; «Загрузить» → «Дополнить» возвращает их, «Вернуть» — как было."""
 from common import *
 
 out, errors, checks = {}, [], []
@@ -149,6 +150,26 @@ with sync_playwright() as p:
     out["B_day_eaten"] = he(day, "careEnergy", "съедено")
     check("Day: в кольце «съедено» — 191", out["B_day_eaten"] and out["B_day_eaten"]["big"].replace(" ", " ").replace(" ", "") == "191")
     day.locator("#careEnergy").screenshot(path=SHOTS + "meal_supplements-3-day-eaten.png")
+
+    # ── «Выгрузить / Загрузить дневник» с добавками (A, в конце — чтобы не задеть проверки Day) ──
+    exported = meal.evaluate("()=>new Promise(r=>{window.jrShareBlob=(name,blob)=>blob.text().then(t=>r({name,text:t}));bkExport()})")
+    backup = json.loads(exported["text"])
+    sup = backup.get("supplements") or {}
+    check("«Выгрузить дневник»: в файле и добавки — 2 приёма со снимком состава, 2 варианта", sup.get("schema") == "happy.meal.supplements.v1" and len(sup.get("entries", [])) == 2 and len(sup.get("variants", [])) == 2 and all(e.get("snapshot") and e.get("portion") for e in sup["entries"]))
+    meal.evaluate("()=>MealSupplementsStore.importState({schema:'happy.meal.supplements.v1',variants:[],entries:[],favoriteIds:[]},'replace')")
+    check("перед загрузкой добавок на A нет", meal.evaluate(ENTRIES) == [])
+    meal.evaluate("(t)=>bkPreview(t)", exported["text"])
+    out["bk_summary"] = meal.evaluate("()=>document.getElementById('bkSummary').textContent")
+    check("при загрузке видно, сколько в файле добавок и сколько новых", "Добавки: 2 приёмов и 2 вариантов, новых приёмов: 2." in out["bk_summary"])
+    with meal.expect_navigation(timeout=30000):
+        meal.locator("#bkMerge").click()
+    wait_for(meal, lambda: meal.evaluate("()=>typeof MealSupplementsStore!=='undefined'&&MealSupplementsStore.ready()&&!!document.querySelector('#toast .tU')"), 25)
+    check("«Дополнить без дублей»: добавки из файла снова на месте", sorted(e[0] for e in meal.evaluate(ENTRIES)) == sorted(e["name"] for e in sup["entries"]))
+    with meal.expect_navigation(timeout=30000):
+        meal.locator("#toast .tU").click()
+    wait_for(meal, lambda: meal.evaluate("()=>typeof MealSupplementsStore!=='undefined'&&MealSupplementsStore.ready()"), 25)
+    meal.wait_for_timeout(800)
+    check("«Вернуть»: добавки — как перед загрузкой", meal.evaluate(ENTRIES) == [])
 
     out["writes"] = sorted(set(str(r.get("kind")) for r in log if r["method"] in ("POST", "PATCH") and r["path"] == "/rest/v1/app_sync"))
     check("в облако пишутся только meal/journal, meal/link, meal/supplements и строки Day", all(k in ("meal/journal", "meal/link", "meal/supplements", "meal/counters") or str(k).startswith("day/") for k in out["writes"]))

@@ -152,6 +152,21 @@ const F=await device('user-1','F'),SF=F.MealSupplementsStore;await SF.write(d=>{
 const writesF=log.filter(l=>!l.startsWith('GET')).length;
 F.clRest=async(...a)=>{const r=await rest(...a);if(a[0]==='GET')F.clOn=()=>false;return r};
 await SF.sync();assert.match(SF.status(),/^error/);assert.equal(log.filter(l=>!l.startsWith('GET')).length,writesF,'после выхода — ни одной записи в облако');
+/* 10в. «Выгрузить / Загрузить дневник»: в файле — все добавки; «Дополнить» — только новые, своё не меняется;
+   «Заменить всё» — как в файле; испорченное в файле не принимается; «Вернуть» — состояние до загрузки */
+{const G=await device('user-3','G'),SG=G.MealSupplementsStore,file=JSON.parse(JSON.stringify(S.exportState()));
+ assert.equal(file.schema,'happy.meal.supplements.v1');assert.equal(file.entries.length,S.state().entries.length);assert.ok(file.entries.every(e=>e.snapshot&&e.portion),'в файле — приёмы со снимком состава и порцией');
+ await SG.write(d=>{d.entries.push(intake(fish,1,'basis','2026-11-20','08:00','am'));d.variants.push(fish)});const before=SG.exportState();
+ const st=await SG.importState(file,'merge');assert.equal(st.added,file.entries.length,'дополнение: все приёмы файла новые');
+ assert.equal(SG.state().entries.length,file.entries.length+1,'своя запись осталась');assert.equal(SG.state().variants.filter(v=>v.id===fish.id).length,1,'вариант не задвоился');
+ const mine=file.entries[0].id;await SG.write(d=>{const r=d.entries.find(x=>x.id===mine);r.portion=plain(M.portion(r.snapshot,7,'basis'))});
+ await SG.importState(file,'merge');assert.equal(SG.state().entries.length,file.entries.length+1,'повторное дополнение без дублей');
+ assert.equal(SG.state().entries.find(x=>x.id===mine).portion.quantity,7,'дополнение не меняет свою правку совпадающей записи');
+ await SG.importState(file,'replace');assert.deepEqual(SG.state().entries.map(e=>e.id).sort(),file.entries.map(e=>e.id).sort(),'заменить — как в файле');
+ await SG.importState(before,'replace');assert.deepEqual(SG.state().entries.map(e=>e.id),before.entries.map(e=>e.id),'вернуть — как было');
+ const bad=JSON.parse(JSON.stringify(file));bad.entries[0].portion={quantity:1,measure:'нет',basisUnits:1};const kept=G.storage.get(SG.key());
+ await assert.rejects(SG.importState(bad,'merge').then(()=>SG.importState(bad,'replace')),/Мера/);assert.equal(G.storage.get(SG.key()),kept,'испорченный файл ничего не меняет');
+ assert.throws(()=>SG.previewImport({schema:'другое'},'merge'),/другого формата/);assert.throws(()=>SG.previewImport({...file,entries:[file.entries[0],file.entries[0]]},'merge'),/повторяются/);}
 /* 11. другой аккаунт на том же устройстве — свой документ */
 const E=await device('user-2','E');assert.deepEqual(E.MealSupplementsStore.state().entries,[]);
 assert.ok(log.every(l=>/meal\/supplements$/.test(l)),'обмен только со строкой meal/supplements');

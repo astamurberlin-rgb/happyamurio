@@ -19,7 +19,7 @@ function validate(db){
  if(n){if(!object(n))throw Error('Повреждён архив питания');for(const k of ['daily','servings'])if(n[k]!=null&&(!Array.isArray(n[k])||n[k].some(x=>!object(x))))throw Error('Повреждён архив питания')}
  return db;
 }
-function parse(input){const o=typeof input==='string'?JSON.parse(input):copy(input);safe(o);if(!object(o))throw Error('Это не копия дневника Happy Meal');if(o.app&&o.app!=='happy-meal')throw Error('Это копия другого приложения, не Happy Meal');if(o.v!=null&&o.v!==1)throw Error('Обнови Happy Meal: версия файла пока не поддерживается');const db=copy(o.db||o);validate(db);if(o.profile)db.backupProfile=copy(o.profile);return {db:db,at:o.at||null}}
+function parse(input){const o=typeof input==='string'?JSON.parse(input):copy(input);safe(o);if(!object(o))throw Error('Это не копия дневника Happy Meal');if(o.app&&o.app!=='happy-meal')throw Error('Это копия другого приложения, не Happy Meal');if(o.v!=null&&o.v!==1)throw Error('Обнови Happy Meal: версия файла пока не поддерживается');const db=copy(o.db||o);validate(db);if(o.profile)db.backupProfile=copy(o.profile);return {db:db,at:o.at||null,supplements:object(o.supplements)?copy(o.supplements):null}}   // Meal 29: добавки — рядом с дневником
 // Existing scalar values win. Arrays without IDs use a multiset union, so two equal servings remain two servings.
 function fill(current,incoming,path){
  if(current==null)return copy(incoming);if(incoming==null)return copy(current);

@@ -1619,7 +1619,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="eyebrow"><span>Разделы</span></div>
     <div id="setSecs" class="mlSet"></div>
     <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить раздел</button></div>
-    <p class="note">Время и калории каждого приёма пищи, включая перекусы и свои разделы, появляются в журнале Happy Day сами. Время приёма — время первого продукта: продукт раньше сдвигает начало всего приёма. Часы в шапке меняют время всех продуктов раздела, часы в карточке — одного продукта. Приём пищи открывает то, в чём больше 4 ккал на 100 г или 100 мл: вода, чёрный кофе и чай без сахара — нет, компот или чай с сахаром — да. БАДы: порошки больше 4 ккал за приём открывают, капсулы и таблетки — нет, но прерывают голодание. Завтрак, обед и ужин связаны с одноимёнными разделами Day; пустой раздел там отмечается как пропущенный приём. Эти разделы можно переименовать, но не убрать. Карандаш — название и иконка. Минус убирает свой раздел, если в нём нет записей.</p>
+    <p class="note">Время и калории каждого приёма пищи, включая перекусы и свои разделы, появляются в журнале Happy Day сами. Время приёма — время первого продукта: продукт раньше сдвигает начало всего приёма. Часы в шапке меняют время всех продуктов раздела, часы в карточке — одного продукта. Приём пищи открывает запись, в которой больше 4 ккал: кофе с молоком, чай с сахаром, компот — да; вода, чёрный кофе и чай без сахара — никогда. БАДы: порошки больше 4 ккал за приём открывают, капсулы и таблетки — нет, но прерывают голодание. Завтрак, обед и ужин связаны с одноимёнными разделами Day; пустой раздел там отмечается как пропущенный приём. Эти разделы можно переименовать, но не убрать. Карандаш — название и иконка. Минус убирает свой раздел, если в нём нет записей.</p>
 
     <div class="eyebrow"><span>Счётчики</span></div>
     <div id="setTaps" class="mlSet"></div>
@@ -1629,7 +1629,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="eyebrow"><span>Мои продукты</span></div>
     <div class="happy-actions" style="margin-bottom:12px"><button class="happy-button" id="addOwnProduct">Создать свой продукт</button></div>
     <div id="setFoods" class="mlSet"></div>
-    <p class="note">Создай свой продукт с нуля или копию из карточки продукта. Карандаш открывает состав, название и свойства. Приём пищи открывает продукт больше 4 ккал на 100 г или 100 мл; если калорийность не указана — еда открывает, напиток нет. Источники встроенных продуктов указаны ниже и в карточках.</p>
+    <p class="note">Создай свой продукт с нуля или копию из карточки продукта. Карандаш открывает состав, название и свойства. Приём пищи открывает запись больше 4 ккал; продукт не больше 4 ккал на 100 г или 100 мл — никогда; если калорийность не указана — еда открывает, напиток нет. Источники встроенных продуктов указаны ниже и в карточках.</p>
 
     <div class="eyebrow"><span>Каталоги</span></div>
     <div id="mealSources"><p class="note">Источники: BLS 4.0 · MEXT · расчёты Happy Meal.</p></div>
@@ -1643,7 +1643,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="eyebrow"><span>Аккаунт и синхронизация</span></div>
     <div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" id="mealDeveloperSync">Обновить связь</button></div><p class="happy-note">Перечитать профиль и облачный дневник вручную. Обычно не нужно: обмен идёт сам после входа.</p></div>
     <div class="eyebrow"><span>Резервная копия</span></div>
-    <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button><button class="happy-button" id="bkIn">Загрузить дневник</button></div><input type="file" id="bkFile" accept="application/json,.json" hidden><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты и рецепты. На телефоне выбери «Сохранить в Файлы». При загрузке выбери дополнение без дублей или полную замену. Архив Cronometer тоже сохраняется. Перед импортом создаётся копия для отмены.</p><p class="happy-note" id="bkWhen"></p><button class="happy-button" id="bkRestore" hidden>Вернуть дневник до загрузки</button></div>
+    <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button><button class="happy-button" id="bkIn">Загрузить дневник</button></div><input type="file" id="bkFile" accept="application/json,.json" hidden><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты, рецепты и добавки (БАДы). На телефоне выбери «Сохранить в Файлы». При загрузке выбери дополнение без дублей или полную замену. Архив Cronometer тоже сохраняется. Перед импортом создаётся копия для отмены.</p><p class="happy-note" id="bkWhen"></p><button class="happy-button" id="bkRestore" hidden>Вернуть дневник до загрузки</button></div>
     <!--PHOTO-->
     <div class="eyebrow"><span>Обложки подборок</span></div>
     <div class="mlMeals" id="setCover" role="group" aria-label="Обложки подборок"></div>
@@ -3115,15 +3115,17 @@ function mlTimeRestart(input,ev){
   if(input.selectionStart!==input.selectionEnd||String(input.value||'').replace(/[^0-9]/g,'').length<4)return false;
   input.value='';return true;
 }
-/* Meal 29 (решение Астамура 11.11.2026): приём пищи открывает только то, в чём есть калории, — больше 4 ккал
-   на 100 г или 100 мл (в правилах ЕС «без калорий» — не больше 4 ккал на 100 мл). Вода, чёрный кофе, чай без сахара
-   приём не открывают; компот, чай с сахаром, кофе с молоком — открывают, хоть это и напитки. Калорийность продукта
-   неизвестна — как раньше: еда открывает, напиток нет. БАДы — по приёму: больше 4 ккал за приём и порошок или
-   жидкость (протеин, коллаген); капсулы и таблетки приём не открывают, но голодание прерывают (рыбий жир). Свой
-   вариант может переопределить правило (supplement-nutrition.js, opensMeal). Голодание прерывает первая запись,
-   которая открывает приём, или БАД больше 4 ккал за приём. */
+/* Meal 29 (решения Астамура 11.11.2026 и 12.11.2026 01:25 «по калориям считать»): приём пищи открывает запись,
+   в которой больше 4 ккал, — напиток это или нет: кофе с молоком, чай с сахаром, компот открывают. Продукт без
+   калорий — не больше 4 ккал на 100 г или 100 мл (в правилах ЕС «без калорий» — не больше 4 ккал на 100 мл): вода,
+   чёрный кофе, чай без сахара — не открывает никогда, хоть литр. Масса записи неизвестна — решает продукт;
+   калорийность продукта неизвестна — как раньше: еда открывает, напиток нет. БАДы — по приёму: больше 4 ккал за
+   приём и порошок или жидкость (протеин, коллаген); капсулы и таблетки приём не открывают, но голодание прерывают
+   (рыбий жир). Свой вариант может переопределить правило (supplement-nutrition.js, opensMeal). Голодание прерывает
+   первая запись, которая открывает приём, или БАД больше 4 ккал за приём. */
 function mlFoodKcal(x){var f=MealProducts.forItem(x,FOODS,DB)||FOODS[x.fid],k=f&&f.k;return typeof k==='number'&&isFinite(k)&&k>=0?k:null}
-function mlOpensFood(x){var k=mlFoodKcal(x);return k!=null?k>4:!isDrink(x.fid)}
+function mlEntryKcal(x){var k=mlFoodKcal(x),g=x&&x.g;return k!=null&&typeof g==='number'&&isFinite(g)&&g>=0?k*g/100:null}
+function mlOpensFood(x){var k=mlFoodKcal(x);if(k==null)return !isDrink(x.fid);if(k<=4)return false;var e=mlEntryKcal(x);return e==null||e>4}
 function mlOpens(x){return x&&x.sup?!!x.sup.opensMeal:mlOpensFood(x)}
 function mlNotOpening(fid,x){return !mlOpens(x||{fid:fid})}
 function mlBreaksFast(x){return x&&x.sup?!!x.sup.breaksFast:mlOpensFood(x)}
@@ -3316,13 +3318,13 @@ async function clAfterIn(){ await MealJournal.sync();
   if(window.MealSupplementsStore) try{ await Promise.race([MealSupplementsStore.sync(),new Promise(function(r){ setTimeout(r,8000) })]) }catch(e){}
   try{ CL_LAST=linkSummary();clQueue() }catch(e){} erSportPoll(); return clPush() }
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden'&&CL_DIRTY) clPush() });
-/* свой продукт: еда или напиток. Meal 29: приём пищи открывает калорийность (больше 4 ккал на 100 мл), отметка «напиток»
-   решает только у продукта без калорийности */
+/* свой продукт: еда или напиток. Meal 29: приём пищи открывает запись больше 4 ккал, отметка «напиток» решает только
+   у продукта без калорийности */
 function editFoodKind(i){
   var f=(DB.foods||[])[i]; if(!f) return;
   var dr=!!f.drink;
-  confirmBox(dr?'«'+f.n+'» сейчас напиток. Приём пищи он всё равно откроет, если в нём больше 4 ккал на 100 мл. Считать едой?'
-              :'Считать «'+f.n+'» напитком? Приём пищи откроет только напиток больше 4 ккал на 100 мл — как компот или чай с сахаром.',
+  confirmBox(dr?'«'+f.n+'» сейчас напиток. Если у него указаны калории, приём пищи откроет запись больше 4 ккал. Считать едой?'
+              :'Считать «'+f.n+'» напитком? Если калории указаны, приём пищи всё равно откроет запись больше 4 ккал — как компот или чай с сахаром.',
              dr?'Это еда':'Это напиток').then(function(ok){
     if(!ok) return;
     f.drink=!dr; rebuildLib(); save(); renderSettings();
@@ -4486,21 +4488,35 @@ function renderAll(){
   if(chatOpen()) renderChat();
 }
 /* резервная копия дневника файлом — как «Выгрузить JSON» в HappyDay */
-var BK_PREV='hdm_db_prev_v1', BK_UNDO='hdm_bk_undo';
+var BK_PREV='hdm_db_prev_v1', BK_UNDO='hdm_bk_undo', BK_SUPP_PREV='hdm_supp_prev_v1';
+/* Meal 29 (Астамур 12.11.2026: все свои данные человек может скачать): в файле дневника — и добавки: свои варианты,
+   приёмы со снимком состава, звёзды (MealSupplementsStore.exportState). Прежние выпуски это поле пропускают.
+   Загрузка: «Дополнить» — только новые добавки, «Заменить всё» — как в файле; в файле без добавок свои не трогаются.
+   «Вернуть» возвращает и добавки (BK_SUPP_PREV — состояние перед последней загрузкой, {none:true} — не менялись). */
+function bkSupp(){ return window.MealSupplementsStore&&MealSupplementsStore.ready()?MealSupplementsStore:null }
+async function bkSuppRestore(guard){
+  var raw=await rawGet(BK_SUPP_PREV);guard();var prev=raw?JSON.parse(raw):null;
+  if(!prev||!prev.schema)return;var S=bkSupp();if(!S)throw Error('Добавки ещё загружаются — повтори через секунду');
+  await S.importState(prev,'replace');guard();
+}
 function bkDays(db){ var n=0; Object.keys((db&&db.days)||{}).forEach(function(d){ if(((db.days[d]||{}).items||[]).length) n++ }); return n }
 function bkDate(t){ var d=new Date(t); return isNaN(d)?'':d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) }
 function bkPaint(){ var el=document.getElementById('bkWhen'); if(el) el.textContent=DB.bkAt?'Последняя выгрузка — '+bkDate(DB.bkAt)+'.':'Выгрузок ещё не было.'; rawGet(BK_PREV).then(function(p){document.getElementById('bkRestore').hidden=!p}) }
 function bkExport(){
   DB.bkAt=Date.now();
-  var data={app:'happy-meal',v:1,at:new Date(DB.bkAt).toISOString(),days:bkDays(DB),db:DB,profile:DB.backupProfile};
+  var data={app:'happy-meal',v:1,at:new Date(DB.bkAt).toISOString(),days:bkDays(DB),db:DB,profile:DB.backupProfile},S=bkSupp();
+  if(S) data.supplements=S.exportState();
   jrShareBlob('happy-meal-'+todayISO()+'.json',new Blob([JSON.stringify(data)],{type:'application/json'}),'application/json','Копия дневника передана');
   save(); bkPaint();
 }
 var bkPending=null,bkBusy=false;
 function bkClose(){if(bkBusy)return;bkPending=null;var w=document.getElementById('bkDialog');w.classList.remove('on');w.hidden=true;document.getElementById('bkIn').focus()}
 function bkPreview(o){
-  bkPending=MealBackup.parse(o);var n=MealBackup.summary(bkPending.db),m,mergeError='';try{m=MealBackup.merge(DB,bkPending.db)}catch(e){mergeError=e.message;m={stats:{added:0,duplicates:0,conflicts:0}}}document.getElementById('bkMerge').disabled=!!mergeError;
-  document.getElementById('bkSummary').textContent='В файле: '+n.items+' записей за '+n.days+' дней. Новых записей: '+m.stats.added+'. Уже есть: '+m.stats.duplicates+'.'+(m.stats.conflicts?' Текущие правки сохранятся: '+m.stats.conflicts+'.':'')+(n.archiveDays?' Архив Cronometer: '+n.archiveDays+' дней, '+n.archiveServings+' порций.':'')+(mergeError?' Дополнение недоступно: '+mergeError:'');
+  bkPending=MealBackup.parse(o);var n=MealBackup.summary(bkPending.db),m,mergeError='',sp='';try{m=MealBackup.merge(DB,bkPending.db)}catch(e){mergeError=e.message;m={stats:{added:0,duplicates:0,conflicts:0}}}
+  if(bkPending.supplements){var S=bkSupp();try{if(!S)throw Error('добавки ещё загружаются');var st=S.previewImport(bkPending.supplements,'merge');sp=' Добавки: '+st.entries+' приёмов и '+st.variants+' вариантов, новых приёмов: '+st.added+'.'}catch(e){mergeError=mergeError||e.message;sp=' Добавки не прочитались: '+e.message+'.'}}
+  else sp=' Добавок в файле нет — твои добавки останутся как есть.';
+  document.getElementById('bkMerge').disabled=!!mergeError;document.getElementById('bkReplace').disabled=!!(bkPending.supplements&&/не прочитались/.test(sp));
+  document.getElementById('bkSummary').textContent='В файле: '+n.items+' записей за '+n.days+' дней. Новых записей: '+m.stats.added+'. Уже есть: '+m.stats.duplicates+'.'+(m.stats.conflicts?' Текущие правки сохранятся: '+m.stats.conflicts+'.':'')+(n.archiveDays?' Архив Cronometer: '+n.archiveDays+' дней, '+n.archiveServings+' порций.':'')+sp+(mergeError?' Дополнение недоступно: '+mergeError:'');
   var w=document.getElementById('bkDialog');w.hidden=false;w.classList.add('on');document.getElementById('bkMerge').focus();
 }
 async function bkStore(key,value){
@@ -4513,8 +4529,14 @@ async function bkApply(mode){
   try{guard=HappyProfile.fence();guard();
     var next=mode==='merge'?MealBackup.merge(DB,bkPending.db).db:bkPending.db;
     if(mode==='replace'){var confirmed=await confirmBox('Заменить весь дневник данными из файла? Текущий дневник сохранится для отмены.','Заменить всё');guard();if(!confirmed)return;}
-    guard();next=MealJournal.prepare(next);MealJournal.pause();paused=true;clearTimeout(saveT);
-    await bkStore(BK_PREV,JSON.stringify(DB));guard();await bkStore(K.db,JSON.stringify(next));guard();
+    /* добавки — до дневника: не вышло — ничего не меняется; дневник не сохранился — добавки возвращаются как были */
+    var S=bkSupp(),suppPrev=null;if(bkPending.supplements&&!S)throw Error('Добавки ещё загружаются — повтори через секунду');
+    if(bkPending.supplements){suppPrev=S.exportState();await S.importState(bkPending.supplements,mode);guard()}
+    try{
+      guard();next=MealJournal.prepare(next);MealJournal.pause();paused=true;clearTimeout(saveT);
+      await bkStore(BK_SUPP_PREV,JSON.stringify(suppPrev||{none:true}));guard();
+      await bkStore(BK_PREV,JSON.stringify(DB));guard();await bkStore(K.db,JSON.stringify(next));guard();
+    }catch(e){if(suppPrev)try{await S.importState(suppPrev,'replace')}catch(x){}throw e}
     try{sessionStorage.setItem(HappyProfile.key(BK_UNDO),'1')}catch(e){}
     guard();location.reload();
   }catch(e){jrToastLong('Не получилось загрузить: '+e.message)}finally{bkBusy=false;if(paused)MealJournal.resume()}
@@ -4528,6 +4550,7 @@ async function bkRestore(){
   if(bkBusy)return;var guard,paused=false;bkBusy=true;
   try{guard=HappyProfile.fence();var prev=await rawGet(BK_PREV);guard();if(!prev)return;
     var confirmed=await confirmBox('Вернуть дневник, сохранённый перед последним импортом?','Вернуть');guard();if(!confirmed)return;
+    await bkSuppRestore(guard);   // Meal 29: и добавки — как были перед загрузкой
     var restored=MealJournal.prepare(MealBackup.parse(prev).db);MealJournal.pause();paused=true;clearTimeout(saveT);
     await bkStore(K.db,JSON.stringify(restored));guard();location.reload();
   }catch(e){jrToastLong('Не получилось вернуть: '+e.message)}finally{bkBusy=false;if(paused)MealJournal.resume()}
@@ -4547,6 +4570,7 @@ function bkAfterLoad(){
   toast('Дневник загружен из копии',async function(){
     if(bkBusy)return;var paused=false;bkBusy=true;
     try{guard();var prev=await rawGet(BK_PREV);guard();if(!prev)return;
+      await bkSuppRestore(guard);
       var restored=MealJournal.prepare(MealBackup.parse(prev).db);MealJournal.pause();paused=true;clearTimeout(saveT);
       await bkStore(K.db,JSON.stringify(restored));guard();location.reload();
     }catch(e){jrToastLong(e.message)}finally{bkBusy=false;if(paused)MealJournal.resume()}

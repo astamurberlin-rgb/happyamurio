@@ -56,8 +56,8 @@
   },
   {
    "path": "README.md",
-   "size": 31249,
-   "sha256": "f490ad5df9a0878a59e9bb958ef46e8c519b24a1ecedd0216eeefd69d113fc31"
+   "size": 32427,
+   "sha256": "948a95d7b6d54a7e33dcf1365710515f1e47b55d09736a0f6d8c34e61184876a"
   },
   {
    "path": "account-ui.js",
@@ -216,8 +216,8 @@
   },
   {
    "path": "backup-model.js",
-   "size": 5735,
-   "sha256": "259ab20b9f405a208bc444eacd485826eb568459e86bc412d23d757e258e5bfb"
+   "size": 5860,
+   "sha256": "eade39a5b5161085520c1cefbe84ad458aaeda282d2d2371b40027992ec54567"
   },
   {
    "path": "catalog-offline.js",
@@ -256,8 +256,8 @@
   },
   {
    "path": "checks/check-meal-first-time.mjs",
-   "size": 13641,
-   "sha256": "f637eb66fc47a245b661a848e643590948fcadb6cc288b97dfefda687209710e"
+   "size": 15662,
+   "sha256": "75af12d892646aa655786261a517d9ab0c88b503937db46c8b54e0d8445c98d2"
   },
   {
    "path": "checks/check-search-names.mjs",
@@ -281,8 +281,8 @@
   },
   {
    "path": "checks/check-supplements-store.mjs",
-   "size": 16918,
-   "sha256": "38cafd44b0bef7ab080b6075ff441e582d172363bdb7baeb3a5c0b3e6c156186"
+   "size": 19569,
+   "sha256": "11cf3b4af132ec209ed704c6512ee8410b1e422f3ebcd87814ac99eaa4c9862d"
   },
   {
    "path": "collections.css",
@@ -326,8 +326,8 @@
   },
   {
    "path": "index.html",
-   "size": 633325,
-   "sha256": "e22659e92c8c2f2646ef365fdb59fc1a728a52ca3760216db37eb3ca11f4d67e"
+   "size": 636593,
+   "sha256": "350c06e2acd0849e1ca5598d5caa49e6174a4ff238939f9ddf18f8e3428a91fe"
   },
   {
    "path": "journal-model.js",
@@ -511,8 +511,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 25540,
-   "sha256": "501ecd805e9316c9b34577bb992f32379c897de1b40981b13575cdfe96e01ad6"
+   "size": 25644,
+   "sha256": "e557cacfed228862225cbe303e193c5e23d69c5cf934622aa2be4486be2b7891"
   },
   {
    "path": "report.css",
@@ -1821,8 +1821,8 @@
   },
   {
    "path": "supplements-store.js",
-   "size": 16766,
-   "sha256": "59a4a3ba5d8894a4a95505d03a7838fa044770521a7519d323611f04eaf97b63"
+   "size": 19544,
+   "sha256": "f667676b6348bd1ff82af2dd5c8b872b96ecfc70ba50a8ad4363c0f53c87a03c"
   },
   {
    "path": "supplements.css",

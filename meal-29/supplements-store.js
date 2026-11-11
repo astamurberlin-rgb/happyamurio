@@ -88,7 +88,28 @@ function patch(before,after,doc,writer,now){
  }
  return {v:1,owner:doc.owner,records};
 }
-const model={empty,check,merge,visible,view,materialize,flatten,patch,stable,hash,compare,measureOf};
+/* «Выгрузить / Загрузить дневник» (решение Астамура 12.11.2026: все свои данные человек может скачать): добавки
+   в файле — вид прототипа целиком: варианты, приёмы со снимком состава и порцией, звёзды. Дополнить — только новые
+   (по id), своё не меняется; заменить — как в файле. */
+const EXPORT='happy.meal.supplements.v1';
+function exportView(s){return {schema:EXPORT,variants:copy(s.variants),entries:copy(s.entries),favoriteIds:copy(s.favoriteIds)}}
+function readImport(x){
+ if(!object(x)||x.schema!==EXPORT||!Array.isArray(x.variants)||!Array.isArray(x.entries)||!Array.isArray(x.favoriteIds))throw Error('Добавки в файле другого формата');
+ safe(x);
+ for(const v of x.variants)if(!object(v)||typeof v.id!=='string'||!RX.test('variant:'+v.id))throw Error('В файле повреждён вариант добавки');
+ for(const e of x.entries)if(!object(e)||typeof e.id!=='string'||!RX.test('entry:'+e.id)||!DATE.test(e.date)||!object(e.snapshot)||!object(e.portion))throw Error('В файле повреждена запись добавки');
+ for(const id of x.favoriteIds)if(typeof id!=='string'||!RX.test('fav:'+id))throw Error('В файле повреждена звезда добавки');
+ const ids=a=>new Set(a.map(y=>y.id)).size===a.length;if(!ids(x.variants)||!ids(x.entries))throw Error('В файле повторяются добавки');
+ return copy(x);
+}
+function plan(current,incoming,mode){
+ const x=readImport(incoming);
+ if(mode==='replace')return {state:{schema:1,variants:x.variants,entries:x.entries,favoriteIds:x.favoriteIds},stats:{variants:x.variants.length,entries:x.entries.length,added:x.entries.length,addedVariants:x.variants.length}};
+ const v=new Set(current.variants.map(a=>a.id)),e=new Set(current.entries.map(a=>a.id)),f=new Set(current.favoriteIds);
+ const nv=x.variants.filter(a=>!v.has(a.id)),ne=x.entries.filter(a=>!e.has(a.id)),nf=x.favoriteIds.filter(id=>!f.has(id));
+ return {state:{schema:1,variants:current.variants.concat(nv),entries:current.entries.concat(ne),favoriteIds:current.favoriteIds.concat(nf)},stats:{variants:x.variants.length,entries:x.entries.length,added:ne.length,addedVariants:nv.length}};
+}
+const model={empty,check,merge,visible,view,materialize,flatten,patch,stable,hash,compare,measureOf,exportView,readImport,plan,EXPORT};
 /* ── на устройстве и в облаке ── */
 let owner=null,key=null,writer=null,doc=null,state=materialize(empty('local')),ready=false,busy=false,again=false,timer=null,status='';
 const listeners=new Set();
@@ -189,7 +210,9 @@ async function flush(ms=15000){
  }
  return status==='synced';
 }
-root.MealSupplementsStore={init,write,sync,flush,state:()=>copy(state),ready:()=>ready,onChange:f=>{listeners.add(f);return ()=>listeners.delete(f)},status:()=>status,document:()=>doc?copy(doc):null,model,key:()=>key};
+async function importState(incoming,mode){let stats=null;await write(d=>{const p=plan(d,incoming,mode);d.variants=p.state.variants;d.entries=p.state.entries;d.favoriteIds=p.state.favoriteIds;stats=p.stats});return stats}
+root.MealSupplementsStore={init,write,sync,flush,state:()=>copy(state),ready:()=>ready,
+ exportState:()=>exportView(state),importState,previewImport:(incoming,mode)=>plan(state,incoming,mode).stats,onChange:f=>{listeners.add(f);return ()=>listeners.delete(f)},status:()=>status,document:()=>doc?copy(doc):null,model,key:()=>key};
 /* запуск Meal уже прошёл место, где начинается документ добавок (журнал готов), а этот файл загрузился позже — начать сейчас */
 if(root.MEAL_SUPPLEMENTS_GO)try{init()}catch(e){}
 })(globalThis);
