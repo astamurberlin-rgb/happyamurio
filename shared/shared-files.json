@@ -20,6 +20,15 @@
       ]
     },
     {
+      "name": "happy-summaries.js",
+      "reference": "shared/happy-summaries.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
       "name": "happy-settings-developer.js",
       "reference": "shared/happy-settings-developer.js",
       "apps": [

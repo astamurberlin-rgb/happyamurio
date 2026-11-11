@@ -1,55 +1,42 @@
 /* Reuse Happy's account and encrypted app_sync protocol. Local summaries work offline. */
 let sportCloudBusy=false,sportSyncTimer,sportSyncError='',sportLastCloud=0;
+/* Update 40.3: the summary is the projection of this journal's workouts. The full journal is synchronised between
+   devices now, so nothing is merged in from an older summary any more (that could bring back workouts the journal
+   no longer has). It is stored where Happy Meal and Happy Day look for it — the key `hd_link_sport_v1` in the
+   account area of this profile (HappySummaries.key; the guest keeps the plain key) — and only when it has changed.
+   The Update 37 copy under `auth_readonly_hd_link_sport_v1` is not written any more and is left in place.
+   A failed local write is retried with the next save and is not reported: the journal itself is unaffected.
+   On this device the journal is the authority: whatever lies under the key and says something else (an older cloud
+   copy that Meal or Day stored there) is replaced. A copy with the same workouts — the cloud row Meal or Day fetched
+   after this very summary was sent, it differs only by its time — is left alone, so the apps do not rewrite each other.
+   sportLinkWritten — the current summary as text (summary-exchange.js sends exactly this text to the cloud). */
+let sportLinkWritten=null,sportLinkSame=null;
+function sportLinkKey(owner=SportProfiles.owner){return HappySummaries.key(HappySummaries.sport.key,owner||'local')}
 function writeSportLink(){
   if(SPORT_MEASURE_EMBED)return null;
   try{SportProfiles.assertOwner()}catch{return null;}
   state.sportLink=sportTrack(state.workouts,state.sportLink);
-  const owner=state.sportOwner||'local';let cached=null;try{cached=JSON.parse(localStorage.getItem(SPORT_LINK_KEY))}catch{}
-  const summary={...sportMerge(cached?.owner===owner?cached:null,state.sportLink),owner};
-  try{localStorage.setItem(SPORT_LINK_KEY,JSON.stringify(summary))}catch{sportSyncError='Не удалось сохранить сводку тренировок на устройстве'}
-  window.dispatchEvent(new Event('happy-sport-link'));
+  const owner=SportProfiles.owner||'local',key=sportLinkKey(owner);
+  const summary={v:1,app:'sport',at:state.sportLink.at,owner,records:state.sportLink.records};
+  const raw=JSON.stringify(summary),changed=raw!==sportLinkWritten;
+  sportLinkWritten=raw;if(changed)sportLinkSame=null;
+  let stored=null;try{stored=localStorage.getItem(key)}catch{}
+  if(stored!==raw&&(stored===null||stored!==sportLinkSame)){
+    const other=stored===null?null:HappySummaries.parse(stored);
+    if(other&&other.owner===owner&&HappySummaries.sport.same(other,summary))sportLinkSame=stored;
+    else{try{localStorage.setItem(key,raw)}catch{}}
+  }
+  if(changed)window.dispatchEvent(new Event('happy-sport-link'));
   return summary;
 }
 persist=function(){writeSportLink();oldPersist();clearTimeout(sportSyncTimer);sportSyncTimer=setTimeout(syncSportCloud,1200)};
-async function putSportConditional(summary,expected){
-  const uid=CL.s.uid,key=CL.ck;const guard=()=>{SportProfiles.assertOwner();clAssertContext(uid,key)};guard();
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const data=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:clAad('sport','link')},key,clUtf(JSON.stringify(summary))));
-  guard();
-  const row={user_id:uid,app:'sport',kind:'link',v:1,iv:clB64(iv),data:clB64(data),at:summary.at};
-  const result=expected==null
-    ?await clRest('POST','?on_conflict=user_id,app,kind',row,'resolution=ignore-duplicates,return=representation',false,uid,guard)
-    :await clRest('PATCH','?app=eq.sport&kind=eq.link&at=eq.'+expected,row,'return=representation',false,uid,guard);
-  return !!result?.length;
-}
+/* Every trigger goes to the journal scheduler: automatic-sync-ui.js replaces this function at start-up.
+   Update 40.3: the direct summary writer that used to live here (putSportConditional, an unconditional merge with the
+   cloud copy) is removed — it could not run since Update 37 and wrote through the generic transport. The workout
+   summary is sent by summary-exchange.js through its own narrow channel. */
 async function syncSportCloud(){
   if(globalThis.SportReadOnlyTest)return sportROReadJournal();
-  if(SPORT_MEASURE_EMBED||!CL.ready||sportCloudBusy)return;
-  if(sportJournalAccountChanged()||!clOn())return;
-  if(state.sportOwner&&state.sportOwner!==CL.s.uid){sportSyncError='Эти записи связаны с другим аккаунтом Happy. Войди в него для синхронизации.';paintHappyAccount();return}
-  sportCloudBusy=true;sportSyncError='';paintHappyAccount();
-  const uid=CL.s.uid;
-  try{
-    if(!await syncSportJournal())return;
-    if(CL.s?.uid!==uid)return;
-    for(let attempt=0;attempt<4;attempt++){
-      // Read timestamp on both sides of decrypt to detect another writer before CAS.
-      const before=await clAt('sport','link'),remote=await clGet('sport','link'),after=await clAt('sport','link');
-      if(before!==after)continue;
-      if(CL.s?.uid!==uid)throw new Error('Аккаунт изменился — повтори синхронизацию');
-      if(remote&&(remote.v!==1||!Array.isArray(remote.records)))throw new Error('Неизвестный формат сводки Sport');
-      const local=writeSportLink(),merged=sportMerge(remote,local);
-      merged.owner=uid;merged.at=Math.max(Date.now(),(after||0)+1,merged.at);
-      if(!await putSportConditional(merged,after))continue;
-      // Store the separate combined summary without importing incomplete workouts into the journal.
-      localStorage.setItem(SPORT_LINK_KEY,JSON.stringify(merged));
-      if(CL.s?.uid!==uid)return;
-      sportLastCloud=Date.now();CL.last=sportLastCloud;clStore();window.dispatchEvent(new Event('happy-sport-link'));
-      return;
-    }
-    throw new Error('Записи изменились на другом устройстве. Повтори синхронизацию.');
-  }catch(e){sportSyncError=e.message||'Не удалось передать сводку'}
-  finally{sportCloudBusy=false;paintHappyAccount()}
+  return false;
 }
 function paintHappyAccount(){
   const box=$('#happy-account');if(!box)return;
@@ -68,8 +55,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSportC
 writeSportLink();oldPersist();
 clLoad().then(async()=>{if(sportJournalAccountChanged())return;paintHappyAccount();await syncSportCloud();
   if(sportRequestedId&&!state.workouts.some(w=>w.id===sportRequestedId)){
-    let cached=null;try{cached=JSON.parse(localStorage.getItem(SPORT_LINK_KEY))}catch{}
-    const record=cached?.owner===(CL.s?.uid||'local')?cached.records?.find(r=>r.id===sportRequestedId&&!r.deleted):null;
+    let cached=null;try{cached=HappySummaries.parse(localStorage.getItem(sportLinkKey()))}catch{}
+    const record=cached?.owner===(CL.s?.uid||'local')&&HappySummaries.sport.valid(cached)?cached.records.find(r=>HappySummaries.sport.live(r)&&r.id===sportRequestedId):null;
     openSheet(record?.title||'Тренировка',record?`<div class="card"><b>${esc(dateLabel(record.start.slice(0,10)))}</b><p>${esc(record.start.slice(11,16))} — ${esc(record.end.slice(11,16))} · ${esc(durationText(record.duration))}</p></div><p class="sheet-info">Сводка получена из Happy Sport на другом устройстве. Полной копии этой тренировки пока нет в аккаунте. Открой Sport на исходном устройстве и дождись синхронизации полного журнала.</p>`:'<p class="sheet-info">Этой тренировки нет на устройстве. Возможно, запись удалена или ещё не синхронизирована.</p>');
   }
 });

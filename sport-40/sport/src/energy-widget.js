@@ -151,26 +151,65 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
   }
 
 
-const owner=()=>typeof CL!=='undefined'&&CL.s?CL.s.uid:'local';
+/* Update 40.3: «съедено» приходит из Happy Meal. Два источника, побеждает более свежая сводка:
+   1) сводка Meal на этом устройстве — тот же сайт и та же область аккаунта (HappySummaries.key);
+   2) после входа — облачная строка meal/link, только чтение: сначала сверяется время, сама сводка
+      скачивается, если она новее сохранённой.
+   На устройстве остаётся короткая копия — калории и БЖУ по дням — под ключом
+   `auth-readonly-happy-energy-meal-v1:<аккаунт>`. Сводка другого аккаунта или гостя не принимается.
+   «Потрачено», покой и шаги Sport пока не считает (решение владельца 11.11.2026: позже, вместе с расчётом
+   энергии тренировок); поля в виджете и в сводке для них уже есть. */
+const owner=()=>typeof SportProfiles!=='undefined'&&SportProfiles.owner||'local';
 const sharedKey=()=> 'auth-readonly-happy-energy-meal-v1:'+owner();
-let remoteMeal=null;
-function date(){return meal?curDate:selectedDate}
-function mealCache(){try{const o=JSON.parse(localStorage.getItem(sharedKey()));return o?.owner===owner()&&o.v===1&&o.days?o:null}catch{return null}}
-function nutrition(){if(meal){const d=day(curDate),tot=sumOf(d.items);return {...tot,g:DB.goals||{},recorded:d.items.length>0}}const local=mealCache(),remote=remoteMeal?.owner===owner()?remoteMeal:null;const o=!local?remote:!remote||Number(local.at)>=Number(remote.at)?local:remote;return o?{k:0,p:0,f:0,c:0,...o.days[date()],g:o.goals||{}}:null}
-function mealPayload(o){return JSON.stringify({v:o.v,secs:o.secs,days:o.days,goals:o.goals||{}})}
-function enrichedMealSummary(original){const sum=original();sum.owner=owner();sum.goals={...(DB.goals||{})};for(const d of new Set([...Object.keys(DB.days||{}),curDate]))if(!sum.days[d])sum.days[d]={k:0,p:0,f:0,c:0};const previous=mealCache();sum.at=previous&&mealPayload(previous)===mealPayload(sum)?previous.at:Math.max(Date.now(),Number(previous?.at||0)+1);return sum}
-function acceptMeal(o,uid){if(owner()!==uid||o?.v!==1||!o.days)return;const local=mealCache();if(local&&Number(local.at)>Number(o.at||0))return;remoteMeal={...o,owner:uid};localStorage.setItem(sharedKey(),JSON.stringify(remoteMeal))}
-function facts(){const food=nutrition();let workouts=[];if(!meal)workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());else try{const o=JSON.parse(localStorage.getItem('auth_readonly_hd_link_sport_v1'));if(o?.owner===owner())workouts=(o.records||[]).filter(w=>!w.deleted&&w.start?.slice(0,10)===date())}catch{}return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
+const mealLinkKey=()=>HappySummaries.key(HappySummaries.meal.key,owner());
+function date(){return selectedDate}
+let mealMemo={key:null,raw:null,value:null},mealLocalSeen='',mealCloudBusy=false;
+function mealCache(){
+ const key=sharedKey();let raw=null;try{raw=localStorage.getItem(key)}catch{}
+ if(key!==mealMemo.key||raw!==mealMemo.raw){const o=HappySummaries.parse(raw);mealMemo={key,raw,value:o&&o.owner===owner()&&HappySummaries.meal.valid(o)?o:null}}
+ return mealMemo.value;
+}
+function nutrition(){const o=mealCache();if(!o)return null;const d=HappySummaries.meal.day(o,date());return d?{k:d.k,p:d.p,f:d.f,c:d.c,fib:d.fib,g:o.goals||{},recorded:d.recorded}:null}
+function acceptMeal(o,uid){
+ if(owner()!==uid||!HappySummaries.meal.valid(o)||o.owner!==uid)return false;
+ const local=mealCache();if(local&&local.at>=o.at)return false;
+ try{localStorage.setItem(sharedKey(),JSON.stringify(o))}catch{return false}
+ return true;
+}
+function readLocalMeal(){
+ const uid=owner();let raw=null;try{raw=localStorage.getItem(mealLinkKey())}catch{}
+ if(!raw)return false;
+ const seen=uid+'|'+raw.length+'|'+raw.slice(0,96);if(seen===mealLocalSeen)return false;mealLocalSeen=seen;
+ const full=HappySummaries.parse(raw);
+ if(!HappySummaries.meal.valid(full)||(full.owner!==undefined&&full.owner!==uid))return false;
+ return acceptMeal(HappySummaries.meal.compact(full,uid),uid);
+}
+async function readCloudMeal(){
+ const uid=owner();
+ if(mealCloudBusy||uid==='local'||typeof clOn!=='function'||!clOn()||CL.s?.uid!==uid||(typeof navigator!=='undefined'&&navigator.onLine===false))return false;
+ mealCloudBusy=true;
+ try{
+  const at=await clAt('meal','link');
+  if(owner()!==uid||CL.s?.uid!==uid||!Number.isSafeInteger(at)||at<=0)return false;
+  const local=mealCache();if(local&&local.at>=at)return false;
+  const full=await clGet('meal','link');
+  if(owner()!==uid||CL.s?.uid!==uid||!HappySummaries.meal.valid(full))return false;
+  return acceptMeal(HappySummaries.meal.compact(full,uid),uid);
+ }catch{return false}
+ finally{mealCloudBusy=false}
+}
+function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
 function number(v){return v==null?'—':Math.round(v).toLocaleString('ru-RU')}
 const hues={pink:350,violet:305,blue:262,teal:180};
 function metricRow(color,name,value,unit,goal,progress){const h=hues[color],tone=(l)=>lchHex(l,.12,h*Math.PI/180);const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?number(value)+(g?'/'+number(g):'')+(unit?' '+unit:''):'—';return `<div class="he-metric"><i class="he-dot" style="background:${tone(.8)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(.86)},${tone(.72-.16*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
 function widget(){const f=facts(),g=f.food?.g||{};S.bal=mode==='balance';S.knob=mode==='balance'?(meal?'eat':'spent'):mode;const missing=mode==='balance'?(f.eaten==null||f.spent==null):f[mode==='eat'?'eaten':'spent']==null;let svg=ringSvg(config,f.eaten||0,f.spent||0,1.5,'Кольцо энергии');if(missing)svg=svg.replace(/<b>[^<]*<\/b>/,'<b>—</b>');let rows='';if(mode==='eat')rows=metricRow('pink','Белки',f.food?.p,'г',g.p)+metricRow('violet','Жиры',f.food?.f,'г',g.f)+metricRow('blue','Углеводы',f.food?.c,'г',g.c)+metricRow('teal','Клетчатка',f.food?.fib,'г',g.fib);else if(mode==='spent')rows=metricRow('violet','Покой',f.rest,'ккал')+metricRow('pink','Тренировки',f.training,'ккал')+metricRow('blue','Шаги',f.steps,'')+metricRow('teal','Время',f.minutes,'мин');else{const d=f.eaten!=null&&f.spent!=null?f.eaten-f.spent:null;rows=metricRow('teal',d!=null&&d>0?'Сжечь':'Запас',d==null?null:Math.abs(d),'ккал')+metricRow('blue','Шаги до цели',null,'')+metricRow('violet','Ходьба',null,'мин')+metricRow('pink','Белка до цели',Number(g.p)>0&&f.food?.p!=null?Math.max(0,Number(g.p)-f.food.p):null,'г')}
 return '<div class="he-layout"><div class="he-plate">'+svg+'<button type="button" class="he-center" data-energy-cycle aria-label="Сменить режим энергии. Сейчас: '+(mode==='eat'?'съедено':mode==='spent'?'потрачено':'баланс')+'"></button></div><div class="he-info">'+rows+'</div></div>'}
-function paint(){const el=document.getElementById(meal?'mlKb':'happy-energy');if(el){el.classList.add('happy-energy');el.innerHTML=widget()}}
-function publishMeal(){if(!meal)return;try{const sum=linkSummary();localStorage.setItem(sharedKey(),JSON.stringify(sum))}catch{}}
-async function refresh(){if(globalThis.SportReadOnlyTest){paint();return}if(meal){publishMeal();paint();return}if(typeof clOn==='function'&&clOn()&&CL.ck){try{const uid=owner(),o=await clGet('meal','link');acceptMeal(o,uid)}catch{}}paint()}
-if(meal){const originalSummary=linkSummary;linkSummary=function(){return enrichedMealSummary(originalSummary)}}
-if(meal){const original=renderDay;renderDay=function(){const r=original.apply(this,arguments);publishMeal();paint();return r};}else{const original=renderDiary;renderDiary=function(){const root=document.createElement('div');root.innerHTML=original();const old=root.querySelector('.energy');if(old)old.outerHTML='<section class="card happy-energy" id="happy-energy">'+widget()+'</section>';return root.innerHTML};render()}
-document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=meal?['eat','balance','spent']:['spent','balance','eat'];mode=modes[(modes.indexOf(mode)+1)%3];paint()}});
-window.addEventListener('storage',()=>{remoteMeal=null;paint()});window.addEventListener('pageshow',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});setInterval(()=>{if(!document.hidden)refresh()},30000);refresh();
+function paint(){const el=document.getElementById('happy-energy');if(el){el.classList.add('happy-energy');el.innerHTML=widget()}}
+function refresh(){readLocalMeal();paint();readCloudMeal().then(changed=>{if(changed)paint()})}
+{const original=renderDiary;renderDiary=function(){const root=document.createElement('div');root.innerHTML=original();const old=root.querySelector('.energy');if(old)old.outerHTML='<section class="card happy-energy" id="happy-energy">'+widget()+'</section>';return root.innerHTML};render()}
+/* Нажатие на кольцо меняет вид по кругу: потрачено → баланс → съедено. Выбор не запоминается: при следующем
+   открытии Sport снова показывает «потрачено» (решение владельца 11.11.2026). */
+document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=['spent','balance','eat'];mode=modes[(modes.indexOf(mode)+1)%3];paint()}});
+window.addEventListener('storage',e=>{if(e.key===null||e.key===sharedKey()||e.key===mealLinkKey()){readLocalMeal();paint()}});
+window.addEventListener('pageshow',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});setInterval(()=>{if(!document.hidden)refresh()},60000);refresh();
 })();

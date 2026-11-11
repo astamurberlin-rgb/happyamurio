@@ -12,6 +12,8 @@ import './check-controlled-transport.mjs';
 import './check-controlled-sync.mjs';
 import './check-readonly-transport.mjs';
 import './check-counter-channel.mjs';
+import './check-summary-channel.mjs';
+import './check-summary-exchange.mjs';
 import './check-food-counters-sport.mjs';
 import './check-readonly.mjs';
 import './check-recovery-vault.mjs';
@@ -73,22 +75,14 @@ const plaintext=await webcrypto.subtle.decrypt({name:'AES-GCM',iv:Buffer.from(c.
 assert.equal(JSON.parse(new TextDecoder().decode(plaintext)).records[0].id,'fixture');
 await assert.rejects(()=>webcrypto.subtle.decrypt({name:'AES-GCM',iv:Buffer.from(c.saved.iv,'base64'),additionalData:new TextEncoder().encode('different-user|sport|link')},key,Buffer.from(c.saved.data,'base64')));
 console.log('Passed: source/HTML syntax; stable IDs, edits, deletion, undo, demo exclusion, cross-device merge; Happy encryption compatibility and user binding.');
-// Optimistic concurrency must report collisions; do not silently replace another write.
-const cloudSource=await read('src/sport-cloud.js');
-runInContext("var SportProfiles={assertOwner(){},current(){return CL.s.uid}}",c);
-runInContext(cloudSource.slice(cloudSource.indexOf('async function putSportConditional'),cloudSource.indexOf('async function syncSportCloud')),c);
-runInContext('clRest=async function(method,path,row,prefer){globalThis.request={method,path,prefer};return []}',c);
-assert.equal(await runInContext('putSportConditional({at:1500},1234)',c),false);
-assert.equal(c.request.method,'PATCH');assert.ok(c.request.path.includes('at=eq.1234'));
-runInContext('clRest=async function(method,path,row,prefer){globalThis.request={method,path,prefer};return [row]}',c);
-assert.equal(await runInContext('putSportConditional({at:1500},null)',c),true);
-assert.ok(c.request.prefer.includes('ignore-duplicates'));
+// Update 40.3: the summary's compare-and-swap lives in summary-exchange.js and is checked by check-summary-channel.mjs
+// and check-summary-exchange.mjs; the old direct writer (putSportConditional) is gone.
 // Pointer behavior, including cancelled/short drags and a completed downward swipe.
 const refinements=await read('src/refinements.js');
 runInContext(refinements.slice(refinements.indexOf('function wireGrip'),refinements.indexOf('function assignExercise')),c);
 runInContext(`var handlers={},closed=0;var handle={dataset:{},setPointerCapture(){},addEventListener(n,f){handlers[n]=f}},card={style:{}};wireGrip(handle,card,()=>closed++,true);handlers.pointerdown({clientY:10,pointerId:1});handlers.pointermove({clientY:40});handlers.pointercancel();handlers.pointerdown({clientY:10,pointerId:1});handlers.pointermove({clientY:100});handlers.pointerup({});`,c);
 assert.equal(c.closed,1);assert.equal(c.handle.dataset.swiped,'1');
-console.log('Passed: server compare-and-swap collision handling and pointer swipe/cancel behavior.');
+console.log('Passed: pointer swipe/cancel behavior.');
 // Calendar and planning coverage lives in the recurrence regression suite.
 // Missing measurements must not imply a change, and amplification only affects geometry.
 {

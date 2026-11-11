@@ -6,7 +6,7 @@ const calls=[];let impl=async r=>({ok:true,status:200,json:async()=>[]});
 const sandbox={Request,URL,AbortSignal,location:{origin:'https://phase1.example',href:'https://phase1.example/sport/'},navigator:{sendBeacon(){throw Error('native beacon reached')}},document:{addEventListener(){}},XMLHttpRequest:class {open(){throw Error('native XHR reached')}},WebSocket:class {},EventSource:class {},Worker:class {},SharedWorker:class {},CLOUD:{key:'anon-fixture'},fetch:async r=>{calls.push(r);return impl(r)}};
 sandbox.globalThis=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox);
 const backend='https://geqziziycpclhnucnsyx.supabase.co',T=sandbox.SportReadOnlyTest;
-assert.ok(Object.isFrozen(T));assert.deepEqual(Object.keys(T).sort(),['active','bindCounterController','bindJournalController','createOnClick','message','ready']);
+assert.ok(Object.isFrozen(T));assert.deepEqual(Object.keys(T).sort(),['active','bindCounterController','bindJournalController','bindSummaryController','createOnClick','message','ready']);
 // One binding only; the dispatcher is returned to the factory, never stored globally.
 let dispatch=null;const bound=T.bindCounterController(d=>{dispatch=d;return 'bound'});
 assert.equal(bound,'bound');assert.equal(typeof dispatch,'function');

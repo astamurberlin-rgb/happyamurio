@@ -57,6 +57,8 @@ async function readShared(name){
   catch(e){if(e.code!=='ENOENT')throw e;return readFile(new URL('shared/'+name,root),'utf8')}
 }
 const [sharedCss,sharedJs]=await Promise.all([readShared('happy-ui.css'),readShared('happy-ui.js')]);
+// Update 40.3: the shared reading of the summaries exchanged with Day and Meal (shared/happy-summaries.js) and Sport's own sender.
+const happySummaries=await readShared('happy-summaries.js'),summaryExchange=await read('src/summary-exchange.js');
 const foodCounters=await readShared('food-counters.js'),sportFoodCounters=await read('src/food-counters.js');
 const workoutInteractions=await read('src/workout-interactions.js');
 const exerciseContext=await read('src/exercise-context.js')+'\n'+await read('src/exercise-families.js'),exerciseContextCss=await read('src/exercise-context.css');
@@ -73,7 +75,7 @@ const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappi
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 40.2'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 40.3'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
@@ -85,7 +87,7 @@ const html = labPage(template
   .replace('__READONLY_GUARD__',()=>readOnlyGuard)
   .replace('__PROFILE_LOCK__',()=>profileLock)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sharedJs,sportIcons,metricField,profileStore,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,readOnlyAuth,link,cloud,scheduleModel,scheduleCalendarJs,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,measurementModel,measurementShared,freeTimerJs,foodCounters,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,recoveryVault,journalCloud,readOnlyUI,controlledJournal,controlledLedger,controlledCAS,controlledSyncUI,automaticSync,automaticUI,liveTabs,strongNativeCore,strongNativeMappings,strongNativeUI,settingsLayout,auditSimplify].join('\n'))
+  .replace('__APP__', () => [sharedJs,happySummaries,sportIcons,metricField,profileStore,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),auth,readOnlyAuth,link,cloud,scheduleModel,scheduleCalendarJs,planning,measurements,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,measurementModel,measurementShared,freeTimerJs,foodCounters,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,recoveryVault,journalCloud,readOnlyUI,controlledJournal,controlledLedger,controlledCAS,controlledSyncUI,automaticSync,automaticUI,liveTabs,summaryExchange,strongNativeCore,strongNativeMappings,strongNativeUI,settingsLayout,auditSimplify].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);

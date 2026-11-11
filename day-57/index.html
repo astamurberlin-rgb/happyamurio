@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
-<script id="hd-auth-transport" src="./auth-read-only.js?v=57.3"></script>
+<script id="hd-auth-transport" src="./auth-read-only.js?v=57.4"></script>
 <script src="./day-sport-lifecycle.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#00A8F5">
@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Day">
 <link rel="preload" href="./fonts/mplus-rounded-1c-bold-latin-cyrillic.woff" as="font" type="font/woff" crossorigin>
-<title>Happy Day · Update 57.3</title>
+<title>Happy Day · Update 57.4</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -1014,7 +1014,7 @@ a.btn{display:inline-block;text-decoration:none}
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
 <link rel="stylesheet" href="./selfcare.css?v=51.14-test">
 <link rel="stylesheet" href="./arc-motion.css?v=1.0">
-<script defer src="./arc-motion.js?v=57.3"></script>
+<script defer src="./arc-motion.js?v=57.4"></script>
 <script defer src="./arc-home.js?v=1.0"></script>
 <link rel="stylesheet" href="./section-wheel.css?v=51.14-test">
 <style id="day-settings-structure">/* Update 54: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
@@ -1269,7 +1269,7 @@ a.btn{display:inline-block;text-decoration:none}
     </div>
     <p class="note">Завтрак, обед и ужин связаны с одноимёнными разделами Happy Meal: время приёма пищи и калории приходят оттуда сами. По умолчанию это последнее время продукта; вручную его можно изменить в Meal. Перекусы и свои разделы Meal тоже видны в ленте журнала. Записи в Meal за день есть, а раздел пуст — приём отмечается как пропущенный. Отметки и теги здесь от этого не меняются.</p>
     </section>
-    <section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../meal-26/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a><a class="happy-button" href="../sport-38/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
+    <section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../meal-27/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a><a class="happy-button" href="../sport-40/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
     <section class="happy-section" data-happy-section="developer" hidden><h2 class="happy-heading">Для разработчика</h2>
     <div class="eyebrow"><span>Аккаунт и синхронизация</span></div>
     <div class="happy-card" id="dayDeveloperAccount"><div class="happy-actions"><button type="button" class="happy-button" id="dayDeveloperSync">Обновить связь</button></div><p class="happy-note">Перечитать профиль и облачные копии вручную. Обычно не нужно: обмен идёт сам после входа.</p></div>
@@ -1287,7 +1287,7 @@ a.btn{display:inline-block;text-decoration:none}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="57.3" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 57</div><small>Обновлено 10.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="57.4" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 57</div><small>Обновлено 10.11.2026</small></footer>
     </section>
   </div>
 
@@ -1377,7 +1377,7 @@ a.btn{display:inline-block;text-decoration:none}
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="./day-local-store.js?v=57.3"></script>
+<script src="./day-local-store.js?v=57.4"></script>
 <script id="happy-profile-storage">
 /* A diary belongs to one account. Legacy local journals remain recoverable. */
 (function(root){
@@ -1576,24 +1576,25 @@ var HappyProfile=HappyProfiles.create("day",{storage:dayStorage});</script>
   }
 })(globalThis);
 </script>
-<script id="hd-food-adapter" src="./shared/food-counters.js?v=57.3"></script>
-<script src="counters.js?v=57.3"></script>
-<script src="./selfcare-core.js?v=51.14-test"></script>
+<script id="hd-food-adapter" src="./shared/food-counters.js?v=57.4"></script>
+<script src="counters.js?v=57.4"></script>
+<script src="./selfcare-core.js?v=57.4"></script>
+<script src="./shared/happy-summaries.js?v=57.4"></script>
 <script src="./energy-widget.js?v=50.14"></script>
-<script src="./shared/release-notes.js?v=57.3"></script>
-<script src="./release-notes.js?v=57.3"></script>
-<script src="./shared/happy-links.js?v=57.3"></script>
-<script src="./shared/happy-settings-developer.js?v=57.3"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 57.3')}catch(e){}</script>
-<script src="./selfcare-ui.js?v=57.3"></script>
+<script src="./shared/release-notes.js?v=57.4"></script>
+<script src="./release-notes.js?v=57.4"></script>
+<script src="./shared/happy-links.js?v=57.4"></script>
+<script src="./shared/happy-settings-developer.js?v=57.4"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 57.4')}catch(e){}</script>
+<script src="./selfcare-ui.js?v=57.4"></script>
 <script src="./snapshot-sync.js?v=local-nov4"></script>
-<script src="./day-test-create.js?v=57.3"></script>
-<script src="./day-auto-sync.js?v=57.3"></script>
+<script src="./day-test-create.js?v=57.4"></script>
+<script src="./day-auto-sync.js?v=57.4"></script>
 <script src="./day-diagnostic.js?v=20261104-readonly-comparison"></script>
 <script src="./day-passive-plan.js?v=20261104-local-time"></script>
-<script src="./day-account-profile.js?v=57.3"></script>
-<script src="./day-account-data.js?v=57.3"></script>
-<script id="hd-journal-adapter" src="./day-journal-sync.js?v=57.3"></script>
+<script src="./day-account-profile.js?v=57.4"></script>
+<script src="./day-account-data.js?v=57.4"></script>
+<script id="hd-journal-adapter" src="./day-journal-sync.js?v=57.4"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════ */
 var mem={};
@@ -1888,6 +1889,13 @@ document.getElementById('cpRow').addEventListener('change',function(ev){
   saveRing(); paintCpMeal();
 });
 
+/* 57.4: «Цели на день» из сводки Meal (с Meal 27.2) — для кольца энергии: «съедено/цель», «Белка до цели».
+   Берутся только положительные числа известных полей. */
+function mealGoals(o){
+  var g={}, src=o&&o.goals;
+  if(src&&typeof src==='object'&&!Array.isArray(src)) ['k','p','f','c','fib'].forEach(function(k){ var v=src[k]; if(typeof v==='number'&&isFinite(v)&&v>0) g[k]=v });
+  return g;
+}
 /* сводка из Meal → копия в DB; true — если что-то поменялось */
 async function syncMeal(){
   var raw=null, o=null;
@@ -1896,7 +1904,7 @@ async function syncMeal(){
   MEAL_SEEN=!!(o&&o.v===1&&o.days);
   if(!MEAL_SEEN) return false;
   if(DB.mealLink&&DB.mealLink.at>=o.at) return false;      // уже есть такая или новее (из облака)
-  DB.mealLink={v:1,at:o.at,secs:o.secs||[],days:o.days,src:'local'};
+  DB.mealLink={v:1,at:o.at,secs:o.secs||[],days:o.days,goals:mealGoals(o),src:'local'};
   save();
   return true;
 }
@@ -2289,7 +2297,7 @@ async function syncMealCloud(){
     if(!mealSummaryValid(o))throw Error('Некорректная сводка Meal. Сохранённые данные не изменены.');
     if(DB.mealLink&&DB.mealLink.at>=o.at)return false;
     context();
-    DB.mealLink={v:1,at:o.at,secs:o.secs,days:o.days,src:'cloud'};
+    DB.mealLink={v:1,at:o.at,secs:o.secs,days:o.days,goals:mealGoals(o),src:'cloud'};
     MEAL_SEEN=true;CL.last=Date.now();CL.err='';
     save();return true;
   }catch(e){
@@ -3816,6 +3824,12 @@ function sleepPerHTML(r){
       jBars(ds,cs.map(function(c){ return c&&c.asl?c.asl:0 }),'Сон')+'</div>'};
 }
 /* ── тренировки: из Apple Health (Strong, «Фитнес», «Здоровье») ── */
+/* 57.4: «Открыть запись в Sport ↗» ведёт в текущий выпуск Sport: папка берётся из списка выпусков (shared/apps.json
+   через shared/happy-links.js), запасная — текущая на день сборки этого выпуска. Раньше здесь стояла папка sport-38.
+   С 57.4 тренировки Sport приходят сами из его сводки (selfcare-ui.js), поэтому ссылка стала появляться. */
+var SPORT_DIR='sport-40';
+window.addEventListener('load',function(){ try{ if(window.HappyLinks) HappyLinks.load().then(function(apps){ var d=apps&&apps.sport&&HappyLinks.dir(apps.sport.entry); if(d&&/^[a-z0-9][a-z0-9-]*$/.test(d)) SPORT_DIR=d }) }catch(e){} });
+function sportWorkoutHref(id){ return (window.HappyLinks?HappyLinks.base:'../')+SPORT_DIR+'/?workout='+encodeURIComponent(id) }
 function woOf(d){
   var local=((DB.days[d]||{}).wo)||[], strong=HappyCare.activity(SelfCare.data(),d).workouts;
   return local.concat(strong.filter(function(w){return !local.some(function(x){return x.id===w.id||(x.s===w.start.slice(11,16)&&Math.abs((x.min||0)-w.duration/60)<.1)})}).map(function(w){return {id:w.id,t:w.title,s:w.start.slice(11,16),e:w.end?w.end.slice(11,16):'',min:w.duration/60,src:['Happy Strong'],strongId:w.id}}));
@@ -3827,7 +3841,7 @@ function woDayHTML(d){
   var L=woOf(d);
   if(L.length) return {cnt:L.length>1?L.length+' '+ruPlural(L.length,['тренировка','тренировки','тренировок']):'',
     h:'<div class="jCard">'+L.map(function(w){ return '<div class="jWo"><div class="jWoT"><b>'+escH(woName(w))+'</b><span class="jMut">'+(w.e?w.s+'–'+w.e:'с '+w.s)+'</span></div>'+
-      '<div class="jMut" style="margin-top:2px">'+escH(woSub(w))+'</div>'+(w.strongId?'<a class="care-workout-link" href="../sport-38/?workout='+encodeURIComponent(w.strongId)+'" target="_blank" rel="noopener">Открыть запись в Sport ↗</a>':'')+'</div>' }).join('')+'</div>'};
+      '<div class="jMut" style="margin-top:2px">'+escH(woSub(w))+'</div>'+(w.strongId?'<a class="care-workout-link" href="'+escH(sportWorkoutHref(w.strongId))+'" target="_blank" rel="noopener">Открыть запись в Sport ↗</a>':'')+'</div>' }).join('')+'</div>'};
   var x=Object.keys(DB.days).filter(function(k){ return k<d&&woOf(k).length }).sort().pop(), w=x&&woOf(x)[woOf(x).length-1];
   return {cnt:'',h:jEmpty((d===todayISO()?'Сегодня':'В этот день')+' тренировок нет'+(w?'. Последняя — '+ruDate(x)+': '+escH(woName(w).toLowerCase())+(w.min?', '+durTxt(w.min):''):'')+'.')};
 }

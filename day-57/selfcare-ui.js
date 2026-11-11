@@ -10,6 +10,46 @@ icons.activity='<span class="aiko-activity-icon"></span>';
 const STRONG_URL='https://astamurberlin-rgb.github.io/happyamurio/sport-40/';
 let strongLinks=null;
 function strongLink(){try{if(!root.HappyLinks)return;strongLinks=strongLinks||root.HappyLinks.load();strongLinks.then(function(apps){if(apps)root.HappyLinks.apply(apps)})}catch(e){}}
+/* 57.4: сводка тренировок Happy Sport приходит сама, как сводка Meal. Источники: ключ hd_link_sport_v1 в области
+   аккаунта на этом устройстве (его пишет Happy Sport) и, после входа, облачная строка sport/link — только чтение:
+   сначала время строки, сама сводка скачивается, если она новее сохранённой. Разбор — общий shared/happy-summaries.js.
+   Тренировки сводки добавляются к тем, что Day уже знает (Apple Здоровье, снимок журнала Sport), без повторов —
+   это делает HappyCare.activity через C.sportDay. В дневник Day сводка не записывается; копия лежит рядом, в том же
+   ключе. Сводка другого аккаунта не принимается. Ошибки чтения — молча: остаётся то, что уже показано. */
+const S=root.HappySummaries||null,SPORT_KEY=S?S.sport.key:'hd_link_sport_v1';
+let sportSummary=null,sportSeen=null,sportBusy=false;
+function sportApply(o){sportSummary=o;const byDay=o?S.sport.byDay(o):null;C.sportDay=byDay?function(date){return byDay[date]||[]}:null;}
+function sportOwn(o){return S.sport.valid(o)&&(o.owner===undefined||o.owner===root.HappyProfile.owner);}
+function sportMark(owner,raw){return owner+'|'+(raw?raw.length+'|'+raw.slice(0,96):'');}
+function sportRead(){
+ if(!S||!root.HappyProfile)return false;
+ let raw=null;try{raw=localStorage.getItem(root.HappyProfile.key(SPORT_KEY));}catch(e){}
+ const seen=sportMark(root.HappyProfile.owner,raw);if(seen===sportSeen)return false;sportSeen=seen;
+ const o=S.parse(raw);sportApply(sportOwn(o)?o:null);return true;
+}
+async function sportCloud(){
+ if(!S||sportBusy||typeof clOn!=='function'||!clOn())return false;
+ const profile=root.HappyProfile,owner=profile.owner;sportBusy=true;
+ try{
+  const guard=await clMealReadReady();   // тот же закреплённый вход, что у чтения сводки Meal
+  const at=await clAt('sport','link',guard);guard();
+  if(!Number.isSafeInteger(at)||at<=0||(sportSummary&&sportSummary.at>=at))return false;
+  const o=await clGet('sport','link',guard);guard();
+  if(root.HappyProfile!==profile||!S.sport.valid(o)||(o.owner!==undefined&&o.owner!==owner))return false;
+  o.owner=owner;o.at=at;   // время строки в облаке: по нему видно, что копия уже свежая
+  const raw=JSON.stringify(o);
+  try{localStorage.setItem(profile.key(SPORT_KEY),raw);sportSeen=sportMark(owner,raw);}catch(e){}
+  sportApply(o);return true;
+ }catch(e){return false;}
+ finally{sportBusy=false;}
+}
+function sportRepaint(){
+ try{if(typeof renderDay==='function')renderDay();}catch(e){}
+ if(!ready)return;
+ try{renderNow();}catch(e){}
+ try{if(block('activity')?.classList.contains('on'))renderActivity();}catch(e){}
+}
+function sportPoll(){if(sportRead())sportRepaint();return sportCloud().then(function(changed){if(changed)sportRepaint();},function(){});}
 const h=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const $=id=>document.getElementById(id);
 const num=v=>(Math.round(v*10)/10).toLocaleString('ru-RU');
@@ -271,6 +311,7 @@ function open(kind,id,parent){
  go('care-'+kind);block(kind).scrollTop=0;
  if(parent){const grip=block(kind).querySelector('[data-care-close]');if(grip)grip.dataset.careClose=parent;}
  if(kind==='activity'&&data().strong?.source==='cloud'&&Date.now()-data().strong.updatedAt>60000)refreshStrong();
+ if(kind==='activity')sportPoll();
 }
 function renderUpdates(){
  const releases=root.HappyDayReleases||[];
@@ -327,7 +368,10 @@ function activityFacts(){
  const workouts=woOf(curDate),calories=workouts.map(w=>w.kcal??a.workouts.find(x=>x.id===w.id)?.energyKcal);
  return {food:food?{...food,g:DB.mealLink?.goals||{}}:null,eaten:food?.k??null,spent:null,rest:null,training:calories.length&&calories.every(C.finite)?calories.reduce((n,v)=>n+v,0):null,minutes:workouts.length?workouts.reduce((n,w)=>n+(w.min||0),0):a.connected?0:null,steps:null};
 }
-function paintEnergy(){const el=$('careEnergy');if(el)el.innerHTML=HappyDayEnergy.render(activityFacts(),data().activitySettings.mode,data().activitySettings.scale);}
+/* 57.4: вид виджета — «Начальный режим» из настроек (по умолчанию «баланс»); нажатие на кольцо меняет его до
+   закрытия страницы и в дневник не записывается (решение владельца 11.11.2026). */
+let energyMode=null;
+function paintEnergy(){const el=$('careEnergy');if(el)el.innerHTML=HappyDayEnergy.render(activityFacts(),energyMode||data().activitySettings.start,data().activitySettings.scale);}
 function renderActivity(){
  const c=data(),a=C.activity(c,curDate);
  block('activity').innerHTML=header('Активность')+'<section class="card happy-energy" id="careEnergy" aria-label="Энергия и активность"></section><div class="eyebrow">Расписание</div>'+a.plans.map(p=>'<div class="card"><b>'+h(p.start.slice(11,16))+' · '+h(p.title)+'</b><p class="care-help">'+p.minutes+' мин · '+(a.workouts.some(w=>w.templateId===p.templateId&&w.plannedStart===p.start)?'выполнено':'план')+'</p>'+(p.note?'<p class="care-long">'+h(p.note)+'</p>':'')+'</div>').join('')+(a.plans.length?'':empty('На этот день тренировок в расписании нет.'))+'<div class="card"><h2>Happy Strong</h2><p class="care-help">Sport открывается отдельно. Войди тем же аккаунтом; переход сам по себе не переносит записи.</p><a class="btn solid care-external" href="'+STRONG_URL+'" data-happy-app="sport" target="_blank" rel="noopener">Открыть Sport ↗</a></div>';
@@ -378,7 +422,7 @@ function renderSettingsPage(kind){
  if(kind==='mood')html+='<form id="careMoodSettingsForm" class="card care-form">'+moodSettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
  if(kind==='mind')html+='<form id="careMindSettingsForm" class="card care-form">'+mindSettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>'+scheduleForm(c);
  if(kind==='diary')html+='<div class="card"><h2>Мои дневники</h2>'+c.books.map(b=>'<div class="care-setting-row"><span>'+h(b.name)+'</span></div>').join('')+'<button class="btn care-submit" data-care-book>Добавить дневник</button></div><form id="careDiarySettingsForm" class="card care-form">'+diarySettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
- if(kind==='activity')html+='<form id="careActivitySettingsForm" class="card care-form"><h2>Виджет энергии</h2><label for="careEnergyMode">Начальный режим</label><select id="careEnergyMode" name="mode">'+options(c.activitySettings.mode,[['spent','Потрачено'],['eat','Съедено'],['balance','Баланс']])+'</select><label for="careEnergyScale">Масштаб кольца, ккал</label><input id="careEnergyScale" name="scale" type="number" min="100" max="20000" required value="'+c.activitySettings.scale+'"><button type="submit" class="btn solid care-submit">Сохранить</button></form>'+strongSettings();
+ if(kind==='activity')html+='<form id="careActivitySettingsForm" class="card care-form"><h2>Виджет энергии</h2><label for="careEnergyMode">Начальный режим</label><select id="careEnergyMode" name="start">'+options(c.activitySettings.start,[['balance','Баланс'],['eat','Съедено'],['spent','Потрачено']])+'</select><p class="care-help">С этого вида виджет открывается. Нажатие на кольцо меняет вид до следующего открытия.</p><label for="careEnergyScale">Масштаб кольца, ккал</label><input id="careEnergyScale" name="scale" type="number" min="100" max="20000" required value="'+c.activitySettings.scale+'"><button type="submit" class="btn solid care-submit">Сохранить</button></form>'+strongSettings();
  screen.innerHTML=html;
  if(host){if(kind==='mood'){screen.querySelector('form').before(host);renderCheckinSettings();}else block('settings-mood').append(host);}
 }
@@ -391,7 +435,7 @@ async function click(ev){
  if(b.dataset.careEntry){open('entry',b.dataset.careEntry);return;}
  if(b.hasAttribute('data-care-book')){const name=await ask('Название дневника','');if(name?.trim()&&await transact(()=>data().books.push({id:C.uid(),name:name.trim().slice(0,80)})))renderSettingsPage('diary');return;}
  if(b.hasAttribute('data-care-strong-refresh')){refreshStrong();return;}
- if(b.hasAttribute('data-energy-cycle')){const modes=['spent','balance','eat'],c=data();c.activitySettings.mode=modes[(modes.indexOf(c.activitySettings.mode)+1)%3];save();paintEnergy();return;}
+ if(b.hasAttribute('data-energy-cycle')){const modes=['spent','balance','eat'];energyMode=modes[(modes.indexOf(energyMode||data().activitySettings.start)+1)%3];paintEnergy();return;}
  if(b.dataset.careMove){if(RO){roWarn();return;}const c=data(),i=c.settings.order.indexOf(b.dataset.careMove),j=i+(+b.dataset.dir);if(j<0||j>=c.settings.order.length)return;if(await transact(()=>{[c.settings.order[i],c.settings.order[j]]=[c.settings.order[j],c.settings.order[i]];const stateAt=c.settings.settingsOrder.indexOf('state');c.settings.settingsOrder=c.settings.order.slice();c.settings.settingsOrder.splice(stateAt,0,'state');}))renderSettingsPage('state');return;}
  if(b.dataset.carePractice){const p=C.scheduled(data(),curDate).find(x=>x.id===b.dataset.carePractice);if(p){const f=$('carePracticeForm');f.elements.planId.value=p.id;f.elements.name.value=p.name;f.elements.time.value=p.time;f.elements.minutes.value='';f.scrollIntoView({block:'start'});f.elements.minutes.focus();}return;}
  if(b.dataset.careRemovePlan&&await confirmBox('Убрать практику из расписания с сегодняшнего дня? Прошедшие планы сохранятся.','Убрать')){if(await transact(()=>{const c=data();c.schedule=c.schedule.filter(x=>x.id!==b.dataset.careRemovePlan);C.rememberPlan(c,todayISO());}))renderSettingsPage('mind');}
@@ -423,11 +467,17 @@ async function submit(ev){const f=ev.target;if(!f.id?.startsWith('care'))return;
  }
  if(f.id==='careMindSettingsForm'&&await transact(()=>{const c=data();Object.assign(c.goals,{scheduleEnabled:v.mindMode==='schedule',mindManual:v.mindManual?+v.mindManual:v.mindMode==='schedule'?c.goals.mindManual:null});C.rememberPlan(c,todayISO());}))toast('Настройки сохранены');
  if(f.id==='careDiarySettingsForm'&&await transact(()=>{const c=data();Object.assign(c.goals,{diaryGoal:v.diaryGoal?+v.diaryGoal:null,countAdditions:!!v.countAdditions});C.rememberPlan(c,todayISO());}))toast('Настройки сохранены');
- if(f.id==='careActivitySettingsForm'&&await transact(()=>{data().activitySettings={mode:v.mode,scale:+v.scale};}))toast('Настройки сохранены');
+ if(f.id==='careActivitySettingsForm'&&await transact(()=>{data().activitySettings={start:['spent','eat','balance'].includes(v.start)?v.start:'balance',scale:+v.scale};})){energyMode=null;toast('Настройки сохранены');}
 }
 function journalEvents(date){const d=C.readDay(DB,date),entries=data().entries;
  return d.checkins.map(x=>({t:x.time,m:hmMin(x.time),dot:'#7CE3C9',title:x.sectionTitle||'Самочувствие',sub:(x.sourceSectionTitle?'Форма: '+x.sourceSectionTitle+' · ':'')+checkinText(x),careKind:'mood',careId:x.id,careDate:date})).concat(d.events.map(x=>({t:x.time,m:hmMin(x.time),dot:'#BC61FE',title:x.type==='diary-appended'?'Дополнен дневник':'Запись в дневнике',sub:entries.find(e=>e.id===x.entryId)?.title||x.title,careKind:'entry',careId:x.entryId,careDate:date,additionId:x.additionId})),d.practices.map(x=>({t:x.time,m:hmMin(x.time),dot:'#46FDFC',title:'Осознанность',sub:x.name+' · '+num(x.minutes)+' мин',careKind:'mind',careDate:date})),C.activity(data(),date).workouts.map(w=>({t:w.start.slice(11,16),m:hmMin(w.start.slice(11,16)),dot:'#FFE19A',title:'Активность · Happy Strong',sub:w.title+' · '+num(w.duration/60)+' мин',careKind:'activity',careId:w.id,careDate:date})));
 }
 function journalOpen(kind,id,date,additionId){curDate=date;open(kind,id,'trends');if(additionId)$('addition-'+additionId)?.scrollIntoView({block:'center'});}
-root.SelfCare={openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,addCheckinTag,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale};
+sportRead();
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')sportPoll();});
+window.addEventListener('storage',function(e){if(root.HappyProfile&&e.key===root.HappyProfile.key(SPORT_KEY)&&sportRead())sportRepaint();});
+/* после запуска вход ещё загружается — спросим облако чуть позже и ещё раз, если не успел; после входа — сразу */
+setTimeout(sportPoll,2500);setTimeout(sportPoll,9000);
+{const afterSignIn=root.clAfterIn;root.clAfterIn=function(){sportPoll();return afterSignIn&&afterSignIn.apply(this,arguments);};}
+root.SelfCare={sportPoll,openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,addCheckinTag,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale};
 })(window);

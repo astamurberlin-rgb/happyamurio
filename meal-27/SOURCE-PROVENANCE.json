@@ -1,5 +1,5 @@
 {
- "release": "Happy Meal Update 27.1",
+ "release": "Happy Meal Update 27.2",
  "date": "2026-11-10",
  "entry": "meal-27/index.html",
  "source": {
@@ -24,8 +24,8 @@
   },
   {
    "path": "README.md",
-   "size": 15699,
-   "sha256": "98a4023bcd7656f9f9b40b513d85f4d2ed69e69c99f2a651ff48ce97dbb45ece"
+   "size": 17243,
+   "sha256": "3dc95fd484518ca82f324a889c0f84cd0cdb4d36b49adbb2aef1d5561098d90a"
   },
   {
    "path": "account-ui.js",
@@ -213,6 +213,11 @@
    "sha256": "9ef33bff74357c1e1686dfaa4ff719031a8c4f920e9925e9c3e51af17897cf9c"
   },
   {
+   "path": "checks/check-sport-summary.mjs",
+   "size": 12018,
+   "sha256": "c72e9601802a506993d4bec739863ac048e8ae19737853292cf78a76d0a23b76"
+  },
+  {
    "path": "checks/check-startup.mjs",
    "size": 2209,
    "sha256": "b94c7ad906ec398b98582e48a155eea29ed3e07457b119484d528b2215b665a7"
@@ -239,8 +244,8 @@
   },
   {
    "path": "index.html",
-   "size": 606957,
-   "sha256": "7d7c95379ba6ef596bc67d35b8d90fab7fa684ae9db962b241796eb8474bc389"
+   "size": 610167,
+   "sha256": "e5d45fe054620d0838cf3bdc5496d56467b1b5522b7a8bd419cf9727b3c8e660"
   },
   {
    "path": "journal-model.js",
@@ -424,8 +429,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 21204,
-   "sha256": "615dd66358b34c920dc38498bc8b11069d50b790150dfaf6f03447f7f15d1571"
+   "size": 21803,
+   "sha256": "3296f903a3682db56429769c5c249e748f092cc797c79bb7a737d468bd1ddc1c"
   },
   {
    "path": "report.css",
@@ -491,6 +496,11 @@
    "path": "shared/happy-settings-developer.js",
    "size": 2670,
    "sha256": "6ed637ccf576bb652956ac2aaa3af4d2c454f495a37666b748e8eb4fcf1a6dbc"
+  },
+  {
+   "path": "shared/happy-summaries.js",
+   "size": 8233,
+   "sha256": "55805c93bff6fb71a3feb40a0229462f8747ade0b854a7ce0586910257a485a3"
   },
   {
    "path": "shared/happy-ui.css",
@@ -1747,6 +1757,16 @@
     "index.html clPaint: after sign-in a background «Нет связи с сервером» is not shown next to the sync line; account note without technical text (account-ui.js)",
     "local-store.js: a refused IndexedDB write is retried on a fresh connection (3 attempts); index.html rawSet: storage errors retried quietly every 5 s, a message only after 30 s",
     "cache busters ?v=27.1, footer and release note 27.1; shared/apps.json meal.version 27.1"
+   ]
+  },
+  {
+   "version": "27.2",
+   "date": "2026-11-11",
+   "changes": [
+    "index.html: the energy ring reads the Sport summary with shared/happy-summaries.js — from hd_link_sport_v1 in the account area and from the cloud row sport/link (read only, the row time first; the copy is stored in the account area); workout time and energy show without the day total",
+    "index.html: linkSummary() adds goals («Цели на день») and days[date].fib (fibre, when known) for the energy ring in Sport and Day",
+    "index.html: fallback addresses of the neighbour apps name the current release directories; cache busters ?v=27.2, title and footer 27.2",
+    "checks/check-sport-summary.mjs (new); shared/happy-summaries.js (new shared file)"
    ]
   }
  ]

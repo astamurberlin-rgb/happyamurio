@@ -18,7 +18,11 @@ function init(db,today){
  c.books=c.books||[{id:'personal',name:'Личный дневник'}];
  c.entries=c.entries||[];
  c.checkinSection=c.checkinSection||{k:'care_current',t:'Текущие отметки',h:'',scales:['energy','focus','drive','anx'].filter(k=>(db.metrics||[]).some(m=>m.k===k)),tags:[]};
- c.activitySettings=Object.assign({mode:'spent',scale:3000},c.activitySettings||{});
+ /* 57.4: «Начальный режим» виджета энергии — поле start, по умолчанию «баланс» (решение владельца 11.11.2026).
+    Прежнее поле mode менялось каждым нажатием на кольцо и поэтому настройкой не считается: оно остаётся в записях,
+    но больше не читается. Выбор нажатием теперь живёт до закрытия страницы и в дневник не пишется. */
+ c.activitySettings=Object.assign({start:'balance',scale:3000},c.activitySettings||{});
+ if(!['spent','eat','balance'].includes(c.activitySettings.start))c.activitySettings.start='balance';
  c.planHistory=c.planHistory||[];
  c.goals=Object.assign({mindManual:null,scheduleEnabled:false,diaryGoal:null,countAdditions:true},c.goals||{});
  if(!c.planHistory.length)rememberPlan(c,today);
@@ -158,10 +162,24 @@ function strongSnapshot(input,previous,today,source='file'){
  for(const p of previous?.plans||[])if(!byId.has(p.id)&&(p.start.slice(0,10)<today||workouts.some(w=>w.templateId===p.templateId&&w.plannedStart===p.start)))byId.set(p.id,p);
  return {plans:[...byId.values()].sort((a,b)=>a.start.localeCompare(b.start)),workouts,source,exportedAt:typeof input.exportedAt==='string'?input.exportedAt:null,updatedAt:Date.now()};
 }
-function activity(c,date){
+/* 57.4: тренировки дня — из снимка журнала Sport (c.strong, его читают вручную в настройках) и из сводки Sport,
+   которая приходит сама: extra — её записи за этот день. Если extra не передан, спрашиваем api.sportDay(date),
+   если интерфейс его подключил (selfcare-ui.js). Одна тренировка считается один раз: по id, а без совпадения id —
+   по минуте начала и длительности (разница меньше 6 секунд). */
+function activity(c,date,extra){
  const s=c.strong||{},plans=(s.plans||[]).filter(x=>x.start.slice(0,10)===date),workouts=(s.workouts||[]).filter(x=>x.start.slice(0,10)===date);
- return {plans,workouts,goal:plans.reduce((n,x)=>n+x.minutes,0),minutes:workouts.reduce((n,x)=>n+x.duration/60,0),connected:!!s.updatedAt};
+ if(extra===undefined&&typeof api.sportDay==='function'){try{extra=api.sportDay(date)}catch(e){extra=undefined}}
+ const summary=Array.isArray(extra);
+ if(summary){
+  const known=w=>workouts.some(x=>x.id===w.id||(String(x.start).slice(0,16)===w.start.slice(0,16)&&Math.abs(x.duration-w.duration)<6));
+  for(const w of extra){
+   if(!w||typeof w.id!=='string'||!w.id||typeof w.start!=='string'||w.start.slice(0,10)!==date||!finite(w.duration)||w.duration<0||known(w))continue;
+   workouts.push({id:w.id,title:String(w.title||'Тренировка').slice(0,160),start:w.start,end:typeof w.end==='string'?w.end:'',duration:w.duration,energyKcal:finite(w.energyKcal)?w.energyKcal:null,templateId:null,plannedStart:null});
+  }
+  workouts.sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:0);
+ }
+ return {plans,workouts,goal:plans.reduce((n,x)=>n+x.minutes,0),minutes:workouts.reduce((n,x)=>n+x.duration/60,0),connected:!!s.updatedAt||summary};
 }
-const api={clamp,finite,copy,uid,iso,init,rememberPlan,plan,scheduled,mindGoal,dayData,readDay,magnitude,mood,addCheckin,saveSectionCheckin,addEntry,appendEntry,diaryProgress,addPractice,mindMinutes,progress,validTime,strongSnapshot,activity};
+const api={clamp,finite,copy,uid,iso,init,rememberPlan,plan,scheduled,mindGoal,dayData,readDay,magnitude,mood,addCheckin,saveSectionCheckin,addEntry,appendEntry,diaryProgress,addPractice,mindMinutes,progress,validTime,strongSnapshot,activity,sportDay:null};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.HappyCare=api;
 })(typeof window!=='undefined'?window:globalThis);

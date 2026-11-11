@@ -1,4 +1,4 @@
-/* Narrow transport boundary: journal sync plus (Update 38) the shared food-counter row. Loaded before any app/auth/storage code. */
+/* Narrow transport boundary: journal sync plus (Update 38) the shared food-counter row and (Update 40.3) the workout summary row. Loaded before any app/auth/storage code. */
 (function(root){
  'use strict';
  const message='Прямые записи отключены. Журнал Sport сохраняется только через защищённую проверку версии.';
@@ -76,6 +76,24 @@
   const dispatch=async(row,ctx,check,expected=null)=>{if(typeof check!=='function')throw Error('Недопустимая запись общих счётчиков');if(counterWriting)throw Error('Сохранение счётчиков уже выполняется');const request=counterRequest(row,ctx,check,expected);check();counterWriting=true;try{return await nativeFetch(request)}finally{counterWriting=false}};
   return factory(dispatch);
  }
+ /* Update 40.3: third narrow channel — the workout summary row (app=sport, kind=link) that Meal and Day read.
+    Same shape as the two channels above: fixed URL/method/headers, exact-row CAS on at+iv, size limit, one write in flight.
+    The journal, the counters, measurements and other apps/kinds cannot pass through it. */
+ function summaryRequest(row,ctx,check,expected=null){
+   check();
+   const fields=Object.keys(row).sort().join(',');
+   if(fields!=='app,at,data,iv,kind,user_id,v'||row.app!=='sport'||row.kind!=='link'||row.user_id!==ctx.uid||typeof ctx.uid!=='string'||!ctx.uid||row.v!==1||!Number.isSafeInteger(row.at)||row.at<0||typeof row.iv!=='string'||!ivField.test(row.iv)||typeof row.data!=='string'||!row.data.length||row.data.length>4000000||!base64Field.test(row.data)||typeof ctx.token!=='string'||!ctx.token)throw Error('Недопустимая запись сводки тренировок');
+   if(expected!==null&&(!expected||Object.keys(expected).sort().join(',')!=='at,iv'||!Number.isSafeInteger(expected.at)||expected.at<0||typeof expected.iv!=='string'||!ivField.test(expected.iv)||row.at<=expected.at||row.iv===expected.iv))throw Error('Недопустимая подтверждённая версия сводки для CAS');
+   const query=expected?'?user_id=eq.'+encodeURIComponent(ctx.uid)+'&app=eq.sport&kind=eq.link&at=eq.'+expected.at+'&iv=eq.'+encodeURIComponent(expected.iv):'?on_conflict=user_id,app,kind';
+   const request=new NativeRequest(backend+'/rest/v1/app_sync'+query,{method:expected?'PATCH':'POST',redirect:'error',signal:AbortSignal.timeout(20000),headers:{apikey:root.CLOUD.key,Authorization:'Bearer '+ctx.token,'Content-Type':'application/json',Prefer:expected?'return=representation':'resolution=ignore-duplicates,return=representation'},body:JSON.stringify(row)});
+   check();return request;
+ }
+ let summaryBound=false,summaryWriting=false;
+ function bindSummaryController(factory){
+  if(summaryBound||typeof factory!=='function')throw Error('Контроллер сводки уже установлен');summaryBound=true;
+  const dispatch=async(row,ctx,check,expected=null)=>{if(typeof check!=='function')throw Error('Недопустимая запись сводки тренировок');if(summaryWriting)throw Error('Сохранение сводки уже выполняется');const request=summaryRequest(row,ctx,check,expected);check();summaryWriting=true;try{return await nativeFetch(request)}finally{summaryWriting=false}};
+  return factory(dispatch);
+ }
  const NativeEvent=root.Event,usedClicks=new WeakSet();let createBusy=false;
  async function createOnClick(event,run){
   const button=event?.target?.closest?.('[data-controlled="create-confirm"]');
@@ -87,5 +105,5 @@
   };
   try{return await run(dispatch)}finally{active=false;createBusy=false;}
  }
- Object.defineProperty(root,'SportReadOnlyTest',{value:Object.freeze({active:true,ready:true,message,createOnClick,bindJournalController,bindCounterController}),writable:false,configurable:false});
+ Object.defineProperty(root,'SportReadOnlyTest',{value:Object.freeze({active:true,ready:true,message,createOnClick,bindJournalController,bindCounterController,bindSummaryController}),writable:false,configurable:false});
 })(globalThis);

@@ -1,10 +1,10 @@
 {
- "release": "Happy Day Update 57.3",
+ "release": "Happy Day Update 57.4",
  "date": "2026-11-10",
  "source_release": "day-56 (Happy Day Update 56)",
  "source_commit": "9280726e7dd358d8ac436ffd99432874d82ba8e8",
  "source_app_version": "56",
- "destination_app_version": "57.3",
+ "destination_app_version": "57.4",
  "adaptations": [
   "day-journal-sync.js: live tabs — reconcile()/adoptExternal()/settle(): a journal written by another tab is adopted or three-way merged (HappyDayProfileData.merge) inside the journal lock; same-field tab conflicts resolve to the acting tab without a variant; triggers: facade change, focus/pageshow/visibilitychange, withLock, writeLocal",
   "day-journal-sync.js: sync line #day-sync-line under the account buttons; long status moved to the developer section; guest-recovery card shown only when guest records exist",
@@ -15,13 +15,13 @@
  "runtime_files": [
   {
    "path": "Happy-Day-57.html",
-   "size": 3631210,
-   "sha256": "aa8f752a3bc7e0a948bc1f9be849793c26dd43bdc3a6e4f1a22d7360ec22b03c"
+   "size": 3653976,
+   "sha256": "a97f28fd62a1d89853557edf5d71da3293ab0e3c3a3cccc3b736088fcfde380c"
   },
   {
    "path": "README.md",
-   "size": 19601,
-   "sha256": "4cb1ef9b0ce20adb5a66fa4c86420a07c3847d89a3bc195e5124cdea39240190"
+   "size": 20734,
+   "sha256": "01d10d576c3942350a172c936f052fa47b0fe9eb7515c69b7a2a725de0c2b68d"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -250,8 +250,8 @@
   },
   {
    "path": "index.html",
-   "size": 538675,
-   "sha256": "291c36bcbb24cd811e39e810ef3317a0d2534261cba3b8ac97f16fba96fe5036"
+   "size": 540185,
+   "sha256": "b100644ba32472b41a25c5f97c81a0d537bbbcc1d8ffd3befb8c07299c3eb54d"
   },
   {
    "path": "manifest.webmanifest",
@@ -260,8 +260,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 21609,
-   "sha256": "a8a11e20e248cfcaba451fe3c6e81fc22f27637c354b21d27267217ed4ad24dc"
+   "size": 22658,
+   "sha256": "e05dca3ab45a39bf315f01bd6ef98451c5e0bb62ca1cc9d69c18e44639d1b170"
   },
   {
    "path": "section-wheel.css",
@@ -270,13 +270,13 @@
   },
   {
    "path": "selfcare-core.js",
-   "size": 11825,
-   "sha256": "2450f5d6fb9cf989fb0b127afb5b3fe3cd112a427c1e0d6c03e4d489cc1f3b6f"
+   "size": 13969,
+   "sha256": "19934b97433de275cb8611cad9fd5ad709b5921222c163e8d720ba5d5303473e"
   },
   {
    "path": "selfcare-ui.js",
-   "size": 69139,
-   "sha256": "f694fca3cbc18445794d2063f09794a31419adca8dfb515861b6a5c3dab11134"
+   "size": 73653,
+   "sha256": "9c1475263da401ed6d5fbdb3251caf2f563a4444b6a186ff8fd1ea81203c016f"
   },
   {
    "path": "selfcare.css",
@@ -344,6 +344,11 @@
    "sha256": "6ed637ccf576bb652956ac2aaa3af4d2c454f495a37666b748e8eb4fcf1a6dbc"
   },
   {
+   "path": "shared/happy-summaries.js",
+   "size": 8233,
+   "sha256": "55805c93bff6fb71a3feb40a0229462f8747ade0b854a7ce0586910257a485a3"
+  },
+  {
    "path": "shared/happy-ui.css",
    "size": 4066,
    "sha256": "7dedc41770041a36a779acf4e2abccf9730cb4e8a332d1b086da77bcbafee4ed"
@@ -399,6 +404,11 @@
    "sha256": "87d7b418c1f66bce1cc8ee27147f721ea94aa181f9b291f17186377d8c70db08"
   },
   {
+   "path": "tests/checkin-tag.test.cjs",
+   "size": 2264,
+   "sha256": "986b1bfd9f03ce8172bc8b3e14a1b1528df4f4854a5d9410aaaba867b908d640"
+  },
+  {
    "path": "tests/day-account-exit.test.cjs",
    "size": 3450,
    "sha256": "3743417aa2862722adead542d094e20db28f334f6beb1911d4cbf7b55a8568c7"
@@ -422,6 +432,16 @@
    "path": "tests/personal-transport.test.cjs",
    "size": 6700,
    "sha256": "93480c37cfda7858c4237b8321841822c5476b6b27388e7527b9ecc61a83ff9b"
+  },
+  {
+   "path": "tests/quiet-account.test.cjs",
+   "size": 2751,
+   "sha256": "4011a0cfa8decf7a48822ea15150160a5791a46db8de6231f5e9505462b8bed4"
+  },
+  {
+   "path": "tests/sport-summary.test.cjs",
+   "size": 13255,
+   "sha256": "6dd87df33de112a13cfb28cf6b8c755407bfedf4e18b065bf963e09926d9cfac"
   }
  ],
  "standalone": {
@@ -460,6 +480,17 @@
     "selfcare-ui.js: «Открыть Sport ↗» on the Activity screen points to the current Sport release (data-happy-app=\"sport\", shared/happy-links.js); the test-build address of 04.11 is removed",
     "tests/quiet-account.test.cjs: the three points above are pinned by a test",
     "cache busters ?v=57.3, footer and release note 57.3; standalone Happy-Day-57.html rebuilt"
+   ]
+  },
+  {
+   "version": "57.4",
+   "date": "2026-11-11",
+   "changes": [
+    "selfcare-core.js: activity(c,date,extra) adds the workouts of the Sport summary to the day once (by id, otherwise by start minute and duration) through the HappyCare.sportDay hook; activitySettings.start (default «balance») replaces the tap-driven field mode, which stays in records and is no longer read",
+    "selfcare-ui.js: the Sport summary is read from hd_link_sport_v1 in the account area and from the cloud row sport/link (read only, the row time first) with shared/happy-summaries.js; it is never written into the Day journal; the energy view chosen by a tap lives until the page is closed",
+    "index.html: shared/happy-summaries.js loaded; goals of the Meal summary are kept in the local copy DB.mealLink.goals; «Открыть запись в Sport ↗» leads to the current Sport release (was ../sport-38/); fallback addresses of the neighbour apps name the current release directories; cache busters ?v=57.4",
+    "tests/sport-summary.test.cjs (new, 7 tests); runtime_files now lists every tracked file of the release (tests/checkin-tag.test.cjs and tests/quiet-account.test.cjs were missing from the list)",
+    "standalone Happy-Day-57.html rebuilt"
    ]
   }
  ]
