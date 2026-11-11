@@ -1,0 +1,1223 @@
+{
+ "schema": "happy.supplements.templates.v1",
+ "version": "1.0.0",
+ "date": "2026-11-11",
+ "author": "Михалыч (ChatGPT) и Астамур — шаблоны, состав и источники; Claude — выпуск библиотеки",
+ "purpose": "Небрендовые шаблоны: проверяемые примеры состава и поля для переноса своей этикетки. Не рекомендация приёма.",
+ "amountPolicy": "Числа из открытых этикеток применяются только к новым шаблонам с example и показаны как оценочные примеры. Остальное null. Сохранённые варианты и записи не обновляются.",
+ "templates": [
+  {
+   "id": "fish-oil",
+   "name": "Рыбий жир",
+   "category": "omega",
+   "unit": "капсула",
+   "form": "",
+   "hint": "Рыбий жир отдельно от содержащихся в нём омега-3.",
+   "components": [
+    {
+     "name": "Рыбий жир",
+     "unit": "мг"
+    },
+    {
+     "name": "Омега-3, всего",
+     "unit": "мг",
+     "substanceId": "n3"
+    },
+    {
+     "name": "EPA",
+     "unit": "мг",
+     "substanceId": "epa"
+    },
+    {
+     "name": "DHA",
+     "unit": "мг",
+     "substanceId": "dha"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "fish-oil-label-2026-11-10",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     1000,
+     300,
+     180,
+     120,
+     1,
+     10
+    ],
+    "source": {
+     "title": "Windmill · Omega III 1000 mg",
+     "url": "https://www.windmillvitamins.com/product/omega-iii-1000mg-180",
+     "quote": "Serving Size: 1 Softgel; Fish Oil 1,000 mg; Total Omega-3 Fatty Acids 300 mg; EPA 180 mg; DHA 120 mg; Calories 10; Total Fat 1 g",
+     "checkedAt": "2026-11-10"
+    },
+    "note": "Пример одной мягкой капсулы рыбьего жира. У других продуктов концентрация может отличаться; масса капсулы неизвестна."
+   }
+  },
+  {
+   "id": "omega-3",
+   "name": "Омега-3",
+   "category": "omega",
+   "unit": "капсула",
+   "form": "",
+   "hint": "Источник и концентрация уточняются по этикетке.",
+   "components": [
+    {
+     "name": "Омега-3, всего",
+     "unit": "мг",
+     "substanceId": "n3"
+    },
+    {
+     "name": "EPA",
+     "unit": "мг",
+     "substanceId": "epa"
+    },
+    {
+     "name": "DHA",
+     "unit": "мг",
+     "substanceId": "dha"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "omega-3-label-2026-11-10",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     300,
+     180,
+     120,
+     1,
+     10
+    ],
+    "source": {
+     "title": "Windmill · Omega III 1000 mg",
+     "url": "https://www.windmillvitamins.com/product/omega-iii-1000mg-180",
+     "quote": "Serving Size: 1 Softgel; Fish Oil 1,000 mg; Total Omega-3 Fatty Acids 300 mg; EPA 180 mg; DHA 120 mg; Calories 10; Total Fat 1 g",
+     "checkedAt": "2026-11-10"
+    },
+    "note": "Пример одной мягкой капсулы рыбьего жира. У других продуктов концентрация может отличаться; масса капсулы неизвестна."
+   }
+  },
+  {
+   "id": "magnesium-citrate",
+   "name": "Магний · цитрат",
+   "category": "magnesium",
+   "unit": "капсула",
+   "form": "цитрат",
+   "hint": "Массу соединения добавляй только при наличии на этикетке.",
+   "components": [
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "magnesium-citrate-label-2026-11-11",
+    "basis": {
+     "quantity": 3,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     400
+    ],
+    "source": {
+     "title": "NOW Foods Magnesium Citrate Veg Capsules — Supplement Facts",
+     "url": "https://www.nowfoods.com/products/supplements/magnesium-citrate-veg-capsules",
+     "quote": "Serving Size: 3 Veg Capsules; Magnesium (elemental) (from Magnesium Citrate) 400 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример конкретной этикетки: 400 мг элементарного магния на 3 капсулы. Не универсальный состав и не рекомендация дозы; масса капсул не указана."
+   }
+  },
+  {
+   "id": "magnesium-bisglycinate",
+   "name": "Магний · бисглицинат",
+   "category": "magnesium",
+   "unit": "капсула",
+   "form": "бисглицинат",
+   "hint": "Массу соединения добавляй только при наличии на этикетке.",
+   "components": [
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "magnesium-bisglycinate-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "мерная ложка",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     200
+    ],
+    "source": {
+     "title": "Thorne Magnesium Bisglycinate — Ingredients",
+     "url": "https://www.thorne.com/products/dp/magnesium-bisglycinate",
+     "quote": "Serving Size: 1 Scoop(s); Magnesium (as Magnesium Bisglycinate) 200mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример порошка: 200 мг элементарного магния в одной фирменной мерной ложке, не в капсуле. Вес ложки на открытой странице не указан. Количество глицина не выводить из названия соли. Не рекомендация дозы."
+   }
+  },
+  {
+   "id": "magnesium-malate",
+   "name": "Магний · малат",
+   "category": "magnesium",
+   "unit": "капсула",
+   "form": "малат",
+   "hint": "Массу соединения добавляй только при наличии на этикетке.",
+   "components": [
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "magnesium-malate-label-2026-11-10",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     100
+    ],
+    "source": {
+     "title": "NIH DSLD · Integrative Therapeutics",
+     "url": "https://api.ods.od.nih.gov/dsld/s3/pdf/78408.pdf",
+     "quote": "Serving Size 1 capsule; Magnesium (as magnesium malate) 100 mg 25%",
+     "checkedAt": "2026-11-10"
+    },
+    "note": "Пример капсулы с малатом: 100 мг элементарного магния. Масса малата и всей капсулы неизвестна; другие формы не получают это значение."
+   }
+  },
+  {
+   "id": "magnesium-taurate",
+   "name": "Магний · таурат",
+   "category": "magnesium",
+   "unit": "капсула",
+   "form": "таурат",
+   "hint": "Массу соединения добавляй только при наличии на этикетке.",
+   "components": [
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "magnesium-taurate-label-2026-11-11",
+    "basis": {
+     "quantity": 2,
+     "unit": "таблетка",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     200
+    ],
+    "source": {
+     "title": "Swanson Magnesium Taurate 100 mg — Supplement Facts",
+     "url": "https://www.swansonvitamins.com/p/swanson-premium-magnesium-taurate-100-mg-120-tabs",
+     "quote": "Serving Size 2 Tablets; Magnesium (from Magnesium taurinate) 200 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример этикетки: 200 мг элементарного магния на 2 таблетки, не капсулы. Масса таурата и количество таурина не заявлены, их не вычисляем. Не рекомендация дозы."
+   }
+  },
+  {
+   "id": "magnesium-threonate",
+   "name": "Магний · L-треонат",
+   "category": "magnesium",
+   "unit": "капсула",
+   "form": "L-треонат",
+   "hint": "Массу соединения добавляй только при наличии на этикетке.",
+   "components": [
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "magnesium-threonate-label-2026-11-11",
+    "basis": {
+     "quantity": 3,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     144
+    ],
+    "source": {
+     "title": "Life Extension Neuro-Mag Magnesium L-Threonate — Supplement Facts",
+     "url": "https://www.lifeextension.com/vitamins-supplements/item01603/neuro-mag-magnesium-l-threonate",
+     "quote": "Serving Size 3 vegetarian capsules; Magnesium (from 2000 mg Magtein® magnesium L-threonate) 144 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример этикетки: 144 мг элементарного магния на 3 капсулы. 2000 мг относится к соединению L-треоната, а не к элементарному магнию; не складывать эти величины. Не рекомендация дозы."
+   }
+  },
+  {
+   "id": "magnesium-oxide",
+   "name": "Магний · оксид",
+   "category": "magnesium",
+   "unit": "капсула",
+   "form": "оксид",
+   "hint": "Массу соединения добавляй только при наличии на этикетке.",
+   "components": [
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "magnesium-oxide-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "таблетка",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     250
+    ],
+    "source": {
+     "title": "Nature Made Magnesium 250 mg Tablets — Ingredients",
+     "url": "https://www.naturemade.com/products/magnesium-250-mg-tablets?variant=17776033857607",
+     "quote": "Serving size: 1 tablet; Amount Per Serving: 250 mg Magnesium (as Magnesium Oxide)",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример этикетки: 250 мг элементарного магния на 1 таблетку. Это не масса оксида и не универсальный состав препаратов. Не рекомендация дозы."
+   }
+  },
+  {
+   "id": "magnesium-chloride",
+   "name": "Магний · хлорид",
+   "category": "magnesium",
+   "unit": "капсула",
+   "form": "хлорид",
+   "hint": "Массу соединения добавляй только при наличии на этикетке.",
+   "components": [
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "magnesium-chloride-label-2026-11-11",
+    "basis": {
+     "quantity": 2.5,
+     "unit": "мл",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     66.5
+    ],
+    "source": {
+     "title": "NutriCology Magnesium Chloride Liquid — Supplement Facts",
+     "url": "https://nutricology.com/magnesium-chloride-liquid-8-fl.-oz.-236-ml",
+     "quote": "Serving Size 1/2 teaspoon (2.5 mL); Magnesium (as Magnesium Chloride) 66.5 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример жидкой добавки для приёма внутрь: 66,5 мг элементарного магния на 2,5 мл. Не наружное магниевое масло. Плотность не указана, мл не переводить в граммы. Не рекомендация дозы."
+   }
+  },
+  {
+   "id": "creatine-monohydrate",
+   "name": "Креатин моногидрат",
+   "category": "sport",
+   "unit": "г",
+   "form": "моногидрат",
+   "hint": "Количество порошка и состав на выбранную меру — по этикетке.",
+   "components": [
+    {
+     "name": "Креатин моногидрат",
+     "unit": "г"
+    }
+   ],
+   "example": {
+    "id": "creatine-monohydrate-label-2026-11-10",
+    "basis": {
+     "quantity": 5,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     5
+    ],
+    "source": {
+     "title": "NIH DSLD · Cutler Essentials",
+     "url": "https://dsld.od.nih.gov/label/310074",
+     "quote": "100% pure creatine monohydrate 5 g per serving",
+     "checkedAt": "2026-11-10"
+    },
+    "note": "Пример чистого моногидрата: 5 г порошка содержат 5 г моногидрата. Это не масса чистого креатина и не стандартная ложка."
+   }
+  },
+  {
+   "id": "protein-whey-concentrate",
+   "name": "Сывороточный протеин · концентрат",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-whey-concentrate-label-2026-11-11",
+    "basis": {
+     "quantity": 30,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     22,
+     1.8,
+     2.7,
+     114
+    ],
+    "source": {
+     "title": "Myprotein Impact Whey Protein — Vanilla",
+     "url": "https://www.myprotein.com/p/sports-nutrition/impact-whey-protein-powder/10530943/",
+     "quote": "Typical Values Per 100g Per 30g",
+     "paraphrase": "На 30 г порошка: белки 22 г, жиры 1.8 г, углеводы 2.7 г, энергия 114 ккал.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Концентрат сывороточного белка 96%, ваниль. Пример этикетки EU/UK, не универсальная норма и не рекомендация приёма. Углеводы не US Total Carbohydrate."
+   }
+  },
+  {
+   "id": "protein-whey-isolate",
+   "name": "Сывороточный протеин · изолят",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-whey-isolate-label-2026-11-11",
+    "basis": {
+     "quantity": 30,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     25,
+     0.27,
+     1.8,
+     108
+    ],
+    "source": {
+     "title": "Myprotein Impact Whey Isolate — Vanilla",
+     "url": "https://www.myprotein.com/p/sports-nutrition/impact-whey-isolate-powder/10530911/",
+     "quote": "Typical Values Per 100g Per 30g",
+     "paraphrase": "На 30 г: белки 25 г, жиры 0.27 г, углеводы 1.8 г, энергия 108 ккал.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Ванильный вариант, сывороточный изолят 96%. Жиры 0.27 г рассчитаны из 0.9 г/100 г; на 30 г этикетка указывает <0.5 г. Пример состава порошка UK, не универсальные значения и не рекомендация приёма. Углеводы отдельно от клетчатки."
+   }
+  },
+  {
+   "id": "protein-whey-hydrolysate",
+   "name": "Сывороточный протеин · гидролизат",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-whey-hydrolysate-label-2026-11-11",
+    "basis": {
+     "quantity": 32,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     25,
+     0.6,
+     0.8,
+     114
+    ],
+    "source": {
+     "title": "Dymatize ISO100 Hydrolyzed — Gourmet Chocolate, EU",
+     "url": "https://www.dymatize-athletic-nutrition.com/products/iso100-hydrolyzed",
+     "quote": "Protein | 79 | 25",
+     "paraphrase": "На 32 г порошка: белки 25 г, жиры 0.6 г, углеводы 0.8 г, энергия 114 ккал.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Рыночный пример смеси: гидролизованный сывороточный изолят 47% и обычный изолят 44%, НЕ чистый гидролизат. Шоколад. Столбец таблицы 32 г согласован с инструкцией для шоколада; ошибочная общая сноска 30 г не использована. Пример этикетки EU/UK, не универсальная норма и не рекомендация приёма. Углеводы не US Total Carbohydrate."
+   }
+  },
+  {
+   "id": "protein-casein",
+   "name": "Казеин",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-casein-label-2026-11-11",
+    "basis": {
+     "quantity": 30,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     24,
+     0.48,
+     1.1,
+     104
+    ],
+    "source": {
+     "title": "Myprotein Impact Micellar Casein Powder — Chocolate, UK",
+     "url": "https://www.myprotein.com/p/sports-nutrition/impact-casein-powder/10798909/?variation=11366947",
+     "quote": "Typical Values Per 100g Per 30g Serving",
+     "paraphrase": "На 30 г: белок 24 г, углеводы 1.1 г, энергия 104 ккал, жиры <0.5 г. На 100 г жиров 1.6 г.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример шоколадного казеина. Жиры 0.48 г вычислены из 1.6 г/100 г; на этикетке на 30 г стоит <0.5 г. Остальные цифры из столбца порции 30 г. UK углеводы, клетчатку не вычитать. Порошок, не рекомендация приёма."
+   }
+  },
+  {
+   "id": "protein-soy",
+   "name": "Соевый протеин",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-soy-label-2026-11-11",
+    "basis": {
+     "quantity": 30,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     23,
+     0.6,
+     1.1,
+     103
+    ],
+    "source": {
+     "title": "Myprotein Impact Soy Protein — Chocolate",
+     "url": "https://www.myprotein.com/p/sports-nutrition/soy-protein-isolate/10529701/?variation=17800872",
+     "quote": "Typical Values Per 100g Per 30g",
+     "paraphrase": "На 30 г: белки 23 г, жиры 0.6 г, углеводы 1.1 г, энергия 103 ккал.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Шоколадный вариант, изолят сои 92%. Пример состава порошка UK, не универсальные значения и не рекомендация приёма. Углеводы отдельно от клетчатки."
+   }
+  },
+  {
+   "id": "protein-pea",
+   "name": "Гороховый протеин",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-pea-label-2026-11-11",
+    "basis": {
+     "quantity": 30,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     24,
+     1.8,
+     0.9,
+     119
+    ],
+    "source": {
+     "title": "Bulk Pea Protein Isolate, unflavoured",
+     "url": "https://www.bulk.com/uk/products/super-pea-protein-isolate/bpb-sppi-0000",
+     "quote": "Nutrition | per 100 g | per serving (30g)",
+     "checkedAt": "2026-11-11",
+     "paraphrase": "На 30 г: белки 24 г; жиры 1.8 г; углеводы 0.9 г; энергия 119 ккал."
+    },
+    "note": "Пример UK-этикетки порошка без вкусовых добавок: 30 г, не готовый напиток и не рекомендация приёма. Углеводы указаны отдельно от клетчатки; повторно клетчатку не вычитать."
+   }
+  },
+  {
+   "id": "protein-rice",
+   "name": "Рисовый протеин",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-rice-label-2026-11-11",
+    "basis": {
+     "quantity": 30,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     24,
+     1.1,
+     1.1,
+     112
+    ],
+    "source": {
+     "title": "Bulk Brown Rice Protein, unflavoured",
+     "url": "https://www.bulk.com/uk/products/brown-rice-protein-80/bpb-brp8-0000",
+     "quote": "Nutrition | per 100 g | per serving (30g)",
+     "checkedAt": "2026-11-11",
+     "paraphrase": "На 30 г: белки 24 г; жиры 1.1 г; углеводы 1.1 г; энергия 112 ккал."
+    },
+    "note": "Пример UK-этикетки порошка без вкусовых добавок: 30 г, не готовый напиток и не рекомендация приёма. Углеводы указаны отдельно от клетчатки; повторно клетчатку не вычитать."
+   }
+  },
+  {
+   "id": "protein-plant-blend",
+   "name": "Растительный протеин · смесь",
+   "category": "protein",
+   "unit": "г",
+   "form": "",
+   "hint": "Белок, БЖУ и калорийность по этикетке, без средних значений.",
+   "components": [
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Жиры",
+     "unit": "г",
+     "substanceId": "fat"
+    },
+    {
+     "name": "Углеводы",
+     "unit": "г",
+     "substanceId": "carb"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "protein-plant-blend-label-2026-11-11",
+    "basis": {
+     "quantity": 30,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     22,
+     2,
+     1.7,
+     115
+    ],
+    "source": {
+     "title": "Myprotein Impact Plant Protein — Vanilla (new recipe)",
+     "url": "https://www.myprotein.com/p/sports-nutrition/vegan-protein-blend/11776868/?rctxt=recs-pdp-customers_eventually_bought",
+     "quote": "Typical Values Per 100g Per 30g",
+     "paraphrase": "На 30 г: белки 22 г, жиры 2 г, углеводы 1.7 г, энергия 115 ккал.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Ванильный вариант новой рецептуры: горох и кормовые бобы. На странице ошибка числа порций 15 при выбранной упаковке 900 г/30порций; использована только согласованная пищевая таблица 30 г. Пример состава порошка UK, не универсальные значения и не рекомендация приёма. Углеводы отдельно от клетчатки."
+   }
+  },
+  {
+   "id": "collagen",
+   "name": "Коллаген",
+   "category": "sport",
+   "unit": "г",
+   "form": "",
+   "hint": "Коллаген и общий белок могут пересекаться, их не складываем.",
+   "components": [
+    {
+     "name": "Коллаген",
+     "unit": "г"
+    },
+    {
+     "name": "Белки",
+     "unit": "г",
+     "substanceId": "prot"
+    },
+    {
+     "name": "Энергия",
+     "unit": "ккал",
+     "substanceId": "kcal"
+    }
+   ],
+   "example": {
+    "id": "collagen-label-2026-11-11",
+    "basis": {
+     "quantity": 20,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     20,
+     18,
+     70
+    ],
+    "source": {
+     "title": "Vital Proteins: Collagen Peptides, unflavored bovine, official comparison chart",
+     "url": "https://www.vitalproteins.com/cdn/shop/t/1531/assets/NewToVital_ComparisonChart_FINAL.pdf?v=83458073185004050311773935584",
+     "quote": "Serving Size 2 Scoops (20 g)",
+     "paraphrase": "На 20 г: коллагеновые пептиды 20 г, белок 18 г, энергия 70 ккал.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример американской этикетки неароматизированного говяжьего коллагена. Коллагеновые пептиды и общий белок описывают пересекающийся состав; их не складываем. Порция порошка, не медицинская рекомендация. Углеводы не переносились."
+   }
+  },
+  {
+   "id": "vitamin-d3",
+   "name": "Витамин D3",
+   "category": "vitamins",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Единицу можно заменить на ту, что указана на этикетке.",
+   "components": [
+    {
+     "name": "Витамин D3",
+     "unit": "мкг",
+     "substanceId": "vD"
+    }
+   ],
+   "example": {
+    "id": "vitamin-d3-label-2026-11-10",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     25
+    ],
+    "source": {
+     "title": "NIH DSLD · Solgar D3",
+     "url": "https://api.ods.od.nih.gov/dsld/s3/pdf/77212.pdf",
+     "quote": "Serving Size: 1 Softgel; Vitamin D3 25 mcg (1000 IU) 125%",
+     "checkedAt": "2026-11-10"
+    },
+    "note": "Пример одной мягкой капсулы: 25 мкг D3, то же количество равно 1000 МЕ. Масса всей капсулы неизвестна."
+   }
+  },
+  {
+   "id": "vitamin-d2",
+   "name": "Витамин D2",
+   "category": "vitamins",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Единицу можно заменить на ту, что указана на этикетке.",
+   "components": [
+    {
+     "name": "Витамин D2",
+     "unit": "мкг",
+     "substanceId": "vD"
+    }
+   ],
+   "example": {
+    "id": "vitamin-d2-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     25
+    ],
+    "source": {
+     "title": "NOW Vitamin D-2 1000 IU Dry Veg Capsules",
+     "url": "https://www.nowfoods.com/products/supplements/vitamin-d-1000-iu-dry-veg-capsules",
+     "quote": "Serving Size: 1 Veg Capsule; Vitamin D (as D2 Ergocalciferol) 25 mcg (1,000 IU)",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. Эргокальциферол: 25 мкг = 1000 МЕ на капсулу. Полная масса капсулы неизвестна."
+   }
+  },
+  {
+   "id": "vitamin-c",
+   "name": "Витамин C",
+   "category": "vitamins",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Единицу можно заменить на ту, что указана на этикетке.",
+   "components": [
+    {
+     "name": "Витамин C",
+     "unit": "мг",
+     "substanceId": "vC"
+    }
+   ],
+   "example": {
+    "id": "vitamin-c-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     500
+    ],
+    "source": {
+     "title": "Solgar Vitamine C 500 mg",
+     "url": "https://www.solgar.nl/producten/vitamine-c-500-mg",
+     "quote": "Samenstelling per één (1) plantaardige capsule: Vitamine C (L-ascorbinezuur) 500 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. L-аскорбиновая кислота, 500 мг на капсулу. Полная масса капсулы неизвестна."
+   }
+  },
+  {
+   "id": "vitamin-b12",
+   "name": "Витамин B12",
+   "category": "vitamins",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Единицу можно заменить на ту, что указана на этикетке.",
+   "components": [
+    {
+     "name": "Витамин B12",
+     "unit": "мкг",
+     "substanceId": "b12"
+    }
+   ],
+   "example": {
+    "id": "vitamin-b12-label-2026-11-10",
+    "basis": {
+     "quantity": 1,
+     "unit": "таблетка",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     500
+    ],
+    "source": {
+     "title": "DailyMed · Nationwide B12",
+     "url": "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=59cff4a0-da7b-40de-87b5-cf3cd400bbf7",
+     "quote": "Serving Size: 1 Tablet; Vitamin B-12 (as Cyanocobalamin) 500 mcg",
+     "checkedAt": "2026-11-10"
+    },
+    "note": "Пример таблетки с цианокобаламином. Это концентрация одного продукта, не суточная потребность; масса таблетки неизвестна."
+   }
+  },
+  {
+   "id": "vitamin-k2",
+   "name": "Витамин K2",
+   "category": "vitamins",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Единицу можно заменить на ту, что указана на этикетке.",
+   "components": [
+    {
+     "name": "Витамин K2",
+     "unit": "мкг",
+     "substanceId": "vK"
+    }
+   ],
+   "example": {
+    "id": "vitamin-k2-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     100
+    ],
+    "source": {
+     "title": "Solgar Natural Vitamin K2 MK-7 100 mcg",
+     "url": "https://www.solgar.co.nz/products/solgar-vitamin-k2-100mcg-50s",
+     "quote": "Each vegetable capsule provides: Vitamin K2 (as menaquinone-7) 100 µg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. Форма MK-7 (менахинон-7), не MK-4. Этикетка этого примера указывает сою и молоко. Полная масса капсулы неизвестна."
+   }
+  },
+  {
+   "id": "zinc",
+   "name": "Цинк",
+   "category": "minerals",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Количество элемента, а не масса его соли. Форму впиши по этикетке.",
+   "components": [
+    {
+     "name": "Цинк (элементарный)",
+     "unit": "мг",
+     "substanceId": "zn"
+    }
+   ],
+   "example": {
+    "id": "zinc-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "таблетка",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     22
+    ],
+    "source": {
+     "title": "Solgar Zink Picolinaat 22 mg",
+     "url": "https://www.solgar.nl/producten/zink-picolinaat-22-mg",
+     "quote": "Samenstelling per één (1) tablet: Zink (picolinaat) 22 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. 22 мг элементного цинка, а не масса пиколината. Полная масса таблетки неизвестна."
+   }
+  },
+  {
+   "id": "calcium",
+   "name": "Кальций",
+   "category": "minerals",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Количество элемента, а не масса его соли. Форму впиши по этикетке.",
+   "components": [
+    {
+     "name": "Кальций (элементарный)",
+     "unit": "мг",
+     "substanceId": "ca"
+    }
+   ],
+   "example": {
+    "id": "calcium-label-2026-11-11",
+    "basis": {
+     "quantity": 3,
+     "unit": "г",
+     "gramsPerUnit": 1
+    },
+    "amounts": [
+     600
+    ],
+    "source": {
+     "title": "NOW Calcium Citrate Pure Powder",
+     "url": "https://www.nowfoods.com/products/supplements/calcium-citrate-pure-powder",
+     "quote": "Serving Size: 1 1/2 Level Teaspoons (approx. 3 g); Calcium (elemental) (from 3,000 mg Calcium Citrate) 600 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. 600 мг элементного кальция в 3 г порошка цитрата кальция. На этикетке бытовая порция 1½ чайной ложки обозначена как приблизительно 3 г; здесь метрическая порция 3 г."
+   }
+  },
+  {
+   "id": "iron",
+   "name": "Железо",
+   "category": "minerals",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Количество элемента, а не масса его соли. Форму впиши по этикетке.",
+   "components": [
+    {
+     "name": "Железо (элементарный)",
+     "unit": "мг",
+     "substanceId": "fe"
+    }
+   ],
+   "example": {
+    "id": "iron-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "капсула",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     18
+    ],
+    "source": {
+     "title": "NOW Iron 18 mg Veg Capsules",
+     "url": "https://www.nowfoods.com/products/supplements/iron-18-mg-veg-capsules",
+     "quote": "Serving Size: 1 Veg Capsule; Iron (elemental) (from 90 mg Ferrous Bisglycinate) (Ferrochel) 18 mg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. 18 мг элементного железа, не 90 мг соединения бисглицината. Полная масса капсулы неизвестна."
+   }
+  },
+  {
+   "id": "selenium",
+   "name": "Селен",
+   "category": "minerals",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Количество элемента, а не масса его соли. Форму впиши по этикетке.",
+   "components": [
+    {
+     "name": "Селен (элементарный)",
+     "unit": "мкг",
+     "substanceId": "se"
+    }
+   ],
+   "example": {
+    "id": "selenium-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "таблетка",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     100
+    ],
+    "source": {
+     "title": "Solgar Selenium 100 mcg",
+     "url": "https://www.solgar.nl/producten/selenium-100-mcg",
+     "quote": "Samenstelling per één (1) tablet: Selenium (L-selenomethionine) 100 mcg",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. 100 мкг элементного селена в форме L-селенометионина, не масса соединения. Полная масса таблетки неизвестна."
+   }
+  },
+  {
+   "id": "electrolytes",
+   "name": "Электролиты",
+   "category": "sport",
+   "unit": "г",
+   "form": "",
+   "hint": "Добавь другие компоненты своей смеси кнопкой +.",
+   "components": [
+    {
+     "name": "Натрий",
+     "unit": "мг",
+     "substanceId": "na"
+    },
+    {
+     "name": "Калий",
+     "unit": "мг",
+     "substanceId": "k"
+    },
+    {
+     "name": "Магний (элементарный)",
+     "unit": "мг",
+     "substanceId": "mg"
+    }
+   ],
+   "example": {
+    "id": "electrolytes-label-2026-11-11",
+    "basis": {
+     "quantity": 1,
+     "unit": "пакетик",
+     "gramsPerUnit": null
+    },
+    "amounts": [
+     1000,
+     200,
+     60
+    ],
+    "source": {
+     "title": "LMNT Raw Unflavored electrolyte stick pack",
+     "url": "https://drinklmnt.com/pages/ingredients",
+     "quote": "LMNT contains 1000 mg sodium, 200 mg potassium, and 60 mg magnesium.",
+     "checkedAt": "2026-11-11"
+    },
+    "note": "Пример состава по этикетке, не универсальная концентрация и не рекомендация приёма. Один stick pack: Na 1000 мг, K 200 мг, Mg 60 мг (порядок массива Na/K/Mg); элементные количества, не масса солей. Это конкретная высоконатриевая спортивная смесь, не универсальная порция электролитов. Полная масса пакетика не установлена."
+   }
+  },
+  {
+   "id": "multivitamin",
+   "name": "Мультивитаминный комплекс",
+   "category": "vitamins",
+   "unit": "таблетка",
+   "form": "",
+   "hint": "Замени первую строку и добавь все нужные компоненты этикетки.",
+   "components": [
+    {
+     "name": "Витамин или минерал",
+     "unit": "мг"
+    }
+   ]
+  },
+  {
+   "id": "custom",
+   "name": "Своя добавка",
+   "category": "custom",
+   "unit": "г",
+   "form": "",
+   "hint": "Свободный шаблон для состава и собственных мер.",
+   "components": [
+    {
+     "name": "Компонент",
+     "unit": "мг"
+    }
+   ]
+  }
+ ]
+}
