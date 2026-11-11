@@ -1,5 +1,5 @@
 {
- "release": "Happy Meal Update 27.3",
+ "release": "Happy Meal Update 27.4",
  "date": "2026-11-10",
  "entry": "meal-27/index.html",
  "source": {
@@ -24,8 +24,8 @@
   },
   {
    "path": "README.md",
-   "size": 18687,
-   "sha256": "2a16ee6eeeffdb0abdd69f7fe344691397b24493f32b3ea19bdb413648ada648"
+   "size": 18679,
+   "sha256": "8074731df96ab47079a1d7e9001d11b66f4e23520cb0f77bb7a6e23ed989287c"
   },
   {
    "path": "account-ui.js",
@@ -435,7 +435,7 @@
   {
    "path": "release-notes.js",
    "size": 22878,
-   "sha256": "b63ae7d7c81dd239e622535c6e01b8b9dd1d325d6d073b80d5855b2eea80d370"
+   "sha256": "1c1ebd076fc821dfb358e8dddb2bbd5f8ef290b975c6d3278a5649b8209f9828"
   },
   {
    "path": "report.css",
@@ -1782,6 +1782,17 @@
     "index.html: cache busters ?v=27.3, title and footer 27.3",
     "shared/happy-summaries.js: meal.day(summary,date,counters) for Sport and Day (shared file)",
     "checks/check-sport-summary.mjs: group 5 — the lists from the real linkSummary and the shared reader"
+   ]
+  },
+  {
+   "version": "27.4",
+   "date": "2026-11-11",
+   "published": "2026-11-11 23:07 (вместе с Meal 28)",
+   "changes": [
+    "index.html: mlFirstTime() — время приёма — самый ранний продукт (напитки приём не открывают): раздел, главный экран, черновик, время всего приёма, сводка для Day (linkFacts t)",
+    "controls.js и окно времени приёма (index.html mealTimeDialog): mlTimeRestart — цифра поверх полного времени начинает время заново, без maxlength 5",
+    "checks/check-meal-first-time.mjs (новый)",
+    "cache busters ?v=27.4, title, footer and release note 27.4"
    ]
   }
  ]

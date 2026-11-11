@@ -1,6 +1,7 @@
 {
  "release": "Happy Meal Update 28",
  "date": "2026-11-11",
+ "published": "2026-11-11 23:07 (по слову Астамура 23:03)",
  "entry": "meal-28/index.html",
  "source": {
   "release": "meal-27 (Happy Meal Update 27.4, ветка meal-27-4-times)",
@@ -47,8 +48,8 @@
   },
   {
    "path": "README.md",
-   "size": 23687,
-   "sha256": "3ad1d88d47740a6e9af47d584c1934baa2ac208998a105d8711e3ba378fd08f7"
+   "size": 23734,
+   "sha256": "1b7a9c5cb228489946800d0d079923544ddbc93038c2ec29ce24f3c47f79e40b"
   },
   {
    "path": "account-ui.js",
@@ -493,7 +494,7 @@
   {
    "path": "release-notes.js",
    "size": 24016,
-   "sha256": "8ba8f92323d2b35c2e03fd55e48bcf9361fa0e4f53db0bf66ba8781e07e4a30b"
+   "sha256": "54ff8c09f1df339a411ea4aeb4e8500c99f2299eebfe2fc5178d56a6bd8c1eef"
   },
   {
    "path": "report.css",
