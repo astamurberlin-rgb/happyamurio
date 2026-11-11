@@ -156,11 +156,17 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
    2) после входа — облачная строка meal/link, только чтение: сначала сверяется время, сама сводка
       скачивается, если она новее сохранённой.
    На устройстве остаётся короткая копия — калории и БЖУ по дням — под ключом
-   `auth-readonly-happy-energy-meal-v1:<аккаунт>`. Сводка другого аккаунта или гостя не принимается.
+   `happy-energy-meal-v2:<аккаунт>`. Сводка другого аккаунта или гостя не принимается.
    «Потрачено», покой и шаги Sport пока не считает (решение владельца 11.11.2026: позже, вместе с расчётом
-   энергии тренировок); поля в виджете и в сводке для них уже есть. */
+   энергии тренировок); поля в виджете и в сводке для них уже есть.
+   Update 40.4: порции со счётчиков попадают в «съедено» сразу после нажатия. Итог дня считает Meal, когда открыт;
+   его сводка (Meal 27.3) называет порции, которые в итог уже вошли, а остальные Sport прибавляет сам из документа
+   счётчиков на этом устройстве — см. shared/happy-summaries.js. Короткая копия теперь хранит и этот список, поэтому
+   у неё новый ключ; прежняя (`auth-readonly-happy-energy-meal-v1:<аккаунт>`) больше не читается и оставлена на месте. */
 const owner=()=>typeof SportProfiles!=='undefined'&&SportProfiles.owner||'local';
-const sharedKey=()=> 'auth-readonly-happy-energy-meal-v1:'+owner();
+const sharedKey=()=> 'happy-energy-meal-v2:'+owner();
+/* документ счётчиков этого устройства (food-counters.js стоит в сборке ниже — до его запуска документа ещё нет) */
+function counters(){try{return sportFoodDoc}catch{return null}}
 const mealLinkKey=()=>HappySummaries.key(HappySummaries.meal.key,owner());
 function date(){return selectedDate}
 let mealMemo={key:null,raw:null,value:null},mealLocalSeen='',mealCloudBusy=false;
@@ -169,7 +175,7 @@ function mealCache(){
  if(key!==mealMemo.key||raw!==mealMemo.raw){const o=HappySummaries.parse(raw);mealMemo={key,raw,value:o&&o.owner===owner()&&HappySummaries.meal.valid(o)?o:null}}
  return mealMemo.value;
 }
-function nutrition(){const o=mealCache();if(!o)return null;const d=HappySummaries.meal.day(o,date());return d?{k:d.k,p:d.p,f:d.f,c:d.c,fib:d.fib,g:o.goals||{},recorded:d.recorded}:null}
+function nutrition(){const o=mealCache();if(!o)return null;const d=HappySummaries.meal.day(o,date(),counters());return d?{k:d.k,p:d.p,f:d.f,c:d.c,fib:d.fib,g:o.goals||{},recorded:d.recorded}:null}
 function acceptMeal(o,uid){
  if(owner()!==uid||!HappySummaries.meal.valid(o)||o.owner!==uid)return false;
  const local=mealCache();if(local&&local.at>=o.at)return false;
@@ -211,5 +217,11 @@ function refresh(){readLocalMeal();paint();readCloudMeal().then(changed=>{if(cha
    открытии Sport снова показывает «потрачено» (решение владельца 11.11.2026). */
 document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=['spent','balance','eat'];mode=modes[(modes.indexOf(mode)+1)%3];paint()}});
 window.addEventListener('storage',e=>{if(e.key===null||e.key===sharedKey()||e.key===mealLinkKey()){readLocalMeal();paint()}});
+/* нажали счётчик здесь или пришли нажатия с другого устройства — кольцо пересчитывается сразу */
+window.addEventListener('happy-food-counters',paint);
 window.addEventListener('pageshow',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});setInterval(()=>{if(!document.hidden)refresh()},60000);refresh();
+/* Update 40.4: вход восстанавливается чуть позже первой отрисовки (ключ аккаунта читается асинхронно), поэтому первый
+   взгляд в облако раньше откладывался до минутного таймера или возврата на вкладку. Теперь сводка Meal спрашивается
+   сразу, как только вход восстановлен; ждём не дольше 15 секунд. */
+if(typeof CL!=='undefined'&&CL.ready===false&&typeof setTimeout==='function'){let tries=75;const wait=()=>{if(CL.ready!==false){refresh();return}if(--tries>0)setTimeout(wait,200)};setTimeout(wait,200)}
 })();

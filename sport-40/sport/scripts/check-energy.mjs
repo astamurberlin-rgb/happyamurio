@@ -1,4 +1,5 @@
-/* Sport's energy widget (Update 40.3): where «съедено» comes from, account isolation, the three views.
+/* Sport's energy widget (Update 40.3, 40.4): where «съедено» comes from, account isolation, the three views,
+   counter servings that Meal has not counted yet.
    Real src/energy-widget.js and shared/happy-summaries.js in a VM; storage and the cloud are stubs, records synthetic. */
 import {readFile} from 'node:fs/promises';
 import {createContext,runInContext} from 'node:vm';
@@ -60,7 +61,7 @@ let groups=0;
  e.store.set('hd_link_meal_v1',JSON.stringify(mealSummary(1000,{[DATE]:eggs})));
  assert.equal(e.run('probe.readLocalMeal()'),true);
  assert.deepEqual(JSON.parse(JSON.stringify(e.run('probe.nutrition()'))),{k:148.5,p:14.5,f:9.9,c:0.3,fib:null,g:{},recorded:true});
- const compact=JSON.parse(e.store.get('auth-readonly-happy-energy-meal-v1:local'));
+ const compact=JSON.parse(e.store.get('happy-energy-meal-v2:local'));
  assert.deepEqual(compact,{v:1,at:1000,owner:'local',days:{[DATE]:{k:148.5,p:14.5,f:9.9,c:0.3}}},'only calories and macros are copied');
  assert.equal(e.run('probe.readLocalMeal()'),false,'the same text is not read twice');
  tap(e);tap(e);assert.deepEqual(shown(e),{big:'149',cap:'съедено',rows:['Белки: 15 г','Жиры: 10 г','Углеводы: 0 г','Клетчатка: —']});
@@ -85,14 +86,14 @@ let groups=0;
  const e=env({owner:A});
  e.store.set('hd_link_meal_v1',JSON.stringify(mealSummary(1000,{[DATE]:{...eggs,k:777}})));
  e.store.set('happy-user:someone-else:hd_link_meal_v1',JSON.stringify(mealSummary(5000,{[DATE]:{...eggs,k:888}})));
- e.store.set('auth-readonly-happy-energy-meal-v1:local',JSON.stringify({v:1,at:9000,owner:'local',days:{[DATE]:{k:555,p:0,f:0,c:0}}}));
+ e.store.set('happy-energy-meal-v2:local',JSON.stringify({v:1,at:9000,owner:'local',days:{[DATE]:{k:555,p:0,f:0,c:0}}}));
  assert.equal(e.run('probe.readLocalMeal()'),false);assert.equal(e.run('probe.nutrition()'),null,'the guest summary is not shown to an account');
  e.store.set(keyA,JSON.stringify(mealSummary(1500,{[DATE]:eggs},{owner:'someone-else'})));
  assert.equal(e.run('probe.readLocalMeal()'),false);assert.equal(e.run('probe.nutrition()'),null,'a summary marked with another owner is refused');
  e.store.set(keyA,JSON.stringify(mealSummary(1600,{[DATE]:eggs})));
  assert.equal(e.run('probe.readLocalMeal()'),true);assert.equal(e.run('probe.nutrition().k'),148.5);
- assert.equal(JSON.parse(e.store.get('auth-readonly-happy-energy-meal-v1:'+A)).owner,A);
- e.store.set('auth-readonly-happy-energy-meal-v1:'+A,JSON.stringify({v:1,at:9999,owner:'local',days:{[DATE]:{k:1,p:0,f:0,c:0}}}));
+ assert.equal(JSON.parse(e.store.get('happy-energy-meal-v2:'+A)).owner,A);
+ e.store.set('happy-energy-meal-v2:'+A,JSON.stringify({v:1,at:9999,owner:'local',days:{[DATE]:{k:1,p:0,f:0,c:0}}}));
  assert.equal(e.run('probe.nutrition()'),null,'a copy that names another owner is not used');
  assert.equal(e.run("probe.acceptMeal({v:1,at:99999,owner:'local',days:{}},'local')"),false,'an answer for a previous owner is ignored');
  groups++;
@@ -122,4 +123,100 @@ let groups=0;
  assert.equal(e.run('probe.nutrition().k'),300);
  groups++;
 }
-console.log('Passed: Sport energy widget — '+groups+' groups: default «потрачено», tap order, nothing remembered; no invented totals; Meal summary from the device and from the cloud (time first, newer wins); account isolation; quiet failures.');
+// 6. Update 40.4 — counter servings reach «съедено» at once. Meal counts the day only while it is open; its summary
+//    (Meal 27.3, counters:1) names the servings already in the total, the rest Sport adds from the counters document.
+{
+ const mandarin={id:'f-mandarin',n:'Мандарин, сырой',k:53,p:0.8,f:0.3,c:11.5,counterValues:{kcal:53,prot:0.8,fat:0.3,carb:11.5,fib:1.8}};
+ const serving=(id,date=DATE,extra={})=>({id,cid:'c2',date,rev:1,writer:'w',item:{fid:'f-mandarin',q:1,u:'шт',g:88,t:'16:50',sec:'dn',counterFood:mandarin},...extra});
+ const book=events=>JSON.stringify({v:1,definitions:[],events});
+ const e=env();
+ // before food-counters.js has run there is no document: the summary is shown as it is
+ e.store.set('hd_link_meal_v1',JSON.stringify(mealSummary(1000,{},{counters:1})));
+ assert.equal(e.run('probe.readLocalMeal()'),true);
+ assert.deepEqual(JSON.parse(JSON.stringify(e.run('probe.nutrition()'))),{k:0,p:0,f:0,c:0,fib:null,g:{},recorded:false});
+ tap(e);tap(e);assert.equal(shown(e).big,'0');assert.equal(shown(e).cap,'съедено');
+ // a tap on a counter: the document changes, the ring is repainted by the event — Meal has not been opened
+ e.run('var sportFoodDoc='+book([serving('serving:a')]));
+ assert.equal(shown(e).big,'0','nothing repaints the ring until the counters say they changed');
+ e.handlers['window:happy-food-counters']();
+ assert.deepEqual(shown(e),{big:'47',cap:'съедено',rows:['Белки: 1 г','Жиры: 0 г','Углеводы: 10 г','Клетчатка: 2 г']});
+ e.run('sportFoodDoc='+book([serving('serving:a'),serving('serving:b'),serving('serving:y','2026-11-10')]));e.handlers['window:happy-food-counters']();
+ assert.equal(shown(e).big,'93','two servings today; yesterday\'s serving belongs to yesterday');
+ // Meal opened and counted both: its number is shown, nothing is added twice; the compact copy keeps the list
+ e.store.set('hd_link_meal_v1',JSON.stringify(mealSummary(2000,{[DATE]:{food:true,k:94,p:1.4,f:0.5,c:20.2,fib:3.2,sec:{},ev:[],cs:{'serving:a':[47,0.7,0.26,10.12,1.58],'serving:b':[47,0.7,0.26,10.12,1.58]}}},{counters:1})));
+ e.handlers['window:storage']({key:'hd_link_meal_v1'});
+ assert.equal(shown(e).big,'94');
+ assert.deepEqual(JSON.parse(e.store.get('happy-energy-meal-v2:local')).days[DATE].cs,{'serving:a':[47,0.7,0.26,10.12,1.58],'serving:b':[47,0.7,0.26,10.12,1.58]});
+ assert.equal(JSON.parse(e.store.get('happy-energy-meal-v2:local')).counters,1);
+ // «−» in Sport after that: Meal's value for that serving is taken away
+ e.run('sportFoodDoc='+book([serving('serving:a'),{id:'serving:b',cid:'c2',date:DATE,rev:2,writer:'w',deleted:true}]));e.handlers['window:happy-food-counters']();
+ assert.equal(shown(e).big,'47');
+ // a summary from an older Meal (no mark) is shown as it is, whatever the counters say
+ e.store.set('hd_link_meal_v1',JSON.stringify(mealSummary(3000,{[DATE]:{food:true,k:94,p:1.4,f:0.5,c:20.2,sec:{},ev:[]}})));
+ e.handlers['window:storage']({key:'hd_link_meal_v1'});
+ assert.equal(shown(e).big,'94');assert.equal('counters' in JSON.parse(e.store.get('happy-energy-meal-v2:local')),false);
+ // records Meal has settled itself (a serving removed in Meal while the counters still hold it, and the like) are left alone
+ const s=env();
+ s.store.set('hd_link_meal_v1',JSON.stringify(mealSummary(1000,{[DATE]:{food:true,k:100,p:1,f:1,c:1,sec:{},ev:[]}},{counters:1,skipped:['serving:ghost','serving:kept',7]})));
+ s.run('probe.readLocalMeal()');
+ s.run('var sportFoodDoc='+book([serving('serving:ghost'),{id:'serving:kept',cid:'c2',date:DATE,rev:2,writer:'w',deleted:true}]));
+ assert.equal(s.run('probe.nutrition().k'),100,'neither added nor taken away');
+ assert.deepEqual(JSON.parse(s.store.get('happy-energy-meal-v2:local')).skipped,['serving:ghost','serving:kept'],'the compact copy keeps the list');
+ s.run('sportFoodDoc='+book([serving('serving:ghost'),serving('serving:new')]));
+ assert.equal(s.run('probe.nutrition().k'),146.6,'a new tap is still added');
+ // the Update 40.3 copy (old key) is neither read nor written
+ const old=env();old.store.set('auth-readonly-happy-energy-meal-v1:local',JSON.stringify({v:1,at:9000,owner:'local',days:{[DATE]:{k:555,p:0,f:0,c:0}}}));
+ assert.equal(old.run('probe.nutrition()'),null);
+ old.store.set('hd_link_meal_v1',JSON.stringify(mealSummary(1000,{[DATE]:eggs})));old.run('probe.readLocalMeal()');
+ assert.equal(old.run('probe.nutrition().k'),148.5);assert.ok(!old.writes.includes('auth-readonly-happy-energy-meal-v1:local'));
+ groups++;
+}
+// 7. In the built page food-counters.js comes after the widget in one script: reading its document before that line is a
+//    «temporal dead zone» error, not undefined. The widget must survive it (first paint) and see the document afterwards.
+{
+ const order=await read('scripts/build.mjs');
+ assert.ok(order.indexOf('energyJs,')<order.indexOf('foodCounters,sportFoodCounters')&&order.indexOf('energyJs,')>0,'the widget is built before the counters');
+ const c=createContext({console,Date,Math,Number,JSON,Object,Array,Promise,SEED:{},selectedDate:DATE,state:{workouts:[]},
+  localStorage:{getItem:k=>k==='happy-energy-meal-v2:local'?JSON.stringify({v:1,at:1,owner:'local',counters:1,days:{}}):null,setItem(){}},navigator:{onLine:true},CL:{s:null,ck:null},
+  document:{hidden:false,getElementById:()=>null,addEventListener(){},createElement:()=>({innerHTML:'',querySelector:()=>null})},setInterval(){return 0},renderDiary:()=>'',render(){}});
+ c.window=c;c.addEventListener=()=>{};
+ runInContext('var SportProfiles={owner:"local"};function clOn(){return false}',c);runInContext(summaries,c);
+ const doc=JSON.stringify({v:1,definitions:[],events:[{id:'serving:a',cid:'c2',date:DATE,rev:1,writer:'w',item:{fid:'f',q:1,u:'шт',g:100,counterFood:{id:'f',n:'Продукт',k:120,p:0,f:0,c:0}}}]});
+ // one script, as in the build: the widget first (it paints at once), then the counters' `let`
+ runInContext(instrumented.replace(/globalThis\.probe=\{/,'globalThis.early=nutrition().k;globalThis.probe={')+'\nlet sportFoodDoc='+doc+';globalThis.later=probe.nutrition().k;',c);
+ assert.equal(c.early,0,'before the counters exist: the summary alone');assert.equal(c.later,120,'afterwards: the serving is counted');
+ groups++;
+}
+// 8. Update 40.4 — the account session is restored a moment after the first paint. The widget asks the cloud as soon as
+//    it is restored instead of waiting for the one-minute timer; a session that is already there is not asked twice.
+{
+ const A='00000000-0000-4000-8000-00000000000a',timers=[];
+ const store=new Map(),handlers={},cloud={at:5000,doc:mealSummary(5000,{[DATE]:eggs}),atCalls:0,getCalls:0};
+ const el={classList:{add(){}},innerHTML:''};
+ const c=createContext({console,Date,Math,Number,JSON,Object,Array,Promise,SEED:{},selectedDate:DATE,state:{workouts:[]},
+  localStorage:{getItem:k=>store.has(k)?store.get(k):null,setItem:(k,v)=>{store.set(k,String(v))}},navigator:{onLine:true},CL:{s:null,ck:null,ready:false},
+  document:{hidden:false,getElementById:id=>id==='happy-energy'?el:null,addEventListener:(type,fn)=>{handlers[type]=fn},createElement:()=>({innerHTML:'',querySelector:()=>null})},
+  setInterval(){return 0},setTimeout:(fn,ms)=>{timers.push({fn,ms});return timers.length},renderDiary:()=>'',render(){}});
+ c.window=c;c.addEventListener=()=>{};
+ runInContext(`var SportProfiles={owner:${JSON.stringify(A)}};function clOn(){return !!(CL.s&&CL.ck)}`,c);
+ c.clAt=async()=>{cloud.atCalls++;return cloud.at};c.clGet=async()=>{cloud.getCalls++;return cloud.doc};
+ runInContext(summaries,c);runInContext(instrumented,c);
+ const step=async()=>{const t=timers.shift();assert.ok(t,'a timer is waiting');assert.equal(t.ms,200);t.fn();await new Promise(r=>setTimeout(r,0))};
+ await new Promise(r=>setTimeout(r,0));
+ assert.equal(cloud.atCalls,0,'the session is not restored yet: nothing is asked');assert.equal(timers.length,1,'the widget waits for the session');
+ await step();await step();assert.equal(cloud.atCalls,0);assert.equal(timers.length,1,'still waiting, one timer at a time');
+ runInContext('CL.s={uid:SportProfiles.owner};CL.ck={};CL.ready=true',c);
+ await step();await new Promise(r=>setTimeout(r,0));
+ assert.deepEqual([cloud.atCalls,cloud.getCalls],[1,1],'restored: the summary is asked at once');assert.equal(timers.length,0,'and the waiting stops');
+ assert.equal(runInContext('probe.nutrition().k',c),148.5);
+ // a guest: the session «restores» to nobody — the waiting stops, the cloud is not asked
+ const g=env();assert.equal(g.cloud.atCalls,0);
+ // the wait gives up after 15 seconds
+ const timers2=[],c2=createContext({console,Date,Math,Number,JSON,Object,Array,Promise,SEED:{},selectedDate:DATE,state:{workouts:[]},localStorage:{getItem:()=>null,setItem(){}},navigator:{onLine:true},CL:{s:null,ck:null,ready:false},
+  document:{hidden:false,getElementById:()=>null,addEventListener(){},createElement:()=>({innerHTML:'',querySelector:()=>null})},setInterval(){return 0},setTimeout:(fn,ms)=>{timers2.push(fn);return 1},renderDiary:()=>'',render(){}});
+ c2.window=c2;c2.addEventListener=()=>{};runInContext('var SportProfiles={owner:"local"};function clOn(){return false}',c2);runInContext(summaries,c2);runInContext(instrumented,c2);
+ let turns=0;while(timers2.length){timers2.shift()();turns++;assert.ok(turns<200,'the wait must end')}
+ assert.equal(turns,75,'75 looks, 200 ms apart');
+ groups++;
+}
+console.log('Passed: Sport energy widget — '+groups+' groups: default «потрачено», tap order, nothing remembered; no invented totals; Meal summary from the device and from the cloud (time first, newer wins); account isolation; quiet failures; counter servings reach «съедено» at once and are never counted twice; the cloud is asked as soon as the session is restored.');

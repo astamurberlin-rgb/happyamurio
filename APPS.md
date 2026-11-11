@@ -5,19 +5,19 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
-| Happy Day · Update 57.4 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.4 |
+| Happy Day · Update 57.5 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.5 |
 | Happy Day · Update 56 | `day-56/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-56/ | 56 |
 | Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
 | Happy Day · Update 54.1 | `day-54/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-54/ | 54.1 |
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
-| Happy Meal · Update 27.2 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.2 |
+| Happy Meal · Update 27.3 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.3 |
 | Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
-| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.3 |
+| Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.4 |
 | Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.2 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
 | Happy Sport · Update 37 | `sport-37/sport/src/`; `node sport-37/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-37/ | 37 |
@@ -45,7 +45,9 @@
 
 **57.4 (11.11.2026 16:18, тот же каталог `day-57/`):** тренировки Sport приходят сами из сводки (`hd_link_sport_v1`, облако `sport/link` — только чтение, `shared/happy-summaries.js`) в «Активность», кольцо, журнал и выгрузки, без повторов и без записи в дневник; виджет энергии открывается на «баланс» и не запоминает выбор нажатием (`activitySettings.start`); цели Meal доходят до кольца; «Открыть запись в Sport ↗» — в текущий выпуск. Проверка — `day-57/tests/sport-summary.test.cjs`.
 
-— Claude · 10.11.2026 01:28; 11.11.2026 11:41 (57.3); 15:48 (57.4); 16:18 (публикация)
+**57.5 (11.11.2026 17:33, в ветке — не опубликовано; тот же каталог `day-57/`):** порции со счётчиков попадают в «съедено» кольца энергии сразу: итог из сводки Meal дополняется нажатиями, которые Meal ещё не посчитал, по документу счётчиков устройства (`mealFood` в `selfcare-ui.js`, правило — `shared/happy-summaries.js`; нужна сводка Meal 27.3). Кольцо на открытом экране «Активность» обновляется само. Проверка — `day-57/tests/counters-eaten.test.cjs`.
+
+— Claude · 10.11.2026 01:28; 11.11.2026 11:41 (57.3); 15:48 (57.4); 16:18 (публикация); 17:33 (57.5)
 
 ## Happy Day · Update 56 · 10.11.2026
 
@@ -95,7 +97,9 @@
 
 **27.2 (11.11.2026 16:18, тот же каталог `meal-27/`):** кольцо энергии принимает сводку тренировок Sport с устройства и из облака (`sport/link`, только чтение) через общий `shared/happy-summaries.js`; время тренировок видно без общего расхода. Сводка Meal отдаёт соседям «Цели на день» и клетчатку. Проверка — `meal-27/checks/check-sport-summary.mjs`.
 
-— Claude · 10.11.2026 00:50; 11.11.2026 15:48 (27.2); 16:18 (публикация)
+**27.3 (11.11.2026 17:33, в ветке — не опубликовано; тот же каталог `meal-27/`):** сводка Meal называет порции со счётчиков, которые уже вошли в итог дня (`counters:1`, `days[дата].cs`), и записи счётчиков, по которым Meal решил сам (`skipped`), — по ним Sport и Day прибавляют к «съедено» нажатия, которые Meal ещё не посчитал, и не считают дважды. Сам Meal считает день как раньше. Проверка — `meal-27/checks/check-sport-summary.mjs` (группа 5).
+
+— Claude · 10.11.2026 00:50; 11.11.2026 15:48 (27.2); 16:18 (публикация); 17:33 (27.3)
 
 ## Happy Meal · Update 26 · 09.11.2026
 
@@ -182,7 +186,9 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 
 **40.3 (11.11.2026 16:18, тот же каталог `sport-40/`):** обмен цифрами с Meal и Day. Сводка тренировок — проекция журнала — пишется под `hd_link_sport_v1` в области аккаунта и в облако `sport/link` через третий узкий канал (`readonly-guard.js` → `summary-exchange.js`): после подтверждённой синхронизации журнала, с проверкой версии и сверкой ответа. Кольцо энергии читает сводку Meal (устройство и облако) и не запоминает вид. Общий разбор сводок — `shared/happy-summaries.js`. Проверки — `check-summary-channel.mjs`, `check-summary-exchange.mjs`, `check-energy.mjs`.
 
-— Claude · 10.11.2026 21:40; 22:40 (40.1); 11.11.2026 11:41 (40.2); 15:48 (40.3); 16:18 (публикация)
+**40.4 (11.11.2026 17:33, в ветке — не опубликовано; тот же каталог `sport-40/`):** порции со счётчиков попадают в «съедено» кольца энергии сразу после нажатия: итог из сводки Meal (27.3) дополняется нажатиями, которые Meal ещё не посчитал, по документу счётчиков устройства; изменение счётчиков перерисовывает кольцо. Короткая копия сводки Meal — под новым ключом `happy-energy-meal-v2:<аккаунт>`. Сводка Meal спрашивается у облака сразу после восстановления входа. Записей в облако не прибавилось. Проверка — `sport/scripts/check-energy.mjs` (группы 6–8).
+
+— Claude · 10.11.2026 21:40; 22:40 (40.1); 11.11.2026 11:41 (40.2); 15:48 (40.3); 16:18 (публикация); 17:33 (40.4)
 
 ## Happy Sport · Update 39 · 09.11.2026
 

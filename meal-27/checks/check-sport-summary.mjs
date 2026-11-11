@@ -1,4 +1,5 @@
-/* Meal 27.2: сводка тренировок Happy Sport для кольца энергии и то, что Meal сам отдаёт соседям (цели, клетчатка).
+/* Meal 27.2, 27.3: сводка тренировок Happy Sport для кольца энергии и то, что Meal сам отдаёт соседям (цели,
+   клетчатка, учтённые порции со счётчиков).
    Настоящий код из index.html (блок чтения сводки Sport и linkSummary) и shared/happy-summaries.js в VM;
    хранилище и облако — заглушки, записи придуманные. */
 import {readFile} from 'node:fs/promises';
@@ -8,7 +9,7 @@ const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
 const page=await read('index.html'),summaries=await read('shared/happy-summaries.js');
 const cut=(from,to)=>{const a=page.indexOf(from),b=page.indexOf(to,a);assert.ok(a>0&&b>a,'блок найден: '+from);return page.slice(a,b)};
 const sportBlock=cut('function erSportOwn(o)','/* клетчатка за день');
-const summaryBlock=cut('function linkSummary(){',"var CL_APP='meal'");
+const summaryBlock=cut('function linkCounterDates(){',"var CL_APP='meal'");
 const A='00000000-0000-4000-8000-00000000000a',DATE='2026-11-11';
 const sportDoc=(at,records,extra={})=>({v:1,app:'sport',at,owner:A,records,...extra});
 const w=(id,start,duration,extra={})=>({id,title:'Тренировка',kind:'gym',start,end:'',duration,energyKcal:null,rev:at0,...extra});const at0=1000;
@@ -79,7 +80,8 @@ let groups=0;
    function sumOf(){return {k:148.5,p:14.5,f:9.9,c:0.3}} function isDrink(){return false} function r1(x){return Math.round(x*10)/10} function linkFacts(){return {food:true,n:1}}
    function goalOf(k){var v=parseFloat(String((DB.goals||{})[k]||'').replace(',','.'));return v>0?v:0}
    function dayFib(){${fibre}}
-   var MealProducts={exchange:function(){return {schema:'happy.meal.nutrition.v1',days:{}}}};`+summaryBlock,c);
+   function nutOf(){return {k:148.5,p:14.5,f:9.9,c:0.3}}
+   var MealProducts={exchange:function(){return {schema:'happy.meal.nutrition.v1',days:{}}},forItem:function(){return null},value:function(){return null}};`+summaryBlock,c);
   return JSON.parse(JSON.stringify(vm.runInContext('linkSummary()',c)))};
  const full=make({k:'2200',p:'120,5',f:'',c:'0',fib:'30',x:'5'},'return 6.44');
  assert.deepEqual(full.goals,{k:2200,p:120.5,fib:30});assert.equal(full.days[DATE].fib,6.4);assert.equal(full.days[DATE].k,148.5);assert.equal(full.v,1);assert.equal(full.app,'meal');
@@ -89,6 +91,62 @@ let groups=0;
  // общий модуль понимает то, что Meal отдал
  const S=vm.runInContext('HappySummaries',(()=>{const c=vm.createContext({});c.window=c;vm.runInContext(summaries,c);return c})());
  assert.equal(S.meal.valid(full),true);assert.equal(S.meal.day(full,DATE).fib,6.4);assert.deepEqual(JSON.parse(JSON.stringify(S.meal.compact(full,A).goals)),{k:2200,p:120.5,fib:30});
+ groups++;
+}
+// 5. Meal 27.3 — порции со счётчиков. Нажатие на счётчик в Sport или Day попадает в общий документ счётчиков, а день
+//    пересчитывает только Meal. В сводке Meal называет порции, которые уже вошли в итог (cs дня), и записи документа,
+//    по которым он решил сам (skipped), — по этим спискам Sport и Day прибавляют остальное сами и не считают дважды.
+{
+ const PREV='2026-11-10';
+ const make=(days,events)=>{const c=vm.createContext({console,JSON,Object,Array,Math,Date,isFinite});
+  vm.runInContext(`var DB={goals:{},sections:[{k:'am',t:'Завтрак'},{k:'dn',t:'Ужин'}],days:${JSON.stringify(days)},mealCounters:${JSON.stringify(events===undefined?undefined:{v:1,definitions:[],events})||'undefined'}};
+   var HD_PAIR={am:1,dn:1},blsVal=null,FOODS={egg:{id:'egg',k:135,p:13.2,f:9,c:0.3,fib:0},man:{id:'man',k:53,p:0.8,f:0.3,c:11.5,fib:1.8},bare:{id:'bare',k:100,p:1,f:1,c:1}};
+   function nutOf(x){var f=FOODS[x.fid],m=(x.g||0)/100;return f?{k:f.k*m,p:f.p*m,f:f.f*m,c:f.c*m}:{k:0,p:0,f:0,c:0}}
+   function sumOf(list){return list.reduce(function(a,x){var n=nutOf(x);a.k+=n.k;a.p+=n.p;a.f+=n.f;a.c+=n.c;return a},{k:0,p:0,f:0,c:0})}
+   function isDrink(){return false} function r1(x){return Math.round(x*10)/10} function linkFacts(){return {food:true,n:1}}
+   function goalOf(){return 0} function dayFib(){return null}
+   var MealProducts={exchange:function(){return {}},forItem:function(x,foods){return foods[x.fid]},value:function(f,key){return f&&typeof f[key]==='number'?f[key]:null}};`+summaryBlock,c);
+  return JSON.parse(JSON.stringify(vm.runInContext('linkSummary()',c)))};
+ const serving=(id,extra={})=>({id,counterEventId:id,tap:'shared-c2',fid:'man',sec:'dn',q:1,u:'шт',g:88,t:'16:50',...extra});
+ const man={id:'man',n:'Мандарин',k:53,p:0.8,f:0.3,c:11.5,counterValues:{kcal:53,prot:0.8,fat:0.3,carb:11.5,fib:1.8}};
+ const event=(id,extra={})=>({id,cid:'c2',date:DATE,rev:1,writer:'w',item:{fid:'man',q:1,u:'шт',g:88,t:'16:50',sec:'dn',counterFood:man},...extra});
+ const gone=(id,date=DATE)=>({id,cid:'c2',date,rev:2,writer:'w',deleted:true});
+ // яйца записаны руками, две порции мандарина — со связанного счётчика, «bare» — со счётчика, который есть только в Meal
+ const items=[{id:'i1',fid:'egg',sec:'am',g:110,t:'08:10'},serving('serving:a'),serving('serving:b'),{id:'i2',fid:'bare',sec:'dn',g:50,tap:'p-local'}];
+ const sum=make({[DATE]:{items}},[event('serving:a'),event('serving:b')]);
+ assert.equal(sum.counters,1,'сводка отмечена: учтённые порции названы');
+ assert.deepEqual(sum.days[DATE].cs,{'serving:a':[46.64,0.7,0.26,10.12,1.58],'serving:b':[46.64,0.7,0.26,10.12,1.58]},'в списке только порции общего документа счётчиков');
+ assert.deepEqual(sum.skipped,[],'дневник и документ согласны — решать нечего');
+ assert.equal(sum.days[DATE].k,291.8,'итог дня прежний: 148,5 + 2 × 46,64 + 50');
+ const none=make({[DATE]:{items:[{id:'i1',fid:'egg',sec:'am',g:110}]}},[]);
+ assert.equal(none.counters,1);assert.equal('cs' in none.days[DATE],false,'нет порций со счётчиков — нет и списка');assert.deepEqual(none.skipped,[]);
+ const odd=make({[DATE]:{items:[serving('serving:z',{fid:'нет-такого'}),serving('serving:n',{g:undefined}),{id:'i9',fid:'egg',sec:'am',g:10,counterEventId:''},{id:'i8',fid:'egg',sec:'am',g:10,counterEventId:7}]}},[event('serving:z'),event('serving:n')]);
+ assert.deepEqual(odd.days[DATE].cs,{'serving:z':[0,0,0,0,null],'serving:n':[0,0,0,0,0]},'нет продукта или веса — нули, а не «не число»; пустая отметка порцией не считается');
+ // Дневник и документ расходятся: такие записи Meal называет решёнными и в cs не ставит.
+ //  ghost — запись документа жива, а в дневнике её нет (убрали в Meal);  kept — в дневнике есть, а в документе убрана;
+ //  moved — в дневнике стоит на вчера, в документе — на сегодня;  lost — в дневнике есть, документ о ней не знает;
+ //  far — живая запись документа на день, в котором в Meal нет ни одной записи
+ const split=make({[DATE]:{items:[serving('serving:a'),serving('serving:kept'),serving('serving:lost')]},[PREV]:{items:[serving('serving:moved')]}},
+  [event('serving:a'),event('serving:ghost'),gone('serving:kept'),event('serving:moved'),event('serving:far',{date:'2026-11-05'}),gone('serving:old'),null,{id:7},{id:'serving:nodate',item:{}}]);
+ assert.deepEqual(Object.keys(split.days[DATE].cs),['serving:a']);assert.equal('cs' in split.days[PREV],false);
+ assert.deepEqual(split.skipped.sort(),['serving:far','serving:ghost','serving:kept','serving:lost','serving:moved']);
+ assert.equal(split.days[DATE].k,139.9,'итог дня Meal считает по своему дневнику: три порции');
+ assert.deepEqual(Object.keys(split.days).sort(),[PREV,DATE],'день без записей в сводку не попадает, но его запись названа решённой');
+ const blind=make({[DATE]:{items:[serving('serving:a')]}},undefined);
+ assert.equal('cs' in blind.days[DATE],false);assert.deepEqual(blind.skipped,['serving:a'],'документа счётчиков в базе нет — согласия проверить не с чем');
+ // общий разбор: порции из списка второй раз не прибавляются, новое нажатие прибавляется, «−» вычитается
+ const S=vm.runInContext('HappySummaries',(()=>{const c=vm.createContext({});c.window=c;vm.runInContext(summaries,c);return c})());
+ const book=events=>({v:1,definitions:[],events});
+ const day=(doc,of=sum)=>JSON.parse(JSON.stringify(S.meal.day(of,DATE,doc)));
+ assert.deepEqual(day(book([event('serving:a'),event('serving:b')])),{k:291.8,p:16.4,f:10.9,c:21.1,fib:null,recorded:true,pending:0},'то же, что показывает сам Meal (клетчатку за день заглушка не считает)');
+ assert.equal(day(book([event('serving:a'),event('serving:b'),event('serving:c')])).k,338.4,'нажатие после сводки: + 46,64');
+ assert.equal(day(book([event('serving:a'),gone('serving:b')])).k,245.2,'«−» после сводки: − 46,64');
+ // расхождения сосед не трогает: ни «призрак» не прибавлен, ни оставленная Meal порция не вычтена
+ assert.equal(day(book([event('serving:a'),event('serving:ghost'),gone('serving:kept'),event('serving:moved')]),split).k,139.9);
+ assert.equal(day(book([event('serving:a'),event('serving:ghost'),gone('serving:kept'),event('serving:moved'),event('serving:new')]),split).k,186.5,'а новое нажатие прибавлено');
+ assert.deepEqual(JSON.parse(JSON.stringify(S.meal.compact(sum,A).days[DATE].cs)),sum.days[DATE].cs,'короткая копия для Sport хранит тот же список');
+ assert.deepEqual(JSON.parse(JSON.stringify(S.meal.compact(split,A).skipped)).sort(),split.skipped.slice().sort(),'и список решённых записей');
+ assert.ok(page.includes('var servings=linkServings(it,d,live,settled); if(servings) D.cs=servings;')&&page.includes("at:Date.now(),counters:1,skipped:Object.keys(settled.skipped),"),'списки и отметка попадают в сводку');
  groups++;
 }
 // 4. Подключение: общий модуль загружается раньше основного скрипта; кольцо берёт день сводки через него.
@@ -101,4 +159,4 @@ let groups=0;
  assert.ok(page.includes("document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') erSportPoll() });"),'при возврате в приложение сводка перечитывается');
  groups++;
 }
-console.log('Сводка Sport в Meal и сводка Meal для соседей: '+groups+' группы проверок пройдены (своя/чужая сводка на устройстве; облако — время, затем сводка, копия в области аккаунта; цели и клетчатка в сводке Meal; подключение общего модуля).');
+console.log('Сводка Sport в Meal и сводка Meal для соседей: '+groups+' групп проверок пройдено (своя/чужая сводка на устройстве; облако — время, затем сводка, копия в области аккаунта; цели и клетчатка в сводке Meal; учтённые порции со счётчиков; подключение общего модуля).');

@@ -1,6 +1,6 @@
 {
   "app": "Happy Sport",
-  "update": "40.3",
+  "update": "40.4",
   "source_release": "sport-39 (Happy Sport · Update 39.2) through the lab copy sport-lab/ (branch sport-lab, 10.11.2026)",
   "source_commit_of_update_39": "36006b27dc1eb472db23fc22365dec99464aef74",
   "source_commit_of_update_38": "b292b2b0b6b7f6660e1ca40152817d3cf2499160",
@@ -83,6 +83,7 @@
     "sport/src/exercise-history.js",
     "sport/src/exercise-player.js",
     "sport/src/exercises/pull-up.html",
+    "sport/src/food-counters.js",
     "sport/src/free-timer.js",
     "sport/src/library-v2.js",
     "sport/src/manifest.webmanifest",
@@ -105,6 +106,7 @@
   "journal_sync_change": "40.1: mergeData device keys; verified() releases held auto-conflict into history",
   "account_change": "40.2: sign-up and the display name pass the transport boundary (readonly-guard.js, readonly-auth.js); journal sync code unchanged since 40.1",
   "summary_change": "40.3: workout summary (app=sport, kind=link) is the projection of the journal, stored under hd_link_sport_v1 in the account area and sent through a third narrow channel after the journal is confirmed (summary-exchange.js); Meal summary is read for the energy ring; journal sync code unchanged since 40.1",
+  "counters_change": "40.4: counter servings reach the energy ring at once — the Meal summary (Meal 27.3, counters:1) names the servings already in the day total, the rest is added from the counters document on the device (shared/happy-summaries.js); the compact copy of the Meal summary moved to happy-energy-meal-v2:<owner>; the Meal summary is asked from the cloud as soon as the session is restored; no new cloud writes, journal sync code unchanged since 40.1",
   "release_files": [
     {
       "path": "LIBRARY-HISTORY-SCOPE.md",
@@ -113,8 +115,8 @@
     },
     {
       "path": "README.md",
-      "size": 46481,
-      "sha256": "90b679a5d8da63d44d3f4805bf9d685d29aa9f592791af66fc85c261b2269e1e"
+      "size": 48013,
+      "sha256": "67d0a145803e98a8ffd9b21b26e7ee6d8b8ce3b85efb78cbae94fee28b169ab6"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -178,8 +180,8 @@
     },
     {
       "path": "index.html",
-      "size": 1066348,
-      "sha256": "695ed7d845a9d50a940ddcbd553a0a56946ce4be2915b8e0c6ddc8608ee2fe16"
+      "size": 1076010,
+      "sha256": "ae221095214cbf81ca692ed6e07b575fec49dc95538164fe282428fe1d8e27c6"
     },
     {
       "path": "manifest.webmanifest",
@@ -223,13 +225,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 4217,
-      "sha256": "a8a8b55e26be60c2a1ed6ca1290d6f0ba168f217925b8a9c6e8cdb45327e36f5"
+      "size": 4781,
+      "sha256": "e806266bfc46e8d28bc9b76d2edc980b93450d7fc8f43486909b62342bb03ce4"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 6873,
-      "sha256": "2296f3e0a77e66f0ddf9649d2e499b1789636a0b5153f82cfc0b011201f01c65"
+      "size": 7365,
+      "sha256": "86da37e9fe028d50f7ace67e4a429b361bb5d5c02aa6e6f2779c0b65d3c799e1"
     },
     {
       "path": "shared/README.md",
@@ -273,8 +275,8 @@
     },
     {
       "path": "shared/happy-summaries.js",
-      "size": 8233,
-      "sha256": "55805c93bff6fb71a3feb40a0229462f8747ade0b854a7ce0586910257a485a3"
+      "size": 14997,
+      "sha256": "8574aca88473e30492b1408bda97c4c33ae18dc07e36cf41b643cbcc42f06334"
     },
     {
       "path": "shared/happy-ui.css",
@@ -329,7 +331,7 @@
     {
       "path": "sport/scripts/build.mjs",
       "size": 13778,
-      "sha256": "f6393b3bfdc9e77ae917aaad852febc618798418746c93a7899408b8168b3e7d"
+      "sha256": "14aee0787197958019e8d49863b4ec9f463cf0835e3cdc034a067bb87e18e08d"
     },
     {
       "path": "sport/scripts/check-automatic-integration.mjs",
@@ -383,8 +385,8 @@
     },
     {
       "path": "sport/scripts/check-energy.mjs",
-      "size": 12388,
-      "sha256": "4c5670e744aa3817677b1e2143e51aab1a079dfd12fb52a29a6a57f931cea471"
+      "size": 21927,
+      "sha256": "3d1088530ef3112bc89c97a00debd24473b91e83ff201365082f86d820d9960f"
     },
     {
       "path": "sport/scripts/check-exercise-context.mjs",
@@ -674,7 +676,7 @@
     {
       "path": "sport/src/data-transfer.js",
       "size": 18761,
-      "sha256": "03eddddda8b110038a430e6b3eec98cd79074a55bc6e6ac7fae40d33412f26b9"
+      "sha256": "b1e45a5b196f9152379ae32b8d8d4c8ebef6c81c1261c6690dd7d282ed3d5b32"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -688,8 +690,8 @@
     },
     {
       "path": "sport/src/energy-widget.js",
-      "size": 17712,
-      "sha256": "8d15b16bd80cbff3ef0eb0b32a8165e3749f04cba7aeb84f25674645a70e9661"
+      "size": 19672,
+      "sha256": "7bb32cdcc31b893030f0a9ac8bb9c746af2052664a08298cb59a2102319c3cdc"
     },
     {
       "path": "sport/src/exercise-config.js",
@@ -733,8 +735,8 @@
     },
     {
       "path": "sport/src/food-counters.js",
-      "size": 8545,
-      "sha256": "9f737c79ef08349d550dbede0b06540940bdbb2fd0e587cc4796631aa5058ec3"
+      "size": 8992,
+      "sha256": "7ee37ba2fb15c14f9832167738a4b434a62d2048a7b294895852c6cc5ba2843b"
     },
     {
       "path": "sport/src/free-timer.js",
@@ -858,8 +860,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 26800,
-      "sha256": "a3088c0761d30379e1bff4b9c30e83c4a96331eae8a765399b82790ae2e836b9"
+      "size": 27291,
+      "sha256": "a7ac4051f1b18b4d3a959cb2d21694b218e7185e914c8d0e08a496cc406df580"
     },
     {
       "path": "sport/src/rest-pill.js",

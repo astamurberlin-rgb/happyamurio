@@ -363,8 +363,22 @@ function renderMind(){const c=data(),goal=C.mindGoal(c,curDate),minutes=C.mindMi
  block('mind').innerHTML=header('Осознанность')+'<div class="card"><div class="care-stat">'+num(minutes)+(goal.value>0?' / '+num(goal.value):'')+' мин</div><p class="care-help">'+(goal.source==='schedule'?(goal.value?'Полный круг — сумма длительностей практик в расписании на этот день.':'На этот день практики не запланированы. Можно заниматься без цели.'):(goal.value?'Полный круг — твоя личная цель.':'Практики за выбранный день.'))+'</p></div><div class="card"><h2>Дыхание и медитации</h2><b>В разработке</b><p class="care-help">Здесь появятся быстрые упражнения и контент для поддержки состояния. Уже можно составить расписание и отметить выполненную практику.</p></div><div class="eyebrow"><span>Расписание на '+h(ruDate(curDate))+'</span></div>'+plan.map(p=>'<div class="card"><b>'+h(p.time)+' · '+h(p.name)+'</b><p class="care-help">'+p.minutes+' минут · план</p><button class="mini" data-care-practice="'+h(p.id)+'">Отметить выполненное время</button></div>').join('')+(plan.length?'':empty('На этот день расписание пустое.'))+
  '<form id="carePracticeForm" class="card care-form"><h2>Записать практику</h2><input type="hidden" name="planId" value=""><label for="carePracticeName">Название</label><input name="name" id="carePracticeName" type="text" placeholder="Медитация, дыхание…" maxlength="100"><div class="care-grid"><div><label for="carePracticeTime">Время</label><input id="carePracticeTime" name="time" type="time" required value="'+nowHM()+'"></div><div><label for="carePracticeMinutes">Фактически, мин</label><input id="carePracticeMinutes" name="minutes" type="number" min="0.1" max="1440" step="0.1" required placeholder="Сколько провёл"></div></div><p class="care-help">План сам по себе не засчитывается. В дугу попадают сохранённые минуты практики и импортированные сессии осознанности; время просмотра приложения не учитывается.</p><button class="btn solid care-submit" type="submit">Сохранить практику</button></form><div class="eyebrow">Выполнено</div>'+logs.slice().reverse().map(x=>'<div class="card"><b>'+h(x.time)+' · '+h(x.name)+'</b><p class="care-help">'+num(x.minutes)+' мин</p></div>').join('');
 }
+/* 57.5: «съедено» за день — итог из сводки Meal и порции со счётчиков, которые Meal ещё не посчитал (нажатие в Day
+   или Sport попадает в кольцо сразу; правило — в shared/happy-summaries.js). Сводки нет или в дне нет ни еды, ни
+   порций — null: «не записано», а не ноль. */
+function mealFood(date){
+ const day=mealDay(date);
+ if(!S||!DB.mealLink)return day;
+ const sum=S.meal.day(DB.mealLink,date,DB.mealCounters);
+ if(!sum||!sum.recorded)return day;
+ const food={...(day||{}),k:sum.k,p:sum.p,f:sum.f,c:sum.c};
+ if(sum.fib!=null)food.fib=sum.fib;
+ return food;
+}
+/* пришла свежая сводка Meal или изменились счётчики, а экран «Активность» открыт — кольцо пересчитывается на месте */
+function mealChanged(){try{if(ready&&block('activity')?.classList.contains('on'))paintEnergy();}catch(e){}}
 function activityFacts(){
- const c=data(),a=C.activity(c,curDate),d=DB.days[curDate]||{},food=mealDay(curDate);
+ const c=data(),a=C.activity(c,curDate),d=DB.days[curDate]||{},food=mealFood(curDate);
  const workouts=woOf(curDate),calories=workouts.map(w=>w.kcal??a.workouts.find(x=>x.id===w.id)?.energyKcal);
  return {food:food?{...food,g:DB.mealLink?.goals||{}}:null,eaten:food?.k??null,spent:null,rest:null,training:calories.length&&calories.every(C.finite)?calories.reduce((n,v)=>n+v,0):null,minutes:workouts.length?workouts.reduce((n,w)=>n+(w.min||0),0):a.connected?0:null,steps:null};
 }
@@ -479,5 +493,5 @@ window.addEventListener('storage',function(e){if(root.HappyProfile&&e.key===root
 /* после запуска вход ещё загружается — спросим облако чуть позже и ещё раз, если не успел; после входа — сразу */
 setTimeout(sportPoll,2500);setTimeout(sportPoll,9000);
 {const afterSignIn=root.clAfterIn;root.clAfterIn=function(){sportPoll();return afterSignIn&&afterSignIn.apply(this,arguments);};}
-root.SelfCare={sportPoll,openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,addCheckinTag,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale};
+root.SelfCare={sportPoll,mealChanged,openSection(k){init();if(DB.sections.some(s=>s.k===k))openMood(null,'day',k);},checkinDirty,restoreCheckinDirty,data,init,renderNow,renderSettings,renderCheckinSettings,open,center,journalEvents,journalOpen,onNavigate,closeCurrent,checkinSection,addCheckinTag,isCheckin,checkinReadOnly,checkinDay,checkinScales,checkinTime,saveCheckin,rememberScale};
 })(window);

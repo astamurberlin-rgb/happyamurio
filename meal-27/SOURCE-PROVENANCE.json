@@ -1,5 +1,5 @@
 {
- "release": "Happy Meal Update 27.2",
+ "release": "Happy Meal Update 27.3",
  "date": "2026-11-10",
  "entry": "meal-27/index.html",
  "source": {
@@ -24,8 +24,8 @@
   },
   {
    "path": "README.md",
-   "size": 17194,
-   "sha256": "32044c925808ddcc3f1202e650ffb0f0b388cf5df4c672277bb71c136d3e24a2"
+   "size": 17972,
+   "sha256": "4dd9f1a8b5c04f8a68107cdb42ef1a0e5e7af90c462e84b7e7cf7456f207e96b"
   },
   {
    "path": "account-ui.js",
@@ -214,8 +214,8 @@
   },
   {
    "path": "checks/check-sport-summary.mjs",
-   "size": 12018,
-   "sha256": "c72e9601802a506993d4bec739863ac048e8ae19737853292cf78a76d0a23b76"
+   "size": 20260,
+   "sha256": "d992164081ff51b7a8819bb21188ddb154fa0846fdbfe456a1476e32f705d732"
   },
   {
    "path": "checks/check-startup.mjs",
@@ -244,8 +244,8 @@
   },
   {
    "path": "index.html",
-   "size": 610167,
-   "sha256": "e5d45fe054620d0838cf3bdc5496d56467b1b5522b7a8bd419cf9727b3c8e660"
+   "size": 612780,
+   "sha256": "0fc11d3d4b21ae2eadfbb50d4d848d1e3507ece1bdb8d85e8f0804f68b228cd7"
   },
   {
    "path": "journal-model.js",
@@ -429,8 +429,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 21803,
-   "sha256": "4396982c3f1b4834047d6e314c85f4d9e06acaf434300f174149f80151d8721e"
+   "size": 22220,
+   "sha256": "ababdbd4001675113b9b214b23b45c883339d79148dad1a80b37c5a5ac9f7b94"
   },
   {
    "path": "report.css",
@@ -499,8 +499,8 @@
   },
   {
    "path": "shared/happy-summaries.js",
-   "size": 8233,
-   "sha256": "55805c93bff6fb71a3feb40a0229462f8747ade0b854a7ce0586910257a485a3"
+   "size": 14997,
+   "sha256": "8574aca88473e30492b1408bda97c4c33ae18dc07e36cf41b643cbcc42f06334"
   },
   {
    "path": "shared/happy-ui.css",
@@ -1258,6 +1258,11 @@
    "sha256": "8fea36761f7a4e1aa828e447ff5362977a033ebcc89e44bc3a226b76fe79ebae"
   },
   {
+   "path": "sport/src/sport-icons.js",
+   "size": 1823,
+   "sha256": "ee7745a8e059938b3b3eb856d0ce8acb20f481e7905e74675eb71ea029e8c48d"
+  },
+  {
    "path": "sport/src/sport-icons/README.md",
    "size": 3523,
    "sha256": "c7fdf2cda135f5dd72953fc5615d95bd71b686cff66e200fd691206310c64a6a"
@@ -1693,11 +1698,6 @@
    "sha256": "6668ab433510fa12706485fdb1b37000cd50794a87d3dfb49b72d0046f9fe317"
   },
   {
-   "path": "sport/src/sport-icons.js",
-   "size": 1823,
-   "sha256": "ee7745a8e059938b3b3eb856d0ce8acb20f481e7905e74675eb71ea029e8c48d"
-  },
-  {
    "path": "sport/src/sport-link.js",
    "size": 1320,
    "sha256": "6d47fb599e0a41a7367196abb144bc5d293bcbb0ac210c0de65cca92a5e6357b"
@@ -1767,6 +1767,16 @@
     "index.html: linkSummary() adds goals («Цели на день») and days[date].fib (fibre, when known) for the energy ring in Sport and Day",
     "index.html: fallback addresses of the neighbour apps name the current release directories; cache busters ?v=27.2, title and footer 27.2",
     "checks/check-sport-summary.mjs (new); shared/happy-summaries.js (new shared file)"
+   ]
+  },
+  {
+   "version": "27.3",
+   "date": "2026-11-11",
+   "changes": [
+    "index.html: linkSummary() marks the summary with counters:1, names in days[date].cs the counter servings already in the day total (journal item and counters document agree: a live record on the same date) and in skipped the counter records Meal has settled itself (linkCounterDates, linkServings); Meal's own totals are computed as before",
+    "index.html: cache busters ?v=27.3, title and footer 27.3",
+    "shared/happy-summaries.js: meal.day(summary,date,counters) for Sport and Day (shared file)",
+    "checks/check-sport-summary.mjs: group 5 — the lists from the real linkSummary and the shared reader"
    ]
   }
  ]

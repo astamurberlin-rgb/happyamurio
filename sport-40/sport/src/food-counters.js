@@ -12,6 +12,9 @@ function sportFoodEvents(id){return sportFoodDoc.events.filter(e=>!e.deleted&&e.
 function sportCounterRow(c,shared){const n=shared?sportFoodEvents(c.id).length:(c.events||[]).filter(e=>e.date===selectedDate).length;return `<div class="sport-food-row"><div><b>${esc(c.title)}</b><small>${esc(shared?`${c.q} ${c.u} · ${c.g} г`:c.unit||'раз')}</small></div><div class="sport-food-pill" role="group" aria-label="${esc(c.title)}"><button class="text-btn" data-action="food-minus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Убрать порцию: ${esc(c.title)}" ${!n?'disabled':''}>−</button><strong>${n}</strong><button class="text-btn" data-action="food-plus" data-id="${esc(c.id)}" data-shared="${shared}" aria-label="Добавить порцию: ${esc(c.title)}">＋</button></div></div>`;/* Update 38.4: капсула «− N +» как в Meal; подпись — порция без «· Meal» */}
 function sportFoodHTML(){return `<section id="sport-food-counters"><div class="section-title"><h2>Счётчики</h2><button class="text-btn" data-action="food-create" aria-label="Создать счётчик">${icon('plus')}</button></div><div class="card">${sportFoodDefinitions().map(d=>sportCounterRow(d,true)).join('')+(state.customCounters||[]).map(d=>sportCounterRow(d,false)).join('')||'<p class="fineprint">Создай свой счётчик Sport или включи связь с Happy Sport у счётчика продукта в Meal.</p>'}</div><p class="fineprint" role="status">${esc(sportFoodStatus)}</p></section>`;}
 function paintSportFood(){const el=document.getElementById('sport-food-counters');if(el)el.outerHTML=sportFoodHTML();}
+/* Update 40.4: документ счётчиков изменился (нажатие здесь или на другом устройстве) — кольцо энергии пересчитывает
+   «съедено» сразу, не дожидаясь, пока день пересчитает Meal. */
+function sportFoodChanged(){try{window.dispatchEvent(new Event('happy-food-counters'))}catch{}}
 const diaryBeforeFoodCounters=renderDiary;
 renderDiary=function(){return diaryBeforeFoodCounters()+sportFoodHTML();};
 // Starting point for the shared document: the Update 37 key (never deleted) plus any copy left in the journal.
@@ -45,7 +48,7 @@ function initSportFoodCounters(){
  if(sportFoodEngine)return;
  const owner=SportProfiles.owner||'local';
  try{sportFoodEngine=HappyFoodCounters.create({owner,currentOwner:()=>SportProfiles.current(),backup:sportFoodStartingPoint(owner),
-  apply:doc=>{sportFoodDoc=doc;paintSportFood();},status:s=>{sportFoodStatus=s;paintSportFood();},online:()=>owner!=='local'&&clOn()&&CL.s?.uid===owner&&SportProfiles.current()===owner,
+  apply:doc=>{sportFoodDoc=doc;paintSportFood();sportFoodChanged();},status:s=>{sportFoodStatus=s;paintSportFood();},online:()=>owner!=='local'&&clOn()&&CL.s?.uid===owner&&SportProfiles.current()===owner,
   get:()=>HappyFoodCounters.transport().get(),put:sportFoodPut});
  }catch(e){sportFoodStatus=e.message;paintSportFood();}
 }
@@ -54,7 +57,7 @@ function changeSportFood(id,shared,add){
   if(add){const stamp=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString(),t=selectedDate===dayNow()?stamp.slice(11,16):null,h=t?Number(t.slice(0,2)):12;
    sportFoodEngine.update('events',{id:'serving:'+HappyFoodCounters.id(),cid:id,date:selectedDate,item:{fid:d.fid,q:d.q,u:d.u,g:d.g,t,sec:h<11?'am':h<16?'pm':h<21?'dn':'sn',counterFood:HappyFoodCounters.copy(d.food)}});
   }else{const e=sportFoodEvents(id).at(-1);if(e)sportFoodEngine.update('events',{id:e.id,cid:id,date:e.date,deleted:true});}
-  sportFoodDoc=sportFoodEngine.document();
+  sportFoodDoc=sportFoodEngine.document();sportFoodChanged();
  }else{const c=(state.customCounters||[]).find(c=>c.id===id);if(!c)return;c.events=c.events||[];if(add)c.events.push({id:HappyFoodCounters.id(),date:selectedDate,at:Date.now()});else{const i=c.events.findLastIndex(e=>e.date===selectedDate);if(i>=0)c.events.splice(i,1);}persist();}
  paintSportFood();
 }

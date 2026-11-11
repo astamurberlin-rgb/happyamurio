@@ -130,7 +130,8 @@ test('the page loads the shared parser, passes Meal goals to the ring and links 
   const mealGoals = vm.runInNewContext(fn + ';mealGoals');
   assert.deepEqual(plain(mealGoals({goals: {k: 2200, p: 120.5, f: 0, c: -5, fib: '30', x: 9}})), {k: 2200, p: 120.5});
   for (const none of [null, {}, {goals: null}, {goals: [1, 2]}, {goals: 'x'}]) assert.deepEqual(plain(mealGoals(none)), {});
-  assert.equal((page.match(/goals:mealGoals\(o\)/g) || []).length, 2, 'both the device copy and the cloud copy carry the goals');
+  // 57.5: both copies are made by one function, mealLinkCopy (its content is checked in counters-eaten.test.cjs)
+  assert.ok(page.includes("DB.mealLink=mealLinkCopy(o,'local');") && page.includes("DB.mealLink=mealLinkCopy(o,'cloud');") && (page.match(/goals:mealGoals\(o\)/g) || []).length === 1, 'both the device copy and the cloud copy carry the goals');
   const hrefCode = page.slice(page.indexOf('function sportWorkoutHref(id){'), page.indexOf('function woOf(d){')) + ";sportWorkoutHref('local-1 2')";
   assert.equal(vm.runInNewContext("var HappyLinks={base:'/happyamurio/'},window={HappyLinks:HappyLinks},SPORT_DIR='sport-40';" + hrefCode), '/happyamurio/sport-40/?workout=local-1%202');
   assert.equal(vm.runInNewContext("var window={},SPORT_DIR='sport-41';" + hrefCode), '../sport-41/?workout=local-1%202', 'without the links module the address stays relative');

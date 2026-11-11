@@ -23,6 +23,8 @@
       day.taps[k].push({t:e.item.t||null,n:1,counterEventId:e.id});const b=clone(e);delete b.rev;delete b.writer;baseline[e.id]=b;
     });
     root.DB.mealCounters=clone(doc);baseSave();if(root.renderAll)root.renderAll();if(root.renderTapSheet)root.renderTapSheet();
+    // 57.5: порции со счётчиков входят в «съедено» кольца энергии — открытый экран «Активность» пересчитывается сразу
+    try{if(root.SelfCare&&root.SelfCare.mealChanged)root.SelfCare.mealChanged()}catch(e){}
   }finally{applying=false}}
   function status(s){const el=document.getElementById('foodCounterStatus');if(el)el.textContent=s}
   function init(){if(root.RO)return;
