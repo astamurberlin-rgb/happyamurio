@@ -1,0 +1,30 @@
+{
+  "library": "uzbek",
+  "version": "1.10.2",
+  "delivery": "1.10.2-meal23.2",
+  "date": "2026-11-12",
+  "by": "Claude",
+  "basedOn": {
+    "file": "data/uzbek-recipes-1.10.1-meal23.2.json.gz",
+    "sha256Uncompressed": "34bdc855b5514125dbddaf0b9865021ef69ad4e9a03c36efb70add67612f36cf"
+  },
+  "changedRecords": [
+    "hmuz:nishalda-mominova-2006-partial-estimate",
+    "hmuz:navat-delikateska-grape-juice-27731"
+  ],
+  "unchangedRecords": 58,
+  "checks": [
+    "58 other records byte-identical to 1.10.1; same IDs and order.",
+    "Nishalda subtotal recomputed from data/bls40.json: S111000 854 g, E113100 56 g, R552000 1 g, R468000 0.4 g per 1000 g yield → 344.3884 kcal, 0.58844 g protein, 0.00172 g fat, 85.42296 g carbohydrate per 100 g (equals approximateNutrition.lowerKnownSubtotal).",
+    "Only composition fields kcal/prot/fat/carb changed (status value, estimated, sourceQualifier.estimated); 72 other fields unchanged and null.",
+    "revision 1 → 2: diary snapshots keyed id@revision keep revision 1.",
+    "Navat with grape juice (revision 2): retailer and SKU removed from n, src, recipe name and sourceLabel, ingredient name and service ID (ingredientCatalog entry renamed, formerId kept), sourceInfo source/catalogs/attribution and field sources; composition values unchanged; retailer, SKU and URLs kept in provenance, sourceResearch and links.",
+    "MealUzbek.ingest + MealProducts.validate pass with the loaders of Meal 23, 24, 25, 26, 27, 28, 29, 30 (60 cards); infoHTML renders.",
+    "Desserts 1.1 marks Nishalda and both navat cards; one product card per ID.",
+    "Visible card text of both records (title, list caption, notes, footer, details without link targets) contains no brand or seller name — checked with Meal 25–30 renderers."
+  ],
+  "notChecked": [
+    "iPhone and live app after publication",
+    "laboratory composition"
+  ]
+}

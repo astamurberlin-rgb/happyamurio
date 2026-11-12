@@ -1,0 +1,96 @@
+{
+  "status": "deferred_by_user",
+  "reasonRu": "Хороших апельсинов пока нет; приготовление планируется ближе к декабрю2026, точная дата не назначена.",
+  "taskRu": "Приготовить выбранный рецепт; взвесить готовый охлаждённый съедобный выход и порции. Отдельно учесть дольки апельсина и25г шоколада. Затем пересчитать оба варианта на100г.",
+  "cards": [
+    {
+      "basis": {
+        "type": "recipe_fraction",
+        "fraction": "1/6",
+        "batchServings": 6,
+        "grams": null,
+        "per100g": null,
+        "allowGramConversion": false
+      },
+      "remainingIngredients": [
+        "5–6 красных апельсинов,75мл сока в крем и оставшиеся дольки для подачи",
+        "500мл light double cream, например Elmlea",
+        "150г сахара"
+      ],
+      "unknownMicronutrients": null,
+      "carbohydrateDefinition": "UK available carbohydrate; fibre separately; do not subtract fibre",
+      "sourceRecipeUrl": "https://www.tesco.com/recipes/en-GB/recipe/blood-orange-possets",
+      "knownFinalMassGrams": null,
+      "limitations": [
+        "Только доля1/6 этой рецептуры; не произвольная ресторанная порция.",
+        "Готовый выход и съедобная масса апельсиновой мякоти не опубликованы. Нет пересчёта на100г.",
+        "Исходная таблица Tesco округлена и является оценкой рецепта, не лабораторным анализом.",
+        "Неизвестные микроэлементы не заполнять нулями."
+      ],
+      "id": "hmdessert:recipe:tesco-blood-orange-posset-chocolate-sixth",
+      "titleRu": "Апельсиновый поссет с дольками апельсина и тёмным шоколадом",
+      "nutritionPerPortion": {
+        "energy_kcal": 375,
+        "energy_kj": 1570,
+        "protein_g": 3.3,
+        "fat_g": 22,
+        "saturates_g": 18,
+        "carbohydrate_g": 44.1,
+        "sugars_g": 40,
+        "fiber_g": 2.7,
+        "salt_g": 0.1
+      },
+      "nutritionStatus": "publisher_recipe_estimate",
+      "chocolateGramsPerBatch": 25,
+      "chocolateGramsPerPortion": 4.166666666666667,
+      "chocolateIdentity": "Тёмный шоколад; марка и процент какао в исходном рецепте не указаны"
+    },
+    {
+      "basis": {
+        "type": "recipe_fraction",
+        "fraction": "1/6",
+        "batchServings": 6,
+        "grams": null,
+        "per100g": null,
+        "allowGramConversion": false
+      },
+      "remainingIngredients": [
+        "5–6 красных апельсинов,75мл сока в крем и оставшиеся дольки для подачи",
+        "500мл light double cream, например Elmlea",
+        "150г сахара"
+      ],
+      "unknownMicronutrients": null,
+      "carbohydrateDefinition": "UK available carbohydrate; fibre separately; do not subtract fibre",
+      "sourceRecipeUrl": "https://www.tesco.com/recipes/en-GB/recipe/blood-orange-possets",
+      "knownFinalMassGrams": null,
+      "limitations": [
+        "Только доля1/6 этой рецептуры; не произвольная ресторанная порция.",
+        "Готовый выход и съедобная масса апельсиновой мякоти не опубликованы. Нет пересчёта на100г.",
+        "Исходная таблица Tesco округлена и является оценкой рецепта, не лабораторным анализом.",
+        "Неизвестные микроэлементы не заполнять нулями."
+      ],
+      "id": "hmdessert:recipe:tesco-blood-orange-posset-no-chocolate-sixth",
+      "titleRu": "Апельсиновый поссет с дольками апельсина, без шоколада",
+      "nutritionPerPortion": {
+        "energy_kcal": 352.375,
+        "energy_kj": 1475.75,
+        "protein_g": 3.0,
+        "fat_g": 20.583333333333332,
+        "saturates_g": 17.129166666666666,
+        "carbohydrate_g": 42.125,
+        "sugars_g": 38.2125,
+        "fiber_g": 2.3041666666666667,
+        "salt_g": 0.09958333333333333
+      },
+      "nutritionStatus": "derived_estimate_using_disclosed_chocolate_proxy",
+      "chocolateGramsPerBatch": 0,
+      "chocolateGramsPerPortion": 0,
+      "calculation": "published per-serving values - (25g chocolate per batch /6 /100)*proxy chocolate per100g",
+      "calculationCaution": "Рецепт не раскрывает шоколад, использованный в расчёте. Для вычитания принят Tesco Dark Chocolate55%. Это обоснованная приближённая модель, не точное восстановление исходного расчёта Tesco. Остальные ингредиенты и1/6 партии сохранены."
+    }
+  ],
+  "recipeUrl": "https://www.tesco.com/recipes/en-GB/recipe/blood-orange-possets",
+  "originalCalculationFile": "evidence/orange-posset-variants.json",
+  "currentReleaseIncluded": false,
+  "reminderScheduled": false
+}

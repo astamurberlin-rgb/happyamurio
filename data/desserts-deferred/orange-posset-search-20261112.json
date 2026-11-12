@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-11-12",
+  "scope": "Second targeted search for orange posset only",
+  "status": "blocked_for_gram_based_import",
+  "confirmed_finished_yield_g": null,
+  "accepted_nutrition_per100g": null,
+  "conclusion": "No reliable orange-posset manufacturer label or measured finished recipe mass found in this targeted search. Do not import as complete and do not substitute lemon posset.",
+  "search_directions": [
+    "manufacturer per100g and net weight",
+    "blood-orange posset supplier specification",
+    "professional menus with nutrition",
+    "orange-posset measured yield grams",
+    "German/Russian terminology",
+    "St Clements orange-lemon variant"
+  ],
+  "evidence": [
+    {
+      "url": "https://menu.menuguide.pro/html/SA26-MENUC/9ac40c0a-cf07-444e-9ed5-47721cb92dbb.html",
+      "finding": "OVO Hydro Blood Orange and Ginger Posset (vegan); search advertised per100g table",
+      "validation": "Opened page and downloaded public HTML: matching menu item has HiddenFieldNutrition value empty. Table headings are generic UI, not actual nutrition. No usable numbers.",
+      "decision": "Reject; no facts to extract, also composite dessert with accompaniments"
+    },
+    {
+      "url": "https://charlotterutledge.substack.com/p/orange-vanilla-posset",
+      "finding": "Four 4–6-ounce servings, cream470g sugar99g orangejuice76g lemonjuice28g; reduce cream mixture to about2cups, serve in6–8oz vessels",
+      "decision": "Reject as mass proof: ounce serving range ambiguous mass/volume and not a measured final gram yield. Raw ingredient grams do not resolve evaporation/straining."
+    },
+    {
+      "url": "https://kidneycareuk.org/get-support/healthy-diet-support/kidney-kitchen/recipe-index/st-clements-posset/",
+      "finding": "Chef Paul Ripley, six servings,585kcal32.5g carbohydrate per serving;567ml cream175g sugar2lemons1orange",
+      "decision": "Useful reputable recipe, not ready gram-based card. No final grams; mixed orange-lemon distinct from plain orange; no full nutrient table."
+    },
+    {
+      "url": "https://dinnersdonequick.com/orange-posset/",
+      "finding": "Source advises weighing finished recipe to determine serving weight, but no measured weight supplied",
+      "decision": "Does not close blocker. The advice itself confirms required measurement is missing."
+    },
+    {
+      "url": "https://www.camfamcookery.com/orange-posset/",
+      "finding": "Six servings,373kcal; automated card says Serving1g; exact2cups reduction",
+      "decision": "Reject1g as erroneous serving metadata; volume is not mass."
+    },
+    {
+      "url": "https://www.karenskitchenstories.com/2024/03/blood-orange-posset.html",
+      "finding": "Six servings; sugar stated2/3cups(12grams), cream reduced to2cups",
+      "decision": "Conflicting ingredient unit conversion and no final mass; cannot use without correcting from primary source. Do not silently infer correction."
+    },
+    {
+      "url": "https://redcurrantbakery.com/blood-orange-possets/",
+      "finding": "Six servings; serving1blood-orange half; no grams",
+      "decision": "No finished edible mass; fruit shell is not a weight standard."
+    }
+  ],
+  "actionable_next_steps": [
+    "Keep orange draft excluded from production gram-based library.",
+    "If completing a recipe model later, specify recipe and weighed cooled/strained yield excluding serving shell and containers; calculate nutrient-per100g from that yield with nutrient-retention assumptions explicit.",
+    "An explicitly recipe-fraction-only record could represent a named recipe without grams, but is not a solution for current gram-based catalog requirements and is not imported here."
+  ],
+  "no_external_changes": true
+}
