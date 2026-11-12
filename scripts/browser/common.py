@@ -129,7 +129,7 @@ def phone(browser, name=None):
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
 # Актуальный выпуск Meal для сценариев (HAPPY_MEAL — другой, например meal-28/)
-MEAL = os.environ.get("HAPPY_MEAL", "meal-29/")
+MEAL = os.environ.get("HAPPY_MEAL", "meal-30/")
 _lib_files = {}
 
 

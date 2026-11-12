@@ -82,7 +82,12 @@ with sync_playwright() as p:
     labels = meal.evaluate("()=>[...document.querySelectorAll('.eyebrow span')].map(s=>s.textContent)")
     check("в настройках «Каталоги», «Пищевых баз» нет", "Каталоги" in labels and "Пищевые базы" not in labels)
     order = meal.evaluate("()=>[...document.querySelectorAll('.mc-source-carousel > .mc-source-body')].map(c=>c.dataset.sourceSlide)")
-    check("карусель: BLS, USDA, MEXT, Happy Meal, десерты, мои продукты, БАДы", order == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN", "SUPP"])
+    # Meal 30 (Астамур 12.11 10:26): не купленный платный набор («БАДы») в настройках каталогов не показывается
+    check("карусель: BLS, USDA, MEXT, Happy Meal, десерты, мои продукты; БАДов без покупки нет", order == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN"])
+    meal.evaluate("()=>{HappyCollections.buy('SUPP');renderSettings()}")
+    meal.wait_for_timeout(400)
+    order_bought = meal.evaluate("()=>[...document.querySelectorAll('.mc-source-carousel > .mc-source-body')].map(c=>c.dataset.sourceSlide)")
+    check("после тестовой покупки «БАДы» — в карусели последними и подключены", order_bought == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN", "SUPP"] and meal.evaluate("()=>MealSources.enabled(DB,'SUPP')"))
     meal.evaluate("()=>{const c=document.querySelector('.mc-source-carousel');c.scrollLeft=c.children[1].offsetLeft-c.children[0].offsetLeft}")
     meal.wait_for_timeout(500)
     more = meal.locator('[data-source-more="USDA"]')
