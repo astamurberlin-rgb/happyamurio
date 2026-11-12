@@ -12,6 +12,7 @@
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
+| Happy Meal · Update 30 · на проверке | `meal-30/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-30/ | 30 |
 | Happy Meal · Update 29 | `meal-29/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-29/ | 29.1 |
 | Happy Meal · Update 28 | `meal-28/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-28/ | 28 |
 | Happy Meal · Update 27.4 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.4 |
@@ -98,6 +99,12 @@
 По прямому запросу владельца Update 52 публикуется отдельно от старой страницы. `day/` восстановлен точно из последнего успешного выпуска `e1e6597`; его внутренняя метка — 50.14. У 52 собственные URL и scope установки; общий аккаунт и прежние ключи дневника сохранены. Для следующего согласованного апдейта Day каталог `day-52/` служит исходной версией; работу и публикацию выполнять в новом каталоге выпуска.
 
 Возможности исходной версии сохранены: регистрация и вход разных пользователей, автоматическое сохранение дневника, отдельные гостевые записи, объединение независимых правок и проверка перед выходом. Связка с Meal остаётся отдельным этапом: переход в Meal отключён, Sport открывается по прежней ссылке исходной сборки. Сервис Sites этим переносом не обновляется.
+
+## Happy Meal · Update 30 · 12.11.2026 · на проверке
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-30/ — для проверки Астамуром до того, как стать основной (его выбор 12.11). Основной Meal — 29.1: `shared/apps.json`, кнопки в Day и Sport и ярлык не переключались. Исходник — `meal-30/` из `meal-29/` (ветка `meal-30`). Что нового — `meal-30/README.md`, история обновлений в приложении, `CHANGELOG.md`.
+
+<small>— Claude · 12.11.2026 11:24</small>
 
 ## Happy Meal · Update 29 · 12.11.2026
 

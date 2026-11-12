@@ -11,7 +11,7 @@ raw.githubusercontent.com), подпись «Лаборатория» в заг�
 Библиотеки берутся из `origin/meal-libraries` (`HAPPY_LIBRARIES_REF` — другая ветка); хеши в манифесте
 сверяются с файлами, как это делает сама страница.
 
-— Claude · 12.11.2026 11:40
+— Claude · 12.11.2026 11:24
 """
 import gzip, hashlib, json, os, re, shutil, subprocess, sys
 

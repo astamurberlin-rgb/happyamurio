@@ -67,8 +67,8 @@
   },
   {
    "path": "README.md",
-   "size": 39354,
-   "sha256": "a635ca55cfcc374f2a0bb4d30eb68ead83ea1d1a11e2c736b7b79cf28e13346e"
+   "size": 39642,
+   "sha256": "38914bfe5c4b1559de68f86e8c286dc9b39e29d0405499687d2fa2adac648849"
   },
   {
    "path": "account-ui.js",
@@ -523,7 +523,7 @@
   {
    "path": "release-notes.js",
    "size": 29719,
-   "sha256": "dc4af93b4187c16ff0cd804812954ef915502f4e0a3f38c5e7d50f3629ca961e"
+   "sha256": "48971a38362c27d3b77c9458e09df3398f3fd0bdac0e49f5139a280e8dd2f87e"
   },
   {
    "path": "report.css",
