@@ -1349,6 +1349,11 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
 .erRing:focus{outline:none}
 .erRing:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:24px}
 .erRing svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+/* Meal 30: дуги энергии — слой поверх дорожки: квадрат по ширине кольца, центр (120, 120) единиц SVG; трубка 84–100 из 100 */
+.erArcs{position:absolute;left:0;top:0;width:100%;aspect-ratio:1/1;pointer-events:none;isolation:isolate}
+.erArcs .erLayer{position:absolute;inset:0}
+.erArcs .erSweep{position:absolute;inset:0;border-radius:50%;-webkit-mask:radial-gradient(closest-side,transparent calc(84% - .6px),#000 84%,#000 calc(100% - .6px),transparent 100%);mask:radial-gradient(closest-side,transparent calc(84% - .6px),#000 84%,#000 calc(100% - .6px),transparent 100%)}
+.erArcs .erCap{position:absolute;width:8%;height:8%;border-radius:50%}
 .erKnob{position:absolute;left:15%;top:16.13%;width:70%;height:75.27%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;pointer-events:none;color:#fff;
   background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
@@ -3013,8 +3018,8 @@ function renderDay(){
   document.getElementById('dateText').textContent=ruDate(curDate);
   document.getElementById('mlKb').innerHTML=kbjuHTML(); erFit(document.getElementById('mlKb'));
   var supplementDay=supplementRows(curDate),partial=['kcal','prot','fat','carb'].some(function(k){return intakeCoverage(day(curDate).items,supplementDay,k).missing>0}),hint=document.getElementById('mlKbHint');
-  hint.hidden=(day(curDate).items.length>0||supplementDay.length>0)&&!partial;
-  hint.textContent=partial?'Калории и БЖУ: сумма известных значений; полный итог неизвестен. Прочерк — нет сопоставимых данных. Углеводы USDA включают клетчатку и показаны отдельно в карточке продукта.':'Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото». ';
+  hint.hidden=day(curDate).items.length>0||supplementDay.length>0;   // Meal 30 (Астамур 12.11 11:30): без пояснения «Калории и БЖУ: сумма известных значений…»
+  hint.textContent='Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото». ';
   var fastEl=document.getElementById('mlFast');if(fastEl){fastEl.hidden=true;fastEl.innerHTML=''}   // Meal 30 (Астамур 12.11): строку «Голодание прервано» не показываем; данные не трогаем
   document.getElementById('mlSecs').innerHTML=sectionsForDate(curDate).map(function(S){
     var it=itemsOf(S.k), supplements=supplementRows(curDate,S.k), s=intakeSum(it,supplements), parts=[];
@@ -3557,15 +3562,31 @@ function erLayer(c,L,len){
   return '<g mask="url(#'+id+')">'+segs+'</g>';
 }
 /* o: eat, spent — ккал (null — нет данных), arcs — какие дуги ('eat', 'spent' или обе), full — полный круг, big и cap — в кружке */
+/* Meal 30 (Астамур 12.11 11:29, «черточки» на дуге): дуга — плавный конический градиент CSS поверх дорожки SVG,
+   а не сотня коротких отрезков SVG под маской: Safari на iPhone показывал стыки отрезков полосками, а круглые концы —
+   отдельными пятнами. Цвет и прозрачность по месту на дуге — прежние (erColAt, erAlphaAt). Внутри слоя всё
+   непрозрачное (дуга и кружки-концы), прозрачность — одной маской слоя, поэтому на концах нет двойного наложения. */
+function erLayerHTML(L,len){
+  if(len<=0.05) return '';
+  var A=212, step=3, n=Math.max(1,Math.ceil(len/step)), col=[], msk=[], i, t;   // 212° = поворот кольца 122° + 90° (у CSS ноль сверху)
+  for(i=0;i<=n;i++){ t=Math.min(len,i*step); col.push(erColAt(L,t/ER_SWEEP)+' '+erN(t)+'deg'); msk.push('rgba(0,0,0,'+erN(erAlphaAt(L,t/len))+') '+erN(t)+'deg') }
+  col.push('transparent '+erN(len)+'deg');
+  var half=len+(360-len)/2, a1='rgba(0,0,0,'+erN(erAlphaAt(L,1))+')', a0='rgba(0,0,0,'+erN(erAlphaAt(L,0))+')';
+  msk.push(a1+' '+erN(half)+'deg',a0+' '+erN(half)+'deg');
+  function cap(th,c){ var f=(122+th)*Math.PI/180; return '<i class="erCap" style="left:'+erN(46+46*Math.cos(f))+'%;top:'+erN(46+46*Math.sin(f))+'%;background:'+c+'"></i>' }
+  var m='conic-gradient(from '+A+'deg,'+msk.join(',')+')';
+  return '<div class="erLayer" style="-webkit-mask-image:'+m+';mask-image:'+m+'"><div class="erSweep" style="background:conic-gradient(from '+A+'deg,'+col.join(',')+')"></div>'+
+    cap(0,erColAt(L,0))+cap(len,erColAt(L,len/ER_SWEEP))+'</div>';
+}
 function erRingHTML(o){
-  var c={id:++ER_UID,defs:'',k:0}, body='';
+  var body='';
   (o.arcs||[]).forEach(function(key){
     var v=key==='eat'?o.eat:o.spent; if(v==null) return;
-    body+=erLayer(c,key==='eat'?ER_EAT:ER_SPENT,erClamp(v/o.full,0,1)*ER_SWEEP);
+    body+=erLayerHTML(key==='eat'?ER_EAT:ER_SPENT,erClamp(v/o.full,0,1)*ER_SWEEP);
   });
   var big=String(o.big);
-  return '<svg viewBox="20 20 200 186" aria-hidden="true"><defs>'+c.defs+'</defs><g transform="rotate(122 120 120)">'+
-    erArc(16,ER_SWEEP,'rgba(255,255,255,.2)',0)+'<g style="isolation:isolate">'+body+'</g></g></svg>'+
+  return '<svg viewBox="20 20 200 186" aria-hidden="true"><g transform="rotate(122 120 120)">'+erArc(16,ER_SWEEP,'rgba(255,255,255,.2)',0)+'</g></svg>'+
+    (body?'<div class="erArcs" aria-hidden="true">'+body+'</div>':'')+
     '<div class="erKnob'+(big.length>=5?' long':'')+'"><b>'+escH(big)+'</b><small>'+escH(o.cap)+'</small></div>';
 }
 /* строка справа: точка, подпись, «сколько/цель»; под строкой полоска до цели (5 px).

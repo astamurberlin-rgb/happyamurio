@@ -67,8 +67,8 @@
   },
   {
    "path": "README.md",
-   "size": 39642,
-   "sha256": "38914bfe5c4b1559de68f86e8c286dc9b39e29d0405499687d2fa2adac648849"
+   "size": 40093,
+   "sha256": "435a217f8affe19000f202b0b659385cb9e57ad535501f5393c8fac24b70832a"
   },
   {
    "path": "account-ui.js",
@@ -337,8 +337,8 @@
   },
   {
    "path": "index.html",
-   "size": 641180,
-   "sha256": "bb3b803a7c96b5899b09a64e09d4b46e7d260bb43e2b94ef8159c0b964ce6c80"
+   "size": 643524,
+   "sha256": "c3d89daa9d79bc8f299384c8f8007b31e1e7d4054415624d8f625a112f4fca4f"
   },
   {
    "path": "journal-model.js",
@@ -522,8 +522,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 29719,
-   "sha256": "48971a38362c27d3b77c9458e09df3398f3fd0bdac0e49f5139a280e8dd2f87e"
+   "size": 29958,
+   "sha256": "a20d1f44eb2021b4170c643ff7b91c028686b56149d966fdb72e1a6c05597cb4"
   },
   {
    "path": "report.css",
