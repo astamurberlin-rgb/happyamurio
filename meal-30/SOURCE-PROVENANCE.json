@@ -67,8 +67,8 @@
   },
   {
    "path": "README.md",
-   "size": 42000,
-   "sha256": "639a5e7c865ea3ee702fb30ae6b2c094b1f0cf0cd721a5c9ae3d6f5069193d9d"
+   "size": 42006,
+   "sha256": "b85d7b3d2893c361f679bd579d6fbb776c958a1cfe888b32a0f665c7b05eee29"
   },
   {
    "path": "account-ui.js",
@@ -342,8 +342,8 @@
   },
   {
    "path": "index.html",
-   "size": 644578,
-   "sha256": "7c149145c1fb4d0774b3b6fb46708a3cc1aaed75764fa19eb0f8b00e481e1a8d"
+   "size": 644853,
+   "sha256": "e668270b38619d707ae87d4b57a170fbdfc1034c33c2b3edf74010b3d0a43d97"
   },
   {
    "path": "journal-model.js",
@@ -567,8 +567,8 @@
   },
   {
    "path": "shared/happy-app-links.js",
-   "size": 6206,
-   "sha256": "c158afa266aae30acc88aa527fdecbbe822c70baaee7e0e49b0d2c8bce5787f3"
+   "size": 6212,
+   "sha256": "34da11944b2442a0a03b21035473ee772fd86d9da1fe63dddb47cbd121339fad"
   },
   {
    "path": "shared/happy-appearance.css",

@@ -63,7 +63,6 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
     return L.cm;
   }
   function alphaAt(L, t) { return clamp((L.a0 + (L.a1 - L.a0) * clamp(t, 0, 1)) / 100, 0, 1); }
-  function grey(a) { var v = ('0' + Math.round(a * 255).toString(16)).slice(-2); return '#' + v + v + v; }
   function rgba(hex, a) { var c = hexRgb(hex); return 'rgba(' + Math.round(c[0] * 255) + ',' + Math.round(c[1] * 255) + ',' + Math.round(c[2] * 255) + ',' + n(a) + ')'; }
   function barCss(L) {
     var st = [], i, t;
@@ -72,7 +71,6 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
   }
 
   /* ── кольцо ── */
-  var uid = 0;
   // дуга по центру трубки; длина и начало — в градусах, переводятся в пиксели (без pathLength — его не везде понимают)
   function arc(r, w, deg, stroke, start, attrs, cap) {
     if (deg <= 0) return '';
@@ -81,73 +79,71 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
       '" stroke-linecap="' + (cap || 'round') + '" stroke-dasharray="' + n(Math.max(0.01, deg * k)) + ' ' + n(circ) + '"' +
       (start ? ' stroke-dashoffset="' + n(-start * k) + '"' : '') + (attrs ? ' ' + attrs : '') + '/>';
   }
-  // стекло: светлая косая полоса (угол 49°, как в «Палетках») и тонкая кромка по контуру
-  function glassDefs(id) {
-    var p = 0.66, w = 0.70, s = 0.5, ang = 49;
-    function st(o, c, a) { return '<stop offset="' + n(clamp(o, 0, 1)) + '" stop-color="' + c + '" stop-opacity="' + n(clamp(a, 0, 1)) + '"/>'; }
-    return '<linearGradient id="' + id + 'sh" gradientUnits="userSpaceOnUse" x1="0" y1="120" x2="240" y2="120" gradientTransform="rotate(' + (ang - 122) + ' 120 120)">' +
-      st(0, '#fff', 0) + st(p - w / 2, '#fff', 0) + st(p - w / 4, '#fff', s * 0.55) + st(p, '#fff', s) + st(p + w / 4, '#fff', s * 0.55) + st(1, '#fff', 0) + '</linearGradient>' +
-      '<linearGradient id="' + id + 'rm" gradientUnits="userSpaceOnUse" x1="30" y1="20" x2="210" y2="230" gradientTransform="rotate(-122 120 120)">' +
-      st(0, '#fff', 0.5) + st(0.5, '#fff', 0.1) + st(1, '#1a0a5a', 0.42) + '</linearGradient>';
-  }
-  function glassArc(c, w, len) {
-    var mid = c.id + 'm' + (c.k++);
-    c.defs += '<mask id="' + mid + '" maskUnits="userSpaceOnUse" x="-20" y="-20" width="280" height="280">' +
-      arc(KR, w, len, '#fff', 0) + arc(KR, Math.max(1, w - 3), len, '#000', 0) + '</mask>';
-    return arc(KR, w, len, 'url(#' + c.id + 'rm)', 0, 'mask="url(#' + mid + ')"') + arc(KR, w, len, 'url(#' + c.id + 'sh)', 0);
-  }
-  // слой: дуга из коротких отрезков, у каждого свой цвет; прозрачность — маской того же рисунка
-  function layer(c, Pp, L, len, w, other) {
-    if (len <= 0.05) return { g: '', glass: '' };
-    var cnt = Math.max(1, Math.ceil(len / c.step)), sl = len / cnt, i, a, ext, mid, segs = '', msk = '';
-    var ramp = L.a0 < 100 || L.a1 < 100;
+  /* Day 58, Sport 41 (Астамур 12.11 11:29, «черточки» на дуге; в Meal поправлено в 30): дуга — плавный конический градиент CSS
+     поверх дорожки SVG, а не сотня коротких отрезков SVG под маской: Safari на iPhone показывал стыки отрезков полосками,
+     а круглые концы — отдельными пятнами. Цвет и прозрачность по месту на дуге — прежние (colAt, alphaAt). Внутри слоя всё
+     непрозрачное (дуга и кружки-концы), прозрачность — одной маской слоя, поэтому на концах нет двойного наложения.
+     Слой — квадрат 200 × 200 единиц SVG с центром кольца (120, 120); у CSS ноль сверху, поэтому начало дуги — 122° + 90°.
+     Стекло (glass) в Day и Sport выключено — его рисунок убран вместе с отрезками. */
+  var CSS_FROM = 212;
+  function layer(Pp, L, len, w, other) {
+    if (len <= 0.05) return '';
     // по балансу: до конца другой дуги — цвет начала; за ним переход к цвету конца, полный — у конца кольца
     function tOf(x) {
       if (Pp.map === 'scale') return x / SWEEP;
       if (Pp.map === 'balance') return x <= other ? 0 : (SWEEP - other < 0.5 ? 1 : (x - other) / (SWEEP - other));
       return x / len;
     }
-    for (i = 0; i < cnt; i++) {
-      a = i * sl; ext = Math.min(sl + 0.8, len - a); mid = a + sl / 2;   // заход на соседа прячет швы
-      segs += arc(KR, w, ext, colAt(L, tOf(mid)), a, '', 'butt');
-      if (ramp) msk += arc(KR, w, ext, grey(alphaAt(L, mid / len)), a, '', 'butt');
+    var step = 3, cnt = Math.max(1, Math.ceil(len / step)), col = [], msk = [], i, t, style = '';
+    var ramp = L.a0 < 100 || L.a1 < 100;
+    for (i = 0; i <= cnt; i++) {
+      t = Math.min(len, i * step);
+      col.push(colAt(L, tOf(t)) + ' ' + n(t) + 'deg');
+      if (ramp) msk.push('rgba(0,0,0,' + n(alphaAt(L, t / len)) + ') ' + n(t) + 'deg');
     }
-    segs += arc(KR, w, 0.01, colAt(L, tOf(0)), 0) + arc(KR, w, 0.01, colAt(L, tOf(len)), len);   // круглые концы
-    var mAttr = '';
+    col.push('transparent ' + n(len) + 'deg');
+    if (Pp.blend && Pp.blend !== 'normal') style += 'mix-blend-mode:' + Pp.blend + ';';
     if (ramp) {
-      msk += arc(KR, w, 0.01, grey(alphaAt(L, 0)), 0) + arc(KR, w, 0.01, grey(alphaAt(L, 1)), len);
-      var id = c.id + 'a' + (c.k++);
-      c.defs += '<mask id="' + id + '" maskUnits="userSpaceOnUse" x="-20" y="-20" width="280" height="280">' + msk + '</mask>';
-      mAttr = ' mask="url(#' + id + ')"';
+      // за концом дуги — прозрачность конца (там круглый конец), с середины просвета — прозрачность начала
+      var half = len + (360 - len) / 2;
+      msk.push('rgba(0,0,0,' + n(alphaAt(L, 1)) + ') ' + n(half) + 'deg', 'rgba(0,0,0,' + n(alphaAt(L, 0)) + ') ' + n(half) + 'deg');
+      var m = 'conic-gradient(from ' + CSS_FROM + 'deg,' + msk.join(',') + ')';
+      style += '-webkit-mask-image:' + m + ';mask-image:' + m + ';';
     }
-    return {
-      g: '<g style="mix-blend-mode:' + Pp.blend + '"' + mAttr + '>' + segs + '</g>',
-      glass: Pp.glass ? '<g' + mAttr + '>' + glassArc(c, w, len) + '</g>' : ''
-    };
+    // трубка: от KR − w/2 до KR + w/2 при радиусе слоя 100 единиц
+    var r0 = n(KR - w / 2), r1 = n(KR + w / 2);
+    var tube = 'radial-gradient(closest-side,transparent calc(' + r0 + '% - .3px),#000 calc(' + r0 + '% + .3px),#000 calc(' + r1 + '% - .3px),transparent calc(' + r1 + '% + .3px))';   // край сглажен поровну по обе стороны, как у кружков-концов
+    // круглый конец — кружок диаметром w единиц на средней линии трубки
+    function cap(th, color) {
+      var f = (122 + th) * Math.PI / 180, d = w / 2;
+      return '<i class="he-cap" style="width:' + n(d) + '%;height:' + n(d) + '%;left:' + n(50 + KR / 2 * Math.cos(f) - d / 2) +
+        '%;top:' + n(50 + KR / 2 * Math.sin(f) - d / 2) + '%;background:' + color + '"></i>';
+    }
+    return '<div class="he-layer"' + (style ? ' style="' + style + '"' : '') + '><div class="he-sweep" style="background:conic-gradient(from ' +
+      CSS_FROM + 'deg,' + col.join(',') + ');-webkit-mask:' + tube + ';mask:' + tube + '"></div>' +
+      cap(0, colAt(L, tOf(0))) + cap(len, colAt(L, tOf(len))) + '</div>';
   }
   function signed(d) { d = Math.round(d); return d > 0 ? '+' + d : d < 0 ? '−' + (-d) : '0'; }
   function ringSvg(Pp, eaten, spent, step, label) {
-    var c = { id: 'q' + (uid++), defs: '', k: 0, step: step };
-    if (Pp.glass) c.defs += glassDefs(c.id);
     var de = clamp(eaten / S.scale, 0, 1) * SWEEP, ds = clamp(spent / S.scale, 0, 1) * SWEEP;
     var order = Pp.top === 'eat' ? ['spent', 'eat'] : ['eat', 'spent'];   // снизу вверх
-    var body = '', gl = '';
+    var body = '';
     if (!S.bal) order = [S.knob];   // одна дуга своего приложения
     order.forEach(function (key, i) {
-      var r = layer(c, Pp, Pp[key], key === 'eat' ? de : ds, i === 1 && Pp.nest ? 8 : 16, key === 'eat' ? ds : de);
-      body += r.g; gl += r.glass;
+      body += layer(Pp, Pp[key], key === 'eat' ? de : ds, i === 1 && Pp.nest ? 8 : 16, key === 'eat' ? ds : de);
     });
-    var ring = arc(KR, 16, SWEEP, 'none', 0, 'style="stroke:var(--trk)"') + '<g style="isolation:isolate">' + body + '</g>' + gl;
     var big = S.bal ? signed(eaten - spent) : String(Math.round(S.knob === 'eat' ? eaten : spent));
     // кнопка в центре — объёмная стеклянная, как в Happy Meal (HTML поверх SVG)
     // крупное кольцо обрезано по видимой дуге: x 20…220, y 20…206 (низ — круглые концы дуги)
-    var vb = c.step > 2 ? [-16, -16, 272, 272] : [20, 20, 200, 186];
+    var vb = step > 2 ? [-16, -16, 272, 272] : [20, 20, 200, 186];
     function pc(v, of) { return (v / of * 100).toFixed(2) + '%'; }
     var kpos = 'left:' + pc(50 - vb[0], vb[2]) + ';top:' + pc(50 - vb[1], vb[3]) + ';width:' + pc(140, vb[2]) + ';height:' + pc(140, vb[3]);
+    var apos = 'left:' + pc(20 - vb[0], vb[2]) + ';top:' + pc(20 - vb[1], vb[3]) + ';width:' + pc(200, vb[2]) + ';height:' + pc(200, vb[3]);
     var cap = S.bal ? 'баланс' : (S.knob === 'eat' ? 'съедено' : 'потрачено');
     var knob = '<div class="he-knob' + (big.length >= 5 ? ' long' : '') + '" style="' + kpos + '"><b>' + big + '</b><small>' + cap + '</small></div>';
-    return '<svg viewBox="' + vb.join(' ') + '"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '><defs>' + c.defs + '</defs>' +
-      '<g transform="rotate(122 120 120)">' + ring + '</g></svg>' + knob;
+    return '<svg viewBox="' + vb.join(' ') + '"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
+      '<g transform="rotate(122 120 120)">' + arc(KR, 16, SWEEP, 'none', 0, 'style="stroke:var(--trk)"') + '</g></svg>' +
+      (body ? '<div class="he-arcs" aria-hidden="true" style="' + apos + '">' + body + '</div>' : '') + knob;
   }
 
 

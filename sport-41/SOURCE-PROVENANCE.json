@@ -116,8 +116,8 @@
     },
     {
       "path": "README.md",
-      "size": 51070,
-      "sha256": "cadc429251a8f0bdb15ec5aba7b61d9845a4b8993361fdf340e4bc7d6bbdec7f"
+      "size": 52071,
+      "sha256": "c530ae6d26775312b72901f8418c918d8d5bd2924fd2ce0c8233ad6f2a26ff8a"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -181,8 +181,8 @@
     },
     {
       "path": "index.html",
-      "size": 1091483,
-      "sha256": "b8602fed638c10d11eb3c98fb6994b2d5256e502ecdfe409304d61f3b393cd0e"
+      "size": 1092657,
+      "sha256": "57d955577bc0f670a3fd8a78f307fbefa17e092c3f4651ce84e661b4e67cd98d"
     },
     {
       "path": "manifest.webmanifest",
@@ -251,8 +251,8 @@
     },
     {
       "path": "shared/happy-app-links.js",
-      "size": 6206,
-      "sha256": "c158afa266aae30acc88aa527fdecbbe822c70baaee7e0e49b0d2c8bce5787f3"
+      "size": 6212,
+      "sha256": "34da11944b2442a0a03b21035473ee772fd86d9da1fe63dddb47cbd121339fad"
     },
     {
       "path": "shared/happy-appearance.css",
@@ -696,13 +696,13 @@
     },
     {
       "path": "sport/src/energy-widget.css",
-      "size": 2301,
-      "sha256": "067a37f20d309b83f0370bf837a5b6efc94ddca1359af3fb1cddc5e2c78674e2"
+      "size": 2753,
+      "sha256": "e363da05e2d86f98a688dfcdedb9103723b141a118f15895fa2efb2b555a49fe"
     },
     {
       "path": "sport/src/energy-widget.js",
-      "size": 19974,
-      "sha256": "f525eca5410e3b7f65bde8f1b003244b3ad431b9f854ee0258ed2be122314efe"
+      "size": 20532,
+      "sha256": "4e6eabd7820360612834b1d0d9232f05e82b036e42514f083627fe071401510a"
     },
     {
       "path": "sport/src/exercise-config.js",
@@ -871,8 +871,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 28968,
-      "sha256": "0288ae397cd19b9caeb4fcd695f7bd0861270ac605bfe5559b0190ddeebe1206"
+      "size": 29126,
+      "sha256": "d1c7d809d22aa41ec9b962294db875a1c26b48772a1f781f26184d4583c0c173"
     },
     {
       "path": "sport/src/rest-pill.js",
