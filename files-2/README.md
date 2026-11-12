@@ -21,4 +21,4 @@ PDF для чтения и аннотаций. Редактирование и �
 
 Версии закреплены в package-lock.json. Лицензии bundled JavaScript — `assets/*.LEGAL.txt`; pdfmake и встроенные шрифты — соответствующие заголовки файлов и `THIRD-PARTY.md`.
 
-— ChatGPT · 12.11.2026 02:11
+— ChatGPT · 12.11.2026 09:03

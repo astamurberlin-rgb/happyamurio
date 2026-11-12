@@ -6,7 +6,7 @@
   "base_commit": "e30849590475b522fdd02e70cc4fd100ea8d22a8",
   "files": {
     ".gitignore": "4d56952b0fb13bf8f9b6c13a6d4c34a075bac3af447636a1df4335d7576e2f97",
-    "README.md": "10f2c3a0274f3909428029bd9eed676dfd87b69e106ef0071e1104705284854a",
+    "README.md": "e447a00bdb363453de7ad41a6b1a3a64cfa37680996515aafcbbebfb1e95f951",
     "THIRD-PARTY.md": "72a925db799e94a6dede65bba7768dfd32acd34c287e1d38e649542ae420cff3",
     "app-icons/notes-180.png": "cb680f58dea149a256d7491973d82b9baa7df8bd8de83144ecf21b45ca5bbe7d",
     "app-icons/notes-192.png": "e946ae18d95265d10576329d19786621b660fd13551a7e2105887d748d850f59",
@@ -23,7 +23,7 @@
     "assets/pdfmake.min.js": "e095e5b991dce0eb84f1989c42a2dbf7d0672fb8510ea3fe1c958920d6d3751d",
     "assets/vfs_fonts.js": "f3db5ac36ce8c9a6a3f55d5d00c2a0e21a3d7698db149dff22f4e670ffcfd5c4",
     "build.mjs": "957d2835cd4836b236a534572179f2c706b626b39171e5c4a7dc9bdd02842a17",
-    "index.html": "ec20a5ab88eb8c7fa659be0fa3db29a7539fc49b772788ee05a78fcdf167966d",
+    "index.html": "9c037636115ccb4f2d40d1e62dae517e296e52458e2f6cf66f551158ffea722f",
     "notes.css": "aeb462667dba1dceef8787153d1c2c664249a61fdce71175c772ab746b65c329",
     "package-lock.json": "554e7cee5c806f56f74a9b73f6643f47d0b0a1e0ff3f6011711b862b0ac4d339",
     "package.json": "32d649a53d958daf0604c8bc8c100bc36b8c4d1cf09fa629d2df17c2e794b72c",
