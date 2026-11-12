@@ -1,0 +1,6 @@
+/* Minimal candidate view; existing Day journal and all field controls are unchanged. */
+.happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}
+.happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}
+.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:#5c4598;font-weight:600}
+.happy-journal-content[hidden],.day-sport-readonly[hidden]{display:none!important}
+.day-sport-readonly{overflow-wrap:anywhere}.day-sport-readonly p{line-height:1.5}.day-sport-candidate{font-weight:700}.day-sport-records li{margin:1em 0}.day-sport-records dt{font-weight:600}.day-sport-records dd{margin:0 0 .5em;white-space:pre-wrap}
