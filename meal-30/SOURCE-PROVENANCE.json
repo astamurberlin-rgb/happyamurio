@@ -1,33 +1,22 @@
 {
- "release": "Happy Meal Update 29",
+ "release": "Happy Meal Update 30",
  "date": "2026-11-12",
- "published": "12.11.2026 09:07 — 29.1 по слову Астамура 09:06 («Выпускай»); 29 — 12.11.2026 02:51 по слову Астамура (02:00–02:01), вместе с Day 57.7 и Sport 40.5; каталог БАДов — в meal-libraries (df8d8d0)",
- "entry": "meal-29/index.html",
+ "published": "12.11.2026 23:29 — основной по слову Астамура 23:11 («Сперва выпусти»), вместе с Day 58 и Sport 41; с 11:24 — отдельный адрес для проверки (выбор Астамура 12.11)",
+ "entry": "meal-30/index.html",
  "source": {
-  "release": "meal-28 (Happy Meal Update 28, опубликован 11.11.2026 23:07)",
-  "commit": "e30849590475b522fdd02e70cc4fd100ea8d22a8",
-  "version": "28"
- },
- "prototype": {
-  "what": "БАДы из прототипа Михалыча (ChatGPT) и Астамура, 10–11.11.2026: H068 / MEAL-09 (экран, модель, вещества, поиск, журнал, отчёт), шаблоны — H072",
-  "archive": "Happy-Meal-prototype-handoff-2026-11-11.zip (sha256 18726b4383d5b2b7bd94fad913f392929b77809111995ab1046cede78049ac1f)",
-  "baseRelease": "meal-27 (Happy Meal Update 27)",
-  "baseCommit": "26d39f720a040d7eb9f539f62e62718b8243060c",
-  "method": "файлы БАДов прототипа перенесены как есть, кроме хранения (только этот браузер → документ аккаунта supplements-store.js) и заглушек прототипа; правки страницы — по разнице прототипа с Meal 27, поверх Meal 28 (всё исправленное в 27.1–28 сохранено); шаблоны — отдельная библиотека supplements в meal-libraries"
+  "release": "meal-29 (Happy Meal Update 29.1, опубликован 12.11.2026 09:07)",
+  "commit": "4b7dc6b0b08449b4726deb00e276cff2375184b0",
+  "version": "29.1"
  },
  "changes": [
-  "supplements-store.js (новый): свои варианты и приёмы — документ аккаунта app_sync meal/supplements (AES-GCM, AAD uid|meal|supplements, gzip, условная запись по iv); на устройстве happy-meal-supplements-v1:<аккаунт>; записи variant/snap/entry/fav, слияние по записи",
-  "supplements-library.js (новый): каталог БАДов — библиотека supplements 1.0.0 из meal-libraries (31 шаблон), тот же массив templates, что у экрана прототипа",
-  "supplements.js, supplements-model.js, supplement-nutrition.js, supplements-search.js, substances.js, supplements.css (из прототипа H068): экран «БАДы» / «Мои добавки», редактор состава, запись приёма, строки в дне, разделе и журнале; правило приёма пищи для БАДов (mealRule) и выбор в варианте (opensMeal)",
-  "index.html: БАДы в итогах дня, раздела и журнала (омега-3 с ЭПК, ДГК, ДПК; «Созданные мной»), поиск; что открывает приём пищи — больше 4 ккал на 100 г/мл (mlOpens), «Голодание прервано» (mlFastBreak); сводка для Day и Sport с калориями и БЖУ БАДов; вход и выход — с документом добавок; подпись подборок в «Моих рецептах»",
-  "collections.js, collections.css: карточка «БАДы» в магазине, пилюля «Мои добавки», тестовая покупка каталога БАДов (как в прототипе)",
-  "sources.js: источник SUPP (переключатель «БАДы»); отметки неизвестных каталогов сохраняются; catalog.js: карточка «БАДы» в настройках; food-libraries.js: SUPP скачивается для работы без интернета",
-  "report.js: БАДы в CSV и отчёте (полный список веществ только в выгрузках, ссылка на BLS в отчёте сохранена)",
-  "images/supplements.jpg (из обложки прототипа, 900×675, 51 КБ); sw.js: копия выпуска meal-29/ с обложкой БАДов",
-  "checks/check-supplements-store.mjs (новая); check-meal-first-time.mjs, check-shop.mjs, check-sport-summary.mjs — под Meal 29",
-  "supplement-counters.js (новый): счётчик добавки — запись еды с продуктом-добавкой supp:<вариант> (состав этикетки на 100 условных граммов, massUnknown, portionText для Day 57.7 и Sport 40.5); counters.js: поиск своих добавок и шаблонов каталога, меры добавки, сохранение шаблона в «Мои добавки» (supplements.js: saveTemplate); index.html: продукт-добавка не в поиске еды и «Моих продуктах», подписи порций, правка записи без условных граммов, правило приёма для записей со счётчика, журнал; report.js, supplement-nutrition.js, user-products.js, shared/meal-products-model.js (migrate не трогает продукт-добавку)"
+  "Правки Астамура с телефона 12.11.2026 09:50–10:44 (доска notes apps/board.md, «Мелкие правки»)",
+  "index.html: дуга «съедено» — плавный конический градиент CSS (erLayerHTML) вместо отрезков SVG под маской; под кольцом нет пояснения «Калории и БЖУ: сумма известных значений…», строки «Голодание прервано» и блока «Добавки»; добавка — в приёме как любая еда, из поиска на главном — в приём по времени; статус счётчиков — только при сбое; Журнал: без «Добавки за период», «Избранное» — только отмеченное, рамка «Мои микроэлементы», у «Омега-3» нет подытога; окно счётчика — черточка сверху, жест вниз, корзина, запятая в количестве; ?v=30, заголовок и подвал 30, manifest.webmanifest; sw.js VERSION 30",
+  "sources.js, catalog.js, collections.js, counters.js: разделы «… · Cronometer» не в настройках; не купленный платный набор (БАДы) — как отключённый; отключённая библиотека не ищется, и в «Новом счётчике»; счётчик продукта из неё тусклый, с подсказкой",
+  "supplements.js, supplements-model.js, supplement-nutrition.js, supplement-counters.js, supplements.css: «Редактировать» вне библиотеки неактивна с подсказкой; шаблоны без брендов («Типичный состав»); «Сбрасывает окно голодания?» — Да / Нет / Если больше 4 ккал; «Отмена» без вопроса; «+ Добавить свою меру» без прыжка; подсказки «Новое вещество» в цветах приложения",
+  "app-links.js (новый), shared/happy-app-links.js: связь с Day и Sport — свитчи сразу под аккаунтом, пара в обе стороны (решения Астамура 12.11 11:50–11:55); переключения — в сводке meal/link (поле links); порядок настроек account → links → app → data → developer → version; стили свитчей — в shared/happy-ui.css выпуска (встраиваются sync-shared-ui)",
+  "checks: check-meal-first-time.mjs — правило окна голодания Meal 30; check-shop.mjs — под Meal 30 (витрина «Сборников» сверяется с коммитом каталогов, на котором собран выпуск: df8d8d0)"
  ],
- "userVerification": "pending (owner, iPhone)",
+ "userVerification": "Астамур 12.11.2026 23:11, iPhone: дуга, добавка в приём, окно счётчика, Журнал, каталоги, отключённая библиотека, поиск десертов — да; свитчи связи с Day 58 и Sport 41 — не проверял; «есть нюансы» — следующими правками",
  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
  "libraries": {
   "desserts": {
@@ -48,17 +37,7 @@
    "date": "2026-11-11"
   }
  },
- "pointReleases": [
-  {
-   "version": "29.1",
-   "date": "2026-11-12",
-   "changes": [
-    "supplements.js: карточка шаблона без покупки каталога — «БАДы не подключены к библиотеке», «Купить · 2 €» (collections.js: HappyCollections.buy), «В магазин»; строка поиска «Каталог БАДов · не подключён»",
-    "supplements.css: кнопка покупки в карточке",
-    "index.html ?v=29.1, заголовок и подвал; sw.js VERSION 29.1; release-notes.js 29.1"
-   ]
-  }
- ],
+ "pointReleases": [],
  "releaseHashes": [
   {
    "path": "PRODUCTS.md",
@@ -67,8 +46,8 @@
   },
   {
    "path": "README.md",
-   "size": 42006,
-   "sha256": "b85d7b3d2893c361f679bd579d6fbb776c958a1cfe888b32a0f665c7b05eee29"
+   "size": 42032,
+   "sha256": "499502907eabfc6781bf2e3641abea29a5808be43ee7dc264ba6c6dfa50bc420"
   },
   {
    "path": "account-ui.js",
@@ -528,7 +507,7 @@
   {
    "path": "release-notes.js",
    "size": 31078,
-   "sha256": "b825f61e40ed3c0371fa05c1addbda2a1baab324e1a0e1c603f47126b878c262"
+   "sha256": "b4f96a815f755ee2011f2e844772ac6afa367fa92bdcad76ea773b122cb782fd"
   },
   {
    "path": "report.css",
@@ -607,8 +586,8 @@
   },
   {
    "path": "shared/happy-ui.css",
-   "size": 5461,
-   "sha256": "64411c84a328e4e8554d4d4fa8670d7cea1ebddeacf07476629c2c320b56e185"
+   "size": 6096,
+   "sha256": "f92da5256d176f9deb538f891e67868001aa794c4acd47bf66a3588be50e4b8c"
   },
   {
    "path": "shared/happy-ui.js",

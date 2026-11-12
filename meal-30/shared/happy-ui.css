@@ -24,6 +24,13 @@
 .happy-backup-cloud{border-top:1px solid rgba(255,255,255,.2);margin-top:16px;padding-top:16px}
 .happy-version{text-align:center;color:rgba(255,255,255,.85);font-family:inherit;font-size:14px;line-height:1.6;margin:28px 0 0;padding:20px 8px 8px;border-top:1px solid rgba(255,255,255,.18)}
 .happy-version small{display:block;font-size:12px;opacity:.8}
+/* Meal 30 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
+.happy-app-links-section{margin-top:12px}
+.happy-app-links{padding:4px 16px!important}
+.happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px}
+.happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.18)}
+.happy-app-name{flex:1;color:inherit;font-size:16px;font-weight:600;text-decoration:none;padding:14px 0}
+.happy-app-link.is-off .happy-app-name{opacity:.6}
 .happy-settings [hidden]{display:none!important}
 @media(max-width:360px){.happy-card{padding:14px}.happy-button{padding:11px 13px}}
 

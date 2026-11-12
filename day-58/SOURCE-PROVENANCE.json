@@ -1,27 +1,38 @@
 {
- "release": "Happy Day Update 57.7",
- "date": "2026-11-10",
- "source_release": "day-56 (Happy Day Update 56)",
- "source_commit": "9280726e7dd358d8ac436ffd99432874d82ba8e8",
- "source_app_version": "56",
- "destination_app_version": "57.7",
+ "release": "Happy Day Update 58",
+ "date": "2026-11-12",
+ "published": "12.11.2026 23:29 — основной по слову Астамура 23:11 («Сперва выпусти»), вместе с Meal 30 и Sport 41; с 12:50 — отдельный адрес для проверки",
+ "source_release": "day-57 (Happy Day Update 57.7) через ветку лаборатории day-58 (e25c6c7, 12.11.2026 09:24)",
+ "source_commit": "f80989f198289177446d00da3f28436393dfd4e4",
+ "source_app_version": "57.7",
+ "destination_app_version": "58",
  "adaptations": [
-  "day-journal-sync.js: live tabs — reconcile()/adoptExternal()/settle(): a journal written by another tab is adopted or three-way merged (HappyDayProfileData.merge) inside the journal lock; same-field tab conflicts resolve to the acting tab without a variant; triggers: facade change, focus/pageshow/visibilitychange, withLock, writeLocal",
-  "day-journal-sync.js: sync line #day-sync-line under the account buttons; long status moved to the developer section; guest-recovery card shown only when guest records exist",
-  "shared/profile-storage.js: sign-in identity without tokens and token adoption (Day 55 fix lost in 56 by re-embedding) now in the shared file; legacy generation legacy-<uid> for cells without a generation (index.html clAuthFence/clLoad, auth-read-only.js)",
-  "index.html: header bar is only a safe-area spacer; no «Связь обновлена»; cache busters ?v=57, manifest, release note 57, README; shared/happy-ui.js account note",
-  "tests updated (46); standalone Happy-Day-57.html; shared/apps.json day → day-57 (56 kept as previous)"
+  "app-links.js (новый), shared/happy-app-links.js: связь с Meal и Sport — два соседних приложения сразу под аккаунтом, название открывает приложение, свитч — связь пары в обе стороны (решения Астамура 12.11 11:50–11:55); пока выключено, с этого момента еда из Meal и тренировки из Sport не отмечаются, включили обратно — видно всё, и пропущенное",
+  "auth-read-only.js: узкий канал своей строки day/link — bindAppLinksAdapter, ровно поля {v, app, at, owner, links}, только своя строка; переключения Meal и Sport — из их сводок",
+  "counters.js, selfcare-ui.js: еда, приёмы, порции со счётчиков и тренировки учитываются только при включённой связи; кнопок общих счётчиков Meal нет, пока связь выключена",
+  "energy-widget.js, energy-widget.css: дуга кольца энергии — один плавный конический градиент CSS поверх дорожки SVG вместо отрезков SVG под маской (Астамур 12.11 13:09)",
+  "index.html: порядок настроек account → links → app → developer → version; без текста «Один аккаунт и одно имя…» и подписи «Оформление»; ?v=58, заголовок и подвал 58, manifest.webmanifest; release-notes.js 58",
+  "tests (86, в том числе meal-start.test.cjs); самостоятельный Happy-Day-58.html; shared/apps.json day → day-58 (57.7 — previous)"
  ],
+ "standalone": {
+  "path": "Happy-Day-58.html",
+  "builder": "scripts/build-day-standalone.py day-58"
+ },
+ "user_data_exported": false,
+ "database_modified": false,
+ "destination_url": "https://astamurberlin-rgb.github.io/happyamurio/day-58/",
+ "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-57/",
+ "point_releases": [],
  "runtime_files": [
   {
    "path": "Happy-Day-58.html",
    "size": 3714159,
-   "sha256": "08d689cf48c699cf1cbc61fc4fdcd84fc92c059abae0af2c1410e52c38022a1a"
+   "sha256": "fd4df9909ef540da0cc962a9a18058db3db12ace257aed8025db9fae27294448"
   },
   {
    "path": "README.md",
-   "size": 27229,
-   "sha256": "042561c7e7d8da11aa4a5457ba2bf185f9036543749a215702d7d2d2cffc7807"
+   "size": 27391,
+   "sha256": "2d8ae7974df1d1ea39079d213314193315316b20b7ea65bc302cadcdedade9c0"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -266,7 +277,7 @@
   {
    "path": "release-notes.js",
    "size": 26580,
-   "sha256": "32d8691457669d08dccbdd96a0cb7fd86a83a3c7d03fa646ab1b3f16cde5c06f"
+   "sha256": "1ae6cb9bcc95985ec6526d223d80783c2d1a200e5e2d4c3af7d79be0f9cf717c"
   },
   {
    "path": "section-wheel.css",
@@ -472,85 +483,6 @@
    "path": "tests/sport-summary.test.cjs",
    "size": 13483,
    "sha256": "681298043f1c6cb69b04851fa2204ef3a49cbd3ed12599d3c21498d30e601ccd"
-  }
- ],
- "standalone": {
-  "path": "Happy-Day-57.html",
-  "builder": "scripts/build-day-standalone.py day-57"
- },
- "user_data_exported": false,
- "database_modified": false,
- "destination_url": "https://astamurberlin-rgb.github.io/happyamurio/day-57/",
- "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-56/",
- "point_releases": [
-  {
-   "version": "57.1",
-   "date": "2026-11-10",
-   "changes": [
-    "selfcare-ui.js: addCheckinTag() writes a custom tag into the real section (or the check-in list for «Текущие отметки») — checkinSection() rebuilds its tag list on every call, so a tag added to its copy lived only while selected",
-    "index.html: «Свой тег» handler in check-in mode calls SelfCare.addCheckinTag(t) and save(); cache busters ?v=57.1, selfcare-ui.js?v=57.1, footer and release note 57.1",
-    "tests/checkin-tag.test.cjs (4 tests); standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.1"
-   ]
-  },
-  {
-   "version": "57.2",
-   "date": "2026-11-10",
-   "changes": [
-    "day-journal-sync.js: sync line under the account buttons «Подождите, идёт синхронизация…» instead of «Синхронизация…»",
-    "shared/happy-ui.js: while «Выйти» waits for the cloud (confirmProfileForExit) the card shows «Подождите, идёт синхронизация…» instead of «Подожди…»",
-    "cache busters ?v=57.2, footer and release note 57.2; standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.2"
-   ]
-  },
-  {
-   "version": "57.3",
-   "date": "2026-11-11",
-   "changes": [
-    "index.html: the backup reminder bkNag() is no longer called after load (Day 53 removed only the visibilitychange call)",
-    "day-journal-sync.js, day-account-data.js: the guest-records card and «Разные версии записей» are created in the developer section (#dayDeveloperSyncTools), not in the account section",
-    "selfcare-ui.js: «Открыть Sport ↗» on the Activity screen points to the current Sport release (data-happy-app=\"sport\", shared/happy-links.js); the test-build address of 04.11 is removed",
-    "tests/quiet-account.test.cjs: the three points above are pinned by a test",
-    "cache busters ?v=57.3, footer and release note 57.3; standalone Happy-Day-57.html rebuilt"
-   ]
-  },
-  {
-   "version": "57.4",
-   "date": "2026-11-11",
-   "changes": [
-    "selfcare-core.js: activity(c,date,extra) adds the workouts of the Sport summary to the day once (by id, otherwise by start minute and duration) through the HappyCare.sportDay hook; activitySettings.start (default «balance») replaces the tap-driven field mode, which stays in records and is no longer read",
-    "selfcare-ui.js: the Sport summary is read from hd_link_sport_v1 in the account area and from the cloud row sport/link (read only, the row time first) with shared/happy-summaries.js; it is never written into the Day journal; the energy view chosen by a tap lives until the page is closed",
-    "index.html: shared/happy-summaries.js loaded; goals of the Meal summary are kept in the local copy DB.mealLink.goals; «Открыть запись в Sport ↗» leads to the current Sport release (was ../sport-38/); fallback addresses of the neighbour apps name the current release directories; cache busters ?v=57.4",
-    "tests/sport-summary.test.cjs (new, 7 tests); runtime_files now lists every tracked file of the release (tests/checkin-tag.test.cjs and tests/quiet-account.test.cjs were missing from the list)",
-    "standalone Happy-Day-57.html rebuilt"
-   ]
-  },
-  {
-   "version": "57.5",
-   "date": "2026-11-11",
-   "changes": [
-    "selfcare-ui.js: mealFood(date) — «съедено» of the energy ring is the Meal summary day plus the counter servings Meal has not counted yet (HappySummaries.meal.day with DB.mealCounters); mealChanged() repaints the ring on the open Activity screen",
-    "index.html: mealLinkCopy(o,src) keeps the summary mark counters:1 and the list skipped in the local copy DB.mealLink; a copy saved by 57.4 without the mark is taken again when the same summary carries it; onMealSync calls SelfCare.mealChanged; cache busters ?v=57.5, title and footer 57.5",
-    "counters.js: apply() calls SelfCare.mealChanged after the counters document changes",
-    "shared/happy-summaries.js: meal.day(summary,date,counters), meal.serving, compact copy keeps cs and skipped (shared file, same bytes in Meal and Sport)",
-    "tests/counters-eaten.test.cjs (new, 8 tests); tests/sport-summary.test.cjs follows mealLinkCopy",
-    "standalone Happy-Day-57.html rebuilt"
-   ]
-  },
-  {
-   "version": "57.6",
-   "date": "2026-11-11",
-   "changes": [
-    "published 11.11.2026 19:40 (main a8dd06b); details — CHANGELOG.md, entry Day 57.6 (this list was not updated at that time)"
-   ]
-  },
-  {
-   "version": "57.7",
-   "date": "2026-11-12",
-   "changes": [
-    "counters.js: the portion label of a shared counter comes from the Meal definition (portionText, Meal 29: a supplement counter shows «2 капсулы» without nominal grams); foods and definitions from older Meal as before (q u · g г); the tap message uses the same label",
-    "index.html: cache busters ?v=57.7, title and footer 57.7; release-notes.js: entry 57.7",
-    "tests/counter-portion.test.cjs (new, 3 tests)",
-    "standalone Happy-Day-57.html rebuilt"
-   ]
   }
  ]
 }

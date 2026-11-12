@@ -8,7 +8,7 @@
   HAPPY_BASE   — адрес сайта с префиксом /happyamurio/ (по умолчанию локальный сервер из run.sh);
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
-  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-29/);
+  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-30/; HAPPY_DAY, HAPPY_SPORT — day-58/, sport-41/);
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """

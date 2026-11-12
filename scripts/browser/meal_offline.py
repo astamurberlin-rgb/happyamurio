@@ -25,7 +25,11 @@ SAVED = """async()=>{const c=await caches.open('happy-meal-libraries-v1');return
 with sync_playwright() as p:
     b = launch(p)
     ctx = phone(b, "offline")
-    net = libraries(ctx, hold={"uzbek-recipes-1.10.1-meal23.2.json.gz"})
+    # файл узбекской кухни — из манифеста ветки каталогов (с 12.11 15:41 там 1.10.2; имя файла меняется с версией)
+    import json as _json
+    from common import _lib_file
+    UZ = _json.loads(_lib_file("manifest.json"))["libraries"]["uzbek"]["url"].split("/data/")[1]
+    net = libraries(ctx, hold={UZ})
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
     meal.goto(BASE + MEAL + "index.html")

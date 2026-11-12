@@ -1,19 +1,19 @@
 {
  "day": {
-  "entry": "day-57/index.html",
-  "version": "57.7",
-  "sharedDirectory": "day-57/shared",
+  "entry": "day-58/index.html",
+  "version": "58",
+  "sharedDirectory": "day-58/shared",
   "links": {
-   "meal": "meal-29/",
-   "sport": "sport-40/"
+   "meal": "meal-30/",
+   "sport": "sport-41/"
   },
-  "download": "day-57/Happy-Day-57.html",
+  "download": "day-58/Happy-Day-58.html",
   "previous": {
-   "entry": "day-56/index.html",
-   "version": "56",
-   "sourceCommit": "9280726e7dd358d8ac436ffd99432874d82ba8e8"
+   "entry": "day-57/index.html",
+   "version": "57.7",
+   "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4"
   },
-  "name": "Happy Day · Update 57.7",
+  "name": "Happy Day · Update 58",
   "earlier": {
    "entry": "day/index.html",
    "version": "50.14",
@@ -21,32 +21,32 @@
   },
   "settingsSections": [
    "account",
-   "app",
    "links",
+   "app",
    "developer",
    "version"
   ],
   "profileOptions": "{storage:dayStorage}"
  },
  "meal": {
-  "entry": "meal-29/index.html",
-  "version": "29.1",
-  "name": "Happy Meal · Update 29.1",
-  "sharedDirectory": "meal-29/shared",
-  "accountScript": "meal-29/account-ui.js",
+  "entry": "meal-30/index.html",
+  "version": "30",
+  "name": "Happy Meal · Update 30",
+  "sharedDirectory": "meal-30/shared",
+  "accountScript": "meal-30/account-ui.js",
   "settingsSections": [
    "account",
+   "links",
    "app",
    "data",
-   "links",
    "developer",
    "version"
   ],
   "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
   "previous": {
-   "entry": "meal-28/index.html",
-   "version": "28",
-   "sourceCommit": "e30849590475b522fdd02e70cc4fd100ea8d22a8"
+   "entry": "meal-29/index.html",
+   "version": "29.1",
+   "sourceCommit": "4b7dc6b0b08449b4726deb00e276cff2375184b0"
   },
   "earlier": {
    "entry": "meal/index.html",
@@ -54,25 +54,25 @@
   }
  },
  "sport": {
-  "entry": "sport-40/index.html",
-  "version": "40.5",
-  "name": "Happy Sport · Update 40.5",
-  "sharedDirectory": "sport-40/shared",
-  "sourceDirectory": "sport-40/sport/src",
-  "sourceRelease": "sport-39",
-  "sourceCommit": "c94464d29767702f45f4df2026c5cdcc158cb3ee",
+  "entry": "sport-41/index.html",
+  "version": "41",
+  "name": "Happy Sport · Update 41",
+  "sharedDirectory": "sport-41/shared",
+  "sourceDirectory": "sport-41/sport/src",
+  "sourceRelease": "sport-40",
+  "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4",
   "settingsSections": [
    "account",
+   "links",
    "app",
    "data",
-   "links",
    "developer",
    "version"
   ],
   "previous": {
-   "entry": "sport-39/index.html",
-   "version": "39.2",
-   "sourceCommit": "c94464d29767702f45f4df2026c5cdcc158cb3ee"
+   "entry": "sport-40/index.html",
+   "version": "40.5",
+   "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4"
   },
   "iconLibrary": "assets/sport-icons/v1",
   "exerciseLibrary": "assets/exercise-library/v1",
