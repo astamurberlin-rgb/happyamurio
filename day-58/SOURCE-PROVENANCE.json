@@ -1,0 +1,546 @@
+{
+ "release": "Happy Day Update 57.7",
+ "date": "2026-11-10",
+ "source_release": "day-56 (Happy Day Update 56)",
+ "source_commit": "9280726e7dd358d8ac436ffd99432874d82ba8e8",
+ "source_app_version": "56",
+ "destination_app_version": "57.7",
+ "adaptations": [
+  "day-journal-sync.js: live tabs — reconcile()/adoptExternal()/settle(): a journal written by another tab is adopted or three-way merged (HappyDayProfileData.merge) inside the journal lock; same-field tab conflicts resolve to the acting tab without a variant; triggers: facade change, focus/pageshow/visibilitychange, withLock, writeLocal",
+  "day-journal-sync.js: sync line #day-sync-line under the account buttons; long status moved to the developer section; guest-recovery card shown only when guest records exist",
+  "shared/profile-storage.js: sign-in identity without tokens and token adoption (Day 55 fix lost in 56 by re-embedding) now in the shared file; legacy generation legacy-<uid> for cells without a generation (index.html clAuthFence/clLoad, auth-read-only.js)",
+  "index.html: header bar is only a safe-area spacer; no «Связь обновлена»; cache busters ?v=57, manifest, release note 57, README; shared/happy-ui.js account note",
+  "tests updated (46); standalone Happy-Day-57.html; shared/apps.json day → day-57 (56 kept as previous)"
+ ],
+ "runtime_files": [
+  {
+   "path": "Happy-Day-57.html",
+   "size": 3690474,
+   "sha256": "70fa8a3f648eba255921cdac7b2566ba6210e5599d5a4d842243c64f5f2ef908"
+  },
+  {
+   "path": "README.md",
+   "size": 23383,
+   "sha256": "9a24b93d8ccc957232683e38b1cb36024a85e525cabf20595b0921c7fb889fba"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-152.png",
+   "size": 12756,
+   "sha256": "defbeefd746b52b99f49ef9d72275d7a5a706a11a1fff6d920e2c8847ed599ea"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-167.png",
+   "size": 14221,
+   "sha256": "4af439baa0216c392a24480c6794b8dc9337d1ce9c2a280275c201c4888bf306"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-180.png",
+   "size": 15625,
+   "sha256": "36dd86d37c31969d2ba1a4865354652541d2255abce9597b33046796b868e4b5"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-192.png",
+   "size": 16951,
+   "sha256": "957db02e860359e9ea4806da98bbb4346f37317f0a2d7afeda93224c6681c683"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-32.png",
+   "size": 2214,
+   "sha256": "7460e7d9b27a6f7345c7f18c482f4afff80ef5a00f3fb1b6e407aec2057f0b53"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-48.png",
+   "size": 3406,
+   "sha256": "e9dfe65941612dcdc1c94e26d1781a7ec93017298fa43d1d24582468d36acea5"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-512.png",
+   "size": 51938,
+   "sha256": "3afb8fbe4fb95a1a3a21aac06e15ca6e53fb7e4c2d3cc496a1433ec8bce0b72b"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-152.png",
+   "size": 19840,
+   "sha256": "c6ceb670c89d3a0352c295031939c45cf8104469191316dcc841ee7cb2eb453a"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-167.png",
+   "size": 23097,
+   "sha256": "ceb9892a6ec0f1f4e718f1f29e01ffda7a123ce75836bf753fc194eb20bf7706"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-180.png",
+   "size": 26023,
+   "sha256": "bee1e1984640fae71d741e0a582d0603d83687f5e42e68a6cc952dad3dd63c52"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-192.png",
+   "size": 29211,
+   "sha256": "e64db7d279c78670debb9ad6443dcf2446a8a3ce3f08af5c52490c1596cb843d"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-32.png",
+   "size": 2003,
+   "sha256": "848605298c992873f0d3efa4c3e47c8709f002c6ef316801eb673624ae1a76f1"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-48.png",
+   "size": 3550,
+   "sha256": "acab8ee8d8f89f3b4a981d13b6654f516ff7d9bec5b0ba411116e133ccdf614c"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-512.png",
+   "size": 185208,
+   "sha256": "070359a516b9bd384a8db9e9e787dd50c6cc5e7666b0a4261a0a46892c319f71"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-152.png",
+   "size": 18144,
+   "sha256": "b79f18c01d2f8be00aaaca97c483d04ee47dc0fbe09ebe3ace95e13cf5f66a5d"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-167.png",
+   "size": 21335,
+   "sha256": "40e83039b9ae2d0371cbc7fb5a31e1c872eafd5a1c62451429475fa816c25754"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-180.png",
+   "size": 24042,
+   "sha256": "704eed958784ed72aaf8ae804655b02f7301e3e41d4eaded144414ce8776d6ac"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-192.png",
+   "size": 26901,
+   "sha256": "bd9e4648220f025cb8ff51cfd0ac305ca1a4d3d6d361726dc2a3749c1c4d6174"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-32.png",
+   "size": 1861,
+   "sha256": "d2b44f8613c8f29f1be9c2ae6b03b775d27c315e95284e2de1edd6dc4a5ea069"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-48.png",
+   "size": 3207,
+   "sha256": "f9ca40edc72996874fcd7f92f80c3b6973016d34e929240dc94141173e559c53"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-512.png",
+   "size": 172490,
+   "sha256": "dcfeebfa92f8feaa95cf3bd922b4b42b6ce0d2daf8a97bb2a484808eaa198444"
+  },
+  {
+   "path": "arc-home.js",
+   "size": 1235,
+   "sha256": "cc7d56260e7c905f2d28ad72aa1069536fe4e1bd19a29cf12403960a5b3b8142"
+  },
+  {
+   "path": "arc-motion.css",
+   "size": 416,
+   "sha256": "32295c718ed0c8d28e9d680d065c650b3371ffb1722c27edb4a2d3958b31c79a"
+  },
+  {
+   "path": "arc-motion.js",
+   "size": 6187,
+   "sha256": "615225ad2b45e4f78c2a01fe1a4330bfe50a892b170fe2b5c731bd130a923fa9"
+  },
+  {
+   "path": "assets/aiko-skating-source.png",
+   "size": 840222,
+   "sha256": "e93861bc811c078669077e554ce3238ba293aeeafbea4509d38e90b8cc6a8396"
+  },
+  {
+   "path": "auth-read-only.js",
+   "size": 13077,
+   "sha256": "18b4111977cf99a6102b16911ef9bc8647c8e92a14eb27a3ee8f91a9277e43cc"
+  },
+  {
+   "path": "counters.js",
+   "size": 6359,
+   "sha256": "80df8fc19734daf36975ffd5c17bd9a8a945b8641e142082ec8ba68789d300a6"
+  },
+  {
+   "path": "day-account-data.js",
+   "size": 6185,
+   "sha256": "1cca2378302add9a0136a71ff5ba8e64e1ae553a89cf05c508899d4df8191c28"
+  },
+  {
+   "path": "day-account-profile.js",
+   "size": 11482,
+   "sha256": "b3b87bafb7cfc671d683db756ce3b211b600d8a18640b992975c274e72f84a64"
+  },
+  {
+   "path": "day-auto-sync.js",
+   "size": 15580,
+   "sha256": "cae4eeff71c06f1cedb845356cecc5b03f6237639f23473d839a4d34c507e25b"
+  },
+  {
+   "path": "day-diagnostic.js",
+   "size": 7886,
+   "sha256": "21ca79b4d27d5f395f45b1e3db2e87ed799b316f070531a218dc9eca68132287"
+  },
+  {
+   "path": "day-journal-sync.js",
+   "size": 92197,
+   "sha256": "58c2306a24590d0ce5117eb36ea6807307c4796ee5413a0fc88e587c14900246"
+  },
+  {
+   "path": "day-local-store.js",
+   "size": 10132,
+   "sha256": "76bd4a9fdc95d339d87dd6d12ce8ab0381804ec11b67a786ecfaaf36d6b549eb"
+  },
+  {
+   "path": "day-passive-plan.js",
+   "size": 11424,
+   "sha256": "7eff8fcb4694bee62a32367d0ccb3a464f8f2db8d0498c80b7286396568509c1"
+  },
+  {
+   "path": "day-sport-auth.mjs",
+   "size": 2362,
+   "sha256": "058b9d92e67b7f765b8bc550ad7dd06c8f902bfd828ae7a02b1ab55f9cf93d23"
+  },
+  {
+   "path": "day-sport-bootstrap.mjs",
+   "size": 544,
+   "sha256": "322f08d049fd78a6db2327979dd6fe33a239b385f220d4c572886935577345a8"
+  },
+  {
+   "path": "day-sport-lifecycle.js",
+   "size": 986,
+   "sha256": "10b709b771a6055a05e27d131d218c86f83b74058c04b6490a87ae05a0a0ec4a"
+  },
+  {
+   "path": "day-sport-view.css",
+   "size": 832,
+   "sha256": "a76a25ee0846aacee1fd3a4c763df2ee6768b77ffbd862d124eb4785360d73ea"
+  },
+  {
+   "path": "day-sport-view.mjs",
+   "size": 8760,
+   "sha256": "69f7e98d41fa2090e6db689ed35c2d5a0a77995d8d6d667f08a45a4b0b3b873e"
+  },
+  {
+   "path": "day-test-create.js",
+   "size": 14041,
+   "sha256": "64e40d867aae708db24f102af21faa70feb37ac5879217262186015cb0ee51b4"
+  },
+  {
+   "path": "energy-widget.css",
+   "size": 2301,
+   "sha256": "067a37f20d309b83f0370bf837a5b6efc94ddca1359af3fb1cddc5e2c78674e2"
+  },
+  {
+   "path": "energy-widget.js",
+   "size": 12745,
+   "sha256": "25510c14291d3908bd8cde7eb7b54f829b13a5bbeb61d49b807d31da4c8e79cc"
+  },
+  {
+   "path": "fonts/OFL.txt",
+   "size": 4397,
+   "sha256": "67f64c5509e5151796599e3ad47c3131cbe0c80c4f9430b90236a1249c2eacc9"
+  },
+  {
+   "path": "fonts/license-source.txt",
+   "size": 78,
+   "sha256": "5abfa330d3c95dd7d264fcb13cf0e0fd76c605f5048072fe6f729974d7b1478e"
+  },
+  {
+   "path": "fonts/mplus-rounded-1c-bold-latin-cyrillic.woff",
+   "size": 78060,
+   "sha256": "a09cfe26dbf5e97f66908b3869a1bd1ab5c747b28762e60f7e7fb7027eea2915"
+  },
+  {
+   "path": "index.html",
+   "size": 544631,
+   "sha256": "f73853d6a4c5caf9e84bfbc59381f737752869774f0fa8d277e799f71ee64135"
+  },
+  {
+   "path": "manifest.webmanifest",
+   "size": 513,
+   "sha256": "a451fb894391bf41fe51acf825cf73a0fc86be27d41c47511c17be9f28136d41"
+  },
+  {
+   "path": "release-notes.js",
+   "size": 25111,
+   "sha256": "7482f601461f40ee061c81043e6464fe8b806f972c8d199738c2a7e665faf33e"
+  },
+  {
+   "path": "section-wheel.css",
+   "size": 5132,
+   "sha256": "75da4debbd9a0d539ad900b4812f52ab0abfa4d50ddc1b47ba44c624ccfad7a2"
+  },
+  {
+   "path": "selfcare-core.js",
+   "size": 18938,
+   "sha256": "18af491e2daa99a5521590e01370aed7b7f4ab15b11cd490db6f67231950a603"
+  },
+  {
+   "path": "selfcare-ui.js",
+   "size": 78636,
+   "sha256": "d5affa6ab26025acdffc18f0bbf8664b1b876e81b684af5de26118390177325e"
+  },
+  {
+   "path": "selfcare.css",
+   "size": 11945,
+   "sha256": "2d639f91a73d1a0352c5271536571ed6c3bf23e94d9556c9e2ec72c6d32b27ff"
+  },
+  {
+   "path": "shared/README.md",
+   "size": 943,
+   "sha256": "692173b8e2bc15d0bd98f8c067b58fd306bf1bcd4418c9ba003c340a0084c865"
+  },
+  {
+   "path": "shared/apps.json",
+   "size": 69,
+   "sha256": "218e7835f60fdc221a7911122b2955aa7ec04126abd699093b54447658112971"
+  },
+  {
+   "path": "shared/food-counters.css",
+   "size": 1925,
+   "sha256": "fde22a8eda8528e832c196836aea7dcb623b4f6388caadccad1d930fe2d5c92b"
+  },
+  {
+   "path": "shared/food-counters.js",
+   "size": 9522,
+   "sha256": "88217b279708615d4747e30b9fac4baa0f711fe530bfd0ba94b5268cb036796a"
+  },
+  {
+   "path": "shared/happy-appearance.css",
+   "size": 4142,
+   "sha256": "1c41e3960eda7d812e82ca1a403699c8d5be61aeeff8c0b99598c4609b6a6dc2"
+  },
+  {
+   "path": "shared/happy-appearance.js",
+   "size": 11020,
+   "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
+  },
+  {
+   "path": "shared/happy-gradient-editor.css",
+   "size": 3832,
+   "sha256": "3538876b0a66ba831a65c419e95cd026253044e94ea96e20ba955c3e4cb72d1f"
+  },
+  {
+   "path": "shared/happy-gradient-editor.js",
+   "size": 10590,
+   "sha256": "ff39901bdf35193f5f30397d8ca29f47c54e577f636e0dd274d8c0c0e094a2db"
+  },
+  {
+   "path": "shared/happy-gradients.js",
+   "size": 6546,
+   "sha256": "d6cac534f3d0cdfa9c5ed3c1d67f10e6d4212c99fbffecd72346b3e3cf510c61"
+  },
+  {
+   "path": "shared/happy-links.js",
+   "size": 1850,
+   "sha256": "4b85d0f744bb3bf5590c01943f743ccc04d671386a621ede79076cf36cf1bad4"
+  },
+  {
+   "path": "shared/happy-reference-themes.js",
+   "size": 8719,
+   "sha256": "6386f5b00febbdfb8337d4a0d2701643574bf70edd05ad3cc3bac70e0726691b"
+  },
+  {
+   "path": "shared/happy-settings-developer.js",
+   "size": 2670,
+   "sha256": "6ed637ccf576bb652956ac2aaa3af4d2c454f495a37666b748e8eb4fcf1a6dbc"
+  },
+  {
+   "path": "shared/happy-summaries.js",
+   "size": 14997,
+   "sha256": "8574aca88473e30492b1408bda97c4c33ae18dc07e36cf41b643cbcc42f06334"
+  },
+  {
+   "path": "shared/happy-ui.css",
+   "size": 4066,
+   "sha256": "7dedc41770041a36a779acf4e2abccf9730cb4e8a332d1b086da77bcbafee4ed"
+  },
+  {
+   "path": "shared/happy-ui.js",
+   "size": 12434,
+   "sha256": "089850813216324c3336258d4105b15b8c2fd29e8c0362e67b8446f9fb3c55f5"
+  },
+  {
+   "path": "shared/imported-history.js",
+   "size": 2249,
+   "sha256": "ced3f73bf903952d67710481ad3d06ddb8cfac97c98a09720c8d7a80a6827fbf"
+  },
+  {
+   "path": "shared/measurements-host.js",
+   "size": 3223,
+   "sha256": "bc7eb9648282545c4e75026885a78a689320bf83e7a8acf388c826f175ca2263"
+  },
+  {
+   "path": "shared/measurements-model.js",
+   "size": 1624,
+   "sha256": "7b2c6ce3286513a71c7d4657106726c72c0701be2d55cb0893c50b68accd3660"
+  },
+  {
+   "path": "shared/profile-storage.js",
+   "size": 4167,
+   "sha256": "38eb7c284011d06be1a33e1cb3312788ddc1d38658af894b24bf14df725eebdd"
+  },
+  {
+   "path": "shared/release-notes.js",
+   "size": 3156,
+   "sha256": "0d811d0efdd6254d5e993bd245ac971e6ab1fb5194a8273363efe2bb7520c089"
+  },
+  {
+   "path": "snapshot-sync.js",
+   "size": 11538,
+   "sha256": "9c168cc2e2270305b244643fe1ad1ca52364d0e7006cc59a2ce5f037af9bd4cb"
+  },
+  {
+   "path": "sport-journal-validator.mjs",
+   "size": 11157,
+   "sha256": "3a6aaeb95ff075ead41ee7275e4825a1c453e2c500b4a20529c0aa35175e2599"
+  },
+  {
+   "path": "sport-measurement-reader.mjs",
+   "size": 10599,
+   "sha256": "4ccde664463a559e56cf8e25faef781a51c39795d5c639be1c35748eb54443bf"
+  },
+  {
+   "path": "tests/auth-identity.test.cjs",
+   "size": 8429,
+   "sha256": "87d7b418c1f66bce1cc8ee27147f721ea94aa181f9b291f17186377d8c70db08"
+  },
+  {
+   "path": "tests/checkin-tag.test.cjs",
+   "size": 2264,
+   "sha256": "986b1bfd9f03ce8172bc8b3e14a1b1528df4f4854a5d9410aaaba867b908d640"
+  },
+  {
+   "path": "tests/counter-portion.test.cjs",
+   "size": 2399,
+   "sha256": "a776524de8c76244cfa0e404ab2fed844eda7a139521c19fe0acc26bdf6d5186"
+  },
+  {
+   "path": "tests/counters-eaten.test.cjs",
+   "size": 10693,
+   "sha256": "03d938b42848f78c1e0b1efe59500e15fcd03db1da62d75eb3c944d774608b5d"
+  },
+  {
+   "path": "tests/day-account-exit.test.cjs",
+   "size": 3450,
+   "sha256": "3743417aa2862722adead542d094e20db28f334f6beb1911d4cbf7b55a8568c7"
+  },
+  {
+   "path": "tests/day-local-store.test.cjs",
+   "size": 18471,
+   "sha256": "78eace74268d9d3eb1a4fcc1ec10874cf6b15fc6715a7bc92a2163d9fbd732c9"
+  },
+  {
+   "path": "tests/day-profile.test.cjs",
+   "size": 2536,
+   "sha256": "c3aad5244be8df913254a275ad83369a85098fec2083f0d4f391a44c6d567790"
+  },
+  {
+   "path": "tests/meal-start.test.cjs",
+   "size": 5076,
+   "sha256": "e2521520a6280b3b1aae113340610d59b2e57d59ed9fe7e3aaa88dea5485fd3a"
+  },
+  {
+   "path": "tests/multi-account.test.cjs",
+   "size": 5671,
+   "sha256": "dfac5e8f16c4a4d87bbab39795ebff3051f8197cf5d0f69d212ff22949485c40"
+  },
+  {
+   "path": "tests/personal-transport.test.cjs",
+   "size": 6700,
+   "sha256": "93480c37cfda7858c4237b8321841822c5476b6b27388e7527b9ecc61a83ff9b"
+  },
+  {
+   "path": "tests/quiet-account.test.cjs",
+   "size": 2751,
+   "sha256": "4011a0cfa8decf7a48822ea15150160a5791a46db8de6231f5e9505462b8bed4"
+  },
+  {
+   "path": "tests/section-times.test.cjs",
+   "size": 8336,
+   "sha256": "daade942266ff5312d2f1e4bb6d4cc83809efde9c629154bad297ea59bd1cef3"
+  },
+  {
+   "path": "tests/sport-summary.test.cjs",
+   "size": 13483,
+   "sha256": "681298043f1c6cb69b04851fa2204ef3a49cbd3ed12599d3c21498d30e601ccd"
+  }
+ ],
+ "standalone": {
+  "path": "Happy-Day-57.html",
+  "builder": "scripts/build-day-standalone.py day-57"
+ },
+ "user_data_exported": false,
+ "database_modified": false,
+ "destination_url": "https://astamurberlin-rgb.github.io/happyamurio/day-57/",
+ "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-56/",
+ "point_releases": [
+  {
+   "version": "57.1",
+   "date": "2026-11-10",
+   "changes": [
+    "selfcare-ui.js: addCheckinTag() writes a custom tag into the real section (or the check-in list for «Текущие отметки») — checkinSection() rebuilds its tag list on every call, so a tag added to its copy lived only while selected",
+    "index.html: «Свой тег» handler in check-in mode calls SelfCare.addCheckinTag(t) and save(); cache busters ?v=57.1, selfcare-ui.js?v=57.1, footer and release note 57.1",
+    "tests/checkin-tag.test.cjs (4 tests); standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.1"
+   ]
+  },
+  {
+   "version": "57.2",
+   "date": "2026-11-10",
+   "changes": [
+    "day-journal-sync.js: sync line under the account buttons «Подождите, идёт синхронизация…» instead of «Синхронизация…»",
+    "shared/happy-ui.js: while «Выйти» waits for the cloud (confirmProfileForExit) the card shows «Подождите, идёт синхронизация…» instead of «Подожди…»",
+    "cache busters ?v=57.2, footer and release note 57.2; standalone Happy-Day-57.html rebuilt; shared/apps.json day.version 57.2"
+   ]
+  },
+  {
+   "version": "57.3",
+   "date": "2026-11-11",
+   "changes": [
+    "index.html: the backup reminder bkNag() is no longer called after load (Day 53 removed only the visibilitychange call)",
+    "day-journal-sync.js, day-account-data.js: the guest-records card and «Разные версии записей» are created in the developer section (#dayDeveloperSyncTools), not in the account section",
+    "selfcare-ui.js: «Открыть Sport ↗» on the Activity screen points to the current Sport release (data-happy-app=\"sport\", shared/happy-links.js); the test-build address of 04.11 is removed",
+    "tests/quiet-account.test.cjs: the three points above are pinned by a test",
+    "cache busters ?v=57.3, footer and release note 57.3; standalone Happy-Day-57.html rebuilt"
+   ]
+  },
+  {
+   "version": "57.4",
+   "date": "2026-11-11",
+   "changes": [
+    "selfcare-core.js: activity(c,date,extra) adds the workouts of the Sport summary to the day once (by id, otherwise by start minute and duration) through the HappyCare.sportDay hook; activitySettings.start (default «balance») replaces the tap-driven field mode, which stays in records and is no longer read",
+    "selfcare-ui.js: the Sport summary is read from hd_link_sport_v1 in the account area and from the cloud row sport/link (read only, the row time first) with shared/happy-summaries.js; it is never written into the Day journal; the energy view chosen by a tap lives until the page is closed",
+    "index.html: shared/happy-summaries.js loaded; goals of the Meal summary are kept in the local copy DB.mealLink.goals; «Открыть запись в Sport ↗» leads to the current Sport release (was ../sport-38/); fallback addresses of the neighbour apps name the current release directories; cache busters ?v=57.4",
+    "tests/sport-summary.test.cjs (new, 7 tests); runtime_files now lists every tracked file of the release (tests/checkin-tag.test.cjs and tests/quiet-account.test.cjs were missing from the list)",
+    "standalone Happy-Day-57.html rebuilt"
+   ]
+  },
+  {
+   "version": "57.5",
+   "date": "2026-11-11",
+   "changes": [
+    "selfcare-ui.js: mealFood(date) — «съедено» of the energy ring is the Meal summary day plus the counter servings Meal has not counted yet (HappySummaries.meal.day with DB.mealCounters); mealChanged() repaints the ring on the open Activity screen",
+    "index.html: mealLinkCopy(o,src) keeps the summary mark counters:1 and the list skipped in the local copy DB.mealLink; a copy saved by 57.4 without the mark is taken again when the same summary carries it; onMealSync calls SelfCare.mealChanged; cache busters ?v=57.5, title and footer 57.5",
+    "counters.js: apply() calls SelfCare.mealChanged after the counters document changes",
+    "shared/happy-summaries.js: meal.day(summary,date,counters), meal.serving, compact copy keeps cs and skipped (shared file, same bytes in Meal and Sport)",
+    "tests/counters-eaten.test.cjs (new, 8 tests); tests/sport-summary.test.cjs follows mealLinkCopy",
+    "standalone Happy-Day-57.html rebuilt"
+   ]
+  },
+  {
+   "version": "57.6",
+   "date": "2026-11-11",
+   "changes": [
+    "published 11.11.2026 19:40 (main a8dd06b); details — CHANGELOG.md, entry Day 57.6 (this list was not updated at that time)"
+   ]
+  },
+  {
+   "version": "57.7",
+   "date": "2026-11-12",
+   "changes": [
+    "counters.js: the portion label of a shared counter comes from the Meal definition (portionText, Meal 29: a supplement counter shows «2 капсулы» without nominal grams); foods and definitions from older Meal as before (q u · g г); the tap message uses the same label",
+    "index.html: cache busters ?v=57.7, title and footer 57.7; release-notes.js: entry 57.7",
+    "tests/counter-portion.test.cjs (new, 3 tests)",
+    "standalone Happy-Day-57.html rebuilt"
+   ]
+  }
+ ]
+}
