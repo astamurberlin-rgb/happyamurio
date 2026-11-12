@@ -151,6 +151,7 @@ function mount(){
    openSupplements зовут и с экрана дня («+ Записать») — поэтому переход на «Сборники» здесь, а не при запуске */
 root.HappyCollections={render:render,openCatalog:openCatalog,route:()=>route,catalogs:catalogs.map(c=>c.id),
  isShopContext:()=>['shop','supplementCatalog','catalogDetail'].includes(route),canUseSupplements:()=>purchased(catalogs[0]),
+ buy:id=>{const c=catalogs.find(x=>x.id===id);if(c)buy(c);return !!c&&purchased(c)},   // Meal 29.1: «Купить · 2 €» в карточке шаблона БАДа
  openSupplements:mode=>{if(typeof root.go==='function')root.go('recipes');selectRoute(mode==='mine'?'supplements':'supplementCatalog')}};
 mount();
 })(window);

@@ -51,8 +51,9 @@ assert.ok(page.includes("navigator.serviceWorker.register('./sw.js',{scope:'./'}
 const refs=new Set([...page.matchAll(/(?:src|href)="([^"#]+)"/g)].map(m=>m[1]).filter(u=>!/^(?:[a-z]+:|\/\/|\.\.\/|#|')/i.test(u)&&!u.includes("'")));
 for(const m of page.matchAll(/"(\.\/(?:meal-img|images|app-icons)\/[^"']+)"/g))refs.add(m[1]);
 for(const u of refs)assert.ok(await exists(u.replace(/^\.\//,'').split('?')[0]),'файл выпуска есть: '+u);
-for(const u of ['collections.js?v=29','collections.css?v=29','catalog-preview.js?v=29','catalog-offline.js?v=29','food-libraries.js?v=29','supplements.js?v=29','supplements.css?v=29','supplements-store.js?v=29','supplements-library.js?v=29','supplement-nutrition.js?v=29','supplements-model.js?v=29','supplements-search.js?v=29','substances.js?v=29'])assert.ok(refs.has(u),'страница грузит '+u);
-const order=['substances.js','supplement-nutrition.js','supplements-model.js','supplements-store.js','supplements-library.js','supplements-search.js','supplements.js','collections.js'].map(f=>page.indexOf('src="'+f+'?v=29"'));
+const V=(page.match(/data-app-version="([^"]+)"/)||[])[1];assert.ok(/^29(\.\d+)?$/.test(V||''),'версия выпуска на странице: '+V);
+for(const u of ['collections.js?v='+V,'collections.css?v='+V,'catalog-preview.js?v='+V,'catalog-offline.js?v='+V,'food-libraries.js?v='+V,'supplements.js?v='+V,'supplements.css?v='+V,'supplements-store.js?v='+V,'supplements-library.js?v='+V,'supplement-nutrition.js?v='+V,'supplements-model.js?v='+V,'supplements-search.js?v='+V,'substances.js?v='+V])assert.ok(refs.has(u),'страница грузит '+u);
+const order=['substances.js','supplement-nutrition.js','supplements-model.js','supplements-store.js','supplements-library.js','supplements-search.js','supplements.js','collections.js'].map(f=>page.indexOf('src="'+f+'?v='+V+'"'));
 assert.ok(order.every((x,i)=>x>0&&(i===0||x>order[i-1])),'порядок файлов БАДов: вещества → правило → модель → хранение → каталог → поиск → экран → «Сборники»');
 for(const img of ['images/supplements.jpg'])assert.ok(await exists(img),'обложка БАДов в выпуске');
 // sw.js в песочнице: какие запросы он берёт на себя
@@ -63,12 +64,12 @@ const ctx={self:{location:new URL(SCOPE+'sw.js'),addEventListener:(t,f)=>listene
  fetch:async(r,o)=>{const u=typeof r==='string'?r:r.url;log.push(u);if(!online)throw new TypeError('offline');if(u.endsWith('index.html'))return new Response(page,{status:200});return new Response('x',{status:200})}};
 ctx.self.caches=ctx.caches;vm.createContext(ctx);vm.runInContext(sw,ctx);
 let waited;await listeners.install({waitUntil:p=>waited=p});await waited;
-assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v=29')&&stored.has(SCOPE+'supplements.js?v=29')&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
+assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v='+V)&&stored.has(SCOPE+'supplements.js?v='+V)&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
 function fetchEvent(url,mode){let res=null;listeners.fetch({request:{url,method:'GET',mode:mode||'no-cors'},respondWith:p=>res=p});return res}
 for(const u of ['https://geqziziycpclhnucnsyx.supabase.co/rest/v1/app_sync','https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json','https://astamurberlin-rgb.github.io/happyamurio/shared/apps.json','https://astamurberlin-rgb.github.io/happyamurio/day-57/'])
  assert.equal(fetchEvent(u),null,'не перехватывает: '+u);
 assert.equal(fetchEvent(SCOPE+'sw.js'),null,'сам себя не кэширует');
 online=false;const offline=await fetchEvent(SCOPE+'?test=1','navigate');assert.ok(offline,'без сети страница открывается из копии');
-assert.ok(await fetchEvent(SCOPE+'catalog.js?v=29').catch(()=>null),'без сети скрипт выпуска — из копии');
+assert.ok(await fetchEvent(SCOPE+'catalog.js?v='+V).catch(()=>null),'без сети скрипт выпуска — из копии');
 online=true;
 console.log('Passed: catalog lists match meal-libraries (uzbek '+P.uzbek.foods.length+', desserts '+P.desserts.foods.length+'); shop catalogs with supplements first ('+manifest.libraries.supplements.templateCount+' templates, '+REF+'), covers, test purchase per account, opens on the day; all '+refs.size+' page files present in order; service worker keeps to meal-29/ and serves the copy offline.');

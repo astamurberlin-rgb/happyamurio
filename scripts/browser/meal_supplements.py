@@ -165,8 +165,10 @@ with sync_playwright() as p:
         meal.locator("#bkMerge").click()
     wait_for(meal, lambda: meal.evaluate("()=>typeof MealSupplementsStore!=='undefined'&&MealSupplementsStore.ready()&&!!document.querySelector('#toast .tU')"), 25)
     check("«Дополнить без дублей»: добавки из файла снова на месте", sorted(e[0] for e in meal.evaluate(ENTRIES)) == sorted(e["name"] for e in sup["entries"]))
+    # «Вернуть» в подсказке после загрузки: подсказка держится 4 с, а проверка выше ждёт документ добавок — нажимаем ту же
+    # кнопку без ожидания видимости (12.11 08:30: на медленной машине подсказка успевала скрыться — сценарий падал по времени)
     with meal.expect_navigation(timeout=30000):
-        meal.locator("#toast .tU").click()
+        meal.evaluate("()=>document.querySelector('#toast .tU').click()")
     wait_for(meal, lambda: meal.evaluate("()=>typeof MealSupplementsStore!=='undefined'&&MealSupplementsStore.ready()"), 25)
     meal.wait_for_timeout(800)
     check("«Вернуть»: добавки — как перед загрузкой", meal.evaluate(ENTRIES) == [])
