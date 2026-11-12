@@ -1,6 +1,6 @@
 """Meal 29: счётчик добавки на одном телефоне, гость (решение Астамура 12.11.2026 01:48: «нажимаешь добавить счетчик
 находишь добавку выбираешь в какое приложение еще подключить и везде должно быть»). Каталог БАДов — из ветки библиотек
-этого репозитория. В Meal: «Новый счётчик» находит шаблон каталога «Рыбий жир» (после тестовой покупки) и свою добавку
+этого репозитория. Meal 29.1: шаблон из поиска без покупки каталога ведёт на страницу каталога БАДов с «Купить». В Meal: «Новый счётчик» находит шаблон каталога «Рыбий жир» (после тестовой покупки) и свою добавку
 «Витамин D3»; меры — капсулы, без граммов. Рыбий жир — 2 капсулы, связь с Day и Sport; витамин D — только Day.
 Нажатия в Meal, Sport и Day: калории в «съедено» без удвоения, подписи порций без условных граммов, голодание прервано
 рыбьим жиром, приём пищи не открыт. Журнал Meal: EPA и витамин D по нажатиям, своё вещество «Рыбий жир» — в «Созданные
@@ -55,7 +55,44 @@ with sync_playwright() as p:
     # ── 1. Meal: тестовая покупка каталога БАДов, своя добавка «Витамин D3» ──
     meal, ready = meal_open()
     check("Meal: каталог БАДов и документ добавок готовы", ready)
-    meal.evaluate("()=>localStorage.setItem(HappyProfile.key('happy-meal-demo-purchases-v1'),JSON.stringify({SUPP:true}))")
+    # Meal 29.1 (Астамур 12.11 08:15–08:16): шаблон каталога без покупки — не тупик: «БАДы не подключены к библиотеке»,
+    # «Купить · 2 €», как в магазине, и «В магазин» — на страницу каталога БАДов
+    row = '.sp-search-results [data-sp="search-template"][data-id="protein-whey-concentrate"]'
+
+    def find_protein():
+        meal.evaluate("()=>{go('day');renderDay()}")
+        meal.wait_for_timeout(300)
+        meal.locator('#mlSecs [data-sec="am"]').click()
+        meal.wait_for_timeout(400)
+        meal.fill("#mlFindQ", "протеин")
+        meal.wait_for_timeout(700)
+        return meal.locator(row).inner_text().replace('\n', ' · ')
+
+    card_js = "()=>{const d=document.querySelector('.sp-dialog');return d?{text:d.innerText,buttons:[...d.querySelectorAll('[data-sp]')].map(b=>b.textContent.trim()),dose:!!document.getElementById('spDose')}:null}"
+    out["row_before_purchase"] = find_protein()
+    meal.locator(row).click()
+    meal.wait_for_timeout(400)
+    out["card_before_purchase"] = meal.evaluate(card_js)
+    check("поиск: шаблон без покупки подписан «Каталог БАДов · не подключён»", 'Каталог БАДов · не подключён' in out["row_before_purchase"])
+    check("карточка шаблона без покупки: «БАДы не подключены к библиотеке», «Купить · 2 €», «Закрыть», «В магазин»", out["card_before_purchase"] and 'БАДы не подключены к библиотеке.' in out["card_before_purchase"]["text"] and 'Тестовая покупка · без оплаты' in out["card_before_purchase"]["text"] and out["card_before_purchase"]["buttons"] == ['Купить · 2 €', 'Закрыть', 'В магазин'])
+    meal.screenshot(path=SHOTS + "meal_supplement_counters-0-card.png")
+    meal.click('.sp-dialog [data-sp="open-shop"]')
+    meal.wait_for_timeout(700)
+    out["shop_after_open"] = meal.evaluate("()=>({route:HappyCollections.route(),screen:document.querySelector('.screen[data-screen=\"recipes\"]').classList.contains('on'),dialog:!!document.querySelector('.sp-dialog'),buy:(()=>{const b=document.querySelector('#ccSupplementBuy [data-cc-buy=\"SUPP\"]');return b&&b.offsetParent!==null?b.textContent:null})(),bought:HappyCollections.canUseSupplements()})")
+    check("«В магазин» ведёт на страницу каталога БАДов в «Сборниках» с «Купить · 2 €», ничего не покупая", out["shop_after_open"] == {"route": 'supplementCatalog', "screen": True, "dialog": False, "buy": 'Купить · 2 €', "bought": False})
+    find_protein()
+    meal.locator(row).click()
+    meal.wait_for_timeout(400)
+    meal.click('.sp-dialog [data-sp="buy-supplements"]')
+    meal.wait_for_timeout(600)
+    out["after_card_purchase"] = meal.evaluate(card_js)
+    out["bought"] = meal.evaluate("()=>HappyCollections.canUseSupplements()")
+    check("«Купить · 2 €» в карточке: каталог куплен, сразу запись приёма", out["bought"] is True and out["after_card_purchase"] and out["after_card_purchase"]["dose"])
+    meal.click('.sp-dialog [data-sp="close"]')
+    out["row_after_purchase"] = find_protein()
+    check("после покупки строка поиска — «Шаблон · настроить по этикетке»", 'Шаблон · настроить по этикетке' in out["row_after_purchase"])
+    meal.evaluate("()=>{go('day');renderDay()}")
+    meal.wait_for_timeout(300)
     out["own_variants"] = meal.evaluate("""async()=>{const M=HappySupplementsModel;const x=M.normalize({id:null,templateId:null,name:'Витамин D3 · 2000 МЕ',form:'',category:'vitamins',
       basis:{quantity:1,unit:'капсула',gramsPerUnit:null},components:[{id:'c1',name:'Витамин D3',unit:'МЕ',amount:2000,substanceId:'vD'}],measures:[],notes:'',source:'Этикетка пользователя',revision:0});
       x.id='d3-own';x.revision=1;x.updatedAt=new Date().toISOString();await MealSupplementsStore.write(d=>{d.variants=d.variants.concat(x)});return MealSupplementsStore.state().variants.map(v=>v.name)}""")

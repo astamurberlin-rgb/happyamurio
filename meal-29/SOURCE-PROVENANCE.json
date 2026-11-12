@@ -48,7 +48,17 @@
    "date": "2026-11-11"
   }
  },
- "pointReleases": [],
+ "pointReleases": [
+  {
+   "version": "29.1",
+   "date": "2026-11-12",
+   "changes": [
+    "supplements.js: карточка шаблона без покупки каталога — «БАДы не подключены к библиотеке», «Купить · 2 €» (collections.js: HappyCollections.buy), «В магазин»; строка поиска «Каталог БАДов · не подключён»",
+    "supplements.css: кнопка покупки в карточке",
+    "index.html ?v=29.1, заголовок и подвал; sw.js VERSION 29.1; release-notes.js 29.1"
+   ]
+  }
+ ],
  "releaseHashes": [
   {
    "path": "PRODUCTS.md",
@@ -57,8 +67,8 @@
   },
   {
    "path": "README.md",
-   "size": 35052,
-   "sha256": "b3da90b9d4b070350e4871832c73697effe57c8c8f1d812c375bd377ee8d9de7"
+   "size": 35779,
+   "sha256": "e32dfc640f20e600a5ca4175a00bcde09ce571b483cc46592d62f2416548dbd4"
   },
   {
    "path": "account-ui.js",
@@ -267,8 +277,8 @@
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 10413,
-   "sha256": "6dfa6e81a8a8657911a09e264e66bab839e32934743eb03ba565239f5f413d42"
+   "size": 10569,
+   "sha256": "2544eb5ceebed683e4246af9f3687572f22c6e3216717e4a81ebba51f0a42a15"
   },
   {
    "path": "checks/check-sport-summary.mjs",
@@ -292,8 +302,8 @@
   },
   {
    "path": "collections.js",
-   "size": 17986,
-   "sha256": "57c5d3cf9928756d0bab6272f06abcddc702318a6245aa18e6a370c91e2ea32d"
+   "size": 18157,
+   "sha256": "4e9e42647e7dee3d9e321539af5afbf8a275e9c1261d9723b19970ac72a7b042"
   },
   {
    "path": "controls.js",
@@ -327,8 +337,8 @@
   },
   {
    "path": "index.html",
-   "size": 638974,
-   "sha256": "86495e51a287a94556ebfafb29e5385871451dd206fe28412f08a3bf5596a440"
+   "size": 639070,
+   "sha256": "b92f591d74f1a8e4f092e9e1a7b6f7e4eb916fcdf7637c0879f9fc4a094f804e"
   },
   {
    "path": "journal-model.js",
@@ -512,8 +522,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 26104,
-   "sha256": "2fb3920b5b725761992aa8ec388e1eca8e80c30f76753df7371d80ad8bdbfb35"
+   "size": 26807,
+   "sha256": "1777e70bd5a6b1caf94eaed7d8f8203a5dba03e228723e58cd39afe153d93201"
   },
   {
    "path": "report.css",
@@ -1832,18 +1842,18 @@
   },
   {
    "path": "supplements.css",
-   "size": 13738,
-   "sha256": "ed8fd2e80f8888f528987a4660c39efc3154897ec7590144bc232806be3ca255"
+   "size": 14019,
+   "sha256": "fa56ea3da77fcaf84c519f6bcd74a70fb1f8a6085299f54fa77524893f52a540"
   },
   {
    "path": "supplements.js",
-   "size": 53824,
-   "sha256": "813779bd4891604d74a4110691e478f6901c02eb38ae6d732d114becf8696306"
+   "size": 55579,
+   "sha256": "297901d7d46e5c6980d2546f316b6eb95670c42299e70d615208260bb7091b4d"
   },
   {
    "path": "sw.js",
-   "size": 2741,
-   "sha256": "77882dff39c467fe7c42b31a22f388c1e7642ba0a9499b2ffbd2d0cec4486601"
+   "size": 2743,
+   "sha256": "ada51db90dfb96e3b0f341b485a1f9bc3dfb46c1f941c2d55cd375ad2cfb153b"
   },
   {
    "path": "usda.js",

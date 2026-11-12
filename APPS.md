@@ -12,7 +12,7 @@
 | Happy Day · Update 53.2 | `day-53/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-53/ | 53.2 |
 | Happy Day · Update 52 | `day-52/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-52/ | 52 |
 | Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
-| Happy Meal · Update 29 | `meal-29/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-29/ | 29 |
+| Happy Meal · Update 29 | `meal-29/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-29/ | 29.1 |
 | Happy Meal · Update 28 | `meal-28/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-28/ | 28 |
 | Happy Meal · Update 27.4 | `meal-27/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-27/ | 27.4 |
 | Happy Meal · Update 26.1 | `meal-26/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-26/ | 26.1 |
@@ -102,6 +102,8 @@
 ## Happy Meal · Update 29 · 12.11.2026
 
 Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/meal-29/ (опубликовано 12.11.2026 02:51 по слову Астамура, вместе с Day 57.7 и Sport 40.5; каталог БАДов влит в `meal-libraries`). Исходник — `meal-28/` (main `e308495`). БАДы из прототипа Михалыча и Астамура (H068, H072): каталог `supplements` в `meal-libraries` (31 шаблон, скачивается для работы без интернета), «Мои добавки» в «Сборниках», свои варианты и приёмы — документ аккаунта `app_sync` meal/supplements (`supplements-store.js`; журнал Meal не менялся), строки БАДов в дне, разделе, журнале, CSV и отчёте. Приём пищи открывает запись больше 4 ккал (вода, чёрный кофе, чай без сахара — никогда); БАДы — порошок больше 4 ккал за приём; «Голодание прервано» — первая запись с калориями. «Выгрузить дневник» — и с добавками. Сводка для Day и Sport — с калориями и БЖУ БАДов, формат прежний. Подробно — `meal-29/README.md`, хранение — `DATA-STORAGE.md`.
+
+**29.1 (12.11.2026 ЧЧ:ММ, тот же каталог `meal-29/`):** шаблон БАДа без покупки каталога — в карточке «БАДы не подключены к библиотеке», «Купить · 2 €» (как в магазине) и «В магазин» — страница каталога БАДов; в поиске — «Каталог БАДов · не подключён» (Астамур 12.11 08:15–08:16).
 
 **Счётчики добавок** (Астамур 12.11 01:48): «Новый счётчик» находит свои добавки и шаблоны каталога; добавка в счётчике — запись еды с продуктом-добавкой `supp:<вариант>` (`supplement-counters.js`), состав на 100 условных граммов, граммы без известной массы не показываются; связь с Day 57.7 и Sport 40.5 — как у продуктов, подпись порции — `portionText`.
 

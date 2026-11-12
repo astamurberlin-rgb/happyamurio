@@ -6,6 +6,9 @@
 from common import *
 
 V = MEAL.strip("/").split("-")[1]   # номер выпуска: meal-29/ → 29
+import re as _re, pathlib as _pl
+# версия копии выпуска — из его sw.js (у точечных выпусков 29.1… имя копии меняется)
+SWV = _re.search(r"const VERSION='([^']+)'", (_pl.Path(__file__).resolve().parents[2] / MEAL / "sw.js").read_text(encoding="utf-8")).group(1)
 
 out, errors, checks = {}, [], []
 
@@ -98,7 +101,7 @@ with sync_playwright() as p:
     meal.reload()
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'"), 25)
     out["caches"] = meal.evaluate("async()=>await caches.keys()")
-    check("снова в сети: всё открывается; у выпуска своя копия happy-meal-" + V + "-shell-" + V, meal.evaluate("()=>BLS_ST") == "ok" and "happy-meal-%s-shell-%s" % (V, V) in out["caches"])
+    check("снова в сети: всё открывается; у выпуска своя копия happy-meal-" + V + "-shell-" + SWV, meal.evaluate("()=>BLS_ST") == "ok" and "happy-meal-%s-shell-%s" % (V, SWV) in out["caches"])
     check("на странице нет ошибок", not errors)
     out["errors"] = errors
     out["library_requests"] = net["log"][:40]
