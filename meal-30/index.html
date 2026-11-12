@@ -265,6 +265,18 @@ textarea{width:100%;min-height:76px;resize:vertical}
   touch-action:none;cursor:grab}
 .grip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)}
 .grip:active i{background:rgba(255,255,255,.75)}
+/* Meal 30 (Астамур 12.11): счётчик продукта из отключённой или не купленной библиотеки — тусклый и неактивный;
+   нажатие — подсказка «Библиотека с данным продуктом отключена». Набранное число остаётся. */
+.tpItem.tpOff{opacity:.42}
+/* Meal 30 (Астамур 12.11 10:24): окно счётчика — черточка вместо «Закрыть» (нажать или потянуть вниз), корзина
+   как у продукта в дневнике. Цвет окна прежний (общий food-counters.css не меняется). */
+.food-counter-editor .fc-grip{display:flex;justify-content:center;align-items:center;height:28px;margin:4px 0 4px;touch-action:none;cursor:grab}
+.food-counter-editor .fc-grip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)}
+.food-counter-editor .fc-grip:active i{background:rgba(255,255,255,.75)}
+.food-counter-editor .fc-shell{padding-top:6px}
+.food-counter-editor .fc-actions.has-delete{grid-template-columns:54px minmax(0,1fr)}
+.food-counter-editor .fc-actions .fc-delete{width:54px;height:54px;min-height:54px;padding:0;border-radius:50%;display:grid;place-items:center}
+.food-counter-editor .fc-actions .fc-delete svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 /* ── заставка на время загрузки: то же кольцо со шкалой, что и в чекпоинте, и мордочка.
    Дуга — рот: вращение тормозит внизу (0,2 с); улыбка начинает расти с 12:00 и к остановке
@@ -3003,12 +3015,10 @@ function renderDay(){
   var supplementDay=supplementRows(curDate),partial=['kcal','prot','fat','carb'].some(function(k){return intakeCoverage(day(curDate).items,supplementDay,k).missing>0}),hint=document.getElementById('mlKbHint');
   hint.hidden=(day(curDate).items.length>0||supplementDay.length>0)&&!partial;
   hint.textContent=partial?'Калории и БЖУ: сумма известных значений; полный итог неизвестен. Прочерк — нет сопоставимых данных. Углеводы USDA включают клетчатку и показаны отдельно в карточке продукта.':'Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото». ';
-  var fast=mlFastBreak(curDate),fastEl=document.getElementById('mlFast');
-  fastEl.hidden=!fast;fastEl.innerHTML=fast?'<b>Голодание прервано · '+escH(fast.t)+'</b><span>'+escH(fast.name)+'</span>':'';
+  var fastEl=document.getElementById('mlFast');if(fastEl){fastEl.hidden=true;fastEl.innerHTML=''}   // Meal 30 (Астамур 12.11): строку «Голодание прервано» не показываем; данные не трогаем
   document.getElementById('mlSecs').innerHTML=sectionsForDate(curDate).map(function(S){
     var it=itemsOf(S.k), supplements=supplementRows(curDate,S.k), s=intakeSum(it,supplements), parts=[];
-    if(it.length)parts.push(it.length+' '+ruPlural(it.length,['продукт','продукта','продуктов']));
-    if(supplements.length)parts.push(supplements.length+' '+ruPlural(supplements.length,['БАД','БАДа','БАДов']));
+    var nAll=it.length+supplements.length;if(nAll)parts.push(nAll+' '+ruPlural(nAll,['продукт','продукта','продуктов']));   // Meal 30: добавки — как любая еда
     var sub=parts.length?parts.join(' · '):'пока пусто';
     var clock=intakeTime(it,supplements);if(clock)sub+=' · '+clock;
     return '<button class="card rowcard" data-sec="'+escH(S.k)+'"><span class="ic">'+secIc(S)+'</span>'+
@@ -3024,8 +3034,8 @@ function tapDef(k){ return DB.taps.filter(function(c){ return c.k===k })[0] }
 function tapCount(k){ return day(curDate).items.filter(function(x){ return x.tap===k }).length }
 function tapsHTML(){
   return '<div class="card tpSec"><h2 class="tpT">Счётчики</h2>'+DB.taps.map(function(c){
-    var n=tapCount(c.k);
-    return '<div class="tpItem"><button class="tpNm" data-tinfo="'+escH(c.k)+'"><b>'+escH(c.t)+'</b><small>'+escH(portTxt(c))+'</small></button>'+
+    var n=tapCount(c.k), off=typeof tapOff==='function'&&tapOff(c);
+    return '<div class="tpItem'+(off?' tpOff':'')+'"><button class="tpNm" data-tinfo="'+escH(c.k)+'"><b>'+escH(c.t)+'</b><small>'+escH(portTxt(c))+'</small></button>'+
       '<div class="tpStp"><button data-tminus="'+escH(c.k)+'" aria-label="Убрать порцию: '+escH(c.t)+'">−</button>'+
       '<span class="v'+(n?'':' tpZero')+'">'+n+'</span>'+
       '<button data-tplus="'+escH(c.k)+'" aria-label="Добавить порцию: '+escH(c.t)+'">+</button></div></div>';
@@ -3125,6 +3135,8 @@ function mlTimeRestart(input,ev){
    приём и порошок или жидкость (протеин, коллаген); капсулы и таблетки приём не открывают, но голодание прерывают
    (рыбий жир). Свой вариант может переопределить правило (supplement-nutrition.js, opensMeal). Голодание прерывает
    первая запись, которая открывает приём, или БАД больше 4 ккал за приём. */
+/* Meal 30 (Астамур 12.11 10:44): у БАДов «открывает приём» и «сбрасывает окно голодания» — одно правило:
+   своё «Да» / «Нет» из варианта, иначе больше 4 ккал за приём для любой формы (supplement-nutrition.js). */
 function mlFoodKcal(x){var f=MealProducts.forItem(x,FOODS,DB)||FOODS[x.fid],k=f&&f.k;return typeof k==='number'&&isFinite(k)&&k>=0?k:null}
 function mlEntryKcal(x){var k=mlFoodKcal(x),g=x&&x.g;return k!=null&&typeof g==='number'&&isFinite(g)&&g>=0?k*g/100:null}
 /* счётчик добавки (supplement-counters.js): запись еды с продуктом-добавкой — правило БАДов за нажатую порцию.
@@ -3355,6 +3367,7 @@ function renderSettings(){
     return rowCard('<span class="nm"><b>'+G.t+'</b><small>'+(v?fmt(v)+' '+G.u+' в день':'не задано')+'</small></span>'+penBtn('g'+i));
   }).join('');
   document.getElementById('setSecs').innerHTML=DB.sections.map(function(S,i){
+    if(importedSection(S)) return '';   // Meal 30 (Астамур 12.11): перенесённые разделы «… · Cronometer» — только в истории дней
     return rowCard((HD_LINK[S.k]?hdLinkMark():minusBtn('s'+i))+'<span class="ic">'+secIc(S)+'</span><span class="nm"><b>'+escH(S.t)+'</b><small>'+escH(secHint(S))+'</small></span>'+penBtn('s'+i));
   }).join('');
   document.getElementById('setTaps').innerHTML=DB.taps.length?DB.taps.map(function(c,i){
@@ -5216,10 +5229,10 @@ Object.keys(JR_N).forEach(function(id){ JR_N[id].id=id });
 JR_MAC.forEach(function(x){ x.mac=1 });
 /* избранное: что человек вывел наверх. Добавить — смахнуть строку влево и нажать звёздочку */
 var JR_FAV_DEMO=['caf','epadha','cre','mg','i'];      // пример, пока человек ничего не менял
-function jrFav(){ return Array.isArray(DB.jrFav)?DB.jrFav:JR_FAV_DEMO }
+function jrFav(){ return Array.isArray(DB.jrFav)?DB.jrFav:[] }   // Meal 30 (Астамур 12.11): только то, что человек отметил
 function jrIsFav(id){ return jrFav().indexOf(id)>=0 }
 function jrToggleFav(id){
-  var L=jrFav().slice(), i=L.indexOf(id), before=jrFav().slice(), x=JR_N[id];
+  var L=jrFav().slice(), i=L.indexOf(id), before=jrFav().slice(), x=JR_N[id]||{t:(window.HappySupplementNutrition&&HappySupplementNutrition.customTitle?HappySupplementNutrition.customTitle(id):'Показатель')};
   if(i>=0) L.splice(i,1); else L.push(id);
   DB.jrFav=L; save(); renderJournal();
   if(i>=0) toast('Убрано из избранного',function(){ DB.jrFav=before; save(); renderJournal() });
@@ -5311,6 +5324,7 @@ function jrTint(hex){
 
 /* ── строки ── */
 function jrRow(id,ctx){
+  if(String(id).indexOf('custom:')===0) return window.HappySupplementNutrition&&HappySupplementNutrition.customFavHTML?HappySupplementNutrition.customFavHTML(id,jrRange(),JR_DATA&&JR_DATA.days):'';   // Meal 30: свой микроэлемент в «Избранном»
   var x=JR_N[id]; if(!x) return '';
   var key=ctx+':'+id, v=jrV(x,id), pct=jrPctOf(x,id), hasN=jrHasN(x), chk=jrHasChk(x), mt=v!=null?jrMissTxt(id):'',
       tap=hasN||chk||!!mt, open=JR_ROW===key&&tap, fav=jrIsFav(id);
@@ -5335,13 +5349,13 @@ function jrOmegaFavorite(){
   var total=n==null?'—':(missing?'':'')+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(n)+'\u00a0г';
   var children=['ala3','epa','dpa','dha'].filter(function(id){return JR_N[id]&&jrV(JR_N[id],id)!=null});
   var subtotal=jrV(JR_N.epadha,'epadha'),on=JR_OMEGA_FAV_OPEN;
-  return '<div class="jrOmegaFav"><div class="jrSw" data-sw="fav:omega"><button class="jrStar on" data-omega-fav-remove aria-label="Убрать из избранного: Омега-3">'+jrStarSvg(true,'jrSi')+'</button><button class="jrRow jrOmegaFavToggle" data-jr-omega-toggle aria-expanded="'+on+'" aria-controls="jrOmegaFavBody"><span class="jrR1"><span class="jrN">Омега-3, всего</span><span class="jrVR"><b class="jrV">'+total+'</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(on?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></span></span>'+(missing?'<span class="jrDet">'+(n==null?'Общий показатель не указан':'Известная часть')+'</span>':'')+'</button></div><div id="jrOmegaFavBody" class="jrOmegaFavBody"'+(on?'':' hidden')+'>'+(children.length?'<div class="jrOmegaParts"><p class="jrOmegaLabel">В том числе</p>'+children.map(function(id){return jrRow(id,'fav-omega')}).join('')+'</div>':'<p class="jrEmpty">Нет данных по отдельным кислотам за выбранный период.</p>')+(subtotal!=null?'<div class="jrOmegaSubtotal"><p class="jrOmegaLabel">Подытог двух кислот</p>'+jrRow('epadha','fav-omega')+'</div>':'')+'</div></div>';
+  return '<div class="jrOmegaFav"><div class="jrSw" data-sw="fav:omega"><button class="jrStar on" data-omega-fav-remove aria-label="Убрать из избранного: Омега-3">'+jrStarSvg(true,'jrSi')+'</button><button class="jrRow jrOmegaFavToggle" data-jr-omega-toggle aria-expanded="'+on+'" aria-controls="jrOmegaFavBody"><span class="jrR1"><span class="jrN">Омега-3, всего</span><span class="jrVR"><b class="jrV">'+total+'</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(on?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></span></span>'+(missing?'<span class="jrDet">'+(n==null?'Общий показатель не указан':'Известная часть')+'</span>':'')+'</button></div><div id="jrOmegaFavBody" class="jrOmegaFavBody"'+(on?'':' hidden')+'>'+(children.length?'<div class="jrOmegaParts"><p class="jrOmegaLabel">В том числе</p>'+children.map(function(id){return jrRow(id,'fav-omega')}).join('')+'</div>':'<p class="jrEmpty">Нет данных по отдельным кислотам за выбранный период.</p>')+'</div></div>';
 }
 function jrRows(list,ctx){
   var omega=JR_OMEGA_IDS,shownOmega=false;
   return list.map(function(r){
     if(ctx==='fav'&&omega.includes(r)){if(shownOmega)return '';shownOmega=true;return jrOmegaFavorite();}
-    if(ctx==='fat'&&r==='n3')return '<div class="jrOmega" role="group" aria-label="Омега-3">'+jrRow('n3',ctx)+'<div class="jrOmegaParts"><p class="jrOmegaLabel">В том числе</p>'+['ala3','epa','dpa','dha'].map(function(id){return jrRow(id,ctx)}).join('')+'</div><div class="jrOmegaSubtotal"><p class="jrOmegaLabel">Подытог двух кислот</p>'+jrRow('epadha',ctx)+'</div></div>';
+    if(ctx==='fat'&&r==='n3')return '<div class="jrOmega" role="group" aria-label="Омега-3">'+jrRow('n3',ctx)+'<div class="jrOmegaParts"><p class="jrOmegaLabel">В том числе</p>'+['ala3','epa','dpa','dha'].map(function(id){return jrRow(id,ctx)}).join('')+'</div></div>';
     if(ctx==='fat'&&omega.includes(r))return '';
     return Array.isArray(r)?'<p class="jrSub">'+escH(r[0])+'</p>':jrRow(r,ctx);
   }).join('');
@@ -6004,7 +6018,7 @@ function jrMissPct(id){
   if(!JR_DATA||!JR_DATA.miss) return 0;
   var s=JR_DATA.miss[id]||0; return s>=0.05?Math.round(s*100):0;
 }
-function jrMissTxt(id){var p=jrMissPct(id),n=JR_DATA&&JR_DATA.supplementMissing&&JR_DATA.supplementMissing[id],parts=[];if(p)parts.push('нет данных у '+p+' % еды');if(n)parts.push('нет данных в '+n+' записях добавок');return parts.join('; ')}
+function jrMissTxt(id){var p=jrMissPct(id),n=JR_DATA&&JR_DATA.supplementMissing&&JR_DATA.supplementMissing[id],parts=[];if(p)parts.push('нет данных у '+p+' % еды');return parts.join('; ')}
 function jrMissWho(id){
   var L=(JR_DATA&&JR_DATA.missN&&JR_DATA.missN[id])||[]; if(!L.length) return 'Итог включает только известные значения. Неизвестные и конфликтующие значения добавок не считаются нулём.';
   return 'Без данных: '+L.slice(0,4).join(', ')+(L.length>4?' и ещё '+(L.length-4):'')+' — '+jrMissPct(id)+' % калорий еды за период. На самом деле съедено больше.';

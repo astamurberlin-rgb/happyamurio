@@ -17,9 +17,15 @@ function preferences(db){
   if(!catalog.some(function(s){return out[s.id]}))out.BLS=true;
   return out;
 }
-function enabled(db,id){return preferences(db)[id]!==false}
+/* Meal 30 (Астамур 12.11 10:14): платный набор без покупки — как отключённый: не ищется, в настройках каталогов
+   его нет; купил — подключён. Платным пока считается только «БАДы»; остальные — дописать сюда, когда решено. */
+var PAID=['SUPP'];
+function paid(id){return PAID.indexOf(id)>=0}
+function purchased(id){if(!paid(id))return true;var C=root.HappyCollections;return !C||typeof C.isPurchased!=='function'||C.isPurchased(id)===true}
+function enabled(db,id){return preferences(db)[id]!==false&&purchased(id)}
 function sourceOf(f){
   if(!f)return null;
+  if(f.supplement||String(f.id||'').indexOf('supp:')===0)return 'SUPP';   // Meal 30: продукт-добавка счётчика — из набора «БАДы»
   if(f.src==='Мои')return 'OWN';
   if(f.catalogSource==='HM-DESSERT')return 'DESSERT';   // Update 25: собственные карточки библиотеки десертов; записи BLS/USDA/кухонь из коллекции остаются в своих базах
   if(f.catalogSource==='MEXT'||String(f.id).indexOf('mext:')===0)return 'MEXT';
@@ -65,5 +71,5 @@ function compare(a,b,q){
  var match=score(b)-score(a);if(match)return match;
  var order={OWN:-1,BLS:0,USDA:1,MEXT:2,HM:3,DESSERT:3};return (order[sourceOf(a)]??4)-(order[sourceOf(b)]??4);
 }
-root.MealSources={applyTestDefaults:applyTestDefaults,prepareTestImport:prepareTestImport,compare:compare,catalog:catalog,preferences:preferences,enabled:enabled,sourceOf:sourceOf,available:available,codeEnabled:codeEnabled,setEnabled:setEnabled};
+root.MealSources={applyTestDefaults:applyTestDefaults,prepareTestImport:prepareTestImport,compare:compare,catalog:catalog,preferences:preferences,enabled:enabled,sourceOf:sourceOf,available:available,codeEnabled:codeEnabled,setEnabled:setEnabled,paid:paid,purchased:purchased};
 })(typeof window!=='undefined'?window:globalThis);

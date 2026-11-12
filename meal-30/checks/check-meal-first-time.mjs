@@ -2,7 +2,8 @@
 // Meal 29 — что открывает приём пищи (решения Астамура 11.11.2026 и 12.11.2026 «по калориям считать»): запись больше
 // 4 ккал, напиток это или нет; продукт не больше 4 ккал на 100 г или 100 мл — никогда; масса неизвестна — решает продукт;
 // калорийность неизвестна — как раньше (еда открывает, напиток нет). БАДы — по приёму: больше 4 ккал и порошок или
-// жидкость; капсулы и таблетки не открывают, но прерывают голодание. Время приёма — первая запись, которая его
+// жидкость; капсулы и таблетки не открывают, но прерывают голодание. С Meal 30 у БАДов одно правило «Сбрасывает окно
+// голодания?»: своё Да / Нет, иначе больше 4 ккал за приём для любой формы (Астамур 12.11 10:44). Время приёма — первая запись, которая его
 // открывает, с БАДами. Сводка для Day: калории и БЖУ БАДов, «еда» и время раздела по тем же правилам.
 // Модель времени, правило БАДов и сводка для Day берутся из настоящих файлов выпуска.
 import {readFile} from 'node:fs/promises';
@@ -73,15 +74,16 @@ c.DB={days:{'2026-11-12':{items:[{fid:'coffee',t:'06:30'},{fid:'tea',t:'10:00'}]
 // Правило БАДов из supplement-nutrition.js: калории приёма, форма, свой выбор в варианте
 const nut=vm.createContext({});nut.globalThis=nut;vm.runInContext(await readFile(new URL('../supplement-nutrition.js',import.meta.url),'utf8'),nut);
 const rule=(unit,values,own)=>JSON.parse(JSON.stringify(nut.HappySupplementNutrition.mealRule({basis:{unit},...(own===undefined?{}:{opensMeal:own})},values)));
-assert.deepEqual(rule('капсула',{kcal:10}),{energy:10,breaksFast:true,opensMeal:false,pill:true},'рыбий жир: голодание прерван, приём не открыт');
+assert.deepEqual(rule('капсула',{kcal:10}),{energy:10,breaksFast:true,opensMeal:true,pill:true},'Meal 30: рыбий жир больше 4 ккал — сбрасывает окно голодания (по калориям, не по форме)');
 assert.deepEqual(rule('г',{kcal:114}),{energy:114,breaksFast:true,opensMeal:true,pill:false},'протеин открывает приём');
 assert.deepEqual(rule('мерная ложка',{kcal:3}),{energy:3,breaksFast:false,opensMeal:false,pill:false},'3 ккал — ничего');
 assert.equal(rule('г',{kcal:4}).breaksFast,false,'ровно 4 ккал за приём — не считается');
 assert.equal(rule('таблетка',{kcal:20},true).opensMeal,true,'свой выбор «открывает» у таблеток');
-assert.equal(rule('г',{kcal:70},false).opensMeal,false,'свой выбор «не открывает» у порошка');assert.equal(rule('г',{kcal:70},false).breaksFast,true);
+assert.equal(rule('г',{kcal:70},false).opensMeal,false,'свой выбор «Нет» у порошка');assert.equal(rule('г',{kcal:70},false).breaksFast,false,'Meal 30: «Нет» — окно голодания не сбрасывает');
+assert.deepEqual([rule('капсула',{kcal:2},true).opensMeal,rule('капсула',{kcal:2},true).breaksFast],[true,true],'Meal 30: «Да» — сбрасывает всегда, даже 2 ккал');
 assert.deepEqual(rule('г',{prot:20}),{energy:80,breaksFast:true,opensMeal:true,pill:false},'калорий нет на этикетке — по БЖУ');
 assert.deepEqual(rule('капсула',{}),{energy:null,breaksFast:false,opensMeal:false,pill:true},'нет данных — ничего');
-assert.equal(rule('жевательная пастилка',{kcal:15}).opensMeal,false,'пастилки — как таблетки');assert.equal(rule('пакетик',{kcal:20}).opensMeal,true,'пакетик порошка — открывает');
+assert.equal(rule('жевательная пастилка',{kcal:15}).opensMeal,true,'Meal 30: пастилки больше 4 ккал — тоже по калориям');assert.equal(rule('пакетик',{kcal:20}).opensMeal,true,'пакетик порошка — открывает');
 
 // Сводка для Happy Day: время приёма t — первое, что открывает приём (Day берёт t0, старые выпуски Day — t).
 c.DB={sections:[{k:'pm',t:'Обед'},{k:'am',t:'Завтрак'}],days:{'2026-11-11':{items:[{id:'a',sec:'pm',fid:'soup',t:'13:00',g:100},{id:'b',sec:'pm',fid:'sweetTea',t:'13:30',g:100},{id:'c',sec:'pm',fid:'coffee',t:'11:50',g:100}]}}};
@@ -128,7 +130,7 @@ assert.equal(SC.portion(fish,{q:2,u:'капсула',g:2}).grams,null,'масс�
 Object.assign(FOODS,{'supp:fish':fish,'supp:whey':powder,'supp:d3':vitD,'supp:tab':tablet});
 const tap=(fid,q,u,g,t,extra)=>({fid,q,u,g,t,tap:'c',...(extra||{})});
 const fish2=tap('supp:fish',2,'капсула',2,'07:00'),scoop=tap('supp:whey',1,'мерная ложка',30,'08:15'),d3=tap('supp:d3',1,'капсула',1,'06:45'),fizzy=tap('supp:tab',1,'таблетка',3.5,'09:00');
-assert.deepEqual([c.mlOpens(fish2),c.mlBreaksFast(fish2)],[false,true],'2 капсулы рыбьего жира со счётчика: 18 ккал — голодание прервано, приём не открыт');
+assert.deepEqual([c.mlOpens(fish2),c.mlBreaksFast(fish2)],[true,true],'Meal 30: 2 капсулы рыбьего жира со счётчика, 18 ккал — сбрасывают окно голодания');
 assert.deepEqual([c.mlOpens(scoop),c.mlBreaksFast(scoop)],[true,true],'мерная ложка протеина со счётчика открывает приём');
 assert.deepEqual([c.mlOpens(d3),c.mlBreaksFast(d3)],[false,false],'витамин D без калорий — ни приёма, ни голодания (не «еда без калорийности»)');
 assert.deepEqual([c.mlOpens(fizzy),c.mlBreaksFast(fizzy)],[true,true],'свой выбор в варианте сильнее формы');
@@ -138,12 +140,12 @@ const own=tap('other:id',2,'капсула',2,'07:00',{counterFood:fish});c.Meal
 assert.equal(c.mlBreaksFast(own),true,'продукт-добавка из самой записи');
 c.DB={days:{'2026-11-12':{items:[d3,{fid:'coffee',t:'06:30'},fish2,{fid:'soup',t:'13:00'}]}}};c.supplementRows=()=>[];
 assert.deepEqual(plain(c.mlFastBreak('2026-11-12')),{t:'07:00',name:'Рыбий жир'},'голодание прервал рыбий жир со счётчика, не витамин D и не кофе');
-assert.equal(c.mlFirstTime(c.mlIntakeItems([fish2,{fid:'soup',t:'13:00'}],[]),null,false,c.mlNotOpening).t,'13:00','капсулы со счётчика приём не открывают');
+assert.equal(c.mlFirstTime(c.mlIntakeItems([fish2,{fid:'soup',t:'13:00'}],[]),null,false,c.mlNotOpening).t,'07:00','Meal 30: капсулы со счётчика больше 4 ккал открывают приём — сбрасывают окно голодания');
 // сводка для Day: капсулы со счётчика — не «только напитки» и не еда; калории — как у записи
 c.DB={sections:[{k:'am',t:'Завтрак'}],days:{'2026-11-13':{items:[Object.assign({id:'f1',sec:'am'},fish2)]},'2026-11-14':{items:[Object.assign({id:'p1',sec:'am'},scoop),Object.assign({id:'c1',sec:'am'},{fid:'coffee',t:'07:00',g:200})]}}};
 c.sumOf=list=>list.reduce((a,x)=>{const f=c.MealProducts.forItem(x,FOODS);a.k+=(f.k||0)*(x.g==null?1:x.g/100);return a},{k:0,p:0,f:0,c:0});
 sum=c.linkSummary();
-assert.deepEqual([sum.days['2026-11-13'].food,sum.days['2026-11-13'].sec.am.dr,sum.days['2026-11-13'].sec.am.food,Math.round(sum.days['2026-11-13'].k)],[false,0,false,18],'только капсулы со счётчика: 18 ккал, приёма пищи нет, «напитков» нет');
+assert.deepEqual([sum.days['2026-11-13'].food,sum.days['2026-11-13'].sec.am.dr,sum.days['2026-11-13'].sec.am.food,Math.round(sum.days['2026-11-13'].k)],[true,0,true,18],'Meal 30: только капсулы со счётчика, 18 ккал — приём пищи есть (окно голодания сброшено), «напитков» нет');
 assert.deepEqual([sum.days['2026-11-14'].sec.am.food,sum.days['2026-11-14'].sec.am.t,sum.days['2026-11-14'].sec.am.dr],[true,'08:15',1],'протеин со счётчика открыл завтрак; кофе — напиток');
 
 // Запуск Meal переводит свои продукты без состава в состав продукта (migrate) — продукт-добавку счётчика не трогает:

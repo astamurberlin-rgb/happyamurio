@@ -89,7 +89,8 @@
   var PILL=/капсул|таблет|драже|пастил|леденц|мармелад/i;
   function rule(s,values){var kcal=finite(values.kcal),p=finite(values.prot),fa=finite(values.fat),c=finite(values.carb);
     var energy=kcal!==null?kcal:p===null&&fa===null&&c===null?null:4*(p||0)+9*(fa||0)+4*(c||0),pill=PILL.test(String(s.basis&&s.basis.unit||'')),breaks=energy!==null&&energy>4;
-    return {energy:energy,breaksFast:breaks,opensMeal:breaks&&(typeof s.opensMeal==='boolean'?s.opensMeal:!pill),pill:pill}}
+    var opens=typeof s.opensMeal==='boolean'?s.opensMeal:breaks;   // Meal 30: как в supplement-nutrition.js
+    return {energy:energy,breaksFast:opens,opensMeal:opens,pill:pill}}
   function mealRule(f,item){var s=of(f)&&f.supplement,N=root.HappySupplementNutrition,P=root.MealProducts;if(!s)return null;
     var g=finite(item&&item.g);function v(k){var n=P&&P.value?P.value(f,k):finite(f[{kcal:'k',prot:'p',fat:'f',carb:'c'}[k]]);return n==null||g===null?null:n*g/100}
     var values={kcal:v('kcal'),prot:v('prot'),fat:v('fat'),carb:v('carb')};

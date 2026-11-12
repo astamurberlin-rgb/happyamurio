@@ -107,7 +107,7 @@ function renderSettings(){
     У каждой карточки свитч «Подключено / Отключено» (то же состояние MealSources, что и раньше) и кнопка загрузки для
     работы без интернета (catalog-offline.js; у «Моих продуктов» её нет — они и так на устройстве). Длинный текст —
     «Показать больше / меньше». */
- var prefs=root.MealSources.preferences(root.DB),cards=root.MealSources.catalog,count=cards.filter(s=>prefs[s.id]).length,off=root.HappyCatalogOffline;
+ var prefs=root.MealSources.preferences(root.DB),cards=root.MealSources.catalog.filter(function(s){return !root.MealSources.purchased||root.MealSources.purchased(s.id)}),   /* Meal 30: не купленный платный набор в настройках не показываем */count=cards.filter(s=>prefs[s.id]).length,off=root.HappyCatalogOffline;
  el.innerHTML='<div class="mc-source-carousel" role="region" aria-roledescription="карусель" aria-label="Каталоги: листай вбок или используй стрелки клавиатуры" tabindex="0">'+cards.map(function(src,i){
   var on=prefs[src.id],last=on&&count===1,body=bodies[src.id].replace(/<h3>.*?<\/h3>/,''),dl=off?off.markup(src.id):'';
   return '<article class="happy-card mc-source-body" data-source-slide="'+src.id+'" role="group" aria-roledescription="слайд" aria-label="'+(i+1)+' из '+cards.length+' · '+esc(src.name)+'">'+

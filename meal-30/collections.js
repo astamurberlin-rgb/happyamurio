@@ -38,6 +38,9 @@ function buyControl(c){const owned=purchased(c);return '<div class="cc-buy"><but
 function buy(c){
  if(purchased(c))return;const state=purchases();state[c.id]=true;
  try{root.localStorage.setItem(purchaseKey(),JSON.stringify(state))}catch(x){root.toast('Не удалось сохранить тестовую покупку');return}
+ /* Meal 30: купленный платный набор — сразу подключён; настройки каталогов и счётчики — заново */
+ if(root.MealSources&&root.MealSources.paid&&root.MealSources.paid(c.id)&&root.DB){root.MealSources.setEnabled(root.DB,c.id,true);if(typeof root.save==='function')root.save();}
+ for(const f of ['renderSettings','renderDay'])if(typeof root[f]==='function')try{root[f]()}catch(x){}
  render();if(c.id!=='SUPP'&&detail)openCatalog(c.id);root.toast('Каталог добавлен. Это тестовая покупка, деньги не списываются.');
 }
 /* personal — карточка в «Моих …»: внизу состояние поиска и свитч (у узбекской кухни — в составе Happy Meal) */
@@ -149,7 +152,7 @@ function mount(){
 }
 /* для supplements.js: магазин или «Мои добавки»; настройка шаблонов — после тестовой покупки каталога БАДов.
    openSupplements зовут и с экрана дня («+ Записать») — поэтому переход на «Сборники» здесь, а не при запуске */
-root.HappyCollections={render:render,openCatalog:openCatalog,route:()=>route,catalogs:catalogs.map(c=>c.id),
+root.HappyCollections={isPurchased:id=>{const c=catalogs.find(x=>x.id===id);return !!c&&purchased(c)},render:render,openCatalog:openCatalog,route:()=>route,catalogs:catalogs.map(c=>c.id),
  isShopContext:()=>['shop','supplementCatalog','catalogDetail'].includes(route),canUseSupplements:()=>purchased(catalogs[0]),
  buy:id=>{const c=catalogs.find(x=>x.id===id);if(c)buy(c);return !!c&&purchased(c)},   // Meal 29.1: «Купить · 2 €» в карточке шаблона БАДа
  openSupplements:mode=>{if(typeof root.go==='function')root.go('recipes');selectRoute(mode==='mine'?'supplements':'supplementCatalog')}};

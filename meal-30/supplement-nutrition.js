@@ -1,8 +1,8 @@
 /* Read-only nutrition projection. Intake snapshots are never rewritten (H068, прототип Михалыча и Астамура).
    Meal 29: снимки приёмов — в документе аккаунта (supplements-store.js). У строки приёма — правило приёма пищи
    (решение Астамура 11.11.2026): energy — калории приёма (нет на этикетке — по БЖУ: 4·Б + 9·Ж + 4·У, только для
-   правила, не в итоги); breaksFast — больше 4 ккал, голодание прервано; opensMeal — ещё и порошок или жидкость
-   (капсулы и таблетки приём пищи не открывают), если в своём варианте не выбрано иначе (opensMeal: true / false). */
+   правила, не в итоги); с Meal 30 opensMeal и breaksFast — одно: «Сбрасывает окно голодания?» (Астамур 12.11):
+   своё true / false из варианта, иначе — больше 4 ккал за приём, для любой формы. */
 (function(root){'use strict';
   function finite(n){return typeof n==='number'&&Number.isFinite(n)&&n>=0?n:null;}
   function dateOK(d){var n=new Date(d+'T12:00:00Z');return /^\d{4}-\d{2}-\d{2}$/.test(d||'')&&Number.isFinite(n.getTime())&&n.toISOString().slice(0,10)===d;}
@@ -17,7 +17,8 @@
     var energy=kcal!==null?kcal:p===null&&f===null&&c===null?null:4*(p||0)+9*(f||0)+4*(c||0);
     var basis=snapshot&&snapshot.basis||{},own=snapshot&&typeof snapshot.opensMeal==='boolean'?snapshot.opensMeal:null;
     var breaks=energy!==null&&energy>4;
-    return {energy:energy,breaksFast:breaks,opensMeal:breaks&&(own!==null?own:!pill(basis.unit)),pill:pill(basis.unit)};
+    var opens=own!==null?own:breaks;   // Meal 30: «Сбрасывает окно голодания?» — Да / Нет / по умолчанию больше 4 ккал, для любой формы
+    return {energy:energy,breaksFast:opens,opensMeal:opens,pill:pill(basis.unit)};
   }
   function nutritionRows(range,list,fields,sections){
     var names={},fs=fields||root.HappySubstances&&root.HappySubstances.fields||[];
@@ -57,7 +58,17 @@
   /* Meal 29: порции со счётчиков добавок — записи еды с продуктом-добавкой (supplement-counters.js); свои вещества
      их состава тоже идут в «Созданные мной». Стандартные вещества они дают через запись еды — здесь не считаются. */
   function counterEntries(){return root.MealSupplementCounters&&root.MealSupplementCounters.entries?root.MealSupplementCounters.entries():[];}
-  function customGroupHTML(range,days){var list=customTotals(range,entries().concat(counterEntries()));if(!list.length)return '';return '<section class="card jrList" data-supplement-custom><div class="jrGh"><span>Созданные мной</span></div><div class="jrGb">'+list.map(function(g){var note=!g.entries?'нет записей за период':g.conflicts?'есть конфликт значений или единиц':g.missing?'часть значений неизвестна':'по сохранённым приёмам';var value=g.value===null?'—':(g.missing||g.conflicts?'':'')+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(g.value/(days||1))+' '+g.unit;return '<div style="padding:12px 18px"><div style="display:flex;justify-content:space-between;gap:16px;overflow-wrap:anywhere"><span>'+esc(g.name)+'</span><b style="min-width:0;overflow-wrap:anywhere">'+esc(value)+'</b></div><small style="display:block;overflow-wrap:anywhere">'+esc((g.legacy?'Старый компонент без сопоставления. ':'')+'Вариант: '+g.origins.slice(0,2).join('; ')+(g.origins.length>2?' и ещё '+(g.origins.length-2):''))+'</small><small>'+esc(note)+'</small></div>';}).join('')+'<p class="jrEmpty">'+(range.a===range.b?'За выбранный день.':'В среднем за день с записями еды или добавок.')+' Нормы не назначены; в стандартные вещества эти значения не включаются.</p></div></section>';}
+/* Meal 30 (Астамур 12.11 10:14): «Мои микроэлементы» — своя рамка внизу журнала; строка как остальные показатели
+     журнала: смахнуть влево — звёздочка, отмеченное появляется в «Избранном» (id custom:<ключ>). */
+  function customAll(range){return customTotals(range,entries().concat(counterEntries()));}
+  function customRowHTML(g,days,ctx,fav){var id='custom:'+g.id,key=ctx+':'+id,note=g.conflicts?'есть конфликт значений или единиц':g.missing&&g.value!==null?'часть значений неизвестна':'';
+    var value=g.value===null?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(g.value/(days||1))+' '+g.unit;
+    var star=typeof root.jrStarSvg==='function'?root.jrStarSvg(fav,'jrSi'):'★';
+    return '<div class="jrSw" data-sw="'+esc(key)+'"><button class="jrStar'+(fav?' on':'')+'" data-star="'+esc(id)+'" aria-label="'+(fav?'Убрать из избранного':'В избранное')+': '+esc(g.name)+'">'+star+'</button><div class="jrRow"><div class="jrR1"><span class="jrN">'+esc(g.name)+'</span><span class="jrVR"><b class="jrV">'+esc(value)+'</b></span></div>'+(note?'<p class="jrMiss">'+esc(note)+'</p>':'')+'</div></div>';}
+  function isFav(id){return typeof root.jrIsFav==='function'&&root.jrIsFav(id);}
+  function customGroupHTML(range,days){var list=customAll(range);if(!list.length)return '';return '<section class="card jrList jrMyMicro" data-supplement-custom><div class="jrGh"><span>Мои микроэлементы</span></div><div class="jrGb">'+list.map(function(g){return customRowHTML(g,days,'own',isFav('custom:'+g.id));}).join('')+'</div></section>';}
+  function customFavHTML(id,range,days){var key=String(id).slice(7),g=customAll(range).filter(function(x){return x.id===key;})[0];return g?customRowHTML(g,days,'fav',true):'';}
+  function customTitle(id){var key=String(id).slice(7),g=customAll(null).filter(function(x){return x.id===key;})[0];return g?g.name:'Свой показатель';}
   function extendJournal(){
     if(!root.JR_N||!root.HappySubstances)return;
     root.HappySubstances.fields.forEach(function(f){
@@ -73,7 +84,7 @@
     omega.forEach(function(id){if(root.JR_N[id])root.JR_N[id].t=titles[id];});
     if(fat){var at=fat.rows.findIndex(function(id){return omega.includes(id);}),rest=fat.rows.filter(function(id){return !omega.includes(id);});rest.splice(at<0?rest.length:at,0,...omega);fat.rows=rest;}
   }
-  var api={nutritionRows:nutritionRows,dayRows:dayRows,coverage:coverage,totals:totals,customTotals:customTotals,customGroupHTML:customGroupHTML,mealRule:mealRule,pill:pill};root.HappySupplementNutrition=api;
+  var api={nutritionRows:nutritionRows,dayRows:dayRows,coverage:coverage,totals:totals,customTotals:customTotals,customGroupHTML:customGroupHTML,customFavHTML:customFavHTML,customTitle:customTitle,mealRule:mealRule,pill:pill};root.HappySupplementNutrition=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   extendJournal();
   if(root.document)root.document.addEventListener('happy-supplements-changed',function(){

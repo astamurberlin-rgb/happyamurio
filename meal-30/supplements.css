@@ -43,3 +43,18 @@
 .mlFast[hidden]{display:none}
 /* Meal 29.1: «Купить · 2 €» в карточке шаблона — как в магазине, но слева */
 .sp-dialog .sp-buy{align-items:flex-start;margin:4px 0 14px}.sp-dialog .sp-buy small{text-align:left;max-width:none}.sp-lock p{font-size:13px;opacity:.95}
+
+/* Meal 30 (Астамур 12.11 10:44): подсказки «Новое вещество» — в цветах окна, без белого фона */
+.sp-inline-results{background:var(--glass)!important;border-color:var(--glassBrd)!important;color:var(--ink)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sp-inline-results .sp-note,.sp-inline-results .sp-substance-heading{color:var(--ink)!important;opacity:.8}
+.sp-inline-results .sp-btn,.sp-inline-results .sp-substance-result{color:var(--ink)!important;background:var(--glass)!important;border-color:var(--glassBrd)!important}
+.sp-inline-results .sp-substance-result b{color:var(--ink)!important;background:transparent!important}
+.sp-inline-results .sp-substance-result small,.sp-inline-results .sp-substance-result em{color:var(--ink)!important;opacity:.75}
+/* «Сбрасывает окно голодания?» — один ряд кнопок, листается вбок, если не влезает */
+.sp-fast>span{display:block;margin-bottom:8px}
+.sp-fast-choice{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.sp-fast-choice::-webkit-scrollbar{display:none}
+.sp-fast-choice .chip{flex:none;white-space:nowrap}
+/* «Редактировать» вне библиотеки: видна, но неактивна */
+.sp-edit-pill.is-locked{opacity:.45}
+.sp-lock-note{margin:-4px 0 10px}
