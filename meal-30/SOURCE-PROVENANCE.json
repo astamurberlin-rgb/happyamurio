@@ -67,8 +67,8 @@
   },
   {
    "path": "README.md",
-   "size": 35815,
-   "sha256": "50d13e375ae8694133c4df4d753db9779bf1103eb3a6ff99fb54dc8177128f2a"
+   "size": 39354,
+   "sha256": "a635ca55cfcc374f2a0bb4d30eb68ead83ea1d1a11e2c736b7b79cf28e13346e"
   },
   {
    "path": "account-ui.js",
@@ -247,8 +247,8 @@
   },
   {
    "path": "catalog.js",
-   "size": 29262,
-   "sha256": "d105e85e9eabfc854ac5e710ffbed6dc10ca65ede799718e4f19d5917ab32487"
+   "size": 29469,
+   "sha256": "af1adb7c3dbe1d2e370a02407f6ea17c691a769fe887e740fbe67e6fdfffb0bf"
   },
   {
    "path": "checks/check-auth-identity.mjs",
@@ -267,8 +267,8 @@
   },
   {
    "path": "checks/check-meal-first-time.mjs",
-   "size": 25087,
-   "sha256": "e7e2c10df4174d40230cdc740b5b23b84e57908d60cd138c2651af7be1f73e5f"
+   "size": 25833,
+   "sha256": "e855e4093a957a0aa6801be568d0fe9f06483c810cc7694705ea8398320d8f1a"
   },
   {
    "path": "checks/check-search-names.mjs",
@@ -278,7 +278,7 @@
   {
    "path": "checks/check-shop.mjs",
    "size": 10569,
-   "sha256": "2544eb5ceebed683e4246af9f3687572f22c6e3216717e4a81ebba51f0a42a15"
+   "sha256": "30b668b205f1a1f6fd4617870ac4ccb6b4da74232a4d5c253a4e6c449d6d13ee"
   },
   {
    "path": "checks/check-sport-summary.mjs",
@@ -302,8 +302,8 @@
   },
   {
    "path": "collections.js",
-   "size": 18157,
-   "sha256": "4e9e42647e7dee3d9e321539af5afbf8a275e9c1261d9723b19970ac72a7b042"
+   "size": 18687,
+   "sha256": "3c4e7ccabe412fc752fd9c72bd7bdea2e57e741c36b08d6f1386833155336007"
   },
   {
    "path": "controls.js",
@@ -312,8 +312,8 @@
   },
   {
    "path": "counters.js",
-   "size": 24502,
-   "sha256": "5af0fd67f3c833a41f835440aadf745b645d60ac1983315319a45d3fc1090a9a"
+   "size": 27676,
+   "sha256": "cf050d862af2cf121deadb2d94034ededcdb48b0966e1e129b3fca353e4707d9"
   },
   {
    "path": "desserts.js",
@@ -337,8 +337,8 @@
   },
   {
    "path": "index.html",
-   "size": 639070,
-   "sha256": "b92f591d74f1a8e4f092e9e1a7b6f7e4eb916fcdf7637c0879f9fc4a094f804e"
+   "size": 641180,
+   "sha256": "bb3b803a7c96b5899b09a64e09d4b46e7d260bb43e2b94ef8159c0b964ce6c80"
   },
   {
    "path": "journal-model.js",
@@ -358,7 +358,7 @@
   {
    "path": "manifest.webmanifest",
    "size": 541,
-   "sha256": "e136624b10b7e23221305ec34cc8bb8aa1b644439a41d6d13413963a67904547"
+   "sha256": "b336ad49ed28292aa162a605ab3f219524d81f4525d9266271f05914655c0014"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",
@@ -522,8 +522,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 26807,
-   "sha256": "39b79f5ffebc24f20f59d85374ca4932483fe3b97ecce85fa239f25396eb357b"
+   "size": 29719,
+   "sha256": "dc4af93b4187c16ff0cd804812954ef915502f4e0a3f38c5e7d50f3629ca961e"
   },
   {
    "path": "report.css",
@@ -637,8 +637,8 @@
   },
   {
    "path": "sources.js",
-   "size": 4514,
-   "sha256": "140dc0d43620757c56697f01aa8260b4314b2b54618cbe0d28992e697fd705fe"
+   "size": 5327,
+   "sha256": "3255cf61bb836290dddbf71055825d61ccce0f15377a7346f09d8f30f29b9e8c"
   },
   {
    "path": "sport/.gitignore",
@@ -1812,13 +1812,13 @@
   },
   {
    "path": "supplement-counters.js",
-   "size": 12130,
-   "sha256": "ac854df8e66fe6d45c27e72f264dd0656528cc207eab4318539b30ed302aa66c"
+   "size": 12189,
+   "sha256": "60272a0894915687620edb11aa3a93a4041a40ff484d07cff1dac84e9302af33"
   },
   {
    "path": "supplement-nutrition.js",
-   "size": 10941,
-   "sha256": "c6b9ea8fd525e673d5e0733c09b8d46162e2572cc920ea2075dc498315a1a1cc"
+   "size": 11688,
+   "sha256": "421d445908a3f76311ad8f4541514d98f87ffc978f8a792c8fa37e9aa277c054"
   },
   {
    "path": "supplements-library.js",
@@ -1827,8 +1827,8 @@
   },
   {
    "path": "supplements-model.js",
-   "size": 6730,
-   "sha256": "8824f897538552d619321405863496ae1d9e04d8e8c7d5221e91e6214705fe69"
+   "size": 6656,
+   "sha256": "4235e16aa291336a80c2093ed788da564dd582d30b9d080cdb39d4f27cdb79db"
   },
   {
    "path": "supplements-search.js",
@@ -1842,18 +1842,18 @@
   },
   {
    "path": "supplements.css",
-   "size": 14019,
-   "sha256": "fa56ea3da77fcaf84c519f6bcd74a70fb1f8a6085299f54fa77524893f52a540"
+   "size": 15481,
+   "sha256": "d1841ce2c338b7e2e9bb005985156b74d7a8fbda1df2e10cfd01e2527739c4e1"
   },
   {
    "path": "supplements.js",
-   "size": 55579,
-   "sha256": "297901d7d46e5c6980d2546f316b6eb95670c42299e70d615208260bb7091b4d"
+   "size": 55598,
+   "sha256": "62a9844847d2df3d64ad4fa77d569d4edd3bf43d00d9af9add917117f168e5a3"
   },
   {
    "path": "sw.js",
-   "size": 2743,
-   "sha256": "ada51db90dfb96e3b0f341b485a1f9bc3dfb46c1f941c2d55cd375ad2cfb153b"
+   "size": 2741,
+   "sha256": "6be24d3a92b272976a58ac1dd8005217266a46ca6d6e58c9eab2ba9443cd50ad"
   },
   {
    "path": "usda.js",
