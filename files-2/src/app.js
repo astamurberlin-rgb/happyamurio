@@ -155,10 +155,7 @@ window.marked = marked; window.DOMPurify = DOMPurify;
       const badge = state.badges.get(d.path);
       if (badge) b.append(el("span", "pill", badge));
       b.addEventListener("click", () => select(d.path));
-      const more = iconButton("more", "Действия: " + d.title);
-      more.setAttribute("aria-haspopup", "dialog");
-      more.addEventListener("click", () => documentTools.openMenu(d));
-      card.append(b, more); els.chips.append(card);
+      card.append(b); els.chips.append(card);
     }
   }
 
@@ -285,7 +282,19 @@ window.marked = marked; window.DOMPurify = DOMPurify;
     }
     const paper = el("article", "paper");
     const inner = el("div", "paper-inner");
-    inner.append(renderMarkdown(d.content));
+    const actions = el("div", "paper-actions");
+    const copyText = iconButton("copy", "Скопировать текст");
+    copyText.addEventListener("click", () => copy(d.content, copyText, "Текст скопирован"));
+    const copyLink = iconButton("link", "Скопировать ссылку для ИИ с ключом доступа");
+    copyLink.addEventListener("click", () => {
+      const url = API + "/" + d.path.split("/").map(encodeURIComponent).join("/") + "?key=" + encodeURIComponent(getKey() || "");
+      copy(url, copyLink, "Ссылка с ключом скопирована");
+    });
+    const more = iconButton("more", "Действия: " + d.title);
+    more.setAttribute("aria-haspopup", "dialog");
+    more.addEventListener("click", () => documentTools.openMenu(d));
+    actions.append(copyText, copyLink, more);
+    inner.append(actions, renderMarkdown(d.content));
     paper.append(inner);
     main.append(paper);
   }

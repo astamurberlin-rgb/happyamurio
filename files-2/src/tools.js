@@ -16,20 +16,48 @@ export function createDocumentTools(ctx) {
     b.addEventListener('click',()=>{try{Promise.resolve(fn()).catch(e=>error(e.message));}catch(e){error(e.message);}});return b;
   }
   function error(text) { if(active) {active.error.textContent=text; active.error.hidden=false;} }
-  function close() { if(active) {active.dialog.close();} }
-  function modal(title,{wide=false,onClose}={}) {
+  function close() { if(active) {active.dismiss();} }
+  function modal(title,{wide=false,onClose,canClose=()=>true}={}) {
     close();
     const previous=document.activeElement;
     const dialog=el('dialog','notes-dialog'+(wide?' editor-dialog':''));
+    const top=el('div','sheet-top');
     const head=el('header','dialog-head');
     const h=el('h2',null,title);h.id='notes-dialog-title-'+(++modalSerial);
     dialog.setAttribute('aria-labelledby',h.id);
-    const x=button('Готово',()=>dialog.close(),'link-btn');x.setAttribute('aria-label','Закрыть окно');
-    head.append(h,x);
+    const dismiss=()=>{if(canClose())dialog.close();};
+    let drag=null,suppressClickUntil=0;
+    const handle=button('',()=>{if(Date.now()>=suppressClickUntil)dismiss();},'sheet-handle');
+    handle.setAttribute('aria-label','Закрыть окно');
+    handle.append(el('span','sheet-handle-line'));
+    head.append(h);top.append(handle,head);
     const body=el('div','dialog-body');const footer=el('footer','dialog-footer');
     const err=el('p','inline-error');err.role='alert';err.hidden=true;
-    dialog.append(head,body,err,footer);document.body.append(dialog);
-    const item={dialog,body,footer,error:err};active=item;
+    dialog.append(top,body,err,footer);document.body.append(dialog);
+    const item={dialog,body,footer,error:err,dismiss,handle};active=item;
+    function endDrag(cancelled=false) {
+      if(!drag)return;
+      const {id,dy,capture}=drag;drag=null;
+      if(capture.hasPointerCapture(id))capture.releasePointerCapture(id);
+      dialog.classList.remove('sheet-dragging');dialog.style.transform='';
+      if(dy>8)suppressClickUntil=Date.now()+350;
+      if(!cancelled&&dy>=72)dismiss();
+    }
+    top.addEventListener('pointerdown',e=>{
+      if(e.button!==0||!e.isPrimary||!canClose())return;
+      const capture=e.target.closest('.sheet-handle')||top;
+      drag={id:e.pointerId,y:e.clientY,dy:0,capture};capture.setPointerCapture(e.pointerId);
+      dialog.classList.add('sheet-dragging');
+    });
+    top.addEventListener('pointermove',e=>{
+      if(!drag||drag.id!==e.pointerId)return;
+      drag.dy=Math.max(0,e.clientY-drag.y);
+      dialog.style.transform=`translateY(${drag.dy}px)`;
+    });
+    top.addEventListener('pointerup',()=>endDrag());
+    top.addEventListener('pointercancel',()=>endDrag(true));
+    top.addEventListener('lostpointercapture',()=>endDrag(true));
+    dialog.addEventListener('cancel',e=>{if(!canClose())e.preventDefault();});
     const scrollY=window.scrollY;
     document.body.classList.add('modal-open');
     dialog.addEventListener('close',()=>{
@@ -134,7 +162,7 @@ export function createDocumentTools(ctx) {
     let base={...(options.base||original)}, local=options.content ?? (mode==='append'?'':original.content);
     let changed=false, pending=null, busy=false, draftSeq=Promise.resolve(), reviewCheck=null, reviewState=null;
     const draftId='draft:'+original.path+':'+mode;
-    const m=modal((mode==='append'?'Добавить запись · ':mode==='create'?'Новая заметка · ':'Редактировать · ')+original.title,{wide:true,onClose:()=>{
+    const m=modal((mode==='append'?'Добавить запись · ':mode==='create'?'Новая заметка · ':'Редактировать · ')+original.title,{wide:true,canClose:()=>!busy,onClose:()=>{
       if(changed)persistDraft();
     }});
     const hint=el('p','hint',mode==='append'?'Запись появится в начале документа с датой и твоей подписью.':'Заголовки, списки и выделение доступны на панели.');m.body.append(hint);
@@ -142,7 +170,7 @@ export function createDocumentTools(ctx) {
     if(mode==='create'){const label=el('label',null,'Название заметки');titleInput=el('input','key-input');titleInput.value=original.title;titleInput.maxLength=180;label.append(titleInput);m.body.append(label);}
     const toolbar=el('div','editor-toolbar');toolbar.setAttribute('role','toolbar');toolbar.setAttribute('aria-label','Оформление текста');
     const editor=el('div','md rich-editor');editor.contentEditable='true';editor.setAttribute('role','textbox');editor.setAttribute('aria-multiline','true');editor.setAttribute('aria-label','Текст документа');editor.spellcheck=true;editor.innerHTML=markdownHtml(local)||'<p><br></p>';
-    for(const [label,command,value] of [['Жирный','bold'],['Курсив','italic'],['Заголовок','formatBlock','h2'],['Текст','formatBlock','p'],['Список','insertUnorderedList'],['1. Список','insertOrderedList'],['Отменить','undo']]) {
+    for(const [label,command,value] of [['Жирный','bold'],['Курсив','italic'],['Заголовок','formatBlock','h2'],['Текст','formatBlock','p'],['Список','insertUnorderedList'],['1. Список','insertOrderedList'],['Отменить правку','undo']]) {
       const b=button(label,()=>{editor.focus();document.execCommand(command,false,value);onInput();},'format-button');
       b.addEventListener('mousedown',e=>e.preventDefault());toolbar.append(b);
     }
@@ -181,12 +209,13 @@ export function createDocumentTools(ctx) {
       if(!preview.hidden)preview.scrollIntoView({block:'start',behavior:'smooth'});
     });
     const saveBtn=button('Сохранить',commit,'btn primary');
-    m.footer.append(previewBtn,saveBtn);
+    const cancelBtn=button('Отменить',m.dismiss);
+    m.footer.append(cancelBtn,previewBtn,saveBtn);
     async function commit(){
       if(busy)return;m.error.hidden=true;
       if(reviewCheck&&!reviewCheck.checked){error('Сначала сравни версии и отметь, что нужные записи сохранены.');return;}
       const mine=content();if(!mine.trim()){error('Сначала напиши текст.');return;}
-      busy=true;saveBtn.disabled=true;saveBtn.textContent='Сохраняю…';editor.contentEditable='false';
+      busy=true;saveBtn.disabled=true;cancelBtn.disabled=true;m.handle.disabled=true;saveBtn.textContent='Сохраняю…';editor.contentEditable='false';
       try{
         if(!pending){
           if(mode==='create')pending={mode:'create',path:original.path,title:titleInput.value.trim(),content:mine};
@@ -210,11 +239,8 @@ export function createDocumentTools(ctx) {
         if(e.conflict){pending=null;error('Пока сохраняли, появилась новая версия. Нажми «Сохранить» ещё раз — сначала проверим изменения.');}
         else error(e.message||'Не удалось подтвердить сохранение. Черновик оставлен на устройстве.');
         changed=true;await persistDraft().catch(()=>{});
-      }finally{busy=false;saveBtn.disabled=false;saveBtn.textContent='Сохранить';editor.contentEditable='true';}
+      }finally{busy=false;saveBtn.disabled=false;cancelBtn.disabled=false;m.handle.disabled=false;saveBtn.textContent='Сохранить';editor.contentEditable='true';}
     }
-    // The dialog cannot be dismissed while a save is in flight.
-    m.dialog.addEventListener('cancel',e=>{if(busy)e.preventDefault();});
-    m.dialog.querySelector('.dialog-head button').addEventListener('click',e=>{if(busy)e.stopImmediatePropagation();},true);
     try{
       const draft=await get(draftId);
       if(draft&&m.dialog.open&&!options.imported){

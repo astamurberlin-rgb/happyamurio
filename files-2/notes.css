@@ -2,15 +2,20 @@
 .chip{position:relative;padding:0;display:flex;align-items:stretch;min-height:94px}
 .chip-select{flex:1;min-width:0;padding:14px 12px 18px 14px;border:0;border-radius:18px;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer;display:grid;gap:5px;align-content:start}
 .chip-select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.chip>.icon-btn{align-self:flex-end;flex-shrink:0;margin:0 7px 7px 0;width:40px;height:40px;border:0;background:none}
-.chip>.icon-btn:hover{background:rgba(178,166,255,.12)}
+.paper-inner::after{content:"";display:block;clear:both}
 .modal-open{overflow:hidden;overscroll-behavior:none}
 .notes-dialog{position:fixed;inset:auto 0 0;width:min(100%,540px);max-width:100%;max-height:92dvh;margin:0 auto;padding:0;border:1px solid var(--glass-brd);border-radius:26px 26px 0 0;background:#181520;color:var(--ink);box-shadow:0 -20px 90px #0008;overflow:hidden}
 .notes-dialog[open]{display:flex;flex-direction:column}
+.notes-dialog{transition:transform .18s ease-out}
+.notes-dialog.sheet-dragging{transition:none}
+.sheet-top{flex:none;touch-action:none;user-select:none;-webkit-user-select:none}
+.sheet-handle{display:grid;place-items:center;width:100%;height:30px;padding:0;border:0;background:none;cursor:grab;touch-action:none}
+.sheet-handle-line{width:38px;height:5px;border-radius:4px;background:var(--paper-muted);opacity:.6}
+.sheet-handle:focus-visible{outline:2px solid var(--accent);outline-offset:-5px;border-radius:20px}
+.sheet-handle:disabled{cursor:wait;opacity:.45}
 .notes-dialog::backdrop{background:#06040bb8;backdrop-filter:blur(4px)}
-.dialog-head{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:18px 20px 12px;flex:none;border-bottom:1px solid var(--paper-line)}
+.dialog-head{display:flex;gap:12px;align-items:center;padding:0 20px 14px;flex:none;border-bottom:1px solid var(--paper-line)}
 .dialog-head h2{margin:0;font-size:18px;line-height:1.3;overflow-wrap:anywhere}
-.dialog-head .link-btn{color:var(--accent);text-decoration:none;min-height:44px;flex-shrink:0}
 .dialog-body{padding:12px 16px 18px;overflow:auto;overscroll-behavior:contain;min-height:0}
 .dialog-footer{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px calc(18px + env(safe-area-inset-bottom));border-top:1px solid var(--paper-line);flex:none;max-height:32dvh;overflow:auto}
 .dialog-footer:empty{padding:0 0 env(safe-area-inset-bottom);border:0}
