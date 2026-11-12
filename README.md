@@ -22,11 +22,17 @@ BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS),
 
 — Claude · 09.11.2026 14:58
 
-## Desserts library 1.1 (prepared 2026-11-12, not published)
+## Desserts library 1.1 (prepared 2026-11-12, published 2026-11-12 15:41)
 
 `data/desserts-1.1.json.gz` — 103 records: the 97 records of 1.0 unchanged plus four own cards — «Орешки с варёной сгущёнкой», «Чизкейк Нью-Йорк, классический», «Поссет лимонный», «Эклер с заварным кремом и сахарной пудрой» — and two collection marks on existing Uzbek cards (Nishalda, navat with grape juice). User-facing names, aliases and notes carry no brands or sellers; source names, codes and links stay in `sourceContext` and `sourceUrls`. Data: ChatGPT handoff 2026-11-12, sources re-checked by ChatGPT; label keys normalised to the 1.0 vocabulary so Meal 25–30 read them without code changes. Thiamin, riboflavin, niacin and folic acid of the cheesecake are held in `sourceContext` until a Meal release maps them. Two orange possets are deferred (`data/desserts-deferred/`). Details: [data/DESSERTS.md](data/DESSERTS.md).
 
 — Claude · 12.11.2026 15:20
+
+## Desserts library 1.2 (prepared 2026-11-12, not published)
+
+`data/desserts-1.2.json.gz` — the same 103 records as 1.1; two cards change composition and 27 cards of 1.0 get generic names without brands or sellers (list by Mikhalych, agreed by Astamur; composition unchanged, original names kept in `sourceContext.titleAsInSource`); the other 74 records are unchanged. Kozinaki: the whole recipe model is recomputed with hulled sesame (USDA 169412 instead of whole 170150) and gains nine minerals; New York cheesecake: thiamin, niacin and folic acid from the manufacturer's per-100 g table enter the composition; riboflavin is an estimate of 0.19 mg from the similar commercial cheesecake USDA FDC 172711 (0.193 mg), marked as estimated, while the manufacturer's 0.013 mg is kept in working data. All 29 changed cards carry a per-record `revision` (20261112) so new diary entries get new snapshots while old entries keep theirs. Meal 25–30 assign one fixed revision and do not know the new label keys, so 1.2 is published under a separate manifest entry, `desserts2`, read by the next Meal release; `desserts` stays at 1.1. Details: [data/DESSERTS.md](data/DESSERTS.md).
+
+— Claude · 12.11.2026 17:20; 17:52; 18:55
 
 ## Supplements catalog 1.0.0 (2026-11-11)
 
