@@ -1,6 +1,6 @@
 """Связь приложений (Meal 30 · Day 58 · Sport 41, решения Астамура 12.11.2026): свитч на пару приложений в обе стороны.
 Один телефон, один аккаунт, поддельный сервер. Выключил связь в одном приложении — в другом тот же свитч выключен;
-включил в другом — включено в обоих. Тренировка Sport, начатая после выключения, в кольцо Meal не идёт, прежняя — идёт.
+включил в другом — включено в обоих. Тренировка Sport, начатая после выключения, в кольцо Meal не идёт, прежняя — идёт; включили обратно — видно всё (Астамур 12.11 12:58).
 — Claude · 12.11.2026 12:33"""
 from common import *
 
@@ -81,6 +81,15 @@ with sync_playwright() as p:
     out["day_learned_on"] = bool(wait_for(day, lambda: (seen(day, 2000) or True) and day.evaluate("()=>{try{syncMealCloud()}catch(e){}return DayAppLinks.on('meal')===true}"), 60))
     day.evaluate("()=>{go('settings');DayAppLinks.paint()}"); day.wait_for_timeout(300)
     out["day_switch_meal"] = switch(day, "meal")
+
+    # включить связь Meal ↔ Sport обратно — в Sport: в Meal видно всё, и тренировку из выключенного периода (500)
+    sport.bring_to_front(); sport.evaluate("()=>{goto('profile')}"); sport.wait_for_timeout(600)
+    sport.locator('[data-app-link="meal"]').click(); sport.wait_for_timeout(1500)
+    meal.evaluate("()=>{ER_SPORT=null}")
+    out["meal_spent_back_on"] = None
+    if wait_for(meal, lambda: (seen(meal, 2000) or True) and meal.evaluate("()=>MealAppLinks.on('sport')===true"), 90):
+        meal.evaluate("()=>{try{erRedraw()}catch(e){}}")
+        out["meal_spent_back_on"] = spent()
     b.close()
 
 checks = [
@@ -93,6 +102,7 @@ checks = [
     ("Day: выключил связь с Meal — своя сводка day/link в облаке, события Meal после выключения не отмечаются", out["day_link_row"] and out["day_event_after_off"] is False),
     ("Meal узнал о выключении из сводки Day, свитч Day выключен", out["meal_learned_day_off"] and out["meal_switch_day"] is False),
     ("включил в Meal — в Day тоже включено", out["day_learned_on"] and out["day_switch_meal"] is True),
+    ("включил связь с Meal в Sport — в Meal снова обе тренировки, и та, что была после выключения (500)", out["meal_spent_back_on"] == 500),
     ("на страницах нет ошибок", not errors),
 ]
 out["errors"] = errors[:5]

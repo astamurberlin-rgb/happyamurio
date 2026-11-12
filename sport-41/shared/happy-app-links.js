@@ -3,8 +3,8 @@
    Переключение — {pair:'day|meal', on:true|false, at:<мс>, by:'meal'}: кто и когда включил или выключил связь пары.
    Состояние пары — по последнему переключению из любого из двух приложений; переключений нет — связь включена.
    Пока связь выключена, между двумя приложениями ничего не передаётся: событие соседа (тренировка, приём пищи,
-   порция со счётчика), время которого попадает в период «выключено», не учитывается и не отмечается; что было
-   до выключения, остаётся. После включения то, что было за время выключения, не появляется.
+   порция со счётчика) со временем после выключения не учитывается и не отмечается; что было до выключения,
+   остаётся. Включили обратно — показывается всё, и то, что было, пока связь была выключена (Астамур 12.11 12:58).
 
    Каждое приложение хранит известные ему переключения в области аккаунта (ключ `hd_app_links_v1`) и отдаёт свои
    пары соседям в своей сводке: Meal — `meal/link`, Sport — `sport/link`, Day — `day/link` (поле `links`).
@@ -52,25 +52,28 @@
     var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(date||'')); if(!m) return null;
     var s=new Date(+m[1],+m[2]-1,+m[3]).getTime(); return [s,new Date(+m[1],+m[2]-1,+m[3]+1).getTime()-1];
   }
-  /* итоги соседа за день (съедено за день и т. п.): берутся, если связь была включена хоть в какой-то момент дня */
+  /* связь сейчас выключена — с какого момента (мс); включена — null */
+  function offSince(list,a,b){ var L=of(list,a,b); return L.length&&!L[L.length-1].on?L[L.length-1].at:null }
+  /* итоги соседа за день (съедено за день и т. п.): связь включена — берутся всегда; выключена — за дни,
+     начавшиеся до выключения (день выключения — целиком: итог дня не делится) */
   function dayOn(list,a,b,date){
-    var r=dayBounds(date); if(!r) return on(list,a,b);
-    if(on(list,a,b,r[0])) return true;
-    return of(list,a,b).some(function(t){ return t.on&&t.at>r[0]&&t.at<=r[1] });
+    var off=offSince(list,a,b); if(off===null) return true;
+    var r=dayBounds(date); return !!r&&r[0]<off;
   }
-  /* событие соседа в день date и время 'HH:MM' (или мс): отмечается, если связь в этот момент включена;
-     время неизвестно — по дню */
+  /* событие соседа в день date и время 'HH:MM' (или мс): связь включена — отмечается всегда; выключена — если
+     оно было до выключения; время неизвестно — по дню */
   function eventOn(list,a,b,date,time){
-    if(typeof time==='number') return on(list,a,b,time);
+    var off=offSince(list,a,b); if(off===null) return true;
+    if(typeof time==='number') return time<off;
     var r=dayBounds(date), m=/^(\d{1,2}):(\d{2})/.exec(String(time||''));
-    if(!r) return on(list,a,b);
-    return m?on(list,a,b,r[0]+(+m[1]*60+(+m[2]))*60000):dayOn(list,a,b,date);
+    if(!r) return false;
+    return m?r[0]+(+m[1]*60+(+m[2]))*60000<off:dayOn(list,a,b,date);
   }
   function key(owner){ return !owner||owner==='local'?KEY:'happy-user:'+encodeURIComponent(owner)+':'+KEY }
   function read(storage,owner){ try{ return merge(JSON.parse(storage.getItem(key(owner))||'[]')) }catch(e){ return [] } }
   function write(storage,owner,list){ try{ storage.setItem(key(owner),JSON.stringify(merge(list))); return true }catch(e){ return false } }
   var api={APPS:APPS,KEY:KEY,pairOf:pairOf,valid:valid,merge:merge,of:of,on:on,toggle:toggle,forApp:forApp,
-    dayOn:dayOn,eventOn:eventOn,key:key,read:read,write:write};
+    offSince:offSince,dayOn:dayOn,eventOn:eventOn,key:key,read:read,write:write};
   root.HappyAppLinks=api;
   if(typeof module!=='undefined'&&module.exports) module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

@@ -116,8 +116,8 @@
     },
     {
       "path": "README.md",
-      "size": 50911,
-      "sha256": "9fdf4a595c75fa09d88946b28fcc0dee81bdcaa58d0beee5b394058d7e4d6e3b"
+      "size": 51070,
+      "sha256": "cadc429251a8f0bdb15ec5aba7b61d9845a4b8993361fdf340e4bc7d6bbdec7f"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -181,8 +181,8 @@
     },
     {
       "path": "index.html",
-      "size": 1090896,
-      "sha256": "0fd4ed884aa74dd7959ed5b4e597450f12f3c5a535c7e540d4223661e4f789bc"
+      "size": 1091483,
+      "sha256": "b8602fed638c10d11eb3c98fb6994b2d5256e502ecdfe409304d61f3b393cd0e"
     },
     {
       "path": "manifest.webmanifest",
@@ -251,8 +251,8 @@
     },
     {
       "path": "shared/happy-app-links.js",
-      "size": 5781,
-      "sha256": "786606c080959d5b21b8dff379deb7fe496870e80dfd06d7577a86d855ef1d99"
+      "size": 6206,
+      "sha256": "c158afa266aae30acc88aa527fdecbbe822c70baaee7e0e49b0d2c8bce5787f3"
     },
     {
       "path": "shared/happy-appearance.css",
@@ -626,8 +626,8 @@
     },
     {
       "path": "sport/src/app-links.js",
-      "size": 5305,
-      "sha256": "df8a33c01ebb4df2d2f92cc307c57fa5c0e89eb177f9eafedaae4c4eb5e6593e"
+      "size": 5387,
+      "sha256": "e29f55bbb6fc4611c303715c8240c650d7b696657e350770992389a5b54e3851"
     },
     {
       "path": "sport/src/app.js",
@@ -871,8 +871,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 28888,
-      "sha256": "421286fbc6c60d80332fe59ba1f27b23398c321f7ce27f5aee556cc0a0326c45"
+      "size": 28968,
+      "sha256": "0288ae397cd19b9caeb4fcd695f7bd0861270ac605bfe5559b0190ddeebe1206"
     },
     {
       "path": "sport/src/rest-pill.js",

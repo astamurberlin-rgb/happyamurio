@@ -67,8 +67,8 @@
   },
   {
    "path": "README.md",
-   "size": 41841,
-   "sha256": "89e5a6a1e5b5547acef646489f0ee5d34e1ff1e03de7f495f5799b98a564e63f"
+   "size": 42000,
+   "sha256": "639a5e7c865ea3ee702fb30ae6b2c094b1f0cf0cd721a5c9ae3d6f5069193d9d"
   },
   {
    "path": "account-ui.js",
@@ -527,8 +527,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 30998,
-   "sha256": "8f95815d19ab450b40d8d11a5f1ce2472db6a49878192acc9b97bf8627a52a17"
+   "size": 31078,
+   "sha256": "b825f61e40ed3c0371fa05c1addbda2a1baab324e1a0e1c603f47126b878c262"
   },
   {
    "path": "report.css",
@@ -567,8 +567,8 @@
   },
   {
    "path": "shared/happy-app-links.js",
-   "size": 5781,
-   "sha256": "786606c080959d5b21b8dff379deb7fe496870e80dfd06d7577a86d855ef1d99"
+   "size": 6206,
+   "sha256": "c158afa266aae30acc88aa527fdecbbe822c70baaee7e0e49b0d2c8bce5787f3"
   },
   {
    "path": "shared/happy-appearance.css",
