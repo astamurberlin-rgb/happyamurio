@@ -1,7 +1,7 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-11.1",
-  "updated": "2026-11-11",
+  "revision": "2026-11-12.1",
+  "updated": "2026-11-12",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
@@ -50,27 +50,27 @@
       "foodCount": 7793
     },
     "uzbek": {
-      "version": "1.10.1",
-      "deliveryRevision": "1.10.1-meal23.2",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/bf762e2633547056a031e2b880fe09c246ba7e11/data/uzbek-recipes-1.10.1-meal23.2.json.gz",
+      "version": "1.10.2",
+      "deliveryRevision": "1.10.2-meal23.2",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/d0c26002172c49c562489bf6289f4e388dc204ea/data/uzbek-recipes-1.10.2-meal23.2.json.gz",
       "encoding": "gzip",
-      "bytes": 5803218,
-      "sha256": "34bdc855b5514125dbddaf0b9865021ef69ad4e9a03c36efb70add67612f36cf",
+      "bytes": 5800645,
+      "sha256": "9dce582af3f62fc9539551d96afed803e8cc532aa2ac97ce83cc8ef61f89a6f5",
       "foodCount": 60,
       "knownPropertiesPartialCards": 1
     },
     "desserts": {
-      "version": "1.0.0",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/00f4b5a7b974863019f489a1b0dd4337a4de855f/data/desserts-1.0.json.gz",
+      "version": "1.1.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/d0c26002172c49c562489bf6289f4e388dc204ea/data/desserts-1.1.json.gz",
       "encoding": "gzip",
-      "bytes": 3287563,
-      "sha256": "a1e0b41433a7622527b0b9c700db84c0708a472db8f0da7b15565e92579efaa9",
-      "foodCount": 97,
-      "ownCards": 30,
-      "collectionMarks": 67,
+      "bytes": 3447368,
+      "sha256": "ecddf8a42de1e7e50fde0f216538b90fba7a187ba743e17e3f3ea8afb44d910b",
+      "foodCount": 103,
+      "ownCards": 34,
+      "collectionMarks": 69,
       "schema": "happy-independent-food-library/1.0",
       "author": "ChatGPT",
-      "date": "2026-11-09",
+      "date": "2026-11-12",
       "notes": "data/DESSERTS.md",
       "firstReader": "Happy Meal Update 25"
     },
