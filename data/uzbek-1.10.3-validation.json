@@ -1,0 +1,35 @@
+{
+  "library": "uzbek",
+  "version": "1.10.3",
+  "delivery": "1.10.3-meal23.2",
+  "date": "2026-11-12",
+  "by": "Claude",
+  "basedOn": {
+    "file": "data/uzbek-recipes-1.10.2-meal23.2.json.gz",
+    "sha256Uncompressed": "9dce582af3f62fc9539551d96afed803e8cc532aa2ac97ce83cc8ef61f89a6f5"
+  },
+  "decision": "Типовые названия трёх кисломолочных продуктов — предложение Михалыча (notes apps/meal/desserts-1.0.md, 12.11.2026 17:56), согласовано Астамуром 12.11.2026 19:16.",
+  "changedRecords": [
+    "hmuz:qatiq-kamilka-3pct",
+    "hmuz:qaymoq-kamilka-45pct",
+    "hmuz:suzma-daymilk-200g"
+  ],
+  "unchangedRecords": 57,
+  "checks": [
+    "57 other records identical to 1.10.2; same IDs and order.",
+    "Names: «Катык Kamilka 3%» → «Катык 3%», «Каймак Kamilka 45%» → «Каймак 45%», «Сузьма DAYMILK, 200 г» → «Сузьма 9%» (fat 3, 45 and 9 g per 100 g in the records).",
+    "Same pattern as navat in 1.10.2: brand removed from n, src, recipe name and sourceLabel, ingredient name and service ID (ingredientCatalog entries renamed, formerId kept), sourceInfo source/catalogs/attribution, field sources, notes and adaptation (suzma: also the other brand named in its note); the catalog code shown in the search result line is brand-free too (catalogCode qatiq-3pct, qaymoq-45pct, suzma-9pct; old code in provenance.formerCatalogCode; ID and catalogFamily, which is not shown, unchanged); original name in provenance.nameAsInSource; brand, manufacturer, references and URLs kept in provenance, sourceResearch and links.",
+    "Composition values, statuses and portions unchanged; brand kept as a search word (w), not shown.",
+    "revision 1 → 2: diary snapshots keyed id@revision keep revision 1 with the old name; new entries get the new name — checked with the loaders of Meal 23–30.",
+    "releaseNotes: entry 1.10.3 appended after 1.10.2; catalog codes unique (60).",
+    "MealUzbek.ingest + MealProducts.validate pass with the loaders of Meal 23, 24, 25, 26, 27, 28, 29, 30 (60 cards); infoHTML and footer render; visible text of the three records (title, list caption, search line code, notes, footer, details without link targets, portion labels) contains no brand."
+  ],
+  "notChecked": [
+    "iPhone and live app after publication",
+    "the static «Сборники» list of Meal 28–30 keeps the old names until a Meal release rebuilds it"
+  ],
+  "open": [
+    "«Сузьма 9%» shows a variant switch with the second suzma card of the same family, «Сюзьма Халалмилк 6%, вариант по маркировке, 270 г» (hmuz:suzma-halalmilk-pictured-6pct-270g): its name, caption and code keep the brand; it is not in the agreed list — question to Astamur.",
+    "hmuz:navat-delikateska-grape-juice-27731 (since 1.10.2): name and captions are brand-free, but the search line shows its code with the retailer and SKU — question to Astamur."
+  ]
+}
