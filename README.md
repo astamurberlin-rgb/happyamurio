@@ -2,7 +2,11 @@
 
 Happy Day, Happy Meal и Happy Sport — приложения Astamur.
 
-[Happy Day · Update 52](https://astamurberlin-rgb.github.io/happyamurio/day-52/) · [Предыдущий Happy Day](https://astamurberlin-rgb.github.io/happyamurio/day/)
+[Открыть актуальные приложения и превью](APPS.md) · [Технические правила](AGENTS.md)
+
+Текущие задачи и приёмка — Happy Notes `apps/board.md`; правила совместной работы — `apps/workflow.md`. Старые аудиты и архивный реестр не являются новой очередью.
+
+— ChatGPT · 13.11.2026 00:05
 
 [История обновлений](CHANGELOG.md) · [Карта приложений и постоянные адреса](APPS.md) · [Где хранятся данные](DATA-STORAGE.md)
 
@@ -12,3 +16,4 @@ Happy Day, Happy Meal и Happy Sport — приложения Astamur.
 `meal-data/bls40.json` — данные из Max Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0. Karlsruhe — https://blsdb.de.
 BLS 4.0 предоставляется бесплатно и без лицензионных ограничений (Nutzungsbedingungen, п. 9.3 документации). Названия продуктов на русском — перевод Happy Meal.
     
+

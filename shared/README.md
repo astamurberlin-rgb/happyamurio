@@ -20,19 +20,13 @@
 
 ## Сборка
 
-```sh
-node scripts/sync-shared-ui.mjs
-npm --prefix sport run build
-node scripts/check-shared-ui.mjs
-npm --prefix sport run check
-node scripts/check-layout.mjs
-```
+Общие операции нужны при изменении соответствующих общих файлов; это не проверка, которую запускают для каждой правки документа. `sync-shared-ui.mjs` меняет встроенные блоки страниц, выбранных в `shared/apps.json`; `sync-shared.mjs` копирует эталоны по `shared-files.json`. Перед запуском проверить цели, после — diff. Превью не становятся основными ради сборки.
 
-Day и Meal получают общий код внутрь HTML при синхронизации, Sport — при сборке.
-Готовые страницы работают без отдельной загрузки общего скрипта или таблицы стилей.
-Не править встроенные блоки `HAPPY_SHARED_STYLE` и `happy-shared-ui` вручную.
-Для отдельной сборки Sport через Sites копировать общий код в его `shared/` и сохранять
-те же исходники UI. Номера приложений находятся в `apps.json`.
+Для целевого Sport использовать его каталог выпуска: `node sport-NN/scripts/build-release.mjs`, затем `npm --prefix sport-NN/sport run check` (NN заменить согласованным выпуском). Старые `npm --prefix sport run build/check` относятся к прежнему корневому прототипу и не являются командами текущего выпуска. Общие проверки: `node scripts/check-shared-ui.mjs`, `node scripts/check-layout.mjs`, `node scripts/check-shared.mjs` — по затронутому объёму, см. AGENTS.
+
+Day и Meal получают общий код внутрь HTML при синхронизации, Sport — при сборке. Не править встроенные блоки `HAPPY_SHARED_STYLE` и `happy-shared-ui` вручную. Для отдельной сборки Sport через Sites копировать общий код в его `shared/` и сохранять те же исходники UI. Основные версии и адреса — `shared/apps.json`, путь к коду — APPS.
+
+— ChatGPT · 13.11.2026 00:05
 
 [Карта приложений](../APPS.md) · [Хранение данных](../DATA-STORAGE.md)
 
@@ -65,6 +59,9 @@ Color Studio сохраняет прежние ключи для обоих вх
 - `happy-links.js` — кнопки соседних приложений: якорь `<a data-happy-app="day|meal|sport" href="../day-54/">` получает адрес текущего выпуска из `/happyamurio/shared/apps.json` при открытии страницы (`HappyLinks.load()`, авто на `DOMContentLoaded`); статический href — запасной. Выпуск соседа больше не требует точечного выпуска у остальных. Подключён в Day 54, Meal 26, Sport 38.5.
 - `happy-settings-developer.js` — скрытый раздел `<section data-happy-section="developer" hidden>`: долгое нажатие 1,2 с на `[data-settings-developer="toggle"]` (строка версии) открывает, кнопка `[data-settings-developer="hide"]` закрывает; состояние на сеанс (`sessionStorage`, ключ по `data-happy-appearance-app`). Подключён в Day 54, Meal 26; у Sport то же поведение в своём `settings-layout.js`.
 - Слот оформления: страница со статической разметкой настроек ставит `<div class="happy-appearance-entry" data-happy-appearance-slot>` под «Оформление» в разделе «Приложение», и `entry()` модуля оформления кладёт кнопку «Выбрать оформление» туда (Day 54, Meal 26 — правка во встроенной копии; эталон `happy-appearance.js` пока без слота, см. `shared-files.json`).
-- Впереди: `happy-auth.js` (один код входа с ключом `happy-auth:<app>`), `happy-shell` (шапка, вкладки, центральная кнопка, настройки по `AGENTS.md`), перенос эталона `happy-appearance.js` в `shared/` со слотом.
+- Впереди: `happy-auth.js` (один код входа с ключом `happy-auth:<app>`), `happy-shell` (шапка, вкладки, центральная кнопка, настройки по `AGENTS.md`), эталон CSS оформления (`happy-appearance.css` пока todo). JS `happy-appearance.js` уже есть в корневом shared на main `4ea7cb9`; старое поручение переноса JS выполнено. Точный текущий остаток — H122 на доске.
+
+— ChatGPT · 13.11.2026 00:05
 
 <small>— Claude · 09.11.2026 12:55 · дополнено 17:00 · 11.11.2026 15:50 (happy-summaries.js) · 17:33 (счётчики в «съедено»)</small>
+
