@@ -1,0 +1,87 @@
+/* Lab 10.11.2026 18:50 · Аудит интерфейса, решения «Да» (номера — как на странице аудита). Loaded last. */
+/* 9. Bottom of the workout: «Добавить упражнение», note, «Завершить тренировку». The rest is in «⋯». */
+.active-workout>[data-action="save-template"],.active-workout>.discard-active{display:none!important}
+.workout-finish-card>p,.workout-finish-card>small{display:none!important}
+.workout-more{flex:none;width:44px;height:44px;margin-left:auto;margin-right:8px;display:grid;place-items:center;border-radius:50%;border:1px solid #ffffff55;background:#ffffff1c;color:#fff}
+.workout-overview .current-bar{gap:0}
+/* 3. «Добавить» from the library: destination and button first, setup folded. */
+#exercise-config-form[data-scope="add"] .exercise-save-actions{margin-top:4px}
+.add-more,.metrics-fold{margin-top:14px;border-top:1px solid #ffffff30;padding-top:4px}
+.add-more>summary,.metrics-fold>summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer}
+.metrics-fold>.metric-switches{margin-top:6px}
+/* 4. Rename: a pencil beside the heading. */
+.rename-exercise{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:none;border:0;color:#fff}
+.rename-exercise .icon{width:20px;height:20px;fill:currentColor}
+.sheet-top:has(.rename-exercise){display:flex;align-items:flex-start;gap:4px}
+/* 6. Home schedule: link to the rest. */
+.schedule-more{display:block;width:100%;min-height:44px;text-align:center;font-size:13px;font-weight:650}
+/* 18. One schedule row on a workout card. */
+.plan-line{display:grid!important;grid-template-columns:24px 1fr 20px;align-items:center;gap:12px;min-height:56px}
+.plan-line .icon{width:22px;height:22px;fill:currentColor}
+/* 20. Settings explanations behind «Подробнее». */
+.happy-more{margin:6px 0 4px}
+.happy-more>summary{min-height:44px;display:flex;align-items:center;font-size:13px;font-weight:600;cursor:pointer;opacity:.9}
+/* 27. Setting title and its explanation on two lines. */
+.setting-row>span>small{display:block;margin-top:2px}
+/* 29. Target time as text on the workout card. */
+.template-target-text{margin:6px 0 0;font-size:13px;opacity:.85}
+/* 30. The placeholder stays quiet next to real pictures. */
+img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
+/* 22. Touch targets at least 44×44 (the drawing stays the same size). */
+.plan-remove,.set-plan-editor [aria-label^="Убрать"],.section-title .text-btn,.workout-share,.exercise-technique,.note-pin,.toast button{min-width:44px;min-height:44px}
+.section-title .text-btn,.workout-share,.exercise-technique{display:inline-grid;place-items:center}
+.rest-separator{min-height:44px!important}
+.workout-summary-header .text-btn{min-height:44px}
+/* Lab 10.11.2026 19:20 · Решения по «Обсудим». */
+/* 2. Set on one line: «1 подход», value, tick. */
+.active-workout .set-row.metrics-1{display:grid!important;grid-template-columns:auto minmax(0,1fr) 44px!important;align-items:center!important;column-gap:12px!important;row-gap:0!important}
+.active-workout .set-row.metrics-1>.set-number{grid-column:1!important;grid-row:1!important;align-self:center;margin:0!important;white-space:nowrap}
+.active-workout .set-row.metrics-1>:not(.set-number):not(.done){grid-column:2!important;grid-row:1!important}
+.active-workout .set-row.metrics-1>.done{grid-column:3!important;grid-row:1!important}
+/* 2. Rest: thin pale line, green fill while it runs, time at the right; tap opens the steps. */
+.active-workout .rest-separator.rest-line{display:flex!important;align-items:center;gap:10px;min-height:44px!important;margin:0!important;padding:0 2px!important;opacity:.6;color:#fff;background:none;border:0;width:100%}
+.active-workout .rest-separator.rest-line::before,.active-workout .rest-separator.rest-line::after{content:none!important;display:none!important}
+.rest-line.running,.rest-line.open{opacity:1}
+.rest-line-track{flex:1;height:3px;border-radius:3px;background:#ffffff40;overflow:hidden}
+.rest-line-fill{display:block;height:100%;width:0;border-radius:3px;background:#8ef0c4;transition:width .2s linear}
+.rest-line.done .rest-line-fill{background:#ffffff70}
+.rest-line-time{flex:none;font-size:12px;font-variant-numeric:tabular-nums}
+.rest-line-edit{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:0 0 8px}
+.rest-line-edit button{min-height:44px;border-radius:14px;border:1px solid #ffffff55;background:#ffffff1c;color:#fff;font-weight:650}
+.rest-line-edit b{font-size:20px;font-variant-numeric:tabular-nums;min-width:64px;text-align:center}
+/* 5. Search and a round filter button. */
+.library-search-row{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:10px;align-items:center}
+.library-search-row .library-search{margin:0!important}
+.library-filter-toggle{position:relative;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;border:1px solid #ffffff55;background:#ffffff1c;color:#fff}
+.library-filter-toggle .icon{width:22px;height:22px;fill:currentColor}
+.library-filter-toggle[aria-expanded="true"]{background:#fff;color:#4b3bc2}
+.library-filter-toggle.has-active::after{content:"";position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:#ff7eb6;border:2px solid #fff}
+.library-filter-box{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.library-filter-box[hidden]{display:none!important}
+/* 13. Counters as in Day and Meal. */
+#sport-food-counters{margin-top:18px}
+.tpSec{padding:16px 16px 4px}
+.tpT{margin:0 0 4px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
+.tpT + .tpItem{border-top:0}
+.tpNm{flex:1;min-width:0;padding:12px 0;color:#fff;font-size:15.5px;font-weight:600;text-align:left}
+.tpNm b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tpNm small{display:block;margin-top:2px;font-size:12.5px;font-weight:600;color:var(--muted,rgba(255,255,255,.75))}
+.tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
+.tpStp button{width:46px;padding:0;border:0;background:none;color:#fff;font:inherit;font-size:20px;font-weight:600;line-height:1}
+.tpStp button:disabled{opacity:.45}
+.tpStp button:active{background:rgba(255,255,255,.22)}
+.tpStp .v{min-width:50px;padding:0 8px;display:grid;place-items:center;font-size:16.5px;font-weight:800;font-variant-numeric:tabular-nums;border-left:1px solid rgba(255,255,255,.4);border-right:1px solid rgba(255,255,255,.4)}
+.tpStp .v.tpZero{color:rgba(255,255,255,.55);font-weight:700}
+.tpAdd{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:none;color:rgba(255,255,255,.88);font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
+.tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.library-search-row{margin-bottom:8px}
+.sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:none}
+/* Аудит п. 23: пустая «История» — одна строка, без переключателя сортировки. */
+.history-empty{margin:24px 4px;text-align:center;color:rgba(255,255,255,.72);font-size:15px}
+/* Переключатели — капсулой (скругление в половину высоты), как в Day и Meal. */
+.segmented,.segmented button{border-radius:999px}
+/* «Журнал / Замеры тела» — те же размеры и цвета, что .happy-measurement-tabs в shared/measurements-host.js Day и Meal. */
+#page>.journal-switch{gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;margin:8px 0 20px}
+#page>.journal-switch button{font-size:14px;font-weight:400;padding:10px 8px;color:inherit;box-shadow:none}
+#page>.journal-switch button.selected{background:#fffffff0;color:#5c4598;font-weight:600;box-shadow:none}

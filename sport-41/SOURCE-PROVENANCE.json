@@ -1,0 +1,998 @@
+{
+  "app": "Happy Sport",
+  "update": "40.5",
+  "source_release": "sport-39 (Happy Sport · Update 39.2) through the lab copy sport-lab/ (branch sport-lab, 10.11.2026)",
+  "source_commit_of_update_39": "36006b27dc1eb472db23fc22365dec99464aef74",
+  "source_commit_of_update_38": "b292b2b0b6b7f6660e1ca40152817d3cf2499160",
+  "source_commit": "c94464d29767702f45f4df2026c5cdcc158cb3ee",
+  "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-41/",
+  "agreed_by_owner": "2026-11-08: Update 38 in sport-38/, automatic counter sync through a narrow channel, new settings structure; 38.1: exercise icons served from the shared library assets/sport-icons/v1/; 38.2: shared exercise library and handles; 2026-11-09 38.3: lock re-acquired on pageshow instead of reload, shared release-notes module with author and time; 2026-11-09 38.4 (owner 15:38): second tab takes the journal over instead of a blocked screen, viewer tab shows a banner and never reloads itself; counters as capsules without «· Meal»; linked-app buttons from apps.json open a new window; single-flight token refresh, same-account token change is not a sign-in change; 38.5: linked-app buttons resolve the current Day/Meal releases from shared/apps.json at runtime (shared/happy-links.js); 2026-11-09 38.6 (owner 17:28): service blocks hidden in the developer section — cloud read button, backup, cloud copy; appearance picker under «Приложение → Оформление» via data-happy-appearance-slot; 38.7 (owner device 19:55: «резерв достиг лимита» with 3,53 MB used by all apps on the origin): the 4 MiB origin-wide budget is dropped — the ledger keeps its 3 MiB cap and the real browser quota is checked by the headroom probe; 2026-11-09 39 (owner 20:11 «Ты можешь это сделать? — Да»): journal-scale keys move from localStorage to IndexedDB through a synchronous facade (local-store.js) with verified migration; the 5 MB origin box shared with Day and Meal is no longer the limit of Sport; 39.1: live tabs — every tab writes, journals merge three ways between tabs (profile-store adopt/save), one automatic sync run per account (Web Lock ifAvailable), no writer lock, banner or blocked screen; 2026-11-10 39.2: sign-out waits for the journal; 2026-11-10 40 (owner 21:27 «в main выпускай под 40»): the lab — pull-up family with grip pills, placeholder picture, schedule form, one-tap finish, fact-only journal record, interface audit decisions (yes / discussed), history tab always present, journal switch as in Day and Meal; 2026-11-12 40.5 (owner 02:00–02:01 «Выпустить все вместе», «доделать все и выпустить»): the portion label of a Meal 29 supplement counter comes from Meal",
+  "icon_library": "/happyamurio/assets/sport-icons/v1/",
+  "exercise_library": {
+    "schema": "happy.exercise-library.v1",
+    "version": "1.1",
+    "generated": "2026-11-10",
+    "source": "sport-38/sport/data/seed.json + exercise-muscles.json (Happy Sport · Update 38.1); families.json — Sport lab 10.11.2026 (pull-up family, five grip variants; neutral-pull-up is a card of its own)",
+    "counts": {
+      "exercises": 137,
+      "equipment": 23,
+      "muscleEntries": 137,
+      "withHandles": 8,
+      "families": 1,
+      "familyCards": 1
+    },
+    "files": [
+      {
+        "path": "exercises.json",
+        "size": 48512,
+        "sha256": "e4f7862d26b8eb493be1ec16bbb2e0282e7319256efc0e4774a920606af99a06"
+      },
+      {
+        "path": "equipment.json",
+        "size": 976,
+        "sha256": "5082160d28bd6d6a56e8141302d5078e1cca8362c9e665bc583a0a81d0e978f8"
+      },
+      {
+        "path": "exercise-muscles.json",
+        "size": 6515,
+        "sha256": "2177220ddbfd1b4d6121f889a179db98b196629d08ec681bd3aeb4f044ddb8b7"
+      },
+      {
+        "path": "families.json",
+        "size": 3124,
+        "sha256": "4267b5c0c0d0900d7cb8cfc35cb362c73622603f722df58c9944af9dd1d79636"
+      }
+    ],
+    "rules": "ids are stable and never removed or renamed; the folder only grows; releases record the manifest version and file hashes they were built from"
+  },
+  "changed_source_files": [
+    "README.md",
+    "scripts/build-preview.mjs",
+    "scripts/build-release.mjs",
+    "scripts/check-families.mjs",
+    "scripts/verify-release.mjs",
+    "scripts/write-provenance.mjs",
+    "shared/happy-summaries.js",
+    "sport/scripts/build.mjs",
+    "sport/scripts/check-clean-shell.mjs",
+    "sport/scripts/check-counter-channel.mjs",
+    "sport/scripts/check-energy.mjs",
+    "sport/scripts/check-exercise-context.mjs",
+    "sport/scripts/check-food-counters-sport.mjs",
+    "sport/scripts/check-paths.mjs",
+    "sport/scripts/check-player-controls.mjs",
+    "sport/scripts/check-readonly-transport.mjs",
+    "sport/scripts/check-readonly.mjs",
+    "sport/scripts/check-summary-channel.mjs",
+    "sport/scripts/check-summary-exchange.mjs",
+    "sport/scripts/check-timer-prototype.mjs",
+    "sport/scripts/check.mjs",
+    "sport/scripts/exercise-media.mjs",
+    "sport/scripts/seed.mjs",
+    "sport/src/app.js",
+    "sport/src/app.template.html",
+    "sport/src/audit-simplify.css",
+    "sport/src/audit-simplify.js",
+    "sport/src/automatic-sync-ui.js",
+    "sport/src/controlled-sync-ui.js",
+    "sport/src/data-transfer.js",
+    "sport/src/energy-widget.js",
+    "sport/src/exercise-config.js",
+    "sport/src/exercise-context.js",
+    "sport/src/exercise-families.js",
+    "sport/src/exercise-history.js",
+    "sport/src/exercise-player.js",
+    "sport/src/exercises/pull-up.html",
+    "sport/src/food-counters.js",
+    "sport/src/free-timer.js",
+    "sport/src/library-v2.js",
+    "sport/src/manifest.webmanifest",
+    "sport/src/metric-field.css",
+    "sport/src/plan-fact.js",
+    "sport/src/planning.js",
+    "sport/src/readonly-auth.js",
+    "sport/src/readonly-guard.js",
+    "sport/src/readonly-ui.js",
+    "sport/src/refinements.js",
+    "sport/src/release-notes.js",
+    "sport/src/rest-pill.js",
+    "sport/src/set-plan.js",
+    "sport/src/sport-cloud.js",
+    "sport/src/summary-exchange.js",
+    "sport/src/workout-interactions.js"
+  ],
+  "exercise_media": "/happyamurio/assets/exercise-media/v1/",
+  "unchanged_journal_sync_code_verified": false,
+  "journal_sync_change": "40.1: mergeData device keys; verified() releases held auto-conflict into history",
+  "account_change": "40.2: sign-up and the display name pass the transport boundary (readonly-guard.js, readonly-auth.js); journal sync code unchanged since 40.1",
+  "summary_change": "40.3: workout summary (app=sport, kind=link) is the projection of the journal, stored under hd_link_sport_v1 in the account area and sent through a third narrow channel after the journal is confirmed (summary-exchange.js); Meal summary is read for the energy ring; journal sync code unchanged since 40.1",
+  "portion_label_change": "40.5: the portion label of a shared counter comes from the Meal definition (portionText, Meal 29: a supplement counter shows «2 капсулы» without nominal grams); foods and definitions from older Meal as before (q u · g g); no storage, cloud or summary changes",
+  "counters_change": "40.4: counter servings reach the energy ring at once — the Meal summary (Meal 27.3, counters:1) names the servings already in the day total, the rest is added from the counters document on the device (shared/happy-summaries.js); the compact copy of the Meal summary moved to happy-energy-meal-v2:<owner>; the Meal summary is asked from the cloud as soon as the session is restored; no new cloud writes, journal sync code unchanged since 40.1",
+  "release_files": [
+    {
+      "path": "LIBRARY-HISTORY-SCOPE.md",
+      "size": 4616,
+      "sha256": "e56106acf85dea8c8f7ac8ebd9167b5eb0f6ed05131b1069a4d8948f327cc5a9"
+    },
+    {
+      "path": "README.md",
+      "size": 48387,
+      "sha256": "c5d5097e142b150d111a1280d1c1d334f5a2663a56f5233d7eb6962080d7482f"
+    },
+    {
+      "path": "app-icons/happy-sport-20261029-152.png",
+      "size": 23900,
+      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+    },
+    {
+      "path": "app-icons/happy-sport-20261029-167.png",
+      "size": 27714,
+      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+    },
+    {
+      "path": "app-icons/happy-sport-20261029-180.png",
+      "size": 31267,
+      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+    },
+    {
+      "path": "app-icons/happy-sport-20261029-192.png",
+      "size": 34916,
+      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+    },
+    {
+      "path": "app-icons/happy-sport-20261029-32.png",
+      "size": 2515,
+      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+    },
+    {
+      "path": "app-icons/happy-sport-20261029-48.png",
+      "size": 4355,
+      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+    },
+    {
+      "path": "app-icons/happy-sport-20261029-512.png",
+      "size": 210488,
+      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+    },
+    {
+      "path": "data/recommended-templates.json",
+      "size": 8464,
+      "sha256": "4be42b1d6aab7d94da1be429dba9827df4437215661f0cc92448129e31cd634a"
+    },
+    {
+      "path": "data/seed.json",
+      "size": 49252,
+      "sha256": "0d301c796e9676f8555e4068155689385048bd69ecae52d037e415779ebe4d6b"
+    },
+    {
+      "path": "day/index.html",
+      "size": 813,
+      "sha256": "439ad9e2b7d51e8ec9c41852c782a3c9bb4c5fb83c09ca1243fae870839b5e97"
+    },
+    {
+      "path": "exercises/neutral-pull-up.html",
+      "size": 161269,
+      "sha256": "11c453e784644bf31e7d77909553dcc501ef433fe9e9c9c5c683d82d65755188"
+    },
+    {
+      "path": "exercises/pull-up.html",
+      "size": 162578,
+      "sha256": "196da64e56eafb096a4feb8982c355a2528f232fd2c8a8887c75363e7181fb02"
+    },
+    {
+      "path": "index.html",
+      "size": 1090896,
+      "sha256": "be6edf70b9f8fc7a10770aedb65c0ad25d00b3a092ddcfe6fd33af7a1e493a1d"
+    },
+    {
+      "path": "manifest.webmanifest",
+      "size": 518,
+      "sha256": "3e7afccb1fd0dbe7915806b5b046ab86fb7f5bf2c5971cd0f96321ab2f549aee"
+    },
+    {
+      "path": "meal/index.html",
+      "size": 717,
+      "sha256": "067fbe61e086e72f98052ed5a3a29eff28ac82cac17e5cbed1c919e295d3ee38"
+    },
+    {
+      "path": "prototypes/happy-icon-studio-manifest.json",
+      "size": 5676,
+      "sha256": "a67e426c069caac7833df36482c73ba8f866cd40623fd65ab300b16a6f1644f4"
+    },
+    {
+      "path": "prototypes/happy-icon-studio.html",
+      "size": 572,
+      "sha256": "c635646ca32c5950b275fc1646215fe892f10f4b231ef0717f64d69828591543"
+    },
+    {
+      "path": "scripts/build-preview.mjs",
+      "size": 2795,
+      "sha256": "69ccb4ddc375bfd95379f517e6b38935090cbe6865b425c27fb139a6dd847c8c"
+    },
+    {
+      "path": "scripts/build-release.mjs",
+      "size": 496,
+      "sha256": "0fa400bd220bfc855606630a538c6bc893c1e844bbe57bc3ea28090710708eb0"
+    },
+    {
+      "path": "scripts/check-families.mjs",
+      "size": 9611,
+      "sha256": "697c3a2513261479f541768fd4ce8ccfa4918c94de1824450c1317c2a0416a6e"
+    },
+    {
+      "path": "scripts/check-settings-layout.mjs",
+      "size": 12613,
+      "sha256": "3dba08baecfeca380b52e13e48ce87ea21fd4738fb1f17fd5164b40ad0c8261e"
+    },
+    {
+      "path": "scripts/verify-release.mjs",
+      "size": 5102,
+      "sha256": "f9daebcdd0fa7c5fb6d4339f29d8cf885d75ea3223cbff47d869d72964dd6ded"
+    },
+    {
+      "path": "scripts/write-provenance.mjs",
+      "size": 7857,
+      "sha256": "fe7bea05bc056b3b6a591b49e89ddacbf4b8287312aafb5e5959b38b914cb75c"
+    },
+    {
+      "path": "shared/README.md",
+      "size": 3877,
+      "sha256": "5c2910ccc7a1f5d87c64983ac1fcf278227fbdd92af17fb66538e1e708feb8d6"
+    },
+    {
+      "path": "shared/apps.json",
+      "size": 838,
+      "sha256": "2ce56f5bc2f1d926fc5fedc39200bdd60061db993222d61731d2e5f75bb3ea6e"
+    },
+    {
+      "path": "shared/food-counters.js",
+      "size": 9522,
+      "sha256": "88217b279708615d4747e30b9fac4baa0f711fe530bfd0ba94b5268cb036796a"
+    },
+    {
+      "path": "shared/happy-app-links.js",
+      "size": 5781,
+      "sha256": "786606c080959d5b21b8dff379deb7fe496870e80dfd06d7577a86d855ef1d99"
+    },
+    {
+      "path": "shared/happy-appearance.css",
+      "size": 4142,
+      "sha256": "1c41e3960eda7d812e82ca1a403699c8d5be61aeeff8c0b99598c4609b6a6dc2"
+    },
+    {
+      "path": "shared/happy-appearance.js",
+      "size": 11020,
+      "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
+    },
+    {
+      "path": "shared/happy-gradients.js",
+      "size": 6546,
+      "sha256": "d6cac534f3d0cdfa9c5ed3c1d67f10e6d4212c99fbffecd72346b3e3cf510c61"
+    },
+    {
+      "path": "shared/happy-links.js",
+      "size": 1850,
+      "sha256": "4b85d0f744bb3bf5590c01943f743ccc04d671386a621ede79076cf36cf1bad4"
+    },
+    {
+      "path": "shared/happy-reference-themes.js",
+      "size": 8719,
+      "sha256": "6386f5b00febbdfb8337d4a0d2701643574bf70edd05ad3cc3bac70e0726691b"
+    },
+    {
+      "path": "shared/happy-summaries.js",
+      "size": 14997,
+      "sha256": "8574aca88473e30492b1408bda97c4c33ae18dc07e36cf41b643cbcc42f06334"
+    },
+    {
+      "path": "shared/happy-ui.css",
+      "size": 4066,
+      "sha256": "7dedc41770041a36a779acf4e2abccf9730cb4e8a332d1b086da77bcbafee4ed"
+    },
+    {
+      "path": "shared/happy-ui.js",
+      "size": 11565,
+      "sha256": "fb25301cdd1605ba177a3055586dfb2504635b3c3063c400d9e7e21ce2d1397a"
+    },
+    {
+      "path": "shared/measurements-host.js",
+      "size": 2343,
+      "sha256": "73b27f9c05308defe63078df678cf240074dc5893ba55d0819d0d373748dfada"
+    },
+    {
+      "path": "shared/measurements-model.js",
+      "size": 1624,
+      "sha256": "7b2c6ce3286513a71c7d4657106726c72c0701be2d55cb0893c50b68accd3660"
+    },
+    {
+      "path": "shared/release-notes.js",
+      "size": 3156,
+      "sha256": "0d811d0efdd6254d5e993bd245ac971e6ab1fb5194a8273363efe2bb7520c089"
+    },
+    {
+      "path": "sport/PHOSPHOR-LICENSE.txt",
+      "size": 1071,
+      "sha256": "b5b1f1da112d18ea2147decfd48ddc1bf2b5aeb6c265381579340e95b15a2bb2"
+    },
+    {
+      "path": "sport/data/recommended-templates.json",
+      "size": 8464,
+      "sha256": "4be42b1d6aab7d94da1be429dba9827df4437215661f0cc92448129e31cd634a"
+    },
+    {
+      "path": "sport/data/seed.json",
+      "size": 49252,
+      "sha256": "0d301c796e9676f8555e4068155689385048bd69ecae52d037e415779ebe4d6b"
+    },
+    {
+      "path": "sport/package.json",
+      "size": 416,
+      "sha256": "11737311ec53d81883a734d8fcfe31d30e8277d17ff46ebb99056251b1fb8924"
+    },
+    {
+      "path": "sport/scripts/build-strong-native-fixture.mjs",
+      "size": 8093,
+      "sha256": "59cc155a475b94b0effe8cb8f5db063450d9360fa29b643565cd367ed09e8a60"
+    },
+    {
+      "path": "sport/scripts/build.mjs",
+      "size": 14051,
+      "sha256": "6241a52e20107887b16b3b2763dcd079c982ba908a5b5d97b6d7f42376aac765"
+    },
+    {
+      "path": "sport/scripts/check-automatic-integration.mjs",
+      "size": 50047,
+      "sha256": "30d82ea00ff099a70965e10a13e195fbe4bccc45f7358f831a151d4b63fcc51a"
+    },
+    {
+      "path": "sport/scripts/check-automatic-scheduler.mjs",
+      "size": 11209,
+      "sha256": "126dea5dd866f715171e5772dbe285b4525231dd826c590710fe4409438155c4"
+    },
+    {
+      "path": "sport/scripts/check-clean-shell.mjs",
+      "size": 7152,
+      "sha256": "e9d778d6790606a83f6be16ee6f08a42ed4c0b5e2a52780d86eee0db5b54af9b"
+    },
+    {
+      "path": "sport/scripts/check-controlled-cas.mjs",
+      "size": 18996,
+      "sha256": "babc63ef9f573d8b58c59cb9de84be08403698d338cf36656992228bc396f609"
+    },
+    {
+      "path": "sport/scripts/check-controlled-integration.mjs",
+      "size": 15682,
+      "sha256": "241008f148fcc1b84382433e44bddc9b94b2608f0fb07846b4e97f6c96245d25"
+    },
+    {
+      "path": "sport/scripts/check-controlled-sync.mjs",
+      "size": 5096,
+      "sha256": "0836a2983ee87f8fa77d380c669bf6b6593d0bca3f5fcf67fb5cd9e3dc31d854"
+    },
+    {
+      "path": "sport/scripts/check-controlled-transport.mjs",
+      "size": 5816,
+      "sha256": "3af7b9608c7f74bce1e9f9f94c46b839d0a891d13c72d0b16cfcac6402aefbe1"
+    },
+    {
+      "path": "sport/scripts/check-countdown.mjs",
+      "size": 3824,
+      "sha256": "f80bea6681b0bb7b0070a509e53ab7d143417c7b45bada8954c6b8c815b0290d"
+    },
+    {
+      "path": "sport/scripts/check-counter-channel.mjs",
+      "size": 6117,
+      "sha256": "2d292ab888b5aa97b7a638d09560a6ac429e5b165dbf824957519e616f88b1c4"
+    },
+    {
+      "path": "sport/scripts/check-device-settings-merge.mjs",
+      "size": 3220,
+      "sha256": "640f28d28edb338068a7547ce35a899ab6647efabb6945362ab60b0d3f31bf60"
+    },
+    {
+      "path": "sport/scripts/check-energy.mjs",
+      "size": 21927,
+      "sha256": "3d1088530ef3112bc89c97a00debd24473b91e83ff201365082f86d820d9960f"
+    },
+    {
+      "path": "sport/scripts/check-exercise-context.mjs",
+      "size": 17695,
+      "sha256": "16210b5baefe2540d00d8a2a27e8019864b4dc545619f65f648f08937ecc1bdc"
+    },
+    {
+      "path": "sport/scripts/check-exercise-experience.mjs",
+      "size": 8521,
+      "sha256": "46d767b4a47f17307903aeb8583af7478902560c3e5939cff5d7d67fa8f2fb94"
+    },
+    {
+      "path": "sport/scripts/check-food-counters-sport.mjs",
+      "size": 9122,
+      "sha256": "40e6828566e60577eb21117266334ee87324557ee3716bcdb6a989c87c5cae31"
+    },
+    {
+      "path": "sport/scripts/check-free-timer.mjs",
+      "size": 2503,
+      "sha256": "e9cd90109a372e0d666dac5f8bd14a3615a426a1b98d4626a914c83441db7193"
+    },
+    {
+      "path": "sport/scripts/check-history-library.mjs",
+      "size": 13148,
+      "sha256": "4428423550f130d8cf3784d580c642fc7d4073765c1bc2791778a93ec58b1cb8"
+    },
+    {
+      "path": "sport/scripts/check-history-pause.mjs",
+      "size": 3401,
+      "sha256": "363ef09ef0b14d6621442f6aec498f506f8ace1f20039f9677e1d276a0874d1e"
+    },
+    {
+      "path": "sport/scripts/check-icons.mjs",
+      "size": 5374,
+      "sha256": "b5b26863ea8fcacceed817e4ce973c995cd2a1641ee9cf063fc2616170f55e44"
+    },
+    {
+      "path": "sport/scripts/check-ledger-storage.mjs",
+      "size": 8942,
+      "sha256": "43f8dc3e4b895800ebd068c011a0c2e9788a138d921c59715f82a069f4520620"
+    },
+    {
+      "path": "sport/scripts/check-local-store.mjs",
+      "size": 14065,
+      "sha256": "23c6ba1e78f81d1980f3a19e1829193621cd0a4c6f271976131cc4a3adbaa707"
+    },
+    {
+      "path": "sport/scripts/check-measurement-input-events.mjs",
+      "size": 8440,
+      "sha256": "e14571e3c553cdc9e8bd2feda9907b533858bdf74afc5245187872259da7cac2"
+    },
+    {
+      "path": "sport/scripts/check-paths.mjs",
+      "size": 4477,
+      "sha256": "961a55d9de8e52839b6882fafa6bf75ed2a22f831c931b5833660aded57e1937"
+    },
+    {
+      "path": "sport/scripts/check-player-controls.mjs",
+      "size": 8537,
+      "sha256": "668a25849ebe057cbef427d2824a7cbf35123ec475671e5e08bd0d5c5cf7eb80"
+    },
+    {
+      "path": "sport/scripts/check-profile-lock.mjs",
+      "size": 10833,
+      "sha256": "b1e98757d511207dfaa133d19c4014933fbb05a8c3a09618da5c274238281a30"
+    },
+    {
+      "path": "sport/scripts/check-profile-sync.mjs",
+      "size": 24611,
+      "sha256": "0dd3622caa2585638ecc2ff2ea13f06f29b2cbafb182ef87a50a0958caaaf95a"
+    },
+    {
+      "path": "sport/scripts/check-readonly-transport.mjs",
+      "size": 5193,
+      "sha256": "b236206bdc9a78c420bfa08a93f97665d9f5f1914973b367ea470ab601978855"
+    },
+    {
+      "path": "sport/scripts/check-readonly.mjs",
+      "size": 9237,
+      "sha256": "f4257bc27ed623ff2e8c89eb5c10d9a065f938cea748571c6ccb504ba940a2e4"
+    },
+    {
+      "path": "sport/scripts/check-recovery-vault.mjs",
+      "size": 4396,
+      "sha256": "212dd678cdf9a1f3157a56c161929324624676e2ef6b9917809490c35ea53497"
+    },
+    {
+      "path": "sport/scripts/check-rest-pill.mjs",
+      "size": 3623,
+      "sha256": "2fad7fb09a78b30aa967af907bf4a9302ecbc15677280f932cc06ac4957c0ab4"
+    },
+    {
+      "path": "sport/scripts/check-rest.mjs",
+      "size": 2299,
+      "sha256": "dff24d9c4ed94b30e06a90a264217a96ca2ab09ff43724c1506eb605244f8e59"
+    },
+    {
+      "path": "sport/scripts/check-schedule-catalog.mjs",
+      "size": 5158,
+      "sha256": "2528ff9581be99b31725757833fce96894c350e7aefe69318bbb3b3ceca06246"
+    },
+    {
+      "path": "sport/scripts/check-set-plan.mjs",
+      "size": 6369,
+      "sha256": "42b239dc87931aa25461b6c5825f57ad1fac947e49b3851515e7784dca01398f"
+    },
+    {
+      "path": "sport/scripts/check-set-swipe.mjs",
+      "size": 2841,
+      "sha256": "c5d2d109448324c68c606b6bdf16077c975efea59ff83da5ccf8f40edeee3573"
+    },
+    {
+      "path": "sport/scripts/check-strong-native-core.mjs",
+      "size": 19216,
+      "sha256": "15f522d3d910a9490e1cb895ea67584650b4b7a6d5e3f220fd90474d749bac21"
+    },
+    {
+      "path": "sport/scripts/check-strong-native-mappings.mjs",
+      "size": 28324,
+      "sha256": "be1cbc5eefb46aa21d7b460168ea5a68c162d210b4d4785009e7436f1a9b2a1c"
+    },
+    {
+      "path": "sport/scripts/check-studio-bridge.mjs",
+      "size": 2483,
+      "sha256": "244178c06de7aa673ce718c5f916e8303cfc9496c0965dc8f176d54dc5053892"
+    },
+    {
+      "path": "sport/scripts/check-summary-channel.mjs",
+      "size": 7011,
+      "sha256": "39f3c2b92cd719bb6a6f3c65d15564cd075634ca40e5f92f365d2f7d5143a188"
+    },
+    {
+      "path": "sport/scripts/check-summary-exchange.mjs",
+      "size": 19010,
+      "sha256": "a4d41dffac0df45d4ac1f4988da74aaf7f0bb21bc3fd0ff3c76c5ca2598ef2e3"
+    },
+    {
+      "path": "sport/scripts/check-template-picker.mjs",
+      "size": 13052,
+      "sha256": "0bd04d54685ddf6c12cd9b27f31b9c681e974461d1d01fc4889330ef6d2ba0a3"
+    },
+    {
+      "path": "sport/scripts/check-timed-exercise.mjs",
+      "size": 9402,
+      "sha256": "c95528eaec9831b4ca6f1c43c7e0abafbafd4f178a65d55cef6eb2201e212731"
+    },
+    {
+      "path": "sport/scripts/check-timer-action-wheel.mjs",
+      "size": 17322,
+      "sha256": "2226c81da36be57b40cbd183a62ffa5d62739640d776acb64297f2e8de631683"
+    },
+    {
+      "path": "sport/scripts/check-timer-mode-lock.mjs",
+      "size": 8794,
+      "sha256": "3c33020c8ddc94b74ab650e08b93978ee0e32a495dd2ea3f52c7c4be7c45687d"
+    },
+    {
+      "path": "sport/scripts/check-timer-pause.mjs",
+      "size": 5020,
+      "sha256": "b886f9eb864cb52508b6aba8dc9a74b6216be945e9601bce5cae5d1bdd25ff7b"
+    },
+    {
+      "path": "sport/scripts/check-timer-prototype.mjs",
+      "size": 5205,
+      "sha256": "1a2ef466de701726341dcc5485aa43be26d5e057b0792df5e8a9685f3cb5be97"
+    },
+    {
+      "path": "sport/scripts/check-transfer.mjs",
+      "size": 6206,
+      "sha256": "ded975e00157c6a2c0294c30edae6a15b309373b8415cf74441ead2f8255f87d"
+    },
+    {
+      "path": "sport/scripts/check-workout-interactions.mjs",
+      "size": 28319,
+      "sha256": "5b18ade76411b459906a70782f852079d88d4a0c58bc21c5c360dce6356dee82"
+    },
+    {
+      "path": "sport/scripts/check-workout-ui-consistency.mjs",
+      "size": 27217,
+      "sha256": "73c6022d0b922968f52567ea517377db7e7ddfc648cff8310fcfe39d3b3c161b"
+    },
+    {
+      "path": "sport/scripts/check.mjs",
+      "size": 17177,
+      "sha256": "7f90ea5dd6c09ec5dbad972059112d9a83544c9d1cb2c15904c2f591b7726aef"
+    },
+    {
+      "path": "sport/scripts/exercise-media.mjs",
+      "size": 3271,
+      "sha256": "bfd77ca04df67fa2072813d26494d4773257b23f4aa0cc979ff490f5e57ddd12"
+    },
+    {
+      "path": "sport/scripts/seed.mjs",
+      "size": 6044,
+      "sha256": "5df404bd46913c62bb964c9cfb38f59f686273a30267db00743aa77044c2f631"
+    },
+    {
+      "path": "sport/src/app-icons/happy-sport-20261029-152.png",
+      "size": 23900,
+      "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
+    },
+    {
+      "path": "sport/src/app-icons/happy-sport-20261029-167.png",
+      "size": 27714,
+      "sha256": "aba1d79f18622e3dfd97ff081eba2c7a5e51c145eb8fae97fead2c77ddc986b3"
+    },
+    {
+      "path": "sport/src/app-icons/happy-sport-20261029-180.png",
+      "size": 31267,
+      "sha256": "665e1c7de2fd289e417c83c8b13ec4d61462c819066dc1fa3a9bf206ca352309"
+    },
+    {
+      "path": "sport/src/app-icons/happy-sport-20261029-192.png",
+      "size": 34916,
+      "sha256": "8bb581f862617c534fa38b0fcffee1af89d4c3f18761d31d9cf21c2de35002f3"
+    },
+    {
+      "path": "sport/src/app-icons/happy-sport-20261029-32.png",
+      "size": 2515,
+      "sha256": "57618994a175bffa91546976a5cd87e1d9358a0094799a20cf1089c3259c4e9b"
+    },
+    {
+      "path": "sport/src/app-icons/happy-sport-20261029-48.png",
+      "size": 4355,
+      "sha256": "c5efc181bb39deed57620b69aa55235daa6e6fd9f13491a030fe54ec68009d88"
+    },
+    {
+      "path": "sport/src/app-icons/happy-sport-20261029-512.png",
+      "size": 210488,
+      "sha256": "691a105f7f6627f2949c90b8dffe287448065214f9c0f750f15b076e90c1c709"
+    },
+    {
+      "path": "sport/src/app-links.js",
+      "size": 5305,
+      "sha256": "26c3c59dc00040ad6d13346c80d963b5893fa71fe8082da8f6cb2f2a9e362b95"
+    },
+    {
+      "path": "sport/src/app.js",
+      "size": 70562,
+      "sha256": "00a65e8d83f3b2679fe671d2c54f934f51bf4fa63f6a919ed7ed1e935cf04cbe"
+    },
+    {
+      "path": "sport/src/app.template.html",
+      "size": 22027,
+      "sha256": "44d3e471697a28f4cc9b00d49ae3a568d6d6b83243365706769fd53f83f3b956"
+    },
+    {
+      "path": "sport/src/audit-simplify.css",
+      "size": 8236,
+      "sha256": "c881736172b74faa3c36facab999e1b4e43d7f8a10327f946b69204ab8e8fb9f"
+    },
+    {
+      "path": "sport/src/audit-simplify.js",
+      "size": 16895,
+      "sha256": "9a64a372097419a92ac81c9f8fea98ba80c8bfce9be161546e185513837af918"
+    },
+    {
+      "path": "sport/src/automatic-sync-ui.js",
+      "size": 28238,
+      "sha256": "155fed4df8f35f3704312393e2a54af262479d5dfca95b532b1c4bf1cadd513f"
+    },
+    {
+      "path": "sport/src/automatic-sync.js",
+      "size": 13281,
+      "sha256": "7e7b134cc963652579fbc1b1627fc77e570735b9222da6fb7fc7617ea936ee3e"
+    },
+    {
+      "path": "sport/src/catalog-groups.js",
+      "size": 13661,
+      "sha256": "733c7ad743ae19f080f84d3fb6cb4024d082df524c0c973a76e18f4fc3097944"
+    },
+    {
+      "path": "sport/src/controlled-cas.js",
+      "size": 17400,
+      "sha256": "903b9ecf01dc4118f42fa9bb80ec75713994f0c036c36ca540ca16d64e3bf2c1"
+    },
+    {
+      "path": "sport/src/controlled-journal.js",
+      "size": 4174,
+      "sha256": "f2aafcc71d34d49f0e42d88e70b2bb148048d75077ed0cd7eb8505c236526054"
+    },
+    {
+      "path": "sport/src/controlled-ledger.js",
+      "size": 6376,
+      "sha256": "7dd34179d1d24229d39d636d70fc23965eebdc4b1abb692da3dcaa42ec3d8ca2"
+    },
+    {
+      "path": "sport/src/controlled-sync-ui.js",
+      "size": 18780,
+      "sha256": "b1300169d021a7efa6f8c0f2a4360feec4860ec1d197bc0e97a60ce4cdd7bc73"
+    },
+    {
+      "path": "sport/src/data-transfer.js",
+      "size": 18757,
+      "sha256": "57a09aedde8a3e676b6c9f9d39edcb2ca772972b03d7593881e42ace88d4883d"
+    },
+    {
+      "path": "sport/src/dock-shape.js",
+      "size": 1227,
+      "sha256": "71ff3daee3882ebab165abfec4775cd867f8fdf268d26f222232cd719bc3fc24"
+    },
+    {
+      "path": "sport/src/energy-widget.css",
+      "size": 2301,
+      "sha256": "067a37f20d309b83f0370bf837a5b6efc94ddca1359af3fb1cddc5e2c78674e2"
+    },
+    {
+      "path": "sport/src/energy-widget.js",
+      "size": 19974,
+      "sha256": "f525eca5410e3b7f65bde8f1b003244b3ad431b9f854ee0258ed2be122314efe"
+    },
+    {
+      "path": "sport/src/exercise-config.js",
+      "size": 28879,
+      "sha256": "50a17950f83ff680f69e2cab2be068111f7ef0fcc9859dc10f8a6642b2d4566e"
+    },
+    {
+      "path": "sport/src/exercise-context.css",
+      "size": 1047,
+      "sha256": "713ad87baab190676d6ec0e3b3ef687b5a0946ba65d97a54162c6b9eef37874d"
+    },
+    {
+      "path": "sport/src/exercise-context.js",
+      "size": 8619,
+      "sha256": "93a020dc71004a2e5d7c3929ba3683739968f3f31667decdca91aefdb48afb08"
+    },
+    {
+      "path": "sport/src/exercise-experience.css",
+      "size": 26120,
+      "sha256": "a4d62cce6547ebfd102e57fc880b89c5774091e838259e8250244cb384499dbd"
+    },
+    {
+      "path": "sport/src/exercise-families.js",
+      "size": 6790,
+      "sha256": "cefc3e044a712b06a5484d8a0753b158140e3862fdefbbe003cc5ca5ec32b7e3"
+    },
+    {
+      "path": "sport/src/exercise-history.js",
+      "size": 6284,
+      "sha256": "72053bbe655bdf37544b2e5053505761e10788b64d58425b7db6e5081bb79f60"
+    },
+    {
+      "path": "sport/src/exercise-player.js",
+      "size": 44417,
+      "sha256": "937cb5d7295a20c7b79b96b96d83a67aa8b8296cfa43dd3f96b060f3d8d585b2"
+    },
+    {
+      "path": "sport/src/exercises/pull-up.html",
+      "size": 159827,
+      "sha256": "c865e26fb709786ef8131405095ffc44c80cdbc098dc5d1dfd8f83c41a9bb2dd"
+    },
+    {
+      "path": "sport/src/food-counters.js",
+      "size": 9597,
+      "sha256": "ecebf0a7dfc18e0046d9ae0ae4e130ef6f4b044b324d737ab1863efa41801721"
+    },
+    {
+      "path": "sport/src/free-timer.js",
+      "size": 15314,
+      "sha256": "66b3cb334259a21e26ced111a84bb18c23adb4b9c1766d55ef55f0bebb7e8ea3"
+    },
+    {
+      "path": "sport/src/happy-auth.js",
+      "size": 11104,
+      "sha256": "6f31d6eb4ecc0ac9a4852b4fbced694d5694ce5352fe580d5e3584764182a61b"
+    },
+    {
+      "path": "sport/src/icon-studio-bridge.js",
+      "size": 2481,
+      "sha256": "62b58edcfce3d1b7315c27b887a72c5a19dd7d07a45a2548fefba1da1417a736"
+    },
+    {
+      "path": "sport/src/journal-cloud.js",
+      "size": 12798,
+      "sha256": "6a3adcb4df257147153c8c992417ef849ed6e959f346eae592b40347004289c5"
+    },
+    {
+      "path": "sport/src/library-v2.js",
+      "size": 15739,
+      "sha256": "5449b374f81ff0f4de3da7f6ce4326a8a50088f1b5abf308adcf003febacb642"
+    },
+    {
+      "path": "sport/src/live-tabs.js",
+      "size": 2328,
+      "sha256": "718a2c6c6502e08a08c9d45d0f54a57802c7fb12df7757acb5697abed9218ee6"
+    },
+    {
+      "path": "sport/src/local-store.js",
+      "size": 7814,
+      "sha256": "d87fdac10c41fa190a3ada23e6a6ab34429ac68856d465dcb83be69f15b63704"
+    },
+    {
+      "path": "sport/src/manifest.webmanifest",
+      "size": 518,
+      "sha256": "3e7afccb1fd0dbe7915806b5b046ab86fb7f5bf2c5971cd0f96321ab2f549aee"
+    },
+    {
+      "path": "sport/src/measurements-shared.js",
+      "size": 10385,
+      "sha256": "358e44afa1bb0464896615eb0fd486ad4c02229916746e82c11ff72c055b9136"
+    },
+    {
+      "path": "sport/src/measurements-v2.js",
+      "size": 18223,
+      "sha256": "5b362b6fb3ca5d4122f917d4b8e3396bf82757281feea81eaf20ecb6b05a7d8b"
+    },
+    {
+      "path": "sport/src/metric-field.css",
+      "size": 13958,
+      "sha256": "40b0b3117ab52eba2a9026a3335bd36a105238c422328543123a46f6af4c1adb"
+    },
+    {
+      "path": "sport/src/metric-field.js",
+      "size": 1170,
+      "sha256": "3cb76f59e50dc543e85ae101c0f2bcf502fae910d5979299aabb94dd7f22d03c"
+    },
+    {
+      "path": "sport/src/nav-icons.json",
+      "size": 771,
+      "sha256": "d3c70715a74ca7ab3e9a8d042cfb3900f19d6faeb5a7928be07f5de0aeb1a424"
+    },
+    {
+      "path": "sport/src/plan-fact.js",
+      "size": 9018,
+      "sha256": "d3e1f3be0d9aab5e27f1d7b23d14a46c877ad6598be4ef5074d6877d7e6cc211"
+    },
+    {
+      "path": "sport/src/planning.js",
+      "size": 21132,
+      "sha256": "a1a5d1245d92536a668369cb4a2fd98081f7fe951362ea16c4e8e5cd53b69424"
+    },
+    {
+      "path": "sport/src/profile-lock.js",
+      "size": 5802,
+      "sha256": "28660e47532c6c73d7c3872dc5b8508b7156b78dd72bee01d5f0e7289ada5c5c"
+    },
+    {
+      "path": "sport/src/profile-store.js",
+      "size": 5396,
+      "sha256": "32d90792bd02885b618cb60b34cb1d86e5cb7d3432fbfe710f1ef29ffb7240c5"
+    },
+    {
+      "path": "sport/src/quick-value-input.js",
+      "size": 2334,
+      "sha256": "95cb619080508226caaba4cb4c06b54ed2fc69efb0b58c7cfd680b4b5563fa14"
+    },
+    {
+      "path": "sport/src/readonly-auth.js",
+      "size": 1598,
+      "sha256": "0c452e9869865c2a55ebb10b23f6b750993789a3d0308a414ae3b13b102702ec"
+    },
+    {
+      "path": "sport/src/readonly-guard.js",
+      "size": 12620,
+      "sha256": "8970e373e96e15b446b4cb405efd51033b181ca7405aeba27d60f4e3ef4a36a8"
+    },
+    {
+      "path": "sport/src/readonly-ui.js",
+      "size": 8053,
+      "sha256": "3a3bccd43b3af78433164667eb96338304426810a663b51597b8b853debab788"
+    },
+    {
+      "path": "sport/src/recovery-vault.js",
+      "size": 5187,
+      "sha256": "8e498966a85ac6bb35f9ac73c164168402b566d7a0eb45df02f5f79d21faf3fe"
+    },
+    {
+      "path": "sport/src/refinements.css",
+      "size": 43538,
+      "sha256": "27ae1b3eafe145b3bc652ccaed266588e3d506ea071e037fbb057fd16f2e86a6"
+    },
+    {
+      "path": "sport/src/refinements.js",
+      "size": 21355,
+      "sha256": "90ff300b464f6d4d2970aeb1ad47d4c20c3baa096431eb0be75afd0883c36ca2"
+    },
+    {
+      "path": "sport/src/release-notes.js",
+      "size": 28888,
+      "sha256": "0e1f2bf19d8887470d5a22d81484b89244d1150845fbb9748c03c9a90da6cc1e"
+    },
+    {
+      "path": "sport/src/rest-pill.js",
+      "size": 12978,
+      "sha256": "666b9dc5e23d5962e46f6092560bd105dd317662d9aff30aaa6bcddeb357edcd"
+    },
+    {
+      "path": "sport/src/schedule-calendar.js",
+      "size": 4610,
+      "sha256": "2010d61e3eb6a64e93e5bdb3a724444a8b0bd07e21fc361bec84dacb93a5c5a8"
+    },
+    {
+      "path": "sport/src/schedule-model.js",
+      "size": 6114,
+      "sha256": "e7327e5a4e1f35c823c91d79e0e32c4233169e57b55777c618f69841c5930dd1"
+    },
+    {
+      "path": "sport/src/set-countdown.js",
+      "size": 8139,
+      "sha256": "648ad2a2bcb8331f983eacb141e1688a578ed17457682dfae1092fce3b8f26c1"
+    },
+    {
+      "path": "sport/src/set-plan.js",
+      "size": 11668,
+      "sha256": "f9419e46494e4b4bfe42cdb517d5a483eacc65142fad131bd9882b816326230b"
+    },
+    {
+      "path": "sport/src/set-rest.js",
+      "size": 3667,
+      "sha256": "b7252c0b8a265c8cfb32c5f05beefe386051b4917f2749d3262decd9d53865bc"
+    },
+    {
+      "path": "sport/src/set-swipe.js",
+      "size": 6816,
+      "sha256": "0f643e62d5084c289338bcc1bcac23534f63e8cbe155f0c2327eeaa0c6b3d400"
+    },
+    {
+      "path": "sport/src/set-time.js",
+      "size": 1458,
+      "sha256": "7e107e9b8e293cec447d30000aedcfd621a5ed83215b18126c3b97460df730d2"
+    },
+    {
+      "path": "sport/src/settings-layout.css",
+      "size": 1887,
+      "sha256": "49e99bd6130f74a2851c8ecdebecea00e0337f4dab931a4d17b0fb6c9724f25d"
+    },
+    {
+      "path": "sport/src/settings-layout.js",
+      "size": 10329,
+      "sha256": "70a1e9b050d276b94fda31df8faecaf31b0b09132c1a8e7b872b7ca59a8083f8"
+    },
+    {
+      "path": "sport/src/sport-cloud.js",
+      "size": 6267,
+      "sha256": "7f80bdd8477d199bbdfe9717e6f7db01d8bd667cf53c4a91102a7f653430a50a"
+    },
+    {
+      "path": "sport/src/sport-icons.js",
+      "size": 5935,
+      "sha256": "ead4c11da378aa65672bd9561d717f872351693ce8505933a0ebc21a0ed899b7"
+    },
+    {
+      "path": "sport/src/sport-link.js",
+      "size": 1334,
+      "sha256": "0a7f683120e063b56593b8f10a7ce4b03a9dd37d5bcbae673df7ea8fb8a4fb7b"
+    },
+    {
+      "path": "sport/src/strong-native-core.js",
+      "size": 19400,
+      "sha256": "38023e2397b79ca664e66d33521a0b3f2b5abe1ceed30a9484c494b4eab4a7f5"
+    },
+    {
+      "path": "sport/src/strong-native-mappings.js",
+      "size": 22213,
+      "sha256": "e42be5fc83443e4de2453c24f0602486ef48c73736904a0f8ab758c2813987cc"
+    },
+    {
+      "path": "sport/src/strong-native-ui.js",
+      "size": 19382,
+      "sha256": "313544bc6c61b3ba3138198e52df978f42298b749fe0a82b03ffa1a104c8bfa0"
+    },
+    {
+      "path": "sport/src/summary-exchange.js",
+      "size": 6608,
+      "sha256": "112a724320e69cc9e8e0dfe2b2cfb610971622b4933d91077155c9b3a561117a"
+    },
+    {
+      "path": "sport/src/template-picker.js",
+      "size": 5977,
+      "sha256": "9ebb7eb5fca70289a1209cff729bafe62f83eefdca729ca4021ed5bb26e6a3cd"
+    },
+    {
+      "path": "sport/src/timer-action-wheel.css",
+      "size": 3961,
+      "sha256": "668fc15fe3d2ca37fe1073fd00cb7dfdcaa992b86bd630bf7493b2c1cdcbcfa0"
+    },
+    {
+      "path": "sport/src/timer-action-wheel.js",
+      "size": 11705,
+      "sha256": "8894128554e932dbd2ab82b4276402cf9bac6de8b17fd2391344b9a6c81428ad"
+    },
+    {
+      "path": "sport/src/timer-prototype.css",
+      "size": 22846,
+      "sha256": "a3777464e2c19980801792ba5670151ce2a035cbf16540418c7a7d1175faa00c"
+    },
+    {
+      "path": "sport/src/workout-identity.js",
+      "size": 4286,
+      "sha256": "e1d68b820759ddc069c0ca1a5a988f872f32222e4922b997980c9f18fd3a0dd1"
+    },
+    {
+      "path": "sport/src/workout-interactions.js",
+      "size": 7071,
+      "sha256": "5990bccd835cca3e050fc229d6101b24fd4b69bfcc0af6e0d45c4a98b3ac63f1"
+    },
+    {
+      "path": "sport/src/workout-pause.js",
+      "size": 1419,
+      "sha256": "591950fbc3c010055f6abe194e6ba8dad73ac44777bb9dab8d9342adb095cc9d"
+    }
+  ]
+}
