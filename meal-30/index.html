@@ -1429,6 +1429,13 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .happy-backup-cloud{border-top:1px solid rgba(255,255,255,.2);margin-top:16px;padding-top:16px}
 .happy-version{text-align:center;color:rgba(255,255,255,.85);font-family:inherit;font-size:14px;line-height:1.6;margin:28px 0 0;padding:20px 8px 8px;border-top:1px solid rgba(255,255,255,.18)}
 .happy-version small{display:block;font-size:12px;opacity:.8}
+/* Meal 30 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
+.happy-app-links-section{margin-top:12px}
+.happy-app-links{padding:4px 16px!important}
+.happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px}
+.happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.18)}
+.happy-app-name{flex:1;color:inherit;font-size:16px;font-weight:600;text-decoration:none;padding:14px 0}
+.happy-app-link.is-off .happy-app-name{opacity:.6}
 .happy-settings [hidden]{display:none!important}
 @media(max-width:360px){.happy-card{padding:14px}.happy-button{padding:11px 13px}}
 
@@ -1466,6 +1473,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <script src="journal-sync.js?v=30"></script>
 <script src="./shared/meal-products-model.js?v=30"></script>
 <script src="./shared/happy-summaries.js?v=30"></script>
+<script src="./shared/happy-app-links.js?v=30"></script>
 <link rel="stylesheet" href="catalog.css?v=30">
 <link rel="stylesheet" href="./shared/food-counters.css?v=30">
 <link rel="stylesheet" href="release-notes.css?v=30">
@@ -1625,9 +1633,12 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <div class="screen happy-settings" data-screen="settings">
     <div class="top"><h1>Настройки</h1><div class="tierBadges" hidden></div></div>
     <!-- Update 26: одна структура настроек Happy (AGENTS.md): Аккаунт → Приложение → Данные → Связанные приложения → Для разработчика (скрыт, долгое нажатие на строку версии) → версия. Блоки прежние, переставлены; id и обработчики не менялись. -->
-    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card"><div id="clBox"></div><p id="mealJournalStatus" class="happy-note" role="status" aria-live="polite" aria-atomic="true">Подготовка синхронизации…</p></div><div data-happy-account-note></div></section>
+    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card"><div id="clBox"></div><p id="mealJournalStatus" class="happy-note" role="status" aria-live="polite" aria-atomic="true">Подготовка синхронизации…</p></div></section>
+    <section class="happy-section happy-app-links-section" data-happy-section="links"><div class="happy-card happy-app-links" role="group" aria-label="Связь с другими приложениями Happy">
+      <div class="happy-app-link"><a class="happy-app-name" href="../day-57/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><input class="happy-switch" type="checkbox" role="switch" data-app-link="day" checked aria-label="Связь с Happy Day"></div>
+      <div class="happy-app-link"><a class="happy-app-name" href="../sport-40/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a><input class="happy-switch" type="checkbox" role="switch" data-app-link="sport" checked aria-label="Связь с Happy Sport"></div>
+    </div></section>
     <section class="happy-section" data-happy-section="app"><h2 class="happy-heading">Приложение</h2>
-    <div class="eyebrow"><span>Оформление</span></div>
     <div class="happy-appearance-entry" data-happy-appearance-slot></div>
     <div class="eyebrow"><span>Цели на день</span></div>
     <div id="setGoals" class="mlSet"></div>
@@ -1655,7 +1666,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="eyebrow"><span>Отчёты</span></div>
     <div class="happy-card"><button class="happy-button" id="mealReportSettings">Открыть отчёт</button><p class="happy-note">Период выбирается в журнале, состав отчёта — перед сохранением. CSV находится в конце журнала. PDF, PNG, печать и полный CSV с продуктами и нутриентами.</p></div>
     </section>
-    <section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="../day-57/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><a class="happy-button" href="../sport-40/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a></div><p class="happy-note">Открываются текущие выпуски. В каждое приложение вход отдельный — войди тем же аккаунтом Happy; записи общие через аккаунт.</p></div></section>
     <section class="happy-section" data-happy-section="developer" hidden><h2 class="happy-heading">Для разработчика</h2>
     <div class="eyebrow"><span>Аккаунт и синхронизация</span></div>
     <div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" id="mealDeveloperSync">Обновить связь</button></div><p class="happy-note">Перечитать профиль и облачный дневник вручную. Обычно не нужно: обмен идёт сам после входа.</p></div>
@@ -2957,7 +2967,7 @@ async function erSportCloud(){
 }
 /* день из сводки: {n — тренировок, min — минут, wo — ккал на тренировках, k — потрачено всего, rest — покой, steps — шаги};
    чего Sport не передал — null. Сводки нет — null. */
-function erSportDay(iso){ return HappySummaries.sport.day(ER_SPORT,iso) }
+function erSportDay(iso){ return HappySummaries.sport.day(window.MealAppLinks?MealAppLinks.sport(ER_SPORT):ER_SPORT,iso) }   // Meal 30: тренировки, пока связь с Sport выключена, не берём
 function erSportVal(d,k){ return d&&d[k]!=null?d[k]:null }
 function erSportGoal(k){ return HappySummaries.sport.goal(ER_SPORT,k)||0 }
 /* клетчатка за день — из BLS по коду продукта; база не открылась или ни у одного продукта нет данных — прочерк */
@@ -3257,7 +3267,7 @@ function linkSummary(){
   var goals={}; ['k','p','f','c','fib'].forEach(function(k){ var v=goalOf(k); if(v>0) goals[k]=v });
   /* counters:1 — в каждом дне названы учтённые порции со счётчиков (cs); нет списка — таких порций в дне нет */
   Object.keys(live).forEach(function(id){ if(!settled.counted[id]) settled.skipped[id]=1 });
-  return {v:1,app:'meal',at:Date.now(),counters:1,skipped:Object.keys(settled.skipped),secs:DB.sections.map(function(S){ return {k:S.k,t:S.t} }),days:days,goals:goals,
+  return {v:1,app:'meal',at:Date.now(),counters:1,skipped:Object.keys(settled.skipped),secs:DB.sections.map(function(S){ return {k:S.k,t:S.t} }),days:days,goals:goals,links:window.MealAppLinks?MealAppLinks.forSummary():[],   // Meal 30: переключения связи — соседям
     nutrition:MealProducts.exchange(DB,FOODS,typeof MealReport==='object'?MealReport.fields(typeof BLS==='object'&&BLS?BLS.keys:null):[],blsVal)};
 }
 var CL_APP='meal', CL_T=null, CL_DIRTY=false, CL_LAST=null;
@@ -6262,6 +6272,7 @@ document.addEventListener('click',function(ev){
 <script src="./shared/release-notes.js?v=30"></script>
 <script src="release-notes.js?v=30"></script>
 <script src="./shared/happy-links.js?v=30"></script>
+<script src="./app-links.js?v=30"></script>
 <script src="./shared/happy-settings-developer.js?v=30"></script>
 <script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 30')}catch(e){}</script>
 <script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
