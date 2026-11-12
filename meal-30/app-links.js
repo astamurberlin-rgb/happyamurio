@@ -59,4 +59,6 @@
   if(typeof poll==='function')root.erSportPoll=function(){const r=poll.apply(this,arguments);Promise.resolve(r).then(()=>{if(learn(root.ER_SPORT)&&typeof root.erRedraw==='function')root.erRedraw();return pullDay()}).catch(()=>{});return r};
   root.MealAppLinks={list,on,learn,sport,paint,pullDay,forSummary:()=>L.forApp(list(),APP)};
   if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',paint);else paint();
+  /* связь уже переключали — кольцо перерисовать с учётом выключенных периодов */
+  if(list().length&&typeof root.erRedraw==='function')setTimeout(()=>{try{root.erRedraw()}catch(e){}},0);
 })(typeof window!=='undefined'?window:globalThis);

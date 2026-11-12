@@ -11,7 +11,7 @@ with sync_playwright() as p:
     ctx.add_init_script(HOOK)
     def page_of(name,path):
         page=ctx.new_page();page.on("pageerror",lambda e:errors.append(name+": "+str(e)[:300]));page.goto(BASE+path);return page
-    sport=page_of("sport","sport-40/index.html");sport.wait_for_timeout(4500)
+    sport=page_of("sport",SPORT + "index.html");sport.wait_for_timeout(4500)
     sport.query_selector_all(".tab")[-1].click();sport.wait_for_timeout(800)
     sport.fill('#happy-account input[type="email"]',EMAIL);sport.fill('#happy-account input[name="password"]',PW);sport.click('#happy-account [data-happy="in"]');sport.wait_for_timeout(9000)
     sport.evaluate("""()=>{const d=selectedDate;state.workouts.push({id:'local-phone-1',timeZone:'Europe/Moscow',title:'Проверка',kind:'gym',icon:null,start:d+'T10:00:00',end:d+'T10:30:00',duration:1800,notes:'',source:'Моя запись',demo:false,exercises:[],warnings:[]});persist();render()}""")
@@ -21,7 +21,7 @@ with sync_playwright() as p:
     meal.evaluate("()=>go('day')");meal.wait_for_timeout(600)
     out["meal_spent"]=er(meal,"потрачено")["rows"][-1]
     meal.evaluate("()=>{day(curDate).items.push({id:'i'+HappyFoodCounters.id(),sec:'am',fid:'egg',q:2,u:'шт',g:110,t:nowHM()});save();renderDay()}");meal.wait_for_timeout(1500)
-    day=page_of("day","day-57/index.html");day.wait_for_timeout(5500)
+    day=page_of("day",DAY + "index.html");day.wait_for_timeout(5500)
     day.evaluate("()=>go('settings')");day.wait_for_timeout(900);day.fill("#clBox #clEmail",EMAIL);day.fill("#clBox #clPw",PW);day.click('#clBox [data-cl="in"]');day.wait_for_timeout(12000)
     day.evaluate("()=>SelfCare.open('activity')");day.wait_for_timeout(2500)
     out["day_spent"]=he(day,"careEnergy","потрачено")["rows"][-1];out["day_eaten"]=he(day,"careEnergy","съедено")["big"]

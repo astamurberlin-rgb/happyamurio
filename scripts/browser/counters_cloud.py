@@ -75,7 +75,7 @@ with sync_playwright() as p:
     meal.close()
 
     # ── B: Day — вход, экран «Активность» ──
-    day = page_of(B, "day", "day-57/index.html")
+    day = page_of(B, "day", DAY + "index.html")
     day.wait_for_timeout(5500)
     day.evaluate("()=>go('settings')")
     day.wait_for_timeout(900)
@@ -90,7 +90,7 @@ with sync_playwright() as p:
 
     # ── A: Sport — вход; счётчик и сводка Meal приходят из облака ──
     A = device("A")
-    sport = page_of(A, "sport", "sport-40/index.html")
+    sport = page_of(A, "sport", SPORT + "index.html")
     sport.wait_for_timeout(4500)
     sport.query_selector_all(".tab")[-1].click()
     sport.wait_for_timeout(800)

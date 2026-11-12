@@ -31,6 +31,7 @@ with sync_playwright() as p:
     meal.goto(BASE + MEAL + "index.html")
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&!!navigator.serviceWorker.controller"), 25)
     check("Meal открыт, BLS из сети, копия выпуска подключена (service worker)", meal.evaluate("()=>BLS_ST==='ok'&&!!navigator.serviceWorker.controller"))
+    meal.evaluate("()=>HappyCollections.buy('SUPP')")   # Meal 30: не купленный набор «БАДы» в настройках каталогов не показывается
     meal.locator('.tab[data-go="settings"]').click()
     meal.locator('#mealSources').scroll_into_view_if_needed()
     meal.wait_for_timeout(500)

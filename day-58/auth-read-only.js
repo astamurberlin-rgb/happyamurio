@@ -93,6 +93,38 @@ function makeJournalCapability(owner,guard,packetGuard){
 // The Day counter client gets a separate, one-time capability. It can publish
 // only a validated counter document for this account in the food counter row.
 let counterBound=false;
+/* Day 58 (12.11.2026): узкий канал сводки связи приложений — только своя строка app=day, kind=link: переключения
+   свитчей связи с Meal и Sport (shared/happy-app-links.js), ровно поля {v, app, at, owner, links}. Привязать может
+   только app-links.js этого выпуска и только один раз. — Claude · 12.11.2026 12:30 */
+let linksBound=false;
+function bindAppLinksAdapter(){
+ const current=root.document?.currentScript?.src;
+ const expected=guardScript&&!bundled&&new URL('./app-links.js',guardScript);
+ const actual=current&&new URL(current,root.location.href);
+ if(linksBound||!(bundledAdapter('hd-app-links-adapter')||expected&&actual&&actual.origin===expected.origin&&actual.pathname===expected.pathname))throw denied();
+ linksBound=true;
+ return async function putAppLinks(summary){
+   const c=root.CL,session=c?.s,key=c?.ck,uid=session?.uid,L=root.HappyAppLinks;
+   if(!canWriteDay(uid)||!key||!root.HappyProfile?.matches(uid)||!L||!summary||typeof summary!=='object'||
+     Object.keys(summary).sort().join(',')!=='app,at,links,owner,v'||summary.v!==1||summary.app!=='day'||summary.owner!==uid||
+     !Number.isSafeInteger(summary.at)||summary.at<=0||!Array.isArray(summary.links)||summary.links.length>200||
+     !summary.links.every(t=>L.valid(t)&&Object.keys(t).sort().join(',')==='at,by,on,pair'&&t.pair.split('|').includes('day'))||
+     root.CLOUD?.url!=='https://'+AUTH_HOST)throw denied();
+   const before=persistedSession();
+   const pin=()=>{if(!root.CL.s||root.CL.s.uid!==session.uid||root.CL.ck!==key||!root.HappyProfile.matches(uid)||persistedSession()!==before)throw denied();};
+   const plain=new TextEncoder().encode(JSON.stringify(summary));
+   if(plain.byteLength>40000)throw denied();
+   const iv=root.crypto.getRandomValues(new Uint8Array(12));
+   const bytes=await root.crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:new TextEncoder().encode(uid+'|day|link')},key,plain);pin();
+   const token=await root.clToken();pin();
+   const row={user_id:uid,app:'day',kind:'link',v:1,iv:root.clB64(iv),data:root.clB64(new Uint8Array(bytes)),at:Date.now()};
+   const response=await originalFetch('https://'+AUTH_HOST+'/rest/v1/app_sync?on_conflict=user_id,app,kind',{method:'POST',
+     headers:{apikey:root.CLOUD.key,Authorization:'Bearer '+token,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},
+     body:JSON.stringify(row),credentials:'omit',redirect:'error'});
+   pin();if(!response.ok)throw Error('Сервер не подтвердил сводку связи приложений.');
+   return true;
+ };
+}
 function bindFoodCounterAdapter(){
  const current=root.document?.currentScript?.src;
  const expected=guardScript&&!bundled&&new URL('./shared/food-counters.js',guardScript);
@@ -132,7 +164,7 @@ function bindJournalAdapter(config){
  // It is retained in that module's closure, never a global write-enable switch.
  return Object.freeze({begin:function(c,guard){const now=config.context();if(!c||!now||c.owner!==now.owner||c.generation!==now.generation||c.session!==now.session||c.key!==now.key||typeof guard!=='function')throw denied();config.guard(c);return makeJournalCapability(c.owner,()=>{config.guard(c);guard();},(body,expected)=>config.packet(c,body,expected));}});
 }
-Object.defineProperty(root,'HappyAuthReadOnly',{value:Object.freeze({phase:'existing-account-read-only',canWriteDay,bindFoodCounterAdapter,assertAllowed,beginJournalCreate,bindJournalAdapter,stats:()=>({...counts})}),writable:false,configurable:false});
+Object.defineProperty(root,'HappyAuthReadOnly',{value:Object.freeze({phase:'existing-account-read-only',canWriteDay,bindFoodCounterAdapter,bindAppLinksAdapter,assertAllowed,beginJournalCreate,bindJournalAdapter,stats:()=>({...counts})}),writable:false,configurable:false});
 if(root.document)root.document.addEventListener('click',function(e){
  const saveButton=e.target.closest&&e.target.closest('[data-day-test-save]');
  if(saveButton&&saveButton.id==='day-test-save'&&root.document.getElementById('day-test-save')===saveButton&&e.isTrusted===true&&!saveButton.disabled){trustedSaveClick=e;root.setTimeout(()=>{if(trustedSaveClick===e)trustedSaveClick=null;},0);}

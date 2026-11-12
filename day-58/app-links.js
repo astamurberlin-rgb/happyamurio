@@ -4,10 +4,12 @@
    переключения Meal и Sport приходят из их сводок (meal/link, sport/link). Пока связь выключена — с этого момента —
    еда Meal (итоги дня, приёмы, порции со счётчиков) и тренировки Sport не отмечаются в «Активности», кольце и журнале,
    кнопки общих счётчиков Meal скрыты; что было до выключения, остаётся.
-   — Claude · 12.11.2026 12:45 */
+   — Claude · 12.11.2026 12:25 */
 (function(root){'use strict';
   const L=root.HappyAppLinks,APP='day',SENT='hd_app_links_sent_v1';
   if(!L)return;
+  /* запись day/link — только через узкий канал auth-read-only.js, привязывается здесь, при загрузке этого файла */
+  const putLinks=(()=>{try{return root.HappyAuthReadOnly&&root.HappyAuthReadOnly.bindAppLinksAdapter?root.HappyAuthReadOnly.bindAppLinksAdapter():null}catch(e){return null}})();
   function owner(){return root.HappyProfile&&root.HappyProfile.owner||'local'}
   function list(){return L.read(root.localStorage,owner())}
   function on(other,time){return L.on(list(),APP,other,time)}
@@ -37,12 +39,12 @@
   /* своя сводка day/link — только переключения; отправляется после изменения и при входе, если ещё не ушла */
   function sentKey(){return root.HappyProfile&&root.HappyProfile.key?root.HappyProfile.key(SENT):SENT}
   async function publish(force){
-    if(typeof root.clPut!=='function'||typeof root.clOn!=='function'||!root.clOn())return false;
+    if(!putLinks||typeof root.clOn!=='function'||!root.clOn())return false;
     const links=L.forApp(list(),APP),last=links.length?links[links.length-1].at:0;
     let sent=0;try{sent=+root.localStorage.getItem(sentKey())||0}catch(e){}
     if(!force&&(!links.length||sent>=last))return false;
     try{
-      await root.clPut('day','link',{v:1,app:'day',at:Date.now(),owner:owner(),links});
+      await putLinks({v:1,app:'day',at:Date.now(),owner:owner(),links});
       try{root.localStorage.setItem(sentKey(),String(last))}catch(e){}
       return true;
     }catch(e){return false}

@@ -20,7 +20,7 @@ with sync_playwright() as p:
 
     # ── устройство A: Sport ──
     A = device("A")
-    sport = page_of(A, "sport", "sport-40/index.html")
+    sport = page_of(A, "sport", SPORT + "index.html")
     sport.wait_for_timeout(4500)
     sport.query_selector_all(".tab")[-1].click()
     sport.wait_for_timeout(800)
@@ -64,7 +64,7 @@ with sync_playwright() as p:
     out["B_meal_eaten"] = er(meal, "съедено")
 
     # ── устройство B: Day ──
-    day = page_of(B, "day", "day-57/index.html")
+    day = page_of(B, "day", DAY + "index.html")
     day.wait_for_timeout(5500)
     day.evaluate("()=>go('settings')")
     day.wait_for_timeout(900)
@@ -107,7 +107,7 @@ with sync_playwright() as p:
     guest_meal = page_of(C, "guest-meal", MEAL + "index.html")
     guest_meal.wait_for_timeout(5000)
     out["C_guest_meal_spent"] = er(guest_meal, "потрачено")
-    guest_sport = page_of(C, "guest-sport", "sport-40/index.html")
+    guest_sport = page_of(C, "guest-sport", SPORT + "index.html")
     guest_sport.wait_for_timeout(6000)
     out["C_guest_sport_eaten"] = he(guest_sport, "happy-energy", "съедено")
     out["C_guest_requests"] = [(r["method"], r["path"], r["query"]) for r in log[mark:] if r["device"] == "C"]
@@ -133,7 +133,7 @@ checks = {
  "Day: время тренировки пришло": "Время: 30 мин" in out["B_day_spent"]["rows"],
  "Day: съеденное из Meal": out["B_day_eaten"]["big"] == "149",
  "Day: после перезагрузки снова «баланс»": out["B_day_after_reload"] == "баланс",
- "Day: ссылка на запись ведёт в текущий Sport": out["B_day_journal_link"] == "/happyamurio/sport-40/?workout=local-e2e-1",
+ "Day: ссылка на запись ведёт в текущий Sport": out["B_day_journal_link"] == "/happyamurio/" + json.load(open(os.path.join(REPO, "shared", "apps.json")))["sport"]["entry"].split("/")[0] + "/?workout=local-e2e-1",
  "Sport (первое устройство): съеденное пришло из облака": out["A_eaten_after_meal"]["big"] == "149",
  "Sport: после перезагрузки снова «потрачено»": out["A_after_reload"]["cap"] == "потрачено",
  "Гость: к облаку не обращается": out["C_guest_requests"] == [],

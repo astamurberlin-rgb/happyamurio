@@ -130,6 +130,9 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
 # Актуальный выпуск Meal для сценариев (HAPPY_MEAL — другой, например meal-28/)
 MEAL = os.environ.get("HAPPY_MEAL", "meal-30/")
+# Актуальные Day и Sport для сценариев (с 12.11.2026, связь приложений: Day 58, Sport 41)
+DAY = os.environ.get("HAPPY_DAY", "day-58/")
+SPORT = os.environ.get("HAPPY_SPORT", "sport-41/")
 _lib_files = {}
 
 

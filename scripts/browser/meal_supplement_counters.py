@@ -160,7 +160,7 @@ with sync_playwright() as p:
     meal.close()
 
     # ── 5. Sport: подпись без граммов, нажатие — +20 ──
-    sport = page_of("sport", "sport-40/index.html")
+    sport = page_of("sport", SPORT + "index.html")
     sport.wait_for_timeout(5000)
     out["sport_rows"] = sport.evaluate("""()=>[...document.querySelectorAll('#sport-food-counters [data-action="food-plus"][data-shared="true"]')].map(b=>b.closest('.tpItem').innerText.replace(/\\n+/g,' | '))""")
     check("Sport: только рыбий жир, «2 капсулы» без граммов", len(out["sport_rows"]) == 1 and 'Рыбий жир' in out["sport_rows"][0] and '2 капсулы' in out["sport_rows"][0] and ' г' not in out["sport_rows"][0])
@@ -172,7 +172,7 @@ with sync_playwright() as p:
     sport.screenshot(path=SHOTS + "meal_supplement_counters-2-sport.png")
 
     # ── 6. Day: подписи, витамин D калорий не прибавляет, рыбий жир — +20 ──
-    day = page_of("day", "day-57/index.html")
+    day = page_of("day", DAY + "index.html")
     day.wait_for_timeout(6000)
     out["day_taps"] = day.evaluate("()=>DB.taps.filter(c=>c.mealCounterId).map(c=>c.t+' · '+c.mealPortion).sort()")
     check("Day: «2 капсулы» и «1 капсула» без граммов", out["day_taps"] == sorted(['Рыбий жир · 2 капсулы', 'Витамин D3 · 2000 МЕ · 1 капсула']))

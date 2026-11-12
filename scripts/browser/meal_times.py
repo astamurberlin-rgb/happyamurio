@@ -86,7 +86,7 @@ with sync_playwright() as p:
     # ── 5. Day видит то же время ──
     dayp = ctx.new_page()
     dayp.on("pageerror", lambda e: errors.append("day: " + str(e)[:300]))
-    dayp.goto(BASE + "day-57/index.html")
+    dayp.goto(BASE + DAY + "index.html")
     dayp.wait_for_timeout(5000)
     out["day_start"] = dayp.evaluate("()=>secTime(todayISO(),'pm')")
     check("в Day начало обеда 12:05 из Meal", out["day_start"] and out["day_start"]["t"] == "12:05" and out["day_start"]["src"] == "meal")

@@ -54,7 +54,7 @@ with sync_playwright() as p:
     meal.close()   # Meal закрыт: дальше день никто не пересчитывает
 
     # ── 2. Sport: нажатия на счётчик сразу видны в кольце ──
-    sport = page_of("sport", "sport-40/index.html")
+    sport = page_of("sport", SPORT + "index.html")
     sport.wait_for_timeout(5000)
     out["sport_counter_rows"] = sport.evaluate("""()=>[...document.querySelectorAll('#sport-food-counters [data-action="food-plus"][data-shared="true"]')].map(b=>b.closest('.tpItem').innerText.replace(/\\n+/g,' | '))""")
     out["sport_eaten_0"] = he(sport, "happy-energy", "съедено")["big"]
@@ -69,7 +69,7 @@ with sync_playwright() as p:
     out["meal_summary_while_closed"] = sport.evaluate("()=>{const o=JSON.parse(localStorage.getItem('hd_link_meal_v1'));const d=new Date(Date.now()+3*3600e3).toISOString().slice(0,10);return {counters:o.counters||null,day:o.days[d]||null}}")
 
     # ── 3. Day: то же число без Meal; нажатие в Day прибавляет порцию ──
-    day = page_of("day", "day-57/index.html")
+    day = page_of("day", DAY + "index.html")
     day.wait_for_timeout(6000)
     day.evaluate("()=>SelfCare.open('activity')")
     day.wait_for_timeout(1200)

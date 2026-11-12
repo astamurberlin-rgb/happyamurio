@@ -18,7 +18,7 @@ with sync_playwright() as p:
     ctx.route(BACKEND + "/**", lambda route, request: (requests.append(request.method + ' ' + request.url[:120]), route.abort())[1])
     page = ctx.new_page()
     page.on("pageerror", lambda e: errors.append(str(e)[:300]))
-    page.goto(BASE + "day-57/index.html")
+    page.goto(BASE + DAY + "index.html")
     page.wait_for_timeout(5000)
     # Придуманные часы: первый заход в 09:00, второй в 14:05. Раздел «Завтрак» (am), в нём два тега проверки.
     page.evaluate("""([t1,t2])=>{window.__ms=Date.parse('2026-01-01T09:00:00Z');window.nowHM=()=>window.__hm;window.__hm='09:00';

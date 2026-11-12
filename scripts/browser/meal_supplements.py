@@ -134,7 +134,7 @@ with sync_playwright() as p:
     # ── устройство B: Day ──
     day = B.new_page()
     day.on("pageerror", lambda e: errors.append("B-day: " + str(e)[:300]))
-    day.goto(BASE + "day-57/index.html")
+    day.goto(BASE + DAY + "index.html")
     day.wait_for_timeout(5500)
     day.evaluate("()=>go('settings')")
     day.wait_for_timeout(900)

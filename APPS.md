@@ -5,6 +5,7 @@
 
 | Приложение | Редактировать | Постоянный адрес | Версия |
 | --- | --- | --- | --- |
+| Happy Day · Update 58 · на проверке | `day-58/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-58/ | 58 |
 | Happy Day · Update 57.7 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.7 |
 | Happy Day · Update 56 | `day-56/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-56/ | 56 |
 | Happy Day · Update 55 | `day-55/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-55/ | 55 |
@@ -20,6 +21,7 @@
 | Happy Meal · Update 25 | `meal-25/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-25/ | 25 |
 | Happy Meal · Update 23 | `meal-23/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-23/ | 23 |
 | Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
+| Happy Sport · Update 41 · на проверке | `sport-41/sport/src/`; `node sport-41/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-41/ | 41 |
 | Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.5 |
 | Happy Sport · Update 39 | `sport-39/sport/src/`; `node sport-39/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-39/ | 39.2 |
 | Happy Sport · Update 38 | `sport-38/sport/src/`; `node sport-38/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-38/ | 38.7 |
@@ -43,6 +45,12 @@
 Они остаются в корне для прежних версий. Update 23 получает пищевые базы из отдельной ветки `meal-libraries`; иллюстрации и исполняемые зависимости закреплены в `meal-23/`.
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
+
+## Happy Day · Update 58 · 12.11.2026 · на проверке
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/day-58/ — для проверки Астамуром вместе с Meal 30 (связь приложений). Основной — Day 57.7: `shared/apps.json`, кнопки соседних приложений и ярлык не переключались. Исходник — `day-58/` из 57.7 (ветка лаборатории `day-58`). Что нового — README выпуска, история обновлений в приложении, `CHANGELOG.md`.
+
+<small>— Claude · 12.11.2026 12:50</small>
 
 ## Happy Day · Update 57 · 10.11.2026
 
@@ -210,6 +218,12 @@ Meal принимает дневные агрегаты `hd_link_sport_v1.days`,
 Подробности прежних выпусков Meal 22.x и Day 50.x, которые раньше лежали здесь, перенесены в `CHANGELOG.md`, раздел «Подробности прежних выпусков».
 
 <small>— Claude · 09.11.2026 11:45</small>
+
+## Happy Sport · Update 41 · 12.11.2026 · на проверке
+
+Отдельная страница: https://astamurberlin-rgb.github.io/happyamurio/sport-41/ — для проверки Астамуром вместе с Meal 30 (связь приложений). Основной — Sport 40.5: `shared/apps.json`, кнопки соседних приложений и ярлык не переключались. Исходник — `sport-41/` из `sport-40/` (40.5). Что нового — README выпуска, история обновлений в приложении, `CHANGELOG.md`.
+
+<small>— Claude · 12.11.2026 12:50</small>
 
 ## Happy Sport · Update 40 · 10.11.2026
 

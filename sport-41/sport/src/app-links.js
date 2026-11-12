@@ -4,7 +4,7 @@
    облако нет); переключения Meal и Day приходят из их сводок meal/link и day/link (только чтение). Пока связь
    с Meal выключена — с этого момента — его еда не идёт в кольцо «съедено», кнопок общих счётчиков Meal нет, порции
    со счётчиков после выключения не отмечаются; что было до выключения, остаётся.
-   — Claude · 12.11.2026 13:20 */
+   — Claude · 12.11.2026 12:28 */
 var SportAppLinks=(()=>{   // var: читается из раскладки настроек и при первой отрисовке
  const L=globalThis.HappyAppLinks,APP='sport',SEEN_DAY='hd_link_day_seen_v1';
  const owner=()=>{try{return SportProfiles.owner||'local'}catch{return 'local'}};

@@ -2967,7 +2967,7 @@ async function erSportCloud(){
 }
 /* день из сводки: {n — тренировок, min — минут, wo — ккал на тренировках, k — потрачено всего, rest — покой, steps — шаги};
    чего Sport не передал — null. Сводки нет — null. */
-function erSportDay(iso){ return HappySummaries.sport.day(window.MealAppLinks?MealAppLinks.sport(ER_SPORT):ER_SPORT,iso) }   // Meal 30: тренировки, пока связь с Sport выключена, не берём
+function erSportDay(iso){ return HappySummaries.sport.day(typeof MealAppLinks!=='undefined'?MealAppLinks.sport(ER_SPORT):ER_SPORT,iso) }   // Meal 30: тренировки, пока связь с Sport выключена, не берём
 function erSportVal(d,k){ return d&&d[k]!=null?d[k]:null }
 function erSportGoal(k){ return HappySummaries.sport.goal(ER_SPORT,k)||0 }
 /* клетчатка за день — из BLS по коду продукта; база не открылась или ни у одного продукта нет данных — прочерк */
@@ -3267,7 +3267,7 @@ function linkSummary(){
   var goals={}; ['k','p','f','c','fib'].forEach(function(k){ var v=goalOf(k); if(v>0) goals[k]=v });
   /* counters:1 — в каждом дне названы учтённые порции со счётчиков (cs); нет списка — таких порций в дне нет */
   Object.keys(live).forEach(function(id){ if(!settled.counted[id]) settled.skipped[id]=1 });
-  return {v:1,app:'meal',at:Date.now(),counters:1,skipped:Object.keys(settled.skipped),secs:DB.sections.map(function(S){ return {k:S.k,t:S.t} }),days:days,goals:goals,links:window.MealAppLinks?MealAppLinks.forSummary():[],   // Meal 30: переключения связи — соседям
+  return {v:1,app:'meal',at:Date.now(),counters:1,skipped:Object.keys(settled.skipped),secs:DB.sections.map(function(S){ return {k:S.k,t:S.t} }),days:days,goals:goals,links:typeof MealAppLinks!=='undefined'?MealAppLinks.forSummary():[],   // Meal 30: переключения связи — соседям
     nutrition:MealProducts.exchange(DB,FOODS,typeof MealReport==='object'?MealReport.fields(typeof BLS==='object'&&BLS?BLS.keys:null):[],blsVal)};
 }
 var CL_APP='meal', CL_T=null, CL_DIRTY=false, CL_LAST=null;
