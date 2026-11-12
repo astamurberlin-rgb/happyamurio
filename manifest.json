@@ -1,6 +1,6 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-12.2",
+  "revision": "2026-11-12.3",
   "updated": "2026-11-12",
   "libraries": {
     "bls": {
@@ -81,6 +81,21 @@
       "bytes": 41327,
       "sha256": "3988688b28587a48dba86c39c8d65a1730702474a7e11015ce03ba496a2f5af1",
       "templateCount": 31
+    },
+    "desserts2": {
+      "version": "1.2.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/cd2f7bd684f7e6f5e2ba5b487e90cf422cc89829/data/desserts-1.2.json.gz",
+      "encoding": "gzip",
+      "bytes": 3484312,
+      "sha256": "5e6354e63ce205d07d42ad7d084cd652dfbfce0c89897fb6f0a49466d0000006",
+      "foodCount": 103,
+      "ownCards": 34,
+      "collectionMarks": 69,
+      "schema": "happy-independent-food-library/1.0",
+      "author": "ChatGPT",
+      "date": "2026-11-12",
+      "notes": "data/DESSERTS.md",
+      "firstReader": "Happy Meal release with the desserts2 adapter (per-record revision); Meal 25-30 keep desserts 1.1"
     }
   }
 }
