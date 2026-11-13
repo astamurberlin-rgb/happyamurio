@@ -4,11 +4,13 @@
 /* Meal 31: строка журнала, которую эта вкладка прочитала или записала последней. Пока на устройстве лежит она же, другая вкладка ничего не писала — сливать нечего. */
 const seen={};const journalKey=k=>/(^|:)hdm_db_v1$/.test(k);
 const marker=k=>'happy-meal-idb:'+k;
-const handles=k=>/(^|:)hdm_(db_v1|db_prev_v1|products_before_v1)$/.test(k);
+const handles=k=>/(^|:)hdm_(db_v1|db_prev_v1|products_before_v1|journal_v1)$/.test(k);
 function open(){if(!opening)opening=new Promise((resolve,reject)=>{if(!root.indexedDB){reject(Error('IndexedDB недоступна'));return}const r=indexedDB.open('happy-meal-private-v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('values');r.onsuccess=()=>{r.result.onversionchange=()=>{r.result.close();opening=null};resolve(r.result)};r.onerror=()=>reject(r.error||Error('Не удалось открыть хранилище'));r.onblocked=()=>reject(Error('Закрой другую вкладку Meal для обновления хранилища'))}).catch(e=>{opening=null;throw e});return opening}
 function mergeValue(k,old,value){
  if(!journalKey(k)||!old||!root.MealJournalModel)return value;
  if(old===seen[k]||old===value)return value;
+ // Meal 31: дневник без копий журнала внутри (состояние журнала — отдельной записью hdm_journal_v1) сливать не с чем
+ if(value.indexOf('"__journalSync":')<0)return value;
  const a=JSON.parse(old),b=JSON.parse(value),M=root.MealJournalModel;
  if(!a.__journalSync||!b.__journalSync||a.__journalSync.owner!==b.__journalSync.owner)return value;
  const doc=M.merge(a.__journalSync,b.__journalSync,b.__journalSync.owner),next=M.materialize(doc,b);root.MealBackup.validate(next);

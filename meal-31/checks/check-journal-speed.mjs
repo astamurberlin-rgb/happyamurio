@@ -17,10 +17,10 @@ const key=await webcrypto.subtle.generateKey({name:'AES-GCM',length:256},true,['
 const stable=x=>JSON.stringify(x,(_,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((o,k)=>(o[k]=v[k],o),{}):v);
 const clone=x=>JSON.parse(JSON.stringify(x));
 
-function world(kind,seedDb){
+async function world(kind,seedDb){
  const server={row:null,gets:0,heads:0,puts:0},ls=new Map(),idb=new Map();let tick=1000,ids=0;   // время задаёт шаг проигрывания: у обоих выпусков одни и те же отметки
  const localStorage={get length(){return ls.size},key:i=>[...ls.keys()][i]??null,getItem:k=>ls.has(k)?ls.get(k):null,setItem:(k,v)=>{ls.set(k,String(v))},removeItem:k=>{ls.delete(k)}};
- function device(name){
+ async function device(name,code=kind){
   const c={console,JSON,Object,Array,Map,Set,Math,Number,String,Promise,Error,TypeError,Uint8Array,TextDecoder,TextEncoder,Blob,Response,
    CompressionStream:globalThis.CompressionStream,DecompressionStream:globalThis.DecompressionStream,crypto:webcrypto,localStorage,
    setTimeout:()=>0,clearTimeout:()=>{},setInterval:()=>0,navigator:{onLine:true},
@@ -36,10 +36,14 @@ function world(kind,seedDb){
     if(method==='POST'){if(server.row)return [];server.row=clone(row);server.puts++;return [row]}
     const want=decodeURIComponent(/iv=eq\.([^&]+)/.exec(query)[1]);if(!server.row||server.row.iv!==want)return [];server.row=clone(row);server.puts++;return [row]},
   };
-  c.globalThis=c;vm.createContext(c);vm.runInContext(SRC[kind].model,c);vm.runInContext(SRC[kind].sync,c);
-  c.DB=clone(seedDb);c.MealJournal.init(true);return c;
+  c.globalThis=c;vm.createContext(c);vm.runInContext(SRC[code].model,c);vm.runInContext(SRC[code].sync,c);
+  // запуск приложения: дневник — с устройства, если он там есть (как index.html), затем журнал
+  const saved=idb.get(name+'hdm_db_v1');c.DB=saved?JSON.parse(saved):clone(seedDb);
+  if(c.MealJournal.load)await c.MealJournal.load();c.MealJournal.init(true);c.code=code;if(/недоступна/.test(c.MealJournal.status()))throw Error(code+' '+name+': '+c.MealJournal.status());return c;
  }
- return {server,ls,A:device('A'),B:device('B'),step:n=>{tick=1000+n*1000}};
+ // «закрыть и открыть приложение»: дневник записан на устройство так, как это делает выпуск, страница загружена заново (можно — другим выпуском)
+ async function restart(w,name,code){const c=w[name];if(c.MealJournal.store)await c.MealJournal.store();else await c.rawSet('hdm_db_v1',JSON.stringify(c.DB));w[name]=await device(name,code||c.code)}
+ const w={server,ls,idb,step:n=>{tick=1000+n*1000},restart};w.A=await device('A');w.B=await device('B');return w;
 }
 const patches=w=>[...w.ls.entries()].filter(([k])=>k.includes(':pending:')).map(([k,v])=>[k,v]).sort((a,b)=>a[0]<b[0]?-1:1);
 // Номера заплаток и отметки времени у двух выпусков свои (Meal 30 берёт новый номер и при пустом сохранении): сверяем содержание —
@@ -71,11 +75,13 @@ function mutate(db,r){
  else if(x<.97){db.taps=[{k:'t'+Math.floor(r()*5),n:Math.floor(r()*9)}]}
  else {/* ничего не меняем: «нажатие без изменений» */}
 }
-async function play(kind,seedNumber,steps){
- made=0;const w=world(kind,seed()),r=rng(seedNumber),trace=[];
+async function play(kind,seedNumber,steps,upgradeAt){
+ made=0;const w=await world(kind,seed()),r=rng(seedNumber),trace=[];
  await w.A.MealJournal.sync();await w.B.MealJournal.sync();
  for(let i=0;i<steps;i++){
-  w.step(i+1);const dev=r()<.5?w.A:w.B;mutate(dev.DB,r);dev.MealJournal.capture();trace.push(stable(content(w)));
+  w.step(i+1);
+  if(i===upgradeAt){await w.restart(w,'A','new');await w.restart(w,'B','new')}   // обновление: дневник в прежнем виде открывает Meal 31
+  const name=r()<.5?'A':'B';if(r()<.12)await w.restart(w,name);const dev=w[name];mutate(dev.DB,r);dev.MealJournal.capture();trace.push(stable(content(w)));
   const x=r();if(x<.35)await dev.MealJournal.sync();else if(x<.5){await w.A.MealJournal.sync();await w.B.MealJournal.sync()}
  }
  for(let i=0;i<3;i++){await w.A.MealJournal.sync();await w.B.MealJournal.sync()}
@@ -93,10 +99,22 @@ for(const seedNumber of [1,2,3,5,8,13,21,34,55,89,144,233]){
  assert.equal(b.cloud,a.cloud,'облачная копия — как в Meal 30');
  assert.equal(filled(b.A),filled(b.B),'оба телефона сошлись');assert.equal(b.docA,b.cloud,'журнал телефона равен облачной копии');
  assert.equal(b.left,0,'неотправленных заплаток не осталось');
+ // обновление посреди истории: Meal 30 → Meal 31 на обоих телефонах, итог — как если бы остался Meal 30
+ const u=await play('old',seedNumber,90,30+seedNumber%40);
+ assert.deepEqual(u.trace,a.trace,'после обновления заплатки те же (набор '+seedNumber+')');
+ assert.equal(u.A,a.A,'после обновления дневник первого телефона — как в Meal 30');assert.equal(u.B,a.B,'после обновления дневник второго телефона — как в Meal 30');
+ assert.equal(u.cloud,a.cloud,'после обновления облачная копия — как в Meal 30');assert.equal(u.left,0);
+ // состав продукта на устройстве — один раз: в сохранённом дневнике нет копий журнала, в состоянии журнала — ссылки
+ for(const name of ['A','B']){const d=b.w[name];await d.MealJournal.store();const db=b.w.idb.get(name+'hdm_db_v1'),st=b.w.idb.get(name+'hdm_journal_v1'),old=a.w.idb.get(name+'hdm_db_v1');
+  assert.ok(!db.includes('"__journalSync"')&&!db.includes('"__journalBaseline"'),'в сохранённом дневнике нет копий журнала');
+  const count=(text,mark)=>text.split(mark).length-1,probe='"Показатель 39"',snaps=Object.keys(d.DB.productSnapshots).length;
+  assert.equal(count(db,probe),snaps,'каждый состав в дневнике — один раз');assert.equal(count(st,probe),0,'в состоянии журнала составов нет — только ссылки');
+  if(old)assert.ok(db.length+st.length<old.length/2,'на устройстве стало больше чем вдвое меньше: '+(db.length+st.length)+' против '+old.length);
+ }
 }
 
 // Без изменений Meal 31 ничего не пишет и не пересылает
-{const w=await play('new',7,40).then(x=>x.w),d=w.A,s=w.server;
+{const w=await play('new',7,40).then(x=>x.w),d=w.A,s=w.server;await d.MealJournal.store();
  const before={writes:d.writes,puts:s.puts,gets:s.gets,heads:s.heads,ls:stable([...w.ls.entries()])};
  for(let i=0;i<25;i++){assert.equal(d.MealJournal.capture(i%5===0),false,'сохранение без изменений не создаёт записей');assert.equal(d.MealJournal.unsaved(),false)}
  for(let i=0;i<10;i++)await d.MealJournal.sync();

@@ -13,7 +13,7 @@
   "journal-sync.js — обход без повторных копий и сравнений (scan), слияние без копий (join), accept без пересборки при отсутствии новых записей, короткая проверка отметки облачной копии (head) вместо скачивания журнала; формат документа, заплаток и облачной строки не менялся",
   "journal-model.js — наружу отданы object, excluded, maps, lists; local-store.js — без разбора и слияния своей же прежней записи",
   "checks/check-journal-speed.mjs (новая) — равенство с журналом Meal 30 на случайных историях двух телефонов; check-shop.mjs — под Meal 31",
-  "Не сделано: формат хранения дневника на устройстве (три копии снимков состава) — отдельным шагом"
+  "Хранение (Астамур 13.11.2026 10:24): дневник hdm_db_v1 без копий журнала; документ журнала и опорное состояние — отдельная запись hdm_journal_v1 со ссылками на productSnapshots; прежний вид читается и переводится при первом сохранении; DATA-STORAGE.md"
  ],
  "userVerification": "нет — не опубликовано",
  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
@@ -45,8 +45,8 @@
   },
   {
    "path": "README.md",
-   "size": 47256,
-   "sha256": "4f9ae2abe5a89879647003e2f262e5fa5f7776ff6be9dd0632c6ba40191cf935"
+   "size": 48179,
+   "sha256": "a2c583c116187f91187cb5310314230a306dc48db878ab1769ae6603e929d4fe"
   },
   {
    "path": "account-ui.js",
@@ -250,8 +250,8 @@
   },
   {
    "path": "checks/check-journal-speed.mjs",
-   "size": 12421,
-   "sha256": "ecab0192f792dea8f7c8a72f8fb2f913cc9657bfd52d58a8806383683038f887"
+   "size": 15480,
+   "sha256": "c9bbc47453f63aa0c3b8cfeef745d63465c41f1cb83c5b43222a274bc07e5b7f"
   },
   {
    "path": "checks/check-meal-first-time.mjs",
@@ -325,8 +325,8 @@
   },
   {
    "path": "index.html",
-   "size": 645912,
-   "sha256": "cb99d49bd1faf42c11154faaf1871ef316f3e892867e31a86a066c2a7ebc2223"
+   "size": 646052,
+   "sha256": "ff0b98b9f79ae2cad91d3e3ebe71c214721c443cbaa9d95c3aa9ecb2c980c133"
   },
   {
    "path": "journal-model.js",
@@ -335,13 +335,13 @@
   },
   {
    "path": "journal-sync.js",
-   "size": 17624,
-   "sha256": "fb09e7c8472a2bb721ad08d233b3f4e0aadd5b2b71ad2c8fa2e52fb2b7d733b4"
+   "size": 21035,
+   "sha256": "caedbc1e8d2258d69dd8935cd6cfb5e287bf52e645695020f194b1e7826da4dc"
   },
   {
    "path": "local-store.js",
-   "size": 3830,
-   "sha256": "b50a068f1bef0e33e4c1def08d56ac6096fbe18b1dd766437af014f2718c7f53"
+   "size": 4088,
+   "sha256": "45c5dbd1588891257fa737baf9530ef1c68f140414a35898661b3fb0450e1acb"
   },
   {
    "path": "manifest.webmanifest",
@@ -510,8 +510,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 31754,
-   "sha256": "cb1d4e89460dfee9e078dd3cdd3b966d1c5be415e2aeb6ccff8e6eb9ed59c30c"
+   "size": 31971,
+   "sha256": "dc6e0f8c0442407097a924d9aab060b78cce32a231ee694f31359eee6ec3556b"
   },
   {
    "path": "report.css",

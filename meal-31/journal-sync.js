@@ -5,8 +5,34 @@ const M=root.MealJournalModel;let owner,key,writer,doc,baseline={},ready=false,b
 /* Meal 31: журнал не переписывается и не пересылается, пока в нём ничего не изменилось.
    strings/sources — память прошлого обхода (строка значения и сам объект снимка состава): неизменённое не копируется и не сравнивается заново;
    fresh — в документе есть записи, которых ещё нет в DB (другая вкладка, прошлый запуск); dirty — есть что сверять с облаком;
-   seenIv — отметка облачной копии, с которой журнал сошёлся; lastStored — строка DB, которую эта вкладка записала или уже разобрала; unsaved — DB изменилась после записи. */
-let strings={},sources={},fresh=true,dirty=true,seenIv=null,lastStored=null,unsaved=false;
+   seenIv — отметка облачной копии, с которой журнал сошёлся; unsaved — DB изменилась после записи. */
+let strings={},sources={},fresh=true,dirty=true,seenIv=null,unsaved=false;
+/* Meal 31: состав продукта лежит на устройстве один раз — в DB.productSnapshots. Документ журнала и опорное состояние
+   (раньше — полные копии внутри DB: __journalSync и __journalBaseline) хранятся отдельной записью STATE, где на месте
+   снимка состава стоит ссылка на него. Прежний вид (копии внутри DB) по-прежнему читается: так пишут загрузка дневника
+   из файла и редактор продукта, так лежит дневник после Meal 23–30. */
+const STATE='hdm_journal_v1',SNAPSHOT='["map","productSnapshots",';
+let stateRaw=null,lastState=null;const verified=new WeakMap();
+const snapshotKey=id=>id.startsWith(SNAPSHOT)?JSON.parse(id)[2]:null;
+function packState(){
+ const snaps=root.DB.productSnapshots||{},refs=[],plain={};
+ const records=doc.records.map(r=>{if(r.deleted)return r;const k=snapshotKey(r.id),s=k===null?null:snaps[k];if(!s)return r;
+  let ok=verified.get(r)===s;if(!ok&&M.stable(r.value)===M.stable(s)){verified.set(r,s);ok=true}
+  return ok?{id:r.id,rev:r.rev,writer:r.writer,ref:1}:r});
+ for(const id of Object.keys(baseline)){const k=snapshotKey(id);if(k!==null&&sources[id]!==undefined&&sources[id]===snaps[k])refs.push(id);else plain[id]=baseline[id]}
+ return {v:1,owner,doc:{v:1,owner,records},baseline:{plain,refs}};
+}
+function unpackState(raw){
+ let o;try{o=JSON.parse(raw)}catch(e){return null}
+ if(!o||o.v!==1||o.owner!==owner||!o.doc||!Array.isArray(o.doc.records)||!o.baseline)return null;
+ const snaps=root.DB.productSnapshots||{},records=[],base=o.baseline.plain||{},src={},copies={};
+ const copyOf=k=>copies[k]||(copies[k]=M.copy(snaps[k]));
+ for(const r of o.doc.records){if(!r||r.ref!==1){records.push(r);continue}const k=snapshotKey(String(r.id));if(k===null||!snaps[k])continue;   // снимка в DB нет — запись вернётся из заплатки или из облака
+  const full={id:r.id,rev:r.rev,writer:r.writer,value:copyOf(k)};verified.set(full,snaps[k]);records.push(full)}
+ for(const id of o.baseline.refs||[]){const k=snapshotKey(String(id));if(k===null||!snaps[k])continue;base[id]=copyOf(k);src[id]=snaps[k]}
+ return {doc:{v:1,owner,records},baseline:base,sources:src};
+}
+async function load(){try{stateRaw=await root.rawGet(STATE)||null}catch(e){stateRaw=null}}
 const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 const snapshotId=p=>p[0]==='map'&&p[1]==='productSnapshots';
 /* Обход DB в том же порядке и с теми же ключами, что M.flatten; значения, не изменившиеся с прошлого обхода, берутся из baseline. */
@@ -35,7 +61,7 @@ function scan(full){
  for(const id of Object.keys(baseline))if(!has(next,id))removed.push(id);
  return {next,str,src,differs,removed};
 }
-function adopt(s){baseline=s.next;strings=s.str;sources=s.src;root.DB.__journalBaseline=baseline}
+function adopt(s){baseline=s.next;strings=s.str;sources=s.src}
 /* Слияние без копий: a — уже проверенный документ этой вкладки, записи в нём не меняются. Итог тот же, что у M.merge(a,b,owner). */
 function same(r,old){return r===old||(r.writer!==''&&r.rev===old.rev&&r.writer===old.writer&&!!r.deleted===!!old.deleted)}
 function join(a,b){
@@ -47,7 +73,12 @@ function join(a,b){
 }
 function pendingKeys(){const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(key+':pending:'))keys.push(k)}return keys}
 /* Запись DB на устройство — одна дорога для всех: строка запоминается, чтобы не разбирать её же при следующем чтении. */
-function store(){const s=JSON.stringify(root.DB);lastStored=s;unsaved=false;return root.rawSet(root.K.db,s)}
+function store(){
+ const o=Object.assign({},root.DB);delete o.__journalSync;delete o.__journalBaseline;
+ const s=JSON.stringify(o),state=JSON.stringify(packState());unsaved=false;
+ // сначала дневник, потом состояние журнала: оборвись запись между ними — журнал лишь повторит уже записанную заплатку
+ return Promise.resolve(root.rawSet(root.K.db,s)).then(r=>{if(state===lastState)return r;lastState=state;return Promise.resolve(root.rawSet(STATE,state)).then(()=>r)});
+}
 const id=()=>root.HappyFoodCounters.id();
 async function unpack(bytes){
  if(bytes[0]!==31||bytes[1]!==139)return bytes;
@@ -66,10 +97,12 @@ const SYNCING='Подождите, идёт синхронизация…',SYNCE
 const offlineError=e=>root.navigator&&root.navigator.onLine===false||(e&&(e.name==='TypeError'||/связи|сети|network|fetch|offline|timeout|Failed/i.test(e.message||'')));
 function pendingState(){state(root.clOn()?SYNCING:'Сохранено на устройстве')}
 function read(){let d=M.empty(owner);for(const k of pendingKeys())d=M.merge(d,JSON.parse(localStorage.getItem(k)),owner);return d}
-function keep(d){doc=d;root.DB.__journalSync=d}
+function keep(d){doc=d}
 function queue(){clearTimeout(timer);timer=setTimeout(sync,900)}
 function capture(full){
  if(!ready)throw Error('Сохранение в облако ещё не готово — запись сохранена на устройстве и уйдёт в облако, как только связь восстановится.');if(!ownerCurrent())throw Error('Аккаунт изменился. Открой приложение снова.');
+ // редактор продукта подменяет DB копией с журналом внутри (прежний вид) — в памяти эти копии не нужны
+ if(root.DB.__journalSync!==undefined||root.DB.__journalBaseline!==undefined){delete root.DB.__journalSync;delete root.DB.__journalBaseline;unsaved=true}
  const waiting=read();let base=doc;if(waiting.records.length){const j=join(doc,waiting);base=j.doc;if(j.won)fresh=true}
  const s=scan(full===true);
  if(s.differs.length||s.removed.length){
@@ -95,9 +128,9 @@ function inPlace(next){
 async function accept(incoming,operationGuard){
  const check=()=>{if(operationGuard)operationGuard();};check();
  if(!current())return;capture();
- const stored=await root.rawGet(root.K.db);check();if(!current())return;capture();
- // Чужая запись DB (другая вкладка, прежний выпуск): её документ вливается. Свою же строку заново не разбираем.
- if(stored&&stored!==lastStored){const saved=JSON.parse(stored);lastStored=stored;if(saved.__journalSync&&saved.__journalSync.owner===owner){const j=join(doc,saved.__journalSync);doc=j.doc;if(j.won)fresh=true}}
+ const stored=await root.rawGet(STATE);check();if(!current())return;capture();
+ // Состояние журнала записала другая вкладка: её документ вливается. Свою же строку заново не разбираем.
+ if(stored&&stored!==lastState){lastState=stored;const other=unpackState(stored);if(other){const j=join(doc,other.doc);doc=j.doc;if(j.won)fresh=true}}
  let merged=doc,ahead=false;
  const waiting=read();if(waiting.records.length){const j=join(merged,waiting);merged=j.doc;if(j.won)fresh=true}
  if(incoming){const j=join(merged,incoming);merged=j.doc;ahead=j.ahead;if(j.won)fresh=true}
@@ -105,7 +138,7 @@ async function accept(incoming,operationGuard){
  if(!fresh){keep(merged);if(unsaved){await store();check()}return {ahead}}
  const base=Object.assign({},root.DB);delete base.__journalSync;delete base.__journalBaseline;
  const next=M.materialize(merged,base);
- root.MealBackup.validate(next);keep(merged);next.__journalSync=merged;next.__journalBaseline=baseline;inPlace(next);
+ root.MealBackup.validate(next);keep(merged);inPlace(next);
  const s=scan(),moved=s.differs.length>0||s.removed.length>0;adopt(s);fresh=false;
  if(root.MealSources&&root.MealSources.applyTestDefaults(root.DB,root.MEAL_SOURCE_DEFAULTS_RELEASE))capture();
  await store();check();if(!current())return;
@@ -159,9 +192,14 @@ function prepareLocal(next){
 }
 function initialize(hadSaved){
  owner=root.HappyProfile.owner;key='happy-meal-journal-v1:'+owner;writer=id();
- const embedded=root.DB.__journalSync;doc=M.merge(read(),embedded&&embedded.owner===owner?embedded:null,owner);
- const localSeed=M.seed(root.DB,owner);doc=M.merge(doc,localSeed,owner);
- baseline=embedded&&embedded.owner===owner?(root.DB.__journalBaseline||M.visible(embedded)):M.flatten(root.DB);strings={};sources={};fresh=true;dirty=true;ready=true;pendingState();capture();keep(doc);
+ const embedded=root.DB.__journalSync&&root.DB.__journalSync.owner===owner?root.DB.__journalSync:null,state=stateRaw?unpackState(stateRaw):null;
+ doc=M.merge(read(),embedded,owner);if(state)doc=join(doc,state.doc).doc;
+ doc=join(doc,M.seed(root.DB,owner)).doc;
+ // Копии внутри DB есть — дневник последним записал прежний вид (Meal 23–30, загрузка из файла): опорное состояние берём оттуда
+ baseline=embedded?(root.DB.__journalBaseline||M.visible(embedded)):state?state.baseline:M.flatten(root.DB);
+ strings={};sources=!embedded&&state?state.sources:{};lastState=stateRaw;if(embedded)unsaved=true;
+ delete root.DB.__journalSync;delete root.DB.__journalBaseline;
+ fresh=true;dirty=true;ready=true;pendingState();capture();keep(doc);
  root.addEventListener('online',sync);root.addEventListener('focus',sync);
  root.addEventListener('storage',e=>{if(e.key===key||(e.key||'').startsWith(key+':pending:')){dirty=true;pendingState();accept(null).catch(e=>state(e.message));queue()}});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){try{capture(true);if(unsaved)store()}catch(e){state(e.message)}}else sync()});
@@ -180,5 +218,5 @@ async function flush(ms=15000){
 }
 function preferJournal(itemId,rev){const r=doc&&doc.records.find(r=>r.id===JSON.stringify(['item',itemId]));return !!r&&r.rev>rev}
 function init(hadSaved){try{initialize(hadSaved)}catch(e){ready=false;state('Облачная синхронизация недоступна: '+e.message+'. Записи сохраняются на устройстве.')}}
-root.MealJournal={pause:()=>{paused=true},resume:()=>{paused=false;queue()},init,capture,store,touch:()=>{unsaved=true},unsaved:()=>unsaved,sync,flush,prepare,prepareLocal,paint,preferJournal,transport,document:()=>M.copy(doc),status:()=>status};
+root.MealJournal={pause:()=>{paused=true},resume:()=>{paused=false;queue()},load,init,capture,store,touch:()=>{unsaved=true},unsaved:()=>unsaved,sync,flush,prepare,prepareLocal,paint,preferJournal,transport,document:()=>M.copy(doc),status:()=>status};
 })(globalThis);
