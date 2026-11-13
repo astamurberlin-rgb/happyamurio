@@ -4660,6 +4660,7 @@ function bkAfterLoad(){
   rebuildLib();
   if(!migrated.readOnly&&MealProducts.snapshotItems(DB,FOODS))await rawSet(K.db,JSON.stringify(DB));
   try{ await clLoad() }catch(e){}
+  await MealJournal.load();   // Meal 31: состояние журнала — отдельной записью на устройстве
   MealJournal.init(!!raw);
   /* Meal 29: свои БАДы и приёмы — документ аккаунта, после журнала. Файлы БАДов грузятся в конце страницы:
      если supplements-store.js ещё не загружен, он начнёт сам, увидев отметку */
