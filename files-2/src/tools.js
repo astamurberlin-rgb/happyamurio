@@ -1,5 +1,6 @@
 import { markdownHtml, htmlMarkdown } from './format.js';
 import { mergeText, appendEntry, documentLink } from './core.js';
+import { preserveArchive } from './archive.js';
 import { storage, fingerprint } from './storage.js';
 
 export function createDocumentTools(ctx) {
@@ -227,7 +228,7 @@ export function createDocumentTools(ctx) {
               base=remote;
               if(!merged.conflict)setContent(merged.text);
               comparison(remote,merged.conflict);changed=true;await persistDraft();return;
-            }else pending={mode:'update',path:original.path,expectedVersion:remote.version,content:mine};
+            }else pending={mode:'update',path:original.path,expectedVersion:remote.version,content:preserveArchive(remote.content,mine)};
           }
           await persistDraft().catch(()=>{});
         }
@@ -252,3 +253,4 @@ export function createDocumentTools(ctx) {
   }
   return {openMenu,openEditor,isOpen:()=>!!active,onForget:()=>{close();scope=null;}};
 }
+

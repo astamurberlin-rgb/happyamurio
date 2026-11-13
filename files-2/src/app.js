@@ -7,6 +7,8 @@ window.marked = marked; window.DOMPurify = DOMPurify;
   const API = "https://geqziziycpclhnucnsyx.supabase.co/functions/v1/files";
   const KEY_STORE = "happy-files:key";
   const SEEN_STORE = "happy-files:seen";
+  const ARCHIVE = "@archive";
+  const isArchived = d => /^<!-- notes:archive -->/m.test(d.content);
   const LAST_STORE = "happy-files:last";
   const GROUP_NAMES = { "health/psychotherapy": "Психотерапия", "personal": "Мои заметки", "health/nutrition": "Питание", "health/fitness": "Тренировки", "": "Общее" };
   const GROUP_ORDER = ["health/nutrition", "health/fitness"];
@@ -122,9 +124,9 @@ window.marked = marked; window.DOMPurify = DOMPurify;
 
   function pickInitial() {
     const linked = new URL(location.href).searchParams.get("document");
-    if (linked && state.byPath.has(linked)) return linked;
+    if (linked === ARCHIVE || (linked && state.byPath.has(linked))) return linked;
     const last = readRaw(LAST_STORE);
-    if (last && state.byPath.has(last)) return last;
+    if (last === ARCHIVE || (last && state.byPath.has(last))) return last;
     const newest = [...state.docs].sort((x, y) => (y.updatedAt ? y.updatedAt.getTime() : 0) - (x.updatedAt ? x.updatedAt.getTime() : 0))[0];
     return newest ? newest.path : null;
   }
@@ -147,7 +149,7 @@ window.marked = marked; window.DOMPurify = DOMPurify;
 
   function renderChips() {
     els.chips.textContent = "";
-    for (const d of state.docs) {
+    for (const d of state.docs.filter(d => !isArchived(d))) {
       const card = el("div", "chip");
       card.setAttribute("aria-current", d.path === state.currentPath ? "true" : "false");
       const b = el("button", "chip-select"); b.type = "button";
@@ -157,6 +159,27 @@ window.marked = marked; window.DOMPurify = DOMPurify;
       b.addEventListener("click", () => select(d.path));
       card.append(b); els.chips.append(card);
     }
+    if (state.docs.length) {
+      const card = el("div", "chip");
+      card.setAttribute("aria-current", state.currentPath === ARCHIVE || isArchived(state.byPath.get(state.currentPath) || {content:""}) ? "true" : "false");
+      const b = el("button", "chip-select"); b.type = "button";
+      b.append(el("span", "chip-name", "Архив"));
+      b.addEventListener("click", () => select(ARCHIVE));
+      card.append(b); els.chips.append(card);
+    }
+  }
+
+  function archiveList() {
+    const paper = el("article", "paper");
+    const inner = el("div", "paper-inner");
+    inner.append(el("h2", null, "Архив"));
+    const list = el("div", "archive-list");
+    for (const d of state.docs.filter(isArchived)) {
+      const b = el("button", "archive-item", d.title); b.type = "button";
+      b.addEventListener("click", () => select(d.path)); list.append(b);
+    }
+    if (!list.children.length) list.append(el("p", null, "Архив пока пуст"));
+    inner.append(list); paper.append(inner); return paper;
   }
 
   function renderMarkdown(md) {
@@ -268,6 +291,7 @@ window.marked = marked; window.DOMPurify = DOMPurify;
         : "Открой полную ссылку с ключом или вставь её сюда. Ключ запомнится на этом устройстве."));
       return;
     }
+    if (state.currentPath === ARCHIVE) { main.append(archiveList()); return; }
     const d = state.byPath.get(state.currentPath);
     if (!d) {
       if (state.error) {
@@ -294,6 +318,10 @@ window.marked = marked; window.DOMPurify = DOMPurify;
     more.setAttribute("aria-haspopup", "dialog");
     more.addEventListener("click", () => documentTools.openMenu(d));
     actions.append(copyText, copyLink, more);
+    if (isArchived(d)) {
+      const back = el("button", "btn", "← Архив"); back.type = "button";
+      back.addEventListener("click", () => select(ARCHIVE)); inner.append(back);
+    }
     inner.append(actions, renderMarkdown(d.content));
     paper.append(inner);
     main.append(paper);
@@ -308,11 +336,11 @@ window.marked = marked; window.DOMPurify = DOMPurify;
 
   function select(path) {
     const d = state.byPath.get(path);
-    if (!d) return;
+    if (!d && path !== ARCHIVE) return;
     state.currentPath = path;
     writeRaw(LAST_STORE, path);
     const u = new URL(location.href); u.searchParams.set("document", path); history.replaceState(null,"",u);
-    markSeen(d);
+    if (d) markSeen(d);
     renderChips();
     renderMain();
     const top = els.main.getBoundingClientRect().top + window.scrollY - 12;
@@ -343,7 +371,7 @@ window.marked = marked; window.DOMPurify = DOMPurify;
       state.badges = computeBadges(docs);
       state.loadedAt = Date.now();
       state.error = null;
-      if (!state.byPath.has(state.currentPath)) state.currentPath = pickInitial();
+      if (state.currentPath !== ARCHIVE && !state.byPath.has(state.currentPath)) state.currentPath = pickInitial();
       const cur = state.byPath.get(state.currentPath);
       if (cur) { writeRaw(LAST_STORE, cur.path); markSeen(cur); }
     } catch (err) {
@@ -445,3 +473,4 @@ window.marked = marked; window.DOMPurify = DOMPurify;
   takeKeyFromHash();
   load();
 })();
+
