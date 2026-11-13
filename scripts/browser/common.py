@@ -8,7 +8,7 @@
   HAPPY_BASE   — адрес сайта с префиксом /happyamurio/ (по умолчанию локальный сервер из run.sh);
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
-  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-30/; HAPPY_DAY, HAPPY_SPORT — day-58/, sport-41/);
+  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-31/; HAPPY_DAY, HAPPY_SPORT — day-58/, sport-41/);
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """
@@ -129,7 +129,7 @@ def phone(browser, name=None):
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
 # Актуальный выпуск Meal для сценариев (HAPPY_MEAL — другой, например meal-28/)
-MEAL = os.environ.get("HAPPY_MEAL", "meal-30/")
+MEAL = os.environ.get("HAPPY_MEAL", "meal-31/")
 # Актуальные Day и Sport для сценариев (с 12.11.2026, связь приложений: Day 58, Sport 41)
 DAY = os.environ.get("HAPPY_DAY", "day-58/")
 SPORT = os.environ.get("HAPPY_SPORT", "sport-41/")

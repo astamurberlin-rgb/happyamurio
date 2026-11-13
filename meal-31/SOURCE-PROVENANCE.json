@@ -1,7 +1,7 @@
 {
  "release": "Happy Meal Update 31",
  "date": "2026-11-13",
- "published": "не опубликовано — ветка meal-31-speed, ждёт слова Астамура",
+ "published": "13.11.2026 11:04 — основной по слову Астамура 11:02 («делай основным»)",
  "entry": "meal-31/index.html",
  "source": {
   "release": "meal-30 (Happy Meal Update 30, основной с 12.11.2026 23:29)",
@@ -15,7 +15,7 @@
   "checks/check-journal-speed.mjs (новая) — равенство с журналом Meal 30 на случайных историях двух телефонов; check-shop.mjs — под Meal 31",
   "Хранение (Астамур 13.11.2026 10:24): дневник hdm_db_v1 без копий журнала; документ журнала и опорное состояние — отдельная запись hdm_journal_v1 со ссылками на productSnapshots; прежний вид читается и переводится при первом сохранении; DATA-STORAGE.md"
  ],
- "userVerification": "нет — не опубликовано",
+ "userVerification": "нет — приёмка Астамура на iPhone впереди",
  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
  "libraries": {
   "desserts": {
@@ -45,8 +45,8 @@
   },
   {
    "path": "README.md",
-   "size": 48179,
-   "sha256": "a2c583c116187f91187cb5310314230a306dc48db878ab1769ae6603e929d4fe"
+   "size": 48245,
+   "sha256": "538b799167f937ca8cc043958f2cad1a969a10d3b707d5acea6c30298cbb090d"
   },
   {
    "path": "account-ui.js",
@@ -511,7 +511,7 @@
   {
    "path": "release-notes.js",
    "size": 31971,
-   "sha256": "dc6e0f8c0442407097a924d9aab060b78cce32a231ee694f31359eee6ec3556b"
+   "sha256": "4126775d5409a59bf476ea13275ffedd8d4a5d283031d6625f91cd3235f6b771"
   },
   {
    "path": "report.css",
