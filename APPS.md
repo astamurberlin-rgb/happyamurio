@@ -7,13 +7,13 @@
 | --- | --- | --- | --- |
 | Happy Day · Update 58 | `day-58/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-58/ | 58 |
 | Happy Day · Update 57.7 | `day-57/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day-57/ | 57.7 |
-| Предыдущий Happy Day | `day/index.html` | https://astamurberlin-rgb.github.io/happyamurio/day/ | 50.14 |
+| Прежний адрес Happy Day | `day/index.html` — переход | https://astamurberlin-rgb.github.io/happyamurio/day/ | открывает текущий выпуск |
 | Happy Meal · Update 31.1 | `meal-31/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-31/ | 31.1 |
 | Happy Meal · Update 30 | `meal-30/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal-30/ | 30 |
-| Предыдущий Happy Meal | `meal/index.html` | https://astamurberlin-rgb.github.io/happyamurio/meal/ | 22.16 |
+| Прежний адрес Happy Meal | `meal/index.html` — переход | https://astamurberlin-rgb.github.io/happyamurio/meal/ | открывает текущий выпуск |
 | Happy Sport · Update 41 | `sport-41/sport/src/`; `node sport-41/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-41/ | 41 |
 | Happy Sport · Update 40 | `sport-40/sport/src/`; `node sport-40/scripts/build-release.mjs` | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ | 40.5 |
-| Предыдущий Happy Sport | `sport/index.html` | https://astamurberlin-rgb.github.io/happyamurio/sport/ | 36.7 |
+| Прежний адрес Happy Sport | `sport/index.html` — переход | https://astamurberlin-rgb.github.io/happyamurio/sport/ | открывает текущий выпуск |
 
 Служебная страница **Файлы** (`files/index.html`, версия 1.7): https://astamurberlin-rgb.github.io/happyamurio/files/ — просмотр общих Markdown-файлов из Supabase (`ai_shared.documents`: дневник питания, упражнения, инструкция для ИИ). Данные читаются при открытии через функцию Supabase `files` по ключу из ссылки `#key=…`; ключ хранится только в ссылке и браузере устройства, в репозиторий не попадает. Это не приложение: в `shared/apps.json` не входит.
 
@@ -31,7 +31,7 @@
 Правила работы, выпусков, проверок и структуры настроек — только в [AGENTS.md](AGENTS.md); общие элементы интерфейса — [shared/README.md](shared/README.md). Серверные операции и хранение остаются в приложениях.
 
 `meal-data/` — публичные справочники продуктов, `meal-img/` — иллюстрации еды. `assets/sport-icons/v1/` — общая неизменяемая библиотека картинок занятий Sport (с 38.1), один адрес для всех выпусков. `assets/exercise-library/v1/` — общий справочник упражнений, оборудования и групп мышц Sport (с 38.2), встраивается при сборке; `sport/data/` старых выпусков остаётся как есть.
-Они остаются в корне для прежних версий (`meal/`). С Update 23 пищевые базы берутся из отдельной ветки `meal-libraries`.
+С Update 23 пищевые базы приложений берутся из отдельной ветки `meal-libraries`; корневой `meal-data/bls40.json` читают Color Studio и `scripts/check-meal-exports.mjs`.
 Это НЕ личные записи питания. `sport/data/` также содержит справочники, а не дневник пользователя.
 Файлы в `prototypes/` — отдельные прототипы.
 
@@ -87,6 +87,10 @@ Happy Icon Studio **2.18**: https://astamurberlin-rgb.github.io/happyamurio/icon
 Уборка 13.11.2026 по слову Астамура: более ранние HTML из корня, Color Studio v1–v11 и каталоги выпусков `day-52`…`day-56`, `meal-23`…`meal-29`, `sport-37`…`sport-39` удалены — их адреса больше не открываются; остаются текущий выпуск и один предыдущий (`day-57/`, `meal-30/`, `sport-40/`), а также `day/`, `meal/`, `sport/`. Удалённое доступно в истории Git (main до уборки — `28f42f6`).
 
 — Claude · 13.11.2026 17:27
+
+`day/`, `meal/`, `sport/` (13.11.2026, слово Астамура 18:11 «Удаляй»): прежний код версий 50.14, 22.16 и 36.7 удалён; в каждой папке осталась страница-переход, которая открывает текущий выпуск из `shared/apps.json`, сохраняя query и hash (`day/arc-studio/` ведёт в `prototypes/arc-studio/`). Записи `earlier` в `shared/apps.json` убраны. Прежний код — в истории Git (main до этой правки — `b83e7d9`).
+
+— Claude · 13.11.2026 18:23
 Не открывать старые версии для редактирования текущих записей: не все поддерживают защиту от старого формата.
 Новые согласованные выпуски получают отдельные каталоги с именем/номером апдейта и собственные адреса. Основной сайт и предыдущие версии не перезаписываются и не перенаправляются без прямого указания владельца.
 

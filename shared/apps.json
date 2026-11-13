@@ -14,11 +14,6 @@
    "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4"
   },
   "name": "Happy Day · Update 58",
-  "earlier": {
-   "entry": "day/index.html",
-   "version": "50.14",
-   "sourceCommit": "e1e6597fe97f5c0acb06239e6e61bd1de88a2e91"
-  },
   "settingsSections": [
    "account",
    "links",
@@ -47,10 +42,6 @@
    "entry": "meal-30/index.html",
    "version": "30",
    "sourceCommit": "262ca2e"
-  },
-  "earlier": {
-   "entry": "meal/index.html",
-   "version": "22.16"
   }
  },
  "sport": {

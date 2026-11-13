@@ -32,5 +32,5 @@ for(const app of ['day','meal']){
  const ids=[...page.matchAll(/\bid="([^"\s<>]+)"/g)].map(m=>m[1]).filter(id=>!id.includes('+'));
  for(const id of app==='day'?['clBox','expJson','impJson','expCsv','wipe','backupAge','bkPrev','bkBack']:['clBox','bkIn','bkOut','bkFile','bkWhen'])assert.equal(ids.filter(x=>x===id).length,1,app+': duplicate/missing '+id);
 }
-const sport=await read('sport/index.html');assert.ok(sport.includes(await read('shared/happy-ui.css')));assert.ok(sport.includes(await read('shared/happy-ui.js')));
+{const sport=await read(apps.sport.entry),dir=apps.sport.sharedDirectory;assert.ok(sport.includes(await read(dir+'/happy-ui.css')));assert.ok(sport.includes(await read(dir+'/happy-ui.js')));}
 console.log('Passed: shared account UI, escaped input, login/signup/confirmation, duplicate submit guard, offline errors and draft retention; same components and settings order in all apps; backup controls retained once.');

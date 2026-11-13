@@ -41,6 +41,12 @@ for(const [old,app] of [['happyday-v50_1.html','day'],['happyday-meal-v22.html',
  vm.runInNewContext(code,{location:{search:'?test=1',hash:'#settings',replace:url=>target=url}});
  assert.equal(target,`${app==='icon-studio'?'..':'.'}/${app}/?test=1#settings`);
 }
+// 13.11.2026: day/, meal/, sport/ are redirects to the current release named in shared/apps.json; the static fallback must name an existing release.
+for(const app of ['day','meal','sport']){
+ const html=await read(app+'/index.html'),m=/var fallback='\.\.\/([a-z0-9-]+)\/'/.exec(html);
+ assert.ok(m,app+': redirect fallback');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),app+': redirect fallback names an existing release');
+ assert.ok(html.includes("a['"+app+"']"),app+': redirect reads its own entry in apps.json');
+}
 const dayPage=await read(apps.day.entry);
 if(apps.day.links?.meal===false){
  assert.ok(dayPage.includes('Переход в Meal в этой версии недоступен.'));
@@ -52,7 +58,6 @@ if(apps.day.links?.meal===false){
  assert.ok(dayPage.includes('happy-links.js'),'day: happy-links module referenced');
  assert.ok(!dayPage.includes('chatgpt.site'),'day: no Sites test addresses');
 }
-assert.ok((await read('meal/index.html')).includes('href="../day/"'));
 {// Update 24: Meal's linked-app buttons point at the current Day and Sport release directories.
  // Update 55 / 26.1: with shared/happy-links.js the static href is a fallback that must name an existing release directory;
  // the live address comes from apps.json at run time, so a Day release no longer needs a Meal point release (and vice versa).

@@ -9,13 +9,14 @@ const releaseDir=app=>apps[app].entry.split('/')[0];
 let ok=0,missing=[],failed=[],warned=[];
 for(const entry of manifest.files){
   let reference;
-  try{reference=await readFile(new URL(entry.reference,root));}catch{failed.push(entry.name+': нет эталона '+entry.reference);continue;}
+  const referencePath=entry.reference.replace(/\{(day|meal|sport)\}/g,(_,app)=>releaseDir(app)); // {day} — каталог текущего выпуска из apps.json
+  try{reference=await readFile(new URL(referencePath,root));}catch{failed.push(entry.name+': нет эталона '+referencePath);continue;}
   for(const app of entry.apps){
     const copy=releaseDir(app)+'/shared/'+entry.name;
     let bytes;
     try{bytes=await readFile(new URL(copy,root));}catch{missing.push(copy);continue;}
     if(Buffer.compare(bytes,reference)===0){ok++;continue;}
-    (entry.divergent?warned:failed).push(copy+' ≠ '+entry.reference+(entry.todo?' — '+entry.todo:''));
+    (entry.divergent?warned:failed).push(copy+' ≠ '+referencePath+(entry.todo?' — '+entry.todo:''));
   }
 }
 for(const m of missing)console.log('Нет копии: '+m);

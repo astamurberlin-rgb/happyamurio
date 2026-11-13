@@ -1,6 +1,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const C=require('../day/selfcare-core.js');
+const DAY=require('../shared/apps.json').day.entry.split('/')[0]; // текущий выпуск Day
+const C=require('../'+DAY+'/selfcare-core.js');
 const date='2026-10-30';
 function db(){const d={days:{},sections:[{k:'morning',t:'Утро',scales:['energy','anx']},{k:'evening',t:'Вечер',scales:['energy','anx']}],metrics:[{k:'energy',t:'Энергия',lo:-3,hi:3},{k:'anx',t:'Напряжение',lo:0,hi:4,neg:true}]};C.init(d,date);return d;}
 test('Every save is distinct, even with the same minute and feeling',()=>{const d=db();C.addCheckin(d,date,'09:00',{feeling:2},'Первая');C.addCheckin(d,date,'09:00',{feeling:2},'Вторая');const a=C.readDay(d,date).checkins;assert.equal(a.length,2);assert.notEqual(a[0].id,a[1].id);assert.equal(a[0].note,'Первая');assert.throws(()=>C.addCheckin(d,date,'12:99',{feeling:2},''));assert.throws(()=>C.addCheckin(d,date,'25:00',{feeling:2},''));});

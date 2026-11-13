@@ -3,8 +3,10 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
+// Выпуски — из shared/apps.json: текущий (REL) и предыдущий (PREV), чтобы новый выпуск не требовал правки этого файла.
+const APPS=JSON.parse(await read('shared/apps.json')),REL=a=>APPS[a].entry.split('/')[0],PREV=a=>APPS[a].previous?.entry?.split('/')[0];
 // The root module serves the earlier day/ and meal/ pages. Since Sport Update 38 the reference for new
-// releases is day-58/shared/food-counters.js (write verified by re-reading the row); release copies must match it.
+// releases is the current Day release copy, <day>/shared/food-counters.js (write verified by re-reading the row); release copies must match it.
 const SOURCE=process.env.FOOD_COUNTERS_SOURCE||'shared/food-counters.js';
 const source=await read(SOURCE);
 const copy=x=>JSON.parse(JSON.stringify(x));
@@ -46,14 +48,14 @@ const diaryStore=storage();diaryStore.setItem('happy-food-counters-v1:local',JSO
 const meal=context({document,localStorage:diaryStore,window:{},CL:{s:null},DB:{taps:[],foods:[],units:{},sections:[{k:'am'},{k:'pm'},{k:'dn'},{k:'sn'}],days:{}},FOODS:{egg:copy(food)},BASE:[['egg']],curDate:'2026-10-30',HappyProfile:{owner:'local'},clOn:()=>false,
  save(){},renderAll(){},renderDay(){},tapsHTML:()=>'',escH:String,toast(){},clAfterIn(){},rebuildLib(){},porFix(){},norm:x=>x.toLowerCase(),sec:k=>({k}),autoSec:()=> 'pm',todayISO:()=> '2026-10-30',nowHM:()=> '12:00',portTxt:()=> '1 шт',gramsFor:()=>55});
 meal.day=d=>meal.DB.days[d]||(meal.DB.days[d]={items:[]});meal.tapDef=k=>meal.DB.taps.find(t=>t.k===k);
-vm.runInContext(await read('meal/counters.js'),meal);meal.HappyMealCounters.init();meal.HappyMealCounters.apply(base);
+vm.runInContext(await read(REL('meal')+'/counters.js'),meal);meal.HappyMealCounters.init();meal.HappyMealCounters.apply(base);
 meal.FOODS.egg.k=999; // A local catalog change cannot change the shared serving snapshot.
 const key=meal.DB.taps[0].k;for(let i=0;i<3;i++)meal.tapAdd(key);assert.equal(meal.day(meal.curDate).items.length,3);assert.equal(new Set(meal.day(meal.curDate).items.map(x=>x.counterEventId)).size,3);
 assert.equal(meal.day(meal.curDate).items[0].counterFood.k,135);
 const doc=meal.DB.mealCounters;meal.HappyMealCounters.apply(doc);meal.HappyMealCounters.apply(doc);assert.equal(meal.day(meal.curDate).items.length,3);
 const day=context({document,localStorage:diaryStore,CL:{s:null},DB:{taps:[{k:'own',t:'Своя привычка'}],days:{}},curDate:'2026-10-30',HappyProfile:{owner:'local'},clOn:()=>false,save(){},renderAll(){},renderTapSheet(){},tapsHTML:()=>'',escH:String,toast(){},clAfterIn(){},tapAdd(){},lockGuard:()=>false,todayISO:()=> '2026-10-30',nowHM:()=> '12:30'});
 day.day=d=>day.DB.days[d]||(day.DB.days[d]={taps:{}});day.tapDef=k=>day.DB.taps.find(t=>t.k===k);
-vm.runInContext(await read('day/counters.js'),day);day.HappyDayCounters.init();const dk=day.DB.taps.find(t=>t.mealCounterId).k;
+vm.runInContext(await read(REL('day')+'/counters.js'),day);day.HappyDayCounters.init();const dk=day.DB.taps.find(t=>t.mealCounterId).k;
 assert.equal(day.day(day.curDate).taps[dk].length,3);day.tapAdd(dk);assert.equal(day.day(day.curDate).taps[dk].length,4);
 meal.HappyMealCounters.apply(day.DB.mealCounters);assert.equal(meal.day(meal.curDate).items.length,4);assert.equal(meal.day(meal.curDate).items.at(-1).g,55);assert.equal(meal.day(meal.curDate).items.at(-1).counterFood.k,135);
 day.day(day.curDate).taps[dk].pop();day.save();meal.HappyMealCounters.apply(day.DB.mealCounters);assert.equal(meal.day(meal.curDate).items.length,3);
@@ -89,19 +91,19 @@ assert.equal(H.linked(def,'day'),true);assert.equal(H.linked(def,'sport'),false)
 console.log('Passed independent Day/Sport links, legacy migration, hide/show with retained servings.');
 // Sport adapter consumes the same document and contributes one shared serving.
 const sportStore=storage();const both=H.patch(targets,'definitions',{...def,targets:{day:true,sport:true}},'both');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(both));
-const sport=context({document,localStorage:sportStore,CL:{s:null,ready:true},HappyProfile:{owner:'local'},state:{customCounters:[]},selectedDate:'2026-10-30',dayNow:()=> '2026-10-30',clOn:()=>false,oldPersist(){},persist(){},renderDiary:()=>'',esc:String,icon:()=>'',toast(){}});
-vm.runInContext(await read('sport/src/food-counters.js'),sport);sport.changeSportFood(def.id,true,true);
-assert.equal(sport.state.foodCounters.events.filter(e=>!e.deleted).length,servings+1);
-meal.HappyMealCounters.apply(sport.state.foodCounters);day.HappyDayCounters.apply(sport.state.foodCounters);
+const sport=context({SPORT_MEASURE_EMBED:false,SportProfiles:{owner:'local',current:()=>'local'},document,localStorage:sportStore,CL:{s:null,ready:true},HappyProfile:{owner:'local'},state:{customCounters:[]},selectedDate:'2026-10-30',dayNow:()=> '2026-10-30',clOn:()=>false,oldPersist(){},persist(){},renderDiary:()=>'',esc:String,icon:()=>'',toast(){}});
+vm.runInContext(await read(REL('sport')+'/sport/src/food-counters.js'),sport);sport.changeSportFood(def.id,true,true);
+assert.equal(vm.runInContext('sportFoodDoc',sport).events.filter(e=>!e.deleted).length,servings+1);
+meal.HappyMealCounters.apply(vm.runInContext('sportFoodDoc',sport));day.HappyDayCounters.apply(vm.runInContext('sportFoodDoc',sport));
 assert.equal(meal.day(meal.curDate).items.length,servings+1);assert.equal(day.day(day.curDate).taps[dk].length,servings+1);
-sport.changeSportFood(def.id,true,false);meal.HappyMealCounters.apply(sport.state.foodCounters);assert.equal(meal.day(meal.curDate).items.length,servings);
-const hidden=H.patch(sport.state.foodCounters,'definitions',{...def,targets:{day:true,sport:false}},'off');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(hidden));
+sport.changeSportFood(def.id,true,false);meal.HappyMealCounters.apply(vm.runInContext('sportFoodDoc',sport));assert.equal(meal.day(meal.curDate).items.length,servings);
+const hidden=H.patch(vm.runInContext('sportFoodDoc',sport),'definitions',{...def,targets:{day:true,sport:false}},'off');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(hidden));
 assert.throws(()=>sport.changeSportFood(def.id,true,true),/отключена/);assert.equal(sport.sportFoodDefinitions().length,0);
 console.log('Passed Sport → Meal → Day portions and undo, and no additions after disabling Sport.');
 if(!process.env.FOOD_COUNTERS_SOURCE){
  const {execFileSync}=await import('node:child_process');
- const reference='day-58/shared/food-counters.js';
- for(const copy of ['day-57/shared/food-counters.js','sport-40/shared/food-counters.js','meal-30/shared/food-counters.js','meal-31/shared/food-counters.js','sport-41/shared/food-counters.js'])assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
+ const reference=REL('day')+'/shared/food-counters.js';
+ for(const copy of [REL('meal'),REL('sport'),PREV('day'),PREV('meal'),PREV('sport')].filter(Boolean).map(d=>d+'/shared/food-counters.js'))assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
  execFileSync(process.execPath,[new URL(import.meta.url).pathname],{stdio:'inherit',env:{...process.env,FOOD_COUNTERS_SOURCE:reference}});
  console.log('Passed: reference module '+reference+' runs the same suite; release copies are identical to it.');
 }

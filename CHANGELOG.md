@@ -12,6 +12,17 @@
 в основной репозиторий; дата внутри старой версии приложения может отличаться.
 Текущие версии и адреса: [APPS.md](APPS.md). Хранение данных: [DATA-STORAGE.md](DATA-STORAGE.md). Правила: [AGENTS.md](AGENTS.md).
 
+## 13.11.2026 — Уборка: `day/`, `meal/`, `sport/` — переходы на текущие выпуски
+
+- По слову Астамура 13.11.2026 18:11 («Удаляй»). Версии приложений не менялись: Day 58, Meal 31.1, Sport 41.
+- Из `day/`, `meal/`, `sport/` удалён прежний код (Day 50.14, Meal 22.16, Sport 36.7 с исходниками, 20 МБ). В каждой папке — одна страница-переход: открывает текущий выпуск по `shared/apps.json`, сохраняя query и hash; запасная ссылка — на `day-58/`, `meal-31/`, `sport-41/`. `day/arc-studio/` ведёт в `prototypes/arc-studio/`. Записи `earlier` в `shared/apps.json` убраны.
+- Общие проверки больше не читают прежние версии. Переведены на текущие выпуски и берут каталоги из `shared/apps.json`: `check-food-counters` (счётчики Meal 31, Day 58 и Sport 41; эталон и копии — текущие и предыдущие выпуски), `check-meal-exports`, `check-selfcare`, `check-shared-ui`, `check-layout` (плюс проверка трёх переходов), `check-summaries`; в `shared/shared-files.json` эталон записан как `{day}/shared/…`.
+- Удалены четыре проверки, написанные по прежнему коду и не проходившие на текущем: `check-meal-times` (ждала время приёма по последнему продукту — с Meal 27.4 это первый продукт), `check-profile-storage`, `check-measurements-shared`, `check-now-draft`. Что закрывает то же на текущем коде — в `AGENTS.md`, раздел «Проверки».
+- Проверки (13.11.2026, все пройдены): `check-shared`, `check-shared-ui`, `check-layout`, `check-food-counters` (намеренно испорченная копия ловится), `check-app-links`, `check-summaries`, `check-meal-exports`, `check-selfcare`, `check-account-profile`, `check-gradients`, `check-studio-account`; `node --test day-58/tests/*.test.cjs` — 86; все `meal-31/checks/*.mjs`; `npm --prefix sport-41/sport run check` после локальной сборки; `scripts/browser/run.sh` — все 14 сценариев, 261 проверка; переходы открыты в headless Chrome: `day/`, `meal/`, `sport/`, оба прежних HTML-перехода и `day/arc-studio/` приводят на текущие выпуски с query и hash, без `apps.json` — по запасной ссылке.
+- Не проверено: переходы на опубликованном сайте и на iPhone. Ярлык на экране «Домой», добавленный с адреса `…/day/`, `…/meal/` или `…/sport/`, теперь открывает текущий выпуск; записи, сделанные в таком ярлыке без входа в аккаунт, остаются в его хранилище. Прежний код — в истории Git: main до правки — `b83e7d9`.
+
+— Claude · 13.11.2026 18:23
+
 ## 13.11.2026 — Уборка репозитория: старые выпуски, прежние HTML, ветки
 
 - По слову Астамура 13.11.2026 17:05 («да» на три пункта аудита: ветки, старые HTML и Color Studio; старые выпуски — оставить текущий и один предыдущий; «там нет ничего, по чему бы я скучал»). Версии приложений не менялись: Day 58, Meal 31.1, Sport 41.

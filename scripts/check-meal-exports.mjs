@@ -2,8 +2,9 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
+const MEAL=JSON.parse(await read('shared/apps.json')).meal.entry.split('/')[0]; // текущий выпуск Meal
 const ctx=vm.createContext({Blob,TextEncoder});
-vm.runInContext(await read('meal/report.js'),ctx);
+vm.runInContext(await read(MEAL+'/report.js'),ctx);
 const m=ctx.MealReport,bls=JSON.parse(await read('meal-data/bls40.json')),fs=m.fields(bls.keys);
 assert.equal(fs.length,76);assert.deepEqual(new Set(fs.map(x=>x.key)),new Set(bls.keys));
 const by=Object.fromEntries(bls.f.map(x=>[x[0],x])),readVal=(code,key)=>by[code]?.[4+bls.keys.indexOf(key)]??null;
@@ -19,12 +20,12 @@ const hidden=m.reportPages(rows,fs,{summary:true,foods:false,time:false,energy:f
 const long=m.reportPages(Array.from({length:200},(_,i)=>({...rows[1],id:String(i),name:'Длинное название продукта '.repeat(5)})),fs,o);assert.equal(long.flat().filter(x=>x.kind==='food').length,200);assert.ok(long.flat().every(b=>b.y+b.h<=1560));
 const pdf=m.pdf([new Uint8Array([255,216,255,217]),new Uint8Array([255,216,255,217])],1240,1754),bytes=new Uint8Array(await pdf.arrayBuffer()),text=new TextDecoder().decode(bytes);assert.equal(pdf.type,'application/pdf');assert.ok(text.includes('/Count 2'));assert.ok(text.includes('/MediaBox [0 0 595.28 841.89]'));
 const start=Number(text.match(/startxref\n(\d+)/)[1]);assert.equal(text.slice(start,start+4),'xref');const lines=text.slice(start).split('\n');for(let i=1;i<9;i++){const at=Number(lines[2+i].slice(0,10));assert.ok(new TextDecoder().decode(bytes.slice(at,at+12)).startsWith(i+' 0 obj'))}
-const html=await read('meal/index.html'),names=vm.createContext({});vm.runInContext(html.slice(html.indexOf('function cookingName('),html.indexOf('function rebuildLib(')),names);
+const html=await read(MEAL+'/index.html'),names=vm.createContext({});vm.runInContext(html.slice(html.indexOf('function cookingName('),html.indexOf('function rebuildLib(')),names);
 assert.equal(names.cookingName('Яйцо, жаренное без жира'),'Яйцо, жаренное без масла');assert.equal(names.cookingName('Мясо, тушённое без жира'),'Мясо, тушённое без масла');assert.equal(names.cookingName('Свинина без жира и сухожилий, сырая'),'Свинина без жира и сухожилий, сырая');assert.equal(names.cookingName('Свинина для жаркого (лопатка без жира и шкуры), сырая'),'Свинина для жаркого (лопатка без жира и шкуры), сырая');
 const left=bls.f.map(r=>names.cookingName(r[1])).filter(n=>/(?:обжар|туш[её]н|жаренн|запеч)[^,;()]*без жира/i.test(n));assert.equal(left.length,0);
 console.log('Passed: 76 nutrient columns, portion scaling and units, zeros vs missing data, date range, separate portions, CSV quoting/formula safety, report selection and pagination, PDF structure, cooking terminology.');
 const leap=m.calendarDays('2024-02','2026-10-28').filter(Boolean);assert.equal(leap.length,29);assert.equal(m.calendarDays('2025-02','2026-10-28').filter(Boolean).length,28);assert.equal(m.calendarDays('2026-06','2026-10-28')[0].day,1);assert.equal(m.calendarDays('2026-10','2026-10-28').find(d=>d?.day===29).disabled,true);assert.throws(()=>m.calendarDays('2026-13','2026-10-28'));
 const draft={a:'2026-10-10',b:'2026-10-20'},picked=m.pickDate(draft,'2026-10-01','b');assert.equal(picked.a,'2026-10-01');assert.equal(picked.b,'2026-10-10');assert.equal(draft.a,'2026-10-10');assert.notEqual(m.copyRange(draft),draft);
 for(const [a,b,count] of [['2026-10-27','2026-10-27',3],['2026-10-21','2026-10-27',3],['2026-01-01','2026-10-27',4]])assert.equal(m.records(db,foods,{a,b},readVal).length,count);
-assert.equal(m.reportPages(rows,fs,{...o,widget:true})[0][0].kind,'widget');assert.ok(!/id="mr(?:From|To|AllDates)"/.test(await read('meal/report.js')));
+assert.equal(m.reportPages(rows,fs,{...o,widget:true})[0][0].kind,'widget');assert.ok(!/id="mr(?:From|To|AllDates)"/.test(await read(MEAL+'/report.js')));
 console.log('Passed: leap calendar, weekday offsets, future bounds, immutable drafts, selected-period records and optional widget page.');
