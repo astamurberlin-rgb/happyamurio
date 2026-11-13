@@ -132,7 +132,7 @@
 | `node scripts/sync-shared.mjs` | Копирует общие файлы из `shared/` в текущие выпуски. |
 | `node scripts/sync-shared-ui.mjs` | Встраивает общую форму аккаунта в страницы Day и Meal. |
 | `python3 scripts/build-day-standalone.py day-58` | Собирает Day одним файлом `Happy-Day-58.html`. |
-| `python3 scripts/refresh-provenance.py day-58 meal-31` | Обновляет список файлов выпуска с контрольными суммами. С `--check` только сверяет. Запускать после последней правки и `git add -A`. |
+| `python3 scripts/refresh-provenance.py day-58 meal-31` | Обновляет список файлов выпуска с контрольными суммами. С `--check` только сверяет. Запускать после последней правки кода и `git add -A`. Справки `.md` в список не входят: после правки справки ничего запускать не нужно. |
 | `node sport-41/scripts/write-provenance.mjs`, затем `verify-release.mjs` | То же для Sport. |
 | `python3 -I scripts/build-meal-lab.py meal-31 папка` | Собирает копию Meal для показа на телефоне до выпуска. |
 

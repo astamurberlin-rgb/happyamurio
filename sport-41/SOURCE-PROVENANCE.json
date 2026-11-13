@@ -47,7 +47,6 @@
     "rules": "ids are stable and never removed or renamed; the folder only grows; releases record the manifest version and file hashes they were built from"
   },
   "changed_source_files": [
-    "README.md",
     "index.html",
     "manifest.webmanifest",
     "scripts/build-preview.mjs",
@@ -85,11 +84,6 @@
   "portion_label_change": "40.5: the portion label of a shared counter comes from the Meal definition (portionText, Meal 29: a supplement counter shows «2 капсулы» without nominal grams); foods and definitions from older Meal as before (q u · g g); no storage, cloud or summary changes",
   "counters_change": "40.4: counter servings reach the energy ring at once — the Meal summary (Meal 27.3, counters:1) names the servings already in the day total, the rest is added from the counters document on the device (shared/happy-summaries.js); the compact copy of the Meal summary moved to happy-energy-meal-v2:<owner>; the Meal summary is asked from the cloud as soon as the session is restored; no new cloud writes, journal sync code unchanged since 40.1",
   "release_files": [
-    {
-      "path": "README.md",
-      "size": 4967,
-      "sha256": "a05f5fe856bbe2f039e182a8b7bdb6b6bb59150e9cabb91c09d38bb8d763b88e"
-    },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
       "size": 23900,
@@ -202,8 +196,8 @@
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 8071,
-      "sha256": "9aa818555f226862e000f57935babc6551320ff661c8674adcb7f2d71fef4267"
+      "size": 8185,
+      "sha256": "4f017f146a02f42fa6c7f345fc84a16238bddf1077f2dd02e24e0935ddf736c4"
     },
     {
       "path": "shared/apps.json",

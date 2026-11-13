@@ -68,11 +68,6 @@
  ],
  "releaseHashes": [
   {
-   "path": "README.md",
-   "size": 4676,
-   "sha256": "afd57fc03d2187adf7f05bfbdb0df0dac7d95cb09693ddb2316395b479241ee9"
-  },
-  {
    "path": "account-ui.js",
    "size": 11304,
    "sha256": "4570b44f21c3b26855320bfd2a485193ee051147d8e317baf2b7be75c3ca3977"
@@ -663,11 +658,6 @@
    "sha256": "b5b1f1da112d18ea2147decfd48ddc1bf2b5aeb6c265381579340e95b15a2bb2"
   },
   {
-   "path": "sport/README.md",
-   "size": 4130,
-   "sha256": "36f1f34162dbfcc4a615e8a40daaee5d8a241362de399695b9d6c4a0e963d34f"
-  },
-  {
    "path": "sport/app-icons/happy-sport-20261029-152.png",
    "size": 23900,
    "sha256": "bb8f5e9a996d90193a15dd4b8fb70bf48f27f28d76c75b3f0c67c314b4ac0481"
@@ -781,11 +771,6 @@
    "path": "sport/scripts/check.mjs",
    "size": 16110,
    "sha256": "ece3daa2be582efa55991f9478f1aa458d699dec7e5b36ee8045d6de42509ac0"
-  },
-  {
-   "path": "sport/sport-icons/README.md",
-   "size": 3523,
-   "sha256": "c7fdf2cda135f5dd72953fc5615d95bd71b686cff66e200fd691206310c64a6a"
   },
   {
    "path": "sport/sport-icons/base/01_barbell.png",
@@ -1366,11 +1351,6 @@
    "path": "sport/src/sport-icons.js",
    "size": 1823,
    "sha256": "ee7745a8e059938b3b3eb856d0ce8acb20f481e7905e74675eb71ea029e8c48d"
-  },
-  {
-   "path": "sport/src/sport-icons/README.md",
-   "size": 3523,
-   "sha256": "c7fdf2cda135f5dd72953fc5615d95bd71b686cff66e200fd691206310c64a6a"
   },
   {
    "path": "sport/src/sport-icons/base/01_barbell.png",

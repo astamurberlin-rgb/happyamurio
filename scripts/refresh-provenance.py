@@ -2,9 +2,9 @@
 """Обновляет размеры и контрольные суммы файлов в SOURCE-PROVENANCE.json выпусков Day и Meal.
 
 Запуск из корня репозитория, после последней сборки и `git add -A` (в список идут только файлы под контролем Git,
-кроме самого манифеста):
+кроме самого манифеста и справок `.md`):
 
-    python3 scripts/refresh-provenance.py day-57 meal-29
+    python3 scripts/refresh-provenance.py day-58 meal-31
 
 Что делает: пересчитывает список файлов выпуска — `runtime_files` у Day, `releaseHashes` у Meal — по содержимому
 на диске. Остальные поля манифеста (название выпуска, версия, записи `point_releases` / `pointReleases`) не трогает:
@@ -26,7 +26,9 @@ KEYS = ('runtime_files', 'releaseHashes')
 def tracked(release):
     out = subprocess.run(['git', 'ls-files', '-z', release], cwd=ROOT, capture_output=True, check=True).stdout.decode()
     prefix = release.rstrip('/') + '/'
-    return sorted(p[len(prefix):] for p in out.split('\0') if p.startswith(prefix) and p != prefix + MANIFEST)
+    # Справки (.md) в список не входят: приложение их не загружает, и правка справки не должна требовать обновления сумм.
+    return sorted(p[len(prefix):] for p in out.split('\0')
+                  if p.startswith(prefix) and p != prefix + MANIFEST and not p.lower().endswith('.md'))
 
 
 def entry(release, path):
