@@ -1,0 +1,32 @@
+{
+ "library": "uzbek",
+ "version": "1.10.4",
+ "delivery": "1.10.4-meal23.2",
+ "date": "2026-11-13",
+ "by": "Claude",
+ "basedOn": {
+  "file": "data/uzbek-recipes-1.10.3-meal23.2.json.gz",
+  "sha256Uncompressed": "4a000333890c6791c2ef8e713dd7350f4b6fb0ddbee9c34c36a2071510783f98"
+ },
+ "decision": "Астамур 13.11.2026: 00:09 меры «либо порция либо нет»; 00:22 названия без перестраховки, отличие блюда оставить; 11:16 «Давай делай, ты поймешь и так. Добивай мелкие правки».",
+ "changedRecords": 60,
+ "unchangedRecords": 0,
+ "stats": {
+  "measuresRenamed": 110,
+  "measuresDropped": 15,
+  "namesChanged": 14
+ },
+ "checks": [
+  "Same 60 IDs in the same order; catalog codes unique; every record revision + 1; composition values and k/p/f/c untouched (second suzma: only field source captions lose the brand).",
+  "Measures: labels only «порция», «маленькая порция», «большая порция», «шт», «четверть лепёшки», «упаковка», «маленькая пиала», «большая пиала»; grams of every kept measure come from an old measure of the same record; gram-only examples and duplicates dropped (15); recipe.portions and canonicalPortions carry the same measures; old labels in provenance.formerPortionLabels.",
+  "Names: 14 changed, none contains «пример», «справочн…», «ориентир», «расчёт…», «приблизительн…», «адаптация», «по рецептуре», «собственн…», «номинал», «взвешенн…», «целевой», «сборка»; old name in provenance.formerName.",
+  "Second suzma «Сузьма 6%»: brand off name, src, sourceInfo, recipe name and label, ingredient name and service ID (ingredientCatalog renamed, formerId kept), catalog code suzma-6pct; brand kept in provenance and as a search word.",
+  "Navat with grape juice: catalog code navat-grape-juice-spices; old code in provenance.formerCatalogCode.",
+  "Loaders of Meal 23–31 (shared/meal-products-model.js + uzbek.js): 60 cards, same kcal/protein/fat/carb as 1.10.3; names and measures without the words above; Meal 31.1 card and footer without method notes and brand, ready products (one ingredient) without «рецептура», «Ингредиенты» and «Выход».",
+  "Diary in every loader: entries logged on 1.10.3 keep their name and measures (snapshot by revision); new entries get the new ones.",
+  "The check catches deliberate breakages: a measure «Порция 400 г, пример», a record without revision + 1, a changed composition value."
+ ],
+ "notChecked": [
+  "iPhone and a real account."
+ ]
+}
