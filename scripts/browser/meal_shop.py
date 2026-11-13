@@ -55,7 +55,7 @@ with sync_playwright() as p:
     check("в магазине у купленного — «Куплено»", meal.evaluate("()=>document.querySelector('#ccShopGrid [data-cc-card=\"UZBEK\"] .cc-price').textContent") == "Куплено")
     meal.locator('#ccShopGrid [data-cc-open="DESSERT"]').tap()
     meal.wait_for_timeout(400)
-    check("страница десертов: 97 карточек", meal.locator(".cc-detail-inline .cc-food").count() == 97)
+    check("страница десертов: 103 карточки", meal.locator(".cc-detail-inline .cc-food").count() == 103)
     meal.locator(".cc-detail-inline .cc-buy-bottom .cc-buy button").tap()
     meal.wait_for_timeout(300)
     meal.locator('[data-cc-route="products"]').tap()

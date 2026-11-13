@@ -1165,6 +1165,8 @@ function apply(f){
 }
 function label(f,u){return f&&f.portionProfile&&f.portionProfile.labels[u]||null}
 function approximate(f,u){return !!(f&&f.portionProfile&&f.portionProfile.measures[u]&&!((f.own||{})[u]))}
-function note(f){var p=f&&f.portionProfile;return p?'Примерные меры: '+(p.note||'съедобная часть')+'. Для точного веса выбери граммы или свою меру.':''}
+/* Meal 31.1 (Астамур 13.11 00:22–00:23): под мерами одной строкой — только что входит в вес: «Без кожуры», «Съедобная часть».
+   «Примерные меры» и «Для точного веса выбери граммы…» — перестраховка, не информация. */
+function note(f){var p=f&&f.portionProfile,t=p?String(p.note||'съедобная часть'):'';return t?t.charAt(0).toUpperCase()+t.slice(1):''}
 root.MealPortions={version:VERSION,records:records,match:match,apply:apply,rawLike:rawLike,label:label,approximate:approximate,note:note};
 })(typeof window!=='undefined'?window:globalThis);

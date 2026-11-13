@@ -20,7 +20,7 @@ const SUPP_ROUTES=['supplements','supplementCatalog','supplementOwnedCatalog'];
 const catalogs=[
  {id:'SUPP',name:'БАДы',image:'images/supplements.jpg',tag:'Добавки и спортивное питание',count:'Шаблоны по этикеткам',description:'Омега-3, магний, креатин, протеины. Твой состав по этикетке.',keywords:'омега omega рыбий жир магний протеин креатин коллаген витамины epa dha бад добавки'},
  {id:'UZBEK',source:'HM',name:'Узбекская кухня',image:'meal-img/r7.jpg',tag:'Кухни мира',count:'60 блюд',description:'Плов, манты, самса и домашние вкусы Узбекистана.',preview:'uzbek'},
- {id:'DESSERT',name:'Десерты мира',image:'images/desserts.jpg',tag:'Дополнительный каталог',count:'97 карточек',description:'От крема каталана до чизкейка. Любимые сладости в одном поиске.',preview:'desserts'},
+ {id:'DESSERT',name:'Десерты мира',image:'images/desserts.jpg',tag:'Дополнительный каталог',count:'103 карточки',description:'От крема каталана до чизкейка. Любимые сладости в одном поиске.',preview:'desserts'},
  {id:'HM',name:'Happy Meal',image:'meal-img/cover-tl-2.jpg',tag:'Кухни и рецепты',description:'Кухни народов мира'},
  {id:'BLS',name:'BLS · Германия',image:'meal-img/cover-bf-1.jpg',tag:'Основной каталог',description:'Продукты и пищевой состав из таблиц Max Rubner-Institut.'},
  {id:'USDA',name:'USDA · США',image:'meal-img/cover-sn-1.jpg',tag:'Основной каталог',description:'Пищевой состав продуктов FoodData Central · SR Legacy.'},
@@ -46,7 +46,7 @@ function buy(c){
 /* personal — карточка в «Моих …»: внизу состояние поиска и свитч (у узбекской кухни — в составе Happy Meal) */
 function card(c,personal){
  const on=enabled(c),owned=purchased(c);
- return '<article class="cc-card" data-cc-card="'+c.id+'"><button type="button" class="cc-card-open" data-cc-open="'+c.id+'" aria-label="Открыть каталог '+esc(c.name)+'"><img src="'+c.image+'" alt="" loading="lazy">'+
+ return '<article class="cc-card" data-cc-card="'+c.id+'"><button type="button" class="cc-card-open" data-cc-open="'+c.id+'" aria-label="Открыть каталог '+esc(c.name)+'"><img src="'+c.image+'" alt="" decoding="async" onload="this.classList.add(\'cc-ready\')">'+
   '<span class="cc-copy"><b>'+esc(c.name)+'</b><span class="cc-tag">'+esc(c.tag)+'</span>'+(c.count?'':'<small>'+esc(c.description)+'</small>')+
   '<span class="cc-card-meta"><small>'+esc(countOf(c)||'Каталог')+'</small><span class="cc-price'+(owned?' cc-owned':'')+'">'+(owned?'Куплено':'2 евро')+'</span></span></span></button>'+
   (personal?'<div class="cc-card-state"><small>'+(c.source?'В составе Happy Meal':on?'В поиске':'Выключен')+'</small>'+(c.source?'':'<input type="checkbox" role="switch" class="happy-switch" data-food-source="'+c.id+'" aria-label="'+esc(c.name)+': в поиске" '+(on?'checked':'')+'>')+'</div>':'')+
@@ -66,6 +66,7 @@ function render(){
  for(const [id,cat] of [['ccPurchasedRecipes','recipes'],['ccPurchasedProducts','products'],['ccPurchasedSupplements','supplements']])if(e(id))e(id).innerHTML=catalogs.filter(c=>purchased(c)&&category(c)===cat).map(c=>card(c,true)).join('');
  renderSupplementPurchase();
  e('ccShopGrid').innerHTML=catalogs.map(c=>card(c,false)).join('');
+ root.document.querySelectorAll('.cc-card-open img').forEach(i=>{if(i.complete&&i.naturalWidth)i.classList.add('cc-ready')});
  for(const [id,r] of [['ccShop','shop'],['ccRecipes','recipes'],['ccOwnProducts','products']])e(id).hidden=!!q||route!==r;
  if(e('ccSupplements'))e('ccSupplements').hidden=!!q||!SUPP_ROUTES.includes(route);
  e('ccSearchResults').hidden=!q;if(detail)detail.hidden=!!q;
@@ -157,4 +158,7 @@ root.HappyCollections={isPurchased:id=>{const c=catalogs.find(x=>x.id===id);retu
  buy:id=>{const c=catalogs.find(x=>x.id===id);if(c)buy(c);return !!c&&purchased(c)},   // Meal 29.1: «Купить · 2 €» в карточке шаблона БАДа
  openSupplements:mode=>{if(typeof root.go==='function')root.go('recipes');selectRoute(mode==='mine'?'supplements':'supplementCatalog')}};
 mount();
+/* Meal 31.1 (Астамур 13.11 11:13: «картинки магазина загружаются хаотично»): семь картинок магазина подгружаются заранее,
+   через несколько секунд после запуска, — к открытию «Сборников» они уже на телефоне (sw.js отдаёт картинки из копии) */
+setTimeout(function(){catalogs.forEach(function(c){var i=new Image();i.decoding='async';i.src=c.image})},2500);
 })(window);

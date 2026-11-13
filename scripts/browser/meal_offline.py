@@ -4,6 +4,7 @@
 затем телефон без интернета: Meal открывается (копия выпуска, sw.js), BLS ищется, запись дня сохраняется и видна
 после перезапуска; нескачанный USDA без сети просто не открывается, без ошибок на странице. Снова в сети — всё как было."""
 from common import *
+from common import _lib_file   # файлы ветки каталогов (имя в манифесте)
 
 V = MEAL.strip("/").split("-")[1]   # номер выпуска: meal-29/ → 29
 import re as _re, pathlib as _pl
@@ -25,10 +26,8 @@ SAVED = """async()=>{const c=await caches.open('happy-meal-libraries-v1');return
 with sync_playwright() as p:
     b = launch(p)
     ctx = phone(b, "offline")
-    # файл узбекской кухни — из манифеста ветки каталогов (с 12.11 15:41 там 1.10.2; имя файла меняется с версией)
-    import json as _json
-    from common import _lib_file
-    UZ = _json.loads(_lib_file("manifest.json"))["libraries"]["uzbek"]["url"].split("/data/")[1]
+    # файл узбекской кухни — из манифеста ветки каталогов (было зашито имя 1.10.1; с 1.10.2 удержание не срабатывало)
+    UZ = json.loads(_lib_file("manifest.json"))["libraries"]["uzbek"]["url"].rsplit("/", 1)[1]
     net = libraries(ctx, hold={UZ})
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))

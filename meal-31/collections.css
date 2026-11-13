@@ -111,3 +111,8 @@
 /* Meal 29: подпись под названием подборки в «Моих рецептах» (прототип «Сборников», в Meal 28 не перенесена) */
 .rcTile:has(small) b{padding-bottom:0}
 .rcTile small{display:block;padding:4px 12px 13px;font-size:12px;color:var(--muted);line-height:1.35}
+/* Meal 31.1: подложка в цвет карточки, картинка проявляется мягко, без рывков */
+.cc-card-open img{background:rgba(255,255,255,.10);opacity:0;transition:opacity .28s ease}
+.cc-card-open img.cc-ready{opacity:1}
+.cc-detail-image{background:rgba(255,255,255,.10)}
+@media (prefers-reduced-motion:reduce){.cc-card-open img{transition:none}}

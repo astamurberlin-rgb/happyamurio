@@ -11,7 +11,7 @@ const manifestURL='https://raw.githubusercontent.com/astamurberlin-rgb/happyamur
 const sourceURL=/^https:\/\/raw\.githubusercontent\.com\/astamurberlin-rgb\/happyamurio\/[a-f0-9]{40}\/data\/[a-z0-9.-]+$/;
 const STORE='happy-meal-libraries-v1',INDEX=manifestURL+'?happy-saved=1',LOCK='happy-meal-libraries';
 /* каталог в настройках → его библиотеки */
-const CATALOGS={BLS:['bls'],USDA:['usda'],MEXT:['mext'],HM:['kav','uzbek'],DESSERT:['desserts'],SUPP:['supplements']};   // Meal 29: каталог БАДов
+const CATALOGS={BLS:['bls'],USDA:['usda'],MEXT:['mext'],HM:['kav','uzbek'],DESSERT:['desserts2'],SUPP:['supplements']};   // Meal 29: каталог БАДов
 let manifestPending;const pending=new Map();
 function checkManifest(m){
  if(!m||m.schema!=='happy.food-libraries.v1'||!m.libraries||typeof m.libraries!=='object')throw Error('Несовместимый каталог библиотек');

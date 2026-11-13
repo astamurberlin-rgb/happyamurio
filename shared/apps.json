@@ -30,8 +30,8 @@
  },
  "meal": {
   "entry": "meal-31/index.html",
-  "version": "31",
-  "name": "Happy Meal · Update 31",
+  "version": "31.1",
+  "name": "Happy Meal · Update 31.1",
   "sharedDirectory": "meal-31/shared",
   "accountScript": "meal-31/account-ui.js",
   "settingsSections": [

@@ -1,6 +1,6 @@
 /* Meal 28: «Сборники» и копия выпуска для работы без интернета. Meal 29 — каталог «БАДы» и «Мои добавки».
    1) Список блюд на странице каталога (catalog-preview.js) совпадает с файлами библиотек meal-libraries
-      (узбекская кухня 1.10.1, десерты 1.0.0): названия, ккал и БЖУ на 100 г; счётчики на карточках — те же.
+      (с Meal 31.1: узбекская кухня 1.10.4, десерты 1.2.0 — запись манифеста desserts2): названия, ккал и БЖУ на 100 г; счётчики на карточках — те же.
    2) Магазин: каталоги — существующие в MealSources, с Meal 29 первым — БАДы (каталог supplements, скачивается
       для работы без интернета); обложки лежат в выпуске; тестовая покупка — в области аккаунта; Meal открывается
       не на магазине: на «Сборники» переходит только «Мои добавки» по нажатию (HappyCollections.openSupplements).
@@ -26,9 +26,10 @@ const close=(a,b,what)=>assert.ok(a==null&&b==null||Math.abs(a-b)<=0.01,what+': 
 const uz=file('uzbek'),uzFoods=uz.foods||uz.recipes||uz.items;
 assert.equal(P.uzbek.version,manifest.libraries.uzbek.version);assert.equal(P.uzbek.foods.length,uzFoods.length);assert.equal(P.uzbek.count,60);
 for(const f of P.uzbek.foods){const r=uzFoods.find(x=>x.n===f.name);assert.ok(r,'узбекская кухня: нет блюда '+f.name);close(f.kcal,r.k==null?null:+r.k.toFixed(2),f.name+' ккал');close(f.protein,r.p==null?null:+r.p.toFixed(2),f.name+' белки');close(f.fat,r.f==null?null:+r.f.toFixed(2),f.name+' жиры');close(f.carb,r.c==null?null:+r.c.toFixed(2),f.name+' углеводы')}
-const ds=file('desserts');assert.equal(P.desserts.version,manifest.libraries.desserts.version);assert.equal(P.desserts.foods.length,97);assert.equal(P.desserts.count,97);
-const byTitle=new Map(ds.foods.map(f=>[f.titleRu,f]));
-for(const f of P.desserts.foods){const r=byTitle.get(f.name);assert.ok(r,'десерты: нет '+f.name);
+const ds=file('desserts2');assert.equal(P.desserts.version,manifest.libraries.desserts2.version);assert.equal(P.desserts.foods.length,103);assert.equal(P.desserts.count,103);
+assert.ok((await read('collections.js')).includes("count:'103 карточки'"),'на карточке магазина — 103 карточки');
+/* с 1.2 у двух разных записей одно название («Сорбет лимонный» — этикетка и BLS, не объединяются): сверяем по порядку файла */
+for(const [i,f] of P.desserts.foods.entries()){const r=ds.foods[i];assert.ok(r&&r.titleRu===f.name,'десерты: строка '+(i+1)+' — '+f.name);
  const k=r.nutrients.find(n=>/(^usda:1008$|:kcal$|energy_kcal$)/.test(n.key)&&n.status==='value');assert.ok(k,'десерты: у '+f.name+' есть калории');
  assert.ok(Math.abs(k.value-f.kcal)<=0.6,'десерты: ккал '+f.name+' '+k.value+' ≠ '+f.kcal)}
 // 2. Магазин
@@ -72,4 +73,8 @@ assert.equal(fetchEvent(SCOPE+'sw.js'),null,'сам себя не кэшируе
 online=false;const offline=await fetchEvent(SCOPE+'?test=1','navigate');assert.ok(offline,'без сети страница открывается из копии');
 assert.ok(await fetchEvent(SCOPE+'catalog.js?v='+V).catch(()=>null),'без сети скрипт выпуска — из копии');
 online=true;
-console.log('Passed: catalog lists match meal-libraries (uzbek '+P.uzbek.foods.length+', desserts '+P.desserts.foods.length+'); shop catalogs with supplements first ('+manifest.libraries.supplements.templateCount+' templates, '+REF+'), covers, test purchase per account, opens on the day; all '+refs.size+' page files present in order; service worker keeps to meal-29/ and serves the copy offline.');
+// Meal 31.1: картинка выпуска в сети тоже берётся из копии — без запроса; скрипт — по-прежнему сначала из сети
+{const before=log.length;const pic=await fetchEvent(SCOPE+'images/desserts.jpg');assert.ok(pic,'картинка отдана');assert.equal(log.length,before,'картинка магазина — из копии, без сети');
+ const before2=log.length;await fetchEvent(SCOPE+'catalog.js?v='+V);assert.equal(log.length,before2+1,'скрипт выпуска — сначала из сети');
+ for(const u of ['meal-img/cover-tl-2.jpg','meal-img/cover-bf-1.jpg','meal-img/cover-sn-1.jpg','meal-img/cover-dn-1.jpg'])assert.ok(stored.has(SCOPE+u),'картинка магазина сохранена при установке: '+u)}
+console.log('Passed: catalog lists match meal-libraries (uzbek '+P.uzbek.foods.length+', desserts '+P.desserts.foods.length+'); shop catalogs with supplements first ('+manifest.libraries.supplements.templateCount+' templates, '+REF+'), covers, test purchase per account, opens on the day; all '+refs.size+' page files present in order; service worker keeps to its release folder, serves the copy offline and shop pictures from the copy.');

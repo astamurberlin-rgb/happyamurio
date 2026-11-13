@@ -1,4 +1,6 @@
-/* Happy Meal · библиотека десертов 1.0 — коллекция ChatGPT (09.11.2026), подключение Claude (Update 25).
+/* Happy Meal · библиотека десертов — коллекция ChatGPT (1.0 — 09.11.2026), подключение Claude (Update 25).
+   С десертов 1.2 (12.11.2026): запись манифеста «desserts2», ревизия карточки — из записи библиотеки (снимки дневника
+   исправленной карточки не путаются с прежними), тиамин → B1, ниацин и фолиевая кислота — своими строками.
    Публичные справочные данные: файл читается с ветки meal-libraries общим загрузчиком (manifest id «desserts»);
    ни аккаунт, ни дневник модуль не пишет.
    97 записей: 30 собственных карточек (этикетки производителей, две расчётные модели, расчёт по рецепту) становятся
@@ -7,7 +9,7 @@
    для USDA, отметка в карточке. Неизвестное значение — не ноль; «менее N» — верхняя граница, не точное число. */
 (function(root){
 'use strict';
-var SCHEMA='happy-independent-food-library/1.0', LIBRARY='desserts', REVISION=20261109;
+var SCHEMA='happy-independent-food-library/1.0', LIBRARY='desserts2', REVISION=20261109, LIB={version:'',date:'',author:''};
 var state='idle', pending=null, data=null, foods=[], members={}, memberIds=[], taggedRows=-1;
 function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function norm(x){return String(x||'').normalize('NFKC').toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim()}
@@ -17,11 +19,13 @@ function fmt(v){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).
 var UNIT_RU={g:'г',mg:'мг',ug:'мкг','µg':'мкг',kcal:'ккал',kJ:'кДж',IU:'МЕ'};
 function u(x){return x==='ug'?'µg':x}
 /* Этикетки: подтверждённые соответствия полям Meal (единица источника совпадает с единицей поля). Остальное — своё свойство карточки. */
-var LABEL_MAP={energy_kcal:['kcal','kcal'],protein:['prot','g'],fat:['fat','g'],carbohydrate:['carb','g'],saturates:['sfa','g'],sugars:['sug','g'],salt:['salt','g'],fibre:['fib','g'],sodium_mg:['na','mg'],cholesterol_mg:['chol','mg'],vitamin_d_ug:['vD','ug'],calcium_mg:['ca','mg'],iron_mg:['fe','mg'],potassium_mg:['k','mg']};
-var LABEL_RU={energy_kcal:'Энергия',energy_kj:'Энергия, кДж',protein:'Белки',fat:'Жиры',carbohydrate:'Углеводы по этикетке',saturates:'Насыщенные жирные кислоты',sugars:'Сахара',salt:'Соль',fibre:'Клетчатка',sodium_mg:'Натрий',cholesterol_mg:'Холестерин',trans_fat:'Трансжиры',added_sugars:'Добавленные сахара',vitamin_d_ug:'Витамин D',calcium_mg:'Кальций',iron_mg:'Железо',potassium_mg:'Калий'};
+var LABEL_MAP={energy_kcal:['kcal','kcal'],protein:['prot','g'],fat:['fat','g'],carbohydrate:['carb','g'],saturates:['sfa','g'],sugars:['sug','g'],salt:['salt','g'],fibre:['fib','g'],sodium_mg:['na','mg'],cholesterol_mg:['chol','mg'],vitamin_d_ug:['vD','ug'],calcium_mg:['ca','mg'],iron_mg:['fe','mg'],potassium_mg:['k','mg'],thiamin:['b1','mg'],riboflavin:['b2','mg']};
+/* Ниацин этикетки — без триптофана, а строка B3 у BLS — ниациновый эквивалент; фолиевая кислота — не общий фолат (B9). Обе — своими строками, с B3 и B9 не складываются. */
+var LABEL_RU={energy_kcal:'Энергия',energy_kj:'Энергия, кДж',protein:'Белки',fat:'Жиры',carbohydrate:'Углеводы по этикетке',saturates:'Насыщенные жирные кислоты',sugars:'Сахара',salt:'Соль',fibre:'Клетчатка',sodium_mg:'Натрий',cholesterol_mg:'Холестерин',trans_fat:'Трансжиры',added_sugars:'Добавленные сахара',vitamin_d_ug:'Витамин D',calcium_mg:'Кальций',iron_mg:'Железо',potassium_mg:'Калий',thiamin:'B1 — тиамин',riboflavin:'B2 — рибофлавин',niacin:'Ниацин (без триптофана)',folic_acid:'Фолиевая кислота'};
+var LABEL_NOTE={folic_acid:'Фолиевая кислота — добавленная форма витамина, не общий фолат: B9 не заполняется и с ней не складывается.',niacin:'Ниацин без учёта триптофана; строка B3 в Meal для BLS — ниациновый эквивалент, поэтому значение показано отдельно.'};
 /* Этикетки США: «Total Carbohydrate» включает клетчатку — это не поле «Углеводы» Meal (как и у USDA 1005): показывается отдельной строкой. */
 var US_LABEL=/-us$/;
-var REGION={uk:'Великобритания',us:'США',ru:'Россия',es:'Испания',de:'Германия',fr:'Франция',it:'Италия',nz:'Новая Зеландия',au:'Австралия'};
+var REGION={uk:'Великобритания',us:'США',ru:'Россия',ua:'Украина',es:'Испания',de:'Германия',fr:'Франция',it:'Италия',nz:'Новая Зеландия',au:'Австралия'};
 var KIND={branded_label:'этикетка производителя',assembled_model:'расчётная модель из готовых компонентов',recipe_estimate:'расчёт по рецепту'};
 var FLAG_RU={portion_energy_kj_inconsistent:'Энергия порции в кДж на странице производителя не совпадает с пересчётом из значения на 100 г; в карточке — пересчёт из 100 г, значение сайта сохранено как расхождение источника.'};
 var MASS={source_declared_portion:'порция по данным производителя',source_average_mass:'средняя масса изделия по данным производителя',source_approximate_mass:'приблизительная масса изделия',recipe_author_declared:'масса по рецепту автора'};
@@ -29,7 +33,9 @@ var MASS={source_declared_portion:'порция по данным произво
 var USDA={"1003":["prot",1,"Protein","g"],"1004":["fat",1,"Total lipid (fat)","g"],"1005":[null,1,"Carbohydrate, by difference","g"],"1007":[null,1,"Ash","g"],"1008":["kcal",1,"Energy","kcal"],"1009":["sta",1,"Starch","g"],"1010":["suc",1,"Sucrose","g"],"1011":["glc",1,"Glucose","g"],"1012":["fru",1,"Fructose","g"],"1013":["lac",1,"Lactose","g"],"1014":["mal",1,"Maltose","g"],"1018":["alc",1,"Alcohol, ethyl","g"],"1051":["water",1,"Water","g"],"1057":[null,1,"Caffeine","mg"],"1058":[null,1,"Theobromine","mg"],"1062":[null,1,"Energy","kJ"],"1075":["gal",1,"Galactose","g"],"1079":["fib",1,"Fiber, total dietary","g"],"1087":["ca",1,"Calcium, Ca","mg"],"1089":["fe",1,"Iron, Fe","mg"],"1090":["mg",1,"Magnesium, Mg","mg"],"1091":["p",1,"Phosphorus, P","mg"],"1092":["k",1,"Potassium, K","mg"],"1093":["na",1,"Sodium, Na","mg"],"1095":["zn",1,"Zinc, Zn","mg"],"1098":["cu",1,"Copper, Cu","mg"],"1099":["fl",0.001,"Fluoride, F","µg"],"1101":["mn",1,"Manganese, Mn","mg"],"1103":[null,1,"Selenium, Se","µg"],"1104":[null,1,"Vitamin A, IU","IU"],"1105":[null,1,"Retinol","µg"],"1106":[null,1,"Vitamin A, RAE","µg"],"1107":["bcar",0.001,"Carotene, beta","µg"],"1108":[null,1,"Carotene, alpha","µg"],"1109":[null,1,"Vitamin E (alpha-tocopherol)","mg"],"1110":[null,1,"Vitamin D (D2 + D3), International Units","IU"],"1111":[null,1,"Vitamin D2 (ergocalciferol)","µg"],"1112":[null,1,"Vitamin D3 (cholecalciferol)","µg"],"1114":["vD",1,"Vitamin D (D2 + D3)","µg"],"1120":[null,1,"Cryptoxanthin, beta","µg"],"1122":[null,1,"Lycopene","µg"],"1123":[null,1,"Lutein + zeaxanthin","µg"],"1125":[null,1,"Tocopherol, beta","mg"],"1126":[null,1,"Tocopherol, gamma","mg"],"1127":[null,1,"Tocopherol, delta","mg"],"1128":[null,1,"Tocotrienol, alpha","mg"],"1129":[null,1,"Tocotrienol, beta","mg"],"1130":[null,1,"Tocotrienol, gamma","mg"],"1131":[null,1,"Tocotrienol, delta","mg"],"1162":["vC",1,"Vitamin C, total ascorbic acid","mg"],"1165":["b1",1,"Thiamin","mg"],"1166":["b2",1,"Riboflavin","mg"],"1167":["b3",1,"Niacin","mg"],"1170":["b5",1,"Pantothenic acid","mg"],"1175":["b6",1,"Vitamin B-6","mg"],"1177":["b9",1,"Folate, total","µg"],"1178":["b12",1,"Vitamin B-12","µg"],"1180":[null,1,"Choline, total","mg"],"1183":[null,1,"Vitamin K (Menaquinone-4)","µg"],"1184":[null,1,"Vitamin K (Dihydrophylloquinone)","µg"],"1185":[null,1,"Vitamin K (phylloquinone)","µg"],"1186":[null,1,"Folic acid","µg"],"1187":[null,1,"Folate, food","µg"],"1190":[null,1,"Folate, DFE","µg"],"1198":[null,1,"Betaine","mg"],"1210":["trp",1,"Tryptophan","g"],"1211":["thr",1,"Threonine","g"],"1212":["ile",1,"Isoleucine","g"],"1213":["leu",1,"Leucine","g"],"1214":["lys",1,"Lysine","g"],"1215":["met_",1,"Methionine","g"],"1216":[null,1,"Cystine","g"],"1217":["phe_",1,"Phenylalanine","g"],"1218":["tyr_",1,"Tyrosine","g"],"1219":["val",1,"Valine","g"],"1220":["arg",1,"Arginine","g"],"1221":["his",1,"Histidine","g"],"1222":["ala",1,"Alanine","g"],"1223":["asp",1,"Aspartic acid","g"],"1224":["glu",1,"Glutamic acid","g"],"1225":["gly",1,"Glycine","g"],"1226":["pro",1,"Proline","g"],"1227":["ser",1,"Serine","g"],"1228":[null,1,"Hydroxyproline","g"],"1242":[null,1,"Vitamin E, added","mg"],"1246":[null,1,"Vitamin B-12, added","µg"],"1253":["chol",1,"Cholesterol","mg"],"1257":[null,1,"Fatty acids, total trans","g"],"1258":["sfa",1,"Fatty acids, total saturated","g"],"1259":[null,1,"SFA 4:0","g"],"1260":[null,1,"SFA 6:0","g"],"1261":[null,1,"SFA 8:0","g"],"1262":[null,1,"SFA 10:0","g"],"1263":[null,1,"SFA 12:0","g"],"1264":[null,1,"SFA 14:0","g"],"1265":[null,1,"SFA 16:0","g"],"1266":[null,1,"SFA 18:0","g"],"1267":[null,1,"SFA 20:0","g"],"1268":[null,1,"MUFA 18:1","g"],"1269":[null,1,"PUFA 18:2","g"],"1270":[null,1,"PUFA 18:3","g"],"1271":[null,1,"PUFA 20:4","g"],"1272":["dha",1000,"PUFA 22:6 n-3 (DHA)","g"],"1273":[null,1,"SFA 22:0","g"],"1274":[null,1,"MUFA 14:1","g"],"1275":[null,1,"MUFA 16:1","g"],"1276":[null,1,"PUFA 18:4","g"],"1277":[null,1,"MUFA 20:1","g"],"1278":["epa",1000,"PUFA 20:5 n-3 (EPA)","g"],"1279":[null,1,"MUFA 22:1","g"],"1280":["dpa",1000,"PUFA 22:5 n-3 (DPA)","g"],"1283":[null,1,"Phytosterols","mg"],"1285":[null,1,"Stigmasterol","mg"],"1286":[null,1,"Campesterol","mg"],"1288":[null,1,"Beta-sitosterol","mg"],"1292":["mufa",1,"Fatty acids, total monounsaturated","g"],"1293":["pufa",1,"Fatty acids, total polyunsaturated","g"],"1299":[null,1,"SFA 15:0","g"],"1300":[null,1,"SFA 17:0","g"],"1301":[null,1,"SFA 24:0","g"],"1303":[null,1,"TFA 16:1 t","g"],"1304":[null,1,"TFA 18:1 t","g"],"1305":[null,1,"TFA 22:1 t","g"],"1306":[null,1,"TFA 18:2 t not further defined","g"],"1307":[null,1,"PUFA 18:2 i","g"],"1310":[null,1,"TFA 18:2 t,t","g"],"1311":[null,1,"PUFA 18:2 CLAs","g"],"1312":[null,1,"MUFA 24:1 c","g"],"1313":[null,1,"PUFA 20:2 n-6 c,c","g"],"1314":[null,1,"MUFA 16:1 c","g"],"1315":[null,1,"MUFA 18:1 c","g"],"1316":["la",1,"PUFA 18:2 n-6 c,c","g"],"1317":[null,1,"MUFA 22:1 c","g"],"1321":[null,1,"PUFA 18:3 n-6 c,c,c","g"],"1323":[null,1,"MUFA 17:1","g"],"1325":[null,1,"PUFA 20:3","g"],"1329":[null,1,"Fatty acids, total trans-monoenoic","g"],"1331":[null,1,"Fatty acids, total trans-polyenoic","g"],"1332":[null,1,"SFA 13:0","g"],"1333":[null,1,"MUFA 15:1","g"],"1404":["ala3",1,"PUFA 18:3 n-3 c,c,c (ALA)","g"],"1405":[null,1,"PUFA 20:3 n-3","g"],"1406":[null,1,"PUFA 20:3 n-6","g"],"1408":[null,1,"PUFA 20:4 n-6","g"],"1409":[null,1,"PUFA 18:3i","g"],"1410":[null,1,"PUFA 21:5","g"],"1411":[null,1,"PUFA 22:4","g"],"1412":[null,1,"MUFA 18:1-11 t (18:1t n-7)","g"],"2000":["sug",1,"Total Sugars","g"]};
 function P(){return root.MealProducts}
 function region(r){var m=/-([a-z]{2})$/.exec(r.id);return m&&REGION[m[1]]||''}
-function sourceLabel(r){return 'Happy Meal · Десерты 1.0 · '+(KIND[r.recordKind]||r.recordKind)+(r.sourceUrls&&r.sourceUrls[0]?' · '+r.sourceUrls[0]:'')}
+function libName(){return 'Десерты'+(LIB.version?' '+LIB.version:'')}
+function ruDate(x){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x||''));return m?m[3]+'.'+m[2]+'.'+m[1]:String(x||'')}
+function sourceLabel(r){return 'Happy Meal · '+libName()+' · '+(KIND[r.recordKind]||r.recordKind)+(r.sourceUrls&&r.sourceUrls[0]?' · '+r.sourceUrls[0]:'')}
 function target(r,n){
  var parts=n.key.split(':'),ns=parts[0],name=parts[parts.length-1];
  if(ns==='label'){
@@ -52,8 +58,10 @@ function noteFor(r,n,t){
  else if(q==='label_value')out.push('Значение этикетки производителя.');
  else if(r.recordKind==='assembled_model')out.push('Сумма готовых компонентов модели, не измерение.');
  else if(r.recordKind==='recipe_estimate')out.push('Расчёт по рецепту: сумма ингредиентов ÷ выход автора; потери не откалиброваны.');
+ var ln=n.key.split(':');if(ln[0]==='label'&&LABEL_NOTE[ln[ln.length-1]])out.push(LABEL_NOTE[ln[ln.length-1]]);
  if(t.kind==='custom'&&t.key==='prop:dessert:carbohydrate')out.push('Определение углеводов этикетки США отличается от BLS; в общей строке «Углеводы» остаётся «нет данных», не ноль.');
  else if(t.kind==='standard'&&t.key==='carb'&&r.recordKind==='branded_label')out.push('Углеводы — как указано на этикетке '+(region(r)||'региона')+'; определение может отличаться от BLS.');
+ if(n.estimate&&n.estimate.fdcId)out.push('Оценка по близкому продукту: '+n.estimate.source+' · FDC '+n.estimate.fdcId+(n.estimate.sourceValue!=null?', в источнике '+fmt(n.estimate.sourceValue)+' '+unit:'')+'.');
  if(n.status==='missing')out.push('В источнике нет значения: неизвестно, не ноль.');
  return out.join(' ');
 }
@@ -62,6 +70,9 @@ function fields(r){
  r.nutrients.forEach(function(n){
   var t=target(r,n),v=finite(n.value),field={value:v==null?null:(t.factor&&t.factor!==1?v*t.factor:v),status:v==null?'missing':'value',origin:origin,source:label,notes:noteFor(r,n,t)};
   if(n.qualifier==='less_than'&&v!=null)field.sourceQualifier={state:'less_than',bound:field.value};
+  /* С 1.2: оценка по близкому продукту (B2 чизкейка «Нью-Йорк» — USDA 172711): в карточке «≈», источник поля — сама оценка */
+  if(/^estimated/.test(n.qualifier||'')&&v!=null)field.sourceQualifier={estimated:true,basis:n.qualifier};
+  if(n.estimate&&n.estimate.source)field.source=n.estimate.source+(n.estimate.fdcId?' · FDC '+n.estimate.fdcId:'')+' · оценка по близкому продукту';
   if(t.kind==='standard'){if(std[t.key])throw Error('Dessert nutrient mapped twice: '+t.key);std[t.key]=field}
   else custom.push(Object.assign({key:t.key,kind:'custom',name:t.name,unit:t.unit,canonicalUnit:t.unit,originalUnit:t.originalUnit,category:'custom'},field));
  });
@@ -84,7 +95,8 @@ function portions(r){
 }
 function makeFood(r,input){
  var ctx=r.sourceContext||{},p=portions(r),label=r.recordKind==='branded_label',reg=region(r),lim=(r.limitations||[]).map(String);
- var f={id:r.id,n:String(r.titleRu).trim(),names:{ru:String(r.titleRu).trim()},catalogSource:'HM-DESSERT',revision:REVISION,
+ /* Ревизия карточки — из записи (исправленная карточка получает новый снимок в дневнике); без поля — прежняя общая 20261109 */
+ var f={id:r.id,n:String(r.titleRu).trim(),names:{ru:String(r.titleRu).trim()},catalogSource:'HM-DESSERT',revision:r.revision==null?REVISION:r.revision,
   src:label?'Десерты · этикетка':r.recordKind==='assembled_model'?'Десерты · расчётная модель':'Десерты · расчёт по рецепту',
   por:p.por,porG:1,porNote:p.note,
   composition:{version:1,basisGrams:100,fields:fields(r)},
@@ -101,8 +113,9 @@ function makeFood(r,input){
 function ingest(input){
  if(!input||input.schema!==SCHEMA||!Array.isArray(input.foods)||!input.nutrientDefinitions||typeof input.version!=='string')throw Error('Invalid dessert library');
  var ids=new Set(),own=[],mem={},memIds=[];
+ LIB={version:input.version.split('.').slice(0,2).join('.'),date:ruDate(input.date),author:String(input.author||'')};
  input.foods.forEach(function(r){
-  if(!r||typeof r.id!=='string'||ids.has(r.id)||!String(r.titleRu||'').trim()||!r.basis||r.basis.type!=='mass'||r.basis.grams!==100||!Array.isArray(r.nutrients)||r.eligibleForImport!==true)throw Error('Invalid dessert record');
+  if(!r||typeof r.id!=='string'||ids.has(r.id)||!String(r.titleRu||'').trim()||!r.basis||r.basis.type!=='mass'||r.basis.grams!==100||!Array.isArray(r.nutrients)||r.eligibleForImport!==true||(r.revision!=null&&!(Number.isSafeInteger(r.revision)&&r.revision>REVISION)))throw Error('Invalid dessert record');
   ids.add(r.id);
   r.nutrients.forEach(function(n){var d=input.nutrientDefinitions[n.key];if(!d||d.unit!==n.unit||(n.value==null)!==(n.status==='missing'))throw Error('Invalid dessert nutrient '+n.key)});
   if(/^hmdessert:/.test(r.id)){var f=makeFood(r,input);P().validate(f);own.push(f)}
@@ -145,22 +158,19 @@ function counts(){var own=foods.length,mem=memberIds.filter(function(id){return 
 function settingsHTML(){
  var c=counts(),head='<h3>Десерты · коллекция</h3>';
  var status=state==='ok'?c.total+' записей: '+c.own+' карточек этикеток и расчётных моделей в этом каталоге и '+c.members+' отметок у продуктов BLS, USDA, кавказской и узбекской кухни.':state==='loading'?'Загрузка библиотеки…':state==='fail'?'Библиотека не загрузилась. Сохранённые продукты и записи доступны.':'Библиотека загрузится при включении.';
- return head+'<p>Библиотека десертов 1.0 (ChatGPT, 09.11.2026). '+status+'</p><p>Этикетка относится к своему продукту и региону; расчётные модели помечены и не выдаются за измерения. Неизвестные микроэлементы остаются неизвестными — не нулями. «Менее N» на этикетке показывается как граница. Углеводы этикеток США (включая клетчатку) — отдельной строкой, как у USDA.</p><p>Продукты BLS, USDA и кухонь, входящие в коллекцию, остаются в своих каталогах (без второй карточки): у них появляется слово «десерт» в поиске, у записей USDA — русское название. Семь черновых позиций набора в приложение не входят.</p>'+(state==='fail'?'<button class="happy-button" data-dessert-retry>Повторить загрузку десертов</button>':'');
+ return head+'<p>'+(LIB.version?'Библиотека десертов '+esc(LIB.version)+' ('+esc([LIB.author,LIB.date].filter(Boolean).join(', '))+'). ':'Библиотека десертов. ')+status+'</p><p>Этикетка относится к своему продукту и региону; расчётные модели помечены и не выдаются за измерения. Неизвестные микроэлементы остаются неизвестными — не нулями. «Менее N» на этикетке показывается как граница. Углеводы этикеток США (включая клетчатку) — отдельной строкой, как у USDA.</p><p>Продукты BLS, USDA и кухонь, входящие в коллекцию, остаются в своих каталогах (без второй карточки): у них появляется слово «десерт» в поиске, у записей USDA — русское название.</p>'+(state==='fail'?'<button class="happy-button" data-dessert-retry>Повторить загрузку десертов</button>':'');
 }
-function membershipHTML(f){var m=member(f);return m?'<p class="happy-note">Входит в коллекцию «Десерты 1.0» Happy Meal'+(norm(m.titleRu)!==norm(f.n)?' как «'+esc(m.titleRu)+'»':'')+'. Состав — из своего каталога, без изменений.</p>':''}
+function membershipHTML(f){var m=member(f);return m?'<p class="happy-note">Входит в коллекцию «Десерты»'+(norm(m.titleRu)!==norm(f.n)?' как «'+esc(m.titleRu)+'»':'')+'.</p>':''}
+/* Meal 31.1: карточка — вид записи, порция и компоненты; заметки сверки этикеток, флаги проверки и оговорки — в данных библиотеки */
 function infoHTML(f){
  if(!owns(f))return '';
- var info=f.sourceInfo||{},lim=info.limitations||[],less=(f.composition.fields||[]).filter(function(x){return x.sourceQualifier&&x.sourceQualifier.state==='less_than'});
- return '<section class="happy-card mc-catalog-info"><span class="mc-source-tag">Happy Meal · Десерты 1.0 · '+esc(KIND[info.recordKind]||info.recordKind||'')+(info.region?' · '+esc(info.region):'')+'</span>'+
-  '<p class="happy-note">'+esc(f.sourceNotes||'На 100 г.')+'</p>'+
-  (f.porNote?'<p class="happy-note">'+esc(f.porNote)+'</p>':'')+
-  (less.length?'<p class="happy-note">'+less.map(function(x){return esc(x.name)+': менее '+fmt(x.value)+' '+esc(x.unit)}).join('; ')+' — верхняя граница по этикетке.</p>':'')+
-  (info.qualityFlags&&info.qualityFlags.length?'<p class="happy-note">Отметки проверки: '+info.qualityFlags.map(esc).join('; ')+'</p>':'')+
-  (info.model&&info.model.ingredients?'<details><summary>Компоненты модели</summary><ul>'+info.model.ingredients.map(function(i){return '<li>'+esc(typeof i==='string'?i:(i.name||i.id||'')+(i.grams?' — '+fmt(i.grams)+' г':'')+(i.sourceId?' · '+i.sourceId:''))+'</li>'}).join('')+'</ul>'+(info.model.yieldGrams?'<p class="happy-note">Выход '+fmt(info.model.yieldGrams)+' г.</p>':'')+'</details>':'')+
-  (info.urls||[]).map(function(url){return '<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Источник ↗</a>'}).join(' ')+
-  '<p class="happy-note">'+esc(footer(f))+'</p></section>';
+ var info=f.sourceInfo||{};
+ return '<section class="happy-card mc-catalog-info"><span class="mc-source-tag">Десерты · '+esc(KIND[info.recordKind]||info.recordKind||'')+(info.region?' · '+esc(info.region):'')+'</span>'+
+  (f.porNote&&/\d/.test(f.porNote)?'<p class="happy-note">'+esc(f.porNote)+'</p>':'')+
+  (info.model&&info.model.ingredients?'<details><summary>Ингредиенты</summary><ul>'+info.model.ingredients.map(function(i){return '<li>'+esc(typeof i==='string'?i:(i.name||i.id||'')+(i.grams?' — '+fmt(i.grams)+' г':''))+'</li>'}).join('')+'</ul>'+(info.model.yieldGrams?'<p class="happy-note">Выход: '+fmt(info.model.yieldGrams)+' г.</p>':'')+'</details>':'')+
+  ((info.urls||[]).length?'<p><a href="'+esc(info.urls[0])+'" target="_blank" rel="noopener noreferrer">Источник ↗</a></p>':'')+'</section>';
 }
-function footer(f){if(!owns(f))return null;var info=f.sourceInfo||{};return 'Библиотека десертов 1.0 · ChatGPT, 09.11.2026 · '+(KIND[info.recordKind]||'')+(info.retrievedOn?', получено '+info.retrievedOn:'')+'. Подключение: Happy Meal Update 25. Неизвестное значение — не ноль.'}
+function footer(f){if(!owns(f))return null;var by=[LIB.author,LIB.date].filter(Boolean).join(', ');return 'Каталог «Десерты»'+(by?' · '+by:'')}
 root.MealDesserts={ingest:ingest,append:append,load:load,owns:owns,member:member,membershipHTML:membershipHTML,infoHTML:infoHTML,footer:footer,settingsHTML:settingsHTML,counts:counts,status:function(){return state},foods:function(){return foods.slice()},memberIds:function(){return memberIds.slice()}};
 if(root.document){root.document.addEventListener('click',function(ev){if(ev.target.closest('[data-dessert-retry]'))load(true)});load()}   // как uzbek.js: модуль стоит после catalog.js, поэтому стартует сам
 })(typeof window!=='undefined'?window:globalThis);

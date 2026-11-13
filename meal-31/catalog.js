@@ -34,7 +34,9 @@ function makeFood(r,src){
    return {key:d.key,kind:'standard',name:d.title,unit:d.unit,canonicalUnit:d.unit,category:d.group,value:typeof v==='number'?v:null,status:typeof v==='number'?'value':'missing',origin:'copied',source:label+' · '+r.sourceUrl,sourceQualifier:P.clone(q)||null,notes:qualifierNote(q)};
  });
  (r.extraProperties||[]).forEach(x=>fields.push(Object.assign({kind:'custom',origin:'copied',source:label+' · '+r.sourceUrl,status:x.value==null?'missing':'value',category:'custom',notes:''},P.clone(x))));
- var f={id:r.id,n:r.names.ru,names:P.clone(r.names),catalogSource:'MEXT',catalogCode:r.code,catalogFamily:r.family,catalogVariant:P.clone(r.variant),revision:src.revision||20260327,src:'MEXT',por:{},porG:1,sourceInfo:{source:'MEXT · Standard Tables of Food Composition in Japan',version:src.edition,url:r.sourceUrl,code:r.code,attribution:src.attribution,tables:P.clone(src.downloads),originalValues:P.clone(r.sourceRaw),fieldTables:P.clone(r.sourceTables),notesJa:r.notesJa},sourceNotes:r.sourceNotesRu||'На 100 г съедобной части. '+(r.notesRu||''),ediblePortion:P.clone(r.ediblePortion),composition:{version:1,basisGrams:100,fields:fields}};
+ // Meal 31.1: «… первого сорта по MEXT» — без «по MEXT»: каталог и так подписан (Астамур 13.11 00:22)
+ var ru=String(r.names.ru||'').replace(/ по MEXT$/,''),names=P.clone(r.names);names.ru=ru;if(names.en)names.en=String(names.en).replace(/ in MEXT$/,'');
+ var f={id:r.id,n:ru,names:names,catalogSource:'MEXT',catalogCode:r.code,catalogFamily:r.family,catalogVariant:P.clone(r.variant),revision:src.revision||20260327,src:'MEXT',por:{},porG:1,sourceInfo:{source:'MEXT · Standard Tables of Food Composition in Japan',version:src.edition,url:r.sourceUrl,code:r.code,attribution:src.attribution,tables:P.clone(src.downloads),originalValues:P.clone(r.sourceRaw),fieldTables:P.clone(r.sourceTables),notesJa:r.notesJa},sourceNotes:r.sourceNotesRu||'На 100 г съедобной части. '+(r.notesRu||''),ediblePortion:P.clone(r.ediblePortion),composition:{version:1,basisGrams:100,fields:fields}};
  P.project(f);f.w=norm(Object.values(r.names).join(' ')+' '+(r.aliases||[]).join(' ')).split(/[^\p{L}\p{N}]+/u).filter(Boolean);f.n=name(f);return f;
 }
 function ingest(data){source=data.source;foods={};data.foods.forEach(r=>{foods[r.id]=makeFood(r,source)});state='ok';return foods}
@@ -71,26 +73,29 @@ function infoHTML(f){
  if(root.MealDesserts&&root.MealDesserts.owns(f))return root.MealDesserts.infoHTML(f);
  return infoHTMLBase(f)+dessert;
 }
+function firstSentence(t){t=String(t||'');var m=t.match(/^[^.]*\./);return m?m[0]:t}
 function infoHTMLBase(f){
  var ref=verifiedReference(f);
- if(ref)return '<section class="happy-card mc-catalog-info"><span class="mc-source-tag">'+esc(ref.kind==='KAV'?'Happy Meal · региональная библиотека':'BLS · Германия')+'</span><p>'+esc(ref.name)+' · '+esc(ref.code)+'</p><p class="happy-note">'+esc(ref.kind==='KAV'?'Существующая карточка региональной библиотеки Happy Meal. Это не рецепт на базе MEXT.':'Bundeslebensmittelschlüssel 4.0 · Max Rubner-Institut (2025).')+'</p></section>';
+ if(ref)return '';   // Meal 31.1: BLS и региональная библиотека — только строка источника внизу карточки
  if(!f.catalogSource)return '';
  if(f.catalogSource==='USDA'&&root.MealUSDA)return root.MealUSDA.infoHTML(f);
  if(root.MealUzbek&&root.MealUzbek.owns(f))return root.MealUzbek.infoHTML(f);
- if(f.catalogSource!=='MEXT'&&!mextRecipe(f))return '<section class="happy-card mc-catalog-info"><p class="happy-note">Источник справочника не подтверждён. Сохранённый состав записи не изменён.</p></section>';
+ if(f.catalogSource!=='MEXT'&&!mextRecipe(f))return '';
  var names=f.names||{},isMext=f.catalogSource==='MEXT',url=f.sourceInfo&&f.sourceInfo.url;
- return '<section class="happy-card mc-catalog-info"><span class="mc-source-tag">'+esc(isMext?'MEXT · Япония · '+f.catalogCode:'Happy Meal · расчётный рецепт')+'</span><dl class="mc-names">'+Object.keys(LANGS).map(l=>'<div><dt>'+LANGS[l]+'</dt><dd lang="'+l+'">'+esc(names[l]||'—')+'</dd></div>').join('')+'</dl>'+
- '<p class="happy-note">'+esc(f.sourceNotes||'На 100 г съедобной части.')+'</p>'+(url&&/^https:\/\/(?:www\.mext\.go\.jp|fooddb\.mext\.go\.jp)\//.test(url)?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Таблицы MEXT ↗</a>':'')+
- (f.recipe?'<details><summary>Ингредиенты и расчёт</summary><ul>'+f.recipe.ingredients.map(i=>'<li>'+esc(i.name)+' — '+i.grams+' г</li>').join('')+'</ul><p class="happy-note">Выход: '+f.recipe.yieldGrams+' г. Сумма состава ингредиентов ÷ выход × 100. Если по ингредиенту нет результата, итоговый показатель остаётся неизвестным. Соус включён только в указанном количестве.</p></details>':'')+'</section>';
+ return '<section class="happy-card mc-catalog-info"><span class="mc-source-tag">'+esc(isMext?'MEXT · Япония':'Happy Meal · рецепт')+'</span><dl class="mc-names">'+Object.keys(LANGS).map(l=>'<div><dt>'+LANGS[l]+'</dt><dd lang="'+l+'">'+esc(names[l]||'—')+'</dd></div>').join('')+'</dl>'+
+ (isMext?'<p class="happy-note">'+esc(firstSentence(f.sourceNotes||'На 100 г съедобной части.'))+'</p>':'')+(url&&/^https:\/\/(?:www\.mext\.go\.jp|fooddb\.mext\.go\.jp)\//.test(url)?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Таблицы MEXT ↗</a>':'')+
+ (f.recipe?'<details><summary>Ингредиенты</summary><ul>'+f.recipe.ingredients.map(i=>'<li>'+esc(i.name)+' — '+i.grams+' г</li>').join('')+'</ul><p class="happy-note">Выход: '+f.recipe.yieldGrams+' г.</p></details>':'')+'</section>';
 }
-function sourceFooter(f){if(root.MealDesserts&&root.MealDesserts.owns(f))return root.MealDesserts.footer(f);if(root.MealUzbek&&root.MealUzbek.owns(f))return root.MealUzbek.footer(f);var ref=verifiedReference(f);if(ref)return ref.kind==='KAV'?'Happy Meal · региональная библиотека · '+ref.code+'. Сохранённый состав существующей карточки.':'BLS 4.0 · Max Rubner-Institut (2025) · '+ref.code+'.';return f.catalogSource==='USDA'?'USDA FoodData Central · SR Legacy, апрель 2018 · CC0. Оригинальные названия и значения USDA; выбранные русские названия — Happy Meal.':f.catalogSource==='MEXT'?'MEXT, таблицы 2023 с исправлениями от 27.03.2026. Переводы и подборка: Happy Meal.':mextRecipe(f)?'Расчёт Happy Meal по ингредиентам MEXT. Это заданный рецепт, состав ресторанного блюда может отличаться.':f.catalogSource?'Источник справочника не подтверждён; сохранённый состав записи не изменён.':null}
+function sourceFooter(f){if(root.MealDesserts&&root.MealDesserts.owns(f))return root.MealDesserts.footer(f);if(root.MealUzbek&&root.MealUzbek.owns(f))return root.MealUzbek.footer(f);var ref=verifiedReference(f);if(ref)return ref.kind==='KAV'?'Happy Meal · региональная библиотека':'BLS 4.0 · Max Rubner-Institut (2025)';return f.catalogSource==='USDA'?'USDA FoodData Central · SR Legacy (2018)':f.catalogSource==='MEXT'?'MEXT · таблицы 2023':mextRecipe(f)?'Happy Meal · состав по ингредиентам MEXT':f.catalogSource?'Источник не указан':null}
+/* Meal 31.1: значения без лишних знаков — ккал целыми, от 100 — целыми, от 1 — до десятых, меньше 1 — две значащие цифры */
+function num(v,unit){var a=Math.abs(v),o=/ккал|kcal/i.test(unit||'')||a>=100?{maximumFractionDigits:0}:a>=1?{maximumFractionDigits:1}:{maximumSignificantDigits:2};return new Intl.NumberFormat('ru-RU',o).format(v)}
 function amount(v,unit,field){
  var q=field&&field.sourceQualifier;
- if(q&&q.state==='trace'&&field.status!=='value')return 'Следы (Tr)';
- if(q&&q.state==='less_than'&&v!=null)return '< '+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(v)+' '+esc(unit);
+ if(q&&q.state==='trace'&&field.status!=='value')return 'следы';
+ if(q&&q.state==='less_than'&&v!=null)return '< '+num(v,unit)+' '+esc(unit);
  if(field&&field.status==='not_detected')return 'Не обнаружено';
  if(v==null){if(q&&q.reason==='MEXT_RAE_not_equivalent_to_BLS_RE')return 'См. RAE ниже';if(q&&q.reason==='MEXT_alpha_tocopherol_not_equivalent_to_BLS_vitamin_E_equivalent')return 'См. α-токоферол ниже';return '—'}
- return (q&&q.estimated?'≈ ':'')+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(v)+' '+esc(unit);
+ return (q&&q.estimated?'≈ ':'')+num(v,unit)+' '+esc(unit);
 }
 function renderSettings(){
  var el=root.document&&root.document.getElementById('mealSources');if(!el)return;
@@ -141,16 +146,16 @@ async function load(){
 /* Explicit, editable sample recipes. Cooked rice mass is used; no hidden cooking yield. */
 function addRecipes(){
  var definitions=[
-  ['shoyu-ramen','ramen-recipe',{ru:'Рамен сёю с курицей — рецепт',en:'Chicken shoyu ramen — recipe',ja:'鶏しょうゆラーメン（レシピ）'},{ru:'Сёю с курицей',en:'Chicken shoyu',ja:'鶏しょうゆ'},[['01048',180],['17024',300],['11288',70],['12005',50],['17007',15],['06227',10]]],
-  ['miso-ramen','ramen-recipe',{ru:'Рамен мисо с курицей — рецепт',en:'Chicken miso ramen — recipe',ja:'鶏みそラーメン（レシピ）'},{ru:'Мисо с курицей',en:'Chicken miso',ja:'鶏みそ'},[['01048',180],['17024',300],['11288',70],['12005',50],['17045',25],['06227',10]]],
-  ['mushroom-ramen','ramen-recipe',{ru:'Рамен с шиитаке и шпинатом — рецепт',en:'Shiitake and spinach ramen — recipe',ja:'しいたけとほうれん草のラーメン（レシピ）'},{ru:'Шиитаке и шпинат',en:'Shiitake and spinach',ja:'しいたけ・ほうれん草'},[['01048',180],['17022',300],['06268',60],['17007',15],['05018',5],['06227',10]]],
+  ['shoyu-ramen','ramen-recipe',{ru:'Рамен сёю с курицей',en:'Chicken shoyu ramen',ja:'鶏しょうゆラーメン'},{ru:'Сёю с курицей',en:'Chicken shoyu',ja:'鶏しょうゆ'},[['01048',180],['17024',300],['11288',70],['12005',50],['17007',15],['06227',10]]],
+  ['miso-ramen','ramen-recipe',{ru:'Рамен мисо с курицей',en:'Chicken miso ramen',ja:'鶏みそラーメン'},{ru:'Мисо с курицей',en:'Chicken miso',ja:'鶏みそ'},[['01048',180],['17024',300],['11288',70],['12005',50],['17045',25],['06227',10]]],
+  ['mushroom-ramen','ramen-recipe',{ru:'Рамен с шиитаке и шпинатом',en:'Shiitake and spinach ramen',ja:'しいたけとほうれん草のラーメン'},{ru:'Шиитаке и шпинат',en:'Shiitake and spinach',ja:'しいたけ・ほうれん草'},[['01048',180],['17022',300],['06268',60],['17007',15],['05018',5],['06227',10]]],
 
-  ['salmon-nigiri','sushi-nigiri',{ru:'Суши нигири с лососем — рецепт',en:'Salmon nigiri — recipe',ja:'サーモンにぎり（レシピ）'},{ru:'Лосось',en:'Salmon',ja:'サーモン'},[['01088',40],['10438',20],['17016',2]]],
-  ['tuna-nigiri','sushi-nigiri',{ru:'Суши нигири с тунцом — рецепт',en:'Tuna nigiri — recipe',ja:'まぐろにぎり（レシピ）'},{ru:'Тунец',en:'Tuna',ja:'まぐろ'},[['01088',40],['10252',20],['17016',2]]],
-  ['cucumber-maki','sushi-maki',{ru:'Суши маки с огурцом — рецепт',en:'Cucumber maki — recipe',ja:'かっぱ巻き（レシピ）'},{ru:'Огурец',en:'Cucumber',ja:'きゅうり'},[['01088',120],['06065',40],['09004',3],['17016',6]]],
-  ['salmon-maki','sushi-maki',{ru:'Суши маки с лососем — рецепт',en:'Salmon maki — recipe',ja:'サーモン巻き（レシピ）'},{ru:'Лосось',en:'Salmon',ja:'サーモン'},[['01088',120],['10438',50],['09004',3],['17016',6]]],
-  ['salmon-poke','poke',{ru:'Поке с лососем — рецепт',en:'Salmon poke bowl — recipe',ja:'サーモンポキ丼（レシピ）'},{ru:'Лосось',en:'Salmon',ja:'サーモン'},[['01088',150],['10438',90],['07006',50],['06065',60],['06016',40],['17007',12],['05018',5]]],
-  ['tuna-poke','poke',{ru:'Поке с тунцом — рецепт',en:'Tuna poke bowl — recipe',ja:'まぐろポキ丼（レシピ）'},{ru:'Тунец',en:'Tuna',ja:'まぐろ'},[['01088',150],['10252',90],['07006',50],['06065',60],['06016',40],['17007',12],['05018',5]]]
+  ['salmon-nigiri','sushi-nigiri',{ru:'Суши нигири с лососем',en:'Salmon nigiri',ja:'サーモンにぎり'},{ru:'Лосось',en:'Salmon',ja:'サーモン'},[['01088',40],['10438',20],['17016',2]]],
+  ['tuna-nigiri','sushi-nigiri',{ru:'Суши нигири с тунцом',en:'Tuna nigiri',ja:'まぐろにぎり'},{ru:'Тунец',en:'Tuna',ja:'まぐろ'},[['01088',40],['10252',20],['17016',2]]],
+  ['cucumber-maki','sushi-maki',{ru:'Суши маки с огурцом',en:'Cucumber maki',ja:'かっぱ巻き'},{ru:'Огурец',en:'Cucumber',ja:'きゅうり'},[['01088',120],['06065',40],['09004',3],['17016',6]]],
+  ['salmon-maki','sushi-maki',{ru:'Суши маки с лососем',en:'Salmon maki',ja:'サーモン巻き'},{ru:'Лосось',en:'Salmon',ja:'サーモン'},[['01088',120],['10438',50],['09004',3],['17016',6]]],
+  ['salmon-poke','poke',{ru:'Поке с лососем',en:'Salmon poke bowl',ja:'サーモンポキ丼'},{ru:'Лосось',en:'Salmon',ja:'サーモン'},[['01088',150],['10438',90],['07006',50],['06065',60],['06016',40],['17007',12],['05018',5]]],
+  ['tuna-poke','poke',{ru:'Поке с тунцом',en:'Tuna poke bowl',ja:'まぐろポキ丼'},{ru:'Тунец',en:'Tuna',ja:'まぐろ'},[['01088',150],['10252',90],['07006',50],['06065',60],['06016',40],['17007',12],['05018',5]]]
  ];
  definitions.forEach(d=>{
    var ingredients=d[4].map(i=>({food:foods['mext:'+i[0]],grams:i[1]}));if(ingredients.some(i=>!i.food))return;
@@ -162,7 +167,8 @@ function addRecipes(){
      var parts=ingredients.map(i=>i.food.composition.fields.find(x=>x.key===def.key&&x.unit===def.unit)),known=parts.every(x=>x&&x.status==='value');
      fields.push({key:def.key,kind:'custom',name:def.name,unit:def.unit,category:def.category,value:known?parts.reduce((sum,x,j)=>sum+x.value*ingredients[j].grams,0)/mass:null,status:known?'value':'missing',origin:'calculated',source:'Happy Meal · рецепт 1 · ингредиенты MEXT',notes:known?'Расчёт по готовым съедобным ингредиентам.':'Нет результата по одному или нескольким ингредиентам.'});
    });
-   var f={id:'hmjp:'+d[0],n:d[2].ru,names:d[2],catalogSource:'HM-JP',catalogFamily:d[1],catalogVariant:d[3],catalogCode:d[0],revision:1,src:'Happy Meal · расчёт',por:{'порция':mass},porG:1,composition:{version:1,basisGrams:100,fields:fields},sourceInfo:{source:'Happy Meal · расчёт по MEXT',version:1},sourceNotes:'Пример рецепта Happy Meal. Масса готовых съедобных ингредиентов; состав рассчитан, не измерен в лаборатории.',recipe:{yieldGrams:mass,ingredients:ingredients.map(i=>({id:i.food.id,name:i.food.names.ru,grams:i.grams,source:i.food.sourceInfo}))}};
+   // Meal 31.1: названия без «— рецепт» (Астамур 13.11 00:22); revision 2 — новые записи берут новое название, старые хранят прежнее
+   var f={id:'hmjp:'+d[0],n:d[2].ru,names:d[2],catalogSource:'HM-JP',catalogFamily:d[1],catalogVariant:d[3],catalogCode:d[0],revision:2,src:'Happy Meal · расчёт',por:{'порция':mass},porG:1,composition:{version:1,basisGrams:100,fields:fields},sourceInfo:{source:'Happy Meal · расчёт по MEXT',version:1},sourceNotes:'Пример рецепта Happy Meal. Масса готовых съедобных ингредиентов; состав рассчитан, не измерен в лаборатории.',recipe:{yieldGrams:mass,ingredients:ingredients.map(i=>({id:i.food.id,name:i.food.names.ru,grams:i.grams,source:i.food.sourceInfo}))}};
    P.project(f);f.w=norm(Object.values(f.names).join(' ')).split(/[^\p{L}\p{N}]+/u).filter(Boolean);foods[f.id]=f;
  });
 }

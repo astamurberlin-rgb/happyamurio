@@ -1,7 +1,7 @@
 {
  "release": "Happy Meal Update 31",
  "date": "2026-11-13",
- "published": "13.11.2026 11:04 — основной по слову Астамура 11:02 («делай основным»)",
+ "published": "13.11.2026 12:09 — 31.1 по слову Астамура 11:16 («Добивай мелкие правки»); 31 — 13.11.2026 11:04, основной по слову Астамура 11:02 («делай основным»)",
  "entry": "meal-31/index.html",
  "source": {
   "release": "meal-30 (Happy Meal Update 30, основной с 12.11.2026 23:29)",
@@ -34,9 +34,38 @@
    "templates": 31,
    "author": "ChatGPT и Астамур (H072), перенос в библиотеку — Claude",
    "date": "2026-11-11"
+  },
+  "desserts2": {
+   "version": "1.2.0",
+   "dataCommit": "e646041ad0f030a46921cb6ac7474cf63f685801",
+   "manifestCommit": "4261588",
+   "sha256Uncompressed": "5e6354e63ce205d07d42ad7d084cd652dfbfce0c89897fb6f0a49466d0000006",
+   "author": "ChatGPT",
+   "date": "2026-11-12"
+  },
+  "uzbek": {
+   "version": "1.10.4",
+   "dataCommit": "213deb8fa151377f09c7218c43dc4a69355302fa",
+   "manifestCommit": "4261588",
+   "sha256Uncompressed": "37656849f84c2b7396b70185c09cc38fba318b9ff1d084a1ed5ad340e82cb1fa",
+   "author": "ChatGPT (данные), Claude (1.10.3–1.10.4: названия и меры)",
+   "date": "2026-11-13"
   }
  },
- "pointReleases": [],
+ "pointReleases": [
+  {
+   "version": "31.1",
+   "date": "2026-11-13",
+   "changes": [
+    "index.html: строка поиска «N ккал / 100 г · каталог» (catLabel, resHTML); продукт в приёме — название по словам, колонка количества сжимается, мера граммами показывается граммами (.mlHead, amtShort, gramsNamed); склонение мер блюд (UFORMS); ?v=31.1, заголовок и подвал",
+    "portions.js: строка под мерами — только что входит в вес («Без кожуры», «Съедобная часть»)",
+    "catalog.js, usda.js, uzbek.js, desserts.js, controls.js: карточки ⓘ и подпись источника коротко, без методики и оговорок; названия без «— рецепт» и «по MEXT»; числа без лишних знаков (num)",
+    "collections.js, collections.css, sw.js VERSION 31.1: картинки «Сборников» из копии на телефоне, заранее и с плавным появлением; скрипты — сначала из сети",
+    "desserts.js, food-libraries.js, collections.js, catalog-preview.js: десерты 1.2 (запись desserts2), ревизия карточки из записи, B1/ниацин/фолиевая кислота, оценка «≈»; списки «Сборников» — десерты 1.2, узбекская 1.10.4",
+    "checks/check-desserts.mjs, checks/check-shop.mjs; scripts/browser: meal_desserts, uzbek_names, meal_offline, meal_shop, run.sh; release-notes.js 31.1"
+   ]
+  }
+ ],
  "releaseHashes": [
   {
    "path": "PRODUCTS.md",
@@ -45,8 +74,8 @@
   },
   {
    "path": "README.md",
-   "size": 48245,
-   "sha256": "538b799167f937ca8cc043958f2cad1a969a10d3b707d5acea6c30298cbb090d"
+   "size": 53822,
+   "sha256": "3caf110d1dad53a8a9a5b40dd1692011ca4a15ca985a3acb0dde9a3ab6264068"
   },
   {
    "path": "account-ui.js",
@@ -220,8 +249,8 @@
   },
   {
    "path": "catalog-preview.js",
-   "size": 22904,
-   "sha256": "be35a2b4c1b57aac7c59d69fa88961633a43fa818ad819402d46c90b61aed7de"
+   "size": 22758,
+   "sha256": "904c35a9743106a3809450a31620a90fafdd758112d71cfc3cd45e3ca46d420f"
   },
   {
    "path": "catalog.css",
@@ -230,8 +259,8 @@
   },
   {
    "path": "catalog.js",
-   "size": 29469,
-   "sha256": "af1adb7c3dbe1d2e370a02407f6ea17c691a769fe887e740fbe67e6fdfffb0bf"
+   "size": 28488,
+   "sha256": "083419a7f93e7ac80538c5f33e0321917a91034cabb10d911e8779aa220e6a4c"
   },
   {
    "path": "checks/check-auth-identity.mjs",
@@ -245,8 +274,8 @@
   },
   {
    "path": "checks/check-desserts.mjs",
-   "size": 12181,
-   "sha256": "dc9e4b7be7f4f59f98c34a96e261a926c2c2648f5d5c2891ca0e0186764f69eb"
+   "size": 26553,
+   "sha256": "4182380338f55c53e4cd381ec112e77da724f78736bf6962731bda879e7ad241"
   },
   {
    "path": "checks/check-journal-speed.mjs",
@@ -265,8 +294,8 @@
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 10569,
-   "sha256": "f8f8c90d335ac2d25e3c28f23afd23b60c2c5b1cd761c01469161d4108f8c62b"
+   "size": 11867,
+   "sha256": "15ba293770f679b0d1366e2e98c69a5d4ff841b7638dd91734492367da99e6c8"
   },
   {
    "path": "checks/check-sport-summary.mjs",
@@ -285,18 +314,18 @@
   },
   {
    "path": "collections.css",
-   "size": 9995,
-   "sha256": "563d66d2f90e119a3ffd9bb3935ec76c8bc80b30ec5166fbedf231948af3322f"
+   "size": 10386,
+   "sha256": "46ff1a7263fa10013fc8737320d4d25192d4ae6d60013306399015a66b15dffa"
   },
   {
    "path": "collections.js",
-   "size": 18687,
-   "sha256": "3c4e7ccabe412fc752fd9c72bd7bdea2e57e741c36b08d6f1386833155336007"
+   "size": 19389,
+   "sha256": "e9d822022ccdb5852fc683caa8d98da3cd3b64207f4adfb2513c69e9ae046c35"
   },
   {
    "path": "controls.js",
-   "size": 17165,
-   "sha256": "21d8315df491244b07347642ea8ffd38fc18234dd8d22d40902642891249c328"
+   "size": 16840,
+   "sha256": "2f992b0f3a750252697384ebd30bd206d3ab1c2f39189a43c4efc8c639a276e8"
   },
   {
    "path": "counters.js",
@@ -305,13 +334,13 @@
   },
   {
    "path": "desserts.js",
-   "size": 26168,
-   "sha256": "4cd7b261a88704f4da36e4a570cda2caa1d8a3abe5cac00c32b6e3e384a341d5"
+   "size": 28343,
+   "sha256": "d928d8626d9bb6827f40b1382837c25e66919a05303ba83633facbe14318405f"
   },
   {
    "path": "food-libraries.js",
-   "size": 11191,
-   "sha256": "d6ed8c0b8e2e4c97bdb50a564b932bad5c1ad66ee8c7716d69eaa75700e2a7fb"
+   "size": 11192,
+   "sha256": "dff3db44801ee0d4b897ba2607820f939832fe84cb401fb90e8a965a8cd74da3"
   },
   {
    "path": "images/desserts.jpg",
@@ -325,8 +354,8 @@
   },
   {
    "path": "index.html",
-   "size": 646052,
-   "sha256": "ff0b98b9f79ae2cad91d3e3ebe71c214721c443cbaa9d95c3aa9ecb2c980c133"
+   "size": 648567,
+   "sha256": "10857ef4da9c51c567913c285f5007a7eed151485b02458cf2d9a608626ce593"
   },
   {
    "path": "journal-model.js",
@@ -500,8 +529,8 @@
   },
   {
    "path": "portions.js",
-   "size": 32510,
-   "sha256": "a29b577b0104b573fe383030a40a473ac6899126c20541ad649669dca957b068"
+   "size": 32810,
+   "sha256": "46c8a2e7fdeda961c3d53e0cfdc48c01ef97c4b276bb3ab8c315b51b5c6f098f"
   },
   {
    "path": "release-notes.css",
@@ -510,8 +539,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 31971,
-   "sha256": "4126775d5409a59bf476ea13275ffedd8d4a5d283031d6625f91cd3235f6b771"
+   "size": 33511,
+   "sha256": "657ce6553684b92bed332e951cbe87011221dd2b1226e88710f5de55dbca13ee"
   },
   {
    "path": "report.css",
@@ -1845,13 +1874,13 @@
   },
   {
    "path": "sw.js",
-   "size": 2741,
-   "sha256": "cdcd9ee4b5276561117fdd3ab6c5f71cc1fbfad6d963d4e371487e58ff8eea3d"
+   "size": 3461,
+   "sha256": "c609348c3e002a332e39d21d15a7c600b2a846423896994695e4654430580511"
   },
   {
    "path": "usda.js",
-   "size": 9455,
-   "sha256": "08451063e472fb922e5df4ae94dd640ea67f858668d80210ef096a3caaae4326"
+   "size": 9074,
+   "sha256": "5e8f59e982fadf097f28328d47d034f31956fc5a7c3b221e16f1d16b25c40acd"
   },
   {
    "path": "user-products.css",
@@ -1865,8 +1894,8 @@
   },
   {
    "path": "uzbek.js",
-   "size": 4350,
-   "sha256": "10cd2b00e63e4656f44e91ddcdef85629808ce7c75881513054db325bc9a7c02"
+   "size": 3843,
+   "sha256": "f26a4c88172ab3d6cdfd0d280e57ecf22e6cda86c397366050f52d99cdf75bd4"
   },
   {
    "path": "widget-image.js",
