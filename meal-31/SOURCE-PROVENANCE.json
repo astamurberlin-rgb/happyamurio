@@ -68,14 +68,9 @@
  ],
  "releaseHashes": [
   {
-   "path": "PRODUCTS.md",
-   "size": 16788,
-   "sha256": "de2b1904481ba1663fb93e53c453f0411b9aa8583856b35a879a4e06888bcd6b"
-  },
-  {
    "path": "README.md",
-   "size": 53822,
-   "sha256": "3caf110d1dad53a8a9a5b40dd1692011ca4a15ca985a3acb0dde9a3ab6264068"
+   "size": 4676,
+   "sha256": "afd57fc03d2187adf7f05bfbdb0df0dac7d95cb09693ddb2316395b479241ee9"
   },
   {
    "path": "account-ui.js",
@@ -556,11 +551,6 @@
    "path": "search-names.js",
    "size": 8986,
    "sha256": "f289fd86116848bc9ad919ebbc1ca24798763df4fc1722b177ea86c0b68a0a48"
-  },
-  {
-   "path": "shared/README.md",
-   "size": 3877,
-   "sha256": "5c2910ccc7a1f5d87c64983ac1fcf278227fbdd92af17fb66538e1e708feb8d6"
   },
   {
    "path": "shared/apps.json",

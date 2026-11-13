@@ -31,8 +31,8 @@
   },
   {
    "path": "README.md",
-   "size": 27391,
-   "sha256": "2d8ae7974df1d1ea39079d213314193315316b20b7ea65bc302cadcdedade9c0"
+   "size": 3127,
+   "sha256": "946a0407384a9d61395cb883962659375f3153590cfa08a37e9d6dfe42fd54d2"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -298,11 +298,6 @@
    "path": "selfcare.css",
    "size": 11945,
    "sha256": "2d639f91a73d1a0352c5271536571ed6c3bf23e94d9556c9e2ec72c6d32b27ff"
-  },
-  {
-   "path": "shared/README.md",
-   "size": 943,
-   "sha256": "692173b8e2bc15d0bd98f8c067b58fd306bf1bcd4418c9ba003c340a0084c865"
   },
   {
    "path": "shared/apps.json",

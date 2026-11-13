@@ -86,14 +86,9 @@
   "counters_change": "40.4: counter servings reach the energy ring at once — the Meal summary (Meal 27.3, counters:1) names the servings already in the day total, the rest is added from the counters document on the device (shared/happy-summaries.js); the compact copy of the Meal summary moved to happy-energy-meal-v2:<owner>; the Meal summary is asked from the cloud as soon as the session is restored; no new cloud writes, journal sync code unchanged since 40.1",
   "release_files": [
     {
-      "path": "LIBRARY-HISTORY-SCOPE.md",
-      "size": 4616,
-      "sha256": "e56106acf85dea8c8f7ac8ebd9167b5eb0f6ed05131b1069a4d8948f327cc5a9"
-    },
-    {
       "path": "README.md",
-      "size": 52233,
-      "sha256": "19f95ef12e9f1c53df8518836d25e0b4f25117ab7f8d66c94672e12c79d7a964"
+      "size": 4967,
+      "sha256": "a05f5fe856bbe2f039e182a8b7bdb6b6bb59150e9cabb91c09d38bb8d763b88e"
     },
     {
       "path": "app-icons/happy-sport-20261029-152.png",
@@ -209,11 +204,6 @@
       "path": "scripts/write-provenance.mjs",
       "size": 8071,
       "sha256": "9aa818555f226862e000f57935babc6551320ff661c8674adcb7f2d71fef4267"
-    },
-    {
-      "path": "shared/README.md",
-      "size": 3877,
-      "sha256": "5c2910ccc7a1f5d87c64983ac1fcf278227fbdd92af17fb66538e1e708feb8d6"
     },
     {
       "path": "shared/apps.json",
