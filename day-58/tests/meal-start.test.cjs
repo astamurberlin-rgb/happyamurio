@@ -4,7 +4,7 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'..','..');
-const day=fs.readFileSync(path.join(root,'day-58/index.html'),'utf8'),meal=fs.readFileSync(path.join(root,'meal-27/index.html'),'utf8');
+const day=fs.readFileSync(path.join(root,'day-58/index.html'),'utf8'),meal=fs.readFileSync(path.join(root,'meal-31/index.html'),'utf8');
 const between=(s,a,b)=>{const i=s.indexOf(a),j=s.indexOf(b,i+a.length);assert.ok(i>=0&&j>i,'нет куска '+a);return s.slice(i,j);};
 const marked=(s,a,b)=>between(s,a,b).slice(a.length);
 const D='2026-11-11';
@@ -13,7 +13,7 @@ function mealSummary(items){
  const c=vm.createContext({});
  vm.runInContext(marked(meal,'/* MEAL_TIME_MODEL_START */','/* MEAL_TIME_MODEL_END */'),c);
  c.DB={sections:[{k:'am',t:'Завтрак'},{k:'pm',t:'Обед'},{k:'dn',t:'Ужин'},{k:'sn',t:'Перекус'}],days:{[D]:{items}}};
- c.HD_PAIR={am:1,pm:1,dn:1};c.isDrink=id=>id==='water';c.goalOf=()=>0;c.dayFib=()=>null;c.MealProducts={exchange:()=>null};c.FOODS={};c.blsVal=()=>null;c.sumOf=list=>({k:list.filter(x=>x.fid!=='water').length*100,p:0,f:0,c:0});
+ c.HD_PAIR={am:1,pm:1,dn:1};c.isDrink=id=>id==='water';c.goalOf=()=>0;c.dayFib=()=>null;c.MealProducts={exchange:()=>null,forItem:()=>null};c.FOODS={};c.blsVal=()=>null;c.sumOf=list=>({k:list.filter(x=>x.fid!=='water').length*100,p:0,f:0,c:0});
  vm.runInContext(between(meal,'function r1(',"var CL_APP='meal'"),c);
  return JSON.parse(JSON.stringify(c.linkSummary()));
 }

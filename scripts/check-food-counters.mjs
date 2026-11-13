@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {webcrypto} from 'node:crypto';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
 // The root module serves the earlier day/ and meal/ pages. Since Sport Update 38 the reference for new
-// releases is day-52/shared/food-counters.js (write verified by re-reading the row); release copies must match it.
+// releases is day-58/shared/food-counters.js (write verified by re-reading the row); release copies must match it.
 const SOURCE=process.env.FOOD_COUNTERS_SOURCE||'shared/food-counters.js';
 const source=await read(SOURCE);
 const copy=x=>JSON.parse(JSON.stringify(x));
@@ -100,8 +100,8 @@ assert.throws(()=>sport.changeSportFood(def.id,true,true),/отключена/);
 console.log('Passed Sport → Meal → Day portions and undo, and no additions after disabling Sport.');
 if(!process.env.FOOD_COUNTERS_SOURCE){
  const {execFileSync}=await import('node:child_process');
- const reference='day-52/shared/food-counters.js';
- for(const copy of ['sport-38/shared/food-counters.js','meal-24/shared/food-counters.js','meal-25/shared/food-counters.js','meal-26/shared/food-counters.js','day-54/shared/food-counters.js','day-55/shared/food-counters.js','sport-39/shared/food-counters.js','day-56/shared/food-counters.js','day-57/shared/food-counters.js','meal-27/shared/food-counters.js','meal-28/shared/food-counters.js','meal-29/shared/food-counters.js','sport-40/shared/food-counters.js','day-58/shared/food-counters.js','meal-30/shared/food-counters.js','meal-31/shared/food-counters.js','sport-41/shared/food-counters.js'])assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
+ const reference='day-58/shared/food-counters.js';
+ for(const copy of ['day-57/shared/food-counters.js','sport-40/shared/food-counters.js','meal-30/shared/food-counters.js','meal-31/shared/food-counters.js','sport-41/shared/food-counters.js'])assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
  execFileSync(process.execPath,[new URL(import.meta.url).pathname],{stdio:'inherit',env:{...process.env,FOOD_COUNTERS_SOURCE:reference}});
  console.log('Passed: reference module '+reference+' runs the same suite; release copies are identical to it.');
 }

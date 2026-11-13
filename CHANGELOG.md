@@ -12,6 +12,18 @@
 в основной репозиторий; дата внутри старой версии приложения может отличаться.
 Текущие версии и адреса: [APPS.md](APPS.md). Хранение данных: [DATA-STORAGE.md](DATA-STORAGE.md). Правила: [AGENTS.md](AGENTS.md).
 
+## 13.11.2026 — Уборка репозитория: старые выпуски, прежние HTML, ветки
+
+- По слову Астамура 13.11.2026 17:05 («да» на три пункта аудита: ветки, старые HTML и Color Studio; старые выпуски — оставить текущий и один предыдущий; «там нет ничего, по чему бы я скучал»). Версии приложений не менялись: Day 58, Meal 31.1, Sport 41.
+- Удалены каталоги выпусков `day-52`…`day-56`, `meal-23`…`meal-29`, `sport-37`…`sport-39` — их адреса больше не открываются. Остаются текущие (`day-58/`, `meal-31/`, `sport-41/`), по одному предыдущему (`day-57/`, `meal-30/`, `sport-40/`) и `day/`, `meal/`, `sport/`.
+- Удалены 22 прежних HTML из корня (`happyday-v6…v47`, `happyday-meal-v8…v21`, `Happy-Sport-v1/v2`, `happy-sport-pullup-prototype-v8`) и Color Studio v1–v11 из `prototypes/` (рабочая — v12 и `studio.html`). Переходы `happyday-v50_1.html`, `happyday-meal-v22.html`, файлы `ornament_facade_editor_*` и `signal-v3.html` не тронуты.
+- Чтобы оставшееся не ссылалось на удалённое: эталоны общих файлов в `shared/shared-files.json` и `scripts/check-food-counters.mjs` — копии `day-58/shared/` (побайтно те же, что прежние `day-52/`, `day-53/`); списки копий в `check-food-counters.mjs` и `check-summaries.mjs` — только оставшиеся выпуски; запасная ссылка «Happy Meal» в `day-58/index.html` и `Happy-Day-58.html` — `../meal-31/` вместо `../meal-29/` (рабочий адрес по-прежнему из `shared/apps.json`); тест `day-58/tests/meal-start.test.cjs` читает код Meal 31 вместо Meal 27; сценарий `meal_supplement_counters` открывает прежним выпуском Meal 30 вместо Meal 28; ссылки студии дуг — на `day-58/`. `APPS.md` — только оставшиеся выпуски; `AGENTS.md` — актуальные входы и эталон.
+- Ветки: на GitHub оставлены `main` и `meal-libraries`; остальные удалены, с ними закрыты запросы #6 и #15.
+- Проверки (13.11.2026, все пройдены): `check-shared`, `check-shared-ui`, `check-layout`, `check-food-counters`, `check-app-links`, `check-summaries`, `check-meal-times`, `check-meal-exports`, `check-profile-storage`, `check-measurements-shared`; `node --test day-58/tests/*.test.cjs` — 86; все `meal-31/checks/*.mjs` (каталоги `4261588`); `refresh-provenance.py day-58 meal-31 --check`; `scripts/browser/run.sh` — все 14 сценариев, 261 проверка; `npm --prefix sport-41/sport run check` после локальной сборки (страница Sport 41 оставлена прежней).
+- Осталось: `day/`, `meal/`, `sport/` (20 МБ, версии 50.14, 22.16, 36.7) — на них написаны семь общих проверок (`check-meal-times`, `check-meal-exports`, `check-layout`, `check-food-counters`, `check-profile-storage`, `check-shared-ui`, `check-measurements-shared`) и ссылки студий; убрать вместе с переводом этих проверок на текущие выпуски. В каждом Meal по-прежнему лежит встроенный Sport 36.26 (17 МБ) ради вкладки «Замеры тела». Удалённое доступно в истории Git: main до уборки — `28f42f6`.
+
+— Claude · 13.11.2026 17:27
+
 ## 13.11.2026 — Happy Meal · Update 31.1 — мелкие правки; каталоги: узбекская кухня 1.10.4, десерты 1.2
 
 - **Опубликован основным 13.11.2026 12:09** по слову Астамура 11:16 («Давай делай, ты поймешь и так. Добивай мелкие правки»; выпуски — сразу основными): тот же адрес https://astamurberlin-rgb.github.io/happyamurio/meal-31/, точечный выпуск в каталоге `meal-31/`; `shared/apps.json` — версия 31.1. Пункты «Meal · Правки» доски notes `apps/board.md` (Астамур 13.11 00:07–01:05, 11:13).

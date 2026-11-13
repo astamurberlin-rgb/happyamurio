@@ -27,7 +27,7 @@
   {
    "path": "Happy-Day-58.html",
    "size": 3714159,
-   "sha256": "fd4df9909ef540da0cc962a9a18058db3db12ace257aed8025db9fae27294448"
+   "sha256": "b496b8fd4e5b82ee21f5d9cbcf08a8c3a996aef41863ad2be4f2c0b79abaf41c"
   },
   {
    "path": "README.md",
@@ -267,7 +267,7 @@
   {
    "path": "index.html",
    "size": 546189,
-   "sha256": "bc867fac23a66ad7ef1637188db2d3c64efeb6565c54fdf1c6bf379320b9ee26"
+   "sha256": "ed539199c37933b65ce89aadb7d1dc018c3ee00143c9c26d604e9ad2749e4cd5"
   },
   {
    "path": "manifest.webmanifest",
@@ -456,8 +456,8 @@
   },
   {
    "path": "tests/meal-start.test.cjs",
-   "size": 5076,
-   "sha256": "c3299215cf5b0f2d54c3da91e3b5ad188cba3c1f8d314ae4d24a7e2be5c225ed"
+   "size": 5093,
+   "sha256": "7281b8e9684e52c10c898c8f7b456b45acbf75d4621475addcb39b69c65d2d4c"
   },
   {
    "path": "tests/multi-account.test.cjs",

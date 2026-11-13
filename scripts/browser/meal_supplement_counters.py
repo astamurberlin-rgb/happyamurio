@@ -240,15 +240,15 @@ with sync_playwright() as p:
     out["day_eaten_final"] = he(day, "careEnergy", "съедено")["big"]
     check("Day в конце: 84", out["day_eaten_final"] == '84')
 
-    # ── 9. Прежний выпуск Meal 28 на том же телефоне: открывается без ошибок, видит порции; Meal 29 после него — тот же журнал ──
-    m28 = page_of("meal-28", "meal-28/index.html")
+    # ── 9. Прежний выпуск Meal 30 на том же телефоне: открывается без ошибок, видит порции; текущий Meal после него — тот же журнал ──
+    m28 = page_of("meal-30", "meal-30/index.html")
     m28.wait_for_timeout(6000)
     out["meal28"] = m28.evaluate("()=>({items:(DB.days[curDate]&&DB.days[curDate].items||[]).length,k:Math.round((DB.days[curDate].items||[]).reduce((a,x)=>{const f=MealProducts.forItem(x,FOODS,DB);return a+(f&&f.k?f.k*x.g/100:0)},0))})")
-    check("Meal 28 открывает те же пять порций со счётчиков, 84 ккал", out["meal28"] == {"items": 5, "k": 84})
+    check("Meal 30 открывает те же пять порций со счётчиков, 84 ккал", out["meal28"] == {"items": 5, "k": 84})
     m28.close()
     meal, _ = meal_open()
     out["journal_after_28"] = meal.evaluate("()=>{const o=jrCompute({a:curDate,b:curDate}),id=k=>Object.keys(JR_N).find(i=>JR_BLS[i]===k);return {epa:o.v[id('epa')],vD:o.v[id('vD')],k:Math.round(o.mac.k),inList:LIST.filter(f=>f.supplement).length}}")
-    check("Meal 29 после Meal 28: EPA 1440 мг, витамин D 50 мкг, 84 ккал; добавки по-прежнему не в поиске еды", out["journal_after_28"] == {"epa": 1440, "vD": 50, "k": 84, "inList": 0})
+    check("текущий Meal после Meal 30: EPA 1440 мг, витамин D 50 мкг, 84 ккал; добавки по-прежнему не в поиске еды", out["journal_after_28"] == {"epa": 1440, "vD": 50, "k": 84, "inList": 0})
     meal.close()
 
     out["server_requests_by_guest"] = requests
