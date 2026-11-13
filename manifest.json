@@ -1,7 +1,7 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-12.3",
-  "updated": "2026-11-12",
+  "revision": "2026-11-13.1",
+  "updated": "2026-11-13",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
@@ -50,12 +50,12 @@
       "foodCount": 7793
     },
     "uzbek": {
-      "version": "1.10.3",
-      "deliveryRevision": "1.10.3-meal23.2",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/956d5f263859ba5171d363b8c79ea55b4d81271c/data/uzbek-recipes-1.10.3-meal23.2.json.gz",
+      "version": "1.10.4",
+      "deliveryRevision": "1.10.4-meal23.2",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/213deb8fa151377f09c7218c43dc4a69355302fa/data/uzbek-recipes-1.10.4-meal23.2.json.gz",
       "encoding": "gzip",
-      "bytes": 5809019,
-      "sha256": "4a000333890c6791c2ef8e713dd7350f4b6fb0ddbee9c34c36a2071510783f98",
+      "bytes": 5709404,
+      "sha256": "37656849f84c2b7396b70185c09cc38fba318b9ff1d084a1ed5ad340e82cb1fa",
       "foodCount": 60,
       "knownPropertiesPartialCards": 1
     },
@@ -84,7 +84,7 @@
     },
     "desserts2": {
       "version": "1.2.0",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/cd2f7bd684f7e6f5e2ba5b487e90cf422cc89829/data/desserts-1.2.json.gz",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/e646041ad0f030a46921cb6ac7474cf63f685801/data/desserts-1.2.json.gz",
       "encoding": "gzip",
       "bytes": 3484312,
       "sha256": "5e6354e63ce205d07d42ad7d084cd652dfbfce0c89897fb6f0a49466d0000006",
@@ -95,7 +95,7 @@
       "author": "ChatGPT",
       "date": "2026-11-12",
       "notes": "data/DESSERTS.md",
-      "firstReader": "Happy Meal release with the desserts2 adapter (per-record revision); Meal 25-30 keep desserts 1.1"
+      "firstReader": "Happy Meal 31.1 and later (desserts2 adapter, per-record revision); Meal 25–30 and 31.0 keep desserts 1.1"
     }
   }
 }
