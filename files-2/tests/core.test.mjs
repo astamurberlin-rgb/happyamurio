@@ -18,3 +18,12 @@ test('shared links never include a key or old query',()=>{
 });
 test('markdown envelope is metadata, not body',()=>assert.deepEqual(readEnvelope('<!-- happy-notes {"version":3} -->\n\n# Hello'),{metadata:{version:3},content:'# Hello'}));
 test('file names do not contain path separators',()=>assert.equal(safeFilename('../Hello:world','pdf'),'.. Hello world.pdf'));
+
+
+import { preserveArchive } from '../src/archive.js';
+test('rich-text save retains archive marker exactly once', () => {
+  const archived='<!-- notes:archive -->\n# Old';
+  assert.equal(preserveArchive(archived,'# Edited'),'<!-- notes:archive -->\n\n# Edited');
+  assert.equal(preserveArchive(archived,archived),archived);
+  assert.equal(preserveArchive('# Active','# Edited'),'# Edited');
+});

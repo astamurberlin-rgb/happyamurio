@@ -1,7 +1,7 @@
 {
   "name": "happy-notes-2",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
@@ -23,3 +23,4 @@
     "turndown-plugin-gfm": "1.0.2"
   }
 }
+
