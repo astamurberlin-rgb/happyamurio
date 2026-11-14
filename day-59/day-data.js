@@ -37,17 +37,24 @@ var DayData=(()=>{
  const stable=x=>HappyStore.model.stable(x);
  /* last — что лежит в хранилище по сведениям приложения: документ → номер записи → {text — значение, i — место в списке} */
  let last=new Map(),failed=false,remote=null,timer=null;
+ /* memo — памятка раскладки (day-docs.js): день, который не менялся, заново не раскладывается и не сравнивается.
+    Очищается каждый раз, когда дневник собирается из хранилища заново: набор записей дня в хранилище мог стать
+    другим и при том же содержимом дня — тогда день нужно разложить и сверить заново. */
+ let memo=new Map();
  const placeOf=v=>v&&typeof v==='object'&&typeof v.i==='number'?v.i:undefined;
  const seenAs=value=>({text:stable(value),i:placeOf(value)});
+ /* запись, прочитанная из хранилища: её текст для сравнения считается, только когда запись понадобилось сравнить */
+ const stored=value=>({text:null,value,i:placeOf(value)});
+ const textOf=one=>{if(one.text===null){one.text=stable(one.value);one.value=undefined}return one.text};
  const store=()=>DayBoot.store;
  const signedIn=()=>!!(DayBoot.store&&!DayBoot.store.closed);
  /* свои документы записаны более новой версией Day: эта версия их не читает и не пишет */
  const outdated=()=>signedIn()&&store().status().newer.some(key=>key.indexOf('day/')===0);
  function records(){const out={};for(const name of DayDocs.NAMES)out[name]=store().doc(name).all();return out}
- function remember(docs){last=new Map(DayDocs.NAMES.map(n=>[n,new Map((docs[n]||[]).map(r=>[r.id,seenAs(r.value)]))]))}
+ function remember(docs){last=new Map(DayDocs.NAMES.map(n=>[n,new Map((docs[n]||[]).map(r=>[r.id,stored(r.value)]))]))}
  function load(defaults){
   if(!signedIn())return null;
-  const docs=records();remember(docs);return DayDocs.build(docs,defaults);
+  const docs=records();remember(docs);memo=new Map();return DayDocs.build(docs,defaults);
  }
  function report(e){
   if(failed)return;failed=true;setTimeout(()=>{failed=false},5000);
@@ -59,10 +66,14 @@ var DayData=(()=>{
   if(!signedIn()||outdated())return false;
   DayDocs.ensureIds(db);
   /* место записи в списке — прежнее, пока её не переставили: соседние записи при вставке и удалении не переписываются */
-  const next=DayDocs.project({db,cfg},(name,id)=>{const r=last.get(name)&&last.get(name).get(id);return r?r.i:undefined});
+  const next=DayDocs.project({db,cfg},(name,id)=>{const r=last.get(name)&&last.get(name).get(id);return r?r.i:undefined},memo);
   for(const name of DayDocs.NAMES){
-   const before=last.get(name)||new Map(),now=next.get(name),list=[],seen=new Map();
-   for(const [id,value] of now){const one=seenAs(value);seen.set(id,one);if(!before.has(id)||before.get(id).text!==one.text)list.push({id,value})}
+   const before=last.get(name)||new Map(),now=next.get(name),same=next.same.get(name),list=[],seen=new Map();
+   for(const [id,value] of now){
+    const old=before.get(id);
+    if(old&&same.has(id)){seen.set(id,old);continue}   // запись дня, который не менялся: она уже лежит в хранилище такой же
+    const one=seenAs(value);seen.set(id,one);if(!old||textOf(old)!==one.text)list.push({id,value});
+   }
    for(const id of before.keys())if(!now.has(id))list.push({id,deleted:true});
    last.set(name,seen);
    if(list.length)store().doc(name).putMany(list).catch(report);

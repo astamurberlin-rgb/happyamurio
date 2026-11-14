@@ -14,7 +14,7 @@
   "selfcare-core.js, selfcare-ui.js: тренировки и плановые занятия — из витрины Sport (shared/happy-sport-summary.js); блок «Связь с Happy Strong» и снимок журнала Sport убраны",
   "counters.js: счётчики еды — из витрины Meal, свои нажатия — документ foodtaps (shared/happy-food.js); app-links.js: свитчи связи — общий документ pairs (shared/happy-app-links.js); day-measurements.js (новый): вкладка «Замеры тела» — общий экран (shared/happy-measurements.js)",
   "arc-motion.js и оформление: настройки устройства в памяти браузера, в дневник не пишутся",
-  "tests (62): day-docs, quiet-account, sport-summary, counters-eaten, counter-portion, meal-start, section-times, checkin-tag, standalone; самостоятельный Happy-Day-59.html; shared/apps.json day → day-59 (58 — previous)"
+  "tests (64): day-docs, quiet-account, sport-summary, counters-eaten, counter-portion, meal-start, section-times, checkin-tag, standalone; самостоятельный Happy-Day-59.html; shared/apps.json day → day-59 (58 — previous)"
  ],
  "standalone": {
   "path": "Happy-Day-59.html",
@@ -28,8 +28,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-59.html",
-   "size": 3463971,
-   "sha256": "a9043ce5aab445d97c49eb8fdf3c6e39f6eaeb3d4d27205c5cc910f29fef8934"
+   "size": 3468087,
+   "sha256": "4f40c4cd65aa0efa33fa3764279e98ea8b2aa17052499ac4ab544822e4993236"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -168,13 +168,13 @@
   },
   {
    "path": "day-data.js",
-   "size": 6568,
-   "sha256": "bf6c1f98ddfc6d0c29f83eae0b78dab31100b00d37c2880f56129439487b3951"
+   "size": 7754,
+   "sha256": "e489ee237a707e18da3cf40ff13e00f33b566f8aafef6e72bcc6256ea44fbde3"
   },
   {
    "path": "day-docs.js",
-   "size": 25145,
-   "sha256": "d3aa9c6ed847983be58762e7b584571cc646a917503c6ba855ed83193314f666"
+   "size": 27047,
+   "sha256": "74aacd48e159856af637ad1020113878b317a1141ebe34eb02a6fc88876885cf"
   },
   {
    "path": "day-measurements.js",
@@ -358,8 +358,8 @@
   },
   {
    "path": "tests/day-docs.test.cjs",
-   "size": 33204,
-   "sha256": "5698c406e28280f5f44882619d85cb280ff269404f0d2571c9b47e065f276de4"
+   "size": 37214,
+   "sha256": "c4be1b7887fb7f56bf4a754cba21b6aed46bba6980b6b86c512161ffb9409d4d"
   },
   {
    "path": "tests/meal-start.test.cjs",

@@ -44,12 +44,12 @@ async function device(cloud, base) {
       putMany: async list => { for (const x of list) local.set(name + '\n' + x.id, x.deleted ? { rev: ++cloud.clock, deleted: true } : { rev: ++cloud.clock, value: plain(x.value) }); },
       subscribe() {}
     }) };
-  const one = { FORMAT: 1 };
+  const one = { FORMAT: 1 }, spy = { compared: 0 }, model = globalThis.HappyStore.model;
   const context = vm.createContext({ console, setTimeout, clearTimeout, DayDocs: D, HappyFood: one, HappyAppLinks: one, HappySportSummary: one, HappyMeasurements: one,
     HappyAccount: { create: () => ({ load: async () => {}, current: () => ({ uid: 'u-1' }), onChange() {} }) },
-    HappyStore: { model: globalThis.HappyStore.model, open: async () => store }, HappyAccountUI: { statusText: () => '' }, location: { reload() {} } });
+    HappyStore: { model: { ...model, stable: x => { spy.compared++; return model.stable(x); } }, open: async () => store }, HappyAccountUI: { statusText: () => '' }, location: { reload() {} } });
   vm.runInContext(dayData, context); await context.DayBoot.ready;
-  const dev = { cloud, local, state: null,
+  const dev = { cloud, local, state: null, spy,
     load() { dev.state = context.DayData.load(plain(base)); },
     save() { assert.equal(context.DayData.save(dev.state.db, dev.state.cfg), true); },
     /* правки из облака легли в хранилище устройства, но экран их ещё не подхватил */
@@ -329,6 +329,46 @@ test('после записи в хранилище уходит только т
   phone.state.db.sections.push(phone.state.db.sections.shift()); phone.save(); assert.equal(cloud.clock, before + 6, 'раздел переставили в конец — переписан он один');
   phone.sync(); assert.deepEqual(phone.state.db.sections.map(s => s.k), ['wake', 'am', 'first']);
   assert.deepEqual(phone.day().taps.coffee.map(x => x.t), ['12:00', '13:00']);
+});
+
+test('запись после правки стоит столько, сколько весит изменённый день, а не вся история', async () => {
+  const [phone, , cloud] = await pair();
+  for (let n = 1; n <= 28; n++) {
+    const date = '2026-10-' + String(n).padStart(2, '0'), d = phone.day(date);
+    d.cp.am = C.editSection(null, {}, { mood: n % 7, energy: 2, tags: { 'Умывание': true } }, visit('v' + n), at('09:00', 1000 + n));
+    d.taps = { coffee: [{ t: '08:10', n: 1 }, { t: '12:00', n: 1 }] }; d.note = 'Заметка ' + n; d.sleep = { b: '00:30', w: '08:00' }; d.mind = { sec: 60, n: 1, ss: [['08:00', 60]] };
+  }
+  phone.save(); phone.sync();
+  const total = cloud.clock; assert.ok(total > 28 * 8, 'записей много: ' + total);
+  // без правок: ни одной записи и ни одного сравнения записей дней
+  phone.spy.compared = 0; phone.save(); phone.save();   // первая запись после сборки из хранилища раскладывает всё, вторая — уже нет
+  phone.spy.compared = 0; phone.save();
+  assert.equal(cloud.clock, total); assert.ok(phone.spy.compared < 40, 'сравнивались только настройки, а не дни: ' + phone.spy.compared);
+  // правка одного дня: сравниваются записи только этого дня
+  phone.spy.compared = 0; phone.day('2026-10-14').note = 'Другая заметка'; phone.save();
+  assert.equal(cloud.clock, total + 1); assert.ok(phone.spy.compared < 60, 'сравнивался один день: ' + phone.spy.compared);
+  // правка вложенного значения на месте (тот же объект в памяти) замечена
+  phone.day('2026-10-03').sleep.w = '08:30'; phone.save(); assert.equal(cloud.clock, total + 2);
+  phone.day('2026-10-03').taps.coffee[0].t = '08:15'; phone.save(); assert.equal(cloud.clock, total + 3);
+  // день убрали из дневника — его записи удалены; вернули — записаны снова
+  const kept = plain(phone.day('2026-10-20')), records = [...phone.local.keys()].filter(k => k.includes('2026-10-20')).length;
+  delete phone.state.db.days['2026-10-20']; phone.save(); assert.equal(cloud.clock, total + 3 + records);
+  phone.state.db.days['2026-10-20'] = kept; phone.save(); phone.sync();
+  assert.deepEqual(plain(phone.day('2026-10-20')), kept); assert.equal(phone.day('2026-10-03').sleep.w, '08:30'); assert.equal(phone.day('2026-10-14').note, 'Другая заметка');
+});
+
+test('места записей, поменянные другим устройством, не возвращаются обратно при следующей записи', async () => {
+  const [phone, , cloud] = await pair();
+  phone.day().taps = { coffee: [{ t: '08:10', n: 1 }, { t: '09:10', n: 1 }, { t: '10:10', n: 1 }] }; phone.save(); phone.sync(); phone.save();
+  // другое устройство перенумеровало тот же список (порядок прежний, числа другие)
+  let n = 0;
+  for (const [key, r] of [...cloud.records]) if (key.includes('"tap"') && !r.deleted) cloud.records.set(key, { rev: ++cloud.clock, value: { ...plain(r.value), i: 10 + (n++) } });
+  assert.equal(n, 3);
+  phone.sync();
+  const before = cloud.clock; phone.save(); phone.day().note = 'Правка после обмена'; phone.save();
+  assert.equal(cloud.clock, before + 1, 'записана только заметка: места из хранилища приняты как есть');
+  assert.deepEqual([...phone.local].filter(([key, r]) => key.includes('"tap"') && !r.deleted).map(([, r]) => r.value.i).sort(), [10, 11, 12]);
+  assert.deepEqual(phone.day().taps.coffee.map(x => x.t), ['08:10', '09:10', '10:10']);
 });
 
 test('удаление записи списка на одном устройстве не затирает правку соседней записи на другом и не возвращает удалённое им', async () => {

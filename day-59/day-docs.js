@@ -24,6 +24,8 @@
  * не используются.
  * Место записи в списке — число i (HappyStore.model.place): оно ставится один раз, вставка и удаление соседей его не
  * меняют. Поэтому правка одной записи не переписывает соседние и не мешает тому, что с ними делает другое устройство.
+ * Новое поле добавляется внутрь значения — в объект раздела, нажатия, записи дневника: прежняя версия Day его
+ * сохранит. Новое поле у самой записи-обёртки ({v,t,c}, {i,v}, {at,i}) — уже другое устройство записей: растёт FORMAT.
  * — Claude · 14.11.2026 */
 var DayDocs=(()=>{
  /* места записей в списках считает общий модуль; в проверках Node он подключается здесь же */
@@ -145,22 +147,29 @@ var DayDocs=(()=>{
 
  /* {db, cfg} → {документ: Map(номер записи → значение)}.
     prev(документ, номер записи) — прежнее место записи в её списке, если запись уже лежит в хранилище (day-data.js);
-    без prev места идут подряд с нуля. */
- function project(state,prev){
+    без prev места идут подряд с нуля.
+    memo — памятка вызывающего (Map): день, который не менялся с прошлой раскладки, второй раз не раскладывается —
+    берутся его готовые записи, а их номера названы в out.same (документ → Set). Так запись после каждой правки
+    стоит столько, сколько весит изменённый день, а не вся история. Памятку нужно очищать, когда дневник собран из
+    хранилища заново: места записей могли поменяться на другом устройстве. */
+ function project(state,prev,memo){
   const db=(state&&state.db)||{},out=new Map(NAMES.map(n=>[n,new Map()]));
   const setup=out.get('setup'),care=out.get('care'),prefs=out.get('prefs');
+  const same=memo?new Map(NAMES.map(n=>[n,new Set()])):null;
+  let collect=null;   // записи дня, который раскладывается сейчас, — для памятки
+  const put=(name,recordId,value)=>{out.get(name).set(recordId,value);if(collect)collect.push([name,recordId,value])};
   /* список → записи с местами: rows — [{name — документ, id — номер записи, key — ключ в списке, value(место)}] */
-  const rows=list=>{const at=place(list.map(r=>r.key),list.map(r=>prev?prev(r.name,r.id):undefined));list.forEach((r,j)=>out.get(r.name).set(r.id,r.value(at[j])))};
+  const rows=list=>{const at=place(list.map(r=>r.key),list.map(r=>prev?prev(r.name,r.id):undefined));list.forEach((r,j)=>put(r.name,r.id,r.value(at[j])))};
   /* список объектов с номерами → записи; иначе — одной записью целиком */
   const putList=(name,head,list,field,item)=>{
-   if(listable(list,field)){out.get(name).set(head,{t:'list'});rows(list.map(x=>({name,id:item(x[field]),key:x[field],value:i=>({i,v:x})})))}
-   else out.get(name).set(head,{t:'value',v:list});
+   if(listable(list,field)){put(name,head,{t:'list'});rows(list.map(x=>({name,id:item(x[field]),key:x[field],value:i=>({i,v:x})})))}
+   else put(name,head,{t:'value',v:list});
   };
   const putSection=(name,date,s,c)=>{
-   const doc=out.get(name),parts=object(c)?splitSection(c):null;
-   if(!parts){doc.set(id('cp',date,s),{w:c});return}
-   doc.set(id('cp',date,s),{b:parts.base});
-   for(const m of parts.marks)if(m.value.c===1)doc.set(id('m',date,s,m.k,String(m.ms)),m.value);
+   const parts=object(c)?splitSection(c):null;
+   if(!parts){put(name,id('cp',date,s),{w:c});return}
+   put(name,id('cp',date,s),{b:parts.base});
+   for(const m of parts.marks)if(m.value.c===1)put(name,id('m',date,s,m.k,String(m.ms)),m.value);
    rows(parts.marks.filter(m=>m.value.c!==1).map(m=>({name,id:id('m',date,s,m.k,String(m.ms)),key:markKey(m.k,m.ms),value:i=>Object.assign({},m.value,{i})})));
    rows(parts.tags.map(t=>({name,id:id('t',date,s,t.tag),key:t.tag,value:i=>Object.assign({},t.value,{i})})));
   };
@@ -185,11 +194,18 @@ var DayDocs=(()=>{
   }
   for(const date of Object.keys(object(db.days)?db.days:{})){
    const e=db.days[date];if(!validDate(date)||!object(e))continue;
-   const name=yearDoc('days',date),doc=out.get(name);
+   const name=yearDoc('days',date);
+   let dayText=null;
+   if(memo){
+    try{dayText=JSON.stringify(e)}catch(error){dayText=null}
+    const hit=dayText===null?null:memo.get(date);
+    if(hit&&hit.text===dayText){for(const r of hit.rows){out.get(r[0]).set(r[1],r[2]);same.get(r[0]).add(r[1])}continue}
+    collect=[];
+   }
    for(const key of Object.keys(e)){
     const v=e[key];if(v===undefined)continue;
     if(key==='cp'&&object(v)){for(const s of Object.keys(v))if(text(s)&&!empty(v[s]))putSection(name,date,s,v[s]);continue}
-    if(key==='cnt'&&object(v)){for(const k of Object.keys(v))if(text(k)&&v[k]!=null)doc.set(id('cnt',date,k),v[k]);continue}
+    if(key==='cnt'&&object(v)){for(const k of Object.keys(v))if(text(k)&&v[k]!=null)put(name,id('cnt',date,k),v[k]);continue}
     if((key==='taps'||key==='cntLog')&&object(v)){
      const kind=key==='taps'?'tap':'log';
      for(const k of Object.keys(v)){
@@ -201,21 +217,26 @@ var DayDocs=(()=>{
     }
     if(key==='now'&&Array.isArray(v)){rows(v.filter(x=>object(x)&&text(x.id)).map(x=>({name,id:id('now',date,x.id),key:x.id,value:i=>({i,v:x})})));continue}
     if(key==='mind'&&object(v)){
-     const mind=out.get(yearDoc('mind',date));
-     for(const s of Array.isArray(v.ss)?v.ss:[])if(Array.isArray(s)&&text(s[2]))mind.set(id(date,s[2]),[s[0],s[1]]);
+     const mind=yearDoc('mind',date);
+     for(const s of Array.isArray(v.ss)?v.ss:[])if(Array.isArray(s)&&text(s[2]))put(mind,id(date,s[2]),[s[0],s[1]]);
      continue;
     }
     if(key==='care'&&object(v)){
      for(const f of Object.keys(v)){
       if(!text(f)||v[f]===undefined)continue;
       if(Array.isArray(v[f])&&listable(v[f],'id'))rows(v[f].map(x=>({name,id:id('care',date,f,x.id),key:x.id,value:i=>({i,v:x})})));
-      else if(!empty(v[f]))doc.set(id('carev',date,f),v[f]);
+      else if(!empty(v[f]))put(name,id('carev',date,f),v[f]);
      }
      continue;
     }
     if(!text(key)||empty(v))continue;   // пустое — как нет: день без записей не хранится
-    doc.set(id('f',date,key),v);
+    put(name,id('f',date,key),v);
    }
+   if(memo){if(dayText===null)memo.delete(date);else memo.set(date,{text:dayText,rows:collect});collect=null}
+  }
+  if(memo){
+   for(const date of [...memo.keys()])if(!object(db.days)||!Object.hasOwn(db.days,date))memo.delete(date);
+   out.same=same;
   }
   const cfg=object(state&&state.cfg)?state.cfg:{},goals={};
   for(const k of ['weight','kcal','prot'])goals[k]=Number.isFinite(cfg[k])?cfg[k]:null;
