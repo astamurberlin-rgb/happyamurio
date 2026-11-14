@@ -342,8 +342,10 @@ function renderUpdates(){
  const cards=root.HappyReleaseNotes?root.HappyReleaseNotes.render(releases,{heading:'h2'}).replaceAll('class="happy-card happy-release"','class="card release-card happy-release"'):releases.map(r=>'<article class="card release-card"><h2>'+h(r.title||r.label||('Версия '+r.version))+'</h2><time datetime="'+h(r.date)+'">'+h(r.date.split('-').reverse().join('.'))+'</time><ul>'+r.changes.map(t=>'<li>'+h(t)+'</li>').join('')+'</ul></article>').join('');
  block('updates').innerHTML=header('История обновлений','settings',false)+'<p class="care-help">Happy Day</p>'+cards;
 }
-function rememberActive(key){if(!key)return;active=key;const s=data().settings;if(s.active!==key){s.active=key;if(!RO)save();}}
-function rememberScale(key){if(!isCheckin()||session.readOnly)return;const s=data().settings;if(s.activeScale!==key){s.activeScale=key;if(!RO)save();}}
+/* Какая карточка «Сейчас» открыта последней — запоминается вместе с дневником, но это не запись человека:
+   без входа просто не запоминаем (иначе листание карточек открывало бы вход). */
+function rememberActive(key){if(!key)return;active=key;const s=data().settings;if(s.active!==key){s.active=key;if(!RO&&DayData.signedIn())save();}}
+function rememberScale(key){if(!isCheckin()||session.readOnly)return;const s=data().settings;if(s.activeScale!==key){s.activeScale=key;if(!RO&&DayData.signedIn())save();}}
 function center(smooth){const i=[...$('nwRail').children].findIndex(x=>x.dataset.careKey===active);if(i>=0)nwGo(i,smooth);}
 function arcPath(a,b){const p=t=>[120+92*Math.cos(t*Math.PI/180),120+92*Math.sin(t*Math.PI/180)];const s=p(a),e=p(b);return 'M'+s.join(',')+' A92,92 0 0 '+(b>a?1:0)+' '+e.join(',');}
 function balanceArc(m){

@@ -8,3 +8,8 @@
 {const closeBeforeAdopt=closeSheet;closeSheet=function(...args){const r=closeBeforeAdopt(...args);SportData.afterSheet();return r}}
 /* Sport 43: при открытии приложения окно плановых занятий для Day и Meal сдвигается на сегодня. */
 SportData.syncPlans();
+/* Sport 43: ссылка на тренировку из Day («Открыть запись в Sport») и ссылка на упражнение («Поделиться») снова
+   открывают их. В Sport 42 эти переходы ушли вместе с прежним обменом (sport-cloud.js). */
+{const asked=new URLSearchParams(location.search),workoutId=asked.get('workout'),exerciseId=asked.get('exercise');
+ if(workoutId&&state.workouts.some(w=>w.id===workoutId)){detailId=workoutId;goto('detail')}
+ else if(exerciseId&&exercise(exerciseId))showExercise(exerciseId)}

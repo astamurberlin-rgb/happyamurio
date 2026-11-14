@@ -19,6 +19,9 @@
  *
  * Номер записи: `ключ` — значение целиком или отметка, что список/словарь есть; `ключ~номер` — элемент списка или
  * словаря. Старые названия строк облака (journal, link, counters, supplements, measurements) не используются.
+ * Sport 43: место записи в списке — число i (HappyStore.model.place) — ставится один раз; вставка и удаление соседей
+ * его не меняют. В Sport 42 местом был порядковый номер: удаление тренировки переписывало все следующие и могло
+ * затереть правку, сделанную в это время на другом устройстве, или вернуть удалённое им.
  * — Claude · 14.11.2026 */
 var SportDocs=(()=>{
  const NAMES=['workouts','active','exercises','routines','schedule','tallies','prefs','summary'];
@@ -43,19 +46,22 @@ var SportDocs=(()=>{
   return true;
  }
  const facts=w=>globalThis.HappySportSummary.workout(w);   // запись сводки — общий формат витрины
- /* state → {документ: Map(номер → значение)} */
- function project(state){
+ /* state → {документ: Map(номер → значение)}.
+    prev(документ, номер записи) — прежнее место записи в её списке, если она уже лежит в хранилище (sport-data.js);
+    без prev места идут подряд с нуля. */
+ function project(state,prev){
   const out=new Map(NAMES.map(n=>[n,new Map()]));
+  const places=(name,key,list,field)=>globalThis.HappyStore.model.place(list.map(x=>x[field]),list.map(x=>prev?prev(name,key+SEP+x[field]):undefined));
   for(const key of Object.keys(state||{})){
    const v=state[key];if(SKIP.has(key)||v===undefined||typeof v==='function')continue;
-   const d=out.get(docOf(key));
+   const name=docOf(key),d=out.get(name);
    if(key==='customCounters'&&listable(v,'id')){
-    d.set(key,{t:'counters'});
-    v.forEach((c,i)=>{const {events,...def}=c;d.set(key+SEP+c.id,{i,v:def});
+    d.set(key,{t:'counters'});const at=places(name,key,v,'id');
+    v.forEach((c,j)=>{const {events,...def}=c;d.set(key+SEP+c.id,{i:at[j],v:def});
      for(const e of Array.isArray(events)?events:[])if(object(e)&&typeof e.id==='string'&&e.id)d.set('tap'+SEP+e.id,{cid:c.id,v:e})});
     continue;
    }
-   if(LISTS[key]&&listable(v,LISTS[key])){d.set(key,{t:'list'});v.forEach((x,i)=>d.set(key+SEP+x[LISTS[key]],{i,v:x}));continue}
+   if(LISTS[key]&&listable(v,LISTS[key])){d.set(key,{t:'list'});const at=places(name,key,v,LISTS[key]);v.forEach((x,j)=>d.set(key+SEP+x[LISTS[key]],{i:at[j],v:x}));continue}
    if(MAPS.has(key)&&object(v)){d.set(key,{t:'map'});for(const k of Object.keys(v))if(v[k]!==undefined)d.set(key+SEP+k,{v:v[k]});continue}
    d.set(key,{t:'value',v});
   }

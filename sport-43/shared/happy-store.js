@@ -68,7 +68,36 @@ function nextMeta(old,o,won){
  if(o.settle!==undefined&&m.seq===o.settle)m.dirty=false;
  return m;
 }
-const model={valid,validId,clean,compare,nextMeta,stable,copy};
+/* Места в списке. Список приложение хранит по записям; у записи списка есть место — число i, записи читаются по
+   возрастанию i, при равных — по ключу. Место ставится один раз и не меняется, пока запись не переставили: вставка и
+   удаление не трогают соседей. Иначе правка одной записи переписывала бы соседние — и затирала бы то, что с ними в это
+   время сделало другое устройство, и возвращала бы удалённое им.
+   keys — ключи записей в нынешнем порядке; was — их прежние места (нет места — запись новая). Возвращает места:
+   записям, которые уже стоят по порядку, — прежние; новым и переставленным — между соседями (в конец: +1). */
+function place(keys,was){
+ const n=keys.length,old=keys.map((_,x)=>typeof (was&&was[x])==='number'&&Number.isFinite(was[x])?was[x]:null);
+ const before=(a,b,x,y)=>a<b||(a===b&&keys[x]<keys[y]);
+ const tails=[],back=new Array(n).fill(-1);          // самая длинная цепочка записей, уже стоящих по порядку
+ for(let x=0;x<n;x++){
+  if(old[x]===null)continue;
+  let lo=0,hi=tails.length;
+  while(lo<hi){const mid=(lo+hi)>>1;if(before(old[tails[mid]],old[x],tails[mid],x))lo=mid+1;else hi=mid}
+  back[x]=lo?tails[lo-1]:-1;tails[lo]=x;
+ }
+ const keep=new Set();for(let x=tails.length?tails[tails.length-1]:-1;x>=0;x=back[x])keep.add(x);
+ const out=new Array(n);
+ for(let x=0;x<n;){
+  if(keep.has(x)){out[x]=old[x];x++;continue}
+  let end=x;while(end<n&&!keep.has(end))end++;
+  const lo=x>0?out[x-1]:null,hi=end<n?old[end]:null,m=end-x;
+  for(let j=0;j<m;j++)out[x+j]=lo===null&&hi===null?j:hi===null?Math.floor(lo)+1+j:lo===null?Math.ceil(hi)-m+j:lo+(hi-lo)*(j+1)/(m+1);
+  x=end;
+ }
+ /* между соседями не осталось чисел (места совпали или кончилась точность) — нумеруем список заново */
+ for(let x=1;x<n;x++)if(!before(out[x-1],out[x],x-1,x))return keys.map((_,i)=>i);
+ return out;
+}
+const model={valid,validId,clean,compare,nextMeta,stable,copy,place};
 
 /* ── Хранилище на устройстве: IndexedDB, одна база на три приложения ───────────────────────────────
    Ключ записи — [аккаунт, приложение, документ, номер записи]: записи разных аккаунтов лежат раздельно. */

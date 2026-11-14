@@ -1,10 +1,13 @@
-"""Day 57.6: раздел дня и кнопка «Отметить самочувствие». Один телефон, гость (без аккаунта и сети).
+"""Раздел дня и кнопка «Отметить самочувствие» (с Day 57.6) на настоящей странице Day. Один телефон, придуманный аккаунт.
 Раздел, открытый с экрана дня, сохраняется сам, у шкал и тегов своё время; новое значение шкалы — новая отметка,
 прежнее остаётся в журнале; кнопка «Отметить самочувствие» — каждое «Сохранить» новая запись, раздел не меняется.
-Начало Завтрака — время первого продукта из сводки Meal; ручное время Day главнее. Только придуманные записи."""
+Начало Завтрака — время первого продукта из сводки Meal; ручное время Day главнее.
+Day 59: записывать можно после входа; раздел лежит в общем модуле хранения по отметкам (шкала, тег — отдельные записи);
+сводка Meal приходит из его витрины в общем модуле — пока Meal сам не перешёл на модуль, её пишет страница-заглушка
+сценария тем же общим файлом формата. Только придуманные записи."""
 from common import *
 
-out, errors, requests, checks = {}, [], [], []
+out, errors, checks = {}, [], []
 TAG, TAG2 = "Проверка-умывание", "Проверка-устал"
 
 
@@ -14,12 +17,26 @@ def check(title, ok):
 
 with sync_playwright() as p:
     b = launch(p)
-    ctx = b.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow")
-    ctx.route(BACKEND + "/**", lambda route, request: (requests.append(request.method + ' ' + request.url[:120]), route.abort())[1])
+    ctx = phone(b, "A")
+    stand_in_route(ctx)
     page = ctx.new_page()
     page.on("pageerror", lambda e: errors.append(str(e)[:300]))
-    page.goto(BASE + DAY + "index.html")
-    page.wait_for_timeout(5000)
+    ready = lambda: wait_for(page, lambda: page.evaluate("()=>typeof DayData!=='undefined'&&typeof MEAL_READY!=='undefined'&&MEAL_READY&&!!document.querySelector('#tapBox .tpItem')"), 12, 200)
+    page.goto(BASE + DAY_STORE + "index.html")
+    ready()
+    # вход, как человек: «Войти» на карточке экрана дня → почта и пароль → страница открывается заново уже со входом
+    page.click("#daySignIn [data-go-screen=settings]")
+    page.fill("#happy-account input[name=email]", EMAIL)
+    page.fill("#happy-account input[name=password]", PW)
+    page.click("#happy-account [data-happy-account-action=in]")
+    def signed():
+        try:
+            return page.evaluate("u=>typeof DayData!=='undefined'&&DayData.signedIn()&&DayData.store.uid===u", UID)
+        except Exception:   # страница как раз открывается заново
+            return False
+    wait_for(page, signed, 15, 200)
+    ready()
+    check("после входа Day открыт и записывает", signed())
     # Придуманные часы: первый заход в 09:00, второй в 14:05. Раздел «Завтрак» (am), в нём два тега проверки.
     page.evaluate("""([t1,t2])=>{window.__ms=Date.parse('2026-01-01T09:00:00Z');window.nowHM=()=>window.__hm;window.__hm='09:00';
       const realNow=Date.now;Date.now=()=>window.__ms||realNow();
@@ -88,11 +105,11 @@ with sync_playwright() as p:
     check("два «Сохранить» — две новые записи в журнале", after_n == before_n + 2)
     check("значения разделов кнопка не меняла", page.evaluate("()=>JSON.stringify(DB.days[todayISO()].cp)") == before_cp)
 
-    # ── 4. Сводка Meal: начало Завтрака — первый продукт; ручное время Day главнее ──
-    summary = {"v": 1, "app": "meal", "at": 1, "counters": 1, "skipped": [], "secs": [{"k": "am", "t": "Завтрак"}],
-               "days": {today: {"food": True, "k": 300, "p": 0, "f": 0, "c": 0, "sec": {"am": {"food": True, "n": 2, "dr": 0, "k": 300, "p": 0, "f": 0, "c": 0, "t0": "08:20", "t1": "08:50", "t": "08:50", "src": "auto"}}, "ev": []}}}
-    page.evaluate("(s)=>{localStorage.setItem('hd_link_meal_v1',JSON.stringify(s));mealPoll()}", summary)
-    page.wait_for_timeout(1500)
+    # ── 4. Сводка Meal из его витрины: начало Завтрака — первый продукт; ручное время Day главнее ──
+    meal_day = {"food": True, "k": 300, "p": 0, "f": 0, "c": 0, "sec": {"am": {"food": True, "n": 2, "dr": 0, "k": 300, "p": 0, "f": 0, "c": 0, "t0": "08:20", "t1": "08:50", "t": "08:50", "src": "auto"}}, "ev": []}
+    meal = stand_in(ctx, MEAL_STAND_IN, errors, "Meal")
+    meal.evaluate("([d,v])=>Promise.all([T.put('summary','secs',[{k:'am',t:'Завтрак'}]),T.put('summary',d,v)])", [today, meal_day])
+    wait_for(page, lambda: page.evaluate("()=>(secTime(todayISO(),'am')||{}).src==='meal'"), 8, 200)
     st = page.evaluate("()=>secTime(todayISO(),'am')")
     out["start_from_meal"] = st
     check("начало Завтрака — 08:20, первый продукт Meal", st and st["t"] == "08:20" and st["src"] == "meal")
@@ -101,11 +118,10 @@ with sync_playwright() as p:
     pill = page.inner_text("#cpTimeTxt")
     out["pill"] = pill
     check("в форме раздела у названия — 08:20", pill == "08:20")
-    summary["days"][today]["sec"]["am"]["t0"] = "08:05"
-    summary["at"] = 2
-    page.evaluate("(s)=>{localStorage.setItem('hd_link_meal_v1',JSON.stringify(s));mealPoll()}", summary)
-    page.wait_for_timeout(1500)
-    check("в Meal поменяли время — в Day сразу 08:05", page.evaluate("()=>secTime(todayISO(),'am').t") == "08:05" and page.inner_text("#cpTimeTxt") == "08:05")
+    meal_day["sec"]["am"]["t0"] = "08:05"
+    meal.evaluate("([d,v])=>T.put('summary',d,v)", [today, meal_day])
+    wait_for(page, lambda: page.evaluate("()=>secTime(todayISO(),'am').t") == "08:05" and page.inner_text("#cpTimeTxt") == "08:05", 8, 200)
+    check("в Meal поменяли время — в Day сразу 08:05, без перезагрузки", page.evaluate("()=>secTime(todayISO(),'am').t") == "08:05" and page.inner_text("#cpTimeTxt") == "08:05")
     page.evaluate("()=>{const i=document.getElementById('cpTimeIn');i.value='07:45';i.dispatchEvent(new Event('change',{bubbles:true}))}")
     page.wait_for_timeout(900)
     page.evaluate("()=>SelfCare.closeCurrent()")
@@ -115,9 +131,18 @@ with sync_playwright() as p:
     out["am_final"] = page.evaluate(AM)
     check("ручное время не тронуло отметки", out["am_final"][metric] == 1 and len(out["am_final"].get("log", [])) == 1)
 
-    out["errors"], out["requests"] = errors, requests
-    check("ошибок на странице нет", not errors)
-    check("гость к серверу не обращался", not requests)
+    # ── 5. В хранилище раздел лежит по отметкам: шкала, прежнее значение и каждый тег — отдельные записи ──
+    ids = page.evaluate("()=>DayData.store.doc(DayDocs.yearDoc('days',todayISO())).all().map(r=>JSON.parse(r.id)).filter(p=>p[2]==='am')")
+    out["section_records"] = ids
+    kinds = sorted(p[0] for p in ids)
+    check("раздел разложен: начало раздела, две отметки шкалы (действующая и прежняя), два тега", kinds == ["cp", "m", "m", "t", "t"] and sorted(p[3] for p in ids if p[0] == "t") == sorted([TAG, TAG2]) and all(p[3] == metric for p in ids if p[0] == "m"))
+    check("сводка Meal в документы Day не записана", not page.evaluate("()=>JSON.stringify(DayDocs.NAMES.map(n=>DayData.store.doc(n).all())).includes('08:05')"))
+    wait_for(page, lambda: page.evaluate("()=>DayData.store.status().state==='cloud'"), 12, 300)
+    writes = sorted(set(e["kind"] for e in log if e.get("kind")))
+    out["writes"] = writes
+    check("в облако ушли только новые документы Day и витрина заглушки Meal", bool(writes) and all(k.startswith("day/") and k not in ("day/journal", "day/link") or k in ("meal/summary", "meal/foods") for k in writes))
+    out["errors"] = errors
+    check("ошибок на страницах нет", not errors)
     b.close()
 
 sys.exit(finish("day_sections", out, checks))

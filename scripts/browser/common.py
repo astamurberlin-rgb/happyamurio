@@ -8,7 +8,9 @@
   HAPPY_BASE   — адрес сайта с префиксом /happyamurio/ (по умолчанию локальный сервер из run.sh);
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
-  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-31/; HAPPY_DAY — day-58/; HAPPY_SPORT — sport-41/ для обмена со старыми Day и Meal);
+  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-31/; HAPPY_DAY — day-58/ и HAPPY_SPORT — sport-41/: прежние
+                 выпуски для сценариев прежнего обмена с Meal, пока он не перешёл на общий модуль);
+  HAPPY_DAY_STORE, HAPPY_SPORT_STORE — выпуски Day и Sport на общем модуле (по умолчанию day-59/ и sport-43/);
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """
@@ -126,15 +128,50 @@ def phone(browser, name=None):
     return ctx
 
 
+# Day и Sport на общем входе и общем модуле хранения — их сценарии: day_store, day_sections, sport_store.
+DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-59/")
+SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-43/")
+# Страница-заглушка для сценариев на общем модуле: общий вход и общий модуль под названием другого приложения (витрину
+# Meal пишет она, пока сам Meal не перешёл на общий модуль) или более новой версии приложения (номер формата новее).
+# Страницу отдаёт сам сценарий; в репозитории и на сайте её нет.
+STAND_IN = BASE + "__store-stand-in.html"
+STAND_IN_HTML = """<!doctype html><meta charset="utf-8"><title>Проверка общего модуля</title>
+<script src="shared/happy-account.js"></script><script src="shared/happy-store.js"></script><script src="shared/happy-food.js"></script>
+<script>
+var T={};
+T.boot=async(app,own,reads,formats)=>{T.account=HappyAccount.create();await T.account.load();
+ T.store=await HappyStore.open({app,account:T.account,own,reads:reads||{},formats:formats||{},interval:1500});return !!T.account.current()};
+T.put=async(doc,id,value)=>{try{await T.store.doc(doc).put(id,value);return 'ok'}catch(e){return e.code||String(e)}};
+T.near=(app,doc)=>T.store.neighbor(app,doc).all();
+T.state=()=>T.store.status().state;
+</script><body>Проверка общего модуля</body></html>"""
+MEAL_STAND_IN = ["meal", ["summary", "foods"], {"day": ["foodtaps"]}, {"meal/summary": 1, "meal/foods": 1, "day/foodtaps": 1}]
+
+
+def stand_in_route(ctx):
+    ctx.route(STAND_IN, lambda route, request: route.fulfill(status=200, content_type="text/html; charset=utf-8", body=STAND_IN_HTML))
+
+
+def stand_in(ctx, spec, errors=None, name="заглушка"):
+    """Вкладка-заглушка на том же «телефоне»: spec — [приложение, свои документы, чужие для чтения, номера форматов]."""
+    page = ctx.new_page()
+    if errors is not None:
+        page.on("pageerror", lambda e: errors.append(name + ": " + str(e)[:300]))
+    page.goto(STAND_IN)
+    page.evaluate("s=>T.boot(...s)", spec)
+    return page
+
+
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
 # Актуальный выпуск Meal для сценариев (HAPPY_MEAL — другой, например meal-28/)
 MEAL = os.environ.get("HAPPY_MEAL", "meal-31/")
-# Актуальный Day для сценариев (с 12.11.2026, связь приложений: Day 58)
+# Day и Sport в сценариях прежнего обмена с Meal (счётчики, «съедено», связь приложений: counters_*, app_links,
+# meal_supplement_counters) — прежние выпуски Day 58 и Sport 41. Текущие Day 59 и Sport 43 ведут записи через общий
+# модуль и с Meal 31 не обмениваются; их проверяют day_store, day_sections и sport_store. Сценарии прежнего обмена
+# смотрят, что текущий Meal 31 по-прежнему работает со своими прежними соседями, и переписываются, когда на общий
+# модуль перейдёт Meal (этап 4).
 DAY = os.environ.get("HAPPY_DAY", "day-58/")
-# Sport в сценариях обмена с Day и Meal (счётчики, связь приложений) — прежний выпуск Sport 41: текущий Sport 42 ведёт
-# записи через общий модуль и с прежними Day и Meal не обменивается. Сам Sport 42 проверяет sport_store.py.
-# Эти сценарии переписываются, когда Day и Meal перейдут на общий модуль.
 SPORT = os.environ.get("HAPPY_SPORT", "sport-41/")
 _lib_files = {}
 

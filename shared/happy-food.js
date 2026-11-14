@@ -56,12 +56,13 @@ function validDay(d){
 function summary(records){
  var out={days:Object.create(null),secs:[],goals:{},skipped:Object.create(null),at:0,any:false};
  (records||[]).forEach(function(r){
-  if(!r||typeof r.id!=='string')return;var v=r.value;
-  if(amount(r.at)&&r.at>out.at)out.at=r.at;
-  if(validDate(r.id)){if(validDay(v)){out.days[r.id]=copy(v);out.any=true}return}
-  if(r.id==='secs'&&Array.isArray(v)){out.secs=v.filter(function(s){return object(s)&&typeof s.k==='string'&&!!s.k&&safeKey(s.k)&&typeof s.t==='string'}).map(function(s){return {k:s.k,t:s.t}});out.any=true;return}
-  if(r.id==='goals'&&object(v)){['k','p','f','c','fib'].forEach(function(k){if(positive(v[k]))out.goals[k]=v[k]});out.any=true;return}
-  if(r.id==='skipped'&&Array.isArray(v)){var n=0;v.forEach(function(id){if(typeof id==='string'&&id&&id.length<=200&&n<LIMIT){out.skipped[id]=true;n++}})}
+  if(!r||typeof r.id!=='string')return;var v=r.value,taken=true;
+  if(validDate(r.id)){if(validDay(v)){out.days[r.id]=copy(v);out.any=true}else taken=false}
+  else if(r.id==='secs'&&Array.isArray(v)){out.secs=v.filter(function(s){return object(s)&&typeof s.k==='string'&&!!s.k&&safeKey(s.k)&&typeof s.t==='string'}).map(function(s){return {k:s.k,t:s.t}});out.any=true}
+  else if(r.id==='goals'&&object(v)){['k','p','f','c','fib'].forEach(function(k){if(positive(v[k]))out.goals[k]=v[k]});out.any=true}
+  else if(r.id==='skipped'&&Array.isArray(v)){var n=0;v.forEach(function(id){if(typeof id==='string'&&id&&id.length<=200&&n<LIMIT){out.skipped[id]=true;n++}})}
+  else taken=false;
+  if(taken&&amount(r.at)&&r.at>out.at)out.at=r.at;   // время сводки — последняя правка принятой записи
  });
  return out;
 }
@@ -129,7 +130,8 @@ function counted(list){
  return n?out:null;
 }
 /* Съедено за день: s — summary(…), свои нажатия — taps(…) (уже без выключенных связью), счётчики — foods(…),
-   app — чьи это нажатия ('day'). Сводки нет вовсе — null. День в сводке не записан — нули.
+   app — чьи это нажатия ('day'). Сводки нет вовсе и своих нажатий за день нет — null: «не записано», а не ноль.
+   День в сводке не записан — нули.
    pending — сколько своих нажатий прибавлено сверх сводки. */
 function eaten(s,date,own,list,app){
  if(!s||!validDate(date))return null;

@@ -457,6 +457,54 @@ section('Номер формата: прежняя версия не затир�
  for(const x of [oldA,oldB,newA,newB,sportNew,reader])x.store.close();
 }
 
+section('Места в списке: вставка и удаление не переписывают соседей');
+{
+ const P=M.place,same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ check('новый список — места подряд с нуля',same(P(['a','b','c']),[0,1,2])&&same(P([],[]),[]));
+ check('список без правок — места прежние',same(P(['a','b','c'],[0,1,2]),[0,1,2])&&same(P(['a','b'],[0.5,7]),[0.5,7]));
+ check('запись в конец — следующая за последней, остальные на месте',same(P(['a','b','c','d'],[0,1,2,undefined]),[0,1,2,3])&&same(P(['a','b'],[0.5,undefined]),[0.5,1]));
+ check('запись удалили — соседи на месте',same(P(['a','c'],[0,2]),[0,2])&&same(P(['b','c'],[1,2]),[1,2]));
+ check('запись в начало и между соседями',same(P(['x','a','b'],[undefined,0,1]),[-1,0,1])&&same(P(['a','x','b'],[0,undefined,1]),[0,0.5,1])&&same(P(['a','x','y','b'],[0,undefined,undefined,3]),[0,1,2,3]));
+ check('переставили одну запись — новое место только у неё',same(P(['c','a','b'],[2,0,1]),[-1,0,1])&&same(P(['b','c','a'],[1,2,0]),[1,2,3])&&same(P(['a','d','b','c','e'],[0,3,1,2,4]),[0,0.5,1,2,4]));
+ check('равные места с двух устройств читаются по ключу и не переписываются',same(P(['a','b'],[5,5]),[5,5]));
+ check('между равными местами числа нет — список нумеруется заново',same(P(['a','x','b'],[5,undefined,5]),[0,1,2]));
+ check('негодное место — как у новой записи',same(P(['a','b'],[NaN,'1']),[0,1])&&same(P(['a','b'],[Infinity,null]),[0,1]));
+ {let keys=['a','z'],was=[0,1],ok=true;
+  for(let i=0;i<70&&ok;i++){keys=[keys[0],'m'+String(i).padStart(2,'0'),...keys.slice(1)];was=P(keys,[was[0],undefined,...was.slice(1)]);
+   for(let x=1;x<was.length;x++)if(!(was[x-1]<was[x]||(was[x-1]===was[x]&&keys[x-1]<keys[x])))ok=false}
+  check('семьдесят вставок в одно место: порядок сохраняется и когда кончается точность',ok&&was.length===72)}
+
+ /* Приложение со списком на двух устройствах — так пишут Day и Sport: записывается только изменившееся, место записи
+    берётся из последнего прочитанного. */
+ const LIST={own:['list']};
+ function app(x){
+  const doc=x.store.doc('list');let last=new Map();
+  const self={items:[],writes:0,
+   load(){const rows=doc.all().sort((a,b)=>a.value.i-b.value.i||(a.id<b.id?-1:1));last=new Map(rows.map(r=>[r.id,{text:M.stable(r.value),i:r.value.i}]));self.items=rows.map(r=>M.copy(r.value.v))},
+   async save(){
+    const at=P(self.items.map(v=>v.id),self.items.map(v=>last.get(v.id)?.i)),next=new Map(self.items.map((v,j)=>[v.id,{i:at[j],v}])),list=[];
+    for(const [id,value] of next)if(last.get(id)?.text!==M.stable(value))list.push({id,value});
+    for(const id of last.keys())if(!next.has(id))list.push({id,deleted:true});
+    last=new Map([...next].map(([id,value])=>[id,{text:M.stable(value),i:value.i}]));self.writes+=list.length;
+    clock.t+=1000;if(list.length)await doc.putMany(list)}};
+  return self;
+ }
+ const xa=await launch(A,'day',LIST,'listA'),xb=await launch(B,'day',LIST,'listB'),a=app(xa),b=app(xb);
+ a.items=[1,2,3,4,5].map(n=>({id:'r'+n,text:'запись '+n}));await a.save();await xa.store.sync();await xb.store.sync();b.load();
+ check('список дошёл до второго устройства в том же порядке',b.items.map(v=>v.id).join()==='r1,r2,r3,r4,r5');
+ B.offline=true;b.items[3].text='поправлено на втором устройстве';b.items.pop();await b.save();        // без сети: правка четвёртой, пятая удалена
+ a.items.shift();a.writes=0;await a.save();                                                              // позже: первая удалена на первом
+ check('удаление первой записи — одна правка, а не пять',a.writes===1,a.writes);
+ await xa.store.sync();B.offline=false;await xb.store.sync();await xa.store.sync();a.load();b.load();
+ check('правка соседней записи со второго устройства не затёрта',a.items.find(v=>v.id==='r4')?.text==='поправлено на втором устройстве'&&b.items.find(v=>v.id==='r4')?.text==='поправлено на втором устройстве');
+ check('удалённое вторым устройством не вернулось, удалённое первым удалено',a.items.map(v=>v.id).join()==='r2,r3,r4'&&b.items.map(v=>v.id).join()==='r2,r3,r4',[a.items.map(v=>v.id),b.items.map(v=>v.id)]);
+ a.items.splice(1,0,{id:'r9',text:'между второй и третьей'});a.writes=0;await a.save();
+ b.items.push({id:'r8',text:'в конец'});await b.save();
+ await xa.store.sync();await xb.store.sync();await xa.store.sync();a.load();b.load();
+ check('вставка в середину — одна правка; вставки с двух устройств остаются обе, порядок одинаковый',a.writes===1&&a.items.map(v=>v.id).join()==='r2,r9,r3,r4,r8'&&b.items.map(v=>v.id).join()==='r2,r9,r3,r4,r8',[a.writes,a.items.map(v=>v.id)]);
+ for(const x of [xa,xb])x.store.close();
+}
+
 for(const x of [dayA,dayB,mealA]){x.store.close();x.account.close()}
 console.log(failed?`Общий модуль хранения и обмена: НЕ ПРОШЛО ${failed} из ${failed+passed}`:`Общий модуль хранения и обмена: ${passed} проверок прошли`);
 process.exit(failed?1:0);

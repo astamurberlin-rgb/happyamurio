@@ -1,6 +1,8 @@
-/* Сводки между приложениями (shared/happy-summaries.js): проверка сводки Sport и Meal, показ за день,
-   сравнение по сути и ключ в области аккаунта — тот же, что даёт shared/profile-storage.js у Day и Meal.
-   Только придуманные записи; сети и хранилища нет. */
+/* Прежние сводки между приложениями (shared/happy-summaries.js): проверка сводки Sport и Meal, показ за день,
+   сравнение по сути и ключ в области аккаунта — тот же, что даёт shared/profile-storage.js у Meal.
+   Этим разбором пользуется Meal, пока не перешёл на общий модуль хранения (этап 4). Day с выпуска 59 читает
+   тренировки и еду из витрин общего модуля — это смотрят scripts/check-sport-summary.mjs, scripts/check-food.mjs и
+   тесты day-NN/tests. Только придуманные записи; сети и хранилища нет. */
 import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
@@ -239,7 +241,8 @@ ok('разбор строки из хранилища не бросает оши
 // Ключ в области аккаунта должен совпадать с тем, что строит profile-storage.js в Day и Meal: иначе Sport положит
 // сводку туда, где соседи её не ищут.
 const summaryApps=JSON.parse(await readFile(new URL('shared/apps.json',root),'utf8')); // текущий и предыдущий выпуски Day и Meal
-for(const copy of ['day','meal'].flatMap(a=>[summaryApps[a].entry,summaryApps[a].previous?.entry]).filter(Boolean).map(e=>e.split('/')[0]+'/shared/profile-storage.js')){
+// С Day 59 прежних профилей в Day нет: сверяются копии текущего и предыдущего Meal и предыдущего Day.
+for(const copy of [summaryApps.meal.entry,summaryApps.meal.previous?.entry,summaryApps.day.previous?.entry].filter(Boolean).map(e=>e.split('/')[0]+'/shared/profile-storage.js')){
  const source=await readFile(new URL(copy,root),'utf8');
  for(const [app,cell] of [['day','happy-auth:day'],['meal','happy-auth:meal']]){
   for(const uid of [null,'00000000-0000-4000-8000-000000000001','имя с пробелом/и:знаками']){
@@ -257,14 +260,11 @@ assert.equal(S.key('hd_link_sport_v1','local'),'hd_link_sport_v1');assert.equal(
 // Копии в выпусках — те же байты, что эталон (подробно это проверяет check-shared.mjs; здесь — что файл подключён).
 const apps=JSON.parse(await readFile(new URL('shared/apps.json',root),'utf8'));
 const dayHtml=await readFile(new URL(apps.day.entry,root),'utf8'),mealHtml=await readFile(new URL(apps.meal.entry,root),'utf8');
-assert.match(dayHtml,/<script src="\.\/shared\/happy-summaries\.js\?v=[\d.]+"><\/script>/,'Day подключает общий разбор сводок');
+assert.doesNotMatch(dayHtml,/happy-summaries\.js/,'Day прежний разбор сводок больше не подключает');
 assert.match(mealHtml,/<script src="\.\/shared\/happy-summaries\.js\?v=[\d.]+"><\/script>/,'Meal подключает общий разбор сводок');
-// Счётчики в «съедено»: Meal называет учтённые порции, Day передаёт разбору документ счётчиков.
+// Счётчики в «съедено»: Meal называет учтённые порции и записи, по которым решил сам.
 // Sport 42 прежнюю сводку Meal не читает (вернётся после перехода Meal на общий модуль) — его кольцо проверяет sport-NN/sport/scripts/check-energy.mjs.
 assert.ok(mealHtml.includes("at:Date.now(),counters:1,")&&mealHtml.includes('D.cs=servings'),'Meal отмечает в сводке учтённые порции со счётчиков');
-const dayCare=await readFile(new URL('selfcare-ui.js',new URL(apps.day.entry,root)),'utf8');
-assert.ok(dayCare.includes('S.meal.day(DB.mealLink,date,DB.mealCounters)'),'Day считает «съедено» вместе с документом счётчиков');
-assert.ok(dayHtml.includes("if(o.counters===1){ copy.counters=1; if(Array.isArray(o.skipped)) copy.skipped="),'Day сохраняет отметку сводки о счётчиках и список решённых записей');
 assert.ok(mealHtml.includes("counters:1,skipped:Object.keys(settled.skipped),")&&mealHtml.includes("if(live[id]!==date){ settled.skipped[id]=1; return }"),'Meal называет записи, по которым решил сам');
-passed+=4;
+passed+=3;
 console.log('Сводки между приложениями: '+passed+' проверок пройдено (Sport: годность, день, расход и цели на будущее, сравнение; Meal: день и короткая копия; счётчики в «съедено»: прибавить непосчитанное, не удвоить посчитанное, вычесть убранное; ключ аккаунта как в profile-storage Day и Meal; файл подключён в трёх приложениях).');

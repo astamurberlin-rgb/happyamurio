@@ -1,8 +1,9 @@
 'use strict';
-/* Day 57.6 — время у каждой шкалы и тега раздела, прежние значения в журнале, «побеждает более поздняя правка». */
+/* Day 57.6 — время у каждой шкалы и тега раздела, прежние значения в журнале раздела.
+   Day 59: как правки раздела с двух устройств сводятся по записям общего модуля («побеждает поставленное позже,
+   второе остаётся строкой журнала») — в day-docs.test.cjs. */
 const test=require('node:test'),assert=require('node:assert/strict');
 const C=require('../selfcare-core.js');
-const {merge}=require('../day-account-profile.js');
 const at=(t,ms)=>({t,ms});
 const visit=id=>({id,at:{},tags:{}});
 
@@ -57,54 +58,4 @@ test('старые разделы без времени у отметок: пр�
  const base={time:'08:10',mood:4,tags:{x:true}},v=visit('v');
  const cp=C.editSection(base,base,{...base,mood:1},v,at('20:00',9));
  assert.deepEqual(cp.log,[{id:'v:mood',k:'mood',v:4,t:'08:10',ms:0}]);assert.ok(!cp.tagAt,'у старого тега время не придумываем');
-});
-
-test('синхронизация: одну шкалу поменяли на двух устройствах — побеждает поставленное позже, второе остаётся отметкой',()=>{
- const base={days:{d:{cp:{am:{time:'09:00',mood:6,at:{mood:at('09:00',100)}}}}}};
- const phone=structuredClone(base),computer=structuredClone(base);
- Object.assign(phone.days.d.cp.am,{mood:7});phone.days.d.cp.am.at.mood=at('09:30',300);
- Object.assign(computer.days.d.cp.am,{mood:5});computer.days.d.cp.am.at.mood=at('09:40',400);
- for(const [l,r] of [[phone,computer],[computer,phone]]){
-  const out=merge(base,l,r).days.d.cp.am;
-  assert.equal(out.mood,5);assert.deepEqual(out.at.mood,at('09:40',400));
-  assert.deepEqual(out.log,[{id:'merge:mood:300:7',k:'mood',v:7,t:'09:30',ms:300}]);
-  assert.ok(!merge(base,l,r).accountConflicts,'выбирать вручную нечего');
- }
- // Повторное сведение не плодит отметок.
- const once=merge(base,phone,computer),twice=merge(once,once,merge(base,computer,phone));
- assert.equal(twice.days.d.cp.am.log.length,1);
-});
-
-test('синхронизация без общей основы и с разными шкалами, тегами и записями кнопки',()=>{
- const l={days:{d:{cp:{am:{time:'09:00',mood:6,at:{mood:at('09:00',100)},tags:{a:true,c:false},tagAt:{a:'09:00'}}},care:{checkins:[{id:'r1',time:'10:00'}]}}}};
- const r={days:{d:{cp:{am:{time:'09:05',energy:3,at:{energy:at('09:05',150)},tags:{a:true,b:true},tagAt:{a:'09:10',b:'09:05'}}},care:{checkins:[{id:'r2',time:'11:00'}]}}}};
- const out=merge(null,l,r),am=out.days.d.cp.am;
- assert.equal(am.mood,6);assert.equal(am.energy,3);assert.deepEqual(am.tags,{a:true,b:true});
- assert.deepEqual(am.tagAt,{a:'09:00',b:'09:05'});assert.equal(am.time,'09:00');
- assert.deepEqual(out.days.d.care.checkins.map(x=>x.id).sort(),['r1','r2'],'записи кнопки не спорят');
- assert.ok(!out.accountConflicts);
-});
-
-test('синхронизация: правка на одном устройстве против нетронутого другого, ручное время главнее',()=>{
- const base={days:{d:{cp:{pm:{time:'13:00',mood:2}}}}};
- const l=structuredClone(base),r=structuredClone(base);
- l.days.d.cp.pm.mood=4;l.days.d.cp.pm.at={mood:at('15:00',9)};
- r.days.d.cp.pm.time='12:40';r.days.d.cp.pm.tm='m';r.days.d.cp.pm.t0='13:00';
- const pm=merge(base,l,r).days.d.cp.pm;
- assert.equal(pm.mood,4);assert.deepEqual(pm.at.mood,at('15:00',9));assert.ok(!pm.log);
- assert.equal(pm.time,'12:40');assert.equal(pm.tm,'m');
-});
-
-test('пример владельца: 6 в 9:00 синхронизировано; телефон 7 в 9:30, компьютер 5 в 9:40 — в разделе 5, в журнале 6 и 7 по одному разу',()=>{
- const first=C.editSection(null,{},{mood:6,tags:{}},visit('v0'),at('09:00',1000)),base={days:{d:{cp:{am:first}}}};
- const phone={days:{d:{cp:{am:C.editSection(first,structuredClone(first),{...structuredClone(first),mood:7},visit('vp'),at('09:30',3000))}}}};
- const computer={days:{d:{cp:{am:C.editSection(first,structuredClone(first),{...structuredClone(first),mood:5},visit('vc'),at('09:40',4000))}}}};
- for(const [l,r] of [[phone,computer],[computer,phone]]){
-  const am=merge(base,l,r).days.d.cp.am;
-  assert.equal(am.mood,5);assert.equal(am.at.mood.t,'09:40');
-  assert.deepEqual(am.log.map(x=>[x.v,x.t]).sort(),[[6,'09:00'],[7,'09:30']]);
- }
- // Телефон получил итог и снова сводится с компьютером — строк не прибавляется.
- const once=merge(base,phone,computer);
- assert.equal(merge(base,once,computer).days.d.cp.am.log.length,2);
 });

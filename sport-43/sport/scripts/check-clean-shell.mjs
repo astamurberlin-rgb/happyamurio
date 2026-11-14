@@ -23,4 +23,12 @@ assert.equal((box.innerHTML.match(/data-happy-account-status/g)||[]).length,1);a
 assert.doesNotMatch(box.innerHTML,/Обновить связь|Прочитать облако/);
 vm.runInContext('(box,a)=>HappyAccountUI.render(box,{account:a})',ctx)(box,out);
 assert.match(box.innerHTML,/name="email"/);assert.match(box.innerHTML,/name="password"/);assert.match(box.innerHTML,/Войти/);assert.match(box.innerHTML,/Создать аккаунт/);
-console.log('PASS clean shell: Update 43 title and page rules, start after shared sign-in and storage, no former guards or prototype journal, one status line under the account.');
+// Sport 43: то, что в Sport 42 ушло вместе с прежним обменом, а нужно приложению: оформление сохраняется на устройстве
+// (общий модуль оформления пишет через rawGet/rawSet), ссылки на тренировку и на упражнение открывают их.
+{const app=built.slice(built.indexOf('id="sport-app-source"'));
+ assert.match(built,/async function rawGet\(key\)\{try\{return localStorage\.getItem\(key\)/,'оформление читается с устройства');
+ assert.match(built,/async function rawSet\(key,value\)\{localStorage\.setItem\(key,value\)/,'оформление сохраняется на устройстве');
+ assert.ok(built.includes("asked.get('workout')")&&built.includes("detailId=workoutId;goto('detail')"),'ссылка на тренировку открывает её');
+ assert.ok(built.includes("asked.get('exercise')")&&built.includes('showExercise(exerciseId)'),'ссылка на упражнение открывает его');
+ assert.ok(app.length>0);}
+console.log('PASS clean shell: Update 43 title and page rules, start after shared sign-in and storage, no former guards or prototype journal, one status line under the account, appearance saved on the device, workout and exercise links open them.');

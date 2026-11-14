@@ -1,3 +1,8 @@
+/* Прежний общий документ счётчиков продуктов (shared/food-counters.js): им пользуется Meal, пока не перешёл на общий
+   модуль хранения (этап 4). Day с выпуска 59 в нём не участвует: счётчики еды он читает из витрины Meal, нажатия
+   хранит в своём документе — это смотрят scripts/check-food.mjs и day-NN/tests/counters-eaten.test.cjs.
+   Здесь: сам документ (слияние, отмена, условная запись, смена аккаунта), страница Meal и нажатие соседа, каким его
+   записывал прежний Day; свои счётчики Sport прежний документ не трогают. */
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
@@ -53,13 +58,12 @@ meal.FOODS.egg.k=999; // A local catalog change cannot change the shared serving
 const key=meal.DB.taps[0].k;for(let i=0;i<3;i++)meal.tapAdd(key);assert.equal(meal.day(meal.curDate).items.length,3);assert.equal(new Set(meal.day(meal.curDate).items.map(x=>x.counterEventId)).size,3);
 assert.equal(meal.day(meal.curDate).items[0].counterFood.k,135);
 const doc=meal.DB.mealCounters;meal.HappyMealCounters.apply(doc);meal.HappyMealCounters.apply(doc);assert.equal(meal.day(meal.curDate).items.length,3);
-const day=context({document,localStorage:diaryStore,CL:{s:null},DB:{taps:[{k:'own',t:'Своя привычка'}],days:{}},curDate:'2026-10-30',HappyProfile:{owner:'local'},clOn:()=>false,save(){},renderAll(){},renderTapSheet(){},tapsHTML:()=>'',escH:String,toast(){},clAfterIn(){},tapAdd(){},lockGuard:()=>false,todayISO:()=> '2026-10-30',nowHM:()=> '12:30'});
-day.day=d=>day.DB.days[d]||(day.DB.days[d]={taps:{}});day.tapDef=k=>day.DB.taps.find(t=>t.k===k);
-vm.runInContext(await read(REL('day')+'/counters.js'),day);day.HappyDayCounters.init();const dk=day.DB.taps.find(t=>t.mealCounterId).k;
-assert.equal(day.day(day.curDate).taps[dk].length,3);day.tapAdd(dk);assert.equal(day.day(day.curDate).taps[dk].length,4);
-meal.HappyMealCounters.apply(day.DB.mealCounters);assert.equal(meal.day(meal.curDate).items.length,4);assert.equal(meal.day(meal.curDate).items.at(-1).g,55);assert.equal(meal.day(meal.curDate).items.at(-1).counterFood.k,135);
-day.day(day.curDate).taps[dk].pop();day.save();meal.HappyMealCounters.apply(day.DB.mealCounters);assert.equal(meal.day(meal.curDate).items.length,3);
-assert.ok(day.DB.taps.some(t=>t.k==='own'));assert.equal(meal.HappyMealCounters.ready({fid:'missing',q:1,u:'шт'}),false);
+// Нажатие соседа (так его записывал прежний Day): запись в общем документе; Meal добавляет порцию в свой дневник.
+let neighbour=H.patch(meal.DB.mealCounters,'events',event('press-neighbour','18:10'),'day');
+meal.HappyMealCounters.apply(neighbour);assert.equal(meal.day(meal.curDate).items.length,4);assert.equal(meal.day(meal.curDate).items.at(-1).g,55);assert.equal(meal.day(meal.curDate).items.at(-1).counterFood.k,135);
+neighbour=H.patch(neighbour,'events',{id:'press-neighbour',cid:def.id,date:'2026-10-30',deleted:true},'day');
+meal.HappyMealCounters.apply(neighbour);assert.equal(meal.day(meal.curDate).items.length,3);
+assert.equal(meal.HappyMealCounters.ready({fid:'missing',q:1,u:'шт'}),false);
 meal.FOODS.fake={id:'fake',n:'Неподтверждённый',k:0,p:0,f:0,c:0};assert.equal(meal.HappyMealCounters.ready({fid:'fake',q:1,u:'г'}),false);
 assert.equal(meal.HappyMealCounters.ready({fid:'egg',q:1,u:'несуществующая мера'}),false);
 // Editing an old event must not turn it into the most recent press for Undo.
@@ -77,18 +81,16 @@ const transport=transportContext.HappyFoodCounters.transport();assert.equal(awai
 assert.ok(!envelope.data.includes('Яйцо'));assert.equal(envelope.user_id,'test-owner');assert.equal(envelope.kind,'counters');
 assert.deepEqual(copy((await transport.get()).doc),copy(base));assert.equal(await transport.put(base,99,101),false);assert.equal(await transport.put(base,100,101),true);
 transportContext.CL.s.uid='other-owner';await assert.rejects(()=>transport.get(),/Аккаунт изменился/);
-console.log('Passed: explicit food validation, distinct servings, bidirectional Day/Meal counts and deletion, idempotent replay, no unrelated counters changed, concurrent/offline merge, tombstones, pending recovery, CAS retries and account isolation.');
+console.log('Passed: explicit food validation, distinct servings, a neighbour tap counted and removed in Meal, idempotent replay, concurrent/offline merge, tombstones, pending recovery, CAS retries and account isolation.');
 
 // Targets are independent; hiding and restoring Day retains every serving.
-let targets=H.patch(day.DB.mealCounters,'definitions',{...def,targets:{day:false,sport:true}},'targets');
-day.HappyDayCounters.apply(targets);assert.equal(day.DB.taps.some(t=>t.mealCounterId===def.id),false);
+let targets=H.patch(neighbour,'definitions',{...def,targets:{day:false,sport:true}},'targets');
 assert.equal(H.linked(targets.definitions[0],'sport'),true);assert.equal(H.linked(targets.definitions[0],'day'),false);
 const servings=targets.events.filter(e=>!e.deleted).length;
 targets=H.patch(targets,'definitions',{...def,targets:{day:true,sport:false}},'targets');
-day.HappyDayCounters.apply(targets);assert.equal(day.DB.taps.filter(t=>t.mealCounterId===def.id).length,1);
 meal.HappyMealCounters.apply(targets);assert.equal(meal.day(meal.curDate).items.length,servings);
 assert.equal(H.linked(def,'day'),true);assert.equal(H.linked(def,'sport'),false);
-console.log('Passed independent Day/Sport links, legacy migration, hide/show with retained servings.');
+console.log('Passed independent Day/Sport links, hide/show with retained servings.');
 // Sport 42: счётчики продуктов Meal Sport покажет после перехода Meal на общий модуль; прежний общий документ счётчиков
 // (облако meal/counters, ключи happy-food-counters-v1) Sport не читает и не пишет. Свои счётчики Sport — нажатие и отмена.
 {
@@ -103,8 +105,9 @@ console.log('Passed independent Day/Sport links, legacy migration, hide/show wit
 }
 if(!process.env.FOOD_COUNTERS_SOURCE){
  const {execFileSync}=await import('node:child_process');
- const reference=REL('day')+'/shared/food-counters.js';
- for(const copy of [REL('meal'),REL('sport'),PREV('day'),PREV('meal'),PREV('sport')].filter(Boolean).map(d=>d+'/shared/food-counters.js'))assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
+ const reference=REL('meal')+'/shared/food-counters.js';   // с Day 59 эталон — копия текущего Meal: Day этим документом больше не пользуется
+ for(const copy of [REL('sport'),PREV('day'),PREV('meal'),PREV('sport')].filter(Boolean).map(d=>d+'/shared/food-counters.js'))assert.equal(await read(copy),await read(reference),copy+' must be byte-identical to '+reference);
+ assert.equal(await read(REL('day')+'/shared/food-counters.js').then(()=>'есть',()=>'нет'),'нет','в текущем Day прежнего документа счётчиков нет');
  execFileSync(process.execPath,[new URL(import.meta.url).pathname],{stdio:'inherit',env:{...process.env,FOOD_COUNTERS_SOURCE:reference}});
  console.log('Passed: reference module '+reference+' runs the same suite; release copies are identical to it.');
 }

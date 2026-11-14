@@ -10,10 +10,12 @@
  * — Claude · 14.11.2026 */
 var SportData=(()=>{
  const store=SportBoot.store,account=SportBoot.account,stable=HappyStore.model.stable;
+ /* last — что лежит в хранилище по сведениям приложения: документ → номер записи → {text — значение, i — место в списке} */
  let last=new Map(),failed=false,askedAt=0,pending=false;
+ const seenAs=value=>({text:stable(value),i:value&&typeof value==='object'&&typeof value.i==='number'?value.i:undefined});
  const signedIn=()=>!!(store&&!store.closed);
  function records(){const out={};for(const name of SportDocs.NAMES)out[name]=store.doc(name).all();return out}
- function remember(docs){last=new Map(SportDocs.NAMES.map(n=>[n,new Map((docs[n]||[]).map(r=>[r.id,stable(r.value)]))]))}
+ function remember(docs){last=new Map(SportDocs.NAMES.map(n=>[n,new Map((docs[n]||[]).map(r=>[r.id,seenAs(r.value)]))]))}
  /* Замеры тела: копия общего документа в дневнике в памяти — для выгрузки файлом и счётчика записей. */
  function mirror(target){const m=HappyMeasurements.read(store.doc('body').all());target.measurements=m.list;target.measurementTrash=m.trash;return target}
  function load(){
@@ -23,10 +25,11 @@ var SportData=(()=>{
  function report(e){if(failed)return;failed=true;setTimeout(()=>{failed=false},5000);try{toast(e&&e.code==='full'?'На устройстве не хватает места. Записи не сохранены.':(e&&e.message)||'Не удалось сохранить на устройстве')}catch{}}
  function save(state){
   if(!signedIn()){askSignIn();return false}
-  const next=SportDocs.project(state);
+  /* место записи в списке — прежнее, пока её не переставили: соседние записи при вставке и удалении не переписываются */
+  const next=SportDocs.project(state,(name,id)=>{const r=last.get(name)&&last.get(name).get(id);return r?r.i:undefined});
   for(const name of SportDocs.NAMES){
    const before=last.get(name)||new Map(),now=next.get(name),list=[],seen=new Map();
-   for(const [id,value] of now){const text=stable(value);seen.set(id,text);if(before.get(id)!==text)list.push({id,value})}
+   for(const [id,value] of now){const one=seenAs(value);seen.set(id,one);if(!before.has(id)||before.get(id).text!==one.text)list.push({id,value})}
    for(const id of before.keys())if(!now.has(id))list.push({id,deleted:true});
    last.set(name,seen);
    if(list.length)store.doc(name).putMany(list).catch(report);

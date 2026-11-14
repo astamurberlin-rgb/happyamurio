@@ -1,6 +1,7 @@
 """Видимые версии: страницы Day, Meal, Sport и самостоятельный файл Day показывают те же версии, что записаны в
-shared/apps.json; общий разбор сводок подключён в Day и Meal (Sport 42 сводки соседей пока не читает — до перехода Day
-и Meal на общий модуль); ошибок на страницах нет. Гость, сеть к серверу закрыта."""
+shared/apps.json; Day (и его самостоятельный файл) и Sport запускаются на общем входе и общем модуле хранения,
+в Meal подключён прежний общий разбор сводок (до его перехода на общий модуль); ошибок на страницах нет.
+Без входа, сеть к серверу закрыта."""
 import urllib.request
 from common import *
 
@@ -10,7 +11,8 @@ out, errors = {"expected": {k: apps[k]["version"] for k in ("day", "meal", "spor
 READ = """()=>({title:document.title,attr:(document.querySelector('[data-app-version]')||{dataset:{}}).dataset.appVersion||null,
  footer:(document.querySelector('.happy-version,[data-app-version]')||{}).innerText||null,
  first:(()=>{try{return (typeof sportReleases!=='undefined'?sportReleases:typeof mealReleases!=='undefined'?mealReleases:window.HappyDayReleases)[0].version}catch(e){return null}})(),
- summaries:typeof HappySummaries==='object'&&typeof HappySummaries.meal.day==='function'})"""
+ summaries:typeof HappySummaries==='object'&&typeof HappySummaries.meal.day==='function',
+ store:typeof HappyAccount==='object'&&typeof HappyStore==='object'&&typeof HappyStore.open==='function'&&(typeof DayData==='object'||typeof SportData==='object')})"""
 with sync_playwright() as p:
     b = launch(p)
     ctx = b.new_context(viewport={"width": 393, "height": 852}, locale="ru-RU", timezone_id="Europe/Moscow")
@@ -32,7 +34,9 @@ for name, _ in pages:
     want = out["expected"]["day" if name.startswith("day") else name]
     got = out[name]
     checks.append((name + ": версия " + want + " в подвале, в отметке страницы и первой в истории обновлений", got["attr"] == want and got["first"] == want and ("Update " + want) in (got["footer"] or "")))
-    if name != "sport":
+    if name == "meal":
         checks.append((name + ": общий разбор сводок подключён", got["summaries"] is True))
+    else:
+        checks.append((name + ": запуск на общем входе и общем модуле хранения", got["store"] is True))
 checks.append(("ошибок на страницах нет", errors == []))
 sys.exit(finish("versions", out, checks))

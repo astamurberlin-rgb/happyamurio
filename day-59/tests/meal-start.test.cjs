@@ -1,10 +1,14 @@
 'use strict';
 /* Day 57.6 — начало Завтрака, Обеда и Ужина — время первого продукта в Meal, с ручным временем приёма и продукта.
-   Сводку собирает настоящий linkSummary Meal 27, читают настоящие функции Day 57. */
+   Day 59: сводка Meal приходит из его витрины в общем модуле (документ meal/summary, формат — shared/happy-food.js):
+   запись на день, записи secs и goals. День сводки собирает настоящий linkSummary текущего Meal — тот же вид дня
+   Meal положит в витрину, когда перейдёт на общий модуль; читают настоящие syncMeal и функции времени Day 59. */
 const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'..','..');
-const day=fs.readFileSync(path.join(root,'day-58/index.html'),'utf8'),meal=fs.readFileSync(path.join(root,'meal-31/index.html'),'utf8');
+const F=require('../shared/happy-food.js');
+const apps=JSON.parse(fs.readFileSync(path.join(root,'shared/apps.json'),'utf8'));
+const day=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8'),meal=fs.readFileSync(path.join(root,apps.meal.entry),'utf8');
 const between=(s,a,b)=>{const i=s.indexOf(a),j=s.indexOf(b,i+a.length);assert.ok(i>=0&&j>i,'нет куска '+a);return s.slice(i,j);};
 const marked=(s,a,b)=>between(s,a,b).slice(a.length);
 const D='2026-11-11';
@@ -17,9 +21,16 @@ function mealSummary(items){
  vm.runInContext(between(meal,'function r1(',"var CL_APP='meal'"),c);
  return JSON.parse(JSON.stringify(c.linkSummary()));
 }
+/* сводка Meal → записи документа витрины meal/summary, как их отдаёт общий модуль (doc.all()) */
+const records=(summary,at=5000)=>Object.keys(summary.days).map(date=>({id:date,value:summary.days[date],at})).concat([{id:'secs',value:summary.secs,at},{id:'goals',value:summary.goals||{},at}]);
 function dayWith(summary,cp){
- const c=vm.createContext({DB:{mealLink:summary,days:{[D]:{cp:cp||{}}},sections:[{k:'wake',t:'Утро'},{k:'am',t:'Завтрак'},{k:'pm',t:'Обед'},{k:'dn',t:'Ужин'}]},
-  MEAL_SECS:['am','pm','dn'],todayISO:()=>D,SelfCare:{checkinTime:()=>null}});
+ let rows=records(summary);
+ const c=vm.createContext({DB:{days:{[D]:{cp:cp||{}}},sections:[{k:'wake',t:'Утро'},{k:'am',t:'Завтрак'},{k:'pm',t:'Обед'},{k:'dn',t:'Ужин'}]},
+  MEAL_SECS:['am','pm','dn'],MEAL_SEEN:false,todayISO:()=>D,SelfCare:{checkinTime:()=>null},HappyFood:F,
+  DayData:{signedIn:()=>true,store:{neighbor:(app,name)=>{assert.deepEqual([app,name],['meal','summary']);return {newer:false,all:()=>JSON.parse(JSON.stringify(rows))}}}}});
+ c.feed=next=>{rows=records(next,6000);return vm.runInContext('syncMeal()',c)};
+ vm.runInContext(between(day,'var MEAL_SUMMARY=null;','function paintMealSet(){'),c);
+ assert.equal(vm.runInContext('syncMeal()',c),true,'сводка из витрины принята');
  vm.runInContext(day.match(/function mealDay\(d\)\{[^\n]+\}/)[0],c);
  vm.runInContext(between(day,'function mealState(','\nfunction mealOf('),c);
  vm.runInContext(day.match(/function mealOf\(d,k\)\{[^\n]+\}/)[0],c);
@@ -64,6 +75,18 @@ test('ручное время раздела в Day главнее Meal; без 
 test('пришла свежая сводка Meal — начало раздела меняется без правок в Day',()=>{
  const c=dayWith(mealSummary([{id:'a',sec:'pm',fid:'soup',t:'13:00'}]),{pm:{time:'14:00'}});
  assert.equal(c.secTime(D,'pm').t,'13:00');
- c.DB.mealLink=mealSummary([{id:'a',sec:'pm',fid:'soup',t:'12:15',tm:1}]);
+ assert.equal(c.feed(mealSummary([{id:'a',sec:'pm',fid:'soup',t:'12:15',tm:1}])),true);
  assert.equal(c.secTime(D,'pm').t,'12:15');
+ assert.equal(c.feed(mealSummary([{id:'a',sec:'pm',fid:'soup',t:'12:15',tm:1}])),false,'та же сводка — ничего не поменялось');
+});
+
+test('день сводки текущего Meal годится для витрины; без входа и без сводки Day еды не показывает',()=>{
+ const s=mealSummary([{id:'w',sec:'pm',fid:'water',t:'12:10'},{id:'a',sec:'pm',fid:'soup',t:'12:30'}]);
+ const parsed=F.summary(records(s));
+ assert.deepEqual(Object.keys(parsed.days),[D],'день сводки Meal проходит проверку формата витрины');
+ assert.deepEqual(JSON.parse(JSON.stringify(parsed.days[D])),s.days[D]);assert.equal(parsed.at,5000);assert.equal(parsed.any,true);
+ const c=dayWith(s);
+ assert.deepEqual(JSON.parse(JSON.stringify(c.DB.mealLink)),{v:1,at:5000,secs:parsed.secs,days:{[D]:s.days[D]},goals:{}},'вид сводки в памяти Day');
+ c.DayData.signedIn=()=>false;assert.equal(vm.runInContext('syncMeal()',c),true);assert.equal(c.DB.mealLink,undefined);assert.equal(c.mealDay(D),null);assert.equal(c.secTime(D,'pm'),null);
+ assert.ok(!/hd_link_meal_v1|rawGet\(MEAL_KEY|mealLinkCopy/.test(day),'прежней копии сводки на устройстве и её чтения из облака нет');
 });

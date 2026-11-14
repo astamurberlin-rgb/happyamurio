@@ -1140,10 +1140,12 @@ document.addEventListener('input',event=>clearSportMetricError(event.target));
  * — Claude · 14.11.2026 */
 var SportData=(()=>{
  const store=SportBoot.store,account=SportBoot.account,stable=HappyStore.model.stable;
+ /* last — что лежит в хранилище по сведениям приложения: документ → номер записи → {text — значение, i — место в списке} */
  let last=new Map(),failed=false,askedAt=0,pending=false;
+ const seenAs=value=>({text:stable(value),i:value&&typeof value==='object'&&typeof value.i==='number'?value.i:undefined});
  const signedIn=()=>!!(store&&!store.closed);
  function records(){const out={};for(const name of SportDocs.NAMES)out[name]=store.doc(name).all();return out}
- function remember(docs){last=new Map(SportDocs.NAMES.map(n=>[n,new Map((docs[n]||[]).map(r=>[r.id,stable(r.value)]))]))}
+ function remember(docs){last=new Map(SportDocs.NAMES.map(n=>[n,new Map((docs[n]||[]).map(r=>[r.id,seenAs(r.value)]))]))}
  /* Замеры тела: копия общего документа в дневнике в памяти — для выгрузки файлом и счётчика записей. */
  function mirror(target){const m=HappyMeasurements.read(store.doc('body').all());target.measurements=m.list;target.measurementTrash=m.trash;return target}
  function load(){
@@ -1153,10 +1155,11 @@ var SportData=(()=>{
  function report(e){if(failed)return;failed=true;setTimeout(()=>{failed=false},5000);try{toast(e&&e.code==='full'?'На устройстве не хватает места. Записи не сохранены.':(e&&e.message)||'Не удалось сохранить на устройстве')}catch{}}
  function save(state){
   if(!signedIn()){askSignIn();return false}
-  const next=SportDocs.project(state);
+  /* место записи в списке — прежнее, пока её не переставили: соседние записи при вставке и удалении не переписываются */
+  const next=SportDocs.project(state,(name,id)=>{const r=last.get(name)&&last.get(name).get(id);return r?r.i:undefined});
   for(const name of SportDocs.NAMES){
    const before=last.get(name)||new Map(),now=next.get(name),list=[],seen=new Map();
-   for(const [id,value] of now){const text=stable(value);seen.set(id,text);if(before.get(id)!==text)list.push({id,value})}
+   for(const [id,value] of now){const one=seenAs(value);seen.set(id,one);if(!before.has(id)||before.get(id).text!==one.text)list.push({id,value})}
    for(const id of before.keys())if(!now.has(id))list.push({id,deleted:true});
    last.set(name,seen);
    if(list.length)store.doc(name).putMany(list).catch(report);
@@ -4718,6 +4721,11 @@ document.addEventListener('change',event=>{if(['sport-strong-file','sport-strong
 {const closeBeforeAdopt=closeSheet;closeSheet=function(...args){const r=closeBeforeAdopt(...args);SportData.afterSheet();return r}}
 /* Sport 43: при открытии приложения окно плановых занятий для Day и Meal сдвигается на сегодня. */
 SportData.syncPlans();
+/* Sport 43: ссылка на тренировку из Day («Открыть запись в Sport») и ссылка на упражнение («Поделиться») снова
+   открывают их. В Sport 42 эти переходы ушли вместе с прежним обменом (sport-cloud.js). */
+{const asked=new URLSearchParams(location.search),workoutId=asked.get('workout'),exerciseId=asked.get('exercise');
+ if(workoutId&&state.workouts.some(w=>w.id===workoutId)){detailId=workoutId;goto('detail')}
+ else if(exerciseId&&exercise(exerciseId))showExercise(exerciseId)}
 
 /* Update 38 · one settings structure for Happy apps (agreed 08.11.2026):
    Аккаунт → Приложение → Данные → Связанные приложения → Для разработчика (hidden) → Версия.
@@ -5215,7 +5223,36 @@ function nextMeta(old,o,won){
  if(o.settle!==undefined&&m.seq===o.settle)m.dirty=false;
  return m;
 }
-const model={valid,validId,clean,compare,nextMeta,stable,copy};
+/* Места в списке. Список приложение хранит по записям; у записи списка есть место — число i, записи читаются по
+   возрастанию i, при равных — по ключу. Место ставится один раз и не меняется, пока запись не переставили: вставка и
+   удаление не трогают соседей. Иначе правка одной записи переписывала бы соседние — и затирала бы то, что с ними в это
+   время сделало другое устройство, и возвращала бы удалённое им.
+   keys — ключи записей в нынешнем порядке; was — их прежние места (нет места — запись новая). Возвращает места:
+   записям, которые уже стоят по порядку, — прежние; новым и переставленным — между соседями (в конец: +1). */
+function place(keys,was){
+ const n=keys.length,old=keys.map((_,x)=>typeof (was&&was[x])==='number'&&Number.isFinite(was[x])?was[x]:null);
+ const before=(a,b,x,y)=>a<b||(a===b&&keys[x]<keys[y]);
+ const tails=[],back=new Array(n).fill(-1);          // самая длинная цепочка записей, уже стоящих по порядку
+ for(let x=0;x<n;x++){
+  if(old[x]===null)continue;
+  let lo=0,hi=tails.length;
+  while(lo<hi){const mid=(lo+hi)>>1;if(before(old[tails[mid]],old[x],tails[mid],x))lo=mid+1;else hi=mid}
+  back[x]=lo?tails[lo-1]:-1;tails[lo]=x;
+ }
+ const keep=new Set();for(let x=tails.length?tails[tails.length-1]:-1;x>=0;x=back[x])keep.add(x);
+ const out=new Array(n);
+ for(let x=0;x<n;){
+  if(keep.has(x)){out[x]=old[x];x++;continue}
+  let end=x;while(end<n&&!keep.has(end))end++;
+  const lo=x>0?out[x-1]:null,hi=end<n?old[end]:null,m=end-x;
+  for(let j=0;j<m;j++)out[x+j]=lo===null&&hi===null?j:hi===null?Math.floor(lo)+1+j:lo===null?Math.ceil(hi)-m+j:lo+(hi-lo)*(j+1)/(m+1);
+  x=end;
+ }
+ /* между соседями не осталось чисел (места совпали или кончилась точность) — нумеруем список заново */
+ for(let x=1;x<n;x++)if(!before(out[x-1],out[x],x-1,x))return keys.map((_,i)=>i);
+ return out;
+}
+const model={valid,validId,clean,compare,nextMeta,stable,copy,place};
 
 /* ── Хранилище на устройстве: IndexedDB, одна база на три приложения ───────────────────────────────
    Ключ записи — [аккаунт, приложение, документ, номер записи]: записи разных аккаунтов лежат раздельно. */
@@ -6115,6 +6152,9 @@ if(typeof module!=='undefined'&&module.exports)module.exports=api;
  *
  * Номер записи: `ключ` — значение целиком или отметка, что список/словарь есть; `ключ~номер` — элемент списка или
  * словаря. Старые названия строк облака (journal, link, counters, supplements, measurements) не используются.
+ * Sport 43: место записи в списке — число i (HappyStore.model.place) — ставится один раз; вставка и удаление соседей
+ * его не меняют. В Sport 42 местом был порядковый номер: удаление тренировки переписывало все следующие и могло
+ * затереть правку, сделанную в это время на другом устройстве, или вернуть удалённое им.
  * — Claude · 14.11.2026 */
 var SportDocs=(()=>{
  const NAMES=['workouts','active','exercises','routines','schedule','tallies','prefs','summary'];
@@ -6139,19 +6179,22 @@ var SportDocs=(()=>{
   return true;
  }
  const facts=w=>globalThis.HappySportSummary.workout(w);   // запись сводки — общий формат витрины
- /* state → {документ: Map(номер → значение)} */
- function project(state){
+ /* state → {документ: Map(номер → значение)}.
+    prev(документ, номер записи) — прежнее место записи в её списке, если она уже лежит в хранилище (sport-data.js);
+    без prev места идут подряд с нуля. */
+ function project(state,prev){
   const out=new Map(NAMES.map(n=>[n,new Map()]));
+  const places=(name,key,list,field)=>globalThis.HappyStore.model.place(list.map(x=>x[field]),list.map(x=>prev?prev(name,key+SEP+x[field]):undefined));
   for(const key of Object.keys(state||{})){
    const v=state[key];if(SKIP.has(key)||v===undefined||typeof v==='function')continue;
-   const d=out.get(docOf(key));
+   const name=docOf(key),d=out.get(name);
    if(key==='customCounters'&&listable(v,'id')){
-    d.set(key,{t:'counters'});
-    v.forEach((c,i)=>{const {events,...def}=c;d.set(key+SEP+c.id,{i,v:def});
+    d.set(key,{t:'counters'});const at=places(name,key,v,'id');
+    v.forEach((c,j)=>{const {events,...def}=c;d.set(key+SEP+c.id,{i:at[j],v:def});
      for(const e of Array.isArray(events)?events:[])if(object(e)&&typeof e.id==='string'&&e.id)d.set('tap'+SEP+e.id,{cid:c.id,v:e})});
     continue;
    }
-   if(LISTS[key]&&listable(v,LISTS[key])){d.set(key,{t:'list'});v.forEach((x,i)=>d.set(key+SEP+x[LISTS[key]],{i,v:x}));continue}
+   if(LISTS[key]&&listable(v,LISTS[key])){d.set(key,{t:'list'});const at=places(name,key,v,LISTS[key]);v.forEach((x,j)=>d.set(key+SEP+x[LISTS[key]],{i:at[j],v:x}));continue}
    if(MAPS.has(key)&&object(v)){d.set(key,{t:'map'});for(const k of Object.keys(v))if(v[k]!==undefined)d.set(key+SEP+k,{v:v[k]});continue}
    d.set(key,{t:'value',v});
   }

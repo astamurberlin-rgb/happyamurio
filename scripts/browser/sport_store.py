@@ -1,8 +1,10 @@
-"""Sport на общем входе и общем модуле хранения и обмена (Sport 42) — настоящая страница Sport в Chrome.
+"""Sport на общем входе и общем модуле хранения и обмена (с Sport 42) — настоящая страница Sport в Chrome.
 Путь человека: без входа записи не принимаются и Sport предлагает войти; вход в карточке настроек; запись без сети;
 вторая вкладка и второй телефон видят запись сами; одна тренировка с двух телефонов — остаётся поздняя правка;
 нажатия одного счётчика с двух телефонов не теряются; удалённое не возвращается; второй аккаунт на том же телефоне
 не видит записей первого; диктовка и внешние ссылки работают. Прежние строки облака Sport не читаются и не меняются.
+Sport 43: удаление тренировки на одном телефоне не затирает правку другой тренировки на втором и не возвращает
+удалённое им; выбранное оформление сохраняется на устройстве; ссылки на тренировку и на упражнение открывают их.
 Два придуманных аккаунта, поддельный сервер с правилом «каждый видит только свои строки».
 — Claude · 14.11.2026"""
 import base64
@@ -15,8 +17,8 @@ USERS = {
 ONE, TWO = "one@example.invalid", "two@example.invalid"
 tokens, table, requests, offline = {}, {}, [], set()
 out, errors = {}, []
-PAGE = BASE + os.environ.get("HAPPY_SPORT_STORE", "sport-42/")
-DOCS = ["workouts", "active", "exercises", "routines", "schedule", "body", "tallies", "prefs", "summary"]
+PAGE = BASE + SPORT_STORE
+DOCS = ["workouts", "active", "exercises", "routines", "schedule", "body", "tallies", "prefs", "summary", "plans"]
 # прежняя строка журнала Sport первого аккаунта: модуль её не читает и не трогает
 OLD = {"user_id": USERS[ONE]["id"], "app": "sport", "kind": "journal", "v": 1, "iv": "b2xkLWl2LW9sZC1pdg==", "data": "b2xkLWNpcGhlcnRleHQ=", "at": 1}
 table[(USERS[ONE]["id"], "sport", "journal")] = dict(OLD)
@@ -222,6 +224,48 @@ with sync_playwright() as p:
     a1.wait_for_timeout(4000)
     out["delete_stays"] = not a1.evaluate("()=>state.workouts.some(w=>w.id==='w-two')") and not b1.evaluate("()=>state.workouts.some(w=>w.id==='w-two')")
 
+    # Sport 43: без сети телефон B правит одну тренировку и удаляет другую, телефон A позже удаляет первую в списке.
+    # Раньше удаление переписывало все следующие тренировки и могло затереть правку второго телефона или вернуть удалённое им.
+    for i, wid in enumerate(("w-3", "w-4", "w-5")):
+        add_workout(a1, wid, "Тренировка %d" % (i + 3))
+    out["list_synced"] = bool(until(b1, "()=>['w-3','w-4','w-5'].every(id=>state.workouts.some(w=>w.id===id))", seconds=20))
+    until(a1, "()=>SportData.store.status().state==='cloud'", seconds=10)
+    until(b1, "()=>SportData.store.status().state==='cloud'", seconds=10)
+    offline.update(["A", "B"])
+    b1.evaluate("()=>{state.workouts.find(w=>w.id==='w-4').title='Правка четвёртой на телефоне B';state.workouts=state.workouts.filter(w=>w.id!=='w-5');persist();render()}")
+    a1.wait_for_timeout(1200)
+    a1.evaluate("()=>{state.workouts=state.workouts.filter(w=>w.id!=='w-one');persist();render()}")
+    offline.clear()
+    want = "()=>JSON.stringify(state.workouts.map(w=>w.id+':'+w.title))===JSON.stringify(['w-3:Тренировка 3','w-4:Правка четвёртой на телефоне B'])"
+    out["neighbours_a"] = bool(until(a1, want, seconds=25)) or a1.evaluate("()=>state.workouts.map(w=>w.id+':'+w.title)")
+    out["neighbours_b"] = bool(until(b1, want, seconds=25)) or b1.evaluate("()=>state.workouts.map(w=>w.id+':'+w.title)")
+    a1.wait_for_timeout(3000)
+    out["neighbours_stay"] = a1.evaluate(want) and b1.evaluate(want)
+
+    # Sport 43: ссылка на тренировку (её ставит Day у тренировки из сводки) и ссылка на упражнение открывают их
+    link = A.new_page()
+    link.on("pageerror", lambda e: errors.append("A-link: " + str(e)[:300]))
+    link.goto(PAGE + "?workout=w-4")
+    ready(link)
+    out["workout_link"] = [link.evaluate("()=>view"), link.evaluate("()=>(document.querySelector('.workout-detail .view-title')||{}).textContent||''")]
+    link.goto(PAGE + "?exercise=barbell-row")
+    ready(link)
+    out["exercise_link"] = bool(until(link, "()=>!!document.querySelector('#modal-root .sheet')&&document.querySelector('#modal-root').innerText.length>20", seconds=5))
+    link.close()
+
+    # Sport 43: выбранное оформление сохраняется на устройстве и остаётся после перезагрузки (в Sport 42 не сохранялось)
+    a1.click(".dock [data-view=profile]")
+    a1.click("[data-happy-appearance-open]")
+    a1.wait_for_selector("#happy-appearance-dialog[open]")
+    theme = a1.evaluate("()=>{const i=[...document.querySelectorAll('#happy-appearance-dialog input')].filter(x=>!x.checked)[1];i.click();return i.value}")
+    a1.click("#happy-appearance-dialog .ha-apply")
+    a1.wait_for_timeout(800)
+    out["theme_saved"] = [a1.evaluate("()=>document.querySelector('#happy-appearance-dialog').open"), a1.evaluate("()=>HappyAppearance.selected") == theme]
+    a1.reload()
+    ready(a1)
+    out["theme_after_reload"] = a1.evaluate("()=>HappyAppearance.selected") == theme
+    out["theme_not_in_diary"] = theme not in a1.evaluate("()=>JSON.stringify(SportDocs.NAMES.map(n=>SportData.store.doc(n).all()))")
+
     # диктовка и внешние ссылки снова работают
     out["dictation_api"] = a1.evaluate("()=>typeof (window.SpeechRecognition||window.webkitSpeechRecognition)")
     a1.evaluate("()=>{voiceSheet();dictate()}")
@@ -274,6 +318,9 @@ checks = [
     ("одна тренировка с двух телефонов — везде поздняя правка, новая тренировка второго телефона тоже есть", out["later_wins_a"] and out["later_wins_b"] and out["later_wins_tab2"] and out["titles_a"] == out["titles_b"] == ["Бассейн с телефона B", "Правка телефона B"]),
     ("нажатия одного счётчика с двух телефонов не потерялись", out["taps_a"] == 3 and out["taps_b"] == 3),
     ("удаление дошло до другого телефона и не вернулось", out["delete_reaches"] and out["delete_stays"]),
+    ("удаление тренировки на одном телефоне не затёрло правку другой на втором и не вернуло удалённое им", out["list_synced"] and out["neighbours_a"] is True and out["neighbours_b"] is True and out["neighbours_stay"]),
+    ("ссылка на тренировку открывает её запись, ссылка на упражнение — упражнение", out["workout_link"] == ["detail", "Правка четвёртой на телефоне B"] and out["exercise_link"]),
+    ("выбранное оформление сохранилось на устройстве, осталось после перезагрузки и в дневник не записано", out["theme_saved"] == [False, True] and out["theme_after_reload"] and out["theme_not_in_diary"]),
     ("диктовка доступна, внешние ссылки не перехватываются", out["dictation_api"] == "function" and "недоступна" not in out["dictation_text"] and out["external_link"]),
     ("выход в одной вкладке — вышли обе; без входа записей не видно", out["sign_out_both_tabs"] and out["signed_out_sees"][0] == []),
     ("второй аккаунт не видит записей первого и пишет в свои строки", out["second_account_sees"] == [[], 0] and out["second_account_cloud"]),

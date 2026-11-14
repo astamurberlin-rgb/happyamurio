@@ -1391,7 +1391,7 @@ a.btn{display:inline-block;text-decoration:none}
 .happy-app-name{flex:1;color:inherit;font-size:16px;font-weight:600;text-decoration:none;padding:14px 0}
 .happy-app-link.is-off .happy-app-name{opacity:.6}</style>
 <style id="day-59">/* Day 59: без входа — предложение войти; вкладки «Журнал · Замеры тела»; общий экран замеров в цветах Day */
-.day-signin{margin:0 0 18px}.day-signin h2{margin:0 0 6px;font-size:18px}.day-signin .note{margin:0 0 12px;color:var(--ink);opacity:.86}
+.day-signin{margin:0 0 18px}.day-signin[hidden]{display:none}.day-signin h2{margin:0 0 6px;font-size:18px}.day-signin .note{margin:0 0 12px;color:var(--ink);opacity:.86}
 .happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}
 .happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}
 .happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:#5c4598;font-weight:600}
@@ -1424,14 +1424,18 @@ function roWarn(){
   if(Date.now()-roSaid<8000) return; roSaid=Date.now();
   toastLong(RO_TEXT);
 }
-/* Без входа записи не принимаются: открыть настройки со входом. */
+/* Без входа записи не принимаются: открыть настройки со входом. Одно действие может позвать запись несколько раз —
+   вход предлагается один раз. Если человек печатал в поле записи, поле теряет фокус: остаток набора не должен
+   попасть в поле почты. */
 var signInAskedAt=0;
 function askSignIn(){
-  var now=Date.now(); if(now-signInAskedAt<1500) return; signInAskedAt=now;
+  var now=Date.now(); if(now-signInAskedAt<500) return; signInAskedAt=now;
+  var a=document.activeElement, typing=!!a&&(a.tagName==='TEXTAREA'||a.tagName==='INPUT'||a.isContentEditable);
+  if(typing){ try{ a.blur() }catch(e){} }
   setTimeout(function(){ try{
     if(window.SelfCare&&SelfCare.closeCurrent) SelfCare.closeCurrent();
     go('settings'); toast('Войди в аккаунт Happy, чтобы записывать');
-    var i=document.querySelector('#happy-account input[name="email"]'); if(i) i.focus();
+    var i=document.querySelector('#happy-account input[name="email"]'); if(i&&!typing) i.focus();
   }catch(e){} },0);
 }
 /* true — записывать сейчас нельзя, и человеку уже сказано почему */
@@ -3312,7 +3316,7 @@ function sleepPerHTML(r){
 /* 57.4: «Открыть запись в Sport ↗» ведёт в текущий выпуск Sport: папка берётся из списка выпусков (shared/apps.json
    через shared/happy-links.js), запасная — текущая на день сборки этого выпуска. Раньше здесь стояла папка sport-38.
    С 57.4 тренировки Sport приходят сами из его сводки (selfcare-ui.js), поэтому ссылка стала появляться. */
-var SPORT_DIR='sport-40';
+var SPORT_DIR='sport-43';
 window.addEventListener('load',function(){ try{ if(window.HappyLinks) HappyLinks.load().then(function(apps){ var d=apps&&apps.sport&&HappyLinks.dir(apps.sport.entry); if(d&&/^[a-z0-9][a-z0-9-]*$/.test(d)) SPORT_DIR=d }) }catch(e){} });
 function sportWorkoutHref(id){ return (window.HappyLinks?HappyLinks.base:'../')+SPORT_DIR+'/?workout='+encodeURIComponent(id) }
 function woOf(d){
@@ -5562,7 +5566,7 @@ function renderAll(){
       var el=document.querySelector('#happy-account [data-happy-account-status]'); if(el) el.textContent=DayData.statusText();
     });
   }
-  setTimeout(checkMisplaced,1700);   // после заставки
+  if(DayData.signedIn()&&!RO) setTimeout(checkMisplaced,1700);   // после заставки; без входа и в режиме чтения проверять нечего
   if(RO) setTimeout(roWarn,1500);
   if(DayBoot.error) setTimeout(function(){ toastLong(DayBoot.error) },1500);
   MIND.ready=DayData.signedIn(); mindBegin();      // время в HappyDay — с этой минуты
