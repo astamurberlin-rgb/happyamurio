@@ -20,7 +20,7 @@ const asDocs=projected=>{const out={};for(const [name,map] of projected)out[name
 
 for(const old of ['journal','link','counters','supplements','measurements'])assert.ok(!D.NAMES.includes(old),'старое название: '+old);
 assert.deepEqual(plain(D.NAMES),['workouts','active','exercises','routines','schedule','tallies','prefs','summary']);
-assert.deepEqual(plain(D.OWN),['workouts','active','exercises','routines','schedule','tallies','prefs','summary','body','plans'],'все свои документы Sport для общего модуля');
+assert.deepEqual(plain(D.OWN),['workouts','active','exercises','routines','schedule','tallies','prefs','summary','body','plans','foodtaps'],'все свои документы Sport для общего модуля');
 
 const state={version:1,
  workouts:[{id:'w1',title:'Зал',kind:'gym',start:'2026-11-14T10:00',end:'2026-11-14T11:00',duration:3600,exercises:[{id:'barbell-row',name:'Тяга',sets:[{weight:60,reps:8,done:true}]}]},

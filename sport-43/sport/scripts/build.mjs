@@ -47,7 +47,7 @@ const dataTransfer=await read('src/data-transfer.js');
 // Sport 42: запуск — общий вход, общий модуль хранения и документы Sport; приложение стартует после них (sport-boot.js).
 const sportDocs=await read('src/sport-docs.js'),sportData=await read('src/sport-data.js'),sportSignIn=await read('src/sport-signin.js');
 // Sport 43: форматы витрины — общие файлы: сводка и плановые занятия, замеры тела, свитчи связи.
-const boot=[await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),sportDocs,await read('src/sport-boot.js')].join('\n');
+const boot=[await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),await readShared('happy-food.js'),sportDocs,await read('src/sport-boot.js')].join('\n');
 const accountUI=await readShared('happy-account-ui.js');
 const happyLinks=await readShared('happy-links.js'),releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await read('src/release-notes.js'),templatePicker=await read('src/template-picker.js');
 const iconStudioBridge=await read('src/icon-studio-bridge.js');
@@ -62,7 +62,7 @@ async function readShared(name){
 const sharedCss=await readShared('happy-ui.css'),measurementsCss=await readShared('happy-measurements.css');
 // Sport 41: связь приложений — общий модуль shared/happy-app-links.js и свитчи Sport (src/app-links.js)
 const sportAppLinks=await read('src/app-links.js');
-const foodCounters=await readShared('food-counters.js'),sportFoodCounters=await read('src/food-counters.js');
+const sportFoodCounters=await read('src/food-counters.js');
 const workoutInteractions=await read('src/workout-interactions.js');
 const exerciseContext=await read('src/exercise-context.js')+'\n'+await read('src/exercise-families.js'),exerciseContextCss=await read('src/exercise-context.css');
 const timerActionWheel=await read('src/timer-action-wheel.js'),timerActionWheelCss=await read('src/timer-action-wheel.css');
@@ -87,7 +87,7 @@ const html = labPage(template
   .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+measurementsCss+measurementsScreenCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [accountUI,sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,foodCounters,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,measurementsScreen].join('\n'))
+  .replace('__APP__', () => [accountUI,sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,measurementsScreen].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);

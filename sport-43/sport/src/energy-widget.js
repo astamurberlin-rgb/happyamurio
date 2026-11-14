@@ -147,12 +147,12 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
   }
 
 
-/* Sport 42: «съедено» придёт из Happy Meal, когда Meal перейдёт на общий модуль хранения и обмена. До того Sport
-   прежнюю сводку Meal (облако meal/link и ключи на устройстве) не читает: в «съедено» прочерк.
-   «Потрачено», покой и шаги Sport пока не считает (решение владельца 11.11.2026: позже, вместе с расчётом
-   энергии тренировок); поля в виджете уже есть. */
+/* «Съедено» — из витрины Happy Meal (документ meal/summary общего модуля, формат — shared/happy-food.js): итог дня
+   и свои нажатия на счётчики еды, которые Meal ещё не посчитал (food-counters.js, SportFood.eaten). Сводки нет —
+   в «съедено» прочерк. «Потрачено», покой и шаги Sport пока не считает (решение владельца 11.11.2026: позже, вместе
+   с расчётом энергии тренировок); поля в виджете уже есть. */
 function date(){return selectedDate}
-function nutrition(){return null}
+function nutrition(){try{return typeof SportFood!=='undefined'?SportFood.eaten(date()):null}catch(e){return null}}
 function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
 function number(v){return v==null?'—':Math.round(v).toLocaleString('ru-RU')}
 const hues={pink:350,violet:305,blue:262,teal:180};
@@ -166,4 +166,5 @@ function refresh(){paint()}
    открытии Sport снова показывает «потрачено» (решение владельца 11.11.2026). */
 document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=['spent','balance','eat'];mode=modes[(modes.indexOf(mode)+1)%3];paint()}});
 window.addEventListener('pageshow',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});refresh();
+globalThis.HappyEnergy={refresh};   // кольцо перерисовывается, когда пришла еда из Meal (food-counters.js)
 })();

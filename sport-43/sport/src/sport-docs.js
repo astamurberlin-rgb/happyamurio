@@ -16,6 +16,7 @@
  * Sport 43: три документа витрины раскладывают их общие файлы, а не этот: body — замеры тела
  * (shared/happy-measurements.js), plans — плановые занятия (shared/happy-sport-summary.js), свитчи связи — общий
  * документ day/pairs (shared/happy-app-links.js). В дневнике в памяти замеры остаются копией для выгрузки файлом.
+ * foodtaps — нажатия Sport на счётчики еды Happy Meal (shared/happy-food.js): сам счётчик и его продукт принадлежат Meal.
  *
  * Номер записи: `ключ` — значение целиком или отметка, что список/словарь есть; `ключ~номер` — элемент списка или
  * словаря. Старые названия строк облака (journal, link, counters, supplements, measurements) не используются.
@@ -25,7 +26,7 @@
  * — Claude · 14.11.2026 */
 var SportDocs=(()=>{
  const NAMES=['workouts','active','exercises','routines','schedule','tallies','prefs','summary'];
- const OWN=NAMES.concat(['body','plans']);   // все свои документы Sport для общего модуля
+ const OWN=NAMES.concat(['body','plans','foodtaps']);   // все свои документы Sport для общего модуля
  const DOC={workouts:'workouts',active:'active',
   customExercises:'exercises',exerciseOverrides:'exercises',favoriteExercises:'exercises',exerciseNotes:'exercises',exerciseChanges:'exercises',exerciseGroups:'exercises',archivedExercises:'exercises',
   templates:'routines',templateOverrides:'routines',

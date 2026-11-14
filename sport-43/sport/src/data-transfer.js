@@ -8,7 +8,6 @@ function sportValidateBackup(input){
   if(!input||!['Happy Sport','happy-sport'].includes(input.app)||input.version!==1)throw new Error('Нужна копия Happy Sport версии 1. JSON из Meal или Day загружай в соответствующее приложение.');
   const source=input.data||input;
   if(source.floatingTimerEnabled!=null&&typeof source.floatingTimerEnabled!=='boolean')throw Error('Повреждена настройка таймера');
-  if(source.foodCounters!=null&&typeof HappyFoodCounters!=='undefined'&&!HappyFoodCounters.valid(source.foodCounters))throw Error('Повреждены общие счётчики');
   if(source.customCounters!=null&&(!Array.isArray(source.customCounters)||source.customCounters.some(c=>!c||typeof c.id!=='string'||typeof c.title!=='string'||!Array.isArray(c.events)||c.events.some(e=>!e||typeof e.id!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(e.date)))))throw Error('Повреждены счётчики');
   if(source.freeTimer!=null&&typeof validateFreeTimer==='function'&&!validateFreeTimer(source.freeTimer))throw Error('Повреждён черновик таймера');
   // Reject prototype keys at every depth before retaining arbitrary journal fields.

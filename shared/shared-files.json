@@ -91,7 +91,8 @@
       "reference": "shared/happy-food.js",
       "apps": [
         "day",
-        "meal"
+        "meal",
+        "sport"
       ],
       "contract": true
     },
@@ -162,14 +163,6 @@
         "sport"
       ],
       "todo": "корневой shared/ отстал от выпусков; обновить корень, когда его перестанут грузить старые страницы"
-    },
-    {
-      "name": "food-counters.js",
-      "reference": "{sport}/shared/food-counters.js",
-      "apps": [
-        "sport"
-      ],
-      "todo": "прежний общий документ счётчиков; у Day с выпуска 59 его нет (shared/happy-food.js), уйдёт вместе с переходом Meal (этап 4)"
     },
     {
       "name": "happy-ui.css",
