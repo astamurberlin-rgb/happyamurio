@@ -108,7 +108,7 @@
     {
       "path": "index.html",
       "size": 952747,
-      "sha256": "9e46a76a081aa2170ccb2462c5c8cbc12182744143c9f3c282b345b41c5d1aad"
+      "sha256": "fbf5e56b758d00b834f9c19b6fcec1964fbfe0fd0f076a6ecd551e8e9a374527"
     },
     {
       "path": "manifest.webmanifest",
@@ -638,7 +638,7 @@
     {
       "path": "sport/src/release-notes.js",
       "size": 32361,
-      "sha256": "df2c79c58ae99f3ac33dca74c44e42432a2d27e91c9886b84d108067ed336c94"
+      "sha256": "998ae6323de19f76a065c393ee73f4ca9054e6582ec5bbe95bdc3e7fe615cb60"
     },
     {
       "path": "sport/src/rest-pill.js",
