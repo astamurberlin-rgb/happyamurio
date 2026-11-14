@@ -324,8 +324,8 @@
   },
   {
    "path": "index.html",
-   "size": 601815,
-   "sha256": "bad14b924d1e9c9088c7c1fe82bc3ae8e1ab8f7d713ebf6f657e96848f9c8fc0"
+   "size": 602004,
+   "sha256": "bf6838f6640527cb7820c2609bac56e0333e2b414e7a9dccea2fd4315fe6071a"
   },
   {
    "path": "manifest.webmanifest",
@@ -334,8 +334,8 @@
   },
   {
    "path": "meal-data.js",
-   "size": 11416,
-   "sha256": "b74265f9144fb2220cf169b23c2f2aaf7c3e34da1056a72303bd98dd2b9650b3"
+   "size": 11456,
+   "sha256": "dee4b67e668be41b574eba8518eb6e745c795c144b3efcccb8404d6400cc29d3"
   },
   {
    "path": "meal-docs.js",
@@ -509,8 +509,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 36474,
-   "sha256": "76e3affd2f5216db7b74979338fef9e75dc5b1cfe48dc68e71652c5978161381"
+   "size": 37111,
+   "sha256": "ac621fcfefae8dd960a51de33e3fe29c359af9bfd6dfa213072205aac3b64428"
   },
   {
    "path": "report.css",
@@ -539,13 +539,13 @@
   },
   {
    "path": "shared/happy-account-ui.js",
-   "size": 9217,
-   "sha256": "fc4c27e6f706ce4885d4654559cf912aa714e1688e08be3b4d4c04de23ab0150"
+   "size": 9250,
+   "sha256": "972d8e165c5f933d94496b4c53eced05cd7b03ae048dc359ccf60ba360bde9bd"
   },
   {
    "path": "shared/happy-account.js",
-   "size": 9392,
-   "sha256": "be0ab6a7e9381eb9caa999749e33ec6b261d7e12d62a37708e327ea494a36064"
+   "size": 10938,
+   "sha256": "25efa1ac9cb5d18053811ffb01521f29f873f9376bb2e4a7d2b233911a0cb2ed"
   },
   {
    "path": "shared/happy-app-links.js",
@@ -674,8 +674,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3457,
-   "sha256": "ecd80a83f734496598195abc7c6bda563a3cca2ead062e68d7f9c9c44dfdd36f"
+   "size": 3459,
+   "sha256": "738e987a6a40b14079f6ff11a331c525fdb60ffc12ff31b0ed837b15878c0c6b"
   },
   {
    "path": "usda.js",

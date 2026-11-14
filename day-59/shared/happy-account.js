@@ -1,15 +1,20 @@
-/* Happy: общий вход для Day, Meal и Sport.
+/* Happy: вход в аккаунт для Day, Meal и Sport — один код, вход у каждого приложения свой.
  *
- * Одна ячейка входа на три приложения: вошёл в одном — вошёл во всех трёх на этом устройстве.
- * Ключ шифрования выводится из пароля на устройстве и на сервер не уходит. Параметры ключа те же,
- * что были в приложениях: PBKDF2-SHA-256, 600 000 шагов, соль — id аккаунта, AES-GCM 256.
- * Пароль нигде не сохраняется. Ключ проекта ниже — публичный: он только говорит, куда стучаться.
+ * Аккаунт один на три приложения, а вход — раздельный (решение Астамура 09.11.2026, возвращено 15.11.2026):
+ * у каждого приложения своя ячейка входа happy-account:<приложение>. Вход, выход и обновление входа в одном
+ * приложении другие не трогают; выход закрывает на сервере только вход этого приложения (scope=local).
+ * Записи общие: под одним аккаунтом приложения видят одни и те же записи и витрину друг друга.
+ * Ключ шифрования выводится из пароля на устройстве и на сервер не уходит: PBKDF2-SHA-256, 600 000 шагов,
+ * соль — id аккаунта, AES-GCM 256. Тот же пароль даёт тот же ключ в любом приложении. Пароль нигде не
+ * сохраняется. Ключ проекта ниже — публичный: он только говорит, куда стучаться.
+ * Прежняя общая ячейка happy-account (Sport 42–43, Day 59, Meal 32) хранила ключ шифрования; при запуске
+ * она удаляется — после этого выпуска в каждое приложение входят заново.
  *
- * На общем входе работают Sport с выпуска 42, Day с выпуска 59 и Meal с выпуска 32.
- * — Claude · 14.11.2026 */
+ * create({app:'day'|'meal'|'sport', …}) — вход приложения app; без app не создаётся.
+ * — Claude · 14.11.2026, раздельный вход — 15.11.2026 */
 (function(root){
 'use strict';
-const CELL='happy-account';
+const APPS=['day','meal','sport'],LEGACY='happy-account',cellOf=app=>LEGACY+':'+app;
 const CLOUD={url:'https://geqziziycpclhnucnsyx.supabase.co',key:'sb_publishable_I8tmZHGlz7CJn9SavbApCg_gg1G890r'};
 const ITERATIONS=600000,SALT='happyday-sync-v1:';
 
@@ -42,11 +47,14 @@ async function deriveKey(password,uid){
 
 function create(options){
  const o=options||{},url=o.url||CLOUD.url,apikey=o.key||CLOUD.key,now=o.now||Date.now;
+ if(!APPS.includes(o.app))throw Error('Вход нужен для приложения: day, meal или sport');
+ const CELL=cellOf(o.app);
  const storage=o.storage||root.localStorage,events=o.events||root,request=o.fetch||((...a)=>root.fetch(...a));
+ try{storage.removeItem(LEGACY)}catch(e){}   // прежняя общая ячейка входа: в ней лежал ключ шифрования
  let session=null,kraw=null,key=null,generation=0,refreshing=null,stopped=false;const listeners=new Set();
- /* Обновлять токен может одно окно за раз: остальные дождутся и возьмут готовый из ячейки входа. */
+ /* Обновлять токен может одно окно этого приложения за раз: остальные дождутся и возьмут готовый из ячейки входа. */
  const locks=o.locks||(root.navigator&&root.navigator.locks)||null;
- const exclusive=fn=>locks?locks.request('happy-account-refresh',fn):fn();
+ const exclusive=fn=>locks?locks.request(CELL+'-refresh',fn):fn();
  const parse=raw=>{try{const a=JSON.parse(raw||'null');return a&&a.s&&typeof a.s.uid==='string'&&a.s.uid&&typeof a.k==='string'&&a.k?a:null}catch(e){return null}};
  const identity=a=>a?a.s.uid+'|'+a.k:'';
  const mine=()=>session?session.uid+'|'+kraw:'';
@@ -91,7 +99,8 @@ function create(options){
  async function signOut(){
   const token=session&&session.at;++generation;
   persist(null);session=null;kraw=null;key=null;emit();
-  if(token)Promise.resolve().then(()=>request(url+'/auth/v1/logout',{method:'POST',headers:{apikey,Authorization:'Bearer '+token}})).catch(()=>{});
+  /* scope=local: сервер закрывает только этот вход; входы других приложений и устройств остаются */
+  if(token)Promise.resolve().then(()=>request(url+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey,Authorization:'Bearer '+token}})).catch(()=>{});
  }
  /* Токен доступа. Обновление — одно за раз; если его уже обновило другое окно тем же входом, берём готовый. */
  async function token(refused){   // refused — токен, который сервер только что не принял
@@ -129,10 +138,11 @@ function create(options){
  if(events&&events.addEventListener)events.addEventListener('storage',onStorage);
  return {
   load:adopt,current,signIn,signUp,signOut,token,rename,
+  app:o.app,cell:CELL,
   cipherKey:()=>key,
   onChange(fn){listeners.add(fn);return ()=>listeners.delete(fn)},
   close(){stopped=true;listeners.clear();if(events&&events.removeEventListener)events.removeEventListener('storage',onStorage)}
  };
 }
-root.HappyAccount={create,deriveKey,CELL,CLOUD,ITERATIONS};
+root.HappyAccount={create,deriveKey,cellOf,LEGACY,APPS,CLOUD,ITERATIONS};
 })(typeof globalThis!=='undefined'?globalThis:this);

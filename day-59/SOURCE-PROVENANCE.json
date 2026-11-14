@@ -28,8 +28,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-59.html",
-   "size": 3481535,
-   "sha256": "24d007d0e59496bc002a6d48b020e5fadb5c067a1dfd64e5b4e6d20deec8b24a"
+   "size": 3484655,
+   "sha256": "b084fd8ed0e558a83936f0df20f45d7e0cb9379953131246ec0d4de37a7381e3"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -168,8 +168,8 @@
   },
   {
    "path": "day-data.js",
-   "size": 7866,
-   "sha256": "f4040876ed68e846c467f05319784532857f2ee3fb1d346ce6c39c3991ea7142"
+   "size": 7902,
+   "sha256": "180da3c7a470074f676a153494bf5f2c804aba0439380ffe53ff4e3d2e3a8e56"
   },
   {
    "path": "day-docs.js",
@@ -208,8 +208,8 @@
   },
   {
    "path": "index.html",
-   "size": 491467,
-   "sha256": "745eef4a41d409737ae5a61b5a08b02ad46b2af6317d77c37894bdacc6553228"
+   "size": 491595,
+   "sha256": "de00dd8b873a0ba56435cdfe70398d8f0c619ed9bb37d3536308489791b18d2c"
   },
   {
    "path": "manifest.webmanifest",
@@ -218,8 +218,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 29302,
-   "sha256": "d805dc385f9e88f869fb9f4bd9459b7543e2889a20d98d4bf7e55140fe163f67"
+   "size": 29963,
+   "sha256": "ddc874061cfd93b4d2f8dbd6dae4b86f28718df3048c0556fadc4178c1b96c98"
   },
   {
    "path": "section-wheel.css",
@@ -253,13 +253,13 @@
   },
   {
    "path": "shared/happy-account-ui.js",
-   "size": 9217,
-   "sha256": "fc4c27e6f706ce4885d4654559cf912aa714e1688e08be3b4d4c04de23ab0150"
+   "size": 9250,
+   "sha256": "972d8e165c5f933d94496b4c53eced05cd7b03ae048dc359ccf60ba360bde9bd"
   },
   {
    "path": "shared/happy-account.js",
-   "size": 9392,
-   "sha256": "be0ab6a7e9381eb9caa999749e33ec6b261d7e12d62a37708e327ea494a36064"
+   "size": 10938,
+   "sha256": "25efa1ac9cb5d18053811ffb01521f29f873f9376bb2e4a7d2b233911a0cb2ed"
   },
   {
    "path": "shared/happy-app-links.js",
@@ -383,8 +383,8 @@
   },
   {
    "path": "tests/standalone.test.cjs",
-   "size": 2756,
-   "sha256": "6247b41289021b879972333fb44b9211881bdb1b7b641e9ba3a93b508ce55401"
+   "size": 3005,
+   "sha256": "58de8b60a4f41e77e8ad8ca4e7ad7030be6fcbc066796baf37fc32e4f8db2dad"
   }
  ]
 }

@@ -1,4 +1,4 @@
-"""Общий вход и общий модуль хранения и обмена (shared/happy-account.js, shared/happy-store.js) в настоящем Chrome:
+"""Вход (у каждого приложения свой) и общий модуль хранения и обмена (shared/happy-account.js, shared/happy-store.js) в настоящем Chrome:
 настоящие IndexedDB, вкладки, шифрование браузера и обмен по расписанию модуля. Приложения Day, Meal и Sport не
 открываются — модуль к ним ещё не подключён (этап 1 общей задачи). Страница проверки отдаётся самим сценарием,
 в репозитории и на сайте её нет.
@@ -16,6 +16,9 @@ tokens, table, requests, offline = {}, {}, [], set()
 out, errors = {}, []
 
 
+import itertools
+TOKEN_N = itertools.count(1)
+
 def serve(route, request, device):
     url = urlsplit(request.url)
     path, q, method = url.path, parse_qs(url.query, keep_blank_values=True), request.method
@@ -30,10 +33,19 @@ def serve(route, request, device):
         user = USERS.get(body.get("email"))
         if not user or user["pw"] != body.get("password"):
             return route.fulfill(status=400, headers=HDR, body=json.dumps({"error_description": "Invalid login credentials"}))
-        token = "at-%d" % (len(tokens) + 1)
+        token = "at-%d" % next(TOKEN_N)   # номер не повторяется и после выхода
         tokens[token] = user["id"]
         return route.fulfill(status=200, headers=HDR, body=json.dumps({"access_token": token, "refresh_token": "rt-" + token, "expires_in": 3600, "user": {"id": user["id"], "email": body["email"], "user_metadata": {"display_name": "Проверка"}}}))
     if path == "/auth/v1/logout":
+        # выход, как у настоящего сервера: scope=local закрывает один вход, без scope — все входы аккаунта
+        entry["scope"] = (q.get("scope") or ["global"])[0]
+        at = request.headers.get("authorization", "").replace("Bearer ", "")
+        uid = tokens.get(at)
+        if entry["scope"] == "local":
+            tokens.pop(at, None)
+        else:
+            for k in [k for k, v in tokens.items() if v == uid]:
+                tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
@@ -72,7 +84,7 @@ PAGE = """<!doctype html><html lang="ru"><meta charset="utf-8"><title>Прове
 <script src="shared/happy-account.js"></script><script src="shared/happy-store.js"></script>
 <script>
 const T=window.T={events:[],statuses:[],app:null,spec:null};
-T.boot=async(app,own,reads,shared,formats)=>{T.app=app;T.spec={own,reads:reads||{},shared:shared||{},formats:formats||{}};T.account=HappyAccount.create();await T.account.load();
+T.boot=async(app,own,reads,shared,formats)=>{T.app=app;T.spec={own,reads:reads||{},shared:shared||{},formats:formats||{}};T.account=HappyAccount.create({app});await T.account.load();
  T.account.onChange(()=>{T.changed=(T.changed||0)+1;T.open()});await T.open();return T.who()};
 T.open=()=>T.opening=(T.opening||Promise.resolve()).then(async()=>{if(T.store)T.store.close();T.events=[];
  const s=T.store=await HappyStore.open({app:T.app,account:T.account,own:T.spec.own,reads:T.spec.reads,shared:T.spec.shared,formats:T.spec.formats,interval:1200});
@@ -139,11 +151,16 @@ with sync_playwright() as p:
     out["no_login_device"] = len(a1.evaluate("()=>T.device()")["keys"])
     out["no_login_requests"] = len([r for r in requests if r["path"] == "/rest/v1/app_sync"])
 
-    # один вход: вошли в первой вкладке Day — вторая вкладка и Meal вошли сами
+    # вход у каждого приложения свой: вошли в первой вкладке Day — вторая вкладка Day вошла сама, Meal — нет
     out["sign_in"] = sign_in(a1, ONE)
-    out["neighbours_signed_in"] = bool(until(a2, "u=>T.who()===u&&!T.store.closed&&T.store.uid===u", USERS[ONE]["id"])) and bool(until(am, "u=>T.who()===u&&!T.store.closed&&T.store.uid===u", USERS[ONE]["id"]))
+    out["neighbours_signed_in"] = bool(until(a2, "u=>T.who()===u&&!T.store.closed&&T.store.uid===u", USERS[ONE]["id"]))
+    am.wait_for_timeout(800)
+    out["meal_not_signed_in"] = am.evaluate("()=>T.who()===null&&T.state()==='signin'")
     until(a1, "u=>T.store.uid===u&&!T.store.closed", USERS[ONE]["id"])
-    out["auth_cells"] = a1.evaluate("()=>Object.keys(localStorage)")
+    out["auth_cells"] = sorted(a1.evaluate("()=>Object.keys(localStorage)"))
+    sign_in(am, ONE)
+    until(am, "u=>T.store.uid===u&&!T.store.closed", USERS[ONE]["id"])
+    out["auth_cells_both"] = sorted(a1.evaluate("()=>Object.keys(localStorage)"))
     out["password_stored"] = USERS[ONE]["pw"] in a1.evaluate("()=>JSON.stringify(localStorage)")
 
     # без сети: запись принята, видна во второй вкладке, переживает перезагрузку
@@ -210,8 +227,13 @@ with sync_playwright() as p:
     until(a1, "()=>T.state()==='cloud'", seconds=8)
     first_ids = sorted(a1.evaluate("()=>T.ids('diary')"))
     a1.evaluate("()=>T.account.signOut()")
-    out["sign_out_everywhere"] = bool(until(a2, "()=>T.who()===null", seconds=3)) and bool(until(am, "()=>T.who()===null", seconds=3))
+    out["sign_out_tabs"] = bool(until(a2, "()=>T.who()===null", seconds=3))
+    am.wait_for_timeout(800)
+    out["meal_stays"] = am.evaluate("u=>T.who()===u&&!T.store.closed", USERS[ONE]["id"])
+    out["logout_scope"] = [r.get("scope") for r in requests if r["path"] == "/auth/v1/logout"]
     out["signed_out_put"] = until(a2, "()=>T.store.uid===null", seconds=3) and a2.evaluate("()=>T.put('diary','z',{})")
+    am.evaluate("()=>T.account.signOut()")
+    sign_in(am, TWO)
     sign_in(a1, TWO)
     until(a1, "u=>T.store.uid===u&&!T.store.closed", USERS[TWO]["id"])
     until(am, "u=>T.store.uid===u&&!T.store.closed", USERS[TWO]["id"])
@@ -246,6 +268,7 @@ with sync_playwright() as p:
     OLD_DAY = ["day", ["notes"], {}, {"sport": ["body"]}]
     d_day, d_sport = tab(D, "D-day", OLD_DAY), tab(D, "D-sport", SPORT)
     sign_in(d_day, ONE)
+    sign_in(d_sport, ONE)
     until(d_day, "u=>T.store.uid===u&&!T.store.closed", USERS[ONE]["id"])
     until(d_sport, "u=>T.store.uid===u&&!T.store.closed", USERS[ONE]["id"])
     offline.add("D")
@@ -253,6 +276,7 @@ with sync_playwright() as p:
     out["shared_same_phone"] = until(d_sport, "()=>T.get('body','m~2026-11-14')", seconds=2)
     offline.discard("D")
     b_sport = tab(B, "B-sport", SPORT)
+    sign_in(b_sport, ONE)   # вход у каждого приложения свой
     out["shared_other_phone"] = until(b_sport, "()=>T.get('body','m~2026-11-14')", seconds=12)
     b_sport.evaluate("()=>T.put('body','m~2026-11-14',{waist:78})")
     out["shared_back"] = until(d_day, "()=>(T.sget('sport','body','m~2026-11-14')||{}).waist===78", seconds=12)
@@ -289,8 +313,8 @@ with sync_playwright() as p:
 uid1, uid2 = USERS[ONE]["id"], USERS[TWO]["id"]
 checks = [
     ("без входа запись не принимается, на устройстве и в облаке пусто", out["no_login_put"] == "signin" and out["no_login_state"] == "signin" and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
-    ("вошёл в одной вкладке — вторая вкладка и Meal вошли сами", out["sign_in"] == "ok" and out["neighbours_signed_in"]),
-    ("ячейка входа одна, пароль не сохранён", out["auth_cells"] == ["happy-account"] and not out["password_stored"]),
+    ("вошёл в одной вкладке Day — вторая вкладка Day вошла сама, Meal без своего входа не вошёл", out["sign_in"] == "ok" and out["neighbours_signed_in"] and out["meal_not_signed_in"]),
+    ("у каждого приложения своя ячейка входа, пароль не сохранён", out["auth_cells"] == ["happy-account:day"] and out["auth_cells_both"] == ["happy-account:day", "happy-account:meal"] and not out["password_stored"]),
     ("запись без сети принята и сразу видна во второй вкладке", out["offline_put"] == "ok" and out["second_tab_sees"] == {"text": "секретная запись без сети", "mood": 4} and out["second_tab_origin"] == ["tab"]),
     ("без сети состояние «нет сети», в облаке пусто", bool(out["offline_state"]) and out["cloud_while_offline"] == 0),
     ("после перезагрузки страницы запись на месте", out["after_reload"] == {"text": "секретная запись без сети", "mood": 4}),
@@ -301,7 +325,7 @@ checks = [
     ("две вкладки пишут одновременно — все 40 записей в обеих вкладках и на втором телефоне", bool(out["burst_a1"]) and bool(out["burst_a2"]) and bool(out["burst_other_phone"])),
     ("одну запись из двух вкладок — одно значение в обеих вкладках и на устройстве", out["shared_a1"] is not None and out["shared_a1"] == out["shared_a2"] == out["shared_device"]),
     ("сводку Meal Day видит сразу на том же телефоне и после обмена на втором", out["neighbour_same_phone"] == {"kcal": 1850} and out["neighbour_other_phone"] == {"kcal": 1850}),
-    ("выход в одной вкладке — вышли все; без входа запись не принимается", out["sign_out_everywhere"] and out["signed_out_put"] == "signin"),
+    ("выход в одной вкладке Day — вышли обе вкладки Day, Meal остался в аккаунте; на сервере закрыт только вход Day; без входа запись не принимается", out["sign_out_tabs"] and out["meal_stays"] and out["logout_scope"] and set(out["logout_scope"]) == {"local"} and out["signed_out_put"] == "signin"),
     ("второй аккаунт не видит записей первого", out["second_account_sees"] == [[], None, []]),
     ("записи двух аккаунтов на устройстве лежат раздельно, в облаке — своими строками", out["device_accounts"] == [uid1, uid2] and out["second_account_cloud"]),
     ("первый аккаунт вернулся к своим записям", out["first_account_back"]),

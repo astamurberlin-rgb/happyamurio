@@ -1,4 +1,4 @@
-/* Проверка общего входа и общего модуля хранения и обмена (shared/happy-account.js, shared/happy-store.js).
+/* Проверка входа (у каждого приложения свой) и общего модуля хранения и обмена (shared/happy-account.js, shared/happy-store.js).
  * Смотрит на поведение: придуманные аккаунты, поддельный сервер с правилом «каждый видит только свои строки»,
  * несколько «устройств» и «вкладок» в одном процессе. Настоящий сервер и настоящие аккаунты не используются.
  * Хранилище на устройстве здесь заменено памятью; настоящий IndexedDB проверяет сценарий
@@ -20,10 +20,10 @@ async function rejects(promise){try{await promise;return null}catch(e){return e}
 /* ── Поддельный сервер: вход и таблица app_sync с проверками настоящей таблицы ───────────────────── */
 const URL_BASE='https://cloud.invalid';
 function makeCloud(){
- const users=new Map(),access=new Map(),refresh=new Map(),rows=new Map(),log=[];let n=0;
+ const users=new Map(),access=new Map(),refresh=new Map(),pair=new Map(),rows=new Map(),log=[];let n=0;
  const cloud={users,rows,log,before:null};
  const json=(status,body)=>new Response(status===204?null:JSON.stringify(body),{status,headers:{'content-type':'application/json'}});
- const issue=u=>{const at='at-'+(++n),rt='rt-'+n;access.set(at,u.id);refresh.set(rt,u.id);return {access_token:at,refresh_token:rt,expires_in:3600,user:{id:u.id,email:u.email,user_metadata:{display_name:u.name}}}};
+ const issue=u=>{const at='at-'+(++n),rt='rt-'+n;access.set(at,u.id);refresh.set(rt,u.id);pair.set(at,rt);return {access_token:at,refresh_token:rt,expires_in:3600,user:{id:u.id,email:u.email,user_metadata:{display_name:u.name}}}};
  cloud.addUser=(email,password,name)=>{const id='00000000-0000-4000-8000-'+String(users.size+1).padStart(12,'0');users.set(email,{id,email,password,name:name||''});return id};
  cloud.expireAccess=()=>access.clear();
  cloud.revokeRefresh=()=>refresh.clear();
@@ -39,7 +39,13 @@ function makeCloud(){
    const uid=refresh.get(body.refresh_token);if(!uid)return json(400,{error_description:'Invalid Refresh Token: Already Used'});
    refresh.delete(body.refresh_token);return json(200,issue([...users.values()].find(x=>x.id===uid)));
   }
-  if(u.pathname==='/auth/v1/logout')return json(204);
+  /* выход: scope=local закрывает один вход (его токены), без scope — все входы аккаунта, как у настоящего сервера */
+  if(u.pathname==='/auth/v1/logout'){
+   const at=String(headers.Authorization||'').replace('Bearer ',''),uid=access.get(at);if(!uid)return json(401,{message:'JWT expired'});
+   if(u.searchParams.get('scope')==='local'){refresh.delete(pair.get(at));access.delete(at)}
+   else{for(const [k,v] of [...refresh])if(v===uid)refresh.delete(k);for(const [k,v] of [...access])if(v===uid)access.delete(k)}
+   return json(204);
+  }
   if(u.pathname!=='/rest/v1/app_sync')return json(404,{});
   const uid=access.get(String(headers.Authorization||'').replace('Bearer ',''));if(!uid)return json(401,{message:'JWT expired'});
   const filters=[...u.searchParams].filter(([,v])=>v.startsWith('eq.')).map(([k,v])=>[k,v.slice(3)]);
@@ -89,9 +95,11 @@ function makeDevice(cloud,name,clock){
  };
  return device;
 }
+/* войти в приложение паролем первого аккаунта (у каждого приложения свой вход) и открыть хранилище заново */
+async function enter(h,email='one@example.invalid',password=PW1){await h.account.signIn(email,password);await tick();await h.reopen();return h}
 async function launch(device,app,spec={},who){
  const tab=device.tab(),fetch=cloud.fetchFor(device,who||app);
- const account=HappyAccount.create({storage:tab.storage,events:tab.events,fetch,url:URL_BASE,key:'test',now:device.now,locks:device.locks});
+ const account=HappyAccount.create({app,storage:tab.storage,events:tab.events,fetch,url:URL_BASE,key:'test',now:device.now,locks:device.locks});
  await account.load();
  const open=()=>HappyStore.open({app,account,backend:device.backend,channel:device.tab().channel,fetch,url:URL_BASE,key:'test',auto:false,now:device.now,...spec});
  return {account,store:await open(),reopen:async function(){this.store.close();this.store=await open();return this.store}};
@@ -121,21 +129,31 @@ let dayA=await launch(A,'day',DAY);
  check('к таблице облака запросов нет',!cloud.log.some(e=>e.path==='/rest/v1/app_sync'));
 }
 
-section('Один вход на три приложения');
+section('Свой вход у каждого приложения');
 const mealA=await launch(A,'meal',MEAL);
 {
+ check('вход без названия приложения не создаётся',(()=>{try{HappyAccount.create({storage:A.tab().storage});return false}catch(e){return true}})());
  const closedBefore=dayA.store.closed;
  check('вход с неверным паролем отклонён',(await rejects(dayA.account.signIn('one@example.invalid','wrong')))?.code==='auth');
  check('вход прошёл',await dayA.account.signIn('one@example.invalid',PW1)==='ok');
  await tick();
- check('соседнее приложение вошло без пароля',mealA.account.current()?.uid===U1,mealA.account.current());
- check('ячейка входа одна',[...A.cell.keys()].join()==='happy-account',[...A.cell.keys()]);
- const saved=JSON.parse(A.cell.get('happy-account'));
+ check('соседнее приложение без входа не вошло',mealA.account.current()===null&&!mealA.store.closed&&mealA.store.status().state==='signin');
+ check('ячейка входа — только у Day',[...A.cell.keys()].join()==='happy-account:day',[...A.cell.keys()]);
+ const saved=JSON.parse(A.cell.get('happy-account:day'));
  check('ключ тот же, что раньше: PBKDF2-SHA-256, 600 000 шагов, соль — аккаунт',saved.k===pbkdf2Sync(PW1,'happyday-sync-v1:'+U1,600000,32,'sha256').toString('base64'));
- check('пароль на устройстве не сохранён',!A.cell.get('happy-account').includes(PW1));
+ check('пароль на устройстве не сохранён',!A.cell.get('happy-account:day').includes(PW1));
  check('хранилище, открытое до входа, закрылось',!closedBefore&&dayA.store.closed);
  check('запись в закрытое хранилище отклонена',(await rejects(dayA.store.doc('diary').put('n1',{})))?.code==='account');
- await dayA.reopen();await mealA.reopen();
+ await dayA.reopen();
+ check('Meal по-прежнему просит войти',(await rejects(mealA.store.doc('diary').put('n1',{})))?.code==='signin');
+ await enter(mealA);
+ check('Meal вошёл своим входом: своя ячейка, свой вход на сервере, тот же ключ',mealA.account.current()?.uid===U1&&A.cell.has('happy-account:meal')&&
+  JSON.parse(A.cell.get('happy-account:meal')).s.rt!==JSON.parse(A.cell.get('happy-account:day')).s.rt&&JSON.parse(A.cell.get('happy-account:meal')).k===saved.k);
+ /* прежняя общая ячейка входа хранила ключ шифрования: при запуске её убирают */
+ A.cell.set('happy-account',JSON.stringify({s:{uid:U1,at:'x',rt:'y',exp:0},k:saved.k}));
+ const fresh=HappyAccount.create({app:'sport',storage:A.tab().storage,events:null,url:URL_BASE,key:'test'});await fresh.load();
+ check('прежняя общая ячейка входа удалена, по ней никто не входит',!A.cell.has('happy-account')&&fresh.current()===null);
+ fresh.close();
 }
 
 section('Запись без сети, потом в облако');
@@ -322,14 +340,15 @@ section('Обновление входа');
  clock.t+=1000;await dayA.store.doc('diary').put('token',{v:1});await dayA.store.doc('settings').put('theme',{v:'dark'});
  const [a,m]=await Promise.all([dayA.store.sync(),mealA.store.sync()]);
  check('обмен прошёл после обновления входа',a===true&&m===true,[dayA.store.status(),mealA.store.status()]);
- check('вход обновлён один раз на два приложения устройства',cloud.log.slice(from).filter(e=>e.path==='/auth/v1/token').length===1,cloud.log.slice(from).filter(e=>e.path==='/auth/v1/token').length);
+ check('каждое приложение обновило свой вход один раз',cloud.log.slice(from).filter(e=>e.path==='/auth/v1/token').length===2,cloud.log.slice(from).filter(e=>e.path==='/auth/v1/token').length);
  check('оба приложения остались в аккаунте',dayA.account.current()?.uid===U1&&mealA.account.current()?.uid===U1);
  cloud.expireAccess();cloud.revokeRefresh();
  clock.t+=1000;await dayA.store.doc('diary').put('unsent',{v:'записано до того, как вход устарел'});
  check('вход устарел — обмен не прошёл',await dayA.store.sync()===false);await tick();
- check('приложения вышли из аккаунта',dayA.account.current()===null&&mealA.account.current()===null&&dayA.store.closed&&mealA.store.closed);
+ check('Day вышел из аккаунта, Meal узнаёт об этом сам при своём обмене',dayA.account.current()===null&&dayA.store.closed&&mealA.account.current()?.uid===U1);
+ check('Meal: вход устарел — обмен не прошёл, вышел',await mealA.store.sync()===false&&(await tick(),mealA.account.current()===null)&&mealA.store.closed);
  check('после выхода запись не принимается',(await rejects(dayA.store.doc('diary').put('z',{})))?.code==='account');
- await dayA.account.signIn('one@example.invalid',PW1);await tick();await dayA.reopen();await mealA.reopen();
+ await enter(dayA);await enter(mealA);
  check('после нового входа неотправленная запись на месте',dayA.store.doc('diary').get('unsent')?.v.startsWith('записано'));
  check('и уходит в облако',await dayA.store.sync()===true&&independentDecrypt(cloud.row(U1,'day','diary'),PW1,U1,'day','diary').records.some(r=>r.id==='unsent'));
 }
@@ -338,10 +357,16 @@ section('Второй аккаунт на том же устройстве');
 {
  check('перед выходом всё отправлено',await dayA.store.flush(3000)===true);
  const mine=JSON.stringify(values(dayA.store.doc('diary')));
- await dayA.account.signOut();await tick();
- check('выход закрыл хранилища обоих приложений',dayA.store.closed&&mealA.store.closed&&mealA.account.current()===null);
- check('ячейка входа пуста',A.cell.size===0);
- await dayA.account.signIn('two@example.invalid',PW2);await tick();await dayA.reopen();await mealA.reopen();
+ const from=cloud.log.length;
+ await dayA.account.signOut();await tick(20);
+ check('выход из Day закрыл только Day; Meal остался в аккаунте',dayA.store.closed&&!mealA.store.closed&&mealA.account.current()?.uid===U1);
+ check('ячейка входа Day пуста, ячейка Meal на месте',!A.cell.has('happy-account:day')&&A.cell.has('happy-account:meal'));
+ check('на сервере закрыт только вход Day (scope=local)',cloud.log.slice(from).some(e=>e.path==='/auth/v1/logout'&&e.query==='?scope=local'));
+ cloud.expireAccess();clock.t+=1000;await mealA.store.doc('summary').put('after-day-out',{v:1});
+ check('Meal после выхода из Day обновил свой вход и сохранил в облако',await mealA.store.sync()===true&&mealA.account.current()?.uid===U1);
+ await mealA.account.signOut();await tick();
+ check('после выхода из обоих ячеек входа нет',A.cell.size===0);
+ await enter(dayA,'two@example.invalid',PW2);await enter(mealA,'two@example.invalid',PW2);
  check('второй аккаунт не видит записей первого',dayA.store.doc('diary').all().length===0&&dayA.store.doc('settings').all().length===0&&dayA.store.neighbor('meal','summary').all().length===0&&mealA.store.doc('summary').all().length===0);
  await dayA.store.sync();
  check('и после обмена не видит',dayA.store.doc('diary').all().length===0&&dayA.store.neighbor('meal','summary').all().length===0);
@@ -351,7 +376,7 @@ section('Второй аккаунт на том же устройстве');
  const peek=await cloud.fetchFor(A,'peek')(URL_BASE+'/rest/v1/app_sync?select=app,kind&user_id=eq.'+U1,{headers:{Authorization:'Bearer '+await dayA.account.token()}});
  check('сервер не отдаёт второму аккаунту строки первого',(await peek.json()).length===0);
  check('на устройстве записи аккаунтов лежат раздельно',A.backend.scopes().every(s=>s[0]===U1||s[0]===U2)&&A.backend.scopes().some(s=>s[0]===U1)&&A.backend.scopes().some(s=>s[0]===U2));
- await dayA.account.signOut();await dayA.account.signIn('one@example.invalid',PW1);await tick();await dayA.reopen();await mealA.reopen();
+ await dayA.account.signOut();await mealA.account.signOut();await enter(dayA);await enter(mealA);
  check('первый аккаунт вернулся к своим записям',JSON.stringify(values(dayA.store.doc('diary')))===mine&&dayA.store.doc('diary').get('n1')?.mood===4);
 }
 
@@ -391,7 +416,7 @@ section('Витрина: сосед видит только названное')
 section('Общий документ: пишут несколько приложений');
 {
  const SPORT={own:['workouts','body']},DAY2={own:['notes'],shared:{sport:['body']}};
- const sportA=await launch(A,'sport',SPORT),day2A=await launch(A,'day',DAY2,'day2'),sportB=await launch(B,'sport',SPORT,'sportB'),mealB=await launch(B,'meal',{own:['notes'],shared:{sport:['body']}},'mealB');
+ const sportA=await enter(await launch(A,'sport',SPORT)),day2A=await launch(A,'day',DAY2,'day2'),sportB=await enter(await launch(B,'sport',SPORT,'sportB')),mealB=await enter(await launch(B,'meal',{own:['notes'],shared:{sport:['body']}},'mealB'));
  const from=cloud.log.length,body=day2A.store.shared('sport','body');
  clock.t+=1000;await sportA.store.doc('body').put('m~2026-11-01',{waist:80});
  clock.t+=1000;await body.put('m~2026-11-14',{waist:79});await tick();

@@ -28,7 +28,7 @@ Sport собирается из исходников. Файл `index.html` в �
 | Где | Что |
 | --- | --- |
 | `sport/src/app.js`, `app.template.html` | Основа приложения и шаблон страницы. |
-| `sport/src/sport-boot.js` | Запуск: общий вход (`shared/happy-account.js`), общий модуль хранения (`shared/happy-store.js`), затем приложение. |
+| `sport/src/sport-boot.js` | Запуск: вход Sport (`shared/happy-account.js`, у каждого приложения свой), общий модуль хранения (`shared/happy-store.js`), затем приложение. |
 | `sport/src/sport-docs.js` | Как дневник раскладывается на документы модуля и собирается обратно. Документы витрины (замеры, плановые занятия, свитчи связи) раскладывают их общие файлы из `shared/`. |
 | `sport/src/sport-data.js`, `sport-signin.js` | Запись изменённого, приём правок с других вкладок и устройств, карточка входа, без входа — предложение войти. |
 | `sport/src/app-links.js`, `food-counters.js`, `energy-widget.js` | Свитчи связи, свои счётчики Sport, кольцо энергии. |

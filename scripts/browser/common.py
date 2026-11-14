@@ -130,7 +130,7 @@ def phone(browser, name=None):
 # Day и Sport на общем входе и общем модуле хранения — их сценарии: day_store, day_sections, sport_store.
 DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-59/")
 SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-43/")
-# Страница-заглушка для сценариев на общем модуле: общий вход и общий модуль под названием более новой версии
+# Страница-заглушка для сценариев на общем модуле: вход и общий модуль под названием более новой версии
 # приложения (номер формата новее).
 # Страницу отдаёт сам сценарий; в репозитории и на сайте её нет.
 STAND_IN = BASE + "__store-stand-in.html"
@@ -138,7 +138,7 @@ STAND_IN_HTML = """<!doctype html><meta charset="utf-8"><title>Проверка 
 <script src="shared/happy-account.js"></script><script src="shared/happy-store.js"></script><script src="shared/happy-food.js"></script>
 <script>
 var T={};
-T.boot=async(app,own,reads,formats)=>{T.account=HappyAccount.create();await T.account.load();
+T.boot=async(app,own,reads,formats)=>{T.account=HappyAccount.create({app});await T.account.load();
  T.store=await HappyStore.open({app,account:T.account,own,reads:reads||{},formats:formats||{},interval:1500});return !!T.account.current()};
 T.put=async(doc,id,value)=>{try{await T.store.doc(doc).put(id,value);return 'ok'}catch(e){return e.code||String(e)}};
 T.near=(app,doc)=>T.store.neighbor(app,doc).all();
@@ -163,7 +163,8 @@ APP_DATA = {"meal": "MealData", "day": "DayData", "sport": "SportData"}
 
 def enter(page, app="meal", seconds=20):
     """Приложения записывают только после входа. Войти придуманным аккаунтом (поддельный сервер handle) и дождаться,
-    пока страница откроется заново уже со входом. Вход общий: соседние приложения на том же «телефоне» войдут сами.
+    пока страница откроется заново уже со входом. Вход у каждого приложения свой: соседнее приложение на том же
+    «телефоне» само не входит, его открывают через enter(page, 'day' | 'sport').
     Путь человека через карточку входа проверяют сценарии meal_store, day_store и sport_store."""
     data = APP_DATA[app]
     wait_for(page, lambda: _look(page, APP_READY[app]), seconds, 200)

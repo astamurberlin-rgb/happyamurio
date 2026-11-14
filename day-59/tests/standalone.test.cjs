@@ -6,9 +6,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const dir = path.join(__dirname, '..'), release = path.basename(dir), version = release.split('-')[1];
-const html = fs.readFileSync(path.join(dir, 'Happy-Day-' + version + '.html'), 'utf8');
+const dir = path.join(__dirname, '..'), release = path.basename(dir), folder = release.split('-')[1];
+const html = fs.readFileSync(path.join(dir, 'Happy-Day-' + folder + '.html'), 'utf8');
 const page = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
+/* версия выпуска — со страницы: точечный выпуск (59.1) лежит в той же папке и в том же файле Happy-Day-59.html */
+const version = (page.match(/data-app-version="([^"]+)"/) || [])[1];
 
 test('версия та же, что у страницы; все скрипты и стили встроены', () => {
   assert.ok(html.includes('data-app-version="' + version + '"'));

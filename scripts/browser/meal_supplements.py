@@ -134,8 +134,7 @@ with sync_playwright() as p:
     day = B.new_page()
     day.on("pageerror", lambda e: errors.append("B-day: " + str(e)[:300]))
     day.goto(BASE + DAY + "index.html")
-    opened(day, "day")          # вход общий: Day на том же телефоне уже вошёл
-    check("Day на том же телефоне вошёл сам", day.evaluate("()=>DayData.signedIn()"))
+    check("Day на том же телефоне: вход тем же аккаунтом", enter(day, "day"))
     wait_for(day, lambda: day.evaluate("()=>!!(DB.mealLink&&DB.mealLink.days&&DB.mealLink.days[todayISO()])"), 20)
     out["B_day_meal"] = day.evaluate("()=>{const d=DB.mealLink.days[todayISO()];return {k:d.k,food:d.food,am:d.sec&&d.sec.am,state:mealState(todayISO(),'am')}}")
     check("Day: калории Meal с БАДами — 171 + 20", abs(out["B_day_meal"]["k"] - 191) < 0.6)

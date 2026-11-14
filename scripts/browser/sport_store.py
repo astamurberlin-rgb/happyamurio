@@ -1,4 +1,4 @@
-"""Sport на общем входе и общем модуле хранения и обмена (с Sport 42) — настоящая страница Sport в Chrome.
+"""Sport на своём входе (с Sport 43.1) и общем модуле хранения и обмена (с Sport 42) — настоящая страница Sport в Chrome.
 Путь человека: без входа записи не принимаются и Sport предлагает войти; вход в карточке настроек; запись без сети;
 вторая вкладка и второй телефон видят запись сами; одна тренировка с двух телефонов — остаётся поздняя правка;
 нажатия одного счётчика с двух телефонов не теряются; удалённое не возвращается; второй аккаунт на том же телефоне
@@ -24,6 +24,9 @@ OLD = {"user_id": USERS[ONE]["id"], "app": "sport", "kind": "journal", "v": 1, "
 table[(USERS[ONE]["id"], "sport", "journal")] = dict(OLD)
 
 
+import itertools
+TOKEN_N = itertools.count(1)
+
 def serve(route, request, device):
     url = urlsplit(request.url)
     path, q, method = url.path, parse_qs(url.query, keep_blank_values=True), request.method
@@ -38,10 +41,19 @@ def serve(route, request, device):
         user = USERS.get(body.get("email"))
         if not user or user["pw"] != body.get("password"):
             return route.fulfill(status=400, headers=HDR, body=json.dumps({"error_description": "Invalid login credentials"}))
-        token = "at-%d" % (len(tokens) + 1)
+        token = "at-%d" % next(TOKEN_N)   # номер не повторяется и после выхода
         tokens[token] = user["id"]
         return route.fulfill(status=200, headers=HDR, body=json.dumps({"access_token": token, "refresh_token": "rt-" + token, "expires_in": 3600, "user": {"id": user["id"], "email": body["email"], "user_metadata": {"display_name": "Проверка"}}}))
     if path == "/auth/v1/logout":
+        # выход, как у настоящего сервера: scope=local закрывает один вход, без scope — все входы аккаунта
+        entry["scope"] = (q.get("scope") or ["global"])[0]
+        at = request.headers.get("authorization", "").replace("Bearer ", "")
+        uid = tokens.get(at)
+        if entry["scope"] == "local":
+            tokens.pop(at, None)
+        else:
+            for k in [k for k, v in tokens.items() if v == uid]:
+                tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
@@ -280,6 +292,7 @@ with sync_playwright() as p:
     first = titles(a1)
     sign_out(a1)
     out["sign_out_both_tabs"] = bool(until(a2, "()=>typeof SportData!=='undefined'&&!SportData.signedIn()", seconds=15))
+    out["logout_scope"] = [r.get("scope") for r in requests if r["path"] == "/auth/v1/logout"]
     ready(a2)
     out["signed_out_sees"] = [titles(a1), a1.is_visible(".sport-signin") if a1.click(".dock [data-view=diary]") is None else None]
     sign_in(a1, TWO)
@@ -308,7 +321,7 @@ out["old_read"] = [r for r in requests if r.get("kinds") and "sport/journal" in 
 out["row_versions"] = sorted(set(r.get("v") for k, r in rows.items() if k[2] != "journal"))
 checks = [
     ("без входа: карточка «Войди, чтобы записывать», нажатие ведёт к входу, ничего не записано", out["signin_card"] and out["no_login_screen"] and out["no_login_toast"] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
-    ("вошёл в одной вкладке — вторая вошла сама; ячейка входа одна, пароль не сохранён", out["second_tab_signed_in"] and out["cells"] == ["happy-account"] and not out["password_stored"]),
+    ("вошёл в одной вкладке — вторая вкладка Sport вошла сама; ячейка входа своя — happy-account:sport, пароль не сохранён", out["second_tab_signed_in"] and out["cells"] == ["happy-account:sport"] and not out["password_stored"]),
     ("под аккаунтом одна строка состояния", bool(out["status_line"])),
     ("без сети тренировка и нажатие приняты и видны во второй вкладке без сообщений", out["offline_taps"] == 1 and out["second_tab_workout"] and out["second_tab_taps"] == 1 and not out["second_tab_toasts"].strip()),
     ("без сети строка «Нет связи · записи сохранены на устройстве», в облаке пусто", out["offline_status"] == "Нет связи · записи сохранены на устройстве" and out["cloud_while_offline"] == ["journal"]),
@@ -322,7 +335,7 @@ checks = [
     ("ссылка на тренировку открывает её запись, ссылка на упражнение — упражнение", out["workout_link"] == ["detail", "Правка четвёртой на телефоне B"] and out["exercise_link"]),
     ("выбранное оформление сохранилось на устройстве, осталось после перезагрузки и в дневник не записано", out["theme_saved"] == [False, True] and out["theme_after_reload"] and out["theme_not_in_diary"]),
     ("диктовка доступна, внешние ссылки не перехватываются", out["dictation_api"] == "function" and "недоступна" not in out["dictation_text"] and out["external_link"]),
-    ("выход в одной вкладке — вышли обе; без входа записей не видно", out["sign_out_both_tabs"] and out["signed_out_sees"][0] == []),
+    ("выход в одной вкладке — вышли обе вкладки Sport; на сервере закрыт только вход Sport; без входа записей не видно", out["sign_out_both_tabs"] and out["logout_scope"] and set(out["logout_scope"]) == {"local"} and out["signed_out_sees"][0] == []),
     ("второй аккаунт не видит записей первого и пишет в свои строки", out["second_account_sees"] == [[], 0] and out["second_account_cloud"]),
     ("записи двух аккаунтов на устройстве лежат раздельно", out["device_accounts"] == [uid1, uid2]),
     ("первый аккаунт вернулся к своим записям", bool(out["first_account_back"])),

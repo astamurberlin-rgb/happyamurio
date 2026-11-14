@@ -1,9 +1,9 @@
-"""Meal на общем входе и общем модуле хранения и обмена (Meal 32) — настоящие страницы Meal, Day и Sport в Chrome.
+"""Meal на своём входе и общем модуле хранения и обмена (Meal 32.1) — настоящие страницы Meal, Day и Sport в Chrome.
 Путь человека: без входа записи не принимаются и Meal предлагает войти; вход в карточке настроек; запись без сети;
 вторая вкладка и второй телефон видят запись сами; одну запись еды правили на двух телефонах — остаётся поздняя
 правка, разные записи остаются обе; удалённое не возвращается; настройки, сделанные на первом телефоне, новый телефон
 получает до первой своей записи и не затирает начальными; второй аккаунт на том же телефоне не видит записей первого.
-Вход общий с Day и Sport: вошёл в одном — вошёл во всех. Обмен между настоящими приложениями: счётчик еды из Meal
+Вход у каждого приложения свой: вход и выход в Meal не трогают Day и Sport; аккаунт и записи общие. Обмен между настоящими приложениями: счётчик еды из Meal
 появляется в Day, нажатие в Day приходит в дневник Meal порцией, которую в Meal можно убрать и вернуть, и один раз входит
 в «съедено»; Day показывает еду Meal; Meal показывает тренировку Sport; замеры тела и свитчи связи — общие документы.
 Свои добавки — документ аккаунта: запись на одном телефоне видна на другом. На сервере только шифр; прежние строки
@@ -28,6 +28,9 @@ for kind, row in OLD.items():
     table[(USERS[ONE]["id"], "meal", kind)] = dict(row)
 
 
+import itertools
+TOKEN_N = itertools.count(1)
+
 def serve(route, request, device):
     url = urlsplit(request.url)
     path, q, method = url.path, parse_qs(url.query, keep_blank_values=True), request.method
@@ -46,10 +49,19 @@ def serve(route, request, device):
         user = USERS.get(body.get("email"))
         if not user or user["pw"] != body.get("password"):
             return route.fulfill(status=400, headers=HDR, body=json.dumps({"error_description": "Invalid login credentials"}))
-        token = "at-%d" % (len(tokens) + 1)
+        token = "at-%d" % next(TOKEN_N)   # номер не повторяется и после выхода
         tokens[token] = user["id"]
         return route.fulfill(status=200, headers=HDR, body=json.dumps({"access_token": token, "refresh_token": "rt-" + token, "expires_in": 3600, "user": {"id": user["id"], "email": body["email"], "user_metadata": {"display_name": "Проверка"}}}))
     if path == "/auth/v1/logout":
+        # выход, как у настоящего сервера: scope=local закрывает один вход, без scope — все входы аккаунта
+        entry["scope"] = (q.get("scope") or ["global"])[0]
+        at = request.headers.get("authorization", "").replace("Bearer ", "")
+        uid = tokens.get(at)
+        if entry["scope"] == "local":
+            tokens.pop(at, None)
+        else:
+            for k in [k for k, v in tokens.items() if v == uid]:
+                tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
@@ -92,6 +104,14 @@ def phone_for(browser, name):
     stand_in_route(ctx)
     return ctx
 
+
+
+def sign_in_app(page, data, email):
+    """Войти в соседнее приложение тем же аккаунтом через его вход (у каждого приложения свой); страница откроется заново."""
+    try:
+        page.evaluate("([d,e,p])=>window[d].account.signIn(e,p)", [data, email, USERS[email]["pw"]])
+    except Exception:   # страница уже открывается заново
+        pass
 
 def until(page, js, arg=None, seconds=10):
     def look():
@@ -281,13 +301,15 @@ with sync_playwright() as p:
     a1.evaluate("""()=>MealSupplementsStore.write(d=>{d.variants.push({id:'v-test',name:'Магний проверочный',revision:1,basis:{quantity:1,unit:'капсула'},components:[{name:'Магний',amount:100,unit:'мг'}],measures:[],createdAt:'2026-11-14T10:00:00.000Z',updatedAt:'2026-11-14T10:00:00.000Z'})})""")
     out["supplement_other_phone"] = until(b1, "()=>MealSupplementsStore.state().variants.map(v=>v.name).join()", seconds=25)
 
-    # общий вход с Day и Sport: на телефоне A они уже вошли, пароль не спрашивали
-    logins = len([r for r in requests if r["path"] == "/auth/v1/token"])
+    # вход у каждого приложения свой: Day и Sport на телефоне A сами не вошли; входим тем же аккаунтом
     d1 = tab(A, "A-day", DAY_PAGE)
-    out["day_signed_in"] = bool(until(d1, "u=>typeof DayData!=='undefined'&&DayData.signedIn()&&DayData.store.uid===u", USERS[ONE]["id"], 10))
     s1 = tab(A, "A-sport", SPORT_PAGE)
-    out["sport_signed_in"] = bool(until(s1, "u=>typeof SportData!=='undefined'&&SportData.signedIn()&&SportData.store.uid===u", USERS[ONE]["id"], 10))
-    out["neighbor_logins"] = len([r for r in requests if r["path"] == "/auth/v1/token"]) - logins
+    out["neighbors_not_signed_in"] = [bool(until(d1, "()=>typeof DayData!=='undefined'&&!!DayData.account&&!DayData.signedIn()", seconds=10)), bool(until(s1, "()=>typeof SportData!=='undefined'&&!!SportData.account&&!SportData.signedIn()", seconds=10))]
+    sign_in_app(d1, "DayData", ONE)
+    sign_in_app(s1, "SportData", ONE)
+    out["day_signed_in"] = bool(until(d1, "u=>typeof DayData!=='undefined'&&DayData.signedIn()&&DayData.store.uid===u", USERS[ONE]["id"], 15))
+    out["sport_signed_in"] = bool(until(s1, "u=>typeof SportData!=='undefined'&&SportData.signedIn()&&SportData.store.uid===u", USERS[ONE]["id"], 15))
+    out["cells_three"] = sorted(k for k in a1.evaluate("()=>Object.keys(localStorage)") if k.startswith("happy-account"))
 
     # еда Meal в Day: «съедено» за день приходит из витрины Meal — на том же телефоне сразу
     eaten_meal = a1.evaluate("()=>Math.round(sumOf(day(curDate).items).k*10)/10")
@@ -361,9 +383,13 @@ with sync_playwright() as p:
     out["old_rows_not_read"] = not any(k in (r.get("kinds") or []) for r in requests for k in ("meal/journal", "meal/link", "meal/counters", "meal/supplements"))
     out["cloud_all"] = cloud(ONE)
 
-    # выход: вышли в Meal — вышли Day и Sport; второй аккаунт на том же телефоне не видит записей первого
+    # выход из Meal: Day и Sport остаются в аккаунте; на сервере закрыт только вход Meal. Второй аккаунт не видит записей первого
     sign_out(a1)
-    out["signed_out_everywhere"] = [bool(until(d1, "()=>typeof DayData!=='undefined'&&!DayData.signedIn()", seconds=15)), bool(until(s1, "()=>typeof SportData!=='undefined'&&!SportData.signedIn()", seconds=15))]
+    a1.wait_for_timeout(1500)
+    out["others_stay"] = [d1.evaluate("()=>DayData.signedIn()"), s1.evaluate("()=>SportData.signedIn()")]
+    out["logout_scope"] = [r.get("scope") for r in requests if r["path"] == "/auth/v1/logout"]
+    s1.evaluate("d=>{state.workouts.push({id:'w-after-meal-out',title:'После выхода из Meal',kind:'gym',start:d+'T10:00',end:d+'T10:30',duration:1800,energyKcal:100,exercises:[]});persist();render()}", today)
+    out["sport_saves_after_meal_out"] = bool(until(s1, "()=>SportData.store.status().state==='cloud'", seconds=15)) and s1.evaluate("()=>SportData.signedIn()")
     out["after_sign_out"] = [count(a1), a1.evaluate("()=>DB.sections[0].t"), a1.is_visible("#mealSignIn")]
     sign_in(a1, TWO)
     out["second_account"] = [count(a1), a1.evaluate("()=>DB.sections[0].t"), a1.evaluate("()=>DB.taps.map(c=>c.k)"), a1.evaluate("()=>MealSupplementsStore.state().variants.length")]
@@ -394,7 +420,7 @@ checks = [
     ("без входа: на устройстве и в облаке пусто", out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("без входа: экраны листаются", out["no_login_walk"] == ["journal", "recipes", "day"]),
     ("вход в одной вкладке — вторая вошла сама; карточка входа скрыта", out["second_tab_signed_in"] and out["signin_card_after"] is False),
-    ("ячейка входа одна, общая; прежних ячеек Meal нет; пароль не хранится", out["cells"] == ["happy-account"] and not out["password_stored"]),
+    ("ячейка входа своя — happy-account:meal; прежних ячеек Meal нет; пароль не хранится", out["cells"] == ["happy-account:meal"] and not out["password_stored"]),
     ("в «Аккаунте» одна строка состояния", bool(out["status_line"])),
     ("вход сам ничего не записал: начальные разделы и счётчики в облако не легли", out["after_login_cloud"] == sorted("meal/" + k for k in OLD)),
     ("запись без сети принята и видна во второй вкладке без сообщений", out["offline_count"] == 1 and out["second_tab_count"] == 1 and out["second_tab_toast"] == ""),
@@ -408,7 +434,7 @@ checks = [
     ("удаление доходит до другого телефона и не возвращается", out["delete_reaches"] == 1 and out["delete_stays"] == [1, 1]),
     ("обычная запись еды — запись документа дневника: видна на втором телефоне, правка и удаление доходят; счётчик её не считает", out["plain_on_b"] and out["plain_edit_on_a"] and out["plain_in_diary_doc"] and "meal/diary_" + year in out["plain_cloud"] and out["plain_gone_on_b"] and out["plain_counts"] == [2, 2]),
     ("своя добавка с одного телефона видна на другом", out["supplement_other_phone"] == "Магний проверочный"),
-    ("вход общий: Day и Sport на том же телефоне вошли сами, без пароля", out["day_signed_in"] and out["sport_signed_in"] and out["neighbor_logins"] == 0),
+    ("вход у каждого приложения свой: Day и Sport на том же телефоне сами не вошли; вошли тем же аккаунтом — у каждого своя ячейка", out["neighbors_not_signed_in"] == [True, True] and out["day_signed_in"] and out["sport_signed_in"] and out["cells_three"] == ["happy-account:day", "happy-account:meal", "happy-account:sport"]),
     ("Day показывает «съедено» из витрины Meal", bool(out["eaten_in_day"])),
     ("счётчик Meal, показанный в Day, появился в Day; соседям ушли только название, порция и числа порции", bool(out["counter_in_day"]) and len(out["showcase"]) == 1 and sorted(out["showcase"][0]["value"]["food"].keys()) in (["c", "counterValues", "f", "id", "k", "n", "p"], ["c", "f", "id", "k", "n", "p"])),
     ("нажатие в Day пришло в дневник Meal порцией; на счётчике одно число в Meal и в Day — 3 (два нажатия Meal и одно Day)", bool(out["day_tap_in_meal"]) and out["meal_counter_total"] == 3 and bool(out["day_counter_total"])),
@@ -422,7 +448,7 @@ checks = [
     ("на сервере только шифр, строки общего модуля", out["cipher_only"] is True),
     ("Meal пишет только свои строки и общие документы (связи, замеры, нажатия на счётчики еды)", all(k.startswith("meal/") or k in ("day/pairs", "sport/body", "day/foodtaps", "sport/foodtaps") for k in out["meal_writes"]) and not any(k in ("meal/" + o for o in OLD) for k in out["meal_writes"])),
     ("прежние строки облака Meal не прочитаны и не изменены", out["old_rows_untouched"] and out["old_rows_not_read"]),
-    ("вышли в Meal — вышли Day и Sport; дневник без входа пустой", out["signed_out_everywhere"] == [True, True] and out["after_sign_out"] == [0, "Завтрак", True]),
+    ("вышли в Meal — Day и Sport остались в аккаунте и сохраняют в облако; на сервере закрыт только вход Meal; дневник Meal без входа пустой", out["others_stay"] == [True, True] and out["logout_scope"] and set(out["logout_scope"]) == {"local"} and out["sport_saves_after_meal_out"] and out["after_sign_out"] == [0, "Завтрак", True]),
     ("второй аккаунт на том же телефоне не видит записей первого", out["second_account"] == [0, "Завтрак", ["egg", "cfm", "wal"], 0]),
     ("первый аккаунт вернулся и видит свои записи", out["first_account_back"] == [2, "Раннее утро"]),
     ("записи более новой версии Meal: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and out["newer_refuses"][0] and "более новой версией" in out["newer_refuses"][1]),

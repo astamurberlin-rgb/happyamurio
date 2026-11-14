@@ -1,10 +1,10 @@
 {
   "app": "Happy Sport",
-  "update": "43",
+  "update": "43.1",
   "source_release": "sport-42 (Happy Sport · Update 42)",
   "source_commit": "26f10dc3aac5a842ae359c3ab479a6d1726358d0",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-43/",
-  "agreed_by_owner": "2026-11-14 15:37, in chat: stage 3 of the shared sign-in, storage and exchange task (Day moves to the shared module). Astamur approved the plan: body measurements become one shared document and one shared screen for Day, Meal and Sport (shared/happy-measurements.js); link switches become one shared document; Sport publishes planned workouts for Day; documents carry a format number. Sport 43 is published together with Day 59 and Meal 32, only by his word.",
+  "agreed_by_owner": "2026-11-15 01:12, in chat: every app signs in and out on its own again (decision of 09.11.2026 restored), the account and its records stay shared. Earlier: 2026-11-14 15:37, in chat: stage 3 of the shared sign-in, storage and exchange task (Day moves to the shared module). Astamur approved the plan: body measurements become one shared document and one shared screen for Day, Meal and Sport (shared/happy-measurements.js); link switches become one shared document; Sport publishes planned workouts for Day; documents carry a format number. Sport 43 is published together with Day 59 and Meal 32, only by his word.",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -107,8 +107,8 @@
     },
     {
       "path": "index.html",
-      "size": 952747,
-      "sha256": "fbf5e56b758d00b834f9c19b6fcec1964fbfe0fd0f076a6ecd551e8e9a374527"
+      "size": 955016,
+      "sha256": "831fd6c6d3226285819cd4ed4b4162bf30d684714ce93ad16a9196fcde6c0b89"
     },
     {
       "path": "manifest.webmanifest",
@@ -132,13 +132,13 @@
     },
     {
       "path": "scripts/build-preview.mjs",
-      "size": 2417,
-      "sha256": "e9c46f6d68a1d6d0d3ef83de7e15b309dde5c1c6907b310f1f5a30257c2ddf12"
+      "size": 2419,
+      "sha256": "71b2d29d7d7bf056742ec75bf5b013d6de20618ccc46c30af7fedfa9a53458df"
     },
     {
       "path": "scripts/build-release.mjs",
-      "size": 496,
-      "sha256": "e9e0512110ccaa93609ff80e0a9376a64ae2465e226607df25cb6d5e5eac013e"
+      "size": 498,
+      "sha256": "a849409b9225f2edefbd3b2a3f61dd17b4d3aba7be168a3af01a76c8079639a8"
     },
     {
       "path": "scripts/check-families.mjs",
@@ -152,13 +152,13 @@
     },
     {
       "path": "scripts/verify-release.mjs",
-      "size": 1529,
-      "sha256": "02f6a65bfd4e7028c678b865506be01f96e6f023d0bfc1aac9791e433f57ae27"
+      "size": 1535,
+      "sha256": "fe265ed069d294b5ec6cb74fea878558f5822a8cd26bd46b247cded4d1601d21"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 2723,
-      "sha256": "d1ff88d16b09bb4838998ec079f8ac359bccd93a94d67a2e581ff2d2314f5a3f"
+      "size": 2999,
+      "sha256": "b95f9fc7e8e0dd38eb17f226133f8b67b74de4f0a44178a46b4db9b7fb9606fd"
     },
     {
       "path": "shared/apps.json",
@@ -167,13 +167,13 @@
     },
     {
       "path": "shared/happy-account-ui.js",
-      "size": 9217,
-      "sha256": "fc4c27e6f706ce4885d4654559cf912aa714e1688e08be3b4d4c04de23ab0150"
+      "size": 9250,
+      "sha256": "972d8e165c5f933d94496b4c53eced05cd7b03ae048dc359ccf60ba360bde9bd"
     },
     {
       "path": "shared/happy-account.js",
-      "size": 9392,
-      "sha256": "be0ab6a7e9381eb9caa999749e33ec6b261d7e12d62a37708e327ea494a36064"
+      "size": 10938,
+      "sha256": "25efa1ac9cb5d18053811ffb01521f29f873f9376bb2e4a7d2b233911a0cb2ed"
     },
     {
       "path": "shared/happy-app-links.js",
@@ -267,13 +267,13 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 13364,
-      "sha256": "a7867293d62b89d16b1b17cedf7d73ac245201059d22f5d053aaf50f96d18d05"
+      "size": 13366,
+      "sha256": "1844712ff44eae2920f4ef9002b922f15ef3b51961d546974fce39322661b43d"
     },
     {
       "path": "sport/scripts/check-clean-shell.mjs",
-      "size": 4507,
-      "sha256": "698e444aa2e356b97f7a8a52c39bd836870f701f8b11ec1727135456229834e4"
+      "size": 4512,
+      "sha256": "cc136645af82f6098e493e31e79102fa9cd9e8fda71fe914963255a1c80e214f"
     },
     {
       "path": "sport/scripts/check-countdown.mjs",
@@ -482,8 +482,8 @@
     },
     {
       "path": "sport/src/app.template.html",
-      "size": 21687,
-      "sha256": "d865acd8f977315de48398e926283a7f15294995af19503762621c2b5252b231"
+      "size": 21689,
+      "sha256": "90fe30b97dcc349a85787a78be71244cfbeb793517a04ccf7856a605ed8b62c3"
     },
     {
       "path": "sport/src/audit-simplify.css",
@@ -502,8 +502,8 @@
     },
     {
       "path": "sport/src/data-transfer.js",
-      "size": 11362,
-      "sha256": "338aec3f8bd1b2bdef646ac685180e6659f5c1507776639a407a576a72209ba4"
+      "size": 11366,
+      "sha256": "6707197e8aa985635b8b118f2383693f65b51df509682d0befbcf7b3e198067a"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -637,8 +637,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 32361,
-      "sha256": "998ae6323de19f76a065c393ee73f4ca9054e6582ec5bbe95bdc3e7fe615cb60"
+      "size": 32998,
+      "sha256": "d97ec140389d0c8d44bc42ad6fea6b499c3ad2d11fc854c5a7206186972a36c2"
     },
     {
       "path": "sport/src/rest-pill.js",
@@ -692,8 +692,8 @@
     },
     {
       "path": "sport/src/sport-boot.js",
-      "size": 2616,
-      "sha256": "75ea0389e9d32a5ac28a7df4c9c36fd401cad9f880b40f8f9d1c51a907e4f528"
+      "size": 2663,
+      "sha256": "36b721d2a299adcb013d2f69eabbe03d13b67ae70866d90af9bae150bc184fa0"
     },
     {
       "path": "sport/src/sport-data.js",

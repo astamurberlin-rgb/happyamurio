@@ -90,7 +90,8 @@ with sync_playwright() as p:
     # ── 2. Sport на том же телефоне: счётчики Meal и «съедено» ──
     sport = page_of(A, "A-sport", SPORT + "index.html")
     opened(sport, "sport")
-    check("Sport на том же телефоне вошёл сам", sport.evaluate("()=>SportData.signedIn()"))
+    check("Sport на том же телефоне сам не вошёл: вход у каждого приложения свой", not sport.evaluate("()=>SportData.signedIn()"))
+    check("Sport: вход тем же аккаунтом", enter(sport, "sport"))
     shown = wait_for(sport, lambda: len([r for r in sport.evaluate(SPORT_ROWS) if "Meal" in r]) == 2 and sport.evaluate(SPORT_ROWS), 10, 200)
     out["sport_rows"] = shown
     check("Sport: счётчики Meal с подписью порции — «Яйцо» и «Рыбий жир · 2 капсулы · Meal»", bool(shown) and any(r.startswith("Яйцо") and "· Meal = 0" in r for r in shown) and any("2 капсулы · Meal = 0" in r for r in shown))
@@ -131,7 +132,7 @@ with sync_playwright() as p:
 
     # ── 3. Day на том же телефоне ──
     dayp = page_of(A, "A-day", DAY + "index.html")
-    opened(dayp, "day")
+    check("Day: вход тем же аккаунтом", enter(dayp, "day"))
     out["day_rows"] = wait_for(dayp, lambda: len(dayp.evaluate(DAY_ROWS)) == 2 and dayp.evaluate(DAY_ROWS), 10, 200)
     check("Day: счётчики Meal — «Рыбий жир · 2 капсулы» и «Яйцо»", bool(out["day_rows"]) and out["day_rows"][0].startswith("Рыбий жир") and "2 капсулы" in out["day_rows"][0] and out["day_rows"][1].startswith("Яйцо"))
     dayp.evaluate("()=>SelfCare.open('activity')")
