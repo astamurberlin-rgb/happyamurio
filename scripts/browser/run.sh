@@ -1,7 +1,7 @@
 #!/bin/bash
 # Сценарии проверки Happy в браузере на придуманных записях.
 # Запуск из любого места:  scripts/browser/run.sh            — все сценарии
-#                          scripts/browser/run.sh counters_guest versions   — выбранные
+#                          scripts/browser/run.sh meal_store versions   — выбранные
 # Поднимает временный локальный сервер, который отдаёт репозиторий под префиксом /happyamurio/, как GitHub Pages.
 set -u
 here="$(cd "$(dirname "$0")" && pwd)"
@@ -19,7 +19,7 @@ export HAPPY_BASE="http://127.0.0.1:$port/happyamurio/"
 for i in $(seq 1 30); do curl -s -o /dev/null "${HAPPY_BASE}shared/apps.json" && break; sleep 0.3; done
 if ! curl -s -o /dev/null "${HAPPY_BASE}shared/apps.json"; then echo "Локальный сервер на порту $port не поднялся (порт занят? задай HAPPY_PORT)"; exit 2; fi
 names=("$@")
-[ "${#names[@]}" -eq 0 ] && names=(versions counters_guest counters_cloud day_sections meal_times meal_shop meal_offline meal_supplements meal_supplement_counters app_links meal_desserts uzbek_names store_devices sport_store day_store)
+[ "${#names[@]}" -eq 0 ] && names=(versions day_sections meal_times meal_shop meal_offline meal_supplements meal_desserts uzbek_names store_devices sport_store day_store meal_store food_exchange)
 failed=0
 for name in "${names[@]}"; do
   if python3 "$here/$name.py" >"$HAPPY_OUT/$name.log" 2>&1; then tail -1 "$HAPPY_OUT/$name.log"

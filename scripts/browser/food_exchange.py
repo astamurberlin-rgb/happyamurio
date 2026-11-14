@@ -1,5 +1,5 @@
 """Счётчики еды и «съедено» между настоящими Meal 32, Day 59 и Sport 43 на общем модуле (решения Астамура 14.11.2026:
-счётчик еды принадлежит Meal, нажатие хранит приложение, где нажали; каталог добавок и их состав — только в Meal,
+счётчик еды принадлежит Meal, нажатие хранит приложение, где нажали, поправить и убрать порцию можно и в Meal; каталог добавок и их состав — только в Meal,
 соседям — только счётчик).
 Телефон A, три приложения под одним придуманным аккаунтом; телефон B — Sport того же аккаунта.
 В Meal: счётчик яйца показан в Day и Sport; «Новый счётчик» находит шаблон каталога БАДов «Рыбий жир», 2 капсулы,
@@ -111,15 +111,23 @@ with sync_playwright() as p:
     counted = wait_for(sport, lambda: sport.evaluate("()=>{const e=HappyFood.eaten(HappyFood.summary(SportData.store.neighbor('meal','summary').all()),selectedDate,SportFood.taps(),SportFood.foods(),'sport');return !!e&&e.pending===0}") and sport_eaten(sport) == out["meal_eaten_2"], 12, 300)
     check("Sport: посчитанное Meal второй раз не прибавлено — число одно", bool(counted))
     check("нажатия Sport лежат в его документе; в документах Meal их нет", sport.evaluate("()=>SportData.store.doc('foodtaps').all().length") == 2 and not meal.evaluate("()=>JSON.stringify(MealDocs.NAMES.map(n=>MealData.store.doc(n).all())).match(/\"nb\"|counterEventId|sport-/)"))
-    # порцию из Sport в Meal нельзя убрать или изменить
-    meal.evaluate("()=>{const x=day(curDate).items.find(x=>x.nb);x.q=5;x.g=500;save();renderDay()}")
-    meal.wait_for_timeout(600)
-    check("Meal: порция из Sport не меняется — правка возвращается, человеку сказано почему", meal.evaluate(EATEN_MEAL) == out["meal_eaten_2"] and "Happy Sport" in meal.inner_text("#toast"))
+    # порцию из Sport в Meal можно поправить: меняется само нажатие, «съедено» остаётся одним числом
+    egg_row = lambda page: next((r for r in page.evaluate(SPORT_ROWS) if r.startswith("Яйцо")), "")
+    meal.evaluate("()=>{const x=day(curDate).items.find(x=>x.nb&&x.tap==='egg');x.q=2;x.g=gramsFor('egg',2,'шт');save();renderDay()}")
+    out["meal_eaten_edit"] = meal.evaluate(EATEN_MEAL)
+    check("Meal: порцию из Sport поправили на две штуки — «съедено» выросло, правка легла в нажатие Sport", out["meal_eaten_edit"] > out["meal_eaten_2"] and wait_for(sport, lambda: sport.evaluate("()=>SportData.store.doc('foodtaps').all().some(r=>r.value.cid==='egg'&&r.value.item.q===2)"), 8, 200))
+    check("Sport: «съедено» с поправленной порцией — то же число; нажатие по-прежнему одно", bool(wait_for(sport, lambda: sport_eaten(sport) == out["meal_eaten_edit"], 12, 300)) and egg_row(sport).endswith("= 1"))
+    meal.evaluate("()=>{const x=day(curDate).items.find(x=>x.nb&&x.tap==='egg');x.q=1;x.g=gramsFor('egg',1,'шт');save();renderDay()}")
+    check("порцию вернули к одной штуке — числа снова прежние", meal.evaluate(EATEN_MEAL) == out["meal_eaten_2"] and bool(wait_for(sport, lambda: sport_eaten(sport) == out["meal_eaten_2"], 12, 300)))
+    check("поправленная порция Sport в документы Meal не попала", not meal.evaluate("()=>JSON.stringify(MealDocs.NAMES.map(n=>MealData.store.doc(n).all())).match(/\"nb\"|counterEventId|sport-/)"))
+    # «−» у счётчика в Meal убирает порцию, нажатую в Sport: уходит само нажатие
     meal.click(".tab[data-go=day]")
     egg_total = meal.evaluate("()=>Number(document.querySelector('#mlTaps [data-tplus=egg]').parentElement.querySelector('.v').textContent)")
     meal.click("#mlTaps [data-tminus='egg']")
-    meal.wait_for_timeout(500)
-    check("Meal: «−» у счётчика порцию из Sport не убирает и говорит, где её убрать", egg_total == 1 and meal.evaluate(NB)[-1] == "sport:supp:1" and len(meal.evaluate(NB)) == 2 and "Happy Sport" in meal.inner_text("#toast"))
+    check("Meal: «−» у счётчика убрал порцию, нажатую в Sport; в Sport счётчик тоже уменьшился", egg_total == 1 and bool(wait_for(meal, lambda: meal.evaluate(NB) == ["sport:supp:1"], 8, 200)) and bool(wait_for(sport, lambda: egg_row(sport).endswith("= 0"), 8, 200)) and sport.evaluate("()=>SportData.store.doc('foodtaps').all().length") == 1)
+    check("«съедено» без этой порции — одно число в Meal и Sport", meal.evaluate(EATEN_MEAL) == round(base + 20) and bool(wait_for(sport, lambda: sport_eaten(sport) == round(base + 20), 12, 300)))
+    sport.locator("#sport-food-counters .tpItem", has_text="Яйцо").locator("[data-action=food-plus]").click()
+    check("порцию нажали в Sport снова — она опять в дневнике Meal", bool(wait_for(meal, lambda: sorted(meal.evaluate(NB)) == ["sport:egg:1", "sport:supp:1"], 10, 200)) and meal.evaluate(EATEN_MEAL) == out["meal_eaten_2"])
 
     # ── 3. Day на том же телефоне ──
     dayp = page_of(A, "A-day", DAY + "index.html")
@@ -181,6 +189,22 @@ with sync_playwright() as p:
     meal.click('[data-fc="save"]')
     check("счётчик добавки ушёл из Sport, в Day остался", wait_for(sport, lambda: len([r for r in sport.evaluate(SPORT_ROWS) if "Meal" in r]) == 1, 10, 200) and len(dayp.evaluate(DAY_ROWS)) == 2)
     check("порции, записанные раньше, остались в дневнике Meal и в «съедено»", sorted(meal.evaluate(NB)) == ["day:supp:1", "sport:supp:1"] and meal.evaluate(EATEN_MEAL) == base + 40)
+
+    # ── 8. счётчик убрали со страницы Day — в Meal он остался, показ в Day выключился; включили в Meal — вернулся ──
+    egg_i = dayp.evaluate("()=>{renderTaps();return DB.taps.findIndex(c=>c.mealCounterId==='egg')}")
+    dayp.evaluate("i=>document.querySelector('#tapList [data-del=\"p'+i+'\"]').click()", egg_i)
+    dayp.wait_for_selector("#askWrap.on")
+    asked = dayp.inner_text("#askTitle")
+    dayp.click("#askYes")
+    check("Day: счётчик «Яйцо» убран со страницы Day после вопроса; «Рыбий жир» остался", "В Happy Meal он останется" in asked and bool(wait_for(dayp, lambda: len(dayp.evaluate(DAY_ROWS)) == 1 and dayp.evaluate(DAY_ROWS)[0].startswith("Рыбий"), 8, 200)))
+    check("Meal: счётчик на месте, показ в Day выключился сам, показ в Sport остался", bool(wait_for(meal, lambda: meal.evaluate("()=>{const c=DB.taps.find(c=>c.k==='egg');return !!c&&!!c.targets&&c.targets.day===false&&c.targets.sport===true}"), 10, 200)))
+    check("Sport: счётчик «Яйцо» на месте; записанные порции и «съедено» в Meal не изменились", egg_row(sport) != "" and sorted(meal.evaluate(NB)) == ["day:supp:1", "sport:supp:1"] and meal.evaluate(EATEN_MEAL) == base + 40)
+    meal.evaluate("()=>{go('day');editTap(DB.taps.findIndex(c=>c.k==='egg'))}")
+    meal.wait_for_selector("#fcSync-day")
+    check("Meal: в окне счётчика свитч Happy Day выключен, Happy Sport включён", not meal.is_checked("#fcSync-day") and meal.is_checked("#fcSync-sport"))
+    meal.check("#fcSync-day")
+    meal.click('[data-fc="save"]')
+    check("показ в Day включили в Meal — счётчик вернулся в Day, отметка «убран» снята", bool(wait_for(dayp, lambda: len(dayp.evaluate(DAY_ROWS)) == 2, 10, 200)) and meal.evaluate("()=>MealData.store.neighbor('day','foodtaps').all().every(r=>r.id.indexOf('off:')!==0)"))
 
     wait_for(meal, lambda: meal.evaluate("()=>MealData.store.status().state==='cloud'"), 15, 300)
     writes = sorted(set(str(e.get("kind")) for e in log if e.get("kind")))

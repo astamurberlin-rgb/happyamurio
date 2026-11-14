@@ -144,7 +144,6 @@ T.put=async(doc,id,value)=>{try{await T.store.doc(doc).put(id,value);return 'ok'
 T.near=(app,doc)=>T.store.neighbor(app,doc).all();
 T.state=()=>T.store.status().state;
 </script><body>Проверка общего модуля</body></html>"""
-MEAL_STAND_IN = ["meal", ["summary", "foods"], {"day": ["foodtaps"]}, {"meal/summary": 1, "meal/foods": 1, "day/foodtaps": 1}]
 
 
 def _look(page, js, arg=None):

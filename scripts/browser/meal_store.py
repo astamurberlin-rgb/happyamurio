@@ -4,7 +4,7 @@
 правка, разные записи остаются обе; удалённое не возвращается; настройки, сделанные на первом телефоне, новый телефон
 получает до первой своей записи и не затирает начальными; второй аккаунт на том же телефоне не видит записей первого.
 Вход общий с Day и Sport: вошёл в одном — вошёл во всех. Обмен между настоящими приложениями: счётчик еды из Meal
-появляется в Day, нажатие в Day приходит в дневник Meal порцией, которую в Meal нельзя изменить, и один раз входит
+появляется в Day, нажатие в Day приходит в дневник Meal порцией, которую в Meal можно убрать и вернуть, и один раз входит
 в «съедено»; Day показывает еду Meal; Meal показывает тренировку Sport; замеры тела и свитчи связи — общие документы.
 Свои добавки — документ аккаунта: запись на одном телефоне видна на другом. На сервере только шифр; прежние строки
 облака Meal не читаются и не меняются.
@@ -89,6 +89,7 @@ def phone_for(browser, name):
     ctx = browser.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow")
     ctx.route(BACKEND + "/**", lambda route, request: serve(route, request, name))
     libraries(ctx)
+    stand_in_route(ctx)
     return ctx
 
 
@@ -295,11 +296,13 @@ with sync_playwright() as p:
     eaten_with = a1.evaluate("()=>Math.round(sumOf(day(curDate).items).k*10)/10")
     out["eaten_with_tap"] = [eaten_meal, eaten_with]
     out["eaten_counted_once"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e}", eaten_with, 12)
-    # порцию из Day в Meal убрать нельзя: «−» убирает свои, порция Day остаётся и убирается в Day
+    # порцию из Day в Meal можно убрать: уходит само нажатие, счётчик Day уменьшается; «Вернуть» кладёт нажатие обратно
     nb = a1.evaluate("()=>day(curDate).items.find(x=>x.nb).id")
-    a1.evaluate("id=>{const e=day(curDate);e.items.splice(e.items.findIndex(x=>x.id===id),1);save();renderDay()}", nb)
-    a1.wait_for_timeout(600)
-    out["neighbor_portion_restored"] = [a1.evaluate("()=>day(curDate).items.filter(x=>x.nb).length"), a1.inner_text("#toast")]
+    a1.evaluate("id=>removeLine('s',id)", nb)
+    out["portion_removed_in_meal"] = until(d1, "()=>DayData.store.doc('foodtaps').all().length===0&&!((DB.days[curDate]||{}).taps||{})['meal-egg']", seconds=10)
+    a1.click("#toast .tU")
+    out["portion_returned"] = bool(until(d1, "()=>DayData.store.doc('foodtaps').all().length===1&&(((DB.days[curDate]||{}).taps||{})['meal-egg']||[]).length===1", seconds=10)) and a1.evaluate("()=>day(curDate).items.filter(x=>x.nb==='day').length") == 1
+    out["eaten_after_return"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0}", eaten_with, 12)
     d1.click("#tapBox [data-tminus='meal-egg']")
     out["day_untap_in_meal"] = until(a1, "()=>day(curDate).items.filter(x=>x.nb).length===0", seconds=10)
     out["eaten_after_untap"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e.k}", eaten_meal, 12)
@@ -333,7 +336,7 @@ with sync_playwright() as p:
     a1.wait_for_selector("dialog.hm-dialog", state="detached", timeout=4000)
     out["measure_in_sport"] = until(s1, "()=>state.measurements.length===1&&state.measurements[0].values.waist", seconds=8)
 
-    # на сервере только шифр, строки помечены общим модулем; Meal пишет только свои строки и общие документы
+    # на сервере только шифр, строки помечены общим модулем; Meal пишет только свои строки и общие документы (связи, замеры, нажатия на счётчики еды)
     synced(a1)
     rows = [r for k, r in table.items() if k[0] == USERS[ONE]["id"] and k[1] == "meal" and k[2] not in OLD]
     blob = b"".join(base64.b64decode(r["data"]) for r in rows)
@@ -356,6 +359,18 @@ with sync_playwright() as p:
     sign_out(a1)
     sign_in(a1, ONE)
     out["first_account_back"] = [wait_for(a1, lambda: count(a1) == 2 and 2, 12, 300) or count(a1), a1.evaluate("()=>DB.sections[0].t")]
+
+    # записи сделала более новая версия Meal: эта версия их не читает и не пишет и предлагает открыть последнюю
+    newer = stand_in(B, ["meal", ["setup"], {}, {"meal/setup": 2}], errors, "B-newer-meal")
+    out["newer_put"] = newer.evaluate("()=>T.put('setup','[\"f\",\"fromNewer\"]',{note:'поле новой версии'})")
+    out["newer_seen"] = until(b1, "()=>MealData.outdated()&&RO===true", seconds=10)
+    b1.click(".tab[data-go=settings]")
+    out["newer_card"] = until(b1, "()=>{const a=document.querySelector('#happy-account a[data-happy-app=meal]');return !!a&&a.textContent+' · '+document.querySelector('#happy-account [data-happy-account-status]').textContent}", seconds=5)
+    before = count(b1)
+    plus(b1)
+    b1.wait_for_timeout(600)
+    out["newer_refuses"] = [count(b1) == before, b1.inner_text("#toast")]
+    newer.close()
     b.close()
 
 checks = [
@@ -384,17 +399,18 @@ checks = [
     ("нажатие в Day пришло в дневник Meal порцией и вошло в счётчик", bool(out["day_tap_in_meal"]) and out["meal_counter_total"] == 3),
     ("порция из Day в документах Meal не хранится", out["day_tap_not_stored_in_meal"] is True),
     ("порция из Day посчитана в «съедено» один раз — одно число в Meal и в Day", out["eaten_with_tap"][1] > out["eaten_with_tap"][0] and bool(out["eaten_counted_once"])),
-    ("порцию из Day в Meal убрать нельзя: она возвращается, человеку сказано почему", out["neighbor_portion_restored"][0] == 1 and "Happy Day" in out["neighbor_portion_restored"][1]),
+    ("порцию из Day убрали в Meal — нажатие ушло и из Day; «Вернуть» положило его обратно, «съедено» то же", bool(out["portion_removed_in_meal"]) and out["portion_returned"] and bool(out["eaten_after_return"])),
     ("нажатие сняли в Day — порция ушла из Meal, «съедено» вернулось", bool(out["day_untap_in_meal"]) and bool(out["eaten_after_untap"])),
     ("тренировка Sport видна в Meal на том же телефоне и на втором; в документы Meal не записана", bool(out["sport_in_meal_a"]) and bool(out["sport_in_meal_b"]) and out["sport_not_stored_in_meal"]),
     ("свитч связи один на пару: выключили в Meal — выключен в Sport; начатое после не берётся; включили — видно всё", bool(out["pair_off_in_sport"]) and out["pair_off_hides"] == 1 and bool(out["pair_on_shows"])),
     ("замер тела из Meal виден в Sport", out["measure_in_sport"] == 83),
     ("на сервере только шифр, строки общего модуля", out["cipher_only"] is True),
-    ("Meal пишет только свои строки и общие документы", all(k.startswith("meal/") or k in ("day/pairs", "sport/body") for k in out["meal_writes"]) and not any(k in ("meal/" + o for o in OLD) for k in out["meal_writes"])),
+    ("Meal пишет только свои строки и общие документы (связи, замеры, нажатия на счётчики еды)", all(k.startswith("meal/") or k in ("day/pairs", "sport/body", "day/foodtaps", "sport/foodtaps") for k in out["meal_writes"]) and not any(k in ("meal/" + o for o in OLD) for k in out["meal_writes"])),
     ("прежние строки облака Meal не прочитаны и не изменены", out["old_rows_untouched"] and out["old_rows_not_read"]),
     ("вышли в Meal — вышли Day и Sport; дневник без входа пустой", out["signed_out_everywhere"] == [True, True] and out["after_sign_out"] == [0, "Завтрак", True]),
     ("второй аккаунт на том же телефоне не видит записей первого", out["second_account"] == [0, "Завтрак", ["egg", "cfm", "wal"], 0]),
     ("первый аккаунт вернулся и видит свои записи", out["first_account_back"] == [2, "Раннее утро"]),
+    ("записи более новой версии Meal: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and out["newer_refuses"][0] and "более новой версией" in out["newer_refuses"][1]),
     ("ошибок на страницах нет", not errors),
 ]
 out["errors"] = errors

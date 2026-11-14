@@ -381,6 +381,8 @@ section('Витрина: сосед видит только названное')
  const opens=async spec=>{try{const s=await HappyStore.open({app:'day',account:dayA.account,backend:A.backend,channel:A.tab().channel,auto:false,...spec});s.close();return true}catch(e){return false}};
  check('внутренний документ соседа назвать нельзя',!(await opens({reads:{meal:['diary']}}))&&!(await opens({reads:{sport:['workouts']}})));
  check('документ витрины назвать можно',await opens({reads:{meal:['summary','foods'],sport:['summary','plans']},shared:{sport:['body']}}));
+ check('нажатия на счётчики еды правит ещё только Meal: нажатия Sport в Day общим документом не назвать',await opens({reads:{sport:['foodtaps']}})&&!(await opens({shared:{sport:['foodtaps']}}))&&
+  JSON.stringify([HappyStore.PUBLIC['day/foodtaps'],HappyStore.PUBLIC['sport/foodtaps']])==='[["day","meal"],["meal","sport"]]');
  check('чужую витрину нельзя назвать общей',!(await opens({shared:{sport:['summary']}}))&&!(await opens({shared:{meal:['foods']}})));
  check('общий документ нельзя назвать дважды',!(await opens({reads:{sport:['body']},shared:{sport:['body']}})));
  check('свой документ общим не называют',!(await opens({own:['pairs'],shared:{day:['pairs']}})));

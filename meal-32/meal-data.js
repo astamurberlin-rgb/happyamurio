@@ -24,7 +24,7 @@ MealBoot.ready=(async()=>{
    'day/pairs':HappyAppLinks.FORMAT,'sport/summary':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT};
   for(const name of MealDocs.NAMES)formats['meal/'+name]=MealDocs.FORMAT;
   try{MealBoot.store=await HappyStore.open({app:'meal',account,own:MealDocs.OWN,
-   reads:{day:['foodtaps'],sport:['foodtaps','summary']},shared:{day:['pairs'],sport:['body']},formats,firstSync:12000})}
+   reads:{sport:['summary']},shared:{day:['pairs','foodtaps'],sport:['body','foodtaps']},formats,firstSync:12000})}
   catch(e){MealBoot.error=(e&&e.message)||'Хранилище на устройстве недоступно'}
  }
  const who=account.current()?account.current().uid:null;

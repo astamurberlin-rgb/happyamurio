@@ -7,7 +7,7 @@
 | Приложение | Открыть | Папка |
 | --- | --- | --- |
 | Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-59/ | `day-59/` |
-| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-31/ | `meal-31/` |
+| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-32/ | `meal-32/` |
 | Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-43/ | `sport-43/`, исходники — `sport-43/sport/src/` |
 
 Точный номер версии виден внизу настроек приложения. Служебно он записан в `shared/apps.json`: по этому файлу приложения находят друг друга, а проверки узнают, что проверять.
@@ -17,10 +17,10 @@
 | Приложение | Открыть |
 | --- | --- |
 | Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-58/ |
-| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-30/ |
+| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-31/ |
 | Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-42/ |
 
-Day 59 и Sport 43 хранят записи через общий модуль. Day 58 и более ранние новых записей Day не откроют: у них свой прежний дневник. Sport 42 открывает те же записи, что и Sport 43.
+Day 59, Meal 32 и Sport 43 хранят записи через общий модуль. Day 58 и Meal 31 и более ранние новых записей не откроют: у них свой прежний дневник. Sport 42 открывает те же записи, что и Sport 43.
 
 Старые адреса `day/`, `meal/`, `sport/`, `happyday-v50_1.html` и `happyday-meal-v22.html` сами открывают текущий выпуск.
 
@@ -59,4 +59,4 @@ Icon Studio собирается в Sites у ChatGPT. При переносе о
 
 В корне лежат четыре страницы, которые к трём приложениям не относятся: `signal-v3.html` и три редактора `ornament_facade_editor_….html`.
 
-— Claude · 13.11.2026, выпуски Day и Sport обновлены 14.11.2026
+— Claude · 13.11.2026, выпуски Day, Meal и Sport обновлены 14.11.2026

@@ -107,8 +107,8 @@
     },
     {
       "path": "index.html",
-      "size": 936677,
-      "sha256": "ccd8f5d8451655ba39e1ba0310cb6b4578155a09d73d2799f0a59e5a17379dab"
+      "size": 948687,
+      "sha256": "e447ae6df4f7502f65aaadcd7a8155cd75e22fa3bbaf12cbe8a03b50b7ce4ad5"
     },
     {
       "path": "manifest.webmanifest",
@@ -166,19 +166,14 @@
       "sha256": "dca9becbb27f0e6a5ed7f89f6b5a3974d93ffc24d53daaa6cc0332769b361bfc"
     },
     {
-      "path": "shared/food-counters.js",
-      "size": 9522,
-      "sha256": "88217b279708615d4747e30b9fac4baa0f711fe530bfd0ba94b5268cb036796a"
-    },
-    {
       "path": "shared/happy-account-ui.js",
-      "size": 9227,
-      "sha256": "37786ef9a2abe65bf76d673c7761e18e49d09e97ae6f2917a1d4d8ab0d761139"
+      "size": 9217,
+      "sha256": "fc4c27e6f706ce4885d4654559cf912aa714e1688e08be3b4d4c04de23ab0150"
     },
     {
       "path": "shared/happy-account.js",
-      "size": 9396,
-      "sha256": "aa08c8062d7678cec998844eace8ad21f9e7910119819b69b5cf95e973e84e2b"
+      "size": 9392,
+      "sha256": "be0ab6a7e9381eb9caa999749e33ec6b261d7e12d62a37708e327ea494a36064"
     },
     {
       "path": "shared/happy-app-links.js",
@@ -194,6 +189,11 @@
       "path": "shared/happy-appearance.js",
       "size": 11020,
       "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
+    },
+    {
+      "path": "shared/happy-food.js",
+      "size": 14491,
+      "sha256": "0f6bc268d478f912dbcfe8b4f5b2955fba0c770094a3af0f420c13122b1d076e"
     },
     {
       "path": "shared/happy-gradients.js",
@@ -227,8 +227,8 @@
     },
     {
       "path": "shared/happy-store.js",
-      "size": 34752,
-      "sha256": "40dd923d6226d10a8b8fb2a8604ab111e1d1c70388eedde813144b021368557c"
+      "size": 36960,
+      "sha256": "460907eb3cdd60a1542076b464badb872b0f00aa11cce3d47de50654ceb9a16c"
     },
     {
       "path": "shared/happy-ui.css",
@@ -267,8 +267,8 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 13393,
-      "sha256": "7c170e6e1b51af5f2864b613b78fa1d12b2bf146ca47774c5d46a6b4ec0e91cd"
+      "size": 13364,
+      "sha256": "a7867293d62b89d16b1b17cedf7d73ac245201059d22f5d053aaf50f96d18d05"
     },
     {
       "path": "sport/scripts/check-clean-shell.mjs",
@@ -357,8 +357,8 @@
     },
     {
       "path": "sport/scripts/check-sport-docs.mjs",
-      "size": 12293,
-      "sha256": "e4d618093ec298c9544251db336731abc4c39616796f0da1f0edb8177fd345ed"
+      "size": 12304,
+      "sha256": "42af4db70b75e09edeabda561fec39ebb0d9f7a750f9857f565f04330e8653eb"
     },
     {
       "path": "sport/scripts/check-strong-native-core.mjs",
@@ -492,8 +492,8 @@
     },
     {
       "path": "sport/src/audit-simplify.js",
-      "size": 16671,
-      "sha256": "c1b10d57494b84e9bd97a9c0794cea182d3f7e066c7969ccd63ae16b8ae0b6af"
+      "size": 16729,
+      "sha256": "8a9ee2629ef177d321e0c4b15c1c0cf21d42dce90952083a8399f16c6f46a62d"
     },
     {
       "path": "sport/src/catalog-groups.js",
@@ -502,8 +502,8 @@
     },
     {
       "path": "sport/src/data-transfer.js",
-      "size": 11545,
-      "sha256": "5b2f34ecde75a3fd3680de2646455befc425c2f385be182b6986488315d32912"
+      "size": 11362,
+      "sha256": "338aec3f8bd1b2bdef646ac685180e6659f5c1507776639a407a576a72209ba4"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -517,8 +517,8 @@
     },
     {
       "path": "sport/src/energy-widget.js",
-      "size": 15363,
-      "sha256": "6ae2e3e750022a8f69542c73728b1c6c7d43e457bd561e21671e56591c546fe8"
+      "size": 15633,
+      "sha256": "5448673b80282519f35303fe6781116d3e35e5baa59ada5822492f2831990035"
     },
     {
       "path": "sport/src/exercise-config.js",
@@ -562,8 +562,8 @@
     },
     {
       "path": "sport/src/food-counters.js",
-      "size": 3505,
-      "sha256": "74940117d8cdfa81406ea68684d9807b32d6f9eea047bd685c7776776586e909"
+      "size": 7398,
+      "sha256": "2ecec0855bb261ef630e032bc6d26b114c7d47688eea7716ce339d63bab6af27"
     },
     {
       "path": "sport/src/free-timer.js",
@@ -637,8 +637,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 31939,
-      "sha256": "d907fa8ce1f64b5137b411086f2c075eeb8543aa459c9f54ed19ad64b98b5484"
+      "size": 32297,
+      "sha256": "cfd3ee998466c999a327ceb64b81b054581b4a3a0cf2ef840c95544a5ff191bb"
     },
     {
       "path": "sport/src/rest-pill.js",
@@ -692,8 +692,8 @@
     },
     {
       "path": "sport/src/sport-boot.js",
-      "size": 2212,
-      "sha256": "d71b6904d944d7ff84e3907527c0831f78ca150dffe396291d59a5c92db907de"
+      "size": 2475,
+      "sha256": "8a4237ef3162648472ec12e16f8c8391bbdde4ec8f3f5fd1b779bad74cef7dde"
     },
     {
       "path": "sport/src/sport-data.js",
@@ -702,8 +702,8 @@
     },
     {
       "path": "sport/src/sport-docs.js",
-      "size": 8217,
-      "sha256": "5a3457150c3c14bac1dfcd50cdf4a467b63a5ce599b6b451919b9645ded8d0a0"
+      "size": 8405,
+      "sha256": "b3888061150b1b13838037d0d2d1f28e95ceafffc528aeed42783717c5e01934"
     },
     {
       "path": "sport/src/sport-icons.js",

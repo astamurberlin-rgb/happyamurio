@@ -141,6 +141,15 @@ ok('«съедено»: записи, по которым Meal решил сам
  assert.deepEqual(F.eaten(summary({},[{id:'skipped',value:[ghost.id]}]),DAY,F.taps([ghost]),list(),'day'),{k:0,p:0,f:0,c:0,fib:null,recorded:false,pending:0},'«призрак» не прибавляется и в день без записей Meal');
 });
 
+ok('счётчик убран со страницы приложения: отметка в документе нажатий, нажатия её не замечают',()=>{
+ const mark=F.hide('c2',700),t=tap('c2',DAY);
+ assert.deepEqual(plain(mark),{id:'off:c2',value:{off:'c2',at:700}});
+ const records=[t,{id:mark.id,value:mark.value,at:800},{id:'off:c9',value:{off:'c1'}},{id:'off:',value:{off:''}},{id:'off:c7',value:'строка'},null];
+ assert.deepEqual(plain(F.hidden(records)),{c2:true},'годна только отметка, у которой номер записи совпадает со счётчиком');
+ assert.deepEqual(F.taps(records).map(x=>x.id),[t.id],'отметка — не нажатие');
+ assert.deepEqual(plain(F.hidden([])),{});assert.deepEqual(plain(F.hidden(null)),{});
+});
+
 ok('«съедено»: повреждённые записи и списки не ломают итог',()=>{
  const t=tap('c2',DAY),taps=F.taps([t]);
  assert.deepEqual(F.eaten(summary({}),DAY,taps.concat([null,'строка',{id:''},{id:7},plain(taps[0]),{id:'day-x',date:DAY,item:null}]),list(),'day'),{k:46.6,p:0.7,f:0.3,c:10.1,fib:1.6,recorded:true,pending:1},'повтор той же записи считается один раз');

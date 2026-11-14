@@ -25,7 +25,7 @@ const COUNTED = [46.64, 0.7, 0.26, 10.12, 1.58];   // что Meal посчита
 
 /* Day с хранилищем-заглушкой: документы meal/foods и meal/summary (пишет Meal), day/foodtaps (пишет Day). */
 function world({ foods = [], summary = null, signedIn = true, linkOff = null } = {}) {
-  const docs = { foods: plain(foods), summary: summary ? plain(summary) : [], foodtaps: [] }, subs = { foods: [], summary: [], foodtaps: [] }, log = { toasts: [], saves: 0, own: [], writes: [], painted: 0, repaints: 0 };
+  const docs = { foods: plain(foods), summary: summary ? plain(summary) : [], foodtaps: [] }, subs = { foods: [], summary: [], foodtaps: [] }, log = { toasts: [], saves: 0, own: [], writes: [], painted: 0, repaints: 0, asked: [], answer: true };
   let clock = 1000;
   const handle = (name, own) => {
     const h = { newer: false, all: () => plain(docs[name]).sort((a, b) => a.id < b.id ? -1 : 1), subscribe: fn => { subs[name].push(fn); return () => {}; } };
@@ -44,7 +44,8 @@ function world({ foods = [], summary = null, signedIn = true, linkOff = null } =
   const c = vm.createContext({ console, JSON, Object, Array, Number, Math, Promise, HappyFood: F, DATE,
     DayData: { signedIn: () => signedIn, store, report: e => { throw e; } },
     DB: { taps: [{ k: 'own', t: 'Своя привычка', step: 1 }], days: {} }, curDate: DATE, MEAL_SEEN: false, ready: true, screenOn: true,
-    todayISO: () => DATE, nowHM: () => '16:50', toast: m => log.toasts.push(m), escH: String, lockGuard: () => false,
+    todayISO: () => DATE, nowHM: () => '16:50', toast: m => log.toasts.push(m), escH: String, lockGuard: () => false, writeGuard: () => false,
+    confirmBox: text => { log.asked.push(text); return { then: fn => fn(log.answer) }; }, renderTaps() {},
     save: () => { log.saves++; }, tapAdd: k => { log.own.push(k); }, tapsHTML: () => '<button data-k="meal-c2">Мандарин</button>', renderAll: () => { log.repaints++; }, renderTapSheet() {},
     document: { getElementById: id => { assert.equal(id, 'tapList'); return { addEventListener: (type, fn) => listeners.push(fn) }; } } });
   c.day = d => c.DB.days[d] || (c.DB.days[d] = { taps: {} }); c.tapDef = k => c.DB.taps.find(t => t.k === k);
@@ -108,14 +109,26 @@ test('сняли нажатие или поправили время в Day — 
   w.meal('foods', [C_MANDARIN, C_FEIJOA]); assert.equal(w.c.DB.days[DATE].taps['meal-c1'].length, 1);
 });
 
-test('нажатие с другого устройства появляется само; название и удаление счётчика Meal в Day закрыты', () => {
+test('нажатие с другого устройства появляется само; название счётчика Meal в Day закрыто; убрать из Day можно — в Meal он остаётся', () => {
   const w = world({ foods: [C_MANDARIN] });
   w.docs.foodtaps.push({ id: 'day-from-phone', value: F.tap({ id: 'c2', ...C_MANDARIN.value }, DATE, '08:00', 500), at: 2000 }); w.subs.foodtaps.forEach(fn => fn({ origin: 'cloud' }));
   assert.deepEqual(plain(w.c.DB.days[DATE].taps['meal-c2']), [{ t: '08:00', n: 1, counterEventId: 'day-from-phone' }]);
   assert.equal(w.listeners.length, 1);
   const click = attrs => { let stopped = false; w.listeners[0]({ target: { closest: () => ({ dataset: attrs }) }, stopImmediatePropagation: () => { stopped = true; } }); return stopped; };
-  assert.equal(click({ ren: 't1' }), true); assert.equal(click({ del: 't1' }), true);
-  assert.match(w.log.toasts[0], /настраиваются в Happy Meal/); assert.match(w.log.toasts[1], /убирается в Happy Meal/);
+  assert.equal(click({ ren: 't1' }), true); assert.match(w.log.toasts[0], /настраиваются в Happy Meal/);
+  // «Убрать»: сначала вопрос; отказ ничего не меняет
+  w.log.answer = false; assert.equal(click({ del: 't1' }), true); assert.match(w.log.asked[0], /Убрать счётчик «Мандарин» из Happy Day\? В Happy Meal он останется/);
+  assert.equal(w.log.writes.length, 0); assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own', 'meal-c2']);
+  // согласие: в документ нажатий Day ложится отметка, счётчик из Day уходит сразу, не дожидаясь Meal; нажатие остаётся
+  w.log.answer = true; click({ del: 't1' });
+  assert.deepEqual(w.log.writes, [['+', 'off:c2']]); assert.deepEqual(plain(w.docs.foodtaps.find(r => r.id === 'off:c2').value.off), 'c2');
+  assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own']); assert.match(w.log.toasts[1], /Счётчик убран из Happy Day\. Вернуть: Happy Meal/);
+  assert.deepEqual(F.taps(w.docs.foodtaps).map(t => t.id), ['day-from-phone'], 'записанная порция осталась'); assert.equal(w.eaten().k, 46.6, 'и осталась в «съедено»');
+  // Meal выключил счётчику показ в Day — ничего не меняется; включил снова и снял отметку — счётчик вернулся с нажатием
+  w.meal('foods', [counter('c2', 'Мандарин', 88, MANDARIN, { day: false, sport: false })]); assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own']);
+  w.docs.foodtaps = w.docs.foodtaps.filter(r => r.id !== 'off:c2'); w.meal('foods', [C_MANDARIN]);
+  assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own', 'meal-c2']); assert.equal(w.c.DB.days[DATE].taps['meal-c2'].length, 1);
+  w.log.writes.length = 0;
   assert.equal(click({ ren: 't0' }), false, 'свой счётчик Day переименовывается как раньше');
   assert.match(w.run("tapsHTML({})"), /Мандарин<small class="fc-day-portion">1 шт · 88 г · Meal<\/small>/);
 });

@@ -11,10 +11,15 @@
  * meal/foods — пишет Meal, читают Day и Sport: счётчики еды из продуктов библиотеки Meal. Счётчик принадлежит Meal.
  *   '<id счётчика>' → {title, fid, q, g, u, food:{id,n,k,p,f,c,…} — состав на 100 г, portionText?,
  *                      targets:{day:true|false, sport:true|false} — где счётчик показан}
- * day/foodtaps, sport/foodtaps — пишут Day и Sport, читает Meal: нажатия на счётчики еды. Нажатие принадлежит
- *   приложению, где нажали; у каждого приложения свой документ с одним и тем же устройством записей.
+ * day/foodtaps, sport/foodtaps — нажатия на счётчики еды. Нажатие лежит у приложения, где нажали; у каждого
+ *   приложения свой документ с одним и тем же устройством записей. Новое нажатие кладёт только это приложение.
+ *   Meal показывает нажатие порцией в дневнике питания и может её поправить или убрать: тогда он меняет или
+ *   убирает саму запись нажатия (документы общие для приложения и Meal).
  *   '<id нажатия>' → {cid — счётчик, date:'ГГГГ-ММ-ДД', item:{fid,q,u,g,t:'ЧЧ:ММ' или null,sec,counterFood}, at — мс}
  *   id нажатия начинается с названия приложения ('day-…', 'sport-…'): по нему видно, чьё нажатие Meal учёл в cs.
+ *   'off:<id счётчика>' → {off:'<id счётчика>', at — мс} — счётчик убран со страницы этого приложения. Приложение
+ *   его больше не показывает; Meal выключает у счётчика показ в этом приложении, а когда показ включают снова —
+ *   убирает эту запись. Сам счётчик и записанные порции остаются.
  *
  * «Съедено» за день в Day не ждёт Meal: к итогу дня из сводки прибавляются свои нажатия, которых в cs ещё нет
  * (вес порции × состав продукта из самого нажатия), и вычитаются учтённые, которые с тех пор убраны или перенесены.
@@ -23,7 +28,7 @@
  * — Claude · 14.11.2026 */
 (function(root){
 'use strict';
-var FORMAT=1,TIME=/^([01]?\d|2[0-3]):[0-5]\d$/,LIMIT=5000;
+var FORMAT=1,TIME=/^([01]?\d|2[0-3]):[0-5]\d$/,LIMIT=5000,OFF='off:';
 function object(x){return !!x&&typeof x==='object'&&!Array.isArray(x)}
 function amount(x){return typeof x==='number'&&Number.isFinite(x)&&x>=0}
 function positive(x){return amount(x)&&x>0}
@@ -96,6 +101,14 @@ function taps(records){
  (records||[]).forEach(function(r){if(r&&text(r.id)&&validTap(r.value))out.push(Object.assign(copy(r.value),{id:r.id}))});
  return out.sort(function(a,b){return (a.at||0)-(b.at||0)||(a.id<b.id?-1:a.id>b.id?1:0)});
 }
+/* счётчики, убранные со страницы приложения: записи 'off:<id счётчика>' его документа нажатий → {id счётчика: true} */
+function hidden(records){
+ var out=Object.create(null);
+ (records||[]).forEach(function(r){var v=r&&r.value;if(r&&object(v)&&text(v.off)&&r.id===OFF+v.off)out[v.off]=true});
+ return out;
+}
+/* запись «счётчик убран со страницы»: {id, value} для doc.put */
+function hide(cid,now){return {id:OFF+cid,value:{off:cid,at:Number.isSafeInteger(now)?now:Date.now()}}}
 /* номер нового нажатия: с названием приложения, которое нажимает */
 function tapId(app){
  var c=root.crypto,id=c&&c.randomUUID?c.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12);
@@ -172,7 +185,7 @@ function eaten(s,date,own,list,app){
  return out;
 }
 var api={FORMAT:FORMAT,SUMMARY:{app:'meal',name:'summary'},FOODS:{app:'meal',name:'foods'},TAPS:{app:'day',name:'foodtaps'},TAP_APPS:['day','sport'],TAPS_NAME:'foodtaps',
- validDate:validDate,summary:summary,foods:foods,linked:linked,portion:portion,taps:taps,tapId:tapId,tap:tap,serving:serving,eaten:eaten};
+ validDate:validDate,summary:summary,foods:foods,linked:linked,portion:portion,taps:taps,hidden:hidden,hide:hide,tapId:tapId,tap:tap,serving:serving,eaten:eaten};
 root.HappyFood=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

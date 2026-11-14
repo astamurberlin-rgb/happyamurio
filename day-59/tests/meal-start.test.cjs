@@ -1,8 +1,8 @@
 'use strict';
 /* Day 57.6 — начало Завтрака, Обеда и Ужина — время первого продукта в Meal, с ручным временем приёма и продукта.
    Day 59: сводка Meal приходит из его витрины в общем модуле (документ meal/summary, формат — shared/happy-food.js):
-   запись на день, записи secs и goals. День сводки собирает настоящий linkSummary текущего Meal — тот же вид дня
-   Meal положит в витрину, когда перейдёт на общий модуль; читают настоящие syncMeal и функции времени Day 59. */
+   запись на день, записи secs и goals. День сводки собирает настоящий linkSummary текущего Meal — тот же день
+   Meal кладёт в витрину (linkWrite); читают настоящие syncMeal и функции времени Day 59. */
 const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'..','..');
@@ -18,7 +18,7 @@ function mealSummary(items){
  vm.runInContext(marked(meal,'/* MEAL_TIME_MODEL_START */','/* MEAL_TIME_MODEL_END */'),c);
  c.DB={sections:[{k:'am',t:'Завтрак'},{k:'pm',t:'Обед'},{k:'dn',t:'Ужин'},{k:'sn',t:'Перекус'}],days:{[D]:{items}}};
  c.HD_PAIR={am:1,pm:1,dn:1};c.isDrink=id=>id==='water';c.goalOf=()=>0;c.dayFib=()=>null;c.MealProducts={exchange:()=>null,forItem:()=>null};c.FOODS={};c.blsVal=()=>null;c.sumOf=list=>({k:list.filter(x=>x.fid!=='water').length*100,p:0,f:0,c:0});
- vm.runInContext(between(meal,'function r1(',"var CL_APP='meal'"),c);
+ vm.runInContext(between(meal,'function r1(','/* Meal 32: сводка — документ витрины'),c);
  return JSON.parse(JSON.stringify(c.linkSummary()));
 }
 /* сводка Meal → записи документа витрины meal/summary, как их отдаёт общий модуль (doc.all()) */
