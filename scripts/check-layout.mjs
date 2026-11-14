@@ -4,8 +4,8 @@ import vm from 'node:vm';
 const root=new URL('../',import.meta.url);
 const read=p=>readFile(new URL(p,root),'utf8');
 const apps=JSON.parse(await read('shared/apps.json'));
-// Sport 42 и Day 59: дневник — в общем модуле хранения (shared/happy-store.js); у Day запуск лежит в day-data.js (storageScript в apps.json)
-const expectedKeys={day:"HappyStore.open({app:'day'",meal:'hdm_db_v1',sport:"HappyStore.open({app:'sport'"};
+// Sport 42, Day 59 и Meal 32: дневник — в общем модуле хранения (shared/happy-store.js); у Day и Meal запуск лежит в day-data.js и meal-data.js (storageScript в apps.json)
+const expectedKeys={day:"HappyStore.open({app:'day'",meal:"HappyStore.open({app:'meal'",sport:"HappyStore.open({app:'sport'"};
 let scripts=0;
 for(const name of ['selfcare-core.js','selfcare-ui.js','energy-widget.js'])new vm.Script(await read(apps.day.entry.replace('index.html',name)),{filename:apps.day.entry.replace('index.html',name)});
 for(const [app,config] of Object.entries(apps)){
@@ -21,24 +21,10 @@ for(const [app,config] of Object.entries(apps)){
  const manifest=JSON.parse(await read(config.entry.replace('index.html','manifest.webmanifest')));
  const base=new URL(config.entry,'https://astamurberlin-rgb.github.io/happyamurio/');
  for(const k of ['id','start_url','scope'])assert.equal(new URL(manifest[k],base).pathname,new URL('./',base).pathname);
- if(app==='day'){   // Day 59: своего хранилища нет — ни прежнего журнала, ни ячейки входа, ни гостя
-  for(const old of ['hd_db_v1','happy-auth:day','hd_cloud_v1','dayStorage','HappyProfile','auth-read-only'])assert.ok(!html.includes(old),'day: прежнее хранилище или вход: '+old);
-  continue;
- }
- // Check the actual storage adapter with pre-existing records, without booting the app.
- const adapterStart=html.indexOf('var mem={};');
- const adapterEnd=html.indexOf('\n',html.indexOf('function rawSet(k,v)',adapterStart));
- assert.ok(adapterStart>=0&&adapterEnd>adapterStart,`${app}: storage adapter missing`);
- const adapter=html.slice(adapterStart,adapterEnd);
- const existing=JSON.stringify({preserved:'existing diary',days:{'2026-10-26':{value:7}}});
- const context=vm.createContext({window:{},localStorage:{getItem:k=>k===expectedKeys[app]?existing:null}});
- // Day 56+: the journal adapter reads through the IndexedDB facade; without indexedDB it is plain localStorage.
- const facade=config.entry.replace('index.html','day-local-store.js');
- if(app==='day'&&await read(facade).then(()=>true,()=>false))vm.runInContext(await read(facade),context);
- vm.runInContext(await read((config.sharedDirectory||'shared')+'/profile-storage.js'),context);
- vm.runInContext(`var HappyProfile=HappyProfiles.create(${JSON.stringify(app)})`,context);
- vm.runInContext(adapter,context);
- assert.equal(await context.rawGet(expectedKeys[app]),existing,`${app}: existing diary unreadable`);
+ // Day 59 и Meal 32: своего хранилища нет — ни прежнего журнала, ни ячейки входа, ни гостя
+ const gone=app==='day'?['hd_db_v1','happy-auth:day','hd_cloud_v1','dayStorage','HappyProfile','auth-read-only']:['hdm_db_v1','hdm_journal_v1','happy-auth:meal','hd_cloud_v1','HappyProfile','MealJournal','MealLocalStore','happy-meal-private-v1','hd_link_','happy-food-counters-v1','happy-meal-supplements-v1'];
+ const sources=[html];for(const m of html.matchAll(/<script\b[^>]*\bsrc="(\.?\/?[^":]+?\.js)(?:\?[^"]*)?"/g))sources.push(await read(new URL(m[1],new URL(config.entry,'https://x/')).pathname.slice(1)));
+ for(const old of gone)assert.ok(!sources.some(text=>text.includes(old)),app+': прежнее хранилище или вход: '+old);
 }
 for(const [old,app] of [['happyday-v50_1.html','day'],['happyday-meal-v22.html','meal'],['prototypes/happy-icon-studio.html','icon-studio']]){
  const html=await read(old);const code=/<script>([\s\S]*?)<\/script>/.exec(html)[1];
@@ -79,4 +65,4 @@ assert.notEqual(apps.meal.entry,apps.meal.previous.entry);
 const previousDay=await read(apps.day.previous.entry);
 assert.ok(previousDay.includes(`data-app-version="${apps.day.previous.version}"`));
 assert.notEqual(apps.day.entry,apps.day.previous.entry);
-console.log(`Passed: ${scripts} scripts parse; permanent app paths, versions, install URLs, existing Meal storage reads, Day and Sport on the shared store, and legacy redirects.`);
+console.log(`Passed: ${scripts} scripts parse; permanent app paths, versions, install URLs, Day, Meal and Sport on the shared store without their former storage and sign-in cells, and legacy redirects.`);

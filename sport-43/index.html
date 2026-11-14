@@ -1430,7 +1430,7 @@ async function shareExercise(){const e=exercise(currentExerciseId);if(!e)return;
 document.addEventListener('change',e=>{if(!e.target.matches('#assign-form select[name=template]')||!e.target.value)return;const form=e.target.form;form.elements.destination.value='template';form.requestSubmit()});
 document.addEventListener('click',e=>{if(e.target.closest('[data-action="share-exercise"]'))shareExercise()});
 
-renderProfile=function(){return '<div class="happy-settings">'+renderTop('Настройки',false)+`<section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="happy-account"></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2>__HAPPY_SPORT_BACKUP__</section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="/happyamurio/day-59/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><a class="happy-button" href="/happyamurio/meal-31/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a></div></div></section><section class="happy-section" data-happy-section="icons"><h2 class="happy-heading">Иконки</h2><div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" disabled>Icon Studio · недоступна в этом выпуске</button></div></div></section><h2 class="happy-heading">Настройки тренировок</h2><div class="settings-section">Датчики</div><div class="card"><div class="setting-row"><div><b>Apple Здоровье</b><small>Нужна нативная интеграция</small></div><button class="text-btn" data-action="connections">Подробнее</button></div><div class="setting-row"><div><b>Пульс</b><small>Демонстрация шкалы во время тренировки</small></div><input class="toggle" id="demo-pulse" type="checkbox" aria-label="Демонстрация пульса" ${state.demoPulse?'checked':''}></div></div><div class="settings-section">Мои данные</div><div class="card"><div class="setting-row"><b>Тренировки</b><span>${state.workouts.length}</span></div><div class="setting-row"><b>Замеры</b><span>${state.measurements.length}</span></div></div></div>`};
+renderProfile=function(){return '<div class="happy-settings">'+renderTop('Настройки',false)+`<section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="happy-account"></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2>__HAPPY_SPORT_BACKUP__</section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="/happyamurio/day-59/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><a class="happy-button" href="/happyamurio/meal-32/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a></div></div></section><section class="happy-section" data-happy-section="icons"><h2 class="happy-heading">Иконки</h2><div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" disabled>Icon Studio · недоступна в этом выпуске</button></div></div></section><h2 class="happy-heading">Настройки тренировок</h2><div class="settings-section">Датчики</div><div class="card"><div class="setting-row"><div><b>Apple Здоровье</b><small>Нужна нативная интеграция</small></div><button class="text-btn" data-action="connections">Подробнее</button></div><div class="setting-row"><div><b>Пульс</b><small>Демонстрация шкалы во время тренировки</small></div><input class="toggle" id="demo-pulse" type="checkbox" aria-label="Демонстрация пульса" ${state.demoPulse?'checked':''}></div></div><div class="settings-section">Мои данные</div><div class="card"><div class="setting-row"><b>Тренировки</b><span>${state.workouts.length}</span></div><div class="setting-row"><b>Замеры</b><span>${state.measurements.length}</span></div></div></div>`};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;if(b.dataset.swiped){e.stopImmediatePropagation();return}const a=b.dataset.action,id=b.dataset.id;if(['close-panel','sport-section','section-past','assign-exercise','exercise-stats'].includes(a)){e.stopImmediatePropagation();if(a==='close-panel')closePanel();if(a==='sport-section')openPanel({type:'section',id});if(a==='section-past'){showWorkoutForm('past');const f=$('#workout-form'),t=templates().find(t=>t.id===id);f.elements.kind.value=t.kind;f.elements.title.value=t.title;updateWorkoutIconPreview(f)}if(a==='assign-exercise')assignExercise();if(a==='exercise-stats')openExerciseHistory(id)}},true);
 document.addEventListener('submit',e=>{if(e.target.id!=='assign-form')return;e.preventDefault();e.stopImmediatePropagation();const f=new FormData(e.target),id=e.target.dataset.id,ex=exercise(id),phase=['warmup','cooldown'].includes(librarySport)?librarySport:'main';if(f.get('destination')==='template'){const t=clone(templates().find(t=>t.id===f.get('template')));t.items.push(workoutItemFromExercise({id,phase,sets:ex.defaultSets?.map(setPlanCopy)||[setPlanDefaults(ex,phase)],metrics:exerciseMetrics(ex)}));if(baseTemplates.some(x=>x.id===t.id)){state.templateOverrides??={};state.templateOverrides[t.id]=t}else state.templates[state.templates.findIndex(x=>x.id===t.id)]=t;persist();closeSheet();toast('Добавлено в «'+t.title+'»: '+ex.name)}else{closeSheet();if(!state.active)startWorkout();state.active.exercises.push(prepareWorkoutExercise({id,name:ex.name,phase,notes:'',sets:ex.defaultSets?.map(setPlanCopy)||[setPlanDefaults(ex,phase)],defaultRestSeconds:ex.defaultRestSeconds||null},true));persist();goto('active');toast(ex.name+' добавлено')}} ,true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#overlay')&&activePanel()){e.preventDefault();closePanel()}});
@@ -5170,7 +5170,7 @@ root.HappyAccount={create,deriveKey,CELL,CLOUD,ITERATIONS};
  *    не читает и не пишет и говорит открыть последнюю версию: старое не затирает то, чего не понимает;
  *  - другая вкладка получает запись сразу, без сообщений.
  *
- * На модуле работают Sport с выпуска 42 и Day с выпуска 59; Meal переходит следующим этапом.
+ * На модуле работают Sport с выпуска 42, Day с выпуска 59 и Meal с выпуска 32.
  * — Claude · 14.11.2026 */
 (function(root){
 'use strict';
@@ -5186,6 +5186,7 @@ const PUBLIC={
  'sport/body':['day','meal','sport'],   // замеры тела, общий — shared/happy-measurements.js
  'day/pairs':['day','meal','sport'],    // свитчи связи приложений, общий — shared/happy-app-links.js
  'day/foodtaps':['day'],                // нажатия Day на счётчики еды — shared/happy-food.js
+ 'sport/foodtaps':['sport'],            // нажатия Sport на счётчики еды — shared/happy-food.js
  'meal/summary':['meal'],               // съедено по дням — shared/happy-food.js
  'meal/foods':['meal']                  // счётчики еды из продуктов Meal — shared/happy-food.js
 };
@@ -5378,6 +5379,7 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
 /* ── Хранилище приложения ──────────────────────────────────────────────────────────────────────────
    open({app, account, own:[названия своих документов], reads:{сосед:[названия]}, shared:{сосед:[названия]},
          formats:{'приложение/название': номер формата, который понимает эта версия}})
+   firstSync: мс — сколько ждать первого обмена с облаком на устройстве, где у аккаунта ещё нет записей.
    doc(название) — свой документ: get, all, put, remove, putMany, subscribe.
    neighbor(приложение, название) — документ соседа, только чтение: get, all, subscribe.
    shared(приложение, название) — общий документ в строке соседа: чтение и запись, как у своего.
@@ -5588,6 +5590,13 @@ async function open(options){
   /* Эта версия пишет документ новым форматом: отметить номер, чтобы прежние версии перестали его писать. */
   for(const d of docs.values())if(d.own&&!d.newer&&d.format>formatOf(d.meta.format)){const r=await backend.write(d.scope,[],{format:d.format,local:true});adoptMeta(d,r.meta);announce(d,[],r.meta)}
   restStatus();
+  /* Первый запуск аккаунта на устройстве: с облаком ещё ничего не сведено и своих записей нет. Приложение, которое
+     назвало firstSync (мс), ждёт первого обмена не дольше этого времени: иначе оно открылось бы с пустого и первой же
+     записью положило бы своё начальное (разделы, счётчики) поверх того, что уже лежит в аккаунте, — поздняя правка
+     побеждает. Нет связи или обмен не успел — приложение открывается как есть, записи придут позже. */
+  if(o.firstSync>0&&[...docs.values()].every(d=>d.meta.iv===null&&!d.records.size))
+   await Promise.race([sync().catch(()=>false),new Promise(resolve=>setTimeout(resolve,o.firstSync))]);
+  if(closed)throw fail('account','Аккаунт изменился. Открой приложение снова.');
   if(auto){
    const listen=(target,type,fn)=>{if(target&&target.addEventListener){target.addEventListener(type,fn);cleanups.push(()=>target.removeEventListener(type,fn))}};
    const doc=events.document;

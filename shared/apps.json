@@ -4,7 +4,7 @@
   "version": "59",
   "sharedDirectory": "day-59/shared",
   "links": {
-   "meal": "meal-31/",
+   "meal": "meal-32/",
    "sport": "sport-43/"
   },
   "download": "day-59/Happy-Day-59.html",
@@ -24,11 +24,10 @@
   "storageScript": "day-59/day-data.js"
  },
  "meal": {
-  "entry": "meal-31/index.html",
-  "version": "31.1",
-  "name": "Happy Meal · Update 31.1",
-  "sharedDirectory": "meal-31/shared",
-  "accountScript": "meal-31/account-ui.js",
+  "entry": "meal-32/index.html",
+  "version": "32",
+  "name": "Happy Meal · Update 32",
+  "sharedDirectory": "meal-32/shared",
   "settingsSections": [
    "account",
    "links",
@@ -39,10 +38,11 @@
   ],
   "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
   "previous": {
-   "entry": "meal-30/index.html",
-   "version": "30",
-   "sourceCommit": "262ca2e"
-  }
+   "entry": "meal-31/index.html",
+   "version": "31.1",
+   "sourceCommit": "26f10dc3aac5a842ae359c3ab479a6d1726358d0"
+  },
+  "storageScript": "meal-32/meal-data.js"
  },
  "sport": {
   "entry": "sport-43/index.html",

@@ -1,4 +1,4 @@
-"""Meal 27.4 (проверяется на актуальном выпуске Meal — common.MEAL): время продукта и время приёма. Один телефон, гость (без аккаунта и сети), касания как на телефоне.
+"""Meal 27.4 (проверяется на актуальном выпуске Meal — common.MEAL): время продукта и время приёма. Один телефон, придуманный аккаунт, касания как на телефоне.
 В «Корректировке» нажал на поле времени и набрал новое поверх старого — время принято; продукт стал раньше всех —
 время всего приёма сдвинулось на него (раздел, главный экран, сводка для Day, Day); продукт позже — время приёма не
 меняется; напиток раньше еды приём не открывает; время всего приёма набирается так же и проставляется всем продуктам.
@@ -15,18 +15,20 @@ def check(title, ok):
 with sync_playwright() as p:
     b = launch(p)
     ctx = b.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow", has_touch=True, is_mobile=True)
-    ctx.route(BACKEND + "/**", lambda route, request: (requests.append(request.method + ' ' + request.url[:120]), route.abort())[1])
+    ctx.route(BACKEND + "/**", lambda route, request: handle(route, request, "A"))
+    libraries(ctx)
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
     meal.goto(BASE + MEAL + "index.html")
-    meal.wait_for_timeout(5000)
+    check("вход придуманным аккаунтом", enter(meal))
+    meal.wait_for_timeout(1500)
     meal.evaluate("""()=>{const fid=Object.keys(FOODS).find(k=>FOODS[k]&&FOODS[k].k>50&&!isDrink(k));const drink=Object.keys(FOODS).find(k=>isDrink(k));
       const e=day(curDate);e.items.push({id:'tA',sec:'pm',fid,q:100,u:'г',g:100,t:'13:00'},{id:'tB',sec:'pm',fid,q:50,u:'г',g:50,t:'13:30'});
       if(drink)e.items.push({id:'tC',sec:'pm',fid:drink,q:1,u:'г',g:200,t:'13:10'});save();openSec('pm')}""")
     meal.wait_for_timeout(600)
     SEC = "()=>document.getElementById('secTimeText').textContent"
     ITEMS = "()=>JSON.parse(JSON.stringify(day(curDate).items.filter(x=>x.sec==='pm').map(x=>({id:x.id,t:x.t,tm:x.tm||0}))))"
-    SUMMARY = "()=>{const s=JSON.parse(localStorage.getItem('hd_link_meal_v1')||'null');const d=s&&s.days[todayISO()];return d&&d.sec&&d.sec.pm?{t:d.sec.pm.t,t0:d.sec.pm.t0}:null}"
+    SUMMARY = "()=>{const d=MealData.store.doc('summary').get(todayISO());return d&&d.sec&&d.sec.pm?{t:d.sec.pm.t,t0:d.sec.pm.t0}:null}"
     check("время приёма — первый продукт (13:00, не последний 13:30)", meal.evaluate(SEC) == "13:00")
 
     def correct(item, digits):
@@ -87,13 +89,13 @@ with sync_playwright() as p:
     dayp = ctx.new_page()
     dayp.on("pageerror", lambda e: errors.append("day: " + str(e)[:300]))
     dayp.goto(BASE + DAY + "index.html")
-    dayp.wait_for_timeout(5000)
+    opened(dayp, "day")
+    dayp.wait_for_timeout(1500)
     out["day_start"] = dayp.evaluate("()=>secTime(todayISO(),'pm')")
     check("в Day начало обеда 12:05 из Meal", out["day_start"] and out["day_start"]["t"] == "12:05" and out["day_start"]["src"] == "meal")
 
-    out["errors"], out["requests"] = errors, requests
+    out["errors"] = errors
     check("ошибок на страницах нет", not errors)
-    check("гость к серверу не обращался", not requests)
     b.close()
 
 sys.exit(finish("meal_times", out, checks))

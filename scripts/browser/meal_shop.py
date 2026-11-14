@@ -1,4 +1,4 @@
-"""Meal 28: «Сборники» и настройки каталогов (с Meal 29 — и каталог «БАДы», пилюля «Мои добавки»). Один телефон, гость, касания; каталоги — из ветки meal-libraries
+"""Meal 28: «Сборники» и настройки каталогов (с Meal 29 — и каталог «БАДы», пилюля «Мои добавки»). Один телефон, придуманный аккаунт, касания; каталоги — из ветки meal-libraries
 этого репозитория. Meal открывается на дне; вкладка «Сборники»: пилюли, шесть карточек магазина без БАДов, цена;
 страница узбекской кухни — 60 блюд, плов 255,4 ккал; тестовая покупка — «Куплено» в магазине и карточка в «Моих
 рецептах»; десерты в «Моих продуктах» со свитчем, который выключает каталог и в настройках; поиск по каталогам и
@@ -15,11 +15,13 @@ def check(title, ok):
 with sync_playwright() as p:
     b = launch(p)
     ctx = b.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow", has_touch=True, is_mobile=True)
-    ctx.route(BACKEND + "/**", lambda route, request: route.abort())
+    ctx.route(BACKEND + "/**", lambda route, request: handle(route, request, "A"))
     libraries(ctx)
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
     meal.goto(BASE + MEAL + "index.html")
+    wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&typeof MealUzbek!=='undefined'"), 25)
+    check("вход придуманным аккаунтом", enter(meal))
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&typeof MealUzbek!=='undefined'"), 25)
     meal.wait_for_timeout(1500)
     check("Meal открывается на дне, не на магазине", meal.evaluate("()=>document.querySelector('.tab.on').dataset.go") == "day")
@@ -44,7 +46,8 @@ with sync_playwright() as p:
     meal.locator(".cc-detail-heading .cc-buy button").tap()
     meal.wait_for_timeout(400)
     check("после покупки — «Куплено» и подсказка, что деньги не списываются", meal.locator(".cc-detail-heading .cc-buy button").inner_text() == "Куплено" and "деньги не списываются" in meal.locator("#toast").inner_text())
-    check("отметка покупки — на устройстве (гость: happy-meal-demo-purchases-v1)", meal.evaluate("()=>JSON.parse(localStorage.getItem('happy-meal-demo-purchases-v1')||'{}').UZBEK===true"))
+    meal.wait_for_timeout(500)
+    check("отметка покупки — в дневнике аккаунта, а не в памяти браузера", meal.evaluate("()=>DB.purchases.UZBEK===true&&MealData.store.doc('setup').get(JSON.stringify(['m','purchases','UZBEK']))===true&&!Object.keys(localStorage).some(k=>k.includes('purchases'))"))
     meal.locator('[data-cc-route="recipes"]').tap()
     meal.wait_for_timeout(400)
     mine = meal.evaluate("()=>[...document.querySelectorAll('#ccPurchasedRecipes .cc-card')].map(c=>c.querySelector('b').textContent+' | '+c.querySelector('.cc-card-state small').textContent)")

@@ -1,4 +1,4 @@
-"""Десерты 1.2 (запись манифеста desserts2): один телефон, гость, каталоги — из ветки каталогов этого репозитория.
+"""Десерты 1.2 (запись манифеста desserts2): один телефон, придуманный аккаунт, каталоги — из ветки каталогов этого репозитория.
 Карточка козинака: модель по очищенному кунжуту — 529,8 ккал и кальций 51,9 мг на 100 г, плитка 22 г; карточка
 чизкейка «Нью-Йорк»: B1 0,021 мг, «Ниацин (без триптофана)» и «Фолиевая кислота» своими строками, B2 «≈ 0,19 мг» (оценка
 по USDA 172711) без поясняющей строки, B3 и B9 — «—»;
@@ -29,11 +29,12 @@ def pairs(text):
 with sync_playwright() as p:
     b = launch(p)
     ctx = b.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow", has_touch=True, is_mobile=True)
-    ctx.route(BACKEND + "/**", lambda route, request: route.abort())
+    ctx.route(BACKEND + "/**", lambda route, request: handle(route, request, "A"))
     libraries(ctx)
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
     meal.goto(BASE + MEAL + "index.html")
+    check("вход придуманным аккаунтом", enter(meal))
     wait_for(meal, lambda: meal.evaluate("()=>typeof MealDesserts!=='undefined'&&MealDesserts.status()==='ok'&&!!FOODS['" + KZ + "']"), 30)
     meal.wait_for_timeout(800)
     out["revisions"] = meal.evaluate("()=>[FOODS['" + KZ + "'].revision,FOODS['" + NY + "'].revision]")

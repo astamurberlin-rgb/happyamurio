@@ -11,9 +11,10 @@
  * meal/foods — пишет Meal, читают Day и Sport: счётчики еды из продуктов библиотеки Meal. Счётчик принадлежит Meal.
  *   '<id счётчика>' → {title, fid, q, g, u, food:{id,n,k,p,f,c,…} — состав на 100 г, portionText?,
  *                      targets:{day:true|false, sport:true|false} — где счётчик показан}
- * day/foodtaps — пишет Day, читает Meal: нажатия Day на счётчики еды. Нажатие принадлежит приложению, где нажали.
+ * day/foodtaps, sport/foodtaps — пишут Day и Sport, читает Meal: нажатия на счётчики еды. Нажатие принадлежит
+ *   приложению, где нажали; у каждого приложения свой документ с одним и тем же устройством записей.
  *   '<id нажатия>' → {cid — счётчик, date:'ГГГГ-ММ-ДД', item:{fid,q,u,g,t:'ЧЧ:ММ' или null,sec,counterFood}, at — мс}
- *   id нажатия начинается с названия приложения ('day-…'): по нему видно, чьё нажатие Meal учёл в cs.
+ *   id нажатия начинается с названия приложения ('day-…', 'sport-…'): по нему видно, чьё нажатие Meal учёл в cs.
  *
  * «Съедено» за день в Day не ждёт Meal: к итогу дня из сводки прибавляются свои нажатия, которых в cs ещё нет
  * (вес порции × состав продукта из самого нажатия), и вычитаются учтённые, которые с тех пор убраны или перенесены.
@@ -170,7 +171,7 @@ function eaten(s,date,own,list,app){
  out.recorded=out.recorded||out.pending>0;
  return out;
 }
-var api={FORMAT:FORMAT,SUMMARY:{app:'meal',name:'summary'},FOODS:{app:'meal',name:'foods'},TAPS:{app:'day',name:'foodtaps'},
+var api={FORMAT:FORMAT,SUMMARY:{app:'meal',name:'summary'},FOODS:{app:'meal',name:'foods'},TAPS:{app:'day',name:'foodtaps'},TAP_APPS:['day','sport'],TAPS_NAME:'foodtaps',
  validDate:validDate,summary:summary,foods:foods,linked:linked,portion:portion,taps:taps,tapId:tapId,tap:tap,serving:serving,eaten:eaten};
 root.HappyFood=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;

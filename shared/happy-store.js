@@ -15,7 +15,7 @@
  *    не читает и не пишет и говорит открыть последнюю версию: старое не затирает то, чего не понимает;
  *  - другая вкладка получает запись сразу, без сообщений.
  *
- * На модуле работают Sport с выпуска 42 и Day с выпуска 59; Meal переходит следующим этапом.
+ * На модуле работают Sport с выпуска 42, Day с выпуска 59 и Meal с выпуска 32.
  * — Claude · 14.11.2026 */
 (function(root){
 'use strict';
@@ -31,6 +31,7 @@ const PUBLIC={
  'sport/body':['day','meal','sport'],   // замеры тела, общий — shared/happy-measurements.js
  'day/pairs':['day','meal','sport'],    // свитчи связи приложений, общий — shared/happy-app-links.js
  'day/foodtaps':['day'],                // нажатия Day на счётчики еды — shared/happy-food.js
+ 'sport/foodtaps':['sport'],            // нажатия Sport на счётчики еды — shared/happy-food.js
  'meal/summary':['meal'],               // съедено по дням — shared/happy-food.js
  'meal/foods':['meal']                  // счётчики еды из продуктов Meal — shared/happy-food.js
 };
@@ -223,6 +224,7 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
 /* ── Хранилище приложения ──────────────────────────────────────────────────────────────────────────
    open({app, account, own:[названия своих документов], reads:{сосед:[названия]}, shared:{сосед:[названия]},
          formats:{'приложение/название': номер формата, который понимает эта версия}})
+   firstSync: мс — сколько ждать первого обмена с облаком на устройстве, где у аккаунта ещё нет записей.
    doc(название) — свой документ: get, all, put, remove, putMany, subscribe.
    neighbor(приложение, название) — документ соседа, только чтение: get, all, subscribe.
    shared(приложение, название) — общий документ в строке соседа: чтение и запись, как у своего.
@@ -433,6 +435,13 @@ async function open(options){
   /* Эта версия пишет документ новым форматом: отметить номер, чтобы прежние версии перестали его писать. */
   for(const d of docs.values())if(d.own&&!d.newer&&d.format>formatOf(d.meta.format)){const r=await backend.write(d.scope,[],{format:d.format,local:true});adoptMeta(d,r.meta);announce(d,[],r.meta)}
   restStatus();
+  /* Первый запуск аккаунта на устройстве: с облаком ещё ничего не сведено и своих записей нет. Приложение, которое
+     назвало firstSync (мс), ждёт первого обмена не дольше этого времени: иначе оно открылось бы с пустого и первой же
+     записью положило бы своё начальное (разделы, счётчики) поверх того, что уже лежит в аккаунте, — поздняя правка
+     побеждает. Нет связи или обмен не успел — приложение открывается как есть, записи придут позже. */
+  if(o.firstSync>0&&[...docs.values()].every(d=>d.meta.iv===null&&!d.records.size))
+   await Promise.race([sync().catch(()=>false),new Promise(resolve=>setTimeout(resolve,o.firstSync))]);
+  if(closed)throw fail('account','Аккаунт изменился. Открой приложение снова.');
   if(auto){
    const listen=(target,type,fn)=>{if(target&&target.addEventListener){target.addEventListener(type,fn);cleanups.push(()=>target.removeEventListener(type,fn))}};
    const doc=events.document;

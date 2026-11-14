@@ -505,6 +505,28 @@ section('Места в списке: вставка и удаление не п�
  for(const x of [xa,xb])x.store.close();
 }
 
+section('Первый запуск на новом устройстве: сначала обмен, потом приложение');
+{
+ /* Приложение при первой записи кладёт своё начальное (например, разделы). На новом устройстве оно не должно лечь
+    поверх того, что уже лежит в аккаунте: модуль по просьбе приложения (firstSync) сначала дожидается первого обмена. */
+ const U3=cloud.addUser('three@example.invalid','synthetic-password-three','Третий');
+ const C=makeDevice(cloud,'C',clock),D=makeDevice(cloud,'D',clock),E=makeDevice(cloud,'E',clock),SPEC={own:['settings'],firstSync:4000};
+ const first=await launch(C,'sport',{own:['settings']},'firstC');await first.account.signIn('three@example.invalid','synthetic-password-three');await first.reopen();
+ await first.store.doc('settings').put('sections',{names:['своё утро']});check('первое устройство записало настройки',await first.store.flush(3000)===true);
+ clock.t+=60000;
+ const reopenWaiting=async(x,device,who)=>{x.store.close();x.store=await HappyStore.open({app:'sport',account:x.account,backend:device.backend,channel:device.tab().channel,fetch:cloud.fetchFor(device,who),url:URL_BASE,key:'test',auto:false,now:device.now,...SPEC});return x.store};
+ const second=await launch(D,'sport',{own:['settings']},'firstD');await second.account.signIn('three@example.invalid','synthetic-password-three');
+ await reopenWaiting(second,D,'firstD');
+ check('новое устройство открылось уже с настройками аккаунта',second.store.doc('settings').get('sections')?.names?.[0]==='своё утро',values(second.store.doc('settings')));
+ const reads=cloud.log.length;await reopenWaiting(second,D,'firstD');
+ check('второй запуск на том же устройстве обмена не ждёт',cloud.log.length===reads,cloud.log.length-reads);
+ /* нет связи: ждать нечего — приложение открывается пустым и не висит */
+ const third=await launch(E,'sport',{own:['settings']},'firstE');await third.account.signIn('three@example.invalid','synthetic-password-three');
+ E.offline=true;const started=Date.now();await reopenWaiting(third,E,'firstE');
+ check('без связи новое устройство открывается сразу и пустым',Date.now()-started<1500&&third.store.doc('settings').all().length===0,Date.now()-started);
+ for(const x of [first,second,third]){x.store.close();x.account.close()}
+}
+
 for(const x of [dayA,dayB,mealA]){x.store.close();x.account.close()}
 console.log(failed?`Общий модуль хранения и обмена: НЕ ПРОШЛО ${failed} из ${failed+passed}`:`Общий модуль хранения и обмена: ${passed} проверок прошли`);
 process.exit(failed?1:0);

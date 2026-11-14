@@ -1,4 +1,4 @@
-"""Узбекская кухня 1.10.4 в Meal 31.1: названия и меры без перестраховки. Один телефон, гость; каталоги — из ветки
+"""Узбекская кухня 1.10.4 в Meal 31.1: названия и меры без перестраховки. Один телефон, придуманный аккаунт; каталоги — из ветки
 каталогов этого репозитория (HAPPY_LIBRARIES_REF). «Катык 3%», «Каймак 45%», «Сузьма 9%» (с 1.10.3) и «Сузьма 6%»
 (1.10.4) — без марки на экране: название, строка поиска, карточка, переключатель вариантов; состав прежний; поиск по
 марке латиницей находит их. Строка поиска — «ккал / 100 г · Узбекская кухня», без кода записи. Меры — «порция»,
@@ -22,11 +22,12 @@ def check(title, ok):
 with sync_playwright() as p:
     b = launch(p)
     ctx = b.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow", has_touch=True, is_mobile=True)
-    ctx.route(BACKEND + "/**", lambda route, request: route.abort())
+    ctx.route(BACKEND + "/**", lambda route, request: handle(route, request, "A"))
     libraries(ctx)
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
     meal.goto(BASE + MEAL + "index.html")
+    check("вход придуманным аккаунтом", enter(meal))
     wait_for(meal, lambda: meal.evaluate("()=>typeof MealUzbek!=='undefined'&&MealUzbek.status()==='ok'&&!!FOODS['hmuz:qatiq-kamilka-3pct']"), 30)
     meal.wait_for_timeout(800)
     cards = meal.evaluate("(ids)=>ids.map(id=>{const f=FOODS[id];return {id,n:f.n,rev:f.revision,src:f.src,code:f.catalogCode,por:f.por,kcal:MealProducts.value(f,'kcal',typeof blsVal==='function'?blsVal:undefined)}})", list(IDS))

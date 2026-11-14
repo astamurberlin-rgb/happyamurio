@@ -1,4 +1,4 @@
-"""Meal 28: каталоги без интернета (с Meal 29 — и каталог БАДов: скачивается и открывается без сети). Один телефон, гость, придуманные записи; каталоги — из ветки meal-libraries
+"""Meal 28: каталоги без интернета (с Meal 29 — и каталог БАДов: скачивается и открывается без сети). Один телефон, придуманный аккаунт и записи; каталоги — из ветки meal-libraries
 этого репозитория (сеть не нужна). Настройки → Каталоги: кнопка «Скачать» у пяти каталогов (у «Моих продуктов» её нет),
 скачивание BLS до «Скачано»; отмена посреди узбекской кухни ничего не оставляет; «убрать» и «Вернуть» в подсказке;
 затем телефон без интернета: Meal открывается (копия выпуска, sw.js), BLS ищется, запись дня сохраняется и видна
@@ -32,6 +32,8 @@ with sync_playwright() as p:
     meal = ctx.new_page()
     meal.on("pageerror", lambda e: errors.append("meal: " + str(e)[:300]))
     meal.goto(BASE + MEAL + "index.html")
+    wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&!!navigator.serviceWorker.controller"), 25)
+    check("вход придуманным аккаунтом", enter(meal))
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&!!navigator.serviceWorker.controller"), 25)
     check("Meal открыт, BLS из сети, копия выпуска подключена (service worker)", meal.evaluate("()=>BLS_ST==='ok'&&!!navigator.serviceWorker.controller"))
     meal.evaluate("()=>HappyCollections.buy('SUPP')")   # Meal 30: не купленный набор «БАДы» в настройках каталогов не показывается
@@ -86,7 +88,7 @@ with sync_playwright() as p:
     meal.evaluate("""()=>{const fid=Object.keys(FOODS).find(k=>FOODS[k]&&FOODS[k].k>50&&!isDrink(k));day(curDate).items.push({id:'offline1',sec:'pm',fid,q:120,u:'г',g:120,t:'13:00'});save()}""")
     meal.wait_for_timeout(1500)
     meal.reload()
-    wait_for(meal, lambda: meal.evaluate("()=>typeof DB!=='undefined'&&!!DB.days"), 20)
+    opened(meal)
     meal.wait_for_timeout(1500)
     check("без интернета запись дня сохраняется и видна после перезапуска", meal.evaluate("()=>day(curDate).items.some(x=>x.id==='offline1')"))
     out["usda_offline"] = meal.evaluate("()=>typeof MealUSDA!=='undefined'?MealUSDA.status():null")

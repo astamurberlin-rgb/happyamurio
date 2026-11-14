@@ -8,9 +8,8 @@
   HAPPY_BASE   — адрес сайта с префиксом /happyamurio/ (по умолчанию локальный сервер из run.sh);
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
-  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-31/; HAPPY_DAY — day-58/ и HAPPY_SPORT — sport-41/: прежние
-                 выпуски для сценариев прежнего обмена с Meal, пока он не перешёл на общий модуль);
-  HAPPY_DAY_STORE, HAPPY_SPORT_STORE — выпуски Day и Sport на общем модуле (по умолчанию day-59/ и sport-43/);
+  HAPPY_MEAL, HAPPY_DAY_STORE, HAPPY_SPORT_STORE — выпуски Meal, Day и Sport для сценариев (по умолчанию текущие:
+                 meal-32/, day-59/ и sport-43/). Все три работают на общем входе и общем модуле хранения;
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """
@@ -131,8 +130,8 @@ def phone(browser, name=None):
 # Day и Sport на общем входе и общем модуле хранения — их сценарии: day_store, day_sections, sport_store.
 DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-59/")
 SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-43/")
-# Страница-заглушка для сценариев на общем модуле: общий вход и общий модуль под названием другого приложения (витрину
-# Meal пишет она, пока сам Meal не перешёл на общий модуль) или более новой версии приложения (номер формата новее).
+# Страница-заглушка для сценариев на общем модуле: общий вход и общий модуль под названием более новой версии
+# приложения (номер формата новее).
 # Страницу отдаёт сам сценарий; в репозитории и на сайте её нет.
 STAND_IN = BASE + "__store-stand-in.html"
 STAND_IN_HTML = """<!doctype html><meta charset="utf-8"><title>Проверка общего модуля</title>
@@ -146,6 +145,37 @@ T.near=(app,doc)=>T.store.neighbor(app,doc).all();
 T.state=()=>T.store.status().state;
 </script><body>Проверка общего модуля</body></html>"""
 MEAL_STAND_IN = ["meal", ["summary", "foods"], {"day": ["foodtaps"]}, {"meal/summary": 1, "meal/foods": 1, "day/foodtaps": 1}]
+
+
+def _look(page, js, arg=None):
+    try:
+        return page.evaluate(js, arg)
+    except Exception:   # страница как раз открывается заново
+        return None
+
+
+APP_READY = {
+    "meal": "()=>typeof MealData!=='undefined'&&typeof HappyMealCounters!=='undefined'&&!!document.querySelector('#mlTaps .tpItem')",
+    "day": "()=>typeof DayData!=='undefined'&&typeof MEAL_READY!=='undefined'&&MEAL_READY&&!!document.querySelector('#tapBox .tpItem')",
+    "sport": "()=>typeof SportData!=='undefined'&&typeof state!=='undefined'&&!!document.querySelector('#page>*')",
+}
+APP_DATA = {"meal": "MealData", "day": "DayData", "sport": "SportData"}
+
+
+def enter(page, app="meal", seconds=20):
+    """Приложения записывают только после входа. Войти придуманным аккаунтом (поддельный сервер handle) и дождаться,
+    пока страница откроется заново уже со входом. Вход общий: соседние приложения на том же «телефоне» войдут сами.
+    Путь человека через карточку входа проверяют сценарии meal_store, day_store и sport_store."""
+    data = APP_DATA[app]
+    wait_for(page, lambda: _look(page, APP_READY[app]), seconds, 200)
+    if not _look(page, "()=>%s.signedIn()" % data):
+        _look(page, "([e,p])=>%s.account.signIn(e,p)" % data, [EMAIL, PW])
+    return bool(wait_for(page, lambda: _look(page, "()=>typeof %s!=='undefined'&&%s.signedIn()" % (data, data)) and _look(page, APP_READY[app]), seconds, 200))
+
+
+def opened(page, app="meal", seconds=20):
+    """Дождаться, пока приложение открылось (со входом или без)."""
+    return bool(wait_for(page, lambda: _look(page, APP_READY[app]), seconds, 200))
 
 
 def stand_in_route(ctx):
@@ -164,15 +194,10 @@ def stand_in(ctx, spec, errors=None, name="заглушка"):
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
-# Актуальный выпуск Meal для сценариев (HAPPY_MEAL — другой, например meal-28/)
-MEAL = os.environ.get("HAPPY_MEAL", "meal-31/")
-# Day и Sport в сценариях прежнего обмена с Meal (счётчики, «съедено», связь приложений: counters_*, app_links,
-# meal_supplement_counters) — прежние выпуски Day 58 и Sport 41. Текущие Day 59 и Sport 43 ведут записи через общий
-# модуль и с Meal 31 не обмениваются; их проверяют day_store, day_sections и sport_store. Сценарии прежнего обмена
-# смотрят, что текущий Meal 31 по-прежнему работает со своими прежними соседями, и переписываются, когда на общий
-# модуль перейдёт Meal (этап 4).
-DAY = os.environ.get("HAPPY_DAY", "day-58/")
-SPORT = os.environ.get("HAPPY_SPORT", "sport-41/")
+# Выпуск Meal для сценариев (HAPPY_MEAL — другой). Day и Sport — DAY_STORE и SPORT_STORE выше; DAY и SPORT — те же
+# выпуски под короткими именами для сценариев, где три приложения открыты на одном телефоне.
+MEAL = os.environ.get("HAPPY_MEAL", "meal-32/")
+DAY, SPORT = DAY_STORE, SPORT_STORE
 _lib_files = {}
 
 
