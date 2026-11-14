@@ -42,9 +42,24 @@ assert.equal(L.on(skew,'meal','day'),false);
 const merged=L.merge(list,list.slice().reverse(),[{pair:'day|meal',on:true,at:5,by:'sport'},{pair:'x|y',on:true,at:1,by:'day'},null,{pair:'day|sport',on:'no',at:1,by:'day'}]);
 assert.deepEqual(plain(merged),plain(list),'повторы и неверные переключения отброшены');
 assert.deepEqual(plain(L.forApp(L.merge(list,off2),'sport')).map(t=>t.pair),['meal|sport'],'в сводку Sport — только его пары');
-// хранилище в области аккаунта
-const store=new Map(),S={getItem:k=>store.has(k)?store.get(k):null,setItem:(k,v)=>store.set(k,v)};
-assert.equal(L.key('u1'),'happy-user:u1:hd_app_links_v1');assert.equal(L.key('local'),'hd_app_links_v1');
-assert.equal(L.write(S,'u1',list),true);assert.deepEqual(plain(L.read(S,'u1')),plain(list));assert.deepEqual(plain(L.read(S,'u2')),[]);
-store.set(L.key('u3'),'{сломано');assert.deepEqual(plain(L.read(S,'u3')),[],'сломанная копия — как пустая');
-console.log('Passed: app links — default on, both directions; while off — nothing after the moment of switching (events by time, day totals for days begun before it); switched on again — everything shows, the off period too; monotonic time, merge without duplicates, account-scoped storage.');
+// общий документ day/pairs: запись на пару — последнее переключение; свитч один на пару
+{
+ const doc=new Map(),records=()=>[...doc].map(([id,value])=>({id,value})),put=c=>doc.set(c.id,c.value);
+ assert.deepEqual(plain(L.DOC),{app:'day',name:'pairs'});assert.equal(L.FORMAT,1);
+ assert.equal(L.on(L.fromRecords(records()),'day','sport'),true,'пустой документ — связь включена');
+ put(L.change(L.fromRecords(records()),'day','sport',false,'day',T('12:00')));
+ assert.deepEqual(plain(records()),[{id:'day|sport',value:{on:false,at:T('12:00'),by:'day'}}]);
+ assert.equal(L.on(L.fromRecords(records()),'sport','day'),false,'выключил в Day — в Sport свитч уже выключен');
+ assert.equal(L.offSince(L.fromRecords(records()),'sport','day'),T('12:00'));
+ assert.equal(L.eventOn(L.fromRecords(records()),'day','sport','2026-11-12','11:30'),true,'что было до выключения — остаётся');
+ assert.equal(L.eventOn(L.fromRecords(records()),'day','sport','2026-11-12','12:30'),false,'после выключения — не учитывается');
+ put(L.change(L.fromRecords(records()),'sport','day',true,'sport',T('11:00')));
+ assert.equal(doc.size,1,'запись на пару одна');
+ assert.equal(doc.get('day|sport').at,T('12:00')+1,'включили при отстающих часах — переключение всё равно позже прежнего');
+ assert.equal(L.eventOn(L.fromRecords(records()),'day','sport','2026-11-12','12:30'),true,'включили обратно — видно всё');
+ put(L.change(L.fromRecords(records()),'meal','day',false,'meal',T('13:00')));
+ assert.equal(L.on(L.fromRecords(records()),'day','sport'),true,'другая пара не затронута');assert.equal(L.on(L.fromRecords(records()),'day','meal'),false);
+ assert.equal(L.change([],'day','day',true,'day'),null);assert.equal(L.change([],'day','meal',true,'sport'),null,'переключает только участник пары');
+ assert.deepEqual(plain(L.fromRecords([{id:'day|meal',value:'мусор'},{id:'x|y',value:{on:true,at:1,by:'day'}},{id:'day|meal',value:{on:'да',at:1,by:'day'}},null])),[],'негодные записи пропускаются');
+}
+console.log('Passed: app links — default on, both directions; while off — nothing after the moment of switching (events by time, day totals for days begun before it); switched on again — everything shows, the off period too; monotonic time, merge without duplicates, one shared record per pair.');

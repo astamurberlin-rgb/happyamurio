@@ -9,13 +9,15 @@ const releaseDir=app=>apps[app].entry.split('/')[0];
 let copied=0,same=0,skipped=0;
 for(const entry of manifest.files){
   if(entry.divergent){skipped+=entry.apps.length;continue;}
-  const reference=await readFile(new URL(entry.reference,root));
+  const referencePath=entry.reference.replace(/\{(day|meal|sport)\}/g,(_,app)=>releaseDir(app)); // {day} — каталог текущего выпуска, как в check-shared
+  const reference=await readFile(new URL(referencePath,root));
   for(const app of entry.apps){
+    if(releaseDir(app)+'/shared/'+entry.name===referencePath)continue; // эталон лежит в самом выпуске
     const target=new URL(releaseDir(app)+'/shared/'+entry.name,root);
     let current=null;try{current=await readFile(target);}catch{}
     if(current&&Buffer.compare(current,reference)===0){same++;continue;}
     await mkdir(new URL('./',target),{recursive:true});await writeFile(target,reference);copied++;
-    console.log('Обновлено: '+releaseDir(app)+'/shared/'+entry.name+' ← '+entry.reference);
+    console.log('Обновлено: '+releaseDir(app)+'/shared/'+entry.name+' ← '+referencePath);
   }
 }
 console.log(`Общие файлы: ${copied} скопировано, ${same} уже совпадали, ${skipped} пропущено (расхождения). Дальше: node scripts/sync-shared-ui.mjs; сборка Sport; node scripts/check-shared.mjs.`);

@@ -6,13 +6,16 @@
    порция со счётчика) со временем после выключения не учитывается и не отмечается; что было до выключения,
    остаётся. Включили обратно — показывается всё, и то, что было, пока связь была выключена (Астамур 12.11, до 12:50).
 
-   Каждое приложение хранит известные ему переключения в области аккаунта (ключ `hd_app_links_v1`) и отдаёт свои
-   пары соседям в своей сводке: Meal — `meal/link`, Sport — `sport/link`, Day — `day/link` (поле `links`).
+   Формат, номер 1 (с Day 59 и Sport 43). Свитчи лежат в общем документе day/pairs (витрина общего модуля, пишут
+   три приложения): запись на пару, номер записи — пара ('day|meal'), значение — последнее переключение
+   {on, at, by}. Свитч один на пару: переключили в одном приложении — в другом он уже переключён.
+   fromRecords(записи документа) — список переключений для функций ниже; change(...) — правка для doc.put.
    Чистые функции, без сети и хранилища; копии в выпусках сверяет `check-shared`.
+   Меняется устройство записей — растёт FORMAT, и три приложения выходят одним выпуском.
 
-   — Claude · 12.11.2026 12:05 */
+   — Claude · 12.11.2026 12:05, общий документ — 14.11.2026 */
 (function(root){'use strict';
-  var APPS=['day','meal','sport'], MAX=200, KEY='hd_app_links_v1', PAIRS=/^(day\|meal|day\|sport|meal\|sport)$/;
+  var APPS=['day','meal','sport'], MAX=200, FORMAT=1, DOC={app:'day',name:'pairs'}, PAIRS=/^(day\|meal|day\|sport|meal\|sport)$/;
   function pairOf(a,b){ return APPS.indexOf(a)>=0&&APPS.indexOf(b)>=0&&a!==b?[a,b].sort().join('|'):null }
   function valid(t){
     return !!t&&typeof t==='object'&&typeof t.pair==='string'&&PAIRS.test(t.pair)&&typeof t.on==='boolean'&&
@@ -69,11 +72,20 @@
     if(!r) return false;
     return m?r[0]+(+m[1]*60+(+m[2]))*60000<off:dayOn(list,a,b,date);
   }
-  function key(owner){ return !owner||owner==='local'?KEY:'happy-user:'+encodeURIComponent(owner)+':'+KEY }
-  function read(storage,owner){ try{ return merge(JSON.parse(storage.getItem(key(owner))||'[]')) }catch(e){ return [] } }
-  function write(storage,owner,list){ try{ storage.setItem(key(owner),JSON.stringify(merge(list))); return true }catch(e){ return false } }
-  var api={APPS:APPS,KEY:KEY,pairOf:pairOf,valid:valid,merge:merge,of:of,on:on,toggle:toggle,forApp:forApp,
-    offSince:offSince,dayOn:dayOn,eventOn:eventOn,key:key,read:read,write:write};
+  /* записи общего документа (doc.all()) → список переключений; негодные записи пропускаются */
+  function fromRecords(records){
+    return merge((records||[]).map(function(r){
+      var v=r&&r.value; return v&&typeof v==='object'?{pair:r.id,on:v.on,at:v.at,by:v.by}:null;
+    }));
+  }
+  /* переключить пару: {id, value} для doc.put общего документа; пара или автор не годятся — null */
+  function change(list,a,b,value,by,now){
+    var p=pairOf(a,b); if(!p||p.split('|').indexOf(by)<0) return null;
+    var L=of(toggle(list,a,b,value,by,now),a,b), last=L[L.length-1];
+    return {id:p,value:{on:last.on,at:last.at,by:last.by}};
+  }
+  var api={APPS:APPS,FORMAT:FORMAT,DOC:DOC,pairOf:pairOf,valid:valid,merge:merge,of:of,on:on,toggle:toggle,forApp:forApp,
+    offSince:offSince,dayOn:dayOn,eventOn:eventOn,fromRecords:fromRecords,change:change};
   root.HappyAppLinks=api;
   if(typeof module!=='undefined'&&module.exports) module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);

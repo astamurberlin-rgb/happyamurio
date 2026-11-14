@@ -1,5 +1,5 @@
 {
-  "_": "Манифест общих файлов Happy (с 09.11.2026). reference — эталонная копия; apps — какие текущие выпуски (каталоги из shared/apps.json) должны содержать побайтно такую же копию в своём shared/. divergent — копии пока разошлись: check-shared предупреждает, а не падает, sync-shared их не трогает. frozenRoot — корневой shared/<name> загружают опубликованные старые страницы day/ и meal/ прямо с сайта, поэтому эталон лежит не в корне.",
+  "_": "Манифест общих файлов Happy (с 09.11.2026). reference — эталонная копия; apps — какие текущие выпуски (каталоги из shared/apps.json) должны содержать побайтно такую же копию в своём shared/. divergent — копии пока разошлись: check-shared предупреждает, а не падает, sync-shared их не трогает. frozenRoot — корневой shared/<name> загружают опубликованные старые страницы day/ и meal/ прямо с сайта, поэтому эталон лежит не в корне. contract — файл формата витрины или общего документа (правило «один код на формат», AGENTS.md, раздел 3): его копии не могут быть в долгах, расхождение — всегда ошибка.",
   "files": [
     {
       "name": "happy-account.js",
@@ -15,7 +15,8 @@
       "apps": [
         "sport"
       ],
-      "todo": "Day и Meal добавить при переходе на общий модуль"
+      "todo": "Day и Meal добавить при переходе на общий модуль",
+      "contract": true
     },
     {
       "name": "happy-account-ui.js",
@@ -47,10 +48,36 @@
       "name": "happy-app-links.js",
       "reference": "shared/happy-app-links.js",
       "apps": [
-        "day",
-        "meal",
         "sport"
-      ]
+      ],
+      "contract": true,
+      "todo": "Day добавить с Day 59, Meal — при переходе на общий модуль (этап 4); до того у них прежний файл с хранением в localStorage"
+    },
+    {
+      "name": "happy-measurements.js",
+      "reference": "shared/happy-measurements.js",
+      "apps": [
+        "sport"
+      ],
+      "contract": true,
+      "todo": "Meal добавить при переходе на общий модуль (этап 4)"
+    },
+    {
+      "name": "happy-measurements.css",
+      "reference": "shared/happy-measurements.css",
+      "apps": [
+        "sport"
+      ],
+      "todo": "Meal добавить при переходе на общий модуль (этап 4)"
+    },
+    {
+      "name": "happy-sport-summary.js",
+      "reference": "shared/happy-sport-summary.js",
+      "apps": [
+        "sport"
+      ],
+      "contract": true,
+      "todo": "Meal добавить при переходе на общий модуль (этап 4)"
     },
     {
       "name": "happy-summaries.js",

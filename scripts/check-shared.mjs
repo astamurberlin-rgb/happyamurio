@@ -1,6 +1,8 @@
 /* Общие файлы Happy: копии в текущих выпусках должны побайтно совпадать с эталоном из shared/shared-files.json.
    Расхождения у записей с divergent:true — предупреждение (долг), остальные — ошибка. Запускать перед коммитом
-   вместе с check-layout; sync-shared.mjs приводит копии к эталону. */
+   вместе с check-layout; sync-shared.mjs приводит копии к эталону.
+   Файл формата витрины или общего документа (contract:true) в долгах быть не может: разные копии читали бы один
+   документ по-разному, поэтому его расхождение — всегда ошибка. */
 import {readFile} from 'node:fs/promises';
 const root=new URL('../',import.meta.url);
 const apps=JSON.parse(await readFile(new URL('shared/apps.json',root),'utf8'));
@@ -8,6 +10,7 @@ const manifest=JSON.parse(await readFile(new URL('shared/shared-files.json',root
 const releaseDir=app=>apps[app].entry.split('/')[0];
 let ok=0,missing=[],failed=[],warned=[];
 for(const entry of manifest.files){
+  if(entry.contract&&entry.divergent){failed.push(entry.name+': файл формата (contract) не может быть помечен divergent');continue;}
   let reference;
   const referencePath=entry.reference.replace(/\{(day|meal|sport)\}/g,(_,app)=>releaseDir(app)); // {day} — каталог текущего выпуска из apps.json
   try{reference=await readFile(new URL(referencePath,root));}catch{failed.push(entry.name+': нет эталона '+referencePath);continue;}
