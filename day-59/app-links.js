@@ -27,6 +27,8 @@
   }
   function mealDayOn(date){return L.dayOn(list(),APP,'meal',date)}
   function mealEventOn(date,time,ms){return L.eventOn(list(),APP,'meal',date,Number.isSafeInteger(ms)?ms:time)}
+  /* нажатие на счётчик еды, сделанное в приложении app (day или sport), пока его связь с Meal была выключена, не считается */
+  function tapOn(app,date,time,ms){return app==='meal'||L.eventOn(list(),'meal',app,date,Number.isSafeInteger(ms)?ms:time)}
   function change(e){
     const i=e.target.closest&&e.target.closest('[data-app-link]');if(!i)return;
     const d=doc();if(!d){paint();if(typeof root.askSignIn==='function')root.askSignIn();return}
@@ -37,6 +39,6 @@
   root.document.addEventListener('change',change);
   /* после запуска хранилища: свитч переключили в Meal, Sport или на другом устройстве — перерисовать */
   function start(){const d=doc();if(d)d.subscribe(e=>{if(e.origin!=='local')redraw()});paint()}
-  root.DayAppLinks={list,on,sportOn,mealDayOn,mealEventOn,paint,start};
+  root.DayAppLinks={list,on,sportOn,mealDayOn,mealEventOn,tapOn,paint,start};
   if(root.document.readyState==='loading')root.document.addEventListener('DOMContentLoaded',paint);else paint();
 })(typeof window!=='undefined'?window:globalThis);

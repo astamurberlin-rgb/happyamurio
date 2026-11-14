@@ -323,7 +323,7 @@ with sync_playwright() as p:
     base = m1.evaluate("()=>Math.round(sumOf(day(curDate).items).k*10)/10")
     one = m1.evaluate("()=>Math.round(sumOf([{fid:'egg',q:1,u:'шт',g:gramsFor('egg',1,'шт')}]).k*10)/10")
     out["meal_numbers"] = [base, one]
-    EATEN = "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e}"
+    EATEN = "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),HappyDayCounters.apps());return !!e&&Math.abs(e.k-k)<0.2&&e}"
     a1.click(".tab[data-go=day]")
     out["meal_counter_shown"] = until(a1, "()=>{const b=document.querySelector('#tapBox [data-tplus=\"meal-egg\"]');return !!b&&b.closest('.tpItem').innerText}", seconds=10)
     out["eaten_before"] = until(a1, EATEN, base, 10)
@@ -334,7 +334,7 @@ with sync_playwright() as p:
     out["eaten_after_tap"] = a1.evaluate(EATEN, round(base + one, 1))
     out["tap_seen_by_meal"] = until(m1, "()=>{const x=day(curDate).items.filter(x=>x.nb==='day');return x.length===1&&{fid:x[0].fid,tap:x[0].tap}}", seconds=10)
     out["meal_not_stored_in_day"] = not a1.evaluate("()=>JSON.stringify(DayDocs.NAMES.map(n=>DayData.store.doc(n).all())).match(/meal-egg|counterEventId/)")
-    out["eaten_counted"] = until(a1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e}", round(base + one, 1), 10)
+    out["eaten_counted"] = until(a1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),HappyDayCounters.apps());return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e}", round(base + one, 1), 10)
     out["meal_on_other_phone"] = until(b1, "k=>{const b=document.querySelector('#tapBox [data-tplus=\"meal-egg\"]');return !!b&&Number(b.parentElement.querySelector('.v').textContent)===1&&!!mealDay(curDate)&&Math.abs(mealDay(curDate).k-k)<0.2}", round(base + one, 1), 30)
     m1.close()
 

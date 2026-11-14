@@ -30,8 +30,11 @@ const PUBLIC={
  'sport/plans':['sport'],               // плановые тренировки — shared/happy-sport-summary.js
  'sport/body':['day','meal','sport'],   // замеры тела, общий — shared/happy-measurements.js
  'day/pairs':['day','meal','sport'],    // свитчи связи приложений, общий — shared/happy-app-links.js
- 'day/foodtaps':['day','meal'],         // нажатия Day на счётчики еды; порцию правит и убирает и Meal — shared/happy-food.js
- 'sport/foodtaps':['meal','sport'],     // нажатия Sport на счётчики еды; порцию правит и убирает и Meal — shared/happy-food.js
+ /* нажатия на счётчики еды: лежат у приложения, где нажали; число на счётчике — одно на три приложения, поэтому
+    читают и убирают нажатия все три — shared/happy-food.js */
+ 'day/foodtaps':['day','meal','sport'],
+ 'meal/foodtaps':['day','meal','sport'],
+ 'sport/foodtaps':['day','meal','sport'],
  'meal/summary':['meal'],               // съедено по дням — shared/happy-food.js
  'meal/foods':['meal']                  // счётчики еды из продуктов Meal — shared/happy-food.js
 };

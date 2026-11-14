@@ -19,11 +19,11 @@ DayBoot.ready=(async()=>{
  try{await account.load()}catch(e){DayBoot.error='Не удалось прочитать вход на устройстве'}
  if(account.current()){
   /* Номера форматов: свои документы — формат раскладки Day; витрина — номера из её общих файлов. */
-  const formats={'day/foodtaps':HappyFood.FORMAT,'day/pairs':HappyAppLinks.FORMAT,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,
+  const formats={'day/foodtaps':HappyFood.FORMAT,'meal/foodtaps':HappyFood.FORMAT,'sport/foodtaps':HappyFood.FORMAT,'day/pairs':HappyAppLinks.FORMAT,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,
    'sport/summary':HappySportSummary.FORMAT,'sport/plans':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT};
   for(const name of DayDocs.NAMES)formats['day/'+name]=DayDocs.FORMAT;
   try{DayBoot.store=await HappyStore.open({app:'day',account,own:DayDocs.OWN,
-   reads:{sport:['summary','plans'],meal:['summary','foods']},shared:{sport:['body']},formats,firstSync:12000})}
+   reads:{sport:['summary','plans'],meal:['summary','foods']},shared:{sport:['body','foodtaps'],meal:['foodtaps']},formats,firstSync:12000})}
   catch(e){DayBoot.error=(e&&e.message)||'Хранилище на устройстве недоступно'}
  }
  const who=account.current()?account.current().uid:null;

@@ -37,11 +37,11 @@ var MealDocs=(()=>{
  const YEARS=[2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035];
  const DIARY=YEARS.map(y=>'diary_'+y).concat(['diary_old']);
  const NAMES=['setup','products','snaps'].concat(DIARY);          // документы, которые раскладывает этот файл
- const OWN=NAMES.concat(['supps','summary','foods']);             // все свои документы Meal для общего модуля
+ const OWN=NAMES.concat(['supps','summary','foods','foodtaps']);  // все свои документы Meal для общего модуля
  /* списки — по записям: ключ элемента; словари — по записям; остальное — полем целиком */
  const LISTS={sections:'k',taps:'k',foods:'id',recipes:'id',propertyDefs:'id'};
- const MAPS=new Set(['goals','purchases','units','bls','referenceFoods','productSnapshots']);
- const DOC={foods:'products',recipes:'products',propertyDefs:'products',units:'products',bls:'products',referenceFoods:'products',productSnapshots:'snaps'};
+ const MAPS=new Set(['goals','purchases','units','bls','referenceFoods','productSnapshots','counterSnaps']);
+ const DOC={foods:'products',recipes:'products',propertyDefs:'products',units:'products',bls:'products',referenceFoods:'products',productSnapshots:'snaps',counterSnaps:'snaps'};
  /* в документы не идёт: дни раскладываются отдельно; остальное — служебное прежних выпусков */
  const SKIP=new Set(['days','mealCounters','__journalSync','__journalBaseline']);
  const BAD=new Set(['__proto__','constructor','prototype']);
@@ -59,7 +59,7 @@ var MealDocs=(()=>{
   for(const x of list){if(!object(x)||!text(x[field])||seen.has(x[field]))return false;seen.add(x[field])}
   return true;
  }
- const mine=x=>!(x&&x.nb);   // порция, нажатая в Day или Sport, — их запись: в документы Meal не кладётся
+ const mine=x=>!(x&&x.nb);   // порция со счётчика — запись нажатия (документы foodtaps): в дневник Meal не кладётся
 
  /* ── дневник → документы ──
     db → Map(документ → Map(номер записи → значение)); у результата поле same: Map(документ → Set(номера записей

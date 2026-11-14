@@ -78,10 +78,16 @@ assert.equal(new Set(D.OWN).size,D.OWN.length);
  assert.deepEqual(oddDocs.diary_2026.map(r=>r.id),['["D","'+DATE+'"]']);assert.deepEqual(plain(D.build(oddDocs,defaults())),plain(odd));
 }
 
-/* 3. порции, нажатые в Day и Sport, в документы Meal не попадают; служебное прежних выпусков — тоже */
+/* 3. порции со счётчиков (нажатия Meal, Day и Sport) в записи дней не попадают; служебное прежних выпусков — тоже.
+      Снимок состава добавки на момент нажатия — запись документа snaps, по одной на версию состава. */
 {
  const w=world(),a=await device(w);
- a.day().items.push(item('i1'),{id:'nb:day-7',nb:'day',counterEventId:'day-7',sec:'am',fid:'egg',q:1,u:'шт',g:55,t:'09:00',tap:'egg'});
+ a.day().items.push(item('i1'),{id:'nb:day-7',nb:'day',counterEventId:'day-7',sec:'am',fid:'egg',q:1,u:'шт',g:55,t:'09:00',tap:'egg'},
+  {id:'nb:meal-8',nb:'meal',counterEventId:'meal-8',sec:'am',fid:'egg',q:1,u:'шт',g:55,t:'09:05',tap:'egg'});
+ a.db.counterSnaps={'supp:v1@2':{id:'supp:v1',n:'Рыбий жир',supplement:{revision:2}}};a.save();
+ assert.deepEqual(a.store.doc('snaps').all().map(r=>r.id).sort(),['["M","counterSnaps"]','["m","counterSnaps","supp:v1@2"]']);
+ assert.ok(!JSON.stringify(D.NAMES.map(n=>a.store.doc(n).all())).includes('meal-8'),'порция со своего счётчика — нажатие, в записи дней не кладётся');
+ assert.ok(D.OWN.includes('foodtaps')&&!D.NAMES.includes('foodtaps'),'документ нажатий Meal назван, раскладывает его общий файл витрины');
  a.db.mealCounters={v:1,definitions:[],events:[]};a.db.__journalSync={v:1};a.save();
  const text=JSON.stringify(D.NAMES.map(n=>a.store.doc(n).all()));
  assert.ok(text.includes('"i1"')&&!text.includes('day-7')&&!text.includes('"nb"'),'порция соседа не записана');

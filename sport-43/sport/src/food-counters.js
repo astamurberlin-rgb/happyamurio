@@ -1,35 +1,40 @@
 /* Счётчики Sport.
    Свои счётчики Sport хранятся в документе tallies общего модуля (каждое нажатие — отдельная запись, sport-docs.js).
    Счётчики еды принадлежат Happy Meal: Sport читает их из витрины meal/foods и показывает те, которым в Meal включён
-   показ в Sport. Нажатие принадлежит Sport: каждое — отдельная запись его документа foodtaps, Meal читает их оттуда
-   и показывает порцию в дневнике питания; порцию там можно поправить и убрать — тогда Meal меняет запись нажатия.
-   Название, продукт и порция такого счётчика меняются в Happy Meal.
+   показ в Sport. Нажатие — отдельная запись; лежит она у приложения, где нажали: нажатие Sport — в его документе
+   foodtaps. Число на счётчике одно во всех трёх приложениях (Астамур 14.11.2026 23:19): Sport считает нажатия из
+   трёх документов (свой, day/foodtaps, meal/foodtaps), «−» снимает последнее, где бы его ни сделали. Meal показывает
+   каждое нажатие порцией в дневнике питания. Название, продукт и порция такого счётчика меняются в Happy Meal.
    Формат записей — shared/happy-food.js. Пока связь с Meal выключена, его счётчики здесь не показываются. */
 var SportFood=(()=>{
  const F=globalThis.HappyFood,PREFIX='meal:';
  const signedIn=()=>!!(F&&SportData.signedIn());
  const linkOn=()=>typeof SportAppLinks==='undefined'||SportAppLinks.on('meal');
- const tapsDoc=()=>signedIn()?SportData.store.doc(F.TAPS_NAME):null;
+ /* документ нажатий приложения app: свой — у Sport, остальные два — общие */
+ const docOf=app=>!signedIn()?null:app==='sport'?SportData.store.doc(F.TAPS_NAME):SportData.store.shared(app,F.TAPS_NAME);
+ const tapsDoc=()=>docOf('sport');
+ /* записи трёх документов нажатий; документ более новой версии не читается и не называется */
+ function docs(){const out={};F.TAP_APPS.forEach(app=>{const d=docOf(app);if(d&&!d.newer)out[app]=d.all()});return out}
  /* счётчики Meal, показанные в Sport */
  function foods(){if(!signedIn()||!linkOn())return [];const d=SportData.store.neighbor(F.FOODS.app,F.FOODS.name);return d.newer?[]:F.foods(d.all()).filter(x=>F.linked(x,'sport'))}
- /* свои нажатия; сделанные, пока связь с Meal была выключена, не учитываются */
+ /* все нажатия на счётчики еды, по времени; сделанные в Day или Sport, пока их связь с Meal была выключена, не считаются */
  function taps(){
-  const d=tapsDoc();if(!d||d.newer)return [];
-  return F.taps(d.all()).filter(t=>typeof SportAppLinks==='undefined'||SportAppLinks.mealEventOn(t.date,t.item&&t.item.t,t.at));
+  if(!signedIn())return [];
+  return F.all(docs(),(app,t)=>typeof SportAppLinks==='undefined'||SportAppLinks.tapOn(app,t.date,t.item&&t.item.t,t.at));
  }
  const count=(cid,date)=>taps().filter(t=>t.cid===cid&&t.date===date).length;
  function change(id,add){
   const cid=id.slice(PREFIX.length),doc=tapsDoc(),d=foods().find(x=>x.id===cid);if(!doc||!d)return;
   const fail=e=>toast(e&&e.code==='newer'?HappyStore.NEWER:(e&&e.message)||'Не удалось сохранить');
   if(add){const now=localNow();doc.put(F.tapId('sport'),F.tap(d,selectedDate,selectedDate===dayNow()?now.slice(11,16):null)).catch(fail);toast(d.title+' +'+F.portion(d)+' · Happy Meal')}
-  else{const mine=taps().filter(t=>t.cid===cid&&t.date===selectedDate);if(mine.length)doc.remove(mine[mine.length-1].id).catch(fail)}
+  else{const t=F.last(taps(),cid,selectedDate),from=t?docOf(t.app):null;if(from&&!from.newer)from.remove(t.id).catch(fail);else if(from)fail({code:'newer'})}
   paintSportFood();if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();
  }
- /* «съедено» за день: итог дня из сводки Meal и свои нажатия, которые Meal ещё не посчитал. Сводки нет — null. */
+ /* «съедено» за день: итог дня из сводки Meal и нажатия, которые Meal ещё не посчитал. Сводки нет — null. */
  function eaten(date){
   if(!signedIn()||(typeof SportAppLinks!=='undefined'&&!SportAppLinks.mealDayOn(date)))return null;
   const d=SportData.store.neighbor(F.SUMMARY.app,F.SUMMARY.name);if(d.newer)return null;
-  const s=F.summary(d.all()),e=F.eaten(s,date,taps(),foods(),'sport');
+  const s=F.summary(d.all()),e=F.eaten(s,date,taps(),foods(),Object.keys(docs()));
   return e?{k:e.k,p:e.p,f:e.f,c:e.c,fib:e.fib,g:s.goals}:null;
  }
  return {PREFIX,foods,taps,count,change,eaten};
@@ -58,6 +63,6 @@ document.addEventListener('submit',event=>{if(event.target.id!=='sport-food-crea
 if(SportData.signedIn()){
  const again=()=>{try{paintSportFood();if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh()}catch(e){}};
  SportData.store.neighbor('meal','foods').subscribe(again);SportData.store.neighbor('meal','summary').subscribe(again);
- SportData.store.doc('foodtaps').subscribe(e=>{if(e.origin!=='local')again()});
+ HappyFood.TAP_APPS.forEach(app=>{const d=app==='sport'?SportData.store.doc('foodtaps'):SportData.store.shared(app,'foodtaps');d.subscribe(e=>{if(e.origin!=='local')again()})});
 }
 if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();   // кольцо нарисовано раньше, чем загрузился этот файл

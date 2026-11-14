@@ -3,12 +3,14 @@
    включён показ в Happy Day или Happy Sport, Meal кладёт в свою витрину — документ meal/foods общего модуля: название,
    порция и числа одной порции (калории, белки, жиры, углеводы, клетчатка на 100 г), без каталога и состава. Каталог
    добавок и их состав остаются в Meal (Астамур 14.11.2026): соседям — только счётчик.
-   Нажатие лежит у приложения, где нажали (Астамур 14.11.2026): своё нажатие Meal — обычная запись дневника;
-   нажатия Day и Sport лежат у них (day/foodtaps, sport/foodtaps), Meal показывает их в дне как порции с отметкой nb —
-   чьё нажатие. В документы Meal такая порция не кладётся. Поправить и убрать её можно и здесь (Астамур 14.11.2026
-   22:34: счётчик показан — порции прибавляются и убавляются): правка уходит в саму запись нажатия, документы нажатий
-   у Meal общие с соседом. Состав порции Meal берёт у себя — по своему счётчику и своему продукту. В сводке для
-   соседей (meal/summary) посчитанные нажатия названы в cs, непосчитанные — в skipped.
+   Нажатие на счётчик — отдельная запись; лежит она у приложения, где нажали: своё нажатие Meal — в его документе
+   foodtaps, нажатия Day и Sport — в их документах (day/foodtaps, sport/foodtaps). Число на счётчике одно во всех
+   трёх приложениях (Астамур 14.11.2026 23:19): каждое считает нажатия из всех трёх документов, «−» убирает последнее,
+   где бы его ни нажали. В дневнике Meal каждое нажатие видно порцией с отметкой nb — где нажали; в записи дней
+   (документы diary_…) такая порция не кладётся. Поправили или убрали порцию в дневнике — меняется или убирается
+   сама запись нажатия. Состав порции Meal берёт у себя — по своему счётчику и своему продукту; у добавки — по
+   составу на момент нажатия (DB.counterSnaps: один снимок на версию состава, в нажатии только номер версии).
+   В сводке для соседей (meal/summary) посчитанные нажатия названы в cs, непосчитанные — в skipped.
    Счётчик, убранный со страницы Day или Sport, остаётся в Meal: у него выключается показ в этом приложении.
    Формат — shared/happy-food.js. */
 (function(root){
@@ -18,7 +20,7 @@
   const $=id=>document.getElementById(id),esc=x=>root.escH(x),clone=x=>JSON.parse(JSON.stringify(x));
   const newId=()=>root.MealData.id();
   const signedIn=()=>!!(root.MealData&&root.MealData.signedIn());
-  const APP_NAME={day:'Happy Day',sport:'Happy Sport'};
+  const APP_NAME={day:'Happy Day',meal:'Happy Meal',sport:'Happy Sport'},NEIGHBORS=['day','sport'];
   function ready(c){const f=c&&root.FOODS[c.fid];return !!(f&&Number(c.q)>0&&c.u&&(c.g>0||c.u==='г'||f.por&&f.por[c.u]>0)&&(c.libraryConfirmed||f.b||f.composition||root.BASE.some(r=>r[0]===c.fid)||[f.k,f.p,f.f,f.c].some(x=>x>0)))}
   /* Meal 29: продукт-добавка (supplement-counters.js) с более новой версией состава заменяет прежнюю копию */
   function rememberFood(f){const old=root.FOODS[f.id];
@@ -29,6 +31,10 @@
   const SUP=()=>root.MealSupplementCounters;
   /* порция добавки: снимок продукта-добавки — из самого счётчика, иначе из дневника */
   function supplementFood(c){if(!c)return null;const f=c.food&&c.food.id===c.fid?c.food:root.FOODS[c.fid];return f&&f.supplement?f:null}
+  /* состав добавки на момент нажатия: один снимок на версию состава, в нажатии — только номер версии (rev) */
+  const snapKey=(fid,rev)=>fid+'@'+rev;
+  function keepSnap(sf){const rev=Number(sf.supplement.revision)||0,S=root.DB.counterSnaps||(root.DB.counterSnaps={}),key=snapKey(sf.id,rev);if(!S[key])S[key]=clone(sf);return rev}
+  function snapOf(it){const rev=it.counterFood&&it.counterFood.rev,S=root.DB.counterSnaps;return Number.isSafeInteger(rev)&&S&&S[snapKey(it.fid,rev)]||null}
   const linked=(c,app)=>!!(c&&c.targets&&c.targets[app]===true);
   const shown=c=>linked(c,'day')||linked(c,'sport');
 
@@ -40,6 +46,7 @@
     const value=(key,own)=>{let v=null;try{v=P&&P.value?P.value(f,key,root.blsVal):null}catch(e){}return num(v)!==null?num(v):num(own)};
     const out={id:c.fid,n:f.n.slice(0,400),k:value('kcal',f.k),p:value('prot',f.p),f:value('fat',f.f),c:value('carb',f.c)},fib=value('fib',null);
     if(fib!==null)out.counterValues={fib};
+    if(f.supplement)out.rev=keepSnap(f);
     return out;
   }
   function publish(){
@@ -60,13 +67,15 @@
     root.MealData.publish(F.FOODS.name,wanted);
   }
 
-  /* ── порции, нажатые в Day и Sport: вид в дневнике ── */
-  const tapsDoc=app=>root.MealData.store.shared(app,F.TAPS_NAME);
+  /* ── порции со счётчиков (нажатия Meal, Day и Sport): вид в дневнике ── */
+  const tapsDoc=app=>app==='meal'?root.MealData.store.doc(F.TAPS_NAME):root.MealData.store.shared(app,F.TAPS_NAME);
   const sig=(date,x)=>JSON.stringify([date,x.sec,x.fid,x.q,x.u,x.g,x.t||null]);
   /* нажатие → порция дня; null — посчитать нельзя (ни счётчика, ни продукта) */
   function viewItem(app,t,c){
     const it=t.item;let counterFood=null,known=false;
-    if(c&&c.fid===it.fid){const sf=supplementFood(c);if(sf)counterFood=clone(sf);else known=!!root.FOODS[c.fid]}
+    const snap=snapOf(it);
+    if(snap)counterFood=clone(snap);
+    else if(c&&c.fid===it.fid){const sf=supplementFood(c);if(sf)counterFood=clone(sf);else known=!!root.FOODS[c.fid]}
     if(!counterFood&&!known){
       /* счётчика уже нет или у него другой продукт: продукт из дневника, иначе — числа из самого нажатия */
       if(root.FOODS[it.fid])known=true;
@@ -78,30 +87,30 @@
     if(c)item.tap=c.k;if(counterFood)item.counterFood=counterFood;
     return item;
   }
-  /* собрать вид заново: по документам нажатий Day и Sport, как они лежат сейчас */
+  /* собрать вид заново: по трём документам нажатий, как они лежат сейчас; порции — по времени нажатия */
   function neighbors(){
     const days=root.DB.days;
     Object.keys(days).forEach(date=>{const items=days[date]&&days[date].items;if(Array.isArray(items)&&items.some(x=>x&&x.nb))days[date].items=items.filter(x=>!(x&&x.nb))});
     skippedIds=[];base=new Map();
-    if(signedIn())F.TAP_APPS.forEach(app=>{
-      const doc=root.MealData.store.neighbor(app,F.TAPS_NAME);if(doc.newer)return;
-      F.taps(doc.all()).forEach(t=>{
-        /* нажатие, сделанное, пока связь с приложением была выключена, не берётся; номер нажатия начинается с названия приложения */
-        const on=t.id.indexOf(app+'-')===0&&(!root.MealAppLinks||root.MealAppLinks.tapOn(app,t.date,t.item.t,t.at));
-        const item=on?viewItem(app,t,root.DB.taps.find(c=>c.k===t.cid)):null;
-        if(!item){skippedIds.push(t.id);return}
-        root.day(t.date).items.push(item);base.set(t.id,{app,t,sig:sig(t.date,item)});
-      });
+    if(!signedIn())return;
+    const docs={},shown={};
+    F.TAP_APPS.forEach(app=>{const doc=tapsDoc(app);if(!doc.newer)docs[app]=doc.all()});
+    /* нажатие Day или Sport, сделанное, пока связь с приложением была выключена, не берётся */
+    F.all(docs,(app,t)=>!root.MealAppLinks||root.MealAppLinks.tapOn(app,t.date,t.item.t,t.at)).forEach(t=>{
+      const item=viewItem(t.app,t,root.DB.taps.find(c=>c.k===t.cid));if(!item)return;
+      shown[t.id]=true;const app=t.app;delete t.app;
+      root.day(t.date).items.push(item);base.set(t.id,{app,t,sig:sig(t.date,item)});
     });
+    Object.keys(docs).forEach(app=>F.taps(docs[app]).forEach(t=>{if(!shown[t.id])skippedIds.push(t.id)}));
   }
-  /* порция соседа, как она выглядит в дневнике после правки, → запись нажатия; null — такую запись сосед не прочтёт */
+  /* порция, как она выглядит в дневнике после правки, → запись нажатия; null — такую запись приложения не прочтут */
   function edited(t,date,x){
     const value=clone(t),it=value.item;delete value.id;value.date=date;
     it.q=x.q;it.u=x.u;it.g=x.g;it.t=x.t||null;it.sec=x.sec;
     if(it.fid!==x.fid){it.fid=x.fid;delete it.counterFood}
     return F.taps([{id:t.id,value}]).length?value:null;
   }
-  /* перед каждой записью дневника: порцию соседа поправили или убрали здесь — меняется или убирается само нажатие */
+  /* перед каждой записью дневника: порцию со счётчика поправили или убрали — меняется или убирается само нажатие */
   function capture(){
     if(!started)return;
     const now=new Map();
@@ -110,7 +119,7 @@
       /* «Вернуть» после удаления: порция снова в дне — нажатие кладётся обратно */
       if(!base.has(id)&&gone.has(id)&&x.id==='nb:'+id){base.set(id,Object.assign(gone.get(id),{sig:''}));gone.delete(id)}
       if(base.has(id)&&!now.has(id)&&x.id==='nb:'+id){now.set(id,{date,x});return}
-      delete x.nb;delete x.counterEventId;x.id='i'+newId();   // копия порции соседа — обычная запись Meal
+      delete x.nb;delete x.counterEventId;delete x.tap;x.id='i'+newId();   // копия порции со счётчика — обычная запись Meal, счётчик её не считает
     }));
     const changes={},names=[];let refused=false;
     base.forEach((b,id)=>{
@@ -129,8 +138,8 @@
   /* счётчик убрали со страницы Day или Sport — у него выключается показ в этом приложении; сам счётчик остаётся */
   function applyHidden(){
     if(!signedIn()||root.RO)return false;let changed=false;
-    F.TAP_APPS.forEach(app=>{
-      const doc=root.MealData.store.neighbor(app,F.TAPS_NAME);if(doc.newer)return;
+    NEIGHBORS.forEach(app=>{
+      const doc=tapsDoc(app);if(doc.newer)return;
       const off=F.hidden(doc.all());
       root.DB.taps.forEach(c=>{if(off[c.k]&&linked(c,app)){c.targets[app]=false;if(!shown(c))delete c.targets;changed=true}});
     });
@@ -148,17 +157,22 @@
     root.editTap=edit;
     /* Meal 30 (Астамур 12.11 10:19): продукт из отключённой или не купленной библиотеки — счётчик тусклый и неактивный */
     root.tapOff=function(c){const MS=root.MealSources;if(!MS||!c||!c.fid)return false;const f=supplementFood(c)||root.FOODS[c.fid]||(c.food&&c.food.id===c.fid?c.food:null);return !!f&&!MS.available(root.DB,f)};
+    /* «+» — новое нажатие в своём документе; порция в дне — его вид */
     root.tapAdd=function(k){const c=root.tapDef(k);if(!ready(c)){edit(root.DB.taps.indexOf(c));return}
       if(root.writeGuard())return;
-      const g=c.g||root.gramsFor(c.fid,c.q,c.u),item={id:'i'+newId(),sec:root.autoSec(),fid:c.fid,q:c.q,u:c.u,g,t:root.curDate===root.todayISO()?root.nowHM():null,tap:k};
-      const sf=supplementFood(c);if(sf)item.counterFood=clone(sf);   // Meal 29: состав добавки — в самой записи
-      root.day(root.curDate).items.push(item);root.save();root.renderDay();root.toast(c.t+' +'+root.portTxt(c));
+      const doc=tapsDoc('meal');if(doc.newer){root.toast(root.HappyStore.NEWER);return}
+      const g=c.g||root.gramsFor(c.fid,c.q,c.u),food=showcaseFood(c);
+      const value={cid:k,date:root.curDate,item:{fid:c.fid,q:c.q,u:c.u,g,t:root.curDate===root.todayISO()?root.nowHM():null,sec:root.autoSec()},at:Date.now()};
+      if(food)value.item.counterFood=food;
+      doc.put(F.tapId('meal'),value).catch(root.MealData.report);
+      neighbors();root.save();root.renderDay();root.toast(c.t+' +'+root.portTxt(c));
     };
-    /* «−» убирает последнюю порцию счётчика за день, где бы её ни нажали: по времени, без времени — последнюю в списке */
+    /* «−» убирает последнее нажатие на счётчик за день, где бы его ни сделали */
     root.tapUndo=function(k){
       const e=root.day(root.curDate),all=e.items.filter(x=>x.tap===k);if(!all.length)return;
       if(root.writeGuard())return;
-      let it=all[0];all.forEach(x=>{if((x.t||'')>=(it.t||''))it=x});
+      const at=x=>{const b=base.get(x.counterEventId);return b?b.t.at||0:0};
+      let it=all[0];all.forEach(x=>{if(at(x)>=at(it))it=x});
       e.items.splice(e.items.indexOf(it),1);root.save();root.renderDay();root.toast(root.tapDef(k).t+' −'+root.amtShort(it));
     };
     const oldTaps=root.tapsHTML;root.tapsHTML=function(){let html=oldTaps();root.DB.taps.forEach(c=>{const before='<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(root.portTxt(c))+'</small>';const note=ready(c)?root.portTxt(c):'Выбрать продукт';html=html.replace(before,'<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(note)+'</small>')});return html};
@@ -166,7 +180,7 @@
     const oldRebuild=root.rebuildLib;root.rebuildLib=function(){oldRebuild();if(dialog&&!dialog.hidden&&draft&&!draft.fid)results()};
     document.addEventListener('happy-supplements-changed',()=>{if(dialog&&!dialog.hidden&&draft&&!draft.fid)results()});
     /* свою правку порции соседа вид уже содержит; остальное — другая вкладка, сосед, другое устройство */
-    if(signedIn())F.TAP_APPS.forEach(app=>root.MealData.store.neighbor(app,F.TAPS_NAME).subscribe(e=>{if(e.origin!=='local')refresh()}));
+    if(signedIn())F.TAP_APPS.forEach(app=>tapsDoc(app).subscribe(e=>{if(e.origin!=='local')refresh()}));
     sync();
     if(signedIn()&&!root.RO)try{publish()}catch(e){}
   }
@@ -252,7 +266,7 @@
     if(f.supplement)c.food=clone(f);else delete c.food;
     if(targets.day||targets.sport)c.targets=targets;else delete c.targets;
     /* показ включён снова — отметка «убран со страницы» у соседа снимается */
-    F.TAP_APPS.forEach(app=>{if(!targets[app])return;const doc=tapsDoc(app),mark=F.hide(c.k).id;if(!doc.newer&&doc.get(mark))doc.remove(mark).catch(root.MealData.report)});
+    NEIGHBORS.forEach(app=>{if(!targets[app])return;const doc=tapsDoc(app),mark=F.hide(c.k).id;if(!doc.newer&&doc.get(mark))doc.remove(mark).catch(root.MealData.report)});
     root.save();neighbors();close();root.renderAll();root.toast('Счётчик сохранён');
   }catch(e){if(draft===d&&$('fcError'))$('fcError').textContent=e.message}}
   root.HappyMealCounters={init,edit,ready,neighbors:sync,publish,skipped:()=>skippedIds.slice()};

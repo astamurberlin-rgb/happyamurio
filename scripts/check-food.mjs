@@ -141,6 +141,33 @@ ok('«съедено»: записи, по которым Meal решил сам
  assert.deepEqual(F.eaten(summary({},[{id:'skipped',value:[ghost.id]}]),DAY,F.taps([ghost]),list(),'day'),{k:0,p:0,f:0,c:0,fib:null,recorded:false,pending:0},'«призрак» не прибавляется и в день без записей Meal');
 });
 
+ok('одно число на счётчике: нажатия из трёх документов считаются вместе, «−» берёт последнее, где бы его ни сделали',()=>{
+ const mk=(app,cid,date,at)=>({id:app+'-'+at,value:{...F.tap(list().find(x=>x.id==='c2'),date,'10:00',at),cid},at});
+ const docs={day:[mk('day','c2',DAY,300),mk('day','c2',DAY,100)],meal:[mk('meal','c2',DAY,200),mk('meal','c1',DAY,250)],sport:[mk('sport','c2',DAY,400),mk('sport','c2',PREV,500),{id:'day-чужой',value:mk('day','c2',DAY,450).value}]};
+ const all=F.all(docs);
+ assert.deepEqual(all.map(t=>t.id),['day-100','meal-200','meal-250','day-300','sport-400','sport-500'],'по времени нажатия; запись с чужим началом номера не берётся');
+ assert.deepEqual(all.map(t=>t.app),['day','meal','meal','day','sport','sport']);
+ assert.equal(all.filter(t=>t.cid==='c2'&&t.date===DAY).length,4,'число на счётчике за день — одно для всех');
+ assert.equal(F.last(all,'c2',DAY).id,'sport-400','«−» снимает последнее нажатие — оно сделано в Sport');
+ assert.equal(F.last(all,'c1',DAY).id,'meal-250');assert.equal(F.last(all,'c9',DAY),null);assert.equal(F.last([],'c2',DAY),null);
+ // связь Sport с Meal была выключена в момент нажатия — такое нажатие не считает никто; нажатия самого Meal считаются всегда
+ const asked=[],cut=F.all(docs,(app,t)=>{asked.push(app);return app!=='sport'});
+ assert.deepEqual(cut.map(t=>t.id),['day-100','meal-200','meal-250','day-300']);assert.ok(!asked.includes('meal'));
+ // документ не прочитан (записан более новой версией) — его нажатия просто не называются
+ assert.deepEqual(F.all({day:docs.day}).map(t=>t.id),['day-100','day-300']);assert.deepEqual(F.all(null),[]);assert.deepEqual(F.all({meal:'строка'}),[]);
+ assert.deepEqual(F.TAP_APPS,['day','meal','sport']);
+});
+
+ok('«съедено» по нажатиям трёх приложений: снятое в любом прочитанном документе вычитается, из непрочитанного — нет',()=>{
+ const mk=(app,at)=>({id:app+'-'+at,value:F.tap(list().find(x=>x.id==='c2'),DAY,'10:00',at),at});
+ const one=[46.64,0.7,0.26,10.12,1.58];
+ const s=summary({[DAY]:{food:true,k:139.9,p:2.1,f:0.8,c:30.4,fib:4.7,cs:{'day-1':one,'meal-2':one,'sport-3':one}}});
+ const left=F.all({day:[mk('day',1)],meal:[],sport:[mk('sport',3),mk('sport',4)]});   // порцию Meal сняли, в Sport нажали ещё одну
+ assert.deepEqual(F.eaten(s,DAY,left,list(),['day','meal','sport']),{k:139.9,p:2.1,f:0.8,c:30.4,fib:4.7,recorded:true,pending:1},'минус снятая порция Meal, плюс новая из Sport');
+ assert.equal(F.eaten(s,DAY,left,list(),['day','sport']).k,186.5,'документ Meal не прочитан — его посчитанная порция остаётся в итоге');
+ assert.equal(F.eaten(s,DAY,left,list(),'day').k,186.5,'название одного приложения — как раньше');
+});
+
 ok('счётчик убран со страницы приложения: отметка в документе нажатий, нажатия её не замечают',()=>{
  const mark=F.hide('c2',700),t=tap('c2',DAY);
  assert.deepEqual(plain(mark),{id:'off:c2',value:{off:'c2',at:700}});

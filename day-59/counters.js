@@ -1,17 +1,24 @@
 /* Day 59 · счётчики еды из Happy Meal.
    Счётчик (название, продукт, порция) принадлежит Meal: Day читает его из витрины meal/foods и показывает, если
-   Meal назначил его в Day. Нажатие принадлежит Day: каждое — отдельная запись его документа foodtaps, Meal читает
-   их оттуда. В дневнике в памяти счётчики Meal и их нажатия — только вид: DB.taps (mealCounterId) и day.taps
+   Meal назначил его в Day. Нажатие — отдельная запись; лежит она у приложения, где нажали: нажатие Day — в его
+   документе foodtaps. Число на счётчике одно во всех трёх приложениях (Астамур 14.11.2026 23:19): Day считает
+   нажатия из трёх документов (свой, meal/foodtaps, sport/foodtaps), «−» снимает последнее, где бы его ни сделали.
+   В дневнике в памяти счётчики Meal и их нажатия — только вид: DB.taps (mealCounterId) и day.taps
    (counterEventId); в свои настройки и дни Day их не кладёт (day-docs.js). Формат записей — shared/happy-food.js.
    Название, продукт и порция такого счётчика меняются в Happy Meal. Убрать счётчик со страницы Day можно здесь
    (Астамур 14.11.2026 22:34): в документ нажатий кладётся отметка, Day счётчик больше не показывает, а Meal
-   выключает у него показ в Day. Сам счётчик и записанные порции остаются. Порцию может поправить и убрать и Meal. */
+   выключает у него показ в Day. Сам счётчик и записанные порции остаются. */
 (function(root){
   'use strict';
   const F=root.HappyFood,clone=x=>JSON.parse(JSON.stringify(x));
   let baseSave=null,baseline={},applying=false,started=false;
   const signedIn=()=>!!(root.DayData&&root.DayData.signedIn());
-  const tapsDoc=()=>signedIn()?root.DayData.store.doc(F.TAPS.name):null;
+  /* документ нажатий приложения app: свой — у Day, остальные два — общие */
+  const docOf=app=>!signedIn()?null:app==='day'?root.DayData.store.doc(F.TAPS_NAME):root.DayData.store.shared(app,F.TAPS_NAME);
+  const tapsDoc=()=>docOf('day');
+  /* записи трёх документов нажатий; документ более новой версии не читается и не называется */
+  function docs(){const out={};F.TAP_APPS.forEach(app=>{const d=docOf(app);if(d&&!d.newer)out[app]=d.all()});return out}
+  const apps=()=>Object.keys(docs());
   const foodsDoc=()=>signedIn()?root.DayData.store.neighbor(F.FOODS.app,F.FOODS.name):null;
   /* счётчики Meal, показанные в Day */
   function foods(){
@@ -19,10 +26,10 @@
     const off=t&&!t.newer?F.hidden(t.all()):{};   // убранные со страницы Day, пока Meal не выключил им показ
     return F.foods(d.all()).filter(x=>F.linked(x,'day')&&!off[x.id]);
   }
-  /* свои нажатия; сделанные, пока связь с Meal выключена, не учитываются */
+  /* все нажатия на счётчики еды, по времени; сделанные в Day или Sport, пока их связь с Meal была выключена, не считаются */
   function taps(){
-    const d=tapsDoc();if(!d||d.newer)return [];
-    return F.taps(d.all()).filter(t=>!root.DayAppLinks||root.DayAppLinks.mealEventOn(t.date,t.item&&t.item.t,t.at));
+    if(!signedIn())return [];
+    return F.all(docs(),(app,t)=>!root.DayAppLinks||root.DayAppLinks.tapOn(app,t.date,t.item&&t.item.t,t.at));
   }
   /* вид в дневнике: счётчики Meal среди счётчиков Day и их нажатия по дням */
   function apply(){applying=true;try{
@@ -55,14 +62,18 @@
     Object.keys(baseline).forEach(id=>{if(!out[id]&&!root.DB.taps.some(c=>c.mealCounterId===baseline[id].cid))out[id]=baseline[id]});
     return out;
   }
-  /* перед каждой записью дневника: правки нажатий уходят в документ foodtaps */
+  /* перед каждой записью дневника: правки нажатий уходят в документ того приложения, где нажали */
   function capture(){
-    if(applying||!started)return;const d=tapsDoc();if(!d||d.newer)return;
-    const now=values(),changes=[];
-    Object.keys(now).forEach(id=>{if(JSON.stringify(now[id])!==JSON.stringify(baseline[id])){const value=clone(now[id]);delete value.id;changes.push({id,value})}});
-    Object.keys(baseline).forEach(id=>{if(!now[id])changes.push({id,deleted:true})});
+    if(applying||!started||!signedIn())return;
+    const now=values(),changes={};let refused=false;
+    const add=(app,change)=>{(changes[app]=changes[app]||[]).push(change)};
+    Object.keys(now).forEach(id=>{if(JSON.stringify(now[id])!==JSON.stringify(baseline[id])){const value=clone(now[id]);delete value.id;delete value.app;add(now[id].app,{id,value})}});
+    Object.keys(baseline).forEach(id=>{if(!now[id])add(baseline[id].app,{id,deleted:true})});
     baseline=now;
-    if(changes.length){d.putMany(changes).catch(root.DayData.report);try{if(root.SelfCare&&root.SelfCare.mealChanged)root.SelfCare.mealChanged()}catch(e){}}
+    const names=Object.keys(changes);if(!names.length)return;
+    names.forEach(app=>{const d=docOf(app);if(!d||d.newer){refused=true;return}d.putMany(changes[app]).catch(root.DayData.report)});
+    if(refused)setTimeout(refresh,0);   // документ записан более новой версией: вид возвращается к записанному
+    try{if(root.SelfCare&&root.SelfCare.mealChanged)root.SelfCare.mealChanged()}catch(e){}
   }
   const short=d=>typeof d.portionText==='string'&&d.portionText.trim()&&d.portionText.length<=80?d.portionText.trim():d.q+' '+d.u;
   function init(){
@@ -91,10 +102,11 @@
         root.toast('Счётчик убран из Happy Day. Вернуть: Happy Meal → настройки счётчика → включить Happy Day.');
       });
     },true);
-    const f=foodsDoc(),t=tapsDoc();
+    const f=foodsDoc();
     if(f)f.subscribe(refresh);
-    if(t)t.subscribe(e=>{if(e.origin!=='local')refresh()});
+    /* свою правку вид уже содержит; остальное — другая вкладка, Meal, Sport, другое устройство */
+    F.TAP_APPS.forEach(app=>{const d=docOf(app);if(d)d.subscribe(e=>{if(e.origin!=='local')refresh()})});
     apply();
   }
-  root.HappyDayCounters={init,capture,apply,refresh,foods,taps};
+  root.HappyDayCounters={init,capture,apply,refresh,foods,taps,apps};
 })(globalThis);

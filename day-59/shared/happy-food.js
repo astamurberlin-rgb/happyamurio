@@ -11,24 +11,26 @@
  * meal/foods — пишет Meal, читают Day и Sport: счётчики еды из продуктов библиотеки Meal. Счётчик принадлежит Meal.
  *   '<id счётчика>' → {title, fid, q, g, u, food:{id,n,k,p,f,c,…} — состав на 100 г, portionText?,
  *                      targets:{day:true|false, sport:true|false} — где счётчик показан}
- * day/foodtaps, sport/foodtaps — нажатия на счётчики еды. Нажатие лежит у приложения, где нажали; у каждого
- *   приложения свой документ с одним и тем же устройством записей. Новое нажатие кладёт только это приложение.
- *   Meal показывает нажатие порцией в дневнике питания и может её поправить или убрать: тогда он меняет или
- *   убирает саму запись нажатия (документы общие для приложения и Meal).
+ * day/foodtaps, meal/foodtaps, sport/foodtaps — нажатия на счётчики еды. Нажатие лежит один раз — у приложения,
+ *   где нажали; у каждого приложения свой документ с одним и тем же устройством записей. Новое нажатие приложение
+ *   кладёт только в свой документ. Число на счётчике одно во всех трёх приложениях (Астамур 14.11.2026 23:19):
+ *   каждое считает нажатия из всех трёх документов (all ниже), а «−» убирает последнее нажатие, где бы его ни
+ *   сделали (last ниже), — поэтому документы общие для трёх приложений. Meal показывает каждое нажатие порцией в
+ *   дневнике питания и может её поправить: тогда он меняет саму запись нажатия.
  *   '<id нажатия>' → {cid — счётчик, date:'ГГГГ-ММ-ДД', item:{fid,q,u,g,t:'ЧЧ:ММ' или null,sec,counterFood}, at — мс}
- *   id нажатия начинается с названия приложения ('day-…', 'sport-…'): по нему видно, чьё нажатие Meal учёл в cs.
+ *   id нажатия начинается с названия приложения ('day-…', 'meal-…', 'sport-…'): по нему видно, где нажали.
  *   'off:<id счётчика>' → {off:'<id счётчика>', at — мс} — счётчик убран со страницы этого приложения. Приложение
  *   его больше не показывает; Meal выключает у счётчика показ в этом приложении, а когда показ включают снова —
  *   убирает эту запись. Сам счётчик и записанные порции остаются.
  *
- * «Съедено» за день в Day не ждёт Meal: к итогу дня из сводки прибавляются свои нажатия, которых в cs ещё нет
+ * «Съедено» за день в Day и Sport не ждёт Meal: к итогу дня из сводки прибавляются нажатия, которых в cs ещё нет
  * (вес порции × состав продукта из самого нажатия), и вычитаются учтённые, которые с тех пор убраны или перенесены.
  * Только чистые функции: без хранилища, сети и экрана, поэтому тот же файл работает в проверках Node.
  * Меняется устройство записей — растёт FORMAT, и три приложения выходят одним выпуском.
  * — Claude · 14.11.2026 */
 (function(root){
 'use strict';
-var FORMAT=1,TIME=/^([01]?\d|2[0-3]):[0-5]\d$/,LIMIT=5000,OFF='off:';
+var FORMAT=1,TIME=/^([01]?\d|2[0-3]):[0-5]\d$/,LIMIT=5000,OFF='off:',TAP_APPS=['day','meal','sport'];
 function object(x){return !!x&&typeof x==='object'&&!Array.isArray(x)}
 function amount(x){return typeof x==='number'&&Number.isFinite(x)&&x>=0}
 function positive(x){return amount(x)&&x>0}
@@ -101,6 +103,28 @@ function taps(records){
  (records||[]).forEach(function(r){if(r&&text(r.id)&&validTap(r.value))out.push(Object.assign(copy(r.value),{id:r.id}))});
  return out.sort(function(a,b){return (a.at||0)-(b.at||0)||(a.id<b.id?-1:a.id>b.id?1:0)});
 }
+/* Все нажатия на счётчики еды — то, что считает счётчик в любом из трёх приложений.
+   docs — {day:записи, meal:записи, sport:записи} (doc.all() трёх документов; документа нет или он не читается — не
+   называть). on(app, нажатие) — была ли связь приложения app с Meal в момент нажатия: нажатие Day или Sport, сделанное,
+   пока связь выключена, не считает никто; нажатия самого Meal считаются всегда. Номер нажатия должен начинаться
+   с названия приложения, в чьём документе оно лежит. → [{id,app,cid,date,item,at}] по времени нажатия. */
+function all(docs,on){
+ var out=[];
+ TAP_APPS.forEach(function(app){
+  if(!object(docs)||!Array.isArray(docs[app]))return;
+  taps(docs[app]).forEach(function(t){
+   if(t.id.indexOf(app+'-')!==0)return;
+   if(app!=='meal'&&typeof on==='function'&&!on(app,t))return;
+   t.app=app;out.push(t);
+  });
+ });
+ return out.sort(function(a,b){return (a.at||0)-(b.at||0)||(a.id<b.id?-1:a.id>b.id?1:0)});
+}
+/* последнее нажатие на счётчик cid за день date — его убирает «−»; нажатий нет — null */
+function last(list,cid,date){
+ var found=null;(list||[]).forEach(function(t){if(t&&t.cid===cid&&t.date===date)found=t});
+ return found;
+}
 /* счётчики, убранные со страницы приложения: записи 'off:<id счётчика>' его документа нажатий → {id счётчика: true} */
 function hidden(records){
  var out=Object.create(null);
@@ -143,8 +167,10 @@ function counted(list){
  });
  return n?out:null;
 }
-/* Съедено за день: s — summary(…), свои нажатия — taps(…) (уже без выключенных связью), счётчики — foods(…),
-   app — чьи это нажатия ('day'). Сводки нет вовсе и своих нажатий за день нет — null: «не записано», а не ноль.
+/* Съедено за день: s — summary(…), нажатия — all(…) (уже без выключенных связью), счётчики — foods(…),
+   app — чьи документы нажатий прочитаны: название приложения или список названий. Нажатие, которое Meal посчитал,
+   а в прочитанном документе его уже нет, вычитается; нажатия из непрочитанных документов не трогаются.
+   Сводки нет вовсе и нажатий за день нет — null: «не записано», а не ноль.
    День в сводке не записан — нули.
    pending — сколько своих нажатий прибавлено сверх сводки. */
 function eaten(s,date,own,list,app){
@@ -170,9 +196,10 @@ function eaten(s,date,own,list,app){
   if(add[4]!=null){sum[4]+=add[4];fibre=true}
   changed=true;out.pending++;
  });
- /* своё нажатие, которое Meal учёл, а здесь его уже нет: убрано после сводки. Чужие нажатия (Sport, сам Meal) не трогаем. */
- if(known&&app)Object.keys(known).forEach(function(id){
-  if(seen[id]||s.skipped[id]||id.indexOf(app+'-')!==0)return;var was=known[id];
+ /* нажатие, которое Meal учёл, а в прочитанном документе его уже нет: убрано после сводки */
+ var apps=Array.isArray(app)?app:app?[app]:[];
+ if(known&&apps.length)Object.keys(known).forEach(function(id){
+  if(seen[id]||s.skipped[id]||!apps.some(function(a){return id.indexOf(a+'-')===0}))return;var was=known[id];
   for(var i=0;i<4;i++)sum[i]-=was[i];
   if(was[4]!=null){sum[4]-=was[4];fibre=true}
   changed=true;
@@ -184,8 +211,8 @@ function eaten(s,date,own,list,app){
  out.recorded=out.recorded||out.pending>0;
  return out;
 }
-var api={FORMAT:FORMAT,SUMMARY:{app:'meal',name:'summary'},FOODS:{app:'meal',name:'foods'},TAPS:{app:'day',name:'foodtaps'},TAP_APPS:['day','sport'],TAPS_NAME:'foodtaps',
- validDate:validDate,summary:summary,foods:foods,linked:linked,portion:portion,taps:taps,hidden:hidden,hide:hide,tapId:tapId,tap:tap,serving:serving,eaten:eaten};
+var api={FORMAT:FORMAT,SUMMARY:{app:'meal',name:'summary'},FOODS:{app:'meal',name:'foods'},TAPS:{app:'day',name:'foodtaps'},TAP_APPS:TAP_APPS,TAPS_NAME:'foodtaps',
+ validDate:validDate,summary:summary,foods:foods,linked:linked,portion:portion,taps:taps,all:all,last:last,hidden:hidden,hide:hide,tapId:tapId,tap:tap,serving:serving,eaten:eaten};
 root.HappyFood=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

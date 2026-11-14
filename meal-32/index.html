@@ -4302,8 +4302,7 @@ function bkPaint(){ var el=document.getElementById('bkWhen'); if(el) el.textCont
 function bkExport(){
   if(writeGuard()) return;
   DB.bkAt=Date.now();
-  var db=JSON.parse(JSON.stringify(DB)); delete db.mealCounters;
-  Object.keys(db.days||{}).forEach(function(date){ db.days[date].items=(db.days[date].items||[]).filter(function(x){ return !x.nb }) });
+  var db=JSON.parse(JSON.stringify(DB)); delete db.mealCounters;   /* порции со счётчиков (отметка nb — где нажали) в файл входят: это тоже съеденное */
   var data={app:'happy-meal',v:1,at:new Date(DB.bkAt).toISOString(),days:bkDays(db),db:db},S=bkSupp();
   if(S) data.supplements=S.exportState();
   jrShareBlob('happy-meal-'+todayISO()+'.json',new Blob([JSON.stringify(data)],{type:'application/json'}),'application/json','Копия дневника передана');

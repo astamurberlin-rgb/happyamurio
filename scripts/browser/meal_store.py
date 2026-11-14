@@ -102,7 +102,7 @@ def until(page, js, arg=None, seconds=10):
     return wait_for(page, look, seconds, 200)
 
 
-MEAL_READY = "()=>typeof MealData!=='undefined'&&typeof HappyMealCounters!=='undefined'&&!!document.querySelector('#mlTaps .tpItem')&&!!document.querySelector('#mlKb .erRing')"
+MEAL_READY = "()=>typeof MealData!=='undefined'&&typeof HappyMealCounters!=='undefined'&&typeof MealSupplementsStore!=='undefined'&&!!document.querySelector('#mlTaps .tpItem')&&!!document.querySelector('#mlKb .erRing')"
 DAY_READY = "()=>typeof DayData!=='undefined'&&typeof MEAL_READY!=='undefined'&&MEAL_READY&&!!document.querySelector('#tapBox .tpItem')"
 SPORT_READY = "()=>typeof SportData!=='undefined'&&typeof state!=='undefined'&&!!document.querySelector('#page>*')"
 SIGNED = "u=>typeof MealData!=='undefined'&&MealData.signedIn()&&MealData.store.uid===u"
@@ -264,6 +264,19 @@ with sync_playwright() as p:
     a1.wait_for_timeout(4000)
     out["delete_stays"] = [count(a1, "cfm"), count(b1, "cfm")]
 
+    # обычная запись еды (не со счётчика) лежит в документе дневника: видна на B, правка B доходит до A, удаление A — до B
+    plain_id = a1.evaluate("()=>{const x={id:'i'+MealData.id(),sec:autoSec(),fid:'egg',q:1,u:'шт',g:gramsFor('egg',1,'шт'),t:'07:30'};day(curDate).items.push(x);save();renderDay();return x.id}")
+    out["plain_on_b"] = bool(until(b1, "id=>day(curDate).items.some(x=>x.id===id&&!x.nb&&!x.tap)", plain_id, 25))
+    out["plain_counts"] = [count(a1, "egg"), count(b1, "egg")]
+    b1.evaluate(EDIT, [plain_id, 4])
+    out["plain_edit_on_a"] = bool(until(a1, "id=>day(curDate).items.some(x=>x.id===id&&x.q===4)", plain_id, 25))
+    synced(a1)
+    out["plain_cloud"] = cloud(ONE, "meal")
+    out["plain_in_diary_doc"] = a1.evaluate("id=>MealData.store.doc(MealDocs.diaryDoc(curDate)).all().some(r=>r.value&&r.value.v&&r.value.v.id===id)", plain_id)
+    a1.evaluate("id=>removeLine('s',id)", plain_id)
+    out["plain_gone_on_b"] = bool(until(b1, "id=>!day(curDate).items.some(x=>x.id===id)", plain_id, 25))
+    a1.wait_for_timeout(4200)   # подсказка «Вернуть» гаснет
+
     # свои добавки — документ аккаунта: записал на A — видно на B
     a1.evaluate("""()=>MealSupplementsStore.write(d=>{d.variants.push({id:'v-test',name:'Магний проверочный',revision:1,basis:{quantity:1,unit:'капсула'},components:[{name:'Магний',amount:100,unit:'мг'}],measures:[],createdAt:'2026-11-14T10:00:00.000Z',updatedAt:'2026-11-14T10:00:00.000Z'})})""")
     out["supplement_other_phone"] = until(b1, "()=>MealSupplementsStore.state().variants.map(v=>v.name).join()", seconds=25)
@@ -295,17 +308,18 @@ with sync_playwright() as p:
     # «съедено» с порцией из Day — одно и то же число в Meal и в Day, порция посчитана один раз
     eaten_with = a1.evaluate("()=>Math.round(sumOf(day(curDate).items).k*10)/10")
     out["eaten_with_tap"] = [eaten_meal, eaten_with]
-    out["eaten_counted_once"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e}", eaten_with, 12)
+    out["eaten_counted_once"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),HappyDayCounters.apps());return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e}", eaten_with, 12)
     # порцию из Day в Meal можно убрать: уходит само нажатие, счётчик Day уменьшается; «Вернуть» кладёт нажатие обратно
-    nb = a1.evaluate("()=>day(curDate).items.find(x=>x.nb).id")
+    out["day_counter_total"] = until(d1, "()=>(((DB.days[curDate]||{}).taps||{})['meal-egg']||[]).length===3", seconds=10)
+    nb = a1.evaluate("()=>day(curDate).items.find(x=>x.nb==='day').id")
     a1.evaluate("id=>removeLine('s',id)", nb)
-    out["portion_removed_in_meal"] = until(d1, "()=>DayData.store.doc('foodtaps').all().length===0&&!((DB.days[curDate]||{}).taps||{})['meal-egg']", seconds=10)
+    out["portion_removed_in_meal"] = until(d1, "()=>DayData.store.doc('foodtaps').all().length===0&&(((DB.days[curDate]||{}).taps||{})['meal-egg']||[]).length===2", seconds=10)
     a1.click("#toast .tU")
-    out["portion_returned"] = bool(until(d1, "()=>DayData.store.doc('foodtaps').all().length===1&&(((DB.days[curDate]||{}).taps||{})['meal-egg']||[]).length===1", seconds=10)) and a1.evaluate("()=>day(curDate).items.filter(x=>x.nb==='day').length") == 1
-    out["eaten_after_return"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0}", eaten_with, 12)
+    out["portion_returned"] = bool(until(d1, "()=>DayData.store.doc('foodtaps').all().length===1&&(((DB.days[curDate]||{}).taps||{})['meal-egg']||[]).length===3", seconds=10)) and a1.evaluate("()=>day(curDate).items.filter(x=>x.nb==='day').length") == 1
+    out["eaten_after_return"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),HappyDayCounters.apps());return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0}", eaten_with, 12)
     d1.click("#tapBox [data-tminus='meal-egg']")
-    out["day_untap_in_meal"] = until(a1, "()=>day(curDate).items.filter(x=>x.nb).length===0", seconds=10)
-    out["eaten_after_untap"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e.k}", eaten_meal, 12)
+    out["day_untap_in_meal"] = until(a1, "()=>day(curDate).items.filter(x=>x.nb==='day').length===0&&day(curDate).items.filter(x=>x.tap==='egg').length===2", seconds=10)
+    out["eaten_after_untap"] = until(d1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),HappyDayCounters.apps());return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e.k}", eaten_meal, 12)
 
     # тренировка из Sport видна в кольце Meal «потрачено → Тренировки»: на том же телефоне сразу, на втором — после обмена
     s1.evaluate("d=>{state.workouts.push({id:'w-meal',title:'Зал утром',kind:'gym',start:d+'T00:05',end:d+'T01:05',duration:3600,energyKcal:420,exercises:[]});persist();render()}", today)
@@ -386,17 +400,18 @@ checks = [
     ("запись без сети принята и видна во второй вкладке без сообщений", out["offline_count"] == 1 and out["second_tab_count"] == 1 and out["second_tab_toast"] == ""),
     ("без сети: строка «Нет связи · записи сохранены на устройстве», в облаке нового нет", out["offline_status"] == "Нет связи · записи сохранены на устройстве" and out["cloud_while_offline"] == sorted("meal/" + k for k in OLD)),
     ("запись без сети переживает перезагрузку", out["after_reload"] == 1),
-    ("сеть вернулась — запись сама ушла в облако", bool(out["online_state"]) and "meal/diary_" + year in out["cloud_rows"] and "meal/summary" in out["cloud_rows"]),
+    ("сеть вернулась — запись сама ушла в облако", bool(out["online_state"]) and "meal/foodtaps" in out["cloud_rows"] and "meal/summary" in out["cloud_rows"]),
     ("второй телефон видит запись сам", out["other_phone"] == 1),
     ("новый телефон получил настройки первого до своей первой записи", bool(out["other_phone_settings"])),
     ("первая запись нового телефона не затёрла настройки начальными", bool(out["settings_survive"])),
     ("одну запись правили два телефона — везде поздняя правка; разные записи остались обе", out["both_a"] and out["both_b"] and out["both_tab2"] and out["counts"] == [[2, 2]] * 3),
     ("удаление доходит до другого телефона и не возвращается", out["delete_reaches"] == 1 and out["delete_stays"] == [1, 1]),
+    ("обычная запись еды — запись документа дневника: видна на втором телефоне, правка и удаление доходят; счётчик её не считает", out["plain_on_b"] and out["plain_edit_on_a"] and out["plain_in_diary_doc"] and "meal/diary_" + year in out["plain_cloud"] and out["plain_gone_on_b"] and out["plain_counts"] == [2, 2]),
     ("своя добавка с одного телефона видна на другом", out["supplement_other_phone"] == "Магний проверочный"),
     ("вход общий: Day и Sport на том же телефоне вошли сами, без пароля", out["day_signed_in"] and out["sport_signed_in"] and out["neighbor_logins"] == 0),
     ("Day показывает «съедено» из витрины Meal", bool(out["eaten_in_day"])),
     ("счётчик Meal, показанный в Day, появился в Day; соседям ушли только название, порция и числа порции", bool(out["counter_in_day"]) and len(out["showcase"]) == 1 and sorted(out["showcase"][0]["value"]["food"].keys()) in (["c", "counterValues", "f", "id", "k", "n", "p"], ["c", "f", "id", "k", "n", "p"])),
-    ("нажатие в Day пришло в дневник Meal порцией и вошло в счётчик", bool(out["day_tap_in_meal"]) and out["meal_counter_total"] == 3),
+    ("нажатие в Day пришло в дневник Meal порцией; на счётчике одно число в Meal и в Day — 3 (два нажатия Meal и одно Day)", bool(out["day_tap_in_meal"]) and out["meal_counter_total"] == 3 and bool(out["day_counter_total"])),
     ("порция из Day в документах Meal не хранится", out["day_tap_not_stored_in_meal"] is True),
     ("порция из Day посчитана в «съедено» один раз — одно число в Meal и в Day", out["eaten_with_tap"][1] > out["eaten_with_tap"][0] and bool(out["eaten_counted_once"])),
     ("порцию из Day убрали в Meal — нажатие ушло и из Day; «Вернуть» положило его обратно, «съедено» то же", bool(out["portion_removed_in_meal"]) and out["portion_returned"] and bool(out["eaten_after_return"])),

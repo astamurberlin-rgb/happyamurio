@@ -107,8 +107,8 @@
     },
     {
       "path": "index.html",
-      "size": 948687,
-      "sha256": "e447ae6df4f7502f65aaadcd7a8155cd75e22fa3bbaf12cbe8a03b50b7ce4ad5"
+      "size": 952747,
+      "sha256": "9e46a76a081aa2170ccb2462c5c8cbc12182744143c9f3c282b345b41c5d1aad"
     },
     {
       "path": "manifest.webmanifest",
@@ -192,8 +192,8 @@
     },
     {
       "path": "shared/happy-food.js",
-      "size": 14491,
-      "sha256": "0f6bc268d478f912dbcfe8b4f5b2955fba0c770094a3af0f420c13122b1d076e"
+      "size": 16862,
+      "sha256": "4375133d3b8c7ea8592ce925df05b011546dfe8298c0395b546a7730aecb879d"
     },
     {
       "path": "shared/happy-gradients.js",
@@ -227,8 +227,8 @@
     },
     {
       "path": "shared/happy-store.js",
-      "size": 36960,
-      "sha256": "460907eb3cdd60a1542076b464badb872b0f00aa11cce3d47de50654ceb9a16c"
+      "size": 37036,
+      "sha256": "9da8c08b46cbca17be68606a9396a6e8d78efed99f92feab411d3b1a42e3370c"
     },
     {
       "path": "shared/happy-ui.css",
@@ -472,8 +472,8 @@
     },
     {
       "path": "sport/src/app-links.js",
-      "size": 2982,
-      "sha256": "e108c42e5baffa5085cd0dbbe41efa20d7b886c672a9dd0b74b6c5948d9b8352"
+      "size": 3312,
+      "sha256": "db093c586e57f37f17962cc7d793e1d11c5b3c3c5202a5c0b05b9981a941e4f5"
     },
     {
       "path": "sport/src/app.js",
@@ -562,8 +562,8 @@
     },
     {
       "path": "sport/src/food-counters.js",
-      "size": 7398,
-      "sha256": "2ecec0855bb261ef630e032bc6d26b114c7d47688eea7716ce339d63bab6af27"
+      "size": 8314,
+      "sha256": "354c2fe87d97c8300a0b239c364308d466b2499b0fc6a2a50daf4f6ff0406211"
     },
     {
       "path": "sport/src/free-timer.js",
@@ -637,8 +637,8 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 32297,
-      "sha256": "cfd3ee998466c999a327ceb64b81b054581b4a3a0cf2ef840c95544a5ff191bb"
+      "size": 32361,
+      "sha256": "df2c79c58ae99f3ac33dca74c44e42432a2d27e91c9886b84d108067ed336c94"
     },
     {
       "path": "sport/src/rest-pill.js",
@@ -692,8 +692,8 @@
     },
     {
       "path": "sport/src/sport-boot.js",
-      "size": 2475,
-      "sha256": "8a4237ef3162648472ec12e16f8c8391bbdde4ec8f3f5fd1b779bad74cef7dde"
+      "size": 2616,
+      "sha256": "75ea0389e9d32a5ac28a7df4c9c36fd401cad9f880b40f8f9d1c51a907e4f528"
     },
     {
       "path": "sport/src/sport-data.js",
@@ -702,8 +702,8 @@
     },
     {
       "path": "sport/src/sport-docs.js",
-      "size": 8405,
-      "sha256": "b3888061150b1b13838037d0d2d1f28e95ceafffc528aeed42783717c5e01934"
+      "size": 8567,
+      "sha256": "66017576cba6268142d9a108f0b90376469ab81338d3068c141c58b6e9d8a7c1"
     },
     {
       "path": "sport/src/sport-icons.js",

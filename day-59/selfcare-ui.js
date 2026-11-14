@@ -388,14 +388,14 @@ function renderMind(){const c=data(),goal=C.mindGoal(c,curDate),minutes=C.mindMi
  block('mind').innerHTML=header('Осознанность')+'<div class="card"><div class="care-stat">'+num(minutes)+(goal.value>0?' / '+num(goal.value):'')+' мин</div><p class="care-help">'+(goal.source==='schedule'?(goal.value?'Полный круг — сумма длительностей практик в расписании на этот день.':'На этот день практики не запланированы. Можно заниматься без цели.'):(goal.value?'Полный круг — твоя личная цель.':'Практики за выбранный день.'))+'</p></div><div class="card"><h2>Дыхание и медитации</h2><b>В разработке</b><p class="care-help">Здесь появятся быстрые упражнения и контент для поддержки состояния. Уже можно составить расписание и отметить выполненную практику.</p></div><div class="eyebrow"><span>Расписание на '+h(ruDate(curDate))+'</span></div>'+plan.map(p=>'<div class="card"><b>'+h(p.time)+' · '+h(p.name)+'</b><p class="care-help">'+p.minutes+' минут · план</p><button class="mini" data-care-practice="'+h(p.id)+'">Отметить выполненное время</button></div>').join('')+(plan.length?'':empty('На этот день расписание пустое.'))+
  '<form id="carePracticeForm" class="card care-form"><h2>Записать практику</h2><input type="hidden" name="planId" value=""><label for="carePracticeName">Название</label><input name="name" id="carePracticeName" type="text" placeholder="Медитация, дыхание…" maxlength="100"><div class="care-grid"><div><label for="carePracticeTime">Время</label><input id="carePracticeTime" name="time" type="time" required value="'+nowHM()+'"></div><div><label for="carePracticeMinutes">Фактически, мин</label><input id="carePracticeMinutes" name="minutes" type="number" min="0.1" max="1440" step="0.1" required placeholder="Сколько провёл"></div></div><p class="care-help">План сам по себе не засчитывается. В дугу попадают сохранённые минуты практики и импортированные сессии осознанности; время просмотра приложения не учитывается.</p><button class="btn solid care-submit" type="submit">Сохранить практику</button></form><div class="eyebrow">Выполнено</div>'+logs.slice().reverse().map(x=>'<div class="card"><b>'+h(x.time)+' · '+h(x.name)+'</b><p class="care-help">'+num(x.minutes)+' мин</p></div>').join('');
 }
-/* «Съедено» за день — итог из сводки Meal и свои нажатия на счётчики еды, которые Meal ещё не посчитал (нажатие в Day
+/* «Съедено» за день — итог из сводки Meal и нажатия на счётчики еды, которые Meal ещё не посчитал (нажатие в Day
    попадает в кольцо сразу; правило — в shared/happy-food.js). Сводки нет или в дне нет ни еды, ни порций — null:
    «не записано», а не ноль. */
 function mealFood(date){
  const day=mealDay(date),F=root.HappyFood,s=root.MEAL_SUMMARY,counters=root.HappyDayCounters;
  if(!F||!s)return day;
  if(typeof DayAppLinks!=='undefined'&&!DayAppLinks.mealDayOn(date))return day;   /* связь с Meal выключена весь день */
- const sum=F.eaten(s,date,counters?counters.taps():[],counters?counters.foods():[],'day');
+ const sum=F.eaten(s,date,counters?counters.taps():[],counters?counters.foods():[],counters?counters.apps():[]);
  if(!sum||!sum.recorded)return day;
  const food={...(day||{}),k:sum.k,p:sum.p,f:sum.f,c:sum.c};
  if(sum.fib!=null)food.fib=sum.fib;

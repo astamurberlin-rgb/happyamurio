@@ -36,7 +36,7 @@
 | `happy-app-links.js` | Свитчи связи между приложениями: правила пары и формат общего документа `day/pairs`. |
 | `happy-sport-summary.js` | Витрина Sport: прошедшие тренировки и плановые занятия. Пишет Sport, читают Day и Meal. |
 | `happy-measurements.js`, `happy-measurements.css` | Замеры тела: формат общего документа `sport/body` и общий экран замеров для Sport, Day и Meal. |
-| `happy-food.js` | Витрина питания: сводка и счётчики еды Meal, нажатия Day и Sport на эти счётчики, «съедено» за день. |
+| `happy-food.js` | Витрина питания: сводка и счётчики еды Meal, нажатия трёх приложений на эти счётчики и одно число на счётчике, «съедено» за день. |
 | `happy-settings-developer.js` | Скрытый раздел «Для разработчика»: открывается долгим нажатием на строку версии. |
 | `happy-appearance.js` | Выбор оформления. |
 | `happy-reference-themes.js`, `happy-gradients.js`, `happy-gradient-editor.js`, `happy-gradient-editor.css` | Темы и градиенты для Color Studio и Icon Studio. |

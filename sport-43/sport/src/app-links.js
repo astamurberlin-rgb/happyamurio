@@ -9,6 +9,8 @@ var SportAppLinks=(()=>{   // var: читается из раскладки на
  const on=(other,time)=>!L||L.on(list(),APP,other,time);
  const mealDayOn=date=>!L||L.dayOn(list(),APP,'meal',date);
  const mealEventOn=(date,time,ms)=>!L||L.eventOn(list(),APP,'meal',date,Number.isSafeInteger(ms)?ms:time);
+ /* нажатие на счётчик еды, сделанное в приложении app (day или sport), пока его связь с Meal была выключена, не считается */
+ const tapOn=(app,date,time,ms)=>!L||app==='meal'||L.eventOn(list(),'meal',app,date,Number.isSafeInteger(ms)?ms:time);
  function paint(){document.querySelectorAll('[data-app-link]').forEach(i=>{const v=on(i.dataset.appLink);i.checked=v;i.closest('.happy-app-link')?.classList.toggle('is-off',!v)})}
  /* настройки: стопка под аккаунтом — название открывает приложение (адреса — из прежнего раздела ссылок), свитч — связь */
  function section(nodes){
@@ -26,5 +28,5 @@ var SportAppLinks=(()=>{   // var: читается из раскладки на
   if(change)d.put(change.id,change.value).catch(error=>{toast(error&&error.code==='newer'?HappyStore.NEWER:(error&&error.message)||'Не удалось сохранить');paint()});
   render();
  });
- return {list,on,mealDayOn,mealEventOn,section,paint};
+ return {list,on,mealDayOn,mealEventOn,tapOn,section,paint};
 })();

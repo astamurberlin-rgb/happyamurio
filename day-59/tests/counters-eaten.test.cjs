@@ -1,8 +1,9 @@
 'use strict';
 /* Day 59 · Счётчики еды из Happy Meal и «съедено» в кольце энергии — через общий модуль хранения.
-   Счётчик принадлежит Meal: Day читает его из витрины meal/foods. Нажатие принадлежит Day: запись его документа
-   foodtaps, Meal читает их оттуда. «Съедено» — итог дня из сводки Meal (meal/summary) плюс свои нажатия, которые
-   Meal ещё не посчитал; посчитанное второй раз не прибавляется, снятое после сводки вычитается.
+   Счётчик принадлежит Meal: Day читает его из витрины meal/foods. Нажатие Day — запись его документа foodtaps.
+   Число на счётчике одно на три приложения: Day считает и нажатия из meal/foodtaps и sport/foodtaps и может их снять.
+   «Съедено» — итог дня из сводки Meal (meal/summary) плюс нажатия, которые Meal ещё не посчитал; посчитанное второй
+   раз не прибавляется, снятое после сводки вычитается.
    Настоящий код: counters.js, mealFood и mealChanged из selfcare-ui.js, syncMeal и mealDay из index.html,
    shared/happy-food.js. Хранилище — заглушка с тем же видом записей, что отдаёт общий модуль; записи придуманные. */
 const fs = require('node:fs');
@@ -23,15 +24,16 @@ const counter = (id, title, g, food, targets = { day: true, sport: false }) => (
 const C_MANDARIN = counter('c2', 'Мандарин', 88, MANDARIN), C_FEIJOA = counter('c1', 'Фейхоа', 42, FEIJOA);
 const COUNTED = [46.64, 0.7, 0.26, 10.12, 1.58];   // что Meal посчитал за одну порцию мандарина
 
-/* Day с хранилищем-заглушкой: документы meal/foods и meal/summary (пишет Meal), day/foodtaps (пишет Day). */
+/* Day с хранилищем-заглушкой: документы meal/foods и meal/summary (пишет Meal), нажатия — day/foodtaps (свой),
+   meal/foodtaps и sport/foodtaps (общие: mealtaps, sporttaps). */
 function world({ foods = [], summary = null, signedIn = true, linkOff = null } = {}) {
-  const docs = { foods: plain(foods), summary: summary ? plain(summary) : [], foodtaps: [] }, subs = { foods: [], summary: [], foodtaps: [] }, log = { toasts: [], saves: 0, own: [], writes: [], painted: 0, repaints: 0, asked: [], answer: true };
+  const docs = { foods: plain(foods), summary: summary ? plain(summary) : [], foodtaps: [], mealtaps: [], sporttaps: [] }, subs = { foods: [], summary: [], foodtaps: [], mealtaps: [], sporttaps: [] }, log = { toasts: [], saves: 0, own: [], writes: [], where: [], painted: 0, repaints: 0, asked: [], answer: true };
   let clock = 1000;
   const handle = (name, own) => {
     const h = { newer: false, all: () => plain(docs[name]).sort((a, b) => a.id < b.id ? -1 : 1), subscribe: fn => { subs[name].push(fn); return () => {}; } };
     if (own) {
       h.putMany = list => {
-        for (const x of list) { docs[name] = docs[name].filter(r => r.id !== x.id); if (!x.deleted) docs[name].push({ id: x.id, value: plain(x.value), at: ++clock }); log.writes.push(x.deleted ? ['−', x.id] : ['+', x.id]); }
+        for (const x of list) { docs[name] = docs[name].filter(r => r.id !== x.id); if (!x.deleted) docs[name].push({ id: x.id, value: plain(x.value), at: ++clock }); log.writes.push(x.deleted ? ['−', x.id] : ['+', x.id]); log.where.push(name); }
         return Promise.resolve();
       };
       h.put = (id, value) => h.putMany([{ id, value }]);
@@ -39,6 +41,8 @@ function world({ foods = [], summary = null, signedIn = true, linkOff = null } =
     return h;
   };
   const store = { doc: name => { assert.equal(name, 'foodtaps', 'свой документ Day для еды один'); return handle(name, true); },
+    /* документы нажатий Meal и Sport — общие: Day их читает и может снять в них нажатие */
+    shared: (app, name) => { assert.ok((app === 'meal' || app === 'sport') && name === 'foodtaps', 'общие у Day здесь только нажатия соседей: ' + app + '/' + name); return handle(app + 'taps', true); },
     neighbor: (app, name) => { assert.equal(app, 'meal'); assert.ok(name === 'foods' || name === 'summary', 'Day читает у Meal только витрину: ' + name); return handle(name, false); } };
   const listeners = [];
   const c = vm.createContext({ console, JSON, Object, Array, Number, Math, Promise, HappyFood: F, DATE,
@@ -49,7 +53,7 @@ function world({ foods = [], summary = null, signedIn = true, linkOff = null } =
     save: () => { log.saves++; }, tapAdd: k => { log.own.push(k); }, tapsHTML: () => '<button data-k="meal-c2">Мандарин</button>', renderAll: () => { log.repaints++; }, renderTapSheet() {},
     document: { getElementById: id => { assert.equal(id, 'tapList'); return { addEventListener: (type, fn) => listeners.push(fn) }; } } });
   c.day = d => c.DB.days[d] || (c.DB.days[d] = { taps: {} }); c.tapDef = k => c.DB.taps.find(t => t.k === k);
-  if (linkOff != null) c.DayAppLinks = { mealDayOn: date => date < linkOff, mealEventOn: (date, time, ms) => date < linkOff };
+  if (linkOff != null) c.DayAppLinks = { mealDayOn: date => date < linkOff, mealEventOn: (date, time, ms) => date < linkOff, tapOn: (app, date) => app === 'meal' || date < linkOff };
   vm.runInContext(`var root=globalThis;function block(){return {classList:{contains:function(name){return name==='on'&&screenOn}}}}
     function paintEnergy(){painted=(typeof painted==='number'?painted:0)+1}var painted=0;` +
     cut(page, 'var MEAL_SUMMARY=null;', 'function paintMealSet(){') + page.match(/function mealDay\(d\)\{[^\n]+\}/)[0] +
@@ -59,6 +63,8 @@ function world({ foods = [], summary = null, signedIn = true, linkOff = null } =
   return { c, docs, subs, log, listeners, run: code => vm.runInContext(code, c),
     /* Meal записал свои документы (на этом же устройстве или после обмена): подписки сообщают Day */
     meal(name, records) { docs[name] = plain(records); if (name === 'summary') vm.runInContext('syncMeal()', c); subs[name].forEach(fn => fn({ origin: 'tab' })); },
+    /* нажатие сделали в Meal или Sport (или сняли там): их документ поменялся, подписка сообщает Day */
+    neighborTaps(app, records) { docs[app + 'taps'] = plain(records); subs[app + 'taps'].forEach(fn => fn({ origin: 'tab' })); },
     eaten: (date = DATE) => plain(vm.runInContext(`mealFood('${date}')`, c)) };
 }
 const day = (extra = {}) => ({ food: true, k: 148.5, p: 14.5, f: 9.9, c: 0.3, sec: { am: { food: true, n: 1 } }, ev: [], ...extra });
@@ -133,6 +139,27 @@ test('нажатие с другого устройства появляется
   assert.match(w.run("tapsHTML({})"), /Мандарин<small class="fc-day-portion">1 шт · 88 г · Meal<\/small>/);
 });
 
+test('одно число на счётчике: нажатия Meal и Sport считаются в Day; «−» в Day снимает последнее, где бы его ни сделали', () => {
+  const mk = (app, at, time) => ({ id: app + '-' + at, value: F.tap({ id: 'c2', ...C_MANDARIN.value }, DATE, time, at), at });
+  const w = world({ foods: [C_MANDARIN] });
+  w.neighborTaps('meal', [mk('meal', 100, '08:00'), mk('meal', 300, '09:00')]); w.neighborTaps('sport', [mk('sport', 200, '08:30')]);
+  w.run("tapAdd('meal-c2')");   // своё нажатие Day — позже всех
+  const mine = w.docs.foodtaps[0].id;
+  assert.deepEqual(plain(w.c.DB.days[DATE].taps['meal-c2'].map(x => x.counterEventId)), ['meal-100', 'sport-200', 'meal-300', mine], 'на счётчике четыре нажатия — по времени');
+  assert.deepEqual(w.log.where, ['foodtaps'], 'новое нажатие Day кладёт только в свой документ');
+  assert.equal(w.eaten().k, 186.6, 'все четыре порции в «съедено», пока Meal их не посчитал');
+  // «−» три раза: своё, затем нажатие Meal, затем нажатие Sport — каждое снимается в документе того, кто нажал
+  const undo = () => { const a = w.c.DB.days[DATE].taps['meal-c2']; a.pop(); if (!a.length) delete w.c.DB.days[DATE].taps['meal-c2']; w.run('save()'); };
+  w.log.writes.length = 0; w.log.where.length = 0; undo(); undo(); undo();
+  assert.deepEqual(w.log.writes, [['−', mine], ['−', 'meal-300'], ['−', 'sport-200']]); assert.deepEqual(w.log.where, ['foodtaps', 'mealtaps', 'sporttaps']);
+  assert.deepEqual([w.docs.foodtaps.length, w.docs.mealtaps.map(r => r.id), w.docs.sporttaps.length], [0, ['meal-100'], 0]);
+  assert.equal(w.c.DB.days[DATE].taps['meal-c2'].length, 1); assert.equal(w.eaten().k, 46.6);
+  // Meal посчитал порцию, потом её сняли в Sport — Day видит, что нажатия нет, и вычитает его, не дожидаясь новой сводки
+  w.neighborTaps('sport', [mk('sport', 400, '10:00')]);
+  w.meal('summary', summaryOf({ [DATE]: day({ k: 93.3, p: 1.4, f: 0.5, c: 20.2, cs: { 'meal-100': COUNTED, 'sport-400': COUNTED } }) }));
+  assert.equal(w.eaten().k, 93.3); w.neighborTaps('sport', []); assert.equal(w.eaten().k, 46.7);
+});
+
 test('без входа счётчиков Meal нет и нажатие ничего не записывает', () => {
   const w = world({ foods: [C_MANDARIN], signedIn: false });
   assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own']); assert.equal(w.eaten(), null);
@@ -176,10 +203,12 @@ test('«съедено»: «−» после сводки вычитает то,
   assert.equal(less.eaten().k, 0);
 });
 
-test('«съедено»: чужие нажатия в сводке и записи, по которым Meal решил сам, Day не трогает', () => {
+test('«съедено»: посчитанные нажатия Sport и Meal, которые лежат на месте, и записи, по которым Meal решил сам, Day не трогает', () => {
   const w = world({ foods: [C_MANDARIN] });
   w.run("tapAdd('meal-c2');tapAdd('meal-c2')"); const [ghost, fresh] = w.docs.foodtaps.map(r => r.id);
-  // в cs — нажатие из Sport и из самого Meal: в документе Day их нет, и это не значит, что их сняли
+  // в cs — нажатие из Sport и из самого Meal: оба лежат в своих документах, Meal их уже посчитал
+  const there = (app) => [{ id: app + '-1', value: F.tap({ id: 'c2', ...C_MANDARIN.value }, DATE, '07:00', 10), at: 10 }];
+  w.neighborTaps('sport', there('sport')); w.neighborTaps('meal', there('meal'));
   w.meal('summary', summaryOf({ [DATE]: day({ k: 241.8, cs: { 'sport-1': COUNTED, 'meal-1': COUNTED } }) }, [{ id: 'skipped', value: [ghost, 7, '', null], at: 5000 }]));
   assert.equal(w.eaten().k, 288.4, 'прибавлено только новое нажатие; названное в skipped Meal учитывает сам');
   w.run("DB.days[DATE].taps['meal-c2']=DB.days[DATE].taps['meal-c2'].filter(function(x){return x.counterEventId!=='" + fresh + "'});save()");

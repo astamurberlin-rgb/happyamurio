@@ -20,7 +20,7 @@ MealBoot.ready=(async()=>{
  try{await account.load()}catch(e){MealBoot.error='Не удалось прочитать вход на устройстве'}
  if(account.current()){
   /* Номера форматов: свои документы — формат раскладки Meal; витрина — номера из её общих файлов. */
-  const formats={'meal/supps':1,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,'day/foodtaps':HappyFood.FORMAT,'sport/foodtaps':HappyFood.FORMAT,
+  const formats={'meal/supps':1,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,'day/foodtaps':HappyFood.FORMAT,'sport/foodtaps':HappyFood.FORMAT,'meal/foodtaps':HappyFood.FORMAT,
    'day/pairs':HappyAppLinks.FORMAT,'sport/summary':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT};
   for(const name of MealDocs.NAMES)formats['meal/'+name]=MealDocs.FORMAT;
   try{MealBoot.store=await HappyStore.open({app:'meal',account,own:MealDocs.OWN,

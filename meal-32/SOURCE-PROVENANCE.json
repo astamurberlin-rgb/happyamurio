@@ -254,8 +254,8 @@
   },
   {
    "path": "checks/check-meal-docs.mjs",
-   "size": 18090,
-   "sha256": "e6fbb2f9cd2c7ebf4e552c5fe0c186355df742e710308af1dfdf0df1e451a631"
+   "size": 19027,
+   "sha256": "4d627c90a274bcbdb7d57799756c39559c5ca219889481ae070a1eabbef544e6"
   },
   {
    "path": "checks/check-meal-first-time.mjs",
@@ -299,8 +299,8 @@
   },
   {
    "path": "counters.js",
-   "size": 32211,
-   "sha256": "1cc0e2397b597ac7626df83da34ac1310f154e3347ea72657c99890035c24e22"
+   "size": 33669,
+   "sha256": "7f89313d341587c6141e599fe738278265613d5aa73b7edb56f8652e84330f2f"
   },
   {
    "path": "desserts.js",
@@ -324,8 +324,8 @@
   },
   {
    "path": "index.html",
-   "size": 601802,
-   "sha256": "911f199c024fa1485b51974d949a06c5f29bc0ba4271a5670d1baf4dc6848ea6"
+   "size": 601815,
+   "sha256": "bad14b924d1e9c9088c7c1fe82bc3ae8e1ab8f7d713ebf6f657e96848f9c8fc0"
   },
   {
    "path": "manifest.webmanifest",
@@ -334,13 +334,13 @@
   },
   {
    "path": "meal-data.js",
-   "size": 11383,
-   "sha256": "8dec264f163f211ad37bd3b38c62bc27bd7c9543c7b7c93bd2c4507e3e834c0f"
+   "size": 11416,
+   "sha256": "b74265f9144fb2220cf169b23c2f2aaf7c3e34da1056a72303bd98dd2b9650b3"
   },
   {
    "path": "meal-docs.js",
-   "size": 12455,
-   "sha256": "24430be258bcef0046a2dd54a615ca1c8772df122446f69c2a9f1b95ad6b65a9"
+   "size": 12512,
+   "sha256": "667c7b554b3263979f19c5f4f72be1a8a781891f46de09d2ea3513aaf05cc4f5"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",
@@ -509,8 +509,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 36295,
-   "sha256": "4dfa0d27ea60cd6e72430a4754f80e6cb98242334fb7543e40ce59748e570848"
+   "size": 36474,
+   "sha256": "49ebf413bf868ba914fa4ecf5fa1e0c936006642acdc91b0dc943e226e9c324c"
   },
   {
    "path": "report.css",
@@ -564,8 +564,8 @@
   },
   {
    "path": "shared/happy-food.js",
-   "size": 14491,
-   "sha256": "0f6bc268d478f912dbcfe8b4f5b2955fba0c770094a3af0f420c13122b1d076e"
+   "size": 16862,
+   "sha256": "4375133d3b8c7ea8592ce925df05b011546dfe8298c0395b546a7730aecb879d"
   },
   {
    "path": "shared/happy-gradients.js",
@@ -604,8 +604,8 @@
   },
   {
    "path": "shared/happy-store.js",
-   "size": 36960,
-   "sha256": "460907eb3cdd60a1542076b464badb872b0f00aa11cce3d47de50654ceb9a16c"
+   "size": 37036,
+   "sha256": "9da8c08b46cbca17be68606a9396a6e8d78efed99f92feab411d3b1a42e3370c"
   },
   {
    "path": "shared/happy-ui.css",
