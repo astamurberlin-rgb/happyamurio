@@ -12,7 +12,8 @@ const tracked=execSync('git ls-files -z .',{cwd:rootPath}).toString().split('\0'
 const files=[];
 for(const path of tracked){const bytes=await readFile(new URL(path,root));files.push({path,size:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
 // Update 43 (14.11.2026): made from sport-42 at main 26f10dc; shared measurement screen, shared link switches,
-// planned workouts published for Day and Meal.
+// planned workouts published for Day and Meal. Also in 43: list places that do not shift when a neighbour is added or
+// removed (HappyStore.model.place), the appearance is saved on the device again, workout and exercise links open them.
 const sourceCommit='26f10dc3aac5a842ae359c3ab479a6d1726358d0';
 const manifest={
  app:'Happy Sport',update:'43',

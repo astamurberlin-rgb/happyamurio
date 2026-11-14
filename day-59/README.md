@@ -1,42 +1,51 @@
-# Happy Day · Update 58
+# Happy Day · Update 59
 
-Адрес: https://astamurberlin-rgb.github.io/happyamurio/day-58/
+Адрес: https://astamurberlin-rgb.github.io/happyamurio/day-59/
 
-Страница — `index.html`. Тот же Day одним файлом для скачивания — `Happy-Day-58.html`.
+Страница — `index.html`. Тот же Day одним файлом для скачивания — `Happy-Day-59.html`.
+
+Записывать можно только после входа в аккаунт Happy. Вход общий со Sport. Дневник хранится и обменивается только через общий модуль хранения; своего хранилища и своих запросов к серверу у Day нет.
 
 ## Что где лежит
 
 | Файлы | Что делают |
 | --- | --- |
 | `index.html` | Экраны и основная логика дня. |
-| `selfcare-core.js`, `selfcare-ui.js`, `selfcare.css`, `section-wheel.css` | Разделы «Осознанность», «Отметить самочувствие», «Дневник», «Активность». |
+| `day-data.js` | Запуск: общий вход и общий модуль. Чтение дневника и запись только изменившегося. |
+| `day-docs.js` | Раскладка дневника на документы и записи общего модуля и сборка обратно. |
+| `selfcare-core.js`, `selfcare-ui.js`, `selfcare.css`, `section-wheel.css` | Разделы «Осознанность», «Отметить самочувствие», «Дневник», «Активность». Тренировки и плановые занятия читаются из витрины Sport. |
 | `energy-widget.js`, `energy-widget.css` | Кольцо энергии. |
 | `arc-motion.js`, `arc-home.js`, `arc-motion.css` | Движение дуги кольца на главном экране. |
-| `counters.js` | Счётчики продуктов. |
-| `app-links.js` | Свитчи связи с Meal и Sport. |
-| `day-local-store.js` | Хранилище журнала на устройстве, `dayStorage`. |
-| `day-journal-sync.js`, `day-auto-sync.js`, `day-account-profile.js`, `day-account-data.js`, `snapshot-sync.js`, `day-passive-plan.js` | Обмен журнала с облаком и сведение правок с двух устройств. |
-| `day-test-create.js` | Сохранение журнала в облако и возврат из него по кнопке. |
-| `auth-read-only.js` | Граница запросов к серверу. Подключается первым. |
-| `day-diagnostic.js` | Сравнение журнала на устройстве и в облаке для раздела «Для разработчика». |
-| `day-sport-….mjs`, `day-sport-lifecycle.js`, `day-sport-view.css`, `sport-journal-validator.mjs`, `sport-measurement-reader.mjs` | Чтение замеров тела из облачной копии Sport на экране замеров. |
+| `counters.js` | Счётчики еды из витрины Meal и свои нажатия на них. |
+| `app-links.js` | Свитчи связи с Meal и Sport — общий документ, один свитч на пару. |
+| `day-measurements.js` | Вкладка «Замеры тела» в журнале: общий экран замеров. |
 | `release-notes.js` | История обновлений внизу настроек. |
-| `shared/` | Копии общих файлов из корневой папки `shared/`. |
+| `shared/` | Копии общих файлов из корневой папки `shared/`: вход, модуль хранения, карточка входа, форматы витрины, экран замеров. |
 | `tests/` | Тесты. |
 | `SOURCE-PROVENANCE.json` | Список файлов выпуска с контрольными суммами. |
 
+## Документы Day в общем модуле
+
+- `setup` — разделы, шкалы, теги, свои счётчики; `care` — настройки самоподдержки; `prefs` — пороги под себя.
+- `days_ГГГГ` — записи дней года и записи дневника; `mind_ГГГГ` — время в Day по заходам. Годы вне списка — `days_old`, `mind_old`.
+- `foodtaps` — нажатия на счётчики еды Meal; `pairs` — свитчи связи. Эти два документа — витрина: их формат лежит в общих файлах.
+- Day читает у соседей: `sport/summary`, `sport/plans`, `meal/summary`, `meal/foods`. Замеры тела `sport/body` — общий документ, Day его читает и пишет.
+
+Оформление и вид дуги — настройки устройства: они лежат в памяти браузера, в дневник не попадают.
+
 ## Что не править руками
 
-- Форму аккаунта внутри `index.html`, блок `happy-shared-ui`. Её встраивает команда `node scripts/sync-shared-ui.mjs`.
+- Блок `HAPPY_SHARED_STYLE` внутри `index.html`. Его встраивает команда `node scripts/sync-shared-ui.mjs`.
 - Файлы в `shared/`. Они меняются в корневой папке `shared/` и копируются командой `node scripts/sync-shared.mjs`.
-- `Happy-Day-58.html`. Его собирает команда ниже.
+- `Happy-Day-59.html`. Его собирает команда ниже.
 
 ## После правки
 
 Команды запускаются из корня репозитория.
 
-1. `node --test day-58/tests/*.test.cjs` — тесты.
-2. `python3 scripts/build-day-standalone.py day-58` — пересобрать Day одним файлом.
-3. `git add -A`, затем `python3 scripts/refresh-provenance.py day-58` — обновить контрольные суммы.
+1. `node --test day-59/tests/*.test.cjs` — тесты.
+2. `python3 scripts/build-day-standalone.py day-59` — пересобрать Day одним файлом.
+3. `scripts/browser/run.sh day_store day_sections versions` — сценарии в браузере. Нужны после правок хранения, входа и обмена.
+4. `git add -A`, затем `python3 scripts/refresh-provenance.py day-59` — обновить контрольные суммы.
 
-— Claude · 13.11.2026
+— Claude · 14.11.2026
