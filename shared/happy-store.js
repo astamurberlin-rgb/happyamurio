@@ -9,14 +9,33 @@
  *  - правки сводятся по записям: разные записи остаются обе, у одной и той же побеждает поздняя;
  *    удаление — тоже правка, поэтому удалённое не возвращается;
  *  - приложение пишет только свои документы, документы соседей только читает;
+ *  - сосед видит только витрину — документы из списка PUBLIC ниже; остальное приложение хранит для себя;
+ *  - общий документ (замеры тела, свитчи связи) пишут несколько приложений: он назван в PUBLIC поимённо;
+ *  - у документа есть номер формата. Версия приложения, которая видит номер новее своего, этот документ
+ *    не читает и не пишет и говорит открыть последнюю версию: старое не затирает то, чего не понимает;
  *  - другая вкладка получает запись сразу, без сообщений.
  *
- * На модуле работает Sport с выпуска 42; Day и Meal переходят следующими этапами.
+ * На модуле работают Sport с выпуска 42 и Day с выпуска 59; Meal переходит следующим этапом.
  * — Claude · 14.11.2026 */
 (function(root){
 'use strict';
 const FORMAT='happy-store',ROW_VERSION=2,APPS=['day','meal','sport'],NAME=/^[a-z][a-z0-9_]{0,31}$/;
 const CIPHER_LIMIT=2900000;   // предел шифра одного документа, байт: в таблице облака помещается с запасом
+/* Витрина: что приложения показывают друг другу. Значение — кто пишет документ. Документ, которого здесь нет,
+   сосед назвать не может: это внутреннее дело приложения, и оно меняет его свободно. Общий документ пишут несколько
+   приложений; живёт он в строке одного из них (в таблице облака приложений только три). Формат каждого документа
+   витрины читает и пишет один файл в shared/, одинаковый во всех текущих выпусках. */
+const PUBLIC={
+ 'sport/summary':['sport'],             // прошедшие тренировки — shared/happy-sport-summary.js
+ 'sport/plans':['sport'],               // плановые тренировки — shared/happy-sport-summary.js
+ 'sport/body':['day','meal','sport'],   // замеры тела, общий — shared/happy-measurements.js
+ 'day/pairs':['day','meal','sport'],    // свитчи связи приложений, общий — shared/happy-app-links.js
+ 'day/foodtaps':['day'],                // нажатия Day на счётчики еды — shared/happy-food.js
+ 'meal/summary':['meal'],               // съедено по дням — shared/happy-food.js
+ 'meal/foods':['meal']                  // счётчики еды из продуктов Meal — shared/happy-food.js
+};
+const NEWER='Записано более новой версией приложения. Открой последнюю версию.';
+const formatOf=n=>Number.isSafeInteger(n)&&n>0?n:1;
 
 const object=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 const copy=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
@@ -39,10 +58,12 @@ const clean=r=>r.deleted?{id:r.id,rev:r.rev,writer:r.writer,deleted:true}:{id:r.
    чтобы на всех устройствах выбор был одинаковым. */
 function compare(a,b){return a.rev-b.rev||Number(!!a.deleted)-Number(!!b.deleted)||order(a.writer,b.writer)||order(stable(a.value),stable(b.value))}
 /* Служебная отметка документа на устройстве: iv — с какой копией облака он уже сведён; dirty — есть неотправленное;
-   seq — счётчик своих записей, по нему видно, не появилось ли новое, пока шла отправка. */
+   seq — счётчик своих записей, по нему видно, не появилось ли новое, пока шла отправка; format — самый новый номер
+   формата, которым этот документ писали (нет — первый). Номер только растёт. */
 function nextMeta(old,o,won){
  const m=Object.assign({iv:null,dirty:false,seq:0},old);
  if(o.local&&won){m.seq++;m.dirty=true}
+ if(o.format>formatOf(m.format)){m.format=o.format;if(o.local){m.seq++;m.dirty=true}}
  if(Object.hasOwn(o,'iv'))m.iv=o.iv;
  if(o.settle!==undefined&&m.seq===o.settle)m.dirty=false;
  return m;
@@ -149,14 +170,15 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
   let d;try{d=JSON.parse(new TextDecoder().decode(await gunzip(bytes)))}catch(e){if(e.code)throw e;throw fail('unreadable','Документ в облаке повреждён. Он не заменён.')}
   const ids=new Set();
   if(!object(d)||d.f!==FORMAT||d.v!==1||d.owner!==c.uid||d.app!==app||d.doc!==kind||!Array.isArray(d.records)||
+   (d.schema!==undefined&&formatOf(d.schema)!==d.schema)||
    !d.records.every(x=>valid(x)&&!ids.has(x.id)&&ids.add(x.id)))throw fail('unreadable','Документ в облаке другого формата или чужой. Он не заменён.');
-  return {iv:r.iv,at:r.at,records:d.records.map(clean)};
+  return {iv:r.iv,at:r.at,schema:formatOf(d.schema),records:d.records.map(clean)};
  }
  /* Условная запись. expected — копия облака, с которой документ уже сведён; null — строки ещё нет.
     Возвращает отметку новой копии или null, если строку за это время поменяли. */
- async function put(app,kind,records,expected){
-  if(app!==c.app)throw fail('foreign','Приложение пишет только свои документы');
-  const plain=utf(JSON.stringify({f:FORMAT,v:1,owner:c.uid,app,doc:kind,records}));
+ async function put(app,kind,records,expected,schema){
+  if(app!==c.app&&!(PUBLIC[app+'/'+kind]||[]).includes(c.app))throw fail('foreign','Приложение пишет только свои документы');
+  const plain=utf(JSON.stringify({f:FORMAT,v:1,owner:c.uid,app,doc:kind,schema:formatOf(schema),records}));
   const iv=crypto.getRandomValues(new Uint8Array(12));
   const data=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad(app,kind)},c.cipherKey,await gzip(plain)));
   if(data.length>c.limit)throw fail('large','Документ больше предела облака. Записи на устройстве сохранены.');
@@ -170,9 +192,12 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
 }
 
 /* ── Хранилище приложения ──────────────────────────────────────────────────────────────────────────
-   open({app, account, own:[названия своих документов], reads:{сосед:[названия]}})
+   open({app, account, own:[названия своих документов], reads:{сосед:[названия]}, shared:{сосед:[названия]},
+         formats:{'приложение/название': номер формата, который понимает эта версия}})
    doc(название) — свой документ: get, all, put, remove, putMany, subscribe.
-   neighbor(приложение, название) — документ соседа, только чтение: get, all, subscribe. */
+   neighbor(приложение, название) — документ соседа, только чтение: get, all, subscribe.
+   shared(приложение, название) — общий документ в строке соседа: чтение и запись, как у своего.
+   Сосед называет только документы витрины (PUBLIC); писать чужой может, только если назван там автором. */
 async function open(options){
  const o=options||{},app=o.app,account=o.account;
  if(!APPS.includes(app))throw Error('Неизвестное приложение: '+app);
@@ -185,20 +210,41 @@ async function open(options){
  let closed=false,busy=null,again=false,timer=null,ticker=null,status={state:uid?'cloud':'signin',detail:''};
  const statusListeners=new Set(),closeListeners=new Set(),cleanups=[];
 
+ /* own — этот документ здесь пишут: свой или общий. */
  function declare(a,name,own){
   if(!APPS.includes(a)||!NAME.test(String(name)))throw Error('Недопустимое название документа: '+a+'/'+name);
   const key=a+'/'+name;if(docs.has(key))throw Error('Документ назван дважды: '+key);
-  docs.set(key,{app:a,name,own,scope:[uid,a,name],records:new Map(),meta:nextMeta(null,{},0),maxRev:0,subs:new Set()});
+  if(a!==app){
+   const writers=PUBLIC[key];
+   if(!writers)throw Error('Документ соседа не для чтения: '+key);
+   if(own&&!writers.includes(app))throw Error('Документ соседа не общий: '+key);
+  }
+  const format=o.formats&&Object.hasOwn(o.formats,key)?o.formats[key]:1;
+  if(formatOf(format)!==format)throw Error('Недопустимый номер формата: '+key);
+  docs.set(key,{app:a,name,own,format,newer:false,scope:[uid,a,name],records:new Map(),meta:nextMeta(null,{},0),maxRev:0,subs:new Set()});
  }
  for(const name of o.own||[])declare(app,name,true);
  for(const a of Object.keys(o.reads||{})){if(a===app)throw Error('Свои документы называются в own');for(const name of o.reads[a])declare(a,name,false)}
+ for(const a of Object.keys(o.shared||{})){if(a===app)throw Error('Свои документы называются в own');for(const name of o.shared[a])declare(a,name,true)}
+ for(const key of Object.keys(o.formats||{}))if(!docs.has(key))throw Error('Номер формата у неназванного документа: '+key);
 
  const guard=()=>{if(closed)throw fail('account','Аккаунт изменился. Открой приложение снова.')};
+ const snapshot=()=>Object.assign({},status,{newer:[...docs.values()].filter(d=>d.newer).map(d=>d.app+'/'+d.name)});
+ function tell(){const s=snapshot();for(const fn of [...statusListeners]){try{fn(s)}catch(e){}}}
  function setStatus(state,detail){
   if(status.state===state&&status.detail===(detail||''))return;
-  status={state,detail:detail||''};for(const fn of [...statusListeners]){try{fn(Object.assign({},status))}catch(e){}}
+  status={state,detail:detail||''};tell();
  }
- const unsent=()=>[...docs.values()].some(d=>d.own&&d.meta.dirty);
+ const unsent=()=>[...docs.values()].some(d=>d.own&&!d.newer&&d.meta.dirty);
+ /* Номер формата. Документ записан более новой версией — эта версия его не читает и не пишет. */
+ function relock(d){
+  const newer=formatOf(d.meta.format)>d.format;if(newer===d.newer)return newer;
+  d.newer=newer;notify(d,[...d.records.keys()],'format');tell();return newer;
+ }
+ async function seeFormat(d,n){   // номер формата, которым документ записан в облаке
+  if(n>formatOf(d.meta.format)){const r=await backend.write(d.scope,[],{format:n});guard();adoptMeta(d,r.meta);announce(d,[],r.meta)}
+  return relock(d);
+ }
  function restStatus(){if(!uid)setStatus('signin');else if(unsent()){if(status.state!=='offline'&&status.state!=='error')setStatus('saving')}else setStatus('cloud')}
  function notify(d,ids,origin){for(const fn of [...d.subs]){try{fn({ids,origin})}catch(e){}}}
  function adoptMeta(d,m){if(m&&m.seq>=d.meta.seq)d.meta=m}
@@ -211,7 +257,7 @@ async function open(options){
   const s=await backend.load(d.scope),before=d.records,next=new Map(),ids=[];
   for(const r of s.records){next.set(r.id,r);if(r.rev>d.maxRev)d.maxRev=r.rev;const old=before.get(r.id);if(!old||compare(r,old)!==0)ids.push(r.id)}
   for(const id of before.keys())if(!next.has(id))ids.push(id);
-  d.records=next;d.meta=s.meta;return ids;
+  d.records=next;d.meta=s.meta;relock(d);return ids;
  }
  function announce(d,won,meta){
   try{channel.post(won.length>200?{scope:d.scope,from:tab,reload:true}:{scope:d.scope,from:tab,records:won,meta})}catch(e){}
@@ -220,6 +266,7 @@ async function open(options){
  /* Запись своего документа: сразу в память и на устройство, потом в очередь на облако. */
  async function write(d,list){
   guard();if(!uid)throw fail('signin','Войди в аккаунт Happy, чтобы записывать');
+  if(d.newer)throw fail('newer',NEWER);
   const rev=Math.max(now(),d.maxRev+1),batch=new Map();
   for(const x of list){
    if(!object(x)||!validId(x.id))throw fail('value','У записи нет номера');
@@ -240,12 +287,19 @@ async function open(options){
   if(!closed){if(status.state!=='offline')setStatus('saving');queue()}
  }
  const reader=d=>({
-  get(id){const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
-  all(){const out=[];for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
-  subscribe(fn){d.subs.add(fn);return ()=>d.subs.delete(fn)}
+  get(id){if(d.newer)return undefined;const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
+  all(){const out=[];if(d.newer)return out;for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
+  subscribe(fn){d.subs.add(fn);return ()=>d.subs.delete(fn)},
+  get newer(){return d.newer}
  });
  const writer=d=>Object.assign(reader(d),{put:(id,value)=>write(d,[{id,value}]),remove:id=>write(d,[{id,deleted:true}]),putMany:list=>write(d,list)});
- function find(a,name,own){const d=docs.get(a+'/'+name);if(!d||d.own!==own)throw Error((own?'Свой документ не назван: ':'Документ соседа не назван: ')+a+'/'+name);return d}
+ /* kind: 'own' — свой документ; 'shared' — общий в строке соседа (пишется); 'neighbor' — любой названный документ соседа (чтение). */
+ function find(a,name,kind){
+  const d=docs.get(a+'/'+name);
+  if(kind==='own'?!d:kind==='shared'?(!d||a===app||!d.own):(!d||a===app))
+   throw Error((kind==='own'?'Свой документ не назван: ':kind==='shared'?'Общий документ не назван: ':'Документ соседа не назван: ')+a+'/'+name);
+  return d;
+ }
 
  /* Сообщение от другой вкладки этого устройства. */
  channel.listen(m=>{
@@ -253,6 +307,7 @@ async function open(options){
   const d=docs.get(m.scope[1]+'/'+m.scope[2]);if(!d)return;
   if(m.reload){load(d).then(ids=>{if(closed)return;if(ids.length)notify(d,ids,'tab');restStatus();if(d.own&&d.meta.dirty)queue()}).catch(()=>{});return}
   const ids=take(d,Array.isArray(m.records)?m.records:[]);adoptMeta(d,m.meta);
+  if(relock(d))return;
   if(ids.length)notify(d,ids,'tab');restStatus();if(d.own&&d.meta.dirty)queue();
  });
 
@@ -274,16 +329,17 @@ async function open(options){
   let copyInCloud=head||null,fetched=null;
   for(let attempt=0;attempt<4;attempt++){
    guard();
+   if(d.newer)return;   // записан более новой версией: не сводим и не отправляем, его обменяет новая версия
    if(copyInCloud&&copyInCloud.iv!==d.meta.iv){
     if(!fetched||fetched.iv!==copyInCloud.iv){fetched=await transport.get(d.app,d.name);guard()}
-    if(fetched){copyInCloud={iv:fetched.iv,at:fetched.at};await merge(d,fetched)}else copyInCloud=null;
+    if(fetched){if(await seeFormat(d,fetched.schema))return;copyInCloud={iv:fetched.iv,at:fetched.at};await merge(d,fetched)}else copyInCloud=null;
    }
    if(!copyInCloud&&d.meta.iv!==null){const r=await backend.write(d.scope,[],{iv:null});guard();adoptMeta(d,r.meta)}
    if(!d.own)return;
    const need=copyInCloud?(d.meta.dirty||(!!fetched&&fetched.iv===copyInCloud.iv&&ahead(d,fetched))):(d.meta.dirty||d.records.size>0);
    if(!need)return;
    const seq=d.meta.seq,records=[...d.records.values()].sort((a,b)=>order(a.id,b.id));
-   const stored=await transport.put(d.app,d.name,records,copyInCloud);guard();
+   const stored=await transport.put(d.app,d.name,records,copyInCloud,Math.max(d.format,formatOf(d.meta.format)));guard();
    if(stored){
     const r=await backend.write(d.scope,[],{iv:stored.iv,settle:seq});guard();adoptMeta(d,r.meta);announce(d,[],r.meta);
     if(!d.meta.dirty)return;
@@ -291,6 +347,7 @@ async function open(options){
     copyInCloud=stored;fetched=null;continue;
    }
    fetched=await transport.get(d.app,d.name);guard();copyInCloud=fetched?{iv:fetched.iv,at:fetched.at}:null;   // строку поменяло другое устройство
+   if(fetched&&await seeFormat(d,fetched.schema))return;
   }
   throw fail('retry','Документ меняется на другом устройстве, повторяем обмен');
  }
@@ -344,6 +401,8 @@ async function open(options){
 
  if(uid){
   await Promise.all([...docs.values()].map(load));
+  /* Эта версия пишет документ новым форматом: отметить номер, чтобы прежние версии перестали его писать. */
+  for(const d of docs.values())if(d.own&&!d.newer&&d.format>formatOf(d.meta.format)){const r=await backend.write(d.scope,[],{format:d.format,local:true});adoptMeta(d,r.meta);announce(d,[],r.meta)}
   restStatus();
   if(auto){
    const listen=(target,type,fn)=>{if(target&&target.addEventListener){target.addEventListener(type,fn);cleanups.push(()=>target.removeEventListener(type,fn))}};
@@ -357,14 +416,15 @@ async function open(options){
  }
  return {
   app,uid,
-  doc:name=>writer(find(app,name,true)),
-  neighbor:(a,name)=>reader(find(a,name,false)),
+  doc:name=>writer(find(app,name,'own')),
+  neighbor:(a,name)=>reader(find(a,name,'neighbor')),
+  shared:(a,name)=>writer(find(a,name,'shared')),
   sync,flush,close,
-  status:()=>Object.assign({},status),
+  status:snapshot,
   onStatus(fn){statusListeners.add(fn);return ()=>statusListeners.delete(fn)},
   onClose(fn){closeListeners.add(fn);return ()=>closeListeners.delete(fn)},
   get closed(){return closed}
  };
 }
-root.HappyStore={open,idbBackend,tabChannel,model,FORMAT,ROW_VERSION};
+root.HappyStore={open,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
 })(typeof globalThis!=='undefined'?globalThis:this);

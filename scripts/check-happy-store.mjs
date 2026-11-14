@@ -376,6 +376,87 @@ section('Названия документов');
  check('неизвестное приложение отклоняется',!!(await rejects(HappyStore.open({app:'notes',account:dayA.account,backend:A.backend,channel:A.tab().channel,auto:false}))));
 }
 
+section('Витрина: сосед видит только названное');
+{
+ const opens=async spec=>{try{const s=await HappyStore.open({app:'day',account:dayA.account,backend:A.backend,channel:A.tab().channel,auto:false,...spec});s.close();return true}catch(e){return false}};
+ check('внутренний документ соседа назвать нельзя',!(await opens({reads:{meal:['diary']}}))&&!(await opens({reads:{sport:['workouts']}})));
+ check('документ витрины назвать можно',await opens({reads:{meal:['summary','foods'],sport:['summary','plans']},shared:{sport:['body']}}));
+ check('чужую витрину нельзя назвать общей',!(await opens({shared:{sport:['summary']}}))&&!(await opens({shared:{meal:['foods']}})));
+ check('общий документ нельзя назвать дважды',!(await opens({reads:{sport:['body']},shared:{sport:['body']}})));
+ check('свой документ общим не называют',!(await opens({own:['pairs'],shared:{day:['pairs']}})));
+}
+
+section('Общий документ: пишут несколько приложений');
+{
+ const SPORT={own:['workouts','body']},DAY2={own:['notes'],shared:{sport:['body']}};
+ const sportA=await launch(A,'sport',SPORT),day2A=await launch(A,'day',DAY2,'day2'),sportB=await launch(B,'sport',SPORT,'sportB'),mealB=await launch(B,'meal',{own:['notes'],shared:{sport:['body']}},'mealB');
+ const from=cloud.log.length,body=day2A.store.shared('sport','body');
+ clock.t+=1000;await sportA.store.doc('body').put('m~2026-11-01',{waist:80});
+ clock.t+=1000;await body.put('m~2026-11-14',{waist:79});await tick();
+ check('Sport на том же устройстве видит замер из Day сразу',sportA.store.doc('body').get('m~2026-11-14')?.waist===79);
+ check('Day видит замер Sport',body.get('m~2026-11-01')?.waist===80&&day2A.store.neighbor('sport','body').get('m~2026-11-01')?.waist===80);
+ sportA.store.close();
+ check('Day сам отправил общий документ',await day2A.store.sync()===true&&!!cloud.row(U1,'sport','body'));
+ const sent=independentDecrypt(cloud.row(U1,'sport','body'),PW1,U1,'sport','body');
+ check('в строке облака оба замера, шифр с тем же ключом',sent.records.length===2&&sent.app==='sport'&&sent.doc==='body');
+ check('Day писал только свои строки и общий документ',writesOf(cloud.log.slice(from),'day2').length>0&&writesOf(cloud.log.slice(from),'day2').every(e=>e.kind.startsWith('day/')||e.kind==='sport/body'),writesOf(cloud.log.slice(from),'day2'));
+ await sportB.store.sync();
+ check('Sport на втором устройстве получил оба замера',sportB.store.doc('body').all().length===2);
+ check('Meal на том же втором устройстве видит их без своего обмена',(await tick(),mealB.store.shared('sport','body').all().length===2));
+ clock.t+=1000;await sportB.store.doc('body').put('m~2026-11-14',{waist:78});
+ clock.t+=1000;await body.put('m~2026-11-14',{waist:77});
+ clock.t+=1000;await mealB.store.shared('sport','body').put('m~2026-11-15',{waist:76});
+ await sportB.store.sync();await day2A.store.sync();await sportB.store.sync();await tick();
+ check('одна запись из двух приложений — везде поздняя',body.get('m~2026-11-14')?.waist===77&&sportB.store.doc('body').get('m~2026-11-14')?.waist===77);
+ check('разные записи из трёх приложений — остаются все',body.all().length===3&&sportB.store.doc('body').all().length===3,body.all().map(x=>x.id));
+ clock.t+=1000;await body.remove('m~2026-11-01');await day2A.store.sync();await sportB.store.sync();
+ check('удалённое в Day не возвращается в Sport',sportB.store.doc('body').get('m~2026-11-01')===undefined&&body.get('m~2026-11-01')===undefined);
+ check('обычный документ соседа по-прежнему не пишется',(()=>{try{day2A.store.shared('sport','workouts');return false}catch(e){return true}})()&&!('put' in day2A.store.neighbor('sport','body')));
+ for(const x of [day2A,sportB,mealB])x.store.close();
+}
+
+section('Номер формата: прежняя версия не затирает новое');
+{
+ const OLD={own:['notes'],reads:{sport:['summary']}},NEW={own:['notes'],formats:{'day/notes':2}};
+ const oldA=await launch(A,'day',OLD,'dayOldA'),oldB=await launch(B,'day',OLD,'dayOldB');
+ clock.t+=1000;await oldA.store.doc('notes').put('a',{text:'первый формат'});await oldA.store.sync();await oldB.store.sync();
+ const schema=()=>independentDecrypt(cloud.row(U1,'day','notes'),PW1,U1,'day','notes');
+ check('обе прежние версии видят запись, номер формата — первый',oldB.store.doc('notes').get('a')?.text==='первый формат'&&schema().schema===1&&oldA.store.status().newer.length===0);
+ B.offline=true;clock.t+=1000;await oldB.store.doc('notes').put('b',{text:'написано прежней версией без сети'});
+ const told=[];oldA.store.onStatus(s=>told.push(s.newer.join()));
+ const newA=await launch(A,'day',NEW,'dayNewA');await tick();
+ check('прежняя версия в соседней вкладке сразу перестала читать документ',oldA.store.doc('notes').all().length===0&&oldA.store.doc('notes').get('a')===undefined&&oldA.store.doc('notes').newer===true);
+ check('и сообщила об этом приложению',told.includes('day/notes')&&oldA.store.status().newer.join()==='day/notes',told);
+ const refused=await rejects(oldA.store.doc('notes').put('c',{text:'не должно записаться'}));
+ check('запись прежней версией отклонена: открой последнюю версию',refused?.code==='newer'&&refused.message===HappyStore.NEWER);
+ check('новая версия видит прежние записи',newA.store.doc('notes').get('a')?.text==='первый формат'&&newA.store.status().newer.length===0);
+ check('новая версия отметила номер формата в облаке и без новой записи',await newA.store.sync()===true&&schema().schema===2);
+ clock.t+=1000;await newA.store.doc('notes').put('a',{text:'второй формат',extra:1});await tick();
+ const mark=cloud.log.length;await oldA.store.sync();
+ check('прежняя версия не отправляет неотправленное новой версии с того же устройства',writesOf(cloud.log.slice(mark),'dayOldA').every(e=>e.kind!=='day/notes'),writesOf(cloud.log.slice(mark),'dayOldA'));
+ await newA.store.sync();
+ const before=cloud.row(U1,'day','notes').iv;
+ B.offline=false;const from=cloud.log.length;
+ await oldB.store.sync();
+ check('прежняя версия на другом устройстве узнала номер из облака и закрыла документ',oldB.store.status().newer.join()==='day/notes'&&oldB.store.doc('notes').all().length===0);
+ check('и ничего в него не записала: строка новой версии цела',cloud.row(U1,'day','notes').iv===before&&writesOf(cloud.log.slice(from),'dayOldB').every(e=>e.kind!=='day/notes'),writesOf(cloud.log.slice(from),'dayOldB'));
+ check('остальной обмен прежней версии идёт дальше',await oldB.store.sync()===true&&oldB.store.status().state==='cloud');
+ const newB=await launch(B,'day',NEW,'dayNewB');await newB.store.sync();
+ check('после обновления приложения запись, сделанная прежней версией без сети, не потеряна',newB.store.doc('notes').get('b')?.text==='написано прежней версией без сети'&&schema().records.some(r=>r.id==='b'));
+ check('и запись новой версии на месте',newB.store.doc('notes').get('a')?.extra===1&&schema().schema===2);
+ const sportNew=await launch(A,'sport',{own:['summary'],formats:{'sport/summary':2}},'sportNew');
+ clock.t+=1000;await sportNew.store.doc('summary').put('w1',{title:'Бег'});await tick();
+ const neighbor=oldA.store.neighbor('sport','summary');
+ check('читатель с прежним номером документ соседа не читает',neighbor.all().length===0&&neighbor.newer===true&&oldA.store.status().newer.includes('sport/summary'));
+ const reader=await launch(A,'day',{own:['notes'],reads:{sport:['summary']},formats:{'day/notes':2,'sport/summary':2}},'dayReader');
+ check('читатель с тем же номером — читает',reader.store.neighbor('sport','summary').get('w1')?.title==='Бег'&&reader.store.status().newer.length===0);
+ await sportNew.store.sync();await oldB.store.sync();
+ check('и с другого устройства: прежний читатель закрыт, обмен не сломан',oldB.store.neighbor('sport','summary').newer===true&&oldB.store.status().state==='cloud');
+ const opens=async spec=>{try{const s=await HappyStore.open({app:'day',account:dayA.account,backend:A.backend,channel:A.tab().channel,auto:false,...spec});s.close();return true}catch(e){return false}};
+ check('номер формата — целое от 1, только у названного документа',!(await opens({own:['notes'],formats:{'day/notes':0}}))&&!(await opens({own:['notes'],formats:{'day/notes':1.5}}))&&!(await opens({own:['notes'],formats:{'day/other':2}})));
+ for(const x of [oldA,oldB,newA,newB,sportNew,reader])x.store.close();
+}
+
 for(const x of [dayA,dayB,mealA]){x.store.close();x.account.close()}
 console.log(failed?`Общий модуль хранения и обмена: НЕ ПРОШЛО ${failed} из ${failed+passed}`:`Общий модуль хранения и обмена: ${passed} проверок прошли`);
 process.exit(failed?1:0);

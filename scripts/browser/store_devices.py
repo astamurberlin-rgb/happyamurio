@@ -3,7 +3,8 @@
 открываются — модуль к ним ещё не подключён (этап 1 общей задачи). Страница проверки отдаётся самим сценарием,
 в репозитории и на сайте её нет.
 Два придуманных аккаунта, поддельный сервер с правилом «каждый видит только свои строки».
-«Телефоны»: A (две вкладки Day и вкладка Meal), B (вкладка Day), C (две вкладки Day без быстрого канала между вкладками).
+«Телефоны»: A (две вкладки Day и вкладка Meal), B (вкладка Day), C (две вкладки Day без быстрого канала между вкладками),
+D (общий документ и номер формата: Day, Sport и «новая версия» Day во вкладках рядом).
 — Claude · 14.11.2026"""
 from common import *
 
@@ -71,10 +72,10 @@ PAGE = """<!doctype html><html lang="ru"><meta charset="utf-8"><title>Прове
 <script src="shared/happy-account.js"></script><script src="shared/happy-store.js"></script>
 <script>
 const T=window.T={events:[],statuses:[],app:null,spec:null};
-T.boot=async(app,own,reads)=>{T.app=app;T.spec={own,reads:reads||{}};T.account=HappyAccount.create();await T.account.load();
+T.boot=async(app,own,reads,shared,formats)=>{T.app=app;T.spec={own,reads:reads||{},shared:shared||{},formats:formats||{}};T.account=HappyAccount.create();await T.account.load();
  T.account.onChange(()=>{T.changed=(T.changed||0)+1;T.open()});await T.open();return T.who()};
 T.open=()=>T.opening=(T.opening||Promise.resolve()).then(async()=>{if(T.store)T.store.close();T.events=[];
- const s=T.store=await HappyStore.open({app:T.app,account:T.account,own:T.spec.own,reads:T.spec.reads,interval:1200});
+ const s=T.store=await HappyStore.open({app:T.app,account:T.account,own:T.spec.own,reads:T.spec.reads,shared:T.spec.shared,formats:T.spec.formats,interval:1200});
  for(const n of T.spec.own)s.doc(n).subscribe(e=>T.events.push({doc:n,origin:e.origin,ids:e.ids}));
  for(const a of Object.keys(T.spec.reads))for(const n of T.spec.reads[a])s.neighbor(a,n).subscribe(e=>T.events.push({doc:a+'/'+n,origin:e.origin,ids:e.ids}));
  s.onStatus(x=>T.statuses.push(x.state))});
@@ -85,6 +86,9 @@ T.get=(doc,id)=>{const v=T.store.doc(doc).get(id);return v===undefined?null:v};
 T.ids=doc=>T.store.doc(doc).all().map(x=>x.id);
 T.near=(app,doc,id)=>{const v=T.store.neighbor(app,doc).get(id);return v===undefined?null:v};
 T.state=()=>T.store.status().state;
+T.newer=()=>T.store.status().newer;
+T.sput=async(app,doc,id,value)=>{try{await T.store.shared(app,doc).put(id,value);return 'ok'}catch(e){return e.code||String(e)}};
+T.sget=(app,doc,id)=>{const v=T.store.shared(app,doc).get(id);return v===undefined?null:v};
 T.burst=(at,prefix,n)=>setTimeout(()=>{for(let i=0;i<n;i++)T.store.doc('diary').put(prefix+i,{n:i});T.store.doc('diary').put('shared',{by:prefix})},at-Date.now());
 T.device=async()=>(await indexedDB.databases()).some(d=>d.name==='happy')?new Promise((resolve,reject)=>{const r=indexedDB.open('happy');r.onerror=()=>reject(r.error);r.onsuccess=()=>{const db=r.result;
  if(!db.objectStoreNames.contains('records')){db.close();resolve({keys:[],values:[]});return}
@@ -236,11 +240,47 @@ with sync_playwright() as p:
     offline.discard("C")
     until(c1, "()=>T.state()==='cloud'", seconds=8)
 
+    # общий документ: Day пишет замер в строку Sport — Sport на том же телефоне видит сразу, на другом после обмена
+    D = phone_for(b, "D")
+    SPORT = ["sport", ["workouts", "body"], {}]
+    OLD_DAY = ["day", ["notes"], {}, {"sport": ["body"]}]
+    d_day, d_sport = tab(D, "D-day", OLD_DAY), tab(D, "D-sport", SPORT)
+    sign_in(d_day, ONE)
+    until(d_day, "u=>T.store.uid===u&&!T.store.closed", USERS[ONE]["id"])
+    until(d_sport, "u=>T.store.uid===u&&!T.store.closed", USERS[ONE]["id"])
+    offline.add("D")
+    out["shared_put"] = d_day.evaluate("()=>T.sput('sport','body','m~2026-11-14',{waist:79})")
+    out["shared_same_phone"] = until(d_sport, "()=>T.get('body','m~2026-11-14')", seconds=2)
+    offline.discard("D")
+    b_sport = tab(B, "B-sport", SPORT)
+    out["shared_other_phone"] = until(b_sport, "()=>T.get('body','m~2026-11-14')", seconds=12)
+    b_sport.evaluate("()=>T.put('body','m~2026-11-14',{waist:78})")
+    out["shared_back"] = until(d_day, "()=>(T.sget('sport','body','m~2026-11-14')||{}).waist===78", seconds=12)
+
+    # номер формата: «новая версия» Day во вкладке рядом — прежняя перестаёт читать и писать документ, и после перезагрузки тоже
+    out["old_put"] = d_day.evaluate("()=>T.put('notes','a',{text:'первый формат'})")
+    until(d_day, "()=>T.state()==='cloud'", seconds=8)
+    d_new = tab(D, "D-new", ["day", ["notes"], {}, {}, {"day/notes": 2}])
+    out["old_locked"] = until(d_day, "()=>T.newer().join()==='day/notes'&&T.ids('notes').length===0", seconds=3)
+    out["old_put_refused"] = d_day.evaluate("()=>T.put('notes','b',{text:'не должно записаться'})")
+    out["old_other_doc_works"] = d_day.evaluate("()=>T.sput('sport','body','m~2026-11-15',{waist:77})")
+    out["new_reads"] = d_new.evaluate("()=>T.get('notes','a')")
+    d_new.evaluate("()=>T.put('notes','a',{text:'второй формат'})")
+    until(d_new, "()=>T.state()==='cloud'", seconds=8)
+    d_day.reload()
+    d_day.evaluate("s=>T.boot(...s)", OLD_DAY)
+    out["old_locked_after_reload"] = d_day.evaluate("()=>T.newer().join()==='day/notes'&&T.ids('notes').length===0")
+    b_old = tab(B, "B-old", ["day", ["notes"], {}])
+    out["other_phone_old_locked"] = until(b_old, "()=>T.newer().join()==='day/notes'&&T.ids('notes').length===0", seconds=12)
+    out["other_phone_put"] = b_old.evaluate("()=>T.put('notes','c',{})")
+    b_new = tab(B, "B-new", ["day", ["notes"], {}, {}, {"day/notes": 2}])
+    out["other_phone_new_reads"] = until(b_new, "()=>T.get('notes','a')", seconds=12)
+
     # что видел сервер
     writes = [r for r in requests if r.get("kind")]
     out["rows"] = sorted("%s %s/%s v%s" % (k[0][-1], k[1], k[2], r["v"]) for k, r in table.items())
     import base64
-    out["plaintext_on_server"] = any(s.encode() in base64.b64decode(r["data"]) for r in table.values() for s in ("секретная", "kcal", "mood", "records"))
+    out["plaintext_on_server"] = any(s.encode() in base64.b64decode(r["data"]) for r in table.values() for s in ("секретная", "kcal", "mood", "records", "waist", "формат"))
     out["refused_writes"] = [r for r in writes if r.get("result") == "refused"]
     out["write_kinds"] = sorted(set(r["kind"] for r in writes))
     out["conflicts_seen"] = len([r for r in writes if r.get("result") in ("no match", "duplicate ignored")])
@@ -266,8 +306,14 @@ checks = [
     ("записи двух аккаунтов на устройстве лежат раздельно, в облаке — своими строками", out["device_accounts"] == [uid1, uid2] and out["second_account_cloud"]),
     ("первый аккаунт вернулся к своим записям", out["first_account_back"]),
     ("без быстрого канала между вкладками запись всё равно видна во второй вкладке", out["fallback_no_channel"] and out["fallback_tab_sees"] == {"v": "без быстрого канала"}),
-    ("на сервере только шифр и только строки нового вида", not out["plaintext_on_server"] and out["rows"] == ["1 day/diary v2", "1 meal/summary v2", "2 day/diary v2"]),
-    ("приложения писали только свои строки, отказов сервера нет", out["write_kinds"] == ["day/diary", "meal/summary"] and not out["refused_writes"]),
+    ("общий документ: замер из Day сразу виден в Sport на том же телефоне, без сети", out["shared_put"] == "ok" and out["shared_same_phone"] == {"waist": 79}),
+    ("общий документ: замер дошёл до Sport на втором телефоне, а правка оттуда вернулась в Day", out["shared_other_phone"] == {"waist": 79} and bool(out["shared_back"])),
+    ("номер формата: рядом открылась новая версия — прежняя вкладка сразу не читает и не пишет документ", out["old_put"] == "ok" and bool(out["old_locked"]) and out["old_put_refused"] == "newer"),
+    ("номер формата: остальные документы прежней версии работают", out["old_other_doc_works"] == "ok"),
+    ("номер формата: новая версия читает прежние записи, а прежняя закрыта и после перезагрузки", out["new_reads"] == {"text": "первый формат"} and out["old_locked_after_reload"]),
+    ("номер формата: прежняя версия на втором телефоне закрылась после обмена, новая читает", bool(out["other_phone_old_locked"]) and out["other_phone_put"] == "newer" and out["other_phone_new_reads"] == {"text": "второй формат"}),
+    ("на сервере только шифр и только строки нового вида", not out["plaintext_on_server"] and out["rows"] == ["1 day/diary v2", "1 day/notes v2", "1 meal/summary v2", "1 sport/body v2", "2 day/diary v2"]),
+    ("приложения писали только свои строки и общий документ, отказов сервера нет", out["write_kinds"] == ["day/diary", "day/notes", "meal/summary", "sport/body"] and not out["refused_writes"]),
     ("на страницах нет ошибок", not errors),
 ]
 out["errors"] = errors[:5]
