@@ -3,8 +3,8 @@
 прежнее остаётся в журнале; кнопка «Отметить самочувствие» — каждое «Сохранить» новая запись, раздел не меняется.
 Начало Завтрака — время первого продукта из сводки Meal; ручное время Day главнее.
 Day 59: записывать можно после входа; раздел лежит в общем модуле хранения по отметкам (шкала, тег — отдельные записи);
-сводка Meal приходит из его витрины в общем модуле — пока Meal сам не перешёл на модуль, её пишет страница-заглушка
-сценария тем же общим файлом формата. Только придуманные записи."""
+сводка Meal приходит из его витрины в общем модуле — её пишет настоящий Meal 32 на том же телефоне (вход общий).
+Только придуманные записи."""
 from common import *
 
 out, errors, checks = {}, [], []
@@ -18,7 +18,7 @@ def check(title, ok):
 with sync_playwright() as p:
     b = launch(p)
     ctx = phone(b, "A")
-    stand_in_route(ctx)
+    libraries(ctx)
     page = ctx.new_page()
     page.on("pageerror", lambda e: errors.append(str(e)[:300]))
     ready = lambda: wait_for(page, lambda: page.evaluate("()=>typeof DayData!=='undefined'&&typeof MEAL_READY!=='undefined'&&MEAL_READY&&!!document.querySelector('#tapBox .tpItem')"), 12, 200)
@@ -106,9 +106,11 @@ with sync_playwright() as p:
     check("значения разделов кнопка не меняла", page.evaluate("()=>JSON.stringify(DB.days[todayISO()].cp)") == before_cp)
 
     # ── 4. Сводка Meal из его витрины: начало Завтрака — первый продукт; ручное время Day главнее ──
-    meal_day = {"food": True, "k": 300, "p": 0, "f": 0, "c": 0, "sec": {"am": {"food": True, "n": 2, "dr": 0, "k": 300, "p": 0, "f": 0, "c": 0, "t0": "08:20", "t1": "08:50", "t": "08:50", "src": "auto"}}, "ev": []}
-    meal = stand_in(ctx, MEAL_STAND_IN, errors, "Meal")
-    meal.evaluate("([d,v])=>Promise.all([T.put('summary','secs',[{k:'am',t:'Завтрак'}]),T.put('summary',d,v)])", [today, meal_day])
+    meal = ctx.new_page()
+    meal.on("pageerror", lambda e: errors.append("Meal: " + str(e)[:300]))
+    meal.goto(BASE + MEAL + "index.html")
+    check("Meal на том же телефоне вошёл сам", opened(meal) and meal.evaluate("()=>MealData.signedIn()"))
+    meal.evaluate("()=>{const e=day(curDate);e.items.push({id:'i-am-1',sec:'am',fid:'egg',q:2,u:'шт',g:gramsFor('egg',2,'шт'),t:'08:20'},{id:'i-am-2',sec:'am',fid:'egg',q:1,u:'шт',g:gramsFor('egg',1,'шт'),t:'08:50'});save();renderAll()}")
     wait_for(page, lambda: page.evaluate("()=>(secTime(todayISO(),'am')||{}).src==='meal'"), 8, 200)
     st = page.evaluate("()=>secTime(todayISO(),'am')")
     out["start_from_meal"] = st
@@ -118,8 +120,7 @@ with sync_playwright() as p:
     pill = page.inner_text("#cpTimeTxt")
     out["pill"] = pill
     check("в форме раздела у названия — 08:20", pill == "08:20")
-    meal_day["sec"]["am"]["t0"] = "08:05"
-    meal.evaluate("([d,v])=>T.put('summary',d,v)", [today, meal_day])
+    meal.evaluate("()=>{day(curDate).items.find(x=>x.id==='i-am-1').t='08:05';save();renderAll()}")
     wait_for(page, lambda: page.evaluate("()=>secTime(todayISO(),'am').t") == "08:05" and page.inner_text("#cpTimeTxt") == "08:05", 8, 200)
     check("в Meal поменяли время — в Day сразу 08:05, без перезагрузки", page.evaluate("()=>secTime(todayISO(),'am').t") == "08:05" and page.inner_text("#cpTimeTxt") == "08:05")
     page.evaluate("()=>{const i=document.getElementById('cpTimeIn');i.value='07:45';i.dispatchEvent(new Event('change',{bubbles:true}))}")
@@ -140,7 +141,7 @@ with sync_playwright() as p:
     wait_for(page, lambda: page.evaluate("()=>DayData.store.status().state==='cloud'"), 12, 300)
     writes = sorted(set(e["kind"] for e in log if e.get("kind")))
     out["writes"] = writes
-    check("в облако ушли только новые документы Day и витрина заглушки Meal", bool(writes) and all(k.startswith("day/") and k not in ("day/journal", "day/link") or k in ("meal/summary", "meal/foods") for k in writes))
+    check("в облако ушли только новые документы Day и Meal", bool(writes) and all((k.startswith("day/") and k not in ("day/journal", "day/link")) or (k.startswith("meal/") and k not in ("meal/journal", "meal/link", "meal/counters", "meal/supplements")) for k in writes))
     out["errors"] = errors
     check("ошибок на страницах нет", not errors)
     b.close()

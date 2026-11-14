@@ -524,6 +524,14 @@ section('Первый запуск на новом устройстве: сна�
  const third=await launch(E,'sport',{own:['settings']},'firstE');await third.account.signIn('three@example.invalid','synthetic-password-three');
  E.offline=true;const started=Date.now();await reopenWaiting(third,E,'firstE');
  check('без связи новое устройство открывается сразу и пустым',Date.now()-started<1500&&third.store.doc('settings').all().length===0,Date.now()-started);
+ /* пустой аккаунт: в облаке ничего нет. Устройство сверяется один раз и запоминает это — потом не ждёт */
+ cloud.addUser('four@example.invalid','synthetic-password-four','Четвёртый');
+ const G=makeDevice(cloud,'G',clock),fourth=await launch(G,'sport',{own:['settings']},'firstG');await fourth.account.signIn('four@example.invalid','synthetic-password-four');
+ let seen=cloud.log.length;await reopenWaiting(fourth,G,'firstG');
+ check('пустой аккаунт: первый запуск сверился с облаком',cloud.log.length>seen&&fourth.store.doc('settings').all().length===0);
+ seen=cloud.log.length;await reopenWaiting(fourth,G,'firstG');
+ check('пустой аккаунт: второй запуск уже не ждёт обмена',cloud.log.length===seen,cloud.log.length-seen);
+ fourth.store.close();fourth.account.close();
  for(const x of [first,second,third]){x.store.close();x.account.close()}
 }
 

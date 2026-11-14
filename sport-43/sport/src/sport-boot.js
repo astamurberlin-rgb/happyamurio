@@ -10,7 +10,7 @@ var SportBoot={account:null,store:null,error:''};
  if(account.current()){
   /* Свои документы и общий документ свитчей связи; номера форматов витрины дают их общие файлы. */
   try{SportBoot.store=await HappyStore.open({app:'sport',account,own:SportDocs.OWN,shared:{day:['pairs']},
-   formats:{'sport/body':HappyMeasurements.FORMAT,'sport/summary':HappySportSummary.FORMAT,'sport/plans':HappySportSummary.FORMAT,'day/pairs':HappyAppLinks.FORMAT}})}
+   formats:{'sport/body':HappyMeasurements.FORMAT,'sport/summary':HappySportSummary.FORMAT,'sport/plans':HappySportSummary.FORMAT,'day/pairs':HappyAppLinks.FORMAT},firstSync:12000})}
   catch(e){SportBoot.error=e&&e.message||'Хранилище на устройстве недоступно'}
  }
  const who=account.current()?account.current().uid:null;

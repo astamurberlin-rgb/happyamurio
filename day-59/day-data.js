@@ -23,7 +23,7 @@ DayBoot.ready=(async()=>{
    'sport/summary':HappySportSummary.FORMAT,'sport/plans':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT};
   for(const name of DayDocs.NAMES)formats['day/'+name]=DayDocs.FORMAT;
   try{DayBoot.store=await HappyStore.open({app:'day',account,own:DayDocs.OWN,
-   reads:{sport:['summary','plans'],meal:['summary','foods']},shared:{sport:['body']},formats})}
+   reads:{sport:['summary','plans'],meal:['summary','foods']},shared:{sport:['body']},formats,firstSync:12000})}
   catch(e){DayBoot.error=(e&&e.message)||'Хранилище на устройстве недоступно'}
  }
  const who=account.current()?account.current().uid:null;

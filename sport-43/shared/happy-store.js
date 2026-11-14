@@ -60,12 +60,14 @@ const clean=r=>r.deleted?{id:r.id,rev:r.rev,writer:r.writer,deleted:true}:{id:r.
 function compare(a,b){return a.rev-b.rev||Number(!!a.deleted)-Number(!!b.deleted)||order(a.writer,b.writer)||order(stable(a.value),stable(b.value))}
 /* Служебная отметка документа на устройстве: iv — с какой копией облака он уже сведён; dirty — есть неотправленное;
    seq — счётчик своих записей, по нему видно, не появилось ли новое, пока шла отправка; format — самый новый номер
-   формата, которым этот документ писали (нет — первый). Номер только растёт. */
+   формата, которым этот документ писали (нет — первый). Номер только растёт. met — устройство уже сверялось с облаком
+   по этому документу (даже если в облаке его не оказалось). */
 function nextMeta(old,o,won){
  const m=Object.assign({iv:null,dirty:false,seq:0},old);
  if(o.local&&won){m.seq++;m.dirty=true}
  if(o.format>formatOf(m.format)){m.format=o.format;if(o.local){m.seq++;m.dirty=true}}
  if(Object.hasOwn(o,'iv'))m.iv=o.iv;
+ if(o.met)m.met=true;
  if(o.settle!==undefined&&m.seq===o.settle)m.dirty=false;
  return m;
 }
@@ -397,6 +399,8 @@ async function open(options){
    if(closed)return false;
    if(problem&&problem.code==='retry'){again=true;problem=null}
    if(problem){setStatus(problem.code==='offline'?'offline':'error',problem.code==='offline'?'':problem.message);return false}
+   /* обмен прошёл: устройство сверилось с облаком по каждому документу — в следующий раз приложение его не ждёт */
+   for(const d of docs.values())if(!d.meta.met){try{const r=await backend.write(d.scope,[],{met:true});if(closed)return false;adoptMeta(d,r.meta);announce(d,[],r.meta)}catch(e){}}
    if(unsent()){again=true;setStatus('saving');return false}
    setStatus('cloud');return true;
   })();
@@ -435,11 +439,12 @@ async function open(options){
   /* Эта версия пишет документ новым форматом: отметить номер, чтобы прежние версии перестали его писать. */
   for(const d of docs.values())if(d.own&&!d.newer&&d.format>formatOf(d.meta.format)){const r=await backend.write(d.scope,[],{format:d.format,local:true});adoptMeta(d,r.meta);announce(d,[],r.meta)}
   restStatus();
-  /* Первый запуск аккаунта на устройстве: с облаком ещё ничего не сведено и своих записей нет. Приложение, которое
+  /* Первый запуск аккаунта на устройстве: с облаком ещё ни разу не сверялись и своих записей нет. Приложение, которое
      назвало firstSync (мс), ждёт первого обмена не дольше этого времени: иначе оно открылось бы с пустого и первой же
      записью положило бы своё начальное (разделы, счётчики) поверх того, что уже лежит в аккаунте, — поздняя правка
-     побеждает. Нет связи или обмен не успел — приложение открывается как есть, записи придут позже. */
-  if(o.firstSync>0&&[...docs.values()].every(d=>d.meta.iv===null&&!d.records.size))
+     побеждает. Ждёт один раз: после удачного обмена у документов стоит отметка met. Нет связи или обмен не успел —
+     приложение открывается как есть, записи придут позже. */
+  if(o.firstSync>0&&[...docs.values()].every(d=>d.meta.iv===null&&!d.meta.met&&!d.records.size))
    await Promise.race([sync().catch(()=>false),new Promise(resolve=>setTimeout(resolve,o.firstSync))]);
   if(closed)throw fail('account','Аккаунт изменился. Открой приложение снова.');
   if(auto){

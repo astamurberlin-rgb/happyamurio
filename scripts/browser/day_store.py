@@ -5,9 +5,10 @@
 удалённое не возвращается; второй аккаунт на том же телефоне не видит записей первого.
 Вход общий со Sport: вошёл в одном — вошёл в обоих, вышел — вышел из обоих. Day показывает тренировки и плановые
 занятия Sport из его витрины, замеры тела — один документ и один экран на оба приложения, свитч связи — один на пару.
-Счётчики еды и «съедено»: Meal ещё не перешёл на общий модуль, поэтому его витрину (meal/summary, meal/foods) пишет
-страница-заглушка сценария через тот же общий модуль и общий файл формата; так же заглушка изображает более новую
-версию Day (номер формата новее). Прежние строки облака Day не читаются и не меняются.
+Счётчики еды и «съедено» — с настоящим Meal 32 на том же телефоне: его счётчик появляется в Day, нажатие в Day сразу
+входит в «съедено», Meal читает его, считает и называет в сводке — второй раз оно не прибавляется. Новый телефон на
+медленной сети не затирает настройки аккаунта начальными. Страница-заглушка изображает более новую версию Day
+(номер формата новее). Прежние строки облака Day не читаются и не меняются.
 Два придуманных аккаунта, поддельный сервер с правилом «каждый видит только свои строки».
 — Claude · 14.11.2026"""
 import base64
@@ -20,7 +21,8 @@ USERS = {
 ONE, TWO = "one@example.invalid", "two@example.invalid"
 tokens, table, requests, offline = {}, {}, [], set()
 out, errors = {}, []
-DAY_PAGE, SPORT_PAGE = BASE + DAY_STORE, BASE + SPORT_STORE
+DAY_PAGE, SPORT_PAGE, MEAL_PAGE = BASE + DAY_STORE, BASE + SPORT_STORE, BASE + MEAL
+slow = set()   # «телефоны» на медленной сети: сервер отвечает им с задержкой
 # прежние строки облака Day первого аккаунта: модуль их не читает и не трогает
 OLD = {kind: {"user_id": USERS[ONE]["id"], "app": "day", "kind": kind, "v": 1, "iv": "b2xkLWl2LW9sZC1pdg==", "data": "b2xkLWNpcGhlcnRleHQ=", "at": 1} for kind in ("journal", "link")}
 for kind, row in OLD.items():
@@ -34,6 +36,8 @@ def serve(route, request, device):
         return route.fulfill(status=204, headers={"access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "*"})
     if device in offline:
         return route.abort("internetdisconnected")
+    if device in slow and "/rest/v1/app_sync" in request.url:
+        time.sleep(2.5)
     try:
         page_path = urlsplit(request.frame.url).path   # какая страница спрашивает сервер
     except Exception:
@@ -87,6 +91,7 @@ def serve(route, request, device):
 def phone_for(browser, name):
     ctx = browser.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow")
     ctx.route(BACKEND + "/**", lambda route, request: serve(route, request, name))
+    libraries(ctx)
     stand_in_route(ctx)
     return ctx
 
@@ -308,27 +313,46 @@ with sync_playwright() as p:
     s1.click("[data-app-link=day]")
     out["pair_on_in_day"] = until(a1, "()=>DayAppLinks.on('sport')===true&&document.querySelector('[data-app-link=sport]').checked&&HappyCare.activity(SelfCare.data(),curDate).workouts.length===2", seconds=8)
 
-    # Meal ещё не перешёл на общий модуль: его витрину пишет заглушка. Счётчик еды появляется в Day, нажатие попадает в «съедено» сразу
-    # и ложится в документ нажатий Day, откуда его читает Meal; посчитанное Meal второй раз не прибавляется.
-    mandarin = {"id": "f-mandarin", "n": "Мандарин, сырой", "k": 53, "p": 0.8, "f": 0.3, "c": 11.5, "counterValues": {"kcal": 53, "prot": 0.8, "fat": 0.3, "carb": 11.5, "fib": 1.8}}
-    m1 = stand_in(A, MEAL_STAND_IN, errors, "A-meal")
-    m1.evaluate("f=>T.put('foods','c2',{title:'Мандарин',fid:f.id,q:1,g:88,u:'шт',food:f,targets:{day:true,sport:false}})", mandarin)
-    m1.evaluate("d=>Promise.all([T.put('summary','secs',[{k:'am',t:'Завтрак'}]),T.put('summary',d,{food:true,k:148.5,p:14.5,f:9.9,c:0.3,n:1,dr:0,sec:{am:{food:true,k:148.5,t:'08:40',n:1}},ev:[{s:'am',t:'08:40'}]})])", today)
+    # Настоящий Meal на том же телефоне: вход общий. Счётчик еды из Meal появляется в Day, нажатие в Day попадает в «съедено» сразу
+    # и ложится в документ нажатий Day; Meal читает его, считает и называет в сводке — второй раз оно не прибавляется.
+    m1 = A.new_page()
+    m1.on("pageerror", lambda e: errors.append("A-meal: " + str(e)[:300]))
+    m1.goto(MEAL_PAGE)
+    out["meal_signed_in"] = bool(until(m1, "u=>typeof MealData!=='undefined'&&MealData.signedIn()&&MealData.store.uid===u&&!!document.querySelector('#mlTaps .tpItem')", USERS[ONE]["id"], 15))
+    m1.evaluate("()=>{const c=DB.taps.find(c=>c.k==='egg');c.targets={day:true,sport:false};day(curDate).items.push({id:'i-meal-1',sec:'am',fid:'egg',q:2,u:'шт',g:gramsFor('egg',2,'шт'),t:'08:40'});save();renderAll()}")
+    base = m1.evaluate("()=>Math.round(sumOf(day(curDate).items).k*10)/10")
+    one = m1.evaluate("()=>Math.round(sumOf([{fid:'egg',q:1,u:'шт',g:gramsFor('egg',1,'шт')}]).k*10)/10")
+    out["meal_numbers"] = [base, one]
+    EATEN = "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e}"
     a1.click(".tab[data-go=day]")
-    out["meal_counter_shown"] = until(a1, "()=>{const b=document.querySelector('#tapBox [data-tplus=\"meal-c2\"]');return !!b&&b.closest('.tpItem').innerText}", seconds=8)
-    out["eaten_before"] = a1.evaluate("d=>mealDay(d)&&SelfCare.data()&&HappyFood.eaten(MEAL_SUMMARY,d,HappyDayCounters.taps(),HappyDayCounters.foods(),'day')", today)
-    plus(a1, "meal-c2")
+    out["meal_counter_shown"] = until(a1, "()=>{const b=document.querySelector('#tapBox [data-tplus=\"meal-egg\"]');return !!b&&b.closest('.tpItem').innerText}", seconds=10)
+    out["eaten_before"] = until(a1, EATEN, base, 10)
+    out["meal_start"] = a1.evaluate("()=>{const s=secTime(curDate,'am');return s&&s.t+' · '+s.src}")
+    plus(a1, "meal-egg")
     out["meal_tap_toast"] = a1.inner_text("#toast")
-    out["meal_count"] = count(a1, "meal-c2")
-    out["eaten_after_tap"] = a1.evaluate("d=>HappyFood.eaten(MEAL_SUMMARY,d,HappyDayCounters.taps(),HappyDayCounters.foods(),'day')", today)
-    seen_by_meal = until(m1, "()=>{const t=T.near('day','foodtaps');return t.length===1&&t[0]}", seconds=8)
-    out["tap_seen_by_meal"] = seen_by_meal
-    out["meal_not_stored_in_day"] = not a1.evaluate("()=>JSON.stringify(DayDocs.NAMES.map(n=>DayData.store.doc(n).all())).match(/meal-c2|Мандарин|counterEventId/)")
-    if seen_by_meal:   # Meal посчитал нажатие: назвал его в сводке дня
-        m1.evaluate("([d,id])=>T.put('summary',d,{food:true,k:195.1,p:15.2,f:10.2,c:10.4,fib:1.6,n:2,dr:0,sec:{am:{food:true,k:148.5,t:'08:40',n:1}},ev:[{s:'am',t:'08:40'}],cs:{[id]:[46.64,0.7,0.26,10.12,1.58]}})", [today, seen_by_meal["id"]])
-    out["eaten_counted"] = until(a1, "d=>{const e=HappyFood.eaten(MEAL_SUMMARY,d,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return e&&e.k===195.1&&e.pending===0&&e}", today, 8)
-    out["meal_on_other_phone"] = until(b1, "()=>{const b=document.querySelector('#tapBox [data-tplus=\"meal-c2\"]');return !!b&&Number(b.parentElement.querySelector('.v').textContent)===1&&mealDay(curDate)&&mealDay(curDate).k}", seconds=30)
+    out["meal_count"] = count(a1, "meal-egg")
+    out["eaten_after_tap"] = a1.evaluate(EATEN, round(base + one, 1))
+    out["tap_seen_by_meal"] = until(m1, "()=>{const x=day(curDate).items.filter(x=>x.nb==='day');return x.length===1&&{fid:x[0].fid,tap:x[0].tap}}", seconds=10)
+    out["meal_not_stored_in_day"] = not a1.evaluate("()=>JSON.stringify(DayDocs.NAMES.map(n=>DayData.store.doc(n).all())).match(/meal-egg|counterEventId/)")
+    out["eaten_counted"] = until(a1, "k=>{const e=HappyFood.eaten(MEAL_SUMMARY,curDate,HappyDayCounters.taps(),HappyDayCounters.foods(),'day');return !!e&&Math.abs(e.k-k)<0.2&&e.pending===0&&e}", round(base + one, 1), 10)
+    out["meal_on_other_phone"] = until(b1, "k=>{const b=document.querySelector('#tapBox [data-tplus=\"meal-egg\"]');return !!b&&Number(b.parentElement.querySelector('.v').textContent)===1&&!!mealDay(curDate)&&Math.abs(mealDay(curDate).k-k)<0.2}", round(base + one, 1), 30)
     m1.close()
+
+    # новый телефон на медленной сети: настройки, сделанные на первом телефоне, он получает до своей первой записи и не затирает начальными
+    a1.evaluate("()=>{DB.sections[1].t='Своё название';save();renderAll()}")
+    a1.wait_for_timeout(700)
+    until(a1, "()=>DayData.store.status().state==='cloud'", seconds=12)
+    C = phone_for(b, "C")
+    slow.add("C")
+    c1 = tab(C, "C1")
+    sign_in(c1, ONE)
+    out["slow_phone_gets_settings"] = until(c1, "()=>DB.sections[1].t==='Своё название'", seconds=20)
+    c1.wait_for_timeout(9000)
+    slow.discard("C")
+    until(c1, "()=>DayData.store.status().state==='cloud'", seconds=20)
+    a1.wait_for_timeout(3000)
+    out["settings_not_overwritten"] = [a1.evaluate("()=>DB.sections[1].t"), c1.evaluate("()=>DB.sections[1].t")]
+    C.close()
 
     # выход в Day — вышли обе вкладки Day и Sport; без входа записей не видно
     until(a1, "()=>DayData.store.status().state==='cloud'", seconds=12)
@@ -372,7 +396,7 @@ with sync_playwright() as p:
 
 uid1, uid2 = USERS[ONE]["id"], USERS[TWO]["id"]
 rows = {k: r for k, r in table.items()}
-secrets = ("Заметка", "телефона", "Умывание", "Зал утром", "Мандарин", "второго аккаунта", "Бассейн")
+secrets = ("Заметка", "телефона", "Умывание", "Зал утром", "Своё название", "второго аккаунта", "Бассейн")
 out["plaintext_on_server"] = any(s.encode() in base64.b64decode(r["data"]) for r in rows.values() for s in secrets)
 writes = [r for r in requests if r.get("kind")]
 day_writes = [r for r in writes if r["from"].endswith(urlsplit(DAY_PAGE).path)]
@@ -402,10 +426,12 @@ checks = [
     ("тренировка Sport стоит в журнале Day, а в документы Day не записана", out["sport_in_journal"] and out["sport_not_stored_in_day"]),
     ("замеры тела — один документ: замер из Day виден в Sport, замер из Sport — в Day на обоих телефонах", out["measure_in_sport"] == 83 and bool(out["measure_in_day_a"]) and out["measure_in_day_b"] == ["2026-10-01:83", today + ":81"]),
     ("свитч связи один на пару: выключили в Day — выключен в Sport, начатое после выключения не показано; включили в Sport — показано", out["pair_off_in_sport"] and out["pair_off_hides"] == ["Зал утром"] and bool(out["pair_on_in_day"])),
-    ("счётчик еды из витрины Meal появился в Day с подписью порции", bool(out["meal_counter_shown"]) and "Мандарин" in out["meal_counter_shown"] and "88 г · Meal" in out["meal_counter_shown"]),
-    ("нажатие на счётчик еды попало в «съедено» сразу и в документ нажатий Day, откуда его читает Meal", out["eaten_before"]["k"] == 148.5 and out["eaten_after_tap"]["k"] == 195.1 and out["eaten_after_tap"]["pending"] == 1 and out["meal_count"] == 1 and "Мандарин +1 шт · Happy Meal" in out["meal_tap_toast"] and bool(out["tap_seen_by_meal"]) and out["tap_seen_by_meal"]["id"].startswith("day-") and out["tap_seen_by_meal"]["value"]["item"]["g"] == 88),
-    ("посчитанное Meal нажатие второй раз не прибавлено; счётчик еды и его нажатия в документы дневника Day не попали", bool(out["eaten_counted"]) and out["meal_not_stored_in_day"]),
-    ("счётчик еды, нажатие и съеденное дошли до второго телефона", out["meal_on_other_phone"] == 195.1),
+    ("Meal на том же телефоне вошёл сам; счётчик еды из его витрины появился в Day с подписью порции", out["meal_signed_in"] and bool(out["meal_counter_shown"]) and "Яйцо" in out["meal_counter_shown"] and "· Meal" in out["meal_counter_shown"]),
+    ("Day показывает «съедено» и начало приёма из витрины Meal", bool(out["eaten_before"]) and out["meal_start"] == "08:40 · meal"),
+    ("нажатие на счётчик еды попало в «съедено» сразу и в документ нажатий Day, откуда его прочитал Meal", bool(out["eaten_after_tap"]) and out["meal_count"] == 1 and "Happy Meal" in out["meal_tap_toast"] and bool(out["tap_seen_by_meal"]) and out["tap_seen_by_meal"]["tap"] == "egg"),
+    ("посчитанное Meal нажатие второй раз не прибавлено; счётчик еды и его нажатия в документы дневника Day не попали", bool(out["eaten_counted"]) and out["meal_not_stored_in_day"] is True),
+    ("счётчик еды, нажатие и съеденное дошли до второго телефона", bool(out["meal_on_other_phone"])),
+    ("новый телефон на медленной сети получил настройки аккаунта и не затёр их начальными", bool(out["slow_phone_gets_settings"]) and out["settings_not_overwritten"] == ["Своё название", "Своё название"]),
     ("выход в Day — вышли вторая вкладка и Sport; без входа записей не видно, ячейка входа убрана", out["sign_out_tab2"] and out["sign_out_sport"] and out["signed_out_sees"] == [0, "", None, True, []]),
     ("второй аккаунт не видит записей, тренировок и счётчиков первого и пишет в свои строки", out["second_account_sees"] == [0, "", None, 0, False] and out["second_account_cloud"]),
     ("записи двух аккаунтов на устройстве лежат раздельно", out["device_accounts"] == [uid1, uid2]),

@@ -1,10 +1,10 @@
-"""Meal 29: БАДы на двух устройствах одного аккаунта и в Happy Day (поддельный сервер, придуманные записи; каталог БАДов —
+"""Meal 32: БАДы на двух устройствах одного аккаунта и в Happy Day (поддельный сервер, придуманные записи; каталог БАДов —
 из ветки библиотек этого репозитория). Устройство A — Meal: тестовая покупка каталога, протеин в завтрак через поиск
 раздела (порошок 114 ккал — открывает приём, 08:15), рыбий жир «без приёма» через «Мои добавки» (капсулы — приём не
-открывают, но прерывают голодание, 07:00). В облаке — отдельная строка meal/supplements, шифр без открытого текста;
-журнал Meal не трогается. Устройство B — Meal: после входа видны оба приёма и свой вариант; правка количества уходит
-в облако и приходит на A. Устройство B — Day: «съедено» с калориями БАДов, завтрак отмечен, время — 08:15.
-В конце на A: «Выгрузить дневник» — в файле и добавки; «Загрузить» → «Дополнить» возвращает их, «Вернуть» — как было."""
+открывают, но прерывают голодание, 07:00). Добавки — документ supps общего модуля: в облаке своя строка meal/supps,
+шифр без открытого текста; в документы дневника они не пишутся. Устройство B — Meal: после входа видны оба приёма и
+свой вариант; правка количества уходит в облако и приходит на A. Устройство B — Day: «съедено» с калориями БАДов,
+завтрак отмечен, время — 08:15. В конце на A: «Выгрузить дневник» — в файле и добавки."""
 from common import *
 
 out, errors, checks = {}, [], []
@@ -31,25 +31,22 @@ with sync_playwright() as p:
         page = ctx.new_page()
         page.on("pageerror", lambda e: errors.append(name + ": " + str(e)[:300]))
         page.goto(BASE + MEAL + "index.html")
-        wait_for(page, lambda: page.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'"), 25)
-        page.evaluate("()=>go('settings')")
-        page.wait_for_timeout(600)
-        page.fill("#clEmail", EMAIL)
-        page.fill("#clPw", PW)
-        page.click('#clBox [data-cl="in"]')
-        page.wait_for_timeout(11000)          # вход, перезагрузка, журнал и добавки из облака
-        ready = wait_for(page, lambda: page.evaluate("()=>typeof HappyProfile!=='undefined'&&HappyProfile.owner!=='local'&&clOn()&&MealSupplementsStore.ready()&&HappySupplementsLibrary.state==='ok'"), 25)
+        enter(page)          # вход, страница открывается заново, дневник и добавки приходят из облака
+        ready = wait_for(page, lambda: page.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&MealData.signedIn()&&MealSupplementsStore.ready()&&HappySupplementsLibrary.state==='ok'"), 30)
         check(name + ": после входа документ добавок и каталог БАДов готовы", ready)
         page.evaluate("()=>{go('day');renderDay()}")
         return page
 
+    def cloud_ok(page):
+        return page.evaluate("()=>MealData.store.status().state==='cloud'")
+
     # ── устройство A: Meal ──
     A = device("A")
     meal = meal_signed_in(A, "A-meal")
-    out["A_owner"] = meal.evaluate("()=>({owner:HappyProfile.owner,key:MealSupplementsStore.key()})")
-    check("A: Meal под аккаунтом, документ добавок — в области аккаунта", out["A_owner"]["owner"] == UID and out["A_owner"]["key"] == "happy-meal-supplements-v1:" + UID)
-    meal.evaluate("()=>localStorage.setItem(HappyProfile.key('happy-meal-demo-purchases-v1'),JSON.stringify({SUPP:true}))")   # тестовая покупка, как кнопкой «Купить»
-    journal_before = rows.get((UID, "meal", "journal"), {}).get("iv")
+    check("A: Meal под аккаунтом", meal.evaluate("()=>MealData.store.uid") == UID)
+    meal.evaluate("()=>HappyCollections.buy('SUPP')")   # тестовая покупка, как кнопкой «Купить»
+    meal.evaluate("()=>{go('day');renderDay()}")
+    meal.wait_for_timeout(600)
     # протеин — в завтрак через поиск раздела
     meal.locator('#mlSecs [data-sec="am"]').tap()
     meal.wait_for_timeout(400)
@@ -94,16 +91,17 @@ with sync_playwright() as p:
     # Meal 30 (Астамур 12.11): строки «Голодание прервано» нет; добавка в приёме — как любая еда («1 продукт»)
     check("A: строки «Голодание прервано» нет; завтрак — «1 продукт · 08:15»", out["A_fast"] == "" and out["A_day"][0].startswith("am: 1 продукт · 08:15"))
     meal.screenshot(path=SHOTS + "meal_supplements-2-day.png")
-    synced = wait_for(meal, lambda: (UID, "meal", "supplements") in rows and meal.evaluate("()=>MealSupplementsStore.status()") == "synced", 30)
-    row = rows.get((UID, "meal", "supplements"), {})
+    meal.wait_for_timeout(800)
+    synced = wait_for(meal, lambda: (UID, "meal", "supps") in rows and cloud_ok(meal), 30)
+    row = rows.get((UID, "meal", "supps"), {})
     out["cloud_row"] = {"bytes": len(row.get("data", "")), "v": row.get("v")}
-    check("A: добавки в облаке — своя строка meal/supplements", bool(synced))
+    check("A: добавки в облаке — своя строка meal/supps общего модуля", bool(synced) and row.get("v") == 2)
     check("в облаке шифр: ни названий, ни ключей записей открытым текстом", row and "Рыбий" not in json.dumps(row, ensure_ascii=False) and "variant:" not in row.get("data", ""))
-    check("строка журнала Meal от добавок не меняется", rows.get((UID, "meal", "journal"), {}).get("iv") == journal_before)
-    meal.evaluate("()=>linkWrite()")
-    wait_for(meal, lambda: (UID, "meal", "link") in rows and not meal.evaluate("()=>CL_DIRTY"), 25)
+    check("в документы дневника Meal добавки не пишутся", not meal.evaluate("()=>JSON.stringify(MealDocs.NAMES.map(n=>MealData.store.doc(n).all())).match(/Рыбий|fish-oil|protein-whey/)"))
+    wait_for(meal, lambda: (UID, "meal", "summary") in rows and cloud_ok(meal), 25)
     out["A_summary"] = meal.evaluate("()=>{const d=linkSummary().days[curDate];return {k:d.k,food:d.food,am:d.sec.am}}")
     check("сводка для Day: калории дня с БАДами (114 + 20), завтрак — еда с 08:15", abs(out["A_summary"]["k"] - 134) < 0.6 and out["A_summary"]["food"] and out["A_summary"]["am"]["food"] and out["A_summary"]["am"]["t"] == "08:15")
+    check("сводка в витрине Meal — та же", meal.evaluate("()=>{const d=MealData.store.doc('summary').get(curDate);return !!d&&Math.abs(d.k-134)<0.6}"))
 
     # ── устройство B: Meal того же аккаунта ──
     B = device("B")
@@ -123,25 +121,21 @@ with sync_playwright() as p:
     meal_b.locator('#spSectionEntries [data-sp-quantity]').dispatch_event("change")
     meal_b.wait_for_timeout(700)
     check("B: количество протеина изменено — 45 г, 171 ккал в итоге раздела", meal_b.evaluate("()=>document.getElementById('secTot').innerText.startsWith('171 ккал')"))
-    wait_for(meal_b, lambda: meal_b.evaluate("()=>MealSupplementsStore.status()") == "synced", 25)
-    meal.evaluate("()=>MealSupplementsStore.sync()")
+    meal_b.wait_for_timeout(800)
+    wait_for(meal_b, lambda: cloud_ok(meal_b), 25)
+    meal.evaluate("()=>{MealData.store.sync()}")
     wait_for(meal, lambda: 45 in [e[3] for e in meal.evaluate(ENTRIES)], 20)
     check("A: правка с B пришла — протеин 45 г", 45 in [e[3] for e in meal.evaluate(ENTRIES)])
-    meal_b.evaluate("()=>{go('day');renderDay();linkWrite()}")
-    wait_for(meal_b, lambda: not meal_b.evaluate("()=>CL_DIRTY"), 25)
+    meal_b.evaluate("()=>{go('day');renderDay()}")
     meal_b.wait_for_timeout(1500)
+    wait_for(meal_b, lambda: cloud_ok(meal_b), 25)
 
     # ── устройство B: Day ──
     day = B.new_page()
     day.on("pageerror", lambda e: errors.append("B-day: " + str(e)[:300]))
     day.goto(BASE + DAY + "index.html")
-    day.wait_for_timeout(5500)
-    day.evaluate("()=>go('settings')")
-    day.wait_for_timeout(900)
-    day.fill("#clBox #clEmail", EMAIL)
-    day.fill("#clBox #clPw", PW)
-    day.click('#clBox [data-cl="in"]')
-    day.wait_for_timeout(12000)
+    opened(day, "day")          # вход общий: Day на том же телефоне уже вошёл
+    check("Day на том же телефоне вошёл сам", day.evaluate("()=>DayData.signedIn()"))
     wait_for(day, lambda: day.evaluate("()=>!!(DB.mealLink&&DB.mealLink.days&&DB.mealLink.days[todayISO()])"), 20)
     out["B_day_meal"] = day.evaluate("()=>{const d=DB.mealLink.days[todayISO()];return {k:d.k,food:d.food,am:d.sec&&d.sec.am,state:mealState(todayISO(),'am')}}")
     check("Day: калории Meal с БАДами — 171 + 20", abs(out["B_day_meal"]["k"] - 191) < 0.6)
@@ -152,30 +146,15 @@ with sync_playwright() as p:
     check("Day: в кольце «съедено» — 191", out["B_day_eaten"] and out["B_day_eaten"]["big"].replace(" ", " ").replace(" ", "") == "191")
     day.locator("#careEnergy").screenshot(path=SHOTS + "meal_supplements-3-day-eaten.png")
 
-    # ── «Выгрузить / Загрузить дневник» с добавками (A, в конце — чтобы не задеть проверки Day) ──
+    # ── «Выгрузить дневник» с добавками ──
     exported = meal.evaluate("()=>new Promise(r=>{window.jrShareBlob=(name,blob)=>blob.text().then(t=>r({name,text:t}));bkExport()})")
     backup = json.loads(exported["text"])
     sup = backup.get("supplements") or {}
     check("«Выгрузить дневник»: в файле и добавки — 2 приёма со снимком состава, 2 варианта", sup.get("schema") == "happy.meal.supplements.v1" and len(sup.get("entries", [])) == 2 and len(sup.get("variants", [])) == 2 and all(e.get("snapshot") and e.get("portion") for e in sup["entries"]))
-    meal.evaluate("()=>MealSupplementsStore.importState({schema:'happy.meal.supplements.v1',variants:[],entries:[],favoriteIds:[]},'replace')")
-    check("перед загрузкой добавок на A нет", meal.evaluate(ENTRIES) == [])
-    meal.evaluate("(t)=>bkPreview(t)", exported["text"])
-    out["bk_summary"] = meal.evaluate("()=>document.getElementById('bkSummary').textContent")
-    check("при загрузке видно, сколько в файле добавок и сколько новых", "Добавки: 2 приёмов и 2 вариантов, новых приёмов: 2." in out["bk_summary"])
-    with meal.expect_navigation(timeout=30000):
-        meal.locator("#bkMerge").click()
-    wait_for(meal, lambda: meal.evaluate("()=>typeof MealSupplementsStore!=='undefined'&&MealSupplementsStore.ready()&&!!document.querySelector('#toast .tU')"), 25)
-    check("«Дополнить без дублей»: добавки из файла снова на месте", sorted(e[0] for e in meal.evaluate(ENTRIES)) == sorted(e["name"] for e in sup["entries"]))
-    # «Вернуть» в подсказке после загрузки: подсказка держится 4 с, а проверка выше ждёт документ добавок — нажимаем ту же
-    # кнопку без ожидания видимости (12.11 08:30: на медленной машине подсказка успевала скрыться — сценарий падал по времени)
-    with meal.expect_navigation(timeout=30000):
-        meal.evaluate("()=>document.querySelector('#toast .tU').click()")
-    wait_for(meal, lambda: meal.evaluate("()=>typeof MealSupplementsStore!=='undefined'&&MealSupplementsStore.ready()"), 25)
-    meal.wait_for_timeout(800)
-    check("«Вернуть»: добавки — как перед загрузкой", meal.evaluate(ENTRIES) == [])
+    check("загрузки дневника из файла и возврата больше нет", meal.locator("#bkIn").count() == 0 and meal.locator("#bkRestore").count() == 0)
 
     out["writes"] = sorted(set(str(r.get("kind")) for r in log if r["method"] in ("POST", "PATCH") and r["path"] == "/rest/v1/app_sync"))
-    check("в облако пишутся только meal/journal, meal/link, meal/supplements и строки Day", all(k in ("meal/journal", "meal/link", "meal/supplements", "meal/counters") or str(k).startswith("day/") for k in out["writes"]))
+    check("в облако пишутся только новые строки Meal и строки Day; прежние строки Meal не пишутся", all((str(k).startswith("meal/") and str(k) not in ("meal/journal", "meal/link", "meal/supplements", "meal/counters")) or str(k).startswith("day/") for k in out["writes"]) and "meal/supps" in out["writes"])
     check("на страницах нет ошибок", not errors)
     out["errors"] = errors
     b.close()
