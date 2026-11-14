@@ -5,26 +5,29 @@
       "name": "happy-account.js",
       "reference": "shared/happy-account.js",
       "apps": [
+        "day",
         "sport"
       ],
-      "todo": "Day и Meal добавить при переходе на общий модуль"
+      "todo": "Meal добавить при переходе на общий модуль (этап 4)"
     },
     {
       "name": "happy-store.js",
       "reference": "shared/happy-store.js",
       "apps": [
+        "day",
         "sport"
       ],
-      "todo": "Day и Meal добавить при переходе на общий модуль",
+      "todo": "Meal добавить при переходе на общий модуль (этап 4)",
       "contract": true
     },
     {
       "name": "happy-account-ui.js",
       "reference": "shared/happy-account-ui.js",
       "apps": [
+        "day",
         "sport"
       ],
-      "todo": "Day и Meal добавить при переходе на общий модуль"
+      "todo": "Meal добавить при переходе на общий модуль (этап 4)"
     },
     {
       "name": "release-notes.js",
@@ -48,15 +51,17 @@
       "name": "happy-app-links.js",
       "reference": "shared/happy-app-links.js",
       "apps": [
+        "day",
         "sport"
       ],
       "contract": true,
-      "todo": "Day добавить с Day 59, Meal — при переходе на общий модуль (этап 4); до того у них прежний файл с хранением в localStorage"
+      "todo": "Meal добавить при переходе на общий модуль (этап 4); до того у него прежний файл с хранением в localStorage"
     },
     {
       "name": "happy-measurements.js",
       "reference": "shared/happy-measurements.js",
       "apps": [
+        "day",
         "sport"
       ],
       "contract": true,
@@ -66,6 +71,7 @@
       "name": "happy-measurements.css",
       "reference": "shared/happy-measurements.css",
       "apps": [
+        "day",
         "sport"
       ],
       "todo": "Meal добавить при переходе на общий модуль (этап 4)"
@@ -74,18 +80,28 @@
       "name": "happy-sport-summary.js",
       "reference": "shared/happy-sport-summary.js",
       "apps": [
+        "day",
         "sport"
       ],
       "contract": true,
       "todo": "Meal добавить при переходе на общий модуль (этап 4)"
     },
     {
+      "name": "happy-food.js",
+      "reference": "shared/happy-food.js",
+      "apps": [
+        "day"
+      ],
+      "contract": true,
+      "todo": "Meal и Sport добавить при переходе Meal на общий модуль (этап 4)"
+    },
+    {
       "name": "happy-summaries.js",
       "reference": "shared/happy-summaries.js",
       "apps": [
-        "day",
         "meal"
-      ]
+      ],
+      "todo": "прежний обмен сводками; у Day с выпуска 59 его нет, уйдёт вместе с переходом Meal (этап 4)"
     },
     {
       "name": "happy-settings-developer.js",
@@ -115,15 +131,14 @@
       "name": "measurements-model.js",
       "reference": "shared/measurements-model.js",
       "apps": [
-        "day",
         "meal"
-      ]
+      ],
+      "todo": "прежний формат замеров; уйдёт вместе с переходом Meal (этап 4)"
     },
     {
       "name": "imported-history.js",
       "reference": "shared/imported-history.js",
       "apps": [
-        "day",
         "meal"
       ]
     },
@@ -173,23 +188,22 @@
     },
     {
       "name": "food-counters.js",
-      "reference": "{day}/shared/food-counters.js",
+      "reference": "{meal}/shared/food-counters.js",
       "apps": [
-        "day",
         "meal",
         "sport"
       ],
-      "frozenRoot": true
+      "frozenRoot": true,
+      "todo": "прежний общий документ счётчиков; у Day с выпуска 59 его нет (shared/happy-food.js), уйдёт вместе с переходом Meal (этап 4)"
     },
     {
       "name": "happy-ui.js",
       "reference": "shared/happy-ui.js",
       "apps": [
-        "day",
         "meal"
       ],
       "divergent": true,
-      "todo": "три версии (day-54, meal-26 = корень, sport-38) — объединить в следующих выпусках"
+      "todo": "прежняя карточка входа; у Day и Sport — общий happy-account-ui.js, уйдёт вместе с переходом Meal (этап 4)"
     },
     {
       "name": "happy-ui.css",
@@ -204,24 +218,22 @@
     },
     {
       "name": "profile-storage.js",
-      "reference": "{day}/shared/profile-storage.js",
+      "reference": "{meal}/shared/profile-storage.js",
       "apps": [
-        "day",
         "meal"
       ],
       "divergent": true,
-      "todo": "у Meal своя версия с проверками входа (fence); объединить вместе с shared/happy-auth.js"
+      "todo": "прежние профили; уйдут вместе с переходом Meal (этап 4)"
     },
     {
       "name": "measurements-host.js",
       "reference": "shared/measurements-host.js",
       "apps": [
-        "day",
         "meal"
       ],
       "divergent": true,
       "frozenRoot": true,
-      "todo": "day-53 отличается"
+      "todo": "прежний показ замеров через внешний сайт; уйдёт вместе с переходом Meal (этап 4) — его заменит shared/happy-measurements.js"
     },
     {
       "name": "food-counters.css",

@@ -4,7 +4,8 @@ import vm from 'node:vm';
 const root=new URL('../',import.meta.url);
 const read=p=>readFile(new URL(p,root),'utf8');
 const apps=JSON.parse(await read('shared/apps.json'));
-const expectedKeys={day:'hd_db_v1',meal:'hdm_db_v1',sport:"HappyStore.open({app:'sport'"};   // Sport 42: дневник — в общем модуле хранения (shared/happy-store.js)
+// Sport 42 и Day 59: дневник — в общем модуле хранения (shared/happy-store.js); у Day запуск лежит в day-data.js (storageScript в apps.json)
+const expectedKeys={day:"HappyStore.open({app:'day'",meal:'hdm_db_v1',sport:"HappyStore.open({app:'sport'"};
 let scripts=0;
 for(const name of ['selfcare-core.js','selfcare-ui.js','energy-widget.js'])new vm.Script(await read(apps.day.entry.replace('index.html',name)),{filename:apps.day.entry.replace('index.html',name)});
 for(const [app,config] of Object.entries(apps)){
@@ -20,6 +21,10 @@ for(const [app,config] of Object.entries(apps)){
  const manifest=JSON.parse(await read(config.entry.replace('index.html','manifest.webmanifest')));
  const base=new URL(config.entry,'https://astamurberlin-rgb.github.io/happyamurio/');
  for(const k of ['id','start_url','scope'])assert.equal(new URL(manifest[k],base).pathname,new URL('./',base).pathname);
+ if(app==='day'){   // Day 59: своего хранилища нет — ни прежнего журнала, ни ячейки входа, ни гостя
+  for(const old of ['hd_db_v1','happy-auth:day','hd_cloud_v1','dayStorage','HappyProfile','auth-read-only'])assert.ok(!html.includes(old),'day: прежнее хранилище или вход: '+old);
+  continue;
+ }
  // Check the actual storage adapter with pre-existing records, without booting the app.
  const adapterStart=html.indexOf('var mem={};');
  const adapterEnd=html.indexOf('\n',html.indexOf('function rawSet(k,v)',adapterStart));
@@ -74,4 +79,4 @@ assert.notEqual(apps.meal.entry,apps.meal.previous.entry);
 const previousDay=await read(apps.day.previous.entry);
 assert.ok(previousDay.includes(`data-app-version="${apps.day.previous.version}"`));
 assert.notEqual(apps.day.entry,apps.day.previous.entry);
-console.log(`Passed: ${scripts} scripts parse; permanent app paths, versions, install URLs, existing Day/Meal storage reads and legacy redirects.`);
+console.log(`Passed: ${scripts} scripts parse; permanent app paths, versions, install URLs, existing Meal storage reads, Day and Sport on the shared store, and legacy redirects.`);

@@ -4,11 +4,14 @@
  * Одна строка состояния под аккаунтом: её текст даёт приложение (обычно из статуса общего модуля хранения).
  *
  *   HappyAccountUI.render(box, options)  — нарисовать карточку в box;
- *   HappyAccountUI.act(action, options)  — обработать нажатие кнопки с атрибутом data-happy-account-action.
- *   options: {account, status, beforeSignOut, onError}
+ *   HappyAccountUI.act(action, options)  — обработать нажатие кнопки с атрибутом data-happy-account-action;
+ *   HappyAccountUI.statusText(store, error) — строка состояния по статусу общего модуля, одна на три приложения.
+ *   options: {account, status, beforeSignOut, onError, newer, app}
  *     account — объект HappyAccount.create();
  *     status — строка состояния под аккаунтом (после входа);
- *     beforeSignOut — async-функция: дождаться, пока записи уйдут в облако.
+ *     beforeSignOut — async-функция: дождаться, пока записи уйдут в облако;
+ *     newer, app — записи сделаны более новой версией приложения app ('day' | 'meal' | 'sport'): под строкой
+ *       состояния появляется кнопка «Открыть последнюю версию» (адрес подставляет shared/happy-links.js).
  * Вход, выход и смена аккаунта приходят приложению через account.onChange.
  * — Claude · 14.11.2026 */
 (function(root){
@@ -29,6 +32,7 @@ function html(o,d){
  if(who){
   out='<b class="happy-account-name">'+esc(who.name||who.email||'Аккаунт Happy')+'</b>'+(who.name?'<span class="happy-account-status">'+esc(who.email)+'</span>':'');
   if(o.status)out+='<span class="happy-account-status" data-happy-account-status>'+esc(o.status)+'</span>';
+  if(o.newer)out+='<div class="happy-actions"><a class="happy-button primary" data-happy-app="'+esc(o.app||'')+'" href="./">Открыть последнюю версию</a></div>';
   if(ui.editing)out+=nameInput(d.hasName?d.name:(who.name||''))+'<p class="happy-note">Имя общее для Happy Day, Happy Meal и Happy Sport.</p><div class="happy-actions">'+button('save-name','Сохранить',true,true)+button('cancel-name','Отмена')+'</div>';
   else out+='<div class="happy-actions">'+button('edit-name','Изменить имя')+button('out','Выйти')+'</div>';
  }else{
@@ -42,7 +46,21 @@ function html(o,d){
  if(note)out+='<p class="happy-note'+(ui.error&&!ui.busy?' happy-error':'')+'" role="status">'+esc(note)+'</p>';
  return '<div class="happy-account" data-happy-account>'+out+'</div>';
 }
-function render(box,o){if(box)box.innerHTML=html(o,draft(box))}
+function render(box,o){
+ if(!box)return;box.innerHTML=html(o,draft(box));
+ if(o.newer&&root.HappyLinks)try{root.HappyLinks.load()}catch(e){}
+}
+/* Одна строка состояния под аккаунтом. store — хранилище общего модуля (или null без входа), error — ошибка запуска. */
+function statusText(store,error){
+ if(error)return error;
+ if(!store||store.closed)return '';
+ const s=store.status();
+ if(s.newer&&s.newer.length)return root.HappyStore?root.HappyStore.NEWER:'Записано более новой версией приложения. Открой последнюю версию.';
+ if(s.state==='saving')return 'Подождите, идёт синхронизация…';
+ if(s.state==='offline')return 'Нет связи · записи сохранены на устройстве';
+ if(s.state==='error')return 'Не удалось сохранить в облако · записи на устройстве';
+ return 'Синхронизировано';
+}
 
 async function act(action,o){
  const box=o.box(),paint=()=>render(o.box(),o),d=draft(box);
@@ -73,5 +91,5 @@ if(root.document)root.document.addEventListener('keydown',e=>{
  const submit=e.target.closest('[data-happy-account]').querySelector('[data-happy-account-submit]');
  if(submit&&!submit.disabled){e.preventDefault();submit.click()}
 });
-root.HappyAccountUI={render,act,ATTR};
+root.HappyAccountUI={render,act,statusText,ATTR};
 })(typeof globalThis!=='undefined'?globalThis:this);

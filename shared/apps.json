@@ -1,19 +1,19 @@
 {
  "day": {
-  "entry": "day-58/index.html",
-  "version": "58",
-  "sharedDirectory": "day-58/shared",
+  "entry": "day-59/index.html",
+  "version": "59",
+  "sharedDirectory": "day-59/shared",
   "links": {
    "meal": "meal-31/",
-   "sport": "sport-41/"
+   "sport": "sport-43/"
   },
-  "download": "day-58/Happy-Day-58.html",
+  "download": "day-59/Happy-Day-59.html",
   "previous": {
-   "entry": "day-57/index.html",
-   "version": "57.7",
-   "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4"
+   "entry": "day-58/index.html",
+   "version": "58",
+   "sourceCommit": "26f10dc3aac5a842ae359c3ab479a6d1726358d0"
   },
-  "name": "Happy Day · Update 58",
+  "name": "Happy Day · Update 59",
   "settingsSections": [
    "account",
    "links",
@@ -21,7 +21,7 @@
    "developer",
    "version"
   ],
-  "profileOptions": "{storage:dayStorage}"
+  "storageScript": "day-59/day-data.js"
  },
  "meal": {
   "entry": "meal-31/index.html",

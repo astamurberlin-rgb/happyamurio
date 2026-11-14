@@ -892,7 +892,7 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 .hm-sheet-top h2{margin:0;font-size:24px;line-height:1.2;font-weight:800}
 .hm-sheet .hm-grid-wrap{margin-top:0}
 .hm-field{display:flex;flex-direction:column;gap:7px;margin:0 0 15px;font-size:13px;font-weight:600}
-.hm-field input{width:100%;min-height:48px;padding:10px 14px;border-radius:16px;border:1px solid var(--hm-line);background:var(--hm-glass);color:inherit;font:inherit;font-size:16px;-webkit-appearance:none;appearance:none}
+.hm-field input{width:100%;min-height:48px;margin:0;padding:10px 14px;border-radius:16px;border:1px solid var(--hm-line);background:var(--hm-glass);color:inherit;font:inherit;font-size:16px;text-align:left;box-shadow:none;outline-offset:2px;-webkit-appearance:none;appearance:none}
 .hm-field input::placeholder{color:inherit;opacity:.6}
 .hm-field input[type=number]{-moz-appearance:textfield}
 .hm-field input[type=number]::-webkit-outer-spin-button,.hm-field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
@@ -934,11 +934,14 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
  * Одна строка состояния под аккаунтом: её текст даёт приложение (обычно из статуса общего модуля хранения).
  *
  *   HappyAccountUI.render(box, options)  — нарисовать карточку в box;
- *   HappyAccountUI.act(action, options)  — обработать нажатие кнопки с атрибутом data-happy-account-action.
- *   options: {account, status, beforeSignOut, onError}
+ *   HappyAccountUI.act(action, options)  — обработать нажатие кнопки с атрибутом data-happy-account-action;
+ *   HappyAccountUI.statusText(store, error) — строка состояния по статусу общего модуля, одна на три приложения.
+ *   options: {account, status, beforeSignOut, onError, newer, app}
  *     account — объект HappyAccount.create();
  *     status — строка состояния под аккаунтом (после входа);
- *     beforeSignOut — async-функция: дождаться, пока записи уйдут в облако.
+ *     beforeSignOut — async-функция: дождаться, пока записи уйдут в облако;
+ *     newer, app — записи сделаны более новой версией приложения app ('day' | 'meal' | 'sport'): под строкой
+ *       состояния появляется кнопка «Открыть последнюю версию» (адрес подставляет shared/happy-links.js).
  * Вход, выход и смена аккаунта приходят приложению через account.onChange.
  * — Claude · 14.11.2026 */
 (function(root){
@@ -959,6 +962,7 @@ function html(o,d){
  if(who){
   out='<b class="happy-account-name">'+esc(who.name||who.email||'Аккаунт Happy')+'</b>'+(who.name?'<span class="happy-account-status">'+esc(who.email)+'</span>':'');
   if(o.status)out+='<span class="happy-account-status" data-happy-account-status>'+esc(o.status)+'</span>';
+  if(o.newer)out+='<div class="happy-actions"><a class="happy-button primary" data-happy-app="'+esc(o.app||'')+'" href="./">Открыть последнюю версию</a></div>';
   if(ui.editing)out+=nameInput(d.hasName?d.name:(who.name||''))+'<p class="happy-note">Имя общее для Happy Day, Happy Meal и Happy Sport.</p><div class="happy-actions">'+button('save-name','Сохранить',true,true)+button('cancel-name','Отмена')+'</div>';
   else out+='<div class="happy-actions">'+button('edit-name','Изменить имя')+button('out','Выйти')+'</div>';
  }else{
@@ -972,7 +976,21 @@ function html(o,d){
  if(note)out+='<p class="happy-note'+(ui.error&&!ui.busy?' happy-error':'')+'" role="status">'+esc(note)+'</p>';
  return '<div class="happy-account" data-happy-account>'+out+'</div>';
 }
-function render(box,o){if(box)box.innerHTML=html(o,draft(box))}
+function render(box,o){
+ if(!box)return;box.innerHTML=html(o,draft(box));
+ if(o.newer&&root.HappyLinks)try{root.HappyLinks.load()}catch(e){}
+}
+/* Одна строка состояния под аккаунтом. store — хранилище общего модуля (или null без входа), error — ошибка запуска. */
+function statusText(store,error){
+ if(error)return error;
+ if(!store||store.closed)return '';
+ const s=store.status();
+ if(s.newer&&s.newer.length)return root.HappyStore?root.HappyStore.NEWER:'Записано более новой версией приложения. Открой последнюю версию.';
+ if(s.state==='saving')return 'Подождите, идёт синхронизация…';
+ if(s.state==='offline')return 'Нет связи · записи сохранены на устройстве';
+ if(s.state==='error')return 'Не удалось сохранить в облако · записи на устройстве';
+ return 'Синхронизировано';
+}
 
 async function act(action,o){
  const box=o.box(),paint=()=>render(o.box(),o),d=draft(box);
@@ -1003,7 +1021,7 @@ if(root.document)root.document.addEventListener('keydown',e=>{
  const submit=e.target.closest('[data-happy-account]').querySelector('[data-happy-account-submit]');
  if(submit&&!submit.disabled){e.preventDefault();submit.click()}
 });
-root.HappyAccountUI={render,act,ATTR};
+root.HappyAccountUI={render,act,statusText,ATTR};
 })(typeof globalThis!=='undefined'?globalThis:this);
 
 /* Связь с Happy Day и Happy Meal — свитчи под аккаунтом (решения Астамура 12.11.2026 11:50–11:55).
@@ -1181,31 +1199,32 @@ var SportData=(()=>{
   /* замеры правит общий экран — и здесь, и в Day, и в Meal: копия в дневнике обновляется при любой правке */
   store.doc('body').subscribe(()=>{if(typeof state!=='undefined')mirror(state)});
  }
- /* Строка состояния под аккаунтом. */
- function statusText(){
-  if(SportBoot.error)return SportBoot.error;
-  if(!signedIn())return '';
-  const s=store.status();
-  if(s.newer.length)return HappyStore.NEWER;
-  if(s.state==='saving')return 'Подождите, идёт синхронизация…';
-  if(s.state==='offline')return 'Нет связи · записи сохранены на устройстве';
-  if(s.state==='error')return 'Не удалось сохранить в облако · записи на устройстве';
-  return 'Синхронизировано';
- }
- return {load,save,adopt,afterSheet,askSignIn,syncPlans,statusText,signedIn,account,store};
+ /* Строка состояния под аккаунтом — общая для трёх приложений (shared/happy-account-ui.js). */
+ const statusText=()=>HappyAccountUI.statusText(signedIn()?store:null,SportBoot.error);
+ const outdated=()=>signedIn()&&store.status().newer.length>0;   // записи сделаны более новой версией Sport
+ return {load,save,adopt,afterSheet,askSignIn,syncPlans,statusText,outdated,signedIn,account,store};
 })();
+/* Sport 43: оформление — настройка устройства, а не запись дневника: общий shared/happy-appearance.js читает и пишет
+   её через rawGet/rawSet. В Sport 42 этих функций не осталось, и выбранное оформление не сохранялось. */
+async function rawGet(key){try{return localStorage.getItem(key)}catch(e){return null}}
+async function rawSet(key,value){localStorage.setItem(key,value);if(localStorage.getItem(key)!==value)throw Error('Не удалось сохранить на устройстве')}
 /* Карточка входа: общий модуль shared/happy-account-ui.js. */
 function paintHappyAccount(){
  const box=document.getElementById('happy-account');if(!box)return;
- HappyAccountUI.render(box,{account:SportData.account,status:SportData.statusText()});
+ HappyAccountUI.render(box,{account:SportData.account,status:SportData.statusText(),newer:SportData.outdated(),app:'sport'});
 }
 document.addEventListener('click',e=>{
  const b=e.target.closest?.('['+HappyAccountUI.ATTR+']');if(!b)return;e.preventDefault();
- HappyAccountUI.act(b.getAttribute(HappyAccountUI.ATTR),{account:SportData.account,status:SportData.statusText(),box:()=>document.getElementById('happy-account'),
+ HappyAccountUI.act(b.getAttribute(HappyAccountUI.ATTR),{account:SportData.account,status:SportData.statusText(),newer:SportData.outdated(),app:'sport',box:()=>document.getElementById('happy-account'),
   beforeSignOut:async()=>{if(SportData.signedIn())await SportData.store.flush(8000)}});
 });
 if(SportData.signedIn()){
- SportData.store.onStatus(()=>{const el=document.querySelector('#happy-account [data-happy-account-status]');if(el)el.textContent=SportData.statusText()});
+ let outdatedShown=SportData.outdated();
+ if(outdatedShown)setTimeout(()=>{try{toast(HappyStore.NEWER)}catch{}},900);   // записи сделаны более новой версией Sport
+ SportData.store.onStatus(()=>{
+  if(SportData.outdated()!==outdatedShown){outdatedShown=SportData.outdated();paintHappyAccount();if(outdatedShown)try{toast(HappyStore.NEWER)}catch{}return}
+  const el=document.querySelector('#happy-account [data-happy-account-status]');if(el)el.textContent=SportData.statusText();
+ });
  /* свитч связи переключили в Day, Meal или на другом устройстве — экран перерисовывается с новым положением */
  SportData.store.shared(HappyAppLinks.DOC.app,HappyAppLinks.DOC.name).subscribe(e=>{if(e.origin!=='local')SportData.adopt()});
 }
@@ -1408,7 +1427,7 @@ async function shareExercise(){const e=exercise(currentExerciseId);if(!e)return;
 document.addEventListener('change',e=>{if(!e.target.matches('#assign-form select[name=template]')||!e.target.value)return;const form=e.target.form;form.elements.destination.value='template';form.requestSubmit()});
 document.addEventListener('click',e=>{if(e.target.closest('[data-action="share-exercise"]'))shareExercise()});
 
-renderProfile=function(){return '<div class="happy-settings">'+renderTop('Настройки',false)+`<section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="happy-account"></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2>__HAPPY_SPORT_BACKUP__</section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="/happyamurio/day-58/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><a class="happy-button" href="/happyamurio/meal-31/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a></div></div></section><section class="happy-section" data-happy-section="icons"><h2 class="happy-heading">Иконки</h2><div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" disabled>Icon Studio · недоступна в этом выпуске</button></div></div></section><h2 class="happy-heading">Настройки тренировок</h2><div class="settings-section">Датчики</div><div class="card"><div class="setting-row"><div><b>Apple Здоровье</b><small>Нужна нативная интеграция</small></div><button class="text-btn" data-action="connections">Подробнее</button></div><div class="setting-row"><div><b>Пульс</b><small>Демонстрация шкалы во время тренировки</small></div><input class="toggle" id="demo-pulse" type="checkbox" aria-label="Демонстрация пульса" ${state.demoPulse?'checked':''}></div></div><div class="settings-section">Мои данные</div><div class="card"><div class="setting-row"><b>Тренировки</b><span>${state.workouts.length}</span></div><div class="setting-row"><b>Замеры</b><span>${state.measurements.length}</span></div></div></div>`};
+renderProfile=function(){return '<div class="happy-settings">'+renderTop('Настройки',false)+`<section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="happy-account"></div></section><section class="happy-section" data-happy-section="backup"><h2 class="happy-heading">Резервная копия</h2>__HAPPY_SPORT_BACKUP__</section><section class="happy-section" data-happy-section="links"><h2 class="happy-heading">Связанные приложения</h2><div class="happy-card"><div class="happy-actions"><a class="happy-button" href="/happyamurio/day-59/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><a class="happy-button" href="/happyamurio/meal-31/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a></div></div></section><section class="happy-section" data-happy-section="icons"><h2 class="happy-heading">Иконки</h2><div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" disabled>Icon Studio · недоступна в этом выпуске</button></div></div></section><h2 class="happy-heading">Настройки тренировок</h2><div class="settings-section">Датчики</div><div class="card"><div class="setting-row"><div><b>Apple Здоровье</b><small>Нужна нативная интеграция</small></div><button class="text-btn" data-action="connections">Подробнее</button></div><div class="setting-row"><div><b>Пульс</b><small>Демонстрация шкалы во время тренировки</small></div><input class="toggle" id="demo-pulse" type="checkbox" aria-label="Демонстрация пульса" ${state.demoPulse?'checked':''}></div></div><div class="settings-section">Мои данные</div><div class="card"><div class="setting-row"><b>Тренировки</b><span>${state.workouts.length}</span></div><div class="setting-row"><b>Замеры</b><span>${state.measurements.length}</span></div></div></div>`};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;if(b.dataset.swiped){e.stopImmediatePropagation();return}const a=b.dataset.action,id=b.dataset.id;if(['close-panel','sport-section','section-past','assign-exercise','exercise-stats'].includes(a)){e.stopImmediatePropagation();if(a==='close-panel')closePanel();if(a==='sport-section')openPanel({type:'section',id});if(a==='section-past'){showWorkoutForm('past');const f=$('#workout-form'),t=templates().find(t=>t.id===id);f.elements.kind.value=t.kind;f.elements.title.value=t.title;updateWorkoutIconPreview(f)}if(a==='assign-exercise')assignExercise();if(a==='exercise-stats')openExerciseHistory(id)}},true);
 document.addEventListener('submit',e=>{if(e.target.id!=='assign-form')return;e.preventDefault();e.stopImmediatePropagation();const f=new FormData(e.target),id=e.target.dataset.id,ex=exercise(id),phase=['warmup','cooldown'].includes(librarySport)?librarySport:'main';if(f.get('destination')==='template'){const t=clone(templates().find(t=>t.id===f.get('template')));t.items.push(workoutItemFromExercise({id,phase,sets:ex.defaultSets?.map(setPlanCopy)||[setPlanDefaults(ex,phase)],metrics:exerciseMetrics(ex)}));if(baseTemplates.some(x=>x.id===t.id)){state.templateOverrides??={};state.templateOverrides[t.id]=t}else state.templates[state.templates.findIndex(x=>x.id===t.id)]=t;persist();closeSheet();toast('Добавлено в «'+t.title+'»: '+ex.name)}else{closeSheet();if(!state.active)startWorkout();state.active.exercises.push(prepareWorkoutExercise({id,name:ex.name,phase,notes:'',sets:ex.defaultSets?.map(setPlanCopy)||[setPlanDefaults(ex,phase)],defaultRestSeconds:ex.defaultRestSeconds||null},true));persist();goto('active');toast(ex.name+' добавлено')}} ,true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#overlay')&&activePanel()){e.preventDefault();closePanel()}});

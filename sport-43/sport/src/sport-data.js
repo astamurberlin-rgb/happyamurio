@@ -69,31 +69,32 @@ var SportData=(()=>{
   /* замеры правит общий экран — и здесь, и в Day, и в Meal: копия в дневнике обновляется при любой правке */
   store.doc('body').subscribe(()=>{if(typeof state!=='undefined')mirror(state)});
  }
- /* Строка состояния под аккаунтом. */
- function statusText(){
-  if(SportBoot.error)return SportBoot.error;
-  if(!signedIn())return '';
-  const s=store.status();
-  if(s.newer.length)return HappyStore.NEWER;
-  if(s.state==='saving')return 'Подождите, идёт синхронизация…';
-  if(s.state==='offline')return 'Нет связи · записи сохранены на устройстве';
-  if(s.state==='error')return 'Не удалось сохранить в облако · записи на устройстве';
-  return 'Синхронизировано';
- }
- return {load,save,adopt,afterSheet,askSignIn,syncPlans,statusText,signedIn,account,store};
+ /* Строка состояния под аккаунтом — общая для трёх приложений (shared/happy-account-ui.js). */
+ const statusText=()=>HappyAccountUI.statusText(signedIn()?store:null,SportBoot.error);
+ const outdated=()=>signedIn()&&store.status().newer.length>0;   // записи сделаны более новой версией Sport
+ return {load,save,adopt,afterSheet,askSignIn,syncPlans,statusText,outdated,signedIn,account,store};
 })();
+/* Sport 43: оформление — настройка устройства, а не запись дневника: общий shared/happy-appearance.js читает и пишет
+   её через rawGet/rawSet. В Sport 42 этих функций не осталось, и выбранное оформление не сохранялось. */
+async function rawGet(key){try{return localStorage.getItem(key)}catch(e){return null}}
+async function rawSet(key,value){localStorage.setItem(key,value);if(localStorage.getItem(key)!==value)throw Error('Не удалось сохранить на устройстве')}
 /* Карточка входа: общий модуль shared/happy-account-ui.js. */
 function paintHappyAccount(){
  const box=document.getElementById('happy-account');if(!box)return;
- HappyAccountUI.render(box,{account:SportData.account,status:SportData.statusText()});
+ HappyAccountUI.render(box,{account:SportData.account,status:SportData.statusText(),newer:SportData.outdated(),app:'sport'});
 }
 document.addEventListener('click',e=>{
  const b=e.target.closest?.('['+HappyAccountUI.ATTR+']');if(!b)return;e.preventDefault();
- HappyAccountUI.act(b.getAttribute(HappyAccountUI.ATTR),{account:SportData.account,status:SportData.statusText(),box:()=>document.getElementById('happy-account'),
+ HappyAccountUI.act(b.getAttribute(HappyAccountUI.ATTR),{account:SportData.account,status:SportData.statusText(),newer:SportData.outdated(),app:'sport',box:()=>document.getElementById('happy-account'),
   beforeSignOut:async()=>{if(SportData.signedIn())await SportData.store.flush(8000)}});
 });
 if(SportData.signedIn()){
- SportData.store.onStatus(()=>{const el=document.querySelector('#happy-account [data-happy-account-status]');if(el)el.textContent=SportData.statusText()});
+ let outdatedShown=SportData.outdated();
+ if(outdatedShown)setTimeout(()=>{try{toast(HappyStore.NEWER)}catch{}},900);   // записи сделаны более новой версией Sport
+ SportData.store.onStatus(()=>{
+  if(SportData.outdated()!==outdatedShown){outdatedShown=SportData.outdated();paintHappyAccount();if(outdatedShown)try{toast(HappyStore.NEWER)}catch{}return}
+  const el=document.querySelector('#happy-account [data-happy-account-status]');if(el)el.textContent=SportData.statusText();
+ });
  /* свитч связи переключили в Day, Meal или на другом устройстве — экран перерисовывается с новым положением */
  SportData.store.shared(HappyAppLinks.DOC.app,HappyAppLinks.DOC.name).subscribe(e=>{if(e.origin!=='local')SportData.adopt()});
 }
