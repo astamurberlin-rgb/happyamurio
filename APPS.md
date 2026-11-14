@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-58/ | `day-58/` |
 | Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-31/ | `meal-31/` |
-| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-41/ | `sport-41/`, исходники — `sport-41/sport/src/` |
+| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-42/ | `sport-42/`, исходники — `sport-42/sport/src/` |
 
 Точный номер версии виден внизу настроек приложения. Служебно он записан в `shared/apps.json`: по этому файлу приложения находят друг друга, а проверки узнают, что проверять.
 
@@ -18,7 +18,7 @@
 | --- | --- |
 | Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-57/ |
 | Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-30/ |
-| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-40/ |
+| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-41/ |
 
 Старые адреса `day/`, `meal/`, `sport/`, `happyday-v50_1.html` и `happyday-meal-v22.html` сами открывают текущий выпуск.
 

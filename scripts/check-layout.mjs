@@ -4,7 +4,7 @@ import vm from 'node:vm';
 const root=new URL('../',import.meta.url);
 const read=p=>readFile(new URL(p,root),'utf8');
 const apps=JSON.parse(await read('shared/apps.json'));
-const expectedKeys={day:'hd_db_v1',meal:'hdm_db_v1',sport:'happy-sport-prototype-v1'};
+const expectedKeys={day:'hd_db_v1',meal:'hdm_db_v1',sport:"HappyStore.open({app:'sport'"};   // Sport 42: дневник — в общем модуле хранения (shared/happy-store.js)
 let scripts=0;
 for(const name of ['selfcare-core.js','selfcare-ui.js','energy-widget.js'])new vm.Script(await read(apps.day.entry.replace('index.html',name)),{filename:apps.day.entry.replace('index.html',name)});
 for(const [app,config] of Object.entries(apps)){

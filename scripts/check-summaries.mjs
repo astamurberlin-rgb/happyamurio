@@ -259,17 +259,12 @@ const apps=JSON.parse(await readFile(new URL('shared/apps.json',root),'utf8'));
 const dayHtml=await readFile(new URL(apps.day.entry,root),'utf8'),mealHtml=await readFile(new URL(apps.meal.entry,root),'utf8');
 assert.match(dayHtml,/<script src="\.\/shared\/happy-summaries\.js\?v=[\d.]+"><\/script>/,'Day подключает общий разбор сводок');
 assert.match(mealHtml,/<script src="\.\/shared\/happy-summaries\.js\?v=[\d.]+"><\/script>/,'Meal подключает общий разбор сводок');
-const sportBuild=await readFile(new URL(apps.sport.sourceDirectory.replace(/src$/,'scripts/build.mjs'),root),'utf8');
-assert.match(sportBuild,/readShared\('happy-summaries\.js'\)/,'Sport встраивает общий разбор сводок при сборке');
-// Счётчики в «съедено»: Meal называет учтённые порции, Sport и Day передают разбору документ счётчиков.
+// Счётчики в «съедено»: Meal называет учтённые порции, Day передаёт разбору документ счётчиков.
+// Sport 42 прежнюю сводку Meal не читает (вернётся после перехода Meal на общий модуль) — его кольцо проверяет sport-NN/sport/scripts/check-energy.mjs.
 assert.ok(mealHtml.includes("at:Date.now(),counters:1,")&&mealHtml.includes('D.cs=servings'),'Meal отмечает в сводке учтённые порции со счётчиков');
-const sportSrc=new URL(apps.sport.sourceDirectory+'/',root);
-const sportEnergy=await readFile(new URL('energy-widget.js',sportSrc),'utf8'),sportFood=await readFile(new URL('food-counters.js',sportSrc),'utf8');
-assert.ok(sportEnergy.includes('HappySummaries.meal.day(o,date(),counters())')&&sportEnergy.includes("addEventListener('happy-food-counters',paint)"),'Sport считает «съедено» вместе с документом счётчиков и перерисовывает кольцо');
-assert.equal((sportFood.match(/sportFoodChanged\(\)/g)||[]).length,3,'Sport сообщает кольцу о нажатии и о пришедших нажатиях');
 const dayCare=await readFile(new URL('selfcare-ui.js',new URL(apps.day.entry,root)),'utf8');
 assert.ok(dayCare.includes('S.meal.day(DB.mealLink,date,DB.mealCounters)'),'Day считает «съедено» вместе с документом счётчиков');
 assert.ok(dayHtml.includes("if(o.counters===1){ copy.counters=1; if(Array.isArray(o.skipped)) copy.skipped="),'Day сохраняет отметку сводки о счётчиках и список решённых записей');
 assert.ok(mealHtml.includes("counters:1,skipped:Object.keys(settled.skipped),")&&mealHtml.includes("if(live[id]!==date){ settled.skipped[id]=1; return }"),'Meal называет записи, по которым решил сам');
-passed+=5;
+passed+=4;
 console.log('Сводки между приложениями: '+passed+' проверок пройдено (Sport: годность, день, расход и цели на будущее, сравнение; Meal: день и короткая копия; счётчики в «съедено»: прибавить непосчитанное, не удвоить посчитанное, вычесть убранное; ключ аккаунта как в profile-storage Day и Meal; файл подключён в трёх приложениях).');

@@ -3,7 +3,8 @@ import {createContext,runInContext,Script} from 'node:vm';
 import assert from 'node:assert/strict';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
 const apps=JSON.parse(await read('shared/apps.json'));
-for(const directory of new Set(['shared',...Object.values(apps).map(app=>app.sharedDirectory).filter(Boolean)])){
+// Sport 42 карточку входа рисует общий happy-account-ui.js, прежнего happy-ui.js в его выпуске нет.
+for(const directory of new Set(['shared',...Object.values(apps).map(app=>app.sharedDirectory).filter(d=>d&&d!==apps.sport.sharedDirectory)])){
 const source=await read(directory+'/happy-ui.js');new Script(source);
 const context=createContext({Date});runInContext(source,context);const ui=context.HappyUI;
 const draft={email:'test@example.invalid',password:'test-only-password',visible:false};
@@ -32,5 +33,6 @@ for(const app of ['day','meal']){
  const ids=[...page.matchAll(/\bid="([^"\s<>]+)"/g)].map(m=>m[1]).filter(id=>!id.includes('+'));
  for(const id of app==='day'?['clBox','expJson','impJson','expCsv','wipe','backupAge','bkPrev','bkBack']:['clBox','bkIn','bkOut','bkFile','bkWhen'])assert.equal(ids.filter(x=>x===id).length,1,app+': duplicate/missing '+id);
 }
-{const sport=await read(apps.sport.entry),dir=apps.sport.sharedDirectory;assert.ok(sport.includes(await read(dir+'/happy-ui.css')));assert.ok(sport.includes(await read(dir+'/happy-ui.js')));}
+// Sport 42: оформление аккаунта — общий happy-ui.css; карточка входа — общий happy-account-ui.js (вместо happy-ui.js).
+{const sport=await read(apps.sport.entry),dir=apps.sport.sharedDirectory;assert.ok(sport.includes(await read(dir+'/happy-ui.css')));assert.ok(sport.includes(await read(dir+'/happy-account-ui.js')));}
 console.log('Passed: shared account UI, escaped input, login/signup/confirmation, duplicate submit guard, offline errors and draft retention; same components and settings order in all apps; backup controls retained once.');

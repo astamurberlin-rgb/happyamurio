@@ -1,0 +1,174 @@
+/* Approved Happy Sport timer and rest prototypes. */
+:root{--sport-rest-green:#52d7c1}
+#rest-pill-root{width:calc(100% - 40px);max-width:420px}
+.floating-rest-pill{box-sizing:border-box;height:68px;min-height:68px;padding:10px;gap:0;border-radius:34px;background:var(--sport-rest-green);color:#fff;box-shadow:inset 0 1px 0 #ffffff26,0 5px 18px #154b4730}
+.floating-rest-progress{inset:0;background:#fff;opacity:.12;z-index:0;transition:clip-path 50ms linear}
+.floating-rest-toggle{width:44px;height:44px;min-width:44px;min-height:44px;padding:10px;border:1px solid #ffffff80;background:#ffffff12;color:#fff;border-radius:50%}
+.floating-rest-toggle .icon{width:24px;height:24px;fill:currentColor;stroke:none}
+.floating-rest-pill>.floating-rest-clock{position:absolute;z-index:1;left:50%;top:50%;transform:translate(-50%,-50%);width:68px;height:44px;min-width:0;justify-content:center}
+.floating-rest-clock input{width:100%;height:34px;min-height:34px;padding:0!important;font-size:29px;line-height:34px;font-weight:650;letter-spacing:-.6px;font-variant-numeric:tabular-nums;color:#fff!important}
+.floating-rest-clock>span{position:absolute;right:calc(100% + 10px);top:50%;transform:translateY(-50%);width:72px;font-size:11px;line-height:14px;white-space:normal;text-align:right;color:#fff!important}
+.floating-rest-finish{width:108px;min-width:108px;height:42px;min-height:42px;margin-left:auto;padding:0 10px;border:1px solid white;border-radius:23px;background:#fff;color:var(--sport-rest-green);font-size:12px;font-weight:650;box-shadow:none}
+.floating-rest-pill>.floating-rest-extra{position:absolute;left:50%;bottom:1px;transform:translateX(-50%);min-height:18px;height:18px;padding:0 3px;font-size:10px;color:#fff}
+.exercise-clock-fab,.exercise-clock-fab.running{background:var(--sport-rest-green);color:#fff;border-color:#ffffff80;box-shadow:inset 0 1px 0 #ffffff26,0 5px 18px #154b4730}
+.overlay:has(.exercise-player),.exercise-player-overlay{inset:0;padding:0;align-items:stretch;background:var(--sport-background);backdrop-filter:none}
+.sheet:has(.exercise-player),.exercise-player-sheet{box-sizing:border-box;position:absolute;inset:0;display:flex;flex-direction:column;isolation:isolate;width:100%;max-width:460px;height:100%;max-height:none;margin:0 auto;padding:env(safe-area-inset-top) 0 calc(100px + env(safe-area-inset-bottom));border:0;border-radius:0;overflow:hidden;animation:none}
+.sheet:has(.exercise-player)>.grip{position:relative;top:auto;width:88px;height:22px;min-height:22px;flex:0 0 22px;margin:0 auto 13px;padding:0;background:none}
+.sheet:has(.exercise-player)>.grip:after{width:40px;height:4px}
+.sheet:has(.exercise-player)>.sheet-top{display:none}
+.exercise-player{--player-axis:120px;--player-stroke:1.8px;box-sizing:border-box;position:static;display:flex;flex:1;min-height:0;width:100%;padding:0 20px 16px;flex-direction:column;align-items:center;text-align:left;color:#fff;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+.exercise-player .player-exercise-name{flex:none;width:100%;padding:0;margin:32px 0 18px;text-align:left;font-size:19px;line-height:1.4;font-weight:650}
+.exercise-player .player-face{flex:none;width:calc((100% - var(--player-axis)) * 1.2254901960784314);max-width:none;aspect-ratio:1;margin:0 auto}
+.exercise-player .player-dial{display:block;width:100%;height:100%}
+.exercise-player .dial-ticks line{stroke:#ffffff47;stroke-width:.7}
+.exercise-player .dial-ticks line.major{stroke:#ffffffb3;stroke-width:1.5}
+.exercise-player .dial-progress,.exercise-player.rest-phase .dial-progress{color:var(--sport-rest-green)}
+.exercise-player .player-face-center{gap:0}
+.exercise-player .player-face-center strong{font-size:clamp(26px,9vw,36px);font-weight:400;line-height:1;letter-spacing:-.6px;white-space:nowrap;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.exercise-player .player-face-center strong[data-hours="true"]{font-size:clamp(22px,7vw,28px)}
+.exercise-player .player-main-controls{flex:none;display:grid;grid-template-columns:var(--player-axis) minmax(0,1fr) var(--player-axis);align-items:end;gap:0;width:100%;height:56px;margin:30px 0 26px;padding:0;border:0;background:none;box-shadow:none}
+.exercise-player .player-main-controls>button{box-sizing:border-box;display:flex;align-items:flex-end;justify-content:center;width:var(--player-axis);min-width:0;max-width:none;height:42px;min-height:42px;max-height:none;aspect-ratio:auto;padding:0 0 2px;border:0;border-radius:0;background:none;box-shadow:none;color:#fff;line-height:1}
+.exercise-player .player-start{grid-column:1;grid-row:1;font-size:33px;font-weight:300;letter-spacing:1px}
+.exercise-player .player-secondary{grid-column:3;grid-row:1}
+.exercise-player .player-main-controls>button:disabled{opacity:.4}
+.exercise-player .player-plus{position:relative;display:block;flex:none;width:28px;height:28px;margin-bottom:1px}
+.exercise-player .player-plus:before,.exercise-player .player-plus:after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:currentColor}
+.exercise-player .player-plus:before{width:28px;height:var(--player-stroke)}
+.exercise-player .player-plus:after{width:var(--player-stroke);height:28px}
+.exercise-player .player-mode-switch{position:relative;inset:auto;transform:none;grid-column:2;grid-row:1;justify-self:center;align-self:end;display:flex;flex-direction:column;align-items:center;gap:3px;width:max-content;min-width:0;min-height:0;margin:0 0 2px;padding:0;cursor:pointer}
+.exercise-player .player-mode-switch small{font-size:10px;line-height:10px;white-space:nowrap;color:#fff}
+.exercise-player .player-mode-switch input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:2;cursor:pointer}
+.exercise-player .player-mode-track{box-sizing:border-box;position:relative;display:flex;align-items:center;flex:none;width:38px;height:22px;padding:3px;border:0;border-radius:11px;background:#ffffff55;box-shadow:inset 0 0 0 1px #ffffff55}
+.exercise-player .player-mode-thumb{box-sizing:border-box;display:block;flex:none;width:16px;height:16px;border:0;border-radius:50%;background:white;transform:translateX(0);box-shadow:0 1px 2px #34498122}
+.exercise-player .player-mode-switch input:checked+.player-mode-track{background:var(--sport-rest-green)}
+.exercise-player .player-mode-switch input:checked+.player-mode-track .player-mode-thumb{transform:translateX(16px)}
+.exercise-player .player-mode-switch input:focus-visible+.player-mode-track{outline:2px solid #fff;outline-offset:3px}
+.exercise-player .player-round-list{display:block;flex:1 0 180px;min-height:180px;max-height:260px;align-self:stretch;margin:0;padding:0;gap:0;border-top:1px solid #ffffff55;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.exercise-player .player-round-row{display:grid;grid-template-columns:var(--player-axis) minmax(0,1fr) var(--player-axis);align-items:center;min-height:60px;padding:12px 0;border-bottom:1px solid #ffffff24;font-size:20px;font-variant-numeric:tabular-nums}
+.exercise-player .player-round-row>span{grid-column:1;text-align:center;white-space:nowrap}
+.exercise-player .player-round-row>b,.exercise-player .player-round-row>input{grid-column:3;box-sizing:border-box;width:100%;min-width:0;padding:4px 0;margin:0;border:0;border-radius:0;background:none;color:#fff;text-align:center;font:inherit;font-weight:400;line-height:1.2;white-space:nowrap;font-feature-settings:"tnum"}
+.exercise-player .player-round-row>input:focus-visible{box-shadow:inset 0 -1px #ffffff85!important}
+.exercise-player .player-edge-tab{position:absolute;top:50%;width:34px;height:126px;min-height:126px;transform:translateY(-50%);padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:#fff;display:grid;place-items:center;isolation:isolate;overflow:visible;z-index:2}
+.exercise-player .player-reset-tab{left:calc(50% - min(230px,50vw));right:auto}
+.exercise-player .player-save-tab{left:calc(50% + min(230px,50vw) - 34px);right:auto}
+.exercise-player .player-edge-tab>svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#ffffffb3;stroke-width:1;pointer-events:none}
+.exercise-player .player-reset-tab>svg{transform:scaleX(-1)}
+.exercise-player .player-edge-tab>span{position:relative;display:block;writing-mode:vertical-rl;transform:rotate(180deg);font-size:12px;font-weight:500;letter-spacing:.2px;line-height:1;pointer-events:none}
+.exercise-player .player-edge-tab:disabled{opacity:.4}
+.exercise-timer-results{margin:18px 0;border-top:1px solid #ffffff35;font-size:13px}
+.exercise-timer-results summary{padding:14px 0;cursor:pointer}
+.exercise-timer-results section{padding:8px 0 14px;border-top:1px solid #ffffff25}
+.exercise-timer-results section>p{margin-bottom:10px;color:var(--muted);font-size:11px}
+.exercise-timer-results section>div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-variant-numeric:tabular-nums}
+@media(max-width:360px){.floating-rest-finish{width:90px;min-width:90px;padding:0 7px;font-size:11px}.floating-rest-pill>.floating-rest-clock{width:62px}.floating-rest-clock input{font-size:27px}.floating-rest-clock>span{width:54px;right:calc(100% + 5px);font-size:10px}}
+/* Keep the common footer above the timer; the central microphone becomes X. */
+body.exercise-player-open>#dock{z-index:90}
+body.exercise-player-open #sport-fab .icon{width:26px;height:26px;fill:currentColor;stroke:none}
+@media(max-height:700px){.exercise-player .player-exercise-name{margin-top:16px}.exercise-player .player-main-controls{margin-top:22px;margin-bottom:20px}}
+/* The compact clock starts on the left and can be dragged along the row. */
+.exercise-clock-fab{left:calc(20px + (100% - 102px) * var(--timer-fab-x,0));right:auto;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.exercise-clock-fab:active{cursor:grabbing}
+
+/* One full-width entry point for each exercise that records time. */
+.timed-exercise-widget{position:relative;isolation:isolate;display:flex;align-items:center;width:100%;min-height:68px;margin:15px 0 18px;padding:10px;gap:12px;overflow:hidden;border:1px solid #ffffff80;border-radius:24px;background:var(--sport-rest-green);color:#fff;box-shadow:inset 0 1px 0 #ffffff26,0 5px 18px #154b4720}
+.timed-exercise-progress{position:absolute;inset:0;z-index:0;background:#ffffff1f;clip-path:inset(0 calc(100% - var(--timed-progress,0%)) 0 0);pointer-events:none}
+.timed-exercise-widget button{position:relative;z-index:1;margin:0;color:inherit;background:none;box-shadow:none}
+.timed-exercise-toggle{display:grid;place-items:center;flex:none;width:44px;height:44px;min-height:44px;padding:10px;border:1px solid #ffffff80;border-radius:14px}
+.timed-exercise-toggle .icon{width:24px;height:24px;fill:currentColor;stroke:none}
+.timed-exercise-open{display:flex;align-items:center;flex:1;min-width:0;gap:10px;min-height:44px;padding:0;border:0;text-align:left}
+.timed-exercise-open>.icon{flex:none;width:25px;height:25px}
+.timed-exercise-open>.clock-outline{fill:none;stroke:currentColor}
+.timed-exercise-open>span:not(.timed-exercise-chevron){display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.timed-exercise-open small{font-size:10px;line-height:1.2;color:#fff}
+.timed-exercise-open strong{font-size:25px;font-weight:500;line-height:1.15;letter-spacing:-.4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.timed-exercise-chevron .icon{display:block;width:17px;height:17px}
+.timed-exercise-widget button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* Four curved corner tabs occupy the space around the circular scale. */
+.exercise-player .player-tab-face{position:relative;width:100%;aspect-ratio:.96;min-height:0;margin:6px auto 24px}
+.exercise-player .player-tab-face>.player-dial{position:absolute;left:50%;top:50%;width:calc((100% - var(--player-axis)) * 1.2254901960784314);height:auto;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+.exercise-player .player-corner-tab{position:absolute;z-index:2;display:block;width:calc(50% - 42px);height:27%;min-height:44px;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:#fff;isolation:isolate}
+.exercise-player .player-corner-tab>svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#ffffffb3;stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none}
+.exercise-player .player-corner-tab>span{position:absolute;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;line-height:1;white-space:nowrap;pointer-events:none}
+.exercise-player .player-corner-top-left{left:0;top:0}
+.exercise-player .player-corner-top-right{right:0;top:0}
+.exercise-player .player-corner-bottom-left{left:0;bottom:0}
+.exercise-player .player-corner-bottom-right{right:0;bottom:0}
+.exercise-player .player-corner-top-left>span{left:12px;top:14px}
+.exercise-player .player-corner-top-right>span{right:12px;top:14px}
+.exercise-player .player-corner-bottom-left>span{left:10px;bottom:12px;font-size:33px;font-weight:300;letter-spacing:1px}
+.exercise-player .player-corner-bottom-right>span{right:12px;bottom:13px}
+.exercise-player .player-corner-bottom-right small{font-size:15px;font-weight:300}
+.exercise-player .player-corner-top-right>svg{transform:scaleX(-1)}
+.exercise-player .player-corner-bottom-left>svg{transform:scaleY(-1)}
+.exercise-player .player-corner-bottom-right>svg{transform:scale(-1)}
+.exercise-player .player-corner-tab:disabled{opacity:.4}
+.exercise-player .player-corner-tab[aria-pressed="true"]>svg{stroke:var(--sport-rest-green);stroke-width:1.7}
+.exercise-player .player-corner-tab:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:10px}
+.exercise-player .player-tab-face>.player-distance-switch{position:absolute;left:50%;top:0;transform:translateX(-50%);gap:5px;margin:0;z-index:3}
+.exercise-player .player-tab-face>.player-main-controls{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;justify-content:center;width:84px;height:44px;margin:0;padding:0;z-index:3}
+.exercise-player .player-tab-face .player-main-controls>.player-mode-switch{align-self:end;gap:5px;margin:0}
+.exercise-player .player-tab-face .player-mode-switch small{font-size:10px;line-height:12px}
+.exercise-player .player-tab-face .player-plus{width:26px;height:26px;margin:0}
+.exercise-player .player-tab-face .player-plus:before{width:26px}
+.exercise-player .player-tab-face .player-plus:after{height:26px}
+.exercise-player .player-round-row{grid-template-columns:var(--player-axis) minmax(0,1fr) var(--player-axis);gap:0}
+.exercise-player .player-round-row>span{overflow:hidden;text-overflow:ellipsis}
+.exercise-player .player-round-row>.player-row-name{grid-column:1;font-size:18px;text-align:left;padding-left:6px;border-bottom:1px solid #ffffff60}
+.exercise-player .player-round-row>.player-distance-field{grid-column:2;grid-row:1}
+.exercise-player .player-distance-field{display:flex;align-items:center;justify-content:center;gap:3px;min-width:0;margin:0;color:#fff}
+.exercise-player .player-distance-field>input{width:100%;min-width:0;height:36px;min-height:36px;padding:4px 2px;border:0;border-bottom:1px solid #ffffff55;border-radius:0;background:none;box-shadow:none;color:inherit;text-align:right;font-size:16px;font-variant-numeric:tabular-nums}
+.exercise-player .player-distance-field>span{font-size:10px;opacity:.8}
+.exercise-player .player-round-row>.player-distance-field{padding:0 5px}
+.exercise-player .player-round-row>[data-player-preset],.exercise-player .player-round-row>b{grid-column:3;grid-row:1}
+.player-history-empty{padding:14px 6px;color:#ffffffb3;font-size:12px}
+.player-history-wrap{max-width:100%;overflow:auto;isolation:isolate;scrollbar-width:thin;overscroll-behavior-x:contain}
+.player-history-table{width:max-content;min-width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;text-align:center;font-variant-numeric:tabular-nums}
+.player-history-table th,.player-history-table td{box-sizing:border-box;min-width:122px;width:122px;max-width:122px;height:66px;padding:10px 7px;border-bottom:1px solid #ffffff30;font-weight:400;vertical-align:middle}
+.player-history-table thead th{font-size:12px;font-weight:600}
+.player-history-table .player-history-label{position:sticky;left:0;z-index:2;min-width:90px;width:90px;max-width:90px;background:#717edf;text-align:left;font-size:14px;overflow-wrap:anywhere}
+.player-history-table .player-history-current{position:sticky;left:90px;z-index:2;min-width:118px;width:118px;max-width:118px;background:#eaf7ff;color:#405183;box-shadow:5px 0 10px #334d9026}
+.player-history-table small{display:block;margin:0 0 5px;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+.player-history-table thead small{margin:5px 0 0;font-size:9px}
+.player-history-table time{display:block;font-size:17px;white-space:nowrap}
+.exercise-player .player-history-table input{width:100%;height:34px;min-height:34px;padding:4px 0;border:0;border-bottom:1px solid #ffffff60;border-radius:0;background:none;box-shadow:none;color:#fff;text-align:center;font-size:17px;font-variant-numeric:tabular-nums}
+.exercise-player .player-history-table .player-saved-name{font-size:12px}
+.exercise-player .player-history-table .player-current-name{font-size:13px;text-align:left}
+.exercise-player .player-history-table .player-history-current input{color:#405183;border-bottom-color:#40518366}
+.exercise-player .player-history-table .player-distance-field input{height:30px;min-height:30px;font-size:14px;text-align:right}
+.player-history-missing{opacity:.5}
+@media(max-width:360px){.exercise-player{--player-axis:100px}.exercise-player .player-corner-bottom-left>span{font-size:26px;left:8px}.exercise-player .player-corner-bottom-right>span{right:8px;gap:5px}.exercise-player .player-corner-bottom-right small{font-size:12px}.exercise-player .player-corner-top-left>span{left:8px}.exercise-player .player-corner-top-right>span{right:8px}.exercise-player .player-round-row{font-size:17px}.exercise-player .player-round-row>.player-row-name{font-size:16px}.timed-exercise-widget{gap:8px;padding:8px}.timed-exercise-open{gap:7px}.timed-exercise-open strong{font-size:23px}}
+/* Metrics next to the exercise title, shared with the clock. */
+.exercise-card-heading{align-items:flex-start!important;gap:10px}
+.exercise-name-info{display:flex;align-items:flex-start;gap:3px;flex:1;min-width:0}
+.exercise-name-info h3{flex:0 1 auto;margin:0;min-width:0}
+.exercise-name-info .exercise-collapse{width:auto;gap:4px}
+.exercise-name-info .exercise-technique{display:grid;place-items:center;flex:none;width:32px;min-width:32px;height:38px;padding:5px;background:none;color:inherit}
+.exercise-name-info .exercise-technique .icon{width:22px;height:22px}
+.exercise-mode-stack{flex:none;display:flex;flex-direction:column;width:126px;gap:0}
+.exercise-mode-row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:36px;margin:0;cursor:pointer}
+.exercise-mode-row small{font-size:11px;white-space:nowrap}
+.exercise-mode-row input.toggle{flex:none;width:36px!important;height:22px!important;margin:0}
+.exercise-mode-row input.toggle:before{width:16px;height:16px}
+.exercise-player .player-tab-face>.player-dial{width:84%}
+.exercise-player .player-face-center{inset:20% 15%;justify-content:center;gap:10px;pointer-events:none}
+.exercise-player .player-face-center strong,.exercise-player .player-face-center strong[data-hours="true"]{font-size:clamp(22px,6.5vw,30px);font-weight:400;letter-spacing:-.5px}
+.exercise-player .player-inner-switches{display:flex;flex-direction:column;gap:1px;width:142px;pointer-events:auto;z-index:4}
+.exercise-player .player-inner-switches .player-mode-switch{display:flex;flex-direction:row;align-items:center;justify-content:space-between;width:100%;min-height:29px;gap:8px;margin:0;position:relative;transform:none;align-self:auto}
+.exercise-player .player-inner-switches .player-mode-switch small{font-size:11px;line-height:1.15;text-align:left}
+.exercise-player .player-inner-switches .player-mode-track{width:34px;height:20px;padding:2px}
+.exercise-player .player-inner-switches input:checked+.player-mode-track .player-mode-thumb{transform:translateX(14px)}
+.exercise-player .player-round-row{grid-template-columns:minmax(0,1fr) 110px;gap:5px;padding:12px 2px}
+.exercise-player .player-round-row>span,.exercise-player .player-round-row>.player-row-name{grid-column:1;grid-row:1;text-align:left;font-size:16px}
+.exercise-player .player-round-row>b,.exercise-player .player-round-row>[data-player-preset],.exercise-player .player-round-row>[data-free-target]{grid-column:2;grid-row:1;font-size:19px}
+.exercise-player .player-row-metrics{grid-column:1 / -1;grid-row:2;display:flex;gap:14px;justify-content:flex-end;min-width:0}
+.exercise-player .player-row-metrics:empty{display:none}
+.exercise-player .player-row-metrics>.player-distance-field{width:30%;max-width:110px;min-height:38px}
+.exercise-player .player-row-metrics input{font-size:18px}
+#free-timer-root{position:fixed;left:50%;bottom:calc(116px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(460px,100%);height:62px;z-index:72;pointer-events:none}
+#free-timer-root .free-clock-fab{position:absolute;bottom:0;pointer-events:auto;display:flex!important}
+body:has(.overlay:not(:empty)) #free-timer-root{visibility:hidden}
+.free-timer-hint{position:absolute;left:20%;right:20%;bottom:-22px;font-size:11px;text-align:center;color:var(--muted)}
+@media(max-width:360px){.exercise-mode-stack{width:116px}.exercise-mode-row small{font-size:10px}.exercise-player .player-inner-switches{width:128px}.exercise-player .player-inner-switches .player-mode-switch{min-height:26px}.exercise-player .player-inner-switches .player-mode-switch small{font-size:10px}.exercise-player .player-face-center{gap:5px;inset:18% 15%}.exercise-player .player-face-center strong{font-size:22px}}
+
+.sport-food-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0}.sport-food-row+ .sport-food-row{border-top:1px solid #ffffff26}.sport-food-row small{display:block;opacity:.65;margin-top:4px;font-size:12px}/* Update 38.4: «− N +» капсулой, как в Happy Meal */.sport-food-pill{display:grid;grid-template-columns:46px 52px 46px;align-items:stretch;height:44px;border:1px solid #ffffff73;border-radius:999px;overflow:hidden;background:#ffffff1f}.sport-food-pill>*{display:flex;align-items:center;justify-content:center;min-height:0;height:100%}.sport-food-pill button{border:0;border-radius:0;background:transparent;color:#fff;font-size:22px;line-height:1;padding:0;min-height:44px}.sport-food-pill button:first-child{border-right:1px solid #ffffff59}.sport-food-pill button:last-child{border-left:1px solid #ffffff59}.sport-food-pill button:disabled{opacity:.35}.sport-food-pill strong{font-size:17px;text-align:center}

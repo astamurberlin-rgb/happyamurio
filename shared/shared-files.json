@@ -2,6 +2,30 @@
   "_": "Манифест общих файлов Happy (с 09.11.2026). reference — эталонная копия; apps — какие текущие выпуски (каталоги из shared/apps.json) должны содержать побайтно такую же копию в своём shared/. divergent — копии пока разошлись: check-shared предупреждает, а не падает, sync-shared их не трогает. frozenRoot — корневой shared/<name> загружают опубликованные старые страницы day/ и meal/ прямо с сайта, поэтому эталон лежит не в корне.",
   "files": [
     {
+      "name": "happy-account.js",
+      "reference": "shared/happy-account.js",
+      "apps": [
+        "sport"
+      ],
+      "todo": "Day и Meal добавить при переходе на общий модуль"
+    },
+    {
+      "name": "happy-store.js",
+      "reference": "shared/happy-store.js",
+      "apps": [
+        "sport"
+      ],
+      "todo": "Day и Meal добавить при переходе на общий модуль"
+    },
+    {
+      "name": "happy-account-ui.js",
+      "reference": "shared/happy-account-ui.js",
+      "apps": [
+        "sport"
+      ],
+      "todo": "Day и Meal добавить при переходе на общий модуль"
+    },
+    {
       "name": "release-notes.js",
       "reference": "shared/release-notes.js",
       "apps": [
@@ -33,8 +57,7 @@
       "reference": "shared/happy-summaries.js",
       "apps": [
         "day",
-        "meal",
-        "sport"
+        "meal"
       ]
     },
     {
@@ -66,8 +89,7 @@
       "reference": "shared/measurements-model.js",
       "apps": [
         "day",
-        "meal",
-        "sport"
+        "meal"
       ]
     },
     {
@@ -137,8 +159,7 @@
       "reference": "shared/happy-ui.js",
       "apps": [
         "day",
-        "meal",
-        "sport"
+        "meal"
       ],
       "divergent": true,
       "todo": "три версии (day-54, meal-26 = корень, sport-38) — объединить в следующих выпусках"
@@ -169,8 +190,7 @@
       "reference": "shared/measurements-host.js",
       "apps": [
         "day",
-        "meal",
-        "sport"
+        "meal"
       ],
       "divergent": true,
       "frozenRoot": true,

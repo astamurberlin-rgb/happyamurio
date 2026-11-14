@@ -8,7 +8,7 @@
   HAPPY_BASE   — адрес сайта с префиксом /happyamurio/ (по умолчанию локальный сервер из run.sh);
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
-  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-31/; HAPPY_DAY, HAPPY_SPORT — day-58/, sport-41/);
+  HAPPY_MEAL   — выпуск Meal для сценариев (по умолчанию meal-31/; HAPPY_DAY — day-58/; HAPPY_SPORT — sport-41/ для обмена со старыми Day и Meal);
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """
@@ -130,8 +130,11 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
 # Актуальный выпуск Meal для сценариев (HAPPY_MEAL — другой, например meal-28/)
 MEAL = os.environ.get("HAPPY_MEAL", "meal-31/")
-# Актуальные Day и Sport для сценариев (с 12.11.2026, связь приложений: Day 58, Sport 41)
+# Актуальный Day для сценариев (с 12.11.2026, связь приложений: Day 58)
 DAY = os.environ.get("HAPPY_DAY", "day-58/")
+# Sport в сценариях обмена с Day и Meal (счётчики, связь приложений) — прежний выпуск Sport 41: текущий Sport 42 ведёт
+# записи через общий модуль и с прежними Day и Meal не обменивается. Сам Sport 42 проверяет sport_store.py.
+# Эти сценарии переписываются, когда Day и Meal перейдут на общий модуль.
 SPORT = os.environ.get("HAPPY_SPORT", "sport-41/")
 _lib_files = {}
 

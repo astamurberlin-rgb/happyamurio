@@ -45,13 +45,13 @@
   }
  },
  "sport": {
-  "entry": "sport-41/index.html",
-  "version": "41",
-  "name": "Happy Sport · Update 41",
-  "sharedDirectory": "sport-41/shared",
-  "sourceDirectory": "sport-41/sport/src",
-  "sourceRelease": "sport-40",
-  "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4",
+  "entry": "sport-42/index.html",
+  "version": "42",
+  "name": "Happy Sport · Update 42",
+  "sharedDirectory": "sport-42/shared",
+  "sourceDirectory": "sport-42/sport/src",
+  "sourceRelease": "sport-41",
+  "sourceCommit": "42114ef6bdd2262b445a9fc86b66e1f061188e5d",
   "settingsSections": [
    "account",
    "links",
@@ -61,9 +61,9 @@
    "version"
   ],
   "previous": {
-   "entry": "sport-40/index.html",
-   "version": "40.5",
-   "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4"
+   "entry": "sport-41/index.html",
+   "version": "41",
+   "sourceCommit": "42114ef6bdd2262b445a9fc86b66e1f061188e5d"
   },
   "iconLibrary": "assets/sport-icons/v1",
   "exerciseLibrary": "assets/exercise-library/v1",

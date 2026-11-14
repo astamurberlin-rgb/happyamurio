@@ -89,17 +89,18 @@ day.HappyDayCounters.apply(targets);assert.equal(day.DB.taps.filter(t=>t.mealCou
 meal.HappyMealCounters.apply(targets);assert.equal(meal.day(meal.curDate).items.length,servings);
 assert.equal(H.linked(def,'day'),true);assert.equal(H.linked(def,'sport'),false);
 console.log('Passed independent Day/Sport links, legacy migration, hide/show with retained servings.');
-// Sport adapter consumes the same document and contributes one shared serving.
-const sportStore=storage();const both=H.patch(targets,'definitions',{...def,targets:{day:true,sport:true}},'both');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(both));
-const sport=context({SPORT_MEASURE_EMBED:false,SportProfiles:{owner:'local',current:()=>'local'},document,localStorage:sportStore,CL:{s:null,ready:true},HappyProfile:{owner:'local'},state:{customCounters:[]},selectedDate:'2026-10-30',dayNow:()=> '2026-10-30',clOn:()=>false,oldPersist(){},persist(){},renderDiary:()=>'',esc:String,icon:()=>'',toast(){}});
-vm.runInContext(await read(REL('sport')+'/sport/src/food-counters.js'),sport);sport.changeSportFood(def.id,true,true);
-assert.equal(vm.runInContext('sportFoodDoc',sport).events.filter(e=>!e.deleted).length,servings+1);
-meal.HappyMealCounters.apply(vm.runInContext('sportFoodDoc',sport));day.HappyDayCounters.apply(vm.runInContext('sportFoodDoc',sport));
-assert.equal(meal.day(meal.curDate).items.length,servings+1);assert.equal(day.day(day.curDate).taps[dk].length,servings+1);
-sport.changeSportFood(def.id,true,false);meal.HappyMealCounters.apply(vm.runInContext('sportFoodDoc',sport));assert.equal(meal.day(meal.curDate).items.length,servings);
-const hidden=H.patch(vm.runInContext('sportFoodDoc',sport),'definitions',{...def,targets:{day:true,sport:false}},'off');sportStore.setItem('happy-food-counters-v1:local',JSON.stringify(hidden));
-assert.throws(()=>sport.changeSportFood(def.id,true,true),/отключена/);assert.equal(sport.sportFoodDefinitions().length,0);
-console.log('Passed Sport → Meal → Day portions and undo, and no additions after disabling Sport.');
+// Sport 42: счётчики продуктов Meal Sport покажет после перехода Meal на общий модуль; прежний общий документ счётчиков
+// (облако meal/counters, ключи happy-food-counters-v1) Sport не читает и не пишет. Свои счётчики Sport — нажатие и отмена.
+{
+ const noStore={getItem(){throw Error('Sport не читает прежний документ счётчиков')},setItem(){throw Error('Sport не пишет прежний документ счётчиков')}};
+ let saved=0;
+ const sport=context({document,localStorage:noStore,state:{customCounters:[{id:'own-1',title:'Вода',unit:'стакан',events:[]}]},selectedDate:'2026-10-30',persist(){saved++},renderDiary:()=>'',esc:String,icon:()=>'',openSheet(){},closeSheet(){},render(){},toast(){}});
+ vm.runInContext(await read(REL('sport')+'/sport/src/food-counters.js'),sport);
+ sport.changeSportFood('own-1',true);sport.changeSportFood('own-1',true);sport.changeSportFood('own-1',false);
+ assert.equal(sport.state.customCounters[0].events.length,1);assert.equal(saved,3);
+ assert.equal(vm.runInContext('typeof sportFoodDoc',sport),'undefined');
+ console.log('Passed Sport own counters: tap and undo saved in Sport; the former shared counter document is not touched.');
+}
 if(!process.env.FOOD_COUNTERS_SOURCE){
  const {execFileSync}=await import('node:child_process');
  const reference=REL('day')+'/shared/food-counters.js';

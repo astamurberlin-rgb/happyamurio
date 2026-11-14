@@ -1,0 +1,13 @@
+import {cp,mkdir,writeFile,rm} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url));
+execFileSync(process.execPath,['sport/scripts/build.mjs'],{cwd:root,stdio:'inherit'});
+await rm(new URL('../dist/',import.meta.url),{recursive:true,force:true});
+for(const dir of ['dist/sport','dist/day','dist/meal','dist/prototypes'])await mkdir(new URL('../'+dir+'/',import.meta.url),{recursive:true});
+for(const [from,to] of [['sport/index.html','dist/sport/index.html'],['sport/index.html','dist/index.html'],['sport/app-icons','dist/sport/app-icons'],['sport/manifest.webmanifest','dist/sport/manifest.webmanifest'],['sport/exercises','dist/sport/exercises'],['sport/data','dist/sport/data'],['sport/app-icons','dist/app-icons'],['sport/manifest.webmanifest','dist/manifest.webmanifest'],['sport/exercises','dist/exercises'],['sport/data','dist/data']])await cp(new URL('../'+from,import.meta.url),new URL('../'+to,import.meta.url),{recursive:true});
+const page=(title,text,link='')=>`<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="connect-src 'none'; form-action 'none'"><title>${title}</title><body style="font:18px system-ui;padding:32px;max-width:700px;margin:auto"><h1>${title}</h1><p>${text}</p>${link}<p><a href="/happyamurio/sport-38/">Вернуться в Sport</a></p></body></html>`;
+await writeFile(new URL('../dist/day/index.html',import.meta.url),page('Happy Day','Day открывается по своему адресу. Войди тем же аккаунтом Happy.','<a href="/happyamurio/day/">Открыть Happy Day</a>'));
+await writeFile(new URL('../dist/meal/index.html',import.meta.url),page('Happy Meal','Meal открывается по своему адресу. Войди тем же аккаунтом Happy.','<a href="/happyamurio/meal/">Открыть Happy Meal</a>'));
+await writeFile(new URL('../dist/prototypes/happy-icon-studio.html',import.meta.url),page('Icon Studio','Icon Studio в этой версии недоступна. Назначения иконок прежнего сайта не изменяются.'));
+console.log('Sport Update 42 built. Storage and exchange only through the shared module (shared/happy-store.js).');

@@ -1,0 +1,9 @@
+/* Замеры: печать и выгрузка CSV — из дневника этого аккаунта на устройстве, без сети.
+   Sport 42: прежний общий документ замеров (облако sport/measurements, ключи happy-measurements-v1) и перенос из старого
+   журнала убраны: замеры — записи документа body общего модуля (sport-docs.js). Показ замеров в Day и Meal — отдельная
+   задача (пункт Е аудита). */
+const hmMeasurements=renderMeasurements;
+renderMeasurements=function(){return hmMeasurements()+'<div class="happy-actions hm-output"><button class="happy-button" data-hm="print">Печать замеров</button><button class="happy-button" data-hm="csv">Выгрузить CSV</button></div>'};
+function hmCsv(){const fields=[...new Set(state.measurements.flatMap(r=>Object.keys(r.values)))],cell=v=>{let text=String(v??'');if(typeof v==='string'&&/^[\s\u0000-\u001f]*[=+@-]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"'},text='\uFEFF'+[['Дата',...fields.map(k=>{const field=MF.find(x=>x[0]===k);return field?field[1]+(k==='weight'?', кг':', см'):'Дополнительное поле: '+k})],...state.measurements.map(r=>[r.date,...fields.map(k=>r.values[k])])].map(r=>r.map(cell).join(';')).join('\r\n');const a=document.createElement('a'),url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.href=url;a.download='happy-measurements.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+function hmPrint(){if(!state.measurements.length){toast('Пока нет замеров');return}let n=document.getElementById('hmPrint');if(!n){n=document.createElement('section');n.id='hmPrint';document.body.appendChild(n)}const {cur,old}=measurePair();n.innerHTML='<h1>Happy · Замеры тела</h1>'+document.querySelector('.body-viz').outerHTML+measurementHistoryTable(cur,old);window.print()}
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-hm]');if(!b)return;if(b.dataset.hm==='csv')hmCsv();if(b.dataset.hm==='print')hmPrint()});

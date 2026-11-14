@@ -1,5 +1,6 @@
 """Видимые версии: страницы Day, Meal, Sport и самостоятельный файл Day показывают те же версии, что записаны в
-shared/apps.json; общий разбор сводок подключён; ошибок на страницах нет. Гость, сеть к серверу закрыта."""
+shared/apps.json; общий разбор сводок подключён в Day и Meal (Sport 42 сводки соседей пока не читает — до перехода Day
+и Meal на общий модуль); ошибок на страницах нет. Гость, сеть к серверу закрыта."""
 import urllib.request
 from common import *
 
@@ -31,6 +32,7 @@ for name, _ in pages:
     want = out["expected"]["day" if name.startswith("day") else name]
     got = out[name]
     checks.append((name + ": версия " + want + " в подвале, в отметке страницы и первой в истории обновлений", got["attr"] == want and got["first"] == want and ("Update " + want) in (got["footer"] or "")))
-    checks.append((name + ": общий разбор сводок подключён", got["summaries"] is True))
+    if name != "sport":
+        checks.append((name + ": общий разбор сводок подключён", got["summaries"] is True))
 checks.append(("ошибок на страницах нет", errors == []))
 sys.exit(finish("versions", out, checks))
