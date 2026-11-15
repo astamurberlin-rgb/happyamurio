@@ -82,3 +82,12 @@
    with an exercise search keeps its full height whatever the number of results, so the search stays at the top and
    the keyboard never covers it. */
 .sheet:has(#picker-search),.sheet:has(#template-picker-search){height:calc(100dvh - 48px);max-height:calc(100dvh - 48px)}
+/* Ввод времени м:с (15.11.2026): поле прозрачное, цифры рисует наложенная строка — ненабранные бледные, двоеточие мигает
+   вместо черты-курсора. */
+.sport-metric-input input.time-masking,.sport-metric-input input.time-masking::placeholder{color:transparent!important;-webkit-text-fill-color:transparent!important;caret-color:transparent!important;text-shadow:none!important}
+.time-mask-view{position:absolute;z-index:1;box-sizing:border-box;display:flex;align-items:center;margin:0;pointer-events:none;white-space:pre;font-variant-numeric:tabular-nums}
+.time-mask-view b{font:inherit}
+.time-mask-view .tm-off{opacity:.38}
+.time-mask-view .tm-colon{animation:time-mask-blink 1s steps(1,end) infinite}
+@keyframes time-mask-blink{50%{opacity:.12}}
+@media(prefers-reduced-motion:reduce){.time-mask-view .tm-colon{animation:none;opacity:.6}}

@@ -196,7 +196,8 @@ button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:n
    (Астамур, 15.11.2026 16:03). */
 .floating-rest-mid>.floating-rest-clock{position:relative!important}
 .floating-rest-mid>.floating-rest-clock>span:first-child{position:absolute!important;left:50%!important;bottom:100%!important;top:auto!important;right:auto!important;transform:translateX(-50%)!important;margin:0 0 1px!important;font-size:10px!important;line-height:12px!important;opacity:.9}
-.floating-rest-step{box-sizing:border-box;flex:none;display:inline-flex;align-items:baseline;justify-content:center;min-width:44px;height:40px;min-height:40px;padding:12px 4px 0;border:0;border-radius:20px;background:#ffffff21;color:#fff;font-size:15px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
-.floating-rest-step small{margin-left:2px;font-size:11px;font-weight:500;opacity:.8}
+.floating-rest-step{box-sizing:border-box;flex:none;display:grid;place-items:center;width:44px;min-width:44px;height:44px;min-height:44px;padding:0 0 2px;border:0;border-radius:22px;background:none;color:#fff;font-size:30px;font-weight:300;line-height:1}
 .floating-rest-step:disabled{opacity:.3}
-@media(max-width:360px){.floating-rest-mid{gap:2px}.floating-rest-step{min-width:40px;padding:12px 3px 0;font-size:14px}}
+/* без линии под цифрами — ни в покое, ни при вводе (Астамур, 15.11.2026 16:06) */
+.floating-rest-mid .floating-rest-clock .sport-metric-input,.floating-rest-mid .floating-rest-clock .sport-metric-input:focus-within{border-bottom:0!important;box-shadow:none!important}
+@media(max-width:360px){.floating-rest-mid{gap:0}.floating-rest-step{width:40px;min-width:40px}}
