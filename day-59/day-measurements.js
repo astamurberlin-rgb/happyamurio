@@ -8,6 +8,8 @@
   tabs.innerHTML='<button type="button" aria-pressed="true">Журнал</button><button type="button" aria-pressed="false">Замеры тела</button>';
   const content=document.createElement('div');content.className='happy-journal-content';
   while(screen.firstChild)content.appendChild(screen.firstChild);
+  /* Day 59.2: слово «Журнал» уже на переключателе и в меню — крупный заголовок под переключателем не показывается (Астамур 15.11.2026) */
+  const title=content.querySelector(':scope>.top>h1');if(title)title.hidden=true;
   const panel=document.createElement('section');panel.className='day-measurements';panel.hidden=true;
   screen.append(tabs,content,panel);
   const buttons=[...tabs.querySelectorAll('button')];

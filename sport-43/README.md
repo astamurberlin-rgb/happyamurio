@@ -31,7 +31,7 @@ Sport собирается из исходников. Файл `index.html` в �
 | `sport/src/sport-boot.js` | Запуск: вход Sport (`shared/happy-account.js`, у каждого приложения свой), общий модуль хранения (`shared/happy-store.js`), затем приложение. |
 | `sport/src/sport-docs.js` | Как дневник раскладывается на документы модуля и собирается обратно. Документы витрины (замеры, плановые занятия, свитчи связи) раскладывают их общие файлы из `shared/`. |
 | `sport/src/sport-data.js`, `sport-signin.js` | Запись изменённого, приём правок с других вкладок и устройств, карточка входа, без входа — предложение войти. |
-| `sport/src/app-links.js`, `food-counters.js`, `energy-widget.js` | Свитчи связи, свои счётчики Sport, кольцо энергии. |
+| `sport/src/app-links.js`, `food-counters.js`, `energy-widget.js` | Свитчи связи, свои счётчики Sport и нажатия за день с правкой времени, кольцо энергии. |
 | `sport/src/exercise-….js`, `set-….js`, `rest-pill.js`, `free-timer.js`, `timer-action-wheel.js`, `workout-….js` | Тренировка: упражнения, подходы, таймеры, перерывы. |
 | `sport/src/library-v2.js`, `catalog-groups.js`, `exercise-families.js`, `sport-icons.js` | Библиотека упражнений: группы, варианты, картинки. |
 | `sport/src/planning.js`, `schedule-model.js`, `schedule-calendar.js`, `plan-fact.js`, `template-picker.js` | Расписание, файл для календаря, «План / Факт». |

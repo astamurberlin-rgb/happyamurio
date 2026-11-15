@@ -18,6 +18,9 @@
  *   сделали (last ниже), — поэтому документы общие для трёх приложений. Meal показывает каждое нажатие порцией в
  *   дневнике питания и может её поправить: тогда он меняет саму запись нажатия.
  *   '<id нажатия>' → {cid — счётчик, date:'ГГГГ-ММ-ДД', item:{fid,q,u,g,t:'ЧЧ:ММ' или null,sec,counterFood}, at — мс}
+ *   sec — приём пищи в Meal по времени нажатия: до 11:00 — 'am', до 16:00 — 'pm', до 21:00 — 'dn', позже — 'sn';
+ *   без времени — как в полдень. Поправили время нажатия (retime ниже) — приём пищи считается заново по тому же
+ *   правилу; номер нажатия, счётчик, день и порция не меняются.
  *   id нажатия начинается с названия приложения ('day-…', 'meal-…', 'sport-…'): по нему видно, где нажали.
  *   'off:<id счётчика>' → {off:'<id счётчика>', at — мс} — счётчик убран со страницы этого приложения. Приложение
  *   его больше не показывает; Meal выключает у счётчика показ в этом приложении, а когда показ включают снова —
@@ -138,10 +141,18 @@ function tapId(app){
  var c=root.crypto,id=c&&c.randomUUID?c.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12);
  return app+'-'+id;
 }
+/* приём пищи Meal по времени нажатия 'ЧЧ:ММ' (null — как в полдень) */
+function mealOf(time){var h=time?parseInt(time,10):12;return h<11?'am':h<16?'pm':h<21?'dn':'sn'}
 /* новое нажатие на счётчик d: значение записи для doc.put. time — 'ЧЧ:ММ' или null (задним числом время неизвестно). */
 function tap(d,date,time,now){
- var h=time?Number(time.slice(0,2)):12,sec=h<11?'am':h<16?'pm':h<21?'dn':'sn';
- return {cid:d.id,date:date,item:{fid:d.fid,q:d.q,u:d.u,g:d.g,t:time||null,sec:sec,counterFood:copy(d.food)},at:Number.isSafeInteger(now)?now:Date.now()};
+ return {cid:d.id,date:date,item:{fid:d.fid,q:d.q,u:d.u,g:d.g,t:time||null,sec:mealOf(time),counterFood:copy(d.food)},at:Number.isSafeInteger(now)?now:Date.now()};
+}
+/* правка времени нажатия (Day, Sport 15.11.2026): то же нажатие v (значение записи) с временем time — 'ЧЧ:ММ' или null —
+   и приёмом пищи по нему. Время не изменилось — нажатие возвращается как есть: приём, поправленный в Meal, остаётся. */
+function retime(v,time){
+ var t=time&&TIME.test(time)?time:null,out=copy(v);
+ if(!object(out.item)||(out.item.t||null)===t)return out;
+ out.item.t=t;out.item.sec=mealOf(t);return out;
 }
 /* что одно нажатие добавляет к дню: [ккал, белки, жиры, углеводы, клетчатка или null]; состав на 100 г лежит в самом
    нажатии (counterFood), иначе берётся из счётчика. Нет веса, продукта или калорийности — null: посчитает Meal. */
@@ -212,7 +223,7 @@ function eaten(s,date,own,list,app){
  return out;
 }
 var api={FORMAT:FORMAT,SUMMARY:{app:'meal',name:'summary'},FOODS:{app:'meal',name:'foods'},TAPS:{app:'day',name:'foodtaps'},TAP_APPS:TAP_APPS,TAPS_NAME:'foodtaps',
- validDate:validDate,summary:summary,foods:foods,linked:linked,portion:portion,taps:taps,all:all,last:last,hidden:hidden,hide:hide,tapId:tapId,tap:tap,serving:serving,eaten:eaten};
+ validDate:validDate,summary:summary,foods:foods,linked:linked,portion:portion,taps:taps,all:all,last:last,hidden:hidden,hide:hide,tapId:tapId,tap:tap,retime:retime,mealOf:mealOf,serving:serving,eaten:eaten};
 root.HappyFood=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -56,7 +56,7 @@
     const out={};
     Object.keys(root.DB.days).forEach(date=>{const t=root.DB.days[date].taps||{};Object.keys(t).forEach(k=>t[k].forEach(rec=>{
       const old=rec.counterEventId&&baseline[rec.counterEventId];if(!old)return;
-      const e=clone(old);e.date=date;e.item.t=rec.t||null;out[e.id]=e;
+      const e=F.retime(old,rec.t||null);e.date=date;out[e.id]=e;   // новое время — и приём пищи в Meal по нему (Day 59.2)
     }))});
     /* нажатия счётчиков, которые сейчас не показаны (Meal убрал счётчик из Day), остаются как есть */
     Object.keys(baseline).forEach(id=>{if(!out[id]&&!root.DB.taps.some(c=>c.mealCounterId===baseline[id].cid))out[id]=baseline[id]});

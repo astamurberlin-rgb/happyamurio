@@ -8,14 +8,14 @@
  * Тем же форматом пишет Sport 42. Меняется устройство записей — растёт FORMAT, и три приложения выходят разом.
  *
  * Экран один на три приложения и везде умеет одно и то же: добавить, исправить, удалить и вернуть, сравнить даты,
- * напечатать, выгрузить CSV.
+ * поделиться — напечатать или выгрузить CSV (одна кнопка «Поделиться», выбор — в маленьком меню у кнопки).
  *   HappyMeasurements.mount(box, {doc, askSignIn, toast})
  *     doc       — общий документ или функция, которая его даёт: в Sport store.doc('body'),
  *                 в Day и Meal store.shared('sport','body'); без входа — null;
  *     askSignIn — что сделать, если записать пробуют без входа;
  *     toast     — toast(текст, вернуть) приложения; без него сообщение показывается в самом экране.
  * Чистая часть (read, saveChanges, removeChanges, restoreChanges, csv) работает и в проверках Node.
- * — Claude · 14.11.2026 */
+ * — Claude · 14.11.2026; «Поделиться» вместо «Редактирование», «Печать замеров» и «Выгрузить CSV» — 15.11.2026; новый силуэт по макету «Что изменилось» — 15.11.2026 */
 (function(root){
 'use strict';
 const FORMAT=1,DOC={app:'sport',name:'body'},LIST='measurements',TRASH='measurementTrash',SEP='~';
@@ -131,29 +131,116 @@ const ICON={
  plus:svg('<path d="M12 5v14M5 12h14"/>'),
  pencil:svg('<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1z"/><path d="M14.5 6.5l3 3"/>'),
  trash:svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>'),
- check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>')
+ check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+ share:svg('<path d="M12 3.5v11M7.5 8 12 3.5 16.5 8"/><path d="M8 11H6.5A2.5 2.5 0 0 0 4 13.5v4A2.5 2.5 0 0 0 6.5 20h11a2.5 2.5 0 0 0 2.5-2.5v-4a2.5 2.5 0 0 0-2.5-2.5H16"/>'),
+ print:svg('<path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2.5"/><path d="M7 14.5h10V21H7z"/>'),
+ file:svg('<path d="M14 3.5H7.5A2 2 0 0 0 5.5 5.5v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h6"/>')
 };
-/* Схема тела: условные размеры для картинки, не личные. От замеров зависят только ширины. */
-function bodyPath(values,baseline,amplify){
- const width=(key,normal,baseWidth,scale)=>{
-  const b=Number.isFinite(baseline[key])?baseline[key]:normal;
-  const a=Number.isFinite(baseline[key])&&Number.isFinite(values[key])?values[key]:b;
-  return Math.max(baseWidth*.6,Math.min(baseWidth*1.45,baseWidth+(b-normal)*scale+(a-b)*scale*amplify));
- };
- const s=width('shoulders',120,39,.35),c=width('chest',100,30,.32),w=width('waist',80,23,.32),h=width('hips',100,31,.30),a=width('bicepsR',30,11,.35),t=width('thighR',50,15,.28),k=width('calfR',30,10,.24);
- return `M150 22 C165 22 166 32 165 45 C165 55 160 61 159 65 C158 69 159 74 160 77 C169 81 ${150+s-7} 85 ${150+s} 90 C${150+s+8} 94 ${150+s+10} 110 ${150+s+14} 123 C${150+s+18} 138 ${150+s+23} 150 ${150+s+29} 164 C${150+s+34} 178 ${150+s+39} 191 ${150+s+43} 204 C${150+s+51} 220 ${150+s+55} 232 ${150+s+52} 235 C${150+s+48} 238 ${150+s+38} 224 ${150+s+35} 213 C${150+s+32} 202 ${150+s+25} 191 ${150+s+20} 182 C${150+s+14} 169 ${150+s+8} 151 ${150+s+a-4} 143 C${150+c+4} 135 ${150+c+1} 127 ${150+c} 120 C${150+c-2} 141 ${150+w} 158 ${150+w} 178 C${150+w} 192 ${150+h} 203 ${150+h} 220 C${150+h} 240 ${168+t} 261 ${168+t-2} 276 C${168+t-3} 286 ${168+k+2} 294 ${168+k} 302 C${168+k-2} 317 ${168+k-3} 337 ${168+k-3} 348 C${168+k-3} 357 ${168+k+5} 368 ${168+k+3} 373 C${168+k+1} 376 168 376 165 373 C163 370 166 359 165 350 C164 332 163 319 161 306 C159 294 157 287 159 277 C161 264 156 250 155 238 C154 229 153 221 150 222 Z`;
+/* Силуэт по замерам — по макету Астамура «Что изменилось» (15.11.2026): мужчина спереди, кости (суставы и длины)
+   неизменны, обхваты меняют только ширину своих частей. Два силуэта лежат друг на друге, как цветные плёнки:
+   три цвета: где фигуры совпадают — голубой, где «Было» шире (ушло) — бирюзовый край, где «Сейчас» шире (прибавилось) —
+   розовый край (решение Астамура 15.11.2026: голубой и бирюзовый из сравнения в макете, прибавка — розовым). Стиль «Стекло»:
+   лёгкий градиент, косой блик и кромка, как у пластин на кругах. Числа в таблице — настоящие; на рисунке разница
+   «Было» от «Сейчас» может быть усилена (×3). */
+const GIRTH=['neck','shoulders','chest','biceps','forearm','waist','hips','thigh','calf'];
+const GIRTH_NORMAL={neck:39,shoulders:121,chest:103,biceps:36,forearm:29.5,waist:82,hips:97,thigh:58.5,calf:38};
+const SIL={now:'#F600FF',past:'#00DFF0',same:'#2dacff',glass:{grad:0.02,shine:0.26,width:0.7,angle:49,pos:0.66,rim:0.79}};
+/* замер → обхваты для рисунка; парные — среднее левой и правой; нет числа — из запасного набора */
+function girths(values,fallback){
+ const v=values||{},fb=fallback||GIRTH_NORMAL,ok=x=>Number.isFinite(x)&&x>0;
+ const pairOf=(l,r)=>ok(v[l])&&ok(v[r])?(v[l]+v[r])/2:ok(v[l])?v[l]:ok(v[r])?v[r]:undefined;
+ const raw={neck:v.neck,shoulders:v.shoulders,chest:v.chest,biceps:pairOf('bicepsL','bicepsR'),forearm:pairOf('forearmL','forearmR'),
+  waist:v.waist,hips:v.hips,thigh:pairOf('thighL','thighR'),calf:pairOf('calfL','calfR')};
+ const o={};for(const k of GIRTH)o[k]=ok(raw[k])?raw[k]:fb[k];return o;
 }
-function silhouette(values,baseline,amplify,color,opacity){
- const d=bodyPath(values,baseline,amplify);
- return `<g fill="${color}" opacity="${opacity}"><path d="${d}"/><path d="${d}" transform="translate(300 0) scale(-1 1)"/></g>`;
+/* прошлый замер для рисунка: разница с «сейчас» усилена в k раз и не уходит за 0,7–1,35 от «сейчас» */
+function drawnPast(now,past,k){const o={};for(const key of GIRTH){const v=now[key]+k*(past[key]-now[key]);o[key]=Math.min(now[key]*1.35,Math.max(now[key]*0.7,v))}return o}
+function bodyPath(m){
+ const R=Math.PI/180,P=(x,y)=>({x,y}),lerp=(a,b,t)=>a+(b-a)*t,dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y),r2=v=>Math.round(v*100)/100;
+ const mirror=pts=>pts.map(q=>P(-q.x,q.y)).reverse(),sym=half=>half.concat(mirror(half.slice(1,-1)));
+ const orient=pts=>{let s=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];s+=a.x*b.y-b.x*a.y}return s<0?pts.slice().reverse():pts};
+ /* замкнутый центростремительный Catmull-Rom → кривые Безье */
+ const path=pts=>{
+  const n=pts.length;let out='M'+r2(pts[0].x)+' '+r2(pts[0].y);
+  for(let i=0;i<n;i++){
+   const p0=pts[(i-1+n)%n],p1=pts[i],q2=pts[(i+1)%n],q3=pts[(i+2)%n];
+   const d1=Math.sqrt(dist(p0,p1))||1e-4,d2=Math.sqrt(dist(p1,q2))||1e-4,d3=Math.sqrt(dist(q2,q3))||1e-4;
+   const a1=2*d1*d1+3*d1*d2+d2*d2,n1=3*d1*(d1+d2),a2=2*d3*d3+3*d3*d2+d2*d2,n2=3*d3*(d3+d2);
+   out+='C'+r2((d1*d1*q2.x-d2*d2*p0.x+a1*p1.x)/n1)+' '+r2((d1*d1*q2.y-d2*d2*p0.y+a1*p1.y)/n1)+' '+r2((d3*d3*p1.x-d2*d2*q3.x+a2*q2.x)/n2)+' '+r2((d3*d3*p1.y-d2*d2*q3.y+a2*q2.y)/n2)+' '+r2(q2.x)+' '+r2(q2.y);
+  }
+  return out+'Z';
+ };
+ /* трубка вдоль ломаной оси; st — [расстояние по оси, ширина наружу, ширина внутрь] */
+ const tube=(axis,st,capTop,capEnd)=>{
+  const segs=[];let acc=0;
+  for(let i=0;i<axis.length-1;i++){const a=axis[i],b=axis[i+1],L=dist(a,b);segs.push({a,s0:acc,t:P((b.x-a.x)/L,(b.y-a.y)/L)});acc+=L}
+  const at=s=>{let g=segs[0];for(const q of segs)if(s>=q.s0-1e-9)g=q;const u=s-g.s0;return {p:P(g.a.x+g.t.x*u,g.a.y+g.t.y*u),t:g.t}};
+  const outer=[],inner=[];
+  for(const row of st){const h=at(row[0]),nx=h.t.y,ny=-h.t.x;outer.push(P(h.p.x+nx*row[1],h.p.y+ny*row[1]));inner.push(P(h.p.x-nx*row[2],h.p.y-ny*row[2]))}
+  return [at(st[0][0]-capTop).p].concat(outer,[at(st[st.length-1][0]+capEnd).p],inner.reverse());
+ };
+ const nw=(m.neck*0.315)/2,sw=(m.shoulders*0.392)/2,cw=(m.chest*0.335)/2,ww=(m.waist*0.35)/2,hw=(m.hips*0.355)/2;
+ const bw=m.biceps/Math.PI/2,fw=m.forearm/Math.PI/2,tw=(m.thigh*0.3)/2,cc=(m.calf*0.318)/2;
+ const head=sym([P(0,0),P(4.7,0.9),P(7.2,3.8),P(7.85,8.4),P(7.6,12.6),P(7.0,16.6),P(5.8,19.8),P(3.6,22.2),P(0,23)]);
+ const neck=sym([P(0,16),P(nw*0.9,16.5),P(nw*0.96,21),P(nw,25),P(nw+0.7,28.5),P(nw+1.6,31),P(0,32)]);
+ const J=P(16,37),t1=22*R,t2=24*R,t3=21*R,U=33.5,F=27,Hd=18.9,W=U+F;
+ const A1=P(J.x+U*Math.sin(t1),J.y+U*Math.cos(t1)),A2=P(A1.x+F*Math.sin(t2),A1.y+F*Math.cos(t2)),A3=P(A2.x+Hd*Math.sin(t3),A2.y+Hd*Math.cos(t3));
+ const dOut=Math.max((sw-J.x-4*Math.sin(t1))/Math.cos(t1),bw*1.02+0.3),ew=0.36*bw+0.42*fw+0.45;
+ const onArm=(s,o)=>P(J.x+s*Math.sin(t1)+o*Math.cos(t1),J.y+s*Math.cos(t1)-o*Math.sin(t1));
+ const torso=sym([P(0,26.8),P(nw+0.2,26.9),P(nw+3.2,28.5),P(nw+7,30.6),onArm(-3.2,dOut*0.56),onArm(0,dOut*0.9),P(cw+1.4,41),P(cw+0.5,47),
+  P(cw*0.995,53),P(lerp(cw,ww,0.55),61),P(ww,69.5),P(lerp(ww,hw,0.5),78),P(hw,86.5),P(hw-0.7,92),P(hw-3.8,96.4),P(2.0,97.6),P(0,98.6)]);
+ const arm=tube([J,A1,A2,A3],[[-3.2,dOut*0.56,2.5],[0,dOut*0.9,4],[4,dOut,bw*0.88],[9,0.6*dOut+0.4*bw*1.02,bw*0.95],[14,bw,bw*0.98],[19.5,bw*1.03,bw*1.05],
+  [26,bw*0.9,bw*0.88],[U,ew,ew*0.95],[U+4.5,fw*1.04,fw*0.96],[U+9,fw,fw*0.98],[U+16,fw*0.8,fw*0.8],
+  [W,2.75,2.6],[W+3.5,3.15,3.25],[W+8.5,3.3,3.0],[W+13,2.85,2.55],[W+16.5,2.05,1.8],[W+Hd-0.6,0.9,0.8]],1.0,0.6);
+ const L0=P(9.2,89),L1=P(10,129),L2=P(10.8,171.6),T=dist(L0,L1),S=dist(L1,L2),kw=0.36*tw+0.24*cc+0.6;
+ const leg=tube([L0,L1,L2],[[-4,hw-10,6.5],[0,hw-9.55,tw*1.035],[7.5,Math.max(tw*0.98,hw-10),tw*1.06],[12,tw*0.98,tw*0.9],[18,tw*0.93,tw*0.83],
+  [26,tw*0.82,tw*0.74],[33,tw*0.7,tw*0.7],[T,kw,kw*0.97],[T+5,cc*0.9,cc*0.84],[T+11,cc*1.04,cc*0.98],[T+15.5,cc*0.98,cc*1.06],
+  [T+24,cc*0.72,cc*0.74],[T+33,3.85,3.7],[T+S,3.2,3.1]],1.5,2.0);
+ const foot=[P(7.9,170.6),P(14.3,170.6),P(15.1,174.4),P(16.5,177.6),P(16.6,179.9),P(13.4,180.9),P(8.8,180.8),P(7.3,179.8),P(7.4,175.8)];
+ return [mirror(leg),leg,mirror(foot),foot,torso,neck,head,mirror(arm),arm].map(q=>path(orient(q))).join('');
+}
+/* цвета плёнок */
+const rgb=c=>{const h=String(c).replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255)};
+const hexOf=v=>'#'+v.map(x=>Math.round(Math.max(0,Math.min(1,x))*255).toString(16).padStart(2,'0')).join('');
+const mul=(a,b)=>{const x=rgb(a),y=rgb(b);return hexOf(x.map((v,i)=>v*y[i]))};
+const tint=(c,t)=>hexOf(rgb(c).map(v=>v+(1-v)*t)),shade=(c,t)=>hexOf(rgb(c).map(v=>v*(1-t)));
+let chartSeq=0;
+/* косой светлый блик через всю фигуру */
+function shineStops(fx){
+ const p=fx.pos,w=fx.width,s=fx.shine,cl=v=>Math.round(Math.max(0,Math.min(1,v))*1000)/1000;
+ return [[0,0],[p-w/2,0],[p-w/4,s*.55],[p,s],[p+w/4,s*.55],[p+w/2,0],[p+w/2+.045,0],[p+w/2+.065,s*.75],[p+w/2+.085,0],[1,0]]
+  .map(q=>`<stop offset="${cl(q[0])}" stop-color="#fff" stop-opacity="${cl(q[1])}"/>`).join('');
+}
+function rimFilter(id,shadeColor,fx){
+ const dark=Math.round(fx.rim*500)/1000;
+ return `<filter id="${id}" x="-6%" y="-4%" width="112%" height="108%" color-interpolation-filters="sRGB"><feComponentTransfer in="SourceAlpha" result="A"><feFuncA type="linear" slope="60"/></feComponentTransfer>`+
+  `<feOffset in="A" dx=".5" dy=".5" result="o1"/><feComposite in="A" in2="o1" operator="out" result="e1"/><feGaussianBlur in="e1" stdDeviation=".2" result="b1"/><feComposite in="b1" in2="A" operator="in" result="m1"/><feFlood flood-color="#fff" flood-opacity="${fx.rim}"/><feComposite in2="m1" operator="in" result="lit"/>`+
+  `<feOffset in="A" dx="-.5" dy="-.5" result="o2"/><feComposite in="A" in2="o2" operator="out" result="e2"/><feGaussianBlur in="e2" stdDeviation=".2" result="b2"/><feComposite in="b2" in2="A" operator="in" result="m2"/><feFlood flood-color="${shadeColor}" flood-opacity="${dark}"/><feComposite in2="m2" operator="in" result="drk"/>`+
+  `<feMerge><feMergeNode in="lit"/><feMergeNode in="drk"/></feMerge></filter>`;
+}
+/* Рисунок. past — обхваты прошлого замера уже для рисунка (с усилением); same — сравнивать не с чем. */
+function figure(now,past,same,label){
+ const fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
+ const ux=Math.round(Math.cos(a)*L/2*100)/100,uy=Math.round(Math.sin(a)*L/2*100)/100;
+ const lin=(gid,c)=>`<linearGradient id="${gid}" x1=".15" y1=".1" x2=".85" y2=".95"><stop offset="0" stop-color="${tint(c,g)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,g*.4)}"/></linearGradient>`;
+ const layer=(d,cls,gid,rim,extra)=>`<g class="${cls}"${extra||''}><path d="${d}" fill="url(#${gid})"/><path d="${d}" fill="url(#${id}s)"/><path d="${d}" fill="#000" fill-opacity=".02" filter="url(#${rim})"/></g>`;
+ const nowD=bodyPath(now),pastD=same?nowD:bodyPath(past);
+ /* «Сейчас» розовым целиком, поверх — та же фигура голубым, но только внутри «Было»: розовым остаётся прибавка */
+ return `<svg class="hm-chart" viewBox="-52 -3 104 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
+  `<clipPath id="${id}k"><path class="hm-past-clip" d="${pastD}"/></clipPath>`+
+  `<linearGradient id="${id}s" gradientUnits="userSpaceOnUse" x1="${-ux}" y1="${Math.round((cy-uy)*100)/100}" x2="${ux}" y2="${Math.round((cy+uy)*100)/100}">${shineStops(fx)}</linearGradient>`+
+  rimFilter(id+'rn',shade(SIL.now,.45),fx)+rimFilter(id+'rp',shade(SIL.past,.45),fx)+rimFilter(id+'rc',shade(SIL.same,.45),fx)+`</defs>`+
+  `<ellipse cx="0" cy="181.6" rx="22" ry="2" fill="rgba(44,62,102,.10)"/>`+
+  layer(pastD,'hm-past',id+'p',id+'rp',same?' opacity="0"':'')+(same?'':layer(nowD,'hm-now',id+'n',id+'rn'))+
+  `<g clip-path="${same?'none':`url(#${id}k)`}">${layer(nowD,'hm-same',id+'c',id+'rc')}</g></svg>`;
 }
 function chart(cur,old,amplify){
- const d=bodyPath(old.values,old.values,amplify);
- return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot hm-now"></i> Сейчас · ${shortDate(cur.date)}</span><span><i class="hm-dot hm-before"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot hm-same"></i> Совпадает</span></div>`+
-  `<div class="hm-amplify" role="group" aria-label="Усиление разницы">${[[1,'1:1'],[3,'×3']].map(([v,t])=>`<button type="button" data-hm="amplify" data-id="${v}" aria-pressed="${amplify===v}">${t}</button>`).join('')}</div>`+
-  `<svg class="hm-chart" viewBox="0 0 300 405" role="img" aria-label="Схематическое сравнение ${esc(old.date)} и ${esc(cur.date)}. ${amplify===3?'Разница усилена втрое':'Разница без усиления'}"><ellipse cx="150" cy="389" rx="56" ry="5" fill="#6b8bb91c"/><defs><clipPath id="hm-old-body"><path d="${d}"/><path d="${d}" transform="translate(300 0) scale(-1 1)"/></clipPath></defs>`+
-  silhouette(old.values,old.values,amplify,'#00ccdf',.9)+silhouette(cur.values,old.values,amplify,'#f12ce5',.85)+`<g clip-path="url(#hm-old-body)">${silhouette(cur.values,old.values,amplify,'#5843e4',1)}</g></svg>`+
-  `<div class="hm-caption">Схематично · ${amplify===3?'разница увеличена ×3':'без усиления разницы'}</div></div>`;
+ const same=cur.date===old.date,now=girths(cur.values),past=drawnPast(now,girths(old.values,now),amplify);
+ const dot=c=>`linear-gradient(150deg,${tint(c,SIL.glass.grad)},${c} 55%,${shade(c,SIL.glass.grad*.4)})`;
+ return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(same?SIL.same:SIL.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
+  (same?'':`<span><i class="hm-dot" style="background:${dot(SIL.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(SIL.same)}"></i> Совпадает</span>`)+`</div>`+
+  `<div class="hm-amplify-box"><div class="hm-amplify" role="group" aria-label="Масштаб разницы">${[[1,'1:1','Разница в натуральную величину'],[3,'×3','Разница усилена в 3 раза']].map(([v,t,l])=>`<button type="button" data-hm="amplify" data-id="${v}" aria-label="${l}" aria-pressed="${amplify===v}">${t}</button>`).join('')}</div><span>разница</span></div>`+
+  (chart.last={now,past,same},'')+figure(now,past,same,same?'Силуэт по замерам '+dateLabel(cur.date):'Силуэт '+dateLabel(cur.date)+' поверх силуэта '+dateLabel(old.date))+`</div>`;
 }
 const value=(values,key)=>values[key]!=null?num(values[key]):'—';
 function cell(group,values){
@@ -180,7 +267,7 @@ function mount(box,options){
   if(mounted.open){mounted.move(box);return mounted}
   mounted.destroy();
  }
- const o=options||{};let dialog=null,off=null,noticeTimer=null,alive=true;
+ const o=options||{};let dialog=null,menu=null,off=null,noticeTimer=null,alive=true,drawn=null,raf=0;   // drawn — обхваты «Было» на рисунке сейчас
  const doc=()=>typeof o.doc==='function'?o.doc():o.doc||null;
  const state=()=>{const d=doc();return d&&!d.newer?read(d.all()):{list:[],trash:[],whole:false}};
  const say=(text,undo)=>{
@@ -205,14 +292,33 @@ function mount(box,options){
    `<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span><button type="button" class="hm-text" data-hm="add">${ICON.plus} Замер</button></div>`+
    `<div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div></div>`+
    grid(cur,past,old.date)+
-   `<button type="button" class="hm-button" data-hm="table">Редактирование</button>`+trash+
-   `<div class="hm-output"><button type="button" class="hm-button" data-hm="print">Печать замеров</button><button type="button" class="hm-button" data-hm="csv">Выгрузить CSV</button></div>`;
+   trash+
+   `<div class="hm-output"><button type="button" class="hm-button" data-hm="share" aria-haspopup="true" aria-expanded="${!!menu}">${ICON.share} Поделиться</button></div>`;
  }
  function render(){
-  if(!alive)return;
+  if(!alive)return;closeMenu();
   const wrap=box.querySelector('.hm-grid-wrap'),scroll=wrap?wrap.scrollLeft:0;
-  box.classList.add('hm');box.innerHTML=view();
+  chart.last=null;box.classList.add('hm');box.innerHTML=view();
   const next=box.querySelector('.hm-grid-wrap');if(next&&scroll)next.scrollLeft=scroll;
+  flow(chart.last);
+ }
+ /* Смена периода или масштаба: «Было» плавно перетекает в новую форму (как в макете, 0,56 с). */
+ function flow(to){
+  if(raf){cancelAnimationFrame(raf);raf=0}
+  const layer=box.querySelector('.hm-viz .hm-past');
+  if(!to||!layer||to.same){drawn=null;return}
+  const from=drawn,calm=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  drawn=to.past;
+  if(calm||typeof requestAnimationFrame!=='function'||(from&&GIRTH.every(k=>Math.abs(from[k]-to.past[k])<1e-6)))return;
+  const start=from||to.now,v0=from?1:0,paths=[...layer.querySelectorAll('path'),...box.querySelectorAll('.hm-viz .hm-past-clip')],t0=performance.now();
+  const step=t=>{
+   const u=Math.min(1,(t-t0)/560),e=1-Math.pow(1-u,3),m={};
+   for(const k of GIRTH)m[k]=start[k]+(to.past[k]-start[k])*e;
+   const d=bodyPath(m);for(const p of paths)p.setAttribute('d',d);
+   layer.setAttribute('opacity',String(Math.round((v0+(1-v0)*e)*1000)/1000));drawn=m;
+   raf=u<1?requestAnimationFrame(step):0;
+  };
+  step(t0);raf=requestAnimationFrame(step);
  }
 
  /* Окно: форма замера, таблица для правки, удалённые замеры. */
@@ -278,9 +384,28 @@ function mount(box,options){
   const s=state();
   openDialog('Удалённые замеры',`<p class="hm-note">Удалённый замер можно восстановить.</p>`+s.trash.map(x=>`<div class="hm-trash-row"><b>${dateLabel(x.record.date)}</b><button type="button" class="hm-text" data-hm="restore" data-id="${esc(x.id)}">Восстановить</button></div>`).join('')+`<p class="hm-error" role="alert"></p>`);
  }
- function openTable(){
-  const s=state(),{cur,old}=pair(s.list,ui.period,ui.chosen);if(!cur)return;
-  openDialog('Редактирование',grid(cur,s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)),old.date)+`<p class="hm-note">Нажми карандаш у даты, чтобы исправить или удалить замер.</p>`);
+ /* «Поделиться»: два действия — печать и CSV, в маленьком меню у кнопки (решение Астамура 15.11.2026). */
+ const SHARE_ITEMS=()=>`<button type="button" class="hm-share-item" role="menuitem" data-hm="print">${ICON.print}<span>Печать замеров</span></button>`+
+  `<button type="button" class="hm-share-item" role="menuitem" data-hm="csv">${ICON.file}<span>Выгрузить CSV</span></button>`;
+ function closeMenu(){if(!menu)return;const m=menu;menu=null;m.remove();document.removeEventListener('pointerdown',outside,true);document.removeEventListener('keydown',escape,true);
+  const b=box.querySelector('[data-hm="share"]');if(b)b.setAttribute('aria-expanded','false')}
+ function outside(e){if(menu&&!menu.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-hm="share"]')))closeMenu()}
+ function escape(e){if(e.key==='Escape')closeMenu()}
+ function openShare(button){
+  if(!state().list.length){say('Пока нет замеров');return}
+  if(menu){closeMenu();return}
+  const m=menu=document.createElement('div');m.className='hm hm-menu';m.setAttribute('role','menu');m.setAttribute('aria-label','Поделиться');m.innerHTML=SHARE_ITEMS();
+  document.body.appendChild(m);
+  /* меню у кнопки: над ней, если снизу не хватает места (внизу экрана меню приложения) */
+  const r=button.getBoundingClientRect(),h=m.offsetHeight,w=m.offsetWidth,gap=8;
+  const below=r.bottom+gap+h<innerHeight-90;
+  m.style.top=(below?r.bottom+gap:Math.max(8,r.top-gap-h))+'px';
+  m.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+'px';
+  m.classList.add(below?'hm-menu-down':'hm-menu-up');
+  m.addEventListener('click',onClick);
+  document.addEventListener('pointerdown',outside,true);document.addEventListener('keydown',escape,true);
+  button.setAttribute('aria-expanded','true');
+  const first=m.querySelector('button');if(first)first.focus({preventScroll:true});
  }
  function download(){
   const s=state();if(!s.list.length){say('Пока нет замеров');return}
@@ -303,9 +428,9 @@ function mount(box,options){
   if(action==='delete'){remove();return}
   if(action==='restore'){restore(id);return}
   if(action==='trash'){openTrash();return}
-  if(action==='table'){openTable();return}
-  if(action==='csv'){download();return}
-  if(action==='print'){print();return}
+  if(action==='share'){openShare(b);return}
+  if(action==='csv'){closeMenu();download();return}
+  if(action==='print'){closeMenu();print();return}
   if(action==='undo'){const undo=ui.notice&&ui.notice.undo;ui.notice=null;if(undo)undo();else render();return}
   if(action==='amplify')ui.amplify=Number(id)===1?1:3;
   if(action==='period'){ui.period=id;ui.chosen=null}
@@ -318,12 +443,12 @@ function mount(box,options){
  render();
  const api={render,
   move(next){box.removeEventListener('click',onClick);box=next;box.addEventListener('click',onClick);render()},
-  destroy(){if(!alive)return;alive=false;clearTimeout(noticeTimer);if(off)off();box.removeEventListener('click',onClick);closeDialog();if(mounted===api)mounted=null},
+  destroy(){if(!alive)return;alive=false;if(raf)cancelAnimationFrame(raf);clearTimeout(noticeTimer);if(off)off();box.removeEventListener('click',onClick);closeMenu();closeDialog();if(mounted===api)mounted=null},
   get box(){return box},get open(){return !!dialog}};
  mounted=api;return api;
 }
 function unmount(){if(mounted)mounted.destroy()}
-const api={FORMAT,DOC,FIELDS,GROUPS,NEWER,valid,validDate,read,compose,saveChanges,removeChanges,restoreChanges,csv,pair,bodyPath,mount,unmount};
+const api={FORMAT,DOC,FIELDS,GROUPS,NEWER,valid,validDate,read,compose,saveChanges,removeChanges,restoreChanges,csv,pair,girths,drawnPast,bodyPath,mount,unmount};
 root.HappyMeasurements=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

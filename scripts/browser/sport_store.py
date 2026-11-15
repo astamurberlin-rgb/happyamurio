@@ -1,7 +1,7 @@
 """Sport на своём входе (с Sport 43.1) и общем модуле хранения и обмена (с Sport 42) — настоящая страница Sport в Chrome.
 Путь человека: без входа записи не принимаются и Sport предлагает войти; вход в карточке настроек; запись без сети;
 вторая вкладка и второй телефон видят запись сами; одна тренировка с двух телефонов — остаётся поздняя правка;
-нажатия одного счётчика с двух телефонов не теряются; удалённое не возвращается; второй аккаунт на том же телефоне
+нажатия одного счётчика с двух телефонов не теряются; время нажатия, поправленное на одном телефоне, видно на втором; удалённое не возвращается; второй аккаунт на том же телефоне
 не видит записей первого; диктовка и внешние ссылки работают. Прежние строки облака Sport не читаются и не меняются.
 Sport 43: удаление тренировки на одном телефоне не затирает правку другой тренировки на втором и не возвращает
 удалённое им; выбранное оформление сохраняется на устройстве; ссылки на тренировку и на упражнение открывают их.
@@ -230,6 +230,15 @@ with sync_playwright() as p:
     out["taps_a"] = wait_for(a1, lambda: taps(a1) == 3 and 3, 12, 300) or taps(a1)
     out["taps_b"] = wait_for(b1, lambda: taps(b1) == 3 and 3, 12, 300) or taps(b1)
 
+    # Sport 43.2: время нажатия своего счётчика поправили на телефоне A — телефон B видит новое время, нажатий столько же
+    a1.locator("#sport-food-counters [data-action=food-taps]").first.click()
+    a1.wait_for_selector("#sport-tap-sheet input[type=time]")
+    a1.locator("#sport-tap-sheet input[type=time]").first.fill("06:30")
+    a1.click("#sport-tap-sheet [data-tap-done]")
+    out["retime_a"] = a1.evaluate("()=>(state.customCounters||[]).flatMap(c=>c.events||[]).filter(e=>e.t==='06:30').length")
+    out["retime_b"] = bool(until(b1, "()=>(state.customCounters||[]).some(c=>(c.events||[]).some(e=>e.t==='06:30'))", seconds=20))
+    out["retime_count"] = [taps(a1), taps(b1)]
+
     # удаление на B доходит до A и не возвращается
     b1.evaluate("()=>{state.workouts=state.workouts.filter(w=>w.id!=='w-two');persist();render()}")
     out["delete_reaches"] = bool(until(a1, "()=>!state.workouts.some(w=>w.id==='w-two')", seconds=20))
@@ -330,6 +339,7 @@ checks = [
     ("второй телефон после входа сам видит тренировку в журнале и нажатие", out["other_phone_workout"] and out["other_phone_taps"] == 1),
     ("одна тренировка с двух телефонов — везде поздняя правка, новая тренировка второго телефона тоже есть", out["later_wins_a"] and out["later_wins_b"] and out["later_wins_tab2"] and out["titles_a"] == out["titles_b"] == ["Бассейн с телефона B", "Правка телефона B"]),
     ("нажатия одного счётчика с двух телефонов не потерялись", out["taps_a"] == 3 and out["taps_b"] == 3),
+    ("время нажатия своего счётчика, поправленное на одном телефоне, видно на втором; нажатий столько же", out["retime_a"] == 1 and out["retime_b"] and out["retime_count"] == [3, 3]),
     ("удаление дошло до другого телефона и не вернулось", out["delete_reaches"] and out["delete_stays"]),
     ("удаление тренировки на одном телефоне не затёрло правку другой на втором и не вернуло удалённое им", out["list_synced"] and out["neighbours_a"] is True and out["neighbours_b"] is True and out["neighbours_stay"]),
     ("ссылка на тренировку открывает её запись, ссылка на упражнение — упражнение", out["workout_link"] == ["detail", "Правка четвёртой на телефоне B"] and out["exercise_link"]),

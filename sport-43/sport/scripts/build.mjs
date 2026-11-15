@@ -47,7 +47,8 @@ const dataTransfer=await read('src/data-transfer.js');
 // Sport 42: запуск — общий вход, общий модуль хранения и документы Sport; приложение стартует после них (sport-boot.js).
 const sportDocs=await read('src/sport-docs.js'),sportData=await read('src/sport-data.js'),sportSignIn=await read('src/sport-signin.js');
 // Sport 43: форматы витрины — общие файлы: сводка и плановые занятия, замеры тела, свитчи связи.
-const boot=[await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),await readShared('happy-food.js'),sportDocs,await read('src/sport-boot.js')].join('\n');
+// Sport 43.2: рамка выбора только с клавиатуры и без полос прокрутки — общий файл shared/happy-input.js, один для трёх приложений.
+const boot=[await readShared('happy-input.js'),await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),await readShared('happy-food.js'),sportDocs,await read('src/sport-boot.js')].join('\n');
 const accountUI=await readShared('happy-account-ui.js');
 const happyLinks=await readShared('happy-links.js'),releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await read('src/release-notes.js'),templatePicker=await read('src/template-picker.js');
 const iconStudioBridge=await read('src/icon-studio-bridge.js');
@@ -76,7 +77,7 @@ const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappi
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 43.1'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 43.2'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}

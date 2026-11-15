@@ -42,6 +42,7 @@
 | `happy-reference-themes.js`, `happy-gradients.js`, `happy-gradient-editor.js`, `happy-gradient-editor.css` | Темы и градиенты для Color Studio и Icon Studio. |
 | `happy-studio-account.js` | Вход в студиях, отдельный от входа в приложениях. |
 | `food-counters.css` | Вид счётчиков продуктов. |
+| `happy-input.js` | Рамка выбора видна только при работе с клавиатуры — после нажатия пальцем или мышью её нет; полос прокрутки нет. Стиль ставит сам файл. С Day 59.2, Meal 32.2, Sport 43.2. |
 | `happy-account.js` | Вход в аккаунт: один код, у каждого приложения своя ячейка входа. Sport с выпуска 42, Day с 59, Meal с 32; раздельный вход — с Day 59.1, Meal 32.1, Sport 43.1. |
 | `happy-account-ui.js` | Карточка входа и одна строка состояния под аккаунтом — общие для трёх приложений. |
 | `happy-store.js` | Общий модуль хранения и обмена. На нём Sport с выпуска 42, Day с выпуска 59 и Meal с выпуска 32. |
