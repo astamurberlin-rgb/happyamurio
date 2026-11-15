@@ -88,6 +88,7 @@
 .time-mask-view{position:absolute;z-index:1;box-sizing:border-box;display:flex;align-items:center;margin:0;pointer-events:none;white-space:pre;font-variant-numeric:tabular-nums}
 .time-mask-view b{font:inherit}
 .time-mask-view .tm-off{opacity:.38}
-.time-mask-view .tm-colon{animation:time-mask-blink 1s steps(1,end) infinite}
+/* Двоеточие меняется раз в секунду: секунду видно, секунду бледное (Астамур, 15.11.2026 18:43). */
+.time-mask-view .tm-colon{animation:time-mask-blink 2s steps(1,end) infinite}
 @keyframes time-mask-blink{50%{opacity:.12}}
 @media(prefers-reduced-motion:reduce){.time-mask-view .tm-colon{animation:none;opacity:.6}}

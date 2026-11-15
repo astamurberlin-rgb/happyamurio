@@ -89,26 +89,25 @@ function auditExerciseForm(form){
   const paint=()=>{d.querySelector('summary').textContent='Показатели: '+([...metrics.querySelectorAll('input:checked')].map(i=>i.nextElementSibling?.textContent.trim().toLowerCase()).join(', ')||'не выбраны')};
   paint();metrics.addEventListener('change',paint);
  }
- // 4. Название одно — в заголовке. Карандаш превращает сам заголовок в поле, а карандаш — в «Готово»; Enter, «Готово»
- //    или нажатие мимо — снова заголовок. Пустое имя возвращает прежнее. Раньше карандаш открывал под заголовком второе
- //    поле с тем же именем и нажимался по кругу (Астамур, 15.11.2026).
+ // 4. Название одно — в заголовке. Карандаш стоит сразу после текста названия; нажал — сам заголовок становится полем,
+ //    а на месте карандаша, тоже сразу после текста, — ✓ в кружке «Готово» (Астамур, 15.11.2026 18:43). Enter, ✓ или
+ //    нажатие мимо — снова заголовок. Пустое имя возвращает прежнее, Escape — тоже. Раньше карандаш открывал под
+ //    заголовком второе поле с тем же именем и нажимался по кругу; потом стоял у правого края (15.11.2026).
  const title=form.closest('.sheet')?.querySelector('.sheet-top h2'),row=form.querySelector('.exercise-title-row'),input=form.querySelector('.exercise-title-input');
  if(title&&row&&input&&!form.dataset.renameReady){
   form.dataset.renameReady='1';row.hidden=true;
   title.parentElement.querySelector('.rename-exercise')?.remove();
+  title.classList.add('rename-title');
   title.insertAdjacentHTML('afterend',`<button type="button" class="rename-exercise" aria-label="Переименовать упражнение">${icon('pencil-simple')}</button>`);
-  const pencil=title.parentElement.querySelector('.rename-exercise'),edit=document.createElement('textarea');
-  edit.className='rename-exercise-input';edit.rows=1;edit.maxLength=input.maxLength>0?input.maxLength:120;edit.setAttribute('aria-label','Название упражнения');edit.setAttribute('enterkeyhint','done');edit.hidden=true;title.after(edit);
-  let before='',closedAt=0;
-  const fit=()=>{edit.style.height='auto';edit.style.height=edit.scrollHeight+'px'};
-  const open=()=>{const cs=getComputedStyle(title);for(const k of ['fontSize','fontWeight','lineHeight','letterSpacing','fontFamily'])edit.style[k]=cs[k];
-   before=input.value;edit.value=input.value;title.hidden=true;edit.hidden=false;fit();pencil.innerHTML=icon('check');pencil.setAttribute('aria-label','Готово');pencil.dataset.editing='1';edit.focus();edit.select();};
-  const close=()=>{if(edit.hidden)return;const name=edit.value.replace(/\s+/g,' ').trim();input.value=name||before;title.textContent=input.value;input.dispatchEvent(new Event('input',{bubbles:true}));
-   edit.hidden=true;title.hidden=false;pencil.innerHTML=icon('pencil-simple');pencil.setAttribute('aria-label','Переименовать упражнение');delete pencil.dataset.editing;closedAt=Date.now();};
+  const pencil=title.parentElement.querySelector('.rename-exercise'),max=input.maxLength>0?input.maxLength:120;
+  let before='',closedAt=0,mode='true';try{title.contentEditable='plaintext-only';if(title.contentEditable==='plaintext-only')mode='plaintext-only';}catch(e){}title.contentEditable='false';
+  const open=()=>{before=input.value;title.contentEditable=mode;title.classList.add('renaming');title.setAttribute('role','textbox');title.setAttribute('aria-label','Название упражнения');title.setAttribute('enterkeyhint','done');
+   pencil.innerHTML=icon('check');pencil.setAttribute('aria-label','Готово');pencil.dataset.editing='1';title.focus();const range=document.createRange();range.selectNodeContents(title);const sel=getSelection();sel.removeAllRanges();sel.addRange(range);};
+  const close=()=>{if(!pencil.dataset.editing)return;const name=title.textContent.replace(/\s+/g,' ').trim().slice(0,max);input.value=name||before;title.textContent=input.value;input.dispatchEvent(new Event('input',{bubbles:true}));
+   title.contentEditable='false';title.classList.remove('renaming');title.removeAttribute('role');title.removeAttribute('aria-label');pencil.innerHTML=icon('pencil-simple');pencil.setAttribute('aria-label','Переименовать упражнение');delete pencil.dataset.editing;closedAt=Date.now();};
   pencil.onclick=()=>{if(pencil.dataset.editing)close();else if(Date.now()-closedAt>400)open();};   // «Готово» после ухода фокуса не открывает поле заново
-  edit.addEventListener('input',fit);
-  edit.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();close();}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();edit.value=before;close();}});
-  edit.addEventListener('blur',close);
+  title.addEventListener('keydown',e=>{if(!pencil.dataset.editing)return;if(e.key==='Enter'){e.preventDefault();close();}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();title.textContent=before;close();}});
+  title.addEventListener('blur',close);
  }
  // 3. «Добавить» from the library: where to add and the button first, the setup folded below.
  if(form.dataset.scope==='add'){
