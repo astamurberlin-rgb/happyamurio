@@ -124,6 +124,11 @@ section('Силуэт');   // макет «Что изменилось» (Sport 
  check('усиленная разница не уходит за 0,7–1,35 от «сейчас»',H.drawnPast(now,past({waist:300}),3).waist===now.waist*1.35&&H.drawnPast(now,past({waist:10}),3).waist===now.waist*0.7);
  check('нет пары замеров — разницы нет',drawn({},3)===H.bodyPath(now)&&H.bodyPath(H.girths({}))===H.bodyPath(H.girths({},null)));
  check('парные замеры — среднее левой и правой, одна сторона — она сама',H.girths({bicepsL:34,bicepsR:36}).biceps===35&&H.girths({thighR:60}).thigh===60);
+ const base={neck:39,shoulders:121,chest:103,bicepsL:36,bicepsR:36,forearmL:29.5,forearmR:29.5,waist:82,hips:97,thighL:58.5,thighR:58.5,calfL:38,calfR:38};
+ const shape=v=>H.bodyPath(H.girths(v)),moved=[['neck'],['shoulders'],['chest'],['bicepsL','bicepsR'],['forearmL','forearmR'],['waist'],['hips'],['thighL','thighR'],['calfL','calfR']]
+  .filter(keys=>{const low={...base},high={...base};for(const k of keys){low[k]=base[k]*0.85;high[k]=base[k]*1.15}return shape(low)===shape(base)||shape(high)===shape(base)}).map(k=>k[0]);
+ check('каждый обхват меняет фигуру в обе стороны — и плечи, и грудь',moved.length===0,moved);
+ check('недостающий обхват — в масштабе остальных: у крупного человека без замера бедра ноги не худые',H.girths({shoulders:126,chest:115}).thigh>H.girths({}).thigh&&H.girths({}).thigh===58.5);
  check('пустые и крайние замеры не дают нечисловых координат',![H.girths({}),H.girths({waist:1,hips:1,chest:1,shoulders:1}),H.girths({waist:500,hips:500,chest:500,shoulders:500,bicepsL:500})].some(m=>/NaN|Infinity/.test(H.bodyPath(m))));
 }
 
