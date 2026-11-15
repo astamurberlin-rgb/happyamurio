@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 const read=name=>fs.readFileSync(new URL('../'+name,import.meta.url),'utf8');
 const html=read('src/app.template.html'),built=read('index.html');
-assert.match(html,/<title>Happy Sport · Update 43\.1<\/title>/);
+assert.match(html,/<title>Happy Sport · Update 43\.2<\/title>/);
 for(const policy of ["form-action 'none'","worker-src 'none'","frame-src 'self'","connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co"])assert.ok(html.includes(policy),policy);
 assert.ok(html.indexOf('id="seed-data"')<html.indexOf('__BOOT__')&&html.indexOf('id="sport-app-source"')<html.indexOf('__BOOT__'),'приложение запускается после входа и хранилища');
 assert.doesNotMatch(built,/readonly-guard|SportReadOnlyTest|auth_readonly_hd_cloud_v1|auth-readonly-happy-sport-prototype-v1|sportStorage|SportProfiles/,'прежние стражи, ячейки и журнал прототипа не попадают в сборку');
@@ -31,4 +31,4 @@ assert.match(box.innerHTML,/name="email"/);assert.match(box.innerHTML,/name="pas
  assert.ok(built.includes("asked.get('workout')")&&built.includes("detailId=workoutId;goto('detail')"),'ссылка на тренировку открывает её');
  assert.ok(built.includes("asked.get('exercise')")&&built.includes('showExercise(exerciseId)'),'ссылка на упражнение открывает его');
  assert.ok(app.length>0);}
-console.log('PASS clean shell: Update 43.1 title and page rules, start after shared sign-in and storage, no former guards or prototype journal, one status line under the account, appearance saved on the device, workout and exercise links open them.');
+console.log('PASS clean shell: Update 43.2 title and page rules, start after shared sign-in and storage, no former guards or prototype journal, one status line under the account, appearance saved on the device, workout and exercise links open them.');

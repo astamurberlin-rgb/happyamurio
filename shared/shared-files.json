@@ -185,6 +185,15 @@
       "divergent": true,
       "frozenRoot": true,
       "todo": "meal-26 отличается"
+    },
+    {
+      "name": "happy-input.js",
+      "reference": "shared/happy-input.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
     }
   ]
 }

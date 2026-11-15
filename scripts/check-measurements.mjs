@@ -115,13 +115,16 @@ section('Сравнение и выгрузка');
  check('CSV: текст, похожий на формулу, обезврежен',rows[2].includes('"\'=1+1"')&&rows[0].includes('Дополнительное поле: custom'));
 }
 
-section('Схема тела');
+section('Силуэт');   // макет «Что изменилось» (Sport 43.2, Day 59.2, Meal 32.2): обхваты меняют ширину, кости неизменны
 {
- const one=(v,b)=>H.bodyPath(v,b,1),three=(v,b)=>H.bodyPath(v,b,3);
- check('без изменения замера усиление ничего не меняет',one({waist:93},{waist:93})===three({waist:93},{waist:93}));
- check('изменение замера усиливается',one({waist:91.5},{waist:98})!==three({waist:91.5},{waist:98}));
- check('нет пары замеров — разницы нет',one({},{waist:98})===three({},{waist:98})&&three({waist:90},{})===three({},{}));
- check('пустые замеры не дают нечисловых координат',!/NaN|Infinity/.test(three({},{})));
+ const now=H.girths({waist:91.5,hips:100}),past=v=>H.girths(v,now);
+ const drawn=(v,k)=>H.bodyPath(H.drawnPast(now,past(v),k));
+ check('без изменения замера усиление ничего не меняет',drawn({waist:91.5,hips:100},1)===drawn({waist:91.5,hips:100},3)&&drawn({waist:91.5,hips:100},3)===H.bodyPath(now));
+ check('изменение замера усиливается',drawn({waist:98},1)!==drawn({waist:98},3)&&H.drawnPast(now,past({waist:98}),3).waist>H.drawnPast(now,past({waist:98}),1).waist);
+ check('усиленная разница не уходит за 0,7–1,35 от «сейчас»',H.drawnPast(now,past({waist:300}),3).waist===now.waist*1.35&&H.drawnPast(now,past({waist:10}),3).waist===now.waist*0.7);
+ check('нет пары замеров — разницы нет',drawn({},3)===H.bodyPath(now)&&H.bodyPath(H.girths({}))===H.bodyPath(H.girths({},null)));
+ check('парные замеры — среднее левой и правой, одна сторона — она сама',H.girths({bicepsL:34,bicepsR:36}).biceps===35&&H.girths({thighR:60}).thigh===60);
+ check('пустые и крайние замеры не дают нечисловых координат',![H.girths({}),H.girths({waist:1,hips:1,chest:1,shoulders:1}),H.girths({waist:500,hips:500,chest:500,shoulders:500,bicepsL:500})].some(m=>/NaN|Infinity/.test(H.bodyPath(m))));
 }
 
 if(existsSync(new URL('../sport-42/sport/src/sport-docs.js',import.meta.url))){

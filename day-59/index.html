@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Day">
 <link rel="preload" href="./fonts/mplus-rounded-1c-bold-latin-cyrillic.woff" as="font" type="font/woff" crossorigin>
-<title>Happy Day · Update 59.1</title>
+<title>Happy Day · Update 59.2</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -1006,7 +1006,7 @@ a.btn{display:inline-block;text-decoration:none}
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
 <link rel="stylesheet" href="./selfcare.css?v=51.14-test">
 <link rel="stylesheet" href="./arc-motion.css?v=1.0">
-<script defer src="./arc-motion.js?v=59.1"></script>
+<script defer src="./arc-motion.js?v=59.2"></script>
 <script defer src="./arc-home.js?v=1.0"></script>
 <link rel="stylesheet" href="./section-wheel.css?v=51.14-test">
 <style id="day-settings-structure">/* Update 54: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
@@ -1046,7 +1046,7 @@ a.btn{display:inline-block;text-decoration:none}
 #happy-appearance-dialog .ha-error{background:var(--ha-glass);color:var(--ha-ink);font-weight:700}
 #happy-appearance-dialog #happy-appearance-help,#happy-appearance-dialog legend{background:var(--ha-glass);padding:8px 10px;border-radius:10px}
 </style>
-<link rel="stylesheet" href="./shared/happy-measurements.css?v=59.1">
+<link rel="stylesheet" href="./shared/happy-measurements.css?v=59.2">
 </head>
 <body class="loading">
 
@@ -1281,7 +1281,7 @@ a.btn{display:inline-block;text-decoration:none}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="59.1" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 59</div><small>Обновлено 14.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="59.2" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 59</div><small>Обновлено 14.11.2026</small></footer>
     </section>
   </div>
 
@@ -1372,18 +1372,19 @@ a.btn{display:inline-block;text-decoration:none}
 <div class="toast" id="toast"></div>
 
 <!-- Day 59: общий вход, общий модуль хранения и обмена, общие файлы витрины; затем запуск и раскладка Day. -->
-<script src="./shared/happy-account.js?v=59.1"></script>
-<script src="./shared/happy-store.js?v=59.1"></script>
-<script src="./shared/happy-account-ui.js?v=59.1"></script>
-<script src="./shared/happy-app-links.js?v=59.1"></script>
-<script src="./shared/happy-sport-summary.js?v=59.1"></script>
-<script src="./shared/happy-food.js?v=59.1"></script>
-<script src="./shared/happy-measurements.js?v=59.1"></script>
-<script src="./day-docs.js?v=59.1"></script>
-<script src="./day-data.js?v=59.1"></script>
+<script src="./shared/happy-account.js?v=59.2"></script>
+<script src="./shared/happy-input.js?v=59.2"></script>
+<script src="./shared/happy-store.js?v=59.2"></script>
+<script src="./shared/happy-account-ui.js?v=59.2"></script>
+<script src="./shared/happy-app-links.js?v=59.2"></script>
+<script src="./shared/happy-sport-summary.js?v=59.2"></script>
+<script src="./shared/happy-food.js?v=59.2"></script>
+<script src="./shared/happy-measurements.js?v=59.2"></script>
+<script src="./day-docs.js?v=59.2"></script>
+<script src="./day-data.js?v=59.2"></script>
 
-<script src="counters.js?v=59.1"></script>
-<script src="./selfcare-core.js?v=59.1"></script>
+<script src="counters.js?v=59.2"></script>
+<script src="./selfcare-core.js?v=59.2"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
 .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px}
@@ -1396,15 +1397,17 @@ a.btn{display:inline-block;text-decoration:none}
 .happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}
 .happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:#5c4598;font-weight:600}
 .happy-journal-content[hidden],.day-measurements[hidden]{display:none!important}
+/* Day 59.2: над журналом переключатель «Журнал · Замеры тела» — крупного заголовка «Журнал» под ним нет, дата справа */
+.happy-journal-content>.top{justify-content:flex-end}
 .day-measurements{padding-bottom:24px}</style>
-<script id="hd-app-links-adapter" src="./app-links.js?v=59.1"></script>
+<script id="hd-app-links-adapter" src="./app-links.js?v=59.2"></script>
 <script src="./energy-widget.js?v=50.14"></script>
-<script src="./shared/release-notes.js?v=59.1"></script>
-<script src="./release-notes.js?v=59.1"></script>
-<script src="./shared/happy-links.js?v=59.1"></script>
-<script src="./shared/happy-settings-developer.js?v=59.1"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 59.1')}catch(e){}</script>
-<script src="./selfcare-ui.js?v=59.1"></script>
+<script src="./shared/release-notes.js?v=59.2"></script>
+<script src="./release-notes.js?v=59.2"></script>
+<script src="./shared/happy-links.js?v=59.2"></script>
+<script src="./shared/happy-settings-developer.js?v=59.2"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 59.2')}catch(e){}</script>
+<script src="./selfcare-ui.js?v=59.2"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════
    Day 59: дневник хранится и обменивается только через общий модуль (shared/happy-store.js; запуск и запись —
@@ -2313,8 +2316,8 @@ function renderTapSheet(){
       '<span class="tpAmt">+'+(o.x.n||1)+'</span>'+
       (lock?'':'<button class="minusBtn" data-tdel="'+o.i+'" aria-label="Снять нажатие">'+MINI+'</button>')+'</div>';
   }).join(''):'<p class="note">За этот день нажатий нет.</p>';
-  h+='<div class="askRow">'+(lock?'':'<button class="btn" data-tadd>Добавить нажатие</button>')+
-     '<button class="btn solid" data-tclose>Готово</button></div>';
+  /* Day 59.2: нажатие добавляют «+» на самом счётчике; в списке только время, «−» и «Готово» (Астамур 15.11.2026) */
+  h+='<div class="askRow"><button class="btn solid" data-tclose>Готово</button></div>';
   document.getElementById('tapSheet').innerHTML=h;
 }
 (function(){
@@ -2325,7 +2328,6 @@ function renderTapSheet(){
     if(inp){ if(!inp.disabled&&inp.showPicker) try{inp.showPicker()}catch(_){} return }
     var b=ev.target.closest('button'); if(!b) return;
     if(b.hasAttribute('data-tclose')) closeTaps();
-    else if(b.hasAttribute('data-tadd')) tapAdd(TAPK);
     else if(b.dataset.tdel!=null){
       if(lockGuard()) return;
       var e=day(curDate), a=(e.taps||{})[TAPK]; if(!a) return;
@@ -5575,7 +5577,7 @@ function renderAll(){
   setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
 })();
 </script>
-<script src="./day-measurements.js?v=59.1"></script>
+<script src="./day-measurements.js?v=59.2"></script>
 <script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
 (function(root){
  'use strict';

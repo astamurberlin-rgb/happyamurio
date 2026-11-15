@@ -66,6 +66,19 @@ ok('нажатие: номер с названием приложения; в з
  assert.deepEqual(taps.map(t=>[t.cid,t.date]),[['c2',DAY],['c1',PREV]],'годные нажатия по времени записи');
 });
 
+ok('правка времени нажатия: то же нажатие с новым временем и приёмом пищи по нему; время то же — приём не трогается',()=>{
+ const v=tap('c2',DAY).value,id=JSON.stringify([v.cid,v.date,v.at,v.item.fid,v.item.q,v.item.u,v.item.g,v.item.counterFood]);
+ const late=F.retime(v,'19:30');
+ assert.deepEqual([late.item.t,late.item.sec],['19:30','dn']);assert.equal(v.item.t,'16:50','исходное нажатие не меняется');
+ assert.equal(JSON.stringify([late.cid,late.date,late.at,late.item.fid,late.item.q,late.item.u,late.item.g,late.item.counterFood]),id,'счётчик, день, момент нажатия и порция те же');
+ assert.deepEqual(['06:00','11:00','16:00','21:00','23:59'].map(t=>F.retime(v,t).item.sec),['am','pm','dn','sn','sn']);
+ const none=F.retime(v,null);assert.deepEqual([none.item.t,none.item.sec],[null,'pm'],'без времени — как в полдень');
+ assert.equal(F.retime(v,'не время').item.t,null);
+ const moved={...v,item:{...v.item,sec:'sn'}};assert.equal(F.retime(moved,'16:50').item.sec,'sn','время не изменилось — приём, поправленный в Meal, остаётся');
+ assert.equal(F.taps([{id:'day-r',value:late}]).length,1,'поправленное нажатие — годное');
+ assert.equal(F.eaten(summary({[DAY]:{k:46.64,cs:{'day-r':[46.64,0.7,0.26,10.12,1.58]}}}),DAY,F.taps([{id:'day-r',value:late}]),list(),'day').k,46.64,'«съедено» не меняется: нажатие то же');
+});
+
 ok('порция — вес × состав на 100 г из самого нажатия; у старого нажатия — из счётчика; без состава её считает Meal',()=>{
  const t=tap('c2',DAY);
  assert.deepEqual(F.serving(t.value,list()).map(x=>Math.round(x*1000)/1000),[46.64,0.704,0.264,10.12,1.584]);
@@ -193,4 +206,4 @@ assert.match(dayHtml,/<script src="\.\/shared\/happy-food\.js\?v=[\d.]+"><\/scri
 assert.ok(dayHtml.indexOf('./shared/happy-food.js')<dayHtml.indexOf('./day-data.js')&&dayHtml.indexOf('./shared/happy-food.js')<dayHtml.indexOf('src="counters.js'),'общий файл — раньше кода Day');
 assert.equal(await readFile(new URL(dayDir+'/shared/happy-food.js',root),'utf8'),await readFile(new URL('shared/happy-food.js',root),'utf8'));
 passed++;
-console.log('Витрина питания: '+passed+' проверок пройдено (сводка Meal и счётчики читаются по одной записи; нажатие несёт продукт и порцию; «съедено»: прибавить непосчитанное, не удвоить посчитанное, вычесть снятое и перенесённое, не трогать чужое и решённое Meal).');
+console.log('Витрина питания: '+passed+' проверок пройдено (сводка Meal и счётчики читаются по одной записи; нажатие несёт продукт и порцию; правка времени нажатия меняет приём пищи; «съедено»: прибавить непосчитанное, не удвоить посчитанное, вычесть снятое и перенесённое, не трогать чужое и решённое Meal).');

@@ -324,8 +324,8 @@
   },
   {
    "path": "index.html",
-   "size": 602004,
-   "sha256": "bf6838f6640527cb7820c2609bac56e0333e2b414e7a9dccea2fd4315fe6071a"
+   "size": 602059,
+   "sha256": "ec2fb8cd6c7346df7380cf74e46861ae80bd07b424effe5dbfd9f89f5b74d016"
   },
   {
    "path": "manifest.webmanifest",
@@ -494,8 +494,8 @@
   },
   {
    "path": "meal-measurements.js",
-   "size": 2234,
-   "sha256": "2996b9fcee5821c54ab255db013f7b95941149cf44d6a3cc35f203e72e3c2f87"
+   "size": 2549,
+   "sha256": "365b802e890a511d57f6625e443134c7a0729123b6dd52013ee1737aa6e9b899"
   },
   {
    "path": "portions.js",
@@ -509,8 +509,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 37113,
-   "sha256": "3ac2a9f3a0b2f00b5dbbb94668f54c02ed0f496253043fc2eb181769939118d1"
+   "size": 38204,
+   "sha256": "3e556526ff39a81210557f2c934997d800096182461b5dc7b4a111b6e7ab368e"
   },
   {
    "path": "report.css",
@@ -564,13 +564,18 @@
   },
   {
    "path": "shared/happy-food.js",
-   "size": 16862,
-   "sha256": "4375133d3b8c7ea8592ce925df05b011546dfe8298c0395b546a7730aecb879d"
+   "size": 18082,
+   "sha256": "7825ff2f8bf42b571e6edcb57c3771c72eb4aae97c6ba26c04f2591b51ccd6b0"
   },
   {
    "path": "shared/happy-gradients.js",
    "size": 6546,
    "sha256": "d6cac534f3d0cdfa9c5ed3c1d67f10e6d4212c99fbffecd72346b3e3cf510c61"
+  },
+  {
+   "path": "shared/happy-input.js",
+   "size": 1810,
+   "sha256": "faaff4eec98970e3c29b9ae6b3db8fbfb25174a32736ec1aa5ded66925acd49d"
   },
   {
    "path": "shared/happy-links.js",
@@ -579,13 +584,13 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 9784,
-   "sha256": "015f76632055b69e4b0077afad046ca99482925d39e0f609946813f6496482c6"
+   "size": 11066,
+   "sha256": "21b24d86fae2d45105db7dc3cba190cd208d57e47646dbcc7e6c2d458aad469b"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 27737,
-   "sha256": "c300b19d42f782b43f11f695f26e9d6666145e1f1cd65f1521db9af5a9d0d438"
+   "size": 39859,
+   "sha256": "44681ababda07b31b66c8dcf7f03ae01478a98842db4208bb363885affd539d6"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -675,7 +680,7 @@
   {
    "path": "sw.js",
    "size": 3459,
-   "sha256": "738e987a6a40b14079f6ff11a331c525fdb60ffc12ff31b0ed837b15878c0c6b"
+   "sha256": "ec0780073d671c62b7fb2308f50a7332d1f650407724d5384633f763a3075477"
   },
   {
    "path": "usda.js",

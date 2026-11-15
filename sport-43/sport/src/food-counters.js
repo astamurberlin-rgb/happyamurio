@@ -67,17 +67,16 @@ if(SportData.signedIn()){
 }
 if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();   // кольцо нарисовано раньше, чем загрузился этот файл
 
-/* Нажатия за день — как в Day (лабратория 15.11.2026, задача «поправить время каждого нажатия»). Нажал на название
+/* Sport 43.2 · нажатия за день — как в Day (решение Астамура в лаборатории 15.11.2026, задача «поправить время каждого нажатия»). Нажал на название
    счётчика — лист снизу (время — видимое поле в пилюле: прозрачное поле поверх на iPhone не открывалось): время каждого нажатия за выбранный день; время можно поправить, лишнее — снять. Добавляют нажатие
    только «+» на самом счётчике (Астамур 15.11.2026).
    Свои счётчики Sport: время — поле t нажатия ('ЧЧ:ММ'); у прежних нажатий без t время берётся из момента нажатия,
-   если нажимали в тот же день. Счётчики еды Meal: правка — то же нажатие с новым item.t и приёмом пищи item.sec (как
-   при нажатии: до 11 — завтрак, до 16 — обед, до 21 — ужин, позже — перекус), в документе приложения, где нажали;
-   номер нажатия не меняется, число на счётчике тоже. */
+   если нажимали в тот же день. Счётчики еды Meal: правка — то же нажатие с новым временем и приёмом пищи по нему
+   (HappyFood.retime, shared/happy-food.js), в документе приложения, где нажали; номер нажатия не меняется, число на
+   счётчике тоже. */
 const SportTaps=(()=>{
  let open=null;   // id счётчика, чей лист открыт
  const pad=n=>String(n).padStart(2,'0');
- const secOf=t=>{const h=t?Number(t.slice(0,2)):12;return h<11?'am':h<16?'pm':h<21?'dn':'sn'};
  const isFood=id=>id.indexOf(SportFood.PREFIX)===0;
  function eventTime(e){
   if(typeof e.t==='string'&&/^\d\d:\d\d$/.test(e.t))return e.t;
@@ -118,8 +117,8 @@ const SportTaps=(()=>{
    const tap=SportFood.taps().find(x=>x.id===key);if(!tap)return;
    const doc=tap.app==='sport'?SportData.store.doc(HappyFood.TAPS_NAME):SportData.store.shared(tap.app,HappyFood.TAPS_NAME);
    if(doc.newer){fail({code:'newer'});return}
-   const {id:_,app:__,...value}=tap;value.item=Object.assign({},value.item,{t:t||null,sec:secOf(t)});
-   doc.put(key,value).catch(fail);
+   const {id:_,app:__,...value}=tap;
+   doc.put(key,HappyFood.retime(value,t)).catch(fail);
   }else{
    const c=(state.customCounters||[]).find(c=>c.id===id),e=c&&(c.events||[]).find(e=>e.id===key);if(!e)return;
    e.t=t||null;persist();

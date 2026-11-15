@@ -163,7 +163,7 @@ function auditLibraryFilters(){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action="library-filters"]');if(!b)return;e.stopImmediatePropagation();auditFiltersOpen=!auditFiltersOpen;render();},true);
 
 // 13. Counters look like in Day and Meal: a card «Счётчики», rows «название — минус, число, плюс», «Новый счётчик».
-// Лаборатория 15.11.2026: название — кнопка, как в Day: открывает нажатия за день с правкой времени (SportTaps, food-counters.js).
+// Sport 43.2 (лаборатория 15.11.2026): название — кнопка, как в Day: открывает нажатия за день с правкой времени (SportTaps, food-counters.js).
 // No explanations. While there is no counter yet, an example «Вода» stands in; its first «+» creates it for real.
 sportFoodHTML=function(){
  const rows=[...sportMealCounters(),...(state.customCounters||[])];   // счётчики еды Meal, показанные в Sport, и свои счётчики Sport (food-counters.js)

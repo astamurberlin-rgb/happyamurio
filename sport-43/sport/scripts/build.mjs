@@ -48,7 +48,8 @@ const dataTransfer=await read('src/data-transfer.js');
 const sportDocs=await read('src/sport-docs.js'),sportData=await read('src/sport-data.js'),sportSignIn=await read('src/sport-signin.js');
 // Sport 43: форматы витрины — общие файлы: сводка и плановые занятия, замеры тела, свитчи связи.
 // Лаборатория (ветка sport-lab-43, 15.11.2026): вместо sport-boot.js — lab-boot.js: вход «Лаборатория», без сервера, пример данных.
-const boot=[await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),await readShared('happy-food.js'),sportDocs,await read(LAB?'src/lab-boot.js':'src/sport-boot.js')].join('\n');
+// Sport 43.2: рамка выбора только с клавиатуры и без полос прокрутки — общий файл shared/happy-input.js, один для трёх приложений.
+const boot=[await readShared('happy-input.js'),await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),await readShared('happy-food.js'),sportDocs,await read(LAB?'src/lab-boot.js':'src/sport-boot.js')].join('\n');
 const accountUI=await readShared('happy-account-ui.js')+(LAB?'\n'+await read('src/lab-head.js'):'');
 // Лаборатория: адреса соседей уже вписаны сборкой — apps.json с сайта не запрашивается.
 const happyLinks=(await readShared('happy-links.js')).replace(LAB?'if(!root.fetch||!root.document)':'\0',()=>'if(true)'),releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await read('src/release-notes.js'),templatePicker=await read('src/template-picker.js');
@@ -78,7 +79,7 @@ const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappi
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 43.1'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 43.2'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
@@ -88,7 +89,7 @@ try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:tru
 const labBar=`<style>:root{--lab-h:30px}html{scroll-padding-top:var(--lab-h)}body{padding-top:var(--lab-h)}.current-bar{top:var(--lab-h)}
 #lab-bar{position:fixed;top:0;left:0;right:0;z-index:90;height:var(--lab-h);padding:5px 12px 0;background:#23466f;color:#fff;font:600 11px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:center;box-shadow:0 2px 10px #0003}
 #lab-bar b{display:block;font-size:11.5px;letter-spacing:.2px;line-height:20px}</style>
-<div id="lab-bar" role="note"><b>Лаборатория · Sport 43.1 · не настоящее приложение</b></div>`;
+<div id="lab-bar" role="note"><b>Лаборатория · Sport 43.2 · не настоящее приложение</b></div>`;
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
   .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+measurementsCss+measurementsScreenCss+'\n</style>')
