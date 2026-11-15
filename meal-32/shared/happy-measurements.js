@@ -201,13 +201,19 @@ function bodyPath(m,frame){
  const f=frame||m,fsw=(f.shoulders*0.392)/2,fcw=(f.chest*0.335)/2;
  const J=P(Math.min(20.5,Math.max(11.5,16+(fsw-121*0.392/2)*0.8)),37),t1=(22+Math.min(7,Math.max(-5,0.9*(fcw-103*0.335/2))))*R,t2=24*R,t3=21*R,U=33.5,F=27,Hd=18.9,W=U+F;
  const A1=P(J.x+U*Math.sin(t1),J.y+U*Math.cos(t1)),A2=P(A1.x+F*Math.sin(t2),A1.y+F*Math.cos(t2)),A3=P(A2.x+Hd*Math.sin(t3),A2.y+Hd*Math.cos(t3));
- const dOut=Math.max((sw-J.x-4*Math.sin(t1))/Math.cos(t1),bw*1.02+0.3),ew=0.36*bw+0.42*fw+0.45;
+ /* Плечо снаружи (дельта): чем шире плечи при тех же костях, тем оно толще. Сверх руки плечо выступает мягко — до 1,2 как
+    есть, дальше вполовину слабее, — а полнота уходит вниз по руке плавным спуском: у полного человека плечо и рука
+    меняются вместе, без «подплечников» (Астамур, 15.11.2026, сравнение ×3). У обычной фигуры ничего не меняется. */
+ const armBase=bw*1.02+0.3,ex=Math.max(0,(sw-J.x-4*Math.sin(t1))/Math.cos(t1)-armBase);
+ const dOut=armBase+(ex<=1.2?ex:1.2+(ex-1.2)*0.45),full=Math.min(1,Math.max(0,(ex-1.2)/3)),dl=dOut-bw,ew=0.36*bw+0.42*fw+0.45;
+ const down=(usual,smooth)=>usual+(smooth-usual)*full;   // обычный спуск плеча к руке → плавный, по мере полноты
+ const lift=Math.max(0,dOut-armBase-1.2),capA=dOut*(0.56-0.05*full),capB=dOut*(0.9-0.07*full);   // полное плечо — круглее, линия от шеи выше
  const onArm=(s,o)=>P(J.x+s*Math.sin(t1)+o*Math.cos(t1),J.y+s*Math.cos(t1)-o*Math.sin(t1));
  const chestCap=J.x+0.834*dOut-3,cwv=cw<=chestCap?cw:chestCap+(cw-chestCap)*0.35;
- const torso=sym([P(0,26.8),P(nw+0.2,26.9),P(nw+(J.x-nw)*0.33,28.5),P(nw+(J.x-nw)*0.71,30.6),onArm(-3.2,dOut*0.56),onArm(0,dOut*0.9),P(cwv+1.4,41),P(cwv+0.5,47),
+ const torso=sym([P(0,26.8),P(nw+0.2,26.9),P(nw+(J.x-nw)*0.33,28.5-0.3*lift),P(nw+(J.x-nw)*0.71,30.6-0.45*lift),onArm(-3.2,capA),onArm(0,capB),P(cwv+1.4,41),P(cwv+0.5,47),
   P(cwv*0.995,53),P(lerp(cwv,ww,0.55),61),P(ww,69.5),P(ww-0.8,76),P(ww-2.2,82),P(3.5,86),P(0,86.4)]);
- const arm=tube([J,A1,A2,A3],[[-3.2,dOut*0.56,2.5],[0,dOut*0.9,4],[4,dOut,bw*0.88],[9,0.6*dOut+0.4*bw*1.02,bw*0.95],[14,bw,bw*0.98],[19.5,bw*1.03,bw*1.05],
-  [26,bw*0.9,bw*0.88],[U,ew,ew*0.95],[U+4.5,fw*1.04,fw*0.96],[U+9,fw,fw*0.98],[U+16,fw*0.8,fw*0.8],
+ const arm=tube([J,A1,A2,A3],[[-3.2,capA,2.5],[0,capB,4],[4,dOut,bw*0.88],[9,down(0.6*dOut+0.4*bw*1.02,dOut-0.3*dl),bw*0.95],[14,down(bw,dOut-0.6*dl),bw*0.98],
+  [19.5,down(bw*1.03,Math.max(bw*1.03,dOut-0.82*dl)),bw*1.05],[26,down(bw*0.9,bw*0.9+0.1*dl),bw*0.88],[U,ew,ew*0.95],[U+4.5,fw*1.04,fw*0.96],[U+9,fw,fw*0.98],[U+16,fw*0.8,fw*0.8],
   [W,2.75,2.6],[W+3.5,3.15,3.25],[W+8.5,3.3,3.0],[W+13,2.85,2.55],[W+16.5,2.05,1.8],[W+Hd-0.6,0.9,0.8]],1.0,0.6);
  const L0=P(9.2,89),L1=P(10,129),L2=P(10.8,171.6),T=dist(L0,L1),S=dist(L1,L2),kw=0.36*tw+0.24*cc+0.6;
  /* Таз и ноги (15.11.2026, по замечаниям Астамура): снаружи одна плавная линия от талии через бёдра к колену — без
