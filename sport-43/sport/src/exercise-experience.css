@@ -2,7 +2,7 @@
 .active-workout>.current-bar{position:static;top:auto;flex:0 0 auto;margin:0;padding:12px;border:1px solid var(--line);border-radius:19px;background:rgba(31,168,231,.91);backdrop-filter:blur(18px);z-index:auto;box-shadow:none}
 .active-panel>.panel-body{padding-top:8px}
 .exercise-card-heading h3{flex:1;min-width:0}.exercise-collapse{display:flex;align-items:center;gap:9px;text-align:left;font:inherit;color:inherit;background:none;width:100%;padding:3px 0;min-height:38px}
-.collapse-chevron{font-size:17px;color:#ffffffa6;transition:transform .15s}.is-collapsed .collapse-chevron{transform:rotate(-90deg)}.collapsed-exercise-count{display:block;color:var(--muted);font-size:12px;margin-top:-10px}
+
 .exercise-heading-tools{display:flex;gap:5px;flex:none}.exercise-heading-tools .exercise-technique{width:30px!important;min-width:30px!important;height:34px!important}.exercise-heading-tools .icon{width:23px!important;height:23px!important}
 .exercise-content[hidden],#exercise-config-form [hidden]{display:none!important}
 .active-workout .set-row{grid-template-columns:repeat(var(--set-fields),minmax(0,1fr)) repeat(var(--set-controls,1),var(--set-control));justify-content:end;gap:7px}

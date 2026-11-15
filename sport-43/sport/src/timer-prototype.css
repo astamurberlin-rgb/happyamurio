@@ -69,21 +69,6 @@ body.exercise-player-open #sport-fab .icon{width:26px;height:26px;fill:currentCo
 .exercise-clock-fab{left:calc(20px + (100% - 102px) * var(--timer-fab-x,0));right:auto;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 .exercise-clock-fab:active{cursor:grabbing}
 
-/* One full-width entry point for each exercise that records time. */
-.timed-exercise-widget{position:relative;isolation:isolate;display:flex;align-items:center;width:100%;min-height:68px;margin:15px 0 18px;padding:10px;gap:12px;overflow:hidden;border:1px solid #ffffff80;border-radius:24px;background:var(--sport-rest-green);color:#fff;box-shadow:inset 0 1px 0 #ffffff26,0 5px 18px #154b4720}
-.timed-exercise-progress{position:absolute;inset:0;z-index:0;background:#ffffff1f;clip-path:inset(0 calc(100% - var(--timed-progress,0%)) 0 0);pointer-events:none}
-.timed-exercise-widget button{position:relative;z-index:1;margin:0;color:inherit;background:none;box-shadow:none}
-.timed-exercise-toggle{display:grid;place-items:center;flex:none;width:44px;height:44px;min-height:44px;padding:10px;border:1px solid #ffffff80;border-radius:14px}
-.timed-exercise-toggle .icon{width:24px;height:24px;fill:currentColor;stroke:none}
-.timed-exercise-open{display:flex;align-items:center;flex:1;min-width:0;gap:10px;min-height:44px;padding:0;border:0;text-align:left}
-.timed-exercise-open>.icon{flex:none;width:25px;height:25px}
-.timed-exercise-open>.clock-outline{fill:none;stroke:currentColor}
-.timed-exercise-open>span:not(.timed-exercise-chevron){display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-.timed-exercise-open small{font-size:10px;line-height:1.2;color:#fff}
-.timed-exercise-open strong{font-size:25px;font-weight:500;line-height:1.15;letter-spacing:-.4px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.timed-exercise-chevron .icon{display:block;width:17px;height:17px}
-.timed-exercise-widget button:focus-visible{outline:2px solid #fff;outline-offset:3px}
-
 /* Four curved corner tabs occupy the space around the circular scale. */
 .exercise-player .player-tab-face{position:relative;width:100%;aspect-ratio:.96;min-height:0;margin:6px auto 24px}
 .exercise-player .player-tab-face>.player-dial{position:absolute;left:50%;top:50%;width:calc((100% - var(--player-axis)) * 1.2254901960784314);height:auto;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
@@ -137,7 +122,7 @@ body.exercise-player-open #sport-fab .icon{width:26px;height:26px;fill:currentCo
 .exercise-player .player-history-table .player-history-current input{color:#405183;border-bottom-color:#40518366}
 .exercise-player .player-history-table .player-distance-field input{height:30px;min-height:30px;font-size:14px;text-align:right}
 .player-history-missing{opacity:.5}
-@media(max-width:360px){.exercise-player{--player-axis:100px}.exercise-player .player-corner-bottom-left>span{font-size:26px;left:8px}.exercise-player .player-corner-bottom-right>span{right:8px;gap:5px}.exercise-player .player-corner-bottom-right small{font-size:12px}.exercise-player .player-corner-top-left>span{left:8px}.exercise-player .player-corner-top-right>span{right:8px}.exercise-player .player-round-row{font-size:17px}.exercise-player .player-round-row>.player-row-name{font-size:16px}.timed-exercise-widget{gap:8px;padding:8px}.timed-exercise-open{gap:7px}.timed-exercise-open strong{font-size:23px}}
+@media(max-width:360px){.exercise-player{--player-axis:100px}.exercise-player .player-corner-bottom-left>span{font-size:26px;left:8px}.exercise-player .player-corner-bottom-right>span{right:8px;gap:5px}.exercise-player .player-corner-bottom-right small{font-size:12px}.exercise-player .player-corner-top-left>span{left:8px}.exercise-player .player-corner-top-right>span{right:8px}.exercise-player .player-round-row{font-size:17px}.exercise-player .player-round-row>.player-row-name{font-size:16px}}
 /* Metrics next to the exercise title, shared with the clock. */
 .exercise-card-heading{align-items:flex-start!important;gap:10px}
 .exercise-name-info{display:flex;align-items:flex-start;gap:3px;flex:1;min-width:0}
@@ -187,3 +172,17 @@ button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:n
 .tap-remove{display:grid;place-items:center;width:30px;height:30px;margin-left:4px;border-radius:50%;background:#ffffff26;border:1px solid #ffffff59;color:#fff}
 .tap-remove svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 .tap-actions{display:flex;gap:9px;margin-top:16px}.tap-actions .button{flex:1}
+/* −30 / +30 по бокам цифр перерыва (Астамур, 15.11.2026): цифры и обе кнопки — одна группа между паузой и «Завершить».
+   Раньше «+30 секунд» появлялся только в конце перерыва, мелко под цифрами. */
+.floating-rest-pill>.floating-rest-mid{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;height:48px}
+.floating-rest-mid>.floating-rest-clock{position:static!important;transform:none!important;flex:none!important;width:auto!important;min-width:0!important;height:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:0!important}
+.floating-rest-mid .floating-rest-clock .sport-metric-input input{width:4.6ch!important}
+/* Цифры, −30, +30, пауза и «Завершить» — на одной средней линии; «Перерыв» — мельче, над цифрами, и не сдвигает их
+   (Астамур, 15.11.2026 16:03). */
+.floating-rest-mid>.floating-rest-clock{position:relative!important}
+.floating-rest-mid>.floating-rest-clock>span:first-child{position:absolute!important;left:50%!important;bottom:100%!important;top:auto!important;right:auto!important;transform:translateX(-50%)!important;margin:0 0 1px!important;font-size:10px!important;line-height:12px!important;opacity:.9}
+.floating-rest-step{box-sizing:border-box;flex:none;display:grid;place-items:center;width:44px;min-width:44px;height:44px;min-height:44px;padding:0 0 2px;border:0;border-radius:22px;background:none;color:#fff;font-size:30px;font-weight:300;line-height:1}
+.floating-rest-step:disabled{opacity:.3}
+/* без линии под цифрами — ни в покое, ни при вводе (Астамур, 15.11.2026 16:06) */
+.floating-rest-mid .floating-rest-clock .sport-metric-input,.floating-rest-mid .floating-rest-clock .sport-metric-input:focus-within{border-bottom:0!important;box-shadow:none!important}
+@media(max-width:360px){.floating-rest-mid{gap:0}.floating-rest-step{width:40px;min-width:40px}}

@@ -30,3 +30,24 @@ if(typeof showWorkoutForm==='function'){
   toast('Тренировка сохранена в журнале',()=>{if(state.active)return;state.workouts=state.workouts.filter(w=>w.id!==before.id);state.active=before;persist();goto('active');});
  };
 }
+
+/* Пункт 2 (Астамур 15.11.2026): шапка тренировки при прокрутке уезжает вверх, а у конца страницы опускается сверху и снова
+   видна — там «Завершить», нижней карточки «Завершить тренировку» нет. Ушёл от конца вверх — шапка снова на своём месте. */
+let workoutBarRevealed=false; // после перерисовки шапка остаётся на месте без повторного «опускания»
+function clearWorkoutBarReveal(box){const bar=box?.querySelector(':scope>.current-bar');box?.classList.remove('bar-revealed','bar-still');if(box)box.style.height='';if(bar){bar.style.left='';bar.style.top='';bar.style.width='';}}
+function updateWorkoutBarReveal(){
+ const box=document.querySelector('.active-workout .workout-overview'),bar=box?.querySelector(':scope>.current-bar');if(!bar){workoutBarRevealed=false;return;}
+ // Тренировка прокручивается внутри листа (.panel-body); без листа — сама страница.
+ const sc=box.closest('.panel-body')||document.scrollingElement||document.documentElement,page=sc===document.scrollingElement||sc===document.documentElement;
+ const top=page?0:sc.getBoundingClientRect().top,left=sc.scrollHeight-sc.scrollTop-sc.clientHeight,shown=box.classList.contains('bar-revealed');
+ const show=box.getBoundingClientRect().bottom<top&&left<=(workoutBarRevealed?96:4);
+ if(show===shown)return;
+ if(!show){clearWorkoutBarReveal(box);workoutBarRevealed=false;return;}
+ // У листа есть сдвиг (transform) — тогда «fixed» считается от листа, а не от экрана.
+ const sheet=box.closest('.panel-screen'),base=sheet&&getComputedStyle(sheet).transform!=='none'?sheet.getBoundingClientRect():{left:0,top:0},r=bar.getBoundingClientRect();
+ box.style.height=box.offsetHeight+'px';bar.style.left=(r.left-base.left)+'px';bar.style.top=(top-base.top+8)+'px';bar.style.width=r.width+'px';
+ box.classList.toggle('bar-still',workoutBarRevealed);box.classList.add('bar-revealed');workoutBarRevealed=true;
+}
+document.addEventListener('scroll',updateWorkoutBarReveal,{capture:true,passive:true});
+window.addEventListener('resize',()=>{clearWorkoutBarReveal(document.querySelector('.workout-overview.bar-revealed'));workoutBarRevealed=false;updateWorkoutBarReveal();},{passive:true});
+{const renderBeforeBarReveal=render;render=function(){const out=renderBeforeBarReveal.apply(this,arguments);updateWorkoutBarReveal();return out;};}

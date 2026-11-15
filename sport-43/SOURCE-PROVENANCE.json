@@ -1,10 +1,10 @@
 {
   "app": "Happy Sport",
-  "update": "43.2",
+  "update": "43.3",
   "source_release": "sport-42 (Happy Sport · Update 42)",
   "source_commit": "26f10dc3aac5a842ae359c3ab479a6d1726358d0",
   "github_pages_url": "https://astamurberlin-rgb.github.io/happyamurio/sport-43/",
-  "agreed_by_owner": "2026-11-15 01:12, in chat: every app signs in and out on its own again (decision of 09.11.2026 restored), the account and its records stay shared. Earlier: 2026-11-14 15:37, in chat: stage 3 of the shared sign-in, storage and exchange task (Day moves to the shared module). Astamur approved the plan: body measurements become one shared document and one shared screen for Day, Meal and Sport (shared/happy-measurements.js); link switches become one shared document; Sport publishes planned workouts for Day; documents carry a format number. Sport 43 is published together with Day 59 and Meal 32, only by his word.",
+  "agreed_by_owner": "2026-11-15 23:51, in chat: release in this chat everything accepted in the Sport lab (steps 8–32), Day and Meal with the shared measurement screen; published only by the word «выпускай». Earlier: 2026-11-15 01:12, in chat: every app signs in and out on its own again (decision of 09.11.2026 restored), the account and its records stay shared. Earlier: 2026-11-14 15:37, in chat: stage 3 of the shared sign-in, storage and exchange task (Day moves to the shared module). Astamur approved the plan: body measurements become one shared document and one shared screen for Day, Meal and Sport (shared/happy-measurements.js); link switches become one shared document; Sport publishes planned workouts for Day; documents carry a format number. Sport 43 is published together with Day 59 and Meal 32, only by his word.",
   "icon_library": "/happyamurio/assets/sport-icons/v1/",
   "exercise_library": {
     "schema": "happy.exercise-library.v1",
@@ -107,8 +107,8 @@
     },
     {
       "path": "index.html",
-      "size": 982039,
-      "sha256": "566650976cba46634ac0c8c502c69adfd5ce82997cdd4fbf80e154335d96aff7"
+      "size": 1075261,
+      "sha256": "4bbde97992769f21d65661445286f687d3e8736318a2ed1beca387cf8b1daf85"
     },
     {
       "path": "manifest.webmanifest",
@@ -133,12 +133,12 @@
     {
       "path": "scripts/build-preview.mjs",
       "size": 2419,
-      "sha256": "cacc8f2d80d227a52e9e2aa41966e5792aa27c11bae4f2fde1e9c9e13adb601e"
+      "sha256": "bcc09f5c66fa9c36e981fdee6a73fde5bc25fbc38f86d26871f62de2a99db778"
     },
     {
       "path": "scripts/build-release.mjs",
       "size": 498,
-      "sha256": "ac3109ae2b04be30caf98ac0cd8928cd88269083c6dac97c8bd3916eab716168"
+      "sha256": "8199b2dd2b492f605c5809ad625e1fa60316465c7208cf604b639a8ac020f100"
     },
     {
       "path": "scripts/check-families.mjs",
@@ -153,12 +153,12 @@
     {
       "path": "scripts/verify-release.mjs",
       "size": 1535,
-      "sha256": "d7693536afc86dc2fcbd686b23ce8350e9378c6c8267dc9be95f65af4882035d"
+      "sha256": "789fd41eeb4be78223269cb8c42ecd256c8c80eedbf3c9e991f5b146bd4d9542"
     },
     {
       "path": "scripts/write-provenance.mjs",
-      "size": 3236,
-      "sha256": "ce39dfc6ba6932c0116eca812a370389fe05d77e3394405750e1029b45273404"
+      "size": 3856,
+      "sha256": "d7d58311e8e6f8683ce4c8b7b88ae2d0b936a26bc4ba899fce649ae75f0855ce"
     },
     {
       "path": "shared/apps.json",
@@ -217,8 +217,8 @@
     },
     {
       "path": "shared/happy-measurements.js",
-      "size": 39859,
-      "sha256": "44681ababda07b31b66c8dcf7f03ae01478a98842db4208bb363885affd539d6"
+      "size": 45078,
+      "sha256": "df2f9bb92b7b66357bc06da716eabbe67a24cda07ea0e39e3234516bde2e301b"
     },
     {
       "path": "shared/happy-reference-themes.js",
@@ -272,18 +272,18 @@
     },
     {
       "path": "sport/scripts/build.mjs",
-      "size": 13611,
-      "sha256": "51789e48a233d173950fe336137dd3abddcf8e6c173a82b9702b40916bbe4bcb"
+      "size": 14523,
+      "sha256": "b43e75bb0948ff817b4d0b7185d9a70627b4d37a75e7b827b2ea2c4d4d120f16"
     },
     {
       "path": "sport/scripts/check-clean-shell.mjs",
       "size": 4512,
-      "sha256": "7fa1cae11dd3488d4498b8b9a6feb1d319c6df547555ec8a7ba6397cd259f40a"
+      "sha256": "05aaf78eaf4c17da786fac16479bcdee471f0a8142fb45672ffae2b0d4af84cd"
     },
     {
       "path": "sport/scripts/check-countdown.mjs",
-      "size": 3824,
-      "sha256": "f80bea6681b0bb7b0070a509e53ab7d143417c7b45bada8954c6b8c815b0290d"
+      "size": 4776,
+      "sha256": "eddfb3bf585c3d375e0a734aaeff2fadfedef8bb4c692a4b472e3313bbcbaebe"
     },
     {
       "path": "sport/scripts/check-energy.mjs",
@@ -327,23 +327,23 @@
     },
     {
       "path": "sport/scripts/check-player-controls.mjs",
-      "size": 8537,
-      "sha256": "668a25849ebe057cbef427d2824a7cbf35123ec475671e5e08bd0d5c5cf7eb80"
+      "size": 8533,
+      "sha256": "1a9061a78a4b2f8d550546ef6b5ff71200bf92178196e904cf9b0938b5393fdb"
     },
     {
       "path": "sport/scripts/check-quick-value-input.mjs",
-      "size": 3218,
-      "sha256": "d5c3f4fa5a929707429e9307b22a3cd5e85805da396ea8c57a268071a1f4236b"
+      "size": 4425,
+      "sha256": "589b2ba668db446e288e5da9af48b5f0b899d0d747c4a02b4a24460afd4d99d6"
     },
     {
       "path": "sport/scripts/check-rest-pill.mjs",
-      "size": 3623,
-      "sha256": "2fad7fb09a78b30aa967af907bf4a9302ecbc15677280f932cc06ac4957c0ab4"
+      "size": 5531,
+      "sha256": "a3fd1c98be664b999b1558e88251edbc1ce3e7015bf6451c893c2ad43b92123b"
     },
     {
       "path": "sport/scripts/check-rest.mjs",
-      "size": 2299,
-      "sha256": "dff24d9c4ed94b30e06a90a264217a96ca2ab09ff43724c1506eb605244f8e59"
+      "size": 3173,
+      "sha256": "afca97d0642d802b0b5299726735bddca8396bd2fd9bd70caa6ce30bc0fd41de"
     },
     {
       "path": "sport/scripts/check-schedule-catalog.mjs",
@@ -387,8 +387,8 @@
     },
     {
       "path": "sport/scripts/check-timed-exercise.mjs",
-      "size": 9402,
-      "sha256": "c95528eaec9831b4ca6f1c43c7e0abafbafd4f178a65d55cef6eb2201e212731"
+      "size": 9770,
+      "sha256": "9bc49acee992aaff978e21d3cf4d298a376975283fc8e7fb071ae1b99d036763"
     },
     {
       "path": "sport/scripts/check-timer-action-wheel.mjs",
@@ -407,8 +407,8 @@
     },
     {
       "path": "sport/scripts/check-timer-prototype.mjs",
-      "size": 5205,
-      "sha256": "1a2ef466de701726341dcc5485aa43be26d5e057b0792df5e8a9685f3cb5be97"
+      "size": 5465,
+      "sha256": "11051b38f056b8d743e13c739e8ffc9bc103229a7dc287e73219030acd585d86"
     },
     {
       "path": "sport/scripts/check-transfer.mjs",
@@ -417,13 +417,13 @@
     },
     {
       "path": "sport/scripts/check-workout-interactions.mjs",
-      "size": 28319,
-      "sha256": "5b18ade76411b459906a70782f852079d88d4a0c58bc21c5c360dce6356dee82"
+      "size": 28717,
+      "sha256": "05875b71aa66fe6823f50fc3f7bd898e4f68cad6cf4bf03c0f626d1a1ad776ea"
     },
     {
       "path": "sport/scripts/check-workout-ui-consistency.mjs",
-      "size": 27217,
-      "sha256": "73c6022d0b922968f52567ea517377db7e7ddfc648cff8310fcfe39d3b3c161b"
+      "size": 27964,
+      "sha256": "fb971cc7221f0ba151052248f6ae4ac9b250fc468beb94a540f3575a83566bcf"
     },
     {
       "path": "sport/scripts/check.mjs",
@@ -482,33 +482,33 @@
     },
     {
       "path": "sport/src/app.js",
-      "size": 62004,
-      "sha256": "e5b147d0f79c2b8fe578f45353e3772d03ac0caa31e6edd04e6d6f89281242d9"
+      "size": 61603,
+      "sha256": "f461c8328dfdcec590071ef2b79aacb66c9337b0fed11ba8b4728cb14c57be6f"
     },
     {
       "path": "sport/src/app.template.html",
       "size": 21689,
-      "sha256": "3110a4e9e0c1c757c1537496f8d985876002a9d00f84a88771a3de0ce8a6828b"
+      "sha256": "dbc22436f9c7354afc2a11d1da7666f2b76dd36cd4f680d8c49540edcf3f0871"
     },
     {
       "path": "sport/src/audit-simplify.css",
-      "size": 8236,
-      "sha256": "c881736172b74faa3c36facab999e1b4e43d7f8a10327f946b69204ab8e8fb9f"
+      "size": 10059,
+      "sha256": "c5a94a3cb90fe5ee8cb4626308a1a07633955e3bf119e0841a0a24df979cabb9"
     },
     {
       "path": "sport/src/audit-simplify.js",
-      "size": 17129,
-      "sha256": "40e86b1594d06597e31ee8851fff7f3a7350c3a4383c8e85669b167edb18798c"
+      "size": 30987,
+      "sha256": "8f82e3a49c42c041348bb076a8f781823cbb9429f3f11077cc99ad3109a8b430"
     },
     {
       "path": "sport/src/catalog-groups.js",
-      "size": 13661,
-      "sha256": "733c7ad743ae19f080f84d3fb6cb4024d082df524c0c973a76e18f4fc3097944"
+      "size": 14772,
+      "sha256": "40033600ea9309688c07328ca160d8768cece583d89ebcd1be065190ed8691ab"
     },
     {
       "path": "sport/src/data-transfer.js",
       "size": 11366,
-      "sha256": "c2efca1daefeda7dbae36cfead6af98a1ae8f1a51ead877e5fd4f65976481ad0"
+      "sha256": "160d8e797c71daf6cebe1f9431cd2f9ee26f1ace635f07fe2084a0b5e16e1edd"
     },
     {
       "path": "sport/src/dock-shape.js",
@@ -527,13 +527,13 @@
     },
     {
       "path": "sport/src/exercise-config.js",
-      "size": 28879,
-      "sha256": "50a17950f83ff680f69e2cab2be068111f7ef0fcc9859dc10f8a6642b2d4566e"
+      "size": 28860,
+      "sha256": "cbd2e86130cd862605b82f715bd1cea49614164ab7d6aee71fa2d3babd147270"
     },
     {
       "path": "sport/src/exercise-context.css",
-      "size": 1047,
-      "sha256": "713ad87baab190676d6ec0e3b3ef687b5a0946ba65d97a54162c6b9eef37874d"
+      "size": 1660,
+      "sha256": "a9d665f29d470dff635896a08c81f64a08e13457d5a5a3e40796c6cd94218298"
     },
     {
       "path": "sport/src/exercise-context.js",
@@ -542,8 +542,8 @@
     },
     {
       "path": "sport/src/exercise-experience.css",
-      "size": 26120,
-      "sha256": "a4d62cce6547ebfd102e57fc880b89c5774091e838259e8250244cb384499dbd"
+      "size": 25897,
+      "sha256": "fe5690e851d12217d23ff4a436a017cae9383692f5f935fdc5dbb9aabc21d697"
     },
     {
       "path": "sport/src/exercise-families.js",
@@ -552,13 +552,13 @@
     },
     {
       "path": "sport/src/exercise-history.js",
-      "size": 6284,
-      "sha256": "72053bbe655bdf37544b2e5053505761e10788b64d58425b7db6e5081bb79f60"
+      "size": 6487,
+      "sha256": "a36f7879c9369a220b810aa5f5befd8bb8c17e753b9db5bc3e5db52ab1850de3"
     },
     {
       "path": "sport/src/exercise-player.js",
-      "size": 44417,
-      "sha256": "937cb5d7295a20c7b79b96b96d83a67aa8b8296cfa43dd3f96b060f3d8d585b2"
+      "size": 41914,
+      "sha256": "16ab4f220cf5b677ab9dd99b5f2a1a1596d347a8547c8a1198d28bd7ed6fae4d"
     },
     {
       "path": "sport/src/exercises/pull-up.html",
@@ -572,8 +572,8 @@
     },
     {
       "path": "sport/src/free-timer.js",
-      "size": 15314,
-      "sha256": "66b3cb334259a21e26ced111a84bb18c23adb4b9c1766d55ef55f0bebb7e8ea3"
+      "size": 15357,
+      "sha256": "8707fe113b68a8f93d6f298f340a2e630fe0cbb646cc4d3c577bc89149728c2d"
     },
     {
       "path": "sport/src/icon-studio-bridge.js",
@@ -582,8 +582,8 @@
     },
     {
       "path": "sport/src/library-v2.js",
-      "size": 15739,
-      "sha256": "5449b374f81ff0f4de3da7f6ce4326a8a50088f1b5abf308adcf003febacb642"
+      "size": 15920,
+      "sha256": "8167b5cbdba1328f4bd1601bd344d25ce01521287c9471f4e55185df88722494"
     },
     {
       "path": "sport/src/manifest.webmanifest",
@@ -602,13 +602,13 @@
     },
     {
       "path": "sport/src/metric-field.css",
-      "size": 13958,
-      "sha256": "40b0b3117ab52eba2a9026a3335bd36a105238c422328543123a46f6af4c1adb"
+      "size": 14531,
+      "sha256": "37d1af219557925cd42660d41190d8c4bc21d8977901492ee2e77fcc9e2d0e17"
     },
     {
       "path": "sport/src/metric-field.js",
-      "size": 1170,
-      "sha256": "3cb76f59e50dc543e85ae101c0f2bcf502fae910d5979299aabb94dd7f22d03c"
+      "size": 1312,
+      "sha256": "674d55f5268018db1dddd7bfa354026c4da4cfff2bd0ca5d7180137be2a880a7"
     },
     {
       "path": "sport/src/nav-icons.json",
@@ -617,23 +617,23 @@
     },
     {
       "path": "sport/src/plan-fact.js",
-      "size": 9018,
-      "sha256": "d3e1f3be0d9aab5e27f1d7b23d14a46c877ad6598be4ef5074d6877d7e6cc211"
+      "size": 9062,
+      "sha256": "f3872e668353d4b574f683ddde011bebd35a467b4350900493865b3c78974bbf"
     },
     {
       "path": "sport/src/planning.js",
-      "size": 21132,
-      "sha256": "a1a5d1245d92536a668369cb4a2fd98081f7fe951362ea16c4e8e5cd53b69424"
+      "size": 21773,
+      "sha256": "b638d0586dfeb638ac6611af64c095b6421bbcf01a6eeddc74d1f9bf3528ae8b"
     },
     {
       "path": "sport/src/quick-value-input.js",
-      "size": 2444,
-      "sha256": "3e339abd522530e755b36bfcef069829aba1ec186ffddbbe3dd5a6299967b538"
+      "size": 6779,
+      "sha256": "4e6a51be3962a5b4d109951d70c4b010a3bb6db972fa3bfeb77b34d5672e8101"
     },
     {
       "path": "sport/src/refinements.css",
-      "size": 44093,
-      "sha256": "2bbba3b53fdaf93e0ebb481fbb1d865cd35fc670f7a0838245f20446bd8a0240"
+      "size": 43926,
+      "sha256": "1c887c0585bfc6ba9e0024363c1ed4ee1aad7e8ff8c6dc46ea50c5d953551b2c"
     },
     {
       "path": "sport/src/refinements.js",
@@ -642,13 +642,13 @@
     },
     {
       "path": "sport/src/release-notes.js",
-      "size": 34589,
-      "sha256": "f00878afbe8dacb42a497cad00a00872fe746e5b8ffa58bc64e54d83085fdabc"
+      "size": 38579,
+      "sha256": "77686bcabf421e4edb886da1d39790a80508da43e6aec89c5aa2802b833e1e30"
     },
     {
       "path": "sport/src/rest-pill.js",
-      "size": 12978,
-      "sha256": "666b9dc5e23d5962e46f6092560bd105dd317662d9aff30aaa6bcddeb357edcd"
+      "size": 14589,
+      "sha256": "48cd3ea3933495e781b753feb297d74f73bcfa2e3612eed7f1c69bb43481bce9"
     },
     {
       "path": "sport/src/schedule-calendar.js",
@@ -662,18 +662,28 @@
     },
     {
       "path": "sport/src/set-countdown.js",
-      "size": 8139,
-      "sha256": "648ad2a2bcb8331f983eacb141e1688a578ed17457682dfae1092fce3b8f26c1"
+      "size": 8922,
+      "sha256": "61398142c55ddcad08bed217e88c124b1ce9d5680eb35a83191891e6b7343df9"
+    },
+    {
+      "path": "sport/src/set-line.css",
+      "size": 9984,
+      "sha256": "81a5b00dd0dd485fec749aa77a77fe6ef7e657b16dd28550f5ad4b6875a422cb"
+    },
+    {
+      "path": "sport/src/set-line.js",
+      "size": 22973,
+      "sha256": "ee3403ee8b649e89b99432c69f7a67da01386d60c7ab304eb73326eec2cbd08e"
     },
     {
       "path": "sport/src/set-plan.js",
-      "size": 11668,
-      "sha256": "f9419e46494e4b4bfe42cdb517d5a483eacc65142fad131bd9882b816326230b"
+      "size": 11658,
+      "sha256": "528938a7b4c87ac91a811b89465024ed7d12c5acfd8f81abf988972d78fbe3c1"
     },
     {
       "path": "sport/src/set-rest.js",
-      "size": 3667,
-      "sha256": "b7252c0b8a265c8cfb32c5f05beefe386051b4917f2749d3262decd9d53865bc"
+      "size": 3698,
+      "sha256": "188d8a31c6e95827747a4501beacd2909150404ecf8bde4566cccd9f573f66a2"
     },
     {
       "path": "sport/src/set-swipe.js",
@@ -682,8 +692,8 @@
     },
     {
       "path": "sport/src/set-time.js",
-      "size": 1458,
-      "sha256": "7e107e9b8e293cec447d30000aedcfd621a5ed83215b18126c3b97460df730d2"
+      "size": 1466,
+      "sha256": "2fc2bdc994e096492ef91c67862f031aecd049fffaf83f31a44a48d8083a5911"
     },
     {
       "path": "sport/src/settings-layout.css",
@@ -716,6 +726,16 @@
       "sha256": "ead4c11da378aa65672bd9561d717f872351693ce8505933a0ebc21a0ed899b7"
     },
     {
+      "path": "sport/src/sport-journal.css",
+      "size": 3120,
+      "sha256": "546e37aa61dd5a32973d22f36c6157b0540cda6f470932d036537472a2eca90c"
+    },
+    {
+      "path": "sport/src/sport-journal.js",
+      "size": 14131,
+      "sha256": "d9c1f598cf350e1def94f045486ca912f8c62dd52ae452e142d247e534028069"
+    },
+    {
       "path": "sport/src/sport-signin.js",
       "size": 1931,
       "sha256": "e3f694be6fb070fe7e812013dfffc693014a51a146c06e05e6cce0c1ac7b4662"
@@ -736,6 +756,16 @@
       "sha256": "113931735b9f2a80fc05b5615b3c3fd40a10c5e772dc3ecd1da54af2a1306c39"
     },
     {
+      "path": "sport/src/template-editor.css",
+      "size": 1309,
+      "sha256": "e87bf26dcbcff9e9e74bbbc597965d749cfc4062b78ac34ff505af8a03ae27dd"
+    },
+    {
+      "path": "sport/src/template-editor.js",
+      "size": 6814,
+      "sha256": "0340fe6b85867b20baf8c135acdf54917f9578d2355956ae64f3db5fa0243a92"
+    },
+    {
       "path": "sport/src/template-picker.js",
       "size": 5977,
       "sha256": "9ebb7eb5fca70289a1209cff729bafe62f83eefdca729ca4021ed5bb26e6a3cd"
@@ -752,8 +782,8 @@
     },
     {
       "path": "sport/src/timer-prototype.css",
-      "size": 24719,
-      "sha256": "1a544fe190e67852b9cf63b45923e50335f7f884e202a8a90f4417b86abfe060"
+      "size": 25076,
+      "sha256": "cfd51d7d8ed59da15904a78668d28fd57c0fe1922d616cfaba7e71e364d3bb42"
     },
     {
       "path": "sport/src/workout-identity.js",
@@ -762,8 +792,8 @@
     },
     {
       "path": "sport/src/workout-interactions.js",
-      "size": 7071,
-      "sha256": "5990bccd835cca3e050fc229d6101b24fd4b69bfcc0af6e0d45c4a98b3ac63f1"
+      "size": 9716,
+      "sha256": "ca18d3e93f6a7eb0660007154c405d6d0b7ba59e49608a57b88260bd44f98d13"
     },
     {
       "path": "sport/src/workout-pause.js",

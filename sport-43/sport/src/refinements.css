@@ -11,7 +11,7 @@ html,body{scrollbar-width:none}body::-webkit-scrollbar{display:none}.date-pill s
 
 .panel-screen.entering{animation:panel-enter .25s cubic-bezier(.2,.8,.25,1)}
 @media(max-width:370px){.energy-legend{margin:12px 0 8px;gap:12px}.energy-layout{min-height:150px}.metrics{gap:13px}}
-.create-workout{justify-content:center;border:1.5px dashed #ffffff80;border-radius:24px;background:transparent;min-height:72px}.create-workout .icon{width:24px;height:24px}.journal-actions{display:flex;justify-content:flex-end;margin:16px 0 8px}.plan-fields{margin-top:22px;padding-top:16px;border-top:1px solid #ffffff40}.plan-toggle{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:600;margin-bottom:16px}.plan-toggle input{width:20px;height:20px;accent-color:#685ad7}.plan-share{display:grid;gap:10px;margin-top:16px}.plan-note{white-space:pre-wrap;font-size:13px;line-height:1.6}.plan-card .sub{margin-top:6px}.plan-copy{width:100%;min-height:220px;margin-bottom:16px}#plan-inputs[hidden]{display:none}
+.create-workout{justify-content:center;border:1.5px dashed #ffffff80;border-radius:24px;background:transparent;min-height:72px}.create-workout .icon{width:24px;height:24px}.journal-actions{display:flex;justify-content:flex-end;margin:16px 0 8px}.plan-fields{margin-top:22px;padding-top:16px;border-top:1px solid #ffffff40}.plan-share{display:grid;gap:10px;margin-top:16px}.plan-note{white-space:pre-wrap;font-size:13px;line-height:1.6}.plan-card .sub{margin-top:6px}.plan-copy{width:100%;min-height:220px;margin-bottom:16px}#plan-inputs[hidden]{display:none}
 
 .empty-plan{font-size:13px;color:var(--muted);margin:0 3px 6px;line-height:1.5}
 

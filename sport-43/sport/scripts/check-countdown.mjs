@@ -20,9 +20,18 @@ assert.equal(runInContext("countdownRemaining(state.active.countdown,'2026-10-25
 assert.equal(runInContext("countdownRemaining(state.active.countdown,'2026-10-25T13:00:00')",c),0,'No negative time after backgrounding');
 runInContext('onSetMarked(0,0,false)',c);
 assert.equal(c.state.active.countdown,null,'Undoing check cancels its rest');
+c.state.active.exercises[0].sets.push({seconds:120,done:false});
 runInContext('onSetMarked(0,1,true)',c);
 assert.equal(c.state.active.countdown.si,1,'Marking a set creates its own default rest');
 assert.equal(c.state.active.countdown.duration,60);
+// Пункт 8 (15.11.2026): после последнего подхода тренировки перерыв не запускается и в запись не попадает.
+runInContext("state.active.exercises[0].sets[2].done=true;onSetMarked(0,2,true)",c);
+assert.equal(c.state.active.countdown,null,'No rest after the last set of the workout; the running rest stops');
+assert.equal(c.state.active.exercises[0].sets[2].restActualSeconds,0,'The record gets no rest after the last set');
+runInContext("state.active.exercises[0].sets[0].done=state.active.exercises[0].sets[1].done=true;onSetMarked(0,1,true)",c);
+assert.equal(c.state.active.countdown,null,'No rest either when the marked set was the last one left open');
+c.state.active.exercises[0].sets.pop();
+for(const set of c.state.active.exercises[0].sets){set.done=false;delete set.restDone;delete set.restActualSeconds;}
 runInContext("startSetCountdown('rest',0,0);removeSetRest(0,0)",c);
 assert.equal(c.state.active.countdown,null,'Removing active rest stops its timer');
 assert.equal(c.state.active.exercises[0].sets[0].seconds,120,'Countdown never overwrites prescribed duration');

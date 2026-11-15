@@ -1,7 +1,7 @@
 /* Lab 10.11.2026 18:50 · Аудит интерфейса, решения «Да» (номера — как на странице аудита). Loaded last. */
 /* 9. Bottom of the workout: «Добавить упражнение», note, «Завершить тренировку». The rest is in «⋯». */
 .active-workout>[data-action="save-template"],.active-workout>.discard-active{display:none!important}
-.workout-finish-card>p,.workout-finish-card>small{display:none!important}
+
 .workout-more{flex:none;width:44px;height:44px;margin-left:auto;margin-right:8px;display:grid;place-items:center;border-radius:50%;border:1px solid #ffffff55;background:#ffffff1c;color:#fff}
 .workout-overview .current-bar{gap:0}
 /* 3. «Добавить» from the library: destination and button first, setup folded. */
@@ -9,10 +9,15 @@
 .add-more,.metrics-fold{margin-top:14px;border-top:1px solid #ffffff30;padding-top:4px}
 .add-more>summary,.metrics-fold>summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer}
 .metrics-fold>.metric-switches{margin-top:6px}
-/* 4. Rename: a pencil beside the heading. */
-.rename-exercise{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:none;border:0;color:#fff}
+/* 4. Переименование: карандаш сразу после текста названия; при правке карандаш прячется, ✓ нет, курсор в конце текста без выделения и линии (15.11.2026 18:58). */
+.sheet-top:has(.rename-exercise){display:block;position:relative}
+.sheet-top h2.rename-title{display:inline;outline:none}
+.sheet-top h2.rename-title.renaming{caret-color:#fff;-webkit-user-select:text;user-select:text}
+.rename-exercise{display:inline-grid;place-items:center;vertical-align:middle;width:44px;height:44px;margin:-8px 0 -6px 4px;padding:0;border-radius:50%;background:none;border:0;color:#fff}
 .rename-exercise .icon{width:20px;height:20px;fill:currentColor}
-.sheet-top:has(.rename-exercise){display:flex;align-items:flex-start;gap:4px}
+.rename-exercise[hidden]{display:none}
+.sheet-top:has(.rename-exercise):has(.favorite-star){padding-right:52px}
+.sheet-top:has(.rename-exercise) .favorite-star{position:absolute;right:0;top:0}
 /* 6. Home schedule: link to the rest. */
 .schedule-more{display:block;width:100%;min-height:44px;text-align:center;font-size:13px;font-weight:650}
 /* 18. One schedule row on a workout card. */
@@ -85,3 +90,17 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 #page>.journal-switch{gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;margin:8px 0 20px}
 #page>.journal-switch button{font-size:14px;font-weight:400;padding:10px 8px;color:inherit;box-shadow:none}
 #page>.journal-switch button.selected{background:#fffffff0;color:#5c4598;font-weight:600;box-shadow:none}
+/* «Добавить упражнение»: поиск и круглая кнопка фильтров, как в Библиотеке (15.11.2026) */
+.picker-search-row{margin-bottom:10px}
+#picker-filters .library-filter-box,#template-picker-filters .library-filter-box{margin:0 0 12px}
+#picker-filters .library-filters,#template-picker-filters .library-filters{margin:0}
+#picker-results .library-count{margin:4px 2px 10px}
+/* Точки на кнопке фильтров нет: открыт фильтр — кнопка белая, и всё (Астамур, 15.11.2026 16:26) */
+.library-filter-toggle.has-active::after{content:none}
+/* Семейство в окне выбора: пилюли вариантов под карточкой (15.11.2026) */
+.picker-variants{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-2px 2px 8px}
+.picker-variants>small{flex-basis:100%;margin:0 2px;font-size:12px;opacity:.8}
+.picker-variant{min-height:40px;padding:8px 14px;border-radius:20px;border:1px solid #ffffff66;background:#ffffff1f;color:#fff;font-size:14px;font-weight:600}
+/* «Начать тренировку» внизу карточки, под расписанием (15.11.2026) */
+.card-start{margin-top:18px}
+.card-start .sheet-actions{margin-top:0}

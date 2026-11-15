@@ -8,6 +8,9 @@ function countdownButton(kind,ei,si,name){const t=matchingCountdown(kind,ei,si),
 function renderSetTimer(s,ei,si,name){return `<span class="set-timer-cell">${countdownButton('set',ei,si,name)}</span>`}
 function captureRestActual(t,at=(typeof playerNow==='function'?playerNow():localNow())){if(t?.kind!=='rest')return;const s=state.active?.exercises[t.ei]?.sets[t.si];if(s)s.restActualSeconds=(t.restElapsedBefore||0)+countdownElapsed(t,at);}
 function startSetCountdown(kind,ei,si,at=(typeof playerNow==='function'?playerNow():localNow())){const e=state.active?.exercises[ei],s=e?.sets[si];if(!s)return false;const duration=kind==='rest'?setRestSeconds(s):Math.round(Number(s.seconds||0));if(!Number.isFinite(duration)||duration<0||(kind==='rest'&&duration===0))return false;if(typeof pauseExercisePlayer==='function'&&!(kind==='rest'&&state.active.exercisePlayer?.independent))pauseExercisePlayer(at);captureRestActual(state.active.countdown,at);if(typeof restWidgetSelection!=='undefined')restWidgetSelection=null;if(typeof restWidgetHidden!=='undefined')restWidgetHidden=null;if(kind==='rest'){s.restDone=false;delete s.restActualSeconds;}else s.timerTargetSeconds=duration;state.active.countdown={kind,ei,si,duration,stopwatch:kind==='set'&&duration===0,startedAt:at,elapsed:0,running:true,finished:false};return true}
+/* Пункт 8 (Астамур 15.11.2026): после последнего подхода тренировки перерыв не запускается и в запись не попадает.
+   Последний — последний подход последнего упражнения или подход, после которого неотмеченных не осталось. */
+function isLastWorkoutSet(ei,si){const list=state.active?.exercises||[],e=list[ei];if(!e)return false;if(ei===list.length-1&&si===e.sets.length-1)return true;return list.every((x,i)=>x.sets.every((set,j)=>set.done||i===ei&&j===si));}
 function onSetMarked(ei,si,done,at=(typeof playerNow==='function'?playerNow():localNow())){
   const ex=state.active?.exercises[ei],s=ex?.sets[si];if(!s)return false;
   const player=state.active.exercisePlayer;
@@ -15,6 +18,7 @@ function onSetMarked(ei,si,done,at=(typeof playerNow==='function'?playerNow():lo
   const t=state.active.countdown;captureRestActual(t,at);if(t&&t.ei===ei&&t.si===si)state.active.countdown=null;
   s.restDone=false;delete s.restActualSeconds;
   if(!done)return true;
+  if(isLastWorkoutSet(ei,si)){if(state.active.countdown?.kind==='rest')state.active.countdown=null;s.restActualSeconds=0;s.restDone=true;return true;}
   if(setRestSeconds(s)==null){const candidates=[ex.defaultRestSeconds,state.lastRestSeconds,60].map(Number);s.restSeconds=Math.min(3600,Math.max(1,Math.round(candidates.find(n=>Number.isFinite(n)&&n>0))));}
   const next=ex.sets[si+1];if(next&&!next.done&&Number.isFinite(s.weight)&&!next.weightEdited)next.weight=s.weight;
   return startSetCountdown('rest',ei,si,at);

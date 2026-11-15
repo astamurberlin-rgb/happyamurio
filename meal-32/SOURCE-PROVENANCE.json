@@ -324,8 +324,8 @@
   },
   {
    "path": "index.html",
-   "size": 602059,
-   "sha256": "ec2fb8cd6c7346df7380cf74e46861ae80bd07b424effe5dbfd9f89f5b74d016"
+   "size": 601911,
+   "sha256": "e7bb2a596041f04c9ccb5d1181ffba84482b3447199fc713a387dc6a3038bcb0"
   },
   {
    "path": "manifest.webmanifest",
@@ -509,8 +509,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 38204,
-   "sha256": "3e556526ff39a81210557f2c934997d800096182461b5dc7b4a111b6e7ab368e"
+   "size": 38996,
+   "sha256": "5ec800f8eb810a31387c9c077a3464ba2f2b960a129b68a6c6584d225c095db3"
   },
   {
    "path": "report.css",
@@ -589,8 +589,8 @@
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 39859,
-   "sha256": "44681ababda07b31b66c8dcf7f03ae01478a98842db4208bb363885affd539d6"
+   "size": 45078,
+   "sha256": "df2f9bb92b7b66357bc06da716eabbe67a24cda07ea0e39e3234516bde2e301b"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -680,7 +680,7 @@
   {
    "path": "sw.js",
    "size": 3459,
-   "sha256": "ec0780073d671c62b7fb2308f50a7332d1f650407724d5384633f763a3075477"
+   "sha256": "8f41d44d882040a5fc40e70ea91d95e694a54ee7991471fa74347323c61dabd5"
   },
   {
    "path": "usda.js",

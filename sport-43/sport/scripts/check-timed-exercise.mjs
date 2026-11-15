@@ -26,20 +26,18 @@ const run=code=>runInContext(code,c),plain=x=>JSON.parse(JSON.stringify(x));run(
 function click(action){const b={dataset:{action,ei:'0'}},event={target:{closest:()=>b},preventDefault(){},stopImmediatePropagation(){this.stopped=true;}};for(const fn of handlers.click){fn(event);if(event.stopped)break;}}
 function change(dataset,value,checked){const target={dataset,value,checked};for(const fn of handlers.change)fn({target});return target;}
 
+// Sport 43.3 (решение Астамура 15.11.2026, пункт 4): зелёной плашки таймера над подходами нет — ▶ стоит в строке подхода,
+// большой таймер открывается кнопкой «Большой таймер» в «Настроить». Здесь — что большой таймер запускается и ставится на паузу.
 const card=run('activeExercise(state.active.exercises[0],0)');
-assert.match(card,/data-timed-widget="0"/);assert.match(card,/00:00.00/);
-assert.ok(card.indexOf('timed-exercise-widget')<card.indexOf('class="set-rows"'));
-assert.equal((card.match(/data-action="toggle-timed-exercise"/g)||[]).length,1);
+assert.doesNotMatch(card,/timed-exercise-widget|data-timed-widget|toggle-timed-exercise/,'Пункт 4: плашки таймера в карточке нет');
 assert.doesNotMatch(card,/data-action="toggle-set-timer"/,'No per-approach Play in the timed exercise card');
-click('toggle-timed-exercise');assert.equal(run('state.active.exercisePlayer.running'),true);
-assert.equal(opened,0,'Widget Play starts the clock without opening a screen');
+click('open-exercise-player');assert.equal(opened,1,'«Большой таймер» opens the exercise timer');
+click('player-toggle');assert.equal(run('state.active.exercisePlayer.running'),true);
 run("now='2026-10-30T12:00:03.250'");
-assert.match(run('renderTimedExerciseWidget(state.active.exercises[0],0)'),/00:03.25/);
 run("toggleWorkoutPause(state.active,now);now='2026-10-30T12:00:13.250'");
-assert.equal(run('exercisePlayerElapsed(state.active.exercisePlayer,now)'),3.25);
-click('toggle-timed-exercise');assert.equal(run('workoutIsPaused(state.active)'),false);assert.equal(run('state.active.exercisePlayer.running'),true);
+assert.equal(run('exercisePlayerElapsed(state.active.exercisePlayer,now)'),3.25,'The workout pause also stops the exercise timer');
+click('player-toggle');assert.equal(run('workoutIsPaused(state.active)'),false,'Play in the timer resumes the paused workout');assert.equal(run('state.active.exercisePlayer.running'),true);
 run("now='2026-10-30T12:00:13.250'");
-click('open-exercise-player');assert.equal(opened,1);
 for(const action of ['timer-actions-open','player-toggle','player-new-round'])assert.match(run('exercisePlayerBody(0)'),new RegExp('data-action="'+action+'"'));
 assert.doesNotMatch(run('exercisePlayerBody(0)'),/data-action="(?:player-reset|player-save|player-edit)"/,'Secondary actions are selected and confirmed through the wheel');
 assert.doesNotMatch(run('exercisePlayerBody(0)'),/data-player-distance-mode|data-player-metric/,'Metric switches belong in exercise settings, not the running timer');
@@ -68,7 +66,7 @@ change({playerRecord:'seconds',playerResult:'past-swim',playerEi:'0',playerIndex
 assert.equal(run('state.workouts[0].exercises[0].timerResults[0].rows[0].name'),'Техника');
 assert.equal(run('state.workouts[0].exercises[0].timerResults[0].elapsed'),18.43);
 const bad=change({playerRecord:'seconds',playerResult:'past-swim',playerEi:'0',playerIndex:'0'},'00:88.10');
-assert.equal(bad.value,'00:18.43');
+assert.equal(bad.value,'0:18');
 change({playerDistance:'0,stopwatch,1'},'-1');assert.equal(run('state.active.exercises[0].timerRowDetails.stopwatch[1].distance'),100);
 change({playerDistanceMode:'0'},'',false);change({playerDistanceMode:'0'},'',true);
 assert.equal(run('state.active.exercises[0].timerRowDetails.stopwatch[0].distance'),50.5,'Hiding distance does not erase it');
@@ -88,4 +86,4 @@ const timerId=run('state.active.exercises[0].timerResults.at(-1).id');
 change({playerRecord:'seconds',playerResult:timerId,playerEi:'0',playerIndex:'0'},'00:05.25');click('player-save');
 assert.equal(run('state.active.exercises[0].timerResults.at(-1).rows[0].seconds'),5.25,'A repeated Save does not overwrite corrected timer history');
 assert.equal(run('parsePlayerResultTime("01:00:00.01")'),3600.01);
-console.log('Passed: timed exercise widget/general Play, six tabs, optional distances, renaming, history carousel by stable exercise ID, correction validation, result persistence and fresh-session isolation.');
+console.log('Passed: no timer plate in the card, big timer Play/pause with the workout pause, six tabs, optional distances, renaming, history carousel by stable exercise ID, correction validation, result persistence and fresh-session isolation.');

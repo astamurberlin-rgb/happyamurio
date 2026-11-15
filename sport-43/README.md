@@ -38,6 +38,7 @@ Sport собирается из исходников. Файл `index.html` в �
 | `sport/src/measurements-screen.js`, `measurements-screen.css` | Замеры тела: подключение общего экрана `shared/happy-measurements.js` (один для Day, Meal и Sport). Сам экран, печать и CSV — в общем файле. |
 | `sport/src/data-transfer.js`, `strong-native-….js` | Выгрузка дневника файлом, добавление истории Strong. |
 | `sport/src/settings-layout.js`, `audit-simplify.js`, `refinements.js` | Настройки и навигация. |
+| `sport/src/template-editor.js`, `set-line.js`, `sport-journal.js` (и `.css`) | Слои 43.3 поверх прежних, по порядку сборки: редактор тренировки (✓ вверху, удаления свайпом); подход одной строкой, один перерыв на упражнение, ▶ в строке у упражнений на время; лист занятия («Перенести», «Отменить»), пометки «Пропущено» и «Перенесено», лента журнала с приёмами пищи из витрины Meal. |
 | `sport/src/release-notes.js` | История обновлений внизу настроек. |
 | `sport/data/` | Виды занятий и рекомендованные шаблоны тренировок. |
 | `sport/scripts/` | Сборка страницы и проверки `check-….mjs`. |

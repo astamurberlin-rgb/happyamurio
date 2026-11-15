@@ -21,4 +21,11 @@ test('workout Escape restores the original',()=>{const e=env(),w=e.input('80');e
 for(const flag of ['readOnly','disabled'])test('workout '+flag+' field is untouched',()=>{const e=env(),w=e.input('80');w[flag]=true;e.fire('focusin',w);assert.equal(w.value,'80');e.fire('focusout',w);assert.equal(w.value,'80')});
 test('shared measurement form: focus does not clear the field',()=>{const e=env(),w=e.input('81',true);e.fire('focusin',w);assert.equal(w.value,'81');e.fire('focusout',w);assert.equal(w.value,'81')});
 test('shared measurement form: an explicit blank stays blank',()=>{const e=env(),w=e.input('81',true);e.fire('focusin',w);w.value='';e.fire('input',w);e.fire('change',w);e.fire('focusout',w);assert.equal(w.value,'')});
+/* Время м:с (15.11.2026): цифры заполняют время справа, двоеточие ставится само, клавиатура цифровая. */
+const timeInput=(e,value)=>{const w=e.input(value);w.attrs={inputmode:'text'};w.getAttribute=k=>w.attrs[k]??null;w.setAttribute=(k,v)=>{w.attrs[k]=v};w.setSelectionRange=()=>{};w.placeholder='';return w};
+test('time field: digits only, colon by itself, numeric keyboard',()=>{const e=env(),w=timeInput(e,'2:00');e.fire('focusin',w);assert.equal(w.value,'');assert.equal(w.attrs.inputmode,'numeric');assert.equal(w.placeholder,'0:00');
+ for(const [typed,shown] of [['1','0:01'],['0:013','0:13'],['0:130','1:30']]){w.value=typed;e.fire('input',w);assert.equal(w.value,shown)}
+ w.value='1:3';e.fire('input',w);assert.equal(w.value,'0:13','стёр цифру — время сдвинулось обратно')});
+test('time field: extra seconds are recounted, blank restores',()=>{const e=env(),w=timeInput(e,'2:00');e.fire('focusin',w);w.value='190';e.fire('input',w);e.fire('change',w);assert.equal(w.value,'2:30');
+ const v=timeInput(e,'2:00');e.fire('focusin',v);w.value='';e.fire('focusout',v);assert.equal(v.value,'2:00')});
 console.log(JSON.stringify({passed,failed:0,syntheticOnly:true}));

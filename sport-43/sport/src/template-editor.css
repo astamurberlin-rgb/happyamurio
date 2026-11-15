@@ -1,0 +1,16 @@
+/* Лаборатория Sport, шаг 21: редактор тренировки — ✓ вверху, удаления свайпом (template-editor.js). */
+.sheet>.sheet-done{position:sticky;top:4px;z-index:6;display:grid;place-items:center;width:48px;height:48px;margin:-2px 0 -48px auto;padding:0;border:0;border-radius:24px;background:#f2fbff;color:#11657f;box-shadow:0 4px 14px #1d3b8a40;cursor:pointer}
+.sheet>.sheet-done .icon{width:24px;height:24px}
+.sheet>.sheet-done:active{transform:scale(.96)}
+.sheet:has(>.sheet-done) .sheet-top{padding-right:58px;min-height:48px}
+.template-form-edit .workout-name-row{margin-right:58px}
+.template-form-simple>button.primary[type=submit][hidden]{display:none!important}
+.sheet>.sheet-top[hidden]{display:none!important}
+.template-exercise-name{margin:0;padding:8px 2px 4px;font-size:17px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.editor-swipe{margin:0;border-radius:12px;border-bottom:0!important}
+.editor-swipe>.swipe-delete{border-radius:12px;font-size:11px}
+.editor-swipe .swipe-content{background:transparent}
+.editor-swipe .plan-set-row,.editor-swipe .plan-rest-row{margin:0}
+.editor-swipe .template-exercise-heading{min-height:44px}
+.editor-swipe[data-swipe-kind^="plan"]{border-radius:0}
+.template-item>.set-plan-editor{margin-top:4px}

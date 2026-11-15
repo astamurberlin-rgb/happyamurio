@@ -39,7 +39,7 @@ function freeSwitch(key,label,checked){return `<label class="player-mode-switch"
 function freeCorner(action,corner,label){return playerCornerTab('free-'+action,0,corner,label);}
 function freeTimerBody(){
  const d=freeTimer(),s=freeSession(),status=freeStatus(),down=d.mode==='timer',result=freeResultRows();
- return `<div class="exercise-player free-player" data-free-timer><div class="player-exercise-heading"><p class="player-exercise-name">${down?'Таймер':'Секундомер'}</p></div><div class="player-face">${playerDial({},status)}<div class="player-face-center"><strong data-free-time role="timer">${playerDisplay(status.remaining,true)}</strong><div class="player-inner-switches">${freeSwitch('mode','Обратный отсчёт',down)}</div></div></div><div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="free-toggle"><span>${s.running?'Стоп':'Старт'}</span></button><button type="button" class="timer-round-text" data-action="free-add"><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>${timerWheelTrigger('free')}<p class="free-timer-hint">${s.resultId?'Результат уже в журнале':''}</p><div class="player-round-list">${s.rows.map((row,i)=>`<div class="player-round-row"><span>${down?'Таймер':'Круг'} ${i+1}</span><div class="player-row-metrics">${d.metrics.map(k=>`<label class="player-distance-field sport-metric-input"><input data-free-value="${k}" data-index="${i}" type="text" inputmode="decimal" value="${row[k]??''}" placeholder="—" aria-label="${metricName(k)} ${i+1}"><span class="sport-metric-unit">${{distance:'м',weight:'кг',reps:'повт.'}[k]}</span></label>`).join('')}</div>${down?sportMetricInput(`data-free-target="${i}" type="text" inputmode="text" value="${sportDurationValue(row.target)}" aria-label="Время таймера ${i+1}" ${s.running||s.elapsed>0?'readonly':''}`,'м:с'):`<b data-free-lap="${i}">${playerDisplay(result[i]?.seconds||0,true)}</b>`}</div>`).join('')}</div></div>`;
+ return `<div class="exercise-player free-player" data-free-timer><div class="player-exercise-heading"><p class="player-exercise-name">${down?'Таймер':'Секундомер'}</p></div><div class="player-face">${playerDial({},status)}<div class="player-face-center"><strong data-free-time role="timer">${playerDisplay(status.remaining,down)}</strong><div class="player-inner-switches">${freeSwitch('mode','Обратный отсчёт',down)}</div></div></div><div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="free-toggle"><span>${s.running?'Стоп':'Старт'}</span></button><button type="button" class="timer-round-text" data-action="free-add"><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>${timerWheelTrigger('free')}<p class="free-timer-hint">${s.resultId?'Результат уже в журнале':''}</p><div class="player-round-list">${s.rows.map((row,i)=>`<div class="player-round-row"><span>${down?'Таймер':'Круг'} ${i+1}</span><div class="player-row-metrics">${d.metrics.map(k=>`<label class="player-distance-field sport-metric-input"><input data-free-value="${k}" data-index="${i}" type="text" inputmode="decimal" value="${row[k]??''}" placeholder="—" aria-label="${metricName(k)} ${i+1}"><span class="sport-metric-unit">${{distance:'м',weight:'кг',reps:'повт.'}[k]}</span></label>`).join('')}</div>${down?sportMetricInput(`data-free-target="${i}" type="text" inputmode="text" value="${sportDurationValue(row.target)}" aria-label="Время таймера ${i+1}" ${s.running||s.elapsed>0?'readonly':''}`,''):`<b data-free-lap="${i}">${playerDisplay(result[i]?.seconds||0)}</b>`}</div>`).join('')}</div></div>`;
 }
 function openFreeTimer(){freeTimer();openSheet('Таймер',freeTimerBody(),'exercise-player');}
 function renderFreeTimer(){const root=document.querySelector('[data-free-timer]');if(root){const scroll=root.scrollTop;root.outerHTML=freeTimerBody();document.querySelector('[data-free-timer]').scrollTop=scroll;}}
@@ -65,7 +65,7 @@ function openFreeSave(){
 function syncFreeTimerFab(){
  let root=document.getElementById('free-timer-root');if(!root){root=document.createElement('div');root.id='free-timer-root';document.body.append(root);}
  const enabled=state.floatingTimerEnabled===true;
- root.innerHTML=enabled?`<button class="exercise-clock-fab free-clock-fab" data-action="free-open" style="--timer-fab-x:${timerFabRatio(state.timerFabX)}" aria-label="Открыть отдельный таймер">${clockFaceIcon()}<span data-free-mini>${state.freeTimer?playerDisplay(freeStatus().remaining):''}</span></button>`:'';
+ root.innerHTML=enabled?`<button class="exercise-clock-fab free-clock-fab" data-action="free-open" style="--timer-fab-x:${timerFabRatio(state.timerFabX)}" aria-label="Открыть отдельный таймер">${clockFaceIcon()}<span data-free-mini>${state.freeTimer?playerDisplay(freeStatus().remaining,freeTimer().mode!=='stopwatch'):''}</span></button>`:'';
 }
 const renderBeforeFreeTimer=render;
 render=function(){renderBeforeFreeTimer();syncFreeTimerFab();};
@@ -79,7 +79,7 @@ document.addEventListener('change',event=>{
  if(input.hasAttribute?.('data-free-enabled')){state.floatingTimerEnabled=input.checked;persist();syncFreeTimerFab();return;}
  if(input.dataset.freeSwitch){const key=input.dataset.freeSwitch;if(key==='mode')setFreeMode(input.checked);else{const d=freeTimer();d.metrics=d.metrics.filter(k=>k!==key);if(input.checked)d.metrics.push(key);persist();}renderFreeTimer();return;}
  if(input.dataset.freeValue){const key=input.dataset.freeValue,row=freeSession().rows[Number(input.dataset.index)],n=parsePlayerMetric(input.value,key);if(!row)return;if(n===undefined){input.value=row[key]??'';toast('Проверь значение: '+metricName(key));return;}if(n==null)delete row[key];else row[key]=n;persist();return;}
- if(input.dataset.freeTarget!=null){const s=freeSession(),row=s.rows[Number(input.dataset.freeTarget)],n=parseSetTime(input.value);if(!row)return;if(s.running||s.elapsed>0||!Number.isFinite(n)||n<=0||n>86400){input.value=sportDurationValue(row.target);sportMetricError(input,'От 0:01 до 1440:00');toast('Время: от 0:01 до 1440:00 (м:с)');return;}row.target=n;persist();renderFreeTimer();}
+ if(input.dataset.freeTarget!=null){const s=freeSession(),row=s.rows[Number(input.dataset.freeTarget)],n=parseSetTime(input.value);if(!row)return;if(s.running||s.elapsed>0||!Number.isFinite(n)||n<=0||n>86400){input.value=sportDurationValue(row.target);sportMetricError(input,'От 0:01 до 1440:00');toast('Время: от 0:01 до 1440:00');return;}row.target=n;persist();renderFreeTimer();}
 });
 document.addEventListener('click',event=>{
  const b=event.target.closest?.('[data-action]');if(!b||!b.dataset.action.startsWith('free-'))return;
@@ -99,10 +99,10 @@ document.addEventListener('submit',event=>{
 },true);
 function tickFreeTimer(){
  if(!state.freeTimer)return;const s=freeSession(),status=freeStatus();if(s.running&&status.finished){pauseFreeTimer();persist();renderFreeTimer();toast('Таймер завершён');}
- const time=document.querySelector('[data-free-time]');if(time)time.textContent=playerDisplay(status.remaining,true);
- const mini=document.querySelector('[data-free-mini]');if(mini)mini.textContent=playerDisplay(status.remaining);
+ const up=freeTimer().mode!=='stopwatch',time=document.querySelector('[data-free-time]');if(time)time.textContent=playerDisplay(status.remaining,up);
+ const mini=document.querySelector('[data-free-mini]');if(mini)mini.textContent=playerDisplay(status.remaining,up);
  const progress=document.querySelector('[data-free-timer] .dial-progress');if(progress)progress.innerHTML=fullPlayerArc(status.progress);
- const rows=freeResultRows();for(const cell of document.querySelectorAll('[data-free-lap]'))cell.textContent=playerDisplay(rows[Number(cell.dataset.freeLap)]?.seconds||0,true);
+ const rows=freeResultRows();for(const cell of document.querySelectorAll('[data-free-lap]'))cell.textContent=playerDisplay(rows[Number(cell.dataset.freeLap)]?.seconds||0);
 }
 setInterval(tickFreeTimer,50);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)tickFreeTimer();});

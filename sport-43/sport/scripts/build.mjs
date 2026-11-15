@@ -73,11 +73,17 @@ const appearanceJs=(await Promise.all(['happy-gradients.js','happy-reference-the
 const settingsLayout=await read('src/settings-layout.js'),settingsLayoutCss=await read('src/settings-layout.css');
 // Lab 10.11.2026 18:50: audit simplifications (decisions «Да» on the audit page), loaded after everything else.
 const auditSimplify=await read('src/audit-simplify.js'),auditSimplifyCss=await read('src/audit-simplify.css');
+// Sport 43.3 (лаборатория 15.11.2026): слои поверх прежних, по порядку — редактор тренировки (✓ вверху, удаления свайпом,
+// один перерыв на упражнение), подход одной строкой (кружок с кольцом перерыва, ▶ у упражнений на время), журнал
+// (лист занятия, пометки «Пропущено» / «Перенесено», лента с Meal).
+const templateEditor=await read('src/template-editor.js'),templateEditorCss=await read('src/template-editor.css');
+const setLine=await read('src/set-line.js'),setLineCss=await read('src/set-line.css');
+const sportJournal=await read('src/sport-journal.js'),sportJournalCss=await read('src/sport-journal.css');
 const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappings=await read('src/strong-native-mappings.js'),strongNativeUI=await read('src/strong-native-ui.js');
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 43.2'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 43.3'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
@@ -85,10 +91,10 @@ function memory(){var m=new Map();return {getItem:function(k){k=String(k);return
 try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:true});Object.defineProperty(window,'sessionStorage',{value:memory(),configurable:true});Object.defineProperty(window,'indexedDB',{value:undefined,configurable:true});window.happyLabMemoryStorage=true}catch(e){}})();</script>`;
 const labPage=page=>!LAB?page:page.replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
-  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+measurementsCss+measurementsScreenCss+'\n</style>')
+  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [accountUI,sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,measurementsScreen].join('\n'))
+  .replace('__APP__', () => [accountUI,sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);

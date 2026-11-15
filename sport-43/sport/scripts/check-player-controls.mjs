@@ -44,7 +44,7 @@ assert.equal(root,null);assert.equal(run('state.active.exercisePlayer.running'),
 assert.equal(nodes.get('sport-fab').dataset.action,'voice');assert.equal(document.body.classList.contains('exercise-player-open'),false);
 run("now='2026-10-29T12:00:20.750';openExercisePlayer(0)");
 assert.equal(run('exercisePlayerElapsed(state.active.exercisePlayer,now)'),20.75,'Elapsed time includes the collapsed interval');
-assert.equal(root.rows,2);assert.match(root.html,/00:15.50/);
+assert.equal(root.rows,2);assert.match(root.html,/>0:15</);
 run('resetExercisePlayer(0);renderExercisePlayerView(0)'); // Confirmation + Undo are covered by check-timer-action-wheel.
 const change={target:{dataset:{playerMode:'0'},checked:true}};for(const fn of handlers.change)fn(change);
 assert.match(root.html,/Таймер 1/);clickAction('player-new-round');clickAction('player-new-round');
@@ -64,7 +64,7 @@ assert.deepEqual(JSON.parse(run('JSON.stringify(state.active)')),beforeBlocked,'
 assert.equal(blocked.checked,true);assert.equal(blocked.disabled,true);
 clickAction('player-toggle');assert.equal(run('state.active.exercisePlayer.running'),false,'Normal STOP unlocks switching');
 for(const fn of handlers.change)fn({target:{dataset:{playerMode:'0'},checked:false}});
-assert.match(root.html,/Обратный отсчёт<\/small><input type="checkbox" role="switch" data-player-mode="0"[^>]*  >/);assert.match(root.html,/00:00.00/);
+assert.match(root.html,/Обратный отсчёт<\/small><input type="checkbox" role="switch" data-player-mode="0"[^>]*  >/);assert.match(root.html,/>0:00</);
 for(const fn of handlers.change)fn({target:{dataset:{playerMode:'0'},checked:true}});
 assert.equal(run('state.active.exercisePlayer.elapsed'),30,'Switching modes retains the prior session');
 assert.equal(run('state.active.exercisePlayer.running'),false);

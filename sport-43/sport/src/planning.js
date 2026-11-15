@@ -16,7 +16,7 @@ function planZoneName(zone){try{const part=(n)=>new Intl.DateTimeFormat('ru-RU',
 function scheduleFields(s){
  const date=s?.startDate||(String(localNow()).slice(11,16)<(s?.time||'18:00')?dayNow():plusDays(dayNow(),1)),mode=s?.mode||'none',phoneZone=scheduleZone(),zone=s?.timeZone||phoneZone,otherZone=zone!==phoneZone;
  const radio=(value,label)=>`<label><input type="radio" name="scheduleMode" value="${value}" ${mode===value?'checked':''}><span>${label}</span></label>`;
- return `<section class="plan-fields"><label class="plan-toggle"><input type="checkbox" name="favorite" checked>Показывать на главной</label><details class="schedule-disclosure"><summary>${s?'Расписание настроено · изменить':'Добавить в расписание'}</summary>`
+ return `<section class="plan-fields">`
  +`<div class="plan-group"><div class="plan-repeat" role="radiogroup" aria-label="Повтор">${radio('once','Один раз')}${radio('weekly','По дням недели')}<input type="radio" name="scheduleMode" value="none" ${mode==='none'?'checked':''} hidden aria-hidden="true" tabindex="-1"></div>`
  +`<div id="plan-inputs" ${s?'':'hidden'}><fieldset class="schedule-weekdays" ${s?.mode==='weekly'?'':'hidden'}><legend>Дни недели</legend>${scheduleWeekdays.map(([d,n])=>`<label><input type="checkbox" name="scheduleDays" value="${d}" ${s?.days?.includes(d)?'checked':''}><span>${n}</span></label>`).join('')}</fieldset>`
  +`<div class="schedule-date-grid"><label class="field"><span class="plan-date-label">${s?.mode==='weekly'?'С даты':'Дата'}</span><input type="date" name="scheduleDate" value="${esc(date)}"></label><label class="field">Время<input type="time" name="scheduleTime" value="${esc(s?.time||'18:00')}"></label></div>`
@@ -27,14 +27,23 @@ function scheduleFields(s){
  +`<label class="plan-row">Напоминание<select name="planReminder">${[[-1,'Без напоминания'],[0,'В начале'],[15,'За 15 минут'],[30,'За 30 минут'],[60,'За час'],[1440,'За день']].map(([v,n])=>`<option value="${v}" ${(s?.reminder??30)===v?'selected':''}>${n}</option>`).join('')}</select></label>`
  +`<label class="field plan-note">Заметка<textarea name="planNote" maxlength="2000" rows="2" placeholder="Например: взять резинку">${esc(s?.note||'')}</textarea></label></div>`
  +`<div class="plan-share"><button class="button" type="submit" data-plan-export="calendar">${icon('calendar-blank')} В календарь</button><button class="button" type="submit" data-plan-export="reminder">${icon('bell')} Поделиться</button></div>`
- +`<p class="fineprint">Сохранит тренировку и откроет файл для календаря телефона. ${s?`<button type="button" class="text-btn plan-remove" data-action="plan-remove">Убрать из расписания</button>`:''}</p></details></section><div id="plan-error" class="form-error" role="alert"></div>`;
+ +`<p class="fineprint">Сохранит расписание и откроет файл для календаря телефона. ${s?`<button type="button" class="text-btn plan-remove" data-action="plan-remove">Убрать из расписания</button>`:''}</p></section><div id="plan-error" class="form-error" role="alert"></div>`;
 }
 function applyPlanMode(form){const mode=form.querySelector('[name=scheduleMode]:checked')?.value||'none';form.querySelector('#plan-inputs').hidden=mode==='none';form.querySelector('.schedule-weekdays').hidden=mode!=='weekly';form.querySelector('.schedule-end').hidden=mode!=='weekly';const label=form.querySelector('.plan-date-label');if(label)label.textContent=mode==='weekly'?'С даты':'Дата';}
 function setPlanMode(form,mode){const input=form.querySelector(`[name=scheduleMode][value="${mode}"]`);if(input)input.checked=true;applyPlanMode(form);}
-// Opening «Добавить в расписание» means planning: one-time by default. Closing it without a saved schedule drops the plan.
-document.addEventListener('toggle',e=>{const d=e.target;if(!d.classList?.contains('schedule-disclosure'))return;const form=d.closest('form'),mode=form?.querySelector('[name=scheduleMode]:checked')?.value;if(!form)return;if(d.open&&mode==='none')setPlanMode(form,'once');if(!d.open&&!form.dataset.scheduleId)setPlanMode(form,'none');},true);
-const previousEditTemplate=editTemplate;
-editTemplate=function(id,fromActive=false){previousEditTemplate(id,fromActive);const form=$('#template-form'),t=templates().find(t=>t.id===id),s=templateSchedule(id);form.querySelector('[type=submit]').insertAdjacentHTML('beforebegin',scheduleFields(s));form.elements.favorite.checked=t?.favorite!==false;if(s)form.dataset.scheduleId=s.id;};
+/* Пункт 11 (Астамур 15.11.2026): расписание не в редакторе — в редакторе только упражнения и подходы. Расписание
+   открывается с карточки тренировки своим листом; новое расписание по умолчанию — «Один раз». */
+function openScheduleSheet(id){
+ const t=templates().find(t=>t.id===id);if(!t)return;const s=templateSchedule(id);
+ openSheet('Расписание',`<form id="schedule-form" data-id="${esc(id)}" ${s?`data-schedule-id="${esc(s.id)}"`:''}><p class="sheet-info">${esc(t.title)}</p>${scheduleFields(s)}</form>`);
+ const form=$('#schedule-form'),sheet=form?.closest('.sheet');if(!form)return;if(!s)setPlanMode(form,'once');
+ if(sheet&&!sheet.querySelector('.sheet-done')){const done=`<button type="submit" form="schedule-form" class="sheet-done" aria-label="Сохранить расписание">${icon('check')}</button>`,grip=sheet.querySelector(':scope > .grip');if(grip)grip.insertAdjacentHTML('afterend',done);else sheet.insertAdjacentHTML('afterbegin',done);}
+}
+document.addEventListener('change',e=>{const input=e.target;if(!input?.dataset?.templateHome)return;const t=templates().find(t=>t.id===input.dataset.templateHome);if(!t||t.recommended)return;storeSportTemplate({...t,favorite:input.checked});persist();render();});
+function scheduleFromForm(f,form,templateId){
+ const mode=f.get('scheduleMode'),prior=state.schedules.find(s=>s.id===form.dataset.scheduleId);
+ return {prior,schedule:mode&&mode!=='none'?validateSchedule({...prior,id:prior?.id||sportId('schedule'),templateId,mode,startDate:String(f.get('scheduleDate')),time:String(f.get('scheduleTime')),endDate:String(f.get('scheduleEnd')||''),timeZone:String(f.get('scheduleZone')||scheduleZone()).trim(),days:f.getAll('scheduleDays').map(Number),minutes:Number(f.get('planMinutes')),note:String(f.get('planNote')||''),reminder:Number(f.get('planReminder')),revision:(prior?.revision||0)+1,archived:false}):null};
+}
 function storeSportTemplate(t){if(baseTemplates.some(x=>x.id===t.id)){state.templateOverrides??={};state.templateOverrides[t.id]=t;}else{const i=state.templates.findIndex(x=>x.id===t.id);if(i<0)state.templates.push(t);else state.templates[i]=t;}}
 function nextPlanCard(t){if(!t)return '';const s=templateSchedule(t.id);return `<div class="section-title"><h2>Расписание</h2><button class="text-btn" data-action="plan-template" data-id="${esc(t.id)}">${s?'Изменить серию':'Добавить'}</button></div>${s?`<div class="card plan-card"><b>${s.mode==='weekly'?s.days.map(d=>scheduleWeekdays.find(x=>x[0]===d)?.[1]).join(' · '):dateLabel(s.startDate)} · ${s.time}</b><p class="sub">${s.minutes} мин${s.timeZone&&s.timeZone!==scheduleZone()?' · по времени '+esc(s.timeZone):''}</p><div class="plan-share"><button class="button" data-action="calendar-plan" data-id="${esc(t.id)}">Добавить в календарь</button><button class="button" data-action="reminder-plan" data-id="${esc(t.id)}">Поделиться</button></div><p class="fineprint">${s.exportedAt?'Файл экспортирован. Добавление в календарь не подтверждено.':''}</p></div>`:''}`;}
 const previousSection=renderSection,previousTemplateCard=renderTemplateCard;
@@ -49,20 +58,22 @@ const previousPlanningPersist=persist;
 persist=function(){ensureSportPlanning(state);state.exerciseGroups??=[];state.archivedExercises??=[];syncCompletedOccurrences();previousPlanningPersist();};
 document.addEventListener('change',e=>{if(e.target.name!=='scheduleMode')return;applyPlanMode(e.target.form);});
 document.addEventListener('submit',e=>{
- const form=e.target;if(!['template-form','occurrence-form'].includes(form.id))return;e.preventDefault();e.stopImmediatePropagation();
+ const form=e.target;if(!['template-form','occurrence-form','schedule-form'].includes(form.id))return;e.preventDefault();e.stopImmediatePropagation();
  try{const f=new FormData(form);if(form.id==='occurrence-form'){const o=resolveOccurrence(form.dataset.id),start=String(f.get('start'));zonedInstant(start,o.timeZone||scheduleZone());const status=String(f.get('status'));storeOccurrence(o,{start,note:String(f.get('note')||''),status});if(o.workoutId){const w=state.workouts.find(w=>w.id===o.workoutId);if(['completed','partial'].includes(status)){if(w)w.completionStatus=status;}else if(w){delete w.occurrenceId;delete w.plannedStart;delete state.occurrences[o.id].workoutId;}}persist();closeSheet();render();return;}
- const id=form.dataset.id||sportId('template'),old=templates().find(t=>t.id===id),items=serializeTemplateItems(form),title=String(f.get('title')||'').trim();if(!title)throw new Error('Укажи название.');const t={...old,id,title,icon:workoutIconValue(f.get('icon')),kind:f.get('kind'),favorite:f.has('favorite'),items};delete t.schedule;
- const mode=f.get('scheduleMode'),prior=state.schedules.find(s=>s.id===form.dataset.scheduleId);let schedule=null;
- if(mode!=='none')schedule=validateSchedule({...prior,id:prior?.id||sportId('schedule'),templateId:id,mode,startDate:String(f.get('scheduleDate')),time:String(f.get('scheduleTime')),endDate:String(f.get('scheduleEnd')||''),timeZone:String(f.get('scheduleZone')||scheduleZone()).trim(),days:f.getAll('scheduleDays').map(Number),minutes:Number(f.get('planMinutes')),note:String(f.get('planNote')||''),reminder:Number(f.get('planReminder')),revision:(prior?.revision||0)+1,archived:false});
- storeSportTemplate(t);if(schedule){if(prior)state.schedules[state.schedules.indexOf(prior)]=schedule;else state.schedules.push(schedule);}else if(prior)prior.archived=true;
- persist();closeSheet();goto('diary');openPanel({type:'template',id});toast('Тренировка сохранена');if(schedule&&e.submitter?.dataset.planExport==='calendar')downloadPlan(t);if(schedule&&e.submitter?.dataset.planExport==='reminder')sharePlan(t);
+ if(form.id==='schedule-form'){const id=form.dataset.id,t=templates().find(t=>t.id===id);if(!t)throw new Error('Тренировка не найдена.');const {prior,schedule}=scheduleFromForm(f,form,id);
+ if(schedule){if(prior)state.schedules[state.schedules.indexOf(prior)]=schedule;else state.schedules.push(schedule);}else if(prior)prior.archived=true;
+ persist();closeSheet();render();toast(schedule?'Расписание сохранено':'Убрано из расписания');if(schedule&&e.submitter?.dataset.planExport==='calendar')downloadPlan(t);if(schedule&&e.submitter?.dataset.planExport==='reminder')sharePlan(t);return;}
+ // Редактор сохраняет только саму тренировку: расписание и «Показывать на главной» живут на карточке (пункты 11 и 12).
+ const id=form.dataset.id||sportId('template'),old=templates().find(t=>t.id===id),items=serializeTemplateItems(form),title=String(f.get('title')||'').trim();if(!title)throw new Error('Укажи название.');const t={...old,id,title,icon:workoutIconValue(f.get('icon')),kind:f.get('kind'),favorite:old?.favorite!==false,items};delete t.schedule;
+ storeSportTemplate(t);
+ persist();closeSheet();goto('diary');openPanel({type:'template',id});toast('Тренировка сохранена');
  }catch(error){const target=form.querySelector('#plan-error,.form-error');if(target)target.textContent=error.message;}
 },true);
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-action]');if(!b)return;const a=b.dataset.action,id=b.dataset.id;
  if(a==='plan-workout')openSheet('Добавить в расписание',`<div class="section-list">${templates().filter(t=>!t.recommended).map(t=>`<button class="card section-row" data-action="plan-template" data-id="${esc(t.id)}">${icon(workoutIconName(t))}<b>${esc(t.title)}</b></button>`).join('')}<button class="button dashed" data-action="plan-template">Создать тренировку</button></div>`);
- if(a==='plan-template'){editTemplate(id);const form=$('#template-form');const disclosure=form.querySelector('.schedule-disclosure');if(disclosure)disclosure.open=true;if(form.querySelector('[name=scheduleMode]:checked')?.value==='none')setPlanMode(form,'once');}
+ if(a==='plan-template'){if(id&&templates().some(t=>t.id===id))openScheduleSheet(id);else editTemplate();}
  if(a==='plan-zone'){const form=b.closest('form'),field=form?.querySelector('.plan-zone');if(field){field.hidden=false;b.remove();field.querySelector('input').focus();}}
- if(a==='plan-remove'){const form=b.closest('form');if(form){setPlanMode(form,'none');const d=form.querySelector('.schedule-disclosure');if(d)d.open=false;b.closest('p')?.remove();toast('Расписание уберётся при сохранении');}}
+ if(a==='plan-remove'){const form=b.closest('form');if(form){setPlanMode(form,'none');b.closest('p')?.remove();toast('Расписание уберётся при сохранении');}}
  if(a==='schedule-open')openOccurrence(id);if(a==='schedule-start')startScheduledWorkout(id);if(a==='schedule-resume'){closeSheet();goto('active');}
  const t=templates().find(t=>t.id===id);if(t&&a==='calendar-plan')downloadPlan(t);if(t&&a==='reminder-plan')sharePlan(t);if(t&&a==='copy-plan'){try{await navigator.clipboard.writeText(planText(t));toast('План скопирован');}catch{$('.plan-copy')?.select();}}
 });

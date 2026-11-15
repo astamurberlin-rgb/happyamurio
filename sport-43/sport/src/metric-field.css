@@ -26,8 +26,8 @@
 .player-row-metrics .sport-metric-input{width:auto;flex:1;min-width:55px}.player-history-table .sport-metric-input{min-width:96px}
 .completed-set-row{grid-template-columns:24px repeat(2,minmax(0,1fr))!important;gap:10px!important}.completed-set-row .completed-delete{grid-column:2/-1}
 .completed-set-row>label:not(.completed-delete){font-size:11px;min-width:0}.completed-set-row>.sport-metric-input{min-width:0}
-.workout-finish-card{margin:22px 0 14px;padding:18px 0 12px;border-top:1px solid #ffffff40;text-align:center}.workout-finish-card p{margin:0 0 12px;font-weight:600}.workout-finish-card small{display:block;margin-top:10px;color:#ffffffbd;font-size:12px}.workout-finish-card .button{min-height:48px}
-.schedule-disclosure{margin-top:12px;border-top:1px solid #ffffff30;padding-top:6px}.schedule-disclosure>summary{padding:14px 0;min-height:44px;cursor:pointer;font-weight:550}.schedule-disclosure[open]>summary{margin-bottom:12px}
+
+
 .floating-rest-pill{border:0!important;box-shadow:0 5px 18px #154b4730!important}.floating-rest-clock>.sport-metric-input{position:static!important;transform:none!important;width:100%!important;border-bottom-color:#ffffffa0!important}.floating-rest-pill>.floating-rest-clock{width:100px}.floating-rest-clock .sport-metric-input input{font-size:24px!important;min-height:38px!important}.floating-rest-clock>.sport-metric-input>.sport-metric-unit{font-size:10px!important}.floating-rest-clock>span:first-child{right:calc(100% + 6px);width:52px}.floating-rest-toggle{border:0!important;background:transparent!important}.floating-rest-finish{width:92px;min-width:92px}
 @media(max-width:400px){.active-workout .set-row.metrics-3,.active-workout .set-row.metrics-4{grid-template-columns:repeat(2,minmax(0,1fr)) 44px!important;row-gap:10px}.active-workout .set-row.metrics-3 .done,.active-workout .set-row.metrics-4 .done{grid-column:3;grid-row:2/4;align-self:center}.active-workout .set-row.metrics-3 .set-number,.active-workout .set-row.metrics-4 .set-number{grid-column:1/-1}.plan-set-values:has(>.plan-set-field:nth-child(3)){grid-template-columns:repeat(2,minmax(0,1fr))}.player-row-metrics{flex-wrap:wrap}.floating-rest-pill>.floating-rest-clock{width:88px}.floating-rest-clock>span:first-child{position:static;transform:none;width:auto;text-align:center;font-size:10px}.floating-rest-clock .sport-metric-input input{font-size:22px!important;min-height:30px!important}.floating-rest-finish{width:78px;min-width:78px;padding:0 6px;font-size:11px}.floating-rest-pill>.floating-rest-clock{height:58px}.player-exercise-heading{margin:0 14px}.player-exercise-heading .player-exercise-name{font-size:16px}}
 /* 36.22: rest is a quiet divider, not a second player. */
@@ -76,9 +76,19 @@
 .plan-note textarea{min-height:64px;resize:vertical}
 .plan-fields .plan-share{grid-template-columns:1fr 1fr;margin-top:14px}
 .plan-fields .plan-share .button{min-height:48px;font-size:13px;padding:10px 8px}
-.plan-fields>details>.fineprint{margin:10px 2px 0}
+.plan-fields>.fineprint{margin:10px 2px 0}
 .plan-zone[hidden],#plan-inputs[hidden]{display:none!important}
 /* Lab 10.11.2026 17:10 (comment «если упражнений мало страница вниз опускается и её закрывает клавиатура»): a sheet
    with an exercise search keeps its full height whatever the number of results, so the search stays at the top and
    the keyboard never covers it. */
 .sheet:has(#picker-search),.sheet:has(#template-picker-search){height:calc(100dvh - 48px);max-height:calc(100dvh - 48px)}
+/* Ввод времени м:с (15.11.2026): поле прозрачное, цифры рисует наложенная строка — ненабранные бледные, двоеточие мигает
+   вместо черты-курсора. */
+.sport-metric-input input.time-masking,.sport-metric-input input.time-masking::placeholder{color:transparent!important;-webkit-text-fill-color:transparent!important;caret-color:transparent!important;text-shadow:none!important}
+.time-mask-view{position:absolute;z-index:1;box-sizing:border-box;display:flex;align-items:center;margin:0;pointer-events:none;white-space:pre;font-variant-numeric:tabular-nums}
+.time-mask-view b{font:inherit}
+.time-mask-view .tm-off{opacity:.38}
+/* Двоеточие меняется раз в секунду: секунду видно, секунду бледное (Астамур, 15.11.2026 18:43). */
+.time-mask-view .tm-colon{animation:time-mask-blink 2s steps(1,end) infinite}
+@keyframes time-mask-blink{50%{opacity:.12}}
+@media(prefers-reduced-motion:reduce){.time-mask-view .tm-colon{animation:none;opacity:.6}}

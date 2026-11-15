@@ -116,13 +116,13 @@ console.log('Passed: active editor isolation from library/history/templates/same
 }
 
 // One field wrapper and one visible duration format; stored units remain seconds.
-for(const [value,expected] of [[0,'0:00'],[90,'1:30'],[12.35,'0:12.35'],[3600.01,'60:00.01'],[86400,'1440:00']])assert.equal(run('sportDurationValue('+value+')'),expected);
+for(const [value,expected] of [[0,'0:00'],[90,'1:30'],[12.35,'0:12'],[3600.01,'60:00'],[86400,'1440:00']])assert.equal(run('sportDurationValue('+value+')'),expected);
 for(const [value,expected] of [['0:00',0],['1:30',90],['0:12.35',12.35],['90',90],['1440:00',86400]]){c.value=value;assert.equal(run('parseSetTime(value)'),expected);}
 for(const value of ['-1','0:60','1:99','1:2','abc','NaN','1:30:20']){c.value=value;assert.equal(run('parseSetTime(value)'),null);}
 for(const [value,expected] of [['0:12.35',12.35],['1:30.25',90.25],['01:00:00.01',3600.01]]){c.value=value;assert.equal(run('parsePlayerResultTime(value)'),expected);}
 for(const value of ['0:60.10','-1','NaN']){c.value=value;assert.equal(run('parsePlayerResultTime(value)'),null);}
 assert.match(run('sportMetricInput(\'type="number" value="20"\',"кг")'),/class="sport-metric-input"><input.*sport-metric-unit.*кг/);
-assert.match(run('readExerciseSet({id:"row",metrics:["seconds"]},{seconds:12.35},0)'),/0:12\.35 м:с/,'History read view preserves recorded hundredths too');
+assert.match(run('readExerciseSet({id:"row",metrics:["seconds"]},{seconds:12.35},0)'),/>0:12</,'History read view: whole seconds, no «м:с» (пункт 7)');
 
 // Actual duration changes keep hundredths; malformed input restores the saved value instead of writing it.
 {
@@ -130,10 +130,10 @@ assert.match(run('readExerciseSet({id:"row",metrics:["seconds"]},{seconds:12.35}
   run('state.active.exercises[0].sets[1].seconds=12.35;state.active.exercises[0].sets[1].timerTargetSeconds=90');
   const attributes={},input={dataset:{setTime:'0,1'},value:'1:30.25',setAttribute(k,v){attributes[k]=v;},closest:()=>null};
   changeSetTime({target:input});
-  assert.equal(run('state.active.exercises[0].sets[1].seconds'),90.25);assert.equal(input.value,'1:30.25');
+  assert.equal(run('state.active.exercises[0].sets[1].seconds'),90.25);assert.equal(input.value,'1:30');
   assert.equal(run('state.active.exercises[0].sets[1].timerTargetSeconds'),undefined);
   const saved=plain(run('state.active.exercises[0].sets[1]'));
-  for(const invalid of ['99:99','1440:00.01','-1']){input.value=invalid;changeSetTime({target:input});assert.equal(input.value,'1:30.25');assert.equal(attributes['aria-invalid'],'true');assert.deepEqual(plain(run('state.active.exercises[0].sets[1]')),saved);}
+  for(const invalid of ['99:99','1440:00.01','-1']){input.value=invalid;changeSetTime({target:input});assert.equal(input.value,'1:30');assert.equal(attributes['aria-invalid'],'true');assert.deepEqual(plain(run('state.active.exercises[0].sets[1]')),saved);}
   c.previousSet=previous;run('state.active.exercises[0].sets[1]=previousSet');
   const draft=run('createSetPlan("row","main",[{seconds:12.35,restSeconds:60,done:false}],["seconds"])');
   const time={dataset:{planValue:'seconds',planIndex:'0'},value:'0:12.35'},rest={dataset:{planRest:'0'},value:'1:30'};
@@ -145,8 +145,8 @@ assert.match(run('readExerciseSet({id:"row",metrics:["seconds"]},{seconds:12.35}
 // Correction form uses m:ss.hh and commits atomically, without touching workout timestamps/pulse.
 run(await read('plan-fact'));
 run(`state.workouts=[{id:'precise',title:'Плавание',start:'2026-11-01T10:00:00',end:'2026-11-01T10:05:00',duration:300,avgHeartRate:117,heartRateSamples:[{elapsedSeconds:0,bpm:110},{elapsedSeconds:30,bpm:124}],exercises:[{id:'row',name:'Плавание',metrics:['seconds','distance'],sets:[{seconds:12.35,distance:25,done:true},{seconds:30.2,distance:50,done:true}]}]}];openCompletedSets('precise')`);
-assert.match(c.sheet.html,/data-completed-time[^>]*value="0:12.35"/);
-assert.match(c.sheet.html,/sport-metric-unit[^>]*>м:с/);
+assert.match(c.sheet.html,/data-completed-time[^>]*value="0:12"/);
+assert.doesNotMatch(c.sheet.html,/м:с/,'Время без подписи «м:с» (пункт 7)');
 const captured=plain(run('state.workouts[0]'));
 const correction={id:'completed-sets-form',dataset:{id:'precise'},fields:{'metric-0-0-seconds':'0:12.35','metric-0-0-distance':'25','metric-0-1-seconds':'0:30.20','metric-0-1-distance':'50'},querySelector:()=>error};
 const submitCorrection=handlers.submit.at(-1);
@@ -187,7 +187,7 @@ console.log('Passed: shared metric wrapper, m:ss validation, centisecond history
   const fire=(type,input)=>{const event={type,target:input,preventDefault(){},stopImmediatePropagation(){this.stopped=true;}};for(const {fn} of [...th[type]||[]].sort((a,b)=>Number(b.capture)-Number(a.capture))){fn(event);if(event.stopped)break;}};
   const attributes={},input={value:'1:00',dataset:{template:'mine',phase:'main',exercise:'row',templateTarget:'seconds'},validity:{valid:true},readOnly:false,disabled:false,matches:selector=>selector.includes('input[data-template-target=seconds]'),setAttribute(k,v){attributes[k]=v;},removeAttribute(k){delete attributes[k];},closest:()=>null,dispatchEvent(event){fire(event.type,this);}};
   const markup=tr('targetField(state.templates[0],{id:"row",name:"Гребля"},"main","seconds","Время",90,86400)');
-  assert.match(markup,/sport-metric-input/);assert.match(markup,/data-template-target="seconds"/);assert.match(markup,/value="1:30"/);assert.match(markup,/sport-metric-unit[^>]*>м:с/);
+  assert.match(markup,/sport-metric-input/);assert.match(markup,/data-template-target="seconds"/);assert.match(markup,/value="1:30"/);assert.doesNotMatch(markup,/м:с/);
   input.value='1:30';fire('input',input);assert.equal(tr('state.templates[0].targets.row.seconds'),60);assert.equal(tr('persisted'),0);
   fire('change',input);assert.equal(tr('state.templates[0].phaseTargets.main.row.seconds'),90);assert.equal(tr('state.templates[0].phaseTargets.main.row.distance'),100);
   const saved=plain(tr('state.templates'));input.value='99:99';fire('change',input);assert.deepEqual(plain(tr('state.templates')),saved);assert.equal(attributes['aria-invalid'],'true');
@@ -201,9 +201,9 @@ console.log('Passed: shared metric wrapper, m:ss validation, centisecond history
 run(app.slice(app.indexOf('function pulseCard('),app.indexOf('function renderDetail(')));
 run('var matchingCountdown=()=>null;state.demoPulse=false;state.active.exercises.forEach(e=>e.sets.forEach(s=>s.done=true));');
 const activeBefore=plain(run('state.active')),markup=run('renderActive()');
-assert.match(markup,/workout-finish-card[\s\S]*data-action="finish"[\s\S]*Завершить тренировку/);
-assert.equal((markup.match(/data-action="finish"/g)||[]).length,2,'Header and bottom use the same manual finish action');
-assert.ok(markup.indexOf('workout-finish-card')>markup.indexOf('id="active-note"'));
+// Пункт 2 (15.11.2026): нижней карточки «Завершить тренировку» нет — «Завершить» только в шапке, она показывается и у конца страницы.
+assert.doesNotMatch(markup,/workout-finish-card|Всё на сегодня/);
+assert.equal((markup.match(/data-action="finish"/g)||[]).length,1,'One manual finish action, in the header');
 assert.doesNotMatch(markup,/data-exercise-metric|exercise-mode-stack|rest-strip|rest-progress-track|data-rest-row/);
 assert.deepEqual(plain(run('state.active')),activeBefore,'Rendering all-complete sets does not finish the workout');
 assert.doesNotMatch(run('exercisePlayerBody(0)'),/data-player-distance-mode|data-player-metric/);
@@ -241,14 +241,20 @@ console.log('Passed: real Finish snapshots actual pulse independently; empty/dem
   pr(await read('metric-field'));pr(await read('schedule-model'));pr(planning);
   pr(`state.schedules=[{id:'s',templateId:'t',mode:'weekly',startDate:'2026-11-03',endDate:'2026-12-01',time:'17:45',timeZone:'Europe/Moscow',minutes:75,days:[2,4],note:'Не терять заметку',reminder:15,revision:2,archived:false}];`);
   const scheduleBefore=plain(pr('state.schedules[0]')),html=pr('scheduleFields(state.schedules[0])');
-  assert.match(html,/<details class="schedule-disclosure"><summary>Расписание настроено/);
-  assert.doesNotMatch(html,/<details[^>]*\sopen(?:[\s=>])/);
+  // Пункты 11 и 12 (15.11.2026): расписание — свой лист с карточки, без раскрывашки и без «Показывать на главной».
+  assert.doesNotMatch(html,/<details|Показывать на главной/);
   for(const [name,value] of [['scheduleDate','2026-11-03'],['scheduleEnd','2026-12-01'],['scheduleTime','17:45'],['scheduleZone','Europe/Moscow'],['planMinutes','75']])assert.match(html,new RegExp('name="'+name+'"[^>]*value="'+value+'"'));
   assert.match(html,/value="2" checked/);assert.match(html,/value="4" checked/);assert.match(html,/Не терять заметку/);assert.doesNotMatch(html,/<(?:input|select|textarea)[^>]*\sdisabled/);
-  const form={id:'template-form',dataset:{id:'t',scheduleId:'s'},fields:{title:'Переименованный план',kind:'gym',favorite:'on',scheduleMode:'weekly',scheduleDate:'2026-11-03',scheduleEnd:'2026-12-01',scheduleTime:'17:45',scheduleZone:'Europe/Moscow',scheduleDays:['2','4'],planMinutes:'75',planNote:'Не терять заметку',planReminder:'15'},querySelector:()=>error};
+  pr("state.templates[0].favorite=false");
+  const form={id:'template-form',dataset:{id:'t'},fields:{title:'Переименованный план',kind:'gym'},querySelector:()=>error};
   for(const fn of ph.submit||[])fn({target:form,preventDefault(){},stopImmediatePropagation(){}});
   const after=plain(pr('state.schedules[0]'));
-  for(const key of ['id','templateId','mode','startDate','endDate','time','timeZone','minutes','days','note','reminder'])assert.deepEqual(after[key],scheduleBefore[key],key+' survives saving without expanding schedule');
+  for(const key of ['id','templateId','mode','startDate','endDate','time','timeZone','minutes','days','note','reminder','archived'])assert.deepEqual(after[key],scheduleBefore[key],key+' survives saving the workout in the editor');
   assert.equal(pr('state.templates[0].title'),'Переименованный план');
-  console.log('Passed: collapsed schedule retains enabled recurrence/date/time/zone/note/reminder controls and real-save field values.');
+  assert.equal(pr('state.templates[0].favorite'),false,'The editor keeps «Показывать на главной» as set on the card');
+  const sheet={id:'schedule-form',dataset:{id:'t',scheduleId:'s'},fields:{scheduleMode:'weekly',scheduleDate:'2026-11-03',scheduleEnd:'2026-12-01',scheduleTime:'19:00',scheduleZone:'Europe/Moscow',scheduleDays:['2','4'],planMinutes:'75',planNote:'Не терять заметку',planReminder:'15'},querySelector:()=>error};
+  for(const fn of ph.submit||[])fn({target:sheet,preventDefault(){},stopImmediatePropagation(){}});
+  assert.equal(pr('state.schedules[0].time'),'19:00','The schedule sheet saves the schedule');
+  assert.equal(pr('state.schedules[0].id'),'s');
+  console.log('Passed: schedule lives in its own sheet; the editor saves the workout without touching schedule or «Показывать на главной».');
 }

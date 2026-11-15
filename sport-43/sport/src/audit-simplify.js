@@ -41,7 +41,9 @@ document.addEventListener('submit',e=>{
 nextPlanCard=function(t){
  if(!t)return '';const s=templateSchedule(t.id);
  const when=s?(s.mode==='weekly'?s.days.map(d=>scheduleWeekdays.find(x=>x[0]===d)?.[1]).join(' · '):dateLabel(s.startDate))+' · '+s.time+' · '+s.minutes+' мин':'';
- return `<div class="section-title"><h2>Расписание</h2></div><button class="card section-row plan-line" data-action="plan-template" data-id="${esc(t.id)}">${icon('calendar-blank')}<b>${s?esc(when):'Добавить в расписание'}</b>${icon('caret-right')}</button>`;
+ return `<div class="section-title"><h2>Расписание</h2></div><button class="card section-row plan-line" data-action="plan-template" data-id="${esc(t.id)}">${icon('calendar-blank')}<b>${s?esc(when):'Добавить в расписание'}</b>${icon('caret-right')}</button>`
+  // Пункт 12 (Астамур 15.11.2026): «Показывать на главной» — обычный переключатель, на карточке рядом с расписанием.
+  +(t.recommended?'':`<label class="card section-row plan-home-row"><b>Показывать на главной</b><input type="checkbox" role="switch" class="sport-switch" data-template-home="${esc(t.id)}" ${t.favorite!==false?'checked':''}></label>`);
 };
 
 // 6. Home: today and the next three planned sessions; the rest behind «Всё расписание».
@@ -89,13 +91,26 @@ function auditExerciseForm(form){
   const paint=()=>{d.querySelector('summary').textContent='Показатели: '+([...metrics.querySelectorAll('input:checked')].map(i=>i.nextElementSibling?.textContent.trim().toLowerCase()).join(', ')||'не выбраны')};
   paint();metrics.addEventListener('change',paint);
  }
- // 4. The name is written once, in the heading; the pencil beside it opens the field.
+ // 4. Название одно — в заголовке. Карандаш стоит сразу после текста названия (Астамур, 15.11.2026 18:43); нажал —
+ //    сам заголовок становится полем, карандаш прячется, ✓ нет (18:53: «кривенько», «текст останется как он написал»);
+ //    в конце текста мигает только курсор — ничего не выделено, линии под текстом нет (18:58).
+ //    Ушёл с поля, нажатие мимо или «Готово» на клавиатуре — снова заголовок с новым названием. Пустое имя возвращает
+ //    прежнее, Escape — тоже. Раньше карандаш открывал второе поле и нажимался по кругу, потом стоял у правого края.
  const title=form.closest('.sheet')?.querySelector('.sheet-top h2'),row=form.querySelector('.exercise-title-row'),input=form.querySelector('.exercise-title-input');
- if(title&&row&&input){
-  row.hidden=true;
-  if(!title.parentElement.querySelector('.rename-exercise'))title.insertAdjacentHTML('afterend',`<button type="button" class="rename-exercise" aria-label="Переименовать упражнение">${icon('pencil-simple')}</button>`);
-  title.parentElement.querySelector('.rename-exercise').onclick=()=>{row.hidden=!row.hidden;if(!row.hidden){input.focus();input.select();}};
-  input.addEventListener('input',()=>{if(input.value.trim())title.textContent=input.value});
+ if(title&&row&&input&&!form.dataset.renameReady){
+  form.dataset.renameReady='1';row.hidden=true;
+  title.parentElement.querySelector('.rename-exercise')?.remove();
+  title.classList.add('rename-title');
+  title.insertAdjacentHTML('afterend',`<button type="button" class="rename-exercise" aria-label="Переименовать упражнение">${icon('pencil-simple')}</button>`);
+  const pencil=title.parentElement.querySelector('.rename-exercise'),max=input.maxLength>0?input.maxLength:120;
+  let before='',closedAt=0,mode='true';try{title.contentEditable='plaintext-only';if(title.contentEditable==='plaintext-only')mode='plaintext-only';}catch(e){}title.contentEditable='false';
+  const open=()=>{before=input.value;title.contentEditable=mode;title.classList.add('renaming');title.setAttribute('role','textbox');title.setAttribute('aria-label','Название упражнения');title.setAttribute('enterkeyhint','done');
+   pencil.dataset.editing='1';pencil.hidden=true;title.focus();const range=document.createRange();range.selectNodeContents(title);range.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(range);};
+  const close=()=>{if(!pencil.dataset.editing)return;const name=title.textContent.replace(/\s+/g,' ').trim().slice(0,max);input.value=name||before;title.textContent=input.value;input.dispatchEvent(new Event('input',{bubbles:true}));
+   title.contentEditable='false';title.classList.remove('renaming');title.removeAttribute('role');title.removeAttribute('aria-label');pencil.hidden=false;delete pencil.dataset.editing;closedAt=Date.now();};
+  pencil.onclick=()=>{if(!pencil.dataset.editing&&Date.now()-closedAt>400)open();};
+  title.addEventListener('keydown',e=>{if(!pencil.dataset.editing)return;if(e.key==='Enter'){e.preventDefault();close();}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();title.textContent=before;close();}});
+  title.addEventListener('blur',close);
  }
  // 3. «Добавить» from the library: where to add and the button first, the setup folded below.
  if(form.dataset.scope==='add'){
@@ -191,3 +206,77 @@ renderJournal=function(){
  const tab=(id,label)=>`<button data-action="journal-tab" data-id="${id}" class="${journalTab===id?'selected':''}" aria-pressed="${journalTab===id}">${label}</button>`;
  return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():renderHistory());
 };
+
+/* Один список упражнений в трёх местах — Библиотека, «Добавить упражнение» в тренировке, «Выбрать упражнение» в
+   «Мои тренировки» (Астамур, 15.11.2026 16:56: «да, как в библиотеке»). Везде одно и то же: поиск «Найти упражнение»,
+   круглая кнопка фильтров (группа → группы мышц → оборудование; оборудование только в группах с ним), выбор фильтров
+   и открыты ли они — общие на все три места, «N упражнений», избранные сверху, семейство одной карточкой
+   («Подтягивания · 5 вариантов хвата»), «Создать своё упражнение» внизу, «＋ Добавить группу» последним пунктом групп.
+   Разное только нажатие на карточку: в Библиотеке открывает упражнение, в окнах выбора добавляет; у семейства сначала
+   выбираешь вариант — пилюли под карточкой. */
+function exerciseCountLabel(n){return n+' '+(n%10===1&&n%100!==11?'упражнение':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'упражнения':'упражнений');}
+function exerciseListMarkup(q,action){
+ const arr=filteredExercises(String(q??'').trim()),ids=new Set(state.favoriteExercises||[]),fav=arr.filter(e=>ids.has(e.id)),rest=arr.filter(e=>!ids.has(e.id));
+ return `${fav.length?`<div class="section-title"><h2>Избранные упражнения</h2></div><div class="exercise-list">${fav.map(e=>exerciseCard(e,action)).join('')}</div><div class="section-title"><h2>Упражнения</h2></div>`:''}<div class="library-count">${exerciseCountLabel(arr.length)}</div><div class="exercise-list">${rest.map(e=>exerciseCard(e,action)).join('')||(!arr.length?'<div class="empty">Ничего не найдено.</div>':'')}</div>`;
+}
+libraryResults=function(){return exerciseListMarkup(query,'exercise-detail');};
+function exercisePool(){return allExercises().filter(e=>librarySport==='all'||exerciseSports(e).includes(librarySport));}
+function pickerFiltersMarkup(){
+ const pool=exercisePool(),equipOn=equipmentFilterVisible();
+ const equip=equipmentChoices.filter(([k])=>k==='all'||pool.some(e=>equipmentMatches(e,k))),muscles=muscleGroups.filter(([id])=>id==='all'||pool.some(e=>exerciseMuscles(e).includes(id)));
+ if(!equipOn||!equip.some(([k])=>k===category))category='all';
+ if(!muscles.some(([id])=>id===libraryMuscle))libraryMuscle='all';
+ return `<div class="library-filter-box picker-filter-box" ${auditFiltersOpen?'':'hidden'}><div class="catalog-group-filter"><label class="library-sport"><select id="picker-sport" aria-label="Группа упражнений"><option value="all">Все группы</option>${exerciseGroups().map(g=>`<option value="${esc(g.id)}" ${librarySport===g.id?'selected':''}>${esc(groupPath(g.id))}</option>`).join('')}<option value="__new-group">＋ Добавить группу</option></select></label></div>`+
+  `<div class="library-filters"><label class="library-muscle"><select id="picker-muscle" aria-label="Группы мышц" ${muscles.length<2?'disabled':''}>${muscles.map(([id,name])=>`<option value="${id}" ${libraryMuscle===id?'selected':''}>${id==='all'?'Группы мышц':name}</option>`).join('')}</select></label>`+
+  (equipOn&&equip.length>1?`<label class="library-equipment"><select id="picker-equipment" aria-label="Оборудование">${equip.map(([id,name])=>`<option value="${id}" ${category===id?'selected':''}>${name}</option>`).join('')}</select></label>`:'')+`</div></div>`;
+}
+function pickerToggleMarkup(){return `<button type="button" class="library-filter-toggle" data-action="picker-filters" aria-expanded="${auditFiltersOpen}" aria-label="Фильтры">${icon('sliders-horizontal')}</button>`;}
+function exerciseSearchRow(id){return `<div class="library-search-row picker-search-row"><label class="search library-search">${icon('magnifying-glass')}<input id="${id}" placeholder="Найти упражнение" aria-label="Найти упражнение" autocomplete="off"></label>${pickerToggleMarkup()}</div>`;}
+showPicker=function(phase){openSheet('Добавить упражнение',`<input id="picker-phase" type="hidden" value="${esc(phase||'main')}">${exerciseSearchRow('picker-search')}<div id="picker-filters">${pickerFiltersMarkup()}</div><div id="picker-results">${exerciseListMarkup('','pick-exercise')}</div><button class="button dashed" style="margin-top:15px" data-action="custom-exercise">${icon('plus')} Создать своё упражнение</button>`,'picker');};
+templatePickerResultsMarkup=function(q=''){return exerciseListMarkup(q,'template-pick-exercise');};
+const openTemplatePickerBeforeFilters=openTemplateExercisePicker;
+openTemplateExercisePicker=function(row=null){
+ openTemplatePickerBeforeFilters(row);
+ const input=$('#template-picker-search'),label=input?.closest('label');if(!label||label.closest('.library-search-row'))return;
+ input.placeholder='Найти упражнение';input.setAttribute('aria-label','Найти упражнение');input.setAttribute('autocomplete','off');
+ label.classList.add('library-search');const wrap=document.createElement('div');wrap.className='library-search-row picker-search-row';label.before(wrap);wrap.append(label);
+ wrap.insertAdjacentHTML('beforeend',pickerToggleMarkup());wrap.insertAdjacentHTML('afterend',`<div id="template-picker-filters">${pickerFiltersMarkup()}</div>`);
+ const create=$('.template-picker-create'),results=$('#template-picker-results');if(create&&results){results.after(create);create.style.marginTop='15px';}
+};
+function refreshPicker(){const box=$('#picker-filters')||$('#template-picker-filters');if(!box)return;box.innerHTML=pickerFiltersMarkup();
+ if($('#picker-results'))$('#picker-results').innerHTML=exerciseListMarkup($('#picker-search')?.value||'','pick-exercise');
+ if($('#template-picker-results'))$('#template-picker-results').innerHTML=exerciseListMarkup($('#template-picker-search')?.value||'','template-pick-exercise');
+ document.querySelector('[data-action="picker-filters"]')?.setAttribute('aria-expanded',String(auditFiltersOpen));}
+function syncLibraryPage(){if(view==='library')render();}
+/* «＋ Добавить группу» из окна выбора: окно выбора откладывается, после сохранения или отмены возвращается. */
+function openPickerGroupForm(){holdTemplateSheet('picker');withTemplateSheetOpening(()=>editGroup());const form=$('#group-form');if(form)form.dataset.from='picker';}
+// на window: обработчик формы группы в catalog-groups.js стоит на document раньше этого и иначе успел бы первым
+window.addEventListener('submit',e=>{const f=e.target;if(f.id!=='group-form'||f.dataset.from!=='picker')return;e.preventDefault();e.stopImmediatePropagation();
+ try{const v=new FormData(f),group=saveExerciseGroup(null,v.get('name'),v.get('parentId'));persist();closeSheet();refreshPicker();syncLibraryPage();toast('Группа «'+group.name+'» создана');}
+ catch(error){const box=f.querySelector('.form-error');if(box)box.textContent=error.message;}},true);
+document.addEventListener('input',e=>{if(e.target.id!=='picker-search')return;e.stopImmediatePropagation();$('#picker-results').innerHTML=exerciseListMarkup(e.target.value,'pick-exercise');},true);
+document.addEventListener('change',e=>{const t=e.target,key={'picker-sport':'sport','picker-equipment':'equipment','picker-muscle':'muscle'}[t.id];if(!key)return;e.stopImmediatePropagation();
+ if(key==='sport'&&t.value==='__new-group'){t.value=librarySport;openPickerGroupForm();return;}
+ if(key==='sport')librarySport=t.value;else if(key==='muscle')libraryMuscle=t.value;else category=t.value;
+ refreshPicker();syncLibraryPage();},true);
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action="picker-filters"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();auditFiltersOpen=!auditFiltersOpen;refreshPicker();syncLibraryPage();},true);
+/* Семейство в окне выбора: нажал на карточку — под ней пилюли вариантов («Прямой», «Обратный»…); нажал пилюлю — добавлено.
+   На window: выбор в «Мои тренировки» (template-picker.js) слушает document раньше и иначе добавил бы сразу. */
+window.addEventListener('click',e=>{
+ const card=e.target.closest('#picker-results .exercise-card[data-action="pick-exercise"],#template-picker-results .exercise-card[data-action="template-pick-exercise"]');if(!card)return;
+ const family=exerciseFamily(card.dataset.id);if(!family)return;e.preventDefault();e.stopImmediatePropagation();
+ const open=card.nextElementSibling?.classList.contains('picker-variants');document.querySelectorAll('.picker-variants').forEach(x=>x.remove());document.querySelectorAll('.exercise-card[aria-expanded]').forEach(x=>x.removeAttribute('aria-expanded'));if(open)return;
+ const hidden=new Set(state.archivedExercises||[]),variants=family.variants.filter(v=>exercise(v.exerciseId)&&!hidden.has(v.exerciseId));
+ card.insertAdjacentHTML('afterend',`<div class="picker-variants" role="group" aria-label="${esc(family.name)}: выбери вариант"><small>Выбери вариант${family.variantNoun?' '+esc(family.variantNoun):''}</small>${variants.map(v=>`<button type="button" class="picker-variant" data-action="${card.dataset.action}" data-id="${esc(v.exerciseId)}">${esc(v.pill||exercise(v.exerciseId).name)}</button>`).join('')}</div>`);
+ card.setAttribute('aria-expanded','true');
+},true);
+
+/* Карточка тренировки: «Начать тренировку» — внизу, под расписанием (Астамур, 15.11.2026 17:14). У рекомендуемой
+   вниз уходят обе кнопки — «Начать тренировку» и «В мои тренировки». */
+function startButtonLast(html){
+ const group=html.match(/<div class="sheet-actions">(?:(?!<\/div>)[\s\S])*data-action="start"[\s\S]*?<\/div>/),single=!group&&html.match(/<button class="button primary"[^>]*data-action="start"[^>]*>[\s\S]*?<\/button>/);
+ const block=group?.[0]||single?.[0];if(!block)return html;
+ return html.replace(block,'')+`<div class="card-start">${block.replace(/ style="margin-top:16px"/,'')}</div>`;
+}
+const sectionBeforeStartLast=renderSection;renderSection=function(id){return startButtonLast(sectionBeforeStartLast(id));};
+const templateCardBeforeStartLast=renderTemplateCard;renderTemplateCard=function(id){return startButtonLast(templateCardBeforeStartLast(id));};

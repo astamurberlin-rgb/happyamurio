@@ -11,6 +11,9 @@ const root=new URL('../',import.meta.url),rootPath=fileURLToPath(root);
 const tracked=execSync('git ls-files -z .',{cwd:rootPath}).toString().split('\0').filter(Boolean).map(p=>p.replace(/^\.\//,'')).filter(p=>p!=='SOURCE-PROVENANCE.json'&&!/\.md$/i.test(p)).sort();
 const files=[];
 for(const path of tracked){const bytes=await readFile(new URL(path,root));files.push({path,size:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});}
+// Update 43.3 (15.11.2026): lab decisions of 15.11 evening — time in one form, no rest after the last set, collapse arrow,
+// header back at the page end, schedule out of the editor, one rest per exercise, set row in one line with ▶ for timed
+// exercises, row names in the journal, session sheet «Перенести / Отменить», marks «Пропущено / Перенесено», journal feed.
 // Update 43.2 (15.11.2026): measurement screen «Поделиться» and the new silhouette, time of each counter tap,
 // journal without the extra heading and with workout pictures, focus ring only from the keyboard, no scrollbars.
 // Update 43.1 (15.11.2026): sign-in of its own again (happy-account:sport), sign-out closes only this app's session.
@@ -19,11 +22,11 @@ for(const path of tracked){const bytes=await readFile(new URL(path,root));files.
 // removed (HappyStore.model.place), the appearance is saved on the device again, workout and exercise links open them.
 const sourceCommit='26f10dc3aac5a842ae359c3ab479a6d1726358d0';
 const manifest={
- app:'Happy Sport',update:'43.2',
+ app:'Happy Sport',update:'43.3',
  source_release:'sport-42 (Happy Sport · Update 42)',
  source_commit:sourceCommit,
  github_pages_url:'https://astamurberlin-rgb.github.io/happyamurio/sport-43/',
- agreed_by_owner:'2026-11-15 01:12, in chat: every app signs in and out on its own again (decision of 09.11.2026 restored), the account and its records stay shared. Earlier: 2026-11-14 15:37, in chat: stage 3 of the shared sign-in, storage and exchange task (Day moves to the shared module). Astamur approved the plan: body measurements become one shared document and one shared screen for Day, Meal and Sport (shared/happy-measurements.js); link switches become one shared document; Sport publishes planned workouts for Day; documents carry a format number. Sport 43 is published together with Day 59 and Meal 32, only by his word.',
+ agreed_by_owner:'2026-11-15 23:51, in chat: release in this chat everything accepted in the Sport lab (steps 8–32), Day and Meal with the shared measurement screen; published only by the word «выпускай». Earlier: 2026-11-15 01:12, in chat: every app signs in and out on its own again (decision of 09.11.2026 restored), the account and its records stay shared. Earlier: 2026-11-14 15:37, in chat: stage 3 of the shared sign-in, storage and exchange task (Day moves to the shared module). Astamur approved the plan: body measurements become one shared document and one shared screen for Day, Meal and Sport (shared/happy-measurements.js); link switches become one shared document; Sport publishes planned workouts for Day; documents carry a format number. Sport 43 is published together with Day 59 and Meal 32, only by his word.',
  icon_library:'/happyamurio/assets/sport-icons/v1/',
  exercise_library:JSON.parse(await readFile(new URL('../assets/exercise-library/v1/manifest.json',root),'utf8')),
  exercise_media:'/happyamurio/assets/exercise-media/v1/',

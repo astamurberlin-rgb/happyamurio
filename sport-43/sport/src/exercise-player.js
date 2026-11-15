@@ -86,7 +86,9 @@ function finishExercisePlayer(at=playerNow()){
 }
 function playerRoundRemaining(p,index,key,at=playerNow()){const program=playerProgram(p),row=program[index];if(!row)return 0;const start=program.slice(0,index).reduce((n,r)=>n+r.workSeconds+r.restSeconds,0)+(key==='restSeconds'?row.workSeconds:0);return Math.max(0,row[key]-Math.max(0,exercisePlayerElapsed(p,at)-start));}
 function playerCanAddRound(p){return p.mode!=='stopwatch'?playerProgram(p).length<50:!!p.setIndices&&!p.finished&&(p.running||p.elapsed>0)&&(p.laps?.length||0)<49;}
-function playerDisplay(seconds,precise=false){const ticks=Math.max(0,Math.floor((Number(seconds)||0)*100+1e-7)),whole=Math.floor(ticks/100),minutes=Math.floor(whole/60),hours=Math.floor(minutes/60),pad=n=>String(n).padStart(2,'0');return (hours?pad(hours)+':'+pad(minutes%60):pad(minutes))+':'+pad(whole%60)+(precise?'.'+pad(ticks%100):'');}
+/* Часы таймеров одним видом (пункт 7, Астамур 15.11.2026): 0:58, 2:00, 12:34, 1:02:03 — без сотых и без нуля впереди.
+   up — обратный отсчёт: округление вверх, чтобы 0:00 было только в самом конце. */
+function playerDisplay(seconds,up=false){const n=Math.max(0,Number(seconds)||0),whole=up?Math.ceil(n-1e-7):Math.floor(n+1e-7),hours=Math.floor(whole/3600),minutes=Math.floor(whole/60)%60,pad=x=>String(x).padStart(2,'0');return hours?hours+':'+pad(minutes)+':'+pad(whole%60):minutes+':'+pad(whole%60);}
 function clockFaceIcon(){return '<svg class="icon clock-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6v6l4 2"/></svg>'}
 function playerDial(p,status){
   const marks=Array.from({length:60},(_,i)=>{const a=i*6*Math.PI/180,inner=i%5?113:110,outer=i%5?117:120;return `<line x1="${125+Math.sin(a)*inner}" y1="${125-Math.cos(a)*inner}" x2="${125+Math.sin(a)*outer}" y2="${125-Math.cos(a)*outer}" class="${i%5?'':'major'}"/>`;}).join('');
@@ -117,7 +119,7 @@ function playerCurrentRow(ei,row,i,p){
   const e=state.active.exercises[ei],down=p.mode!=='stopwatch',started=!!p.setIndices&&(p.running||p.elapsed>0||p.finished),key=`${ei},${playerModeKey(p.mode)},${i}`;
   const name=playerView.editing?`<input class="player-row-name" type="text" maxlength="80" data-player-row-name="${key}" value="${esc(row.name)}" aria-label="Название ${playerRoundLabel(p.mode,i)}">`:`<span title="${esc(row.name)}">${esc(row.name)}</span>`;
   const distance=playerMetricFields(e,row,key);
-  const time=down?sportMetricInput(`type="text" inputmode="text" data-player-preset="${ei},${i},workSeconds" value="${sportDurationValue(row.seconds)}" aria-label="Время таймера ${i+1}, минуты:секунды" ${started?'readonly':''}`,'м:с'):`<b ${row.current?'data-player-current-lap':''}>${playerDisplay(row.seconds,true)}</b>`;
+  const time=down?sportMetricInput(`type="text" inputmode="text" data-player-preset="${ei},${i},workSeconds" value="${sportDurationValue(row.seconds)}" aria-label="Время таймера ${i+1}, минуты:секунды" ${started?'readonly':''}`,''):`<b ${row.current?'data-player-current-lap':''}>${playerDisplay(row.seconds)}</b>`;
   return `<div class="player-round-row" data-distance="${exerciseHasMetric(e,'distance')}">${name}${distance}${time}</div>`;
 }
 function playerHistorySessions(ei){
@@ -131,14 +133,14 @@ function playerHistoryCell(ei,result,row,index){
   const name=row.name||playerRoundLabel(result.mode,index),attrs=`data-player-result="${esc(result.id)}" data-player-ei="${ei}" data-player-index="${index}"`;
   const label=playerView.editing?`<input class="player-saved-name" maxlength="80" data-player-record="name" ${attrs} value="${esc(name)}" aria-label="Название сохранённого круга ${index+1}">`:`<small>${esc(name)}</small>`;
   const distance=result.distanceEnabled||row.distance!=null?(playerView.editing?playerDistanceField(row.distance,`data-player-record="distance" ${attrs}`,name):`<small class="player-history-distance">${row.distance==null?'—':esc(String(row.distance))} м</small>`):'';
-  const time=playerView.editing?sportMetricInput(`data-player-record="seconds" ${attrs} value="${sportDurationValue(row.seconds)}" inputmode="text" aria-label="Время сохранённого круга ${index+1}"`,'м:с'):`<time>${playerDisplay(row.seconds,true)}</time>`;
+  const time=playerView.editing?sportMetricInput(`data-player-record="seconds" ${attrs} value="${sportDurationValue(row.seconds)}" inputmode="text" aria-label="Время сохранённого круга ${index+1}"`,''):`<time>${playerDisplay(row.seconds)}</time>`;
   return `<td>${label}${distance}${playerExtraHistory(row,attrs,playerView.editing)}${time}</td>`;
 }
 function playerHistoryCurrentCell(ei,row,index,p){
   if(!row)return '—';const e=state.active.exercises[ei],attrs=`${ei},${playerModeKey(p.mode)},${index}`;
   const distance=exerciseHasMetric(e,'distance')?(playerView.editing?playerDistanceField(row.distance,`data-player-distance="${attrs}"`,row.name):`<small>${row.distance==null?'—':esc(String(row.distance))} м</small>`):'';
   const editable=p.mode!=='stopwatch'&&(!p.setIndices||!p.running&&!p.elapsed&&!p.finished);
-  return distance+playerExtraHistory(row)+(editable?sportMetricInput(`type="text" data-player-preset="${ei},${index},workSeconds" value="${sportDurationValue(row.seconds)}" aria-label="Время таймера ${index+1}, минуты:секунды"`,'м:с'):`<time ${row.current?'data-player-current-lap':''} ${p.mode!=='stopwatch'?`data-player-history-current="${index}"`:''}>${playerDisplay(row.seconds,true)}</time>`);
+  return distance+playerExtraHistory(row)+(editable?sportMetricInput(`type="text" data-player-preset="${ei},${index},workSeconds" value="${sportDurationValue(row.seconds)}" aria-label="Время таймера ${index+1}, минуты:секунды"`,''):`<time ${row.current?'data-player-current-lap':''} ${p.mode!=='stopwatch'?`data-player-history-current="${index}"`:''}>${playerDisplay(row.seconds)}</time>`);
 }
 function playerHistoryMarkup(ei,rows){
   const results=playerHistorySessions(ei),p=playerPreview(ei),e=state.active.exercises[ei],count=Math.max(rows.length,...results.map(r=>r.rows.length));
@@ -147,7 +149,7 @@ function playerHistoryMarkup(ei,rows){
 function exercisePlayerBody(ei){
   const e=state.active?.exercises[ei];if(!e)return '';
   const p=playerPreview(ei),s=exercisePlayerStatus(p),running=p.running&&!workoutIsPaused(state.active),down=p.mode!=='stopwatch',rows=playerLiveRows(ei);
-  return `<div class="exercise-player ${s.phase==='rest'?'rest-phase':''}" data-player-ei="${ei}"><div class="player-exercise-heading"><p class="player-exercise-name">${esc(e.name)}</p></div><div class="player-face">${playerDial(p,s)}<div class="player-face-center"><strong data-player-time data-hours="${s.remaining>=3600}" role="timer">${playerDisplay(s.remaining,true)}</strong>${playerMetricControls(e,ei,down)}</div></div>
+  return `<div class="exercise-player ${s.phase==='rest'?'rest-phase':''}" data-player-ei="${ei}"><div class="player-exercise-heading"><p class="player-exercise-name">${esc(e.name)}</p></div><div class="player-face">${playerDial(p,s)}<div class="player-face-center"><strong data-player-time data-hours="${s.remaining>=3600}" role="timer">${playerDisplay(s.remaining,down)}</strong>${playerMetricControls(e,ei,down)}</div></div>
   <div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="player-toggle" data-ei="${ei}" aria-label="${running?'Приостановить':'Запустить'} плеер упражнения"><span>${running?'Стоп':'Старт'}</span></button><button type="button" class="timer-round-text" data-action="player-new-round" data-ei="${ei}" aria-label="${down?'Добавить таймер':'Добавить круг'}" ${!playerCanAddRound(p)?'disabled':''}><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>
   ${timerWheelTrigger('exercise',ei)}
   ${playerView.history?`<div class="timer-history-controls"><button class="text-btn" data-action="player-history" data-ei="${ei}">Текущие круги</button><button class="text-btn" data-action="player-edit" data-ei="${ei}" aria-pressed="${playerView.editing}">${playerView.editing?'Готово':'Правки'}</button></div>`:''}
@@ -171,10 +173,10 @@ function parsePlayerPreset(value){return parseSetTime(String(value).replace(/\.0
 function commitPlayerPreset(input){
   const [ei,index,key]=input.dataset.playerPreset.split(','),n=parsePlayerPreset(input.value);
   if(!Number.isInteger(n)||n<0||n>(key==='workSeconds'?86400:3600)){
-    toast('Время таймера: минуты:секунды, например 01:30');input.value=playerDisplay(playerProgram(playerPreview(Number(ei)))[Number(index)][key],true);return;
+    toast('Время таймера: минуты:секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(Number(ei)))[Number(index)][key]);return;
   }
   if(!updatePlayerPreset(Number(ei),c=>{c.program=playerProgram(c).map(r=>({...r}));c.program[Number(index)][key]=n;}))return;
-  input.value=sportDurationValue(n);const preview=playerPreview(Number(ei)),display=$('[data-player-time]');if(display)display.textContent=playerDisplay(exercisePlayerStatus(preview).remaining,true);
+  input.value=sportDurationValue(n);const preview=playerPreview(Number(ei)),display=$('[data-player-time]');if(display)display.textContent=playerDisplay(exercisePlayerStatus(preview).remaining);
 }
 function parsePlayerResultTime(value){
   const s=String(value).trim().replace(',','.');
@@ -200,7 +202,7 @@ function commitPlayerHistoryRecord(input){
   const result=playerHistorySessions(Number(input.dataset.playerEi)).find(r=>r.id===input.dataset.playerResult),row=result?.rows[Number(input.dataset.playerIndex)],key=input.dataset.playerRecord;
   if(!row||!['name','distance','weight','reps','seconds'].includes(key))return false;
   const value=key==='name'?String(input.value).trim().slice(0,80):key==='seconds'?parsePlayerResultTime(input.value):parsePlayerMetric(input.value,key);
-  if(value===undefined||key==='seconds'&&value==null){input.value=key==='seconds'?playerDisplay(row.seconds,true):row[key]??'';toast(key==='seconds'?'Время: минуты:секунды.сотые, например 01:23.45':'Дистанция: от 0 до 1 000 000 м');return false;}
+  if(value===undefined||key==='seconds'&&value==null){input.value=key==='seconds'?playerDisplay(row.seconds):row[key]??'';toast(key==='seconds'?'Время: минуты:секунды, например 1:23':'Дистанция: от 0 до 1 000 000 м');return false;}
   const extraElapsed=Math.max(0,result.elapsed-result.rows.reduce((n,r)=>n+r.seconds,0));
   if(value==null||value==='')delete row[key];else row[key]=value;
   if(key==='seconds')result.elapsed=extraElapsed+result.rows.reduce((n,r)=>n+r.seconds,0);
@@ -210,7 +212,7 @@ function commitPlayerHistoryRecord(input){
     if(p.mode==='stopwatch'){let elapsed=0;p.laps=result.rows.slice(0,-1).map(r=>({seconds:r.seconds,elapsed:elapsed+=r.seconds}));}
     e.timerRowDetails??={};e.timerRowDetails[playerModeKey(p.mode)]=result.rows.map(r=>({...(r.name?{name:r.name}:{}),...Object.fromEntries(['distance','weight','reps'].filter(k=>r[k]!=null).map(k=>[k,r[k]]))}));
   }
-  input.value=key==='seconds'?playerDisplay(value,true):value??'';persist();return true;
+  input.value=key==='seconds'?playerDisplay(value):value??'';persist();return true;
 }
 document.addEventListener('change',event=>{
   const input=event.target;
@@ -241,22 +243,7 @@ function saveExercisePlayerResult(ei,at=playerNow()){
 }
 function renderExerciseTimerResults(e){
   if(!e.timerResults?.length)return '';
-  return `<details class="exercise-timer-results"><summary>Таймеры и секундомер · ${e.timerResults.length}</summary>${e.timerResults.map(result=>`<section><p>${result.mode==='stopwatch'?'Секундомер':'Таймер'} · ${playerDisplay(result.elapsed,true)}</p>${result.rows.map((row,i)=>`<div><span>${esc(row.name||playerRoundLabel(result.mode,i))}</span>${result.distanceEnabled||row.distance!=null?`<span>${row.distance==null?'—':esc(String(row.distance))} м</span>`:''}${playerExtraHistory(row)}<time>${playerDisplay(row.seconds,true)}</time></div>`).join('')}</section>`).join('')}</details>`;
-}
-function timedExercisePreview(e,ei){const p=state.active?.exercisePlayer;return p?.ei===ei?p:e.timerDraft?playerPreview(ei):{ei,mode:'stopwatch',elapsed:0,running:false,finished:false,laps:[]};}
-function renderTimedExerciseWidget(e,ei){
-  const p=timedExercisePreview(e,ei),s=exercisePlayerStatus(p),running=p.running&&!workoutIsPaused(state.active);
-  return `<div class="timed-exercise-widget" data-timed-widget="${ei}" data-action="open-exercise-player" data-ei="${ei}" role="group" aria-label="Таймер: ${esc(e.name)}" style="--timed-progress:${s.progress*100}%"><span class="timed-exercise-progress" aria-hidden="true"></span><button type="button" class="timed-exercise-toggle" data-action="toggle-timed-exercise" data-ei="${ei}" aria-label="${running?'Приостановить':'Запустить'} отсчёт: ${esc(e.name)}">${icon(running?'pause':'play')}</button><button type="button" class="timed-exercise-open" data-action="open-exercise-player" data-ei="${ei}" aria-label="Открыть таймер: ${esc(e.name)}">${clockFaceIcon()}<span><small data-timed-mode>${p.mode==='stopwatch'?'Секундомер':'Таймер'}</small><strong data-timed-time>${playerDisplay(s.remaining,true)}</strong></span><span class="timed-exercise-chevron" aria-hidden="true">${icon('caret-right')}</span></button></div>`;
-}
-function refreshTimedExerciseWidgets(at=playerNow()){
-  for(const widget of document.querySelectorAll?.('[data-timed-widget]')||[]){
-    const ei=Number(widget.dataset.timedWidget),e=state.active?.exercises[ei];if(!e)continue;
-    const p=timedExercisePreview(e,ei),s=exercisePlayerStatus(p,at),running=p.running&&!workoutIsPaused(state.active),toggle=widget.querySelector('.timed-exercise-toggle'),label=(running?'Приостановить':'Запустить')+' отсчёт: '+e.name;
-    widget.style.setProperty('--timed-progress',s.progress*100+'%');
-    const time=widget.querySelector('[data-timed-time]');if(time)time.textContent=playerDisplay(s.remaining,true);
-    const mode=widget.querySelector('[data-timed-mode]');if(mode)mode.textContent=p.mode==='stopwatch'?'Секундомер':'Таймер';
-    if(toggle&&toggle.getAttribute('aria-label')!==label){toggle.setAttribute('aria-label',label);toggle.innerHTML=icon(running?'pause':'play');}
-  }
+  return `<details class="exercise-timer-results"><summary>Таймеры и секундомер · ${e.timerResults.length}</summary>${e.timerResults.map(result=>`<section><p>${result.mode==='stopwatch'?'Секундомер':'Таймер'} · ${playerDisplay(result.elapsed)}</p>${result.rows.map((row,i)=>`<div><span>${esc(row.name||playerRoundLabel(result.mode,i))}</span>${result.distanceEnabled||row.distance!=null?`<span>${row.distance==null?'—':esc(String(row.distance))} м</span>`:''}${playerExtraHistory(row)}<time>${playerDisplay(row.seconds)}</time></div>`).join('')}</section>`).join('')}</details>`;
 }
 function openExercisePlayer(ei){
   const p=state.active?.exercisePlayer;if(p?.running&&p.ei!==ei){toast('Сначала поставь текущий плеер на паузу');ei=p.ei;}
@@ -297,31 +284,29 @@ function renderExercisePlayerView(ei,revealLast=false){
 }
 function exerciseClockFab(){return '';}
 function refreshExercisePlayer(at=playerNow()){
-  refreshTimedExerciseWidgets(at);
   const p=state.active?.exercisePlayer;if(!p)return;
   if(syncExercisePlayer(at)){persist();if(p.finished)toast(p.independent?'Таймер завершён':'Упражнение завершено · подходы записаны');if(activePanel()?.type==='active'&&!$('#exercise-config-form'))render();}
   const s=exercisePlayerStatus(p,at),root=$('[data-player-ei]'),mini=$('[data-player-mini]');
   if(s.phase==='rest'){const si=p.setIndices[s.round-1],row=document.querySelector(`[data-rest-row="${p.ei},${si}"]`);if(row){row.style.setProperty('--rest-progress',String(s.progress*100));const time=row.querySelector('[data-rest-time]');if(time)time.textContent=countdownTime(Math.ceil(s.remaining));row.classList.toggle('rest-paused',!p.running);}}
-  if(mini)mini.textContent=playerDisplay(s.remaining);
+  if(mini)mini.textContent=playerDisplay(s.remaining,p.mode!=='stopwatch');
   if(!root||Number(root.dataset.playerEi)!==p.ei)return;
-  const time=root.querySelector('[data-player-time]');if(time){time.textContent=playerDisplay(s.remaining,true);time.dataset.hours=String(s.remaining>=3600);}
+  const time=root.querySelector('[data-player-time]');if(time){time.textContent=playerDisplay(s.remaining,p.mode!=='stopwatch');time.dataset.hours=String(s.remaining>=3600);}
   root.classList.toggle('rest-phase',s.phase==='rest');const progress=root.querySelector('.dial-progress');if(progress)progress.innerHTML=fullPlayerArc(s.progress);
   const start=root.querySelector('[data-action=player-toggle]');if(start){const running=p.running&&!workoutIsPaused(state.active),label=start.querySelector('span');if(label)label.textContent=running?'Стоп':'Старт';start.setAttribute('aria-label',(running?'Приостановить':'Запустить')+' плеер упражнения');}
   for(const input of root.querySelectorAll('[data-player-preset]')){input.readOnly=!!p.setIndices;const [,index,key]=input.dataset.playerPreset.split(',');if(document.activeElement!==input)input.value=sportDurationValue(playerRoundRemaining(p,Number(index),key,at));}
   const mode=root.querySelector('[data-player-mode]');if(mode)mode.disabled=!!p.running;
   const add=root.querySelector('[data-action=player-new-round]');if(add)add.disabled=!playerCanAddRound(p);
   const save=root.querySelector('[data-action=player-save]');if(save)save.disabled=s.elapsed<=0;
-  const currentLap=root.querySelector('[data-player-current-lap]');if(currentLap)currentLap.textContent=playerDisplay(s.elapsed-(p.laps?.at(-1)?.elapsed||0),true);
+  const currentLap=root.querySelector('[data-player-current-lap]');if(currentLap)currentLap.textContent=playerDisplay(s.elapsed-(p.laps?.at(-1)?.elapsed||0));
   for(const cell of root.querySelectorAll('[data-player-history-current]'))cell.textContent=playerDisplay(playerRoundRemaining(p,Number(cell.dataset.playerHistoryCurrent),'workSeconds',at),true);
 }
 document.addEventListener('click',event=>{
   const b=event.target.closest('[data-action]');if(!b)return;const action=b.dataset.action,ei=Number(b.dataset.ei);
   if(action==='finish'&&state.active?.exercisePlayer?.running){pauseExercisePlayer();persist();}
-  if(!['open-exercise-player','toggle-timed-exercise','player-history','player-edit','player-toggle','player-reset','player-lap','player-new-round','player-finish','player-save','collapse-exercise-player'].includes(action))return;
+  if(!['open-exercise-player','player-history','player-edit','player-toggle','player-reset','player-lap','player-new-round','player-finish','player-save','collapse-exercise-player'].includes(action))return;
   event.preventDefault();event.stopImmediatePropagation();if(b.disabled)return;
   if(action==='open-exercise-player'){if(Number(b.dataset.suppressOpenUntil)>Date.now())return;openExercisePlayer(ei);return;}
   if(action==='collapse-exercise-player'){collapseExercisePlayer();return;}
-  if(action==='toggle-timed-exercise'){if(state.active?.exercisePlayer?.running&&state.active.exercisePlayer.ei!==ei){toast('Сначала поставь текущий плеер на паузу');return;}ensurePlayerDraft(ei);if(!toggleExercisePlayer(ei)){openExercisePlayer(ei);toast('Укажи время каждого таймера');return;}persist();render();return;}
   if(action==='player-history'){playerView.history=!playerView.history;renderExercisePlayerView(ei);return;}
   if(action==='player-edit'){playerView.editing=!playerView.editing;renderExercisePlayerView(ei);return;}
   if(action==='player-toggle'&&!toggleExercisePlayer(ei)){toast(playerPreview(ei).mode!=='stopwatch'&&playerProgram(playerPreview(ei)).some(r=>r.workSeconds<=0)?'Укажи время каждого таймера':'Плеер недоступен');return;}

@@ -10,4 +10,4 @@ const page=(title,text,link='')=>`<!doctype html><html lang="ru"><meta charset="
 await writeFile(new URL('../dist/day/index.html',import.meta.url),page('Happy Day','Day открывается по своему адресу. Войди тем же аккаунтом Happy.','<a href="/happyamurio/day/">Открыть Happy Day</a>'));
 await writeFile(new URL('../dist/meal/index.html',import.meta.url),page('Happy Meal','Meal открывается по своему адресу. Войди тем же аккаунтом Happy.','<a href="/happyamurio/meal/">Открыть Happy Meal</a>'));
 await writeFile(new URL('../dist/prototypes/happy-icon-studio.html',import.meta.url),page('Icon Studio','Icon Studio в этой версии недоступна. Назначения иконок прежнего сайта не изменяются.'));
-console.log('Sport Update 43.2 built. Storage and exchange only through the shared module (shared/happy-store.js).');
+console.log('Sport Update 43.3 built. Storage and exchange only through the shared module (shared/happy-store.js).');

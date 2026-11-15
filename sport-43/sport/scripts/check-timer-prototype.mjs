@@ -23,9 +23,12 @@ assert.equal(run('playerCanAddRound(playerPreview(0))'),false,'No lap before a s
 assert.equal(run('addPlayerRound(0)'),false);
 assert.match(run('exercisePlayerBody(0)'),/Круг 1/);
 assert.match(run('exercisePlayerBody(0)'),/>Старт</);
-assert.equal(run('playerDisplay(0,true)'),'00:00.00');
-assert.equal(run('playerDisplay(125.43,true)'),'02:05.43');
-assert.equal(run('playerDisplay(3600.01,true)'),'01:00:00.01');
+// Время одним видом (пункт 7, 15.11.2026): без сотых и без нуля впереди; обратный отсчёт округляется вверх.
+assert.equal(run('playerDisplay(0)'),'0:00');
+assert.equal(run('playerDisplay(125.43)'),'2:05');
+assert.equal(run('playerDisplay(3600.01)'),'1:00:00');
+assert.equal(run('playerDisplay(59.2,true)'),'1:00');
+assert.equal(run('playerDisplay(0.4,true)'),'0:01');
 
 run("toggleExercisePlayer(0,now);now='2026-10-29T12:00:05.125'");
 assert.equal(run('playerCanAddRound(state.active.exercisePlayer)'),true);
@@ -42,7 +45,7 @@ assert.equal(run('state.active.exercises[0].timerResults.length'),1,'Saving twic
 c.state=plain(c.state);
 run('state.active.exercisePlayer=null');
 assert.equal(run('state.active.exercises[0].timerResults[0].elapsed'),12.6,'Reset and JSON reload preserve saved results');
-assert.match(run('renderExerciseTimerResults(state.active.exercises[0])'),/00:07.47/);
+assert.match(run('renderExerciseTimerResults(state.active.exercises[0])'),/>0:07</);
 assert.equal(run('prepareWorkoutExercise(clone(state.active.exercises[0]),true).timerResults'),undefined,'A repeated workout starts without the old session results');
 
 // The real switch handler enables timer rows immediately and relabels them.
