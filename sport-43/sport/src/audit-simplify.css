@@ -9,14 +9,13 @@
 .add-more,.metrics-fold{margin-top:14px;border-top:1px solid #ffffff30;padding-top:4px}
 .add-more>summary,.metrics-fold>summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer}
 .metrics-fold>.metric-switches{margin-top:6px}
-/* 4. Переименование: карандаш сразу после текста названия, при правке на его месте ✓ в кружке (15.11.2026 18:43). */
+/* 4. Переименование: карандаш сразу после текста названия; при правке карандаш прячется, ✓ нет (15.11.2026 18:53). */
 .sheet-top:has(.rename-exercise){display:block;position:relative}
 .sheet-top h2.rename-title{display:inline;outline:none}
 .sheet-top h2.rename-title.renaming{border-bottom:1px solid #ffffffb0;caret-color:#fff;-webkit-user-select:text;user-select:text}
 .rename-exercise{display:inline-grid;place-items:center;vertical-align:middle;width:44px;height:44px;margin:-8px 0 -6px 4px;padding:0;border-radius:50%;background:none;border:0;color:#fff}
 .rename-exercise .icon{width:20px;height:20px;fill:currentColor}
-.rename-exercise[data-editing]{width:40px;height:40px;margin-left:8px;background:#f2fbff;color:#11657f;box-shadow:0 3px 10px #1d3b8a40}
-.rename-exercise[data-editing] .icon{width:22px;height:22px}
+.rename-exercise[hidden]{display:none}
 .sheet-top:has(.rename-exercise):has(.favorite-star){padding-right:52px}
 .sheet-top:has(.rename-exercise) .favorite-star{position:absolute;right:0;top:0}
 /* 6. Home schedule: link to the rest. */
