@@ -73,3 +73,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#overlay')&&act
 window.addEventListener('message',e=>{const frame=$('.exercise-frame');if(!frame||e.source!==frame.contentWindow||e.origin!==location.origin||!['happy-sport.exercise-variant','happy-sport.exercise-add'].includes(e.data?.type)||!pullVariantIds.includes(e.data.exerciseId)||activePanel()?.type!=='exercise')return;currentExerciseId=e.data.exerciseId;activePanel().exerciseId=currentExerciseId;const heading=$('.exercise-heading h1');if(heading)heading.textContent=exercise(currentExerciseId)?.name||'';nav();if(e.data.type==='happy-sport.exercise-add')assignExercise()});
 window.addEventListener('resize',()=>shapeDock());
 render();
+/* Лаборатория 15.11.2026: чем сейчас управляют — пальцем/мышью или клавиатурой. Рамка выбора видна только с клавиатуры
+   (refinements.css: html[data-input="pointer"]). По умолчанию — палец. — Claude */
+(()=>{const root=document.documentElement,set=v=>{if(root.dataset.input!==v)root.dataset.input=v};set('pointer');
+ document.addEventListener('pointerdown',()=>set('pointer'),true);
+ document.addEventListener('keydown',e=>{if(e.key==='Tab'||e.key.startsWith('Arrow')||e.key==='Enter'||e.key===' ')set('keyboard')},true);})();

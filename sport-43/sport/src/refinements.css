@@ -198,3 +198,8 @@ body{width:100%;max-width:100%;overflow-x:clip}
 .workout-icon-picker{max-height:50dvh;overflow:auto;overscroll-behavior:contain}
 @media(max-width:360px){.active-workout>.set-card{padding:16px 4px}.active-workout .set-card h3{font-size:18px}.set-rows{--set-control:36px;--set-gap:4px}.set-row .set-metric input{font-size:19px}.set-row .set-unit{font-size:8px}.set-row .set-metric+.set-metric{padding-left:4px}.set-rows .set-rest{grid-template-columns:minmax(0,1fr) minmax(80px,1fr) repeat(2,var(--set-control))}.set-rest .rest-label{font-size:13px}.set-rest .set-metric input{font-size:19px}.set-rest .set-unit{font-size:9px}.set-actions .set-add{font-size:13px}.workout-icon-options{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .sport-signin{margin-bottom:14px}.sport-signin h3{margin:0 0 6px}.sport-signin .button{margin-top:14px}
+/* Лаборатория 15.11.2026 (Астамур): рамка выбора — только при работе с клавиатуры. После нажатия пальцем или мышью
+   (и когда окно само ставит фокус на первую кнопку) рамки нет. Полос прокрутки нет нигде: ни у страницы, ни у списков. */
+html[data-input="pointer"] :focus-visible{outline:none!important}
+html,html *{scrollbar-width:none}
+html::-webkit-scrollbar,html *::-webkit-scrollbar{display:none;width:0;height:0}
