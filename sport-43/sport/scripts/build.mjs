@@ -84,12 +84,11 @@ const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 43.1'",()=
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
 function memory(){var m=new Map();return {getItem:function(k){k=String(k);return m.has(k)?m.get(k):null},setItem:function(k,v){m.set(String(k),String(v))},removeItem:function(k){m.delete(String(k))},clear:function(){m.clear()},key:function(i){var keys=Array.from(m.keys());return i<keys.length?keys[i]:null},get length(){return m.size}}}
 try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:true});Object.defineProperty(window,'sessionStorage',{value:memory(),configurable:true});Object.defineProperty(window,'indexedDB',{value:undefined,configurable:true});window.happyLabMemoryStorage=true}catch(e){}})();</script>`;
-// Лаборатория 15.11.2026: полоска наверху и переключатель вариантов шага; к серверу страница не обращается (connect-src 'none').
-const labBar=`<style>:root{--lab-h:52px}html{scroll-padding-top:var(--lab-h)}body{padding-top:var(--lab-h)}.current-bar{top:var(--lab-h)}
+// Лаборатория 15.11.2026: полоска наверху; к серверу страница не обращается (connect-src 'none').
+const labBar=`<style>:root{--lab-h:30px}html{scroll-padding-top:var(--lab-h)}body{padding-top:var(--lab-h)}.current-bar{top:var(--lab-h)}
 #lab-bar{position:fixed;top:0;left:0;right:0;z-index:90;height:var(--lab-h);padding:5px 12px 0;background:#23466f;color:#fff;font:600 11px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:center;box-shadow:0 2px 10px #0003}
-#lab-bar b{display:block;font-size:11.5px;letter-spacing:.2px}#lab-variant{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-weight:600;opacity:.95}
-#lab-variant button{padding:3px 9px;border-radius:12px;background:#ffffff1f;border:1px solid #ffffff40;font-size:10.5px;font-weight:650;color:#fff}#lab-variant button[aria-pressed="true"]{background:#fff;color:#23466f}</style>
-<div id="lab-bar" role="note"><b>Лаборатория · Sport 43.1 · не настоящее приложение</b><span id="lab-variant">«Поделиться»: <button type="button" data-lab="sheet" aria-pressed="true">А · лист снизу</button><button type="button" data-lab="menu" aria-pressed="false">Б · меню у кнопки</button></span></div>`;
+#lab-bar b{display:block;font-size:11.5px;letter-spacing:.2px;line-height:20px}</style>
+<div id="lab-bar" role="note"><b>Лаборатория · Sport 43.1 · не настоящее приложение</b></div>`;
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
   .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+measurementsCss+measurementsScreenCss+'\n</style>')

@@ -8,12 +8,10 @@
  * Тем же форматом пишет Sport 42. Меняется устройство записей — растёт FORMAT, и три приложения выходят разом.
  *
  * Экран один на три приложения и везде умеет одно и то же: добавить, исправить, удалить и вернуть, сравнить даты,
- * поделиться — напечатать или выгрузить CSV (одна кнопка «Поделиться», выбор — в листе снизу или в меню у кнопки).
+ * поделиться — напечатать или выгрузить CSV (одна кнопка «Поделиться», выбор — в маленьком меню у кнопки).
  *   HappyMeasurements.mount(box, {doc, askSignIn, toast})
  *     doc       — общий документ или функция, которая его даёт: в Sport store.doc('body'),
  *                 в Day и Meal store.shared('sport','body'); без входа — null;
- *     share     — как показать выбор «Поделиться»: 'sheet' — лист снизу (по умолчанию), 'menu' — меню у кнопки;
- *                 можно функцией, которая даёт одно из двух;
  *     askSignIn — что сделать, если записать пробуют без входа;
  *     toast     — toast(текст, вернуть) приложения; без него сообщение показывается в самом экране.
  * Чистая часть (read, saveChanges, removeChanges, restoreChanges, csv) работает и в проверках Node.
@@ -283,7 +281,7 @@ function mount(box,options){
   const s=state();
   openDialog('Удалённые замеры',`<p class="hm-note">Удалённый замер можно восстановить.</p>`+s.trash.map(x=>`<div class="hm-trash-row"><b>${dateLabel(x.record.date)}</b><button type="button" class="hm-text" data-hm="restore" data-id="${esc(x.id)}">Восстановить</button></div>`).join('')+`<p class="hm-error" role="alert"></p>`);
  }
- /* «Поделиться»: два действия — печать и CSV. Выбор — лист снизу или маленькое меню у кнопки (share). */
+ /* «Поделиться»: два действия — печать и CSV, в маленьком меню у кнопки (решение Астамура 15.11.2026). */
  const SHARE_ITEMS=()=>`<button type="button" class="hm-share-item" role="menuitem" data-hm="print">${ICON.print}<span>Печать замеров</span></button>`+
   `<button type="button" class="hm-share-item" role="menuitem" data-hm="csv">${ICON.file}<span>Выгрузить CSV</span></button>`;
  function closeMenu(){if(!menu)return;const m=menu;menu=null;m.remove();document.removeEventListener('pointerdown',outside,true);document.removeEventListener('keydown',escape,true);
@@ -292,8 +290,6 @@ function mount(box,options){
  function escape(e){if(e.key==='Escape')closeMenu()}
  function openShare(button){
   if(!state().list.length){say('Пока нет замеров');return}
-  const style=typeof o.share==='function'?o.share():o.share;
-  if(style!=='menu'){openDialog('Поделиться',`<div class="hm-share-list" role="menu">${SHARE_ITEMS()}</div>`);return}
   if(menu){closeMenu();return}
   const m=menu=document.createElement('div');m.className='hm hm-menu';m.setAttribute('role','menu');m.setAttribute('aria-label','Поделиться');m.innerHTML=SHARE_ITEMS();
   document.body.appendChild(m);
@@ -330,8 +326,8 @@ function mount(box,options){
   if(action==='restore'){restore(id);return}
   if(action==='trash'){openTrash();return}
   if(action==='share'){openShare(b);return}
-  if(action==='csv'){closeMenu();closeDialog();download();return}
-  if(action==='print'){closeMenu();closeDialog();print();return}
+  if(action==='csv'){closeMenu();download();return}
+  if(action==='print'){closeMenu();print();return}
   if(action==='undo'){const undo=ui.notice&&ui.notice.undo;ui.notice=null;if(undo)undo();else render();return}
   if(action==='amplify')ui.amplify=Number(id)===1?1:3;
   if(action==='period'){ui.period=id;ui.chosen=null}
