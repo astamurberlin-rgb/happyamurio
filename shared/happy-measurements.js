@@ -196,19 +196,25 @@ function bodyPath(m){
  const dOut=Math.max((sw-J.x-4*Math.sin(t1))/Math.cos(t1),bw*1.02+0.3),ew=0.36*bw+0.42*fw+0.45;
  const onArm=(s,o)=>P(J.x+s*Math.sin(t1)+o*Math.cos(t1),J.y+s*Math.cos(t1)-o*Math.sin(t1));
  const torso=sym([P(0,26.8),P(nw+0.2,26.9),P(nw+3.2,28.5),P(nw+7,30.6),onArm(-3.2,dOut*0.56),onArm(0,dOut*0.9),P(cw+1.4,41),P(cw+0.5,47),
-  P(cw*0.995,53),P(lerp(cw,ww,0.55),61),P(ww,69.5),P(lerp(ww,hw,0.5),78),P(hw,86.5),P(hw-0.7,92),P(hw-2.6,93.6),P(2.4,92.4),P(0,92)]);
+  P(cw*0.995,53),P(lerp(cw,ww,0.55),61),P(ww,69.5),P(ww-0.8,76),P(ww-2.2,82),P(3.5,86),P(0,86.4)]);
  const arm=tube([J,A1,A2,A3],[[-3.2,dOut*0.56,2.5],[0,dOut*0.9,4],[4,dOut,bw*0.88],[9,0.6*dOut+0.4*bw*1.02,bw*0.95],[14,bw,bw*0.98],[19.5,bw*1.03,bw*1.05],
   [26,bw*0.9,bw*0.88],[U,ew,ew*0.95],[U+4.5,fw*1.04,fw*0.96],[U+9,fw,fw*0.98],[U+16,fw*0.8,fw*0.8],
   [W,2.75,2.6],[W+3.5,3.15,3.25],[W+8.5,3.3,3.0],[W+13,2.85,2.55],[W+16.5,2.05,1.8],[W+Hd-0.6,0.9,0.8]],1.0,0.6);
  const L0=P(9.2,89),L1=P(10,129),L2=P(10.8,171.6),T=dist(L0,L1),S=dist(L1,L2),kw=0.36*tw+0.24*cc+0.6;
- /* Верх бедра (15.11.2026): снаружи контур плавно переходит от ширины бёдер к ширине бедра — без ступеньки, если бёдра
-    шире бедра; изнутри ноги сходятся под пахом, ниже расходятся по обхвату бедра. Пах образуют сами ноги, а не корпус,
-    поэтому между ног нет «нароста» при любых обхватах. Ниже середины бедра — как в макете. */
+ /* Таз и ноги (15.11.2026, по замечаниям Астамура): снаружи одна плавная линия от талии через бёдра к колену — без
+    «ушей» на бёдрах и без ступеньки; если бёдра шире бедра, лишняя ширина плавно сходит к середине бедра, а не обрывается.
+    Изнутри ноги заходят друг на друга до паха, а ниже расходятся по обхвату бедра ровной аркой: пах образуют сами ноги,
+    между ног ничего не торчит. Ниже середины бедра и голень — как в макете. */
  const ax=s=>L0.x+(L1.x-L0.x)*s/T,ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)};
- const outTop=hw-0.35,outMid=ax(12)+tw*0.98,inTop=-0.3,inMid=ax(12)-tw*0.9;
- const outAt=s=>lerp(outTop,outMid,ease(s/12))-ax(s),inAt=s=>ax(s)-lerp(inTop,inMid,ease((s-3)/9));
- const leg=tube([L0,L1,L2],[[-4,hw-10,ax(-4)+1.2],[0,outAt(0),ax(0)+0.8],[3,outAt(3),inAt(3)],[6,outAt(6),inAt(6)],[9,outAt(9),inAt(9)],
-  [12,tw*0.98,tw*0.9],[18,tw*0.93,tw*0.83],[26,tw*0.82,tw*0.74],[33,tw*0.7,tw*0.7],[T,kw,kw*0.97],[T+5,cc*0.9,cc*0.84],[T+11,cc*1.04,cc*0.98],[T+15.5,cc*0.98,cc*1.06],
+ const thighOut={1:tw*0.98,12:tw*0.98,18:tw*0.93,26:tw*0.82,33:tw*0.7},thighIn={12:tw*0.9,18:tw*0.83,26:tw*0.74,33:tw*0.7};
+ const prof=(tab,s)=>{const ks=Object.keys(tab).map(Number).sort((a,b)=>a-b);if(s<=ks[0])return tab[ks[0]];for(let i=1;i<ks.length;i++)if(s<=ks[i])return lerp(tab[ks[i-1]],tab[ks[i]],(s-ks[i-1])/(ks[i]-ks[i-1]));return tab[ks[ks.length-1]]};
+ const t12=ax(12)+tw*0.98,extra=hw-t12;
+ const outX=s=>s<=-19.5?ww-1.5+1.5*Math.max(0,(s+27)/7.5):s<=1?ww+(hw-ww)*Math.sin(Math.PI/2*(s+19.5)/20.5)   // от талии к бёдрам: самая широкая точка без излома
+  :extra>=0?ax(s)+prof(thighOut,s)+extra*(1-ease((s-1)/30)):s<12?lerp(hw,t12,ease((s-1)/11)):ax(s)+prof(thighOut,s);
+ const x12=Math.max(0,ax(12)-tw*0.9),gap=s=>s<=4.5?0:s<12?x12*Math.pow((s-4.5)/7.5,0.6):Math.max(0,ax(s)-prof(thighIn,s));
+ const inX=s=>s<=0?-1.25:s<4.5?lerp(-1.25,-0.35,s/4.5):gap(s)-0.35*(1-ease((s-12)/14));
+ const row=s=>[s,outX(s)-ax(s),ax(s)-inX(s)];
+ const leg=tube([L0,L1,L2],[row(-27),row(-19.5),row(-14),row(-9),row(-4),row(-1),row(1),row(3),row(4.5),row(6.5),row(9),row(12),row(18),row(26),row(33),[T,kw,kw*0.97],[T+5,cc*0.9,cc*0.84],[T+11,cc*1.04,cc*0.98],[T+15.5,cc*0.98,cc*1.06],
   [T+24,cc*0.72,cc*0.74],[T+33,3.85,3.7],[T+S,3.2,3.1]],1.5,2.0);
  const foot=[P(7.9,170.6),P(14.3,170.6),P(15.1,174.4),P(16.5,177.6),P(16.6,179.9),P(13.4,180.9),P(8.8,180.8),P(7.3,179.8),P(7.4,175.8)];
  return [mirror(leg),leg,mirror(foot),foot,torso,neck,head,mirror(arm),arm].map(q=>path(orient(q))).join('');
