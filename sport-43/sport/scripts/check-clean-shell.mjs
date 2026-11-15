@@ -1,5 +1,6 @@
-/* Оболочка Sport 42: заголовок и правила страницы; запуск после общего входа и общего модуля хранения; карточка входа
-   (shared/happy-account-ui.js) — одна строка состояния под аккаунтом; печать и CSV замеров берут дневник на устройстве. */
+/* Оболочка Sport 42: заголовок и правила страницы; запуск после общего входа и общего модуля хранения; первый экран
+   и экраны аккаунта — общие файлы в запуске (прототип Sport v2, 16.11.2026): без входа — первый экран, после входа —
+   верх настроек (имя, «Настроить профиль / цели») и низ («Выйти», одна строка синхронизации). */
 import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
@@ -12,17 +13,21 @@ assert.doesNotMatch(built,/readonly-guard|SportReadOnlyTest|auth_readonly_hd_clo
 assert.doesNotMatch(built,/webkitSpeechRecognition=undefined|SpeechRecognition=undefined/,'диктовка не выключена');
 const boot=built.slice(built.lastIndexOf('<script>'));
 assert.ok(boot.includes('HappyAccount.create')&&boot.includes('HappyStore.open')&&boot.includes("app:'sport'"),'запуск открывает общий вход и общий модуль');
+assert.ok(boot.includes("HappyWelcome.init({app:'sport',name:'Sport'"),'первый экран — в запуске, до открытия хранилища');
+assert.doesNotMatch(built,/HappyAccountUI|data-happy-account-action/,'прежней карточки входа нет');
 
-// Карточка входа: после входа имя, почта, одна строка состояния и «Изменить имя», «Выйти»; без входа — почта и пароль.
-const ctx=vm.createContext({});vm.runInContext(fs.readFileSync(new URL('../../shared/happy-account-ui.js',import.meta.url),'utf8'),ctx);
-const box={innerHTML:'',querySelector:()=>null};
-const signed={current:()=>({uid:'u',email:'synthetic@example.invalid',name:'Проверка'})},out={current:()=>null};
-vm.runInContext('(box,a)=>HappyAccountUI.render(box,{account:a,status:"Синхронизировано"})',ctx)(box,signed);
-assert.match(box.innerHTML,/Проверка/);assert.match(box.innerHTML,/synthetic@example.invalid/);assert.match(box.innerHTML,/Выйти/);assert.match(box.innerHTML,/Изменить имя/);
-assert.equal((box.innerHTML.match(/data-happy-account-status/g)||[]).length,1);assert.match(box.innerHTML,/Синхронизировано/);
-assert.doesNotMatch(box.innerHTML,/Обновить связь|Прочитать облако/);
-vm.runInContext('(box,a)=>HappyAccountUI.render(box,{account:a})',ctx)(box,out);
-assert.match(box.innerHTML,/name="email"/);assert.match(box.innerHTML,/name="password"/);assert.match(box.innerHTML,/Войти/);assert.match(box.innerHTML,/Создать аккаунт/);
+// Верх и низ настроек: после входа имя, «Настроить профиль / цели», «Выйти» и одна строка синхронизации; без входа — «Гость» и «Войти».
+const ctx=vm.createContext({});ctx.globalThis=ctx;
+for(const f of ['happy-measurements.js','happy-screens.js','happy-person.js'])vm.runInContext(fs.readFileSync(new URL('../../shared/'+f,import.meta.url),'utf8'),ctx);
+const top={innerHTML:'',querySelector:()=>null},bottom={innerHTML:'',querySelector:()=>null};let who={uid:'u',email:'synthetic@example.invalid',name:'Проверка'};
+const doc={all:()=>[],newer:false,subscribe:()=>()=>{}};
+ctx.HappyPerson.init({app:'sport',account:{current:()=>who},profileDoc:()=>who?doc:null,bodyDoc:()=>who?doc:null});
+ctx.HappyPerson.top(top);ctx.HappyPerson.bottom(bottom,{status:'Синхронизировано'});
+assert.match(top.innerHTML,/Проверка/);assert.match(top.innerHTML,/Настроить профиль/);assert.match(top.innerHTML,/Настроить цели/);assert.match(bottom.innerHTML,/Выйти/);
+assert.equal((bottom.innerHTML.match(/data-hp-status/g)||[]).length,1);assert.match(bottom.innerHTML,/Синхронизировано/);
+assert.doesNotMatch(top.innerHTML+bottom.innerHTML,/Обновить связь|Прочитать облако/);
+who=null;ctx.HappyPerson.top();ctx.HappyPerson.bottom(bottom,{status:''});
+assert.match(top.innerHTML,/Гость/);assert.match(bottom.innerHTML,/Войти/);assert.doesNotMatch(bottom.innerHTML,/Выйти/);
 // Sport 43: то, что в Sport 42 ушло вместе с прежним обменом, а нужно приложению: оформление сохраняется на устройстве
 // (общий модуль оформления пишет через rawGet/rawSet), ссылки на тренировку и на упражнение открывают их.
 {const app=built.slice(built.indexOf('id="sport-app-source"'));
@@ -31,4 +36,4 @@ assert.match(box.innerHTML,/name="email"/);assert.match(box.innerHTML,/name="pas
  assert.ok(built.includes("asked.get('workout')")&&built.includes("detailId=workoutId;goto('detail')"),'ссылка на тренировку открывает её');
  assert.ok(built.includes("asked.get('exercise')")&&built.includes('showExercise(exerciseId)'),'ссылка на упражнение открывает его');
  assert.ok(app.length>0);}
-console.log('PASS clean shell: Update 43.3 title and page rules, start after shared sign-in and storage, no former guards or prototype journal, one status line under the account, appearance saved on the device, workout and exercise links open them.');
+console.log('PASS clean shell: Update 43.3 title and page rules, start after shared sign-in and storage, first screen at start-up, no former guards, prototype journal or sign-in card, settings top and bottom with one sync line, appearance saved on the device, workout and exercise links open them.');

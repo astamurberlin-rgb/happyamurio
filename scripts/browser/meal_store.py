@@ -100,6 +100,7 @@ def serve(route, request, device):
 def phone_for(browser, name):
     ctx = browser.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow")
     ctx.route(BACKEND + "/**", lambda route, request: serve(route, request, name))
+    ctx.add_init_script(GUEST)   # как после «Познакомиться с Meal»: первый экран проверяет account_screens
     libraries(ctx)
     stand_in_route(ctx)
     return ctx
@@ -138,19 +139,17 @@ def tab(ctx, name, url=None):
 
 
 def sign_in(page, email):
-    """Как человек: «Войти» на карточке экрана дня → почта и пароль в настройках → «Войти». Страница открывается заново уже со входом."""
+    """Как человек: «Войти» на карточке экрана дня → экран входа: почта и пароль → «Войти». Страница открывается заново уже со входом."""
     page.click(".tab[data-go=day]")
     page.click("#mealSignInGo")
-    page.fill("#happy-account input[name=email]", email)
-    page.fill("#happy-account input[name=password]", USERS[email]["pw"])
-    page.click("#happy-account [data-happy-account-action=in]")
+    sign_in_screen(page, email, USERS[email]["pw"])
     until(page, SIGNED, USERS[email]["id"], 20)
     until(page, MEAL_READY, seconds=15)
 
 
 def sign_out(page):
     page.click(".tab[data-go=settings]")
-    page.click("#happy-account [data-happy-account-action=out]")
+    sign_out_settings(page)
     until(page, "()=>typeof MealData!=='undefined'&&!MealData.signedIn()&&!!document.querySelector('#mlTaps .tpItem')", seconds=25)
 
 
@@ -203,14 +202,18 @@ with sync_playwright() as p:
     out["signin_card"] = a1.is_visible("#mealSignIn")
     plus(a1)
     a1.wait_for_timeout(700)
-    out["no_login_screen"] = screen(a1) == "settings" and a1.is_visible("#happy-account input[name=email]")
-    out["no_login_toast"] = a1.inner_text("#toast")
-    a1.click(".tab[data-go=day]")
+    out["no_login_screen"] = screen(a1) == "day" and a1.is_visible("#happy-screens .hs-sheet [data-g=login]")
+    out["no_login_toast"] = a1.inner_text("#happy-screens .hs-sheet")
+    a1.click("#happy-screens [data-g=cancel]")
+    a1.wait_for_timeout(400)
     out["no_login_count"] = count(a1)
     # запись другим путём (правка настроек дневника) без входа тоже не остаётся
     a1.evaluate("()=>{document.dispatchEvent(new Event('pointerdown'));DB.goals.k='2100';save()}")
     a1.wait_for_timeout(700)
     out["no_login_goal"] = [screen(a1), a1.evaluate("()=>DB.goals.k")]
+    if a1.is_visible("#happy-screens [data-g=cancel]"):
+        a1.click("#happy-screens [data-g=cancel]")
+        a1.wait_for_timeout(400)
     out["no_login_device"] = len(device_keys(a1))
     out["no_login_requests"] = len([r for r in requests if r["path"] == "/rest/v1/app_sync"])
     out["no_login_walk"] = []   # листать экраны без входа можно: вход открывает только запись
@@ -227,8 +230,8 @@ with sync_playwright() as p:
     out["cells"] = sorted(k for k in a1.evaluate("()=>Object.keys(localStorage)") if "appearance" not in k)
     out["password_stored"] = USERS[ONE]["pw"] in a1.evaluate("()=>JSON.stringify(localStorage)")
     a1.click(".tab[data-go=settings]")
-    out["status_line"] = until(a1, "()=>{const n=document.querySelectorAll('#happy-account [data-happy-account-status]');return n.length===1&&n[0].textContent}", seconds=5)
-    out["account_card"] = a1.inner_text("#happy-account")
+    out["status_line"] = until(a1, "()=>{const n=document.querySelectorAll('#happy-account-bottom [data-hp-status]');return n.length===1&&n[0].textContent}", seconds=5)
+    out["account_card"] = a1.inner_text("#happy-account-top")
     # вход сам ничего не записывает: начальные разделы и счётчики в хранилище не кладутся
     synced(a1)
     out["after_login_cloud"] = cloud(ONE, "meal")
@@ -405,7 +408,7 @@ with sync_playwright() as p:
     out["newer_put"] = newer.evaluate("()=>T.put('setup','[\"f\",\"fromNewer\"]',{note:'поле новой версии'})")
     out["newer_seen"] = until(b1, "()=>MealData.outdated()&&RO===true", seconds=10)
     b1.click(".tab[data-go=settings]")
-    out["newer_card"] = until(b1, "()=>{const a=document.querySelector('#happy-account a[data-happy-app=meal]');return !!a&&a.textContent+' · '+document.querySelector('#happy-account [data-happy-account-status]').textContent}", seconds=5)
+    out["newer_card"] = until(b1, "()=>{const a=document.querySelector('#happy-account-bottom a[data-happy-app=meal]');return !!a&&a.textContent+' · '+document.querySelector('#happy-account-bottom [data-hp-status]').textContent}", seconds=5)
     before = count(b1)
     plus(b1)
     b1.wait_for_timeout(600)
@@ -415,13 +418,13 @@ with sync_playwright() as p:
 
 checks = [
     ("без входа: карточка «Войди, чтобы записывать»", out["signin_card"] is True),
-    ("без входа: нажатие открывает настройки со входом и ничего не записывает", out["no_login_screen"] and "Войди" in out["no_login_toast"] and out["no_login_count"] == 0),
+    ("без входа: нажатие открывает лист «Войдите в аккаунт» на том же экране и ничего не записывает", out["no_login_screen"] and "Войдите в аккаунт" in out["no_login_toast"] and out["no_login_count"] == 0),
     ("без входа: правка другим путём тоже не остаётся", out["no_login_goal"][1] == ""),
     ("без входа: на устройстве и в облаке пусто", out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("без входа: экраны листаются", out["no_login_walk"] == ["journal", "recipes", "day"]),
     ("вход в одной вкладке — вторая вошла сама; карточка входа скрыта", out["second_tab_signed_in"] and out["signin_card_after"] is False),
     ("ячейка входа своя — happy-account:meal; прежних ячеек Meal нет; пароль не хранится", out["cells"] == ["happy-account:meal"] and not out["password_stored"]),
-    ("в «Аккаунте» одна строка состояния", bool(out["status_line"])),
+    ("внизу настроек одна строка синхронизации", bool(out["status_line"])),
     ("вход сам ничего не записал: начальные разделы и счётчики в облако не легли", out["after_login_cloud"] == sorted("meal/" + k for k in OLD)),
     ("запись без сети принята и видна во второй вкладке без сообщений", out["offline_count"] == 1 and out["second_tab_count"] == 1 and out["second_tab_toast"] == ""),
     ("без сети: строка «Нет связи · записи сохранены на устройстве», в облаке нового нет", out["offline_status"] == "Нет связи · записи сохранены на устройстве" and out["cloud_while_offline"] == sorted("meal/" + k for k in OLD)),

@@ -24,11 +24,9 @@ with sync_playwright() as p:
     ready = lambda: wait_for(page, lambda: page.evaluate("()=>typeof DayData!=='undefined'&&typeof MEAL_READY!=='undefined'&&MEAL_READY&&!!document.querySelector('#tapBox .tpItem')"), 12, 200)
     page.goto(BASE + DAY_STORE + "index.html")
     ready()
-    # вход, как человек: «Войти» на карточке экрана дня → почта и пароль → страница открывается заново уже со входом
-    page.click("#daySignIn [data-go-screen=settings]")
-    page.fill("#happy-account input[name=email]", EMAIL)
-    page.fill("#happy-account input[name=password]", PW)
-    page.click("#happy-account [data-happy-account-action=in]")
+    # вход, как человек: «Войти» на карточке экрана дня → экран входа: почта и пароль → страница открывается заново уже со входом
+    page.click("#daySignInGo")
+    sign_in_screen(page, EMAIL, PW)
     def signed():
         try:
             return page.evaluate("u=>typeof DayData!=='undefined'&&DayData.signedIn()&&DayData.store.uid===u", UID)

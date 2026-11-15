@@ -19,7 +19,8 @@
       "links",
       "app",
       "developer",
-      "version"
+      "version",
+      "signout"
     ],
     "storageScript": "day-59/day-data.js"
   },
@@ -34,7 +35,8 @@
       "app",
       "data",
       "developer",
-      "version"
+      "version",
+      "signout"
     ],
     "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
     "previous": {
@@ -58,7 +60,8 @@
       "app",
       "data",
       "developer",
-      "version"
+      "version",
+      "signout"
     ],
     "previous": {
       "entry": "sport-42/index.html",

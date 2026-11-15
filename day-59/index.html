@@ -1047,6 +1047,7 @@ a.btn{display:inline-block;text-decoration:none}
 #happy-appearance-dialog #happy-appearance-help,#happy-appearance-dialog legend{background:var(--ha-glass);padding:8px 10px;border-radius:10px}
 </style>
 <link rel="stylesheet" href="./shared/happy-measurements.css?v=59.3">
+<link rel="stylesheet" href="./shared/happy-screens.css?v=59.3">
 </head>
 <body class="loading">
 
@@ -1086,7 +1087,7 @@ a.btn{display:inline-block;text-decoration:none}
       </div>
     </div>
 
-    <section class="card day-signin" id="daySignIn" hidden><h2>Войди, чтобы записывать</h2><p class="note">Записи Day хранятся в аккаунте Happy — одном для Day, Meal и Sport. После входа запись работает и без сети.</p><button class="btn solid" type="button" data-go-screen="settings">Войти</button></section>
+    <section class="card day-signin" id="daySignIn" hidden><h2>Войди, чтобы записывать</h2><p class="note">Записи Day хранятся в аккаунте Happy — одном для Day, Meal и Sport. После входа запись работает и без сети.</p><button class="btn solid" type="button" id="daySignInGo">Войти</button></section>
     <div class="eyebrow nwEb"><span>Сейчас</span></div>
     <section class="nwWg" aria-label="Сейчас">
       <div class="nwRail" id="nwRail" role="group" aria-label="Шкалы: налево — тяжёлые, направо — светлые"></div>
@@ -1226,10 +1227,9 @@ a.btn{display:inline-block;text-decoration:none}
 
   <!-- НАСТРОЙКИ -->
   <div class="screen happy-settings" data-screen="settings">
-    <div class="top"><h1>Настройки</h1></div>
-    <!-- Одна структура настроек Happy (правила проекта): Аккаунт → Связанные приложения → Приложение → Для разработчика (скрыт, долгое нажатие на строку версии) → версия. Day 59: вход — общая карточка shared/happy-account-ui.js. -->
-    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="happy-account"></div></section>
-    <section class="happy-section happy-app-links-section" data-happy-section="links"><div class="happy-card happy-app-links" role="group" aria-label="Связь с другими приложениями Happy">
+    <!-- Одна структура настроек Happy: аккаунт (аватар, имя, «Настроить профиль / цели») → «Связка с» → Приложение → Для разработчика (скрыт, долгое нажатие на строку версии) → версия → «Выйти» и строка синхронизации. По прототипу Day v2 (16.11.2026): верх и низ аккаунта рисует shared/happy-person.js. -->
+    <section class="happy-section" data-happy-section="account"><div id="happy-account-top"></div></section>
+    <section class="happy-section happy-app-links-section hs-links" data-happy-section="links"><h3 class="hs-links-title">Связка с</h3><div class="happy-card happy-app-links" role="group" aria-label="Связь с другими приложениями Happy">
       <div class="happy-app-link"><a class="happy-app-name" href="../meal-32/" data-happy-app="meal" target="_blank" rel="noopener">Happy Meal</a><input class="happy-switch" type="checkbox" role="switch" data-app-link="meal" checked aria-label="Связь с Happy Meal"></div>
       <div class="happy-app-link"><a class="happy-app-name" href="../sport-43/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a><input class="happy-switch" type="checkbox" role="switch" data-app-link="sport" checked aria-label="Связь с Happy Sport"></div>
     </div></section>
@@ -1283,6 +1283,7 @@ a.btn{display:inline-block;text-decoration:none}
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
     <footer class="app-version happy-version" data-app-version="59.3" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 59</div><small>Обновлено 14.11.2026</small></footer>
     </section>
+    <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
 
 </div>
@@ -1375,13 +1376,17 @@ a.btn{display:inline-block;text-decoration:none}
 <script src="./shared/happy-account.js?v=59.3"></script>
 <script src="./shared/happy-input.js?v=59.3"></script>
 <script src="./shared/happy-store.js?v=59.3"></script>
-<script src="./shared/happy-account-ui.js?v=59.3"></script>
 <script src="./shared/happy-app-links.js?v=59.3"></script>
 <script src="./shared/happy-sport-summary.js?v=59.3"></script>
 <script src="./shared/happy-food.js?v=59.3"></script>
 <script src="./shared/happy-measurements.js?v=59.3"></script>
+<script src="./shared/happy-screens.js?v=59.3"></script>
+<script src="./shared/happy-welcome.js?v=59.3"></script>
+<script src="./shared/happy-person.js?v=59.3"></script>
+<script src="./shared/happy-goals.js?v=59.3"></script>
 <script src="./day-docs.js?v=59.3"></script>
 <script src="./day-data.js?v=59.3"></script>
+<script src="./day-account.js?v=59.3"></script>
 
 <script src="counters.js?v=59.3"></script>
 <script src="./selfcare-core.js?v=59.3"></script>
@@ -1427,20 +1432,8 @@ function roWarn(){
   if(Date.now()-roSaid<8000) return; roSaid=Date.now();
   toastLong(RO_TEXT);
 }
-/* Без входа записи не принимаются: открыть настройки со входом. Одно действие может позвать запись несколько раз —
-   вход предлагается один раз. Если человек печатал в поле записи, поле теряет фокус: остаток набора не должен
-   попасть в поле почты. */
-var signInAskedAt=0;
-function askSignIn(){
-  var now=Date.now(); if(now-signInAskedAt<500) return; signInAskedAt=now;
-  var a=document.activeElement, typing=!!a&&(a.tagName==='TEXTAREA'||a.tagName==='INPUT'||a.isContentEditable);
-  if(typing){ try{ a.blur() }catch(e){} }
-  setTimeout(function(){ try{
-    if(window.SelfCare&&SelfCare.closeCurrent) SelfCare.closeCurrent();
-    go('settings'); toast('Войди в аккаунт Happy, чтобы записывать');
-    var i=document.querySelector('#happy-account input[name="email"]'); if(i&&!typing) i.focus();
-  }catch(e){} },0);
-}
+/* Без входа записи не принимаются: askSignIn (day-account.js) открывает лист «Войдите в аккаунт», после входа Day
+   открывается на том же экране. */
 /* true — записывать сейчас нельзя, и человеку уже сказано почему */
 function writeGuard(){
   if(RO){ roWarn(); return true }
@@ -1560,7 +1553,7 @@ function ringDay(){return SelfCare.isCheckin()?SelfCare.checkinDay():day(curDate
 function saveRing(){if(SelfCare.isCheckin())SelfCare.saveCheckin();else save()}
 var saveT=null;
 /* Day 59: запись через общий модуль — уходит только изменившееся (day-data.js). Без входа запись не принимается:
-   то, что успели нажать, отменяется, и открываются настройки со входом. */
+   то, что успели нажать, отменяется, и появляется лист «Войдите в аккаунт». */
 var lastGesture=0;   // когда человек последний раз коснулся экрана или клавиши (обновляется рядом со счётом времени в Day)
 function persistNow(){
   if(RO){ roWarn(); return false }
@@ -1780,27 +1773,9 @@ function mealSeries(k,dates){ return dates.map(function(d){ var st=mealState(iso
    Day 59: у Happy Day свой вход в аккаунт Happy (shared/happy-account.js; раздельный вход — решение Астамура
    09.11.2026, возвращено 15.11.2026): вход и выход здесь не трогают другие приложения. Аккаунт и записи общие. Из пароля на телефоне выводится ключ шифрования
    (PBKDF2-SHA-256, 600 000 шагов, соль — id аккаунта); записи шифруются AES-GCM до отправки — на сервере лежит
-   нечитаемый блок. Ключ шифрования на сервер не уходит. Карточка входа и строка состояния под ней — общие
-   (shared/happy-account-ui.js). После входа или выхода страница открывается заново (day-data.js). */
-function accountOptions(){
-  return {account:DayData.account,status:DayData.statusText(),newer:DayData.outdated(),app:'day',
-    box:function(){ return document.getElementById('happy-account') },
-    /* перед выходом: своё несохранённое уходит в хранилище и, если есть связь, в облако */
-    beforeSignOut:async function(){ if(!DayData.signedIn()) return; if(MIND.on) mindEnd(); saveNow(); await DayData.store.flush(8000) }};
-}
-function paintAccount(){
-  var box=document.getElementById('happy-account'); if(!box||!DayData.account) return;
-  HappyAccountUI.render(box,accountOptions());
-}
-document.addEventListener('click',function(ev){
-  var b=ev.target.closest&&ev.target.closest('['+HappyAccountUI.ATTR+']'); if(!b||!DayData.account) return;
-  ev.preventDefault();
-  HappyAccountUI.act(b.getAttribute(HappyAccountUI.ATTR),accountOptions());
-});
-/* без входа на экране дня — предложение войти */
-function paintSignIn(){
-  var box=document.getElementById('daySignIn'); if(box) box.hidden=DayData.signedIn();
-}
+   нечитаемый блок. Ключ шифрования на сервер не уходит. После входа или выхода страница открывается заново (day-data.js).
+   Первый экран, вход, верх и низ настроек, профиль и цели — day-account.js (общие экраны shared/happy-welcome.js,
+   happy-person.js, happy-goals.js): paintAccount, paintSignIn, askSignIn. */
 /* Своё окно ввода: системный prompt() во встроенных браузерах
    часто заблокирован и молча возвращает пустоту — из-за этого
    не работали ни свои теги, ни переименование. */
@@ -5562,10 +5537,10 @@ function renderAll(){
   if(DayData.signedIn()){
     DayData.onRemote(adoptRemote);
     DayData.store.neighbor('meal','summary').subscribe(function(){ onMealSync(syncMeal()) });
-    /* строка состояния под аккаунтом; записи открыла более новая версия — только чтение и кнопка «Открыть последнюю версию» */
+    /* строка синхронизации внизу настроек; записи открыла более новая версия — только чтение и кнопка «Открыть последнюю версию» */
     DayData.store.onStatus(function(){
       if(DayData.outdated()!==RO){ RO=DayData.outdated(); paintAccount(); if(RO) roWarn(); return }
-      var el=document.querySelector('#happy-account [data-happy-account-status]'); if(el) el.textContent=DayData.statusText();
+      HappyPerson.status(DayData.statusText());
     });
   }
   if(DayData.signedIn()&&!RO) setTimeout(checkMisplaced,1700);   // после заставки; без входа и в режиме чтения проверять нечего

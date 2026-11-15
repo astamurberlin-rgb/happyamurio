@@ -16,6 +16,7 @@ with sync_playwright() as p:
     b = launch(p)
     ctx = b.new_context(viewport={"width": 393, "height": 852}, locale="ru-RU", timezone_id="Europe/Moscow")
     ctx.route(BACKEND + "/**", lambda route, request: route.abort())
+    ctx.add_init_script(GUEST)   # как после «Познакомиться с …»: первый экран не закрывает приложение
     for name, path in pages:
         page = ctx.new_page()
         page.on("pageerror", lambda e, n=name: errors.append(n + ": " + str(e)[:200]))

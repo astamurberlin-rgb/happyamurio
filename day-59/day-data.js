@@ -20,10 +20,10 @@ DayBoot.ready=(async()=>{
  if(account.current()){
   /* Номера форматов: свои документы — формат раскладки Day; витрина — номера из её общих файлов. */
   const formats={'day/foodtaps':HappyFood.FORMAT,'meal/foodtaps':HappyFood.FORMAT,'sport/foodtaps':HappyFood.FORMAT,'day/pairs':HappyAppLinks.FORMAT,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,
-   'sport/summary':HappySportSummary.FORMAT,'sport/plans':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT};
+   'sport/summary':HappySportSummary.FORMAT,'sport/plans':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT,'sport/profile':HappyPerson.FORMAT};
   for(const name of DayDocs.NAMES)formats['day/'+name]=DayDocs.FORMAT;
   try{DayBoot.store=await HappyStore.open({app:'day',account,own:DayDocs.OWN,
-   reads:{sport:['summary','plans'],meal:['summary','foods']},shared:{sport:['body','foodtaps'],meal:['foodtaps']},formats,firstSync:12000})}
+   reads:{sport:['summary','plans'],meal:['summary','foods']},shared:{sport:['body','foodtaps','profile'],meal:['foodtaps']},formats,firstSync:12000})}
   catch(e){DayBoot.error=(e&&e.message)||'Хранилище на устройстве недоступно'}
  }
  const who=account.current()?account.current().uid:null;
@@ -85,6 +85,6 @@ var DayData=(()=>{
   remote=fn;if(!signedIn())return;
   for(const name of DayDocs.NAMES)store().doc(name).subscribe(e=>{if(e.origin==='local')return;clearTimeout(timer);timer=setTimeout(()=>{try{remote()}catch(_){}},60)});
  }
- const statusText=()=>HappyAccountUI.statusText(signedIn()?store():null,DayBoot.error);
+ const statusText=()=>HappyPerson.statusText(signedIn()?store():null,DayBoot.error);
  return {load,save,onRemote,statusText,signedIn,outdated,report,get store(){return DayBoot.store},get account(){return DayBoot.account}};
 })();

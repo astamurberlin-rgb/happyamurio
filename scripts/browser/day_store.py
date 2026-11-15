@@ -103,6 +103,7 @@ def serve(route, request, device):
 def phone_for(browser, name):
     ctx = browser.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow")
     ctx.route(BACKEND + "/**", lambda route, request: serve(route, request, name))
+    ctx.add_init_script(GUEST)   # как после «Познакомиться с Day»: первый экран проверяет account_screens
     libraries(ctx)
     stand_in_route(ctx)
     return ctx
@@ -138,19 +139,17 @@ def tab(ctx, name, url=None):
 
 
 def sign_in(page, email):
-    """Как человек: «Войти» на карточке экрана дня → почта и пароль в настройках → «Войти». Страница открывается заново уже со входом."""
+    """Как человек: «Войти» на карточке экрана дня → экран входа: почта и пароль → «Войти». Страница открывается заново уже со входом."""
     page.click(".tab[data-go=day]")
-    page.click("#daySignIn [data-go-screen=settings]")
-    page.fill("#happy-account input[name=email]", email)
-    page.fill("#happy-account input[name=password]", USERS[email]["pw"])
-    page.click("#happy-account [data-happy-account-action=in]")
+    page.click("#daySignInGo")
+    sign_in_screen(page, email, USERS[email]["pw"])
     until(page, "u=>typeof DayData!=='undefined'&&DayData.signedIn()&&DayData.store.uid===u", USERS[email]["id"], 15)
     until(page, DAY_READY, seconds=12)
 
 
 def sign_out(page):
     page.click(".tab[data-go=settings]")
-    page.click("#happy-account [data-happy-account-action=out]")
+    sign_out_settings(page)
     until(page, "()=>typeof DayData!=='undefined'&&!DayData.signedIn()&&typeof MEAL_READY!=='undefined'&&MEAL_READY", seconds=20)
 
 
@@ -212,14 +211,18 @@ with sync_playwright() as p:
     out["signin_card"] = a1.is_visible("#daySignIn")
     plus(a1)
     a1.wait_for_timeout(700)
-    out["no_login_screen"] = a1.evaluate("()=>document.querySelector('.screen.on').dataset.screen") == "settings" and a1.is_visible("#happy-account input[name=email]")
-    out["no_login_toast"] = a1.inner_text("#toast")
-    a1.click(".tab[data-go=day]")
+    out["no_login_screen"] = a1.evaluate("()=>document.querySelector('.screen.on').dataset.screen") == "day" and a1.is_visible("#happy-screens .hs-sheet [data-g=login]")
+    out["no_login_toast"] = a1.inner_text("#happy-screens .hs-sheet")
+    a1.click("#happy-screens [data-g=cancel]")
+    a1.wait_for_timeout(400)
     out["no_login_count"] = count(a1)
     a1.click("#note")
     a1.keyboard.type("без входа")
     a1.wait_for_timeout(700)
-    out["no_login_note"] = [a1.evaluate("()=>document.querySelector('.screen.on').dataset.screen"), a1.evaluate("()=>document.getElementById('note').value")]
+    out["no_login_note"] = [a1.evaluate("()=>document.querySelector('.screen.on').dataset.screen"), a1.evaluate("()=>document.getElementById('note').value"), a1.is_visible("#happy-screens .hs-sheet [data-g=login]")]
+    if a1.is_visible("#happy-screens [data-g=cancel]"):
+        a1.click("#happy-screens [data-g=cancel]")
+        a1.wait_for_timeout(400)
     out["no_login_state"] = a1.evaluate("()=>Object.values(DB.days).filter(d=>d.note||Object.keys(d.taps||{}).length||Object.keys(d.cp||{}).length).length")
     out["no_login_device"] = len(device_keys(a1))
     out["no_login_requests"] = len([r for r in requests if r["path"] == "/rest/v1/app_sync"])
@@ -237,8 +240,8 @@ with sync_playwright() as p:
     out["cells"] = sorted(a1.evaluate("()=>Object.keys(localStorage)"))
     out["password_stored"] = USERS[ONE]["pw"] in a1.evaluate("()=>JSON.stringify(localStorage)")
     a1.click(".tab[data-go=settings]")
-    out["status_line"] = until(a1, "()=>{const n=document.querySelectorAll('#happy-account [data-happy-account-status]');return n.length===1&&n[0].textContent}", seconds=5)
-    out["account_card"] = a1.inner_text("#happy-account")
+    out["status_line"] = until(a1, "()=>{const n=document.querySelectorAll('#happy-account-bottom [data-hp-status]');return n.length===1&&n[0].textContent}", seconds=5)
+    out["account_card"] = a1.inner_text("#happy-account-top") + "\n" + a1.inner_text("#happy-account-bottom")
 
     # без сети: нажатие, заметка и отметка раздела приняты, видны во второй вкладке без сообщений, переживают перезагрузку
     until(a1, "()=>DayData.store.status().state==='cloud'", seconds=10)
@@ -405,7 +408,7 @@ with sync_playwright() as p:
     out["newer_put"] = newer.evaluate("()=>T.put('setup','[\"x\",\"fromNewer\"]',{note:'поле новой версии'})")
     out["newer_seen"] = until(b1, "()=>DayData.outdated()&&RO===true", seconds=10)
     b1.click(".tab[data-go=settings]")
-    out["newer_card"] = until(b1, "()=>{const a=document.querySelector('#happy-account a[data-happy-app=day]');return !!a&&a.textContent+' · '+document.querySelector('#happy-account [data-happy-account-status]').textContent}", seconds=5)
+    out["newer_card"] = until(b1, "()=>{const a=document.querySelector('#happy-account-bottom a[data-happy-app=day]');return !!a&&a.textContent+' · '+document.querySelector('#happy-account-bottom [data-hp-status]').textContent}", seconds=5)
     before = count(b1)
     plus(b1)
     b1.wait_for_timeout(600)
@@ -432,10 +435,10 @@ out["row_versions"] = sorted(set(r.get("v") for k, r in rows.items() if k[2] not
 sec = out.get("section_a") or {}
 log = sorted([x["v"] for x in sec.get("log", [])]) if sec else []
 checks = [
-    ("без входа: карточка «Войди, чтобы записывать», нажатие и заметка ведут к входу, ничего не записано", out["signin_card"] and out["no_login_screen"] and "Войди в аккаунт Happy" in out["no_login_toast"] and out["no_login_count"] == 0 and out["no_login_note"] == ["settings", ""] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
+    ("без входа: карточка «Войди, чтобы записывать», нажатие и заметка открывают лист «Войдите в аккаунт», ничего не записано", out["signin_card"] and out["no_login_screen"] and "Войдите в аккаунт" in out["no_login_toast"] and out["no_login_count"] == 0 and out["no_login_note"] == ["day", "", True] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("без входа экраны листаются, вход открывает только запись", out["no_login_walk"] == ["trends", "links", "day"]),
     ("вошёл в одной вкладке — вторая вкладка Day вошла сама; ячейка входа своя — happy-account:day, пароль не сохранён, карточка «Войди» убрана", out["second_tab_signed_in"] and out["cells"] == ["happy-account:day"] and not out["password_stored"] and not out["signin_card_after"]),
-    ("под аккаунтом одна строка состояния, служебных блоков нет", bool(out["status_line"]) and "Изменить имя" in out["account_card"] and "Выйти" in out["account_card"] and "облак" not in out["account_card"].lower().replace("в облако", "")),
+    ("в настройках имя, «Настроить профиль / цели», «Выйти» и одна строка синхронизации; служебных блоков нет", bool(out["status_line"]) and "Настроить профиль" in out["account_card"] and "Настроить цели" in out["account_card"] and "Выйти" in out["account_card"] and "облак" not in out["account_card"].lower().replace("в облако", "")),
     ("без сети нажатие, заметка и отметка раздела приняты и видны во второй вкладке без сообщений", out["offline_count"] == 1 and out["second_tab_count"] == 1 and out["second_tab_note"] and (out["second_tab_section"] or {}).get(mood) == 6 and not out["second_tab_toast"]),
     ("без сети строка «Нет связи · записи сохранены на устройстве», в облаке нового нет", out["offline_status"] == "Нет связи · записи сохранены на устройстве" and not [k for k in out["cloud_while_offline"] if k.startswith("day/days_")]),
     ("после перезагрузки без сети записи на месте", out["after_reload"][0] == 1 and out["after_reload"][1] == "Заметка без сети" and (out["after_reload"][2] or {}).get(mood) == 6),

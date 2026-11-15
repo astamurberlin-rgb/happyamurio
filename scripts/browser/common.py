@@ -26,6 +26,7 @@ BACKEND = "https://geqziziycpclhnucnsyx.supabase.co"
 UID = "00000000-0000-4000-8000-000000000001"
 EMAIL, PW = "fixture@example.invalid", "synthetic-only-password"
 rows, log = {}, []
+account = {"name": "Проверка"}   # имя аккаунта на поддельном сервере: «Изменить имя» в профиле его меняет
 HDR = {"content-type": "application/json", "access-control-allow-origin": "*", "access-control-expose-headers": "*"}
 
 
@@ -36,10 +37,19 @@ def handle(route, request, device=None):
         return route.fulfill(status=204, headers={"access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "*"})
     entry = {"method": method, "path": path, "query": url.query[:160], "device": device}
     log.append(entry)
+    if path == "/auth/v1/token" and q.get("grant_type") == ["password"]:
+        sent = json.loads(request.post_data or "{}")
+        if sent.get("email") != EMAIL or sent.get("password") != PW:   # неверная почта или пароль
+            return route.fulfill(status=400, headers=HDR, body=json.dumps({"error": "invalid_grant", "error_description": "Invalid login credentials"}))
+    if path == "/auth/v1/user" and method == "PUT":
+        sent = json.loads(request.post_data or "{}")
+        if "display_name" in (sent.get("data") or {}):
+            account["name"] = sent["data"]["display_name"]
+        return route.fulfill(status=200, headers=HDR, body=json.dumps({"id": UID, "email": EMAIL, "user_metadata": {"display_name": account["name"]}}))
     if path == "/auth/v1/token":
-        return route.fulfill(status=200, headers=HDR, body=json.dumps({"access_token": "synthetic-at", "refresh_token": "synthetic-rt", "expires_in": 3600, "user": {"id": UID, "email": EMAIL, "user_metadata": {"display_name": "Проверка"}}}))
+        return route.fulfill(status=200, headers=HDR, body=json.dumps({"access_token": "synthetic-at", "refresh_token": "synthetic-rt", "expires_in": 3600, "user": {"id": UID, "email": EMAIL, "user_metadata": {"display_name": account["name"]}}}))
     if path == "/auth/v1/user":
-        return route.fulfill(status=200, headers=HDR, body=json.dumps({"id": UID, "email": EMAIL, "user_metadata": {"display_name": "Проверка"}}))
+        return route.fulfill(status=200, headers=HDR, body=json.dumps({"id": UID, "email": EMAIL, "user_metadata": {"display_name": account["name"]}}))
     if path == "/auth/v1/logout":
         return route.fulfill(status=204, headers=HDR, body="")
     if path != "/rest/v1/app_sync":
@@ -120,11 +130,32 @@ def launch(playwright):
     return playwright.chromium.launch(executable_path=CHROME, args=["--no-sandbox"])
 
 
-def phone(browser, name=None):
-    """Один «телефон»: отдельное хранилище браузера, экран 393×852, московское время, поддельный сервер."""
+# Без входа приложение открывается первым экраном (shared/happy-welcome.js). Сценарии про другое начинают как после
+# «Познакомиться с …»: отметка гостя в памяти вкладки. Первый экран и вход человека проверяет account_screens.
+GUEST = "try{for(const a of ['day','meal','sport'])sessionStorage.setItem('happy-guest:'+a,'1')}catch(e){}"
+
+
+def phone(browser, name=None, welcome=False):
+    """Один «телефон»: отдельное хранилище браузера, экран 393×852, московское время, поддельный сервер.
+    welcome=True — без входа приложение открывается первым экраном, как у человека в первый раз."""
     ctx = browser.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow")
     ctx.route(BACKEND + "/**", lambda route, request: handle(route, request, name))
+    if not welcome:
+        ctx.add_init_script(GUEST)
     return ctx
+
+
+def sign_in_screen(page, email, password):
+    """Как человек: экран «Войти» (shared/happy-welcome.js) уже открыт — почта, пароль, «Войти». Страница открывается заново."""
+    page.wait_for_selector("#happy-screens form [name=email]", timeout=10000)
+    page.fill("#happy-screens [name=email]", email)
+    page.fill("#happy-screens [name=password]", password)
+    page.click("#happy-screens [data-hw=login]")
+
+
+def sign_out_settings(page):
+    """Как человек: «Выйти» внизу настроек (shared/happy-person.js)."""
+    page.evaluate("()=>document.querySelector('[data-hp=signout]').click()")
 
 
 # Day и Sport на общем входе и общем модуле хранения — их сценарии: day_store, day_sections, sport_store.

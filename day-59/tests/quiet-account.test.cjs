@@ -1,7 +1,8 @@
 'use strict';
 /* Принципы владельца, закреплённые проверкой (с Day 57.3): при открытии Day ничего не всплывает само, в «Аккаунте» нет
    служебных блоков, ссылки не ведут на тестовые сборки. Каждая из трёх вещей уже возвращалась после «исправлено».
-   Day 59: вход общий, хранение и обмен — только через общий модуль. Проверка следит, чтобы убранное не вернулось:
+   Day 59: вход общий, хранение и обмен — только через общий модуль. По прототипу Day v2 (16.11.2026) первый экран, вход,
+   верх и низ настроек — общие экраны (day-account.js). Проверка следит, чтобы убранное не вернулось:
    страж записи, ручное сохранение и восстановление, диагностика, резерв расхождений, гость, прежние ячейки. */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -21,9 +22,11 @@ test('при открытии ничего не всплывает само: н�
   assert.ok(init.includes('if(RO) setTimeout(roWarn,1500);'), 'и подсказка открыть последнюю версию, если записи сделаны более новой');
 });
 
-test('в «Аккаунте» только общая карточка входа; служебных блоков и ручного сохранения нет нигде', () => {
-  assert.ok(page.includes('<section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="happy-account"></div></section>'));
-  assert.ok(page.includes("HappyAccountUI.render(box,accountOptions())"), 'карточку рисует общий файл shared/happy-account-ui.js');
+test('аккаунт в настройках — общие экраны: верх (аватар, имя, профиль и цели) и низ («Выйти», строка синхронизации); служебных блоков и ручного сохранения нет нигде', () => {
+  assert.ok(page.includes('<section class="happy-section" data-happy-section="account"><div id="happy-account-top"></div></section>'));
+  assert.ok(page.includes('<section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>'));
+  const account = read('day-account.js');
+  assert.ok(account.includes("HappyPerson.top(document.getElementById('happy-account-top'))") && account.includes("HappyPerson.bottom(document.getElementById('happy-account-bottom')"), 'верх и низ рисует общий файл shared/happy-person.js');
   for (const gone of ['Сохранить в облако', 'Вернуть из облака', 'Вернуть дневник до загрузки', 'Резервная копия', 'резерв расхождений', 'Разные версии записей', 'Диагностика', 'Гость', 'Обновить связь', 'Прочитать облако', 'Прочитать из Sport', 'Загрузить дневник'])
     assert.ok(!page.includes(gone), 'убранное вернулось на страницу: ' + gone);
   for (const id of ['clBox', 'bkPrev', 'bkBack', 'backupAge', 'dayDeveloperSync', 'dayDeveloperSyncTools', 'day-auto-status']) assert.ok(!new RegExp('id="' + id + '"').test(page), 'прежний блок: ' + id);
@@ -34,8 +37,11 @@ test('в «Аккаунте» только общая карточка вход�
 });
 
 test('без входа — предложение войти на экране дня; запись проверяет вход в одном месте', () => {
-  assert.match(page, /<section class="card day-signin" id="daySignIn" hidden><h2>Войди, чтобы записывать<\/h2>/);
-  assert.ok(page.includes("function paintSignIn(){\n  var box=document.getElementById('daySignIn'); if(box) box.hidden=DayData.signedIn();"));
+  assert.match(page, /<section class="card day-signin" id="daySignIn" hidden><h2>Войди, чтобы записывать<\/h2>.*<button class="btn solid" type="button" id="daySignInGo">Войти<\/button><\/section>/);
+  const account = read('day-account.js');
+  assert.ok(account.includes("window.paintSignIn=function(){\n  var box=document.getElementById('daySignIn'); if(box) box.hidden=DayData.signedIn();"));
+  assert.ok(account.includes("closest('#daySignInGo')) HappyWelcome.open('login')"), '«Войти» на карточке — сразу экран входа');
+  assert.ok(account.includes('HappyWelcome.ask({reason:'), 'запись без входа — лист «Войдите в аккаунт»');
   const guard = between(page, 'function writeGuard(){', '\n}');
   assert.ok(guard.includes('if(RO){ roWarn(); return true }') && guard.includes('if(!DayData.signedIn()){ askSignIn(); return true }'));
   assert.ok(between(page, 'function lockGuard(){', '\n}').includes('if(writeGuard())return true;'), 'закрытый день, вход и версия проверяются одной функцией');

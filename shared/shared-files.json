@@ -21,8 +21,45 @@
       "contract": true
     },
     {
-      "name": "happy-account-ui.js",
-      "reference": "shared/happy-account-ui.js",
+      "name": "happy-screens.js",
+      "reference": "shared/happy-screens.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
+      "name": "happy-screens.css",
+      "reference": "shared/happy-screens.css",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
+      "name": "happy-welcome.js",
+      "reference": "shared/happy-welcome.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
+      "name": "happy-person.js",
+      "reference": "shared/happy-person.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ],
+      "contract": true
+    },
+    {
+      "name": "happy-goals.js",
+      "reference": "shared/happy-goals.js",
       "apps": [
         "day",
         "meal",

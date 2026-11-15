@@ -21,10 +21,10 @@ MealBoot.ready=(async()=>{
  if(account.current()){
   /* Номера форматов: свои документы — формат раскладки Meal; витрина — номера из её общих файлов. */
   const formats={'meal/supps':1,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,'day/foodtaps':HappyFood.FORMAT,'sport/foodtaps':HappyFood.FORMAT,'meal/foodtaps':HappyFood.FORMAT,
-   'day/pairs':HappyAppLinks.FORMAT,'sport/summary':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT};
+   'day/pairs':HappyAppLinks.FORMAT,'sport/summary':HappySportSummary.FORMAT,'sport/body':HappyMeasurements.FORMAT,'sport/profile':HappyPerson.FORMAT};
   for(const name of MealDocs.NAMES)formats['meal/'+name]=MealDocs.FORMAT;
   try{MealBoot.store=await HappyStore.open({app:'meal',account,own:MealDocs.OWN,
-   reads:{sport:['summary']},shared:{day:['pairs','foodtaps'],sport:['body','foodtaps']},formats,firstSync:12000})}
+   reads:{sport:['summary']},shared:{day:['pairs','foodtaps'],sport:['body','foodtaps','profile']},formats,firstSync:12000})}
   catch(e){MealBoot.error=(e&&e.message)||'Хранилище на устройстве недоступно'}
  }
  const who=account.current()?account.current().uid:null;
@@ -127,6 +127,6 @@ var MealData=(()=>{
   /* витрину могла переписать другая вкладка или устройство: сверяться заново с тем, что лежит */
   for(const name of ['summary','foods'])store().doc(name).subscribe(e=>{if(e.origin!=='local')sent.delete(name)});
  }
- const statusText=()=>HappyAccountUI.statusText(signedIn()?store():null,MealBoot.error);
+ const statusText=()=>HappyPerson.statusText(signedIn()?store():null,MealBoot.error);
  return {load,save,publish,stored:stored_,onRemote,statusText,signedIn,outdated,report,id,get store(){return MealBoot.store},get account(){return MealBoot.account}};
 })();

@@ -92,6 +92,7 @@ def serve(route, request, device):
 def phone_for(browser, name):
     ctx = browser.new_context(viewport={"width": 393, "height": 852}, device_scale_factor=2, locale="ru-RU", timezone_id="Europe/Moscow")
     ctx.route(BACKEND + "/**", lambda route, request: serve(route, request, name))
+    ctx.add_init_script(GUEST)   # как после «Познакомиться со Sport»: первый экран проверяет account_screens
     return ctx
 
 
@@ -117,18 +118,17 @@ def until(page, js, arg=None, seconds=10):
 
 
 def sign_in(page, email):
-    """Как человек: Настройки → почта и пароль → «Войти». Страница открывается заново уже со входом."""
+    """Как человек: Настройки → «Войти» внизу → экран входа: почта и пароль → «Войти». Страница открывается заново уже со входом."""
     page.click(".dock [data-view=profile]")
-    page.fill("#happy-account input[name=email]", email)
-    page.fill("#happy-account input[name=password]", USERS[email]["pw"])
-    page.click("#happy-account [data-happy-account-action=in]")
+    page.evaluate("()=>document.querySelector('[data-hp=signin]').click()")
+    sign_in_screen(page, email, USERS[email]["pw"])
     until(page, "u=>typeof SportData!=='undefined'&&SportData.signedIn()&&SportData.store.uid===u", USERS[email]["id"], 15)
     ready(page)
 
 
 def sign_out(page):
     page.click(".dock [data-view=profile]")
-    page.click("#happy-account [data-happy-account-action=out]")
+    sign_out_settings(page)
     until(page, "()=>typeof SportData!=='undefined'&&!SportData.signedIn()&&!!document.querySelector('#page>*')", seconds=20)
 
 
@@ -171,8 +171,10 @@ with sync_playwright() as p:
     out["signin_card"] = a1.is_visible(".sport-signin")
     tap(a1)
     a1.wait_for_timeout(600)
-    out["no_login_screen"] = a1.evaluate("()=>baseView") == "profile" and a1.is_visible("#happy-account input[name=email]")
-    out["no_login_toast"] = "Войди в аккаунт Happy" in a1.inner_text("#toast-root")
+    out["no_login_screen"] = a1.evaluate("()=>baseView") == "diary" and a1.is_visible("#happy-screens .hs-sheet [data-g=login]")
+    out["no_login_toast"] = "Войдите в аккаунт" in a1.inner_text("#happy-screens .hs-sheet")
+    a1.click("#happy-screens [data-g=cancel]")
+    a1.wait_for_timeout(400)
     out["no_login_state"] = a1.evaluate("()=>(state.customCounters||[]).length+state.workouts.length")
     out["no_login_device"] = len(device_keys(a1))
     out["no_login_requests"] = len([r for r in requests if r["path"] == "/rest/v1/app_sync"])
@@ -184,7 +186,7 @@ with sync_playwright() as p:
     out["cells"] = sorted(k for k in a1.evaluate("()=>Object.keys(localStorage)") if "happy-account" in k or "auth" in k)
     out["password_stored"] = USERS[ONE]["pw"] in a1.evaluate("()=>JSON.stringify(localStorage)")
     a1.click(".dock [data-view=profile]")
-    out["status_line"] = until(a1, "()=>{const n=document.querySelector('#happy-account [data-happy-account-status]');return n&&n.textContent}", seconds=5)
+    out["status_line"] = until(a1, "()=>{const n=document.querySelector('#happy-account-bottom [data-hp-status]');return n&&n.textContent}", seconds=5)
 
     # без сети: тренировка и нажатие счётчика приняты, видны во второй вкладке без сообщений, переживают перезагрузку
     until(a1, "()=>SportData.store.status().state==='cloud'", seconds=8)
@@ -329,7 +331,7 @@ out["old_row"] = rows.get((uid1, "sport", "journal")) == OLD
 out["old_read"] = [r for r in requests if r.get("kinds") and "sport/journal" in r["kinds"]]
 out["row_versions"] = sorted(set(r.get("v") for k, r in rows.items() if k[2] != "journal"))
 checks = [
-    ("без входа: карточка «Войди, чтобы записывать», нажатие ведёт к входу, ничего не записано", out["signin_card"] and out["no_login_screen"] and out["no_login_toast"] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
+    ("без входа: карточка «Войди, чтобы записывать», нажатие открывает лист «Войдите в аккаунт», ничего не записано", out["signin_card"] and out["no_login_screen"] and out["no_login_toast"] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("вошёл в одной вкладке — вторая вкладка Sport вошла сама; ячейка входа своя — happy-account:sport, пароль не сохранён", out["second_tab_signed_in"] and out["cells"] == ["happy-account:sport"] and not out["password_stored"]),
     ("под аккаунтом одна строка состояния", bool(out["status_line"])),
     ("без сети тренировка и нажатие приняты и видны во второй вкладке без сообщений", out["offline_taps"] == 1 and out["second_tab_workout"] and out["second_tab_taps"] == 1 and not out["second_tab_toasts"].strip()),
