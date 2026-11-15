@@ -20,6 +20,10 @@ assert.equal(restored.exercises[0].sets[1].restSeconds,90,'A rest remains attach
 c.fixture=restored.exercises[0].sets[1];
 assert.match(runInContext('renderReadRest(fixture)',c),/class="read-rest-note">Перерыв · 1:30 м:с/);
 assert.doesNotMatch(runInContext('renderReadRest(fixture)',c),/rest-strip|rest-progress|data-rest-row/,'History retains the duration as a quiet note, not a live rest bar');
+assert.equal(runInContext('renderReadRest({restSeconds:60,restActualSeconds:0},true)',c),'','Журнал: нулевой перерыв после последнего подхода не показывается (решение Астамура 15.11.2026 12:37)');
+assert.equal(runInContext('renderReadRest({restSeconds:60,restActualSeconds:0.239},true)',c),'','Доли секунды после последнего подхода — тоже «0:00», не показываются');
+assert.match(runInContext('renderReadRest({restSeconds:60,restActualSeconds:0},false)',c),/0:00/,'Перерыв между подходами остаётся, даже нулевой');
+assert.match(runInContext('renderReadRest({restSeconds:90,restActualSeconds:90},true)',c),/1:30/,'Ненулевой перерыв после последнего подхода остаётся');
 assert.equal(c.state.lastRestSeconds,90);
 runInContext('state.active.exercises[0].sets.push({reps:6});addSetRest(0)',c);assert.equal(c.state.active.exercises[0].sets[2].restSeconds,90,'New rests reuse the last explicit duration');
 runInContext('removeSetRest(0,1)',c);
