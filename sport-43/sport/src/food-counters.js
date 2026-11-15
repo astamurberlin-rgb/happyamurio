@@ -68,7 +68,7 @@ if(SportData.signedIn()){
 if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();   // кольцо нарисовано раньше, чем загрузился этот файл
 
 /* Нажатия за день — как в Day (лабратория 15.11.2026, задача «поправить время каждого нажатия»). Нажал на название
-   счётчика — лист снизу: время каждого нажатия за выбранный день; время можно поправить, лишнее — снять, можно добавить.
+   счётчика — лист снизу (время — видимое поле в пилюле: прозрачное поле поверх на iPhone не открывалось): время каждого нажатия за выбранный день; время можно поправить, лишнее — снять, можно добавить.
    Свои счётчики Sport: время — поле t нажатия ('ЧЧ:ММ'); у прежних нажатий без t время берётся из момента нажатия,
    если нажимали в тот же день. Счётчики еды Meal: правка — то же нажатие с новым item.t и приёмом пищи item.sec (как
    при нажатии: до 11 — завтрак, до 16 — обед, до 21 — ужин, позже — перекус), в документе приложения, где нажали;
@@ -104,7 +104,7 @@ const SportTaps=(()=>{
  function body(id){
   const rows=list(id),date=new Date(selectedDate+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
   return `<p class="sheet-info">${date}${rows.length?', всего '+rows.length:''}. Время можно поправить, лишнее — снять.</p>`+
-   (rows.length?rows.map(r=>`<div class="tap-row"><span class="tap-time${r.t?'':' tap-none'}"><b>${r.t||'—:—'}</b><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"></span><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
+   (rows.length?rows.map(r=>`<div class="tap-row"><label class="tap-time${r.t?'':' tap-none'}"><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"><b aria-hidden="true">—:—</b></label><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
     :'<p class="fineprint">За этот день нажатий нет.</p>')+
    `<div class="tap-actions"><button type="button" class="button" data-tap-add>Добавить нажатие</button><button type="button" class="button primary" data-tap-done>Готово</button></div>`;
  }
@@ -139,7 +139,7 @@ const SportTaps=(()=>{
   const b=ev.target.closest?.('[data-action="food-taps"]');
   if(b){ev.preventDefault();show(b.dataset.id);return}
   const box=ev.target.closest?.('#sport-tap-sheet');if(!box||!open)return;
-  const input=ev.target.closest('input[type=time]');if(input){if(input.showPicker)try{input.showPicker()}catch(e){}return}
+  if(ev.target.closest('input[type=time]'))return;   // выбор времени открывает само поле
   const btn=ev.target.closest('button');if(!btn)return;
   if(btn.hasAttribute('data-tap-done')){open=null;closeSheet();return}
   if(btn.hasAttribute('data-tap-add')){try{changeSportFood(open,true)}catch(e){toast(e.message)}paint();return}

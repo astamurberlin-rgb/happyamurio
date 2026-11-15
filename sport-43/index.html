@@ -569,9 +569,13 @@ body:has(.overlay:not(:empty)) #free-timer-root{visibility:hidden}
 button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
 .tap-row{display:flex;align-items:center;gap:12px;padding:8px 0}
 .tap-row+.tap-row{border-top:1px solid #ffffff47}
-.tap-time{position:relative;display:inline-grid;place-items:center;min-width:86px;height:40px;padding:0 14px;border-radius:12px;border:1px solid #ffffff99;background:#ffffff2e;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
-.tap-time.tap-none b{color:#ffffff99;font-weight:600}
-.tap-time input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;-webkit-appearance:none;appearance:none;font-size:16px}
+.tap-time{position:relative;display:block;width:96px;height:40px;border-radius:12px;border:1px solid #ffffff99;background:#ffffff2e;overflow:hidden;cursor:pointer}
+.tap-time input{display:block;box-sizing:border-box;width:100%;height:100%;min-width:0;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#fff;font:inherit;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;line-height:40px;text-align:center;-webkit-appearance:none;appearance:none;color-scheme:dark;cursor:pointer}
+.tap-time input::-webkit-date-and-time-value{text-align:center;margin:0}
+.tap-time input::-webkit-datetime-edit{display:inline-flex;justify-content:center;width:100%;padding:0}
+.tap-time input::-webkit-calendar-picker-indicator{display:none}
+.tap-time b{display:none;position:absolute;inset:0;place-items:center;font-size:16px;font-weight:600;color:#ffffff99;pointer-events:none}
+.tap-time.tap-none b{display:grid}.tap-time.tap-none input{color:transparent}
 .tap-amount{flex:1;text-align:right;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
 .tap-remove{display:grid;place-items:center;width:30px;height:30px;margin-left:4px;border-radius:50%;background:#ffffff26;border:1px solid #ffffff59;color:#fff}
 .tap-remove svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
@@ -3688,7 +3692,7 @@ if(SportData.signedIn()){
 if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();   // кольцо нарисовано раньше, чем загрузился этот файл
 
 /* Нажатия за день — как в Day (лабратория 15.11.2026, задача «поправить время каждого нажатия»). Нажал на название
-   счётчика — лист снизу: время каждого нажатия за выбранный день; время можно поправить, лишнее — снять, можно добавить.
+   счётчика — лист снизу (время — видимое поле в пилюле: прозрачное поле поверх на iPhone не открывалось): время каждого нажатия за выбранный день; время можно поправить, лишнее — снять, можно добавить.
    Свои счётчики Sport: время — поле t нажатия ('ЧЧ:ММ'); у прежних нажатий без t время берётся из момента нажатия,
    если нажимали в тот же день. Счётчики еды Meal: правка — то же нажатие с новым item.t и приёмом пищи item.sec (как
    при нажатии: до 11 — завтрак, до 16 — обед, до 21 — ужин, позже — перекус), в документе приложения, где нажали;
@@ -3724,7 +3728,7 @@ const SportTaps=(()=>{
  function body(id){
   const rows=list(id),date=new Date(selectedDate+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
   return `<p class="sheet-info">${date}${rows.length?', всего '+rows.length:''}. Время можно поправить, лишнее — снять.</p>`+
-   (rows.length?rows.map(r=>`<div class="tap-row"><span class="tap-time${r.t?'':' tap-none'}"><b>${r.t||'—:—'}</b><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"></span><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
+   (rows.length?rows.map(r=>`<div class="tap-row"><label class="tap-time${r.t?'':' tap-none'}"><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"><b aria-hidden="true">—:—</b></label><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
     :'<p class="fineprint">За этот день нажатий нет.</p>')+
    `<div class="tap-actions"><button type="button" class="button" data-tap-add>Добавить нажатие</button><button type="button" class="button primary" data-tap-done>Готово</button></div>`;
  }
@@ -3759,7 +3763,7 @@ const SportTaps=(()=>{
   const b=ev.target.closest?.('[data-action="food-taps"]');
   if(b){ev.preventDefault();show(b.dataset.id);return}
   const box=ev.target.closest?.('#sport-tap-sheet');if(!box||!open)return;
-  const input=ev.target.closest('input[type=time]');if(input){if(input.showPicker)try{input.showPicker()}catch(e){}return}
+  if(ev.target.closest('input[type=time]'))return;   // выбор времени открывает само поле
   const btn=ev.target.closest('button');if(!btn)return;
   if(btn.hasAttribute('data-tap-done')){open=null;closeSheet();return}
   if(btn.hasAttribute('data-tap-add')){try{changeSportFood(open,true)}catch(e){toast(e.message)}paint();return}
