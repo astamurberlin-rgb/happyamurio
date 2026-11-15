@@ -90,6 +90,6 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 #page>.journal-switch button.selected{background:#fffffff0;color:#5c4598;font-weight:600;box-shadow:none}
 /* «Добавить упражнение»: поиск и круглая кнопка фильтров, как в Библиотеке (15.11.2026) */
 .picker-search-row{margin-bottom:10px}
-#picker-filters .library-filter-box{margin:0 0 12px}
-#picker-filters .library-filters{margin:0}
+#picker-filters .library-filter-box,#template-picker-filters .library-filter-box{margin:0 0 12px}
+#picker-filters .library-filters,#template-picker-filters .library-filters{margin:0}
 #picker-results .library-count{margin:4px 2px 10px}

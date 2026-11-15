@@ -210,9 +210,9 @@ renderJournal=function(){
    держится, пока приложение открыто; кнопка с точкой — какой-то фильтр выбран. Варианты упражнений видны все. */
 const pickerFilter={sport:'all',equipment:'all',muscle:'all',open:false};
 function pickerPool(){return allExercises().filter(e=>pickerFilter.sport==='all'||exerciseSports(e).includes(pickerFilter.sport));}
-function pickerExercises(q=''){const seen=new Set(),hidden=new Set(state.archivedExercises||[]),f=pickerFilter;
- return pickerPool().filter(e=>{if(seen.has(e.id)||hidden.has(e.id)||!matches(e,q))return false;seen.add(e.id);
-  return (f.equipment==='all'||equipmentMatches(e,f.equipment))&&(f.muscle==='all'||exerciseMuscles(e).includes(f.muscle));});}
+function pickerPasses(e){const f=pickerFilter;return (f.sport==='all'||exerciseSports(e).includes(f.sport))&&(f.equipment==='all'||equipmentMatches(e,f.equipment))&&(f.muscle==='all'||exerciseMuscles(e).includes(f.muscle));}
+function pickerExercises(q=''){const seen=new Set(),hidden=new Set(state.archivedExercises||[]);
+ return allExercises().filter(e=>{if(seen.has(e.id)||hidden.has(e.id)||!matches(e,q))return false;seen.add(e.id);return pickerPasses(e);});}
 function pickerActive(){return pickerFilter.sport!=='all'||pickerFilter.equipment!=='all'||pickerFilter.muscle!=='all';}
 function pickerFiltersMarkup(){
  const f=pickerFilter,pool=pickerPool(),equipOn=['gym','bars'].includes(f.sport);
@@ -227,7 +227,20 @@ function pickerCount(n){return n+' '+(n%10===1&&n%100!==11?'упражнение
 function pickerResultsMarkup(q=''){const list=pickerExercises(String(q).trim());return `<div class="library-count">${pickerCount(list.length)}</div><div class="exercise-list">${list.map(e=>exerciseCard(e,'pick-exercise')).join('')||'<div class="empty">Ничего не найдено. Можно создать своё упражнение.</div>'}</div>`;}
 function pickerToggleMarkup(){const on=pickerActive();return `<button type="button" class="library-filter-toggle${on?' has-active':''}" data-action="picker-filters" aria-expanded="${pickerFilter.open}" aria-label="Фильтры${on?' (выбраны)':''}">${icon('sliders-horizontal')}</button>`;}
 showPicker=function(phase){openSheet('Добавить упражнение',`<input id="picker-phase" type="hidden" value="${esc(phase||'main')}"><div class="library-search-row picker-search-row"><label class="search library-search">${icon('magnifying-glass')}<input id="picker-search" placeholder="Название упражнения…" aria-label="Найти упражнение" autocomplete="off"></label>${pickerToggleMarkup()}</div><div id="picker-filters">${pickerFiltersMarkup()}</div><div id="picker-results">${pickerResultsMarkup('')}</div><button class="button dashed" style="margin-top:12px" data-action="custom-exercise">${icon('plus')} Создать своё</button>`,'picker');};
-function refreshPicker(){const box=$('#picker-filters');if(!box)return;box.innerHTML=pickerFiltersMarkup();$('#picker-results').innerHTML=pickerResultsMarkup($('#picker-search')?.value||'');document.querySelector('[data-action="picker-filters"]')?.replaceWith(document.createRange().createContextualFragment(pickerToggleMarkup()));}
+function refreshPicker(){const box=$('#picker-filters')||$('#template-picker-filters');if(!box)return;box.innerHTML=pickerFiltersMarkup();
+ if($('#picker-results'))$('#picker-results').innerHTML=pickerResultsMarkup($('#picker-search')?.value||'');
+ if($('#template-picker-results'))$('#template-picker-results').innerHTML=templatePickerResultsMarkup($('#template-picker-search')?.value||'');
+ document.querySelector('[data-action="picker-filters"]')?.replaceWith(document.createRange().createContextualFragment(pickerToggleMarkup()));}
+/* Выбор упражнения в редакторе «Мои тренировки» — те же фильтры и тот же выбор (Астамур, 15.11.2026 16:20). */
+const templateResultsBeforeFilters=templateExerciseResults;
+templateExerciseResults=function(q=''){return templateResultsBeforeFilters(q).filter(pickerPasses);};
+const openTemplatePickerBeforeFilters=openTemplateExercisePicker;
+openTemplateExercisePicker=function(row=null){
+ openTemplatePickerBeforeFilters(row);
+ const search=$('#template-picker-search')?.closest('label');if(!search||search.closest('.library-search-row'))return;
+ search.classList.add('library-search');const wrap=document.createElement('div');wrap.className='library-search-row picker-search-row';search.before(wrap);wrap.append(search);
+ wrap.insertAdjacentHTML('beforeend',pickerToggleMarkup());wrap.insertAdjacentHTML('afterend',`<div id="template-picker-filters">${pickerFiltersMarkup()}</div>`);
+};
 document.addEventListener('input',e=>{if(e.target.id!=='picker-search')return;e.stopImmediatePropagation();$('#picker-results').innerHTML=pickerResultsMarkup(e.target.value);},true);
 document.addEventListener('change',e=>{const key={'picker-sport':'sport','picker-equipment':'equipment','picker-muscle':'muscle'}[e.target.id];if(!key)return;e.stopImmediatePropagation();pickerFilter[key]=e.target.value;refreshPicker();},true);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action="picker-filters"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();pickerFilter.open=!pickerFilter.open;refreshPicker();},true);
