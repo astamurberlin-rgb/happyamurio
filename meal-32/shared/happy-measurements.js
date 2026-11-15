@@ -163,7 +163,7 @@ function girths(values,fallback){
 }
 /* прошлый замер для рисунка: разница с «сейчас» усилена в k раз и не уходит за 0,7–1,35 от «сейчас» */
 function drawnPast(now,past,k){const o={};for(const key of GIRTH){const v=now[key]+k*(past[key]-now[key]);o[key]=Math.min(now[key]*1.35,Math.max(now[key]*0.7,v))}return o}
-function bodyPath(m){
+function bodyPath(m,frame){
  const R=Math.PI/180,P=(x,y)=>({x,y}),lerp=(a,b,t)=>a+(b-a)*t,dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y),r2=v=>Math.round(v*100)/100;
  const mirror=pts=>pts.map(q=>P(-q.x,q.y)).reverse(),sym=half=>half.concat(mirror(half.slice(1,-1)));
  const orient=pts=>{let s=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];s+=a.x*b.y-b.x*a.y}return s<0?pts.slice().reverse():pts};
@@ -194,8 +194,12 @@ function bodyPath(m){
  /* Плечи (15.11.2026, Астамур: «плечи уменьшил — не видно»): в макете плечевой сустав стоял на месте, и плечи уже
     ~120 см не меняли фигуру. Теперь сустав сдвигается вместе с обхватом плеч (у примера, 121 см, — там же, где в
     макете); руки висят от него. Грудь не шире плеч: что выходит за плечо, сходит мягко. Широкая грудь чуть отводит руки
-    в стороны, узкая — прижимает (при груди 103 см — как в макете), иначе грудь за руками почти не видна. */
- const J=P(Math.min(20.5,Math.max(11.5,16+(sw-121*0.392/2)*0.8)),37),t1=(22+Math.min(7,Math.max(-5,0.9*(cw-103*0.335/2))))*R,t2=24*R,t3=21*R,U=33.5,F=27,Hd=18.9,W=U+F;
+    в стороны, узкая — прижимает (при груди 103 см — как в макете), иначе грудь за руками почти не видна.
+    frame — замер, по которому ставится «скелет» (сустав плеча и разворот рук). У одного человека кости те же, поэтому
+    при сравнении «Было» рисуется на скелете «Сейчас» и меняется только толщина: иначе при похудении руки съезжали к телу
+    и давали ложный розовый, будто что-то прибавилось. */
+ const f=frame||m,fsw=(f.shoulders*0.392)/2,fcw=(f.chest*0.335)/2;
+ const J=P(Math.min(20.5,Math.max(11.5,16+(fsw-121*0.392/2)*0.8)),37),t1=(22+Math.min(7,Math.max(-5,0.9*(fcw-103*0.335/2))))*R,t2=24*R,t3=21*R,U=33.5,F=27,Hd=18.9,W=U+F;
  const A1=P(J.x+U*Math.sin(t1),J.y+U*Math.cos(t1)),A2=P(A1.x+F*Math.sin(t2),A1.y+F*Math.cos(t2)),A3=P(A2.x+Hd*Math.sin(t3),A2.y+Hd*Math.cos(t3));
  const dOut=Math.max((sw-J.x-4*Math.sin(t1))/Math.cos(t1),bw*1.02+0.3),ew=0.36*bw+0.42*fw+0.45;
  const onArm=(s,o)=>P(J.x+s*Math.sin(t1)+o*Math.cos(t1),J.y+s*Math.cos(t1)-o*Math.sin(t1));
@@ -249,7 +253,7 @@ function figure(now,past,same,label){
  const ux=Math.round(Math.cos(a)*L/2*100)/100,uy=Math.round(Math.sin(a)*L/2*100)/100;
  const lin=(gid,c)=>`<linearGradient id="${gid}" x1=".15" y1=".1" x2=".85" y2=".95"><stop offset="0" stop-color="${tint(c,g)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,g*.4)}"/></linearGradient>`;
  const layer=(d,cls,gid,rim,extra)=>`<g class="${cls}"${extra||''}><path d="${d}" fill="url(#${gid})"/><path d="${d}" fill="url(#${id}s)"/><path d="${d}" fill="#000" fill-opacity=".02" filter="url(#${rim})"/></g>`;
- const nowD=bodyPath(now),pastD=same?nowD:bodyPath(past);
+ const nowD=bodyPath(now),pastD=same?nowD:bodyPath(past,now);   // «Было» — на скелете «Сейчас»
  /* «Сейчас» розовым целиком, поверх — та же фигура голубым, но только внутри «Было»: розовым остаётся прибавка */
  return `<svg class="hm-chart" viewBox="-52 -3 104 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
   `<clipPath id="${id}k"><path class="hm-past-clip" d="${pastD}"/></clipPath>`+
@@ -339,7 +343,7 @@ function mount(box,options){
   const step=t=>{
    const u=Math.min(1,(t-t0)/560),e=1-Math.pow(1-u,3),m={};
    for(const k of GIRTH)m[k]=start[k]+(to.past[k]-start[k])*e;
-   const d=bodyPath(m);for(const p of paths)p.setAttribute('d',d);
+   const d=bodyPath(m,to.now);for(const p of paths)p.setAttribute('d',d);
    layer.setAttribute('opacity',String(Math.round((v0+(1-v0)*e)*1000)/1000));drawn=m;
    raf=u<1?requestAnimationFrame(step):0;
   };

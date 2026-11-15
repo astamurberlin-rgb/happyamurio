@@ -129,6 +129,23 @@ section('Силуэт');   // макет «Что изменилось» (Sport 
   .filter(keys=>{const low={...base},high={...base};for(const k of keys){low[k]=base[k]*0.85;high[k]=base[k]*1.15}return shape(low)===shape(base)||shape(high)===shape(base)}).map(k=>k[0]);
  check('каждый обхват меняет фигуру в обе стороны — и плечи, и грудь',moved.length===0,moved);
  check('недостающий обхват — в масштабе остальных: у крупного человека без замера бедра ноги не худые',H.girths({shoulders:126,chest:115}).thigh>H.girths({}).thigh&&H.girths({}).thigh===58.5);
+ /* Сравнение одного человека: всё уменьшилось — «Сейчас» целиком внутри «Было». Контур «Сейчас» обходится точками
+    и каждая проверяется: внутри «Было» или на его краю (0,3). Раньше руки съезжали к телу вслед за плечами и давали
+    ложный розовый, будто что-то прибавилось. */
+ const outline=d=>d.split('M').slice(1).map(sp=>{const n=sp.replace(/[CZ]/g,' ').trim().split(/\s+/).map(Number),pts=[];let x0=n[0],y0=n[1];
+  for(let i=2;i+5<n.length;i+=6){const [a,b,c,e,x,y]=n.slice(i,i+6);for(let t=0.125;t<1.0001;t+=0.125){const u=1-t;
+   pts.push([u*u*u*x0+3*u*u*t*a+3*u*t*t*c+t*t*t*x,u*u*u*y0+3*u*u*t*b+3*u*t*t*e+t*t*t*y])}x0=x;y0=y}return pts});
+ const inside=(pt,polys)=>polys.some(poly=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const [xi,yi]=poly[i],[xj,yj]=poly[j];
+  if((yi>pt[1])!==(yj>pt[1])&&pt[0]<(xj-xi)*(pt[1]-yi)/(yj-yi)+xi)c=!c}return c});
+ const near=(pt,polys,eps)=>polys.some(poly=>poly.some((q,i)=>{const r=poly[(i+1)%poly.length],dx=r[0]-q[0],dy=r[1]-q[1],L=dx*dx+dy*dy||1e-9,
+  t=Math.max(0,Math.min(1,((pt[0]-q[0])*dx+(pt[1]-q[1])*dy)/L));return Math.hypot(pt[0]-q[0]-t*dx,pt[1]-q[1]-t*dy)<eps}));
+ const both=(o,v)=>{for(const k of ['biceps','forearm','thigh','calf'])if(v[k]!=null){o[k+'L']=o[k+'R']=v[k]}for(const k of ['neck','shoulders','chest','waist','hips'])o[k]=v[k];return o};
+ const strays=(fat,slim,k)=>{const now=H.girths(both({},slim)),past=H.drawnPast(now,H.girths(both({},fat),now),k),polys=outline(H.bodyPath(past,now));
+  return outline(H.bodyPath(now)).flat().filter(p=>!inside(p,polys)&&!near(p,polys,0.3)).length};
+ const woman=[{neck:35,shoulders:106,chest:104,biceps:31,forearm:25.5,waist:82,hips:108,thigh:63,calf:39},{neck:31,shoulders:96,chest:90,biceps:25,forearm:22,waist:60,hips:90,thigh:51,calf:34}];
+ const man=[{neck:44,shoulders:122,chest:113,biceps:36,forearm:31,waist:108,hips:112,thigh:66,calf:42},{neck:40,shoulders:120,chest:102,biceps:34,forearm:29,waist:80,hips:95,thigh:59,calf:38}];
+ const leaks=[['похудела',woman,1],['похудела, ×3',woman,3],['похудел',man,1],['похудел, ×3',man,3]].map(([t,[a,b],k])=>[t,strays(a,b,k)]).filter(x=>x[1]>0);
+ check('похудел(а): «Сейчас» целиком внутри «Было» — нигде нет розового, руки не съезжают к телу',leaks.length===0,leaks);
  check('пустые и крайние замеры не дают нечисловых координат',![H.girths({}),H.girths({waist:1,hips:1,chest:1,shoulders:1}),H.girths({waist:500,hips:500,chest:500,shoulders:500,bicepsL:500})].some(m=>/NaN|Infinity/.test(H.bodyPath(m))));
 }
 
