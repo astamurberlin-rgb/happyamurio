@@ -204,3 +204,30 @@ renderJournal=function(){
  const tab=(id,label)=>`<button data-action="journal-tab" data-id="${id}" class="${journalTab===id?'selected':''}" aria-pressed="${journalTab===id}">${label}</button>`;
  return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():renderHistory());
 };
+
+/* «Добавить упражнение» в тренировке: те же фильтры, что в Библиотеке, — круглая кнопка у поиска открывает группу,
+   оборудование и группы мышц (Астамур, 15.11.2026: «добавить упражнение на плечи, а название не помню»). Выбор
+   держится, пока приложение открыто; кнопка с точкой — какой-то фильтр выбран. Варианты упражнений видны все. */
+const pickerFilter={sport:'all',equipment:'all',muscle:'all',open:false};
+function pickerPool(){return allExercises().filter(e=>pickerFilter.sport==='all'||exerciseSports(e).includes(pickerFilter.sport));}
+function pickerExercises(q=''){const seen=new Set(),hidden=new Set(state.archivedExercises||[]),f=pickerFilter;
+ return pickerPool().filter(e=>{if(seen.has(e.id)||hidden.has(e.id)||!matches(e,q))return false;seen.add(e.id);
+  return (f.equipment==='all'||equipmentMatches(e,f.equipment))&&(f.muscle==='all'||exerciseMuscles(e).includes(f.muscle));});}
+function pickerActive(){return pickerFilter.sport!=='all'||pickerFilter.equipment!=='all'||pickerFilter.muscle!=='all';}
+function pickerFiltersMarkup(){
+ const f=pickerFilter,pool=pickerPool(),equipOn=['gym','bars'].includes(f.sport);
+ const equip=equipmentChoices.filter(([k])=>k==='all'||pool.some(e=>equipmentMatches(e,k))),muscles=muscleGroups.filter(([id])=>id==='all'||pool.some(e=>exerciseMuscles(e).includes(id)));
+ if(!equipOn||!equip.some(([k])=>k===f.equipment))f.equipment='all';
+ if(!muscles.some(([id])=>id===f.muscle))f.muscle='all';
+ return `<div class="library-filter-box picker-filter-box" ${f.open?'':'hidden'}><div class="catalog-group-filter"><label class="library-sport"><select id="picker-sport" aria-label="Группа упражнений"><option value="all">Все группы</option>${exerciseGroups().map(g=>`<option value="${esc(g.id)}" ${f.sport===g.id?'selected':''}>${esc(groupPath(g.id))}</option>`).join('')}</select></label></div>`+
+  `<div class="library-filters"><label class="library-equipment"><select id="picker-equipment" aria-label="Оборудование" ${!equipOn||equip.length<2?'disabled':''}>${equip.map(([id,name])=>`<option value="${id}" ${f.equipment===id?'selected':''}>${name}</option>`).join('')}</select></label>`+
+  `<label class="library-muscle"><select id="picker-muscle" aria-label="Группы мышц" ${muscles.length<2?'disabled':''}>${muscles.map(([id,name])=>`<option value="${id}" ${f.muscle===id?'selected':''}>${id==='all'?'Группы мышц':name}</option>`).join('')}</select></label></div></div>`;
+}
+function pickerCount(n){return n+' '+(n%10===1&&n%100!==11?'упражнение':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'упражнения':'упражнений');}
+function pickerResultsMarkup(q=''){const list=pickerExercises(String(q).trim());return `<div class="library-count">${pickerCount(list.length)}</div><div class="exercise-list">${list.map(e=>exerciseCard(e,'pick-exercise')).join('')||'<div class="empty">Ничего не найдено. Можно создать своё упражнение.</div>'}</div>`;}
+function pickerToggleMarkup(){const on=pickerActive();return `<button type="button" class="library-filter-toggle${on?' has-active':''}" data-action="picker-filters" aria-expanded="${pickerFilter.open}" aria-label="Фильтры${on?' (выбраны)':''}">${icon('sliders-horizontal')}</button>`;}
+showPicker=function(phase){openSheet('Добавить упражнение',`<input id="picker-phase" type="hidden" value="${esc(phase||'main')}"><div class="library-search-row picker-search-row"><label class="search library-search">${icon('magnifying-glass')}<input id="picker-search" placeholder="Название упражнения…" aria-label="Найти упражнение" autocomplete="off"></label>${pickerToggleMarkup()}</div><div id="picker-filters">${pickerFiltersMarkup()}</div><div id="picker-results">${pickerResultsMarkup('')}</div><button class="button dashed" style="margin-top:12px" data-action="custom-exercise">${icon('plus')} Создать своё</button>`,'picker');};
+function refreshPicker(){const box=$('#picker-filters');if(!box)return;box.innerHTML=pickerFiltersMarkup();$('#picker-results').innerHTML=pickerResultsMarkup($('#picker-search')?.value||'');document.querySelector('[data-action="picker-filters"]')?.replaceWith(document.createRange().createContextualFragment(pickerToggleMarkup()));}
+document.addEventListener('input',e=>{if(e.target.id!=='picker-search')return;e.stopImmediatePropagation();$('#picker-results').innerHTML=pickerResultsMarkup(e.target.value);},true);
+document.addEventListener('change',e=>{const key={'picker-sport':'sport','picker-equipment':'equipment','picker-muscle':'muscle'}[e.target.id];if(!key)return;e.stopImmediatePropagation();pickerFilter[key]=e.target.value;refreshPicker();},true);
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action="picker-filters"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();pickerFilter.open=!pickerFilter.open;refreshPicker();},true);
