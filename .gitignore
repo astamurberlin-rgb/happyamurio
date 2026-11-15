@@ -10,3 +10,4 @@ sport-*/sport/index.html
 sport-*/sport/manifest.webmanifest
 # Python cache next to the browser scenarios (scripts/browser/)
 __pycache__/
+sport-*/lab/

@@ -16,8 +16,21 @@
 .hm-button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:14px;padding:12px 18px;background:var(--hm-glass);border:1px solid var(--hm-line);border-radius:22px;font-size:14px;font-weight:700;text-align:center}
 .hm-button.hm-primary{background:rgba(244,251,255,.96);color:#2f5f99;border-color:transparent}
 .hm-button.hm-delete{background:rgba(114,28,88,.2);border-color:rgba(255,209,228,.48)}
-.hm-output{display:flex;flex-wrap:wrap;gap:8px}
-.hm-output .hm-button{width:auto;flex:0 1 auto;min-height:44px;border-radius:14px}
+.hm-output{display:flex;justify-content:center}
+.hm-output .hm-button{width:auto;flex:0 1 auto;min-height:44px;padding:10px 22px;border-radius:22px}
+/* «Поделиться»: лист снизу (.hm-share-list в окне) или меню у кнопки (.hm-menu) — 15.11.2026 */
+.hm-share-item{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:12px 16px;text-align:left;font-size:15px;font-weight:650}
+.hm-share-item .hm-icon{width:20px;height:20px;flex-basis:20px}
+.hm-share-list{display:grid;gap:10px}
+.hm-share-list .hm-share-item{background:var(--hm-glass);border:1px solid var(--hm-line);border-radius:18px}
+.hm-menu{position:fixed;z-index:80;min-width:212px;padding:6px;border-radius:18px;background:#f4fbff;color:#2f5f99;box-shadow:0 12px 34px rgba(8,50,100,.28);border:1px solid #fff}
+.hm-menu .hm-share-item{min-height:46px;border-radius:13px;font-size:14px}
+.hm-menu .hm-share-item+.hm-share-item{border-top:1px solid rgba(47,95,153,.12);border-radius:0 0 13px 13px}
+.hm-menu .hm-share-item:first-child{border-radius:13px 13px 0 0}
+.hm-menu .hm-share-item:active{background:rgba(47,95,153,.08)}
+.hm-menu-down{animation:hm-pop-down .14s ease}.hm-menu-up{animation:hm-pop-up .14s ease}
+@keyframes hm-pop-down{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes hm-pop-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .hm-note{font-size:11px;line-height:1.55;margin:13px 0 0;color:var(--hm-soft)}
 .hm-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:10px 14px;border-radius:16px;background:var(--hm-glass);border:1px solid var(--hm-line);font-size:12px}
 .hm-notice button{font-weight:750;text-decoration:underline;text-underline-offset:4px;min-height:32px}
@@ -68,7 +81,7 @@
  .hm-grid .hm-paired b{font-size:13px}
 }
 
-/* окно: форма замера, таблица для правки, удалённые замеры */
+/* окно: форма замера, удалённые замеры, выбор «Поделиться» */
 dialog.hm-dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;padding:0;border:0;width:min(100%,460px);max-width:100%;max-height:calc(100dvh - 28px);background:transparent;color:var(--ink,#fff);overflow:visible}
 dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 .hm-sheet{max-height:calc(100dvh - 28px);overflow:auto;overscroll-behavior:contain;padding:18px 20px calc(25px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;border:1px solid rgba(255,255,255,.27);background:var(--hm-sheet);box-shadow:0 -12px 60px rgba(8,60,120,.25);-webkit-user-select:text;user-select:text}

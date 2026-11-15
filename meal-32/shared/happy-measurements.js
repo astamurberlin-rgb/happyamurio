@@ -8,14 +8,16 @@
  * Тем же форматом пишет Sport 42. Меняется устройство записей — растёт FORMAT, и три приложения выходят разом.
  *
  * Экран один на три приложения и везде умеет одно и то же: добавить, исправить, удалить и вернуть, сравнить даты,
- * напечатать, выгрузить CSV.
+ * поделиться — напечатать или выгрузить CSV (одна кнопка «Поделиться», выбор — в листе снизу или в меню у кнопки).
  *   HappyMeasurements.mount(box, {doc, askSignIn, toast})
  *     doc       — общий документ или функция, которая его даёт: в Sport store.doc('body'),
  *                 в Day и Meal store.shared('sport','body'); без входа — null;
+ *     share     — как показать выбор «Поделиться»: 'sheet' — лист снизу (по умолчанию), 'menu' — меню у кнопки;
+ *                 можно функцией, которая даёт одно из двух;
  *     askSignIn — что сделать, если записать пробуют без входа;
  *     toast     — toast(текст, вернуть) приложения; без него сообщение показывается в самом экране.
  * Чистая часть (read, saveChanges, removeChanges, restoreChanges, csv) работает и в проверках Node.
- * — Claude · 14.11.2026 */
+ * — Claude · 14.11.2026; «Поделиться» вместо «Редактирование», «Печать замеров» и «Выгрузить CSV» — 15.11.2026 */
 (function(root){
 'use strict';
 const FORMAT=1,DOC={app:'sport',name:'body'},LIST='measurements',TRASH='measurementTrash',SEP='~';
@@ -131,7 +133,10 @@ const ICON={
  plus:svg('<path d="M12 5v14M5 12h14"/>'),
  pencil:svg('<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1z"/><path d="M14.5 6.5l3 3"/>'),
  trash:svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>'),
- check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>')
+ check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+ share:svg('<path d="M12 3.5v11M7.5 8 12 3.5 16.5 8"/><path d="M8 11H6.5A2.5 2.5 0 0 0 4 13.5v4A2.5 2.5 0 0 0 6.5 20h11a2.5 2.5 0 0 0 2.5-2.5v-4a2.5 2.5 0 0 0-2.5-2.5H16"/>'),
+ print:svg('<path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2.5"/><path d="M7 14.5h10V21H7z"/>'),
+ file:svg('<path d="M14 3.5H7.5A2 2 0 0 0 5.5 5.5v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h6"/>')
 };
 /* Схема тела: условные размеры для картинки, не личные. От замеров зависят только ширины. */
 function bodyPath(values,baseline,amplify){
@@ -180,7 +185,7 @@ function mount(box,options){
   if(mounted.open){mounted.move(box);return mounted}
   mounted.destroy();
  }
- const o=options||{};let dialog=null,off=null,noticeTimer=null,alive=true;
+ const o=options||{};let dialog=null,menu=null,off=null,noticeTimer=null,alive=true;
  const doc=()=>typeof o.doc==='function'?o.doc():o.doc||null;
  const state=()=>{const d=doc();return d&&!d.newer?read(d.all()):{list:[],trash:[],whole:false}};
  const say=(text,undo)=>{
@@ -205,11 +210,11 @@ function mount(box,options){
    `<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span><button type="button" class="hm-text" data-hm="add">${ICON.plus} Замер</button></div>`+
    `<div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div></div>`+
    grid(cur,past,old.date)+
-   `<button type="button" class="hm-button" data-hm="table">Редактирование</button>`+trash+
-   `<div class="hm-output"><button type="button" class="hm-button" data-hm="print">Печать замеров</button><button type="button" class="hm-button" data-hm="csv">Выгрузить CSV</button></div>`;
+   trash+
+   `<div class="hm-output"><button type="button" class="hm-button" data-hm="share" aria-haspopup="true" aria-expanded="${!!menu}">${ICON.share} Поделиться</button></div>`;
  }
  function render(){
-  if(!alive)return;
+  if(!alive)return;closeMenu();
   const wrap=box.querySelector('.hm-grid-wrap'),scroll=wrap?wrap.scrollLeft:0;
   box.classList.add('hm');box.innerHTML=view();
   const next=box.querySelector('.hm-grid-wrap');if(next&&scroll)next.scrollLeft=scroll;
@@ -278,9 +283,30 @@ function mount(box,options){
   const s=state();
   openDialog('Удалённые замеры',`<p class="hm-note">Удалённый замер можно восстановить.</p>`+s.trash.map(x=>`<div class="hm-trash-row"><b>${dateLabel(x.record.date)}</b><button type="button" class="hm-text" data-hm="restore" data-id="${esc(x.id)}">Восстановить</button></div>`).join('')+`<p class="hm-error" role="alert"></p>`);
  }
- function openTable(){
-  const s=state(),{cur,old}=pair(s.list,ui.period,ui.chosen);if(!cur)return;
-  openDialog('Редактирование',grid(cur,s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)),old.date)+`<p class="hm-note">Нажми карандаш у даты, чтобы исправить или удалить замер.</p>`);
+ /* «Поделиться»: два действия — печать и CSV. Выбор — лист снизу или маленькое меню у кнопки (share). */
+ const SHARE_ITEMS=()=>`<button type="button" class="hm-share-item" role="menuitem" data-hm="print">${ICON.print}<span>Печать замеров</span></button>`+
+  `<button type="button" class="hm-share-item" role="menuitem" data-hm="csv">${ICON.file}<span>Выгрузить CSV</span></button>`;
+ function closeMenu(){if(!menu)return;const m=menu;menu=null;m.remove();document.removeEventListener('pointerdown',outside,true);document.removeEventListener('keydown',escape,true);
+  const b=box.querySelector('[data-hm="share"]');if(b)b.setAttribute('aria-expanded','false')}
+ function outside(e){if(menu&&!menu.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-hm="share"]')))closeMenu()}
+ function escape(e){if(e.key==='Escape')closeMenu()}
+ function openShare(button){
+  if(!state().list.length){say('Пока нет замеров');return}
+  const style=typeof o.share==='function'?o.share():o.share;
+  if(style!=='menu'){openDialog('Поделиться',`<div class="hm-share-list" role="menu">${SHARE_ITEMS()}</div>`);return}
+  if(menu){closeMenu();return}
+  const m=menu=document.createElement('div');m.className='hm hm-menu';m.setAttribute('role','menu');m.setAttribute('aria-label','Поделиться');m.innerHTML=SHARE_ITEMS();
+  document.body.appendChild(m);
+  /* меню у кнопки: над ней, если снизу не хватает места (внизу экрана меню приложения) */
+  const r=button.getBoundingClientRect(),h=m.offsetHeight,w=m.offsetWidth,gap=8;
+  const below=r.bottom+gap+h<innerHeight-90;
+  m.style.top=(below?r.bottom+gap:Math.max(8,r.top-gap-h))+'px';
+  m.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+'px';
+  m.classList.add(below?'hm-menu-down':'hm-menu-up');
+  m.addEventListener('click',onClick);
+  document.addEventListener('pointerdown',outside,true);document.addEventListener('keydown',escape,true);
+  button.setAttribute('aria-expanded','true');
+  const first=m.querySelector('button');if(first)first.focus({preventScroll:true});
  }
  function download(){
   const s=state();if(!s.list.length){say('Пока нет замеров');return}
@@ -303,9 +329,9 @@ function mount(box,options){
   if(action==='delete'){remove();return}
   if(action==='restore'){restore(id);return}
   if(action==='trash'){openTrash();return}
-  if(action==='table'){openTable();return}
-  if(action==='csv'){download();return}
-  if(action==='print'){print();return}
+  if(action==='share'){openShare(b);return}
+  if(action==='csv'){closeMenu();closeDialog();download();return}
+  if(action==='print'){closeMenu();closeDialog();print();return}
   if(action==='undo'){const undo=ui.notice&&ui.notice.undo;ui.notice=null;if(undo)undo();else render();return}
   if(action==='amplify')ui.amplify=Number(id)===1?1:3;
   if(action==='period'){ui.period=id;ui.chosen=null}
@@ -318,7 +344,7 @@ function mount(box,options){
  render();
  const api={render,
   move(next){box.removeEventListener('click',onClick);box=next;box.addEventListener('click',onClick);render()},
-  destroy(){if(!alive)return;alive=false;clearTimeout(noticeTimer);if(off)off();box.removeEventListener('click',onClick);closeDialog();if(mounted===api)mounted=null},
+  destroy(){if(!alive)return;alive=false;clearTimeout(noticeTimer);if(off)off();box.removeEventListener('click',onClick);closeMenu();closeDialog();if(mounted===api)mounted=null},
   get box(){return box},get open(){return !!dialog}};
  mounted=api;return api;
 }
