@@ -77,6 +77,8 @@ const settingsLayout=await read('src/settings-layout.js'),settingsLayoutCss=awai
 const auditSimplify=await read('src/audit-simplify.js'),auditSimplifyCss=await read('src/audit-simplify.css');
 // Лаборатория 15.11.2026, шаг 21: редактор тренировки проще (✓ вверху, удаления свайпом) — после audit-simplify.
 const templateEditor=await read('src/template-editor.js'),templateEditorCss=await read('src/template-editor.css');
+// Лаборатория 15.11.2026, шаг 25: подход одной строкой (название, «кг × повт.», кружок с кольцом перерыва) — после редактора.
+const setLine=await read('src/set-line.js'),setLineCss=await read('src/set-line.css');
 const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappings=await read('src/strong-native-mappings.js'),strongNativeUI=await read('src/strong-native-ui.js');
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
@@ -94,10 +96,10 @@ const labBar=`<style>:root{--lab-h:30px}html{scroll-padding-top:var(--lab-h)}bod
 <div id="lab-bar" role="note"><b>Лаборатория · Sport 43.2 · не настоящее приложение</b></div>`;
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
-  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+measurementsCss+measurementsScreenCss+'\n</style>')
+  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+measurementsCss+measurementsScreenCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [accountUI,sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,measurementsScreen].join('\n'))
+  .replace('__APP__', () => [accountUI,sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,measurementsScreen].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 await mkdir(new URL('dist/', root), { recursive: true });
 await writeFile(new URL('dist/index.html', root), html);
