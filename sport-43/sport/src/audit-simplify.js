@@ -163,12 +163,13 @@ function auditLibraryFilters(){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action="library-filters"]');if(!b)return;e.stopImmediatePropagation();auditFiltersOpen=!auditFiltersOpen;render();},true);
 
 // 13. Counters look like in Day and Meal: a card «Счётчики», rows «название — минус, число, плюс», «Новый счётчик».
+// Лаборатория 15.11.2026: название — кнопка, как в Day: открывает нажатия за день с правкой времени (SportTaps, food-counters.js).
 // No explanations. While there is no counter yet, an example «Вода» stands in; its first «+» creates it for real.
 sportFoodHTML=function(){
  const rows=[...sportMealCounters(),...(state.customCounters||[])];   // счётчики еды Meal, показанные в Sport, и свои счётчики Sport (food-counters.js)
  if(!rows.length)rows.push({id:'example-water',title:'Вода',unit:'стакан, 250 мл',events:[]});
  const item=c=>{const n=(c.events||[]).filter(e=>e.date===selectedDate).length,sub=c.unit||'';
-  return `<div class="tpItem"><div class="tpNm"><b>${esc(c.title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div><div class="tpStp" role="group" aria-label="${esc(c.title)}"><button type="button" data-action="food-minus" data-id="${esc(c.id)}" aria-label="Убрать: ${esc(c.title)}" ${n?'':'disabled'}>−</button><span class="v${n?'':' tpZero'}">${n}</span><button type="button" data-action="food-plus" data-id="${esc(c.id)}" aria-label="Добавить: ${esc(c.title)}">+</button></div></div>`};
+  return `<div class="tpItem">${c.id==='example-water'?`<div class="tpNm">`:`<button type="button" class="tpNm" data-action="food-taps" data-id="${esc(c.id)}" aria-label="${esc(c.title)}: нажатия за день">`}<b>${esc(c.title)}</b>${sub?`<small>${esc(sub)}</small>`:''}${c.id==='example-water'?'</div>':'</button>'}<div class="tpStp" role="group" aria-label="${esc(c.title)}"><button type="button" data-action="food-minus" data-id="${esc(c.id)}" aria-label="Убрать: ${esc(c.title)}" ${n?'':'disabled'}>−</button><span class="v${n?'':' tpZero'}">${n}</span><button type="button" data-action="food-plus" data-id="${esc(c.id)}" aria-label="Добавить: ${esc(c.title)}">+</button></div></div>`};
  return `<section id="sport-food-counters"><div class="card tpSec"><h2 class="tpT">Счётчики</h2>${rows.map(item).join('')}<button type="button" class="tpAdd" data-action="food-create"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Новый счётчик</button></div></section>`;
 };
 document.addEventListener('click',e=>{

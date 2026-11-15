@@ -50,7 +50,7 @@ renderDiary=function(){return diaryBeforeFoodCounters()+sportFoodHTML();};
 function changeSportFood(id,add){
  if(id.indexOf(SportFood.PREFIX)===0){SportFood.change(id,add);return}
  const c=(state.customCounters||[]).find(c=>c.id===id);if(!c)return;c.events=c.events||[];
- if(add)c.events.push({id:sportCounterId(),date:selectedDate,at:Date.now()});
+ if(add)c.events.push({id:sportCounterId(),date:selectedDate,at:Date.now(),t:selectedDate===dayNow()?localNow().slice(11,16):null});
  else{const i=c.events.findLastIndex(e=>e.date===selectedDate);if(i>=0)c.events.splice(i,1);}
  persist();paintSportFood();
 }
@@ -66,3 +66,88 @@ if(SportData.signedIn()){
  HappyFood.TAP_APPS.forEach(app=>{const d=app==='sport'?SportData.store.doc('foodtaps'):SportData.store.shared(app,'foodtaps');d.subscribe(e=>{if(e.origin!=='local')again()})});
 }
 if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();   // кольцо нарисовано раньше, чем загрузился этот файл
+
+/* Нажатия за день — как в Day (лабратория 15.11.2026, задача «поправить время каждого нажатия»). Нажал на название
+   счётчика — лист снизу: время каждого нажатия за выбранный день; время можно поправить, лишнее — снять, можно добавить.
+   Свои счётчики Sport: время — поле t нажатия ('ЧЧ:ММ'); у прежних нажатий без t время берётся из момента нажатия,
+   если нажимали в тот же день. Счётчики еды Meal: правка — то же нажатие с новым item.t и приёмом пищи item.sec (как
+   при нажатии: до 11 — завтрак, до 16 — обед, до 21 — ужин, позже — перекус), в документе приложения, где нажали;
+   номер нажатия не меняется, число на счётчике тоже. */
+const SportTaps=(()=>{
+ let open=null;   // id счётчика, чей лист открыт
+ const pad=n=>String(n).padStart(2,'0');
+ const secOf=t=>{const h=t?Number(t.slice(0,2)):12;return h<11?'am':h<16?'pm':h<21?'dn':'sn'};
+ const isFood=id=>id.indexOf(SportFood.PREFIX)===0;
+ function eventTime(e){
+  if(typeof e.t==='string'&&/^\d\d:\d\d$/.test(e.t))return e.t;
+  if(e.t===null||!Number.isFinite(e.at))return null;
+  const d=new Date(e.at),day=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  return day===e.date?pad(d.getHours())+':'+pad(d.getMinutes()):null;
+ }
+ /* нажатия счётчика за выбранный день: [{key, t, amount}] по времени, без времени — в конце */
+ function list(id){
+  let rows;
+  if(isFood(id)){
+   const cid=id.slice(SportFood.PREFIX.length),d=SportFood.foods().find(x=>x.id===cid);
+   rows=SportFood.taps().filter(t=>t.cid===cid&&t.date===selectedDate).map((t,i)=>({key:t.id,t:t.item&&t.item.t||null,amount:d?HappyFood.portion(d):'+1',i}));
+  }else{
+   const c=(state.customCounters||[]).find(c=>c.id===id);
+   rows=(c&&c.events||[]).filter(e=>e.date===selectedDate).map((e,i)=>({key:e.id,t:eventTime(e),amount:'+1',i}));
+  }
+  return rows.sort((a,b)=>a.t==null&&b.t==null?a.i-b.i:a.t==null?1:b.t==null?-1:a.t<b.t?-1:a.t>b.t?1:a.i-b.i);
+ }
+ function title(id){
+  if(isFood(id)){const d=SportFood.foods().find(x=>x.id===id.slice(SportFood.PREFIX.length));return d?d.title:''}
+  const c=(state.customCounters||[]).find(c=>c.id===id);return c?c.title:'';
+ }
+ const MINUS='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg>';
+ function body(id){
+  const rows=list(id),date=new Date(selectedDate+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+  return `<p class="sheet-info">${date}${rows.length?', всего '+rows.length:''}. Время можно поправить, лишнее — снять.</p>`+
+   (rows.length?rows.map(r=>`<div class="tap-row"><span class="tap-time${r.t?'':' tap-none'}"><b>${r.t||'—:—'}</b><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"></span><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
+    :'<p class="fineprint">За этот день нажатий нет.</p>')+
+   `<div class="tap-actions"><button type="button" class="button" data-tap-add>Добавить нажатие</button><button type="button" class="button primary" data-tap-done>Готово</button></div>`;
+ }
+ function paint(){if(!open)return;const box=document.getElementById('sport-tap-sheet');if(!box){open=null;return}box.innerHTML=body(open)}
+ function show(id){open=id;openSheet(title(id),`<div id="sport-tap-sheet">${body(id)}</div>`,'sport-taps')}
+ const fail=e=>toast(e&&e.code==='newer'?HappyStore.NEWER:(e&&e.message)||'Не удалось сохранить');
+ /* записать нажатию время t ('ЧЧ:ММ' или null) */
+ function setTime(id,key,t){
+  if(isFood(id)){
+   const tap=SportFood.taps().find(x=>x.id===key);if(!tap)return;
+   const doc=tap.app==='sport'?SportData.store.doc(HappyFood.TAPS_NAME):SportData.store.shared(tap.app,HappyFood.TAPS_NAME);
+   if(doc.newer){fail({code:'newer'});return}
+   const {id:_,app:__,...value}=tap;value.item=Object.assign({},value.item,{t:t||null,sec:secOf(t)});
+   doc.put(key,value).catch(fail);
+  }else{
+   const c=(state.customCounters||[]).find(c=>c.id===id),e=c&&(c.events||[]).find(e=>e.id===key);if(!e)return;
+   e.t=t||null;persist();
+  }
+  paint();paintSportFood();if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();
+ }
+ function remove(id,key){
+  if(isFood(id)){
+   const tap=SportFood.taps().find(x=>x.id===key);if(!tap)return;
+   const doc=tap.app==='sport'?SportData.store.doc(HappyFood.TAPS_NAME):SportData.store.shared(tap.app,HappyFood.TAPS_NAME);
+   if(doc.newer){fail({code:'newer'});return}doc.remove(key).catch(fail);
+  }else{
+   const c=(state.customCounters||[]).find(c=>c.id===id);if(!c)return;c.events=(c.events||[]).filter(e=>e.id!==key);persist();
+  }
+  paint();paintSportFood();if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();
+ }
+ document.addEventListener('click',ev=>{
+  const b=ev.target.closest?.('[data-action="food-taps"]');
+  if(b){ev.preventDefault();show(b.dataset.id);return}
+  const box=ev.target.closest?.('#sport-tap-sheet');if(!box||!open)return;
+  const input=ev.target.closest('input[type=time]');if(input){if(input.showPicker)try{input.showPicker()}catch(e){}return}
+  const btn=ev.target.closest('button');if(!btn)return;
+  if(btn.hasAttribute('data-tap-done')){open=null;closeSheet();return}
+  if(btn.hasAttribute('data-tap-add')){try{changeSportFood(open,true)}catch(e){toast(e.message)}paint();return}
+  if(btn.dataset.tapRemove)remove(open,btn.dataset.tapRemove);
+ });
+ document.addEventListener('change',ev=>{
+  const input=ev.target;if(!open||!input.dataset||input.dataset.tapTime==null||!input.closest('#sport-tap-sheet'))return;
+  setTime(open,input.dataset.tapTime,input.value||null);
+ });
+ return {paint,show};
+})();

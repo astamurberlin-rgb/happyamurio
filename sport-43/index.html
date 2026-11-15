@@ -565,6 +565,18 @@ body:has(.overlay:not(:empty)) #free-timer-root{visibility:hidden}
 @media(max-width:360px){.exercise-mode-stack{width:116px}.exercise-mode-row small{font-size:10px}.exercise-player .player-inner-switches{width:128px}.exercise-player .player-inner-switches .player-mode-switch{min-height:26px}.exercise-player .player-inner-switches .player-mode-switch small{font-size:10px}.exercise-player .player-face-center{gap:5px;inset:18% 15%}.exercise-player .player-face-center strong{font-size:22px}}
 
 .sport-food-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0}.sport-food-row+ .sport-food-row{border-top:1px solid #ffffff26}.sport-food-row small{display:block;opacity:.65;margin-top:4px;font-size:12px}/* Update 38.4: «− N +» капсулой, как в Happy Meal */.sport-food-pill{display:grid;grid-template-columns:46px 52px 46px;align-items:stretch;height:44px;border:1px solid #ffffff73;border-radius:999px;overflow:hidden;background:#ffffff1f}.sport-food-pill>*{display:flex;align-items:center;justify-content:center;min-height:0;height:100%}.sport-food-pill button{border:0;border-radius:0;background:transparent;color:#fff;font-size:22px;line-height:1;padding:0;min-height:44px}.sport-food-pill button:first-child{border-right:1px solid #ffffff59}.sport-food-pill button:last-child{border-left:1px solid #ffffff59}.sport-food-pill button:disabled{opacity:.35}.sport-food-pill strong{font-size:17px;text-align:center}
+/* Лаборатория 15.11.2026: название счётчика — кнопка, открывает нажатия за день; лист нажатий — как в Day. */
+button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.tap-row{display:flex;align-items:center;gap:12px;padding:8px 0}
+.tap-row+.tap-row{border-top:1px solid #ffffff47}
+.tap-time{position:relative;display:inline-grid;place-items:center;min-width:86px;height:40px;padding:0 14px;border-radius:12px;border:1px solid #ffffff99;background:#ffffff2e;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+.tap-time.tap-none b{color:#ffffff99;font-weight:600}
+.tap-time input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;-webkit-appearance:none;appearance:none;font-size:16px}
+.tap-amount{flex:1;text-align:right;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.tap-remove{display:grid;place-items:center;width:30px;height:30px;margin-left:4px;border-radius:50%;background:#ffffff26;border:1px solid #ffffff59;color:#fff}
+.tap-remove svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.tap-actions{display:flex;gap:9px;margin-top:16px}.tap-actions .button{flex:1}
+.tap-actions .button{white-space:nowrap;padding-left:10px;padding-right:10px}
 /* Shared numeric entry. Names, search, selects and cards retain their design. */
 .sport-metric-input{position:relative;display:inline-flex!important;align-items:baseline!important;gap:6px!important;min-width:0;max-width:100%;width:100%;padding:0!important;margin:0!important;border:0!important;border-bottom:1px solid #ffffff80!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:inherit;font-variant-numeric:tabular-nums;overflow:visible!important}
 .sport-metric-input input,.active-workout .set-row .sport-metric-input input,.plan-set-field .sport-metric-input input,.player-round-row .sport-metric-input input{appearance:textfield;-moz-appearance:textfield;flex:1 1 auto;min-width:0!important;max-width:100%;width:100%!important;min-height:44px!important;height:auto!important;margin:0!important;padding:8px 0 6px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;outline:0!important;color:inherit;font:inherit;font-size:20px!important;line-height:1.25!important;text-align:right;font-variant-numeric:tabular-nums}
@@ -3658,7 +3670,7 @@ renderDiary=function(){return diaryBeforeFoodCounters()+sportFoodHTML();};
 function changeSportFood(id,add){
  if(id.indexOf(SportFood.PREFIX)===0){SportFood.change(id,add);return}
  const c=(state.customCounters||[]).find(c=>c.id===id);if(!c)return;c.events=c.events||[];
- if(add)c.events.push({id:sportCounterId(),date:selectedDate,at:Date.now()});
+ if(add)c.events.push({id:sportCounterId(),date:selectedDate,at:Date.now(),t:selectedDate===dayNow()?localNow().slice(11,16):null});
  else{const i=c.events.findLastIndex(e=>e.date===selectedDate);if(i>=0)c.events.splice(i,1);}
  persist();paintSportFood();
 }
@@ -3674,6 +3686,91 @@ if(SportData.signedIn()){
  HappyFood.TAP_APPS.forEach(app=>{const d=app==='sport'?SportData.store.doc('foodtaps'):SportData.store.shared(app,'foodtaps');d.subscribe(e=>{if(e.origin!=='local')again()})});
 }
 if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();   // кольцо нарисовано раньше, чем загрузился этот файл
+
+/* Нажатия за день — как в Day (лабратория 15.11.2026, задача «поправить время каждого нажатия»). Нажал на название
+   счётчика — лист снизу: время каждого нажатия за выбранный день; время можно поправить, лишнее — снять, можно добавить.
+   Свои счётчики Sport: время — поле t нажатия ('ЧЧ:ММ'); у прежних нажатий без t время берётся из момента нажатия,
+   если нажимали в тот же день. Счётчики еды Meal: правка — то же нажатие с новым item.t и приёмом пищи item.sec (как
+   при нажатии: до 11 — завтрак, до 16 — обед, до 21 — ужин, позже — перекус), в документе приложения, где нажали;
+   номер нажатия не меняется, число на счётчике тоже. */
+const SportTaps=(()=>{
+ let open=null;   // id счётчика, чей лист открыт
+ const pad=n=>String(n).padStart(2,'0');
+ const secOf=t=>{const h=t?Number(t.slice(0,2)):12;return h<11?'am':h<16?'pm':h<21?'dn':'sn'};
+ const isFood=id=>id.indexOf(SportFood.PREFIX)===0;
+ function eventTime(e){
+  if(typeof e.t==='string'&&/^\d\d:\d\d$/.test(e.t))return e.t;
+  if(e.t===null||!Number.isFinite(e.at))return null;
+  const d=new Date(e.at),day=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  return day===e.date?pad(d.getHours())+':'+pad(d.getMinutes()):null;
+ }
+ /* нажатия счётчика за выбранный день: [{key, t, amount}] по времени, без времени — в конце */
+ function list(id){
+  let rows;
+  if(isFood(id)){
+   const cid=id.slice(SportFood.PREFIX.length),d=SportFood.foods().find(x=>x.id===cid);
+   rows=SportFood.taps().filter(t=>t.cid===cid&&t.date===selectedDate).map((t,i)=>({key:t.id,t:t.item&&t.item.t||null,amount:d?HappyFood.portion(d):'+1',i}));
+  }else{
+   const c=(state.customCounters||[]).find(c=>c.id===id);
+   rows=(c&&c.events||[]).filter(e=>e.date===selectedDate).map((e,i)=>({key:e.id,t:eventTime(e),amount:'+1',i}));
+  }
+  return rows.sort((a,b)=>a.t==null&&b.t==null?a.i-b.i:a.t==null?1:b.t==null?-1:a.t<b.t?-1:a.t>b.t?1:a.i-b.i);
+ }
+ function title(id){
+  if(isFood(id)){const d=SportFood.foods().find(x=>x.id===id.slice(SportFood.PREFIX.length));return d?d.title:''}
+  const c=(state.customCounters||[]).find(c=>c.id===id);return c?c.title:'';
+ }
+ const MINUS='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg>';
+ function body(id){
+  const rows=list(id),date=new Date(selectedDate+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+  return `<p class="sheet-info">${date}${rows.length?', всего '+rows.length:''}. Время можно поправить, лишнее — снять.</p>`+
+   (rows.length?rows.map(r=>`<div class="tap-row"><span class="tap-time${r.t?'':' tap-none'}"><b>${r.t||'—:—'}</b><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"></span><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
+    :'<p class="fineprint">За этот день нажатий нет.</p>')+
+   `<div class="tap-actions"><button type="button" class="button" data-tap-add>Добавить нажатие</button><button type="button" class="button primary" data-tap-done>Готово</button></div>`;
+ }
+ function paint(){if(!open)return;const box=document.getElementById('sport-tap-sheet');if(!box){open=null;return}box.innerHTML=body(open)}
+ function show(id){open=id;openSheet(title(id),`<div id="sport-tap-sheet">${body(id)}</div>`,'sport-taps')}
+ const fail=e=>toast(e&&e.code==='newer'?HappyStore.NEWER:(e&&e.message)||'Не удалось сохранить');
+ /* записать нажатию время t ('ЧЧ:ММ' или null) */
+ function setTime(id,key,t){
+  if(isFood(id)){
+   const tap=SportFood.taps().find(x=>x.id===key);if(!tap)return;
+   const doc=tap.app==='sport'?SportData.store.doc(HappyFood.TAPS_NAME):SportData.store.shared(tap.app,HappyFood.TAPS_NAME);
+   if(doc.newer){fail({code:'newer'});return}
+   const {id:_,app:__,...value}=tap;value.item=Object.assign({},value.item,{t:t||null,sec:secOf(t)});
+   doc.put(key,value).catch(fail);
+  }else{
+   const c=(state.customCounters||[]).find(c=>c.id===id),e=c&&(c.events||[]).find(e=>e.id===key);if(!e)return;
+   e.t=t||null;persist();
+  }
+  paint();paintSportFood();if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();
+ }
+ function remove(id,key){
+  if(isFood(id)){
+   const tap=SportFood.taps().find(x=>x.id===key);if(!tap)return;
+   const doc=tap.app==='sport'?SportData.store.doc(HappyFood.TAPS_NAME):SportData.store.shared(tap.app,HappyFood.TAPS_NAME);
+   if(doc.newer){fail({code:'newer'});return}doc.remove(key).catch(fail);
+  }else{
+   const c=(state.customCounters||[]).find(c=>c.id===id);if(!c)return;c.events=(c.events||[]).filter(e=>e.id!==key);persist();
+  }
+  paint();paintSportFood();if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();
+ }
+ document.addEventListener('click',ev=>{
+  const b=ev.target.closest?.('[data-action="food-taps"]');
+  if(b){ev.preventDefault();show(b.dataset.id);return}
+  const box=ev.target.closest?.('#sport-tap-sheet');if(!box||!open)return;
+  const input=ev.target.closest('input[type=time]');if(input){if(input.showPicker)try{input.showPicker()}catch(e){}return}
+  const btn=ev.target.closest('button');if(!btn)return;
+  if(btn.hasAttribute('data-tap-done')){open=null;closeSheet();return}
+  if(btn.hasAttribute('data-tap-add')){try{changeSportFood(open,true)}catch(e){toast(e.message)}paint();return}
+  if(btn.dataset.tapRemove)remove(open,btn.dataset.tapRemove);
+ });
+ document.addEventListener('change',ev=>{
+  const input=ev.target;if(!open||!input.dataset||input.dataset.tapTime==null||!input.closest('#sport-tap-sheet'))return;
+  setTime(open,input.dataset.tapTime,input.value||null);
+ });
+ return {paint,show};
+})();
 
 /* Общая история обновлений Happy — один формат записи и один рендер для Day, Meal и Sport.
  * Запись: {version:'38.3', label:'Happy Sport · Update 38.3', date:'2026-11-09', time:'13:40', author:'Claude', changes:['…']}.
@@ -4945,12 +5042,13 @@ function auditLibraryFilters(){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action="library-filters"]');if(!b)return;e.stopImmediatePropagation();auditFiltersOpen=!auditFiltersOpen;render();},true);
 
 // 13. Counters look like in Day and Meal: a card «Счётчики», rows «название — минус, число, плюс», «Новый счётчик».
+// Лаборатория 15.11.2026: название — кнопка, как в Day: открывает нажатия за день с правкой времени (SportTaps, food-counters.js).
 // No explanations. While there is no counter yet, an example «Вода» stands in; its first «+» creates it for real.
 sportFoodHTML=function(){
  const rows=[...sportMealCounters(),...(state.customCounters||[])];   // счётчики еды Meal, показанные в Sport, и свои счётчики Sport (food-counters.js)
  if(!rows.length)rows.push({id:'example-water',title:'Вода',unit:'стакан, 250 мл',events:[]});
  const item=c=>{const n=(c.events||[]).filter(e=>e.date===selectedDate).length,sub=c.unit||'';
-  return `<div class="tpItem"><div class="tpNm"><b>${esc(c.title)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div><div class="tpStp" role="group" aria-label="${esc(c.title)}"><button type="button" data-action="food-minus" data-id="${esc(c.id)}" aria-label="Убрать: ${esc(c.title)}" ${n?'':'disabled'}>−</button><span class="v${n?'':' tpZero'}">${n}</span><button type="button" data-action="food-plus" data-id="${esc(c.id)}" aria-label="Добавить: ${esc(c.title)}">+</button></div></div>`};
+  return `<div class="tpItem">${c.id==='example-water'?`<div class="tpNm">`:`<button type="button" class="tpNm" data-action="food-taps" data-id="${esc(c.id)}" aria-label="${esc(c.title)}: нажатия за день">`}<b>${esc(c.title)}</b>${sub?`<small>${esc(sub)}</small>`:''}${c.id==='example-water'?'</div>':'</button>'}<div class="tpStp" role="group" aria-label="${esc(c.title)}"><button type="button" data-action="food-minus" data-id="${esc(c.id)}" aria-label="Убрать: ${esc(c.title)}" ${n?'':'disabled'}>−</button><span class="v${n?'':' tpZero'}">${n}</span><button type="button" data-action="food-plus" data-id="${esc(c.id)}" aria-label="Добавить: ${esc(c.title)}">+</button></div></div>`};
  return `<section id="sport-food-counters"><div class="card tpSec"><h2 class="tpT">Счётчики</h2>${rows.map(item).join('')}<button type="button" class="tpAdd" data-action="food-create"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Новый счётчик</button></div></section>`;
 };
 document.addEventListener('click',e=>{

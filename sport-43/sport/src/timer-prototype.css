@@ -172,3 +172,15 @@ body:has(.overlay:not(:empty)) #free-timer-root{visibility:hidden}
 @media(max-width:360px){.exercise-mode-stack{width:116px}.exercise-mode-row small{font-size:10px}.exercise-player .player-inner-switches{width:128px}.exercise-player .player-inner-switches .player-mode-switch{min-height:26px}.exercise-player .player-inner-switches .player-mode-switch small{font-size:10px}.exercise-player .player-face-center{gap:5px;inset:18% 15%}.exercise-player .player-face-center strong{font-size:22px}}
 
 .sport-food-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0}.sport-food-row+ .sport-food-row{border-top:1px solid #ffffff26}.sport-food-row small{display:block;opacity:.65;margin-top:4px;font-size:12px}/* Update 38.4: «− N +» капсулой, как в Happy Meal */.sport-food-pill{display:grid;grid-template-columns:46px 52px 46px;align-items:stretch;height:44px;border:1px solid #ffffff73;border-radius:999px;overflow:hidden;background:#ffffff1f}.sport-food-pill>*{display:flex;align-items:center;justify-content:center;min-height:0;height:100%}.sport-food-pill button{border:0;border-radius:0;background:transparent;color:#fff;font-size:22px;line-height:1;padding:0;min-height:44px}.sport-food-pill button:first-child{border-right:1px solid #ffffff59}.sport-food-pill button:last-child{border-left:1px solid #ffffff59}.sport-food-pill button:disabled{opacity:.35}.sport-food-pill strong{font-size:17px;text-align:center}
+/* Лаборатория 15.11.2026: название счётчика — кнопка, открывает нажатия за день; лист нажатий — как в Day. */
+button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.tap-row{display:flex;align-items:center;gap:12px;padding:8px 0}
+.tap-row+.tap-row{border-top:1px solid #ffffff47}
+.tap-time{position:relative;display:inline-grid;place-items:center;min-width:86px;height:40px;padding:0 14px;border-radius:12px;border:1px solid #ffffff99;background:#ffffff2e;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+.tap-time.tap-none b{color:#ffffff99;font-weight:600}
+.tap-time input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;-webkit-appearance:none;appearance:none;font-size:16px}
+.tap-amount{flex:1;text-align:right;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.tap-remove{display:grid;place-items:center;width:30px;height:30px;margin-left:4px;border-radius:50%;background:#ffffff26;border:1px solid #ffffff59;color:#fff}
+.tap-remove svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.tap-actions{display:flex;gap:9px;margin-top:16px}.tap-actions .button{flex:1}
+.tap-actions .button{white-space:nowrap;padding-left:10px;padding-right:10px}
