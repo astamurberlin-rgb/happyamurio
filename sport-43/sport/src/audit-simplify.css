@@ -13,6 +13,9 @@
 .rename-exercise{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;background:none;border:0;color:#fff}
 .rename-exercise .icon{width:20px;height:20px;fill:currentColor}
 .sheet-top:has(.rename-exercise){display:flex;align-items:flex-start;gap:4px}
+/* Переименование прямо в заголовке: поле тем же шрифтом, что заголовок, с тонкой линией снизу (15.11.2026) */
+.sheet-top .rename-exercise-input{flex:1;min-width:0;display:block;margin:0;padding:0 0 4px;border:0;border-bottom:1px solid #ffffffb0;border-radius:0;background:transparent;color:inherit;font:inherit;resize:none;overflow:hidden;outline:none;box-shadow:none}
+.sheet-top .rename-exercise-input[hidden]{display:none}
 /* 6. Home schedule: link to the rest. */
 .schedule-more{display:block;width:100%;min-height:44px;text-align:center;font-size:13px;font-weight:650}
 /* 18. One schedule row on a workout card. */
