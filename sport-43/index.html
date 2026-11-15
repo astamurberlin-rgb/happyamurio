@@ -5844,13 +5844,13 @@ const ICON={
 };
 /* Силуэт по замерам — по макету Астамура «Что изменилось» (15.11.2026): мужчина спереди, кости (суставы и длины)
    неизменны, обхваты меняют только ширину своих частей. Два силуэта лежат друг на друге, как цветные плёнки:
-   «Было» снизу, «Сейчас» сверху умножением цвета — где совпадают, получается третий цвет. Цвета — из сравнения в макете
-   (Compare): «Сейчас» голубой #2dacff с прозрачностью, «Было» бирюзовый #00DFF0. Стиль «Стекло»:
+   три цвета: где фигуры совпадают — голубой, где «Было» шире (ушло) — бирюзовый край, где «Сейчас» шире (прибавилось) —
+   розовый край (решение Астамура 15.11.2026: голубой и бирюзовый из сравнения в макете, прибавка — розовым). Стиль «Стекло»:
    лёгкий градиент, косой блик и кромка, как у пластин на кругах. Числа в таблице — настоящие; на рисунке разница
    «Было» от «Сейчас» может быть усилена (×3). */
 const GIRTH=['neck','shoulders','chest','biceps','forearm','waist','hips','thigh','calf'];
 const GIRTH_NORMAL={neck:39,shoulders:121,chest:103,biceps:36,forearm:29.5,waist:82,hips:97,thigh:58.5,calf:38};
-const SIL={now:'#2dacffa0',past:'#00DFF0',glass:{grad:0.02,shine:0.26,width:0.7,angle:49,pos:0.66,rim:0.79}};
+const SIL={now:'#F600FF',past:'#00DFF0',same:'#2dacff',glass:{grad:0.02,shine:0.26,width:0.7,angle:49,pos:0.66,rim:0.79}};
 /* замер → обхваты для рисунка; парные — среднее левой и правой; нет числа — из запасного набора */
 function girths(values,fallback){
  const v=values||{},fb=fallback||GIRTH_NORMAL,ok=x=>Number.isFinite(x)&&x>0;
@@ -5929,19 +5929,22 @@ function figure(now,past,same,label){
  const fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
  const ux=Math.round(Math.cos(a)*L/2*100)/100,uy=Math.round(Math.sin(a)*L/2*100)/100;
  const lin=(gid,c)=>`<linearGradient id="${gid}" x1=".15" y1=".1" x2=".85" y2=".95"><stop offset="0" stop-color="${tint(c,g)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,g*.4)}"/></linearGradient>`;
- const layer=(d,cls,gid,rim,extra)=>`<g class="${cls}"${extra||''}><path d="${d}" fill="url(#${gid})"${cls==='hm-now'?' style="mix-blend-mode:multiply"':''}/><path d="${d}" fill="url(#${id}s)"/><path d="${d}" fill="#000" fill-opacity=".02" filter="url(#${rim})"/></g>`;
- const nowD=bodyPath(now);
- return `<svg class="hm-chart" viewBox="-52 -3 104 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}`+
+ const layer=(d,cls,gid,rim,extra)=>`<g class="${cls}"${extra||''}><path d="${d}" fill="url(#${gid})"/><path d="${d}" fill="url(#${id}s)"/><path d="${d}" fill="#000" fill-opacity=".02" filter="url(#${rim})"/></g>`;
+ const nowD=bodyPath(now),pastD=same?nowD:bodyPath(past);
+ /* «Сейчас» розовым целиком, поверх — та же фигура голубым, но только внутри «Было»: розовым остаётся прибавка */
+ return `<svg class="hm-chart" viewBox="-52 -3 104 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
+  `<clipPath id="${id}k"><path class="hm-past-clip" d="${pastD}"/></clipPath>`+
   `<linearGradient id="${id}s" gradientUnits="userSpaceOnUse" x1="${-ux}" y1="${Math.round((cy-uy)*100)/100}" x2="${ux}" y2="${Math.round((cy+uy)*100)/100}">${shineStops(fx)}</linearGradient>`+
-  rimFilter(id+'rn',shade(SIL.now,.45),fx)+rimFilter(id+'rp',shade(SIL.past,.45),fx)+`</defs>`+
-  `<ellipse cx="0" cy="181.6" rx="22" ry="2" fill="rgba(44,62,102,.10)"/><g style="isolation:isolate">`+
-  layer(same?nowD:bodyPath(past),'hm-past',id+'p',id+'rp',same?' opacity="0"':'')+layer(nowD,'hm-now',id+'n',id+'rn')+`</g></svg>`;
+  rimFilter(id+'rn',shade(SIL.now,.45),fx)+rimFilter(id+'rp',shade(SIL.past,.45),fx)+rimFilter(id+'rc',shade(SIL.same,.45),fx)+`</defs>`+
+  `<ellipse cx="0" cy="181.6" rx="22" ry="2" fill="rgba(44,62,102,.10)"/>`+
+  layer(pastD,'hm-past',id+'p',id+'rp',same?' opacity="0"':'')+(same?'':layer(nowD,'hm-now',id+'n',id+'rn'))+
+  `<g clip-path="${same?'none':`url(#${id}k)`}">${layer(nowD,'hm-same',id+'c',id+'rc')}</g></svg>`;
 }
 function chart(cur,old,amplify){
  const same=cur.date===old.date,now=girths(cur.values),past=drawnPast(now,girths(old.values,now),amplify);
  const dot=c=>`linear-gradient(150deg,${tint(c,SIL.glass.grad)},${c} 55%,${shade(c,SIL.glass.grad*.4)})`;
- return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(SIL.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
-  (same?'':`<span><i class="hm-dot" style="background:${dot(SIL.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(mul(SIL.now,SIL.past))}"></i> Совпадает</span>`)+`</div>`+
+ return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(same?SIL.same:SIL.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
+  (same?'':`<span><i class="hm-dot" style="background:${dot(SIL.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(SIL.same)}"></i> Совпадает</span>`)+`</div>`+
   `<div class="hm-amplify-box"><div class="hm-amplify" role="group" aria-label="Масштаб разницы">${[[1,'1:1','Разница в натуральную величину'],[3,'×3','Разница усилена в 3 раза']].map(([v,t,l])=>`<button type="button" data-hm="amplify" data-id="${v}" aria-label="${l}" aria-pressed="${amplify===v}">${t}</button>`).join('')}</div><span>разница</span></div>`+
   (chart.last={now,past,same},'')+figure(now,past,same,same?'Силуэт по замерам '+dateLabel(cur.date):'Силуэт '+dateLabel(cur.date)+' поверх силуэта '+dateLabel(old.date))+`</div>`;
 }
@@ -6013,7 +6016,7 @@ function mount(box,options){
   const from=drawn,calm=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   drawn=to.past;
   if(calm||typeof requestAnimationFrame!=='function'||(from&&GIRTH.every(k=>Math.abs(from[k]-to.past[k])<1e-6)))return;
-  const start=from||to.now,v0=from?1:0,paths=layer.querySelectorAll('path'),t0=performance.now();
+  const start=from||to.now,v0=from?1:0,paths=[...layer.querySelectorAll('path'),...box.querySelectorAll('.hm-viz .hm-past-clip')],t0=performance.now();
   const step=t=>{
    const u=Math.min(1,(t-t0)/560),e=1-Math.pow(1-u,3),m={};
    for(const k of GIRTH)m[k]=start[k]+(to.past[k]-start[k])*e;
