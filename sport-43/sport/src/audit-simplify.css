@@ -99,3 +99,6 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .picker-variants{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-2px 2px 8px}
 .picker-variants>small{flex-basis:100%;margin:0 2px;font-size:12px;opacity:.8}
 .picker-variant{min-height:40px;padding:8px 14px;border-radius:20px;border:1px solid #ffffff66;background:#ffffff1f;color:#fff;font-size:14px;font-weight:600}
+/* «Начать тренировку» внизу карточки, под расписанием (15.11.2026) */
+.card-start{margin-top:18px}
+.card-start .sheet-actions{margin-top:0}

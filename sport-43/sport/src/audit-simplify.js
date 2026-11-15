@@ -268,3 +268,13 @@ window.addEventListener('click',e=>{
  card.insertAdjacentHTML('afterend',`<div class="picker-variants" role="group" aria-label="${esc(family.name)}: выбери вариант"><small>Выбери вариант${family.variantNoun?' '+esc(family.variantNoun):''}</small>${variants.map(v=>`<button type="button" class="picker-variant" data-action="${card.dataset.action}" data-id="${esc(v.exerciseId)}">${esc(v.pill||exercise(v.exerciseId).name)}</button>`).join('')}</div>`);
  card.setAttribute('aria-expanded','true');
 },true);
+
+/* Карточка тренировки: «Начать тренировку» — внизу, под расписанием (Астамур, 15.11.2026 17:14). У рекомендуемой
+   вниз уходят обе кнопки — «Начать тренировку» и «В мои тренировки». */
+function startButtonLast(html){
+ const group=html.match(/<div class="sheet-actions">(?:(?!<\/div>)[\s\S])*data-action="start"[\s\S]*?<\/div>/),single=!group&&html.match(/<button class="button primary"[^>]*data-action="start"[^>]*>[\s\S]*?<\/button>/);
+ const block=group?.[0]||single?.[0];if(!block)return html;
+ return html.replace(block,'')+`<div class="card-start">${block.replace(/ style="margin-top:16px"/,'')}</div>`;
+}
+const sectionBeforeStartLast=renderSection;renderSection=function(id){return startButtonLast(sectionBeforeStartLast(id));};
+const templateCardBeforeStartLast=renderTemplateCard;renderTemplateCard=function(id){return startButtonLast(templateCardBeforeStartLast(id));};
