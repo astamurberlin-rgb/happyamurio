@@ -12,6 +12,8 @@ run('playerNow=()=>now');
 run("startSetCountdown('rest',0,0,now);now='2026-10-29T12:00:20'");
 assert.equal(run('activeRestContext().remaining'),40);
 run('extendFloatingRest()');assert.equal(run('activeRestContext().remaining'),70);
+run('shiftFloatingRest(-30)');assert.equal(run('activeRestContext().remaining'),40,'−30 убавляет оставшееся время');
+run('shiftFloatingRest(30)');assert.equal(run('activeRestContext().remaining'),70,'+30 прибавляет');
 run('toggleSetCountdown("rest",0,0);now="2026-10-29T12:10:00"');
 assert.equal(run('activeRestContext().remaining'),70,'Pausing freezes the floating rest');
 run('setFloatingRestTime("0:45")');assert.equal(run('activeRestContext().remaining'),45);assert.equal(run('activeRestContext().running'),false);
@@ -24,8 +26,18 @@ run('finishFloatingRest()');assert.equal(run('activeRestContext()'),null);assert
 run(`state.active.countdown=null;state.active.exercises[0].sets=[{seconds:20,done:true,restSeconds:10},{seconds:40,done:false}];state.active.exercisePlayer={ei:0,mode:'intervals',workSeconds:20,restSeconds:10,rounds:2,program:[{workSeconds:20,restSeconds:10},{workSeconds:40,restSeconds:0}],setIndices:[0,1],startedAt:now,elapsed:23,running:false,finished:false,completedRounds:1,laps:[]}`);
 assert.equal(run('activeRestContext().remaining'),7);
 run('setFloatingRestTime("0:12")');assert.equal(run('activeRestContext().remaining'),12);
+run('shiftFloatingRest(-30)');assert.equal(run('activeRestContext()'),null,'−30 в интервалах при остатке меньше 30 секунд заканчивает перерыв');
 run('finishFloatingRest()');assert.equal(run('activeRestContext()'),null);assert.equal(run('exercisePlayerStatus(state.active.exercisePlayer).round'),2);
-console.log('Passed: floating rest pause, extension, editing, expiry/restart, reload, finish and interval-player rest skip.');
+run(`state.active.exercisePlayer=null;state.active.countdown=null;state.active.exercises[0].sets=[{reps:10,done:true,restSeconds:60}];now='2026-10-29T12:20:00';startSetCountdown('rest',0,0,now);now='2026-10-29T12:20:45'`);
+assert.equal(run('activeRestContext().remaining'),15);
+run('shiftFloatingRest(-30);updateSetCountdown()');assert.equal(run('activeRestContext().finished'),true,'−30 при остатке меньше 30 секунд заканчивает перерыв');
+assert.equal(run('shiftFloatingRest(-30)'),false,'после конца −30 не действует');
+run('shiftFloatingRest(30)');assert.equal(run('activeRestContext().remaining'),30,'после конца +30 начинает ещё 30 секунд');
+run(`state.active.countdown=null;restWidgetSelection={workout:state.active,ei:0,si:0,set:state.active.exercises[0].sets[0]}`);
+run('shiftFloatingRest(30)');assert.equal(run('state.active.exercises[0].sets[0].restSeconds'),90,'до запуска +30 меняет длительность');
+run('shiftFloatingRest(-30);shiftFloatingRest(-30)');assert.equal(run('state.active.exercises[0].sets[0].restSeconds'),30);
+assert.equal(run('shiftFloatingRest(-30)'),false,'короче 30 секунд до запуска не убавляется');
+console.log('Passed: floating rest pause, extension, −30/+30, editing, expiry/restart, reload, finish and interval-player rest skip.');
 
 runInContext(pill.slice(pill.indexOf('function restPillBottom('),pill.indexOf('function positionFloatingRest(')),c);
 assert.equal(run('restPillBottom(900,900,0,null,0)'),100);
