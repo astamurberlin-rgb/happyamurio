@@ -2783,7 +2783,7 @@ setInterval(function(){ if(adoptPending&&!adoptBusy()) adoptRemote() },1200);
    в кружке и этих строках прочерк.
    Сводки нет — прочерк везде. Полный круг — цель по калориям из «Целей на день», нет цели — 3000.
    Цели строк — из «Целей на день» (клетчатка — тоже); нет цели — число без полоски. */
-var ER_MODE='eat', ER_SPORT=null, ER_TOLD=false;   // ER_SPORT — тренировки по дням из витрины Sport; null — её нет
+var ER_MODE='eat', ER_SPORT=null;   // ER_SPORT — тренировки по дням из витрины Sport; null — её нет
 function gTxt(v){ return v>=10?String(Math.round(v)):fmt(v) }
 function goalOf(k){ var v=parseFloat(String((DB.goals||{})[k]||'').replace(',','.')); return v>0?v:0 }
 function erSportRead(){
@@ -2838,7 +2838,6 @@ function erNext(key){
   ER_MODE=ER_NEXT[ER_MODE];
   var el=document.getElementById('mlKb'); el.innerHTML=kbjuHTML(); erFit(el);
   if(key){ var r=el.querySelector('.erRing'); if(r) r.focus({preventScroll:true}) }          // с клавиатуры фокус остаётся на кольце
-  if(ER_MODE!=='eat'&&!erSportDay(curDate)&&!ER_TOLD){ ER_TOLD=true; toast('Потраченное придёт из Happy Sport') }
 }
 document.getElementById('mlKb').addEventListener('click',function(e){ if(e.target.closest('.erRing')) erNext(false) });
 document.getElementById('mlKb').addEventListener('keydown',function(e){

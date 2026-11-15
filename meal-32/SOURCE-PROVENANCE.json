@@ -324,8 +324,8 @@
   },
   {
    "path": "index.html",
-   "size": 602059,
-   "sha256": "ec2fb8cd6c7346df7380cf74e46861ae80bd07b424effe5dbfd9f89f5b74d016"
+   "size": 601911,
+   "sha256": "561d7c3d0f05c3a68c6b93ca4327d97d456c5d6ed434408da178c7403fc7b86b"
   },
   {
    "path": "manifest.webmanifest",
@@ -589,8 +589,8 @@
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 39859,
-   "sha256": "44681ababda07b31b66c8dcf7f03ae01478a98842db4208bb363885affd539d6"
+   "size": 45078,
+   "sha256": "df2f9bb92b7b66357bc06da716eabbe67a24cda07ea0e39e3234516bde2e301b"
   },
   {
    "path": "shared/happy-reference-themes.js",
