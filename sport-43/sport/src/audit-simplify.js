@@ -206,8 +206,9 @@ renderJournal=function(){
 };
 
 /* «Добавить упражнение» в тренировке: те же фильтры, что в Библиотеке, — круглая кнопка у поиска открывает группу,
-   оборудование и группы мышц (Астамур, 15.11.2026: «добавить упражнение на плечи, а название не помню»). Выбор
-   держится, пока приложение открыто; кнопка с точкой — какой-то фильтр выбран. Варианты упражнений видны все. */
+   группы мышц и оборудование (Астамур, 15.11.2026: «добавить упражнение на плечи, а название не помню»). Группы мышц
+   выше: они есть у всех; оборудование появляется только в группах с ним (зал, турники). Выбор держится, пока
+   приложение открыто. Точки на кнопке нет: открыт фильтр — кнопка белая, и всё (16:26). Варианты упражнений видны все. */
 const pickerFilter={sport:'all',equipment:'all',muscle:'all',open:false};
 function pickerPool(){return allExercises().filter(e=>pickerFilter.sport==='all'||exerciseSports(e).includes(pickerFilter.sport));}
 function pickerPasses(e){const f=pickerFilter;return (f.sport==='all'||exerciseSports(e).includes(f.sport))&&(f.equipment==='all'||equipmentMatches(e,f.equipment))&&(f.muscle==='all'||exerciseMuscles(e).includes(f.muscle));}
@@ -220,8 +221,8 @@ function pickerFiltersMarkup(){
  if(!equipOn||!equip.some(([k])=>k===f.equipment))f.equipment='all';
  if(!muscles.some(([id])=>id===f.muscle))f.muscle='all';
  return `<div class="library-filter-box picker-filter-box" ${f.open?'':'hidden'}><div class="catalog-group-filter"><label class="library-sport"><select id="picker-sport" aria-label="Группа упражнений"><option value="all">Все группы</option>${exerciseGroups().map(g=>`<option value="${esc(g.id)}" ${f.sport===g.id?'selected':''}>${esc(groupPath(g.id))}</option>`).join('')}</select></label></div>`+
-  `<div class="library-filters"><label class="library-equipment"><select id="picker-equipment" aria-label="Оборудование" ${!equipOn||equip.length<2?'disabled':''}>${equip.map(([id,name])=>`<option value="${id}" ${f.equipment===id?'selected':''}>${name}</option>`).join('')}</select></label>`+
-  `<label class="library-muscle"><select id="picker-muscle" aria-label="Группы мышц" ${muscles.length<2?'disabled':''}>${muscles.map(([id,name])=>`<option value="${id}" ${f.muscle===id?'selected':''}>${id==='all'?'Группы мышц':name}</option>`).join('')}</select></label></div></div>`;
+  `<div class="library-filters"><label class="library-muscle"><select id="picker-muscle" aria-label="Группы мышц" ${muscles.length<2?'disabled':''}>${muscles.map(([id,name])=>`<option value="${id}" ${f.muscle===id?'selected':''}>${id==='all'?'Группы мышц':name}</option>`).join('')}</select></label>`+
+  (equipOn&&equip.length>1?`<label class="library-equipment"><select id="picker-equipment" aria-label="Оборудование">${equip.map(([id,name])=>`<option value="${id}" ${f.equipment===id?'selected':''}>${name}</option>`).join('')}</select></label>`:'')+`</div></div>`;
 }
 function pickerCount(n){return n+' '+(n%10===1&&n%100!==11?'упражнение':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'упражнения':'упражнений');}
 function pickerResultsMarkup(q=''){const list=pickerExercises(String(q).trim());return `<div class="library-count">${pickerCount(list.length)}</div><div class="exercise-list">${list.map(e=>exerciseCard(e,'pick-exercise')).join('')||'<div class="empty">Ничего не найдено. Можно создать своё упражнение.</div>'}</div>`;}
