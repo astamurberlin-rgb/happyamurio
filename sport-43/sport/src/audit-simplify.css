@@ -95,3 +95,7 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 #picker-results .library-count{margin:4px 2px 10px}
 /* Точки на кнопке фильтров нет: открыт фильтр — кнопка белая, и всё (Астамур, 15.11.2026 16:26) */
 .library-filter-toggle.has-active::after{content:none}
+/* Семейство в окне выбора: пилюли вариантов под карточкой (15.11.2026) */
+.picker-variants{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-2px 2px 8px}
+.picker-variants>small{flex-basis:100%;margin:0 2px;font-size:12px;opacity:.8}
+.picker-variant{min-height:40px;padding:8px 14px;border-radius:20px;border:1px solid #ffffff66;background:#ffffff1f;color:#fff;font-size:14px;font-weight:600}
