@@ -68,7 +68,8 @@ if(SportData.signedIn()){
 if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh();   // кольцо нарисовано раньше, чем загрузился этот файл
 
 /* Нажатия за день — как в Day (лабратория 15.11.2026, задача «поправить время каждого нажатия»). Нажал на название
-   счётчика — лист снизу (время — видимое поле в пилюле: прозрачное поле поверх на iPhone не открывалось): время каждого нажатия за выбранный день; время можно поправить, лишнее — снять, можно добавить.
+   счётчика — лист снизу (время — видимое поле в пилюле: прозрачное поле поверх на iPhone не открывалось): время каждого нажатия за выбранный день; время можно поправить, лишнее — снять. Добавляют нажатие
+   только «+» на самом счётчике (Астамур 15.11.2026).
    Свои счётчики Sport: время — поле t нажатия ('ЧЧ:ММ'); у прежних нажатий без t время берётся из момента нажатия,
    если нажимали в тот же день. Счётчики еды Meal: правка — то же нажатие с новым item.t и приёмом пищи item.sec (как
    при нажатии: до 11 — завтрак, до 16 — обед, до 21 — ужин, позже — перекус), в документе приложения, где нажали;
@@ -106,7 +107,7 @@ const SportTaps=(()=>{
   return `<p class="sheet-info">${date}${rows.length?', всего '+rows.length:''}. Время можно поправить, лишнее — снять.</p>`+
    (rows.length?rows.map(r=>`<div class="tap-row"><label class="tap-time${r.t?'':' tap-none'}"><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"><b aria-hidden="true">—:—</b></label><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
     :'<p class="fineprint">За этот день нажатий нет.</p>')+
-   `<div class="tap-actions"><button type="button" class="button" data-tap-add>Добавить нажатие</button><button type="button" class="button primary" data-tap-done>Готово</button></div>`;
+   `<div class="tap-actions"><button type="button" class="button primary" data-tap-done>Готово</button></div>`;
  }
  function paint(){if(!open)return;const box=document.getElementById('sport-tap-sheet');if(!box){open=null;return}box.innerHTML=body(open)}
  function show(id){open=id;openSheet(title(id),`<div id="sport-tap-sheet">${body(id)}</div>`,'sport-taps')}
@@ -142,7 +143,6 @@ const SportTaps=(()=>{
   if(ev.target.closest('input[type=time]'))return;   // выбор времени открывает само поле
   const btn=ev.target.closest('button');if(!btn)return;
   if(btn.hasAttribute('data-tap-done')){open=null;closeSheet();return}
-  if(btn.hasAttribute('data-tap-add')){try{changeSportFood(open,true)}catch(e){toast(e.message)}paint();return}
   if(btn.dataset.tapRemove)remove(open,btn.dataset.tapRemove);
  });
  document.addEventListener('change',ev=>{

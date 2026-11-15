@@ -187,4 +187,3 @@ button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:n
 .tap-remove{display:grid;place-items:center;width:30px;height:30px;margin-left:4px;border-radius:50%;background:#ffffff26;border:1px solid #ffffff59;color:#fff}
 .tap-remove svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 .tap-actions{display:flex;gap:9px;margin-top:16px}.tap-actions .button{flex:1}
-.tap-actions .button{white-space:nowrap;padding-left:10px;padding-right:10px}
