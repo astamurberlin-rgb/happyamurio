@@ -163,7 +163,7 @@ function girths(values,fallback){
 }
 /* прошлый замер для рисунка: разница с «сейчас» усилена в k раз и не уходит за 0,7–1,35 от «сейчас» */
 function drawnPast(now,past,k){const o={};for(const key of GIRTH){const v=now[key]+k*(past[key]-now[key]);o[key]=Math.min(now[key]*1.35,Math.max(now[key]*0.7,v))}return o}
-function bodyPath(m,frame){
+function rawParts(m,frame){
  const R=Math.PI/180,P=(x,y)=>({x,y}),lerp=(a,b,t)=>a+(b-a)*t,dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y),r2=v=>Math.round(v*100)/100;
  const mirror=pts=>pts.map(q=>P(-q.x,q.y)).reverse(),sym=half=>half.concat(mirror(half.slice(1,-1)));
  const orient=pts=>{let s=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];s+=a.x*b.y-b.x*a.y}return s<0?pts.slice().reverse():pts};
@@ -231,9 +231,27 @@ function bodyPath(m,frame){
  const row=s=>[s,outX(s)-ax(s),ax(s)-inX(s)];
  const leg=tube([L0,L1,L2],[row(-27),row(-19.5),row(-14),row(-9),row(-4),row(-1),row(1),row(3),row(4.5),row(6.5),row(9),row(12),row(18),row(26),row(33),[T,kw,kw*0.97],[T+5,cc*0.9,cc*0.84],[T+11,cc*1.04,cc*0.98],[T+15.5,cc*0.98,cc*1.06],
   [T+24,cc*0.72,cc*0.74],[T+33,3.85,3.7],[T+S,3.2,3.1]],1.5,2.0);
- const foot=[P(7.9,170.6),P(14.3,170.6),P(15.1,174.4),P(16.5,177.6),P(16.6,179.9),P(13.4,180.9),P(8.8,180.8),P(7.3,179.8),P(7.4,175.8)];
- return [mirror(leg),leg,mirror(foot),foot,torso,neck,head,mirror(arm),arm].map(q=>path(orient(q))).join('');
+ /* Стопа (Астамур, 16.11.2026, «копыта»): шире щиколотки, носок развёрнут наружу и чуть вниз, изнутри видна пятка,
+    подошва между пяткой и носком приподнята сводом. */
+ const foot=[P(8.4,170.4),P(13.2,170.4),P(14.4,173.0),P(16.4,175.6),P(18.8,177.6),P(20.6,179.0),P(21.0,180.4),P(19.8,181.6),P(16.6,182.1),P(13.6,181.7),P(11.4,181.0),P(9.4,181.4),P(7.6,181.9),P(6.4,181.2),P(6.2,179.8),P(6.9,177.6),P(7.8,174.6)];
+ return [mirror(leg),leg,mirror(foot),foot,torso,neck,head,mirror(arm),arm].map(q=>path(orient(q)));
 }
+/* Пропорции (Астамур, 16.11.2026, лаборатория Sport 44: «ноги слишком длинные»): пах ниже на 2 — туловище от плеча до
+   паха длиннее, нога до стопы короче, рост тот же; голова крупнее в 1,05 (7,5 головы в росте вместо 7,9); руки длиннее на
+   0,4 на каждую единицу, чтобы ладонь осталась на бедре; щиколотка у стопы чуть шире. Рисунок делится на тело и руки:
+   углы сглаживаются у каждого отдельно, чтобы подмышки остались как были. */
+const LEGS_SHORTER=2,HEAD_SCALE=1.05,SH=37,CROTCH=93.5,FOOT_TOP=170.6,CHIN=23;
+function bodyParts(m,frame){
+ const r2=v=>Math.round(v*100)/100,d=LEGS_SHORTER,armK=(73.4+0.4*d)/73.4;
+ const map=(p,fn)=>p.replace(/(-?\d*\.?\d+) (-?\d*\.?\d+)/g,(_,x,y)=>{const q=fn(+x,+y);return r2(q[0])+' '+r2(q[1])});
+ const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)};
+ const warp=y=>y<=SH?y:y<=CROTCH?SH+(y-SH)*(CROTCH+d-SH)/(CROTCH-SH):y<=FOOT_TOP?CROTCH+d+(y-CROTCH)*(FOOT_TOP-CROTCH-d)/(FOOT_TOP-CROTCH):y;
+ const ankle=(x,y)=>{if(y<150)return x;const s=x<0?-1:1,ax=s*(10+0.8*(y-129)/42.6);return ax+(x-ax)*(1+0.06*smooth((y-150)/18))};
+ const p=rawParts(m,frame).map((q,i)=>i<=1?map(q,(x,y)=>[ankle(x,y),warp(y)]):i===4||i===5?map(q,(x,y)=>[x,warp(y)])
+  :i===6?map(q,(x,y)=>[x*HEAD_SCALE,CHIN+(y-CHIN)*HEAD_SCALE]):i>=7?map(q,(x,y)=>[x,y<=SH?y:SH+(y-SH)*armK]):q);
+ return {body:p.slice(0,7).join(''),arms:p.slice(7).join('')};
+}
+function bodyPath(m,frame){const p=bodyParts(m,frame);return p.body+p.arms}
 /* цвета плёнок */
 const rgb=c=>{const h=String(c).replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255)};
 const hexOf=v=>'#'+v.map(x=>Math.round(Math.max(0,Math.min(1,x))*255).toString(16).padStart(2,'0')).join('');
@@ -253,21 +271,26 @@ function rimFilter(id,shadeColor,fx){
   `<feOffset in="A" dx="-.5" dy="-.5" result="o2"/><feComposite in="A" in2="o2" operator="out" result="e2"/><feGaussianBlur in="e2" stdDeviation=".2" result="b2"/><feComposite in="b2" in2="A" operator="in" result="m2"/><feFlood flood-color="${shadeColor}" flood-opacity="${dark}"/><feComposite in2="m2" operator="in" result="drk"/>`+
   `<feMerge><feMergeNode in="lit"/><feMergeNode in="drk"/></feMerge></filter>`;
 }
-/* Рисунок. past — обхваты прошлого замера уже для рисунка (с усилением); same — сравнивать не с чем. */
+/* Рисунок. past — обхваты прошлого замера уже для рисунка (с усилением); same — сравнивать не с чем.
+   Углы сглажены (Астамур, 16.11.2026): фигура размывается и снова режется по середине — острия кистей, стоп и пах
+   скругляются, изломы у шеи и щиколоток заливаются дугой; тело и руки отдельно, подмышки как были. Фигуры — маски. */
+const SOFT=1.1,BOX='x="-64" y="-8" width="128" height="196"';
 function figure(now,past,same,label){
  const fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
  const ux=Math.round(Math.cos(a)*L/2*100)/100,uy=Math.round(Math.sin(a)*L/2*100)/100;
  const lin=(gid,c)=>`<linearGradient id="${gid}" x1=".15" y1=".1" x2=".85" y2=".95"><stop offset="0" stop-color="${tint(c,g)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,g*.4)}"/></linearGradient>`;
- const layer=(d,cls,gid,rim,extra)=>`<g class="${cls}"${extra||''}><path d="${d}" fill="url(#${gid})"/><path d="${d}" fill="url(#${id}s)"/><path d="${d}" fill="#000" fill-opacity=".02" filter="url(#${rim})"/></g>`;
- const nowD=bodyPath(now),pastD=same?nowD:bodyPath(past,now);   // «Было» — на скелете «Сейчас»
+ const nowS=bodyParts(now),pastS=same?nowS:bodyParts(past,now);   // «Было» — на скелете «Сейчас»
+ const shape=(sh,cls)=>['body','arms'].map(k=>`<g filter="url(#${id}f)"><path${cls?` class="${cls}"`:''} data-part="${k}" d="${sh[k]}" fill="#fff"/></g>`).join('');
+ const layer=(cls,gid,rim,mask,extra)=>`<g class="${cls}"${extra||''}><g mask="url(#${mask})"><rect ${BOX} fill="url(#${gid})"/><rect ${BOX} fill="url(#${id}s)"/></g><g filter="url(#${rim})"><rect ${BOX} fill="#000" fill-opacity=".02" mask="url(#${mask})"/></g></g>`;
  /* «Сейчас» розовым целиком, поверх — та же фигура голубым, но только внутри «Было»: розовым остаётся прибавка */
  return `<svg class="hm-chart" viewBox="-52 -3 104 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
-  `<clipPath id="${id}k"><path class="hm-past-clip" d="${pastD}"/></clipPath>`+
+  `<filter id="${id}f" filterUnits="userSpaceOnUse" ${BOX} color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="${SOFT}"/><feComponentTransfer><feFuncA type="linear" slope="14" intercept="-6.5"/></feComponentTransfer></filter>`+
+  `<mask id="${id}m" maskUnits="userSpaceOnUse" ${BOX}>${shape(nowS,'')}</mask><mask id="${id}k" maskUnits="userSpaceOnUse" ${BOX}>${shape(pastS,'hm-past-clip')}</mask>`+
   `<linearGradient id="${id}s" gradientUnits="userSpaceOnUse" x1="${-ux}" y1="${Math.round((cy-uy)*100)/100}" x2="${ux}" y2="${Math.round((cy+uy)*100)/100}">${shineStops(fx)}</linearGradient>`+
   rimFilter(id+'rn',shade(SIL.now,.45),fx)+rimFilter(id+'rp',shade(SIL.past,.45),fx)+rimFilter(id+'rc',shade(SIL.same,.45),fx)+`</defs>`+
-  `<ellipse cx="0" cy="181.6" rx="22" ry="2" fill="rgba(44,62,102,.10)"/>`+
-  layer(pastD,'hm-past',id+'p',id+'rp',same?' opacity="0"':'')+(same?'':layer(nowD,'hm-now',id+'n',id+'rn'))+
-  `<g clip-path="${same?'none':`url(#${id}k)`}">${layer(nowD,'hm-same',id+'c',id+'rc')}</g></svg>`;
+  `<ellipse cx="0" cy="182" rx="25" ry="2" fill="rgba(44,62,102,.10)"/>`+
+  layer('hm-past',id+'p',id+'rp',id+'k',same?' opacity="0"':'')+(same?'':layer('hm-now',id+'n',id+'rn',id+'m'))+
+  `<g${same?'':` mask="url(#${id}k)"`}>${layer('hm-same',id+'c',id+'rc',id+'m')}</g></svg>`;
 }
 function chart(cur,old,amplify){
  const same=cur.date===old.date,now=girths(cur.values),past=drawnPast(now,girths(old.values,now),amplify);
@@ -345,11 +368,11 @@ function mount(box,options){
   const from=drawn,calm=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   drawn=to.past;
   if(calm||typeof requestAnimationFrame!=='function'||(from&&GIRTH.every(k=>Math.abs(from[k]-to.past[k])<1e-6)))return;
-  const start=from||to.now,v0=from?1:0,paths=[...layer.querySelectorAll('path'),...box.querySelectorAll('.hm-viz .hm-past-clip')],t0=performance.now();
+  const start=from||to.now,v0=from?1:0,paths=[...box.querySelectorAll('.hm-viz .hm-past-clip')],t0=performance.now();
   const step=t=>{
    const u=Math.min(1,(t-t0)/560),e=1-Math.pow(1-u,3),m={};
    for(const k of GIRTH)m[k]=start[k]+(to.past[k]-start[k])*e;
-   const d=bodyPath(m,to.now);for(const p of paths)p.setAttribute('d',d);
+   const sh=bodyParts(m,to.now);for(const p of paths)p.setAttribute('d',sh[p.dataset.part]);
    layer.setAttribute('opacity',String(Math.round((v0+(1-v0)*e)*1000)/1000));drawn=m;
    raf=u<1?requestAnimationFrame(step):0;
   };
@@ -483,7 +506,7 @@ function mount(box,options){
  mounted=api;return api;
 }
 function unmount(){if(mounted)mounted.destroy()}
-const api={FORMAT,DOC,FIELDS,GROUPS,NEWER,valid,validDate,read,compose,saveChanges,removeChanges,restoreChanges,csv,pair,girths,drawnPast,bodyPath,mount,unmount};
+const api={FORMAT,DOC,FIELDS,GROUPS,NEWER,valid,validDate,read,compose,saveChanges,removeChanges,restoreChanges,csv,pair,girths,drawnPast,bodyPath,bodyParts,mount,unmount};
 root.HappyMeasurements=api;
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
