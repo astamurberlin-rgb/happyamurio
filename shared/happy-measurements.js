@@ -239,19 +239,26 @@ function rawParts(m,frame){
 /* Пропорции (Астамур, 16.11.2026, лаборатория Sport 44: «ноги слишком длинные»): пах ниже на 2 — туловище от плеча до
    паха длиннее, нога до стопы короче, рост тот же; голова крупнее в 1,05 (7,5 головы в росте вместо 7,9); руки длиннее на
    0,4 на каждую единицу, чтобы ладонь осталась на бедре; щиколотка у стопы чуть шире. Рисунок делится на тело и руки:
-   углы сглаживаются у каждого отдельно, чтобы подмышки остались как были. */
-const LEGS_SHORTER=2,HEAD_SCALE=1.05,SH=37,CROTCH=93.5,FOOT_TOP=170.6,CHIN=23;
-function bodyParts(m,frame){
- const r2=v=>Math.round(v*100)/100,d=LEGS_SHORTER,armK=(73.4+0.4*d)/73.4;
+   углы сглаживаются у каждого отдельно, чтобы подмышки остались как были.
+   Рост из профиля (Астамур, 16.11.2026 «брать»): кости растут с ростом, обхваты остаются в сантиметрах; фигура вписана
+   в карточку, поэтому на рисунке меняется ширина тела ×181/рост — невысокий плотнее, высокий стройнее. Голова и стопы
+   растут вместе с ростом, их ширина не меняется. Роста нет — 181, как раньше. */
+const BASE_HEIGHT=181,LEGS_SHORTER=2,HEAD_SCALE=1.05,SH=37,CROTCH=93.5,FOOT_TOP=170.6,CHIN=23;
+function bodyParts(m,frame,height){
+ const r2=v=>Math.round(v*100)/100,d=LEGS_SHORTER,armK=(73.4+0.4*d)/73.4,w=BASE_HEIGHT/stature(height);
  const map=(p,fn)=>p.replace(/(-?\d*\.?\d+) (-?\d*\.?\d+)/g,(_,x,y)=>{const q=fn(+x,+y);return r2(q[0])+' '+r2(q[1])});
  const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)};
  const warp=y=>y<=SH?y:y<=CROTCH?SH+(y-SH)*(CROTCH+d-SH)/(CROTCH-SH):y<=FOOT_TOP?CROTCH+d+(y-CROTCH)*(FOOT_TOP-CROTCH-d)/(FOOT_TOP-CROTCH):y;
  const ankle=(x,y)=>{if(y<150)return x;const s=x<0?-1:1,ax=s*(10+0.8*(y-129)/42.6);return ax+(x-ax)*(1+0.06*smooth((y-150)/18))};
- const p=rawParts(m,frame).map((q,i)=>i<=1?map(q,(x,y)=>[ankle(x,y),warp(y)]):i===4||i===5?map(q,(x,y)=>[x,warp(y)])
-  :i===6?map(q,(x,y)=>[x*HEAD_SCALE,CHIN+(y-CHIN)*HEAD_SCALE]):i>=7?map(q,(x,y)=>[x,y<=SH?y:SH+(y-SH)*armK]):q);
+ const p=rawParts(m,frame).map((q,i)=>i<=1?map(q,(x,y)=>[ankle(x,y)*w,warp(y)]):i===4||i===5?map(q,(x,y)=>[x*w,warp(y)])
+  :i===6?map(q,(x,y)=>[x*HEAD_SCALE,CHIN+(y-CHIN)*HEAD_SCALE]):i>=7?map(q,(x,y)=>[x*w,y<=SH?y:SH+(y-SH)*armK])
+  :map(q,(x,y)=>{const cx=i===2?-11.95:11.95;return [x-cx+cx*w,y]}));
  return {body:p.slice(0,7).join(''),arms:p.slice(7).join('')};
 }
-function bodyPath(m,frame){const p=bodyParts(m,frame);return p.body+p.arms}
+function bodyPath(m,frame,height){const p=bodyParts(m,frame,height);return p.body+p.arms}
+/* рост для рисунка: из профиля (shared/happy-person.js), если он есть и похож на рост взрослого; иначе 181 */
+function stature(h){return Number.isFinite(h)&&h>=120&&h<=230?h:BASE_HEIGHT}
+function profileHeight(){try{const P=root.HappyPerson;return P&&typeof P.data==='function'?P.data().profile.heightCm:null}catch(e){return null}}
 /* цвета плёнок */
 const rgb=c=>{const h=String(c).replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255)};
 const hexOf=v=>'#'+v.map(x=>Math.round(Math.max(0,Math.min(1,x))*255).toString(16).padStart(2,'0')).join('');
@@ -275,15 +282,15 @@ function rimFilter(id,shadeColor,fx){
    Углы сглажены (Астамур, 16.11.2026): фигура размывается и снова режется по середине — острия кистей, стоп и пах
    скругляются, изломы у шеи и щиколоток заливаются дугой; тело и руки отдельно, подмышки как были. Фигуры — маски. */
 const SOFT=1.1,BOX='x="-64" y="-8" width="128" height="196"';
-function figure(now,past,same,label){
+function figure(now,past,same,label,height){
  const fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
  const ux=Math.round(Math.cos(a)*L/2*100)/100,uy=Math.round(Math.sin(a)*L/2*100)/100;
  const lin=(gid,c)=>`<linearGradient id="${gid}" x1=".15" y1=".1" x2=".85" y2=".95"><stop offset="0" stop-color="${tint(c,g)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,g*.4)}"/></linearGradient>`;
- const nowS=bodyParts(now),pastS=same?nowS:bodyParts(past,now);   // «Было» — на скелете «Сейчас»
+ const nowS=bodyParts(now,null,height),pastS=same?nowS:bodyParts(past,now,height),vw=Math.round(104*Math.max(1,BASE_HEIGHT/stature(height))*100)/100;   // «Было» — на скелете «Сейчас»
  const shape=(sh,cls)=>['body','arms'].map(k=>`<g filter="url(#${id}f)"><path${cls?` class="${cls}"`:''} data-part="${k}" d="${sh[k]}" fill="#fff"/></g>`).join('');
  const layer=(cls,gid,rim,mask,extra)=>`<g class="${cls}"${extra||''}><g mask="url(#${mask})"><rect ${BOX} fill="url(#${gid})"/><rect ${BOX} fill="url(#${id}s)"/></g><g filter="url(#${rim})"><rect ${BOX} fill="#000" fill-opacity=".02" mask="url(#${mask})"/></g></g>`;
  /* «Сейчас» розовым целиком, поверх — та же фигура голубым, но только внутри «Было»: розовым остаётся прибавка */
- return `<svg class="hm-chart" viewBox="-52 -3 104 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
+ return `<svg class="hm-chart" viewBox="${-vw/2} -3 ${vw} 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
   `<filter id="${id}f" filterUnits="userSpaceOnUse" ${BOX} color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="${SOFT}"/><feComponentTransfer><feFuncA type="linear" slope="14" intercept="-6.5"/></feComponentTransfer></filter>`+
   `<mask id="${id}m" maskUnits="userSpaceOnUse" ${BOX}>${shape(nowS,'')}</mask><mask id="${id}k" maskUnits="userSpaceOnUse" ${BOX}>${shape(pastS,'hm-past-clip')}</mask>`+
   `<linearGradient id="${id}s" gradientUnits="userSpaceOnUse" x1="${-ux}" y1="${Math.round((cy-uy)*100)/100}" x2="${ux}" y2="${Math.round((cy+uy)*100)/100}">${shineStops(fx)}</linearGradient>`+
@@ -293,12 +300,12 @@ function figure(now,past,same,label){
   `<g${same?'':` mask="url(#${id}k)"`}>${layer('hm-same',id+'c',id+'rc',id+'m')}</g></svg>`;
 }
 function chart(cur,old,amplify){
- const same=cur.date===old.date,now=girths(cur.values),past=drawnPast(now,girths(old.values,now),amplify);
+ const height=profileHeight(),same=cur.date===old.date,now=girths(cur.values),past=drawnPast(now,girths(old.values,now),amplify);
  const dot=c=>`linear-gradient(150deg,${tint(c,SIL.glass.grad)},${c} 55%,${shade(c,SIL.glass.grad*.4)})`;
  return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(same?SIL.same:SIL.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
   (same?'':`<span><i class="hm-dot" style="background:${dot(SIL.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(SIL.same)}"></i> Совпадает</span>`)+`</div>`+
   `<div class="hm-amplify-box"><div class="hm-amplify" role="group" aria-label="Масштаб разницы">${[[1,'1:1','Разница в натуральную величину'],[3,'×3','Разница усилена в 3 раза']].map(([v,t,l])=>`<button type="button" data-hm="amplify" data-id="${v}" aria-label="${l}" aria-pressed="${amplify===v}">${t}</button>`).join('')}</div><span>разница</span></div>`+
-  (chart.last={now,past,same},'')+figure(now,past,same,same?'Силуэт по замерам '+dateLabel(cur.date):'Силуэт '+dateLabel(cur.date)+' поверх силуэта '+dateLabel(old.date))+`</div>`;
+  (chart.last={now,past,same,height},'')+figure(now,past,same,same?'Силуэт по замерам '+dateLabel(cur.date):'Силуэт '+dateLabel(cur.date)+' поверх силуэта '+dateLabel(old.date),height)+`</div>`;
 }
 const value=(values,key)=>values[key]!=null?num(values[key]):'—';
 function cell(group,values){
@@ -372,7 +379,7 @@ function mount(box,options){
   const step=t=>{
    const u=Math.min(1,(t-t0)/560),e=1-Math.pow(1-u,3),m={};
    for(const k of GIRTH)m[k]=start[k]+(to.past[k]-start[k])*e;
-   const sh=bodyParts(m,to.now);for(const p of paths)p.setAttribute('d',sh[p.dataset.part]);
+   const sh=bodyParts(m,to.now,to.height);for(const p of paths)p.setAttribute('d',sh[p.dataset.part]);
    layer.setAttribute('opacity',String(Math.round((v0+(1-v0)*e)*1000)/1000));drawn=m;
    raf=u<1?requestAnimationFrame(step):0;
   };
