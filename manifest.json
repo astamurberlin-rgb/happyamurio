@@ -1,7 +1,7 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-16.2",
-  "updated": "2026-11-16",
+  "revision": "2026-11-17.1",
+  "updated": "2026-11-17",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
@@ -104,6 +104,19 @@
       "date": "2026-11-14",
       "notes": "data/SWEET-PRESERVES.md",
       "firstReader": "Happy Meal 33.3 and later (preserves.js)"
+    },
+    "kfct": {
+      "version": "10.4.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/dabcff7a86f22fcf2585634b06c0b2791e4ba581/data/kfct-10.4.json.gz",
+      "encoding": "gzip",
+      "bytes": 2549402,
+      "sha256": "574d117a22b3709592d96ea7bd16689ec23e3d46c0dbf087e2b3a8b0bb9c09c4",
+      "foodCount": 3366,
+      "schema": "happy-meal-kfct/1",
+      "author": "RDA/NICS (данные), Михалыч и Claude (названия)",
+      "date": "2026-11-17",
+      "notes": "data/KFCT.md",
+      "firstReader": "Happy Meal 33.4 and later (kfct.js)"
     }
   }
 }

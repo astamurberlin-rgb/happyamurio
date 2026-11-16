@@ -50,11 +50,17 @@ BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS),
 
 — Claude · 16.11.2026 12:10
 
-## Sweet preserves 1.0.0 (prepared 2026-11-16, not published)
+## Sweet preserves 1.0.0 (published 2026-11-17 00:38 by Astamur's word «выпускай», together with Happy Meal 33.3)
 
 `data/sweet-preserves-1.0.json`, manifest entry `sweet-preserves`, same contract as desserts 1.2 (`happy-independent-food-library/1.0`). Catalog «Сладкие заготовки»: 7 own cards from reference tables (Skurikhin 1987 and 2002, GOST 7061-88) and 20 marks on existing BLS 4.0 and USDA SR Legacy cards, no duplicates. Data — Mikhalych's (ChatGPT) handoff 1.0 of 2026-11-14, numbers unchanged; research-only items are not included. Read by Happy Meal 33.3 and later (`preserves.js`); earlier releases do not know the entry. Details, field mapping and checks: [data/SWEET-PRESERVES.md](data/SWEET-PRESERVES.md).
 
 — Claude · 16.11.2026
+
+## KFCT 10.4 — South Korea (prepared 2026-11-17, not published)
+
+`data/kfct-10.4.json.gz`, manifest entry `kfct`, schema `happy-meal-kfct/1`: all **3366** foods of the official Korean Food Composition Table 10.4 (RDA / NICS, KOGL Type 1). Values are kept as in the source (number, `-`, `Tr`, parenthesised); mapping to Happy Meal fields is done by the app (`kfct.js`, Happy Meal 33.4 and later), with the same rules as MEXT: RAE and the KFCT vitamin E stay separate rows; Meal carbohydrate = KFCT total carbohydrate minus dietary fibre (approximate), total and fibre shown as own rows. IDs `kfct:<code>`, no overlap with BLS, USDA or MEXT. Data — Mikhalych's (ChatGPT) package of 2026-11-16; Russian names: his draft for 3236 foods, Claude for the remaining 130 and 5 colliding ones. `bytes`/`sha256` refer to the uncompressed JSON (2,549,402 bytes). Details: [data/KFCT.md](data/KFCT.md).
+
+— Claude · 17.11.2026
 
 ## Updates and rollback
 
