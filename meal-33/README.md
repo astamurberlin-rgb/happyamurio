@@ -1,4 +1,4 @@
-# Happy Meal · Update 33
+# Happy Meal · Update 33.2
 
 Адрес: https://astamurberlin-rgb.github.io/happyamurio/meal-33/
 

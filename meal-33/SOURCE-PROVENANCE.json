@@ -1,7 +1,7 @@
 {
  "release": "Happy Meal Update 33",
  "date": "2026-11-16",
- "published": "16.11.2026 12:10 — 33.1 по слову Астамура 11:45 («Выпускай с ускорением»), вместе с полной MEXT в каталогах; 33 — 16.11.2026 03:48 по слову Астамура 03:47",
+ "published": "16.11.2026 17:40 — 33.2 по слову Астамура 17:09, вместе с Day 60.1 и Sport 44.1; 16.11.2026 12:10 — 33.1 по слову Астамура 11:45 («Выпускай с ускорением»), вместе с полной MEXT в каталогах; 33 — 16.11.2026 03:48 по слову Астамура 03:47",
  "entry": "meal-33/index.html",
  "source": {
   "release": "meal-32 (Happy Meal Update 32.3)",
@@ -62,6 +62,14 @@
   }
  },
  "pointReleases": [
+  {
+   "version": "33.2",
+   "date": "2026-11-16",
+   "changes": [
+    "shared/happy-measurements.js: новый силуэт на экране замеров, рост из профиля (лаборатория Sport, ветка sport-lab-44)",
+    "index.html ?v=33.2, заголовок и подвал; sw.js VERSION 33.2; release-notes.js 33.2"
+   ]
+  },
   {
    "version": "33.1",
    "date": "2026-11-16",
@@ -333,7 +341,7 @@
   {
    "path": "index.html",
    "size": 599063,
-   "sha256": "5700b27a4e7dae646e729ac8fa2d764fe07690235b13bc9180f617b530cc862a"
+   "sha256": "08664563e3cf633209d6a2e59c43bbbc9dc88ad421408a18c62a24094d3d7832"
   },
   {
    "path": "manifest.webmanifest",
@@ -522,8 +530,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 42345,
-   "sha256": "a6db71a63f1812c0b309f35b008fe63edf4f8d45695549d4d1aed106fa167c4b"
+   "size": 42797,
+   "sha256": "38f06d16daef6f5db6e882d1050e3f12de6a2568f3480dd57c6f54a0138e1d46"
   },
   {
    "path": "report.css",
@@ -602,8 +610,8 @@
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 45078,
-   "sha256": "df2f9bb92b7b66357bc06da716eabbe67a24cda07ea0e39e3234516bde2e301b"
+   "size": 51855,
+   "sha256": "17744a6bba25eba5cc77395383cab9e78f7a9347c1510751f42bb81035bc11b3"
   },
   {
    "path": "shared/happy-person.js",
@@ -713,7 +721,7 @@
   {
    "path": "sw.js",
    "size": 3459,
-   "sha256": "8733fdea9a4b42b2cac559808c3954c5fba3c362e71ede25d215c3275d5a9ae8"
+   "sha256": "31d9aa626e785d4b10d91f64c45b452ea531912cef9fdd45c652d296bea89e72"
   },
   {
    "path": "usda.js",

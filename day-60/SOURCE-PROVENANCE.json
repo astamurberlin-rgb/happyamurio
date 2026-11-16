@@ -1,11 +1,11 @@
 {
  "release": "Happy Day Update 60",
  "date": "2026-11-16",
- "published": "не выпущен: ждёт слова Астамура «выпускай», выходит вместе с Meal 33 и Sport 44",
+ "published": "16.11.2026 17:40 — 60.1 по слову Астамура 17:09, вместе с Meal 33.2 и Sport 44.1; 60 — 16.11.2026 03:50 по слову Астамура 03:47",
  "source_release": "day-59 (Happy Day Update 59.3)",
  "source_commit": "f18b3d91f812742f47c0e2b7dbee4889a3aeefef",
  "source_app_version": "59.3",
- "destination_app_version": "60",
+ "destination_app_version": "60.1",
  "adaptations": [
   "Задача «Перенести вход, настройки, профиль и цели из прототипов в Day, Meal и Sport» (Астамур 16.11.2026 01:14): экраны по прототипам Михалыча Meal v7, Sport v2, Day v2.",
   "day-account.js (новый): первый экран и вход (shared/happy-welcome.js), верх и низ настроек и профиль (shared/happy-person.js), цели Day (shared/happy-goals.js, DB.lifeGoals в документе setup); лист «Войдите в аккаунт» вместо перехода в настройки.",
@@ -21,12 +21,22 @@
  "database_modified": false,
  "destination_url": "https://astamurberlin-rgb.github.io/happyamurio/day-60/",
  "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-59/",
- "point_releases": [],
+ "point_releases": [
+  {
+   "version": "60.1",
+   "date": "2026-11-16",
+   "changes": [
+    "лаборатория Day 60 (ветка day-lab-60), шаги 1–4: дуга самочувствия по варианту 3 Студии дуг (arc-motion.js, arc-home.js, selfcare-ui.js); человечек в «Активности» (assets/activity-side-bend.svg, трафарет Айко убран); свайп по счётчику (tap-swipe.js, counters.js hide); экран раздела без «Журнал → …» и подсказки, листается до меню",
+    "shared/happy-measurements.js: новый силуэт на экране замеров, рост из профиля (лаборатория Sport, ветка sport-lab-44)",
+    "index.html ?v=60.1, заголовок и подвал; release-notes.js 60.1; Happy-Day-60.html пересобран"
+   ]
+  }
+ ],
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 3691464,
-   "sha256": "e7fb72a7b5a53446f51a5d51062b62999207a16941ce1f5a9ca8f89d4d62f492"
+   "size": 1492961,
+   "sha256": "58795a0aae3dc5487006452487f30ede551436ea80c06e943efa58f7dd3025b8"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -140,28 +150,28 @@
   },
   {
    "path": "arc-home.js",
-   "size": 1235,
-   "sha256": "cc7d56260e7c905f2d28ad72aa1069536fe4e1bd19a29cf12403960a5b3b8142"
+   "size": 1977,
+   "sha256": "b1c01b628fb0928642ac3ceb9a622d7394525e5c13dc65a5fc8e5996f395cd1f"
   },
   {
    "path": "arc-motion.css",
-   "size": 416,
-   "sha256": "32295c718ed0c8d28e9d680d065c650b3371ffb1722c27edb4a2d3958b31c79a"
+   "size": 544,
+   "sha256": "382426838d27fe751aadb8b4bdaec167447e595bb12ec951fc160ad8c178e890"
   },
   {
    "path": "arc-motion.js",
-   "size": 6076,
-   "sha256": "25109650a2f9bbda45e528ba6802ea523ccf8ed7c6fc85bbb8454c2de16c041d"
+   "size": 18123,
+   "sha256": "bb396f18ac988d906e22bd63b8e94cffb5c7175fc93e5799600082bf22d73abe"
   },
   {
-   "path": "assets/aiko-skating-source.png",
-   "size": 840222,
-   "sha256": "e93861bc811c078669077e554ce3238ba293aeeafbea4509d38e90b8cc6a8396"
+   "path": "assets/activity-side-bend.svg",
+   "size": 2592,
+   "sha256": "6d9e702d87c984ceb3e8d60a347870a738035d03e105a6db19b4fac9e057237f"
   },
   {
    "path": "counters.js",
-   "size": 9402,
-   "sha256": "95c842fc24be682bdb6ef0ffefd070e24999b674a827ed24f9e1615cd4561292"
+   "size": 10012,
+   "sha256": "1eeba9e678de66e5a4ccdf0cc3be6c34b6af7fba6eccce3f836ab99bb3a2f7cb"
   },
   {
    "path": "day-account.js",
@@ -210,8 +220,8 @@
   },
   {
    "path": "index.html",
-   "size": 490234,
-   "sha256": "d894de69f2a6a0f8cbeb25960ac475660c3b3b2cd4ead080b51f924211652de7"
+   "size": 491134,
+   "sha256": "1f24bc80419e6ee192be4be480233c882afa3872787c9e27c8dd8c7446c0b2b8"
   },
   {
    "path": "manifest.webmanifest",
@@ -220,13 +230,13 @@
   },
   {
    "path": "release-notes.js",
-   "size": 34345,
-   "sha256": "8325b3009831d879bfe837986d523b7edaecf3da3e65e0b209a2526afd5d8503"
+   "size": 35563,
+   "sha256": "67ce10e68b3832fb737f0e0181d653c252104aacee7ba325a9ca00a04176d9ff"
   },
   {
    "path": "section-wheel.css",
-   "size": 5132,
-   "sha256": "75da4debbd9a0d539ad900b4812f52ab0abfa4d50ddc1b47ba44c624ccfad7a2"
+   "size": 5631,
+   "sha256": "0557a11c000c174d3fdcd85a9c0ef26a522d90132d6783ffe54a6560f6b5254c"
   },
   {
    "path": "selfcare-core.js",
@@ -235,13 +245,13 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 74251,
-   "sha256": "2bd949f2b4a1a694d1cc04c6b3b86fe9384fa37469adcf78ebb22b19caf2059e"
+   "size": 75050,
+   "sha256": "fc4b0da9c3d9833577be730c3c112fb1b588a7ce74755119183ca124a8783281"
   },
   {
    "path": "selfcare.css",
-   "size": 11945,
-   "sha256": "2d639f91a73d1a0352c5271536571ed6c3bf23e94d9556c9e2ec72c6d32b27ff"
+   "size": 11818,
+   "sha256": "55d8619cc0bb406d2f7998726c650778ddf675a9aeef6eae290d42ceff70b41f"
   },
   {
    "path": "shared/apps.json",
@@ -315,8 +325,8 @@
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 45078,
-   "sha256": "df2f9bb92b7b66357bc06da716eabbe67a24cda07ea0e39e3234516bde2e301b"
+   "size": 51855,
+   "sha256": "17744a6bba25eba5cc77395383cab9e78f7a9347c1510751f42bb81035bc11b3"
   },
   {
    "path": "shared/happy-person.js",
@@ -367,6 +377,11 @@
    "path": "shared/release-notes.js",
    "size": 3156,
    "sha256": "0d811d0efdd6254d5e993bd245ac971e6ab1fb5194a8273363efe2bb7520c089"
+  },
+  {
+   "path": "tap-swipe.js",
+   "size": 3158,
+   "sha256": "49450c730948d94aace87d9a8f3dbac921cae28e74cfb64f963314d50ee6a192"
   },
   {
    "path": "tests/checkin-tag.test.cjs",
