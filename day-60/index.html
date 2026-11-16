@@ -240,6 +240,12 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .tpT{margin:0 0 4px;font-size:17px;font-weight:700;letter-spacing:-.01em}
 .tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
 .tpT + .tpItem{border-top:0}
+/* свайп вбок убирает счётчик (tap-swipe.js, 16.11.2026): строка уезжает влево, справа проступает «Убрать» */
+.tpItem{position:relative;touch-action:pan-y}
+.tpItem>*{transform:translateX(var(--sx,0px));transition:transform .2s ease}
+.tpItem.tpSwiping>*{transition:none}
+.tpItem::before{content:'Убрать';position:absolute;right:0;top:9px;bottom:9px;display:grid;place-items:center;padding:0 16px;
+  border-radius:14px;background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
 .tpNm{flex:1;min-width:0;padding:12px 0;border:0;background:none;color:#fff;font:inherit;font-size:15.5px;font-weight:600;
   text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;
@@ -1386,7 +1392,8 @@ a.btn{display:inline-block;text-decoration:none}
 <script src="./day-data.js?v=60"></script>
 <script src="./day-account.js?v=60"></script>
 
-<script src="counters.js?v=60"></script>
+<script src="counters.js?v=60.1"></script>
+<script src="tap-swipe.js?v=60.1"></script>
 <script src="./selfcare-core.js?v=60"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}

@@ -7,7 +7,8 @@
    (counterEventId); в свои настройки и дни Day их не кладёт (day-docs.js). Формат записей — shared/happy-food.js.
    Название, продукт и порция такого счётчика меняются в Happy Meal. Убрать счётчик со страницы Day можно здесь
    (Астамур 14.11.2026 22:34): в документ нажатий кладётся отметка, Day счётчик больше не показывает, а Meal
-   выключает у него показ в Day. Сам счётчик и записанные порции остаются. */
+   выключает у него показ в Day. Сам счётчик и записанные порции остаются. С 16.11.2026 — и свайпом вбок на главной
+   (tap-swipe.js), с «Вернуть» на 5 секунд. */
 (function(root){
   'use strict';
   const F=root.HappyFood,clone=x=>JSON.parse(JSON.stringify(x));
@@ -75,6 +76,14 @@
     if(refused)setTimeout(refresh,0);   // документ записан более новой версией: вид возвращается к записанному
     try{if(root.SelfCare&&root.SelfCare.mealChanged)root.SelfCare.mealChanged()}catch(e){}
   }
+  /* убрать счётчик Meal со страницы Day: отметка в документе нажатий Day, Meal выключит ему показ в Day.
+     Отдаёт «вернуть» — снять отметку (свайп на главной, 16.11.2026). */
+  function hide(cid){
+    const doc=tapsDoc(),mark=F.hide(cid);if(!doc||doc.newer)return null;
+    doc.put(mark.id,mark.value).catch(root.DayData.report);
+    refresh();if(root.renderTaps)root.renderTaps();
+    return ()=>{if(root.writeGuard())return;doc.putMany([{id:mark.id,deleted:true}]).catch(root.DayData.report);refresh();if(root.renderTaps)root.renderTaps()};
+  }
   const short=d=>typeof d.portionText==='string'&&d.portionText.trim()&&d.portionText.length<=80?d.portionText.trim():d.q+' '+d.u;
   function init(){
     if(started)return;started=true;
@@ -95,10 +104,7 @@
       e.stopImmediatePropagation();
       if(!b.dataset.del){root.toast('Название, продукт и порция этого счётчика настраиваются в Happy Meal.');return}
       root.confirmBox('Убрать счётчик «'+c.t+'» из Happy Day? В Happy Meal он останется, записанные порции — тоже.','Убрать').then(ok=>{
-        if(!ok||root.writeGuard())return;
-        const doc=tapsDoc(),mark=F.hide(c.mealCounterId);if(!doc||doc.newer)return;
-        doc.put(mark.id,mark.value).catch(root.DayData.report);
-        refresh();if(root.renderTaps)root.renderTaps();
+        if(!ok||root.writeGuard()||!hide(c.mealCounterId))return;
         root.toast('Счётчик убран из Happy Day. Вернуть: Happy Meal → настройки счётчика → включить Happy Day.');
       });
     },true);
@@ -108,5 +114,5 @@
     F.TAP_APPS.forEach(app=>{const d=docOf(app);if(d)d.subscribe(e=>{if(e.origin!=='local')refresh()})});
     apply();
   }
-  root.HappyDayCounters={init,capture,apply,refresh,foods,taps,apps};
+  root.HappyDayCounters={init,capture,apply,refresh,foods,taps,apps,hide};
 })(globalThis);
