@@ -95,11 +95,8 @@ const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 44'",()=>J
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
 function memory(){var m=new Map();return {getItem:function(k){k=String(k);return m.has(k)?m.get(k):null},setItem:function(k,v){m.set(String(k),String(v))},removeItem:function(k){m.delete(String(k))},clear:function(){m.clear()},key:function(i){var keys=Array.from(m.keys());return i<keys.length?keys[i]:null},get length(){return m.size}}}
 try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:true});Object.defineProperty(window,'sessionStorage',{value:memory(),configurable:true});Object.defineProperty(window,'indexedDB',{value:undefined,configurable:true});window.happyLabMemoryStorage=true}catch(e){}})();</script>`;
-// Лаборатория 15.11.2026: полоска наверху; к серверу страница не обращается (connect-src 'none').
-const labBar=LAB?`<style>:root{--lab-h:30px}html{scroll-padding-top:var(--lab-h)}body{padding-top:var(--lab-h)}.current-bar{top:var(--lab-h)}
-#lab-bar{position:fixed;top:0;left:0;right:0;z-index:90;height:var(--lab-h);padding:5px 12px 0;background:#23466f;color:#fff;font:600 11px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:center;box-shadow:0 2px 10px #0003}
-#lab-bar b{display:block;font-size:11.5px;letter-spacing:.2px;line-height:20px}</style>
-<div id="lab-bar" role="note"><b>${labNote.label} · не настоящее приложение</b></div>`:'';
+// Лаборатория: полоски наверху нет (Астамур 16.11.2026: «портит интерфейс»); к серверу страница не обращается (connect-src 'none').
+const labBar='';
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
   .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+'\n</style>')
