@@ -19,11 +19,9 @@ async function check(ref, page) {
     // Update 38.4: the linked releases are the current Day/Meal entries from shared/apps.json (filled at build time).
     const apps=JSON.parse(await readFile(new URL('../shared/apps.json',repo),'utf8')),siblings={};for(const app of ['day','meal']){const dir=apps[app].entry.split('/')[0];siblings['/happyamurio/'+dir+'/']='../'+dir+'/index.html';}
     if(siblings[url.pathname]){try{assert.ok((await stat(new URL(siblings[url.pathname],repo))).isFile())}catch{failures.push(`${page}: linked release missing: ${ref}`)}return;}
-    if(['/day/','/meal/','/prototypes/happy-icon-studio.html'].includes(url.pathname))return;
     failures.push(`${page}: path escapes project prefix: ${ref}`); return;
   }
   const relative = decodeURIComponent(url.pathname.slice(prefix.length));
-  if(['day/','meal/','prototypes/happy-icon-studio.html'].includes(relative))return;
   if (checked.has(relative)) return;
   checked.add(relative);
   try {
