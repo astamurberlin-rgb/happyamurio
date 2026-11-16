@@ -240,6 +240,12 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .tpT{margin:0 0 4px;font-size:17px;font-weight:700;letter-spacing:-.01em}
 .tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
 .tpT + .tpItem{border-top:0}
+/* свайп вбок убирает счётчик (tap-swipe.js, 16.11.2026): строка уезжает влево, справа проступает «Убрать» */
+.tpItem{position:relative;touch-action:pan-y}
+.tpItem>*{transform:translateX(var(--sx,0px));transition:transform .2s ease}
+.tpItem.tpSwiping>*{transition:none}
+.tpItem::before{content:'Убрать';position:absolute;right:0;top:9px;bottom:9px;display:grid;place-items:center;padding:0 16px;
+  border-radius:14px;background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
 .tpNm{flex:1;min-width:0;padding:12px 0;border:0;background:none;color:#fff;font:inherit;font-size:15.5px;font-weight:600;
   text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;
@@ -386,8 +392,6 @@ body.loading .app,body.loading .dock{opacity:0}
   font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   transition:color .3s,font-size .3s,opacity .3s;opacity:.55}
 .factTrack button.on{color:#fff;font-size:21px;font-weight:800;letter-spacing:-.01em;opacity:1}
-.factLine{height:1px;background:rgba(255,255,255,.26);margin:14px 0 0}
-.swipeHint{text-align:center;font-size:11.5px;color:var(--dim);margin:10px 0 0}
 
 /* ── тренды ── */
 .tr{margin-bottom:22px}
@@ -768,6 +772,11 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .factTrack .fT{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;transition:font-size .3s}
 .factTrack button.on .fT{white-space:normal;text-overflow:clip;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
   line-height:1.15;text-align:center;text-wrap:balance}
+/* Лаборатория Day 60, 16.11.2026: название раздела ближе к кольцу, «Что было» — на том же расстоянии под ним
+   (без черты и подсказки «листай вбок…»). Длинное название в две строки сдвигает теги ниже. */
+.facts{margin-top:-28px}
+.factTrack button{min-height:0;padding-top:6px;padding-bottom:6px}
+[data-screen="ring"] .eyebrow{margin-top:8px}
 
 /* ── окно шкалы: вид, отсчёт, деления, подписи ── */
 .icLayer.scEd{z-index:69}
@@ -1002,11 +1011,11 @@ a.btn{display:inline-block;text-decoration:none}
 </style>
 <link rel="stylesheet" href="./shared/food-counters.css?v=2">
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
-<link rel="stylesheet" href="./selfcare.css?v=51.14-test">
-<link rel="stylesheet" href="./arc-motion.css?v=1.0">
-<script defer src="./arc-motion.js?v=60"></script>
-<script defer src="./arc-home.js?v=1.0"></script>
-<link rel="stylesheet" href="./section-wheel.css?v=51.14-test">
+<link rel="stylesheet" href="./selfcare.css?v=60.1">
+<link rel="stylesheet" href="./arc-motion.css?v=60.1">
+<script defer src="./arc-motion.js?v=60.1"></script>
+<script defer src="./arc-home.js?v=60.1"></script>
+<link rel="stylesheet" href="./section-wheel.css?v=60.2">
 <style id="day-settings-structure">/* Update 54: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
 .happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
@@ -1118,8 +1127,6 @@ a.btn{display:inline-block;text-decoration:none}
       <div class="ringRail"><div class="ringTrack" id="ringTrack"></div></div>
       <div class="facts" id="facts"><div class="factTrack" id="factTrack"></div></div>
     </div>
-    <div class="factLine"></div>
-    <p class="swipeHint">листай вбок или жми по названию</p>
     <div class="eyebrow"><span>Что было</span></div>
     <div class="chips" id="cpTags"></div>
   </div>
@@ -1386,7 +1393,8 @@ a.btn{display:inline-block;text-decoration:none}
 <script src="./day-data.js?v=60"></script>
 <script src="./day-account.js?v=60"></script>
 
-<script src="counters.js?v=60"></script>
+<script src="counters.js?v=60.1"></script>
+<script src="tap-swipe.js?v=60.1"></script>
 <script src="./selfcare-core.js?v=60"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
@@ -1410,7 +1418,7 @@ a.btn{display:inline-block;text-decoration:none}
 <script src="./shared/happy-links.js?v=60"></script>
 <script src="./shared/happy-settings-developer.js?v=60"></script>
 <script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 60')}catch(e){}</script>
-<script src="./selfcare-ui.js?v=60"></script>
+<script src="./selfcare-ui.js?v=60.2"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════
    Day 59: дневник хранится и обменивается только через общий модуль (shared/happy-store.js; запуск и запись —
