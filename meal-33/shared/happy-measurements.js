@@ -244,15 +244,41 @@ function rawParts(m,frame){
    в карточку, поэтому на рисунке меняется ширина тела ×181/рост — невысокий плотнее, высокий стройнее. Голова и стопы
    растут вместе с ростом, их ширина не меняется. Роста нет — 181, как раньше. */
 const BASE_HEIGHT=181,LEGS_SHORTER=2,HEAD_SCALE=1.05,SH=37,CROTCH=93.5,FOOT_TOP=170.6,CHIN=23;
+/* Ноги и стопы по образцу Астамура (16.11.2026, силуэт из поиска; ушей и рук образца нет): доля роста, внутренний и
+   наружный край на 18 высотах, ось фигуры — 0. Сверху нога продолжает талию и бёдра туловища. Ширина меняется с обхватами:
+   верх — бёдра, бедро — обхват бедра, голень — икра; стопа не меняется. */
+const REF_LEG=[[.55,.9,18.7],[.575,1.4,18.7],[.6,2.2,18.5],[.625,3.1,18.2],[.65,3.7,17.5],[.675,4.0,16.7],[.7,4.6,16.7],[.725,5.6,16.6],[.75,6.1,17.3],[.775,5.7,17.6],[.8,5.7,17.5],[.825,6.5,16.7],[.85,7.3,16.0],[.875,7.9,15.3],[.9,8.1,14.7],[.925,7.6,15.0],[.95,7.3,17.0],[.975,10.4,21.0]];
+function curve(pts){
+ const P=(x,y)=>({x,y}),dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y),r2=v=>Math.round(v*100)/100;
+ let s=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];s+=a.x*b.y-b.x*a.y}if(s<0)pts=pts.slice().reverse();
+ const n=pts.length;let out='M'+r2(pts[0].x)+' '+r2(pts[0].y);
+ for(let i=0;i<n;i++){
+  const p0=pts[(i-1+n)%n],p1=pts[i],q2=pts[(i+1)%n],q3=pts[(i+2)%n];
+  const d1=Math.sqrt(dist(p0,p1))||1e-4,d2=Math.sqrt(dist(p1,q2))||1e-4,d3=Math.sqrt(dist(q2,q3))||1e-4;
+  const a1=2*d1*d1+3*d1*d2+d2*d2,n1=3*d1*(d1+d2),a2=2*d3*d3+3*d3*d2+d2*d2,n2=3*d3*(d3+d2);
+  out+='C'+r2((d1*d1*q2.x-d2*d2*p0.x+a1*p1.x)/n1)+' '+r2((d1*d1*q2.y-d2*d2*p0.y+a1*p1.y)/n1)+' '+r2((d3*d3*p1.x-d2*d2*q3.x+a2*q2.x)/n2)+' '+r2((d3*d3*p1.y-d2*d2*q3.y+a2*q2.y)/n2)+' '+r2(q2.x)+' '+r2(q2.y);
+ }
+ return out+'Z';
+}
+function refLeg(m,side,w,warp){
+ const P=(x,y)=>({x,y}),ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)},refY=f=>f*182.15-1.15;
+ const rh=m.hips/GIRTH_NORMAL.hips,rt=m.thigh/GIRTH_NORMAL.thigh,rc=m.calf/GIRTH_NORMAL.calf;
+ const ratio=y=>y<104?rh+(rt-rh)*ease((y-96)/8):y<124?rt:y<146?rt+(rc-rt)*ease((y-124)/22):y<158?rc:rc+(1-rc)*ease((y-158)/8);
+ const rows=REF_LEG.map(([f,a,b])=>{const y=refY(f),ax=(a+b)/2,h=(b-a)/2*ratio(y);return [y,ax-h,ax+h]});
+ const ww=m.waist*0.35/2,hp=m.hips*0.355/2,wy=warp(69.5);
+ const outer=[P(ww*0.98,wy-9),P(ww,wy),P(ww+(hp-ww)*0.55,wy+8),P(hp,wy+17),P(Math.max(hp,18.7*rh)*0.99,refY(.53))].concat(rows.map(r=>P(r[2],r[0])));
+ const toe=[P(19.5,180.6),P(16.2,181.4),P(13.4,180.8)];
+ const inner=rows.slice().reverse().map(r=>P(r[1],r[0])).concat([P(-1,refY(.53)),P(-1.5,wy+18),P(-2,wy-9)]);
+ return curve(outer.concat(toe,inner).map(q=>P(side*q.x*w,q.y)));
+}
 function bodyParts(m,frame,height){
  const r2=v=>Math.round(v*100)/100,d=LEGS_SHORTER,armK=(73.4+0.4*d)/73.4,w=BASE_HEIGHT/stature(height);
  const map=(p,fn)=>p.replace(/(-?\d*\.?\d+) (-?\d*\.?\d+)/g,(_,x,y)=>{const q=fn(+x,+y);return r2(q[0])+' '+r2(q[1])});
  const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)};
  const warp=y=>y<=SH?y:y<=CROTCH?SH+(y-SH)*(CROTCH+d-SH)/(CROTCH-SH):y<=FOOT_TOP?CROTCH+d+(y-CROTCH)*(FOOT_TOP-CROTCH-d)/(FOOT_TOP-CROTCH):y;
- const ankle=(x,y)=>{if(y<150)return x;const s=x<0?-1:1,ax=s*(10+0.8*(y-129)/42.6);return ax+(x-ax)*(1+0.06*smooth((y-150)/18))};
- const p=rawParts(m,frame).map((q,i)=>i<=1?map(q,(x,y)=>[ankle(x,y)*w,warp(y)]):i===4||i===5?map(q,(x,y)=>[x*w,warp(y)])
+ const p=rawParts(m,frame).map((q,i)=>i<=1?refLeg(m,i===0?-1:1,w,warp):i<=3?'':i===4||i===5?map(q,(x,y)=>[x*w,warp(y)])
   :i===6?map(q,(x,y)=>[x*HEAD_SCALE,CHIN+(y-CHIN)*HEAD_SCALE]):i>=7?map(q,(x,y)=>[x*w,y<=SH?y:SH+(y-SH)*armK])
-  :map(q,(x,y)=>{const cx=i===2?-11.95:11.95;return [x-cx+cx*w,y]}));
+  :q);
  return {body:p.slice(0,7).join(''),arms:p.slice(7).join('')};
 }
 function bodyPath(m,frame,height){const p=bodyParts(m,frame,height);return p.body+p.arms}
