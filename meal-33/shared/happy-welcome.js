@@ -211,14 +211,14 @@ if(doc){
 }
 
 /* ── смайлик первого экрана: кружит, пока приложение грузится, и останавливается улыбкой снизу ── */
-let ready=false,frame=0,boot=false;
+let ready=false,frame=0;
 function stopSmile(){if(frame)cancelAnimationFrame(frame);frame=0;clearTimeout(smileTimer)}
 function startSmile(instant){
  stopSmile();const p=pageH;if(!p)return;
  const svg=p.main.querySelector('[data-hs-ring]'),options=p.main.querySelector('.hs-welcome-options');
- const settle=()=>{if(!options.isConnected)return;if(boot){boot=false;if(screen==='welcome')closePage();return}options.classList.add('hs-settled');options.removeAttribute('inert');options.removeAttribute('aria-hidden')};
+ const settle=()=>{if(!options.isConnected)return;options.classList.add('hs-settled');options.removeAttribute('inert');options.removeAttribute('aria-hidden')};
  const reduced=root.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(instant||reduced){svg.style.transform='rotate(90deg)';if(boot)Promise.resolve(cfg.ready).catch(()=>{}).then(settle);else settle();return}
+ if(instant||reduced){svg.style.transform='rotate(90deg)';settle();return}
  const start=performance.now(),minSpin=start+420;let stopAt=null,from=0,target=0,angle=-90;
  const draw=t=>{
   if(stopAt===null){angle=-90+(t-start)*.288;if(ready&&t>=minSpin){from=angle;target=90+360*(Math.floor((angle-90)/360)+1);stopAt=t}}
@@ -262,10 +262,7 @@ function init(o){
   setTimeout(()=>S().toast('Ссылка больше не действует. Запросите новую.'),400);
  }
  if(cfg.account.current()||cell){
-  /* Заставка (Астамур 16.11.2026): вход уже был — пока приложение грузится, кружит тот же смайлик; докрутился до
-     улыбки — заставка уходит, кнопок входа нет. */
-  if(!(link&&link.type==='recovery'))boot=true,show('welcome');
-  Promise.resolve(cfg.ready).catch(()=>{}).then(()=>{if(cfg.account.current())signedIn(link);else{boot=false;signedOut(link)}});
+  Promise.resolve(cfg.ready).catch(()=>{}).then(()=>{if(cfg.account.current())signedIn(link);else signedOut(link)});
   return;
  }
  signedOut(link);
