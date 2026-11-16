@@ -32,10 +32,24 @@ assert.ok((await read('collections.js')).includes("count:'103 карточки'"
 for(const [i,f] of P.desserts.foods.entries()){const r=ds.foods[i];assert.ok(r&&r.titleRu===f.name,'десерты: строка '+(i+1)+' — '+f.name);
  const k=r.nutrients.find(n=>/(^usda:1008$|:kcal$|energy_kcal$)/.test(n.key)&&n.status==='value');assert.ok(k,'десерты: у '+f.name+' есть калории');
  assert.ok(Math.abs(k.value-f.kcal)<=0.6,'десерты: ккал '+f.name+' '+k.value+' ≠ '+f.kcal)}
+/* Meal 33.3: «Сладкие заготовки» — порядок и названия позиций как в файле каталога; свои карточки — значения каталога,
+   отметки — из BLS и USDA, как их показывает Meal (углеводы USDA в Meal не переносятся — null); неизвестное — null, не ноль */
+const sp=file('sweet-preserves'),blsLib=file('bls'),usdaLib=file('usda'),blsRow={},usdaRow={};
+blsLib.f.forEach(r=>blsRow[r[0]]=r);usdaLib.foods.forEach(r=>usdaRow[r.id]=r);
+const bk=n=>4+blsLib.keys.indexOf(n),refv=(r,...keys)=>{for(const k of keys){const n=r.nutrients.find(x=>x.key==='ref:'+k);if(n)return n.status==='value'?n.value:null}return null};
+assert.equal(P.preserves.version,manifest.libraries['sweet-preserves'].version);assert.equal(P.preserves.count,27);assert.equal(P.preserves.foods.length,27);
+assert.ok((await read('collections.js')).includes("count:'27 позиций'"),'на карточке магазина — 27 позиций');
+for(const [i,f] of P.preserves.foods.entries()){const r=sp.foods[i];assert.ok(r&&r.titleRu===f.name,'заготовки: строка '+(i+1)+' — '+f.name);
+ let want;
+ if(r.id.startsWith('hmpreserve:'))want=[refv(r,'energy_kcal'),refv(r,'protein_g'),refv(r,'fat_g'),refv(r,'available_carbohydrate_source_g','carbohydrate_as_reported_g')];
+ else if(r.id.startsWith('bls:')){const b=blsRow[r.id.slice(4)];assert.ok(b,'BLS '+r.id);want=['kcal','prot','fat','carb'].map((n,j)=>j?Math.round(b[bk(n)]*10)/10:Math.round(b[bk(n)]))}   // как blsMac в index.html
+ else{const u=usdaRow[r.id];assert.ok(u&&r.id.startsWith('usda:'),'USDA '+r.id);want=[u.nut.kcal,u.nut.prot,u.nut.fat,null]}
+ close(f.kcal,want[0],f.name+' ккал');close(f.protein,want[1],f.name+' белки');close(f.fat,want[2],f.name+' жиры');close(f.carb,want[3],f.name+' углеводы')}
+assert.equal(P.preserves.foods.filter(f=>f.protein==null).length,2,'белки неизвестны только у двух варений по ГОСТ');
 // 2. Магазин
 const shop=await read('collections.js'),sources=await read('sources.js');
 const ids=[...shop.matchAll(/\{id:'([A-Z]+)'(?:,source:'([A-Z]+)')?,name:'([^']+)',image:'([^']+)'/g)];
-assert.deepEqual(ids.map(m=>m[1]),['SUPP','UZBEK','DESSERT','HM','BLS','USDA','MEXT']);
+assert.deepEqual(ids.map(m=>m[1]),['SUPP','UZBEK','DESSERT','PRESERVE','HM','BLS','USDA','MEXT']);
 for(const m of ids){const id=m[2]||m[1];assert.ok(sources.includes("{id:'"+id+"'"),'каталог есть в MealSources: '+id);assert.ok(await exists(m[4]),'обложка в выпуске: '+m[4])}
 const shopCode=shop.replace(/\/\*[\s\S]*?\*\//g,'');
 assert.ok(sources.includes("{id:'SUPP',name:'БАДы'}"),'источник БАДов — в MealSources (переключатель поиска и настроек)');
@@ -65,7 +79,7 @@ const ctx={self:{location:new URL(SCOPE+'sw.js'),addEventListener:(t,f)=>listene
  fetch:async(r,o)=>{const u=typeof r==='string'?r:r.url;log.push(u);if(!online)throw new TypeError('offline');if(u.endsWith('index.html'))return new Response(page,{status:200});return new Response('x',{status:200})}};
 ctx.self.caches=ctx.caches;vm.createContext(ctx);vm.runInContext(sw,ctx);
 let waited;await listeners.install({waitUntil:p=>waited=p});await waited;
-assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v='+V)&&stored.has(SCOPE+'supplements.js?v='+V)&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
+assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v='+V)&&stored.has(SCOPE+'supplements.js?v='+V)&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/preserves.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
 function fetchEvent(url,mode){let res=null;listeners.fetch({request:{url,method:'GET',mode:mode||'no-cors'},respondWith:p=>res=p});return res}
 for(const u of ['https://geqziziycpclhnucnsyx.supabase.co/rest/v1/app_sync','https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json','https://astamurberlin-rgb.github.io/happyamurio/shared/apps.json','https://astamurberlin-rgb.github.io/happyamurio/day-57/'])
  assert.equal(fetchEvent(u),null,'не перехватывает: '+u);
@@ -77,4 +91,4 @@ online=true;
 {const before=log.length;const pic=await fetchEvent(SCOPE+'images/desserts.jpg');assert.ok(pic,'картинка отдана');assert.equal(log.length,before,'картинка магазина — из копии, без сети');
  const before2=log.length;await fetchEvent(SCOPE+'catalog.js?v='+V);assert.equal(log.length,before2+1,'скрипт выпуска — сначала из сети');
  for(const u of ['meal-img/cover-tl-2.jpg','meal-img/cover-bf-1.jpg','meal-img/cover-sn-1.jpg','meal-img/cover-dn-1.jpg'])assert.ok(stored.has(SCOPE+u),'картинка магазина сохранена при установке: '+u)}
-console.log('Passed: catalog lists match meal-libraries (uzbek '+P.uzbek.foods.length+', desserts '+P.desserts.foods.length+'); shop catalogs with supplements first ('+manifest.libraries.supplements.templateCount+' templates, '+REF+'), covers, test purchase per account, opens on the day; all '+refs.size+' page files present in order; service worker keeps to its release folder, serves the copy offline and shop pictures from the copy.');
+console.log('Passed: catalog lists match meal-libraries (uzbek '+P.uzbek.foods.length+', desserts '+P.desserts.foods.length+', sweet preserves '+P.preserves.foods.length+'); shop catalogs with supplements first ('+manifest.libraries.supplements.templateCount+' templates, '+REF+'), covers, test purchase per account, opens on the day; all '+refs.size+' page files present in order; service worker keeps to its release folder, serves the copy offline and shop pictures from the copy.');

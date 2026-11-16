@@ -40,10 +40,10 @@ with sync_playwright() as p:
     meal.locator('.tab[data-go="settings"]').click()
     meal.locator('#mealSources').scroll_into_view_if_needed()
     meal.wait_for_timeout(500)
-    caps = {i: meal.evaluate(CAPTION, i) for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN", "SUPP"]}
+    caps = {i: meal.evaluate(CAPTION, i) for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "PRESERVE", "OWN", "SUPP"]}
     out["captions"] = caps
-    check("«Скачать» у BLS, USDA, MEXT, Happy Meal, десертов и БАДов; у «Моих продуктов» кнопки нет", all(caps[i] == "Скачать" for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "SUPP"]) and caps["OWN"] is None)
-    check("в карусели семь карточек каталогов, свитч — «Подключено»", meal.evaluate("()=>document.querySelectorAll('.mc-source-carousel > .mc-source-body').length") == 7
+    check("«Скачать» у BLS, USDA, MEXT, Happy Meal, десертов, сладких заготовок и БАДов; у «Моих продуктов» кнопки нет", all(caps[i] == "Скачать" for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "PRESERVE", "SUPP"]) and caps["OWN"] is None)
+    check("в карусели восемь карточек каталогов, свитч — «Подключено»", meal.evaluate("()=>document.querySelectorAll('.mc-source-carousel > .mc-source-body').length") == 8
           and meal.evaluate("()=>document.querySelector('[data-source-slide=\"BLS\"] .mc-switch-control .mc-control-caption').textContent") == "Подключено")
     meal.locator('[data-catalog-download="BLS"]').click()
     seen_loading = wait_for(meal, lambda: meal.evaluate(CAPTION, "BLS") in ("Отменить", "Скачано"), 5, 50)

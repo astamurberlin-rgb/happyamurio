@@ -35,9 +35,12 @@ function makeFood(r,src){
  });
  (r.extraProperties||[]).forEach(x=>fields.push(Object.assign({kind:'custom',origin:'copied',source:label+' · '+r.sourceUrl,status:x.value==null?'missing':'value',category:'custom',notes:''},P.clone(x))));
  // Meal 31.1: «… первого сорта по MEXT» — без «по MEXT»: каталог и так подписан (Астамур 13.11 00:22)
- var ru=String(r.names.ru||'').replace(/ по MEXT$/,''),names=P.clone(r.names);names.ru=ru;if(names.en)names.en=String(names.en).replace(/ in MEXT$/,'');
- var f={id:r.id,n:ru,names:names,catalogSource:'MEXT',catalogCode:r.code,catalogFamily:r.family,catalogVariant:P.clone(r.variant),revision:src.revision||20260327,src:'MEXT',por:{},porG:1,sourceInfo:{source:'MEXT · Standard Tables of Food Composition in Japan',version:src.edition,url:r.sourceUrl,code:r.code,attribution:src.attribution,tables:P.clone(src.downloads),originalValues:P.clone(r.sourceRaw),fieldTables:P.clone(r.sourceTables),notesJa:r.notesJa},sourceNotes:r.sourceNotesRu||'На 100 г съедобной части. '+(r.notesRu||''),ediblePortion:P.clone(r.ediblePortion),composition:{version:1,basisGrams:100,fields:fields}};
- P.project(f);f.w=norm(Object.values(r.names).join(' ')+' '+(r.aliases||[]).join(' ')).split(/[^\p{L}\p{N}]+/u).filter(Boolean);f.n=name(f);return f;
+ // Meal 33.3: джемы и соки — обычный русский порядок слов («Клубничный джем», search-names.js); прежнее название — в словах поиска
+ var loc=root.MealSearchNames&&root.MealSearchNames.mext?root.MealSearchNames.mext(r.code):null,variant=P.clone(r.variant);
+ var ru=loc?loc.ru:String(r.names.ru||'').replace(/ по MEXT$/,''),names=P.clone(r.names);names.ru=ru;if(names.en)names.en=String(names.en).replace(/ in MEXT$/,'');
+ if(loc&&loc.variant&&variant)variant.ru=loc.variant;
+ var f={id:r.id,n:ru,names:names,catalogSource:'MEXT',catalogCode:r.code,catalogFamily:r.family,catalogVariant:variant,revision:src.revision||20260327,src:'MEXT',por:{},porG:1,sourceInfo:{source:'MEXT · Standard Tables of Food Composition in Japan',version:src.edition,url:r.sourceUrl,code:r.code,attribution:src.attribution,tables:P.clone(src.downloads),originalValues:P.clone(r.sourceRaw),fieldTables:P.clone(r.sourceTables),notesJa:r.notesJa},sourceNotes:r.sourceNotesRu||'На 100 г съедобной части. '+(r.notesRu||''),ediblePortion:P.clone(r.ediblePortion),composition:{version:1,basisGrams:100,fields:fields}};
+ P.project(f);f.w=norm(Object.values(r.names).join(' ')+' '+(loc?loc.ru+' '+loc.words.join(' '):'')+' '+(r.aliases||[]).join(' ')).split(/[^\p{L}\p{N}]+/u).filter(Boolean);f.n=name(f);return f;
 }
 function ingest(data){source=data.source;foods={};data.foods.forEach(r=>{foods[r.id]=makeFood(r,source)});state='ok';return foods}
 function append(db,dict,list){
@@ -49,7 +52,8 @@ function append(db,dict,list){
  Object.values(Object.assign(cached,foods)).forEach(saved=>{if(!saved.catalogSource||nativeWrapper(saved)||verifiedReference(saved))return;var f=Object.assign({},saved);f.por=Object.assign({},saved.por||{});if(saved.names)f.names=Object.assign({},saved.names);if(saved.w)f.w=saved.w.slice();f.n=name(f);if(!f.w)f.w=norm(Object.values(f.names||{ru:f.n}).join(' ')).split(/[^\p{L}\p{N}]+/u).filter(Boolean);dict[f.id]=f;if(!have.has(f.id)){have.add(f.id);list.push(f)}});
  if(root.MealUSDA)root.MealUSDA.append(db,dict,list);
  if(root.MealUzbek)root.MealUzbek.append(db,dict,list);
- if(root.MealDesserts)root.MealDesserts.append(db,dict,list);   // после USDA и кухонь: отметки коллекции ставятся на уже собранные карточки
+ if(root.MealDesserts)root.MealDesserts.append(db,dict,list);
+ if(root.MealPreserves)root.MealPreserves.append(db,dict,list);   // Meal 33.3: «Сладкие заготовки» — так же, после USDA и кухонь   // после USDA и кухонь: отметки коллекции ставятся на уже собранные карточки
 }
 function cacheUsed(db,dict){
  // Diary records already carry versioned composition snapshots; avoid storing them twice.
@@ -72,9 +76,10 @@ function variantHTML(f,preview){
  return '<div class="mlVar mc-catalog-variants" role="group" aria-label="Варианты продукта">'+all.map(v=>'<button class="chip'+(v.id===f.id?' on':'')+'" '+(preview?'data-catalog-preview':'data-catalog-variant')+'="'+esc(v.id)+'" aria-pressed="'+(v.id===f.id)+'">'+esc(v.catalogVariant&&(v.catalogVariant[lang()]||v.catalogVariant.ru)||name(v))+'</button>').join('')+'</div>';
 }
 function infoHTML(f){
- var dessert=root.MealDesserts?root.MealDesserts.membershipHTML(f):'';
+ var dessert=root.MealDesserts?root.MealDesserts.membershipHTML(f):'',preserve=root.MealPreserves?root.MealPreserves.membershipHTML(f):'';
  if(root.MealDesserts&&root.MealDesserts.owns(f))return root.MealDesserts.infoHTML(f);
- return infoHTMLBase(f)+dessert;
+ if(root.MealPreserves&&root.MealPreserves.owns(f))return root.MealPreserves.infoHTML(f);
+ return infoHTMLBase(f)+dessert+preserve;
 }
 function firstSentence(t){t=String(t||'');var m=t.match(/^[^.]*\./);return m?m[0]:t}
 function infoHTMLBase(f){
@@ -89,7 +94,7 @@ function infoHTMLBase(f){
  (isMext?'<p class="happy-note">'+esc(firstSentence(f.sourceNotes||'На 100 г съедобной части.'))+'</p>':'')+(url&&/^https:\/\/(?:www\.mext\.go\.jp|fooddb\.mext\.go\.jp)\//.test(url)?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Таблицы MEXT ↗</a>':'')+
  (f.recipe?'<details><summary>Ингредиенты</summary><ul>'+f.recipe.ingredients.map(i=>'<li>'+esc(i.name)+' — '+i.grams+' г</li>').join('')+'</ul><p class="happy-note">Выход: '+f.recipe.yieldGrams+' г.</p></details>':'')+'</section>';
 }
-function sourceFooter(f){if(root.MealDesserts&&root.MealDesserts.owns(f))return root.MealDesserts.footer(f);if(root.MealUzbek&&root.MealUzbek.owns(f))return root.MealUzbek.footer(f);var ref=verifiedReference(f);if(ref)return ref.kind==='KAV'?'Happy Meal · региональная библиотека':'BLS 4.0 · Max Rubner-Institut (2025)';return f.catalogSource==='USDA'?'USDA FoodData Central · SR Legacy (2018)':f.catalogSource==='MEXT'?'MEXT · таблицы 2023':mextRecipe(f)?'Happy Meal · состав по ингредиентам MEXT':f.catalogSource?'Источник не указан':null}
+function sourceFooter(f){if(root.MealDesserts&&root.MealDesserts.owns(f))return root.MealDesserts.footer(f);if(root.MealPreserves&&root.MealPreserves.owns(f))return root.MealPreserves.footer(f);if(root.MealUzbek&&root.MealUzbek.owns(f))return root.MealUzbek.footer(f);var ref=verifiedReference(f);if(ref)return ref.kind==='KAV'?'Happy Meal · региональная библиотека':'BLS 4.0 · Max Rubner-Institut (2025)';return f.catalogSource==='USDA'?'USDA FoodData Central · SR Legacy (2018)':f.catalogSource==='MEXT'?'MEXT · таблицы 2023':mextRecipe(f)?'Happy Meal · состав по ингредиентам MEXT':f.catalogSource?'Источник не указан':null}
 /* Meal 31.1: значения без лишних знаков — ккал целыми, от 100 — целыми, от 1 — до десятых, меньше 1 — две значащие цифры */
 function num(v,unit){var a=Math.abs(v),o=/ккал|kcal/i.test(unit||'')||a>=100?{maximumFractionDigits:0}:a>=1?{maximumFractionDigits:1}:{maximumSignificantDigits:2};return new Intl.NumberFormat('ru-RU',o).format(v)}
 function amount(v,unit,field){
@@ -107,6 +112,7 @@ function renderSettings(){
  HM:'<h3>Happy Meal · рецепты</h3><p>Узбекская кухня: адаптированные плов, шурпа, манты и самса по BLS + USDA; выход учтён, потери нутриентов ещё не откалиброваны. Суши и поке: расчёт по указанным массам ингредиентов MEXT. Кавказская кухня: расчёты по рецептам и BLS 4.0; сулугуни — по справочнику И. М. Скурихина и соавторов.</p><p>Неизвестное значение сохраняется пустым. Отсутствие числа не означает отсутствие вещества. Рецепт и источник видны в карточке.</p>'};
  bodies.USDA=root.MealUSDA?root.MealUSDA.settingsHTML():'<p>USDA: модуль справочника недоступен. Сохранённые записи не изменены.</p>';
  bodies.DESSERT=root.MealDesserts?root.MealDesserts.settingsHTML():'<p>Десерты: модуль библиотеки недоступен. Сохранённые записи не изменены.</p>';
+ bodies.PRESERVE=root.MealPreserves?root.MealPreserves.settingsHTML():'<p>Сладкие заготовки: модуль каталога недоступен. Сохранённые записи не изменены.</p>';
  bodies.OWN='<p>Созданные тобой продукты и копии. Отключение скрывает их из нового поиска, но сохраняет продукты, рецепты и записи дневника.</p>';
  /* Meal 29: каталог БАДов (текст прототипа H068); число шаблонов — из скачанного каталога */
  var supp=root.HappySupplementsLibrary,n=supp?supp.templates.length:0,suppCount=n?n+' '+(n%10===1&&n%100!==11?'небрендовый шаблон':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'небрендовых шаблона':'небрендовых шаблонов'):'Небрендовые шаблоны';
@@ -143,6 +149,7 @@ async function load(){
  state='loading';renderSettings();
  if(root.MealUSDA)root.MealUSDA.load();
  if(root.MealDesserts)root.MealDesserts.load();
+ if(root.MealPreserves)root.MealPreserves.load();
  try{ingest(await root.HappyFoodLibraries.getJson('mext'));addRecipes();root.rebuildLib();if(root.renderAll)root.renderAll();if(root.paintFind&&root.FIND)root.paintFind()}
  catch(e){state='fail'}renderSettings();
 }
@@ -183,6 +190,7 @@ if(root.document){
    if(!root.MealSources.setEnabled(root.DB,id,b.checked)){b.checked=true;if(root.toast)root.toast('Оставь включённым хотя бы один каталог');return}
    if(id==='USDA'&&b.checked&&root.MealUSDA)root.MealUSDA.load();
    if(id==='DESSERT'&&b.checked&&root.MealDesserts)root.MealDesserts.load();
+   if(id==='PRESERVE'&&b.checked&&root.MealPreserves)root.MealPreserves.load();
    root.rebuildLib();root.save();root.renderAll();if(root.FIND&&root.paintFind)root.paintFind();
    root.document.querySelectorAll('#mealSources details').forEach((d,i)=>{d.open=!!open[i]});
    var next=root.document.getElementById('mealSource-'+id);if(next&&!next.disabled)next.focus({preventScroll:true});

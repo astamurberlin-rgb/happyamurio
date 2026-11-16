@@ -59,9 +59,34 @@
    "foodCount": 2538,
    "author": "Михалыч (ChatGPT), комплект Happy-MEXT-full-preparation-20261112-v4; публикация — Claude",
    "date": "2026-11-16"
+  },
+  "sweet-preserves": {
+   "version": "1.0.0",
+   "dataCommit": "14ad8718f2302703b2c8b5d3e1172e87264b45c3",
+   "manifestCommit": "1967765",
+   "sha256": "953498169a3a4b7a84644281d03c3e79d0be41b3bdf143c45b162c3d8650c668",
+   "bytes": 56736,
+   "foodCount": 27,
+   "author": "Михалыч (ChatGPT), комплект Happy-Meal-Sweet-Preserves-handoff-1.0; файл каталога — Claude",
+   "date": "2026-11-14",
+   "published": "2026-11-17"
   }
  },
  "pointReleases": [
+  {
+   "version": "33.3",
+   "date": "2026-11-17",
+   "changes": [
+    "preserves.js: каталог «Сладкие заготовки» (запись манифеста sweet-preserves, контракт happy-independent-food-library/1.0): 7 своих карточек HM-PRESERVE, 20 отметок у карточек BLS и USDA без второго продукта; поля «ref:…» → поля Meal только по смыслу",
+    "sources.js: каталог PRESERVE в переключателе (включён по умолчанию, не платный), порядок выдачи как у десертов; food-libraries.js: PRESERVE → sweet-preserves для скачивания без интернета",
+    "catalog.js и index.html: загрузка, карточка, подпись, настройки каталогов, состояние в пустом поиске, подпись выдачи «Сладкие заготовки», повтор загрузки",
+    "checks/check-preserves.mjs; scripts/browser/meal_preserves.py",
+    "index.html ?v=33.3, заголовок и подвал; sw.js VERSION 33.3; release-notes.js 33.3",
+    "collections.js: карточка «Сладкие заготовки» в «Сборниках», обложка images/preserves.jpg (картинка Астамура 17.11.2026, 1200×800); catalog-preview.js: 27 позиций каталога с ккал и БЖУ; sw.js: обложка в копии выпуска",
+    "search-names.js и catalog.js: 15 джемов и соков MEXT — обычный русский порядок слов («Клубничный джем, …»), прежнее название остаётся в словах поиска; файл MEXT не меняется",
+    "checks: check-shop (страница каталога сверяется с файлами каталога, BLS и USDA), check-search-names (MEXT); scripts/browser/meal_preserves.py, meal_shop.py, meal_offline.py"
+   ]
+  },
   {
    "version": "33.2",
    "date": "2026-11-16",
@@ -245,8 +270,8 @@
   },
   {
    "path": "catalog-preview.js",
-   "size": 22758,
-   "sha256": "904c35a9743106a3809450a31620a90fafdd758112d71cfc3cd45e3ca46d420f"
+   "size": 26372,
+   "sha256": "82d22e85a238041c9d09d9118d7bd9d030ea1875bb4d20528c38fe460480e86e"
   },
   {
    "path": "catalog.css",
@@ -255,8 +280,8 @@
   },
   {
    "path": "catalog.js",
-   "size": 29162,
-   "sha256": "8ae41fe8576c7cbb7a5edc5965ee4e40598af505bcfa6e6f860f8b647ece46f5"
+   "size": 30375,
+   "sha256": "b0b3b3b8d54c3f45946095b2403d9118e61d5ec8c1d3a9aa25db090debd9b680"
   },
   {
    "path": "checks/check-catalog-offline.mjs",
@@ -279,14 +304,19 @@
    "sha256": "8ecec5ce4f4c859792bf20fb08100501b16f74ba5efca60c2590c75239f6a3ec"
   },
   {
+   "path": "checks/check-preserves.mjs",
+   "size": 12458,
+   "sha256": "4df57a92823fdece385ebb6c677b195274d1055088c763dd079e94afdf320b6d"
+  },
+  {
    "path": "checks/check-search-names.mjs",
-   "size": 6408,
-   "sha256": "e54626fe6508a1879c647e3c3754b6d38c41b88f5b46d1593afc646ef67f2ffc"
+   "size": 8640,
+   "sha256": "8b368d5757097959fcd643b694561066718db195b740aa3f0bcf8c28ae419bf6"
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 11939,
-   "sha256": "35bbf9c955ef385493e53e24bd452154667832ce56b89055e646b34a4101dd8a"
+   "size": 14124,
+   "sha256": "c3a4d2a0e81413c1c0b67f23b5e7fbc996fbed4f8bfd004f814e233547c597c7"
   },
   {
    "path": "checks/check-supplements-store.mjs",
@@ -305,8 +335,8 @@
   },
   {
    "path": "collections.js",
-   "size": 19168,
-   "sha256": "8fb7b18dae4bb52349899deb9e24b34c62eb6b01cb90deb32bf22949999d9b7e"
+   "size": 19531,
+   "sha256": "bf58e7cc183c5b38ef5f35cf5055566b814190f2735fe84cef15b85d048f12f2"
   },
   {
    "path": "controls.js",
@@ -325,13 +355,18 @@
   },
   {
    "path": "food-libraries.js",
-   "size": 11641,
-   "sha256": "4975e228b25c5b4e83953830ccce80485aad28727f52a437a058e068a6694d28"
+   "size": 11670,
+   "sha256": "1cc4046ab121eb74709dc99c9a7aa6ca8a825e7a57b14d788fe89cbd0b25d589"
   },
   {
    "path": "images/desserts.jpg",
    "size": 119763,
    "sha256": "6e05d5729b6b5f219cde7aa0cd14d704fc0be7bee6a99232a3a6306abe553843"
+  },
+  {
+   "path": "images/preserves.jpg",
+   "size": 90750,
+   "sha256": "f1f2a24f5a1d006270cdd1496996125547a23be95afa53223bac41ee405b9be9"
   },
   {
    "path": "images/supplements.jpg",
@@ -340,8 +375,8 @@
   },
   {
    "path": "index.html",
-   "size": 599063,
-   "sha256": "08664563e3cf633209d6a2e59c43bbbc9dc88ad421408a18c62a24094d3d7832"
+   "size": 599363,
+   "sha256": "5ab9bf28bb425c63633df5b604c8f730423584433867e28a4cbacab16f2bf65f"
   },
   {
    "path": "manifest.webmanifest",
@@ -524,14 +559,19 @@
    "sha256": "f916d0b528a453e5265abc042bcf053860ea29b6b11121966f6df9160ca855a6"
   },
   {
+   "path": "preserves.js",
+   "size": 13393,
+   "sha256": "65dfc7d747bc2a5f89548b8cc1cb25743df4b307916be1cca901c4a51ff4bf13"
+  },
+  {
    "path": "release-notes.css",
    "size": 375,
    "sha256": "f0d3ecfd811b2008d5f348f596cdcc405f217132baac9e989f2af45b598364f2"
   },
   {
    "path": "release-notes.js",
-   "size": 42797,
-   "sha256": "38f06d16daef6f5db6e882d1050e3f12de6a2568f3480dd57c6f54a0138e1d46"
+   "size": 44104,
+   "sha256": "999c8e463b7393026f98bd32a26a40d75691a93fba36418e3af9c26ad99b6c4d"
   },
   {
    "path": "report.css",
@@ -545,8 +585,8 @@
   },
   {
    "path": "search-names.js",
-   "size": 8986,
-   "sha256": "f289fd86116848bc9ad919ebbc1ca24798763df4fc1722b177ea86c0b68a0a48"
+   "size": 11951,
+   "sha256": "384f4faf9204be9dbaccd0f6a095bcb3f2583d2079becae882937b12b033b474"
   },
   {
    "path": "shared/apps.json",
@@ -670,8 +710,8 @@
   },
   {
    "path": "sources.js",
-   "size": 4253,
-   "sha256": "2b9ceeb3b000f319af7ba165eb6c1115a5d9be0259ce3a34a9fc92237ad230f0"
+   "size": 4624,
+   "sha256": "e132c16bcb650806fc9e6fe8c077883779ef422eee83e3ab049fb4bbce22dd46"
   },
   {
    "path": "substances.js",
@@ -720,8 +760,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3459,
-   "sha256": "31d9aa626e785d4b10d91f64c45b452ea531912cef9fdd45c652d296bea89e72"
+   "size": 3484,
+   "sha256": "3150368fcc0ecf816d27fa1fd75bfa44bdbc0282cc4673ad1a1c71ea1ad6d44b"
   },
   {
    "path": "usda.js",

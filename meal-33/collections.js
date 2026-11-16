@@ -21,6 +21,7 @@ const catalogs=[
  {id:'SUPP',name:'БАДы',image:'images/supplements.jpg',tag:'Добавки и спортивное питание',count:'Шаблоны по этикеткам',description:'Омега-3, магний, креатин, протеины. Твой состав по этикетке.',keywords:'омега omega рыбий жир магний протеин креатин коллаген витамины epa dha бад добавки'},
  {id:'UZBEK',source:'HM',name:'Узбекская кухня',image:'meal-img/r7.jpg',tag:'Кухни мира',count:'60 блюд',description:'Плов, манты, самса и домашние вкусы Узбекистана.',preview:'uzbek'},
  {id:'DESSERT',name:'Десерты мира',image:'images/desserts.jpg',tag:'Дополнительный каталог',count:'103 карточки',description:'От крема каталана до чизкейка. Любимые сладости в одном поиске.',preview:'desserts'},
+ {id:'PRESERVE',name:'Сладкие заготовки',image:'images/preserves.jpg',tag:'Дополнительный каталог',count:'27 позиций',description:'От кизилового варенья до цукатов. Варенья, джемы, компоты и фрукты в сиропе в одном поиске.',preview:'preserves'},
  {id:'HM',name:'Happy Meal',image:'meal-img/cover-tl-2.jpg',tag:'Кухни и рецепты',description:'Кухни народов мира'},
  {id:'BLS',name:'BLS · Германия',image:'meal-img/cover-bf-1.jpg',tag:'Основной каталог',description:'Продукты и пищевой состав из таблиц Max Rubner-Institut.'},
  {id:'USDA',name:'USDA · США',image:'meal-img/cover-sn-1.jpg',tag:'Основной каталог',description:'Пищевой состав продуктов FoodData Central · SR Legacy.'},

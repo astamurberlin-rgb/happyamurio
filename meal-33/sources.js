@@ -7,6 +7,7 @@ var catalog=[
   {id:'MEXT',name:'MEXT · Япония'},
   {id:'HM',name:'Happy Meal · рецепты'},
   {id:'DESSERT',name:'Десерты · коллекция'},
+  {id:'PRESERVE',name:'Сладкие заготовки'},   // Meal 33.3: варенья, джемы, компоты, фрукты в сиропе, цукаты
   {id:'OWN',name:'Мои продукты'},
   {id:'SUPP',name:'БАДы'}   // Meal 29: шаблоны каталога БАДов и свои варианты в поиске (прототип H068)
 ];
@@ -26,6 +27,7 @@ function sourceOf(f){
   if(!f)return null;
   if(f.supplement||String(f.id||'').indexOf('supp:')===0)return 'SUPP';   // Meal 30: продукт-добавка счётчика — из набора «БАДы»
   if(f.src==='Мои')return 'OWN';
+  if(f.catalogSource==='HM-PRESERVE')return 'PRESERVE';   // Meal 33.3: свои карточки каталога; записи BLS и USDA из него остаются в своих базах
   if(f.catalogSource==='HM-DESSERT')return 'DESSERT';   // Update 25: собственные карточки библиотеки десертов; записи BLS/USDA/кухонь из коллекции остаются в своих базах
   if(f.catalogSource==='MEXT'||String(f.id).indexOf('mext:')===0)return 'MEXT';
   if(f.catalogSource==='HM-JP'||f.kav||/^Z/.test(f.b||'')||/^bls:Z/.test(f.id||''))return 'HM';
@@ -53,7 +55,7 @@ function compare(a,b,q){
  var specific=0;names.forEach(function(n){if(tokens.every(t=>n.includes(t))){var count=n.split(/[^\p{L}\p{N}]+/u).filter(Boolean).length;specific=Math.max(specific,tokens.length/Math.max(count,tokens.length))}});return 2+specific;
  }
  var match=score(b)-score(a);if(match)return match;
- var order={OWN:-1,BLS:0,USDA:1,MEXT:2,HM:3,DESSERT:3};return (order[sourceOf(a)]??4)-(order[sourceOf(b)]??4);
+ var order={OWN:-1,BLS:0,USDA:1,MEXT:2,HM:3,DESSERT:3,PRESERVE:3};return (order[sourceOf(a)]??4)-(order[sourceOf(b)]??4);
 }
 root.MealSources={compare:compare,catalog:catalog,preferences:preferences,enabled:enabled,sourceOf:sourceOf,available:available,codeEnabled:codeEnabled,setEnabled:setEnabled,paid:paid,purchased:purchased};
 })(typeof window!=='undefined'?window:globalThis);

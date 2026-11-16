@@ -1,4 +1,6 @@
 /* Update 27: search-names.js — русские поисковые названия десертов BLS и русские названия 15 записей USDA.
+   Meal 33.3: обычный русский порядок слов у 15 джемов и соков MEXT («Клубничный джем, …»): коды есть в полной MEXT,
+   каталог ставит это название, прежнее остаётся в словах поиска, английское и японское не меняются.
    Данные — реальные файлы ветки meal-libraries (git show origin/meal-libraries:data/…): все 44 кода BLS и 15 FDC ID
    существуют; слова попадают в индекс (фраза — в строку синонимов, «имена» — в список имён), общие слова именами
    не становятся; USDA получает names.ru без изменения names.en, кода и состава; повторное применение ничего не дублирует. */
@@ -12,7 +14,7 @@ const show=p=>execFileSync('git',['show','origin/meal-libraries:'+p],{cwd:repo,m
 const win={};win.window=win;win.globalThis=win;const ctx=vm.createContext(win);
 vm.runInContext(await readFile(new URL('search-names.js',app),'utf8'),ctx);
 const N=win.MealSearchNames,plain=x=>JSON.parse(JSON.stringify(x));
-assert.deepEqual(plain(N.counts()),{bls:44,usda:15});
+assert.deepEqual(plain(N.counts()),{bls:44,usda:15,mext:15});
 // Нормализация: регистр, ё → е, дефис — граница слова.
 assert.deepEqual(plain(N.words('Крем-Брюле, чЁрный лес')),['крем','брюле','черный','лес']);
 // Никаких марок среди поисковых слов.
@@ -51,9 +53,23 @@ for(const [fdc,ru] of Object.entries(N.USDA_RU)){const r=byId['usda:'+fdc];asser
  assert.equal(N.localizeUsda(r),false,'повторно не меняет')}
 assert.ok(localized>0,'хотя бы одна запись получила русское название');
 const other=usda.foods.find(r=>!N.USDA_RU[String(r.code)]),copy=JSON.stringify(other);assert.equal(N.localizeUsda(other),false);assert.equal(JSON.stringify(other),copy,'прочие записи USDA не тронуты');
+// MEXT: реальный файл полной MEXT (запись манифеста mext).
+const mextUrl=JSON.parse(show('manifest.json').toString('utf8')).libraries.mext.url,mext=JSON.parse(gunzipSync(show('data/'+mextUrl.split('/data/')[1])).toString('utf8'));
+const mextById={};mext.foods.forEach(r=>mextById[r.code]=r);
+for(const [code,ru] of Object.entries(N.MEXT_RU)){const r=mextById[code];assert.ok(r,'MEXT: код существует: '+code);
+ const x=N.mext(code);assert.equal(x.ru,ru);assert.notEqual(r.names.ru,ru,'MEXT '+code+': название правда другое');
+ assert.ok(/^[А-ЯЁ]/.test(ru)&&!/ по MEXT$/.test(ru),'MEXT '+code+': русское название');
+ assert.ok(/джем|сок/i.test(ru)&&/джем|сок|мармелад/i.test(r.names.ru),'MEXT '+code+': только джемы и соки')}
+assert.equal(N.mext('01004'),null,'прочие продукты MEXT — без замены');assert.equal(N.mext(null),null);
+assert.equal(N.mext('07156').variant,'сок, свежевыжатый');assert.equal(mextById['07156'].family,'lemon','лимон — семейство с вариантами');
+assert.deepEqual(plain(N.mext('07125').words),['голубичный джем']);
+assert.deepEqual(plain(N.mext('07013').words),['джем из клубники']);
+{const a=N.mext('07052');a.words.push('x');assert.deepEqual(plain(N.mext('07052').words),[],'слова — копия')}
 // Проводка в приложении.
+const catalogCode=await readFile(new URL('catalog.js',app),'utf8');
+assert.ok(catalogCode.includes('root.MealSearchNames.mext(r.code)')&&/f\.w=norm\(Object\.values\(r\.names\)\.join\(' '\)\+' '\+\(loc\?loc\.ru/.test(catalogCode),'MEXT: каталог ставит название и сохраняет прежние слова поиска');
 const page=await readFile(new URL('index.html',app),'utf8'),adapter=await readFile(new URL('usda.js',app),'utf8');
 assert.ok(page.indexOf('search-names.js?v=')<page.indexOf('usda.js?v=')&&page.indexOf('search-names.js?v=')>0,'модуль загружается до usda.js');   // Meal 28: без номера выпуска в проверке
 assert.ok(page.includes('MealSearchNames.applyBls({rows:d.f,words:BLS_W,extra:BLS_X,aliases:BLS_AL,isVocabulary:isVoc})'),'индекс BLS получает слова при загрузке базы');
 assert.ok(adapter.includes('root.MealSearchNames.localizeUsda(r)')&&adapter.indexOf('localizeUsda(r)')<adapter.indexOf('r.searchWords='),'русское название — до построения поисковых слов USDA');
-console.log('Passed: 44 BLS dessert codes exist and receive search phrases ('+first.names+' name words), common words stay plain; '+localized+' of 15 USDA records localized, originals untouched; wiring in index.html and usda.js.');
+console.log('Passed: 44 BLS dessert codes exist and receive search phrases ('+first.names+' name words), common words stay plain; '+localized+' of 15 USDA records localized, originals untouched; 15 MEXT jams and juices get natural Russian names; wiring in index.html, usda.js and catalog.js.');

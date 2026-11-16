@@ -34,7 +34,7 @@ with sync_playwright() as p:
     check("пилюли: Магазин (выбран) · Мои рецепты · Мои продукты · Мои добавки", pills == ["Магазин*", "Мои рецепты", "Мои продукты", "Мои добавки"])
     cards = meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid .cc-card')].map(c=>c.querySelector('b').textContent+' | '+c.querySelector('.cc-price').textContent)")
     out["shop"] = cards
-    check("магазин: семь каталогов, первый — БАДы, цена «2 евро»", len(cards) == 7 and cards[0].startswith("БАДы") and all(c.endswith("| 2 евро") for c in cards))
+    check("магазин: восемь каталогов, первый — БАДы, цена «2 евро»", len(cards) == 8 and cards[0].startswith("БАДы") and all(c.endswith("| 2 евро") for c in cards))
     check("обложки загрузились", meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid img')].every(i=>i.complete&&i.naturalWidth>0)"))
     meal.screenshot(path=SHOTS + "meal_shop-1-shop.png")
     meal.locator('#ccShopGrid [data-cc-open="UZBEK"]').tap()
@@ -86,11 +86,11 @@ with sync_playwright() as p:
     check("в настройках «Каталоги», «Пищевых баз» нет", "Каталоги" in labels and "Пищевые базы" not in labels)
     order = meal.evaluate("()=>[...document.querySelectorAll('.mc-source-carousel > .mc-source-body')].map(c=>c.dataset.sourceSlide)")
     # Meal 30 (Астамур 12.11 10:26): не купленный платный набор («БАДы») в настройках каталогов не показывается
-    check("карусель: BLS, USDA, MEXT, Happy Meal, десерты, мои продукты; БАДов без покупки нет", order == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN"])
+    check("карусель: BLS, USDA, MEXT, Happy Meal, десерты, сладкие заготовки, мои продукты; БАДов без покупки нет", order == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "PRESERVE", "OWN"])
     meal.evaluate("()=>{HappyCollections.buy('SUPP');renderSettings()}")
     meal.wait_for_timeout(400)
     order_bought = meal.evaluate("()=>[...document.querySelectorAll('.mc-source-carousel > .mc-source-body')].map(c=>c.dataset.sourceSlide)")
-    check("после тестовой покупки «БАДы» — в карусели последними и подключены", order_bought == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "OWN", "SUPP"] and meal.evaluate("()=>MealSources.enabled(DB,'SUPP')"))
+    check("после тестовой покупки «БАДы» — в карусели последними и подключены", order_bought == ["BLS", "USDA", "MEXT", "HM", "DESSERT", "PRESERVE", "OWN", "SUPP"] and meal.evaluate("()=>MealSources.enabled(DB,'SUPP')"))
     meal.evaluate("()=>{const c=document.querySelector('.mc-source-carousel');c.scrollLeft=c.children[1].offsetLeft-c.children[0].offsetLeft}")
     meal.wait_for_timeout(500)
     more = meal.locator('[data-source-more="USDA"]')
