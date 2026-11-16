@@ -1,7 +1,7 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-13.1",
-  "updated": "2026-11-13",
+  "revision": "2026-11-16.1",
+  "updated": "2026-11-16",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
@@ -20,19 +20,12 @@
       "foodCount": 103
     },
     "mext": {
-      "version": "2023 supplement · 2026-03-27",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/mext2023.json",
-      "encoding": "json",
-      "bytes": 9134037,
-      "sha256": "27354a9ce7e305824d2fb9d3fbae85b69b00ec38cae8cb523cf78dd12fa646bc",
-      "foodCount": 520
-    },
-    "mextSelection": {
-      "version": "1",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/mext-selection.json",
-      "encoding": "json",
-      "bytes": 111046,
-      "sha256": "27db6a93103f600f18a5749760925569e620751aabc433488de80b09cabc2984"
+      "version": "2023 supplement · 2026-03-27 · full main table",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/23e641ca05a62685ec2a4802d1b818a377d957ca/data/mext2023-full.json.gz",
+      "encoding": "gzip",
+      "bytes": 45405917,
+      "sha256": "2d9befa3112aef7f6f31296853c5186552e383e60de3f630874163d21a1b3ecd",
+      "foodCount": 2538
     },
     "portions": {
       "version": "2026-10-31",

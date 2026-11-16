@@ -1,6 +1,8 @@
 # Japanese reference foods in Happy Meal
 
-This is a curated, adapted catalogue of **520 official food codes in 278 variant families**. It is not the full Japanese database and does not replace the BLS catalogue. All source IDs use the separate `mext:` namespace.
+**Full main table (manifest revision 2026-11-16.1, file `mext2023-full.json.gz`): all 2538 official food codes.** It replaces the earlier curated selection of 520 codes under the same manifest entry `mext`. Those 520 records are byte-identical in the full file (IDs, names, families, values, qualifiers), so saved diary snapshots are unaffected. The 2018 added codes come from the package «Happy-MEXT-full-preparation-20261112-v4» (Mikhalych, ChatGPT), unchanged: each has its own family `mext-full-CODE` (not merged with the 278 curated families), RU/EN names are Happy Meal translations with `translation.status: translated_pending_review`, and no portions are invented. Coverage: main 2538, amino acids 1999, fatty acids 1967, carbohydrates 1101 rows. Standard fields: 130,507 numeric values, 3,230 traces, 36,309 missing. Checked by Claude 16.11.2026 against the official workbooks (raw cells of every record; every standard field recomputed with the mapping of the 520 published records). The supplementary tables with other denominators (per gram of nitrogen, fatty acids per 100 g of fatty acids, fiber methods, organic acids) are not part of this file. The sections below describe the original 520 selection and still apply to those records.
+
+The original 520-code selection: a curated, adapted catalogue of **520 official food codes in 278 variant families**. It does not replace the BLS catalogue. All source IDs use the separate `mext:` namespace.
 
 Source: Ministry of Education, Culture, Sports, Science and Technology, Japan (MEXT), *Standard Tables of Food Composition in Japan, eighth edition, Supplement 2023*. The official download files used here incorporate the corrections dated **27 March 2026**. The original Japanese names are preserved verbatim. The Russian and English display names are translations prepared by Happy Meal; they are not official MEXT translations.
 
@@ -88,11 +90,11 @@ Saury `10173` is raw flesh with skin from filleted fish; the note gives 35% disc
 
 ### Limitations
 
-- This is a selected 520-code catalogue, not all 2,538 main-table food codes. The selection prioritises basic foods and common Japanese ingredients.
+- Until revision 2026-11-16.1 this was a selected 520-code catalogue; the full file now holds all 2,538 main-table codes (see the top of this file).
 - The six official instant-ramen entries describe instant products and preparation states; they are not restaurant ramen. Four prepared entries include the soup and seasonings. MEXT identifies those prepared values as estimates from corresponding dry products, preserved in the source notes.
 - Sushi and poke recipes are assembled separately by Happy Meal and must be labelled calculated recipes. They are not MEXT laboratory records.
 - RU/EN names are editorial translations, not certified translations. Japanese originals and source codes remain available for verification.
 - The separate detailed dietary-fiber-method and organic-acid workbooks are not yet imported. Total fiber and total organic acids from the main table are retained. Unmapped individual fatty acids from the imported fatty-acid workbook are preserved losslessly in `sourceRaw`, but not all currently have standalone editable custom-property rows in the app.
 - A missing or trace marker alone does not determine whether a substance was not tested, was below the reporting threshold, or is biologically absent. The importer intentionally makes no such inference. A source-method review remains necessary for those claims.
 
-The dataset is around 9.1 MB uncompressed / 0.64 MB gzip. The runtime may choose a compact read model, but source provenance and qualifiers must be retained when a record is copied into a user product or diary snapshot.
+The 520-code file is around 9.1 MB uncompressed / 0.64 MB gzip; the full file is 45.4 MB uncompressed / 2.9 MB gzip. The runtime may choose a compact read model, but source provenance and qualifiers must be retained when a record is copied into a user product or diary snapshot.

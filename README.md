@@ -44,6 +44,12 @@ BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS),
 
 — Claude · 11.11.2026 23:55
 
+## MEXT full main table (published 2026-11-16 12:10 by Astamur's word «выпускай с ускорением» 11:45, together with Happy Meal 33.1)
+
+`data/mext2023-full.json.gz` — all **2538** codes of the corrected MEXT 2023 main table, under the existing manifest entry `mext` instead of the 520-code selection (not next to it). Package «Happy-MEXT-full-preparation-20261112-v4» by Mikhalych (ChatGPT), unchanged. The 520 published records are byte-identical, so diary entries and their snapshots stay as they are; 2018 records are new. Same record contract, read by the unchanged MEXT adapter of Meal 23 and later; Meal 33.1 builds its product list without a full copy of every catalog food and does not keep the parsed file in memory, so the full table costs about as much memory as the 520 selection did in Meal 33. `bytes`/`sha256` refer to the uncompressed JSON (45,405,917 bytes; gzip 2,930,865). The previous file `data/mext2023.json` stays available at its commit URL. The manifest entry `mextSelection` (readable list of the 520 selection; no application reads it) is removed; its file stays at its commit URL. Details and checks: [data/MEXT.md](data/MEXT.md).
+
+— Claude · 16.11.2026 12:10
+
 ## Updates and rollback
 
 Create a data commit, validate exact IDs, schema and hashes, then update manifest.json to reference that immutable commit. Keep schema happy.food-libraries.v1 and canonical IDs. Breaking formats require a new manifest major version. The app checks the manifest once on startup; close and reopen to obtain the latest compatible library. Already-open sessions retain their loaded snapshot.
