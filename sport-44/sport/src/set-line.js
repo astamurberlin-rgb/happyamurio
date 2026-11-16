@@ -22,13 +22,26 @@ function setLabelText(sets,i){
  (sets||[]).forEach((s,j)=>{if(setLabelBase(s).toLowerCase()===key){total++;if(j<=i)index=total;}});
  return total>1?index+' '+base:base;
 }
-// Свои названия — только из записей, набранное отдельно не запоминается: исправил опечатку — её нет и в подсказке.
+// Свои названия — из записей (Астамур 16.11.2026): всё, что уже вбивали у этого упражнения, попадает в подсказку, чаще
+// встречавшееся — выше. Опечатки не попадают: название, которое встретилось реже и отличается от другого на 1–2 буквы
+// («Заплв» рядом с «Заплыв»), считается опечаткой. Подсказки «похожего названия» при наборе нет.
+function setLabelDistance(a,b){
+ if(Math.abs(a.length-b.length)>2)return 3;
+ let prev=Array.from({length:b.length+1},(_,k)=>k);
+ for(let x=1;x<=a.length;x++){const cur=[x];for(let y=1;y<=b.length;y++)cur[y]=Math.min(prev[y]+1,cur[y-1]+1,prev[y-1]+(a[x-1]===b[y-1]?0:1));prev=cur}
+ return prev[b.length];
+}
 function setLabelSuggestions(id,sets,skip){
- const out=[],seen=new Set(),add=n=>{const t=typeof n==='string'?n.trim():'',k=t.toLowerCase();if(!t||k==='подход'||SET_LABEL_KINDS[k]||seen.has(k))return;seen.add(k);out.push(t);};
- (sets||[]).forEach((s,j)=>{if(j!==skip)add(s?.label);});
- const recent=(state.workouts||[]).filter(w=>w.exercises?.some(e=>e.id===id)).sort((a,b)=>String(b.start||'').localeCompare(String(a.start||''))).slice(0,5);
- for(const w of recent)for(const e of w.exercises)if(e.id===id)for(const s of e.sets||[])add(s?.label);
- return SET_LABEL_OPTIONS.concat(out.slice(0,3));
+ const found=new Map();let order=0;
+ const add=(n,weight)=>{const t=typeof n==='string'?n.replace(/\s+/g,' ').trim():'',k=t.toLowerCase();if(!t||k==='подход'||SET_LABEL_KINDS[k])return;
+  const f=found.get(k)||{text:t,count:0,first:order++};f.count+=weight;found.set(k,f)};
+ (sets||[]).forEach((s,j)=>{if(j!==skip)add(s?.label,1)});
+ const past=(state.workouts||[]).filter(w=>w.exercises?.some(e=>e.id===id)).sort((a,b)=>String(b.start||'').localeCompare(String(a.start||'')));
+ for(const w of past)for(const e of w.exercises)if(e.id===id)for(const s of e.sets||[])add(s?.label,1);
+ const all=[...found.entries()];
+ const typo=([k,f])=>k.length>=4&&all.some(([k2,f2])=>k2!==k&&f2.count>f.count&&setLabelDistance(k,k2)<=(k.length>=8?2:1));
+ const out=all.filter(x=>!typo(x)).sort((a,b)=>b[1].count-a[1].count||a[1].first-b[1].first).map(([,f])=>f.text);
+ return SET_LABEL_OPTIONS.concat(out.slice(0,6));
 }
 function setLabelInput(attrs,text,label){return `<input class="set-name" type="text" ${attrs} value="${esc(text)}" maxlength="40" enterkeyhint="done" autocomplete="off" aria-label="${esc(label)}">`;}
 
