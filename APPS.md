@@ -6,9 +6,9 @@
 
 | Приложение | Открыть | Папка |
 | --- | --- | --- |
-| Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-59/ | `day-59/` |
-| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-32/ | `meal-32/` |
-| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-43/ | `sport-43/`, исходники — `sport-43/sport/src/` |
+| Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-60/ | `day-60/` |
+| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-33/ | `meal-33/` |
+| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-44/ | `sport-44/`, исходники — `sport-44/sport/src/` |
 
 Точный номер версии виден внизу настроек приложения. Служебно он записан в `shared/apps.json`: по этому файлу приложения находят друг друга, а проверки узнают, что проверять.
 

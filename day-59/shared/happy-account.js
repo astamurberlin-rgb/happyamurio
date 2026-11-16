@@ -11,10 +11,7 @@
  * она удаляется — после этого выпуска в каждое приложение входят заново.
  *
  * create({app:'day'|'meal'|'sport', …}) — вход приложения app; без app не создаётся.
- * Письма и ссылки для экранов входа (shared/happy-welcome.js): resend — повторить письмо регистрации; recover — письмо для
- * нового пароля; user — почта и ожидающая новая почта с сервера; changeEmail — смена почты по подтверждению;
- * linkUser / setPassword — по ключу из ссылки письма (это не вход приложения).
- * — Claude · 14.11.2026, раздельный вход — 15.11.2026, письма и ссылки — 16.11.2026 */
+ * — Claude · 14.11.2026, раздельный вход — 15.11.2026 */
 (function(root){
 'use strict';
 const APPS=['day','meal','sport'],LEGACY='happy-account',cellOf=app=>LEGACY+':'+app;
@@ -30,15 +27,13 @@ function fail(code,message){const e=Error(message);e.code=code;return e}
 function errorText(j,status){
  const m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
  if(/invalid login|invalid_credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
- if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Эта почта уже зарегистрирована. Войдите в аккаунт.';
- if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейдите по ссылке в письме.';
- if(/refresh token/i.test(m))return 'Вход устарел. Войдите заново.';
+ if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Такой аккаунт уже есть — нажми «Войти»';
+ if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена — открой письмо';
+ if(/refresh token/i.test(m))return 'Вход устарел — войди заново';
  if(/signups? (are )?(not allowed|disabled)/i.test(m))return 'Новые аккаунты сейчас закрыты';
- if(/address .*invalid|invalid email|email_address_invalid/i.test(m))return 'Проверьте формат почты';
- if(/should be different|same_password/i.test(m))return 'Новый пароль должен отличаться от прежнего';
- if(/password/i.test(m))return 'Пароль не подходит: нужно не меньше 8 знаков';
- if(/expired|otp_expired|invalid.*(token|link)|token.*invalid/i.test(m))return 'Ссылка больше не действует. Запросите новую.';
- if(status===429)return 'Слишком много попыток. Подождите минуту.';
+ if(/address .*invalid|invalid email|email_address_invalid/i.test(m))return 'Почта записана с ошибкой';
+ if(/password/i.test(m))return 'Пароль не подходит: нужно хотя бы 8 знаков';
+ if(status===429)return 'Слишком много попыток — подожди минуту';
  return m||('Сервер ответил ошибкой '+status);
 }
 
@@ -80,8 +75,8 @@ function create(options){
   if(mine()!==before)emit();
  }
  async function auth(path,body,token,method){
-  let r;const verb=method||'POST';
-  try{r=await request(url+'/auth/v1/'+path,{method:verb,headers:Object.assign({apikey,'Content-Type':'application/json'},token?{Authorization:'Bearer '+token}:{}),body:verb==='GET'?undefined:JSON.stringify(body||{})})}
+  let r;
+  try{r=await request(url+'/auth/v1/'+path,{method:method||'POST',headers:Object.assign({apikey,'Content-Type':'application/json'},token?{Authorization:'Bearer '+token}:{}),body:JSON.stringify(body)})}
   catch(e){throw fail('offline','Нет связи с сервером')}
   let j=null;try{j=await r.json()}catch(e){}
   if(!r.ok)throw fail(r.status===429?'busy':'auth',errorText(j,r.status));
@@ -96,7 +91,7 @@ function create(options){
   if(!j||!j.access_token)return 'confirm';                         // сервер ждёт подтверждения почты
   const next=sessionFrom(j);if(!next.uid)throw fail('auth','Не удалось проверить вход');
   const mark=++generation,derived=await deriveKey(password,next.uid);
-  if(mark!==generation)throw fail('auth','Вход изменился в другом окне. Повторите.');
+  if(mark!==generation)throw fail('auth','Вход изменился в другом окне. Повтори.');
   persist(next,derived.raw);session=next;kraw=derived.raw;key=derived.key;emit();return 'ok';
  }
  const signIn=async(email,password)=>enter(await auth('token?grant_type=password',{email,password}),password);
@@ -123,7 +118,7 @@ function create(options){
      if(e.code==='auth'&&mine()===who)await signOut();
      throw e;
     }
-    if(mine()!==who)throw fail('auth','Вход изменился. Повторите.');
+    if(mine()!==who)throw fail('auth','Вход изменился. Повтори.');
     const next=sessionFrom(j,old);if(!next.at||next.uid!==old.uid)throw fail('auth','Не удалось обновить вход');
     persist(next,kraw);session=next;
    });
@@ -139,31 +134,10 @@ function create(options){
   if(mine()!==who)return;
   session=Object.assign({},session,{name:String(((j&&j.user_metadata)||{}).display_name||clean)});persist(session,kraw);emit();
  }
- /* Письма и ссылки (экраны входа — shared/happy-welcome.js, 16.11.2026). Адрес возврата — страница приложения. */
- const back=()=>{try{return root.location.origin+root.location.pathname}catch(e){return ''}};
- const withBack=path=>{const b=back();return b?path+(path.includes('?')?'&':'?')+'redirect_to='+encodeURIComponent(b):path};
- /* повторить письмо подтверждения регистрации */
- const resend=email=>auth('resend',{type:'signup',email});
- /* письмо со ссылкой для нового пароля */
- const recover=email=>auth(withBack('recover'),{email});
- /* сведения аккаунта с сервера: почта, ожидающая подтверждения новая почта, имя */
- async function user(){
-  const who=mine(),j=await auth('user',null,await token(),'GET');
-  if(mine()===who&&j&&j.id===session.uid){
-   const next=Object.assign({},session,{email:j.email||session.email,name:String(((j.user_metadata)||{}).display_name||session.name||'')});
-   if(next.email!==session.email||next.name!==session.name){session=next;persist(session,kraw);emit()}
-  }
-  return {email:(j&&j.email)||'',newEmail:(j&&j.new_email)||''};
- }
- /* смена почты: прежняя действует, пока новую не подтвердят по ссылке */
- async function changeEmail(email){const j=await auth(withBack('user'),{email},await token(),'PUT');return {email:(j&&j.email)||'',newEmail:(j&&j.new_email)||''}}
- /* по ссылке из письма: кто это и новый пароль (ключ ссылки — не вход приложения) */
- const linkUser=async access=>{const j=await auth('user',null,access,'GET');return {email:(j&&j.email)||'',id:(j&&j.id)||''}};
- const setPassword=(access,password)=>auth('user',{password},access,'PUT');
  function onStorage(e){if(stopped||(e.key!==null&&e.key!==CELL))return;adopt().catch(()=>{})}
  if(events&&events.addEventListener)events.addEventListener('storage',onStorage);
  return {
-  load:adopt,current,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load:adopt,current,signIn,signUp,signOut,token,rename,
   app:o.app,cell:CELL,
   cipherKey:()=>key,
   onChange(fn){listeners.add(fn);return ()=>listeners.delete(fn)},

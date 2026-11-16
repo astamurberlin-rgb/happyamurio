@@ -9,7 +9,7 @@
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
   HAPPY_MEAL, HAPPY_DAY_STORE, HAPPY_SPORT_STORE — выпуски Meal, Day и Sport для сценариев (по умолчанию текущие:
-                 meal-32/, day-59/ и sport-43/). Все три работают на общем входе и общем модуле хранения;
+                 meal-33/, day-60/ и sport-44/). Все три работают на общем входе и общем модуле хранения;
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """
@@ -159,8 +159,8 @@ def sign_out_settings(page):
 
 
 # Day и Sport на общем входе и общем модуле хранения — их сценарии: day_store, day_sections, sport_store.
-DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-59/")
-SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-43/")
+DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-60/")
+SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-44/")
 # Страница-заглушка для сценариев на общем модуле: вход и общий модуль под названием более новой версии
 # приложения (номер формата новее).
 # Страницу отдаёт сам сценарий; в репозитории и на сайте её нет.
@@ -227,7 +227,7 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
 # Выпуск Meal для сценариев (HAPPY_MEAL — другой). Day и Sport — DAY_STORE и SPORT_STORE выше; DAY и SPORT — те же
 # выпуски под короткими именами для сценариев, где три приложения открыты на одном телефоне.
-MEAL = os.environ.get("HAPPY_MEAL", "meal-32/")
+MEAL = os.environ.get("HAPPY_MEAL", "meal-33/")
 DAY, SPORT = DAY_STORE, SPORT_STORE
 _lib_files = {}
 

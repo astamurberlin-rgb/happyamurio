@@ -13,7 +13,6 @@
  *   prefs     — всё остальное: таймер, оформление тренировки;
  *   summary   — сводка тренировок для Day и Meal (только чтение соседями), строится из workouts;
  *               формат записи — shared/happy-sport-summary.js.
- * profile — общий профиль Happy (дата рождения, рост, пол, единицы, фото) пишет shared/happy-person.js, не этот файл.
  * Sport 43: три документа витрины раскладывают их общие файлы, а не этот: body — замеры тела
  * (shared/happy-measurements.js), plans — плановые занятия (shared/happy-sport-summary.js), свитчи связи — общий
  * документ day/pairs (shared/happy-app-links.js). В дневнике в памяти замеры остаются копией для выгрузки файлом.
@@ -28,7 +27,7 @@
  * — Claude · 14.11.2026 */
 var SportDocs=(()=>{
  const NAMES=['workouts','active','exercises','routines','schedule','tallies','prefs','summary'];
- const OWN=NAMES.concat(['body','plans','foodtaps','profile']);   // все свои документы Sport для общего модуля
+ const OWN=NAMES.concat(['body','plans','foodtaps']);   // все свои документы Sport для общего модуля
  const DOC={workouts:'workouts',active:'active',
   customExercises:'exercises',exerciseOverrides:'exercises',favoriteExercises:'exercises',exerciseNotes:'exercises',exerciseChanges:'exercises',exerciseGroups:'exercises',archivedExercises:'exercises',
   templates:'routines',templateOverrides:'routines',

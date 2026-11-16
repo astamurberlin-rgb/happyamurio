@@ -1475,18 +1475,14 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <script src="./shared/happy-account.js?v=32.3"></script>
 <script src="./shared/happy-input.js?v=32.3"></script>
 <script src="./shared/happy-store.js?v=32.3"></script>
+<script src="./shared/happy-account-ui.js?v=32.3"></script>
 <script src="./shared/happy-app-links.js?v=32.3"></script>
 <script src="./shared/happy-sport-summary.js?v=32.3"></script>
 <script src="./shared/happy-food.js?v=32.3"></script>
 <script src="./shared/happy-measurements.js?v=32.3"></script>
-<script src="./shared/happy-screens.js?v=32.3"></script>
-<script src="./shared/happy-welcome.js?v=32.3"></script>
-<script src="./shared/happy-person.js?v=32.3"></script>
-<script src="./shared/happy-goals.js?v=32.3"></script>
 <script src="meal-docs.js?v=32.3"></script>
 <script src="meal-data.js?v=32.3"></script>
 <link rel="stylesheet" href="./shared/happy-measurements.css?v=32.3">
-<link rel="stylesheet" href="./shared/happy-screens.css?v=32.3">
 <link rel="stylesheet" href="catalog.css?v=32.3">
 <link rel="stylesheet" href="./shared/food-counters.css?v=32.3">
 <link rel="stylesheet" href="release-notes.css?v=32.3">
@@ -1532,7 +1528,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <link rel="stylesheet" href="collections.css?v=32.3">
 </head>
 <body class="loading">
-<script src="meal-account.js?v=32.3"></script>
 
 <div class="bg"></div><div class="grain"></div>
 
@@ -1646,15 +1641,19 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <!-- НАСТРОЙКИ -->
   <section class="screen" data-screen="updates"><div class="grip" data-grip role="button" tabindex="0" aria-label="Закрыть историю обновлений"><i></i></div><div class="top"><h1>История обновлений</h1></div><div id="releaseHistory"></div></section>
   <div class="screen happy-settings" data-screen="settings">
-    <div class="top" hidden><div class="tierBadges" hidden></div></div>
-    <!-- Одна структура настроек Happy: аккаунт (аватар, имя, «Настроить профиль / цели») → «Связка с» → Приложение → Данные → Для разработчика (скрыт, долгое нажатие на строку версии) → версия → «Выйти» и строка синхронизации. По прототипу Meal v7 (16.11.2026): верх и низ аккаунта рисует shared/happy-person.js. -->
-    <section class="happy-section" data-happy-section="account"><div id="happy-account-top"></div></section>
-    <section class="happy-section happy-app-links-section hs-links" data-happy-section="links"><h3 class="hs-links-title">Связка с</h3><div class="happy-card happy-app-links" role="group" aria-label="Связь с другими приложениями Happy">
+    <div class="top"><h1>Настройки</h1><div class="tierBadges" hidden></div></div>
+    <!-- Update 26: одна структура настроек Happy (AGENTS.md): Аккаунт → Приложение → Данные → Связанные приложения → Для разработчика (скрыт, долгое нажатие на строку версии) → версия. Блоки прежние, переставлены; id и обработчики не менялись. -->
+    <section class="happy-section" data-happy-section="account"><h2 class="happy-heading">Аккаунт</h2><div class="happy-card" id="happy-account"></div></section>
+    <section class="happy-section happy-app-links-section" data-happy-section="links"><div class="happy-card happy-app-links" role="group" aria-label="Связь с другими приложениями Happy">
       <div class="happy-app-link"><a class="happy-app-name" href="../day-59/" data-happy-app="day" target="_blank" rel="noopener">Happy Day</a><input class="happy-switch" type="checkbox" role="switch" data-app-link="day" checked aria-label="Связь с Happy Day"></div>
       <div class="happy-app-link"><a class="happy-app-name" href="../sport-43/" data-happy-app="sport" target="_blank" rel="noopener">Happy Sport</a><input class="happy-switch" type="checkbox" role="switch" data-app-link="sport" checked aria-label="Связь с Happy Sport"></div>
     </div></section>
     <section class="happy-section" data-happy-section="app"><h2 class="happy-heading">Приложение</h2>
     <div class="happy-appearance-entry" data-happy-appearance-slot></div>
+    <div class="eyebrow"><span>Цели на день</span></div>
+    <div id="setGoals" class="mlSet"></div>
+    <p class="note">Встроенных норм нет: цифры задаёшь ты или врач. Пусто — без цели: кольцо показывает только состав.</p>
+
     <div class="eyebrow"><span>Разделы</span></div>
     <div id="setSecs" class="mlSet"></div>
     <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить раздел</button></div>
@@ -1693,7 +1692,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <p class="note mlCopy">© 2026 Astamur. Все права защищены.</p>
     <footer class="app-version happy-version" data-app-version="32.3" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Meal · Update 32</div><small>Обновлено 14.11.2026</small></footer>
     </section>
-    <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
 
 </div>
@@ -2698,13 +2696,25 @@ function secAt(h){ var want=h<11?'am':h<16?'pm':h<21?'dn':'sn'; return sec(want)
 function autoSec(){ return secAt(new Date().getHours()) }
 var saveT=null;
 /* Meal 32: запись через общий модуль — уходит только изменившееся (meal-data.js). Без входа запись не принимается:
-   то, что успели нажать, отменяется, и появляется лист «Войдите в аккаунт». RO — записи сделаны более новой версией
+   то, что успели нажать, отменяется, и открываются настройки со входом. RO — записи сделаны более новой версией
    Meal: только чтение. */
 var lastGesture=0, RO=false;   // lastGesture — когда человек последний раз коснулся экрана или клавиши
 ['pointerdown','keydown','touchstart'].forEach(function(type){ document.addEventListener(type,function(){ lastGesture=Date.now() },{capture:true,passive:true}) });
 function roWarn(){ jrToastLong(HappyStore.NEWER) }
-/* Без входа записи не принимаются: askSignIn (meal-account.js) открывает лист «Войдите в аккаунт», после входа Meal
-   возвращается к тому же действию. */
+var signInAskedAt=0;
+/* Без входа записи не принимаются: открыть настройки со входом. Одно действие может позвать запись несколько раз —
+   вход предлагается один раз. Если человек печатал в поле записи, поле теряет фокус: остаток набора не должен
+   попасть в поле почты. */
+function askSignIn(){
+  var now=Date.now(); if(now-signInAskedAt<500) return; signInAskedAt=now;
+  var a=document.activeElement, typing=!!a&&(a.tagName==='TEXTAREA'||a.tagName==='INPUT'||a.isContentEditable);
+  if(typing){ try{ a.blur() }catch(e){} }
+  setTimeout(function(){ try{
+    if(typeof closeSheet==='function') closeSheet();
+    go('settings'); toast('Войди в аккаунт Happy, чтобы записывать');
+    var i=document.querySelector('#happy-account input[name="email"]'); if(i&&!typing) i.focus();
+  }catch(e){} },0);
+}
 /* true — записывать сейчас нельзя, и человеку уже сказано почему */
 function writeGuard(){
   if(RO){ roWarn(); return true }
@@ -3098,6 +3108,7 @@ function editFoodKind(i){
   });
 }
 function rowCard(inner){ return '<div class="card" style="margin-bottom:8px;padding:0"><div class="swipeInner">'+inner+'</div></div>' }
+var GOALS=[{k:'k',t:'Калории',u:'ккал'},{k:'p',t:'Белки',u:'г'},{k:'f',t:'Жиры',u:'г'},{k:'c',t:'Углеводы',u:'г'},{k:'fib',t:'Клетчатка',u:'г'}];
 function renderCoverSet(){
   var el=document.getElementById('setCover'); if(!el) return;
   var cur=DB.cover==='two'?'two':'one';
@@ -3109,6 +3120,10 @@ function renderSettings(){
   if(typeof MealCatalog!=='undefined') MealCatalog.renderSettings();
   renderCoverSet();
   if(typeof bkPaint==='function') bkPaint();
+  document.getElementById('setGoals').innerHTML=GOALS.map(function(G,i){
+    var v=goalOf(G.k);
+    return rowCard('<span class="nm"><b>'+G.t+'</b><small>'+(v?fmt(v)+' '+G.u+' в день':'не задано')+'</small></span>'+penBtn('g'+i));
+  }).join('');
   document.getElementById('setSecs').innerHTML=DB.sections.map(function(S,i){
     if(importedSection(S)) return '';   // Meal 30 (Астамур 12.11): перенесённые разделы «… · Cronometer» — только в истории дней
     return rowCard((HD_LINK[S.k]?hdLinkMark():minusBtn('s'+i))+'<span class="ic">'+secIc(S)+'</span><span class="nm"><b>'+escH(S.t)+'</b><small>'+escH(secHint(S))+'</small></span>'+penBtn('s'+i));
@@ -3127,10 +3142,21 @@ document.querySelector('[data-screen="settings"]').addEventListener('click',func
   var r=ev.target.closest('[data-ren]'), d=ev.target.closest('[data-del]');
   var id=(r&&r.dataset.ren)||(d&&d.dataset.del); if(!id) return;
   var kind=id.charAt(0), i=+id.slice(1);
-  if(r){ if(kind==='s') editSec(i); else if(kind==='t') editTap(i); else if(kind==='f') MealProductEditor.edit(DB.foods[i]) }
+  if(r){ if(kind==='s') editSec(i); else if(kind==='t') editTap(i); else if(kind==='g') editGoal(i); else if(kind==='f') MealProductEditor.edit(DB.foods[i]) }
   else { if(kind==='s') delSec(i); else if(kind==='t') delTap(i); else if(kind==='f') delFood(i) }
 });
-/* Цели на день (калории, БЖУ, клетчатка) задаются в «Настроить цели» вверху настроек: meal-account.js, shared/happy-goals.js. */
+/* цель: число или пусто (пусто — без цели) */
+function editGoal(i){
+  var G=GOALS[i], v=goalOf(G.k);
+  ask(G.t+' в день, '+G.u+' — пусто, если без цели',v?fmt(v):'').then(function(r){
+    if(r===null) return;
+    var n=parseFloat(String(r).replace(',','.').replace(/[^\d.]/g,''));
+    DB.goals=DB.goals||{};
+    DB.goals[G.k]=n>0?String(Math.round(n*10)/10):'';
+    save(); renderAll();
+    toast(n>0?G.t+': '+fmt(n)+' '+G.u:G.t+': без цели');
+  });
+}
 document.getElementById('addSec').addEventListener('click',function(){ editSec(-1) });
 document.getElementById('addTap').addEventListener('click',function(){ editTap(-1) });
 function editSec(i){
@@ -4307,10 +4333,10 @@ document.getElementById('bkOut').addEventListener('click',bkExport);
     linkWrite();          // сводка для Day и Sport
     MealData.onRemote(adoptRemote);
     MealData.store.neighbor('sport','summary').subscribe(function(){ erSportPoll() });
-    /* строка синхронизации внизу настроек; записи открыла более новая версия — только чтение и кнопка «Открыть последнюю версию» */
+    /* строка состояния под аккаунтом; записи открыла более новая версия — только чтение и кнопка «Открыть последнюю версию» */
     MealData.store.onStatus(function(){
       if(MealData.outdated()!==RO){ RO=MealData.outdated(); paintAccount(); if(RO) roWarn(); return }
-      HappyPerson.status(MealData.statusText());
+      var el=document.querySelector('#happy-account [data-happy-account-status]'); if(el) el.textContent=MealData.statusText();
     });
   }
   if(RO) setTimeout(roWarn,1500);
@@ -5734,9 +5760,28 @@ function jrNoteTxt(){
    Meal 32: у Happy Meal свой вход в аккаунт Happy (shared/happy-account.js; раздельный вход — решение Астамура
    09.11.2026, возвращено 15.11.2026): вход и выход здесь не трогают другие приложения. Аккаунт и записи общие. Из пароля на телефоне выводится ключ шифрования
    (PBKDF2-SHA-256, 600 000 шагов, соль — id аккаунта); записи шифруются AES-GCM до отправки — на сервере лежит
-   нечитаемый блок. Ключ шифрования на сервер не уходит. После входа или выхода страница открывается заново (meal-data.js).
-   Первый экран, вход, верх и низ настроек, профиль и цели — meal-account.js (общие экраны shared/happy-welcome.js,
-   happy-person.js, happy-goals.js): paintAccount, paintSignIn, askSignIn. */
+   нечитаемый блок. Ключ шифрования на сервер не уходит. Карточка входа и строка состояния под ней — общие
+   (shared/happy-account-ui.js). После входа или выхода страница открывается заново (meal-data.js). */
+function accountOptions(){
+  return {account:MealData.account,status:MealData.statusText(),newer:MealData.outdated(),app:'meal',
+    box:function(){ return document.getElementById('happy-account') },
+    /* перед выходом: своё несохранённое уходит в хранилище и, если есть связь, в облако (до 15 с) */
+    beforeSignOut:async function(){ if(!MealData.signedIn()) return; saveNow(); await MealData.store.flush(15000) }};
+}
+function paintAccount(){
+  var box=document.getElementById('happy-account'); if(!box||!MealData.account) return;
+  HappyAccountUI.render(box,accountOptions());
+}
+document.addEventListener('click',function(ev){
+  var b=ev.target.closest&&ev.target.closest('['+HappyAccountUI.ATTR+']'); if(!b||!MealData.account) return;
+  ev.preventDefault();
+  HappyAccountUI.act(b.getAttribute(HappyAccountUI.ATTR),accountOptions());
+});
+/* без входа на экране дня — предложение войти */
+function paintSignIn(){
+  var box=document.getElementById('mealSignIn'); if(box) box.hidden=MealData.signedIn();
+}
+document.addEventListener('click',function(ev){ if(ev.target.closest&&ev.target.closest('#mealSignInGo')) go('settings') });
 
 </script>
 <script src="substances.js?v=32.3"></script>

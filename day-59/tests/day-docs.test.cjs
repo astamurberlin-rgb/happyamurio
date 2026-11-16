@@ -47,7 +47,7 @@ async function device(cloud, base) {
   const one = { FORMAT: 1 }, spy = { compared: 0 }, model = globalThis.HappyStore.model;
   const context = vm.createContext({ console, setTimeout, clearTimeout, DayDocs: D, HappyFood: one, HappyAppLinks: one, HappySportSummary: one, HappyMeasurements: one,
     HappyAccount: { create: () => ({ load: async () => {}, current: () => ({ uid: 'u-1' }), onChange() {} }) },
-    HappyStore: { model: { ...model, stable: x => { spy.compared++; return model.stable(x); } }, open: async () => store }, HappyPerson: { FORMAT: 1, statusText: () => '' }, location: { reload() {} } });
+    HappyStore: { model: { ...model, stable: x => { spy.compared++; return model.stable(x); } }, open: async () => store }, HappyAccountUI: { statusText: () => '' }, location: { reload() {} } });
   vm.runInContext(dayData, context); await context.DayBoot.ready;
   const dev = { cloud, local, state: null, spy,
     load() { dev.state = context.DayData.load(plain(base)); },

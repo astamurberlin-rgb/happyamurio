@@ -1,0 +1,174 @@
+/* Happy: вход в аккаунт для Day, Meal и Sport — один код, вход у каждого приложения свой.
+ *
+ * Аккаунт один на три приложения, а вход — раздельный (решение Астамура 09.11.2026, возвращено 15.11.2026):
+ * у каждого приложения своя ячейка входа happy-account:<приложение>. Вход, выход и обновление входа в одном
+ * приложении другие не трогают; выход закрывает на сервере только вход этого приложения (scope=local).
+ * Записи общие: под одним аккаунтом приложения видят одни и те же записи и витрину друг друга.
+ * Ключ шифрования выводится из пароля на устройстве и на сервер не уходит: PBKDF2-SHA-256, 600 000 шагов,
+ * соль — id аккаунта, AES-GCM 256. Тот же пароль даёт тот же ключ в любом приложении. Пароль нигде не
+ * сохраняется. Ключ проекта ниже — публичный: он только говорит, куда стучаться.
+ * Прежняя общая ячейка happy-account (Sport 42–43, Day 59, Meal 32) хранила ключ шифрования; при запуске
+ * она удаляется — после этого выпуска в каждое приложение входят заново.
+ *
+ * create({app:'day'|'meal'|'sport', …}) — вход приложения app; без app не создаётся.
+ * Письма и ссылки для экранов входа (shared/happy-welcome.js): resend — повторить письмо регистрации; recover — письмо для
+ * нового пароля; user — почта и ожидающая новая почта с сервера; changeEmail — смена почты по подтверждению;
+ * linkUser / setPassword — по ключу из ссылки письма (это не вход приложения).
+ * — Claude · 14.11.2026, раздельный вход — 15.11.2026, письма и ссылки — 16.11.2026 */
+(function(root){
+'use strict';
+const APPS=['day','meal','sport'],LEGACY='happy-account',cellOf=app=>LEGACY+':'+app;
+const CLOUD={url:'https://geqziziycpclhnucnsyx.supabase.co',key:'sb_publishable_I8tmZHGlz7CJn9SavbApCg_gg1G890r'};
+const ITERATIONS=600000,SALT='happyday-sync-v1:';
+
+function b64(u8){let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)}
+function unb64(t){const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
+const utf=t=>new TextEncoder().encode(t);
+function fail(code,message){const e=Error(message);e.code=code;return e}
+
+/* понятные слова вместо ответов сервера */
+function errorText(j,status){
+ const m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
+ if(/invalid login|invalid_credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
+ if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Эта почта уже зарегистрирована. Войдите в аккаунт.';
+ if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейдите по ссылке в письме.';
+ if(/refresh token/i.test(m))return 'Вход устарел. Войдите заново.';
+ if(/signups? (are )?(not allowed|disabled)/i.test(m))return 'Новые аккаунты сейчас закрыты';
+ if(/address .*invalid|invalid email|email_address_invalid/i.test(m))return 'Проверьте формат почты';
+ if(/should be different|same_password/i.test(m))return 'Новый пароль должен отличаться от прежнего';
+ if(/password/i.test(m))return 'Пароль не подходит: нужно не меньше 8 знаков';
+ if(/expired|otp_expired|invalid.*(token|link)|token.*invalid/i.test(m))return 'Ссылка больше не действует. Запросите новую.';
+ if(status===429)return 'Слишком много попыток. Подождите минуту.';
+ return m||('Сервер ответил ошибкой '+status);
+}
+
+async function importKey(raw){return crypto.subtle.importKey('raw',unb64(raw),{name:'AES-GCM'},false,['encrypt','decrypt'])}
+async function deriveKey(password,uid){
+ const base=await crypto.subtle.importKey('raw',utf(password),'PBKDF2',false,['deriveKey']);
+ const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:utf(SALT+uid),iterations:ITERATIONS,hash:'SHA-256'},base,{name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+ const raw=b64(new Uint8Array(await crypto.subtle.exportKey('raw',k)));
+ return {raw,key:await importKey(raw)};
+}
+
+function create(options){
+ const o=options||{},url=o.url||CLOUD.url,apikey=o.key||CLOUD.key,now=o.now||Date.now;
+ if(!APPS.includes(o.app))throw Error('Вход нужен для приложения: day, meal или sport');
+ const CELL=cellOf(o.app);
+ const storage=o.storage||root.localStorage,events=o.events||root,request=o.fetch||((...a)=>root.fetch(...a));
+ try{storage.removeItem(LEGACY)}catch(e){}   // прежняя общая ячейка входа: в ней лежал ключ шифрования
+ let session=null,kraw=null,key=null,generation=0,refreshing=null,stopped=false;const listeners=new Set();
+ /* Обновлять токен может одно окно этого приложения за раз: остальные дождутся и возьмут готовый из ячейки входа. */
+ const locks=o.locks||(root.navigator&&root.navigator.locks)||null;
+ const exclusive=fn=>locks?locks.request(CELL+'-refresh',fn):fn();
+ const parse=raw=>{try{const a=JSON.parse(raw||'null');return a&&a.s&&typeof a.s.uid==='string'&&a.s.uid&&typeof a.k==='string'&&a.k?a:null}catch(e){return null}};
+ const identity=a=>a?a.s.uid+'|'+a.k:'';
+ const mine=()=>session?session.uid+'|'+kraw:'';
+ const disk=()=>parse(storage.getItem(CELL));
+ function emit(){for(const fn of [...listeners]){try{fn(current())}catch(e){}}}
+ function current(){return session?{uid:session.uid,email:session.email||'',name:session.name||''}:null}
+
+ function persist(next,raw){
+  if(next){const text=JSON.stringify({s:next,k:raw});storage.setItem(CELL,text);if(storage.getItem(CELL)!==text)throw fail('storage','Не удалось сохранить вход на устройстве')}
+  else storage.removeItem(CELL);
+ }
+ /* Принять то, что лежит в ячейке: при запуске и когда вход поменяло другое окно или приложение. */
+ async function adopt(){
+  const mark=++generation,a=disk(),before=mine();
+  if(!a){session=null;kraw=null;key=null}
+  else if(identity(a)===before)session=a.s;                       // тот же вход, свежий токен
+  else{const k=await importKey(a.k);if(mark!==generation)return;session=a.s;kraw=a.k;key=k}
+  if(mine()!==before)emit();
+ }
+ async function auth(path,body,token,method){
+  let r;const verb=method||'POST';
+  try{r=await request(url+'/auth/v1/'+path,{method:verb,headers:Object.assign({apikey,'Content-Type':'application/json'},token?{Authorization:'Bearer '+token}:{}),body:verb==='GET'?undefined:JSON.stringify(body||{})})}
+  catch(e){throw fail('offline','Нет связи с сервером')}
+  let j=null;try{j=await r.json()}catch(e){}
+  if(!r.ok)throw fail(r.status===429?'busy':'auth',errorText(j,r.status));
+  return j;
+ }
+ function sessionFrom(j,old){
+  return {at:j.access_token,rt:j.refresh_token,exp:now()+(j.expires_in||3600)*1000,
+   uid:(j.user&&j.user.id)||(old&&old.uid),email:(j.user&&j.user.email)||(old&&old.email)||'',
+   name:j.user?String((j.user.user_metadata||{}).display_name||''):((old&&old.name)||'')};
+ }
+ async function enter(j,password){
+  if(!j||!j.access_token)return 'confirm';                         // сервер ждёт подтверждения почты
+  const next=sessionFrom(j);if(!next.uid)throw fail('auth','Не удалось проверить вход');
+  const mark=++generation,derived=await deriveKey(password,next.uid);
+  if(mark!==generation)throw fail('auth','Вход изменился в другом окне. Повторите.');
+  persist(next,derived.raw);session=next;kraw=derived.raw;key=derived.key;emit();return 'ok';
+ }
+ const signIn=async(email,password)=>enter(await auth('token?grant_type=password',{email,password}),password);
+ const signUp=async(email,password,name)=>enter(await auth('signup',{email,password,data:{display_name:String(name||'').trim().slice(0,60)}}),password);
+ async function signOut(){
+  const token=session&&session.at;++generation;
+  persist(null);session=null;kraw=null;key=null;emit();
+  /* scope=local: сервер закрывает только этот вход; входы других приложений и устройств остаются */
+  if(token)Promise.resolve().then(()=>request(url+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey,Authorization:'Bearer '+token}})).catch(()=>{});
+ }
+ /* Токен доступа. Обновление — одно за раз; если его уже обновило другое окно тем же входом, берём готовый. */
+ async function token(refused){   // refused — токен, который сервер только что не принял
+  if(!session)throw fail('signin','Нужно войти в аккаунт');
+  if(refused?session.at!==refused:now()<session.exp-60000)return session.at;
+  if(!refreshing){
+   const who=mine(),used=session.rt,old=session;
+   const fromOtherWindow=()=>{const a=disk();if(a&&identity(a)===who&&a.s.rt!==used){if(mine()===who)session=a.s;return true}return false};
+   const run=refreshing=exclusive(async()=>{
+    if(fromOtherWindow())return;
+    let j;
+    try{j=await auth('token?grant_type=refresh_token',{refresh_token:used})}
+    catch(e){
+     if(fromOtherWindow())return;
+     if(e.code==='auth'&&mine()===who)await signOut();
+     throw e;
+    }
+    if(mine()!==who)throw fail('auth','Вход изменился. Повторите.');
+    const next=sessionFrom(j,old);if(!next.at||next.uid!==old.uid)throw fail('auth','Не удалось обновить вход');
+    persist(next,kraw);session=next;
+   });
+   const done=()=>{if(refreshing===run)refreshing=null};run.then(done,done);
+  }
+  await refreshing;
+  if(!session)throw fail('signin','Нужно войти в аккаунт');
+  return session.at;
+ }
+ async function rename(name){
+  const who=mine(),clean=String(name||'').trim().slice(0,60);
+  const j=await auth('user',{data:{display_name:clean}},await token(),'PUT');
+  if(mine()!==who)return;
+  session=Object.assign({},session,{name:String(((j&&j.user_metadata)||{}).display_name||clean)});persist(session,kraw);emit();
+ }
+ /* Письма и ссылки (экраны входа — shared/happy-welcome.js, 16.11.2026). Адрес возврата — страница приложения. */
+ const back=()=>{try{return root.location.origin+root.location.pathname}catch(e){return ''}};
+ const withBack=path=>{const b=back();return b?path+(path.includes('?')?'&':'?')+'redirect_to='+encodeURIComponent(b):path};
+ /* повторить письмо подтверждения регистрации */
+ const resend=email=>auth('resend',{type:'signup',email});
+ /* письмо со ссылкой для нового пароля */
+ const recover=email=>auth(withBack('recover'),{email});
+ /* сведения аккаунта с сервера: почта, ожидающая подтверждения новая почта, имя */
+ async function user(){
+  const who=mine(),j=await auth('user',null,await token(),'GET');
+  if(mine()===who&&j&&j.id===session.uid){
+   const next=Object.assign({},session,{email:j.email||session.email,name:String(((j.user_metadata)||{}).display_name||session.name||'')});
+   if(next.email!==session.email||next.name!==session.name){session=next;persist(session,kraw);emit()}
+  }
+  return {email:(j&&j.email)||'',newEmail:(j&&j.new_email)||''};
+ }
+ /* смена почты: прежняя действует, пока новую не подтвердят по ссылке */
+ async function changeEmail(email){const j=await auth(withBack('user'),{email},await token(),'PUT');return {email:(j&&j.email)||'',newEmail:(j&&j.new_email)||''}}
+ /* по ссылке из письма: кто это и новый пароль (ключ ссылки — не вход приложения) */
+ const linkUser=async access=>{const j=await auth('user',null,access,'GET');return {email:(j&&j.email)||'',id:(j&&j.id)||''}};
+ const setPassword=(access,password)=>auth('user',{password},access,'PUT');
+ function onStorage(e){if(stopped||(e.key!==null&&e.key!==CELL))return;adopt().catch(()=>{})}
+ if(events&&events.addEventListener)events.addEventListener('storage',onStorage);
+ return {
+  load:adopt,current,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  app:o.app,cell:CELL,
+  cipherKey:()=>key,
+  onChange(fn){listeners.add(fn);return ()=>listeners.delete(fn)},
+  close(){stopped=true;listeners.clear();if(events&&events.removeEventListener)events.removeEventListener('storage',onStorage)}
+ };
+}
+root.HappyAccount={create,deriveKey,cellOf,LEGACY,APPS,CLOUD,ITERATIONS};
+})(typeof globalThis!=='undefined'?globalThis:this);

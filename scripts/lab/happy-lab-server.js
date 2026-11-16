@@ -194,14 +194,14 @@ function paintPanel(){
  if(!panel)return;
  var u=db.users[0],mails=db.mails.slice().reverse().slice(0,10);
  panel.innerHTML='<div class="lab-head"><strong>Проверка · лаборатория</strong><button type="button" data-lab="close" aria-label="Закрыть">×</button></div>'+
-  '<p>Вне интерфейса приложения. Вымышленные аккаунты и записи — только в этом браузере. Письма никуда не уходят.</p>'+
+  '<p>Инструмент лаборатории — в приложение он не попадёт. Аккаунты и записи вымышленные и живут только в этом браузере. Письма никуда не уходят: ссылки из них — здесь.</p>'+
   '<div class="lab-cred"><span>'+esc(u.email)+'</span><code>'+esc(u.password)+'</code></div><button type="button" data-lab="fill">Заполнить пример</button><button type="button" data-lab="wrong">Подставить ошибку</button>'+
   '<h3>Письма</h3>'+(mails.length?mails.map(function(m){return '<div class="lab-mail"><b>'+esc(KIND[m.kind]||m.kind)+'</b><span>'+esc(m.to)+'</span>'+
    (m.kind==='notice'?'<small>'+esc(m.text||'Адрес изменён')+'. Это только макет уведомления.</small>':m.status==='pending'?'<button type="button" data-lab="follow" data-mail="'+m.id+'">Перейти по ссылке</button>':
    '<small>'+(m.status==='used'?'Ссылка использована':'Ссылка отменена')+'</small>')+'</div>'}).join(''):'<p>Здесь появится письмо после регистрации, смены почты или восстановления пароля.</p>')+
   '<h3>Начать заново</h3><button type="button" data-lab="first">Первое открытие</button><button type="button" data-lab="reset">Сбросить лабораторию</button>'+
   '<p>«Первое открытие» — выйти из этого приложения и показать первый экран; соседние приложения остаются со своим входом. «Сбросить» — удалить все вымышленные аккаунты и записи лаборатории.</p>'+
-  '<h3>Приложения</h3><a class="lab-app" href="../">Все три приложения</a>';
+  '<h3>Приложения</h3><a class="lab-app" href="../index.html">Все три приложения</a>';
 }
 function openPanel(){if(panel){closePanel();return}panel=document.createElement('div');panel.id='happy-lab-panel';panel.setAttribute('data-hs-keep','');panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Проверка лаборатории');document.body.appendChild(panel);paintPanel()}
 function appName(){return (window.HappyScreens&&HappyScreens.app)||''}

@@ -60,7 +60,7 @@ def edit(path, pairs):
     for old, new, count in pairs:
         n = len(re.findall(old, s))
         assert n == count if count is not None else True, (path, old, n)
-        s = re.sub(old, lambda m: new, s)
+        s = re.sub(old, (lambda m: new) if new is not None else (lambda m: 'href="../' + m.group(1) + '/index.html"'), s)
     open(p, 'w', encoding='utf-8').write(s)
 
 
@@ -70,12 +70,15 @@ for app, folder in release.items():
         # сервер лаборатории — раньше всех скриптов страницы
         (r'<head>', '<head>\n<script src="../lab/happy-lab-server.js"></script>', 1),
         (r'<title>[^<]*</title>', '<title>' + names[app] + ' · Лаборатория</title>', 1),
-        # соседние приложения — рядом, в этой же лаборатории
+        # соседние приложения — рядом, в этой же лаборатории; страница открывается по имени файла
         (r'/happyamurio/', '../', None),
+        (r'href="\.\./((?:day|meal|sport)-\d+)/"', None, None),
+        (r"var href=BASE\+d\+'/';", "var href=BASE+d+'/index.html';", None),   # Sport: адреса соседей встроены в страницу
     ])
     links = os.path.join(out, folder, 'shared', 'happy-links.js')
     if os.path.exists(links):
-        edit(folder + '/shared/happy-links.js', [(r"var BASE='/happyamurio/';", "var BASE='../';", 1)])
+        edit(folder + '/shared/happy-links.js', [(r"var BASE='/happyamurio/';", "var BASE='../';", 1),
+                                                 (r"var href=BASE\+d\+'/';", "var href=BASE+d+'/index.html';", 1)])
 
 # каталоги Meal — рядом со страницей
 meal = release['meal']
@@ -106,7 +109,7 @@ edit(meal + '/food-libraries.js', [
 # первая страница лаборатории
 start = open(os.path.join(repo, 'scripts', 'lab', 'index.html'), encoding='utf-8').read()
 for app, folder in release.items():
-    start = start.replace('{' + app + '}', folder + '/').replace('{' + app + '-version}', apps[app]['version'])
+    start = start.replace('{' + app + '}', folder + '/index.html').replace('{' + app + '-version}', apps[app]['version'])
 with open(os.path.join(out, 'index.html'), 'w', encoding='utf-8') as fh:
     fh.write(start)
 

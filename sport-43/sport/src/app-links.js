@@ -16,8 +16,8 @@ var SportAppLinks=(()=>{   // var: читается из раскладки на
  function section(nodes){
   const holder=document.createElement('div');(nodes||[]).forEach(n=>holder.append(n.cloneNode(true)));
   const href=app=>holder.querySelector('a[data-happy-app="'+app+'"]')?.getAttribute('href')||'#';
-  const s=document.createElement('section');s.className='happy-section happy-app-links-section hs-links';s.dataset.happySection='links';
-  s.innerHTML='<h3 class="hs-links-title">Связка с</h3><div class="happy-card happy-app-links" role="group" aria-label="Связь с другими приложениями Happy">'+
+  const s=document.createElement('section');s.className='happy-section happy-app-links-section';s.dataset.happySection='links';
+  s.innerHTML='<div class="happy-card happy-app-links" role="group" aria-label="Связь с другими приложениями Happy">'+
    [['day','Happy Day'],['meal','Happy Meal']].map(([app,name])=>{const v=on(app);return '<div class="happy-app-link'+(v?'':' is-off')+'"><a class="happy-app-name" href="'+href(app)+'" data-happy-app="'+app+'" target="_blank" rel="noopener">'+name+'</a><input class="happy-switch" type="checkbox" role="switch" data-app-link="'+app+'"'+(v?' checked':'')+' aria-label="Связь с '+name+'"></div>'}).join('')+'</div>';
   return s;
  }

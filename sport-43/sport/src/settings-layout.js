@@ -1,7 +1,5 @@
 /* Update 38 · one settings structure for Happy apps (agreed 08.11.2026):
    Аккаунт → Приложение → Данные → Связанные приложения → Для разработчика (hidden) → Версия.
-   Prototype Sport v2 (16.11.2026): no big title; the account block (avatar, name, «Настроить профиль / цели») has no
-   heading; links are «Связка с»; «Выйти» and the sync line close the page (shared/happy-person.js).
    This is the LAST layer over renderProfile: it takes the composed screen and regroups known blocks by stable
    markers (section ids, element ids, data-attributes), without changing their markup or handlers. Developer-only
    blocks are rendered inside a hidden section that opens with a long press on the version line. Any block this
@@ -61,14 +59,13 @@ function sportSettingsLayout(html){
   const rank=run=>{const i=order[group].indexOf(run[0].matches('.settings-section')?text(run[0]):'');return i<0?order[group].length:i};
   groups[group]=runs.map((run,i)=>[run,i]).sort((a,b)=>rank(a[0])-rank(b[0])||a[1]-b[1]).flatMap(([run])=>run);
  }
- const section=(id,title,children)=>{if(!children.length)return null;const s=document.createElement('section');s.className='happy-section';s.dataset.happySection=id;if(title){const h=document.createElement('h2');h.className='happy-heading';h.textContent=title;s.append(h)}s.append(...children);return s};
+ const section=(id,title,children)=>{if(!children.length)return null;const s=document.createElement('section');s.className='happy-section';s.dataset.happySection=id;const h=document.createElement('h2');h.className='happy-heading';h.textContent=title;s.append(h,...children);return s};
  const out=document.createElement('div');out.className='happy-settings';if(header)out.append(header);
  const dev=section('developer','Для разработчика',groups.developer);
  if(dev){dev.hidden=!sportDevVisible;const hide=document.createElement('div');hide.className='happy-actions';const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.settingsDeveloper='hide';b.textContent='Скрыть раздел';hide.append(b);const note=document.createElement('p');note.className='happy-note';note.textContent='Выгрузка дневника файлом и перенос истории Strong. Открывается долгим нажатием на строку версии.';dev.insertBefore(note,dev.children[1]||null);dev.append(hide);}
  const version=document.createElement('section');version.className='happy-section';version.dataset.happySection='version';version.append(...groups.version);
  const footer=version.querySelector('footer.happy-version');if(footer){footer.setAttribute('data-settings-developer','toggle');footer.setAttribute('title','Долгое нажатие открывает раздел для разработчика');}
- const signout=document.createElement('section');signout.className='happy-section';signout.dataset.happySection='signout';signout.innerHTML='<div id="happy-account-bottom"></div>';
- for(const s of [section('account','',groups.account),(typeof SportAppLinks!=='undefined'&&SportAppLinks?SportAppLinks.section(groups.links):section('links','Связанные приложения',groups.links)),section('app','Приложение',groups.app),section('data','Данные',groups.data),dev,version,signout])   /* Sport 41: связь приложений — сразу под аккаунтом */if(s)out.append(s);
+ for(const s of [section('account','Аккаунт',groups.account),(typeof SportAppLinks!=='undefined'&&SportAppLinks?SportAppLinks.section(groups.links):section('links','Связанные приложения',groups.links)),section('app','Приложение',groups.app),section('data','Данные',groups.data),dev,version])   /* Sport 41: связь приложений — сразу под аккаунтом */if(s)out.append(s);
  return out.outerHTML;
 }
 // Long press on the version line opens the developer section; a button inside hides it again.

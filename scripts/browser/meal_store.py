@@ -20,7 +20,7 @@ USERS = {
 ONE, TWO = "one@example.invalid", "two@example.invalid"
 tokens, table, requests, offline = {}, {}, [], set()
 out, errors = {}, []
-MEAL_STORE = os.environ.get("HAPPY_MEAL_STORE", "meal-32/")
+MEAL_STORE = os.environ.get("HAPPY_MEAL_STORE", "meal-33/")
 MEAL_PAGE, DAY_PAGE, SPORT_PAGE = BASE + MEAL_STORE, BASE + DAY_STORE, BASE + SPORT_STORE
 # прежние строки облака Meal первого аккаунта: модуль их не читает и не трогает
 OLD = {kind: {"user_id": USERS[ONE]["id"], "app": "meal", "kind": kind, "v": 1, "iv": "b2xkLWl2LW9sZC1pdg==", "data": "b2xkLWNpcGhlcnRleHQ=", "at": 1} for kind in ("journal", "link", "counters", "supplements")}

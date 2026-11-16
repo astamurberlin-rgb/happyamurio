@@ -4,7 +4,7 @@
 Запуск из корня репозитория, после последней сборки и `git add -A` (в список идут только файлы под контролем Git,
 кроме самого манифеста и справок `.md`):
 
-    python3 scripts/refresh-provenance.py day-59 meal-32
+    python3 scripts/refresh-provenance.py day-60 meal-33
 
 Что делает: пересчитывает список файлов выпуска — `runtime_files` у Day, `releaseHashes` у Meal — по содержимому
 на диске. Остальные поля манифеста (название выпуска, версия, записи `point_releases` / `pointReleases`) не трогает:
