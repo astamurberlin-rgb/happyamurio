@@ -296,7 +296,7 @@ function openWeight(o){
   const miss=missingProfile(),F=S().field;
   const sh=S().sheet({title:miss?'Данные для расчёта':'Поправка к калориям',onClose:()=>{if(sheet===sh)sheet=null}});sheet=sh;
   let h='<div class="hs-sheet-fields">';
-  if(!data.profile.birthday)h+=F({label:'Дата рождения',name:'cbirthday',type:'date',max:date,value:calcProfile.birthday||''});
+  if(!data.profile.birthday)h+=F({label:'Дата рождения',name:'cbirthday',type:'date',max:date,value:calcProfile.birthday||'',placeholder:'Не указана'});
   if(!data.profile.heightCm)h+=F({label:'Рост',name:'cheight',inputmode:'decimal',suffix:'см',value:calcProfile.heightCm||'',quick:true});
   if(current===null)h+=F({label:'Вес сейчас',name:'cweight',inputmode:'decimal',suffix:'кг',value:g.calc.weightKg||'',quick:true});
   if(!data.profile.sex)h+='<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('csex',[['male','Мужской'],['female','Женский']],calcProfile.sex,'Пол')+'</div>';

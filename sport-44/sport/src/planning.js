@@ -87,7 +87,7 @@ function ruClockText(time){time=String(time||'');return /^\d{2}:\d{2}:\d{2}/.tes
 function ruFieldText(input){const v=input.value;if(!v)return input.type==='time'?'—':'Не выбрана';if(input.type==='date')return ruDateText(v);if(input.type==='time')return ruClockText(v);const [day,time='']=v.split('T');return ruDateText(day)+' · '+ruClockText(time)}
 const ruDateSelector='input[type=date],input[type=time],input[type=datetime-local]';
 function ruDateField(input){
- if(input.dataset.ruDate||input.closest('.date-pill'))return;
+ if(input.dataset.ruDate||input.closest('.date-pill,#happy-screens'))return;   // общие экраны (профиль, цели) подписывают дату сами
  const style=getComputedStyle(input),text=document.createElement('span'),wrap=document.createElement('span');
  input.dataset.ruDate='1';wrap.className='ru-date';text.className='ru-date-text';text.setAttribute('aria-hidden','true');
  Object.assign(text.style,{fontSize:style.fontSize,fontWeight:style.fontWeight,fontFamily:style.fontFamily,color:style.color});

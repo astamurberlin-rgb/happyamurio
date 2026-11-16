@@ -38,8 +38,14 @@ body.hs-open{overflow:hidden}
 #happy-screens .hs-input input{display:block;flex:1;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;
  line-height:24px;height:46px;font-size:16px;color:#fff;color-scheme:dark;-webkit-appearance:none;appearance:none}
 #happy-screens .hs-input input::placeholder{color:rgba(255,255,255,.42)}
-#happy-screens .hs-input input[type=date]{font-size:15px}
-#happy-screens .hs-input input[type=date]::-webkit-date-and-time-value{text-align:left}
+/* дата: поле настоящее, но его текст скрыт — видна русская строка по центру (happy-screens.js, dateText) */
+.hs-date{position:relative}
+#happy-screens .hs-input.hs-date>input{color:transparent;-webkit-text-fill-color:transparent;caret-color:transparent;cursor:pointer}
+#happy-screens .hs-input.hs-date>input::-webkit-datetime-edit,#happy-screens .hs-input.hs-date>input::-webkit-date-and-time-value{opacity:0}
+#happy-screens .hs-input.hs-date>input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:auto;height:auto;margin:0;padding:0;opacity:0;cursor:pointer}
+.hs-date-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 14px;pointer-events:none;
+ font-size:16px;line-height:24px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-date-empty>.hs-date-text{color:rgba(255,255,255,.42)}
 .hs-input:focus-within{border-color:#fff;background:rgba(255,255,255,.18)}
 .hs-suffix{font-size:14px;flex-shrink:0;color:rgba(255,255,255,.88)}
 .hs-password{padding-right:3px}
@@ -215,11 +221,10 @@ body.hs-open{overflow:hidden}
 .hs-pending strong{display:block;font-size:14px;line-height:1.4;font-weight:400;color:#fff;overflow-wrap:anywhere;margin-top:4px}
 #happy-screens .hs-pending .hs-quiet{display:inline-block;font-size:12px;padding:6px 14px 0 0;min-height:28px}
 .hs-section-title{margin-top:9px;font-size:16px}
-.hs-height-sex{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+/* «Рост | Пол» и «Вес сейчас | Дата замера» — одни и те же две колонки: края полей совпадают (Астамур, 16.11.2026) */
+.hs-height-sex,.hs-field-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .hs-compact-sex{height:48px}
 #happy-screens .hs-compact-sex button{font-size:14px}
-.hs-field-pair{display:grid;grid-template-columns:1fr 1.2fr;gap:12px}
-#happy-screens .hs-field-pair input[type=date]{font-size:14px}
 .hs-history{font-size:13px;margin:0}
 .hs-history summary{list-style:none;display:flex;justify-content:space-between;cursor:pointer;color:var(--hs-muted);padding:7px 0}
 .hs-history summary::-webkit-details-marker{display:none}

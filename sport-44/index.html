@@ -1163,8 +1163,14 @@ body.hs-open{overflow:hidden}
 #happy-screens .hs-input input{display:block;flex:1;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;
  line-height:24px;height:46px;font-size:16px;color:#fff;color-scheme:dark;-webkit-appearance:none;appearance:none}
 #happy-screens .hs-input input::placeholder{color:rgba(255,255,255,.42)}
-#happy-screens .hs-input input[type=date]{font-size:15px}
-#happy-screens .hs-input input[type=date]::-webkit-date-and-time-value{text-align:left}
+/* дата: поле настоящее, но его текст скрыт — видна русская строка по центру (happy-screens.js, dateText) */
+.hs-date{position:relative}
+#happy-screens .hs-input.hs-date>input{color:transparent;-webkit-text-fill-color:transparent;caret-color:transparent;cursor:pointer}
+#happy-screens .hs-input.hs-date>input::-webkit-datetime-edit,#happy-screens .hs-input.hs-date>input::-webkit-date-and-time-value{opacity:0}
+#happy-screens .hs-input.hs-date>input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:auto;height:auto;margin:0;padding:0;opacity:0;cursor:pointer}
+.hs-date-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 14px;pointer-events:none;
+ font-size:16px;line-height:24px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-date-empty>.hs-date-text{color:rgba(255,255,255,.42)}
 .hs-input:focus-within{border-color:#fff;background:rgba(255,255,255,.18)}
 .hs-suffix{font-size:14px;flex-shrink:0;color:rgba(255,255,255,.88)}
 .hs-password{padding-right:3px}
@@ -1340,11 +1346,10 @@ body.hs-open{overflow:hidden}
 .hs-pending strong{display:block;font-size:14px;line-height:1.4;font-weight:400;color:#fff;overflow-wrap:anywhere;margin-top:4px}
 #happy-screens .hs-pending .hs-quiet{display:inline-block;font-size:12px;padding:6px 14px 0 0;min-height:28px}
 .hs-section-title{margin-top:9px;font-size:16px}
-.hs-height-sex{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+/* «Рост | Пол» и «Вес сейчас | Дата замера» — одни и те же две колонки: края полей совпадают (Астамур, 16.11.2026) */
+.hs-height-sex,.hs-field-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .hs-compact-sex{height:48px}
 #happy-screens .hs-compact-sex button{font-size:14px}
-.hs-field-pair{display:grid;grid-template-columns:1fr 1.2fr;gap:12px}
-#happy-screens .hs-field-pair input[type=date]{font-size:14px}
 .hs-history{font-size:13px;margin:0}
 .hs-history summary{list-style:none;display:flex;justify-content:space-between;cursor:pointer;color:var(--hs-muted);padding:7px 0}
 .hs-history summary::-webkit-details-marker{display:none}
@@ -2043,7 +2048,7 @@ function ruClockText(time){time=String(time||'');return /^\d{2}:\d{2}:\d{2}/.tes
 function ruFieldText(input){const v=input.value;if(!v)return input.type==='time'?'—':'Не выбрана';if(input.type==='date')return ruDateText(v);if(input.type==='time')return ruClockText(v);const [day,time='']=v.split('T');return ruDateText(day)+' · '+ruClockText(time)}
 const ruDateSelector='input[type=date],input[type=time],input[type=datetime-local]';
 function ruDateField(input){
- if(input.dataset.ruDate||input.closest('.date-pill'))return;
+ if(input.dataset.ruDate||input.closest('.date-pill,#happy-screens'))return;   // общие экраны (профиль, цели) подписывают дату сами
  const style=getComputedStyle(input),text=document.createElement('span'),wrap=document.createElement('span');
  input.dataset.ruDate='1';wrap.className='ru-date';text.className='ru-date-text';text.setAttribute('aria-hidden','true');
  Object.assign(text.style,{fontSize:style.fontSize,fontWeight:style.fontWeight,fontFamily:style.fontFamily,color:style.color});
@@ -7772,9 +7777,27 @@ function toast(text){
 function field(o){
  const attrs=['type','name','value','placeholder','inputmode','autocomplete','max','min','maxlength','step','readonly','id','autocapitalize','spellcheck'].filter(k=>o[k]!==undefined&&o[k]!==false)
   .map(k=>k==='readonly'?'readonly':k+'="'+esc(o[k])+'"').concat(o.quick?['data-hs-quick']:[]).join(' ');
- return '<label class="hs-field'+(o.className?' '+o.className:'')+'"><span class="hs-field-title">'+esc(o.label)+'</span><span class="hs-input"><input '+attrs+' aria-label="'+esc(o.label)+'">'+
+ const head='<label class="hs-field'+(o.className?' '+o.className:'')+'"><span class="hs-field-title">'+esc(o.label)+'</span>';
+ if(o.type==='date'){const text=dateText(o.value),empty=o.placeholder||'Не выбрана';
+  return head+'<span class="hs-input hs-date'+(text?'':' hs-date-empty')+'"><input '+attrs+' aria-label="'+esc(o.label)+'">'+
+   '<span class="hs-date-text" aria-hidden="true" data-empty="'+esc(empty)+'">'+esc(text||empty)+'</span></span></label>';}
+ return head+'<span class="hs-input"><input '+attrs+' aria-label="'+esc(o.label)+'">'+
   (o.suffix?'<span class="hs-suffix">'+esc(o.suffix)+'</span>':'')+'</span></label>';
 }
+/* Дата — по-русски и по центру ячейки (Астамур, 16.11.2026). Своё значение поле даты пишет на языке телефона
+   («May 24, 1986» на английском iPhone) и на iPhone прижимает его к верху. Поле остаётся настоящим: нажатие открывает
+   системный выбор даты, форма получает то же значение, — а видна строка поверх него. Год текущего года не пишется. */
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+function dateText(v){
+ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v||''));if(!m||+m[2]<1||+m[2]>12)return '';
+ return (+m[3])+' '+MONTHS[+m[2]-1]+(m[1]===day().slice(0,4)?'':' '+m[1]);
+}
+function syncDate(input){
+ const box=input&&input.parentElement,text=box&&box.querySelector(':scope>.hs-date-text');if(!text)return;
+ const s=dateText(input.value);text.textContent=s||text.dataset.empty;box.classList.toggle('hs-date-empty',!s);
+}
+function syncDates(scope){for(const i of (scope||doc).querySelectorAll('.hs-date>input'))syncDate(i)}
+if(doc)for(const type of ['input','change'])doc.addEventListener(type,e=>{const i=e.target;if(i&&i.matches&&i.matches('#happy-screens .hs-date>input'))syncDate(i)},true);
 function passwordField(o){
  return '<label class="hs-field"><span class="hs-field-title">'+esc(o.label)+'</span><span class="hs-input hs-password"><input type="password" name="'+esc(o.name)+'" aria-label="'+esc(o.label)+
   '" autocomplete="'+esc(o.autocomplete||'current-password')+'" autocapitalize="none" spellcheck="false" value="'+esc(o.value||'')+'">'+
@@ -7880,7 +7903,7 @@ function ruler(box,o){
 }
 
 root.HappyScreens={theme,page,sheet,toast,field,passwordField,actions,segment,setSegment,wheel,ruler,mount,
- esc,clamp,round1,num,fmt,day,ICONS,LB,toUnits,fromUnits,
+ esc,clamp,round1,num,fmt,day,dateText,syncDates,ICONS,LB,toUnits,fromUnits,
  set appToast(fn){appToast=fn},get app(){return app},get open(){return openPages().length>0},
  closeAll(){for(const s of sheets.slice())s.close();for(const p of openPages())p.close()}};
 })(typeof globalThis!=='undefined'?globalThis:this);
@@ -8351,7 +8374,7 @@ function open(){
    (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
    F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как вас зовут'})+
-   F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday})+
+   F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
    '<div class="hs-height-sex">'+F({label:'Рост',name:'height',inputmode:'decimal',value:shown.height,suffix:heightLabel(),placeholder:'Не указан',quick:true})+
    '<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('sex',[['','—','Не указан'],['male','М','Мужской'],['female','Ж','Женский']],draft.sex,'Пол','hs-compact-sex')+'</div></div>'+
    '<div class="hs-field-pair">'+F({label:'Вес сейчас',name:'weight',inputmode:'decimal',value:shown.weight,suffix:weightLabel(),placeholder:'Не указан',quick:true})+
@@ -8372,8 +8395,8 @@ function open(){
   if(e.target.name==='date')autoDate=false;
   if(e.target.name!=='weight'||!original)return;
   const same=e.target.value.trim()===fmt(S().toUnits(original.kg,draft.units.weight)),d=input('date');
-  if(!same&&d.value===original.date&&original.date!==today){d.value=today;autoDate=true}
-  else if(same&&autoDate){d.value=original.date;autoDate=false}
+  if(!same&&d.value===original.date&&original.date!==today){d.value=today;autoDate=true;S().syncDates(main)}
+  else if(same&&autoDate){d.value=original.date;autoDate=false;S().syncDates(main)}
  });
  main.addEventListener('change',e=>{
   if(e.target.matches('[data-p-file]')){const f=e.target.files&&e.target.files[0];e.target.value='';if(f)photoFrom(f).then(url=>{readInputs();draft.photo=url;render()}).catch(err=>error(err.message))}
@@ -8758,7 +8781,7 @@ function openWeight(o){
   const miss=missingProfile(),F=S().field;
   const sh=S().sheet({title:miss?'Данные для расчёта':'Поправка к калориям',onClose:()=>{if(sheet===sh)sheet=null}});sheet=sh;
   let h='<div class="hs-sheet-fields">';
-  if(!data.profile.birthday)h+=F({label:'Дата рождения',name:'cbirthday',type:'date',max:date,value:calcProfile.birthday||''});
+  if(!data.profile.birthday)h+=F({label:'Дата рождения',name:'cbirthday',type:'date',max:date,value:calcProfile.birthday||'',placeholder:'Не указана'});
   if(!data.profile.heightCm)h+=F({label:'Рост',name:'cheight',inputmode:'decimal',suffix:'см',value:calcProfile.heightCm||'',quick:true});
   if(current===null)h+=F({label:'Вес сейчас',name:'cweight',inputmode:'decimal',suffix:'кг',value:g.calc.weightKg||'',quick:true});
   if(!data.profile.sex)h+='<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('csex',[['male','Мужской'],['female','Женский']],calcProfile.sex,'Пол')+'</div>';

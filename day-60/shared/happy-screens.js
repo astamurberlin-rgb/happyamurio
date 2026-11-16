@@ -140,9 +140,27 @@ function toast(text){
 function field(o){
  const attrs=['type','name','value','placeholder','inputmode','autocomplete','max','min','maxlength','step','readonly','id','autocapitalize','spellcheck'].filter(k=>o[k]!==undefined&&o[k]!==false)
   .map(k=>k==='readonly'?'readonly':k+'="'+esc(o[k])+'"').concat(o.quick?['data-hs-quick']:[]).join(' ');
- return '<label class="hs-field'+(o.className?' '+o.className:'')+'"><span class="hs-field-title">'+esc(o.label)+'</span><span class="hs-input"><input '+attrs+' aria-label="'+esc(o.label)+'">'+
+ const head='<label class="hs-field'+(o.className?' '+o.className:'')+'"><span class="hs-field-title">'+esc(o.label)+'</span>';
+ if(o.type==='date'){const text=dateText(o.value),empty=o.placeholder||'Не выбрана';
+  return head+'<span class="hs-input hs-date'+(text?'':' hs-date-empty')+'"><input '+attrs+' aria-label="'+esc(o.label)+'">'+
+   '<span class="hs-date-text" aria-hidden="true" data-empty="'+esc(empty)+'">'+esc(text||empty)+'</span></span></label>';}
+ return head+'<span class="hs-input"><input '+attrs+' aria-label="'+esc(o.label)+'">'+
   (o.suffix?'<span class="hs-suffix">'+esc(o.suffix)+'</span>':'')+'</span></label>';
 }
+/* Дата — по-русски и по центру ячейки (Астамур, 16.11.2026). Своё значение поле даты пишет на языке телефона
+   («May 24, 1986» на английском iPhone) и на iPhone прижимает его к верху. Поле остаётся настоящим: нажатие открывает
+   системный выбор даты, форма получает то же значение, — а видна строка поверх него. Год текущего года не пишется. */
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+function dateText(v){
+ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v||''));if(!m||+m[2]<1||+m[2]>12)return '';
+ return (+m[3])+' '+MONTHS[+m[2]-1]+(m[1]===day().slice(0,4)?'':' '+m[1]);
+}
+function syncDate(input){
+ const box=input&&input.parentElement,text=box&&box.querySelector(':scope>.hs-date-text');if(!text)return;
+ const s=dateText(input.value);text.textContent=s||text.dataset.empty;box.classList.toggle('hs-date-empty',!s);
+}
+function syncDates(scope){for(const i of (scope||doc).querySelectorAll('.hs-date>input'))syncDate(i)}
+if(doc)for(const type of ['input','change'])doc.addEventListener(type,e=>{const i=e.target;if(i&&i.matches&&i.matches('#happy-screens .hs-date>input'))syncDate(i)},true);
 function passwordField(o){
  return '<label class="hs-field"><span class="hs-field-title">'+esc(o.label)+'</span><span class="hs-input hs-password"><input type="password" name="'+esc(o.name)+'" aria-label="'+esc(o.label)+
   '" autocomplete="'+esc(o.autocomplete||'current-password')+'" autocapitalize="none" spellcheck="false" value="'+esc(o.value||'')+'">'+
@@ -248,7 +266,7 @@ function ruler(box,o){
 }
 
 root.HappyScreens={theme,page,sheet,toast,field,passwordField,actions,segment,setSegment,wheel,ruler,mount,
- esc,clamp,round1,num,fmt,day,ICONS,LB,toUnits,fromUnits,
+ esc,clamp,round1,num,fmt,day,dateText,syncDates,ICONS,LB,toUnits,fromUnits,
  set appToast(fn){appToast=fn},get app(){return app},get open(){return openPages().length>0},
  closeAll(){for(const s of sheets.slice())s.close();for(const p of openPages())p.close()}};
 })(typeof globalThis!=='undefined'?globalThis:this);

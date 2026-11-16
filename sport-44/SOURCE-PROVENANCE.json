@@ -107,8 +107,8 @@
     },
     {
       "path": "index.html",
-      "size": 1210880,
-      "sha256": "d89cada826cabb4805aac261887d73892df68eaa6afb2026d4ea2f83ae4ef790"
+      "size": 1213854,
+      "sha256": "dac13326ebc066413e7dc8ddae8401e4fd3254b13a59d24d1672d11b1cf009a0"
     },
     {
       "path": "manifest.webmanifest",
@@ -192,8 +192,8 @@
     },
     {
       "path": "shared/happy-goals.js",
-      "size": 39117,
-      "sha256": "fd4c930ad6aa8b0258f3579eaf8a59a561dbec19362c76b069b6ec0305912ef3"
+      "size": 39151,
+      "sha256": "96c62978990d3ebe9aeaf20ce123494cbe0253c7f0d58d5feff4080f0970d025"
     },
     {
       "path": "shared/happy-gradients.js",
@@ -222,8 +222,8 @@
     },
     {
       "path": "shared/happy-person.js",
-      "size": 22631,
-      "sha256": "fe2ff011504111ba4b9e4e7aaa0fff59fca61c02180562d2828a3d54597aa3fa"
+      "size": 22705,
+      "sha256": "95a309fc0e91ea3d88250b3f92648ddb8775a154702b7baa7f8e74b126170ec7"
     },
     {
       "path": "shared/happy-reference-themes.js",
@@ -232,13 +232,13 @@
     },
     {
       "path": "shared/happy-screens.css",
-      "size": 29109,
-      "sha256": "ef4efe80166092bd2f14e1362863f29e92420a2f3432286a1f6533aedc6c5abc"
+      "size": 29988,
+      "sha256": "8216c4245e22dcb609f0af94fd021402f997cfe248ea8395f5d894e813928df9"
     },
     {
       "path": "shared/happy-screens.js",
-      "size": 21016,
-      "sha256": "c0027f9a9f73b82a15c332abacdaccde41fb2a651ac96368395fc76881cb1c2b"
+      "size": 22891,
+      "sha256": "b4ea381dbaadcc6e53f9ca1d4c441ab2459896fd0f57361ba5b8027dfa0d8a13"
     },
     {
       "path": "shared/happy-sport-summary.js",
@@ -642,8 +642,8 @@
     },
     {
       "path": "sport/src/planning.js",
-      "size": 21773,
-      "sha256": "b638d0586dfeb638ac6611af64c095b6421bbcf01a6eeddc74d1f9bf3528ae8b"
+      "size": 21885,
+      "sha256": "591980a75a919af5a9753cbaaa3e8dafa90f65d6f4d7188f7ac30fdb634a9826"
     },
     {
       "path": "sport/src/quick-value-input.js",

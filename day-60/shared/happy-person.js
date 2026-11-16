@@ -164,7 +164,7 @@ function open(){
    (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
    F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как вас зовут'})+
-   F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday})+
+   F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
    '<div class="hs-height-sex">'+F({label:'Рост',name:'height',inputmode:'decimal',value:shown.height,suffix:heightLabel(),placeholder:'Не указан',quick:true})+
    '<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('sex',[['','—','Не указан'],['male','М','Мужской'],['female','Ж','Женский']],draft.sex,'Пол','hs-compact-sex')+'</div></div>'+
    '<div class="hs-field-pair">'+F({label:'Вес сейчас',name:'weight',inputmode:'decimal',value:shown.weight,suffix:weightLabel(),placeholder:'Не указан',quick:true})+
@@ -185,8 +185,8 @@ function open(){
   if(e.target.name==='date')autoDate=false;
   if(e.target.name!=='weight'||!original)return;
   const same=e.target.value.trim()===fmt(S().toUnits(original.kg,draft.units.weight)),d=input('date');
-  if(!same&&d.value===original.date&&original.date!==today){d.value=today;autoDate=true}
-  else if(same&&autoDate){d.value=original.date;autoDate=false}
+  if(!same&&d.value===original.date&&original.date!==today){d.value=today;autoDate=true;S().syncDates(main)}
+  else if(same&&autoDate){d.value=original.date;autoDate=false;S().syncDates(main)}
  });
  main.addEventListener('change',e=>{
   if(e.target.matches('[data-p-file]')){const f=e.target.files&&e.target.files[0];e.target.value='';if(f)photoFrom(f).then(url=>{readInputs();draft.photo=url;render()}).catch(err=>error(err.message))}

@@ -27,10 +27,18 @@ def until(page, js, arg=None, seconds=10):
     return wait_for(page, lambda: look(page, js, arg), seconds, 200)
 
 
+# Первый экран запоминается в самой странице в момент появления: на медленном запуске дуга успевает остановиться
+# раньше, чем сценарий спросит страницу, и проверка «сначала только смайлик» падала без ошибки в приложении.
+FIRST_LOOK = """new MutationObserver((list,o)=>{const w=document.querySelector('#happy-screens .hs-welcome'),opt=w&&w.querySelector('.hs-welcome-options'),
+ s=w&&w.querySelector('.hs-smile');if(!opt||!s)return;o.disconnect();const r=s.getBoundingClientRect();
+ window.__welcomeStart={smile:[Math.round(r.x),Math.round(r.y),Math.round(r.width)],options:getComputedStyle(opt).opacity}}).observe(document,{childList:true,subtree:true})"""
+
+
 def new(ctx, name, url):
     """Открыть приложение; не ждать полной загрузки — первый экран смотрим с самого начала."""
     page = ctx.new_page()
     page.on("pageerror", lambda e: errors.append(name + ": " + str(e)[:300]))
+    page.add_init_script(FIRST_LOOK)
     page.goto(url, wait_until="commit")
     return page
 
@@ -39,7 +47,7 @@ def welcome(page):
     """Первый экран: что видно до и после того, как дуга остановилась."""
     page.wait_for_selector("#happy-screens .hs-welcome", timeout=15000)
     box = "()=>{const r=document.querySelector('.hs-smile').getBoundingClientRect();return [Math.round(r.x),Math.round(r.y),Math.round(r.width)]}"
-    start = {"smile": page.evaluate(box), "options": page.evaluate("()=>getComputedStyle(document.querySelector('.hs-welcome-options')).opacity")}
+    start = page.evaluate("()=>window.__welcomeStart")
     page.wait_for_selector(".hs-welcome-options.hs-settled", timeout=15000)
     page.wait_for_timeout(700)   # кнопки проявляются плавно
     angle = page.evaluate("()=>parseFloat(/rotate\\(([-\\d.]+)deg\\)/.exec(document.querySelector('[data-hs-ring]').style.transform)[1])")
@@ -117,6 +125,14 @@ with sync_playwright() as p:
     m.fill("#happy-screens [name=height]", "178")
     m.click("#happy-screens [data-segment=sex] [data-value=male]")
     m.fill("#happy-screens [name=weight]", "82,4")
+    # колонки «Рост | Пол» и «Вес сейчас | Дата замера» совпадают; дата — по-русски и по центру ячейки (Астамур, 16.11.2026)
+    out["profile_layout"] = lay = m.evaluate("""()=>{const pg=document.querySelector('#happy-screens [data-page=profile]'),r=e=>e.getBoundingClientRect(),
+      f=n=>r(pg.querySelector('[name='+n+']').closest('.hs-input')),sex=r(pg.querySelector('[data-segment=sex]'));
+      const dates=[...pg.querySelectorAll('.hs-date')].map(d=>{const t=d.querySelector('.hs-date-text'),g=document.createRange();g.selectNodeContents(t);
+        const a=g.getBoundingClientRect(),b=r(d);return [t.textContent,Math.round(Math.abs(a.left+a.right-b.left-b.right)/2),Math.round(Math.abs(a.top+a.bottom-b.top-b.bottom)/2)]});
+      return {cols:Math.round(f('height').right)===Math.round(f('weight').right)&&Math.round(sex.left)===Math.round(f('date').left),dates}}""")
+    check("профиль: колонки «Рост | Пол» и «Вес сейчас | Дата замера» совпадают; дата по-русски и по центру ячейки",
+          lay["cols"] and len(lay["dates"]) == 2 and lay["dates"][0][0] == "14 мая 1990" and all(d[1] <= 1 and d[2] <= 1 for d in lay["dates"]))
     save_screen(m)
     out["profile_toast"] = until(m, "()=>{const t=document.getElementById('toast');return t&&/Профиль сохранён/.test(t.textContent)&&t.textContent}", seconds=8)
     out["profile_name_top"] = until(m, "()=>{const h=document.querySelector('#happy-account-top h2');return h&&h.textContent!=='Проверка'&&h.textContent}", seconds=8)
