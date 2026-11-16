@@ -1,6 +1,6 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-16.1",
+  "revision": "2026-11-16.2",
   "updated": "2026-11-16",
   "libraries": {
     "bls": {
@@ -89,6 +89,21 @@
       "date": "2026-11-12",
       "notes": "data/DESSERTS.md",
       "firstReader": "Happy Meal 31.1 and later (desserts2 adapter, per-record revision); Meal 25–30 and 31.0 keep desserts 1.1"
+    },
+    "sweet-preserves": {
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/14ad8718f2302703b2c8b5d3e1172e87264b45c3/data/sweet-preserves-1.0.json",
+      "encoding": "json",
+      "bytes": 56736,
+      "sha256": "953498169a3a4b7a84644281d03c3e79d0be41b3bdf143c45b162c3d8650c668",
+      "foodCount": 27,
+      "ownCards": 7,
+      "collectionMarks": 20,
+      "schema": "happy-independent-food-library/1.0",
+      "author": "ChatGPT",
+      "date": "2026-11-14",
+      "notes": "data/SWEET-PRESERVES.md",
+      "firstReader": "Happy Meal 33.3 and later (preserves.js)"
     }
   }
 }

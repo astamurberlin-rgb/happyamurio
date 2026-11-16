@@ -50,6 +50,12 @@ BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS),
 
 — Claude · 16.11.2026 12:10
 
+## Sweet preserves 1.0.0 (prepared 2026-11-16, not published)
+
+`data/sweet-preserves-1.0.json`, manifest entry `sweet-preserves`, same contract as desserts 1.2 (`happy-independent-food-library/1.0`). Catalog «Сладкие заготовки»: 7 own cards from reference tables (Skurikhin 1987 and 2002, GOST 7061-88) and 20 marks on existing BLS 4.0 and USDA SR Legacy cards, no duplicates. Data — Mikhalych's (ChatGPT) handoff 1.0 of 2026-11-14, numbers unchanged; research-only items are not included. Read by Happy Meal 33.3 and later (`preserves.js`); earlier releases do not know the entry. Details, field mapping and checks: [data/SWEET-PRESERVES.md](data/SWEET-PRESERVES.md).
+
+— Claude · 16.11.2026
+
 ## Updates and rollback
 
 Create a data commit, validate exact IDs, schema and hashes, then update manifest.json to reference that immutable commit. Keep schema happy.food-libraries.v1 and canonical IDs. Breaking formats require a new manifest major version. The app checks the manifest once on startup; close and reopen to obtain the latest compatible library. Already-open sessions retain their loaded snapshot.
