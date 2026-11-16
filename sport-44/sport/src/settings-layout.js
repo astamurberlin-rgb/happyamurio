@@ -12,7 +12,16 @@ const SPORT_DEV_FLAG='sport-settings-developer-v1';
 let sportDevVisible=(()=>{try{return sessionStorage.getItem(SPORT_DEV_FLAG)==='1'}catch{return false}})();
 function sportDevToggle(on){sportDevVisible=on;try{if(on)sessionStorage.setItem(SPORT_DEV_FLAG,'1');else sessionStorage.removeItem(SPORT_DEV_FLAG)}catch{}}
 const sportLayoutProfile=renderProfile;
-renderProfile=function(){return sportSettingsLayout(sportLayoutProfile())};
+// Кнопки Happy Day и Happy Meal: в разметке постоянные адреса (/happyamurio/day/, /happyamurio/meal/). После отрисовки
+// настроек общий файл shared/happy-links.js подставляет папку текущего выпуска из shared/apps.json — кнопка открывает
+// приложение сразу, без страницы-перехода. Нет сети — остаётся постоянный адрес. (16.11.2026)
+let sportNeighborApps=null;
+function sportNeighborLinks(){
+ if(typeof HappyLinks==='undefined')return;
+ sportNeighborApps=sportNeighborApps||HappyLinks.load();
+ sportNeighborApps.then(apps=>{if(apps)HappyLinks.apply(apps);else sportNeighborApps=null});
+}
+renderProfile=function(){const html=sportSettingsLayout(sportLayoutProfile());setTimeout(sportNeighborLinks,0);return html};
 function sportSettingsLayout(html){
  const tpl=document.createElement('template');tpl.innerHTML=html;
  const root=tpl.content,settings=root.querySelector('.happy-settings');

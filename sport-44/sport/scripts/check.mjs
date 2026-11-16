@@ -27,9 +27,12 @@ import './check-rest.mjs';
 import './check-countdown.mjs';
 import './check-set-swipe.mjs';
 import './check-history-pause.mjs';
+import './check-free-timer.mjs';
+import './check-strong-native-mappings.mjs';
 const root=new URL('../',import.meta.url),read=p=>readFile(new URL(p,root),'utf8');
 for(const f of await readdir(new URL('src',root)))if(f.endsWith('.js'))new Script(await read('src/'+f),{filename:f});
-for(const f of ['dist/index.html','dist/exercises/pull-up.html']){
+// Собранные страницы — из папки выпуска (сборка: node sport-NN/sport/scripts/build.mjs).
+for(const f of ['../index.html','../exercises/pull-up.html']){
  const html=await read(f);
  for(const [i,m] of [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].entries())if(!m[1].includes('application/json'))new Script(m[2],{filename:f+':'+i});
 }

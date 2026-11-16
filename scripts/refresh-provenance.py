@@ -10,7 +10,7 @@
 на диске. Остальные поля манифеста (название выпуска, версия, записи `point_releases` / `pointReleases`) не трогает:
 их правит исполнитель при выпуске. Проверка без записи: `--check` (код возврата 1, если манифест расходится с файлами).
 
-У Sport свой порядок: `node sport-NN/scripts/write-provenance.mjs`, затем `node sport-NN/scripts/verify-release.mjs`.
+У Sport списка с контрольными суммами нет (убран 16.11.2026): то же хранит Git.
 """
 import hashlib
 import json

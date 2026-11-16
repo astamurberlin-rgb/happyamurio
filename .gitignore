@@ -1,6 +1,5 @@
-# GitHub Pages serves the release roots (sport-38/index.html, sport-38/sport-icons/, …).
-# Intermediate Sport build outputs are produced locally by `node sport-NN/scripts/build-release.mjs`
-# and are not committed: they tripled the size of every Sport release (08.11.2026).
+# Промежуточные файлы сборки прежних выпусков Sport (до 44 включительно на сайте): в Git не хранятся.
+# С 16.11.2026 сборка Sport (`node sport-NN/sport/scripts/build.mjs`) пишет сразу в папку выпуска, промежуточных файлов нет.
 sport-*/dist/
 sport-*/sport/dist/
 sport-*/sport/sport-icons/

@@ -1,4 +1,9 @@
+/* Сборка Sport — одна команда из корня репозитория: node sport-NN/sport/scripts/build.mjs
+ * Склеивает исходники src/ в одну страницу, встраивает справочник упражнений и общие файлы и пишет результат один раз,
+ * в папку выпуска: index.html, exercises/, app-icons/, manifest.webmanifest. Промежуточных копий нет (16.11.2026).
+ * Проверки берут собранное из памяти: import {files} from './build.mjs' — при импорте на диск ничего не пишется. */
 import { readFile, mkdir, writeFile, cp } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
 import { loadSeed, loadLibrary, loadMedia, loadMediaPlaceholder, EXERCISE_LIBRARY_URL, EXERCISE_MEDIA_VERSION } from './seed.mjs';
 
 const root = new URL('../', import.meta.url);
@@ -22,8 +27,6 @@ if (!template.includes('__SEED__') || !template.includes('__APP__')) {
   throw new Error('В шаблоне отсутствуют места для данных или приложения.');
 }
 const read=path=>readFile(new URL(path,root),'utf8');
-// Update 38.4: linked-app buttons take the current Day/Meal release directories from shared/apps.json at build time and open a new window.
-const happyApps=JSON.parse(await readFile(new URL('../../shared/apps.json',root),'utf8')),releaseDir=app=>happyApps[app].entry.split('/')[0];
 const [css,refinementsSource,navIcons,dock]=await Promise.all([
   read('src/refinements.css'),read('src/refinements.js'),read('src/nav-icons.json'),read('src/dock-shape.js')
 ]);
@@ -60,7 +63,9 @@ const happyLinks=(await readShared('happy-links.js')).replace(LAB?'if(!root.fetc
 const iconStudioBridge=await read('src/icon-studio-bridge.js');
 const setPlan=await read('src/set-plan.js'),freeTimerJs=await read('src/free-timer.js');
 const quickValueInput=await read('src/quick-value-input.js'),restPill=await read('src/rest-pill.js');
-const refinements=refinementsSource.replace('__HAPPY_DAY_DIR__',()=>releaseDir('day')).replace('__HAPPY_MEAL_DIR__',()=>releaseDir('meal'));
+// Кнопки соседей ведут на постоянные адреса /happyamurio/day/ и /happyamurio/meal/ (16.11.2026): номера выпусков Day и Meal
+// в страницу не вшиваются, после их выпуска Sport пересобирать не нужно. Текущую папку подставляет shared/happy-links.js.
+const refinements=refinementsSource;
 const exerciseConfig=await read('src/exercise-config.js'),exercisePlayer=await read('src/exercise-player.js'),experienceCss=await read('src/exercise-experience.css'),timerPrototypeCss=await read('src/timer-prototype.css');
 async function readShared(name){
   try{return await readFile(new URL('../shared/'+name,root),'utf8')}
@@ -104,9 +109,8 @@ const html = labPage(template
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
   .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
-await mkdir(new URL('dist/', root), { recursive: true });
-await writeFile(new URL('dist/index.html', root), html);
-await writeFile(new URL('index.html', root), html);
+// Всё собранное: путь внутри папки выпуска → текст.
+const files=new Map([['index.html',html]]);
 // Lab 10.11.2026: an exercise page takes its text from the family in the library and its pictures from the media
 // library; both are embedded here, so the page keeps working offline and never carries its own copy of the text.
 // A card of its own (other equipment, families.json «cards») gets a page of its own from the same source: the family's
@@ -121,12 +125,14 @@ for(const family of [...exerciseLibrary.families.filter(f=>f.page),...cardPages]
   // The page shows the full name of the chosen variant when it is opened on its own.
   const {file,...pageSource}=family,pageFamily={...pageSource,variants:family.variants.map(v=>({...v,fullName:v.name||exerciseLibrary.exercises.find(e=>e.id===v.exerciseId)?.name||family.name}))};
   const page=source.replace('__EXERCISE_FAMILY__',()=>inline(pageFamily)).replace('__EXERCISE_MEDIA__',()=>inline(media));
-  for(const directory of ['exercises/','dist/exercises/']){await mkdir(new URL(directory,root),{recursive:true});await writeFile(new URL(directory+(family.file||family.page)+'.html',root),page)}
+  files.set('exercises/'+(family.file||family.page)+'.html',page);
 }
-console.log('Sport built.');
-
-// App installation assets travel with both published Sport outputs.
-for (const directory of ['', 'dist/']) {
-  await cp(new URL('src/app-icons',root),new URL(directory+'app-icons',root),{recursive:true});
-  await cp(new URL('src/manifest.webmanifest',root),new URL(directory+'manifest.webmanifest',root));
+export {files};
+// Запущено командой — записать в папку выпуска (лаборатория — в lab/) вместе со значками и файлом установки.
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  const out=new URL(LAB?'../lab/':'../',root);
+  for(const [path,text] of files){const to=new URL(path,out);await mkdir(new URL('./',to),{recursive:true});await writeFile(to,text)}
+  await cp(new URL('src/app-icons',root),new URL('app-icons',out),{recursive:true});
+  await cp(new URL('src/manifest.webmanifest',root),new URL('manifest.webmanifest',out));
+  console.log('Sport built: '+[...files.keys()].join(', ')+(LAB?' (лаборатория, lab/)':''));
 }
