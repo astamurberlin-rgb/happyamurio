@@ -106,7 +106,27 @@ const SportTaps=(()=>{
   return `<p class="sheet-info">${date}${rows.length?', всего '+rows.length:''}. Время можно поправить, лишнее — снять.</p>`+
    (rows.length?rows.map(r=>`<div class="tap-row"><label class="tap-time${r.t?'':' tap-none'}"><input type="time" value="${r.t||''}" data-tap-time="${esc(r.key)}" aria-label="Время нажатия"><b aria-hidden="true">—:—</b></label><span class="tap-amount">${esc(r.amount.indexOf('+')===0?r.amount:'+'+r.amount)}</span><button type="button" class="tap-remove" data-tap-remove="${esc(r.key)}" aria-label="Снять нажатие">${MINUS}</button></div>`).join('')
     :'<p class="fineprint">За этот день нажатий нет.</p>')+
-   `<div class="tap-actions"><button type="button" class="button primary" data-tap-done>Готово</button></div>`;
+   (isFood(id)?`<p class="fineprint">Название и порция этого счётчика меняются в Happy Meal. Там же его можно убрать из Sport.</p>`:'')+
+   `<div class="tap-actions">${isFood(id)?'':`<button type="button" class="button tap-trash" data-tap-delete aria-label="Удалить счётчик">${icon('trash')}</button><button type="button" class="button" data-tap-edit>Изменить</button>`}<button type="button" class="button primary" data-tap-done>Готово</button></div>`;
+ }
+ /* Свой счётчик Sport (Астамур 12.11.2026, «корзина, как в Meal»): «Изменить» — название и порция; корзина удаляет
+    счётчик сразу, без второго окна, с «Отменить» в сообщении. Счётчики еды Meal меняются и убираются в Meal. */
+ function editBody(id){
+  const c=(state.customCounters||[]).find(c=>c.id===id);if(!c)return '';
+  return `<form id="sport-counter-edit"><label class="field">Название<input name="title" required maxlength="100" value="${esc(c.title)}"></label>`+
+   `<label class="field">Одна порция<input name="unit" maxlength="40" value="${esc(c.unit||'')}" placeholder="Например, стакан"></label>`+
+   `<div class="tap-actions"><button type="button" class="button" data-tap-back>Отменить</button><button type="submit" class="button primary">Сохранить</button></div></form>`;
+ }
+ function edit(id){const box=document.getElementById('sport-tap-sheet');if(box)box.innerHTML=editBody(id)}
+ function save(id,form){
+  const c=(state.customCounters||[]).find(c=>c.id===id),data=new FormData(form),title=String(data.get('title')||'').trim();if(!c||!title)return;
+  c.title=title;c.unit=String(data.get('unit')||'').trim();persist();paintSportFood();
+  const head=document.getElementById('sheet-title');if(head)head.textContent=title;paint();
+ }
+ function drop(id){
+  const list=state.customCounters||[],i=list.findIndex(c=>c.id===id);if(i<0)return;
+  const [c]=list.splice(i,1);persist();open=null;closeSheet();paintSportFood();
+  toast('Счётчик «'+c.title+'» удалён',()=>{state.customCounters=state.customCounters||[];state.customCounters.splice(Math.min(i,state.customCounters.length),0,c);persist();paintSportFood()});
  }
  function paint(){if(!open)return;const box=document.getElementById('sport-tap-sheet');if(!box){open=null;return}box.innerHTML=body(open)}
  function show(id){open=id;openSheet(title(id),`<div id="sport-tap-sheet">${body(id)}</div>`,'sport-taps')}
@@ -142,8 +162,12 @@ const SportTaps=(()=>{
   if(ev.target.closest('input[type=time]'))return;   // выбор времени открывает само поле
   const btn=ev.target.closest('button');if(!btn)return;
   if(btn.hasAttribute('data-tap-done')){open=null;closeSheet();return}
+  if(btn.hasAttribute('data-tap-delete')){drop(open);return}
+  if(btn.hasAttribute('data-tap-edit')){edit(open);return}
+  if(btn.hasAttribute('data-tap-back')){paint();return}
   if(btn.dataset.tapRemove)remove(open,btn.dataset.tapRemove);
  });
+ document.addEventListener('submit',ev=>{if(ev.target.id!=='sport-counter-edit'||!open)return;ev.preventDefault();save(open,ev.target)});
  document.addEventListener('change',ev=>{
   const input=ev.target;if(!open||!input.dataset||input.dataset.tapTime==null||!input.closest('#sport-tap-sheet'))return;
   setTime(open,input.dataset.tapTime,input.value||null);

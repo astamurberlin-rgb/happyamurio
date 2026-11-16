@@ -172,6 +172,8 @@ button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:n
 .tap-remove{display:grid;place-items:center;width:30px;height:30px;margin-left:4px;border-radius:50%;background:#ffffff26;border:1px solid #ffffff59;color:#fff}
 .tap-remove svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 .tap-actions{display:flex;gap:9px;margin-top:16px}.tap-actions .button{flex:1}
+.tap-actions .tap-trash{flex:0 0 52px;padding:0;display:grid;place-items:center}.tap-trash svg{width:22px;height:22px}
+#sport-counter-edit{display:grid;gap:12px}
 /* −30 / +30 по бокам цифр перерыва (Астамур, 15.11.2026): цифры и обе кнопки — одна группа между паузой и «Завершить».
    Раньше «+30 секунд» появлялся только в конце перерыва, мелко под цифрами. */
 .floating-rest-pill>.floating-rest-mid{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;height:48px}
