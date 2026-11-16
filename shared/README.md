@@ -6,7 +6,7 @@
 
 - `node scripts/sync-shared.mjs` копирует файлы из этой папки в папку `shared/` текущих выпусков. Список файлов — `shared-files.json`.
 - `node scripts/sync-shared-ui.mjs` встраивает общий стиль настроек в страницы Day и Meal.
-- В Sport общий код попадает при сборке: `node sport-44/scripts/build-release.mjs`.
+- В Sport общий код попадает при сборке: `node sport-44/sport/scripts/build.mjs`.
 - Обе команды `sync` меняют файлы. После них смотреть, что изменилось.
 - Встроенный в страницу блок `HAPPY_SHARED_STYLE` руками не править: следующая сборка его перезапишет.
 

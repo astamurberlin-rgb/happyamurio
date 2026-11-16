@@ -16,7 +16,19 @@ var SportFood=(()=>{
  /* записи трёх документов нажатий; документ более новой версии не читается и не называется */
  function docs(){const out={};F.TAP_APPS.forEach(app=>{const d=docOf(app);if(d&&!d.newer)out[app]=d.all()});return out}
  /* счётчики Meal, показанные в Sport */
- function foods(){if(!signedIn()||!linkOn())return [];const d=SportData.store.neighbor(F.FOODS.app,F.FOODS.name);return d.newer?[]:F.foods(d.all()).filter(x=>F.linked(x,'sport'))}
+ function foods(){
+  if(!signedIn()||!linkOn())return [];const d=SportData.store.neighbor(F.FOODS.app,F.FOODS.name),t=tapsDoc();if(d.newer)return [];
+  const off=t&&!t.newer?F.hidden(t.all()):{};   // убранные со страницы Sport свайпом, пока Meal не выключил им показ
+  return F.foods(d.all()).filter(x=>F.linked(x,'sport')&&!off[x.id]);
+ }
+ /* убрать счётчик Meal со страницы Sport (свайп, 16.11.2026): отметка в документе нажатий Sport, Meal выключит ему показ
+    в Sport. Сам счётчик и порции остаются. Отдаёт «вернуть» — снять отметку. */
+ function hide(cid){
+  const doc=tapsDoc(),mark=F.hide(cid);if(!doc||doc.newer)return null;
+  const fail=e=>toast(e&&e.code==='newer'?HappyStore.NEWER:(e&&e.message)||'Не удалось сохранить');
+  doc.put(mark.id,mark.value).catch(fail);paintSportFood();
+  return ()=>{doc.remove(mark.id).catch(fail);paintSportFood()};
+ }
  /* все нажатия на счётчики еды, по времени; сделанные в Day или Sport, пока их связь с Meal была выключена, не считаются */
  function taps(){
   if(!signedIn())return [];
@@ -37,7 +49,7 @@ var SportFood=(()=>{
   const s=F.summary(d.all()),e=F.eaten(s,date,taps(),foods(),Object.keys(docs()));
   return e?{k:e.k,p:e.p,f:e.f,c:e.c,fib:e.fib,g:s.goals}:null;
  }
- return {PREFIX,foods,taps,count,change,eaten};
+ return {PREFIX,foods,taps,count,change,eaten,hide};
 })();
 const sportCounterId=()=>crypto.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
 function sportCounterRow(c){const n=(c.events||[]).filter(e=>e.date===selectedDate).length;return `<div class="sport-food-row"><div><b>${esc(c.title)}</b><small>${esc(c.unit||'раз')}</small></div><div class="sport-food-pill" role="group" aria-label="${esc(c.title)}"><button class="text-btn" data-action="food-minus" data-id="${esc(c.id)}" aria-label="Убрать: ${esc(c.title)}" ${!n?'disabled':''}>−</button><strong>${n}</strong><button class="text-btn" data-action="food-plus" data-id="${esc(c.id)}" aria-label="Добавить: ${esc(c.title)}">＋</button></div></div>`;}
@@ -149,4 +161,57 @@ const SportTaps=(()=>{
   setTime(open,input.dataset.tapTime,input.value||null);
  });
  return {paint,show};
+})();
+
+/* Счётчики на главной Sport: свайп влево убирает счётчик — как в лаборатории Day (Астамур 16.11.2026 14:15).
+   Без вопроса, 6 секунд «Отменить». Счётчик Happy Meal не удаляется: Sport кладёт отметку «убран из Sport», Meal выключает
+   ему показ в Sport; вернуть — свитч Happy Sport в настройках счётчика в Meal. Свой счётчик Sport удаляется вместе
+   со своими нажатиями. Пример «Вода» не свайпается. Список перерисовывается целиком, поэтому слушаем документ.
+   — Claude · 16.11.2026 (лаборатория Sport 44) */
+(()=>{
+ let g=null,swiped=0;
+ const keyOf=row=>{const b=row.querySelector('[data-action="food-plus"]');return b&&b.dataset.id!=='example-water'?b.dataset.id:null};
+ const set=(row,dx)=>{row.style.setProperty('--sx',dx+'px');row.style.setProperty('--so',String(Math.min(1,-dx/90)))};
+ const back=row=>{row.classList.remove('tpSwiping');set(row,0)};
+ const repaint=()=>{paintSportFood();if(typeof HappyEnergy!=='undefined')HappyEnergy.refresh()};
+ function remove(row){
+  const id=keyOf(row);if(!id){back(row);return}
+  set(row,-row.offsetWidth);
+  setTimeout(()=>{
+   if(id.startsWith(SportFood.PREFIX)){
+    const cid=id.slice(SportFood.PREFIX.length),d=SportFood.foods().find(x=>x.id===cid),undo=SportFood.hide(cid);
+    if(!undo){back(row);return}
+    toast('«'+(d?d.title:'Счётчик')+'» убран из Happy Sport',undo);return;
+   }
+   const list=state.customCounters||[],i=list.findIndex(c=>c.id===id);if(i<0){back(row);return}
+   const [c]=list.splice(i,1);persist();repaint();
+   toast('«'+c.title+'» убран',()=>{state.customCounters=state.customCounters||[];state.customCounters.splice(Math.min(i,state.customCounters.length),0,c);persist();repaint()});
+  },180);
+ }
+ document.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse'&&e.button!==0)return;
+  const row=e.target.closest('#sport-food-counters .tpItem');if(!row||!keyOf(row))return;
+  g={row,id:e.pointerId,x:e.clientX,y:e.clientY,dx:0,axis:null};
+ });
+ document.addEventListener('pointermove',e=>{
+  if(!g||e.pointerId!==g.id)return;
+  const dx=e.clientX-g.x,dy=e.clientY-g.y;
+  if(!g.axis){
+   if(Math.abs(dx)<8&&Math.abs(dy)<8)return;
+   g.axis=dx<0&&Math.abs(dx)>Math.abs(dy)*1.2?'x':'y';
+   if(g.axis!=='x'){g=null;return}
+   try{g.row.setPointerCapture(e.pointerId)}catch(_){}
+   g.row.classList.add('tpSwiping');
+  }
+  g.dx=Math.min(0,dx);set(g.row,g.dx);
+ });
+ function end(e,cancel){
+  if(!g||e.pointerId!==g.id)return;
+  const G=g;g=null;if(G.axis!=='x')return;swiped=Date.now();
+  if(!cancel&&-G.dx>Math.max(90,G.row.offsetWidth*.35)){G.row.classList.remove('tpSwiping');remove(G.row)}else back(G.row);
+ }
+ document.addEventListener('pointerup',e=>end(e,false));
+ document.addEventListener('pointercancel',e=>end(e,true));
+ // после свайпа кнопка под пальцем не нажимается
+ document.addEventListener('click',e=>{if(Date.now()-swiped<350&&e.target.closest('#sport-food-counters')){e.stopImmediatePropagation();e.preventDefault()}},true);
 })();
