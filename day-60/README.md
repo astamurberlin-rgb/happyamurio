@@ -1,4 +1,4 @@
-# Happy Day · Update 60.2
+# Happy Day · Update 60.3
 
 Адрес: https://astamurberlin-rgb.github.io/happyamurio/day-60/
 

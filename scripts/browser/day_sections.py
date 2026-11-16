@@ -1,6 +1,7 @@
 """Раздел дня и кнопка «Отметить самочувствие» (с Day 57.6) на настоящей странице Day. Один телефон, придуманный аккаунт.
 Раздел, открытый с экрана дня, сохраняется сам, у шкал и тегов своё время; новое значение шкалы — новая отметка,
 прежнее остаётся в журнале; кнопка «Отметить самочувствие» — каждое «Сохранить» новая запись, раздел не меняется.
+Day 60.3: кнопка сразу открывает раздел «Сейчас», колеса разделов нет — одно «Сохранить» сохраняет и возвращает на главную.
 Начало Завтрака — время первого продукта из сводки Meal; ручное время Day главнее.
 Day 59: записывать можно после входа; раздел лежит в общем модуле хранения по отметкам (шкала, тег — отдельные записи);
 сводка Meal приходит из его витрины в общем модуле — её пишет настоящий Meal 32 на том же телефоне (вход общий).
@@ -84,15 +85,13 @@ with sync_playwright() as p:
     before_n = page.evaluate("()=>(DB.days[todayISO()].care?.checkins||[]).length")
     page.evaluate("()=>{window.__hm='15:00';SelfCare.open('mood')}")
     page.wait_for_timeout(700)
-    out["button_destination"] = page.evaluate("()=>document.getElementById('wheelDestination')?.textContent||''")
+    check("кнопка открывает раздел «Сейчас»", page.evaluate("()=>document.getElementById('cpName').textContent") == "Сейчас")
     empty = page.evaluate("()=>{const c=SelfCare.checkinDay().cp.care_current;return !Object.keys(c).some(k=>typeof c[k]==='number')&&!Object.values(c.tags||{}).some(Boolean)}")
     check("форма кнопки открывается пустой", empty)
     for i in range(2):
         page.evaluate("(k)=>{const c=SelfCare.checkinDay().cp.care_current;c[k]=4;SelfCare.saveCheckin()}", metric)
         page.wait_for_timeout(200)
-        page.click("#nowSave")          # первое нажатие открывает колесо разделов
-        page.wait_for_timeout(1200)
-        page.click("#nowSave")          # второе — сохраняет
+        page.click("#nowSave")          # Day 60.3: колеса разделов нет — одно нажатие сохраняет и возвращает на главную
         page.wait_for_timeout(1200)
         if i == 0:
             page.evaluate("()=>{window.__hm='15:10';SelfCare.open('mood')}")
@@ -101,6 +100,9 @@ with sync_playwright() as p:
     recs = page.evaluate("()=>(DB.days[todayISO()].care?.checkins||[]).map(x=>({time:x.time,key:x.sectionKey||null}))")
     out["button_records"] = recs
     check("два «Сохранить» — две новые записи в журнале", after_n == before_n + 2)
+    check("после «Сохранить» — главная", page.evaluate("()=>document.querySelector('.screen.on')?.dataset.screen") == "day")
+    check("записи кнопки — раздел «Сейчас», а не раздел по времени суток", all(r["key"] in (None, "care_current") for r in recs[-2:]))
+    check("в «Ленте дня» — «Отметка дня»", page.evaluate("()=>SelfCare.journalEvents(todayISO()).filter(e=>e.title==='Отметка дня').length") >= 2)
     check("значения разделов кнопка не меняла", page.evaluate("()=>JSON.stringify(DB.days[todayISO()].cp)") == before_cp)
 
     # ── 4. Сводка Meal из его витрины: начало Завтрака — первый продукт; ручное время Day главнее ──

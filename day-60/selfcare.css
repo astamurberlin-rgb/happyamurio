@@ -85,7 +85,8 @@
 
 /* Shared ring geometry: home and check-in keep the same centre and diameter. */
 [data-screen="day"]>.top,[data-screen="ring"]>.top{height:68px;box-sizing:border-box}
-[data-screen="day"]>.nwEb{height:20px;margin:0;display:flex;align-items:center}
+/* Day 60.3: мелкой надписи «Сейчас» над кольцами нет — «Сейчас» уже подписано под кнопкой; место надписи остаётся, чтобы кольца не сдвинулись */
+[data-screen="day"]>.nwEb{height:20px;margin:0;display:flex;align-items:center;visibility:hidden}
 .nwWg{border:0;border-radius:0;background:none;box-shadow:none;padding:0;margin:-10px 0 23px;overflow:visible}
 /* Day 60.2, шаг 3 (16.11.2026, Claude): по полосе колец вбок листаются кольца, вверх-вниз — страница */
 .nwRail{gap:0;padding:0 max(0px,calc((100% - min(280px,76vw))/2));overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y;overscroll-behavior-x:none;scroll-snap-type:x mandatory}
@@ -146,3 +147,7 @@ body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 [data-screen="ring"].on #sectionPanel>:not(.swipeZone):not(.section-form-header),[data-screen="ring"].on .section-form-header>:not(#cpGrip){animation:careFadeIn .45s ease-out .08s backwards}
 .screen.on:is([data-screen="care-diary"],[data-screen="care-entry"],[data-screen="care-mind"],[data-screen="care-activity"]){animation:careSheetIn .32s cubic-bezier(.22,.75,.25,1)}
 @media(prefers-reduced-motion:reduce){.screen.on,[data-screen="ring"].on #sectionPanel>*{animation:none!important}}
+/* Day 60.3 (17.11.2026): обратный переход с экрана отметок на главную — кольцо с кнопкой на месте,
+   шапка, соседние кольца, подпись под кнопкой и карточки разделов проявляются так же, как блоки экрана отметок. */
+[data-screen="day"].from-ring>:not(.nwWg),[data-screen="day"].from-ring .nwSl.side,[data-screen="day"].from-ring .nwSl:not(.side) .care-ring-label{animation:careFadeIn .45s ease-out .08s backwards}
+@media(prefers-reduced-motion:reduce){[data-screen="day"].from-ring *{animation:none!important}}
