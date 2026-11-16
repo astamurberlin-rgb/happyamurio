@@ -1,7 +1,7 @@
 {
  "release": "Happy Meal Update 33",
  "date": "2026-11-16",
- "published": "не выпущен: ждёт слова Астамура «выпускай», выходит вместе с Day 60 и Sport 44",
+ "published": "16.11.2026 12:10 — 33.1 по слову Астамура 11:45 («Выпускай с ускорением»), вместе с полной MEXT в каталогах; 33 — 16.11.2026 03:48 по слову Астамура 03:47",
  "entry": "meal-33/index.html",
  "source": {
   "release": "meal-32 (Happy Meal Update 32.3)",
@@ -49,9 +49,31 @@
    "sha256Uncompressed": "37656849f84c2b7396b70185c09cc38fba318b9ff1d084a1ed5ad340e82cb1fa",
    "author": "ChatGPT (данные), Claude (1.10.3–1.10.4: названия и меры)",
    "date": "2026-11-13"
+  },
+  "mext": {
+   "version": "2023 supplement · 2026-03-27 · full main table",
+   "dataCommit": "23e641ca05a62685ec2a4802d1b818a377d957ca",
+   "manifestCommit": "32ce63d",
+   "sha256Uncompressed": "2d9befa3112aef7f6f31296853c5186552e383e60de3f630874163d21a1b3ecd",
+   "bytes": 45405917,
+   "foodCount": 2538,
+   "author": "Михалыч (ChatGPT), комплект Happy-MEXT-full-preparation-20261112-v4; публикация — Claude",
+   "date": "2026-11-16"
   }
  },
- "pointReleases": [],
+ "pointReleases": [
+  {
+   "version": "33.1",
+   "date": "2026-11-16",
+   "changes": [
+    "catalog.js: append — продукт каталога в общем списке копируется мелко (свои por, names, w; состав и источник общие с каталогом) вместо P.clone при каждой пересборке; повторы — через Set вместо list.some; карточка MEXT в настройках — «каталог» вместо «подборки»",
+    "food-libraries.js: getJson не держит разобранный файл в pending после выдачи модулю",
+    "portions.js: сама ботва, кожица или кожура — без мер целого плода (06211, 06347 полной MEXT)",
+    "index.html ?v=33.1, заголовок и подвал; sw.js VERSION 33.1; release-notes.js 33.1",
+    "каталог MEXT в meal-libraries: полная таблица 2538 (данные 23e641c, манифест 32ce63d)"
+   ]
+  }
+ ],
  "releaseHashes": [
   {
    "path": "app-icons/happy-meal-20261029-152.png",
@@ -225,8 +247,8 @@
   },
   {
    "path": "catalog.js",
-   "size": 28488,
-   "sha256": "083419a7f93e7ac80538c5f33e0321917a91034cabb10d911e8779aa220e6a4c"
+   "size": 29162,
+   "sha256": "8ae41fe8576c7cbb7a5edc5965ee4e40598af505bcfa6e6f860f8b647ece46f5"
   },
   {
    "path": "checks/check-catalog-offline.mjs",
@@ -295,8 +317,8 @@
   },
   {
    "path": "food-libraries.js",
-   "size": 11192,
-   "sha256": "dff3db44801ee0d4b897ba2607820f939832fe84cb401fb90e8a965a8cd74da3"
+   "size": 11641,
+   "sha256": "4975e228b25c5b4e83953830ccce80485aad28727f52a437a058e068a6694d28"
   },
   {
    "path": "images/desserts.jpg",
@@ -310,8 +332,8 @@
   },
   {
    "path": "index.html",
-   "size": 598945,
-   "sha256": "3ebdde417651c507c458c5da1e7b3825199165741196d0076c55974c80a5c280"
+   "size": 599063,
+   "sha256": "5700b27a4e7dae646e729ac8fa2d764fe07690235b13bc9180f617b530cc862a"
   },
   {
    "path": "manifest.webmanifest",
@@ -490,8 +512,8 @@
   },
   {
    "path": "portions.js",
-   "size": 32810,
-   "sha256": "46c8a2e7fdeda961c3d53e0cfdc48c01ef97c4b276bb3ab8c315b51b5c6f098f"
+   "size": 33109,
+   "sha256": "f916d0b528a453e5265abc042bcf053860ea29b6b11121966f6df9160ca855a6"
   },
   {
    "path": "release-notes.css",
@@ -500,8 +522,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 41552,
-   "sha256": "f55f4cf2f23fa64c52bc239cb0ac79a9c8ec6277c614cd9bc2e62fa46cbd46dc"
+   "size": 42345,
+   "sha256": "a6db71a63f1812c0b309f35b008fe63edf4f8d45695549d4d1aed106fa167c4b"
   },
   {
    "path": "report.css",
@@ -690,8 +712,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3457,
-   "sha256": "92ecae0506c8cb0b1668c19c962aff8ea675cfcbb91d8b3a0057290b58a43dec"
+   "size": 3459,
+   "sha256": "8733fdea9a4b42b2cac559808c3954c5fba3c362e71ede25d215c3275d5a9ae8"
   },
   {
    "path": "usda.js",

@@ -1131,6 +1131,8 @@ function match(f){
  if(!f||f.src==='Мои'||f.recipe||f.catalogSource&&f.catalogSource!=='MEXT')return null;
  var n=name(f);
  if(/^мангольд/.test(n)||f.catalogSource==='MEXT'&&f.catalogCode==='07155')return null;
+ // Meal 33.1: сама ботва или кожица («Морковная ботва», «Морковь, корень, кожица» в полной MEXT) — не целый плод: мер штуки нет
+ if(/(^|[\s,])(ботва|кожица|кожура)([\s,]|$)/.test(n))return null;
  for(var i=0;i<records.length;i++){
   var r=records[i];if(!r.test.test(n))continue;
   if(r.kind==='fresh'||r.kind==='berry'){if(!rawLike(f)||r.kind==='berry'&&/лесн/.test(n))continue}

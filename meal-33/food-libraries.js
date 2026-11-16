@@ -92,7 +92,9 @@ async function getJson(id){
   }
  })();
  pending.set(id,work);
- try{return await work}catch(e){pending.delete(id);throw e}
+ /* Meal 33.1: разобранный файл отдаётся модулю каталога и дальше в памяти не держится (полная MEXT — 45 МБ JSON).
+    Одновременные запросы ждут одну загрузку; повторный запрос (кнопка «Повторить», включение каталога) читает файл заново. */
+ try{const data=await work;pending.delete(id);return data}catch(e){pending.delete(id);throw e}
 }
 /* ── скачивание для работы без интернета ── */
 function librariesOf(catalog){return (CATALOGS[catalog]||[]).slice()}
