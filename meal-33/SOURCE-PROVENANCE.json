@@ -70,9 +70,29 @@
    "author": "Михалыч (ChatGPT), комплект Happy-Meal-Sweet-Preserves-handoff-1.0; файл каталога — Claude",
    "date": "2026-11-14",
    "published": "2026-11-17"
+  },
+  "kfct": {
+   "version": "10.4.0",
+   "dataCommit": "dabcff7a86f22fcf2585634b06c0b2791e4ba581",
+   "manifestCommit": "8f5b421",
+   "bytes": 2549402,
+   "foodCount": 3366,
+   "author": "RDA/NICS; комплект Михалыча (ChatGPT) 16.11.2026; названия 135 — Claude",
+   "date": "2026-11-17",
+   "published": "2026-11-17"
   }
  },
  "pointReleases": [
+  {
+   "version": "33.4",
+   "date": "2026-11-17",
+   "changes": [
+    "kfct.js: каталог KFCT 10.4 (запись манифеста kfct, схема happy-meal-kfct/1): 3 366 продуктов kfct:<код>; поля KFCT → поля Meal только совместимые по смыслу и единице; «Углеводы» Meal — углеводы всего минус клетчатка (≈, Астамур и Михалыч 17.11), «углеводы всего» и «из них клетчатка» своими строками; RAE и витамин E KFCT — своими строками",
+    "sources.js: KFCT в переключателе, включён у всех (Астамур 17.11); food-libraries.js: KFCT → kfct; catalog.js и index.html: загрузка, карточка, подпись, настройки, подсказки «См. … ниже»",
+    "collections.js: карточка KFCT в «Сборниках», обложка images/kfct.jpg (картинка Астамура 17.11.2026, 1200×800); sw.js: обложка в копии выпуска",
+    "checks/check-kfct.mjs, check-shop; scripts/browser/meal_kfct.py, meal_shop.py, meal_offline.py; index.html ?v=33.4, sw.js 33.4, release-notes.js 33.4"
+   ]
+  },
   {
    "version": "33.3",
    "date": "2026-11-17",
@@ -280,8 +300,8 @@
   },
   {
    "path": "catalog.js",
-   "size": 30375,
-   "sha256": "b0b3b3b8d54c3f45946095b2403d9118e61d5ec8c1d3a9aa25db090debd9b680"
+   "size": 31085,
+   "sha256": "57db28e5c40bea8fc8dc2b72bb808d608809dab6a0478d44f25bab6f69c7c7ff"
   },
   {
    "path": "checks/check-catalog-offline.mjs",
@@ -292,6 +312,11 @@
    "path": "checks/check-desserts.mjs",
    "size": 26553,
    "sha256": "4182380338f55c53e4cd381ec112e77da724f78736bf6962731bda879e7ad241"
+  },
+  {
+   "path": "checks/check-kfct.mjs",
+   "size": 10247,
+   "sha256": "34fb91a5ffebbe1f69afddc45bdbc9f3f26a5f3d569d2b9718b42f95e7a1daf1"
   },
   {
    "path": "checks/check-meal-docs.mjs",
@@ -315,8 +340,8 @@
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 14124,
-   "sha256": "c3a4d2a0e81413c1c0b67f23b5e7fbc996fbed4f8bfd004f814e233547c597c7"
+   "size": 14168,
+   "sha256": "5ab69dab841b4ad7333f750216986bc9312de456bd4b961f69fb660713be3891"
   },
   {
    "path": "checks/check-supplements-store.mjs",
@@ -335,8 +360,8 @@
   },
   {
    "path": "collections.js",
-   "size": 19531,
-   "sha256": "bf58e7cc183c5b38ef5f35cf5055566b814190f2735fe84cef15b85d048f12f2"
+   "size": 19824,
+   "sha256": "dd112bbdd2319cf2ae7668fd2875adf2589e51e00217c99e5ca8d388011b095e"
   },
   {
    "path": "controls.js",
@@ -355,13 +380,18 @@
   },
   {
    "path": "food-libraries.js",
-   "size": 11670,
-   "sha256": "1cc4046ab121eb74709dc99c9a7aa6ca8a825e7a57b14d788fe89cbd0b25d589"
+   "size": 11684,
+   "sha256": "ca6d62728482171c13beeef8fbb4bb52d66895761e4f53570646ac300bbcd270"
   },
   {
    "path": "images/desserts.jpg",
    "size": 119763,
    "sha256": "6e05d5729b6b5f219cde7aa0cd14d704fc0be7bee6a99232a3a6306abe553843"
+  },
+  {
+   "path": "images/kfct.jpg",
+   "size": 155732,
+   "sha256": "26278fc98a864aff3b36adb36fee00374100eaf49ff0d539d3e9cd570ca837ad"
   },
   {
    "path": "images/preserves.jpg",
@@ -375,8 +405,13 @@
   },
   {
    "path": "index.html",
-   "size": 599363,
-   "sha256": "5ab9bf28bb425c63633df5b604c8f730423584433867e28a4cbacab16f2bf65f"
+   "size": 599567,
+   "sha256": "e4a79ff49e37385af2e94936a2207f7cbfbfe1c2b0b950619d687789a940b849"
+  },
+  {
+   "path": "kfct.js",
+   "size": 15966,
+   "sha256": "e374f450571c7a6efe3ac7b57581225a5fdba6c568c07a3d8397942b4ae45df3"
   },
   {
    "path": "manifest.webmanifest",
@@ -570,8 +605,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 44104,
-   "sha256": "999c8e463b7393026f98bd32a26a40d75691a93fba36418e3af9c26ad99b6c4d"
+   "size": 45074,
+   "sha256": "a0d6a3ba8a399cf17b7d4904cec20f0f277b5775cb654a7e2f3914fd96483a1e"
   },
   {
    "path": "report.css",
@@ -710,8 +745,8 @@
   },
   {
    "path": "sources.js",
-   "size": 4624,
-   "sha256": "e132c16bcb650806fc9e6fe8c077883779ef422eee83e3ab049fb4bbce22dd46"
+   "size": 5055,
+   "sha256": "1c0efe0e4fe90fed487c8c06bc604ff02aba1260bee43250bf0b3cefe3063524"
   },
   {
    "path": "substances.js",
@@ -760,8 +795,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3484,
-   "sha256": "3150368fcc0ecf816d27fa1fd75bfa44bdbc0282cc4673ad1a1c71ea1ad6d44b"
+   "size": 3504,
+   "sha256": "dd3865f108f14363c4fea49f5fc6e4547dee592edcb75dda9804dd4a20549d48"
   },
   {
    "path": "usda.js",

@@ -43,7 +43,7 @@ with sync_playwright() as p:
     caps = {i: meal.evaluate(CAPTION, i) for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "PRESERVE", "OWN", "SUPP"]}
     out["captions"] = caps
     check("«Скачать» у BLS, USDA, MEXT, Happy Meal, десертов, сладких заготовок и БАДов; у «Моих продуктов» кнопки нет", all(caps[i] == "Скачать" for i in ["BLS", "USDA", "MEXT", "HM", "DESSERT", "PRESERVE", "SUPP"]) and caps["OWN"] is None)
-    check("в карусели восемь карточек каталогов, свитч — «Подключено»", meal.evaluate("()=>document.querySelectorAll('.mc-source-carousel > .mc-source-body').length") == 8
+    check("в карусели девять карточек каталогов, свитч — «Подключено»", meal.evaluate("()=>document.querySelectorAll('.mc-source-carousel > .mc-source-body').length") == 9
           and meal.evaluate("()=>document.querySelector('[data-source-slide=\"BLS\"] .mc-switch-control .mc-control-caption').textContent") == "Подключено")
     meal.locator('[data-catalog-download="BLS"]').click()
     seen_loading = wait_for(meal, lambda: meal.evaluate(CAPTION, "BLS") in ("Отменить", "Скачано"), 5, 50)

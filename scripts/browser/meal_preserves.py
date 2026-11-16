@@ -64,8 +64,10 @@ with sync_playwright() as p:
     wait_for(meal, lambda: meal.evaluate("()=>!!FOODS['mext:07013']"), 30)
     jams = {q: meal.evaluate("(q)=>searchLib(q).slice(0,3).map(f=>f.id+' '+f.n)", q) for q in ("клубничный джем", "клубника джем", "джем из клубники", "джем из голубики", "яблочный джем")}
     out["mext_jams"] = jams
-    check("«клубничный джем» и «джем из клубники» — первым «Клубничный джем, …» из MEXT",
-          all(jams[q][:1] and jams[q][0].split(" ", 1)[0] in ("mext:07013", "mext:07014") and jams[q][0].split(" ", 1)[1].startswith("Клубничный джем, ") for q in ("клубничный джем", "джем из клубники")))
+    # Meal 33.4: с корейской базой первым может быть «Клубничный джем» KFCT — точное совпадение названия
+    check("«клубничный джем» и «джем из клубники» — «Клубничный джем, …» из MEXT в первых трёх, все три — клубничные джемы",
+          all(any(x.split(" ", 1)[0] in ("mext:07013", "mext:07014") and x.split(" ", 1)[1].startswith("Клубничный джем, ") for x in jams[q][:3])
+              and all(x.split(" ", 1)[1].startswith("Клубничный джем") for x in jams[q][:3]) for q in ("клубничный джем", "джем из клубники")))
     check("старое «клубника джем» тоже находит; «джем из голубики» и «яблочный джем» — MEXT",
           jams["клубника джем"][:1] and jams["клубника джем"][0].startswith("mext:0701") and jams["джем из голубики"][:1] == ["mext:07125 Джем из голубики"] and jams["яблочный джем"][:1] == ["mext:07154 Яблочный джем"])
     out["orange_name"] = meal.evaluate("(id)=>FOODS[id]&&FOODS[id].n", ORANGE)

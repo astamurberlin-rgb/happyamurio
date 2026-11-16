@@ -14,7 +14,7 @@ Meal 33 записывает только после входа в аккаун�
 | `meal-data.js` | Запуск (вход Meal → общий модуль) и запись дневника: уходит только изменившееся. |
 | `meal-docs.js` | Раскладка дневника на документы общего модуля и обратно. |
 | `meal-account.js` | Первый экран, вход, верх и низ настроек, профиль и цели Meal — связь с общими экранами (`shared/happy-welcome.js`, `happy-person.js`, `happy-goals.js`). Подключается в начале страницы: первый экран появляется раньше заставки. |
-| `food-libraries.js`, `catalog.js`, `usda.js`, `uzbek.js`, `desserts.js`, `preserves.js` | Каталоги продуктов. |
+| `food-libraries.js`, `catalog.js`, `usda.js`, `uzbek.js`, `desserts.js`, `preserves.js`, `kfct.js` | Каталоги продуктов. |
 | `sources.js`, `search-names.js`, `portions.js` | Поиск: выбор каталогов, русские названия, бытовые меры. |
 | `catalog-offline.js`, `sw.js` | Работа без интернета: скачанные каталоги и копия файлов выпуска на устройстве. |
 | `collections.js`, `catalog-preview.js`, `collections.css`, `catalog.css` | «Сборники»: магазин каталогов и личные разделы. |

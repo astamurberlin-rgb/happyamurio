@@ -25,7 +25,8 @@ const catalogs=[
  {id:'HM',name:'Happy Meal',image:'meal-img/cover-tl-2.jpg',tag:'Кухни и рецепты',description:'Кухни народов мира'},
  {id:'BLS',name:'BLS · Германия',image:'meal-img/cover-bf-1.jpg',tag:'Основной каталог',description:'Продукты и пищевой состав из таблиц Max Rubner-Institut.'},
  {id:'USDA',name:'USDA · США',image:'meal-img/cover-sn-1.jpg',tag:'Основной каталог',description:'Пищевой состав продуктов FoodData Central · SR Legacy.'},
- {id:'MEXT',name:'MEXT · Япония',image:'meal-img/cover-dn-1.jpg',tag:'Основной каталог',description:'Японские таблицы пищевого состава. Названия на трёх языках.'}
+ {id:'MEXT',name:'MEXT · Япония',image:'meal-img/cover-dn-1.jpg',tag:'Основной каталог',description:'Японские таблицы пищевого состава. Названия на трёх языках.'},
+ {id:'KFCT',name:'KFCT · Южная Корея',image:'images/kfct.jpg',tag:'Основной каталог',description:'Корейская таблица состава: кимчи, пулькоги, рис и азиатская груша. Названия на трёх языках.'}
 ];
 /* Meal 32: отметки «Куплено» — в дневнике аккаунта (DB.purchases, документ setup общего модуля), а не в памяти браузера */
 function purchases(){const x=root.DB&&root.DB.purchases;return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}

@@ -49,7 +49,7 @@ assert.equal(P.preserves.foods.filter(f=>f.protein==null).length,2,'белки �
 // 2. Магазин
 const shop=await read('collections.js'),sources=await read('sources.js');
 const ids=[...shop.matchAll(/\{id:'([A-Z]+)'(?:,source:'([A-Z]+)')?,name:'([^']+)',image:'([^']+)'/g)];
-assert.deepEqual(ids.map(m=>m[1]),['SUPP','UZBEK','DESSERT','PRESERVE','HM','BLS','USDA','MEXT']);
+assert.deepEqual(ids.map(m=>m[1]),['SUPP','UZBEK','DESSERT','PRESERVE','HM','BLS','USDA','MEXT','KFCT']);
 for(const m of ids){const id=m[2]||m[1];assert.ok(sources.includes("{id:'"+id+"'"),'каталог есть в MealSources: '+id);assert.ok(await exists(m[4]),'обложка в выпуске: '+m[4])}
 const shopCode=shop.replace(/\/\*[\s\S]*?\*\//g,'');
 assert.ok(sources.includes("{id:'SUPP',name:'БАДы'}"),'источник БАДов — в MealSources (переключатель поиска и настроек)');
@@ -79,7 +79,7 @@ const ctx={self:{location:new URL(SCOPE+'sw.js'),addEventListener:(t,f)=>listene
  fetch:async(r,o)=>{const u=typeof r==='string'?r:r.url;log.push(u);if(!online)throw new TypeError('offline');if(u.endsWith('index.html'))return new Response(page,{status:200});return new Response('x',{status:200})}};
 ctx.self.caches=ctx.caches;vm.createContext(ctx);vm.runInContext(sw,ctx);
 let waited;await listeners.install({waitUntil:p=>waited=p});await waited;
-assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v='+V)&&stored.has(SCOPE+'supplements.js?v='+V)&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/preserves.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
+assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v='+V)&&stored.has(SCOPE+'supplements.js?v='+V)&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/preserves.jpg')&&stored.has(SCOPE+'images/kfct.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
 function fetchEvent(url,mode){let res=null;listeners.fetch({request:{url,method:'GET',mode:mode||'no-cors'},respondWith:p=>res=p});return res}
 for(const u of ['https://geqziziycpclhnucnsyx.supabase.co/rest/v1/app_sync','https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json','https://astamurberlin-rgb.github.io/happyamurio/shared/apps.json','https://astamurberlin-rgb.github.io/happyamurio/day-57/'])
  assert.equal(fetchEvent(u),null,'не перехватывает: '+u);

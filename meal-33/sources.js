@@ -5,6 +5,7 @@ var catalog=[
   {id:'BLS',name:'BLS · Германия'},
   {id:'USDA',name:'USDA · США'},
   {id:'MEXT',name:'MEXT · Япония'},
+  {id:'KFCT',name:'KFCT · Южная Корея'},   // Meal 33.4: 3 366 корейских продуктов; включён у всех (Астамур 17.11.2026). off:true — выключен, пока не включили
   {id:'HM',name:'Happy Meal · рецепты'},
   {id:'DESSERT',name:'Десерты · коллекция'},
   {id:'PRESERVE',name:'Сладкие заготовки'},   // Meal 33.3: варенья, джемы, компоты, фрукты в сиропе, цукаты
@@ -13,7 +14,7 @@ var catalog=[
 ];
 function preferences(db){
   var saved=db&&db.foodSources||{},out={};
-  catalog.forEach(function(s){out[s.id]=saved[s.id]!==false});
+  catalog.forEach(function(s){out[s.id]=s.off?saved[s.id]===true:saved[s.id]!==false});   // Meal 33.4: off — выключен, пока не включили
   if(!catalog.some(function(s){return out[s.id]}))out.BLS=true;
   return out;
 }
@@ -30,6 +31,7 @@ function sourceOf(f){
   if(f.catalogSource==='HM-PRESERVE')return 'PRESERVE';   // Meal 33.3: свои карточки каталога; записи BLS и USDA из него остаются в своих базах
   if(f.catalogSource==='HM-DESSERT')return 'DESSERT';   // Update 25: собственные карточки библиотеки десертов; записи BLS/USDA/кухонь из коллекции остаются в своих базах
   if(f.catalogSource==='MEXT'||String(f.id).indexOf('mext:')===0)return 'MEXT';
+  if(f.catalogSource==='KFCT'||String(f.id).indexOf('kfct:')===0)return 'KFCT';   // Meal 33.4
   if(f.catalogSource==='HM-JP'||f.kav||/^Z/.test(f.b||'')||/^bls:Z/.test(f.id||''))return 'HM';
   if(f.catalogSource==='USDA'||f.src==='USDA')return 'USDA';
   if(f.src==='BLS'||f.b||/^bls:/.test(f.id||''))return 'BLS';
@@ -55,7 +57,7 @@ function compare(a,b,q){
  var specific=0;names.forEach(function(n){if(tokens.every(t=>n.includes(t))){var count=n.split(/[^\p{L}\p{N}]+/u).filter(Boolean).length;specific=Math.max(specific,tokens.length/Math.max(count,tokens.length))}});return 2+specific;
  }
  var match=score(b)-score(a);if(match)return match;
- var order={OWN:-1,BLS:0,USDA:1,MEXT:2,HM:3,DESSERT:3,PRESERVE:3};return (order[sourceOf(a)]??4)-(order[sourceOf(b)]??4);
+ var order={OWN:-1,BLS:0,USDA:1,MEXT:2,KFCT:2,HM:3,DESSERT:3,PRESERVE:3};return (order[sourceOf(a)]??4)-(order[sourceOf(b)]??4);
 }
 root.MealSources={compare:compare,catalog:catalog,preferences:preferences,enabled:enabled,sourceOf:sourceOf,available:available,codeEnabled:codeEnabled,setEnabled:setEnabled,paid:paid,purchased:purchased};
 })(typeof window!=='undefined'?window:globalThis);
