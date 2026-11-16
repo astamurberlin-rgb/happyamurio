@@ -3,7 +3,8 @@
 const C=root.HappyCare;
 const titles={mind:'Осознанность',mood:'Отметить самочувствие',diary:'Дневник',activity:'Активность'};
 const icons={mood:'+',mind:'<svg viewBox="0 0 24 24"><path d="M12 20V12M12 16C4 17 3 10 3 5c6 0 9 4 9 9M12 14c0-7 3-10 9-10 0 7-2 11-9 11"/></svg>',diary:'<svg viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v15h15v-7M7 8h5M7 12h3M14 11l6-6 2 2-6 6-3 1z"/></svg>'};
-icons.activity='<span class="aiko-activity-icon"></span>';
+/* «Активность»: белый человечек в наклоне вбок (рисунок Астамура от 10.11, одобрен 10.11) вместо силуэта Айко. */
+icons.activity='<span class="activity-icon"></span>';
 /* 57.3: «Открыть Sport ↗» ведёт на текущий выпуск Sport. Адрес подставляет shared/happy-links.js из shared/apps.json
    (как у кнопки «Happy Sport» в настройках); ниже — запасной, если список выпусков не загрузился. Раньше здесь стоял
    адрес тестовой сборки от 04.11. */
@@ -348,11 +349,13 @@ function rememberActive(key){if(!key)return;active=key;const s=data().settings;i
 function rememberScale(key){if(!isCheckin()||session.readOnly)return;const s=data().settings;if(s.activeScale!==key){s.activeScale=key;if(!RO&&DayData.signedIn())save();}}
 function center(smooth){const i=[...$('nwRail').children].findIndex(x=>x.dataset.careKey===active);if(i>=0)nwGo(i,smooth);}
 function arcPath(a,b){const p=t=>[120+92*Math.cos(t*Math.PI/180),120+92*Math.sin(t*Math.PI/180)];const s=p(a),e=p(b);return 'M'+s.join(',')+' A92,92 0 0 '+(b>a?1:0)+' '+e.join(',');}
+/* Баланс самочувствия (лаборатория Day 60, 16.11.2026): дуги позитива и негатива рисует HappyArc.balance на холсте
+   .care-balance — цвета, плавный стык наверху и растворяющиеся концы из Студии дуг (вариант 3). Дорожка — одной дугой,
+   без точки наверху: две половины с круглыми концами давали светлое пятно в месте стыка. */
 function balanceArc(m){
- return '<svg class="care-arc" viewBox="0 0 240 240" aria-hidden="true"><path class="care-track" d="'+arcPath(-90,58)+'"/><path class="care-track" d="'+arcPath(-90,-238)+'"/>'+
- (m.positive>0?'<path class="care-positive" d="'+arcPath(-90,-90+148*m.positive)+'"/>':'')+
- (m.negative>0?'<path class="care-negative" d="'+arcPath(-90,-90-148*m.negative)+'"/>':'')+
- (m.positive!==null?'<circle class="care-zero" cx="120" cy="28" r="3"/>':'')+'</svg>';
+ const p=t=>(120+92*Math.cos(t*Math.PI/180))+','+(120+92*Math.sin(t*Math.PI/180));
+ return '<canvas class="care-balance" aria-hidden="true" data-pos="'+(m.positive||0)+'" data-neg="'+(m.negative||0)+'"></canvas>'+
+ '<svg class="care-arc" viewBox="0 0 240 240" aria-hidden="true"><path class="care-track" d="M'+p(122)+' A92,92 0 1 1 '+p(58)+'"/></svg>';
 }
 function regularArc(f,k){return ringSvg({w:[]},'care-'+k).replace('stroke-dasharray="0 '+CIRC+'"','stroke-dasharray="'+(TRACK*C.clamp(f))+' '+CIRC+'" style="visibility:'+(f>0?'visible':'hidden')+'"');}
 function renderNow(){

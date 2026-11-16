@@ -45,4 +45,4 @@ body.wheel-editing [data-screen="ring"]{position:relative;overflow-x:hidden}
 .section-form-header .cpMeal{margin:0 0 4px}
 .section-outgoing{position:absolute!important;left:20px;right:20px;top:calc(14px + env(safe-area-inset-top));pointer-events:none!important;z-index:2}
 
-.aiko-activity-icon{display:block;width:76px;height:76px;background:currentColor;-webkit-mask:url('./assets/aiko-skating-source.png') center/contain no-repeat;mask:url('./assets/aiko-skating-source.png') center/contain no-repeat}
+.activity-icon{display:block;width:76px;height:76px;background:currentColor;-webkit-mask:url('./assets/activity-side-bend.svg') center/contain no-repeat;mask:url('./assets/activity-side-bend.svg') center/contain no-repeat}

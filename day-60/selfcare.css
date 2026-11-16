@@ -5,9 +5,6 @@
 .care-arc{transform:none!important;pointer-events:none}
 .care-arc path{fill:none;stroke-width:16;stroke-linecap:round}
 .care-arc .care-track{stroke:rgba(255,255,255,.2)}
-.care-arc .care-positive{stroke:#7CE3C9}
-.care-arc .care-negative{stroke:#FFB4C4}
-.care-arc .care-zero{fill:white;stroke:none}
 .care-meta{font-size:12px;line-height:1.45;color:var(--muted);margin:2px 0 5px;text-align:center;max-width:196px;min-height:35px}
 .care-meta b{font-size:14px;color:var(--ink)}
 .care-links{display:flex;justify-content:center;gap:10px;width:100%;padding:0 0 4px}
