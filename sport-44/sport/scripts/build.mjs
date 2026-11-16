@@ -51,8 +51,12 @@ const sportDocs=await read('src/sport-docs.js'),sportData=await read('src/sport-
 // Sport 44 (прототип Sport v2): первый экран, вход, профиль и цели — общие экраны shared/happy-screens.js, happy-welcome.js,
 // happy-person.js, happy-goals.js; связь со Sport — src/sport-account.js. Они — часть запуска: первый экран появляется сразу.
 const boot=[await readShared('happy-input.js'),await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),await readShared('happy-food.js'),
- await readShared('happy-screens.js'),await readShared('happy-welcome.js'),await readShared('happy-person.js'),await readShared('happy-goals.js'),sportDocs,await read('src/sport-boot.js'),await read('src/sport-account.js')].join('\n');
-const happyLinks=await readShared('happy-links.js'),releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await read('src/release-notes.js'),templatePicker=await read('src/template-picker.js');
+ await readShared('happy-screens.js'),await readShared('happy-welcome.js'),await readShared('happy-person.js'),await readShared('happy-goals.js'),sportDocs,
+ // Лаборатория (ветка sport-lab-44, 16.11.2026): вместо sport-boot.js — lab-boot.js (вход «Лаборатория», без сервера, пример
+ // данных), после sport-account.js — lab-head.js (строка внизу настроек). Выпуск берёт только sport-boot.js.
+ await read(LAB?'src/lab-boot.js':'src/sport-boot.js'),await read('src/sport-account.js'),...(LAB?[await read('src/lab-head.js')]:[])].join('\n');
+// Лаборатория: адреса соседей уже вписаны сборкой — apps.json с сайта не запрашивается.
+const happyLinks=(await readShared('happy-links.js')).replace(LAB?'if(!root.fetch||!root.document)':'\0',()=>'if(true)'),releaseNotesShared=await readShared('release-notes.js'),releaseNotes=await read('src/release-notes.js'),templatePicker=await read('src/template-picker.js');
 const iconStudioBridge=await read('src/icon-studio-bridge.js');
 const setPlan=await read('src/set-plan.js'),freeTimerJs=await read('src/free-timer.js');
 const quickValueInput=await read('src/quick-value-input.js'),restPill=await read('src/rest-pill.js');
@@ -91,7 +95,12 @@ const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 44'",()=>J
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
 function memory(){var m=new Map();return {getItem:function(k){k=String(k);return m.has(k)?m.get(k):null},setItem:function(k,v){m.set(String(k),String(v))},removeItem:function(k){m.delete(String(k))},clear:function(){m.clear()},key:function(i){var keys=Array.from(m.keys());return i<keys.length?keys[i]:null},get length(){return m.size}}}
 try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:true});Object.defineProperty(window,'sessionStorage',{value:memory(),configurable:true});Object.defineProperty(window,'indexedDB',{value:undefined,configurable:true});window.happyLabMemoryStorage=true}catch(e){}})();</script>`;
-const labPage=page=>!LAB?page:page.replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
+// Лаборатория 15.11.2026: полоска наверху; к серверу страница не обращается (connect-src 'none').
+const labBar=LAB?`<style>:root{--lab-h:30px}html{scroll-padding-top:var(--lab-h)}body{padding-top:var(--lab-h)}.current-bar{top:var(--lab-h)}
+#lab-bar{position:fixed;top:0;left:0;right:0;z-index:90;height:var(--lab-h);padding:5px 12px 0;background:#23466f;color:#fff;font:600 11px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;text-align:center;box-shadow:0 2px 10px #0003}
+#lab-bar b{display:block;font-size:11.5px;letter-spacing:.2px;line-height:20px}</style>
+<div id="lab-bar" role="note"><b>${labNote.label} · не настоящее приложение</b></div>`:'';
+const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
   .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
