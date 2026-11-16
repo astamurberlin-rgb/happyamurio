@@ -41,7 +41,7 @@ body.wheel-editing #sectionWheel.wheel-visible{visibility:visible}
 /* 51.11: fixed arc anchor and real section carousel. Header copy cannot push the arc. */
 #sectionPanel{position:relative;min-height:100%}
 body.wheel-editing [data-screen="ring"]{position:relative;overflow-x:hidden}
-.section-form-header{box-sizing:border-box;height:calc(var(--section-arc-top,150px) - 14px - env(safe-area-inset-top));min-height:72px;overflow-y:auto;scrollbar-width:none;padding-bottom:8px}
+.section-form-header{box-sizing:border-box;height:calc(var(--section-arc-top,150px) - 14px - env(safe-area-inset-top));min-height:72px;overflow-y:auto;scrollbar-width:none;padding-bottom:0}   /* шаг 8: шапка не прокручивается сама на 1 точку — иначе на iPhone жест за черточку уходит в её прокрутку */
 .section-form-header .top{padding-bottom:8px;min-height:46px}
 .section-form-header .top h1{font-size:clamp(20px,6vw,27px);overflow-wrap:anywhere}
 .section-form-header .cpMeal{margin:0 0 4px}

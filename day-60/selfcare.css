@@ -1,4 +1,4 @@
-.care-knob{cursor:pointer;inset:18%;padding:8px!important;gap:3px;align-content:center;touch-action:pan-x!important}
+.care-knob{cursor:pointer;inset:18%;padding:8px!important;gap:3px;align-content:center;touch-action:manipulation!important}
 .care-knob .care-symbol{display:block;font-size:29px;font-weight:400;line-height:1.1}
 .care-knob .care-name{font-size:14px;line-height:1.15;max-width:113px;overflow-wrap:normal;font-weight:650}
 .care-symbol svg{position:static!important;transform:none!important;width:27px!important;height:27px!important;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -86,15 +86,24 @@
 /* Shared ring geometry: home and check-in keep the same centre and diameter. */
 [data-screen="day"]>.top,[data-screen="ring"]>.top{height:68px;box-sizing:border-box}
 [data-screen="day"]>.nwEb{height:20px;margin:0;display:flex;align-items:center}
-.nwWg{border:0;border-radius:0;background:none;box-shadow:none;padding:0;margin:0 0 22px;overflow:visible}
-.nwRail{gap:0;padding:0 max(0px,calc((100% - min(280px,76vw))/2));overflow-x:auto;overflow-y:hidden;touch-action:pan-x;overscroll-behavior:none;scroll-snap-type:x mandatory}
+.nwWg{border:0;border-radius:0;background:none;box-shadow:none;padding:0;margin:-10px 0 23px;overflow:visible}
+/* Day 60.2, шаг 3 (16.11.2026, Claude): по полосе колец вбок листаются кольца, вверх-вниз — страница */
+.nwRail{gap:0;padding:0 max(0px,calc((100% - min(280px,76vw))/2));overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y;overscroll-behavior-x:none;scroll-snap-type:x mandatory}
 .nwSl{flex:0 0 min(280px,76vw);gap:0;scroll-snap-stop:always;transform:none!important}
+/* Day 60.2, шаги 4 и 9: соседние кольца заходят друг на друга на --ring-overlap — по краям видно их дуги, понятно, что можно листать */
+.nwSl:not(:last-child){margin-right:calc(-1*var(--ring-overlap))}
+/* Шаг 9: соседние кольца чуть дальше (заход 9 точек вместо 22); то же расстояние — у колец шкал в разделах */
+:root{--ring-overlap:9px}
+[data-screen="ring"] .ringSlide{flex:0 0 min(280px,76vw);transition:opacity .25s ease-out}
+[data-screen="ring"] .ringSlide:not(:last-child){margin-right:calc(-1*var(--ring-overlap))}
+[data-screen="ring"] .ringSlide.side{opacity:.5}
 .nwSl.side{opacity:.5}
 .ringWrap.nwR{width:min(280px,76vw)}
-.care-knob{inset:21%;touch-action:pan-x!important}
+.care-knob{inset:21%;touch-action:manipulation!important}
 .care-knob .care-name{font-size:21px;font-weight:700;max-width:100%;line-height:1.15}
 .care-symbol svg{width:42px!important;height:42px!important}
-.care-ring-label{min-height:69px;margin-top:1px;padding:10px 6px;display:flex;align-items:flex-end;justify-content:center;border:0;background:none;color:var(--ink);font-family:inherit;font-weight:800;font-size:21px;line-height:1.2;letter-spacing:-.01em;cursor:pointer;width:100%;touch-action:pan-x}
+/* Day 60.2, шаги 2 и 4: подпись — в просвете внизу дуги, 32 точки от концов дуги, как от подписи до разделов (16.11.2026, Claude) */
+.care-ring-label{min-height:0;margin-top:-17px;padding:9px 6px;position:relative;display:flex;align-items:flex-end;justify-content:center;border:0;background:none;color:var(--ink);font-family:inherit;font-weight:800;font-size:21px;line-height:1.2;letter-spacing:-.01em;cursor:pointer;width:100%;touch-action:manipulation}
 .care-function-row{display:flex;align-items:center;gap:10px;padding:0 12px!important;margin-bottom:8px;position:relative}
 .care-function-open{display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:62px;padding:12px 0;border:0;background:none;color:inherit;font:inherit;text-align:left}
 .care-function-open>span{flex:1;font-weight:700}
@@ -128,3 +137,12 @@ body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 .release-card time{font-size:13px;color:var(--muted)}
 .release-card ul{padding-left:20px;margin:14px 0 0;line-height:1.5;font-size:15px}
 .release-card li+li{margin-top:9px}
+/* Day 60.2, шаг 7 (16.11.2026, Claude): переход с главной на экран отметок. Кольцо с кнопкой и подпись под ним
+   стоят там же, где на главной, и не двигаются; всё, чего на главной нет (шапка, «Что было», теги, заметка), проявляется
+   чуть позже. Экраны «Дневник», «Активность», «Осознанность» проявляются целиком. */
+@keyframes careFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes careSheetIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+/* Черточка закрытия свайпом вниз (#cpGrip) не проявляется — она сразу на месте и сразу ловит палец (исправление 16.11 22:40) */
+[data-screen="ring"].on #sectionPanel>:not(.swipeZone):not(.section-form-header),[data-screen="ring"].on .section-form-header>:not(#cpGrip){animation:careFadeIn .45s ease-out .08s backwards}
+.screen.on:is([data-screen="care-diary"],[data-screen="care-entry"],[data-screen="care-mind"],[data-screen="care-activity"]){animation:careSheetIn .32s cubic-bezier(.22,.75,.25,1)}
+@media(prefers-reduced-motion:reduce){.screen.on,[data-screen="ring"].on #sectionPanel>*{animation:none!important}}

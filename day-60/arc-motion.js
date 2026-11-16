@@ -10,7 +10,7 @@
   const MODES=['shimmer','flow','wave','breathe','still'],LIGHTS=['none',...GLOW];
   const BALANCE={posColor:'#30F7F1',negColor:'#FFB4C4',blend:55,fade:35,alpha:100,dot:false};
   const DEFAULT={version:1,enabled:true,mode:'flow',colors:['#55DFD6','#67ADFF','#73FFFF'],duration:16,intensity:62,softness:76,breathDepth:52,
-    light:'aurora',lightColor:'#E2D6FF',lightDuration:22,glow:50,span:55,halo:26,thick:55,pause:15,ease:'top',lightSides:'one',lightLeft:null,lightRight:null,lightBlend:30,edgeFade:0,
+    light:'none',lightColor:'#E2D6FF',lightDuration:22,glow:50,span:55,halo:26,thick:55,pause:15,ease:'top',lightSides:'one',lightLeft:null,lightRight:null,lightBlend:30,edgeFade:0,
     direction:1,scope:'mood',centerOnly:true,playing:true,balance:BALANCE};
   const PRESETS=[
     {id:'shimmer',name:'Блик',note:'Мягкий свет по кругу',colors:['#76DCD3','#F3FFFC','#B8D3FF'],duration:12,intensity:65,softness:83},

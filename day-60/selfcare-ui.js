@@ -85,10 +85,10 @@ function init(){
  document.addEventListener('input',input);
  const rail=$('nwRail');
  active=data().settings.active||'mood';
- rail.addEventListener('scroll',()=>{clearTimeout(railTimer);railTimer=setTimeout(()=>{if(railPainting||!rail.closest('.screen').classList.contains('on'))return;nwSide();const slide=rail.children[NW.idx];if(slide)rememberActive(slide.dataset.careKey);},160);},{passive:true});
- let touchY=0,touchX=0;
- rail.addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;touchX=e.touches[0].clientX;},{passive:true});
- rail.addEventListener('touchmove',e=>{const t=e.touches[0];if(Math.abs(t.clientY-touchY)>Math.abs(t.clientX-touchX)&&e.cancelable)e.preventDefault();},{passive:false});
+ /* Кнопка в центре светлеет сразу, пока листаешь, а не после остановки: ожидание выглядело как задержка сети.
+    Запоминается центральная кнопка по-прежнему после остановки. Day 60.2, шаг 1 — 16.11.2026, Claude. */
+ let sideFrame=0;
+ rail.addEventListener('scroll',()=>{if(!sideFrame)sideFrame=requestAnimationFrame(()=>{sideFrame=0;if(!railPainting&&rail.closest('.screen').classList.contains('on'))nwSide();});clearTimeout(railTimer);railTimer=setTimeout(()=>{if(railPainting||!rail.closest('.screen').classList.contains('on'))return;nwSide();const slide=rail.children[NW.idx];if(slide)rememberActive(slide.dataset.careKey);},160);},{passive:true});
  bindSettingsOrder();
  window.addEventListener('resize',()=>{center(false);if(session)requestAnimationFrame(renderWheel);});
  document.querySelector('.nwWg').setAttribute('aria-label','Сейчас');
@@ -110,9 +110,10 @@ function closeCurrent(){
 }
 function bindCareNavigation(){
  let drag=null;
- document.addEventListener('pointerdown',e=>{const grip=e.target.closest('.care-grip,#cpGrip');if(!grip)return;const screen=grip.closest('.screen');drag={grip,screen,y:e.clientY,dy:0};grip.setPointerCapture(e.pointerId);screen.style.transition='none';});
- document.addEventListener('pointermove',e=>{if(!drag)return;drag.dy=Math.max(0,e.clientY-drag.y);drag.screen.style.transform='translateY('+drag.dy+'px)';});
- const finish=cancel=>{if(!drag)return;const d=drag;drag=null;d.screen.style.transition='transform .24s';d.screen.style.transform='';if(!cancel&&(d.dy>70||d.dy<6))closeCurrent();setTimeout(()=>{d.screen.style.transition='';},250);};
+ document.addEventListener('pointerdown',e=>{const grip=e.target.closest('.care-grip,#cpGrip');if(!grip)return;const screen=grip.closest('.screen');drag={grip,screen,y:e.clientY,dy:0,t:performance.now()};grip.setPointerCapture(e.pointerId);screen.style.transition='none';});
+ document.addEventListener('pointermove',e=>{if(!drag)return;const now=performance.now(),ndy=Math.max(0,e.clientY-drag.y);if(now>drag.t)drag.v=(ndy-drag.dy)/(now-drag.t);drag.t=now;drag.dy=ndy;drag.screen.style.transform='translateY('+drag.dy+'px)';});
+ const finish=cancel=>{if(!drag)return;const d=drag;drag=null;d.screen.style.transition='transform .24s';d.screen.style.transform='';/* Day 60.2, шаг 8: закрывает только жест вниз — протянуть на 70 точек или смахнуть вниз (скорость в конце жеста больше 0,25 точки за мс); простое нажатие на черточку больше не закрывает */
+  if(!cancel&&(d.dy>70||(d.dy>24&&(d.v||0)>.25)))closeCurrent();setTimeout(()=>{d.screen.style.transition='';},250);};
  document.addEventListener('pointerup',()=>finish(false));document.addEventListener('pointercancel',()=>finish(true));
  document.addEventListener('keydown',e=>{if(e.target.matches('.care-grip,#cpGrip')&&['Enter',' '].includes(e.key)){e.preventDefault();closeCurrent();}});
 }
