@@ -7,8 +7,19 @@ function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;',
 function selectedName(r){var l=root.DB&&root.DB.catalogLang||'ru';return r.names[l]||r.names.ru||r.names.en}
 function displayUnit(u){return ({g:'г',mg:'мг','µg':'мкг',ug:'мкг',kcal:'ккал',kJ:'кДж',IU:'МЕ'})[u]||u}
 function finite(x){return typeof x==='number'&&Number.isFinite(x)?x:null}
+/* Meal 33.5 (Астамур 17.11.2026): углеводы для дневника — готовое значение без клетчатки, если оно есть; иначе углеводы по разности
+   (USDA 1005, вместе с клетчаткой) минус клетчатка (1079), если известны оба (≈, расчёт; не меньше нуля); иначе прочерк.
+   Так же, как «Углеводы» BLS, MEXT и KFCT — без клетчатки. Ревизия продуктов USDA — 20261117: состав изменился, прежние записи
+   дневника хранят свои снимки (@20180401) и не пересчитываются. */
+var REVISION=20261117;
+function carbs(r){
+ var ready=finite(r.nut&&r.nut.carb);if(ready!=null)return {value:ready,derived:null};
+ var s=r.sourceNutrients||{},total=finite(s['1005']),fib=finite(s['1079']);
+ if(total==null||fib==null)return {value:null,derived:null,total:total};
+ return {value:Math.round(Math.max(0,total-fib)*1e6)/1e6,derived:'USDA_total_minus_fiber',total:total,fib:fib};
+}
 function fields(r){
- var label='USDA · SR Legacy · FDC '+r.code,standard=root.MealReport.fields().map(function(d){var v=finite(r.nut[d.key]);return {key:d.key,kind:'standard',name:d.title,unit:d.unit,canonicalUnit:d.unit,category:d.group,value:v,status:v==null?'missing':'value',origin:'copied',source:label+' · '+r.sourceUrl,notes:v==null?'В источнике нет сопоставимого числового результата.':''}});
+ var label='USDA · SR Legacy · FDC '+r.code,cb=carbs(r),standard=root.MealReport.fields().map(function(d){if(d.key==='carb'&&cb.derived)return {key:d.key,kind:'standard',name:d.title,unit:d.unit,canonicalUnit:d.unit,category:d.group,value:cb.value,status:'value',origin:'calculated',source:label+' · '+r.sourceUrl,sourceQualifier:{state:'value',estimated:true,derived:cb.derived},notes:'Рассчитано: углеводы по разности '+cb.total+' г минус клетчатка '+cb.fib+' г (USDA).'};var v=finite(r.nut[d.key]);return {key:d.key,kind:'standard',name:d.title,unit:d.unit,canonicalUnit:d.unit,category:d.group,value:v,status:v==null?'missing':'value',origin:'copied',source:label+' · '+r.sourceUrl,notes:v==null?(d.key==='carb'&&cb.total!=null?'Клетчатка в USDA не указана: углеводы без неё не посчитать.':'В источнике нет сопоставимого числового результата.'):''}});
  Object.keys(r.sourceNutrients||{}).forEach(function(id){var def=definitions[id];if(!def||def.standard)return;var v=finite(r.sourceNutrients[id]);standard.push({key:def.key||'prop:usda:'+id,kind:'custom',name:def.name,unit:displayUnit(def.unit),canonicalUnit:displayUnit(def.unit),originalUnit:def.unit,category:'custom',value:v,status:v==null?'missing':'value',origin:'copied',source:label+' · '+r.sourceUrl,notes:'Исходное определение USDA; не подменяет показатель с другим определением.'})});
  return standard;
 }
@@ -16,9 +27,9 @@ function portionMap(r){
  var out={};(r.portions||[]).forEach(function(p){if(!(p.gramWeight>0))return;var unit=p.modifier||p.measureUnit||'serving';if(typeof unit==='object')unit=unit.name||'serving';var label=(p.amount&&p.amount!==1?p.amount+' ':'')+unit;label=label.trim().slice(0,80);if(!label||label==='г')return;if(out[label]&&out[label]!==p.gramWeight)label=(label.slice(0,65)+' ('+p.gramWeight+' g)').slice(0,80);out[label]=p.gramWeight});return out;
 }
 function makeFood(r){
- var P=root.MealProducts,f={id:r.id,n:selectedName(r),names:Object.assign({},r.names),catalogSource:'USDA',catalogCode:String(r.code),revision:20180401,src:'USDA',por:portionMap(r),porG:1,k:finite(r.nut.kcal),p:finite(r.nut.prot),f:finite(r.nut.fat),c:finite(r.nut.carb),w:r.searchWords.slice(),
+ var P=root.MealProducts,f={id:r.id,n:selectedName(r),names:Object.assign({},r.names),catalogSource:'USDA',catalogCode:String(r.code),revision:REVISION,src:'USDA',por:portionMap(r),porG:1,k:finite(r.nut.kcal),p:finite(r.nut.prot),f:finite(r.nut.fat),c:carbs(r).value,w:r.searchWords.slice(),
  sourceInfo:{source:'USDA · FoodData Central · SR Legacy',nameOrigins:r.nameOrigins||null,version:'April 2018',url:r.sourceUrl,code:String(r.code),ndbNumber:r.ndbNumber,publicationDate:r.publicationDate,license:'CC0',archiveUrl:source.downloadUrl||source.url,originalNutrients:r.sourceNutrients},
- sourceNotes:'На 100 г съедобной части. SR Legacy, выпуск апреля 2018; публикация записи FDC: '+(r.publicationDate==='4/1/2019'?'01.04.2019':r.publicationDate||'не указана')+'. Это не новые измерения 2026 года. Углеводы по разности (включая клетчатку), витамин A RAE и α-токоферол показаны отдельно: определения отличаются от BLS. Порции — исходные меры USDA в граммах; английские названия сохранены.'};
+ sourceNotes:'На 100 г съедобной части. SR Legacy, выпуск апреля 2018; публикация записи FDC: '+(r.publicationDate==='4/1/2019'?'01.04.2019':r.publicationDate||'не указана')+'. Это не новые измерения 2026 года. Углеводы — по разности минус клетчатка (≈, расчёт Happy Meal); углеводы с клетчаткой, витамин A RAE и α-токоферол показаны отдельно: определения отличаются от BLS. Порции — исходные меры USDA в граммах; английские названия сохранены.'};
  // Only selected/inspected foods allocate full composition fields. Snapshot JSON
  // evaluates this enumerable getter and persists independent plain data.
  var composition;Object.defineProperty(f,'composition',{enumerable:true,configurable:true,get:function(){return composition||(composition={version:1,basisGrams:100,fields:fields(r)})},set:function(v){composition=v}});

@@ -33,7 +33,7 @@ for(const [i,f] of P.desserts.foods.entries()){const r=ds.foods[i];assert.ok(r&&
  const k=r.nutrients.find(n=>/(^usda:1008$|:kcal$|energy_kcal$)/.test(n.key)&&n.status==='value');assert.ok(k,'десерты: у '+f.name+' есть калории');
  assert.ok(Math.abs(k.value-f.kcal)<=0.6,'десерты: ккал '+f.name+' '+k.value+' ≠ '+f.kcal)}
 /* Meal 33.3: «Сладкие заготовки» — порядок и названия позиций как в файле каталога; свои карточки — значения каталога,
-   отметки — из BLS и USDA, как их показывает Meal (углеводы USDA в Meal не переносятся — null); неизвестное — null, не ноль */
+   отметки — из BLS и USDA, как их показывает Meal (углеводы USDA — по разности минус клетчатка); неизвестное — null, не ноль */
 const sp=file('sweet-preserves'),blsLib=file('bls'),usdaLib=file('usda'),blsRow={},usdaRow={};
 blsLib.f.forEach(r=>blsRow[r[0]]=r);usdaLib.foods.forEach(r=>usdaRow[r.id]=r);
 const bk=n=>4+blsLib.keys.indexOf(n),refv=(r,...keys)=>{for(const k of keys){const n=r.nutrients.find(x=>x.key==='ref:'+k);if(n)return n.status==='value'?n.value:null}return null};
@@ -43,7 +43,7 @@ for(const [i,f] of P.preserves.foods.entries()){const r=sp.foods[i];assert.ok(r&
  let want;
  if(r.id.startsWith('hmpreserve:'))want=[refv(r,'energy_kcal'),refv(r,'protein_g'),refv(r,'fat_g'),refv(r,'available_carbohydrate_source_g','carbohydrate_as_reported_g')];
  else if(r.id.startsWith('bls:')){const b=blsRow[r.id.slice(4)];assert.ok(b,'BLS '+r.id);want=['kcal','prot','fat','carb'].map((n,j)=>j?Math.round(b[bk(n)]*10)/10:Math.round(b[bk(n)]))}   // как blsMac в index.html
- else{const u=usdaRow[r.id];assert.ok(u&&r.id.startsWith('usda:'),'USDA '+r.id);want=[u.nut.kcal,u.nut.prot,u.nut.fat,null]}
+ else{const u=usdaRow[r.id],s=u&&u.sourceNutrients;assert.ok(u&&r.id.startsWith('usda:'),'USDA '+r.id);want=[u.nut.kcal,u.nut.prot,u.nut.fat,s['1005']!=null&&s['1079']!=null?Math.round(Math.max(0,s['1005']-s['1079'])*1e6)/1e6:null]}   // Meal 33.5: углеводы USDA — по разности минус клетчатка
  close(f.kcal,want[0],f.name+' ккал');close(f.protein,want[1],f.name+' белки');close(f.fat,want[2],f.name+' жиры');close(f.carb,want[3],f.name+' углеводы')}
 assert.equal(P.preserves.foods.filter(f=>f.protein==null).length,2,'белки неизвестны только у двух варений по ГОСТ');
 // 2. Магазин

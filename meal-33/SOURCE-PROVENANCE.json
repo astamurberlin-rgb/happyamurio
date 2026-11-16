@@ -84,6 +84,14 @@
  },
  "pointReleases": [
   {
+   "version": "33.5",
+   "date": "2026-11-17",
+   "changes": [
+    "usda.js: «Углеводы» для дневника — готовое значение без клетчатки, иначе углеводы по разности (1005) минус клетчатка (1079), если известны оба (≈, origin calculated), иначе прочерк (Астамур 17.11.2026); ревизия продуктов USDA 20180401 → 20261117, старые записи хранят свои снимки",
+    "catalog-preview.js: углеводы USDA в списке «Сладких заготовок»; checks/check-usda-carbs.mjs, check-shop; index.html ?v=33.5, sw.js 33.5, release-notes.js 33.5"
+   ]
+  },
+  {
    "version": "33.4",
    "date": "2026-11-17",
    "changes": [
@@ -290,8 +298,8 @@
   },
   {
    "path": "catalog-preview.js",
-   "size": 26372,
-   "sha256": "82d22e85a238041c9d09d9118d7bd9d030ea1875bb4d20528c38fe460480e86e"
+   "size": 26421,
+   "sha256": "743ff32e58c5d8f2a6d3d4d29b27e687c6b17a4a3de33329adbf1552c0b9ddf4"
   },
   {
    "path": "catalog.css",
@@ -340,13 +348,18 @@
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 14168,
-   "sha256": "5ab69dab841b4ad7333f750216986bc9312de456bd4b961f69fb660713be3891"
+   "size": 14381,
+   "sha256": "ae0d0775a6e4a304b9a19e2abd70dc0b426d7af24d157b141ec7c6ed89fd168c"
   },
   {
    "path": "checks/check-supplements-store.mjs",
    "size": 12368,
    "sha256": "0ef8897621a5f828b25453defc0fe6a8b062fec5498d2173f55ed1d5555bd6df"
+  },
+  {
+   "path": "checks/check-usda-carbs.mjs",
+   "size": 3038,
+   "sha256": "8e5e31f950749e37054586584cde54a2e4f55a676f7a76a29e11e6794010b5e0"
   },
   {
    "path": "checks/store-model.mjs",
@@ -406,7 +419,7 @@
   {
    "path": "index.html",
    "size": 599567,
-   "sha256": "e4a79ff49e37385af2e94936a2207f7cbfbfe1c2b0b950619d687789a940b849"
+   "sha256": "220e710789391a810fb416394d317a8f29098e940924830c2af84643f7111f2f"
   },
   {
    "path": "kfct.js",
@@ -605,8 +618,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 45074,
-   "sha256": "a0d6a3ba8a399cf17b7d4904cec20f0f277b5775cb654a7e2f3914fd96483a1e"
+   "size": 45669,
+   "sha256": "53b5bfd59972f8d5c9dd2e1af9c259631afb789aa73d40bf2a9c6568f441531c"
   },
   {
    "path": "report.css",
@@ -796,12 +809,12 @@
   {
    "path": "sw.js",
    "size": 3504,
-   "sha256": "dd3865f108f14363c4fea49f5fc6e4547dee592edcb75dda9804dd4a20549d48"
+   "sha256": "2bed221d6d6c6842d0f030095dbad2a6ef0839a9a195d5389a846e5c7ecae518"
   },
   {
    "path": "usda.js",
-   "size": 9074,
-   "sha256": "5e8f59e982fadf097f28328d47d034f31956fc5a7c3b221e16f1d16b25c40acd"
+   "size": 10836,
+   "sha256": "0fea7a78425971727bfe4c18868726e00040954e5054b6af90d3c54d3db4d3e8"
   },
   {
    "path": "user-products.css",
