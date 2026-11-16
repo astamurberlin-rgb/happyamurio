@@ -1,0 +1,2002 @@
+{
+ "schema": "happy-independent-food-library/1.0",
+ "library": "sweet-preserves",
+ "name": "Сладкие заготовки",
+ "version": "1.0.0",
+ "date": "2026-11-14",
+ "author": "ChatGPT",
+ "adaptedBy": "Claude",
+ "adaptedOn": "2026-11-16",
+ "sourcePackage": "Happy-Meal-Sweet-Preserves-handoff-1.0.zip",
+ "sourcePackageFiles": {
+  "SHA256SUMS.txt": "3096115dce9a3f58233991a2c2501cce4197c40a3f230a96fde99f2c0126f950",
+  "START-HERE.ru.md": "2f7351769599f070cbed4ecd995cbe540bf0200288783c72c4ea649ae9a78b18",
+  "release-candidate/existing-refs.json": "accad8130d8dcc6335980a067565a2dd801ea579af6853ec7740fdf53756c889",
+  "release-candidate/new-cards.json": "db97f76ab06fafde5f9e1d74d6dda03d3ee3b9ac163be62847e2917508e529f0",
+  "release-candidate/scope.json": "38544b97a8359bf264e30ab2adb757051b431514315a30ef218bcfed99338f58",
+  "research-only/dried-fruit-compote-alternatives.md": "1efaa9e6a084c501513cfb65002f2d2c49b19d5120fed1fca42a654576152898",
+  "research-only/excluded-11.json": "d671a1ac1e99ab93a395301ce7cb556e729d1ac5b21d74689c2d376a05806054",
+  "verify-package.py": "430538a51421c9925f69c6b7b72d901615d8cd23fcb0163d341bfeed95b323d7"
+ },
+ "policy": {
+  "missingIsZero": false,
+  "basis": "per 100 g edible finished product",
+  "zero": "Only where the source prints 0; rounding is not analytical absence.",
+  "crossSourceEquivalence": "Not inferred. Shared names do not authorize nutrient merging.",
+  "keys": "ref:<field> keep the source meaning; the Meal adapter maps only semantically compatible fields.",
+  "researchOnly": "11 records of the package (research-only, NOT_FOR_IMPORT) are not part of this file."
+ },
+ "categories": [
+  {
+   "key": "compotes",
+   "name": "Компоты-напитки"
+  },
+  {
+   "key": "jams",
+   "name": "Варенья, джемы и повидло"
+  },
+  {
+   "key": "fruit-in-syrup",
+   "name": "Фрукты в сиропе и фруктовые десерты"
+  },
+  {
+   "key": "candied",
+   "name": "Цукаты"
+  }
+ ],
+ "nutrientDefinitions": {
+  "ref:alcohol_g": {
+   "unit": "g",
+   "name": "Алкоголь"
+  },
+  "ref:ash_g": {
+   "unit": "g",
+   "name": "Зола"
+  },
+  "ref:available_carbohydrate_source_g": {
+   "unit": "g",
+   "name": "Усвояемые углеводы (сахара + крахмал)"
+  },
+  "ref:beta_carotene_mg": {
+   "unit": "mg",
+   "name": "Бета-каротин"
+  },
+  "ref:calcium_mg": {
+   "unit": "mg",
+   "name": "Кальций"
+  },
+  "ref:carbohydrate_as_reported_g": {
+   "unit": "g",
+   "name": "Углеводы"
+  },
+  "ref:carotene_source_ug": {
+   "unit": "ug",
+   "name": "Каротин, колонка «Кар»"
+  },
+  "ref:cholesterol_mg": {
+   "unit": "mg",
+   "name": "Холестерин"
+  },
+  "ref:dietary_fiber_source_g": {
+   "unit": "g",
+   "name": "Пищевые волокна"
+  },
+  "ref:energy_kcal": {
+   "unit": "kcal",
+   "name": "Энергетическая ценность"
+  },
+  "ref:fat_g": {
+   "unit": "g",
+   "name": "Жиры"
+  },
+  "ref:iron_mg": {
+   "unit": "mg",
+   "name": "Железо"
+  },
+  "ref:legacy_crude_fiber_source_g": {
+   "unit": "g",
+   "name": "Клетчатка (методика исходного справочника)"
+  },
+  "ref:magnesium_mg": {
+   "unit": "mg",
+   "name": "Магний"
+  },
+  "ref:niacin_equivalent_source_mg": {
+   "unit": "mg",
+   "name": "Ниациновый эквивалент (НЭ)"
+  },
+  "ref:organic_acids_as_malic_acid_g": {
+   "unit": "g",
+   "name": "Органические кислоты, в пересчёте на яблочную"
+  },
+  "ref:organic_acids_source_g": {
+   "unit": "g",
+   "name": "Органические кислоты"
+  },
+  "ref:phosphorus_mg": {
+   "unit": "mg",
+   "name": "Фосфор"
+  },
+  "ref:potassium_mg": {
+   "unit": "mg",
+   "name": "Калий"
+  },
+  "ref:protein_g": {
+   "unit": "g",
+   "name": "Белки"
+  },
+  "ref:retinol_equivalent_source_ug": {
+   "unit": "ug",
+   "name": "Ретиноловый эквивалент (РЭ)"
+  },
+  "ref:riboflavin_mg": {
+   "unit": "mg",
+   "name": "Витамин B2"
+  },
+  "ref:salt_sodium_chloride_source_g": {
+   "unit": "g",
+   "name": "Хлорид натрия (NaCl), по таблице"
+  },
+  "ref:saturated_fat_source_g": {
+   "unit": "g",
+   "name": "Насыщенные жирные кислоты"
+  },
+  "ref:sodium_mg": {
+   "unit": "mg",
+   "name": "Натрий"
+  },
+  "ref:starch_g": {
+   "unit": "g",
+   "name": "Крахмал"
+  },
+  "ref:thiamin_mg": {
+   "unit": "mg",
+   "name": "Витамин B1"
+  },
+  "ref:tocopherol_equivalent_source_mg": {
+   "unit": "mg",
+   "name": "Токофероловый эквивалент (ТЭ)"
+  },
+  "ref:total_sugars_g": {
+   "unit": "g",
+   "name": "Моно- и дисахариды (сахара, всего)"
+  },
+  "ref:vitamin_a_column_a_source_ug": {
+   "unit": "ug",
+   "name": "Витамин A, колонка «A»"
+  },
+  "ref:vitamin_c_mg": {
+   "unit": "mg",
+   "name": "Витамин C"
+  },
+  "ref:vitamin_pp_source_mg": {
+   "unit": "mg",
+   "name": "Витамин PP"
+  },
+  "ref:water_g": {
+   "unit": "g",
+   "name": "Вода"
+  }
+ },
+ "foods": [
+  {
+   "id": "hmpreserve:cornelian-cherry-preserve",
+   "stableHandoffKey": "cornelian-cherry-preserve",
+   "titleRu": "Кизиловое варенье",
+   "aliases": [
+    "варенье из кизила"
+   ],
+   "category": "jams",
+   "recordKind": "reference_table",
+   "basis": {
+    "type": "mass",
+    "grams": 100,
+    "description": "100 г съедобного готового продукта"
+   },
+   "nutrients": [
+    {
+     "key": "ref:energy_kcal",
+     "value": 276,
+     "unit": "kcal",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:protein_g",
+     "value": 0.4,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:fat_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:available_carbohydrate_source_g",
+     "value": 71.7,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:total_sugars_g",
+     "value": 71.4,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:starch_g",
+     "value": 0.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:legacy_crude_fiber_source_g",
+     "value": 0.2,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:water_g",
+     "value": 26.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:organic_acids_as_malic_acid_g",
+     "value": 0.6,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:ash_g",
+     "value": 0.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:sodium_mg",
+     "value": 10,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:potassium_mg",
+     "value": 109,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:calcium_mg",
+     "value": 25,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:magnesium_mg",
+     "value": 11,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:phosphorus_mg",
+     "value": 14,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:iron_mg",
+     "value": 1.7,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_c_mg",
+     "value": 5.5,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:salt_sodium_chloride_source_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:beta_carotene_mg",
+     "value": null,
+     "unit": "mg",
+     "status": "trace",
+     "qualifier": "trace",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:thiamin_mg",
+     "value": null,
+     "unit": "mg",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:riboflavin_mg",
+     "value": null,
+     "unit": "mg",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_pp_source_mg",
+     "value": null,
+     "unit": "mg",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    }
+   ],
+   "portions": [],
+   "sourceUrls": [
+    "https://djvu.online/file/WOUgKpZYmvpEs",
+    "https://djvu.online/jpg/W/O/U/WOUgKpZYmvpEs/058.jpg"
+   ],
+   "sourceContext": {
+    "sources": [
+     {
+      "title": "Скурихин и Волгарев, 1987, книга 1, с. 112–113, строка 10.10.5",
+      "url": "https://djvu.online/file/WOUgKpZYmvpEs"
+     },
+     {
+      "title": "Скан таблицы, с. 112–113",
+      "url": "https://djvu.online/jpg/W/O/U/WOUgKpZYmvpEs/058.jpg"
+     }
+    ],
+    "method": "Показатели переписаны из строки справочника без усреднения с другими рецептами. Усвояемые углеводы вычислены как моно- и дисахариды + крахмал. Калорийность оставлена из справочника, не пересчитана по формуле 4/9/4.",
+    "recipe": "Рецептура, точно соответствующая этой строке пищевого состава, не установлена. Значения закладки не додумываем.",
+    "fruitContentPct": null,
+    "addedSugarPer100g": null
+   },
+   "limitations": [
+    "готовое варенье; на 100 г съедобной части",
+    "Усвояемые углеводы — сумма сахаров и крахмала. «Клетчатка» — колонка справочника, не приравнивать автоматически к современному методу суммарных пищевых волокон. Бета-каротин обозначен как следы, B1/B2/PP численно не указаны. Энергию сохранить из таблицы, не пересчитывать.",
+    "Добавленный сахар и доля плодов не опубликованы для этой записи. Отсутствующие показатели не равны нулю."
+   ],
+   "handoffStatus": "approved_scope_pending_adapter_review",
+   "eligibleForImport": true
+  },
+  {
+   "id": "hmpreserve:raspberry-preserve-skurikhin",
+   "stableHandoffKey": "raspberry-preserve-skurikhin",
+   "titleRu": "Малиновое варенье",
+   "aliases": [
+    "варенье из малины"
+   ],
+   "category": "jams",
+   "recordKind": "reference_table",
+   "basis": {
+    "type": "mass",
+    "grams": 100,
+    "description": "100 г съедобного готового продукта"
+   },
+   "nutrients": [
+    {
+     "key": "ref:energy_kcal",
+     "value": 275,
+     "unit": "kcal",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:protein_g",
+     "value": 0.6,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:fat_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:available_carbohydrate_source_g",
+     "value": 71.2,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:total_sugars_g",
+     "value": 70.9,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:starch_g",
+     "value": 0.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:legacy_crude_fiber_source_g",
+     "value": 1.4,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:water_g",
+     "value": 26,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:ash_g",
+     "value": 0.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:sodium_mg",
+     "value": 14,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:potassium_mg",
+     "value": 168,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:calcium_mg",
+     "value": 19,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:magnesium_mg",
+     "value": 10,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:phosphorus_mg",
+     "value": 16,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:iron_mg",
+     "value": 1.2,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:beta_carotene_mg",
+     "value": 0.02,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:thiamin_mg",
+     "value": 0.01,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:riboflavin_mg",
+     "value": 0.04,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_c_mg",
+     "value": 7.4,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:salt_sodium_chloride_source_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:organic_acids_as_malic_acid_g",
+     "value": 0.5,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_pp_source_mg",
+     "value": null,
+     "unit": "mg",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    }
+   ],
+   "portions": [],
+   "sourceUrls": [
+    "https://djvu.online/file/WOUgKpZYmvpEs",
+    "https://djvu.online/jpg/W/O/U/WOUgKpZYmvpEs/058.jpg"
+   ],
+   "sourceContext": {
+    "sources": [
+     {
+      "title": "Скурихин и Волгарев, 1987, книга 1, с. 112–113, строка 10.10.6",
+      "url": "https://djvu.online/file/WOUgKpZYmvpEs"
+     },
+     {
+      "title": "Скан таблицы, с. 112–113",
+      "url": "https://djvu.online/jpg/W/O/U/WOUgKpZYmvpEs/058.jpg"
+     }
+    ],
+    "method": "Показатели переписаны из строки справочника без усреднения с другими рецептами. Усвояемые углеводы вычислены как моно- и дисахариды + крахмал. Калорийность оставлена из справочника, не пересчитана по формуле 4/9/4.",
+    "recipe": "Рецептура, точно соответствующая этой строке пищевого состава, не установлена. Значения закладки не додумываем.",
+    "fruitContentPct": null,
+    "addedSugarPer100g": null
+   },
+   "limitations": [
+    "готовое варенье; на 100 г съедобной части",
+    "Усвояемые углеводы — сумма сахаров и крахмала; клетчатка по исходной колонке, не подмена современных суммарных пищевых волокон; энергию сохранить из строки, не пересчитывать.",
+    "Добавленный сахар и доля плодов не опубликованы для этой записи. Отсутствующие показатели не равны нулю."
+   ],
+   "handoffStatus": "approved_scope_pending_adapter_review",
+   "eligibleForImport": true
+  },
+  {
+   "id": "hmpreserve:blackcurrant-jam-skurikhin",
+   "stableHandoffKey": "blackcurrant-jam-skurikhin",
+   "titleRu": "Джем из чёрной смородины",
+   "aliases": [
+    "смородиновый джем",
+    "джем из черной смородины"
+   ],
+   "category": "jams",
+   "recordKind": "reference_table",
+   "basis": {
+    "type": "mass",
+    "grams": 100,
+    "description": "100 г съедобного готового продукта"
+   },
+   "nutrients": [
+    {
+     "key": "ref:energy_kcal",
+     "value": 265,
+     "unit": "kcal",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:protein_g",
+     "value": 0.6,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:fat_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:available_carbohydrate_source_g",
+     "value": 68.2,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:total_sugars_g",
+     "value": 68.1,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:starch_g",
+     "value": 0.1,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:legacy_crude_fiber_source_g",
+     "value": 1,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:water_g",
+     "value": 23.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:organic_acids_as_malic_acid_g",
+     "value": 1.2,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:sodium_mg",
+     "value": 18,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:potassium_mg",
+     "value": 140,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:calcium_mg",
+     "value": 22,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:magnesium_mg",
+     "value": 14,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:phosphorus_mg",
+     "value": 16,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:iron_mg",
+     "value": 0.5,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:beta_carotene_mg",
+     "value": 0.05,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:thiamin_mg",
+     "value": 0.01,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:riboflavin_mg",
+     "value": 0.01,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_pp_source_mg",
+     "value": 0.06,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_c_mg",
+     "value": 40,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:salt_sodium_chloride_source_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:ash_g",
+     "value": 0.5,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    }
+   ],
+   "portions": [],
+   "sourceUrls": [
+    "https://djvu.online/file/WOUgKpZYmvpEs",
+    "https://djvu.online/jpg/W/O/U/WOUgKpZYmvpEs/058.jpg"
+   ],
+   "sourceContext": {
+    "sources": [
+     {
+      "title": "Скурихин и Волгарев, 1987, книга 1, с. 112–113, строка 10.10.14",
+      "url": "https://djvu.online/file/WOUgKpZYmvpEs"
+     },
+     {
+      "title": "Скан таблицы, с. 112–113",
+      "url": "https://djvu.online/jpg/W/O/U/WOUgKpZYmvpEs/058.jpg"
+     }
+    ],
+    "method": "Показатели переписаны из строки справочника без усреднения с другими рецептами. Усвояемые углеводы вычислены как моно- и дисахариды + крахмал. Калорийность оставлена из справочника, не пересчитана по формуле 4/9/4.",
+    "recipe": "Рецептура, точно соответствующая этой строке пищевого состава, не установлена. Значения закладки не додумываем.",
+    "fruitContentPct": null,
+    "addedSugarPer100g": null
+   },
+   "limitations": [
+    "готовый джем, не варенье с целыми ягодами",
+    "Энергия по справочнику. Усвояемые углеводы — сахара плюс крахмал. Клетчатка по исходной колонке.",
+    "Добавленный сахар и доля плодов не опубликованы для этой записи. Отсутствующие показатели не равны нулю."
+   ],
+   "handoffStatus": "approved_scope_pending_adapter_review",
+   "eligibleForImport": true
+  },
+  {
+   "id": "hmpreserve:cherry-preserve-gost",
+   "stableHandoffKey": "cherry-preserve-gost",
+   "titleRu": "Вишнёвое варенье",
+   "aliases": [
+    "вишневое варенье",
+    "варенье из вишни"
+   ],
+   "category": "jams",
+   "recordKind": "reference_table",
+   "basis": {
+    "type": "mass",
+    "grams": 100,
+    "description": "100 г съедобного готового продукта"
+   },
+   "nutrients": [
+    {
+     "key": "ref:energy_kcal",
+     "value": 248,
+     "unit": "kcal",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:carbohydrate_as_reported_g",
+     "value": 62,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_c_mg",
+     "value": 7,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:protein_g",
+     "value": null,
+     "unit": "g",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:fat_g",
+     "value": null,
+     "unit": "g",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:dietary_fiber_source_g",
+     "value": null,
+     "unit": "g",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    }
+   ],
+   "portions": [],
+   "sourceUrls": [
+    "https://files.stroyinf.ru/Data2/1/4294822/4294822674.pdf",
+    "https://ru.djvu.online/file/ekHB8TcSDU9e3"
+   ],
+   "sourceContext": {
+    "sources": [
+     {
+      "title": "ГОСТ 7061-88, приложение 2, справочная пищевая ценность стерилизованного варенья",
+      "url": "https://files.stroyinf.ru/Data2/1/4294822/4294822674.pdf"
+     },
+     {
+      "title": "Кенгис, 1951, отдельный пример рецептуры №38, с. 50",
+      "url": "https://ru.djvu.online/file/ekHB8TcSDU9e3"
+     }
+    ],
+    "method": "Прямые справочные показатели из ГОСТ. Углеводы не переименованы в «сахар»; белки, жиры и клетчатка не заданы, поэтому не нули. Энергию не пересчитывали.",
+    "recipe": "Отдельный рецептурный пример (не источник приведённого состава): Кенгис, 1951, №38, с. 50: вишня нетто без косточек 500 г, сахар 605 г, патока 100 г; выход 1 кг. Количество воды не зафиксировано. Не совмещать эти пропорции с данными ГОСТ как с измерением одного продукта.",
+    "fruitContentPct": null,
+    "addedSugarPer100g": null
+   },
+   "limitations": [
+    "стерилизованное варенье: ягоды с сиропом, на 100 г готового продукта",
+    "ГОСТ 7061-88, исторические справочные данные по стерилизованному варенью. Вишня входит в общую строку для нескольких ягод; черная смородина отдельная. Витамин C — справочное значение, не измерение конкретной банки.",
+    "Добавленный сахар и доля плодов не опубликованы для этой записи. Отсутствующие показатели не равны нулю."
+   ],
+   "handoffStatus": "approved_scope_partial_requires_missing_value_support",
+   "eligibleForImport": true
+  },
+  {
+   "id": "hmpreserve:blackcurrant-preserve-gost",
+   "stableHandoffKey": "blackcurrant-preserve-gost",
+   "titleRu": "Варенье из чёрной смородины с целыми ягодами",
+   "aliases": [
+    "варенье из черной смородины",
+    "смородиновое варенье"
+   ],
+   "category": "jams",
+   "recordKind": "reference_table",
+   "basis": {
+    "type": "mass",
+    "grams": 100,
+    "description": "100 г съедобного готового продукта"
+   },
+   "nutrients": [
+    {
+     "key": "ref:energy_kcal",
+     "value": 220,
+     "unit": "kcal",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:carbohydrate_as_reported_g",
+     "value": 55,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_c_mg",
+     "value": 50,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:protein_g",
+     "value": null,
+     "unit": "g",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:fat_g",
+     "value": null,
+     "unit": "g",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:dietary_fiber_source_g",
+     "value": null,
+     "unit": "g",
+     "status": "missing",
+     "qualifier": "unknown",
+     "origin": "reference_table"
+    }
+   ],
+   "portions": [],
+   "sourceUrls": [
+    "https://files.stroyinf.ru/Data2/1/4294822/4294822674.pdf"
+   ],
+   "sourceContext": {
+    "sources": [
+     {
+      "title": "ГОСТ 7061-88, приложение 2, справочная пищевая ценность стерилизованного варенья",
+      "url": "https://files.stroyinf.ru/Data2/1/4294822/4294822674.pdf"
+     }
+    ],
+    "method": "Прямые справочные показатели из ГОСТ. Углеводы не переименованы в «сахар»; белки, жиры и клетчатка не заданы, поэтому не нули. Энергию не пересчитывали.",
+    "recipe": "Рецептура, точно соответствующая этой строке пищевого состава, не установлена. Значения закладки не додумываем.",
+    "fruitContentPct": null,
+    "addedSugarPer100g": null
+   },
+   "limitations": [
+    "стерилизованное варенье: ягоды с сиропом, на 100 г готового продукта",
+    "ГОСТ 7061-88, исторические справочные данные по стерилизованному варенью. Вишня входит в общую строку для нескольких ягод; черная смородина отдельная. Витамин C — справочное значение, не измерение конкретной банки.",
+    "Добавленный сахар и доля плодов не опубликованы для этой записи. Отсутствующие показатели не равны нулю."
+   ],
+   "handoffStatus": "approved_scope_partial_requires_missing_value_support",
+   "eligibleForImport": true
+  },
+  {
+   "id": "hmpreserve:gooseberry-blackcurrant-compote",
+   "stableHandoffKey": "gooseberry-blackcurrant-compote",
+   "titleRu": "Компот из крыжовника и чёрной смородины",
+   "aliases": [
+    "компот из крыжовника и черной смородины"
+   ],
+   "category": "compotes",
+   "recordKind": "reference_table",
+   "basis": {
+    "type": "mass",
+    "grams": 100,
+    "description": "100 г съедобного готового продукта"
+   },
+   "nutrients": [
+    {
+     "key": "ref:energy_kcal",
+     "value": 58,
+     "unit": "kcal",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:protein_g",
+     "value": 0.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:fat_g",
+     "value": 0.1,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:carbohydrate_as_reported_g",
+     "value": 13.9,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:total_sugars_g",
+     "value": 13.9,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:dietary_fiber_source_g",
+     "value": 1.2,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:potassium_mg",
+     "value": 92,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:calcium_mg",
+     "value": 9,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:magnesium_mg",
+     "value": 6,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:iron_mg",
+     "value": 0.4,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_c_mg",
+     "value": 13,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:saturated_fat_source_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:cholesterol_mg",
+     "value": 0,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_a_column_a_source_ug",
+     "value": 0,
+     "unit": "ug",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:alcohol_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:water_g",
+     "value": 83.7,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:starch_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:organic_acids_source_g",
+     "value": 0.5,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:ash_g",
+     "value": 0.3,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:sodium_mg",
+     "value": 8,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:phosphorus_mg",
+     "value": 9,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:carotene_source_ug",
+     "value": 30,
+     "unit": "ug",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:retinol_equivalent_source_ug",
+     "value": 5,
+     "unit": "ug",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:tocopherol_equivalent_source_mg",
+     "value": 0.2,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:thiamin_mg",
+     "value": 0.01,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:riboflavin_mg",
+     "value": 0.01,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_pp_source_mg",
+     "value": 0.1,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:niacin_equivalent_source_mg",
+     "value": 0.1,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    }
+   ],
+   "portions": [],
+   "sourceUrls": [
+    "https://djvu.online/file/ljproamN2jMGs",
+    "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/180.webp",
+    "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/181.webp"
+   ],
+   "sourceContext": {
+    "sources": [
+     {
+      "title": "Скурихин и Тутельян, 2002, таблица 11, с. 180–181, строка 11.1.4.9",
+      "url": "https://djvu.online/file/ljproamN2jMGs"
+     },
+     {
+      "title": "Скан таблицы: основные показатели, с. 180",
+      "url": "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/180.webp"
+     },
+     {
+      "title": "Скан таблицы: витамины и минералы, с. 181",
+      "url": "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/181.webp"
+     }
+    ],
+    "method": "Переписана строка на 100 г (не строка порции 200 г и не проценты суточной потребности). Процентные массовые показатели равны граммам на 100 г; мг% = мг/100 г, мкг% = мкг/100 г. РЭ/ТЭ/НЭ показаны отдельно, их не складывают с отдельными витаминами.",
+    "recipe": "В справочнике указана рецептура 2-124. Закладка именно этой версии рецепта не извлечена; не заменяем её одноимённым рецептом из другого сборника.",
+    "fruitContentPct": null,
+    "addedSugarPer100g": null
+   },
+   "limitations": [
+    "приготовленный компот, плоды вместе с жидкостью; не процеженный",
+    "Не сопоставлять автоматически с одноимённым рецептом в сборнике 1982.",
+    "Добавленный сахар и доля плодов не опубликованы для этой записи. Отсутствующие показатели не равны нулю."
+   ],
+   "handoffStatus": "approved_scope_pending_adapter_review",
+   "eligibleForImport": true
+  },
+  {
+   "id": "hmpreserve:apple-compote-skurikhin-reference",
+   "stableHandoffKey": "apple-compote-skurikhin-reference",
+   "titleRu": "Яблочный компот с плодами",
+   "aliases": [
+    "яблочный компот",
+    "компот из яблок",
+    "яблочный компот с яблоками"
+   ],
+   "category": "compotes",
+   "recordKind": "reference_table",
+   "basis": {
+    "type": "mass",
+    "grams": 100,
+    "description": "100 г съедобного готового продукта"
+   },
+   "nutrients": [
+    {
+     "key": "ref:energy_kcal",
+     "value": 55,
+     "unit": "kcal",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:protein_g",
+     "value": 0.1,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:fat_g",
+     "value": 0.1,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:carbohydrate_as_reported_g",
+     "value": 13.6,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:total_sugars_g",
+     "value": 13.4,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:dietary_fiber_source_g",
+     "value": 0.4,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:potassium_mg",
+     "value": 48,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:calcium_mg",
+     "value": 6,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:magnesium_mg",
+     "value": 2,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:iron_mg",
+     "value": 0.4,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_c_mg",
+     "value": 2.7,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:saturated_fat_source_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:cholesterol_mg",
+     "value": 0,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_a_column_a_source_ug",
+     "value": 0,
+     "unit": "ug",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:alcohol_g",
+     "value": 0,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:water_g",
+     "value": 85.5,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:starch_g",
+     "value": 0.2,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:organic_acids_source_g",
+     "value": 0.2,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:ash_g",
+     "value": 0.1,
+     "unit": "g",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:sodium_mg",
+     "value": 5,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:phosphorus_mg",
+     "value": 2,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:carotene_source_ug",
+     "value": 10,
+     "unit": "ug",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:retinol_equivalent_source_ug",
+     "value": 2,
+     "unit": "ug",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:tocopherol_equivalent_source_mg",
+     "value": 0,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:thiamin_mg",
+     "value": 0.01,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:riboflavin_mg",
+     "value": 0,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:vitamin_pp_source_mg",
+     "value": 0.1,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    },
+    {
+     "key": "ref:niacin_equivalent_source_mg",
+     "value": 0.1,
+     "unit": "mg",
+     "status": "value",
+     "qualifier": "reported",
+     "origin": "reference_table"
+    }
+   ],
+   "portions": [],
+   "sourceUrls": [
+    "https://djvu.online/file/ljproamN2jMGs",
+    "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/180.webp",
+    "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/181.webp"
+   ],
+   "sourceContext": {
+    "sources": [
+     {
+      "title": "Скурихин и Тутельян, 2002, таблица 11, с. 180–181, строка 11.1.4.14",
+      "url": "https://djvu.online/file/ljproamN2jMGs"
+     },
+     {
+      "title": "Скан таблицы: основные показатели, с. 180",
+      "url": "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/180.webp"
+     },
+     {
+      "title": "Скан таблицы: витамины и минералы, с. 181",
+      "url": "https://djvu.online/jpg1/l/j/p/ljproamN2jMGs/181.webp"
+     }
+    ],
+    "method": "Переписана строка на 100 г (не строка порции 200 г и не проценты суточной потребности). Процентные массовые показатели равны граммам на 100 г; мг% = мг/100 г, мкг% = мкг/100 г. РЭ/ТЭ/НЭ показаны отдельно, их не складывают с отдельными витаминами.",
+    "recipe": "В справочнике указана рецептура 2-118. Закладка именно этой версии рецепта не извлечена; не заменяем её одноимённым рецептом из другого сборника.",
+    "fruitContentPct": null,
+    "addedSugarPer100g": null
+   },
+   "limitations": [
+    "приготовленный компот, плоды вместе с жидкостью; не процеженный",
+    "Не сопоставлять автоматически с одноимённым рецептом в сборнике 1982.",
+    "Добавленный сахар и доля плодов не опубликованы для этой записи. Отсутствующие показатели не равны нулю."
+   ],
+   "handoffStatus": "approved_scope_pending_adapter_review",
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:170645",
+   "titleRu": "Абрикосовое варенье / джем",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "170645",
+    "originalName": "Jams and preserves, apricot",
+    "url": "https://fdc.nal.usda.gov/food-details/170645/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:168819",
+   "titleRu": "Апельсиновый джем",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "168819",
+    "originalName": "Marmalade, orange",
+    "url": "https://fdc.nal.usda.gov/food-details/168819/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:S135000",
+   "titleRu": "Цитрусовый мармелад",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "S135000",
+    "originalName": "Marmelade (hergestellt aus Zitrusfrüchten)",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:S161000",
+   "titleRu": "Сливовое повидло",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "S161000",
+    "originalName": "Pflaumenmus",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:S132000",
+   "titleRu": "Конфитюр экстра",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "S132000",
+    "originalName": "Konfitüre extra",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:S132100",
+   "titleRu": "Конфитюр экстра с фруктозой и подсластителями",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "S132100",
+    "originalName": "Konfitüre extra, mit Fruchtzucker und Süßungsmitteln",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:167706",
+   "titleRu": "Джем с пониженным содержанием сахара",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "167706",
+    "originalName": "Jams, preserves, marmalade, reduced sugar",
+    "url": "https://fdc.nal.usda.gov/food-details/167706/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:169641",
+   "titleRu": "Варенье / джем, общий вариант",
+   "aliases": [],
+   "category": "jams",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "169641",
+    "originalName": "Jams and preserves",
+    "url": "https://fdc.nal.usda.gov/food-details/169641/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:Y841363",
+   "titleRu": "Вишнёвый компот с ягодами",
+   "aliases": [],
+   "category": "fruit-in-syrup",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "Y841363",
+    "originalName": "Sauerkirschkompott",
+    "url": "https://blsdb.de/food?foodId=41644&token=EASF-C8FV-E3AU-PXZ6-FNL8-EG1F-EJ8D-11ME"
+   },
+   "limitations": [
+    "Ягоды вместе с заливкой, не отдельно жидкость или ягоды."
+   ],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:173956",
+   "titleRu": "Вишня в лёгком сиропе",
+   "aliases": [],
+   "category": "fruit-in-syrup",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "173956",
+    "originalName": "Cherries, sour, red, canned, light syrup pack, solids and liquids",
+    "url": "https://fdc.nal.usda.gov/food-details/173956/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:171716",
+   "titleRu": "Вишня в густом сиропе",
+   "aliases": [],
+   "category": "fruit-in-syrup",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "171716",
+    "originalName": "Cherries, sour, red, canned, heavy syrup pack, solids and liquids",
+    "url": "https://fdc.nal.usda.gov/food-details/171716/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:173960",
+   "titleRu": "Черешня в густом сиропе",
+   "aliases": [],
+   "category": "fruit-in-syrup",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "173960",
+    "originalName": "Cherries, sweet, canned, pitted, heavy syrup pack, solids and liquids",
+    "url": "https://fdc.nal.usda.gov/food-details/173960/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:167770",
+   "titleRu": "Черешня из густого сиропа, без жидкости",
+   "aliases": [],
+   "category": "fruit-in-syrup",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "167770",
+    "originalName": "Cherries, sweet, canned, pitted, heavy syrup, drained",
+    "url": "https://fdc.nal.usda.gov/food-details/167770/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:F606902",
+   "titleRu": "Дольки мандарина из сиропа, без жидкости",
+   "aliases": [],
+   "category": "fruit-in-syrup",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "F606902",
+    "originalName": "Mandarine gezuckert, Konserve, abgetropft",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:R381100",
+   "titleRu": "Цукаты из апельсиновых корок",
+   "aliases": [],
+   "category": "candied",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "R381100",
+    "originalName": "Orangeat",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:R381200",
+   "titleRu": "Цукаты из лимонных корок",
+   "aliases": [],
+   "category": "candied",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "R381200",
+    "originalName": "Zitronat/Sukkade",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:S475100",
+   "titleRu": "Засахаренный ананас",
+   "aliases": [],
+   "category": "candied",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "S475100",
+    "originalName": "Ananas kandiert",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:S478100",
+   "titleRu": "Засахаренный имбирь",
+   "aliases": [],
+   "category": "candied",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "S478100",
+    "originalName": "Ingwer kandiert",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "bls:S472200",
+   "titleRu": "Засахаренная коктейльная вишня",
+   "aliases": [],
+   "category": "candied",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "Max Rubner-Institut BLS 4.0 (2025)",
+    "id": "S472200",
+    "originalName": "Kirsche kandiert (Belegkirsche)",
+    "url": "https://blsdb.de/download"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  },
+  {
+   "id": "usda:167781",
+   "titleRu": "Цукаты, общий вариант",
+   "aliases": [],
+   "category": "candied",
+   "recordKind": "source_record",
+   "basis": {
+    "type": "mass",
+    "grams": 100
+   },
+   "nutrients": [],
+   "portions": [],
+   "source": {
+    "dataset": "USDA FoodData Central SR Legacy",
+    "id": "167781",
+    "originalName": "Candied fruit",
+    "url": "https://fdc.nal.usda.gov/food-details/167781/nutrients"
+   },
+   "limitations": [],
+   "eligibleForImport": true
+  }
+ ]
+}
