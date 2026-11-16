@@ -35,8 +35,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1503328,
-   "sha256": "3e36b2163a61b4b5f2fec649c22a9c3506d1cc41b1681fb3745adac92875ebd4"
+   "size": 1274761,
+   "sha256": "6a387ce9feeade772d32d0b012144f460cf094039293b243b9f6eaa99e7d4b51"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -204,24 +204,9 @@
    "sha256": "d2a3c260aa48b89660305c22dbb717f735023fb9e94b989843e9978e0ac398df"
   },
   {
-   "path": "fonts/OFL.txt",
-   "size": 4397,
-   "sha256": "67f64c5509e5151796599e3ad47c3131cbe0c80c4f9430b90236a1249c2eacc9"
-  },
-  {
-   "path": "fonts/license-source.txt",
-   "size": 78,
-   "sha256": "5abfa330d3c95dd7d264fcb13cf0e0fd76c605f5048072fe6f729974d7b1478e"
-  },
-  {
-   "path": "fonts/mplus-rounded-1c-bold-latin-cyrillic.woff",
-   "size": 78060,
-   "sha256": "a09cfe26dbf5e97f66908b3869a1bd1ab5c747b28762e60f7e7fb7027eea2915"
-  },
-  {
    "path": "index.html",
-   "size": 494042,
-   "sha256": "8b0f6b81e1092dbaf684ef82594707ec434cd4c726b05570e239a0b126dac28b"
+   "size": 493925,
+   "sha256": "5d3136beee6b60a9e97a574b72642b1719958e59b726e2002b69f20fbff318c1"
   },
   {
    "path": "manifest.webmanifest",
@@ -235,8 +220,8 @@
   },
   {
    "path": "section-wheel.css",
-   "size": 5817,
-   "sha256": "8a96bfcc76965b10b78ba0fc31a8808fc7822fa832c1541b80bbab39b6d4a992"
+   "size": 2185,
+   "sha256": "c38386b5c88640da4100337c8c2f5d08d5052d795ded995db56cc166857f913b"
   },
   {
    "path": "selfcare-core.js",
@@ -245,8 +230,8 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 75516,
-   "sha256": "caa337f1d3d0be007ff6a552339a1e81f74c36d71ac5f8c0389cce514604035a"
+   "size": 62980,
+   "sha256": "5053523d6fbedaab5ecdc269708b9fba9da8f88347cb56bdd99493c8e490df76"
   },
   {
    "path": "selfcare.css",

@@ -47,14 +47,7 @@ const signed=v=>(v>0?'+':v<0?'−':'')+Math.abs(pct(v));
 const empty=t=>'<p class="care-empty">'+h(t)+'</p>';
 let ready=false,active='mood',currentEntry=null,busy=false;
 let session=null,railTimer=null,railPainting=false,pendingWheel=null;
-let shownWheel=null,wheelMoving=false,wheelRevealing=false,wheelFrame=0,wheelEpoch=0,wheelAngle=0,wheelLift=0,fontWaiting=false;
-const wheelFontReady=document.fonts.load('700 18px "Day Wheel Rounded"','УТРО ЗАВТРАК ЁЙ').then(f=>f.length>0).catch(()=>false);
-function wheelDestinationKey(){return session?.target??CURRENT;}
-function wheelDestinationTitle(){return wheelItems().find(s=>s.k===wheelDestinationKey())?.t||'Сейчас';}
-function stopWheelMotion(){cancelAnimationFrame(wheelFrame);wheelEpoch++;wheelMoving=false;wheelRevealing=false;}
-function paintWheelMotion(angle,lift=0){wheelAngle=angle;wheelLift=lift;const el=$('sectionWheel');if(!el)return;el.querySelector('.wheel-lift').style.transform='translateY('+lift+'px)';el.querySelector('.wheel-disc').style.transform='rotate('+angle+'deg)';}
-function animateWheelMotion(angle,lift,duration=300){stopWheelMotion();const epoch=wheelEpoch,from=wheelAngle,fromLift=wheelLift;if(matchMedia('(prefers-reduced-motion:reduce)').matches||!duration){paintWheelMotion(angle,lift);return;}wheelMoving=true;const started=performance.now();function frame(now){if(epoch!==wheelEpoch)return;const t=Math.min(1,(now-started)/duration),e=1-Math.pow(1-t,3);paintWheelMotion(from+(angle-from)*e,fromLift+(lift-fromLift)*e);if(t<1)wheelFrame=requestAnimationFrame(frame);else {wheelMoving=false;wheelRevealing=false;}}wheelFrame=requestAnimationFrame(frame);}
-
+/* Day 60.4: колеса разделов нет (Day 60.3, решение Астамура 17.11.2026) — его код убран. */
 const CURRENT='care_current';
 function data(){return C.init(DB,todayISO());}
 function block(name){return document.querySelector('[data-screen="care-'+name+'"]');}
@@ -90,7 +83,7 @@ function init(){
  let sideFrame=0;
  rail.addEventListener('scroll',()=>{if(!sideFrame)sideFrame=requestAnimationFrame(()=>{sideFrame=0;if(!railPainting&&rail.closest('.screen').classList.contains('on'))nwSide();});clearTimeout(railTimer);railTimer=setTimeout(()=>{if(railPainting||!rail.closest('.screen').classList.contains('on'))return;nwSide();const slide=rail.children[NW.idx];if(slide)rememberActive(slide.dataset.careKey);},160);},{passive:true});
  bindSettingsOrder();
- window.addEventListener('resize',()=>{center(false);if(session)requestAnimationFrame(renderWheel);});
+ window.addEventListener('resize',()=>{center(false);if(session)requestAnimationFrame(renderNote);});
  document.querySelector('.nwWg').setAttribute('aria-label','Сейчас');
  rail.setAttribute('aria-label','Кнопки-виджеты дневника');
  $('nwTags').hidden=true;
@@ -117,7 +110,7 @@ function bindCareNavigation(){
  document.addEventListener('pointerup',()=>finish(false));document.addEventListener('pointercancel',()=>finish(true));
  document.addEventListener('keydown',e=>{if(e.target.matches('.care-grip,#cpGrip')&&['Enter',' '].includes(e.key)){e.preventDefault();closeCurrent();}});
 }
-function onNavigate(name){if(name!=='ring'&&session?.autosave)commitSection(session);if(name!=='ring'){cancelWheelSpeech();stopWheelMotion();shownWheel=null;$('sectionWheel')?.classList.remove('wheel-visible');document.body.classList.remove('wheel-shown');}if(session&&!session.readOnly)stashWheel();document.body.classList.toggle('wheel-editing',name==='ring'&&!!session&&!session.readOnly); document.body.classList.toggle("now-editing",name==="ring"&&isCheckin()&&!session.readOnly);updateNowSave();if(session&&!session.readOnly&&CURS[cur])rememberScale(CURS[cur].k);if(session&&(name!=='ring'||curSec!==CURRENT)){session=null;if(curSec===CURRENT)curSec=DB.sections[0]?.k||'wake';}}
+function onNavigate(name){if(name!=='ring'&&session?.autosave)commitSection(session);if(name!=='ring')cancelWheelSpeech();if(session&&!session.readOnly)stashWheel();document.body.classList.toggle('wheel-editing',name==='ring'&&!!session&&!session.readOnly); document.body.classList.toggle("now-editing",name==="ring"&&isCheckin()&&!session.readOnly);updateNowSave();if(session&&!session.readOnly&&CURS[cur])rememberScale(CURS[cur].k);if(session&&(name!=='ring'||curSec!==CURRENT)){session=null;if(curSec===CURRENT)curSec=DB.sections[0]?.k||'wake';}}
 function checkinSection(){if(session?.readOnly)return {...data().checkinSection,t:session.sectionTitle||'Сейчас',scales:Object.keys(session.defs||{}),tags:Object.keys(session.checkpoint.tags||{})};const section=session?.target&&DB.sections.find(x=>x.k===session.target);const raw=section?{...section,k:CURRENT}:data().checkinSection,base={...raw,scales:[...raw.scales],tags:[...new Set([...raw.tags,...Object.keys(session?.checkpoint?.tags||{}).filter(k=>session.checkpoint.tags[k])])]};if(!session?.travelling)return base;return {...base,scales:[...new Set([...base.scales,...Object.keys(session.checkpoint).filter(k=>Number.isFinite(session.checkpoint[k])&&[...DB.metrics,...Object.values(session.defs||{})].some(m=>m.k===k))])],tags:[...new Set([...base.tags,...Object.keys(session.checkpoint.tags||{}).filter(k=>session.checkpoint.tags[k])])]};}
 /* Свой тег в режиме «Отметить самочувствие»: checkinSection() каждый раз собирает список заново,
    поэтому тег, добавленный в его копию, жил только пока был отмечен. Записываем в настоящий список —
@@ -162,13 +155,12 @@ let undoNow=null;
 function wheelHasEntry(){return !!session&&(checkinSection().scales.some(k=>Number.isFinite(session.checkpoint[k]))||Object.values(session.checkpoint.tags||{}).some(Boolean)||!!String(session.checkpoint.note||'').trim());}
 function updateNowSave(){
  const b=document.getElementById('nowSave');if(!b)return;
- const canSave=!!session&&session.dirty;b.disabled=busy||fontWaiting||!session; b.dataset.dirty=canSave; b.innerHTML=canSave?'Save':'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>';b.setAttribute('aria-label',canSave?(shownWheel===session?'Save — сохранить в '+wheelDestinationTitle():'Save — выбрать раздел'):'Продиктовать заметку'); renderWheel();
+ const canSave=!!session&&session.dirty;b.disabled=busy||!session; b.dataset.dirty=canSave; b.innerHTML=canSave?'Save':'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>';b.setAttribute('aria-label',canSave?'Save — сохранить в журнал':'Продиктовать заметку'); renderNote();
 }
 async function submitNow(){
- if(busy||fontWaiting||wheelMoving||!session||session.readOnly)return;
+ if(busy||!session||session.readOnly)return;
  if(!session.dirty){dictateWheel();return;}
  if(!guard(session.date))return;
- /* Day 60.3: колеса разделов нет — «Save» сразу сохраняет запись «Сейчас» в журнал (решение Астамура 17.11.2026) */
  if(session.travelling){await saveTravellingCheckin();return;}
  if(session.target){toNewRecord(session);await saveTravellingCheckin();return;}   // 57.6: «Сохранить» значения раздела не заменяет — только новая запись
  const original=session,draft=C.copy(session);let record;pendingWheel={session:original,value:JSON.stringify(draft.checkpoint)};
@@ -197,108 +189,22 @@ function initNowSave(){
 }
 
 
-function defaultWheelSection(){
- const hour=new Date().getHours(),cp=DB.days[curDate]?.cp||{};
- const morningDone=DB.sections.find(x=>x.k==='wake')?.scales.some(k=>Number.isFinite(cp.wake?.[k]))||Object.values(cp.wake?.tags||{}).some(Boolean)||(DB.days[curDate]?.care?.checkins||[]).some(x=>x.sectionKey==='wake');
- const desired=hour>=4&&hour<12&&!morningDone?'wake':hour>=4&&hour<12?'am':hour>=12&&hour<17?'pm':hour>=17&&hour<21?'dn':hour>=21||hour<4?'eve':CURRENT;
- return DB.sections.some(s=>s.k===desired)?desired:CURRENT;
-}
 function wheelDraftKey(draft){return draft.travelling?'care_travelling':draft.target||CURRENT;}
 function stashWheel(){if(!session||session.readOnly||!session.dirty)return;if(pendingWheel?.session===session&&pendingWheel.value===JSON.stringify(session.checkpoint))return;const d=data();d.wheelDrafts=d.wheelDrafts||{};d.wheelDrafts[session.date]=d.wheelDrafts[session.date]||{};d.wheelDrafts[session.date][wheelDraftKey(session)]=C.copy(session);if(session.dirty)save();}
-function wheelItems(){return DB.sections.concat([{...data().checkinSection,t:'Сейчас'}]);}
-let panelAnimations=[];
 function prepareSectionPanel(){
  const screen=document.querySelector('[data-screen="ring"]');let panel=$('sectionPanel');
  if(!panel){panel=document.createElement('div');panel.id='sectionPanel';while(screen.firstChild)panel.append(screen.firstChild);screen.append(panel);const header=document.createElement('div');header.className='section-form-header';panel.prepend(header);['cpGrip'].forEach(k=>header.append($(k)));header.append($('cpName').closest('.top'));$('swipeZone').after($('cpMeal'));}
  return panel;
 }
-function slideSectionPanel(oldPanel,direction){
- const panel=prepareSectionPanel();panelAnimations.forEach(a=>a.cancel());panelAnimations=[];document.querySelectorAll('.section-outgoing').forEach(x=>x.remove());
- if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
- const width=panel.clientWidth;oldPanel.removeAttribute('id');oldPanel.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));oldPanel.classList.add('section-outgoing');oldPanel.setAttribute('aria-hidden','true');oldPanel.inert=true;panel.parentNode.append(oldPanel);
- const opts={duration:300,easing:'cubic-bezier(.22,.75,.25,1)'};
- const out=oldPanel.animate([{transform:'translateX(0)'},{transform:'translateX('+(-direction*width)+'px)'}],opts),incoming=panel.animate([{transform:'translateX('+(direction*width)+'px)'},{transform:'translateX(0)'}],opts);panelAnimations=[out,incoming];out.onfinish=()=>oldPanel.remove();
-}
-function switchWheel(key){
- if(busy||fontWaiting||wheelRevealing||!session||session.readOnly||shownWheel!==session||wheelDestinationKey()===key)return;
- const a=wheelItems(),i=a.findIndex(s=>s.k===key);if(i<0)return;const base=-i*360/a.length,angle=base+Math.round((wheelAngle-base)/360)*360,direction=angle<wheelAngle?1:-1;
- const existingTravel=data().wheelDrafts?.[session.date]?.care_travelling;if(!session.travelling&&existingTravel){toastLong('Есть незавершённая запись: открой «Отметить самочувствие» на главной и сохрани её. Текущий черновик тоже сохранён.');stashWheel();return;}
- cancelWheelSpeech();stashWheel();const originDraftKey=session.target||CURRENT,originDraftId=session.id,oldPanel=prepareSectionPanel().cloneNode(true);
- if(!session.travelling){
- const baseline=session.baseline||{},cp=session.checkpoint,entered={time:cp.time,tags:{}};
- for(const m of DB.metrics)if(Number.isFinite(cp[m.k])&&cp[m.k]!==baseline[m.k])entered[m.k]=cp[m.k];
- for(const [tag,value]of Object.entries(cp.tags||{}))if(value&&value!==baseline.tags?.[tag])entered.tags[tag]=true;
- if(cp.note&&cp.note!==baseline.note)entered.note=cp.note;
- session.defs=Object.fromEntries(DB.metrics.map(m=>[m.k,C.copy(m)]));session.originKey=session.target||CURRENT;session.originTitle=checkinSection().t;session.checkpoint=entered;session.id=C.uid();session.travelling=true;session.dirty=Object.keys(entered.tags).length>0||!!entered.note||cp.time!==baseline.time||DB.metrics.some(m=>Number.isFinite(entered[m.k]));
- }
- session.target=key===CURRENT?null:key;delete session.destination;shownWheel=session;stashWheel();const drafts=data().wheelDrafts?.[session.date];if(drafts?.[originDraftKey]?.id===originDraftId){delete drafts[originDraftKey];save();}cur=0;buildTracks();renderCpTags();$('cpName').textContent=checkinSection().t;paintCpMeal();renderFacts();CURS.forEach((_,i)=>paint(i));updateNowSave();document.querySelector('[data-screen="ring"]').scrollTop=0;slideSectionPanel(oldPanel,direction);animateWheelMotion(angle,0);
-}
-
-let wheelDrag=null,recognition=null;
+let recognition=null;
 function cancelWheelSpeech(){if(recognition){const active=recognition;recognition=null;active.abort();}}
 
-function syncWheelClearance(el){
- const dock=document.querySelector('.dock'),fab=$('fab'),action=$('nowSave');if(!dock||!fab||!action||!el.clientWidth)return;
- const d=dock.getBoundingClientRect(),cy=parseFloat(fab.style.top)||18;
- const buttonSize=action.getBoundingClientRect().width||60,buttonCenter=d.top+cy;
- action.style.bottom=(innerHeight-buttonCenter-buttonSize/2)+'px';
- const disc=el.querySelector('.wheel-disc');if(disc){const radius=buttonSize*(134/60),centerY=buttonCenter+buttonSize*(40/60);disc.style.width=disc.style.height=(radius*2)+'px';disc.style.marginLeft=(-radius)+'px';disc.style.top=(centerY-radius-el.getBoundingClientRect().top)+'px';}
- // The real disc is behind the original footer and button; the notch reveals green.
- el.style.maskImage='none';el.style.webkitMaskImage='none';
-}
-function balanceWheelLabelClearance(el){
- const disc=el.querySelector('.wheel-disc'),button=$('nowSave');if(!disc||!button||!el.clientWidth)return;
- const rimTop=el.getBoundingClientRect().top+parseFloat(getComputedStyle(disc).top),scale=(button.getBoundingClientRect().width||60)/60,target=(button.getBoundingClientRect().top-rimTop)/(2*scale);
- const sample=disc.querySelector('text'),font=sample?getComputedStyle(sample).font:'';
- const key=disc.dataset.items+'|'+target.toFixed(3)+'|'+font;if(disc.dataset.clearanceKey===key)return;let measured=true;
- disc.querySelectorAll('.wheel-label').forEach(group=>{const text=group.querySelector('text'),path=group.querySelector('path');const r=64;let arcCenter=target+r;
-  for(let pass=0;pass<3;pass++){
-   const x=r*Math.sin(100*Math.PI/180),y=arcCenter-r*Math.cos(100*Math.PI/180);
-   path.setAttribute('d','M'+(134-x)+' '+y+' A'+r+' '+r+' 0 1 1 '+(134+x)+' '+y);
-   let box;try{box=text.getBBox();}catch(_){measured=false;break;}if(!box.height||!Number.isFinite(box.y+box.height)){measured=false;break;}
-   if(pass<2)arcCenter+=target-(box.y+box.height/2);
-  }
-  group.dataset.labelRadius=r.toFixed(3);
-
- });if(measured)disc.dataset.clearanceKey=key;
-}
-function renderWheel(){
- let el=$('sectionWheel');if(!el){el=document.createElement('div');el.id='sectionWheel';el.innerHTML='<div class="wheel-destination" role="status"></div><div class="wheel-lift"><div class="wheel-disc" role="group" aria-label="Выбрать раздел"></div></div><div class="wheel-draft"></div>';document.body.append(el);
- const destination=el.querySelector('.wheel-destination');destination.id='wheelDestination';$('cpMeal').after(destination);
- const disc=el.querySelector('.wheel-disc');
- let rotation=0,startIndex=0;
- function down(e){if(!session||busy||fontWaiting||wheelRevealing||shownWheel!==session||e.isPrimary===false)return;e.preventDefault();stopWheelMotion();rotation=wheelAngle;wheelDrag={x:e.clientX,id:e.pointerId,dx:0};disc.classList.add('dragging');disc.setPointerCapture(e.pointerId);}
- function move(e){if(!wheelDrag||e.pointerId!==wheelDrag.id)return;e.preventDefault();wheelDrag.dx=e.clientX-wheelDrag.x;paintWheelMotion(rotation+wheelDrag.dx*.42);}
- function finish(e,cancel){if(!wheelDrag||e.pointerId!==wheelDrag.id)return;e.preventDefault();const dx=wheelDrag.dx;wheelDrag=null;disc.classList.remove('dragging');const a=wheelItems(),step=360/a.length;if(cancel||Math.abs(dx)<24){const i=a.findIndex(s=>s.k===wheelDestinationKey()),base=-i*step;animateWheelMotion(base+Math.round((wheelAngle-base)/360)*360,0);return;}const next=((Math.round(-wheelAngle/step)%a.length)+a.length)%a.length;if(a[next].k===wheelDestinationKey()){const base=-next*step;animateWheelMotion(base+Math.round((wheelAngle-base)/360)*360,0);}else switchWheel(a[next].k);}
- disc.addEventListener('pointerdown',down);disc.addEventListener('pointermove',move);disc.addEventListener('pointerup',e=>finish(e,false));disc.addEventListener('pointercancel',e=>finish(e,true));
- disc.addEventListener('lostpointercapture',()=>{if(wheelDrag){wheelDrag=null;disc.classList.remove('dragging');const a=wheelItems(),i=a.findIndex(s=>s.k===wheelDestinationKey()),base=-i*360/a.length;animateWheelMotion(base+Math.round((wheelAngle-base)/360)*360,0);}});
- // Prevent Safari scrolling from stealing the horizontal wheel gesture.
- disc.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
- disc.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});
- el.tabIndex=0;el.setAttribute('role','slider');el.setAttribute('aria-label','Раздел — проведи по колесу влево или вправо');
- el.addEventListener('keydown',e=>{if(shownWheel===session&&!fontWaiting&&!wheelRevealing&&['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const a=wheelItems(),i=a.findIndex(s=>s.k===wheelDestinationKey());const j=e.key==='Home'?0:e.key==='End'?a.length-1:(i+(e.key==='ArrowRight'?1:-1)+a.length)%a.length;switchWheel(a[j].k);el.focus({preventScroll:true});}});
- }
- if(!session||session.readOnly){el.classList.remove('wheel-visible');document.body.classList.remove('wheel-shown');return;}syncWheelClearance(el);el.classList.toggle('wheel-visible',shownWheel===session);document.body.classList.toggle('wheel-shown',shownWheel===session);el.tabIndex=shownWheel===session?0:-1;el.setAttribute('aria-hidden',String(shownWheel!==session));
+/* Кнопка «Save» — в вырезе нижнего меню; под тегами — поле заметки. Раньше это делало колесо разделов. */
+function renderNote(){
+ if(!session||session.readOnly)return;
+ const dock=document.querySelector('.dock'),fab=$('fab'),action=$('nowSave');
+ if(dock&&fab&&action){const d=dock.getBoundingClientRect(),cy=parseFloat(fab.style.top)||18,size=action.getBoundingClientRect().width||60;action.style.bottom=(innerHeight-(d.top+cy)-size/2)+'px';}
  let note=$('wheelNote');if(!note){note=document.createElement('textarea');note.id='wheelNote';note.placeholder='Заметка к этому разделу';note.setAttribute('aria-label','Заметка к выбранному разделу');$('cpTags').after(note);note.addEventListener('input',()=>{if(session&&!session.readOnly){session.checkpoint.note=note.value;saveCheckin();}});}if(document.activeElement!==note)note.value=session.checkpoint.note||'';
- const a=wheelItems(),i=a.findIndex(s=>s.k===wheelDestinationKey());
- const disc=el.querySelector('.wheel-disc'),signature=a.map(s=>s.k+':'+s.t).join('|');
- if(disc.dataset.items!==signature){disc.dataset.items=signature;disc.innerHTML='<svg class="wheel-type" viewBox="0 0 268 268" aria-hidden="true">'+a.map((s,n)=>'<g class="wheel-label" transform="rotate('+(n*360/a.length)+' 134 134)"><defs><path id="wheelText'+n+'" d="M110.69 31.36 A164 164 0 0 1 249.31 31.36"/></defs><text dominant-baseline="middle"><textPath dominant-baseline="middle" href="#wheelText'+n+'" startOffset="50%" text-anchor="middle">'+h(s.t.toLocaleUpperCase('ru'))+'</textPath></text></g>').join('')+'</svg>';}
- balanceWheelLabelClearance(el);
- if(shownWheel!==session&&!wheelDrag&&!wheelMoving)paintWheelMotion(-i*360/a.length);
- el.setAttribute('aria-valuemin','0');el.setAttribute('aria-valuemax',String(a.length-1));el.setAttribute('aria-valuenow',String(i));el.setAttribute('aria-valuetext',a[i]?.t||'Сейчас');
- $('wheelDestination').textContent=(session.travelling?'Новая запись → ':'Журнал → ')+wheelDestinationTitle()+' · '+ruDate(session.date)+(session.travelling?' · сохранённые записи не меняются':'');
- el.querySelector('.wheel-draft').textContent=session.dirty?'Черновик · сохранится в выбранный раздел':'Свайп по дуге · выбор раздела';
-}
-async function saveWheelSection(){
- if(busy||!session?.dirty||!guard(session.date))return;
- const original=session,draft=C.copy(session),section=DB.sections.find(x=>x.k===draft.target);if(!section)return;pendingWheel={session:original,value:JSON.stringify(draft.checkpoint)};
- const ok=await transact(()=>{
- const d=day(draft.date);d.wheelHistory=d.wheelHistory||[];
- if(d.cp[draft.target])d.wheelHistory.push({section:draft.target,checkpoint:C.copy(d.cp[draft.target]),replacedAt:new Date().toISOString()});
- d.cp[draft.target]=C.copy(draft.checkpoint);delete data().wheelDrafts?.[draft.date]?.[draft.target];
- });
- pendingWheel=null;if(!ok){updateNowSave();return;}
- if(session===original&&JSON.stringify(session.checkpoint)===JSON.stringify(draft.checkpoint)){session.dirty=false;session=null;go('day');renderDay();}else if(session===original){stashWheel();updateNowSave();}toastLong('Сохранено: '+section.t+' · '+ruDate(draft.date));
 }
 function dictateWheel(){
  const Speech=root.SpeechRecognition||root.webkitSpeechRecognition;if(!Speech){toastLong('Голосовой ввод недоступен в этом браузере. Отметь шкалу или тег — появится «Сохранить».');return;}
@@ -329,7 +235,7 @@ function openMood(recordId,returnTo='day',explicitKey=null){
   }
   delete session.destination;if(!session.baseline)session.baseline={};session.returnTo=returnTo;
   if(session.autosave&&drafts[key]&&!drafts[key].travelling)scheduleSection();
- }shownWheel=null;stopWheelMotion();curSec=CURRENT;cur=0;
+ }curSec=CURRENT;cur=0;
  let recordNote=$('careRecordNote');if(!recordNote){recordNote=document.createElement('p');recordNote.id='careRecordNote';recordNote.className='care-help';recordNote.style.whiteSpace='pre-wrap';$('cpTags').after(recordNote);}recordNote.hidden=!record;recordNote.textContent=record?[(record.sourceSectionTitle?'Форма: '+record.sourceSectionTitle:''),record.note||''].filter(Boolean).join('\n'):'';buildTracks();if(!record)cur=Math.max(0,CURS.findIndex(m=>m.k===data().settings.activeScale));renderCpTags();$('cpName').textContent=record?(record.sectionTitle||'Сейчас'):(session.target?checkinSection().t:'Сейчас');paintCpMeal();go('ring');updateNowSave();document.querySelector('[data-screen="ring"]').scrollTop=0;
 }
 function open(kind,id,parent){
