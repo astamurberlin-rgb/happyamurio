@@ -7,13 +7,14 @@
 
 Вход, письма и облако на странице лаборатории — поддельные (scripts/lab/happy-lab-server.js): запросы к настоящему
 серверу перехватываются в самой странице и наружу не уходят, письма видны в панели «Проверка». Пароль примера
-придумывается при каждой сборке. Библиотеки продуктов Meal — из ветки `meal-libraries`, рядом, в `libs/` (страница
-не может ходить на raw.githubusercontent.com).
+придумывается при каждой сборке. В лабораторию идут только файлы выпусков под контролем Git, без проверок, исходников
+Sport, иконок установки и service worker.
 
     python3 -I scripts/build-lab.py /tmp/happy-lab
 
-Библиотеки берутся из `origin/meal-libraries` (`HAPPY_LIBRARIES_REF` — другая ветка); хеши в манифесте
-сверяются с файлами, как это делает сама страница.
+Каталоги продуктов Meal — по желанию: HAPPY_LAB_LIBRARIES=1 кладёт их рядом, в `meal-NN/libs/` (страница не может
+ходить на raw.githubusercontent.com). Берутся из `origin/meal-libraries` (`HAPPY_LIBRARIES_REF` — другая ветка); хеши
+в манифесте сверяются с файлами, как это делает сама страница.
 
 — Claude · 12.11.2026 (лаборатория Meal), три приложения и поддельный вход — 16.11.2026
 """
@@ -24,26 +25,37 @@ repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ref = os.environ.get('HAPPY_LIBRARIES_REF', 'origin/meal-libraries')
 apps = json.load(open(os.path.join(repo, 'shared', 'apps.json'), encoding='utf-8'))
 release = {k: apps[k]['entry'].split('/')[0] for k in ('day', 'meal', 'sport')}
-skip_dirs = {'checks', 'tests', 'sport', 'scripts', 'prototypes'}
-skip_files = {'README.md', 'PRODUCTS.md', 'SOURCE-PROVENANCE.json', 'sw.js'}
+skip_dirs = {'checks', 'tests', 'sport', 'scripts', 'prototypes', 'app-icons', 'dist'}
+skip_files = {'README.md', 'PRODUCTS.md', 'SOURCE-PROVENANCE.json', 'sw.js', 'manifest.webmanifest'}
+
+
+def tracked(prefix):
+    return subprocess.run(['git', '-C', repo, 'ls-files', '-z', prefix], capture_output=True, check=True).stdout.decode().split('\0')
+
+
+def copy(path):
+    dst = os.path.join(out, path)
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copy2(os.path.join(repo, path), dst)
+
 
 if os.path.exists(out):
     shutil.rmtree(out)
 for app, folder in release.items():
-    src = os.path.join(repo, folder)
-    for base, dirs, files in os.walk(src):
-        rel = os.path.relpath(base, src)
-        dirs[:] = [d for d in dirs if not (rel == '.' and d in skip_dirs)]
-        for f in files:
-            if rel == '.' and (f in skip_files or re.match(r'Happy-Day-\d+\.html$', f)):
-                continue
-            dst = os.path.join(out, folder, rel, f)
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            shutil.copy2(os.path.join(base, f), dst)
-os.makedirs(os.path.join(out, 'shared'), exist_ok=True)
-shutil.copy2(os.path.join(repo, 'shared', 'apps.json'), os.path.join(out, 'shared', 'apps.json'))
-# общие картинки и справочник упражнений Sport (на сайте — /happyamurio/assets/)
-shutil.copytree(os.path.join(repo, 'assets'), os.path.join(out, 'assets'))
+    for path in tracked(folder + '/'):
+        if not path:
+            continue
+        parts = path.split('/')[1:]
+        if parts[0] in skip_dirs or (len(parts) == 1 and (parts[0] in skip_files or re.match(r'Happy-Day-\d+\.html$', parts[0]))):
+            continue
+        if app == 'sport' and parts[0] in ('shared', 'day', 'meal'):   # Sport: общие файлы встроены в страницу при сборке
+            continue
+        copy(path)
+copy('shared/apps.json')
+# картинки занятий и вариантов упражнений Sport (на сайте — /happyamurio/assets/); справочник встроен в страницу
+for path in tracked('assets/'):
+    if path and path.split('/')[1] in ('sport-icons', 'exercise-media'):
+        copy(path)
 
 # поддельный сервер: пароль примера — новый при каждой сборке
 password = 'Happy-' + str(secrets.randbelow(9000) + 1000) + '!'
@@ -80,7 +92,7 @@ for app, folder in release.items():
         edit(folder + '/shared/happy-links.js', [(r"var BASE='/happyamurio/';", "var BASE='../';", 1),
                                                  (r"var href=BASE\+d\+'/';", "var href=BASE+d+'/index.html';", 1)])
 
-# каталоги Meal — рядом со страницей
+# каталоги Meal — рядом со страницей, если попросили
 meal = release['meal']
 
 
@@ -88,7 +100,7 @@ def git_bytes(path):
     return subprocess.run(['git', '-C', repo, 'show', ref + ':' + path], capture_output=True, check=True).stdout
 
 
-manifest = json.loads(git_bytes('manifest.json'))
+manifest = json.loads(git_bytes('manifest.json')) if os.environ.get('HAPPY_LAB_LIBRARIES') == '1' else {'libraries': {}}
 for key, entry in manifest['libraries'].items():
     name = entry['url'].rsplit('/', 1)[1]
     data = git_bytes('data/' + name)
@@ -98,13 +110,14 @@ for key, entry in manifest['libraries'].items():
     with open(os.path.join(out, meal, 'libs', 'data', name), 'wb') as fh:
         fh.write(data)
     entry['url'] = 'libs/data/' + name
-with open(os.path.join(out, meal, 'libs', 'manifest.json'), 'w', encoding='utf-8') as fh:
-    json.dump(manifest, fh, ensure_ascii=False)
-edit(meal + '/food-libraries.js', [
-    (r"const manifestURL='https://raw\.githubusercontent\.com/[^']*';",
-     "const manifestURL=new URL('libs/manifest.json',location.href).href;   // лаборатория: библиотеки рядом со страницей", 1),
-    (r"const sourceURL=/\^https:.*?;\n", "const sourceURL=/^libs\\/data\\/[a-z0-9.-]+$/;\n", 1),
-])
+if manifest['libraries']:
+    with open(os.path.join(out, meal, 'libs', 'manifest.json'), 'w', encoding='utf-8') as fh:
+        json.dump(manifest, fh, ensure_ascii=False)
+    edit(meal + '/food-libraries.js', [
+        (r"const manifestURL='https://raw\.githubusercontent\.com/[^']*';",
+         "const manifestURL=new URL('libs/manifest.json',location.href).href;   // лаборатория: библиотеки рядом со страницей", 1),
+        (r"const sourceURL=/\^https:.*?;\n", "const sourceURL=/^libs\\/data\\/[a-z0-9.-]+$/;\n", 1),
+    ])
 
 # первая страница лаборатории
 start = open(os.path.join(repo, 'scripts', 'lab', 'index.html'), encoding='utf-8').read()
