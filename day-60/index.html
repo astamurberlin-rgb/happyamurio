@@ -5436,6 +5436,8 @@ function go(name){
   var prevScreen=(document.querySelector('.screen.on')||{}).dataset; prevScreen=prevScreen&&prevScreen.screen;
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.dataset.screen===name) });
   /* Day 60.3: с экрана отметок на главную — кольцо остаётся на месте, остальное мягко проявляется */
+  /* Day 60.4: вернулись с экрана раздела или отметок — главная в начальном положении, кольцо с кнопкой на своём месте */
+  if(name==='day'&&prevScreen&&(prevScreen==='ring'||prevScreen.indexOf('care-')===0)){ var homeScr=document.querySelector('[data-screen="day"]'); if(homeScr) homeScr.scrollTop=0 }
   if(name==='day'&&prevScreen==='ring'){ var dayScr=document.querySelector('[data-screen="day"]'); dayScr.classList.remove('from-ring'); void dayScr.offsetWidth; dayScr.classList.add('from-ring'); clearTimeout(go.fromRingTimer); go.fromRingTimer=setTimeout(function(){ dayScr.classList.remove('from-ring') },700) }
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name||(name.startsWith('care-settings-')&&t.dataset.go==='settings')) });
   document.body.classList.toggle('sheet',name==='ring'||name.startsWith('care-'));
