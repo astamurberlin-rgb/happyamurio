@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
-  "dictionary_version": "0.1.0-research",
+  "dictionary_version": "0.2.0-research",
   "locale": "ru",
   "status": "draft_not_connected",
   "updated_on": "2026-11-17",
-  "description_ru": "Единый проект словаря бытовой речи Happy Meal. Данные и предложения; приложение этот файл пока не читает.",
+  "description_ru": "Единый проект словаря бытовой речи Happy Meal: названия продуктов, выражения, меры, части, основания решений и контрольные примеры. Приложение этот файл пока не читает.",
   "approval": {
     "implementation_requires_user_yes": true,
-    "site_release_requires_user_vypuskay": true
+    "site_release_requires_user_vypuskay": true,
+    "scope_note_ru": "Согласие создать и расширить каталог относится к исследованию и данным. Подключение к боту и изменение поведения требуют отдельного явного согласия; выпуск сайта — отдельного слова «выпускай»."
   },
   "baseline": {
     "app_version": "Meal 33.7",
@@ -326,6 +327,150 @@
       "kind": "существующее поведение",
       "access": "исходники и запуск",
       "reliability": "Подтверждает действие программы, не правильность массы."
+    },
+    {
+      "id": "S29",
+      "title": "Активный словарь русского языка РАН, курица 1.2",
+      "url": "https://ruslang.ru/sites/default/files/2024-12/ASRYa-4-2.pdf",
+      "kind": "академический словарь",
+      "access": "полный текст",
+      "reliability": "Кулинарное значение курицы; курятина, курочка; формы куриный. Значение, не вес.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S30",
+      "title": "Грамота, индейка и индюшка",
+      "url": "https://gramota.ru/poisk?mode=slovari&query=%D0%B8%D0%BD%D0%B4%D0%B5%D0%B9%D0%BA%D0%B0",
+      "kind": "академический словарь",
+      "access": "поисковый текст; прямое открытие 403",
+      "reliability": "Индейка, индюшка, индюшатина в пищевом значении; не определяет часть туши.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S31",
+      "title": "Грамота, варёный",
+      "url": "https://gramota.ru/meta/varenyy",
+      "kind": "академический словарь",
+      "access": "поисковый текст; прямое открытие 403",
+      "reliability": "Варёный и отварной как способ приготовления.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S32",
+      "title": "Грамота, помидор",
+      "url": "https://gramota.ru/poisk?mode=slovari&query=%D0%BF%D0%BE%D0%BC%D0%B8%D0%B4%D0%BE%D1%80%D0%BE%D0%B2&simple=0",
+      "kind": "академический словарь",
+      "access": "поисковый текст; прямое открытие 403",
+      "reliability": "Помидор, томат, помидорчик в значении плода; не паста и не сок.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S33",
+      "title": "Грамота, морковка",
+      "url": "https://gramota.ru/meta/morkovka",
+      "kind": "академический словарь",
+      "access": "поисковый текст статьи",
+      "reliability": "Морковь и отдельный корнеплод; размер не задан.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S34",
+      "title": "Грамота, бурак",
+      "url": "https://gramota.ru/poisk?mode=slovari&query=%D0%B1%D1%83%D1%80%D0%B1%D0%B0%D0%BA",
+      "kind": "академический словарь",
+      "access": "полный текст словарного результата",
+      "reliability": "Народно-разговорное название свёклы; также значение тары. Нужен контекст еды.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S35",
+      "title": "Грамота, синенький",
+      "url": "https://gramota.ru/poisk?mode=slovari&query=%D0%A1%D0%B8%D0%BD%D0%B5%D1%83%D1%86%D0%BA%D0%B8%D0%B9&simple=0",
+      "kind": "академический словарь",
+      "access": "поисковый текст; прямое открытие 403",
+      "reliability": "Синенькие во множественном числе — разговорное название баклажанов. Не любая синяя еда.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S36",
+      "title": "Грамота, кочан",
+      "url": "https://gramota.ru/poisk?mode=slovari&query=%D0%9A%D0%BE%D1%87%D0%B0%D0%BD&simple=0",
+      "kind": "академический словарь",
+      "access": "полный текст",
+      "reliability": "Кочан, головка капусты, вилок; также разговорный початок кукурузы. Массы нет.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S37",
+      "title": "FineCooking, соус паста из укропа",
+      "url": "https://finecooking.ru/recipe/sous-pasta-iz-ukropa-s-chesnokom-na-zimu?comment=34484",
+      "kind": "авторский рецепт",
+      "access": "полный текст, шаг 2",
+      "reliability": "Автор отделяет веточки с листочками от стеблей и допускает молодые нежные стебли. Пример речи, не единый размер веточки.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S38",
+      "title": "Гастроном, укроп с солью на зиму",
+      "url": "https://www.gastronom.ru/recipe/17719/ukrop-na-zimu",
+      "kind": "рецепт редакции",
+      "access": "полный текст, шаги 1–4",
+      "reliability": "Отдельно названы пучки, веточки и грубые концы стеблей. Количество в рецепте не вес одного пучка.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S39",
+      "title": "University of Wisconsin Extension, Dill",
+      "url": "https://hort.extension.wisc.edu/articles/dill-anethum-graveolens/",
+      "kind": "университетская публикация",
+      "access": "полный текст",
+      "reliability": "Листья, стебли, соцветия и семена — разные части. Нет массы русской веточки.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S40",
+      "title": "University of Maryland Extension, Cilantro Coriander",
+      "url": "https://extension.umd.edu/resource/cilantrocoriander",
+      "kind": "университетская публикация",
+      "access": "полный текст",
+      "reliability": "У одного растения употребляют листья и семена. Их различение подтверждено; частоту русских названий источник не исследует.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S41",
+      "title": "Грамота, овсянка",
+      "url": "https://gramota.ru/poisk?dicts%5B%5D=42&mode=slovari&query=%D0%BE%D0%B2%D1%81%D1%8F%D0%BD%D0%BA%D0%B0",
+      "kind": "академический словарь",
+      "access": "поисковый текст; прямое открытие 403",
+      "reliability": "Овсянка может обозначать крупу или кашу.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S42",
+      "title": "Грамота, филе",
+      "url": "https://gramota.ru/poisk?dicts%5B0%5D=42&mode=slovari&query=%D1%83%D0%B3%D0%BB%D0%B5&simple=0",
+      "kind": "академический словарь",
+      "access": "поисковый текст статьи; прямое открытие 403",
+      "reliability": "Бескостный кусок; не автоматически грудка, определённый вид животного или способ приготовления.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S43",
+      "title": "Грамота, картошка и отварить",
+      "url": "https://gramota.ru/poisk?mode=spravka&page=3&query=%D0%BA%D0%B0%D1%80%D1%82%D0%BE%D1%88%D0%BA%D0%B0+%D0%BA%D0%B0%D1%81%D1%82%D1%80%D1%8E%D0%BB%D1%8F&simple=0",
+      "kind": "справочная служба",
+      "access": "полный текст, ответы 322040 и 200091",
+      "reliability": "Картошка и картофель называют один объект; отварить и сварить — синонимы.",
+      "checked_on": "2026-11-17"
+    },
+    {
+      "id": "S44",
+      "title": "Апресян и соавторы, О компьютерном учебнике лексики русского языка",
+      "url": "https://rjano.ruslang.ru/sites/default/files/journals/2007/2007-2.pdf",
+      "kind": "лингвистическая статья Института русского языка РАН",
+      "access": "полный текст, печатная страница 87",
+      "reliability": "Связь животного и названия мяса: говядина, свинина, баранина, телятина, утятина, гусятина, оленина, лососина. Это языковые связи, не эквивалентность пищевых карточек.",
+      "checked_on": "2026-11-17"
     }
   ],
   "fillers_and_operators": [
@@ -695,12 +840,18 @@
         "веточка",
         "веточки",
         "веточек",
-        "ветка"
+        "ветка",
+        "ветки",
+        "ветку",
+        "веток",
+        "веточку"
       ],
-      "meaning_ru": "Масса зависит от растения и съедаемой части.",
+      "meaning_ru": "Веточка/ветка зелени; не обязательно всё растение и не гарантированно листья без стебля. Сохранять «без ножки» и «со стеблем».",
       "action": "personal_weight_or_ask",
       "source_ids": [
-        "BRIEF"
+        "BRIEF",
+        "S37",
+        "S38"
       ],
       "default_grams": null
     },
@@ -1107,6 +1258,148 @@
         "BRIEF"
       ],
       "default_grams": null
+    },
+    {
+      "id": "cabbage_head",
+      "forms": [
+        "кочан",
+        "кочана",
+        "кочанов",
+        "качан",
+        "качана",
+        "вилок",
+        "вилка",
+        "вилков"
+      ],
+      "meaning_ru": "Капуста: кочан, вилок, головка; «качан» — входное написание из примера пользователя. Вид капусты сохраняется.",
+      "food_scope": "cabbage",
+      "source_ids": [
+        "S36",
+        "BRIEF"
+      ],
+      "note_ru": "Не смешивать со столовой вилкой и початком кукурузы.",
+      "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
+      "default_grams": null,
+      "status": "proposed"
+    },
+    {
+      "id": "corn_cob",
+      "forms": [
+        "початок",
+        "початка",
+        "початков",
+        "кочан",
+        "кочана"
+      ],
+      "meaning_ru": "Кукуруза: початок; разговорный кочан только при названной кукурузе.",
+      "food_scope": "corn",
+      "source_ids": [
+        "S36"
+      ],
+      "note_ru": "Не переносить массу капусты и не считать стержень съеденными зёрнами.",
+      "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
+      "default_grams": null,
+      "status": "proposed"
+    },
+    {
+      "id": "stem",
+      "forms": [
+        "стебель",
+        "стебля",
+        "стеблей",
+        "стебелёк",
+        "стебелек",
+        "стебелька"
+      ],
+      "meaning_ru": "Стебель растения; в бытовой речи может подразумеваться вместе с зеленью.",
+      "food_scope": "plant_specific",
+      "source_ids": [
+        "S37",
+        "S38",
+        "S39",
+        "BRIEF"
+      ],
+      "note_ru": "Укроп, петрушка и сельдерей требуют своих мер и съедаемых частей.",
+      "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
+      "default_grams": null,
+      "status": "proposed"
+    },
+    {
+      "id": "leaf",
+      "forms": [
+        "лист",
+        "листа",
+        "листьев",
+        "листик",
+        "листика",
+        "листиков"
+      ],
+      "meaning_ru": "Лист конкретного растения; не веточка и не кочан.",
+      "food_scope": "plant_specific",
+      "source_ids": [
+        "S37",
+        "S38",
+        "DESIGN"
+      ],
+      "note_ru": "Вес листа капусты не переносится на базилик или салат.",
+      "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
+      "default_grams": null,
+      "status": "proposed"
+    },
+    {
+      "id": "floret",
+      "forms": [
+        "соцветие",
+        "соцветия",
+        "соцветий"
+      ],
+      "meaning_ru": "Отдельное соцветие брокколи или цветной капусты.",
+      "food_scope": "broccoli_or_cauliflower",
+      "source_ids": [
+        "DESIGN"
+      ],
+      "note_ru": "Предложение по аналогии; подтверждённого веса в этом расширении нет.",
+      "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
+      "default_grams": null,
+      "status": "proposed"
+    },
+    {
+      "id": "onion_feather",
+      "forms": [
+        "перо",
+        "пера",
+        "перьев",
+        "пёрышко",
+        "перышко",
+        "пёрышка",
+        "перышка"
+      ],
+      "meaning_ru": "Перо зелёного лука; не луковица.",
+      "food_scope": "green_onion",
+      "source_ids": [
+        "DESIGN"
+      ],
+      "note_ru": "Предложение по аналогии; не назначать вес целого лука.",
+      "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
+      "default_grams": null,
+      "status": "proposed"
+    },
+    {
+      "id": "pod",
+      "forms": [
+        "стручок",
+        "стручка",
+        "стручков"
+      ],
+      "meaning_ru": "Стручок фасоли, гороха или перца; съедаемая оболочка зависит от продукта.",
+      "food_scope": "plant_specific",
+      "source_ids": [
+        "DESIGN"
+      ],
+      "note_ru": "Стручковая фасоль и только горошины не одно и то же.",
+      "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
+      "default_grams": null,
+      "status": "proposed"
     }
   ],
   "diminutives_and_food_aliases": [
@@ -1138,10 +1431,15 @@
       "meaning_ru": "Картофель; учитывать способ приготовления.",
       "action": "alias_food",
       "source_ids": [
-        "BRIEF"
+        "BRIEF",
+        "S43"
       ],
       "canonical": "картофель",
-      "weight_multiplier": 1
+      "weight_multiplier": 1,
+      "protected_longer_phrases": [
+        "пирожное картошка"
+      ],
+      "scope": "картофель, за пределами самостоятельных названий блюд"
     },
     {
       "id": "alias_cucumber",
@@ -1247,6 +1545,451 @@
       "source_ids": [
         "DESIGN"
       ]
+    },
+    {
+      "id": "alias_chicken",
+      "forms": [
+        "курятина",
+        "курятины",
+        "курятину",
+        "курица",
+        "курицы",
+        "курицу",
+        "курочка",
+        "курочки",
+        "курочку",
+        "куриное мясо"
+      ],
+      "canonical": "мясо курицы",
+      "canonical_food_key": "chicken_meat",
+      "source_ids": [
+        "S29"
+      ],
+      "meaning_ru": "Часть, кожа, кости, приготовление и возраст отдельно.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_turkey",
+      "forms": [
+        "индюшатина",
+        "индюшатины",
+        "индюшатину",
+        "индейка",
+        "индейки",
+        "индейку",
+        "индюшка",
+        "индюшки",
+        "индюшку",
+        "мясо индейки",
+        "мясо индюшки"
+      ],
+      "canonical": "мясо индейки",
+      "canonical_food_key": "turkey_meat",
+      "source_ids": [
+        "S30",
+        "S44",
+        "BRIEF"
+      ],
+      "meaning_ru": "Название птицы и мяса объединяются в пищевом контексте; филе и часть не теряются.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_beef",
+      "forms": [
+        "говядина",
+        "говядины",
+        "говядину",
+        "говяжье мясо",
+        "мясо говядины"
+      ],
+      "canonical": "говядина",
+      "canonical_food_key": "beef_meat",
+      "source_ids": [
+        "S44",
+        "BRIEF"
+      ],
+      "meaning_ru": "Не объединять с телятиной, печенью, жиром, бульоном или смешанным фаршем.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_pork",
+      "forms": [
+        "свинина",
+        "свинины",
+        "свинину",
+        "свиное мясо"
+      ],
+      "canonical": "свинина",
+      "canonical_food_key": "pork_meat",
+      "source_ids": [
+        "S44"
+      ],
+      "meaning_ru": "Сало и бекон не заменяются общим мясом.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_lamb",
+      "forms": [
+        "баранина",
+        "баранины",
+        "баранину",
+        "баранье мясо",
+        "мясо барана"
+      ],
+      "canonical": "баранина",
+      "canonical_food_key": "sheep_meat",
+      "source_ids": [
+        "S44"
+      ],
+      "meaning_ru": "Сохранять указание на ягнёнка; возраст и часть не додумывать.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_veal",
+      "forms": [
+        "телятина",
+        "телятины",
+        "телятину",
+        "мясо телёнка",
+        "мясо теленка"
+      ],
+      "canonical": "телятина",
+      "canonical_food_key": "veal_meat",
+      "source_ids": [
+        "S44"
+      ],
+      "meaning_ru": "Возрастное название сохраняется; не подменять обычной говядиной.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_duck",
+      "forms": [
+        "утятина",
+        "утятины",
+        "утятину",
+        "утка",
+        "утки",
+        "утку",
+        "утиное мясо",
+        "мясо утки"
+      ],
+      "canonical": "мясо утки",
+      "canonical_food_key": "duck_meat",
+      "source_ids": [
+        "S44"
+      ],
+      "meaning_ru": "Состояние, кожа, кости и часть отдельно.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_goose",
+      "forms": [
+        "гусятина",
+        "гусятины",
+        "гусятину",
+        "гусь",
+        "гуся",
+        "гусиное мясо",
+        "мясо гуся"
+      ],
+      "canonical": "мясо гуся",
+      "canonical_food_key": "goose_meat",
+      "source_ids": [
+        "S44"
+      ],
+      "meaning_ru": "Не переносить массу целой птицы на названное количество мяса.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_venison",
+      "forms": [
+        "оленина",
+        "оленины",
+        "оленину",
+        "мясо оленя"
+      ],
+      "canonical": "оленина",
+      "canonical_food_key": "venison",
+      "source_ids": [
+        "S44"
+      ],
+      "meaning_ru": "Часть и приготовление отдельно.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_salmon_flesh",
+      "forms": [
+        "лососина",
+        "лососины",
+        "лососину",
+        "мясо лосося",
+        "лосось",
+        "лосося"
+      ],
+      "canonical": "мясо лосося",
+      "canonical_food_key": "salmon_unspecified",
+      "source_ids": [
+        "S44"
+      ],
+      "meaning_ru": "Вид рыбы не уточнён; не выбирать сёмгу или горбушу только по этому слову.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_tomato",
+      "forms": [
+        "томат",
+        "томаты",
+        "томата",
+        "томатов",
+        "помидор",
+        "помидоры",
+        "помидора",
+        "помидоров",
+        "помидорчик",
+        "помидорчика"
+      ],
+      "canonical": "помидор",
+      "canonical_food_key": "tomato_fruit",
+      "source_ids": [
+        "S32"
+      ],
+      "meaning_ru": "Плод; сок, паста, соус, вяленые и маринованные варианты сохраняют свои признаки.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия",
+      "protected_longer_phrases": [
+        "томатная паста",
+        "томатный сок",
+        "томатный соус"
+      ]
+    },
+    {
+      "id": "alias_carrot",
+      "forms": [
+        "морковка",
+        "морковки",
+        "морковку",
+        "морковок",
+        "морковь",
+        "моркови"
+      ],
+      "canonical": "морковь",
+      "canonical_food_key": "carrot_root",
+      "source_ids": [
+        "S33"
+      ],
+      "meaning_ru": "Название продукта или корнеплода; морковка не обязана быть маленькой.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_beet",
+      "forms": [
+        "бурак",
+        "бурака",
+        "бураки",
+        "бураков",
+        "свёкла",
+        "свекла",
+        "свёклы",
+        "свеклы",
+        "свёклу",
+        "свеклу"
+      ],
+      "canonical": "свёкла",
+      "canonical_food_key": "beet_root",
+      "source_ids": [
+        "S34"
+      ],
+      "meaning_ru": "Разговорное пищевое значение; корнеплод не равен ботве.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_eggplant",
+      "forms": [
+        "синенькие",
+        "синеньких",
+        "баклажан",
+        "баклажана",
+        "баклажаны",
+        "баклажанов"
+      ],
+      "canonical": "баклажан",
+      "canonical_food_key": "eggplant",
+      "source_ids": [
+        "S35"
+      ],
+      "meaning_ru": "Синенькие — самостоятельное название баклажанов; прилагательное при другом продукте не заменять.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_dill_greens",
+      "forms": [
+        "зелень укропа",
+        "укропная зелень",
+        "листочки укропа",
+        "листья укропа"
+      ],
+      "canonical": "зелень укропа",
+      "canonical_food_key": "dill_foliage",
+      "source_ids": [
+        "S37",
+        "S38",
+        "S39"
+      ],
+      "meaning_ru": "Листовая часть; семена, зонтики и отдельные стебли не объединяются с ней.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия"
+    },
+    {
+      "id": "alias_cilantro_greens",
+      "forms": [
+        "зелень кинзы",
+        "зелень кориандра",
+        "листья кориандра",
+        "листья кинзы",
+        "кинза",
+        "кинзы",
+        "кинзу"
+      ],
+      "canonical": "кинза зелень",
+      "canonical_food_key": "coriander_foliage",
+      "source_ids": [
+        "S40",
+        "DESIGN"
+      ],
+      "meaning_ru": "Рабочее кулинарное сопоставление зелени; кориандр без признаков оставляет выбор зелень/семена.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "weight_multiplier": 1,
+      "evidence_status": "botanical_distinction_supported_ru_mapping_proposed",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия",
+      "exclude_longer_phrases": [
+        "семена кинзы",
+        "семена кориандра"
+      ]
+    },
+    {
+      "id": "alias_oatmeal_ambiguous",
+      "forms": [
+        "овсянка",
+        "овсянки",
+        "овсянку"
+      ],
+      "canonical": "овсянка",
+      "canonical_food_key": null,
+      "source_ids": [
+        "S41"
+      ],
+      "meaning_ru": "Крупа или готовая каша; количество 60 г само по себе не доказывает сухое состояние.",
+      "action": "resolve_state_or_ask",
+      "weight_multiplier": 1,
+      "evidence_status": "supported_meaning",
+      "implementation_status": "not_connected",
+      "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия",
+      "candidate_food_keys": [
+        "oat_grain_or_flakes",
+        "oat_porridge"
+      ],
+      "short_question_ru": "Это сухая овсянка или готовая каша?"
+    },
+    {
+      "id": "alias_coriander_seed_ground",
+      "forms": [
+        "кориандр молотый",
+        "молотый кориандр",
+        "семена кориандра молотые"
+      ],
+      "canonical": "кориандр семена молотые",
+      "canonical_food_key": "coriander_seed_ground",
+      "meaning_ru": "Кулинарное название пряности; не зелень.",
+      "action": "resolve_food_identity_preserve_qualifiers",
+      "source_ids": [
+        "S40",
+        "DESIGN"
+      ],
+      "evidence_status": "botanical_distinction_supported_ru_mapping_proposed",
+      "implementation_status": "not_connected",
+      "scope": "кулинарный контекст пряности"
+    },
+    {
+      "id": "alias_coriander_ambiguous",
+      "forms": [
+        "кориандр",
+        "кориандра"
+      ],
+      "canonical": null,
+      "canonical_food_key": null,
+      "candidate_food_keys": [
+        "coriander_foliage",
+        "coriander_seed"
+      ],
+      "meaning_ru": "Без названия части и контекста не выбирать между зеленью и семенами.",
+      "action": "resolve_part_or_ask",
+      "short_question_ru": "Это зелень или семена кориандра?",
+      "source_ids": [
+        "S40",
+        "DESIGN"
+      ],
+      "evidence_status": "botanical_distinction_supported_ru_mapping_proposed",
+      "implementation_status": "not_connected",
+      "scope": "самостоятельное название; длинная фраза зелень/семена/молотый имеет приоритет"
     }
   ],
   "numbers": {
@@ -1316,7 +2059,11 @@
       "полбутылки",
       "пол-литра",
       "поллитра",
-      "пол литра"
+      "пол литра",
+      "полкочана",
+      "полкачана",
+      "полвилка",
+      "полветочки"
     ],
     "non_number_prefix_exceptions": [
       "полба",
@@ -1686,7 +2433,13 @@
       "drained_or_total",
       "whole_or_chopped",
       "oil_kind",
-      "salt_grind"
+      "salt_grind",
+      "species",
+      "cut_or_plant_part",
+      "skin_and_bone",
+      "stem_and_leaves",
+      "before_or_after_removal",
+      "age_class_if_explicit"
     ]
   },
   "quantity_priority": [
@@ -1822,18 +2575,26 @@
     "Новая фраза → запись/уточнение в этом словаре с источником либо пометкой «пример пользователя» → проверочная фраза → при необходимости изменение разбора.",
     "Не дублировать эти списки вручную в bot.js, описании экрана и запросе Gemini.",
     "Словарное пополнение уже поддержанного вида не требует новой ветки условий в коде; новый способ разбора всё ещё может потребовать код.",
-    "Личные дневники и персональные веса не входят в общий словарь."
+    "Личные дневники и персональные веса не входят в общий словарь.",
+    "Продолжать этот же каталог, не создавать новый отчёт или список задач.",
+    "Для записи словаря указывать устойчивый id, формы, смысл, контекст, действие, исключения, source_ids, подтверждение и статус подключения. Для веса обязательны продукт, мера, часть/состояние, граммы и основание.",
+    "Контрольный пример содержит исходную фразу и ожидаемый смысл; фактический ответ хранить отдельно с версией приложения, баз и способом проверки. Не подменять ожидание фактом.",
+    "Уточнение пользователя сохранять как пример; личный смысл неоднозначного слова не делать автоматически общим.",
+    "Изменяя решение, обновлять ту же строку, причину и дату. Не оставлять противоположные действующие инструкции.",
+    "К синониму добавлять положительную проверку и пример, который нельзя объединять: курятина/куриная печень, томат/томатная паста, веточка/стебель.",
+    "Перед будущим внедрением сверить актуальные AGENTS.md, ветки Meal и карточку Бот Happy. Ветка исследования основана на 33.7; это не утверждение о текущем опубликованном выпуске."
   ],
   "gemini_stage_2": {
     "same_dictionary_version_required": true,
     "use_only_after_rules_cannot_resolve": true,
     "input": "Тот же файл либо автоматически выбранная релевантная часть, с версией.",
     "output": "Название, мера, число, приблизительность, связи частей, необходимость вопроса; без выдуманных граммов.",
-    "validation": "Результат проходит те же проверки единиц, источников и двойного счёта; модель не пишет дневник напрямую."
+    "validation": "Результат проходит те же проверки единиц, источников и двойного счёта; модель не пишет дневник напрямую.",
+    "shared_semantics_ru": "Брать значения, исключения и признаки из этого файла; неизвестный вес не генерировать. Сохранение проходит общие проверки."
   },
   "acceptance_contract": {
     "retain_existing_143": true,
-    "new_cases_count": 50,
+    "new_cases_count": 90,
     "must_test": [
       "correction_replaces_number_and_unit",
       "explicit_grams_override_piece",
@@ -1841,9 +2602,785 @@
       "recipe_not_intake",
       "no_duplicate_composite",
       "unknown_measure_not_missing_food",
-      "same_data_offline_and_gemini"
+      "same_data_offline_and_gemini",
+      "synonym_preserves_part_and_cooking",
+      "protected_compound_food_name",
+      "regional_alias_requires_food_context",
+      "stem_and_sprig_not_interchangeable",
+      "edible_weight_not_subtracted_twice",
+      "unclear_raw_or_cooked_is_not_guessed"
     ],
-    "not_yet_integrated_into_test_suite": true
+    "not_yet_integrated_into_test_suite": true,
+    "extension_cases_count": 40,
+    "extension_cases_ids": "N01–N40",
+    "extension_cases_run_status": "not_run",
+    "count_note": "50 сценариев первого исследования проверялись на Meal 33.7 в Node/JSDOM; 40 новых здесь — ожидаемое поведение, не запуск. Все 90 пока вне рабочего набора."
   },
-  "developer_screen_copy_ru": "Бот понимает обычные слова о еде: «грамм двести», «полголовки», «ложечка». Понятное количество записывает, бытовые меры оценивает по продукту и показывает приблизительный вес. Твои сохранённые меры важнее справочных. Если количества не хватает, бот коротко спросит. Новые слова и источники хранятся в одном общем словаре."
+  "developer_screen_copy_ru": "Бот понимает разные названия одной еды: «курица» и «курятина», «индейка» и «индюшатина». Приготовление, часть и уточнения вроде «без кожи» сохраняются. Меры зависят от продукта; личные меры важнее справочных. Если смысла или количества недостаточно, бот коротко уточняет.",
+  "catalog": {
+    "page_url": "https://chatgpt.com/space/page_8247bc3043a08191be8308faeb719e1c",
+    "scope": "Речь и поведение бота Happy Meal; не общий реестр задач Happy.",
+    "canonical_dictionary_path": "meal-33/bot/household-ru.json",
+    "data_status": "draft_not_connected",
+    "new_research_scope": "Синонимы, формы названий, части растений и мяса. 16 новых внешних источников; не исследование частот или аудиозаписей."
+  },
+  "food_modifier_aliases": [
+    {
+      "id": "turkey_species",
+      "forms": [
+        "индюшиное",
+        "индюшиный",
+        "индюшиная",
+        "индюшачье",
+        "индюшачий",
+        "индюшиные",
+        "индюшиного",
+        "индейки",
+        "индюшки"
+      ],
+      "assign": {
+        "species": "turkey"
+      },
+      "allowed_head_nouns": [
+        "мясо",
+        "филе",
+        "грудка",
+        "бедро",
+        "голень",
+        "печень",
+        "сердце",
+        "крыло"
+      ],
+      "meaning_ru": "Добавляет вид птицы к названной части; не заменяет часть общим мясом.",
+      "source_ids": [
+        "S30",
+        "BRIEF"
+      ],
+      "status": "proposed"
+    },
+    {
+      "id": "chicken_species",
+      "forms": [
+        "куриное",
+        "куриный",
+        "куриная",
+        "куриные",
+        "куриного",
+        "курицы"
+      ],
+      "assign": {
+        "species": "chicken"
+      },
+      "allowed_head_nouns": [
+        "мясо",
+        "филе",
+        "грудка",
+        "бедро",
+        "голень",
+        "печень",
+        "сердце",
+        "крыло"
+      ],
+      "meaning_ru": "Куриная печень остаётся печенью. Куриные яйца — самостоятельный продукт.",
+      "source_ids": [
+        "S29",
+        "DESIGN"
+      ],
+      "status": "proposed"
+    },
+    {
+      "id": "boiled",
+      "forms": [
+        "варёный",
+        "вареный",
+        "варёная",
+        "вареная",
+        "варёное",
+        "вареное",
+        "варёные",
+        "вареные",
+        "отварной",
+        "отварная",
+        "отварное",
+        "отварные",
+        "отварного",
+        "варёного",
+        "вареного"
+      ],
+      "assign": {
+        "cooking": "boiled"
+      },
+      "meaning_ru": "Один способ приготовления, если это свободный признак продукта.",
+      "protect": [
+        "варёная колбаса",
+        "вареная колбаса",
+        "варёная сгущёнка",
+        "вареная сгущенка",
+        "варёно-копчёный",
+        "варено-копченый"
+      ],
+      "source_ids": [
+        "S31",
+        "S43",
+        "DESIGN"
+      ],
+      "status": "proposed"
+    }
+  ],
+  "semantic_model": {
+    "status": "proposed_not_implemented",
+    "fields_ru": {
+      "food": "Продукт и семейство",
+      "species": "Животное или растение",
+      "part": "Филе, бедро, листья, стебли",
+      "cooking": "Приготовление",
+      "condition": "Сухой/свежий/замороженный, измельчённый/целый, с жидкостью/без",
+      "included_excluded": "С кожей/без, с костями/без, со стеблями/без",
+      "amount": "Число, единица, размер, доля",
+      "weight_basis": "До или после удаления части",
+      "certainty": "Точный вес, справочная оценка, неопределённость"
+    },
+    "rules_ru": [
+      "Синоним выбирает смысл, но не объединяет карточки разных пищевых баз и не пересчитывает старый дневник.",
+      "Сначала сохраняются целое название, отрицания, исправления, части и связи. Затем применяются формы и синонимы.",
+      "Длинное подходящее название разбирается раньше короткого. Пирожное картошка не становится картофелем; куриная печень — мышечным мясом.",
+      "Окончания и порядок слов не меняют явные признаки. Список форм проекта пока не охватывает все падежи.",
+      "Филе — бескостный кусок, но не автоматически грудка и не отсутствие кожи. Сохранять вид, часть и приготовление.",
+      "Не выбирать сырой/готовый продукт, вид рыбы или точную часть только по похожему имени. Нет подходящей карточки — явно предложить замену или уточнить.",
+      "Личный смысл неоднозначного выражения не превращается в общее правило."
+    ],
+    "source_ids": [
+      "S29",
+      "S30",
+      "S36",
+      "S37",
+      "S40",
+      "S41",
+      "S42",
+      "S44",
+      "DESIGN"
+    ]
+  },
+  "part_qualifiers": [
+    {
+      "id": "without_stem",
+      "forms": [
+        "без стебля",
+        "без стеблей",
+        "без стебельков"
+      ],
+      "meaning_ru": "Исключить названные стебли из съеденной части; не вычитать неизвестный вес.",
+      "source_ids": [
+        "S37",
+        "S38"
+      ],
+      "default_removed_grams": null
+    },
+    {
+      "id": "with_stem",
+      "forms": [
+        "со стеблем",
+        "со стеблями",
+        "вместе со стеблем"
+      ],
+      "meaning_ru": "Часть включена; «с ножкой» требует связи с продуктом.",
+      "source_ids": [
+        "S37",
+        "BRIEF"
+      ],
+      "default_removed_grams": null
+    },
+    {
+      "id": "without_leg_contextual",
+      "forms": [
+        "без ножки",
+        "без ножек"
+      ],
+      "meaning_ru": "У зелени вероятно без жёсткого стебля, у гриба без ножки; у птицы другая часть. Если смысл неясен — спросить.",
+      "source_ids": [
+        "BRIEF",
+        "DESIGN"
+      ],
+      "default_removed_grams": null,
+      "status": "contextual_proposal",
+      "never_global_alias_to": "без стебля"
+    },
+    {
+      "id": "without_core",
+      "forms": [
+        "без кочерыжки",
+        "кочерыжку убрал",
+        "без сердцевины"
+      ],
+      "meaning_ru": "Удалена часть конкретного растения; точный вычет только по известной массе.",
+      "source_ids": [
+        "DESIGN"
+      ],
+      "default_removed_grams": null
+    },
+    {
+      "id": "without_skin",
+      "forms": [
+        "без кожи",
+        "без шкурки",
+        "без кожуры",
+        "очищенный",
+        "очищенная"
+      ],
+      "meaning_ru": "Сохранять, что очищено; «очищенный» не означает автоматически без костей или без семян.",
+      "source_ids": [
+        "S29",
+        "DESIGN"
+      ],
+      "default_removed_grams": null
+    },
+    {
+      "id": "without_bone_or_pit",
+      "forms": [
+        "без костей",
+        "без кости",
+        "без косточки",
+        "без косточек"
+      ],
+      "meaning_ru": "Кость мяса и косточка плода различаются по продукту; вес не угадывать.",
+      "source_ids": [
+        "S29",
+        "DESIGN"
+      ],
+      "default_removed_grams": null
+    },
+    {
+      "id": "with_leg_contextual",
+      "forms": [
+        "с ножкой",
+        "с ножками"
+      ],
+      "meaning_ru": "Часть включена; определять её только по продукту: гриб, зелень или птица. Не заменять глобально на стебель.",
+      "source_ids": [
+        "BRIEF",
+        "DESIGN"
+      ],
+      "default_removed_grams": null,
+      "status": "contextual_proposal"
+    }
+  ],
+  "user_utterance_examples": [
+    {
+      "id": "user_dill_stem_20261117",
+      "text": "стебель укропа (это с ножкой)",
+      "meaning_ru": "Пояснение пользователя для проектирования. Не установлена универсальная трактовка и не создана личная настройка.",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "global_rule": false
+    },
+    {
+      "id": "user_kachan_20261117",
+      "text": "качан капусты",
+      "meaning_ru": "Входной вариант «качан» в контексте капусты распознаётся как кочан; исходный текст сохраняется.",
+      "source_ids": [
+        "BRIEF",
+        "S36"
+      ],
+      "status": "proposed"
+    }
+  ],
+  "edible_weight_rules": [
+    {
+      "id": "final_weight",
+      "rule_ru": "Граммы уже относятся к очищенной съедобной части — записать один раз. «Укроп 15 г, это уже без ножек» = 15 г.",
+      "source_ids": [
+        "DESIGN"
+      ]
+    },
+    {
+      "id": "known_subtraction",
+      "rule_ru": "Взвешено до очистки и отдельно назван вес удалённого — вычесть один раз в одинаковом состоянии. 20 г со стеблями минус 5 г выброшенных = 15 г.",
+      "source_ids": [
+        "DESIGN"
+      ]
+    },
+    {
+      "id": "unknown_subtraction",
+      "rule_ru": "Вес до очистки, удалённая масса неизвестна — спросить вес после очистки или предложить подходящую явную оценку. Нет постоянного процента для всех ножек.",
+      "source_ids": [
+        "DESIGN"
+      ]
+    },
+    {
+      "id": "cooked_weight",
+      "rule_ru": "Не вычитать сырой остаток из готовой массы и не переводить сырой вес в готовый без подходящего выхода приготовления.",
+      "source_ids": [
+        "DESIGN"
+      ]
+    },
+    {
+      "id": "used_not_eaten",
+      "rule_ru": "Зелень, положенная в бульон и вынутая, не равна съеденным стеблям. Не добавлять всю исходную массу в дневник отдельной едой.",
+      "source_ids": [
+        "S38",
+        "DESIGN"
+      ]
+    }
+  ],
+  "decision_catalog": [
+    {
+      "id": "D01",
+      "decision_ru": "Один словарь и одна закрытая страница для решений, выводов и инструкций.",
+      "status": "user_requested",
+      "basis": "Прямое поручение 17.11.2026",
+      "implementation": "Каталог; подключение не выполнено.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D02",
+      "decision_ru": "Заполнители удаляются после распознавания команд; ещё, нет, без, из них сохраняют смысл.",
+      "status": "proposed_behavior",
+      "basis": "Первое исследование",
+      "implementation": "Требует согласования и проверки.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D03",
+      "decision_ru": "Явный вес порции важнее куска, штуки или доли. Личная подходящая мера важнее справочной.",
+      "status": "proposed_behavior",
+      "basis": "Первое исследование, S01, S20",
+      "implementation": "Не подключено.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D04",
+      "decision_ru": "Другие названия объединяют смысл, а часть, приготовление и съедобный состав сохраняются.",
+      "status": "user_requested_direction_details_proposed",
+      "basis": "Уточнения про курятину, индейку и филе",
+      "implementation": "Расширены данные исследования.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D05",
+      "decision_ru": "Кочан, стебель, веточка и ножка требуют продукта и съедаемой части; общих граммов нет.",
+      "status": "proposed_behavior",
+      "basis": "S36–S39, примеры пользователя",
+      "implementation": "Новые веса не назначены.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D06",
+      "decision_ru": "Без ножки и без кожи не означают вычесть постоянный вес; важно до или после очистки.",
+      "status": "proposed_behavior",
+      "basis": "S37, S38, вывод исследования",
+      "implementation": "Не подключено.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D07",
+      "decision_ru": "Различать овсянку сухую/готовую, зелень кориандра/семена, филе грудки/бедра.",
+      "status": "proposed_behavior",
+      "basis": "S40–S42, примеры пользователя",
+      "implementation": "Нужны поведенческие проверки.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D08",
+      "decision_ru": "Новая фраза сначала дополняет словарь и проверочный пример, затем при необходимости разбор.",
+      "status": "user_requested",
+      "basis": "Первоначальное задание",
+      "implementation": "Инструкция сохранена; автоматизация не подключена.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D09",
+      "decision_ru": "Будущий ИИ получает ту же версию словаря; вручную переписанных списков не заводить.",
+      "status": "user_requested",
+      "basis": "Первоначальное задание, этап 2",
+      "implementation": "Gemini не подключён.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D10",
+      "decision_ru": "Значение слова, предложенное поведение и реально проверенное поведение указывать отдельно.",
+      "status": "catalog_convention",
+      "basis": "Не выдавать исследовательский пример за работающую функцию",
+      "implementation": "Применено к каталогу.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D11",
+      "decision_ru": "Задачи и статус работы остаются в карточке Бот Happy; каталог хранит знания.",
+      "status": "user_requested",
+      "basis": "Правила проекта",
+      "implementation": "Нового списка задач нет.",
+      "updated_on": "2026-11-17"
+    },
+    {
+      "id": "D12",
+      "decision_ru": "Каталог не выпускает сайт и не разрешает менять поведение бота.",
+      "status": "user_requested",
+      "basis": "Код после отдельного согласия, сайт после выпускай",
+      "implementation": "Рабочие файлы приложения не изменены.",
+      "updated_on": "2026-11-17"
+    }
+  ],
+  "control_examples": [
+    {
+      "id": "N01",
+      "phrase": "Курятина отварная 180 г",
+      "expected_ru": "Мясо курицы, варёное, 180 г; часть и кожа не выдумываются.",
+      "rule_id": "alias_chicken",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N02",
+      "phrase": "Курица варёная 180 г",
+      "expected_ru": "Тот же смысл, что у N01; вес 180 г.",
+      "rule_id": "alias_chicken",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N03",
+      "phrase": "Индюшатина отварная 150 г",
+      "expected_ru": "Мясо индейки, варёное, 150 г.",
+      "rule_id": "alias_turkey",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N04",
+      "phrase": "Индюшка отварная 150 г",
+      "expected_ru": "Тот же смысл, что у N03.",
+      "rule_id": "alias_turkey",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N05",
+      "phrase": "Индейка варёная 150 г",
+      "expected_ru": "Тот же смысл, что у N03.",
+      "rule_id": "alias_turkey",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N06",
+      "phrase": "Индюшиное филе отварное 150 г",
+      "expected_ru": "Филе индейки, варёное, 150 г; часть не объявляется грудкой.",
+      "rule_id": "turkey_species",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N07",
+      "phrase": "Отварное филе индейки 150 г",
+      "expected_ru": "Тот же смысл, что у N06, независимо от порядка слов.",
+      "rule_id": "turkey_species",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N08",
+      "phrase": "Филе бедра индейки отварное 150 г",
+      "expected_ru": "Сохранить бедро; не заменить грудкой.",
+      "rule_id": "turkey_species",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N09",
+      "phrase": "Филе грудки индейки отварное 150 г",
+      "expected_ru": "Сохранить грудку; отличать от N08.",
+      "rule_id": "turkey_species",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N10",
+      "phrase": "Куриная печень жареная 100 г",
+      "expected_ru": "Печень курицы, жареная, 100 г; не общее куриное мясо.",
+      "rule_id": "chicken_species",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N11",
+      "phrase": "Говяжье мясо отварное 120 г",
+      "expected_ru": "Говядина, варёная, 120 г; не телятина.",
+      "rule_id": "alias_beef",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N12",
+      "phrase": "Свиное мясо варёное 120 г",
+      "expected_ru": "Свинина, варёная, 120 г; не сало.",
+      "rule_id": "alias_pork",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N13",
+      "phrase": "Утятина запечённая 140 г",
+      "expected_ru": "Мясо утки, запечённое, 140 г; кожу не додумывать.",
+      "rule_id": "alias_duck",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N14",
+      "phrase": "Гусятина варёная 140 г",
+      "expected_ru": "Мясо гуся, варёное, 140 г.",
+      "rule_id": "alias_goose",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N15",
+      "phrase": "Телятина варёная 150 г",
+      "expected_ru": "Сохранить телятину, не заменить обычной говядиной.",
+      "rule_id": "alias_veal",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N16",
+      "phrase": "Лососина солёная 80 г",
+      "expected_ru": "Лосось, солёный, 80 г; точный вид не выдумывать.",
+      "rule_id": "alias_salmon_flesh",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N17",
+      "phrase": "Томат свежий 120 г",
+      "expected_ru": "Помидор свежий, 120 г; не паста.",
+      "rule_id": "alias_tomato",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N18",
+      "phrase": "Помидорчик свежий 120 г",
+      "expected_ru": "Тот же смысл и вес, что у N17; уменьшительность не уменьшает граммы.",
+      "rule_id": "alias_tomato",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N19",
+      "phrase": "Картошечка отварная 200 г",
+      "expected_ru": "Картофель варёный, 200 г; не пирожное.",
+      "rule_id": "alias_potato",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N20",
+      "phrase": "Морковка сырая 70 г",
+      "expected_ru": "Морковь сырая, 70 г; не обязательно маленькая.",
+      "rule_id": "alias_carrot",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N21",
+      "phrase": "Бурак отварной 90 г",
+      "expected_ru": "Свёкла варёная, 90 г.",
+      "rule_id": "alias_beet",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N22",
+      "phrase": "Синенькие запечённые 150 г",
+      "expected_ru": "Баклажаны запечённые, 150 г; масло не выдумывать.",
+      "rule_id": "alias_eggplant",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N23",
+      "phrase": "Овсянка 60 г",
+      "expected_ru": "Уточнить: сухая или готовая, если нет однозначного контекста.",
+      "rule_id": "alias_oatmeal_ambiguous",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N24",
+      "phrase": "Овсянка сухая 60 г",
+      "expected_ru": "Сохранить сухое состояние и 60 г; при необходимости уточнить крупу/хлопья.",
+      "rule_id": "alias_oatmeal_ambiguous",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N25",
+      "phrase": "Овсянка на воде готовая 200 г",
+      "expected_ru": "Готовая каша на воде, 200 г; не сухие хлопья.",
+      "rule_id": "alias_oatmeal_ambiguous",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N26",
+      "phrase": "Кинза свежая 5 г",
+      "expected_ru": "Свежая зелень, 5 г; не семена.",
+      "rule_id": "alias_cilantro_greens",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N27",
+      "phrase": "Зелень кориандра свежая 5 г",
+      "expected_ru": "Тот же смысл, что у N26.",
+      "rule_id": "alias_cilantro_greens",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N28",
+      "phrase": "Кориандр молотый 2 г",
+      "expected_ru": "Кулинарная пряность, молотые семена, 2 г; не зелень. Правило требует проверки на базе.",
+      "rule_id": "alias_coriander_seed_ground",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N29",
+      "phrase": "Кориандр 2 г",
+      "expected_ru": "При отсутствии контекста спросить: зелень или семена? Количество уже известно.",
+      "rule_id": "alias_coriander_ambiguous",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N30",
+      "phrase": "Полкачана капусты",
+      "expected_ru": "Половина кочана; вид и вес не выдумывать. Сохранить исходное написание.",
+      "rule_id": "cabbage_head",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N31",
+      "phrase": "Полвилка краснокочанной капусты без кочерыжки, вес после очистки 400 г",
+      "expected_ru": "400 г уже названной очищенной порции; не делить повторно на два.",
+      "rule_id": "cabbage_head",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N32",
+      "phrase": "Кочан кукурузы отварной",
+      "expected_ru": "Початок кукурузы, не капуста; съедобный вес требует подходящей меры или уточнения.",
+      "rule_id": "corn_cob",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N33",
+      "phrase": "Две веточки укропа без ножек",
+      "expected_ru": "Зелень двух веточек с указанным исключением; не целые растения. Без подходящей меры уточнить вес.",
+      "rule_id": "sprig",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N34",
+      "phrase": "Стебель укропа",
+      "expected_ru": "Сохранить неоднозначность: только стебель или со всей зеленью? Вес не выдумывать.",
+      "rule_id": "stem",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N35",
+      "phrase": "Укроп 5 г без стеблей, взвесил уже очищенный",
+      "expected_ru": "5 г; ничего повторно не вычитать.",
+      "rule_id": "without_stem",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N36",
+      "phrase": "Взвесил укроп 20 г со стеблями, стебли 5 г выбросил",
+      "expected_ru": "15 г съедобной части при одинаковом состоянии взвешивания.",
+      "rule_id": "without_stem",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N37",
+      "phrase": "Укроп 15 г, это уже без ножек",
+      "expected_ru": "15 г; не вычитать стебли повторно.",
+      "rule_id": "without_leg_contextual",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N38",
+      "phrase": "Шампиньоны без ножек 60 г, это вес шляпок",
+      "expected_ru": "60 г шляпок, не минус неизвестный процент и не стебли зелени.",
+      "rule_id": "without_leg_contextual",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N39",
+      "phrase": "Цветная капуста, три соцветия",
+      "expected_ru": "Сохранить цветную капусту и меру соцветия; не три кочана. Вес по продукту или вопрос.",
+      "rule_id": "floret",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    },
+    {
+      "id": "N40",
+      "phrase": "Зелёный лук, три пера",
+      "expected_ru": "Мера пера, не три репчатые луковицы; подходящая мера или вопрос.",
+      "rule_id": "onion_feather",
+      "origin": "authored_research_case",
+      "run_status": "not_run",
+      "actual": null
+    }
+  ]
 }
