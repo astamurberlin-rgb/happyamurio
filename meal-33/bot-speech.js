@@ -98,6 +98,12 @@ var MealSpeech=(function(){
     var n=nz(f.n), hit=(E.cooked_for||[]).filter(function(x){ return new RegExp(x.raw).test(n) })[0];
     return !hit?null:hit.search?{search:hit.search,sameKind:false}:{search:n.split(',')[0]+' '+hit.add,sameKind:true};
   }
+  /* часть блюда, как она названа в базе: «в сливочном соусе» — «Соус белый (основа) со сливками» */
+  function partAs(text){
+    var t=nz(text), hit=((D&&D.composite_part_as)||[]).filter(function(x){ return new RegExp(x.said).test(t) })[0];
+    return hit?t.replace(new RegExp(x_said(hit)),hit.search):text;
+  }
+  function x_said(h){ return h.said }
   function hasDish(re){
     try{ if(typeof LIST==='undefined'||typeof FOODS==='undefined') return false;
       return LIST.some(function(x){ var f=FOODS[x.id]||x; return f&&re.test(nz(f.n)) }) }catch(e){ return false }
@@ -260,7 +266,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, missing:missing, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();
