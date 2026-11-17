@@ -87,10 +87,15 @@ var MealSpeech=(function(){
     function has(list){ return (list||[]).some(function(w){ return t.indexOf(' '+nz(w)+' ')>=0 }) }
     return has(E.verbs)&&!has(E.raw_words);
   }
+  function weighed(raw){
+    var E=(D&&D.eaten_context)||null; if(!E) return false;
+    var t=' '+nz(raw).replace(/[^a-zа-я0-9]+/g,' ')+' ';
+    return (E.weigh_words||[]).some(function(w){ return t.indexOf(' '+nz(w)+' ')>=0 });
+  }
   function cooked(f){
     var E=(D&&D.eaten_context)||null; if(!E||!f) return null;
     var n=nz(f.n), hit=(E.cooked_for||[]).filter(function(x){ return new RegExp(x.raw).test(n) })[0];
-    return hit?hit.search:null;
+    return !hit?null:hit.search?{search:hit.search,sameKind:false}:{search:n.split(',')[0]+' '+hit.add,sameKind:true};
   }
   function hasDish(re){
     try{ if(typeof LIST==='undefined'||typeof FOODS==='undefined') return false;
@@ -252,7 +257,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, missing:missing, eaten:eaten, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, missing:missing, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},all:/[≈⊕⊘▽◇△]/g}};
 })();
