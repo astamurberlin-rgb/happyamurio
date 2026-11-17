@@ -7,7 +7,7 @@
    Решения Астамура 17.11.2026: не спрашивать без крайней необходимости; своя мера человека — первой. — Claude · 17.11.2026 */
 var MealSpeech=(function(){
   var D=window.HappyMealSpeechData||null, active=false;
-  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], UM=[], NOGEN={}, CARD={}, CARDRE=null, SPLIT=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
+  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], NOGEN={}, CARD={}, CARDRE=null, SPLIT=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
   var MARK={0.5:'▽',1:'◇',1.5:'△'}, FMARK={1.5:'⊕',0.8:'⊘'};
   var B0='(^|[\\s,.;:!?(])', B1='(?=[\\s,.;:!?)]|$)';
   function nz(s){ return String(s||'').toLowerCase().replace(/ё/g,'е').replace(/́/g,'') }
@@ -36,7 +36,10 @@ var MealSpeech=(function(){
     });
     ALIASES.sort(function(a,b){ return b.len-a.len });
     PROT=(D.protected_phrases||[]).map(nz);
-    FM=(D.food_measures||[]).map(function(r){ return {re:new RegExp(r.match),unit:r.unit,g:r.g} });
+    /* мера по кухне: у японского продукта (база MEXT) — японская порция, у корейского (KFCT) — корейская; такие правила идут первыми */
+    FM=(D.food_measures||[]).map(function(r){ return {re:new RegExp(r.match),unit:r.unit,g:r.g,src:r.src?new RegExp(r.src):null} })
+      .sort(function(a,b){ return (b.src?1:0)-(a.src?1:0) });
+    COMP=(D.composite_dishes||[]).map(function(c){ return {said:c.said,dish:new RegExp(c.dish_in_base),parts:c.parts} });
     UM=(D.usual_measures||[]).map(function(r){ return {re:new RegExp(r.match),unit:r.unit} });
     var N=D.numbers||{};
     Object.keys(N.cardinals||{}).forEach(function(k){ CARD[nz(k)]=N.cardinals[k] });
@@ -61,12 +64,16 @@ var MealSpeech=(function(){
     if(typeof window.unitOf==='function'){ var u0=window.unitOf; window.unitOf=function(t){ if(active&&U2[t]) return U2[t]; return u0(t) } }
   }
 
+  function hasDish(re){
+    try{ if(typeof LIST==='undefined'||typeof FOODS==='undefined') return false;
+      return LIST.some(function(x){ var f=FOODS[x.id]||x; return f&&re.test(nz(f.n)) }) }catch(e){ return false }
+  }
   /* вес меры у группы продуктов («бокал вина» — 150, «стакан овсяных хлопьев» — 100): после своей меры и меры продукта, до общего веса */
   var gc={};
   function group(f,u){
     if(!f||!FM.length) return 0;
     var k=f.id+'|'+u; if(gc[k]!=null) return gc[k];
-    var n=nz(f.n), hit=FM.filter(function(r){ return r.unit===u&&r.re.test(n) })[0];
+    var n=nz(f.n), src=String(f.src||''), hit=FM.filter(function(r){ return r.unit===u&&r.re.test(n)&&(!r.src||r.src.test(src)) })[0];
     return gc[k]=hit?hit.g:0;
   }
   function weight(f,u){ return (f&&f.por&&f.por[u])||group(f,u)||(typeof DEF!=='undefined'&&DEF[u])||0 }
@@ -141,6 +148,13 @@ var MealSpeech=(function(){
     s=s.replace(new RegExp('(\\d+(?:,\\d+)?)\\s*-?\\s*х?\\s*-?\\s*литров[а-я]*\\s+'+cont,'g'),function(m,n){ return out(num(n)*1000)+' мл' });
     Object.keys(NV.adjectives||{}).sort(function(a,b){ return b.length-a.length }).forEach(function(k){
       s=s.replace(new RegExp('(?:(\\d+(?:,\\d+)?)\\s+)?'+rx(k).replace('-','-?')+'[а-я]*\\s+'+cont,'g'),function(m,n){ return out((n?num(n):1)*NV.adjectives[k])+' мл' }) });
+    /* блюдо из частей, которого нет в базе: «бутерброд с сыром» — хлеб 50 г и сыр 25 г (решение Астамура 17.11.2026); есть такое блюдо в базе — берётся оно */
+    COMP.forEach(function(c){
+      s=s.replace(new RegExp('(^|\\s)(?:(\\d+(?:,\\d+)?)\\s+)?(?:'+c.said+')(?:\\s+(\\d+(?:,\\d+)?)\\s*(?:г|гр|грамм[а-я]*)(?=[\\s,.;!?]|$))?','g'),function(m,a,n,gr){
+        if(hasDish(c.dish)) return m;
+        var tot=c.parts.reduce(function(t,x){ return t+x.g },0), k=gr?num(gr)/tot:(n?num(n):1);
+        return a+c.parts.map(function(x){ return x.search+' ≈ '+out(Math.round(x.g*k))+' г' }).join(', ')+',' });
+    });
     /* «2 банки по 250 г»; «полпачки творога, пачка 180 г» */
     var PK='(пачк|пачеч|банк|баноч|бутыл|упаков|плитк|пакет|коробк)', UN='(г|гр|грамм[а-я]*|мл|миллилитр[а-я]*|л|литр[а-я]*|кг|кило[а-я]*)';
     function grams(v,u){ v=num(v); return /^(кг|кило)/.test(u)||/^(л|литр)/.test(u)?v*1000:v }

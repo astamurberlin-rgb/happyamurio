@@ -215,8 +215,11 @@ var MealBot=(function(){
     var mass=new RegExp('\\d\\s*'+VOL+'(?=\\s)').test(' '+c.text+' ');
     if(!mass){ var ou=SP.ownUnit(f,c.raw||c.text); if(ou&&l.u!==ou){ l.u=ou; if(!l.explicit) l.q=1; l.explicit=true; l.g=gramsFor(id,l.q,l.u) } }
     /* у выбранного продукта нет такой меры, а у соседнего есть («пять колец лука» — лук, а не луковый сок) */
-    if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!SP.weight(f,l.u)&&!(l.u==='кусок'&&SP.weight(f,'ломтик'))){
-      var fw0=String(l.spoken||l.name||'').split(' ').filter(Boolean), alt=(l.alts||[]).filter(function(x){ return x!==id&&FOODS[x]&&SP.weight(FOODS[x],l.u)&&headOk(x,fw0) })[0];
+    /* …или у соседнего мера своя, а у выбранного только общая («ложка мисо» — паста, а не мисо-суп) */
+    function own(fx,u){ return (fx.own&&fx.own[u])||(fx.por&&fx.por[u])||SP.group(fx,u) }
+    if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!own(f,l.u)&&!(l.u==='кусок'&&SP.weight(f,'ломтик'))){
+      var fw0=String(l.spoken||l.name||'').split(' ').filter(Boolean), had=SP.weight(f,l.u),
+          alt=(l.alts||[]).filter(function(x){ return x!==id&&FOODS[x]&&(had?own(FOODS[x],l.u):SP.weight(FOODS[x],l.u))&&headOk(x,fw0) })[0];
       if(alt){ l.alts=[alt].concat(l.alts.filter(function(x){ return x!==alt })); l.fid=alt; l.st='ok'; id=alt; f=FOODS[alt]; l.g=gramsFor(id,l.q,l.u) }
     }
     if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!SP.weight(f,l.u)){
