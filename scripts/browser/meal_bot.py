@@ -124,6 +124,10 @@ with sync_playwright() as p:
     # общие веса мер в приложении те же, что в словаре: правят в одном месте
     same = page.evaluate("""()=>HappyMealSpeechData.measures.filter(m=>m.unit&&m.general!=null&&m.unit!=='шт'&&DEF[m.unit]!==m.general).map(m=>m.unit+': '+DEF[m.unit]+' ≠ '+m.general)""")
     check("веса мер в Meal совпадают со словарём", not same, "; ".join(same))
+    # Meal 33.9.1 · продиктовал, пока основная база грузилась: «Подобрано» обновляется само, когда база загрузилась (находка Астамура 18.11.2026 02:05)
+    late = page.evaluate("""()=>{const st=BLS_ST;BLS_ST='loading';openMatch('суп лапша одна тарелка');const a=M.lines[0].st;BLS_ST=st;blsRerender();
+      const l=M.lines[0],r={before:a,st:l.st,n:FOODS[l.fid]?FOODS[l.fid].n:'',g:l.g};go('day');return r}""")
+    check("база загрузилась после диктовки — «суп лапша одна тарелка» сам стал супом с лапшой, 300 г", late["st"] == "ok" and "лапш" in late["n"] and late["g"] == 300, str(late))
     page.evaluate("()=>MealBot.setOn(false)")
     out["errors"] = errors
     check("ошибок на страницах нет", not errors, "; ".join(errors[:3]))
