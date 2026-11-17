@@ -1,7 +1,7 @@
 /* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
  * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
  * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
- * короткое сообщение — тёмная пилюля 14 в одну строку. Карточка 26, поле и поиск 12, лист снизу 22, выключатель 42 × 25.
+ * короткое сообщение — тёмная пилюля 14 в одну строку. поле и поиск 12 (карточки — прежнее скругление), лист снизу 22, выключатель 42 × 25.
  * Слой стоит последним в сборке; !important — только там, где прежние слои сами держат значение через !important.
  * — Claude · 17.11.2026, лаборатория Sport 44.1 */
 
@@ -45,8 +45,7 @@
 .toast>span,.toast>div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .toast button{font-size:14px!important;font-weight:600!important;color:#fff!important;opacity:.9;text-decoration:underline;text-underline-offset:3px;min-height:20px}
 
-/* ── Карточка: 26 ── */
-.card,.happy-card,.section-row,.feed-body,.template-card,.hs-card,.hm-card{border-radius:26px!important}
+/* ── Карточки: скругление прежнее (Астамур 17.11.2026: в карточках крупные картинки упражнений — правило 26 не подходит) ── */
 
 /* ── Поле ввода, поле на несколько строк, поиск: 12 ── */
 input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.search,.workout-name-input,.hs-input,.happy-input,.hm-field input,.library-filters select,.template-targets input{border-radius:12px}
