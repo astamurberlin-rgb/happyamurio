@@ -1,6 +1,6 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-17.2",
+  "revision": "2026-11-17.3",
   "updated": "2026-11-17",
   "libraries": {
     "bls": {
@@ -35,11 +35,11 @@
       "sha256": "dc503a160db7cfab97ffec132a8d0a5f04669e825afadf64a5d25bfd62644468"
     },
     "usda": {
-      "version": "SR Legacy · April 2018 · русские названия 2026-11-17",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/6c3c8e88229e3ab93c2973abb6af240499e835eb/data/usda-sr-legacy.json.gz",
+      "version": "SR Legacy · April 2018",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/usda-sr-legacy.json.gz",
       "encoding": "gzip",
-      "bytes": 17588960,
-      "sha256": "83131e2d8da0b52f70da78a7de3d39f41d2c268407239e28b88381c91d2860b3",
+      "bytes": 15922487,
+      "sha256": "2fb25ebb266524ab4a1b564097ca54a5f56ecca29306a5667908b4abb7be2201",
       "foodCount": 7793
     },
     "uzbek": {
