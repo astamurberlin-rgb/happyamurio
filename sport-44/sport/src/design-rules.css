@@ -57,7 +57,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .sheet:has(.exercise-player){border-radius:0!important}
 
 /* ── Выключатель: 42 × 25 ── */
-.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
 .sport-switch::after,.hs-links .happy-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
 .sport-switch{border-width:1px}
 .sport-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
@@ -137,3 +137,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
  border:0!important;border-radius:0!important;background:none!important;color:#fff;font-size:14px!important;font-weight:400!important;white-space:nowrap}
 .metric-pill input:checked+span,.timer-mode-options input:checked+span{background:rgba(244,251,255,.96)!important;color:#176b98!important;font-weight:600!important}
 .metric-pill label:has(input:checked)+label:has(input:checked){border-left-color:rgba(23,107,152,.25)}
+/* все выключатели — одинаковые: 42 × 25, кружок 19 (раньше у «Связка с» был 46 × 28 — держала ширина flex) */
+.toggle{box-sizing:border-box;padding:0!important}
+.toggle:before{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
+.toggle:checked:before{left:19px!important}
