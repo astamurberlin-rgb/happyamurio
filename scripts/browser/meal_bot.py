@@ -1,6 +1,6 @@
 """Meal: бот записи еды (bot.js) — проверочный набор фраз из meal_bot_scenarios.py на придуманном аккаунте.
 Сверяет, что попало в дневник: продукт, граммы, время, дата, раздел, отметка счётчика. Бот включается переключателем
-«Для разработчика» (на устройстве). Отдельно: с выключенным ботом диалог отвечает по-прежнему и сам ничего не записывает."""
+«Для разработчика» (на устройстве). С Meal 33.9 — ещё своя мера человека первой и совпадение весов мер со словарём bot/household-ru.js. Отдельно: с выключенным ботом диалог отвечает по-прежнему и сам ничего не записывает."""
 import datetime, json, re, sys
 from playwright.sync_api import sync_playwright
 from common import *
@@ -107,6 +107,17 @@ with sync_playwright() as p:
     n_ok = sum(1 for r in out["rows"] if r["now"] == "записал верно")
     out["summary"] = {"всего": len(S), "записал верно": n_ok, "спросил или отложил": len(S) - n_ok - len(bad), "ошибка": len(bad)}
     check("ошибочных записей нет (%d фраз, верно %d)" % (len(S), n_ok), not bad, " | ".join(bad[:6]))
+    # Meal 33.9 · своя мера человека — первой (решение Астамура 17.11.2026): у борща своя «тарелка» 500 г, у кефира своя «большая кружка» 450 г
+    page.evaluate(RESET)
+    own = page.evaluate("""()=>{MealSpeech.on(true);const a=parseText('борщ').lines[0],b=parseText('кефир').lines[0];MealSpeech.on(false);
+      const fa=FOODS[a.fid||a.alts[0]],fb=FOODS[b.fid||b.alts[0]];DB.units=DB.units||{};DB.units[fa.id]={'тарелка':500};DB.units[fb.id]={'большая кружка':450};rebuildLib();return [fa.n,fb.n]}""")
+    page.evaluate(SAY, "тарелка борща"); page.evaluate(SAY, "большая кружка кефира"); page.evaluate(SAY, "кефир")
+    recs = page.evaluate(RECS)
+    check("своя мера первой: «тарелка борща» — 500 г, «большая кружка кефира» и просто «кефир» — 450 г", [r["g"] for r in recs] == [500, 450, 450], "; ".join("%s %s г" % (r["n"], r["g"]) for r in recs))
+    page.evaluate("()=>{DB.units={};rebuildLib();return true}")
+    # общие веса мер в приложении те же, что в словаре: правят в одном месте
+    same = page.evaluate("""()=>HappyMealSpeechData.measures.filter(m=>m.unit&&m.general!=null&&m.unit!=='шт'&&DEF[m.unit]!==m.general).map(m=>m.unit+': '+DEF[m.unit]+' ≠ '+m.general)""")
+    check("веса мер в Meal совпадают со словарём", not same, "; ".join(same))
     page.evaluate("()=>MealBot.setOn(false)")
     out["errors"] = errors
     check("ошибок на страницах нет", not errors, "; ".join(errors[:3]))
