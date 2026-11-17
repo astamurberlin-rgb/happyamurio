@@ -5,6 +5,8 @@
 function mountSportMeasurements(){
  const box=document.getElementById('happy-measurements');
  if(!box){HappyMeasurements.unmount();return}
- HappyMeasurements.mount(box,{doc:()=>SportData.signedIn()?SportData.store.doc('body'):null,askSignIn:SportData.askSignIn,toast});
+ HappyMeasurements.mount(box,{doc:()=>SportData.signedIn()?SportData.store.doc('body'):null,askSignIn:SportData.askSignIn,toast,
+  // цвет разницы по цели веса Sport (снижение, поддержание, рекомпозиция, набор) — Claude · 17.11.2026
+  goal:()=>{try{return HappyGoals.goalFor((state.sportGoals||{}).versions).kind||null}catch(e){return null}}});
 }
 {const renderBeforeMeasurements=render;render=function(...args){const r=renderBeforeMeasurements(...args);mountSportMeasurements();return r}}

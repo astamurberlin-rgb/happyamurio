@@ -145,6 +145,11 @@ const ICON={
 const GIRTH=['neck','shoulders','chest','biceps','forearm','waist','hips','thigh','calf'];
 const GIRTH_NORMAL={neck:39,shoulders:121,chest:103,biceps:36,forearm:29.5,waist:82,hips:97,thigh:58.5,calf:38};
 const SIL={now:'#F600FF',past:'#00DFF0',same:'#2dacff',glass:{grad:0.02,shine:0.26,width:0.7,angle:49,pos:0.66,rim:0.79}};
+/* Цвет по цели (Астамур 17.11.2026): розовым — то, что идёт против цели, бирюзовым — в сторону цели. Снижение,
+   поддержание и рекомпозиция: прибавка розовая, убыль бирюзовая (как было). Набор веса — наоборот: прибавка бирюзовая,
+   убыль розовая. Цель даёт приложение: mount(box,{goal:()=>'loss'|'maintain'|'recomp'|'gain'}); нет цели — как при снижении. */
+let goalOf=null;
+function palette(){let k=null;try{k=goalOf?goalOf():null}catch(e){}return k==='gain'?{now:SIL.past,past:SIL.now}:{now:SIL.now,past:SIL.past}}
 /* замер → обхваты для рисунка; парные — среднее левой и правой; нет числа — из запасного набора */
 function girths(values,fallback){
  const v=values||{},ok=x=>Number.isFinite(x)&&x>0;
@@ -313,27 +318,27 @@ function rimFilter(id,shadeColor,fx){
    скругляются, изломы у шеи и щиколоток заливаются дугой; тело и руки отдельно, подмышки как были. Фигуры — маски. */
 const SOFT=1.1,BOX='x="-64" y="-8" width="128" height="196"';
 function figure(now,past,same,label,height){
- const fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
+ const C=palette(),fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
  const ux=Math.round(Math.cos(a)*L/2*100)/100,uy=Math.round(Math.sin(a)*L/2*100)/100;
  const lin=(gid,c)=>`<linearGradient id="${gid}" x1=".15" y1=".1" x2=".85" y2=".95"><stop offset="0" stop-color="${tint(c,g)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,g*.4)}"/></linearGradient>`;
  const nowS=bodyParts(now,null,height),pastS=same?nowS:bodyParts(past,now,height),vw=Math.round(104*Math.max(1,BASE_HEIGHT/stature(height))*100)/100;   // «Было» — на скелете «Сейчас»
  const shape=(sh,cls)=>['body','arms'].map(k=>`<g filter="url(#${id}f)"><path${cls?` class="${cls}"`:''} data-part="${k}" d="${sh[k]}" fill="#fff"/></g>`).join('');
  const layer=(cls,gid,rim,mask,extra)=>`<g class="${cls}"${extra||''}><g mask="url(#${mask})"><rect ${BOX} fill="url(#${gid})"/><rect ${BOX} fill="url(#${id}s)"/></g><g filter="url(#${rim})"><rect ${BOX} fill="#000" fill-opacity=".02" mask="url(#${mask})"/></g></g>`;
  /* «Сейчас» розовым целиком, поверх — та же фигура голубым, но только внутри «Было»: розовым остаётся прибавка */
- return `<svg class="hm-chart" viewBox="${-vw/2} -3 ${vw} 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
+ return `<svg class="hm-chart" viewBox="${-vw/2} -3 ${vw} 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',C.now)}${lin(id+'p',C.past)}${lin(id+'c',SIL.same)}`+
   `<filter id="${id}f" filterUnits="userSpaceOnUse" ${BOX} color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="${SOFT}"/><feComponentTransfer><feFuncA type="linear" slope="14" intercept="-6.5"/></feComponentTransfer></filter>`+
   `<mask id="${id}m" maskUnits="userSpaceOnUse" ${BOX}>${shape(nowS,'')}</mask><mask id="${id}k" maskUnits="userSpaceOnUse" ${BOX}>${shape(pastS,'hm-past-clip')}</mask>`+
   `<linearGradient id="${id}s" gradientUnits="userSpaceOnUse" x1="${-ux}" y1="${Math.round((cy-uy)*100)/100}" x2="${ux}" y2="${Math.round((cy+uy)*100)/100}">${shineStops(fx)}</linearGradient>`+
-  rimFilter(id+'rn',shade(SIL.now,.45),fx)+rimFilter(id+'rp',shade(SIL.past,.45),fx)+rimFilter(id+'rc',shade(SIL.same,.45),fx)+`</defs>`+
+  rimFilter(id+'rn',shade(C.now,.45),fx)+rimFilter(id+'rp',shade(C.past,.45),fx)+rimFilter(id+'rc',shade(SIL.same,.45),fx)+`</defs>`+
   `<ellipse cx="0" cy="182" rx="25" ry="2" fill="rgba(44,62,102,.10)"/>`+
   layer('hm-past',id+'p',id+'rp',id+'k',same?' opacity="0"':'')+(same?'':layer('hm-now',id+'n',id+'rn',id+'m'))+
   `<g${same?'':` mask="url(#${id}k)"`}>${layer('hm-same',id+'c',id+'rc',id+'m')}</g></svg>`;
 }
 function chart(cur,old,amplify){
  const height=profileHeight(),same=cur.date===old.date,now=girths(cur.values),past=drawnPast(now,girths(old.values,now),amplify);
- const dot=c=>`linear-gradient(150deg,${tint(c,SIL.glass.grad)},${c} 55%,${shade(c,SIL.glass.grad*.4)})`;
- return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(same?SIL.same:SIL.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
-  (same?'':`<span><i class="hm-dot" style="background:${dot(SIL.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(SIL.same)}"></i> Совпадает</span>`)+`</div>`+
+ const C=palette(),dot=c=>`linear-gradient(150deg,${tint(c,SIL.glass.grad)},${c} 55%,${shade(c,SIL.glass.grad*.4)})`;
+ return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(same?SIL.same:C.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
+  (same?'':`<span><i class="hm-dot" style="background:${dot(C.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(SIL.same)}"></i> Совпадает</span>`)+`</div>`+
   `<div class="hm-amplify-box"><div class="hm-amplify" role="group" aria-label="Масштаб разницы">${[[1,'1:1','Разница в натуральную величину'],[3,'×3','Разница усилена в 3 раза']].map(([v,t,l])=>`<button type="button" data-hm="amplify" data-id="${v}" aria-label="${l}" aria-pressed="${amplify===v}">${t}</button>`).join('')}</div><span>разница</span></div>`+
   (chart.last={now,past,same,height},'')+figure(now,past,same,same?'Силуэт по замерам '+dateLabel(cur.date):'Силуэт '+dateLabel(cur.date)+' поверх силуэта '+dateLabel(old.date),height)+`</div>`;
 }
@@ -362,7 +367,7 @@ function mount(box,options){
   if(mounted.open){mounted.move(box);return mounted}
   mounted.destroy();
  }
- const o=options||{};let dialog=null,menu=null,off=null,noticeTimer=null,alive=true,drawn=null,raf=0;   // drawn — обхваты «Было» на рисунке сейчас
+ const o=options||{};goalOf=typeof o.goal==='function'?o.goal:null;let dialog=null,menu=null,off=null,noticeTimer=null,alive=true,drawn=null,raf=0;   // drawn — обхваты «Было» на рисунке сейчас
  const doc=()=>typeof o.doc==='function'?o.doc():o.doc||null;
  const state=()=>{const d=doc();return d&&!d.newer?read(d.all()):{list:[],trash:[],whole:false}};
  const say=(text,undo)=>{
