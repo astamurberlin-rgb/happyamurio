@@ -108,3 +108,17 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .sheet:has(.exercise-context-tabs)>.exercise-context-tabs{margin-bottom:12px!important}
 .sheet:has(.exercise-context-tabs)>:is(form,section):not([hidden]){flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:12px 20px 24px;-webkit-mask-image:linear-gradient(transparent,#000 12px);mask-image:linear-gradient(transparent,#000 12px)}
 #exercise-config-form[data-scope=add]>:first-child{border-top:0!important;margin-top:0!important}
+
+/* ── Настройки: действия внутри карточки — строки, как «Настроить профиль / цели», без рамки в рамке (Астамур 17.11.2026) ── */
+.happy-settings .happy-card:has(>.happy-button),.happy-settings .happy-card:has(>.happy-actions>.happy-button:only-child){padding:0 17px!important;display:block}
+.happy-settings .happy-card>.happy-button,.happy-settings .happy-card>.happy-actions>.happy-button:only-child{display:flex!important;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;width:100%;max-width:none;
+ height:auto!important;min-height:56px!important;padding:16px 0!important;margin:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;
+ text-align:left!important;line-height:20px!important;font-size:16px!important;font-weight:600!important;white-space:normal;color:inherit}
+.happy-settings .happy-card>*+*,.happy-settings .happy-card>.happy-button+.happy-button{border-top:1px solid rgba(255,255,255,.22)!important}
+.happy-settings .happy-card>.happy-actions{margin:0!important;display:block}
+.happy-settings .happy-card>.happy-button small{font-size:14px!important;font-weight:400;opacity:.75;margin:0!important}
+.happy-settings .happy-card>.happy-button:active{opacity:.6}
+.happy-settings .happy-card+.happy-card{margin-top:12px}
+/* все карточки настроек — одно скругление, как у «Настроить профиль / цели» (22) */
+.happy-settings .happy-card,.happy-settings .card,.happy-settings .hs-group,.happy-appearance-entry>.happy-button{border-radius:22px!important}
+.happy-settings .happy-card,.happy-settings .card{border-style:solid!important}
