@@ -101,3 +101,9 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .sheet:has(.exercise-context-tabs) .rename-exercise{width:44px;height:44px;min-height:44px;margin-top:0;margin-bottom:0;flex:none}
 /* на других вкладках карандаш невидим, но место держит: длинное название переносится одинаково на всех вкладках */
 .sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:inline-grid!important;visibility:hidden;pointer-events:none}
+/* карточка упражнения: шапка (ручка, название, вкладки) стоит на месте, прокручивается только содержимое вкладки;
+   у каждой вкладки своя прокрутка — при переключении ничего не прыгает (Астамур 17.11.2026) */
+.sheet:has(.exercise-context-tabs){display:flex!important;flex-direction:column;overflow:hidden!important;overscroll-behavior:contain}
+.sheet:has(.exercise-context-tabs)>.grip,.sheet:has(.exercise-context-tabs)>.sheet-top,.sheet:has(.exercise-context-tabs)>.exercise-context-tabs{flex:none;position:relative!important;top:auto!important}
+.sheet:has(.exercise-context-tabs)>.exercise-context-tabs{margin-bottom:12px!important}
+.sheet:has(.exercise-context-tabs)>:is(form,section):not([hidden]){flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:12px 20px 24px;-webkit-mask-image:linear-gradient(transparent,#000 12px);mask-image:linear-gradient(transparent,#000 12px)}
