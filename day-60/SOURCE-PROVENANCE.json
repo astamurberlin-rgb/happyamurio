@@ -35,8 +35,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1274761,
-   "sha256": "6a387ce9feeade772d32d0b012144f460cf094039293b243b9f6eaa99e7d4b51"
+   "size": 1275930,
+   "sha256": "00d518f117d85266e02505746c478d92fe4d675383ae1b708f58c9708e866ad6"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -160,8 +160,8 @@
   },
   {
    "path": "arc-motion.js",
-   "size": 18121,
-   "sha256": "c062292ebc5351da3afa36210178dc12b0d52ee3f2298363d1260ef3a4ade780"
+   "size": 18699,
+   "sha256": "2800948bdce7eaf07b97c5600e8cce0767ddb9085b6cbe8cb242d2b76004d8de"
   },
   {
    "path": "assets/activity-side-bend.svg",
@@ -205,8 +205,8 @@
   },
   {
    "path": "index.html",
-   "size": 493925,
-   "sha256": "5d3136beee6b60a9e97a574b72642b1719958e59b726e2002b69f20fbff318c1"
+   "size": 493434,
+   "sha256": "b2fe25efb4538bbd1bbf4efc92305ff1eacbb3beada2e80fb0b37d50785cd093"
   },
   {
    "path": "manifest.webmanifest",
@@ -230,8 +230,8 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 62980,
-   "sha256": "5053523d6fbedaab5ecdc269708b9fba9da8f88347cb56bdd99493c8e490df76"
+   "size": 63649,
+   "sha256": "41df503cc9fca3e1f3c95dfdce1e3038450e6602b2eca1411136b23d8d8d1101"
   },
   {
    "path": "selfcare.css",

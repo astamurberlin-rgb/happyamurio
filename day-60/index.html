@@ -5182,30 +5182,11 @@ document.getElementById('saveKey').addEventListener('click',function(){
 (function(){
   var scr=document.querySelector('[data-screen="ring"]'), grip=document.getElementById('cpGrip');
   if(!scr||!grip) return;
-  var y0=null, dy=0;
   function closeSheet(){
     scr.style.transition=''; scr.style.transform='';
     SelfCare.closeCurrent();renderDay();renderLinks();
   }
-  function start(e){ var t=e.touches?e.touches[0]:e; y0=t.clientY; dy=0; scr.style.transition='none' }
-  function move(e){ if(y0===null) return; var t=e.touches?e.touches[0]:e;
-    dy=Math.max(0,t.clientY-y0); scr.style.transform='translateY('+dy+'px)' }
-  function end(){
-    if(y0===null) return; y0=null;
-    scr.style.transition='transform .26s cubic-bezier(.22,.75,.25,1)';
-    if(dy>70){ scr.style.transform='translateY(110%)'; setTimeout(closeSheet,200) }
-    else { scr.style.transform=''; setTimeout(function(){ scr.style.transition='' },280) }
-  }
-  grip.addEventListener('touchstart',start,{passive:true});
-  grip.addEventListener('touchmove',move,{passive:true});
-  grip.addEventListener('touchend',end);
-  grip.addEventListener('touchcancel',end);
-  grip.addEventListener('mousedown',function(e){
-    start(e);
-    var mm=function(ev){ move(ev) };
-    var mu=function(){ end(); window.removeEventListener('mousemove',mm); window.removeEventListener('mouseup',mu) };
-    window.addEventListener('mousemove',mm); window.addEventListener('mouseup',mu);
-  });
+  /* Day 60.4: жест за черточку ведёт selfcare-ui.js (pointer) — кольцо с кнопкой при этом стоит на месте; здесь только клавиатура */
   grip.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();closeSheet()}});
   /* Day 60.2, шаг 8: простой тап по черточке больше не закрывает — только жест вниз */
 })();

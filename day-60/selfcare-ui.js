@@ -103,10 +103,13 @@ function closeCurrent(){
 }
 function bindCareNavigation(){
  let drag=null;
- document.addEventListener('pointerdown',e=>{const grip=e.target.closest('.care-grip,#cpGrip');if(!grip)return;const screen=grip.closest('.screen');drag={grip,screen,y:e.clientY,dy:0,t:performance.now()};grip.setPointerCapture(e.pointerId);screen.style.transition='none';});
- document.addEventListener('pointermove',e=>{if(!drag)return;const now=performance.now(),ndy=Math.max(0,e.clientY-drag.y);if(now>drag.t)drag.v=(ndy-drag.dy)/(now-drag.t);drag.t=now;drag.dy=ndy;drag.screen.style.transform='translateY('+drag.dy+'px)';});
- const finish=cancel=>{if(!drag)return;const d=drag;drag=null;d.screen.style.transition='transform .24s';d.screen.style.transform='';/* Day 60.2, шаг 8: закрывает только жест вниз — протянуть на 70 точек или смахнуть вниз (скорость в конце жеста больше 0,25 точки за мс); простое нажатие на черточку больше не закрывает */
-  if(!cancel&&(d.dy>70||(d.dy>24&&(d.v||0)>.25)))closeCurrent();setTimeout(()=>{d.screen.style.transition='';},250);};
+ /* Day 60.4: на экране отметок жест вниз уводит всё, кроме кольца с кнопкой: кольцо стоит на месте, как при переходе с главной. Другие экраны уезжают целиком. */
+ function sheetMove(screen,dy,anim){const ring=screen.dataset.screen==='ring',parts=ring?[...document.querySelectorAll('#sectionPanel>:not(.swipeZone)')]:[screen];for(const el of parts){el.style.transition=anim?'transform .24s cubic-bezier(.22,.75,.25,1),opacity .24s':'none';el.style.transform=dy?'translateY('+dy+'px)':'';el.style.opacity=ring&&dy?String(Math.max(0,1-dy/220)):'';}}
+ function sheetRest(screen){setTimeout(()=>sheetMove(screen,0,false),260);}
+ document.addEventListener('pointerdown',e=>{const grip=e.target.closest('.care-grip,#cpGrip');if(!grip)return;const screen=grip.closest('.screen');drag={grip,screen,y:e.clientY,dy:0,t:performance.now()};grip.setPointerCapture(e.pointerId);sheetMove(screen,0,false);});
+ document.addEventListener('pointermove',e=>{if(!drag)return;const now=performance.now(),ndy=Math.max(0,e.clientY-drag.y);if(now>drag.t)drag.v=(ndy-drag.dy)/(now-drag.t);drag.t=now;drag.dy=ndy;sheetMove(drag.screen,drag.dy,false);});
+ const finish=cancel=>{if(!drag)return;const d=drag;drag=null;const close=!cancel&&(d.dy>70||(d.dy>24&&(d.v||0)>.25));if(!close)sheetMove(d.screen,0,true);/* Day 60.2, шаг 8: закрывает только жест вниз — протянуть на 70 точек или смахнуть вниз (скорость в конце жеста больше 0,25 точки за мс); простое нажатие на черточку больше не закрывает */
+  if(close)closeCurrent();sheetRest(d.screen);};
  document.addEventListener('pointerup',()=>finish(false));document.addEventListener('pointercancel',()=>finish(true));
  document.addEventListener('keydown',e=>{if(e.target.matches('.care-grip,#cpGrip')&&['Enter',' '].includes(e.key)){e.preventDefault();closeCurrent();}});
 }
