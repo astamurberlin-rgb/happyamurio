@@ -1766,7 +1766,15 @@ window.HappyMealSpeechData={
     "кружочков",
     "слайс",
     "слайса",
-    "слайсов"
+    "слайсов",
+    "ломтем",
+    "ломти",
+    "краюха",
+    "краюху",
+    "краюхи",
+    "горбушка",
+    "горбушку",
+    "горбушки"
    ],
    "meaning_ru": "Вес зависит от продукта, толщины и размера.",
    "action": "personal_or_food_specific_weight",
@@ -2295,6 +2303,28 @@ window.HappyMealSpeechData={
     "стаканчике"
    ],
    "meaning_ru": "Стаканчик — упаковка: йогурт 125 г, мороженое 70 г (оценки); иначе спросить один раз и запомнить.",
+   "source_ids": [
+    "ESTIMATE"
+   ],
+   "action": "food_specific_weight",
+   "default_grams": null,
+   "status": "connected"
+  },
+  {
+   "id": "loaf",
+   "unit": "буханка",
+   "no_general": "ask_once",
+   "forms": [
+    "буханка",
+    "буханки",
+    "буханку",
+    "буханок",
+    "буханкой",
+    "буханочка",
+    "буханочку",
+    "буханочки"
+   ],
+   "meaning_ru": "Буханка хлеба — 600 г (рабочая оценка: формовой хлеб в магазинах 500–700 г). «Полбуханки» — 300 г.",
    "source_ids": [
     "ESTIMATE"
    ],
@@ -6306,6 +6336,65 @@ window.HappyMealSpeechData={
    ]
   },
   {
+   "match": "^хлеб",
+   "unit": "буханка",
+   "g": 600,
+   "source_ids": [
+    "ESTIMATE"
+   ]
+  },
+  {
+   "match": "^арбуз",
+   "unit": "ломтик",
+   "g": 250,
+   "source_ids": [
+    "C06",
+    "ESTIMATE"
+   ]
+  },
+  {
+   "match": "^арбуз",
+   "unit": "долька",
+   "g": 250,
+   "source_ids": [
+    "C06",
+    "ESTIMATE"
+   ]
+  },
+  {
+   "match": "^арбуз",
+   "unit": "кусок",
+   "g": 250,
+   "source_ids": [
+    "C06",
+    "ESTIMATE"
+   ]
+  },
+  {
+   "match": "^дын",
+   "unit": "ломтик",
+   "g": 150,
+   "source_ids": [
+    "ESTIMATE"
+   ]
+  },
+  {
+   "match": "^дын",
+   "unit": "долька",
+   "g": 150,
+   "source_ids": [
+    "ESTIMATE"
+   ]
+  },
+  {
+   "match": "^дын",
+   "unit": "кусок",
+   "g": 150,
+   "source_ids": [
+    "ESTIMATE"
+   ]
+  },
+  {
    "match": "^соус(?! соев)",
    "unit": "порция",
    "g": 30,
@@ -7292,6 +7381,11 @@ window.HappyMealSpeechData={
    "шот",
    "шота",
    "шотов"
+  ],
+  "буханка": [
+   "буханка",
+   "буханки",
+   "буханок"
   ]
  }
 };

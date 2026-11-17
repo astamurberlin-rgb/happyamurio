@@ -60,7 +60,7 @@ var MealBot=(function(){
   function row(l,ok,note){ return '<div class="mlRow'+(ok?'':' warn')+'"><span class="g" aria-hidden="true">'+(ok?CHECKI:WARNI)+'</span><span class="n">'+esc(foodName(l))+
     (note?' <small style="font-weight:500;opacity:.8">'+esc(note)+'</small>':'')+'</span><b>'+esc((l.approx?'≈ ':'')+amt(l))+'</b></div>' }
   /* «5 перепёлка» → «5 шт · 500 г» */
-  function amt(l){ if(l.u&&l.u!=='г'&&l.u!=='мл'&&!DEF[l.u]&&!/^(маленьк|средн|больш)/.test(l.u)&&l.q!==1) return fmt(l.q)+' шт · '+fmt(l.g)+' г'; return amtShort(l) }
+  function amt(l){ if(l.u&&l.u!=='г'&&l.u!=='мл'&&!DEF[l.u]&&!/^(маленьк|средн|больш)/.test(l.u)&&l.q!==1) return (typeof UFORMS!=='undefined'&&UFORMS[l.u]?amtShort(l):fmt(l.q)+' шт')+' · '+fmt(l.g)+' г'; return amtShort(l) }   // у меры со своим словом — «0,5 буханки · 300 г»
 
   /* ── время: «в 16:30», «в час дня», «10 утра», «где-то в 2 часа дня», «час назад», «15 минут назад», «вчера» ── */
   function hourOf(w){ return /^\d/.test(w)?+w:HOURS[w] }
@@ -549,6 +549,7 @@ var MealBot=(function(){
   function memOf(k){ var v=memGet()[k]; return !v?null:Array.isArray(v)?{n:1,parts:v}:v.parts?v:null }
   function compKey(text){ return tokensOf(text).map(function(w){ return w.slice(0,5) }).join('+') }
   /* «с Б» здесь — вид блюда, а не добавка: «пирог с капустой», «суп с лапшой» — не делится */
+  var TOPHEAD=/^(суп|борщ|щи$|солянк|окрошк|ух[аиу]$|салат|запеканк|рагу|плов|вареник|пельмен|мант|хинкал|голубц|блин)/, TOPPING=/^(сметан|майонез|кетчуп|горчиц|хрен|аджик|соус|масл|мед|мёд|варень|джем|сгущ|хлеб|сахар|зелень|укроп|петрушк)/;
   var KINDHEAD=/^(торт|суп|борщ|щи$|солянк|окрошк|ух[аиу]$|салат|пирог|пирож|пицц|булочк|булк|запеканк|рагу|плов|вареник|пельмен|мант|хинкал|голубц|чебурек|беляш|шаурм|хачапур|лазань|ролл|суши|рулет|сырок|сырк|блин|слойк|круассан|пончик|кекс|маффин|эклер|вафл|трубочк|печень|пряник|конфет|шоколад|морожен|ватрушк|самс)/;
   var BREADHEAD=/^(бутерброд|сэндвич|сендвич|тост)/;
   var ADJ=/^.{3,}(ый|ий|ая|яя|ое|ее|ые|ие|ого|его|ую|юю|ым|им|ых|их|ыми|ими)$/;
@@ -594,7 +595,9 @@ var MealBot=(function(){
     /* 3. общее правило */
     var ps=(' '+txt+' ').split(new RegExp(SEPW.source,'g')).map(function(x){ return x.trim() }); if(ps.length<2||ps.length>3||ps.some(function(x){ return !tokensOf(x).length })) return null;
     var head=tokensOf(ps[0]), h0=head[head.length-1]||'';
-    if(head.some(function(w){ return KINDHEAD.test(w) })) return null;
+    /* «суп с лапшой» — вид супа, не делится; «борщ со сметаной», «блины с мёдом» — блюдо и добавка к нему, делится */
+    var kh=head.filter(function(w){ return KINDHEAD.test(w) })[0];
+    if(kh&&!(TOPHEAD.test(kh)&&ps.slice(1).every(function(x){ return tokensOf(x).some(function(w){ return TOPPING.test(w) }) }))) return null;
     var r0=parseText(txt).lines[0], ids=r0?[r0.fid].concat(r0.alts||[]).filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i }).slice(0,6):[];
     var tailW=W.filter(function(w){ return head.indexOf(w)<0 }); if(ids.some(function(id){ return dishOk(id,head,tailW) })) return null;
     var bread=head.some(function(w){ return BREADHEAD.test(w) });
