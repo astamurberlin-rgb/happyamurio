@@ -35,8 +35,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1277435,
-   "sha256": "54fa5c23df45627d57c917906394ed5ab3c3c10a57e0555bee70f7b0c0b70a99"
+   "size": 1277555,
+   "sha256": "00b33a906d13fe33432f5dfcd31bb4fba5edbdd8e3575ac8122cd135411be1f0"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -160,8 +160,8 @@
   },
   {
    "path": "arc-motion.js",
-   "size": 18984,
-   "sha256": "54d87ad5ca11bf75b29ced07210603d98cc0cbe26e2e697ea8bde3e526b53d8f"
+   "size": 19072,
+   "sha256": "db437aa2d03649dbda668d8b44ef249dc91e4bb73abadf630b603844db7e8fae"
   },
   {
    "path": "assets/activity-side-bend.svg",
