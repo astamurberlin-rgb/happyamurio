@@ -36,10 +36,10 @@
     },
     "usda": {
       "version": "SR Legacy · April 2018 · русские названия 2026-11-17",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/cc92cd0d6277ed13f6213c5afbd069e6f01bc1c7/data/usda-sr-legacy.json.gz",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/e193d5c6d6d6a7f6e790b42c3e0307b8ae32710c/data/usda-sr-legacy.json.gz",
       "encoding": "gzip",
-      "bytes": 17589665,
-      "sha256": "262b8b3ed17feca364cf1e0596c7e309f7ba63f8c1da343a2b65002f7d8e86a8",
+      "bytes": 17589824,
+      "sha256": "12f81ab86ffe1534bb653df9fe1269ac140a00c3513fd7f27c0bad8002d4b7e9",
       "foodCount": 7793
     },
     "uzbek": {
