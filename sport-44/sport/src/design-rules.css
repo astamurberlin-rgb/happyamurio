@@ -1,0 +1,99 @@
+/* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
+ * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
+ * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
+ * короткое сообщение — тёмная пилюля 14 в одну строку. Карточка 26, поле и поиск 12, лист снизу 22, выключатель 42 × 25.
+ * Слой стоит последним в сборке; !important — только там, где прежние слои сами держат значение через !important.
+ * — Claude · 17.11.2026, лаборатория Sport 44.1 */
+
+/* ── Основная кнопка: пилюля 48, одна строка ── */
+.button,.happy-button,.hs-btn,.assign-options .button,.plan-fields .plan-share .button,.quick-actions .button,.template-card .button,.measure-outer .button,.current-bar>.button,.exercise-save-actions .button{
+ box-sizing:border-box;min-height:48px;height:48px;border-radius:999px!important;padding:0 20px!important;
+ font-size:16px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* кнопка-строка с подписью внутри («Выбрать оформление», «История обновлений») — это строка настроек, а не кнопка:
+   форма карточки-строки, подпись видна */
+.happy-card>.happy-button[data-action=release-history],.happy-button:has(>small),.happy-button:has(>b+small){
+ height:auto;min-height:56px;border-radius:26px!important;padding:12px 18px!important;white-space:normal;text-align:left;justify-content:space-between}
+.happy-button:has(>small)>span{white-space:nowrap;font-size:16px}
+.happy-card>.happy-button[data-action=release-history] small,.happy-button:has(>small) small{display:block;font-size:14px!important;font-weight:400}
+
+/* ── Вкладки внутри экрана и выбор из нескольких вариантов: пилюля 44, текст 14 ── */
+.segmented,.hs-segment,#page>.journal-switch,.library-tabs,.exercise-context-tabs{border-radius:999px!important}
+.segmented button,.hs-segment button,#page>.journal-switch button,[data-action=library-tab],[data-action=journal-tab],.exercise-context-tabs button{
+ min-height:44px;height:44px;border-radius:999px!important;font-size:14px!important;line-height:18px;white-space:nowrap;padding-top:0!important;padding-bottom:0!important}
+.hs-segment{height:auto!important;min-height:44px}
+.hs-units-row>.hs-segment{height:44px!important}
+.segmented button.on,.segmented button[aria-selected=true],.hs-segment button[aria-pressed=true],button.selected[data-action$=-tab]{font-weight:600!important}
+.segmented button:not(.on):not([aria-selected=true]),[data-action$=-tab]:not(.selected){font-weight:400!important}
+
+/* ── Чипы и фильтры: пилюля 44, текст 14 ── */
+.chips button,.metric-switches span,.timer-mode-options span,.date-pill,.hm-pill{
+ box-sizing:border-box;min-height:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;
+ border-radius:999px!important;padding:0 16px!important;font-size:14px!important;font-weight:600;white-space:nowrap}
+
+/* ── Кнопки-значки: круг (пилюля одинаковых сторон) ── */
+.exercise-technique,.pause-toggle,.workout-icon-toggle,.library-filter-toggle,.floating-rest-toggle,.sheet .icon-btn,.sheet>.sheet-done,.happy-password-toggle{border-radius:999px!important}
+.pause-toggle,.workout-icon-toggle{width:44px!important;height:44px!important}
+
+/* ── Текстовые кнопки («Редактировать», «Подробнее»): текст 14, нажимаемая зона 44 ── */
+.text-btn,.training-heading .text-btn,.workout-summary-header .text-btn,.exercise-heading .text-btn,.exercise-heading .exercise-actions .text-btn,.player-exercise-heading .text-btn,.plan-add-actions .text-btn{
+ font-size:14px!important;font-weight:600!important;min-height:44px;border-radius:999px}
+.plan-zone-note .text-btn,.plan-remove{font-size:14px!important}
+
+/* ── Короткое сообщение после действия: тёмная пилюля, текст 14, одна строка ── */
+.toast,.hs-toast{border-radius:999px!important;background:rgba(18,20,32,.92)!important;color:#fff!important;font-size:14px!important;font-weight:400;
+ line-height:20px!important;white-space:nowrap;padding:12px 20px!important;min-height:44px;box-sizing:border-box;align-items:center}
+.toast>span,.toast>div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.toast button{font-size:14px!important;font-weight:600!important;color:#fff!important;opacity:.9;text-decoration:underline;text-underline-offset:3px;min-height:20px}
+
+/* ── Карточка: 26 ── */
+.card,.happy-card,.section-row,.feed-body,.template-card,.hs-card,.hm-card{border-radius:26px!important}
+
+/* ── Поле ввода, поле на несколько строк, поиск: 12 ── */
+input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.search,.workout-name-input,.hs-input,.happy-input,.hm-field input,.library-filters select,.template-targets input{border-radius:12px}
+.set-row .set-metric input,.set-rest .set-metric input,.floating-rest-clock input,.player-round-preset input,.exercise-player input,.tap-time input,.exercise-title-input,.sport-metric-input input{border-radius:0}
+
+/* ── Лист снизу: 22 у верхних углов ── */
+.sheet,.hs-sheet,.hm-sheet{border-radius:22px 22px 0 0!important}
+.sheet:has(#rest-time-form){border-radius:26px!important}
+.sheet:has(.exercise-player){border-radius:0!important}
+
+/* ── Выключатель: 42 × 25 ── */
+.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.sport-switch::after,.hs-links .happy-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
+.sport-switch{border-width:1px}
+.sport-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
+.sport-switch:checked::after,.hs-links .happy-switch:checked::after{transform:translateX(17px)!important}
+.hs-switch{padding:3px!important}
+.hs-switch>b{width:19px!important;height:19px!important}
+.hs-switch[aria-checked=true]>b{transform:translateX(17px)!important}
+.toggle{border-radius:999px!important}
+
+/* ── Меню снизу: подписи 12, без наложения ── */
+.dock .tab span,.tab span{font-size:12px!important;font-weight:400;letter-spacing:-.3px}
+.dock .tab.on span{font-weight:600}
+
+/* ── Заголовок экрана: 28, жирность 800 (больше нигде) ── */
+.top h1,.happy-settings>.top h1,h1{font-size:28px;font-weight:800}
+
+/* ── Прочее по проверке экранов (17.11.2026) ── */
+/* кнопки только с текстом: одна строка с многоточием, если не влезает */
+.button:not(:has(*)),.happy-button:not(:has(*)),.hs-btn:not(:has(*)){display:block;text-align:center;line-height:46px!important}
+/* вкладки карточки упражнения («Инструкции · История · Добавить»): пилюлями, как остальные вкладки */
+.exercise-context-tabs{gap:3px!important;padding:4px;border:1px solid var(--line)!important;background:rgba(0,97,172,.12)}
+.exercise-context-tabs [role=tab]{height:44px;min-height:44px;padding:0 6px!important;border:0!important;border-radius:999px;font-size:14px!important;font-weight:400!important;opacity:1!important}
+.exercise-context-tabs [aria-selected=true]{background:rgba(244,251,255,.96);color:#176b98;font-weight:600!important}
+/* замеры тела: периоды — выбор из вариантов; «Поделиться» — основная кнопка; «＋ Замер» — текстовая */
+.hm-periods{border-radius:999px!important}
+.hm-periods button{height:44px;min-height:44px;padding:0 6px!important;border-radius:999px!important;font-size:14px!important}
+.hm-periods button:not([aria-pressed="true"]){font-weight:400!important}
+.hm-button,.hm-output .hm-button{min-height:48px!important;height:48px;border-radius:999px!important;font-size:16px!important;font-weight:600!important;white-space:nowrap}
+.hm-text{font-size:14px!important;min-height:44px}
+.hm-amplify button{font-weight:600!important;border-radius:999px!important}
+/* заметка к упражнению — поле; булавка — круг */
+.set-note,textarea{border-radius:12px!important}
+.note-pin{border-radius:999px!important}
+/* кольцо энергии: число 28, подпись 12 */
+.he-knob b{font-size:28px!important}
+.he-knob small{font-size:12px!important}
+/* «Продолжить» в полоске текущей тренировки */
+[data-action=resume]{font-size:14px!important}

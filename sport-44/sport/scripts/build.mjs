@@ -71,6 +71,8 @@ async function readShared(name){
   try{return await readFile(new URL('../shared/'+name,root),'utf8')}
   catch(e){if(e.code!=='ENOENT')throw e;return readFile(new URL('shared/'+name,root),'utf8')}
 }
+// 17.11.2026: оформление Happy (AGENTS.md, раздел 4) — последним слоем.
+const designRulesCss=await read('src/design-rules.css');
 const sharedCss=await readShared('happy-ui.css'),measurementsCss=await readShared('happy-measurements.css'),screensCss=await readShared('happy-screens.css');
 // Sport 41: связь приложений — общий модуль shared/happy-app-links.js и свитчи Sport (src/app-links.js)
 const sportAppLinks=await read('src/app-links.js');
@@ -104,7 +106,7 @@ try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:tru
 const labBar='';
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
-  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+'\n</style>')
+  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+designRulesCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
   .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen].join('\n'))
