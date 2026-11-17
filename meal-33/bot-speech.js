@@ -64,19 +64,15 @@ var MealSpeech=(function(){
     if(typeof window.unitOf==='function'){ var u0=window.unitOf; window.unitOf=function(t){ if(active&&U2[t]) return U2[t]; return u0(t) } }
   }
 
-  /* блюда нет в базе, а частей хватает — не спрашивать «что именно?», а предложить расписать по отдельности (решение Астамура 17.11.2026 21:56) */
-  function offer(text){
+  /* блюдо из словаря, которого нет в базе («творог с изюмом»): части и граммы для предложения «записать по отдельности» */
+  function composite(text){
     if(!D) return null;
     var s=' '+String(text)+' ', res=null;
     COMP.forEach(function(c){
       if(!c.offer||res) return;
-      var re=new RegExp('(^|\\s)(?:(\\d+(?:,\\d+)?)\\s+)?(?:'+c.said+')(?:\\s+(\\d+(?:,\\d+)?)\\s*(?:г|гр|грамм[а-я]*)(?=[\\s,.;!?]|$))?');
-      var m=re.exec(s); if(!m||hasDish(c.dish)) return;
-      var tot=c.parts.reduce(function(t,x){ return t+x.g },0), k=m[3]?num(m[3])/tot:(m[2]?num(m[2]):1);
-      var ps=c.parts.map(function(x){ return {w:x.search,g:Math.round(x.g*k)} });
-      res={name:c.name,
-        text:(s.slice(0,m.index)+m[1]+ps.map(function(x){ return x.w+' ≈ '+x.g+' г' }).join(', ')+','+s.slice(m.index+m[0].length)).replace(/\s+/g,' ').trim(),
-        say:ps.map(function(x){ return x.w+' '+x.g+' г' }).join(' и ')};
+      var m=new RegExp('\\s(?:(\\d+(?:,\\d+)?)\\s+)?(?:'+c.said+')(?:\\s+(\\d+(?:,\\d+)?)\\s*(?:г|гр|грамм[а-я]*))?\\s$').exec(s); if(!m||hasDish(c.dish)) return;
+      var tot=c.parts.reduce(function(t,x){ return t+x.g },0), k=m[2]?num(m[2])/tot:(m[1]?num(m[1]):1);
+      res={name:c.name,parts:c.parts.map(function(x){ return {w:x.search,g:Math.round(x.g*k)} })};
     });
     return res;
   }
@@ -236,11 +232,11 @@ var MealSpeech=(function(){
   /* общее слово («сыр», «сок»): что брать, когда человек не уточнил */
   function generic(word){
     var w=nz(word), e=((D&&D.generic_defaults)||[]).filter(function(x){ return new RegExp(x.said).test(w) })[0];
-    return e?{id:e.id,history:new RegExp(e.history),search:e.default_search||null,ask:!!e.ask,first:e.first_search||null}:null;
+    return e?{id:e.id,history:new RegExp(e.history),search:e.default_search||null,ask:!!e.ask,options:e.ask_options||(e.first_search?[e.first_search]:[])}:null;
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, offer:offer, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},all:/[≈⊕⊘▽◇△]/g}};
 })();

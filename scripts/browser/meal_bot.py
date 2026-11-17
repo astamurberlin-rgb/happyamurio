@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 from common import *
 from meal_bot_scenarios import S
 
-RESET = """()=>{DB.days={};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
+RESET = """()=>{DB.days={};try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),q:x.q,u:x.u,g:x.g,t:x.t||null,tm:x.tm||0,sec:x.sec,tap:x.tap||null})}));return o}"""
 SAY = """(text)=>{const m={id:'m'+(++D.seq),who:'me',kind:'text',text};D.msgs.push(m);const h=respond(m);D.msgs.push({who:'bot',kind:'reply',html:h});
  const S=D.bot||{pend:[],ask:null};return {html:h,pend:S.pend.length,ask:S.ask?S.ask.kind:null}}"""
