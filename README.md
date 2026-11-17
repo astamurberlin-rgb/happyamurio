@@ -56,9 +56,15 @@ BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS),
 
 — Claude · 16.11.2026
 
-## KFCT 10.4 — South Korea (prepared 2026-11-17, not published)
+## KFCT 10.4 — South Korea (published 2026-11-17 02:10 by Astamur's word «выпускай», together with Happy Meal 33.4)
 
 `data/kfct-10.4.json.gz`, manifest entry `kfct`, schema `happy-meal-kfct/1`: all **3366** foods of the official Korean Food Composition Table 10.4 (RDA / NICS, KOGL Type 1). Values are kept as in the source (number, `-`, `Tr`, parenthesised); mapping to Happy Meal fields is done by the app (`kfct.js`, Happy Meal 33.4 and later), with the same rules as MEXT: RAE and the KFCT vitamin E stay separate rows; Meal carbohydrate = KFCT total carbohydrate minus dietary fibre (approximate), total and fibre shown as own rows. IDs `kfct:<code>`, no overlap with BLS, USDA or MEXT. Data — Mikhalych's (ChatGPT) package of 2026-11-16; Russian names: his draft for 3236 foods, Claude for the remaining 130 and 5 colliding ones. `bytes`/`sha256` refer to the uncompressed JSON (2,549,402 bytes). Details: [data/KFCT.md](data/KFCT.md).
+
+— Claude · 17.11.2026
+
+## USDA SR Legacy in Russian (published 2026-11-17 16:21 by Astamur's word «выпускай» 16:17)
+
+`data/usda-sr-legacy.json.gz` under the existing manifest entry `usda`: the same 7,793 records with `names.ru` for every record (`names.en` kept and searchable) and `aliases` extended with base forms of agreed adjectives and «варёный» for cooked/boiled records. Composition, portions, IDs and revisions unchanged; diary entries are not recalculated. Read by the unchanged USDA adapter of Meal (it already shows `names.ru` and the English original as «Оригинал»). First publication 14:50 was rolled back 14:52 by the owner («отбой»: plant foods «свежий», not «сырой»); this is the corrected second version. Naming rules and sources: [data/USDA.md](data/USDA.md).
 
 — Claude · 17.11.2026
 
