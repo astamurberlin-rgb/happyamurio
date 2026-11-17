@@ -436,7 +436,9 @@ var MealBot=(function(){
     var nm0=String(l.spoken||l.name||'').trim(), nw=nm0.split(' ').filter(Boolean);
     if(nm0) [nm0, nm0+' целиком'].forEach(function(q){ var r=parseText(q).lines[0]; if(r) ids=ids.concat([r.fid].concat(r.alts||[])) });
     ids=ids.filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i });
-    var hit=ids.filter(function(x){ return pieceUnit(x)&&(!nw.length||related(x,nw)) })[0]; if(!hit) return false;
+    /* Meal 33.7: у справочников (USDA, MEXT, KFCT) теперь русские названия — штука из основной базы и своих продуктов впереди */
+    var hits=ids.filter(function(x){ return pieceUnit(x)&&(!nw.length||related(x,nw)) });
+    var hit=hits.filter(function(x){ return !/USDA|MEXT|KFCT/.test(String(FOODS[x].src||'')) })[0]||hits[0]; if(!hit) return false;
     var others=ids.filter(function(x){ return x!==hit });
     l.fid=hit; l.st='ok'; l.u=pieceUnit(hit); l.q=l.count; l.g=gramsFor(hit,l.q,l.u); l.explicit=true; l.alts=[hit].concat(others); l.picked=others.length>0; l.ask=null;
     return true;
@@ -1000,5 +1002,5 @@ var MealBot=(function(){
       if(typeof toast==='function') toast(sw.checked?'Бот записи еды включён':'Бот записи еды выключен') });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
-  return {on:on,setOn:setOn,reply:reply,tap:tap,openSheet:openSheet,loose:loose,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
+  return {on:on,setOn:setOn,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
 })();
