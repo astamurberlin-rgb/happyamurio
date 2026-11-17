@@ -26,7 +26,7 @@
 .segmented button:not(.on):not([aria-selected=true]),[data-action$=-tab]:not(.selected){font-weight:400!important}
 
 /* ── Чипы и фильтры: пилюля 44, текст 14 ── */
-.chips button,.metric-switches span,.timer-mode-options span,.date-pill,.hm-pill{
+.chips button,.date-pill,.hm-pill{
  box-sizing:border-box;min-height:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;
  border-radius:999px!important;padding:0 16px!important;font-size:14px!important;font-weight:600;white-space:nowrap}
 
@@ -122,3 +122,18 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* все карточки настроек — одно скругление, как у «Настроить профиль / цели» (22) */
 .happy-settings .happy-card,.happy-settings .card,.happy-settings .hs-group,.happy-appearance-entry>.happy-button{border-radius:22px!important}
 .happy-settings .happy-card,.happy-settings .card{border-style:solid!important}
+
+/* ── «Что записываем» и выбор режима плеера — одна пилюля, части одной ширины через тонкий разделитель
+   (Астамур 17.11.2026, вариант А): выбранное — светлое, как выбранная вкладка; крайние части повторяют скругление ── */
+.metric-pick{border:0;padding:0;margin:0 0 16px;min-width:0}
+.metric-pick legend{padding:0;margin:0 0 10px;font-size:14px;font-weight:600}
+.metric-pill,.timer-mode-options{display:flex!important;height:48px;padding:0!important;gap:0!important;margin:0;border:1px solid var(--line,rgba(255,255,255,.36))!important;
+ border-radius:999px!important;overflow:hidden;background:rgba(0,97,172,.12)!important}
+.metric-pill label,.timer-mode-options label{flex:1 1 0;min-width:0;position:relative;margin:0;padding:0;display:block}
+.metric-pill label+label,.timer-mode-options label+label{border-left:1px solid var(--line,rgba(255,255,255,.36))}
+.metric-pill input,.timer-mode-options input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:1;cursor:pointer}
+.metric-pill input:disabled{cursor:default}
+.metric-pill span,.timer-mode-options span{display:flex!important;align-items:center;justify-content:center;height:100%!important;min-height:0!important;padding:0 2px!important;
+ border:0!important;border-radius:0!important;background:none!important;color:#fff;font-size:14px!important;font-weight:400!important;white-space:nowrap}
+.metric-pill input:checked+span,.timer-mode-options input:checked+span{background:rgba(244,251,255,.96)!important;color:#176b98!important;font-weight:600!important}
+.metric-pill label:has(input:checked)+label:has(input:checked){border-left-color:rgba(23,107,152,.25)}

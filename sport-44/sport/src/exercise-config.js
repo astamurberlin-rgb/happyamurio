@@ -1,6 +1,12 @@
 /* Optional exercise settings extend v1 records without changing their stable IDs. */
 function metricOrder(){return ['seconds','distance','reps','weight']}
 function metricName(key){return {seconds:'Время',distance:'Дистанция',reps:'Повторения',weight:'Вес'}[key]}
+// Что записываем — одна пилюля (Астамур 17.11.2026, вариант А): части одной ширины, только то, что упражнению подходит
+// по природе; выбранное — светлое, как выбранная вкладка. Внутри — обычные флажки name="metrics", форма читает их как раньше.
+const METRIC_PILL_ORDER=['distance','seconds','reps','weight'],METRIC_SHORT={distance:'Дист.',seconds:'Время',reps:'Повт.',weight:'Вес'};
+function metricsAvailable(e){const p=(e&&(exercise(e.id)||e).profile)||'';return /distance_time|swim|ergometer|treadmill/.test(p)?['distance','seconds']:/duration|hold/.test(p)?['seconds','weight']:['seconds','reps','weight']}
+function metricPill(selected,available,locked){locked=locked||[];const keys=METRIC_PILL_ORDER.filter(k=>available.includes(k)||selected.includes(k)||locked.includes(k));
+ return `<fieldset class="metric-pick"><legend>Что записываем</legend><div class="metric-pill" role="group" aria-label="Что записываем">${keys.map(k=>`<label><input type="checkbox" ${locked.includes(k)?'checked disabled':`name="metrics" value="${k}" ${selected.includes(k)?'checked':''}`} aria-label="${metricName(k)}"><span>${METRIC_SHORT[k]}</span></label>`).join('')}</div></fieldset>`}
 function exerciseMetrics(value){
   const e=typeof value==='string'?exercise(value):value,definition=exercise(e?.id)||e;
   const explicit=Array.isArray(e?.metrics)?e.metrics:definition?.metrics;
@@ -124,8 +130,7 @@ function openExerciseEditor(id,ei=null){
     <div class="exercise-title-row"><label class="exercise-title-label"><span>Название · нажми, чтобы изменить</span><input class="exercise-title-input" name="name" required maxlength="120" value="${esc(active?.name||e?.name||'')}" placeholder="Название упражнения"></label></div>
     ${active?`<nav class="local-exercise-links" aria-label="Об этом упражнении"><button type="button" class="text-btn" data-action="local-exercise-history" data-id="${esc(id)}">История</button><button type="button" class="text-btn" data-action="local-exercise-instructions" data-id="${esc(id)}">Инструкция</button></nav>`:''}
     ${active&&exerciseHandles(active).length?`<label class="field exercise-handle-field">Рукоять<select name="handle" aria-label="Рукоять"><option value="">Не указана</option>${exerciseHandles(active).map(h=>`<option value="${esc(h)}" ${exerciseHandle(active)===h?'selected':''}>${esc(h)}</option>`).join('')}${exerciseHandle(active)&&!exerciseHandles(active).includes(exerciseHandle(active))?`<option value="${esc(exerciseHandle(active))}" selected>${esc(exerciseHandle(active))}</option>`:''}</select></label><p class="fineprint">Рукоять — пометка для этой тренировки и истории. Подходы и нагрузка не пересчитываются.</p>`:''}
-    <fieldset class="metric-switches"><legend>Что записываем</legend>${metricOrder().map(key=>`<label><input type="checkbox" name="metrics" value="${key}" ${metrics.includes(key)?'checked':''}><span>${metricName(key)}</span></label>`).join('')}</fieldset>
-    <p class="fineprint">Показатели можно сочетать. Время: задано — обратный отсчёт; 0:00 — секундомер.</p>
+    ${metricPill(metrics,active||e?metricsAvailable(active||e):METRIC_PILL_ORDER)}
     ${setPlanMarkup(draft)}
     <section class="exercise-timer-settings"><h3>Плеер упражнения</h3><div class="segmented timer-mode-options">${[['countdown','Таймер'],['intervals','Интервалы'],['stopwatch','Секундомер']].map(([key,name])=>`<label><input type="radio" name="timerMode" value="${key}" ${timer.mode===key?'checked':''}><span>${name}</span></label>`).join('')}</div>
       <div class="timer-presets"><label class="field" data-timer-setting="work">Работа${sportMetricInput(`name="workSeconds" type="text" value="${sportDurationValue(timer.workSeconds)}" inputmode="text" aria-label="Время работы"`,'')}</label><label class="field" data-timer-setting="rest">Отдых${sportMetricInput(`name="restSeconds" type="text" value="${sportDurationValue(timer.restSeconds)}" inputmode="text" aria-label="Время отдыха"`,'')}</label><label class="field" data-timer-setting="rounds">Циклы${sportMetricInput(`name="rounds" type="number" min="1" max="50" value="${timer.rounds}" inputmode="numeric" aria-label="Число циклов"`,'раз')}</label></div>
