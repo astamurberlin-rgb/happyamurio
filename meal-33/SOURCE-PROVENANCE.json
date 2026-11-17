@@ -84,6 +84,14 @@
  },
  "pointReleases": [
   {
+   "version": "33.6",
+   "date": "2026-11-17",
+   "changes": [
+    "bot.js: бот записи еды без ИИ (объект MealBot), бета 1; включается переключателем в разделе «Для разработчика», состояние — на устройстве (localStorage happy-meal-bot); выключен — поведение Meal прежнее",
+    "index.html: пять условных вызовов MealBot (parseText — выбор продукта, respond, goMatch, подпись кнопки диалога), подключение bot.js, переключатель; ?v=33.6, sw.js 33.6, release-notes.js 33.6; scripts/browser/meal_bot.py"
+   ]
+  },
+  {
    "version": "33.5",
    "date": "2026-11-17",
    "changes": [
