@@ -93,7 +93,7 @@ function pinExerciseNote(ei){
   const e=state.active?.exercises[ei];if(!e)return false;
   state.exerciseNotes??={};
   if(exercisePinnedNote(e.id)!=null){delete state.exerciseNotes[e.id];for(const other of state.active.exercises)if(other.id===e.id)other.notePinned=false;return false;}
-  if(!String(e.notes||'').trim())throw new Error('Сначала напиши заметку, которую хочешь закрепить.');
+  if(!String(e.notes||'').trim())throw new Error('Сначала напиши заметку');
   state.exerciseNotes[e.id]=e.notes;
   for(const other of state.active.exercises)if(other.id===e.id){other.notes=e.notes;other.notePinned=true;}
   return true;
@@ -191,7 +191,7 @@ function saveExerciseEditor(form,mode){
   if(!e&&form.dataset.addActive==='true'&&state.active)state.active.exercises.push(prepareWorkoutExercise({id:next.id,name:next.name,phase:'main',notes:'',sets:next.defaultSets.map(setPlanCopy),defaultRestSeconds:lastRest},true));
   persist();closeSheet();render();toast(localOnly?'Настройки сохранены только для этой тренировки':mode==='copy'?'Создано отдельное упражнение. Прежняя история сохранена.':'Настройки сохранены'+(e&&e.name!==name?' · история остаётся с упражнением':''));return next;
 }
-function restoreExerciseName(id){const e=exercise(id);if(!e)return;const name=exerciseOriginalName(e);if(name===e.name)return;saveExerciseDefinition(id,{...clone(e),name,metrics:exerciseMetrics(e),timerConfig:exerciseTimerConfig(e)});persist();closeSheet();render();toast('Исходное название восстановлено. История сохранена.');}
+function restoreExerciseName(id){const e=exercise(id);if(!e)return;const name=exerciseOriginalName(e);if(name===e.name)return;saveExerciseDefinition(id,{...clone(e),name,metrics:exerciseMetrics(e),timerConfig:exerciseTimerConfig(e)});persist();closeSheet();render();toast('Название вернулось к исходному');}
 function renderExerciseChange(change){return `<article class="exercise-change-row"><span>${icon('pencil-simple')}</span><div><small>${dateLabel(change.at.slice(0,10))} · ${change.at.slice(11,16)}</small><b>${change.kind==='restore'?'Возвращено исходное название':'Упражнение переименовано'}</b><p>${esc(change.oldName)} → ${esc(change.newName)}</p></div></article>`}
 
 customExercise=function(id){openExerciseEditor(id)};

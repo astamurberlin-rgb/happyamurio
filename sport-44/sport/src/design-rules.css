@@ -149,3 +149,10 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .hs-switch{display:flex!important;align-items:center;padding:0 3px!important}
 .hs-switch>b{flex:none;margin:0!important}
 .hs-switch[aria-checked=true]>b{transform:translateX(17px)!important}
+
+/* ── Идущая тренировка (Астамур 17.11.2026): каждое упражнение в своей рамке, как карточка; удаление подхода — только
+   свайпом влево, «Удалить» справа во всю высоту строки ── */
+.active-workout>.set-card{background:var(--glass,rgba(255,255,255,.14))!important;border:1px solid var(--line,rgba(255,255,255,.36))!important;border-radius:24px!important;
+ padding:14px 16px 10px!important;margin:0 0 12px!important;box-shadow:none}
+.set-swipe .swipe-delete,.active-workout .set-swipe[data-swipe-kind="set"]>.swipe-delete{left:auto!important;right:0!important;top:0!important;bottom:0!important;height:auto!important;
+ max-height:none!important;min-height:0!important;width:66px;padding:0!important;gap:2px!important;border-radius:12px!important;font-size:12px!important}
