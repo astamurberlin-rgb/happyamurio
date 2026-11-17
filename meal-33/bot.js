@@ -479,7 +479,7 @@ var MealBot=(function(){
   /* ── блюдо «А с Б» ──
      Есть такое блюдо в базе или у человека — берётся оно. Нет — части по отдельности обычными порциями; бот предлагает, человек подтверждает или называет свои граммы,
      и в следующий раз блюдо пишется так же без вопроса. Решения Астамура 17.11.2026 21:56 и 22:08. */
-  var COMBK='happy-meal-bot-combos', FRESH=null, NOSPLIT=false, EATEN=false;
+  var COMBK='happy-meal-bot-combos', FRESH=null, NOSPLIT=false, EATEN=false, NEST=0;
   /* «съел курицы 200 г» — сырую курицу не едят: берётся готовая. «Курица 200 г», «взвесил курицу» — сырая, как раньше.
      Овощи, фрукты, зелень без слов о способе — сырые. Решение Астамура 17.11.2026 23:11 */
   var COOKEDN=/(варен|отварн|тушен|жарен|запечен|приготовл|гриль)/, WEIGHED=false;
@@ -586,6 +586,8 @@ var MealBot=(function(){
     save();
     try{ if(typeof renderAll==='function') renderAll() }catch(e){}
     var c={id:'c'+(++S.seq),add:add,undone:false,at:Date.now()}; S.commits.push(c);
+    /* «перепиши: …» — прежняя запись убирается только теперь, когда новая уже записана (раньше убиралась заранее и могла пропасть) */
+    if(S.rewrite){ var old=S.rewrite; S.rewrite=null; if(!old.undone&&old!==c){ undo(S,old); c.replaced=true } }
     return c;
   }
   function undo(S,c){
@@ -894,6 +896,13 @@ var MealBot=(function(){
   }
 
   /* ── вопросы о записанном ── */
+  function productInfo(text){
+    var u; FILLOK=false; try{ u=core(fixes(' '+text+' ')) }catch(e){ return null }
+    var l=u&&u.lines.length===1?u.lines[0]:null; if(!l) return null;
+    var id=l.fid||(l.ask==='pick'&&!l.noAuto?l.alts[0]:null); if(!id||!FOODS[id]) return null;
+    var g=l.explicit&&l.fid&&l.g>0?l.g:100, s=sumOf([{fid:id,g:g,q:g,u:'г'}]); if(!(s.k>0)&&!(s.p>0)&&!(s.c>0)) return null;
+    return p(esc(FOODS[id].n)+', '+fmt(g)+' г: <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г</p><p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
+  }
   function todayTotals(){
     var items=day(curDate).items, s=sumOf(items), when=curDate===todayISO()?'сегодня':'за этот день';
     if(!items.length) return p('За '+(curDate===todayISO()?'сегодня':'этот день')+' пока ничего не записано.');
@@ -964,10 +973,11 @@ var MealBot=(function(){
     var asked=/\?\s*$/.test(String(raw).trim());
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
+    if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;   // замена не состоялась, а человек уже говорит о другом
     var prepped=false; FRESH=null; EATEN=!!(SP&&SP.eaten&&m.kind!=='photo'&&SP.eaten(String(raw))); WEIGHED=!!(SP&&SP.weighed&&m.kind!=='photo'&&SP.weighed(String(raw)));
     if(S.offer&&m.kind!=='photo'){ var ofr=S.offer; S.offer=null;
       var b0=nrm(raw).trim().replace(/[?!.,…\s]+$/,'');
-      if(/^(нет|неа|не надо|не нужно|не записывай|отмена|отмени|пропусти)$/.test(b0)) return p('Хорошо, не записываю.');
+      if(/^(нет|неа|не надо|не нужно|не записывай|отмена|отмени|пропусти)$/.test(b0)){ S.rewrite=null; return p('Хорошо, не записываю.') }
       if(/^(да|ага|угу|давай|ок|окей|хорошо|годится|верно|записывай|запиши|пиши|так)( так| запиши| записывай| давай)?$/.test(b0)){ memSet(ofr.key,ofr.parts); FRESH=ofr.key; raw=ofr.raw; prepped=true; EATEN=!!ofr.eaten; WEIGHED=!!ofr.weighed }
       else { var cust=String(raw).replace(/^\s*(нет|не|неа)[,.!\s]+/i,'').replace(/^\s*(давай|лучше|пусть|запиши)\s+/i,''); if(SP) cust=SP.prepare(cust);
         var cu=core(cust), good=cu.lines.filter(function(l){ return l.fid&&l.explicit&&!l.ask&&l.g>0 });
@@ -988,20 +998,32 @@ var MealBot=(function(){
     var cx=bare.match(/^(?:отмени|отменить|убери|удали|сотри)\s+(.+)$/);
     if(cx&&!S.pend.length){ var cr=cx[1].replace(/(^|\s)(последн\S*|запись|записи|это|все|всё|его|ее|её|их)(?=\s|$)/g,' ').trim(); if(tokensOf(cr).length) return removeCmd(S,cr) }
     var rw=bare.match(/^(?:перепиши|запиши заново|заново|переделай)[\s,:]+(.+)$/);
-    if(rw&&!/\sна\s/.test(' '+rw[1]+' ')&&tokensOf(rw[1].replace(FILL,' ')).length){
-      var lc=S.commits.filter(function(c){ return !c.undone&&c.add.length }).pop(); if(lc) undo(S,lc);
-      return (lc?p('Прежнюю запись убрал.'):'')+handle(chat,S,{kind:'text',text:rw[1]});
+    if(rw&&/\sна\s/.test(' '+rw[1]+' ')) rw=null;                                               // «перепиши грушу на банан» — ниже, заменой
+    var rw2=bare.match(/^(?:замени|поменяй|исправь|перепиши|переделай)[\s,:]+на\s+(.+)$/);        // «замени на полбанана» — последнюю запись
+    if(rw2) rw=[bare,rw2[1]];
+    if(rw&&tokensOf(rw[1].replace(FILL,' ')).length){
+      var lc=S.commits.filter(function(c){ return !c.undone&&c.add.length }).pop();
+      S.rewrite=lc||null;
+      var hN, eat0=EATEN, wg0=WEIGHED; NEST++; try{ hN=handle(chat,S,{kind:'text',text:rw[1]}) } finally { NEST-- }
+      EATEN=eat0; WEIGHED=wg0;
+      if(!lc) return hN;
+      if(!S.rewrite) return p('Прежнюю запись заменил.')+hN;
+      if(S.pend.length||S.offer) return hN+'<p class="mlHint">Прежнюю запись пока оставил: уберу, когда запишу новую.</p>';
+      S.rewrite=null; return hN+p('Прежнюю запись оставил как была.');
     }
     var MV=/(^|\s)(перенеси|перемести|переставь|перекинь|оставь|не трогай)(\s|$)|(^|\s)был[аои]?\s+(на|в|к)\s|(^|\s)(это|эти|то)\s+(на|в)\s/;
     if(m.kind!=='photo'&&MV.test(' '+bare+' ')){ var mvh=moveCmd(chat,S,raw); if(mvh!=null) return mvh }
     if(/^(отмена|отмени|отменить|верни|не записывай|не надо|стоп)(\s|$)/.test(bare)){
-      if(S.pend.length){ S.pend=[]; S.ask=null; return p('Хорошо, не записываю.') }
+      if(S.pend.length){ S.pend=[]; S.ask=null; S.rewrite=null; return p('Хорошо, не записываю.') }
       var lastC=S.commits.filter(function(c){ return !c.undone }).pop();
       if(!lastC) return p('Отменять нечего: в этом диалоге я ещё ничего не записал.');
       return undo(S,lastC)?p('Отменил последнюю запись: '+esc(lastC.add.filter(function(a){ return !a.hide }).map(function(a){ return foodName(a.line) }).join(', ')||'удаление')+'.'):p('Не получилось отменить.');
     }
     if(!/\d/.test(bare)&&/(подожди|погоди|секунд|минутк|сейчас взвешу|взвешиваю|взвешу)/.test(bare)&&tokensOf(bare.replace(/подожди|погоди|секунд\S*|минутк\S*|взвеш\S*/g,' ').replace(FILL,' ')).length===0)
       return p('Жду. Ничего не записываю, пока не скажешь.');
+    /* «сколько калорий в 100 г риса?» — вопрос о продукте, а не об итоге дня: ответ из базы, в дневник ничего не идёт */
+    var pq=bare.match(/^(?:а\s+)?сколько\s+(?:калори\S*|ккал|белк\S*|жир\S*|углевод\S*)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/);
+    if(pq&&m.kind!=='photo'){ var pi=productInfo(pq[1]); return pi||deferred('вопрос о питании') }
     if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(bare)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(bare)) return todayTotals();
     if(/что\s+(я\s+)?(уже\s+|сегодня\s+)*(записал|записано|съел|ел)(\s|$)/.test(bare)||/^(покажи|что)\s+(записи|день|записано|за сегодня)/.test(bare)) return todayList();
     if(/(список|чего)\s+(недостающ|не хватает|нет в базе)|что\s+не\s+нашел|ненайденн/.test(bare)) return missShow();

@@ -170,6 +170,7 @@ var MealSpeech=(function(){
       if(/^литр(а|у|ы)?$/.test(rest)) return a+'500 мл';
       if(/^литров/.test(rest)) return m;
       if(/^кило/.test(rest)) return a+'500 г';
+      if(U2[rest]) return a+'0,5 '+rest;                                         // «полтарелки», «полстакана», «полпорции» — половина меры
       if(exact.indexOf(w)>=0||stems.some(function(x){ return w.indexOf(x)===0 })) return m;
       return a+'0,5 '+rest });
     /* диапазон: середина и «≈» */
