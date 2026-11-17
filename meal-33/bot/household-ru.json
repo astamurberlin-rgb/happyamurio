@@ -1,0 +1,1849 @@
+{
+  "schema_version": 1,
+  "dictionary_version": "0.1.0-research",
+  "locale": "ru",
+  "status": "draft_not_connected",
+  "updated_on": "2026-11-17",
+  "description_ru": "Единый проект словаря бытовой речи Happy Meal. Данные и предложения; приложение этот файл пока не читает.",
+  "approval": {
+    "implementation_requires_user_yes": true,
+    "site_release_requires_user_vypuskay": true
+  },
+  "baseline": {
+    "app_version": "Meal 33.7",
+    "app_commit": "414c0161ac984263b0d99f171401a6a002fb6dfe",
+    "libraries_commit": "8f5b421eb5af9d3fc2bb8451b0ff9a81eba6b421"
+  },
+  "normalization": {
+    "unicode": "NFC",
+    "lowercase_for_matching": true,
+    "ё_equals_е_for_matching": true,
+    "retain_original_utterance": true,
+    "phrase_match": "longest_first_whole_tokens",
+    "do_not_delete_words_before_semantic_parse": true
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Дневник: разные ложки масла",
+      "url": "https://health-diet.ru/people/user/942532/blog/446865/",
+      "published_or_version": "2026-06-26",
+      "kind": "дневник и обсуждение",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Надёжно как пример речи; взвешивания сообщены самими авторами, не проверены независимо."
+    },
+    {
+      "id": "S02",
+      "title": "Дневник: проверка количества на глаз",
+      "url": "https://health-diet.ru/people/user/1086735/blog/425001/",
+      "published_or_version": "2025-11-05",
+      "kind": "дневник",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Речь — прямое свидетельство; вес — неподтверждённый личный замер."
+    },
+    {
+      "id": "S03",
+      "title": "Домашний рецепт с фаршем",
+      "url": "https://forum.say7.info/topic14477.html",
+      "published_or_version": "2009-05-08",
+      "kind": "кулинарный форум",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Прямой пример бытового рецепта; веса луковицы не измерены."
+    },
+    {
+      "id": "S04",
+      "title": "Панчо: неполный стакан",
+      "url": "https://forum.say7.info/topic1346.html",
+      "published_or_version": "2007; дополнения 2009",
+      "kind": "рецепт и отзывы",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Хорошее свидетельство формулировки и необходимости уточнения; универсального веса нет."
+    },
+    {
+      "id": "S05",
+      "title": "Салат с фенхелем",
+      "url": "https://forum.say7.info/topic101689.html",
+      "published_or_version": "2022-03-23",
+      "kind": "кулинарный форум",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Пример речи подтверждён индексом; полное открытие страницы было нестабильно."
+    },
+    {
+      "id": "S06",
+      "title": "Чай с мятой",
+      "url": "https://forum.say7.info/topic67521.html",
+      "published_or_version": "2013",
+      "kind": "кулинарный форум",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Языковой пример; источник не используется для лечебных или весовых утверждений."
+    },
+    {
+      "id": "S07",
+      "title": "Домашнее приготовление в казане",
+      "url": "https://forum.say7.info/topic36183.html",
+      "published_or_version": "2010",
+      "kind": "кулинарный форум",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Речь подтверждена индексом; страница открывалась с ошибкой кодировки. Не источник граммов порции."
+    },
+    {
+      "id": "S08",
+      "title": "Обсуждение рецепта, пропорции",
+      "url": "https://forum.say7.info/topic49285-25.html",
+      "published_or_version": "дата обсуждения на странице",
+      "kind": "отзывы к рецепту",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Пример разговора; частный пересчёт нельзя переносить на любой продукт."
+    },
+    {
+      "id": "S09",
+      "title": "Суп: головка, полголовки, пучок",
+      "url": "https://forum.say7.info/topic49647.html",
+      "published_or_version": "2011",
+      "kind": "кулинарный форум",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Прямая речь; пол и возраст аудитории по профилю не устанавливаем."
+    },
+    {
+      "id": "S10",
+      "title": "Арбузный сироп: неуверенное количество",
+      "url": "https://forum.say7.info/topic68572.html",
+      "published_or_version": "2013-08",
+      "kind": "кулинарный форум",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Речь надёжна как наблюдение; спорные числа не принимаются за весовые нормы."
+    },
+    {
+      "id": "S11",
+      "title": "Рецепт: ложечка и горка",
+      "url": "https://forum.say7.info/topic12674.html",
+      "published_or_version": "2009-03-12",
+      "kind": "кулинарный форум",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Прямой пример; коэффициента горки нет."
+    },
+    {
+      "id": "S12",
+      "title": "Рецепт с сыром",
+      "url": "https://forum.say7.info/topic90938.html",
+      "published_or_version": "дата на странице",
+      "kind": "кулинарный форум",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Надёжно для факта написания; предполагаемое исправление требует осторожности."
+    },
+    {
+      "id": "S13",
+      "title": "Дневник: кусочек хлеба",
+      "url": "https://health-diet.ru/people/user/1249240/blog/456078/",
+      "published_or_version": "2026-10-28",
+      "kind": "дневник и обсуждение",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Речь — прямое свидетельство; 30–35 г относятся к конкретному хлебу автора."
+    },
+    {
+      "id": "S14",
+      "title": "Дневник: хлеб и разговорное написание",
+      "url": "https://health-diet.ru/people/user/1170647/blog/451368/",
+      "published_or_version": "2026",
+      "kind": "дневник",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Языковой пример; происхождение ошибки неизвестно."
+    },
+    {
+      "id": "S15",
+      "title": "Дневник: сокращения на ходу",
+      "url": "https://health-diet.ru/people/user/291117/blog/446838/",
+      "published_or_version": "2026",
+      "kind": "дневник",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Прямая письменная речь; не выдаём её за расшифровку аудио."
+    },
+    {
+      "id": "S16",
+      "title": "Разговор о пироге и крупе",
+      "url": "https://forum.say7.info/topic102393-20625.html",
+      "published_or_version": "2026-02",
+      "kind": "кулинарное обсуждение",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Прямое речевое свидетельство; пол/возраст не используются для правил."
+    },
+    {
+      "id": "S17",
+      "title": "Пожелание голосовой записи дневника",
+      "url": "https://health-diet.ru/people/user/1/blog/231020/",
+      "published_or_version": "2020-06",
+      "kind": "обсуждение функций дневника",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Не аудиозапись и не расшифровка; реальную частоту голосовых ошибок не подтверждает."
+    },
+    {
+      "id": "S18",
+      "title": "Ошибка пользователя: штуки и граммы",
+      "url": "https://health-diet.ru/people/user/298122/blog/179003/",
+      "published_or_version": "дата на странице",
+      "kind": "дневник",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Личный рассказ; нельзя определить, где именно произошла ошибка приложения."
+    },
+    {
+      "id": "S19",
+      "title": "Бабушкина каша",
+      "url": "https://domashnierecepty.info/novosti/kasha-pshennaya-v-russkoy-pechi-kasha-pshennaya-iz-russkoy-pechki-babushkina-kasha",
+      "published_or_version": "2019-10-29",
+      "kind": "перепечатка домашнего рецепта",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Вторичный источник, ниже надёжность происхождения; полезен как бытовая формулировка."
+    },
+    {
+      "id": "S20",
+      "title": "USDA FoodData Central: исходные порции",
+      "url": "https://fdc.nal.usda.gov/download-datasets/",
+      "published_or_version": "SR Legacy, апрель 2018",
+      "kind": "официальная база",
+      "access": "страница и сохранённые строки данных",
+      "checked_on": "2026-11-17",
+      "reliability": "Высокая для справочного веса указанной порции; не измерение конкретной луковицы или домашней ложки."
+    },
+    {
+      "id": "S21",
+      "title": "King Arthur: таблица весов",
+      "url": "https://www.kingarthurbaking.com/learn/ingredient-weight-chart",
+      "published_or_version": "проверено 2026-11-17",
+      "kind": "справочник производителя для выпечки",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Практический первичный справочник; только указанные продукты и способ отмеривания, не универсальный закон."
+    },
+    {
+      "id": "S22",
+      "title": "USDA: перевод объёмов",
+      "url": "https://foodbuyingguide.fns.usda.gov/Content/TablesFBG/Table9_FBG_A_Guide_to_Metric_Conversions.pdf",
+      "published_or_version": "проверено 2026-11-17",
+      "kind": "официальный справочник",
+      "access": "PDF",
+      "checked_on": "2026-11-17",
+      "reliability": "Высокая для системы мер. Не приравнивать всякую бытовую чашку к американской мере."
+    },
+    {
+      "id": "S23",
+      "title": "Оренбургский ЦСМ: гранёный стакан",
+      "url": "https://orencsm.ru/about/info/news/252134/",
+      "published_or_version": "2024-09-11",
+      "kind": "центр стандартизации и метрологии",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Высокая для описанной модели; не доказательство вместимости любого стакана пользователя."
+    },
+    {
+      "id": "S24",
+      "title": "King Arthur: определение щепотки в рецепте",
+      "url": "https://www.kingarthurbaking.com/recipes/tortillas-de-maiz-corn-tortillas-recipe",
+      "published_or_version": "проверено 2026-11-17",
+      "kind": "рецепт производителя",
+      "access": "полный текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Условие конкретного рецепта, не исследование массы щепотки пальцами у населения."
+    },
+    {
+      "id": "S25",
+      "title": "Жменя: словарное значение",
+      "url": "https://ru.wiktionary.org/wiki/жменя",
+      "published_or_version": "проверено 2026-11-17",
+      "kind": "редактируемый словарь",
+      "access": "страница/поисковый текст",
+      "checked_on": "2026-11-17",
+      "reliability": "Вспомогательный словарь, подтверждён примерами S05–S06. Точный регион говорящего не выводим."
+    },
+    {
+      "id": "S26",
+      "title": "Грамота: приблизительное «порядка»",
+      "url": "https://gramota.ru/spravka/vopros/281475",
+      "published_or_version": "вопрос №281475",
+      "kind": "языковая справка",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Надёжно для значения, не для размера числового отклонения."
+    },
+    {
+      "id": "S27",
+      "title": "Рецепт: чуток чеснока",
+      "url": "https://forum.say7.info/topic17157.html",
+      "published_or_version": "дата на странице",
+      "kind": "кулинарный форум",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Языковое свидетельство; граммы отсутствуют."
+    },
+    {
+      "id": "S28",
+      "title": "Рецепт: слегка относится к нагреву",
+      "url": "https://forum.say7.info/topic63435.html",
+      "published_or_version": "дата на странице",
+      "kind": "кулинарный форум",
+      "access": "поисковый текст страницы",
+      "checked_on": "2026-11-17",
+      "reliability": "Надёжный контрпример для безусловного перевода «слегка» в граммы."
+    },
+    {
+      "id": "BRIEF",
+      "title": "Задание Астамура, 17.11.2026",
+      "url": null,
+      "kind": "исходные требования",
+      "access": "текст задания",
+      "reliability": "Кандидат в словарь; сам по себе не свидетельство частотности речи."
+    },
+    {
+      "id": "DESIGN",
+      "title": "Предложенное правило по итогам исследования",
+      "url": null,
+      "kind": "проектное решение",
+      "access": "этот отчёт",
+      "reliability": "Не измеренная норма; требует согласования до подключения."
+    },
+    {
+      "id": "LEGACY",
+      "title": "Текущий бот Meal 33.7",
+      "url": "https://github.com/astamurberlin-rgb/happyamurio/blob/414c0161ac984263b0d99f171401a6a002fb6dfe/meal-33/bot.js",
+      "kind": "существующее поведение",
+      "access": "исходники и запуск",
+      "reliability": "Подтверждает действие программы, не правильность массы."
+    }
+  ],
+  "fillers_and_operators": [
+    {
+      "id": "filler_plain",
+      "forms": [
+        "ну",
+        "вот",
+        "короче",
+        "значит",
+        "это самое",
+        "сейчас скажу"
+      ],
+      "meaning_ru": "Разговорная вставка; удалять только после распознавания еды, времени, команд и связей.",
+      "action": "ignore_if_discourse",
+      "source_ids": [
+        "S04",
+        "S09",
+        "BRIEF"
+      ],
+      "scope": "whole_phrase_or_token",
+      "never_substring": true
+    },
+    {
+      "id": "filler_conditional",
+      "forms": [
+        "так",
+        "типа",
+        "а",
+        "ой"
+      ],
+      "meaning_ru": "Может быть вставкой, сравнением или началом исправления.",
+      "action": "context_first",
+      "source_ids": [
+        "BRIEF",
+        "S10"
+      ],
+      "ignore_only_after": "corrections_and_food_identity"
+    },
+    {
+      "id": "addition",
+      "forms": [
+        "ещё",
+        "еще",
+        "плюс",
+        "добавь"
+      ],
+      "meaning_ru": "Ещё одна порция или ингредиент; не удалять до привязки к записи.",
+      "action": "add_or_extend",
+      "source_ids": [
+        "S15",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "correction",
+      "forms": [
+        "нет",
+        "то есть",
+        "ой нет",
+        "вернее",
+        "точнее"
+      ],
+      "meaning_ru": "Заменить сказанное или уточнить равнозначное описание.",
+      "action": "resolve_correction",
+      "source_ids": [
+        "S16",
+        "BRIEF"
+      ],
+      "must_resolve_before_commit": true
+    },
+    {
+      "id": "protected",
+      "forms": [
+        "без",
+        "не",
+        "из них",
+        "в том числе",
+        "осталось",
+        "вчера",
+        "сейчас",
+        "блин"
+      ],
+      "meaning_ru": "Отрицание, часть целого, остаток, время или название еды; это не общий мусор.",
+      "action": "protect",
+      "source_ids": [
+        "S15",
+        "BRIEF"
+      ]
+    }
+  ],
+  "approximation": [
+    {
+      "id": "approx_number",
+      "forms": [
+        "около",
+        "где-то",
+        "где то",
+        "примерно",
+        "приблизительно",
+        "порядка"
+      ],
+      "meaning_ru": "Число известно приблизительно.",
+      "action": "use_number_mark_estimate",
+      "source_ids": [
+        "S02",
+        "S10",
+        "S11",
+        "S26",
+        "BRIEF"
+      ],
+      "interval": null
+    },
+    {
+      "id": "approx_reversed",
+      "forms": [
+        "грамм 200",
+        "грамм сто пятьдесят",
+        "килограмма два"
+      ],
+      "meaning_ru": "Мера стоит перед числом; порядок слов часто передаёт приблизительность.",
+      "action": "parse_reversed_measure_number",
+      "source_ids": [
+        "S03",
+        "S07",
+        "BRIEF"
+      ],
+      "interval": null
+    },
+    {
+      "id": "approx_similarity",
+      "forms": [
+        "что-то вроде",
+        "что то вроде",
+        "типа"
+      ],
+      "meaning_ru": "Похожий продукт или блюдо, а не обязательно неточный вес.",
+      "action": "clarify_food_if_similarity",
+      "source_ids": [
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "approx_remainder",
+      "forms": [
+        "с чем-то",
+        "с чем то"
+      ],
+      "meaning_ru": "Известна основная часть числа, остаток не назван.",
+      "action": "ask_accept_approx_base",
+      "source_ids": [
+        "S10",
+        "BRIEF"
+      ],
+      "multiplier": null
+    },
+    {
+      "id": "approx_range",
+      "forms": [
+        "плюс-минус",
+        "плюс минус",
+        "±",
+        "от",
+        "до"
+      ],
+      "meaning_ru": "Явно заданный диапазон или отклонение хранится вместе с центральным значением.",
+      "action": "parse_explicit_range",
+      "source_ids": [
+        "S07",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "approx_more_less",
+      "forms": [
+        "чуть больше",
+        "чуть меньше",
+        "немного больше",
+        "немного меньше"
+      ],
+      "meaning_ru": "Направление изменения известно, величина нет.",
+      "action": "ask_or_offer_base_estimate",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "multiplier": null
+    },
+    {
+      "id": "approx_incomplete",
+      "forms": [
+        "неполный",
+        "неполная",
+        "неполное",
+        "неполную",
+        "неполного"
+      ],
+      "meaning_ru": "Часть объёма неизвестна.",
+      "action": "ask_fraction",
+      "source_ids": [
+        "S04",
+        "S11"
+      ],
+      "multiplier": null
+    },
+    {
+      "id": "level",
+      "forms": [
+        "без горки",
+        "вровень",
+        "ровная"
+      ],
+      "meaning_ru": "Наполнение до края без дополнительной горки.",
+      "action": "use_level_measure",
+      "source_ids": [
+        "S11",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "heaped",
+      "forms": [
+        "с горкой",
+        "с верхом"
+      ],
+      "meaning_ru": "Дополнительный объём зависит от продукта и помола.",
+      "action": "use_exact_food_personal_measure_or_ask",
+      "source_ids": [
+        "S11"
+      ],
+      "multiplier": null
+    }
+  ],
+  "qualitative_amounts": [
+    {
+      "id": "vague_eye",
+      "forms": [
+        "на глаз",
+        "на глазок",
+        "по вкусу",
+        "сколько не жалко"
+      ],
+      "meaning_ru": "Человек не измерял или выбирал по вкусу; числа нет.",
+      "action": "ask_household_measure",
+      "source_ids": [
+        "S02",
+        "S08",
+        "S19",
+        "BRIEF"
+      ],
+      "grams": null
+    },
+    {
+      "id": "vague_small",
+      "forms": [
+        "немного",
+        "чуть-чуть",
+        "чуть чуть",
+        "чуток",
+        "чучуть",
+        "малость",
+        "мало"
+      ],
+      "meaning_ru": "Малое относительно ситуации количество.",
+      "action": "offer_food_specific_measure_or_ask",
+      "source_ids": [
+        "S09",
+        "S27",
+        "BRIEF"
+      ],
+      "grams": null
+    },
+    {
+      "id": "vague_large",
+      "forms": [
+        "щедро",
+        "много",
+        "полно",
+        "побольше"
+      ],
+      "meaning_ru": "Большое относительно ситуации количество.",
+      "action": "ask_household_measure",
+      "source_ids": [
+        "S12",
+        "BRIEF"
+      ],
+      "grams": null
+    },
+    {
+      "id": "vague_drop",
+      "forms": [
+        "капля",
+        "капелька"
+      ],
+      "meaning_ru": "Может быть буквальной каплей либо образом небольшого налитого количества.",
+      "action": "clarify_literal_or_household_measure",
+      "source_ids": [
+        "S01",
+        "BRIEF"
+      ],
+      "grams": null
+    },
+    {
+      "id": "vague_slight",
+      "forms": [
+        "слегка"
+      ],
+      "meaning_ru": "Может описывать действие: прогрел, посолил, смазал.",
+      "action": "attach_to_verb_before_amount",
+      "source_ids": [
+        "S28",
+        "BRIEF"
+      ],
+      "grams": null
+    }
+  ],
+  "measures": [
+    {
+      "id": "head",
+      "forms": [
+        "головка",
+        "головки",
+        "головку",
+        "головок"
+      ],
+      "meaning_ru": "Лук и чеснок имеют разные массы.",
+      "action": "food_specific_weight",
+      "source_ids": [
+        "S03",
+        "S09"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "clove",
+      "forms": [
+        "зубчик",
+        "зубчика",
+        "зубчиков",
+        "зубочек"
+      ],
+      "meaning_ru": "Только зубчик чеснока; не головка.",
+      "action": "food_specific_weight",
+      "source_ids": [
+        "S03",
+        "S20"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "bunch",
+      "forms": [
+        "пучок",
+        "пучка",
+        "пучков"
+      ],
+      "meaning_ru": "Пучки различаются по зелени и продавцу.",
+      "action": "personal_weight_or_ask",
+      "source_ids": [
+        "S09",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "sprig",
+      "forms": [
+        "веточка",
+        "веточки",
+        "веточек",
+        "ветка"
+      ],
+      "meaning_ru": "Масса зависит от растения и съедаемой части.",
+      "action": "personal_weight_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "pinch",
+      "forms": [
+        "щепотка",
+        "щепотки",
+        "щепоток",
+        "щепоть",
+        "щепоточка",
+        "щепоточки"
+      ],
+      "meaning_ru": "Пальцевая мера; помол и пальцы меняют вес.",
+      "action": "offer_explicit_estimate_or_ask",
+      "source_ids": [
+        "S24",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "knife_tip",
+      "forms": [
+        "на кончике ножа",
+        "кончик ножа"
+      ],
+      "meaning_ru": "Нет универсального объёма или массы.",
+      "action": "ask_or_offer_explicit_estimate",
+      "source_ids": [
+        "S12",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "handful",
+      "forms": [
+        "горсть",
+        "горсти",
+        "горстей",
+        "жменя",
+        "жмени",
+        "жмень"
+      ],
+      "meaning_ru": "Рука и содержимое меняют массу; листья не равны орехам.",
+      "action": "personal_weight_or_offer_food_specific_estimate",
+      "source_ids": [
+        "S05",
+        "S06",
+        "S25"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "spoon",
+      "forms": [
+        "ложка",
+        "ложки",
+        "ложек",
+        "ложечка",
+        "ложечки"
+      ],
+      "meaning_ru": "Без уточнения тип ложки неизвестен.",
+      "action": "ask_spoon_kind",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "tablespoon",
+      "forms": [
+        "столовая ложка",
+        "столовые ложки",
+        "столовых ложек",
+        "столовой ложки",
+        "ст. л.",
+        "ст л",
+        "ст.л.",
+        "стл"
+      ],
+      "meaning_ru": "Справочная мерная ложка; бытовая может отличаться.",
+      "action": "food_specific_weight",
+      "source_ids": [
+        "S01",
+        "S20",
+        "S22"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "teaspoon",
+      "forms": [
+        "чайная ложка",
+        "чайные ложки",
+        "чайных ложек",
+        "чайной ложки",
+        "чайная ложечка",
+        "ч. л.",
+        "ч л",
+        "ч.л.",
+        "чл"
+      ],
+      "meaning_ru": "Чайная ложечка не означает половину чайной ложки.",
+      "action": "food_specific_weight",
+      "source_ids": [
+        "S11",
+        "S20",
+        "S22"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "dessertspoon",
+      "forms": [
+        "десертная ложка",
+        "десертные ложки",
+        "десертных ложек"
+      ],
+      "meaning_ru": "Предлагаемое соглашение: две мерные чайные ложки. Домашнюю можно запомнить отдельно.",
+      "action": "derived_two_teaspoons_or_personal",
+      "source_ids": [
+        "BRIEF",
+        "DESIGN"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "glass",
+      "forms": [
+        "стакан",
+        "стакана",
+        "стаканов",
+        "стаканчик"
+      ],
+      "meaning_ru": "Нужен объём, личная мера или выбор обычного объёма.",
+      "action": "personal_volume_or_ask",
+      "source_ids": [
+        "S04",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "faceted_glass",
+      "forms": [
+        "гранёный стакан",
+        "граненый стакан"
+      ],
+      "meaning_ru": "Для классической модели важен уровень наполнения.",
+      "action": "choose_fill_line",
+      "source_ids": [
+        "S23"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "mug",
+      "forms": [
+        "кружка",
+        "кружки",
+        "кружек",
+        "кружечка"
+      ],
+      "meaning_ru": "Не приравнивать к стакану автоматически.",
+      "action": "personal_volume_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "cup",
+      "forms": [
+        "чашка",
+        "чашки",
+        "чашек",
+        "чашечка"
+      ],
+      "meaning_ru": "Домашняя чашка не равна автоматически американской cup.",
+      "action": "personal_volume_or_ask",
+      "source_ids": [
+        "S22",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "piala",
+      "forms": [
+        "пиала",
+        "пиалы",
+        "пиал"
+      ],
+      "meaning_ru": "Отдельный сосуд, не универсальная тарелка 300 г.",
+      "action": "personal_volume_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "plate",
+      "forms": [
+        "тарелка",
+        "тарелки",
+        "тарелок",
+        "тарелочка"
+      ],
+      "meaning_ru": "Масса зависит от еды, посуды и наполнения.",
+      "action": "personal_food_portion_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "deep_plate",
+      "forms": [
+        "глубокая тарелка",
+        "глубокие тарелки"
+      ],
+      "meaning_ru": "Форма посуды, не точный объём.",
+      "action": "personal_food_portion_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "shallow_plate",
+      "forms": [
+        "мелкая тарелка",
+        "мелкие тарелки"
+      ],
+      "meaning_ru": "Мелкая здесь означает неглубокая, не обязательно маленькая.",
+      "action": "personal_food_portion_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "ladle",
+      "forms": [
+        "половник",
+        "половника",
+        "половников",
+        "поварёшка",
+        "поварешка",
+        "черпак"
+      ],
+      "meaning_ru": "Нужен объём конкретного половника; синонимы поварёшка/черпак пока кандидаты.",
+      "action": "personal_volume_or_ask",
+      "source_ids": [
+        "BRIEF",
+        "DESIGN"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "slice",
+      "forms": [
+        "ломтик",
+        "ломтика",
+        "ломтиков",
+        "ломтичек"
+      ],
+      "meaning_ru": "Вес зависит от продукта, толщины и размера.",
+      "action": "personal_or_food_specific_weight",
+      "source_ids": [
+        "S13",
+        "S27",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "piece",
+      "forms": [
+        "кусок",
+        "куска",
+        "кусков",
+        "кусочек",
+        "кусочка",
+        "кусочков"
+      ],
+      "meaning_ru": "Уменьшение слова не задаёт уменьшения граммов.",
+      "action": "personal_or_food_specific_weight",
+      "source_ids": [
+        "S13",
+        "S16"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "wedge",
+      "forms": [
+        "долька",
+        "дольки",
+        "долек"
+      ],
+      "meaning_ru": "Чеснок: зубчик; фрукт: часть; шоколад: сегмент плитки.",
+      "action": "food_specific_equivalence_or_ask",
+      "source_ids": [
+        "S20",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "ring",
+      "forms": [
+        "кольцо",
+        "кольца",
+        "колец"
+      ],
+      "meaning_ru": "Лук, кальмар и ананас требуют разных весов; сок несовместим с кольцом.",
+      "action": "food_specific_weight_or_ask",
+      "source_ids": [
+        "S20",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "can",
+      "forms": [
+        "банка",
+        "банки",
+        "банок",
+        "баночка"
+      ],
+      "meaning_ru": "Размер упаковки и масса без жидкости важнее названия тары.",
+      "action": "use_label_net_or_drained_weight",
+      "source_ids": [
+        "S10",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "pack",
+      "forms": [
+        "пачка",
+        "пачки",
+        "пачек"
+      ],
+      "meaning_ru": "Упаковка не имеет универсального веса.",
+      "action": "use_label_weight_or_ask",
+      "source_ids": [
+        "S08",
+        "S19",
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "package",
+      "forms": [
+        "упаковка",
+        "упаковки",
+        "упаковок"
+      ],
+      "meaning_ru": "Упаковка не имеет универсального веса.",
+      "action": "use_label_weight_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "bottle",
+      "forms": [
+        "бутылка",
+        "бутылки",
+        "бутылок",
+        "бутылочка"
+      ],
+      "meaning_ru": "Сначала объём конкретной бутылки.",
+      "action": "use_label_volume_or_ask",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "default_grams": null
+    },
+    {
+      "id": "unit",
+      "forms": [
+        "штука",
+        "штуки",
+        "штук",
+        "шт.",
+        "шт",
+        "штучка",
+        "штучки",
+        "одна штучка"
+      ],
+      "meaning_ru": "Целый предмет с весом конкретного продукта.",
+      "action": "personal_or_food_specific_weight",
+      "source_ids": [
+        "S18",
+        "BRIEF"
+      ],
+      "default_grams": null
+    }
+  ],
+  "diminutives_and_food_aliases": [
+    {
+      "id": "alias_bread",
+      "forms": [
+        "хлебушек",
+        "хлебушка",
+        "хлебушку"
+      ],
+      "meaning_ru": "Хлеб; вес не уменьшается.",
+      "action": "alias_food",
+      "source_ids": [
+        "S13",
+        "S14"
+      ],
+      "canonical": "хлеб",
+      "weight_multiplier": 1
+    },
+    {
+      "id": "alias_potato",
+      "forms": [
+        "картошка",
+        "картошки",
+        "картошку",
+        "картошечка",
+        "картошечки"
+      ],
+      "meaning_ru": "Картофель; учитывать способ приготовления.",
+      "action": "alias_food",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "canonical": "картофель",
+      "weight_multiplier": 1
+    },
+    {
+      "id": "alias_cucumber",
+      "forms": [
+        "огурчик",
+        "огурчика",
+        "огурчики",
+        "огурчиков"
+      ],
+      "meaning_ru": "Огурец; уменьшительность не задаёт размер.",
+      "action": "alias_food",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "canonical": "огурец",
+      "weight_multiplier": 1
+    },
+    {
+      "id": "alias_soup",
+      "forms": [
+        "супчик",
+        "супчика",
+        "супчику"
+      ],
+      "meaning_ru": "Суп; рецепт всё ещё может быть неизвестен.",
+      "action": "alias_food",
+      "source_ids": [
+        "S15",
+        "BRIEF"
+      ],
+      "canonical": "суп",
+      "weight_multiplier": 1
+    },
+    {
+      "id": "alias_garlic",
+      "forms": [
+        "чесночок",
+        "чесночка",
+        "чесночку"
+      ],
+      "meaning_ru": "Чеснок.",
+      "action": "alias_food",
+      "source_ids": [
+        "S03"
+      ],
+      "canonical": "чеснок",
+      "weight_multiplier": 1
+    },
+    {
+      "id": "alias_mince",
+      "forms": [
+        "фаршик",
+        "фаршика",
+        "фаршику"
+      ],
+      "meaning_ru": "Фарш; вид мяса отдельно.",
+      "action": "alias_food",
+      "source_ids": [
+        "S03"
+      ],
+      "canonical": "фарш",
+      "weight_multiplier": 1
+    },
+    {
+      "id": "alias_sausage_ambiguous",
+      "forms": [
+        "колбаска",
+        "колбаски",
+        "колбаску"
+      ],
+      "meaning_ru": "Может означать колбасу или отдельную колбаску для жарки.",
+      "action": "clarify_food_or_offer_close_with_state",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "canonical": null
+    },
+    {
+      "id": "alias_oil_ambiguous",
+      "forms": [
+        "маслице",
+        "маслица",
+        "масличко"
+      ],
+      "meaning_ru": "Вид масла не следует из уменьшительности.",
+      "action": "clarify_oil_kind",
+      "source_ids": [
+        "BRIEF"
+      ],
+      "canonical": null
+    },
+    {
+      "id": "protected_food_names",
+      "forms": [
+        "сырок",
+        "сырки",
+        "сливки",
+        "маслёнок",
+        "масленок"
+      ],
+      "meaning_ru": "Самостоятельные названия, не обрезать до сыр/слива/масло.",
+      "action": "protect_food_identity",
+      "source_ids": [
+        "DESIGN"
+      ]
+    }
+  ],
+  "numbers": {
+    "cardinals": {
+      "ноль": 0,
+      "нуль": 0,
+      "один": 1,
+      "одна": 1,
+      "одно": 1,
+      "одну": 1,
+      "два": 2,
+      "две": 2,
+      "три": 3,
+      "четыре": 4,
+      "пять": 5,
+      "шесть": 6,
+      "семь": 7,
+      "восемь": 8,
+      "девять": 9,
+      "десять": 10,
+      "одиннадцать": 11,
+      "двенадцать": 12,
+      "тринадцать": 13,
+      "четырнадцать": 14,
+      "пятнадцать": 15,
+      "шестнадцать": 16,
+      "семнадцать": 17,
+      "восемнадцать": 18,
+      "девятнадцать": 19,
+      "двадцать": 20,
+      "тридцать": 30,
+      "сорок": 40,
+      "пятьдесят": 50,
+      "шестьдесят": 60,
+      "семьдесят": 70,
+      "восемьдесят": 80,
+      "девяносто": 90,
+      "сто": 100,
+      "двести": 200,
+      "триста": 300,
+      "четыреста": 400,
+      "пятьсот": 500,
+      "шестьсот": 600,
+      "семьсот": 700,
+      "восемьсот": 800,
+      "девятьсот": 900
+    },
+    "scales": {
+      "тысяча": 1000,
+      "тысячи": 1000,
+      "тысяч": 1000
+    },
+    "fractions": {
+      "полтора": 1.5,
+      "полторы": 1.5,
+      "половина": 0.5,
+      "половинку": 0.5,
+      "половинка": 0.5,
+      "четверть": 0.25,
+      "пол": 0.5
+    },
+    "fused_fraction_examples": [
+      "полголовки",
+      "полпучка",
+      "полбанки",
+      "полпачки",
+      "полбутылки",
+      "пол-литра",
+      "поллитра",
+      "пол литра"
+    ],
+    "non_number_prefix_exceptions": [
+      "полба",
+      "полдник",
+      "полынь"
+    ],
+    "colloquial_candidates": {
+      "стописят": 150
+    },
+    "unit_aliases": {
+      "г": [
+        "г",
+        "гр",
+        "г.",
+        "гр.",
+        "грамм",
+        "грамма",
+        "граммов"
+      ],
+      "кг": [
+        "кг",
+        "килограмм",
+        "килограмма",
+        "килограммов"
+      ],
+      "мл": [
+        "мл",
+        "миллилитр",
+        "миллилитра",
+        "миллилитров"
+      ],
+      "л": [
+        "л",
+        "литр",
+        "литра",
+        "литров"
+      ]
+    },
+    "compose": "Складывать и умножать числовые части по смыслу. Не склеивать строками. Исправление заменяет число вместе с единицей.",
+    "source_ids": [
+      "S07",
+      "S10",
+      "S14",
+      "BRIEF"
+    ],
+    "pair": "пара = 2 только для счётных предметов; парочка может быть приблизительной, пара ложек требует типа ложки",
+    "decimal": "Понимать 1,5; 1.5; полтора. Тире между двумя числами может быть диапазоном.",
+    "protect": [
+      "жирность 5%",
+      "время 10:30",
+      "дата",
+      "на четверых",
+      "на 100 г на этикетке"
+    ]
+  },
+  "sizes": {
+    "small": [
+      "маленький",
+      "маленькая",
+      "маленькое",
+      "небольшой",
+      "небольшая"
+    ],
+    "medium": [
+      "средний",
+      "средняя",
+      "среднее"
+    ],
+    "large": [
+      "большой",
+      "большая",
+      "большое",
+      "крупный",
+      "крупная"
+    ],
+    "contextual": [
+      "мелкий",
+      "мелкая",
+      "тонкий",
+      "тонкая",
+      "толстый",
+      "толстая"
+    ],
+    "global_multipliers": null,
+    "source_ids": [
+      "S03",
+      "S11",
+      "S20",
+      "BRIEF"
+    ]
+  },
+  "volume_references": [
+    {
+      "id": "faceted_rim",
+      "measure": "faceted_glass",
+      "condition": "классический стакан, до ободка/каёмки",
+      "ml": 200,
+      "source_ids": [
+        "S23"
+      ]
+    },
+    {
+      "id": "faceted_full",
+      "measure": "faceted_glass",
+      "condition": "классический стакан, до краёв",
+      "ml": 250,
+      "source_ids": [
+        "S23"
+      ]
+    },
+    {
+      "id": "us_teaspoon",
+      "measure": "US_teaspoon",
+      "ml": 4.93,
+      "source_ids": [
+        "S22"
+      ],
+      "use": "reference_not_every_home_spoon"
+    },
+    {
+      "id": "us_tablespoon",
+      "measure": "US_tablespoon",
+      "ml": 14.79,
+      "source_ids": [
+        "S22"
+      ],
+      "use": "reference_not_every_home_spoon"
+    },
+    {
+      "id": "us_cup",
+      "measure": "US_cup",
+      "ml": 236,
+      "source_ids": [
+        "S22"
+      ],
+      "use": "rounded_reference_not_every_home_cup"
+    }
+  ],
+  "food_weights": [
+    {
+      "id": "onion_small",
+      "food_key": "onion_raw_edible",
+      "measure": "head",
+      "grams": 70,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 170000,
+      "portion_row_id": "85862",
+      "size": "small",
+      "state": "сырой, съедобная часть",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "onion_medium",
+      "food_key": "onion_raw_edible",
+      "measure": "head",
+      "grams": 110,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 170000,
+      "portion_row_id": "85860",
+      "size": "medium",
+      "state": "сырой, съедобная часть",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "onion_large",
+      "food_key": "onion_raw_edible",
+      "measure": "head",
+      "grams": 150,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 170000,
+      "portion_row_id": "85858",
+      "size": "large",
+      "state": "сырой, съедобная часть",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "onion_rings",
+      "food_key": "onion_raw_edible",
+      "measure": "ring",
+      "grams": 6,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 170000,
+      "portion_row_id": "85864",
+      "derivation": "60 г / 10 колец",
+      "use": "offer_only_thickness_unknown"
+    },
+    {
+      "id": "garlic_clove",
+      "food_key": "garlic_raw_edible",
+      "measure": "clove",
+      "grams": 3,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 169230,
+      "portion_row_id": "84480",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "garlic_wedge",
+      "food_key": "garlic_raw_edible",
+      "measure": "wedge",
+      "grams": 3,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 169230,
+      "portion_row_id": "84480",
+      "derivation": "Долька чеснока трактуется как зубчик",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "olive_tablespoon",
+      "food_key": "olive_oil",
+      "measure": "tablespoon",
+      "grams": 13.5,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 171413,
+      "portion_row_id": "88667",
+      "fill": "level",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "olive_teaspoon",
+      "food_key": "olive_oil",
+      "measure": "teaspoon",
+      "grams": 4.5,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 171413,
+      "portion_row_id": "88669",
+      "fill": "level",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "olive_dessertspoon",
+      "food_key": "olive_oil",
+      "measure": "dessertspoon",
+      "grams": 9,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20",
+        "DESIGN"
+      ],
+      "fdc_id": 171413,
+      "derivation": "2 × 4,5 г; предложенное соглашение о размере десертной ложки",
+      "use": "offer_only_until_agreed"
+    },
+    {
+      "id": "sugar_teaspoon",
+      "food_key": "granulated_sugar",
+      "measure": "teaspoon",
+      "grams": 4.2,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 169655,
+      "portion_row_id": "85287",
+      "fill": "level",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "salt_teaspoon",
+      "food_key": "fine_table_salt",
+      "measure": "teaspoon",
+      "grams": 6,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 173468,
+      "portion_row_id": "92594",
+      "fill": "level",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "salt_tablespoon",
+      "food_key": "fine_table_salt",
+      "measure": "tablespoon",
+      "grams": 18,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20"
+      ],
+      "fdc_id": 173468,
+      "portion_row_id": "92595",
+      "fill": "level",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "salt_pinch_candidate",
+      "food_key": "fine_table_salt",
+      "measure": "pinch",
+      "grams": 0.5,
+      "estimated_for_user": true,
+      "source_ids": [
+        "LEGACY",
+        "DESIGN"
+      ],
+      "derivation": "Существующее предложение бота; не измеренная универсальная щепотка",
+      "use": "offer_only_not_auto"
+    },
+    {
+      "id": "salt_recipe_pinch",
+      "food_key": "fine_table_salt",
+      "measure": "pinch",
+      "grams": 0.375,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S20",
+        "S24"
+      ],
+      "derivation": "6 г × 1/16 чайной ложки по соглашению конкретного рецепта",
+      "use": "only_when_recipe_defines_pinch"
+    },
+    {
+      "id": "honey_tablespoon",
+      "food_key": "honey",
+      "measure": "tablespoon",
+      "grams": 21,
+      "estimated_for_user": true,
+      "source_ids": [
+        "S21"
+      ],
+      "fill": "level",
+      "use": "reference_default_with_visible_estimate"
+    },
+    {
+      "id": "walnut_handful_candidate",
+      "food_key": "walnut_kernels",
+      "measure": "handful",
+      "grams": 30,
+      "estimated_for_user": true,
+      "source_ids": [
+        "DESIGN"
+      ],
+      "derivation": "Удобный вариант кнопки для оценки, не измерение горсти и не универсальная норма",
+      "use": "offer_only_not_auto"
+    }
+  ],
+  "food_binding_contract": {
+    "meaning": "food_key — смысловой ключ, не поиск по подстроке; привязка к проверенным продуктам приложения потребуется при подключении",
+    "direct_fdc_ids": "Использовать указанные номера USDA для этой же еды и состояния. Для BLS/другой базы сначала подтвердить эквивалентность.",
+    "must_preserve": [
+      "raw_or_cooked",
+      "edible_basis",
+      "drained_or_total",
+      "whole_or_chopped",
+      "oil_kind",
+      "salt_grind"
+    ]
+  },
+  "quantity_priority": [
+    "explicit_mass_or_volume",
+    "explicit_fraction_of_known_package",
+    "personal_food_specific_measure",
+    "matching_sourced_food_measure",
+    "visible_estimate_offer",
+    "short_question"
+  ],
+  "quantity_rules": {
+    "explicit_mass_overrides_piece_count": true,
+    "ml_is_not_g": true,
+    "unknown_density": "Сохранить объём; использовать проверенную меру этого продукта или спросить вес. Не считать любой продукт водой.",
+    "unknown_default_grams": null,
+    "range": "Сохранять исходные границы, если названы. Не изобретать доверительные интервалы.",
+    "personal_measures": "Хранить отдельно в личных данных пользователя; не добавлять частные граммы и записи в общий репозиторий.",
+    "ordinary_portion": "Только подходящая продуктовая порция с источником и видимым ≈; если еда/мера неоднозначна — предложить, не записывать молча."
+  },
+  "compound_and_intent_rules": [
+    {
+      "id": "included",
+      "forms": [
+        "из них",
+        "в том числе"
+      ],
+      "action": "components_inside_total_no_double_count",
+      "source_ids": [
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "extra",
+      "forms": [
+        "плюс",
+        "ещё",
+        "добавил отдельно"
+      ],
+      "action": "additional_quantity",
+      "source_ids": [
+        "S15",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "with",
+      "forms": [
+        "с",
+        "со",
+        "там",
+        "заправил",
+        "посыпал"
+      ],
+      "action": "relate_ingredient_to_parent_then_clarify_amount_or_inclusion",
+      "source_ids": [
+        "S03",
+        "S09",
+        "S12",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "recipe",
+      "forms": [
+        "готовлю",
+        "приготовил на",
+        "на четверых",
+        "на всю кастрюлю"
+      ],
+      "action": "detect_recipe_do_not_assume_all_eaten",
+      "source_ids": [
+        "S07",
+        "S09",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "intake",
+      "forms": [
+        "съел",
+        "съела",
+        "выпил",
+        "выпила",
+        "запиши"
+      ],
+      "action": "record_intake_after_quantity_resolution",
+      "source_ids": [
+        "S16",
+        "S17",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "exclusion",
+      "forms": [
+        "без",
+        "б/",
+        "не ел",
+        "не ела"
+      ],
+      "action": "exclude_named_component_preserve_scope",
+      "source_ids": [
+        "S15",
+        "BRIEF"
+      ]
+    },
+    {
+      "id": "refuse",
+      "forms": [
+        "без жидкости",
+        "без скорлупы",
+        "без костей",
+        "осталось",
+        "выбросил"
+      ],
+      "action": "resolve_edible_mass_no_double_subtraction",
+      "source_ids": [
+        "BRIEF"
+      ]
+    }
+  ],
+  "short_questions": {
+    "oil": "Примерно сколько масла: чайная ложка, столовая или свой вес?",
+    "cheese": "Сыра примерно сколько — граммов или ломтиков?",
+    "package": "Сколько граммов в целой упаковке?",
+    "bottle": "Какой объём у целой бутылки?",
+    "unknown_spoon": "Чайная или столовая ложка?",
+    "inclusion": "Сметана входит в эти 300 г или добавлена сверху?",
+    "recipe": "Это рецепт или твоя съеденная порция?",
+    "glass": "Стакан 200 или 250 мл? Можно свой объём."
+  },
+  "maintenance": [
+    "Новая фраза → запись/уточнение в этом словаре с источником либо пометкой «пример пользователя» → проверочная фраза → при необходимости изменение разбора.",
+    "Не дублировать эти списки вручную в bot.js, описании экрана и запросе Gemini.",
+    "Словарное пополнение уже поддержанного вида не требует новой ветки условий в коде; новый способ разбора всё ещё может потребовать код.",
+    "Личные дневники и персональные веса не входят в общий словарь."
+  ],
+  "gemini_stage_2": {
+    "same_dictionary_version_required": true,
+    "use_only_after_rules_cannot_resolve": true,
+    "input": "Тот же файл либо автоматически выбранная релевантная часть, с версией.",
+    "output": "Название, мера, число, приблизительность, связи частей, необходимость вопроса; без выдуманных граммов.",
+    "validation": "Результат проходит те же проверки единиц, источников и двойного счёта; модель не пишет дневник напрямую."
+  },
+  "acceptance_contract": {
+    "retain_existing_143": true,
+    "new_cases_count": 50,
+    "must_test": [
+      "correction_replaces_number_and_unit",
+      "explicit_grams_override_piece",
+      "measure_food_compatibility",
+      "recipe_not_intake",
+      "no_duplicate_composite",
+      "unknown_measure_not_missing_food",
+      "same_data_offline_and_gemini"
+    ],
+    "not_yet_integrated_into_test_suite": true
+  },
+  "developer_screen_copy_ru": "Бот понимает обычные слова о еде: «грамм двести», «полголовки», «ложечка». Понятное количество записывает, бытовые меры оценивает по продукту и показывает приблизительный вес. Твои сохранённые меры важнее справочных. Если количества не хватает, бот коротко спросит. Новые слова и источники хранятся в одном общем словаре."
+}
