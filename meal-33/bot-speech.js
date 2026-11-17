@@ -39,7 +39,7 @@ var MealSpeech=(function(){
     /* мера по кухне: у японского продукта (база MEXT) — японская порция, у корейского (KFCT) — корейская; такие правила идут первыми */
     FM=(D.food_measures||[]).map(function(r){ return {re:new RegExp(r.match),unit:r.unit,g:r.g,src:r.src?new RegExp(r.src):null} })
       .sort(function(a,b){ return (b.src?1:0)-(a.src?1:0) });
-    COMP=(D.composite_dishes||[]).map(function(c){ return {said:c.said,dish:new RegExp(c.dish_in_base),parts:c.parts} });
+    COMP=(D.composite_dishes||[]).map(function(c){ return {said:c.said,dish:new RegExp(c.dish_in_base),parts:c.parts,offer:c.mode==='offer',name:c.name_ru||''} });
     UM=(D.usual_measures||[]).map(function(r){ return {re:new RegExp(r.match),unit:r.unit} });
     var N=D.numbers||{};
     Object.keys(N.cardinals||{}).forEach(function(k){ CARD[nz(k)]=N.cardinals[k] });
@@ -64,6 +64,22 @@ var MealSpeech=(function(){
     if(typeof window.unitOf==='function'){ var u0=window.unitOf; window.unitOf=function(t){ if(active&&U2[t]) return U2[t]; return u0(t) } }
   }
 
+  /* блюда нет в базе, а частей хватает — не спрашивать «что именно?», а предложить расписать по отдельности (решение Астамура 17.11.2026 21:56) */
+  function offer(text){
+    if(!D) return null;
+    var s=' '+String(text)+' ', res=null;
+    COMP.forEach(function(c){
+      if(!c.offer||res) return;
+      var re=new RegExp('(^|\\s)(?:(\\d+(?:,\\d+)?)\\s+)?(?:'+c.said+')(?:\\s+(\\d+(?:,\\d+)?)\\s*(?:г|гр|грамм[а-я]*)(?=[\\s,.;!?]|$))?');
+      var m=re.exec(s); if(!m||hasDish(c.dish)) return;
+      var tot=c.parts.reduce(function(t,x){ return t+x.g },0), k=m[3]?num(m[3])/tot:(m[2]?num(m[2]):1);
+      var ps=c.parts.map(function(x){ return {w:x.search,g:Math.round(x.g*k)} });
+      res={name:c.name,
+        text:(s.slice(0,m.index)+m[1]+ps.map(function(x){ return x.w+' ≈ '+x.g+' г' }).join(', ')+','+s.slice(m.index+m[0].length)).replace(/\s+/g,' ').trim(),
+        say:ps.map(function(x){ return x.w+' '+x.g+' г' }).join(' и ')};
+    });
+    return res;
+  }
   function hasDish(re){
     try{ if(typeof LIST==='undefined'||typeof FOODS==='undefined') return false;
       return LIST.some(function(x){ var f=FOODS[x.id]||x; return f&&re.test(nz(f.n)) }) }catch(e){ return false }
@@ -150,6 +166,7 @@ var MealSpeech=(function(){
       s=s.replace(new RegExp('(?:(\\d+(?:,\\d+)?)\\s+)?'+rx(k).replace('-','-?')+'[а-я]*\\s+'+cont,'g'),function(m,n){ return out((n?num(n):1)*NV.adjectives[k])+' мл' }) });
     /* блюдо из частей, которого нет в базе: «бутерброд с сыром» — хлеб 50 г и сыр 25 г (решение Астамура 17.11.2026); есть такое блюдо в базе — берётся оно */
     COMP.forEach(function(c){
+      if(c.offer) return;
       s=s.replace(new RegExp('(^|\\s)(?:(\\d+(?:,\\d+)?)\\s+)?(?:'+c.said+')(?:\\s+(\\d+(?:,\\d+)?)\\s*(?:г|гр|грамм[а-я]*)(?=[\\s,.;!?]|$))?','g'),function(m,a,n,gr){
         if(hasDish(c.dish)) return m;
         var tot=c.parts.reduce(function(t,x){ return t+x.g },0), k=gr?num(gr)/tot:(n?num(n):1);
@@ -223,7 +240,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, offer:offer, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},all:/[≈⊕⊘▽◇△]/g}};
 })();

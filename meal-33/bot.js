@@ -815,7 +815,15 @@ var MealBot=(function(){
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
+    /* ответ на предложение расписать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек */
+    if(S.offer&&m.kind!=='photo'){ var ofr=S.offer; S.offer=null;
+      var b0=nrm(raw).trim().replace(/[?!.,…\s]+$/,'');
+      if(/^(да|ага|угу|давай|ок|окей|хорошо|годится|верно|записывай|запиши|пиши|так)( так| запиши| записывай| давай)?$/.test(b0)) raw=ofr;
+      else raw=String(raw).replace(/^\s*(нет|не|неа)[,.!\s]+/i,'').replace(/^\s*(давай|лучше|пусть|запиши)\s+/i,'');
+    }
     if(SP&&m.kind!=='photo') raw=SP.prepare(raw);
+    if(SP&&SP.offer&&m.kind!=='photo'&&!S.ask&&!S.pend.length){ var of=SP.offer(raw);
+      if(of){ S.offer=of.text; return p(esc(of.name)+' в базе нет. Предлагаю записать по отдельности: '+esc(of.say)+'.')+p('Записать так? Или напиши свои граммы.')+chips([['offer:1','Записать так']]) } }
     var t=nrm(raw), now=new Date(), bare=t.trim().replace(/[?!.,…\s]+$/,'');
     /* служебные фразы */
     if(/^тест(\s|$|овая|овое|овый)/.test(bare)) return p('Это тест. В дневник ничего не добавляю.');
@@ -1100,6 +1108,7 @@ var MealBot=(function(){
     else if(a[0]==='less'||a[0]==='more'){ var c3=S.commits.filter(function(x){ return x.id===a[1] })[0]; if(!c3||c3.undone||writeGuard()) return;
       var kf=a[0]==='less'?0.5:1.5; c3.add.forEach(function(ad){ var l=ad.line; if(!l.usual) return; l.q=Math.round(l.q*kf*100)/100; l.g=gramsFor(l.fid,l.q,l.u); ad.item.q=l.q; ad.item.g=l.g });
       touch(); h=commitHTML(c3) }
+    else if(a[0]==='offer'){ if(!S.offer) return; h=handle(chat,S,{kind:'text',text:'да'}) }
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='misscopy'){ var mt=missText(); try{ navigator.clipboard.writeText(mt).then(function(){ toast('Список скопирован') },function(){ toast('Не скопировалось — выдели текст вручную') }) }catch(e){ toast('Не скопировалось — выдели текст вручную') } return }
     else if(a[0]==='missclear'){ try{ localStorage.removeItem(MISSK) }catch(e){} h=p('Список очистил.') }
