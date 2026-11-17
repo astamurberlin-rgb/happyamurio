@@ -112,14 +112,11 @@ function auditExerciseForm(form){
   title.addEventListener('keydown',e=>{if(!pencil.dataset.editing)return;if(e.key==='Enter'){e.preventDefault();close();}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();title.textContent=before;close();}});
   title.addEventListener('blur',close);
  }
- // 3. «Добавить» from the library: where to add and the button first, the setup folded below.
+ // 3. Вкладка «Настроить» в библиотеке (Астамур 17.11.2026): сначала настройки — открыто, без «Настроить перед добавлением»;
+ //    внизу «Куда добавить» и кнопка «Добавить упражнение» — после настроек.
  if(form.dataset.scope==='add'){
   const actions=form.querySelector('.exercise-save-actions');
-  if(actions&&!form.querySelector('.add-more')){
-   const more=document.createElement('details');more.className='add-more';more.innerHTML='<summary>Настроить перед добавлением</summary>';
-   for(const el of [...form.children])if(el!==actions&&el!==row&&!el.classList.contains('form-error')&&el.id!=='exercise-config-error')more.append(el);
-   form.append(actions,form.querySelector('#exercise-config-error')||'',more);
-  }
+  if(actions&&!actions.dataset.bottom){actions.dataset.bottom='1';const err=form.querySelector('#exercise-config-error');if(err)form.append(err);form.append(actions);}
  }
 }
 new MutationObserver(()=>{const f=document.getElementById('exercise-config-form');if(f)auditExerciseForm(f);

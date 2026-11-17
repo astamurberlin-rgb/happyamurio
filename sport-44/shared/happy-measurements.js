@@ -263,10 +263,14 @@ function curve(pts){
 function refLeg(m,side,w,warp){
  const P=(x,y)=>({x,y}),ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)},refY=f=>f*182.15-1.15;
  const rh=m.hips/GIRTH_NORMAL.hips,rt=m.thigh/GIRTH_NORMAL.thigh,rc=m.calf/GIRTH_NORMAL.calf;
- const ratio=y=>y<104?rh+(rt-rh)*ease((y-96)/8):y<124?rt:y<146?rt+(rc-rt)*ease((y-124)/22):y<158?rc:rc+(1-rc)*ease((y-158)/8);
+ /* Бёдра шире бедра (Астамур 17.11.2026, «уши» на бёдрах): переход от бёдер к бедру тем длиннее, чем больше разница —
+    до середины бедра; без разницы — чуть мягче прежнего (10 вместо 8). */
+ const span=Math.min(28,10+60*Math.max(0,rh-rt)),soft=t=>{t=Math.max(0,Math.min(1,t));return t*t*t*(t*(t*6-15)+10)};
+ const y0=rh>rt?92:96,ratio=y=>y<y0+span?rh+(rt-rh)*soft((y-y0)/span):y<124?rt:y<146?rt+(rc-rt)*ease((y-124)/22):y<158?rc:rc+(1-rc)*ease((y-158)/8);
  const rows=REF_LEG.map(([f,a,b])=>{const y=refY(f),ax=(a+b)/2,h=(b-a)/2*ratio(y);return [y,ax-h,ax+h]});
  const ww=m.waist*0.35/2,hp=m.hips*0.355/2,wy=warp(69.5);
- const outer=[P(ww*0.98,wy-9),P(ww,wy),P(ww+(hp-ww)*0.55,wy+8),P(hp,wy+17),P(Math.max(hp,18.7*rh)*0.99,refY(.53))].concat(rows.map(r=>P(r[2],r[0])));
+ if(rh>rt)for(const r of rows)r[2]=Math.min(r[2],hp*1.01);   // ниже бёдер нога не шире бёдер — без «ушей»
+ const outer=[P(ww*0.98,wy-9),P(ww,wy),P(ww+(hp-ww)*0.55,wy+8),P(hp,wy+17),P(rh>rt?(hp+rows[0][2])/2+0.15:Math.max(hp,18.7*rh)*0.99,refY(.53))].concat(rows.map(r=>P(r[2],r[0])));
  const toe=[P(19.5,180.6),P(16.2,181.4),P(13.4,180.8)];
  const inner=rows.slice().reverse().map(r=>P(r[1],r[0])).concat([P(-1,refY(.53)),P(-1.5,wy+18),P(-2,wy-9)]);
  return curve(outer.concat(toe,inner).map(q=>P(side*q.x*w,q.y)));

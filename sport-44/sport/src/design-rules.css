@@ -107,3 +107,4 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .sheet:has(.exercise-context-tabs)>.grip,.sheet:has(.exercise-context-tabs)>.sheet-top,.sheet:has(.exercise-context-tabs)>.exercise-context-tabs{flex:none;position:relative!important;top:auto!important}
 .sheet:has(.exercise-context-tabs)>.exercise-context-tabs{margin-bottom:12px!important}
 .sheet:has(.exercise-context-tabs)>:is(form,section):not([hidden]){flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:12px 20px 24px;-webkit-mask-image:linear-gradient(transparent,#000 12px);mask-image:linear-gradient(transparent,#000 12px)}
+#exercise-config-form[data-scope=add]>:first-child{border-top:0!important;margin-top:0!important}

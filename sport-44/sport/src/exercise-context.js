@@ -11,7 +11,7 @@ function mountExerciseContext(id,ei=null,context='active'){
  const name=context==='active'?state.active?.exercises[ei]?.name:definition.name;
  const heading=sheet.querySelector('.sheet-top h2');if(heading){heading.textContent=name||definition.name;heading.classList.add('exercise-context-title');}
  form.querySelector('.local-exercise-links')?.remove();
- const labels=context==='active'?[['configure','Настроить'],['instructions','Инструкции'],['history','История']]:[['instructions','Инструкции'],['history','История'],['configure','Добавить']];
+ const labels=context==='active'?[['configure','Настроить'],['instructions','Инструкции'],['history','История']]:[['instructions','Инструкции'],['history','История'],['configure','Настроить']];
  const nav=document.createElement('nav');nav.className='exercise-context-tabs';nav.setAttribute('role','tablist');nav.setAttribute('aria-label','Разделы упражнения');nav.innerHTML=labels.map(([key,label])=>`<button type="button" role="tab" id="exercise-context-tab-${key}" aria-controls="exercise-context-${key}" data-exercise-context-tab="${key}" aria-selected="false" tabindex="-1">${label}</button>`).join('');
  form.before(nav);form.id='exercise-config-form';form.setAttribute('role','tabpanel');form.setAttribute('aria-labelledby','exercise-context-tab-configure');
  const panels={configure:form};for(const key of ['instructions','history']){const panel=document.createElement('section');panel.id='exercise-context-'+key;panel.className='exercise-context-panel';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby','exercise-context-tab-'+key);panel.hidden=true;form.after(panel);panels[key]=panel;}
