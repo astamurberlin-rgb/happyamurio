@@ -28,7 +28,7 @@ var MealBot=(function(){
     '.mlB .mbSum{margin-top:8px;font-size:13px;opacity:.86}'+
     '.mlB .mbMiss{white-space:pre-wrap;font:13px/1.45 inherit;margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.14);user-select:text;-webkit-user-select:text}';
   var booted=false;
-  var SP=typeof MealSpeech!=='undefined'&&MealSpeech.ready()?MealSpeech:null, MK=/[≈⊕⊘▽◇△]/g;
+  var SP=typeof MealSpeech!=='undefined'&&MealSpeech.ready()?MealSpeech:null, MK=/[≈⊕⊘▽◇△⊙]/g;
 
   function boot(){
     if(booted) return; booted=true;
@@ -53,6 +53,7 @@ var MealBot=(function(){
     if(l.split) return 'из '+fmt(l.split.total)+' г, без части '+fmt(l.split.part)+' г';
     if(l.fromDish) return 'из блюда';
     if(l.cooked) return 'съедено — взял готовое';
+    if(l.left) return l.left;
     if(l.waste) return fmt(l.whole)+' г − несъедобное '+fmt(l.waste)+' г';
     return '';
   }
@@ -165,7 +166,7 @@ var MealBot=(function(){
     return s.split(/[,.;:!?\n…]+|\s(?:и|а|потом|плюс|затем)\s/).map(function(c){ return c.replace(/#/g,',').replace(/\s+/g,' ').trim() }).filter(Boolean)
       .map(function(c){ var mk=''; c=c.replace(MK,function(x){ mk+=x; return ' ' }).replace(/\s+/g,' ').trim();
         var corr=c.charAt(0)==='¶'; if(corr) c=c.slice(1).trim(); var mn=c.match(/⊖([\d.]+)/); if(mn) c=c.replace(mn[0],' ').replace(/\s+/g,' ').trim();
-        var parts=one(c); if(corr&&parts.length) parts[0]='¶'+parts[0]; if(mn&&parts.length) parts[parts.length-1]+=' ⊖'+mn[1]; if(mk&&parts.length) parts[parts.length-1]+=' '+mk; return parts })
+        var parts=one(c); if(corr&&parts.length) parts[0]='¶'+parts[0]; if(mn&&parts.length) parts[parts.length-1]+=' ⊖'+mn[1]; if(mk&&parts.length){ parts[parts.length-1]+=' '+mk; if(mk.indexOf('⊙')>=0) parts=parts.map(function(x,i){ return i<parts.length-1?x+' ⊙':x }) } return parts })
       .reduce(function(a,c){ return a.concat(c) },[]);
   }
   function one(c0){
@@ -176,7 +177,7 @@ var MealBot=(function(){
     var o={text:c,raw:c,dup:null,range:null,size:null,corr:c.charAt(0)==='¶'};
     if(o.corr) c=c.slice(1);
     /* пометки словаря: ≈ примерно; ⊕ ⊘ множитель меры; ▽ ◇ △ количество без числа */
-    (c.match(MK)||[]).forEach(function(x){ if(x==='≈') o.approx=true; else if(SP&&SP.marks.fac[x]) o.fac=SP.marks.fac[x]; else if(SP&&SP.marks.vague[x]) o.vague=SP.marks.vague[x] });
+    (c.match(MK)||[]).forEach(function(x){ if(x==='⊙') o.own=true; else if(x==='≈') o.approx=true; else if(SP&&SP.marks.fac[x]) o.fac=SP.marks.fac[x]; else if(SP&&SP.marks.vague[x]) o.vague=SP.marks.vague[x] });
     c=c.replace(MK,' ');
     var mn=c.match(/⊖([\d.]+)/); if(mn){ o.minus=+mn[1]; c=c.replace(mn[0],' ') }
     var t=' '+c+' ';
@@ -348,12 +349,26 @@ var MealBot=(function(){
   }
   function core(text){
     var res={lines:[],meal:null,orphan:null}, hist=null;
+    if(SP){ /* «ребёнок съел…» — ел не владелец дневника; «мне», «себе», «я» — пометка «это моё» */
+      text=(' '+text+' ').replace(/(^|\s)(ребенок|дети|малыш|сын|сынок|дочь|дочка|муж|жена|мама|папа|бабушка|дедушка|брат|сестра|гости|гость|друг|подруга|кот|кошка|собака|пес)\s+(?:не\s+)?⊙/g,'$1$2 ')
+        .replace(/(^|\s)(мне|себе|я|сам|сама|у меня)(?=\s)/g,'$1⊙'); }
     var cs=chunksOf(text).map(prepChunk), merged=[];
-    var carry=null;
+    var carry=null, carryOther=false, lastOtherFood='', wantFood=false;
     function qtyOf(txt){ return txt.split(' ').filter(function(w){ var k=kindOf(w); return k==='N'||k==='U' }).join(' ') }
     function foodOf(txt){ return txt.split(' ').filter(function(w){ var k=kindOf(w); return k!=='N'&&k!=='U' }).join(' ') }
     cs.forEach(function(c){
-      if(/(^|\s)(кошк[еиу]|кот(у|ам|ятам)|собак[еиу]|пс(у|ам)|отдал\S*|угостил\S*|детям|ребенку|жене|мужу|другу|подруге)(\s|$)/.test(' '+c.text+' ')){ (res.others=res.others||[]).push(c.text); return }
+      /* аккаунт — одного человека: в дневник идёт только то, что съел он сам. «Положила детям по две котлеты и пюре», «ребёнок съел котлету», «мужу три, мне две»:
+         чужое не пишется, и это действует до конца фразы, пока человек не сказал про себя («мне», «я», «съела»). Уронил, пролил — тоже не съедено. Решение Астамура 18.11.2026 */
+      var T=' '+c.text+' ', notEaten=NOTEATEN.test(T), other=hasW(SUBJ,T)||hasW(RECIP,T);
+      if(other||notEaten){
+        if(other){ carryOther=true; var lf0=tokensOf(c.text.replace(RECIP,' ').replace(SUBJ,' ')).join(' ');
+          if(lf0&&/\d/.test(c.text)){ lastOtherFood=lf0; wantFood=false } else if(/\d/.test(c.text)) wantFood=true }
+        (res.others=res.others||[]).push(c.text); return }
+      if(c.own||hasW(OWNW,T)){
+        carryOther=false; c.text=T.replace(OWNW,' ').replace(/\s+/g,' ').trim();
+        if(!tokensOf(c.text).length&&/\d/.test(c.text)&&lastOtherFood) c.text+=' '+lastOtherFood;      // «мужу три котлеты, мне две» — две котлеты
+        if(!c.text) return }
+      else if(carryOther){ var lf1=tokensOf(c.text).join(' '); if(lf1&&(wantFood||/\d/.test(c.text))){ lastOtherFood=lf1; wantFood=false } (res.others=res.others||[]).push(c.text); return }
       var food=tokensOf(c.text), last=merged[merged.length-1];
       if(c.corr&&last){
         /* «…, нет, …»: поправка последнего названного. Только число — меняется количество; назван продукт — меняется продукт */
@@ -479,6 +494,24 @@ var MealBot=(function(){
   /* ── блюдо «А с Б» ──
      Есть такое блюдо в базе или у человека — берётся оно. Нет — части по отдельности обычными порциями; бот предлагает, человек подтверждает или называет свои граммы,
      и в следующий раз блюдо пишется так же без вопроса. Решения Астамура 17.11.2026 21:56 и 22:08. */
+  var RECIP=/(^|\s)(кошк[еиу]|кот(у|ам|ятам)|собак[еиу]|пс(у|ам)|отдал\S*|угостил\S*|детям|ребенку|малышу|дочке|дочери|сыну|жене|мужу|маме|папе|бабушке|дедушке|брату|сестре|гостям|другу|подруге)(?=\s|$)/g,
+      SUBJ=/(^|\s)(ребенок|дети|малыш|сын|сынок|дочь|дочка|муж|жена|мама|папа|бабушка|дедушка|брат|сестра|гости|гость|друг|подруга|кот|кошка|собака|пес)(?=\s|$)/g,
+      OWNW=/(^|\s)(мне|себе|я|сам|сама|у меня)(?=\s|$)/g,
+      NOTEATEN=/(^|\s)(уронил\S*|выбросил\S*|выкинул\S*|пролил\S*|разлил\S*|просыпал\S*)(?=\s|$)/;
+  function hasW(re,t){ re.lastIndex=0; var r=re.test(t); re.lastIndex=0; return r }
+  /* «…но не доела, половину оставила» — пишется съеденная часть; сколько осталось, не сказано — целиком со знаком «≈» и кнопкой «Меньше» */
+  var LEFT=null, LEFTK={'половин':0.5,'треть':0.67,'четверт':0.75,'немного':0.9,'чуть':0.9,'почти':0.1};
+  var LEFTRE=[/[\s,]+(?:но\s+|а\s+|только\s+)?(?:я\s+)?(?:не\s+дое(?:ли|ла|л)|не\s+осили(?:ли|ла|л)|не\s+вс[её]\s+съе(?:ли|ла|л))(?:[\s,]+(?:где-то\s+|примерно\s+)?(половину|треть|четверть|немного|чуть-чуть|чуть|почти\s+вс[её])\s+(?:оставил[аи]?|осталось|осталась|остался))?(?=[\s,.!?]|$)/i,
+              /[\s,]+(?:но\s+|а\s+)?(половину|треть|четверть)\s+(?:оставил[аи]?|не\s+дое(?:ли|ла|л)|осталось|осталась)(?=[\s,.!?]|$)/i,
+              /[\s,]+(?:но\s+|а\s+)?(?:оставил[аи]?|осталось|осталась)\s+(половин[ау]|треть|четверть)(?=[\s,.!?]|$)/i];
+  function takeLeft(raw){
+    var t=String(raw), out=null;
+    LEFTRE.forEach(function(re){ if(out) return; var m=re.exec(t); if(!m) return;
+      var w=String(m[1]||'').toLowerCase(), key=Object.keys(LEFTK).filter(function(k){ return w.indexOf(k)===0 })[0];
+      out={text:(t.slice(0,m.index)+' '+t.slice(m.index+m[0].length)).replace(/\s+/g,' ').trim(),k:key?LEFTK[key]:null,said:m[0].replace(/^[\s,]+/,'')} });
+    return out;
+  }
+  var NOCOUNT=/(не\s+считай|не\s+учитывай|не\s+в\s+сч[её]т|это\s+не\s+записывай|это\s+не\s+надо)/i;
   var COMBK='happy-meal-bot-combos', FRESH=null, NOSPLIT=false, EATEN=false, NEST=0;
   /* «съел курицы 200 г» — сырую курицу не едят: берётся готовая. «Курица 200 г», «взвесил курицу» — сырая, как раньше.
      Овощи, фрукты, зелень без слов о способе — сырые. Решение Астамура 17.11.2026 23:11 */
@@ -973,18 +1006,31 @@ var MealBot=(function(){
     var asked=/\?\s*$/.test(String(raw).trim());
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
-    if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;   // замена не состоялась, а человек уже говорит о другом
+    if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
+    if(!NEST) LEFT=null;   // замена не состоялась, а человек уже говорит о другом
     var prepped=false; FRESH=null; EATEN=!!(SP&&SP.eaten&&m.kind!=='photo'&&SP.eaten(String(raw))); WEIGHED=!!(SP&&SP.weighed&&m.kind!=='photo'&&SP.weighed(String(raw)));
     if(S.offer&&m.kind!=='photo'){ var ofr=S.offer; S.offer=null;
       var b0=nrm(raw).trim().replace(/[?!.,…\s]+$/,'');
       if(/^(нет|неа|не надо|не нужно|не записывай|отмена|отмени|пропусти)$/.test(b0)){ S.rewrite=null; return p('Хорошо, не записываю.') }
-      if(/^(да|ага|угу|давай|ок|окей|хорошо|годится|верно|записывай|запиши|пиши|так)( так| запиши| записывай| давай)?$/.test(b0)){ memSet(ofr.key,ofr.parts); FRESH=ofr.key; raw=ofr.raw; prepped=true; EATEN=!!ofr.eaten; WEIGHED=!!ofr.weighed }
+      if(/^(да|ага|угу|давай|ок|окей|хорошо|годится|верно|записывай|запиши|пиши|так)( так| запиши| записывай| давай)?$/.test(b0)){ memSet(ofr.key,ofr.parts); FRESH=ofr.key; raw=ofr.raw; prepped=true; EATEN=!!ofr.eaten; WEIGHED=!!ofr.weighed; LEFT=ofr.left||null }
       else { var cust=String(raw).replace(/^\s*(нет|не|неа)[,.!\s]+/i,'').replace(/^\s*(давай|лучше|пусть|запиши)\s+/i,''); if(SP) cust=SP.prepare(cust);
         var cu=core(cust), good=cu.lines.filter(function(l){ return l.fid&&l.explicit&&!l.ask&&l.g>0 });
         if(good.length&&good.length===cu.lines.length) memSet(ofr.key,good.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} }));
-        raw=ofr.raw.indexOf(ofr.src)>=0?ofr.raw.replace(ofr.src,cust.trim()):cust; prepped=true; EATEN=!!ofr.eaten; WEIGHED=!!ofr.weighed }
+        raw=ofr.raw.indexOf(ofr.src)>=0?ofr.raw.replace(ofr.src,cust.trim()):cust; prepped=true; EATEN=!!ofr.eaten; WEIGHED=!!ofr.weighed; LEFT=ofr.left||null }
     }
-    if(SP&&m.kind!=='photo'&&!prepped) raw=SP.prepare(raw);
+    if(m.kind!=='photo'&&!prepped){
+      /* «…это не считай» — сказанное в этом предложении в дневник не идёт */
+      if(NOCOUNT.test(String(raw))&&!/^\s*(не\s+считай|не\s+записывай)/i.test(String(raw))){
+        var keepS=String(raw).split(/(?<=[.!?;])\s+/).filter(function(x){ return !NOCOUNT.test(x) });
+        if(!keepS.length||!tokensOf(keepS.join(' ')).length) return p('Хорошо, это не записываю.');
+        raw=keepS.join(' ') }
+      LEFT=null; var lf=takeLeft(raw); if(lf&&tokensOf(lf.text).length){ LEFT=lf; raw=lf.text }
+    }
+    var ORIG=nrm(String(raw)).trim().replace(/[?!.,…\s]+$/,'');   // как сказано, до разбора речи: по этому тексту узнаются вопросы «что я съел», «сколько я съел»
+    if(SP&&m.kind!=='photo'&&!prepped){ raw=SP.prepare(raw);
+      /* «ребёнок съел…» — ел не владелец дневника; «мне», «себе», «я» — пометка «это моё» (ставится здесь, пока слова не убраны как пустые) */
+      raw=(' '+raw+' ').replace(/(^|\s)(ребенок|дети|малыш|сын|сынок|дочь|дочка|муж|жена|мама|папа|бабушка|дедушка|брат|сестра|гости|гость|друг|подруга|кот|кошка|собака|пес)\s+(?:не\s+)?⊙/g,'$1$2 ')
+        .replace(/(^|\s)(мне|себе|сам|сама|у меня)(?=\s)/g,'$1⊙').replace(/\s+/g,' ').trim(); }
     var RAW0=raw;
     var t=nrm(raw), now=new Date(), bare=t.trim().replace(/[?!.,…\s]+$/,'');
     /* служебные фразы */
@@ -1024,8 +1070,8 @@ var MealBot=(function(){
     /* «сколько калорий в 100 г риса?» — вопрос о продукте, а не об итоге дня: ответ из базы, в дневник ничего не идёт */
     var pq=bare.match(/^(?:а\s+)?сколько\s+(?:калори\S*|ккал|белк\S*|жир\S*|углевод\S*)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/);
     if(pq&&m.kind!=='photo'){ var pi=productInfo(pq[1]); return pi||deferred('вопрос о питании') }
-    if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(bare)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(bare)) return todayTotals();
-    if(/что\s+(я\s+)?(уже\s+|сегодня\s+)*(записал|записано|съел|ел)(\s|$)/.test(bare)||/^(покажи|что)\s+(записи|день|записано|за сегодня)/.test(bare)) return todayList();
+    if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(ORIG)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(ORIG)) return todayTotals();
+    if(/что\s+(я\s+)?(уже\s+|сегодня\s+)*(записал|записано|съел|ел)(\s|$)/.test(ORIG)||/^(покажи|что)\s+(записи|день|записано|за сегодня)/.test(ORIG)) return todayList();
     if(/(список|чего)\s+(недостающ|не хватает|нет в базе)|что\s+не\s+нашел|ненайденн/.test(bare)) return missShow();
     var rp=bare.match(/^(?:замени|поменяй|исправь|перепиши|переделай)\s+(.+?)\s+на\s+(.+)$/)||bare.match(/^вместо\s+(.+?)\s+(?:запиши\s+|был[аио]?\s+|пил\S*\s+|ел\S*\s+)?(.+)$/)||bare.match(/^(?:нет\s*,?\s*)?не\s+(.+?)\s*,?\s+а\s+(.+)$/)||bare.match(/^(?:у\s+)?(.+?)\s+(?:было\s+|была\s+)?не\s+[\d.,]+\s*[а-я]*\s*,?\s+а\s+(.+)$/);
     if(rp){ var rr=replaceCmd(S,rp[1],rp[2]); if(rr) return rr }
@@ -1100,12 +1146,23 @@ var MealBot=(function(){
         else asks.push(en);
       });
     });
+    if(m.kind!=='photo'&&SP){
+      /* килограмм и больше одного продукта без слова «съел» — это покупка или готовка, а не порция: «взвесила фарш, полтора кило» */
+      var INGR=/^(фарш|мясо|говядин|свинин|баранин|телятин|куриц|курин|филе|рыба|мука|сахар|крупа|рис|гречк|макарон|масло|картофел|лук|морков|капуст|яйц|творог|сыр)/;
+      var big=ready.concat(asks).filter(function(en){ var l=en.line; if(!l.fid||en.tap||!l.explicit||isDrink(l.fid)) return false;
+        return l.g>=3000||l.g>=1000&&INGR.test(norm(FOODS[l.fid].n)) })[0];   // килограмм арбуза съесть можно, килограмм фарша — нет
+      if(big&&!EATEN) return p('Похоже, это для готовки, а не съедено: '+esc(String(foodName(big.line)).split(/[,(—]/)[0].trim().toLowerCase())+' '+fmt(big.line.g)+' г. В дневник ничего не записал.')+'<p class="mlHint">Если это съел ты — скажи: «съел …». Или скажи, сколько съел ты.</p>';
+      /* «не доела, половину оставила» */
+      if(LEFT) ready.forEach(function(en){ var l=en.line; if(en.tap||!l.fid||!(l.g>0)) return;
+        if(LEFT.k){ l.q=Math.round(l.q*LEFT.k*100)/100; l.g=gramsFor(l.fid,l.q,l.u); l.approx=true; l.left='не доедено — записал съеденную часть' }
+        else { l.approx=true; l.usual=true; l.left='не доедено — сколько осталось? «Меньше» — половина' } });
+    }
     /* блюда «А с Б» нет в базе, а части понятны: не спрашиваю «что именно?» — предлагаю записать по отдельности; пока человек не ответил, ничего не пишу */
     if(m.kind!=='photo'){
       var allEn=ready.concat(asks), cpL=[]; allEn.forEach(function(en){ var cp=en.line.comp; if(cp&&!cp.ok&&cpL.indexOf(cp)<0) cpL.push(cp) });
       var cp0=cpL.filter(function(cp){ return cp.lines.length>1&&cp.lines.every(function(l){ return l.fid&&l.g>0&&(!l.ask||l.ask==='meal') }) })[0];
       if(cp0){
-        S.offer={raw:RAW0,src:cp0.src,key:cp0.key,eaten:EATEN,weighed:WEIGHED,parts:cp0.lines.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} })};
+        S.offer={raw:RAW0,src:cp0.src,key:cp0.key,eaten:EATEN,weighed:WEIGHED,left:LEFT,parts:cp0.lines.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} })};
         var restN=allEn.filter(function(en){ return en.line.comp!==cp0 }).length+miss.length;
         return p((cp0.named?esc(cp0.name)+' в базе нет. Предлагаю':'Одним блюдом этого в базе нет — предлагаю')+' записать по отдельности: '+
             cp0.lines.map(function(l){ return esc(String(foodName(l)).split(/[,(—]/)[0].trim().toLowerCase())+' '+fmt(l.g)+' г' }).join(' и ')+'.')+
@@ -1132,7 +1189,7 @@ var MealBot=(function(){
       S.pend=S.pend.concat(asks);
       return p('На фото, похоже:')+'<div class="mlRows">'+asks.map(function(en){ return row(en.line,en.line.st==='ok') }).join('')+'</div><p class="mlHint">Вес на глаз — проверь в списке и сохрани.</p>';
     }
-    var othH=others.length?'<p class="mlHint">Не записал чужую порцию: «'+esc(others.join('», «'))+'».</p>':'';
+    var othH=others.length?'<p class="mlHint">Не записал — это не съедено тобой: «'+esc(others.join('», «').replace(MK,'').replace(/\s+/g,' ').trim())+'».</p>':'';
     if(!ready.length&&!asks.length&&othH) return othH;
     if(!ready.length&&!asks.length){
       if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); return p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'». Ничего не записал, добавил в список недостающего.') }

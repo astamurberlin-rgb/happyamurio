@@ -7,7 +7,7 @@
    Решения Астамура 17.11.2026: не спрашивать без крайней необходимости; своя мера человека — первой. — Claude · 17.11.2026 */
 var MealSpeech=(function(){
   var D=window.HappyMealSpeechData||null, active=false;
-  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], NOGEN={}, CARD={}, CARDRE=null, SPLIT=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
+  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], NOGEN={}, CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
   var MARK={0.5:'▽',1:'◇',1.5:'△'}, FMARK={1.5:'⊕',0.8:'⊘'};
   var B0='(^|[\\s,.;:!?(])', B1='(?=[\\s,.;:!?)]|$)';
   function nz(s){ return String(s||'').toLowerCase().replace(/ё/g,'е').replace(/́/g,'') }
@@ -57,6 +57,7 @@ var MealSpeech=(function(){
     });
     (D.part_qualifiers||[]).forEach(function(e){ if(e.bot==='drop') drop=drop.concat(e.forms) });
     (D.qualitative_amounts||[]).forEach(function(e){ if(e.bot==='vague') VAGUE.push({forms:e.forms,mark:MARK[e.factor]||'◇'}) });
+    EATRE=D.eaten_context&&D.eaten_context.verbs?phrase(D.eaten_context.verbs.filter(function(v){ return (D.eaten_context.meal_verbs||[]).indexOf(v)<0 })):null;   // «перекусил», «пообедал» остаются словами: по ним узнаётся приём пищи
     DROP=phrase(drop); CORR=phrase(corr); APPROX=phrase(approx.filter(function(f){ return nz(f)!=='типа' }));
     /* меры Meal: общий вес и подписи — из словаря */
     if(typeof DEF!=='undefined') (D.measures||[]).forEach(function(m){ if(m.unit&&m.general!=null&&m.unit!=='шт') DEF[m.unit]=m.general });
@@ -230,6 +231,7 @@ var MealSpeech=(function(){
     s=s.replace(/(^|[\s,])типа(?=\s)/g,'$1≈');
     FACT.forEach(function(r){ s=s.replace(r.re,function(m,a){ return a+r.mark }) });
     if(SPLIT) s=s.replace(SPLIT,function(m,a){ return a+', ' });
+    if(EATRE) s=s.replace(EATRE,function(m,a){ return a+'⊙' });   // «съел», «поела» — пометка: дальше то, что человек съел сам
     s=s.replace(DROP,function(m,a){ return a });
     s=s.replace(DROP,function(m,a){ return a });
     VAGUE.slice().sort(function(a,b){ return 0 }).forEach(function(v){ s=s.replace(phrase(v.forms),function(m,a){ return a+v.mark }) });
@@ -260,5 +262,5 @@ var MealSpeech=(function(){
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
     noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, missing:missing, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
-    marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},all:/[≈⊕⊘▽◇△]/g}};
+    marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();
