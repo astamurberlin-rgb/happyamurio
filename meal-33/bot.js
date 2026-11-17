@@ -416,6 +416,8 @@ var MealBot=(function(){
     var q=S.pend[0]; S.ask=null; if(!q||q.line.ask==='photo') return '';
     var l=q.line, id='q'+(++S.seq), nm=cap(l.name||''); S.ask={id:id,kind:l.ask,q:q};
     if(l.ask==='what') return p('«'+esc(l.raw)+'» — чего? Назови продукт.');
+    if(l.ask==='meal'){ var grp=S.pend.filter(function(x){ return x.grp&&x.grp===q.grp&&x.line.ask==='meal' }).map(function(x){ return foodName(x.line) });
+      return p(esc(cap(grp.join(', ')||foodName(l)))+' за '+esc(q.date.slice(8,10)+'.'+q.date.slice(5,7))+' — в какой приём?')+chips(['am','pm','dn','sn'].filter(function(k){ return sec(k) }).map(function(k){ return ['meal:'+id+':'+k,sec(k).t] })) }
     if(l.ask==='name'){ missLog('нет в базе',nm,l.raw); return p('В базе нет «'+esc(nm)+'» — добавил в список недостающего.')+'<p class="mlHint">Если это другое название — скажи его. Или «пропусти».</p>'+chips([['skip:'+id,'Пропустить']]) }
     if(l.ask==='pick') return p(esc(nm)+' — что именно?')+chips(l.alts.slice(0,3).map(function(a,i){ return ['pick:'+id+':'+i,FOODS[a]?FOODS[a].n:a] }).concat([['sheet:'+id,'Другое']]));
     if(l.ask==='range') return p(esc(foodName(l))+' — сколько граммов?')+chips([['num:'+id+':'+l.range[1],l.range[1]+' г'],['num:'+id+':'+l.range[0],l.range[0]+' г']]);
@@ -478,7 +480,36 @@ var MealBot=(function(){
   }
   function timeNote(t){ return '<p class="mlHint">Время поставил сам: '+esc(t)+'. Не так — скажи: «нет, в 9 утра».</p>' }
   function mins(t){ return +t.slice(0,2)*60+(+t.slice(3,5)) }
-  function secFor(date,t){
+  /* Meal 33.7 · приём по правилам Астамура (17.11.2026). Тот же текст обычным языком — экран «Правила бота»
+     в «Для разработчика» (index.html, data-screen="botrules"): поменял правило — поправь и его.
+     1) запись ближе 1,5 ч (до или после) — тот же приём; 2) немного еды (до 150 ккал на сообщение или только напитки)
+     после приёма — перекус; 3) иначе следующий по порядку приём, если время в его окне; 4) иначе прошлый приём, если
+     время в его окне, иначе перекус. Ночью (до 05:00) — перекус. Окна, где приём может начаться: */
+  var NEAR=90, SNACK=150, NEWWIN={am:[300,780],pm:[660,1080],dn:[960,1440]}, ORDK=['am','pm','dn'];
+  function smallOf(list){
+    var ok=list.length>0, k=0, drinks=true;
+    list.forEach(function(x){ var fid=x&&(x.fid||(x.alts&&x.alts[0])), g=x&&(x.g>0?x.g:(x.explicit&&fid&&FOODS[fid]?gramsFor(fid,x.q,x.u):0));   // строка ещё без выбранного продукта — по первому похожему
+      if(!fid||!FOODS[fid]||!(g>0)){ ok=false; return } k+=nutOf({fid:fid,g:g}).k||0; if(!isDrink(fid)) drinks=false });
+    return ok&&(drinks||k<=SNACK);
+  }
+  function secFor(date,t,small){
+    var m=mins(t);
+    if(m<300&&sec('sn')) return 'sn';                                 // ночью, с полуночи до пяти, — перекус, а не завтрак
+    var ks=sectionsForDate(date).map(function(S0){ return S0.k });
+    if(['am','pm','dn','sn'].some(function(k){ return ks.indexOf(k)<0 })) return secForOld(date,t);
+    var items=((DB.days[date]&&DB.days[date].items)||[]).filter(function(x){ return x.t&&ks.indexOf(x.sec)>=0 });
+    var near=null; items.forEach(function(x){ var d=Math.abs(mins(x.t)-m); if(d<=NEAR&&(!near||d<near.d)) near={k:x.sec,d:d} });
+    if(near) return near.k;
+    var prev=-1, next=3;
+    items.forEach(function(x){ var i=ORDK.indexOf(x.sec), xm=mins(x.t); if(i<0) return; if(xm<m&&i>prev) prev=i; if(xm>m&&i<next) next=i });
+    function inWin(i){ var w=NEWWIN[ORDK[i]]; return m>=w[0]&&m<w[1] }
+    if(small&&prev>=0) return 'sn';
+    for(var i=prev+1;i<=Math.min(next,2);i++) if(inWin(i)) return ORDK[i];
+    if(prev>=0&&inWin(prev)) return ORDK[prev];
+    return 'sn';
+  }
+  /* до 33.7: приём начинается со своей первой записи или с обычного часа. Остаётся для дней со своими разделами */
+  function secForOld(date,t){
     var m=mins(t), items=(DB.days[date]&&DB.days[date].items)||[], best=null, first=null;
     if(m<300&&sec('sn')) return 'sn';                                 // ночью, с полуночи до пяти, — перекус, а не завтрак
     sectionsForDate(date).forEach(function(S0){
@@ -505,6 +536,7 @@ var MealBot=(function(){
   function setGrams(l,g){ l.q=g; l.u='г'; l.g=gramsFor(l.fid,g,'г'); l.explicit=true }
   function resolved(S){ var q=S.pend.shift(); S.ask=null; q.line.ask=null; return q }
   function finish(S,q,pre){
+    if(q.needMeal&&!q.secSet){ q.line.ask='meal'; S.pend.unshift(q); return (pre||'')+askHTML(S) }
     var c=commit(S,[q]);
     if(c===false){ S.pend.unshift(q); return p('Чтобы записывать, войди в аккаунт.') }
     return (pre||'')+commitHTML(c)+askHTML(S);
@@ -516,6 +548,7 @@ var MealBot=(function(){
     var a=S.ask, q=a&&a.q; if(!a||S.pend[0]!==q) return null;
     var l=q.line, t=nrm(text).trim();
     if(/^(пропусти|пропустить|не надо|не важно|неважно|забудь)/.test(t)&&(a.kind==='name'||a.kind==='what'||a.kind==='qty'||a.kind==='pick')) return tapDo(S,'skip',a.id);
+    if(a.kind==='meal'){ var mm=mealIn(t.replace(/^(да|ну|в|на|во)\s+/,'')).mk; return mm?tapDo(S,'meal',a.id,mm):null }
     if(a.kind==='again'){ if(/^(да|ещ|еще|ага|угу)/.test(t)) return tapDo(S,'again',a.id,'1'); if(/^(нет|не|повтор)/.test(t)) return tapDo(S,'again',a.id,'0'); return null }
     if(a.kind==='pick'){ var tt0=t.replace(/^(да|ну|давай|пусть|будет)\s+/,'').replace(/[,.!]+$/,''); if(ORD[tt0]!=null&&l.alts[ORD[tt0]]) return tapDo(S,'pick',a.id,String(ORD[tt0]));
       var ws0=tokensOf(tt0), hitA=ws0.length?l.alts.slice(0,3).map(function(x,i){ return i }).filter(function(i){ return ws0.every(function(q){ return /^\d/.test(q)?words(l.alts[i]).indexOf(q)>=0:words(l.alts[i]).some(function(wd){ return sim(q,wd)>=1.8||adjStem(q)&&adjStem(q)===adjStem(wd) }) }) }):[];
@@ -613,6 +646,12 @@ var MealBot=(function(){
     var a=S.ask; if(!a||a.id!==id) return null;
     var q=a.q, l=q.line;
     if(kind==='skip'){ resolved(S); return p('Пропустил.')+askHTML(S) }
+    if(kind==='meal'){ if(!sec(arg)) return null;
+      var mine=S.pend.filter(function(x){ return x===q||(x.grp&&x.grp===q.grp&&x.line.ask==='meal') }), gt=mealTime(q.date,arg,null);
+      S.pend=S.pend.filter(function(x){ return mine.indexOf(x)<0 }); S.ask=null;
+      mine.forEach(function(x){ x.line.ask=null; x.sec=arg; x.secSet=true; x.t=gt; x.tm=false });
+      var cm=commit(S,mine); if(cm===false){ mine.forEach(function(x){ x.line.ask='meal'; x.secSet=false }); S.pend=mine.concat(S.pend); return p('Чтобы записывать, войди в аккаунт.') }
+      return commitHTML(cm)+(gt?timeNote(gt):'')+askHTML(S) }
     if(kind==='pick'){ var fid=l.alts[+arg]; if(!fid) return null; l.fid=fid; l.st='ok'; l.g=gramsFor(fid,l.q,l.u);
       if(!l.explicit&&!isDrink(fid)){ l.ask='qty'; return askHTML(S) } return finish(S,resolved(S)) }
     if(kind==='num'){ setGrams(l,+arg); return finish(S,resolved(S)) }
@@ -762,12 +801,19 @@ var MealBot=(function(){
       if(c.hit&&c.hit.amb){ var mk=(u.lines.filter(function(l){ return l.meal })[0]||{}).meal||u.tailMeal, hr=byMeal(c.hit.amb,mk); if(hr!=null) c.hit.t=pad2(hr)+':00' }
       var time=c.hit?c.hit.t:(today&&!shift?hm(now):null);
       if(u.tailMeal) u.lines.forEach(function(l){ if(!l.meal) l.meal=u.tailMeal });
+      var small=smallOf(u.lines), grp='g'+(++SEQ);
       u.lines.forEach(function(l){
-        var sk=l.meal||(time?secFor(date,time):autoSec());
+        var sk=l.meal||(time?secFor(date,time,small):autoSec()), ld=date, needMeal=!l.meal&&!time;
         /* «на завтрак…», сказанное вечером без времени: время «сейчас» завтраку не ставим — иначе завтрак «начнётся» вечером */
-        var lt=time;
-        if(l.meal&&!c.hit&&(!time||secFor(date,time)!==l.meal)){ var mt0=time?movedTime(date,l.meal,time,null):{t:mealTime(date,l.meal,null),set:true}; lt=mt0.t; if(mt0.set&&lt) guessed=lt }
-        var en={line:l,date:date,t:lt,tm:!!c.hit,approx:!!(c.hit&&c.hit.approx),sec:sk};
+        var lt=time, own=l.meal&&time?mealTimes(date,l.meal,null):[];
+        if(l.meal&&!c.hit&&today&&!shift&&mins(time)<300&&ORDK.indexOf(l.meal)>=0){
+          /* ночью «на ужин…» без времени — это про вчерашний ужин */
+          var dy=new Date(date+'T12:00:00'); dy.setDate(dy.getDate()-1); ld=isoOf(dy); lt=mealTime(ld,l.meal,null); if(lt) guessed=lt;
+        }
+        else if(l.meal&&!c.hit&&own.length&&mins(time)-own[own.length-1]>NEAR){ lt=hmOf(own[own.length-1]); guessed=lt }   // «на ужин ещё…» позже — к тому ужину
+        else if(l.meal&&!c.hit&&(!time||secFor(date,time,small)!==l.meal)){ var mt0=time?movedTime(date,l.meal,time,null):{t:mealTime(date,l.meal,null),set:true}; lt=mt0.t; if(mt0.set&&lt) guessed=lt }
+        var en={line:l,date:ld,t:lt,tm:!!c.hit,approx:!!(c.hit&&c.hit.approx),sec:sk};
+        if(needMeal){ en.needMeal=true; en.grp=grp }
         l.t=lt; l.tm=c.hit?1:0; l.sec=sk;
         var tc=m.kind!=='photo'&&l.ask!=='range'&&l.ask!=='waste'&&l.ask!=='inc'&&!l.inc&&!l.split&&!l.fromDish&&!l.waste?tapFor(l):null;
         if(tc&&tc.n){ en.tap=tc; l.fid=tc.c.fid; l.st='ok'; l.q=tc.n*tc.c.q; l.u=tc.c.u; l.g=Math.round(tc.n*tc.g*10)/10; l.explicit=true; l.ask=null; l.picked=false; l.count=null }
@@ -776,6 +822,7 @@ var MealBot=(function(){
           l.fid=l.alts[0]; l.st='ok'; l.g=gramsFor(l.fid,l.q,l.u); l.picked=true; l.ask=(!l.explicit&&!isDrink(l.fid))?'qty':null;
         }
         if(m.kind==='photo'){ l.ask=l.ask||'photo'; asks.push(en) }
+        else if(!l.ask&&needMeal){ l.ask='meal'; asks.push(en) }
         else if(!l.ask) ready.push(en);
         else if(l.ask==='name'&&!l.explicit) miss.push(l);
         else asks.push(en);
@@ -864,7 +911,7 @@ var MealBot=(function(){
         a.item.sec=mk; a.en.sec=mk; a.line.meal=mk }
       else if(nt&&!a.line.meal){ a.item.sec='__'; }
     });
-    if(nt&&!mk) c.add.forEach(function(a){ if(a.item.sec==='__'){ var k=secFor(a.date,nt); a.item.sec=k; a.en.sec=k } });
+    if(nt&&!mk){ var sm=smallOf(c.add.map(function(a){ return a.item })); c.add.forEach(function(a){ if(a.item.sec==='__'){ var k=secFor(a.date,nt,sm); a.item.sec=k; a.en.sec=k } }) }
     touch();
     return p('Перенёс: '+esc(whenText(c.add[0].en)))+'<div class="mlRows">'+c.add.filter(function(a){ return !a.hide }).map(function(a){ return row(a.line,true) }).join('')+'</div>'+(guess?timeNote(guess):'');
   }
@@ -887,7 +934,7 @@ var MealBot=(function(){
       var nt=null; if(hitT){ nt=hitT.t; if(hitT.amb){ var hr=byMeal(hitT.amb,mi.mk||x.sec); if(hr!=null) nt=pad2(hr)+':00' } }
       if(nt){ x.t=nt; x.tm=1 }
       var g1=null;
-      if(mi.mk){ if(!nt){ var mt=movedTime(cd(),mi.mk,x.t,[x]); if(mt.set){ x.t=mt.t; delete x.tm; g1=mt.t } } x.sec=mi.mk } else { var keep=x.sec; x.sec='__'; x.sec=secFor(cd(),nt)||keep }
+      if(mi.mk){ if(!nt){ var mt=movedTime(cd(),mi.mk,x.t,[x]); if(mt.set){ x.t=mt.t; delete x.tm; g1=mt.t } } x.sec=mi.mk } else { var keep=x.sec; x.sec='__'; x.sec=secFor(cd(),nt,smallOf([x]))||keep }
       touch(); did=true;
       out+=p('Перенёс: '+esc(whenText({sec:x.sec,t:x.t,date:cd(),approx:hitT&&hitT.approx})))+'<div class="mlRows">'+row({fid:x.fid,q:x.q,u:x.u,g:x.g,name:''},true)+'</div>'+(g1?timeNote(g1):'');
     });
