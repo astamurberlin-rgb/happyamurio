@@ -556,7 +556,7 @@ var MealBot=(function(){
   var ADJF=/^.{2,}(н|ск|ов|ев|ян|чат|ист|лив|ч|ж|ш|щ)(ой|ей)$/;
   /* блюдо «А с Б» есть в базе: в названии А стоит до «с», Б — после, и сверх сказанного не больше одного существительного
      («трубочка со сгущёнкой» — «Вафельная трубочка со сливочной начинкой и сгущёнкой»; «хлеб с маслом» — не «Гренки из хлеба, обжаренные в масле») */
-  function dishOk(id,A,B){
+  function dishOk(id,A,B,strict){
     var f=FOODS[id]; if(!f) return false;
     var ws=words(id), W=A.concat(B), same=function(q,w){ return sim(q,w)>=1.8||!!adjStem(q)&&adjStem(q)===adjStem(w) };
     if(!W.every(function(q){ return ws.some(function(w){ return same(q,w) }) })) return false;
@@ -564,7 +564,10 @@ var MealBot=(function(){
     var iS=-1; ws.forEach(function(w,i){ if(iS<0&&(w==='с'||w==='со'||w==='в'||w==='под')) iS=i }); if(iS<1) return false;
     if(!A.every(function(q){ return ws.some(function(w,i){ return i<iS&&same(q,w) }) })) return false;
     if(!B.every(function(q){ return ws.some(function(w,i){ return i>iS&&same(q,w) }) })) return false;
-    return ws.filter(function(w){ return w.length>1&&!PREP.test(w)&&w!=='и'&&!W.some(function(q){ return same(q,w) })&&!ADJ.test(w)&&!ADJF.test(w)&&!/^(напиток|блюдо|готов\S*|\d+|%)$/.test(w) }).length<=1;
+    var ex=ws.map(function(w,i){ return {w:w,i:i} }).filter(function(o){ var w=o.w; return w.length>1&&!PREP.test(w)&&w!=='и'&&!W.some(function(q){ return same(q,w) })&&!ADJ.test(w)&&!ADJF.test(w)&&!/^(напиток|блюдо|готов\S*|\d+|%)$/.test(w) });
+    /* блюдо с добавкой («блины со сметаной»): в начинке базы не должно быть ничего несказанного — «блины с грибами и сметаной» это другое блюдо */
+    if(strict&&ex.some(function(o){ return o.i>iS })) return false;
+    return ex.length<=1;
   }
   /* «котлеты в сливочном соусе», «рыба под маринадом» — то же, что «А с Б»: блюдо и то, в чём оно (решение Астамура 18.11.2026 00:55) */
   var SEPW=/\s(?:с|со)\s|\s(?:в|под)\s(?=(?:[а-я-]+\s+){0,2}(?:соус|сметан|подлив|кляр|маринад|сливк|сироп|глазур))/;
@@ -599,7 +602,7 @@ var MealBot=(function(){
     var kh=head.filter(function(w){ return KINDHEAD.test(w) })[0];
     if(kh&&!(TOPHEAD.test(kh)&&ps.slice(1).every(function(x){ return tokensOf(x).some(function(w){ return TOPPING.test(w) }) }))) return null;
     var r0=parseText(txt).lines[0], ids=r0?[r0.fid].concat(r0.alts||[]).filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i }).slice(0,6):[];
-    var tailW=W.filter(function(w){ return head.indexOf(w)<0 }); if(ids.some(function(id){ return dishOk(id,head,tailW) })) return null;
+    var tailW=W.filter(function(w){ return head.indexOf(w)<0 }); if(ids.some(function(id){ return dishOk(id,head,tailW,!!kh) })) return null;
     var bread=head.some(function(w){ return BREADHEAD.test(w) });
     if(bread) ps[0]=(cnt?String(Math.round(50*num(cnt[1]))):'50')+' г хлеб';                       // бутерброд — 50 г хлеба и то, что на нём
     if(SP.partAs) ps=ps.map(function(x,i){ return i?SP.partAs(x):x });
@@ -1180,7 +1183,7 @@ var MealBot=(function(){
         S.offer={raw:RAW0,src:cp0.src,key:cp0.key,n:cp0.n||1,eaten:EATEN,weighed:WEIGHED,left:LEFT,parts:cp0.lines.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} })};
         var restN=allEn.filter(function(en){ return en.line.comp!==cp0 }).length+miss.length;
         return p((cp0.named?esc(cp0.name)+' в базе нет. Предлагаю':'Одним блюдом этого в базе нет — предлагаю')+' записать по отдельности: '+
-            cp0.lines.map(function(l){ return esc(String(foodName(l)).split(/[,(—]/)[0].trim().toLowerCase())+' '+fmt(l.g)+' г' }).join(' и ')+'.')+
+            cp0.lines.map(function(l){ return esc(String(foodName(l)).split(/,\s|\(|—/)[0].trim().toLowerCase())+' '+fmt(l.g)+' г' }).join(' и ')+'.')+
           p('Записать так? Или скажи свои граммы.')+(restN?'<p class="mlHint">Остальное из сообщения запишу вместе с этим.</p>':'')+chips([['offer:1','Записать так']]);
       }
     }
