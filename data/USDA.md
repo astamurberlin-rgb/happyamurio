@@ -21,7 +21,7 @@ python scripts/build-usda.py --archive /absolute/path/sr-legacy.zip
 
 Standard-library Python only; no API key or runtime third-party service. The importer pins archive SHA-256 `0fe8ae486a2c8eb42cb96413f058deb51863a46c8fb8eeb4b1fb45006dd338ef`. A changed archive fails closed for review.
 
-Verified: **7,793 unique FDC IDs**, **644,125 numeric nutrient values**, **149 nutrient definitions**, **14,449 original household portions**, **48 curated Russian names/alias records** (all 42 `Spices, ...` records plus six fresh herbs/stock). These source counts match the SR Legacy documentation. Asset: approximately 15.9 MB uncompressed / 3.1 MB gzip. Original English names remain for every record; English-only coverage is explicit, not silently auto-translated.
+Verified: **7,793 unique FDC IDs**, **644,125 numeric nutrient values**, **149 nutrient definitions**, **14,449 original household portions**, **Russian names for all 7,793 records** (see below). These source counts match the SR Legacy documentation. Asset: approximately 15.9 MB uncompressed / 3.1 MB gzip. Original English names remain for every record.
 
 Paprika is FDC **171329** (282 kcal/100 g, teaspoon 2.3 g); black pepper **170931** (251 kcal/100 g, ground teaspoon 2.3 g, whole teaspoon 2.9 g). Pure red/cayenne pepper **170932** (sodium 30 mg/100 g) is not chili-powder seasoning **171319** (sodium 2,870 mg/100 g). No cultivar stronger than the original description is claimed. Original portions preserve `amount`, modifier, and `gramWeight`; the gram weight belongs to that stated amount, not automatically one unit.
 
@@ -38,3 +38,10 @@ Paprika is FDC **171329** (282 kcal/100 g, teaspoon 2.3 g); black pepper **17093
 Definition sources: [BLS 4.0 documentation, §5.3](https://www.openagrar.de/servlets/MCRFileNodeServlet/openagrar_derivate_00069363/BLS_4_0_Dokumentation_DE.pdf); [USDA SR28 documentation, carbohydrate](https://www.ars.usda.gov/ARSUserFiles/80400535/Data/SR/SR28/sr28_doc.pdf). SR Legacy refers detailed food-method documentation back to SR28.
 
 `legacySearchReplacements` identifies eight prior hand-entered generic herb entries for **new-search de-duplication only**. Historical IDs, compositions, and diaries must remain untouched. Old `bbf` is **not** an exact alias: its app name claims bone stock with fat removed, whereas the USDA item only says home-prepared beef stock. It must not be silently rewritten as that product.
+
+## Russian names (2026-11-17)
+
+Every record has `names.ru`; `names.en` is unchanged and still searchable. Sources of the Russian names (`nameOrigins.ru`): 48 curated earlier (42 `Spices, ...` plus six fresh herbs/stock); 15 dessert records by ChatGPT, 09.11.2026 (the same as `USDA_RU` in Meal `search-names.js`); 9 «Sweet preserves» titles by ChatGPT, 14.11.2026; 7,721 translated by Claude, 17.11.2026. Claude's translation follows the USDA description part by part, in the same order («Rice, white, long-grain, regular, enriched, cooked» → «Рис, белый, длиннозёрный, обычный, обогащённый, приготовленный»); adjectives agree with the product; «raw» of fruit, vegetables, greens, herbs and fresh legumes is «свежий» (owner's rule of 17.11.2026), of meat, fish, grain, nuts and dry legumes «сырой»; brand and product-line names stay as in the source. `aliases` gain the base (masculine) forms of agreed adjectives and «варёный» for cooked/boiled records, so «белый рис» and «рис варёный» find rice. Composition, portions, IDs and revisions are unchanged; diary entries are not recalculated.
+
+— Claude · 17.11.2026
+
