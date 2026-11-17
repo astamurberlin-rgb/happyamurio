@@ -105,8 +105,8 @@ function bindCareNavigation(){
  let drag=null;
  /* Day 60.4: на экране отметок жест вниз уводит всё, кроме кольца с кнопкой: кольцо стоит на месте, как при переходе с главной. Другие экраны уезжают целиком. */
  function sheetMove(screen,dy,anim){const ring=screen.dataset.screen==='ring',parts=ring?[...document.querySelectorAll('#sectionPanel>:not(.swipeZone)')]:[screen];for(const el of parts){el.style.transition=anim?'transform .24s cubic-bezier(.22,.75,.25,1),opacity .24s':'none';el.style.transform=dy?'translateY('+dy+'px)':'';el.style.opacity=ring&&dy?String(Math.max(0,1-Math.pow(dy/320,3))):'';   /* почти без прозрачности: 100 точек — 97 %, 180 — 82 %, 250 — 52 % (Астамур 17.11.2026: «ещё менее прозрачные») */}
-  /* Надпись на самой кнопке гаснет по мере жеста (сама кнопка стоит): 60 точек — 70 %, 120 — 40 %, 200 — 0. Главная после закрытия показывает свою надпись. */
-  if(ring)for(const el of document.querySelectorAll('[data-screen="ring"] .ringSlide .knob>span')){el.style.transition=anim?'opacity .24s':'none';el.style.opacity=dy?String(Math.max(0,1-dy/200)):'';}}
+  /* Надпись на кнопке и цветное заполнение дуги гаснут по мере жеста (сама кнопка и серая дорожка стоят): 60 точек — 70 %, 120 — 40 %, 200 — 0. Главная после закрытия показывает свою надпись. */
+  if(ring)for(const el of document.querySelectorAll('[data-screen="ring"] .ringSlide .knob>span,[data-screen="ring"] .ringSlide circle.fill')){el.style.transition=anim?'opacity .24s':'none';el.style.opacity=dy?String(Math.max(0,1-dy/200)):'';}}
  function sheetRest(screen){setTimeout(()=>sheetMove(screen,0,false),260);}
  document.addEventListener('pointerdown',e=>{const grip=e.target.closest('.care-grip,#cpGrip');if(!grip)return;const screen=grip.closest('.screen');drag={grip,screen,y:e.clientY,dy:0,t:performance.now()};grip.setPointerCapture(e.pointerId);sheetMove(screen,0,false);});
  document.addEventListener('pointermove',e=>{if(!drag)return;const now=performance.now(),ndy=Math.max(0,e.clientY-drag.y);if(now>drag.t)drag.v=(ndy-drag.dy)/(now-drag.t);drag.t=now;drag.dy=ndy;sheetMove(drag.screen,drag.dy,false);});

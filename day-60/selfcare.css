@@ -149,5 +149,5 @@ body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 @media(prefers-reduced-motion:reduce){.screen.on,[data-screen="ring"].on #sectionPanel>*{animation:none!important}}
 /* Day 60.3 (17.11.2026): обратный переход с экрана отметок на главную — кольцо с кнопкой на месте,
    шапка, соседние кольца, подпись под кнопкой и карточки разделов проявляются так же, как блоки экрана отметок. */
-[data-screen="day"].from-ring>:not(.nwWg),[data-screen="day"].from-ring .nwSl.side,[data-screen="day"].from-ring .nwSl:not(.side) .care-ring-label,[data-screen="day"].from-ring .nwSl:not(.side) .knob b{animation:careFadeIn .45s ease-out .08s backwards}
+[data-screen="day"].from-ring>:not(.nwWg),[data-screen="day"].from-ring .nwSl.side,[data-screen="day"].from-ring .nwSl:not(.side) .care-ring-label,[data-screen="day"].from-ring .nwSl:not(.side) .knob b,[data-screen="day"].from-ring .nwSl:not(.side) canvas{animation:careFadeIn .45s ease-out .08s backwards}
 @media(prefers-reduced-motion:reduce){[data-screen="day"].from-ring *{animation:none!important}}
