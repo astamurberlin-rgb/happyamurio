@@ -190,7 +190,8 @@ var MealSpeech=(function(){
     if(/(^|\s)(чай|чая|чаю|чае|кофе|какао)(?=[\s,.])/.test(s)&&/сахар/.test(s)&&!/столов/.test(s)) s=s.replace(/(^|\s)(ложк[а-я]*)(?=\s)/g,'$1чайная $2');
     /* другие названия и уменьшительные */
     var skip=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after||[]).join('|')+')\\s*$');
-    ALIASES.forEach(function(r){ s=s.replace(r.re,function(m,a,off){ return skip.test(s.slice(0,off)+a)?m:a+r.to }) });
+    var skipStem=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after_stems||['~']).join('|')+')[а-я]*\\s*$');
+    ALIASES.forEach(function(r){ s=s.replace(r.re,function(m,a,off){ var before=s.slice(0,off)+a; return skip.test(before)||(m.trim().indexOf(' ')<0&&skipStem.test(before))?m:a+r.to }) });
     s=s.replace(/\u0001(.)/g,function(m,c){ return keep[c.charCodeAt(0)-0x2460] });
     return s.replace(/\s+/g,' ').replace(/(\s,)+/g,',').replace(/^[\s,]+/,'').trim();
   }
@@ -201,9 +202,14 @@ var MealSpeech=(function(){
     var e=(D.compound_and_intent_rules||[]).filter(function(x){ return x.bot==='recipe' })[0]; if(!e) return null;
     return new RegExp(B0+'(?:'+alt(e.forms)+')'+B1).test(' '+nz(raw)+' ')?e.reply_ru:null;
   }
+  /* общее слово («сыр», «сок»): что брать, когда человек не уточнил */
+  function generic(word){
+    var w=nz(word), e=((D&&D.generic_defaults)||[]).filter(function(x){ return new RegExp(x.said).test(w) })[0];
+    return e?{id:e.id,history:new RegExp(e.history),search:e.default_search||null,ask:!!e.ask,first:e.first_search||null}:null;
+  }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},all:/[≈⊕⊘▽◇△]/g}};
 })();

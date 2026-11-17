@@ -127,6 +127,11 @@ var MealBot=(function(){
     for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ var x=it[j]; if(FOODS[x.fid]&&!x.tap&&headOk(x.fid,[word])) return x } }
     return null;
   }
+  function lastNamed(re){
+    var ds=Object.keys(DB.days||{}).sort();
+    for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ var x=it[j]; if(FOODS[x.fid]&&!x.tap&&re.test(norm(FOODS[x.fid].n))) return x } }
+    return null;
+  }
   var GENERIC=/^(мяс(о|а|ом|е)|рыб(а|у|ы|ой)|овощ(и|ей|ами)|фрукт(ы|ов)|ягод(ы|а)|орех(и|ов|а)|сыр(а|ом)?|колбас(а|ы|у)|каш(а|и|у))$/;
   var PREP=/^(с|со|из|в|во|на|без|для|под|по|к|у)$/;
   var SIZE=/^(маленьк|небольш|средн|больш|крупн|глубок)/;
@@ -368,6 +373,16 @@ var MealBot=(function(){
         l.ask=null; l.spoken=l.spoken||l.name;
         if(minus){ l.whole=l.g; l.waste=minus; if(minus>=l.g){ l.ask='waste' } else { l.q=Math.round((l.g-minus)*10)/10; l.u='г'; l.g=l.q; l.explicit=true } minus=0 }
         var fw=String(l.name||'').split(' ').filter(Boolean);
+        /* Meal 33.9: просто «сыр» — последний записанный сыр, иначе гауда; просто «сок» — последний записанный, иначе вопрос (решение Астамура 17.11.2026) */
+        var gd=SP&&fw.length===1&&(l.fid||l.alts.length)?SP.generic(fw[0]):null;
+        if(gd){
+          var wasG=lastNamed(gd.history), gid=null;
+          if(wasG){ gid=wasG.fid; l.asBefore=true }
+          else if(gd.search){ var rg=parseText(gd.search).lines[0]; gid=rg&&(rg.fid||rg.alts[0])||null; if(gid) l.picked=true }
+          if(gid){ l.alts=[gid].concat(l.alts.filter(function(x){ return x!==gid })); l.fid=gid; l.st='ok'; l.bls=0; l.g=gramsFor(gid,l.q,l.u) }
+          else if(gd.ask){ var rf=gd.first?parseText(gd.first).lines[0]:null, fi=rf&&(rf.fid||rf.alts[0]);
+            if(fi) l.alts=[fi].concat(l.alts.filter(function(x){ return x!==fi })).slice(0,3); l.fid=null; l.st='pick'; l.noAuto=true; l.bls=0 }
+        }
         /* общее слово («торт», «суп», «салат»): был такой раньше — тот же и той же порцией; не было — спросить, какой */
         if(fw.length===1&&GENW.test(fw[0])&&(l.fid||l.alts.length)){
           var was=lastOf(fw[0]);
@@ -494,6 +509,8 @@ var MealBot=(function(){
   /* «пять перепелок»: если у похожего продукта есть вес штуки — пишем штуками сразу, остальное кнопками */
   function pieceUnit(fid){ var por=(FOODS[fid]||{}).por||{}; return Object.keys(por).filter(function(k){ return por[k]>0&&!/^(г|мл|порция|ломтик|кусок)$/.test(k) })[0]||null }
   function byPiece(l){
+    /* Meal 33.9: вес штуки из словаря («два онигири», «шесть суши») */
+    if(SP&&l.fid&&FOODS[l.fid]&&!pieceUnit(l.fid)&&SP.group(FOODS[l.fid],'шт')){ l.st='ok'; l.u='шт'; l.q=l.count; l.g=gramsFor(l.fid,l.q,'шт'); l.explicit=true; l.ask=null; return true }
     var ids=[l.fid].concat(l.alts||[]);
     var nm0=String(l.spoken||l.name||'').trim(), nw=nm0.split(' ').filter(Boolean);
     if(nm0) [nm0, nm0+' целиком'].forEach(function(q){ var r=parseText(q).lines[0]; if(r) ids=ids.concat([r.fid].concat(r.alts||[])) });
@@ -1100,7 +1117,8 @@ var MealBot=(function(){
   function words(id){ var f=FOODS[id]; return f?norm(f.n).split(/[^a-zа-я0-9%]+/).filter(Boolean):[] }
   function extraState(id,food){ var fs=statesOf(words(id)), qs=statesOf(food); return Object.keys(fs).some(function(k){ return k!=='raw'&&!qs[k] }) }
   function headOk(id,food){ var w=words(id)[0]; return !!w&&food.some(function(q){ return sim(q,w)>=1.8 }) }
-  function covers(id,food){ var ws=words(id); return food.every(function(q){ return ws.some(function(w){ return sim(q,w)>=1.8||adjStem(q)&&adjStem(q)===adjStem(w) }) }) }
+  /* Meal 33.9: «отварная» покрыта названием «…, варёное» — тот же способ приготовления другим словом */
+  function covers(id,food){ var ws=words(id), fs=statesOf(ws); return food.every(function(q){ return ws.some(function(w){ return sim(q,w)>=1.8||adjStem(q)&&adjStem(q)===adjStem(w) })||STF.some(function(pp){ return pp[1].test(q)&&fs[pp[0]] }) }) }
   function related(id,food){ var ws=words(id); return food.some(function(q){ return ws.some(function(w){ return sim(q,w)>=1||adjStem(q)&&adjStem(q)===adjStem(w) }) }) }
   /* название — это и есть сказанное слово: «Груша, сырая» для «груша»; «Грибы шиитаке» для «грибы» — нет */
   function exactName(id,food){ return words(id).every(function(w){
@@ -1118,7 +1136,7 @@ var MealBot=(function(){
     var src=String(f.src||'');
     if(src==='BLS'||src==='Мои'||f.mine) return false;      // свой короткий список и свои продукты — как раньше
     if(!headOk(id,food)||extraState(id,food)) return true;  // «говядина» → «Машкичири с говядиной», «хурма» → «Хурма сушёная»
-    return /MEXT|USDA/.test(src);                           // большие справочники — после основной базы
+    return /MEXT|USDA|KFCT/.test(src);                      // большие справочники — после основной базы (Meal 33.9: и корейский KFCT — иначе один и тот же продукт находился то в нём, то в основной базе)
   }
   /* среди точных совпадений сначала те, где слово — само название и нет лишнего способа приготовления */
   function rank(list,food){

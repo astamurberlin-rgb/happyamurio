@@ -85,6 +85,12 @@ with sync_playwright() as p:
     check("бот выключен по умолчанию", off["on"] is False)
     check("выключен: прежний ответ «Понял» и ничего не записано", "Понял" in off["html"] and off["items"] == 0, off["html"][:120])
 
+    # каталоги подключаются не сразу: ждём, пока список продуктов перестанет расти, иначе выбор продукта зависел бы от скорости загрузки
+    last, same = -1, 0
+    for _ in range(60):
+        n = page.evaluate("()=>LIST.length"); same = same + 1 if n == last else 0; last = n
+        if same >= 3: break
+        page.wait_for_timeout(500)
     page.evaluate("()=>MealBot.setOn(true)")
     bad = []
     for s in S:
