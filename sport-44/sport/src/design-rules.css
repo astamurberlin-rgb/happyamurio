@@ -96,3 +96,8 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .he-knob small{font-size:12px!important}
 /* «Продолжить» в полоске текущей тренировки */
 [data-action=resume]{font-size:14px!important}
+/* карточка упражнения: шапка одной высоты на всех вкладках — карандаш на «Добавить» не сдвигает вкладки вниз */
+.sheet:has(.exercise-context-tabs) .sheet-top{box-sizing:border-box;min-height:44px;height:auto;align-items:center}
+.sheet:has(.exercise-context-tabs) .rename-exercise{width:44px;height:44px;min-height:44px;margin-top:0;margin-bottom:0;flex:none}
+/* на других вкладках карандаш невидим, но место держит: длинное название переносится одинаково на всех вкладках */
+.sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:inline-grid!important;visibility:hidden;pointer-events:none}
