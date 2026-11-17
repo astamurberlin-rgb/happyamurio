@@ -73,9 +73,10 @@
       // Стык наверху: при blend=0 — чёткая граница, иначе цвета переливаются друг в друга; к концам дуги гаснут.
       if(tn<.002){
         // Day 60.4: вторая сторона пустая — дуга растворяется с обоих концов, наверху без резкого начала (Астамур 17.11.2026).
-        const fS=Math.min(fP,tp/2);add(0,P,endA);add(fS,P,1);add(tp-fP,P,1);add(tp,P,endA);add(tp+cap,P,endA);add(tp+cap+.001,P,0);add(1,P,endA);
+        // Длина затухания — от всей дуги, а не от остатка после перелива: иначе у короткой дуги концы срезаны (Астамур 17.11.2026 14:12).
+        const f1=Math.min(tp/2,Math.max(tp*style.fade/100,.04));add(0,P,endA);add(f1,P,1);add(tp-f1,P,1);add(tp,P,endA);add(tp+cap,P,endA);add(tp+cap+.001,P,0);add(1,P,endA);
       }else if(tp<.002){
-        const fS=Math.min(fN,tn/2);add(0,N,endA);add(1-tn-cap-.001,N,0);add(1-tn-cap,N,endA);add(1-tn,N,endA);add(1-tn+fN,N,1);add(1-fS,N,1);add(1,N,endA);
+        const f1=Math.min(tn/2,Math.max(tn*style.fade/100,.04));add(0,N,endA);add(1-tn-cap-.001,N,0);add(1-tn-cap,N,endA);add(1-tn,N,endA);add(1-tn+f1,N,1);add(1-f1,N,1);add(1,N,endA);
       }else{
         add(0,bw?mid:P,1);add(bP,P,1);add(tp-fP,P,1);add(tp,P,endA);add(tp+cap,P,endA);add(tp+cap+.001,P,0);
         add(1-tn-cap-.001,N,0);add(1-tn-cap,N,endA);add(1-tn,N,endA);add(1-tn+fN,N,1);add(1-bN,N,1);add(1,bw?mid:N,1);
