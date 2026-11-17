@@ -400,6 +400,7 @@ var MealBot=(function(){
         l.ask=null; l.spoken=l.spoken||l.name;
         if(minus){ l.whole=l.g; l.waste=minus; if(minus>=l.g){ l.ask='waste' } else { l.q=Math.round((l.g-minus)*10)/10; l.u='г'; l.g=l.q; l.explicit=true } minus=0 }
         var fw=String(l.name||'').split(' ').filter(Boolean);
+        if(SP&&fw.length&&SP.missing(fw[0])){ l.fid=null; l.alts=[]; l.st='none' }   // «пельмени»: настоящих в базе нет — не подставлять похожее по слову
         /* Meal 33.9: просто «сыр» — последний записанный сыр, иначе гауда; просто «сок» — последний записанный, иначе вопрос (решение Астамура 17.11.2026) */
         var gd=SP&&fw.length===1&&tokensOf(c.text).length===1&&(l.fid||l.alts.length)?SP.generic(fw[0]):null;
         if(gd){
@@ -623,7 +624,12 @@ var MealBot=(function(){
     ids=ids.filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i });
     /* Meal 33.7: у справочников (USDA, MEXT, KFCT) теперь русские названия — штука из основной базы и своих продуктов впереди */
     var hits=ids.filter(function(x){ return pieceUnit(x)&&(!nw.length||related(x,nw)) });
-    var hit=hits.filter(function(x){ return !/USDA|MEXT|KFCT/.test(String(FOODS[x].src||'')) })[0]||hits[0]; if(!hit) return false;
+    var hit=hits.filter(function(x){ return !/USDA|MEXT|KFCT/.test(String(FOODS[x].src||'')) })[0];
+    /* продукт ещё не выбран из похожих («три печенья» — овсяное или бисквитное): беру первое и вес штуки из словаря, остальные — кнопками замены;
+       штука из большого справочника (USDA, MEXT, KFCT) — только если словарь веса не знает */
+    if(!hit){ var a0=SP&&!l.fid&&(l.alts||[])[0];
+      if(a0&&FOODS[a0]&&SP.group(FOODS[a0],'шт')){ l.fid=a0; l.st='ok'; l.u='шт'; l.q=l.count; l.g=gramsFor(a0,l.q,'шт'); l.explicit=true; l.picked=l.alts.length>1; l.ask=null; return true }
+      hit=hits[0]; if(!hit) return false }
     var others=ids.filter(function(x){ return x!==hit });
     l.fid=hit; l.st='ok'; l.u=pieceUnit(hit); l.q=l.count; l.g=gramsFor(hit,l.q,l.u); l.explicit=true; l.alts=[hit].concat(others); l.picked=others.length>0; l.ask=null;
     return true;

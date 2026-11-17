@@ -76,6 +76,10 @@ var MealSpeech=(function(){
     });
     return res;
   }
+  /* слово, под которым в базе лежит другое («пельмени» — вареники с картошкой): пока настоящего продукта нет, бот говорит «в базе нет» */
+  function missing(word){
+    var w=nz(word); return ((D&&D.known_missing)||[]).some(function(e){ return new RegExp(e.said).test(w)&&!hasDish(new RegExp(e.unless_in_base)) });
+  }
   function hasDish(re){
     try{ if(typeof LIST==='undefined'||typeof FOODS==='undefined') return false;
       return LIST.some(function(x){ var f=FOODS[x.id]||x; return f&&re.test(nz(f.n)) }) }catch(e){ return false }
@@ -236,7 +240,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, missing:missing, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},all:/[≈⊕⊘▽◇△]/g}};
 })();
