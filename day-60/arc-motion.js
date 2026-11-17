@@ -71,8 +71,15 @@
       const add=(t,c,a)=>{at=Math.max(at,Math.min(1,t));g.addColorStop(at,'rgba('+c.join(',')+','+a+')');};
       const bw=style.blend/100*.12,bP=Math.min(tp*.9,bw),bN=Math.min(tn*.9,bw),fP=(tp-bP)*style.fade/100,fN=(tn-bN)*style.fade/100,endA=style.fade>0?0:1,cap=.02;
       // Стык наверху: при blend=0 — чёткая граница, иначе цвета переливаются друг в друга; к концам дуги гаснут.
-      add(0,bw?mid:P,1);add(bP,P,1);add(tp-fP,P,1);add(tp,P,endA);add(tp+cap,P,endA);add(tp+cap+.001,P,0);
-      add(1-tn-cap-.001,N,0);add(1-tn-cap,N,endA);add(1-tn,N,endA);add(1-tn+fN,N,1);add(1-bN,N,1);add(1,bw?mid:N,1);
+      if(tn<.002){
+        // Day 60.4: вторая сторона пустая — дуга растворяется с обоих концов, наверху без резкого начала (Астамур 17.11.2026).
+        const fS=Math.min(fP,tp/2);add(0,P,endA);add(fS,P,1);add(tp-fP,P,1);add(tp,P,endA);add(tp+cap,P,endA);add(tp+cap+.001,P,0);add(1,P,endA);
+      }else if(tp<.002){
+        const fS=Math.min(fN,tn/2);add(0,N,endA);add(1-tn-cap-.001,N,0);add(1-tn-cap,N,endA);add(1-tn,N,endA);add(1-tn+fN,N,1);add(1-fS,N,1);add(1,N,endA);
+      }else{
+        add(0,bw?mid:P,1);add(bP,P,1);add(tp-fP,P,1);add(tp,P,endA);add(tp+cap,P,endA);add(tp+cap+.001,P,0);
+        add(1-tn-cap-.001,N,0);add(1-tn-cap,N,endA);add(1-tn,N,endA);add(1-tn+fN,N,1);add(1-bN,N,1);add(1,bw?mid:N,1);
+      }
       ctx.strokeStyle=g;ctx.beginPath();ctx.arc(120,120,92,top-tn*TAU,top+tp*TAU);ctx.stroke();
     }
     ctx.globalAlpha=1;
