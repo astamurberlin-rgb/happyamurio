@@ -37,7 +37,8 @@ function openScheduleSheet(id){
  const t=templates().find(t=>t.id===id);if(!t)return;const s=templateSchedule(id);
  openSheet('Расписание',`<form id="schedule-form" data-id="${esc(id)}" ${s?`data-schedule-id="${esc(s.id)}"`:''}><p class="sheet-info">${esc(t.title)}</p>${scheduleFields(s)}</form>`);
  const form=$('#schedule-form'),sheet=form?.closest('.sheet');if(!form)return;if(!s)setPlanMode(form,'once');
- if(sheet&&!sheet.querySelector('.sheet-done')){const done=`<button type="submit" form="schedule-form" class="sheet-done" aria-label="Сохранить расписание">${icon('check')}</button>`,grip=sheet.querySelector(':scope > .grip');if(grip)grip.insertAdjacentHTML('afterend',done);else sheet.insertAdjacentHTML('afterbegin',done);}
+ // Аудит единообразия 18.11.2026: «Сохранить» внизу, после полей, а не ✓ вверху.
+ if(!form.querySelector('.schedule-save'))form.insertAdjacentHTML('beforeend','<button type="submit" class="button primary schedule-save">Сохранить</button>');
 }
 document.addEventListener('change',e=>{const input=e.target;if(!input?.dataset?.templateHome)return;const t=templates().find(t=>t.id===input.dataset.templateHome);if(!t||t.recommended)return;storeSportTemplate({...t,favorite:input.checked});persist();render();});
 function scheduleFromForm(f,form,templateId){

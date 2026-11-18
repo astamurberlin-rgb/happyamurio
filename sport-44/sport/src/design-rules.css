@@ -189,3 +189,19 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .exercise-ask-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
 /* «Добавить упражнение» — фиолетовая пилюля, как «Добавить в тренировку» в инструкции подтягиваний (на проверку) */
 #exercise-config-form[data-scope=add] .exercise-save-actions .button.primary{background:#8156dd!important;color:#fff!important;border:1px solid #ffffff33!important}
+/* Аудит единообразия 18.11.2026 · настройки упражнения: «Сохранить» / «Добавить» всегда в конце, внизу листа —
+   короткое содержимое прижимает кнопку к низу, длинное — кнопка после всех полей. */
+.sheet:has(.exercise-context-tabs)>form#exercise-config-form:not([hidden]){display:flex!important;flex-direction:column}
+#exercise-config-form>.exercise-save-actions{margin-top:auto!important;padding-top:16px}
+#exercise-config-form>.exercise-save-actions .button{width:100%}
+/* редактор тренировки и расписание: «Сохранить» последней кнопкой листа */
+#template-form>.template-save,#schedule-form>.schedule-save{width:100%;margin-top:16px}
+/* редактор: значок настроек справа от названия упражнения, как в идущей тренировке */
+.template-exercise-heading{display:flex;align-items:center;gap:8px}
+.template-exercise-heading .template-exercise-name{flex:1 1 auto;min-width:0;margin:0}
+.template-exercise-settings{flex:none;width:44px;height:44px;display:grid;place-items:center;color:#fff;background:transparent;border:0}
+/* карточка тренировки: (i) справа, как в записи журнала */
+.template-exercise-title{display:flex!important;align-items:center;gap:10px}
+.template-exercise-title b{flex:1 1 auto;min-width:0}
+.template-exercise-title small{flex:none}
+.template-exercise-title .exercise-technique{flex:none;order:3}

@@ -28,7 +28,7 @@ function mountExerciseContext(id,ei=null,context='active'){
   const last=form.lastElementChild;if(last?.classList.contains('fineprint'))last.textContent='Настройки применятся только к добавляемому упражнению. Библиотека и прежние тренировки не изменятся.';
  }
  exerciseContext={id,ei,context,form,sheet,nav,panels,tab:null,scroll:{},loaded:{}};
- selectExerciseContextTab(context==='active'?'configure':'instructions');return true;
+ selectExerciseContextTab(context==='library'?'instructions':'configure');return true;
 }
 function selectExerciseContextTab(key,focus=false){
  const c=exerciseContext;if(!c||!c.form.isConnected||!c.panels[key])return false;
