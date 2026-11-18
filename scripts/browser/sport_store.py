@@ -278,12 +278,12 @@ with sync_playwright() as p:
 
     # Sport 43: выбранное оформление сохраняется на устройстве и остаётся после перезагрузки (в Sport 42 не сохранялось)
     a1.click(".dock [data-view=profile]")
-    a1.click("[data-happy-appearance-open]")
-    a1.wait_for_selector("#happy-appearance-dialog[open]")
-    theme = a1.evaluate("()=>{const i=[...document.querySelectorAll('#happy-appearance-dialog input')].filter(x=>!x.checked)[1];i.click();return i.value}")
-    a1.click("#happy-appearance-dialog .ha-apply")
+    # Sport 44.5: «Настроить тему» под «Настроить цели» — нажатие на тему сразу применяет и сохраняет
+    a1.click(".appearance-trigger")
+    a1.wait_for_selector("#sport-appearance-panel[data-open]")
+    theme = a1.evaluate("()=>{const o=[...document.querySelectorAll('.appearance-options[data-kind=theme] .appearance-choice')].filter(x=>x.getAttribute('aria-pressed')!=='true')[1];o.click();return o.dataset.value}")
     a1.wait_for_timeout(800)
-    out["theme_saved"] = [a1.evaluate("()=>document.querySelector('#happy-appearance-dialog').open"), a1.evaluate("()=>HappyAppearance.selected") == theme]
+    out["theme_saved"] = [a1.evaluate("()=>!!document.querySelector('#happy-appearance-dialog,[data-happy-appearance-open]')"), a1.evaluate("()=>HappyAppearance.selected") == theme]
     a1.reload()
     ready(a1)
     out["theme_after_reload"] = a1.evaluate("()=>HappyAppearance.selected") == theme
