@@ -14,7 +14,7 @@
 
 Проверено: check-shared, check-shared-ui, check-layout, check-account-screens (с общей целью веса), check-measurements, Sport `npm run check`, тесты Day, проверки Meal, сценарии в браузере. Не проверено: на iPhone.
 
-— Claude · 19.11.2026 01:48
+— Claude · 19.11.2026 01:57
 
 ## 19.11.2026 — Meal 33.13: общий вес блюда и «не ел»
 
