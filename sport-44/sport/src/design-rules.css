@@ -326,3 +326,11 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .workout-pop-card{position:absolute;left:0;right:0;bottom:0;display:grid;gap:12px;padding:22px 20px calc(112px + env(safe-area-inset-bottom));background:var(--sport-background);border-top:1px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:0 -8px 30px rgba(4,40,80,.18);border-radius:26px 26px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.25,1)}
 .workout-pop.on .workout-pop-card{transform:translateY(0)}
 .workout-pop-card h3{margin:0 0 2px;font-size:18px;font-weight:800;color:#fff}
+/* Обзор тренировки и запись журнала: упражнения одним списком в одной рамке, без кнопок «i» (Астамур 18.11.2026). */
+.card.template-exercises,.card.record-exercises{display:block;padding:2px 18px}
+.card.template-exercises>.template-exercise,.card.record-exercises>.record-exercise{margin:0!important;padding:14px 0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.card.template-exercises>.template-exercise+.template-exercise,.card.record-exercises>.record-exercise+.record-exercise{border-top:1px solid #ffffff33!important}
+/* «Добавить в расписание» — без стрелки, значок и текст по центру, как «В календарь». */
+.plan-line{display:flex!important;align-items:center;justify-content:center!important;text-align:center;gap:10px}.plan-line>.icon{position:static!important;margin:0!important;flex:none}.plan-line b{flex:0 1 auto!important}
+/* «Редактировать» с карандашом — на одной линии с названием. */
+.training-heading{align-items:center!important}
