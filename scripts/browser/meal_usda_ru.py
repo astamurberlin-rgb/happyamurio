@@ -70,6 +70,12 @@ with sync_playwright() as p:
       return {st:l.st,n:FOODS[l.fid]?FOODS[l.fid].n:'',src:FOODS[l.fid]?FOODS[l.fid].src:'',u:l.u}}""")
     check("без бота «суп с лапшой» — суп из основной базы, а не американский концентрат", soup["st"] == "ok" and "лапш" in soup["n"] and soup["src"] == "BLS")
     out["soup"] = soup
+    # Meal 33.9.3 · фрукты и овощи — «свежий», картофель — «сырой» (решение Астамура 18.11.2026 12:59); «помидоры» — томаты из своего списка
+    fresh = meal.evaluate("""()=>{const on=MealBot.on();MealBot.setOn(false);const n=q=>{const l=parseText(q).lines[0];return FOODS[l.fid]?FOODS[l.fid].n:l.st};
+      const r={mandarin:n('мандарин'),raw_cucumber:n('сырой огурец'),potato:n('картофель'),beef:n('говядина'),tomato:n('помидоры')};if(on)MealBot.setOn(true);return r}""")
+    out["fresh"] = fresh
+    check("«Мандарин, свежий», «сырой огурец» — «Огурец…, свежий», картофель и говядина — «сырой», «помидоры» — томаты",
+          fresh["mandarin"] == "Мандарин, свежий" and "свеж" in fresh["raw_cucumber"] and "сыр" in fresh["potato"] and "сыр" in fresh["beef"] and fresh["tomato"] == "Томаты")
     check("на странице нет ошибок", not errors)
     out["errors"] = errors
     b.close()

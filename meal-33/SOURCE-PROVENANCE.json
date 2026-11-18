@@ -84,6 +84,15 @@
  },
  "pointReleases": [
   {
+   "version": "33.9.3",
+   "date": "2026-11-18",
+   "changes": [
+    "index.html: freshName, freshProduce, freshCatalogNames — фрукты, ягоды, овощи и грибы называются «свежий» (BLS F и G, MEXT 06–08, KFCT F–H, USDA Fruits и Vegetables); картофель и клубни — «сырой»; слова поиска прежние",
+    "usda.js: catalogGroup — группа продукта USDA",
+    "bot.js rank: слово в словах поиска продукта своего списка считается его названием («Томаты» — «помидоры»)"
+   ]
+  },
+  {
    "version": "33.9.2",
    "date": "2026-11-18",
    "changes": [
