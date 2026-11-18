@@ -534,7 +534,7 @@ var MealBot=(function(){
      3) просто назвал или взвесил — сырое. Овощи, фрукты, зелень — сырые. Решения Астамура 17.11.2026 23:11 и 23:41 */
   function methodFix(l,fw){
     if(!l.fid||l.st!=='ok'||l.asBefore||l.cooked||l.said||WEIGHED) return;
-    if(Object.keys(statesOf(fw)).length){ l.said=true; return }
+    if(Object.keys(statesOf(fw)).length||fw.some(function(w){ return typeof W_FRESH!=='undefined'&&W_FRESH.test(norm(w)) })){ l.said=true; return }   // «свежая курица» — как «сырая»
     var k=kindKey(l.fid), ds=Object.keys(DB.days||{}).sort(), was=null;
     for(var i=ds.length-1;i>=0&&!was;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0&&!was;j--){ var x=it[j]; if(x.how&&!x.tap&&FOODS[x.fid]&&kindKey(x.fid)===k) was=x } }
     if(was){ var raw0=l.fid; l.asBefore=true;
