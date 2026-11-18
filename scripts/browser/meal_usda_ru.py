@@ -107,6 +107,12 @@ with sync_playwright() as p:
     wait_for(meal, lambda: meal.evaluate("(id)=>!!FOODS[id]", RICE), 30)
     check("язык English — английское название", meal.evaluate("(id)=>FOODS[id]?FOODS[id].n:null", RICE) == "Rice, white, long-grain, regular, enriched, cooked")
     meal.evaluate("()=>{DB.catalogLang='ru';rebuildLib();renderAll()}"); meal.wait_for_timeout(400)
+    wait_for(meal, lambda: meal.evaluate("()=>BLS_ST==='ok'"), 60)
+    # Meal 33.9.2 · бот выключен, американский справочник включён: основная база первой (находка Астамура 18.11.2026 12:06)
+    soup = meal.evaluate("""()=>{const on=MealBot.on();MealBot.setOn(false);const l=parseText('суп с лапшой').lines[0];if(on)MealBot.setOn(true);
+      return {st:l.st,n:FOODS[l.fid]?FOODS[l.fid].n:'',src:FOODS[l.fid]?FOODS[l.fid].src:'',u:l.u}}""")
+    check("без бота «суп с лапшой» — суп из основной базы, а не американский концентрат", soup["st"] == "ok" and "лапш" in soup["n"] and soup["src"] == "BLS")
+    out["soup"] = soup
     check("на странице нет ошибок", not errors)
     out["errors"] = errors
     b.close()

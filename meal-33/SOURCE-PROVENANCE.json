@@ -91,6 +91,13 @@
    ]
   },
   {
+   "version": "33.9.2",
+   "date": "2026-11-18",
+   "changes": [
+    "index.html parseText: правило «основная база первой» (MealBot.loose, MealBot.rank) работает и при выключенном боте записи еды"
+   ]
+  },
+  {
    "version": "33.9.1",
    "date": "2026-11-18",
    "changes": [
@@ -484,8 +491,8 @@
   },
   {
    "path": "index.html",
-   "size": 622621,
-   "sha256": "18a446babe4bb3cb061e7b7cc554e2e86a78b7bd26c367c32a41f88cb8805698"
+   "size": 622847,
+   "sha256": "f08a6201b15dc9205958ff81b7ad5a394e9dbfe9bcd41a1ea1ed1c72a2fea4d2"
   },
   {
    "path": "kfct.js",
@@ -684,8 +691,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 53772,
-   "sha256": "0888b1a08b56e80fbedafab95373ffa3fce942413fb43c6c3da72caef730ec97"
+   "size": 54418,
+   "sha256": "01a63b98be7599ff8e73c8ae2417cc63ff7da6c0cef955c40402383c8f53bfa8"
   },
   {
    "path": "report.css",

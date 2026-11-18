@@ -2652,9 +2652,10 @@ function parseText(text){
       if(fat!=null){ var close=sc.filter(function(x){ return Math.abs((FOODS[x.id].f||0)-fat)<=0.3 }); if(close.length) sc=close.concat(sc.filter(function(x){ return close.indexOf(x)<0 })) }
       var top=sc[0];
       var libOk=top&&top.strong&&(fat==null||Math.abs((FOODS[top.id].f||0)-fat)<=0.3);
-      /* бот записи еды (bot.js, включается в разделе «Для разработчика»): простое слово — базовый продукт;
-         «рыхлое» совпадение из подключённых библиотек уступает точному из основной базы */
-      var loose=!!libOk&&useBls&&typeof MealBot!=='undefined'&&MealBot.on()&&MealBot.loose(top.id,food);
+      /* простое слово — базовый продукт; «рыхлое» совпадение из подключённых справочников уступает точному из основной базы.
+         Meal 33.9.2: правило работает и без бота записи еды — иначе с включённым американским справочником
+         «суп с лапшой» находился как консервированный концентрат «1 can (10.5 oz)» (находка Астамура 18.11.2026 12:06) */
+      var loose=!!libOk&&useBls&&typeof MealBot!=='undefined'&&MealBot.loose(top.id,food);
       var bc=((!libOk||loose)&&useBls)?blsSearch(key,20,bo({})):[];
       if(loose){ if(bc.strong) libOk=false; else { bc=[];
         if(!MealBot.headOk(top.id,food)){
@@ -2666,7 +2667,7 @@ function parseText(text){
         var strongs=sc.filter(function(x){ return x.strong&&(fat==null||Math.abs((FOODS[x.id].f||0)-fat)<=0.3) });
         var farFat=!strongs.length&&fat!=null;
         if(!strongs.length) strongs=sc.filter(function(x){ return x.strong });
-        if(typeof MealBot!=='undefined'&&MealBot.on()) strongs=MealBot.rank(strongs,food);
+        if(typeof MealBot!=='undefined') strongs=MealBot.rank(strongs,food);
         line.alts=strongs.slice(0,3).map(function(x){ return x.id });
         var amb=strongs.length>1&&(strongs[0].s-strongs[1].s)<=0.31;
         line.st=amb?'pick':'ok'; line.fid=amb?null:strongs[0].id;
