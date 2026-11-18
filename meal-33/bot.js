@@ -16,7 +16,7 @@ var MealBot=(function(){
     [/(^|\s)(съедобн\S*\s+част\S*)(?=\s|$)/g,' '],[/(^|\s)себе(?=[\s,.;!?]|$)/g,' '],[/(^|\s)(цел(ая|ый|ое|ые|иком|ую))(?=[\s,.;!?]|$)/g,' '],
     [/(^|\s)сто(?=\s)/g,'$1100'],[/(^|\s)двести(?=\s)/g,'$1200'],[/(^|\s)триста(?=\s)/g,'$1300'],[/(^|\s)четыреста(?=\s)/g,'$1400'],[/(^|\s)пятьсот(?=\s)/g,'$1500']];
   /* слова-связки диктовки: к еде не относятся */
-  var FILL=/(^|\s)(так|значит|запиши|записывай|запись|щас|сейчас|только что|ну|там|короче|я|мне|мы|пожалуйста|это|вот|отметь|отметить|отмечай|добавь|добавить|еще и|тебе скажу|взвешиваю|было|был|была|были|опять|снова|опять-таки|где-то|где то|примерно|около|приблизительно|м{2,}|э+х|э+м+|о+х|а+х|у+х|хм+|ой|ух|эй|блин|кстати|в общем|короче говоря|была|были|ровно)(?=[\s,.;!?]|$)/g;
+  var FILL=/(^|\s)(так|значит|запиши|записывай|запись|щас|сейчас|только что|ну|там|короче|я|мне|мы|пожалуйста|это|вот|отметь|отметить|отмечай|добавь|добавить|еще и|тебе скажу|взвешиваю|было|был|была|были|опять|снова|опять-таки|где-то|где то|примерно|около|приблизительно|м{2,}|э+х|э+м+|о+х|а+х|у+х|хм+|ой|ух|эй|блин|кстати|в общем|короче говоря|была|были|ровно|только)(?=[\s,.;!?]|$)/g;
   /* слова, с которыми правила не справляются честно: это работа модели (этап 2) */
   var DEFER=[[/(^|\s)(пополам|поделил\S*|половину)(\s|$)/,'еда делится на части'],
     [/(^|\s)если(\s|$)/,'условие «если»'],
@@ -122,6 +122,7 @@ var MealBot=(function(){
     s=s.replace(new RegExp('(\\d+(?:[.,]\\d+)?)\\s*'+VOL+'?\\s*[,.]?\\s*нет\\s*[,.]?\\s*(?=\\d)','g'),' ');
     s=s.replace(new RegExp(CUP+'\\s*[,.]?\\s*нет\\s*[,.]?\\s*(?=(?:больш\\S*|маленьк\\S*)?\\s*'+CUP+')','g'),' ');
     s=s.replace(/(^|\s)(глубок\S*|по вкусу)(?=\s|$)/g,' ');
+    if(SP) s=s.replace(/\s*,?\s+(?:это\s+)?(?:всего|итого|в сумме|в общей сложности|общий вес|общим весом|на вс[её])\s+(?=\d)/g,' ');   // Meal 33.13: «гречка с грибами, всего 200 г» — вес всего блюда, а не продукт «Всего»
     if(SP) s=s.replace(/(американо|капучино|латте|раф|флэт уайт|кофе)\s+(?:в\s+котор\S+|с|на)\s+(?:\d+|одним|двумя|тремя|двух|трех)\s+шот\S*(?:\s+(?:кофе|эспрессо))?(?=\s|$)/g,'$1')
       .replace(/(американо|капучино|латте|раф|флэт уайт|кофе)\s*,\s*(?:\d+|одним|двумя|тремя)\s+шот(?:ами|ом)(?:\s+(?:кофе|эспрессо))?(?=\s|$)/g,'$1');   // Meal 33.12: «с тремя шотами» после разбора речи выглядит как «, 3 шотами»
     return s;
@@ -172,6 +173,7 @@ var MealBot=(function(){
   var WASTE='(?:остат\\S*(?:\\s+несъедобн\\S*\\s+част\\S*)?|несъедобн\\S*(?:\\s+част\\S*)?|кожур\\S*|кожиц\\S*|косточ\\S*|кост(?:и|ей)|скорлуп\\S*|стерж\\S*|кочерыж\\S*|очистк\\S*|шкурк\\S*|отход\\S*)';
   function chunksOf(s){
     s=' '+s+' ';
+    if(SP) s=s.replace(/(^|\s)не\s*⊙/g,'$1⊗ ').replace(NOTATE,' ⊗ ');   // Meal 33.13: «не ел», «не стал» — пометка «не съедено» на весь кусок фразы
     s=s.replace(new RegExp('[\\s,]+(?:и\\s+|а\\s+)?(?:весит\\s+|было\\s+)?'+WASTE+'(?:\\s+(?:весит|было|вес|после еды|осталось|остался|осталась))*\\s+(\\d+(?:[.,]\\d+)?)\\s*(?:г|гр|грам+\\S*)?(?=[\\s,.;!?]|$)','g'),function(m,n){ return ' ⊖'+n.replace(',','.')+' ' });
     s=s.replace(/(\d)[,.](\d)/g,'$1#$2');
     s=s.replace(/(\sиз\s+[а-я]+(ов|ев|ей|ок|ек))\s+и\s+([а-я]+(ов|ев|ей|ок|ек))(?=[\s,.;:!?]|$)/g,'$1 $3');
@@ -180,8 +182,9 @@ var MealBot=(function(){
     if(SP) s=s.replace(/\sеще\s+(?=\d)/g,' , ').replace(/([а-я])\s+([▽◇△])\s*(?=[а-я])/g,'$1 , $2 ');   // Meal 33.12: «груша 180 ещё 180 г гречки» — две еды
     return s.split(/[,.;:!?\n…]+|\s(?:и|а|потом|плюс|затем)\s/).map(function(c){ return c.replace(/#/g,',').replace(/\s+/g,' ').trim() }).filter(Boolean)
       .map(function(c){ var mk=''; c=c.replace(MK,function(x){ mk+=x; return ' ' }).replace(/\s+/g,' ').trim();
+        var neg=c.indexOf('⊗')>=0; if(neg) c=c.replace(/⊗/g,' ').replace(/\s+/g,' ').trim();
         var corr=c.charAt(0)==='¶'; if(corr) c=c.slice(1).trim(); var mn=c.match(/⊖([\d.]+)/); if(mn) c=c.replace(mn[0],' ').replace(/\s+/g,' ').trim();
-        var parts=one(c); if(corr&&parts.length) parts[0]='¶'+parts[0]; if(mn&&parts.length) parts[parts.length-1]+=' ⊖'+mn[1]; if(mk&&parts.length){ parts[parts.length-1]+=' '+mk; if(mk.indexOf('⊙')>=0) parts=parts.map(function(x,i){ return i<parts.length-1?x+' ⊙':x }) } return parts })
+        var parts=one(c); if(corr&&parts.length) parts[0]='¶'+parts[0]; if(mn&&parts.length) parts[parts.length-1]+=' ⊖'+mn[1]; if(mk&&parts.length){ parts[parts.length-1]+=' '+mk; if(mk.indexOf('⊙')>=0) parts=parts.map(function(x,i){ return i<parts.length-1?x+' ⊙':x }) } if(neg) parts=parts.map(function(x){ return x+' ⊗' }); return parts })
       .reduce(function(a,c){ return a.concat(c) },[]);
   }
   function one(c0){
@@ -190,6 +193,7 @@ var MealBot=(function(){
   }
   function prepChunk(c){
     var o={text:c,raw:c,dup:null,range:null,size:null,corr:c.charAt(0)==='¶'};
+    if(c.indexOf('⊗')>=0){ o.neg=true; c=c.replace(/⊗/g,' ').replace(/\s+/g,' ').trim(); o.text=o.raw=c }
     if(o.corr) c=c.slice(1);
     /* пометки словаря: ≈ примерно; ⊕ ⊘ множитель меры; ▽ ◇ △ количество без числа */
     (c.match(MK)||[]).forEach(function(x){ if(x==='⊙') o.own=true; else if(x==='≈') o.approx=true; else if(SP&&SP.marks.fac[x]) o.fac=SP.marks.fac[x]; else if(SP&&SP.marks.vague[x]) o.vague=SP.marks.vague[x] });
@@ -395,6 +399,8 @@ var MealBot=(function(){
       /* аккаунт — одного человека: в дневник идёт только то, что съел он сам. «Положила детям по две котлеты и пюре», «ребёнок съел котлету», «мужу три, мне две»:
          чужое не пишется, и это действует до конца фразы, пока человек не сказал про себя («мне», «я», «съела»). Уронил, пролил — тоже не съедено. Решение Астамура 18.11.2026 */
       var T=' '+c.text+' ', notEaten=NOTEATEN.test(T), other=hasW(SUBJ,T)||hasW(RECIP,T);
+      /* Meal 33.13: «а рис 100 г не ел» — названное с «не ел», «не стал», «не трогал» в дневник не идёт («не доел» — отдельное правило выше) */
+      if(c.neg) notEaten=true;
       if(other||notEaten){
         if(other){ carryOther=true; var lf0=tokensOf(c.text.replace(RECIP,' ').replace(SUBJ,' ')).join(' ');
           if(lf0&&/\d/.test(c.text)){ lastOtherFood=lf0; wantFood=false } else if(/\d/.test(c.text)) wantFood=true }
@@ -531,7 +537,8 @@ var MealBot=(function(){
     cps.forEach(function(cp){
       if(!cp.total||!cp.lines.length||!cp.lines.every(function(l){ return l.fid&&!l.ask&&l.g>0 })) return;
       var sum=cp.lines.reduce(function(t,l){ return t+l.g },0), k=cp.total/sum;
-      cp.lines.forEach(function(l){ var g=Math.max(1,Math.round(l.g*k)); l.q=g; l.u='г'; l.g=gramsFor(l.fid,g,'г'); l.approx=true });
+      var left=cp.total;
+      cp.lines.forEach(function(l,i){ var g=i===cp.lines.length-1?Math.max(1,Math.round(left)):Math.max(1,Math.round(l.g*k)); left-=g; l.q=g; l.u='г'; l.g=gramsFor(l.fid,g,'г'); l.approx=true });   // Meal 33.13: последняя часть добирает остаток — в сумме ровно названный вес
     });
     res.tailMeal=tailMeal;
     return res;
@@ -542,6 +549,7 @@ var MealBot=(function(){
   var RECIP=/(^|\s)(кошк[еиу]|кот(у|ам|ятам)|собак[еиу]|пс(у|ам)|отдал\S*|угостил\S*|детям|ребенку|малышу|дочке|дочери|сыну|жене|мужу|маме|папе|бабушке|дедушке|брату|сестре|гостям|другу|подруге)(?=\s|$)/g,
       SUBJ=/(^|\s)(ребенок|дети|малыш|сын|сынок|дочь|дочка|муж|жена|мама|папа|бабушка|дедушка|брат|сестра|гости|гость|друг|подруга|кот|кошка|собака|пес)(?=\s|$)/g,
       OWNW=/(^|\s)(мне|себе|я|сам|сама|у меня)(?=\s|$)/g,
+      NOTATE=/(^|\s)не\s+(ел|ела|ели|съел|съела|съели|пил|пила|пили|выпил|выпила|стал|стала|трогал|трогала|брал|брала|кушал|кушала|буду|хочу|хотел|хотела)(?=\s|$)/,
       NOTEATEN=/(^|\s)(уронил\S*|выбросил\S*|выкинул\S*|пролил\S*|разлил\S*|просыпал\S*)(?=\s|$)/;
   function hasW(re,t){ re.lastIndex=0; var r=re.test(t); re.lastIndex=0; return r }
   /* «…но не доела, половину оставила» — пишется съеденная часть; сколько осталось, не сказано — целиком со знаком «≈» и кнопкой «Меньше» */
