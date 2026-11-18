@@ -1,0 +1,6 @@
+-- Meal сам забирает диктовки шортката «Еда» (решение Астамура 18–19.11.2026).
+-- Применено к проекту Supabase «happyday» (geqziziycpclhnucnsyx) 19.11.2026 миграцией «meal_inbox_take».
+-- В таблицу ai_shared.food_inbox добавлены поля meal_taken_at, meal_taken_by, meal_done_at: отметка Meal отдельно от status,
+-- который ведёт записная книжка. Функции public.meal_inbox_take(p_device) и public.meal_inbox_done(p_device, p_ids)
+-- отдают диктовки только аккаунту из ai_shared.inbox_meal_owner и только созданные после его поля since.
+-- Строки входящих не удаляются и не меняются, кроме этих трёх полей. Полный текст миграции — в истории миграций проекта.

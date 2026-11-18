@@ -133,6 +133,25 @@ function rest(url,method,body,headers){
  if(method==='PATCH'){var target=Object.keys(rows).filter(function(k){return mine(rows[k])&&match(rows[k])});if(target.length!==1)return reply(200,[]);rows[target[0]]=body;saveRows();return reply(200,prefer.indexOf('return=representation')>=0?[body]:undefined)}
  return reply(405,{});
 }
+/* ── входящие шортката «Еда» (Meal 33.15): придуманные диктовки. При первом открытии страницы — четыре, при каждом следующем — ещё одна,
+   как будто её только что сказали в шорткат. Настоящие входящие лаборатория не видит. ── */
+var INBOX='happy-lab-inbox-v1',SAMPLES=['Груша 200 г','Два мандарина и одно капучино','140 грам квашеной капусты','Солёные помидоры 250 г','Гречка с грибами, всего 200 г',
+ '175 г курицы','25 250 г лосося жареного','Паштет 30 г 20 г багета','Я съел хурму 150 г, а рис не ел','Селёдка 50 г и чёрный хлеб 30 г','Борщ две тарелки'],box;
+try{box=JSON.parse(localStorage.getItem(INBOX))}catch(e){}
+if(!box||!Array.isArray(box.rows))box={rows:[],next:0};
+/* в лаборатории выключатель «Диктовки с шортката» включён сразу; на сайте он выключен, пока человек сам не включит */
+try{var mi=JSON.parse(localStorage.getItem('happy-meal-inbox')||'{}');if(!mi.lab){mi.on=1;mi.lab=1;localStorage.setItem('happy-meal-inbox',JSON.stringify(mi))}}catch(e){}
+(function(){var n=box.rows.length?1:4,now=Date.now();
+ for(var i=0;i<n;i++){box.rows.push({id:1000+box.next,created_at:new Date(now-(n-i)*7*60000).toISOString(),raw_text:SAMPLES[box.next%SAMPLES.length],by:null,done:false});box.next++}
+ try{localStorage.setItem(INBOX,JSON.stringify(box))}catch(e){}})();
+function inbox(name,body){
+ var dev=String(body.p_device||'');
+ if(name==='meal_inbox_take'){box.rows.forEach(function(r){if(!r.by)r.by=dev});try{localStorage.setItem(INBOX,JSON.stringify(box))}catch(e){}
+  return reply(200,box.rows.filter(function(r){return r.by===dev&&!r.done}).map(function(r){return {id:r.id,created_at:r.created_at,raw_text:r.raw_text}}))}
+ var n=0;(body.p_ids||[]).forEach(function(i){box.rows.forEach(function(r){if(r.id===i&&r.by===dev&&!r.done){r.done=true;n++}})});
+ try{localStorage.setItem(INBOX,JSON.stringify(box))}catch(e){}
+ return reply(200,n);
+}
 var real=window.fetch.bind(window);
 window.fetch=async function(input,init){
  var url=typeof input==='string'?input:input&&input.url||String(input);
@@ -141,6 +160,7 @@ window.fetch=async function(input,init){
  await new Promise(function(r){setTimeout(r,120)});   // как будто по сети
  if(url.indexOf(BACKEND+'/auth/v1/')===0)return auth(url.slice((BACKEND+'/auth/v1/').length),method,body,init.headers||{});
  if(url.indexOf(BACKEND+'/rest/v1/app_sync')===0)return rest(url,method,body,init.headers||{});
+ if(url.indexOf(BACKEND+'/rest/v1/rpc/meal_inbox_')===0)return inbox(url.slice((BACKEND+'/rest/v1/rpc/').length),body);
  return reply(404,{});
 };
 

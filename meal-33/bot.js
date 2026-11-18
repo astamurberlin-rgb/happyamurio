@@ -685,7 +685,7 @@ var MealBot=(function(){
     });
     save();
     try{ if(typeof renderAll==='function') renderAll() }catch(e){}
-    var c={id:'c'+(++S.seq),add:add,undone:false,at:Date.now()}; S.commits.push(c);
+    var c={id:'c'+(++S.seq),add:add,undone:false,at:S.clock||Date.now()}; S.commits.push(c);
     /* «перепиши: …» — прежняя запись убирается только теперь, когда новая уже записана (раньше убиралась заранее и могла пропасть) */
     if(S.rewrite){ var old=S.rewrite; S.rewrite=null; if(!old.undone&&old!==c){ undo(S,old); c.replaced=true } }
     return c;
@@ -1059,15 +1059,37 @@ var MealBot=(function(){
   }
 
   /* ── главный вход: сообщение человека → ответ бота (HTML) ── */
+  /* Meal 33.15 · диктовка шортката: «сейчас» и «сегодня» — момент диктовки (m.at), а не момент, когда Meal её забрал */
+  function atTime(m,fn){
+    if(!m.at) return fn();
+    var d=new Date(m.at), iso=isoOf(d), cd0=curDate, t0=window.todayISO;
+    curDate=iso; window.todayISO=function(){ return iso };
+    try{ return fn() } finally { curDate=cd0; window.todayISO=t0 }
+  }
+  function feed(chat,m){ return atTime(m,function(){ return reply(chat,m) }) }
+  function probe(m){
+    boot(); var r, m2=Object.assign({},m,{dry:1}), miss0=null;
+    try{ miss0=localStorage.getItem(MISSK) }catch(e){}
+    if(SP) SP.on(true);
+    try{ r=atTime(m2,function(){ return handle({msgs:[]},{pend:[],ask:null,commits:[],seq:0,last:null},m2) }) }catch(e){ r={dry:1,clean:false,n:0} } finally { if(SP) SP.on(false) }
+    try{ if(miss0==null) localStorage.removeItem(MISSK); else localStorage.setItem(MISSK,miss0) }catch(e){}
+    return r&&r.dry?r:{dry:1,clean:true,n:0};   // строка в ответ — служебная фраза или «не еда»: вопроса не будет
+  }
   function reply(chat,m){
     boot();
     var S=state(chat), h;
     if(SP) SP.on(true);
     try{ h=handle(chat,S,m) } finally { if(SP) SP.on(false) }
     syncLines(chat);
+    if(typeof MealInbox!=='undefined') MealInbox.settle();
     return h;
   }
+  /* ответ «да» или свои граммы на предложение по диктовке шортката — тоже в момент той диктовки */
   function handle(chat,S,m){
+    var at=m.at||(S.offer&&S.offer.at&&m.kind!=='photo'&&!m.inbox?S.offer.at:null);
+    return at?atTime({at:at},function(){ return handle0(chat,S,m) }):handle0(chat,S,m);
+  }
+  function handle0(chat,S,m){
     var raw=m.kind==='photo'?m.det:m.text;
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
@@ -1076,7 +1098,7 @@ var MealBot=(function(){
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
     if(!NEST) LEFT=null;   // замена не состоялась, а человек уже говорит о другом
     var prepped=false; FRESH=null; OFP=null; EATEN=!!(SP&&SP.eaten&&m.kind!=='photo'&&(m.eaten||SP.eaten(String(raw)))); WEIGHED=!!(SP&&SP.weighed&&m.kind!=='photo'&&SP.weighed(String(raw)));
-    if(S.offer&&m.kind!=='photo'){ var ofr=S.offer; S.offer=null;
+    if(S.offer&&m.kind!=='photo'&&!m.inbox){ var ofr=S.offer; S.offer=null; if(ofr.at){ m=Object.assign({},m,{at:ofr.at,inbox:ofr.inbox,eaten:true}) }
       var b0=nrm(raw).trim().replace(/[?!.,…\s]+$/,'');
       if(/^(нет|неа|не надо|не нужно|не записывай|отмена|отмени|пропусти)$/.test(b0)){ S.rewrite=null; return p('Хорошо, не записываю.') }
       if(/^(да|ага|угу|давай|ок|окей|хорошо|годится|верно|записывай|запиши|пиши|так)( так| запиши| записывай| давай)?$/.test(b0)){ memSet(ofr.key,ofr.parts,ofr.n); FRESH=ofr.key; raw=ofr.raw; prepped=true; EATEN=!!ofr.eaten; WEIGHED=!!ofr.weighed; LEFT=ofr.left||null }
@@ -1100,7 +1122,11 @@ var MealBot=(function(){
       raw=(' '+raw+' ').replace(/(^|\s)(ребенок|дети|малыш|сын|сынок|дочь|дочка|муж|жена|мама|папа|бабушка|дедушка|брат|сестра|гости|гость|друг|подруга|кот|кошка|собака|пес)\s+(?:не\s+)?⊙/g,'$1$2 ')
         .replace(/(^|\s)(мне|себе|сам|сама|у меня)(?=\s)/g,'$1⊙').replace(/\s+/g,' ').trim(); }
     var RAW0=raw;
-    var t=nrm(raw), now=new Date(), bare=t.trim().replace(/[?!.,…\s]+$/,'');
+    var t=nrm(raw), now=m.at?new Date(m.at):new Date(), bare=t.trim().replace(/[?!.,…\s]+$/,'');
+    if(!NEST) S.clock=m.at?+now:null;
+    /* Meal 33.15 · диктовка шортката «Еда» (m.inbox) — данные о еде, а не команды: поправки и удаления из неё не выполняются */
+    if(m.inbox&&/^(отмени|отменить|убери|удали|сотри|замени|поменяй|перепиши|вместо|перенеси|перемести|верни|не записывай|не надо|стоп)(\s|$)/.test(bare))
+      return m.dry?{dry:1,clean:true,n:0}:p('Это похоже на поправку, а не на еду. Из диктовок шортката поправки не выполняю — скажи это здесь, в диалоге.');
     /* служебные фразы */
     if(/^тест(\s|$|овая|овое|овый)/.test(bare)) return p('Это тест. В дневник ничего не добавляю.');
     /* «отмени кофе» — убрать одну запись; «перепиши: груша 250 г» — убрать последнее и записать заново */
@@ -1148,12 +1174,12 @@ var MealBot=(function(){
     /* «нет, …» — поправка последней записи; раньше ответа на вопрос, кроме вопроса «да / нет» */
     var no=bare.match(/^(?:(?:ой|ах|ай|блин|стоп|так)[\s,.!]+)*(?:нет|не так|неправильно|ошибся|ошиблась|исправь|поправь)(?:[\s,.!]+(.*))?$/);
     if(!no&&!S.ask&&lastAdd(S)&&hasMeal(bare)&&!tokensOf(bare.replace(FILL,' ')).length&&!/\d/.test(bare)) no=[bare,bare];
-    if(no&&!(S.ask&&S.ask.kind==='again')&&lastAdd(S)){ var fixd=correct(S,no[1]||''); if(fixd!=null) return fixd+(S.pend.length?askHTML(S):'') }
+    if(no&&!m.inbox&&!(S.ask&&S.ask.kind==='again')&&lastAdd(S)){ var fixd=correct(S,no[1]||''); if(fixd!=null) return fixd+(S.pend.length?askHTML(S):'') }
     /* ответ на заданный вопрос */
-    if(S.ask&&m.kind!=='photo'){ var ans=answer(S,raw); if(ans!=null) return ans }
+    if(S.ask&&m.kind!=='photo'&&!m.inbox){ var ans=answer(S,raw); if(ans!=null) return ans }
     /* «жареные, были целиком» без вопроса — уточнение последней записи */
     var dw0=bare.replace(/[,.!]+/g,' ').replace(/(^|\s)(были|был|была|было|это|они|он|она|да|ну|все|всё|там|точнее)(?=\s|$)/g,' ').trim().split(/\s+/).filter(Boolean);
-    if(!S.ask&&dw0.length&&!/\d/.test(bare)&&dw0.every(function(w){ return DESCR.test(w)||PREP.test(w) })&&lastAdd(S)){
+    if(!S.ask&&!m.inbox&&dw0.length&&!/\d/.test(bare)&&dw0.every(function(w){ return DESCR.test(w)||PREP.test(w) })&&lastAdd(S)){
       var ad0=lastAdd(S), base0=String(ad0.line.spoken||ad0.line.name||'').trim(), r0=understand(fixes(' '+base0+' '+dw0.join(' ')+' ')).lines[0], f0=r0&&(r0.fid||r0.alts[0]);
       if(f0&&f0===ad0.item.fid) return p('Так и записано: '+esc(foodName(ad0.line))+'.');
       if(f0){ ad0.line.alts=r0.alts.length?r0.alts:[f0]; var sw0=swapTo(S,ad0,f0); if(sw0) return sw0 }
@@ -1172,7 +1198,8 @@ var MealBot=(function(){
         sg.some(function(x,i){ var nx=fixes(nrm(x)); if(DEFER.some(function(d){ return d[0].test(nx) })){ cutAt=i; return true } return false });
         var keepT=cutAt>0?sg.slice(0,cutAt).join(', '):'';
         if(keepT&&tokensOf(keepT.toLowerCase().replace(FILL,' ')).length){
-          var hD; NEST++; try{ hD=handle(chat,S,{kind:'text',text:keepT,eaten:m.eaten,noDefer:true}) } finally { NEST-- }
+          var hD; NEST++; try{ hD=handle(chat,S,{kind:'text',text:keepT,eaten:m.eaten,noDefer:true,at:m.at,inbox:m.inbox,dry:m.dry,onlyAsk:m.onlyAsk}) } finally { NEST-- }
+          if(m.dry) return hD&&hD.dry?hD:{dry:1,clean:true,n:0};
           return hD+'<p class="mlHint">Дальше не разобрал: «'+esc(sg.slice(cutAt).join(', '))+'» — '+esc(why[1])+'. Это не записал. Скажи проще: продукт и вес.</p>';
         }
       }
@@ -1201,6 +1228,7 @@ var MealBot=(function(){
       if(u.tailMeal) u.lines.forEach(function(l){ if(!l.meal) l.meal=u.tailMeal });
       var small=smallOf(u.lines), grp='g'+(++SEQ);
       u.lines.forEach(function(l){
+        if(m.inbox) l.inbox=m.inbox;
         var sk=l.meal||(time?secFor(date,time,small):autoSec()), ld=date, needMeal=!l.meal&&!time;
         /* «на завтрак…», сказанное вечером без времени: время «сейчас» завтраку не ставим — иначе завтрак «начнётся» вечером */
         var lt=time, own=l.meal&&time?mealTimes(date,l.meal,null):[];
@@ -1244,13 +1272,16 @@ var MealBot=(function(){
       var allEn=ready.concat(asks), cpL=[]; allEn.forEach(function(en){ var cp=en.line.comp; if(cp&&!cp.ok&&cpL.indexOf(cp)<0) cpL.push(cp) });
       var cp0=cpL.filter(function(cp){ return cp.lines.length>1&&cp.lines.every(function(l){ return l.fid&&l.g>0&&(!l.ask||l.ask==='meal') }) })[0];
       if(cp0){
-        S.offer={raw:RAW0,src:cp0.src,key:cp0.key,n:cp0.n||1,eaten:EATEN,weighed:WEIGHED,left:LEFT,parts:cp0.lines.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} })};
+        if(m.dry) return {dry:1,clean:false,n:0};
+        S.offer={inbox:m.inbox||null,at:m.at||null,raw:RAW0,src:cp0.src,key:cp0.key,n:cp0.n||1,eaten:EATEN,weighed:WEIGHED,left:LEFT,parts:cp0.lines.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} })};
         var restN=allEn.filter(function(en){ return en.line.comp!==cp0 }).length+miss.length;
         return p((cp0.named?esc(cp0.name)+' в базе нет. Предлагаю':'Одним блюдом этого в базе нет — предлагаю')+' записать по отдельности: '+
             cp0.lines.map(function(l){ return esc(String(foodName(l)).split(/,\s|\(|—/)[0].trim().toLowerCase())+' '+fmt(l.g)+' г' }).join(' и ')+'.')+
           p('Записать так? Или скажи свои граммы.')+(restN?'<p class="mlHint">Остальное из сообщения запишу вместе с этим.</p>':'')+chips([['offer:1','Записать так']]);
       }
     }
+    if(m.dry) return {dry:1,clean:!asks.length&&!(orphan&&!ready.length),n:ready.length};   // проба: будет ли вопрос; в дневник ничего не идёт
+    if(m.onlyAsk) ready=[];   // диктовка уже записана на этом устройстве, после перезагрузки возвращаются только её вопросы
     /* Meal 33.9: «…и груша» записана обычной мерой (≈), а следом «и груша 200 г» — это уточнение той записи, а не вторая груша */
     var spec=[], lc0=S.commits[S.commits.length-1];
     if(SP&&m.kind!=='photo'&&lc0&&!lc0.undone&&lc0.at&&now-lc0.at<120000){
@@ -1279,7 +1310,7 @@ var MealBot=(function(){
     }
     /* то же сообщение второй раз подряд за две минуты — возможно, повтор, а не вторая порция */
     var key=bare, h=specH;
-    if(S.last&&S.last.key===key&&now-S.last.at<120000&&ready.length&&!S.pend.length){
+    if(!m.inbox&&S.last&&S.last.key===key&&now-S.last.at<120000&&ready.length&&!S.pend.length){
       ready.forEach(function(en){ en.line.ask='again' }); S.pend=ready.concat(asks); return askHTML(S);
     }
     if(ready.length){
@@ -1438,6 +1469,7 @@ var MealBot=(function(){
     try{ h=tapInner(chat,S,a) } finally { if(SP) SP.on(false) }
     if(h==null) return;
     syncLines(chat);
+    if(typeof MealInbox!=='undefined') MealInbox.settle();
     chat.msgs.push({id:'m'+(++chat.seq),who:'me',kind:'text',text:label,tapped:1});
     botSay(h,260);
   }
@@ -1511,5 +1543,5 @@ var MealBot=(function(){
       if(typeof toast==='function') toast(sw.checked?'Бот записи еды включён':'Бот записи еды выключен') });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
-  return {on:on,setOn:setOn,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
+  return {on:on,setOn:setOn,feed:feed,probe:probe,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
 })();
