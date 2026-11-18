@@ -69,6 +69,9 @@ function mount(){
  return rootEl;
 }
 // Страница на весь экран прячет приложение; страница-лист — нет: приложение видно под затемнением, прокрутка стоит.
+// Нажатие на нижнее меню при открытом листе закрывает лист (с «Правки не сохранены · Вернуть», если что-то вписано)
+// и выполняет само нажатие — как в листах Sport (19.11.2026).
+if(doc&&doc.addEventListener)doc.addEventListener('click',e=>{if(!e.target.closest?.('.dock'))return;for(const p of pages.filter(p=>!p.closed&&p.sheet&&p.dismiss).reverse())p.dismiss()},true);
 function syncBody(){const open=pages.filter(p=>!p.closed);doc.body.classList.toggle('hs-open',open.some(p=>!p.sheet));doc.body.classList.toggle('hs-sheet-open',open.some(p=>p.sheet))}
 
 /* ── страница ── */

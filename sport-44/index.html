@@ -1132,6 +1132,12 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 /* Аудит единообразия Sport 18.11.2026: ручка окна замера — как у листов приложения */
 .hm-grip{display:block;width:100%;height:30px;margin:-6px 0 2px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;position:relative}
 .hm-grip::before{content:"";position:absolute;left:50%;top:12px;width:42px;height:5px;margin-left:-21px;border-radius:999px;background:rgba(255,255,255,.55)}
+
+/* Окно замера под нижним меню приложения (19.11.2026): затемнение, окно, меню поверх, низ с запасом под меню. */
+.hm-dialog-shade{position:fixed;inset:0;z-index:2147479990;background:rgba(18,32,70,.46)}
+.hm-dialog[open]{z-index:2147479995}
+body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
+.hm-dialog .hm-sheet{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 /* Sport 43 · общий экран замеров (shared/happy-measurements.css): цвета Sport для закреплённого столбца таблицы. */
 .hm{--hm-pin-bg:#717edf}
 #happy-measurements{margin-top:2px}
@@ -1474,6 +1480,11 @@ body.hs-open{overflow:hidden}
 .hs-page-sheet .hs-main{min-height:0;padding-top:4px}
 body.hs-sheet-open{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.hs-page-backdrop,.hs-page-sheet>.hs-scroll{transition:none}}
+
+/* Нижнее меню приложения поверх листов (профиль, цели, «Новый замер») — как у листов Sport (Астамур 19.11.2026: «и там
+   тоже, и сразу везде»). Низ листа — с запасом под меню. Страница на весь экран (вход) меню по-прежнему закрывает. */
+body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!important}
+.hs-page-sheet>.hs-scroll{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 /* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
  * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
  * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
@@ -8552,6 +8563,9 @@ const ui={period:'first',amplify:3,chosen:null,notice:null};   // вид экр�
 let mounted=null;
 /* Поставить экран в box. Экран на странице один: тот же box — просто перерисовать; приложение перерисовало страницу,
    пока открыто окно замера, — экран переезжает в новый box вместе с окном; иначе прежний экран снимается. */
+/* Нажатие на нижнее меню закрывает открытое окно замера (одно на страницу). */
+let openDialogEl=null;
+if(root.document&&root.document.addEventListener)root.document.addEventListener('click',e=>{if(openDialogEl&&e.target.closest?.('.dock'))openDialogEl.dispatchEvent(new Event('hm-dismiss'))},true);
 function mount(box,options){
  if(mounted){
   if(mounted.box===box){mounted.render();return mounted}
@@ -8613,7 +8627,14 @@ function mount(box,options){
  }
 
  /* Окно: форма замера, таблица для правки, удалённые замеры. */
- function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove()}}
+ /* Окно замера — лист под нижним меню приложения (Астамур 19.11.2026: меню поверх листов везде): не модальное окно
+    (оно легло бы поверх всего), а обычное с затемнением; нажатие мимо, ручка или Escape закрывают. */
+ function showOver(d){
+  const shade=document.createElement('div');shade.className='hm-dialog-shade';shade.addEventListener('click',()=>d.dispatchEvent(new Event('hm-dismiss')));
+  document.body.append(shade);d._shade=shade;document.body.appendChild(d);openDialogEl=d;
+  if(typeof d.show==='function')d.show();else d.setAttribute('open','');document.body.classList.add('hm-dialog-open');
+ }
+ function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove();d._shade?.remove();if(openDialogEl===d)openDialogEl=null;document.body.classList.remove('hm-dialog-open')}}
  function openDialog(title,html){
   closeDialog();
   const d=dialog=document.createElement('dialog');d.className='hm hm-dialog';d.setAttribute('aria-label',title);
@@ -8631,11 +8652,12 @@ function mount(box,options){
   let initial=null;const snap=()=>[...d.querySelectorAll('input,select,textarea')].map(c=>c.name+'='+c.value).join('|');
   for(const type of ['pointerdown','keydown','focusin'])d.addEventListener(type,()=>{if(initial===null)initial=snap()},true);
   const dismiss=()=>{const changed=initial!==null&&snap()!==initial&&!!d.querySelector('form');closeDialog();
-   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';document.body.appendChild(d);if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}})};
+   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';showOver(d)}})};
   d.addEventListener('click',e=>{if(e.target===d){dismiss();return}if(e.target.closest&&e.target.closest('.hm-grip')){e.preventDefault();dismiss();return}onClick(e)});
   d.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
+  d.addEventListener('hm-dismiss',dismiss);d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dismiss()}});
   d.addEventListener('submit',onSubmit);
-  if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
+  showOver(d);
   return d;
  }
  function openForm(date){
@@ -9150,6 +9172,9 @@ function mount(){
  return rootEl;
 }
 // Страница на весь экран прячет приложение; страница-лист — нет: приложение видно под затемнением, прокрутка стоит.
+// Нажатие на нижнее меню при открытом листе закрывает лист (с «Правки не сохранены · Вернуть», если что-то вписано)
+// и выполняет само нажатие — как в листах Sport (19.11.2026).
+if(doc&&doc.addEventListener)doc.addEventListener('click',e=>{if(!e.target.closest?.('.dock'))return;for(const p of pages.filter(p=>!p.closed&&p.sheet&&p.dismiss).reverse())p.dismiss()},true);
 function syncBody(){const open=pages.filter(p=>!p.closed);doc.body.classList.toggle('hs-open',open.some(p=>!p.sheet));doc.body.classList.toggle('hs-sheet-open',open.some(p=>p.sheet))}
 
 /* ── страница ── */

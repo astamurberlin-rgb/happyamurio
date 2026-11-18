@@ -365,6 +365,9 @@ const ui={period:'first',amplify:3,chosen:null,notice:null};   // вид экр�
 let mounted=null;
 /* Поставить экран в box. Экран на странице один: тот же box — просто перерисовать; приложение перерисовало страницу,
    пока открыто окно замера, — экран переезжает в новый box вместе с окном; иначе прежний экран снимается. */
+/* Нажатие на нижнее меню закрывает открытое окно замера (одно на страницу). */
+let openDialogEl=null;
+if(root.document&&root.document.addEventListener)root.document.addEventListener('click',e=>{if(openDialogEl&&e.target.closest?.('.dock'))openDialogEl.dispatchEvent(new Event('hm-dismiss'))},true);
 function mount(box,options){
  if(mounted){
   if(mounted.box===box){mounted.render();return mounted}
@@ -426,7 +429,14 @@ function mount(box,options){
  }
 
  /* Окно: форма замера, таблица для правки, удалённые замеры. */
- function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove()}}
+ /* Окно замера — лист под нижним меню приложения (Астамур 19.11.2026: меню поверх листов везде): не модальное окно
+    (оно легло бы поверх всего), а обычное с затемнением; нажатие мимо, ручка или Escape закрывают. */
+ function showOver(d){
+  const shade=document.createElement('div');shade.className='hm-dialog-shade';shade.addEventListener('click',()=>d.dispatchEvent(new Event('hm-dismiss')));
+  document.body.append(shade);d._shade=shade;document.body.appendChild(d);openDialogEl=d;
+  if(typeof d.show==='function')d.show();else d.setAttribute('open','');document.body.classList.add('hm-dialog-open');
+ }
+ function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove();d._shade?.remove();if(openDialogEl===d)openDialogEl=null;document.body.classList.remove('hm-dialog-open')}}
  function openDialog(title,html){
   closeDialog();
   const d=dialog=document.createElement('dialog');d.className='hm hm-dialog';d.setAttribute('aria-label',title);
@@ -444,11 +454,12 @@ function mount(box,options){
   let initial=null;const snap=()=>[...d.querySelectorAll('input,select,textarea')].map(c=>c.name+'='+c.value).join('|');
   for(const type of ['pointerdown','keydown','focusin'])d.addEventListener(type,()=>{if(initial===null)initial=snap()},true);
   const dismiss=()=>{const changed=initial!==null&&snap()!==initial&&!!d.querySelector('form');closeDialog();
-   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';document.body.appendChild(d);if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}})};
+   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';showOver(d)}})};
   d.addEventListener('click',e=>{if(e.target===d){dismiss();return}if(e.target.closest&&e.target.closest('.hm-grip')){e.preventDefault();dismiss();return}onClick(e)});
   d.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
+  d.addEventListener('hm-dismiss',dismiss);d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dismiss()}});
   d.addEventListener('submit',onSubmit);
-  if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
+  showOver(d);
   return d;
  }
  function openForm(date){
