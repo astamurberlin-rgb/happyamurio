@@ -84,12 +84,20 @@
  },
  "pointReleases": [
   {
-   "version": "33.13",
+   "version": "33.14",
    "date": "2026-11-19",
    "changes": [
     "shared/happy-person.js и happy-goals.js: цель веса одна на аккаунт (запись weightGoal в общем профиле), Meal и Sport пишут её, силуэт во всех трёх красит по ней",
     "shared/happy-measurements.js: пустые замеры — текст без рамки и «+ Замер»",
-    "index.html ?v=33.13, заголовок и подвал; release-notes.js 33.13"
+    "index.html ?v=33.14, заголовок и подвал; release-notes.js 33.14"
+   ]
+  },
+  {
+   "version": "33.13",
+   "date": "2026-11-19",
+   "changes": [
+    "bot.js: «всего / итого N г» после блюда — вес всего блюда, последняя часть добирает остаток; «не ел», «не стал» — пометка ⊗ «не съедено» на кусок фразы; «только» — слово-связка",
+    "index.html: «Правила бота» — две строки; ?v=33.13, заголовок и подвал; sw.js 33.13; release-notes.js 33.13"
    ]
   },
   {
@@ -391,8 +399,8 @@
   },
   {
    "path": "bot.js",
-   "size": 152265,
-   "sha256": "ac31ed6e3bb1b55ac9baf4690b5f46a3eba7b6761b96a50213ec64b39257eca2"
+   "size": 153844,
+   "sha256": "844a2eb29ced162a25eeb1b407266aae9c07c7f68201bc7200978ea8387cd83f"
   },
   {
    "path": "bot/household-ru.js",
@@ -531,8 +539,8 @@
   },
   {
    "path": "index.html",
-   "size": 627949,
-   "sha256": "f7fc906fe0db88cc162b9612d892b53030b537188bd2ee0aa733655a3149a471"
+   "size": 628373,
+   "sha256": "fe92ccbe3dad8f71e50d33c2491d0acc42b8f2df66d43f750144a6d4cbada350"
   },
   {
    "path": "kfct.js",
@@ -731,8 +739,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 58381,
-   "sha256": "8e98b98b3e842bf6598e25a534349fb8a23601d9918d90b43480e09735370f35"
+   "size": 58802,
+   "sha256": "bffc575e32c87fadb9364cf684ccf8d74ea93fa54e3cd4ea235e7e20ddbabb3a"
   },
   {
    "path": "report.css",
@@ -922,7 +930,7 @@
   {
    "path": "sw.js",
    "size": 3505,
-   "sha256": "59e357d1399a2e98ea34a87e66ad7a4e541f48417d7d6fadc7c78c33c9ec185d"
+   "sha256": "6417bfd589fcedf7c232e3ea4e03ef87a8497e97c6fb9a159bc1cd4d8d2be193"
   },
   {
    "path": "usda-measures.js",
