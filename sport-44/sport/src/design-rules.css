@@ -199,7 +199,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* редактор: значок настроек справа от названия упражнения, как в идущей тренировке */
 .template-exercise-heading{display:flex;align-items:center;gap:8px}
 .template-exercise-heading .template-exercise-name{flex:1 1 auto;min-width:0;margin:0}
-.template-exercise-settings{flex:none;width:44px;height:44px;display:grid;place-items:center;color:#fff;background:transparent;border:0}
+.template-exercise-settings{flex:none;width:44px!important;height:44px!important;min-height:44px!important;display:grid;place-items:center;color:#fff;background:transparent;border:0;padding:0}
 /* карточка тренировки: (i) справа, как в записи журнала */
 .template-exercise-title{display:flex!important;align-items:center;gap:10px}
 .template-exercise-title b{flex:1 1 auto;min-width:0}
