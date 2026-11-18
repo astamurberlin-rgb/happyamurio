@@ -84,6 +84,14 @@
  },
  "pointReleases": [
   {
+   "version": "33.12.1",
+   "date": "2026-11-19",
+   "changes": [
+    "index.html unitOf, bot.js, bot-speech.js: «грам», «килограм», «милилитр» с одной буквой — меры",
+    "index.html ?v=33.12.1, заголовок и подвал; sw.js 33.12.1; release-notes.js 33.12.1"
+   ]
+  },
+  {
    "version": "33.12",
    "date": "2026-11-18",
    "changes": [
@@ -369,13 +377,13 @@
   },
   {
    "path": "bot-speech.js",
-   "size": 25217,
-   "sha256": "786e9ac65f7714014d760c5cd34c0babb5c1e18b45e64583f868ce481bb36794"
+   "size": 25208,
+   "sha256": "b523478369544753df5b3a0db6f678f211bbdd3f400a2582c215e183e58f0677"
   },
   {
    "path": "bot.js",
-   "size": 152272,
-   "sha256": "3fcdcc8553f160ec7ffa8391912ceecdc8cd45bb08dd20362c0e8145977ff211"
+   "size": 152265,
+   "sha256": "ac31ed6e3bb1b55ac9baf4690b5f46a3eba7b6761b96a50213ec64b39257eca2"
   },
   {
    "path": "bot/household-ru.js",
@@ -514,8 +522,8 @@
   },
   {
    "path": "index.html",
-   "size": 627831,
-   "sha256": "57ea95d17df430e4e000b2492cbd3f84984eaaf9538d402d0666989d5e0d9980"
+   "size": 628079,
+   "sha256": "3a194d94389d97e36259d9a79ab1e96cc17a665b7b51b65dcda7c88af8835b38"
   },
   {
    "path": "kfct.js",
@@ -714,8 +722,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 57532,
-   "sha256": "03d726b04f38f9ecbd530d0c2885fa4173a72f3fd3067f2f37aa4f24ec95eba9"
+   "size": 57840,
+   "sha256": "41a6ebe61f2b73fbd1688c2d04eb3b13a9f2d2edc58253579410562316f59c20"
   },
   {
    "path": "report.css",
@@ -904,8 +912,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3505,
-   "sha256": "da23675c577b9eb66abcf81346e0819a46fe219e1352e82649e0a995c4157362"
+   "size": 3507,
+   "sha256": "a9a1341c715aeee3a92281dc5827250655c559b217843c12d6fd9b1937beb850"
   },
   {
    "path": "usda-measures.js",
