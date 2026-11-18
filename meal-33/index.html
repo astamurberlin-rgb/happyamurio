@@ -2308,6 +2308,26 @@ var BASE=[
 var FOODS={}, LIST=[], WORDS=[];
 /* продукты BLS, найденные из фразы, но ещё не записанные: видны в «Подобрано», в библиотеку не попадают */
 var BLS_TMP={};
+/* Meal 33.10: фрукты, ягоды и овощи — «свежий», а не «сырой»: «Мандарин, свежий», «Огурец, свежий» (решение Астамура 18.11.2026 12:59;
+   находка Михалыча). Картофель, батат и другие клубни — «сырой», как говорят по-русски; мясо, рыба, крупы, бобы — как было.
+   Меняется только показываемое название: слова поиска остаются от исходного («сырой огурец» находит его же). */
+var FRESH_NOT=/(картоф|батат|топинамбур|ямс|маниок|кассав|таро|квашен|солен|маринов|сушен|сух|вялен|заморож|консерв|пюре|сок|тест|фарш|мука)/;
+function freshName(name,produce){
+  if(!produce||FRESH_NOT.test(norm(name))) return name;
+  return String(name).replace(/([,—]\s*)сыр(ой|ая|ое|ые)(?=\s*(?:,|\(|$|ягод|плод|лист))/,function(m,sp,e){ return sp+'свеж'+({'ой':'ий','ая':'ая','ое':'ее','ые':'ие'})[e] });
+}
+/* фрукты и овощи справочников — по их группам: японский MEXT 06 овощи, 07 фрукты, 08 грибы; корейский KFCT F овощи, G грибы, H фрукты;
+   американский USDA — группы «Fruits…» и «Vegetables…» */
+function freshProduce(f){
+  var src=String(f.src||''), code=String(f.catalogCode||'');
+  if(src==='MEXT') return /^0[678]/.test(code);
+  if(src==='KFCT') return /^[FGH]/.test(code);
+  if(src==='USDA') return /^(Fruits|Vegetables)/.test(String(f.catalogGroup||''));
+  return false;
+}
+function freshCatalogNames(){
+  Object.keys(FOODS).forEach(function(id){ var f=FOODS[id]; if(f&&f.n&&freshProduce(f)) f.n=freshName(f.n,true) });
+}
 function cookingName(name){
   return String(name).replace(/((?:обжар|жар|туш|запеч|припущ|приготов)[^,;()]*?)без жира/gi,'$1без масла');
 }
@@ -2323,12 +2343,13 @@ function rebuildLib(){
   (DB.foods||[]).forEach(function(o){ FOODS[o.id]=o; if(!o.supplement) LIST.push(o) });   // Meal 29: продукт-добавка счётчика — не в поиске еды
   /* продукты из базы BLS, которые уже выбирали, — тоже в библиотеке: фраза их находит */
   Object.keys(DB.bls||{}).forEach(function(code){
-    var x=DB.bls[code], name=cookingName(x.n), o={id:'bls:'+code,n:name,w:norm(name).split(/[^a-zа-я0-9%]+/).filter(function(w){ return w.length>1 }),
+    var x=DB.bls[code], name=cookingName(x.n), o={id:'bls:'+code,n:freshName(name,/^[FG]/.test(code)),w:norm(name).split(/[^a-zа-я0-9%]+/).filter(function(w){ return w.length>1 }),
       k:x.k,p:x.p,f:x.f,c:x.c,por:{},src:'BLS',b:code};
     if(typeof kavPor==='function') kavPor(o);          // блюдо кавказской кухни: свои меры порции и кухня
     FOODS[o.id]=o; LIST.push(o);
   });
   if(typeof MealCatalog!=='undefined') MealCatalog.append(DB,FOODS,LIST);
+  if(DB.catalogLang!=='en') freshCatalogNames();
   // Retain legacy IDs for old entries; offer verified FDC replacements only for new search.
   if(typeof MealUSDA!=='undefined') LIST=LIST.filter(function(f){var replacement=MealUSDA.legacyReplacement(f.id);return !replacement||!FOODS[replacement]});
   if(typeof MealSources!=='undefined'){ DB.foodSources=MealSources.preferences(DB); LIST=LIST.filter(function(f){return MealSources.available(DB,f)}) }
@@ -2371,7 +2392,8 @@ function fmt(n){ return String(Math.round(n*10)/10).replace('.',',') }
    «сайра» ≠ «сайда», «перепелка» ≠ «перец», «морс» ≠ «морковь», «чернослив» ≠ «чёрный», «медовик» ≠ «мёд» */
 var W_E='(а|я|ы|и|у|ю|е|о|ь|й|ой|ей|ом|ем|ам|ям|ах|ях|ами|ями|ого|его|ому|ему|ую|юю|ий|ый|ая|яя|ое|ее|ые|ие|ых|их|ым|им|ыми|ими|ою|ею|ью|ов|ев)';
 var W_END=new RegExp('^'+W_E+'?$'), W_DER=new RegExp('^(к|ок|ек|ик|н|нн|ов|ев|енн|ин|ск|ян|ан|ичн|ечн|нев|чат)+'+W_E+'?$');
-var W_RAW=/^сыр(ой|ая|ое|ые|ых|ым|ую|ого|ому|ыми)$/;
+var W_RAW=/^сыр(ой|ая|ое|ые|ых|ым|ую|ого|ому|ыми)$/, W_FRESH=/^свеж(ий|ая|ее|ие|их|им|ую|его|ему|ими|ей|ем|ой)$/;
+function freshAsRaw(w){ var m=W_FRESH.exec(w); return m?'сыр'+({'ий':'ой','ая':'ая','ее':'ое','ие':'ые','их':'ых','им':'ым','ую':'ую','его':'ого','ему':'ому','ими':'ыми','ей':'ой','ем':'ом','ой':'ой'})[m[1]]:w }
 var W_ADJ=/^(ый|ий|ой|ая|яя|ое|ее|ые|ие|ого|его|ому|ему|ую|юю|ых|их|ым|им|ыми|ими)$/;
 var W_ADJL=/(ый|ий|ой|ая|яя|ое|ее|ые|ие|ого|его|ую|юю|ых|их|ым|им)$/;
 function wFlee(w){ return w.replace(/[ео]([цкл])$/,'$1') }     // беглая гласная: перец → перц(а), огурец → огурц(ы)
@@ -2380,6 +2402,9 @@ function wRel(t,w){
   t=t.replace(/нн/g,'н'); w=w.replace(/нн/g,'н');                  // «тушёный» = «тушённый», «жареный» = «жаренный»
   if(t===w) return 3;
   if(t.slice(0,3)==='сыр'&&w.slice(0,3)==='сыр'&&W_RAW.test(t)!==W_RAW.test(w)) return 0;   // «сыр» ≠ «сырой»
+  /* «свежий» и «сырой» — одно слово для поиска: не приготовленный (решение Астамура 18.11.2026 14:55). «Свежий» при этом
+     остаётся словом, которое можно не найти: «свежий хлеб», «свежий сок» ищутся как прежде */
+  if(W_FRESH.test(t)!==W_FRESH.test(w)&&(W_RAW.test(t)||W_RAW.test(w))) return wRel(freshAsRaw(t),freshAsRaw(w));
   var best=0;
   [[t,w],[wFlee(t),w],[t,wFlee(w)]].forEach(function(p){
     var a=p[0], b=p[1], n=Math.min(a.length,b.length), L0=0; while(L0<n&&a[L0]===b[L0]) L0++;
@@ -5354,6 +5379,7 @@ function blsReady(d){
       r[1]=cookingName(r[1]);
       if(r[0]==='X651013')r[1]='Картофель жареный без лука';
       BLS_BY[r[0]]=r; BLS_W[i]=blsWordsOf(r[1]); BLS_X[i]=(r[2]+' '+r[3]).toLowerCase();
+      if(/^[FG]/.test(r[0])) r[1]=freshName(r[1],true);   // слова поиска уже взяты из исходного названия
       var g=d.grp?d.grp[i]:null; if(g!=null){ BLS_GRP[r[0]]=g; (BLS_GM[g]=BLS_GM[g]||[]).push(r[0]) }
     });
     /* Update 27: русские поисковые названия десертов BLS (search-names.js) — в тот же индекс, по которому ищет BLS:

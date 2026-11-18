@@ -49,7 +49,7 @@ function amountText(f,u,q,fid){
 }
 function setUnits(u){u=u==='oz'?'oz':'metric';if(u===UNITS)return false;UNITS=u;return true}
 function makeFood(r){
- var P=root.MealProducts,f={id:r.id,n:selectedName(r),names:Object.assign({},r.names),catalogSource:'USDA',catalogCode:String(r.code),revision:REVISION,src:'USDA',por:portionMap(r),porG:1,k:finite(r.nut.kcal),p:finite(r.nut.prot),f:finite(r.nut.fat),c:carbs(r).value,w:r.searchWords.slice(),
+ var P=root.MealProducts,f={id:r.id,n:selectedName(r),names:Object.assign({},r.names),catalogSource:'USDA',catalogCode:String(r.code),catalogGroup:String(r.category||''),revision:REVISION,src:'USDA',por:portionMap(r),porG:1,k:finite(r.nut.kcal),p:finite(r.nut.prot),f:finite(r.nut.fat),c:carbs(r).value,w:r.searchWords.slice(),
  sourceInfo:{source:'USDA · FoodData Central · SR Legacy',nameOrigins:r.nameOrigins||null,version:'April 2018',url:r.sourceUrl,code:String(r.code),ndbNumber:r.ndbNumber,publicationDate:r.publicationDate,license:'CC0',archiveUrl:source.downloadUrl||source.url,originalNutrients:r.sourceNutrients},
  sourceNotes:'На 100 г съедобной части. SR Legacy, выпуск апреля 2018; публикация записи FDC: '+(r.publicationDate==='4/1/2019'?'01.04.2019':r.publicationDate||'не указана')+'. Это не новые измерения 2026 года. Углеводы — по разности минус клетчатка (≈, расчёт Happy Meal); углеводы с клетчаткой, витамин A RAE и α-токоферол показаны отдельно: определения отличаются от BLS. Порции — меры USDA в граммах; подписи переведены на русский и пересчитаны в граммы и миллилитры (в профиле можно выбрать унции), американская чашка — 237 мл.'};
  // Only selected/inspected foods allocate full composition fields. Snapshot JSON

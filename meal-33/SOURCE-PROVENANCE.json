@@ -87,7 +87,10 @@
    "version": "33.10",
    "date": "2026-11-18",
    "changes": [
-    "usda-measures.js — словарь мер USDA по-русски и пересчёт чисел (oz → г, fl oz → мл, lb → г, дюйм → см; чашка США 237 мл); usda.js: unitLabel, unitWord, amountText, setUnits — только подписи, ключи f.por и граммы прежние; index.html: unitName, uLab, amtShort, portTxt, кнопка меры без повтора граммов; bot.js amt; counters.js — portionText счётчика USDA; meal-account.js — единицы еды из профиля; user-products.js — копия продукта USDA с русскими мерами; shared/happy-person.js — units.food; checks/check-usda-measures.mjs; ?v=33.10, sw.js 33.10"
+    "usda-measures.js — словарь мер USDA по-русски и пересчёт чисел (oz → г, fl oz → мл, lb → г, дюйм → см; чашка США 237 мл); usda.js: unitLabel, unitWord, amountText, setUnits — только подписи, ключи f.por и граммы прежние; index.html: unitName, uLab, amtShort, portTxt, кнопка меры без повтора граммов; bot.js amt; counters.js — portionText счётчика USDA; meal-account.js — единицы еды из профиля; user-products.js — копия продукта USDA с русскими мерами; shared/happy-person.js — units.food; checks/check-usda-measures.mjs; ?v=33.10, sw.js 33.10",
+    "index.html: freshName, freshProduce, freshCatalogNames — фрукты, ягоды, овощи и грибы называются «свежий» (BLS F и G, MEXT 06–08, KFCT F–H, USDA Fruits и Vegetables); картофель и клубни — «сырой»; слова поиска прежние",
+    "usda.js: catalogGroup — группа продукта USDA",
+    "bot.js rank: слово в словах поиска продукта своего списка считается его названием («Томаты» — «помидоры»)"
    ]
   },
   {

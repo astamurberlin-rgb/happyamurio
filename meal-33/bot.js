@@ -536,7 +536,7 @@ var MealBot=(function(){
      3) просто назвал или взвесил — сырое. Овощи, фрукты, зелень — сырые. Решения Астамура 17.11.2026 23:11 и 23:41 */
   function methodFix(l,fw){
     if(!l.fid||l.st!=='ok'||l.asBefore||l.cooked||l.said||WEIGHED) return;
-    if(Object.keys(statesOf(fw)).length){ l.said=true; return }
+    if(Object.keys(statesOf(fw)).length||fw.some(function(w){ return typeof W_FRESH!=='undefined'&&W_FRESH.test(norm(w)) })){ l.said=true; return }   // «свежая курица» — как «сырая»
     var k=kindKey(l.fid), ds=Object.keys(DB.days||{}).sort(), was=null;
     for(var i=ds.length-1;i>=0&&!was;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0&&!was;j--){ var x=it[j]; if(x.how&&!x.tap&&FOODS[x.fid]&&kindKey(x.fid)===k) was=x } }
     if(was){ var raw0=l.fid; l.asBefore=true;
@@ -1431,7 +1431,9 @@ var MealBot=(function(){
   }
   /* среди точных совпадений сначала те, где слово — само название и нет лишнего способа приготовления */
   function rank(list,food){
-    return list.map(function(x,i){ return {x:x,i:i,p:(headOk(x.id,food)?0:2)+(extraState(x.id,food)?1:0)+(/^(BLS|Мои)$/.test(String((FOODS[x.id]||{}).src||''))?0:1.5)+((FOODS[x.id]||{}).mine?-0.5:0)+(/\s(с|со)\s/.test(' '+String((FOODS[x.id]||{}).n||'').toLowerCase()+' ')&&food.length<2?0.75:0)} })
+    /* Meal 33.10: у продукта своего короткого списка слово может стоять в словах поиска, а не в названии: «Томаты» — это и «помидоры» */
+    function head(id){ var f=FOODS[id]; return headOk(id,food)||!!(f&&f.w&&String(id).indexOf('bls:')!==0&&/^(BLS|Мои)$/.test(String(f.src||''))&&f.w.some(function(w){ return food.some(function(q){ return sim(q,w)>=1.8 }) })) }
+    return list.map(function(x,i){ return {x:x,i:i,p:(head(x.id)?0:2)+(extraState(x.id,food)?1:0)+(/^(BLS|Мои)$/.test(String((FOODS[x.id]||{}).src||''))?0:1.5)+((FOODS[x.id]||{}).mine?-0.5:0)+(/\s(с|со)\s/.test(' '+String((FOODS[x.id]||{}).n||'').toLowerCase()+' ')&&food.length<2?0.75:0)} })
       .sort(function(a,b){ return a.p-b.p||a.i-b.i }).map(function(o){ return o.x });
   }
   /* включение: проба на этом устройстве (раздел «Для разработчика»). Выключен — Meal работает как без бота */
