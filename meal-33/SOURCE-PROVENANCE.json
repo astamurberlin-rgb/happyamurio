@@ -84,6 +84,13 @@
  },
  "pointReleases": [
   {
+   "version": "33.9.2",
+   "date": "2026-11-18",
+   "changes": [
+    "index.html parseText: правило «основная база первой» (MealBot.loose, MealBot.rank) работает и при выключенном боте записи еды"
+   ]
+  },
+  {
    "version": "33.9.1",
    "date": "2026-11-18",
    "changes": [
