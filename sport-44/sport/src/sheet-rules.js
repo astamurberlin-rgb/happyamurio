@@ -8,7 +8,7 @@
 /* Пользователь закрывает лист сам: ручка, нажатие мимо, Escape, «← К …», вкладка внизу. Отмечаем до обработчиков
    (window, перехват) — closeSheet, вызванный сразу после этого, считается закрытием, а не сохранением. */
 let sheetDismissAt=0;
-const SHEET_LEAVE_ACTIONS='[data-action="close"],[data-action="template-picker-back"],[data-action="navigate"]';
+const SHEET_LEAVE_ACTIONS='[data-action="close"],[data-action="template-picker-back"],[data-action="navigate"],[data-action="collapse-exercise-player"]';
 function sheetMarkDismiss(){sheetDismissAt=performance.now();}
 function sheetDismissedNow(){return performance.now()-sheetDismissAt<500;}
 for(const type of ['touchend','pointerup','mouseup'])window.addEventListener(type,e=>{if(e.target.closest?.('#modal-root .grip'))sheetMarkDismiss();},true);

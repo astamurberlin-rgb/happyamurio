@@ -253,3 +253,13 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .settings-templates-hint{margin:8px 4px 0!important}
 /* текст в строке со свайпом не выделяется — иначе следующий свайп превращается в перетаскивание выделения */
 .exercise-name-swipe,.row-swipe{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+/* Аудит 18.11.2026, часть 5: большой таймер. Пилюля «Что записываем» под названием упражнения; название круга —
+   название подхода, его можно поменять прямо в строке */
+.exercise-player .player-exercise-heading:has(.player-metric-pill){flex-wrap:wrap;row-gap:10px}
+.exercise-player .player-metric-pill{flex:1 0 100%;margin:0 0 6px}
+.exercise-player .player-metric-pill .metric-pill{height:40px}
+.exercise-player .player-metric-pill .metric-pick{margin:0;border:0;padding:0}
+.exercise-player .player-metric-pill legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.player-round-row .set-name{min-width:0;width:100%;margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;outline-offset:2px}
+.exercise-player .player-round-row>.player-row-label{min-width:120px;overflow:visible;text-align:left}

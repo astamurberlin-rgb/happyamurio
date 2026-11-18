@@ -94,6 +94,8 @@ const templateEditor=await read('src/template-editor.js'),templateEditorCss=awai
 const sheetRules=await read('src/sheet-rules.js');
 // Аудит единообразия 18.11.2026: удаление — свайп влево, «Удалить» внизу карточки, свои тренировки в Настройках.
 const deleteRules=await read('src/delete-rules.js');
+// Аудит единообразия 18.11.2026: большой таймер — из настроек упражнения, круги = подходы, «Сохранить» отмечает подходы.
+const timerRules=await read('src/timer-rules.js');
 const setLine=await read('src/set-line.js'),setLineCss=await read('src/set-line.css');
 const sportJournal=await read('src/sport-journal.js'),sportJournalCss=await read('src/sport-journal.css');
 const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappings=await read('src/strong-native-mappings.js'),strongNativeUI=await read('src/strong-native-ui.js');
@@ -113,7 +115,7 @@ const html = labPage(template
   .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+designRulesCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,deleteRules,sheetRules].join('\n'))
+  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 // Всё собранное: путь внутри папки выпуска → текст.
 const files=new Map([['index.html',html]]);

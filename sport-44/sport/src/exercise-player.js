@@ -314,7 +314,7 @@ document.addEventListener('click',event=>{
   if(action==='player-lap')addExercisePlayerLap();
   let added=false;if(action==='player-new-round')added=addPlayerRound(ei);
   if(action==='player-finish')finishExercisePlayer();
-  if(action==='player-save'&&saveExercisePlayerResult(ei))toast('Результат сохранён в упражнении');
+  if(action==='player-save'&&saveExercisePlayerResult(ei))toast(state.active?.exercisePlayer?.independent===false?'Подходы отмечены':'Результат сохранён в упражнении');
   persist();renderExercisePlayerView(ei,added);
 },true);
 setInterval(()=>refreshExercisePlayer(),50);
