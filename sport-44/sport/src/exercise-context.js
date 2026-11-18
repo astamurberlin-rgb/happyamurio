@@ -1,6 +1,8 @@
 /* One retained editor, three context tabs. Tab changes never mutate or stop a workout. */
 let exerciseContext=null;
 function exerciseContextInstructions(id,context='library'){
+ // Своё упражнение, сделанное из библиотечного («Сделать своим»), показывает инструкцию исходного (аудит 18.11.2026).
+ const own=exercise(id),base=own?.basedOn&&exercise(own.basedOn)?own.basedOn:null;if(base&&!own.description)id=base;
  const e=exercise(id);
  // Lab 10.11.2026: in the library the page reports the chosen variant and offers «Добавить в тренировку»; inside a workout it only shows.
  return typeof pullVariantIds!=='undefined'&&pullVariantIds.includes(id)?`<iframe class="exercise-frame local-instruction-frame" title="Инструкции: ${esc(e?.name||'упражнение')}" src="${pullFrameUrl(id)+'&context='+(context==='library'?'library':'active')}"></iframe>`:`<p class="sheet-info">${esc(e?.description||'Инструкция для этого упражнения ещё не добавлена в библиотеку.')}</p>`;
@@ -22,7 +24,7 @@ function mountExerciseContext(id,ei=null,context='active'){
  {const top=sheet.querySelector('.sheet-top');if(top){if(typeof exerciseFavoriteButton==='function')top.insertAdjacentHTML('beforeend',exerciseFavoriteButton());top.insertAdjacentHTML('beforeend',exerciseMenuButton());}}
  if(context==='library'){
   form.dataset.scope='add';form.dataset.workoutId=state.active?.id||'';
-  form.querySelector('.exercise-extra').hidden=true;
+  for(const extra of form.querySelectorAll('.exercise-extra'))extra.hidden=true;   // все блоки описания: здесь их нечем сохранить
   const mine=templates().filter(t=>!t.recommended);
   form.querySelector('.exercise-save-actions').innerHTML=`<label class="field">Куда добавить<select name="addDestination" aria-label="Куда добавить упражнение"><option value="" selected disabled>Выбери тренировку</option><option value="current">${state.active?'В текущую тренировку':'В новую тренировку'}</option>${mine.map(t=>`<option value="template:${esc(t.id)}">${esc(t.title)}</option>`).join('')}</select></label><button class="button primary" type="submit" name="saveMode" value="add">Добавить упражнение</button>`;
   const last=form.lastElementChild;if(last?.classList.contains('fineprint'))last.textContent='Настройки применятся только к добавляемому упражнению. Библиотека и прежние тренировки не изменятся.';
@@ -40,7 +42,10 @@ function selectExerciseContextTab(key,focus=false){
  c.tab=key;c.sheet.scrollTop=c.scroll[key]||0;if(focus)c.nav.querySelector(`[data-exercise-context-tab="${key}"]`).focus({preventScroll:true});return true;
 }
 function openExerciseContext(id,tab='instructions'){
- if(!exercise(id))return false;openExerciseEditor(id);mountExerciseContext(id,null,'library');if(tab!=='instructions')selectExerciseContextTab(tab);return true;
+ if(!exercise(id))return false;openExerciseEditor(id);mountExerciseContext(id,null,'library');
+ // Открыто из карточки тренировки — «Куда добавить» сразу эта тренировка (аудит 18.11.2026: из открытой тренировки — в неё).
+ {const panel=typeof activePanel==='function'?activePanel():null,select=document.querySelector('#exercise-config-form [name=addDestination]'),option=panel?.type==='template'&&select?[...select.options].find(o=>o.value==='template:'+panel.id):null;if(option)select.value=option.value;}
+ if(tab!=='instructions')selectExerciseContextTab(tab);return true;
 }
 function addConfiguredExercise(id,entry,destination,form){
  if(!exercise(id))throw new Error('Упражнение больше недоступно.');

@@ -24,6 +24,9 @@ function restoreTemplateSheet(){
   return true;
 }
 function discardTemplatePicker(){templateSheetStack.length=0;templatePickerSession=null;}
+// Вернуться к листу, отложенному с этой меткой, — не дальше: под ним может ждать ещё один лист (например, список
+// «Добавить в расписание» под «Создать тренировку», аудит 18.11.2026).
+function restoreTemplateSheetTo(stage){while(templateSheetStack.length){const top=templateSheetStack.at(-1);restoreTemplateSheet();if(top.stage===stage)return true;}return false;}
 function withTemplateSheetOpening(fn){templateSheetOpening=true;try{return fn();}finally{templateSheetOpening=false;}}
 function openTemplateExercisePicker(row=null){
   if(!$('#template-form')||templatePickerSession)return;
@@ -32,7 +35,7 @@ function openTemplateExercisePicker(row=null){
 }
 function selectTemplateExercise(id){
   const definition=exercise(id),session=templatePickerSession;if(!definition||!session)return;
-  while(templateSheetStack.length)restoreTemplateSheet();
+  restoreTemplateSheetTo('template');
   const form=$('#template-form');if(!form)return;
   let row=session.row;
   if(!row){form.querySelector('#template-items').insertAdjacentHTML('beforeend',templateItemRow([id,'main',1,{metrics:exerciseMetrics(definition),sets:definition.defaultSets?.map(setPlanCopy)||[setPlanDefaults(definition)]}]));row=form.querySelector('#template-items').lastElementChild;}

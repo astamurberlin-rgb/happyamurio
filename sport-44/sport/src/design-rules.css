@@ -263,3 +263,16 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .exercise-player .player-metric-pill legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .player-round-row .set-name{min-width:0;width:100%;margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;outline-offset:2px}
 .exercise-player .player-round-row>.player-row-label{min-width:120px;overflow:visible;text-align:left}
+
+/* Астамур 18.11.2026 (снимок «Редактировать запись»): поля даты и времени — той же ширины, что остальные. На iPhone
+   родное поле даты не сжимается по ширине колонки и вылезает вправо; своего вида ему не нужно — поверх русская подпись. */
+.ru-date>input{-webkit-appearance:none!important;appearance:none!important;display:block;min-width:0!important;max-width:100%!important;width:100%!important;box-sizing:border-box!important}
+.ru-date{max-width:100%}
+/* Значок тренировки — внутри поля «Название»: квадратик слева, нажал — выбор значка. Поле во всю ширину. */
+.workout-name-inline{display:block!important;margin-right:0!important}
+.template-form-edit .workout-name-row{margin-right:0!important}
+.workout-name-input .workout-icon-toggle{position:relative;flex:0 0 40px;width:40px!important;height:40px!important;margin:0 0 0 5px;padding:0;border:1px solid rgba(255,255,255,.34);border-radius:10px!important;background:rgba(255,255,255,.12);display:grid;place-items:center}
+.workout-name-input .workout-icon-toggle>.icon,.workout-name-input .workout-icon-toggle>.sport-icon,.workout-name-input .workout-icon-toggle>img{width:32px!important;height:32px!important}
+.workout-name-input .workout-icon-plus{width:15px;height:15px;right:-4px;bottom:-4px;border-radius:5px}
+.workout-name-input .workout-icon-plus .icon{width:10px;height:10px}
+.workout-name-input input{padding-left:10px!important}

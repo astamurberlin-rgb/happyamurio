@@ -25,9 +25,11 @@ function openTemplateExerciseSettings(row){
  const source={id,name:draft.localName||definition.name,phase:draft.phase||'main',metrics:clone(draft.metrics),sets:clone(draft.sets),timerConfig:clone(draft.localTimerConfig||exerciseTimerConfig(definition))};
  holdTemplateSheet('exercise');
  withTemplateSheetOpening(()=>openExerciseEditor(id,null,source));
+ // Вложенный лист — сверху «← К тренировке», как у выбора упражнения (аудит 18.11.2026).
+ document.querySelector('#modal-root .sheet-top')?.insertAdjacentHTML('afterend','<button type="button" class="text-btn template-picker-back sheet-back" data-action="template-picker-back">← К тренировке</button>');
  templateExerciseApply=({metrics,sets,timerConfig})=>{
   draft.metrics=metrics;draft.sets=sets;draft.localTimerConfig=timerConfig;draft.lastRestSeconds=setPlanLastRest(sets)||draft.lastRestSeconds;
-  while(templateSheetStack.length)restoreTemplateSheet();
+  restoreTemplateSheetTo('exercise');
   root.innerHTML=setPlanRows(draft);toast('Настройки упражнения в тренировке');
   row.querySelector('[data-action="template-exercise-settings"]')?.focus({preventScroll:true});
  };

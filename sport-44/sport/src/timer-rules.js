@@ -12,12 +12,18 @@
 
 // Таймер упражнения из его подходов.
 function timerPendingIndices(e){return (e?.sets||[]).map((s,i)=>s.done?-1:i).filter(i=>i>=0);}
-function timerDraftFromSets(e){
+// «Плеер упражнения» из «Настроить» тоже учитывается, если он задан у упражнения: «Секундомер» — секундомер,
+// «Интервалы» — между кругами его отдых; его «Работа» — время круга, если у подхода своего времени нет.
+// timer: true — таймер (переключатель в круге уже стоит на нём), false — секундомер, не задано — как настроено.
+function timerDraftFromSets(e,timer){
+  const explicit=!!(e?.timerConfig||exercise(e?.id)?.timerConfig),cfg=exerciseTimerConfig(e);
+  const stopwatch={mode:'stopwatch',program:[{workSeconds:0,restSeconds:0}],independent:false};
+  if(timer===false||(timer!==true&&explicit&&cfg.mode==='stopwatch'))return stopwatch;
   const pending=timerPendingIndices(e),seconds=pending.map(i=>Math.max(0,Math.round(Number(e.sets[i].seconds)||0))),any=seconds.find(n=>n>0);
-  if(any)return {mode:pending.length>1?'intervals':'countdown',program:seconds.map(n=>({workSeconds:n||any,restSeconds:0})),independent:false};
-  const last=Math.round(Number(e?.sets?.at(-1)?.seconds)||0);
-  if(!pending.length&&last>0)return {mode:'countdown',program:[{workSeconds:last,restSeconds:0}],independent:false};
-  return {mode:'stopwatch',program:[{workSeconds:0,restSeconds:0}],independent:false};
+  const fallback=any||(explicit||timer===true?cfg.workSeconds:0),last=Math.round(Number(e?.sets?.at(-1)?.seconds)||0);
+  if(!fallback&&!(!pending.length&&last>0))return stopwatch;
+  const rows=pending.length?seconds.map(n=>n||fallback):[last||fallback],rest=explicit&&cfg.mode==='intervals'?Math.max(0,Number(cfg.restSeconds)||0):0;
+  return {mode:rows.length>1||rest>0?'intervals':'countdown',program:rows.map((n,k)=>({workSeconds:n,restSeconds:k<rows.length-1?rest:0})),independent:false};
 }
 function timerBound(e){return e?.timerDraft?.independent===false;}
 // Какой подход за строкой i: у идущего таймера — его подходы, до старта — несделанные подходы по порядку.
@@ -30,7 +36,12 @@ function timerSetIndex(ei,p,i){
 }
 
 const playerConfigurationBeforeSets=playerConfiguration;
-playerConfiguration=function(e){const c=playerConfigurationBeforeSets(e);if(timerBound(e))c.independent=false;return c;};
+playerConfiguration=function(e){
+  const c=playerConfigurationBeforeSets(e);if(!timerBound(e))return c;c.independent=false;
+  // отдых между кругами (интервалы) — из черновика, прежний расчёт его обнулял
+  const program=e.timerDraft.program;if(Array.isArray(program)&&program.some(r=>Number(r.restSeconds)>0)){c.program=c.program.map((r,k)=>({...r,restSeconds:Math.max(0,Math.min(3600,Math.round(Number(program[k]?.restSeconds)||0)))}));c.restSeconds=c.program[0]?.restSeconds||0;}
+  return c;
+};
 
 // Названия кругов — названия подходов.
 const playerRowNameBeforeSets=playerRowName;
@@ -71,7 +82,7 @@ commitPlayerPreset=function(input){
   if(!e||!timerBound(e)||key!=='workSeconds'||(p?.ei===ei&&!p.finished&&(p.running||p.elapsed>0)))return commitPlayerPresetBeforeSets(input);
   const n=parsePlayerPreset(input.value),si=timerPendingIndices(e)[index];
   if(!Number.isInteger(n)||n<0||n>86400||si==null){toast('Время — минуты:секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(ei))[index]?.workSeconds||0);return;}
-  e.sets[si].seconds=n;const mode=e.timerDraft.mode;e.timerDraft=timerDraftFromSets(e);if(mode==='stopwatch')e.timerDraft.mode='stopwatch';
+  e.sets[si].seconds=n;e.timerDraft=timerDraftFromSets(e,e.timerDraft.mode!=='stopwatch');
   if(p?.ei===ei)state.active.exercisePlayer=null;persist();
   input.value=sportDurationValue(n);const display=$('[data-player-time]');if(display)display.textContent=playerDisplay(exercisePlayerStatus(playerPreview(ei)).remaining,true);
 };
@@ -80,7 +91,7 @@ addPlayerRound=function(ei,at=playerNow()){
   const e=state.active?.exercises[ei],p=state.active?.exercisePlayer;
   if(!e||!timerBound(e)||(p?.ei===ei&&!p.finished&&(p.running||p.elapsed>0))||playerPreview(ei).mode==='stopwatch')return addPlayerRoundBeforeSets(ei,at);
   if(!addWorkoutSet(ei))return false;const s=e.sets.at(-1);s.done=false;if(!(Number(s.seconds)>0))s.seconds=playerProgram(playerPreview(ei)).at(-1)?.workSeconds||60;
-  e.timerDraft=timerDraftFromSets(e);if(p?.ei===ei)state.active.exercisePlayer=null;return true;
+  e.timerDraft=timerDraftFromSets(e,true);if(p?.ei===ei)state.active.exercisePlayer=null;return true;
 };
 // Круг секундомера — следующий подход; не хватает подходов — добавляется новый.
 const addExercisePlayerLapBeforeSets=addExercisePlayerLap;
@@ -159,4 +170,11 @@ const playerRoundRemainingBeforeSets=playerRoundRemaining;
 playerRoundRemaining=function(p,index,key,at){
   if(p?.finished&&p.savedToSets&&key==='workSeconds'){const s=state.active?.exercises[p.ei]?.sets[p.setIndices?.[index]];if(s?.done)return Number(s.seconds)||0;}
   return playerRoundRemainingBeforeSets(p,index,key,at);
+};
+// Переключатель в круге на «таймер»: круги — подходы со своим временем (или «Работа» плеера), а не пустой отсчёт.
+const setExercisePlayerModeBeforeSets=setExercisePlayerMode;
+setExercisePlayerMode=function(ei,countdown,at){
+  const ok=setExercisePlayerModeBeforeSets(ei,countdown,at),e=state.active?.exercises[ei];
+  if(ok&&countdown&&e&&timerBound(e)&&state.active.exercisePlayer?.ei!==ei){e.timerDraft=timerDraftFromSets(e,true);persist();}
+  return ok;
 };

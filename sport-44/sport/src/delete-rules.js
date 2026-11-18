@@ -30,10 +30,33 @@ function settingsTemplatesMarkup(){
   const list=templates().filter(t=>!t.recommended);if(!list.length)return '';
   return `<div class="settings-section">Мои тренировки</div><div class="happy-card settings-templates">${list.map(t=>`<div class="row-swipe" data-id="${esc(t.id)}"><button type="button" class="swipe-delete" data-action="delete-template" data-id="${esc(t.id)}" aria-label="Удалить тренировку ${esc(t.title)}" tabindex="-1">${icon('trash')}<span>Удалить</span></button><div class="swipe-content"><button type="button" class="settings-template-row" data-action="preview-template" data-id="${esc(t.id)}">${esc(t.title)}</button></div></div>`).join('')}</div><p class="fineprint settings-templates-hint">Свайп влево — удалить.</p>`;
 }
-// Настройки уже разложены по разделам (settings-layout.js): «Мои тренировки» встают сразу после «Создать».
+/* Группы упражнений — только в Настройках: «Создать → Группу упражнений» открывает форму сразу; «Мои группы» —
+   свои группы списком: нажать — изменить (внизу красная «Удалить»), свайп влево — удалить. */
+function settingsGroupsMarkup(){
+  const list=exerciseGroups().filter(g=>g.type==='user');if(!list.length)return '';
+  return `<div class="settings-section">Мои группы</div><div class="happy-card settings-templates settings-groups">${list.map(g=>`<div class="row-swipe" data-id="${esc(g.id)}"><button type="button" class="swipe-delete" data-action="settings-delete-group" data-id="${esc(g.id)}" aria-label="Удалить группу ${esc(groupPath(g.id))}" tabindex="-1">${icon('trash')}<span>Удалить</span></button><div class="swipe-content"><button type="button" class="settings-template-row" data-action="settings-edit-group" data-id="${esc(g.id)}">${esc(groupPath(g.id))}</button></div></div>`).join('')}</div>`;
+}
+function settingsGroupForm(id){editGroup(id||undefined);const form=$('#group-form');if(form)form.dataset.from='settings';}
+function deleteGroupWithUndo(id){
+  const before=clone(state.exerciseGroups),links=clone(state.exerciseOverrides||{}),custom=clone(state.customExercises);
+  deleteExerciseGroup(id);persist();
+  toast('Группа удалена',()=>{state.exerciseGroups=before;state.exerciseOverrides=links;state.customExercises=custom;persist();render();if($('#modal-root .group-manager'))openGroupManager();});
+}
+window.addEventListener('click',e=>{
+  const b=e.target.closest?.('[data-action="settings-create-group"],[data-action="settings-edit-group"],[data-action="settings-delete-group"],#group-form[data-from="settings"] [data-action="delete-group"]');if(!b)return;
+  e.preventDefault();e.stopImmediatePropagation();const a=b.dataset.action,id=b.dataset.id;
+  if(a==='settings-create-group'){settingsGroupForm(null);return;}
+  if(a==='settings-edit-group'){settingsGroupForm(id);return;}
+  if(a==='settings-delete-group'){deleteGroupWithUndo(id);render();return;}
+  if(a==='delete-group'){closeSheet();deleteGroupWithUndo(id);render();}
+},true);
+window.addEventListener('submit',e=>{const f=e.target;if(f.id!=='group-form'||f.dataset.from!=='settings')return;e.preventDefault();e.stopImmediatePropagation();
+  try{const v=new FormData(f),fresh=!f.dataset.id,group=saveExerciseGroup(f.dataset.id||null,v.get('name'),v.get('parentId'));persist();closeSheet();render();toast(fresh?'Группа «'+group.name+'» создана':'Группа сохранена');}
+  catch(error){const box=f.querySelector('.form-error');if(box)box.textContent=error.message;}},true);
+// Настройки уже разложены по разделам (settings-layout.js): «Мои тренировки» и «Мои группы» встают сразу после «Создать».
 const renderProfileBeforeOwnTemplates=renderProfile;
 renderProfile=function(){
   const html=renderProfileBeforeOwnTemplates.apply(this,arguments),label='<div class="settings-section">Создать</div>',i=html.indexOf(label);if(i<0)return html;
   const next=html.indexOf('<div class="settings-section"',i+label.length);if(next<0)return html;
-  return html.slice(0,next)+settingsTemplatesMarkup()+html.slice(next);
+  return html.slice(0,next)+settingsTemplatesMarkup()+settingsGroupsMarkup()+html.slice(next);
 };
