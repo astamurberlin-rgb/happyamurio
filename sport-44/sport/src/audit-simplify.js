@@ -96,22 +96,9 @@ function auditExerciseForm(form){
  //    в конце текста мигает только курсор — ничего не выделено, линии под текстом нет (18:58).
  //    Ушёл с поля, нажатие мимо или «Готово» на клавиатуре — снова заголовок с новым названием. Пустое имя возвращает
  //    прежнее, Escape — тоже. Раньше карандаш открывал второе поле и нажимался по кругу, потом стоял у правого края.
- const title=form.closest('.sheet')?.querySelector('.sheet-top h2'),row=form.querySelector('.exercise-title-row'),input=form.querySelector('.exercise-title-input');
- if(title&&row&&input&&!form.dataset.renameReady){
-  form.dataset.renameReady='1';row.hidden=true;
-  title.parentElement.querySelector('.rename-exercise')?.remove();
-  title.classList.add('rename-title');
-  title.insertAdjacentHTML('afterend',`<button type="button" class="rename-exercise" aria-label="Переименовать упражнение">${icon('pencil-simple')}</button>`);
-  const pencil=title.parentElement.querySelector('.rename-exercise'),max=input.maxLength>0?input.maxLength:120;
-  let before='',closedAt=0,mode='true';try{title.contentEditable='plaintext-only';if(title.contentEditable==='plaintext-only')mode='plaintext-only';}catch(e){}title.contentEditable='false';
-  const open=()=>{before=input.value;title.contentEditable=mode;title.classList.add('renaming');title.setAttribute('role','textbox');title.setAttribute('aria-label','Название упражнения');title.setAttribute('enterkeyhint','done');
-   pencil.dataset.editing='1';pencil.hidden=true;title.focus();const range=document.createRange();range.selectNodeContents(title);range.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(range);};
-  const close=()=>{if(!pencil.dataset.editing)return;const name=title.textContent.replace(/\s+/g,' ').trim().slice(0,max);input.value=name||before;title.textContent=input.value;input.dispatchEvent(new Event('input',{bubbles:true}));
-   title.contentEditable='false';title.classList.remove('renaming');title.removeAttribute('role');title.removeAttribute('aria-label');pencil.hidden=false;delete pencil.dataset.editing;closedAt=Date.now();};
-  pencil.onclick=()=>{if(!pencil.dataset.editing&&Date.now()-closedAt>400)open();};
-  title.addEventListener('keydown',e=>{if(!pencil.dataset.editing)return;if(e.key==='Enter'){e.preventDefault();close();}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();title.textContent=before;close();}});
-  title.addEventListener('blur',close);
- }
+ //    Аудит единообразия (Астамур 18.11.2026): карандаша больше нет. Библиотечное упражнение не переименовывается —
+ //    «Сделать своим» в меню «⋯»; своё переименовывается там же («Переименовать»). Поле названия формы скрыто.
+ {const row=form.querySelector('.exercise-title-row');if(row)row.hidden=true;}
  // 3. Вкладка «Настроить» в библиотеке (Астамур 17.11.2026): сначала настройки — открыто, без «Настроить перед добавлением»;
  //    внизу «Куда добавить» и кнопка «Добавить упражнение» — после настроек.
  if(form.dataset.scope==='add'){

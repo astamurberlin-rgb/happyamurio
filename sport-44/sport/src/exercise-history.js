@@ -1,12 +1,15 @@
 let exerciseHistoryId=null,exerciseHistoryMode='date';
 function exerciseHistoryKind(id){const e=exercise(id),profile=e?.profile||'';return /assisted/.test(profile)?'assisted':isLoaded({id})?'weight':hasDistance(e)&&state.workouts.some(w=>!w.demo&&w.exercises.some(x=>x.id===id&&x.sets.some(s=>s.done&&Number.isFinite(s.distance)&&s.distance>0)))?'distance':isTimed({id})?'time':'reps'}
+// Своё упражнение, сделанное из библиотечного («Сделать своим», 18.11.2026), до сброса показывает и записи исходного
+// упражнения до минуты, когда его сделали своим (historyFrom).
+function exerciseHistoryMatches(w,e,id){const from=exercise(id)?.historyFrom;return e.id===id||!!(from&&e.id===from.id&&String(w.start)<String(from.until))}
 function exerciseHistoryEntries(id){const kind=exerciseHistoryKind(id);return state.workouts.filter(w=>!w.demo).flatMap(w=>{
- const sets=w.exercises.filter(e=>e.id===id).flatMap(e=>e.sets).filter(s=>s.done);if(!sets.length)return [];
+ const sets=w.exercises.filter(e=>exerciseHistoryMatches(w,e,id)).flatMap(e=>e.sets).filter(s=>s.done);if(!sets.length)return [];
  const positive=(k)=>sets.filter(s=>Number.isFinite(s[k])&&s[k]>0),sum=k=>positive(k).reduce((n,s)=>n+s[k],0),max=k=>positive(k).length?Math.max(...positive(k).map(s=>s[k])):null;
  const duration=positive('seconds').length?sum('seconds'):null,distance=positive('distance').length?sum('distance'):null;
  const weight=sets.some(s=>Number.isFinite(s.weight))?(kind==='assisted'?Math.min(...sets.filter(s=>Number.isFinite(s.weight)).map(s=>s.weight)):Math.max(...sets.filter(s=>Number.isFinite(s.weight)).map(s=>s.weight))):null;
  const best=kind==='weight'||kind==='assisted'?weight:kind==='distance'?max('distance'):kind==='time'?max('seconds'):max('reps');
- const handles=[...new Set(w.exercises.filter(e=>e.id===id&&typeof e.handle==='string'&&e.handle.trim()).map(e=>e.handle.trim()))];
+ const handles=[...new Set(w.exercises.filter(e=>exerciseHistoryMatches(w,e,id)&&typeof e.handle==='string'&&e.handle.trim()).map(e=>e.handle.trim()))];
  return [{id:w.id,start:w.start,warnings:w.warnings||[],handles,sets,best,score:best==null?null:kind==='assisted'?-best:best,duration,distance,reps:sum('reps'),volume:sets.reduce((n,s)=>n+(Number.isFinite(s.weight)&&s.weight>0&&Number.isFinite(s.reps)&&s.reps>0?s.weight*s.reps:0),0)}];
 })}
 function sortedExerciseHistory(entries,mode){return [...entries].sort((a,b)=>{if(mode==='date')return b.start.localeCompare(a.start);const k=mode==='best'?'score':'duration',x=a[k],y=b[k];if(x==null&&y!=null)return 1;if(y==null&&x!=null)return -1;return (y??0)-(x??0)||b.start.localeCompare(a.start)})}
