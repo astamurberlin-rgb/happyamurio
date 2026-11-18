@@ -84,6 +84,16 @@
  },
  "pointReleases": [
   {
+   "version": "33.12",
+   "date": "2026-11-18",
+   "changes": [
+    "bot.js: бот включён по умолчанию (в ячейке happy-meal-bot хранится только «0» — выключен); правила по 107 диктовкам из ai_shared.food_inbox — product_pins, два веса подряд, мера без числа, напитки штуками, «с тремя шотами», «А с Б и В», часть блюда и отдельная еда, непонятный хвост не блокирует начало, m.eaten — диктовка шортката",
+    "bot-speech.js: pin(); bot/household-ru.js 0.4.0: product_pins, generic broth, селёдка — солёная, cooked_for",
+    "index.html: «Правила бота» — раздел «Живая диктовка»; в строке ввода кнопка «Отправить» вместо второго микрофона; выключатель «Бот записи еды» без «бета 1»",
+    "index.html ?v=33.12, заголовок и подвал; sw.js 33.12; release-notes.js 33.12"
+   ]
+  },
+  {
    "version": "33.11",
    "date": "2026-11-18",
    "changes": [
@@ -359,18 +369,18 @@
   },
   {
    "path": "bot-speech.js",
-   "size": 23951,
-   "sha256": "da4e09851b4e4bf0a5764183e005f9d55509079a20ae92ad936890ce26f5ff74"
+   "size": 25217,
+   "sha256": "786e9ac65f7714014d760c5cd34c0babb5c1e18b45e64583f868ce481bb36794"
   },
   {
    "path": "bot.js",
-   "size": 145447,
-   "sha256": "a773d3e2311fc8acb1543ac431b3d8a8527f4ce50731b576d9a4bb2de60959ee"
+   "size": 152272,
+   "sha256": "3fcdcc8553f160ec7ffa8391912ceecdc8cd45bb08dd20362c0e8145977ff211"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 225193,
-   "sha256": "96f060242ecd11779f88d43fab96d2860a93c23350c70f0f5651fb3c615b1da0"
+   "size": 231743,
+   "sha256": "c57da9d122f8bd5d424f10efdc3d373643eaf2d8bd568d93e1479faa6568e08b"
   },
   {
    "path": "catalog-offline.js",
@@ -504,8 +514,8 @@
   },
   {
    "path": "index.html",
-   "size": 625862,
-   "sha256": "9719820d6af5217ae491db223ecd45f6e3ac1f2ea2d9d3f461f4b3bd8dcf1917"
+   "size": 627831,
+   "sha256": "57ea95d17df430e4e000b2492cbd3f84984eaaf9538d402d0666989d5e0d9980"
   },
   {
    "path": "kfct.js",
@@ -704,8 +714,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 56173,
-   "sha256": "e1e3fee2ff5c5b2164d14ce05fdb3fed8dbcc389c50f88b8de68d5a0ed6c2161"
+   "size": 57532,
+   "sha256": "03d726b04f38f9ecbd530d0c2885fa4173a72f3fd3067f2f37aa4f24ec95eba9"
   },
   {
    "path": "report.css",
@@ -895,7 +905,7 @@
   {
    "path": "sw.js",
    "size": 3505,
-   "sha256": "7f9df9b30efe3d0187b0bfbdb6d0ffe8effab8721aa9316b93ebfc8d5151195a"
+   "sha256": "da23675c577b9eb66abcf81346e0819a46fe219e1352e82649e0a995c4157362"
   },
   {
    "path": "usda-measures.js",

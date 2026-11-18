@@ -81,7 +81,7 @@ var MealSpeech=(function(){
   function missing(word){
     var w=nz(word); return ((D&&D.known_missing)||[]).some(function(e){ return new RegExp(e.said).test(w)&&!hasDish(new RegExp(e.unless_in_base)) });
   }
-  /* Meal 34 · слово человека → точное название продукта в базе (product_pins): «квашеная капуста» — капуста, а не её сок.
+  /* Meal 33.12 · слово человека → точное название продукта в базе (product_pins): «квашеная капуста» — капуста, а не её сок.
      tokens — слова еды из куска фразы; text — весь кусок; unit — мера строки; vague — количество без числа. Сам продукт по названию находит бот (bot.js, pinFid) */
   function pin(tokens,text,unit,vague,bare){
     var P=(D&&D.product_pins)||[], T=(tokens||[]).map(nz), full=' '+nz(text)+' ', hit=null;

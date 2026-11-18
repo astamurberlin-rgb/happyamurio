@@ -78,11 +78,13 @@ with sync_playwright() as p:
     check("вход", enter(page))
     wait_for(page, lambda: page.evaluate("()=>typeof parseText==='function'&&typeof BLS_ST!=='undefined'&&BLS_ST==='ok'&&typeof MealBot!=='undefined'"), 40, 300)
 
-    # выключен (как у всех): прежний ответ диалога, в дневник само ничего не идёт
+    # Meal 33.12: включён у всех (решение Астамура 18.11.2026). Выключенный в «Для разработчика» — прежний ответ диалога, в дневник само ничего не идёт
     page.evaluate(RESET)
+    check("бот включён по умолчанию", page.evaluate("()=>MealBot.on()") is True)
+    page.evaluate("()=>MealBot.setOn(false)")
     off = page.evaluate("""()=>{const on=MealBot.on();const m={id:'m1',who:'me',kind:'text',text:'Груша 200 г'};D.msgs.push(m);const h=respond(m);
       return {on,html:h,items:Object.keys(DB.days).reduce((n,d)=>n+(DB.days[d].items||[]).length,0)}}""")
-    check("бот выключен по умолчанию", off["on"] is False)
+    check("выключатель выключает бота", off["on"] is False)
     check("выключен: прежний ответ «Понял» и ничего не записано", "Понял" in off["html"] and off["items"] == 0, off["html"][:120])
 
     # каталоги подключаются не сразу: ждём, пока список продуктов перестанет расти, иначе выбор продукта зависел бы от скорости загрузки
@@ -128,7 +130,6 @@ with sync_playwright() as p:
     late = page.evaluate("""()=>{const st=BLS_ST;BLS_ST='loading';openMatch('суп лапша одна тарелка');const a=M.lines[0].st;BLS_ST=st;blsRerender();
       const l=M.lines[0],r={before:a,st:l.st,n:FOODS[l.fid]?FOODS[l.fid].n:'',g:l.g};go('day');return r}""")
     check("база загрузилась после диктовки — «суп лапша одна тарелка» сам стал супом с лапшой, 300 г", late["st"] == "ok" and "лапш" in late["n"] and late["g"] == 300, str(late))
-    page.evaluate("()=>MealBot.setOn(false)")
     out["errors"] = errors
     check("ошибок на страницах нет", not errors, "; ".join(errors[:3]))
     b.close()
