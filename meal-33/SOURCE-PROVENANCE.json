@@ -84,6 +84,16 @@
  },
  "pointReleases": [
   {
+   "version": "33.11",
+   "date": "2026-11-18",
+   "changes": [
+    "shared/: общие экраны из лаборатории Sport 44.1 — профиль и цели листом (ручка, нажатие мимо), «Отмена», вход, «Новый замер» (ручка, красная «Удалить»), силуэт без «ушей» на бёдрах, размеры текста по правилам",
+    "shared/happy-measurements.js: «нога не шире бёдер» — только у бедра (выше колена) и не уже самого бедра; стопа больше не срезается по ширине бёдер, при похудении «Сейчас» внутри «Было» (scripts/check-measurements.mjs)",
+    "meal-account.js: HappyScreens.dismissed — «Правки не сохранены · Вернуть»",
+    "index.html ?v=33.11, заголовок и подвал; sw.js 33.11; release-notes.js 33.11"
+   ]
+  },
+  {
    "version": "33.10",
    "date": "2026-11-18",
    "changes": [
@@ -354,8 +364,8 @@
   },
   {
    "path": "bot.js",
-   "size": 144845,
-   "sha256": "b0f0728c0336e9d7eb3f4607811ab108181c157bd4d6a5b8c3e3dee78ec907e2"
+   "size": 145447,
+   "sha256": "a773d3e2311fc8acb1543ac431b3d8a8527f4ce50731b576d9a4bb2de60959ee"
   },
   {
    "path": "bot/household-ru.js",
@@ -494,8 +504,8 @@
   },
   {
    "path": "index.html",
-   "size": 622847,
-   "sha256": "f08a6201b15dc9205958ff81b7ad5a394e9dbfe9bcd41a1ea1ed1c72a2fea4d2"
+   "size": 625862,
+   "sha256": "9719820d6af5217ae491db223ecd45f6e3ac1f2ea2d9d3f461f4b3bd8dcf1917"
   },
   {
    "path": "kfct.js",
@@ -509,8 +519,8 @@
   },
   {
    "path": "meal-account.js",
-   "size": 7313,
-   "sha256": "cbf99ac9f56d6fc2648d45556937ca2dbc8c7d0a9c91a01b7d09f49f3a6a34cc"
+   "size": 7785,
+   "sha256": "a4b3532da4e5192f9099d5f5db40163411c07128757117abf55451327838e6f0"
   },
   {
    "path": "meal-data.js",
@@ -694,8 +704,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 54418,
-   "sha256": "01a63b98be7599ff8e73c8ae2417cc63ff7da6c0cef955c40402383c8f53bfa8"
+   "size": 56173,
+   "sha256": "84bc71d84f004ad39c447004499d5b2906706297d862f009cf6c1b4db7975e86"
   },
   {
    "path": "report.css",
@@ -734,13 +744,13 @@
   },
   {
    "path": "shared/happy-appearance.css",
-   "size": 4142,
-   "sha256": "1c41e3960eda7d812e82ca1a403699c8d5be61aeeff8c0b99598c4609b6a6dc2"
+   "size": 4371,
+   "sha256": "bfb61859f0414968fef1b1386d085916e416ba6f5673d5b23b9f194c628bfad8"
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 11020,
-   "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
+   "size": 10905,
+   "sha256": "c68cc0631dfd5414694a10ff8da7b76a9c36301c2349f2a0c233ff7fe840b8e9"
   },
   {
    "path": "shared/happy-food.js",
@@ -749,8 +759,8 @@
   },
   {
    "path": "shared/happy-goals.js",
-   "size": 39151,
-   "sha256": "96c62978990d3ebe9aeaf20ce123494cbe0253c7f0d58d5feff4080f0970d025"
+   "size": 39207,
+   "sha256": "0e9cccf69e01c6cdf12e54066a9eb74ebc2dc3f5a9c3d2c3baaab4da9e629f84"
   },
   {
    "path": "shared/happy-gradients.js",
@@ -769,18 +779,18 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 11066,
-   "sha256": "21b24d86fae2d45105db7dc3cba190cd208d57e47646dbcc7e6c2d458aad469b"
+   "size": 11520,
+   "sha256": "7f002991a062f862261dc7d6e371187537b5a4cc0e8e35677ff722de91de5de4"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 51855,
-   "sha256": "17744a6bba25eba5cc77395383cab9e78f7a9347c1510751f42bb81035bc11b3"
+   "size": 56076,
+   "sha256": "e4157507d1b79ff733354b4403cfdc1a766795fc575b8c8f35cf4017c4f4cbaa"
   },
   {
    "path": "shared/happy-person.js",
-   "size": 23640,
-   "sha256": "c75c57b878633f28a7c6fd02ab93f998b45cdf22745b6c0f76397abe3744a355"
+   "size": 23666,
+   "sha256": "b244743a584b70e741786e09e27648c147be25ce0e7193aaec641b084c3359f9"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -789,13 +799,13 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 29988,
-   "sha256": "8216c4245e22dcb609f0af94fd021402f997cfe248ea8395f5d894e813928df9"
+   "size": 31485,
+   "sha256": "d76c9a9701986762a5ceeb2ecf67e8f9841dda3b2fb719c894bb20fdbdf4134c"
   },
   {
    "path": "shared/happy-screens.js",
-   "size": 22891,
-   "sha256": "b4ea381dbaadcc6e53f9ca1d4c441ab2459896fd0f57361ba5b8027dfa0d8a13"
+   "size": 27974,
+   "sha256": "e914beda8f6412a6ce2d524e44c11a9908b5baa5983ceea4fb6558a50b976704"
   },
   {
    "path": "shared/happy-settings-developer.js",
@@ -819,8 +829,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 22921,
-   "sha256": "b87ba7d2325c44a84ee533993380aeac34adc37c704a1910f99658f6442f210c"
+   "size": 22897,
+   "sha256": "0cca82d4a3a269195d8c9187cffbbf1bca79e44d157e88e0d6676d2bb4a63132"
   },
   {
    "path": "shared/meal-products-model.js",
@@ -830,7 +840,7 @@
   {
    "path": "shared/release-notes.js",
    "size": 3156,
-   "sha256": "0d811d0efdd6254d5e993bd245ac971e6ab1fb5194a8273363efe2bb7520c089"
+   "sha256": "b2b96a57602e29a4ca711439e23b801522c8d1be6c79864fb7a4dae203f2d5a5"
   },
   {
    "path": "sources.js",
@@ -885,7 +895,7 @@
   {
    "path": "sw.js",
    "size": 3505,
-   "sha256": "bff42cfef96007cb9afe864a7d6b7c60bd5d9e74e31d89e3e114b6d5fc358514"
+   "sha256": "7f9df9b30efe3d0187b0bfbdb6d0ffe8effab8721aa9316b93ebfc8d5151195a"
   },
   {
    "path": "usda-measures.js",
@@ -894,8 +904,8 @@
   },
   {
    "path": "usda.js",
-   "size": 13284,
-   "sha256": "f6520782ca1c6a10a1dec3aa265b4c7bac7b4a1cf5ca757a73599b996953e0ac"
+   "size": 13320,
+   "sha256": "836a088a1153b2ddf655e47bf34c0c222b25a001f17583ffc88bd18fb88cb306"
   },
   {
    "path": "user-products.css",

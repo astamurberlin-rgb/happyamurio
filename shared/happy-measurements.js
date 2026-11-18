@@ -145,6 +145,11 @@ const ICON={
 const GIRTH=['neck','shoulders','chest','biceps','forearm','waist','hips','thigh','calf'];
 const GIRTH_NORMAL={neck:39,shoulders:121,chest:103,biceps:36,forearm:29.5,waist:82,hips:97,thigh:58.5,calf:38};
 const SIL={now:'#F600FF',past:'#00DFF0',same:'#2dacff',glass:{grad:0.02,shine:0.26,width:0.7,angle:49,pos:0.66,rim:0.79}};
+/* Цвет по цели (Астамур 17.11.2026): розовым — то, что идёт против цели, бирюзовым — в сторону цели. Снижение,
+   поддержание и рекомпозиция: прибавка розовая, убыль бирюзовая (как было). Набор веса — наоборот: прибавка бирюзовая,
+   убыль розовая. Цель даёт приложение: mount(box,{goal:()=>'loss'|'maintain'|'recomp'|'gain'}); нет цели — как при снижении. */
+let goalOf=null;
+function palette(){let k=null;try{k=goalOf?goalOf():null}catch(e){}return k==='gain'?{now:SIL.past,past:SIL.now}:{now:SIL.now,past:SIL.past}}
 /* замер → обхваты для рисунка; парные — среднее левой и правой; нет числа — из запасного набора */
 function girths(values,fallback){
  const v=values||{},ok=x=>Number.isFinite(x)&&x>0;
@@ -263,10 +268,18 @@ function curve(pts){
 function refLeg(m,side,w,warp){
  const P=(x,y)=>({x,y}),ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)},refY=f=>f*182.15-1.15;
  const rh=m.hips/GIRTH_NORMAL.hips,rt=m.thigh/GIRTH_NORMAL.thigh,rc=m.calf/GIRTH_NORMAL.calf;
- const ratio=y=>y<104?rh+(rt-rh)*ease((y-96)/8):y<124?rt:y<146?rt+(rc-rt)*ease((y-124)/22):y<158?rc:rc+(1-rc)*ease((y-158)/8);
- const rows=REF_LEG.map(([f,a,b])=>{const y=refY(f),ax=(a+b)/2,h=(b-a)/2*ratio(y);return [y,ax-h,ax+h]});
+ /* Бёдра шире бедра (Астамур 17.11.2026, «уши» на бёдрах): переход от бёдер к бедру тем длиннее, чем больше разница —
+    до середины бедра; без разницы — чуть мягче прежнего (10 вместо 8). */
+ const span=Math.min(28,10+60*Math.max(0,rh-rt)),soft=t=>{t=Math.max(0,Math.min(1,t));return t*t*t*(t*(t*6-15)+10)};
+ const y0=rh>rt?92:96,ratio=y=>y<y0+span?rh+(rt-rh)*soft((y-y0)/span):y<124?rt:y<146?rt+(rc-rt)*ease((y-124)/22):y<158?rc:rc+(1-rc)*ease((y-158)/8);
+ const rows=REF_LEG.map(([f,a,b])=>{const y=refY(f),ax=(a+b)/2,h=(b-a)/2;return [y,ax-h*ratio(y),ax+h*ratio(y),ax+h*rt]});
  const ww=m.waist*0.35/2,hp=m.hips*0.355/2,wy=warp(69.5);
- const outer=[P(ww*0.98,wy-9),P(ww,wy),P(ww+(hp-ww)*0.55,wy+8),P(hp,wy+17),P(Math.max(hp,18.7*rh)*0.99,refY(.53))].concat(rows.map(r=>P(r[2],r[0])));
+ /* Ниже бёдер нога не шире бёдер — без «ушей» (Астамур 17.11.2026). Выпуск 18.11.2026: только у бедра, выше колена,
+    и не уже самого бедра по его обхвату. Так стопа не срезается по ширине бёдер, при похудении «Сейчас» не вылезает
+    за «Было» (scripts/check-measurements.mjs), а когда бёдра не шире бедра, рисунок прежний — без скачка. */
+ for(const r of rows)if(r[0]<124)r[2]=Math.min(r[2],Math.max(hp*1.01,r[3]));
+ const hipLine=Math.min(Math.max(hp,18.7*rh)*0.99,Math.max((hp+rows[0][2])/2+0.15,Math.max(hp,18.7*rt)*0.99));
+ const outer=[P(ww*0.98,wy-9),P(ww,wy),P(ww+(hp-ww)*0.55,wy+8),P(hp,wy+17),P(hipLine,refY(.53))].concat(rows.map(r=>P(r[2],r[0])));
  const toe=[P(19.5,180.6),P(16.2,181.4),P(13.4,180.8)];
  const inner=rows.slice().reverse().map(r=>P(r[1],r[0])).concat([P(-1,refY(.53)),P(-1.5,wy+18),P(-2,wy-9)]);
  return curve(outer.concat(toe,inner).map(q=>P(side*q.x*w,q.y)));
@@ -309,27 +322,27 @@ function rimFilter(id,shadeColor,fx){
    скругляются, изломы у шеи и щиколоток заливаются дугой; тело и руки отдельно, подмышки как были. Фигуры — маски. */
 const SOFT=1.1,BOX='x="-64" y="-8" width="128" height="196"';
 function figure(now,past,same,label,height){
- const fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
+ const C=palette(),fx=SIL.glass,id='hm'+(++chartSeq),g=fx.grad,a=fx.angle*Math.PI/180,cy=90.5,L=92*Math.abs(Math.cos(a))+182*Math.abs(Math.sin(a));
  const ux=Math.round(Math.cos(a)*L/2*100)/100,uy=Math.round(Math.sin(a)*L/2*100)/100;
  const lin=(gid,c)=>`<linearGradient id="${gid}" x1=".15" y1=".1" x2=".85" y2=".95"><stop offset="0" stop-color="${tint(c,g)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,g*.4)}"/></linearGradient>`;
  const nowS=bodyParts(now,null,height),pastS=same?nowS:bodyParts(past,now,height),vw=Math.round(104*Math.max(1,BASE_HEIGHT/stature(height))*100)/100;   // «Было» — на скелете «Сейчас»
  const shape=(sh,cls)=>['body','arms'].map(k=>`<g filter="url(#${id}f)"><path${cls?` class="${cls}"`:''} data-part="${k}" d="${sh[k]}" fill="#fff"/></g>`).join('');
  const layer=(cls,gid,rim,mask,extra)=>`<g class="${cls}"${extra||''}><g mask="url(#${mask})"><rect ${BOX} fill="url(#${gid})"/><rect ${BOX} fill="url(#${id}s)"/></g><g filter="url(#${rim})"><rect ${BOX} fill="#000" fill-opacity=".02" mask="url(#${mask})"/></g></g>`;
  /* «Сейчас» розовым целиком, поверх — та же фигура голубым, но только внутри «Было»: розовым остаётся прибавка */
- return `<svg class="hm-chart" viewBox="${-vw/2} -3 ${vw} 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',SIL.now)}${lin(id+'p',SIL.past)}${lin(id+'c',SIL.same)}`+
+ return `<svg class="hm-chart" viewBox="${-vw/2} -3 ${vw} 188" role="img" aria-label="${esc(label)}"><defs>${lin(id+'n',C.now)}${lin(id+'p',C.past)}${lin(id+'c',SIL.same)}`+
   `<filter id="${id}f" filterUnits="userSpaceOnUse" ${BOX} color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="${SOFT}"/><feComponentTransfer><feFuncA type="linear" slope="14" intercept="-6.5"/></feComponentTransfer></filter>`+
   `<mask id="${id}m" maskUnits="userSpaceOnUse" ${BOX}>${shape(nowS,'')}</mask><mask id="${id}k" maskUnits="userSpaceOnUse" ${BOX}>${shape(pastS,'hm-past-clip')}</mask>`+
   `<linearGradient id="${id}s" gradientUnits="userSpaceOnUse" x1="${-ux}" y1="${Math.round((cy-uy)*100)/100}" x2="${ux}" y2="${Math.round((cy+uy)*100)/100}">${shineStops(fx)}</linearGradient>`+
-  rimFilter(id+'rn',shade(SIL.now,.45),fx)+rimFilter(id+'rp',shade(SIL.past,.45),fx)+rimFilter(id+'rc',shade(SIL.same,.45),fx)+`</defs>`+
+  rimFilter(id+'rn',shade(C.now,.45),fx)+rimFilter(id+'rp',shade(C.past,.45),fx)+rimFilter(id+'rc',shade(SIL.same,.45),fx)+`</defs>`+
   `<ellipse cx="0" cy="182" rx="25" ry="2" fill="rgba(44,62,102,.10)"/>`+
   layer('hm-past',id+'p',id+'rp',id+'k',same?' opacity="0"':'')+(same?'':layer('hm-now',id+'n',id+'rn',id+'m'))+
   `<g${same?'':` mask="url(#${id}k)"`}>${layer('hm-same',id+'c',id+'rc',id+'m')}</g></svg>`;
 }
 function chart(cur,old,amplify){
  const height=profileHeight(),same=cur.date===old.date,now=girths(cur.values),past=drawnPast(now,girths(old.values,now),amplify);
- const dot=c=>`linear-gradient(150deg,${tint(c,SIL.glass.grad)},${c} 55%,${shade(c,SIL.glass.grad*.4)})`;
- return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(same?SIL.same:SIL.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
-  (same?'':`<span><i class="hm-dot" style="background:${dot(SIL.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(SIL.same)}"></i> Совпадает</span>`)+`</div>`+
+ const C=palette(),dot=c=>`linear-gradient(150deg,${tint(c,SIL.glass.grad)},${c} 55%,${shade(c,SIL.glass.grad*.4)})`;
+ return `<div class="hm-viz"><div class="hm-legend"><span><i class="hm-dot" style="background:${dot(same?SIL.same:C.now)}"></i> Сейчас · ${shortDate(cur.date)}</span>`+
+  (same?'':`<span><i class="hm-dot" style="background:${dot(C.past)}"></i> Было · ${shortDate(old.date)}</span><span><i class="hm-dot" style="background:${dot(SIL.same)}"></i> Совпадает</span>`)+`</div>`+
   `<div class="hm-amplify-box"><div class="hm-amplify" role="group" aria-label="Масштаб разницы">${[[1,'1:1','Разница в натуральную величину'],[3,'×3','Разница усилена в 3 раза']].map(([v,t,l])=>`<button type="button" data-hm="amplify" data-id="${v}" aria-label="${l}" aria-pressed="${amplify===v}">${t}</button>`).join('')}</div><span>разница</span></div>`+
   (chart.last={now,past,same,height},'')+figure(now,past,same,same?'Силуэт по замерам '+dateLabel(cur.date):'Силуэт '+dateLabel(cur.date)+' поверх силуэта '+dateLabel(old.date),height)+`</div>`;
 }
@@ -358,7 +371,7 @@ function mount(box,options){
   if(mounted.open){mounted.move(box);return mounted}
   mounted.destroy();
  }
- const o=options||{};let dialog=null,menu=null,off=null,noticeTimer=null,alive=true,drawn=null,raf=0;   // drawn — обхваты «Было» на рисунке сейчас
+ const o=options||{};goalOf=typeof o.goal==='function'?o.goal:null;let dialog=null,menu=null,off=null,noticeTimer=null,alive=true,drawn=null,raf=0;   // drawn — обхваты «Было» на рисунке сейчас
  const doc=()=>typeof o.doc==='function'?o.doc():o.doc||null;
  const state=()=>{const d=doc();return d&&!d.newer?read(d.all()):{list:[],trash:[],whole:false}};
  const say=(text,undo)=>{
@@ -417,10 +430,23 @@ function mount(box,options){
  function openDialog(title,html){
   closeDialog();
   const d=dialog=document.createElement('dialog');d.className='hm hm-dialog';d.setAttribute('aria-label',title);
-  d.innerHTML=`<div class="hm-sheet"><div class="hm-sheet-top"><h2>${esc(title)}</h2><button type="button" class="hm-text" data-hm="close">Закрыть</button></div>${html}</div>`;
+  // Аудит единообразия Sport 18.11.2026: окно замера закрывается, как листы приложения — ручка сверху (нажать или
+  // потянуть вниз) или нажатие мимо окна; надписи «Закрыть» нет.
+  d.innerHTML=`<div class="hm-sheet"><button type="button" class="hm-grip" data-hm="close" aria-label="Закрыть — потяни вниз или нажми"></button><div class="hm-sheet-top"><h2>${esc(title)}</h2></div>${html}</div>`;
   document.body.appendChild(d);
-  d.addEventListener('click',e=>{if(e.target===d){closeDialog();return}onClick(e)});
-  d.addEventListener('cancel',e=>{e.preventDefault();closeDialog()});
+  {const grip=d.querySelector('.hm-grip'),card=d.querySelector('.hm-sheet');let y0=null,dy=0;
+   grip.addEventListener('pointerdown',e=>{y0=e.clientY;dy=0;try{grip.setPointerCapture(e.pointerId)}catch(err){}card.style.transition='none'});
+   grip.addEventListener('pointermove',e=>{if(y0===null)return;dy=Math.max(0,e.clientY-y0);card.style.transform='translateY('+dy+'px)'});
+   grip.addEventListener('pointerup',e=>{if(y0===null)return;y0=null;card.style.transition='';if(dy>70){e.preventDefault();grip.dataset.dragged='1';setTimeout(()=>delete grip.dataset.dragged,0);dismiss();return}card.style.transform='';if(dy>=6){grip.dataset.dragged='1';setTimeout(()=>delete grip.dataset.dragged,0)}});
+   grip.addEventListener('pointercancel',()=>{y0=null;card.style.transition='';card.style.transform=''});
+   grip.addEventListener('click',e=>{if(grip.dataset.dragged){e.preventDefault();e.stopImmediatePropagation()}},true);}
+  // Закрыли ручкой, нажатием мимо или Escape, а в форме что-то поменяли — «Правки не сохранены · Вернуть» (окно откроется снова).
+  let initial=null;const snap=()=>[...d.querySelectorAll('input,select,textarea')].map(c=>c.name+'='+c.value).join('|');
+  for(const type of ['pointerdown','keydown','focusin'])d.addEventListener(type,()=>{if(initial===null)initial=snap()},true);
+  const dismiss=()=>{const changed=initial!==null&&snap()!==initial&&!!d.querySelector('form');closeDialog();
+   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';document.body.appendChild(d);if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}})};
+  d.addEventListener('click',e=>{if(e.target===d){dismiss();return}if(e.target.closest&&e.target.closest('.hm-grip')){e.preventDefault();dismiss();return}onClick(e)});
+  d.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
   d.addEventListener('submit',onSubmit);
   if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
   return d;
@@ -434,7 +460,7 @@ function mount(box,options){
    `<form class="hm-form" novalidate><label class="hm-field">Дата<input name="date" type="date" required value="${record?record.date:today()}"></label><div class="hm-fields">`+
    GROUPS.map(g=>g.keys.length===1?input(g.keys[0],g.name+', '+(g.keys[0]==='weight'?'кг':'см')):`<fieldset class="hm-pair-fields"><legend>${g.name}, см</legend><div class="hm-two">${input(g.keys[0],'Левая')}${input(g.keys[1],'Правая')}</div></fieldset>`).join('')+
    `</div><p class="hm-error" role="alert"></p><button class="hm-button hm-primary" type="submit">${ICON.check} Сохранить замер</button>`+
-   (record?`<button class="hm-button hm-delete" type="button" data-hm="delete">${ICON.trash} Удалить замер</button>`:'')+`</form>`);
+   (record?`<button class="hm-button hm-delete" type="button" data-hm="delete">${ICON.trash} Удалить</button>`:'')+`</form>`);
   d.hmBefore=record?copy(record):null;
  }
  function fail(e){

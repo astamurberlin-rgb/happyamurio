@@ -23,6 +23,16 @@
  "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-59/",
  "point_releases": [
   {
+   "version": "60.6",
+   "date": "2026-11-18",
+   "changes": [
+    "shared/: общие экраны из лаборатории Sport 44.1 — профиль и цели листом (ручка, нажатие мимо), «Отмена», вход, «Новый замер» (ручка, красная «Удалить»), силуэт без «ушей» на бёдрах, размеры текста по правилам; happy-ui.css — текст настроек 16, подписи 14 (встроено sync-shared-ui)",
+    "shared/happy-measurements.js: «нога не шире бёдер» — только у бедра (выше колена) и не уже самого бедра; стопа больше не срезается по ширине бёдер, при похудении «Сейчас» внутри «Было» (scripts/check-measurements.mjs)",
+    "day-account.js: HappyScreens.dismissed — «Правки не сохранены · Вернуть»",
+    "index.html ?v=60.6, заголовок и подвал; release-notes.js 60.6; Happy-Day-60.html пересобран"
+   ]
+  },
+  {
    "version": "60.5",
    "date": "2026-11-18",
    "changes": [
@@ -43,8 +53,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1280783,
-   "sha256": "0eadb218de9f92c96e7c9c64a6b0660ef64d8d1fd125e2d13aefcb130a531bf4"
+   "size": 1297038,
+   "sha256": "b82093e8eb1815c97946abbc95771f8911e5446ce50eb90bd4728fea04b04c40"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -183,8 +193,8 @@
   },
   {
    "path": "day-account.js",
-   "size": 5935,
-   "sha256": "5012d30d95ddb8182829fb6c1949d9300a8845e3c39b7e8d9e834477bc0879f3"
+   "size": 6406,
+   "sha256": "756a6e9b40aad26c5b22e8c719b6e45018e282876c54bb0cbb7ceb00fa5e51c9"
   },
   {
    "path": "day-data.js",
@@ -214,7 +224,7 @@
   {
    "path": "index.html",
    "size": 493434,
-   "sha256": "c62c9949463013360b926729175b5cd20bf4027bd35bb0ec0710e0e7fbf63380"
+   "sha256": "cf7d39dfbf57bc31837dd67049873556e72d5c19bf180b0c99b6ce9fd6bac220"
   },
   {
    "path": "manifest.webmanifest",
@@ -223,8 +233,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 39444,
-   "sha256": "ca490ce521f72caf364e32e4dfaeb6753fc5a1ff29e04bd3e3688ca4988a10ae"
+   "size": 40339,
+   "sha256": "655ca295179e5d93d6aa929f969393d65471de3af814520c0ce692a56cabc666"
   },
   {
    "path": "section-wheel.css",
@@ -268,13 +278,13 @@
   },
   {
    "path": "shared/happy-appearance.css",
-   "size": 4142,
-   "sha256": "1c41e3960eda7d812e82ca1a403699c8d5be61aeeff8c0b99598c4609b6a6dc2"
+   "size": 4371,
+   "sha256": "bfb61859f0414968fef1b1386d085916e416ba6f5673d5b23b9f194c628bfad8"
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 11020,
-   "sha256": "d70bcb0685a35a92d9edb5712888423232391e0eef83f2cbb68664f5d708f1cc"
+   "size": 10905,
+   "sha256": "c68cc0631dfd5414694a10ff8da7b76a9c36301c2349f2a0c233ff7fe840b8e9"
   },
   {
    "path": "shared/happy-food.js",
@@ -283,8 +293,8 @@
   },
   {
    "path": "shared/happy-goals.js",
-   "size": 39151,
-   "sha256": "96c62978990d3ebe9aeaf20ce123494cbe0253c7f0d58d5feff4080f0970d025"
+   "size": 39207,
+   "sha256": "0e9cccf69e01c6cdf12e54066a9eb74ebc2dc3f5a9c3d2c3baaab4da9e629f84"
   },
   {
    "path": "shared/happy-gradient-editor.css",
@@ -313,18 +323,18 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 11066,
-   "sha256": "21b24d86fae2d45105db7dc3cba190cd208d57e47646dbcc7e6c2d458aad469b"
+   "size": 11520,
+   "sha256": "7f002991a062f862261dc7d6e371187537b5a4cc0e8e35677ff722de91de5de4"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 51855,
-   "sha256": "17744a6bba25eba5cc77395383cab9e78f7a9347c1510751f42bb81035bc11b3"
+   "size": 56076,
+   "sha256": "e4157507d1b79ff733354b4403cfdc1a766795fc575b8c8f35cf4017c4f4cbaa"
   },
   {
    "path": "shared/happy-person.js",
-   "size": 23640,
-   "sha256": "c75c57b878633f28a7c6fd02ab93f998b45cdf22745b6c0f76397abe3744a355"
+   "size": 23666,
+   "sha256": "b244743a584b70e741786e09e27648c147be25ce0e7193aaec641b084c3359f9"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -333,13 +343,13 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 29988,
-   "sha256": "8216c4245e22dcb609f0af94fd021402f997cfe248ea8395f5d894e813928df9"
+   "size": 31485,
+   "sha256": "d76c9a9701986762a5ceeb2ecf67e8f9841dda3b2fb719c894bb20fdbdf4134c"
   },
   {
    "path": "shared/happy-screens.js",
-   "size": 22891,
-   "sha256": "b4ea381dbaadcc6e53f9ca1d4c441ab2459896fd0f57361ba5b8027dfa0d8a13"
+   "size": 27974,
+   "sha256": "e914beda8f6412a6ce2d524e44c11a9908b5baa5983ceea4fb6558a50b976704"
   },
   {
    "path": "shared/happy-settings-developer.js",
@@ -359,17 +369,17 @@
   {
    "path": "shared/happy-ui.css",
    "size": 3816,
-   "sha256": "d2fd2defc30173d95ec5b040aabac55d0bf97c6bc6df70b94c05049d5829a877"
+   "sha256": "e0d30ef94c251c75016122282b07d38b7b7af5198296f19f7b9b7acddc30607b"
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 22921,
-   "sha256": "b87ba7d2325c44a84ee533993380aeac34adc37c704a1910f99658f6442f210c"
+   "size": 22897,
+   "sha256": "0cca82d4a3a269195d8c9187cffbbf1bca79e44d157e88e0d6676d2bb4a63132"
   },
   {
    "path": "shared/release-notes.js",
    "size": 3156,
-   "sha256": "0d811d0efdd6254d5e993bd245ac971e6ab1fb5194a8273363efe2bb7520c089"
+   "sha256": "b2b96a57602e29a4ca711439e23b801522c8d1be6c79864fb7a4dae203f2d5a5"
   },
   {
    "path": "tap-swipe.js",

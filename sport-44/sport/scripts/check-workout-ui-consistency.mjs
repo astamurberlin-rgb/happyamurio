@@ -109,8 +109,9 @@ console.log('Passed: active editor isolation from library/history/templates/same
     const before=plain(run('state'));assert.throws(()=>run('saveExerciseEditor(form,"replace")'),/STOP|останов|пауз/i,change+' requires an explicit stop');assert.deepEqual(plain(run('state')),before,'Rejected configuration is atomic');
   }
   run('state.active.exercisePlayer.running=false;state.active.countdown.running=false');
-  c.form=settingsForm({workoutId:'live-settings',name:'Stopped edit',metrics:['seconds','distance'],timerMode:'countdown'});c.form.fields.workSeconds='1:30';c.form.draft.sets[1].seconds=90;
-  assert.doesNotThrow(()=>run('saveExerciseEditor(form,"replace")'));assert.equal(run('state.active.exercises[0].timerConfig.workSeconds'),90);assert.equal(run('state.active.exercises[0].sets[0].seconds'),12.35);assert.equal(run('state.active.exercises[0].sets[0].done'),true);
+  // «Работы» в «Плеере упражнения» нет (Астамур, 18.11.2026): время таймера — у подходов, в форме только режим.
+  c.form=settingsForm({workoutId:'live-settings',name:'Stopped edit',metrics:['seconds','distance'],timerMode:'countdown'});c.form.draft.sets[1].seconds=90;
+  assert.doesNotThrow(()=>run('saveExerciseEditor(form,"replace")'));assert.equal(run('state.active.exercises[0].timerConfig.mode'),'countdown');assert.equal(run('state.active.exercises[0].sets[1].seconds'),90);assert.equal(run('state.active.exercises[0].sets[0].seconds'),12.35);assert.equal(run('state.active.exercises[0].sets[0].done'),true);
   c.previousActive=priorActive;run('state.active=previousActive');
   console.log('Passed: unchanged live settings preserve in-flight set results and clock identities; running plan/timer changes reject atomically until STOP.');
 }
@@ -243,7 +244,8 @@ console.log('Passed: real Finish snapshots actual pulse independently; empty/dem
   const scheduleBefore=plain(pr('state.schedules[0]')),html=pr('scheduleFields(state.schedules[0])');
   // Пункты 11 и 12 (15.11.2026): расписание — свой лист с карточки, без раскрывашки и без «Показывать на главной».
   assert.doesNotMatch(html,/<details|Показывать на главной/);
-  for(const [name,value] of [['scheduleDate','2026-11-03'],['scheduleEnd','2026-12-01'],['scheduleTime','17:45'],['scheduleZone','Europe/Moscow'],['planMinutes','75']])assert.match(html,new RegExp('name="'+name+'"[^>]*value="'+value+'"'));
+  // Одно поле «Дата и время» (аудит единообразия Sport, 18.11.2026): дата и время вместе — scheduleWhen.
+  for(const [name,value] of [['scheduleWhen','2026-11-03T17:45'],['scheduleEnd','2026-12-01'],['scheduleZone','Europe/Moscow'],['planMinutes','75']])assert.match(html,new RegExp('name="'+name+'"[^>]*value="'+value+'"'));
   assert.match(html,/value="2" checked/);assert.match(html,/value="4" checked/);assert.match(html,/Не терять заметку/);assert.doesNotMatch(html,/<(?:input|select|textarea)[^>]*\sdisabled/);
   pr("state.templates[0].favorite=false");
   const form={id:'template-form',dataset:{id:'t'},fields:{title:'Переименованный план',kind:'gym'},querySelector:()=>error};
@@ -252,7 +254,7 @@ console.log('Passed: real Finish snapshots actual pulse independently; empty/dem
   for(const key of ['id','templateId','mode','startDate','endDate','time','timeZone','minutes','days','note','reminder','archived'])assert.deepEqual(after[key],scheduleBefore[key],key+' survives saving the workout in the editor');
   assert.equal(pr('state.templates[0].title'),'Переименованный план');
   assert.equal(pr('state.templates[0].favorite'),false,'The editor keeps «Показывать на главной» as set on the card');
-  const sheet={id:'schedule-form',dataset:{id:'t',scheduleId:'s'},fields:{scheduleMode:'weekly',scheduleDate:'2026-11-03',scheduleEnd:'2026-12-01',scheduleTime:'19:00',scheduleZone:'Europe/Moscow',scheduleDays:['2','4'],planMinutes:'75',planNote:'Не терять заметку',planReminder:'15'},querySelector:()=>error};
+  const sheet={id:'schedule-form',dataset:{id:'t',scheduleId:'s'},fields:{scheduleMode:'weekly',scheduleWhen:'2026-11-03T19:00',scheduleEnd:'2026-12-01',scheduleZone:'Europe/Moscow',scheduleDays:['2','4'],planMinutes:'75',planNote:'Не терять заметку',planReminder:'15'},querySelector:()=>error};
   for(const fn of ph.submit||[])fn({target:sheet,preventDefault(){},stopImmediatePropagation(){}});
   assert.equal(pr('state.schedules[0].time'),'19:00','The schedule sheet saves the schedule');
   assert.equal(pr('state.schedules[0].id'),'s');

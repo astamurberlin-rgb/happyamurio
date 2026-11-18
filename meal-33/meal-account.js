@@ -16,6 +16,9 @@
 var FEATURES=Object.assign({recovery:false,emailChange:false},window.HAPPY_FEATURES||{});
 HappyScreens.theme('meal');
 HappyScreens.appToast=function(t){ toast(t) };
+/* Профиль, цели, «Новый замер» закрыли ручкой или нажатием мимо, а правки не сохранили — «Правки не сохранены · Вернуть»:
+   лист открывается снова со всем введённым (общие экраны, Sport 44.3 · Meal, 18.11.2026). */
+HappyScreens.dismissed=function(h){ toast('Правки не сохранены',function(){ h.reopen() }) };
 /* приложение нарисовано и заставка ушла — смайлик первого экрана может остановиться улыбкой */
 var shown=MealBoot.ready.catch(function(){}).then(function(){ return new Promise(function(done){
   var t0=Date.now();(function wait(){ if(!document.body.classList.contains('loading')||Date.now()-t0>8000) return done(); setTimeout(wait,60) })();

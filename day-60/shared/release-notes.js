@@ -24,7 +24,7 @@
     var heading=opts.heading||'h3';
     return '<article class="happy-card happy-release" data-release="'+esc(r.version)+'">'
       +'<'+heading+' style="margin:0 0 8px">'+esc(r.label)+'</'+heading+'>'
-      +(r.date?'<time datetime="'+esc(r.date)+'" style="font-size:13px;opacity:.75">'+esc(ruDate(r.date))+'</time>':'')
+      +(r.date?'<time datetime="'+esc(r.date)+'" style="font-size:14px;opacity:.75">'+esc(ruDate(r.date))+'</time>':'')
       +'<ul style="padding-left:20px;line-height:1.5">'+r.changes.map(function(t){return '<li style="margin-top:9px">'+esc(t)+'</li>'}).join('')+'</ul>'
       +signature(r)
       +'</article>';

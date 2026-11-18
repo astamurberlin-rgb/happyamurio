@@ -89,15 +89,15 @@ function html(name){
    '<button type="button" class="hs-guest" data-hw="guest">Познакомиться '+(/^[SС]/.test(app)?'со':'с')+' '+esc(app)+'</button></div>';
  case 'register':return title('Создать аккаунт')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+
    S().passwordField({label:'Пароль',name:'password',autocomplete:'new-password'})+S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+
-   '<div class="hs-actions">'+btn('register','Создать аккаунт','hs-primary',true)+btn('cancel','Отменить','hs-cancel')+'</div></form>';
+   '<div class="hs-actions">'+btn('register','Создать аккаунт','hs-primary',true)+btn('cancel','Отмена','hs-cancel')+'</div></form>';
  case 'login':return title('Войти')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+S().passwordField({label:'Пароль',name:'password'})+'</div>'+
    (form.note?'<p class="hs-note">'+esc(form.note)+'</p>':'')+errorBox()+(cfg.features.recovery?quiet('to-forgot','Забыли пароль?','hs-forgot'):'')+
-   '<div class="hs-actions">'+btn('login','Войти','hs-primary',true)+btn('cancel','Отменить','hs-cancel')+'</div>'+quiet('to-register','Создать аккаунт','hs-center hs-form-signup')+'</form>';
+   '<div class="hs-actions">'+btn('login','Войти','hs-primary',true)+btn('cancel','Отмена','hs-cancel')+'</div>'+quiet('to-register','Создать аккаунт','hs-center hs-form-signup')+'</form>';
  case 'forgot':return title('Восстановить пароль')+'<form novalidate><div class="hs-auth-fields">'+emailInput()+'</div><p class="hs-note">Отправим ссылку для восстановления пароля.</p>'+errorBox()+
-   '<div class="hs-actions">'+btn('forgot','Продолжить','hs-primary',true)+btn('to-login','Отменить','hs-cancel')+'</div></form>';
+   '<div class="hs-actions">'+btn('forgot','Продолжить','hs-primary',true)+btn('to-login','Отмена','hs-cancel')+'</div></form>';
  case 'reset':return title('Новый пароль')+'<form novalidate><div class="hs-auth-fields">'+S().passwordField({label:'Новый пароль',name:'password',autocomplete:'new-password'})+
    S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+
-   '<div class="hs-actions">'+btn('reset','Сохранить пароль','hs-primary',true)+btn('to-login','Отменить','hs-cancel')+'</div></form>';
+   '<div class="hs-actions">'+btn('reset','Сохранить пароль','hs-primary',true)+btn('to-login','Отмена','hs-cancel')+'</div></form>';
  case 'resetDone':return title('Пароль изменён')+'<div class="hs-mail-symbol">'+I.check+'</div><div class="hs-actions">'+btn('to-login','Войти','hs-primary')+'</div>';
  case 'verify':case 'resetSent':case 'emailConfirm':{
   const t=name==='emailConfirm'?'Подтвердите новую почту':name==='resetSent'?'Проверьте почту':'Подтвердите почту';
@@ -110,7 +110,7 @@ function html(name){
   const signup=name==='signupEmail',current=signup?(pending&&pending.email):(cfg.account.current()||{}).email;
   return title('Изменить почту')+'<p class="hs-current-email">'+esc(current||'')+'</p><form novalidate>'+emailInput('Новая почта')+
    '<p class="hs-note">'+(signup?'Отправим ссылку на новый адрес.':'На новый адрес отправим ссылку. До подтверждения действует прежняя почта.')+'</p>'+errorBox()+
-   '<div class="hs-actions">'+btn(signup?'signup-email':'change-email','Продолжить','hs-primary',true)+btn(signup?'to-verify':'back-profile','Отменить','hs-cancel')+'</div></form>';
+   '<div class="hs-actions">'+btn(signup?'signup-email':'change-email','Продолжить','hs-primary',true)+btn(signup?'to-verify':'back-profile','Отмена','hs-cancel')+'</div></form>';
  }
  }
  return '';
@@ -237,7 +237,7 @@ function ask(o){
  gate=S().sheet({title:'Войдите в аккаунт',onClose:()=>{gate=null}});
  gate.body.innerHTML='<p class="hs-gate-reason">'+esc(o.reason||'Чтобы сохранить изменения.')+'</p><div class="hs-actions">'+
   '<button type="button" class="hs-btn hs-primary" data-g="login">Войти</button><button type="button" class="hs-btn hs-glass-btn" data-g="register">Создать аккаунт</button>'+
-  '<button type="button" class="hs-btn hs-cancel" data-g="cancel">Отменить</button></div>';
+  '<button type="button" class="hs-btn hs-cancel" data-g="cancel">Отмена</button></div>';
  gate.body.addEventListener('click',e=>{
   const b=e.target.closest('[data-g]');if(!b)return;const g=gate;
   if(b.dataset.g==='cancel'){g.close();return}

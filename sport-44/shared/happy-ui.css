@@ -26,7 +26,7 @@
 @media(max-width:360px){.happy-card{padding:14px}.happy-button{padding:11px 13px}}
 
 .happy-settings>.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 22px;margin:0}
-.happy-settings>.top h1{font-size:28px;line-height:1.2;letter-spacing:-.5px;margin:0;font-weight:700}
+.happy-settings>.top h1{font-size:28px;line-height:1.2;letter-spacing:-.5px;margin:0;font-weight:800}
 .happy-settings>[data-happy-section="account"]>.happy-heading{margin-top:22px}
 .page:has(>.happy-settings){padding:calc(14px + env(safe-area-inset-top)) 20px calc(130px + env(safe-area-inset-bottom))}
 

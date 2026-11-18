@@ -118,6 +118,8 @@ with sync_playwright() as p:
     f.click('[data-variant="pull-up-narrow"]')
     f.click("#addExercise")
     page.wait_for_timeout(600)
+    # «Куда добавить» заранее не выбрано — выбираешь сам (аудит единообразия Sport, 18.11.2026)
+    page.select_option("select[name=addDestination]", "current")
     page.click("button[name=saveMode][value=add]")
     page.wait_for_timeout(800)
     out["active"] = look(page, "()=>state.active&&state.active.exercises.map(e=>e.id+':'+e.name)")

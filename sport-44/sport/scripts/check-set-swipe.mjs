@@ -17,6 +17,7 @@ listeners.pointerdown(event(150,50));listeners.pointermove(event(80,53));listene
 listeners.pointerdown(event(80,50));listeners.pointermove(event(140,51));listeners.pointerup(event(140,51));assert.equal(row.classList.contains('swipe-open'),false);
 listeners.pointerdown(event(150,50));listeners.pointermove(event(140,100));listeners.pointerup(event(80,110));assert.equal(row.classList.contains('swipe-open'),false,'Vertical scroll never reveals deletion');
 listeners.pointerdown(event(150,50));listeners.pointermove(event(80,53));listeners.pointercancel(event(80,53));assert.equal(row.classList.contains('swipe-open'),false,'Cancelled gesture resets');
-listeners.pointerdown(event(50,50));listeners.pointermove(event(120,53));listeners.pointerup(event(120,53));assert.equal(row.classList.contains('swipe-open'),true);assert.equal(row.classList.contains('swipe-right'),true);assert.equal(row.content.style.transform,'translateX(66px)');
-listeners.pointerdown(event(120,50));listeners.pointermove(event(50,53));listeners.pointerup(event(50,53));assert.equal(row.classList.contains('swipe-open'),false,'The opposite movement closes a right-revealed set');
-console.log('Passed: bidirectional set swipe reveal/close, vertical scroll and cancellation, set deletion/undo and timer index/cancellation.');
+// Удаление только свайпом влево, «Удалить» справа (Астамур, 17.11.2026): свайп вправо ничего не открывает.
+listeners.pointerdown(event(50,50));listeners.pointermove(event(120,53));listeners.pointerup(event(120,53));assert.equal(row.classList.contains('swipe-open'),false,'Swipe right never reveals deletion');assert.equal(row.classList.contains('swipe-right'),false);
+listeners.pointerdown(event(120,50));listeners.pointermove(event(50,53));listeners.pointerup(event(50,53));assert.equal(row.classList.contains('swipe-open'),true);assert.equal(row.content.style.transform,'translateX(-66px)','«Удалить» on the right, the row moves left');
+console.log('Passed: left-only set swipe reveal/close (swipe right never reveals), vertical scroll and cancellation, set deletion/undo and timer index/cancellation.');

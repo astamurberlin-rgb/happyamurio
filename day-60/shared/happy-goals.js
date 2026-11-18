@@ -182,7 +182,7 @@ function openWeight(o){
  const effectiveCurrent=()=>current!==null?current:(meal&&Number.isFinite(g.calc.weightKg)?g.calc.weightKg:null);
  const needsProfile=()=>!calcProfile.sex||!calcProfile.birthday||!calcProfile.heightCm||effectiveCurrent()===null;
  const missingProfile=()=>!data.profile.sex||!data.profile.birthday||!data.profile.heightCm||current===null;
- pageH=S().page({id:'goals',className:'hs-goals'+(meal?'':' hs-sport-goals'),label:'Цели',onClose:()=>{pageH=null}});
+ pageH=S().page({id:'goals',className:'hs-goals'+(meal?'':' hs-sport-goals'),label:'Цели',handle:true,onClose:()=>{pageH=null},onReopen:h=>{pageH=h}});
  const main=pageH.main;let ruler=null,kindWheel=null,activityWheel=null,focusWheel=null,sheet=null;
  function weightHtml(){
   const c=effectiveCurrent();
@@ -205,7 +205,7 @@ function openWeight(o){
   }else{
    h+='<section class="hs-sport-weight"><h2>Вес</h2>'+weightHtml()+'<div data-gw="kind"></div></section><section class="hs-focus-block"><div data-gw="focus"></div></section>';
   }
-  h+='<p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отменить',action:'cancel'});
+  h+='<p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'});
   if(meal&&g.method==='calculate')h+='<button type="button" class="hs-method-link" data-gw="method" aria-haspopup="dialog">Как мы рассчитываем?</button>';
   main.innerHTML=h;
   const rb=main.querySelector('[data-gw="ruler"]');
@@ -284,7 +284,7 @@ function openWeight(o){
  function rangeSheet(){
   const sh=S().sheet({title:'Диапазон веса',description:'Внутри — поддержание или рекомпозиция',onClose:()=>{if(sheet===sh)sheet=null}});sheet=sh;
   sh.body.innerHTML=S().field({label:'Отклонение от текущего веса',name:'band',inputmode:'decimal',value:fmt(S().toUnits(g.bandKg,units)),suffix:wu,quick:true})+
-   '<p class="hs-error" role="alert" hidden></p>'+(meal?'<p class="hs-sheet-note">Диапазон можно настроить под себя.</p>':'')+S().actions({label:'Применить',action:'apply'},{label:'Отменить',action:'cancel'});
+   '<p class="hs-error" role="alert" hidden></p>'+(meal?'<p class="hs-sheet-note">Диапазон можно настроить под себя.</p>':'')+S().actions({label:'Применить',action:'apply'},{label:'Отмена',action:'cancel'});
   sh.body.addEventListener('click',e=>{const b=e.target.closest('[data-hs]');if(!b)return;
    if(b.dataset.hs==='cancel'){sh.close();return}
    const n=S().fromUnits(num(sh.body.querySelector('[name="band"]').value),units);
@@ -375,7 +375,7 @@ function openWeight(o){
 /* Day: жизненный фокус, темы наблюдений, формулировка */
 function openDay(o){
  const esc=S().esc;let d=dayDraft(o.load()),sheetH=null,wheelH=null;
- pageH=S().page({id:'goals',className:'hs-goals hs-day-goals',label:'Цели',onClose:()=>{pageH=null}});
+ pageH=S().page({id:'goals',className:'hs-goals hs-day-goals',label:'Цели',handle:true,onClose:()=>{pageH=null},onReopen:h=>{pageH=h}});
  const main=pageH.main;
  const focuses=()=>[...DAY_FOCUS.map(({value,label})=>({value,label})),...d.customFocuses,{value:'add-custom',label:'+ Своя цель'}];
  const prompt=()=>{const f=DAY_FOCUS.find(x=>x.value===d.focus);return f?f.prompt:'Что хочется изменить или лучше понять?'};
@@ -388,7 +388,7 @@ function openDay(o){
    '<section class="hs-observations"><h2>На что обращать внимание</h2><div class="hs-topics" role="group" aria-label="Темы наблюдений">'+topicsHtml()+'</div></section>'+
    '<section class="hs-intention"><label class="hs-field"><span class="hs-field-title">Моя цель своими словами <small>необязательно</small></span>'+
    '<textarea class="hs-textarea" name="intention" rows="4" maxlength="'+INTENTION_MAX+'" aria-label="Моя цель своими словами" placeholder="'+esc(prompt())+'">'+esc(d.intention)+'</textarea></label></section>'+
-   '<p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отменить',action:'cancel'});
+   '<p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'});
   wheelH=S().wheel(main.querySelector('[data-gd="wheel"]'),{id:'hs-day-focus',label:'Сейчас я хочу',ariaLabel:'Главный фокус Day',options:focuses(),value:d.focus,
    onChange:f=>{if(f==='add-custom'){addSheet('focus');return false}d.focus=f;const t=main.querySelector('[name="intention"]');if(t)t.placeholder=prompt()}});
  }
