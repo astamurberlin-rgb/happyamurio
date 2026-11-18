@@ -84,6 +84,15 @@
  },
  "pointReleases": [
   {
+   "version": "33.13",
+   "date": "2026-11-19",
+   "changes": [
+    "shared/happy-person.js и happy-goals.js: цель веса одна на аккаунт (запись weightGoal в общем профиле), Meal и Sport пишут её, силуэт во всех трёх красит по ней",
+    "shared/happy-measurements.js: пустые замеры — текст без рамки и «+ Замер»",
+    "index.html ?v=33.13, заголовок и подвал; release-notes.js 33.13"
+   ]
+  },
+  {
    "version": "33.12.1",
    "date": "2026-11-19",
    "changes": [
@@ -522,8 +531,8 @@
   },
   {
    "path": "index.html",
-   "size": 628079,
-   "sha256": "3a194d94389d97e36259d9a79ab1e96cc17a665b7b51b65dcda7c88af8835b38"
+   "size": 627949,
+   "sha256": "f7fc906fe0db88cc162b9612d892b53030b537188bd2ee0aa733655a3149a471"
   },
   {
    "path": "kfct.js",
@@ -537,8 +546,8 @@
   },
   {
    "path": "meal-account.js",
-   "size": 7785,
-   "sha256": "a4b3532da4e5192f9099d5f5db40163411c07128757117abf55451327838e6f0"
+   "size": 7960,
+   "sha256": "1d18f9aa161f9927dd1806a7346e73977851ef8a499dba9db3fc09e95a73726a"
   },
   {
    "path": "meal-data.js",
@@ -702,8 +711,8 @@
   },
   {
    "path": "meal-measurements.js",
-   "size": 2549,
-   "sha256": "365b802e890a511d57f6625e443134c7a0729123b6dd52013ee1737aa6e9b899"
+   "size": 2742,
+   "sha256": "2b20aa407f939f0062d168afaf6912f4d54a75f3ae2bd63b3dd7c79ed5dd39d2"
   },
   {
    "path": "portions.js",
@@ -722,8 +731,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 57840,
-   "sha256": "41a6ebe61f2b73fbd1688c2d04eb3b13a9f2d2edc58253579410562316f59c20"
+   "size": 58381,
+   "sha256": "8e98b98b3e842bf6598e25a534349fb8a23601d9918d90b43480e09735370f35"
   },
   {
    "path": "report.css",
@@ -777,8 +786,8 @@
   },
   {
    "path": "shared/happy-goals.js",
-   "size": 39207,
-   "sha256": "0e9cccf69e01c6cdf12e54066a9eb74ebc2dc3f5a9c3d2c3baaab4da9e629f84"
+   "size": 41778,
+   "sha256": "0dc47b6019cb9d1c1e34be3133ed8910553c00fe2b218b3b45ba6b5a806d3f09"
   },
   {
    "path": "shared/happy-gradients.js",
@@ -797,18 +806,18 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 11520,
-   "sha256": "7f002991a062f862261dc7d6e371187537b5a4cc0e8e35677ff722de91de5de4"
+   "size": 11511,
+   "sha256": "fabf69faa165a9f8386b0de628495c6902e4fdb7982a39ed1253cd2976c62ade"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 56076,
-   "sha256": "e4157507d1b79ff733354b4403cfdc1a766795fc575b8c8f35cf4017c4f4cbaa"
+   "size": 56219,
+   "sha256": "a2a2d565e090245fd803e35529c869a07fe05bdf53a69c965b6a02c31af1f93f"
   },
   {
    "path": "shared/happy-person.js",
-   "size": 23666,
-   "sha256": "b244743a584b70e741786e09e27648c147be25ce0e7193aaec641b084c3359f9"
+   "size": 25014,
+   "sha256": "b692cf659195782d86752547b36b33539a47ad7ac3dd9b513943f47f34d0d94c"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -912,8 +921,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3507,
-   "sha256": "a9a1341c715aeee3a92281dc5827250655c559b217843c12d6fd9b1937beb850"
+   "size": 3505,
+   "sha256": "59e357d1399a2e98ea34a87e66ad7a4e541f48417d7d6fadc7c78c33c9ec185d"
   },
   {
    "path": "usda-measures.js",

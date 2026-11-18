@@ -96,8 +96,8 @@ const P=ctx.HappyPerson,G=ctx.HappyGoals,M=ctx.HappyMeasurements,plain=x=>JSON.p
  assert.equal(G.weightKind(sport),'gain','своя прежняя цель Sport видна до переноса');
  assert.equal(await G.syncWeight(sport),true);assert.equal(G.weightKind([]),'gain','перенесённая цель видна в Day');
  assert.equal(await G.syncWeight(meal),false,'прежняя цель Meal старше общей — не переносится');assert.equal(G.weightKind(meal),'gain','Meal видит общую, более позднюю');
- assert.equal(await G.saveSharedWeight({kind:'loss',centralKind:'maintain',targetKg:68,anchorKg:72,bandKg:.5},'2026-11-18'),true);
+ assert.equal(await G.saveSharedWeight({kind:'loss',centralKind:'maintain',targetKg:68,anchorKg:72,bandKg:.5},(d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))(new Date())),true);
  assert.equal(G.weightKind([]),'loss');assert.equal(G.weightKind(sport),'loss','Sport видит цель, поменянную в Meal');
- assert.equal(await G.saveSharedWeight({kind:'loss',centralKind:'maintain',targetKg:68,anchorKg:72,bandKg:.5},'2026-11-18'),false,'та же цель — без новой версии');
+ assert.equal(await G.saveSharedWeight({kind:'loss',centralKind:'maintain',targetKg:68,anchorKg:72,bandKg:.5},(d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))(new Date())),false,'та же цель — без новой версии');
  assert.equal(P.data().weightGoal.length,2);assert.deepEqual(P.read(doc.all()),P.read([...doc.all()].filter(r=>r.id!=='weightGoal')),'цель веса не трогает поля профиля');}
 console.log('Passed: one weight goal per account (shared profile, later wins, Day reads it); profile writes only changed fields, a new weight is a dated measurement and the same date corrects it; weight goal wheel and ruler share one model; macro shares stay 100 % and the prototype formula; Sport focus does not duplicate the weight goal; Day starts on the second row and adds own goals and topics without blanks or duplicates.');

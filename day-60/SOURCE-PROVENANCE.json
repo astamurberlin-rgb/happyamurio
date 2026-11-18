@@ -23,6 +23,15 @@
  "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-59/",
  "point_releases": [
   {
+   "version": "60.7",
+   "date": "2026-11-19",
+   "changes": [
+    "shared/happy-person.js и happy-goals.js: цель веса одна на аккаунт (запись weightGoal в общем профиле), Meal и Sport пишут её, силуэт во всех трёх красит по ней",
+    "shared/happy-measurements.js: пустые замеры — текст без рамки и «+ Замер»",
+    "index.html ?v=60.7, заголовок и подвал; release-notes.js 60.7"
+   ]
+  },
+  {
    "version": "60.6",
    "date": "2026-11-18",
    "changes": [
@@ -53,8 +62,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1297038,
-   "sha256": "6e0b302212d4fd7bad2ba292b97ee749b6cb7e8e0796631edfb21e7fa7e14000"
+   "size": 1303389,
+   "sha256": "98e6edaf9e9f86bc98b8d8f94a557f1ea355fd1c05a18afe9ce994b8b620ce49"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -208,8 +217,8 @@
   },
   {
    "path": "day-measurements.js",
-   "size": 2465,
-   "sha256": "907a0e6e527749f79c66e9b100259918853accc21ea50da94e4edd37b282e68c"
+   "size": 2633,
+   "sha256": "2d7fcdb083a1dadd0dfd3e699f7050a8e8a571d30cacc136ab38e163b52019dd"
   },
   {
    "path": "energy-widget.css",
@@ -224,7 +233,7 @@
   {
    "path": "index.html",
    "size": 493434,
-   "sha256": "cf7d39dfbf57bc31837dd67049873556e72d5c19bf180b0c99b6ce9fd6bac220"
+   "sha256": "a62c02356cba145b67633a244db8c92bafc0a83126f134ced475299c805a87e3"
   },
   {
    "path": "manifest.webmanifest",
@@ -233,8 +242,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 40339,
-   "sha256": "1ac0b946ca90b31b79909ee05a04aa61a8dc61c092b6a7eabf76524b67705e8c"
+   "size": 40879,
+   "sha256": "c6b7c2f58fd8f34e4ecca26eead54680949fc3dd4c01d7f88752c42106d978e8"
   },
   {
    "path": "section-wheel.css",
@@ -293,8 +302,8 @@
   },
   {
    "path": "shared/happy-goals.js",
-   "size": 39207,
-   "sha256": "0e9cccf69e01c6cdf12e54066a9eb74ebc2dc3f5a9c3d2c3baaab4da9e629f84"
+   "size": 41778,
+   "sha256": "0dc47b6019cb9d1c1e34be3133ed8910553c00fe2b218b3b45ba6b5a806d3f09"
   },
   {
    "path": "shared/happy-gradient-editor.css",
@@ -323,18 +332,18 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 11520,
-   "sha256": "7f002991a062f862261dc7d6e371187537b5a4cc0e8e35677ff722de91de5de4"
+   "size": 11511,
+   "sha256": "fabf69faa165a9f8386b0de628495c6902e4fdb7982a39ed1253cd2976c62ade"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 56076,
-   "sha256": "e4157507d1b79ff733354b4403cfdc1a766795fc575b8c8f35cf4017c4f4cbaa"
+   "size": 56219,
+   "sha256": "a2a2d565e090245fd803e35529c869a07fe05bdf53a69c965b6a02c31af1f93f"
   },
   {
    "path": "shared/happy-person.js",
-   "size": 23666,
-   "sha256": "b244743a584b70e741786e09e27648c147be25ce0e7193aaec641b084c3359f9"
+   "size": 25014,
+   "sha256": "b692cf659195782d86752547b36b33539a47ad7ac3dd9b513943f47f34d0d94c"
   },
   {
    "path": "shared/happy-reference-themes.js",
