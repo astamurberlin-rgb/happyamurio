@@ -18,7 +18,7 @@ saveExerciseDefinition=function(id,entry,mode,ei){const form=$('#exercise-config
 /* Карандаша у групп нет — он звал нажать без нужды. Своей группы нет в списке — последний пункт «＋ Добавить группу»
    открывает создание группы; изменить и удалить группы — Настройки → Библиотека → «Группы упражнений»
    (Астамур, 15.11.2026 16:31). */
-sportFilter=function(){return `<div class="catalog-group-filter"><label class="library-sport"><select id="library-sport" aria-label="Группа упражнений"><option value="all">Все группы</option>${exerciseGroups().map(g=>`<option value="${esc(g.id)}" ${librarySport===g.id?'selected':''}>${esc(groupPath(g.id))}</option>`).join('')}<option value="__new-group">＋ Добавить группу</option></select></label></div>`;};
+sportFilter=function(){return `<div class="catalog-group-filter"><label class="library-sport"><select id="library-sport" aria-label="Группа упражнений"><option value="all">Все группы</option>${exerciseGroups().map(g=>`<option value="${esc(g.id)}" ${librarySport===g.id?'selected':''}>${esc(groupPath(g.id))}</option>`).join('')}<option value="__new-group">＋ Создать группу</option></select></label></div>`;};
 document.addEventListener('change',event=>{const t=event.target;if(t.id!=='library-sport'||t.value!=='__new-group')return;event.stopImmediatePropagation();t.value=librarySport;editGroup();const form=$('#group-form');if(form)form.dataset.from='filter';},true);
 document.addEventListener('submit',event=>{const f=event.target;if(f.id!=='group-form'||f.dataset.from!=='filter')return;event.preventDefault();event.stopImmediatePropagation();
  try{const values=new FormData(f),group=saveExerciseGroup(null,values.get('name'),values.get('parentId'));persist();closeSheet();render();toast('Группа «'+group.name+'» создана');}

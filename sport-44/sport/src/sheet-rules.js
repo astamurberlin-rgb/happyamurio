@@ -122,3 +122,12 @@ openFreeSettings=sheetBackToFreeTimer(openFreeSettings);
 
 /* Профиль, цели, новый замер: закрыли с изменениями — то же сообщение. */
 if(window.HappyScreens)HappyScreens.dismissed=handle=>toast('Правки не сохранены',()=>handle.reopen());
+
+// «Создать тренировку» из списка «Добавить в расписание»: редактор — вложенный лист (ручка — назад к списку);
+// после «Сохранить» сразу форма расписания с новой тренировкой (planning.js, form.dataset.fromSchedule).
+window.addEventListener('click',e=>{
+  const b=e.target.closest?.('#modal-root .section-list [data-action="plan-template"]:not([data-id])');if(!b)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  openNestedSheet('plan-list','К выбору тренировки',()=>editTemplate());
+  const form=$('#template-form');if(form)form.dataset.fromSchedule='1';
+},true);

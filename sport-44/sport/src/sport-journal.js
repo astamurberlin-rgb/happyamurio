@@ -115,9 +115,10 @@ function journalRows(feed){
  return rows.sort((a,b)=>b.at.localeCompare(a.at));
 }
 renderHistory=function(){
+ // Аудит единообразия 18.11.2026: журнал всегда лентой — со связкой с Day и Meal и без; еда из Meal — только при связке.
  const feed=journalFeedOn(),rows=journalRows(feed);
  if(!rows.length)return '<div class="stack"><div class="empty">Завершённые тренировки появятся здесь.</div></div>';
- if(feed){
+ {
   const days=new Map();for(const r of rows){const d=String(r.at).slice(0,10);if(!days.has(d))days.set(d,[]);days.get(d).push(r);}
   return `<div class="journal-feed">${[...days].map(([d,list])=>`<section class="feed-daygroup"><h3 class="feed-date">${esc(ruDateText(d))}</h3><ol class="feed-list">${list.map(journalFeedItem).join('')}</ol></section>`).join('')}</div>`;
  }
