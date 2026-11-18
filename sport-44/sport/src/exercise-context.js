@@ -83,7 +83,7 @@ function exerciseMenuItems(c){
  const e=exercise(c.variantId||c.id);if(!e)return [];
  const items=[];
  if(c.context==='active'&&Number.isInteger(c.ei)&&state.active?.exercises[c.ei])items.push(['replace','Заменить упражнение']);
- if(exerciseIsOwn(e)){items.push(['rename','Переименовать']);if(e.historyFrom)items.push(['reset-history','Сбросить историю']);items.push(['delete','Удалить']);}
+ if(exerciseIsOwn(e)){items.push(['edit','Изменить'],['rename','Переименовать']);if(e.historyFrom)items.push(['reset-history','Сбросить историю']);items.push(['delete','Удалить']);}
  else items.push(['make-own','Сделать своим']);
  return items;
 }
@@ -170,9 +170,40 @@ window.addEventListener('click',event=>{
  if(event.target.closest?.('[data-exercise-menu-open]')){event.preventDefault();event.stopImmediatePropagation();openExerciseMenu(event.target.closest('[data-exercise-menu-open]'));return;}
  const item=event.target.closest?.('[data-exercise-menu]');
  if(item){event.preventDefault();event.stopImmediatePropagation();const c=exerciseContext,key=item.dataset.exerciseMenu,id=c?.variantId||c?.id;closeExerciseMenu();if(!c)return;
-  if(key==='make-own')makeExerciseOwn(id);else if(key==='rename')startExerciseRename();else if(key==='reset-history')resetOwnExerciseHistory(id);else if(key==='delete')deleteOwnExercise(id);else if(key==='replace')openReplaceExercise(c.ei);return;}
+  if(key==='make-own')makeExerciseOwn(id);else if(key==='edit')openOwnExerciseEdit(c);else if(key==='rename')startExerciseRename();else if(key==='reset-history')resetOwnExerciseHistory(id);else if(key==='delete')deleteOwnExercise(id);else if(key==='replace')openReplaceExercise(c.ei);return;}
  if(document.querySelector('.exercise-menu')&&!event.target.closest?.('.exercise-menu'))closeExerciseMenu();
  const pick=event.target.closest?.('[data-action="pick-exercise"]'),sheet=pick?.closest('.sheet');
  if(pick&&sheet?.dataset.replaceEi){event.preventDefault();event.stopImmediatePropagation();replaceWorkoutExercise(Number(sheet.dataset.replaceEi),pick.dataset.id);}
 },true);
 window.addEventListener('keydown',event=>{if(event.key==='Escape'&&closeExerciseMenu()){event.preventDefault();event.stopImmediatePropagation();}},true);
+
+/* «Изменить» своё упражнение (Астамур 18.11.2026, голосом: «да»). Та же форма, что при создании: название, что
+   записываем, подходы, плеер, группы, вариант, описание, английское название, оборудование. Открывается поверх
+   страницы упражнения, наверху «← К упражнению»; ручка и нажатие мимо — назад к странице, с правками — «Вернуть».
+   «Сохранить» меняет своё упражнение и снова показывает его страницу на той же вкладке. */
+const ownExerciseEdits=new WeakMap();
+function openOwnExerciseEdit(c){
+ const id=c?.variantId||c?.id,e=exercise(id);if(!exerciseIsOwn(e))return;
+ const back={id,context:c.context,ei:c.ei,tab:c.tab||'instructions',name:e.name};
+ openNestedSheet('own-exercise','К упражнению',()=>openExerciseEditor(id));
+ const form=$('#modal-root #exercise-config-form');if(!form)return;
+ ownExerciseEdits.set(form,back);form.dataset.edit='own';
+ const title=$('#modal-root #sheet-title');if(title)title.textContent='Изменить упражнение';
+ const row=form.querySelector('.exercise-title-row');if(row)row.hidden=false;
+ for(const d of form.querySelectorAll('details.exercise-extra'))if(d.querySelector('[name=description]'))d.open=true;
+ const actions=form.querySelector('.exercise-save-actions');if(actions)actions.innerHTML='<button class="button primary" type="submit" name="saveMode" value="replace">Сохранить</button>';
+ const note=form.querySelector(':scope>.fineprint:last-child');if(note)note.textContent='Изменится твоё упражнение. Прошлые записи останутся как были.';
+}
+window.addEventListener('submit',event=>{
+ const form=event.target;if(form?.id!=='exercise-config-form'||form.dataset.edit!=='own')return;
+ event.preventDefault();event.stopImmediatePropagation();
+ const back=ownExerciseEdits.get(form),box=form.querySelector('#exercise-config-error');
+ try{saveExerciseEditor(form,'replace');}catch(error){if(box)box.textContent=error.message;return;}
+ // saveExerciseEditor закрыл форму — под ней прежняя страница упражнения; открываем её заново с новыми данными.
+ if(!back)return;
+ const fresh=()=>{const sheet=$('#modal-root .sheet');if(sheet)sheet.style.animation='none';if(back.tab&&exerciseContext?.id===back.id)selectExerciseContextTab(back.tab);};
+ if(back.context==='library'){openExerciseContext(back.id);fresh();}
+ else if(back.context==='active'&&state.active?.exercises[back.ei]?.id===back.id){openExerciseEditor(back.id,back.ei);fresh();}
+ else{const h=$('#modal-root .exercise-context-title'),e=exercise(back.id);if(h&&e&&h.textContent===back.name)h.textContent=e.name;if(exerciseContext){exerciseContext.loaded={};selectExerciseContextTab(exerciseContext.tab||'configure');}}
+ toast('Изменения сохранены');
+},true);

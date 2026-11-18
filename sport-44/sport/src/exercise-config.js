@@ -141,8 +141,7 @@ function openExerciseEditor(id,ei=null,source=null){
     ${metricPill(metrics,active||e?metricsAvailable(active||e):METRIC_PILL_ORDER)}
     ${setPlanMarkup(draft)}
     <section class="exercise-timer-settings"><h3>Плеер упражнения</h3><div class="segmented timer-mode-options">${[['countdown','Таймер'],['intervals','Интервалы'],['stopwatch','Секундомер']].map(([key,name])=>`<label><input type="radio" name="timerMode" value="${key}" ${timer.mode===key?'checked':''}><span>${name}</span></label>`).join('')}</div>
-      <div class="timer-presets"><label class="field" data-timer-setting="work">Работа${sportMetricInput(`name="workSeconds" type="text" value="${sportDurationValue(timer.workSeconds)}" inputmode="text" aria-label="Время работы"`,'')}</label><label class="field" data-timer-setting="rest">Отдых${sportMetricInput(`name="restSeconds" type="text" value="${sportDurationValue(timer.restSeconds)}" inputmode="text" aria-label="Время отдыха"`,'')}</label><label class="field" data-timer-setting="rounds">Циклы${sportMetricInput(`name="rounds" type="number" min="1" max="50" value="${timer.rounds}" inputmode="numeric" aria-label="Число циклов"`,'раз')}</label></div>
-      <p class="fineprint">Интервалы чередуют работу и отдых. Секундомер считает вверх и сохраняет круги.</p>
+      <p class="fineprint timer-mode-note" data-timer-note>${timerModeNote(timer.mode)}</p>
     </section>
     <details class="exercise-extra"><summary>Оборудование и группы мышц</summary><label class="field">Оборудование<input name="equipment" value="${esc(e?.equipment?.join(', ')||'')}" placeholder="Через запятую"></label><label class="field">Другие названия<input name="aliases" value="${esc(e?.aliases?.join(', ')||'')}"></label><div class="muscle-options">${muscleGroups.filter(([key])=>key!=='all').map(([key,name])=>`<label><input type="checkbox" name="muscleGroups" value="${key}" ${(e?exerciseMuscles(e):[]).includes(key)?'checked':''}>${name}</label>`).join('')}</div></details>
     <div id="exercise-config-error" class="form-error" role="alert"></div><div class="exercise-save-actions">
@@ -164,18 +163,21 @@ function updateExerciseEditor(){
   }
   const timedSwitch=form.querySelector('[data-plan-timed]');if(timedSwitch)timedSwitch.checked=selected.includes('seconds');
   form.querySelector('.exercise-timer-settings').hidden=!selected.includes('seconds');
-  const mode=form.querySelector('[name=timerMode]:checked')?.value;
-  for(const el of form.querySelectorAll('[data-timer-setting]'))el.hidden=mode==='stopwatch'||(mode!=='intervals'&&el.dataset.timerSetting!=='work');
+  const mode=form.querySelector('[name=timerMode]:checked')?.value,note=form.querySelector('[data-timer-note]');
+  if(note)note.textContent=timerModeNote(mode);
 }
+// Аудит единообразия (Астамур 18.11.2026, голосом): время — только у подходов. В «Плеере» остался выбор режима;
+// «Работа», «Отдых» и «Циклы» убраны — это были время подхода, «Перерыв» и число подходов ещё раз.
+function timerModeNote(mode){return {countdown:'Время — у каждого подхода. Подходы идут подряд.',intervals:'Время — у каждого подхода, между ними — перерыв.',stopwatch:'Считает вверх. Каждый круг — подход.'}[mode]||''}
 function saveExerciseEditor(form,mode){
   const f=new FormData(form),id=form.dataset.id,ei=form.dataset.ei===''?null:Number(form.dataset.ei),e=exercise(id),name=String(f.get('name')||'').trim();
   const metrics=metricOrder().filter(key=>f.getAll('metrics').includes(key));
   if(!name)throw new Error('Укажи название упражнения.');if(!metrics.length)throw new Error('Выбери хотя бы один показатель.');
   const draft=readSetPlanInputs(form.querySelector('[data-set-plan]'));if(!draft?.sets.length)throw new Error('Добавь хотя бы один подход.');
   const defaults=Object.fromEntries(metrics.map(key=>[key,Number(draft.sets.find(s=>!s.done)?.[key]??draft.sets[0][key]??0)]));
-  const contextExercise=ei==null?e:state.active?.exercises[ei],timer={...exerciseTimerConfig(contextExercise||e),mode:String(f.get('timerMode')||'countdown'),workSeconds:parseSetTime(f.get('workSeconds')),restSeconds:parseSetTime(f.get('restSeconds')),rounds:Number(f.get('rounds'))};
-  const priorTimer=exerciseTimerConfig(contextExercise||e);if(['mode','workSeconds','restSeconds','rounds'].some(key=>timer[key]!==priorTimer[key]))delete timer.program;
-  if(metrics.includes('seconds')&&(timer.mode!=='stopwatch'&&(!Number.isInteger(timer.workSeconds)||timer.workSeconds<1||timer.workSeconds>86400)||timer.mode==='intervals'&&(!Number.isInteger(timer.restSeconds)||timer.restSeconds<0||timer.restSeconds>3600||!Number.isInteger(timer.rounds)||timer.rounds<1||timer.rounds>50)))throw new Error('Проверь время работы, отдыха и число циклов.');
+  // В «Плеере» только режим: время, перерыв и число кругов таймер берёт у подходов (аудит 18.11.2026).
+  const contextExercise=ei==null?e:state.active?.exercises[ei],modeValue=String(f.get('timerMode')||'countdown'),timer={...exerciseTimerConfig(contextExercise||e),mode:['countdown','intervals','stopwatch'].includes(modeValue)?modeValue:'countdown'};
+  const priorTimer=exerciseTimerConfig(contextExercise||e);if(timer.mode!==priorTimer.mode)delete timer.program;
   if(form.dataset.scope==='template'){const apply=templateExerciseApply;templateExerciseApply=null;if(!apply)throw new Error('Редактор тренировки закрыт. Открой настройки заново.');apply({metrics:clone(metrics),sets:clone(draft.sets),timerConfig:clone(timer)});return null;}
   const active=ei==null?null:state.active?.exercises[ei],lastRest=setPlanLastRest(draft.sets);
   const entry={name,en:e?.en||'',aliases:String(f.get('aliases')||'').split(',').map(x=>x.trim()).filter(Boolean),equipment:String(f.get('equipment')||'').split(',').map(x=>x.trim()).filter(Boolean),category:e?.category||'Мои упражнения',profile:exerciseProfile(metrics),metrics,defaultValues:defaults,defaultSets:draft.sets.map(setPlanCopy),defaultRestSeconds:lastRest,timerConfig:timer,muscleGroups:f.getAll('muscleGroups')};

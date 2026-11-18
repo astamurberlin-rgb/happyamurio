@@ -54,7 +54,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* ── Лист снизу: 22 у верхних углов ── */
 .sheet,.hs-sheet,.hm-sheet{border-radius:22px 22px 0 0!important}
 .sheet:has(#rest-time-form){border-radius:26px!important}
-.sheet:has(.exercise-player){border-radius:0!important}
+.sheet:has(.exercise-player),.exercise-player-sheet{border-radius:22px 22px 23px 23px!important}
 
 /* ── Выключатель: 42 × 25 ── */
 .sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
@@ -276,3 +276,15 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .workout-name-input .workout-icon-plus{width:15px;height:15px;right:-4px;bottom:-4px;border-radius:5px}
 .workout-name-input .workout-icon-plus .icon{width:10px;height:10px}
 .workout-name-input input{padding-left:10px!important}
+
+
+/* ── Профиль, цели, большой таймер — листы (Астамур 18.11.2026, голосом: «должно быть» место нажать мимо) ──
+   Как остальные листы Sport: сверху 36, по бокам 12, затемнение с размытием; нажатие на свободное место закрывает.
+   Таймер (упражнения и отдельный): внизу под ним остаётся меню с «×»; низ листа прячется ровно за меню. */
+.hs-page-sheet>.hs-page-backdrop{background:#064c7548;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.hs-page-sheet>.hs-scroll{top:36px;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;border:1px solid #ffffff45;
+ background:var(--sport-background);background-attachment:fixed;box-shadow:0 -12px 60px #08619c40}
+.overlay:has(.exercise-player),.exercise-player-overlay{background:#064c7548!important;-webkit-backdrop-filter:blur(5px)!important;backdrop-filter:blur(5px)!important}
+.sheet:has(.exercise-player),.exercise-player-sheet{inset:36px calc((100% - min(calc(100% - 28px),432px)) / 2) calc(8px + env(safe-area-inset-bottom))!important;
+ width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;margin:0!important;padding:6px 0 80px!important;border:1px solid #ffffff45!important;box-shadow:0 -12px 60px #08619c40}
+.sheet:has(.exercise-player) .exercise-player .player-exercise-name{margin-top:12px}

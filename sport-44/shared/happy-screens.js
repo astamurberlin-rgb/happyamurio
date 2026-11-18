@@ -8,6 +8,8 @@
  *   HappyScreens.theme(app)            — цвета приложения ('day' | 'meal' | 'sport');
  *   HappyScreens.page({id, className}) — страница на весь экран: {el, main, close(), closed}. Пока страница открыта,
  *                                        остальное приложение скрыто, видна только его подложка (.bg);
+ *                                        с handle:true (профиль, цели) — лист: сверху свободное место, под ним видно
+ *                                        приложение; нажатие туда, ручка, Escape закрывают (как «Отмена»);
  *   HappyScreens.sheet({title, description, onClose}) — нижний лист: {el, body, close()};
  *   HappyScreens.toast(text)           — короткое сообщение; без открытой страницы — сообщение приложения;
  *   HappyScreens.wheel(box, {...}), HappyScreens.ruler(box, {...}) — колесо выбора и линейка веса.
@@ -66,23 +68,28 @@ function mount(){
  doc.body.appendChild(rootEl);
  return rootEl;
 }
-function syncBody(){doc.body.classList.toggle('hs-open',pages.some(p=>!p.closed))}
+// Страница на весь экран прячет приложение; страница-лист — нет: приложение видно под затемнением, прокрутка стоит.
+function syncBody(){const open=pages.filter(p=>!p.closed);doc.body.classList.toggle('hs-open',open.some(p=>!p.sheet));doc.body.classList.toggle('hs-sheet-open',open.some(p=>p.sheet))}
 
 /* ── страница ── */
 function page(o){
  o=o||{};const host=mount();
- const el=doc.createElement('section');el.className='hs-page';el.dataset.page=o.id||'';
- el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');if(o.label)el.setAttribute('aria-label',o.label);
  // Аудит единообразия Sport 18.11.2026: страница с правкой (профиль, цели; o.handle) закрывается, как листы: ручка сверху —
  // нажать или потянуть вниз, это то же, что «Отмена». Если на странице что-то поменяли, приложение предлагает «Вернуть»
  // (HappyScreens.dismissed): страница открывается снова с введённым.
- el.innerHTML='<div class="hs-scroll">'+(o.handle?'<div class="hs-handle-zone hs-page-handle" aria-hidden="true"><div class="hs-handle"></div></div>':'')+'<main class="hs-main '+esc(o.className||'')+'"></main></div>';
+ // Астамур 18.11.2026 (голосом): такая страница и выглядит листом — сверху свободное место, под ним видно приложение;
+ // нажал туда — закрылось, как ручкой. Escape — тоже.
+ const asSheet=!!o.handle;
+ const el=doc.createElement('section');el.className='hs-page'+(asSheet?' hs-page-sheet':'');el.dataset.page=o.id||'';
+ el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');if(o.label)el.setAttribute('aria-label',o.label);
+ el.innerHTML=(asSheet?'<div class="hs-page-backdrop" aria-hidden="true"></div>':'')+'<div class="hs-scroll">'+(o.handle?'<div class="hs-handle-zone hs-page-handle" aria-hidden="true"><div class="hs-handle"></div></div>':'')+'<main class="hs-main '+esc(o.className||'')+'"></main></div>';
  host.appendChild(el);
  let removeTimer=0,initial=null;
- const handle={el,main:el.querySelector('.hs-main'),scroller:el.querySelector('.hs-scroll'),closed:false,
+ const card=el.querySelector('.hs-scroll');if(asSheet)paintSheet(card);
+ const handle={el,main:el.querySelector('.hs-main'),scroller:card,closed:false,sheet:asSheet,
   close(){if(handle.closed)return;handle.closed=true;const i=pages.indexOf(handle);if(i>=0)pages.splice(i,1);
    el.classList.remove('hs-in');blur();syncBody();removeTimer=setTimeout(()=>el.remove(),o.instant?0:230);if(o.onClose)try{o.onClose()}catch(e){}},
-  reopen(){if(!handle.closed)return;clearTimeout(removeTimer);handle.closed=false;pages.push(handle);if(!el.isConnected)host.appendChild(el);el.style.transform='';syncBody();
+  reopen(){if(!handle.closed)return;clearTimeout(removeTimer);handle.closed=false;pages.push(handle);if(!el.isConnected)host.appendChild(el);el.style.transform='';card.style.transform='';syncBody();
    if(o.onReopen)try{o.onReopen(handle)}catch(e){}
    requestAnimationFrame(()=>requestAnimationFrame(()=>{if(!handle.closed)el.classList.add('hs-in')}))},
   top(){handle.scroller.scrollTop=0}};
@@ -97,14 +104,18 @@ function page(o){
    return parts.join('|')};
   const mark=()=>{if(initial===null)initial=snapshot()};
   for(const type of ['pointerdown','keydown','focusin'])el.addEventListener(type,mark,true);
-  const dismiss=()=>{const changed=initial!==null&&snapshot()!==initial;
+  const dismiss=()=>{if(handle.closed)return;const changed=initial!==null&&snapshot()!==initial;
    const cancel=el.querySelector('.hs-actions [data-hs="cancel"]');if(cancel)cancel.click();if(!handle.closed)handle.close();
    if(changed)unsaved(handle)};
+  handle.dismiss=dismiss;
+  // тянем лист (у листа — карточку, подложка остаётся на месте)
+  const moving=asSheet?card:el;
   const zone=el.querySelector('.hs-page-handle');let startY=null,dy=0;
-  zone.addEventListener('pointerdown',e=>{startY=e.clientY;dy=0;try{zone.setPointerCapture(e.pointerId)}catch(err){}el.style.transition='none'});
-  zone.addEventListener('pointermove',e=>{if(startY===null)return;dy=Math.max(0,e.clientY-startY);el.style.transform='translateY('+dy+'px)'});
-  zone.addEventListener('pointerup',()=>{if(startY===null)return;startY=null;el.style.transition='';el.style.transform='';if(dy>70||dy<6)dismiss()});
-  zone.addEventListener('pointercancel',()=>{startY=null;el.style.transition='';el.style.transform=''});
+  zone.addEventListener('pointerdown',e=>{startY=e.clientY;dy=0;try{zone.setPointerCapture(e.pointerId)}catch(err){}moving.style.transition='none'});
+  zone.addEventListener('pointermove',e=>{if(startY===null)return;dy=Math.max(0,e.clientY-startY);moving.style.transform='translateY('+dy+'px)'});
+  zone.addEventListener('pointerup',()=>{if(startY===null)return;startY=null;moving.style.transition='';moving.style.transform='';if(dy>70||dy<6)dismiss()});
+  zone.addEventListener('pointercancel',()=>{startY=null;moving.style.transition='';moving.style.transform=''});
+  const backdrop=el.querySelector('.hs-page-backdrop');if(backdrop)backdrop.addEventListener('click',dismiss);
  }
  pages.push(handle);syncBody();
  requestAnimationFrame(()=>requestAnimationFrame(()=>{if(!handle.closed)el.classList.add('hs-in')}));
@@ -152,7 +163,8 @@ function sheet(o){
 }
 if(doc)doc.addEventListener('keydown',e=>{
  if(e.key!=='Escape')return;
- const s=sheets[sheets.length-1];if(s){e.preventDefault();s.close()}
+ const s=sheets[sheets.length-1];if(s){e.preventDefault();s.close();return}
+ const p=openPages().filter(p=>p.sheet&&p.dismiss).pop();if(p){e.preventDefault();p.dismiss()}
 });
 
 /* ── сообщение ── */
