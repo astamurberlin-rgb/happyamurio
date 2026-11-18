@@ -84,6 +84,14 @@
  },
  "pointReleases": [
   {
+   "version": "33.13",
+   "date": "2026-11-19",
+   "changes": [
+    "bot.js: «всего / итого N г» после блюда — вес всего блюда, последняя часть добирает остаток; «не ел», «не стал» — пометка ⊗ «не съедено» на кусок фразы; «только» — слово-связка",
+    "index.html: «Правила бота» — две строки; ?v=33.13, заголовок и подвал; sw.js 33.13; release-notes.js 33.13"
+   ]
+  },
+  {
    "version": "33.12.1",
    "date": "2026-11-19",
    "changes": [
@@ -382,8 +390,8 @@
   },
   {
    "path": "bot.js",
-   "size": 152265,
-   "sha256": "ac31ed6e3bb1b55ac9baf4690b5f46a3eba7b6761b96a50213ec64b39257eca2"
+   "size": 153844,
+   "sha256": "844a2eb29ced162a25eeb1b407266aae9c07c7f68201bc7200978ea8387cd83f"
   },
   {
    "path": "bot/household-ru.js",
@@ -522,8 +530,8 @@
   },
   {
    "path": "index.html",
-   "size": 628079,
-   "sha256": "3a194d94389d97e36259d9a79ab1e96cc17a665b7b51b65dcda7c88af8835b38"
+   "size": 628373,
+   "sha256": "27a0a353588ed5e192f9f280f4726d596768a7e94920358f510a9702f5d44664"
   },
   {
    "path": "kfct.js",
@@ -722,8 +730,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 57840,
-   "sha256": "41a6ebe61f2b73fbd1688c2d04eb3b13a9f2d2edc58253579410562316f59c20"
+   "size": 58261,
+   "sha256": "d1c38368a35c623def4ef41178c11abf4934ee511d9d43730cf27c8dacb39295"
   },
   {
    "path": "report.css",
@@ -912,8 +920,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3507,
-   "sha256": "a9a1341c715aeee3a92281dc5827250655c559b217843c12d6fd9b1937beb850"
+   "size": 3505,
+   "sha256": "59e357d1399a2e98ea34a87e66ad7a4e541f48417d7d6fadc7c78c33c9ec185d"
   },
   {
    "path": "usda-measures.js",
