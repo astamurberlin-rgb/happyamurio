@@ -1810,9 +1810,10 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .plan-line{display:flex!important;align-items:center;justify-content:center!important;text-align:center;gap:10px}.plan-line>.icon{position:static!important;margin:0!important;flex:none}.plan-line b{flex:0 1 auto!important}
 /* «Редактировать» с карандашом — на одной линии с названием. */
 .training-heading{align-items:center!important}
-/* Лист расписания: нижнее меню поверх листа, как у карточки тренировки (Астамур 19.11.2026). */
-.overlay:has(#schedule-form){z-index:50}
-.overlay:has(#schedule-form) .sheet{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+/* Нижнее меню всегда поверх листов, как у карточки тренировки (Астамур 19.11.2026: «поверх листа, как и везде»).
+   Низ листа — с запасом под меню, чтобы последняя кнопка не пряталась. Большой таймер устроен так уже давно. */
+.overlay{z-index:50!important}
+.overlay .sheet:not(:has(.exercise-player)){padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
