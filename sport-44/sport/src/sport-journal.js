@@ -28,7 +28,7 @@ openOccurrence=function(id){
   :o.workoutId?`<button class="button primary" type="button" data-action="open-workout" data-id="${esc(o.workoutId)}">Открыть запись</button>`
   :cancelled?`<button class="button primary" type="button" data-action="occurrence-restore" data-id="${esc(id)}">Вернуть занятие</button>`
   :`<button class="button primary" type="button" data-action="schedule-start" data-id="${esc(id)}">Начать тренировку</button>`;
- const pair=!live&&!o.workoutId&&!cancelled?`<div class="occurrence-actions"><button class="button" type="button" data-action="occurrence-move" data-id="${esc(id)}">Перенести</button><button class="button" type="button" data-action="occurrence-cancel" data-id="${esc(id)}">Отменить</button></div>`
+ const pair=!live&&!o.workoutId&&!cancelled?`<div class="occurrence-actions"><button class="button" type="button" data-action="occurrence-move" data-id="${esc(id)}">Перенести</button><button class="button" type="button" data-action="occurrence-cancel" data-id="${esc(id)}">Отменить занятие</button></div>`
   +`<div class="occurrence-move" hidden><label class="field">Новые дата и время<input type="datetime-local" name="start" required value="${esc(o.start)}"></label><button class="button primary" type="submit">Перенести</button></div>`:'';
  const series=weekly?`<button class="text-btn occurrence-series" type="button" data-action="plan-template" data-id="${esc(s.templateId)}">Изменить всю серию</button>`:'';
  openSheet(o.title,`<form id="occurrence-form" class="occurrence-sheet" data-id="${esc(id)}"><p class="sheet-info">${esc(info)}</p><div class="occurrence-main">${main}</div>${pair}${series}`

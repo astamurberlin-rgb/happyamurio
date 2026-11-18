@@ -141,7 +141,7 @@ function open(){
  const original=d.latest;let pendingEmail='';
  const shown={weight:original?fmt(S().toUnits(original.kg,draft.units.weight)):'',date:original?original.date:today,
   height:draft.heightCm?(draft.units.height==='cm'?fmt(draft.heightCm,0):fmt(draft.heightCm/30.48,2)):''};
- pageH=S().page({id:'profile',className:'hs-profile',label:'Профиль',onClose:()=>{pageH=null}});
+ pageH=S().page({id:'profile',className:'hs-profile',label:'Профиль',handle:true,onClose:()=>{pageH=null},onReopen:h=>{pageH=h}});
  const main=pageH.main;
  function weightLabel(){return draft.units.weight==='kg'?'кг':'фунты'}
  function heightLabel(){return draft.units.height==='cm'?'см':'футы'}
@@ -172,7 +172,7 @@ function open(){
    '<div data-p-history>'+history()+'</div>'+
    '<section class="hs-units"><h2>Единицы измерения</h2><div class="hs-units-row"><span>Вес</span>'+S().segment('wunits',[['kg','кг'],['lb','фунты']],draft.units.weight,'Единицы веса')+'</div>'+
    '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div></section>'+
-   '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отменить',action:'cancel'});
+   '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'});
  }
  const input=n=>main.querySelector('[name="'+n+'"]');
  function readInputs(){draft.name=input('name').value;draft.birthday=input('birthday').value;shown.height=input('height').value;shown.weight=input('weight').value;shown.date=input('date').value}
@@ -212,7 +212,7 @@ function open(){
  function photoSheet(){
   const sh=S().sheet({title:'Фото профиля'});
   sh.body.innerHTML='<div class="hs-photo-preview">'+avatar(draft.photo)+'</div><div class="hs-actions"><button type="button" class="hs-btn hs-primary" data-ph="pick">Выбрать другое фото</button>'+
-   '<button type="button" class="hs-btn hs-glass-btn" data-ph="remove">Убрать фото</button><button type="button" class="hs-btn hs-cancel" data-ph="cancel">Отменить</button></div>';
+   '<button type="button" class="hs-btn hs-glass-btn" data-ph="remove">Убрать фото</button><button type="button" class="hs-btn hs-cancel" data-ph="cancel">Отмена</button></div>';
   sh.body.addEventListener('click',e=>{const b=e.target.closest('[data-ph]');if(!b)return;const a=b.dataset.ph;sh.close();
    if(a==='pick')main.querySelector('[data-p-file]').click();
    if(a==='remove'){draft.photo='';render()}});

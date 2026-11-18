@@ -322,3 +322,6 @@ body.hs-open{overflow:hidden}
 
 @media (prefers-reduced-motion:reduce){.hs-wheel-track,.hs-wheel-option,.hs-welcome-options,.hs-switch,.hs-switch>b,.hs-page,.hs-sheet,.hs-backdrop,.hs-toast{transition:none}}
 @media (max-width:359px){.hs-main{padding-left:16px;padding-right:16px}.hs-macro-grid{gap:12px;padding:0}.hs-units-row>.hs-segment{width:140px}}
+
+/* Аудит единообразия Sport 18.11.2026: ручка у страницы (профиль, цели) — как у листов */
+.hs-page .hs-page-handle{position:sticky;top:0;z-index:3;height:30px;display:flex;justify-content:center;align-items:center;cursor:grab;touch-action:none}

@@ -426,10 +426,23 @@ function mount(box,options){
  function openDialog(title,html){
   closeDialog();
   const d=dialog=document.createElement('dialog');d.className='hm hm-dialog';d.setAttribute('aria-label',title);
-  d.innerHTML=`<div class="hm-sheet"><div class="hm-sheet-top"><h2>${esc(title)}</h2><button type="button" class="hm-text" data-hm="close">Закрыть</button></div>${html}</div>`;
+  // Аудит единообразия Sport 18.11.2026: окно замера закрывается, как листы приложения — ручка сверху (нажать или
+  // потянуть вниз) или нажатие мимо окна; надписи «Закрыть» нет.
+  d.innerHTML=`<div class="hm-sheet"><button type="button" class="hm-grip" data-hm="close" aria-label="Закрыть — потяни вниз или нажми"></button><div class="hm-sheet-top"><h2>${esc(title)}</h2></div>${html}</div>`;
   document.body.appendChild(d);
-  d.addEventListener('click',e=>{if(e.target===d){closeDialog();return}onClick(e)});
-  d.addEventListener('cancel',e=>{e.preventDefault();closeDialog()});
+  {const grip=d.querySelector('.hm-grip'),card=d.querySelector('.hm-sheet');let y0=null,dy=0;
+   grip.addEventListener('pointerdown',e=>{y0=e.clientY;dy=0;try{grip.setPointerCapture(e.pointerId)}catch(err){}card.style.transition='none'});
+   grip.addEventListener('pointermove',e=>{if(y0===null)return;dy=Math.max(0,e.clientY-y0);card.style.transform='translateY('+dy+'px)'});
+   grip.addEventListener('pointerup',e=>{if(y0===null)return;y0=null;card.style.transition='';if(dy>70){e.preventDefault();grip.dataset.dragged='1';setTimeout(()=>delete grip.dataset.dragged,0);dismiss();return}card.style.transform='';if(dy>=6){grip.dataset.dragged='1';setTimeout(()=>delete grip.dataset.dragged,0)}});
+   grip.addEventListener('pointercancel',()=>{y0=null;card.style.transition='';card.style.transform=''});
+   grip.addEventListener('click',e=>{if(grip.dataset.dragged){e.preventDefault();e.stopImmediatePropagation()}},true);}
+  // Закрыли ручкой, нажатием мимо или Escape, а в форме что-то поменяли — «Правки не сохранены · Вернуть» (окно откроется снова).
+  let initial=null;const snap=()=>[...d.querySelectorAll('input,select,textarea')].map(c=>c.name+'='+c.value).join('|');
+  for(const type of ['pointerdown','keydown','focusin'])d.addEventListener(type,()=>{if(initial===null)initial=snap()},true);
+  const dismiss=()=>{const changed=initial!==null&&snap()!==initial&&!!d.querySelector('form');closeDialog();
+   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';document.body.appendChild(d);if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}})};
+  d.addEventListener('click',e=>{if(e.target===d){dismiss();return}if(e.target.closest&&e.target.closest('.hm-grip')){e.preventDefault();dismiss();return}onClick(e)});
+  d.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
   d.addEventListener('submit',onSubmit);
   if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
   return d;

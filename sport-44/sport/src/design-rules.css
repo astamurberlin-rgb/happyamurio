@@ -205,3 +205,24 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .template-exercise-title b{flex:1 1 auto;min-width:0}
 .template-exercise-title small{flex:none}
 .template-exercise-title .exercise-technique{flex:none;order:3}
+
+/* Аудит 18.11.2026, часть 3: ссылка «← К …» у вложенного листа — сверху, как «← К тренировке» */
+.sheet-back{display:block;margin:0 0 14px;padding:0;min-height:44px;text-align:left}
+.hs-page .hs-page-handle .hs-handle{background:rgba(255,255,255,.45)}
+/* Аудит 18.11.2026, часть 3: сообщение внизу видно и поверх открытого листа — иначе «Вернуть» после шага назад
+   оказывается под листом. Выше листа (80) и нижней панели (90), ниже вопросов (200). */
+.toast{z-index:95!important}
+/* «Отменить занятие» целиком: в половине строки текст переносится, а не обрезается многоточием */
+.occurrence-actions .button{white-space:normal!important;text-overflow:clip!important;overflow:visible!important;padding-inline:10px!important;line-height:1.2!important}
+
+/* Расписание (Астамур 18.11.2026): одно поле «Дата и время» на всю ширину; «В календарь» на всю ширину;
+   «Поделиться» — значок 44 × 44 справа от названия листа */
+.plan-group .schedule-when{margin-top:14px!important;display:block}
+.plan-group .schedule-when input{width:100%;min-width:0}
+.plan-fields .plan-share.plan-share-one{grid-template-columns:1fr!important}
+.sheet-top .sheet-share{margin-left:auto;width:44px!important;height:44px!important;min-width:44px;min-height:44px;display:inline-grid;place-items:center;padding:0;background:transparent;border:0;color:inherit}
+.sheet-top .sheet-share .icon{width:24px;height:24px}
+.sheet-top .sheet-share .icon{fill:none!important;stroke:currentColor!important}
+/* Два поля даты рядом («Связать с расписанием»: От / До): на iPhone поле даты не сжимается и налезает на соседнее —
+   у полей с русской подписью сверху свой вид не нужен, ширина — по колонке. */
+.schedule-date-grid .ru-date>input{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;box-sizing:border-box}

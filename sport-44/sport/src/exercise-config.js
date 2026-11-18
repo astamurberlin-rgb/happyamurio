@@ -135,7 +135,7 @@ function openExerciseEditor(id,ei=null,source=null){
   const metrics=exerciseMetrics(active||e||{profile:'reps'}),timer=exerciseTimerConfig(active||e),original=exerciseOriginalName(e);
   const draft=createSetPlan(e?.id,active?.phase||'main',active?.sets||e?.defaultSets||null,metrics);
   openSheet(e?'Настроить упражнение':'Создать упражнение',`<form id="exercise-config-form" data-id="${esc(e?.id||'')}" data-ei="${ei??''}" data-initial-plan="${esc(JSON.stringify(draft.sets))}" data-add-active="${addToActive}" data-scope="${scope}" data-workout-id="${scope==='active'?esc(state.active.id):''}">
-    <div class="exercise-title-row"><label class="exercise-title-label"><span>Название · нажми, чтобы изменить</span><input class="exercise-title-input" name="name" required maxlength="120" value="${esc(active?.name||e?.name||'')}" placeholder="Название упражнения"></label></div>
+    <div class="exercise-title-row"><label class="exercise-title-label"><span>Название</span><input class="exercise-title-input" name="name" required maxlength="120" value="${esc(active?.name||e?.name||'')}" placeholder="Название упражнения"></label></div>
     ${scope==='active'?`<nav class="local-exercise-links" aria-label="Об этом упражнении"><button type="button" class="text-btn" data-action="local-exercise-history" data-id="${esc(id)}">История</button><button type="button" class="text-btn" data-action="local-exercise-instructions" data-id="${esc(id)}">Инструкция</button></nav>`:''}
     ${scope==='active'&&exerciseHandles(active).length?`<label class="field exercise-handle-field">Рукоять<select name="handle" aria-label="Рукоять"><option value="">Не указана</option>${exerciseHandles(active).map(h=>`<option value="${esc(h)}" ${exerciseHandle(active)===h?'selected':''}>${esc(h)}</option>`).join('')}${exerciseHandle(active)&&!exerciseHandles(active).includes(exerciseHandle(active))?`<option value="${esc(exerciseHandle(active))}" selected>${esc(exerciseHandle(active))}</option>`:''}</select></label><p class="fineprint">Рукоять — пометка для этой тренировки и истории. Подходы и нагрузка не пересчитываются.</p>`:''}
     ${metricPill(metrics,active||e?metricsAvailable(active||e):METRIC_PILL_ORDER)}
@@ -198,6 +198,7 @@ function saveExerciseEditor(form,mode){
   }else next=saveExerciseDefinition(id,entry,mode,ei);
   if(active){if(planChanged)active.sets=clone(draft.sets);active.defaultRestSeconds=lastRest;if(liveRestOnly)applyLiveRestLength(state.active.countdown,draft.sets[state.active.countdown.si].restSeconds);else if(state.active.countdown?.ei===ei&&planChanged)state.active.countdown=null;if(state.active.exercisePlayer?.ei===ei&&playerChanged)state.active.exercisePlayer=null;}
   if(lastRest!=null)state.lastRestSeconds=lastRest;
+  if(form.dataset.addActive==='true'&&typeof discardTemplatePicker==='function')discardTemplatePicker();
   if(!e&&form.dataset.addActive==='true'&&state.active)state.active.exercises.push(prepareWorkoutExercise({id:next.id,name:next.name,phase:'main',notes:'',sets:next.defaultSets.map(setPlanCopy),defaultRestSeconds:lastRest},true));
   persist();closeSheet();render();toast(localOnly?'Сохранено для этой тренировки':mode==='copy'?'Создано отдельное упражнение. Прежняя история сохранена.':'Настройки сохранены'+(e&&e.name!==name?' · история остаётся с упражнением':''));return next;
 }
