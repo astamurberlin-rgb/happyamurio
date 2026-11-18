@@ -303,3 +303,37 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .plan-group,.happy-card,.hs-group,.hm-card,.happy-button:has(>small),.happy-card>.happy-button[data-action=release-history]{border-radius:24px!important}
 /* карточка тренировки и запись журнала поднимаются снизу, как листы, — 22 у верхних углов */
 .panel-screen{border-radius:22px 22px 0 0!important}
+
+/* Мелочи аудита 18.11.2026: полоса свёрнутой тренировки нажимается целиком. */
+button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}.active-banner-go{font-size:12px;font-weight:600}
+/* Долгое нажатие на тренировку — меню, а не выделение текста. */
+.home-favorite,.template-library-row{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.workout-quick-menu{display:grid;gap:12px;padding-bottom:8px}
+/* Строки расписания и тренировок — одной высоты, картинка тренировки одного размера (мелочи аудита 18.11.2026). */
+.occurrence-row,.home-favorite,.template-library-row,#modal-root .section-list .section-row[data-action="plan-template"]{min-height:72px}
+/* Настройки: заголовки разделов одного вида — тусклые и меньше: 14, полужирный, белый 60 % (Астамур 19.11.2026). */
+.happy-settings .happy-heading,.happy-settings .settings-section,.happy-settings .settings-section h3,.happy-settings .hs-section>h3,.happy-settings .hs-links-title{font-size:14px!important;font-weight:600!important;color:rgba(255,255,255,.6)!important;opacity:1!important;text-transform:none!important;letter-spacing:0!important}
+/* Подход: «П» всегда на одном месте — номер в своей ячейке слева, прижат к названию (Астамур 18.11.2026). */
+.set-name-wrap{display:flex;align-items:center;min-width:0;font-size:16px;color:#fff}.set-name-wrap::before{content:attr(data-num);flex:0 0 1.35em;text-align:right;padding-right:.3em;font-variant-numeric:tabular-nums}.set-name-wrap>.set-name{flex:1 1 auto}
+/* «+ Подход»: плюс — в той же ячейке, что номера подходов (прижат вправо), «П» — ровно под «П» остальных строк (Астамур 18.11.2026). */
+.active-workout .set-actions .set-add-plus,.plan-add-actions .set-add-plus{display:inline-block;flex:0 0 auto;width:1.35em;padding-right:.3em;box-sizing:content-box;text-align:right}
+.active-workout .set-actions .set-add-digit,.plan-add-actions .set-add-digit{display:none}
+.active-workout .set-actions .set-add-sign,.plan-add-actions .set-add-sign{position:static;transform:none}
+/* Долгое нажатие: лист снизу, как «Загрузить отчёты» в Day — во всю ширину, нижнее меню поверх него. */
+.workout-pop{position:fixed;inset:0;z-index:50}   /* под нижним меню (у него 55) */
+.workout-pop-shade{position:absolute;inset:0;background:rgba(4,40,80,.18);opacity:0;transition:opacity .3s}
+.workout-pop.on .workout-pop-shade{opacity:1}
+.workout-pop-card{position:absolute;left:0;right:0;bottom:0;display:grid;gap:12px;padding:22px 20px calc(112px + env(safe-area-inset-bottom));background:var(--sport-background);border-top:1px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:0 -8px 30px rgba(4,40,80,.18);border-radius:26px 26px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.25,1)}
+.workout-pop.on .workout-pop-card{transform:translateY(0)}
+.workout-pop-card h3{margin:0 0 2px;font-size:18px;font-weight:800;color:#fff}
+/* Обзор тренировки и запись журнала: упражнения одним списком в одной рамке, без кнопок «i» (Астамур 18.11.2026). */
+.card.template-exercises,.card.record-exercises{display:block;padding:2px 18px}
+.card.template-exercises>.template-exercise,.card.record-exercises>.record-exercise{margin:0!important;padding:14px 0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.card.template-exercises>.template-exercise+.template-exercise,.card.record-exercises>.record-exercise+.record-exercise{border-top:1px solid #ffffff33!important}
+/* «Добавить в расписание» — без стрелки, значок и текст по центру, как «В календарь». */
+.plan-line{display:flex!important;align-items:center;justify-content:center!important;text-align:center;gap:10px}.plan-line>.icon{position:static!important;margin:0!important;flex:none}.plan-line b{flex:0 1 auto!important}
+/* «Редактировать» с карандашом — на одной линии с названием. */
+.training-heading{align-items:center!important}
+/* Лист расписания: нижнее меню поверх листа, как у карточки тренировки (Астамур 19.11.2026). */
+.overlay:has(#schedule-form){z-index:50}
+.overlay:has(#schedule-form) .sheet{padding-bottom:calc(112px + env(safe-area-inset-bottom))}

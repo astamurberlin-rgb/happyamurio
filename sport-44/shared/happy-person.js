@@ -9,6 +9,9 @@
  * документе замеров sport/body (shared/happy-measurements.js): новый вес — замер на свою дату, прежние даты не меняются;
  * одна дата — одна запись замеров, поэтому вес за ту же дату её исправляет.
  * Меняется устройство записей — растёт FORMAT, и три приложения выходят разом.
+ * weightGoal (Астамур 18.11.2026: «один профайл — одна цель»): цель веса одна на аккаунт — {v:[{effectiveFrom, savedAt,
+ * goal:{kind, centralKind, targetKg, anchorKg, bandKg}}]}, датированные версии. Пишут цели Meal и Sport (shared/happy-goals.js),
+ * по ней силуэт в Day, Meal и Sport красит разницу. Новое поле — номер прежний.
  * units.food (Meal 33.10, Астамур 18.11.2026): единицы еды — 'metric' (г, мл и русские меры; по умолчанию) или 'oz'
  * (oz и fl oz в подписях мер USDA). Одно на аккаунт, видно и меняется в профиле Day, Meal и Sport. Новое поле — номер прежний;
  * запись без food читается как 'metric'.
@@ -28,7 +31,7 @@
  * — Claude · 16.11.2026 */
 (function(root){
 'use strict';
-const FORMAT=1,DOC={app:'sport',name:'profile'},KEYS=['birthday','height','sex','units','photo'],PHOTO_MAX=300000;
+const FORMAT=1,DOC={app:'sport',name:'profile'},KEYS=['birthday','height','sex','units','photo','weightGoal'],PHOTO_MAX=300000;
 const object=x=>!!x&&typeof x==='object'&&!Array.isArray(x);
 function validDate(d){
  if(typeof d!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(d))return false;
@@ -47,6 +50,11 @@ function read(records){
  const u=v('units');if(object(u)){if(u.weight==='lb')p.units.weight='lb';if(u.height==='ft')p.units.height='ft';if(u.food==='oz')p.units.food='oz'}
  const ph=v('photo');if(typeof ph==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(ph)&&ph.length<=PHOTO_MAX)p.photo=ph;
  return p;
+}
+/* общая цель веса: датированные версии из записи weightGoal */
+function weightGoalOf(records){
+ const r=(records||[]).find(x=>x&&x.id==='weightGoal'),v=r&&object(r.value)?r.value.v:null;
+ return Array.isArray(v)?v.filter(x=>object(x)&&object(x.goal)&&validDate(x.effectiveFrom)&&typeof x.savedAt==='string').slice(-60):[];
 }
 /* правки для doc.putMany: только изменившиеся поля */
 function changes(before,after){
@@ -86,13 +94,18 @@ const signedIn=()=>!!(cfg&&cfg.account&&cfg.account.current()&&cfg.profileDoc())
 function data(){
  const pd=cfg&&cfg.profileDoc(),bd=cfg&&cfg.bodyDoc();
  const profile=pd&&!pd.newer?read(pd.all()):BLANK(),weights=bd&&!bd.newer?weightsOf(bd.all()):[];
- return {profile,weights,latest:weights.length?weights[weights.length-1]:null,newer:!!((pd&&pd.newer)||(bd&&bd.newer))};
+ return {profile,weights,latest:weights.length?weights[weights.length-1]:null,weightGoal:pd&&!pd.newer?weightGoalOf(pd.all()):[],newer:!!((pd&&pd.newer)||(bd&&bd.newer))};
 }
 async function update(patch){
  const pd=cfg.profileDoc();if(!pd)throw Error('Войдите в аккаунт, чтобы записывать');
  if(pd.newer)throw Error('Профиль записан более новой версией приложения. Откройте последнюю версию.');
  const before=read(pd.all()),after=Object.assign({},before,patch,{units:Object.assign({},before.units,patch&&patch.units||{})});
  const list=changes(before,after);if(list.length)await pd.putMany(list);
+}
+async function setWeightGoal(versions){
+ const pd=cfg&&cfg.profileDoc();if(!pd)throw Error('Войдите в аккаунт, чтобы записывать');
+ if(pd.newer)throw Error('Профиль записан более новой версией приложения. Откройте последнюю версию.');
+ await pd.putMany([{id:'weightGoal',value:{v:(Array.isArray(versions)?versions:[]).slice(-60)}}]);
 }
 async function addWeight(date,kg){
  const bd=cfg.bodyDoc();if(!bd)throw Error('Войдите в аккаунт, чтобы записывать');
@@ -275,6 +288,6 @@ function init(o){
  if(offProfile)offProfile();offProfile=null;
  const pd=cfg.profileDoc();if(pd&&pd.subscribe)offProfile=pd.subscribe(()=>top());
 }
-root.HappyPerson={FORMAT,DOC,KEYS,read,changes,weightsOf,weightChanges,ageAt,init,top,bottom,status,statusText,open,data,update,addWeight,refresh,
+root.HappyPerson={FORMAT,DOC,KEYS,read,changes,weightsOf,weightChanges,weightGoalOf,ageAt,init,top,bottom,status,statusText,open,data,update,addWeight,setWeightGoal,refresh,
  get isOpen(){return !!(pageH&&!pageH.closed)}};
 })(typeof globalThis!=='undefined'?globalThis:this);

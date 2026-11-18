@@ -43,7 +43,11 @@ function setLabelSuggestions(id,sets,skip){
  const out=all.filter(x=>!typo(x)).sort((a,b)=>b[1].count-a[1].count||a[1].first-b[1].first).map(([,f])=>f.text);
  return SET_LABEL_OPTIONS.concat(out.slice(0,6));
 }
-function setLabelInput(attrs,text,label){return `<input class="set-name" type="text" ${attrs} value="${esc(text)}" maxlength="40" enterkeyhint="done" autocomplete="off" aria-label="${esc(label)}">`;}
+// «П» всегда на одном месте (Астамур 18.11.2026): номер — в своей ячейке слева, прижат к названию справа; в поле —
+// только название. Нет номера — ячейка пустая, но место держит.
+function setLabelSplit(text){const m=/^(\d+) (.+)$/.exec(String(text||''));return m?{num:m[1],base:m[2]}:{num:'',base:String(text||'')};}
+function setLabelPut(node,text){const p=setLabelSplit(text);node.value=p.base;const w=node.parentElement;if(w?.classList.contains('set-name-wrap'))w.dataset.num=p.num;}
+function setLabelInput(attrs,text,label){const p=setLabelSplit(text);return `<span class="set-name-wrap" data-num="${esc(p.num)}"><input class="set-name" type="text" ${attrs} value="${esc(p.base)}" maxlength="40" enterkeyhint="done" autocomplete="off" aria-label="${esc(label)}"></span>`;}
 
 // Столбик 42px; число длиннее — столбик шире, у всех строк упражнения одинаковый.
 function setLineValueText(s,key){const v=Number(s?.[key]||0);return key==='seconds'?sportDurationValue(v):v?String(v):'—';}
@@ -114,7 +118,7 @@ setPlanRows=function(draft){
   return !s.done&&draft.sets.length>1?templateEditorSwipe('plan-set',name,`data-action="plan-remove-set" data-plan-index="${i}"`,line):line;
  }).join('');
  const rest=planExerciseRest(draft);
- return `<div class="plan-set-list">${setLineHead(metrics,cols,done,draft.id)}${rows}</div><div class="plan-add-actions"><button type="button" class="set-add" aria-label="Добавить подход" data-action="plan-add-set" ${draft.sets.length>=50?'disabled':''}><span class="set-add-plus" aria-hidden="true"><span class="set-add-digit">1</span><span class="set-add-sign">+</span></span><span>&nbsp;Подход</span></button></div>`
+ return `<div class="plan-set-list">${setLineHead(metrics,cols,done,draft.id)}${rows}</div><div class="plan-add-actions"><button type="button" class="set-add" aria-label="Добавить подход" data-action="plan-add-set" ${draft.sets.length>=50?'disabled':''}><span class="set-add-plus" aria-hidden="true"><span class="set-add-digit">1</span><span class="set-add-sign">+</span></span><span class="set-add-word">Подход</span></button></div>`
   +`<div class="plan-rest-row plan-rest-one"><label>Перерыв${sportMetricInput(`type="text" inputmode="text" data-plan-rest="all" value="${sportDurationValue(rest)}" aria-label="Перерыв между подходами, для всех подходов упражнения"`,'')}</label></div><p class="plan-error form-error" role="alert"></p>`;
 };
 
@@ -157,7 +161,7 @@ function setNameMirror(root,draft,i,label){
  if(!e||!Array.isArray(initial)||initial.length!==draft.sets.length||e.sets.length!==draft.sets.length)return;
  for(const s of [e.sets[i],initial[i]]){if(!s)continue;if(label)s.label=label;else delete s.label;}
  form.dataset.initialPlan=JSON.stringify(initial);persist();
- for(const node of document.querySelectorAll(`.set-name[data-set-label^="${ei},"]`))node.value=setLabelText(e.sets,Number(node.dataset.setLabel.split(',')[1]));
+ for(const node of document.querySelectorAll(`.set-name[data-set-label^="${ei},"]`))setLabelPut(node,setLabelText(e.sets,Number(node.dataset.setLabel.split(',')[1])));
 }
 function setNameMenuNode(){
  let menu=document.getElementById('set-name-menu');if(menu)return menu;
@@ -188,8 +192,8 @@ function setNameCommit(ed){
  if(setNameEdit===ed)setNameEdit=null;const menu=document.getElementById('set-name-menu');if(menu)menu.hidden=true;
  const text=ed.input.value,label=String(text||'').trim()?setLabelNormalize(text):ed.before;
  ed.ctx.save(label);ed.input.placeholder='';
- for(const [node,j] of ed.ctx.inputs())if(node!==setNameEdit?.input)node.value=setLabelText(ed.ctx.sets,j);
- if(ed.input.isConnected&&ed.input!==setNameEdit?.input)ed.input.value=setLabelText(ed.ctx.sets,ed.ctx.i);
+ for(const [node,j] of ed.ctx.inputs())if(node!==setNameEdit?.input)setLabelPut(node,setLabelText(ed.ctx.sets,j));
+ if(ed.input.isConnected&&ed.input!==setNameEdit?.input)setLabelPut(ed.input,setLabelText(ed.ctx.sets,ed.ctx.i));
 }
 // Нажал на название — старое стёрлось (бледной подсказкой), выпал список; ничего не написал — вернулось прежнее.
 document.addEventListener('focusin',e=>{

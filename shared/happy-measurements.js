@@ -390,7 +390,7 @@ function mount(box,options){
   const notice=ui.notice?`<p class="hm-notice" role="status"><span>${esc(ui.notice.text)}</span>${ui.notice.undo?'<button type="button" data-hm="undo">Вернуть</button>':''}</p>`:'';
   const trash=s.trash.length?`<button type="button" class="hm-text" data-hm="trash">Удалённые замеры · ${s.trash.length}</button>`:'';
   if(d&&d.newer)return `<div class="hm-card hm-empty">${esc(NEWER)}</div>`;
-  if(!cur)return notice+`<div class="hm-card hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</div><button type="button" class="hm-button" data-hm="add">Добавить замер</button>`+trash;
+  if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p><button type="button" class="hm-button" data-hm="add">+ Замер</button>`+trash;   // пустой экран — текст без рамки, кнопка под ним; «+ Замер», как наверху (мелочи аудита 18.11.2026)
   const past=s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b));
   return notice+
    `<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span><button type="button" class="hm-text" data-hm="add">${ICON.plus} Замер</button></div>`+

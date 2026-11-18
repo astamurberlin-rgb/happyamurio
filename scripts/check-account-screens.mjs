@@ -87,4 +87,17 @@ const P=ctx.HappyPerson,G=ctx.HappyGoals,M=ctx.HappyMeasurements,plain=x=>JSON.p
  r=G.addCustom(d,'topic','Творчество');d=r.draft;assert.deepEqual(plain(d.customTopics),['Творчество']);assert.ok(d.topics.includes('Творчество'),'новая тема сразу выбрана');
  r=G.addCustom(d,'topic',' сон ');assert.deepEqual(plain(r.draft.customTopics),['Творчество'],'тема «Сон» уже есть — не дублируется');assert.ok(r.draft.topics.includes('Сон'));
  assert.equal(G.addCustom(d,'topic','x'.repeat(80)).draft.customTopics.at(-1).length,60,'название — до 60 знаков');}
-console.log('Passed: profile writes only changed fields, a new weight is a dated measurement and the same date corrects it; weight goal wheel and ruler share one model; macro shares stay 100 % and the prototype formula; Sport focus does not duplicate the weight goal; Day starts on the second row and adds own goals and topics without blanks or duplicates.');
+/* ── цель веса одна на аккаунт (Астамур 18.11.2026: «один профайл — одна цель») ── */
+{const map=new Map(),doc={all:()=>[...map].map(([id,value])=>({id,value:plain(value)})),putMany:async list=>{for(const x of list)map.set(x.id,plain(x.value))}};
+ const body={all:()=>[]};P.init({app:'sport',account:{current:()=>({id:'u'})},profileDoc:()=>doc,bodyDoc:()=>body,openGoals(){}});
+ const V=(kind,from,saved)=>({effectiveFrom:from,savedAt:saved,goal:{kind,centralKind:'maintain',targetKg:70,anchorKg:72,bandKg:.5}});
+ assert.equal(G.weightKind([]),null,'целей нет — цвет как при снижении');
+ const sport=[V('gain','2026-11-10','2026-11-10T10:00:00Z')],meal=[Object.assign(V('loss','2026-11-01','2026-11-01T10:00:00Z'),{goal:{kind:'loss',calories:1800,method:'manual'}})];
+ assert.equal(G.weightKind(sport),'gain','своя прежняя цель Sport видна до переноса');
+ assert.equal(await G.syncWeight(sport),true);assert.equal(G.weightKind([]),'gain','перенесённая цель видна в Day');
+ assert.equal(await G.syncWeight(meal),false,'прежняя цель Meal старше общей — не переносится');assert.equal(G.weightKind(meal),'gain','Meal видит общую, более позднюю');
+ assert.equal(await G.saveSharedWeight({kind:'loss',centralKind:'maintain',targetKg:68,anchorKg:72,bandKg:.5},'2026-11-18'),true);
+ assert.equal(G.weightKind([]),'loss');assert.equal(G.weightKind(sport),'loss','Sport видит цель, поменянную в Meal');
+ assert.equal(await G.saveSharedWeight({kind:'loss',centralKind:'maintain',targetKg:68,anchorKg:72,bandKg:.5},'2026-11-18'),false,'та же цель — без новой версии');
+ assert.equal(P.data().weightGoal.length,2);assert.deepEqual(P.read(doc.all()),P.read([...doc.all()].filter(r=>r.id!=='weightGoal')),'цель веса не трогает поля профиля');}
+console.log('Passed: one weight goal per account (shared profile, later wins, Day reads it); profile writes only changed fields, a new weight is a dated measurement and the same date corrects it; weight goal wheel and ruler share one model; macro shares stay 100 % and the prototype formula; Sport focus does not duplicate the weight goal; Day starts on the second row and adds own goals and topics without blanks or duplicates.');

@@ -97,7 +97,9 @@ customExercise=function(id){
 const openScheduleBeforeNest=openScheduleSheet;
 openScheduleSheet=function(id){
   const from=$('#modal-root .sheet');
-  if(from?.querySelector('.section-list [data-action="plan-template"]'))return openNestedSheet('plan-list','К выбору тренировки',()=>openScheduleBeforeNest(id));
+  // Мелочи аудита 18.11.2026 (Астамур): из списка «Добавить в расписание» — без «← К выбору тренировки» и без строки
+  // с названием; закрыл или сохранил — снова главный экран.
+  if(from?.querySelector('.section-list [data-action="plan-template"]')){const r=openScheduleBeforeNest(id);$('#schedule-form>.sheet-info')?.remove();return r;}
   if(from?.querySelector('#occurrence-form'))return openNestedSheet('occurrence','К занятию',()=>openScheduleBeforeNest(id));
   return openScheduleBeforeNest(id);
 };
@@ -131,3 +133,25 @@ window.addEventListener('click',e=>{
   openNestedSheet('plan-list','К выбору тренировки',()=>editTemplate());
   const form=$('#template-form');if(form)form.dataset.fromSchedule='1';
 },true);
+
+/* Мелочи аудита 18.11.2026 (Астамур): долгое нажатие на тренировку на главной и в Библиотеке → «Мои тренировки» —
+   меню «Начать тренировку», чтобы не открывать её, когда смотреть содержимое не нужно. Короткое нажатие — как было. */
+{let hold=null,swallowClickUntil=0;
+ const rowOf=t=>t?.closest?.('.home-favorite[data-action],.template-library-row[data-action="preview-template"]');
+ const stop=()=>{if(hold){clearTimeout(hold.timer);hold=null}};
+ // Меню выезжает снизу, как «Загрузить отчёты» в Day по «+» в нижнем меню (Астамур 18.11.2026): лист во всю ширину,
+ // нижнее меню остаётся поверх, название тренировки и две кнопки.
+ function closeWorkoutMenu(){const pop=document.getElementById('workout-pop');if(!pop)return;pop.classList.remove('on');setTimeout(()=>pop.remove(),320)}
+ function workoutMenu(id,action){
+  const t=templates().find(x=>x.id===id);if(!t)return;document.getElementById('workout-pop')?.remove();
+  const pop=document.createElement('div');pop.id='workout-pop';pop.className='workout-pop';
+  pop.innerHTML=`<div class="workout-pop-shade" data-workout-pop="close"></div><div class="workout-pop-card" role="menu" aria-label="${esc(t.title)}"><h3>${esc(t.title)}</h3><button type="button" class="button primary" role="menuitem" data-action="start" data-id="${esc(t.id)}">${icon('play')} Начать тренировку</button><button type="button" class="button" role="menuitem" data-action="${esc(action||'preview-template')}" data-id="${esc(t.id)}">Открыть тренировку</button></div>`;
+  document.body.append(pop);pop.offsetHeight;pop.classList.add('on');
+  pop.addEventListener('click',e=>{if(e.target.closest('[data-workout-pop=close]')||e.target.closest('[data-action]'))setTimeout(closeWorkoutMenu,0)});
+ }
+ document.addEventListener('pointerdown',e=>{const row=rowOf(e.target);if(!row||e.button>0)return;stop();
+  hold={row,id:row.dataset.id,action:row.dataset.action,x:e.clientX,y:e.clientY,timer:setTimeout(()=>{const h=hold;hold=null;if(!h)return;swallowClickUntil=Date.now()+700;try{navigator.vibrate?.(10)}catch(err){}workoutMenu(h.id,h.action)},500)}},true);
+ document.addEventListener('pointermove',e=>{if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>10)stop()},true);
+ for(const type of ['pointerup','pointercancel'])document.addEventListener(type,stop,true);   // прокрутка пальцем — pointercancel
+ document.addEventListener('contextmenu',e=>{const row=rowOf(e.target);if(!row)return;e.preventDefault();stop();swallowClickUntil=Date.now()+700;workoutMenu(row.dataset.id,row.dataset.action)},true);
+ window.addEventListener('click',e=>{if(Date.now()<swallowClickUntil&&rowOf(e.target)){e.preventDefault();e.stopImmediatePropagation()}},true);}
