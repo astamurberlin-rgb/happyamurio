@@ -8,7 +8,7 @@ from meal_bot_scenarios import S
 
 RESET = """()=>{DB.days={};try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),q:x.q,u:x.u,g:x.g,t:x.t||null,tm:x.tm||0,sec:x.sec,tap:x.tap||null})}));return o}"""
-SAY = """(text)=>{const m={id:'m'+(++D.seq),who:'me',kind:'text',text};D.msgs.push(m);const h=respond(m);D.msgs.push({who:'bot',kind:'reply',html:h});
+SAY = """(arg)=>{const text=Array.isArray(arg)?arg[0]:arg;const m={id:'m'+(++D.seq),who:'me',kind:'text',text};if(Array.isArray(arg)&&arg[1])m.eaten=true;D.msgs.push(m);const h=respond(m);D.msgs.push({who:'bot',kind:'reply',html:h});
  const S=D.bot||{pend:[],ask:null};return {html:h,pend:S.pend.length,ask:S.ask?S.ask.kind:null}}"""
 TAP = """(label)=>{const last=[...D.msgs].reverse().find(m=>m.who==='bot'&&m.html);const box=document.createElement('div');box.innerHTML=last?last.html:'';
  const b=[...box.querySelectorAll('[data-bot]')].find(x=>x.textContent.trim()===label);if(!b)return {html:'',missing:true};
@@ -103,12 +103,12 @@ with sync_playwright() as p:
                 if r.get("missing"): continue
                 page.wait_for_timeout(450); r = page.evaluate(LAST)
             else:
-                r = page.evaluate(SAY, m)
+                r = page.evaluate(SAY, [m, bool(s.get("eaten"))])   # eaten — диктовка с шортката «Еда»: уже съеденное
             html = r["html"]; asked = asked or bool(r.get("pend")) or "Пока так не умею" in html or "В базе нет" in html or "Не нашёл" in html
         page.wait_for_timeout(100)
         recs = page.evaluate(RECS)
         verdict, why = judge(s, recs, asked, html)
-        out["rows"].append({"id": s["id"], "now": verdict, "why": why, "records": ["%s %s г %s" % (r["n"], r["g"], r["t"] or "") for r in recs]})
+        out["rows"].append({"id": s["id"], "now": verdict, "why": why, "records": ["%s %s г %s" % (r["n"], r["g"], r["t"] or "") for r in recs], "reply": re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", html)).strip()[:300]})
         if verdict == "ошибка": bad.append("%s: %s — %s" % (s["id"], why, "; ".join(out["rows"][-1]["records"])[:160]))
     n_ok = sum(1 for r in out["rows"] if r["now"] == "записал верно")
     out["summary"] = {"всего": len(S), "записал верно": n_ok, "спросил или отложил": len(S) - n_ok - len(bad), "ошибка": len(bad)}

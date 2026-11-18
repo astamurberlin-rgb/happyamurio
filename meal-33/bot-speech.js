@@ -81,6 +81,21 @@ var MealSpeech=(function(){
   function missing(word){
     var w=nz(word); return ((D&&D.known_missing)||[]).some(function(e){ return new RegExp(e.said).test(w)&&!hasDish(new RegExp(e.unless_in_base)) });
   }
+  /* Meal 34 · слово человека → точное название продукта в базе (product_pins): «квашеная капуста» — капуста, а не её сок.
+     tokens — слова еды из куска фразы; text — весь кусок; unit — мера строки; vague — количество без числа. Сам продукт по названию находит бот (bot.js, pinFid) */
+  function pin(tokens,text,unit,vague,bare){
+    var P=(D&&D.product_pins)||[], T=(tokens||[]).map(nz), full=' '+nz(text)+' ', hit=null;
+    if(!T.length) return null;
+    P.some(function(e){
+      var all=(e.all||[]).map(function(x){ return new RegExp(x) }), opt=(e.opt||[]).map(function(x){ return new RegExp(x) });
+      if(e.not&&new RegExp(e.not).test(full)) return false;
+      if(!all.every(function(re){ return T.some(function(t){ return re.test(t) }) })) return false;
+      if(!T.every(function(t){ return all.concat(opt).some(function(re){ return re.test(t) }) })) return false;
+      if(e.unit&&!(new RegExp(e.unit).test(String(unit||''))||(e.vague&&vague))) return false;
+      if(e.bare&&!bare) return false;
+      hit={name:e.name,rule:e.id}; return true });
+    return hit;
+  }
   /* сказано «съел», «поел» — и не сказано «взвесил», «сырой»: речь о готовой еде */
   function eaten(raw){
     var E=(D&&D.eaten_context)||null; if(!E) return false;
@@ -266,7 +281,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();
