@@ -103,7 +103,7 @@ var MealBot=(function(){
       if(v>=1&&v<=11){ var nowH=now.getHours()+now.getMinutes()/60; if(v+12<=nowH) v+=12 }
       return hit(pad2(v)+':00',near,0,amb) });
     /* «часов в 10», «в 10» — без слова «часов» после числа; не «в 2 раза» и не «в 200 г» */
-    s=s.replace(new RegExp('(?:^|\\s)(?:('+NEAR+')\\s+)?(часов\\s+|часа\\s+)?(?:в|к)\\s+(\\d{1,2})(?=\\s|$)(?!\\s+(?:г|гр|грамм\\S*|мл|кг|л|литр\\S*|шт\\S*|раз\\S*|минут\\S*|мин|процент\\S*|%|стакан\\S*|чашк\\S*|тарел\\S*|лож\\S*|кус\\S*|порци\\S*)(?:\\s|$))','g'),function(m,near,ch,h){
+    s=s.replace(new RegExp('(?:^|\\s)(?:('+NEAR+')\\s+)?(часов\\s+|часа\\s+)?(?:в|к)\\s+(\\d{1,2})(?=\\s|$)(?!\\s+(?:г|гр|грам+\\S*|мл|кг|л|литр\\S*|шт\\S*|раз\\S*|минут\\S*|мин|процент\\S*|%|стакан\\S*|чашк\\S*|тарел\\S*|лож\\S*|кус\\S*|порци\\S*)(?:\\s|$))','g'),function(m,near,ch,h){
       var v=+h; if(!(v>=0&&v<=23)) return m;
       var amb=(v>=1&&v<=12)?v:0;
       if(v>=1&&v<=11){ var nowH=now.getHours()+now.getMinutes()/60; if(v+12<=nowH) v+=12 }
@@ -114,7 +114,7 @@ var MealBot=(function(){
   }
 
   /* ── подготовка фразы: поправки числом, тара при названном объёме, размеры, повторы, диапазоны ── */
-  var VOL='(?:г|гр|грамм\\S*|мл|миллилитр\\S*|кг|кило\\S*|л|литр\\S*)';
+  var VOL='(?:г|гр|грам+\\S*|мл|мил+илитр\\S*|кг|кило\\S*|л|литр\\S*)';
   var CUP='(?:стакан\\S*|чашк\\S*|кружк\\S*|тарелк\\S*|миск\\S*|пиал\\S*|бокал\\S*)';
   function fixes(s){
     ALIAS.forEach(function(r){ s=s.replace(r[0],r[1]) });
@@ -172,7 +172,7 @@ var MealBot=(function(){
   var WASTE='(?:остат\\S*(?:\\s+несъедобн\\S*\\s+част\\S*)?|несъедобн\\S*(?:\\s+част\\S*)?|кожур\\S*|кожиц\\S*|косточ\\S*|кост(?:и|ей)|скорлуп\\S*|стерж\\S*|кочерыж\\S*|очистк\\S*|шкурк\\S*|отход\\S*)';
   function chunksOf(s){
     s=' '+s+' ';
-    s=s.replace(new RegExp('[\\s,]+(?:и\\s+|а\\s+)?(?:весит\\s+|было\\s+)?'+WASTE+'(?:\\s+(?:весит|было|вес|после еды|осталось|остался|осталась))*\\s+(\\d+(?:[.,]\\d+)?)\\s*(?:г|гр|грамм\\S*)?(?=[\\s,.;!?]|$)','g'),function(m,n){ return ' ⊖'+n.replace(',','.')+' ' });
+    s=s.replace(new RegExp('[\\s,]+(?:и\\s+|а\\s+)?(?:весит\\s+|было\\s+)?'+WASTE+'(?:\\s+(?:весит|было|вес|после еды|осталось|остался|осталась))*\\s+(\\d+(?:[.,]\\d+)?)\\s*(?:г|гр|грам+\\S*)?(?=[\\s,.;!?]|$)','g'),function(m,n){ return ' ⊖'+n.replace(',','.')+' ' });
     s=s.replace(/(\d)[,.](\d)/g,'$1#$2');
     s=s.replace(/(\sиз\s+[а-я]+(ов|ев|ей|ок|ек))\s+и\s+([а-я]+(ов|ев|ей|ок|ек))(?=[\s,.;:!?]|$)/g,'$1 $3');
     if(SP) s=s.replace(/(\sсо?\s+[а-я]+(?:ой|ей|ом|ем|ами|ями|ью))\s+и\s+([а-я]{3,}(?:ой|ей|ом|ем|ами|ями|ью))(?=[\s,.;:!?]|$)/g,'$1 с $2');   // Meal 33.12
@@ -619,7 +619,7 @@ var MealBot=(function(){
     var W=tokensOf(txt); if(W.length<2) return null;
     var key=compKey(txt), cp={key:key,src:txt,name:cap(txt.split(' ').filter(function(w){ var k=kindOf(w); return k!=='N'&&k!=='U' }).join(' ')),lines:[]};
     function part(t,extra){ var o=prepChunk(t); o.comp=cp; if(c.approx) o.approx=true; if(extra){ Object.keys(extra).forEach(function(k){ o[k]=extra[k] }) } return o }
-    var lead=txt.match(/^(\d+(?:,\d+)?)\s*(?:г|гр|грамм[а-я]*|мл)\s/), trail=txt.match(/\s(\d+(?:,\d+)?)\s*(?:г|гр|грамм[а-я]*|мл)$/),
+    var lead=txt.match(/^(\d+(?:,\d+)?)\s*(?:г|гр|грам+[а-я]*|мл)\s/), trail=txt.match(/\s(\d+(?:,\d+)?)\s*(?:г|гр|грам+[а-я]*|мл)$/),
         cnt=!lead&&txt.match(/^(\d+(?:,\d+)?)\s+(?:порци[а-я]*\s+|тарелк[а-я]*\s+|штук[а-я]*\s+)?(?=[а-я])/), num=function(x){ return parseFloat(String(x).replace(',','.')) };
     if(cnt&&unitOf(norm(txt.split(' ')[1]||''))&&!/^(порци|тарелк|штук)/.test(txt.split(' ')[1])) cnt=null;
     /* 1. человек уже записывал это блюдо по частям — так же, без вопроса */
@@ -651,7 +651,7 @@ var MealBot=(function(){
     var okp=ps.every(function(x,i){ if(bread&&i===0) return true; var tk=tokensOf(x), rp=parseText(x).lines[0], id=rp&&(rp.fid||rp.alts[0]); return !!id&&rp.st!=='none'&&(rp.st==='ok'||related(id,tk)) });
     if(!okp) return null;
     /* вес в конце без веса в начале — это вес всего блюда */
-    if(trail&&!lead&&!bread&&num(trail[1])>=50&&!/\d/.test(ps[0])){ cp.total=num(trail[1]); ps[ps.length-1]=ps[ps.length-1].replace(/\s*\d+(?:,\d+)?\s*(?:г|гр|грамм[а-я]*|мл)$/,'').trim(); if(!tokensOf(ps[ps.length-1]).length) return null }
+    if(trail&&!lead&&!bread&&num(trail[1])>=50&&!/\d/.test(ps[0])){ cp.total=num(trail[1]); ps[ps.length-1]=ps[ps.length-1].replace(/\s*\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*|мл)$/,'').trim(); if(!tokensOf(ps[ps.length-1]).length) return null }
     cps.push(cp);
     var inS=/\s(?:в|под)\s/.test(' '+txt+' ')&&!/\s(?:с|со)\s/.test(' '+ps[0]+' ');
     return ps.map(function(x,i){ return part(x,i===0?{fac:c.fac,vague:c.vague,approx:c.approx||(bread?true:undefined),cookDish:inS||undefined}:null) });
