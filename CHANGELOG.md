@@ -30,7 +30,7 @@
 
 Проверено: `check-shared`, `check-shared-ui`, `check-layout`, `check-account-screens`, `check-measurements`, Sport `npm run check`, тесты Day, проверки Meal, сценарии в браузере (`scripts/browser/run.sh`). Не проверено: на iPhone.
 
-— Claude · 18.11.2026 21:20
+— Claude · 18.11.2026 21:14
 
 ## 18.11.2026 — Meal 33.10, Day 60.5, Sport 44.2: меры USDA по-русски, единицы еды в профиле, фрукты и овощи — «свежий»
 
