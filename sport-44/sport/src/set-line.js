@@ -47,25 +47,28 @@ function setLabelInput(attrs,text,label){return `<input class="set-name" type="t
 
 // Столбик 42px; число длиннее — столбик шире, у всех строк упражнения одинаковый.
 function setLineValueText(s,key){const v=Number(s?.[key]||0);return key==='seconds'?sportDurationValue(v):v?String(v):'—';}
-function setLineColumns(metrics,sets,last){
+function setLineColumns(metrics,sets,last,id){
  const cols=['minmax(0,1fr)'];
- metrics.forEach((key,j)=>{const chars=Math.max(1,...(sets||[]).map(s=>setLineValueText(s,key).length));if(j)cols.push('10px');cols.push(Math.max(42,Math.ceil(chars*10.5+2))+'px');});
+ // id — упражнение: столбец не уже своей подписи («помощь», «кг/рука», «доп. кг»), аудит 18.11.2026.
+ metrics.forEach((key,j)=>{const chars=Math.max(1,...(sets||[]).map(s=>setLineValueText(s,key).length));if(j)cols.push('10px');cols.push(Math.max(42,Math.ceil(chars*10.5+2),id?Math.ceil(setLineUnit(key,id).length*7.4+4):0)+'px');});
  if(last)cols.push(last);return cols.join(' ');
 }
-function setLineHead(metrics,cols,last){return `<div class="set-head" style="--set-cols:${cols}" aria-hidden="true"><span></span>${metrics.map((key,j)=>(j?'<span class="set-hx">×</span>':'')+`<span class="set-h">${SET_LINE_UNITS[key]}</span>`).join('')}${last?'<span></span>':''}</div>`;}
+// Аудит единообразия 18.11.2026: у гравитрона вес — это помощь, у гантелей — вес на руку, у подтягиваний с весом — доп. вес.
+function setLineUnit(key,id){const d=exercise(id),p=d?.profile||'',basis=d?.loadBasis||'';if(key==='weight'){if(/assisted/.test(p))return 'помощь';if(/added_load/.test(p))return 'доп. кг';if(basis==='per_hand')return 'кг/рука';}return SET_LINE_UNITS[key];}
+function setLineHead(metrics,cols,last,id){return `<div class="set-head" style="--set-cols:${cols}" aria-hidden="true"><span></span>${metrics.map((key,j)=>(j?'<span class="set-hx">×</span>':'')+`<span class="set-h">${setLineUnit(key,id)}</span>`).join('')}${last?'<span></span>':''}</div>`;}
 function setCheckDot(progress){return `<span class="set-dot" aria-hidden="true"><svg class="set-ring" viewBox="0 0 24 24"><circle class="set-ring-track" cx="12" cy="12" r="11"/><circle class="set-ring-fill" cx="12" cy="12" r="11" stroke-dasharray="${SET_RING_C.toFixed(2)}" style="stroke-dashoffset:${(SET_RING_C*(1-progress)).toFixed(2)}"/></svg><svg class="set-tick" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>`;}
 // Идёт перерыв после этого подхода — доля прошедшего (0…1), иначе null.
 function setLineRest(ei,si,c=(typeof engineRestContext==='function'&&state.active?engineRestContext():null)){return c&&!c.finished&&c.ei===ei&&c.si===si?Math.max(0,Math.min(1,(Number(c.progress)||0)/100)):null;}
 
 /* ---------- Текущая тренировка ---------- */
 function activeSetLines(e,ei){
- const metrics=setLineMetrics(exerciseMetrics(e)),cols=setLineColumns(metrics,e.sets,'46px');
+ const metrics=setLineMetrics(exerciseMetrics(e)),cols=setLineColumns(metrics,e.sets,'46px',e.id);
  const rows=e.sets.map((s,si)=>{
   const name=setLabelText(e.sets,si),rest=s.done?setLineRest(ei,si):null,mark=s.done?(rest!=null?'resting':'complete'):'';
   const fields=metrics.map((key,j)=>(j?'<span class="set-x" aria-hidden="true">×</span>':'')+(key==='seconds'?setTimeInput(e,ei,si,s):setMetricInput(e,ei,si,key,s[key]||'',{weight:'кг',reps:'повт.',distance:'м'}[key],{weight:2000,reps:10000,distance:100000}[key],key==='weight'?'.5':'1',metricName(key)))).join('');
   return swipeSetRow('set',ei,si,`<div class="set-row set-line" style="--set-cols:${cols}">${setLabelInput(`data-set-label="${ei},${si}"`,name,`Название строки ${si+1}, ${e.name}`)}${fields}${!s.done&&metrics.includes('seconds')?setPlayButton(e,ei,si,name):`<button type="button" class="set-check ${mark}" data-action="set-done" data-ei="${ei}" data-si="${si}" aria-label="${s.done?'Снять отметку':'Отметить'}: ${esc(name)}, ${esc(e.name)}" aria-pressed="${!!s.done}">${setCheckDot(rest||0)}</button>`}</div>`);
  }).join('');
- return setLineHead(metrics,cols,true)+`<div class="set-rows">${rows}</div>`;
+ return setLineHead(metrics,cols,true,e.id)+`<div class="set-rows">${rows}</div>`;
 }
 // Карточка упражнения прежняя; заменяются только строки подходов. Тонкой линии перерыва между строками нет — её заменило кольцо.
 const activeExerciseBeforeSetLine=activeExercise;
@@ -104,14 +107,14 @@ function setPlanLineField(s,i,key){
  return `<label class="plan-set-field set-metric">${sportMetricInput(attributes,SET_LINE_UNITS[key])}</label>`;
 }
 setPlanRows=function(draft){
- const metrics=setLineMetrics(draft.metrics),done=draft.sets.some(s=>s.done),cols=setLineColumns(metrics,draft.sets,done?'34px':'');
+ const metrics=setLineMetrics(draft.metrics),done=draft.sets.some(s=>s.done),cols=setLineColumns(metrics,draft.sets,done?'34px':'',draft.id);
  const rows=draft.sets.map((s,i)=>{
   const name=setLabelText(draft.sets,i);
   const line=`<div class="plan-set-row set-line" style="--set-cols:${cols}">${setLabelInput(`data-plan-label="${i}"`,name,`Название строки ${i+1}`)}${metrics.map((key,j)=>(j?'<span class="set-x" aria-hidden="true">×</span>':'')+setPlanLineField(s,i,key)).join('')}${done?(s.done?`<span class="plan-done" role="img" aria-label="Выполнено">${setCheckDot(0)}</span>`:'<span></span>'):''}</div>`;
   return !s.done&&draft.sets.length>1?templateEditorSwipe('plan-set',name,`data-action="plan-remove-set" data-plan-index="${i}"`,line):line;
  }).join('');
  const rest=planExerciseRest(draft);
- return `<div class="plan-set-list">${setLineHead(metrics,cols,done)}${rows}</div><div class="plan-add-actions"><button type="button" class="set-add" aria-label="Добавить подход" data-action="plan-add-set" ${draft.sets.length>=50?'disabled':''}><span class="set-add-plus" aria-hidden="true"><span class="set-add-digit">1</span><span class="set-add-sign">+</span></span><span>&nbsp;Подход</span></button></div>`
+ return `<div class="plan-set-list">${setLineHead(metrics,cols,done,draft.id)}${rows}</div><div class="plan-add-actions"><button type="button" class="set-add" aria-label="Добавить подход" data-action="plan-add-set" ${draft.sets.length>=50?'disabled':''}><span class="set-add-plus" aria-hidden="true"><span class="set-add-digit">1</span><span class="set-add-sign">+</span></span><span>&nbsp;Подход</span></button></div>`
   +`<div class="plan-rest-row plan-rest-one"><label>Перерыв${sportMetricInput(`type="text" inputmode="text" data-plan-rest="all" value="${sportDurationValue(rest)}" aria-label="Перерыв между подходами, для всех подходов упражнения"`,'')}</label></div><p class="plan-error form-error" role="alert"></p>`;
 };
 

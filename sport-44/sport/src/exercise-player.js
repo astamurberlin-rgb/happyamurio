@@ -173,7 +173,7 @@ function parsePlayerPreset(value){return parseSetTime(String(value).replace(/\.0
 function commitPlayerPreset(input){
   const [ei,index,key]=input.dataset.playerPreset.split(','),n=parsePlayerPreset(input.value);
   if(!Number.isInteger(n)||n<0||n>(key==='workSeconds'?86400:3600)){
-    toast('Время таймера: минуты:секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(Number(ei)))[Number(index)][key]);return;
+    toast('Время — минуты:секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(Number(ei)))[Number(index)][key]);return;
   }
   if(!updatePlayerPreset(Number(ei),c=>{c.program=playerProgram(c).map(r=>({...r}));c.program[Number(index)][key]=n;}))return;
   input.value=sportDurationValue(n);const preview=playerPreview(Number(ei)),display=$('[data-player-time]');if(display)display.textContent=playerDisplay(exercisePlayerStatus(preview).remaining);
@@ -314,7 +314,7 @@ document.addEventListener('click',event=>{
   if(action==='player-lap')addExercisePlayerLap();
   let added=false;if(action==='player-new-round')added=addPlayerRound(ei);
   if(action==='player-finish')finishExercisePlayer();
-  if(action==='player-save'&&saveExercisePlayerResult(ei))toast('Результат сохранён в упражнении');
+  if(action==='player-save'&&saveExercisePlayerResult(ei))toast(state.active?.exercisePlayer?.independent===false?'Подходы отмечены':'Результат сохранён в упражнении');
   persist();renderExercisePlayerView(ei,added);
 },true);
 setInterval(()=>refreshExercisePlayer(),50);

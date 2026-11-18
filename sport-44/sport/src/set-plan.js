@@ -80,7 +80,7 @@ function addWorkoutSet(ei){
 function toggleWorkoutExerciseTime(ei,enabled){
   const e=state.active?.exercises[ei];if(!e)return;
   const metrics=exerciseMetrics(e).filter(key=>key!=='seconds');if(enabled)metrics.unshift('seconds');
-  if(!metrics.length){toast('Для этого упражнения оставь время или выбери другой показатель в настройках');render();return;}
+  if(!metrics.length){toast('Оставь время или выбери другой показатель');render();return;}
   const t=state.active.countdown;
   if(!enabled&&t?.kind==='set'&&t.ei===ei){finishWorkTimer(ei,t.si);state.active.countdown=null;}
   if(!enabled&&state.active.exercisePlayer?.ei===ei){syncExercisePlayer();state.active.exercisePlayer=null;}

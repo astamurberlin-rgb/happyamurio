@@ -65,7 +65,15 @@ window.addEventListener('message',e=>{
  const frame=[...document.querySelectorAll('.exercise-frame')].find(f=>f.contentWindow===e.source);
  if(!frame||e.origin!==self.origin||!e.data||typeof e.data.type!=='string')return; // self.origin: also right when the viewer frames the app without an origin
  if(e.data.type==='happy-sport.exercise-height'){const h=Number(e.data.height);if(h>200&&h<6000&&frame.classList.contains('local-instruction-frame'))frame.style.height=Math.ceil(h)+'px';return}
- const c=exerciseContext;if(!c||!c.form.isConnected||c.context!=='library'||!c.panels.instructions.contains(frame))return;
+ const c=exerciseContext;
+ // Аудит единообразия 18.11.2026: в идущей тренировке другой хват — это другое упражнение со своей историей. Приложение
+ // спрашивает, заменить ли; «Отмена» возвращает в инструкции прежний хват.
+ if(c&&c.form.isConnected&&c.context==='active'&&c.panels.instructions.contains(frame)&&e.data.type==='happy-sport.exercise-variant'){
+  const current=state.active?.exercises[c.ei],next=e.data.exerciseId,family=exerciseFamily(current?.id);
+  if(current&&family&&next!==current.id&&family.variants.some(v=>v.exerciseId===next)&&exercise(next))askExercise('Заменить на «'+exercise(next).name+'»?','Подходы этой тренировки дальше пойдут в историю нового упражнения.','Заменить',()=>replaceWorkoutExercise(c.ei,next),()=>{frame.src=frame.src;});
+  return;
+ }
+ if(!c||!c.form.isConnected||c.context!=='library'||!c.panels.instructions.contains(frame))return;
  const id=e.data.exerciseId,family=exerciseFamily(c.id);
  // A card of its own has no pills: «Добавить в тренировку» opens Add for this exercise.
  if(!family&&id===c.id&&exerciseCards.some(x=>x.exerciseId===id)){if(e.data.type==='happy-sport.exercise-add')selectExerciseContextTab('configure',true);return}

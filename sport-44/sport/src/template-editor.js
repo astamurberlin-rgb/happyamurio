@@ -9,13 +9,32 @@
  * Свайп — тот же, что у подходов в идущей тренировке (set-swipe.js). Этот файл грузится после audit-simplify.js. */
 
 function templateEditorSwipe(kind,label,deleteAttrs,content){
- return `<div class="set-swipe editor-swipe" data-swipe-kind="${kind}" tabindex="0" role="group" aria-label="${esc(label)}. Свайп влево или вправо — удалить" aria-keyshortcuts="Delete"><button type="button" class="swipe-delete" ${deleteAttrs} aria-label="Удалить: ${esc(label)}">${icon('trash')}<span>Удалить</span></button><div class="swipe-content">${content}</div></div>`;
+ return `<div class="set-swipe editor-swipe" data-swipe-kind="${kind}" tabindex="0" role="group" aria-label="${esc(label)}. Свайп влево — удалить" aria-keyshortcuts="Delete"><button type="button" class="swipe-delete" ${deleteAttrs} aria-label="Удалить: ${esc(label)}">${icon('trash')}<span>Удалить</span></button><div class="swipe-content">${content}</div></div>`;
 }
 
 templateItemRow=function(item=['','main',1]){
  const draft=setPlanFromItem(item),name=exercise(item[0])?.name||'Упражнение';
- return `<div class="card template-item">${templateEditorSwipe('exercise',name,'data-action="remove-template-item"',`<div class="template-exercise-heading"><input type="hidden" name="exerciseId" value="${esc(item[0])}"><h3 class="template-exercise-name">${esc(name)}</h3></div>`)}<input type="hidden" name="phase" value="${esc(item[1]||'main')}">${setPlanMarkup(draft)}</div>`;
+ // Аудит единообразия 18.11.2026: справа от названия — значок настроек, как в идущей тренировке; открывает ту же
+ // страницу упражнения на «Настроить» с теми же настройками (пилюля «Что записываем», подходы, перерыв, плеер).
+ return `<div class="card template-item">${templateEditorSwipe('exercise',name,'data-action="remove-template-item"',`<div class="template-exercise-heading"><input type="hidden" name="exerciseId" value="${esc(item[0])}"><h3 class="template-exercise-name">${esc(name)}</h3><button type="button" class="icon-btn template-exercise-settings" data-action="template-exercise-settings" aria-label="Настройки упражнения: ${esc(name)}">${icon('sliders-horizontal')}</button></div>`)}<input type="hidden" name="phase" value="${esc(item[1]||'main')}">${setPlanMarkup(draft)}</div>`;
 };
+function openTemplateExerciseSettings(row){
+ const id=row?.querySelector('[name=exerciseId]')?.value,root=row?.querySelector('[data-set-plan]'),draft=root&&setPlanDrafts.get(root.dataset.setPlan),definition=exercise(id);
+ if(!definition||!draft)return;
+ try{readSetPlanInputs(root);}catch(e){}
+ const source={id,name:draft.localName||definition.name,phase:draft.phase||'main',metrics:clone(draft.metrics),sets:clone(draft.sets),timerConfig:clone(draft.localTimerConfig||exerciseTimerConfig(definition))};
+ holdTemplateSheet('exercise');
+ withTemplateSheetOpening(()=>openExerciseEditor(id,null,source));
+ // Вложенный лист — сверху «← К тренировке», как у выбора упражнения (аудит 18.11.2026).
+ document.querySelector('#modal-root .sheet-top')?.insertAdjacentHTML('afterend','<button type="button" class="text-btn template-picker-back sheet-back" data-action="template-picker-back">← К тренировке</button>');
+ templateExerciseApply=({metrics,sets,timerConfig})=>{
+  draft.metrics=metrics;draft.sets=sets;draft.localTimerConfig=timerConfig;draft.lastRestSeconds=setPlanLastRest(sets)||draft.lastRestSeconds;
+  restoreTemplateSheetTo('exercise');
+  root.innerHTML=setPlanRows(draft);toast('Настройки упражнения в тренировке');
+  row.querySelector('[data-action="template-exercise-settings"]')?.focus({preventScroll:true});
+ };
+}
+window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="template-exercise-settings"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();openTemplateExerciseSettings(b.closest('.template-item'));},true);
 
 // Подходы и перерывы без крестиков. Удалить можно то же, что раньше: не единственный и не сделанный подход,
 // перерыв у несделанного подхода. Тот же список — и в «Настроить» у упражнения в идущей тренировке.
@@ -32,13 +51,13 @@ setPlanRows=function(draft){
 };
 
 function simplifyTemplateSheet(){
- const form=document.getElementById('template-form'),sheet=form?.closest('.sheet');if(!sheet||sheet.querySelector('.sheet-done'))return;
+ const form=document.getElementById('template-form'),sheet=form?.closest('.sheet');if(!sheet||sheet.dataset.saveBottom)return;
  const editing=!!form.dataset.id;
  form.classList.add('template-form-simple');form.classList.toggle('template-form-edit',editing);
  if(editing){sheet.querySelector('.sheet-top')?.setAttribute('hidden','');sheet.removeAttribute('aria-labelledby');sheet.setAttribute('aria-label','Редактировать тренировку');}
- const done=`<button type="submit" form="template-form" class="sheet-done" aria-label="Сохранить тренировку">${icon('check')}</button>`;
- const grip=sheet.querySelector(':scope > .grip');if(grip)grip.insertAdjacentHTML('afterend',done);else sheet.insertAdjacentHTML('afterbegin',done);
- for(const b of form.querySelectorAll(':scope > button.primary[type=submit]'))b.hidden=true;
+ // Аудит единообразия 18.11.2026: «Сохранить» всегда внизу, после всех правок — ✓ вверху больше нет.
+ if(!form.querySelector(':scope > .template-save')){const old=[...form.querySelectorAll(':scope > button.primary[type=submit]')];for(const b of old)b.remove();form.insertAdjacentHTML('beforeend','<button type="submit" class="button primary template-save">Сохранить</button>');}
+ sheet.dataset.saveBottom='1';
  form.querySelector('[data-action="focus-workout-title"]')?.remove();
  const kind=form.querySelector('select[name=kind]')?.closest('label');if(kind)kind.style.display='none';
 }

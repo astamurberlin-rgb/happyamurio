@@ -28,7 +28,7 @@ openOccurrence=function(id){
   :o.workoutId?`<button class="button primary" type="button" data-action="open-workout" data-id="${esc(o.workoutId)}">Открыть запись</button>`
   :cancelled?`<button class="button primary" type="button" data-action="occurrence-restore" data-id="${esc(id)}">Вернуть занятие</button>`
   :`<button class="button primary" type="button" data-action="schedule-start" data-id="${esc(id)}">Начать тренировку</button>`;
- const pair=!live&&!o.workoutId&&!cancelled?`<div class="occurrence-actions"><button class="button" type="button" data-action="occurrence-move" data-id="${esc(id)}">Перенести</button><button class="button" type="button" data-action="occurrence-cancel" data-id="${esc(id)}">Отменить</button></div>`
+ const pair=!live&&!o.workoutId&&!cancelled?`<div class="occurrence-actions"><button class="button" type="button" data-action="occurrence-move" data-id="${esc(id)}">Перенести</button><button class="button" type="button" data-action="occurrence-cancel" data-id="${esc(id)}">Отменить занятие</button></div>`
   +`<div class="occurrence-move" hidden><label class="field">Новые дата и время<input type="datetime-local" name="start" required value="${esc(o.start)}"></label><button class="button primary" type="submit">Перенести</button></div>`:'';
  const series=weekly?`<button class="text-btn occurrence-series" type="button" data-action="plan-template" data-id="${esc(s.templateId)}">Изменить всю серию</button>`:'';
  openSheet(o.title,`<form id="occurrence-form" class="occurrence-sheet" data-id="${esc(id)}"><p class="sheet-info">${esc(info)}</p><div class="occurrence-main">${main}</div>${pair}${series}`
@@ -115,9 +115,10 @@ function journalRows(feed){
  return rows.sort((a,b)=>b.at.localeCompare(a.at));
 }
 renderHistory=function(){
+ // Аудит единообразия 18.11.2026: журнал всегда лентой — со связкой с Day и Meal и без; еда из Meal — только при связке.
  const feed=journalFeedOn(),rows=journalRows(feed);
  if(!rows.length)return '<div class="stack"><div class="empty">Завершённые тренировки появятся здесь.</div></div>';
- if(feed){
+ {
   const days=new Map();for(const r of rows){const d=String(r.at).slice(0,10);if(!days.has(d))days.set(d,[]);days.get(d).push(r);}
   return `<div class="journal-feed">${[...days].map(([d,list])=>`<section class="feed-daygroup"><h3 class="feed-date">${esc(ruDateText(d))}</h3><ol class="feed-list">${list.map(journalFeedItem).join('')}</ol></section>`).join('')}</div>`;
  }

@@ -1,6 +1,13 @@
 /* Optional exercise settings extend v1 records without changing their stable IDs. */
 function metricOrder(){return ['seconds','distance','reps','weight']}
 function metricName(key){return {seconds:'Время',distance:'Дистанция',reps:'Повторения',weight:'Вес'}[key]}
+// Что записываем — одна пилюля (Астамур 17.11.2026, вариант А): части одной ширины, только то, что упражнению подходит
+// по природе; выбранное — светлое, как выбранная вкладка. Внутри — обычные флажки name="metrics", форма читает их как раньше.
+const METRIC_PILL_ORDER=['distance','seconds','reps','weight'],METRIC_SHORT={distance:'Дист.',seconds:'Время',reps:'Повт.',weight:'Вес'};
+// Переноска (прогулка фермера) записывает и дистанцию (аудит единообразия 18.11.2026).
+function metricsAvailable(e){const p=(e&&(exercise(e.id)||e).profile)||'';return /distance_time|swim|ergometer|treadmill/.test(p)?['distance','seconds']:/duration|hold/.test(p)?['seconds','weight']:/loaded_carry/.test(p)?['distance','seconds','weight']:['seconds','reps','weight']}
+function metricPill(selected,available,locked){locked=locked||[];const keys=METRIC_PILL_ORDER.filter(k=>available.includes(k)||selected.includes(k)||locked.includes(k));
+ return `<fieldset class="metric-pick"><legend>Что записываем</legend><div class="metric-pill" role="group" aria-label="Что записываем">${keys.map(k=>`<label><input type="checkbox" ${locked.includes(k)?'checked disabled':`name="metrics" value="${k}" ${selected.includes(k)?'checked':''}`} aria-label="${metricName(k)}"><span>${METRIC_SHORT[k]}</span></label>`).join('')}</div></fieldset>`}
 function exerciseMetrics(value){
   const e=typeof value==='string'?exercise(value):value,definition=exercise(e?.id)||e;
   const explicit=Array.isArray(e?.metrics)?e.metrics:definition?.metrics;
@@ -8,6 +15,10 @@ function exerciseMetrics(value){
   const profile=definition?.profile||'';
   if(/distance_time|swim|ergometer|treadmill/.test(profile))return ['seconds','distance'];
   if(/duration|hold/.test(profile))return ['seconds'];
+  // Аудит единообразия 18.11.2026: тип упражнения доходит до тренировки — повторы на время с временем, переноска
+  // с дистанцией и весом (раньше у бёрпи не было времени, у прогулки фермера — дистанции).
+  if(/timed_reps/.test(profile))return ['seconds','reps'];
+  if(/loaded_carry/.test(profile))return ['distance','weight'];
   const inferred=/load|assisted/.test(profile)?['reps','weight']:['reps'];
   if(e?.sets?.some(s=>Number(s.seconds)>0))inferred.unshift('seconds');
   return inferred;
@@ -87,7 +98,7 @@ function pinExerciseNote(ei){
   const e=state.active?.exercises[ei];if(!e)return false;
   state.exerciseNotes??={};
   if(exercisePinnedNote(e.id)!=null){delete state.exerciseNotes[e.id];for(const other of state.active.exercises)if(other.id===e.id)other.notePinned=false;return false;}
-  if(!String(e.notes||'').trim())throw new Error('Сначала напиши заметку, которую хочешь закрепить.');
+  if(!String(e.notes||'').trim())throw new Error('Сначала напиши заметку');
   state.exerciseNotes[e.id]=e.notes;
   for(const other of state.active.exercises)if(other.id===e.id){other.notes=e.notes;other.notePinned=true;}
   return true;
@@ -115,31 +126,33 @@ function changeExerciseMetric(ei,key,enabled){
 
 // Shared editor for the library and the current workout.
 function editorMetricInput(key,value){return `<label class="editor-value" data-editor-value="${key}"><span>${metricName(key)}${key==='distance'?', м':key==='weight'?', кг':''}</span><input name="default-${key}" ${key==='seconds'?'type="text" inputmode="text"':'type="number" min="0" step="'+(key==='weight'?'.5':'1')+'" inputmode="decimal"'} value="${key==='seconds'?countdownTime(value||0):value??''}" aria-label="${metricName(key)} по умолчанию"></label>`}
-function openExerciseEditor(id,ei=null){
+// source — упражнение в редакторе тренировки (аудит 18.11.2026): те же настройки, что в идущей тренировке; «Сохранить»
+// кладёт их в строку редактора, тренировка сохраняется её кнопкой «Сохранить».
+let templateExerciseApply=null;
+function openExerciseEditor(id,ei=null,source=null){
   const addToActive=!id&&sheetKind==='picker'&&!!state.active;
-  const e=exercise(id),active=Number.isInteger(ei)?state.active?.exercises[ei]:null;
+  const e=exercise(id),active=Number.isInteger(ei)?state.active?.exercises[ei]:source||null,scope=source?'template':Number.isInteger(ei)&&active?'active':'library';
   const metrics=exerciseMetrics(active||e||{profile:'reps'}),timer=exerciseTimerConfig(active||e),original=exerciseOriginalName(e);
   const draft=createSetPlan(e?.id,active?.phase||'main',active?.sets||e?.defaultSets||null,metrics);
-  openSheet(e?'Настроить упражнение':'Создать упражнение',`<form id="exercise-config-form" data-id="${esc(e?.id||'')}" data-ei="${ei??''}" data-initial-plan="${esc(JSON.stringify(draft.sets))}" data-add-active="${addToActive}" data-scope="${active?'active':'library'}" data-workout-id="${active?esc(state.active.id):''}">
-    <div class="exercise-title-row"><label class="exercise-title-label"><span>Название · нажми, чтобы изменить</span><input class="exercise-title-input" name="name" required maxlength="120" value="${esc(active?.name||e?.name||'')}" placeholder="Название упражнения"></label></div>
-    ${active?`<nav class="local-exercise-links" aria-label="Об этом упражнении"><button type="button" class="text-btn" data-action="local-exercise-history" data-id="${esc(id)}">История</button><button type="button" class="text-btn" data-action="local-exercise-instructions" data-id="${esc(id)}">Инструкция</button></nav>`:''}
-    ${active&&exerciseHandles(active).length?`<label class="field exercise-handle-field">Рукоять<select name="handle" aria-label="Рукоять"><option value="">Не указана</option>${exerciseHandles(active).map(h=>`<option value="${esc(h)}" ${exerciseHandle(active)===h?'selected':''}>${esc(h)}</option>`).join('')}${exerciseHandle(active)&&!exerciseHandles(active).includes(exerciseHandle(active))?`<option value="${esc(exerciseHandle(active))}" selected>${esc(exerciseHandle(active))}</option>`:''}</select></label><p class="fineprint">Рукоять — пометка для этой тренировки и истории. Подходы и нагрузка не пересчитываются.</p>`:''}
-    <fieldset class="metric-switches"><legend>Что записываем</legend>${metricOrder().map(key=>`<label><input type="checkbox" name="metrics" value="${key}" ${metrics.includes(key)?'checked':''}><span>${metricName(key)}</span></label>`).join('')}</fieldset>
-    <p class="fineprint">Показатели можно сочетать. Время: задано — обратный отсчёт; 0:00 — секундомер.</p>
+  openSheet(e?'Настроить упражнение':'Создать упражнение',`<form id="exercise-config-form" data-id="${esc(e?.id||'')}" data-ei="${ei??''}" data-initial-plan="${esc(JSON.stringify(draft.sets))}" data-add-active="${addToActive}" data-scope="${scope}" data-workout-id="${scope==='active'?esc(state.active.id):''}">
+    <div class="exercise-title-row"><label class="exercise-title-label"><span>Название</span><input class="exercise-title-input" name="name" required maxlength="120" value="${esc(active?.name||e?.name||'')}" placeholder="Название упражнения"></label></div>
+    ${scope==='active'?`<nav class="local-exercise-links" aria-label="Об этом упражнении"><button type="button" class="text-btn" data-action="local-exercise-history" data-id="${esc(id)}">История</button><button type="button" class="text-btn" data-action="local-exercise-instructions" data-id="${esc(id)}">Инструкция</button></nav>`:''}
+    ${scope==='active'&&exerciseHandles(active).length?`<label class="field exercise-handle-field">Рукоять<select name="handle" aria-label="Рукоять"><option value="">Не указана</option>${exerciseHandles(active).map(h=>`<option value="${esc(h)}" ${exerciseHandle(active)===h?'selected':''}>${esc(h)}</option>`).join('')}${exerciseHandle(active)&&!exerciseHandles(active).includes(exerciseHandle(active))?`<option value="${esc(exerciseHandle(active))}" selected>${esc(exerciseHandle(active))}</option>`:''}</select></label><p class="fineprint">Рукоять — пометка для этой тренировки и истории. Подходы и нагрузка не пересчитываются.</p>`:''}
+    ${metricPill(metrics,active||e?metricsAvailable(active||e):METRIC_PILL_ORDER)}
     ${setPlanMarkup(draft)}
     <section class="exercise-timer-settings"><h3>Плеер упражнения</h3><div class="segmented timer-mode-options">${[['countdown','Таймер'],['intervals','Интервалы'],['stopwatch','Секундомер']].map(([key,name])=>`<label><input type="radio" name="timerMode" value="${key}" ${timer.mode===key?'checked':''}><span>${name}</span></label>`).join('')}</div>
-      <div class="timer-presets"><label class="field" data-timer-setting="work">Работа${sportMetricInput(`name="workSeconds" type="text" value="${sportDurationValue(timer.workSeconds)}" inputmode="text" aria-label="Время работы"`,'')}</label><label class="field" data-timer-setting="rest">Отдых${sportMetricInput(`name="restSeconds" type="text" value="${sportDurationValue(timer.restSeconds)}" inputmode="text" aria-label="Время отдыха"`,'')}</label><label class="field" data-timer-setting="rounds">Циклы${sportMetricInput(`name="rounds" type="number" min="1" max="50" value="${timer.rounds}" inputmode="numeric" aria-label="Число циклов"`,'раз')}</label></div>
-      <p class="fineprint">Интервалы чередуют работу и отдых. Секундомер считает вверх и сохраняет круги.</p>
+      <p class="fineprint timer-mode-note" data-timer-note>${timerModeNote(timer.mode)}</p>
     </section>
     <details class="exercise-extra"><summary>Оборудование и группы мышц</summary><label class="field">Оборудование<input name="equipment" value="${esc(e?.equipment?.join(', ')||'')}" placeholder="Через запятую"></label><label class="field">Другие названия<input name="aliases" value="${esc(e?.aliases?.join(', ')||'')}"></label><div class="muscle-options">${muscleGroups.filter(([key])=>key!=='all').map(([key,name])=>`<label><input type="checkbox" name="muscleGroups" value="${key}" ${(e?exerciseMuscles(e):[]).includes(key)?'checked':''}>${name}</label>`).join('')}</div></details>
     <div id="exercise-config-error" class="form-error" role="alert"></div><div class="exercise-save-actions">
-    <button class="button primary" type="submit" name="saveMode" value="replace">${active?'Сохранить для этой тренировки':e?'Сохранить в библиотеке':'Создать упражнение'}</button>
+    <button class="button primary" type="submit" name="saveMode" value="replace">${active?'Сохранить':e?'Сохранить в библиотеке':'Создать упражнение'}</button>
     ${e&&!active?'<button class="button" type="submit" name="saveMode" value="copy">Сохранить как новое упражнение</button>':''}
     ${e&&!active&&e.name!==original?`<button class="text-btn" type="button" data-action="restore-exercise-name" data-id="${esc(e.id)}">Вернуть исходное название: ${esc(original)}</button>`:''}</div>
     <p class="fineprint">${active?'Изменения относятся только к этому упражнению в текущей тренировке. Библиотека и другие тренировки не изменятся.':e?'Сохранение обновит название в библиотеке и текущей тренировке. История сохранится; изменение названия появится отдельной строкой в журнале.':''}</p></form>`,'exercise-config');
   if(active)$('#exercise-config-form .exercise-extra').hidden=true;
   updateExerciseEditor();
-  if(active&&typeof mountExerciseContext==='function')mountExerciseContext(id,ei,'active');
+  if(scope==='active'&&typeof mountExerciseContext==='function')mountExerciseContext(id,ei,'active');
+  else if(scope==='template'&&typeof mountExerciseContext==='function')mountExerciseContext(id,null,'template');
 }
 function updateExerciseEditor(){
   const form=$('#exercise-config-form');if(!form)return;
@@ -150,18 +163,22 @@ function updateExerciseEditor(){
   }
   const timedSwitch=form.querySelector('[data-plan-timed]');if(timedSwitch)timedSwitch.checked=selected.includes('seconds');
   form.querySelector('.exercise-timer-settings').hidden=!selected.includes('seconds');
-  const mode=form.querySelector('[name=timerMode]:checked')?.value;
-  for(const el of form.querySelectorAll('[data-timer-setting]'))el.hidden=mode==='stopwatch'||(mode!=='intervals'&&el.dataset.timerSetting!=='work');
+  const mode=form.querySelector('[name=timerMode]:checked')?.value,note=form.querySelector('[data-timer-note]');
+  if(note)note.textContent=timerModeNote(mode);
 }
+// Аудит единообразия (Астамур 18.11.2026, голосом): время — только у подходов. В «Плеере» остался выбор режима;
+// «Работа», «Отдых» и «Циклы» убраны — это были время подхода, «Перерыв» и число подходов ещё раз.
+function timerModeNote(mode){return {countdown:'Время — у каждого подхода. Подходы идут подряд.',intervals:'Время — у каждого подхода, между ними — перерыв.',stopwatch:'Считает вверх. Каждый круг — подход.'}[mode]||''}
 function saveExerciseEditor(form,mode){
   const f=new FormData(form),id=form.dataset.id,ei=form.dataset.ei===''?null:Number(form.dataset.ei),e=exercise(id),name=String(f.get('name')||'').trim();
   const metrics=metricOrder().filter(key=>f.getAll('metrics').includes(key));
   if(!name)throw new Error('Укажи название упражнения.');if(!metrics.length)throw new Error('Выбери хотя бы один показатель.');
   const draft=readSetPlanInputs(form.querySelector('[data-set-plan]'));if(!draft?.sets.length)throw new Error('Добавь хотя бы один подход.');
   const defaults=Object.fromEntries(metrics.map(key=>[key,Number(draft.sets.find(s=>!s.done)?.[key]??draft.sets[0][key]??0)]));
-  const contextExercise=ei==null?e:state.active?.exercises[ei],timer={...exerciseTimerConfig(contextExercise||e),mode:String(f.get('timerMode')||'countdown'),workSeconds:parseSetTime(f.get('workSeconds')),restSeconds:parseSetTime(f.get('restSeconds')),rounds:Number(f.get('rounds'))};
-  const priorTimer=exerciseTimerConfig(contextExercise||e);if(['mode','workSeconds','restSeconds','rounds'].some(key=>timer[key]!==priorTimer[key]))delete timer.program;
-  if(metrics.includes('seconds')&&(timer.mode!=='stopwatch'&&(!Number.isInteger(timer.workSeconds)||timer.workSeconds<1||timer.workSeconds>86400)||timer.mode==='intervals'&&(!Number.isInteger(timer.restSeconds)||timer.restSeconds<0||timer.restSeconds>3600||!Number.isInteger(timer.rounds)||timer.rounds<1||timer.rounds>50)))throw new Error('Проверь время работы, отдыха и число циклов.');
+  // В «Плеере» только режим: время, перерыв и число кругов таймер берёт у подходов (аудит 18.11.2026).
+  const contextExercise=ei==null?e:state.active?.exercises[ei],modeValue=String(f.get('timerMode')||'countdown'),timer={...exerciseTimerConfig(contextExercise||e),mode:['countdown','intervals','stopwatch'].includes(modeValue)?modeValue:'countdown'};
+  const priorTimer=exerciseTimerConfig(contextExercise||e);if(timer.mode!==priorTimer.mode)delete timer.program;
+  if(form.dataset.scope==='template'){const apply=templateExerciseApply;templateExerciseApply=null;if(!apply)throw new Error('Редактор тренировки закрыт. Открой настройки заново.');apply({metrics:clone(metrics),sets:clone(draft.sets),timerConfig:clone(timer)});return null;}
   const active=ei==null?null:state.active?.exercises[ei],lastRest=setPlanLastRest(draft.sets);
   const entry={name,en:e?.en||'',aliases:String(f.get('aliases')||'').split(',').map(x=>x.trim()).filter(Boolean),equipment:String(f.get('equipment')||'').split(',').map(x=>x.trim()).filter(Boolean),category:e?.category||'Мои упражнения',profile:exerciseProfile(metrics),metrics,defaultValues:defaults,defaultSets:draft.sets.map(setPlanCopy),defaultRestSeconds:lastRest,timerConfig:timer,muscleGroups:f.getAll('muscleGroups')};
   const planChanged=JSON.stringify(draft.sets)!==form.dataset.initialPlan;
@@ -173,7 +190,7 @@ function saveExerciseEditor(form,mode){
   // is the length of the rest that is running now, the running rest takes the new length and keeps going.
   const liveRestOnly=!!(localOnly&&planChanged&&liveCountdown?.kind==='rest'&&liveCountdown.ei===ei&&(()=>{try{const before=JSON.parse(form.dataset.initialPlan||'null');if(!Array.isArray(before)||!before[liveCountdown.si])return false;before[liveCountdown.si].restSeconds=draft.sets[liveCountdown.si]?.restSeconds;return JSON.stringify(before)===JSON.stringify(draft.sets)}catch{return false}})());
   if(localOnly&&((livePlayer?.ei===ei&&livePlayer.running&&(playerChanged||!metrics.includes('seconds')))||(liveCountdown?.ei===ei&&liveCountdown.running&&planChanged&&!liveRestOnly)))throw new Error('Сначала останови таймер кнопкой «Стоп», затем измени его время или подходы.');
-  if(form.dataset.scope==='add')return addConfiguredExercise(id,entry,String(f.get('addDestination')||'current'),form);
+  if(form.dataset.scope==='add')return addConfiguredExercise(id,entry,String(f.get('addDestination')||''),form);
   // Session settings never write to the catalog, another occurrence, or a completed workout.
   let next;
   if(localOnly){
@@ -183,10 +200,11 @@ function saveExerciseEditor(form,mode){
   }else next=saveExerciseDefinition(id,entry,mode,ei);
   if(active){if(planChanged)active.sets=clone(draft.sets);active.defaultRestSeconds=lastRest;if(liveRestOnly)applyLiveRestLength(state.active.countdown,draft.sets[state.active.countdown.si].restSeconds);else if(state.active.countdown?.ei===ei&&planChanged)state.active.countdown=null;if(state.active.exercisePlayer?.ei===ei&&playerChanged)state.active.exercisePlayer=null;}
   if(lastRest!=null)state.lastRestSeconds=lastRest;
+  if(form.dataset.addActive==='true'&&typeof discardTemplatePicker==='function')discardTemplatePicker();
   if(!e&&form.dataset.addActive==='true'&&state.active)state.active.exercises.push(prepareWorkoutExercise({id:next.id,name:next.name,phase:'main',notes:'',sets:next.defaultSets.map(setPlanCopy),defaultRestSeconds:lastRest},true));
-  persist();closeSheet();render();toast(localOnly?'Настройки сохранены только для этой тренировки':mode==='copy'?'Создано отдельное упражнение. Прежняя история сохранена.':'Настройки сохранены'+(e&&e.name!==name?' · история остаётся с упражнением':''));return next;
+  persist();closeSheet();render();toast(localOnly?'Сохранено для этой тренировки':mode==='copy'?'Создано отдельное упражнение. Прежняя история сохранена.':!e?'Упражнение создано':'Настройки сохранены'+(e.name!==name?' · история остаётся с упражнением':''));return next;
 }
-function restoreExerciseName(id){const e=exercise(id);if(!e)return;const name=exerciseOriginalName(e);if(name===e.name)return;saveExerciseDefinition(id,{...clone(e),name,metrics:exerciseMetrics(e),timerConfig:exerciseTimerConfig(e)});persist();closeSheet();render();toast('Исходное название восстановлено. История сохранена.');}
+function restoreExerciseName(id){const e=exercise(id);if(!e)return;const name=exerciseOriginalName(e);if(name===e.name)return;saveExerciseDefinition(id,{...clone(e),name,metrics:exerciseMetrics(e),timerConfig:exerciseTimerConfig(e)});persist();closeSheet();render();toast('Название вернулось к исходному');}
 function renderExerciseChange(change){return `<article class="exercise-change-row"><span>${icon('pencil-simple')}</span><div><small>${dateLabel(change.at.slice(0,10))} · ${change.at.slice(11,16)}</small><b>${change.kind==='restore'?'Возвращено исходное название':'Упражнение переименовано'}</b><p>${esc(change.oldName)} → ${esc(change.newName)}</p></div></article>`}
 
 customExercise=function(id){openExerciseEditor(id)};

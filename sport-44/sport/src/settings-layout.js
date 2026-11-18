@@ -64,7 +64,7 @@ function sportSettingsLayout(html){
  if(pendingLabel)place('app',label(pendingLabel));
  // Blocks inside a group are (label, cards…) runs; order them the same way in every release.
  const slot=document.createElement('div');slot.className='happy-appearance-entry';slot.setAttribute('data-happy-appearance-slot','');const appearanceLabel=label('Оформление');appearanceLabel.hidden=true;groups.app.unshift(appearanceLabel,slot);   // Sport 41: подпись не видна — кнопка «Выбрать оформление» говорит сама
- const order={app:['Оформление','Библиотека','Таймер','Датчики','Настройки тренировок','Иконки'],data:['Мои данные'],developer:['Резервная копия']};
+ const order={app:['Оформление','Создать','Таймер','Датчики','Настройки тренировок','Иконки'],data:['Мои данные'],developer:['Резервная копия']};
  for(const group of Object.keys(order)){
   const runs=[];for(const n of groups[group]){if(n.matches('.settings-section')||!runs.length)runs.push([n]);else runs.at(-1).push(n);}
   const rank=run=>{const i=order[group].indexOf(run[0].matches('.settings-section')?text(run[0]):'');return i<0?order[group].length:i};

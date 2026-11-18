@@ -10,13 +10,13 @@
 .set-line.set-line>*{grid-row:1!important;grid-column:auto!important;min-width:0}
 .set-line .set-name{all:unset;box-sizing:border-box;display:block;width:100%;min-width:0;min-height:44px;font-size:16px;line-height:44px;color:#fff;caret-color:#fff;cursor:text;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-user-select:text;user-select:text}
 .set-line .set-name::placeholder{color:#e3e6ff;opacity:.45}
-.set-line .set-x{text-align:center;color:#e3e6ff;font-size:15px}
+.set-line .set-x{text-align:center;color:#e3e6ff;font-size:16px}
 .set-line.set-line .set-metric{display:block!important;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:none!important;outline:0!important}
 .set-line.set-line .set-metric::before{content:none!important}
 .set-line.set-line .sport-metric-input{display:block!important;width:100%!important;border-bottom:1px solid #c9cff8!important}
 .set-line.set-line .sport-metric-input:focus-within{border-bottom-color:#fff!important;box-shadow:0 1px 0 #fff!important}
 .set-line.set-line .sport-metric-input:has(input[readonly]){border-bottom-style:dashed!important}
-.set-line.set-line .sport-metric-input input{display:block!important;width:100%!important;min-height:0!important;height:auto!important;padding:10px 1px 8px!important;font-size:18px!important;line-height:23px!important;text-align:right!important;font-variant-numeric:tabular-nums}
+.set-line.set-line .sport-metric-input input{display:block!important;width:100%!important;min-height:0!important;height:auto!important;padding:10px 1px 8px!important;font-size:16px!important;line-height:23px!important;text-align:right!important;font-variant-numeric:tabular-nums}
 .set-line.set-line .sport-metric-unit{display:none!important}
 .plan-set-row.set-line.set-line{border-top:0!important;padding:0!important}
 
@@ -36,7 +36,7 @@
 @media (prefers-reduced-motion:reduce){.set-ring-fill,.set-dot{transition:none}}
 
 /* Подсказки названия: в цветах Sport, поверх листа; внизу мало места — открываются вверх. */
-.set-name-menu{position:fixed;z-index:400;min-width:150px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:2px 0;background:#5a68d8;color:#fff;border:1px solid #ffffff6e;border-radius:14px;box-shadow:0 8px 20px #1a1f5a55;font-size:14px;font-weight:500;line-height:1.2;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.set-name-menu{position:fixed;z-index:400;min-width:150px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:2px 0;background:#5a68d8;color:#fff;border:1px solid #ffffff6e;border-radius:14px;box-shadow:0 8px 20px #1a1f5a55;font-size:14px;font-weight:600;line-height:1.2;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .set-name-menu[hidden]{display:none}
 .set-name-menu button{appearance:none;-webkit-appearance:none;display:block;width:100%;min-height:40px;margin:0;padding:0 14px;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .set-name-menu button+button{border-top:1px solid #ffffff38}

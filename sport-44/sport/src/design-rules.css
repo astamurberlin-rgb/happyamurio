@@ -1,0 +1,305 @@
+/* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
+ * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
+ * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
+ * короткое сообщение — тёмная пилюля 14 в одну строку. поле и поиск 12 (карточки — прежнее скругление), лист снизу 22, выключатель 42 × 25.
+ * Слой стоит последним в сборке; !important — только там, где прежние слои сами держат значение через !important.
+ * — Claude · 17.11.2026, лаборатория Sport 44.1 */
+
+/* ── Основная кнопка: пилюля 48, одна строка ── */
+.button,.happy-button,.hs-btn,.assign-options .button,.plan-fields .plan-share .button,.quick-actions .button,.template-card .button,.measure-outer .button,.current-bar>.button,.exercise-save-actions .button{
+ box-sizing:border-box;min-height:48px;height:48px;border-radius:999px!important;padding:0 20px!important;
+ font-size:16px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* кнопка-строка с подписью внутри («Выбрать оформление», «История обновлений») — это строка настроек, а не кнопка:
+   форма карточки-строки, подпись видна */
+.happy-card>.happy-button[data-action=release-history],.happy-button:has(>small),.happy-button:has(>b+small){
+ height:auto;min-height:56px;border-radius:26px!important;padding:12px 18px!important;white-space:normal;text-align:left;justify-content:space-between}
+.happy-button:has(>small)>span{white-space:nowrap;font-size:16px}
+.happy-card>.happy-button[data-action=release-history] small,.happy-button:has(>small) small{display:block;font-size:14px!important;font-weight:400}
+
+/* ── Вкладки внутри экрана и выбор из нескольких вариантов: пилюля 44, текст 14 ── */
+.segmented,.hs-segment,#page>.journal-switch,.library-tabs,.exercise-context-tabs{border-radius:999px!important}
+.segmented button,.hs-segment button,#page>.journal-switch button,[data-action=library-tab],[data-action=journal-tab],.exercise-context-tabs button{
+ min-height:44px;height:44px;border-radius:999px!important;font-size:14px!important;line-height:18px;white-space:nowrap;padding-top:0!important;padding-bottom:0!important}
+.hs-segment{height:auto!important;min-height:44px}
+.hs-units-row>.hs-segment{height:44px!important}
+.segmented button.on,.segmented button[aria-selected=true],.hs-segment button[aria-pressed=true],button.selected[data-action$=-tab]{font-weight:600!important}
+.segmented button:not(.on):not([aria-selected=true]),[data-action$=-tab]:not(.selected){font-weight:400!important}
+
+/* ── Чипы и фильтры: пилюля 44, текст 14 ── */
+.chips button,.date-pill,.hm-pill{
+ box-sizing:border-box;min-height:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;
+ border-radius:999px!important;padding:0 16px!important;font-size:14px!important;font-weight:600;white-space:nowrap}
+
+/* ── Кнопки-значки: круг (пилюля одинаковых сторон) ── */
+.exercise-technique,.pause-toggle,.workout-icon-toggle,.library-filter-toggle,.floating-rest-toggle,.sheet .icon-btn,.sheet>.sheet-done,.happy-password-toggle{border-radius:999px!important}
+.pause-toggle,.workout-icon-toggle{width:44px!important;height:44px!important}
+
+/* ── Текстовые кнопки («Редактировать», «Подробнее»): текст 14, нажимаемая зона 44 ── */
+.text-btn,.training-heading .text-btn,.workout-summary-header .text-btn,.exercise-heading .text-btn,.exercise-heading .exercise-actions .text-btn,.player-exercise-heading .text-btn,.plan-add-actions .text-btn{
+ font-size:14px!important;font-weight:600!important;min-height:44px;border-radius:999px}
+.plan-zone-note .text-btn,.plan-remove{font-size:14px!important}
+
+/* ── Короткое сообщение после действия: тёмная пилюля, текст 14, одна строка ── */
+.toast,.hs-toast{border-radius:999px!important;background:rgba(18,20,32,.92)!important;color:#fff!important;font-size:14px!important;font-weight:400;
+ line-height:20px!important;white-space:nowrap;padding:12px 20px!important;min-height:44px;box-sizing:border-box;align-items:center}
+.toast>span,.toast>div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.toast button{font-size:14px!important;font-weight:600!important;color:#fff!important;opacity:.9;text-decoration:underline;text-underline-offset:3px;min-height:20px}
+
+/* ── Карточки: скругление прежнее (Астамур 17.11.2026: в карточках крупные картинки упражнений — правило 26 не подходит) ── */
+
+/* ── Поле ввода, поле на несколько строк, поиск: 12 ── */
+input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.search,.workout-name-input,.hs-input,.happy-input,.hm-field input,.library-filters select,.template-targets input{border-radius:12px}
+.set-row .set-metric input,.set-rest .set-metric input,.floating-rest-clock input,.player-round-preset input,.exercise-player input,.tap-time input,.exercise-title-input,.sport-metric-input input{border-radius:0}
+
+/* ── Лист снизу: 22 у верхних углов ── */
+.sheet,.hs-sheet,.hm-sheet{border-radius:22px 22px 0 0!important}
+.sheet:has(#rest-time-form){border-radius:26px!important}
+.sheet:has(.exercise-player),.exercise-player-sheet{border-radius:22px 22px 23px 23px!important}
+
+/* ── Выключатель: 42 × 25 ── */
+.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.sport-switch::after,.hs-links .happy-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
+.sport-switch{border-width:1px}
+.sport-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
+.sport-switch:checked::after,.hs-links .happy-switch:checked::after{transform:translateX(17px)!important}
+.hs-switch{padding:3px!important}
+.hs-switch>b{width:19px!important;height:19px!important}
+.hs-switch[aria-checked=true]>b{transform:translateX(17px)!important}
+.toggle{border-radius:999px!important}
+
+/* ── Меню снизу: подписи 12, без наложения ── */
+.dock .tab span,.tab span{font-size:12px!important;font-weight:400;letter-spacing:-.3px}
+.dock .tab.on span{font-weight:600}
+
+/* ── Заголовок экрана: 28, жирность 800 (больше нигде) ── */
+.top h1,.happy-settings>.top h1,h1{font-size:28px;font-weight:800}
+
+/* ── Прочее по проверке экранов (17.11.2026) ── */
+/* кнопки только с текстом: одна строка с многоточием, если не влезает */
+.button:not(:has(*)),.happy-button:not(:has(*)),.hs-btn:not(:has(*)){display:block;text-align:center;line-height:46px!important}
+/* вкладки карточки упражнения («Инструкции · История · Добавить»): пилюлями, как остальные вкладки */
+.exercise-context-tabs{gap:3px!important;padding:4px;border:1px solid var(--line)!important;background:rgba(0,97,172,.12)}
+.exercise-context-tabs [role=tab]{height:44px;min-height:44px;padding:0 6px!important;border:0!important;border-radius:999px;font-size:14px!important;font-weight:400!important;opacity:1!important}
+.exercise-context-tabs [aria-selected=true]{background:rgba(244,251,255,.96);color:#176b98;font-weight:600!important}
+/* замеры тела: периоды — выбор из вариантов; «Поделиться» — основная кнопка; «＋ Замер» — текстовая */
+.hm-periods{border-radius:999px!important}
+.hm-periods button{height:44px;min-height:44px;padding:0 6px!important;border-radius:999px!important;font-size:14px!important}
+.hm-periods button:not([aria-pressed="true"]){font-weight:400!important}
+.hm-button,.hm-output .hm-button{min-height:48px!important;height:48px;border-radius:999px!important;font-size:16px!important;font-weight:600!important;white-space:nowrap}
+.hm-text{font-size:14px!important;min-height:44px}
+.hm-amplify button{font-weight:600!important;border-radius:999px!important}
+/* заметка к упражнению — поле; булавка — круг */
+.set-note,textarea{border-radius:12px!important}
+.note-pin{border-radius:999px!important}
+/* кольцо энергии: число 28, подпись 12 */
+.he-knob b{font-size:28px!important}
+.he-knob small{font-size:12px!important}
+/* «Продолжить» в полоске текущей тренировки */
+[data-action=resume]{font-size:14px!important}
+/* карточка упражнения: шапка одной высоты на всех вкладках — карандаш на «Добавить» не сдвигает вкладки вниз */
+.sheet:has(.exercise-context-tabs) .sheet-top{box-sizing:border-box;min-height:44px;height:auto;align-items:center}
+.sheet:has(.exercise-context-tabs) .rename-exercise{width:44px;height:44px;min-height:44px;margin-top:0;margin-bottom:0;flex:none}
+/* на других вкладках карандаш невидим, но место держит: длинное название переносится одинаково на всех вкладках */
+.sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:inline-grid!important;visibility:hidden;pointer-events:none}
+/* карточка упражнения: шапка (ручка, название, вкладки) стоит на месте, прокручивается только содержимое вкладки;
+   у каждой вкладки своя прокрутка — при переключении ничего не прыгает (Астамур 17.11.2026) */
+.sheet:has(.exercise-context-tabs){display:flex!important;flex-direction:column;overflow:hidden!important;overscroll-behavior:contain}
+.sheet:has(.exercise-context-tabs)>.grip,.sheet:has(.exercise-context-tabs)>.sheet-top,.sheet:has(.exercise-context-tabs)>.exercise-context-tabs{flex:none;position:relative!important;top:auto!important}
+.sheet:has(.exercise-context-tabs)>.exercise-context-tabs{margin-bottom:12px!important}
+.sheet:has(.exercise-context-tabs)>:is(form,section):not([hidden]){flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:12px 20px 24px;-webkit-mask-image:linear-gradient(transparent,#000 12px);mask-image:linear-gradient(transparent,#000 12px)}
+#exercise-config-form[data-scope=add]>:first-child{border-top:0!important;margin-top:0!important}
+
+/* ── Настройки: действия внутри карточки — строки, как «Настроить профиль / цели», без рамки в рамке (Астамур 17.11.2026) ── */
+.happy-settings .happy-card:has(>.happy-button),.happy-settings .happy-card:has(>.happy-actions>.happy-button:only-child){padding:0 17px!important;display:block}
+.happy-settings .happy-card>.happy-button,.happy-settings .happy-card>.happy-actions>.happy-button:only-child{display:flex!important;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;width:100%;max-width:none;
+ height:auto!important;min-height:56px!important;padding:16px 0!important;margin:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;
+ text-align:left!important;line-height:20px!important;font-size:16px!important;font-weight:600!important;white-space:normal;color:inherit}
+.happy-settings .happy-card>*+*,.happy-settings .happy-card>.happy-button+.happy-button{border-top:1px solid rgba(255,255,255,.22)!important}
+.happy-settings .happy-card>.happy-actions{margin:0!important;display:block}
+.happy-settings .happy-card>.happy-button small{font-size:14px!important;font-weight:400;opacity:.75;margin:0!important}
+.happy-settings .happy-card>.happy-button:active{opacity:.6}
+.happy-settings .happy-card+.happy-card{margin-top:12px}
+/* все карточки настроек — одно скругление; 18.11.2026 — 24, как у всех карточек Sport (было 22, как у «Настроить профиль / цели») */
+.happy-settings .happy-card,.happy-settings .card,.happy-settings .hs-group,.happy-appearance-entry>.happy-button{border-radius:24px!important}
+.happy-settings .happy-card,.happy-settings .card{border-style:solid!important}
+
+/* ── «Что записываем» и выбор режима плеера — одна пилюля, части одной ширины через тонкий разделитель
+   (Астамур 17.11.2026, вариант А): выбранное — светлое, как выбранная вкладка; крайние части повторяют скругление ── */
+.metric-pick{border:0;padding:0;margin:0 0 16px;min-width:0}
+.metric-pick legend{padding:0;margin:0 0 10px;font-size:14px;font-weight:600}
+.metric-pill,.timer-mode-options{display:flex!important;height:48px;padding:0!important;gap:0!important;margin:0;border:1px solid var(--line,rgba(255,255,255,.36))!important;
+ border-radius:999px!important;overflow:hidden;background:rgba(0,97,172,.12)!important}
+.metric-pill label,.timer-mode-options label{flex:1 1 0;min-width:0;position:relative;margin:0;padding:0;display:block}
+.metric-pill label+label,.timer-mode-options label+label{border-left:1px solid var(--line,rgba(255,255,255,.36))}
+.metric-pill input,.timer-mode-options input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:1;cursor:pointer}
+.metric-pill input:disabled{cursor:default}
+.metric-pill span,.timer-mode-options span{display:flex!important;align-items:center;justify-content:center;height:100%!important;min-height:0!important;padding:0 2px!important;
+ border:0!important;border-radius:0!important;background:none!important;color:#fff;font-size:14px!important;font-weight:400!important;white-space:nowrap}
+.metric-pill input:checked+span,.timer-mode-options input:checked+span{background:rgba(244,251,255,.96)!important;color:#176b98!important;font-weight:600!important}
+.metric-pill label:has(input:checked)+label:has(input:checked){border-left-color:rgba(23,107,152,.25)}
+/* все выключатели — одинаковые: 42 × 25, кружок 19 (раньше у «Связка с» был 46 × 28 — держала ширина flex) */
+.toggle{box-sizing:border-box;padding:0!important}
+.toggle:before{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
+.toggle:checked:before{left:19px!important}
+/* кружок выключателя — строго по центру высоты и с равным отступом 3 у краёв (на iPhone кружок съезжал вверх) */
+.sport-switch::after,.hs-links .happy-switch::after{top:50%!important;left:3px!important;margin:0!important;transform:translateY(-50%)!important}
+.sport-switch:checked::after,.hs-links .happy-switch:checked::after{transform:translate(17px,-50%)!important}
+.toggle:before{top:50%!important;left:3px!important;margin:0!important;transform:translateY(-50%)!important}
+.toggle:checked:before{left:20px!important}
+.hs-switch{display:flex!important;align-items:center;padding:0 3px!important}
+.hs-switch>b{flex:none;margin:0!important}
+.hs-switch[aria-checked=true]>b{transform:translateX(17px)!important}
+
+/* ── Идущая тренировка (Астамур 17.11.2026): каждое упражнение в своей рамке, как карточка; удаление подхода — только
+   свайпом влево, «Удалить» справа во всю высоту строки ── */
+.active-workout>.set-card{background:var(--glass,rgba(255,255,255,.14))!important;border:1px solid var(--line,rgba(255,255,255,.36))!important;border-radius:24px!important;
+ padding:14px 16px 10px!important;margin:0 0 12px!important;box-shadow:none}
+.set-swipe .swipe-delete,.active-workout .set-swipe[data-swipe-kind="set"]>.swipe-delete{left:auto!important;right:0!important;top:0!important;bottom:0!important;height:auto!important;
+ max-height:none!important;min-height:0!important;width:66px;padding:0!important;gap:2px!important;border-radius:12px!important;font-size:12px!important}
+
+/* ── Идущая тренировка, «Как лист» (Астамур 17.11.2026, прототип «рамка упражнения ярче»): в рамке — сам фон темы,
+   панель за карточками чуть притемнена, тень едва заметная. Шапка: название слева, справа всегда «Настроить» и правее
+   «Свернуть»; длинное название переносится только слева, значки стоят на уровне первой строки ── */
+.panel-screen:has(.active-workout){background:linear-gradient(rgba(20,24,60,.28),rgba(20,24,60,.28)),var(--sport-background)!important;background-attachment:fixed!important}
+.active-workout>.set-card{background:var(--sport-background)!important;background-attachment:fixed!important;box-shadow:0 3px 10px rgba(30,20,90,.12)!important}
+.active-workout .exercise-name-info{position:relative;display:grid!important;grid-template-columns:minmax(0,1fr) 44px 44px;align-items:start;gap:0;width:100%;margin-right:-10px}
+.active-workout .exercise-name-info>h3{grid-column:1;margin:0;min-width:0;position:static}
+.active-workout .exercise-collapse{position:static!important;display:block!important;width:100%;text-align:left;padding:9px 0 0!important;margin:0!important;min-height:44px;
+ font-size:20px!important;font-weight:700!important;line-height:26px!important;background:none;border:0;color:inherit}
+.active-workout .exercise-name-info>.exercise-technique{grid-column:2;grid-row:1;width:44px!important;height:44px!important;margin:0!important;border:0!important;background:none!important}
+.active-workout .exercise-collapse .collapse-chevron{position:absolute!important;right:0;top:0;width:44px;height:44px;display:grid!important;place-items:center;margin:0!important}
+
+/* ── Аудит единообразия (Астамур 18.11.2026) · страница упражнения: шапка одна везде — название слева, справа звезда
+   и «⋯», на одном месте, откуда бы ни открыли упражнение. Карандаша нет. ── */
+.sheet:has(.exercise-context-tabs) .sheet-top{display:flex!important;align-items:flex-start!important;gap:4px;padding-right:0!important;position:relative}
+.sheet:has(.exercise-context-tabs) .sheet-top h2{flex:1 1 auto;min-width:0;display:block!important;margin-top:4px}
+.sheet:has(.exercise-context-tabs) .sheet-top .favorite-star{position:static!important;flex:none}
+.exercise-menu-button{flex:none;width:44px;height:44px;min-height:44px;display:grid;place-items:center;border:0;border-radius:999px;background:transparent;color:#fff;padding:0;margin:0}
+.exercise-menu-button[aria-expanded=true]{background:rgba(255,255,255,.16)}
+.exercise-menu{position:absolute;right:0;top:48px;z-index:5;min-width:220px;display:grid;padding:6px;border-radius:18px;background:rgba(28,22,64,.97);box-shadow:0 12px 32px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14)}
+.exercise-menu button{min-height:44px;text-align:left;padding:0 14px;border:0;border-radius:12px;background:transparent;color:#fff;font-size:16px;font-weight:600}
+.exercise-menu button:active,.exercise-menu button:focus-visible{background:rgba(255,255,255,.12);outline:none}
+.exercise-menu button.danger{color:#ff9aa8}
+.sheet-top h2.renaming{outline:none;caret-color:#fff;-webkit-user-select:text;user-select:text;box-shadow:inset 0 -1px 0 rgba(255,255,255,.55)}
+/* вопрос внутри приложения — только где он нужен (смена хвата в тренировке) */
+.exercise-ask{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:rgba(10,8,30,.45);backdrop-filter:blur(4px)}
+.exercise-ask-card{width:min(340px,100%);border-radius:22px;padding:20px;background:rgba(28,22,64,.97);color:#fff;display:grid;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.exercise-ask-card h3{margin:0;font-size:20px;font-weight:700;line-height:1.3}
+.exercise-ask-card p{margin:0;font-size:14px;line-height:1.4;color:rgba(255,255,255,.8)}
+.exercise-ask-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+/* «Добавить упражнение» — фиолетовая пилюля, как «Добавить в тренировку» в инструкции подтягиваний (на проверку) */
+#exercise-config-form[data-scope=add] .exercise-save-actions .button.primary{background:#8156dd!important;color:#fff!important;border:1px solid #ffffff33!important}
+/* Аудит единообразия 18.11.2026 · настройки упражнения: «Сохранить» / «Добавить» всегда в конце, внизу листа —
+   короткое содержимое прижимает кнопку к низу, длинное — кнопка после всех полей. */
+.sheet:has(.exercise-context-tabs)>form#exercise-config-form:not([hidden]){display:flex!important;flex-direction:column}
+#exercise-config-form>.exercise-save-actions{margin-top:auto!important;padding-top:16px}
+#exercise-config-form>.exercise-save-actions .button{width:100%}
+/* редактор тренировки и расписание: «Сохранить» последней кнопкой листа */
+#template-form>.template-save,#schedule-form>.schedule-save{width:100%;margin-top:16px}
+/* редактор: значок настроек справа от названия упражнения, как в идущей тренировке */
+.template-exercise-heading{display:flex;align-items:center;gap:8px}
+.template-exercise-heading .template-exercise-name{flex:1 1 auto;min-width:0;margin:0}
+.template-exercise-settings{flex:none;width:44px!important;height:44px!important;min-height:44px!important;display:grid;place-items:center;color:#fff;background:transparent;border:0;padding:0}
+/* карточка тренировки: (i) справа, как в записи журнала */
+.template-exercise-title{display:flex!important;align-items:center;gap:10px}
+.template-exercise-title b{flex:1 1 auto;min-width:0}
+.template-exercise-title small{flex:none}
+.template-exercise-title .exercise-technique{flex:none;order:3}
+
+/* Аудит 18.11.2026, часть 3: ссылка «← К …» у вложенного листа — сверху, как «← К тренировке» */
+.sheet-back{display:block;margin:0 0 14px;padding:0;min-height:44px;text-align:left}
+.hs-page .hs-page-handle .hs-handle{background:rgba(255,255,255,.45)}
+/* Аудит 18.11.2026, часть 3: сообщение внизу видно и поверх открытого листа — иначе «Вернуть» после шага назад
+   оказывается под листом. Выше листа (80) и нижней панели (90), ниже вопросов (200). */
+.toast{z-index:95!important}
+/* «Отменить занятие» целиком: в половине строки текст переносится, а не обрезается многоточием */
+.occurrence-actions .button{white-space:normal!important;text-overflow:clip!important;overflow:visible!important;padding-inline:10px!important;line-height:1.2!important}
+
+/* Расписание (Астамур 18.11.2026): одно поле «Дата и время» на всю ширину; «В календарь» на всю ширину;
+   «Поделиться» — значок 44 × 44 справа от названия листа */
+.plan-group .schedule-when{margin-top:14px!important;display:block}
+.plan-group .schedule-when input{width:100%;min-width:0}
+.plan-fields .plan-share.plan-share-one{grid-template-columns:1fr!important}
+.sheet-top .sheet-share{margin-left:auto;width:44px!important;height:44px!important;min-width:44px;min-height:44px;display:inline-grid;place-items:center;padding:0;background:transparent;border:0;color:inherit}
+.sheet-top .sheet-share .icon{width:24px;height:24px}
+.sheet-top .sheet-share .icon{fill:none!important;stroke:currentColor!important}
+/* Два поля даты рядом («Связать с расписанием»: От / До): на iPhone поле даты не сжимается и налезает на соседнее —
+   у полей с русской подписью сверху свой вид не нужен, ширина — по колонке. */
+.schedule-date-grid .ru-date>input{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;box-sizing:border-box}
+
+/* Аудит 18.11.2026, часть 4: упражнение в тренировке удаляется свайпом влево по строке названия — как подход;
+   красная «Удалить» справа, высотой со строку названия */
+.exercise-name-swipe{position:relative;overflow:hidden;border-radius:12px;touch-action:pan-y}
+.exercise-name-swipe>.exercise-card-heading{position:relative;transition:transform .18s ease}
+.exercise-name-swipe.swipe-dragging>.exercise-card-heading{transition:none}
+.exercise-name-delete{position:absolute;right:0;top:0;bottom:0;width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;padding:0;background:#df547d;color:#fff;border-radius:11px;font-size:12px;font-weight:600;visibility:hidden;z-index:0}
+.exercise-name-swipe.swipe-open>.exercise-name-delete,.exercise-name-swipe.swipe-dragging>.exercise-name-delete{visibility:visible}
+.exercise-name-delete .icon{width:18px;height:18px}
+
+/* Аудит 18.11.2026, часть 4: удалить внутри карточки — красная «Удалить» внизу, сразу, без вопроса; в сообщении «Вернуть».
+   Тот же красный, что у «Удалить» в свайпе. */
+.button.button-delete,.hm-button.hm-delete{background:#df547d!important;border-color:#df547d!important;color:#fff!important;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.button.button-delete .icon,.hm-button.hm-delete svg{width:18px;height:18px}
+#group-form .button-delete{margin-top:12px}
+.workout-detail .delete-workout{margin-top:12px}
+/* «Редактировать» — в шапке справа, как в карточке тренировки; «Поделиться» — значок перед ним */
+.training-heading-actions{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
+
+/* Настройки → «Мои тренировки»: строки как «Настроить профиль», свайп влево — красная «Удалить» справа */
+.happy-settings .happy-card.settings-templates{padding:0 17px!important;display:block}
+.row-swipe{position:relative;overflow:hidden;touch-action:pan-y}
+.row-swipe>.swipe-delete{top:7px;bottom:7px;border:0;padding:0}
+.settings-template-row{display:flex;align-items:center;width:100%;min-height:56px;padding:16px 0;margin:0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;text-align:left;font:inherit;font-size:16px;font-weight:600;line-height:20px}
+.settings-templates-hint{margin:8px 4px 0!important}
+/* текст в строке со свайпом не выделяется — иначе следующий свайп превращается в перетаскивание выделения */
+.exercise-name-swipe,.row-swipe{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+/* Аудит 18.11.2026, часть 5: большой таймер. Пилюля «Что записываем» под названием упражнения; название круга —
+   название подхода, его можно поменять прямо в строке */
+.exercise-player .player-exercise-heading:has(.player-metric-pill){flex-wrap:wrap;row-gap:10px}
+.exercise-player .player-metric-pill{flex:1 0 100%;margin:0 0 6px}
+.exercise-player .player-metric-pill .metric-pick{margin:0;border:0;padding:0}
+.exercise-player .player-metric-pill legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.player-round-row .set-name{min-width:0;width:100%;margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;outline-offset:2px}
+.exercise-player .player-round-row>.player-row-label{min-width:120px;overflow:visible;text-align:left}
+
+/* Астамур 18.11.2026 (снимок «Редактировать запись»): поля даты и времени — той же ширины, что остальные. На iPhone
+   родное поле даты не сжимается по ширине колонки и вылезает вправо; своего вида ему не нужно — поверх русская подпись. */
+.ru-date>input{-webkit-appearance:none!important;appearance:none!important;display:block;min-width:0!important;max-width:100%!important;width:100%!important;box-sizing:border-box!important}
+.ru-date{max-width:100%}
+/* Значок тренировки — внутри поля «Название»: квадратик слева, нажал — выбор значка. Поле во всю ширину. */
+.workout-name-inline{display:block!important;margin-right:0!important}
+.template-form-edit .workout-name-row{margin-right:0!important}
+.workout-name-input .workout-icon-toggle{position:relative;flex:0 0 40px;width:40px!important;height:40px!important;margin:0 0 0 5px;padding:0;border:1px solid rgba(255,255,255,.34);border-radius:10px!important;background:rgba(255,255,255,.12);display:grid;place-items:center}
+.workout-name-input .workout-icon-toggle>.icon,.workout-name-input .workout-icon-toggle>.sport-icon,.workout-name-input .workout-icon-toggle>img{width:32px!important;height:32px!important}
+.workout-name-input .workout-icon-plus{width:15px;height:15px;right:-4px;bottom:-4px;border-radius:5px}
+.workout-name-input .workout-icon-plus .icon{width:10px;height:10px}
+.workout-name-input input{padding-left:10px!important}
+
+
+/* ── Профиль, цели, большой таймер — листы (Астамур 18.11.2026, голосом: «должно быть» место нажать мимо) ──
+   Как остальные листы Sport: сверху 36, по бокам 12, затемнение с размытием; нажатие на свободное место закрывает.
+   Таймер (упражнения и отдельный): внизу под ним остаётся меню с «×»; низ листа прячется ровно за меню. */
+.hs-page-sheet>.hs-page-backdrop{background:#064c7548;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.hs-page-sheet>.hs-scroll{top:36px;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;border:1px solid #ffffff45;
+ background:var(--sport-background);background-attachment:fixed;box-shadow:0 -12px 60px #08619c40}
+.overlay:has(.exercise-player),.exercise-player-overlay{background:#064c7548!important;-webkit-backdrop-filter:blur(5px)!important;backdrop-filter:blur(5px)!important}
+.sheet:has(.exercise-player),.exercise-player-sheet{inset:36px calc((100% - min(calc(100% - 28px),432px)) / 2) calc(8px + env(safe-area-inset-bottom))!important;
+ width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;margin:0!important;padding:6px 0 80px!important;border:1px solid #ffffff45!important;box-shadow:0 -12px 60px #08619c40}
+.sheet:has(.exercise-player) .exercise-player .player-exercise-name{margin-top:12px}
+
+/* ── Скругления по правилам там, где они ещё расходились (Астамур 18.11.2026, снимок расписания с телефона:
+   «мы разве скругления не согласовывали?»). Обход всех экранов: отличались выбор «Один раз / По дням недели», дни
+   недели, карточки 20 / 22 / 26 вместо 24, верх карточки тренировки 30 вместо 22, пилюля в большом таймере 40. ── */
+/* «Один раз / По дням недели» — как остальные вкладки и выбор из вариантов: пилюля, части 44, текст 14 */
+.plan-repeat{border-radius:999px!important;padding:4px!important;gap:4px!important}
+.plan-repeat span{min-height:44px!important;border-radius:999px!important;padding:0 12px!important;font-size:14px!important;font-weight:400!important}
+.plan-repeat input:checked+span{font-weight:600!important}
+/* дни недели — круги (пилюля одинаковых сторон), текст 14 */
+.schedule-weekdays{gap:4px!important}
+.schedule-weekdays label{flex:1 1 0;min-width:0;display:flex;justify-content:center}
+.schedule-weekdays span{width:100%;max-width:44px;aspect-ratio:1;min-height:0!important;border-radius:999px!important;font-size:14px!important}
+/* карточки Sport — одно скругление 24: группы расписания, Настройки, профиль и цели, замеры тела */
+.plan-group,.happy-card,.hs-group,.hm-card,.happy-button:has(>small),.happy-card>.happy-button[data-action=release-history]{border-radius:24px!important}
+/* карточка тренировки и запись журнала поднимаются снизу, как листы, — 22 у верхних углов */
+.panel-screen{border-radius:22px 22px 0 0!important}

@@ -96,30 +96,16 @@ function auditExerciseForm(form){
  //    в конце текста мигает только курсор — ничего не выделено, линии под текстом нет (18:58).
  //    Ушёл с поля, нажатие мимо или «Готово» на клавиатуре — снова заголовок с новым названием. Пустое имя возвращает
  //    прежнее, Escape — тоже. Раньше карандаш открывал второе поле и нажимался по кругу, потом стоял у правого края.
- const title=form.closest('.sheet')?.querySelector('.sheet-top h2'),row=form.querySelector('.exercise-title-row'),input=form.querySelector('.exercise-title-input');
- if(title&&row&&input&&!form.dataset.renameReady){
-  form.dataset.renameReady='1';row.hidden=true;
-  title.parentElement.querySelector('.rename-exercise')?.remove();
-  title.classList.add('rename-title');
-  title.insertAdjacentHTML('afterend',`<button type="button" class="rename-exercise" aria-label="Переименовать упражнение">${icon('pencil-simple')}</button>`);
-  const pencil=title.parentElement.querySelector('.rename-exercise'),max=input.maxLength>0?input.maxLength:120;
-  let before='',closedAt=0,mode='true';try{title.contentEditable='plaintext-only';if(title.contentEditable==='plaintext-only')mode='plaintext-only';}catch(e){}title.contentEditable='false';
-  const open=()=>{before=input.value;title.contentEditable=mode;title.classList.add('renaming');title.setAttribute('role','textbox');title.setAttribute('aria-label','Название упражнения');title.setAttribute('enterkeyhint','done');
-   pencil.dataset.editing='1';pencil.hidden=true;title.focus();const range=document.createRange();range.selectNodeContents(title);range.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(range);};
-  const close=()=>{if(!pencil.dataset.editing)return;const name=title.textContent.replace(/\s+/g,' ').trim().slice(0,max);input.value=name||before;title.textContent=input.value;input.dispatchEvent(new Event('input',{bubbles:true}));
-   title.contentEditable='false';title.classList.remove('renaming');title.removeAttribute('role');title.removeAttribute('aria-label');pencil.hidden=false;delete pencil.dataset.editing;closedAt=Date.now();};
-  pencil.onclick=()=>{if(!pencil.dataset.editing&&Date.now()-closedAt>400)open();};
-  title.addEventListener('keydown',e=>{if(!pencil.dataset.editing)return;if(e.key==='Enter'){e.preventDefault();close();}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();title.textContent=before;close();}});
-  title.addEventListener('blur',close);
- }
- // 3. «Добавить» from the library: where to add and the button first, the setup folded below.
+ //    Аудит единообразия (Астамур 18.11.2026): карандаша больше нет. Библиотечное упражнение не переименовывается —
+ //    «Сделать своим» в меню «⋯»; своё переименовывается там же («Переименовать»). Поле названия скрыто у готового
+ //    упражнения; у нового («Создать своё упражнение») оно есть — иначе название не ввести (исправлено 18.11.2026).
+ //    В форме «Изменить» своего упражнения (меню «⋯») поле названия есть — это та же форма, что при создании.
+ {const row=form.querySelector('.exercise-title-row');if(row)row.hidden=!!form.dataset.id&&form.dataset.edit!=='own';}
+ // 3. Вкладка «Настроить» в библиотеке (Астамур 17.11.2026): сначала настройки — открыто, без «Настроить перед добавлением»;
+ //    внизу «Куда добавить» и кнопка «Добавить упражнение» — после настроек.
  if(form.dataset.scope==='add'){
   const actions=form.querySelector('.exercise-save-actions');
-  if(actions&&!form.querySelector('.add-more')){
-   const more=document.createElement('details');more.className='add-more';more.innerHTML='<summary>Настроить перед добавлением</summary>';
-   for(const el of [...form.children])if(el!==actions&&el!==row&&!el.classList.contains('form-error')&&el.id!=='exercise-config-error')more.append(el);
-   form.append(actions,form.querySelector('#exercise-config-error')||'',more);
-  }
+  if(actions&&!actions.dataset.bottom){actions.dataset.bottom='1';const err=form.querySelector('#exercise-config-error');if(err)form.append(err);form.append(actions);}
  }
 }
 new MutationObserver(()=>{const f=document.getElementById('exercise-config-form');if(f)auditExerciseForm(f);
@@ -226,7 +212,7 @@ function pickerFiltersMarkup(){
  const equip=equipmentChoices.filter(([k])=>k==='all'||pool.some(e=>equipmentMatches(e,k))),muscles=muscleGroups.filter(([id])=>id==='all'||pool.some(e=>exerciseMuscles(e).includes(id)));
  if(!equipOn||!equip.some(([k])=>k===category))category='all';
  if(!muscles.some(([id])=>id===libraryMuscle))libraryMuscle='all';
- return `<div class="library-filter-box picker-filter-box" ${auditFiltersOpen?'':'hidden'}><div class="catalog-group-filter"><label class="library-sport"><select id="picker-sport" aria-label="Группа упражнений"><option value="all">Все группы</option>${exerciseGroups().map(g=>`<option value="${esc(g.id)}" ${librarySport===g.id?'selected':''}>${esc(groupPath(g.id))}</option>`).join('')}<option value="__new-group">＋ Добавить группу</option></select></label></div>`+
+ return `<div class="library-filter-box picker-filter-box" ${auditFiltersOpen?'':'hidden'}><div class="catalog-group-filter"><label class="library-sport"><select id="picker-sport" aria-label="Группа упражнений"><option value="all">Все группы</option>${exerciseGroups().map(g=>`<option value="${esc(g.id)}" ${librarySport===g.id?'selected':''}>${esc(groupPath(g.id))}</option>`).join('')}<option value="__new-group">＋ Создать группу</option></select></label></div>`+
   `<div class="library-filters"><label class="library-muscle"><select id="picker-muscle" aria-label="Группы мышц" ${muscles.length<2?'disabled':''}>${muscles.map(([id,name])=>`<option value="${id}" ${libraryMuscle===id?'selected':''}>${id==='all'?'Группы мышц':name}</option>`).join('')}</select></label>`+
   (equipOn&&equip.length>1?`<label class="library-equipment"><select id="picker-equipment" aria-label="Оборудование">${equip.map(([id,name])=>`<option value="${id}" ${category===id?'selected':''}>${name}</option>`).join('')}</select></label>`:'')+`</div></div>`;
 }

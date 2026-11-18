@@ -19,17 +19,17 @@
 .sheet-top:has(.rename-exercise):has(.favorite-star){padding-right:52px}
 .sheet-top:has(.rename-exercise) .favorite-star{position:absolute;right:0;top:0}
 /* 6. Home schedule: link to the rest. */
-.schedule-more{display:block;width:100%;min-height:44px;text-align:center;font-size:13px;font-weight:650}
+.schedule-more{display:block;width:100%;min-height:44px;text-align:center;font-size:14px;font-weight:600}
 /* 18. One schedule row on a workout card. */
 .plan-line{display:grid!important;grid-template-columns:24px 1fr 20px;align-items:center;gap:12px;min-height:56px}
 .plan-line .icon{width:22px;height:22px;fill:currentColor}
 /* 20. Settings explanations behind «Подробнее». */
 .happy-more{margin:6px 0 4px}
-.happy-more>summary{min-height:44px;display:flex;align-items:center;font-size:13px;font-weight:600;cursor:pointer;opacity:.9}
+.happy-more>summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer;opacity:.9}
 /* 27. Setting title and its explanation on two lines. */
 .setting-row>span>small{display:block;margin-top:2px}
 /* 29. Target time as text on the workout card. */
-.template-target-text{margin:6px 0 0;font-size:13px;opacity:.85}
+.template-target-text{margin:6px 0 0;font-size:14px;opacity:.85}
 /* 30. The placeholder stays quiet next to real pictures. */
 img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 /* 22. Touch targets at least 44×44 (the drawing stays the same size). */
@@ -52,7 +52,7 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .rest-line.done .rest-line-fill{background:#ffffff70}
 .rest-line-time{flex:none;font-size:12px;font-variant-numeric:tabular-nums}
 .rest-line-edit{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:0 0 8px}
-.rest-line-edit button{min-height:44px;border-radius:14px;border:1px solid #ffffff55;background:#ffffff1c;color:#fff;font-weight:650}
+.rest-line-edit button{min-height:44px;border-radius:14px;border:1px solid #ffffff55;background:#ffffff1c;color:#fff;font-weight:600}
 .rest-line-edit b{font-size:20px;font-variant-numeric:tabular-nums;min-width:64px;text-align:center}
 /* 5. Search and a round filter button. */
 .library-search-row{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:10px;align-items:center}
@@ -66,24 +66,24 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 /* 13. Counters as in Day and Meal. */
 #sport-food-counters{margin-top:18px}
 .tpSec{padding:16px 16px 4px}
-.tpT{margin:0 0 4px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.tpT{margin:0 0 4px;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
 .tpT + .tpItem{border-top:0}
-.tpNm{flex:1;min-width:0;padding:12px 0;color:#fff;font-size:15.5px;font-weight:600;text-align:left}
+.tpNm{flex:1;min-width:0;padding:12px 0;color:#fff;font-size:16px;font-weight:600;text-align:left}
 .tpNm b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tpNm small{display:block;margin-top:2px;font-size:12.5px;font-weight:600;color:var(--muted,rgba(255,255,255,.75))}
+.tpNm small{display:block;margin-top:2px;font-size:12px;font-weight:600;color:var(--muted,rgba(255,255,255,.75))}
 .tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
 .tpStp button{width:46px;padding:0;border:0;background:none;color:#fff;font:inherit;font-size:20px;font-weight:600;line-height:1}
 .tpStp button:disabled{opacity:.45}
 .tpStp button:active{background:rgba(255,255,255,.22)}
-.tpStp .v{min-width:50px;padding:0 8px;display:grid;place-items:center;font-size:16.5px;font-weight:800;font-variant-numeric:tabular-nums;border-left:1px solid rgba(255,255,255,.4);border-right:1px solid rgba(255,255,255,.4)}
+.tpStp .v{min-width:50px;padding:0 8px;display:grid;place-items:center;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;border-left:1px solid rgba(255,255,255,.4);border-right:1px solid rgba(255,255,255,.4)}
 .tpStp .v.tpZero{color:rgba(255,255,255,.55);font-weight:700}
-.tpAdd{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:none;color:rgba(255,255,255,.88);font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
+.tpAdd{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:none;color:rgba(255,255,255,.88);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .library-search-row{margin-bottom:8px}
 .sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:none}
 /* Аудит п. 23: пустая «История» — одна строка, без переключателя сортировки. */
-.history-empty{margin:24px 4px;text-align:center;color:rgba(255,255,255,.72);font-size:15px}
+.history-empty{margin:24px 4px;text-align:center;color:rgba(255,255,255,.72);font-size:16px}
 /* Переключатели — капсулой (скругление в половину высоты), как в Day и Meal. */
 .segmented,.segmented button{border-radius:999px}
 /* «Журнал / Замеры тела» — те же размеры и цвета, что .happy-measurement-tabs в shared/measurements-host.js Day и Meal. */
