@@ -118,7 +118,7 @@ setPlanRows=function(draft){
   return !s.done&&draft.sets.length>1?templateEditorSwipe('plan-set',name,`data-action="plan-remove-set" data-plan-index="${i}"`,line):line;
  }).join('');
  const rest=planExerciseRest(draft);
- return `<div class="plan-set-list">${setLineHead(metrics,cols,done,draft.id)}${rows}</div><div class="plan-add-actions"><button type="button" class="set-add" aria-label="Добавить подход" data-action="plan-add-set" ${draft.sets.length>=50?'disabled':''}><span class="set-add-plus" aria-hidden="true"><span class="set-add-digit">1</span><span class="set-add-sign">+</span></span><span>&nbsp;Подход</span></button></div>`
+ return `<div class="plan-set-list">${setLineHead(metrics,cols,done,draft.id)}${rows}</div><div class="plan-add-actions"><button type="button" class="set-add" aria-label="Добавить подход" data-action="plan-add-set" ${draft.sets.length>=50?'disabled':''}><span class="set-add-plus" aria-hidden="true"><span class="set-add-digit">1</span><span class="set-add-sign">+</span></span><span class="set-add-word">Подход</span></button></div>`
   +`<div class="plan-rest-row plan-rest-one"><label>Перерыв${sportMetricInput(`type="text" inputmode="text" data-plan-rest="all" value="${sportDurationValue(rest)}" aria-label="Перерыв между подходами, для всех подходов упражнения"`,'')}</label></div><p class="plan-error form-error" role="alert"></p>`;
 };
 

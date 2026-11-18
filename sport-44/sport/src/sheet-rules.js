@@ -139,13 +139,22 @@ window.addEventListener('click',e=>{
 {let hold=null,swallowClickUntil=0;
  const rowOf=t=>t?.closest?.('.home-favorite[data-action],.template-library-row[data-action="preview-template"]');
  const stop=()=>{if(hold){clearTimeout(hold.timer);hold=null}};
- function workoutMenu(id,action){
-  const t=templates().find(x=>x.id===id);if(!t)return;
-  openSheet(t.title,`<div class="stack workout-quick-menu"><button type="button" class="button primary" data-action="start" data-id="${esc(t.id)}">${icon('play')} Начать тренировку</button><button type="button" class="button" data-action="${esc(action||'preview-template')}" data-id="${esc(t.id)}">Открыть тренировку</button></div>`);
+ // Меню всплывает у самой тренировки и всегда над нижним меню (Астамур 18.11.2026), а не листом снизу.
+ function closeWorkoutMenu(){document.getElementById('workout-pop')?.remove()}
+ function workoutMenu(id,action,row){
+  const t=templates().find(x=>x.id===id);if(!t)return;closeWorkoutMenu();
+  const pop=document.createElement('div');pop.id='workout-pop';pop.className='workout-pop';
+  pop.innerHTML=`<div class="workout-pop-shade" data-workout-pop="close"></div><div class="workout-pop-card" role="menu" aria-label="${esc(t.title)}"><button type="button" class="button primary" role="menuitem" data-action="start" data-id="${esc(t.id)}">${icon('play')} Начать тренировку</button><button type="button" class="button" role="menuitem" data-action="${esc(action||'preview-template')}" data-id="${esc(t.id)}">Открыть тренировку</button></div>`;
+  document.body.append(pop);
+  const card=pop.querySelector('.workout-pop-card'),r=row.getBoundingClientRect(),dock=document.getElementById('dock')?.getBoundingClientRect(),floor=(dock&&dock.height?dock.top:innerHeight)-10,h=card.offsetHeight;
+  card.style.left=Math.round(r.left)+'px';card.style.width=Math.round(r.width)+'px';
+  card.style.top=Math.round(r.bottom+8+h<=floor?r.bottom+8:Math.max(10,r.top-8-h))+'px';
+  pop.addEventListener('click',e=>{if(e.target.closest('[data-workout-pop=close]')||e.target.closest('[data-action]'))setTimeout(closeWorkoutMenu,0)});
  }
+ addEventListener('scroll',closeWorkoutMenu,true);
  document.addEventListener('pointerdown',e=>{const row=rowOf(e.target);if(!row||e.button>0)return;stop();
-  hold={row,id:row.dataset.id,action:row.dataset.action,x:e.clientX,y:e.clientY,timer:setTimeout(()=>{const h=hold;hold=null;if(!h)return;swallowClickUntil=Date.now()+700;try{navigator.vibrate?.(10)}catch(err){}workoutMenu(h.id,h.action)},500)}},true);
+  hold={row,id:row.dataset.id,action:row.dataset.action,x:e.clientX,y:e.clientY,timer:setTimeout(()=>{const h=hold;hold=null;if(!h)return;swallowClickUntil=Date.now()+700;try{navigator.vibrate?.(10)}catch(err){}workoutMenu(h.id,h.action,h.row)},500)}},true);
  document.addEventListener('pointermove',e=>{if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>10)stop()},true);
  for(const type of ['pointerup','pointercancel'])document.addEventListener(type,stop,true);   // прокрутка пальцем — pointercancel
- document.addEventListener('contextmenu',e=>{const row=rowOf(e.target);if(!row)return;e.preventDefault();stop();swallowClickUntil=Date.now()+700;workoutMenu(row.dataset.id,row.dataset.action)},true);
+ document.addEventListener('contextmenu',e=>{const row=rowOf(e.target);if(!row)return;e.preventDefault();stop();swallowClickUntil=Date.now()+700;workoutMenu(row.dataset.id,row.dataset.action,row)},true);
  window.addEventListener('click',e=>{if(Date.now()<swallowClickUntil&&rowOf(e.target)){e.preventDefault();e.stopImmediatePropagation()}},true);}

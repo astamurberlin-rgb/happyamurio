@@ -315,3 +315,10 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .happy-settings .happy-heading,.happy-settings .settings-section,.happy-settings .settings-section h3,.happy-settings .hs-section>h3,.happy-settings .hs-links-title{font-size:16px!important;font-weight:700!important;color:#fff!important;opacity:1!important;text-transform:none!important;letter-spacing:0!important}
 /* Подход: «П» всегда на одном месте — номер в своей ячейке слева, прижат к названию (Астамур 18.11.2026). */
 .set-name-wrap{display:flex;align-items:center;min-width:0;font-size:16px;color:#fff}.set-name-wrap::before{content:attr(data-num);flex:0 0 1.35em;text-align:right;padding-right:.3em;font-variant-numeric:tabular-nums}.set-name-wrap>.set-name{flex:1 1 auto}
+/* «+ Подход»: плюс — в той же ячейке, что номера подходов (прижат вправо), «П» — ровно под «П» остальных строк (Астамур 18.11.2026). */
+.active-workout .set-actions .set-add-plus,.plan-add-actions .set-add-plus{display:inline-block;flex:0 0 auto;width:1.35em;padding-right:.3em;box-sizing:content-box;text-align:right}
+.active-workout .set-actions .set-add-digit,.plan-add-actions .set-add-digit{display:none}
+.active-workout .set-actions .set-add-sign,.plan-add-actions .set-add-sign{position:static;transform:none}
+/* Долгое нажатие: меню у самой тренировки, над нижним меню. */
+.workout-pop{position:fixed;inset:0;z-index:60}.workout-pop-shade{position:absolute;inset:0;background:#06204a33;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.workout-pop-card{position:fixed;display:grid;gap:10px;padding:12px;border-radius:24px;background:var(--sport-background);box-shadow:0 14px 34px #0b1e5a55;border:1px solid #ffffff33}
