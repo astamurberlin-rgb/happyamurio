@@ -456,7 +456,7 @@ function mount(box,options){
    `<form class="hm-form" novalidate><label class="hm-field">Дата<input name="date" type="date" required value="${record?record.date:today()}"></label><div class="hm-fields">`+
    GROUPS.map(g=>g.keys.length===1?input(g.keys[0],g.name+', '+(g.keys[0]==='weight'?'кг':'см')):`<fieldset class="hm-pair-fields"><legend>${g.name}, см</legend><div class="hm-two">${input(g.keys[0],'Левая')}${input(g.keys[1],'Правая')}</div></fieldset>`).join('')+
    `</div><p class="hm-error" role="alert"></p><button class="hm-button hm-primary" type="submit">${ICON.check} Сохранить замер</button>`+
-   (record?`<button class="hm-button hm-delete" type="button" data-hm="delete">${ICON.trash} Удалить замер</button>`:'')+`</form>`);
+   (record?`<button class="hm-button hm-delete" type="button" data-hm="delete">${ICON.trash} Удалить</button>`:'')+`</form>`);
   d.hmBefore=record?copy(record):null;
  }
  function fail(e){

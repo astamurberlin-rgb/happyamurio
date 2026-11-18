@@ -226,3 +226,30 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* Два поля даты рядом («Связать с расписанием»: От / До): на iPhone поле даты не сжимается и налезает на соседнее —
    у полей с русской подписью сверху свой вид не нужен, ширина — по колонке. */
 .schedule-date-grid .ru-date>input{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;box-sizing:border-box}
+
+/* Аудит 18.11.2026, часть 4: упражнение в тренировке удаляется свайпом влево по строке названия — как подход;
+   красная «Удалить» справа, высотой со строку названия */
+.exercise-name-swipe{position:relative;overflow:hidden;border-radius:12px;touch-action:pan-y}
+.exercise-name-swipe>.exercise-card-heading{position:relative;transition:transform .18s ease}
+.exercise-name-swipe.swipe-dragging>.exercise-card-heading{transition:none}
+.exercise-name-delete{position:absolute;right:0;top:0;bottom:0;width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;padding:0;background:#df547d;color:#fff;border-radius:11px;font-size:12px;font-weight:600;visibility:hidden;z-index:0}
+.exercise-name-swipe.swipe-open>.exercise-name-delete,.exercise-name-swipe.swipe-dragging>.exercise-name-delete{visibility:visible}
+.exercise-name-delete .icon{width:18px;height:18px}
+
+/* Аудит 18.11.2026, часть 4: удалить внутри карточки — красная «Удалить» внизу, сразу, без вопроса; в сообщении «Вернуть».
+   Тот же красный, что у «Удалить» в свайпе. */
+.button.button-delete,.hm-button.hm-delete{background:#df547d!important;border-color:#df547d!important;color:#fff!important;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.button.button-delete .icon,.hm-button.hm-delete svg{width:18px;height:18px}
+#group-form .button-delete{margin-top:12px}
+.workout-detail .delete-workout{margin-top:12px}
+/* «Редактировать» — в шапке справа, как в карточке тренировки; «Поделиться» — значок перед ним */
+.training-heading-actions{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
+
+/* Настройки → «Мои тренировки»: строки как «Настроить профиль», свайп влево — красная «Удалить» справа */
+.happy-settings .happy-card.settings-templates{padding:0 17px!important;display:block}
+.row-swipe{position:relative;overflow:hidden;touch-action:pan-y}
+.row-swipe>.swipe-delete{top:7px;bottom:7px;border:0;padding:0}
+.settings-template-row{display:flex;align-items:center;width:100%;min-height:56px;padding:16px 0;margin:0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;text-align:left;font:inherit;font-size:16px;font-weight:600;line-height:20px}
+.settings-templates-hint{margin:8px 4px 0!important}
+/* текст в строке со свайпом не выделяется — иначе следующий свайп превращается в перетаскивание выделения */
+.exercise-name-swipe,.row-swipe{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
