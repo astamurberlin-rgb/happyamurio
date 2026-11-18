@@ -59,6 +59,8 @@
       if(food&&g>0&&title){
         const v={title,fid:c.fid,q:c.q,g,u:c.u,food,targets},sf=supplementFood(c);
         if(sf&&SUP())v.portionText=SUP().counterLabel(sf,c.q,c.u,g);
+        /* Meal 33.10: мера USDA — русской подписью и в Day и Sport («1 банка (298 г)»), а не «1 can (10.5 oz) · 298 г» */
+        else if(root.MealUSDA&&root.MealUSDA.unitLabel(root.FOODS[c.fid]||food,c.u,c.fid)){const t=root.portTxt(c),txt=/\sг$/.test(t)?t:t+' · '+Math.round(g)+' г';if(txt.length<=80)v.portionText=txt}
         wanted.set(c.k,v);return;
       }
       /* продукт счётчика сейчас не читается (каталог ещё не загрузился): прежняя запись витрины остаётся */

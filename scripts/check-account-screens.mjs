@@ -1,6 +1,6 @@
 /* Экраны аккаунта, профиля и целей (прототипы Meal v7, Sport v2, Day v2; shared/happy-person.js, shared/happy-goals.js):
    правила, которые не видны глазом, — на настоящем коде общих файлов в Node.
-   Профиль: запись только изменившихся полей; новый вес — замер на свою дату, история не переписывается, вес за ту же дату
+   Профиль: запись только изменившихся полей; единицы еды — своё поле в units (Meal 33.10); новый вес — замер на свою дату, история не переписывается, вес за ту же дату
    правит замер этой даты и не трогает его остальные значения. Цели веса: колесо и линейка — одна модель (левее диапазона —
    снижение, правее — набор, внутри — последний центральный режим). Meal: доли БЖУ всегда 100 %, расчёт по формуле прототипа.
    Sport: смена одного фокуса не повторяет цель веса. Day: новый выбор — со второй строки, сохранённый не сбрасывается,
@@ -15,14 +15,19 @@ const P=ctx.HappyPerson,G=ctx.HappyGoals,M=ctx.HappyMeasurements,plain=x=>JSON.p
 
 /* ── профиль ── */
 {const before=P.read([]);
- assert.deepEqual(plain(before),{birthday:'',heightCm:null,sex:'',units:{weight:'kg',height:'cm'},photo:''},'пустой профиль');
+ assert.deepEqual(plain(before),{birthday:'',heightCm:null,sex:'',units:{weight:'kg',height:'cm',food:'metric'},photo:''},'пустой профиль');
  const list=plain(P.changes(before,Object.assign({},before,{birthday:'1990-05-14',heightCm:178,sex:'male'})));
  assert.deepEqual(list.map(x=>x.id),['birthday','height','sex'],'пишутся только изменившиеся поля');
  const after=P.read(list);assert.equal(after.heightCm,178);assert.equal(after.sex,'male');assert.equal(after.birthday,'1990-05-14');
  assert.deepEqual(plain(P.changes(after,after)),[],'без изменений ничего не пишется');
  assert.throws(()=>P.changes(after,Object.assign({},after,{heightCm:20})),/рост/i);
  assert.throws(()=>P.changes(after,Object.assign({},after,{birthday:'1990-02-30'})),/дату рождения/i);
- assert.deepEqual(plain(P.read([{id:'units',value:{v:{weight:'lb',height:'ft'}}}]).units),{weight:'lb',height:'ft'},'единицы веса и роста отдельно');
+ assert.deepEqual(plain(P.read([{id:'units',value:{v:{weight:'lb',height:'ft'}}}]).units),{weight:'lb',height:'ft',food:'metric'},'единицы веса и роста отдельно; запись без еды — граммы');
+ /* единицы еды (Meal 33.10): одно поле на аккаунт, отдельно от веса */
+ const oz=plain(P.changes(after,Object.assign({},after,{units:{weight:'kg',height:'cm',food:'oz'}})));
+ assert.deepEqual(oz,[{id:'units',value:{v:{weight:'kg',height:'cm',food:'oz'}}}],'смена единиц еды пишет одно поле units');
+ assert.equal(P.read(oz).units.food,'oz');assert.equal(P.read(oz).units.weight,'kg','вес остаётся в кг');
+ assert.equal(P.read([{id:'units',value:{v:{weight:'lb',height:'cm',food:'cups'}}}]).units.food,'metric','неизвестное значение — граммы');
  assert.equal(P.read([{id:'photo',value:{v:'javascript:alert(1)'}}]).photo,'','фото — только картинка data:image');}
 /* вес: замер на дату */
 {let records=[];const apply=list=>{const map=new Map(records.map(r=>[r.id,r]));for(const c of list){if(c.deleted)map.delete(c.id);else map.set(c.id,{id:c.id,value:c.value})}records=[...map.values()]};

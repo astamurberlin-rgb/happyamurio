@@ -2,13 +2,18 @@
 каталогов этого репозитория (HAPPY_LIBRARIES_REF). Все 7 793 продукта USDA с русским названием; «белый рис» находит
 варёный длиннозёрный рис USDA, английский запрос «rice long-grain cooked» — тоже. Карточка: русское название и
 «Оригинал» по-английски. Названия «Сладких заготовок» и десертов остались прежними. Язык English — английские
-названия. Без ошибок на странице."""
+названия. Меры (Meal 33.10): в разделе дня и в правке записи — по-русски и в граммах («1 чашка США», «2 банки (305 г)»,
+«59 мл»); профиль → «Единицы измерения» → «Еда» → «унции» — подписи в oz и fl oz, граммы записей те же; обратно — г и мл.
+Без ошибок на странице."""
 from common import *
 
 out, errors, checks = {}, [], []
 RICE = "usda:168878"          # Rice, white, long-grain, regular, enriched, cooked
 CHEESECAKE = "usda:172711"    # русское название от ChatGPT (десерты)
 APRICOT_JAM = "usda:170645"   # русское название от ChatGPT («Сладкие заготовки»)
+SOUP = "usda:171539"          # Soup, beef noodle, canned, condensed: can (10.75 oz), 0.5 cup
+MILK = "usda:171265"          # Milk, whole: fl oz, cup, tbsp, quart
+ROWS = "()=>[...document.querySelectorAll('[data-screen=\"sec\"] .mlItem')].map(r=>r.innerText.replace(/\\s+/g,' ').trim())"
 
 
 def check(title, ok):
@@ -59,6 +64,44 @@ with sync_playwright() as p:
     check("карточка: русское название и «Оригинал» по-английски", "Рис, белый, длиннозёрный, обычный, обогащённый, приготовленный" in whole and "Rice, white, long-grain, regular, enriched, cooked" in whole)
     meal.screenshot(path=SHOTS + "meal_usda_ru-2-card.png")
     meal.keyboard.press("Escape"); meal.wait_for_timeout(300)
+
+    # ── меры по-русски (Meal 33.10) ──
+    meal.evaluate("(a)=>{for(const [fid,q,u] of a){FIND={where:'s',mode:'add',q:''};applyFind(fid);const it=day(curDate).items[day(curDate).items.length-1];it.q=q;it.u=u;it.g=gramsFor(fid,q,u)}save();renderAll()}", [[RICE, 1, "cup"], [SOUP, 2, "can (10.75 oz)"], [MILK, 2, "fl oz"]])
+    meal.wait_for_timeout(1200)
+    meal.evaluate("()=>{SOPEN=null;renderSec()}"); meal.wait_for_timeout(300)
+    rows = meal.evaluate(ROWS)
+    out["rows_metric"] = rows
+    grams = meal.evaluate("()=>day(curDate).items.map(x=>[x.fid,x.u,x.q,x.g])")
+    out["items_metric"] = grams
+    check("раздел: «1 чашка США», «2 банки (305 г)», «59 мл» — без cup, can, fl oz",
+          any("1 чашка США " in r for r in rows) and any("2 банки (305 г)" in r for r in rows) and any("59 мл" in r for r in rows) and not any(w in " ".join(rows) for w in ("cup", "can (", "fl oz")))
+    check("граммы мер — из USDA: 158, 610, 61 г", [g[3] for g in grams] == [158, 610, 61])
+    meal.screenshot(path=SHOTS + "meal_usda_ru-3-measures.png")
+    meal.evaluate("()=>{const it=day(curDate).items[0];SOPEN=it.id;renderSec()}"); meal.wait_for_timeout(500)
+    chips = meal.evaluate("()=>[...document.querySelectorAll('.mlUnits .chip')].map(c=>c.innerText.replace(/\\s+/g,' ').trim())")
+    out["chips_metric"] = chips
+    check("правка записи: кнопка меры «чашка США (237 мл) 158 г»", any(c.startswith("чашка США (237 мл)") and "158" in c for c in chips))
+    meal.screenshot(path=SHOTS + "meal_usda_ru-4-edit.png")
+    meal.evaluate("()=>{SOPEN=null;renderSec()}")
+    # профиль → «Еда» → «унции»: настоящий экран профиля
+    meal.evaluate("()=>{go('settings');HappyPerson.open()}"); meal.wait_for_timeout(700)
+    meal.evaluate("()=>document.querySelector('.hs-units').scrollIntoView({block:'center'})"); meal.wait_for_timeout(300)
+    out["units_row"] = meal.evaluate("()=>document.querySelector('.hs-units').innerText.replace(/\\s+/g,' ').trim()")
+    check("профиль: в «Единицах измерения» строки «Вес», «Рост», «Еда» — «г и мл» выбрано", "Еда" in out["units_row"] and meal.evaluate("()=>document.querySelector('[data-segment=funits] [data-value=metric]').getAttribute('aria-pressed')") == "true")
+    meal.locator('[data-segment="funits"] [data-value="oz"]').tap(); meal.wait_for_timeout(200)
+    meal.screenshot(path=SHOTS + "meal_usda_ru-5-profile.png")
+    meal.locator('.hs-profile [data-hs="save"]').tap()
+    ok = wait_for(meal, lambda: meal.evaluate("()=>MealUSDA.units()==='oz'"), 10)
+    meal.evaluate("()=>{go('day');openSec('am');SOPEN=null;renderSec()}"); meal.wait_for_timeout(600)
+    rows = meal.evaluate(ROWS)
+    out["rows_oz"] = rows
+    out["profile_units"] = meal.evaluate("()=>HappyPerson.data().profile.units")
+    check("унции: профиль записал food:'oz', подписи — «2 банки (10¾ oz)», «2 fl oz», в правке — «чашка США (8 fl oz)»",
+          ok and out["profile_units"].get("food") == "oz" and meal.evaluate("()=>{const it=day(curDate).items[0];return unitName(FOODS[it.fid],it.u)}") == "чашка США (8 fl oz)" and any("банки (10¾ oz)" in r for r in rows) and any("2 fl oz" in r for r in rows))
+    check("граммы записей не изменились", meal.evaluate("()=>day(curDate).items.map(x=>x.g)") == [158, 610, 61])
+    meal.screenshot(path=SHOTS + "meal_usda_ru-6-oz.png")
+    meal.evaluate("()=>HappyPerson.update({units:{food:'metric'}})")
+    check("обратно г и мл", wait_for(meal, lambda: meal.evaluate("()=>MealUSDA.units()==='metric'"), 10))
 
     meal.evaluate("()=>{DB.catalogLang='en';rebuildLib();renderAll()}"); meal.wait_for_timeout(400)
     wait_for(meal, lambda: meal.evaluate("(id)=>!!FOODS[id]", RICE), 30)

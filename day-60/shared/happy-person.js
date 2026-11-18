@@ -4,11 +4,14 @@
  *
  * Формат, номер 1. Личные данные лежат в общем документе sport/profile (витрина общего модуля, пишут три приложения),
  * по записи на поле: birthday → {v:'ГГГГ-ММ-ДД'|''}, height → {v: см | null}, sex → {v:'male'|'female'|''},
- * units → {v:{weight:'kg'|'lb', height:'cm'|'ft'}}, photo → {v:'data:image/jpeg;base64,…'|''} (маленькое фото, до 300 КБ).
+ * units → {v:{weight:'kg'|'lb', height:'cm'|'ft', food:'metric'|'oz'}}, photo → {v:'data:image/jpeg;base64,…'|''} (маленькое фото, до 300 КБ).
  * Имя — в аккаунте (shared/happy-account.js, rename), общее для трёх приложений. Вес — датированные замеры в общем
  * документе замеров sport/body (shared/happy-measurements.js): новый вес — замер на свою дату, прежние даты не меняются;
  * одна дата — одна запись замеров, поэтому вес за ту же дату её исправляет.
  * Меняется устройство записей — растёт FORMAT, и три приложения выходят разом.
+ * units.food (Meal 33.10, Астамур 18.11.2026): единицы еды — 'metric' (г, мл и русские меры; по умолчанию) или 'oz'
+ * (oz и fl oz в подписях мер USDA). Одно на аккаунт, видно и меняется в профиле Day, Meal и Sport. Новое поле — номер прежний;
+ * запись без food читается как 'metric'.
  *
  * Экраны — по прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026):
  *   HappyPerson.init({app, account, profileDoc, bodyDoc, openGoals, features})
@@ -31,7 +34,7 @@ function validDate(d){
  if(typeof d!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(d))return false;
  const t=new Date(d+'T12:00:00Z');return !isNaN(t)&&t.toISOString().slice(0,10)===d;
 }
-const BLANK=()=>({birthday:'',heightCm:null,sex:'',units:{weight:'kg',height:'cm'},photo:''});
+const BLANK=()=>({birthday:'',heightCm:null,sex:'',units:{weight:'kg',height:'cm',food:'metric'},photo:''});
 
 /* ── формат: записи документа ↔ профиль ── */
 function read(records){
@@ -41,7 +44,7 @@ function read(records){
  const b=v('birthday');if(validDate(b))p.birthday=b;
  const h=v('height');if(Number.isFinite(h)&&h>=50&&h<=260)p.heightCm=Math.round(h*10)/10;
  const s=v('sex');if(s==='male'||s==='female')p.sex=s;
- const u=v('units');if(object(u)){if(u.weight==='lb')p.units.weight='lb';if(u.height==='ft')p.units.height='ft'}
+ const u=v('units');if(object(u)){if(u.weight==='lb')p.units.weight='lb';if(u.height==='ft')p.units.height='ft';if(u.food==='oz')p.units.food='oz'}
  const ph=v('photo');if(typeof ph==='string'&&/^data:image\/(jpeg|png|webp);base64,/.test(ph)&&ph.length<=PHOTO_MAX)p.photo=ph;
  return p;
 }
@@ -52,7 +55,8 @@ function changes(before,after){
  if(a.birthday!==b.birthday){if(b.birthday&&!validDate(b.birthday))throw Error('Проверьте дату рождения');put('birthday',b.birthday||'')}
  if(a.heightCm!==b.heightCm){if(b.heightCm!==null&&!(Number.isFinite(b.heightCm)&&b.heightCm>=50&&b.heightCm<=260))throw Error('Проверьте рост');put('height',b.heightCm)}
  if(a.sex!==b.sex)put('sex',b.sex==='male'||b.sex==='female'?b.sex:'');
- if(a.units.weight!==b.units.weight||a.units.height!==b.units.height)put('units',{weight:b.units.weight==='lb'?'lb':'kg',height:b.units.height==='ft'?'ft':'cm'});
+ const fa=a.units.food==='oz'?'oz':'metric',fb=b.units.food==='oz'?'oz':'metric';
+ if(a.units.weight!==b.units.weight||a.units.height!==b.units.height||fa!==fb)put('units',{weight:b.units.weight==='lb'?'lb':'kg',height:b.units.height==='ft'?'ft':'cm',food:fb});
  if(a.photo!==b.photo){if(b.photo&&b.photo.length>PHOTO_MAX)throw Error('Фото слишком большое');put('photo',b.photo||'')}
  return out;
 }
@@ -171,7 +175,8 @@ function open(){
    F({label:'Дата замера',name:'date',type:'date',max:today,value:shown.date})+'</div>'+
    '<div data-p-history>'+history()+'</div>'+
    '<section class="hs-units"><h2>Единицы измерения</h2><div class="hs-units-row"><span>Вес</span>'+S().segment('wunits',[['kg','кг'],['lb','фунты']],draft.units.weight,'Единицы веса')+'</div>'+
-   '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div></section>'+
+   '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div>'+
+   '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+
    '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отменить',action:'cancel'});
  }
  const input=n=>main.querySelector('[name="'+n+'"]');
@@ -197,6 +202,7 @@ function open(){
    const name=seg.parentElement.dataset.segment,v=seg.dataset.value;readInputs();
    if(name==='sex'){draft.sex=v;S().setSegment(main,'sex',v);return}
    if(name==='wunits'&&v!==draft.units.weight){const kg=shown.weight?S().fromUnits(num(shown.weight),draft.units.weight):null;draft.units.weight=v;shown.weight=kg&&Number.isFinite(kg)?fmt(S().toUnits(kg,v)):shown.weight;render();return}
+   if(name==='funits'){draft.units.food=v==='oz'?'oz':'metric';S().setSegment(main,'funits',draft.units.food);return}
    if(name==='hunits'&&v!==draft.units.height){const cm=shown.height?num(shown.height)*(draft.units.height==='cm'?1:30.48):null;draft.units.height=v;shown.height=cm&&Number.isFinite(cm)?(v==='cm'?fmt(cm,0):fmt(cm/30.48,2)):shown.height;render();return}
    return;
   }

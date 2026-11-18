@@ -16,6 +16,7 @@ Meal 33 записывает только после входа в аккаун�
 | `meal-account.js` | Первый экран, вход, верх и низ настроек, профиль и цели Meal — связь с общими экранами (`shared/happy-welcome.js`, `happy-person.js`, `happy-goals.js`). Подключается в начале страницы: первый экран появляется раньше заставки. |
 | `food-libraries.js`, `catalog.js`, `usda.js`, `uzbek.js`, `desserts.js`, `preserves.js`, `kfct.js` | Каталоги продуктов. |
 | `sources.js`, `search-names.js`, `portions.js` | Поиск: выбор каталогов, русские названия, бытовые меры. |
+| `usda-measures.js` | Меры USDA по-русски: словарь подписей и пересчёт чисел (oz → г, fl oz → мл, дюймы → см; американская чашка — «чашка США (237 мл)»). Только подписи: ключи мер и граммы прежние. Единицы еды — из профиля. |
 | `catalog-offline.js`, `sw.js` | Работа без интернета: скачанные каталоги и копия файлов выпуска на устройстве. |
 | `collections.js`, `catalog-preview.js`, `collections.css`, `catalog.css` | «Сборники»: магазин каталогов и личные разделы. |
 | `user-products.js`, `user-products.css` | «Мои продукты»: свой продукт и рецепт. |

@@ -80,10 +80,20 @@ function resume(r){
 
 var profileOptions={app:'meal',account:MealBoot.account,features:FEATURES,profileDoc:profileDoc,bodyDoc:bodyDoc,openGoals:openGoals};
 HappyPerson.init(profileOptions);
+/* Meal 33.10: единицы еды из профиля («Единицы измерения» → «Еда»): подписи мер USDA — в г и мл или в унциях.
+   Поменяли в профиле любого из трёх приложений — подписи меняются сами; граммы записей не трогаются. */
+function syncFoodUnits(){
+  try{
+    var u=HappyPerson.data().profile.units.food;
+    if(typeof MealUSDA!=='undefined'&&MealUSDA.setUnits(u)){ if(typeof renderAll==='function') renderAll(); if(window.HappyMealCounters&&MealData.signedIn()&&!RO) HappyMealCounters.publish() }
+  }catch(e){}
+}
 MealBoot.ready.catch(function(){}).then(function(){
   HappyPerson.init(profileOptions);   // хранилище открыто: профиль следит за своим документом
   paintAccount();
+  syncFoodUnits();
   if(!MealData.signedIn()) return;
+  profileDoc().subscribe(syncFoodUnits);
   bodyDoc().subscribe(function(){ HappyPerson.top() });
   MealBoot.account.onChange(function(){ HappyPerson.top() });   // имя поменяли в профиле
   shown.then(function(){ resume(HappyWelcome.takeResume()) });

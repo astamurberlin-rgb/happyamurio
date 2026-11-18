@@ -40,7 +40,7 @@ async function open(food,options){
  if(food&&food.b&&root.BLS_ST!=='ok'){root.toast('Дождись загрузки каталога состава, чтобы скопировать все нутриенты');return}
  var draft,sourceInfo=food&&food.sourceInfo||null;
  if(food&&food.b){var kav=root.kavOf&&root.kavOf(food.b),bls=root.BLS;sourceInfo=kav?{source:root.KAV&&root.KAV.src||'Happy Meal · Кавказская кухня',record:P.clone(kav),version:root.KAV&&root.KAV.v,code:food.b}:{source:bls&&bls.src||food.src,url:bls&&bls.url,version:bls&&bls.v,note:bls&&bls.note,code:food.b}}
- try{draft=P.fromFood(food,food?catalog():null,root.blsVal,{copy:!!options.copy,name:options.name||'',sourceInfo:sourceInfo});if(food&&options.copy){draft.por=Object.assign({},draft.por,(root.DB.units||{})[food.id]||{});draft.drink=!!root.isDrink(food.id)}}
+ try{draft=P.fromFood(food,food?catalog():null,root.blsVal,{copy:!!options.copy,name:options.name||'',sourceInfo:sourceInfo});if(food&&options.copy){draft.por=Object.assign({},draft.por,(root.DB.units||{})[food.id]||{});draft.drink=!!root.isDrink(food.id);draft.por=usdaNames(food,draft.por)}}
  catch(ex){root.toast(ex.message);return}
  session={draft:draft,initial:P.clone(draft),original:options.copy?null:food,expected:draft.revision||0,cb:options.onSave,pro:!!root.DB.productToolsPro,view:'edit',query:'',filter:'',selected:[],open:{main:true},undo:null,saving:false};
  draft.por=Object.assign({},draft.por,(root.DB.units||{})[draft.id]||{});draft.porG=1;delete draft.porOwn;delete draft.own;session.initial=P.clone(draft);
@@ -103,6 +103,13 @@ function reportBody(){var f=session.draft;return '<h1>'+esc(f.n||'Свой пр�
 function reportDocument(){return '<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(session.draft.n)+'</title><style>body{font:15px system-ui,sans-serif;color:#222;max-width:900px;margin:24px auto;padding:16px}h1{overflow-wrap:anywhere}p{white-space:pre-wrap}table{border-collapse:collapse;width:100%;table-layout:fixed}th,td{text-align:left;vertical-align:top;padding:10px 5px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}th:nth-child(2){width:22%}thead{display:table-header-group}tr{break-inside:avoid}@page{size:A4;margin:14mm}</style><body>'+reportBody()+'</body></html>'}
 function shareHTML(){return '<button class="happy-button" data-up="back">‹ К продукту</button><div class="happy-actions up-share-actions"><button class="happy-button" data-up="share-file">Поделиться карточкой</button><button class="happy-button" data-up="print">Печать / PDF</button></div><p class="happy-note">Предпросмотр текущих данных. Для PDF выбери сохранение в меню печати.</p><article class="up-report">'+reportBody()+'</article>'}
 function printProduct(){var frame=doc.createElement('iframe');frame.title='Печать продукта';frame.className='up-print-frame';frame.onload=function(){try{frame.contentWindow.focus();frame.contentWindow.print()}catch(ex){error('Печать недоступна в этом окне. Открой Happy Meal в Safari.')}};frame.srcdoc=reportDocument();box.appendChild(frame)}
+/* Meal 33.10: копия продукта USDA — меры под русскими названиями, как их видно в Meal («чашка США (237 мл)»); граммы те же.
+   Совпали названия у мер с разной массой — к названию добавляется масса; длиннее 80 знаков — прежнее название. */
+function usdaNames(food,por){
+ if(!root.MealUSDA)return por;var out={};
+ Object.keys(por).forEach(function(k){var ru=root.MealUSDA.unitLabel(food,k,food.id);if(!ru||ru.length>80)ru=k;if(out[ru]!=null&&out[ru]!==por[k])ru=(ru+' ('+root.fmt(por[k])+' г)').slice(0,80);if(out[ru]==null)out[ru]=por[k]});
+ return out;
+}
 function renderOwnLibrary(){var node=e('libraryOwnProducts');if(!node)return;var foods=(root.DB.foods||[]).filter(function(f){return !f.supplement});/* Meal 29: продукты-добавки счётчиков — в «Мои добавки» */node.innerHTML=foods.length?'<div class="eyebrow"><span>Мои продукты</span></div>'+foods.map(function(f){return '<button class="happy-button up-own-product" data-own-product="'+esc(f.id)+'"><span>'+esc(f.n)+'<small>Порций: '+Object.keys(f.por||{}).length+' · Мои</small></span><span aria-hidden="true">›</span></button>'}).join(''):''}
 function macroText(){var f=session.draft;return ['kcal','prot','fat','carb'].map(function(k,i){var v=P.value(f,k);return ['Ккал','Б','Ж','У'][i]+' '+(v==null?'—':num(v))}).join(' · ')+' / 100 г'}
 function rowHTML(f){

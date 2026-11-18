@@ -23,6 +23,14 @@
  "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-59/",
  "point_releases": [
   {
+   "version": "60.5",
+   "date": "2026-11-18",
+   "changes": [
+    "shared/happy-person.js: «Единицы измерения» → «Еда» (units.food, общее с Meal 33.10 и Sport 44.2)",
+    "index.html ?v=60.5, заголовок и подвал; release-notes.js 60.5; Happy-Day-60.html пересобран"
+   ]
+  },
+  {
    "version": "60.1",
    "date": "2026-11-16",
    "changes": [
@@ -35,8 +43,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1278843,
-   "sha256": "4067015a9e9beef74ebe750e9f06163b512e02eff8d78a9cce9f159dc81d2554"
+   "size": 1280783,
+   "sha256": "0eadb218de9f92c96e7c9c64a6b0660ef64d8d1fd125e2d13aefcb130a531bf4"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -206,7 +214,7 @@
   {
    "path": "index.html",
    "size": 493434,
-   "sha256": "76ddca4ecb773e9228cba8a996789388640a4eebd9d466806529ddd1b80f8b93"
+   "sha256": "c62c9949463013360b926729175b5cd20bf4027bd35bb0ec0710e0e7fbf63380"
   },
   {
    "path": "manifest.webmanifest",
@@ -215,8 +223,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 38922,
-   "sha256": "df309c445443fa7beeee3f3affd81da95b01a0985a743219cb0ecc812c6f99c0"
+   "size": 39444,
+   "sha256": "ca490ce521f72caf364e32e4dfaeb6753fc5a1ff29e04bd3e3688ca4988a10ae"
   },
   {
    "path": "section-wheel.css",
@@ -315,8 +323,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 22705,
-   "sha256": "95a309fc0e91ea3d88250b3f92648ddb8775a154702b7baa7f8e74b126170ec7"
+   "size": 23640,
+   "sha256": "c75c57b878633f28a7c6fd02ab93f998b45cdf22745b6c0f76397abe3744a355"
   },
   {
    "path": "shared/happy-reference-themes.js",

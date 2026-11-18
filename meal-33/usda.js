@@ -26,10 +26,32 @@ function fields(r){
 function portionMap(r){
  var out={};(r.portions||[]).forEach(function(p){if(!(p.gramWeight>0))return;var unit=p.modifier||p.measureUnit||'serving';if(typeof unit==='object')unit=unit.name||'serving';var label=(p.amount&&p.amount!==1?p.amount+' ':'')+unit;label=label.trim().slice(0,80);if(!label||label==='г')return;if(out[label]&&out[label]!==p.gramWeight)label=(label.slice(0,65)+' ('+p.gramWeight+' g)').slice(0,80);out[label]=p.gramWeight});return out;
 }
+/* Meal 33.10: подписи мер по-русски (usda-measures.js). Ключ меры (f.por) — прежний, английский: по нему записи дневника
+   находят свою меру; меняется только то, что видно на экране. Единицы еды — из профиля: 'metric' или 'oz'. */
+var UNITS='metric';
+function isUsda(f,fid){return !!(f&&(f.catalogSource==='USDA'||/^usda:/.test(String(f.id||''))))||/^usda:/.test(String(fid||''))}
+function measureOf(f,u,fid){
+ var M=root.MealUSDAMeasures;if(!M||!u||u==='г'||!isUsda(f,fid)||!/[A-Za-z]/.test(u))return null;
+ if(f&&f.own&&f.own[u])return null;
+ /* ключ собран portionMap: «количество модификатор», при совпадении подписей — « (N g)» в конце */
+ var m=String(u).match(/^(\d*\.?\d+) (.+)$/);return m?{amount:+m[1],modifier:m[2]}:{amount:1,modifier:u};
+}
+function unitLabel(f,u,fid){var p=measureOf(f,u,fid);if(!p)return null;try{return root.MealUSDAMeasures.label(p,UNITS)}catch(e){return null}}
+/* слово после числа, коротко — для строки дневника: «2 чашки США» (объём чашки — на кнопке меры); склонять нечего — «2 × банка (298 г)» */
+function unitWord(f,u,q,fid){
+ var p=measureOf(f,u,fid);if(!p)return null;
+ try{var M=root.MealUSDAMeasures,lab=M.label(p,UNITS,true);if(q===1)return lab;return M.phrase(p,q,UNITS,true)||'× '+lab}catch(e){return null}
+}
+/* мера — только объём или масса («30 мл», «3 oz»): в дневнике — общим количеством, «61 мл», а не «2 × 30 мл» */
+function amountText(f,u,q,fid){
+ var lab=unitLabel(f,u,fid);if(!lab||!(q>0)||!/^[\d,]+ (мл|л|oz|fl oz|lb)$/.test(lab))return null;
+ var p=measureOf(f,u,fid);try{return root.MealUSDAMeasures.label({amount:p.amount*q,modifier:p.modifier},UNITS)}catch(e){return null}
+}
+function setUnits(u){u=u==='oz'?'oz':'metric';if(u===UNITS)return false;UNITS=u;return true}
 function makeFood(r){
  var P=root.MealProducts,f={id:r.id,n:selectedName(r),names:Object.assign({},r.names),catalogSource:'USDA',catalogCode:String(r.code),revision:REVISION,src:'USDA',por:portionMap(r),porG:1,k:finite(r.nut.kcal),p:finite(r.nut.prot),f:finite(r.nut.fat),c:carbs(r).value,w:r.searchWords.slice(),
  sourceInfo:{source:'USDA · FoodData Central · SR Legacy',nameOrigins:r.nameOrigins||null,version:'April 2018',url:r.sourceUrl,code:String(r.code),ndbNumber:r.ndbNumber,publicationDate:r.publicationDate,license:'CC0',archiveUrl:source.downloadUrl||source.url,originalNutrients:r.sourceNutrients},
- sourceNotes:'На 100 г съедобной части. SR Legacy, выпуск апреля 2018; публикация записи FDC: '+(r.publicationDate==='4/1/2019'?'01.04.2019':r.publicationDate||'не указана')+'. Это не новые измерения 2026 года. Углеводы — по разности минус клетчатка (≈, расчёт Happy Meal); углеводы с клетчаткой, витамин A RAE и α-токоферол показаны отдельно: определения отличаются от BLS. Порции — исходные меры USDA в граммах; английские названия сохранены.'};
+ sourceNotes:'На 100 г съедобной части. SR Legacy, выпуск апреля 2018; публикация записи FDC: '+(r.publicationDate==='4/1/2019'?'01.04.2019':r.publicationDate||'не указана')+'. Это не новые измерения 2026 года. Углеводы — по разности минус клетчатка (≈, расчёт Happy Meal); углеводы с клетчаткой, витамин A RAE и α-токоферол показаны отдельно: определения отличаются от BLS. Порции — меры USDA в граммах; подписи переведены на русский и пересчитаны в граммы и миллилитры (в профиле можно выбрать унции), американская чашка — 237 мл.'};
  // Only selected/inspected foods allocate full composition fields. Snapshot JSON
  // evaluates this enumerable getter and persists independent plain data.
  var composition;Object.defineProperty(f,'composition',{enumerable:true,configurable:true,get:function(){return composition||(composition={version:1,basisGrams:100,fields:fields(r)})},set:function(v){composition=v}});
@@ -48,7 +70,7 @@ function load(force){
  state='loading';if(root.MealCatalog)root.MealCatalog.renderSettings();
  pending=Promise.resolve().then(function(){return root.HappyFoodLibraries.getJson('usda')}).then(function(input){var n=ingest(input);refresh();return n}).catch(function(){state='fail';if(root.MealCatalog)root.MealCatalog.renderSettings();return 0}).finally(function(){pending=null});return pending;
 }
-function settingsHTML(){return '<h3>USDA · США</h3><p>FoodData Central · SR Legacy, выпуск апреля 2018. '+(state==='ok'?records.length+' записей.':state==='loading'?'Загрузка справочника…':state==='fail'?'Справочник не загрузился. Сохранённые продукты доступны.':'Справочник загрузится при включении USDA.')+'</p><p>Полный набор SR Legacy из официальной выгрузки; не все типы FoodData Central, без отдельного набора Branded. Дата публикации записи FDC (обычно 2019) не означает дату измерения состава.</p><p>Оригинальные английские названия доступны для поиска. Русские названия добавлены для выбранных специй и зелени; остальной каталог пока на английском. Неизвестные и несопоставимые нутриенты не заменяются нулями.</p><p>USDA: общественное достояние, CC0. Значения и меры на карточке относятся к конкретному продукту и его состоянию.</p><a href="https://fdc.nal.usda.gov/download-datasets/" target="_blank" rel="noopener noreferrer">Официальная выгрузка ↗</a>'+ (state==='fail'?'<button class="happy-button" data-usda-retry>Повторить загрузку USDA</button>':'')}
+function settingsHTML(){return '<h3>USDA · США</h3><p>FoodData Central · SR Legacy, выпуск апреля 2018. '+(state==='ok'?records.length+' записей.':state==='loading'?'Загрузка справочника…':state==='fail'?'Справочник не загрузился. Сохранённые продукты доступны.':'Справочник загрузится при включении USDA.')+'</p><p>Полный набор SR Legacy из официальной выгрузки; не все типы FoodData Central, без отдельного набора Branded. Дата публикации записи FDC (обычно 2019) не означает дату измерения состава.</p><p>Русские названия у всех продуктов, оригинальные английские доступны для поиска. Меры порций — по-русски, в граммах и миллилитрах (единицы еды — в профиле); американская чашка — 237 мл, не наша 200 мл. Неизвестные и несопоставимые нутриенты не заменяются нулями.</p><p>USDA: общественное достояние, CC0. Значения и меры на карточке относятся к конкретному продукту и его состоянию.</p><a href="https://fdc.nal.usda.gov/download-datasets/" target="_blank" rel="noopener noreferrer">Официальная выгрузка ↗</a>'+ (state==='fail'?'<button class="happy-button" data-usda-retry>Повторить загрузку USDA</button>':'')}
 function carbHTML(f,grams){
  if(!f||f.catalogSource!=='USDA')return '';
  var field=(f.composition&&f.composition.fields||[]).find(function(x){return x.key==='prop:usda:1005'}),v=field&&field.status==='value'?field.value*grams/f.composition.basisGrams:null;
@@ -56,6 +78,6 @@ function carbHTML(f,grams){
  return v==null?'':'<section class="happy-card"><h3>Углеводы с клетчаткой</h3><p><strong>'+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(v)+' г</strong></p></section>';
 }
 function infoHTML(f){var info=f.sourceInfo||{},names=f.names||{},url=info.url,first=String(f.sourceNotes||'На 100 г съедобной части.').match(/^[^.]*\./);return '<section class="happy-card mc-catalog-info"><span class="mc-source-tag">USDA · США</span>'+(names.ru&&names.en&&names.en!==f.n?'<dl class="mc-names"><div><dt>Оригинал</dt><dd lang="en">'+esc(names.en)+'</dd></div></dl>':'')+'<p class="happy-note">'+esc(first?first[0]:'На 100 г съедобной части.')+'</p>'+(/^https:\/\/fdc\.nal\.usda\.gov\//.test(url||'')?'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Запись USDA ↗</a>':'')+'</section>'}
-root.MealUSDA={carbHTML:carbHTML,legacyReplacement:function(id){return data&&data.legacySearchReplacements&&data.legacySearchReplacements[id]||null},ingest:ingest,append:append,load:load,settingsHTML:settingsHTML,infoHTML:infoHTML,count:function(){return records.length},status:function(){return state}};
+root.MealUSDA={unitLabel:unitLabel,unitWord:unitWord,amountText:amountText,setUnits:setUnits,units:function(){return UNITS},carbHTML:carbHTML,legacyReplacement:function(id){return data&&data.legacySearchReplacements&&data.legacySearchReplacements[id]||null},ingest:ingest,append:append,load:load,settingsHTML:settingsHTML,infoHTML:infoHTML,count:function(){return records.length},status:function(){return state}};
 if(root.document)root.document.addEventListener('click',function(ev){if(ev.target.closest('[data-usda-retry]'))load(true)});
 })(typeof window!=='undefined'?window:globalThis);

@@ -84,6 +84,13 @@
  },
  "pointReleases": [
   {
+   "version": "33.10",
+   "date": "2026-11-18",
+   "changes": [
+    "usda-measures.js — словарь мер USDA по-русски и пересчёт чисел (oz → г, fl oz → мл, lb → г, дюйм → см; чашка США 237 мл); usda.js: unitLabel, unitWord, amountText, setUnits — только подписи, ключи f.por и граммы прежние; index.html: unitName, uLab, amtShort, portTxt, кнопка меры без повтора граммов; bot.js amt; counters.js — portionText счётчика USDA; meal-account.js — единицы еды из профиля; user-products.js — копия продукта USDA с русскими мерами; shared/happy-person.js — units.food; checks/check-usda-measures.mjs; ?v=33.10, sw.js 33.10"
+   ]
+  },
+  {
    "version": "33.9.1",
    "date": "2026-11-18",
    "changes": [
@@ -331,6 +338,21 @@
    "sha256": "087feafc7f39d8fc5b025786f2311204ff117112195a3578b0134cdf2d4de409"
   },
   {
+   "path": "bot-speech.js",
+   "size": 23951,
+   "sha256": "da4e09851b4e4bf0a5764183e005f9d55509079a20ae92ad936890ce26f5ff74"
+  },
+  {
+   "path": "bot.js",
+   "size": 144845,
+   "sha256": "b0f0728c0336e9d7eb3f4607811ab108181c157bd4d6a5b8c3e3dee78ec907e2"
+  },
+  {
+   "path": "bot/household-ru.js",
+   "size": 225193,
+   "sha256": "96f060242ecd11779f88d43fab96d2860a93c23350c70f0f5651fb3c615b1da0"
+  },
+  {
    "path": "catalog-offline.js",
    "size": 7389,
    "sha256": "4eeda9afa636713cbc5cd9661712257c3540e2bd5239fbc788e2143aae53ecb9"
@@ -382,8 +404,8 @@
   },
   {
    "path": "checks/check-search-names.mjs",
-   "size": 8640,
-   "sha256": "8b368d5757097959fcd643b694561066718db195b740aa3f0bcf8c28ae419bf6"
+   "size": 9570,
+   "sha256": "9c619e0eed6f03276bf344253ef51a5597062bae02ce64fa3fba257ebb31cfec"
   },
   {
    "path": "checks/check-shop.mjs",
@@ -399,6 +421,11 @@
    "path": "checks/check-usda-carbs.mjs",
    "size": 3038,
    "sha256": "8e5e31f950749e37054586584cde54a2e4f55a676f7a76a29e11e6794010b5e0"
+  },
+  {
+   "path": "checks/check-usda-measures.mjs",
+   "size": 7570,
+   "sha256": "1f8f7571bec15477c89da4b920592c485c656ac1c81cc0883487e14059f702fb"
   },
   {
    "path": "checks/store-model.mjs",
@@ -422,8 +449,8 @@
   },
   {
    "path": "counters.js",
-   "size": 33669,
-   "sha256": "7f89313d341587c6141e599fe738278265613d5aa73b7edb56f8652e84330f2f"
+   "size": 34034,
+   "sha256": "377f996153f0057abb4faa0500924a024b883467d1d04b94f004ba7b3628d4bf"
   },
   {
    "path": "desserts.js",
@@ -457,8 +484,8 @@
   },
   {
    "path": "index.html",
-   "size": 599567,
-   "sha256": "220e710789391a810fb416394d317a8f29098e940924830c2af84643f7111f2f"
+   "size": 622621,
+   "sha256": "18a446babe4bb3cb061e7b7cc554e2e86a78b7bd26c367c32a41f88cb8805698"
   },
   {
    "path": "kfct.js",
@@ -472,8 +499,8 @@
   },
   {
    "path": "meal-account.js",
-   "size": 6592,
-   "sha256": "2d8cad304328193d79e5abd2aa0ae351a7cd1d4eb623beb721c1f0ac1b9389cb"
+   "size": 7313,
+   "sha256": "cbf99ac9f56d6fc2648d45556937ca2dbc8c7d0a9c91a01b7d09f49f3a6a34cc"
   },
   {
    "path": "meal-data.js",
@@ -652,13 +679,13 @@
   },
   {
    "path": "release-notes.css",
-   "size": 375,
-   "sha256": "f0d3ecfd811b2008d5f348f596cdcc405f217132baac9e989f2af45b598364f2"
+   "size": 785,
+   "sha256": "588f10be828ff4cc972585a2553c1de87c9a7995e2c13d6231084a6f585d4faa"
   },
   {
    "path": "release-notes.js",
-   "size": 45669,
-   "sha256": "53b5bfd59972f8d5c9dd2e1af9c259631afb789aa73d40bf2a9c6568f441531c"
+   "size": 53772,
+   "sha256": "0888b1a08b56e80fbedafab95373ffa3fce942413fb43c6c3da72caef730ec97"
   },
   {
    "path": "report.css",
@@ -742,8 +769,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 22705,
-   "sha256": "95a309fc0e91ea3d88250b3f92648ddb8775a154702b7baa7f8e74b126170ec7"
+   "size": 23640,
+   "sha256": "c75c57b878633f28a7c6fd02ab93f998b45cdf22745b6c0f76397abe3744a355"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -847,13 +874,18 @@
   },
   {
    "path": "sw.js",
-   "size": 3504,
-   "sha256": "2bed221d6d6c6842d0f030095dbad2a6ef0839a9a195d5389a846e5c7ecae518"
+   "size": 3505,
+   "sha256": "bff42cfef96007cb9afe864a7d6b7c60bd5d9e74e31d89e3e114b6d5fc358514"
+  },
+  {
+   "path": "usda-measures.js",
+   "size": 76979,
+   "sha256": "3a1c387ff87b329aef575ebfffa0598cb47f3f7435e84a82f82a02adc5033570"
   },
   {
    "path": "usda.js",
-   "size": 10836,
-   "sha256": "0fea7a78425971727bfe4c18868726e00040954e5054b6af90d3c54d3db4d3e8"
+   "size": 13284,
+   "sha256": "f6520782ca1c6a10a1dec3aa265b4c7bac7b4a1cf5ca757a73599b996953e0ac"
   },
   {
    "path": "user-products.css",
@@ -862,8 +894,8 @@
   },
   {
    "path": "user-products.js",
-   "size": 41258,
-   "sha256": "8f2d7cfb0f376546c641d66cc806106cd7c57ac57b597ae2d2e2d6b5cec01759"
+   "size": 42013,
+   "sha256": "38488ea53797b159576583aec638b87a0f8fab06d7315fe206cb86465ba2c7ef"
   },
   {
    "path": "uzbek.js",

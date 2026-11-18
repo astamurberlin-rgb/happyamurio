@@ -60,7 +60,9 @@ var MealBot=(function(){
   function row(l,ok,note){ return '<div class="mlRow'+(ok?'':' warn')+'"><span class="g" aria-hidden="true">'+(ok?CHECKI:WARNI)+'</span><span class="n">'+esc(foodName(l))+
     (note?' <small style="font-weight:500;opacity:.8">'+esc(note)+'</small>':'')+'</span><b>'+esc((l.approx?'≈ ':'')+amt(l))+'</b></div>' }
   /* «5 перепёлка» → «5 шт · 500 г» */
-  function amt(l){ if(l.u&&l.u!=='г'&&l.u!=='мл'&&!DEF[l.u]&&!/^(маленьк|средн|больш)/.test(l.u)&&l.q!==1) return (typeof UFORMS!=='undefined'&&UFORMS[l.u]?amtShort(l):fmt(l.q)+' шт')+' · '+fmt(l.g)+' г'; return amtShort(l) }   // у меры со своим словом — «0,5 буханки · 300 г»
+  function amt(l){ /* Meal 33.10: мера USDA — русской подписью: «2 чашки США (237 мл) · 316 г» */
+    if(l.u&&l.u!=='г'&&l.q!==1&&typeof MealUSDA!=='undefined'&&MealUSDA.unitLabel(FOODS[l.fid],l.u,l.fid)){ var a=amtShort(l); return /\sг$/.test(a)?a:a+' · '+fmt(l.g)+' г' }
+    if(l.u&&l.u!=='г'&&l.u!=='мл'&&!DEF[l.u]&&!/^(маленьк|средн|больш)/.test(l.u)&&l.q!==1) return (typeof UFORMS!=='undefined'&&UFORMS[l.u]?amtShort(l):fmt(l.q)+' шт')+' · '+fmt(l.g)+' г'; return amtShort(l) }   // у меры со своим словом — «0,5 буханки · 300 г»
 
   /* ── время: «в 16:30», «в час дня», «10 утра», «где-то в 2 часа дня», «час назад», «15 минут назад», «вчера» ── */
   function hourOf(w){ return /^\d/.test(w)?+w:HOURS[w] }
