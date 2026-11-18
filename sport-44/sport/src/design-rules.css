@@ -311,8 +311,8 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .workout-quick-menu{display:grid;gap:12px;padding-bottom:8px}
 /* Строки расписания и тренировок — одной высоты, картинка тренировки одного размера (мелочи аудита 18.11.2026). */
 .occurrence-row,.home-favorite,.template-library-row,#modal-root .section-list .section-row[data-action="plan-template"]{min-height:72px}
-/* Настройки: заголовки разделов одного вида — 16, жирный, белый (мелочи аудита 18.11.2026). */
-.happy-settings .happy-heading,.happy-settings .settings-section,.happy-settings .settings-section h3,.happy-settings .hs-section>h3,.happy-settings .hs-links-title{font-size:16px!important;font-weight:700!important;color:#fff!important;opacity:1!important;text-transform:none!important;letter-spacing:0!important}
+/* Настройки: заголовки разделов одного вида — тусклые и меньше: 14, полужирный, белый 60 % (Астамур 19.11.2026). */
+.happy-settings .happy-heading,.happy-settings .settings-section,.happy-settings .settings-section h3,.happy-settings .hs-section>h3,.happy-settings .hs-links-title{font-size:14px!important;font-weight:600!important;color:rgba(255,255,255,.6)!important;opacity:1!important;text-transform:none!important;letter-spacing:0!important}
 /* Подход: «П» всегда на одном месте — номер в своей ячейке слева, прижат к названию (Астамур 18.11.2026). */
 .set-name-wrap{display:flex;align-items:center;min-width:0;font-size:16px;color:#fff}.set-name-wrap::before{content:attr(data-num);flex:0 0 1.35em;text-align:right;padding-right:.3em;font-variant-numeric:tabular-nums}.set-name-wrap>.set-name{flex:1 1 auto}
 /* «+ Подход»: плюс — в той же ячейке, что номера подходов (прижат вправо), «П» — ровно под «П» остальных строк (Астамур 18.11.2026). */
