@@ -12,7 +12,7 @@
 .hm-text{display:inline-flex;align-items:center;gap:5px;padding:8px 0;font-size:12px;font-weight:600;min-height:40px}
 .hm-card{background:var(--hm-glass);border:1px solid var(--hm-line);border-radius:26px}
 .hm-outer{padding:11px}
-.hm-empty{padding:22px 18px;margin-bottom:14px;font-size:14px;color:var(--hm-soft)}
+.hm-empty{padding:0;margin:4px 0 14px;font-size:14px;color:var(--hm-soft)}
 .hm-button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:14px;padding:12px 18px;background:var(--hm-glass);border:1px solid var(--hm-line);border-radius:22px;font-size:14px;font-weight:700;text-align:center}
 .hm-button.hm-primary{background:rgba(244,251,255,.96);color:#2f5f99;border-color:transparent}
 .hm-button.hm-delete{background:rgba(114,28,88,.2);border-color:rgba(255,209,228,.48)}

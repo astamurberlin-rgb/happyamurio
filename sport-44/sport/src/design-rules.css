@@ -303,3 +303,15 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .plan-group,.happy-card,.hs-group,.hm-card,.happy-button:has(>small),.happy-card>.happy-button[data-action=release-history]{border-radius:24px!important}
 /* карточка тренировки и запись журнала поднимаются снизу, как листы, — 22 у верхних углов */
 .panel-screen{border-radius:22px 22px 0 0!important}
+
+/* Мелочи аудита 18.11.2026: полоса свёрнутой тренировки нажимается целиком. */
+button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}.active-banner-go{font-size:12px;font-weight:600}
+/* Долгое нажатие на тренировку — меню, а не выделение текста. */
+.home-favorite,.template-library-row{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.workout-quick-menu{display:grid;gap:12px;padding-bottom:8px}
+/* Строки расписания и тренировок — одной высоты, картинка тренировки одного размера (мелочи аудита 18.11.2026). */
+.occurrence-row,.home-favorite,.template-library-row,#modal-root .section-list .section-row[data-action="plan-template"]{min-height:72px}
+/* Настройки: заголовки разделов одного вида — 16, жирный, белый (мелочи аудита 18.11.2026). */
+.happy-settings .happy-heading,.happy-settings .settings-section,.happy-settings .settings-section h3,.happy-settings .hs-section>h3,.happy-settings .hs-links-title{font-size:16px!important;font-weight:700!important;color:#fff!important;opacity:1!important;text-transform:none!important;letter-spacing:0!important}
+/* Подход: «П» всегда на одном месте — номер в своей ячейке слева, прижат к названию (Астамур 18.11.2026). */
+.set-name-wrap{display:flex;align-items:center;min-width:0;font-size:16px;color:#fff}.set-name-wrap::before{content:attr(data-num);flex:0 0 1.35em;text-align:right;padding-right:.3em;font-variant-numeric:tabular-nums}.set-name-wrap>.set-name{flex:1 1 auto}

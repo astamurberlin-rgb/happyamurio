@@ -17,7 +17,8 @@
   function show(measurements){
     buttons.forEach((b,i)=>b.setAttribute('aria-pressed',String(!!measurements===!!i)));
     content.hidden=!!measurements;panel.hidden=!measurements;
-    if(measurements)root.HappyMeasurements.mount(panel,{doc,askSignIn:root.askSignIn,toast:root.toast});
+    if(measurements)root.HappyMeasurements.mount(panel,{doc,askSignIn:root.askSignIn,toast:root.toast,
+      goal:function(){try{return root.HappyGoals.weightKind(typeof DB!=='undefined'&&DB?DB.goalVersions:[])}catch(e){return null}}});   // цвет по общей цели веса (18.11.2026)
     else root.HappyMeasurements.unmount();
   }
   buttons.forEach((b,i)=>b.addEventListener('click',()=>show(i===1)));

@@ -42,6 +42,7 @@ var SportAccount=(()=>{
   HappyPerson.init(options);   // хранилище открыто: профиль следит за своим документом
   if(typeof paintHappyAccount==='function')paintHappyAccount();
   if(!signedIn())return;
+  HappyGoals.syncWeight((state.sportGoals||{}).versions).catch(()=>{});   // прежняя цель веса Sport — в общий профиль, если новее
   bodyDoc().subscribe(()=>HappyPerson.top());
   SportBoot.account.onChange(()=>HappyPerson.top());   // имя поменяли в профиле
   resume(HappyWelcome.takeResume());

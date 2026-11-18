@@ -111,6 +111,28 @@ function goalFor(versions,date){
  return copy(((Array.isArray(versions)?versions:[]).filter(v=>v&&object(v.goal)&&typeof v.effectiveFrom==='string'&&v.effectiveFrom<=d)
   .sort((a,b)=>a.effectiveFrom.localeCompare(b.effectiveFrom)||String(a.savedAt).localeCompare(String(b.savedAt))).at(-1)||{}).goal);
 }
+/* ── общая цель веса (Астамур 18.11.2026: «один профайл — одна цель») ──
+   Цель веса одна на аккаунт: лежит в общем профиле (HappyPerson, запись weightGoal). Meal и Sport, сохраняя цели, пишут
+   её туда же; свои части (калории и БЖУ Meal, фокус Sport) остаются у приложений. Действует версия с самой поздней датой
+   начала, при равной — сохранённая позже; так и прежние цели Meal и Sport сходятся в одну. */
+const sharedWeight=()=>{try{return (root.HappyPerson&&P().data().weightGoal)||[]}catch(e){return []}};
+const weightVersions=list=>(Array.isArray(list)?list:[]).filter(v=>v&&object(v.goal)&&typeof v.effectiveFrom==='string')
+ .map(v=>({effectiveFrom:v.effectiveFrom,savedAt:String(v.savedAt||''),goal:weightOnly(v.goal)}));
+/* цель веса на дату: общая и, пока общей нет или она старше, своя прежняя у приложения */
+function weightGoal(own,date){const all=weightVersions(own).concat(weightVersions(sharedWeight()));return all.length?weightOnly(goalFor(all,date)):null}
+function weightKind(own,date){const g=weightGoal(own,date);return g?g.kind:null}
+async function saveSharedWeight(goal,date){
+ const sh=weightVersions(sharedWeight()),prev=sh.length?weightOnly(goalFor(sh,date)):null,w=weightOnly(goal);
+ if(prev&&Object.keys(w).every(k=>prev[k]===w[k]))return false;
+ await P().setWeightGoal(saveVersion(sh,w,date));return true;
+}
+/* прежняя цель приложения новее общей — переносится в общую (один раз при открытии приложения) */
+async function syncWeight(own){
+ const o=weightVersions(own);if(!o.length||!root.HappyPerson)return false;
+ const late=l=>l.map(v=>v.savedAt).sort().at(-1)||'',sh=weightVersions(sharedWeight());
+ if(late(o)<=late(sh))return false;
+ const g=goalFor(o.concat(sh),today());return g?saveSharedWeight(g,today()):false;
+}
 /* Sport: фокус хранится отдельно; цель веса записывается новой версией, только если она изменилась */
 function saveSport(state,weight,focus,date){
  const versions=state&&Array.isArray(state.versions)?state.versions:[],previous=goalFor(versions,date);
@@ -169,11 +191,12 @@ function openWeight(o){
    const shares=sharesFromGrams(...['p','f','c'].map(x=>parseFloat(String(legacy[x]||'').replace(',','.'))||0))||[25,27,48];
    g=Object.assign(weightOnly(null),{method:'manual',calories:k>0?Math.round(k):null,shares,calc:{sex:'',activity:0,adjustment:10}});
   }
+  {const sh=weightVersions(sharedWeight());if(sh.length)g=Object.assign({},g,weightOnly(goalFor(weightVersions(versions).concat(sh),date)));}   // цель веса — общая
   if(k>0&&g.method==='manual')g.calories=Math.round(k);   // цифра на кольце — та, что записана в «Целях на день»
   g.calc=Object.assign({sex:'',activity:0,adjustment:10},g.calc||{});
   if(!Array.isArray(g.shares)||g.shares.length!==3||Math.abs(g.shares.reduce((a,b)=>a+b,0)-100)>.01)g.shares=[25,27,48];
   if(g.method==='calculate')g=calculateGoal(g,data.profile,current,g.calc,date);
- }else g=weightOnly(goalFor(versions,date));
+ }else g=weightOnly(goalFor(weightVersions(versions).concat(weightVersions(sharedWeight())),date));
  if(current!==null&&g.targetKg===null&&(g.kind==='maintain'||g.kind==='recomp'))g=Object.assign({},g,{targetKg:current,anchorKg:current});
  if(current!==null&&g.targetKg!==null)g=moveWeight(g,g.targetKg,current);
  let focus=!meal&&FOCUS.some(f=>f.value===saved.focus)?saved.focus:'none';
@@ -366,6 +389,7 @@ function openWeight(o){
     const goals={k:calories?String(Math.round(calories)):'',p:calories?String(round1(gr[0])):'',f:calories?String(round1(gr[1])):'',c:calories?String(round1(gr[2])):'',fib:fb?String(round1(num(fb))):''};
     await o.save({versions:saveVersion(versions,goal,date),goals});
    }else await o.save(saveSport({versions},g,focus,date));
+   await saveSharedWeight(g,date);   // цель веса одна на аккаунт — видна в Day, Meal и Sport
    pageH.close();S().toast('Цели сохранены');
   }finally{saving=false}
  }
@@ -426,6 +450,6 @@ function openDay(o){
  render();
 }
 root.HappyGoals={KINDS,LABELS,ACTIVITY,FOCUS,DAY_FOCUS,TOPICS,NAME_MAX,INTENTION_MAX,open,
- weightOnly,moveWeight,chooseKind,redistribute,percentages,grams,ageAt,calculation,recalculate,calculateGoal,sharesFromGrams,saveVersion,goalFor,saveSport,dayDraft,addCustom,cleanName,
+ weightOnly,weightGoal,weightKind,saveSharedWeight,syncWeight,moveWeight,chooseKind,redistribute,percentages,grams,ageAt,calculation,recalculate,calculateGoal,sharesFromGrams,saveVersion,goalFor,saveSport,dayDraft,addCustom,cleanName,
  get isOpen(){return !!(pageH&&!pageH.closed)}};
 })(typeof globalThis!=='undefined'?globalThis:this);

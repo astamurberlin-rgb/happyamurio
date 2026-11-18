@@ -96,6 +96,7 @@ MealBoot.ready.catch(function(){}).then(function(){
   paintAccount();
   syncFoodUnits();
   if(!MealData.signedIn()) return;
+  try{ HappyGoals.syncWeight(DB.goalVersions).catch(function(){}) }catch(e){}   // прежняя цель веса Meal — в общий профиль, если новее
   profileDoc().subscribe(syncFoodUnits);
   bodyDoc().subscribe(function(){ HappyPerson.top() });
   MealBoot.account.onChange(function(){ HappyPerson.top() });   // имя поменяли в профиле

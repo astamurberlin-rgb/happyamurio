@@ -52,7 +52,7 @@ function sportSettingsLayout(html){
   if(n.matches('div.settings-section')){
    // Sport's own small labels: «Мои данные» (counts) belong to Данные, the rest to the app group.
    const next=nodes[i+1],own=text(n);
-   if(own==='Мои данные'&&next?.matches('.card')){place('data',label('Мои данные'),next);i++;continue;}
+   if(own==='Мои данные'&&next?.matches('.card')){place('data',next);i++;continue;}   // один заголовок «Данные» (мелочи аудита 18.11.2026)
    pendingLabel=null;if(next?.matches('.card,.happy-card')){place('app',n,next);i++;}else place('app',n);continue;
   }
   if(pendingLabel&&(n.matches('.happy-card')||n.matches('.card'))){place('app',label(pendingLabel),n);pendingLabel=null;continue;}
