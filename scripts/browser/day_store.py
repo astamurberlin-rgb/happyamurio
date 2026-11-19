@@ -189,14 +189,15 @@ def cloud(user, app=None):
 
 
 def measure(page, box, date, values):
-    """Новый замер на общем экране замеров (он один и тот же в Day и в Sport)."""
+    """Новый замер на общем экране замеров (он один и тот же в Day и в Sport): «+ Замер» в углу таблицы
+    (или под «Пока нет замеров»), значения — в белом столбце таблицы, «Сохранить замер» под ней."""
     page.click(box + " [data-hm=add]")
-    page.wait_for_selector("dialog.hm-dialog[open] .hm-form")
-    page.fill("dialog.hm-dialog input[name=date]", date)
+    page.wait_for_selector(box + " .hm-add .hm-new input[name=neck]")
+    page.fill(box + " .hm-add input[name=date]", date)
     for field, value in values.items():
-        page.fill("dialog.hm-dialog input[name=%s]" % field, str(value))
-    page.click("dialog.hm-dialog button[type=submit]")
-    page.wait_for_selector("dialog.hm-dialog", state="detached", timeout=4000)
+        page.fill(box + " .hm-add input[name=%s]" % field, str(value))
+    page.click(box + " .hm-add button[type=submit]")
+    page.wait_for_selector(box + " .hm-add", state="detached", timeout=4000)
 
 
 with sync_playwright() as p:
