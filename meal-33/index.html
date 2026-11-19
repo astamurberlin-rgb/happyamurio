@@ -1527,6 +1527,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 </style>
 <link rel="stylesheet" href="supplements.css?v=33.15">
 <link rel="stylesheet" href="collections.css?v=33.15">
+<link rel="stylesheet" href="meal-periods.css?v=33.15">
 </head>
 <body class="loading">
 <script src="meal-account.js?v=33.15"></script>
@@ -1642,24 +1643,23 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 
   <!-- НАСТРОЙКИ -->
   <section class="screen" data-screen="updates"><div class="grip" data-grip role="button" tabindex="0" aria-label="Закрыть историю обновлений"><i></i></div><div class="top"><h1>История обновлений</h1></div><div id="releaseHistory"></div></section>
-  <!-- Meal 33.7 · правила бота обычным языком. Это тот же порядок, что в bot.js (secFor, mealTime): поменял правило — поправь и текст -->
+  <!-- Meal 33.7, с 33.16 — по периодам · правила бота обычным языком. Это тот же порядок, что в meal-periods.js (classify) и bot.js (secFor, mealTime): поменял правило — поправь и текст -->
   <section class="screen" data-screen="botrules"><div class="grip" data-grip role="button" tabindex="0" aria-label="Закрыть правила бота"><i></i></div><div class="top"><h1>Правила бота</h1></div><div class="bot-rules">
     <article class="card release-card"><h2>Когда какой приём</h2><ul>
-      <li>Ночь, 00:00–04:59 — перекус.</li>
-      <li>Завтрак может начаться с 05:00 до 13:00. Первая еда дня до 13:00 — завтрак.</li>
-      <li>Обед может начаться с 11:00 до 18:00.</li>
-      <li>Ужин может начаться с 16:00 до 24:00.</li>
-      <li>Промежутки перекрываются. Какой приём взять, решает порядок: завтрак → обед → ужин. Назад порядок не идёт: после обеда завтрака в этот день уже нет.</li>
+      <li>Сутки поделены на периоды в «Настройки → Настроить приёмы пищи». Периоды идут подряд, без пересечений и дыр.</li>
+      <li>Пока ничего не менял: перекус 00:00–05:00, завтрак 05:00–13:00, обед 13:00–18:00, ужин 18:00–24:00.</li>
+      <li>Запись ровно на границе относится к следующему периоду: 13:00 — уже обед.</li>
+      <li>Свои приёмы и перекусы, добавленные в настройках, работают так же, как исходные.</li>
     </ul></article>
-    <article class="card release-card"><h2>Ты не назвал приём</h2><p>Бот смотрит на время: сказанное («в 10 утра», «час назад») или время сообщения. Дальше по шагам, до первого подходящего:</p><ol>
-      <li>Есть запись ближе 1,5 часа, раньше или позже, — в тот же приём.</li>
-      <li>Немного еды после приёма — перекус.</li>
-      <li>Следующий по порядку приём, если время в его промежутке.</li>
-      <li>Прошлый приём, если время ещё в его промежутке. Иначе — перекус.</li>
-    </ol><p>Другой день без времени («вчера груша 200 г») — бот спросит кнопками, в какой приём.</p></article>
-    <article class="card release-card"><h2>Как время меняет промежутки</h2><ul>
-      <li>Промежутки выше — только по умолчанию. Записанное важнее: вокруг каждой записи 1,5 часа — её приём.</li>
-      <li>Запись задним числом («в 10 утра овсянка») встаёт по тем же шагам среди записей до и после неё.</li>
+    <article class="card release-card"><h2>Ты не назвал приём</h2><p>Бот смотрит на время: сказанное («в 10 утра», «час назад») или время сообщения. Диктовка с шортката — время диктовки. Дальше по шагам, до первого подходящего:</p><ol>
+      <li>Время в периоде перекуса — этот перекус. Калории не важны.</li>
+      <li>В периоде основного приёма записей ещё нет — основной приём, даже если еды немного.</li>
+      <li>После прошлой записи периода прошло не больше 20 минут — туда же, куда она: это продолжение.</li>
+      <li>Меньше 150 ккал на всё сообщение и прошло больше 20 минут — перекус.</li>
+      <li>Иначе — основной приём периода.</li>
+    </ol><p>150 ккал и 20 минут меняются в «Настроить приёмы пищи → Правила перекуса». Калории считаются по всему сообщению; если у чего-то вес ещё не понятен, запись маленькой не считается. Другой день без времени («вчера груша 200 г») — бот спросит кнопками, в какой приём.</p></article>
+    <article class="card release-card"><h2>Назвал приём или время</h2><ul>
+      <li>Запись задним числом («в 10 утра овсянка») встаёт по тем же шагам: бот смотрит на записи периода до неё.</li>
       <li>Назвал приём («на обед…») — бот слушается, шаги выше не работают.</li>
       <li>Назвал приём без времени, а этот приём уже был больше 1,5 часа назад, — время его последней записи.</li>
       <li>Назвал приём, которого сегодня ещё не было, — время как обычно в этом приёме за последние 7 дней (нужно хотя бы 3 дня). Иначе за 5 часов до следующего приёма или через 5 часов после прошлого. Иначе 09:00, 14:00 или 19:00. Бот пишет: «Время поставил сам».</li>
@@ -1744,11 +1744,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     </div></section>
     <section class="happy-section" data-happy-section="app"><h2 class="happy-heading">Приложение</h2>
     <div class="happy-appearance-entry" data-happy-appearance-slot></div>
-    <div class="eyebrow"><span>Разделы</span></div>
-    <div id="setSecs" class="mlSet"></div>
-    <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить раздел</button></div>
-    <p class="note">Время и калории каждого приёма пищи, включая перекусы и свои разделы, появляются в журнале Happy Day сами. Время приёма — время первого продукта: продукт раньше сдвигает начало всего приёма. Часы в шапке меняют время всех продуктов раздела, часы в карточке — одного продукта. Приём пищи открывает запись, в которой больше 4 ккал: кофе с молоком, чай с сахаром, компот — да; вода, чёрный кофе и чай без сахара — никогда. БАДы: порошки больше 4 ккал за приём открывают, капсулы и таблетки — нет, но прерывают голодание. Завтрак, обед и ужин связаны с одноимёнными разделами Day; пустой раздел там отмечается как пропущенный приём. Эти разделы можно переименовать, но не убрать. Карандаш — название и иконка. Минус убирает свой раздел, если в нём нет записей.</p>
-
     <div class="eyebrow"><span>Счётчики</span></div>
     <div id="setTaps" class="mlSet"></div>
     <div class="chips" style="margin-top:4px"><button class="chip add" id="addTap">Добавить счётчик</button></div>
@@ -2827,9 +2822,10 @@ function uLab(fid,q,u){ var f=fid&&FOODS[fid], us=typeof MealUSDA!=='undefined'&
 function gramsNamed(fid,u){ var f=fid&&FOODS[fid], n=(u&&u.indexOf('г ')!==0&&typeof unitName==='function')?unitName(f,u):u; return /^\d[\d.,]*\s*г(\s|,|$)/.test(String(n||'')) }
 function amtShort(l){ if(mlSuppFood(l)) return MealSupplementCounters.portionText(l.q,l.u); var us=typeof MealUSDA!=='undefined'&&l.u!=='г'&&MealUSDA.amountText(FOODS[l.fid],l.u,l.q,l.fid); if(us) return us; return l.u==='г'||gramsNamed(l.fid,l.u)?fmt(l.g)+' г':fmt(l.q)+' '+uLab(l.fid,l.q,l.u) }
 function portTxt(c){ if(c&&typeof MealSupplementCounters!=='undefined'&&MealSupplementCounters.of(c.food||FOODS[c.fid])) return MealSupplementCounters.portionText(c.q,c.u); var us=typeof MealUSDA!=='undefined'&&c.fid&&MealUSDA.unitWord(FOODS[c.fid]||c.food,c.u,c.q,c.fid); if(us) return (MealUSDA.amountText(FOODS[c.fid]||c.food,c.u,c.q,c.fid)||fmt(c.q)+' '+us); return fmt(c.q)+' '+uWord(c.q,c.u) }
-/* раздел по времени: до 11 — завтрак, до 16 — обед, до 21 — ужин, дальше — перекус */
-function secAt(h){ var want=h<11?'am':h<16?'pm':h<21?'dn':'sn'; return sec(want)?want:(DB.sections[0]&&DB.sections[0].k) }
-function autoSec(){ return secAt(new Date().getHours()) }
+/* раздел по времени — период из «Настроить приёмы пищи» (meal-periods.js), в который попадает время.
+   Правило перекуса по калориям и паузе — только у бота (bot.js, secFor); счётчики и запись руками берут период. */
+function secAt(h,mi){ var k=typeof MealPeriods!=='undefined'?MealPeriods.at(DB,h*60+(mi||0)):null; return k||(DB.sections[0]&&DB.sections[0].k) }
+function autoSec(){ var d=new Date(); return secAt(d.getHours(),d.getMinutes()) }
 var saveT=null;
 /* Meal 32: запись через общий модуль — уходит только изменившееся (meal-data.js). Без входа запись не принимается:
    то, что успели нажать, отменяется, и появляется лист «Войдите в аккаунт». RO — записи сделаны более новой версией
@@ -3030,13 +3026,6 @@ document.getElementById('mlTaps').addEventListener('click',function(ev){
 
 /* ═══════════ НАСТРОЙКИ ═══════════ */
 /* разделы, связанные с HappyDay: время приёма отсюда будет учитываться там (после синхронизации) */
-var HD_LINK={am:1,pm:1,dn:1,sn:1};
-var HD_LINK_IC='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.2 13.8a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.1 1.1"/><path d="M13.8 10.2a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.1-1.1"/></svg>';
-function hdLinkMark(){ return '<span class="mlLink" role="img" aria-label="Связан с HappyDay">'+HD_LINK_IC+'</span>' }
-function secHint(S){
-  var m={am:'сам подставляется до 11:00',pm:'сам подставляется с 11 до 16',dn:'сам подставляется с 16 до 21',sn:'сам подставляется после 21'};
-  return m[S.k]||'выбирается в шторке «Подобрано»';
-}
 
 /* ═══════════ СВЯЗЬ С HAPPYDAY ═══════════
    Meal — источник: что и когда съедено. После каждого сохранения пишет сводку по дням
@@ -3243,10 +3232,6 @@ function renderSettings(){
   if(typeof MealCatalog!=='undefined') MealCatalog.renderSettings();
   renderCoverSet();
   if(typeof bkPaint==='function') bkPaint();
-  document.getElementById('setSecs').innerHTML=DB.sections.map(function(S,i){
-    if(importedSection(S)) return '';   // Meal 30 (Астамур 12.11): перенесённые разделы «… · Cronometer» — только в истории дней
-    return rowCard((HD_LINK[S.k]?hdLinkMark():minusBtn('s'+i))+'<span class="ic">'+secIc(S)+'</span><span class="nm"><b>'+escH(S.t)+'</b><small>'+escH(secHint(S))+'</small></span>'+penBtn('s'+i));
-  }).join('');
   document.getElementById('setTaps').innerHTML=DB.taps.length?DB.taps.map(function(c,i){
     var f=FOODS[c.fid];
     return rowCard(minusBtn('t'+i)+'<span class="nm"><b>'+escH(c.t)+'</b><small>порция '+escH(portTxt(c))+(f?' · '+escH(f.n):'')+'</small></span>'+penBtn('t'+i));
@@ -3261,32 +3246,12 @@ document.querySelector('[data-screen="settings"]').addEventListener('click',func
   var r=ev.target.closest('[data-ren]'), d=ev.target.closest('[data-del]');
   var id=(r&&r.dataset.ren)||(d&&d.dataset.del); if(!id) return;
   var kind=id.charAt(0), i=+id.slice(1);
-  if(r){ if(kind==='s') editSec(i); else if(kind==='t') editTap(i); else if(kind==='f') MealProductEditor.edit(DB.foods[i]) }
-  else { if(kind==='s') delSec(i); else if(kind==='t') delTap(i); else if(kind==='f') delFood(i) }
+  if(r){ if(kind==='t') editTap(i); else if(kind==='f') MealProductEditor.edit(DB.foods[i]) }
+  else { if(kind==='t') delTap(i); else if(kind==='f') delFood(i) }
 });
 /* Цели на день (калории, БЖУ, клетчатка) задаются в «Настроить цели» вверху настроек: meal-account.js, shared/happy-goals.js. */
-document.getElementById('addSec').addEventListener('click',function(){ editSec(-1) });
+/* Разделы дневника — приёмы пищи со временем: экран «Настроить приёмы пищи» вверху настроек (meal-periods.js). */
 document.getElementById('addTap').addEventListener('click',function(){ editTap(-1) });
-function editSec(i){
-  var S=i>=0?DB.sections[i]:null;
-  editItem({title:S?'Раздел':'Новый раздел',name:S?S.t:'',sub:null,ic:S?S.ic:null,layer:'Иконка раздела',ph:'Например: Перед тренировкой',
-    check:function(t){ return !t?'Напиши название':nameTaken(DB.sections,t,i>=0?i:undefined)?'Такой раздел уже есть':'' }})
-  .then(function(v){
-    if(!v) return;
-    if(S){ S.t=v.t; if(v.ic) S.ic=v.ic }
-    else DB.sections.push({k:'s'+Date.now().toString(36),t:v.t,ic:v.ic||'circle'});
-    save(); renderAll();
-    toast(S?'Раздел «'+v.t+'» сохранён':'Раздел «'+v.t+'» добавлен');
-  });
-}
-function delSec(i){
-  var S=DB.sections[i];
-  if(HD_LINK[S.k]){ toast('«'+S.t+'» связан с HappyDay — переименовать можно, убрать нельзя'); return }
-  var used=Object.keys(DB.days).some(function(d){ return (DB.days[d].items||[]).some(function(x){ return x.sec===S.k }) });
-  if(used){ toast('В разделе есть записи — его не убрать'); return }
-  if(DB.sections.length<2){ toast('Нужен хотя бы один раздел'); return }
-  confirmBox('Убрать раздел «'+S.t+'»?','Убрать').then(function(ok){ if(!ok) return; DB.sections.splice(i,1); save(); renderAll() });
-}
 function editTap(i){ return HappyMealCounters.edit(i); }
 
 function delTap(i){
@@ -4161,7 +4126,7 @@ document.getElementById('mlTimeBox').addEventListener('click',function(){
   mealTimeDialog('Время приёма пищи',mlFirstTime(M.lines,M.t,M.tm,mlNotOpening).t,true).then(function(result){
     if(!result||M!==draft||curDate!==date)return;
     var t=result.t;M.t=t;M.tm=true;mlStamp(M.lines,t);
-    if(!M.man)M.sec=secAt(+t.slice(0,2));
+    if(!M.man)M.sec=secAt(+t.slice(0,2),+t.slice(3,5));
     renderMatch();
   });
 });
@@ -5904,7 +5869,7 @@ function jrNoteTxt(){
 <script src="desserts.js?v=33.15"></script>
 <script src="preserves.js?v=33.15"></script><script src="kfct.js?v=33.15"></script>
 <script src="user-products.js?v=33.15"></script>
-<script src="bot/household-ru.js?v=33.15"></script><script src="bot-speech.js?v=33.15"></script><script src="bot.js?v=33.15"></script><script src="meal-inbox.js?v=33.15"></script><script src="meal-measurements.js?v=33.15"></script>
+<script src="bot/household-ru.js?v=33.15"></script><script src="bot-speech.js?v=33.15"></script><script src="meal-periods.js?v=33.15"></script><script src="bot.js?v=33.15"></script><script src="meal-inbox.js?v=33.15"></script><script src="meal-measurements.js?v=33.15"></script>
 
 <script src="./shared/release-notes.js?v=33.15"></script>
 <script src="release-notes.js?v=33.15"></script>

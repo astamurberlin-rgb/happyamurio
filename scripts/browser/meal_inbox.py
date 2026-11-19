@@ -29,7 +29,7 @@ def inbox(route, request):
         if taken.get(i) == dev: done.add(i)
     return route.fulfill(status=200, headers=HDR, body="1")
 
-RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),g:x.g,t:x.t||null})}));return o}"""
+RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),g:x.g,t:x.t||null,sec:x.sec})}));return o}"""
 STATE = """()=>{const S=MealBot.state(CH.meal);const last=[...CH.meal.msgs].reverse().find(m=>m.who==='bot');return {pend:S.pend.length,offer:!!S.offer,queue:MealInbox.queue().map(r=>r.id),
   msgs:CH.meal.msgs.filter(m=>m.inbox).map(m=>m.inbox),last:last?last.html.replace(/<[^>]+>/g,' ').replace(/\\s+/g,' ').trim():''}}"""
 TAP = """(label)=>{const last=[...CH.meal.msgs].reverse().find(m=>m.who==='bot'&&m.html);const box=document.createElement('div');box.innerHTML=last?last.html:'';
@@ -69,6 +69,9 @@ with sync_playwright() as p:
     recs, st = page.evaluate(RECS), page.evaluate(STATE); out["first"] = {"recs": recs, "state": st, "done": sorted(done)}
     check("груша записана временем диктовки — сегодня 09:15", has(recs, "груш", 200, "2026-11-19", "09:15") == 1, recs)
     check("вчерашняя диктовка — во вчерашнем дне, 20:40, курица готовая", has(recs, "курицы без кожи, варён", 175, "2026-11-18", "20:40") == 1, recs)
+    by = {(r["date"], r["t"]): r["sec"] for r in recs}
+    check("приём — по времени диктовки и периодам (Meal 33.16): 09:15 — завтрак, вчера 20:40 — ужин, 11:05 немного после завтрака — перекус",
+          (by.get(("2026-11-19", "09:15")), by.get(("2026-11-18", "20:40")), by.get(("2026-11-19", "11:05"))) == ("am", "dn", "sn"), by)
     check("мандарины записаны, хотя перед ними диктовка с вопросом", has(recs, "мандарин", 176, "2026-11-19", "11:05") == 1, recs)
     check("о солёных помидорах бот спрашивает и ничего не пишет наугад", st["pend"] >= 1 and not any("омидор" in r["n"] or "омат" in r["n"] for r in recs), st["last"][:160])
     check("вторая диктовка с вопросом ждёт ответа на первый", 205 in st["queue"] and 205 not in st["msgs"], st)

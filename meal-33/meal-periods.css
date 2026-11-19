@@ -1,0 +1,98 @@
+/* Happy Meal · экран «Настроить приёмы пищи» (meal-periods.js). Размеры и скругления — по AGENTS.md, раздел «Оформление»:
+   текст 12 / 14 / 16 / 20, жирность 400 / 600, пилюля 999, поле 12, карточка 26. Цвета — белый поверх темы. */
+.mp-page{--mp-muted:rgba(255,255,255,.72)}
+.mp-page .mp-bar{display:flex;justify-content:flex-end;min-height:44px}
+#happy-screens .mp-edit{min-height:44px;padding:4px 0 4px 12px;font-size:14px;font-weight:600}
+.mp-list{margin:0 -8px}
+.mp-row{position:relative;isolation:isolate;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.mp-fast{margin:0 -8px}
+.mp-row.mp-compact{height:64px}
+.mp-row.mp-dragging{z-index:5}
+.mp-surface{position:relative;z-index:1;padding:0 8px;border-radius:26px;transition:transform .18s ease}
+.mp-row.mp-dragging .mp-surface{background:rgba(40,20,45,.55);box-shadow:0 10px 22px rgba(20,8,24,.35);outline:1px solid rgba(255,255,255,.4)}
+.mp-row.mp-swiped .mp-surface{background:rgba(40,20,45,.4)}
+.mp-head{display:flex;align-items:center;gap:2px;min-height:44px}
+.mp-compact .mp-head{height:64px}
+#happy-screens .mp-ic,.mp-ic{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:10px;margin-left:-10px}
+.mp-ic svg{width:26px;height:26px}
+.mp-fast .mp-ic svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#happy-screens .mp-name,.mp-name{display:flex;align-items:center;flex:1;min-width:0;min-height:44px;text-align:left;font-size:14px;font-weight:600;touch-action:pan-y}
+.mp-name>span{overflow-wrap:anywhere}
+.mp-time{flex:none;font-size:12px;color:var(--mp-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mp-lock{display:grid;place-items:center;flex:none;width:20px;color:var(--mp-muted)}
+.mp-lock svg{width:16px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+#happy-screens .mp-grip{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:8px;color:var(--mp-muted);touch-action:none}
+#happy-screens .mp-grip:disabled{opacity:.25}
+.mp-grip svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+.mp-grip-space{flex:none;width:44px}
+#happy-screens .mp-del{position:absolute;right:8px;top:6px;bottom:6px;width:80px;border-radius:26px;background:#b3261e;color:#fff;font-size:12px;font-weight:600;z-index:0;visibility:hidden}
+#happy-screens .mp-row.mp-swiped .mp-del{visibility:visible}
+
+/* шкала 00–24 */
+.mp-track{position:relative;height:48px;margin:0 5px 2px;isolation:isolate}
+.mp-rail{position:absolute;left:0;right:0;top:30px;height:4px;border-radius:999px;background:rgba(255,255,255,.14)}
+.mp-tick{position:absolute;top:-4px;width:1px;height:12px;background:rgba(255,255,255,.16)}
+.mp-tick.mp-major{top:-7px;height:18px;background:rgba(255,255,255,.3)}
+.mp-fill,.mp-shade{position:absolute;top:27px;height:10px}
+.mp-fill{border-radius:999px;background:rgba(255,255,255,.46);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.mp-fast .mp-fill{background:#fff;box-shadow:none}
+.mp-fast.mp-off .mp-track{opacity:.5}
+.mp-shade{background:repeating-linear-gradient(120deg,rgba(30,12,36,.62) 0 3px,rgba(30,12,36,.2) 3px 6px);pointer-events:none}
+.mp-handle{position:absolute;top:0;width:44px;height:48px;transform:translateX(-50%);z-index:2;touch-action:none;cursor:ew-resize;border-radius:12px}
+.mp-handle:focus,.mp-handle:active{z-index:4}
+.mp-handle>span{position:absolute;left:50%;top:-2px;transform:translateX(-50%);font-size:14px;font-weight:600;line-height:22px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mp-handle>i{position:absolute;left:20px;top:20px;width:4px;height:24px;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(30,12,36,.3);pointer-events:none}
+.mp-handle:active>i,.mp-handle:focus>i{box-shadow:0 0 0 5px rgba(255,255,255,.14),0 0 12px rgba(255,255,255,.35)}
+.mp-handle.mp-fixed{cursor:default}
+.mp-handle.mp-fixed>i{opacity:.45}
+.mp-axis{position:relative;height:22px;margin:7px 5px 0;font-size:12px;color:var(--mp-muted)}
+.mp-axis span{position:absolute;transform:translateX(-50%)}
+.mp-axis span:first-child{transform:none}
+.mp-axis span:last-child{transform:translateX(-100%)}
+
+#happy-screens .mp-pill{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.1);font-size:14px;font-weight:600;white-space:nowrap}
+#happy-screens .mp-pill:active{background:rgba(255,255,255,.24)}
+#happy-screens .mp-pill:disabled{opacity:.35}
+#happy-screens .mp-pill[aria-pressed=true]{background:var(--hs-seg-bg,#fff);color:var(--hs-pill-on-ink,#333);border-color:transparent}
+#happy-screens .mp-add{width:100%;margin-top:8px}
+#happy-screens .mp-remove{width:100%;margin-top:10px}
+.mp-pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.mp-after{margin-top:16px}
+.mp-after .mp-pills{margin:10px 0 0}
+.mp-undo{display:flex;align-items:center;gap:10px;margin:10px 0 0;padding:0 4px 0 16px;border-radius:999px;background:rgba(30,12,36,.45);font-size:14px}
+.mp-undo span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#happy-screens .mp-undo button{min-height:44px;padding:8px 12px;font-size:14px;font-weight:600}
+.mp-note{margin:10px 0 0;font-size:12px;line-height:1.5;color:var(--mp-muted)}
+.mp-hint:empty,.mp-error:empty{display:none}
+.mp-center{text-align:center}
+
+.mp-more{margin-top:0;border-top:1px solid rgba(255,255,255,.2)}
+.mp-bar~.mp-more:first-of-type,.mp-hint+.mp-more{margin-top:16px}
+.mp-more>summary{display:flex;align-items:center;justify-content:space-between;min-height:48px;list-style:none;font-size:14px;font-weight:600;cursor:pointer}
+.mp-more>summary::-webkit-details-marker{display:none}
+.mp-more>summary>span{font-size:20px;font-weight:400;color:var(--mp-muted)}
+.mp-more[open]>summary>span{transform:rotate(180deg)}
+.mp-body{padding:0 0 18px}
+.mp-body>.mp-note:first-child{margin-top:0}
+.mp-rule{margin:0 0 10px;font-size:14px;line-height:1.5}
+.mp-rule b{font-weight:600}
+.mp-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+#happy-screens .mp-extime{display:block;width:100%;min-height:48px;padding:0 14px;text-align:left;font-size:16px;border:1px solid var(--hs-border,rgba(255,255,255,.3));border-radius:12px;background:var(--hs-glass,rgba(255,255,255,.13));font-variant-numeric:tabular-nums}
+.mp-page .hs-input,.hs-sheet-body .mp-two .hs-input{border-radius:12px}
+.mp-result{display:flex;gap:4px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
+.mp-result>.mp-ic{margin-left:-8px}
+.mp-result>div{min-width:0}
+.mp-result span{display:block;font-size:12px;color:var(--mp-muted)}
+.mp-result strong{display:block;margin-top:2px;font-size:20px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.mp-result p{margin:6px 0 0;font-size:12px;line-height:1.5;color:var(--mp-muted)}
+
+/* листы: точное время и иконки */
+.mp-clock{display:block;margin-top:2px;text-align:center;font-size:28px;font-weight:600;line-height:1.3;font-variant-numeric:tabular-nums}
+.mp-wheels{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
+.mp-wheels .hs-wheel-wrap{margin:0}
+.mp-wheels .hs-field-title{text-align:center}
+.mp-icons{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+#happy-screens .mp-icons button{display:grid;place-items:center;height:56px;border:1px solid transparent;border-radius:12px;background:rgba(255,255,255,.08)}
+#happy-screens .mp-icons button[aria-pressed=true]{background:rgba(255,255,255,.24);border-color:rgba(255,255,255,.6)}
+.mp-icons svg{width:30px;height:30px}
+@media (prefers-reduced-motion:reduce){.mp-surface{transition:none}}
