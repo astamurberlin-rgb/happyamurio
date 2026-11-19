@@ -8,6 +8,12 @@ function modal(title,html,kind,headExtra){
  if(box)close();prior=doc.activeElement;box=doc.createElement('section');box.className='meal-modal '+kind;box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-labelledby','mcTitle');
  var sheet=kind==='mc-product'||kind==='mc-correction';
  box.innerHTML='<div class="mc-shell">'+(sheet?'<button class="mc-grab" id="mcDismiss" aria-label="Закрыть карточку, отменив несохранённые изменения"><span></span></button>':'')+'<header class="mc-head"><h2 id="mcTitle">'+root.escH(title)+'</h2>'+(headExtra||'')+(sheet?'':'<button class="mlIco" id="mcClose" aria-label="Закрыть">×</button>')+'</header>'+html+'</div>';
+ if(kind==='mc-product'){
+   var shell=box.querySelector('.mc-shell'), heading=doc.createElement('div');
+   heading.className='mc-product-heading';
+   shell.prepend(heading);
+   heading.append(shell.querySelector('.mc-grab'),shell.querySelector('.mc-head'));
+ }
  doc.body.appendChild(box);outside=Array.from(doc.body.children).filter(n=>n!==box).map(n=>{var was=n.inert;n.inert=true;return [n,was]});doc.body.classList.add('meal-report-open');var dismiss=e(sheet?'mcDismiss':'mcClose');dismiss.onclick=close;box.addEventListener('click',function(ev){if(ev.target===box)close()});if(sheet){bindSwipe(box.querySelector('.mc-shell'));fitViewport()}
  box.addEventListener('keydown',function(ev){if(ev.key==='Escape'){ev.preventDefault();close()}if(ev.key==='Tab'){var nodes=Array.from(box.querySelectorAll('button,input,select,a[href],summary')).filter(n=>!n.disabled&&n.getClientRects().length),first=nodes[0],last=nodes[nodes.length-1];if(ev.shiftKey&&doc.activeElement===first){ev.preventDefault();last.focus()}else if(!ev.shiftKey&&doc.activeElement===last){ev.preventDefault();first.focus()}}});dismiss.focus({preventScroll:true});
 }
@@ -48,12 +54,23 @@ function factsHTML(f,grams,caption){
  '<p class="happy-note mc-source-attribution">'+root.escH(root.MealCatalog&&root.MealCatalog.sourceFooter(f)|| (f.composition?'Свой продукт':f.b?'BLS 4.0 · Max Rubner-Institut (2025)':f.src==='этикетка'?'По этикетке производителя':f.src==='оценка'?'Оценка Happy Meal':f.src||'Источник не указан'))+
  (!f.catalogSource&&f.b?' <a href="https://www.blsdb.de/" target="_blank" rel="noopener noreferrer">BLS ↗</a>':'')+'</p>';
 }
+function paintFavorite(){
+ var button=e('mcProductFavorite'),on=root.isFav(line.fid);
+ button.classList.toggle('on',on);
+ button.setAttribute('aria-pressed',String(on));
+ button.setAttribute('aria-label',on?'Убрать из избранного':'В избранное');
+}
+function toggleFavorite(){
+ var id=line.fid;
+ root.setMealRowFavorite(id,!root.isFav(id));paintFavorite();
+}
 function facts(){
+ if(e('mcProductFavorite'))paintFavorite();
  var f=root.MealProducts.forItem(line,root.FOODS,root.DB),grams=basis==='100'?100:line.g;
  e('mcFacts').innerHTML=factsHTML(f,grams,basis==='100'?'На 100 г':'Порция: '+root.fmt(grams)+' г');
  box.querySelectorAll('[data-basis]').forEach(b=>{b.classList.toggle('primary',b.dataset.basis===basis);b.setAttribute('aria-pressed',String(b.dataset.basis===basis))});
 }
-function product(l){if(!root.FOODS[l.fid])return;line={fid:l.fid,g:l.g||100,productSnapshot:l.productSnapshot,productRevision:l.productRevision};basis='portion';var food=root.MealProducts.forItem(line,root.FOODS,root.DB),own=(root.DB.foods||[]).some(f=>f.id===l.fid);modal(food.n,(own?'<div class="up-facts-actions"><button class="happy-button" id="mcEdit">Редактировать продукт</button></div>':'')+(l.catalogBrowse?'<button class="happy-button primary mc-catalog-add" id="mcCatalogAdd">Добавить в дневник</button>':'')+'<div class="mc-basis"><button class="happy-button" data-basis="portion">Порция</button><button class="happy-button" data-basis="100">На 100 г</button></div><div id="mcFacts"></div>','mc-product');facts();if(e('mcCatalogAdd'))e('mcCatalogAdd').onclick=function(){var f=root.FOODS[line.fid],mass=f.por['порция']||100;close();root.openMatchLines([{id:'l'+(++root.SEQ),fid:f.id,q:mass,u:'г',g:mass,st:'ok',alts:[],raw:'',name:f.n}],{back:'recipes'});root.M.open=root.M.lines[0].id;root.renderMatch()};if(own)e('mcEdit').onclick=function(){close();root.MealProductEditor.edit(root.FOODS[l.fid])};box.addEventListener('click',ev=>{var v=ev.target.closest('[data-catalog-preview]');if(v){line.fid=v.dataset.catalogPreview;delete line.productSnapshot;delete line.productRevision;e('mcTitle').textContent=root.FOODS[line.fid].n;facts();return}var b=ev.target.closest('[data-basis]');if(b){basis=b.dataset.basis;facts()}});}
+function product(l){if(!root.FOODS[l.fid])return;line={fid:l.fid,g:l.g||100,productSnapshot:l.productSnapshot,productRevision:l.productRevision};basis='portion';var food=root.MealProducts.forItem(line,root.FOODS,root.DB),own=(root.DB.foods||[]).some(f=>f.id===l.fid);modal(food.n,(own?'<div class="up-facts-actions"><button class="happy-button" id="mcEdit">Редактировать продукт</button></div>':'')+(l.catalogBrowse?'<button class="happy-button primary mc-catalog-add" id="mcCatalogAdd">Добавить в дневник</button>':'')+'<div class="mc-basis"><button class="happy-button" data-basis="portion">Порция</button><button class="happy-button" data-basis="100">На 100 г</button></div><div id="mcFacts"></div>','mc-product','<button type="button" class="mlStar" id="mcProductFavorite">'+root.STARI+'</button>');e('mcProductFavorite').onclick=toggleFavorite;facts();if(e('mcCatalogAdd'))e('mcCatalogAdd').onclick=function(){var f=root.FOODS[line.fid],mass=f.por['порция']||100;close();root.openMatchLines([{id:'l'+(++root.SEQ),fid:f.id,q:mass,u:'г',g:mass,st:'ok',alts:[],raw:'',name:f.n}],{back:'recipes'});root.M.open=root.M.lines[0].id;root.renderMatch()};if(own)e('mcEdit').onclick=function(){close();root.MealProductEditor.edit(root.FOODS[l.fid])};box.addEventListener('click',ev=>{var v=ev.target.closest('[data-catalog-preview]');if(v){line.fid=v.dataset.catalogPreview;delete line.productSnapshot;delete line.productRevision;e('mcTitle').textContent=root.FOODS[line.fid].n;facts();return}var b=ev.target.closest('[data-basis]');if(b){basis=b.dataset.basis;facts()}});}
 function correct(where,id){
  var item=root.lineOf(where,id);if(!item)return;
  var timed=where==='s'||root.M.mode!=='recipe',context={date:root.curDate,item:item,draft:root.M},current=root.MealProducts.forItem(item,root.FOODS,root.DB),selected={fid:item.fid,sec:item.sec||(where==='m'?root.M.sec:root.SECK)},results=[];
