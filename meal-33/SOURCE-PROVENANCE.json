@@ -84,6 +84,15 @@
  },
  "pointReleases": [
   {
+   "version": "33.15",
+   "date": "2026-11-19",
+   "changes": [
+    "meal-inbox.js (новый): диктовки шортката «Еда» из ai_shared.food_inbox через public.meal_inbox_take / meal_inbox_done; выключатель mealInboxSwitch в «Для разработчика», по умолчанию выключен",
+    "bot.js: feed, probe; отметки m.at (время диктовки), m.inbox, m.dry, m.onlyAsk; поправки из диктовок не выполняются",
+    "index.html ?v=33.15, заголовок и подвал; sw.js 33.15; release-notes.js 33.15"
+   ]
+  },
+  {
    "version": "33.14",
    "date": "2026-11-19",
    "changes": [
@@ -399,8 +408,8 @@
   },
   {
    "path": "bot.js",
-   "size": 153844,
-   "sha256": "844a2eb29ced162a25eeb1b407266aae9c07c7f68201bc7200978ea8387cd83f"
+   "size": 157037,
+   "sha256": "e9cee51ce3366ac20151297481238123c83b89333b3b0e1db9bff79038007e50"
   },
   {
    "path": "bot/household-ru.js",
@@ -539,8 +548,8 @@
   },
   {
    "path": "index.html",
-   "size": 628373,
-   "sha256": "fe92ccbe3dad8f71e50d33c2491d0acc42b8f2df66d43f750144a6d4cbada350"
+   "size": 629060,
+   "sha256": "b6f0660ece3f8c0ee7dcdacfddc240a6bc892c3a7406ec8dd216125f96a68f19"
   },
   {
    "path": "kfct.js",
@@ -718,6 +727,11 @@
    "sha256": "e30f489819953ec88010f51b12cf7197de062f2028b885f6b494124522076732"
   },
   {
+   "path": "meal-inbox.js",
+   "size": 8981,
+   "sha256": "73b5c5eb003dfcd0e99686905346d9b22238f143947fa08701922818f487ba80"
+  },
+  {
    "path": "meal-measurements.js",
    "size": 2742,
    "sha256": "2b20aa407f939f0062d168afaf6912f4d54a75f3ae2bd63b3dd7c79ed5dd39d2"
@@ -739,8 +753,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 58802,
-   "sha256": "5d0877e90f47c8420fd9fa3459feae2daac04d17d42772e22c08a95d2b364071"
+   "size": 59325,
+   "sha256": "7d4ddbd691a185823793d54b10bef59da1f9d9ff5206bbf9d9172e16a4365225"
   },
   {
    "path": "report.css",
@@ -930,7 +944,7 @@
   {
    "path": "sw.js",
    "size": 3505,
-   "sha256": "6417bfd589fcedf7c232e3ea4e03ef87a8497e97c6fb9a159bc1cd4d8d2be193"
+   "sha256": "f1157f9fade1afdd04b855b58c61a51bb168acb3e2ee22aa33c92ac4c56bb209"
   },
   {
    "path": "usda-measures.js",
