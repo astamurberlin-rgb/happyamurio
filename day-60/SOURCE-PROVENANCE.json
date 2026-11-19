@@ -23,6 +23,15 @@
  "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-59/",
  "point_releases": [
   {
+   "version": "60.8",
+   "date": "2026-11-19",
+   "changes": [
+    "shared/happy-measurements.js и .css: новый замер прямо в таблице («+ Замер» в углу, белый столбец с подчёркнутыми полями, «Отмена», «Сохранить замер»); правка — прежним листом",
+    "shared/happy-screens.js и .css: нижнее меню поверх общих листов, нажатие на меню закрывает лист",
+    "index.html ?v=60.8, заголовок и подвал; release-notes.js 60.8"
+   ]
+  },
+  {
    "version": "60.7",
    "date": "2026-11-19",
    "changes": [
@@ -62,8 +71,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1303389,
-   "sha256": "445055fa237aa64513e34d2d4159cbb70fc22dabe815e829f32ef27c7de2b9aa"
+   "size": 1321466,
+   "sha256": "f2c7acd545d3578dc438fa8b9b30ddcf56a36b08af1f3268ff482e6638196a39"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -233,7 +242,7 @@
   {
    "path": "index.html",
    "size": 493434,
-   "sha256": "a62c02356cba145b67633a244db8c92bafc0a83126f134ced475299c805a87e3"
+   "sha256": "b1ce3e5f68bcbece848a738fe842ee7a007bdf6ec076cb1ae5e32764e0649dbd"
   },
   {
    "path": "manifest.webmanifest",
@@ -242,8 +251,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 40879,
-   "sha256": "0320efecbfb7f3b0365aac7f221ff2d1c4f9ec2b8761763ee1c33587e5ea978b"
+   "size": 41542,
+   "sha256": "2debef3120f3ba667a5932690422bebffb7d79dd7d65dd9ef57838b808af9599"
   },
   {
    "path": "section-wheel.css",
@@ -292,8 +301,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 10905,
-   "sha256": "c68cc0631dfd5414694a10ff8da7b76a9c36301c2349f2a0c233ff7fe840b8e9"
+   "size": 12702,
+   "sha256": "019948cdcf2a15381e1f91ba768273e0f0544cd5a87b8b38bc6a5252c1e0233a"
   },
   {
    "path": "shared/happy-food.js",
@@ -332,13 +341,13 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 11511,
-   "sha256": "fabf69faa165a9f8386b0de628495c6902e4fdb7982a39ed1253cd2976c62ade"
+   "size": 14178,
+   "sha256": "1d45edf92c010141fe5e1d4c7e58010c714060724315bea03bf1f9d303374c89"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 56219,
-   "sha256": "a2a2d565e090245fd803e35529c869a07fe05bdf53a69c965b6a02c31af1f93f"
+   "size": 66183,
+   "sha256": "68c9863a8b0d83ff60bfa335afd27c7d90d4922b75abd00c7bfae867b41c5bd2"
   },
   {
    "path": "shared/happy-person.js",
@@ -352,13 +361,13 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 31485,
-   "sha256": "d76c9a9701986762a5ceeb2ecf67e8f9841dda3b2fb719c894bb20fdbdf4134c"
+   "size": 32063,
+   "sha256": "1475b60ecb068eba14cb76ec6db464fd153c418aa81f7a15efc40c04b8b85577"
   },
   {
    "path": "shared/happy-screens.js",
-   "size": 27974,
-   "sha256": "e914beda8f6412a6ce2d524e44c11a9908b5baa5983ceea4fb6558a50b976704"
+   "size": 28472,
+   "sha256": "b07335c94e75766ab109404e86ae6d645f8adf520f9910336dbd9a2f894586fc"
   },
   {
    "path": "shared/happy-settings-developer.js",
