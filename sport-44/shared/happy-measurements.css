@@ -121,3 +121,9 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 /* Аудит единообразия Sport 18.11.2026: ручка окна замера — как у листов приложения */
 .hm-grip{display:block;width:100%;height:30px;margin:-6px 0 2px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;position:relative}
 .hm-grip::before{content:"";position:absolute;left:50%;top:12px;width:42px;height:5px;margin-left:-21px;border-radius:999px;background:rgba(255,255,255,.55)}
+
+/* Окно замера под нижним меню приложения (19.11.2026): затемнение, окно, меню поверх, низ с запасом под меню. */
+.hm-dialog-shade{position:fixed;inset:0;z-index:2147479990;background:rgba(18,32,70,.46)}
+.hm-dialog[open]{z-index:2147479995}
+body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
+.hm-dialog .hm-sheet{padding-bottom:calc(96px + env(safe-area-inset-bottom))}

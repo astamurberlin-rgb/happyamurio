@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="sport" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'none'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#00A8F5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 44</title>
+<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'none'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#00A8F5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 44</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-sport-20261029-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-sport-20261029-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-sport-20261029-152.png">
@@ -1091,6 +1091,24 @@ button.feed-body{cursor:pointer}
  .hm-grid .hm-paired b{font-size:14px}
 }
 
+/* Новый замер прямо в таблице (Астамур 19.11.2026): «+ Замер» в углу таблицы; нажал — столбцы уезжают вправо,
+   в белом столбце подчёркнутые поля нового замера; «Отмена» в углу, «Сохранить замер» под таблицей. */
+.hm-grid .hm-corner{padding:6px 8px;vertical-align:middle}
+.hm-grid .hm-corner-button{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0;font-size:14px;font-weight:600;white-space:nowrap;text-align:left}
+.hm-corner-button .hm-icon{width:16px;height:16px;flex-basis:16px;stroke-width:2}
+.hm-grid td.hm-new{padding:8px 6px}
+.hm-grid .hm-col-date{display:block;font-size:12px;font-weight:700}
+.hm-date{position:relative;display:inline-block;margin-top:5px;padding:2px 4px 3px;border-bottom:1.5px solid rgba(64,81,131,.45)}
+.hm-grid thead .hm-new .hm-date b{display:inline;margin:0;font-size:12px}
+.hm-date input{position:absolute;inset:0;width:100%!important;height:100%!important;min-height:0!important;margin:0;padding:0!important;border:0!important;opacity:0;font-size:16px;cursor:pointer;-webkit-appearance:none;appearance:none}
+/* поля нового замера: вид не берётся у полей приложения (там рамка и скругление 12) */
+.hm-add .hm-in{display:block!important;width:100%!important;max-width:64px;height:34px!important;min-height:0!important;margin:0 auto!important;padding:0 2px!important;border:0!important;border-bottom:1.5px solid rgba(64,81,131,.45)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;outline:0;color:#405183!important;font:inherit;font-size:16px!important;font-weight:700!important;line-height:1.2;text-align:center!important;-webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text}
+.hm-add .hm-in:focus{border-bottom:2px solid #405183!important}
+.hm-add .hm-paired label{display:block;min-width:0}
+.hm-add .hm-paired .hm-in{max-width:none;height:28px!important}
+.hm-add .hm-grid .hm-paired small{margin:0 0 2px}
+.hm-add .hm-error{text-align:center}
+
 /* окно: форма замера, удалённые замеры */
 dialog.hm-dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;padding:0;border:0;width:min(100%,460px);max-width:100%;max-height:calc(100dvh - 28px);background:transparent;color:var(--ink,#fff);overflow:visible}
 dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
@@ -1132,6 +1150,12 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 /* Аудит единообразия Sport 18.11.2026: ручка окна замера — как у листов приложения */
 .hm-grip{display:block;width:100%;height:30px;margin:-6px 0 2px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;position:relative}
 .hm-grip::before{content:"";position:absolute;left:50%;top:12px;width:42px;height:5px;margin-left:-21px;border-radius:999px;background:rgba(255,255,255,.55)}
+
+/* Окно замера под нижним меню приложения (19.11.2026): затемнение, окно, меню поверх, низ с запасом под меню. */
+.hm-dialog-shade{position:fixed;inset:0;z-index:2147479990;background:rgba(18,32,70,.46)}
+.hm-dialog[open]{z-index:2147479995}
+body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
+.hm-dialog .hm-sheet{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 /* Sport 43 · общий экран замеров (shared/happy-measurements.css): цвета Sport для закреплённого столбца таблицы. */
 .hm{--hm-pin-bg:#717edf}
 #happy-measurements{margin-top:2px}
@@ -1474,6 +1498,11 @@ body.hs-open{overflow:hidden}
 .hs-page-sheet .hs-main{min-height:0;padding-top:4px}
 body.hs-sheet-open{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.hs-page-backdrop,.hs-page-sheet>.hs-scroll{transition:none}}
+
+/* Нижнее меню приложения поверх листов (профиль, цели, «Новый замер») — как у листов Sport (Астамур 19.11.2026: «и там
+   тоже, и сразу везде»). Низ листа — с запасом под меню. Страница на весь экран (вход) меню по-прежнему закрывает. */
+body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!important}
+.hs-page-sheet>.hs-scroll{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 /* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
  * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
  * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
@@ -1810,9 +1839,154 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .plan-line{display:flex!important;align-items:center;justify-content:center!important;text-align:center;gap:10px}.plan-line>.icon{position:static!important;margin:0!important;flex:none}.plan-line b{flex:0 1 auto!important}
 /* «Редактировать» с карандашом — на одной линии с названием. */
 .training-heading{align-items:center!important}
-/* Лист расписания: нижнее меню поверх листа, как у карточки тренировки (Астамур 19.11.2026). */
-.overlay:has(#schedule-form){z-index:50}
-.overlay:has(#schedule-form) .sheet{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+/* Нижнее меню всегда поверх листов, как у карточки тренировки (Астамур 19.11.2026: «поверх листа, как и везде»).
+   Низ листа — с запасом под меню, чтобы последняя кнопка не пряталась. Большой таймер устроен так уже давно. */
+.overlay{z-index:50!important}
+.overlay .sheet:not(:has(.exercise-player)){padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
+/* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
+.hs-group .appearance-trigger{width:100%}
+.happy-settings [data-happy-appearance-slot]:empty {
+  display: none;
+}
+
+.appearance-fold {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .24s cubic-bezier(.22, .75, .3, 1);
+}
+
+.appearance-fold[data-open] {
+  grid-template-rows: 1fr;
+}
+
+.appearance-fold-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.appearance-wheels {
+  padding: 4px 0 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .appearance-fold { transition: none; }
+}
+
+.appearance-wheel + .appearance-wheel {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, .22);
+}
+
+.appearance-wheel h3 {
+  margin: 0 4px 6px;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.appearance-options {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  padding: 2px 2px 3px;
+  overflow: auto hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 2px;
+  mask-image: linear-gradient(to right,#000 calc(100% - 8px),transparent);
+  user-select: none;
+}
+
+.appearance-options[data-end] { mask-image: none; }
+.appearance-options[data-dragging] { scroll-snap-type: none; cursor: grabbing; }
+
+.appearance-options .appearance-choice {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  width: auto;
+  min-height: 44px;
+  padding: 0 12px 0 7px;
+  overflow: hidden;
+  color: inherit;
+  border: 1px solid var(--happy-line);
+  border-radius: 999px;
+  background: var(--happy-glass);
+  background: color-mix(in srgb, var(--happy-glass) 64%, transparent);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  scroll-snap-align: start;
+}
+
+.appearance-options .appearance-choice[aria-pressed="true"] {
+  border-color: #ffffffa6;
+  border-color: color-mix(in srgb, var(--happy-line) 60%, #fff 40%);
+  background: var(--happy-glass);
+  box-shadow: inset 0 0 0 1px #ffffff24;
+}
+
+.appearance-options .appearance-choice:focus-visible { outline-offset: -3px; outline-color: #fff; }
+.appearance-options .appearance-choice:active { transform: none; }
+
+.appearance-choice-name {
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #18204566;
+}
+
+.appearance-swatch {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--swatch-ink, #fff);
+  border: 1px solid #ffffff8a;
+  border-radius: 50%;
+  background: var(--swatch);
+}
+
+.appearance-swatch svg { width: 15px; height: 15px; }
+
+.appearance-options[data-kind="theme"] .appearance-choice {
+  flex: 0 0 clamp(124px, calc((100% - 24px) / 2), 168px);
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  grid-template-rows: 104px minmax(34px,auto);
+  align-items: center;
+  gap: 6px;
+  padding: 7px 7px 5px;
+  border-radius: 24px;
+}
+
+.appearance-options[data-kind="theme"] .appearance-swatch {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-color: var(--happy-line);
+  border-radius: 16px;
+}
+
+.appearance-options[data-kind="theme"] .appearance-choice-name {
+  padding: 0 4px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.appearance-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 </style></head><body><div class="bg"></div><div class="app"><main class="page" id="page"></main></div><nav class="dock" id="dock" aria-label="Главное меню"></nav><div id="active-banner"></div><div id="modal-root"></div><div id="toast-root" aria-live="polite"></div>
 <script id="seed-data" type="application/json">{"workouts":[],"measurements":[],"activities":[{"id":"hsp.activity.strength-gym","name_ru":"Силовая тренировка в зале","category":"strength","logging_profile":"duration","setting_default":"indoor","healthkit":{"symbol":"traditionalStrengthTraining","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/traditionalstrengthtraining"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.strength-bodyweight","name_ru":"Силовая тренировка с собственным весом","category":"strength","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"functionalStrengthTraining","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/functionalstrengthtraining"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.strength-circuit","name_ru":"Круговая силовая тренировка","category":"strength","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"functionalStrengthTraining","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/functionalstrengthtraining"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.core-session","name_ru":"Тренировка мышц корпуса","category":"strength","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"coreTraining","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/coretraining"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.walk-outdoor","name_ru":"Ходьба на улице","category":"cardio","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"walking","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/walking"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.walk-treadmill","name_ru":"Ходьба на дорожке","category":"cardio","logging_profile":"treadmill","setting_default":"indoor","healthkit":{"symbol":"walking","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/walking"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.run-outdoor","name_ru":"Бег на улице","category":"cardio","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"running","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/running"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.run-treadmill","name_ru":"Бег на дорожке","category":"cardio","logging_profile":"treadmill","setting_default":"indoor","healthkit":{"symbol":"running","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/running"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.trail-run","name_ru":"Трейловый бег","category":"cardio","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"running","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/running"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.hike","name_ru":"Пеший поход","category":"outdoor","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"hiking","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/hiking"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.nordic-walk","name_ru":"Скандинавская ходьба","category":"cardio","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"walking","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/walking"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.cycle-outdoor","name_ru":"Велосипед на улице","category":"cardio","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"cycling","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/cycling"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.cycle-indoor","name_ru":"Велотренажёр","category":"cardio","logging_profile":"ergometer","setting_default":"indoor","healthkit":{"symbol":"cycling","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/cycling"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.elliptical","name_ru":"Эллиптический тренажёр","category":"cardio","logging_profile":"ergometer","setting_default":"indoor","healthkit":{"symbol":"elliptical","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/elliptical"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.rowing-indoor","name_ru":"Гребной тренажёр","category":"cardio","logging_profile":"ergometer","setting_default":"indoor","healthkit":{"symbol":"rowing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/rowing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.rowing-outdoor","name_ru":"Гребля на воде","category":"water","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"rowing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/rowing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.stair-machine","name_ru":"Лестничный тренажёр","category":"cardio","logging_profile":"ergometer","setting_default":"indoor","healthkit":{"symbol":"stairClimbing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/stairclimbing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.stairs","name_ru":"Ходьба или бег по лестнице","category":"cardio","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"stairs","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/stairs"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.step-aerobics","name_ru":"Степ-аэробика на платформе","category":"studio","logging_profile":"duration","setting_default":"indoor","healthkit":{"symbol":"stepTraining","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/steptraining"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.jump-rope","name_ru":"Прыжки со скакалкой","category":"cardio","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"jumpRope","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/jumprope"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.air-bike","name_ru":"Вентиляторный велотренажёр","category":"cardio","logging_profile":"ergometer","setting_default":"indoor","healthkit":{"symbol":"cycling","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/cycling"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.ski-erg","name_ru":"Лыжный эргометр","category":"cardio","logging_profile":"ergometer","setting_default":"indoor","healthkit":{"symbol":"mixedCardio","mapping_quality":"approximate","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/mixedcardio"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.hiit","name_ru":"Интервальная тренировка высокой интенсивности","category":"conditioning","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"highIntensityIntervalTraining","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/highintensityintervaltraining"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.swim-pool","name_ru":"Плавание в бассейне","category":"water","logging_profile":"swim","setting_default":"unspecified","healthkit":{"symbol":"swimming","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/swimming"},"authorship":"independently_compiled_for_happy_sports","swimming_context":"pool"},{"id":"hsp.activity.swim-open-water","name_ru":"Плавание в открытой воде","category":"water","logging_profile":"swim","setting_default":"outdoor","healthkit":{"symbol":"swimming","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/swimming"},"authorship":"independently_compiled_for_happy_sports","swimming_context":"open_water"},{"id":"hsp.activity.water-fitness","name_ru":"Аквафитнес","category":"water","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"waterFitness","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/waterfitness"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.yoga","name_ru":"Йога","category":"studio","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"yoga","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/yoga"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.pilates","name_ru":"Пилатес","category":"studio","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"pilates","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/pilates"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.stretching","name_ru":"Растяжка","category":"mobility","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"flexibility","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/flexibility"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.mobility","name_ru":"Занятие на мобильность суставов","category":"mobility","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"flexibility","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/flexibility"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.warm-up","name_ru":"Разминка отдельным занятием","category":"recovery","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"preparationAndRecovery","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/preparationandrecovery"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.cooldown","name_ru":"Заминка отдельным занятием","category":"recovery","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"cooldown","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/cooldown"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.dance-cardio","name_ru":"Танцевальная фитнес-тренировка","category":"studio","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"cardioDance","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/cardiodance"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.dance-social","name_ru":"Социальные танцы","category":"studio","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"socialDance","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/socialdance"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.tennis","name_ru":"Теннис","category":"racket","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"tennis","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/tennis"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.table-tennis","name_ru":"Настольный теннис","category":"racket","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"tableTennis","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/tabletennis"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.badminton","name_ru":"Бадминтон","category":"racket","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"badminton","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/badminton"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.squash","name_ru":"Сквош","category":"racket","logging_profile":"duration","setting_default":"indoor","healthkit":{"symbol":"squash","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/squash"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.padel","name_ru":"Падел","category":"racket","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"other","mapping_quality":"fallback","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/other"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.football","name_ru":"Футбол","category":"team","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"soccer","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/soccer"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.basketball","name_ru":"Баскетбол","category":"team","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"basketball","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/basketball"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.volleyball","name_ru":"Волейбол","category":"team","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"volleyball","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/volleyball"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.boxing","name_ru":"Бокс","category":"combat","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"boxing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/boxing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.kickboxing","name_ru":"Кикбоксинг","category":"combat","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"kickboxing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/kickboxing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.wrestling","name_ru":"Борьба","category":"combat","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"wrestling","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/wrestling"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.martial-arts","name_ru":"Боевые искусства","category":"combat","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"martialArts","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/martialarts"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.climbing","name_ru":"Скалолазание","category":"outdoor","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"climbing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/climbing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.cross-country-ski","name_ru":"Беговые лыжи","category":"winter","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"crossCountrySkiing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/crosscountryskiing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.downhill-ski","name_ru":"Горные лыжи","category":"winter","logging_profile":"duration","setting_default":"outdoor","healthkit":{"symbol":"downhillSkiing","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/downhillskiing"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.snowboard","name_ru":"Сноуборд","category":"winter","logging_profile":"duration","setting_default":"outdoor","healthkit":{"symbol":"snowboarding","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/snowboarding"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.skating","name_ru":"Катание на коньках или роликах","category":"sport","logging_profile":"distance_time","setting_default":"unspecified","healthkit":{"symbol":"skatingSports","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/skatingsports"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.paddling","name_ru":"Каяк, каноэ или SUP","category":"water","logging_profile":"distance_time","setting_default":"outdoor","healthkit":{"symbol":"paddleSports","mapping_quality":"broad","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/paddlesports"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.surfing","name_ru":"Сёрфинг","category":"water","logging_profile":"duration","setting_default":"outdoor","healthkit":{"symbol":"surfingSports","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/surfingsports"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.wheelchair-walk","name_ru":"Прогулка на коляске","category":"adaptive","logging_profile":"distance_time","setting_default":"unspecified","healthkit":{"symbol":"wheelchairWalkPace","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/wheelchairwalkpace"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.wheelchair-run","name_ru":"Тренировка на коляске в быстром темпе","category":"adaptive","logging_profile":"distance_time","setting_default":"unspecified","healthkit":{"symbol":"wheelchairRunPace","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/wheelchairrunpace"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.hand-cycle","name_ru":"Ручной велосипед","category":"adaptive","logging_profile":"distance_time","setting_default":"unspecified","healthkit":{"symbol":"handCycling","mapping_quality":"direct","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/handcycling"},"authorship":"independently_compiled_for_happy_sports"},{"id":"hsp.activity.other","name_ru":"Другая активность","category":"other","logging_profile":"duration","setting_default":"unspecified","healthkit":{"symbol":"other","mapping_quality":"fallback","documentation_url":"https://developer.apple.com/documentation/healthkit/hkworkoutactivitytype/other"},"authorship":"independently_compiled_for_happy_sports"}],"icons":{"calendar-blank":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z\"/><\/svg>","barbell":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M248,120h-8V88a16,16,0,0,0-16-16H208V64a16,16,0,0,0-16-16H168a16,16,0,0,0-16,16v56H104V64A16,16,0,0,0,88,48H64A16,16,0,0,0,48,64v8H32A16,16,0,0,0,16,88v32H8a8,8,0,0,0,0,16h8v32a16,16,0,0,0,16,16H48v8a16,16,0,0,0,16,16H88a16,16,0,0,0,16-16V136h48v56a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16v-8h16a16,16,0,0,0,16-16V136h8a8,8,0,0,0,0-16ZM32,168V88H48v80Zm56,24H64V64H88V192Zm104,0H168V64h24V175.82c0,.06,0,.12,0,.18s0,.12,0,.18V192Zm32-24H208V88h16Z\"/><\/svg>","waves":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M222.16,177.25a8,8,0,0,1-1,11.25c-17.36,14.39-32.86,19.5-47,19.5-18.58,0-34.82-8.82-49.93-17-25.35-13.76-47.24-25.64-79.07.74a8,8,0,1,1-10.22-12.31c40.17-33.28,70.32-16.92,96.93-2.48,25.35,13.75,47.24,25.63,79.07-.74A8,8,0,0,1,222.16,177.25Zm-11.27-57c-31.83,26.38-53.72,14.5-79.07.74-26.61-14.43-56.76-30.79-96.93,2.49a8,8,0,0,0,10.22,12.31c31.83-26.38,53.72-14.5,79.07-.74,15.11,8.19,31.35,17,49.93,17,14.14,0,29.64-5.11,47-19.5a8,8,0,1,0-10.22-12.31ZM45.11,79.8c31.83-26.37,53.72-14.49,79.07-.74,15.11,8.2,31.35,17,49.93,17,14.14,0,29.64-5.12,47-19.5a8,8,0,1,0-10.22-12.31c-31.83,26.38-53.72,14.5-79.07.74C105.21,50.58,75.06,34.22,34.89,67.5A8,8,0,1,0,45.11,79.8Z\"/><\/svg>","person-simple":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M128,80A32,32,0,1,0,96,48,32,32,0,0,0,128,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,128,32ZM230.86,132.12a8,8,0,0,1-11,2.74c-.35-.21-35.11-20.59-83.88-22.67V149l62,69.73a8,8,0,1,1-12,10.62L128,164,70,229.31a8,8,0,1,1-12-10.62L120,149V112.18c-49,2.08-83.52,22.46-83.88,22.68a8,8,0,1,1-8.23-13.72C29.6,120.11,70.45,96,128,96s98.4,24.11,100.12,25.14A8,8,0,0,1,230.86,132.12Z\"/><\/svg>","person-simple-walk":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M152,80a32,32,0,1,0-32-32A32,32,0,0,0,152,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,152,32Zm64,112a8,8,0,0,1-8,8c-35.31,0-52.95-17.81-67.12-32.12-2.74-2.77-5.36-5.4-8-7.84l-13.43,30.88,37.2,26.57A8,8,0,0,1,160,176v56a8,8,0,0,1-16,0V180.12l-31.07-22.2L79.34,235.19A8,8,0,0,1,72,240a7.84,7.84,0,0,1-3.19-.67,8,8,0,0,1-4.15-10.52l54.08-124.37c-9.31-1.65-20.92,1.2-34.7,8.58a163.88,163.88,0,0,0-30.57,21.77,8,8,0,0,1-10.95-11.66c2.5-2.35,61.69-57.23,98.72-25.08,3.83,3.32,7.48,7,11,10.57C166.19,122.7,179.36,136,208,136A8,8,0,0,1,216,144Z\"/><\/svg>","heartbeat":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M72,144H32a8,8,0,0,1,0-16H67.72l13.62-20.44a8,8,0,0,1,13.32,0l25.34,38,9.34-14A8,8,0,0,1,136,128h24a8,8,0,0,1,0,16H140.28l-13.62,20.44a8,8,0,0,1-13.32,0L88,126.42l-9.34,14A8,8,0,0,1,72,144ZM178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,.75,0,1.5,0,2.25a8,8,0,1,0,16-.5c0-.58,0-1.17,0-1.75A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46c0,53.61-77.76,102.15-96,112.8-10.83-6.31-42.63-26-66.68-52.21a8,8,0,1,0-11.8,10.82c31.17,34,72.93,56.68,74.69,57.63a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40Z\"/><\/svg>","fire":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M183.89,153.34a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68ZM216,144a88,88,0,0,1-176,0c0-27.92,11-56.47,32.66-84.85a8,8,0,0,1,11.93-.89l24.12,23.41,22-60.41a8,8,0,0,1,12.63-3.41C165.21,36,216,84.55,216,144Zm-16,0c0-46.09-35.79-85.92-58.21-106.33L119.52,98.74a8,8,0,0,1-13.09,3L80.06,76.16C64.09,99.21,56,122,56,144a72,72,0,0,0,144,0Z\"/><\/svg>","timer":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M128,40a96,96,0,1,0,96,96A96.11,96.11,0,0,0,128,40Zm0,176a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,216ZM173.66,90.34a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32-11.32l40-40A8,8,0,0,1,173.66,90.34ZM96,16a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,16Z\"/><\/svg>","play":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z\"/><\/svg>","pause":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M200,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm0,176H160V48h40ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Zm0,176H56V48H96Z\"/><\/svg>","plus":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z\"/><\/svg>","x":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\"/><\/svg>","check":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z\"/><\/svg>","check-circle":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z\"/><\/svg>","caret-right":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z\"/><\/svg>","caret-left":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z\"/><\/svg>","arrow-left":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z\"/><\/svg>","arrow-up-right":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z\"/><\/svg>","microphone":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M128,176a48.05,48.05,0,0,0,48-48V64a48,48,0,0,0-96,0v64A48.05,48.05,0,0,0,128,176ZM96,64a32,32,0,0,1,64,0v64a32,32,0,0,1-64,0Zm40,143.6V240a8,8,0,0,1-16,0V207.6A80.11,80.11,0,0,1,48,128a8,8,0,0,1,16,0,64,64,0,0,0,128,0,8,8,0,0,1,16,0A80.11,80.11,0,0,1,136,207.6Z\"/><\/svg>","notebook":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M184,112a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h64A8,8,0,0,1,184,112Zm-8,24H112a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm48-88V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM48,208H72V48H48Zm160,0V48H88V208H208Z\"/><\/svg>","books":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z\"/><\/svg>","user-circle":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z\"/><\/svg>","sliders-horizontal":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z\"/><\/svg>","magnifying-glass":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z\"/><\/svg>","pencil-simple":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z\"/><\/svg>","ruler":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M235.32,73.37,182.63,20.69a16,16,0,0,0-22.63,0L20.68,160a16,16,0,0,0,0,22.63l52.69,52.68a16,16,0,0,0,22.63,0L235.32,96A16,16,0,0,0,235.32,73.37ZM84.68,224,32,171.31l32-32,26.34,26.35a8,8,0,0,0,11.32-11.32L75.31,128,96,107.31l26.34,26.35a8,8,0,0,0,11.32-11.32L107.31,96,128,75.31l26.34,26.35a8,8,0,0,0,11.32-11.32L139.31,64l32-32L224,84.69Z\"/><\/svg>","clock-counter-clockwise":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M136,80v43.47l36.12,21.67a8,8,0,0,1-8.24,13.72l-40-24A8,8,0,0,1,120,128V80a8,8,0,0,1,16,0Zm-8-48A95.44,95.44,0,0,0,60.08,60.15C52.81,67.51,46.35,74.59,40,82V64a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H49c7.15-8.42,14.27-16.35,22.39-24.57a80,80,0,1,1,1.66,114.75,8,8,0,1,0-11,11.64A96,96,0,1,0,128,32Z\"/><\/svg>","arrow-counter-clockwise":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M224,128a96,96,0,0,1-94.71,96H128A95.38,95.38,0,0,1,62.1,197.8a8,8,0,0,1,11-11.63A80,80,0,1,0,71.43,71.39a3.07,3.07,0,0,1-.26.25L44.59,96H72a8,8,0,0,1,0,16H24a8,8,0,0,1-8-8V56a8,8,0,0,1,16,0V85.8L60.25,60A96,96,0,0,1,224,128Z\"/><\/svg>","arrow-down":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z\"/><\/svg>","arrow-up":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z\"/><\/svg>","download-simple":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z\"/><\/svg>","info":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z\"/><\/svg>","image":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V158.75l-26.07-26.06a16,16,0,0,0-22.63,0l-20,20-44-44a16,16,0,0,0-22.62,0L40,149.37V56ZM40,172l52-52,80,80H40Zm176,28H194.63l-36-36,20-20L216,181.38V200ZM144,100a12,12,0,1,1,12,12A12,12,0,0,1,144,100Z\"/><\/svg>","star":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z\"/><\/svg>","sparkle":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M197.58,129.06,146,110l-19-51.62a15.92,15.92,0,0,0-29.88,0L78,110l-51.62,19a15.92,15.92,0,0,0,0,29.88L78,178l19,51.62a15.92,15.92,0,0,0,29.88,0L146,178l51.62-19a15.92,15.92,0,0,0,0-29.88ZM137,164.22a8,8,0,0,0-4.74,4.74L112,223.85,91.78,169A8,8,0,0,0,87,164.22L32.15,144,87,123.78A8,8,0,0,0,91.78,119L112,64.15,132.22,119a8,8,0,0,0,4.74,4.74L191.85,144ZM144,40a8,8,0,0,1,8-8h16V16a8,8,0,0,1,16,0V32h16a8,8,0,0,1,0,16H184V64a8,8,0,0,1-16,0V48H152A8,8,0,0,1,144,40ZM248,88a8,8,0,0,1-8,8h-8v8a8,8,0,0,1-16,0V96h-8a8,8,0,0,1,0-16h8V72a8,8,0,0,1,16,0v8h8A8,8,0,0,1,248,88Z\"/><\/svg>","floppy-disk":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M219.31,72,184,36.69A15.86,15.86,0,0,0,172.69,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V83.31A15.86,15.86,0,0,0,219.31,72ZM168,208H88V152h80Zm40,0H184V152a16,16,0,0,0-16-16H88a16,16,0,0,0-16,16v56H48V48H172.69L208,83.31ZM160,72a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h56A8,8,0,0,1,160,72Z\"/><\/svg>","trash":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z\"/><\/svg>","list":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z\"/><\/svg>","gear-six":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm109.94-52.79a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A112.1,112.1,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.62a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21Zm-15,34.91-28.57,16.25a8,8,0,0,0-3,3c-.58,1-1.19,2.06-1.81,3.06a7.94,7.94,0,0,0-1.22,4.21l-.15,32.25a95.89,95.89,0,0,1-25.37,14.3L134,199.13a8,8,0,0,0-3.91-1h-.19c-1.21,0-2.43,0-3.64,0a8.08,8.08,0,0,0-4.1,1l-28.84,16.1A96,96,0,0,1,67.88,201l-.11-32.2a8,8,0,0,0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09,8.09,0,0,0-3-3.06l-28.6-16.29a90.49,90.49,0,0,1,0-28.26L61.67,97.63a8,8,0,0,0,3-3c.58-1,1.19-2.06,1.81-3.06a7.94,7.94,0,0,0,1.22-4.21l.15-32.25a95.89,95.89,0,0,1,25.37-14.3L122,56.87a8,8,0,0,0,4.1,1c1.21,0,2.43,0,3.64,0a8.08,8.08,0,0,0,4.1-1l28.84-16.1A96,96,0,0,1,188.12,55l.11,32.2a8,8,0,0,0,1.22,4.22c.62,1,1.23,2,1.8,3.06a8.09,8.09,0,0,0,3,3.06l28.6,16.29A90.49,90.49,0,0,1,222.9,142.12Z\"/><\/svg>","stop":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M200,40H56A16,16,0,0,0,40,56V200a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,160H56V56H200V200Z\"/><\/svg>","chart-line-up":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69l50.34-50.35a8,8,0,0,1,11.32,0L128,132.69,180.69,80H160a8,8,0,0,1,0-16h40a8,8,0,0,1,8,8v40a8,8,0,0,1-16,0V91.31l-58.34,58.35a8,8,0,0,1-11.32,0L96,123.31l-56,56V200H224A8,8,0,0,1,232,208Z\"/><\/svg>","copy":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z\"/><\/svg>","check-square":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z\"/><\/svg>","square":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z\"/><\/svg>","device-mobile":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16ZM72,64H184V192H72Zm8-32h96a8,8,0,0,1,8,8v8H72V40A8,8,0,0,1,80,32Zm96,192H80a8,8,0,0,1-8-8v-8H184v8A8,8,0,0,1,176,224Z\"/><\/svg>","headphones":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88,88,0,0,1,128,40h.67a87.71,87.71,0,0,1,87,80H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h16a24,24,0,0,0,24-24V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm152,48a8,8,0,0,1-8,8H192a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24Z\"/><\/svg>","bluetooth":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M196.8,169.6,141.33,128,196.8,86.4a8,8,0,0,0,0-12.8l-64-48A8,8,0,0,0,120,32v80L68.8,73.6a8,8,0,0,0-9.6,12.8L114.67,128,59.2,169.6a8,8,0,1,0,9.6,12.8L120,144v80a8,8,0,0,0,12.8,6.4l64-48a8,8,0,0,0,0-12.8ZM136,48l42.67,32L136,112Zm0,160V144l42.67,32Z\"/><\/svg>","paper-plane-right":"<svg class=\"icon\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M231.87,114l-168-95.89A16,16,0,0,0,40.92,37.34L71.55,128,40.92,218.67A16,16,0,0,0,56,240a16.15,16.15,0,0,0,7.93-2.1l167.92-96.05a16,16,0,0,0,.05-27.89ZM56,224a.56.56,0,0,0,0-.12L85.74,136H144a8,8,0,0,0,0-16H85.74L56.06,32.16A.46.46,0,0,0,56,32l168,95.83Z\"/><\/svg>","bell":"<svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4\"/><\/svg>"},"rawMeasurements":[],"exercises":[{"id":"squat","name":"Приседание","en":"Bodyweight squat","aliases":["приседания","присед"],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"forward-lunge","name":"Выпад вперёд","en":"Forward lunge","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"reverse-lunge","name":"Выпад назад","en":"Reverse lunge","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"side-lunge","name":"Боковой выпад","en":"Lateral lunge","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"split-squat","name":"Сплит-приседание","en":"Split squat","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"glute-bridge","name":"Ягодичный мост на полу","en":"Glute bridge","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"single-leg-bridge","name":"Ягодичный мост на одной ноге","en":"Single-leg glute bridge","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"push-up","name":"Отжимание от пола","en":"Push-up","aliases":["отжимания"],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"knee-push-up","name":"Отжимание с колен","en":"Knee push-up","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"calf-raise","name":"Подъём на носки стоя","en":"Standing calf raise","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"single-leg-calf-raise","name":"Подъём на носок одной ноги","en":"Single-leg calf raise","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"crunch","name":"Скручивание лёжа","en":"Crunch","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"reverse-crunch","name":"Обратное скручивание","en":"Reverse crunch","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"dead-bug","name":"Мёртвый жук","en":"Dead bug","aliases":[],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"bird-dog","name":"Разноимённое вытягивание руки и ноги на четвереньках","en":"Bird dog","aliases":["птица-собака"],"category":"Без оборудования","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"forearm-plank","name":"Планка на предплечьях","en":"Forearm plank","aliases":["планка"],"category":"Без оборудования","equipment":[],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"side-plank","name":"Боковая планка","en":"Side plank","aliases":[],"category":"Без оборудования","equipment":[],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"mountain-climber","name":"Скалолаз","en":"Mountain climber","aliases":[],"category":"Без оборудования","equipment":[],"profile":"timed_reps","loadBasis":null,"scope":"app"},{"id":"jumping-jack","name":"Прыжок с разведением рук и ног","en":"Jumping jack","aliases":[],"category":"Без оборудования","equipment":[],"profile":"timed_reps","loadBasis":null,"scope":"app"},{"id":"burpee","name":"Бёрпи","en":"Burpee","aliases":["берпи"],"category":"Без оборудования","equipment":[],"profile":"timed_reps","loadBasis":null,"scope":"app"},{"id":"chair-stand","name":"Вставание со стула","en":"Sit-to-stand","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["chair"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"wall-push-up","name":"Отжимание от стены","en":"Wall push-up","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["wall"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"incline-push-up","name":"Отжимание с руками на опоре","en":"Incline push-up","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["bench"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"step-up","name":"Зашагивание на платформу","en":"Step-up","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["step_platform"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"wall-sit","name":"Удержание приседа у стены","en":"Wall sit","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["wall"],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"pull-up","name":"Подтягивание прямым хватом","en":"Pull-up","aliases":["подтягивания"],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"chin-up","name":"Подтягивание обратным хватом","en":"Chin-up","aliases":["подтягивания обратным хватом"],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"neutral-pull-up","name":"Подтягивание нейтральным хватом","en":"Neutral-grip pull-up","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"weighted-pull-up","name":"Подтягивание с дополнительным весом","en":"Weighted pull-up","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar","dip_belt","external_load"],"profile":"added_load","loadBasis":null,"scope":"app"},{"id":"band-pull-up","name":"Подтягивание с помощью резинки","en":"Band-assisted pull-up","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar","resistance_band"],"profile":"band_reps","loadBasis":null,"scope":"app"},{"id":"inverted-row","name":"Горизонтальное подтягивание на низкой перекладине","en":"Inverted row","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["low_bar"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"suspension-row","name":"Тяга в подвесных петлях","en":"Suspension row","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["suspension_straps"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"dip","name":"Отжимание на брусьях","en":"Parallel-bar dip","aliases":["брусья"],"category":"С опорой, перекладиной или петлями","equipment":["parallel_bars"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"weighted-dip","name":"Отжимание на брусьях с дополнительным весом","en":"Weighted dip","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["parallel_bars","dip_belt","external_load"],"profile":"added_load","loadBasis":null,"scope":"app"},{"id":"hanging-knee-raise","name":"Подъём коленей в висе","en":"Hanging knee raise","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"hanging-leg-raise","name":"Подъём прямых ног в висе","en":"Hanging leg raise","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"dead-hang","name":"Вис на перекладине","en":"Dead hang","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["pull_up_bar"],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"back-extension","name":"Разгибание спины на наклонной скамье","en":"Back extension","aliases":["гиперэкстензия"],"category":"С опорой, перекладиной или петлями","equipment":["back_extension_bench"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"ab-wheel","name":"Выкатывание с роликом для пресса","en":"Ab wheel rollout","aliases":[],"category":"С опорой, перекладиной или петлями","equipment":["ab_wheel"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"barbell-back-squat","name":"Приседание со штангой на спине","en":"Barbell back squat","aliases":["присед со штангой"],"category":"Штанга","equipment":["barbell","rack"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-front-squat","name":"Приседание со штангой на груди","en":"Barbell front squat","aliases":[],"category":"Штанга","equipment":["barbell","rack"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-deadlift","name":"Становая тяга со штангой","en":"Barbell deadlift","aliases":[],"category":"Штанга","equipment":["barbell"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-sumo-deadlift","name":"Становая тяга сумо со штангой","en":"Barbell sumo deadlift","aliases":[],"category":"Штанга","equipment":["barbell"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-rdl","name":"Румынская тяга со штангой","en":"Barbell Romanian deadlift","aliases":["румынская тяга со штангой"],"category":"Штанга","equipment":["barbell"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-hip-thrust","name":"Подъём таза со штангой с опорой на скамью","en":"Barbell hip thrust","aliases":["хип траст со штангой"],"category":"Штанга","equipment":["barbell","bench"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-bench-press","name":"Жим штанги лёжа","en":"Barbell bench press","aliases":["жим лёжа со штангой"],"category":"Штанга","equipment":["barbell","bench","rack"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-incline-press","name":"Жим штанги на наклонной скамье","en":"Incline barbell press","aliases":[],"category":"Штанга","equipment":["barbell","bench","rack"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-close-grip-press","name":"Жим штанги лёжа узким хватом","en":"Close-grip barbell bench press","aliases":[],"category":"Штанга","equipment":["barbell","bench","rack"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-overhead-press","name":"Жим штанги стоя вверх","en":"Standing barbell overhead press","aliases":[],"category":"Штанга","equipment":["barbell"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-row","name":"Тяга штанги в наклоне","en":"Bent-over barbell row","aliases":[],"category":"Штанга","equipment":["barbell"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"barbell-curl","name":"Сгибание рук со штангой","en":"Barbell curl","aliases":[],"category":"Штанга","equipment":["barbell"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"ez-triceps-extension","name":"Разгибание рук с EZ-грифом лёжа","en":"Lying EZ-bar triceps extension","aliases":[],"category":"Штанга","equipment":["ez_bar","bench"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"trap-bar-deadlift","name":"Становая тяга с трэп-грифом","en":"Trap-bar deadlift","aliases":[],"category":"Штанга","equipment":["trap_bar"],"profile":"load_reps","loadBasis":"total_external","scope":"app"},{"id":"dumbbell-goblet-squat","name":"Приседание с одной гантелью у груди","en":"Dumbbell goblet squat","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"single_implement","scope":"app"},{"id":"dumbbell-split-squat","name":"Болгарское сплит-приседание с гантелями","en":"Dumbbell Bulgarian split squat","aliases":[],"category":"Гантели и гири","equipment":["dumbbell","bench"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-reverse-lunge","name":"Выпад назад с гантелями","en":"Dumbbell reverse lunge","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-step-up","name":"Зашагивание на платформу с гантелями","en":"Dumbbell step-up","aliases":[],"category":"Гантели и гири","equipment":["dumbbell","step_platform"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-rdl","name":"Румынская тяга с гантелями","en":"Dumbbell Romanian deadlift","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-bench-press","name":"Жим гантелей лёжа","en":"Dumbbell bench press","aliases":[],"category":"Гантели и гири","equipment":["dumbbell","bench"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-incline-press","name":"Жим гантелей на наклонной скамье","en":"Incline dumbbell press","aliases":[],"category":"Гантели и гири","equipment":["dumbbell","bench"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-seated-press","name":"Жим гантелей сидя вверх","en":"Seated dumbbell overhead press","aliases":[],"category":"Гантели и гири","equipment":["dumbbell","bench"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-standing-press","name":"Жим гантелей стоя вверх","en":"Standing dumbbell overhead press","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-single-arm-row","name":"Тяга гантели одной рукой","en":"One-arm dumbbell row","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-chest-supported-row","name":"Тяга гантелей с упором грудью","en":"Chest-supported dumbbell row","aliases":[],"category":"Гантели и гири","equipment":["dumbbell","bench"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-fly","name":"Разведение гантелей лёжа","en":"Dumbbell chest fly","aliases":[],"category":"Гантели и гири","equipment":["dumbbell","bench"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-lateral-raise","name":"Подъём гантелей через стороны","en":"Dumbbell lateral raise","aliases":["махи гантелями в стороны"],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-rear-fly","name":"Разведение гантелей в наклоне","en":"Bent-over dumbbell reverse fly","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-curl","name":"Сгибание рук с гантелями","en":"Dumbbell curl","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-hammer-curl","name":"Молотковое сгибание рук с гантелями","en":"Dumbbell hammer curl","aliases":["молотки"],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app"},{"id":"dumbbell-overhead-extension","name":"Разгибание рук с одной гантелью из-за головы","en":"Two-hand dumbbell overhead triceps extension","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"single_implement","scope":"app"},{"id":"dumbbell-farmer-carry","name":"Прогулка фермера с гантелями","en":"Dumbbell farmer carry","aliases":[],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"loaded_carry","loadBasis":"per_hand","scope":"app"},{"id":"kettlebell-goblet-squat","name":"Приседание с гирей у груди","en":"Kettlebell goblet squat","aliases":[],"category":"Гантели и гири","equipment":["kettlebell"],"profile":"load_reps","loadBasis":"single_implement","scope":"app"},{"id":"kettlebell-swing","name":"Мах гирей двумя руками","en":"Two-hand kettlebell swing","aliases":[],"category":"Гантели и гири","equipment":["kettlebell"],"profile":"load_reps","loadBasis":"single_implement","scope":"app"},{"id":"kettlebell-deadlift","name":"Становая тяга с гирей","en":"Kettlebell deadlift","aliases":[],"category":"Гантели и гири","equipment":["kettlebell"],"profile":"load_reps","loadBasis":"single_implement","scope":"app"},{"id":"machine-leg-press","name":"Жим ногами в тренажёре","en":"Machine leg press","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-hack-squat","name":"Гакк-приседание в тренажёре","en":"Machine hack squat","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"smith-squat","name":"Приседание в машине Смита","en":"Smith machine squat","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"smith-bench-press","name":"Жим лёжа в машине Смита","en":"Smith machine bench press","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-leg-extension","name":"Разгибание ног в тренажёре","en":"Machine leg extension","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-seated-curl","name":"Сгибание ног сидя в тренажёре","en":"Seated leg curl","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-lying-curl","name":"Сгибание ног лёжа в тренажёре","en":"Lying leg curl","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-hip-abduction","name":"Разведение ног в тренажёре","en":"Machine hip abduction","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-hip-adduction","name":"Сведение ног в тренажёре","en":"Machine hip adduction","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-standing-calf","name":"Подъём на носки стоя в тренажёре","en":"Machine standing calf raise","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-seated-calf","name":"Подъём на носки сидя в тренажёре","en":"Machine seated calf raise","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-chest-press","name":"Жим от груди в тренажёре","en":"Machine chest press","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-shoulder-press","name":"Жим вверх в тренажёре","en":"Machine shoulder press","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-chest-fly","name":"Сведение рук в тренажёре","en":"Machine chest fly","aliases":["бабочка","пек-дек"],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-reverse-fly","name":"Обратное разведение рук в тренажёре","en":"Machine reverse fly","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-row","name":"Горизонтальная рычажная тяга","en":"Lever machine row","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"machine-assisted-pull-up","name":"Подтягивание в гравитроне","en":"Machine-assisted pull-up","aliases":["подтягивания в гравитроне"],"category":"Тренажёры","equipment":["machine"],"profile":"assisted_reps","loadBasis":null,"scope":"app"},{"id":"machine-assisted-dip","name":"Отжимание на брусьях в гравитроне","en":"Machine-assisted dip","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"assisted_reps","loadBasis":null,"scope":"app"},{"id":"machine-crunch","name":"Скручивание в тренажёре","en":"Machine abdominal crunch","aliases":[],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"cable-lat-pulldown","name":"Тяга верхнего блока к груди","en":"Lat pulldown","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["Широкая рукоять","Узкая рукоять","Параллельная рукоять","Обратный хват"]},{"id":"cable-seated-row","name":"Горизонтальная тяга блока сидя","en":"Seated cable row","aliases":["нижний блок","горизонтальный блок"],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["Узкая параллельная рукоять","Широкая рукоять","Прямая рукоять","Канат"]},{"id":"cable-chest-fly","name":"Сведение рук на блоках","en":"Cable chest fly","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"cable-straight-arm-pulldown","name":"Тяга верхнего блока прямыми руками","en":"Straight-arm cable pulldown","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["Прямая рукоять","Канат"]},{"id":"cable-face-pull","name":"Тяга каната к лицу","en":"Cable face pull","aliases":["фейс пул"],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"cable-triceps-pushdown","name":"Разгибание рук вниз на блоке","en":"Cable triceps pushdown","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["Канат","Прямая рукоять","V-рукоять","Обратный хват"]},{"id":"cable-overhead-extension","name":"Разгибание рук на блоке из-за головы","en":"Overhead cable triceps extension","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["Канат","Прямая рукоять","Одной рукой (D-рукоятка)"]},{"id":"cable-curl","name":"Сгибание рук на нижнем блоке","en":"Cable curl","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["Прямая рукоять","EZ-рукоять","Канат","Одной рукой (D-рукоятка)"]},{"id":"cable-lateral-raise","name":"Подъём руки в сторону на блоке","en":"Cable lateral raise","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"cable-hip-extension","name":"Отведение ноги назад на блоке","en":"Cable hip extension","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app"},{"id":"cable-pallof-press","name":"Жим Палоффа на блоке","en":"Cable Pallof press","aliases":[],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["D-рукоятка","Канат"]},{"id":"cable-crunch","name":"Скручивание на верхнем блоке","en":"Cable crunch","aliases":["молитва на пресс"],"category":"Блоки и эластичные ленты","equipment":["cable_station"],"profile":"load_reps","loadBasis":"machine_display","scope":"app","handles":["Канат","Прямая рукоять"]},{"id":"band-row","name":"Тяга эластичной ленты к корпусу","en":"Resistance band row","aliases":[],"category":"Блоки и эластичные ленты","equipment":["resistance_band"],"profile":"band_reps","loadBasis":null,"scope":"app"},{"id":"band-overhead-press","name":"Жим эластичной ленты вверх","en":"Resistance band overhead press","aliases":[],"category":"Блоки и эластичные ленты","equipment":["resistance_band"],"profile":"band_reps","loadBasis":null,"scope":"app"},{"id":"band-curl","name":"Сгибание рук с эластичной лентой","en":"Resistance band curl","aliases":[],"category":"Блоки и эластичные ленты","equipment":["resistance_band"],"profile":"band_reps","loadBasis":null,"scope":"app"},{"id":"band-lateral-walk","name":"Боковые шаги с эластичной лентой","en":"Lateral band walk","aliases":[],"category":"Блоки и эластичные ленты","equipment":["resistance_band"],"profile":"band_reps","loadBasis":null,"scope":"app"},{"id":"band-pull-apart","name":"Разведение рук с эластичной лентой","en":"Band pull-apart","aliases":[],"category":"Блоки и эластичные ленты","equipment":["resistance_band"],"profile":"band_reps","loadBasis":null,"scope":"app"},{"id":"cat-cow","name":"Сгибание и разгибание позвоночника на четвереньках","en":"Cat-cow","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"hip-90-90","name":"Переходы бёдер в положении 90/90","en":"90/90 hip transitions","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"ankle-knee-to-wall","name":"Движение колена к стене для голеностопа","en":"Knee-to-wall ankle mobility","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":["wall"],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"thoracic-rotation","name":"Поворот грудного отдела лёжа на боку","en":"Side-lying thoracic rotation","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"reps","loadBasis":null,"scope":"app"},{"id":"hip-flexor-stretch","name":"Растяжка сгибателей бедра с колена","en":"Half-kneeling hip flexor stretch","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"hamstring-stretch","name":"Растяжка задней поверхности бедра сидя","en":"Seated hamstring stretch","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"quadriceps-stretch","name":"Растяжка передней поверхности бедра стоя","en":"Standing quadriceps stretch","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"calf-stretch","name":"Растяжка икроножной мышцы у стены","en":"Wall calf stretch","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":["wall"],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"chest-stretch","name":"Растяжка грудных мышц у дверного проёма","en":"Doorway chest stretch","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":["doorway"],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"shoulder-stretch","name":"Растяжка плеча поперёк груди","en":"Cross-body shoulder stretch","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"single-leg-balance","name":"Стойка на одной ноге","en":"Single-leg balance","aliases":[],"category":"Мобильность, растяжка и равновесие","equipment":[],"profile":"hold","loadBasis":null,"scope":"app"},{"id":"swimming","name":"Плавание","en":"Swimming","aliases":[],"category":"Кардио","equipment":[],"profile":"distance_time","scope":"app","loadBasis":null},{"id":"aerobics","name":"Аэробика","en":"Aerobics","aliases":[],"category":"Кардио","equipment":[],"profile":"duration","scope":"app","loadBasis":null},{"id":"walking","name":"Ходьба","en":"Walking","aliases":[],"category":"Кардио","equipment":[],"profile":"distance_time","scope":"app","loadBasis":null},{"id":"running","name":"Бег","en":"Running","aliases":[],"category":"Кардио","equipment":[],"profile":"distance_time","scope":"app","loadBasis":null},{"id":"cycling","name":"Велосипед","en":"Cycling","aliases":[],"category":"Кардио","equipment":[],"profile":"distance_time","scope":"app","loadBasis":null},{"id":"rowing","name":"Гребной тренажёр","en":"Rowing","aliases":[],"category":"Кардио","equipment":[],"profile":"distance_time","scope":"app","loadBasis":null},{"id":"elliptical","name":"Эллиптический тренажёр","en":"Elliptical","aliases":[],"category":"Кардио","equipment":[],"profile":"duration","scope":"app","loadBasis":null},{"id":"flat-leg-raise","name":"Подъём ног лёжа","en":"Flat Leg Raise","aliases":[],"category":"Из моих записей","equipment":[],"profile":"reps","scope":"user","loadBasis":null},{"id":"wide-pull-up","name":"Подтягивание широким хватом","en":"Wide Pull Up","aliases":[],"category":"Из моих записей","equipment":[],"profile":"reps","scope":"user","loadBasis":null},{"id":"bar-pullover","name":"Подъём переворотом на турнике","en":"Pullover on horizontal bar","aliases":["подъём-переворот","подъем переворотом","подъём переворотом"],"equipment":["Турник"],"category":"Гимнастика","profile":"reps","scope":"system","groupIds":["gymnastics","gymnastics-bars","street-workout","bars"],"loadBasis":null,"description":""},{"id":"bar-muscle-up-one-arm-transition","name":"Выход силой через одну руку","en":"Muscle-up with one-arm-at-a-time transition","aliases":["выход на один","выход на одну","выход силой на одну руку","выход через одну руку"],"equipment":["Турник"],"category":"Гимнастика","profile":"reps","scope":"system","groupIds":["gymnastics","gymnastics-bars","street-workout","bars"],"loadBasis":null,"description":"Последовательный перевод локтей над перекладиной при хвате двумя руками."},{"id":"bar-muscle-up-two-arm","name":"Выход силой на две руки","en":"Two-arm bar muscle-up","aliases":["выход на два","выход на две","выход силой двумя руками","muscle up"],"equipment":["Турник"],"category":"Гимнастика","profile":"reps","scope":"system","groupIds":["gymnastics","gymnastics-bars","street-workout","bars"],"loadBasis":null,"description":""},{"id":"machine-plate-loaded-seated-calf","name":"Подъём на носки сидя в тренажёре с блинами","en":"Plate-loaded seated calf raise","aliases":["Seated Calf Raise (Plate Loaded)","икры сидя с блинами"],"category":"Тренажёры","equipment":["machine","external_load"],"profile":"load_reps","loadBasis":"plates_only","scope":"app","description":"Подъём на носки сидя с подушками над коленями и дисками на рычаге. В этой карточке записывается только масса добавленных блинов. Масса тела и собственное сопротивление механизма не прибавляются; значение не равно измеренной нагрузке на мышцы. Тренажёр с выбором веса штифтом — другой вариант.","strongIdentity":{"family":"seated_plate_loaded_calf_raise","loading":"plate_loaded","loadBasis":"plates_only"},"references":[{"title":"Legend Fitness: Plate-Loaded Seated Calf","url":"https://www.legendfitness.com/product/seated-calf-pl/","scope":"equipment_example"}],"groupIds":["gym"]},{"id":"machine-independent-lever-row","name":"Тяга в тренажёре с независимыми рычагами","en":"Independent-lever machine row","aliases":["Iso-Lateral Row (Machine)","изолатеральная тяга","тяга независимыми рычагами"],"category":"Тренажёры","equipment":["machine"],"profile":"load_reps","loadBasis":"total_external","scope":"app","description":"Горизонтальная тяга, в которой правый и левый рычаги могут двигаться независимо. Наличие и вид опоры, а также порядок движения рук этой карточкой не уточняются. Вес записывается общей величиной для обеих сторон; приложение не добавляет массу рычагов и не пересчитывает показание в фактическое усилие. У конкретного тренажёра сверяй устройство и настройку с его инструкцией.","strongIdentity":{"family":"independent_lever_row","leverAction":"independent","support":"unknown","loadBasis":"total_external"},"references":[{"title":"Hammer Strength: Iso-Lateral Row","url":"https://www.lifefitness.com/en-us/catalog/strength-training/plate-loaded/plate-loaded-iso-lateral-row","scope":"independent_lever_equipment_example_not_assumed_model"}],"groupIds":["gym"]},{"id":"dumbbell-bilateral-simultaneous-row","name":"Тяга двух гантелей в наклоне одновременно","en":"Simultaneous two-dumbbell bent-over row","aliases":["Bilateral dumbbell bent-over row","тяга гантелей двумя руками одновременно"],"category":"Гантели и гири","equipment":["dumbbell"],"profile":"load_reps","loadBasis":"per_hand","scope":"app","description":"Тяга двух гантелей одновременно, а не поочерёдно и не одной рукой. Наличие и вид опоры этой карточкой не уточняются. Вес в подходе — вес одной гантели; приложение не удваивает это число. Для явно указанной опоры грудью есть отдельная карточка.","strongIdentity":{"family":"dumbbell_row","armAction":"bilateral_simultaneous","support":"unknown","loadBasis":"per_hand"},"references":[{"title":"PureGym: Dumbbell Bent Over Row","url":"https://www.puregym.com/exercises/back/rows/dumbbell-bent-over-row/","scope":"movement_example_not_assumed_support"}],"groupIds":["gym"]},{"id":"dumbbell-incline-chest-supported-reverse-fly","name":"Разведение гантелей на заднюю дельту с опорой грудью на наклонную скамью","en":"Chest-supported incline dumbbell reverse fly","aliases":["Incline reverse fly","Incline bench rear delt fly","разведение гантелей лёжа грудью на наклонной скамье"],"category":"Гантели и гири","equipment":["dumbbell","bench"],"profile":"load_reps","loadBasis":"unknown","scope":"app","description":"Разведение гантелей в стороны с опорой грудью на наклонную скамью. Движение направлено на заднюю дельту и мышцы верхней части спины. Сохраняй опору грудью и опускай гантели контролируемо. Это разведение, не отжимание и не тяга. Способ учёта веса этой карточкой не устанавливается: исходное число сохраняется без удвоения или другого пересчёта.","strongIdentity":{"family":"dumbbell_reverse_fly","support":"chest_supported","benchPosition":"incline","loadBasis":"unknown"},"references":[{"title":"ACE: Incline Reverse Fly","url":"https://www.acefitness.org/resources/everyone/exercise-library/34/incline-reverse-fly/","scope":"movement_and_support"},{"title":"Catalyst Athletics: Incline Bench Rear Delt Fly","url":"https://www.catalystathletics.com/exercise/848/Incline-Bench-Rear-Delt-Fly/","scope":"movement_and_support"}],"groupIds":["gym"]}],"equipment":{"support":"Опора","barbell":"Штанга","dumbbell":"Гантели","kettlebell":"Гиря","machine":"Силовой тренажёр","cable_station":"Блочный тренажёр","resistance_band":"Эластичная лента","bench":"Скамья","rack":"Стойка для штанги","chair":"Устойчивый стул","wall":"Стена","step_platform":"Платформа","pull_up_bar":"Перекладина","parallel_bars":"Брусья","dip_belt":"Пояс для отягощения","external_load":"Отягощение","low_bar":"Низкая перекладина","suspension_straps":"Подвесные петли с креплением","back_extension_bench":"Скамья для разгибания спины","ab_wheel":"Ролик для пресса","ez_bar":"EZ-гриф","trap_bar":"Трэп-гриф","doorway":"Дверной проём"},"exerciseLibrary":{"url":"/happyamurio/assets/exercise-library/v1/","version":"1.1","generated":"2026-11-10"},"exerciseFamilies":[{"id":"pull-ups","name":"Подтягивания","page":"pull-up","baseExerciseId":"pull-up","variantNoun":"хвата","phases":[{"key":"start","title":"Старт","breath":"вдох","frame":"start","text":"Повисни на прямых руках, ноги вместе. Плечи опусти от ушей, пресс напряги."},{"key":"up","title":"Подъём","breath":"выдох","frame":"mid","text":"Тяни локти вниз к бокам. Без рывка и маха ногами."},{"key":"top","title":"Верх","breath":"","frame":"top","text":"Подбородок выше перекладины. Шею не вытягивай."},{"key":"down","title":"Вниз","breath":"вдох","frame":"mid","text":"Плавно опустись до прямых рук."}],"errors":["рывок","мах ногами","неполная амплитуда"],"hotspots":{"back":"Спина: плечи опущены от ушей, шею не вытягивай.","core":"Корпус: пресс напряжён, ногами не маши."},"variants":[{"exerciseId":"pull-up","pill":"Прямой","grip":"ладони от себя, на ширине плеч","accent":"спина","aliases":["прямой хват"]},{"exerciseId":"wide-pull-up","pill":"Прямой широкий","grip":"ладони от себя, шире плеч","accent":"широчайшие","aliases":["широкий хват","прямой широкий хват"]},{"exerciseId":"pull-up-narrow","pill":"Прямой узкий","name":"Подтягивание узким хватом","grip":"ладони от себя, уже плеч","accent":"бицепс","aliases":["узкий хват","прямой узкий хват"]},{"exerciseId":"chin-up","pill":"Обратный","grip":"ладони к себе, на ширине плеч","accent":"бицепс и спина","note":"Шире плеч этим хватом не берись.","aliases":["обратный хват"]},{"exerciseId":"chin-up-narrow","pill":"Обратный узкий","name":"Подтягивание узким обратным хватом","grip":"ладони к себе, уже плеч","accent":"бицепс","note":"Шире плеч этим хватом не берись.","aliases":["узкий обратный хват","обратный узкий хват"]}],"retiredExerciseIds":["pull-up-wide","chin-up-wide"]}],"exerciseCards":[{"exerciseId":"neutral-pull-up","name":"Подтягивание на параллельных рукоятях","page":"pull-up","techniqueFrom":"pull-ups","grip":"ладони друг к другу","accent":"спина и руки","aliases":["на параллельных рукоятях","параллельные рукояти","нейтральный хват"]}],"exerciseMedia":{"base":"/happyamurio/assets/exercise-media/v1/","items":{},"placeholder":{"cover":"/happyamurio/assets/exercise-media/v1/placeholder.png"}}}</script>
@@ -2423,7 +2597,7 @@ function ruClockText(time){time=String(time||'');return /^\d{2}:\d{2}:\d{2}/.tes
 function ruFieldText(input){const v=input.value;if(!v)return input.type==='time'?'—':'Не выбрана';if(input.type==='date')return ruDateText(v);if(input.type==='time')return ruClockText(v);const [day,time='']=v.split('T');return ruDateText(day)+' · '+ruClockText(time)}
 const ruDateSelector='input[type=date],input[type=time],input[type=datetime-local]';
 function ruDateField(input){
- if(input.dataset.ruDate||input.closest('.date-pill,#happy-screens'))return;   // общие экраны (профиль, цели) подписывают дату сами
+ if(input.dataset.ruDate||input.closest('.date-pill,#happy-screens,.hm-date'))return;   // общие экраны (профиль, цели, дата нового замера) подписывают дату сами
  const style=getComputedStyle(input),text=document.createElement('span'),wrap=document.createElement('span');
  input.dataset.ruDate='1';wrap.className='ru-date';text.className='ru-date-text';text.setAttribute('aria-hidden','true');
  Object.assign(text.style,{fontSize:style.fontSize,fontWeight:style.fontWeight,fontFamily:style.fontFamily,color:style.color});
@@ -2962,7 +3136,10 @@ function filteredTemplates(){return templates().filter(t=>(matchesTemplateSport(
 renderTemplates=function(){const visible=filteredTemplates(),fav=visible.filter(t=>!t.recommended&&t.favorite!==false),mine=visible.filter(t=>!t.recommended&&t.favorite===false),recommended=visible.filter(t=>t.recommended);return `<div class="section-title"><h2>Мои тренировки</h2></div>${fav.length?`<div class="section-list">${fav.map(libraryTemplateRow).join('')}</div>`:''}<div class="section-list">${mine.map(libraryTemplateRow).join('')||''}<button class="section-row create-workout" data-action="new-template">${icon('plus')}<b>Создать тренировку</b></button></div><div class="section-title"><h2>Рекомендуемые тренировки</h2></div><p class="fineprint template-hint">Примеры для своей программы. Состав, подходы и время можно изменить в своей копии.</p><div class="section-list">${recommended.map(libraryTemplateRow).join('')||'<p class="empty-plan">Для этого вида спорта примеры ещё не добавлены.</p>'}</div>`};
 function hasDistance(e){const metrics=e?.metrics||exercise(e?.id)?.metrics;return Array.isArray(metrics)?metrics.includes('distance'):/distance_time|swim|ergometer|treadmill/.test(e?.profile||'')||e?.id==='swimming'}
 function targetField(t,e,phase,key,label,value,max){const timed=key==='seconds';return `<label>${label}${sportMetricInput(`${timed?'type="text" inputmode="text"':'type="number" min="0" max="'+max+'" step="1" inputmode="decimal"'} data-template-target="${key}" data-template="${esc(t.id)}" data-exercise="${esc(e.id)}" data-phase="${phase}" value="${timed&&value!==''&&value!=null?sportDurationValue(value):value??''}" placeholder="${timed?'0:00':'—'}" aria-label="${label}: ${esc(e.name)}" ${t.recommended?'readonly':''}`,timed?'':'м')}</label>`}
-renderTemplateItems=function(t){return `<div class="card template-exercises">${(t?.items||[]).map(([eid,p,sets])=>{const e=exercise(eid),target=t.phaseTargets?.[p]?.[eid]||(p==='main'?t.targets?.[eid]:null);const timed=isTimed({id:eid});return `<div class="template-exercise"><div class="template-exercise-title"><b>${esc(e?.name||eid)}</b><small>${sets} ${target?.reps?'× '+target.reps:'подх.'}</small></div>${timed?`<div class="template-targets">${targetField(t,e,p,'seconds','Время',target?.seconds??'',86400)}${hasDistance(e)?targetField(t,e,p,'distance','Дистанция',target?.distance,100000):''}</div>`:''}</div>`}).join('')}</div>`};
+renderTemplateItems=function(t){if(!t?.items?.length)return t&&!t.recommended?`<button type="button" class="card section-row plan-line template-add-first" data-action="template-add-first" data-id="${esc(t.id)}">${icon('plus')}<b>Добавить упражнение</b></button>`:'';return `<div class="card template-exercises">${(t?.items||[]).map(([eid,p,sets])=>{const e=exercise(eid),target=t.phaseTargets?.[p]?.[eid]||(p==='main'?t.targets?.[eid]:null);const timed=isTimed({id:eid});return `<div class="template-exercise"><div class="template-exercise-title"><b>${esc(e?.name||eid)}</b><small>${sets} ${target?.reps?'× '+target.reps:'подх.'}</small></div>${timed?`<div class="template-targets">${targetField(t,e,p,'seconds','Время',target?.seconds??'',86400)}${hasDistance(e)?targetField(t,e,p,'distance','Дистанция',target?.distance,100000):''}</div>`:''}</div>`}).join('')}</div>`};
+// Тренировка без упражнений (Астамур 19.11.2026): на карточке нет пустой рамки раздела упражнений — на её месте
+// «Добавить упражнение» во всю ширину, как «Добавить в расписание». Нажатие открывает правку тренировки сразу с выбором упражнения.
+document.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="template-add-first"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();editTemplate(b.dataset.id);if(document.getElementById('template-form'))openTemplateExercisePicker();},true);
 function storeTemplateTarget(input){const t=clone(templates().find(t=>t.id===input.dataset.template));if(!t||t.recommended||!input.validity.valid)return;const phase=input.dataset.phase,eid=input.dataset.exercise,key=['minutes','seconds'].includes(input.dataset.templateTarget)?'seconds':'distance',raw=input.value;const value=input.dataset.templateTarget==='seconds'?parseSetTime(raw):Number(raw)*(key==='seconds'?60:1);if(raw!==''&&(!Number.isFinite(value)||value<0||value>(key==='seconds'?86400:100000))){sportMetricError(input,'Проверь значение');return;}t.phaseTargets??={};t.phaseTargets[phase]??={};t.phaseTargets[phase][eid]??=clone(phase==='main'?t.targets?.[eid]||{}:{});if(raw==='')delete t.phaseTargets[phase][eid][key];else t.phaseTargets[phase][eid][key]=value;if(baseTemplates.some(b=>b.id===t.id)){state.templateOverrides??={};state.templateOverrides[t.id]=t}else state.templates[state.templates.findIndex(x=>x.id===t.id)]=t;persist()}
 document.addEventListener('input',e=>{if(e.target.dataset.templateTarget&&e.target.dataset.templateTarget!=='seconds')storeTemplateTarget(e.target)});
 
@@ -5377,7 +5554,10 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
 
 
 /* Happy appearance picker v2.1 — slot data-happy-appearance-slot (Day 54.1 / Meal 26.1 / Sport 38.6). Live preview is transactional. Presets: Color Studio 12.5, collection v3.
-   Only a validated ID is stored. No diary/auth writes or default migration. */
+   Only a validated ID is stored. No diary/auth writes or default migration.
+   19.11.2026 (Sport 44.5): необязательное поле button — главная кнопка с микрофоном: 'theme' (как у темы, по умолчанию,
+   и для прежних записей без поля), 'original' (исходная кнопка приложения) или id темы. Sport выбирает его каруселями в
+   «Настроить тему» (data-happy-appearance-entry="inline" — без кнопки «Выбрать оформление»); Day и Meal — как прежде. */
 (function(root){'use strict';
  const G=root.HappyGradients,R=root.HappyReferenceThemes;
  if(!G||!R)return;
@@ -5386,27 +5566,34 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
  const app=document.documentElement.dataset.happyAppearanceApp;
  if(!['day','meal','sport'].includes(app))return;
  const key='happy-'+app+'-appearance-v1';
- let current='',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
+ let current='',currentButton='theme',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
  const valid=id=>id===''||themes.some(t=>t.id===id);
+ const validButton=b=>b==='theme'||b==='original'||themes.some(t=>t.id===b);
  const name=id=>themes.find(t=>t.id===id)?.name||'По умолчанию · исходное';
  const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
- function skin(id){
+ function skin(id,button){
+  if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
-  if(!id){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
-  const t=themes.find(t=>t.id===id);if(!t)return;
-  const s=t.state,bg=G.css(s.backgroundGradient),button=G.css(s.buttonGradient),shine=Number(s.buttonShine);
-  const shadow=shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(s.buttonColor,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40';
-  // Studio's default glass tokens deliberately retain each application's glass.
-  // No optional legacy ui arguments are promoted to active theme tokens.
-  let css='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';--fab:'+G.colors(s.buttonGradient)[0].color+';}';
-  css+=' .fab,#fab,.dockFab,.mic-fab,.mlMic,#sport-fab,#nowSave{background:'+button+'!important;background-blend-mode:normal!important;box-shadow:'+shadow+'!important;filter:none!important;color:'+s.buttonTextColor+'!important;}';
-  css+=' .fab::before,.fab::after,.dockFab::before,.dockFab::after,.mic-fab::before,.mic-fab::after,#nowSave::before,#nowSave::after{background:none!important;box-shadow:none!important;}';
-  css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';
+  const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
+  const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
+  document.documentElement.dataset.happyAppearanceButton=button;
+  if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
+  let css='';
+  if(t){const s=t.state,bg=G.css(s.backgroundGradient);
+   css+='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';}';}
+  if(b){const s=b.state,btn=G.css(s.buttonGradient),shine=Number(s.buttonShine);
+   const shadow=shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(s.buttonColor,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40';
+   // Studio's default glass tokens deliberately retain each application's glass.
+   css+=' :root{--fab:'+G.colors(s.buttonGradient)[0].color+';}';
+   css+=' .fab,#fab,.dockFab,.mic-fab,.mlMic,#sport-fab,#nowSave{background:'+btn+'!important;background-blend-mode:normal!important;box-shadow:'+shadow+'!important;filter:none!important;color:'+s.buttonTextColor+'!important;}';
+   css+=' .fab::before,.fab::after,.dockFab::before,.dockFab::after,.mic-fab::before,.mic-fab::after,#nowSave::before,#nowSave::after{background:none!important;box-shadow:none!important;}';
+   css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';}
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
-  document.documentElement.dataset.happyAppearance=id;
+  if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');
  }
  function labels(){document.querySelectorAll('[data-happy-appearance-label]').forEach(el=>{el.textContent=name(current)});}
  function entry(){
+  if(document.documentElement.dataset.happyAppearanceEntry==='inline')return;   // выбор встроен в страницу приложения (Sport — «Настроить тему»)
   const button=()=>{const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.happyAppearanceOpen='';b.setAttribute('aria-haspopup','dialog');
    const title=document.createElement('span');title.textContent='Выбрать оформление';const label=document.createElement('small');label.dataset.happyAppearanceLabel='';label.textContent=name(current);b.append(title,label);return b;};
   // Settings structure (AGENTS.md): the picker lives under «Приложение → Оформление» when the page provides a slot, as in Sport.
@@ -5464,7 +5651,7 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
     if(busy)return;const id=dialog.querySelector('input:checked')?.value;if(!valid(id))return;
     if(id===current){close();return;}busy=true;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=true);
     const error=dialog.querySelector('.ha-error');error.hidden=true;
-    try{await root.rawSet(key,JSON.stringify({version:1,presetId:id}));current=id;skin(id);labels();busy=false;close();}
+    try{await root.rawSet(key,JSON.stringify({version:1,presetId:id,button:currentButton}));current=id;skin(id);labels();busy=false;close();}
     catch(e){preview(current);error.textContent='Не удалось сохранить оформление. Возвращён прежний вид. Выбери тему и попробуй ещё раз.';error.hidden=false;}
     finally{busy=false;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=false);}
    });
@@ -5474,11 +5661,18 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
  }
  document.addEventListener('click',e=>{const b=e.target.closest?.('[data-happy-appearance-open]');if(b)open(b)});
  async function init(){
-  try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;skin(current)}}catch(e){}
+  try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;if(validButton(saved.button))currentButton=saved.button;skin(current)}}catch(e){}
   ready=true;entry();labels();
   new MutationObserver(entry).observe(document.body,{childList:true,subtree:true});
  }
- root.HappyAppearance={init,skin,themes,get selected(){return current},get previewed(){return previewId},get ready(){return ready}};
+ /* Выбор без окна (Sport, «Настроить тему»): сохранить тему и/или главную кнопку сразу. */
+ async function choose(theme,button){
+  if(theme===undefined)theme=current;if(button===undefined)button=currentButton;
+  if(!valid(theme)||!validButton(button))throw Error('Неизвестное оформление');
+  await root.rawSet(key,JSON.stringify({version:1,presetId:theme,button}));
+  current=theme;currentButton=button;skin(current);labels();
+ }
+ root.HappyAppearance={init,skin,themes,choose,validButton,get button(){return currentButton},get selected(){return current},get previewed(){return previewId},get ready(){return ready}};
  init();
 })(globalThis);
 
@@ -5947,7 +6141,7 @@ function sportSettingsLayout(html){
  }
  if(pendingLabel)place('app',label(pendingLabel));
  // Blocks inside a group are (label, cards…) runs; order them the same way in every release.
- const slot=document.createElement('div');slot.className='happy-appearance-entry';slot.setAttribute('data-happy-appearance-slot','');const appearanceLabel=label('Оформление');appearanceLabel.hidden=true;groups.app.unshift(appearanceLabel,slot);   // Sport 41: подпись не видна — кнопка «Выбрать оформление» говорит сама
+ // Sport 44.5 (19.11.2026): оформление выбирается в «Настроить тему» под «Настроить цели» (appearance-carousels.js) — здесь его больше нет.
  const order={app:['Оформление','Создать','Таймер','Датчики','Настройки тренировок','Иконки'],data:['Мои данные'],developer:['Резервная копия']};
  for(const group of Object.keys(order)){
   const runs=[];for(const n of groups[group]){if(n.matches('.settings-section')||!runs.length)runs.push([n]);else runs.at(-1).push(n);}
@@ -7120,6 +7314,136 @@ window.addEventListener('click',e=>{
  document.addEventListener('contextmenu',e=>{const row=rowOf(e.target);if(!row)return;e.preventDefault();stop();swallowClickUntil=Date.now()+700;workoutMenu(row.dataset.id,row.dataset.action)},true);
  window.addEventListener('click',e=>{if(Date.now()<swallowClickUntil&&rowOf(e.target)){e.preventDefault();e.stopImmediatePropagation()}},true);}
 
+/* Sport 44.5 · «Настроить тему» (макет Михалыча «Happy Sport · Настройки», версия 6; поручение Астамура 19.11.2026).
+   Строка под «Настроить цели» в той же стеклянной карточке: нажатие плавно раскрывает карточку вниз, повторное — сворачивает.
+   Внутри две горизонтальные ленты: «Тема» (прямоугольные окошки с настоящим фоновым градиентом) и «Главная кнопка»
+   (пилюли с цветом и микрофоном). Свайп только листает; нажатие сразу применяет и сохраняет выбор (shared/happy-appearance.js,
+   HappyAppearance.choose → happy-sport-appearance-v1: presetId + button). «Как у темы» меняет микрофон вместе с темой;
+   «Исходная Sport» и отдельно выбранный цвет остаются при смене темы. Выделение — светлой обводкой и подложкой, без галочек,
+   стрелки и «Применить». Прежняя кнопка «Выбрать оформление» в Sport не показывается (data-happy-appearance-entry="inline"). */
+(()=>{'use strict';
+ document.documentElement.dataset.happyAppearanceEntry='inline';
+ const A=()=>globalThis.HappyAppearance,G=globalThis.HappyGradients,R=globalThis.HappyReferenceThemes;
+ if(!G||!R)return;
+ const allThemes=R.themes||R.items||[],themes=new Map(allThemes.map(t=>[t.id,t]));
+ const motion=matchMedia('(prefers-reduced-motion: reduce)');
+ let expanded=false,groups=[],autoSwatch=null,original=null;
+ const selected=()=>({theme:A()?.selected||'original',button:A()?.button||'theme'});
+ const sel=()=>{const s=selected();return {theme:s.theme===''?'original':s.theme,button:s.button}};
+ /* Исходный фон и исходная кнопка Sport — без наложенной темы. */
+ function originals(){
+  if(original)return original;
+  const skin=document.getElementById('happy-appearance-skin');if(skin)skin.disabled=true;
+  const fab=document.getElementById('sport-fab'),cs=fab?getComputedStyle(fab):null;
+  original={background:getComputedStyle(document.documentElement).getPropertyValue('--sport-background').trim()||'#8c75db',
+   gradient:cs?cs.backgroundImage:'none',ink:cs?cs.color:'#fff'};
+  if(skin)skin.disabled=false;
+  return original;
+ }
+ function buttonLook(id){
+  const st=themes.get(id)?.state;
+  return st?{gradient:G.css(st.buttonGradient),ink:st.buttonTextColor}:{gradient:originals().gradient,ink:originals().ink};
+ }
+ function paintButtonSwatch(swatch,id){const {gradient,ink}=buttonLook(id);swatch.style.setProperty('--swatch',gradient);swatch.style.setProperty('--swatch-ink',ink)}
+ const updateMask=list=>list.toggleAttribute('data-end',list.scrollLeft>=list.scrollWidth-list.clientWidth-2);
+ function reveal(group,option){
+  const {list}=group;if(!option)return;const left=option.offsetLeft;
+  if(left<list.scrollLeft||left+option.offsetWidth>list.scrollLeft+list.clientWidth-2)list.scrollTo({left:left-2,behavior:'auto'});
+  updateMask(list);
+ }
+ function updateSelection(group){
+  const value=sel()[group.key];
+  for(const option of group.options){const active=option.dataset.value===value;option.setAttribute('aria-pressed',String(active));option.tabIndex=active?0:-1}
+  return group.options.find(o=>o.tabIndex===0);
+ }
+ function onKey(event,group){
+  const index=group.options.indexOf(event.target);if(index<0)return;
+  const last=group.options.length-1,moves={ArrowLeft:index-1,ArrowRight:index+1,Home:0,End:last};
+  if(!Object.hasOwn(moves,event.key))return;event.preventDefault();
+  const option=group.options[Math.max(0,Math.min(last,moves[event.key]))];
+  group.options.forEach(o=>{o.tabIndex=o===option?0:-1});option.focus({preventScroll:true});reveal(group,option);
+ }
+ async function choose(group,option,item,title,status){
+  const before=sel(),next={...before,[group.key]:item.id};
+  try{
+   await A().choose(next.theme==='original'?'':next.theme,next.button);
+   status.textContent=title+' — '+item.name;
+  }catch(e){if(typeof toast==='function')toast('Не удалось сохранить оформление');}
+  for(const g of groups)updateSelection(g);reveal(group,option);
+  if(autoSwatch)paintButtonSwatch(autoSwatch,sel().theme);
+ }
+ function makeGroup(key,title,items,status){
+  const section=document.createElement('section');section.className='appearance-wheel';
+  const heading=document.createElement('h3');heading.id='appearance-'+key;heading.textContent=title;
+  const list=document.createElement('div');list.className='appearance-options';list.dataset.kind=key;list.setAttribute('role','group');list.setAttribute('aria-labelledby',heading.id);
+  section.append(heading,list);
+  const group={key,list,options:[]};
+  for(const item of items){
+   const option=document.createElement('button');option.type='button';option.className='appearance-choice';option.dataset.value=item.id;
+   option.innerHTML='<span class="appearance-swatch" aria-hidden="true"></span><span class="appearance-choice-name"></span>';
+   option.querySelector('.appearance-choice-name').textContent=item.name;
+   const swatch=option.querySelector('.appearance-swatch');
+   if(key==='theme')swatch.style.setProperty('--swatch',item.state?G.css(item.state.backgroundGradient):originals().background);
+   else{
+    const icon=document.querySelector('#sport-fab svg');if(icon)swatch.append(icon.cloneNode(true));
+    paintButtonSwatch(swatch,item.id==='theme'?sel().theme:item.id);if(item.id==='theme')autoSwatch=swatch;
+   }
+   option.addEventListener('click',()=>choose(group,option,item,title,status));
+   group.options.push(option);list.append(option);
+  }
+  list.addEventListener('keydown',e=>onKey(e,group));
+  list.addEventListener('scroll',()=>updateMask(list),{passive:true});
+  return {section,group};
+ }
+ function mount(){
+  const card=document.querySelector('#happy-account-top .hs-group');
+  if(!card||card.querySelector('.appearance-trigger')||!A()?.ready)return;
+  const trigger=document.createElement('button');trigger.type='button';trigger.className='hs-row appearance-trigger';
+  trigger.setAttribute('aria-controls','sport-appearance-panel');trigger.innerHTML='<span>Настроить тему</span>';
+  const fold=document.createElement('div');fold.id='sport-appearance-panel';fold.className='appearance-fold';
+  const clip=document.createElement('div');clip.className='appearance-fold-clip';
+  const wheels=document.createElement('div');wheels.className='appearance-wheels';
+  const status=document.createElement('span');status.className='appearance-announcement';status.setAttribute('role','status');
+  autoSwatch=null;
+  const theme=makeGroup('theme','Тема',[{id:'original',name:'По умолчанию · исходное'},...allThemes],status);
+  const button=makeGroup('button','Главная кнопка',[{id:'theme',name:'Как у темы'},{id:'original',name:'Исходная Sport'},...allThemes],status);
+  wheels.append(theme.section,button.section,status);clip.append(wheels);fold.append(clip);card.append(trigger,fold);
+  groups=[theme.group,button.group];
+  const render=()=>{trigger.setAttribute('aria-expanded',String(expanded));fold.toggleAttribute('data-open',expanded);fold.inert=!expanded;
+   for(const g of groups){const o=updateSelection(g);if(expanded)reveal(g,o)}};
+  render();
+  trigger.addEventListener('click',()=>{
+   expanded=!expanded;render();if(!expanded)return;
+   const dock=document.getElementById('dock');if(!dock)return;
+   requestAnimationFrame(()=>{const gap=fold.getBoundingClientRect().top+wheels.offsetHeight+20-dock.getBoundingClientRect().top;
+    if(gap>0)window.scrollBy({top:gap,behavior:motion.matches?'instant':'smooth'})});
+  });
+ }
+ // Настройки каждый раз открываются свёрнутыми.
+ new MutationObserver(()=>{if(!document.querySelector('#happy-account-top .appearance-trigger'))expanded=false;mount()}).observe(document.body,{childList:true,subtree:true});
+ addEventListener('load',mount);
+
+ /* Мышью ленты тянутся, как пальцем (касание листает само). После перетаскивания нажатие не выбирает карточку. */
+ let drag=null,ignoreClickUntil=0;
+ document.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='mouse'||e.button!==0)return;const list=e.target.closest?.('.appearance-options');if(!list)return;
+  ignoreClickUntil=0;drag={id:e.pointerId,list,x:e.clientX,y:e.clientY,left:list.scrollLeft,top:scrollY,axis:null};
+ });
+ addEventListener('pointermove',e=>{
+  if(!drag||drag.id!==e.pointerId)return;const x=drag.x-e.clientX,y=drag.y-e.clientY;
+  if(!drag.axis){if(Math.max(Math.abs(x),Math.abs(y))<7)return;drag.axis=Math.abs(x)>Math.abs(y)?'x':'y';if(drag.axis==='x')drag.list.setAttribute('data-dragging','')}
+  e.preventDefault();if(drag.axis==='x')drag.list.scrollLeft=drag.left+x;else scrollTo(0,drag.top+y);
+ },{passive:false});
+ function settle(list){
+  const current=list.scrollLeft,max=list.scrollWidth-list.clientWidth;let nearest=0;
+  for(const o of list.children){const start=Math.min(max,o.offsetLeft-2);if(Math.abs(start-current)<Math.abs(nearest-current))nearest=start}
+  list.removeAttribute('data-dragging');list.scrollTo({left:nearest,behavior:motion.matches?'auto':'smooth'});
+ }
+ function end(e){if(!drag||drag.id!==e.pointerId)return;if(drag.axis){ignoreClickUntil=performance.now()+240;if(drag.axis==='x')settle(drag.list)}drag=null}
+ addEventListener('pointerup',end);addEventListener('pointercancel',end);
+ document.addEventListener('click',e=>{if(e.detail>0&&performance.now()<ignoreClickUntil&&e.target.closest?.('.appearance-options')){e.preventDefault();e.stopImmediatePropagation()}},true);
+})();
+
 </script>
 <script>/* Happy: рамка выбора — только при работе с клавиатуры; полос прокрутки нет. Один файл для Day, Meal и Sport
  * (решение Астамура в лаборатории Sport 15.11.2026).
@@ -8246,20 +8570,43 @@ function cell(group,values){
  if(group.keys.length===1)return `<b>${value(values,group.keys[0])}</b>`;
  return `<div class="hm-paired">${group.keys.map((k,i)=>`<span aria-label="${group.name} · ${i===0?'левая':'правая'} сторона: ${value(values,k)}"><small>${i===0?'Л':'П'}</small><b>${value(values,k)}</b></span>`).join('')}</div>`;
 }
-/* Таблица: названия и последние замеры закреплены, прошлые даты прокручиваются вбок. */
-function grid(cur,past,chosenDate){
+/* Новый замер прямо в таблице (Астамур 19.11.2026): белый столбец — подчёркнутые поля нового замера, все прежние
+   замеры — обычными столбцами правее, от нового к старому. В углу вместо «+ Замер» — «Отмена». */
+const unit=k=>k==='weight'?'кг':'см';
+function blank(g,values){
+ const field=(k,label,last)=>`<input class="hm-in" name="${k}" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="${last?'done':'next'}" aria-label="${label}" value="${esc(values[k]==null?'':values[k])}">`;
+ if(g.keys.length===1)return field(g.keys[0],g.name+', '+unit(g.keys[0]),g===GROUPS[GROUPS.length-1]);
+ return `<div class="hm-paired">${g.keys.map((k,i)=>`<label><small>${i===0?'Л':'П'}</small>${field(k,g.name+' · '+(i===0?'левая':'правая')+', см')}</label>`).join('')}</div>`;
+}
+function draftGrid(list,draft){
+ return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Новый замер: впиши значения в белый столбец"><table class="hm-grid"><thead><tr>`+
+  `<th class="hm-label hm-corner" scope="col"><button type="button" class="hm-corner-button" data-hm="cancel">Отмена</button></th>`+
+  `<th class="hm-latest hm-new" scope="col"><span>Новый</span><label class="hm-date"><b>${shortDate(draft.date)}</b><input name="date" type="date" required value="${esc(draft.date)}" aria-label="Дата замера"></label></th>`+
+  list.map((m,i)=>`<th scope="col"${i===0?' class="hm-was-latest"':''}><span class="hm-col-date">${shortDate(m.date)}</span><small>${m.date.slice(0,4)}</small></th>`).join('')+
+  `</tr></thead><tbody>`+GROUPS.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${unit(g.keys[0])}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest hm-new">${blank(g,draft.values)}</td>`+
+   list.map((m,i)=>`<td${i===0?' class="hm-was-latest"':''}>${cell(g,m.values)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
+}
+/* Таблица: названия и последние замеры закреплены, прошлые даты прокручиваются вбок. В углу — «+ Замер»
+   (Астамур 19.11.2026: кнопка переехала сюда сверху экрана), на печати там просто «Замер». */
+function grid(cur,past,chosenDate,printed){
  const edit=m=>`<button type="button" class="hm-edit" data-hm="edit" data-id="${m.date}" aria-label="Изменить замер ${dateLabel(m.date)}">${ICON.pencil}</button>`;
  const shown=GROUPS.filter(g=>[cur].concat(past).some(m=>g.keys.some(k=>m.values[k]!=null)));
- return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Сравнение замеров: последние закреплены, прошлые прокручиваются"><table class="hm-grid"><thead><tr><th class="hm-label" scope="col">Замер</th><th class="hm-latest" scope="col"><span>Последние</span><b>${shortDate(cur.date)}</b>${edit(cur)}</th>`+
+ const corner=printed?'Замер':`<button type="button" class="hm-corner-button" data-hm="add">${ICON.plus}<span>Замер</span></button>`;
+ return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Сравнение замеров: последние закреплены, прошлые прокручиваются"><table class="hm-grid"><thead><tr><th class="hm-label hm-corner" scope="col">${corner}</th><th class="hm-latest" scope="col"><span>Последние</span><b>${shortDate(cur.date)}</b>${edit(cur)}</th>`+
   past.map(m=>`<th scope="col" class="${m.date===chosenDate?'hm-chosen':''}"><button type="button" data-hm="compare" data-id="${m.date}" aria-pressed="${m.date===chosenDate}">${shortDate(m.date)}<small>${m.date.slice(0,4)}</small></button>${edit(m)}</th>`).join('')+
   `</tr></thead><tbody>`+shown.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${g.keys[0]==='weight'?'кг':'см'}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest">${cell(g,cur.values)}</td>`+
    past.map(m=>`<td class="${m.date===chosenDate?'hm-chosen':''}">${cell(g,m.values)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
 }
 
-const ui={period:'first',amplify:3,chosen:null,notice:null};   // вид экрана переживает перерисовку приложения
+const ui={period:'first',amplify:3,chosen:null,notice:null,draft:null,focus:null};   // вид экрана переживает перерисовку приложения;
+// draft — новый замер, который вписывают в таблицу ({date, values}); пока он есть, белый столбец — поля ввода
 let mounted=null;
 /* Поставить экран в box. Экран на странице один: тот же box — просто перерисовать; приложение перерисовало страницу,
-   пока открыто окно замера, — экран переезжает в новый box вместе с окном; иначе прежний экран снимается. */
+   пока открыто окно замера или вписывают новый замер, — экран переезжает в новый box вместе с ним; иначе прежний
+   экран снимается. Вписанное в новый замер живёт в ui.draft: ушёл с экрана и вернулся — столбец на месте. */
+/* Нажатие на нижнее меню закрывает открытое окно замера (одно на страницу). */
+let openDialogEl=null;
+if(root.document&&root.document.addEventListener)root.document.addEventListener('click',e=>{if(openDialogEl&&e.target.closest?.('.dock'))openDialogEl.dispatchEvent(new Event('hm-dismiss'))},true);
 function mount(box,options){
  if(mounted){
   if(mounted.box===box){mounted.render();return mounted}
@@ -8285,11 +8632,14 @@ function mount(box,options){
   const notice=ui.notice?`<p class="hm-notice" role="status"><span>${esc(ui.notice.text)}</span>${ui.notice.undo?'<button type="button" data-hm="undo">Вернуть</button>':''}</p>`:'';
   const trash=s.trash.length?`<button type="button" class="hm-text" data-hm="trash">Удалённые замеры · ${s.trash.length}</button>`:'';
   if(d&&d.newer)return `<div class="hm-card hm-empty">${esc(NEWER)}</div>`;
-  if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p><button type="button" class="hm-button" data-hm="add">+ Замер</button>`+trash;   // пустой экран — текст без рамки, кнопка под ним; «+ Замер», как наверху (мелочи аудита 18.11.2026)
+  if(ui.draft&&!d)ui.draft=null;   // вышли из аккаунта — вписанное не сохранить
+  const top=cur?`<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span></div>`+
+   `<div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div></div>`:'';
+  if(ui.draft)return notice+top+`<form class="hm-form hm-add" novalidate>${draftGrid(s.list.slice().sort((a,b)=>-byDate(a,b)),ui.draft)}`+
+   `<p class="hm-error" role="alert"></p><div class="hm-output"><button class="hm-button hm-primary" type="submit">${ICON.check} Сохранить замер</button></div></form>`;
+  if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p><button type="button" class="hm-button" data-hm="add">+ Замер</button>`+trash;   // пустой экран — текст без рамки, кнопка под ним (мелочи аудита 18.11.2026)
   const past=s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b));
-  return notice+
-   `<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span><button type="button" class="hm-text" data-hm="add">${ICON.plus} Замер</button></div>`+
-   `<div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div></div>`+
+  return notice+top+
    grid(cur,past,old.date)+
    trash+
    `<div class="hm-output"><button type="button" class="hm-button" data-hm="share" aria-haspopup="true" aria-expanded="${!!menu}">${ICON.share} Поделиться</button></div>`;
@@ -8297,10 +8647,83 @@ function mount(box,options){
  function render(){
   if(!alive)return;closeMenu();
   const wrap=box.querySelector('.hm-grid-wrap'),scroll=wrap?wrap.scrollLeft:0;
+  const active=document.activeElement,lost=!active||active===document.body||!active.isConnected||box.contains(active);
   chart.last=null;box.classList.add('hm');box.innerHTML=view();
   const next=box.querySelector('.hm-grid-wrap');if(next&&scroll)next.scrollLeft=scroll;
   flow(chart.last);
+  // Перерисовка, пока вписывают новый замер (пришло из облака, приложение перерисовало страницу): курсор остаётся в том же поле.
+  const field=ui.draft&&ui.focus&&lost&&box.querySelector('.hm-add [name="'+ui.focus+'"]');
+  if(field){field.focus({preventScroll:true});try{const n=field.value.length;field.setSelectionRange(n,n)}catch(e){}}
  }
+ /* Новый замер в таблице: «+ Замер» — столбцы плавно уезжают вправо, на место белого проявляется пустой столбец;
+    «Отмена» — обратно. Без анимации, если в системе выключено движение. */
+ const calm=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const EASE='cubic-bezier(.2,.8,.2,1)',SLIDE=420;
+ function shift(){
+  const wrap=box.querySelector('.hm-add .hm-grid-wrap'),first=wrap&&wrap.querySelector('th.hm-new');if(!first)return null;
+  return {wrap,w:first.getBoundingClientRect().width,moving:[...wrap.querySelectorAll('.hm-grid tr>*:not(.hm-label):not(.hm-new)')],
+   fresh:[...wrap.querySelectorAll('.hm-new')],was:[...wrap.querySelectorAll('.hm-was-latest')]};
+ }
+ function slideOpen(){
+  const s=shift();if(!s)return;s.wrap.scrollLeft=0;if(calm()||typeof requestAnimationFrame!=='function')return;
+  for(const c of s.moving){c.style.transition='none';c.style.transform='translateX('+(-s.w)+'px)'}
+  for(const c of s.was){c.style.background='#eaf7ff';c.style.color='#405183'}
+  for(const c of s.fresh){c.style.transition='none';c.style.opacity='0'}
+  s.wrap.offsetWidth;
+  requestAnimationFrame(()=>{
+   for(const c of s.moving){c.style.transition='transform '+SLIDE+'ms '+EASE+',background-color '+SLIDE+'ms,color '+SLIDE+'ms';c.style.transform=''}
+   for(const c of s.was){c.style.background='';c.style.color=''}
+   for(const c of s.fresh){c.style.transition='opacity 300ms ease 120ms';c.style.opacity=''}
+   setTimeout(()=>{for(const c of s.moving.concat(s.fresh))c.style.transition=''},SLIDE+80);
+  });
+ }
+ function slideClose(then){
+  const s=shift();if(!s||calm()||typeof requestAnimationFrame!=='function'){then();return}
+  for(const c of s.moving)c.style.transition='transform '+SLIDE+'ms '+EASE+',background-color '+SLIDE+'ms,color '+SLIDE+'ms';
+  for(const c of s.fresh)c.style.transition='opacity 220ms ease';
+  s.wrap.scrollTo?s.wrap.scrollTo({left:0,behavior:'smooth'}):s.wrap.scrollLeft=0;
+  requestAnimationFrame(()=>{
+   for(const c of s.moving)c.style.transform='translateX('+(-s.w)+'px)';
+   for(const c of s.was){c.style.background='#eaf7ff';c.style.color='#405183'}
+   for(const c of s.fresh)c.style.opacity='0';
+  });
+  setTimeout(then,SLIDE);
+ }
+ function startAdd(){
+  if(!canWrite())return;
+  if(ui.draft){render();return}
+  ui.draft={date:today(),values:{}};ui.focus=null;render();slideOpen();
+ }
+ function cancelAdd(){
+  const kept=ui.draft;if(!kept)return;
+  const typed=Object.keys(kept.values).some(k=>String(kept.values[k]).trim()!=='');
+  slideClose(()=>{ui.draft=null;ui.focus=null;render();
+   if(typed)say('Новый замер не сохранён',()=>{if(ui.draft)return;ui.draft=kept;render();slideOpen()})});
+ }
+ async function saveAdd(form){
+  try{
+   const d=canWrite();if(!d)return;
+   const fields={};for(const [key] of FIELDS){const i=form.querySelector('input[name="'+key+'"]');if(i)fields[key]=i.value}
+   const s=state(),m=compose(s,String(form.querySelector('input[name=date]').value||''),fields,null);
+   await d.putMany(saveChanges(s,m,null));
+   ui.draft=null;ui.focus=null;ui.chosen=null;render();say('Замер сохранён');
+  }catch(err){fail(err)}
+ }
+ function onInput(e){
+  const i=e.target;if(!ui.draft||!i.closest||!i.closest('.hm-add')||!i.name)return;
+  if(i.name==='date'){if(validDate(i.value)){ui.draft.date=i.value;const b=i.parentNode.querySelector('b');if(b)b.textContent=shortDate(i.value)}return}
+  if(e.type==='change'&&i.value.includes('.'))i.value=i.value.replace('.',',');   // дробь — через запятую, как в таблице
+  ui.draft.values[i.name]=i.value;
+ }
+ function onFocusIn(e){const i=e.target;if(ui.draft&&i.closest&&i.closest('.hm-add')&&i.name)ui.focus=i.name}
+ function onFocusOut(e){const i=e.target;setTimeout(()=>{if(i.isConnected&&ui.focus===i.name&&document.activeElement!==i)ui.focus=null},0)}
+ /* Enter — к следующему полю, на последнем — сохранить. */
+ function onKey(e){
+  const i=e.target;if(e.key!=='Enter'||!i.classList||!i.classList.contains('hm-in'))return;
+  e.preventDefault();const all=[...box.querySelectorAll('.hm-add .hm-in')],n=all.indexOf(i);
+  if(n>=0&&n<all.length-1)all[n+1].focus();else{const f=i.closest('form');if(f)saveAdd(f)}
+ }
+ function onBoxSubmit(e){const f=e.target;if(!f.classList||!f.classList.contains('hm-add'))return;e.preventDefault();saveAdd(f)}
  /* Смена периода или масштаба: «Было» плавно перетекает в новую форму (как в макете, 0,56 с). */
  function flow(to){
   if(raf){cancelAnimationFrame(raf);raf=0}
@@ -8321,7 +8744,14 @@ function mount(box,options){
  }
 
  /* Окно: форма замера, таблица для правки, удалённые замеры. */
- function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove()}}
+ /* Окно замера — лист под нижним меню приложения (Астамур 19.11.2026: меню поверх листов везде): не модальное окно
+    (оно легло бы поверх всего), а обычное с затемнением; нажатие мимо, ручка или Escape закрывают. */
+ function showOver(d){
+  const shade=document.createElement('div');shade.className='hm-dialog-shade';shade.addEventListener('click',()=>d.dispatchEvent(new Event('hm-dismiss')));
+  document.body.append(shade);d._shade=shade;document.body.appendChild(d);openDialogEl=d;
+  if(typeof d.show==='function')d.show();else d.setAttribute('open','');document.body.classList.add('hm-dialog-open');
+ }
+ function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove();d._shade?.remove();if(openDialogEl===d)openDialogEl=null;document.body.classList.remove('hm-dialog-open')}}
  function openDialog(title,html){
   closeDialog();
   const d=dialog=document.createElement('dialog');d.className='hm hm-dialog';d.setAttribute('aria-label',title);
@@ -8339,11 +8769,12 @@ function mount(box,options){
   let initial=null;const snap=()=>[...d.querySelectorAll('input,select,textarea')].map(c=>c.name+'='+c.value).join('|');
   for(const type of ['pointerdown','keydown','focusin'])d.addEventListener(type,()=>{if(initial===null)initial=snap()},true);
   const dismiss=()=>{const changed=initial!==null&&snap()!==initial&&!!d.querySelector('form');closeDialog();
-   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';document.body.appendChild(d);if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}})};
+   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';showOver(d)}})};
   d.addEventListener('click',e=>{if(e.target===d){dismiss();return}if(e.target.closest&&e.target.closest('.hm-grip')){e.preventDefault();dismiss();return}onClick(e)});
   d.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
+  d.addEventListener('hm-dismiss',dismiss);d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dismiss()}});
   d.addEventListener('submit',onSubmit);
-  if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
+  showOver(d);
   return d;
  }
  function openForm(date){
@@ -8359,9 +8790,9 @@ function mount(box,options){
   d.hmBefore=record?copy(record):null;
  }
  function fail(e){
-  const box=dialog&&dialog.querySelector('.hm-error');
+  const place=(dialog&&dialog.querySelector('.hm-error'))||(ui.draft&&box.querySelector('.hm-add .hm-error'));
   const text=e&&e.code==='newer'?NEWER:e&&e.code==='signin'?'Войди в аккаунт Happy, чтобы записывать':(e&&e.message)||'Замер не сохранён.';
-  if(box)box.textContent=text;else say(text);
+  if(place)place.textContent=text;else say(text);
  }
  async function onSubmit(e){
   const form=e.target;if(!form.classList||!form.classList.contains('hm-form'))return;e.preventDefault();
@@ -8427,15 +8858,17 @@ function mount(box,options){
  function print(){
   const s=state(),{cur,old}=pair(s.list,ui.period,ui.chosen);if(!cur){say('Пока нет замеров');return}
   let n=document.getElementById('hm-print');if(!n){n=document.createElement('section');n.id='hm-print';n.className='hm';document.body.appendChild(n)}
-  n.innerHTML='<h1>Happy · Замеры тела</h1>'+chart(cur,old,ui.amplify)+grid(cur,s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)),old.date);
+  n.innerHTML='<h1>Happy · Замеры тела</h1>'+chart(cur,old,ui.amplify)+grid(cur,s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)),old.date,true);
   const clean=()=>{root.removeEventListener('afterprint',clean);n.remove()};root.addEventListener('afterprint',clean);
   root.print();
  }
  function onClick(e){
-  const b=e.target.closest&&e.target.closest('[data-hm]');if(!b)return;
+  const t=e.target;if(t.matches&&t.matches('.hm-date input')){if(typeof t.showPicker==='function')try{t.showPicker()}catch(err){}return}   // дата нового замера: окно выбора даты
+  const b=t.closest&&t.closest('[data-hm]');if(!b)return;
   const action=b.dataset.hm,id=b.dataset.id;
   if(action==='close'){closeDialog();return}
-  if(action==='add'){openForm(null);return}
+  if(action==='add'){startAdd();return}
+  if(action==='cancel'){cancelAdd();return}
   if(action==='edit'){openForm(id);return}
   if(action==='delete'){remove();return}
   if(action==='restore'){restore(id);return}
@@ -8450,13 +8883,15 @@ function mount(box,options){
   if(dialog&&dialog.contains(b)&&action==='compare')closeDialog();
   render();
  }
- box.addEventListener('click',onClick);
+ const HANDLERS={click:onClick,submit:onBoxSubmit,input:onInput,change:onInput,focusin:onFocusIn,focusout:onFocusOut,keydown:onKey};
+ const listen=(b,on)=>{for(const [type,fn] of Object.entries(HANDLERS))b[on?'addEventListener':'removeEventListener'](type,fn)};
+ listen(box,true);
  const d=doc();if(d&&d.subscribe)off=d.subscribe(()=>{if(alive)render()});
  render();
  const api={render,
-  move(next){box.removeEventListener('click',onClick);box=next;box.addEventListener('click',onClick);render()},
-  destroy(){if(!alive)return;alive=false;if(raf)cancelAnimationFrame(raf);clearTimeout(noticeTimer);if(off)off();box.removeEventListener('click',onClick);closeMenu();closeDialog();if(mounted===api)mounted=null},
-  get box(){return box},get open(){return !!dialog}};
+  move(next){listen(box,false);box=next;listen(box,true);render()},
+  destroy(){if(!alive)return;alive=false;if(raf)cancelAnimationFrame(raf);clearTimeout(noticeTimer);if(off)off();listen(box,false);closeMenu();closeDialog();if(mounted===api)mounted=null},
+  get box(){return box},get open(){return !!dialog||!!ui.draft}};
  mounted=api;return api;
 }
 function unmount(){if(mounted)mounted.destroy()}
@@ -8858,6 +9293,9 @@ function mount(){
  return rootEl;
 }
 // Страница на весь экран прячет приложение; страница-лист — нет: приложение видно под затемнением, прокрутка стоит.
+// Нажатие на нижнее меню при открытом листе закрывает лист (с «Правки не сохранены · Вернуть», если что-то вписано)
+// и выполняет само нажатие — как в листах Sport (19.11.2026).
+if(doc&&doc.addEventListener)doc.addEventListener('click',e=>{if(!e.target.closest?.('.dock'))return;for(const p of pages.filter(p=>!p.closed&&p.sheet&&p.dismiss).reverse())p.dismiss()},true);
 function syncBody(){const open=pages.filter(p=>!p.closed);doc.body.classList.toggle('hs-open',open.some(p=>!p.sheet));doc.body.classList.toggle('hs-sheet-open',open.some(p=>p.sheet))}
 
 /* ── страница ── */

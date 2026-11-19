@@ -92,6 +92,8 @@ const auditSimplify=await read('src/audit-simplify.js'),auditSimplifyCss=await r
 const templateEditor=await read('src/template-editor.js'),templateEditorCss=await read('src/template-editor.css');
 // Аудит единообразия 18.11.2026: листы — закрытие, шаг назад, «Правки не сохранены · Вернуть». Стоит последним.
 const sheetRules=await read('src/sheet-rules.js');
+// Sport 44.5 (19.11.2026): «Настроить тему» — ленты темы и главной кнопки в карточке аккаунта.
+const appearanceCarousels=await read('src/appearance-carousels.js'),appearanceCarouselsCss=await read('src/appearance-carousels.css');
 // Аудит единообразия 18.11.2026: удаление — свайп влево, «Удалить» внизу карточки, свои тренировки в Настройках.
 const deleteRules=await read('src/delete-rules.js');
 // Аудит единообразия 18.11.2026: большой таймер — из настроек упражнения, круги = подходы, «Сохранить» отмечает подходы.
@@ -112,10 +114,10 @@ try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:tru
 const labBar='';
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
-  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+designRulesCss+'\n</style>')
+  .replace('</style>',()=>css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+designRulesCss+appearanceCarouselsCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules].join('\n'))
+  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules,appearanceCarousels].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 // Всё собранное: путь внутри папки выпуска → текст.
 const files=new Map([['index.html',html]]);

@@ -1,5 +1,8 @@
 /* Happy appearance picker v2.1 — slot data-happy-appearance-slot (Day 54.1 / Meal 26.1 / Sport 38.6). Live preview is transactional. Presets: Color Studio 12.5, collection v3.
-   Only a validated ID is stored. No diary/auth writes or default migration. */
+   Only a validated ID is stored. No diary/auth writes or default migration.
+   19.11.2026 (Sport 44.5): необязательное поле button — главная кнопка с микрофоном: 'theme' (как у темы, по умолчанию,
+   и для прежних записей без поля), 'original' (исходная кнопка приложения) или id темы. Sport выбирает его каруселями в
+   «Настроить тему» (data-happy-appearance-entry="inline" — без кнопки «Выбрать оформление»); Day и Meal — как прежде. */
 (function(root){'use strict';
  const G=root.HappyGradients,R=root.HappyReferenceThemes;
  if(!G||!R)return;
@@ -8,27 +11,34 @@
  const app=document.documentElement.dataset.happyAppearanceApp;
  if(!['day','meal','sport'].includes(app))return;
  const key='happy-'+app+'-appearance-v1';
- let current='',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
+ let current='',currentButton='theme',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
  const valid=id=>id===''||themes.some(t=>t.id===id);
+ const validButton=b=>b==='theme'||b==='original'||themes.some(t=>t.id===b);
  const name=id=>themes.find(t=>t.id===id)?.name||'По умолчанию · исходное';
  const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
- function skin(id){
+ function skin(id,button){
+  if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
-  if(!id){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
-  const t=themes.find(t=>t.id===id);if(!t)return;
-  const s=t.state,bg=G.css(s.backgroundGradient),button=G.css(s.buttonGradient),shine=Number(s.buttonShine);
-  const shadow=shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(s.buttonColor,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40';
-  // Studio's default glass tokens deliberately retain each application's glass.
-  // No optional legacy ui arguments are promoted to active theme tokens.
-  let css='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';--fab:'+G.colors(s.buttonGradient)[0].color+';}';
-  css+=' .fab,#fab,.dockFab,.mic-fab,.mlMic,#sport-fab,#nowSave{background:'+button+'!important;background-blend-mode:normal!important;box-shadow:'+shadow+'!important;filter:none!important;color:'+s.buttonTextColor+'!important;}';
-  css+=' .fab::before,.fab::after,.dockFab::before,.dockFab::after,.mic-fab::before,.mic-fab::after,#nowSave::before,#nowSave::after{background:none!important;box-shadow:none!important;}';
-  css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';
+  const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
+  const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
+  document.documentElement.dataset.happyAppearanceButton=button;
+  if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
+  let css='';
+  if(t){const s=t.state,bg=G.css(s.backgroundGradient);
+   css+='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';}';}
+  if(b){const s=b.state,btn=G.css(s.buttonGradient),shine=Number(s.buttonShine);
+   const shadow=shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(s.buttonColor,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40';
+   // Studio's default glass tokens deliberately retain each application's glass.
+   css+=' :root{--fab:'+G.colors(s.buttonGradient)[0].color+';}';
+   css+=' .fab,#fab,.dockFab,.mic-fab,.mlMic,#sport-fab,#nowSave{background:'+btn+'!important;background-blend-mode:normal!important;box-shadow:'+shadow+'!important;filter:none!important;color:'+s.buttonTextColor+'!important;}';
+   css+=' .fab::before,.fab::after,.dockFab::before,.dockFab::after,.mic-fab::before,.mic-fab::after,#nowSave::before,#nowSave::after{background:none!important;box-shadow:none!important;}';
+   css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';}
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
-  document.documentElement.dataset.happyAppearance=id;
+  if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');
  }
  function labels(){document.querySelectorAll('[data-happy-appearance-label]').forEach(el=>{el.textContent=name(current)});}
  function entry(){
+  if(document.documentElement.dataset.happyAppearanceEntry==='inline')return;   // выбор встроен в страницу приложения (Sport — «Настроить тему»)
   const button=()=>{const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.happyAppearanceOpen='';b.setAttribute('aria-haspopup','dialog');
    const title=document.createElement('span');title.textContent='Выбрать оформление';const label=document.createElement('small');label.dataset.happyAppearanceLabel='';label.textContent=name(current);b.append(title,label);return b;};
   // Settings structure (AGENTS.md): the picker lives under «Приложение → Оформление» when the page provides a slot, as in Sport.
@@ -86,7 +96,7 @@
     if(busy)return;const id=dialog.querySelector('input:checked')?.value;if(!valid(id))return;
     if(id===current){close();return;}busy=true;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=true);
     const error=dialog.querySelector('.ha-error');error.hidden=true;
-    try{await root.rawSet(key,JSON.stringify({version:1,presetId:id}));current=id;skin(id);labels();busy=false;close();}
+    try{await root.rawSet(key,JSON.stringify({version:1,presetId:id,button:currentButton}));current=id;skin(id);labels();busy=false;close();}
     catch(e){preview(current);error.textContent='Не удалось сохранить оформление. Возвращён прежний вид. Выбери тему и попробуй ещё раз.';error.hidden=false;}
     finally{busy=false;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=false);}
    });
@@ -96,10 +106,17 @@
  }
  document.addEventListener('click',e=>{const b=e.target.closest?.('[data-happy-appearance-open]');if(b)open(b)});
  async function init(){
-  try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;skin(current)}}catch(e){}
+  try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;if(validButton(saved.button))currentButton=saved.button;skin(current)}}catch(e){}
   ready=true;entry();labels();
   new MutationObserver(entry).observe(document.body,{childList:true,subtree:true});
  }
- root.HappyAppearance={init,skin,themes,get selected(){return current},get previewed(){return previewId},get ready(){return ready}};
+ /* Выбор без окна (Sport, «Настроить тему»): сохранить тему и/или главную кнопку сразу. */
+ async function choose(theme,button){
+  if(theme===undefined)theme=current;if(button===undefined)button=currentButton;
+  if(!valid(theme)||!validButton(button))throw Error('Неизвестное оформление');
+  await root.rawSet(key,JSON.stringify({version:1,presetId:theme,button}));
+  current=theme;currentButton=button;skin(current);labels();
+ }
+ root.HappyAppearance={init,skin,themes,choose,validButton,get button(){return currentButton},get selected(){return current},get previewed(){return previewId},get ready(){return ready}};
  init();
 })(globalThis);

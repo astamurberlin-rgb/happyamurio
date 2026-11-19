@@ -351,20 +351,43 @@ function cell(group,values){
  if(group.keys.length===1)return `<b>${value(values,group.keys[0])}</b>`;
  return `<div class="hm-paired">${group.keys.map((k,i)=>`<span aria-label="${group.name} · ${i===0?'левая':'правая'} сторона: ${value(values,k)}"><small>${i===0?'Л':'П'}</small><b>${value(values,k)}</b></span>`).join('')}</div>`;
 }
-/* Таблица: названия и последние замеры закреплены, прошлые даты прокручиваются вбок. */
-function grid(cur,past,chosenDate){
+/* Новый замер прямо в таблице (Астамур 19.11.2026): белый столбец — подчёркнутые поля нового замера, все прежние
+   замеры — обычными столбцами правее, от нового к старому. В углу вместо «+ Замер» — «Отмена». */
+const unit=k=>k==='weight'?'кг':'см';
+function blank(g,values){
+ const field=(k,label,last)=>`<input class="hm-in" name="${k}" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="${last?'done':'next'}" aria-label="${label}" value="${esc(values[k]==null?'':values[k])}">`;
+ if(g.keys.length===1)return field(g.keys[0],g.name+', '+unit(g.keys[0]),g===GROUPS[GROUPS.length-1]);
+ return `<div class="hm-paired">${g.keys.map((k,i)=>`<label><small>${i===0?'Л':'П'}</small>${field(k,g.name+' · '+(i===0?'левая':'правая')+', см')}</label>`).join('')}</div>`;
+}
+function draftGrid(list,draft){
+ return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Новый замер: впиши значения в белый столбец"><table class="hm-grid"><thead><tr>`+
+  `<th class="hm-label hm-corner" scope="col"><button type="button" class="hm-corner-button" data-hm="cancel">Отмена</button></th>`+
+  `<th class="hm-latest hm-new" scope="col"><span>Новый</span><label class="hm-date"><b>${shortDate(draft.date)}</b><input name="date" type="date" required value="${esc(draft.date)}" aria-label="Дата замера"></label></th>`+
+  list.map((m,i)=>`<th scope="col"${i===0?' class="hm-was-latest"':''}><span class="hm-col-date">${shortDate(m.date)}</span><small>${m.date.slice(0,4)}</small></th>`).join('')+
+  `</tr></thead><tbody>`+GROUPS.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${unit(g.keys[0])}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest hm-new">${blank(g,draft.values)}</td>`+
+   list.map((m,i)=>`<td${i===0?' class="hm-was-latest"':''}>${cell(g,m.values)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
+}
+/* Таблица: названия и последние замеры закреплены, прошлые даты прокручиваются вбок. В углу — «+ Замер»
+   (Астамур 19.11.2026: кнопка переехала сюда сверху экрана), на печати там просто «Замер». */
+function grid(cur,past,chosenDate,printed){
  const edit=m=>`<button type="button" class="hm-edit" data-hm="edit" data-id="${m.date}" aria-label="Изменить замер ${dateLabel(m.date)}">${ICON.pencil}</button>`;
  const shown=GROUPS.filter(g=>[cur].concat(past).some(m=>g.keys.some(k=>m.values[k]!=null)));
- return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Сравнение замеров: последние закреплены, прошлые прокручиваются"><table class="hm-grid"><thead><tr><th class="hm-label" scope="col">Замер</th><th class="hm-latest" scope="col"><span>Последние</span><b>${shortDate(cur.date)}</b>${edit(cur)}</th>`+
+ const corner=printed?'Замер':`<button type="button" class="hm-corner-button" data-hm="add">${ICON.plus}<span>Замер</span></button>`;
+ return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Сравнение замеров: последние закреплены, прошлые прокручиваются"><table class="hm-grid"><thead><tr><th class="hm-label hm-corner" scope="col">${corner}</th><th class="hm-latest" scope="col"><span>Последние</span><b>${shortDate(cur.date)}</b>${edit(cur)}</th>`+
   past.map(m=>`<th scope="col" class="${m.date===chosenDate?'hm-chosen':''}"><button type="button" data-hm="compare" data-id="${m.date}" aria-pressed="${m.date===chosenDate}">${shortDate(m.date)}<small>${m.date.slice(0,4)}</small></button>${edit(m)}</th>`).join('')+
   `</tr></thead><tbody>`+shown.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${g.keys[0]==='weight'?'кг':'см'}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest">${cell(g,cur.values)}</td>`+
    past.map(m=>`<td class="${m.date===chosenDate?'hm-chosen':''}">${cell(g,m.values)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
 }
 
-const ui={period:'first',amplify:3,chosen:null,notice:null};   // вид экрана переживает перерисовку приложения
+const ui={period:'first',amplify:3,chosen:null,notice:null,draft:null,focus:null};   // вид экрана переживает перерисовку приложения;
+// draft — новый замер, который вписывают в таблицу ({date, values}); пока он есть, белый столбец — поля ввода
 let mounted=null;
 /* Поставить экран в box. Экран на странице один: тот же box — просто перерисовать; приложение перерисовало страницу,
-   пока открыто окно замера, — экран переезжает в новый box вместе с окном; иначе прежний экран снимается. */
+   пока открыто окно замера или вписывают новый замер, — экран переезжает в новый box вместе с ним; иначе прежний
+   экран снимается. Вписанное в новый замер живёт в ui.draft: ушёл с экрана и вернулся — столбец на месте. */
+/* Нажатие на нижнее меню закрывает открытое окно замера (одно на страницу). */
+let openDialogEl=null;
+if(root.document&&root.document.addEventListener)root.document.addEventListener('click',e=>{if(openDialogEl&&e.target.closest?.('.dock'))openDialogEl.dispatchEvent(new Event('hm-dismiss'))},true);
 function mount(box,options){
  if(mounted){
   if(mounted.box===box){mounted.render();return mounted}
@@ -390,11 +413,14 @@ function mount(box,options){
   const notice=ui.notice?`<p class="hm-notice" role="status"><span>${esc(ui.notice.text)}</span>${ui.notice.undo?'<button type="button" data-hm="undo">Вернуть</button>':''}</p>`:'';
   const trash=s.trash.length?`<button type="button" class="hm-text" data-hm="trash">Удалённые замеры · ${s.trash.length}</button>`:'';
   if(d&&d.newer)return `<div class="hm-card hm-empty">${esc(NEWER)}</div>`;
-  if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p><button type="button" class="hm-button" data-hm="add">+ Замер</button>`+trash;   // пустой экран — текст без рамки, кнопка под ним; «+ Замер», как наверху (мелочи аудита 18.11.2026)
+  if(ui.draft&&!d)ui.draft=null;   // вышли из аккаунта — вписанное не сохранить
+  const top=cur?`<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span></div>`+
+   `<div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div></div>`:'';
+  if(ui.draft)return notice+top+`<form class="hm-form hm-add" novalidate>${draftGrid(s.list.slice().sort((a,b)=>-byDate(a,b)),ui.draft)}`+
+   `<p class="hm-error" role="alert"></p><div class="hm-output"><button class="hm-button hm-primary" type="submit">${ICON.check} Сохранить замер</button></div></form>`;
+  if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p><button type="button" class="hm-button" data-hm="add">+ Замер</button>`+trash;   // пустой экран — текст без рамки, кнопка под ним (мелочи аудита 18.11.2026)
   const past=s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b));
-  return notice+
-   `<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span><button type="button" class="hm-text" data-hm="add">${ICON.plus} Замер</button></div>`+
-   `<div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div></div>`+
+  return notice+top+
    grid(cur,past,old.date)+
    trash+
    `<div class="hm-output"><button type="button" class="hm-button" data-hm="share" aria-haspopup="true" aria-expanded="${!!menu}">${ICON.share} Поделиться</button></div>`;
@@ -402,10 +428,83 @@ function mount(box,options){
  function render(){
   if(!alive)return;closeMenu();
   const wrap=box.querySelector('.hm-grid-wrap'),scroll=wrap?wrap.scrollLeft:0;
+  const active=document.activeElement,lost=!active||active===document.body||!active.isConnected||box.contains(active);
   chart.last=null;box.classList.add('hm');box.innerHTML=view();
   const next=box.querySelector('.hm-grid-wrap');if(next&&scroll)next.scrollLeft=scroll;
   flow(chart.last);
+  // Перерисовка, пока вписывают новый замер (пришло из облака, приложение перерисовало страницу): курсор остаётся в том же поле.
+  const field=ui.draft&&ui.focus&&lost&&box.querySelector('.hm-add [name="'+ui.focus+'"]');
+  if(field){field.focus({preventScroll:true});try{const n=field.value.length;field.setSelectionRange(n,n)}catch(e){}}
  }
+ /* Новый замер в таблице: «+ Замер» — столбцы плавно уезжают вправо, на место белого проявляется пустой столбец;
+    «Отмена» — обратно. Без анимации, если в системе выключено движение. */
+ const calm=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const EASE='cubic-bezier(.2,.8,.2,1)',SLIDE=420;
+ function shift(){
+  const wrap=box.querySelector('.hm-add .hm-grid-wrap'),first=wrap&&wrap.querySelector('th.hm-new');if(!first)return null;
+  return {wrap,w:first.getBoundingClientRect().width,moving:[...wrap.querySelectorAll('.hm-grid tr>*:not(.hm-label):not(.hm-new)')],
+   fresh:[...wrap.querySelectorAll('.hm-new')],was:[...wrap.querySelectorAll('.hm-was-latest')]};
+ }
+ function slideOpen(){
+  const s=shift();if(!s)return;s.wrap.scrollLeft=0;if(calm()||typeof requestAnimationFrame!=='function')return;
+  for(const c of s.moving){c.style.transition='none';c.style.transform='translateX('+(-s.w)+'px)'}
+  for(const c of s.was){c.style.background='#eaf7ff';c.style.color='#405183'}
+  for(const c of s.fresh){c.style.transition='none';c.style.opacity='0'}
+  s.wrap.offsetWidth;
+  requestAnimationFrame(()=>{
+   for(const c of s.moving){c.style.transition='transform '+SLIDE+'ms '+EASE+',background-color '+SLIDE+'ms,color '+SLIDE+'ms';c.style.transform=''}
+   for(const c of s.was){c.style.background='';c.style.color=''}
+   for(const c of s.fresh){c.style.transition='opacity 300ms ease 120ms';c.style.opacity=''}
+   setTimeout(()=>{for(const c of s.moving.concat(s.fresh))c.style.transition=''},SLIDE+80);
+  });
+ }
+ function slideClose(then){
+  const s=shift();if(!s||calm()||typeof requestAnimationFrame!=='function'){then();return}
+  for(const c of s.moving)c.style.transition='transform '+SLIDE+'ms '+EASE+',background-color '+SLIDE+'ms,color '+SLIDE+'ms';
+  for(const c of s.fresh)c.style.transition='opacity 220ms ease';
+  s.wrap.scrollTo?s.wrap.scrollTo({left:0,behavior:'smooth'}):s.wrap.scrollLeft=0;
+  requestAnimationFrame(()=>{
+   for(const c of s.moving)c.style.transform='translateX('+(-s.w)+'px)';
+   for(const c of s.was){c.style.background='#eaf7ff';c.style.color='#405183'}
+   for(const c of s.fresh)c.style.opacity='0';
+  });
+  setTimeout(then,SLIDE);
+ }
+ function startAdd(){
+  if(!canWrite())return;
+  if(ui.draft){render();return}
+  ui.draft={date:today(),values:{}};ui.focus=null;render();slideOpen();
+ }
+ function cancelAdd(){
+  const kept=ui.draft;if(!kept)return;
+  const typed=Object.keys(kept.values).some(k=>String(kept.values[k]).trim()!=='');
+  slideClose(()=>{ui.draft=null;ui.focus=null;render();
+   if(typed)say('Новый замер не сохранён',()=>{if(ui.draft)return;ui.draft=kept;render();slideOpen()})});
+ }
+ async function saveAdd(form){
+  try{
+   const d=canWrite();if(!d)return;
+   const fields={};for(const [key] of FIELDS){const i=form.querySelector('input[name="'+key+'"]');if(i)fields[key]=i.value}
+   const s=state(),m=compose(s,String(form.querySelector('input[name=date]').value||''),fields,null);
+   await d.putMany(saveChanges(s,m,null));
+   ui.draft=null;ui.focus=null;ui.chosen=null;render();say('Замер сохранён');
+  }catch(err){fail(err)}
+ }
+ function onInput(e){
+  const i=e.target;if(!ui.draft||!i.closest||!i.closest('.hm-add')||!i.name)return;
+  if(i.name==='date'){if(validDate(i.value)){ui.draft.date=i.value;const b=i.parentNode.querySelector('b');if(b)b.textContent=shortDate(i.value)}return}
+  if(e.type==='change'&&i.value.includes('.'))i.value=i.value.replace('.',',');   // дробь — через запятую, как в таблице
+  ui.draft.values[i.name]=i.value;
+ }
+ function onFocusIn(e){const i=e.target;if(ui.draft&&i.closest&&i.closest('.hm-add')&&i.name)ui.focus=i.name}
+ function onFocusOut(e){const i=e.target;setTimeout(()=>{if(i.isConnected&&ui.focus===i.name&&document.activeElement!==i)ui.focus=null},0)}
+ /* Enter — к следующему полю, на последнем — сохранить. */
+ function onKey(e){
+  const i=e.target;if(e.key!=='Enter'||!i.classList||!i.classList.contains('hm-in'))return;
+  e.preventDefault();const all=[...box.querySelectorAll('.hm-add .hm-in')],n=all.indexOf(i);
+  if(n>=0&&n<all.length-1)all[n+1].focus();else{const f=i.closest('form');if(f)saveAdd(f)}
+ }
+ function onBoxSubmit(e){const f=e.target;if(!f.classList||!f.classList.contains('hm-add'))return;e.preventDefault();saveAdd(f)}
  /* Смена периода или масштаба: «Было» плавно перетекает в новую форму (как в макете, 0,56 с). */
  function flow(to){
   if(raf){cancelAnimationFrame(raf);raf=0}
@@ -426,7 +525,14 @@ function mount(box,options){
  }
 
  /* Окно: форма замера, таблица для правки, удалённые замеры. */
- function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove()}}
+ /* Окно замера — лист под нижним меню приложения (Астамур 19.11.2026: меню поверх листов везде): не модальное окно
+    (оно легло бы поверх всего), а обычное с затемнением; нажатие мимо, ручка или Escape закрывают. */
+ function showOver(d){
+  const shade=document.createElement('div');shade.className='hm-dialog-shade';shade.addEventListener('click',()=>d.dispatchEvent(new Event('hm-dismiss')));
+  document.body.append(shade);d._shade=shade;document.body.appendChild(d);openDialogEl=d;
+  if(typeof d.show==='function')d.show();else d.setAttribute('open','');document.body.classList.add('hm-dialog-open');
+ }
+ function closeDialog(){if(dialog){const d=dialog;dialog=null;try{d.close()}catch(e){}d.remove();d._shade?.remove();if(openDialogEl===d)openDialogEl=null;document.body.classList.remove('hm-dialog-open')}}
  function openDialog(title,html){
   closeDialog();
   const d=dialog=document.createElement('dialog');d.className='hm hm-dialog';d.setAttribute('aria-label',title);
@@ -444,11 +550,12 @@ function mount(box,options){
   let initial=null;const snap=()=>[...d.querySelectorAll('input,select,textarea')].map(c=>c.name+'='+c.value).join('|');
   for(const type of ['pointerdown','keydown','focusin'])d.addEventListener(type,()=>{if(initial===null)initial=snap()},true);
   const dismiss=()=>{const changed=initial!==null&&snap()!==initial&&!!d.querySelector('form');closeDialog();
-   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';document.body.appendChild(d);if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}})};
+   const hs=root.HappyScreens;if(changed&&hs&&hs.unsaved)hs.unsaved({reopen(){if(dialog)return;dialog=d;d.querySelector('.hm-sheet').style.transform='';showOver(d)}})};
   d.addEventListener('click',e=>{if(e.target===d){dismiss();return}if(e.target.closest&&e.target.closest('.hm-grip')){e.preventDefault();dismiss();return}onClick(e)});
   d.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
+  d.addEventListener('hm-dismiss',dismiss);d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dismiss()}});
   d.addEventListener('submit',onSubmit);
-  if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
+  showOver(d);
   return d;
  }
  function openForm(date){
@@ -464,9 +571,9 @@ function mount(box,options){
   d.hmBefore=record?copy(record):null;
  }
  function fail(e){
-  const box=dialog&&dialog.querySelector('.hm-error');
+  const place=(dialog&&dialog.querySelector('.hm-error'))||(ui.draft&&box.querySelector('.hm-add .hm-error'));
   const text=e&&e.code==='newer'?NEWER:e&&e.code==='signin'?'Войди в аккаунт Happy, чтобы записывать':(e&&e.message)||'Замер не сохранён.';
-  if(box)box.textContent=text;else say(text);
+  if(place)place.textContent=text;else say(text);
  }
  async function onSubmit(e){
   const form=e.target;if(!form.classList||!form.classList.contains('hm-form'))return;e.preventDefault();
@@ -532,15 +639,17 @@ function mount(box,options){
  function print(){
   const s=state(),{cur,old}=pair(s.list,ui.period,ui.chosen);if(!cur){say('Пока нет замеров');return}
   let n=document.getElementById('hm-print');if(!n){n=document.createElement('section');n.id='hm-print';n.className='hm';document.body.appendChild(n)}
-  n.innerHTML='<h1>Happy · Замеры тела</h1>'+chart(cur,old,ui.amplify)+grid(cur,s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)),old.date);
+  n.innerHTML='<h1>Happy · Замеры тела</h1>'+chart(cur,old,ui.amplify)+grid(cur,s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)),old.date,true);
   const clean=()=>{root.removeEventListener('afterprint',clean);n.remove()};root.addEventListener('afterprint',clean);
   root.print();
  }
  function onClick(e){
-  const b=e.target.closest&&e.target.closest('[data-hm]');if(!b)return;
+  const t=e.target;if(t.matches&&t.matches('.hm-date input')){if(typeof t.showPicker==='function')try{t.showPicker()}catch(err){}return}   // дата нового замера: окно выбора даты
+  const b=t.closest&&t.closest('[data-hm]');if(!b)return;
   const action=b.dataset.hm,id=b.dataset.id;
   if(action==='close'){closeDialog();return}
-  if(action==='add'){openForm(null);return}
+  if(action==='add'){startAdd();return}
+  if(action==='cancel'){cancelAdd();return}
   if(action==='edit'){openForm(id);return}
   if(action==='delete'){remove();return}
   if(action==='restore'){restore(id);return}
@@ -555,13 +664,15 @@ function mount(box,options){
   if(dialog&&dialog.contains(b)&&action==='compare')closeDialog();
   render();
  }
- box.addEventListener('click',onClick);
+ const HANDLERS={click:onClick,submit:onBoxSubmit,input:onInput,change:onInput,focusin:onFocusIn,focusout:onFocusOut,keydown:onKey};
+ const listen=(b,on)=>{for(const [type,fn] of Object.entries(HANDLERS))b[on?'addEventListener':'removeEventListener'](type,fn)};
+ listen(box,true);
  const d=doc();if(d&&d.subscribe)off=d.subscribe(()=>{if(alive)render()});
  render();
  const api={render,
-  move(next){box.removeEventListener('click',onClick);box=next;box.addEventListener('click',onClick);render()},
-  destroy(){if(!alive)return;alive=false;if(raf)cancelAnimationFrame(raf);clearTimeout(noticeTimer);if(off)off();box.removeEventListener('click',onClick);closeMenu();closeDialog();if(mounted===api)mounted=null},
-  get box(){return box},get open(){return !!dialog}};
+  move(next){listen(box,false);box=next;listen(box,true);render()},
+  destroy(){if(!alive)return;alive=false;if(raf)cancelAnimationFrame(raf);clearTimeout(noticeTimer);if(off)off();listen(box,false);closeMenu();closeDialog();if(mounted===api)mounted=null},
+  get box(){return box},get open(){return !!dialog||!!ui.draft}};
  mounted=api;return api;
 }
 function unmount(){if(mounted)mounted.destroy()}

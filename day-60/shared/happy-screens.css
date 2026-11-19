@@ -337,3 +337,8 @@ body.hs-open{overflow:hidden}
 .hs-page-sheet .hs-main{min-height:0;padding-top:4px}
 body.hs-sheet-open{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.hs-page-backdrop,.hs-page-sheet>.hs-scroll{transition:none}}
+
+/* Нижнее меню приложения поверх листов (профиль, цели, «Новый замер») — как у листов Sport (Астамур 19.11.2026: «и там
+   тоже, и сразу везде»). Низ листа — с запасом под меню. Страница на весь экран (вход) меню по-прежнему закрывает. */
+body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!important}
+.hs-page-sheet>.hs-scroll{padding-bottom:calc(96px + env(safe-area-inset-bottom))}

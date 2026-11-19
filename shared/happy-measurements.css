@@ -80,6 +80,24 @@
  .hm-grid .hm-paired b{font-size:14px}
 }
 
+/* Новый замер прямо в таблице (Астамур 19.11.2026): «+ Замер» в углу таблицы; нажал — столбцы уезжают вправо,
+   в белом столбце подчёркнутые поля нового замера; «Отмена» в углу, «Сохранить замер» под таблицей. */
+.hm-grid .hm-corner{padding:6px 8px;vertical-align:middle}
+.hm-grid .hm-corner-button{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0;font-size:14px;font-weight:600;white-space:nowrap;text-align:left}
+.hm-corner-button .hm-icon{width:16px;height:16px;flex-basis:16px;stroke-width:2}
+.hm-grid td.hm-new{padding:8px 6px}
+.hm-grid .hm-col-date{display:block;font-size:12px;font-weight:700}
+.hm-date{position:relative;display:inline-block;margin-top:5px;padding:2px 4px 3px;border-bottom:1.5px solid rgba(64,81,131,.45)}
+.hm-grid thead .hm-new .hm-date b{display:inline;margin:0;font-size:12px}
+.hm-date input{position:absolute;inset:0;width:100%!important;height:100%!important;min-height:0!important;margin:0;padding:0!important;border:0!important;opacity:0;font-size:16px;cursor:pointer;-webkit-appearance:none;appearance:none}
+/* поля нового замера: вид не берётся у полей приложения (там рамка и скругление 12) */
+.hm-add .hm-in{display:block!important;width:100%!important;max-width:64px;height:34px!important;min-height:0!important;margin:0 auto!important;padding:0 2px!important;border:0!important;border-bottom:1.5px solid rgba(64,81,131,.45)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;outline:0;color:#405183!important;font:inherit;font-size:16px!important;font-weight:700!important;line-height:1.2;text-align:center!important;-webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text}
+.hm-add .hm-in:focus{border-bottom:2px solid #405183!important}
+.hm-add .hm-paired label{display:block;min-width:0}
+.hm-add .hm-paired .hm-in{max-width:none;height:28px!important}
+.hm-add .hm-grid .hm-paired small{margin:0 0 2px}
+.hm-add .hm-error{text-align:center}
+
 /* окно: форма замера, удалённые замеры */
 dialog.hm-dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;padding:0;border:0;width:min(100%,460px);max-width:100%;max-height:calc(100dvh - 28px);background:transparent;color:var(--ink,#fff);overflow:visible}
 dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
@@ -121,3 +139,9 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 /* Аудит единообразия Sport 18.11.2026: ручка окна замера — как у листов приложения */
 .hm-grip{display:block;width:100%;height:30px;margin:-6px 0 2px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;position:relative}
 .hm-grip::before{content:"";position:absolute;left:50%;top:12px;width:42px;height:5px;margin-left:-21px;border-radius:999px;background:rgba(255,255,255,.55)}
+
+/* Окно замера под нижним меню приложения (19.11.2026): затемнение, окно, меню поверх, низ с запасом под меню. */
+.hm-dialog-shade{position:fixed;inset:0;z-index:2147479990;background:rgba(18,32,70,.46)}
+.hm-dialog[open]{z-index:2147479995}
+body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
+.hm-dialog .hm-sheet{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
