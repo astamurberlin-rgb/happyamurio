@@ -1,7 +1,7 @@
 """Meal: приёмы пищи со временем (Meal 33.17, meal-33/meal-periods.js) — экран «Настроить приёмы пищи» на настоящей
 странице, экран 393×852, придуманный аккаунт. Третья строка настроек; шкалы и общая граница; точное время; замки
-исходных периодов; свой приём и ночной перекус; перестановка «время остаётся у места»; свайп-удаление и возврат; фастинг
-и штриховка; пороги и пример; «Отмена» ничего не пишет, «Сохранить» — в дневник, после перезагрузки и на втором телефоне
+исходных периодов; свой приём и ночной перекус; перестановка «время остаётся у места»; свайп-удаление и возврат; фастинг — строкой, без настроек;
+пороги и пример; «Отмена» ничего не пишет, «Сохранить» — в дневник, после перезагрузки и на втором телефоне
 то же; бот и счётчики берут приём по новым периодам; старый список разделов из настроек убран."""
 import datetime, json, sys
 from playwright.sync_api import sync_playwright
@@ -78,12 +78,12 @@ with sync_playwright() as p:
     check("четыре исходных периода со временем по умолчанию", [(x["k"], x["a"], x["b"]) for x in r] == [("am", "05:00", "13:00"), ("pm", "13:00", "18:00"), ("dn", "18:00", "24:00"), ("sn", "00:00", "05:00")], r)
     look = page.evaluate("""()=>{const m=document.querySelector('#happy-screens .mp-page');const all=[...m.querySelectorAll('*')];const q=s=>m.querySelector(s).getBoundingClientRect();
       return {h1:!!m.querySelector('h1'),pen:/карандаш/i.test(m.innerHTML),presets:/16:8|18:6|20:4/.test(m.textContent),edit:m.querySelector('.mp-edit').textContent,
-       fastBeforeAdd:q('.mp-fast').bottom<=q('.mp-add').top+1,fastAfterList:q('.mp-list').bottom<=q('.mp-fast').top+1,fastOn:m.querySelector('[data-mp=fast]').getAttribute('aria-checked'),
+       fastBeforeAdd:q('.mp-fast').bottom<=q('.mp-add').top+1,fastAfterList:q('.mp-list').bottom<=q('.mp-fast').top+1,fastPlain:!m.querySelector('[data-mp=fast]')&&!m.querySelector('.mp-fast .mp-track')&&!m.querySelector('[data-track=fast]'),fastText:m.querySelector('[data-fast-now]').textContent,
        closed:[...m.querySelectorAll('details')].every(d=>!d.open),over:m.scrollWidth>m.clientWidth,
        small:all.filter(e=>e.children.length===0&&e.textContent.trim()&&parseFloat(getComputedStyle(e).fontSize)<12).length}}""")
     out["look"] = look
     check("экран без заголовка и карандаша, «Редактировать» текстом, кнопок 16:8 / 18:6 / 20:4 нет", not look["h1"] and not look["pen"] and not look["presets"] and look["edit"] == "Редактировать", look)
-    check("фастинг — после периодов еды и перед «Добавить приём», выключен; правила и пример свёрнуты", look["fastBeforeAdd"] and look["fastAfterList"] and look["fastOn"] == "false" and look["closed"], look)
+    check("фастинг — строкой после периодов еды, без выключателя и шкалы: он считается сам; правила и пример свёрнуты", look["fastBeforeAdd"] and look["fastAfterList"] and look["fastPlain"] and look["fastText"] != "" and look["closed"], look)
     check("на узком экране ничего не вылезает за край, текста мельче 12 нет", not look["over"] and look["small"] == 0, look)
     labels = page.evaluate("""()=>[...document.querySelectorAll('#happy-screens .mp-track')].map(t=>{const a=t.querySelector('[data-edge=a] span').getBoundingClientRect(),b=t.querySelector('[data-edge=b] span').getBoundingClientRect(),m=document.querySelector('#happy-screens .mp-page').getBoundingClientRect();
       return {gap:Math.round(Math.max(b.left-a.right,a.left-b.right)),in:Math.min(a.left,b.left)>=m.left-1&&Math.max(a.right,b.right)<=m.right+1}})""")
@@ -117,8 +117,8 @@ with sync_playwright() as p:
     click(page, "#happy-screens .mp-edit")
     r = page.evaluate(ROWS)
     check("в режиме правки шкалы свёрнуты в строки; у исходных периодов замок и неактивная ручка", all(x["lock"] and x["grip"] is False and x["time"] for x in r) and page.evaluate("()=>document.querySelector('#happy-screens .mp-edit').textContent") == "Готово" and not page.evaluate("()=>document.querySelector('#happy-screens .mp-list .mp-track')"), r)
-    cols = page.evaluate("""()=>{const xs=s=>[...new Set([...document.querySelectorAll('#happy-screens '+s)].map(e=>Math.round(e.getBoundingClientRect().right)))];return {time:xs('.mp-time'),lock:xs('.mp-lock')}}""")
-    check("время и замки, включая фастинг, стоят в общих столбцах", len(cols["time"]) == 1 and len(cols["lock"]) == 1, cols)
+    cols = page.evaluate("""()=>{const xs=s=>[...new Set([...document.querySelectorAll('#happy-screens '+s)].map(e=>Math.round(e.getBoundingClientRect().right)))];return {time:xs('.mp-list .mp-time'),lock:xs('.mp-list .mp-lock')}}""")
+    check("время и замки стоят в общих столбцах", len(cols["time"]) == 1 and len(cols["lock"]) == 1, cols)
     click(page, "#happy-screens .mp-row[data-k=am] .mp-name"); page.wait_for_timeout(200)
     check("исходный период не переименовать: лист не открывается", not page.evaluate("()=>!!document.querySelector('#happy-screens .hs-sheet-layer.hs-in')"))
     drag(page, "#happy-screens .mp-row[data-k=pm] .mp-surface", dx=-150, at=(200, 30))
@@ -158,16 +158,7 @@ with sync_playwright() as p:
     check("свой приём переименован, ключ прежний", page.evaluate(STATE)["rows"][2]["t"] == "Полдник" and page.evaluate(STATE)["rows"][2]["k"] == order[1])
     click(page, "#happy-screens .mp-edit")
 
-    # фастинг и пороги
-    click(page, "#happy-screens [data-mp=fast]")
-    f = page.evaluate("()=>({on:JSON.parse(document.querySelector('#happy-screens [name=mp-state]').value).rules.fast,shade:document.querySelectorAll('#happy-screens .mp-list .mp-shade').length,white:getComputedStyle(document.querySelector('#happy-screens .mp-fast .mp-fill')).backgroundColor,parts:document.querySelectorAll('#happy-screens .mp-fast .mp-fill').length})")
-    out["fast"] = f
-    check("фастинг включён: 20:00–12:00 белой полосой с двух краёв шкалы, пересечения с едой заштрихованы", f["on"] == {"on": True, "a": 1200, "b": 720} and f["parts"] == 2 and f["white"] == "rgb(255, 255, 255)" and f["shade"] >= 3, f)
-    food = [(x["a"], x["b"]) for x in page.evaluate(STATE)["rows"]]
-    wf = box(page, "#happy-screens [data-track=fast]")["w"]
-    drag(page, "#happy-screens [data-track=fast] [data-edge=b]", dx=wf * 120 / 1440)
-    st = page.evaluate(STATE)
-    check("границы фастинга двигаются свободно и еду не трогают", st["rules"]["fast"] == {"on": True, "a": 1200, "b": 840} and [(x["a"], x["b"]) for x in st["rows"]] == food, st["rules"])
+    # пороги (фастинг настроек не имеет: считается сам, сценарий meal_fast)
     page.evaluate("()=>document.querySelectorAll('#happy-screens details').forEach(d=>d.open=true)")
     page.fill("#happy-screens [name=mp-kcal]", "200"); page.fill("#happy-screens [name=mp-gap]", "30")
     click(page, "#happy-screens [data-scene=later]")
@@ -184,7 +175,7 @@ with sync_playwright() as p:
     saved = page.evaluate("()=>({secs:DB.sections,rules:DB.mealRules,chain:MealPeriods.chain(DB),open:!!document.querySelector('#happy-screens .mp-page.hs-in')})"); out["saved"] = saved
     keys = [x["k"] for x in want["rows"]]
     check("«Сохранить»: периоды, названия, виды и время — в разделах дневника, ключи исходных прежние", not saved["open"] and [(x["k"], x["t"], x["a"], x["b"]) for x in saved["chain"]] == [(x["k"], x["t"], x["a"], x["b"]) for x in want["rows"]] and keys[:2] == ["am", "pm"] and whole(saved["chain"]), saved["chain"])
-    check("пороги и фастинг сохранены", saved["rules"] == {"kcal": 150, "gap": 20, "fast": {"on": True, "a": 1200, "b": 840}}, saved["rules"])
+    check("пороги сохранены", saved["rules"]["kcal"] == 150 and saved["rules"]["gap"] == 20, saved["rules"])
     synced(page)
     page.reload(); enter(page); ready(page)
     check("после перезагрузки настройки те же", page.evaluate(CHAIN) == [[x["k"], x["t"], x["a"], x["b"], x["kind"]] for x in want["rows"]] and page.evaluate("()=>MealPeriods.rules(DB)") == saved["rules"], page.evaluate(CHAIN))

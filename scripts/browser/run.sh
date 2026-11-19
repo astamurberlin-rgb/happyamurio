@@ -19,7 +19,7 @@ export HAPPY_BASE="http://127.0.0.1:$port/happyamurio/"
 for i in $(seq 1 30); do curl -s -o /dev/null "${HAPPY_BASE}shared/apps.json" && break; sleep 0.3; done
 if ! curl -s -o /dev/null "${HAPPY_BASE}shared/apps.json"; then echo "Локальный сервер на порту $port не поднялся (порт занят? задай HAPPY_PORT)"; exit 2; fi
 names=("$@")
-[ "${#names[@]}" -eq 0 ] && names=(versions day_sections meal_times meal_bot meal_inbox meal_periods meal_shop meal_offline meal_supplements meal_desserts meal_preserves meal_kfct meal_usda_ru uzbek_names store_devices sport_store sport_workout sport_families day_store meal_store food_exchange account_screens)
+[ "${#names[@]}" -eq 0 ] && names=(versions day_sections meal_times meal_bot meal_inbox meal_periods meal_fast meal_shop meal_offline meal_supplements meal_desserts meal_preserves meal_kfct meal_usda_ru uzbek_names store_devices sport_store sport_workout sport_families day_store meal_store food_exchange account_screens)
 failed=0
 for name in "${names[@]}"; do
   if python3 "$here/$name.py" >"$HAPPY_OUT/$name.log" 2>&1; then tail -1 "$HAPPY_OUT/$name.log"

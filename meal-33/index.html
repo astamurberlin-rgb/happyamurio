@@ -860,6 +860,7 @@ body.sheet .fab .icX{display:block}
 .mlKbR .bar{grid-column:2/-1;height:6px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.24);overflow:hidden}
 .mlKbR .bar i{display:block;height:100%;border-radius:3px}
 .mlKbHint{margin:-12px 4px 22px}
+#mlFast{margin:-8px 4px 18px;font-size:14px;font-weight:400;line-height:1.45;color:var(--muted)}
 /* ══════════ ДИАЛОГ «Что съел» ══════════ */
 .screen[data-screen="chat"]{padding-bottom:calc(230px + env(safe-area-inset-bottom))}
 .mlChat{display:flex;flex-direction:column;gap:10px}
@@ -2858,6 +2859,7 @@ function persistNow(){
   return ok;
 }
 function save(){
+  mlFastWatch();
   if(typeof MealCatalog!=='undefined') MealCatalog.cacheUsed(DB,FOODS); MealProducts.snapshotItems(DB,FOODS);
   if(RO){ roWarn(); return }
   if(!MealData.signedIn()){ persistNow(); return }
@@ -2974,7 +2976,7 @@ function renderDay(){
   var supplementDay=supplementRows(curDate),partial=['kcal','prot','fat','carb'].some(function(k){return intakeCoverage(day(curDate).items,supplementDay,k).missing>0}),hint=document.getElementById('mlKbHint');
   hint.hidden=day(curDate).items.length>0||supplementDay.length>0;   // Meal 30 (Астамур 12.11 11:30): без пояснения «Калории и БЖУ: сумма известных значений…»
   hint.textContent='Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото». ';
-  var fastEl=document.getElementById('mlFast');if(fastEl){fastEl.hidden=true;fastEl.innerHTML=''}   // Meal 30 (Астамур 12.11): строку «Голодание прервано» не показываем; данные не трогаем
+  mlFastPaint(); mlFastWatch();   // фастинг считается сам, по записям (Астамур 19.11.2026)
   document.getElementById('mlSecs').innerHTML=sectionsForDate(curDate).map(function(S){
     var it=itemsOf(S.k), supplements=supplementRows(curDate,S.k), s=intakeSum(it,supplements), parts=[];
     var nAll=it.length+supplements.length;if(nAll)parts.push(nAll+' '+ruPlural(nAll,['продукт','продукта','продуктов']));   // Meal 30: добавки — как любая еда
@@ -3124,6 +3126,80 @@ function mlTimeMask(value,deleting){
   return digits.length<2?digits:digits.slice(0,2)+(digits.length===2&&deleting?'':':'+digits.slice(2));
 }
 /* MEAL_TIME_MODEL_END */
+
+/* ── Фастинг считается сам (Астамур 19.11.2026) ──
+   Настроек нет: фастинг — это время без еды, от последней записи, которая прерывает голодание (mlBreaksFast: больше
+   4 ккал; вода, чай и кофе без калорий не в счёт), до следующей такой записи. Всё выводится из записей дневника:
+   записал еду — фастинг закончился этой записью; удалил запись — он снова идёт или снова засчитан за эту дату.
+   Отдельно ничего не хранится, поэтому и стереть «факт фастинга» нельзя. Фастингом называем перерыв от 12 часов. */
+var ML_FAST_MIN=720;
+function mlDateShift(date,n){ var a=date.split('-'); return isoOf(new Date(+a[0],+a[1]-1,+a[2]+n)) }
+function mlBreakMins(date){
+  var out=[];
+  mlIntakeItems((DB.days[date]&&DB.days[date].items)||[],supplementRows(date)).forEach(function(x){
+    var t=mlNormTime(x.t); if(t&&mlBreaksFast(x)) out.push(+t.slice(0,2)*60+(+t.slice(3,5)));
+  });
+  return out.sort(function(a,b){ return a-b });
+}
+/* последняя еда до этой даты: смотрим две недели назад */
+function mlLastBreakBefore(date){
+  for(var i=1;i<=14;i++){ var d=mlDateShift(date,-i), b=mlBreakMins(d); if(b.length) return {date:d,m:b[b.length-1],days:i} }
+  return null;
+}
+/* фастинг, который закончился первой едой этой даты */
+function mlFastDay(date){
+  var b=mlBreakMins(date); if(!b.length) return null;
+  var p=mlLastBreakBefore(date); if(!p) return null;
+  return {len:p.days*1440-p.m+b[0],from:p,end:b[0]};
+}
+/* фастинг, который идёт сейчас: от последней еды до этой минуты */
+function mlFastRun(){
+  var t=todayISO(), d=new Date(), now=d.getHours()*60+d.getMinutes(), b=mlBreakMins(t).filter(function(m){ return m<=now });
+  if(b.length) return {len:now-b[b.length-1],from:{date:t,m:b[b.length-1],days:0}};
+  var p=mlLastBreakBefore(t); return p?{len:p.days*1440-p.m+now,from:p}:null;
+}
+function mlDur(n){ var h=Math.floor(n/60), m=n%60; return (h?h+' ч ':'')+m+' мин' }
+function mlFastFrom(p){
+  var c=String(Math.floor(p.m/60)).padStart(2,'0')+':'+String(p.m%60).padStart(2,'0'), a=p.date.split('-');
+  return c+(p.days===1?' вчера':p.days>1?' '+(+a[2])+'.'+a[1]:'');
+}
+function mlFastLines(date){
+  var out=[], f=mlFastDay(date);
+  if(f&&f.len>=ML_FAST_MIN) out.push('Фастинг '+mlDur(f.len)+' · с '+mlFastFrom(f.from)+' до '+mlFastFrom({m:f.end,date:date,days:0}));
+  if(date===todayISO()){ var r=mlFastRun(); if(r) out.push('Фастинг идёт · '+mlDur(r.len)+' · с '+mlFastFrom(r.from)) }
+  return out;
+}
+/* строка для настроек приёмов пищи */
+function mlFastNow(){ var r=mlFastRun(); return r?{len:mlDur(r.len),from:mlFastFrom(r.from)}:null }
+/* Предупреждение, а не вопрос: запись делается всегда. Сравниваем «до» и «после» каждой записи в дневник. */
+var mlFastSeen=null, mlFastMsg='', mlFastT=null;
+function mlFastSnap(){
+  var o={}, t=todayISO();
+  [t,mlDateShift(t,-1),mlDateShift(t,-2),curDate].forEach(function(d){ var f=mlFastDay(d); o[d]=f?f.len:null });
+  return o;
+}
+function mlFastWatch(){
+  var was=mlFastSeen, now; try{ now=mlFastSnap() }catch(e){ return }
+  mlFastSeen=now; if(!was) return;
+  var t=todayISO(), msg='';
+  Object.keys(now).forEach(function(d){
+    if(!(d in was)||msg) return;
+    if(was[d]==null&&now[d]!=null&&now[d]>=ML_FAST_MIN) msg='Фастинг завершён: '+mlDur(now[d]);
+    else if(was[d]!=null&&was[d]>=ML_FAST_MIN&&now[d]==null&&d===t){ var r=mlFastRun(); if(r&&r.len>=ML_FAST_MIN) msg='Фастинг снова идёт: '+mlDur(r.len) }
+  });
+  if(!msg) return;
+  mlFastMsg=msg; clearTimeout(mlFastT);
+  /* своё сообщение действия (например «Кофе +1 → Завтрак») показывается первым, наше — следом */
+  mlFastT=setTimeout(function(){ if(!mlFastMsg) return; var m=mlFastMsg, busy=document.getElementById('toast').classList.contains('on'); mlFastMsg='';
+    mlFastT=setTimeout(function(){ toast(m) },busy?2000:0) },0);
+}
+/* бот забирает предупреждение в свой ответ — тогда отдельное сообщение не нужно */
+function mlFastTake(){ var m=mlFastMsg; mlFastMsg=''; clearTimeout(mlFastT); return m }
+setInterval(function(){ var el=document.getElementById('mlFast'); if(el&&!el.hidden&&curDate===todayISO()&&document.visibilityState!=='hidden') mlFastPaint() },30000);
+function mlFastPaint(){
+  var el=document.getElementById('mlFast'); if(!el) return;
+  var l=mlFastLines(curDate); el.hidden=!l.length; el.innerHTML=l.map(escH).join('<br>');
+}
 
 function r1(x){ return Math.round(x*10)/10 }
 function byT(a,b){ return a.t<b.t?-1:a.t>b.t?1:0 }

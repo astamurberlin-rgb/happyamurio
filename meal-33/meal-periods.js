@@ -11,7 +11,8 @@
  * Ключи разделов прежние, поэтому записи дневника и сводка для Day и Sport не меняются.
  *
  * Правила и фастинг — поле дневника DB.mealRules: {kcal — «меньше, ккал», gap — «пауза больше, мин»,
- * fast:{on,a,b} — фастинг, отдельный слой: может идти через полночь и пересекаться с едой}.
+ * fast:{on,a,b} — прежняя настройка фастинга: хранится как была, но не показывается и не читается. С 19.11.2026 фастинг
+ * считается сам по записям дня (index.html, mlFastRun), здесь только строка «идёт столько-то»}.
  * Запись еды в период фастинга (вопрос «точно записать?») здесь НЕ сделана — это следующий этап.
  *
  * Пока человек не нажал «Сохранить», в дневник ничего не пишется: разделы без a и b получают время на лету
@@ -207,16 +208,17 @@ function open(){
     return '<div class="mp-track" data-track="'+id+'"><div class="mp-rail" aria-hidden="true">'+ticks+'</div><div class="mp-fills" aria-hidden="true"></div>'+
       ['a','b'].map(function(edge){ return '<div class="mp-handle" role="slider" tabindex="0" data-edge="'+edge+'" aria-orientation="horizontal" aria-label="'+esc(label)+': '+(edge==='a'?'начало':'конец')+'"><span></span><i></i></div>' }).join('')+'</div>';
   }
+  /* фастинг настроек не имеет: считается сам по записям дневника (Астамур 19.11.2026), здесь только показываем, сколько идёт */
+  function fastText(){ var n=typeof mlFastNow==='function'?mlFastNow():null; return n?'идёт '+n.len:'начнётся после записи еды' }
   function render(){
     var R=D.rules, f=R.fast, snack=D.rows.filter(function(r){ return kindOf(r)==='snack'&&hasWin(r) });
     main.innerHTML='<input type="hidden" name="mp-state">'+
       '<div class="mp-bar"><button type="button" class="mp-edit" data-mp="edit" aria-pressed="'+editing+'">'+(editing?'Готово':'Редактировать')+'</button></div>'+
       '<div class="mp-list'+(editing?' mp-editing':'')+'" role="list" aria-label="Приёмы по порядку">'+D.rows.map(rowHtml).join('')+'</div>'+
-      '<div class="mp-row mp-fast'+(editing?' mp-compact':'')+(f.on?'':' mp-off')+'"><div class="mp-surface"><div class="mp-head"><span class="mp-ic">'+CLOCK+'</span><span class="mp-name"><span>Фастинг</span></span>'+
-        (editing?'<span class="mp-time">'+clock(f.a)+'–'+clock(f.b)+'</span><span class="mp-lock" role="img" aria-label="Предустановленный период">'+LOCK+'</span><span class="mp-grip-space"></span>'
-                :'<button type="button" class="hs-switch" role="switch" data-mp="fast" aria-label="Включить фастинг" aria-checked="'+!!f.on+'"><b></b></button>')+
-        '</div>'+(editing?'':trackHtml('fast','Фастинг'))+'</div></div>'+
       (editing?'':'<div class="mp-axis" aria-hidden="true">'+[0,6,12,18,24].map(function(h){ return '<span style="left:'+(h/24*100)+'%">'+('0'+h).slice(-2)+'</span>' }).join('')+'</div>')+
+      '<div class="mp-row mp-fast mp-compact"><div class="mp-surface"><div class="mp-head"><span class="mp-ic">'+CLOCK+'</span><span class="mp-name"><span>Фастинг</span></span>'+
+        '<span class="mp-time" data-fast-now>'+esc(fastText())+'</span></div></div></div>'+
+      (editing?'':'<p class="mp-note">Фастинг считается сам — это время без еды после последней записи. Записал еду — он закончился. Удалил запись — вернулся.</p>')+
       '<button type="button" class="mp-pill mp-add" data-mp="add">＋ Добавить приём</button>'+
       (undo?'<div class="mp-undo" role="status"><span>«'+esc(undo.name)+'» удалён</span><button type="button" data-mp="undo">Вернуть</button></div>':'')+
       (editing?'<p class="mp-note">Смахни влево, чтобы удалить добавленный приём или перекус.</p>':'')+
@@ -246,7 +248,6 @@ function open(){
     main.querySelectorAll('.mp-track').forEach(function(tr){
       var id=tr.dataset.track, w=windowOf(id), fast=id==='fast'; if(!w||(!fast&&!hasWin(w))){ tr.hidden=true; return }
       var width=tr.clientWidth||300, fills=segments(w), html=fills.map(function(s){ return '<div class="mp-fill" style="left:'+s[0]/14.4+'%;width:'+(s[1]-s[0])/14.4+'%"></div>' }).join('');
-      if(!fast&&f.on) fills.forEach(function(s){ segments(f).forEach(function(q){ var x=Math.max(s[0],q[0]), y=Math.min(s[1],q[1]); if(y>x) html+='<div class="mp-shade" style="left:'+x/14.4+'%;width:'+(y-x)/14.4+'%"></div>' }) });
       tr.querySelector('.mp-fills').innerHTML=html;
       var xa=w.a/DAY*width, xb=w.b/DAY*width, pa=bound(xa,20,width-20), pb=bound(xb,20,width-20);
       if(Math.abs(pb-pa)<52){ var left=xa<=xb, c=(pa+pb)/2, lo=bound(c-26,20,width-72); if(left){ pa=lo; pb=lo+52 } else { pb=lo; pa=lo+52 } }

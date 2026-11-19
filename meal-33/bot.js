@@ -686,6 +686,7 @@ var MealBot=(function(){
     save();
     try{ if(typeof renderAll==='function') renderAll() }catch(e){}
     var c={id:'c'+(++S.seq),add:add,undone:false,at:S.clock||Date.now()}; S.commits.push(c);
+    if(typeof mlFastTake==='function'){ var fm=mlFastTake(); if(fm) c.fast=fm }   // фастинг: предупреждение идёт в ответ бота
     /* «перепиши: …» — прежняя запись убирается только теперь, когда новая уже записана (раньше убиралась заранее и могла пропасть) */
     if(S.rewrite){ var old=S.rewrite; S.rewrite=null; if(!old.undone&&old!==c){ undo(S,old); c.replaced=true } }
     return c;
@@ -718,6 +719,7 @@ var MealBot=(function(){
     });
     var s=sumOf(c.add.map(function(a){ return a.item }));
     h+='<p class="mbSum">'+Math.round(s.k)+' ккал · Б '+fmt(s.p)+' · Ж '+fmt(s.f)+' · У '+fmt(s.c)+'</p>';
+    if(c.fast) h+='<p class="mlHint" data-fast>'+esc(c.fast)+'. Удалишь запись — фастинг вернётся.</p>';
     var sw=[]; c.add.forEach(function(a,i){ if(a.line.picked) a.line.alts.slice(1,3).forEach(function(x,k){ if(FOODS[x]) sw.push(['swap:'+c.id+':'+i+':'+(k+1),FOODS[x].n]) }) });
     if(sw.length) h+='<p class="mlHint">Взял самое близкое. Другое — нажми или скажи: «нет, второй», «нет, '+esc(String(FOODS[c.add.filter(function(a){ return a.line.picked&&FOODS[a.line.alts[1]] })[0].line.alts[1]].n).toLowerCase().split(/[,(—]/)[0].trim())+'».</p>';
     var lm=c.add.some(function(a){ return a.line.usual&&day(a.date).items.indexOf(a.item)>=0 })?[['less:'+c.id,'Меньше'],['more:'+c.id,'Больше']]:[];
