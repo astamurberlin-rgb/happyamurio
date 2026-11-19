@@ -84,6 +84,15 @@
  },
  "pointReleases": [
   {
+   "version": "33.17",
+   "date": "2026-11-19",
+   "changes": [
+    "meal-periods.js и meal-periods.css (новые): приёмы пищи со временем — поля a, b, kind у раздела, поле дневника mealRules (пороги перекуса, фастинг); экран «Настроить приёмы пищи» третьей строкой настроек",
+    "bot.js: secFor через MealPeriods.pick, kcalOf вместо smallOf; index.html: secAt и autoSec по периодам, прежний список разделов в настройках убран, экран «Правила бота» переписан",
+    "index.html ?v=33.17, заголовок и подвал; release-notes.js 33.17; sw.js 33.17"
+   ]
+  },
+  {
    "version": "33.16",
    "date": "2026-11-19",
    "changes": [
@@ -417,8 +426,8 @@
   },
   {
    "path": "bot.js",
-   "size": 157037,
-   "sha256": "e9cee51ce3366ac20151297481238123c83b89333b3b0e1db9bff79038007e50"
+   "size": 155814,
+   "sha256": "659c07d829c1e7144bbab7cddcfbb37e3a1bb6e6e09f35d233b37a990a12abdc"
   },
   {
    "path": "bot/household-ru.js",
@@ -469,6 +478,11 @@
    "path": "checks/check-meal-first-time.mjs",
    "size": 25876,
    "sha256": "8ecec5ce4f4c859792bf20fb08100501b16f74ba5efca60c2590c75239f6a3ec"
+  },
+  {
+   "path": "checks/check-meal-periods.mjs",
+   "size": 12353,
+   "sha256": "3f6804c76cf197bf7856a8f571ef4d1e7ef05194f04759756ec4908c7f54387d"
   },
   {
    "path": "checks/check-preserves.mjs",
@@ -557,8 +571,8 @@
   },
   {
    "path": "index.html",
-   "size": 629060,
-   "sha256": "8050e529cc224a55ccd46226b79acf0ec0483a5bdcb2576eef61afcb6208d30c"
+   "size": 625887,
+   "sha256": "a5b136de8a9c61e6096b878d24c3e09466d2dc52ea581b0e418e5e800e5c4d34"
   },
   {
    "path": "kfct.js",
@@ -746,6 +760,16 @@
    "sha256": "2b20aa407f939f0062d168afaf6912f4d54a75f3ae2bd63b3dd7c79ed5dd39d2"
   },
   {
+   "path": "meal-periods.css",
+   "size": 7869,
+   "sha256": "f981d0976c3a0395f402d83ad2900a9a6def2737a7fdaf63e5a7d9d51cf24ce3"
+  },
+  {
+   "path": "meal-periods.js",
+   "size": 45593,
+   "sha256": "579c50ac33cf0c72c72a2423e9cfbf4d27f259477d59fbeab1aac356ca7c5d79"
+  },
+  {
    "path": "portions.js",
    "size": 33109,
    "sha256": "f916d0b528a453e5265abc042bcf053860ea29b6b11121966f6df9160ca855a6"
@@ -762,8 +786,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 59989,
-   "sha256": "322ac34a75629addfacd599a050d338feb7855ed730029a13e6f87cdc9fc0b1e"
+   "size": 61996,
+   "sha256": "72b2a3a758e659228d2bdf13d89e79adb16e2c10adb1e27b1b4e7e940d924466"
   },
   {
    "path": "report.css",
@@ -953,7 +977,7 @@
   {
    "path": "sw.js",
    "size": 3505,
-   "sha256": "943cf826cd5fae324a3ab636e402e97305a8a36409870c4794153915b482e5a1"
+   "sha256": "4f485baf0ee0a3c059e36421f9bc85a6c563f6497a6a7e813d91c8442d7acddb"
   },
   {
    "path": "usda-measures.js",

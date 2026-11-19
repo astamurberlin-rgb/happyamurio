@@ -783,7 +783,6 @@ var MealBot=(function(){
   function byMeal(h,k){ var w=MEALWIN[k]; if(!w) return null; var a=h%12, b=a+12, inA=a>=w[0]&&a<w[1], inB=b>=w[0]&&b<w[1]; return inA&&!inB?a:inB&&!inA?b:inA?a:null }
   /* время записи подходит приёму пищи? «15:00» в завтраке — нет: такое время при переносе снимается */
   function fits(t,k){ var w=MEALWIN[k]; if(!t||!w) return true; var h=+t.slice(0,2); return h>=w[0]&&h<w[1] }
-  var DEFSTART={am:0,pm:660,dn:960,sn:1260};
   function hmOf(m){ m=Math.max(0,Math.min(1439,Math.round(m))); return pad2(Math.floor(m/60))+':'+pad2(m%60) }
   function mealTimes(date,k,skip){ return ((DB.days[date]&&DB.days[date].items)||[]).filter(function(x){ return x.sec===k&&x.t&&(!skip||skip.indexOf(x)<0) }).map(function(x){ return mins(x.t) }).sort(function(a,b){ return a-b }) }
   /* какое время поставить записи в приёме k, когда человек времени не назвал. null — не трогать */
@@ -812,45 +811,24 @@ var MealBot=(function(){
   }
   function timeNote(t){ return '<p class="mlHint">Время поставил сам: '+esc(t)+'. Не так — скажи: «нет, в 9 утра».</p>' }
   function mins(t){ return +t.slice(0,2)*60+(+t.slice(3,5)) }
-  /* Meal 33.7 · приём по правилам Астамура (17.11.2026). Тот же текст обычным языком — экран «Правила бота»
-     в «Для разработчика» (index.html, data-screen="botrules"): поменял правило — поправь и его.
-     1) запись ближе 1,5 ч (до или после) — тот же приём; 2) немного еды (до 150 ккал на сообщение или только напитки)
-     после приёма — перекус; 3) иначе следующий по порядку приём, если время в его окне; 4) иначе прошлый приём, если
-     время в его окне, иначе перекус. Ночью (до 05:00) — перекус. Окна, где приём может начаться: */
-  var NEAR=90, SNACK=150, NEWWIN={am:[300,780],pm:[660,1080],dn:[960,1440]}, ORDK=['am','pm','dn'];
-  function smallOf(list){
-    var ok=list.length>0, k=0, drinks=true;
+  /* Meal 33.17 · приём по периодам из «Настроить приёмы пищи» (макет Михалыча и Астамура, 19.11.2026; до этого —
+     правила 33.7 с зашитыми окнами). Само правило — MealPeriods.classify (meal-periods.js). Тот же текст обычным
+     языком — экран «Правила бота» в «Для разработчика» (index.html, data-screen="botrules"): поменял правило — поправь и его.
+     1) время в периоде перекуса — этот перекус при любой калорийности; 2) первая запись основного периода — основной
+     приём, даже маленькая; 3) не больше «паузы» (20 мин) после последней записи периода — туда же, куда она;
+     4) меньше порога (150 ккал) и пауза больше — перекус; 5) иначе основной приём периода. Запись ровно на границе
+     относится к следующему периоду. NEAR — не про выбор приёма: это «названный приём уже был больше 1,5 ч назад». */
+  var NEAR=90, ORDK=['am','pm','dn'];
+  /* калории всей новой записи; null — у какой-то строки ещё нет продукта или веса: маленькой такую запись не считаем */
+  function kcalOf(list){
+    var ok=list.length>0, k=0;
     list.forEach(function(x){ var fid=x&&(x.fid||(x.alts&&x.alts[0])), g=x&&(x.g>0?x.g:(x.explicit&&fid&&FOODS[fid]?gramsFor(fid,x.q,x.u):0));   // строка ещё без выбранного продукта — по первому похожему
-      if(!fid||!FOODS[fid]||!(g>0)){ ok=false; return } k+=nutOf({fid:fid,g:g}).k||0; if(!isDrink(fid)) drinks=false });
-    return ok&&(drinks||k<=SNACK);
+      if(!fid||!FOODS[fid]||!(g>0)){ ok=false; return } k+=nutOf({fid:fid,g:g}).k||0 });
+    return ok?k:null;
   }
-  function secFor(date,t,small){
-    var m=mins(t);
-    if(m<300&&sec('sn')) return 'sn';                                 // ночью, с полуночи до пяти, — перекус, а не завтрак
-    var ks=sectionsForDate(date).map(function(S0){ return S0.k });
-    if(['am','pm','dn','sn'].some(function(k){ return ks.indexOf(k)<0 })) return secForOld(date,t);
-    var items=((DB.days[date]&&DB.days[date].items)||[]).filter(function(x){ return x.t&&ks.indexOf(x.sec)>=0 });
-    var near=null; items.forEach(function(x){ var d=Math.abs(mins(x.t)-m); if(d<=NEAR&&(!near||d<near.d)) near={k:x.sec,d:d} });
-    if(near) return near.k;
-    var prev=-1, next=3;
-    items.forEach(function(x){ var i=ORDK.indexOf(x.sec), xm=mins(x.t); if(i<0) return; if(xm<m&&i>prev) prev=i; if(xm>m&&i<next) next=i });
-    function inWin(i){ var w=NEWWIN[ORDK[i]]; return m>=w[0]&&m<w[1] }
-    if(small&&prev>=0) return 'sn';
-    for(var i=prev+1;i<=Math.min(next,2);i++) if(inWin(i)) return ORDK[i];
-    if(prev>=0&&inWin(prev)) return ORDK[prev];
-    return 'sn';
-  }
-  /* до 33.7: приём начинается со своей первой записи или с обычного часа. Остаётся для дней со своими разделами */
-  function secForOld(date,t){
-    var m=mins(t), items=(DB.days[date]&&DB.days[date].items)||[], best=null, first=null;
-    if(m<300&&sec('sn')) return 'sn';                                 // ночью, с полуночи до пяти, — перекус, а не завтрак
-    sectionsForDate(date).forEach(function(S0){
-      var ts=items.filter(function(x){ return x.sec===S0.k&&x.t }).map(function(x){ return mins(x.t) });
-      var st=ts.length?Math.min.apply(null,ts):DEFSTART[S0.k]; if(st==null) return;
-      if(!first||st<first.st) first={k:S0.k,st:st};
-      if(st<=m&&(!best||st>=best.st)) best={k:S0.k,st:st};
-    });
-    return (best||first||{k:secAt(+t.slice(0,2))}).k;
+  function secFor(date,t,kcal){
+    var recs=((DB.days[date]&&DB.days[date].items)||[]).filter(function(x){ return x.t&&x.sec }).map(function(x){ return {m:mins(x.t),k:x.sec} });
+    return MealPeriods.pick(DB,mins(t),kcal,recs)||autoSec();
   }
   /* счётчик: сказанное совпало со счётчиком (тот же продукт или его название) и порций целое число — отмечаем в счётчике */
   function tapFor(l){
@@ -1226,7 +1204,7 @@ var MealBot=(function(){
       if(c.hit&&c.hit.amb){ var mk=(u.lines.filter(function(l){ return l.meal })[0]||{}).meal||u.tailMeal, hr=byMeal(c.hit.amb,mk); if(hr!=null) c.hit.t=pad2(hr)+':00' }
       var time=c.hit?c.hit.t:(today&&!shift?hm(now):null);
       if(u.tailMeal) u.lines.forEach(function(l){ if(!l.meal) l.meal=u.tailMeal });
-      var small=smallOf(u.lines), grp='g'+(++SEQ);
+      var small=kcalOf(u.lines), grp='g'+(++SEQ);
       u.lines.forEach(function(l){
         if(m.inbox) l.inbox=m.inbox;
         var sk=l.meal||(time?secFor(date,time,small):autoSec()), ld=date, needMeal=!l.meal&&!time;
@@ -1377,7 +1355,7 @@ var MealBot=(function(){
         a.item.sec=mk; a.en.sec=mk; a.line.meal=mk }
       else if(nt&&!a.line.meal){ a.item.sec='__'; }
     });
-    if(nt&&!mk){ var sm=smallOf(c.add.map(function(a){ return a.item })); c.add.forEach(function(a){ if(a.item.sec==='__'){ var k=secFor(a.date,nt,sm); a.item.sec=k; a.en.sec=k } }) }
+    if(nt&&!mk){ var sm=kcalOf(c.add.map(function(a){ return a.item })); c.add.forEach(function(a){ if(a.item.sec==='__'){ var k=secFor(a.date,nt,sm); a.item.sec=k; a.en.sec=k } }) }
     touch();
     return p('Перенёс: '+esc(whenText(c.add[0].en)))+'<div class="mlRows">'+c.add.filter(function(a){ return !a.hide }).map(function(a){ return row(a.line,true) }).join('')+'</div>'+(guess?timeNote(guess):'');
   }
@@ -1400,7 +1378,7 @@ var MealBot=(function(){
       var nt=null; if(hitT){ nt=hitT.t; if(hitT.amb){ var hr=byMeal(hitT.amb,mi.mk||x.sec); if(hr!=null) nt=pad2(hr)+':00' } }
       if(nt){ x.t=nt; x.tm=1 }
       var g1=null;
-      if(mi.mk){ if(!nt){ var mt=movedTime(cd(),mi.mk,x.t,[x]); if(mt.set){ x.t=mt.t; delete x.tm; g1=mt.t } } x.sec=mi.mk } else { var keep=x.sec; x.sec='__'; x.sec=secFor(cd(),nt,smallOf([x]))||keep }
+      if(mi.mk){ if(!nt){ var mt=movedTime(cd(),mi.mk,x.t,[x]); if(mt.set){ x.t=mt.t; delete x.tm; g1=mt.t } } x.sec=mi.mk } else { var keep=x.sec; x.sec='__'; x.sec=secFor(cd(),nt,kcalOf([x]))||keep }
       touch(); did=true;
       out+=p('Перенёс: '+esc(whenText({sec:x.sec,t:x.t,date:cd(),approx:hitT&&hitT.approx})))+'<div class="mlRows">'+row({fid:x.fid,q:x.q,u:x.u,g:x.g,name:''},true)+'</div>'+(g1?timeNote(g1):'');
     });
