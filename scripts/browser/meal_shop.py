@@ -1,7 +1,7 @@
 """Meal 28: «Сборники» и настройки каталогов (с Meal 29 — и каталог «БАДы», пилюля «Мои добавки»). Один телефон, придуманный аккаунт, касания; каталоги — из ветки meal-libraries
 этого репозитория. Meal открывается на дне; вкладка «Сборники»: пилюли, десять карточек магазина, цена;
 страница узбекской кухни — 60 блюд, плов 255,4 ккал; с Meal 33.21 страница «Кавказской кухни» — 103 позиции из каталога kav
-по тем же кодам, обложка, «Абыста» и «Хинкали» в общем поиске по одному разу; тестовая покупка — «Куплено» в магазине и карточка в «Моих
+по тем же кодам, обложка, «Абыста» и «Хинкали» в общем поиске по одному разу; национальные базы (BLS, USDA, MEXT, KFCT) — без цены и покупки (Астамур 20.11.2026); тестовая покупка — «Куплено» в магазине и карточка в «Моих
 рецептах»; десерты в «Моих продуктах» со свитчем, который выключает каталог и в настройках; поиск по каталогам и
 продуктам. Настройки: «Каталоги» вместо «Пищевых баз», карусель листается, «Показать больше / меньше». Без «≥»."""
 from common import *
@@ -33,11 +33,30 @@ with sync_playwright() as p:
     pills = meal.evaluate("()=>[...document.querySelectorAll('[data-cc-route]')].map(b=>b.textContent+(b.getAttribute('aria-pressed')==='true'?'*':''))")
     out["pills"] = pills
     check("пилюли: Магазин (выбран) · Мои рецепты · Мои продукты · Мои добавки", pills == ["Магазин*", "Мои рецепты", "Мои продукты", "Мои добавки"])
-    cards = meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid .cc-card')].map(c=>c.querySelector('b').textContent+' | '+c.querySelector('.cc-price').textContent)")
+    cards = meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid .cc-card')].map(c=>c.querySelector('b').textContent+' | '+((c.querySelector('.cc-price')||{}).textContent||'без цены'))")
     out["shop"] = cards
-    check("магазин: десять каталогов, первый — БАДы, «Кавказская кухня» после узбекской, цена «2 евро»", len(cards) == 10 and cards[0].startswith("БАДы") and cards[2].startswith("Кавказская кухня") and all(c.endswith("| 2 евро") for c in cards))
+    BASES = ["BLS · Германия", "USDA · США", "MEXT · Япония", "KFCT · Южная Корея"]
+    check("магазин: десять каталогов, первый — БАДы, «Кавказская кухня» после узбекской; своё — «2 евро», национальные базы — без цены (Астамур 20.11.2026)",
+          len(cards) == 10 and cards[0].startswith("БАДы") and cards[2].startswith("Кавказская кухня")
+          and all(c.endswith("| без цены") if c.split(" | ")[0] in BASES else c.endswith("| 2 евро") for c in cards) and sum(c.split(" | ")[0] in BASES for c in cards) == 4)
     check("обложки загрузились", meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid img')].every(i=>i.complete&&i.naturalWidth>0)"))
     meal.screenshot(path=SHOTS + "meal_shop-1-shop.png")
+    # национальная база: страница без «Купить», покупка не действует, старая тестовая отметка не учитывается
+    meal.locator('#ccShopGrid [data-cc-open="BLS"]').tap()
+    meal.wait_for_timeout(400)
+    base = meal.evaluate("""()=>({buy:document.querySelectorAll('.cc-detail-inline .cc-buy,.cc-detail-inline .cc-buy-bottom').length,
+      note:document.querySelector('.cc-detail-inline').textContent.includes('Подключение каталога — в настройках, раздел «Каталоги».'),
+      bought:HappyCollections.buy('BLS'),mark:!!(DB.purchases&&DB.purchases.BLS)})""")
+    out["base"] = base
+    check("страница BLS: без «Купить», подсказка про настройки; покупка базы не записывается", base == {"buy": 0, "note": True, "bought": False, "mark": False})
+    meal.evaluate("()=>{DB.purchases=Object.assign({},DB.purchases,{USDA:true});HappyCollections.render()}")
+    meal.wait_for_timeout(200)
+    old = meal.evaluate("""()=>({shop:!!document.querySelector('#ccShopGrid [data-cc-card="USDA"] .cc-price'),mine:!!document.querySelector('#ccPurchasedProducts [data-cc-card="USDA"]'),owned:HappyCollections.isPurchased('USDA')})""")
+    out["old_mark"] = old
+    check("старая тестовая отметка «Куплено» у базы не учитывается: ни цены, ни карточки в «Моих продуктах»", old == {"shop": False, "mine": False, "owned": False})
+    meal.evaluate("()=>{const p=Object.assign({},DB.purchases);delete p.USDA;DB.purchases=p;HappyCollections.render()}")
+    meal.locator('[data-cc-route="shop"]').tap()
+    meal.wait_for_timeout(300)
     meal.locator('#ccShopGrid [data-cc-open="UZBEK"]').tap()
     meal.wait_for_timeout(500)
     foods = meal.evaluate("()=>[...document.querySelectorAll('.cc-detail-inline .cc-food')].map(f=>f.querySelector('h3').textContent+' '+f.querySelector('.cc-macros b').textContent)")

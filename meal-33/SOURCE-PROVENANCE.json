@@ -519,8 +519,8 @@
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 16558,
-   "sha256": "3d957d645878e79a8a33489168eda905718e086921ee5da9fb1d37b3f548cb39"
+   "size": 17535,
+   "sha256": "cd9fe94a6360db9f12d1cdd8648f60ceaedf1a6a63bae3466a0e0ff062399270"
   },
   {
    "path": "checks/check-supplements-store.mjs",
@@ -549,8 +549,8 @@
   },
   {
    "path": "collections.js",
-   "size": 21499,
-   "sha256": "fb52e263352f64cd578c133b699231c35f2362ca340660baeacc98a10d07d637"
+   "size": 22331,
+   "sha256": "3fd5500ef205204c57bfe2322da7d66b3af4caa55d11fd23a8441fdee2c0fa15"
   },
   {
    "path": "controls.js",
@@ -599,8 +599,8 @@
   },
   {
    "path": "index.html",
-   "size": 648237,
-   "sha256": "5714ad009b3d3ba421ea9ae1bdbf27083861f247ed59f4b869597334bde67559"
+   "size": 648225,
+   "sha256": "74e7519343e693ce2fb1254544eec2e721d7c8b30c4e910cc223dd383311932f"
   },
   {
    "path": "kfct.js",

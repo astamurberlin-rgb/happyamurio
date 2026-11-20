@@ -9,6 +9,10 @@
    на этом устройстве, в области аккаунта (ключ happy-meal-demo-purchases-v1). Купленный каталог виден в «Моих рецептах»
    или «Моих продуктах» со свитчем поиска. Сами каталоги работают, как раньше, без покупки: включаются в настройках.
    Права, оплата и восстановление покупок — позже.
+   Национальные базы (base:true — BLS, USDA, MEXT, KFCT) не продаются (решение Астамура 20.11.2026): мы их только
+   перевели, они входят в Meal по умолчанию. В магазине у них нет цены и «Купить», в «Моих продуктах» их нет —
+   включаются в настройках, раздел «Каталоги»; старые тестовые отметки покупки баз не учитываются. Продаём только
+   своё — каталоги, над которыми у нас работа; свой каталог может брать данные из баз.
    Meal 29: каталог «БАДы» и пилюля «Мои добавки» — как в прототипе (H068): каталог в магазине открывает список шаблонов
    (настройка шаблона — после тестовой покупки), «Мои добавки» — свои варианты. Сами варианты и приёмы — в аккаунте
    (supplements-store.js), шаблоны — каталог supplements (supplements-library.js), экран — supplements.js. */
@@ -25,21 +29,21 @@ const catalogs=[
  {id:'DESSERT',name:'Десерты мира',image:'images/desserts.jpg',tag:'Дополнительный каталог',count:'103 карточки',description:'От крема каталана до чизкейка. Любимые сладости в одном поиске.',preview:'desserts'},
  {id:'PRESERVE',name:'Сладкие заготовки',image:'images/preserves.jpg',tag:'Дополнительный каталог',count:'27 позиций',description:'От кизилового варенья до цукатов. Варенья, джемы, компоты и фрукты в сиропе в одном поиске.',preview:'preserves'},
  {id:'HM',name:'Happy Meal',image:'meal-img/cover-tl-2.jpg',tag:'Кухни и рецепты',description:'Кухни народов мира'},
- {id:'BLS',name:'BLS · Германия',image:'meal-img/cover-bf-1.jpg',tag:'Основной каталог',description:'Продукты и пищевой состав из таблиц Max Rubner-Institut.'},
- {id:'USDA',name:'USDA · США',image:'meal-img/cover-sn-1.jpg',tag:'Основной каталог',description:'Пищевой состав продуктов FoodData Central · SR Legacy.'},
- {id:'MEXT',name:'MEXT · Япония',image:'meal-img/cover-dn-1.jpg',tag:'Основной каталог',description:'Японские таблицы пищевого состава. Названия на трёх языках.'},
- {id:'KFCT',name:'KFCT · Южная Корея',image:'images/kfct.jpg',tag:'Основной каталог',description:'Корейская таблица состава: кимчи, пулькоги, рис и азиатская груша. Названия на трёх языках.'}
+ {id:'BLS',name:'BLS · Германия',image:'meal-img/cover-bf-1.jpg',tag:'Основной каталог',description:'Продукты и пищевой состав из таблиц Max Rubner-Institut.',base:true},
+ {id:'USDA',name:'USDA · США',image:'meal-img/cover-sn-1.jpg',tag:'Основной каталог',description:'Пищевой состав продуктов FoodData Central · SR Legacy.',base:true},
+ {id:'MEXT',name:'MEXT · Япония',image:'meal-img/cover-dn-1.jpg',tag:'Основной каталог',description:'Японские таблицы пищевого состава. Названия на трёх языках.',base:true},
+ {id:'KFCT',name:'KFCT · Южная Корея',image:'images/kfct.jpg',tag:'Основной каталог',description:'Корейская таблица состава: кимчи, пулькоги, рис и азиатская груша. Названия на трёх языках.',base:true}
 ];
 /* Meal 32: отметки «Куплено» — в дневнике аккаунта (DB.purchases, документ setup общего модуля), а не в памяти браузера */
 function purchases(){const x=root.DB&&root.DB.purchases;return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
-function purchased(c){return purchases()[c.id]===true}
+function purchased(c){return !c.base&&purchases()[c.id]===true}
 function category(c){return c.id==='SUPP'?'supplements':['HM','UZBEK','KAV'].includes(c.id)?'recipes':'products'}
 /* число шаблонов БАДов — из каталога, когда он прочитан */
 function countOf(c){if(c.id!=='SUPP')return c.count;const n=root.HappySupplementsLibrary?root.HappySupplementsLibrary.templates.length:0;return n?n+' '+(n%10===1&&n%100!==11?'шаблон':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'шаблона':'шаблонов'):c.count}
 function enabled(c){return root.MealSources.enabled(root.DB,c.source||c.id)}
-function buyControl(c){const owned=purchased(c);return '<div class="cc-buy"><button type="button" data-cc-buy="'+c.id+'" '+(owned?'disabled':'')+'>'+(owned?'Куплено':'Купить · 2 €')+'</button><small>Тестовая покупка · без оплаты</small></div>'}
+function buyControl(c){if(c.base)return '';const owned=purchased(c);return '<div class="cc-buy"><button type="button" data-cc-buy="'+c.id+'" '+(owned?'disabled':'')+'>'+(owned?'Куплено':'Купить · 2 €')+'</button><small>Тестовая покупка · без оплаты</small></div>'}
 function buy(c){
- if(purchased(c))return;
+ if(c.base||purchased(c))return;
  if(typeof root.writeGuard==='function'&&root.writeGuard())return;   // без входа записи не принимаются
  root.DB.purchases=Object.assign({},purchases(),{[c.id]:true});
  /* Meal 30: купленный платный набор — сразу подключён; настройки каталогов и счётчики — заново */
@@ -53,7 +57,7 @@ function card(c,personal){
  const on=enabled(c),owned=purchased(c);
  return '<article class="cc-card" data-cc-card="'+c.id+'"><button type="button" class="cc-card-open" data-cc-open="'+c.id+'" aria-label="Открыть каталог '+esc(c.name)+'"><img src="'+c.image+'" alt="" decoding="async" onload="this.classList.add(\'cc-ready\')">'+
   '<span class="cc-copy"><b>'+esc(c.name)+'</b><span class="cc-tag">'+esc(c.tag)+'</span>'+(c.count?'':'<small>'+esc(c.description)+'</small>')+
-  '<span class="cc-card-meta"><small>'+esc(countOf(c)||'Каталог')+'</small><span class="cc-price'+(owned?' cc-owned':'')+'">'+(owned?'Куплено':'2 евро')+'</span></span></span></button>'+
+  '<span class="cc-card-meta"><small>'+esc(countOf(c)||'Каталог')+'</small>'+(c.base?'':'<span class="cc-price'+(owned?' cc-owned':'')+'">'+(owned?'Куплено':'2 евро')+'</span>')+'</span></span></button>'+
   (personal?'<div class="cc-card-state"><small>'+(c.source?'В составе Happy Meal':on?'В поиске':'Выключен')+'</small>'+(c.source?'':'<input type="checkbox" role="switch" class="happy-switch" data-food-source="'+c.id+'" aria-label="'+esc(c.name)+': в поиске" '+(on?'checked':'')+'>')+'</div>':'')+
   '</article>';
 }
@@ -118,7 +122,7 @@ function openCatalog(id){
    :later?'<p class="cc-note">Блюда каталога загружаются.</p>'
    :'<p class="cc-note">Продукты этого каталога доступны в обычном поиске при добавлении еды. Подключение каталога — в настройках, раздел «Каталоги».</p>')+
   (c.source?'<p class="cc-note">Кухня включается в поиск вместе с каталогом Happy Meal. Отдельного переключателя нет.</p>':'')+
-  '<div class="cc-buy-bottom">'+buyControl(c)+'</div></div>';
+  (c.base?'':'<div class="cc-buy-bottom">'+buyControl(c)+'</div>')+'</div>';
  root.document.querySelector('[data-screen="recipes"]').append(detail);
 }
 /* экран БАДов (supplements.js) — внутри «Сборников», как в прототипе */

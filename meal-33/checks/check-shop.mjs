@@ -6,6 +6,7 @@
       не на магазине: на «Сборники» переходит только «Мои добавки» по нажатию (HappyCollections.openSupplements).
    3) sw.js: всё, что страница грузит со своего каталога, есть в выпуске; чужие адреса (облако, библиотеки,
       shared/apps.json, соседние приложения) service worker не трогает; без сети отдаёт копию.
+   20.11.2026 (Астамур): национальные базы BLS, USDA, MEXT, KFCT не продаются — без цены и покупки.
    Meal 33.21: «Кавказская кухня» — карточка после узбекской, в составе Happy Meal; её список не копия, а сам каталог kav
    по тем же кодам (bls:ZA01A…), в порядке файла, ккал и БЖУ каталога; обложка сохраняется при установке, как остальные. */
 import {readFile,stat} from 'node:fs/promises';
@@ -72,6 +73,10 @@ assert.ok(/root\.DB\.purchases=/.test(shopCode)&&!/localStorage/.test(shopCode),
 const goes=[...shopCode.matchAll(/go\(['"]recipes['"]\)/g)];assert.equal(goes.length,1,'на «Сборники» — только из openSupplements');
 assert.ok(/openSupplements:mode=>\{if\(typeof root\.go==='function'\)root\.go\('recipes'\)/.test(shopCode),'переход — только по «Мои добавки» / «+ Записать», не при запуске');
 assert.ok(shop.includes("'Купить · 2 €'")&&shop.includes('Тестовая покупка · без оплаты'),'покупка — как в прототипе');
+/* решение Астамура 20.11.2026: национальные базы не продаём — мы их только перевели, они входят в Meal по умолчанию */
+assert.deepEqual([...shop.matchAll(/\{id:'([A-Z]+)'[^\n]*,base:true\}/g)].map(m=>m[1]),['BLS','USDA','MEXT','KFCT'],'национальные базы отмечены base:true, остальные — нет');
+assert.ok(/function buyControl\(c\)\{if\(c\.base\)return '';/.test(shopCode)&&/function purchased\(c\)\{return !c\.base&&/.test(shopCode)&&/if\(c\.base\|\|purchased\(c\)\)return;/.test(shopCode)
+ &&/\(c\.base\?'':'<span class="cc-price/.test(shopCode)&&/\(c\.base\?'':'<div class="cc-buy-bottom">/.test(shopCode),'у базы нет цены, кнопки «Купить» и отметки «Куплено»');
 // 3. Копия выпуска для работы без интернета
 const page=await read('index.html');
 assert.ok(page.includes("navigator.serviceWorker.register('./sw.js',{scope:'./'})"),'service worker подключён к своему каталогу');
