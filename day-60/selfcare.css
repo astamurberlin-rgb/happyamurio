@@ -173,7 +173,7 @@ body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 .care-add{flex:none;width:44px;height:44px;margin:-12px -10px -12px 0;border:0;border-radius:50%;background:none;color:#fff;display:grid;place-items:center;cursor:pointer}
 .care-add svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .care-add:focus-visible{outline:2px solid #fff}
-.card.care-list{padding-top:0;padding-bottom:0}
+.card.care-card{padding:0 16px;margin-bottom:8px}   /* строка расписания и выполненной практики — своя карточка (21.11.2026) */
 .care-row{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 0;cursor:pointer}
 .care-row+.care-row{border-top:1px solid rgba(255,255,255,.18)}
 .care-row:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:12px}
@@ -206,5 +206,3 @@ body.wheel-editing.now-dirty #fab{visibility:visible}
 .care-form .hs-wheel-wrap>.hs-field-title{display:block;margin:0 0 8px;font-size:14px;font-weight:600;color:inherit;text-align:left}
 /* 21.11.2026 (Астамур): кружки дней недели не липнут к полю «Практика» над ними; барабан длительности — отступ, как у полей */
 .care-sheet-form .care-days{margin:16px 0 2px}
-.care-sheet-form .hf-drum{margin-top:16px}
-.care-form .hf-drum-label{font-size:16px;font-weight:600}

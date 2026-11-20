@@ -1552,6 +1552,25 @@ body.hs-sheet-open{overflow:hidden}
    тоже, и сразу везде»). Низ листа — с запасом под меню. Страница на весь экран (вход) меню по-прежнему закрывает. */
 body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!important}
 .hs-page-sheet>.hs-scroll{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+/* Барабан Happy (shared/happy-drum.js) — решения Астамура 21.11.2026 по макету «Day · Осознанность»:
+   две колонки, подпись над своим барабаном, длительность справа (один барабан — тоже справа);
+   три строки, выбранная — на светлой полосе без рамки, как в iPhone. — Claude · 21.11.2026 */
+.hf-drum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0 0}
+.hf-drum-cell{display:flex;flex-direction:column;min-width:0}
+.hf-drum-cap{display:block;margin:0 0 6px;text-align:center;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap}
+.hf-drum-group{position:relative;display:flex;align-items:stretch;justify-content:center;gap:2px;height:132px;
+ -webkit-mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent);mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent)}
+.hf-drum-band{position:absolute;left:0;right:0;top:44px;height:44px;border-radius:999px;background:var(--hf-band,rgba(255,255,255,.22));pointer-events:none}
+.hf-drum-col{position:relative;width:52px;height:132px;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;
+ -webkit-overflow-scrolling:touch;touch-action:pan-y;outline:0;cursor:ns-resize}
+.hf-drum-col::-webkit-scrollbar{display:none}
+.hf-drum-col:focus-visible{outline:2px solid #fff;outline-offset:-2px;border-radius:12px}
+.hf-drum-pad{height:44px}
+.hf-drum-item{height:44px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-size:28px;font-weight:400;line-height:1;
+ font-variant-numeric:tabular-nums;white-space:nowrap;transform-origin:center;will-change:transform,opacity;cursor:pointer}
+.hf-drum-item.hf-on{font-weight:600}
+.hf-drum-sep{position:relative;align-self:center;font-size:28px;font-weight:600;line-height:1;margin-top:-4px}
+@media (prefers-reduced-motion:reduce){.hf-drum-col{scroll-behavior:auto}}
 /* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
  * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
  * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
@@ -1912,7 +1931,7 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .toast,.hs-toast{background:rgba(12,60,110,.92)!important}
 .toast button{color:#8EF3DD!important;opacity:1!important;text-decoration:none!important}
 /* п. 31 (Астамур, 21.11.2026: «без рамок»): в форме расписания нет линии под шапкой и рамок групп — поля стоят прямо на листе;
- *       «Дата и время» — высота 48, как остальные поля. Строка «Время телефона · …» и «Другой часовой пояс» — по центру. */
+ *       «Дата и время» — высота 48, как остальные поля. Строка «Время телефона · …» и «Выбрать другой часовой пояс» — по центру. */
 .sheet .plan-fields{border-top:0!important}
 .sheet .plan-group{border:0!important;background:none!important;box-shadow:none!important;padding:0!important;margin:0 0 14px!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important}
@@ -1920,6 +1939,9 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .sheet .ru-date>input,.sheet .ru-date{height:48px!important}
 .sheet .plan-zone-note{margin-bottom:0!important;text-align:center!important;justify-content:center!important;flex-wrap:wrap!important}
 .sheet .plan-zone-note .text-btn{margin-left:auto;margin-right:auto}
+
+/* Астамур 21.11.2026: длительность в «Расписании» — общий барабан 00:00 (shared/happy-drum.js), как в Day */
+.plan-details>.hf-drum{margin:8px 0 6px}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
@@ -2174,6 +2196,61 @@ function clearSportMetricError(input){input?.removeAttribute?.('aria-invalid');i
 /* Время в полях — минуты:секунды без сотых: 0:58, 2:00, 12:34 (пункт 7, Астамур 15.11.2026). */
 function sportDurationValue(seconds){const whole=Math.floor(Math.max(0,Number(seconds)||0)+1e-7);return Math.floor(whole/60)+':'+String(whole%60).padStart(2,'0');}
 document.addEventListener('input',event=>clearSportMetricError(event.target));
+
+/* Барабан Happy — колёса с крупными цифрами, как время на iPhone. Один кусок на Day и Sport (AGENTS.md, раздел 4).
+   Решения Астамура 21.11.2026 (макет «Day · Осознанность» в Claude Design):
+   — время и длительность в одном виде 00:00: часы и минуты (длительность бывает больше часа);
+   — видно три строки: выбранная посередине, по одной сверху и снизу — мельче и бледнее;
+   — выбранная строка лежит на светлой полосе без рамки, как в iPhone; у каждого барабана своя полоса;
+   — барабаны стоят в две колонки, подпись — над своим барабаном; длительность всегда справа,
+     и если барабан один, он тоже в правой колонке.
+   Колесо крутится пальцем с разгоном (родная прокрутка с защёлкой на строке), нажатие на строку — выбрать её,
+   стрелки вверх-вниз — на шаг.
+
+   HappyFields.drum(host,{groups:[{label,cols:[{name,label,options:[{v,t}],value}|{sep:':'}]}],onChange(vals)})
+   → {get(name), set(name,v)}. Готовые колёса: HappyFields.drumTimeCols('08:30') → h, m; HappyFields.drumDurationCols(75) → dh, dm. Day подключает рядом shared/happy-fields.js (поля), Sport — только этот файл.
+   — Claude · 21.11.2026 */
+(function(root){
+ 'use strict';
+ if(!root.document)return;
+ const ROW=44,VIEW=3*ROW;
+ const escH=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ function drum(host,o){
+  const vals={},cols=[],groups=o.groups.length===1?[null,o.groups[0]]:o.groups;
+  host.classList.add('hf-drum');
+  host.innerHTML=groups.map(g=>!g?'<div class="hf-drum-cell" aria-hidden="true"></div>':
+   '<div class="hf-drum-cell"><span class="hf-drum-cap" aria-hidden="true">'+escH(g.label||'')+'</span>'+
+   '<div class="hf-drum-group"><div class="hf-drum-band" aria-hidden="true"></div>'+g.cols.map(c=>
+    c.sep?'<span class="hf-drum-sep" aria-hidden="true">'+escH(c.sep)+'</span>':
+    '<div class="hf-drum-col" role="listbox" tabindex="0" aria-label="'+escH(c.label||'')+'" data-name="'+escH(c.name)+'">'+
+     '<div class="hf-drum-pad"></div>'+c.options.map((x,i)=>'<div class="hf-drum-item" role="option" data-i="'+i+'">'+escH(x.t)+'</div>').join('')+'<div class="hf-drum-pad"></div></div>'
+   ).join('')+'</div></div>').join('');
+  o.groups.forEach(g=>g.cols.forEach(c=>{if(!c.options)return;const el=host.querySelector('[data-name="'+c.name+'"]');
+   const at=Math.max(0,c.options.findIndex(x=>String(x.v)===String(c.value)));vals[c.name]=c.options[at].v;cols.push({c,el,at,frame:0,timer:0});}));
+  /* соседние строки мельче и бледнее — по расстоянию до середины */
+  function paint(k){const mid=k.el.scrollTop+VIEW/2;
+   k.el.querySelectorAll('.hf-drum-item').forEach((n,i)=>{const d=Math.abs(ROW+i*ROW+ROW/2-mid)/ROW;
+    n.style.transform='scale('+(1-Math.min(d,1.5)*.17).toFixed(3)+')';n.style.opacity=String(Math.max(.2,1-Math.min(d,2)*.4).toFixed(2));
+    const on=d<.5;n.classList.toggle('hf-on',on);n.setAttribute('aria-selected',String(on));});}
+  function settle(k){const i=Math.max(0,Math.min(k.c.options.length-1,Math.round(k.el.scrollTop/ROW)));
+   if(Math.abs(k.el.scrollTop-i*ROW)>1)k.el.scrollTo({top:i*ROW,behavior:'smooth'});
+   if(i!==k.at){k.at=i;vals[k.c.name]=k.c.options[i].v;if(o.onChange)o.onChange(Object.assign({},vals));}}
+  cols.forEach(k=>{
+   k.el.scrollTop=k.at*ROW;paint(k);
+   k.el.addEventListener('scroll',()=>{if(!k.frame)k.frame=requestAnimationFrame(()=>{k.frame=0;paint(k)});clearTimeout(k.timer);k.timer=setTimeout(()=>settle(k),110);},{passive:true});
+   k.el.addEventListener('click',e=>{const n=e.target.closest('.hf-drum-item');if(n)k.el.scrollTo({top:+n.dataset.i*ROW,behavior:'smooth'});});
+   k.el.addEventListener('keydown',e=>{if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return;e.preventDefault();k.el.scrollBy({top:e.key==='ArrowDown'?ROW:-ROW,behavior:'smooth'});});
+  });
+  /* лист открывается с анимацией: место колёс ставится ещё раз, когда разметка уже на экране */
+  requestAnimationFrame(()=>cols.forEach(k=>{k.el.scrollTop=k.at*ROW;paint(k);}));
+  return {get:name=>vals[name],set(name,v){const k=cols.find(x=>x.c.name===name);if(!k)return;const i=k.c.options.findIndex(x=>String(x.v)===String(v));if(i<0)return;k.at=i;vals[name]=k.c.options[i].v;k.el.scrollTop=i*ROW;paint(k);}};
+ }
+ /* готовые колёса: время 00:00 и длительность 00:00 (часы и минуты; длительность в минутах) */
+ const pad2=n=>String(n).padStart(2,'0'),HOURS=Array.from({length:24},(_,i)=>({v:i,t:pad2(i)})),MINS=Array.from({length:60},(_,i)=>({v:i,t:pad2(i)}));
+ const drumTimeCols=t=>[{name:'h',label:'Часы',options:HOURS,value:+String(t||'00:00').slice(0,2)},{sep:':'},{name:'m',label:'Минуты',options:MINS,value:+String(t||'00:00').slice(3,5)}];
+ const drumDurationCols=min=>{const m=Math.max(0,Math.round(Number(min)||0));return [{name:'dh',label:'Часы длительности',options:HOURS,value:Math.min(23,Math.floor(m/60))},{sep:':'},{name:'dm',label:'Минуты длительности',options:MINS,value:m%60}];};
+ root.HappyFields=Object.assign(root.HappyFields||{},{drum,drumTimeCols,drumDurationCols});
+})(globalThis);
 
 /* Sport 42–43 · запись и чтение дневника через общий модуль (документы — sport-docs.js, запуск — sport-boot.js).
  *
@@ -2587,7 +2664,7 @@ function templateSchedule(id){return state.schedules.find(s=>s.templateId===id&&
 /* Lab 10.11.2026 17:05: «Добавить в расписание» laid out like a calendar event (Apple Calendar, Google Calendar):
    1) when — one-time or by weekdays, date and time side by side; the time zone is the phone's and stays out of view
       (like Apple Calendar, where a per-event zone appears only with Time Zone Override) — one quiet line names it and
-      «Другой часовой пояс» opens the field for trips to camps or competitions;
+      «Выбрать другой часовой пояс» opens the field for trips to camps or competitions;
    2) details — duration and reminder as compact rows, then an optional note;
    3) actions — add to the calendar, share.
    Field names and values are unchanged, so saving and the old schedules work as before. */
@@ -2601,15 +2678,22 @@ function scheduleFields(s){
  // Астамур 18.11.2026 (скриншот с телефона): дата и время рядом налезали друг на друга — теперь одно поле «Дата и время».
  +`<label class="field schedule-when"><span class="plan-date-label">${s?.mode==='weekly'?'С даты · время':'Дата и время'}</span><input type="datetime-local" name="scheduleWhen" value="${esc(date)}T${esc(s?.time||'18:00')}" required></label>`
  +`<label class="field schedule-end" ${s?.mode==='weekly'?'':'hidden'}>До даты · необязательно<input type="date" name="scheduleEnd" value="${esc(s?.endDate||'')}"></label>`
- +`<p class="plan-zone-note">${otherZone?'Время по поясу '+esc(planZoneName(zone)):'Время телефона · '+esc(planZoneName(phoneZone))}${otherZone?'':' <button type="button" class="text-btn" data-action="plan-zone">Другой часовой пояс</button>'}</p>`
+ +`<p class="plan-zone-note">${otherZone?'Время по поясу '+esc(planZoneName(zone)):'Время телефона · '+esc(planZoneName(phoneZone))}${otherZone?'':' <button type="button" class="text-btn" data-action="plan-zone">Выбрать другой часовой пояс</button>'}</p>`
  +`<label class="field plan-zone" ${otherZone?'':'hidden'}>Часовой пояс<input name="scheduleZone" required value="${esc(zone)}" list="schedule-zones" autocomplete="off"></label><datalist id="schedule-zones">${[phoneZone,'Europe/Moscow','Europe/Berlin','Asia/Tbilisi','UTC'].filter((x,i,a)=>a.indexOf(x)===i).map(x=>`<option value="${x}">`).join('')}</datalist></div></div>`
- +`<div class="plan-group plan-details"><label class="plan-row">Длительность${sportMetricInput(`type="number" name="planMinutes" min="1" max="1440" value="${s?.minutes||60}" aria-label="Длительность плана, минут"`,'мин')}</label>`
+ // Астамур 21.11.2026: длительность — тот же барабан 00:00, что в Day (shared/happy-drum.js): справа, подпись сверху.
+ +`<div class="plan-group plan-details"><div class="plan-drum" data-plan-drum></div><input type="hidden" name="planMinutes" value="${s?.minutes||60}">`
  // Аудит 20.11.2026, п. 3 (Астамур): «Напоминание» одной ширины с «Длительностью», подписи короче («за 30 мин»).
  +`<label class="plan-row">Напоминание<select name="planReminder">${[[-1,'нет'],[0,'в начале'],[15,'за 15 мин'],[30,'за 30 мин'],[60,'за час'],[1440,'за день']].map(([v,n])=>`<option value="${v}" ${(s?.reminder??30)===v?'selected':''}>${n}</option>`).join('')}</select></label>`
  +`<label class="field plan-note">Заметка<textarea name="planNote" maxlength="2000" rows="2" placeholder="Например: взять резинку">${esc(s?.note||'')}</textarea></label></div>`
  // «В календарь» — на всю ширину; «Поделиться» — значок справа от названия листа (openScheduleSheet), Астамур 18.11.2026.
  +`<div class="plan-share plan-share-one"><button class="button" type="submit" data-plan-export="calendar">${icon('calendar-blank')} В календарь</button></div>`
  +`<p class="fineprint">Сохранит расписание и откроет файл для календаря телефона. ${s?`<button type="button" class="text-btn plan-remove" data-action="plan-remove">Убрать из расписания</button>`:''}</p></section><div id="plan-error" class="form-error" role="alert"></div>`;
+}
+/* Длительность в расписании — барабан 00:00, как в Day: часы и минуты, пишет в скрытое поле planMinutes (21.11.2026) */
+function mountPlanDrum(form){
+ const host=form.querySelector('[data-plan-drum]'),input=form.elements.planMinutes,HF=globalThis.HappyFields;
+ if(!host||!input||!HF?.drum)return;
+ HF.drum(host,{groups:[{label:'Длительность',cols:HF.drumDurationCols(input.value)}],onChange:v=>{input.value=v.dh*60+v.dm;}});
 }
 function applyPlanMode(form){const mode=form.querySelector('[name=scheduleMode]:checked')?.value||'none';form.querySelector('#plan-inputs').hidden=mode==='none';form.querySelector('.schedule-weekdays').hidden=mode!=='weekly';form.querySelector('.schedule-end').hidden=mode!=='weekly';const label=form.querySelector('.plan-date-label');if(label)label.textContent=mode==='weekly'?'С даты · время':'Дата и время';}
 function setPlanMode(form,mode){const input=form.querySelector(`[name=scheduleMode][value="${mode}"]`);if(input)input.checked=true;applyPlanMode(form);}
@@ -2618,7 +2702,7 @@ function setPlanMode(form,mode){const input=form.querySelector(`[name=scheduleMo
 function openScheduleSheet(id){
  const t=templates().find(t=>t.id===id);if(!t)return;const s=templateSchedule(id);
  openSheet('Расписание',`<form id="schedule-form" data-id="${esc(id)}" ${s?`data-schedule-id="${esc(s.id)}"`:''}><p class="sheet-info">${esc(t.title)}</p>${scheduleFields(s)}</form>`);
- const form=$('#schedule-form'),sheet=form?.closest('.sheet');if(!form)return;if(!s)setPlanMode(form,'once');
+ const form=$('#schedule-form'),sheet=form?.closest('.sheet');if(!form)return;if(!s)setPlanMode(form,'once');mountPlanDrum(form);
  // Аудит единообразия 18.11.2026: «Сохранить» внизу, после полей, а не ✓ вверху.
  if(!form.querySelector('.schedule-save'))form.insertAdjacentHTML('beforeend','<button type="submit" class="button primary schedule-save">Сохранить</button>');
  // «Поделиться» — значок в шапке, напротив названия: сохраняет расписание и открывает «Поделиться» телефона.

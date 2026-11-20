@@ -247,6 +247,22 @@
       ]
     },
     {
+      "name": "happy-drum.js",
+      "reference": "shared/happy-drum.js",
+      "apps": [
+        "day",
+        "sport"
+      ]
+    },
+    {
+      "name": "happy-drum.css",
+      "reference": "shared/happy-drum.css",
+      "apps": [
+        "day",
+        "sport"
+      ]
+    },
+    {
       "name": "happy-design.css",
       "reference": "shared/happy-design.css",
       "apps": [

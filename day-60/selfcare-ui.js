@@ -319,6 +319,8 @@ const WD=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
 const PLUS='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 const swDel=attr=>'<button class="swDel" '+attr+' hidden tabindex="-1" aria-hidden="true"></button>';
 function planWhen(x){return x.kind==='once'?ruDate(x.date):[1,2,3,4,5,6,0].filter(i=>(x.days||[]).includes(i)).map(i=>WD[i].toLowerCase()).join(', ');}
+/* 21.11.2026 (Астамур): в «Расписании» и «Выполнено» каждая строка — своя карточка, как в Sport и в Настройках Day;
+   свайп влево уводит карточку целиком, «Убрать» — отдельная пилюля справа (row-swipe.js). */
 /* Аудит Day 20.11.2026 (Астамур). Расписание практик живёт здесь, на странице «Осознанность», а не в Настройках (п. 32):
    «+» — новая практика листом снизу; нажал на строку — тот же лист с её полями; свайп влево — убрать с сегодняшнего дня.
    Записанную практику можно поправить и удалить (п. 28): нажал — лист с полями, «Сохранить» и красная «Удалить»; свайп — удалить.
@@ -327,9 +329,9 @@ function renderMind(){const c=data(),goal=C.mindGoal(c,curDate),minutes=C.mindMi
  const plans=c.schedule.filter(x=>x.enabled!==false&&(x.kind!=='once'||x.date>=todayISO())).sort((a,b)=>a.time.localeCompare(b.time));
  block('mind').innerHTML=header('Осознанность')+'<div class="card"><div class="care-stat">'+num(minutes)+(goal.value>0?' / '+num(goal.value):'')+' мин</div><p class="care-help">'+(goal.source==='schedule'?(goal.value?'Полный круг — сумма длительностей практик в расписании на этот день.':'На этот день практики не запланированы. Можно заниматься без цели.'):(goal.value?'Полный круг — твоя личная цель.':'Практики за выбранный день.'))+'</p></div>'+
  '<div class="eyebrow care-head-add"><span>Расписание</span><button type="button" class="care-add" data-care-plan-new aria-label="Добавить практику в расписание">'+PLUS+'</button></div>'+
- (plans.length?'<div class="card care-list">'+plans.map(p=>'<div class="care-row swRow" data-care-plan-edit="'+h(p.id)+'" role="button" tabindex="0"><span class="care-row-t"><b>'+h(p.time)+' · '+h(p.name)+'</b><small>'+num(p.minutes)+' мин · '+h(planWhen(p))+'</small></span>'+(today.has(p.id)?'<button type="button" class="mini" data-care-practice="'+h(p.id)+'">Отметить</button>':'')+swDel('data-care-remove-plan="'+h(p.id)+'"')+'</div>').join('')+'</div>':empty('Расписание пустое. Добавить практику — «+».'))+
+ (plans.length?'<div class="care-cards">'+plans.map(p=>'<div class="card care-card"><div class="care-row swRow" data-care-plan-edit="'+h(p.id)+'" role="button" tabindex="0"><span class="care-row-t"><b>'+h(p.time)+' · '+h(p.name)+'</b><small>'+num(p.minutes)+' мин · '+h(planWhen(p))+'</small></span>'+(today.has(p.id)?'<button type="button" class="mini" data-care-practice="'+h(p.id)+'">Отметить</button>':'')+swDel('data-care-remove-plan="'+h(p.id)+'"')+'</div></div>').join('')+'</div>':empty('Расписание пустое. Добавить практику — «+».'))+
  '<form id="carePracticeForm" class="card care-form"><h2>Записать практику</h2><input type="hidden" name="planId" value=""><label for="carePracticeName">Название</label><input name="name" id="carePracticeName" type="text" placeholder="Медитация, дыхание…" maxlength="100"><div data-drum></div><input type="hidden" name="time" value="'+nowHM()+'"><input type="hidden" name="minutes" value=""><p class="care-help">План сам по себе не засчитывается. В дугу попадают сохранённые минуты практики и импортированные сессии осознанности; время просмотра приложения не учитывается.</p><button class="btn solid care-submit" type="submit">Сохранить практику</button></form>'+
- '<div class="eyebrow">Выполнено</div>'+(logs.length?'<div class="card care-list">'+logs.slice().reverse().map(x=>'<div class="care-row swRow" data-care-log-edit="'+h(x.id)+'" role="button" tabindex="0"><span class="care-row-t"><b>'+h(x.time)+' · '+h(x.name)+'</b><small>'+num(x.minutes)+' мин</small></span>'+swDel('data-care-log-del="'+h(x.id)+'"')+'</div>').join('')+'</div>':empty('За этот день практик нет.'));
+ '<div class="eyebrow">Выполнено</div>'+(logs.length?'<div class="care-cards">'+logs.slice().reverse().map(x=>'<div class="card care-card"><div class="care-row swRow" data-care-log-edit="'+h(x.id)+'" role="button" tabindex="0"><span class="care-row-t"><b>'+h(x.time)+' · '+h(x.name)+'</b><small>'+num(x.minutes)+' мин</small></span>'+swDel('data-care-log-del="'+h(x.id)+'"')+'</div></div>').join('')+'</div>':empty('За этот день практик нет.'));
  const pf=$('carePracticeForm');if(pf)pf._drum=timeDurDrum(pf,pf.elements.time.value,0);
 }
 /* Лист снизу для расписания и практики: ручка, затемнение позади; закрыть — жест вниз, нажатие на ручку,
@@ -343,11 +345,10 @@ function careSheet(html){
 function closeSheet(){const w=$('careSheet');if(!w||!w.classList.contains('on'))return false;w.classList.remove('on');if(w.contains(document.activeElement))document.activeElement.blur();return true;}
 /* Барабан для времени, даты и минут (Астамур 21.11.2026: «как в iPhone — большие цифры, карусель вертикальная») */
 const pad2=n=>String(n).padStart(2,'0');
-const HOURS=Array.from({length:24},(_,i)=>({v:i,t:pad2(i)})),MINS=Array.from({length:60},(_,i)=>({v:i,t:pad2(i)}));
-/* время и длительность — в одном виде 00:00: часы и минуты (длительность бывает больше часа; Астамур 21.11.2026) */
-const timeCols=(t)=>[{name:'h',label:'Часы',options:HOURS,value:+String(t||'00:00').slice(0,2)},{sep:':'},{name:'m',label:'Минуты',options:MINS,value:+String(t||'00:00').slice(3,5)}];
-const durCols=(min)=>{const m=Math.round(Number(min)||0);return [{name:'dh',label:'Часы длительности',options:HOURS,value:Math.min(23,Math.floor(m/60))},{sep:':'},{name:'dm',label:'Минуты длительности',options:MINS,value:m%60}];};
-/* время и длительность рядом — два барабана, у каждого своя пилюля; пишут в скрытые поля формы time и minutes */
+/* время и длительность — в одном виде 00:00: часы и минуты (длительность бывает больше часа; Астамур 21.11.2026);
+   колёса — из общего shared/happy-drum.js, такие же в Sport */
+const timeCols=t=>HF.drumTimeCols(t),durCols=min=>HF.drumDurationCols(min);
+/* время и длительность рядом — два барабана, у каждого своя полоса; пишут в скрытые поля формы time и minutes */
 function timeDurDrum(f,time,minutes){
  return HF.drum(f.querySelector('[data-drum]'),{groups:[{label:'Время',cols:timeCols(time)},{label:'Длительность',cols:durCols(minutes)}],
   onChange:v=>{const t=pad2(v.h)+':'+pad2(v.m),d=v.dh*60+v.dm;if(f.elements.time.value!==t)f.elements.time.value=t;
@@ -367,8 +368,8 @@ function planSheet(id){
   '<div data-drum></div><input type="hidden" name="minutes" value="'+(x?x.minutes:10)+'">'+
   '<button type="submit" class="btn solid care-submit">Сохранить</button>'+(x?'<button type="button" class="btn care-danger" data-care-remove-plan="'+h(x.id)+'">Убрать из расписания</button>':'')+'</form>');
  const f=$('carePlanSheet');
- /* длительность одна в строке — слово «Длительность» слева, барабан 00:00 посередине (Астамур 21.11.2026) */
- HF.drum(f.querySelector('[data-drum]'),{inline:true,groups:[{label:'Длительность',cols:durCols(x?x.minutes:10)}],onChange:v=>{f.elements.minutes.value=v.dh*60+v.dm;}});
+ /* длительность всегда справа, подпись сверху; один барабан — тоже в правой колонке (Астамур 21.11.2026, макет) */
+ HF.drum(f.querySelector('[data-drum]'),{groups:[{label:'Длительность',cols:durCols(x?x.minutes:10)}],onChange:v=>{f.elements.minutes.value=v.dh*60+v.dm;}});
 }
 function practiceSheet(id){
  const x=C.readDay(DB,curDate).practices.find(p=>p.id===id);if(!x)return;

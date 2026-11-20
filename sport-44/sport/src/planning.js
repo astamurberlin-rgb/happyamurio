@@ -8,7 +8,7 @@ function templateSchedule(id){return state.schedules.find(s=>s.templateId===id&&
 /* Lab 10.11.2026 17:05: «Добавить в расписание» laid out like a calendar event (Apple Calendar, Google Calendar):
    1) when — one-time or by weekdays, date and time side by side; the time zone is the phone's and stays out of view
       (like Apple Calendar, where a per-event zone appears only with Time Zone Override) — one quiet line names it and
-      «Другой часовой пояс» opens the field for trips to camps or competitions;
+      «Выбрать другой часовой пояс» opens the field for trips to camps or competitions;
    2) details — duration and reminder as compact rows, then an optional note;
    3) actions — add to the calendar, share.
    Field names and values are unchanged, so saving and the old schedules work as before. */
@@ -22,15 +22,22 @@ function scheduleFields(s){
  // Астамур 18.11.2026 (скриншот с телефона): дата и время рядом налезали друг на друга — теперь одно поле «Дата и время».
  +`<label class="field schedule-when"><span class="plan-date-label">${s?.mode==='weekly'?'С даты · время':'Дата и время'}</span><input type="datetime-local" name="scheduleWhen" value="${esc(date)}T${esc(s?.time||'18:00')}" required></label>`
  +`<label class="field schedule-end" ${s?.mode==='weekly'?'':'hidden'}>До даты · необязательно<input type="date" name="scheduleEnd" value="${esc(s?.endDate||'')}"></label>`
- +`<p class="plan-zone-note">${otherZone?'Время по поясу '+esc(planZoneName(zone)):'Время телефона · '+esc(planZoneName(phoneZone))}${otherZone?'':' <button type="button" class="text-btn" data-action="plan-zone">Другой часовой пояс</button>'}</p>`
+ +`<p class="plan-zone-note">${otherZone?'Время по поясу '+esc(planZoneName(zone)):'Время телефона · '+esc(planZoneName(phoneZone))}${otherZone?'':' <button type="button" class="text-btn" data-action="plan-zone">Выбрать другой часовой пояс</button>'}</p>`
  +`<label class="field plan-zone" ${otherZone?'':'hidden'}>Часовой пояс<input name="scheduleZone" required value="${esc(zone)}" list="schedule-zones" autocomplete="off"></label><datalist id="schedule-zones">${[phoneZone,'Europe/Moscow','Europe/Berlin','Asia/Tbilisi','UTC'].filter((x,i,a)=>a.indexOf(x)===i).map(x=>`<option value="${x}">`).join('')}</datalist></div></div>`
- +`<div class="plan-group plan-details"><label class="plan-row">Длительность${sportMetricInput(`type="number" name="planMinutes" min="1" max="1440" value="${s?.minutes||60}" aria-label="Длительность плана, минут"`,'мин')}</label>`
+ // Астамур 21.11.2026: длительность — тот же барабан 00:00, что в Day (shared/happy-drum.js): справа, подпись сверху.
+ +`<div class="plan-group plan-details"><div class="plan-drum" data-plan-drum></div><input type="hidden" name="planMinutes" value="${s?.minutes||60}">`
  // Аудит 20.11.2026, п. 3 (Астамур): «Напоминание» одной ширины с «Длительностью», подписи короче («за 30 мин»).
  +`<label class="plan-row">Напоминание<select name="planReminder">${[[-1,'нет'],[0,'в начале'],[15,'за 15 мин'],[30,'за 30 мин'],[60,'за час'],[1440,'за день']].map(([v,n])=>`<option value="${v}" ${(s?.reminder??30)===v?'selected':''}>${n}</option>`).join('')}</select></label>`
  +`<label class="field plan-note">Заметка<textarea name="planNote" maxlength="2000" rows="2" placeholder="Например: взять резинку">${esc(s?.note||'')}</textarea></label></div>`
  // «В календарь» — на всю ширину; «Поделиться» — значок справа от названия листа (openScheduleSheet), Астамур 18.11.2026.
  +`<div class="plan-share plan-share-one"><button class="button" type="submit" data-plan-export="calendar">${icon('calendar-blank')} В календарь</button></div>`
  +`<p class="fineprint">Сохранит расписание и откроет файл для календаря телефона. ${s?`<button type="button" class="text-btn plan-remove" data-action="plan-remove">Убрать из расписания</button>`:''}</p></section><div id="plan-error" class="form-error" role="alert"></div>`;
+}
+/* Длительность в расписании — барабан 00:00, как в Day: часы и минуты, пишет в скрытое поле planMinutes (21.11.2026) */
+function mountPlanDrum(form){
+ const host=form.querySelector('[data-plan-drum]'),input=form.elements.planMinutes,HF=globalThis.HappyFields;
+ if(!host||!input||!HF?.drum)return;
+ HF.drum(host,{groups:[{label:'Длительность',cols:HF.drumDurationCols(input.value)}],onChange:v=>{input.value=v.dh*60+v.dm;}});
 }
 function applyPlanMode(form){const mode=form.querySelector('[name=scheduleMode]:checked')?.value||'none';form.querySelector('#plan-inputs').hidden=mode==='none';form.querySelector('.schedule-weekdays').hidden=mode!=='weekly';form.querySelector('.schedule-end').hidden=mode!=='weekly';const label=form.querySelector('.plan-date-label');if(label)label.textContent=mode==='weekly'?'С даты · время':'Дата и время';}
 function setPlanMode(form,mode){const input=form.querySelector(`[name=scheduleMode][value="${mode}"]`);if(input)input.checked=true;applyPlanMode(form);}
@@ -39,7 +46,7 @@ function setPlanMode(form,mode){const input=form.querySelector(`[name=scheduleMo
 function openScheduleSheet(id){
  const t=templates().find(t=>t.id===id);if(!t)return;const s=templateSchedule(id);
  openSheet('Расписание',`<form id="schedule-form" data-id="${esc(id)}" ${s?`data-schedule-id="${esc(s.id)}"`:''}><p class="sheet-info">${esc(t.title)}</p>${scheduleFields(s)}</form>`);
- const form=$('#schedule-form'),sheet=form?.closest('.sheet');if(!form)return;if(!s)setPlanMode(form,'once');
+ const form=$('#schedule-form'),sheet=form?.closest('.sheet');if(!form)return;if(!s)setPlanMode(form,'once');mountPlanDrum(form);
  // Аудит единообразия 18.11.2026: «Сохранить» внизу, после полей, а не ✓ вверху.
  if(!form.querySelector('.schedule-save'))form.insertAdjacentHTML('beforeend','<button type="submit" class="button primary schedule-save">Сохранить</button>');
  // «Поделиться» — значок в шапке, напротив названия: сохраняет расписание и открывает «Поделиться» телефона.

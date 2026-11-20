@@ -469,6 +469,11 @@ body.loading .app,body.loading .dock{opacity:0}
 .swRow::after,.swipeInner::after{content:'Убрать';position:absolute;right:0;top:6px;bottom:6px;display:grid;place-items:center;padding:0 16px;
   border-radius:999px;background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
 .swDel{display:none}
+/* 21.11.2026 (Астамур): строка в своей рамке — карточка Настроек — уезжает вся, вместе с рамкой; «Убрать» — отдельная
+   пилюля справа от неё, в освободившемся месте (row-swipe.js) */
+.swPill{position:absolute;left:calc(100% + 8px);height:44px;width:0;display:grid;place-items:center;overflow:hidden;
+  border-radius:999px;background:#ff6b78;color:#fff;font-size:14px;white-space:nowrap;pointer-events:none}
+.swPill>b{font-weight:700;opacity:var(--so,0)}
 .swipeInner{display:flex;align-items:center;gap:8px;padding:12px 13px}
 .swipeInner .nm{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .swipeInner .nm b{display:block;font-size:16px;font-weight:600}
@@ -1104,6 +1109,7 @@ a.btn{display:inline-block;text-decoration:none}
 <link rel="stylesheet" href="./shared/happy-screens.css?v=60.9">
 <!-- Аудит Day 20.11.2026: общие поля, общие правила оформления общих экранов и последний слой правил Day -->
 <link rel="stylesheet" href="./shared/happy-fields.css?v=60.9">
+<link rel="stylesheet" href="./shared/happy-drum.css?v=60.9">
 <link rel="stylesheet" href="./shared/happy-design.css?v=60.9">
 <link rel="stylesheet" href="./shared/happy-theme-picker.css?v=60.9">
 <link rel="stylesheet" href="./design-rules.css?v=60.9">
@@ -1450,6 +1456,8 @@ a.btn{display:inline-block;text-decoration:none}
 <script src="./shared/happy-account.js?v=60.9"></script>
 <script src="./shared/happy-input.js?v=60.9"></script>
 <script src="./shared/happy-fields.js?v=60.9"></script>
+<!-- барабан времени и длительности — общий кусок Day и Sport (21.11.2026) -->
+<script src="./shared/happy-drum.js?v=60.9"></script>
 <script src="./shared/happy-store.js?v=60.9"></script>
 <script src="./shared/happy-app-links.js?v=60.9"></script>
 <script src="./shared/happy-sport-summary.js?v=60.9"></script>
