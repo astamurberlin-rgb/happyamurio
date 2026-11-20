@@ -1720,6 +1720,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <article class="card release-card"><h2>Назвал приём или время</h2><ul>
       <li>Запись задним числом («в 10 утра овсянка») встаёт по тем же шагам: бот смотрит на записи периода до неё.</li>
       <li>Назвал приём («на обед…») — бот слушается, шаги выше не работают.</li>
+      <li>Нажал кнопку приёма вверху диалога «Что съел» — то же, что назвать приём; действует, пока диалог открыт. Кнопку не трогал — она просто показывает приём по времени, а выбирает бот.</li>
       <li>Назвал приём без времени, а этот приём уже был больше 1,5 часа назад, — время его последней записи.</li>
       <li>Назвал приём, которого сегодня ещё не было, — время как обычно в этом приёме за последние 7 дней (нужно хотя бы 3 дня). Иначе за 5 часов до следующего приёма или через 5 часов после прошлого. Иначе 09:00, 14:00 или 19:00. Бот пишет: «Время поставил сам».</li>
       <li>Ночью, до 05:00, «на ужин…» без времени — вчерашний ужин.</li>
@@ -1773,7 +1774,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       <li>«Курятина», «индюшатина», «бурак», «синенькие» — курица, индейка, свёкла, баклажаны. Часть и приготовление остаются: бедро не становится грудкой.</li>
       <li>«Вернее», «точнее», «то есть», «не сто, а сто пятьдесят» — новое заменяет сказанное, а не складывается.</li>
       <li>«Без ножек», «без кочерыжки», «уже очищенный» — вес записывается как назван, ничего не вычитается.</li>
-      <li>Общее слово без уточнения — сначала то, что ты записывал последним. Если такого ещё не было — привычный вариант: сыр — гауда, рис и гречка — варёные, масло — сливочное, колбаса — варёная, вино — красное сухое, пиво — светлое, орехи — грецкие, грибы — шампиньоны, кимчи — из пекинской капусты.</li>
+      <li>Общее слово без уточнения — сначала то, что у тебя в избранном: в избранном сулугуни — «сыр» запишется как сулугуни. Нет в избранном — то, что ты записывал последним. Если такого ещё не было — привычный вариант: сыр — гауда, рис и гречка — варёные, масло — сливочное, колбаса — варёная, вино — красное сухое, пиво — светлое, орехи — грецкие, грибы — шампиньоны, кимчи — из пекинской капусты.</li>
       <li>Где привычного варианта нет — «сок», «мясо», «рыба», «рамен» — бот спросит, какой, и предложит варианты кнопками.</li>
       <li>«Нет, гречки 150» после «гречка и масло» — поправится гречка, а не последняя запись.</li>
       <li>«Перепиши: …», «замени на …» — прежняя запись убирается только после того, как записана новая. Новую не понял — прежняя остаётся.</li>
@@ -3510,14 +3511,15 @@ new ResizeObserver(function(){
 }).observe(composer);
 /* два разговора в одной шторке: «Что съел» (еда в дневник) и «Рецепт» (совет или свой рецепт) */
 function newChat(kind){ return kind==='recipe'?{kind:'recipe',msgs:[],draft:{name:'',lines:[]},busy:0,seq:0,shown:[],ask:''}:
-  {kind:'meal',msgs:[],lines:[],src:[],meal:null,section:null,busy:0,seq:0} }
+  {kind:'meal',msgs:[],lines:[],src:[],meal:null,section:null,sectionPicked:false,busy:0,seq:0} }
 var CH={meal:newChat('meal'),recipe:newChat('recipe')}, D=CH.meal;
 document.getElementById('chatMeals').addEventListener('click',function(event){
   var chip=event.target.closest('[data-meal]');
   if(!chip||D.kind!=='meal'||!sec(chip.dataset.meal)) return;
-  D.section=chip.dataset.meal;
+  D.section=chip.dataset.meal; D.sectionPicked=true;   // приём выбрал человек: действует, пока чат открыт
   if(D.bot) D.bot.pend.forEach(function(q){if(!q.line.inbox){q.sec=D.section;q.line.sec=D.section;q.secSet=true}});
   document.getElementById('chatMeals').innerHTML=mealChips(D.section);
+  if(D.bot&&D.bot.ask&&D.bot.ask.kind==='meal'&&typeof MealBot!=='undefined') MealBot.tap('meal:'+D.bot.ask.id+':'+D.section,chip.textContent);   // бот спрашивал «в какой приём?» — это ответ
 });
 function setChat(kind){ D=CH[kind]; document.getElementById('chatTitle').textContent=kind==='recipe'?'Рецепт':'Что съел' }
 /* копия строк для правки: новые ключи, всё остальное как было */
@@ -3593,7 +3595,7 @@ function renderChat(options){
   var meals=document.getElementById('chatMeals');
   meals.hidden=rec;
   if(!rec){
-    if(!sec(D.section)) D.section=autoSec();
+    if(!D.sectionPicked||!sec(D.section)){ D.section=autoSec(); D.sectionPicked=false }   // кнопку не нажимали — подсветка идёт за временем
     meals.innerHTML=mealChips(D.section);
   }
   if(!rec&&D.bot&&D.bot.pend.length)n=D.bot.pend.filter(q=>!q.collapsed).length;
@@ -3706,7 +3708,7 @@ function goMatch(){
 function dropChat(old){ old.msgs.forEach(function(m){ if(m.img) URL.revokeObjectURL(m.img) }) }
 document.getElementById('chatClear').addEventListener('click',function(){
   if(REC) stopRec();
-  var old=D, k=old.kind; CH[k]=newChat(k); if(k==='meal') CH[k].section=old.section; CH[k].seq=old.seq; D=CH[k]; renderChat();
+  var old=D, k=old.kind; CH[k]=newChat(k); if(k==='meal'){ CH[k].section=old.section; CH[k].sectionPicked=old.sectionPicked } CH[k].seq=old.seq; D=CH[k]; renderChat();
   toast('Диалог очищен',function(){ CH[k]=old; if(D.kind===k) D=old; renderChat() });
   setTimeout(function(){ if(D!==old) dropChat(old) },5000);
 });
@@ -4589,7 +4591,8 @@ function hotAt(x,y){ var h=fanAt(x,y); FAN.querySelectorAll('.mlFanB').forEach(f
 function openChat(mode,kind){
   closeFan();
   kind=kind||'meal';
-  if(!chatOpen()||D.kind!==kind){ setChat(kind); FIND=null; SECK=null; SOPEN=null; go('chat') }
+  if(!chatOpen()||D.kind!==kind){ if(!chatOpen()) CH.meal.sectionPicked=false;   // чат открыли заново — приём снова выбирает бот
+    setChat(kind); FIND=null; SECK=null; SOPEN=null; go('chat') }
   if(mode==='voice'||mode==='text'){ TA.focus(); syncInput() }
   else if(mode==='photo') PH.click();
 }

@@ -148,12 +148,6 @@ var MealBot=(function(){
     if(!FOODS[id]&&id.startsWith('bls:')&&BLS_BY[id.slice(4)]) bindTmp(id.slice(4));
     return FOODS[id]||null;
   }
-  function recentDays(){
-    var end=cd(), start=new Date(end+'T12:00:00');
-    start.setDate(start.getDate()-29);
-    var since=isoOf(start);
-    return Object.keys(DB.days||{}).filter(function(d){return since<=d&&d<=end}).sort().reverse();
-  }
   function preparation(text){
     var ws=norm(text).split(/[^а-яa-z0-9]+/).filter(Boolean), forms=statesOf(ws);
     if(/(?:^|\s)на пару(?:$|[\s,])/.test(norm(text))) forms.steam=true;
@@ -184,75 +178,26 @@ var MealBot=(function(){
     if(!Object.keys(forms).length&&(WEIGHED||tokens.some(function(w){return W_FRESH.test(w)}))) forms={raw:true};
     return {forms:forms,eaten:EATEN||!!chunk.cookDish,conditions:blsConds(tokens)};
   }
-  function resolveFamily(l,chunk,words){
-    var word=words.find(function(w){return familyOf(w)}), family=word&&familyOf(word);
-    if(!family||l.pin||l.ofp||chunk.memPart) return false;
-    var context=formContext(chunk), conditions=context.conditions;
-    var modifiers=words.filter(function(w){return w!==word});
-    var specific=modifiers.length||conditions.length||l.fat!=null;
-    // An ingredient of a named dish must not become the family of the whole dish.
-    if(specific&&words[0]!==word&&!words.slice(0,words.indexOf(word)).every(descr)) return false;
-    if(specific&&words.slice(0,words.indexOf(word)).some(function(w){return familyOf(w)})) return false;
-    var choices=new Map(), methods=new Map();
-    function add(food){
-      if(!familyFood(food,word,family)) return null;
-      if(!FOODS[food.id]&&food.id.startsWith('bls:')) bindTmp(food.id.slice(4));
-      var titleWords=norm((food.names&&food.names.ru)||food.n).split(/[^а-яa-z0-9%]+/);
-      if(!covers(food.id,modifiers)) return null;
-      if(l.fat!=null&&Math.abs(food.f-l.fat)>0.3&&!titleWords.includes(String(l.fat))) return null;
-      // For plain “rice”, a preparation was never specified. Offer catalog examples and honor personal choices.
-      var form=family.id==='rice'&&!specific&&!WEIGHED&&!context.eaten&&!Object.keys(context.forms).length?
-        0:compatibleForm(food,context,methods);
-      if(form<0) return null;
-      var key=food.src==='BLS'&&food.b?'bls:'+food.b:food.id;
-      if(!choices.has(key)) choices.set(key,{id:food.id,fav:false,count:0,form:form});
-      return choices.get(key);
-    }
-    var original=[l.fid].concat(l.alts||[]);
-    if(specific){
-      original.forEach(function(id){add(availableFood(id))});
-      if(l.fid&&choices.size&&Array.from(choices.values()).some(function(o){return o.id===l.fid})){
-        l.familyChoice=true;l.bls=0;l.alts=[l.fid];
-        return true;
-      }
-      if(!choices.size) searchLib(l.name).forEach(add);
-    }
-    (DB.favs||[]).forEach(function(id){var option=add(availableFood(id));if(option) option.fav=true});
-    recentDays().forEach(function(d){(DB.days[d].items||[]).forEach(function(x){
-      var option=add(availableFood(x.fid));if(option) option.count++;
-    })});
-    if(!specific){
-      // Common alternatives are suggestions only. They never select a food by themselves.
-      var prompts=family.bread?['хлеб белый пшеничный','хлеб ржаной']:(family.options||[]);
-      if(choices.size<2) prompts.forEach(function(query){
-        var options=searchLib(query);
-        var best=options.find(function(f){return familyFood(f,word,family)&&norm(f.n)===norm(query)})||
-          options.find(function(f){return familyFood(f,word,family)});
-        if(best) add(best);
-      });
-      original.forEach(function(id){add(availableFood(id))});
-      if(choices.size<2) searchLib(word).forEach(add);
-    }
-    var list=Array.from(choices.values());
-    if(!list.length){l.fid=null;l.alts=[];l.st='none';l.noAuto=true;l.bls=0;return true}
-    var bestForm=Math.max.apply(null,list.map(function(o){return o.form}));
-    var suitable=list.filter(function(o){return o.form===bestForm}).sort(function(a,b){return b.count-a.count});
-    var favorites=suitable.filter(function(o){return o.fav});
-    var top=suitable[0],next=suitable[1];
-    var winner=null;
-    if(specific&&suitable.length===1) winner=top;
-    else if(favorites.length===1) winner=favorites[0];
-    else if(top.count>=2&&top.count-(next?next.count:0)>=2) winner=top;
-    l.bls=0;l.noAuto=true;l.familyChoice=true;
-    if(winner){l.fid=winner.id;l.alts=[winner.id];l.st='ok';l.g=gramsFor(l.fid,l.q,l.u)}
-    else {
-      var titles=new Set();
-      l.alts=favorites.concat(suitable).filter(function(o){
-        var title=norm(FOODS[o.id].n);if(titles.has(title))return false;titles.add(title);return true;
-      }).slice(0,2).map(function(o){return o.id});
-      l.fid=null;l.st='pick';
-    }
-    return true;
+  function lastOf(word){
+    var ds=Object.keys(DB.days||{}).sort();
+    for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ var x=it[j]; if(FOODS[x.fid]&&!x.tap&&headOk(x.fid,[word])) return x } }
+    return null;
+  }
+  function lastNamed(re){
+    var ds=Object.keys(DB.days||{}).sort();
+    for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ var x=it[j]; if(FOODS[x.fid]&&!x.tap&&re.test(norm(FOODS[x.fid].n))) return x } }
+    return null;
+  }
+  /* избранное — тоже источник уточнения общего слова (решение Астамура 20.11.2026): в избранном сулугуни, сказано просто «сыр» — пишется сулугуни.
+     Порядок: избранное → последний записанный такой продукт → привычный вариант или вопрос (решения Астамура 17.11.2026).
+     Подходящих в избранном несколько — тот из них, что записан последним; ни один ещё не записан — вопрос «какой?» с ними в кнопках */
+  function favOf(word){
+    var family=familyOf(word); if(!family) return null;
+    var ids=(DB.favs||[]).filter(function(id,i,a){ return a.indexOf(id)===i&&familyFood(availableFood(id),word,family) });
+    if(ids.length<2) return ids.length?{fid:ids[0]}:null;
+    var ds=Object.keys(DB.days||{}).sort();
+    for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ var x=it[j]; if(!x.tap&&ids.indexOf(x.fid)>=0) return {fid:x.fid} } }
+    return {ask:ids.slice(0,3)};
   }
   var GENERIC=/^(мяс(о|а|ом|е)|рыб(а|у|ы|ой)|овощ(и|ей|ами)|фрукт(ы|ов)|ягод(ы|а)|орех(и|ов|а)|сыр(а|ом)?|колбас(а|ы|у)|каш(а|и|у))$/;
   var PREP=/^(с|со|из|в|во|на|без|для|под|по|к|у)$/;
@@ -421,7 +366,7 @@ var MealBot=(function(){
     var q=l.vague||1, g=gramsFor(l.fid,q,u); if(!(g>0)) return false;
     l.q=q; l.u=u; l.g=g; l.explicit=true; l.approx=true; l.usual=true; return true;
   }
-  function needQty(l,choosing){ return !l.explicit&&(choosing||(!isDrink(l.fid)&&!fillUsual(l,true))) }
+  function needQty(l){ return !l.explicit&&!isDrink(l.fid)&&!fillUsual(l,true) }
   function histCount(){ var h={}; Object.keys(DB.days||{}).forEach(function(d){ ((DB.days[d]||{}).items||[]).forEach(function(x){ h[x.fid]=(h[x.fid]||0)+1 }) }); return h }
 
   /* фраза → строки. У каждой строки: ready (можно записать) или ask (о чём спросить) */
@@ -483,6 +428,9 @@ var MealBot=(function(){
               if(/субпродукт|сердц|печен[ьи]|почк|желуд|язык|хвост|фарш|голяшк|паштет|колбас|сосис|котлет/.test(n)) return;   /* мясо из блюда — не субпродукты */ if(!cid) cid=x; same.push(x) });
             return !!cid });
         }
+        /* общее слово («сыр»), уже уточнённое избранным, последней записью или привычным вариантом, — это и есть часть:
+           после сулугуни «омлет с сыром, из них 80 г сыра» — сулугуни, а не первый продукт с названием на «Сыр …» (фета) */
+        if(!cid&&c.generic&&c.fid&&FOODS[c.fid]) cid=c.fid;
         if(!cid){
           /* часть — сама по себе: «сулугуни», а не «Абыста с сулугуни» */
           var cw3=cq.split(' ').filter(Boolean), cp=[c.fid].concat(c.alts||[]); var r3=core(cq).lines[0]; if(r3) cp=cp.concat([r3.fid].concat(r3.alts||[]));
@@ -575,17 +523,38 @@ var MealBot=(function(){
         if(minus){ l.whole=l.g; l.waste=minus; if(minus>=l.g){ l.ask='waste' } else { l.q=Math.round((l.g-minus)*10)/10; l.u='г'; l.g=l.q; l.explicit=true } minus=0 }
         var fw=String(l.name||'').split(' ').filter(Boolean);
         if(SP&&fw.length&&SP.missing(fw[0])){ l.fid=null; l.alts=[]; l.st='none' }   // «пельмени»: настоящих в базе нет — не подставлять похожее по слову
+        /* Meal 33.9: просто «сыр» — последний записанный сыр, иначе гауда; просто «сок» — последний записанный, иначе вопрос (решение Астамура 17.11.2026).
+           Раньше них — избранное: в избранном сулугуни, сказано просто «сыр» — пишется сулугуни (решение Астамура 20.11.2026) */
+        var oneWord=SP&&fw.length===1&&tokensOf(c.text).length===1&&(l.fid||l.alts.length), fv=oneWord&&!l.pin?favOf(fw[0]):null;
+        if(fv&&fv.fid){ l.alts=[fv.fid].concat(l.alts.filter(function(x){ return x!==fv.fid })); l.fid=fv.fid; l.st='ok'; l.bls=0; l.fav=true; l.generic=true; l.g=gramsFor(fv.fid,l.q,l.u) }
+        else if(fv){ l.alts=fv.ask.slice(); l.fid=null; l.st='pick'; l.noAuto=true; l.gdAsk=true; l.bls=0 }
+        var gd=oneWord&&!fv?SP.generic(fw[0]):null;
+        if(gd){
+          var wasG=lastNamed(gd.history), gid=null;
+          if(wasG){ gid=wasG.fid; l.asBefore=true }
+          else if(gd.search){ var rg=parseText(gd.search).lines[0]; gid=rg&&(rg.fid||rg.alts[0])||null; if(gid) l.picked=true }
+          if(gid){ l.alts=[gid].concat(l.alts.filter(function(x){ return x!==gid })); l.fid=gid; l.st='ok'; l.bls=0; l.generic=true; l.g=gramsFor(gid,l.q,l.u) }
+          else if(gd.ask){ var op=gd.options.map(function(sx){ var rf=parseText(sx).lines[0]; return rf&&(rf.fid||rf.alts[0])||null }).filter(function(x,i,a){ return x&&a.indexOf(x)===i });
+            if(EATEN) op=op.map(function(x){ return cookedId(x)||x }).filter(function(x,i,a){ return a.indexOf(x)===i });
+            if(op.length) l.alts=op.concat(l.alts.filter(function(x){ return op.indexOf(x)<0 })).slice(0,3); l.fid=null; l.st='pick'; l.noAuto=true; l.gdAsk=true; l.bls=0 }
+        }
         /* ответ на предложение своими граммами: «соуса 100 г» — тот самый соус, что был предложен, а не первый попавшийся */
         var ofp=OFP&&fw.length===1&&fw[0].length>=4?OFP.filter(function(x){ return FOODS[x.fid]&&norm(FOODS[x.fid].n).split(/[^а-яё]+/).some(function(w){ return w.length>=4&&w.slice(0,4)===norm(fw[0]).slice(0,4) }) })[0]:null;
-        if(ofp){ l.fid=ofp.fid; l.alts=[ofp.fid].concat((l.alts||[]).filter(function(x){ return x!==ofp.fid })); l.st='ok'; l.picked=true; l.bls=0; l.ofp=true; l.g=gramsFor(l.fid,l.q,l.u) }
-        var personal=!ofp&&resolveFamily(l,c,fw);
+        if(ofp){ l.fid=ofp.fid; l.alts=[ofp.fid].concat((l.alts||[]).filter(function(x){ return x!==ofp.fid })); l.st='ok'; l.picked=true; l.bls=0; l.ofp=true; l.fav=false; l.g=gramsFor(l.fid,l.q,l.u) }
+        /* общее слово («торт», «суп», «салат»): был такой раньше — тот же и той же порцией; не было — спросить, какой */
+        if(!ofp&&!fv&&fw.length===1&&GENW.test(fw[0])&&(l.fid||l.alts.length)&&!(gd&&l.fid&&(l.picked||l.asBefore))){
+          var was=lastOf(fw[0]);
+          if(was){ l.fid=was.fid; l.alts=[was.fid].concat(l.alts.filter(function(x){ return x!==was.fid })); l.st='ok'; l.asBefore=true; l.bls=0;
+            if(!l.explicit){ l.q=was.q; l.u=was.u; l.explicit=true; l.sameAs=true } l.g=gramsFor(l.fid,l.q,l.u) }
+          else if(l.alts.length>1){ l.fid=null; l.st='pick'; l.noAuto=true; l.bls=0 }
+        }
         if(l.st==='ok'&&l.bls&&l.alts.length>1){
           hist=hist||histCount();
           if(hist[l.fid]) l.asBefore=true;
           else if(l.alts.some(function(a){ return hist[a] })||(!exactName(l.fid,fw)&&!sameKcal(l.alts))){ l.fid=null; l.st='pick' }
         }
         if(l.st==='pick'&&!l.noAuto&&l.alts.length&&!l.alts.some(function(a){ return related(a,fw) })){ l.st='none'; l.alts=[] }   // предложенное не похоже ни на одно слово
-        if(!personal&&l.st==='pick'&&l.alts.length){
+        if(l.st==='pick'&&l.alts.length&&!l.gdAsk){
           hist=hist||histCount();
           var used=l.alts.filter(function(a){ return hist[a] });
           if(used.length===1&&!WEIGHED){ l.fid=used[0]; l.st='ok'; l.g=gramsFor(l.fid,l.q,l.u); l.asBefore=true }   // «взвесил» — сырое, а не «как раньше»
@@ -598,9 +567,9 @@ var MealBot=(function(){
         }
         if(c.cookDish) l.cookDish=true;
         if(SP){ var e0=EATEN; if(c.cookDish) EATEN=true; methodFix(l,fw); EATEN=e0 }   // блюдо в соусе — готовое, а не сырое
-        if(SP&&!(l.st==='pick'&&l.noAuto)) speechLine(l,c);
+        if(SP) speechLine(l,c);
         if(c.range&&c.range[0]!==c.range[1]) l.range=c.range;
-        if(!(l.noAuto&&l.st==='pick')&&l.st!=='none'&&l.explicit&&l.u==='г'&&l.q<=10&&c.noUnit&&!(c.range&&c.range[0]!==c.range[1])){ l.count=l.q; l.explicit=false;
+        if(l.st!=='none'&&l.explicit&&l.u==='г'&&l.q<=10&&c.noUnit&&!(c.range&&c.range[0]!==c.range[1])){ l.count=l.q; l.explicit=false;
           var dk=l.fid||l.alts[0];
           if(SP&&l.q===Math.round(l.q)&&isDrink(dk)){ var df=FOODS[dk]; l.fid=dk; l.st='ok'; l.q=l.count; l.count=null;   // Meal 33.12
             l.u=Object.keys(df.por||{}).length?defUnit(df):/эспрессо|ристретто/i.test(df.n)?'шот':'чашка'; l.g=gramsFor(dk,l.q,l.u); l.explicit=true }
@@ -692,9 +661,10 @@ var MealBot=(function(){
     return null;
   }
   function methodFix(l,fw){
-    if(!l.fid||l.st!=='ok'||l.familyChoice||l.asBefore||l.cooked||l.said||WEIGHED) return;
+    if(!l.fid||l.st!=='ok'||l.fav||l.asBefore||l.cooked||l.said||WEIGHED) return;
     if(Object.keys(statesOf(fw)).length||fw.some(function(w){ return typeof W_FRESH!=='undefined'&&W_FRESH.test(norm(w)) })){ l.said=true; return }   // «свежая курица» — как «сырая»
-    var was=lastMethod(kindKey(l.fid));
+    var k=kindKey(l.fid), ds=Object.keys(DB.days||{}).sort(), was=null;
+    for(var i=ds.length-1;i>=0&&!was;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0&&!was;j--){ var x=it[j]; if(x.how&&!x.tap&&FOODS[x.fid]&&kindKey(x.fid)===k) was=x } }
     if(was){ var raw0=l.fid; l.asBefore=true;
       if(was.fid!==raw0){ l.fid=was.fid; l.alts=[was.fid,raw0].concat((l.alts||[]).filter(function(a){ return a!==was.fid&&a!==raw0 })); l.picked=true; l.g=gramsFor(l.fid,l.q,l.u) }
       return }
@@ -810,7 +780,7 @@ var MealBot=(function(){
   }
   function whenText(en){
     var S0=sec(en.sec), parts=[];
-    if(S0) parts.push('«'+S0.t+'»');
+    if(S0&&!(en.needMeal&&!en.secSet)) parts.push('«'+S0.t+'»');   // приём ещё спрашивается — в заголовке его нет
     if(en.t) parts.push((en.approx?'около ':'')+en.t);
     if(en.date!==curDate){ var d=new Date(en.date+'T12:00:00'); parts.push(d.getDate()+'.'+pad2(d.getMonth()+1)) }
     return parts.join(' · ');
@@ -1006,7 +976,7 @@ var MealBot=(function(){
       if(!f||!MealSources.available(DB,f))return;
       var line=Object.assign(newPortion(f),{name:f.n,st:'ok',alts:[fid],explicit:true});
       phrase.addOpen=false;
-      commit(S,[{line:line,date:phrase.date,t:phrase.t,tm:phrase.tm,sec:chat.section||phrase.sec,
+      commit(S,[{line:line,date:phrase.date,t:phrase.t,tm:phrase.tm,sec:(chat.sectionPicked&&chat.section)||phrase.sec,
         order:phrase.nextOrder++,phraseId:id,inlineList:true}]);
       renderChat();return;
     }
@@ -1123,7 +1093,7 @@ var MealBot=(function(){
         if(a.en.tap&&a.en.tap.n) return row(a.line,true,'счётчик «'+a.en.tap.c.t+'» +'+a.en.tap.n);
         if(c.undone||!day(a.date).items.includes(a.item))return row(a.line,true);
         var same=day(a.date).items.filter(function(x){ return x.fid===a.item.fid&&x.sec===a.item.sec }), tot=same.reduce(function(s,x){ return s+(x.g||0) },0);
-        var notes=[noteOf(a.line),a.line.tapMiss?'в счётчик «'+a.line.tapMiss.t+'» не пошло: там порция '+portTxt(a.line.tapMiss):'',same.length>1?'всего '+fmt(tot)+' г':'',a.line.sameAs?'как в прошлый раз':a.line.habit?'твоя обычная порция':a.line.asBefore?'как раньше':''].filter(Boolean).join(' · ');
+        var notes=[noteOf(a.line),a.line.tapMiss?'в счётчик «'+a.line.tapMiss.t+'» не пошло: там порция '+portTxt(a.line.tapMiss):'',same.length>1?'всего '+fmt(tot)+' г':'',a.line.fav?'из избранного':'',a.line.sameAs?'как в прошлый раз':a.line.habit?'твоя обычная порция':a.line.asBefore?'как раньше':''].filter(Boolean).join(' · ');
         return savedFoodRow(S,a,c.id)+(notes?'<p class="mlHint">'+esc(notes)+'</p>':'');
       }).join('')+'</div>';
     });
@@ -1213,6 +1183,7 @@ var MealBot=(function(){
     if(l.ask==='meal'){ var grp=S.pend.filter(function(x){ return x.grp&&x.grp===q.grp&&x.line.ask==='meal' }).map(function(x){ return foodName(x.line) });
       return p(esc(cap(grp.join(', ')||foodName(l)))+' за '+esc(q.date.slice(8,10)+'.'+q.date.slice(5,7))+' — в какой приём?')+chips(['am','pm','dn','sn'].filter(function(k){ return sec(k) }).map(function(k){ return ['meal:'+id+':'+k,sec(k).t] })) }
     if(l.ask==='name'){
+      if(q.nameTurn==null) q.nameTurn=S.turn||0;   // на каком сообщении человека вопрос задан впервые
       var heard=q.heard||l.spoken||l.name;
       var unavailable=MealReplacement.catalogMessage();
       if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>';
@@ -1230,7 +1201,7 @@ var MealBot=(function(){
       prefix+='<div id="search-'+id+'" data-replacement-slot="'+id+'" data-optional-search hidden></div>';
     }
     if(l.ask==='pick'){
-      var choices=l.alts.slice(0,l.familyChoice?2:3).map(function(fid,i){return ['pick:'+id+':'+i,FOODS[fid].n]});
+      var choices=l.alts.slice(0,3).map(function(fid,i){return ['pick:'+id+':'+i,FOODS[fid].n]});
       return prefix+'<div data-clarify-controls="'+id+'">'+p('Какой вариант записать?')+chips(choices)+'</div>';
     }
     if(l.ask==='range') return p(esc(foodName(l))+' — сколько граммов?')+chips([['num:'+id+':'+l.range[1],l.range[1]+' г'],['num:'+id+':'+l.range[0],l.range[0]+' г']]);
@@ -1367,7 +1338,9 @@ var MealBot=(function(){
     var a=S.ask, q=a&&a.q; if(!a||S.pend[0]!==q) return null;
     var l=q.line, t=nrm(text).trim();
     if(/^(пропусти|пропустить|не надо|не важно|неважно|забудь)/.test(t)&&(a.kind==='name'||a.kind==='what'||a.kind==='qty'||a.kind==='pick')) return tapDo(S,'skip',a.id);
-    if(a.kind==='name'&&inlinePhrase(S,q)&&!explicitReplacement)return null;
+    /* недостающее в списке: названное сразу следом — ответ, как на сайте («22 г ореха бурундука» → «да, фундук» — фундук 22 г);
+       после любого другого сообщения строка ждёт явной замены («замени на…», кнопка в строке) и чужую еду на себя не берёт */
+    if(a.kind==='name'&&inlinePhrase(S,q)&&!explicitReplacement&&q.nameTurn!==(S.turn||0)-1)return null;
     if(a.kind==='meal'){ var mm=mealIn(t.replace(/^(да|ну|в|на|во)\s+/,'')).mk; return mm?tapDo(S,'meal',a.id,mm):null }
     if(a.kind==='again'){ if(/^(да|ещ|еще|ага|угу)/.test(t)) return tapDo(S,'again',a.id,'1'); if(/^(нет|не|повтор)/.test(t)) return tapDo(S,'again',a.id,'0'); return null }
     if(a.kind==='pick'){ var tt0=t.replace(/^(да|ну|давай|пусть|будет)\s+/,'').replace(/[,.!]+$/,''); if(ORD[tt0]!=null&&l.alts[ORD[tt0]]) return tapDo(S,'pick',a.id,String(ORD[tt0]));
@@ -1378,7 +1351,7 @@ var MealBot=(function(){
         var sp0=String(l.spoken||l.name||'').trim(), cb=understand(fixes(' '+sp0+' '+tt0+' ')).lines[0], cf=cb&&(cb.fid||cb.alts[0]);
         if(cf&&covers(cf,ws0)&&related(cf,sp0.split(' ').filter(Boolean))){
           l.fid=cf; l.alts=[cf].concat((cb.alts||[]).filter(function(x){ return x!==cf })); l.st='ok'; l.noAuto=false; l.g=gramsFor(cf,l.q,l.u);
-          if(needQty(l,a.kind==='pick')){ l.ask='qty'; return askHTML(S) } return finish(S,resolved(S));
+          if(needQty(l)){ l.ask='qty'; return askHTML(S) } return finish(S,resolved(S));
         }
       } }
     if(a.kind==='dup'){ var m=t.match(/^(да\s+)?(один|одна|одну|одно|1|два|две|2)(\s|$)/); if(!m) return null; return tapDo(S,'cnt',a.id,/^(два|две|2)$/.test(m[2])?'2':'1') }
@@ -1446,7 +1419,7 @@ var MealBot=(function(){
       l.fid=n.fid; l.alts=n.alts; l.st='ok'; l.name=n.name; if(n.explicit){ l.q=n.q; l.u=n.u; l.explicit=true } else if(!l.explicit&&a.kind!=='what'){ l.q=n.q; l.u=n.u }
       if(a.kind==='what'&&!n.explicit){ var w=parseText(n.name+' '+l.raw).lines[0]; if(w){ l.q=w.q; l.u=w.u; l.explicit=w.explicit } }
       l.g=gramsFor(l.fid,l.q,l.u);
-      if(needQty(l,a.kind==='pick')){ l.ask='qty'; return askHTML(S) }
+      if(needQty(l)){ l.ask='qty'; return askHTML(S) }
       return finish(S,resolved(S));
     }
     /* «нет, мясо перепёлки» на вопрос о весе: тот же продукт другим вариантом — меняем продукт, штуки сохраняем */
@@ -1473,7 +1446,7 @@ var MealBot=(function(){
       var cm=commit(S,mine); if(cm===false){ mine.forEach(function(x){ x.line.ask='meal'; x.secSet=false }); S.pend=mine.concat(S.pend); return p('Чтобы записывать, войди в аккаунт.') }
       return commitHTML(cm)+(gt?timeNote(gt):'')+askHTML(S) }
     if(kind==='pick'){ var fid=l.alts[+arg]; if(!fid) return null; l.fid=fid; l.st='ok'; l.g=gramsFor(fid,l.q,l.u);
-      if(needQty(l,a.kind==='pick')){ l.ask='qty'; return askHTML(S) } return finish(S,resolved(S)) }
+      if(needQty(l)){ l.ask='qty'; return askHTML(S) } return finish(S,resolved(S)) }
     if(kind==='num'){ if(!Number.isFinite(+arg)||+arg<=0)return null; setGrams(l,+arg); return finish(S,resolved(S)) }
     if(kind==='unit'){ var f=FOODS[l.fid]; l.q=1; l.u=defUnit(f); l.g=gramsFor(l.fid,1,l.u); l.explicit=true; return finish(S,resolved(S)) }
     if(kind==='cnt'){ var f2=FOODS[l.fid], u2=l.u||defUnit(f2); l.q=+arg; l.u=u2; l.g=gramsFor(l.fid,l.q,u2); l.explicit=true; return finish(S,resolved(S)) }
@@ -1579,6 +1552,7 @@ var MealBot=(function(){
   }
   function handle0(chat,S,m){
     var raw=m.kind==='photo'?m.det:m.text;
+    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
@@ -1726,8 +1700,12 @@ var MealBot=(function(){
       var small=kcalOf(u.lines), grp='g'+(++SEQ);
       u.lines.forEach(function(l){
         if(m.inbox) l.inbox=m.inbox;
+        /* selected — чат открыт: недостающее показывается строкой списка. Приём из кнопки вверху чата берётся, только если кнопку нажал сам человек:
+           это то же, что сказать «на завтрак» (время приёма, ночное «на ужин» — по тем же правилам). Кнопку не трогали — приём выбирает бот по времени
+           и правилам приёмов, как раньше; для другого дня без времени — спрашивает */
         var selected=!m.inbox&&chat.section&&sec(chat.section)?chat.section:null;
-        var sk=l.meal||(!c.hit&&selected)||(time?secFor(date,time,small):autoSec()), ld=date, needMeal=!selected&&!l.meal&&!time;
+        if(selected&&chat.sectionPicked&&!l.meal&&!c.hit) l.meal=selected;
+        var sk=l.meal||(time?secFor(date,time,small):autoSec()), ld=date, needMeal=!l.meal&&!time;
         /* «на завтрак…», сказанное вечером без времени: время «сейчас» завтраку не ставим — иначе завтрак «начнётся» вечером */
         var lt=time, own=l.meal&&time?mealTimes(date,l.meal,null):[];
         if(l.meal&&!c.hit&&today&&!shift&&mins(time)<300&&ORDK.indexOf(l.meal)>=0){
@@ -1744,7 +1722,7 @@ var MealBot=(function(){
         }
         if(needMeal){ en.needMeal=true; en.grp=grp }
         l.t=lt; l.tm=c.hit?1:0; l.sec=sk;
-        var tc=m.kind!=='photo'&&!l.familyChoice&&l.ask!=='name'&&l.ask!=='range'&&l.ask!=='waste'&&l.ask!=='inc'&&!l.inc&&!l.split&&!l.fromDish&&!l.waste?tapFor(l):null;
+        var tc=m.kind!=='photo'&&l.ask!=='range'&&l.ask!=='waste'&&l.ask!=='inc'&&!l.inc&&!l.split&&!l.fromDish&&!l.waste?tapFor(l):null;
         if(tc&&tc.n){ en.tap=tc; l.fid=tc.c.fid; l.st='ok'; l.q=tc.n*tc.c.q; l.u=tc.c.u; l.g=Math.round(tc.n*tc.g*10)/10; l.explicit=true; l.ask=null; l.picked=false; l.count=null }
         else if(tc&&l.fid===tc.c.fid) l.tapMiss=tc.c;
         if(m.kind!=='photo'&&l.ask==='pick'&&!l.noAuto&&l.alts.some(function(x){ return covers(x,String(l.name||'').split(' ').filter(Boolean)) })){
@@ -1754,7 +1732,9 @@ var MealBot=(function(){
         if(selected&&!en.tap&&l.ask==='pick'){
           var keys=String(l.spoken||l.name).split(/\s+/).filter(Boolean);
           var nouns=keys.filter(function(w){return !W_ADJL.test(w)&&!NEUTRAL.test(w)});
-          if(!l.familyChoice&&nouns.length&&keys.length>1&&!l.alts.some(function(fid){return covers(fid,keys)})){
+          /* сам названный продукт (первое существительное) среди вариантов есть — это варианты, бот предлагает их, как раньше:
+             «творог пятипроцентный» — «Творог 5%», «сайра слитая» — «Сайра». Совпал только вкус — продукта в базе нет */
+          if(nouns.length&&keys.length>1&&!l.alts.some(function(fid){return covers(fid,[nouns[0]])})){
             l.ask='name';l.st='none';l.alts=[];l.fid=null;l.formContext=formContext({text:l.raw||l.name});
           }
         }
