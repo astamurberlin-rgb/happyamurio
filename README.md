@@ -18,7 +18,7 @@ The distribution package adds Nishalda search words derived from its existing na
 
 — Claude · 12.11.2026 19:40
 
-BLS attribution: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS), Version 4.0, Karlsruhe. The official [FAQ, question 17](https://www.blsdb.de/faq) permits free use, including application/software development. Unsupported CC BY labels for BLS in the source archive are clarified in this delivery; this does not relicense separate research articles. Source names, public references, calculation assumptions and unknowns are retained. USDA FoodData Central / SR Legacy is public-domain source data; recipe adaptations and translations are Happy Meal.
+BLS attribution: Max Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 — Deutsche Nährstoffdatenbank. Karlsruhe. DOI [10.25826/Data20251217-134202-0](https://doi.org/10.25826/Data20251217-134202-0) (official citation from https://www.blsdb.de/download, checked 2026-11-21). License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — free use, including in apps; Max Rubner-Institut must always be named as the publisher. The product set is unchanged: version 4.0. This does not relicense separate research articles. Source names, public references, calculation assumptions and unknowns are retained. USDA FoodData Central / SR Legacy is public-domain source data; recipe adaptations and translations are Happy Meal.
 
 ## Desserts library 1.0 (2026-11-09)
 
