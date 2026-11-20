@@ -515,8 +515,17 @@ body.loading .app,body.loading .dock{opacity:0}
   background:radial-gradient(circle at 36% 28%, #7B6FE8, var(--fab) 70%);
   box-shadow:0 4px 8px rgba(40,32,120,.30),0 14px 30px rgba(40,32,120,.40);
   transition:transform .22s cubic-bezier(.2,.7,.3,1)}
-.fab svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
-body.sheet .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
+/* аудит 20.11.2026, п. 37 (Астамур): кнопка выпуклая, как в Meal и Sport, цвет Day; в ней микрофон.
+   Открыт экран, лист или карточка — в ней «×»: закрыть. */
+.fab,body.wheel-editing .now-save:not([data-dirty="true"]){background:radial-gradient(circle at 32% 20%,#a59ff0 0%,var(--fab) 56%,#3f379b 100%);
+  box-shadow:0 6px 14px rgba(40,32,120,.27),0 0 25px rgba(90,80,209,.5)}
+@supports (color:color-mix(in srgb,red,blue)){
+  .fab,body.wheel-editing .now-save:not([data-dirty="true"]){background:radial-gradient(circle at 32% 20%,color-mix(in srgb,var(--fab) 58%,#fff) 0%,var(--fab) 56%,color-mix(in srgb,var(--fab) 72%,#000) 100%);
+    box-shadow:0 6px 14px rgba(40,32,120,.27),0 0 25px color-mix(in srgb,var(--fab) 50%,transparent)}}
+.fab svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.fab .fabX{display:none;stroke-width:2.6}
+body.sheet .fab .fabMic,body.card-open .fab .fabMic{display:none}
+body.sheet .fab .fabX,body.card-open .fab .fabX{display:block}
 /* ══════════ КОНЕЦ ФУТЕРА ══════════ */
 
 .ask{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
@@ -547,6 +556,22 @@ body.sheet .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
 .drop b{display:block;font-size:16px;font-weight:700;margin-bottom:6px}
 .drop span{display:block;font-size:12px;color:rgba(255,255,255,.75);line-height:1.5}
 .askRow button{flex:1}
+/* аудит 20.11.2026, п. 15 (Астамур): окна ввода (новый счётчик, раздел, тег, дневник…) — карточка внизу,
+   её нижний край на несколько точек уходит под главную кнопку. Сверху ручка. «Отмена / Готово» нет: введённое
+   записывается, когда карточку закрыл — нажал на ручку, потянул вниз, нажал мимо или на «×» в меню; Enter — то же.
+   Окно по центру с кнопками осталось только для вопроса («Стереть всё»). */
+.ask .askBox>.grip{display:none}
+.ask.card .askBox>.grip{display:flex;margin:0 0 4px}
+body.card-open .dock{z-index:80}
+body.card-open .dock .tab{pointer-events:none}
+.ask.card.on{z-index:75;align-items:flex-end;padding:0 14px var(--card-bottom,78px);background:rgba(4,40,80,.30)}
+.ask.card .askBox{max-width:none;border-radius:26px;padding:6px 18px 26px}
+.ask.card .askBox h3{font-size:20px;font-weight:700;margin:4px 0 14px}
+.ask.card .askRow{display:none}
+.ask.card input[type=text]{height:48px;font-size:16px}
+.askL{display:block;font-size:14px;font-weight:600;margin:14px 0 8px}
+.askL[hidden]{display:none}
+.askL+input{margin-top:0!important}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:104px;z-index:60;
   background:rgba(12,60,110,.92);color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;
   opacity:0;pointer-events:none;transition:opacity .2s;max-width:86vw;text-align:center}
@@ -1331,7 +1356,7 @@ a.btn{display:inline-block;text-decoration:none}
   <span class="gap"></span>
   <button class="tab" data-go="links"><svg viewBox="0 0 24 24"><circle cx="7" cy="15" r="3"/><circle cx="17" cy="8" r="3"/><path d="M9.5 13.5l5-4"/></svg><span>Связи</span></button>
   <button class="tab" data-go="settings"><svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z"/><circle cx="12" cy="12" r="3.3"/></svg><span>Настройки</span></button>
-  <button class="fab" id="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="fab" id="fab" aria-label="Отметить самочувствие голосом"><svg class="fabMic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg><svg class="fabX" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></button>
 </div>
 
 <div class="imp" id="impWrap">
@@ -1355,8 +1380,10 @@ a.btn{display:inline-block;text-decoration:none}
 
 <div class="ask" id="askWrap">
   <div class="askBox">
+    <div class="grip ask-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>
     <h3 id="askTitle"></h3>
     <input type="text" id="askInput" autocomplete="off">
+    <label class="askL" id="askL2" for="askInput2" hidden></label>
     <input type="text" id="askInput2" autocomplete="off" style="display:none;margin-top:9px">
     <div class="askRow">
       <button class="btn" id="askNo">Отмена</button>
@@ -1365,13 +1392,13 @@ a.btn{display:inline-block;text-decoration:none}
   </div>
 </div>
 
-<div class="ask" id="edWrap">
+<div class="ask card" id="edWrap">
   <div class="askBox" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+    <div class="grip ask-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>
     <h3 id="edTitle"></h3>
     <div class="icRow"><button class="icPick" id="edPick" aria-label="Выбрать иконку"></button><input type="text" id="edName" maxlength="40" autocomplete="off"></div>
     <input type="text" class="icWide" id="edSub" placeholder="Подпись снизу" maxlength="60" autocomplete="off">
     <p class="edErr" id="edErr" role="alert"></p>
-    <div class="askRow"><button class="btn" data-ed="cancel">Отмена</button><button class="btn solid" data-ed="done">Готово</button></div>
     <button class="btn edDel" id="edDel" data-ed="del" hidden>Убрать тег</button>
   </div>
 </div>
@@ -1633,7 +1660,7 @@ function signedOutReset(){
 var adoptPending=false;
 function adoptBusy(){
   var a=document.activeElement, typing=!!a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&!/^(checkbox|radio|button|submit|range|file)$/.test(a.type))||a.isContentEditable);
-  return typing||document.getElementById('askWrap').classList.contains('on')||document.body.classList.contains('sheet')||!!document.querySelector('dialog[open]');
+  return typing||document.getElementById('askWrap').classList.contains('on')||!!CARD||document.body.classList.contains('sheet')||!!document.querySelector('dialog[open]');
 }
 function adoptRemote(){
   if(!DayData.signedIn()) return;
@@ -1829,25 +1856,40 @@ function mealSeries(k,dates){ return dates.map(function(d){ var st=mealState(iso
 /* Своё окно ввода: системный prompt() во встроенных браузерах
    часто заблокирован и молча возвращает пустоту — из-за этого
    не работали ни свои теги, ни переименование. */
+/* Карточка внизу (п. 15): открыть, поставить над кнопкой меню (или над клавиатурой), закрыть. */
+var CARD=null;
+function cardPlace(w){
+  var f=document.getElementById('fab').getBoundingClientRect(), v=window.visualViewport,
+      kb=v?Math.max(0,innerHeight-v.height-v.offsetTop):0;
+  w.style.setProperty('--card-bottom',(kb>60?kb+12:Math.max(12,innerHeight-f.top-8))+'px');
+}
+function cardOpen(w,close){
+  w.classList.add('on'); document.body.classList.add('card-open'); CARD={w:w,close:close};
+  w._close=close; cardPlace(w);
+  if(window.visualViewport&&!cardOpen.bound){ cardOpen.bound=1; visualViewport.addEventListener('resize',function(){ if(CARD) cardPlace(CARD.w) }) }
+}
+function cardShut(w){
+  w.classList.remove('on'); w._close=null; if(CARD&&CARD.w===w) CARD=null;
+  if(!document.querySelector('.ask.card.on')) document.body.classList.remove('card-open');
+  if(w.contains(document.activeElement)) document.activeElement.blur();
+}
+/* открыта карточка — закрыть её (то, что введено, записывается) */
+function closeCard(){ if(!CARD) return false; CARD.close(); return true }
 function ask(title,value){
   return new Promise(function(res){
     var w=document.getElementById('askWrap'),
-        i=document.getElementById('askInput');
+        i=document.getElementById('askInput'), j=document.getElementById('askInput2');
     document.getElementById('askTitle').textContent=title;
-    i.value=value||'';
-    w.classList.add('on');
+    document.getElementById('askL2').hidden=true; j.style.display='none';
+    i.style.display=''; i.value=value||''; i.placeholder='';
+    var start=i.value;
+    w.classList.add('card');
     setTimeout(function(){ i.focus(); i.select() },40);
-    function done(v){
-      w.classList.remove('on');
-      document.getElementById('askYes').onclick=null;
-      document.getElementById('askNo').onclick=null;
-      i.onkeydown=null;
-      res(v);
-    }
-    document.getElementById('askYes').onclick=function(){ done(i.value) };
-    document.getElementById('askNo').onclick=function(){ done(null) };
-    i.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); done(i.value) } };
-    w.onclick=function(e){ if(e.target===w) done(null) };
+    function done(v){ cardShut(w); i.onkeydown=null; w.onclick=null; res(v) }
+    function commit(){ done(i.value===start?null:i.value) }
+    i.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); commit() } };
+    w.onclick=function(e){ if(e.target===w) commit() };
+    cardOpen(w,commit);
   });
 }
 /* Системный confirm() во встроенных браузерах заблокирован так же,
@@ -1856,6 +1898,7 @@ function ask(title,value){
 function confirmBox(text,yes){
   return new Promise(function(res){
     var w=document.getElementById('askWrap');
+    w.classList.remove('card'); document.getElementById('askL2').hidden=true;   // вопрос — окно по центру с кнопками
     document.getElementById('askTitle').textContent=text;
     var i=document.getElementById('askInput');
     i.style.display='none';
@@ -1883,20 +1926,20 @@ function ask2(title, l1, v1, l2, v2){
   return new Promise(function(res){
     var w=document.getElementById('askWrap');
     document.getElementById('askTitle').textContent=title;
-    var i=document.getElementById('askInput'), j=document.getElementById('askInput2');
+    var i=document.getElementById('askInput'), j=document.getElementById('askInput2'), L=document.getElementById('askL2');
     i.style.display=''; i.value=v1||''; i.placeholder=l1||'';
-    j.style.display=''; j.value=v2||''; j.placeholder=l2||'';
-    w.classList.add('on');
+    /* вторая подсказка длинная («по сколько прибавлять — по умолчанию 1») — подпись над полем, а не внутри (п. 15) */
+    L.textContent=l2?l2.charAt(0).toUpperCase()+l2.slice(1):''; L.hidden=!l2;
+    j.style.display=''; j.value=v2||''; j.placeholder='';
+    var a0=i.value, b0=j.value;
+    w.classList.add('card');
     setTimeout(function(){ i.focus(); i.select() },40);
-    function done(v){
-      w.classList.remove('on'); j.style.display='none';
-      document.getElementById('askYes').onclick=null;
-      document.getElementById('askNo').onclick=null;
-      res(v);
-    }
-    document.getElementById('askYes').onclick=function(){ done({a:i.value, b:j.value}) };
-    document.getElementById('askNo').onclick=function(){ done(null) };
-    w.onclick=function(e){ if(e.target===w) done(null) };
+    function done(v){ cardShut(w); j.style.display='none'; L.hidden=true; i.onkeydown=j.onkeydown=null; w.onclick=null; res(v) }
+    function commit(){ done(i.value===a0&&j.value===b0?null:{a:i.value, b:j.value}) }
+    i.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); j.focus() } };
+    j.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); commit() } };
+    w.onclick=function(e){ if(e.target===w) commit() };
+    cardOpen(w,commit);
   });
 }
 /* Аудит Day 20.11.2026, п. 26: удаление — сразу, без вопроса; в сообщении «Вернуть» (5 секунд). */
@@ -2103,10 +2146,19 @@ function editItem(o){
     err.textContent='';
     function paint(){ var x=ic&&ICON[ic]; pick.classList.toggle('empty',!x); pick.innerHTML=x?icoUniq(x[2]):PLUSI }
     paint();
-    w.classList.add('on');
+    var t0=(o.name||''), h0=(o.sub||''), ic0=o.ic||null;
+    cardOpen(w,closeCommit);
     if(!o.name) setTimeout(function(){ name.focus() },40);
+    /* закрыл карточку — изменения записываются; ничего не менял — просто закрылась; ошибка — не записываем и говорим почему */
+    function closeCommit(){
+      var t=name.value.trim(), changed=t!==t0||sub.value.trim()!==h0||ic!==ic0;
+      if(!changed){ done(null); return }
+      var e=o.check?o.check(t):(t?'':'Напиши название');
+      if(e){ if(t) toast(e+' — не записано'); done(null); return }
+      done({t:t, h:sub.value.trim(), ic:ic});
+    }
     function done(v){
-      w.classList.remove('on'); closeIcons();
+      cardShut(w); closeIcons();
       w.onclick=null; pick.onclick=null; name.onkeydown=null; name.oninput=null;
       res(v);
     }
@@ -2119,9 +2171,9 @@ function editItem(o){
     name.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); ok() } };
     name.oninput=function(){ err.textContent='' };
     w.onclick=function(e){
-      if(e.target===w){ done(null); return }
+      if(e.target===w){ closeCommit(); return }
       var b=e.target.closest('[data-ed]'); if(!b) return;
-      if(b.dataset.ed==='cancel') done(null); else if(b.dataset.ed==='del') done({del:true}); else ok();
+      if(b.dataset.ed==='del') done({del:true});
     };
   });
 }
@@ -5487,9 +5539,12 @@ function openSection(k){SelfCare.openSection(k);}
 document.getElementById('fab').addEventListener('click',function(){
   if(document.getElementById('tapWrap').classList.contains('on')){ closeTaps(); return }
   if(document.getElementById('impWrap').classList.contains('on')){ closeImport(); return }
+  if(closeCard())return;
   if(SelfCare.closeCurrent())return;
   if(document.body.classList.contains('sheet')){ go('day'); renderDay(); renderLinks(); return }
-  openImport();
+  /* аудит 20.11.2026, п. 37: микрофон — сразу «Отметить самочувствие» и слушает заметку (прежде «+» открывал
+     «Загрузить отчёты», а разбор отчётов выключен) */
+  SelfCare.open('mood'); SelfCare.dictate();
 });
 function openImport(){
   document.getElementById('impState').textContent =

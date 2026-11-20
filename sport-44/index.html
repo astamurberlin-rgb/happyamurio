@@ -1911,6 +1911,15 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .top .date-pill{min-height:37px!important;height:37px!important}
 .toast,.hs-toast{background:rgba(12,60,110,.92)!important}
 .toast button{color:#8EF3DD!important;opacity:1!important;text-decoration:none!important}
+/* п. 31 (Астамур, 21.11.2026: «без рамок»): в форме расписания нет линии под шапкой и рамок групп — поля стоят прямо на листе;
+ *       «Дата и время» — высота 48, как остальные поля. Строка «Время телефона · …» и «Другой часовой пояс» — по центру. */
+.sheet .plan-fields{border-top:0!important}
+.sheet .plan-group{border:0!important;background:none!important;box-shadow:none!important;padding:0!important;margin:0 0 14px!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.sheet .plan-group::before,.sheet .plan-group::after{display:none!important}
+.sheet .ru-date>input,.sheet .ru-date{height:48px!important}
+.sheet .plan-zone-note{margin-bottom:0!important;text-align:center!important;justify-content:center!important;flex-wrap:wrap!important}
+.sheet .plan-zone-note .text-btn{margin-left:auto;margin-right:auto}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {

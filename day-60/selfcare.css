@@ -200,3 +200,7 @@ body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 body.wheel-editing .now-save[data-dirty="true"]{width:auto;min-width:160px;height:48px;padding:0 28px;margin-left:0;left:50%;
   bottom:calc(109px + env(safe-area-inset-bottom));transform:translateX(-50%);border-radius:999px;font-size:16px;font-weight:600}
 body.wheel-editing.now-dirty #fab{visibility:visible}
+
+/* аудит 20.11.2026, п. 5: колесо выбора дневника (общее HappyScreens.wheel) в форме записи — подпись как у полей */
+.care-form .hs-wheel-wrap{margin:14px 0 2px}
+.care-form .hs-wheel-wrap>.hs-field-title{display:block;margin:0 0 8px;font-size:14px;font-weight:600;color:inherit;text-align:left}

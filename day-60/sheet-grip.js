@@ -1,16 +1,17 @@
 /* Аудит Day 20.11.2026, п. 14, 16, 17 (Астамур): у каждого листа снизу сверху ручка; лист закрывается и жестом вниз,
    и нажатием на ручку. Закрыть — то же, что нажать мимо листа (на затемнение): у каждого листа это уже своё.
-   Листы: .impSheet (отчёты, счётчик, расписание, практика) и .icSheet (иконка, шкала).
+   Листы: .impSheet (отчёты, счётчик, расписание, практика), .icSheet (иконка, шкала) и карточки ввода внизу
+   (.ask.card .askBox — п. 15): у карточки закрыть — значит записать введённое (её _close).
    — Claude · 20.11.2026 (лаборатория Day 60) */
 (function(){
   'use strict';
   let d=null;
-  const GRIP='.impSheet>.grip,.icSheet>.grip';
+  const GRIP='.impSheet>.grip,.icSheet>.grip,.ask.card .askBox>.grip';
   function move(s,dy,anim){s.style.transition=anim?'transform .24s cubic-bezier(.22,.75,.25,1)':'none';s.style.transform=dy?'translateY('+dy+'px)':''}
   function close(s){
-    const w=s.closest('.imp,.icLayer'),scrim=w&&w.querySelector(':scope>.impScrim,:scope>.icScrim');
+    const w=s.closest('.imp,.icLayer,.ask'),scrim=w&&w.querySelector(':scope>.impScrim,:scope>.icScrim');
     s.style.transition='';s.style.transform='';
-    if(scrim)scrim.click();
+    if(w&&typeof w._close==='function')w._close();else if(scrim)scrim.click();
   }
   document.addEventListener('pointerdown',e=>{
     const g=e.target.closest&&e.target.closest(GRIP);if(!g)return;
