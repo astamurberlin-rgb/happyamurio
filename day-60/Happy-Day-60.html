@@ -1063,7 +1063,9 @@ a.btn{display:inline-block;text-decoration:none}
 .care-screen .card h2,.care-settings h3{font-size:17px;margin:0 0 14px}
 .care-form label,.care-form .care-label{display:block;font-size:14px;font-weight:600;margin:14px 0 8px}
 .care-form input:not([type=checkbox]),.care-form select,.care-form textarea{width:100%;max-width:100%;box-sizing:border-box;text-align:left}
-.care-form input[type=time]{font:inherit;font-size:16px;color:var(--ink);background:var(--glass);border:1px solid var(--glassBrd);border-radius:12px;padding:10px}
+/* iPhone: у поля времени своя наименьшая ширина и свой вид — без этого оно шире колонки и налезает на соседнее поле */
+.care-form input[type=time]{-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box;min-width:0;height:41px;margin:0;font:inherit;font-size:16px;line-height:20px;color:var(--ink);background:rgba(255,255,255,.14);border:1px solid var(--glassBrd);border-radius:12px;padding:0 12px}
+.care-form input[type=time]::-webkit-date-and-time-value{text-align:left;min-height:20px}
 .care-form textarea{min-height:120px;user-select:text;-webkit-user-select:text}
 .care-form input,.care-form select,.care-form textarea{font-size:16px}
 .care-form option{color:#20324b;background:white}
@@ -1093,7 +1095,8 @@ a.btn{display:inline-block;text-decoration:none}
 .care-setting-row:last-child{border:0}
 .care-check{display:flex!important;align-items:center;gap:10px;font-weight:400!important;font-size:13px!important;line-height:1.45}
 .care-check input{flex:none;width:20px;height:20px;accent-color:#5A50D1}
-.care-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.care-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.care-grid>div{min-width:0}
 .care-mapping{border-top:1px solid var(--glassBrd);padding:12px 0}
 .care-mapping .care-label{margin-top:0}
 .care-days{display:flex;gap:4px;flex-wrap:wrap}.care-days label{display:flex;gap:3px;align-items:center;font-size:12px;margin:4px}
