@@ -41,6 +41,8 @@
    моноширинный; число посередине). Число рисует строка поверх, само поле отдаёт только курсор. Текст поля — 16, чтобы
    iPhone не приближал страницу, когда в поле ставят курсор. */
 .care-form .care-when>input.care-num-in{text-align:center;font-weight:600;caret-color:var(--ink);cursor:text}
+/* В пустом поле стоит прочерк. Поставили курсор — прочерк убирается: курсор по центру лёг бы на него крестом. */
+.care-num.care-empty:focus-within>.care-when-text{visibility:hidden}
 /* Остальные числовые поля этих форм (цели, масштаб кольца) — тоже шрифтом приложения, не моноширинным. */
 .care-form input[type=number]{font-family:inherit;font-variant-numeric:tabular-nums}
 .care-form textarea{min-height:120px;user-select:text;-webkit-user-select:text}

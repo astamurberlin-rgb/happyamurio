@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1341491,
-   "sha256": "8ae272a465ddb9387b0c338cf2791d8159806eb92ec7b5204b67237be33813bb"
+   "size": 1342230,
+   "sha256": "f5e7ff437956bad41fe50b2b420278005c482d8b8c526bc4ebca44a674861df5"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -274,13 +274,13 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 71611,
-   "sha256": "9e477f3cc65bf3a64d488d54a904a949ce1e0c50bcf85680603fc53522704c2d"
+   "size": 71963,
+   "sha256": "10cda75d9cb6b317ff7b05efa901ae92863395b19bf75112305fa0b1ce0f4a55"
   },
   {
    "path": "selfcare.css",
-   "size": 17879,
-   "sha256": "97b8f645ab62db4664f02c419dbd7764a791d6bc5da227cc9dd8ad7b382219a0"
+   "size": 18150,
+   "sha256": "2d41742057f16fbd1303f59ac583885721650c2d129924f7d38493e6e9a81a5b"
   },
   {
    "path": "shared/apps.json",

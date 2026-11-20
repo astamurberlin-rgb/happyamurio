@@ -45,7 +45,7 @@ const num=v=>(Math.round(v*10)/10).toLocaleString('ru-RU');
 /* Поле числа в формах (минуты): тот же вид, что у поля времени рядом, — число посередине, 14 / 600, шрифт приложения.
    Устроено так же: текст самого поля скрыт, число рисует строка поверх (whenText), поэтому оба поля совпадают до точки.
    Тип — текст с цифровой клавиатурой, как у полей замеров: для type=number iPhone показывает полную клавиатуру. */
-const numField=attrs=>'<span class="care-when care-num"><input class="care-num-in" data-care-when="1" type="text" autocomplete="off" enterkeyhint="done" '+attrs+'><span class="care-when-text" aria-hidden="true">—</span></span>';
+const numField=attrs=>'<span class="care-when care-num care-empty"><input class="care-num-in" data-care-when="1" type="text" autocomplete="off" enterkeyhint="done" '+attrs+'><span class="care-when-text" aria-hidden="true">—</span></span>';
 /* «30», «12,5» и «12.5» — число; пусто или не число — NaN (дальше скажет проверка длительности). */
 const minutesOf=v=>{const t=String(v==null?'':v).trim().replace(',','.');return /^\d+(\.\d+)?$/.test(t)?Number(t):NaN;};
 const pct=v=>Math.round(v*100);
@@ -475,7 +475,9 @@ function whenDateText(day){const d=new Date(String(day)+'T12:00:00Z');if(!/^\d{4
 function whenText(input){const v=input.value;if(input.classList.contains('care-num-in'))return v.trim()||'—';if(!v)return input.type==='time'?'—':'Не выбрана';if(input.type==='date')return whenDateText(v);if(input.type==='time')return v.slice(0,5);const [day,time='']=v.split('T');return whenDateText(day)+' · '+time.slice(0,5);}
 const whenSelector='.care-form input[type=date],.care-form input[type=time],.care-form input[type=datetime-local]';
 function whenField(input){if(input.dataset.careWhen)return;const wrap=document.createElement('span'),text=document.createElement('span');input.dataset.careWhen='1';wrap.className='care-when';text.className='care-when-text';text.setAttribute('aria-hidden','true');input.before(wrap);wrap.append(input,text);text.textContent=whenText(input);}
-function whenRefresh(input){const text=input.parentElement?.querySelector(':scope>.care-when-text');if(text)text.textContent=whenText(input);}
+function whenRefresh(input){const text=input.parentElement?.querySelector(':scope>.care-when-text');if(text)text.textContent=whenText(input);
+ /* пустое поле числа: прочерк виден, пока в поле не стоит курсор, — иначе курсор ложится на прочерк крестом (Астамур 20.11.2026) */
+ if(input.classList.contains('care-num-in'))input.parentElement.classList.toggle('care-empty',!input.value.trim());}
 function whenScan(node){if(node.matches?.(whenSelector))whenField(node);node.querySelectorAll?.(whenSelector).forEach(whenField);}
 if(typeof document!=='undefined'&&document.addEventListener){for(const type of ['input','change'])document.addEventListener(type,e=>{if(e.target.dataset?.careWhen)whenRefresh(e.target);},true);
  if(typeof MutationObserver==='function'&&document.body){new MutationObserver(list=>{for(const r of list)for(const n of r.addedNodes)if(n.nodeType===1)whenScan(n);}).observe(document.body,{childList:true,subtree:true});whenScan(document);}}
