@@ -67,7 +67,7 @@ Meal показывает каждое нажатие порцией в днев
 | `day/foodtaps`, `day/pairs` | Витрина Day, см. таблицу выше | — | — |
 | `sport/workouts`, `sport/active`, `sport/exercises`, `sport/routines`, `sport/schedule`, `sport/tallies`, `sport/prefs` | Записи Sport | Sport | Sport |
 | `sport/summary`, `sport/plans`, `sport/body`, `sport/profile`, `sport/foodtaps` | Витрина Sport, см. таблицу выше | — | — |
-| `meal/setup` | Настройки дневника Meal: разделы — приёмы пищи со временем, правила перекуса и фастинг (`mealRules`; в нём `fastVersions` — история фастинга с моментом каждого сохранения: по ней считаются окна, прошлые не меняются; `fastStops` — моменты, когда идущее окно отменили кнопкой на плашке), счётчики, цели на день (`goals`) и цель с датой (`goalVersions`), избранное | Meal | Meal |
+| `meal/setup` | Настройки дневника Meal: разделы — приёмы пищи со временем, правила перекуса и фастинг (`mealRules`; в нём `fastVersions` — история фастинга с моментом каждого изменения — сохранения настроек или «Отменить» на плашке: по ней считаются окна, прошлые не меняются), счётчики, цели на день (`goals`) и цель с датой (`goalVersions`), избранное | Meal | Meal |
 | `meal/products`, `meal/snaps` | Свои продукты и рецепты, свои меры; снимки состава своих продуктов на момент записи и добавок счётчиков на момент нажатия | Meal | Meal |
 | `meal/diary_ГГГГ`, `meal/diary_old` | Записи еды по годам | Meal | Meal |
 | `meal/supps` | Свои добавки и их приёмы | Meal | Meal |

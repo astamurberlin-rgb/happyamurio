@@ -494,8 +494,8 @@
   },
   {
    "path": "checks/check-meal-fast.mjs",
-   "size": 22220,
-   "sha256": "26983d968ad9c4a4b0d115d34c3cafdaf3b26068b0268aa672a40a8cbb121e0f"
+   "size": 25701,
+   "sha256": "6cdb11fb540cd4d4320834bb49c2de7e3d740116a8d0eb30c701a8ec5a789214"
   },
   {
    "path": "checks/check-meal-first-time.mjs",
@@ -599,8 +599,8 @@
   },
   {
    "path": "index.html",
-   "size": 648056,
-   "sha256": "575b04c1c635700d352fafbc6cbf3298de9efd4dcd95f10a8425c88cc6916d2e"
+   "size": 648238,
+   "sha256": "7be8f4a0d93eead8f8bb9216f0d86b77e46418abd20f103e1419500198e6cab7"
   },
   {
    "path": "kfct.js",
@@ -629,8 +629,8 @@
   },
   {
    "path": "meal-fast.js",
-   "size": 21080,
-   "sha256": "10b960e507285bb2bb3b1fa4c48e787a8b176eee8d660218565171b4d2532355"
+   "size": 23666,
+   "sha256": "03251c181d7829e2e5fbbd385a0927709b5cf260c890d1c804195f12e361577e"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",
@@ -799,8 +799,8 @@
   },
   {
    "path": "meal-periods.js",
-   "size": 46615,
-   "sha256": "835b86b755e850c54cf8ea91fb460f4fbad6b7ac31c9db3cabf5a4bbd3bae8eb"
+   "size": 46708,
+   "sha256": "a31dbdf3d86489c4ca7d601ef992c7ee727df4387afccf43a46342a64b77a8d2"
   },
   {
    "path": "portions.js",

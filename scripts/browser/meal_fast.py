@@ -1,13 +1,16 @@
 """Meal: фастинг (Meal 33.21, meal-33/meal-fast.js) на настоящей странице, экран 393×852, придуманный аккаунт.
 Окно 20:00–12:00. Пока окно идёт — фиолетовая плашка над нижним меню: «Фастинг до 12:00», заполнение, обратный отсчёт
 «−4:30», «Отменить»; стоит близко к меню (зазор 6) и позади кнопки микрофона, текст кнопка не закрывает. Под кольцом об
-идущем окне строки нет, у законченных, прерванных и отменённых — итог.
+идущем окне строки нет, у законченных, прерванных и отменённых — итог. Короткие сообщения — на одной высоте, с плашкой
+и без неё.
 Бот: вода литр и чёрный кофе не прерывают, порция 4 ккал — нет, 5 ккал — да: плашки нет, короткое сообщение
 «Фастинг прерван» с «Отменить запись», под кольцом сразу «Фастинг прерван в …». Так же в диалоге, приём БАДа, счётчик,
 поиск в разделе, запись за прошлую ночь; удаление записи возвращает окно.
-«Отменить» на плашке: окно отменено, «Вернуть» возвращает; выключение в «Настроить приёмы пищи» — то же, прошлые окна
-прежние; еда, записанная в минуту отмены, окно уже не прерывает; включение посреди окна — окно с этой минуты. Окно дошло до конца — сообщение «Поздравляю! Фастинг закончен
-успешно», один раз на окно; второй телефон видит то же. Подсказки про микрофон под кольцом нет.
+«Отменить» на плашке выключает фастинг (выключатель в настройках выключен), «Вернуть» возвращает; еда, записанная в
+минуту отмены, окно не прерывает. Включил фастинг посреди окна: еда в окне уже записана — сообщение, что он начнётся
+со следующего окна; еды нет — идёт, отсчёт до конца. Выключение в «Настроить приёмы пищи» — окно отменено, прошлые окна
+прежние. Окно дошло до конца — сообщение «Поздравляю! Фастинг закончен успешно», один раз на окно; второй телефон видит
+то же. Подсказки про микрофон под кольцом нет.
 Снимки экрана — в HAPPY_OUT (fast-*.png)."""
 import datetime, sys
 from playwright.sync_api import sync_playwright
@@ -30,6 +33,8 @@ SEED = """()=>{DB.mealRules={kcal:150,gap:20,fast:{on:true,a:1200,b:720},fastVer
 RUN = "Фастинг до %s \u2212%s Отменить"
 FAST_TOAST = {"text": "Фастинг прерван", "button": "Отменить запись"}
 WELL = "Поздравляю! Фастинг закончен успешно"
+LATER = {"text": "В этом окне уже записана еда. Фастинг начнётся сегодня в 20:00", "button": None}
+LOW = "()=>Math.round(innerHeight-document.getElementById('toast').getBoundingClientRect().bottom)"   # сколько от низа экрана до короткого сообщения
 
 checks, out, errors = [], {}, []
 def check(name, ok, detail=""):
@@ -68,6 +73,13 @@ def fast_switch(page):
     page.evaluate("()=>go('settings')"); page.wait_for_timeout(400)
     click(page, "#happy-account-top [data-mp-open]"); page.wait_for_selector("#happy-screens .mp-page .mp-list", timeout=5000); page.wait_for_timeout(450)
     click(page, "#happy-screens [data-mp=fast]"); click(page, "#happy-screens [data-hs=save]"); page.wait_for_timeout(600)
+def fast_is_on(page):
+    """«Настройки» → «Настроить приёмы пищи»: включён ли выключатель «Фастинг». Закрыть без сохранения."""
+    page.evaluate("()=>go('settings')"); page.wait_for_timeout(400)
+    click(page, "#happy-account-top [data-mp-open]"); page.wait_for_selector("#happy-screens .mp-page .mp-list", timeout=5000); page.wait_for_timeout(450)
+    on = page.evaluate("()=>document.querySelector('#happy-screens [data-mp=fast]').getAttribute('aria-checked')")
+    click(page, "#happy-screens [data-hs=cancel]"); page.wait_for_timeout(450)
+    return on == "true"
 def shot(page, name):
     page.evaluate("()=>window.scrollTo(0,0)"); page.screenshot(path=SHOTS + "fast-" + name + ".png")
 def names(page, n): return [r for r in page.evaluate(RECS) if r["n"] == n]
@@ -105,6 +117,7 @@ with sync_playwright() as p:
     page.evaluate("()=>toast('Проверка места')"); page.wait_for_timeout(250)
     tb = page.evaluate("()=>{const t=document.getElementById('toast').getBoundingClientRect(),b=document.getElementById('mfBar').getBoundingClientRect();return Math.round(b.top-t.bottom)}")
     check("короткое сообщение стоит над плашкой, не на ней", tb >= 8, tb)
+    low_with_bar = page.evaluate(LOW)
     shot(page, "run")
     check("вчерашний день: окно 19.11 20:00 – 20.11 12:00 выдержано", page.evaluate(MARK, "2026-11-20") == "Фастинг выдержан · 20:00–12:00", page.evaluate(MARK, "2026-11-20"))
     page.evaluate(MARK, "2026-11-21"); quiet(page)
@@ -186,41 +199,55 @@ with sync_playwright() as p:
     toast_button(page)
     check("«Отменить запись» убрала ночную запись — окно идёт", running(page, "12:00", "2:55") and not names(page, "Банан"), [bar(page), page.evaluate(TOAST)])
 
-    # 10:00 — «Отменить» на плашке
+    # 10:00 — «Отменить» на плашке: фастинг выключен
     page.clock.set_system_time(at("2026-11-21T10:00:00")); quiet(page); page.evaluate("()=>go('day')"); page.wait_for_timeout(300)
-    bar_button(page); t = toast(page, 100); out["cancel"] = [t, page.evaluate("()=>DB.mealRules.fastStops")]
+    bar_button(page); t = toast(page, 100); out["cancel"] = [t, page.evaluate("()=>MealFast.versions(DB).map(x=>x.on)")]
     check("«Отменить»: плашки нет, «Фастинг отменён · Вернуть»", bar(page) is None and t == {"text": "Фастинг отменён", "button": "Вернуть"}, [bar(page), t])
-    check("под кольцом: «Фастинг отменён в 10:00»; расписание включено", page.evaluate(MARK) == "Фастинг отменён в 10:00" and page.evaluate("()=>DB.mealRules.fast.on&&DB.mealRules.fastStops.length===1&&MealFast.status(DB,'2026-11-22',Date.now(),MealFast.rows).state==='plan'"), page.evaluate(MARK))
+    check("сообщение на той же высоте, что и с плашкой", page.evaluate(LOW) == low_with_bar == 140, [page.evaluate(LOW), low_with_bar])
+    check("под кольцом: «Фастинг отменён в 10:00»; фастинг выключен, следующего окна нет", page.evaluate(MARK) == "Фастинг отменён в 10:00" and page.evaluate("()=>DB.mealRules.fast.on===false&&MealFast.versions(DB).length===2&&MealFast.status(DB,'2026-11-22',Date.now(),MealFast.rows)===null"), [page.evaluate(MARK), page.evaluate("()=>DB.mealRules.fast")])
     shot(page, "cancel")
     toast_button(page)
-    check("«Вернуть» — окно снова идёт, отмены нет", running(page, "12:00", "2:00") and page.evaluate("()=>!DB.mealRules.fastStops") and page.evaluate(MARK) is None, bar(page))
-    # отменил и в ту же минуту записал еду (время еды — с точностью до минуты): окно отменено, а не прервано
+    check("«Вернуть» — фастинг снова включён, окно идёт, как будто не отменяли", running(page, "12:00", "2:00") and page.evaluate("()=>DB.mealRules.fast.on===true&&MealFast.versions(DB).length===1") and page.evaluate(MARK) is None, bar(page))
+    # отменил ещё раз и в ту же минуту записал еду (время еды — с точностью до минуты): окно отменено, а не прервано
     quiet(page); bar_button(page); page.wait_for_timeout(200)
     n1 = page.evaluate("()=>tapCount('cfm')"); click(page, "#mlTaps [data-tplus='cfm']"); t = toast(page)
     check("отменил и сразу записал кофе с молоком — «Фастинг прерван» нет, окно так и отменено", bool(t) and t != FAST_TOAST and t["text"].startswith("Кофе с молоком +") and page.evaluate(MARK) == "Фастинг отменён в 10:00", [t, page.evaluate(MARK)])
-    page.evaluate("()=>{tapUndo('cfm');delete DB.mealRules.fastStops;save();renderAll()}"); page.wait_for_timeout(300)
-    check("убрал нажатие и отмену — окно идёт", page.evaluate("()=>tapCount('cfm')") == n1 and running(page, "12:00", "2:00"), bar(page))
+    check("выключатель «Фастинг» в настройках выключен", fast_is_on(page) is False)
 
-    # 10:05 — выключил фастинг в настройках и сохранил
+    # 10:05 — включил фастинг заново, а в этом окне уже записана еда (кофе с молоком в 10:00)
     page.clock.set_system_time(at("2026-11-21T10:05:00")); quiet(page)
+    fast_switch(page); t = toast(page, 100); out["later"] = t
+    check("включил, а еда в окне уже записана — «В этом окне уже записана еда. Фастинг начнётся сегодня в 20:00»", t == LATER, t)
+    check("плашки нет, окно так и отменено; фастинг включён, вечернее окно начнётся как обычно", bar(page) is None and page.evaluate(MARK) == "Фастинг отменён в 10:00" and page.evaluate("()=>DB.mealRules.fast.on===true&&MealFast.status(DB,'2026-11-22',Date.now(),MealFast.rows).state==='plan'"), [bar(page), page.evaluate(MARK)])
+    shot(page, "later")
+    page.evaluate("()=>{tapUndo('cfm');save();renderAll()}"); page.wait_for_timeout(300)
+    b1 = bar(page)
+    check("убрал запись — еды в окне нет: фастинг идёт, отсчёт до конца, шкала с начала окна", page.evaluate("()=>tapCount('cfm')") == n1 and running(page, "12:00", "1:55") and b1["fill"] == 88 and page.evaluate(MARK) is None, b1)
+
+    # 10:10 — выключил фастинг в настройках и сохранил
+    page.clock.set_system_time(at("2026-11-21T10:10:00")); quiet(page)
     fast_switch(page)
     v = page.evaluate("()=>MealFast.versions(DB).map(x=>[x.on,new Date(x.at).toTimeString().slice(0,5)])"); out["off"] = v
-    check("выключение сохранено версией с моментом сохранения", v[-1] == [False, "10:05"] and v[0][0] is True and len(v) == 2, v)
-    check("окно закончилось в момент выключения: «Фастинг отменён в 10:05», плашки нет", page.evaluate(MARK, "2026-11-21") == "Фастинг отменён в 10:05" and bar(page) is None, [page.evaluate(MARK, "2026-11-21"), bar(page)])
+    check("выключение сохранено версией с моментом сохранения", v[-1] == [False, "10:10"] and v[0][0] is True and len(v) == 4, v)
+    check("окно закончилось в момент выключения: «Фастинг отменён в 10:10», плашки нет", page.evaluate(MARK, "2026-11-21") == "Фастинг отменён в 10:10" and bar(page) is None, [page.evaluate(MARK, "2026-11-21"), bar(page)])
     shot(page, "off")
     n2 = page.evaluate("()=>tapCount('cfm')"); click(page, "#mlTaps [data-tplus='cfm']"); t = toast(page)
-    check("выключил и в ту же минуту записал кофе с молоком — «Фастинг прерван» нет", bool(t) and t != FAST_TOAST and page.evaluate(MARK) == "Фастинг отменён в 10:05", [t, page.evaluate(MARK)])
+    check("выключил и в ту же минуту записал кофе с молоком — «Фастинг прерван» нет", bool(t) and t != FAST_TOAST and page.evaluate(MARK) == "Фастинг отменён в 10:10", [t, page.evaluate(MARK)])
     page.evaluate("()=>{tapUndo('cfm');save();renderAll()}"); page.wait_for_timeout(300)
     page.evaluate(RESET); t = say(page, "в 10:30 съел банан")
-    check("еда после выключения ничего не прерывает", t != FAST_TOAST and bar(page) is None and page.evaluate(MARK) == "Фастинг отменён в 10:05", [t, page.evaluate(MARK)])
+    check("еда после выключения ничего не прерывает", t != FAST_TOAST and bar(page) is None and page.evaluate(MARK) == "Фастинг отменён в 10:10", [t, page.evaluate(MARK)])
     check("прошлые окна прежние: 20.11 выдержан", page.evaluate(MARK, "2026-11-20") == "Фастинг выдержан · 20:00–12:00", page.evaluate(MARK, "2026-11-20"))
     check("завтра окна нет, пока фастинг выключен", page.evaluate("()=>MealFast.status(DB,'2026-11-22',Date.now(),MealFast.rows)") is None)
 
-    # 10:40 — включил снова: окно с этой минуты, банан в 10:30 его не прерывает
-    page.clock.set_system_time(at("2026-11-21T10:40:00")); page.wait_for_timeout(300)
-    fast_switch(page); page.evaluate(MARK, "2026-11-21")
-    check("включил посреди окна — окно с 10:40: «до 12:00 · −1:20», шкала пустая, банан в 10:30 не в счёт", running(page, "12:00", "1:20") and page.evaluate(BAR)["fill"] == 0, bar(page))
-    check("история: включён — выключен — включён", [x[0] for x in page.evaluate("()=>MealFast.versions(DB).map(x=>[x.on])")] == [True, False, True])
+    # 10:40 — включил снова: банан в 10:30 уже записан — фастинг начнётся со следующего окна; убрал банан — идёт
+    page.clock.set_system_time(at("2026-11-21T10:40:00")); quiet(page)
+    fast_switch(page); t = toast(page, 100)
+    check("включил в 10:40, банан в 10:30 уже записан — сообщение про следующее окно, плашки нет", t == LATER and bar(page) is None, [t, bar(page)])
+    ban = names(page, "Банан")[0]
+    page.evaluate("(id)=>{Object.keys(DB.days).forEach(d=>{DB.days[d].items=DB.days[d].items.filter(x=>x.id!==id)});save();renderAll()}", ban["id"]); page.wait_for_timeout(300)
+    page.evaluate(MARK, "2026-11-21"); b2 = bar(page)
+    check("убрал банан — фастинг идёт: «до 12:00 · −1:20», шкала с начала окна", running(page, "12:00", "1:20") and b2["fill"] == 92, b2)
+    check("история: включён — выключен — включён — выключен — включён", [x[0] for x in page.evaluate("()=>MealFast.versions(DB).map(x=>[x.on])")] == [True, False, True, False, True])
     synced(page)
 
     # 12:05 — открыл Meal после конца окна на втором телефоне: поздравление, один раз
@@ -229,7 +256,7 @@ with sync_playwright() as p:
     t = wait_for(c2, lambda: [x for x in c2.evaluate("()=>window.__toasts||[]") if x["text"] == WELL], 8, 200); out["done"] = t
     check("открыл Meal после конца окна — сообщение «Поздравляю! Фастинг закончен успешно», без кнопки", bool(t) and len(t) == 1 and t[0]["button"] is None, t)
     if (c2.evaluate(TOAST) or {}).get("text") == WELL: shot(c2, "done")
-    check("плашки нет, под кольцом итог: выдержан с 10:40 до 12:00", bar(c2) is None and c2.evaluate(MARK) == "Фастинг выдержан · 10:40–12:00", [bar(c2), c2.evaluate(MARK)])
+    check("плашки нет, под кольцом итог: выдержан · 20:00–12:00", bar(c2) is None and c2.evaluate(MARK) == "Фастинг выдержан · 20:00–12:00", [bar(c2), c2.evaluate(MARK)])
     c2.reload(); enter(c2); ready(c2); c2.wait_for_timeout(1500)
     check("второй раз поздравления нет", not [x for x in c2.evaluate("()=>window.__toasts||[]") if x["text"] == WELL], c2.evaluate("()=>window.__toasts||[]"))
     check("вчерашний день на втором телефоне тот же", c2.evaluate(MARK, "2026-11-20") == "Фастинг выдержан · 20:00–12:00")

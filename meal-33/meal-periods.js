@@ -12,8 +12,7 @@
  *
  * Правила и фастинг — поле дневника DB.mealRules: {kcal — «меньше, ккал», gap — «пауза больше, мин»,
  * fast:{on,a,b} — фастинг, отдельный слой: может идти через полночь и пересекаться с едой;
- * fastVersions — история фастинга с моментом каждого сохранения, fastStops — отмены идущего окна кнопкой на плашке
- * (Meal 33.21, meal-fast.js)}.
+ * fastVersions — история фастинга с моментом каждого изменения (Meal 33.21, meal-fast.js)}.
  * Запись еды в окне фастинга не останавливается вопросом: окно прерывает сама запись — это считает meal-fast.js.
  *
  * Пока человек не нажал «Сохранить», в дневник ничего не пишется: разделы без a и b получают время на лету
@@ -167,10 +166,8 @@ function apply(db,d,used,today,now){
   var fast={on:!!d.rules.fast.on,a:d.rules.fast.a,b:d.rules.fast.b}, F=typeof MealFast!=='undefined'?MealFast:null;
   if(!F&&typeof require==='function'){ try{ F=require('./meal-fast.js') }catch(e){} }
   var history=F?F.record(db,fast,typeof now==='number'?now:Date.now()):null;   // Meal 33.21: фастинг с историей — прошлые окна не меняются
-  var stops=db.mealRules&&db.mealRules.fastStops;                              // отмены идущих окон кнопкой на плашке — остаются как были
   db.mealRules={kcal:d.rules.kcal,gap:d.rules.gap,fast:fast};
   if(history&&history.length) db.mealRules.fastVersions=history;
-  if(Array.isArray(stops)&&stops.length) db.mealRules.fastStops=stops;
 }
 var api={DAY:DAY,STEP:STEP,RULES:RULES,clock:clock,preset:preset,kindOf:kindOf,inChain:inChain,hasWin:hasWin,tiles:tiles,tile:tile,chain:chain,rules:rules,
   contains:contains,duration:duration,segments:segments,periodAt:periodAt,limits:limits,moveEdge:moveEdge,addRow:addRow,removeRow:removeRow,
@@ -493,8 +490,12 @@ function open(){
     if(typeof RO!=='undefined'&&RO){ if(typeof roWarn==='function') roWarn(); return }
     var used=function(key){ return Object.keys(DB.days||{}).some(function(d){ return ((DB.days[d]||{}).items||[]).some(function(x){ return x.sec===key }) })||
       (typeof supplementRows==='function'&&Object.keys(DB.days||{}).some(function(d){ try{ return supplementRows(d).some(function(r){ return r.sectionKey===key }) }catch(e){ return false } })) };
+    var wasOn=!!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on);
     apply(DB,D,used,typeof todayISO==='function'?todayISO():new Date().toISOString().slice(0,10));
-    save(); renderAll(); page.close(); toast('Приёмы пищи сохранены');
+    save(); renderAll(); page.close();
+    /* Meal 33.21: фастинг включили посреди окна, а еда в нём уже записана — он начнётся со следующего окна (meal-fast.js) */
+    var note=!wasOn&&D.rules.fast.on&&typeof MealFast!=='undefined'&&MealFast.startNote?MealFast.startNote(Date.now()):'';
+    if(note) toast(note,null,null,6000); else toast('Приёмы пищи сохранены');
   }
   render();
   /* ширина шкал известна после вставки в страницу и меняется при повороте телефона */

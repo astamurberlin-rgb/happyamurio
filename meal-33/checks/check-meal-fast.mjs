@@ -1,7 +1,8 @@
 /* Meal 33.21 · фастинг (meal-fast.js) по решениям Астамура 20.11.2026: окно по расписанию, прерывание по записям,
-   итог дня под кольцом (выдержан, прерван, отменён), плашка идущего окна (до скольки, сколько осталось, доля), отмена
-   окна кнопкой, отмена записи из сообщения «Фастинг прерван», поздравление. Правило «прерывает ли запись» — настоящее
-   mlBreaksFast из index.html, запись настроек — настоящий MealPeriods.apply. Время — московское.
+   итог дня под кольцом (выдержан, прерван, отменён), плашка идущего окна (до скольки, сколько осталось, доля), «Отменить»
+   на плашке выключает фастинг, включение посреди окна — только если в окне ещё нет еды, отмена записи из сообщения
+   «Фастинг прерван», поздравление. Правило «прерывает ли запись» — настоящее mlBreaksFast из index.html, запись
+   настроек — настоящий MealPeriods.apply. Время — московское.
    Запуск: node meal-33/checks/check-meal-fast.mjs */
 process.env.TZ='Europe/Moscow';
 import {readFile} from 'node:fs/promises';
@@ -31,6 +32,8 @@ function diary(days,versions){
  return c.DB;
 }
 const st=(date,now)=>F.status(c.DB,date,now,F.rows);
+/* выключатель фастинга: «Отменить» на плашке и сохранение настроек делают одно и то же — новую версию в истории */
+const turn=(on,when)=>{const f=c.DB.mealRules.fast;c.DB.mealRules.fastVersions=plain(F.record(c.DB,{on,a:f.a,b:f.b},when));c.DB.mealRules.fast={on,a:f.a,b:f.b}};
 const state=(date,now)=>{const s=st(date,now);return s&&s.state};
 
 ok('окно 20:00–12:00 через полночь — одно окно, относится к дню, где заканчивается',()=>{
@@ -98,45 +101,68 @@ ok('выключил фастинг посреди окна и сохранил 
  assert.equal(F.windowOf(F.versions(c.DB),'2026-11-22'),null,'дальше окон нет, пока не включил');
  assert.equal(F.ended(c.DB,T('2026-11-21T12:30'),F.rows),null,'поздравление — только когда окно дошло до конца по расписанию');
  assert.equal(F.live(c.DB,now,F.rows).state,'off','время окна по расписанию ещё идёт, но плашки нет: отменено');
+ assert.equal(F.nextStart(c.DB,now,F.rows),null,'фастинг выключен — следующего окна нет');
+});
+ok('включил фастинг посреди окна: в окне уже записана еда — начнётся со следующего окна; еды не было — идёт, как будто с начала окна',()=>{
+ /* выключил в 08:00, поел в 09:00, включил в 10:40 */
+ diary({'2026-11-21':[item('pizza',200,'09:00')]});turn(false,T('2026-11-21T08:00'));
  const d2=P.draft(c.DB);d2.rules.fast.on=true;P.apply(c.DB,d2,()=>false,'2026-11-21',T('2026-11-21T10:40'));
- const w1=plain(F.windowOf(F.versions(c.DB),'2026-11-21'));assert.deepEqual(w1.segs,[[T('2026-11-20T20:00'),T('2026-11-21T08:00')],[T('2026-11-21T10:40'),T('2026-11-21T12:00')]],'включил в 10:40 — второй отрезок с этой минуты');
- c.DB.days['2026-11-21'].items.push(item('pizza',100,'10:30'));
- const r=F.live(c.DB,T('2026-11-21T11:00'),F.rows);assert.deepEqual([r.state,r.from],['run',T('2026-11-21T10:40')],'еда между выключением и включением не в счёт, окно идёт с 10:40');
- assert.deepEqual(plain(F.progress(r,T('2026-11-21T11:00'))),{till:'12:00',left:'1:00',share:0.25});
- assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T12:00')))),{b:'Фастинг выдержан',n:' · 10:40–12:00'},'итог — по последнему непрерывному отрезку');
+ const w1=plain(F.windowOf(F.versions(c.DB),'2026-11-21'));
+ assert.deepEqual(w1.segs,[[T('2026-11-20T20:00'),T('2026-11-21T08:00'),T('2026-11-20T20:00')],[T('2026-11-21T10:40'),T('2026-11-21T12:00'),T('2026-11-20T20:00')]],'два отрезка одного окна');
+ let r=F.live(c.DB,T('2026-11-21T11:00'),F.rows);
+ assert.deepEqual([r.state,r.at,r.blocked.name],['off',T('2026-11-21T08:00'),'Пицца'],'в окне уже записана еда — включённый в 10:40 фастинг в этом окне не идёт, окно так и отменено в 08:00');
+ assert.equal(F.nextStart(c.DB,T('2026-11-21T10:40'),F.rows),T('2026-11-21T20:00'),'начнётся со следующего окна — сегодня в 20:00');
+ assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T12:00')))),{b:'Фастинг отменён',n:' в 08:00'});
+ assert.equal(F.ended(c.DB,T('2026-11-21T12:05'),F.rows),null,'поздравления нет');
+ assert.deepEqual([state('2026-11-22',T('2026-11-21T19:00')),state('2026-11-22',T('2026-11-21T20:30'))],['plan','run'],'следующее окно — как обычно');
+ /* еды в окне не было (убрал запись) — тот же включённый фастинг идёт с начала окна */
+ c.DB.days['2026-11-21'].items=[];
+ r=F.live(c.DB,T('2026-11-21T11:00'),F.rows);assert.deepEqual([r.state,r.from],['run',T('2026-11-20T20:00')],'еды нет — идёт, отсчёт до конца окна');
+ assert.equal(F.nextStart(c.DB,T('2026-11-21T11:00'),F.rows),null);
+ assert.deepEqual(plain(F.progress(r,T('2026-11-21T11:00'))),{till:'12:00',left:'1:00',share:900/960});
+ assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T12:00')))),{b:'Фастинг выдержан',n:' · 20:00–12:00'});
  assert.equal(F.ended(c.DB,T('2026-11-21T12:05'),F.rows).plan,T('2026-11-21T12:00'));
  const d3=P.draft(c.DB);P.apply(c.DB,d3,()=>false,'2026-11-21',T('2026-11-21T23:00'));assert.equal(c.DB.mealRules.fastVersions.length,3,'сохранили без изменений фастинга — новой версии нет');
+ /* фастинг включили впервые в 09:00, а в 07:00 уже ели: окна в этот день нет вовсе */
+ diary({'2026-11-21':[item('pizza',200,'07:00')]},[]);P.apply(c.DB,P.draft(c.DB),()=>false,'2026-11-21',T('2026-11-21T09:00'));
+ r=F.live(c.DB,T('2026-11-21T09:01'),F.rows);assert.deepEqual([r.state,r.blocked.name],['skip','Пицца']);
+ assert.equal(F.words(st('2026-11-21',T('2026-11-21T13:00'))),null,'у дня отметки нет: фастинг в этом окне не начинался');
+ assert.equal(F.nextStart(c.DB,T('2026-11-21T09:01'),F.rows),T('2026-11-21T20:00'));
+ assert.equal(F.ended(c.DB,T('2026-11-21T12:05'),F.rows),null);
+ c.DB.days['2026-11-21'].items[0].fid='tea';assert.deepEqual([F.live(c.DB,T('2026-11-21T09:01'),F.rows).state,F.live(c.DB,T('2026-11-21T09:01'),F.rows).from],['run',T('2026-11-20T20:00')],'в 07:00 был чай без сахара — фастинг идёт');
+ /* окно прервано едой, пока фастинг был включён; выключил и включил снова — оно так и прервано */
+ diary({'2026-11-21':[item('pizza',200,'07:00')]});turn(false,T('2026-11-21T08:00'));turn(true,T('2026-11-21T08:30'));
+ assert.equal(state('2026-11-21',T('2026-11-21T09:00')),'broken');assert.equal(F.nextStart(c.DB,T('2026-11-21T09:00'),F.rows),T('2026-11-21T20:00'));
 });
-ok('«Отменить» на плашке: окно закончилось сейчас, расписание включено; «Вернуть» — окно идёт дальше; настройки отмену не стирают',()=>{
+ok('«Отменить» на плашке выключает фастинг: окно закончилось сейчас, следующего нет, пока не включат; «Вернуть» — выключения не было',()=>{
  diary();const stop=T('2026-11-21T02:00');
  assert.equal(F.live(c.DB,T('2026-11-20T21:00'),F.rows).state,'run');
  c.DB.days['2026-11-20']={items:[item('pizza',200,'21:30')]};assert.equal(F.live(c.DB,T('2026-11-20T22:00'),F.rows).state,'broken','еда в 21:30 прервала');
  c.DB.days['2026-11-20'].items=[];
- c.DB.mealRules.fastStops=[stop];assert.deepEqual(plain(F.stops(c.DB)),[stop]);
- const w=plain(F.windowOf(F.versions(c.DB),'2026-11-21',F.stops(c.DB)));assert.deepEqual([w.start,w.end,w.plan,w.planned],[T('2026-11-20T20:00'),stop,T('2026-11-21T12:00'),false]);
- assert.equal(state('2026-11-21',T('2026-11-21T01:59')),'run','до отмены окно шло');
+ turn(false,stop);assert.deepEqual(plain(F.versions(c.DB).map(v=>[v.on,v.at])),[[true,T('2026-11-19T15:00')],[false,stop]]);
+ const w=plain(F.windowOf(F.versions(c.DB),'2026-11-21'));assert.deepEqual([w.start,w.end,w.plan,w.planned],[T('2026-11-20T20:00'),stop,T('2026-11-21T12:00'),false]);
  assert.equal(state('2026-11-21',T('2026-11-21T02:00')),'off');assert.equal(F.live(c.DB,T('2026-11-21T03:00'),F.rows).state,'off');
  assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T09:00')))),{b:'Фастинг отменён',n:' в 02:00'});
- c.DB.mealRules.fastStops=[T('2026-11-20T23:10')];assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T09:00')))),{b:'Фастинг отменён',n:' вчера в 23:10'});
- c.DB.mealRules.fastStops=[stop];
  c.DB.days['2026-11-21']={items:[item('pizza',300,'03:00')]};assert.equal(state('2026-11-21',T('2026-11-21T13:00')),'off','еда после отмены окно не «прерывает»');
  c.DB.days['2026-11-21'].items.push(item('pizza',300,'01:00'));assert.equal(state('2026-11-21',T('2026-11-21T13:00')),'broken','еда до отмены — окно прервано, так и считается');
  c.DB.days['2026-11-21'].items=[];
  assert.equal(F.ended(c.DB,T('2026-11-21T12:05'),F.rows),null,'отменённое окно — без поздравления');
- assert.equal(state('2026-11-22',T('2026-11-21T19:00')),'plan','следующее окно начнётся как обычно');assert.equal(F.live(c.DB,T('2026-11-21T20:00'),F.rows).state,'run');
- const d=P.draft(c.DB);d.rules.kcal=200;P.apply(c.DB,d,()=>false,'2026-11-21',T('2026-11-21T09:00'));
- assert.deepEqual(plain(c.DB.mealRules.fastStops),[stop],'сохранили «Настроить приёмы пищи» — отмена на месте');assert.equal(c.DB.mealRules.fastVersions.length,1);
- c.DB.mealRules.fastStops=[];assert.equal(state('2026-11-21',T('2026-11-21T03:00')),'run','«Вернуть» — отмены нет, окно идёт');
- c.DB.mealRules.fastStops=[stop,'x',-5,1.5];assert.deepEqual(plain(F.stops(c.DB)),[stop],'негодные отмены не читаются');
+ assert.equal(F.windowOf(F.versions(c.DB),'2026-11-22'),null,'выключатель выключен — следующее окно не начнётся');
+ c.DB.mealRules.fastVersions.pop();c.DB.mealRules.fast.on=true;assert.equal(state('2026-11-21',T('2026-11-21T03:00')),'run','«Вернуть» — выключения не было, окно идёт');
+ const d=P.draft(c.DB);d.rules.kcal=200;P.apply(c.DB,d,()=>false,'2026-11-21',T('2026-11-21T09:00'));assert.equal(c.DB.mealRules.fastVersions.length,1,'сохранили настройки без изменения фастинга — история та же');
+ diary();turn(false,T('2026-11-20T23:10'));assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T09:00')))),{b:'Фастинг отменён',n:' вчера в 23:10'});
+ /* отменил и включил снова, еды не было — окно идёт дальше, как будто не отменял */
+ turn(true,T('2026-11-20T23:40'));let r=F.live(c.DB,T('2026-11-21T07:30'),F.rows);assert.deepEqual([r.state,r.from],['run',T('2026-11-20T20:00')]);
+ assert.deepEqual(plain(F.progress(r,T('2026-11-21T07:30'))),{till:'12:00',left:'4:30',share:690/960});
  /* время еды — с точностью до минуты: отменил в 10:00:20 и сразу записал завтрак в 10:00 — окно отменено, а не прервано */
- diary({'2026-11-21':[item('pizza',300,'10:00')]});c.DB.mealRules.fastStops=[T('2026-11-21T10:00')+20000];
+ diary({'2026-11-21':[item('pizza',300,'10:00')]});turn(false,T('2026-11-21T10:00')+20000);
  assert.equal(state('2026-11-21',T('2026-11-21T10:01')),'off','еда в минуту отмены окно не прерывает');
  assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T10:01')))),{b:'Фастинг отменён',n:' в 10:00'});
  assert.deepEqual(plain(F.broke(c.DB,[{date:'2026-11-21',id:c.DB.days['2026-11-21'].items[0].id}],T('2026-11-21T10:01'),F.rows)),[],'и сообщения «Фастинг прерван» нет');
  c.DB.days['2026-11-21'].items[0].t='09:59';assert.equal(state('2026-11-21',T('2026-11-21T10:01')),'broken','еда минутой раньше отмены — окно прервано');
  diary({'2026-11-21':[item('pizza',300,'08:00')]});const dz=P.draft(c.DB);dz.rules.fast.on=false;P.apply(c.DB,dz,()=>false,'2026-11-21',T('2026-11-21T08:00')+30000);
  assert.equal(state('2026-11-21',T('2026-11-21T08:05')),'off','выключил в настройках в 08:00:30, еда в 08:00 — тоже отменено, не прервано');
- diary();c.DB.mealRules.fastStops=[T('2026-11-20T20:00')+15000];
+ diary();turn(false,T('2026-11-20T20:00')+15000);
  assert.deepEqual([state('2026-11-21',T('2026-11-20T20:01')),F.words(st('2026-11-21',T('2026-11-20T20:01'))).n],['off',' вчера в 20:00'],'отменил в первую минуту окна');
 });
 ok('плашка идущего окна: до скольки, сколько осталось и доля; прервано или закончилось — плашки нет, отметка сразу',()=>{
