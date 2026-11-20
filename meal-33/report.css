@@ -41,7 +41,9 @@ body.meal-report-open{overflow:hidden}
 @media(max-height:520px){.mc-correction .mc-shell{max-height:calc(var(--mc-viewport-height,100dvh) - 12px)}}
 
 .mc-product .mc-shell{padding-top:0}
-.mc-product .mc-product-heading{position:sticky;top:0;z-index:2;margin:0 -18px;padding:max(10px,env(safe-area-inset-top)) 18px 10px;background:#984367}
+/* Шапка закреплена и закрывает то, что прокручивается под ней. Заливка — тот же переход цвета, что у фона карточки (.mc-product),
+   растянутый на всё окно карточки: шапка показывает его верхний срез, поэтому шва между шапкой и фоном нет (Астамур, 20.11.2026). */
+.mc-product .mc-product-heading{position:sticky;top:0;z-index:2;margin:0 -18px;padding:max(10px,env(safe-area-inset-top)) 18px 10px;background:linear-gradient(155deg,#a44667,#552642) center top/100vw var(--mc-viewport-height,100dvh) no-repeat}
 .mc-product .mc-product-heading .mc-grab{margin:0 auto 2px}
 .mc-product .mc-product-heading .mc-head{margin:0}
 .mc-product .mc-basis{display:flex;gap:0;padding:3px;border-radius:999px;background:#ffffff20;border:1px solid #ffffff40}
