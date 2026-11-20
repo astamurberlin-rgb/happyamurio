@@ -204,3 +204,7 @@ body.wheel-editing.now-dirty #fab{visibility:visible}
 /* аудит 20.11.2026, п. 5: колесо выбора дневника (общее HappyScreens.wheel) в форме записи — подпись как у полей */
 .care-form .hs-wheel-wrap{margin:14px 0 2px}
 .care-form .hs-wheel-wrap>.hs-field-title{display:block;margin:0 0 8px;font-size:14px;font-weight:600;color:inherit;text-align:left}
+/* 21.11.2026 (Астамур): кружки дней недели не липнут к полю «Практика» над ними; барабан длительности — отступ, как у полей */
+.care-sheet-form .care-days{margin:16px 0 2px}
+.care-sheet-form .hf-drum{margin-top:16px}
+.care-form .hf-drum-label{font-size:16px;font-weight:600}

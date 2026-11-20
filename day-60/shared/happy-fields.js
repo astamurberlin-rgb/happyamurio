@@ -72,24 +72,26 @@
  function parse(v){const t=String(v==null?'':v).trim().replace(',','.');return /^-?\d+(\.\d+)?$/.test(t)?Number(t):NaN;}
  /* Барабан — колёса с крупными цифрами, как время на iPhone (Астамур 21.11.2026: «большие цифры и карусель вертикальная»).
     Колесо крутится пальцем с разгоном (родная прокрутка с защёлкой на строке), нажатие на строку — выбрать её,
-    стрелки вверх-вниз — на шаг. Выбранное стоит в полосе посередине; соседние строки мельче и бледнее.
-    drum(host,{groups:[{label,cols:[{name,label,options:[{v,t}],value,width}|{sep:':'}|{unit:'мин'}]}],onChange(vals)})
-    → {get(name), set(name,v)}. Подписи групп («Время», «Длительность») стоят над своими колёсами. */
+    стрелки вверх-вниз — на шаг. Выбранное стоит в пилюле посередине; соседние строки мельче и бледнее.
+    Время и длительность — в одном виде 00:00 (длительность бывает больше часа); у каждой группы колёс своя пилюля.
+    drum(host,{groups:[{label,cols:[{name,label,options:[{v,t}],value}|{sep:':'}|{unit:'мин'}]}],inline,onChange(vals)})
+    inline — подпись слева, колёса посередине оставшегося места (одна группа в строке); иначе подписи над группами.
+    → {get(name), set(name,v)}. */
  const ROW=44,DRUM_H=176;
  const escH=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  function drum(host,o){
   const vals={},cols=[];
-  host.classList.add('hf-drum');
-  host.innerHTML='<div class="hf-drum-labels" aria-hidden="true">'+o.groups.map(g=>'<span>'+escH(g.label||'')+'</span>').join('')+'</div>'+
-   '<div class="hf-drum-wheel"><div class="hf-drum-band" aria-hidden="true"></div>'+o.groups.map((g,gi)=>'<div class="hf-drum-group" data-g="'+gi+'">'+g.cols.map(c=>
+  host.classList.add('hf-drum');host.classList.toggle('hf-drum-inline',!!o.inline);
+  host.innerHTML=(o.inline?'':'<div class="hf-drum-labels" aria-hidden="true">'+o.groups.map(g=>'<span>'+escH(g.label||'')+'</span>').join('')+'</div>')+
+   '<div class="hf-drum-wheel">'+(o.inline?'<span class="hf-drum-label">'+escH(o.groups[0].label||'')+'</span>':'')+o.groups.map((g,gi)=>'<div class="hf-drum-group" data-g="'+gi+'"><div class="hf-drum-band" aria-hidden="true"></div>'+g.cols.map(c=>
     c.sep?'<span class="hf-drum-sep" aria-hidden="true">'+escH(c.sep)+'</span>':
     c.unit?'<span class="hf-drum-unit" aria-hidden="true">'+escH(c.unit)+'</span>':
-    '<div class="hf-drum-col'+(c.text?' hf-drum-text':'')+'" role="listbox" tabindex="0" aria-label="'+escH(c.label||'')+'" data-name="'+escH(c.name)+'"'+(c.width?' style="width:'+c.width+'px"':'')+'>'+
+    '<div class="hf-drum-col" role="listbox" tabindex="0" aria-label="'+escH(c.label||'')+'" data-name="'+escH(c.name)+'"'+(c.width?' style="width:'+c.width+'px"':'')+'>'+
      '<div class="hf-drum-pad"></div>'+c.options.map((x,i)=>'<div class="hf-drum-item" role="option" data-i="'+i+'">'+escH(x.t)+'</div>').join('')+'<div class="hf-drum-pad"></div></div>'
    ).join('')+'</div>').join('')+'</div>';
   o.groups.forEach(g=>g.cols.forEach(c=>{if(!c.options)return;const el=host.querySelector('[data-name="'+c.name+'"]');
    const at=Math.max(0,c.options.findIndex(x=>String(x.v)===String(c.value)));vals[c.name]=c.options[at].v;cols.push({c,el,at,frame:0,timer:0});}));
-  function paint(k){const top=k.el.scrollTop,mid=top+DRUM_H/2;
+  function paint(k){const mid=k.el.scrollTop+DRUM_H/2;
    k.el.querySelectorAll('.hf-drum-item').forEach((n,i)=>{const d=Math.abs(i*ROW+ROW/2+(DRUM_H-ROW)/2-mid)/ROW;
     n.style.transform='scale('+(1-Math.min(d,2)*.17).toFixed(3)+')';n.style.opacity=String(Math.max(.18,1-Math.min(d,2.4)*.36).toFixed(2));
     const on=d<.5;n.classList.toggle('hf-on',on);n.setAttribute('aria-selected',String(on));});}
@@ -103,7 +105,7 @@
    k.el.addEventListener('keydown',e=>{if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return;e.preventDefault();k.el.scrollBy({top:e.key==='ArrowDown'?ROW:-ROW,behavior:'smooth'});});
   });
   /* подписи — над своими группами колёс */
-  function place(){const lab=host.querySelectorAll('.hf-drum-labels>span'),box=host.getBoundingClientRect();
+  function place(){if(o.inline)return;const lab=host.querySelectorAll('.hf-drum-labels>span'),box=host.getBoundingClientRect();
    host.querySelectorAll('.hf-drum-group').forEach((g,i)=>{const r=g.getBoundingClientRect(),l=lab[i];if(!l||!r.width)return;l.style.left=(r.left-box.left)+'px';l.style.width=r.width+'px';});}
   place();requestAnimationFrame(()=>{place();cols.forEach(k=>{k.el.scrollTop=k.at*ROW;paint(k);});});
   return {get:name=>vals[name],set(name,v){const k=cols.find(x=>x.c.name===name);if(!k)return;const i=k.c.options.findIndex(x=>String(x.v)===String(v));if(i<0)return;k.at=i;vals[name]=k.c.options[i].v;k.el.scrollTop=i*ROW;paint(k);},place};
