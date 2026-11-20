@@ -767,7 +767,20 @@ var MealBot=(function(){
     var c={id:'c'+(++S.seq),add:add,undone:false,at:S.clock||Date.now()}; S.commits.push(c);
     /* «перепиши: …» — прежняя запись убирается только теперь, когда новая уже записана (раньше убиралась заранее и могла пропасть) */
     if(S.rewrite){ var old=S.rewrite; S.rewrite=null; if(!old.undone&&old!==c){ undo(S,old); c.replaced=true } }
+    /* Meal 33.21: запись прервала окно фастинга — «Фастинг прерван» с «Отменить» (meal-fast.js). У диктовки шортката —
+       после сообщения «Диктовки с шортката» */
+    if(typeof MealFast!=='undefined'){ var inbox=entries.some(function(en){ return en.line&&en.line.inbox });
+      MealFast.recorded(add.map(function(a){ return {date:a.date,id:a.item.id} }),function(){ fastUndo(S,c) },{later:inbox?2400:0}) }
     return c;
+  }
+  /* «Отменить» в сообщении «Фастинг прерван»: та же отмена, что у кнопки в ответе бота */
+  function fastUndo(S,c){
+    if(!undo(S,c)) return;
+    c.add.forEach(function(a){ var id=a.en.phraseId, ph=id&&S.phrases&&S.phrases[id]; if(!ph||ph.cancelled) return;
+      var live=S.commits.some(function(x){ return !x.undone&&x.add.some(function(b){ return b.en.phraseId===id&&day(b.date).items.some(function(y){ return y.id===b.item.id }) }) })||S.pend.some(function(q){ return q.phraseId===id });
+      if(!live) ph.cancelled=true });
+    var chat=CH.meal; if(chat&&chat.bot===S) chat.msgs.push({id:'b'+(++chat.seq),who:'bot',kind:'reply',html:p('Отменил. Этих записей в дневнике больше нет.')});
+    try{ if(typeof chatOpen==='function'&&chatOpen()&&D===CH.meal) renderChat({keepScroll:true}) }catch(e){}
   }
   function undo(S,c){
     if(!c||c.undone) return false;

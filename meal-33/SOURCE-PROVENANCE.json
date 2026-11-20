@@ -444,8 +444,8 @@
   },
   {
    "path": "bot.js",
-   "size": 195522,
-   "sha256": "15d2f44390898918d723da61b693f3b03ee9a4469f7fea692ea4f55569038bcf"
+   "size": 196951,
+   "sha256": "2cfaca668c7e193172371d7a417d4cc00727ef15bf868b86ab2ac7a3297c41ba"
   },
   {
    "path": "bot/household-ru.js",
@@ -493,14 +493,19 @@
    "sha256": "ea1c62b7e57af0acefad5481006aee3ff0f0c92e5c1f023369ee07c82ac08ffa"
   },
   {
+   "path": "checks/check-meal-fast.mjs",
+   "size": 14397,
+   "sha256": "b62909bfe490560684b6e55f5adde8c42a6b82312bd12ad17c0e091693aefda0"
+  },
+  {
    "path": "checks/check-meal-first-time.mjs",
-   "size": 25876,
-   "sha256": "8ecec5ce4f4c859792bf20fb08100501b16f74ba5efca60c2590c75239f6a3ec"
+   "size": 25654,
+   "sha256": "a03433f2df321f14bb6834d05741b869f6ca61e6914a9fd1536e62b2f5c600af"
   },
   {
    "path": "checks/check-meal-periods.mjs",
-   "size": 12353,
-   "sha256": "3f6804c76cf197bf7856a8f571ef4d1e7ef05194f04759756ec4908c7f54387d"
+   "size": 12566,
+   "sha256": "8ab8a9b65abc64b8f046e5148aaf8a4303a90e3f95d67d3c24633318ffc301d2"
   },
   {
    "path": "checks/check-preserves.mjs",
@@ -554,8 +559,8 @@
   },
   {
    "path": "counters.js",
-   "size": 34034,
-   "sha256": "377f996153f0057abb4faa0500924a024b883467d1d04b94f004ba7b3628d4bf"
+   "size": 34445,
+   "sha256": "b902c19c0267fa7ef633c00f4d636a89f09f0e3379d2ef41b00cb7b1400fe015"
   },
   {
    "path": "desserts.js",
@@ -589,8 +594,8 @@
   },
   {
    "path": "index.html",
-   "size": 645074,
-   "sha256": "62d9fc5cfdaff45310fe30da13adbd0e5ad91f6149f4c132c1659538e21b1a46"
+   "size": 645805,
+   "sha256": "a21b204a14ecb7a885d52108ccc890239e911ca5f646f1e8e63f9748c8e33c96"
   },
   {
    "path": "kfct.js",
@@ -616,6 +621,11 @@
    "path": "meal-docs.js",
    "size": 12512,
    "sha256": "667c7b554b3263979f19c5f4f72be1a8a781891f46de09d2ea3513aaf05cc4f5"
+  },
+  {
+   "path": "meal-fast.js",
+   "size": 14184,
+   "sha256": "71a83d1a69ae434c44c8808c27e20b551d4a9a2adf892eb14bdf0c652f4bf470"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",
@@ -784,8 +794,8 @@
   },
   {
    "path": "meal-periods.js",
-   "size": 45593,
-   "sha256": "579c50ac33cf0c72c72a2423e9cfbf4d27f259477d59fbeab1aac356ca7c5d79"
+   "size": 46269,
+   "sha256": "be3d619c9d075ff6d8787d579340967592680e636daf9b3db102e47becfb24a3"
   },
   {
    "path": "portions.js",
@@ -984,13 +994,13 @@
   },
   {
    "path": "supplements.css",
-   "size": 15481,
-   "sha256": "d1841ce2c338b7e2e9bb005985156b74d7a8fbda1df2e10cfd01e2527739c4e1"
+   "size": 15245,
+   "sha256": "78d28d17b1d0165d9488d9a85364010e88e1f2c7bb7e8f93f64a9c0544e069af"
   },
   {
    "path": "supplements.js",
-   "size": 55559,
-   "sha256": "e768874be37a490489d65c7e74d2ced4cadf704e6ed8433c991966bd20710042"
+   "size": 55959,
+   "sha256": "9f745c82e6f2f23119e48fe456563144bef0c0d56b6908a7ac68c3bb274e9c10"
   },
   {
    "path": "sw.js",

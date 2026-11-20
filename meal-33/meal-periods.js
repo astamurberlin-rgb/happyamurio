@@ -11,8 +11,9 @@
  * Ключи разделов прежние, поэтому записи дневника и сводка для Day и Sport не меняются.
  *
  * Правила и фастинг — поле дневника DB.mealRules: {kcal — «меньше, ккал», gap — «пауза больше, мин»,
- * fast:{on,a,b} — фастинг, отдельный слой: может идти через полночь и пересекаться с едой}.
- * Запись еды в период фастинга (вопрос «точно записать?») здесь НЕ сделана — это следующий этап.
+ * fast:{on,a,b} — фастинг, отдельный слой: может идти через полночь и пересекаться с едой;
+ * fastVersions — история фастинга с моментом каждого сохранения (Meal 33.21, meal-fast.js)}.
+ * Запись еды в окне фастинга не останавливается вопросом: окно прерывает сама запись — это считает meal-fast.js.
  *
  * Пока человек не нажал «Сохранить», в дневник ничего не пишется: разделы без a и b получают время на лету
  * (chain), одинаково на всех устройствах. Разделы из другого приложения («· Cronometer») и скрытые (visibleBefore)
@@ -144,8 +145,9 @@ function pick(db,m,kcal,recs){ var r=classify(chain(db),rules(db),{m:m,kcal:kcal
 /* черновик экрана и его запись в дневник */
 function draft(db){ var rows=chain(db); return {rows:rows,rules:rules(db),had:rows.map(function(r){ return r.k })} }
 function sameRows(a,b){ return JSON.stringify(a)===JSON.stringify(b) }
-/* used(k) — в разделе есть записи; today — дата, с которой удалённый раздел с записями больше не показывается */
-function apply(db,d,used,today){
+/* used(k) — в разделе есть записи; today — дата, с которой удалённый раздел с записями больше не показывается;
+   now — момент сохранения (мс), с него действует изменённый фастинг */
+function apply(db,d,used,today,now){
   var old=db.sections||[], byK={}; old.forEach(function(s){ byK[s.k]=s });
   var keep={}, out=d.rows.map(function(r){
     var s=byK[r.k]||{k:r.k}; keep[r.k]=1;
@@ -161,7 +163,11 @@ function apply(db,d,used,today){
     if(used&&used(s.k)){ s.visibleBefore=today; delete s.a; delete s.b; out.push(s) }   // записи целы: раздел виден в прошлых днях
   });
   db.sections=out;
-  db.mealRules={kcal:d.rules.kcal,gap:d.rules.gap,fast:{on:!!d.rules.fast.on,a:d.rules.fast.a,b:d.rules.fast.b}};
+  var fast={on:!!d.rules.fast.on,a:d.rules.fast.a,b:d.rules.fast.b}, F=typeof MealFast!=='undefined'?MealFast:null;
+  if(!F&&typeof require==='function'){ try{ F=require('./meal-fast.js') }catch(e){} }
+  var history=F?F.record(db,fast,typeof now==='number'?now:Date.now()):null;   // Meal 33.21: фастинг с историей — прошлые окна не меняются
+  db.mealRules={kcal:d.rules.kcal,gap:d.rules.gap,fast:fast};
+  if(history&&history.length) db.mealRules.fastVersions=history;
 }
 var api={DAY:DAY,STEP:STEP,RULES:RULES,clock:clock,preset:preset,kindOf:kindOf,inChain:inChain,hasWin:hasWin,tiles:tiles,tile:tile,chain:chain,rules:rules,
   contains:contains,duration:duration,segments:segments,periodAt:periodAt,limits:limits,moveEdge:moveEdge,addRow:addRow,removeRow:removeRow,

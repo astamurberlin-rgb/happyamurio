@@ -181,10 +181,10 @@ with sync_playwright() as p:
     page.fill("#happy-screens [name=mp-kcal]", "150")
     want = page.evaluate(STATE)
     click(page, "#happy-screens [data-hs=save]"); page.wait_for_timeout(600)
-    saved = page.evaluate("()=>({secs:DB.sections,rules:DB.mealRules,chain:MealPeriods.chain(DB),open:!!document.querySelector('#happy-screens .mp-page.hs-in')})"); out["saved"] = saved
+    saved = page.evaluate("()=>({secs:DB.sections,rules:MealPeriods.rules(DB),versions:MealFast.versions(DB).map(v=>[v.on,v.a,v.b]),chain:MealPeriods.chain(DB),open:!!document.querySelector('#happy-screens .mp-page.hs-in')})"); out["saved"] = saved
     keys = [x["k"] for x in want["rows"]]
     check("«Сохранить»: периоды, названия, виды и время — в разделах дневника, ключи исходных прежние", not saved["open"] and [(x["k"], x["t"], x["a"], x["b"]) for x in saved["chain"]] == [(x["k"], x["t"], x["a"], x["b"]) for x in want["rows"]] and keys[:2] == ["am", "pm"] and whole(saved["chain"]), saved["chain"])
-    check("пороги и фастинг сохранены", saved["rules"] == {"kcal": 150, "gap": 20, "fast": {"on": True, "a": 1200, "b": 840}}, saved["rules"])
+    check("пороги и фастинг сохранены; включение фастинга — версия в истории (Meal 33.21)", saved["rules"] == {"kcal": 150, "gap": 20, "fast": {"on": True, "a": 1200, "b": 840}} and saved["versions"] == [[True, 1200, 840]], [saved["rules"], saved["versions"]])
     synced(page)
     page.reload(); enter(page); ready(page)
     check("после перезагрузки настройки те же", page.evaluate(CHAIN) == [[x["k"], x["t"], x["a"], x["b"], x["kind"]] for x in want["rows"]] and page.evaluate("()=>MealPeriods.rules(DB)") == saved["rules"], page.evaluate(CHAIN))

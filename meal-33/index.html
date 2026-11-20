@@ -861,6 +861,12 @@ body.sheet:not(.chatOn) .fab .icX{display:block}
 .mlKbR .bar{grid-column:2/-1;height:6px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.24);overflow:hidden}
 .mlKbR .bar i{display:block;height:100%;border-radius:3px}
 .mlKbHint{margin:-12px 4px 22px}
+/* Meal 33.21 · отметка фастинга дня (meal-fast.js): одна строка между кольцом и приёмами пищи */
+.mlFast{display:flex;align-items:center;gap:8px;margin:-8px 6px 16px;font-size:14px;font-weight:400;line-height:20px;color:var(--muted)}
+.mlFast[hidden]{display:none}
+.mlFast svg{flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mlFast span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mlFast b{font-weight:600;color:var(--ink)}
 /* ══════════ ДИАЛОГ «Что съел» ══════════ */
 .screen[data-screen="chat"]{padding-bottom:calc(230px + env(safe-area-inset-bottom))}
 .mlChat{display:flex;flex-direction:column;gap:10px}
@@ -2003,13 +2009,13 @@ function ask2(title, l1, v1, l2, v2){
     w.onclick=function(e){ if(e.target===w) done(null) };
   });
 }
-/* undo — что сделать по «Вернуть»; без него подсказка как раньше */
-function toast(msg,undo){
+/* undo — что сделать по кнопке; без него подсказка как раньше. label — надпись кнопки (обычно «Вернуть»), ms — сколько видно */
+function toast(msg,undo,label,ms){
   var t=document.getElementById('toast');
   clearTimeout(t._h);
   if(undo){
-    t.innerHTML='<span></span><button class="tU">Вернуть</button>';
-    t.firstChild.textContent=msg;
+    t.innerHTML='<span></span><button class="tU"></button>';
+    t.firstChild.textContent=msg; t.lastChild.textContent=label||'Вернуть';
     t.lastChild.onclick=function(){
       t.classList.remove('on','tAct');
       var f=undo; undo=null; if(f) f();
@@ -2017,7 +2023,7 @@ function toast(msg,undo){
     t.classList.add('tAct');
   } else { t.textContent=msg; t.classList.remove('tAct') }
   t.classList.add('on');
-  t._h=setTimeout(function(){ t.classList.remove('on','tAct') },undo?4000:1900);
+  t._h=setTimeout(function(){ t.classList.remove('on','tAct') },ms||(undo?4000:1900));
 }
 /* ── Замок дня ──
    Когда смотришь прошедший день, легко задеть кольцо или тег и
@@ -3034,7 +3040,7 @@ function renderDay(){
   var supplementDay=supplementRows(curDate),partial=['kcal','prot','fat','carb'].some(function(k){return intakeCoverage(day(curDate).items,supplementDay,k).missing>0}),hint=document.getElementById('mlKbHint');
   hint.hidden=day(curDate).items.length>0||supplementDay.length>0;   // Meal 30 (Астамур 12.11 11:30): без пояснения «Калории и БЖУ: сумма известных значений…»
   hint.textContent='Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото». ';
-  var fastEl=document.getElementById('mlFast');if(fastEl){fastEl.hidden=true;fastEl.innerHTML=''}   // Meal 30 (Астамур 12.11): строку «Голодание прервано» не показываем; данные не трогаем
+  if(typeof MealFast!=='undefined') MealFast.tick();   // отметка фастинга этого дня (meal-fast.js, решения Астамура 20.11.2026)
   document.getElementById('mlSecs').innerHTML=sectionsForDate(curDate).map(function(S){
     var it=itemsOf(S.k), supplements=supplementRows(curDate,S.k), s=intakeSum(it,supplements), parts=[];
     var nAll=it.length+supplements.length;if(nAll)parts.push(nAll+' '+ruPlural(nAll,['продукт','продукта','продуктов']));   // Meal 30: добавки — как любая еда
@@ -3145,7 +3151,8 @@ function mlTimeRestart(input,ev){
    калорийность продукта неизвестна — как раньше: еда открывает, напиток нет. БАДы — по приёму: больше 4 ккал за
    приём и порошок или жидкость (протеин, коллаген); капсулы и таблетки приём не открывают, но голодание прерывают
    (рыбий жир). Свой вариант может переопределить правило (supplement-nutrition.js, opensMeal). Голодание прерывает
-   первая запись, которая открывает приём, или БАД больше 4 ккал за приём. */
+   запись, которая открывает приём, или БАД больше 4 ккал за приём: mlBreaksFast. С Meal 33.21 по нему считается окно
+   фастинга (meal-fast.js, решения Астамура 20.11.2026). */
 /* Meal 30 (Астамур 12.11 10:44): у БАДов «открывает приём» и «сбрасывает окно голодания» — одно правило:
    своё «Да» / «Нет» из варианта, иначе больше 4 ккал за приём для любой формы (supplement-nutrition.js). */
 function mlFoodKcal(x){var f=MealProducts.forItem(x,FOODS,DB)||FOODS[x.fid],k=f&&f.k;return typeof k==='number'&&isFinite(k)&&k>=0?k:null}
@@ -3160,16 +3167,6 @@ function mlNotOpening(fid,x){return !mlOpens(x||{fid:fid})}
 function mlBreaksFast(x){if(x&&x.sup)return !!x.sup.breaksFast;var r=mlSuppRule(x);return r?!!r.breaksFast:mlOpensFood(x)}
 /* записи дня вместе с приёмами БАДов — для времени приёма и сводки (sup — строка HappySupplementNutrition) */
 function mlIntakeItems(items,rows){return (items||[]).concat((rows||[]).map(function(r){return {t:r.time||null,tm:r.manual?1:0,sup:r,fid:null}}))}
-function mlFastBreak(date){
-  var best=null;
-  mlIntakeItems((DB.days[date]&&DB.days[date].items)||[],supplementRows(date)).forEach(function(x){
-    var t=mlNormTime(x.t);if(!t||!mlBreaksFast(x))return;
-    if(!best||t<best.t)best={t:t,x:x};
-  });
-  if(!best)return null;
-  var f=best.x.sup?null:MealProducts.forItem(best.x,FOODS,DB)||FOODS[best.x.fid];
-  return {t:best.t,name:best.x.sup?best.x.sup.name:(f&&f.n)||'Продукт'};
-}
 function mlStamp(items,value){
   var t=mlNormTime(value);if(!t)return false;
   (items||[]).forEach(function(x){x.t=t;x.tm=1});return true;
@@ -4411,7 +4408,9 @@ function applyFind(fid){
     save(); renderSec(); renderDay();
     var ae=document.activeElement; if(ae&&ae.blur) ae.blur();
     var row=document.querySelector('[data-screen="sec"] .mlItem[data-id="'+it.id+'"]'); if(row) row.scrollIntoView({block:'center',behavior:'smooth'});
-    toast('Добавлено в «'+(S?S.t:'')+'»: '+f.n,function(){ e.items=e.items.filter(function(x){ return x.id!==it.id }); save(); renderSec(); renderDay() });
+    var back=function(){ e.items=e.items.filter(function(x){ return x.id!==it.id }); save(); renderSec(); renderDay() };
+    toast('Добавлено в «'+(S?S.t:'')+'»: '+f.n,back);
+    if(typeof MealFast!=='undefined') MealFast.recorded([{date:curDate,id:it.id}],back);   // прервала окно — «Фастинг прерван» с «Отменить»
     return;
   } else {
     var keys=Object.keys(f.por||{}), u=defUnit(f), q=u==='г'?100:1;
@@ -4448,10 +4447,12 @@ document.getElementById('mlSave').addEventListener('click',function(){
   if(M.fromChat){ var sq=CH.meal.seq; dropChat(CH.meal); CH.meal=newChat('meal'); CH.meal.seq=sq; if(D.kind==='meal') D=CH.meal }
   M={mode:'diary',said:'',lines:[],sec:null,open:null,t:null,man:false}; FIND=null;
   go('day');
-  toast('Записано в «'+(S?S.t:'')+'»: '+add.length,function(){
+  var back=function(){
     var ids=add.map(function(x){ return x.id });
     e.items=e.items.filter(function(x){ return ids.indexOf(x.id)<0 }); save(); renderDay();
-  });
+  };
+  toast('Записано в «'+(S?S.t:'')+'»: '+add.length,back);
+  if(typeof MealFast!=='undefined') MealFast.recorded(add.map(function(x){ return {date:curDate,id:x.id} }),back);
 });
 
 var CLOCKI='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.8v5.6l3.8 2.2"/></svg>';
@@ -6176,7 +6177,7 @@ function jrNoteTxt(){
 <script src="desserts.js?v=33.20"></script>
 <script src="preserves.js?v=33.20"></script><script src="kfct.js?v=33.20"></script>
 <script src="user-products.js?v=33.20"></script>
-<script src="bot/household-ru.js?v=33.20"></script><script src="bot-speech.js?v=33.20"></script><script src="meal-periods.js?v=33.20"></script><script src="bot.js?v=33.20"></script><script src="meal-inbox.js?v=33.20"></script><script src="meal-measurements.js?v=33.20"></script>
+<script src="bot/household-ru.js?v=33.20"></script><script src="bot-speech.js?v=33.20"></script><script src="meal-periods.js?v=33.20"></script><script src="meal-fast.js?v=33.20"></script><script src="bot.js?v=33.20"></script><script src="meal-inbox.js?v=33.20"></script><script src="meal-measurements.js?v=33.20"></script>
 
 <script src="./shared/release-notes.js?v=33.20"></script>
 <script src="release-notes.js?v=33.20"></script>
