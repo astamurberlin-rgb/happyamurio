@@ -469,8 +469,8 @@
   },
   {
    "path": "catalog.js",
-   "size": 31085,
-   "sha256": "57db28e5c40bea8fc8dc2b72bb808d608809dab6a0478d44f25bab6f69c7c7ff"
+   "size": 31199,
+   "sha256": "d5a070bf645563d2f441d91f1208085e8a32dd79219fbbca2105d2ab4f90f021"
   },
   {
    "path": "checks/check-catalog-offline.mjs",
@@ -605,7 +605,7 @@
   {
    "path": "kfct.js",
    "size": 15966,
-   "sha256": "e374f450571c7a6efe3ac7b57581225a5fdba6c568c07a3d8397942b4ae45df3"
+   "sha256": "cbfd5a44fca531348b9fd1d6c6556362eb69f4e88efa16a274c946bd5b0db3d0"
   },
   {
    "path": "manifest.webmanifest",
@@ -799,8 +799,8 @@
   },
   {
    "path": "meal-periods.js",
-   "size": 49977,
-   "sha256": "11a02e7b36bf3e8ea198fe199aa65de54646e2571a7013cd69503d4eb8e91dfd"
+   "size": 50106,
+   "sha256": "7e178e07feb2736996c26d209c95050850a0a30d7aae87c5f16a0e6f49769c19"
   },
   {
    "path": "portions.js",

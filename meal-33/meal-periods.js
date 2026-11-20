@@ -528,7 +528,7 @@ function open(){
     save(); renderAll(); page.close();
     /* Meal 33.21: фастинг включили посреди окна, а еда в нём уже записана — он начнётся со следующего окна (meal-fast.js) */
     var note=!wasOn&&D.rules.fast.on&&typeof MealFast!=='undefined'&&MealFast.startNote?MealFast.startNote(Date.now()):'';
-    if(note) toast(note,null,null,6000); else toast('Приёмы пищи сохранены');
+    if(note) toast(note,null,null,6000); else toast('Настройки сохранены');   // слова Астамура 21.11.2026: «Приёмы пищи сохранены» звучало как запись еды
   }
   render();
   /* ширина шкал известна после вставки в страницу и меняется при повороте телефона */

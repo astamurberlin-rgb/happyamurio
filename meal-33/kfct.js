@@ -126,7 +126,7 @@ function infoHTML(f){
   '<p class="happy-note">'+esc(f.sourceNotes||'На 100 г съедобной части.')+'</p>'+
   '<a href="https://www.nics.go.kr/food/kfi/fct/fctIntro/list" target="_blank" rel="noopener noreferrer">Таблица KFCT ↗</a></section>';
 }
-function footer(f){return owns(f)?'KFCT 10.4 · RDA / NICS, Корея (2025)':null}
+function footer(f){return owns(f)?'KFCT 10.4 · RDA / NICS, Корея (2026)':null}
 root.MealKfct={ingest:ingest,append:append,load:load,owns:owns,infoHTML:infoHTML,footer:footer,settingsHTML:settingsHTML,status:function(){return state},
  count:function(){return list.length},food:function(id){return foods[id]||null},MAP:MAP,OWN:OWN};
 if(root.document){root.document.addEventListener('click',function(ev){if(ev.target.closest('[data-kfct-retry]'))load(true)});load()}

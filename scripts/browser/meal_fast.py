@@ -240,7 +240,8 @@ with sync_playwright() as p:
 
     # 10:10 — выключил фастинг в настройках и сохранил
     page.clock.set_system_time(at("2026-11-21T10:10:00")); quiet(page)
-    fast_switch(page)
+    fast_switch(page); t = page.evaluate(TOAST)
+    check("сохранил настройки — сообщение «Настройки сохранены» (Астамур 21.11.2026: не «Приёмы пищи сохранены»)", bool(t) and t["text"] == "Настройки сохранены", t)
     v = page.evaluate("()=>MealFast.versions(DB).map(x=>[x.on,new Date(x.at).toTimeString().slice(0,5)])"); out["off"] = v
     check("выключение сохранено версией с моментом сохранения", v[-1] == [False, "10:10"] and v[0][0] is True and len(v) == 4, v)
     check("окно закончилось в момент выключения: «Фастинг отменён в 10:10», плашки нет", page.evaluate(MARK, "2026-11-21") == "Фастинг отменён в 10:10" and bar(page) is None, [page.evaluate(MARK, "2026-11-21"), bar(page)])
