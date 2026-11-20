@@ -96,7 +96,7 @@ window.MealReplacement=(function(){
   function clear(){clearTimeout(timer);hold=null}
   document.addEventListener('pointerdown',function(e){
     clear();consumed=null;
-    var node=e.target.closest(selector);
+    var node=e.target.closest?e.target.closest(selector):null;   // событие не от элемента страницы — продукта под пальцем нет
     if(!node||!e.isPrimary||e.button!==0)return;
     var fid=node.dataset.infoFood||node.dataset.replacementFood||node.dataset.savedPick||node.dataset.addFood;
     var ask=D.bot&&D.bot.ask;
@@ -118,7 +118,7 @@ window.MealReplacement=(function(){
     if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>10)clear();
   },true);
   ['pointerup','pointercancel','scroll'].forEach(function(type){document.addEventListener(type,clear,true)});
-  document.addEventListener('contextmenu',function(e){if(e.target.closest(selector))e.preventDefault()},true);
+  document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest(selector))e.preventDefault()},true);
   document.addEventListener('click',function(e){
     if(consumed){consumed=null;e.preventDefault();e.stopImmediatePropagation()}
   },true);

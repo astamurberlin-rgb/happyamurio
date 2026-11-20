@@ -1186,13 +1186,15 @@ var MealBot=(function(){
       if(q.nameTurn==null) q.nameTurn=S.turn||0;   // на каком сообщении человека вопрос задан впервые
       var heard=q.heard||l.spoken||l.name;
       var unavailable=MealReplacement.catalogMessage();
-      if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>';
+      /* вопрос отдельным сообщением (диктовка шортката): строки списка, которую можно смахнуть, у него нет — «Пропустить» кнопкой, как раньше */
+      var skip=inlinePhrase(S,q)?'':chips([['skip:'+id,'Пропустить']]);
+      if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>'+skip;
       missLog('нет в базе',heard,l.raw);
       var options=similarFoods(l.spoken||l.name,l.formContext);
       var message=options.length?'К сожалению, в базе отсутствует «'+esc(heard)+'». Предлагаю на замену:':
         'Не нашёл «'+esc(heard)+'» в подключённых базах.';
       return p(message)+'<div data-replacement-slot="'+id+'">'+(options.length?
-        '<div class="mbChips mrOptions">'+options.map(function(f){return '<button type="button" class="chip" data-replacement-food="'+esc(f.id)+'">'+esc(f.n)+'</button>'}).join('')+'</div>':'')+'</div>';
+        '<div class="mbChips mrOptions">'+options.map(function(f){return '<button type="button" class="chip" data-replacement-food="'+esc(f.id)+'">'+esc(f.n)+'</button>'}).join('')+'</div>':'')+'</div>'+skip;
     }
     var clarifying=canClarify(l), prefix='';
     if(clarifying){
@@ -1202,6 +1204,7 @@ var MealBot=(function(){
     }
     if(l.ask==='pick'){
       var choices=l.alts.slice(0,3).map(function(fid,i){return ['pick:'+id+':'+i,FOODS[fid].n]});
+      if(!inlinePhrase(S,q)) choices.push(['skip:'+id,'Пропустить']);   // вне списка — «Пропустить» рядом с вариантами
       return prefix+'<div data-clarify-controls="'+id+'">'+p('Какой вариант записать?')+chips(choices)+'</div>';
     }
     if(l.ask==='range') return p(esc(foodName(l))+' — сколько граммов?')+chips([['num:'+id+':'+l.range[1],l.range[1]+' г'],['num:'+id+':'+l.range[0],l.range[0]+' г']]);
