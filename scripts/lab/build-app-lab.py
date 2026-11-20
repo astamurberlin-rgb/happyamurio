@@ -5,6 +5,9 @@
     python3 -I scripts/build-lab.py /home/claude/lab-all
     python3 -I scripts/lab/build-app-lab.py day /home/claude/lab-all /home/claude/lab-day
 
+Четвёртое слово --sample-measurements добавляет в лабораторию пример замеров тела (scripts/lab/sample-measurements.js):
+таблица замеров открывается сразу с историей. Тоже только в лабораторной копии.
+
 Решение Астамура 17.11.2026: в лаборатории — одно приложение, без выбора из трёх и без входа руками.
 
 ВАЖНО. Вход сам по себе делает только лабораторная копия: скрипт lab/app-autologin.js вставляется в страницу
@@ -17,6 +20,7 @@ import json, os, re, shutil, sys
 
 NAMES = {'day': 'Day', 'meal': 'Meal', 'sport': 'Sport'}
 app, src, out = sys.argv[1], sys.argv[2], sys.argv[3]
+sample = '--sample-measurements' in sys.argv[4:]
 assert app in NAMES, 'приложение: day, meal или sport'
 repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 folder = json.load(open(os.path.join(src, 'shared', 'apps.json'), encoding='utf-8'))[app]['entry'].split('/')[0]
@@ -27,13 +31,16 @@ for part in parts:
     if os.path.exists(os.path.join(src, part)):
         shutil.copytree(os.path.join(src, part), os.path.join(out, part))
 shutil.copy2(os.path.join(repo, 'scripts', 'lab', 'app-autologin.js'), os.path.join(out, 'lab', 'app-autologin.js'))
+if sample:
+    shutil.copy2(os.path.join(repo, 'scripts', 'lab', 'sample-measurements.js'), os.path.join(out, 'lab', 'sample-measurements.js'))
 
 title = 'Лаборатория · Happy ' + NAMES[app]
 page = os.path.join(out, folder, 'index.html')
 s = open(page, encoding='utf-8').read()
 tag = '<script src="../lab/happy-lab-server.js"></script>'
 assert s.count(tag) == 1, 'в странице нет поддельного сервера лаборатории'
-s = s.replace(tag, tag + '\n<script src="../lab/app-autologin.js" defer></script>')
+s = s.replace(tag, tag + '\n<script src="../lab/app-autologin.js" defer></script>'
+              + ('\n<script src="../lab/sample-measurements.js" defer></script>' if sample else ''))
 s = re.sub(r'<title>[^<]*</title>', '<title>' + title + '</title>', s, count=1)
 open(page, 'w', encoding='utf-8').write(s)
 
