@@ -121,7 +121,7 @@ with sync_playwright() as p:
     meal.wait_for_timeout(300)
     check("«Показать меньше» после раскрытия", meal.locator('[data-source-more="USDA"]').inner_text() == "Показать меньше")
     meal.screenshot(path=SHOTS + "meal_shop-5-settings.png")
-    text = meal.evaluate("()=>document.getElementById('mlKb').innerText+' '+document.getElementById('mlKbHint').textContent")
+    text = meal.evaluate("()=>document.querySelector('[data-screen=day]').innerText")
     check("на главном нет знака «≥»", "≥" not in text)
     check("на странице нет ошибок", not errors)
     out["errors"] = errors

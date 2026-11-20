@@ -12,7 +12,8 @@
  *
  * Правила и фастинг — поле дневника DB.mealRules: {kcal — «меньше, ккал», gap — «пауза больше, мин»,
  * fast:{on,a,b} — фастинг, отдельный слой: может идти через полночь и пересекаться с едой;
- * fastVersions — история фастинга с моментом каждого сохранения (Meal 33.21, meal-fast.js)}.
+ * fastVersions — история фастинга с моментом каждого сохранения, fastStops — отмены идущего окна кнопкой на плашке
+ * (Meal 33.21, meal-fast.js)}.
  * Запись еды в окне фастинга не останавливается вопросом: окно прерывает сама запись — это считает meal-fast.js.
  *
  * Пока человек не нажал «Сохранить», в дневник ничего не пишется: разделы без a и b получают время на лету
@@ -166,8 +167,10 @@ function apply(db,d,used,today,now){
   var fast={on:!!d.rules.fast.on,a:d.rules.fast.a,b:d.rules.fast.b}, F=typeof MealFast!=='undefined'?MealFast:null;
   if(!F&&typeof require==='function'){ try{ F=require('./meal-fast.js') }catch(e){} }
   var history=F?F.record(db,fast,typeof now==='number'?now:Date.now()):null;   // Meal 33.21: фастинг с историей — прошлые окна не меняются
+  var stops=db.mealRules&&db.mealRules.fastStops;                              // отмены идущих окон кнопкой на плашке — остаются как были
   db.mealRules={kcal:d.rules.kcal,gap:d.rules.gap,fast:fast};
   if(history&&history.length) db.mealRules.fastVersions=history;
+  if(Array.isArray(stops)&&stops.length) db.mealRules.fastStops=stops;
 }
 var api={DAY:DAY,STEP:STEP,RULES:RULES,clock:clock,preset:preset,kindOf:kindOf,inChain:inChain,hasWin:hasWin,tiles:tiles,tile:tile,chain:chain,rules:rules,
   contains:contains,duration:duration,segments:segments,periodAt:periodAt,limits:limits,moveEdge:moveEdge,addRow:addRow,removeRow:removeRow,

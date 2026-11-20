@@ -860,8 +860,34 @@ body.sheet:not(.chatOn) .fab .icX{display:block}
 .mlKbR .pc{min-width:31px;text-align:right;font-size:12.5px;font-weight:600;color:var(--muted)}
 .mlKbR .bar{grid-column:2/-1;height:6px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.24);overflow:hidden}
 .mlKbR .bar i{display:block;height:100%;border-radius:3px}
-.mlKbHint{margin:-12px 4px 22px}
-/* Meal 33.21 · отметка фастинга дня (meal-fast.js): одна строка между кольцом и приёмами пищи */
+/* Meal 33.21 · плашка фастинга над нижним меню (meal-fast.js) — как полоса свёрнутой тренировки в Sport (.active-banner):
+   то же место, высота 48, скругление 16, цвет главной кнопки. Заполнение — светлее, слева направо по доле пройденного */
+.mfBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));z-index:9;
+  width:min(calc(100% - 40px),420px);min-height:48px;display:flex;align-items:center;gap:8px;padding:0 2px 0 15px;overflow:hidden;
+  border-radius:16px;border:1px solid rgba(255,255,255,.42);background:color-mix(in srgb,var(--fab) 93%,transparent);color:#fff;
+  font-size:14px;line-height:17px;box-shadow:0 8px 20px rgba(42,24,72,.27);transition:opacity .2s}
+.mfBar[hidden],body.sheet .mfBar{display:none}
+body.fan .mfBar{opacity:0;pointer-events:none}
+.mfBar>*{position:relative}
+.mfBar .mfFill{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(255,255,255,.18);pointer-events:none;transition:width .6s ease}
+.mfIc{flex:none;display:grid}
+.mfBar svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mfName{flex:none;font-weight:700}
+.mfGone,.mfLeft{flex:none;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mfGone{font-weight:600}
+.mfLeft{margin-left:auto;font-size:12px;color:rgba(255,255,255,.86)}
+.mfText{flex:1 1 auto;min-width:0;padding:6px 0;font-weight:600}
+.mfAct{flex:none;min-width:44px;min-height:46px;padding:0 13px;display:grid;place-items:center;border:0;background:none;color:#fff;
+  font:inherit;font-size:12px;font-weight:600;-webkit-tap-highlight-color:transparent}
+.mfAct:focus-visible{outline:2px solid #fff;outline-offset:-4px;border-radius:12px}
+/* узкий телефон: сначала уходит значок, потом слово «осталось» (вместо него минус перед временем) */
+@media (max-width:389px){.mfBar[data-state=run] .mfIc{display:none}}
+@media (max-width:359px){.mfWord{display:none}.mfLeft::before{content:'−'}}
+@media (prefers-reduced-motion:reduce){.mfBar,.mfBar .mfFill{transition:none}}
+/* с плашкой короткие сообщения встают над ней, а конец страницы не прячется под неё */
+body.mfOn:not(.sheet) .toast{bottom:calc(146px + env(safe-area-inset-bottom))}
+body.mfOn .screen:not(.mlSheet){padding-bottom:190px}
+/* отметка фастинга дня (meal-fast.js): одна строка между кольцом и приёмами пищи — итог законченного окна */
 .mlFast{display:flex;align-items:center;gap:8px;margin:-8px 6px 16px;font-size:14px;font-weight:400;line-height:20px;color:var(--muted)}
 .mlFast[hidden]{display:none}
 .mlFast svg{flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -1632,8 +1658,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <section class="card meal-signin" id="mealSignIn" hidden><h2>Войди, чтобы записывать</h2><p class="note">Записи Meal хранятся в аккаунте Happy — одном для Day, Meal и Sport. После входа запись работает и без сети.</p><button class="happy-button primary" type="button" id="mealSignInGo">Войти</button></section>
     <!-- кольцо энергии (общий виджет Meal и Sport): слева кольцо, справа четыре строки; нажатие — съедено → баланс → потрачено -->
     <div class="card erCard" id="mlKb"></div>
-    <p class="note mlKbHint" id="mlKbHint">Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото».</p>
-
     <p class="mlFast" id="mlFast" role="status" hidden></p>
     <div id="mlSecs" class="mlSecs"></div>
     <div id="mlTaps"></div>
@@ -1927,6 +1951,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   </div>
 </div>
 
+<div class="mfBar" id="mfBar" role="status" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script src="supplement-counters.js?v=33.20"></script>
@@ -3037,9 +3062,7 @@ function renderDay(){
   document.getElementById('dateBtn').value=curDate;
   document.getElementById('dateText').textContent=ruDate(curDate);
   document.getElementById('mlKb').innerHTML=kbjuHTML(); erFit(document.getElementById('mlKb'));
-  var supplementDay=supplementRows(curDate),partial=['kcal','prot','fat','carb'].some(function(k){return intakeCoverage(day(curDate).items,supplementDay,k).missing>0}),hint=document.getElementById('mlKbHint');
-  hint.hidden=day(curDate).items.length>0||supplementDay.length>0;   // Meal 30 (Астамур 12.11 11:30): без пояснения «Калории и БЖУ: сумма известных значений…»
-  hint.textContent='Микрофон внизу откроет запись еды. Продиктуй текст через клавиатуру или напиши его. Удерживай — ещё «Написать» и «Фото». ';
+  /* Meal 33.21 (Астамур 20.11.2026): подсказки про микрофон под кольцом нет — кнопка и так на виду */
   if(typeof MealFast!=='undefined') MealFast.tick();   // отметка фастинга этого дня (meal-fast.js, решения Астамура 20.11.2026)
   document.getElementById('mlSecs').innerHTML=sectionsForDate(curDate).map(function(S){
     var it=itemsOf(S.k), supplements=supplementRows(curDate,S.k), s=intakeSum(it,supplements), parts=[];
