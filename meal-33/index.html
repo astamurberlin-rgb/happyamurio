@@ -1568,9 +1568,11 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .draftSection{position:relative;margin:0;border-radius:0}
 .draftSection{--swipe-offset:0px;--trash-space:76px}
 .draftSlide{position:relative;transform:translateX(var(--swipe-offset));transition:transform .16s ease-out}
-.draftTrashRail{position:absolute;inset:0 0 0 auto;width:var(--trash-space);display:flex;justify-content:center;align-items:flex-start;padding-top:10px;box-sizing:border-box;
+/* корзина — по центру строки продукта (--trash-top и --trash-h ставит смахивание): и у названия в три строки, и у
+   раскрытой строки с мерами или поиском замены (слова Астамура 21.11.2026) */
+.draftTrashRail{position:absolute;top:var(--trash-top,0px);right:0;height:var(--trash-h,100%);width:var(--trash-space);display:flex;justify-content:center;align-items:center;box-sizing:border-box;
   transform:translateX(max(0px,calc(var(--trash-space) + var(--swipe-offset))));transition:transform .16s ease-out}
-.draftSection.revealLeft .draftTrashRail{inset:0 auto 0 0;transform:translateX(min(0px,calc(var(--swipe-offset) - var(--trash-space))))}
+.draftSection.revealLeft .draftTrashRail{left:0;right:auto;transform:translateX(min(0px,calc(var(--swipe-offset) - var(--trash-space))))}
 .draftTrash{display:grid;place-items:center;box-sizing:border-box;width:56px;height:44px;border:1px solid rgba(255,255,255,.32);border-radius:999px;padding:0;background:#c42640;color:white}
 .draftTrash svg{display:block;width:24px;height:24px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .draftSection.dragging .draftSlide,.draftSection.dragging .draftTrashRail{transition:none}
@@ -1600,7 +1602,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .chatFoods .mlHead{flex:1;min-width:0;gap:8px;padding:8px 0;line-height:1.25}
 .chatFoods .mlHead .nm b{white-space:normal;overflow-wrap:anywhere}
 .chatFoods .mlHead .w{white-space:nowrap}
-.chatFoods .draftTrashRail{padding-top:5px}
 .chatFoods .mrSearch{margin:0 2px 12px}
 .chatFoods + .mbSum{margin-top:6px}
 .mbPhraseFooter{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18)}
@@ -4042,6 +4043,13 @@ function removeLine(w,id){
 })();
 function wireProductSwipe(list,remove){
   var start=null;
+  /* корзина — по центру строки продукта, а не всего блока: у раскрытой строки она остаётся у названия */
+  function fitTrash(section){
+    var slide=section.querySelector('.draftSlide'), line=slide&&slide.querySelector(':scope>.chatFoodLine,:scope>.mlRow');
+    if(!line)return;
+    section.style.setProperty('--trash-top',(slide.offsetTop+line.offsetTop)+'px');
+    section.style.setProperty('--trash-h',line.offsetHeight+'px');
+  }
   function offset(section,value){
     if(value)section.classList.toggle('revealLeft',value>0);
     section.style.setProperty('--swipe-offset',value+'px');
@@ -4075,6 +4083,7 @@ function wireProductSwipe(list,remove){
     var open=list.querySelector('.draftSection[data-rest]:not([data-rest="0"])');
     if(open&&open!==section&&!open.dataset.removing)rest(open,0);
     if(!section||section.dataset.removing)return;
+    fitTrash(section);
     start={x:e.clientX,y:e.clientY,section:section,p:e.pointerId,origin:+section.dataset.rest||0};
     row.setPointerCapture(e.pointerId);
   });
@@ -4274,7 +4283,8 @@ function searchLib(q){
   return combined(lib.concat(bl.length&&bl[0].kav?kv.concat(bs):bs.concat(kv)));          // группа «Кавказская кухня» — выше базы, только если в ней лучшее совпадение
 }
 var STARI='<svg viewBox="0 0 24 24"><path d="M12 3.6l2.5 5.3 5.8.7-4.3 4 1.1 5.7L12 16.5l-5.1 2.8 1.1-5.7-4.3-4 5.8-.7z"/></svg>';
-var ROW_REPLACE='<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><g transform="translate(0 -.55)" stroke-width="1.9"><path d="M3.35 11.2C3.75 3.75 12.3.75 17.7 5.2l2.15 1.95M19.85 2.95v4.2h-4.2"/><path transform="rotate(180 12 12)" d="M3.35 11.2C3.75 3.75 12.3.75 17.7 5.2l2.15 1.95M19.85 2.95v4.2h-4.2"/></g></g></svg>';
+/* «Заменить продукт» — лупа, как в полях поиска Meal (слова Астамура 21.11.2026: вместо стрелок в кружочке) */
+var ROW_REPLACE='<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></g></svg>';
 function mealRowText(name,detail,amount,kcal){
   return '<span class="nm"><b>'+escH(name)+'</b>'+(detail?'<small>'+escH(detail)+'</small>':'')+'</span>'+
     '<span class="w">'+escH(amount)+(kcal?'<small>'+escH(kcal)+'</small>':'')+'</span>';

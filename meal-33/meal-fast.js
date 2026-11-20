@@ -1,55 +1,54 @@
-/* Happy Meal · фастинг: окна по расписанию, прерывание по записям еды, плашка идущего окна, короткие сообщения и
- * отметка дня (Meal 33.21).
+/* Happy Meal · фастинг: окна по расписанию и дням недели, прерывание по записям еды, плашка идущего окна, короткие
+ * сообщения и отметка дня (Meal 33.21).
  *
  * Решения Астамура 20.11.2026 — карточка Todoist «Фастинг Meal · прерывание окна»; плашка и сообщения — его же слова
  * 20.11.2026 в 18:11, 19:39 и 20:45: то, что длится, — фиолетовая плашка; короткие сообщения — синие, как все
- * сообщения Meal; фастинг сбросился (отменили или прервала запись еды) — выключатель в настройках выключен;
- * включение посреди окна — только если в окне ещё нет еды.
+ * сообщения Meal; «Отменить» на плашке выключает выключатель в настройках; включение посреди окна — только если в окне
+ * ещё нет еды. Слова Астамура 21.11.2026 01:09: дни недели кружками под шкалой фастинга, по умолчанию выбран текущий
+ * день — тогда запись еды выключатель не трогает: она прерывает только своё окно, а начнётся ли фастинг завтра, решают
+ * дни.
  *
- * Расписание — «Настроить приёмы пищи» → «Фастинг» (meal-periods.js): выключатель и окно a–b в минутах от полуночи,
- * окно может идти через полночь. Каждое изменение фастинга добавляет версию в историю
- * DB.mealRules.fastVersions = [{at — когда (мс), on, a, b, by — 'food', если фастинг выключила запись еды}]. Версия
- * действует от своего at до at следующей; прошлые
- * окна считаются по своим версиям и не меняются. Истории нет, а фастинг включён (сохранили до этого выпуска) —
- * считается включённым с выхода Meal 33.17, где он появился (19.11.2026 12:30).
+ * Расписание — «Настроить приёмы пищи» → «Фастинг» (meal-periods.js): выключатель, окно a–b в минутах от полуночи (окно
+ * может идти через полночь) и дни недели d — [1 понедельник … 7 воскресенье], в какие дни окно начинается. Окно 20:00–12:00
+ * с отмеченной субботой — с субботы 20:00 до воскресенья 12:00. Без d (сохранили до дней недели) — каждый день.
+ * Каждое изменение фастинга добавляет версию в историю DB.mealRules.fastVersions = [{at — когда (мс), on, a, b, d}].
+ * Версия действует от своего at до at следующей; прошлые окна считаются по своим версиям и не меняются. Истории нет, а
+ * фастинг включён (сохранили до этого выпуска) — считается включённым с выхода Meal 33.17, где он появился
+ * (19.11.2026 12:30).
  * «Отменить» на плашке — то же, что выключить фастинг в настройках: выключатель выключен, окно закончилось в этот
- * момент, следующее не начнётся, пока фастинг не включат снова.
- * Запись еды остановила идущий фастинг — выключатель тоже выключается (recorded → stop): окно прервано, следующее не
- * начнётся, пока фастинг не включат снова. Этой записи не стало — отменили из сообщения, убрали нажатие счётчика,
- * удалили или поправили в дневнике — выключения не было: фастинг снова включён (settle; на том же устройстве, пока
- * Meal открыт и идёт то же окно). Прошлые окна и записи, которые прервали уже закончившееся окно, выключатель не
- * трогают.
+ * момент, следующее не начнётся, пока фастинг не включат снова. Дни при этом сохраняются: включил — они те же.
  *
- * Окно через полночь — одно окно. Окно относится к дню, в котором заканчивается: 20:00–12:00 — к дню, где 12:00.
+ * Окно через полночь — одно окно. Окно относится к дню, в котором заканчивается: 20:00–12:00 — к дню, где 12:00 (там
+ * его отметка под кольцом); день недели окна — день, в который оно начинается.
  * Состояние окна не хранится: оно каждый раз считается из записей дня окна и дня перед ним, поэтому правка времени,
  * калорий или удаление записи пересчитывают окно сами. Прерывает фастинг запись по mlBreaksFast (index.html): больше
  * 4 ккал в записанной порции; продукт не больше 4 ккал на 100 г или 100 мл (вода, чёрный кофе, чай без сахара) —
  * никогда; БАДы и записи с неизвестной калорийностью — по тому же правилу. Время еды, а не время, когда запись
  * внесли; запись без времени окно не трогает — когда ели, неизвестно.
- * Окно считается целиком. Еда, пока фастинг включён, — окно прервано. Фастинг включили посреди окна: в окне до этого
- * уже записана еда — в этом окне он не начинается, начнётся со следующего; еды не было — идёт, как будто включён с
- * начала окна.
+ * Окно считается целиком. Еда, пока фастинг включён, — окно прервано; выключатель остаётся включённым, следующее окно
+ * в отмеченный день начнётся как обычно. Фастинг включили посреди окна: в окне до этого уже записана еда — в этом окне
+ * он не начинается, начнётся со следующего; еды не было — идёт, как будто включён с начала окна.
  *
  * Состояние окна: plan — ещё не началось; run — идёт; kept — выдержан (дошёл до конца по расписанию без еды);
  * broken — прерван записью еды; off — отменён (кнопкой на плашке или выключателем в настройках), выдержанным не
  * считается; skip — включили посреди окна, а еда в нём уже записана: не начался.
- * Время еды записано с точностью до минуты. Выключил сам (кнопкой или в настройках) — окно заканчивается в начале
- * этой минуты: еда, записанная в ту же минуту, его уже не прерывает. Выключила запись еды (by:'food') — окно
- * заканчивается в сам момент выключения: эта запись остаётся внутри окна, и окно прервано, а не отменено.
+ * Время еды записано с точностью до минуты. Выключил (кнопкой или в настройках) — окно заканчивается в начале этой
+ * минуты: еда, записанная в ту же минуту, его уже не прерывает.
  *
  * На экране:
  * — плашка над нижним меню (#mfBar) — только пока окно идёт: «Фастинг до 12:00», заполнение по доле пройденного,
  *   обратный отсчёт «−2:55» и «Отменить». По образцу полосы свёрнутой тренировки в Sport (.active-banner), но ближе к
  *   меню и позади кнопки микрофона. Окно прервано, отменено или закончилось — плашки нет;
  * — короткие сообщения (обычный toast): «Фастинг прерван» с «Отменить запись» — сразу после записи, прервавшей окно
- *   (recorded — его зовут все места записи еды: поиск в разделе, «Подобрано», бот и шорткат «Еда», счётчики, БАДы);
- *   «Фастинг отменён» с «Вернуть» — после «Отменить» на плашке; «В этом окне уже записана еда. Фастинг начнётся…» —
- *   включили посреди окна, а еда в нём есть (startNote — его зовёт сохранение настроек); «Поздравляю! Фастинг закончен
- *   успешно» — окно дошло до конца без еды: один раз на окно, в момент конца или при первом открытии Meal после него
- *   (помнит устройство);
+ *   или остановившей идущий фастинг (recorded — его зовут все места записи еды: поиск в разделе, «Подобрано», бот и
+ *   шорткат «Еда», счётчики, БАДы); «Фастинг отменён» с «Вернуть» — после «Отменить» на плашке; «В этом окне уже
+ *   записана еда. Фастинг начнётся…» — включили посреди окна, а еда в нём есть; «Фастинг начнётся сегодня в 20:00»
+ *   (или «завтра», «в среду») — включили, а окно сейчас не идёт (startNote — его зовёт сохранение настроек);
+ *   «Поздравляю! Фастинг закончен успешно» — окно дошло до конца без еды: один раз на окно, в момент конца
+ *   или при первом открытии Meal после него (помнит устройство);
  * — отметка дня под кольцом (#mlFast) — итог окна: выдержан, прерван или отменён. Пока окно идёт, о нём говорит плашка.
  * Закрытый Meal ничего не присылает: всё видно при открытии.
- * — Claude · 20.11.2026 */
+ * — Claude · 20.11.2026, дни недели — 21.11.2026 */
 var MealFast=(function(){
 'use strict';
 var DAY=1440, SINCE=Date.parse('2026-11-19T12:30:00+03:00'), DONE='happy-meal-fast-done', FRESH=12*3600e3;
@@ -66,35 +65,53 @@ function dateOf(t){ return iso(new Date(t)) }
 function clock(t){ var d=new Date(t); return pad(d.getHours())+':'+pad(d.getMinutes()) }
 function minute(t){ return Math.floor(t/60000)*60000 }   // начало минуты: время еды записано с точностью до минуты
 
+/* ═══════════ ДНИ НЕДЕЛИ ═══════════
+   1 — понедельник … 7 — воскресенье. Список дней — в какие дни окно начинается; null — каждый день */
+var WEEK=[1,2,3,4,5,6,7];
+var ON_DAY=['','в понедельник','во вторник','в среду','в четверг','в пятницу','в субботу','в воскресенье'];
+function weekday(date){ var p=ymd(date); return new Date(p[0],p[1],p[2]).getDay()||7 }
+/* годный список дней — по порядку, без повторов; иначе null */
+function days(d){
+  if(!Array.isArray(d)||!d.length||!d.every(function(x){ return int(x)&&x>=1&&x<=7 })) return null;
+  return WEEK.filter(function(x){ return d.indexOf(x)>=0 });
+}
+function sameDays(x,y){ return String(days(x)||WEEK)===String(days(y)||WEEK) }
+
 /* ═══════════ ИСТОРИЯ ВЫКЛЮЧАТЕЛЯ ═══════════ */
+function version(v){ var x={at:v.at,on:v.on,a:v.a,b:v.b}, d=v.on&&days(v.d); if(d) x.d=d; return x }
 function versions(db){
   var r=(db&&db.mealRules)||{};
   if(Array.isArray(r.fastVersions)) return r.fastVersions
     .filter(function(v){ return !!v&&int(v.at)&&v.at>0&&typeof v.on==='boolean'&&(!v.on||okWin(v)) })
-    .map(function(v){ var x={at:v.at,on:v.on,a:v.a,b:v.b}; if(!v.on&&v.by==='food') x.by='food'; return x }).sort(function(x,y){ return x.at-y.at });
-  var f=r.fast; return f&&f.on===true&&okWin(f)?[{at:SINCE,on:true,a:f.a,b:f.b}]:[];
+    .map(version).sort(function(x,y){ return x.at-y.at });
+  var f=r.fast; return f&&f.on===true&&okWin(f)?[version({at:SINCE,on:true,a:f.a,b:f.b,d:f.d})]:[];
 }
-/* фастинг изменился (сохранили «Настроить приёмы пищи», нажали «Отменить» на плашке или его выключила запись еды —
-   тогда by='food') — новая версия с этого момента. Ответ — история для mealRules */
-function record(db,fast,now,by){
+/* фастинг изменился (сохранили «Настроить приёмы пищи» или нажали «Отменить» на плашке) — новая версия с этого
+   момента. Ответ — история для mealRules */
+function record(db,fast,now){
   var list=versions(db), last=list[list.length-1], on=!!(fast&&fast.on);
   if(on&&!okWin(fast)) return list;
-  var same=last?last.on===on&&(!on||last.a===fast.a&&last.b===fast.b):!on;
-  if(!same){ var v={at:Math.max(now,last?last.at+1:0),on:on,a:fast.a,b:fast.b}; if(!on&&by==='food') v.by='food'; list.push(v) }
+  var same=last?last.on===on&&(!on||last.a===fast.a&&last.b===fast.b&&sameDays(last.d,fast.d)):!on;
+  if(!same) list.push(version({at:Math.max(now,last?last.at+1:0),on:on,a:fast.a,b:fast.b,d:fast.d}));
   return list;
 }
+/* настройки фастинга с другим выключателем: окно и дни те же. Дни без списка (сохранили до дней недели) — каждый
+   день: так и записываются, чтобы включённый снова фастинг шёл, как шёл */
+function turned(f,on){ return {on:on,a:f.a,b:f.b,d:days(f.d)||WEEK.slice()} }
 
 /* ═══════════ ОКНО ДНЯ ═══════════
    segs — отрезки времени окна, когда выключатель был включён: [начало, конец, начало окна по расписанию].
    plan — конец по расписанию; planned — последний отрезок дошёл до этого конца.
-   Выключил фастинг сам — отрезок заканчивается в начале этой минуты: еда, записанная в ту же минуту (отменил и сразу
-   записал завтрак), окно уже не прерывает. Выключила запись еды — в сам момент выключения: эта запись внутри отрезка */
+   Версия с днями недели даёт отрезок, только если окно начинается в отмеченный день.
+   Выключил фастинг — отрезок заканчивается в начале этой минуты: еда, записанная в ту же минуту (отменил и сразу
+   записал завтрак), окно уже не прерывает */
 function windowOf(list,date){
   var segs=[], plan=null;
   list.forEach(function(v,i){
     if(!v.on) return;
-    var nx=list[i+1], to=nx?(nx.on||nx.by==='food'?nx.at:minute(nx.at)):Infinity, b=v.b||DAY;
-    var s=v.a<b?at(date,v.a):at(shift(date,-1),v.a), e=at(date,b), S=Math.max(s,v.at), E=Math.min(e,to);
+    var nx=list[i+1], to=nx?(nx.on?nx.at:minute(nx.at)):Infinity, b=v.b||DAY, from=v.a<b?date:shift(date,-1);
+    if(v.d&&v.d.indexOf(weekday(from))<0) return;
+    var s=at(from,v.a), e=at(date,b), S=Math.max(s,v.at), E=Math.min(e,to);
     if(E<S||S>=e) return;
     var p=segs[segs.length-1]; if(p&&S<=p[1]) p[1]=Math.max(p[1],E); else segs.push([S,E,s]);
     plan=e;
@@ -167,11 +184,25 @@ function ended(db,now,entries){
   var next=windowOf(list,shift(best.date,1)); if(next&&next.start<=now) return null;
   return judge(best,listFor(best,entries),now).state==='kept'?best:null;
 }
-/* фастинг включён, а в идущем окне он не начался или прерван — когда начнётся следующее окно (мс); иначе null */
+/* фастинг включён, а в идущем окне он не начался или прерван — когда начнётся следующее окно (мс): в ближайший
+   отмеченный день; иначе null */
 function nextStart(db,now,entries){
   var st=live(db,now,entries); if(!st||!(st.blocked||st.state==='broken')) return null;
   var list=versions(db), last=list[list.length-1]; if(!last||!last.on) return null;
-  var w=windowOf(list,shift(st.win.date,1)); return w?w.segs[0][2]:null;
+  for(var i=1;i<=7;i++){ var w=windowOf(list,shift(st.win.date,i)); if(w) return w.segs[0][2] }
+  return null;
+}
+/* фастинг включён, а окно сейчас не идёт — когда начнётся ближайшее (мс): с днями недели оно может быть через
+   несколько дней; иначе null */
+function upcoming(db,now){
+  var list=versions(db), last=list[list.length-1]; if(!last||!last.on) return null;
+  for(var i=0;i<=8;i++){ var w=windowOf(list,shift(dateOf(now),i)); if(w&&w.segs[0][2]>now) return w.segs[0][2] }
+  return null;
+}
+/* когда начнётся окно t словами, от сегодняшнего дня: «сегодня», «завтра», «в среду» */
+function when(t,now){
+  var day=dateOf(t), today=dateOf(now);
+  return day===today?'сегодня':day===shift(today,1)?'завтра':ON_DAY[weekday(day)];
 }
 /* отметка дня словами — итог окна: b — главное (жирным), n — продолжение строки. Окно идёт или не началось — null */
 function words(st){
@@ -208,8 +239,8 @@ function remove(records){
     var e=DB.days[d]; if(e&&e.items&&e.items.some(function(x){ return ids[x.id] })) e.items=e.items.filter(function(x){ return !ids[x.id] });
   });
 }
-var api={SINCE:SINCE,versions:versions,record:record,windowOf:windowOf,judge:judge,status:status,live:live,broke:broke,stopped:stopped,ended:ended,nextStart:nextStart,
-  words:words,progress:progress,at:at,shift:shift,dateOf:dateOf,clock:clock,rows:rows,remove:remove};
+var api={SINCE:SINCE,WEEK:WEEK,versions:versions,record:record,turned:turned,days:days,weekday:weekday,windowOf:windowOf,judge:judge,status:status,live:live,broke:broke,
+  stopped:stopped,ended:ended,nextStart:nextStart,upcoming:upcoming,when:when,words:words,progress:progress,at:at,shift:shift,dateOf:dateOf,clock:clock,rows:rows,remove:remove};
 if(typeof document==='undefined') return api;
 
 /* ═══════════ НА ЭКРАНЕ ═══════════ */
@@ -254,24 +285,26 @@ function cancel(){
   var now=Date.now(), st=null; try{ st=live(DB,now,rows) }catch(e){}
   var r=DB.mealRules, f=r&&r.fast;
   if(!st||st.state!=='run'||!f||!f.on){ tick(); return }
-  var history=record(DB,{on:false,a:f.a,b:f.b},now), off=history[history.length-1];
-  r.fast={on:false,a:f.a,b:f.b}; r.fastVersions=history;
+  var history=record(DB,turned(f,false),now), off=history[history.length-1];
+  r.fast=turned(f,false); r.fastVersions=history;
   save(); renderAll();
   toast('Фастинг отменён',function(){
     if(guard()||!DB.mealRules) return;
     var list=versions(DB), last=list[list.length-1];
     if(!last||last.on||last.at!==off.at) return;                       // фастинг с тех пор уже включали и выключали заново
-    list.pop(); DB.mealRules.fast={on:true,a:f.a,b:f.b}; DB.mealRules.fastVersions=list;
+    list.pop(); DB.mealRules.fast=turned(f,true); DB.mealRules.fastVersions=list;
     save(); renderAll();
   });
 }
-/* фастинг только что включили в настройках: в идущем окне уже записана еда — он начнётся со следующего окна.
+/* фастинг только что включили в настройках. В идущем окне уже записана еда — он начнётся со следующего окна в
+   отмеченный день; окно сейчас не идёт — когда начнётся ближайшее; идёт — сообщения нет: видна плашка.
    Ответ — текст сообщения или '' */
 function startNote(now){
-  var t=null; try{ t=nextStart(DB,now,rows) }catch(e){ return '' }
-  if(!t) return '';
-  var day=dateOf(t), today=dateOf(now), when=day===today?'сегодня':day===shift(today,1)?'завтра':'';
-  return 'В этом окне уже записана еда. Фастинг начнётся '+(when?when+' ':'')+'в '+clock(t);
+  var t=null, st=null;
+  try{ t=nextStart(DB,now,rows) }catch(e){ return '' }
+  if(t) return 'В этом окне уже записана еда. Фастинг начнётся '+when(t,now)+' в '+clock(t);
+  try{ st=live(DB,now,rows); t=st&&st.state==='run'?null:upcoming(DB,now) }catch(e){ return '' }
+  return t?'Фастинг начнётся '+when(t,now)+' в '+clock(t):'';
 }
 document.addEventListener('click',function(e){
   if(e.target.closest&&e.target.closest('#mfBar [data-mf="cancel"]')) cancel();
@@ -287,55 +320,31 @@ function done(){
   setTimeout(function(){ toast('Поздравляю! Фастинг закончен успешно',null,null,6000) },300);
 }
 
-/* перерисовать в момент, когда окно начинается или заканчивается; отсчёт на идущей плашке — раз в 20 секунд */
+/* перерисовать в момент, когда окно начинается или заканчивается; отсчёт на идущей плашке — раз в 20 секунд.
+   Окна ищутся на неделю вперёд: с днями недели ближайшее может быть не завтра */
 var timer=null;
 function plan(){
   clearTimeout(timer); timer=null;
   if(!signedIn()) return;
   var t=Date.now(), list=versions(DB), today=dateOf(t), next=Infinity;
-  [today,shift(today,1)].forEach(function(d){ var w=windowOf(list,d); if(w) [w.start,w.end,w.plan].forEach(function(x){ if(x>t&&x<next) next=x }) });
+  for(var i=0;i<=8;i++){ var w=windowOf(list,shift(today,i)); if(w) [w.start,w.end,w.plan].forEach(function(x){ if(x>t&&x<next) next=x }) }
   if(next<Infinity) timer=setTimeout(tick,Math.min(next-t+500,6*3600e3));
 }
-function tick(){ try{ settle() }catch(e){} try{ paint(); bar(); done() }catch(e){} plan() }
+function tick(){ try{ paint(); bar(); done() }catch(e){} plan() }
 setInterval(function(){ if(shown&&document.visibilityState!=='hidden'){ try{ bar() }catch(e){} } },20000);
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') tick() });
 document.addEventListener('happy-supplements-changed',function(){ tick() });
 
-/* запись остановила идущий фастинг (st — состояние окна сейчас) — он выключается, как выключателем в настройках: слова
-   Астамура 20.11.2026 20:45 — «если он сбросился, выключатель в настройках отключиться должен». Версия с by='food':
-   окно заканчивается в этот момент, сама запись остаётся внутри него */
-var stoppedBy=null;   // выключение записью еды, сделанное на этом устройстве, пока Meal открыт: {at — версия, date — окно}
-function stop(st,now){
-  if(typeof RO!=='undefined'&&RO) return;
-  var r=DB.mealRules, f=r&&r.fast; if(!f||!f.on) return;
-  var history=record(DB,{on:false,a:f.a,b:f.b},st.state==='broken'&&st.at===now?now+1:now,'food'), off=history[history.length-1];
-  if(!off||off.on) return;
-  r.fast={on:false,a:f.a,b:f.b}; r.fastVersions=history; stoppedBy={at:off.at,date:st.win.date}; save();
-}
-/* фастинг выключила запись еды, а её больше нет или она уже не прерывает (отменили из сообщения, убрали нажатие
-   счётчика, удалили или поправили в дневнике) — выключения не было: фастинг снова включён, окно идёт дальше.
-   Только пока идёт то же окно и только на устройстве, где запись сделали, пока Meal не закрывали: позже или на
-   другом устройстве фастинг включают сами. Его уже включали заново или окно прервала ещё и другая запись — как есть */
-function settle(){
-  if(!stoppedBy||!signedIn()||(typeof RO!=='undefined'&&RO)) return;
-  var r=DB.mealRules, list=versions(DB), last=list[list.length-1], prev=list[list.length-2];
-  if(!r||!last||last.on||last.by!=='food'||last.at!==stoppedBy.at||!prev||!prev.on){ stoppedBy=null; return }
-  var rest=list.slice(0,-1), st=live({mealRules:{fastVersions:rest}},Date.now(),rows);
-  if(!st||st.win.date!==stoppedBy.date){ stoppedBy=null; return }
-  if(st.state!=='run') return;
-  r.fast={on:true,a:prev.a,b:prev.b}; r.fastVersions=rest; stoppedBy=null; save();
-}
-/* записи records ([{date, id}]) только что записаны; undo — отменить эту запись. Остановили идущий фастинг — он
-   выключается (stop). Прервали окно, идущее или прошлое, — короткое сообщение «Фастинг прерван» с «Отменить запись»
-   (поверх сообщения о самой записи: отмена та же; записи не стало — фастинг возвращает settle).
-   Ответ: true — сообщение будет */
+/* записи records ([{date, id}]) только что записаны; undo — отменить эту запись. Прервали окно, идущее или прошлое,
+   или остановили идущий фастинг (легли в окно раньше, чем его включили посреди окна) — короткое сообщение «Фастинг
+   прерван» с «Отменить запись» (поверх сообщения о самой записи: отмена та же). Выключатель запись не трогает: решение
+   Астамура 21.11.2026 — начнётся ли следующее окно, решают дни недели. Ответ: true — сообщение будет */
 function recorded(records,undo,opts){
   if(!records||!records.length||!signedIn()) return false;
-  var now=Date.now(), days=[], st=null;
-  try{ days=broke(DB,records,now,rows); st=stopped(DB,records,now,rows) }catch(e){ return false }
-  if(st){ try{ stop(st,now) }catch(e){} }
+  var now=Date.now(), broken=[], st=null;
+  try{ broken=broke(DB,records,now,rows); st=stopped(DB,records,now,rows) }catch(e){ return false }
   tick();
-  if(!days.length&&!st) return false;
+  if(!broken.length&&!st) return false;
   var back=undo?function(){ undo(); tick() }:null;
   setTimeout(function(){ toast('Фастинг прерван',back,'Отменить запись') },(opts&&opts.later)||0);
   return true;

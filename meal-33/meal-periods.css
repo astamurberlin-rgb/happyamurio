@@ -49,6 +49,12 @@
 .mp-axis span{position:absolute;transform:translateX(-50%)}
 .mp-axis span:first-child{transform:none}
 .mp-axis span:last-child{transform:translateX(-100%)}
+/* дни фастинга — кружки под шкалой (Meal 33.21): пилюля 44, текст 14; выключенный фастинг — приглушены, как его шкала */
+.mp-days{display:flex;justify-content:space-between;gap:4px;margin:10px 5px 8px}
+.mp-days.mp-off{opacity:.5}
+#happy-screens .mp-day{display:grid;place-items:center;flex:0 1 44px;min-width:0;aspect-ratio:1;padding:0;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.1);color:inherit;font:inherit;font-size:14px;font-weight:600;line-height:1}
+#happy-screens .mp-day:active{background:rgba(255,255,255,.24)}
+#happy-screens .mp-day[aria-pressed=true]{background:var(--hs-seg-bg,#fff);color:var(--hs-pill-on-ink,#333);border-color:transparent}
 
 #happy-screens .mp-pill{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.1);font-size:14px;font-weight:600;white-space:nowrap}
 #happy-screens .mp-pill:active{background:rgba(255,255,255,.24)}
