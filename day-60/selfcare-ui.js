@@ -77,6 +77,7 @@ function init(){
  const settings=document.createElement('section');settings.className='care-settings';settings.id='careSettings';
  $('daySectionSettingsHeading').before(settings);
  document.addEventListener('click',click);
+ document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches?.('[data-care-plan-edit],[data-care-log-edit]')){e.preventDefault();e.target.click();}});
  document.addEventListener('click',function(e){const b=e.target.closest('[data-care-event]');if(!b)return;const v=JSON.parse(b.dataset.careEvent);journalOpen(v.kind,v.id,v.date,v.additionId);});
  document.addEventListener('submit',submit);
  document.addEventListener('focusout',leavePractice);
@@ -89,7 +90,7 @@ function init(){
     Запоминается центральная кнопка по-прежнему после остановки. Day 60.2, шаг 1 — 16.11.2026, Claude. */
  let sideFrame=0;
  rail.addEventListener('scroll',()=>{if(!sideFrame)sideFrame=requestAnimationFrame(()=>{sideFrame=0;if(!railPainting&&rail.closest('.screen').classList.contains('on'))nwSide();});clearTimeout(railTimer);railTimer=setTimeout(()=>{if(railPainting||!rail.closest('.screen').classList.contains('on'))return;nwSide();const slide=rail.children[NW.idx];if(slide)rememberActive(slide.dataset.careKey);},160);},{passive:true});
- bindSettingsOrder();
+ bindSettingsOrder();bindSettingsOrder(block('settings-state'),()=>data().settings.order);
  window.addEventListener('resize',()=>{center(false);if(session)requestAnimationFrame(renderNote);});
  document.querySelector('.nwWg').setAttribute('aria-label','Сейчас');
  rail.setAttribute('aria-label','Кнопки-виджеты дневника');
@@ -103,6 +104,7 @@ function header(title,parent='day',date=true){
  return '<div class="grip care-grip" role="button" tabindex="0" data-care-close="'+parent+'" aria-label="Закрыть"><i></i></div><div class="top"><h1>'+h(title)+'</h1></div>'+(date?'<p class="care-date">'+h(ruDate(curDate))+'</p>':'');
 }
 function closeCurrent(){
+ if(closeSheet())return true;
  const screen=document.querySelector('.screen.on');
  if(screen?.dataset.screen==='ring'){const dest=session?.returnTo||'day';go(dest);renderDay();return true;}
  const grip=screen?.querySelector('[data-care-close]');if(!grip)return false;
@@ -115,9 +117,10 @@ function bindCareNavigation(){
   /* Надпись на кнопке и цветное заполнение дуги гаснут по мере жеста (сама кнопка и серая дорожка стоят): 60 точек — 70 %, 120 — 40 %, 200 — 0. Главная после закрытия показывает свою надпись. */
   if(ring)for(const el of document.querySelectorAll('[data-screen="ring"] .ringSlide .knob>span,[data-screen="ring"] .ringSlide circle.fill')){el.style.transition=anim?'opacity .24s':'none';el.style.opacity=dy?String(Math.max(0,1-dy/200)):'';}}
  function sheetRest(screen){setTimeout(()=>sheetMove(screen,0,false),260);}
- document.addEventListener('pointerdown',e=>{const grip=e.target.closest('.care-grip,#cpGrip');if(!grip)return;const screen=grip.closest('.screen');drag={grip,screen,y:e.clientY,dy:0,t:performance.now()};grip.setPointerCapture(e.pointerId);sheetMove(screen,0,false);});
+ document.addEventListener('pointerdown',e=>{const grip=e.target.closest('.care-grip,#cpGrip');if(!grip)return;const screen=grip.closest('.screen');drag={grip,screen,y:e.clientY,dy:0,t:performance.now(),t0:performance.now()};grip.setPointerCapture(e.pointerId);sheetMove(screen,0,false);});
  document.addEventListener('pointermove',e=>{if(!drag)return;const now=performance.now(),ndy=Math.max(0,e.clientY-drag.y);if(now>drag.t)drag.v=(ndy-drag.dy)/(now-drag.t);drag.t=now;drag.dy=ndy;sheetMove(drag.screen,drag.dy,false);});
- const finish=cancel=>{if(!drag)return;const d=drag;drag=null;const close=!cancel&&(d.dy>70||(d.dy>24&&(d.v||0)>.25));if(!close)sheetMove(d.screen,0,true);/* Day 60.2, шаг 8: закрывает только жест вниз — протянуть на 70 точек или смахнуть вниз (скорость в конце жеста больше 0,25 точки за мс); простое нажатие на черточку больше не закрывает */
+ /* аудит 20.11.2026, п. 16 (Астамур): закрывает и жест вниз, и нажатие на ручку (нажатие — палец почти не сдвинулся) */
+ const finish=cancel=>{if(!drag)return;const d=drag;drag=null;const tap=!cancel&&d.dy<6&&performance.now()-d.t0<450;const close=tap||(!cancel&&(d.dy>70||(d.dy>24&&(d.v||0)>.25)));if(!close)sheetMove(d.screen,0,true);/* Day 60.2, шаг 8: закрывает только жест вниз — протянуть на 70 точек или смахнуть вниз (скорость в конце жеста больше 0,25 точки за мс); простое нажатие на черточку больше не закрывает */
   if(close)closeCurrent();sheetRest(d.screen);};
  document.addEventListener('pointerup',()=>finish(false));document.addEventListener('pointercancel',()=>finish(true));
  document.addEventListener('keydown',e=>{if(e.target.matches('.care-grip,#cpGrip')&&['Enter',' '].includes(e.key)){e.preventDefault();closeCurrent();}});
@@ -167,7 +170,7 @@ let undoNow=null;
 function wheelHasEntry(){return !!session&&(checkinSection().scales.some(k=>Number.isFinite(session.checkpoint[k]))||Object.values(session.checkpoint.tags||{}).some(Boolean)||!!String(session.checkpoint.note||'').trim());}
 function updateNowSave(){
  const b=document.getElementById('nowSave');if(!b)return;
- const canSave=!!session&&session.dirty;b.disabled=busy||!session; b.dataset.dirty=canSave; b.innerHTML=canSave?'Save':'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>';b.setAttribute('aria-label',canSave?'Save — сохранить в журнал':'Продиктовать заметку'); renderNote();
+ const canSave=!!session&&session.dirty;b.disabled=busy||!session; b.dataset.dirty=canSave;document.body.classList.toggle('now-dirty',canSave); b.innerHTML=canSave?'Сохранить':'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>';b.setAttribute('aria-label',canSave?'Сохранить в журнал':'Продиктовать заметку'); renderNote();
 }
 async function submitNow(){
  if(busy||!session||session.readOnly)return;
@@ -178,7 +181,7 @@ async function submitNow(){
  const original=session,draft=C.copy(session);let record;pendingWheel={session:original,value:JSON.stringify(draft.checkpoint)};
  const ok=await transact(()=>{record=C.saveSectionCheckin(DB,draft.date,draft.id,draft.checkpoint,DB.metrics,checkinSection());if(!record)throw Error('Сначала отметь самочувствие или тег');record.note=draft.checkpoint.note||'';delete data().wheelDrafts?.[draft.date]?.[CURRENT];});
  pendingWheel=null;if(!ok){updateNowSave();return;}
- undoNow=draft;if(session===original&&JSON.stringify(session.checkpoint)===JSON.stringify(draft.checkpoint)){session=null;go('day');renderDay();document.getElementById('nowNotice').hidden=false;}else if(session===original){stashWheel();updateNowSave();}
+ undoNow=draft;if(session===original&&JSON.stringify(session.checkpoint)===JSON.stringify(draft.checkpoint)){session=null;go('day');renderDay();toast('Запись сохранена в журнал',undoNowSave,'Вернуть',6000);}else if(session===original){stashWheel();updateNowSave();}
 }
 async function saveTravellingCheckin(){
  if(busy||!session?.dirty||!guard(session.date))return;
@@ -192,12 +195,11 @@ async function undoNowSave(){
  const draft=C.copy(undoNow);
  const ok=await transact(()=>{const list=C.dayData(DB,draft.date).checkins;const i=list.findIndex(x=>x.id===draft.id);if(i>=0)list.splice(i,1);});
  if(!ok)return;
- undoNow=null;document.getElementById('nowNotice').hidden=true;curDate=draft.date;
+ undoNow=null;curDate=draft.date;
  session=draft;curSec=CURRENT;buildTracks();cur=Math.max(0,CURS.findIndex(m=>m.k===data().settings.activeScale));renderCpTags();$('cpName').textContent='Сейчас';paintCpMeal();go('ring');updateNowSave();
 }
 function initNowSave(){
  const b=document.createElement('button');b.id='nowSave';b.className='now-save';b.textContent='Сохранить';b.onclick=submitNow;document.body.append(b);
- const n=document.createElement('div');n.id='nowNotice';n.className='now-notice';n.hidden=true;n.setAttribute('role','status');n.innerHTML='<span>Запись сохранена в журнал</span><button type="button">Отменить</button>';n.querySelector('button').onclick=undoNowSave;document.body.append(n);
 }
 
 
@@ -211,11 +213,12 @@ function prepareSectionPanel(){
 let recognition=null;
 function cancelWheelSpeech(){if(recognition){const active=recognition;recognition=null;active.abort();}}
 
-/* Кнопка «Save» — в вырезе нижнего меню; под тегами — поле заметки. Раньше это делало колесо разделов. */
+/* Кнопка-микрофон — в вырезе нижнего меню; есть что сохранить — пилюля «Сохранить» над меню (аудит 20.11.2026, п. 25).
+   Под тегами — поле заметки. Раньше это делало колесо разделов. */
 function renderNote(){
  if(!session||session.readOnly)return;
  const dock=document.querySelector('.dock'),fab=$('fab'),action=$('nowSave');
- if(dock&&fab&&action){const d=dock.getBoundingClientRect(),cy=parseFloat(fab.style.top)||18,size=action.getBoundingClientRect().width||60;action.style.bottom=(innerHeight-(d.top+cy)-size/2)+'px';}
+ if(dock&&fab&&action){const d=dock.getBoundingClientRect();if(action.dataset.dirty==='true')action.style.bottom=(innerHeight-d.top+14)+'px';else{const cy=parseFloat(fab.style.top)||18,size=60;action.style.bottom=(innerHeight-(d.top+cy)-size/2)+'px';}}
  let note=$('wheelNote');if(!note){note=document.createElement('textarea');note.id='wheelNote';note.placeholder='Заметка к этому разделу';note.setAttribute('aria-label','Заметка к выбранному разделу');$('cpTags').after(note);note.addEventListener('input',()=>{if(session&&!session.readOnly){session.checkpoint.note=note.value;saveCheckin();}});}if(document.activeElement!==note)note.value=session.checkpoint.note||'';
 }
 function dictateWheel(){
@@ -225,7 +228,6 @@ function dictateWheel(){
 
 function openMood(recordId,returnTo='day',explicitKey=null){
  const panel=prepareSectionPanel(),home=document.querySelector('[data-screen="day"].on .ringWrap.nwR');if(home){const top=home.getBoundingClientRect().top+home.closest('.screen').scrollTop;document.documentElement.style.setProperty('--section-arc-top',Math.max(90,top)+'px');}
- document.getElementById('nowNotice').hidden=true;
  const record=recordId?C.readDay(DB,curDate).checkins.find(x=>x.id===recordId):null;
  const checkpoint={time:record?.time||nowHM(),note:record?.note||'',tags:C.copy(record?.tags||{})},defs=C.copy(record?.metricDefs||{});
  if(record){Object.assign(checkpoint,record.metricValues||{});const old={feeling:['Самочувствие',-3,3],joy:['Радость',0,4],strain:['Напряжение',0,4]};for(const [key,value]of Object.entries(record.values||{})){const d=old[key];if(d){defs[key]={k:key,t:d[0],lo:d[1],hi:d[2],w:[],neg:key==='strain'};checkpoint[key]=value;}}}
@@ -256,6 +258,7 @@ function open(kind,id,parent){
  else if(kind.startsWith('settings-'))renderSettingsPage(kind.slice(9));
  else if(kind==='diary')renderDiary();else if(kind==='entry'){currentEntry=id;renderEntry();}else if(kind==='mind')renderMind();else if(kind==='activity')renderActivity();
  go('care-'+kind);block(kind).scrollTop=0;
+ if(kind==='mind'&&id)practiceSheet(id);
  if(parent){const grip=block(kind).querySelector('[data-care-close]');if(grip)grip.dataset.careClose=parent;}
 }
 function renderUpdates(){
@@ -308,9 +311,65 @@ function renderDiaryList(query){const c=data(),q=query.trim().toLocaleLowerCase(
 function renderEntry(){const e=data().entries.find(x=>x.id===currentEntry);if(!e){open('diary');return;}
  block('entry').innerHTML=header('Запись','care-diary')+'<article class="card"><h2>'+h(e.title)+'</h2><p class="care-help">'+h(ruDate(e.date))+' · '+h(e.time)+'</p><div class="care-long">'+h(e.text)+'</div>'+e.additions.map(a=>'<section class="care-addition" id="addition-'+h(a.id)+'"><p class="care-help">Дополнение · '+h(ruDate(a.date))+' · '+h(a.time)+'</p><div class="care-long">'+h(a.text)+'</div></section>').join('')+'</article><form id="careAppendForm" class="card care-form"><h2>Дополнить запись</h2><p class="care-help">Дополнение будет отмечено в журнале за '+h(ruDate(curDate))+'. Исходная запись останется.</p><label for="careAppendText">Продолжение</label><textarea id="careAppendText" name="text" required></textarea><button class="btn solid care-submit" type="submit">Сохранить дополнение</button></form>';
 }
-function renderMind(){const c=data(),goal=C.mindGoal(c,curDate),minutes=C.mindMinutes(DB,curDate),plan=C.scheduled(c,curDate),logs=C.readDay(DB,curDate).practices;
- block('mind').innerHTML=header('Осознанность')+'<div class="card"><div class="care-stat">'+num(minutes)+(goal.value>0?' / '+num(goal.value):'')+' мин</div><p class="care-help">'+(goal.source==='schedule'?(goal.value?'Полный круг — сумма длительностей практик в расписании на этот день.':'На этот день практики не запланированы. Можно заниматься без цели.'):(goal.value?'Полный круг — твоя личная цель.':'Практики за выбранный день.'))+'</p></div><div class="card"><h2>Дыхание и медитации</h2><b>В разработке</b><p class="care-help">Здесь появятся быстрые упражнения и контент для поддержки состояния. Уже можно составить расписание и отметить выполненную практику.</p></div><div class="eyebrow"><span>Расписание на '+h(ruDate(curDate))+'</span></div>'+plan.map(p=>'<div class="card"><b>'+h(p.time)+' · '+h(p.name)+'</b><p class="care-help">'+p.minutes+' минут · план</p><button class="mini" data-care-practice="'+h(p.id)+'">Отметить выполненное время</button></div>').join('')+(plan.length?'':empty('На этот день расписание пустое.'))+
- '<form id="carePracticeForm" class="card care-form"><h2>Записать практику</h2><input type="hidden" name="planId" value=""><label for="carePracticeName">Название</label><input name="name" id="carePracticeName" type="text" placeholder="Медитация, дыхание…" maxlength="100"><div class="care-grid"><div><label for="carePracticeTime">Время</label><input id="carePracticeTime" name="time" type="time" required value="'+nowHM()+'"></div><div><label for="carePracticeMinutes">Длительность</label>'+numField('id="carePracticeMinutes" name="minutes" required','мин')+'</div></div><p class="care-help">План сам по себе не засчитывается. В дугу попадают сохранённые минуты практики и импортированные сессии осознанности; время просмотра приложения не учитывается.</p><button class="btn solid care-submit" type="submit">Сохранить практику</button></form><div class="eyebrow">Выполнено</div>'+logs.slice().reverse().map(x=>'<div class="card"><b>'+h(x.time)+' · '+h(x.name)+'</b><p class="care-help">'+num(x.minutes)+' мин</p></div>').join('');
+const WD=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const PLUS='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const swDel=attr=>'<button class="swDel" '+attr+' hidden tabindex="-1" aria-hidden="true"></button>';
+function planWhen(x){return x.kind==='once'?ruDate(x.date):[1,2,3,4,5,6,0].filter(i=>(x.days||[]).includes(i)).map(i=>WD[i].toLowerCase()).join(', ');}
+/* Аудит Day 20.11.2026 (Астамур). Расписание практик живёт здесь, на странице «Осознанность», а не в Настройках (п. 32):
+   «+» — новая практика листом снизу; нажал на строку — тот же лист с её полями; свайп влево — убрать с сегодняшнего дня.
+   Записанную практику можно поправить и удалить (п. 28): нажал — лист с полями, «Сохранить» и красная «Удалить»; свайп — удалить.
+   Удаление без вопроса, в сообщении «Вернуть» (п. 26). Карточка «Дыхание и медитации · В разработке» убрана (п. 38). */
+function renderMind(){const c=data(),goal=C.mindGoal(c,curDate),minutes=C.mindMinutes(DB,curDate),today=new Set(C.scheduled(c,curDate).map(p=>p.id)),logs=C.readDay(DB,curDate).practices;
+ const plans=c.schedule.filter(x=>x.enabled!==false&&(x.kind!=='once'||x.date>=todayISO())).sort((a,b)=>a.time.localeCompare(b.time));
+ block('mind').innerHTML=header('Осознанность')+'<div class="card"><div class="care-stat">'+num(minutes)+(goal.value>0?' / '+num(goal.value):'')+' мин</div><p class="care-help">'+(goal.source==='schedule'?(goal.value?'Полный круг — сумма длительностей практик в расписании на этот день.':'На этот день практики не запланированы. Можно заниматься без цели.'):(goal.value?'Полный круг — твоя личная цель.':'Практики за выбранный день.'))+'</p></div>'+
+ '<div class="eyebrow care-head-add"><span>Расписание</span><button type="button" class="care-add" data-care-plan-new aria-label="Добавить практику в расписание">'+PLUS+'</button></div>'+
+ (plans.length?'<div class="card care-list">'+plans.map(p=>'<div class="care-row swRow" data-care-plan-edit="'+h(p.id)+'" role="button" tabindex="0"><span class="care-row-t"><b>'+h(p.time)+' · '+h(p.name)+'</b><small>'+num(p.minutes)+' мин · '+h(planWhen(p))+'</small></span>'+(today.has(p.id)?'<button type="button" class="mini" data-care-practice="'+h(p.id)+'">Отметить</button>':'')+swDel('data-care-remove-plan="'+h(p.id)+'"')+'</div>').join('')+'</div>':empty('Расписание пустое. Добавить практику — «+».'))+
+ '<form id="carePracticeForm" class="card care-form"><h2>Записать практику</h2><input type="hidden" name="planId" value=""><label for="carePracticeName">Название</label><input name="name" id="carePracticeName" type="text" placeholder="Медитация, дыхание…" maxlength="100"><div class="care-grid"><div><label for="carePracticeTime">Время</label><input id="carePracticeTime" name="time" type="time" required value="'+nowHM()+'"></div><div><label for="carePracticeMinutes">Длительность</label>'+numField('id="carePracticeMinutes" name="minutes" required','мин')+'</div></div><p class="care-help">План сам по себе не засчитывается. В дугу попадают сохранённые минуты практики и импортированные сессии осознанности; время просмотра приложения не учитывается.</p><button class="btn solid care-submit" type="submit">Сохранить практику</button></form>'+
+ '<div class="eyebrow">Выполнено</div>'+(logs.length?'<div class="card care-list">'+logs.slice().reverse().map(x=>'<div class="care-row swRow" data-care-log-edit="'+h(x.id)+'" role="button" tabindex="0"><span class="care-row-t"><b>'+h(x.time)+' · '+h(x.name)+'</b><small>'+num(x.minutes)+' мин</small></span>'+swDel('data-care-log-del="'+h(x.id)+'"')+'</div>').join('')+'</div>':empty('За этот день практик нет.'));
+}
+/* Лист снизу для расписания и практики: ручка, затемнение позади; закрыть — жест вниз, нажатие на ручку,
+   нажатие мимо листа или «×» внизу (sheet-grip.js). */
+function careSheet(html){
+ let w=$('careSheet');
+ if(!w){w=document.createElement('div');w.className='imp';w.id='careSheet';w.innerHTML='<div class="impScrim"></div><div class="impSheet care-sheet" role="dialog" aria-modal="true"></div>';$('toast').before(w);w.querySelector('.impScrim').addEventListener('click',closeSheet);}
+ w.querySelector('.impSheet').innerHTML='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>'+html;
+ void w.offsetWidth;w.classList.add('on');return w.querySelector('.impSheet');
+}
+function closeSheet(){const w=$('careSheet');if(!w||!w.classList.contains('on'))return false;w.classList.remove('on');if(w.contains(document.activeElement))document.activeElement.blur();return true;}
+function nextHour(){const d=new Date();d.setMinutes(0,0,0);d.setHours(d.getHours()+1);return {date:iso(d),time:String(d.getHours()).padStart(2,'0')+':00'};}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function planSheet(id){
+ const c=data(),x=id?c.schedule.find(p=>p.id===id):null;if(id&&!x)return;
+ const nh=nextHour(),kind=x?.kind||'once',days=x?.days||[],time=x?.time||nh.time,date=x?.kind==='once'?x.date:nh.date;
+ careSheet('<form id="carePlanSheet" class="care-form care-sheet-form" data-plan-id="'+h(id||'')+'" novalidate><h3>'+(x?'Практика в расписании':'Новая практика')+'</h3>'+
+  '<div class="care-seg" role="radiogroup" aria-label="Повторение">'+[['once','Один раз'],['weekly','По дням недели']].map(([k,t])=>'<button type="button" role="radio" data-plan-kind="'+k+'" aria-checked="'+(kind===k)+'">'+t+'</button>').join('')+'</div><input type="hidden" name="kind" value="'+kind+'">'+
+  '<label for="carePlanName">Практика</label><input id="carePlanName" name="name" type="text" maxlength="100" placeholder="Например, утренняя медитация" value="'+h(x?.name||'')+'">'+
+  '<div class="care-days" data-plan-days'+(kind==='weekly'?'':' hidden')+'>'+[1,2,3,4,5,6,0].map(i=>'<label><input type="checkbox" name="days" value="'+i+'"'+(days.includes(i)?' checked':'')+'><span>'+WD[i]+'</span></label>').join('')+'</div>'+
+  '<div data-plan-once'+(kind==='once'?'':' hidden')+'><label for="carePlanWhen">Дата и время</label><input id="carePlanWhen" name="when" type="datetime-local" min="'+todayISO()+'T00:00" value="'+date+'T'+time+'"></div>'+
+  '<div data-plan-weekly'+(kind==='weekly'?'':' hidden')+'><label for="carePlanTime">Время</label><input id="carePlanTime" name="time" type="time" value="'+time+'"></div>'+
+  '<div class="fieldrow"><label for="carePlanMinutes">Длительность</label>'+numField('id="carePlanMinutes" name="minutes"'+(x?' value="'+num(x.minutes)+'"':''),'мин')+'</div>'+
+  '<button type="submit" class="btn solid care-submit">Сохранить</button>'+(x?'<button type="button" class="btn care-danger" data-care-remove-plan="'+h(x.id)+'">Убрать из расписания</button>':'')+'</form>');
+}
+function practiceSheet(id){
+ const x=C.readDay(DB,curDate).practices.find(p=>p.id===id);if(!x)return;
+ careSheet('<form id="careLogSheet" class="care-form care-sheet-form" data-log-id="'+h(id)+'" data-log-date="'+curDate+'" novalidate><h3>Практика</h3>'+
+  '<label for="careLogName">Название</label><input id="careLogName" name="name" type="text" maxlength="100" value="'+h(x.name)+'">'+
+  '<div class="care-grid"><div><label for="careLogTime">Время</label><input id="careLogTime" name="time" type="time" value="'+h(x.time)+'"></div><div><label for="careLogMinutes">Длительность</label>'+numField('id="careLogMinutes" name="minutes" value="'+num(x.minutes)+'"','мин')+'</div></div>'+
+  '<button type="submit" class="btn solid care-submit">Сохранить</button><button type="button" class="btn care-danger" data-care-log-del="'+h(id)+'">Удалить</button></form>');
+}
+async function removePlan(id){
+ if(RO){roWarn();return;}
+ let removed=null,at=-1;
+ if(!await transact(()=>{const c=data();at=c.schedule.findIndex(x=>x.id===id);if(at<0)return;removed=c.schedule.splice(at,1)[0];C.rememberPlan(c,todayISO());}))return;
+ closeSheet();renderMind();if(!removed)return;
+ toast('«'+removed.name+'» убрана из расписания',async()=>{if(await transact(()=>{const c=data();c.schedule.splice(Math.min(at,c.schedule.length),0,removed);C.rememberPlan(c,todayISO());}))renderMind();},'Вернуть',5000);
+}
+async function removeLog(id,date){
+ if(!guard(date))return;
+ let removed=null,at=-1;
+ if(!await transact(()=>{const list=C.dayData(DB,date).practices;at=list.findIndex(x=>x.id===id);if(at<0)return;removed=list.splice(at,1)[0];}))return;
+ closeSheet();if(curDate===date)renderMind();if(!removed)return;
+ toast('Практика удалена',async()=>{if(!guard(date))return;if(await transact(()=>{const list=C.dayData(DB,date).practices;list.splice(Math.min(at,list.length),0,removed);})&&curDate===date)renderMind();},'Вернуть',5000);
 }
 /* «Съедено» за день — итог из сводки Meal и нажатия на счётчики еды, которые Meal ещё не посчитал (нажатие в Day
    попадает в кольцо сразу; правило — в shared/happy-food.js). Сводки нет или в дне нет ни еды, ни порций — null:
@@ -338,11 +397,11 @@ let energyMode=null;
 function paintEnergy(){const el=$('careEnergy');if(el)el.innerHTML=HappyDayEnergy.render(activityFacts(),energyMode||data().activitySettings.start,data().activitySettings.scale);}
 function renderActivity(){
  const c=data(),a=C.activity(c,curDate);
- block('activity').innerHTML=header('Активность')+'<section class="card happy-energy" id="careEnergy" aria-label="Энергия и активность"></section><div class="eyebrow">Расписание</div>'+a.plans.map(p=>'<div class="card"><b>'+h(p.start.slice(11,16))+' · '+h(p.title)+'</b><p class="care-help">'+p.minutes+' мин · '+(p.status==='completed'||p.status==='partial'?'выполнено':'план')+'</p>'+(p.note?'<p class="care-long">'+h(p.note)+'</p>':'')+'</div>').join('')+(a.plans.length?'':empty('На этот день тренировок в расписании нет.'))+'<div class="card"><h2>Happy Strong</h2><p class="care-help">Тренировки и плановые занятия приходят из Happy Sport сами.</p><a class="btn solid care-external" href="'+STRONG_URL+'" data-happy-app="sport" target="_blank" rel="noopener">Открыть Sport ↗</a></div>';
+ block('activity').innerHTML=header('Активность')+'<section class="card happy-energy" id="careEnergy" aria-label="Энергия и активность"></section><div class="eyebrow">Расписание</div>'+a.plans.map(p=>'<div class="card"><b>'+h(p.start.slice(11,16))+' · '+h(p.title)+'</b><p class="care-help">'+p.minutes+' мин · '+(p.status==='completed'||p.status==='partial'?'выполнено':'план')+'</p>'+(p.note?'<p class="care-long">'+h(p.note)+'</p>':'')+'</div>').join('')+(a.plans.length?'':empty('На этот день тренировок в расписании нет.'))+'<div class="card"><h2>Happy Sport</h2><p class="care-help">Тренировки и плановые занятия приходят из Happy Sport сами.</p><a class="btn solid care-external" href="'+STRONG_URL+'" data-happy-app="sport" target="_blank" rel="noopener">Открыть Sport ↗</a></div>';
  strongLink();
  paintEnergy();
 }
-function scheduleForm(c){return '<details class="card care-form"><summary class="care-summary">Настроить расписание</summary><p class="care-help">Изменения действуют с сегодняшнего дня. Прошлые цели сохраняются.</p><div>'+c.schedule.map(x=>'<div class="care-setting-row"><span>'+h(x.name)+' · '+h(x.time)+' · '+x.minutes+' мин<br><small>'+h(x.kind==='once'?ruDate(x.date):x.days.map(i=>['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][i]).join(', '))+'</small></span><button type="button" class="mini" data-care-remove-plan="'+h(x.id)+'" aria-label="Удалить практику из расписания">×</button></div>').join('')+'</div><form id="careScheduleForm"><label for="carePlanName">Практика</label><input id="carePlanName" name="name" type="text" required maxlength="100" placeholder="Например, утренняя медитация"><div class="care-grid"><div><label for="carePlanTime">Время</label><input id="carePlanTime" name="time" type="time" required></div><div><label for="carePlanMinutes">Длительность</label>'+numField('id="carePlanMinutes" name="minutes" required','мин')+'</div></div><label for="carePlanKind">Повторение</label><select id="carePlanKind" name="kind"><option value="once">Один день</option><option value="weekly">По дням недели</option></select><div id="carePlanDateRow"><label for="carePlanDate">Дата</label><input id="carePlanDate" name="date" type="date" min="'+todayISO()+'" value="'+todayISO()+'"></div><div id="carePlanDaysRow" hidden><label>Дни недели</label><div class="care-days">'+[1,2,3,4,5,6,0].map(i=>'<label><input type="checkbox" name="days" value="'+i+'">'+['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][i]+'</label>').join('')+'</div></div><button class="btn solid care-submit" type="submit">Добавить в расписание</button><p class="care-help">Добавление практики включает расчёт цели по расписанию. Ручную цель можно выбрать в настройках.</p></form></details>';}
+/* Форма расписания из Настроек убрана: расписание — на странице «Осознанность» (аудит 20.11.2026, п. 32). */
 function options(value,arr){return arr.map(([v,t])=>'<option value="'+v+'"'+(value===v?' selected':'')+'>'+t+'</option>').join('');}
 function mappingRows(c){const defs=[['check:feeling','Общее ощущение','bipolar'],['check:joy','Радость','positive'],['check:strain','Напряжение','negative']].concat(DB.metrics.map(m=>['metric:'+m.k,m.t,metricNeg(m)?'negative':'bipolar']));
  return defs.map(([key,title,def])=>{const m=c.settings.mappings[key]||{mode:def};return '<div class="care-mapping" data-mapping="'+h(key)+'"><label class="care-label">'+h(title)+'</label><select data-map-mode aria-label="Направление шкалы '+h(title)+'">'+options(m.mode,[['bipolar','От неприятного (−) к приятному (+)'],['positive','Больше → сильнее приятное (+)'],['negative','Больше → сильнее неприятное (−)'],['optimal','Комфортен средний диапазон'],['ignore','Не учитывать в дуге']])+'</select><div class="care-grid" data-map-range'+(m.mode==='optimal'?'':' hidden')+'><div><label>Нижняя граница</label>'+numField('data-map-low aria-label="Нижняя граница, %" value="'+pct(m.low??.35)+'"','%')+'</div><div><label>Верхняя граница</label>'+numField('data-map-high aria-label="Верхняя граница, %" value="'+pct(m.high??.65)+'"','%')+'</div></div></div>';}).join('');
@@ -351,28 +410,32 @@ function renderSettings(){
  if(!ready)return;const s=data().settings;
  const names={state:'Текущее состояние',diary:'Дневник',mood:'Самочувствие',activity:'Активность',mind:'Осознанность'};
  const order=s.settingsOrder||['state',...s.order];
- $('careSettings').innerHTML='<div class="eyebrow"><span>Настройки «Сейчас»</span></div><div class="care-function-list">'+order.map(k=>'<div class="card care-function-row" data-care-function="'+k+'"><button class="care-function-open" data-care-open="settings-'+k+'"><span>'+names[k]+'</span>'+CHEV+'</button>'+(k==='state'?'':'<label class="care-switch"><input type="checkbox" data-care-visible="'+k+'" aria-label="Показывать '+titles[k]+'"'+(!s.hidden.includes(k)?' checked':'')+'><i></i></label>')+'<button class="dragH care-function-drag" aria-label="Переместить '+names[k]+'" title="Перетащи или используй стрелки вверх и вниз"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 12h16M4 16h16"/></svg></button></div>').join('')+'</div>';
+ $('careSettings').innerHTML='<div class="eyebrow"><span>Настройки «Сейчас»</span></div><div class="care-function-list">'+order.map(k=>functionRow(k,names[k],true)).join('')+'</div>';
 }
+/* Строка настройки «Сейчас»: название (в Настройках — с переходом), выключатель показа, «≡» — зажал и перетащил.
+   Та же строка — в «Текущее состояние → Кнопки-виджеты» (аудит 20.11.2026, п. 7: вместо галочек и стрелок «← →»). */
+function functionRow(k,name,openable){const s=data().settings;return '<div class="card care-function-row" data-care-function="'+k+'">'+(openable?'<button class="care-function-open" data-care-open="settings-'+k+'"><span>'+name+'</span>'+CHEV+'</button>':'<span class="care-function-name">'+name+'</span>')+(k==='state'?'':'<label class="care-switch"><input type="checkbox" data-care-visible="'+k+'" aria-label="Показывать '+titles[k]+'"'+(!s.hidden.includes(k)?' checked':'')+'><i></i></label>')+'<button class="dragH care-function-drag" aria-label="Переместить '+name+'" title="Перетащи или используй стрелки вверх и вниз"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 12h16M4 16h16"/></svg></button></div>';}
 function moveFunction(key,to){
  const s=data().settings,order=s.settingsOrder.slice(),from=order.indexOf(key);if(RO||from<0||to<0||to>=order.length||from===to)return;
- order.splice(to,0,order.splice(from,1)[0]);s.settingsOrder=order;s.order=order.filter(k=>k!=='state');save();renderSettings();renderNow();
+ order.splice(to,0,order.splice(from,1)[0]);s.settingsOrder=order;s.order=order.filter(k=>k!=='state');save();renderSettings();renderNow();if(block('settings-state')?.classList.contains('on'))renderSettingsPage('state');
 }
-function bindSettingsOrder(){
- const host=$('careSettings');let drag=null;
- host.addEventListener('pointerdown',e=>{const handle=e.target.closest('.care-function-drag');if(!handle||RO)return;const row=handle.closest('[data-care-function]');drag={handle,row,key:row.dataset.careFunction,y:e.clientY,centres:[...host.querySelectorAll('[data-care-function]')].map(r=>{const b=r.getBoundingClientRect();return b.top+b.height/2;}),to:data().settings.settingsOrder.indexOf(row.dataset.careFunction)};handle.setPointerCapture(e.pointerId);row.classList.add('dragging');e.preventDefault();});
+function bindSettingsOrder(host=$('careSettings'),keys=()=>data().settings.settingsOrder){
+ let drag=null;
+ const place=(key,to)=>{const k=keys()[to];if(k)moveFunction(key,data().settings.settingsOrder.indexOf(k));};
+ host.addEventListener('pointerdown',e=>{const handle=e.target.closest('.care-function-drag');if(!handle||RO)return;const row=handle.closest('[data-care-function]');drag={handle,row,key:row.dataset.careFunction,y:e.clientY,centres:[...host.querySelectorAll('[data-care-function]')].map(r=>{const b=r.getBoundingClientRect();return b.top+b.height/2;}),to:keys().indexOf(row.dataset.careFunction)};handle.setPointerCapture(e.pointerId);row.classList.add('dragging');e.preventDefault();});
  host.addEventListener('pointermove',e=>{if(!drag)return;drag.row.style.transform='translateY('+(e.clientY-drag.y)+'px)';drag.to=drag.centres.reduce((best,y,i)=>Math.abs(y-e.clientY)<Math.abs(drag.centres[best]-e.clientY)?i:best,0);});
- const finish=cancel=>{if(!drag)return;const d=drag;drag=null;d.row.style.transform='';d.row.classList.remove('dragging');if(!cancel)moveFunction(d.key,d.to);};
+ const finish=cancel=>{if(!drag)return;const d=drag;drag=null;d.row.style.transform='';d.row.classList.remove('dragging');if(!cancel)place(d.key,d.to);};
  host.addEventListener('pointerup',()=>finish(false));host.addEventListener('pointercancel',()=>finish(true));
- host.addEventListener('keydown',e=>{const handle=e.target.closest('.care-function-drag');if(!handle||!['ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const key=handle.closest('[data-care-function]').dataset.careFunction;moveFunction(key,data().settings.settingsOrder.indexOf(key)+(e.key==='ArrowDown'?1:-1));host.querySelector('[data-care-function="'+key+'"] .care-function-drag')?.focus();});
+ host.addEventListener('keydown',e=>{const handle=e.target.closest('.care-function-drag');if(!handle||!['ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const key=handle.closest('[data-care-function]').dataset.careFunction;place(key,keys().indexOf(key)+(e.key==='ArrowDown'?1:-1));host.querySelector('[data-care-function="'+key+'"] .care-function-drag')?.focus();});
 }
 function renderCheckinSettings(){const host=$('careSectionConfig');if(host)host.innerHTML='<div class="secListInner">'+sectionMarkup(checkinSection(),-1)+'</div>';}
 function renderSettingsPage(kind){
  const c=data(),s=c.settings,screen=block('settings-'+kind),title={state:'Текущее состояние',mood:'Самочувствие',diary:'Дневник',activity:'Активность',mind:'Осознанность'}[kind];
  const host=$('careSectionConfig');if(host)host.remove();
  let html=header(title,'settings',false);
- if(kind==='state')html+='<div class="card"><h2>Кнопки-виджеты</h2>'+s.order.map((k,i)=>'<div class="care-setting-row"><span>'+titles[k]+'</span><button class="mini" data-care-move="'+k+'" data-dir="-1" aria-label="'+titles[k]+': влево"'+(!i?' disabled':'')+'>←</button><button class="mini" data-care-move="'+k+'" data-dir="1" aria-label="'+titles[k]+': вправо"'+(i===s.order.length-1?' disabled':'')+'>→</button><input type="checkbox" data-care-visible="'+k+'" aria-label="Показывать '+titles[k]+'"'+(!s.hidden.includes(k)?' checked':'')+'></div>').join('')+'</div>';
+ if(kind==='state')html+='<div class="eyebrow"><span>Кнопки-виджеты</span></div><div class="care-function-list" data-care-widgets>'+s.order.map(k=>functionRow(k,titles[k],false)).join('')+'</div><p class="care-help care-note">Порядок слева направо — сверху вниз. Зажми «≡» и перетащи.</p>';
  if(kind==='mood')html+='<form id="careMoodSettingsForm" class="card care-form">'+moodSettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
- if(kind==='mind')html+='<form id="careMindSettingsForm" class="card care-form">'+mindSettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>'+scheduleForm(c);
+ if(kind==='mind')html+='<form id="careMindSettingsForm" class="card care-form">'+mindSettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form><p class="care-help care-note">Расписание практик — на странице «Осознанность»: «+» над списком.</p>';
  if(kind==='diary')html+='<div class="card"><h2>Мои дневники</h2>'+c.books.map(b=>'<div class="care-setting-row"><span>'+h(b.name)+'</span></div>').join('')+'<button class="btn care-submit" data-care-book>Добавить дневник</button></div><form id="careDiarySettingsForm" class="card care-form">'+diarySettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
  if(kind==='activity')html+='<form id="careActivitySettingsForm" class="card care-form"><h2>Виджет энергии</h2><label for="careEnergyMode">Начальный режим</label><select id="careEnergyMode" name="start">'+options(c.activitySettings.start,[['balance','Баланс'],['eat','Съедено'],['spent','Потрачено']])+'</select><p class="care-help">С этого вида виджет открывается. Нажатие на кольцо меняет вид до следующего открытия.</p><label for="careEnergyScale">Масштаб кольца, ккал</label>'+numField('id="careEnergyScale" name="scale" required value="'+c.activitySettings.scale+'"','ккал')+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
  screen.innerHTML=html;
@@ -382,19 +445,22 @@ function moodSettings(c,s){return '<details open><summary class="care-summary">�
 function mindSettings(c,s){return '<details open><summary class="care-summary">Осознанность · цель круга</summary><label for="careGoalMode">Источник цели</label><select id="careGoalMode" name="mindMode">'+options(c.goals.scheduleEnabled?'schedule':'manual',[['manual','Моя цель в минутах'],['schedule','Сумма практик в расписании']])+'</select><label for="careMindGoal">Моя цель, минут в день</label>'+numField('id="careMindGoal" name="mindManual" value="'+(c.goals.mindManual||'')+'"'+(c.goals.scheduleEnabled?' disabled':''),'мин')+'<p class="care-help">При расписании 5 + 10 минут полный круг = 15 минут. Без практик в расписании на день — день без плановой цели. Прошлые дни сохраняют свой план.</p></details>';}
 function diarySettings(c,s){return '<details open><summary class="care-summary">Дневник · частота записей</summary><label for="careDiaryGoal">Сколько записей в день ты хочешь делать?</label>'+numField('id="careDiaryGoal" name="diaryGoal" value="'+(c.goals.diaryGoal||'')+'"','в день')+'<label class="care-check"><input name="countAdditions" type="checkbox"'+(c.goals.countAdditions?' checked':'')+'>Учитывать сохранённые дополнения</label><p class="care-help">При достижении цели круг заполнен. Лишние записи остаются видны числом, без штрафа.</p></details>';}
 async function click(ev){
- const b=ev.target.closest('[data-care-open],[data-care-entry],[data-care-book],[data-care-practice],[data-care-remove-plan],[data-care-move],[data-energy-cycle]');if(!b)return;
+ const b=ev.target.closest('[data-care-open],[data-care-entry],[data-care-book],[data-care-practice],[data-care-remove-plan],[data-energy-cycle],[data-care-plan-new],[data-care-plan-edit],[data-care-log-edit],[data-care-log-del],[data-plan-kind]');if(!b)return;
  if(b.hasAttribute('data-care-open')){open(b.dataset.careOpen);return;}
  if(b.dataset.careEntry){open('entry',b.dataset.careEntry);return;}
  if(b.hasAttribute('data-care-book')){const name=await ask('Название дневника','');if(name?.trim()&&await transact(()=>data().books.push({id:C.uid(),name:name.trim().slice(0,80)})))renderSettingsPage('diary');return;}
  if(b.hasAttribute('data-energy-cycle')){const modes=['spent','balance','eat'];energyMode=modes[(modes.indexOf(energyMode||data().activitySettings.start)+1)%3];paintEnergy();return;}
- if(b.dataset.careMove){if(RO){roWarn();return;}const c=data(),i=c.settings.order.indexOf(b.dataset.careMove),j=i+(+b.dataset.dir);if(j<0||j>=c.settings.order.length)return;if(await transact(()=>{[c.settings.order[i],c.settings.order[j]]=[c.settings.order[j],c.settings.order[i]];const stateAt=c.settings.settingsOrder.indexOf('state');c.settings.settingsOrder=c.settings.order.slice();c.settings.settingsOrder.splice(stateAt,0,'state');}))renderSettingsPage('state');return;}
+ if(b.hasAttribute('data-care-plan-new')){planSheet(null);return;}
+ if(b.dataset.carePlanEdit){planSheet(b.dataset.carePlanEdit);return;}
+ if(b.dataset.careLogEdit){practiceSheet(b.dataset.careLogEdit);return;}
+ if(b.dataset.careLogDel){removeLog(b.dataset.careLogDel,b.closest('form')?.dataset.logDate||curDate);return;}
+ if(b.dataset.planKind){const f=b.closest('form'),k=b.dataset.planKind;f.elements.kind.value=k;f.querySelectorAll('[data-plan-kind]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));f.querySelector('[data-plan-days]').hidden=k!=='weekly';f.querySelector('[data-plan-once]').hidden=k!=='once';f.querySelector('[data-plan-weekly]').hidden=k!=='weekly';return;}
  if(b.dataset.carePractice){const p=C.scheduled(data(),curDate).find(x=>x.id===b.dataset.carePractice);if(p){const f=$('carePracticeForm');f.elements.planId.value=p.id;f.elements.name.value=p.name;f.elements.time.value=p.time;HF.refresh(f.elements.time);f.elements.minutes.value='';HF.refresh(f.elements.minutes);f.scrollIntoView({block:'start'});f.elements.minutes.focus();}return;}
- if(b.dataset.careRemovePlan&&await confirmBox('Убрать практику из расписания с сегодняшнего дня? Прошедшие планы сохранятся.','Убрать')){if(await transact(()=>{const c=data();c.schedule=c.schedule.filter(x=>x.id!==b.dataset.careRemovePlan);C.rememberPlan(c,todayISO());}))renderSettingsPage('mind');}
+ if(b.dataset.careRemovePlan){removePlan(b.dataset.careRemovePlan);return;}
 }
 async function change(ev){const el=ev.target;
 
  if(el.dataset.careVisible){const k=el.dataset.careVisible;if(await transact(()=>{const s=data().settings;s.hidden=s.hidden.filter(x=>x!==k);if(!el.checked)s.hidden.push(k);})){renderSettings();if(block('settings-state').classList.contains('on'))renderSettingsPage('state');}return;}
- if(el.id==='carePlanKind'){$('carePlanDateRow').hidden=el.value==='weekly';$('carePlanDaysRow').hidden=el.value!=='weekly';}
  if(el.id==='careGoalMode'){$('careMindGoal').disabled=el.value==='schedule';HF.refresh($('careMindGoal'));}
  if(el.hasAttribute('data-map-mode'))el.parentElement.querySelector('[data-map-range]').hidden=el.value!=='optimal';
 }
@@ -435,10 +501,24 @@ async function submit(ev){const f=ev.target;if(!f.id?.startsWith('care'))return;
  if(f.id==='careDiaryForm'){let entry;if(await transact(()=>{entry=C.addEntry(DB,diaryWhen[0],(diaryWhen[1]||'').slice(0,5),v.title,v.text,v.book);})){open('entry',entry.id);toast('Запись добавлена в дневник и журнал дня');}}
  if(f.id==='careAppendForm'){if(await transact(()=>C.appendEntry(DB,currentEntry,curDate,nowHM(),v.text))){renderEntry();toast('Дополнение сохранено отдельным событием');}}
  if(f.id==='carePracticeForm')await savePractice(v);
- if(f.id==='careScheduleForm'){
-  const days=new FormData(f).getAll('days').map(Number);if(v.kind==='weekly'&&!days.length){toast('Выбери дни недели');return;}
+ if(f.id==='carePlanSheet'){
+  const days=new FormData(f).getAll('days').map(Number),name=String(v.name||'').trim(),kind=v.kind==='weekly'?'weekly':'once',when=String(v.when||'').split('T');
+  const time=kind==='weekly'?String(v.time||''):(when[1]||'').slice(0,5),date=kind==='once'?when[0]:todayISO();
+  if(!name){toast('Напиши, какая практика');return;}
+  if(kind==='weekly'&&!days.length){toast('Выбери дни недели');return;}
+  if(kind==='once'&&!/^\d{4}-\d{2}-\d{2}$/.test(date)){toast('Выбери дату');return;}
+  if(!/^\d{2}:\d{2}$/.test(time)){toast('Выбери время');return;}
+  if(kind==='once'&&date<todayISO()){toast('Эта дата уже прошла');return;}
   const planMinutes=minutesOf(v.minutes);if(!Number.isInteger(planMinutes)||planMinutes<1||planMinutes>1440){toast('Укажи длительность от 1 до 1440 минут, целым числом');return;}
-  if(await transact(()=>{const c=data();c.schedule.push({id:C.uid(),name:v.name.trim(),time:v.time,minutes:planMinutes,kind:v.kind,date:v.date,days,since:todayISO(),enabled:true});c.goals.scheduleEnabled=true;C.rememberPlan(c,todayISO());})){renderSettingsPage('mind');toast('Расписание и цель дня обновлены');}
+  const id=f.dataset.planId,fields={name,time,minutes:planMinutes,kind,date,days:kind==='weekly'?days:[]};
+  if(await transact(()=>{const c=data(),x=id&&c.schedule.find(p=>p.id===id);if(x)Object.assign(x,fields);else{c.schedule.push({id:C.uid(),...fields,since:todayISO(),enabled:true});c.goals.scheduleEnabled=true;}C.rememberPlan(c,todayISO());})){closeSheet();renderMind();toast(id?'Расписание обновлено':'Расписание и цель дня обновлены');}
+ }
+ if(f.id==='careLogSheet'){
+  const date=f.dataset.logDate,id=f.dataset.logId,m=minutesOf(v.minutes),time=String(v.time||'');
+  if(!/^\d{2}:\d{2}$/.test(time)){toast('Выбери время');return;}
+  if(!(m>0&&m<=1440)){toast('Укажи длительность от 0,1 до 1440 минут');return;}
+  if(!guard(date))return;
+  if(await transact(()=>{const x=C.dayData(DB,date).practices.find(p=>p.id===id);if(!x)throw Error('Практика не найдена');Object.assign(x,{name:String(v.name||'').trim()||'Практика',time,minutes:Math.round(m*100)/100});})){closeSheet();if(curDate===date)renderMind();toast('Практика сохранена');}
  }
  if(f.id==='careMoodSettingsForm'){
   const mappings={...data().settings.mappings};let invalid=false;
@@ -453,7 +533,7 @@ async function submit(ev){const f=ev.target;if(!f.id?.startsWith('care'))return;
  if(f.id==='careActivitySettingsForm'&&await transact(()=>{data().activitySettings={start:['spent','eat','balance'].includes(v.start)?v.start:'balance',scale:HF.parse(v.scale)};})){energyMode=null;toast('Настройки сохранены');}
 }
 function journalEvents(date){const d=C.readDay(DB,date),entries=data().entries;
- return d.checkins.map(x=>({t:x.time,m:hmMin(x.time),dot:'#7CE3C9',title:x.sectionTitle||'Отметка дня',sub:(x.sourceSectionTitle?'Форма: '+x.sourceSectionTitle+' · ':'')+checkinText(x),careKind:'mood',careId:x.id,careDate:date})).concat(d.events.map(x=>({t:x.time,m:hmMin(x.time),dot:'#BC61FE',title:x.type==='diary-appended'?'Дополнен дневник':'Запись в дневнике',sub:entries.find(e=>e.id===x.entryId)?.title||x.title,careKind:'entry',careId:x.entryId,careDate:date,additionId:x.additionId})),d.practices.map(x=>({t:x.time,m:hmMin(x.time),dot:'#46FDFC',title:'Осознанность',sub:x.name+' · '+num(x.minutes)+' мин',careKind:'mind',careDate:date})),C.activity(data(),date).workouts.map(w=>({t:w.start.slice(11,16),m:hmMin(w.start.slice(11,16)),dot:'#FFE19A',title:'Активность · Happy Strong',sub:w.title+' · '+num(w.duration/60)+' мин',careKind:'activity',careId:w.id,careDate:date})));
+ return d.checkins.map(x=>({t:x.time,m:hmMin(x.time),dot:'#7CE3C9',title:x.sectionTitle||'Отметка дня',sub:(x.sourceSectionTitle?'Форма: '+x.sourceSectionTitle+' · ':'')+checkinText(x),careKind:'mood',careId:x.id,careDate:date})).concat(d.events.map(x=>({t:x.time,m:hmMin(x.time),dot:'#BC61FE',title:x.type==='diary-appended'?'Дополнен дневник':'Запись в дневнике',sub:entries.find(e=>e.id===x.entryId)?.title||x.title,careKind:'entry',careId:x.entryId,careDate:date,additionId:x.additionId})),d.practices.map(x=>({t:x.time,m:hmMin(x.time),dot:'#46FDFC',title:'Осознанность',sub:x.name+' · '+num(x.minutes)+' мин',careKind:'mind',careId:x.id,careDate:date})),C.activity(data(),date).workouts.map(w=>({t:w.start.slice(11,16),m:hmMin(w.start.slice(11,16)),dot:'#FFE19A',title:'Активность · Happy Sport',sub:w.title+' · '+num(w.duration/60)+' мин',careKind:'activity',careId:w.id,careDate:date})));
 }
 function journalOpen(kind,id,date,additionId){curDate=date;open(kind,id,'trends');if(additionId)$('addition-'+additionId)?.scrollIntoView({block:'center'});}
 /* 57.6: свернули приложение посреди правки раздела — записать сразу */

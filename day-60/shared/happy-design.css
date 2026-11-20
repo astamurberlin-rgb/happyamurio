@@ -36,3 +36,6 @@
   font-size:14px!important;font-weight:400!important;line-height:20px!important;white-space:nowrap}
 .toast button,.hs-toast button{min-height:20px;padding:0;border:0;background:none;color:#8EF3DD!important;font:inherit;font-size:14px!important;font-weight:600!important;
   text-decoration:none!important;opacity:1!important}
+
+/* аудит 20.11.2026, п. 34: карандаш у даты замера — зона нажатия 44, рисунок прежний (14) */
+.hm-grid .hm-edit{min-width:44px;min-height:44px;margin:-7px auto -8px;padding:0;display:grid;place-items:center}

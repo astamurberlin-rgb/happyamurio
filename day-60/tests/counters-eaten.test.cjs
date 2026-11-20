@@ -122,13 +122,11 @@ test('нажатие с другого устройства появляется
   assert.equal(w.listeners.length, 1);
   const click = attrs => { let stopped = false; w.listeners[0]({ target: { closest: () => ({ dataset: attrs }) }, stopImmediatePropagation: () => { stopped = true; } }); return stopped; };
   assert.equal(click({ ren: 't1' }), true); assert.match(w.log.toasts[0], /настраиваются в Happy Meal/);
-  // «Убрать»: сначала вопрос; отказ ничего не меняет
-  w.log.answer = false; assert.equal(click({ del: 't1' }), true); assert.match(w.log.asked[0], /Убрать счётчик «Мандарин» из Happy Day\? В Happy Meal он останется/);
-  assert.equal(w.log.writes.length, 0); assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own', 'meal-c2']);
-  // согласие: в документ нажатий Day ложится отметка, счётчик из Day уходит сразу, не дожидаясь Meal; нажатие остаётся
-  w.log.answer = true; click({ del: 't1' });
+  // «Убрать» — без вопроса (аудит Day 20.11.2026, п. 26): в документ нажатий Day ложится отметка, счётчик из Day уходит сразу,
+  // не дожидаясь Meal; нажатие остаётся; в сообщении — «Вернуть»
+  assert.equal(click({ del: 't1' }), true); assert.equal(w.log.asked.length, 0, 'вопроса нет');
   assert.deepEqual(w.log.writes, [['+', 'off:c2']]); assert.deepEqual(plain(w.docs.foodtaps.find(r => r.id === 'off:c2').value.off), 'c2');
-  assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own']); assert.match(w.log.toasts[1], /Счётчик убран из Happy Day\. Вернуть: Happy Meal/);
+  assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own']); assert.match(w.log.toasts[1], /«Мандарин» убран из Happy Day/);
   assert.deepEqual(F.taps(w.docs.foodtaps).map(t => t.id), ['day-from-phone'], 'записанная порция осталась'); assert.equal(w.eaten().k, 46.6, 'и осталась в «съедено»');
   // Meal выключил счётчику показ в Day — ничего не меняется; включил снова и снял отметку — счётчик вернулся с нажатием
   w.meal('foods', [counter('c2', 'Мандарин', 88, MANDARIN, { day: false, sport: false })]); assert.deepEqual(plain(w.c.DB.taps.map(t => t.k)), ['own']);

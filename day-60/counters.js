@@ -103,10 +103,10 @@
       const c=root.DB.taps[Number((b.dataset.ren||b.dataset.del).slice(1))];if(!c||!c.mealCounterId)return;
       e.stopImmediatePropagation();
       if(!b.dataset.del){root.toast('Название, продукт и порция этого счётчика настраиваются в Happy Meal.');return}
-      root.confirmBox('Убрать счётчик «'+c.t+'» из Happy Day? В Happy Meal он останется, записанные порции — тоже.','Убрать').then(ok=>{
-        if(!ok||root.writeGuard()||!hide(c.mealCounterId))return;
-        root.toast('Счётчик убран из Happy Day. Вернуть: Happy Meal → настройки счётчика → включить Happy Day.');
-      });
+      /* аудит 20.11.2026, п. 26 и 38: без вопроса, в сообщении «Вернуть»; в Happy Meal счётчик и порции остаются */
+      if(root.writeGuard())return;
+      const undo=hide(c.mealCounterId);if(!undo)return;
+      root.toast('«'+c.t+'» убран из Happy Day',typeof undo==='function'?undo:null,'Вернуть',5000);
     },true);
     const f=foodsDoc();
     if(f)f.subscribe(refresh);

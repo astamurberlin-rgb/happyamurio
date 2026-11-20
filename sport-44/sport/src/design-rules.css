@@ -338,3 +338,22 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
    Низ листа — с запасом под меню, чтобы последняя кнопка не пряталась. Большой таймер устроен так уже давно. */
 .overlay{z-index:50!important}
 .overlay .sheet:not(:has(.exercise-player)){padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
+
+/* ── Аудит единого стиля, 20.11.2026 — решения Астамура для Sport ──
+ * п. 3: в форме расписания «Длительность» — рамка, как поле времени в Day: 132 × 48, «мин» внутри, текст полужирный по центру;
+ *       «Напоминание» — той же ширины и высоты, подписи короче. Число 16 — мельче iPhone приближает страницу при вводе.
+ * п. 11: дата в шапке справа — как в Day: пилюля высотой 37.
+ * п. 26: сообщение после действия — как в Day: синяя пилюля, «Вернуть» бирюзовым, без подчёркивания.
+ * — Claude · 20.11.2026 (лаборатория) */
+.plan-row .sport-metric-input{box-sizing:border-box;display:inline-flex!important;align-items:center!important;justify-content:center;gap:5px!important;
+  width:132px!important;flex:0 0 132px!important;height:48px!important;padding:0 10px!important;border:1px solid rgba(255,255,255,.34)!important;border-radius:12px!important;
+  background:rgba(255,255,255,.14)!important;box-shadow:none!important}
+.plan-row .sport-metric-input:focus-within{border-color:#fff!important;box-shadow:none!important}
+.plan-row .sport-metric-input input{flex:0 0 auto!important;width:4ch!important;min-width:0!important;max-width:none!important;height:24px!important;min-height:0!important;
+  line-height:24px!important;padding:0!important;text-align:right;font-size:16px!important;font-weight:600}
+.plan-row .sport-metric-input .sport-metric-unit{padding:0!important;line-height:24px!important;font-size:14px!important;font-weight:600;opacity:.85}
+.plan-row select{box-sizing:border-box;width:132px!important;flex:0 0 132px!important;height:48px!important;min-height:48px!important;text-align:center;text-align-last:center;
+  font-size:16px!important;font-weight:600}
+.top .date-pill{min-height:37px!important;height:37px!important}
+.toast,.hs-toast{background:rgba(12,60,110,.92)!important}
+.toast button{color:#8EF3DD!important;opacity:1!important;text-decoration:none!important}

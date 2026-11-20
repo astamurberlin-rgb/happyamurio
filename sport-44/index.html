@@ -1892,6 +1892,25 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
    Низ листа — с запасом под меню, чтобы последняя кнопка не пряталась. Большой таймер устроен так уже давно. */
 .overlay{z-index:50!important}
 .overlay .sheet:not(:has(.exercise-player)){padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
+
+/* ── Аудит единого стиля, 20.11.2026 — решения Астамура для Sport ──
+ * п. 3: в форме расписания «Длительность» — рамка, как поле времени в Day: 132 × 48, «мин» внутри, текст полужирный по центру;
+ *       «Напоминание» — той же ширины и высоты, подписи короче. Число 16 — мельче iPhone приближает страницу при вводе.
+ * п. 11: дата в шапке справа — как в Day: пилюля высотой 37.
+ * п. 26: сообщение после действия — как в Day: синяя пилюля, «Вернуть» бирюзовым, без подчёркивания.
+ * — Claude · 20.11.2026 (лаборатория) */
+.plan-row .sport-metric-input{box-sizing:border-box;display:inline-flex!important;align-items:center!important;justify-content:center;gap:5px!important;
+  width:132px!important;flex:0 0 132px!important;height:48px!important;padding:0 10px!important;border:1px solid rgba(255,255,255,.34)!important;border-radius:12px!important;
+  background:rgba(255,255,255,.14)!important;box-shadow:none!important}
+.plan-row .sport-metric-input:focus-within{border-color:#fff!important;box-shadow:none!important}
+.plan-row .sport-metric-input input{flex:0 0 auto!important;width:4ch!important;min-width:0!important;max-width:none!important;height:24px!important;min-height:0!important;
+  line-height:24px!important;padding:0!important;text-align:right;font-size:16px!important;font-weight:600}
+.plan-row .sport-metric-input .sport-metric-unit{padding:0!important;line-height:24px!important;font-size:14px!important;font-weight:600;opacity:.85}
+.plan-row select{box-sizing:border-box;width:132px!important;flex:0 0 132px!important;height:48px!important;min-height:48px!important;text-align:center;text-align-last:center;
+  font-size:16px!important;font-weight:600}
+.top .date-pill{min-height:37px!important;height:37px!important}
+.toast,.hs-toast{background:rgba(12,60,110,.92)!important}
+.toast button{color:#8EF3DD!important;opacity:1!important;text-decoration:none!important}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
@@ -2576,7 +2595,8 @@ function scheduleFields(s){
  +`<p class="plan-zone-note">${otherZone?'Время по поясу '+esc(planZoneName(zone)):'Время телефона · '+esc(planZoneName(phoneZone))}${otherZone?'':' <button type="button" class="text-btn" data-action="plan-zone">Другой часовой пояс</button>'}</p>`
  +`<label class="field plan-zone" ${otherZone?'':'hidden'}>Часовой пояс<input name="scheduleZone" required value="${esc(zone)}" list="schedule-zones" autocomplete="off"></label><datalist id="schedule-zones">${[phoneZone,'Europe/Moscow','Europe/Berlin','Asia/Tbilisi','UTC'].filter((x,i,a)=>a.indexOf(x)===i).map(x=>`<option value="${x}">`).join('')}</datalist></div></div>`
  +`<div class="plan-group plan-details"><label class="plan-row">Длительность${sportMetricInput(`type="number" name="planMinutes" min="1" max="1440" value="${s?.minutes||60}" aria-label="Длительность плана, минут"`,'мин')}</label>`
- +`<label class="plan-row">Напоминание<select name="planReminder">${[[-1,'Без напоминания'],[0,'В начале'],[15,'За 15 минут'],[30,'За 30 минут'],[60,'За час'],[1440,'За день']].map(([v,n])=>`<option value="${v}" ${(s?.reminder??30)===v?'selected':''}>${n}</option>`).join('')}</select></label>`
+ // Аудит 20.11.2026, п. 3 (Астамур): «Напоминание» одной ширины с «Длительностью», подписи короче («за 30 мин»).
+ +`<label class="plan-row">Напоминание<select name="planReminder">${[[-1,'нет'],[0,'в начале'],[15,'за 15 мин'],[30,'за 30 мин'],[60,'за час'],[1440,'за день']].map(([v,n])=>`<option value="${v}" ${(s?.reminder??30)===v?'selected':''}>${n}</option>`).join('')}</select></label>`
  +`<label class="field plan-note">Заметка<textarea name="planNote" maxlength="2000" rows="2" placeholder="Например: взять резинку">${esc(s?.note||'')}</textarea></label></div>`
  // «В календарь» — на всю ширину; «Поделиться» — значок справа от названия листа (openScheduleSheet), Астамур 18.11.2026.
  +`<div class="plan-share plan-share-one"><button class="button" type="submit" data-plan-export="calendar">${icon('calendar-blank')} В календарь</button></div>`

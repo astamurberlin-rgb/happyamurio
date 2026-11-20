@@ -171,17 +171,19 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .cHead .cName{flex:1;min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Раскрытая кнопка всегда одной ширины — под самую длинную надпись («10 ч 55 мин»).
    При протяжке меняется только надпись по центру, сама кнопка не дёргается. */
-.plus{flex:none;display:flex;align-items:center;height:34px;width:34px;padding:0 0 0 7.5px;overflow:hidden;
+/* аудит 20.11.2026, п. 34: зона нажатия 44, рисунок прежний — 34 (кнопка шире рисунка на 5 точек с каждой стороны) */
+.plus{flex:none;display:block;margin:-5px;padding:5px;border:0;background:none;color:#fff;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.plusIn{display:flex;align-items:center;box-sizing:border-box;height:34px;width:34px;padding:0 0 0 7.5px;overflow:hidden;
   border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.16);color:#fff;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.25);font:inherit;white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25);white-space:nowrap;
   transition:width .34s cubic-bezier(.25,.8,.25,1),background .25s,color .25s,border-color .25s,box-shadow .25s}
 .plus svg{flex:none;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round}
 .plus .pl{flex:1;min-width:0;padding:0 9px 0 4px;text-align:center;overflow:hidden}
 .plus .pl b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;transition:opacity .15s}
-.plus:active{background:rgba(255,255,255,.3)}
-.hasDraft .plus{width:128px;background:rgba(255,255,255,.95);color:#0C6FA8;
+.plus:active .plusIn{background:rgba(255,255,255,.3)}
+.hasDraft .plusIn{width:128px;background:rgba(255,255,255,.95);color:#0C6FA8;
   border-color:#fff;box-shadow:0 4px 14px rgba(4,40,80,.2)}
-.hasDraft .plus:active{background:#fff}
+.hasDraft .plus:active .plusIn{background:#fff}
 .plus.pop{animation:plusPop .5s cubic-bezier(.25,.8,.25,1)}
 @keyframes plusPop{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}
 .dX{flex:none;width:30px;height:30px;border-radius:50%;padding:0;display:grid;place-items:center;
@@ -460,6 +462,13 @@ body.loading .app,body.loading .dock{opacity:0}
 .tagPill .minusBtn{width:20px;height:20px;margin:0 2px 0 0}
 .tagPill .minusBtn svg{width:12px;height:12px}
 .swipe{position:relative;margin-bottom:0}
+/* аудит 20.11.2026, п. 27: свайп влево убирает строку (row-swipe.js) — строка уезжает влево, справа проступает «Убрать» */
+.swRow,.swipeInner{position:relative;touch-action:pan-y}
+.swRow>*,.swipeInner>*{transform:translateX(var(--sx,0px));transition:transform .2s ease}
+.swRow.swOn>*,.swipeInner.swOn>*{transition:none}
+.swRow::after,.swipeInner::after{content:'Убрать';position:absolute;right:0;top:6px;bottom:6px;display:grid;place-items:center;padding:0 16px;
+  border-radius:14px;background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
+.swDel{display:none}
 .swipeInner{display:flex;align-items:center;gap:8px;padding:12px 13px}
 .swipeInner .nm{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .swipeInner .nm b{display:block;font-size:16px;font-weight:600}
@@ -542,6 +551,8 @@ body.sheet .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
   background:rgba(12,60,110,.92);color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;
   opacity:0;pointer-events:none;transition:opacity .2s;max-width:86vw;text-align:center}
 .toast.on{opacity:1}
+/* открыт лист снизу — сообщение сверху экрана, чтобы не закрывало кнопки листа (аудит 20.11.2026) */
+.imp.on ~ .toast{bottom:auto;top:calc(14px + env(safe-area-inset-top))}
 /* после записи и после минуса в подсказке есть «Вернуть» */
 .toast.tAct{display:flex;align-items:center;gap:14px;white-space:nowrap}
 .toast.tAct span{min-width:0;overflow:hidden;text-overflow:ellipsis}
@@ -724,13 +735,21 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .edErr{margin:10px 2px 0;font-size:14px;font-weight:600;color:#FFE3BF}
 .edErr:empty{display:none}
 /* сетка иконок — отдельный экран поверх окна */
-.icLayer{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);
-  background:linear-gradient(180deg,rgba(86,205,252,.985),rgba(40,178,248,.985));
-  transform:translateY(102%);transition:transform .38s cubic-bezier(.25,.8,.25,1);visibility:hidden}
-.icLayer.on{transform:none;visibility:visible}
-@media (prefers-reduced-motion:reduce){.icLayer{transition:none}}
-.icHead{flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:12px 14px 6px}
-.icHead b{font-size:16px;font-weight:700;text-align:center;white-space:nowrap}
+/* аудит 20.11.2026, п. 17: выбор иконки и редактор шкалы — листы снизу: ручка сверху, углы 22, затемнение позади */
+.icLayer{position:fixed;inset:0;z-index:80;visibility:hidden;transition:visibility 0s .38s}
+.icLayer.on{visibility:visible;transition:none}
+.icScrim{position:absolute;inset:0;background:rgba(4,40,80,.18);opacity:0;transition:opacity .3s}
+.icLayer.on .icScrim{opacity:1}
+.icSheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 40px - env(safe-area-inset-top));display:flex;flex-direction:column;
+  padding-top:6px;border-radius:22px 22px 0 0;border-top:1px solid rgba(255,255,255,.55);
+  background:linear-gradient(180deg,rgba(86,205,252,.985),rgba(40,178,248,.985));box-shadow:0 -8px 30px rgba(4,40,80,.18);
+  transform:translateY(102%);transition:transform .38s cubic-bezier(.25,.8,.25,1)}
+.icLayer.on .icSheet{transform:none}
+@media (prefers-reduced-motion:reduce){.icSheet{transition:none}}
+.icHead{flex:none;padding:4px 20px 10px}
+.icHead b{display:block;font-size:20px;font-weight:700}
+.icFoot{flex:none;padding:12px 20px calc(16px + env(safe-area-inset-bottom))}
+.icFoot .btn{width:100%}
 .icBack{justify-self:start;border:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:600;padding:9px 6px}
 .icScroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding:6px 20px calc(30px + env(safe-area-inset-bottom))}
@@ -780,7 +799,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 
 /* ── окно шкалы: вид, отсчёт, деления, подписи ── */
 .icLayer.scEd{z-index:69}
-.scEd .icHead .scDone{justify-self:end;font-weight:700}
+.scEd .icScroll{padding-bottom:8px}
 .scEd input[type=text]{font-size:16px}
 .scName{display:block;width:100%;margin-top:6px}
 .scUse{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0}
@@ -1254,7 +1273,7 @@ a.btn{display:inline-block;text-decoration:none}
     <div class="eyebrow"><span>Разделы</span></div>
     <div id="secList"></div>
     <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить раздел</button></div>
-    <p class="note">Нажми на раздел — развернётся список его шкал и тегов. Свайп по строке влево открывает переименование и удаление.</p>
+    <p class="note">Нажми на раздел — развернётся список его шкал и тегов. Карандаш — переименовать, свайп влево — убрать.</p>
 
     <div class="eyebrow"><span>Счётчики</span></div>
     <div id="tapList"></div>
@@ -1279,7 +1298,7 @@ a.btn{display:inline-block;text-decoration:none}
       <p class="note" id="mealState" style="margin:0 0 10px;color:var(--muted)"></p>
 
     </div>
-    <p class="note">Завтрак, обед и ужин связаны с одноимёнными разделами Happy Meal: время приёма пищи и калории приходят оттуда сами. Начало раздела здесь — время первого продукта; если в Meal поменять время всего приёма или одного продукта, оно поменяется и здесь. Своё время раздела в Day главнее. Перекусы и свои разделы Meal тоже видны в ленте журнала. Записи в Meal за день есть, а раздел пуст — приём отмечается как пропущенный. Отметки и теги здесь от этого не меняются.</p>
+    <p class="note">Завтрак, обед и ужин берут время и калории из Happy Meal. Своё время раздела в Day главнее.</p>
     </section>
     <section class="happy-section" data-happy-section="developer" hidden><h2 class="happy-heading">Для разработчика</h2>
     <div class="eyebrow"><span>Выгрузка</span></div>
@@ -1353,15 +1372,25 @@ a.btn{display:inline-block;text-decoration:none}
     <input type="text" class="icWide" id="edSub" placeholder="Подпись снизу" maxlength="60" autocomplete="off">
     <p class="edErr" id="edErr" role="alert"></p>
     <div class="askRow"><button class="btn" data-ed="cancel">Отмена</button><button class="btn solid" data-ed="done">Готово</button></div>
+    <button class="btn edDel" id="edDel" data-ed="del" hidden>Убрать тег</button>
   </div>
 </div>
 <div class="icLayer" id="icLayer" role="dialog" aria-modal="true" aria-labelledby="icLayerT">
-  <div class="icHead"><button class="icBack" data-back>Назад</button><b id="icLayerT">Иконка</b><span></span></div>
-  <div class="icScroll" id="icoScroll"><div id="icoCells"></div></div>
+  <div class="icScrim" data-back></div>
+  <div class="icSheet">
+    <div class="grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>
+    <div class="icHead"><b id="icLayerT">Иконка</b></div>
+    <div class="icScroll" id="icoScroll"><div id="icoCells"></div></div>
+  </div>
 </div>
 <div class="icLayer scEd" id="scEd" role="dialog" aria-modal="true" aria-labelledby="scEdT">
-  <div class="icHead"><button class="icBack" data-sc="cancel">Отмена</button><b id="scEdT">Шкала</b><button class="icBack scDone" data-sc="done">Готово</button></div>
-  <div class="icScroll" id="scEdScroll"><div id="scEdBody"></div></div>
+  <div class="icScrim" data-sc="cancel"></div>
+  <div class="icSheet">
+    <div class="grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>
+    <div class="icHead"><b id="scEdT">Шкала</b></div>
+    <div class="icScroll" id="scEdScroll"><div id="scEdBody"></div></div>
+    <div class="icFoot"><button class="btn solid" data-sc="done">Сохранить</button></div>
+  </div>
 </div>
 
 <div class="ask" id="fixWrap">
@@ -1408,6 +1437,8 @@ a.btn{display:inline-block;text-decoration:none}
 
 <script src="counters.js?v=60.9"></script>
 <script src="tap-swipe.js?v=60.9"></script>
+<script src="row-swipe.js?v=60.9"></script>
+<script src="sheet-grip.js?v=60.9"></script>
 <script src="./selfcare-core.js?v=60.9"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
@@ -1868,6 +1899,12 @@ function ask2(title, l1, v1, l2, v2){
     w.onclick=function(e){ if(e.target===w) done(null) };
   });
 }
+/* Аудит Day 20.11.2026, п. 26: удаление — сразу, без вопроса; в сообщении «Вернуть» (5 секунд). */
+function delUndo(text,apply,revert,after){
+  if(writeGuard()) return;
+  apply(); save(); after();
+  toast(text,function(){ if(writeGuard()) return; revert(); save(); after() },'Вернуть',5000);
+}
 /* undo — что сделать по кнопке; без него подсказка как раньше.
    label — слово на кнопке (по умолчанию «Вернуть»), ms — сколько держать */
 function toast(msg,undo,label,ms){
@@ -2062,6 +2099,7 @@ function editItem(o){
     document.getElementById('edTitle').textContent=o.title;
     name.value=o.name||''; name.placeholder=o.ph||'Название';
     sub.style.display=o.sub==null?'none':''; sub.value=o.sub||'';
+    document.getElementById('edDel').hidden=!o.del;
     err.textContent='';
     function paint(){ var x=ic&&ICON[ic]; pick.classList.toggle('empty',!x); pick.innerHTML=x?icoUniq(x[2]):PLUSI }
     paint();
@@ -2083,7 +2121,7 @@ function editItem(o){
     w.onclick=function(e){
       if(e.target===w){ done(null); return }
       var b=e.target.closest('[data-ed]'); if(!b) return;
-      if(b.dataset.ed==='cancel') done(null); else ok();
+      if(b.dataset.ed==='cancel') done(null); else if(b.dataset.ed==='del') done({del:true}); else ok();
     };
   });
 }
@@ -2302,13 +2340,15 @@ function renderTapSheet(){
     if(p.x.t==null) return 1; if(q.x.t==null) return -1;
     return p.x.t<q.x.t?-1:p.x.t>q.x.t?1:p.i-q.i;
   });
-  var h='<h3>'+escH(c.t)+'</h3><p class="note" style="margin:-8px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
-    (lock?'. День закрыт.':'. Время можно поправить, лишнее — снять.')+'</p>';
+  /* аудит 20.11.2026: сверху ручка (п. 14, 16); лишнее снимается свайпом влево, кружка «−» нет (п. 27) */
+  var h='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>'+
+    '<h3>'+escH(c.t)+'</h3><p class="note" style="margin:-8px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
+    (lock?'. День закрыт.':'. Время можно поправить, лишнее — смахнуть влево.')+'</p>';
   h+=a.length?a.map(function(o){
-    return '<div class="tpRow"><span class="tpTime'+(o.x.t?'':' tpNo')+'"><b>'+(o.x.t||'—:—')+'</b>'+
+    return '<div class="tpRow swRow"><span class="tpTime'+(o.x.t?'':' tpNo')+'"><b>'+(o.x.t||'—:—')+'</b>'+
       '<input type="time" value="'+(o.x.t||'')+'" data-tedit="'+o.i+'"'+(lock?' disabled':'')+' aria-label="Время нажатия"></span>'+
       '<span class="tpAmt">+'+(o.x.n||1)+'</span>'+
-      (lock?'':'<button class="minusBtn" data-tdel="'+o.i+'" aria-label="Снять нажатие">'+MINI+'</button>')+'</div>';
+      (lock?'':'<button class="swDel" data-tdel="'+o.i+'" hidden tabindex="-1" aria-hidden="true"></button>')+'</div>';
   }).join(''):'<p class="note">За этот день нажатий нет.</p>';
   /* Day 59.2: нажатие добавляют «+» на самом счётчике; в списке только время, «−» и «Готово» (Астамур 15.11.2026) */
   h+='<div class="askRow"><button class="btn solid" data-tclose>Готово</button></div>';
@@ -2324,9 +2364,14 @@ function renderTapSheet(){
     if(b.hasAttribute('data-tclose')) closeTaps();
     else if(b.dataset.tdel!=null){
       if(lockGuard()) return;
-      var e=day(curDate), a=(e.taps||{})[TAPK]; if(!a) return;
-      a.splice(+b.dataset.tdel,1); if(!a.length) delete e.taps[TAPK];
+      var e=day(curDate), a=(e.taps||{})[TAPK], k=TAPK, j=+b.dataset.tdel; if(!a||!a[j]) return;
+      var rec=a.splice(j,1)[0]; if(!a.length) delete e.taps[k];
       save(); renderDay(); renderTapSheet();
+      toast('Нажатие снято',function(){
+        if(lockGuard()) return;
+        var t=day(curDate); t.taps=t.taps||{}; var list=t.taps[k]=t.taps[k]||[];
+        list.splice(Math.min(j,list.length),0,rec); save(); renderDay(); renderTapSheet();
+      },'Вернуть',5000);
     }
   });
   sh.addEventListener('change',function(ev){
@@ -2459,7 +2504,7 @@ function cntHTML(){
     return '<div class="card" data-cnt="'+escH(c.k)+'" style="margin-bottom:11px">'+
       '<div class="cHead"><span class="cName">'+escH(c.t)+'</span>'+
         '<button class="dX" data-dx aria-label="Убрать черновик">'+CXI+'</button>'+
-        '<button class="plus" data-plus aria-label="Записать время">'+TPLUS+'<span class="pl"><b></b></span></button></div>'+
+        '<button class="plus" data-plus aria-label="Записать время"><span class="plusIn">'+TPLUS+'<span class="pl"><b></b></span></span></button></div>'+
       '<div class="barWrap"><div class="scrBar"><span class="lim" style="left:'+lim+'%"></span><span class="knob"></span></div></div>'+
       '<div class="limRow"><span style="left:'+lim+'%">'+(c.max||4)+' ч</span></div>'+
       '<div class="eList"></div></div>';
@@ -3201,11 +3246,12 @@ function nwRemove(h){
   var C=nwCfg(), isK=h.slice(0,2)==='k:', id=h.slice(2), m=isK?nwSc(id):null, name=isK?(m&&m.t):id;
   if(!name) return;
   if(isK&&C.sc.length<2){ toast('Хотя бы одна шкала остаётся'); return }
-  confirmBox('Убрать «'+name+'» из «Как ты сейчас»? Отметки в журнале останутся.','Убрать').then(function(y){
-    if(!y) return; if(RO){ roWarn(); return }
-    if(isK) C.sc=C.sc.filter(function(x){ return x.k!==id }); else C.tags=C.tags.filter(function(x){ return x!==id });
-    save(); renderNow(); nwSide();
-  });
+  if(RO){ roWarn(); return }
+  var sc=C.sc.slice(), tags=C.tags.slice();   // отметки в журнале остаются; «Вернуть» возвращает строку на её место
+  delUndo('«'+name+'» убрано из «Как ты сейчас»',
+    function(){ if(isK) C.sc=C.sc.filter(function(x){ return x.k!==id }); else C.tags=C.tags.filter(function(x){ return x!==id }) },
+    function(){ C.sc=sc; C.tags=tags },
+    function(){ renderNow(); nwSide() });
 }
 /* ═══════════ ЖУРНАЛ ═══════════
    По согласованному макету: шапка с датой; Сегодня · Неделя · Месяц · свой период;
@@ -3286,7 +3332,7 @@ function jBars(ds,vals,lbl){
     '<div class="jLt" style="margin-left:0"><span>'+ruDate(ds[0])+'</span><span>'+ruDate(ds[ds.length-1])+'</span></div>';
 }
 function jEmpty(t){ return '<p class="jEmptyT">'+t+'</p>' }   /* аудит 20.11.2026, п. 35: пустое место — просто текст, без рамки */
-var SL_NONE='Данных о сне пока нет. Сон приходит файлом из Apple Health: Настройки → Данные → «Загрузить JSON».';
+var SL_NONE='Данных о сне пока нет.';   // аудит 20.11.2026, п. 38: путь к загрузке спрятан в «Для разработчика» — на обычном экране его не пишем
 function sleepDayHTML(d){
   var c=slOf(d), lbl='', note='';
   if(!c){
@@ -3578,7 +3624,7 @@ function jrCsvText(sel){
       if(c&&c.asl){ row(d,c.b||'','Сон','Сон всего',Math.round(c.asl),'мин',c.man?(c.summaryOnly?c.src+' · без последовательности стадий':'вручную'):'отбой '+c.b+', подъём '+c.w+', '+c.src);
         if(!c.man){ ['D','C','R','A'].forEach(function(k){ row(d,'','Сон',ST[k].t,Math.round(c[k]),'мин') }); row(d,'','Сон','Пробуждения от 5 мин',c.wk,'раз') }
         (c.naps||[]).forEach(function(nn){ var nc=slCalc(nn); if(nc&&nc.asl) row(d,nn.b,'Сон','Дневной сон',Math.round(nc.asl),'мин',nn.b+'–'+nn.w) }) } }
-    if(sel.wo) HappyCare.activity(DB.selfCare,d).workouts.forEach(function(w){row(d,w.start.slice(11,16),'Активность · Happy Strong',w.title,n1(w.duration/60),'мин')});
+    if(sel.wo) HappyCare.activity(DB.selfCare,d).workouts.forEach(function(w){row(d,w.start.slice(11,16),'Активность · Happy Sport',w.title,n1(w.duration/60),'мин')});
     if(sel.wo) (e.wo||[]).forEach(function(w){ row(d,w.s,'Тренировки',woName(w),w.min!=null?Math.round(w.min):'','мин',[w.e?w.s+'–'+w.e:'', w.kcal?w.kcal+' ккал':'', woSrcTxt(w)].filter(Boolean).join(', ')) });
     if(sel.mind){ (e.care?.practices||[]).forEach(function(x){row(d,x.time,'Осознанность',x.name,n1(x.minutes),'мин')});
       (e.mindx||[]).forEach(function(x){ row(d,x.s,'Осознанность',x.src||'другое',n1(x.sec/60),'мин') }) }
@@ -4804,7 +4850,8 @@ function swipeRow(id, inner, del, drag){
     '<div class="swipeInner">'+(del?minusBtn(id):'')+inner+'</div></div>';
 }
 function penBtn(id){ return '<button class="penBtn" data-ren="'+id+'">'+PENI+'</button>' }
-function minusBtn(id){ return '<button class="minusBtn" data-del="'+id+'">'+MINI+'</button>' }
+/* аудит 20.11.2026, п. 27: кружок «−» в строках убран — на него легко нажать случайно; удаление — свайпом влево (settings-swipe.js) */
+function minusBtn(id){ return '<button class="swDel" data-del="'+id+'" hidden tabindex="-1" aria-hidden="true"></button>' }
 
 function renderCounters(){
   document.getElementById('cntList').innerHTML =
@@ -4999,10 +5046,11 @@ function handleRen(id){
     openScaleEd(S.scales[q.i]);   // название, вид, отсчёт, деления, подписи
   } else if(q.kind==='t'){
     var oldName=S.tags[q.i];
-    editItem({title:'Тег', name:oldName, ic:(DB.tagIc||{})[oldName]||null, layer:'Иконка тега',
+    editItem({title:'Тег', name:oldName, ic:(DB.tagIc||{})[oldName]||null, layer:'Иконка тега', del:true,
       check:function(t){ return !t?'Напиши название тега':nameTaken(S.tags,t,q.i)?'Такое название уже есть: '+t:'' }
     }).then(function(r){
       if(!r) return;
+      if(r.del){ handleDel(id); return }
       if(r.t!==oldName) renameTag(oldName, r.t, S);
       if(r.ic) DB.tagIc[r.t]=r.ic;
       save(); renderSections(); renderDay(); renderLinks();
@@ -5048,37 +5096,33 @@ function renameTag(oldName, newName, onlySection){
 }
 function handleDel(id){
   if(id[0]==='C'){
-    var ci=+id.slice(1), c=DB.counters[ci];
-    confirmBox('Убрать счётчик «'+c.t+'»? Записи останутся в данных.').then(function(ok){
-      if(!ok) return;
-      DB.counters.splice(ci,1);
-      save(); renderCounters(); renderDay(); renderLinks();
-    });
+    var ci=+id.slice(1), c=DB.counters[ci]; if(!c) return;
+    delUndo('«'+c.t+'» убран',function(){ DB.counters.splice(ci,1) },function(){ DB.counters.splice(Math.min(ci,DB.counters.length),0,c) },
+      function(){ renderCounters(); renderDay(); renderLinks() });
     return;
   }
   var q=parseId(id), S=settingsSection(q.si);
   if(!S) return;
-  var msg, act;
+  var text, act, back;
   if(q.kind==='S'){
     if(q.si<0)return;
-    msg='Убрать раздел «'+S.t+'»? Записи по нему останутся в данных.';
-    act=function(){
-      DB.sections.splice(q.si,1);
-      if(curSec===S.k && DB.sections.length) curSec=DB.sections[0].k;
-    };
+    var prevCur=curSec;
+    text='Раздел «'+S.t+'» убран';
+    act=function(){ DB.sections.splice(q.si,1); if(curSec===S.k && DB.sections.length) curSec=DB.sections[0].k };
+    back=function(){ DB.sections.splice(Math.min(q.si,DB.sections.length),0,S); curSec=prevCur };
   } else if(q.kind==='s'){
-    var m=DB.metrics.filter(function(x){return x.k===S.scales[q.i]})[0];
-    msg='Убрать «'+(m?m.t:'шкалу')+'» из «'+S.t+'»? Накопленные записи останутся.';
+    var mk=S.scales[q.i], m=DB.metrics.filter(function(x){return x.k===mk})[0];
+    text='Шкала «'+(m?m.t:'')+'» убрана из «'+S.t+'»';
     act=function(){ S.scales.splice(q.i,1) };
+    back=function(){ S.scales.splice(Math.min(q.i,S.scales.length),0,mk) };
   } else {
-    msg='Убрать тег «'+S.tags[q.i]+'» из «'+S.t+'»?';
+    var tg=S.tags[q.i];
+    text='Тег «'+tg+'» убран из «'+S.t+'»';
     act=function(){ S.tags.splice(q.i,1) };
+    back=function(){ S.tags.splice(Math.min(q.i,S.tags.length),0,tg) };
   }
-  confirmBox(msg).then(function(ok){
-    if(!ok) return;
-    act();
-    save(); renderSections(); renderDay(); refreshRing(); renderTrends(); renderLinks();
-  });
+  /* записи по разделу, шкале и тегу остаются в данных — как и раньше */
+  delUndo(text,act,back,function(){ renderSections(); renderDay(); refreshRing(); renderTrends(); renderLinks() });
 }
 /* «Добавить шкалу» сразу открывает окно новой шкалы: название и выбор, как её делить —
    плавно или по делениям, — на одном экране. Готовую шкалу из других разделов можно взять там же. */
@@ -5116,12 +5160,9 @@ document.getElementById('cntList').addEventListener('click',function(e){
     });
   }
   if(del){
-    var j=+del.dataset.del.slice(1), d=DB.counters[j];
-    confirmBox('Убрать «'+d.t+'»? Записи по нему останутся в данных.').then(function(ok){
-      if(!ok) return;
-      DB.counters.splice(j,1);
-      save(); renderCounters(); renderDay(); renderLinks();
-    });
+    var j=+del.dataset.del.slice(1), d=DB.counters[j]; if(!d) return;
+    delUndo('«'+d.t+'» убран',function(){ DB.counters.splice(j,1) },function(){ DB.counters.splice(Math.min(j,DB.counters.length),0,d) },
+      function(){ renderCounters(); renderDay(); renderLinks() });
   }
 });
 document.getElementById('addCnt').addEventListener('click',function(){
@@ -5151,11 +5192,8 @@ document.getElementById('tapList').addEventListener('click',function(e){
   }
   if(del){
     var j=+del.dataset.del.slice(1), d=DB.taps[j]; if(!d) return;
-    confirmBox('Убрать счётчик «'+d.t+'»? Нажатия по нему останутся в данных.').then(function(ok){
-      if(!ok) return;
-      DB.taps.splice(j,1);
-      save(); renderTaps(); renderDay();
-    });
+    delUndo('Счётчик «'+d.t+'» убран',function(){ DB.taps.splice(j,1) },function(){ DB.taps.splice(Math.min(j,DB.taps.length),0,d) },
+      function(){ renderTaps(); renderDay() });
   }
 });
 document.getElementById('addTap').addEventListener('click',newTap);
@@ -5296,7 +5334,7 @@ function renderScaleEd(){
        '<button class="scKind'+(st?' on':'')+'" data-kind="step"><b>По делениям</b><small>целые отметки: <i class="nw">0–3</i>, <i class="nw">1–5</i>, <i class="nw">−3…+3</i></small></button>'+
      '</div>'+
      '<div class="scPvBox"><div class="ringWrap scPv" id="scPv">'+ringSvg(m,'progPv')+
-       '<button class="knob" id="scPvKnob" aria-label="Следующая ступень"><span><b class="kv"></b><small class="kh">тап — следующая</small></span></button></div></div>';
+       '<button class="knob" id="scPvKnob" aria-label="Следующая ступень"><span><b class="kv"></b><small class="kh"></small></span></button></div></div>';
   h+='<div class="subTitle">Что лучше</div><div class="scChips">'+
      scChip('neg','0','Больше — лучше',e.neg?'1':'0')+scChip('neg','1','Больше — хуже',e.neg?'1':'0')+'</div>';
   if(st){
@@ -5455,7 +5493,7 @@ document.getElementById('fab').addEventListener('click',function(){
 });
 function openImport(){
   document.getElementById('impState').textContent =
-    (APIKEY?'ключ сохранён':'нужен ключ — вкладка «Настройки»')+' · день: '+ruDate(curDate);
+    'День: '+ruDate(curDate);   // аудит 20.11.2026, п. 38: про ключ на обычном экране не пишем
   document.getElementById('impWrap').classList.add('on');
   document.body.classList.add('sheet');   // кнопка поворачивается в крестик
 }
