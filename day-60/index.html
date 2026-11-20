@@ -246,7 +246,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .tpItem>*{transform:translateX(var(--sx,0px));transition:transform .2s ease}
 .tpItem.tpSwiping>*{transition:none}
 .tpItem::before{content:'Убрать';position:absolute;right:0;top:9px;bottom:9px;display:grid;place-items:center;padding:0 16px;
-  border-radius:14px;background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
+  border-radius:999px;   /* «Убрать» — пилюля, как в других приложениях (Астамур 21.11.2026) */background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
 .tpNm{flex:1;min-width:0;padding:12px 0;border:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:600;
   text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;
@@ -467,7 +467,7 @@ body.loading .app,body.loading .dock{opacity:0}
 .swRow>*,.swipeInner>*{transform:translateX(var(--sx,0px));transition:transform .2s ease}
 .swRow.swOn>*,.swipeInner.swOn>*{transition:none}
 .swRow::after,.swipeInner::after{content:'Убрать';position:absolute;right:0;top:6px;bottom:6px;display:grid;place-items:center;padding:0 16px;
-  border-radius:14px;background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
+  border-radius:999px;background:#ff6b78;color:#fff;font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
 .swDel{display:none}
 .swipeInner{display:flex;align-items:center;gap:8px;padding:12px 13px}
 .swipeInner .nm{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

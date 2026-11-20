@@ -23,3 +23,25 @@
 .hf-number.hf-editing>input{color:var(--hf-ink,#fff)!important;-webkit-text-fill-color:var(--hf-ink,#fff)!important;font-weight:600;caret-color:var(--hf-ink,#fff)}
 .hf-field>input:focus-visible,.hf-field>select:focus-visible{outline:2px solid var(--hf-ink,#fff);outline-offset:2px}
 .hf-field>input:disabled,.hf-field>select:disabled{opacity:.5}
+
+/* Барабан (21.11.2026): колёса с крупными цифрами, как время на iPhone. Полоса выбора — пилюля посередине,
+   соседние строки мельче и бледнее, края колеса тают. Высота 176: выбранная строка 44 и по полторы сверху и снизу. */
+.hf-drum{display:block;margin:14px 0 4px}
+.hf-drum-labels{position:relative;height:22px;margin-bottom:6px}
+.hf-drum-labels>span{position:absolute;top:0;text-align:center;font-size:14px;font-weight:600;white-space:nowrap}
+.hf-drum-wheel{position:relative;display:flex;align-items:stretch;justify-content:space-around;height:176px;
+ -webkit-mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent);mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent)}
+.hf-drum-band{position:absolute;left:0;right:0;top:66px;height:44px;border-radius:999px;background:var(--hf-bg,rgba(255,255,255,.14));border:1px solid var(--hf-border,rgba(255,255,255,.34));pointer-events:none}
+.hf-drum-group{position:relative;display:flex;align-items:stretch;justify-content:center;gap:2px}
+.hf-drum-col{width:52px;height:176px;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;
+ -webkit-overflow-scrolling:touch;touch-action:pan-y;outline:0;cursor:ns-resize}
+.hf-drum-col::-webkit-scrollbar{display:none}
+.hf-drum-col:focus-visible{outline:2px solid #fff;outline-offset:-2px;border-radius:12px}
+.hf-drum-pad{height:66px}
+.hf-drum-item{height:44px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-size:28px;font-weight:400;line-height:1;
+ font-variant-numeric:tabular-nums;white-space:nowrap;transform-origin:center;will-change:transform,opacity;cursor:pointer}
+.hf-drum-item.hf-on{font-weight:600}
+.hf-drum-text .hf-drum-item{font-size:20px}
+.hf-drum-sep{align-self:center;font-size:28px;font-weight:600;line-height:1;margin-top:-4px}
+.hf-drum-unit{align-self:center;font-size:16px;font-weight:600;margin-left:4px}
+@media (prefers-reduced-motion:reduce){.hf-drum-col{scroll-behavior:auto}}

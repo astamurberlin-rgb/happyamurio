@@ -11,7 +11,8 @@
 
    HappyFields.watch(selector)   — какие поля приложения оформлять (новые подхватываются сами);
    HappyFields.refresh(input)    — перерисовать строку после смены значения из кода;
-   HappyFields.number(attrs, unit) — разметка поля числа: <input … data-unit="мин">.
+   HappyFields.number(attrs, unit) — разметка поля числа: <input … data-unit="мин">;
+   HappyFields.drum(host, {...})   — барабан: колёса с крупными цифрами, как время на iPhone (21.11.2026).
    — Claude · 20.11.2026 */
 (function(root){
  'use strict';
@@ -69,5 +70,43 @@
  function number(attrs,unit){return '<input type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" data-unit="'+String(unit||'').replace(/"/g,'&quot;')+'" '+(attrs||'')+'>';}
  /* «12,5» и «12.5» — число; пусто или не число — NaN */
  function parse(v){const t=String(v==null?'':v).trim().replace(',','.');return /^-?\d+(\.\d+)?$/.test(t)?Number(t):NaN;}
- root.HappyFields={watch,refresh,number,parse,dateText};
+ /* Барабан — колёса с крупными цифрами, как время на iPhone (Астамур 21.11.2026: «большие цифры и карусель вертикальная»).
+    Колесо крутится пальцем с разгоном (родная прокрутка с защёлкой на строке), нажатие на строку — выбрать её,
+    стрелки вверх-вниз — на шаг. Выбранное стоит в полосе посередине; соседние строки мельче и бледнее.
+    drum(host,{groups:[{label,cols:[{name,label,options:[{v,t}],value,width}|{sep:':'}|{unit:'мин'}]}],onChange(vals)})
+    → {get(name), set(name,v)}. Подписи групп («Время», «Длительность») стоят над своими колёсами. */
+ const ROW=44,DRUM_H=176;
+ const escH=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ function drum(host,o){
+  const vals={},cols=[];
+  host.classList.add('hf-drum');
+  host.innerHTML='<div class="hf-drum-labels" aria-hidden="true">'+o.groups.map(g=>'<span>'+escH(g.label||'')+'</span>').join('')+'</div>'+
+   '<div class="hf-drum-wheel"><div class="hf-drum-band" aria-hidden="true"></div>'+o.groups.map((g,gi)=>'<div class="hf-drum-group" data-g="'+gi+'">'+g.cols.map(c=>
+    c.sep?'<span class="hf-drum-sep" aria-hidden="true">'+escH(c.sep)+'</span>':
+    c.unit?'<span class="hf-drum-unit" aria-hidden="true">'+escH(c.unit)+'</span>':
+    '<div class="hf-drum-col'+(c.text?' hf-drum-text':'')+'" role="listbox" tabindex="0" aria-label="'+escH(c.label||'')+'" data-name="'+escH(c.name)+'"'+(c.width?' style="width:'+c.width+'px"':'')+'>'+
+     '<div class="hf-drum-pad"></div>'+c.options.map((x,i)=>'<div class="hf-drum-item" role="option" data-i="'+i+'">'+escH(x.t)+'</div>').join('')+'<div class="hf-drum-pad"></div></div>'
+   ).join('')+'</div>').join('')+'</div>';
+  o.groups.forEach(g=>g.cols.forEach(c=>{if(!c.options)return;const el=host.querySelector('[data-name="'+c.name+'"]');
+   const at=Math.max(0,c.options.findIndex(x=>String(x.v)===String(c.value)));vals[c.name]=c.options[at].v;cols.push({c,el,at,frame:0,timer:0});}));
+  function paint(k){const top=k.el.scrollTop,mid=top+DRUM_H/2;
+   k.el.querySelectorAll('.hf-drum-item').forEach((n,i)=>{const d=Math.abs(i*ROW+ROW/2+(DRUM_H-ROW)/2-mid)/ROW;
+    n.style.transform='scale('+(1-Math.min(d,2)*.17).toFixed(3)+')';n.style.opacity=String(Math.max(.18,1-Math.min(d,2.4)*.36).toFixed(2));
+    const on=d<.5;n.classList.toggle('hf-on',on);n.setAttribute('aria-selected',String(on));});}
+  function settle(k){const i=Math.max(0,Math.min(k.c.options.length-1,Math.round(k.el.scrollTop/ROW)));
+   if(Math.abs(k.el.scrollTop-i*ROW)>1)k.el.scrollTo({top:i*ROW,behavior:'smooth'});
+   if(i!==k.at){k.at=i;vals[k.c.name]=k.c.options[i].v;if(o.onChange)o.onChange(Object.assign({},vals));}}
+  cols.forEach(k=>{
+   k.el.scrollTop=k.at*ROW;paint(k);
+   k.el.addEventListener('scroll',()=>{if(!k.frame)k.frame=requestAnimationFrame(()=>{k.frame=0;paint(k)});clearTimeout(k.timer);k.timer=setTimeout(()=>settle(k),110);},{passive:true});
+   k.el.addEventListener('click',e=>{const n=e.target.closest('.hf-drum-item');if(n)k.el.scrollTo({top:+n.dataset.i*ROW,behavior:'smooth'});});
+   k.el.addEventListener('keydown',e=>{if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return;e.preventDefault();k.el.scrollBy({top:e.key==='ArrowDown'?ROW:-ROW,behavior:'smooth'});});
+  });
+  /* подписи — над своими группами колёс */
+  function place(){const lab=host.querySelectorAll('.hf-drum-labels>span'),box=host.getBoundingClientRect();
+   host.querySelectorAll('.hf-drum-group').forEach((g,i)=>{const r=g.getBoundingClientRect(),l=lab[i];if(!l||!r.width)return;l.style.left=(r.left-box.left)+'px';l.style.width=r.width+'px';});}
+  place();requestAnimationFrame(()=>{place();cols.forEach(k=>{k.el.scrollTop=k.at*ROW;paint(k);});});
+  return {get:name=>vals[name],set(name,v){const k=cols.find(x=>x.c.name===name);if(!k)return;const i=k.c.options.findIndex(x=>String(x.v)===String(v));if(i<0)return;k.at=i;vals[name]=k.c.options[i].v;k.el.scrollTop=i*ROW;paint(k);},place};
+ }
+ root.HappyFields={watch,refresh,number,parse,dateText,drum};
 })(globalThis);

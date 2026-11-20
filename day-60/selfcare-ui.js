@@ -340,6 +340,12 @@ function careSheet(html){
  void w.offsetWidth;w.classList.add('on');return w.querySelector('.impSheet');
 }
 function closeSheet(){const w=$('careSheet');if(!w||!w.classList.contains('on'))return false;w.classList.remove('on');if(w.contains(document.activeElement))document.activeElement.blur();return true;}
+/* Барабан для времени, даты и минут (Астамур 21.11.2026: «как в iPhone — большие цифры, карусель вертикальная») */
+const pad2=n=>String(n).padStart(2,'0');
+const HOURS=Array.from({length:24},(_,i)=>({v:i,t:pad2(i)})),MINS=Array.from({length:60},(_,i)=>({v:i,t:pad2(i)}));
+function durOpts(cur){const a=[];for(let i=1;i<=240;i++)a.push(i);const c=Number(cur);if(c>0&&!a.includes(c))a.push(c);return a.sort((x,y)=>x-y).map(v=>({v,t:num(v)}));}
+function shortDay(d){const x=new Date(d+'T12:00:00');return WD[x.getDay()].toLowerCase()+', '+x.getDate()+' '+['янв','февр','мар','апр','мая','июн','июл','авг','сент','окт','нояб','дек'][x.getMonth()];}
+function dateOpts(cur){const out=[],t=new Date(todayISO()+'T12:00:00');for(let i=0;i<=180;i++){const d=new Date(t);d.setDate(t.getDate()+i);const v=iso(d);out.push({v,t:i===0?'сегодня':i===1?'завтра':shortDay(v)});}if(cur&&!out.some(x=>x.v===cur))out.unshift({v:cur,t:shortDay(cur)});return out;}
 function nextHour(){const d=new Date();d.setMinutes(0,0,0);d.setHours(d.getHours()+1);return {date:iso(d),time:String(d.getHours()).padStart(2,'0')+':00'};}
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function planSheet(id){
@@ -349,17 +355,26 @@ function planSheet(id){
   '<div class="care-seg" role="radiogroup" aria-label="Повторение">'+[['once','Один раз'],['weekly','По дням недели']].map(([k,t])=>'<button type="button" role="radio" data-plan-kind="'+k+'" aria-checked="'+(kind===k)+'">'+t+'</button>').join('')+'</div><input type="hidden" name="kind" value="'+kind+'">'+
   '<label for="carePlanName">Практика</label><input id="carePlanName" name="name" type="text" maxlength="100" placeholder="Например, утренняя медитация" value="'+h(x?.name||'')+'">'+
   '<div class="care-days" data-plan-days'+(kind==='weekly'?'':' hidden')+'>'+[1,2,3,4,5,6,0].map(i=>'<label><input type="checkbox" name="days" value="'+i+'"'+(days.includes(i)?' checked':'')+'><span>'+WD[i]+'</span></label>').join('')+'</div>'+
-  '<div data-plan-once'+(kind==='once'?'':' hidden')+'><label for="carePlanWhen">Дата и время</label><input id="carePlanWhen" name="when" type="datetime-local" min="'+todayISO()+'T00:00" value="'+date+'T'+time+'"></div>'+
-  '<div data-plan-weekly'+(kind==='weekly'?'':' hidden')+'><label for="carePlanTime">Время</label><input id="carePlanTime" name="time" type="time" value="'+time+'"></div>'+
-  '<div class="fieldrow"><label for="carePlanMinutes">Длительность</label>'+numField('id="carePlanMinutes" name="minutes"'+(x?' value="'+num(x.minutes)+'"':''),'мин')+'</div>'+
+  '<div data-drum></div><input type="hidden" name="when" value="'+date+'T'+time+'"><input type="hidden" name="time" value="'+time+'"><input type="hidden" name="minutes" value="'+(x?x.minutes:10)+'">'+
   '<button type="submit" class="btn solid care-submit">Сохранить</button>'+(x?'<button type="button" class="btn care-danger" data-care-remove-plan="'+h(x.id)+'">Убрать из расписания</button>':'')+'</form>');
+ const f=$('carePlanSheet'),st={date,h:+time.slice(0,2),m:+time.slice(3,5),d:x?x.minutes:10};
+ const write=()=>{const t=pad2(st.h)+':'+pad2(st.m);f.elements.time.value=t;f.elements.when.value=st.date+'T'+t;f.elements.minutes.value=st.d;};
+ /* один раз — «Дата и время» (день, часы, минуты); по дням недели — «Время»; рядом «Длительность» */
+ f._renderDrum=()=>{const once=f.elements.kind.value!=='weekly',time=[{name:'h',label:'Часы',options:HOURS,value:st.h},{sep:':'},{name:'m',label:'Минуты',options:MINS,value:st.m}];
+  HF.drum(f.querySelector('[data-drum]'),{groups:[{label:once?'Дата и время':'Время',cols:once?[{name:'date',label:'День',options:dateOpts(st.date),value:st.date,width:104,text:true},...time]:time},
+   {label:'Длительность',cols:[{name:'d',label:'Длительность, минут',options:durOpts(st.d),value:st.d},{unit:'мин'}]}],onChange:v=>{Object.assign(st,v);write();}});};
+ f._renderDrum();write();
 }
 function practiceSheet(id){
  const x=C.readDay(DB,curDate).practices.find(p=>p.id===id);if(!x)return;
  careSheet('<form id="careLogSheet" class="care-form care-sheet-form" data-log-id="'+h(id)+'" data-log-date="'+curDate+'" novalidate><h3>Практика</h3>'+
   '<label for="careLogName">Название</label><input id="careLogName" name="name" type="text" maxlength="100" value="'+h(x.name)+'">'+
-  '<div class="care-grid"><div><label for="careLogTime">Время</label><input id="careLogTime" name="time" type="time" value="'+h(x.time)+'"></div><div><label for="careLogMinutes">Длительность</label>'+numField('id="careLogMinutes" name="minutes" value="'+num(x.minutes)+'"','мин')+'</div></div>'+
+  '<div data-drum></div><input type="hidden" name="time" value="'+h(x.time)+'"><input type="hidden" name="minutes" value="'+x.minutes+'">'+
   '<button type="submit" class="btn solid care-submit">Сохранить</button><button type="button" class="btn care-danger" data-care-log-del="'+h(id)+'">Удалить</button></form>');
+ const f=$('careLogSheet');
+ HF.drum(f.querySelector('[data-drum]'),{groups:[{label:'Время',cols:[{name:'h',label:'Часы',options:HOURS,value:+x.time.slice(0,2)},{sep:':'},{name:'m',label:'Минуты',options:MINS,value:+x.time.slice(3,5)}]},
+  {label:'Длительность',cols:[{name:'d',label:'Длительность, минут',options:durOpts(x.minutes),value:x.minutes},{unit:'мин'}]}],
+  onChange:v=>{f.elements.time.value=pad2(v.h)+':'+pad2(v.m);f.elements.minutes.value=v.d;}});
 }
 async function removePlan(id){
  if(RO){roWarn();return;}
@@ -458,7 +473,7 @@ async function click(ev){
  if(b.dataset.carePlanEdit){planSheet(b.dataset.carePlanEdit);return;}
  if(b.dataset.careLogEdit){practiceSheet(b.dataset.careLogEdit);return;}
  if(b.dataset.careLogDel){removeLog(b.dataset.careLogDel,b.closest('form')?.dataset.logDate||curDate);return;}
- if(b.dataset.planKind){const f=b.closest('form'),k=b.dataset.planKind;f.elements.kind.value=k;f.querySelectorAll('[data-plan-kind]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));f.querySelector('[data-plan-days]').hidden=k!=='weekly';f.querySelector('[data-plan-once]').hidden=k!=='once';f.querySelector('[data-plan-weekly]').hidden=k!=='weekly';return;}
+ if(b.dataset.planKind){const f=b.closest('form'),k=b.dataset.planKind;f.elements.kind.value=k;f.querySelectorAll('[data-plan-kind]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));f.querySelector('[data-plan-days]').hidden=k!=='weekly';if(f._renderDrum)f._renderDrum();return;}
  if(b.dataset.carePractice){const p=C.scheduled(data(),curDate).find(x=>x.id===b.dataset.carePractice);if(p){const f=$('carePracticeForm');f.elements.planId.value=p.id;f.elements.name.value=p.name;f.elements.time.value=p.time;HF.refresh(f.elements.time);f.elements.minutes.value='';HF.refresh(f.elements.minutes);f.scrollIntoView({block:'start'});f.elements.minutes.focus();}return;}
  if(b.dataset.careRemovePlan){removePlan(b.dataset.careRemovePlan);return;}
 }
