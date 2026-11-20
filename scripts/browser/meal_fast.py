@@ -118,8 +118,9 @@ with sync_playwright() as p:
     check("заполнение — доля пройденного; текста мельче 12 нет, ничего не вылезает; для чтения вслух — «осталось»", 70 <= look["fill"] <= 73 and look["small"] == 0 and not look["over"] and look["label"] == "Фастинг до 12:00, осталось 4:30", look)
     check("об идущем окне под кольцом строки нет", page.evaluate(MARK) is None, page.evaluate(MARK))
     page.evaluate("()=>toast('Проверка места')"); page.wait_for_timeout(250)
-    tb = page.evaluate("()=>{const t=document.getElementById('toast').getBoundingClientRect(),b=document.getElementById('mfBar').getBoundingClientRect();return Math.round(b.top-t.bottom)}")
-    check("короткое сообщение стоит над плашкой, не на ней", tb >= 8, tb)
+    tb = page.evaluate("""()=>{const t=document.getElementById('toast'),r=t.getBoundingClientRect(),f=document.querySelector('.fab').getBoundingClientRect(),
+      z=e=>+getComputedStyle(e).zIndex||0;return {fab:Math.round(f.top-r.bottom),top:z(t)>z(document.getElementById('mfBar'))&&z(t)>z(document.querySelector('.dock'))}}""")
+    check("короткое сообщение (Астамур 20.11 23:31) — сразу над кнопкой микрофона, поверх плашки", 4 <= tb["fab"] <= 10 and tb["top"], tb)
     low_with_bar = page.evaluate(LOW)
     shot(page, "run")
     check("вчерашний день: окно 19.11 20:00 – 20.11 12:00 выдержано", page.evaluate(MARK, "2026-11-20") == "Фастинг выдержан · 20:00–12:00", page.evaluate(MARK, "2026-11-20"))
@@ -219,7 +220,7 @@ with sync_playwright() as p:
     page.clock.set_system_time(at("2026-11-21T10:00:00")); quiet(page); page.evaluate("()=>go('day')"); page.wait_for_timeout(300)
     bar_button(page); t = toast(page, 100); out["cancel"] = [t, page.evaluate("()=>MealFast.versions(DB).map(x=>x.on)")]
     check("«Отменить»: плашки нет, «Фастинг отменён · Вернуть»", bar(page) is None and t == {"text": "Фастинг отменён", "button": "Вернуть"}, [bar(page), t])
-    check("сообщение на той же высоте, что и с плашкой", page.evaluate(LOW) == low_with_bar == 140, [page.evaluate(LOW), low_with_bar])
+    check("сообщение на той же высоте, что и с плашкой", page.evaluate(LOW) == low_with_bar == 92, [page.evaluate(LOW), low_with_bar])
     check("под кольцом: «Фастинг отменён в 10:00»; фастинг выключен, следующего окна нет", page.evaluate(MARK) == "Фастинг отменён в 10:00" and page.evaluate("()=>DB.mealRules.fast.on===false&&MealFast.versions(DB).length===4&&MealFast.status(DB,'2026-11-22',Date.now(),MealFast.rows)===null"), [page.evaluate(MARK), page.evaluate("()=>DB.mealRules.fast")])
     shot(page, "cancel")
     toast_button(page)
