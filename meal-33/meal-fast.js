@@ -48,6 +48,7 @@ function at(date,m){ var p=ymd(date); return new Date(p[0],p[1],p[2],0,m).getTim
 function shift(date,n){ var p=ymd(date); return iso(new Date(p[0],p[1],p[2]+n)) }
 function dateOf(t){ return iso(new Date(t)) }
 function clock(t){ var d=new Date(t); return pad(d.getHours())+':'+pad(d.getMinutes()) }
+function minute(t){ return Math.floor(t/60000)*60000 }   // начало минуты: время еды записано с точностью до минуты
 
 /* ═══════════ ИСТОРИЯ РАСПИСАНИЯ И ОТМЕНЫ ═══════════ */
 function versions(db){
@@ -73,19 +74,21 @@ function stops(db){
 
 /* ═══════════ ОКНО ДНЯ ═══════════
    segs — отрезки времени, когда фастинг шёл: окно по расписанию, обрезанное временем действия своей версии и отменой
-   (cut — моменты отмен). plan — конец по расписанию; planned — последний отрезок дошёл до этого конца */
+   (cut — моменты отмен). plan — конец по расписанию; planned — последний отрезок дошёл до этого конца.
+   Отменил или выключил фастинг — отрезок заканчивается в начале этой минуты: еда, записанная в ту же минуту
+   (отменил и сразу записал завтрак), окно уже не прерывает */
 function windowOf(list,date,cut){
   var segs=[], plan=null;
   list.forEach(function(v,i){
     if(!v.on) return;
-    var to=i+1<list.length?list[i+1].at:Infinity, b=v.b||DAY;
+    var nx=list[i+1], to=nx?(nx.on?nx.at:minute(nx.at)):Infinity, b=v.b||DAY;
     var s=v.a<b?at(date,v.a):at(shift(date,-1),v.a), e=at(date,b), S=Math.max(s,v.at), E=Math.min(e,to);
     if(E<=S) return;
     var p=segs[segs.length-1]; if(p&&S<=p[1]) p[1]=Math.max(p[1],E); else segs.push([S,E]);
     plan=e;
   });
   if(!segs.length) return null;
-  (cut||[]).forEach(function(t){ segs.forEach(function(g){ if(t>g[0]&&t<g[1]) g[1]=t }) });
+  (cut||[]).forEach(function(t){ segs.forEach(function(g){ if(t>g[0]&&t<g[1]) g[1]=Math.max(g[0],minute(t)) }) });
   var L=segs[segs.length-1];
   return {date:date,segs:segs,start:segs[0][0],end:L[1],plan:plan,planned:L[1]===plan};
 }

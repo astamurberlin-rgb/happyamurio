@@ -494,8 +494,8 @@
   },
   {
    "path": "checks/check-meal-fast.mjs",
-   "size": 20638,
-   "sha256": "03733525242a1a7fcc4b8e9d6990ed4c8cabbee0ad39a8283ca4340a5a9fc462"
+   "size": 22220,
+   "sha256": "26983d968ad9c4a4b0d115d34c3cafdaf3b26068b0268aa672a40a8cbb121e0f"
   },
   {
    "path": "checks/check-meal-first-time.mjs",
@@ -629,8 +629,8 @@
   },
   {
    "path": "meal-fast.js",
-   "size": 20576,
-   "sha256": "f07755ebf99930eb052782399426c3135e3430834ca03f50b1756994b2deee7e"
+   "size": 21080,
+   "sha256": "10b960e507285bb2bb3b1fa4c48e787a8b176eee8d660218565171b4d2532355"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",

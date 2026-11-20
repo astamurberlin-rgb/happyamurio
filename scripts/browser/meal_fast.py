@@ -6,7 +6,7 @@
 «Фастинг прерван» с «Отменить запись», под кольцом сразу «Фастинг прерван в …». Так же в диалоге, приём БАДа, счётчик,
 поиск в разделе, запись за прошлую ночь; удаление записи возвращает окно.
 «Отменить» на плашке: окно отменено, «Вернуть» возвращает; выключение в «Настроить приёмы пищи» — то же, прошлые окна
-прежние; включение посреди окна — окно с этой минуты. Окно дошло до конца — сообщение «Поздравляю! Фастинг закончен
+прежние; еда, записанная в минуту отмены, окно уже не прерывает; включение посреди окна — окно с этой минуты. Окно дошло до конца — сообщение «Поздравляю! Фастинг закончен
 успешно», один раз на окно; второй телефон видит то же. Подсказки про микрофон под кольцом нет.
 Снимки экрана — в HAPPY_OUT (fast-*.png)."""
 import datetime, sys
@@ -194,6 +194,12 @@ with sync_playwright() as p:
     shot(page, "cancel")
     toast_button(page)
     check("«Вернуть» — окно снова идёт, отмены нет", running(page, "12:00", "2:00") and page.evaluate("()=>!DB.mealRules.fastStops") and page.evaluate(MARK) is None, bar(page))
+    # отменил и в ту же минуту записал еду (время еды — с точностью до минуты): окно отменено, а не прервано
+    quiet(page); bar_button(page); page.wait_for_timeout(200)
+    n1 = page.evaluate("()=>tapCount('cfm')"); click(page, "#mlTaps [data-tplus='cfm']"); t = toast(page)
+    check("отменил и сразу записал кофе с молоком — «Фастинг прерван» нет, окно так и отменено", bool(t) and t != FAST_TOAST and t["text"].startswith("Кофе с молоком +") and page.evaluate(MARK) == "Фастинг отменён в 10:00", [t, page.evaluate(MARK)])
+    page.evaluate("()=>{tapUndo('cfm');delete DB.mealRules.fastStops;save();renderAll()}"); page.wait_for_timeout(300)
+    check("убрал нажатие и отмену — окно идёт", page.evaluate("()=>tapCount('cfm')") == n1 and running(page, "12:00", "2:00"), bar(page))
 
     # 10:05 — выключил фастинг в настройках и сохранил
     page.clock.set_system_time(at("2026-11-21T10:05:00")); quiet(page)
@@ -202,6 +208,9 @@ with sync_playwright() as p:
     check("выключение сохранено версией с моментом сохранения", v[-1] == [False, "10:05"] and v[0][0] is True and len(v) == 2, v)
     check("окно закончилось в момент выключения: «Фастинг отменён в 10:05», плашки нет", page.evaluate(MARK, "2026-11-21") == "Фастинг отменён в 10:05" and bar(page) is None, [page.evaluate(MARK, "2026-11-21"), bar(page)])
     shot(page, "off")
+    n2 = page.evaluate("()=>tapCount('cfm')"); click(page, "#mlTaps [data-tplus='cfm']"); t = toast(page)
+    check("выключил и в ту же минуту записал кофе с молоком — «Фастинг прерван» нет", bool(t) and t != FAST_TOAST and page.evaluate(MARK) == "Фастинг отменён в 10:05", [t, page.evaluate(MARK)])
+    page.evaluate("()=>{tapUndo('cfm');save();renderAll()}"); page.wait_for_timeout(300)
     page.evaluate(RESET); t = say(page, "в 10:30 съел банан")
     check("еда после выключения ничего не прерывает", t != FAST_TOAST and bar(page) is None and page.evaluate(MARK) == "Фастинг отменён в 10:05", [t, page.evaluate(MARK)])
     check("прошлые окна прежние: 20.11 выдержан", page.evaluate(MARK, "2026-11-20") == "Фастинг выдержан · 20:00–12:00", page.evaluate(MARK, "2026-11-20"))
