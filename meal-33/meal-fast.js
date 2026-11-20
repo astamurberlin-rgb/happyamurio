@@ -3,15 +3,22 @@
  *
  * Решения Астамура 20.11.2026 — карточка Todoist «Фастинг Meal · прерывание окна»; плашка и сообщения — его же слова
  * 20.11.2026 в 18:11, 19:39 и 20:45: то, что длится, — фиолетовая плашка; короткие сообщения — синие, как все
- * сообщения Meal; «Отменить» выключает выключатель; включение посреди окна — только если в окне ещё нет еды.
+ * сообщения Meal; фастинг сбросился (отменили или прервала запись еды) — выключатель в настройках выключен;
+ * включение посреди окна — только если в окне ещё нет еды.
  *
  * Расписание — «Настроить приёмы пищи» → «Фастинг» (meal-periods.js): выключатель и окно a–b в минутах от полуночи,
  * окно может идти через полночь. Каждое изменение фастинга добавляет версию в историю
- * DB.mealRules.fastVersions = [{at — когда (мс), on, a, b}]. Версия действует от своего at до at следующей; прошлые
+ * DB.mealRules.fastVersions = [{at — когда (мс), on, a, b, by — 'food', если фастинг выключила запись еды}]. Версия
+ * действует от своего at до at следующей; прошлые
  * окна считаются по своим версиям и не меняются. Истории нет, а фастинг включён (сохранили до этого выпуска) —
  * считается включённым с выхода Meal 33.17, где он появился (19.11.2026 12:30).
  * «Отменить» на плашке — то же, что выключить фастинг в настройках: выключатель выключен, окно закончилось в этот
  * момент, следующее не начнётся, пока фастинг не включат снова.
+ * Запись еды остановила идущий фастинг — выключатель тоже выключается (recorded → stop): окно прервано, следующее не
+ * начнётся, пока фастинг не включат снова. Этой записи не стало — отменили из сообщения, убрали нажатие счётчика,
+ * удалили или поправили в дневнике — выключения не было: фастинг снова включён (settle; на том же устройстве, пока
+ * Meal открыт и идёт то же окно). Прошлые окна и записи, которые прервали уже закончившееся окно, выключатель не
+ * трогают.
  *
  * Окно через полночь — одно окно. Окно относится к дню, в котором заканчивается: 20:00–12:00 — к дню, где 12:00.
  * Состояние окна не хранится: оно каждый раз считается из записей дня окна и дня перед ним, поэтому правка времени,
@@ -26,6 +33,9 @@
  * Состояние окна: plan — ещё не началось; run — идёт; kept — выдержан (дошёл до конца по расписанию без еды);
  * broken — прерван записью еды; off — отменён (кнопкой на плашке или выключателем в настройках), выдержанным не
  * считается; skip — включили посреди окна, а еда в нём уже записана: не начался.
+ * Время еды записано с точностью до минуты. Выключил сам (кнопкой или в настройках) — окно заканчивается в начале
+ * этой минуты: еда, записанная в ту же минуту, его уже не прерывает. Выключила запись еды (by:'food') — окно
+ * заканчивается в сам момент выключения: эта запись остаётся внутри окна, и окно прервано, а не отменено.
  *
  * На экране:
  * — плашка над нижним меню (#mfBar) — только пока окно идёт: «Фастинг до 12:00», заполнение по доле пройденного,
@@ -61,29 +71,29 @@ function versions(db){
   var r=(db&&db.mealRules)||{};
   if(Array.isArray(r.fastVersions)) return r.fastVersions
     .filter(function(v){ return !!v&&int(v.at)&&v.at>0&&typeof v.on==='boolean'&&(!v.on||okWin(v)) })
-    .map(function(v){ return {at:v.at,on:v.on,a:v.a,b:v.b} }).sort(function(x,y){ return x.at-y.at });
+    .map(function(v){ var x={at:v.at,on:v.on,a:v.a,b:v.b}; if(!v.on&&v.by==='food') x.by='food'; return x }).sort(function(x,y){ return x.at-y.at });
   var f=r.fast; return f&&f.on===true&&okWin(f)?[{at:SINCE,on:true,a:f.a,b:f.b}]:[];
 }
-/* фастинг изменился (сохранили «Настроить приёмы пищи» или нажали «Отменить» на плашке) — новая версия с этой минуты.
-   Ответ — история для mealRules */
-function record(db,fast,now){
+/* фастинг изменился (сохранили «Настроить приёмы пищи», нажали «Отменить» на плашке или его выключила запись еды —
+   тогда by='food') — новая версия с этого момента. Ответ — история для mealRules */
+function record(db,fast,now,by){
   var list=versions(db), last=list[list.length-1], on=!!(fast&&fast.on);
   if(on&&!okWin(fast)) return list;
   var same=last?last.on===on&&(!on||last.a===fast.a&&last.b===fast.b):!on;
-  if(!same) list.push({at:Math.max(now,last?last.at+1:0),on:on,a:fast.a,b:fast.b});
+  if(!same){ var v={at:Math.max(now,last?last.at+1:0),on:on,a:fast.a,b:fast.b}; if(!on&&by==='food') v.by='food'; list.push(v) }
   return list;
 }
 
 /* ═══════════ ОКНО ДНЯ ═══════════
    segs — отрезки времени окна, когда выключатель был включён: [начало, конец, начало окна по расписанию].
    plan — конец по расписанию; planned — последний отрезок дошёл до этого конца.
-   Выключил фастинг — отрезок заканчивается в начале этой минуты: еда, записанная в ту же минуту (отменил и сразу
-   записал завтрак), окно уже не прерывает */
+   Выключил фастинг сам — отрезок заканчивается в начале этой минуты: еда, записанная в ту же минуту (отменил и сразу
+   записал завтрак), окно уже не прерывает. Выключила запись еды — в сам момент выключения: эта запись внутри отрезка */
 function windowOf(list,date){
   var segs=[], plan=null;
   list.forEach(function(v,i){
     if(!v.on) return;
-    var nx=list[i+1], to=nx?(nx.on?nx.at:minute(nx.at)):Infinity, b=v.b||DAY;
+    var nx=list[i+1], to=nx?(nx.on||nx.by==='food'?nx.at:minute(nx.at)):Infinity, b=v.b||DAY;
     var s=v.a<b?at(date,v.a):at(shift(date,-1),v.a), e=at(date,b), S=Math.max(s,v.at), E=Math.min(e,to);
     if(E<S||S>=e) return;
     var p=segs[segs.length-1]; if(p&&S<=p[1]) p[1]=Math.max(p[1],E); else segs.push([S,E,s]);
@@ -141,6 +151,13 @@ function broke(db,records,now,entries){
     var a=status(db,d,now,entries); return !!a&&a.state==='broken'&&status(db,d,now,entries,skip).state!=='broken';
   });
 }
+/* записи records ([{date, id}]) остановили идущий фастинг: без них окно шло бы, с ними — нет. Прервали его (еда, пока
+   фастинг включён) или легли в окно раньше, чем фастинг включили посреди окна. Ответ — состояние окна сейчас или null */
+function stopped(db,records,now,entries){
+  var st=live(db,now,entries); if(!st||st.state==='run') return null;
+  var skip={}; (records||[]).forEach(function(r){ skip[r.id]=1 });
+  return judge(st.win,listFor(st.win,entries,skip),now).state==='run'?st:null;
+}
 /* последнее окно, которое дошло до конца по расписанию без еды, — для поздравления. Пока не началось следующее окно
    и не прошло 12 часов: позже сообщение было бы о прошлом */
 function ended(db,now,entries){
@@ -191,7 +208,7 @@ function remove(records){
     var e=DB.days[d]; if(e&&e.items&&e.items.some(function(x){ return ids[x.id] })) e.items=e.items.filter(function(x){ return !ids[x.id] });
   });
 }
-var api={SINCE:SINCE,versions:versions,record:record,windowOf:windowOf,judge:judge,status:status,live:live,broke:broke,ended:ended,nextStart:nextStart,
+var api={SINCE:SINCE,versions:versions,record:record,windowOf:windowOf,judge:judge,status:status,live:live,broke:broke,stopped:stopped,ended:ended,nextStart:nextStart,
   words:words,progress:progress,at:at,shift:shift,dateOf:dateOf,clock:clock,rows:rows,remove:remove};
 if(typeof document==='undefined') return api;
 
@@ -279,19 +296,48 @@ function plan(){
   [today,shift(today,1)].forEach(function(d){ var w=windowOf(list,d); if(w) [w.start,w.end,w.plan].forEach(function(x){ if(x>t&&x<next) next=x }) });
   if(next<Infinity) timer=setTimeout(tick,Math.min(next-t+500,6*3600e3));
 }
-function tick(){ try{ paint(); bar(); done() }catch(e){} plan() }
+function tick(){ try{ settle() }catch(e){} try{ paint(); bar(); done() }catch(e){} plan() }
 setInterval(function(){ if(shown&&document.visibilityState!=='hidden'){ try{ bar() }catch(e){} } },20000);
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') tick() });
 document.addEventListener('happy-supplements-changed',function(){ tick() });
 
-/* записи records ([{date, id}]) только что записаны; undo — отменить эту запись. Прервали окно — короткое сообщение
-   «Фастинг прерван» с «Отменить запись» (поверх сообщения о самой записи: отмена та же). Ответ: true — сообщение будет */
+/* запись остановила идущий фастинг (st — состояние окна сейчас) — он выключается, как выключателем в настройках: слова
+   Астамура 20.11.2026 20:45 — «если он сбросился, выключатель в настройках отключиться должен». Версия с by='food':
+   окно заканчивается в этот момент, сама запись остаётся внутри него */
+var stoppedBy=null;   // выключение записью еды, сделанное на этом устройстве, пока Meal открыт: {at — версия, date — окно}
+function stop(st,now){
+  if(typeof RO!=='undefined'&&RO) return;
+  var r=DB.mealRules, f=r&&r.fast; if(!f||!f.on) return;
+  var history=record(DB,{on:false,a:f.a,b:f.b},st.state==='broken'&&st.at===now?now+1:now,'food'), off=history[history.length-1];
+  if(!off||off.on) return;
+  r.fast={on:false,a:f.a,b:f.b}; r.fastVersions=history; stoppedBy={at:off.at,date:st.win.date}; save();
+}
+/* фастинг выключила запись еды, а её больше нет или она уже не прерывает (отменили из сообщения, убрали нажатие
+   счётчика, удалили или поправили в дневнике) — выключения не было: фастинг снова включён, окно идёт дальше.
+   Только пока идёт то же окно и только на устройстве, где запись сделали, пока Meal не закрывали: позже или на
+   другом устройстве фастинг включают сами. Его уже включали заново или окно прервала ещё и другая запись — как есть */
+function settle(){
+  if(!stoppedBy||!signedIn()||(typeof RO!=='undefined'&&RO)) return;
+  var r=DB.mealRules, list=versions(DB), last=list[list.length-1], prev=list[list.length-2];
+  if(!r||!last||last.on||last.by!=='food'||last.at!==stoppedBy.at||!prev||!prev.on){ stoppedBy=null; return }
+  var rest=list.slice(0,-1), st=live({mealRules:{fastVersions:rest}},Date.now(),rows);
+  if(!st||st.win.date!==stoppedBy.date){ stoppedBy=null; return }
+  if(st.state!=='run') return;
+  r.fast={on:true,a:prev.a,b:prev.b}; r.fastVersions=rest; stoppedBy=null; save();
+}
+/* записи records ([{date, id}]) только что записаны; undo — отменить эту запись. Остановили идущий фастинг — он
+   выключается (stop). Прервали окно, идущее или прошлое, — короткое сообщение «Фастинг прерван» с «Отменить запись»
+   (поверх сообщения о самой записи: отмена та же; записи не стало — фастинг возвращает settle).
+   Ответ: true — сообщение будет */
 function recorded(records,undo,opts){
   if(!records||!records.length||!signedIn()) return false;
-  var days=[]; try{ days=broke(DB,records,Date.now(),rows) }catch(e){ return false }
+  var now=Date.now(), days=[], st=null;
+  try{ days=broke(DB,records,now,rows); st=stopped(DB,records,now,rows) }catch(e){ return false }
+  if(st){ try{ stop(st,now) }catch(e){} }
   tick();
-  if(!days.length) return false;
-  setTimeout(function(){ toast('Фастинг прерван',undo||null,'Отменить запись') },(opts&&opts.later)||0);
+  if(!days.length&&!st) return false;
+  var back=undo?function(){ undo(); tick() }:null;
+  setTimeout(function(){ toast('Фастинг прерван',back,'Отменить запись') },(opts&&opts.later)||0);
   return true;
 }
 api.paint=paint; api.bar=bar; api.tick=tick; api.recorded=recorded; api.startNote=startNote;
