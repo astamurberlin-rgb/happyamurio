@@ -188,6 +188,16 @@ def cloud(user, app=None):
     return sorted("%s/%s" % (k[1], k[2]) for k in table if k[0] == USERS[user]["id"] and (app is None or k[1] == app))
 
 
+# Таблица замеров после «+ Замер» стоит у верха экрана: её верх не ниже 60 от верха, либо страница докручена до конца
+# (дальше крутить некуда). Что прокручивается — окно (Sport) или экран внутри страницы (Day, Meal) — находит сама.
+TABLE_AT_TOP = """(box)=>{const b=document.querySelector(box),w=b&&b.querySelector('.hm-grid-wrap');if(!w)return 0;
+ let sc=null;for(let p=b.parentElement;p&&p!==document.body&&p!==document.documentElement;p=p.parentElement){
+  const o=getComputedStyle(p).overflowY;if(o==='auto'||o==='scroll'){sc=p;break}}
+ const end=sc?sc.scrollTop>=sc.scrollHeight-sc.clientHeight-2:scrollY>=document.documentElement.scrollHeight-innerHeight-2;
+ const top=Math.round(w.getBoundingClientRect().top);
+ return (top>=0&&top<=60)||(end&&top>60)?top+1:0}"""
+
+
 def measure(page, box, date, values):
     """Новый замер на общем экране замеров (он один и тот же в Day и в Sport): «+ Замер» в углу таблицы
     (или под «Пока нет замеров»), значения — в белом столбце таблицы, «Сохранить» в углу таблицы (появляется после ввода)."""
@@ -325,6 +335,13 @@ with sync_playwright() as p:
     b1.click(".tab[data-go=trends]")
     b1.click(".happy-measurement-tabs button:nth-child(2)")
     out["measure_in_day_b"] = until(b1, "()=>{const t=document.querySelector('.day-measurements');return !!t&&t.innerText.includes('81')&&HappyMeasurements.read(DayData.store.shared('sport','body').all()).list.map(m=>m.date+':'+m.values.waist)}", seconds=25)
+    # «+ Замер» поднимает таблицу к верху экрана и в Day: там прокручивается не окно, а экран внутри страницы.
+    # Нажатие — из страницы, а не page.click: тот сам подкручивает кнопку в видимую часть и скрыл бы ошибку.
+    b1.evaluate("()=>document.querySelector('.day-measurements [data-hm=add]').click()")
+    b1.wait_for_selector(".day-measurements .hm-add .hm-new input[name=neck]")
+    out["measure_table_top_day"] = until(b1, TABLE_AT_TOP, ".day-measurements", seconds=5)
+    b1.evaluate("()=>document.querySelector('.day-measurements [data-hm=cancel]').click()")
+    b1.wait_for_selector(".day-measurements .hm-add", state="detached", timeout=4000)
 
     # свитч связи один на пару: выключили в Day — в Sport он уже выключен; начатое после выключения не показывается; включили в Sport — показывается
     a1.click(".tab[data-go=settings]")
@@ -453,6 +470,7 @@ checks = [
     ("тренировка и плановое занятие Sport видны в Day сами — на том же телефоне и на втором", bool(out["sport_in_day_a"]) and out["sport_in_day_a"] == out["sport_in_day_b"] and out["sport_in_day_a"]["minutes"] == 60 and out["sport_in_day_a"]["goal"] == 45 and out["sport_in_day_a"]["kcal"] == 420 and "Ноги" in out["sport_in_day_a"]["plan"]),
     ("тренировка Sport стоит в журнале Day, а в документы Day не записана", out["sport_in_journal"] and out["sport_not_stored_in_day"]),
     ("замеры тела — один документ: замер из Day виден в Sport, замер из Sport — в Day на обоих телефонах", out["measure_in_sport"] == 83 and bool(out["measure_in_day_a"]) and out["measure_in_day_b"] == ["2026-10-01:83", today + ":81"]),
+    ("«+ Замер» в Day поднимает таблицу к верху экрана (прокручивается экран внутри страницы, а не окно)", bool(out["measure_table_top_day"])),
     ("свитч связи один на пару: выключили в Day — выключен в Sport, начатое после выключения не показано; включили в Sport — показано", out["pair_off_in_sport"] and out["pair_off_hides"] == ["Зал утром"] and bool(out["pair_on_in_day"])),
     ("Meal на том же телефоне сам не вошёл, вошёл тем же аккаунтом; счётчик еды из его витрины появился в Day с подписью порции", out["meal_not_signed_in"] and out["meal_signed_in"] and bool(out["meal_counter_shown"]) and "Яйцо" in out["meal_counter_shown"] and "· Meal" in out["meal_counter_shown"]),
     ("Day показывает «съедено» и начало приёма из витрины Meal", bool(out["eaten_before"]) and out["meal_start"] == "08:40 · meal"),

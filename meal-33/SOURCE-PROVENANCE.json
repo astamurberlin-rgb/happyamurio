@@ -879,13 +879,13 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 16329,
-   "sha256": "2afeb46e4112c1e574dcc15c04c1806658eb954361cbcf74260deca2a71000d7"
+   "size": 17508,
+   "sha256": "1bcd17e2a8d9bcaed5879997457d6b0eea05049427248a573bb654d34c64a50f"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 67564,
-   "sha256": "7d610281f7f0a0c11c6dca284da3a0adcb9378d530a6fd3c3cac1c37229dffd3"
+   "size": 68644,
+   "sha256": "59b9b25aea565464ccbf3b497b94a947d2397a7b9e0fbaa9584f7e860dd9c820"
   },
   {
    "path": "shared/happy-person.js",

@@ -439,10 +439,22 @@ function mount(box,options){
    grid(cur,past,old.date)+trash+
    `<div class="hm-output"><button type="button" class="hm-button" data-hm="share" aria-haspopup="true" aria-expanded="${!!menu}">${ICON.share} Поделиться</button></div>`;
  }
+ // Что прокручивает страницу. В Sport прокручивается окно, в Day и Meal — экран внутри страницы (окно стоит на месте).
+ // Экран замеров не знает, в каком он приложении: ищет прокручиваемого родителя, а если его нет — это окно (null).
+ function pageScroller(){
+  for(let p=box.parentElement;p&&p!==document.body&&p!==document.documentElement;p=p.parentElement){
+   const overflow=getComputedStyle(p).overflowY;
+   if(overflow==='auto'||overflow==='scroll')return p;
+  }
+  return null;
+ }
  // Place the rounded table below the status area. Its rows scroll natively inside it.
+ // --hm-grid-top — где встаёт верх таблицы, от верха экрана: 16 под верхним отступом страницы (окно) или экрана внутри неё.
  function updateTableInset(){
   const safeTop=parseFloat(getComputedStyle(document.body).paddingTop)||0;
-  box.style.setProperty('--hm-grid-top',(safeTop+16)+'px');
+  const inner=pageScroller();
+  const top=inner?inner.getBoundingClientRect().top+Math.max(16,parseFloat(getComputedStyle(inner).paddingTop)||0):safeTop+16;
+  box.style.setProperty('--hm-grid-top',top+'px');
  }
  root.addEventListener('resize',updateTableInset);
  function render(){
@@ -493,7 +505,7 @@ function mount(box,options){
   if(!draft.before)revealHistory(editor,previousScroll);
   const target=parseFloat(getComputedStyle(editor).scrollMarginTop);
   const delta=editor.getBoundingClientRect().top-target;
-  if(Math.abs(delta)>2)root.scrollBy({top:delta,behavior:calm()?'instant':'smooth'});
+  if(Math.abs(delta)>2)(pageScroller()||root).scrollBy({top:delta,behavior:calm()?'instant':'smooth'});
  }
  function startAdd(){
   if(!canWrite())return;
@@ -503,9 +515,9 @@ function mount(box,options){
  }
  function closeEditor(){
   if(!ui.draft)return;
-  const y=root.scrollY;
+  const inner=pageScroller(),y=inner?inner.scrollTop:root.scrollY;
   ui.draft=null;ui.focus=null;render();
-  root.scrollTo({top:y,behavior:'instant'});
+  (inner||root).scrollTo({top:y,behavior:'instant'});
  }
  const editorActions='[data-hm="cancel"],[data-hm="delete"],[data-hm="save"]';
  let pendingWrite=null,skipBlurSave=false;

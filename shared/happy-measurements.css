@@ -1,9 +1,17 @@
 /* Happy: общий экран замеров тела — к shared/happy-measurements.js. Один вид в Day, Meal и Sport.
    Цвета берутся из приложения (--ink, --muted, --base); приложение может задать свои:
-   --hm-pin-bg — фон закреплённого столбца названий, --hm-sheet-bg — фон окна. — Claude · 14.11.2026 */
+   --hm-pin-bg — фон закреплённого столбца названий, --hm-sheet-bg — фон окна. — Claude · 14.11.2026
+   Полосы истории в таблице: --hm-stripe-dark и --hm-stripe-light (и цвет текста в них, …-ink). Без отметки они прежние,
+   синие. С отметкой data-hm-colors="app" на месте экрана полосы берутся из цвета приложения — того же, что у столбца
+   названий: тёмная полоса — этот цвет чуть темнее, светлая — он же, разбавленный белым. Отметку ставит приложение
+   (Day — с 20.11.2026, решение Астамура; Meal и Sport — когда он посмотрит их цвета). — Claude · 20.11.2026 */
 .hm{--hm-line:rgba(255,255,255,.36);--hm-glass:rgba(255,255,255,.16);--hm-soft:var(--muted,rgba(255,255,255,.8));
  --hm-pin:var(--hm-pin-bg,var(--base,#717edf));--hm-sheet:var(--hm-sheet-bg,var(--base,#5d6fdc));
+ --hm-stripe-dark:#5797df;--hm-stripe-dark-ink:#fff;--hm-stripe-light:#b1d7f8;--hm-stripe-light-ink:#30496d;
  font-size:14px;line-height:1.4;-webkit-user-select:none;user-select:none}
+@supports (color:color-mix(in srgb,red,blue)){
+ .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 88%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 26%,#fff);--hm-stripe-light-ink:color-mix(in srgb,var(--hm-pin) 45%,#0b1220)}
+}
 .hm *{box-sizing:border-box}
 :where(.hm) button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 .hm-icon{width:16px;height:16px;flex:0 0 16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -69,8 +77,8 @@
   scroll-margin-top:var(--hm-grid-top);
   max-height:max(180px,calc(100svh - var(--hm-grid-top) - 136px));
  }
- .hm-grid tr > :nth-child(2n + 3){background-color:#5797df;color:#fff}
- .hm-grid tr > :nth-child(2n + 4){background-color:#b1d7f8;color:#30496d}
+ .hm-grid tr > :nth-child(2n + 3){background-color:var(--hm-stripe-dark);color:var(--hm-stripe-dark-ink)}
+ .hm-grid tr > :nth-child(2n + 4){background-color:var(--hm-stripe-light);color:var(--hm-stripe-light-ink)}
  .hm-grid-wrap>.hm-grid{flex:none}
  /* Give the last date exactly enough room to reach a whole-column stop. */
  .hm-grid-wrap::after{

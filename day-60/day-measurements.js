@@ -11,6 +11,7 @@
   /* Day 59.2: слово «Журнал» уже на переключателе и в меню — крупный заголовок под переключателем не показывается (Астамур 15.11.2026) */
   const title=content.querySelector(':scope>.top>h1');if(title)title.hidden=true;
   const panel=document.createElement('section');panel.className='day-measurements';panel.hidden=true;
+  panel.dataset.hmColors='app';   // полосы таблицы — в цвет приложения, как столбец названий (Астамур 20.11.2026)
   screen.append(tabs,content,panel);
   const buttons=[...tabs.querySelectorAll('button')];
   const doc=()=>root.DayData&&root.DayData.signedIn()?root.DayData.store.shared(root.HappyMeasurements.DOC.app,root.HappyMeasurements.DOC.name):null;
