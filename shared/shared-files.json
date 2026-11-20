@@ -179,7 +179,7 @@
         "meal",
         "sport"
       ],
-      "todo": "встроенные копии в index.html Day/Meal отличаются от файла только экранированием </ и (Day) темой аккаунта; Sport встраивает файл при сборке"
+      "todo": "встроенная копия в index.html Day совпадает с файлом, кроме экранирования </ (с 21.11.2026 — для «Настроить тему»); у Meal встроенная копия прежняя, без выбора кнопки; Sport встраивает файл при сборке"
     },
     {
       "name": "happy-appearance.css",
@@ -249,6 +249,20 @@
     {
       "name": "happy-design.css",
       "reference": "shared/happy-design.css",
+      "apps": [
+        "day"
+      ]
+    },
+    {
+      "name": "happy-theme-picker.js",
+      "reference": "shared/happy-theme-picker.js",
+      "apps": [
+        "day"
+      ]
+    },
+    {
+      "name": "happy-theme-picker.css",
+      "reference": "shared/happy-theme-picker.css",
       "apps": [
         "day"
       ]

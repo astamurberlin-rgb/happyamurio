@@ -1,0 +1,147 @@
+/* «Настроить тему» — общий кусок (из Sport 44.5, макет Михалыча, версия 6): раскрытие карточки и две ленты. Подключён в Day (21.11.2026). */
+.hs-group .appearance-trigger{width:100%}
+.happy-settings [data-happy-appearance-slot]:empty {
+  display: none;
+}
+
+.appearance-fold {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .24s cubic-bezier(.22, .75, .3, 1);
+}
+
+.appearance-fold[data-open] {
+  grid-template-rows: 1fr;
+}
+
+.appearance-fold-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.appearance-wheels {
+  padding: 4px 0 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .appearance-fold { transition: none; }
+}
+
+.appearance-wheel + .appearance-wheel {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, .22);
+}
+
+.appearance-wheel h3 {
+  margin: 0 4px 6px;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.appearance-options {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  padding: 2px 2px 3px;
+  overflow: auto hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 2px;
+  mask-image: linear-gradient(to right,#000 calc(100% - 8px),transparent);
+  user-select: none;
+}
+
+.appearance-options[data-end] { mask-image: none; }
+.appearance-options[data-dragging] { scroll-snap-type: none; cursor: grabbing; }
+
+.appearance-options .appearance-choice {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  width: auto;
+  min-height: 44px;
+  padding: 0 12px 0 7px;
+  overflow: hidden;
+  color: inherit;
+  border: 1px solid var(--happy-line, rgba(255,255,255,.36));
+  border-radius: 999px;
+  background: var(--happy-glass, rgba(255,255,255,.17));
+  background: color-mix(in srgb, var(--happy-glass, rgba(255,255,255,.17)) 64%, transparent);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  scroll-snap-align: start;
+}
+
+.appearance-options .appearance-choice[aria-pressed="true"] {
+  border-color: #ffffffa6;
+  border-color: color-mix(in srgb, var(--happy-line, rgba(255,255,255,.36)) 60%, #fff 40%);
+  background: var(--happy-glass, rgba(255,255,255,.17));
+  box-shadow: inset 0 0 0 1px #ffffff24;
+}
+
+.appearance-options .appearance-choice:focus-visible { outline-offset: -3px; outline-color: #fff; }
+.appearance-options .appearance-choice:active { transform: none; }
+
+.appearance-choice-name {
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #18204566;
+}
+
+.appearance-swatch {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--swatch-ink, #fff);
+  border: 1px solid #ffffff8a;
+  border-radius: 50%;
+  background: var(--swatch);
+}
+
+.appearance-swatch svg { width: 15px; height: 15px; }
+
+.appearance-options[data-kind="theme"] .appearance-choice {
+  flex: 0 0 clamp(124px, calc((100% - 24px) / 2), 168px);
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  grid-template-rows: 104px minmax(34px,auto);
+  align-items: center;
+  gap: 6px;
+  padding: 7px 7px 5px;
+  border-radius: 24px;
+}
+
+.appearance-options[data-kind="theme"] .appearance-swatch {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-color: var(--happy-line, rgba(255,255,255,.36));
+  border-radius: 16px;
+}
+
+.appearance-options[data-kind="theme"] .appearance-choice-name {
+  padding: 0 4px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.appearance-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* значок кнопки Day в ленте «Главная кнопка» — контурный микрофон, как на самой кнопке */
+.appearance-swatch svg.fabMic { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }

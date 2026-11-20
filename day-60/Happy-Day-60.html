@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="day" lang="ru" data-theme="aurora">
+<html data-happy-appearance-app="day" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
@@ -1982,6 +1982,154 @@ body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!im
 
 /* аудит 20.11.2026, п. 34: карандаш у даты замера — зона нажатия 44, рисунок прежний (14) */
 .hm-grid .hm-edit{min-width:44px;min-height:44px;margin:-7px auto -8px;padding:0;display:grid;place-items:center}
+</style>
+<style>/* «Настроить тему» — общий кусок (из Sport 44.5, макет Михалыча, версия 6): раскрытие карточки и две ленты. Подключён в Day (21.11.2026). */
+.hs-group .appearance-trigger{width:100%}
+.happy-settings [data-happy-appearance-slot]:empty {
+  display: none;
+}
+
+.appearance-fold {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .24s cubic-bezier(.22, .75, .3, 1);
+}
+
+.appearance-fold[data-open] {
+  grid-template-rows: 1fr;
+}
+
+.appearance-fold-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.appearance-wheels {
+  padding: 4px 0 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .appearance-fold { transition: none; }
+}
+
+.appearance-wheel + .appearance-wheel {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, .22);
+}
+
+.appearance-wheel h3 {
+  margin: 0 4px 6px;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.appearance-options {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  padding: 2px 2px 3px;
+  overflow: auto hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 2px;
+  mask-image: linear-gradient(to right,#000 calc(100% - 8px),transparent);
+  user-select: none;
+}
+
+.appearance-options[data-end] { mask-image: none; }
+.appearance-options[data-dragging] { scroll-snap-type: none; cursor: grabbing; }
+
+.appearance-options .appearance-choice {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  width: auto;
+  min-height: 44px;
+  padding: 0 12px 0 7px;
+  overflow: hidden;
+  color: inherit;
+  border: 1px solid var(--happy-line, rgba(255,255,255,.36));
+  border-radius: 999px;
+  background: var(--happy-glass, rgba(255,255,255,.17));
+  background: color-mix(in srgb, var(--happy-glass, rgba(255,255,255,.17)) 64%, transparent);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  scroll-snap-align: start;
+}
+
+.appearance-options .appearance-choice[aria-pressed="true"] {
+  border-color: #ffffffa6;
+  border-color: color-mix(in srgb, var(--happy-line, rgba(255,255,255,.36)) 60%, #fff 40%);
+  background: var(--happy-glass, rgba(255,255,255,.17));
+  box-shadow: inset 0 0 0 1px #ffffff24;
+}
+
+.appearance-options .appearance-choice:focus-visible { outline-offset: -3px; outline-color: #fff; }
+.appearance-options .appearance-choice:active { transform: none; }
+
+.appearance-choice-name {
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #18204566;
+}
+
+.appearance-swatch {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--swatch-ink, #fff);
+  border: 1px solid #ffffff8a;
+  border-radius: 50%;
+  background: var(--swatch);
+}
+
+.appearance-swatch svg { width: 15px; height: 15px; }
+
+.appearance-options[data-kind="theme"] .appearance-choice {
+  flex: 0 0 clamp(124px, calc((100% - 24px) / 2), 168px);
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  grid-template-rows: 104px minmax(34px,auto);
+  align-items: center;
+  gap: 6px;
+  padding: 7px 7px 5px;
+  border-radius: 24px;
+}
+
+.appearance-options[data-kind="theme"] .appearance-swatch {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-color: var(--happy-line, rgba(255,255,255,.36));
+  border-radius: 16px;
+}
+
+.appearance-options[data-kind="theme"] .appearance-choice-name {
+  padding: 0 4px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.appearance-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* значок кнопки Day в ленте «Главная кнопка» — контурный микрофон, как на самой кнопке */
+.appearance-swatch svg.fabMic { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 </style>
 <style>/* Оформление Happy (AGENTS.md, раздел 4) — последний слой стилей Day, как design-rules.css в Sport. Только форма: высота,
    скругление, размер и жирность; цвета задаёт тема. Общие экраны и элементы — в shared/happy-design.css, поля — в shared/happy-fields.css.
@@ -6746,7 +6894,10 @@ function renderAll(){
 
 
 /* Happy appearance picker v2.1 — slot data-happy-appearance-slot (Day 54.1 / Meal 26.1 / Sport 38.6). Live preview is transactional. Presets: Color Studio 12.5, collection v3.
-   Only a validated ID is stored. No diary/auth writes or default migration. */
+   Only a validated ID is stored. No diary/auth writes or default migration.
+   19.11.2026 (Sport 44.5): необязательное поле button — главная кнопка с микрофоном: 'theme' (как у темы, по умолчанию,
+   и для прежних записей без поля), 'original' (исходная кнопка приложения) или id темы. Sport выбирает его каруселями в
+   «Настроить тему» (data-happy-appearance-entry="inline" — без кнопки «Выбрать оформление»); Day и Meal — как прежде. */
 (function(root){'use strict';
  const G=root.HappyGradients,R=root.HappyReferenceThemes;
  if(!G||!R)return;
@@ -6755,27 +6906,34 @@ function renderAll(){
  const app=document.documentElement.dataset.happyAppearanceApp;
  if(!['day','meal','sport'].includes(app))return;
  const key='happy-'+app+'-appearance-v1';
- let current='',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
+ let current='',currentButton='theme',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
  const valid=id=>id===''||themes.some(t=>t.id===id);
+ const validButton=b=>b==='theme'||b==='original'||themes.some(t=>t.id===b);
  const name=id=>themes.find(t=>t.id===id)?.name||'По умолчанию · исходное';
  const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
- function skin(id){
+ function skin(id,button){
+  if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
-  if(!id){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
-  const t=themes.find(t=>t.id===id);if(!t)return;
-  const s=t.state,bg=G.css(s.backgroundGradient),button=G.css(s.buttonGradient),shine=Number(s.buttonShine);
-  const shadow=shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(s.buttonColor,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40';
-  // Studio's default glass tokens deliberately retain each application's glass.
-  // No optional legacy ui arguments are promoted to active theme tokens.
-  let css='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';--fab:'+G.colors(s.buttonGradient)[0].color+';}';
-  css+=' .fab,#fab,.dockFab,.mic-fab,.mlMic,#sport-fab,#nowSave{background:'+button+'!important;background-blend-mode:normal!important;box-shadow:'+shadow+'!important;filter:none!important;color:'+s.buttonTextColor+'!important;}';
-  css+=' .fab::before,.fab::after,.dockFab::before,.dockFab::after,.mic-fab::before,.mic-fab::after,#nowSave::before,#nowSave::after{background:none!important;box-shadow:none!important;}';
-  css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';
+  const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
+  const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
+  document.documentElement.dataset.happyAppearanceButton=button;
+  if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
+  let css='';
+  if(t){const s=t.state,bg=G.css(s.backgroundGradient);
+   css+='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';}';}
+  if(b){const s=b.state,btn=G.css(s.buttonGradient),shine=Number(s.buttonShine);
+   const shadow=shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(s.buttonColor,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40';
+   // Studio's default glass tokens deliberately retain each application's glass.
+   css+=' :root{--fab:'+G.colors(s.buttonGradient)[0].color+';}';
+   css+=' .fab,#fab,.dockFab,.mic-fab,.mlMic,#sport-fab,#nowSave{background:'+btn+'!important;background-blend-mode:normal!important;box-shadow:'+shadow+'!important;filter:none!important;color:'+s.buttonTextColor+'!important;}';
+   css+=' .fab::before,.fab::after,.dockFab::before,.dockFab::after,.mic-fab::before,.mic-fab::after,#nowSave::before,#nowSave::after{background:none!important;box-shadow:none!important;}';
+   css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';}
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
-  document.documentElement.dataset.happyAppearance=id;
+  if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');
  }
  function labels(){document.querySelectorAll('[data-happy-appearance-label]').forEach(el=>{el.textContent=name(current)});}
  function entry(){
+  if(document.documentElement.dataset.happyAppearanceEntry==='inline')return;   // выбор встроен в страницу приложения (Sport — «Настроить тему»)
   const button=()=>{const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.happyAppearanceOpen='';b.setAttribute('aria-haspopup','dialog');
    const title=document.createElement('span');title.textContent='Выбрать оформление';const label=document.createElement('small');label.dataset.happyAppearanceLabel='';label.textContent=name(current);b.append(title,label);return b;};
   // Settings structure (AGENTS.md): the picker lives under «Приложение → Оформление» when the page provides a slot, as in Sport.
@@ -6817,10 +6975,10 @@ function renderAll(){
   if(!ready||busy)return;opener=button;
   if(!dialog){
    dialog=document.createElement('dialog');dialog.id='happy-appearance-dialog';dialog.setAttribute('aria-labelledby','happy-appearance-title');dialog.setAttribute('aria-describedby','happy-appearance-help');
-   dialog.innerHTML='<div class="ha-layout"><header class="ha-head"><h2 id="happy-appearance-title">Выбрать оформление<\/h2><button type="button" class="ha-close" aria-label="Закрыть без изменений">Закрыть<\/button><\/header><div class="ha-body"><p id="happy-appearance-help">Нажми на тему — увидишь её сразу. «Применить» сохранит выбор, «Отмена» вернёт прежний вид.<\/p><p class="ha-preview-status" role="status" aria-live="polite"><\/p><fieldset><legend>Оформление приложения<\/legend><label class="ha-choice"><input type="radio" name="happy-appearance" value=""><span>По умолчанию · исходное<\/span><\/label><div class="ha-grid" style="margin-top:10px"><\/div><\/fieldset><\/div><p class="ha-error" role="alert" hidden><\/p><footer class="ha-actions"><button type="button" class="ha-cancel">Отмена<\/button><button type="button" class="ha-apply">Применить<\/button><\/footer><\/div>';
+   dialog.innerHTML='<div class="ha-layout"><header class="ha-head"><h2 id="happy-appearance-title">Выбрать оформление<\/h2><\/header><div class="ha-body"><p id="happy-appearance-help">Нажми на тему — увидишь её сразу. «Применить» сохранит выбор, «Отмена» вернёт прежний вид.<\/p><p class="ha-preview-status" role="status" aria-live="polite"><\/p><fieldset><legend>Оформление приложения<\/legend><label class="ha-choice"><input type="radio" name="happy-appearance" value=""><span>По умолчанию · исходное<\/span><\/label><div class="ha-grid" style="margin-top:10px"><\/div><\/fieldset><\/div><p class="ha-error" role="alert" hidden><\/p><footer class="ha-actions"><button type="button" class="ha-cancel">Отмена<\/button><button type="button" class="ha-apply">Применить<\/button><\/footer><\/div>';
    const grid=dialog.querySelector('.ha-grid');themes.forEach(t=>{const label=document.createElement('label');label.className='ha-choice';const radio=document.createElement('input');radio.type='radio';radio.name='happy-appearance';radio.value=t.id;const text=document.createElement('span');text.className='ha-theme';const swatch=document.createElement('span');swatch.className='ha-swatch';swatch.style.background=G.css(t.state.backgroundGradient);swatch.setAttribute('aria-hidden','true');const title=document.createElement('span');title.textContent=t.name;text.append(swatch,title);label.append(radio,text);grid.append(label)});
    document.body.append(dialog);
-   dialog.querySelector('.ha-close').addEventListener('click',close);dialog.querySelector('.ha-cancel').addEventListener('click',close);
+   dialog.querySelector('.ha-close')?.addEventListener('click',close);dialog.querySelector('.ha-cancel').addEventListener('click',close);
    dialog.addEventListener('change',e=>{if(!busy&&e.target.matches('input[name="happy-appearance"]')){dialog.querySelector('.ha-error').hidden=true;preview(e.target.value)}});
    const isOutside=e=>{const r=dialog.getBoundingClientRect();return e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom};
    dialog.addEventListener('pointerdown',e=>{outsideStart=e.target===dialog&&isOutside(e)?{id:e.pointerId,x:e.clientX,y:e.clientY}:null});
@@ -6833,7 +6991,7 @@ function renderAll(){
     if(busy)return;const id=dialog.querySelector('input:checked')?.value;if(!valid(id))return;
     if(id===current){close();return;}busy=true;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=true);
     const error=dialog.querySelector('.ha-error');error.hidden=true;
-    try{await root.rawSet(key,JSON.stringify({version:1,presetId:id}));current=id;skin(id);labels();busy=false;close();}
+    try{await root.rawSet(key,JSON.stringify({version:1,presetId:id,button:currentButton}));current=id;skin(id);labels();busy=false;close();}
     catch(e){preview(current);error.textContent='Не удалось сохранить оформление. Возвращён прежний вид. Выбери тему и попробуй ещё раз.';error.hidden=false;}
     finally{busy=false;dialog.querySelectorAll('button,input').forEach(x=>x.disabled=false);}
    });
@@ -6843,13 +7001,22 @@ function renderAll(){
  }
  document.addEventListener('click',e=>{const b=e.target.closest?.('[data-happy-appearance-open]');if(b)open(b)});
  async function init(){
-  try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;skin(current)}}catch(e){}
+  try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;if(validButton(saved.button))currentButton=saved.button;skin(current)}}catch(e){}
   ready=true;entry();labels();
   new MutationObserver(entry).observe(document.body,{childList:true,subtree:true});
  }
- root.HappyAppearance={init,skin,themes,get selected(){return current},get previewed(){return previewId},get ready(){return ready}};
+ /* Выбор без окна (Sport, «Настроить тему»): сохранить тему и/или главную кнопку сразу. */
+ async function choose(theme,button){
+  if(theme===undefined)theme=current;if(button===undefined)button=currentButton;
+  if(!valid(theme)||!validButton(button))throw Error('Неизвестное оформление');
+  await root.rawSet(key,JSON.stringify({version:1,presetId:theme,button}));
+  current=theme;currentButton=button;skin(current);labels();
+ }
+ root.HappyAppearance={init,skin,themes,choose,validButton,get button(){return currentButton},get selected(){return current},get previewed(){return previewId},get ready(){return ready}};
  init();
 })(globalThis);
 </script>
+<!-- аудит 20.11.2026, п. 18: «Настроить тему», как в Sport — общий кусок shared/happy-theme-picker.js (вместо «Выбрать оформление») -->
+<script src="data:text/javascript;base64,LyogwqvQndCw0YHRgtGA0L7QuNGC0Ywg0YLQtdC80YPCuyDigJQg0L7QsdGJ0LjQuSDQutGD0YHQvtC6IEhhcHB5ICjQsNGD0LTQuNGCIERheSAyMC4xMS4yMDI2LCDQvy4gMTgsINGA0LXRiNC10L3QuNC1INCQ0YHRgtCw0LzRg9GA0LA6IMKr0JLRi9Cx0YDQsNGC0Ywg0L7RhNC+0YDQvNC70LXQvdC40LXCuyDQstGL0LPQu9GP0LTQuNGCCiAgINGD0LbQsNGB0L3QviDigJQg0LTQtdC70LDQtdC8LCDQutCw0LogwqvQndCw0YHRgtGA0L7QuNGC0Ywg0YLQtdC80YPCuyDQsiBTcG9ydCwg0LLQviDQstGB0LXRhSDQv9GA0LjQu9C+0LbQtdC90LjRj9GFOyDQsiBNZWFsIOKAlCDRgSDQtdCz0L4g0YHQu9C10LTRg9GO0YnQuNC8INC+0LHQvdC+0LLQu9C10L3QuNC10LwpLgogICDQn9C10YDQtdC90LXRgdC10L3QviDQuNC3IFNwb3J0IDQ0LjUgKHNwb3J0L3NyYy9hcHBlYXJhbmNlLWNhcm91c2Vscy5qcywg0LzQsNC60LXRgiDQnNC40YXQsNC70YvRh9CwIMKrSGFwcHkgU3BvcnQgwrcg0J3QsNGB0YLRgNC+0LnQutC4wrssINCy0LXRgNGB0LjRjyA2KS4KICAg0J/QvtC00LrQu9GO0YfRkdC9INCyIERheTsgU3BvcnQg0L/QtdGA0LXRhdC+0LTQuNGCINC90LAg0Y3RgtC+0YIg0YTQsNC50Lsg0L/QviDRgdC70L7QstGDINCQ0YHRgtCw0LzRg9GA0LAsIE1lYWwg4oCUINGB0L4g0YHQstC+0LjQvCDQvtCx0L3QvtCy0LvQtdC90LjQtdC8LgoKICAg0KHRgtGA0L7QutCwIMKr0J3QsNGB0YLRgNC+0LjRgtGMINGC0LXQvNGDwrsg0LIg0LrQsNGA0YLQvtGH0LrQtSDQsNC60LrQsNGD0L3RgtCwINCd0LDRgdGC0YDQvtC10LogKNC/0L7QtCDCq9Cd0LDRgdGC0YDQvtC40YLRjCDRhtC10LvQuMK7KTog0L3QsNC20LDRgtC40LUg0L/Qu9Cw0LLQvdC+INGA0LDRgdC60YDRi9Cy0LDQtdGCINC60LDRgNGC0L7Rh9C60YMg0LLQvdC40LcsCiAgINC/0L7QstGC0L7RgNC90L7QtSDigJQg0YHQstC+0YDQsNGH0LjQstCw0LXRgi4g0JLQvdGD0YLRgNC4INC00LLQtSDQs9C+0YDQuNC30L7QvdGC0LDQu9GM0L3Ri9C1INC70LXQvdGC0Ys6IMKr0KLQtdC80LDCuyAo0L7QutC+0YjQutC4INGBINC90LDRgdGC0L7Rj9GJ0LjQvCDRhNC+0L3QvtC8KSDQuCDCq9CT0LvQsNCy0L3QsNGPINC60L3QvtC/0LrQsMK7CiAgICjQv9C40LvRjtC70Lgg0YEg0YbQstC10YLQvtC8INC4INC30L3QsNGH0LrQvtC8INC60L3QvtC/0LrQuCkuINCh0LLQsNC50L8g0YLQvtC70YzQutC+INC70LjRgdGC0LDQtdGCOyDQvdCw0LbQsNGC0LjQtSDRgdGA0LDQt9GDINC/0YDQuNC80LXQvdGP0LXRgiDQuCDRgdC+0YXRgNCw0L3Rj9C10YIg0LLRi9Cx0L7RgAogICAoc2hhcmVkL2hhcHB5LWFwcGVhcmFuY2UuanMsIEhhcHB5QXBwZWFyYW5jZS5jaG9vc2UpLiDCq9Ca0LDQuiDRgyDRgtC10LzRi8K7INC80LXQvdGP0LXRgiDQutC90L7Qv9C60YMg0LLQvNC10YHRgtC1INGBINGC0LXQvNC+0Lk7IMKr0JjRgdGF0L7QtNC90LDRjyDigKbCuyDQuAogICDQvtGC0LTQtdC70YzQvdC+INCy0YvQsdGA0LDQvdC90YvQuSDRhtCy0LXRgiDQvtGB0YLQsNGO0YLRgdGPINC/0YDQuCDRgdC80LXQvdC1INGC0LXQvNGLLiDQn9GA0LXQttC90Y/RjyDQutC90L7Qv9C60LAgwqvQktGL0LHRgNCw0YLRjCDQvtGE0L7RgNC80LvQtdC90LjQtcK7INC90LUg0L/QvtC60LDQt9GL0LLQsNC10YLRgdGPCiAgIChkYXRhLWhhcHB5LWFwcGVhcmFuY2UtZW50cnk9ImlubGluZSIpLiDigJQgQ2xhdWRlIMK3IDIxLjExLjIwMjYgKi8KKCgpPT57J3VzZSBzdHJpY3QnOwogZG9jdW1lbnQuZG9jdW1lbnRFbGVtZW50LmRhdGFzZXQuaGFwcHlBcHBlYXJhbmNlRW50cnk9J2lubGluZSc7CiBjb25zdCBBPSgpPT5nbG9iYWxUaGlzLkhhcHB5QXBwZWFyYW5jZSxHPWdsb2JhbFRoaXMuSGFwcHlHcmFkaWVudHMsUj1nbG9iYWxUaGlzLkhhcHB5UmVmZXJlbmNlVGhlbWVzOwogaWYoIUd8fCFSKXJldHVybjsKIGNvbnN0IGFsbFRoZW1lcz1SLnRoZW1lc3x8Ui5pdGVtc3x8W10sdGhlbWVzPW5ldyBNYXAoYWxsVGhlbWVzLm1hcCh0PT5bdC5pZCx0XSkpOwogY29uc3QgbW90aW9uPW1hdGNoTWVkaWEoJyhwcmVmZXJzLXJlZHVjZWQtbW90aW9uOiByZWR1Y2UpJyk7CiBsZXQgZXhwYW5kZWQ9ZmFsc2UsZ3JvdXBzPVtdLGF1dG9Td2F0Y2g9bnVsbCxvcmlnaW5hbD1udWxsOwogLyog0L/RgNC40LvQvtC20LXQvdC40LU6IERheSwgTWVhbCDQuNC70LggU3BvcnQg4oCUINC/0L7QtNC/0LjRgdGMIMKr0JjRgdGF0L7QtNC90LDRjyDigKbCuywg0LPQu9Cw0LLQvdCw0Y8g0LrQvdC+0L/QutCwLCDQv9GA0L7QutGA0YPRgtC60LAg0YHRgtGA0LDQvdC40YbRiyAqLwogY29uc3QgQVBQPWRvY3VtZW50LmRvY3VtZW50RWxlbWVudC5kYXRhc2V0LmhhcHB5QXBwZWFyYW5jZUFwcHx8J3Nwb3J0JyxBUFBfTkFNRT17ZGF5OidEYXknLG1lYWw6J01lYWwnLHNwb3J0OidTcG9ydCd9W0FQUF18fCcnOwogY29uc3QgZmFiRWw9KCk9PmRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzcG9ydC1mYWInKXx8ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2ZhYicpfHxkb2N1bWVudC5xdWVyeVNlbGVjdG9yKCcuZG9ja0ZhYicpOwogY29uc3Qgc2Nyb2xsZXI9ZWw9Pntmb3IobGV0IHA9ZWwmJmVsLnBhcmVudEVsZW1lbnQ7cCYmcCE9PWRvY3VtZW50LmJvZHk7cD1wLnBhcmVudEVsZW1lbnQpe2NvbnN0IG89Z2V0Q29tcHV0ZWRTdHlsZShwKS5vdmVyZmxvd1k7aWYobz09PSdhdXRvJ3x8bz09PSdzY3JvbGwnKXJldHVybiBwfXJldHVybiBudWxsfTsKIGNvbnN0IHNlbGVjdGVkPSgpPT4oe3RoZW1lOkEoKT8uc2VsZWN0ZWR8fCdvcmlnaW5hbCcsYnV0dG9uOkEoKT8uYnV0dG9ufHwndGhlbWUnfSk7CiBjb25zdCBzZWw9KCk9Pntjb25zdCBzPXNlbGVjdGVkKCk7cmV0dXJuIHt0aGVtZTpzLnRoZW1lPT09Jyc/J29yaWdpbmFsJzpzLnRoZW1lLGJ1dHRvbjpzLmJ1dHRvbn19OwogLyog0JjRgdGF0L7QtNC90YvQuSDRhNC+0L0g0Lgg0LjRgdGF0L7QtNC90LDRjyDQutC90L7Qv9C60LAgU3BvcnQg4oCUINCx0LXQtyDQvdCw0LvQvtC20LXQvdC90L7QuSDRgtC10LzRiy4gKi8KIGZ1bmN0aW9uIG9yaWdpbmFscygpewogIGlmKG9yaWdpbmFsKXJldHVybiBvcmlnaW5hbDsKICBjb25zdCBza2luPWRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdoYXBweS1hcHBlYXJhbmNlLXNraW4nKTtpZihza2luKXNraW4uZGlzYWJsZWQ9dHJ1ZTsKICBjb25zdCBmYWI9ZmFiRWwoKSxjcz1mYWI/Z2V0Q29tcHV0ZWRTdHlsZShmYWIpOm51bGw7CiAgLyog0LjRgdGF0L7QtNC90YvQuSDRhNC+0L06INGDIFNwb3J0IOKAlCDQv9C10YDQtdC80LXQvdC90LDRjyDRgdGC0YDQsNC90LjRhtGLLCDRgyBEYXkg0LggTWVhbCDigJQg0YHQu9C+0LkgLmJnINC40LvQuCDRgdCw0LzQsCDRgdGC0YDQsNC90LjRhtCwICovCiAgbGV0IGJhY2tncm91bmQ9Z2V0Q29tcHV0ZWRTdHlsZShkb2N1bWVudC5kb2N1bWVudEVsZW1lbnQpLmdldFByb3BlcnR5VmFsdWUoJy0tc3BvcnQtYmFja2dyb3VuZCcpLnRyaW0oKTsKICBpZighYmFja2dyb3VuZCl7Y29uc3QgbGF5ZXI9ZG9jdW1lbnQucXVlcnlTZWxlY3RvcignYm9keT4uYmcnKXx8ZG9jdW1lbnQuYm9keSxscz1nZXRDb21wdXRlZFN0eWxlKGxheWVyKTtiYWNrZ3JvdW5kPWxzLmJhY2tncm91bmRJbWFnZSYmbHMuYmFja2dyb3VuZEltYWdlIT09J25vbmUnP2xzLmJhY2tncm91bmRJbWFnZTpscy5iYWNrZ3JvdW5kQ29sb3I7fQogIG9yaWdpbmFsPXtiYWNrZ3JvdW5kOmJhY2tncm91bmR8fCcjOGM3NWRiJyxncmFkaWVudDpjcz9jcy5iYWNrZ3JvdW5kSW1hZ2U6J25vbmUnLGluazpjcz9jcy5jb2xvcjonI2ZmZid9OwogIGlmKHNraW4pc2tpbi5kaXNhYmxlZD1mYWxzZTsKICByZXR1cm4gb3JpZ2luYWw7CiB9CiBmdW5jdGlvbiBidXR0b25Mb29rKGlkKXsKICBjb25zdCBzdD10aGVtZXMuZ2V0KGlkKT8uc3RhdGU7CiAgcmV0dXJuIHN0P3tncmFkaWVudDpHLmNzcyhzdC5idXR0b25HcmFkaWVudCksaW5rOnN0LmJ1dHRvblRleHRDb2xvcn06e2dyYWRpZW50Om9yaWdpbmFscygpLmdyYWRpZW50LGluazpvcmlnaW5hbHMoKS5pbmt9OwogfQogZnVuY3Rpb24gcGFpbnRCdXR0b25Td2F0Y2goc3dhdGNoLGlkKXtjb25zdCB7Z3JhZGllbnQsaW5rfT1idXR0b25Mb29rKGlkKTtzd2F0Y2guc3R5bGUuc2V0UHJvcGVydHkoJy0tc3dhdGNoJyxncmFkaWVudCk7c3dhdGNoLnN0eWxlLnNldFByb3BlcnR5KCctLXN3YXRjaC1pbmsnLGluayl9CiBjb25zdCB1cGRhdGVNYXNrPWxpc3Q9Pmxpc3QudG9nZ2xlQXR0cmlidXRlKCdkYXRhLWVuZCcsbGlzdC5zY3JvbGxMZWZ0Pj1saXN0LnNjcm9sbFdpZHRoLWxpc3QuY2xpZW50V2lkdGgtMik7CiBmdW5jdGlvbiByZXZlYWwoZ3JvdXAsb3B0aW9uKXsKICBjb25zdCB7bGlzdH09Z3JvdXA7aWYoIW9wdGlvbilyZXR1cm47Y29uc3QgbGVmdD1vcHRpb24ub2Zmc2V0TGVmdDsKICBpZihsZWZ0PGxpc3Quc2Nyb2xsTGVmdHx8bGVmdCtvcHRpb24ub2Zmc2V0V2lkdGg+bGlzdC5zY3JvbGxMZWZ0K2xpc3QuY2xpZW50V2lkdGgtMilsaXN0LnNjcm9sbFRvKHtsZWZ0OmxlZnQtMixiZWhhdmlvcjonYXV0byd9KTsKICB1cGRhdGVNYXNrKGxpc3QpOwogfQogZnVuY3Rpb24gdXBkYXRlU2VsZWN0aW9uKGdyb3VwKXsKICBjb25zdCB2YWx1ZT1zZWwoKVtncm91cC5rZXldOwogIGZvcihjb25zdCBvcHRpb24gb2YgZ3JvdXAub3B0aW9ucyl7Y29uc3QgYWN0aXZlPW9wdGlvbi5kYXRhc2V0LnZhbHVlPT09dmFsdWU7b3B0aW9uLnNldEF0dHJpYnV0ZSgnYXJpYS1wcmVzc2VkJyxTdHJpbmcoYWN0aXZlKSk7b3B0aW9uLnRhYkluZGV4PWFjdGl2ZT8wOi0xfQogIHJldHVybiBncm91cC5vcHRpb25zLmZpbmQobz0+by50YWJJbmRleD09PTApOwogfQogZnVuY3Rpb24gb25LZXkoZXZlbnQsZ3JvdXApewogIGNvbnN0IGluZGV4PWdyb3VwLm9wdGlvbnMuaW5kZXhPZihldmVudC50YXJnZXQpO2lmKGluZGV4PDApcmV0dXJuOwogIGNvbnN0IGxhc3Q9Z3JvdXAub3B0aW9ucy5sZW5ndGgtMSxtb3Zlcz17QXJyb3dMZWZ0OmluZGV4LTEsQXJyb3dSaWdodDppbmRleCsxLEhvbWU6MCxFbmQ6bGFzdH07CiAgaWYoIU9iamVjdC5oYXNPd24obW92ZXMsZXZlbnQua2V5KSlyZXR1cm47ZXZlbnQucHJldmVudERlZmF1bHQoKTsKICBjb25zdCBvcHRpb249Z3JvdXAub3B0aW9uc1tNYXRoLm1heCgwLE1hdGgubWluKGxhc3QsbW92ZXNbZXZlbnQua2V5XSkpXTsKICBncm91cC5vcHRpb25zLmZvckVhY2gobz0+e28udGFiSW5kZXg9bz09PW9wdGlvbj8wOi0xfSk7b3B0aW9uLmZvY3VzKHtwcmV2ZW50U2Nyb2xsOnRydWV9KTtyZXZlYWwoZ3JvdXAsb3B0aW9uKTsKIH0KIGFzeW5jIGZ1bmN0aW9uIGNob29zZShncm91cCxvcHRpb24saXRlbSx0aXRsZSxzdGF0dXMpewogIGNvbnN0IGJlZm9yZT1zZWwoKSxuZXh0PXsuLi5iZWZvcmUsW2dyb3VwLmtleV06aXRlbS5pZH07CiAgdHJ5ewogICBhd2FpdCBBKCkuY2hvb3NlKG5leHQudGhlbWU9PT0nb3JpZ2luYWwnPycnOm5leHQudGhlbWUsbmV4dC5idXR0b24pOwogICBzdGF0dXMudGV4dENvbnRlbnQ9dGl0bGUrJyDigJQgJytpdGVtLm5hbWU7CiAgfWNhdGNoKGUpe2lmKHR5cGVvZiB0b2FzdD09PSdmdW5jdGlvbicpdG9hc3QoJ9Cd0LUg0YPQtNCw0LvQvtGB0Ywg0YHQvtGF0YDQsNC90LjRgtGMINC+0YTQvtGA0LzQu9C10L3QuNC1Jyk7fQogIGZvcihjb25zdCBnIG9mIGdyb3Vwcyl1cGRhdGVTZWxlY3Rpb24oZyk7cmV2ZWFsKGdyb3VwLG9wdGlvbik7CiAgaWYoYXV0b1N3YXRjaClwYWludEJ1dHRvblN3YXRjaChhdXRvU3dhdGNoLHNlbCgpLnRoZW1lKTsKIH0KIGZ1bmN0aW9uIG1ha2VHcm91cChrZXksdGl0bGUsaXRlbXMsc3RhdHVzKXsKICBjb25zdCBzZWN0aW9uPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ3NlY3Rpb24nKTtzZWN0aW9uLmNsYXNzTmFtZT0nYXBwZWFyYW5jZS13aGVlbCc7CiAgY29uc3QgaGVhZGluZz1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCdoMycpO2hlYWRpbmcuaWQ9J2FwcGVhcmFuY2UtJytrZXk7aGVhZGluZy50ZXh0Q29udGVudD10aXRsZTsKICBjb25zdCBsaXN0PWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO2xpc3QuY2xhc3NOYW1lPSdhcHBlYXJhbmNlLW9wdGlvbnMnO2xpc3QuZGF0YXNldC5raW5kPWtleTtsaXN0LnNldEF0dHJpYnV0ZSgncm9sZScsJ2dyb3VwJyk7bGlzdC5zZXRBdHRyaWJ1dGUoJ2FyaWEtbGFiZWxsZWRieScsaGVhZGluZy5pZCk7CiAgc2VjdGlvbi5hcHBlbmQoaGVhZGluZyxsaXN0KTsKICBjb25zdCBncm91cD17a2V5LGxpc3Qsb3B0aW9uczpbXX07CiAgZm9yKGNvbnN0IGl0ZW0gb2YgaXRlbXMpewogICBjb25zdCBvcHRpb249ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnYnV0dG9uJyk7b3B0aW9uLnR5cGU9J2J1dHRvbic7b3B0aW9uLmNsYXNzTmFtZT0nYXBwZWFyYW5jZS1jaG9pY2UnO29wdGlvbi5kYXRhc2V0LnZhbHVlPWl0ZW0uaWQ7CiAgIG9wdGlvbi5pbm5lckhUTUw9JzxzcGFuIGNsYXNzPSJhcHBlYXJhbmNlLXN3YXRjaCIgYXJpYS1oaWRkZW49InRydWUiPjwvc3Bhbj48c3BhbiBjbGFzcz0iYXBwZWFyYW5jZS1jaG9pY2UtbmFtZSI+PC9zcGFuPic7CiAgIG9wdGlvbi5xdWVyeVNlbGVjdG9yKCcuYXBwZWFyYW5jZS1jaG9pY2UtbmFtZScpLnRleHRDb250ZW50PWl0ZW0ubmFtZTsKICAgY29uc3Qgc3dhdGNoPW9wdGlvbi5xdWVyeVNlbGVjdG9yKCcuYXBwZWFyYW5jZS1zd2F0Y2gnKTsKICAgaWYoa2V5PT09J3RoZW1lJylzd2F0Y2guc3R5bGUuc2V0UHJvcGVydHkoJy0tc3dhdGNoJyxpdGVtLnN0YXRlP0cuY3NzKGl0ZW0uc3RhdGUuYmFja2dyb3VuZEdyYWRpZW50KTpvcmlnaW5hbHMoKS5iYWNrZ3JvdW5kKTsKICAgZWxzZXsKICAgIGNvbnN0IGY9ZmFiRWwoKSxpY29uPWYmJihmLnF1ZXJ5U2VsZWN0b3IoJ3N2Zy5mYWJNaWMnKXx8Zi5xdWVyeVNlbGVjdG9yKCdzdmcnKSk7aWYoaWNvbilzd2F0Y2guYXBwZW5kKGljb24uY2xvbmVOb2RlKHRydWUpKTsKICAgIHBhaW50QnV0dG9uU3dhdGNoKHN3YXRjaCxpdGVtLmlkPT09J3RoZW1lJz9zZWwoKS50aGVtZTppdGVtLmlkKTtpZihpdGVtLmlkPT09J3RoZW1lJylhdXRvU3dhdGNoPXN3YXRjaDsKICAgfQogICBvcHRpb24uYWRkRXZlbnRMaXN0ZW5lcignY2xpY2snLCgpPT5jaG9vc2UoZ3JvdXAsb3B0aW9uLGl0ZW0sdGl0bGUsc3RhdHVzKSk7CiAgIGdyb3VwLm9wdGlvbnMucHVzaChvcHRpb24pO2xpc3QuYXBwZW5kKG9wdGlvbik7CiAgfQogIGxpc3QuYWRkRXZlbnRMaXN0ZW5lcigna2V5ZG93bicsZT0+b25LZXkoZSxncm91cCkpOwogIGxpc3QuYWRkRXZlbnRMaXN0ZW5lcignc2Nyb2xsJywoKT0+dXBkYXRlTWFzayhsaXN0KSx7cGFzc2l2ZTp0cnVlfSk7CiAgcmV0dXJuIHtzZWN0aW9uLGdyb3VwfTsKIH0KIGZ1bmN0aW9uIG1vdW50KCl7CiAgY29uc3QgY2FyZD1kb2N1bWVudC5xdWVyeVNlbGVjdG9yKCcjaGFwcHktYWNjb3VudC10b3AgLmhzLWdyb3VwJyk7CiAgaWYoIWNhcmR8fGNhcmQucXVlcnlTZWxlY3RvcignLmFwcGVhcmFuY2UtdHJpZ2dlcicpfHwhQSgpPy5yZWFkeSlyZXR1cm47CiAgY29uc3QgdHJpZ2dlcj1kb2N1bWVudC5jcmVhdGVFbGVtZW50KCdidXR0b24nKTt0cmlnZ2VyLnR5cGU9J2J1dHRvbic7dHJpZ2dlci5jbGFzc05hbWU9J2hzLXJvdyBhcHBlYXJhbmNlLXRyaWdnZXInOwogIHRyaWdnZXIuc2V0QXR0cmlidXRlKCdhcmlhLWNvbnRyb2xzJyxBUFArJy1hcHBlYXJhbmNlLXBhbmVsJyk7dHJpZ2dlci5pbm5lckhUTUw9JzxzcGFuPtCd0LDRgdGC0YDQvtC40YLRjCDRgtC10LzRgzwvc3Bhbj4nOwogIGNvbnN0IGZvbGQ9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7Zm9sZC5pZD1BUFArJy1hcHBlYXJhbmNlLXBhbmVsJztmb2xkLmNsYXNzTmFtZT0nYXBwZWFyYW5jZS1mb2xkJzsKICBjb25zdCBjbGlwPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO2NsaXAuY2xhc3NOYW1lPSdhcHBlYXJhbmNlLWZvbGQtY2xpcCc7CiAgY29uc3Qgd2hlZWxzPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO3doZWVscy5jbGFzc05hbWU9J2FwcGVhcmFuY2Utd2hlZWxzJzsKICBjb25zdCBzdGF0dXM9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnc3BhbicpO3N0YXR1cy5jbGFzc05hbWU9J2FwcGVhcmFuY2UtYW5ub3VuY2VtZW50JztzdGF0dXMuc2V0QXR0cmlidXRlKCdyb2xlJywnc3RhdHVzJyk7CiAgYXV0b1N3YXRjaD1udWxsOwogIGNvbnN0IHRoZW1lPW1ha2VHcm91cCgndGhlbWUnLCfQotC10LzQsCcsW3tpZDonb3JpZ2luYWwnLG5hbWU6J9Cf0L4g0YPQvNC+0LvRh9Cw0L3QuNGOIMK3INC40YHRhdC+0LTQvdC+0LUnfSwuLi5hbGxUaGVtZXNdLHN0YXR1cyk7CiAgY29uc3QgYnV0dG9uPW1ha2VHcm91cCgnYnV0dG9uJywn0JPQu9Cw0LLQvdCw0Y8g0LrQvdC+0L/QutCwJyxbe2lkOid0aGVtZScsbmFtZTon0JrQsNC6INGDINGC0LXQvNGLJ30se2lkOidvcmlnaW5hbCcsbmFtZTon0JjRgdGF0L7QtNC90LDRjyAnK0FQUF9OQU1FfSwuLi5hbGxUaGVtZXNdLHN0YXR1cyk7CiAgd2hlZWxzLmFwcGVuZCh0aGVtZS5zZWN0aW9uLGJ1dHRvbi5zZWN0aW9uLHN0YXR1cyk7Y2xpcC5hcHBlbmQod2hlZWxzKTtmb2xkLmFwcGVuZChjbGlwKTtjYXJkLmFwcGVuZCh0cmlnZ2VyLGZvbGQpOwogIGdyb3Vwcz1bdGhlbWUuZ3JvdXAsYnV0dG9uLmdyb3VwXTsKICBjb25zdCByZW5kZXI9KCk9Pnt0cmlnZ2VyLnNldEF0dHJpYnV0ZSgnYXJpYS1leHBhbmRlZCcsU3RyaW5nKGV4cGFuZGVkKSk7Zm9sZC50b2dnbGVBdHRyaWJ1dGUoJ2RhdGEtb3BlbicsZXhwYW5kZWQpO2ZvbGQuaW5lcnQ9IWV4cGFuZGVkOwogICBmb3IoY29uc3QgZyBvZiBncm91cHMpe2NvbnN0IG89dXBkYXRlU2VsZWN0aW9uKGcpO2lmKGV4cGFuZGVkKXJldmVhbChnLG8pfX07CiAgcmVuZGVyKCk7CiAgdHJpZ2dlci5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsKCk9PnsKICAgZXhwYW5kZWQ9IWV4cGFuZGVkO3JlbmRlcigpO2lmKCFleHBhbmRlZClyZXR1cm47CiAgIGNvbnN0IGRvY2s9ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2RvY2snKXx8ZG9jdW1lbnQucXVlcnlTZWxlY3RvcignLmRvY2snKTtpZighZG9jaylyZXR1cm47CiAgIHJlcXVlc3RBbmltYXRpb25GcmFtZSgoKT0+e2NvbnN0IGdhcD1mb2xkLmdldEJvdW5kaW5nQ2xpZW50UmVjdCgpLnRvcCt3aGVlbHMub2Zmc2V0SGVpZ2h0KzIwLWRvY2suZ2V0Qm91bmRpbmdDbGllbnRSZWN0KCkudG9wOwogICAgaWYoZ2FwPjApKHNjcm9sbGVyKGZvbGQpfHx3aW5kb3cpLnNjcm9sbEJ5KHt0b3A6Z2FwLGJlaGF2aW9yOm1vdGlvbi5tYXRjaGVzPydpbnN0YW50Jzonc21vb3RoJ30pfSk7CiAgfSk7CiB9CiAvLyDQndCw0YHRgtGA0L7QudC60Lgg0LrQsNC20LTRi9C5INGA0LDQtyDQvtGC0LrRgNGL0LLQsNGO0YLRgdGPINGB0LLRkdGA0L3Rg9GC0YvQvNC4LgogbmV3IE11dGF0aW9uT2JzZXJ2ZXIoKCk9PntpZighZG9jdW1lbnQucXVlcnlTZWxlY3RvcignI2hhcHB5LWFjY291bnQtdG9wIC5hcHBlYXJhbmNlLXRyaWdnZXInKSlleHBhbmRlZD1mYWxzZTttb3VudCgpfSkub2JzZXJ2ZShkb2N1bWVudC5ib2R5LHtjaGlsZExpc3Q6dHJ1ZSxzdWJ0cmVlOnRydWV9KTsKIGFkZEV2ZW50TGlzdGVuZXIoJ2xvYWQnLG1vdW50KTsKCiAvKiDQnNGL0YjRjNGOINC70LXQvdGC0Ysg0YLRj9C90YPRgtGB0Y8sINC60LDQuiDQv9Cw0LvRjNGG0LXQvCAo0LrQsNGB0LDQvdC40LUg0LvQuNGB0YLQsNC10YIg0YHQsNC80L4pLiDQn9C+0YHQu9C1INC/0LXRgNC10YLQsNGB0LrQuNCy0LDQvdC40Y8g0L3QsNC20LDRgtC40LUg0L3QtSDQstGL0LHQuNGA0LDQtdGCINC60LDRgNGC0L7Rh9C60YMuICovCiBsZXQgZHJhZz1udWxsLGlnbm9yZUNsaWNrVW50aWw9MDsKIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ3BvaW50ZXJkb3duJyxlPT57CiAgaWYoZS5wb2ludGVyVHlwZSE9PSdtb3VzZSd8fGUuYnV0dG9uIT09MClyZXR1cm47Y29uc3QgbGlzdD1lLnRhcmdldC5jbG9zZXN0Py4oJy5hcHBlYXJhbmNlLW9wdGlvbnMnKTtpZighbGlzdClyZXR1cm47CiAgY29uc3QgcGFnZT1zY3JvbGxlcihsaXN0KTtpZ25vcmVDbGlja1VudGlsPTA7ZHJhZz17aWQ6ZS5wb2ludGVySWQsbGlzdCxwYWdlLHg6ZS5jbGllbnRYLHk6ZS5jbGllbnRZLGxlZnQ6bGlzdC5zY3JvbGxMZWZ0LHRvcDpwYWdlP3BhZ2Uuc2Nyb2xsVG9wOnNjcm9sbFksYXhpczpudWxsfTsKIH0pOwogYWRkRXZlbnRMaXN0ZW5lcigncG9pbnRlcm1vdmUnLGU9PnsKICBpZighZHJhZ3x8ZHJhZy5pZCE9PWUucG9pbnRlcklkKXJldHVybjtjb25zdCB4PWRyYWcueC1lLmNsaWVudFgseT1kcmFnLnktZS5jbGllbnRZOwogIGlmKCFkcmFnLmF4aXMpe2lmKE1hdGgubWF4KE1hdGguYWJzKHgpLE1hdGguYWJzKHkpKTw3KXJldHVybjtkcmFnLmF4aXM9TWF0aC5hYnMoeCk+TWF0aC5hYnMoeSk/J3gnOid5JztpZihkcmFnLmF4aXM9PT0neCcpZHJhZy5saXN0LnNldEF0dHJpYnV0ZSgnZGF0YS1kcmFnZ2luZycsJycpfQogIGUucHJldmVudERlZmF1bHQoKTtpZihkcmFnLmF4aXM9PT0neCcpZHJhZy5saXN0LnNjcm9sbExlZnQ9ZHJhZy5sZWZ0K3g7ZWxzZSBpZihkcmFnLnBhZ2UpZHJhZy5wYWdlLnNjcm9sbFRvcD1kcmFnLnRvcCt5O2Vsc2Ugc2Nyb2xsVG8oMCxkcmFnLnRvcCt5KTsKIH0se3Bhc3NpdmU6ZmFsc2V9KTsKIGZ1bmN0aW9uIHNldHRsZShsaXN0KXsKICBjb25zdCBjdXJyZW50PWxpc3Quc2Nyb2xsTGVmdCxtYXg9bGlzdC5zY3JvbGxXaWR0aC1saXN0LmNsaWVudFdpZHRoO2xldCBuZWFyZXN0PTA7CiAgZm9yKGNvbnN0IG8gb2YgbGlzdC5jaGlsZHJlbil7Y29uc3Qgc3RhcnQ9TWF0aC5taW4obWF4LG8ub2Zmc2V0TGVmdC0yKTtpZihNYXRoLmFicyhzdGFydC1jdXJyZW50KTxNYXRoLmFicyhuZWFyZXN0LWN1cnJlbnQpKW5lYXJlc3Q9c3RhcnR9CiAgbGlzdC5yZW1vdmVBdHRyaWJ1dGUoJ2RhdGEtZHJhZ2dpbmcnKTtsaXN0LnNjcm9sbFRvKHtsZWZ0Om5lYXJlc3QsYmVoYXZpb3I6bW90aW9uLm1hdGNoZXM/J2F1dG8nOidzbW9vdGgnfSk7CiB9CiBmdW5jdGlvbiBlbmQoZSl7aWYoIWRyYWd8fGRyYWcuaWQhPT1lLnBvaW50ZXJJZClyZXR1cm47aWYoZHJhZy5heGlzKXtpZ25vcmVDbGlja1VudGlsPXBlcmZvcm1hbmNlLm5vdygpKzI0MDtpZihkcmFnLmF4aXM9PT0neCcpc2V0dGxlKGRyYWcubGlzdCl9ZHJhZz1udWxsfQogYWRkRXZlbnRMaXN0ZW5lcigncG9pbnRlcnVwJyxlbmQpO2FkZEV2ZW50TGlzdGVuZXIoJ3BvaW50ZXJjYW5jZWwnLGVuZCk7CiBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsZT0+e2lmKGUuZGV0YWlsPjAmJnBlcmZvcm1hbmNlLm5vdygpPGlnbm9yZUNsaWNrVW50aWwmJmUudGFyZ2V0LmNsb3Nlc3Q/LignLmFwcGVhcmFuY2Utb3B0aW9ucycpKXtlLnByZXZlbnREZWZhdWx0KCk7ZS5zdG9wSW1tZWRpYXRlUHJvcGFnYXRpb24oKX19LHRydWUpOwp9KSgpOwo="></script>
 </body>
 </html>
