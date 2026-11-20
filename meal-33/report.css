@@ -39,3 +39,11 @@ body.meal-report-open{overflow:hidden}
 
 .mc-product .mc-shell{max-height:var(--mc-viewport-height,100dvh)}.mc-correction .mc-shell{max-height:calc(var(--mc-viewport-height,100dvh) - 32px)}.mc-correction input[aria-invalid=true]{outline:2px solid #ffd1d1}
 @media(max-height:520px){.mc-correction .mc-shell{max-height:calc(var(--mc-viewport-height,100dvh) - 12px)}}
+
+.mc-product .mc-shell{padding-top:0}
+.mc-product .mc-product-heading{position:sticky;top:0;z-index:2;margin:0 -18px;padding:max(10px,env(safe-area-inset-top)) 18px 10px;background:#984367}
+.mc-product .mc-product-heading .mc-grab{margin:0 auto 2px}
+.mc-product .mc-product-heading .mc-head{margin:0}
+.mc-product .mc-basis{display:flex;gap:0;padding:3px;border-radius:999px;background:#ffffff20;border:1px solid #ffffff40}
+.mc-product .mc-basis button{margin:0;border:0;border-radius:999px;background:transparent;color:white;box-shadow:none}
+.mc-product .mc-basis button[aria-pressed="true"]{background:#faf7f8;color:#17628b}

@@ -17,6 +17,7 @@
 <style>
 :root{
   --base:#00A8F5;
+  --meal-row-icon:rgba(255,255,255,.75);
   --ink:#fff; --muted:rgba(255,255,255,.72); --dim:rgba(255,255,255,.45);
   --glass:rgba(255,255,255,.16); --glassBrd:rgba(255,255,255,.34);
   --fab:#5A50D1;
@@ -508,7 +509,7 @@ body.loading .app,body.loading .dock{opacity:0}
   box-shadow:0 4px 8px rgba(40,32,120,.30),0 14px 30px rgba(40,32,120,.40);
   transition:transform .22s cubic-bezier(.2,.7,.3,1)}
 .fab svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
-body.sheet .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
+body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
 /* ══════════ КОНЕЦ ФУТЕРА ══════════ */
 
 .ask{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
@@ -824,8 +825,8 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 
 /* микрофон в доке: на главном — микрофон, в шторке — крестик */
 .fab .icX,.fab .icStop{display:none}
-body.sheet .fab .icMic{display:none}
-body.sheet .fab .icX{display:block}
+body.sheet:not(.chatOn) .fab .icMic{display:none}
+body.sheet:not(.chatOn) .fab .icX{display:block}
 @keyframes mlPulse{0%,100%{box-shadow:0 3px 8px rgba(40,32,120,.30),0 0 0 0 rgba(123,111,232,.6)}
   60%{box-shadow:0 3px 8px rgba(40,32,120,.30),0 0 0 12px rgba(123,111,232,0)}}
 
@@ -977,7 +978,7 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 .mlRow{display:flex;align-items:stretch}
 .mlRow .mlHead{flex:1;min-width:0;padding-left:2px}
 .mlFav{flex:none;width:50px;padding:0 0 0 10px;border:0;background:none;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.mlFav svg{width:23px;height:23px;fill:none;stroke:rgba(255,255,255,.75);stroke-width:1.9;stroke-linejoin:round;transition:transform .15s}
+.mlFav svg{width:23px;height:23px;fill:none;stroke:var(--meal-row-icon);stroke-width:1.9;stroke-linejoin:round;transition:transform .15s}
 .mlFav:active svg{transform:scale(.86)}
 .mlFav.on svg{fill:#FFC53D;stroke:#FFC53D}
 .mlHead .nm b{display:block;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1528,7 +1529,64 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <link rel="stylesheet" href="supplements.css?v=33.18">
 <link rel="stylesheet" href="collections.css?v=33.18">
 <link rel="stylesheet" href="meal-periods.css?v=33.18">
-</head>
+<link rel="stylesheet" href="bot-replacement.css?v=33.18">
+<style>
+#mlList.draftGroup{padding:0;overflow:hidden}
+.draftSection{position:relative;margin:0;border-radius:0}
+.draftSection{--swipe-offset:0px;--trash-space:76px}
+.draftSlide{position:relative;transform:translateX(var(--swipe-offset));transition:transform .16s ease-out}
+.draftTrashRail{position:absolute;inset:0 0 0 auto;width:var(--trash-space);display:flex;justify-content:center;align-items:flex-start;padding-top:10px;box-sizing:border-box;
+  transform:translateX(max(0px,calc(var(--trash-space) + var(--swipe-offset))));transition:transform .16s ease-out}
+.draftSection.revealLeft .draftTrashRail{inset:0 auto 0 0;transform:translateX(min(0px,calc(var(--swipe-offset) - var(--trash-space))))}
+.draftTrash{display:grid;place-items:center;box-sizing:border-box;width:56px;height:44px;border:1px solid rgba(255,255,255,.32);border-radius:999px;padding:0;background:#c42640;color:white}
+.draftTrash svg{display:block;width:24px;height:24px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.draftSection.dragging .draftSlide,.draftSection.dragging .draftTrashRail{transition:none}
+@media(prefers-reduced-motion:reduce){.draftSlide,.draftTrashRail{transition:none}}
+.draftSection+.draftSection{border-top:1px solid rgba(255,255,255,.21)}
+.draftSlide>.mlRow{align-items:center;gap:6px;padding:4px 12px}
+.draftSection .mlHead{touch-action:pan-y;padding:12px 4px;user-select:none}
+.draftSection .mlFav,.draftSection .draftReplace{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;padding:0;margin:0;align-self:center}
+.draftSection .draftReplace,.clarifyHead .clarifyReplace{background:transparent;border:0;color:var(--meal-row-icon)}
+.draftSection .mlFav svg,.draftSection .draftReplace svg{width:26px;height:26px}
+.draftSection .draftReplace svg{stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.draftDetails{padding:0 16px 18px}
+.draftDetails>p{margin:4px 0 10px}
+.draftOptions{display:flex;flex-wrap:wrap;gap:7px}
+.draftOptions .chip{flex:0 1 auto;max-width:100%;min-width:0;height:auto;white-space:normal;overflow-wrap:anywhere;text-align:left;padding:8px 13px;line-height:1.25}
+#mlList .mlResPick{display:block;width:100%;text-align:left}
+.screen[data-screen="chat"] #mlChat{margin-bottom:calc(94px + env(safe-area-inset-bottom) + var(--composer-height,58px));padding-bottom:4px;position:relative;overflow-anchor:none}
+/* Leave room below a collapsed editor to hold the current reading position. */
+#mlChat::after{content:"";position:absolute;top:100%;left:0;width:1px;height:var(--chat-held-offset,0px);pointer-events:none}
+#mlChat .mlB:has(.chatFoods){max-width:96%;width:100%;min-width:0}
+.chatFoods .draftSection{overflow:hidden}
+.chatFoods .draftSlide{padding:2px 0}
+.chatFoods .chatFoodLine,.draftSlide>.mlRow{--amount-column:clamp(54px,16vw,74px);display:grid;align-items:center;grid-template-columns:44px minmax(0,1fr) 44px;column-gap:2px}
+.draftSection :is(.chatFoodLine,.mlRow)>.mlHead{grid-column:2;display:grid;grid-template-columns:minmax(0,1fr) var(--amount-column);min-width:0;width:100%;padding-inline:0}
+.draftSection :is(.chatFoodLine,.mlRow)>.draftReplace{grid-column:3}
+.draftSection :is(.chatFoodLine,.mlRow)>.mlHead .w{max-width:100%}
+.chatFoods .mlHead{flex:1;min-width:0;gap:8px;padding:8px 0;line-height:1.25}
+.chatFoods .mlHead .nm b{white-space:normal;overflow-wrap:anywhere}
+.chatFoods .mlHead .w{white-space:nowrap}
+.chatFoods .draftTrashRail{padding-top:5px}
+.chatFoods .mrSearch{margin:0 2px 12px}
+.chatFoods + .mbSum{margin-top:6px}
+.mbPhraseFooter{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18)}
+.mbPhraseFooter .mbChips{margin:0;justify-content:flex-end}
+.mlB .mbChips + p{margin-top:12px}
+.phraseActions{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.phraseAdd{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 4px;background:none;border:0;color:inherit;font:inherit;font-weight:600}
+.phraseAdd span{font-size:20px;line-height:1}
+.draftSection :is(.chatFoodLine,.mlRow)>.pendingHead{grid-column:1 / 3;position:relative;padding-inline-start:46px;row-gap:0}
+.draftSection .pendingMark{position:absolute;left:11px;top:50%;transform:translateY(-50%);display:grid;place-items:center;justify-self:center;box-sizing:border-box;width:22px;height:22px;border:1.9px solid #ffdfa6;border-radius:50%;background:rgba(255,196,120,.16)}
+.draftSection .pendingMark svg{width:14px;height:14px;stroke:#ffe3bf;stroke-width:2.6;stroke-linecap:round;fill:none}
+.draftSection .pendingHead .nm{display:contents}
+.draftSection .pendingHead .nm b{grid-area:1/1;align-self:center}
+.draftSection .pendingHead .w{grid-area:1/2;align-self:center}
+.draftSection .pendingHead .nm small{grid-area:2/1/3/-1;white-space:normal}
+.pendingQuestion{padding:2px 4px 12px}
+.chatFoods .pendingQuestion .mrSearch{margin:12px 0 0}
+.phraseSearch{margin:12px 2px 0}
+</style></head>
 <body class="loading">
 <script src="meal-account.js?v=33.18"></script>
 
@@ -1579,6 +1637,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <div class="screen mlSheet" data-screen="chat">
     <div class="grip" data-grip aria-label="Закрыть"><i></i></div>
     <div class="top"><h1 id="chatTitle">Что съел</h1><button class="mini" id="chatClear" hidden>Очистить</button></div>
+    <div class="mlMeals" id="chatMeals" role="group" aria-label="Приём пищи"></div>
     <div class="mlChat" id="mlChat" role="log" aria-live="polite"></div>
   </div>
 
@@ -1661,6 +1720,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <article class="card release-card"><h2>Назвал приём или время</h2><ul>
       <li>Запись задним числом («в 10 утра овсянка») встаёт по тем же шагам: бот смотрит на записи периода до неё.</li>
       <li>Назвал приём («на обед…») — бот слушается, шаги выше не работают.</li>
+      <li>Нажал кнопку приёма вверху диалога «Что съел» — то же, что назвать приём; действует, пока диалог открыт. Кнопку не трогал — она просто показывает приём по времени, а выбирает бот.</li>
       <li>Назвал приём без времени, а этот приём уже был больше 1,5 часа назад, — время его последней записи.</li>
       <li>Назвал приём, которого сегодня ещё не было, — время как обычно в этом приёме за последние 7 дней (нужно хотя бы 3 дня). Иначе за 5 часов до следующего приёма или через 5 часов после прошлого. Иначе 09:00, 14:00 или 19:00. Бот пишет: «Время поставил сам».</li>
       <li>Ночью, до 05:00, «на ужин…» без времени — вчерашний ужин.</li>
@@ -1714,7 +1774,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       <li>«Курятина», «индюшатина», «бурак», «синенькие» — курица, индейка, свёкла, баклажаны. Часть и приготовление остаются: бедро не становится грудкой.</li>
       <li>«Вернее», «точнее», «то есть», «не сто, а сто пятьдесят» — новое заменяет сказанное, а не складывается.</li>
       <li>«Без ножек», «без кочерыжки», «уже очищенный» — вес записывается как назван, ничего не вычитается.</li>
-      <li>Общее слово без уточнения — сначала то, что ты записывал последним. Если такого ещё не было — привычный вариант: сыр — гауда, рис и гречка — варёные, масло — сливочное, колбаса — варёная, вино — красное сухое, пиво — светлое, орехи — грецкие, грибы — шампиньоны, кимчи — из пекинской капусты.</li>
+      <li>Общее слово без уточнения — сначала то, что у тебя в избранном: в избранном сулугуни — «сыр» запишется как сулугуни. Нет в избранном — то, что ты записывал последним. Если такого ещё не было — привычный вариант: сыр — гауда, рис и гречка — варёные, масло — сливочное, колбаса — варёная, вино — красное сухое, пиво — светлое, орехи — грецкие, грибы — шампиньоны, кимчи — из пекинской капусты.</li>
       <li>Где привычного варианта нет — «сок», «мясо», «рыба», «рамен» — бот спросит, какой, и предложит варианты кнопками.</li>
       <li>«Нет, гречки 150» после «гречка и масло» — поправится гречка, а не последняя запись.</li>
       <li>«Перепиши: …», «замени на …» — прежняя запись убирается только после того, как записана новая. Новую не понял — прежняя остаётся.</li>
@@ -2670,7 +2730,7 @@ function parseText(text){
         food=food.filter(function(w){ return w!==fw }) } }
     var key=food.join(' ');
     var line={id:'l'+(++SEQ),raw:ch.trim().replace(/#/g,','),q:q,u:u,fid:null,alts:[],st:'none',
-              name:key,explicit:(q!==null||u!==null)};
+              name:key,namedMeasure:q!==null?{q:q,u:u}:u?{q:1,u:u}:null,explicit:(q!==null||u!==null)};
     if(fat!=null) line.fat=fat;
     var fatDry=fat!=null&&food.some(function(w){ return CHEESE.test(w)&&!W_RAW.test(w) });
     var bo=function(x){ var o={conds:conds,fat:fat,fatDry:fatDry,drop:drop}; for(var k in x) o[k]=x[k]; return o };
@@ -3445,10 +3505,22 @@ function erSigned(d){ d=Math.round(d); return d>0?'+'+d:d<0?'−'+(-d):'0' }
    разбор на правилах: что понял, что поправил, что уточнить. «Подобрать» в конце —
    всё сказанное разом уходит в шторку «Подобрано». Окна ввода на главном больше нет. */
 var TA=document.getElementById('mlText'), PH=document.getElementById('mlPhoto');
+var composer=document.getElementById('mlComp'), chatLog=document.getElementById('mlChat');
+new ResizeObserver(function(){
+  if(composer.offsetHeight)chatLog.style.setProperty('--composer-height',composer.offsetHeight+'px');
+}).observe(composer);
 /* два разговора в одной шторке: «Что съел» (еда в дневник) и «Рецепт» (совет или свой рецепт) */
 function newChat(kind){ return kind==='recipe'?{kind:'recipe',msgs:[],draft:{name:'',lines:[]},busy:0,seq:0,shown:[],ask:''}:
-  {kind:'meal',msgs:[],lines:[],src:[],meal:null,busy:0,seq:0} }
+  {kind:'meal',msgs:[],lines:[],src:[],meal:null,section:null,sectionPicked:false,busy:0,seq:0} }
 var CH={meal:newChat('meal'),recipe:newChat('recipe')}, D=CH.meal;
+document.getElementById('chatMeals').addEventListener('click',function(event){
+  var chip=event.target.closest('[data-meal]');
+  if(!chip||D.kind!=='meal'||!sec(chip.dataset.meal)) return;
+  D.section=chip.dataset.meal; D.sectionPicked=true;   // приём выбрал человек: действует, пока чат открыт
+  if(D.bot) D.bot.pend.forEach(function(q){if(!q.line.inbox){q.sec=D.section;q.line.sec=D.section;q.secSet=true}});
+  document.getElementById('chatMeals').innerHTML=mealChips(D.section);
+  if(D.bot&&D.bot.ask&&D.bot.ask.kind==='meal'&&typeof MealBot!=='undefined') MealBot.tap('meal:'+D.bot.ask.id+':'+D.section,chip.textContent);   // бот спрашивал «в какой приём?» — это ответ
+});
 function setChat(kind){ D=CH[kind]; document.getElementById('chatTitle').textContent=kind==='recipe'?'Рецепт':'Что съел' }
 /* копия строк для правки: новые ключи, всё остальное как было */
 function cloneLines(ls){ return (ls||[]).map(function(l){ return {id:'l'+(++SEQ),raw:l.raw||'',q:l.q,u:l.u,g:l.g,fid:l.fid||null,
@@ -3506,7 +3578,8 @@ function msgHTML(m){
   if(m.who==='bot'){
     if(m.kind==='typing') return '<div class="mlMsg bot"><div class="mlB mlDots" role="status" aria-label="'+escH(m.text||'Отвечаю')+'"><i></i><i></i><i></i>'+
       (m.text?'<span>'+escH(m.text)+'</span>':'')+'</div></div>';
-    return '<div class="mlMsg bot"><div class="mlB">'+m.html+'</div></div>';
+    var html=/data-(?:food-receipt|chat-foods|phrase-list|phrase-part|phrase-footer)/.test(m.html)?MealBot.renderGroups(D,m.html):m.html;
+    return html?'<div class="mlMsg bot"><div class="mlB">'+html+'</div></div>':'';
   }
   if(m.kind==='photo') return '<div class="mlMsg me"><div class="mlB ph"><img src="'+escH(m.img)+'" alt="Фото еды"></div></div>';
   return '<div class="mlMsg me'+(m.live?' live':'')+'" data-mid="'+escH(m.id)+'"><div class="mlB">'+
@@ -3514,21 +3587,50 @@ function msgHTML(m){
 }
 var HELLO={meal:'Привет, давай запишем еду.',
   recipe:'Подскажу рецепт или соберу твой. Спроси: «быстрый завтрак с творогом» — или продиктуй состав: «салат: огурец 150 г, помидоры 200 г, ложка масла».'};
-function renderChat(){
+function renderChat(options){
   var rec=D.kind==='recipe', n=rec?D.draft.lines.length:D.lines.length, live=D.msgs.some(function(m){ return m.live });
   var hello='<div class="mlMsg bot"><div class="mlB">'+HELLO[D.kind]+'</div></div>';
-  var goB=n&&!D.busy&&!live?'<button class="btn solid mlGo mlChatGo" data-gomatch>'+(rec?'Собрать рецепт · ':typeof MealBot!=='undefined'&&MealBot.on()?'Уточнить в списке · ':'Подобрать · ')+n+'</button>':'';
+  var activeAsk=!rec&&D.bot&&D.bot.ask;
+  var replacing=activeAsk&&(activeAsk.kind==='name'||activeAsk.kind==='pick'||activeAsk.kind==='qty'&&!activeAsk.q.line.count);
+  var meals=document.getElementById('chatMeals');
+  meals.hidden=rec;
+  if(!rec){
+    if(!D.sectionPicked||!sec(D.section)){ D.section=autoSec(); D.sectionPicked=false }   // кнопку не нажимали — подсветка идёт за временем
+    meals.innerHTML=mealChips(D.section);
+  }
+  if(!rec&&D.bot&&D.bot.pend.length)n=D.bot.pend.filter(q=>!q.collapsed).length;
+  var goB=n&&!activeAsk&&!D.busy&&!live?'<button class="btn solid mlGo mlChatGo" data-gomatch>'+(rec?'Собрать рецепт · ':typeof MealBot!=='undefined'&&MealBot.on()?'Уточнить в списке · ':'Подобрать · ')+n+'</button>':'';
   var box=document.getElementById('mlChat');
-  box.innerHTML=hello+D.msgs.map(msgHTML).join('')+goB;
+  var markup=hello+D.msgs.map(msgHTML).join('')+goB;
+  // Catalogs can finish loading while the user types. Keep the live input and its caret.
+  if(box._markup===markup&&box._ask===(activeAsk&&activeAsk.id)){
+    if(window.MealReplacement) MealReplacement.refresh();
+    return;
+  }
+  var keep=options&&options.keepScroll;
+  var top=keep?(options.scrollTop??box.scrollTop):0;
+  cancelAnimationFrame(chatBottomFrame);
+  if(keep)box.style.setProperty('--chat-held-offset',Math.max(0,top)+'px');
+  else box.style.removeProperty('--chat-held-offset');
+  box._markup=markup; box._ask=activeAsk&&activeAsk.id;
+  box.innerHTML=markup;
+  if(window.MealReplacement) MealReplacement.mount(box,replacing&&activeAsk.id);
   document.getElementById('chatClear').hidden=!D.msgs.length;
+  if(keep){box.scrollTop=top;return}
   /* фото дорисовывается позже — ещё раз вниз, когда оно загрузится */
   box.querySelectorAll('img').forEach(function(im){ if(!im.complete) im.addEventListener('load',toBottom,{once:true}) });
   toBottom();
 }
+var chatBottomFrame;
 function toBottom(){
-  var s=document.querySelector('[data-screen="chat"]');
-  requestAnimationFrame(function(){ s.scrollTop=s.scrollHeight });
+  var s=document.getElementById('mlChat');
+  cancelAnimationFrame(chatBottomFrame);
+  chatBottomFrame=requestAnimationFrame(function(){s.scrollTop=s.scrollHeight});
 }
+document.getElementById('mlChat').addEventListener('scroll',function(){
+  var held=parseFloat(this.style.getPropertyValue('--chat-held-offset'));
+  if(this.scrollTop<held)this.style.setProperty('--chat-held-offset',Math.max(0,this.scrollTop)+'px');
+},{passive:true});
 document.getElementById('mlChat').addEventListener('click',function(e){
   if(e.target.closest('[data-gomatch]')){ goMatch(); return }
   var t=e.target.closest('[data-rtake]'); if(t) takeRecipe(t.dataset.rtake);
@@ -3564,6 +3666,10 @@ function respond(m){
 }
 /* ответ готов сразу (по порядку сообщений), а показывается после «печатает…» */
 function botSay(html,delay,label){
+  if(html&&html.includes('data-list-turn=')){
+    D.msgs.push({id:'b'+(++D.seq),who:'bot',kind:'reply',html:html});
+    renderChat();return;
+  }
   var dd=D, t={id:'b'+(++D.seq),who:'bot',kind:'typing',text:label||''};
   D.msgs.push(t); D.busy++; renderChat();
   setTimeout(function(){
@@ -3578,6 +3684,16 @@ function sendText(){
   var m={id:'m'+(++D.seq),who:'me',kind:'text',text:t};
   D.msgs.push(m);
   TA.value=''; syncInput(true);
+  if(D.kind==='meal'&&MealBot.on()&&MealReplacement.loading()){
+    var chat=D, pending={id:'b'+(++D.seq),who:'bot',kind:'reply',html:'<p role="status">Ищу в каталогах…</p>'};
+    chat.msgs.push(pending);chat.busy++;renderChat();
+    function resume(){
+      if(!chat.msgs.includes(pending))return;
+      if(MealReplacement.loading()||D!==chat){setTimeout(resume,200);return}
+      chat.busy--;pending.html=respond(m);renderChat();
+    }
+    setTimeout(resume,200);return;
+  }
   botSay(respond(m),420);
 }
 function goMatch(){
@@ -3592,7 +3708,7 @@ function goMatch(){
 function dropChat(old){ old.msgs.forEach(function(m){ if(m.img) URL.revokeObjectURL(m.img) }) }
 document.getElementById('chatClear').addEventListener('click',function(){
   if(REC) stopRec();
-  var old=D, k=old.kind; CH[k]=newChat(k); CH[k].seq=old.seq; D=CH[k]; renderChat();
+  var old=D, k=old.kind; CH[k]=newChat(k); if(k==='meal'){ CH[k].section=old.section; CH[k].sectionPicked=old.sectionPicked } CH[k].seq=old.seq; D=CH[k]; renderChat();
   toast('Диалог очищен',function(){ CH[k]=old; if(D.kind===k) D=old; renderChat() });
   setTimeout(function(){ if(D!==old) dropChat(old) },5000);
 });
@@ -3656,6 +3772,10 @@ function openRecipeEdit(src,opt){
   FIND=null; go('match'); renderMatch();
   document.querySelector('[data-screen="match"]').scrollTop=0;
 }
+function mealChips(value){ return sectionsForDate(curDate).map(function(S){
+    var on=S.k===value;
+    return '<button class="chip'+(on?' on':'')+'" data-meal="'+escH(S.k)+'" aria-pressed="'+on+'">'+escH(S.t)+'</button>';
+  }).join('') }
 function renderMatch(){
   var rec=M.mode==='recipe';
   document.getElementById('mlTitle').textContent=rec?'Мой рецепт':'Подобрано';
@@ -3666,10 +3786,8 @@ function renderMatch(){
   var clock=mlFirstTime(M.lines,M.t,M.tm,mlNotOpening).t||mlNormTime(M.t);
   document.getElementById('mlTimeTxt').textContent=clock||'—:—';
   document.getElementById('mlTimeBox').classList.toggle('none',!clock);
-  document.getElementById('mlMeals').innerHTML=sectionsForDate(curDate).map(function(S){
-    var on=S.k===M.sec;
-    return '<button class="chip'+(on?' on':'')+'" data-meal="'+escH(S.k)+'" aria-pressed="'+on+'">'+escH(S.t)+'</button>';
-  }).join('');
+  document.getElementById('mlMeals').innerHTML=mealChips(M.sec);
+  document.getElementById('mlList').className=!rec&&M.lines.length?'card draftGroup':'';
   document.getElementById('mlList').innerHTML=M.lines.length?M.lines.map(function(l){ return lineHTML(l,'m') }).join(''):
     '<p class="mlEmpty">Пусто. Добавь продукт или закрой шторку.</p>';
   if(FIND&&FIND.where==='m'){ document.getElementById('secFind').innerHTML=''; document.getElementById('mlFindS').innerHTML='' }
@@ -3685,23 +3803,40 @@ function lineHTML(l,where){
   var st=l.st||'ok', f=MealProducts.forItem(l,FOODS,DB), open=(where==='m'?M.open:SOPEN)===l.id, warn=st==='pick'||st==='none';
   var name=st==='pick'?cap(l.name)+' — какой?':f?(typeof MealCatalog!=='undefined'?MealCatalog.name(f):f.n):cap(l.name||'Продукт');
   var src=f?(f.supplement?'добавка':f.src==='Мои'?'мой продукт':f.src==='этикетка'?'по типичной этикетке':f.src==='оценка'?'оценка':''):(st==='none'?'нет в библиотеке':'');
-  var sub=where==='m'?(l.from==='photo'?'с фото'+(src?' · '+src:''):l.from==='recipe'?'из рецепта'+(src?' · '+src:''):l.raw?'«'+l.raw+'»'+(src?' · '+src:''):src):[l.t,l.tap?'счётчик':src].filter(Boolean).join(' · ');
   var clock=where==='m'&&M.mode!=='recipe'?mlEntryTime(l,M.t,M.tm).t:where==='s'?mlNormTime(l.t):null;
-  if(where==='m'&&clock)sub=[clock,sub].filter(Boolean).join(' · ');
-  if(clock&&l.tm)sub+=' · время вручную';
-  // Keep the approved drink proxy on the entry, never rename the shared sugar catalog card.
-  if(where==='s'&&l.fid==='bls:S111000'&&l.importSource&&l.importSource.system==='User dictation'&&/компот/i.test(l.said||''))sub+=' · '+l.said;
-  if(where==='m'&&l.sec&&sec(l.sec))sub+=' · '+sec(l.sec).t;
+  var sub;
+  if(where==='m'&&M.mode==='diary'&&l.from!=='photo'&&l.from!=='recipe'){
+    sub=st==='none'?MealReplacement.missingLabel():clock;
+  }else{
+    sub=where==='m'?(l.from==='photo'?'с фото'+(src?' · '+src:''):l.from==='recipe'?'из рецепта'+(src?' · '+src:''):l.raw?'«'+l.raw+'»'+(src?' · '+src:''):src):[l.t,l.tap?'счётчик':src].filter(Boolean).join(' · ');
+    if(where==='m'&&clock)sub=[clock,sub].filter(Boolean).join(' · ');
+    if(clock&&l.tm)sub+=' · время вручную';
+    // Keep the approved drink proxy on the entry, never rename the shared sugar catalog card.
+    if(where==='s'&&l.fid==='bls:S111000'&&l.importSource&&l.importSource.system==='User dictation'&&/компот/i.test(l.said||''))sub+=' · '+l.said;
+    if(where==='m'&&l.sec&&sec(l.sec))sub+=' · '+sec(l.sec).t;
+  }
   var kc=f?(f.k==null?'—':Math.round(f.k*l.g/100))+' ккал':'';
-  var h='<div class="card mlItem'+(warn?' mlWarn':'')+'" data-id="'+escH(l.id)+'" data-w="'+where+'">'+
+  var h='<div class="'+(where==='m'&&M.mode==='diary'?'draftSection':'card')+' mlItem'+(warn?' mlWarn':'')+'" data-id="'+escH(l.id)+'" data-w="'+where+'">'+
+    (where==='m'&&M.mode==='diary'?'<div class="draftTrashRail" inert><button class="draftTrash" type="button" aria-label="Удалить: '+escH(name)+'">'+BINI+'</button></div><div class="draftSlide">':'')+
     /* слева — звёздочка «в избранное» (птичка пользы не несла); у строки, где продукт не найден, — значок вопроса */
-    (warn?'<div class="mlRow"><button class="mlHead" data-act="open" aria-expanded="'+open+'"><span class="st" aria-hidden="true">'+WARNI+'</span>':
-      (function(){ var on=!!(f&&(DB.favs||[]).indexOf(f.id)>=0);
-        return '<div class="mlRow"><button class="mlFav'+(on?' on':'')+'" data-act="fav" aria-pressed="'+on+'" aria-label="'+(on?'Убрать из избранного':'В избранное')+': '+escH(name)+'">'+STARI+'</button>'+
-          '<button class="mlHead" data-act="open" aria-expanded="'+open+'">' })())+
-    '<span class="nm"><b>'+escH(name)+'</b><small>'+escH(sub)+'</small></span>'+
-    '<span class="w">'+escH(amtShort(l))+(kc?'<small>'+kc+'</small>':'')+'</span></button>'+
-    (where==='m'&&(warn||!open)?'<button class="mlIco del mlDraftRemove" data-act="del" aria-label="Удалить продукт">'+BINI+'</button>':'')+'</div>';
+    (warn?'<div class="mlRow"><button class="mlHead'+(where==='m'&&M.mode==='diary'?' pendingHead':'')+'" data-act="open" aria-expanded="'+open+'"><span class="'+(where==='m'&&M.mode==='diary'?'pendingMark':'st')+'" aria-hidden="true">'+WARNI+'</span>':
+      '<div class="mlRow">'+mealRowFavorite(l.fid,name)+'<button class="mlHead" data-act="open" data-info-food="'+escH(l.fid)+'" data-info-grams="'+Number(l.g)+'" aria-expanded="'+open+'">')+
+    mealRowText(name,sub,amtShort(l),kc)+'</button>'+
+    (where==='m'&&M.mode==='diary'?'<button class="mlIco draftReplace" data-act="inlineReplace" aria-label="Заменить продукт">'+ROW_REPLACE+'</button>':
+      where==='m'&&(warn||!open)?'<button class="mlIco del mlDraftRemove" data-act="del" aria-label="Удалить продукт">'+BINI+'</button>':'')+'</div>';
+  if(where==='m'&&M.mode==='diary'){
+    if(warn||M.replacing===l.id){
+      h+='<div class="draftDetails">';
+      var options=st==='pick'?l.alts.map(id=>FOODS[id]).filter(Boolean):
+        st==='none'&&!MealReplacement.catalogMessage()?MealBot.similarFoods(l.name):[];
+      if(st==='none')h+='<p>'+escH(MealReplacement.catalogMessage()||('В базе отсутствует «'+l.name+'».'))+'</p>';
+      if(options.length)h+='<div class="draftOptions">'+options.slice(0,3).map(f=>'<button class="chip" data-act="draftPick" data-fid="'+escH(f.id)+'">'+escH(f.n)+'</button>').join('')+'</div>';
+      if(!warn)h+=varHTML(l)+famHTML(l);
+      h+='<div class="mrSearch"><div class="mrField"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="text" data-draft-search aria-label="Найти замену" placeholder="Найти замену" autocomplete="off"></div><div class="mlRes"></div></div></div>';
+    }
+    if(open&&!warn&&M.replacing!==l.id)h+=edHTML(l,where);
+    return h+'</div></div>';
+  }
   if(st==='pick'){
     var blsWait=typeof BLS_ST!=='undefined'&&(BLS_ST==='loading'||BLS_ST==='idle');
     h+='<div class="mlAsk"><p>'+(blsWait?'Какой именно? Основная база ещё загружается — варианты обновятся сами.':'Какой именно?')+'</p><div class="chips">'+l.alts.map(function(id){
@@ -3793,6 +3928,7 @@ function edHTML(l,where){
     '<div class="mlUBtns"><button class="btn" data-act="ucancel">Отмена</button><button class="btn solid" data-act="usave">Сохранить в продукт</button></div>'+
     '<p class="mlUNote">Мера запомнится у «'+escH(f?f.n:'')+'» только у тебя.</p></div>';
   else if(own[l.u]) h+='<button class="mlUDel" data-act="udel">Убрать мою меру «'+escH(l.u)+'»</button>';
+  if(where==='chat')return h+'</div>';
   h+='<div class="mlCorrectionActions mlIcoA">'+
     '<button class="mlIco" data-act="info" aria-label="Информация и корректировка продукта">'+INFOI+'</button>'+
     '<button class="mlIco del" data-act="del" aria-label="Удалить продукт">'+BINI+'</button></div>';
@@ -3828,12 +3964,22 @@ function unitDel(l){
 
 /* строки: в шторке «Подобрано» — черновик, в разделе — записи дня */
 function listOf(w){ return w==='m'?M.lines:day(curDate).items }
-function lineOf(w,id){ return listOf(w).filter(function(x){ return x.id===id })[0] }
-function rer(w){ if(w==='m') renderMatch(); else { renderSec(); renderDay() } }
+function lineOf(w,id){
+  if(w==='chat'){var a=MealBot.portionEntry();return a&&a.item.id===id?a.item:null}
+  return listOf(w).find(function(x){return x.id===id});
+}
+function rer(w){ if(w==='chat') renderChat({keepScroll:true}); else if(w==='m') renderMatch(); else { renderSec(); renderDay() } }
 /* после каждой перерисовки — выбранная часть туши / жирность на виду, даже если она двадцатая в ленте */
 var _renderMatch0=renderMatch; renderMatch=function(){ _renderMatch0.apply(this,arguments); famReveal() };
 var _renderSec0=renderSec; renderSec=function(){ _renderSec0.apply(this,arguments); famReveal() };
-function keep(w){ if(w!=='m') save() }
+function keep(w){
+  if(w==='chat'){
+    var a=MealBot.portionEntry();if(!a)return;
+    Object.assign(a.line,{q:a.item.q,u:a.item.u,g:a.item.g,explicit:true,usual:false,approx:false,habit:false});
+    delete a.item.approx;
+  }
+  if(w!=='m')save();
+}
 function setFood(l,fid){
   var f=FOODS[fid];
   delete l.productSnapshot; delete l.productRevision; l.fid=fid; l.st='ok';
@@ -3862,6 +4008,86 @@ function removeLine(w,id){
   save(); renderSec(); renderDay();
   toast('Убрано: '+(FOODS[it.fid]?FOODS[it.fid].n:'продукт'),function(){ e.items.splice(idx,0,it); save(); renderSec(); renderDay() });
 }
+(function(){
+  var list=document.getElementById('mlList');
+  list.addEventListener('input',function(e){
+    if(!e.target.matches('[data-draft-search]'))return;
+    var term=e.target.value.trim(),results=e.target.closest('.mrSearch').querySelector('.mlRes');
+    var foods=term?searchLib(term).filter(f=>MealSources.available(DB,f)):[];
+    results.innerHTML=foods.map(f=>'<button class="mlResPick" data-act="draftPick" data-fid="'+escH(f.id)+'">'+escH(f.n)+'</button>').join('')||
+      (term?'<p class="mlEmpty">'+escH(MealReplacement.catalogMessage()||'Ничего не найдено. Попробуй другое название.')+'</p>':'');
+  });
+  wireProductSwipe(list,function(section){removeLine('m',section.dataset.id)});
+})();
+function wireProductSwipe(list,remove){
+  var start=null;
+  function offset(section,value){
+    if(value)section.classList.toggle('revealLeft',value>0);
+    section.style.setProperty('--swipe-offset',value+'px');
+  }
+  function rest(section,value){
+    section.classList.remove('dragging');
+    section.dataset.rest=String(value);
+    section.querySelector('.draftTrashRail').inert=!value;
+    offset(section,value);
+  }
+  function dismissRow(section,dir){
+    if(section.dataset.removing)return;
+    section.dataset.removing='1';
+    var width=section.offsetWidth;
+    section.inert=true;
+    section.classList.remove('dragging');
+    offset(section,dir*width);
+    var duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:160;
+    var collapse=section.animate([{height:section.offsetHeight+'px'},{height:'0px'}],{
+      duration:duration,delay:duration,easing:'ease-out',fill:'forwards'
+    });
+    collapse.onfinish=function(){if(section.isConnected)remove(section)};
+  }
+  list.addEventListener('click',function(e){
+    var trash=e.target.closest('.draftTrash');
+    if(trash){var section=trash.closest('.draftSection');dismissRow(section,Math.sign(+section.dataset.rest)||-1)}
+  });
+  list.addEventListener('pointerdown',function(e){
+    if(!e.isPrimary||e.button!==0||e.target.closest('.draftTrash'))return;
+    var row=e.target.closest('.mlHead'), section=row&&row.closest('.draftSection');
+    var open=list.querySelector('.draftSection[data-rest]:not([data-rest="0"])');
+    if(open&&open!==section&&!open.dataset.removing)rest(open,0);
+    if(!section||section.dataset.removing)return;
+    start={x:e.clientX,y:e.clientY,section:section,p:e.pointerId,origin:+section.dataset.rest||0};
+    row.setPointerCapture(e.pointerId);
+  });
+  list.addEventListener('pointermove',function(e){
+    if(!start||start.p!==e.pointerId)return;
+    var dx=e.clientX-start.x,dy=e.clientY-start.y;
+    if(!start.drag&&Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*2){
+      start.drag=true;
+      start.section.classList.add('dragging');
+    }
+    if(start.drag)offset(start.section,start.origin+dx);
+  });
+  function endSwipe(e){
+    var s=start;if(!s||s.p!==e.pointerId)return;
+    start=null;
+    var section=s.section;
+    if(e.type==='pointercancel'){rest(section,s.origin);return}
+    if(!s.drag&&!s.origin)return;
+    // A drag or a tap to close the tray must not also expand the row.
+    var suppress=function(event){event.preventDefault();event.stopImmediatePropagation()};
+    section.addEventListener('click',suppress,true);
+    setTimeout(()=>section.removeEventListener('click',suppress,true),0);
+    var dx=e.clientX-s.x, x=s.origin+dx;
+    if(!s.drag||Math.abs(dx)<=2*Math.abs(e.clientY-s.y)){rest(section,0);return}
+    if(Math.abs(x)>section.clientWidth*.5&&Math.sign(x)===Math.sign(dx)){
+      dismissRow(section,Math.sign(x));return;
+    }
+    var rail=section.querySelector('.draftTrashRail').offsetWidth;
+    var reveal=s.origin&&Math.sign(dx)!==Math.sign(s.origin)&&Math.abs(dx)>28?0:x;
+    rest(section,Math.abs(reveal)>=28?Math.sign(reveal)*rail:0);
+  }
+  list.addEventListener('pointercancel',endSwipe);
+  list.addEventListener('pointerup',endSwipe);
+}
 function onAct(ev){
   var meal=ev.target.closest('[data-meal]');
   if(meal){ M.sec=meal.dataset.meal; M.lines.forEach(function(l){delete l.sec}); M.man=true; renderMatch(); return }
@@ -3869,13 +4095,26 @@ function onAct(ev){
   if(fa){ onFind(fa); return }
   var b=ev.target.closest('[data-act]'); if(!b||b.tagName==='INPUT'||b.tagName==='LABEL') return;
   var card=b.closest('.mlItem'); if(!card) return;
-  var w=card.dataset.w, id=card.dataset.id, l=lineOf(w,id), act=b.dataset.act; if(!l) return;
+  var w=card.dataset.w, id=card.dataset.id, l=lineOf(w,id), act=b.dataset.act; if(!l||w==='chat'&&writeGuard()) return;
+  if(w==='m'&&M.mode==='diary'){
+    if(act==='inlineReplace'||act==='replace'){
+      M.replacing=M.replacing===id?null:id;M.open=null;renderMatch();
+      if(M.replacing)document.querySelector('#mlList [data-id="'+id+'"] [data-draft-search]')?.focus();
+      return;
+    }
+    if(act==='draftPick'){
+      var fid=b.dataset.fid;
+      if(fid.startsWith('bls:'))blsUse(fid);
+      if(!FOODS[fid])return;
+      setFood(l,fid);M.replacing=null;M.open=null;renderMatch();return;
+    }
+    if(act==='open')M.replacing=null;
+  }
   if(act==='fav'){
     var ff=FOODS[l.fid]; if(!ff) return;
-    if(String(ff.id).indexOf('bls:')===0&&typeof blsUse==='function') blsUse(ff.id);
-    DB.favs=DB.favs||[]; var fi=DB.favs.indexOf(ff.id);
-    if(fi>=0) DB.favs.splice(fi,1); else DB.favs.unshift(ff.id);
-    save(); rer(w); toast(fi>=0?'Убрано из избранного':'В избранном: '+ff.n,function(){ var j=DB.favs.indexOf(ff.id); if(fi>=0){ if(j<0) DB.favs.splice(fi,0,ff.id) } else if(j>=0) DB.favs.splice(j,1); save(); rer(w) });
+    var wasFavorite=isFav(ff.id);
+    setMealRowFavorite(ff.id,!wasFavorite);rer(w);
+    toast(wasFavorite?'Убрано из избранного':'В избранном: '+ff.n,function(){setMealRowFavorite(ff.id,wasFavorite);rer(w)});
     return;
   }
   if(act==='open'){
@@ -3916,24 +4155,65 @@ function restoreQty(t){
   var card=t.closest('.mlItem'),l=card&&lineOf(card.dataset.w,card.dataset.id);if(!l)return;
   t.value=Number.isFinite(l.q)?Math.round(l.q*10)/10:100;t.style.width=qtyW(t.value);
 }
-function onGrams(ev){
-  var t=ev.target; if(t.dataset.act!=='qty') return;
-  var card=t.closest('.mlItem'), w=card.dataset.w, l=lineOf(w,card.dataset.id); if(!l) return;
-  var v=parseFloat(String(t.value).replace(',','.'));
-  if(!(v>0)){ restoreQty(t); return }
-  l.q=Math.round(v*10)/10; l.g=l.u==='г'?l.q:gramsFor(l.fid,l.q,l.u);
-  keep(w); rer(w);
+// The field commits on blur. Keep the next button in the DOM until its click has run.
+var chatPortionPress=null;
+function endPortionPress(press){
+  if(!press||press!==chatPortionPress)return;
+  chatPortionPress=null;
+  if(press.changed&&chatOpen())rer('chat');
 }
-['match','sec'].forEach(function(n){
+document.addEventListener('pointerdown',function(e){
+  var field=document.activeElement;
+  if(field&&field.matches('.chatPortion [data-act="qty"]')&&e.target.closest('button')){
+    chatPortionPress={id:e.pointerId,changed:false,scrollTop:field.closest('#mlChat').scrollTop};
+  }
+},true);
+document.addEventListener('click',function(){
+  var press=chatPortionPress;if(press)queueMicrotask(function(){endPortionPress(press)});
+});
+document.addEventListener('pointerup',function(e){
+  var press=chatPortionPress;
+  if(press&&press.id===e.pointerId)setTimeout(function(){endPortionPress(press)},350);
+},true);
+document.addEventListener('pointercancel',function(){endPortionPress(chatPortionPress)},true);
+function saveQuantityField(t){
+  var card=t.closest('.mlItem'), w=card.dataset.w, l=lineOf(w,card.dataset.id);
+  if(!l)return;
+  if(w==='chat'&&writeGuard()){restoreQty(t);return}
+  var v=parseFloat(String(t.value).replace(',','.'));
+  if(!Number.isFinite(v)||!(Math.round(v*10)>0)){restoreQty(t);return}
+  l.q=Math.round(v*10)/10; l.g=l.u==='г'?l.q:gramsFor(l.fid,l.q,l.u);
+  keep(w);
+  return l;
+}
+function onGrams(ev){
+  var t=ev.target;
+  if(t.dataset.act!=='qty')return;
+  var l=saveQuantityField(t);
+  if(!l)return;
+  var card=t.closest('.mlItem'), w=card.dataset.w;
+  if(w==='chat'&&chatPortionPress){
+    chatPortionPress.changed=true;
+    card.closest('[data-saved-id]').querySelector('[data-edit-portion]').dataset.infoGrams=String(l.g);
+  }else rer(w);
+}
+['match','sec','chat'].forEach(function(n){
   var scr=document.querySelector('[data-screen="'+n+'"]');
-  scr.addEventListener('click',onAct);
-  scr.addEventListener('change',onGrams);
+  if(n==='chat')scr=document.getElementById('mlChat');
+  scr.addEventListener('click',function(e){if(n!=='chat'||e.target.closest('.chatPortion'))onAct(e)});
+  if(n==='chat')scr.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&e.target.matches('.chatPortion [data-act="qty"]')){e.preventDefault();e.target.blur()}
+  });
+  if(n!=='chat')scr.addEventListener('change',onGrams);
   scr.addEventListener('pointerdown',function(ev){var t=ev.target;if(t.dataset&&t.dataset.act==='qty'){t.value='';t.style.width=qtyW(3)}});
   scr.addEventListener('focusin',function(ev){
     var t=ev.target;if(t.dataset&&t.dataset.act==='qty')t.value='';
   });
   scr.addEventListener('focusout',function(ev){
-    var t=ev.target;if(t.dataset&&t.dataset.act==='qty'&&!t.value)restoreQty(t);
+    var t=ev.target;
+    if(t.dataset.act!=='qty')return;
+    if(!t.value)restoreQty(t);
+    else if(n==='chat'&&t.value!==t.defaultValue)onGrams(ev);
   });
   scr.addEventListener('input',function(ev){
     if(ev.target.dataset&&ev.target.dataset.act==='qty'){ ev.target.style.width=qtyW(ev.target.value); return }
@@ -3973,6 +4253,28 @@ function searchLib(q){
   return combined(lib.concat(bl.length&&bl[0].kav?kv.concat(bs):bs.concat(kv)));          // группа «Кавказская кухня» — выше базы, только если в ней лучшее совпадение
 }
 var STARI='<svg viewBox="0 0 24 24"><path d="M12 3.6l2.5 5.3 5.8.7-4.3 4 1.1 5.7L12 16.5l-5.1 2.8 1.1-5.7-4.3-4 5.8-.7z"/></svg>';
+var ROW_REPLACE='<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><g transform="translate(0 -.55)" stroke-width="1.9"><path d="M3.35 11.2C3.75 3.75 12.3.75 17.7 5.2l2.15 1.95M19.85 2.95v4.2h-4.2"/><path transform="rotate(180 12 12)" d="M3.35 11.2C3.75 3.75 12.3.75 17.7 5.2l2.15 1.95M19.85 2.95v4.2h-4.2"/></g></g></svg>';
+function mealRowText(name,detail,amount,kcal){
+  return '<span class="nm"><b>'+escH(name)+'</b>'+(detail?'<small>'+escH(detail)+'</small>':'')+'</span>'+
+    '<span class="w">'+escH(amount)+(kcal?'<small>'+escH(kcal)+'</small>':'')+'</span>';
+}
+function mealRowFavorite(fid,name){
+  var on=isFav(fid);
+  return '<button type="button" class="mlFav'+(on?' on':'')+'" data-act="fav" data-row-favorite="'+escH(fid||'')+'" aria-pressed="'+on+'" aria-label="'+(on?'Убрать из избранного':'В избранное')+': '+escH(name)+'">'+STARI+'</button>';
+}
+function setMealRowFavorite(id,on){
+  if(String(id).startsWith('bls:'))blsUse(id);
+  var favs=DB.favs||(DB.favs=[]),index=favs.indexOf(id);
+  if(on&&index<0)favs.unshift(id);
+  if(!on&&index>=0)favs.splice(index,1);
+  save();
+  document.querySelectorAll('[data-row-favorite]').forEach(function(button){
+    if(button.dataset.rowFavorite!==id)return;
+    button.classList.toggle('on',on);
+    button.setAttribute('aria-pressed',String(on));
+    button.setAttribute('aria-label',(on?'Убрать из избранного':'В избранное')+': '+FOODS[id].n);
+  });
+}
 function isFav(id){ return (DB.favs||[]).indexOf(id)>=0 }
 /* последние — только то, что реально попало в дневник, свежее сверху */
 function recentIds(){
@@ -4289,12 +4591,14 @@ function hotAt(x,y){ var h=fanAt(x,y); FAN.querySelectorAll('.mlFanB').forEach(f
 function openChat(mode,kind){
   closeFan();
   kind=kind||'meal';
-  if(!chatOpen()||D.kind!==kind){ setChat(kind); FIND=null; SECK=null; SOPEN=null; go('chat') }
+  if(!chatOpen()||D.kind!==kind){ if(!chatOpen()) CH.meal.sectionPicked=false;   // чат открыли заново — приём снова выбирает бот
+    setChat(kind); FIND=null; SECK=null; SOPEN=null; go('chat') }
   if(mode==='voice'||mode==='text'){ TA.focus(); syncInput() }
   else if(mode==='photo') PH.click();
 }
 function fabTap(){
   if(fanOpen){ openChat('voice'); return }
+  if(chatOpen()){ startRec(); return }
   if(inSheet()){ closeSheet(); return }
   openChat('voice');
 }
@@ -4371,7 +4675,7 @@ function renderAll(){
   renderDay(); renderSettings(); renderRecipes();
   if(SECK) renderSec();
   if(document.querySelector('[data-screen="match"]').classList.contains('on')) renderMatch();
-  if(chatOpen()) renderChat();
+  if(chatOpen()) renderChat({keepScroll:true});
 }
 /* Весь дневник Meal одним файлом: записи, свои продукты, рецепты и добавки (БАДы) — свои варианты, приёмы со снимком
    состава, звёзды (MealSupplementsStore.exportState). Meal 32: загрузки дневника из файла нет — дневник хранится
@@ -5342,10 +5646,11 @@ var BLS_SYN=[['помидор','томат'],['томат','помидор'],['�
   ['тендерлойн','вырезк'],['миньон','вырезк'],['брискет','грудинк'],['оссобуко','голяшк'],['топсайд','верх']];
 function blsWordsOf(s){ return norm(s).split(/[^a-zа-я0-9%]+/).filter(Boolean) }
 /* BLS is shared across new releases through the standalone v1 manifest. */
+var blsPending;
 function blsLoad(){
-  if(BLS_ST==='loading'||BLS_ST==='ok') return;
+  if(BLS_ST==='loading'||BLS_ST==='ok') return blsPending;
   BLS_ST='loading';
-  Promise.resolve().then(function(){return HappyFoodLibraries.getJson('bls')}).then(blsReady).catch(function(){BLS_ST='fail';blsRerender()});
+  return blsPending=Promise.resolve().then(function(){return HappyFoodLibraries.getJson('bls')}).then(blsReady).catch(function(){BLS_ST='fail';blsRerender()});
 }
 function blsReady(d){
     if(!d||!Array.isArray(d.f)||!Array.isArray(d.keys)) throw new Error('format');
@@ -5385,12 +5690,14 @@ function isVoc(w){
   var r=!!BLS_VOC[w]||(BLS_VOCP[w.slice(0,3)]||[]).some(function(x){ return wRel(w,x)>=2.7 });
   return VOC_C[w]=r;
 }
+var kavStatus='idle';
 function kavLoad(){
-  if(KAV) return;
+  if(KAV||kavStatus==='loading') return;
+  kavStatus='loading';
   Promise.resolve().then(function(){return HappyFoodLibraries.getJson('kav')}).then(function(d){
     if(!d||!Array.isArray(d.f)||!Array.isArray(d.keys))throw new Error('format');
-    KAV=d;kavMerge();blsRerender();
-  }).catch(function(){});
+    KAV=d;kavMerge();kavStatus='ok';blsRerender();
+  }).catch(function(){kavStatus='fail'});
 }
 function kavMerge(){
   if(!KAV||KAV.done||BLS_ST!=='ok') return;
@@ -6138,6 +6445,8 @@ function jrNoteTxt(){
 <script src="supplements.js?v=33.18"></script>
 <script src="catalog-preview.js?v=33.18"></script>
 <script src="collections.js?v=33.18"></script>
+
+<script src="bot-replacement.js?v=33.18"></script>
 <script>/* Meal 28: работа без интернета — копия файлов этого выпуска на устройстве (sw.js, только свой каталог выпуска) */
 if('serviceWorker' in navigator&&window.isSecureContext)navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(function(){});</script>
 </body>

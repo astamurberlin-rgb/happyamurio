@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 from common import *
 from meal_bot_scenarios import S
 
-RESET = """()=>{DB.days={};try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
+RESET = """()=>{DB.days={};DB.favs=[];try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),q:x.q,u:x.u,g:x.g,t:x.t||null,tm:x.tm||0,sec:x.sec,tap:x.tap||null})}));return o}"""
 SAY = """(arg)=>{const text=Array.isArray(arg)?arg[0]:arg;const m={id:'m'+(++D.seq),who:'me',kind:'text',text};if(Array.isArray(arg)&&arg[1])m.eaten=true;D.msgs.push(m);const h=respond(m);D.msgs.push({who:'bot',kind:'reply',html:h});
  const S=D.bot||{pend:[],ask:null};return {html:h,pend:S.pend.length,ask:S.ask?S.ask.kind:null}}"""
@@ -14,6 +14,9 @@ TAP = """(label)=>{const last=[...D.msgs].reverse().find(m=>m.who==='bot'&&m.htm
  const b=[...box.querySelectorAll('[data-bot]')].find(x=>x.textContent.trim()===label);if(!b)return {html:'',missing:true};
  const n=D.msgs.length;MealBot.tap(b.dataset.bot,label);return {n}}"""
 LAST = """()=>{const last=[...D.msgs].reverse().find(m=>m.who==='bot'&&m.kind==='reply');const S=D.bot||{pend:[],ask:null};return {html:last?last.html:'',pend:S.pend.length,ask:S.ask?S.ask.kind:null}}"""
+# избранное сценария (fav): названия → продукты базы; кнопка приёма вверху диалога (chip): нажата человеком
+FAV = """(names)=>{MealSpeech.on(true);try{DB.favs=names.map(q=>{const r=parseText(q).lines[0];const id=r&&(r.fid||r.alts[0]);if(id&&String(id).startsWith('bls:'))blsUse(id);return id}).filter(Boolean)}finally{MealSpeech.on(false)};return DB.favs.map(id=>FOODS[id]?FOODS[id].n:id)}"""
+CHIP = """(k)=>{D.section=k;D.sectionPicked=true;return true}"""
 OLD = """(text)=>{const r=parseText(text);return r.lines.map(l=>({n:l.fid&&FOODS[l.fid]?FOODS[l.fid].n:null,q:l.q,u:l.u,g:l.g,st:l.st}))}"""
 
 def nm(s): return s.lower().replace("ё", "е")
@@ -98,6 +101,8 @@ with sync_playwright() as p:
     for s in S:
         page.clock.set_fixed_time(datetime.datetime.fromisoformat(s["clock"]))
         page.evaluate(RESET)
+        if s.get("fav"): page.evaluate(FAV, s["fav"])
+        if s.get("chip"): page.evaluate(CHIP, s["chip"])
         html, asked = "", False
         for m in s["msgs"]:
             if isinstance(m, dict):
