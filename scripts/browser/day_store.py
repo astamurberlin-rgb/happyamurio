@@ -190,13 +190,13 @@ def cloud(user, app=None):
 
 def measure(page, box, date, values):
     """Новый замер на общем экране замеров (он один и тот же в Day и в Sport): «+ Замер» в углу таблицы
-    (или под «Пока нет замеров»), значения — в белом столбце таблицы, «Сохранить замер» под ней."""
+    (или под «Пока нет замеров»), значения — в белом столбце таблицы, «Сохранить» в углу таблицы (появляется после ввода)."""
     page.click(box + " [data-hm=add]")
     page.wait_for_selector(box + " .hm-add .hm-new input[name=neck]")
     page.fill(box + " .hm-add input[name=date]", date)
     for field, value in values.items():
         page.fill(box + " .hm-add input[name=%s]" % field, str(value))
-    page.click(box + " .hm-add button[type=submit]")
+    page.click(box + " .hm-add [data-hm=save]")
     page.wait_for_selector(box + " .hm-add", state="detached", timeout=4000)
 
 

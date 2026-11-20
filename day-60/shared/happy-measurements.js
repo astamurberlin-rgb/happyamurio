@@ -128,6 +128,7 @@ function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth
 const svg=d=>'<svg class="hm-icon" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
 const ICON={
  calendar:svg('<rect x="3" y="4.5" width="18" height="16.5" rx="4"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/>'),
+ back:svg('<path d="M9 5 3 11l6 6M4 11h10a6 6 0 0 1 6 6v2"/>'),
  plus:svg('<path d="M12 5v14M5 12h14"/>'),
  pencil:svg('<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1z"/><path d="M14.5 6.5l3 3"/>'),
  trash:svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>'),
@@ -351,32 +352,46 @@ function cell(group,values){
  if(group.keys.length===1)return `<b>${value(values,group.keys[0])}</b>`;
  return `<div class="hm-paired">${group.keys.map((k,i)=>`<span aria-label="${group.name} · ${i===0?'левая':'правая'} сторона: ${value(values,k)}"><small>${i===0?'Л':'П'}</small><b>${value(values,k)}</b></span>`).join('')}</div>`;
 }
-/* Новый замер прямо в таблице (Астамур 19.11.2026): белый столбец — подчёркнутые поля нового замера, все прежние
-   замеры — обычными столбцами правее, от нового к старому. В углу вместо «+ Замер» — «Отмена». */
+/* Новый замер вписывают в белый столбец. Как только заполнено поле, в углу появляется «Сохранить». */
 const unit=k=>k==='weight'?'кг':'см';
 function blank(g,values){
  const field=(k,label,last)=>`<input class="hm-in" name="${k}" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="${last?'done':'next'}" aria-label="${label}" value="${esc(values[k]==null?'':values[k])}">`;
  if(g.keys.length===1)return field(g.keys[0],g.name+', '+unit(g.keys[0]),g===GROUPS[GROUPS.length-1]);
  return `<div class="hm-paired">${g.keys.map((k,i)=>`<label><small>${i===0?'Л':'П'}</small>${field(k,g.name+' · '+(i===0?'левая':'правая')+', см')}</label>`).join('')}</div>`;
 }
+const cornerContent={
+ add:`<span>Замер</span>${ICON.plus}`,
+ cancel:`<span>Отмена</span>${ICON.back}`,
+ save:`<span>Сохранить</span>${ICON.plus}`
+};
+const cornerButton=action=>`<button type="button" class="hm-corner-button" data-hm="${action}">${cornerContent[action]}</button>`;
+const hasValues=draft=>Object.values(draft.values).some(value=>value.trim()!=='');
+const draftAction=draft=>(draft.before?draft.changed:hasValues(draft))?'save':'cancel';
+const draftTitle=draft=>draft.target&&!draft.created?'Дополнить':'Новый';
+function dateField(date){
+ return `<label class="hm-date"><b>${validDate(date)?shortDate(date):'Дата'}</b>`+
+  `<input name="date" type="date" required value="${esc(date)}" aria-label="Дата замера"></label>`;
+}
 function draftGrid(list,draft){
  return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Новый замер: впиши значения в белый столбец"><table class="hm-grid"><thead><tr>`+
-  `<th class="hm-label hm-corner" scope="col"><button type="button" class="hm-corner-button" data-hm="cancel">Отмена</button></th>`+
-  `<th class="hm-latest hm-new" scope="col"><span>Новый</span><label class="hm-date"><b>${shortDate(draft.date)}</b><input name="date" type="date" required value="${esc(draft.date)}" aria-label="Дата замера"></label></th>`+
-  list.map((m,i)=>`<th scope="col"${i===0?' class="hm-was-latest"':''}><span class="hm-col-date">${shortDate(m.date)}</span><small>${m.date.slice(0,4)}</small></th>`).join('')+
+  `<th class="hm-label hm-corner" scope="col">${cornerButton(draftAction(draft))}</th>`+
+  `<th class="hm-latest hm-new" scope="col"><span class="hm-draft-title">${draftTitle(draft)}</span>${dateField(draft.date)}</th>`+
+  list.map((m,i)=>`<th scope="col"${i===0?' class="hm-was-latest"':''}><small>${m.date.slice(0,4)}</small><b>${shortDate(m.date)}</b></th>`).join('')+
   `</tr></thead><tbody>`+GROUPS.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${unit(g.keys[0])}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest hm-new">${blank(g,draft.values)}</td>`+
-   list.map((m,i)=>`<td${i===0?' class="hm-was-latest"':''}>${cell(g,m.values)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
+  list.map(m=>`<td>${cell(g,m.values)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
 }
 /* Таблица: названия и последние замеры закреплены, прошлые даты прокручиваются вбок. В углу — «+ Замер»
    (Астамур 19.11.2026: кнопка переехала сюда сверху экрана), на печати там просто «Замер». */
-function grid(cur,past,chosenDate,printed){
- const edit=m=>`<button type="button" class="hm-edit" data-hm="edit" data-id="${m.date}" aria-label="Изменить замер ${dateLabel(m.date)}">${ICON.pencil}</button>`;
- const shown=GROUPS.filter(g=>[cur].concat(past).some(m=>g.keys.some(k=>m.values[k]!=null)));
- const corner=printed?'Замер':`<button type="button" class="hm-corner-button" data-hm="add">${ICON.plus}<span>Замер</span></button>`;
- return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Сравнение замеров: последние закреплены, прошлые прокручиваются"><table class="hm-grid"><thead><tr><th class="hm-label hm-corner" scope="col">${corner}</th><th class="hm-latest" scope="col"><span>Последние</span><b>${shortDate(cur.date)}</b>${edit(cur)}</th>`+
-  past.map(m=>`<th scope="col" class="${m.date===chosenDate?'hm-chosen':''}"><button type="button" data-hm="compare" data-id="${m.date}" aria-pressed="${m.date===chosenDate}">${shortDate(m.date)}<small>${m.date.slice(0,4)}</small></button>${edit(m)}</th>`).join('')+
-  `</tr></thead><tbody>`+shown.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${g.keys[0]==='weight'?'кг':'см'}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest">${cell(g,cur.values)}</td>`+
-   past.map(m=>`<td class="${m.date===chosenDate?'hm-chosen':''}">${cell(g,m.values)}</td>`).join('')+`</tr>`).join('')+`</tbody></table></div>`;
+function grid(cur,past,chosenDate,printed,draft){
+ const active=m=>draft&&draft.before.date===m.date;
+ const dataCell=(g,m)=>active(m)?blank(g,draft.values):cell(g,m.values);
+ const edit=m=>draft?'':`<button type="button" class="hm-edit" data-hm="edit" data-id="${m.date}" aria-label="Изменить замер ${dateLabel(m.date)}">${ICON.pencil}</button>`;
+ const shown=draft?GROUPS:GROUPS.filter(g=>[cur].concat(past).some(m=>g.keys.some(k=>m.values[k]!=null)));
+ const corner=printed?'Замер':cornerButton(draft?draftAction(draft):'add');
+ return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Сравнение замеров: последние закреплены, прошлые прокручиваются"><table class="hm-grid"><thead><tr><th class="hm-label hm-corner" scope="col">${corner}</th><th class="hm-latest" scope="col"><span>${active(cur)?'Правка':'Последние'}</span>${active(cur)?dateField(draft.date):`<b>${shortDate(cur.date)}</b>`}${edit(cur)}</th>`+
+  past.map(m=>`<th scope="col" class="${m.date===chosenDate?'hm-chosen':''}">${active(m)?`<span>Правка</span>${dateField(draft.date)}`:`<button type="button" data-hm="compare" data-id="${m.date}" aria-pressed="${m.date===chosenDate}"><small>${m.date.slice(0,4)}</small><b>${shortDate(m.date)}</b></button>`}${edit(m)}</th>`).join('')+
+  `</tr></thead><tbody>`+shown.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${g.keys[0]==='weight'?'кг':'см'}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest">${dataCell(g,cur)}</td>`+
+   past.map(m=>`<td class="${m.date===chosenDate?'hm-chosen':''}">${dataCell(g,m)}</td>`).join('')+`</tr>`).join('')+`</tbody>${draft?`<tfoot><tr><td class="hm-label"></td>${[cur,...past].map((m,i)=>`<td class="${i===0?'hm-latest':''}">${active(m)?`<button type="button" class="hm-bin" data-hm="delete" aria-label="Удалить замер за ${dateLabel(m.date)}">${ICON.trash}</button>`:''}</td>`).join('')}</tr></tfoot>`:''}</table></div>`;
 }
 
 const ui={period:'first',amplify:3,chosen:null,notice:null,draft:null,focus:null};   // вид экрана переживает перерисовку приложения;
@@ -414,97 +429,188 @@ function mount(box,options){
   const trash=s.trash.length?`<button type="button" class="hm-text" data-hm="trash">Удалённые замеры · ${s.trash.length}</button>`:'';
   if(d&&d.newer)return `<div class="hm-card hm-empty">${esc(NEWER)}</div>`;
   if(ui.draft&&!d)ui.draft=null;   // вышли из аккаунта — вписанное не сохранить
-  const top=cur?`<div class="hm-head"><span class="hm-pill">${ICON.calendar}<span>Последние · ${dateLabel(cur.date)}</span></span></div>`+
-   `<div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div></div>`:'';
-  if(ui.draft)return notice+top+`<form class="hm-form hm-add" novalidate>${draftGrid(s.list.slice().sort((a,b)=>-byDate(a,b)),ui.draft)}`+
-   `<p class="hm-error" role="alert"></p><div class="hm-output"><button class="hm-button hm-primary" type="submit">${ICON.check} Сохранить замер</button></div></form>`;
+  const top=cur?`<div class="hm-periods" role="group" aria-label="С чем сравнить">${PERIODS.map(([k,t])=>`<button type="button" data-hm="period" data-id="${k}" aria-pressed="${!ui.chosen&&ui.period===k}">${t}</button>`).join('')}</div><div class="hm-card hm-outer">${chart(cur,old,ui.amplify)}</div>`:'';
+  const past=cur?s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)):[];
+  if(ui.draft)return notice+top+`<form class="hm-form hm-add" novalidate>${ui.draft.before&&cur?grid(cur,past,old.date,false,ui.draft):draftGrid(s.list.filter(m=>m.date!==ui.draft.saved?.date).sort((a,b)=>-byDate(a,b)),ui.draft)}`+
+   `<p class="hm-error" role="alert"></p></form>`;
   if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p><button type="button" class="hm-button" data-hm="add">+ Замер</button>`+trash;   // пустой экран — текст без рамки, кнопка под ним (мелочи аудита 18.11.2026)
-  const past=s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b));
+
   return notice+top+
-   grid(cur,past,old.date)+
-   trash+
+   grid(cur,past,old.date)+trash+
    `<div class="hm-output"><button type="button" class="hm-button" data-hm="share" aria-haspopup="true" aria-expanded="${!!menu}">${ICON.share} Поделиться</button></div>`;
  }
+ // Place the rounded table below the status area. Its rows scroll natively inside it.
+ function updateTableInset(){
+  const safeTop=parseFloat(getComputedStyle(document.body).paddingTop)||0;
+  box.style.setProperty('--hm-grid-top',(safeTop+16)+'px');
+ }
+ root.addEventListener('resize',updateTableInset);
  function render(){
   if(!alive)return;closeMenu();
-  const wrap=box.querySelector('.hm-grid-wrap'),scroll=wrap?wrap.scrollLeft:0;
+  const wrap=box.querySelector('.hm-grid-wrap'),left=wrap?.scrollLeft||0,top=wrap?.scrollTop||0;
   const active=document.activeElement,lost=!active||active===document.body||!active.isConnected||box.contains(active);
   chart.last=null;box.classList.add('hm');box.innerHTML=view();
-  const next=box.querySelector('.hm-grid-wrap');if(next&&scroll)next.scrollLeft=scroll;
+  updateTableInset();
+  const next=box.querySelector('.hm-grid-wrap');
+  if(next){
+   next.scrollTop=top;next.scrollLeft=left;
+   if(ui.draft&&!ui.draft.before)updateTargetFields(box.querySelector('.hm-add'),ui.draft);
+  }
   flow(chart.last);
   // Перерисовка, пока вписывают новый замер (пришло из облака, приложение перерисовало страницу): курсор остаётся в том же поле.
   const field=ui.draft&&ui.focus&&lost&&box.querySelector('.hm-add [name="'+ui.focus+'"]');
   if(field){field.focus({preventScroll:true});try{const n=field.value.length;field.setSelectionRange(n,n)}catch(e){}}
  }
- /* Новый замер в таблице: «+ Замер» — столбцы плавно уезжают вправо, на место белого проявляется пустой столбец;
-    «Отмена» — обратно. Без анимации, если в системе выключено движение. */
  const calm=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
- const EASE='cubic-bezier(.2,.8,.2,1)',SLIDE=420;
- function shift(){
-  const wrap=box.querySelector('.hm-add .hm-grid-wrap'),first=wrap&&wrap.querySelector('th.hm-new');if(!first)return null;
-  return {wrap,w:first.getBoundingClientRect().width,moving:[...wrap.querySelectorAll('.hm-grid tr>*:not(.hm-label):not(.hm-new)')],
-   fresh:[...wrap.querySelectorAll('.hm-new')],was:[...wrap.querySelectorAll('.hm-was-latest')]};
+ function revealHistory(wrap,previousScroll){
+  const inserted=wrap.querySelector('.hm-was-latest');
+  if(!inserted||calm()){wrap.scrollLeft=0;return}
+  // Сначала совместить старые даты с их прежней позицией. Белые ячейки всё время закреплены над историей.
+  const start=previousScroll+inserted.offsetWidth;
+  wrap.classList.add('hm-moving');
+  const extra=Math.max(0,start-(wrap.scrollWidth-wrap.clientWidth));
+  if(extra)wrap.style.setProperty('--hm-scroll-room',extra+'px');
+  wrap.scrollLeft=start;
+  const initial=wrap.scrollLeft;
+  const started=performance.now();
+  function frame(now){
+   if(!alive||!wrap.isConnected)return;
+   const progress=Math.max(0,Math.min(1,(now-started)/420));
+   const remaining=(1+Math.cos(progress*Math.PI))/2;
+   wrap.scrollLeft=initial*remaining;
+   if(progress<1){requestAnimationFrame(frame);return}
+   wrap.classList.remove('hm-moving');
+   wrap.style.removeProperty('--hm-scroll-room');
+  }
+  requestAnimationFrame(frame);
  }
- function slideOpen(){
-  const s=shift();if(!s)return;s.wrap.scrollLeft=0;if(calm()||typeof requestAnimationFrame!=='function')return;
-  for(const c of s.moving){c.style.transition='none';c.style.transform='translateX('+(-s.w)+'px)'}
-  for(const c of s.was){c.style.background='#eaf7ff';c.style.color='#405183'}
-  for(const c of s.fresh){c.style.transition='none';c.style.opacity='0'}
-  s.wrap.offsetWidth;
-  requestAnimationFrame(()=>{
-   for(const c of s.moving){c.style.transition='transform '+SLIDE+'ms '+EASE+',background-color '+SLIDE+'ms,color '+SLIDE+'ms';c.style.transform=''}
-   for(const c of s.was){c.style.background='';c.style.color=''}
-   for(const c of s.fresh){c.style.transition='opacity 300ms ease 120ms';c.style.opacity=''}
-   setTimeout(()=>{for(const c of s.moving.concat(s.fresh))c.style.transition=''},SLIDE+80);
-  });
- }
- function slideClose(then){
-  const s=shift();if(!s||calm()||typeof requestAnimationFrame!=='function'){then();return}
-  for(const c of s.moving)c.style.transition='transform '+SLIDE+'ms '+EASE+',background-color '+SLIDE+'ms,color '+SLIDE+'ms';
-  for(const c of s.fresh)c.style.transition='opacity 220ms ease';
-  s.wrap.scrollTo?s.wrap.scrollTo({left:0,behavior:'smooth'}):s.wrap.scrollLeft=0;
-  requestAnimationFrame(()=>{
-   for(const c of s.moving)c.style.transform='translateX('+(-s.w)+'px)';
-   for(const c of s.was){c.style.background='#eaf7ff';c.style.color='#405183'}
-   for(const c of s.fresh)c.style.opacity='0';
-  });
-  setTimeout(then,SLIDE);
+ function openEditor(draft){
+  const previous=box.querySelector('.hm-grid-wrap');
+  const previousScroll=previous?.scrollLeft||0;
+  ui.draft=draft;ui.focus=null;render();
+  const editor=box.querySelector('.hm-grid-wrap');
+  if(!editor)return;
+  if(!draft.before)revealHistory(editor,previousScroll);
+  const target=parseFloat(getComputedStyle(editor).scrollMarginTop);
+  const delta=editor.getBoundingClientRect().top-target;
+  if(Math.abs(delta)>2)root.scrollBy({top:delta,behavior:calm()?'instant':'smooth'});
  }
  function startAdd(){
   if(!canWrite())return;
   if(ui.draft){render();return}
-  ui.draft={date:today(),values:{}};ui.focus=null;render();slideOpen();
+  const date=today();
+  openEditor({date,values:{},target:state().list.find(m=>m.date===date)});
  }
- function cancelAdd(){
-  const kept=ui.draft;if(!kept)return;
-  const typed=Object.keys(kept.values).some(k=>String(kept.values[k]).trim()!=='');
-  slideClose(()=>{ui.draft=null;ui.focus=null;render();
-   if(typed)say('Новый замер не сохранён',()=>{if(ui.draft)return;ui.draft=kept;render();slideOpen()})});
+ function closeEditor(){
+  if(!ui.draft)return;
+  const y=root.scrollY;
+  ui.draft=null;ui.focus=null;render();
+  root.scrollTo({top:y,behavior:'instant'});
  }
+ const editorActions='[data-hm="cancel"],[data-hm="delete"],[data-hm="save"]';
+ let pendingWrite=null,skipBlurSave=false;
+ function outsideField(e){
+  skipBlurSave=!!e.target.closest(editorActions);
+  const field=document.activeElement;
+  if(!ui.draft||!field?.matches('.hm-add input'))return;
+  if(skipBlurSave){
+   // Keep focus through the tap. Hiding the iOS keyboard on pointerdown can move
+   // the button before pointerup and prevent its click from reaching the form.
+   if(e.button===0&&e.cancelable)e.preventDefault();
+   return;
+  }
+  if(!e.target.closest('input,label'))field.blur();
+ }
+ document.addEventListener('pointerdown',outsideField,true);
  async function saveAdd(form){
-  try{
-   const d=canWrite();if(!d)return;
-   const fields={};for(const [key] of FIELDS){const i=form.querySelector('input[name="'+key+'"]');if(i)fields[key]=i.value}
-   const s=state(),m=compose(s,String(form.querySelector('input[name=date]').value||''),fields,null);
-   await d.putMany(saveChanges(s,m,null));
-   ui.draft=null;ui.focus=null;ui.chosen=null;render();say('Замер сохранён');
-  }catch(err){fail(err)}
+  const draft=ui.draft;
+  if(!draft)return false;
+  if(pendingWrite)return pendingWrite;
+  if(!draft.dirty)return !!draft.saved;
+  // A newly created entry may move to a different free date. When adding to an
+  // existing day, only update that day's typed fields and keep its other values.
+  const movingRecord=draft.before||draft.created;
+  const before=movingRecord?(draft.saved||draft.before):draft.target;
+  if(!before&&!hasValues(draft))return false;
+  const date=form.elements.date.value,values=draft.values;
+  // Дождаться той же записи, если «Сохранить» нажали во время автосохранения.
+  pendingWrite=Promise.resolve().then(async()=>{
+   try{
+    const d=canWrite();if(!d)return false;
+    const s=state(),m=compose(s,date,values,before);
+    await d.putMany(saveChanges(s,m,before?.date));
+    draft.saved=copy(m);
+    if(!draft.before&&!before)draft.created=true;
+    if(!draft.before&&draft.date===date)draft.target=draft.saved;
+    if(draft.before)draft.before=copy(m);
+    draft.dirty=draft.values!==values||form.elements.date.value!==date;
+    form.querySelector('.hm-error').textContent='';
+    return true;
+   }catch(err){if(ui.draft===draft)fail(err);return false}
+   finally{pendingWrite=null}
+  });
+  return pendingWrite;
+ }
+ async function finishAdd(){
+  const draft=ui.draft;
+  if(!draft)return;
+  do{
+   const form=box.querySelector('.hm-add');
+   if(!form)return;
+   if(!(await saveAdd(form))){
+    const error=form.querySelector('.hm-error').textContent;
+    if(error&&typeof o.toast==='function')o.toast(error);
+    return;
+   }
+  }while(ui.draft===draft&&draft.dirty);
+  if(ui.draft===draft)closeEditor();
+ }
+ function updateTargetFields(form,draft){
+  const existing=draft.created?null:draft.target;
+  form.querySelector('.hm-draft-title').textContent=draftTitle(draft);
+  for(const field of form.querySelectorAll('.hm-in')){
+   const previous=existing?.values[field.name];
+   field.placeholder=previous==null?'':num(previous);
+  }
  }
  function onInput(e){
   const i=e.target;if(!ui.draft||!i.closest||!i.closest('.hm-add')||!i.name)return;
-  if(i.name==='date'){if(validDate(i.value)){ui.draft.date=i.value;const b=i.parentNode.querySelector('b');if(b)b.textContent=shortDate(i.value)}return}
-  if(e.type==='change'&&i.value.includes('.'))i.value=i.value.replace('.',',');   // дробь — через запятую, как в таблице
-  ui.draft.values[i.name]=i.value;
+  const draft=ui.draft;
+  if(i.name==='date'){
+   if(i.value===draft.date)return;
+   draft.date=i.value;
+   i.parentNode.querySelector('b').textContent=validDate(i.value)?shortDate(i.value):'Дата';
+   if(!draft.before){
+    draft.target=state().list.find(m=>m.date===i.value);
+    updateTargetFields(i.form,draft);
+   }
+  }else{
+   if(e.type==='change'&&i.value.includes('.'))i.value=i.value.replace('.',',');
+   if(draft.values[i.name]===i.value)return;
+   draft.values={...draft.values,[i.name]:i.value};
+  }
+  draft.changed=true;draft.dirty=true;
+  const button=i.form.querySelector('.hm-corner-button'),action=draftAction(draft);
+  if(button.dataset.hm!==action){
+   button.dataset.hm=action;
+   button.innerHTML=cornerContent[action];
+  }
  }
  function onFocusIn(e){const i=e.target;if(ui.draft&&i.closest&&i.closest('.hm-add')&&i.name)ui.focus=i.name}
- function onFocusOut(e){const i=e.target;setTimeout(()=>{if(i.isConnected&&ui.focus===i.name&&document.activeElement!==i)ui.focus=null},0)}
+ function onFocusOut(e){
+  const form=e.target.closest('.hm-add');
+  if(!form||!ui.draft||!e.target.name)return;
+  ui.focus=null;
+  if(!skipBlurSave&&!e.relatedTarget?.closest(editorActions))saveAdd(form);
+  skipBlurSave=false;
+ }
  /* Enter — к следующему полю, на последнем — сохранить. */
  function onKey(e){
   const i=e.target;if(e.key!=='Enter'||!i.classList||!i.classList.contains('hm-in'))return;
   e.preventDefault();const all=[...box.querySelectorAll('.hm-add .hm-in')],n=all.indexOf(i);
-  if(n>=0&&n<all.length-1)all[n+1].focus();else{const f=i.closest('form');if(f)saveAdd(f)}
+  if(n>=0&&n<all.length-1)all[n+1].focus();else i.blur()
  }
- function onBoxSubmit(e){const f=e.target;if(!f.classList||!f.classList.contains('hm-add'))return;e.preventDefault();saveAdd(f)}
+ function onBoxSubmit(e){const f=e.target;if(!f.classList||!f.classList.contains('hm-add'))return;e.preventDefault();if(draftAction(ui.draft)==='save')finishAdd()}
  /* Смена периода или масштаба: «Было» плавно перетекает в новую форму (как в макете, 0,56 с). */
  function flow(to){
   if(raf){cancelAnimationFrame(raf);raf=0}
@@ -554,47 +660,30 @@ function mount(box,options){
   d.addEventListener('click',e=>{if(e.target===d){dismiss();return}if(e.target.closest&&e.target.closest('.hm-grip')){e.preventDefault();dismiss();return}onClick(e)});
   d.addEventListener('cancel',e=>{e.preventDefault();dismiss()});
   d.addEventListener('hm-dismiss',dismiss);d.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dismiss()}});
-  d.addEventListener('submit',onSubmit);
   showOver(d);
   return d;
  }
- function openForm(date){
-  if(!canWrite())return;
-  const s=state(),record=date?s.list.find(m=>m.date===date):null;
-  if(date&&!record){say('Замер не найден');return}
-  const input=(key,label)=>`<label class="hm-field">${label}<input name="${key}" aria-label="${(FIELDS.find(x=>x[0]===key)||[0,label])[1]}, ${key==='weight'?'кг':'см'}" type="number" min="1" max="500" step=".1" inputmode="decimal" value="${record&&record.values[key]!=null?record.values[key]:''}" placeholder="—"></label>`;
-  const d=openDialog(record?'Редактирование':'Новый замер',
-   `<form class="hm-form" novalidate><label class="hm-field">Дата<input name="date" type="date" required value="${record?record.date:today()}"></label><div class="hm-fields">`+
-   GROUPS.map(g=>g.keys.length===1?input(g.keys[0],g.name+', '+(g.keys[0]==='weight'?'кг':'см')):`<fieldset class="hm-pair-fields"><legend>${g.name}, см</legend><div class="hm-two">${input(g.keys[0],'Левая')}${input(g.keys[1],'Правая')}</div></fieldset>`).join('')+
-   `</div><p class="hm-error" role="alert"></p><button class="hm-button hm-primary" type="submit">${ICON.check} Сохранить замер</button>`+
-   (record?`<button class="hm-button hm-delete" type="button" data-hm="delete">${ICON.trash} Удалить</button>`:'')+`</form>`);
-  d.hmBefore=record?copy(record):null;
+ async function startEdit(date){
+  if(!canWrite()||ui.draft)return;
+  const record=state().list.find(m=>m.date===date);
+  if(!record){say('Замер не найден');return}
+  const values={};
+  for(const [key] of FIELDS)if(record.values[key]!=null)values[key]=String(record.values[key]).replace('.',',');
+  openEditor({before:copy(record),date,values});
  }
  function fail(e){
   const place=(dialog&&dialog.querySelector('.hm-error'))||(ui.draft&&box.querySelector('.hm-add .hm-error'));
   const text=e&&e.code==='newer'?NEWER:e&&e.code==='signin'?'Войди в аккаунт Happy, чтобы записывать':(e&&e.message)||'Замер не сохранён.';
   if(place)place.textContent=text;else say(text);
  }
- async function onSubmit(e){
-  const form=e.target;if(!form.classList||!form.classList.contains('hm-form'))return;e.preventDefault();
-  try{
-   const d=canWrite();if(!d)return;
-   /* Числовое поле отдаёт пустую строку и для неверного текста: такое поле — ошибка, а не «очистить». */
-   for(const i of form.querySelectorAll('input[type=number]'))if(i.validity&&i.validity.badInput)throw Error('Проверь числовые значения замеров.');
-   const f=new FormData(form),fields={};for(const [key] of FIELDS)if(f.has(key))fields[key]=f.get(key);
-   const s=state(),before=dialog.hmBefore,m=compose(s,String(f.get('date')||''),fields,before);
-   await d.putMany(saveChanges(s,m,before?before.date:null));
-   ui.chosen=null;closeDialog();render();say('Замер сохранён');
-  }catch(err){fail(err)}
- }
  async function remove(){
   try{
-   const d=canWrite(),before=dialog&&dialog.hmBefore;if(!d||!before)return;
+   const d=canWrite(),before=ui.draft?.before;if(!d||!before)return;
    const s=state(),now=s.list.find(m=>m.date===before.date);
    if(!now||JSON.stringify(now)!==JSON.stringify(before))throw Error('Замер изменён на другом устройстве. Открой его заново.');
    const r=removeChanges(s,before.date,'measure-deleted-'+Date.now()+'-'+Math.random().toString(36).slice(2,8));
    await d.putMany(r.changes);
-   ui.chosen=null;closeDialog();render();say('Замер за '+dateLabel(before.date)+' удалён',()=>restore(r.entry.id));
+   ui.draft=null;ui.focus=null;ui.chosen=null;render();say('Замер за '+dateLabel(before.date)+' удалён',()=>restore(r.entry.id));
   }catch(err){fail(err)}
  }
  async function restore(id){
@@ -649,8 +738,9 @@ function mount(box,options){
   const action=b.dataset.hm,id=b.dataset.id;
   if(action==='close'){closeDialog();return}
   if(action==='add'){startAdd();return}
-  if(action==='cancel'){cancelAdd();return}
-  if(action==='edit'){openForm(id);return}
+  if(action==='cancel'){closeEditor();return}
+  if(action==='save'){finishAdd();return}
+  if(action==='edit'){startEdit(id);return}
   if(action==='delete'){remove();return}
   if(action==='restore'){restore(id);return}
   if(action==='trash'){openTrash();return}
@@ -667,11 +757,12 @@ function mount(box,options){
  const HANDLERS={click:onClick,submit:onBoxSubmit,input:onInput,change:onInput,focusin:onFocusIn,focusout:onFocusOut,keydown:onKey};
  const listen=(b,on)=>{for(const [type,fn] of Object.entries(HANDLERS))b[on?'addEventListener':'removeEventListener'](type,fn)};
  listen(box,true);
- const d=doc();if(d&&d.subscribe)off=d.subscribe(()=>{if(alive)render()});
+ const d=doc();if(d&&d.subscribe)off=d.subscribe(()=>{if(alive&&!pendingWrite)render()});
  render();
  const api={render,
   move(next){listen(box,false);box=next;listen(box,true);render()},
-  destroy(){if(!alive)return;alive=false;if(raf)cancelAnimationFrame(raf);clearTimeout(noticeTimer);if(off)off();listen(box,false);closeMenu();closeDialog();if(mounted===api)mounted=null},
+  destroy(){if(!alive)return;alive=false;document.removeEventListener('pointerdown',outsideField,true);root.removeEventListener('resize',updateTableInset);
+   if(raf)cancelAnimationFrame(raf);clearTimeout(noticeTimer);if(off)off();listen(box,false);closeMenu();closeDialog();if(mounted===api)mounted=null},
   get box(){return box},get open(){return !!dialog||!!ui.draft}};
  mounted=api;return api;
 }

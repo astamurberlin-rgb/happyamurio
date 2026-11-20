@@ -371,7 +371,7 @@ with sync_playwright() as p:
     a1.wait_for_selector(".meal-measurements .hm-add .hm-new input[name=waist]")
     a1.fill(".meal-measurements .hm-add input[name=date]", "2026-10-01")
     a1.fill(".meal-measurements .hm-add input[name=waist]", "83")
-    a1.click(".meal-measurements .hm-add button[type=submit]")
+    a1.click(".meal-measurements .hm-add [data-hm=save]")
     a1.wait_for_selector(".meal-measurements .hm-add", state="detached", timeout=4000)
     out["measure_in_sport"] = until(s1, "()=>state.measurements.length===1&&state.measurements[0].values.waist", seconds=8)
 
