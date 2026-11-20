@@ -444,8 +444,8 @@
   },
   {
    "path": "bot.js",
-   "size": 196951,
-   "sha256": "2cfaca668c7e193172371d7a417d4cc00727ef15bf868b86ab2ac7a3297c41ba"
+   "size": 196977,
+   "sha256": "10d33888fe42b4463dd76ecf1ece106d8f67535eae2ba28c0612452408be64d3"
   },
   {
    "path": "bot/household-ru.js",
@@ -494,8 +494,8 @@
   },
   {
    "path": "checks/check-meal-fast.mjs",
-   "size": 20912,
-   "sha256": "a9d426bb35ac2db2f6f7ade0fb8fc615341a705eadbe126c53051375f922d3d5"
+   "size": 20638,
+   "sha256": "03733525242a1a7fcc4b8e9d6990ed4c8cabbee0ad39a8283ca4340a5a9fc462"
   },
   {
    "path": "checks/check-meal-first-time.mjs",
@@ -559,8 +559,8 @@
   },
   {
    "path": "counters.js",
-   "size": 34445,
-   "sha256": "b902c19c0267fa7ef633c00f4d636a89f09f0e3379d2ef41b00cb7b1400fe015"
+   "size": 34458,
+   "sha256": "608dddc169d24daf3815c727ae1abbc8e31af107d95c2795cc9f510593336c2a"
   },
   {
    "path": "desserts.js",
@@ -599,8 +599,8 @@
   },
   {
    "path": "index.html",
-   "size": 647659,
-   "sha256": "1d8e6f51280cf84bc90f94552bf59ab22ceab296352a6412abdfc3e20af185b7"
+   "size": 648056,
+   "sha256": "575b04c1c635700d352fafbc6cbf3298de9efd4dcd95f10a8425c88cc6916d2e"
   },
   {
    "path": "kfct.js",
@@ -629,8 +629,8 @@
   },
   {
    "path": "meal-fast.js",
-   "size": 23766,
-   "sha256": "c3396c840d771bb8af8da7ac4a481250e69b8ea4fc3b89bf76adeb5707724d24"
+   "size": 20576,
+   "sha256": "f07755ebf99930eb052782399426c3135e3430834ca03f50b1756994b2deee7e"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",
@@ -1004,8 +1004,8 @@
   },
   {
    "path": "supplements.js",
-   "size": 56363,
-   "sha256": "6d29d9020e5240bc7bf1fa8494d37f0f013af8b1d1c01aa493900d67884d089d"
+   "size": 55959,
+   "sha256": "9f745c82e6f2f23119e48fe456563144bef0c0d56b6908a7ac68c3bb274e9c10"
   },
   {
    "path": "sw.js",

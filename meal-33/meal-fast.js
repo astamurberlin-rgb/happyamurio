@@ -1,6 +1,8 @@
-/* Happy Meal · фастинг: окна по расписанию, прерывание по записям еды, плашка идущего окна и отметка дня (Meal 33.21).
+/* Happy Meal · фастинг: окна по расписанию, прерывание по записям еды, плашка идущего окна, короткие сообщения и
+ * отметка дня (Meal 33.21).
  *
- * Решения Астамура 20.11.2026 — карточка Todoist «Фастинг Meal · прерывание окна»; плашка — его же слова 20.11.2026 18:11.
+ * Решения Астамура 20.11.2026 — карточка Todoist «Фастинг Meal · прерывание окна»; плашка и сообщения — его же слова
+ * 20.11.2026 в 18:11 и 19:39: то, что длится, — фиолетовая плашка; короткие сообщения — синие, как все сообщения Meal.
  *
  * Расписание — «Настроить приёмы пищи» → «Фастинг» (meal-periods.js): выключатель и окно a–b в минутах от полуночи,
  * окно может идти через полночь. Сохранение, которое меняет фастинг, добавляет версию в историю
@@ -22,14 +24,14 @@
  * broken — прерван записью еды; off — отменён (кнопкой на плашке или выключателем в настройках), выдержанным не считается.
  *
  * На экране:
- * — плашка над нижним меню (#mfBar), по образцу полосы свёрнутой тренировки в Sport (.active-banner): пока окно идёт —
- *   сколько идёт, заполнение по доле пройденного, сколько осталось, «Отменить»; окно прервано — «Фастинг прерван записью
- *   еды» и значок, который убирает эту запись; окно дошло до конца — «Поздравляю! Фастинг закончен успешно» (закрывается
- *   крестиком, об уже закрытом помнит устройство). Отменённое окно — плашки нет. Под листами (диалог, раздел) плашки не
- *   видно: там после записи, прервавшей окно, — короткое сообщение «Фастинг прерван» с «Отменить» (recorded — его зовут
- *   все места записи еды: поиск в разделе, «Подобрано», бот и шорткат «Еда», счётчики, БАДы);
- * — отметка дня под кольцом (#mlFast) — только итог законченного окна: выдержан, прерван или отменён. Пока окно идёт,
- *   о нём говорит плашка.
+ * — плашка над нижним меню (#mfBar) — только пока окно идёт: «Фастинг до 12:00», заполнение по доле пройденного,
+ *   обратный отсчёт «−2:55» и «Отменить». По образцу полосы свёрнутой тренировки в Sport (.active-banner), но ближе к
+ *   меню и позади кнопки микрофона. Окно прервано, отменено или закончилось — плашки нет;
+ * — короткие сообщения (обычный toast): «Фастинг прерван» с «Отменить запись» — сразу после записи, прервавшей окно
+ *   (recorded — его зовут все места записи еды: поиск в разделе, «Подобрано», бот и шорткат «Еда», счётчики, БАДы);
+ *   «Фастинг отменён» с «Вернуть» — после «Отменить» на плашке; «Поздравляю! Фастинг закончен успешно» — окно дошло до
+ *   конца без еды: один раз на окно, в момент конца или при первом открытии Meal после него (помнит устройство);
+ * — отметка дня под кольцом (#mlFast) — итог окна: выдержан, прерван или отменён. Пока окно идёт, о нём говорит плашка.
  * Закрытый Meal ничего не присылает: всё видно при открытии.
  * — Claude · 20.11.2026 */
 var MealFast=(function(){
@@ -131,20 +133,18 @@ function ended(db,now,entries){
   var next=windowOf(list,shift(best.date,1),cut); if(next&&next.start<=now) return null;
   return judge(best,listFor(best,entries),now).state==='kept'?best:null;
 }
-/* отметка дня словами: b — главное (жирным), n — продолжение строки */
+/* отметка дня словами — итог окна: b — главное (жирным), n — продолжение строки. Окно идёт или не началось — null */
 function words(st){
   var w=st.win;
   if(st.state==='broken') return {b:'Фастинг прерван',n:(dateOf(st.at)!==w.date?' вчера':'')+' в '+clock(st.at)+(st.by.name?' · '+st.by.name:'')};
   if(st.state==='kept') return {b:'Фастинг выдержан',n:' · '+clock(st.from)+'–'+clock(w.end)};
   if(st.state==='off') return {b:'Фастинг отменён',n:(dateOf(st.at)!==w.date?' вчера':'')+' в '+clock(st.at)};
-  if(st.state==='run') return {b:'Фастинг идёт',n:' до '+clock(w.plan)};
-  return {b:'Фастинг',n:' с '+clock(w.start)+' до '+clock(w.plan)};
+  return null;
 }
-/* плашка идущего окна: сколько идёт, сколько осталось (ч:мм) и доля пройденного */
+/* плашка идущего окна: до скольки оно по расписанию, сколько осталось (ч:мм) и доля пройденного */
 function progress(st,now){
-  var total=Math.max(1,Math.round((st.win.plan-st.from)/60000)), gone=Math.min(total,Math.max(0,Math.floor((now-st.from)/60000)));
-  var hm=function(m){ return Math.floor(m/60)+':'+pad(m%60) };
-  return {gone:hm(gone),left:hm(total-gone),share:gone/total};
+  var total=Math.max(1,Math.round((st.win.plan-st.from)/60000)), gone=Math.min(total,Math.max(0,Math.floor((now-st.from)/60000))), left=total-gone;
+  return {till:clock(st.win.plan),left:Math.floor(left/60)+':'+pad(left%60),share:gone/total};
 }
 function food(x){ try{ return (MealProducts.forItem(x,FOODS,DB)||FOODS[x.fid]||{}).n||'' }catch(e){ return '' } }
 /* записи дня для фастинга из дневника страницы: еда и приёмы БАДов, у которых есть время. Берёт DB, FOODS, mlNormTime,
@@ -161,29 +161,15 @@ function rows(date){
   });
   return out;
 }
-/* записи, которые прервали окно в его первую «прерванную» минуту: их убирает значок на плашке (одна диктовка или одно
-   сохранение — одно время еды) */
-function breakers(st,entries){
-  return st&&st.state==='broken'?listFor(st.win,entries).filter(function(x){ return x.breaks&&x.t===st.at }):[];
-}
-/* записи дня убрать по номерам; ответ — что убрано и откуда, чтобы вернуть (restore) */
+/* записи дня убрать по номерам — отмена нажатия счётчика из сообщения «Фастинг прерван» */
 function remove(records){
-  var ids={}, taken=[]; (records||[]).forEach(function(r){ ids[r.id]=1 });
+  var ids={}; (records||[]).forEach(function(r){ ids[r.id]=1 });
   Object.keys(DB.days||{}).forEach(function(d){
-    var e=DB.days[d]; if(!e||!e.items||!e.items.some(function(x){ return ids[x.id] })) return;
-    e.items.forEach(function(x,i){ if(ids[x.id]) taken.push({date:d,i:i,item:x}) });
-    e.items=e.items.filter(function(x){ return !ids[x.id] });
-  });
-  return taken;
-}
-function restore(taken){
-  (taken||[]).slice().sort(function(x,y){ return x.i-y.i }).forEach(function(r){
-    var e=DB.days[r.date]||(DB.days[r.date]={items:[]}); if(!e.items) e.items=[];
-    if(!e.items.some(function(x){ return x.id===r.item.id })) e.items.splice(Math.min(r.i,e.items.length),0,r.item);
+    var e=DB.days[d]; if(e&&e.items&&e.items.some(function(x){ return ids[x.id] })) e.items=e.items.filter(function(x){ return !ids[x.id] });
   });
 }
 var api={SINCE:SINCE,versions:versions,record:record,stops:stops,windowOf:windowOf,judge:judge,status:status,live:live,broke:broke,ended:ended,
-  words:words,progress:progress,breakers:breakers,at:at,shift:shift,dateOf:dateOf,clock:clock,rows:rows,remove:remove,restore:restore};
+  words:words,progress:progress,at:at,shift:shift,dateOf:dateOf,clock:clock,rows:rows,remove:remove};
 if(typeof document==='undefined') return api;
 
 /* ═══════════ НА ЭКРАНЕ ═══════════ */
@@ -192,54 +178,36 @@ var ICON={
   kept:SVG('<circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.3 2.6 2.6 5-5.4"/>'),
   broken:SVG('<circle cx="12" cy="12" r="8.5"/><path d="M8.6 8.6l6.8 6.8"/>'),
   off:SVG('<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/>'),
-  run:SVG('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
-  undo:SVG('<path d="M9.5 13.5 5 9l4.5-4.5"/><path d="M5.5 9H14a5 5 0 0 1 0 10h-3"/>'),
-  close:SVG('<path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/>')};
+  run:SVG('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>')};
 function signedIn(){ return typeof MealData!=='undefined'&&MealData.signedIn() }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function guard(){ return typeof writeGuard==='function'&&writeGuard() }
-function seen(){ try{ return +localStorage.getItem(DONE)||0 }catch(e){ return 0 } }
 
-/* отметка дня под кольцом — итог законченного окна; об идущем говорит плашка */
+/* отметка дня под кольцом — итог окна: выдержан, прерван или отменён; об идущем говорит плашка */
 function paint(){
   var el=document.getElementById('mlFast'); if(!el) return;
-  var st=null, now=Date.now(); try{ st=signedIn()?status(DB,curDate,now,rows):null }catch(e){ st=null }
-  if(st&&!(st.state==='kept'||st.state==='off'||(st.state==='broken'&&now>=st.win.plan))) st=null;
-  el.hidden=!st; el.dataset.state=st?st.state:'';
-  if(!st){ el.innerHTML=''; return }
-  var w=words(st); el.innerHTML=ICON[st.state]+'<span><b>'+esc(w.b)+'</b>'+esc(w.n)+'</span>';
+  var st=null, w=null; try{ st=signedIn()?status(DB,curDate,Date.now(),rows):null; w=st&&words(st) }catch(e){ w=null }
+  el.hidden=!w; el.dataset.state=w?st.state:'';
+  el.innerHTML=w?ICON[st.state]+'<span><b>'+esc(w.b)+'</b>'+esc(w.n)+'</span>':'';
 }
 
-/* ── плашка над нижним меню ── */
-var shownKind='';
-function view(now){
-  if(!signedIn()) return null;
-  var st=null; try{ st=live(DB,now,rows) }catch(e){ return null }
-  if(st&&(st.state==='run'||st.state==='broken')) return {kind:st.state,st:st};
-  var w=null; try{ w=ended(DB,now,rows) }catch(e){ return null }
-  return w&&w.plan>seen()?{kind:'kept',win:w}:null;
-}
+/* ── плашка над нижним меню: только пока окно идёт ── */
+var shown=false;
 function bar(){
   var el=document.getElementById('mfBar'); if(!el) return;
-  var now=Date.now(), v=view(now), kind=v?v.kind:'';
-  el.hidden=!v; document.body.classList.toggle('mfOn',!!v);
-  if(!v){ el.innerHTML=''; el.dataset.state=''; shownKind=''; return }
-  if(kind==='run'){
-    var p=progress(v.st,now);
-    if(shownKind!=='run') el.innerHTML='<i class="mfFill"></i><span class="mfIc">'+ICON.run+'</span><b class="mfName">Фастинг</b><span class="mfGone"></span>'+
-      '<span class="mfLeft"><span class="mfWord">осталось </span><span></span></span><button type="button" class="mfAct" data-mf="cancel">Отменить</button>';
-    el.querySelector('.mfFill').style.width=(p.share*100).toFixed(2)+'%';
-    el.querySelector('.mfGone').textContent=p.gone; el.querySelector('.mfLeft').lastChild.textContent=p.left;
-    el.setAttribute('aria-label','Фастинг идёт '+p.gone+', осталось '+p.left);
-  } else if(shownKind!==kind){
-    el.removeAttribute('aria-label');
-    el.innerHTML=kind==='broken'
-      ?'<span class="mfIc">'+ICON.broken+'</span><b class="mfText">Фастинг прерван записью еды</b><button type="button" class="mfAct" data-mf="undo" aria-label="Отменить запись, которая прервала фастинг">'+ICON.undo+'</button>'
-      :'<span class="mfIc">'+ICON.kept+'</span><b class="mfText">Поздравляю! Фастинг закончен успешно</b><button type="button" class="mfAct" data-mf="close" aria-label="Закрыть">'+ICON.close+'</button>';
-  }
-  el.dataset.state=kind; shownKind=kind;
+  var now=Date.now(), st=null; try{ st=signedIn()?live(DB,now,rows):null }catch(e){ st=null }
+  var on=!!st&&st.state==='run';
+  el.hidden=!on; document.body.classList.toggle('mfOn',on);
+  if(!on){ el.innerHTML=''; el.removeAttribute('aria-label'); shown=false; return }
+  if(!shown) el.innerHTML='<i class="mfFill"></i><span class="mfIc">'+ICON.run+'</span><b class="mfName">Фастинг</b><span class="mfTill"></span>'+
+    '<span class="mfLeft"></span><button type="button" class="mfAct" data-mf="cancel">Отменить</button>';
+  var p=progress(st,now);
+  el.querySelector('.mfFill').style.width=(p.share*100).toFixed(2)+'%';
+  el.querySelector('.mfTill').textContent='до '+p.till; el.querySelector('.mfLeft').textContent='\u2212'+p.left;
+  el.setAttribute('aria-label','Фастинг до '+p.till+', осталось '+p.left);
+  shown=true;
 }
-/* «Отменить» на идущей плашке: окно закончилось сейчас; расписание остаётся включённым */
+/* «Отменить» на плашке: окно закончилось сейчас; расписание остаётся включённым */
 function cancel(){
   if(guard()) return;
   var now=Date.now(), st=null; try{ st=live(DB,now,rows) }catch(e){}
@@ -253,32 +221,21 @@ function cancel(){
     save(); renderDay();
   });
 }
-/* значок на плашке «Фастинг прерван записью еды»: убрать эту запись — окно снова идёт; следом обычное «Убрано · Вернуть» */
-function undoBreak(){
-  if(guard()) return;
-  var st=null; try{ st=live(DB,Date.now(),rows) }catch(e){}
-  var hit=breakers(st,rows); if(!hit.length){ tick(); return }
-  var sup=hit.filter(function(x){ return String(x.id).indexOf('sup:')===0 }).map(function(x){ return x.id.slice(4) });
-  var S=window.HappySupplements, kept=sup.length&&S&&S.getEntries?S.getEntries().filter(function(r){ return sup.indexOf(r.id)>=0 }):[];
-  var taken=remove(hit.filter(function(x){ return String(x.id).indexOf('sup:')!==0 }));
-  var again=function(){ try{ renderAll() }catch(e){ tick() } };
-  save(); again();
-  if(kept.length&&S.removeEntries) S.removeEntries(sup).then(again,function(e){ toast(e&&e.message||'Не получилось убрать запись') });
-  toast('Убрано: '+(hit[0].name||'запись')+(hit.length>1?' и ещё '+(hit.length-1):''),function(){
-    if(guard()) return;
-    restore(taken); save(); again();
-    if(kept.length&&S.addEntries) S.addEntries(kept).then(again,function(){});
-  });
-}
 document.addEventListener('click',function(e){
-  var b=e.target.closest&&e.target.closest('#mfBar [data-mf]'); if(!b) return;
-  var act=b.dataset.mf;
-  if(act==='cancel') cancel();
-  else if(act==='undo') undoBreak();
-  else if(act==='close'){ var w=null; try{ w=ended(DB,Date.now(),rows) }catch(x){} if(w){ try{ localStorage.setItem(DONE,String(w.plan)) }catch(x){} } tick() }
+  if(e.target.closest&&e.target.closest('#mfBar [data-mf="cancel"]')) cancel();
 });
+/* окно дошло до конца без еды — поздравление: одно на окно */
+function done(){
+  if(!signedIn()||(typeof RO!=='undefined'&&RO)) return;
+  var w=null; try{ w=ended(DB,Date.now(),rows) }catch(e){ return }
+  if(!w) return;
+  var seen=0; try{ seen=+localStorage.getItem(DONE)||0 }catch(e){}
+  if(w.plan<=seen) return;
+  try{ localStorage.setItem(DONE,String(w.plan)) }catch(e){}
+  setTimeout(function(){ toast('Поздравляю! Фастинг закончен успешно',null,null,6000) },300);
+}
 
-/* перерисовать в момент, когда окно начинается или заканчивается; время на идущей плашке — раз в 20 секунд */
+/* перерисовать в момент, когда окно начинается или заканчивается; отсчёт на идущей плашке — раз в 20 секунд */
 var timer=null;
 function plan(){
   clearTimeout(timer); timer=null;
@@ -287,23 +244,19 @@ function plan(){
   [today,shift(today,1)].forEach(function(d){ var w=windowOf(list,d,cut); if(w) [w.start,w.end,w.plan].forEach(function(x){ if(x>t&&x<next) next=x }) });
   if(next<Infinity) timer=setTimeout(tick,Math.min(next-t+500,6*3600e3));
 }
-function tick(){ try{ paint(); bar() }catch(e){} plan() }
-setInterval(function(){ if(shownKind==='run'&&document.visibilityState!=='hidden'){ try{ bar() }catch(e){} } },20000);
+function tick(){ try{ paint(); bar(); done() }catch(e){} plan() }
+setInterval(function(){ if(shown&&document.visibilityState!=='hidden'){ try{ bar() }catch(e){} } },20000);
 document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') tick() });
 document.addEventListener('happy-supplements-changed',function(){ tick() });
 
-/* записи records ([{date, id}]) только что записаны; undo — отменить эту запись. Прервали идущее окно, и плашка на
-   экране — о прерывании говорит она. Плашки не видно (открыт лист) или прервано уже прошедшее окно — короткое
-   сообщение «Фастинг прерван» с «Отменить». Ответ: true — будет сообщение */
+/* записи records ([{date, id}]) только что записаны; undo — отменить эту запись. Прервали окно — короткое сообщение
+   «Фастинг прерван» с «Отменить запись» (поверх сообщения о самой записи: отмена та же). Ответ: true — сообщение будет */
 function recorded(records,undo,opts){
   if(!records||!records.length||!signedIn()) return false;
   var days=[]; try{ days=broke(DB,records,Date.now(),rows) }catch(e){ return false }
   tick();
   if(!days.length) return false;
-  var el=document.getElementById('mfBar'), visible=!!el&&!el.hidden&&!document.body.classList.contains('sheet');
-  var st=null; try{ st=live(DB,Date.now(),rows) }catch(e){}
-  if(visible&&st&&st.state==='broken'&&days.indexOf(st.win.date)>=0) return false;
-  setTimeout(function(){ toast('Фастинг прерван',undo||null,'Отменить') },(opts&&opts.later)||0);
+  setTimeout(function(){ toast('Фастинг прерван',undo||null,'Отменить запись') },(opts&&opts.later)||0);
   return true;
 }
 api.paint=paint; api.bar=bar; api.tick=tick; api.recorded=recorded;

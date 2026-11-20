@@ -860,9 +860,11 @@ body.sheet:not(.chatOn) .fab .icX{display:block}
 .mlKbR .pc{min-width:31px;text-align:right;font-size:12.5px;font-weight:600;color:var(--muted)}
 .mlKbR .bar{grid-column:2/-1;height:6px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.24);overflow:hidden}
 .mlKbR .bar i{display:block;height:100%;border-radius:3px}
-/* Meal 33.21 · плашка фастинга над нижним меню (meal-fast.js) — как полоса свёрнутой тренировки в Sport (.active-banner):
-   то же место, высота 48, скругление 16, цвет главной кнопки. Заполнение — светлее, слева направо по доле пройденного */
-.mfBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(86px + env(safe-area-inset-bottom));z-index:9;
+/* Meal 33.21 · плашка идущего фастинга над нижним меню (meal-fast.js) — по образцу полосы свёрнутой тренировки в Sport
+   (.active-banner): высота 48, скругление 16, цвет главной кнопки. Стоит ближе к меню — зазор 6 — и позади кнопки
+   микрофона: кнопка заходит на нижний край плашки, текста не касается. Заполнение — светлее, слева направо по доле
+   пройденного. Фиолетовое — то, что длится; короткие сообщения о фастинге — обычный синий .toast */
+.mfBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(80px + env(safe-area-inset-bottom));z-index:9;
   width:min(calc(100% - 40px),420px);min-height:48px;display:flex;align-items:center;gap:8px;padding:0 2px 0 15px;overflow:hidden;
   border-radius:16px;border:1px solid rgba(255,255,255,.42);background:color-mix(in srgb,var(--fab) 93%,transparent);color:#fff;
   font-size:14px;line-height:17px;box-shadow:0 8px 20px rgba(42,24,72,.27);transition:opacity .2s}
@@ -873,21 +875,20 @@ body.fan .mfBar{opacity:0;pointer-events:none}
 .mfIc{flex:none;display:grid}
 .mfBar svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .mfName{flex:none;font-weight:700}
-.mfGone,.mfLeft{flex:none;white-space:nowrap;font-variant-numeric:tabular-nums}
-.mfGone{font-weight:600}
+.mfTill,.mfLeft{flex:none;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mfTill{font-weight:600}
 .mfLeft{margin-left:auto;font-size:12px;color:rgba(255,255,255,.86)}
-.mfText{flex:1 1 auto;min-width:0;padding:6px 0;font-weight:600}
 .mfAct{flex:none;min-width:44px;min-height:46px;padding:0 13px;display:grid;place-items:center;border:0;background:none;color:#fff;
   font:inherit;font-size:12px;font-weight:600;-webkit-tap-highlight-color:transparent}
 .mfAct:focus-visible{outline:2px solid #fff;outline-offset:-4px;border-radius:12px}
-/* узкий телефон: сначала уходит значок, потом слово «осталось» (вместо него минус перед временем) */
-@media (max-width:389px){.mfBar[data-state=run] .mfIc{display:none}}
-@media (max-width:359px){.mfWord{display:none}.mfLeft::before{content:'−'}}
+@media (max-width:339px){.mfBar{gap:6px;padding-left:12px}.mfIc{display:none}}   /* узкий телефон: без значка и плотнее */
 @media (prefers-reduced-motion:reduce){.mfBar,.mfBar .mfFill{transition:none}}
 /* с плашкой короткие сообщения встают над ней, а конец страницы не прячется под неё */
-body.mfOn:not(.sheet) .toast{bottom:calc(146px + env(safe-area-inset-bottom))}
-body.mfOn .screen:not(.mlSheet){padding-bottom:190px}
-/* отметка фастинга дня (meal-fast.js): одна строка между кольцом и приёмами пищи — итог законченного окна */
+body.mfOn:not(.sheet) .toast{bottom:calc(140px + env(safe-area-inset-bottom))}
+body.mfOn .screen:not(.mlSheet){padding-bottom:184px}
+/* узкий телефон: «Фастинг прерван · Отменить запись» помещается целиком, без многоточия */
+@media (max-width:339px){.toast.tAct{max-width:calc(100vw - 24px)}}
+/* отметка фастинга дня (meal-fast.js): одна строка между кольцом и приёмами пищи — итог окна: выдержан, прерван, отменён */
 .mlFast{display:flex;align-items:center;gap:8px;margin:-8px 6px 16px;font-size:14px;font-weight:400;line-height:20px;color:var(--muted)}
 .mlFast[hidden]{display:none}
 .mlFast svg{flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -4433,7 +4434,7 @@ function applyFind(fid){
     var row=document.querySelector('[data-screen="sec"] .mlItem[data-id="'+it.id+'"]'); if(row) row.scrollIntoView({block:'center',behavior:'smooth'});
     var back=function(){ e.items=e.items.filter(function(x){ return x.id!==it.id }); save(); renderSec(); renderDay() };
     toast('Добавлено в «'+(S?S.t:'')+'»: '+f.n,back);
-    if(typeof MealFast!=='undefined') MealFast.recorded([{date:curDate,id:it.id}],back);   // прервала окно — «Фастинг прерван» с «Отменить»
+    if(typeof MealFast!=='undefined') MealFast.recorded([{date:curDate,id:it.id}],back);   // прервала окно — «Фастинг прерван» с «Отменить запись»
     return;
   } else {
     var keys=Object.keys(f.por||{}), u=defUnit(f), q=u==='г'?100:1;

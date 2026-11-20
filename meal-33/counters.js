@@ -169,7 +169,7 @@
       const tid=F.tapId('meal');
       doc.put(tid,value).catch(root.MealData.report);
       neighbors();root.save();root.renderDay();root.toast(c.t+' +'+root.portTxt(c));
-      /* Meal 33.21: нажатие прервало окно фастинга — «Фастинг прерван» с «Отменить»: убрать это нажатие (meal-fast.js) */
+      /* Meal 33.21: нажатие прервало окно фастинга — «Фастинг прерван» с «Отменить запись»: убрать это нажатие (meal-fast.js) */
       const rec={date:root.curDate,id:'nb:'+tid};
       if(root.MealFast)root.MealFast.recorded([rec],()=>{if(root.writeGuard())return;root.MealFast.remove([rec]);root.save();root.renderAll()});
     };

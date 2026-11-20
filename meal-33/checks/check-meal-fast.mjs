@@ -1,7 +1,7 @@
 /* Meal 33.21 · фастинг (meal-fast.js) по решениям Астамура 20.11.2026: окно по расписанию, прерывание по записям,
-   итог дня (выдержан, прерван, отменён), плашка идущего окна (сколько идёт, сколько осталось, доля), отмена окна кнопкой,
-   значок «убрать запись, которая прервала», поздравление. Правило «прерывает ли запись» — настоящее mlBreaksFast из
-   index.html, запись настроек — настоящий MealPeriods.apply. Время — московское.
+   итог дня под кольцом (выдержан, прерван, отменён), плашка идущего окна (до скольки, сколько осталось, доля), отмена
+   окна кнопкой, отмена записи из сообщения «Фастинг прерван», поздравление. Правило «прерывает ли запись» — настоящее
+   mlBreaksFast из index.html, запись настроек — настоящий MealPeriods.apply. Время — московское.
    Запуск: node meal-33/checks/check-meal-fast.mjs */
 process.env.TZ='Europe/Moscow';
 import {readFile} from 'node:fs/promises';
@@ -42,8 +42,8 @@ ok('окно 20:00–12:00 через полночь — одно окно, от
  assert.equal(state('2026-11-21',T('2026-11-20T19:00')),'plan');assert.equal(state('2026-11-21',T('2026-11-20T20:00')),'run');
  assert.equal(state('2026-11-21',T('2026-11-21T11:59')),'run');assert.equal(state('2026-11-21',T('2026-11-21T12:00')),'kept','без еды — выдержан');
  assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T13:00')))),{b:'Фастинг выдержан',n:' · 20:00–12:00'});
- assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T09:00')))),{b:'Фастинг идёт',n:' до 12:00'});
- assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-20T18:00')))),{b:'Фастинг',n:' с 20:00 до 12:00'});
+ assert.equal(F.words(st('2026-11-21',T('2026-11-21T09:00'))),null,'пока окно идёт, отметки под кольцом нет — о нём говорит плашка');
+ assert.equal(F.words(st('2026-11-21',T('2026-11-20T18:00'))),null,'окно ещё не началось — отметки нет');
 });
 ok('порция 4 ккал не прерывает, 5 ккал — прерывает; вода литр и чёрный кофе литр — никогда',()=>{
  const now=T('2026-11-21T13:00');
@@ -102,7 +102,7 @@ ok('выключил фастинг посреди окна и сохранил 
  const w1=plain(F.windowOf(F.versions(c.DB),'2026-11-21'));assert.deepEqual(w1.segs,[[T('2026-11-20T20:00'),T('2026-11-21T08:00')],[T('2026-11-21T10:40'),T('2026-11-21T12:00')]],'включил в 10:40 — второй отрезок с этой минуты');
  c.DB.days['2026-11-21'].items.push(item('pizza',100,'10:30'));
  const r=F.live(c.DB,T('2026-11-21T11:00'),F.rows);assert.deepEqual([r.state,r.from],['run',T('2026-11-21T10:40')],'еда между выключением и включением не в счёт, окно идёт с 10:40');
- assert.deepEqual(plain(F.progress(r,T('2026-11-21T11:00'))),{gone:'0:20',left:'1:00',share:0.25});
+ assert.deepEqual(plain(F.progress(r,T('2026-11-21T11:00'))),{till:'12:00',left:'1:00',share:0.25});
  assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T12:00')))),{b:'Фастинг выдержан',n:' · 10:40–12:00'},'итог — по последнему непрерывному отрезку');
  assert.equal(F.ended(c.DB,T('2026-11-21T12:05'),F.rows).plan,T('2026-11-21T12:00'));
  const d3=P.draft(c.DB);P.apply(c.DB,d3,()=>false,'2026-11-21',T('2026-11-21T23:00'));assert.equal(c.DB.mealRules.fastVersions.length,3,'сохранили без изменений фастинга — новой версии нет');
@@ -129,26 +129,23 @@ ok('«Отменить» на плашке: окно закончилось се
  c.DB.mealRules.fastStops=[];assert.equal(state('2026-11-21',T('2026-11-21T03:00')),'run','«Вернуть» — отмены нет, окно идёт');
  c.DB.mealRules.fastStops=[stop,'x',-5,1.5];assert.deepEqual(plain(F.stops(c.DB)),[stop],'негодные отмены не читаются');
 });
-ok('плашка идущего окна: сколько идёт, сколько осталось и доля; прервано — какие записи убирает значок',()=>{
+ok('плашка идущего окна: до скольки, сколько осталось и доля; прервано или закончилось — плашки нет, отметка сразу',()=>{
  diary();
  const at=(t)=>F.live(c.DB,T(t),F.rows);
  assert.equal(at('2026-11-20T19:59'),null,'до начала окна плашки нет');
  let r=at('2026-11-21T07:30');assert.deepEqual([r.state,r.win.date,r.from],['run','2026-11-21',T('2026-11-20T20:00')]);
- assert.deepEqual(plain(F.progress(r,T('2026-11-21T07:30'))),{gone:'11:30',left:'4:30',share:690/960});
- assert.deepEqual(plain(F.progress(at('2026-11-20T20:00'),T('2026-11-20T20:00'))),{gone:'0:00',left:'16:00',share:0});
- assert.deepEqual(plain(F.progress(at('2026-11-21T11:59'),T('2026-11-21T11:59:40'))),{gone:'15:59',left:'0:01',share:959/960});
+ assert.deepEqual(plain(F.progress(r,T('2026-11-21T07:30'))),{till:'12:00',left:'4:30',share:690/960});
+ assert.deepEqual(plain(F.progress(at('2026-11-20T20:00'),T('2026-11-20T20:00'))),{till:'12:00',left:'16:00',share:0});
+ assert.deepEqual(plain(F.progress(at('2026-11-21T11:59'),T('2026-11-21T11:59:40'))),{till:'12:00',left:'0:01',share:959/960});
  assert.equal(at('2026-11-21T12:00'),null,'окно закончилось — идущего нет');
- const soup=item('pizza',200,'23:30'),juice=item('latte',200,'23:30'),tea=item('tea',200,'23:30'),later=item('pizza',100,'23:50');
- c.DB.days['2026-11-20']={items:[tea,soup,juice,later]};SUPP=[{id:'s9',date:'2026-11-20',time:'23:30',breaksFast:true,name:'Протеин'}];
- r=at('2026-11-21T07:30');assert.equal(r.state,'broken');
- assert.deepEqual(plain(F.breakers(r,F.rows).map(x=>x.id)),[soup.id,juice.id,'sup:s9'],'значок убирает то, что прервало в первую минуту: еду и БАД; чай и поздняя запись остаются');
- const taken=F.remove(F.breakers(r,F.rows));SUPP=[];
- assert.deepEqual(plain(c.DB.days['2026-11-20'].items.map(x=>x.id)),[tea.id,later.id]);
- assert.equal(at('2026-11-21T07:30').state,'broken','осталась запись в 23:50 — окно всё ещё прервано, теперь ею');assert.deepEqual(plain(F.breakers(at('2026-11-21T07:30'),F.rows).map(x=>x.id)),[later.id]);
- F.restore(taken);assert.deepEqual(plain(c.DB.days['2026-11-20'].items.map(x=>x.id)),[tea.id,soup.id,juice.id,later.id],'«Вернуть» ставит записи на прежние места');
- F.restore(taken);assert.equal(c.DB.days['2026-11-20'].items.length,4,'повторное «Вернуть» записей не удваивает');
- F.remove([{id:soup.id},{id:juice.id},{id:later.id}]);assert.equal(at('2026-11-21T07:30').state,'run','убрал всё, что прерывало, — окно идёт');
- assert.deepEqual(plain(F.breakers(at('2026-11-21T07:30'),F.rows)),[]);
+ const pizza=item('pizza',200,'23:30'),tea=item('tea',200,'23:30'),later=item('pizza',100,'23:50');
+ c.DB.days['2026-11-20']={items:[tea,pizza,later]};SUPP=[{id:'s9',date:'2026-11-20',time:'23:40',breaksFast:true,name:'Протеин'}];
+ r=at('2026-11-21T07:30');assert.deepEqual([r.state,r.by.id],['broken',pizza.id],'прервано — идущего окна нет; прервала первая запись');
+ assert.deepEqual(plain(F.words(st('2026-11-21',T('2026-11-21T07:30')))),{b:'Фастинг прерван',n:' вчера в 23:30 · Пицца'},'отметка под кольцом — сразу, не дожидаясь конца окна');
+ F.remove([{id:pizza.id}]);assert.equal(at('2026-11-21T07:30').by.id,'sup:s9','убрал первую запись — окно прервано следующей: БАДом в 23:40');
+ SUPP=[];assert.equal(at('2026-11-21T07:30').by.id,later.id);
+ F.remove([{id:later.id}]);assert.equal(at('2026-11-21T07:30').state,'run','убрал всё, что прерывало, — окно идёт');
+ assert.deepEqual(plain(c.DB.days['2026-11-20'].items.map(x=>x.id)),[tea.id],'чай на месте');
 });
 ok('поменял время окна посреди окна — оно идёт по новому времени, начало прежнее',()=>{
  diary();const d=P.draft(c.DB);d.rules.fast.b=780;P.apply(c.DB,d,()=>false,'2026-11-21',T('2026-11-21T08:00'));
