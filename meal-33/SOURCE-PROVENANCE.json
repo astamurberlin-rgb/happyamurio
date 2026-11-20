@@ -428,14 +428,24 @@
    "sha256": "087feafc7f39d8fc5b025786f2311204ff117112195a3578b0134cdf2d4de409"
   },
   {
+   "path": "bot-replacement.css",
+   "size": 3197,
+   "sha256": "4f34a8b21be54ae9ff29b1e8684526ac2487d2bf1b393177c193c38113765f48"
+  },
+  {
+   "path": "bot-replacement.js",
+   "size": 6670,
+   "sha256": "be6a0f8bb36301165cb95beb34cce0b73ca139473c01a448faab701e5680976d"
+  },
+  {
    "path": "bot-speech.js",
    "size": 25208,
    "sha256": "b523478369544753df5b3a0db6f678f211bbdd3f400a2582c215e183e58f0677"
   },
   {
    "path": "bot.js",
-   "size": 155814,
-   "sha256": "659c07d829c1e7144bbab7cddcfbb37e3a1bb6e6e09f35d233b37a990a12abdc"
+   "size": 195522,
+   "sha256": "15d2f44390898918d723da61b693f3b03ee9a4469f7fea692ea4f55569038bcf"
   },
   {
    "path": "bot/household-ru.js",
@@ -539,8 +549,8 @@
   },
   {
    "path": "controls.js",
-   "size": 16840,
-   "sha256": "2f992b0f3a750252697384ebd30bd206d3ab1c2f39189a43c4efc8c639a276e8"
+   "size": 17663,
+   "sha256": "5f4f371dd5a99fac4cff085df7211378022bc211e21e7c475cb29efa5617a3e5"
   },
   {
    "path": "counters.js",
@@ -579,8 +589,8 @@
   },
   {
    "path": "index.html",
-   "size": 625887,
-   "sha256": "7248aa8a135f21dbde001a6a2f26b38ed9f78866e83bff3b0d066a68e525edd3"
+   "size": 645074,
+   "sha256": "670f8c9288549b28a534a336a050a0c8467ee6802ea7aea354791d7a183e2a4d"
   },
   {
    "path": "kfct.js",
@@ -794,13 +804,13 @@
   },
   {
    "path": "release-notes.js",
-   "size": 62820,
-   "sha256": "a82606e6f19999ee9bd6449dc2974110ad1eac98e0f1cf8e8595b9a7fd17554e"
+   "size": 64261,
+   "sha256": "84a3fd8c225132f227cc6dea3765ed54b2bad546db12e7f1cddc2793db13f6b3"
   },
   {
    "path": "report.css",
-   "size": 10371,
-   "sha256": "17ab2dbee3504b51e783d4639f42011da5c8a9811e50396c5db2ce4f1d9186da"
+   "size": 10997,
+   "sha256": "bb15869dfe9e9115e081e71187544e521f2820acc88c270ec5a149d8024a810f"
   },
   {
    "path": "report.js",
@@ -985,7 +995,7 @@
   {
    "path": "sw.js",
    "size": 3505,
-   "sha256": "49ac935c565db52b9cdb9162f9aa7c0a3dd966fd228fba63533aec670d67aeb4"
+   "sha256": "17d197ead29faa26e4d7c2788c35f76eb283dcb690bae9c202bf08e6f6905375"
   },
   {
    "path": "usda-measures.js",
