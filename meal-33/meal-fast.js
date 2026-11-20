@@ -46,7 +46,9 @@
  *   (или «завтра», «в среду») — включили, а окно сейчас не идёт (startNote — его зовёт сохранение настроек);
  *   «Поздравляю! Фастинг закончен успешно» — окно дошло до конца без еды: один раз на окно, в момент конца
  *   или при первом открытии Meal после него (помнит устройство);
- * — отметка дня под кольцом (#mlFast) — итог окна: выдержан, прерван или отменён. Пока окно идёт, о нём говорит плашка.
+ * — отметка дня под кольцом (#mlFast) — итог окна: выдержан или прерван. Отменённое окно (кнопкой «Отменить», выключателем
+ *   или снятым днём недели) отметки не даёт: слова Астамура 21.11.2026 02:47 — «Фастинг отменён» и подобных сообщений
+ *   после дней недели быть не должно. Пока окно идёт, о нём говорит плашка.
  * Закрытый Meal ничего не присылает: всё видно при открытии.
  * — Claude · 20.11.2026, дни недели — 21.11.2026 */
 var MealFast=(function(){
@@ -204,12 +206,11 @@ function when(t,now){
   var day=dateOf(t), today=dateOf(now);
   return day===today?'сегодня':day===shift(today,1)?'завтра':ON_DAY[weekday(day)];
 }
-/* отметка дня словами — итог окна: b — главное (жирным), n — продолжение строки. Окно идёт или не началось — null */
+/* отметка дня словами — итог окна: b — главное (жирным), n — продолжение строки. Окно идёт, не началось или отменено — null */
 function words(st){
   var w=st.win;
   if(st.state==='broken') return {b:'Фастинг прерван',n:(dateOf(st.at)!==w.date?' вчера':'')+' в '+clock(st.at)+(st.by.name?' · '+st.by.name:'')};
   if(st.state==='kept') return {b:'Фастинг выдержан',n:' · '+clock(st.from)+'–'+clock(w.end)};
-  if(st.state==='off') return {b:'Фастинг отменён',n:(dateOf(st.at)!==w.date?' вчера':'')+' в '+clock(st.at)};
   return null;
 }
 /* плашка идущего окна: до скольки оно по расписанию, сколько осталось (ч:мм) и доля пройденного */
@@ -248,13 +249,12 @@ var SVG=function(d){ return '<svg viewBox="0 0 24 24" aria-hidden="true">'+d+'</
 var ICON={
   kept:SVG('<circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.3 2.6 2.6 5-5.4"/>'),
   broken:SVG('<circle cx="12" cy="12" r="8.5"/><path d="M8.6 8.6l6.8 6.8"/>'),
-  off:SVG('<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/>'),
   run:SVG('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>')};
 function signedIn(){ return typeof MealData!=='undefined'&&MealData.signedIn() }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function guard(){ return typeof writeGuard==='function'&&writeGuard() }
 
-/* отметка дня под кольцом — итог окна: выдержан, прерван или отменён; об идущем говорит плашка */
+/* отметка дня под кольцом — итог окна: выдержан или прерван; об отменённом и идущем — ничего (идущее — на плашке) */
 function paint(){
   var el=document.getElementById('mlFast'); if(!el) return;
   var st=null, w=null; try{ st=signedIn()?status(DB,curDate,Date.now(),rows):null; w=st&&words(st) }catch(e){ w=null }
