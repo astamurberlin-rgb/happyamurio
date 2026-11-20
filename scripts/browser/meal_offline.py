@@ -82,6 +82,11 @@ with sync_playwright() as p:
     meal.reload()
     wait_for(meal, lambda: meal.evaluate("()=>typeof BLS_ST!=='undefined'&&BLS_ST!=='loading'&&BLS_ST!=='idle'"), 25)
     check("без интернета Meal открывается: Happy Meal · Update " + V, "Update " + V in meal.title())
+    # Meal 33.21: обложка «Кавказской кухни» в магазине — из копии выпуска на телефоне
+    meal.evaluate("()=>{go('recipes');document.querySelector('[data-cc-route=\"shop\"]').click()}")
+    wait_for(meal, lambda: meal.evaluate("()=>{const i=document.querySelector('#ccShopGrid [data-cc-open=\"KAV\"] img');return !!i&&i.complete&&i.naturalWidth>0}"), 8, 200)
+    check("без интернета обложка «Кавказской кухни» в магазине на месте", meal.evaluate("()=>{const i=document.querySelector('#ccShopGrid [data-cc-open=\"KAV\"] img');return !!i&&i.complete&&i.naturalWidth>0}"))
+    meal.evaluate("()=>go('day')")
     check("без интернета BLS из скачанного: «яблоко» находится", meal.evaluate("()=>BLS_ST") == "ok" and len(meal.evaluate("()=>searchLib('яблоко')")) > 0)
     wait_for(meal, lambda: meal.evaluate("()=>typeof HappySupplementsLibrary!=='undefined'&&HappySupplementsLibrary.state!=='loading'"), 10)
     check("без интернета каталог БАДов — из скачанного: 31 шаблон", meal.evaluate("()=>HappySupplementsLibrary.state==='ok'&&HappySupplementsLibrary.templates.length===31"))

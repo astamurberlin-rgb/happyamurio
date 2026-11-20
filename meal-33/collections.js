@@ -3,7 +3,8 @@
    Вкладка «Библиотека» стала «Сборниками»: сверху пилюли «Магазин · Мои рецепты · Мои продукты» и общий поиск
    по каталогам, своим рецептам и продуктам. Магазин — карточки каталогов: обложка, название, описание, количество,
    цена. Страница каталога — обложка, покупка, описание, а у узбекской кухни и десертов — список блюд с ккал и БЖУ
-   на 100 г (catalog-preview.js).
+   на 100 г (catalog-preview.js). Meal 33.21: «Кавказская кухня» — по образцу узбекской, в составе Happy Meal, без своего
+   переключателя; её список — не копия, а сам каталог kav (data/kav.json) по тем же кодам, что в поиске (bls:ZA01A…).
    Покупка — тестовая, как в прототипе (решение Астамура 11.11.2026): без оплаты, отметка «Куплено» хранится только
    на этом устройстве, в области аккаунта (ключ happy-meal-demo-purchases-v1). Купленный каталог виден в «Моих рецептах»
    или «Моих продуктах» со свитчем поиска. Сами каталоги работают, как раньше, без покупки: включаются в настройках.
@@ -20,6 +21,7 @@ const SUPP_ROUTES=['supplements','supplementCatalog','supplementOwnedCatalog'];
 const catalogs=[
  {id:'SUPP',name:'БАДы',image:'images/supplements.jpg',tag:'Добавки и спортивное питание',count:'Шаблоны по этикеткам',description:'Омега-3, магний, креатин, протеины. Твой состав по этикетке.',keywords:'омега omega рыбий жир магний протеин креатин коллаген витамины epa dha бад добавки'},
  {id:'UZBEK',source:'HM',name:'Узбекская кухня',image:'meal-img/r7.jpg',tag:'Кухни мира',count:'60 блюд',description:'Плов, манты, самса и домашние вкусы Узбекистана.',preview:'uzbek'},
+ {id:'KAV',source:'HM',name:'Кавказская кухня',image:'images/kav.jpg',tag:'Кухни мира',count:'103 позиции',description:'Абыста, хинкали, хачапури и домашние вкусы Кавказа.',preview:'kav'},   // Meal 33.21: блюда — из каталога kav по тем же кодам
  {id:'DESSERT',name:'Десерты мира',image:'images/desserts.jpg',tag:'Дополнительный каталог',count:'103 карточки',description:'От крема каталана до чизкейка. Любимые сладости в одном поиске.',preview:'desserts'},
  {id:'PRESERVE',name:'Сладкие заготовки',image:'images/preserves.jpg',tag:'Дополнительный каталог',count:'27 позиций',description:'От кизилового варенья до цукатов. Варенья, джемы, компоты и фрукты в сиропе в одном поиске.',preview:'preserves'},
  {id:'HM',name:'Happy Meal',image:'meal-img/cover-tl-2.jpg',tag:'Кухни и рецепты',description:'Кухни народов мира'},
@@ -31,7 +33,7 @@ const catalogs=[
 /* Meal 32: отметки «Куплено» — в дневнике аккаунта (DB.purchases, документ setup общего модуля), а не в памяти браузера */
 function purchases(){const x=root.DB&&root.DB.purchases;return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
 function purchased(c){return purchases()[c.id]===true}
-function category(c){return c.id==='SUPP'?'supplements':['HM','UZBEK'].includes(c.id)?'recipes':'products'}
+function category(c){return c.id==='SUPP'?'supplements':['HM','UZBEK','KAV'].includes(c.id)?'recipes':'products'}
 /* число шаблонов БАДов — из каталога, когда он прочитан */
 function countOf(c){if(c.id!=='SUPP')return c.count;const n=root.HappySupplementsLibrary?root.HappySupplementsLibrary.templates.length:0;return n?n+' '+(n%10===1&&n%100!==11?'шаблон':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'шаблона':'шаблонов'):c.count}
 function enabled(c){return root.MealSources.enabled(root.DB,c.source||c.id)}
@@ -98,15 +100,22 @@ function nutrition(f){
  return '<div class="cc-macros" aria-label="Пищевая ценность на 100 граммов"><span><b>'+n(f.kcal,1)+'</b><small>ккал</small></span>'+
   [['Белки',f.protein],['Жиры',f.fat],['Углеводы',f.carb]].map(([t,x])=>'<span><b>'+(x==null?'—':n(x,2)+' г')+'</b><small>'+t+'</small></span>').join('')+'</div>';
 }
+/* список блюд страницы каталога: данные из catalog-preview.js; у «Кавказской кухни» (Meal 33.21) — сам каталог kav, когда он
+   прочитан (KAV, index.html), по тем же кодам, что в поиске и дневнике; ещё не прочитан — null */
+function previewOf(c){const x=c.preview&&root.MealCatalogPreview&&root.MealCatalogPreview[c.preview];return typeof x==='function'?x(root.KAV):x||null}
+let waitPreview=null;
 function openCatalog(id){
  const c=catalogs.find(x=>x.id===id);if(!c)return;
  if(id==='SUPP'){selectRoute(['supplements','supplementOwnedCatalog'].includes(route)&&purchased(c)?'supplementOwnedCatalog':'supplementCatalog');return}
  closeDetail();query='';e('ccQuery').value='';route='catalogDetail';pressRoutes();render();
- const preview=c.preview&&root.MealCatalogPreview&&root.MealCatalogPreview[c.preview];
- detail=root.document.createElement('section');detail.className='cc-detail-inline';detail.setAttribute('aria-label',c.name);
+ const preview=previewOf(c),later=!preview&&typeof(c.preview&&root.MealCatalogPreview&&root.MealCatalogPreview[c.preview])==='function';
+ clearInterval(waitPreview);
+ if(later){let n=0;waitPreview=setInterval(()=>{if(++n>60||!detail||detail.dataset.catalog!==id){clearInterval(waitPreview);return}if(previewOf(c)){clearInterval(waitPreview);const y=root.scrollY;openCatalog(id);root.scrollTo(0,y)}},500)}
+ detail=root.document.createElement('section');detail.className='cc-detail-inline';detail.dataset.catalog=id;detail.setAttribute('aria-label',c.name);
  detail.innerHTML='<img class="cc-detail-image" src="'+c.image+'" alt=""><div class="cc-detail-copy"><div class="cc-detail-heading"><h2>'+esc(c.name)+'</h2>'+buyControl(c)+'</div>'+
   (c.count?'<p class="cc-count">'+esc(c.count)+'</p>':'')+'<p>'+esc(c.description)+'</p>'+
-  (preview?'<div class="cc-groups">'+preview.groups.map(g=>'<span>'+esc(g)+'</span>').join('')+'</div>'+preview.foods.map(f=>'<article class="cc-food"><h3>'+esc(f.name)+'</h3>'+nutrition(f)+'</article>').join('')+'<p class="cc-note">Подробности в разработке</p>'
+  (preview?'<div class="cc-groups">'+preview.groups.map(g=>'<span>'+esc(g)+'</span>').join('')+'</div>'+preview.foods.map(f=>'<article class="cc-food"'+(f.id?' data-food="'+esc(f.id)+'"':'')+'><h3>'+esc(f.name)+'</h3>'+nutrition(f)+'</article>').join('')+'<p class="cc-note">Подробности в разработке</p>'
+   :later?'<p class="cc-note">Блюда каталога загружаются.</p>'
    :'<p class="cc-note">Продукты этого каталога доступны в обычном поиске при добавлении еды. Подключение каталога — в настройках, раздел «Каталоги».</p>')+
   (c.source?'<p class="cc-note">Кухня включается в поиск вместе с каталогом Happy Meal. Отдельного переключателя нет.</p>':'')+
   '<div class="cc-buy-bottom">'+buyControl(c)+'</div></div>';

@@ -459,8 +459,8 @@
   },
   {
    "path": "catalog-preview.js",
-   "size": 26421,
-   "sha256": "743ff32e58c5d8f2a6d3d4d29b27e687c6b17a4a3de33329adbf1552c0b9ddf4"
+   "size": 28100,
+   "sha256": "86ec5045b388b49320be4360313f628623fef22c85adb4016acdc7fb915d1bb3"
   },
   {
    "path": "catalog.css",
@@ -519,8 +519,8 @@
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 14381,
-   "sha256": "ae0d0775a6e4a304b9a19e2abd70dc0b426d7af24d157b141ec7c6ed89fd168c"
+   "size": 16558,
+   "sha256": "3d957d645878e79a8a33489168eda905718e086921ee5da9fb1d37b3f548cb39"
   },
   {
    "path": "checks/check-supplements-store.mjs",
@@ -549,8 +549,8 @@
   },
   {
    "path": "collections.js",
-   "size": 19824,
-   "sha256": "dd112bbdd2319cf2ae7668fd2875adf2589e51e00217c99e5ca8d388011b095e"
+   "size": 21499,
+   "sha256": "fb52e263352f64cd578c133b699231c35f2362ca340660baeacc98a10d07d637"
   },
   {
    "path": "controls.js",
@@ -576,6 +576,11 @@
    "path": "images/desserts.jpg",
    "size": 119763,
    "sha256": "6e05d5729b6b5f219cde7aa0cd14d704fc0be7bee6a99232a3a6306abe553843"
+  },
+  {
+   "path": "images/kav.jpg",
+   "size": 179281,
+   "sha256": "0f1a00306325f6e063c26a71c53b4497efb877eef73cc8a8751f19c3dd86132b"
   },
   {
    "path": "images/kfct.jpg",
@@ -1004,8 +1009,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3505,
-   "sha256": "987b1bce584d4ac4a66aff896be7b571fe5841f1cb872f28312c07f504e2421c"
+   "size": 3524,
+   "sha256": "b77a3bcb2f9f069586876c8491bde32028bef99ead2b322046bdea7d18d32985"
   },
   {
    "path": "usda-measures.js",

@@ -5,7 +5,9 @@
       для работы без интернета); обложки лежат в выпуске; тестовая покупка — в дневнике аккаунта; Meal открывается
       не на магазине: на «Сборники» переходит только «Мои добавки» по нажатию (HappyCollections.openSupplements).
    3) sw.js: всё, что страница грузит со своего каталога, есть в выпуске; чужие адреса (облако, библиотеки,
-      shared/apps.json, соседние приложения) service worker не трогает; без сети отдаёт копию. */
+      shared/apps.json, соседние приложения) service worker не трогает; без сети отдаёт копию.
+   Meal 33.21: «Кавказская кухня» — карточка после узбекской, в составе Happy Meal; её список не копия, а сам каталог kav
+   по тем же кодам (bls:ZA01A…), в порядке файла, ккал и БЖУ каталога; обложка сохраняется при установке, как остальные. */
 import {readFile,stat} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {gunzipSync} from 'node:zlib';
@@ -46,10 +48,20 @@ for(const [i,f] of P.preserves.foods.entries()){const r=sp.foods[i];assert.ok(r&
  else{const u=usdaRow[r.id],s=u&&u.sourceNutrients;assert.ok(u&&r.id.startsWith('usda:'),'USDA '+r.id);want=[u.nut.kcal,u.nut.prot,u.nut.fat,s['1005']!=null&&s['1079']!=null?Math.round(Math.max(0,s['1005']-s['1079'])*1e6)/1e6:null]}   // Meal 33.5: углеводы USDA — по разности минус клетчатка
  close(f.kcal,want[0],f.name+' ккал');close(f.protein,want[1],f.name+' белки');close(f.fat,want[2],f.name+' жиры');close(f.carb,want[3],f.name+' углеводы')}
 assert.equal(P.preserves.foods.filter(f=>f.protein==null).length,2,'белки неизвестны только у двух варений по ГОСТ');
+/* Meal 33.21: «Кавказская кухня» — список строит MealCatalogPreview.kav из самого каталога kav, данных-копии в файле нет */
+assert.equal(typeof win.MealCatalogPreview.kav,'function','список кавказской кухни — функцией от каталога, не копией');assert.ok(!('kav' in P),'копии блюд kav в catalog-preview.js нет');
+const kav=file('kav'),K=win.MealCatalogPreview.kav(kav);assert.equal(win.MealCatalogPreview.kav(null),null,'каталог не прочитан — списка нет');
+assert.equal(K.count,kav.f.length);assert.equal(K.foods.length,kav.f.length);assert.equal(kav.f.length,103,'в каталоге kav 103 позиции');
+assert.ok((await read('collections.js')).includes("count:'"+kav.f.length+" позиции'"),'на карточке магазина — '+kav.f.length+' позиции');
+const kk=n=>4+kav.keys.indexOf(n);
+for(const [i,f] of K.foods.entries()){const r=kav.f[i];assert.equal(f.id,'bls:'+r[0],'кавказская кухня: строка '+(i+1)+' — тот же код, что в поиске');assert.equal(f.name,r[1]);
+ close(f.kcal,r[kk('kcal')],f.name+' ккал');close(f.protein,r[kk('prot')],f.name+' белки');close(f.fat,r[kk('fat')],f.name+' жиры');close(f.carb,r[kk('carb')],f.name+' углеводы')}
+assert.equal(new Set(K.foods.map(f=>f.id)).size,K.foods.length,'коды кавказской кухни не повторяются');
 // 2. Магазин
 const shop=await read('collections.js'),sources=await read('sources.js');
 const ids=[...shop.matchAll(/\{id:'([A-Z]+)'(?:,source:'([A-Z]+)')?,name:'([^']+)',image:'([^']+)'/g)];
-assert.deepEqual(ids.map(m=>m[1]),['SUPP','UZBEK','DESSERT','PRESERVE','HM','BLS','USDA','MEXT','KFCT']);
+assert.deepEqual(ids.map(m=>m[1]),['SUPP','UZBEK','KAV','DESSERT','PRESERVE','HM','BLS','USDA','MEXT','KFCT']);
+assert.equal(ids.find(m=>m[1]==='KAV')[2],'HM','кавказская кухня — в составе Happy Meal, без своего переключателя');
 for(const m of ids){const id=m[2]||m[1];assert.ok(sources.includes("{id:'"+id+"'"),'каталог есть в MealSources: '+id);assert.ok(await exists(m[4]),'обложка в выпуске: '+m[4])}
 const shopCode=shop.replace(/\/\*[\s\S]*?\*\//g,'');
 assert.ok(sources.includes("{id:'SUPP',name:'БАДы'}"),'источник БАДов — в MealSources (переключатель поиска и настроек)');
@@ -79,7 +91,7 @@ const ctx={self:{location:new URL(SCOPE+'sw.js'),addEventListener:(t,f)=>listene
  fetch:async(r,o)=>{const u=typeof r==='string'?r:r.url;log.push(u);if(!online)throw new TypeError('offline');if(u.endsWith('index.html'))return new Response(page,{status:200});return new Response('x',{status:200})}};
 ctx.self.caches=ctx.caches;vm.createContext(ctx);vm.runInContext(sw,ctx);
 let waited;await listeners.install({waitUntil:p=>waited=p});await waited;
-assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v='+V)&&stored.has(SCOPE+'supplements.js?v='+V)&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/preserves.jpg')&&stored.has(SCOPE+'images/kfct.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
+assert.ok(stored.has(SCOPE+'index.html')&&stored.has(SCOPE+'catalog.js?v='+V)&&stored.has(SCOPE+'supplements.js?v='+V)&&stored.has(SCOPE+'meal-img/r7.jpg')&&stored.has(SCOPE+'images/desserts.jpg')&&stored.has(SCOPE+'images/preserves.jpg')&&stored.has(SCOPE+'images/kfct.jpg')&&stored.has(SCOPE+'images/kav.jpg')&&stored.has(SCOPE+'images/supplements.jpg'),'при установке сохранены страница, скрипты и обложки');
 function fetchEvent(url,mode){let res=null;listeners.fetch({request:{url,method:'GET',mode:mode||'no-cors'},respondWith:p=>res=p});return res}
 for(const u of ['https://geqziziycpclhnucnsyx.supabase.co/rest/v1/app_sync','https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json','https://astamurberlin-rgb.github.io/happyamurio/shared/apps.json','https://astamurberlin-rgb.github.io/happyamurio/day-57/'])
  assert.equal(fetchEvent(u),null,'не перехватывает: '+u);
@@ -91,4 +103,4 @@ online=true;
 {const before=log.length;const pic=await fetchEvent(SCOPE+'images/desserts.jpg');assert.ok(pic,'картинка отдана');assert.equal(log.length,before,'картинка магазина — из копии, без сети');
  const before2=log.length;await fetchEvent(SCOPE+'catalog.js?v='+V);assert.equal(log.length,before2+1,'скрипт выпуска — сначала из сети');
  for(const u of ['meal-img/cover-tl-2.jpg','meal-img/cover-bf-1.jpg','meal-img/cover-sn-1.jpg','meal-img/cover-dn-1.jpg'])assert.ok(stored.has(SCOPE+u),'картинка магазина сохранена при установке: '+u)}
-console.log('Passed: catalog lists match meal-libraries (uzbek '+P.uzbek.foods.length+', desserts '+P.desserts.foods.length+', sweet preserves '+P.preserves.foods.length+'); shop catalogs with supplements first ('+manifest.libraries.supplements.templateCount+' templates, '+REF+'), covers, test purchase per account, opens on the day; all '+refs.size+' page files present in order; service worker keeps to its release folder, serves the copy offline and shop pictures from the copy.');
+console.log('Passed: catalog lists match meal-libraries (uzbek '+P.uzbek.foods.length+', Caucasian from kav '+K.foods.length+', desserts '+P.desserts.foods.length+', sweet preserves '+P.preserves.foods.length+'); shop catalogs with supplements first ('+manifest.libraries.supplements.templateCount+' templates, '+REF+'), covers, test purchase per account, opens on the day; all '+refs.size+' page files present in order; service worker keeps to its release folder, serves the copy offline and shop pictures from the copy.');
