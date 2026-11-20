@@ -23,6 +23,14 @@
  "previous_release_url": "https://astamurberlin-rgb.github.io/happyamurio/day-59/",
  "point_releases": [
   {
+   "version": "60.9",
+   "date": "2026-11-20",
+   "changes": [
+    "shared/happy-measurements.js и .css: новый замер и правка в таблице (лист правки убран), «Отмена» / «Сохранить» в углу, сохранение при выходе из поля, закреплённая шапка, полосатая история с остановкой по столбцам, период сравнения над силуэтом (макет Михалыча, PR #20)",
+    "index.html ?v=60.9, заголовок и подвал; release-notes.js 60.9"
+   ]
+  },
+  {
    "version": "60.8",
    "date": "2026-11-19",
    "changes": [
@@ -71,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1321466,
-   "sha256": "81d2e0cb678c6f43831841e4ea774fc68ee2bd8b7ff44f5a3260b2d0eb2e736d"
+   "size": 1326557,
+   "sha256": "48c5e955854e070312df3cf5283707ab7fb1fda6b28330bae34b52ee153c20d0"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -242,7 +250,7 @@
   {
    "path": "index.html",
    "size": 493434,
-   "sha256": "b1ce3e5f68bcbece848a738fe842ee7a007bdf6ec076cb1ae5e32764e0649dbd"
+   "sha256": "10ef9360751ad521203a12a7c2367df32a76f965cce6da65498ef0bb7b9ec20e"
   },
   {
    "path": "manifest.webmanifest",
@@ -251,8 +259,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 41542,
-   "sha256": "fa7f139dcca36f8aca71aee75c016420a79a2ac8fff0eb0da077cd86d32f4dd3"
+   "size": 42365,
+   "sha256": "0b5e45d9e14714fd071e661773939eaf8af0f272a84cdd7f4b07ee86dba20432"
   },
   {
    "path": "section-wheel.css",
@@ -341,13 +349,13 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 14178,
-   "sha256": "1d45edf92c010141fe5e1d4c7e58010c714060724315bea03bf1f9d303374c89"
+   "size": 16329,
+   "sha256": "2afeb46e4112c1e574dcc15c04c1806658eb954361cbcf74260deca2a71000d7"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 66183,
-   "sha256": "68c9863a8b0d83ff60bfa335afd27c7d90d4922b75abd00c7bfae867b41c5bd2"
+   "size": 67564,
+   "sha256": "7d610281f7f0a0c11c6dca284da3a0adcb9378d530a6fd3c3cac1c37229dffd3"
   },
   {
    "path": "shared/happy-person.js",

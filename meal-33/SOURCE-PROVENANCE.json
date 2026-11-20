@@ -84,6 +84,14 @@
  },
  "pointReleases": [
   {
+   "version": "33.18",
+   "date": "2026-11-20",
+   "changes": [
+    "shared/happy-measurements.js и .css: новый замер и правка в таблице (лист правки убран), «Отмена» / «Сохранить» в углу, сохранение при выходе из поля, закреплённая шапка, полосатая история с остановкой по столбцам, период сравнения над силуэтом (макет Михалыча, PR #20)",
+    "index.html ?v=33.18, заголовок и подвал; release-notes.js 33.18; sw.js 33.18"
+   ]
+  },
+  {
    "version": "33.17",
    "date": "2026-11-19",
    "changes": [
@@ -572,7 +580,7 @@
   {
    "path": "index.html",
    "size": 625887,
-   "sha256": "a5b136de8a9c61e6096b878d24c3e09466d2dc52ea581b0e418e5e800e5c4d34"
+   "sha256": "7248aa8a135f21dbde001a6a2f26b38ed9f78866e83bff3b0d066a68e525edd3"
   },
   {
    "path": "kfct.js",
@@ -786,8 +794,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 61996,
-   "sha256": "72b2a3a758e659228d2bdf13d89e79adb16e2c10adb1e27b1b4e7e940d924466"
+   "size": 62820,
+   "sha256": "a82606e6f19999ee9bd6449dc2974110ad1eac98e0f1cf8e8595b9a7fd17554e"
   },
   {
    "path": "report.css",
@@ -861,13 +869,13 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 14178,
-   "sha256": "1d45edf92c010141fe5e1d4c7e58010c714060724315bea03bf1f9d303374c89"
+   "size": 16329,
+   "sha256": "2afeb46e4112c1e574dcc15c04c1806658eb954361cbcf74260deca2a71000d7"
   },
   {
    "path": "shared/happy-measurements.js",
-   "size": 66183,
-   "sha256": "68c9863a8b0d83ff60bfa335afd27c7d90d4922b75abd00c7bfae867b41c5bd2"
+   "size": 67564,
+   "sha256": "7d610281f7f0a0c11c6dca284da3a0adcb9378d530a6fd3c3cac1c37229dffd3"
   },
   {
    "path": "shared/happy-person.js",
@@ -977,7 +985,7 @@
   {
    "path": "sw.js",
    "size": 3505,
-   "sha256": "4f485baf0ee0a3c059e36421f9bc85a6c563f6497a6a7e813d91c8442d7acddb"
+   "sha256": "49ac935c565db52b9cdb9162f9aa7c0a3dd966fd228fba63533aec670d67aeb4"
   },
   {
    "path": "usda-measures.js",
