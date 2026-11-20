@@ -1,6 +1,6 @@
 .care-knob{cursor:pointer;inset:18%;padding:8px!important;gap:3px;align-content:center;touch-action:manipulation!important}
 .care-knob .care-symbol{display:block;font-size:29px;font-weight:400;line-height:1.1}
-.care-knob .care-name{font-size:14px;line-height:1.15;max-width:113px;overflow-wrap:normal;font-weight:650}
+.care-knob .care-name{font-size:14px;line-height:1.15;max-width:113px;overflow-wrap:normal;font-weight:700}
 .care-symbol svg{position:static!important;transform:none!important;width:27px!important;height:27px!important;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .care-arc{transform:none!important;pointer-events:none}
 .care-arc path{fill:none;stroke-width:16;stroke-linecap:round}
@@ -16,46 +16,30 @@
 .care-external{display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink);box-sizing:border-box}
 .care-workout-link{display:flex;align-items:center;justify-content:space-between;color:var(--ink);text-decoration:none;gap:12px;padding:14px 0;border-bottom:1px solid var(--glassBrd)}
 .care-workout-link small{display:block;margin-top:5px;color:var(--muted)}
-.care-file-picker{display:flex!important;align-items:center;justify-content:center;cursor:pointer;font-weight:500!important}
+.care-file-picker{display:flex!important;align-items:center;justify-content:center;cursor:pointer;font-weight:400!important}
 .care-file-picker input{position:absolute;width:1px!important;height:1px;opacity:0}
 .care-file-picker:focus-within{outline:2px solid white;outline-offset:3px}
 .care-strong{background:linear-gradient(125deg,rgba(255,255,255,.17),rgba(122,88,230,.18))}
-.care-strong>p{font-size:15px;line-height:1.45}
+.care-strong>p{font-size:16px;line-height:1.45}
 .care-links button{font:inherit;font-size:12px;color:var(--ink);background:none;border:0;min-height:30px;text-decoration:underline;text-underline-offset:3px}
 .care-screen .top{padding:6px 0 22px}
-.care-screen .top h1{font-size:27px;min-width:0}
+.care-screen .top h1{font-size:28px;min-width:0}
 .care-screen .care-date{font-size:14px;color:var(--muted);margin:0 0 18px}
-.care-screen .card h2,.care-settings h3{font-size:17px;margin:0 0 14px}
+.care-screen .card h2,.care-settings h3{font-size:16px;margin:0 0 14px}
 .care-form label,.care-form .care-label{display:block;font-size:14px;font-weight:600;margin:14px 0 8px}
 .care-form input:not([type=checkbox]),.care-form select,.care-form textarea{width:100%;max-width:100%;box-sizing:border-box;text-align:left}
-/* Поля даты и времени: системный текст скрыт, поверх — своя строка (selfcare-ui.js, whenField). На iPhone у системного поля
-   своя наименьшая ширина и свой вид — без этого оно шире колонки, налезает на соседнее поле и пишет значение не по центру. */
-.care-when{position:relative;display:block;min-width:0;width:100%}
-.care-form .care-when>input{-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;height:41px;margin:0;padding:0 12px;font:inherit;font-size:16px;background:rgba(255,255,255,.14);border:1px solid var(--glassBrd);border-radius:12px;color:transparent!important;-webkit-text-fill-color:transparent!important}
-.care-when>input::-webkit-datetime-edit,.care-when>input::-webkit-date-and-time-value{opacity:0}
-.care-when>input::-webkit-calendar-picker-indicator{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}
-/* Вид строки — как у поля «Дата и время» в Sport, согласованный в аудите 18.11.2026: текст посередине, 14 / 600.
-   Высота и рамка поля — как у остальных полей формы Day. (Астамур 20.11.2026: стиль должен быть единым.) */
-.care-when-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 12px;font-size:14px;font-weight:600;color:var(--ink);pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* Поле числа (минуты): то же устройство и тот же вид, что у поля времени рядом (Астамур 20.11.2026: шрифт приложения, а не
-   моноширинный; число посередине). Число рисует строка поверх, само поле отдаёт только курсор. Текст поля — 16, чтобы
-   iPhone не приближал страницу, когда в поле ставят курсор. */
-.care-form .care-when>input.care-num-in{text-align:center;font-weight:600;caret-color:var(--ink);cursor:text}
-/* В пустом поле стоит прочерк. Поставили курсор — прочерк убирается: курсор по центру лёг бы на него крестом. */
-.care-num.care-empty:focus-within>.care-when-text{visibility:hidden}
-/* Остальные числовые поля этих форм (цели, масштаб кольца) — тоже шрифтом приложения, не моноширинным. */
-.care-form input[type=number]{font-family:inherit;font-variant-numeric:tabular-nums}
+/* Поля даты, времени, выбора и числа — общий кусок shared/happy-fields.css (аудит Day 20.11.2026). */
 .care-form textarea{min-height:120px;user-select:text;-webkit-user-select:text}
 .care-form input,.care-form select,.care-form textarea{font-size:16px}
 .care-form option{color:#20324b;background:white}
 .care-choices{display:flex;gap:5px;flex-wrap:wrap}
 .care-choice{flex:1;min-width:33px;min-height:45px;border-radius:14px;border:1px solid var(--glassBrd);background:var(--glass);color:var(--ink);font:inherit;font-size:16px}
-.care-choice[aria-pressed=true]{background:#fff;color:#075a85;border-color:#fff;font-weight:750}
-.care-endpoints{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin:7px 0 18px}
+.care-choice[aria-pressed=true]{background:#fff;color:#075a85;border-color:#fff;font-weight:700}
+.care-endpoints{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin:7px 0 18px}
 .care-help{font-size:12px;line-height:1.5;color:var(--muted);margin:10px 0}
 .care-help strong{color:var(--ink)}
 .care-submit{width:100%;min-height:46px;margin-top:18px;font-size:16px}
-.care-stat{font-size:30px;font-weight:700;margin:8px 0}
+.care-stat{font-size:28px;font-weight:700;margin:8px 0}
 .care-status{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
 .care-status span{padding:6px 10px;border-radius:20px;font-size:12px;background:rgba(255,255,255,.13)}
 .care-empty{color:var(--muted);font-size:14px;line-height:1.5;padding:14px 0}
@@ -65,14 +49,14 @@
 .care-long{white-space:pre-wrap;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text;font-size:16px;line-height:1.6}
 .care-addition{border-top:1px solid var(--glassBrd);margin-top:18px;padding-top:14px}
 .care-addition:target{outline:2px solid #fff;border-radius:10px;padding:12px}
-.care-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;min-height:40px;font-weight:650}
+.care-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;min-height:40px;font-weight:700}
 .care-settings{scroll-margin-top:18px}
 .care-setting-row{display:flex;align-items:center;gap:7px;padding:10px 0;border-bottom:1px solid var(--glassBrd)}
 .care-setting-row>span{flex:1;font-size:14px;min-width:0}
 .care-setting-row .mini{min-width:34px;min-height:36px;padding:4px 8px}
 .care-setting-row input[type=checkbox]{width:21px;height:21px;accent-color:#5A50D1}
 .care-setting-row:last-child{border:0}
-.care-check{display:flex!important;align-items:center;gap:10px;font-weight:400!important;font-size:13px!important;line-height:1.45}
+.care-check{display:flex!important;align-items:center;gap:10px;font-weight:400!important;font-size:14px!important;line-height:1.45}
 .care-check input{flex:none;width:20px;height:20px;accent-color:#5A50D1}
 .care-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .care-grid>div{min-width:0}
@@ -118,10 +102,10 @@
 .nwSl.side{opacity:.5}
 .ringWrap.nwR{width:min(280px,76vw)}
 .care-knob{inset:21%;touch-action:manipulation!important}
-.care-knob .care-name{font-size:21px;font-weight:700;max-width:100%;line-height:1.15}
+.care-knob .care-name{font-size:20px;font-weight:700;max-width:100%;line-height:1.15}
 .care-symbol svg{width:42px!important;height:42px!important}
 /* Day 60.2, шаги 2 и 4: подпись — в просвете внизу дуги, 32 точки от концов дуги, как от подписи до разделов (16.11.2026, Claude) */
-.care-ring-label{min-height:0;margin-top:-17px;padding:9px 6px;position:relative;display:flex;align-items:flex-end;justify-content:center;border:0;background:none;color:var(--ink);font-family:inherit;font-weight:800;font-size:21px;line-height:1.2;letter-spacing:-.01em;cursor:pointer;width:100%;touch-action:manipulation}
+.care-ring-label{min-height:0;margin-top:-17px;padding:9px 6px;position:relative;display:flex;align-items:flex-end;justify-content:center;border:0;background:none;color:var(--ink);font-family:inherit;font-weight:700;font-size:20px;line-height:1.2;letter-spacing:-.01em;cursor:pointer;width:100%;touch-action:manipulation}
 .care-function-row{display:flex;align-items:center;gap:10px;padding:0 12px!important;margin-bottom:8px;position:relative}
 .care-function-open{display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:62px;padding:12px 0;border:0;background:none;color:inherit;font:inherit;text-align:left}
 .care-function-open>span{flex:1;font-weight:700}
@@ -150,10 +134,10 @@ body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 @media(prefers-reduced-motion:reduce){.now-save{transition:none}}
 
 .update-history-link{display:flex;flex-direction:column;gap:6px;width:100%;border:0;background:transparent;color:var(--ink);text-align:left;font:inherit;padding:4px 0;cursor:pointer}
-.update-history-link>span{font-weight:700;font-size:17px}
-.update-history-link>small{font-size:13px;line-height:1.4;color:var(--muted)}
-.release-card time{font-size:13px;color:var(--muted)}
-.release-card ul{padding-left:20px;margin:14px 0 0;line-height:1.5;font-size:15px}
+.update-history-link>span{font-weight:700;font-size:16px}
+.update-history-link>small{font-size:14px;line-height:1.4;color:var(--muted)}
+.release-card time{font-size:14px;color:var(--muted)}
+.release-card ul{padding-left:20px;margin:14px 0 0;line-height:1.5;font-size:16px}
 .release-card li+li{margin-top:9px}
 /* Day 60.2, шаг 7 (16.11.2026, Claude): переход с главной на экран отметок. Кольцо с кнопкой и подпись под ним
    стоят там же, где на главной, и не двигаются; всё, чего на главной нет (шапка, «Что было», теги, заметка), проявляется

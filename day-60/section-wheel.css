@@ -5,7 +5,7 @@ body.wheel-editing #fab{visibility:hidden}
 body.wheel-editing .tabs{z-index:11}
 #wheelNote{display:none}body.wheel-editing #wheelNote{display:block;min-height:64px;margin-top:16px;width:100%;resize:vertical}
 
-body.wheel-editing .now-save{visibility:visible;transition:none;font-size:15px}body.wheel-editing .now-save[data-dirty="true"]::before,body.wheel-editing .now-save[data-dirty="true"]::after{content:none!important}
+body.wheel-editing .now-save{visibility:visible;transition:none;font-size:16px}body.wheel-editing .now-save[data-dirty="true"]::before,body.wheel-editing .now-save[data-dirty="true"]::after{content:none!important}
 
 body.wheel-editing .dockBg{background:#d6f0fb;backdrop-filter:none;-webkit-backdrop-filter:none}
 

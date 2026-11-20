@@ -231,6 +231,27 @@
         "meal",
         "sport"
       ]
+    },
+    {
+      "name": "happy-fields.js",
+      "reference": "shared/happy-fields.js",
+      "apps": [
+        "day"
+      ]
+    },
+    {
+      "name": "happy-fields.css",
+      "reference": "shared/happy-fields.css",
+      "apps": [
+        "day"
+      ]
+    },
+    {
+      "name": "happy-design.css",
+      "reference": "shared/happy-design.css",
+      "apps": [
+        "day"
+      ]
     }
   ]
 }
