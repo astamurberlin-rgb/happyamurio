@@ -42,6 +42,12 @@ function sportStart(){
 const h=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 const $=id=>document.getElementById(id);
 const num=v=>(Math.round(v*10)/10).toLocaleString('ru-RU');
+/* Поле числа в формах (минуты): тот же вид, что у поля времени рядом, — число посередине, 14 / 600, шрифт приложения.
+   Устроено так же: текст самого поля скрыт, число рисует строка поверх (whenText), поэтому оба поля совпадают до точки.
+   Тип — текст с цифровой клавиатурой, как у полей замеров: для type=number iPhone показывает полную клавиатуру. */
+const numField=attrs=>'<span class="care-when care-num"><input class="care-num-in" data-care-when="1" type="text" autocomplete="off" enterkeyhint="done" '+attrs+'><span class="care-when-text" aria-hidden="true">—</span></span>';
+/* «30», «12,5» и «12.5» — число; пусто или не число — NaN (дальше скажет проверка длительности). */
+const minutesOf=v=>{const t=String(v==null?'':v).trim().replace(',','.');return /^\d+(\.\d+)?$/.test(t)?Number(t):NaN;};
 const pct=v=>Math.round(v*100);
 const signed=v=>(v>0?'+':v<0?'−':'')+Math.abs(pct(v));
 const empty=t=>'<p class="care-empty">'+h(t)+'</p>';
@@ -74,6 +80,9 @@ function init(){
  document.addEventListener('click',click);
  document.addEventListener('click',function(e){const b=e.target.closest('[data-care-event]');if(!b)return;const v=JSON.parse(b.dataset.careEvent);journalOpen(v.kind,v.id,v.date,v.additionId);});
  document.addEventListener('submit',submit);
+ document.addEventListener('focusout',leavePractice);
+ document.addEventListener('pointerdown',careTapStart,true);
+ document.addEventListener('pointerup',careTapEnd,true);
  document.addEventListener('change',change);
  document.addEventListener('input',input);
  const rail=$('nwRail');
@@ -303,7 +312,7 @@ function renderEntry(){const e=data().entries.find(x=>x.id===currentEntry);if(!e
 }
 function renderMind(){const c=data(),goal=C.mindGoal(c,curDate),minutes=C.mindMinutes(DB,curDate),plan=C.scheduled(c,curDate),logs=C.readDay(DB,curDate).practices;
  block('mind').innerHTML=header('Осознанность')+'<div class="card"><div class="care-stat">'+num(minutes)+(goal.value>0?' / '+num(goal.value):'')+' мин</div><p class="care-help">'+(goal.source==='schedule'?(goal.value?'Полный круг — сумма длительностей практик в расписании на этот день.':'На этот день практики не запланированы. Можно заниматься без цели.'):(goal.value?'Полный круг — твоя личная цель.':'Практики за выбранный день.'))+'</p></div><div class="card"><h2>Дыхание и медитации</h2><b>В разработке</b><p class="care-help">Здесь появятся быстрые упражнения и контент для поддержки состояния. Уже можно составить расписание и отметить выполненную практику.</p></div><div class="eyebrow"><span>Расписание на '+h(ruDate(curDate))+'</span></div>'+plan.map(p=>'<div class="card"><b>'+h(p.time)+' · '+h(p.name)+'</b><p class="care-help">'+p.minutes+' минут · план</p><button class="mini" data-care-practice="'+h(p.id)+'">Отметить выполненное время</button></div>').join('')+(plan.length?'':empty('На этот день расписание пустое.'))+
- '<form id="carePracticeForm" class="card care-form"><h2>Записать практику</h2><input type="hidden" name="planId" value=""><label for="carePracticeName">Название</label><input name="name" id="carePracticeName" type="text" placeholder="Медитация, дыхание…" maxlength="100"><div class="care-grid"><div><label for="carePracticeTime">Время</label><input id="carePracticeTime" name="time" type="time" required value="'+nowHM()+'"></div><div><label for="carePracticeMinutes">Фактически, мин</label><input id="carePracticeMinutes" name="minutes" type="number" min="0.1" max="1440" step="0.1" required placeholder="Сколько провёл"></div></div><p class="care-help">План сам по себе не засчитывается. В дугу попадают сохранённые минуты практики и импортированные сессии осознанности; время просмотра приложения не учитывается.</p><button class="btn solid care-submit" type="submit">Сохранить практику</button></form><div class="eyebrow">Выполнено</div>'+logs.slice().reverse().map(x=>'<div class="card"><b>'+h(x.time)+' · '+h(x.name)+'</b><p class="care-help">'+num(x.minutes)+' мин</p></div>').join('');
+ '<form id="carePracticeForm" class="card care-form"><h2>Записать практику</h2><input type="hidden" name="planId" value=""><label for="carePracticeName">Название</label><input name="name" id="carePracticeName" type="text" placeholder="Медитация, дыхание…" maxlength="100"><div class="care-grid"><div><label for="carePracticeTime">Время</label><input id="carePracticeTime" name="time" type="time" required value="'+nowHM()+'"></div><div><label for="carePracticeMinutes">Фактически, мин</label>'+numField('id="carePracticeMinutes" name="minutes" inputmode="decimal" required')+'</div></div><p class="care-help">План сам по себе не засчитывается. В дугу попадают сохранённые минуты практики и импортированные сессии осознанности; время просмотра приложения не учитывается.</p><button class="btn solid care-submit" type="submit">Сохранить практику</button></form><div class="eyebrow">Выполнено</div>'+logs.slice().reverse().map(x=>'<div class="card"><b>'+h(x.time)+' · '+h(x.name)+'</b><p class="care-help">'+num(x.minutes)+' мин</p></div>').join('');
 }
 /* «Съедено» за день — итог из сводки Meal и нажатия на счётчики еды, которые Meal ещё не посчитал (нажатие в Day
    попадает в кольцо сразу; правило — в shared/happy-food.js). Сводки нет или в дне нет ни еды, ни порций — null:
@@ -335,7 +344,7 @@ function renderActivity(){
  strongLink();
  paintEnergy();
 }
-function scheduleForm(c){return '<details class="card care-form"><summary class="care-summary">Настроить расписание</summary><p class="care-help">Изменения действуют с сегодняшнего дня. Прошлые цели сохраняются.</p><div>'+c.schedule.map(x=>'<div class="care-setting-row"><span>'+h(x.name)+' · '+h(x.time)+' · '+x.minutes+' мин<br><small>'+h(x.kind==='once'?ruDate(x.date):x.days.map(i=>['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][i]).join(', '))+'</small></span><button type="button" class="mini" data-care-remove-plan="'+h(x.id)+'" aria-label="Удалить практику из расписания">×</button></div>').join('')+'</div><form id="careScheduleForm"><label for="carePlanName">Практика</label><input id="carePlanName" name="name" type="text" required maxlength="100" placeholder="Например, утренняя медитация"><div class="care-grid"><div><label for="carePlanTime">Время</label><input id="carePlanTime" name="time" type="time" required></div><div><label for="carePlanMinutes">План, мин</label><input id="carePlanMinutes" name="minutes" type="number" required min="1" max="1440" placeholder="Длительность"></div></div><label for="carePlanKind">Повторение</label><select id="carePlanKind" name="kind"><option value="once">Один день</option><option value="weekly">По дням недели</option></select><div id="carePlanDateRow"><label for="carePlanDate">Дата</label><input id="carePlanDate" name="date" type="date" min="'+todayISO()+'" value="'+todayISO()+'"></div><div id="carePlanDaysRow" hidden><label>Дни недели</label><div class="care-days">'+[1,2,3,4,5,6,0].map(i=>'<label><input type="checkbox" name="days" value="'+i+'">'+['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][i]+'</label>').join('')+'</div></div><button class="btn solid care-submit" type="submit">Добавить в расписание</button><p class="care-help">Добавление практики включает расчёт цели по расписанию. Ручную цель можно выбрать в настройках.</p></form></details>';}
+function scheduleForm(c){return '<details class="card care-form"><summary class="care-summary">Настроить расписание</summary><p class="care-help">Изменения действуют с сегодняшнего дня. Прошлые цели сохраняются.</p><div>'+c.schedule.map(x=>'<div class="care-setting-row"><span>'+h(x.name)+' · '+h(x.time)+' · '+x.minutes+' мин<br><small>'+h(x.kind==='once'?ruDate(x.date):x.days.map(i=>['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][i]).join(', '))+'</small></span><button type="button" class="mini" data-care-remove-plan="'+h(x.id)+'" aria-label="Удалить практику из расписания">×</button></div>').join('')+'</div><form id="careScheduleForm"><label for="carePlanName">Практика</label><input id="carePlanName" name="name" type="text" required maxlength="100" placeholder="Например, утренняя медитация"><div class="care-grid"><div><label for="carePlanTime">Время</label><input id="carePlanTime" name="time" type="time" required></div><div><label for="carePlanMinutes">План, мин</label>'+numField('id="carePlanMinutes" name="minutes" inputmode="numeric" required')+'</div></div><label for="carePlanKind">Повторение</label><select id="carePlanKind" name="kind"><option value="once">Один день</option><option value="weekly">По дням недели</option></select><div id="carePlanDateRow"><label for="carePlanDate">Дата</label><input id="carePlanDate" name="date" type="date" min="'+todayISO()+'" value="'+todayISO()+'"></div><div id="carePlanDaysRow" hidden><label>Дни недели</label><div class="care-days">'+[1,2,3,4,5,6,0].map(i=>'<label><input type="checkbox" name="days" value="'+i+'">'+['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][i]+'</label>').join('')+'</div></div><button class="btn solid care-submit" type="submit">Добавить в расписание</button><p class="care-help">Добавление практики включает расчёт цели по расписанию. Ручную цель можно выбрать в настройках.</p></form></details>';}
 function options(value,arr){return arr.map(([v,t])=>'<option value="'+v+'"'+(value===v?' selected':'')+'>'+t+'</option>').join('');}
 function mappingRows(c){const defs=[['check:feeling','Общее ощущение','bipolar'],['check:joy','Радость','positive'],['check:strain','Напряжение','negative']].concat(DB.metrics.map(m=>['metric:'+m.k,m.t,metricNeg(m)?'negative':'bipolar']));
  return defs.map(([key,title,def])=>{const m=c.settings.mappings[key]||{mode:def};return '<div class="care-mapping" data-mapping="'+h(key)+'"><label class="care-label">'+h(title)+'</label><select data-map-mode aria-label="Направление шкалы '+h(title)+'">'+options(m.mode,[['bipolar','От неприятного (−) к приятному (+)'],['positive','Больше → сильнее приятное (+)'],['negative','Больше → сильнее неприятное (−)'],['optimal','Комфортен средний диапазон'],['ignore','Не учитывать в дуге']])+'</select><div class="care-grid" data-map-range'+(m.mode==='optimal'?'':' hidden')+'><div><label>Нижняя граница, %</label><input data-map-low type="number" min="0" max="100" value="'+pct(m.low??.35)+'"></div><div><label>Верхняя граница, %</label><input data-map-high type="number" min="0" max="100" value="'+pct(m.high??.65)+'"></div></div></div>';}).join('');
@@ -381,7 +390,7 @@ async function click(ev){
  if(b.hasAttribute('data-care-book')){const name=await ask('Название дневника','');if(name?.trim()&&await transact(()=>data().books.push({id:C.uid(),name:name.trim().slice(0,80)})))renderSettingsPage('diary');return;}
  if(b.hasAttribute('data-energy-cycle')){const modes=['spent','balance','eat'];energyMode=modes[(modes.indexOf(energyMode||data().activitySettings.start)+1)%3];paintEnergy();return;}
  if(b.dataset.careMove){if(RO){roWarn();return;}const c=data(),i=c.settings.order.indexOf(b.dataset.careMove),j=i+(+b.dataset.dir);if(j<0||j>=c.settings.order.length)return;if(await transact(()=>{[c.settings.order[i],c.settings.order[j]]=[c.settings.order[j],c.settings.order[i]];const stateAt=c.settings.settingsOrder.indexOf('state');c.settings.settingsOrder=c.settings.order.slice();c.settings.settingsOrder.splice(stateAt,0,'state');}))renderSettingsPage('state');return;}
- if(b.dataset.carePractice){const p=C.scheduled(data(),curDate).find(x=>x.id===b.dataset.carePractice);if(p){const f=$('carePracticeForm');f.elements.planId.value=p.id;f.elements.name.value=p.name;f.elements.time.value=p.time;whenRefresh(f.elements.time);f.elements.minutes.value='';f.scrollIntoView({block:'start'});f.elements.minutes.focus();}return;}
+ if(b.dataset.carePractice){const p=C.scheduled(data(),curDate).find(x=>x.id===b.dataset.carePractice);if(p){const f=$('carePracticeForm');f.elements.planId.value=p.id;f.elements.name.value=p.name;f.elements.time.value=p.time;whenRefresh(f.elements.time);f.elements.minutes.value='';whenRefresh(f.elements.minutes);f.scrollIntoView({block:'start'});f.elements.minutes.focus();}return;}
  if(b.dataset.careRemovePlan&&await confirmBox('Убрать практику из расписания с сегодняшнего дня? Прошедшие планы сохранятся.','Убрать')){if(await transact(()=>{const c=data();c.schedule=c.schedule.filter(x=>x.id!==b.dataset.careRemovePlan);C.rememberPlan(c,todayISO());}))renderSettingsPage('mind');}
 }
 async function change(ev){const el=ev.target;
@@ -392,16 +401,53 @@ async function change(ev){const el=ev.target;
  if(el.hasAttribute('data-map-mode'))el.parentElement.querySelector('[data-map-range]').hidden=el.value!=='optimal';
 }
 function input(ev){if(ev.target.id==='careDiarySearch')renderDiaryList(ev.target.value);}
-async function submit(ev){const f=ev.target;if(!f.id?.startsWith('care'))return;ev.preventDefault();if(!f.reportValidity()||busy)return;const v=Object.fromEntries(new FormData(f));
+/* «Записать практику» — единое поведение ввода, как в замерах (Астамур 20.11.2026): ввёл минуты и вышел из формы —
+   нажал мимо полей или убрал клавиатуру — практика записывается сама; «Сохранить практику» делает то же. Переход между
+   полями формы ничего не записывает. В сообщении — «Вернуть»: запись убирается, введённое возвращается в форму. */
+async function savePractice(v){
+ const date=curDate;let saved=null;
+ if(!await transact(()=>{saved=C.addPractice(DB,date,v.time,minutesOf(v.minutes),v.name,v.planId);}))return false;
+ renderMind();
+ toast('Практика записана · '+num(saved.minutes)+' мин',async()=>{
+  if(!await transact(()=>{const d=C.dayData(DB,date);d.practices=d.practices.filter(x=>x.id!==saved.id);}))return;
+  if(curDate!==date)return;
+  renderMind();const f=$('carePracticeForm');if(!f)return;
+  f.elements.planId.value=v.planId||'';f.elements.name.value=v.name||'';f.elements.time.value=v.time;whenRefresh(f.elements.time);f.elements.minutes.value=v.minutes;whenRefresh(f.elements.minutes);
+ },null,6000);
+ return true;
+}
+let practiceButtonTap=false,careTap=null;
+function leavePractice(ev){
+ const f=ev.target.closest&&ev.target.closest('#carePracticeForm');if(!f)return;
+ if(ev.relatedTarget&&f.contains(ev.relatedTarget))return;                 // перешёл в соседнее поле формы
+ if(practiceButtonTap)return;                                              // нажал «Сохранить практику» — запишет она
+ setTimeout(()=>{
+  if(!f.isConnected||f.contains(document.activeElement)||busy)return;
+  if(!String(f.elements.minutes.value).trim())return;                       // минут нет — записывать нечего
+  if(!guard(curDate))return;
+  savePractice(Object.fromEntries(new FormData(f)));
+ },0);
+}
+/* Нажал мимо поля формы — поле отпускается и клавиатура уходит. Сам iPhone так не делает: нажатие на пустое место
+   оставляет клавиатуру открытой. Считается именно нажатие: палец, который листает страницу, поле не отпускает. */
+function careTapStart(ev){careTap={x:ev.clientX,y:ev.clientY};practiceButtonTap=!!(ev.target.closest&&ev.target.closest('#carePracticeForm .care-submit'));}
+function careTapEnd(ev){
+ const start=careTap;careTap=null;if(!start||Math.abs(ev.clientX-start.x)>10||Math.abs(ev.clientY-start.y)>10)return;
+ const a=document.activeElement;if(!a||!a.matches||!a.matches('.care-form input,.care-form textarea,.care-form select'))return;
+ if(ev.target.closest&&ev.target.closest('input,textarea,select,label,button,a,summary'))return;
+ a.blur();
+}
+async function submit(ev){const f=ev.target;if(!f.id?.startsWith('care'))return;ev.preventDefault();practiceButtonTap=false;if(!f.reportValidity()||busy)return;const v=Object.fromEntries(new FormData(f));
  const diaryWhen=f.id==='careDiaryForm'?String(v.when||'').split('T'):null;
   if(diaryWhen&&!/^\d{4}-\d{2}-\d{2}$/.test(diaryWhen[0])){toast('Выбери дату и время');return;}
   if(['careDiaryForm','careAppendForm','carePracticeForm'].includes(f.id)&&!guard(diaryWhen?diaryWhen[0]:curDate))return;
  if(f.id==='careDiaryForm'){let entry;if(await transact(()=>{entry=C.addEntry(DB,diaryWhen[0],(diaryWhen[1]||'').slice(0,5),v.title,v.text,v.book);})){open('entry',entry.id);toast('Запись добавлена в дневник и журнал дня');}}
  if(f.id==='careAppendForm'){if(await transact(()=>C.appendEntry(DB,currentEntry,curDate,nowHM(),v.text))){renderEntry();toast('Дополнение сохранено отдельным событием');}}
- if(f.id==='carePracticeForm'){if(await transact(()=>C.addPractice(DB,curDate,v.time,+v.minutes,v.name,v.planId))){renderMind();toast('Фактическое время сохранено');}}
+ if(f.id==='carePracticeForm')await savePractice(v);
  if(f.id==='careScheduleForm'){
   const days=new FormData(f).getAll('days').map(Number);if(v.kind==='weekly'&&!days.length){toast('Выбери дни недели');return;}
-  if(await transact(()=>{const c=data();c.schedule.push({id:C.uid(),name:v.name.trim(),time:v.time,minutes:+v.minutes,kind:v.kind,date:v.date,days,since:todayISO(),enabled:true});c.goals.scheduleEnabled=true;C.rememberPlan(c,todayISO());})){renderSettingsPage('mind');toast('Расписание и цель дня обновлены');}
+  const planMinutes=minutesOf(v.minutes);if(!Number.isInteger(planMinutes)||planMinutes<1||planMinutes>1440){toast('Укажи длительность от 1 до 1440 минут, целым числом');return;}
+  if(await transact(()=>{const c=data();c.schedule.push({id:C.uid(),name:v.name.trim(),time:v.time,minutes:planMinutes,kind:v.kind,date:v.date,days,since:todayISO(),enabled:true});c.goals.scheduleEnabled=true;C.rememberPlan(c,todayISO());})){renderSettingsPage('mind');toast('Расписание и цель дня обновлены');}
  }
  if(f.id==='careMoodSettingsForm'){
   const mappings={...data().settings.mappings};let invalid=false;
@@ -426,7 +472,7 @@ addEventListener('pagehide',function(){if(session?.autosave)commitSection(sessio
    системным — нажатие открывает системный выбор. Тот же приём, что в Sport (planning.js). */
 const whenWeekday=new Intl.DateTimeFormat('ru-RU',{weekday:'short',timeZone:'UTC'}),whenDay=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',timeZone:'UTC'});
 function whenDateText(day){const d=new Date(String(day)+'T12:00:00Z');if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||isNaN(d))return String(day||'');return whenWeekday.format(d)+', '+whenDay.format(d)+(day.slice(0,4)!==todayISO().slice(0,4)?' '+day.slice(0,4):'');}
-function whenText(input){const v=input.value;if(!v)return input.type==='time'?'—':'Не выбрана';if(input.type==='date')return whenDateText(v);if(input.type==='time')return v.slice(0,5);const [day,time='']=v.split('T');return whenDateText(day)+' · '+time.slice(0,5);}
+function whenText(input){const v=input.value;if(input.classList.contains('care-num-in'))return v.trim()||'—';if(!v)return input.type==='time'?'—':'Не выбрана';if(input.type==='date')return whenDateText(v);if(input.type==='time')return v.slice(0,5);const [day,time='']=v.split('T');return whenDateText(day)+' · '+time.slice(0,5);}
 const whenSelector='.care-form input[type=date],.care-form input[type=time],.care-form input[type=datetime-local]';
 function whenField(input){if(input.dataset.careWhen)return;const wrap=document.createElement('span'),text=document.createElement('span');input.dataset.careWhen='1';wrap.className='care-when';text.className='care-when-text';text.setAttribute('aria-hidden','true');input.before(wrap);wrap.append(input,text);text.textContent=whenText(input);}
 function whenRefresh(input){const text=input.parentElement?.querySelector(':scope>.care-when-text');if(text)text.textContent=whenText(input);}
