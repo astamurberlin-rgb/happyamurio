@@ -207,6 +207,15 @@ const baseStops=[0,17,50,76,100],layerTitles=['Верх 0%','Переход 17%'
 const wallpapers={none:{label:'Без',layer:''},dots:{label:'Точки',layer:'radial-gradient(circle at 1.4px 1.4px, rgba(255,255,255,.14) 1.2px, transparent 1.45px) 0 0/18px 18px'},mesh:{label:'Сетка',layer:'linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px) 0 0/22px 22px,linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px) 0 0/22px 22px'},stripes:{label:'Полосы',layer:'repeating-linear-gradient(135deg, rgba(255,255,255,.06) 0 8px, rgba(255,255,255,0) 8px 16px)'},soft:{label:'Пятна',layer:'radial-gradient(circle at 18% 24%, rgba(255,255,255,.10) 0 3%, transparent 8%),radial-gradient(circle at 78% 16%, rgba(255,255,255,.08) 0 4%, transparent 9%),radial-gradient(circle at 60% 82%, rgba(255,255,255,.08) 0 3%, transparent 8%)'},spark:{label:'Искры',layer:'radial-gradient(circle at 12% 16%, rgba(255,255,255,.18) 0 1px, transparent 2px),radial-gradient(circle at 72% 24%, rgba(255,255,255,.17) 0 1px, transparent 2px),radial-gradient(circle at 45% 72%, rgba(255,255,255,.15) 0 1px, transparent 2px),radial-gradient(circle at 86% 80%, rgba(255,255,255,.15) 0 1px, transparent 2px) 0 0/90px 90px'}};
 function g(color,opacity,x,y,w,h){return {color,opacity,x,y,w,h}}
 const defaults=Object.fromEntries(['day','meal','sport'].map((app,i)=>[app,JSON.parse(JSON.stringify(referenceThemes[i].state))]));
+// Lab 21.11.2026: the studio starts from the apps as they are (Astamur: «лабораторию под наш оригинал, а не наоборот»).
+// Meal = «Бордо», Sport = «Фиолетовый бриз» already match. Day's own background is a moving blurred aurora
+// (day-NN/index.html, .bg) that a five-stop gradient can only approximate: the blue #00a8f5 in the middle, cyan and violet light.
+// Glass and borders 16% / 34% as in shared/happy-colors.css.
+(()=>{const d=defaults.day,stops=['#3fd2f8','#1cb8f7','#00a8f5','#08a3f4','#2c96f0'];
+ d.backgroundGradient=G.normalize({type:'linear',angle:165,stops:stops.map((color,i)=>({color,position:[0,17,50,76,100][i]})),glow:{enabled:true,color:'#46fdfc',x:18,y:14,radius:62,strength:52},extraGlow:{enabled:true,color:'#bc61fe',x:12,y:56,radius:64,strength:24}});
+ d.angle=165;d.base=stops.slice();d.glows=[{color:'#46fdfc',opacity:.52,x:18,y:14,w:62,h:62},{color:'#bc61fe',opacity:.24,x:12,y:56,w:64,h:64}];
+ d.buttonColor='#5a50d1';d.buttonGradient=G.normalize({type:'radial',x:32,y:20,radius:100,stops:[{color:'#a59ff0',position:0},{color:'#5a50d1',position:56},{color:'#3f379b',position:100}]});
+ for(const k of ['day','meal','sport']){defaults[k].glassAlpha=16;defaults[k].borderAlpha=34}})();
 const EXTRA_DEFAULT={wallpaperData:'',wallpaperAlpha:55,buttonAlpha:100,fabAlpha:100,fontFamily:'system',fontWeight:700,textSize:15,titleSize:29,spacing:0,lineHeight:1.4,brightness:100,saturationBoost:100,glassColor:'#ffffff',borderColor:'#ffffff',glassAlpha:18,borderAlpha:36,glassBlur:12,cornerRadius:22};
 const FONT_STACKS={system:'-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif',rounded:'ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif',serif:'ui-serif,Georgia,serif',georgia:'Georgia,"Times New Roman",serif',mono:'ui-monospace,Menlo,Consolas,monospace'};
 function normalizeExtra(st){
@@ -354,6 +363,7 @@ function drawLayers(){}
 function drawControls(){const st=states[selected];if(backgroundEditor)backgroundEditor.set(st.backgroundGradient);showCode()}
 
 // «Палитра для приложений»: the colours of the three previews as the Color Studio block of shared/happy-colors.css.
+// Only what differs from the studio's starting look (= the apps as they are) is written; untouched colours keep the file's values.
 // The block is read from the site and rewritten in place: only the --happy- names the studio sets change (plan «Общий файл цветов Happy»); --hs- and the rest stay as in the file.
 const COLORS_FILE='../shared/happy-colors.css',BLOCK_START='/* ── из Color Studio',BLOCK_END='/* ── конец блока из Color Studio ── */';
 const TOKEN_TITLES={'--happy-base':'основной цвет фона','--happy-accent':'главная кнопка','--happy-on-accent':'текст на кнопке','--happy-ink':'основной текст','--happy-heading':'заголовок экрана','--happy-muted':'подписи','--happy-glass':'стекло карточек','--happy-line':'границы','--happy-dock-accent':'выбранная вкладка внизу'};
@@ -376,7 +386,7 @@ function parseColorBlock(text){const a=text.indexOf(BLOCK_START),b=text.indexOf(
 function effective(parsed,app){const v={};for(const b of parsed.blocks)if(b.app==='root'||b.app===app)for(const [k,x] of b.tokens)v[k]=x;return v}
 function sameValue(a,b){return String(a||'').replace(/\s+/g,'').toLowerCase()===String(b||'').replace(/\s+/g,'').toLowerCase()}
 function buildColorBlock(parsed){
- const want={},now={};for(const k of APP_ORDER){want[k]=studioTokens(states[k]);now[k]=effective(parsed,k)}
+ const want={},now={};for(const k of APP_ORDER){now[k]=effective(parsed,k);const own=studioTokens(states[k]),orig=studioTokens(defaults[k]);want[k]={};for(const n of Object.keys(own))if(!sameValue(own[n],orig[n]))want[k][n]=own[n]}
  const blocks=parsed.blocks.map(b=>({...b,tokens:b.tokens.map(x=>x.slice())}));
  const holder=(app,name)=>blocks.find(b=>b.app===app&&b.tokens.some(([k])=>k.startsWith(name.startsWith('--hs-')?'--hs-':'--happy-')));
  for(const name of Object.keys(TOKEN_TITLES)){
