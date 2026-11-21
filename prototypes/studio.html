@@ -191,6 +191,13 @@ body.has-theme-float .shell{padding-bottom:110px}
 .phone-wrap:not(.active) .phone-inner iframe{pointer-events:none!important}
 .phone-wrap:not(.active) .phone{cursor:pointer}
 #referenceThemes .reference-badge{display:none!important}
+/* Превью — сразу под названием студии и закрепляется наверху; без отступа safe-area (в окне просмотра на iPhone он давал пустую полосу). */
+.preview-dock{padding-top:6px!important}
+/* Верхний отступ телефона (вырез, кнопки окна просмотра) — у названия студии, а не у превью: превью сразу под названием.
+   Закреплённое превью встаёт под этот отступ, полоса над ним закрашена фоном студии. */
+.shell{padding-top:calc(14px + env(safe-area-inset-top))!important}
+.preview-dock{top:env(safe-area-inset-top)!important}
+body::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:#161527;z-index:79;pointer-events:none}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Color Studio</h1><p>Дизайн-студия Happy Day, Happy Meal и Happy Sport. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><div class="head-actions"><button class="chipbutton" id="fullPreview">Скрыть настройки</button><span class="hsa-slot" id="accountSlot"></span></div></header>
@@ -416,7 +423,9 @@ function studioPreviewBridge(key){
  });
 }
 function previewSource(key){
- const original=ORIGINALS[key];const p=original.lastIndexOf('<'+'/body>');
+ // 21.11.2026: внутри превью нет выреза и полоски «домой» — отступы safe-area обнуляем. На iPhone окно превью получало отступы телефона,
+ // и экран приложения съезжал вниз (пустая полоса сверху, меню выше обычного).
+ const original=ORIGINALS[key].replace(/env\(\s*safe-area-inset-(top|right|bottom|left)\s*(,[^()]*(\([^()]*\)[^()]*)*)?\)/g,'0px');const p=original.lastIndexOf('<'+'/body>');
  const script='<scr'+'ipt>('+studioPreviewBridge.toString()+')('+JSON.stringify(key)+');</scr'+'ipt>';
  return p===-1?original+script:original.slice(0,p)+script+original.slice(p);
 }
