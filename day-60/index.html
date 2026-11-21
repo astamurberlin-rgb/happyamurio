@@ -3411,7 +3411,7 @@ function sleepDayHTML(d){
 }
 function sleepPerHTML(r){
   var ds=jrDates(r), cs=ds.map(slOf), has=cs.filter(function(c){ return c&&c.asl });
-  if(!has.length) return {cnt:'',h:jEmpty('За этот период данных о сне нет. '+SL_NONE.slice(SL_NONE.indexOf('Сон приходит')))};
+  if(!has.length) return {cnt:'',h:jEmpty('За этот период данных о сне нет.')};   // 21.11.2026: подсказка о загрузке ушла в «Для разработчика» (аудит, п. 38) — без хвоста «. .»
   var avg=has.reduce(function(a,c){ return a+c.asl },0)/has.length, st=has.filter(function(c){ return c.sg }), mb=0, mw=0, u=slUsual(r.a);
   st.forEach(function(c){ var a=m18(c.b); mb+=a; mw+=a+c.bed });
   var sub='в среднем'+(st.length?' · отбой около '+hmOf18(mb/st.length)+' · подъём около '+hmOf18(mw/st.length):'')+(u?' · обычно '+durTxt(u):'');
