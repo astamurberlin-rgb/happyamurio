@@ -117,6 +117,6 @@ if(typeof MutationObserver==='function'&&document.body){new MutationObserver(lis
 /* Астамур 21.11.2026 (аудит): у «Расписания» на главной без плюса — добавить можно строкой «Запланировать тренировку»,
    она теперь всегда под занятиями. В настройках выключатель «Расписание на главной»: выключен — блока на главной нет,
    само расписание и напоминания остаются. */
-{const profileBeforeHomeSchedule=renderProfile;
+if(typeof renderProfile==='function'){const profileBeforeHomeSchedule=renderProfile;
 renderProfile=function(){return profileBeforeHomeSchedule().replace('<h2 class="happy-heading">Настройки тренировок</h2>',`<h2 class="happy-heading">Главная</h2><div class="happy-card"><label class="setting-row"><span>Расписание на главной<small>Блок «Расписание» на экране «Тренировки»</small></span><input class="toggle" type="checkbox" role="switch" data-home-schedule aria-label="Расписание на главной" ${state.homeScheduleHidden===true?'':'checked'}></label></div><h2 class="happy-heading">Настройки тренировок</h2>`);};
 document.addEventListener('change',e=>{const input=e.target;if(!input.hasAttribute?.('data-home-schedule'))return;state.homeScheduleHidden=!input.checked;persist();});}
