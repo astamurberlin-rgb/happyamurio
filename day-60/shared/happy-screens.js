@@ -49,7 +49,9 @@ const ICONS={
 /* ── цвета приложения ── */
 function theme(name){
  app=name;const t=THEMES[name];if(!t||!doc)return;
- for(const k of Object.keys(t))doc.documentElement.style.setProperty(k,t[k]);
+ // С лаборатории 21.11.2026 эти цвета задаёт shared/happy-colors.css (там их может подменить тема). Код ставит их сам,
+ // только если страница этот файл не подключила.
+ if(!getComputedStyle(doc.documentElement).getPropertyValue('--happy-ink').trim())for(const k of Object.keys(t))doc.documentElement.style.setProperty(k,t[k]);
  if(rootEl)rootEl.dataset.app=name;
 }
 /* Подложка листа — фон приложения: выбранное оформление или цвета приложения по умолчанию. */

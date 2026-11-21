@@ -46,6 +46,43 @@
   --happy-base:#8c75db;
   --happy-dock-ink:#6e8396;
 }
+/* Общие экраны (вход, профиль, листы — shared/happy-screens.css): цвета каждого приложения. До лаборатории 21.11.2026 их ставил код happy-screens.js. */
+:root[data-happy-appearance-app="day"]{
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary:#5A50D1;
+  --hs-primary-shadow:0 6px 16px #37309d30;
+  --hs-cancel-ink:#6254cf;
+  --hs-seg-bg:#edf8ff;
+  --hs-seg-ink:#5a50d1;
+  --hs-switch-on:#8071df;
+  --hs-sheet-bg:#00A8F5;
+  --hs-toast-bg:rgba(49,57,105,.94);
+  --hs-pill-on-ink:#5046c3;
+}
+:root[data-happy-appearance-app="meal"]{
+  --hs-glass:rgba(255,255,255,.13);
+  --hs-primary:linear-gradient(110deg,#940080,#770078);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#870078;
+  --hs-seg-bg:#efdae3;
+  --hs-seg-ink:#84036d;
+  --hs-switch-on:#b25191;
+  --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
+  --hs-toast-bg:rgba(49,20,46,.92);
+  --hs-pill-on-ink:#84036d;
+}
+:root[data-happy-appearance-app="sport"]{
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary:linear-gradient(110deg,#8665dc,#6254cf);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#6254cf;
+  --hs-seg-bg:#edf8ff;
+  --hs-seg-ink:#5a50d1;
+  --hs-switch-on:#8071df;
+  --hs-sheet-bg:linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%);
+  --hs-toast-bg:rgba(49,57,105,.94);
+  --hs-pill-on-ink:#5046c3;
+}
 /* ── конец блока из Color Studio ── */
 
 /* Цвета смысла: одинаковые в трёх приложениях, тема их не меняет. */
@@ -9767,7 +9804,9 @@ const ICONS={
 /* ── цвета приложения ── */
 function theme(name){
  app=name;const t=THEMES[name];if(!t||!doc)return;
- for(const k of Object.keys(t))doc.documentElement.style.setProperty(k,t[k]);
+ // С лаборатории 21.11.2026 эти цвета задаёт shared/happy-colors.css (там их может подменить тема). Код ставит их сам,
+ // только если страница этот файл не подключила.
+ if(!getComputedStyle(doc.documentElement).getPropertyValue('--happy-ink').trim())for(const k of Object.keys(t))doc.documentElement.style.setProperty(k,t[k]);
  if(rootEl)rootEl.dataset.app=name;
 }
 /* Подложка листа — фон приложения: выбранное оформление или цвета приложения по умолчанию. */
