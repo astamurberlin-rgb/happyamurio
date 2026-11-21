@@ -7,12 +7,12 @@
  const mix=(hex,target,amount)=>'#'+[1,3,5].map(i=>Math.round(parseInt(hex.slice(i,i+2),16)*(1-amount)+target*amount).toString(16).padStart(2,'0')).join('');
  const glow=(color,x,y,radius,strength)=>({enabled:true,color,x,y,radius,strength});
  /* 21.11.2026 (Астамур): цвет главной кнопки и цветных мест темы (меню, выделения, переключатели) берётся с фона темы —
-    примерно на 20 % от верха, а не из отдельного цвета. Цвет затемняется, пока белый значок на нём не станет читаемым
+    примерно на 10 % от верха (чистая зона шапки), а не из отдельного цвета. Цвет затемняется, пока белый значок на нём не станет читаемым
     (контраст 4,5 : 1). Ночные темы и темы-оригиналы приложений (Бордо — Meal, Фиолетовый бриз — Sport) остаются со своим цветом. */
  const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),hex=a=>'#'+a.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
  const lum=h=>{const c=rgb(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]};
  function fromTop(colors){
-  const P=[0,17,50,76,100],p=20;let i=0;while(i<P.length-2&&p>P[i+1])i++;
+  const P=[0,17,50,76,100],p=10;let i=0;while(i<P.length-2&&p>P[i+1])i++;
   const t=(p-P[i])/(P[i+1]-P[i]),a=rgb(colors[i]),b=rgb(colors[i+1]);let c=hex(a.map((v,k)=>v+(b[k]-v)*t));
   for(let n=0;n<20&&1.05/(lum(c)+.05)<4.5;n++)c=hex(rgb(c).map(v=>v*.93));
   return c;
