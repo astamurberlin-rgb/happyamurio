@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1483410,
-   "sha256": "575453a108a675d71bb82ccc881bc725b839d0102575bc94d1cc3f9eca6d53ea"
+   "size": 1484521,
+   "sha256": "cc0f69cd37d3e80174e96ecd30db2d25161e41b2dbd694dcf7e958a90aa24b5a"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -255,7 +255,7 @@
   {
    "path": "index.html",
    "size": 518314,
-   "sha256": "951a9ac70f42cd1db1495bd2ab37409d7fa69cb74693300248c2b65ab2c8358d"
+   "sha256": "8caac1330f69dbc16570ab4cd9c5c278360e73dd6c6616aa41f5e08b316a7774"
   },
   {
    "path": "manifest.webmanifest",
@@ -284,13 +284,13 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 78202,
-   "sha256": "d043090b7ee5eaa824872388003384678d8b2bde487264eb87840ae4cb5b7db0"
+   "size": 78566,
+   "sha256": "6f63233cd5d79de497b8b9881cd7f14039c9f8687cabd9d1173f6db1bc37c6ce"
   },
   {
    "path": "selfcare.css",
-   "size": 22361,
-   "sha256": "0be5a94b838eb257a3b8c4eb1ddc14a534d58a3e0845e6f1377dc1a7f8f50ade"
+   "size": 22988,
+   "sha256": "8f98f338758b4aa73fa2608a0642651865072f5f35c2a0ca9eaf27a45ff3e21b"
   },
   {
    "path": "shared/apps.json",
@@ -415,7 +415,7 @@
   {
    "path": "shared/happy-reference-themes.js",
    "size": 10057,
-   "sha256": "98eeebc95c6b82be2523df557e474420e1c622fe12a2084cec56c35bc9dff5c2"
+   "sha256": "9c8aec121592b92c773cb225302fc882a7a5da51c1f56dcc8e4c68509cb0ac87"
   },
   {
    "path": "shared/happy-screens.css",

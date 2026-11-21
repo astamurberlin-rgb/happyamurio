@@ -519,8 +519,8 @@
   },
   {
    "path": "checks/check-shop.mjs",
-   "size": 17535,
-   "sha256": "cd9fe94a6360db9f12d1cdd8648f60ceaedf1a6a63bae3466a0e0ff062399270"
+   "size": 17618,
+   "sha256": "9930a3b2f8daa219472518a4d87afc86b72ce4672ca359151ede7a01e5a0f84a"
   },
   {
    "path": "checks/check-supplements-store.mjs",
@@ -544,8 +544,8 @@
   },
   {
    "path": "collections.css",
-   "size": 10780,
-   "sha256": "9582a1b6abd12c055c7edcd4007fb3601aef9de5ef40872d365f53b2899ac92f"
+   "size": 11251,
+   "sha256": "898a02fad789317b05a44ad40000780f44322536a7c136ad24f4fac36a0806c6"
   },
   {
    "path": "collections.js",
@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 663661,
-   "sha256": "cb9d68bc81b2a1946bea932ccdfc0a84cc93b114211a726da252fd0fa769ad21"
+   "size": 663859,
+   "sha256": "1614d2ec5aaaabce9054f2ae645cbf368a2152625b5ed0f1dc47da49f5e8e5bf"
   },
   {
    "path": "kfct.js",
@@ -935,7 +935,7 @@
   {
    "path": "shared/happy-reference-themes.js",
    "size": 10057,
-   "sha256": "98eeebc95c6b82be2523df557e474420e1c622fe12a2084cec56c35bc9dff5c2"
+   "sha256": "9c8aec121592b92c773cb225302fc882a7a5da51c1f56dcc8e4c68509cb0ac87"
   },
   {
    "path": "shared/happy-screens.css",
