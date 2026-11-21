@@ -33,6 +33,7 @@
 | Color Studio — палитры трёх приложений | 12.9 | https://astamurberlin-rgb.github.io/happyamurio/prototypes/studio.html | `prototypes/` |
 | Icon Studio — иконки | 2.18 | https://astamurberlin-rgb.github.io/happyamurio/icon-studio/ | `icon-studio/` |
 | Студия дуг — дуга кольца энергии Day | 1.2 | https://astamurberlin-rgb.github.io/happyamurio/prototypes/arc-studio/ | `prototypes/arc-studio/` |
+| Советы — какую модель ИИ брать под задачу | 1.0 | https://astamurberlin-rgb.github.io/happyamurio/tips/ | `tips/` |
 
 Ключ доступа к Happy Notes и «Файлам» живёт только в ссылке и в браузере устройства. В репозиторий он не попадает.
 
@@ -59,4 +60,4 @@ Icon Studio собирается в Sites у ChatGPT. При переносе о
 
 В корне лежат четыре страницы, которые к трём приложениям не относятся: `signal-v3.html` и три редактора `ornament_facade_editor_….html`.
 
-— Claude · последняя правка 20.11.2026 02:52
+— Claude · последняя правка 21.11.2026 15:32

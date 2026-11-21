@@ -1,0 +1,229 @@
+{
+ "groups": [
+  {
+   "id": "claude",
+   "name": "Claude",
+   "rows": [
+    {
+     "model": "fable",
+     "name": "Fable",
+     "effort": "low",
+     "usd": 3.1,
+     "score": 54
+    },
+    {
+     "model": "fable",
+     "name": "Fable",
+     "effort": "medium",
+     "usd": 3.8,
+     "score": 56
+    },
+    {
+     "model": "fable",
+     "name": "Fable",
+     "effort": "high",
+     "usd": 9.08,
+     "score": 62
+    },
+    {
+     "model": "fable",
+     "name": "Fable",
+     "effort": "xhigh",
+     "usd": 14.83,
+     "score": 62
+    },
+    {
+     "model": "fable",
+     "name": "Fable",
+     "effort": "max",
+     "usd": 26.54,
+     "score": 65
+    },
+    {
+     "model": "opus",
+     "name": "Opus",
+     "effort": "low",
+     "usd": 0.98,
+     "score": 35
+    },
+    {
+     "model": "opus",
+     "name": "Opus",
+     "effort": "medium",
+     "usd": 2.45,
+     "score": 48
+    },
+    {
+     "model": "opus",
+     "name": "Opus",
+     "effort": "high",
+     "usd": 3.47,
+     "score": 52
+    },
+    {
+     "model": "opus",
+     "name": "Opus",
+     "effort": "xhigh",
+     "usd": 6.05,
+     "score": 57
+    },
+    {
+     "model": "opus",
+     "name": "Opus",
+     "effort": "max",
+     "usd": 10.04,
+     "score": 59
+    },
+    {
+     "model": "sonnet",
+     "name": "Sonnet",
+     "effort": "low",
+     "usd": 0.51,
+     "score": 26
+    },
+    {
+     "model": "sonnet",
+     "name": "Sonnet",
+     "effort": "medium",
+     "usd": 0.78,
+     "score": 31
+    },
+    {
+     "model": "sonnet",
+     "name": "Sonnet",
+     "effort": "high",
+     "usd": 1.64,
+     "score": 42
+    },
+    {
+     "model": "sonnet",
+     "name": "Sonnet",
+     "effort": "xhigh",
+     "usd": 4.09,
+     "score": 50
+    },
+    {
+     "model": "sonnet",
+     "name": "Sonnet",
+     "effort": "max",
+     "usd": 10.02,
+     "score": 55
+    }
+   ]
+  },
+  {
+   "id": "gpt",
+   "name": "GPT",
+   "rows": [
+    {
+     "model": "astra",
+     "name": "Astra",
+     "effort": "low",
+     "usd": null,
+     "score": 46
+    },
+    {
+     "model": "astra",
+     "name": "Astra",
+     "effort": "medium",
+     "usd": null,
+     "score": 57
+    },
+    {
+     "model": "astra",
+     "name": "Astra",
+     "effort": "high",
+     "usd": null,
+     "score": 60
+    },
+    {
+     "model": "astra",
+     "name": "Astra",
+     "effort": "xhigh",
+     "usd": 2.52,
+     "score": 62
+    },
+    {
+     "model": "astra",
+     "name": "Astra",
+     "effort": "max",
+     "usd": 4.0,
+     "score": 62
+    },
+    {
+     "model": "sol",
+     "name": "Sol",
+     "effort": "low",
+     "usd": 0.18,
+     "score": 41
+    },
+    {
+     "model": "sol",
+     "name": "Sol",
+     "effort": "medium",
+     "usd": 0.41,
+     "score": 53
+    },
+    {
+     "model": "sol",
+     "name": "Sol",
+     "effort": "high",
+     "usd": 0.56,
+     "score": 55
+    },
+    {
+     "model": "sol",
+     "name": "Sol",
+     "effort": "xhigh",
+     "usd": 0.65,
+     "score": 56
+    },
+    {
+     "model": "sol",
+     "name": "Sol",
+     "effort": "max",
+     "usd": 1.01,
+     "score": 57
+    }
+   ]
+  },
+  {
+   "id": "gemini",
+   "name": "Gemini",
+   "rows": [
+    {
+     "model": "gemini",
+     "name": "Neon",
+     "effort": "low",
+     "usd": 0.75,
+     "score": 44
+    },
+    {
+     "model": "gemini",
+     "name": "Neon",
+     "effort": "medium",
+     "usd": 1.9,
+     "score": 55
+    },
+    {
+     "model": "gemini",
+     "name": "Neon",
+     "effort": "high",
+     "usd": 3.74,
+     "score": 60
+    },
+    {
+     "model": "gemini",
+     "name": "Neon",
+     "effort": "xhigh",
+     "usd": 6.44,
+     "score": 61
+    }
+   ]
+  }
+ ],
+ "base": {
+  "model": "opus",
+  "effort": "medium"
+ }
+}

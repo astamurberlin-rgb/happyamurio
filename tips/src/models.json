@@ -1,0 +1,9 @@
+[
+  {"model": "fable", "label": "Claude Fable 5.2", "short": "Fable 5.2", "family": "Claude", "fam": 1, "tint": 1, "order": 1, "usd": 27, "cost": 26.54, "usd_in": 8, "usd_out": 40},
+  {"model": "opus", "label": "Claude Opus 5.5", "short": "Opus 5.5", "family": "Claude", "fam": 1, "tint": 0.72, "order": 2, "usd": 10, "cost": 10.04, "usd_in": 4, "usd_out": 20},
+  {"model": "sonnet", "label": "Claude Sonnet 5.5", "short": "Sonnet 5.5", "family": "Claude", "fam": 1, "tint": 0.48, "order": 3, "usd": 10, "cost": 10.02, "usd_in": 2, "usd_out": 10},
+  {"model": "astra", "label": "GPT-6.2 Astra", "short": "Astra 6.2", "family": "GPT", "fam": 2, "tint": 1, "order": 4, "usd": 4, "cost": 4, "usd_in": 8, "usd_out": 40},
+  {"model": "sol", "label": "GPT-6.2 Sol", "short": "Sol 6.2", "family": "GPT", "fam": 2, "tint": 0.55, "order": 5, "usd": 1, "cost": 1.01, "usd_in": 2, "usd_out": 10},
+  {"model": "gemini", "label": "Gemini 4 Neon", "short": "Gemini Neon", "family": "Gemini", "fam": 0, "tint": 1, "order": 6, "usd": 6, "cost": 6.44, "usd_in": 3, "usd_out": 15},
+  {"model": "perplexity", "label": "Perplexity", "short": "Perplexity", "family": "Perplexity", "fam": 3, "tint": 1, "order": 7, "usd": null, "cost": null, "usd_in": null, "usd_out": null}
+]

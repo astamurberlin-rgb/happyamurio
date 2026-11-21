@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ru" data-app-version="1.0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0a10">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Советы · 1.0</title>
+<link rel="icon" type="image/png" sizes="32x32" href="./app-icons/tips-32.png?v=1.0">
+<link rel="icon" type="image/png" sizes="192x192" href="./app-icons/tips-192.png?v=1.0">
+<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/tips-180.png?v=1.0">
+<meta name="apple-mobile-web-app-title" content="Советы">
+<style>
+:root{
+  /* Layout: one standalone page, no app shell: a small header (ring mark, the name «Советы», the date the numbers were taken), then four rows of pills, each with its own horizontal carousel of cards (rings by task, bars by model, cost by effort, fast models), then notes on how to read it and the sources. Colour: Notes near-black base with its soft violet accent; ring colours are the neon stops of the notes wordmark, one hue per vendor, paler for junior models. Type scale 12/14/16/20/28, weights 400/600/700/800 (Happy rules: 28 and 800 only for the page title). */
+  --base:#0b0a10;
+  --ink:#ece9f5;
+  --muted:rgba(236,233,245,.64);
+  --glass:rgba(255,255,255,.05);
+  --glass-brd:rgba(196,180,255,.15);
+  --paper:rgba(20,18,28,.96);
+  --paper-ink:#e7e4f0;
+  --paper-muted:#9d98b0;
+  --paper-line:rgba(196,180,255,.13);
+  --accent:#b2a6ff;
+  --accent-strong:#cfc5ff;
+  --accent-ink:#17112e;
+  --fresh:#ffb585;
+  --fresh-soft:rgba(255,150,80,.15);
+  --m-fable:#ec5bcb;
+  --m-opus:#9c4be0;
+  --m-sonnet:#e7a8f5;
+  --m-astra:#2f7bff;
+  --m-sol:#8fb8ff;
+  --m-gemini:#17cfa8;
+  --m-perplexity:#f2d14b;
+  --m-haiku:#ec5bcb;
+  --m-luna:#8fb8ff;
+  --m-terra:#2f7bff;
+  --m-hydrogen:#17cfa8;
+  --m-flashlite:#8be8d2;
+  --none:rgba(255,255,255,.2);
+  --none-on:rgba(255,255,255,.3);
+  --none-dot:rgba(255,255,255,.34);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{
+  min-height:100%;overflow-x:clip;
+  font-family:var(--font);font-size:16px;line-height:1.5;
+  color:var(--ink);background:var(--base);
+  -webkit-text-size-adjust:100%;
+}
+[hidden]{display:none!important}
+.bg{position:fixed;inset:-20%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(56% 30% at 16% 8%, rgba(124,92,214,.13), transparent 70%),
+    radial-gradient(48% 28% at 90% 46%, rgba(150,96,214,.07), transparent 72%),
+    radial-gradient(56% 32% at 22% 96%, rgba(96,80,200,.08), transparent 74%),
+    var(--base);
+  filter:blur(40px)}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 0 calc(16px + env(safe-area-inset-left))}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;margin:0;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.01em}
+.mark{display:block;flex:none;width:40px;height:40px}
+.brand-name{color:var(--ink)}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .brand-name{background:linear-gradient(100deg,#ec5bcb 0%,#b06bf0 36%,#5b8cff 68%,#17cfa8 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+}
+.brand-date{flex:none;font-size:12px;line-height:1.3;color:var(--muted);text-align:right}
+/* Home-screen mode only: keeps the page from sliding under the clock; zero height in a browser tab */
+.safe-top{position:fixed;top:0;left:0;right:0;z-index:4;height:env(safe-area-inset-top);pointer-events:none;
+  background:rgba(11,10,16,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+
+.wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:14px 0 calc(32px + env(safe-area-inset-bottom))}
+.wrap > *{min-width:0}
+
+
+.tips{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.tips > *{min-width:0}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+.tips-pills{display:flex;gap:8px;overflow-x:auto;padding:2px 16px;scrollbar-width:none}
+.tips-pills::-webkit-scrollbar{display:none}
+.tpill{
+  display:inline-flex;align-items:center;gap:8px;
+  flex:0 0 auto;min-height:44px;padding:0 16px;border-radius:999px;
+  border:1px solid var(--glass-brd);background:var(--glass);color:var(--ink);
+  font:inherit;font-size:14px;font-weight:600;line-height:1;white-space:nowrap;cursor:pointer;
+}
+.tpill[aria-current="true"]{background:var(--accent-strong);border-color:var(--accent-strong);color:var(--accent-ink)}
+.tpill[aria-current="true"] .dot{box-shadow:0 0 0 2px var(--accent-ink)}
+.tpill:focus-visible,.row:focus-visible,.brow:focus-visible,.tips-track:focus-visible,.hit:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+.tips-track{
+  display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;scroll-padding-inline:16px;
+  padding:4px 16px 14px;scrollbar-width:none;
+}
+.tips-track::-webkit-scrollbar{display:none}
+.tips-slide{
+  flex:0 0 min(340px,86%);scroll-snap-align:start;
+  display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:10px;
+  padding:14px 14px 12px;border-radius:22px;
+  background:var(--paper);color:var(--paper-ink);border:1px solid var(--paper-line);
+  box-shadow:0 14px 34px rgba(0,0,0,.45);
+}
+.ring{position:relative;width:100%;max-width:264px;aspect-ratio:1;margin:-4px auto -8px}
+.ring svg{display:block;width:100%;height:100%;overflow:visible}
+.ring-center{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:2px;padding:0 28%;text-align:center;pointer-events:none}
+.ring-task{font-size:16px;font-weight:700;line-height:1.2;text-wrap:balance}
+.ring-cap{margin-top:4px;font-size:12px;line-height:1.2;color:var(--paper-muted)}
+.ring-pick{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap}
+.sector{stroke:none}
+.sector.is-none{fill:var(--none)}
+.sector.is-on{stroke:var(--ink);stroke-width:2.5}
+.sector.is-none.is-on{fill:var(--none-on)}
+.hit{fill:transparent;cursor:pointer;outline:none}
+.tick-bg{fill:var(--ink)}
+.tick{fill:none;stroke:var(--base);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.void{fill:none;stroke:var(--none);stroke-width:22}
+
+.dot{flex:none;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+.dot.is-none{background:var(--none-dot);box-shadow:none}
+
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 64px 52px;gap:8px;padding:0 10px;font-size:12px;line-height:1.3;color:var(--paper-muted)}
+.cols span:nth-child(2){text-align:left}
+.cols span:nth-child(3){text-align:right}
+.rows{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.row{
+  display:grid;grid-template-columns:10px minmax(0,1fr) 64px 52px;align-items:center;gap:8px;
+  width:100%;min-height:44px;padding:0 10px;border:0;border-radius:12px;
+  background:none;color:inherit;font:inherit;font-size:14px;line-height:1.3;text-align:left;cursor:pointer;
+}
+.row-name{display:inline-flex;align-items:center;gap:6px;min-width:0;font-weight:400}
+.row-name svg{flex:none;width:16px;height:16px;fill:none;stroke:var(--accent-strong);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.row-level{font-size:12px;color:var(--paper-muted)}
+.row-price{text-align:right;font-variant-numeric:tabular-nums;color:var(--paper-muted)}
+.row.is-lead .row-level{color:var(--paper-ink);font-weight:600}
+.row.is-pick{background:rgba(178,166,255,.12)}
+.row.is-pick .row-name{font-weight:600}
+.row[aria-expanded="true"]{background:rgba(178,166,255,.18)}
+.row-basis{margin:0;padding:6px 10px 10px 28px;font-size:14px;line-height:1.45;color:var(--muted)}
+.empty{margin:0;padding:0 10px 6px;font-size:14px;color:var(--muted)}
+
+/* Model card: a stack of bars, one per task, longest on top. Bar length = level; an empty bar = no figures. */
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 10px 0}
+.mname{display:inline-flex;align-items:center;gap:8px;min-width:0;font-size:16px;font-weight:700;line-height:1.2}
+.mprice{flex:none;font-size:12px;line-height:1.2;color:var(--paper-muted);font-variant-numeric:tabular-nums}
+.msum{margin:0;padding:0 10px 4px;font-size:14px;line-height:1.4;color:var(--paper-ink)}
+.msum span{color:var(--paper-muted)}
+.brow{
+  display:grid;gap:7px;align-content:center;width:100%;min-height:52px;padding:8px 10px 10px;
+  border:0;border-radius:12px;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;
+}
+.brow-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;line-height:1.3}
+.brow-name{display:inline-flex;align-items:center;gap:6px;min-width:0;font-weight:400}
+.brow-name svg{flex:none;width:16px;height:16px;fill:none;stroke:var(--accent-strong);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.brow-tag{font-size:12px;color:var(--paper-muted)}
+.brow-level{flex:none;font-size:12px;color:var(--paper-muted)}
+.brow.is-lead .brow-level{color:var(--paper-ink);font-weight:600}
+.brow.is-pick{background:rgba(178,166,255,.12)}
+.brow.is-pick .brow-name{font-weight:600}
+.brow[aria-expanded="true"]{background:rgba(178,166,255,.18)}
+.bar{display:block;height:10px;border-radius:999px;background:var(--none)}
+.bar i{display:block;height:100%;width:var(--w,0%);border-radius:999px;background:var(--c);box-shadow:0 0 8px var(--c)}
+.stack .row-basis{padding-left:10px}
+
+/* Usage card: one bar per model × effort on one common dollar scale, the most expensive on top.
+   ×N is the cost against the reference row (×1); tapping a row makes it the reference. */
+.ubase{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin:0;padding:0 10px 4px;font-size:14px;line-height:1.4;color:var(--paper-muted)}
+.ubase b{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--paper-ink);white-space:nowrap}
+.umult{flex:none;font-size:14px;font-weight:600;color:var(--paper-ink);font-variant-numeric:tabular-nums}
+.umult.is-none{font-size:12px;font-weight:400;color:var(--paper-muted)}
+.brow.is-base .umult{color:var(--accent-strong)}
+
+/* Fast-models cards: one metric per card as bars, plus two text cards (what vendors say, where to start for the bot). */
+.tlist{list-style:none;margin:0;padding:0 10px 4px;display:grid;gap:14px}
+.tlist-head{display:flex;align-items:center;gap:8px;margin:0 0 2px;font-size:14px;font-weight:600;line-height:1.3;color:var(--paper-ink)}
+.tlist-text{margin:0;font-size:14px;line-height:1.45;color:var(--muted)}
+
+.paper{
+  margin:0 12px;padding:16px 18px;border-radius:22px;
+  background:var(--paper);color:var(--paper-ink);border:1px solid var(--paper-line);
+  box-shadow:0 14px 34px rgba(0,0,0,.45);
+}
+.about summary{cursor:pointer;font-size:16px;font-weight:600}
+.about ul{margin:12px 0;padding-left:1.25em;display:grid;gap:8px;font-size:14px;line-height:1.5;color:var(--muted)}
+.about li::marker{color:var(--accent)}
+.about p{margin:0;font-size:14px;line-height:1.5;color:var(--muted)}
+.about p + p{margin-top:8px}
+.about a{color:var(--accent);text-underline-offset:2px}
+
+.foot{display:grid;gap:4px;justify-items:center;padding:4px 16px 0;text-align:center;font-size:12px;color:var(--muted)}
+
+@media (min-width:900px){
+  .top{max-width:1180px;margin:0 auto;padding:20px 20px 0}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 40px;gap:20px}
+  .tips-pills{padding-left:0;padding-right:0}
+  .tips-track{padding-left:0;padding-right:0;scroll-padding-inline:0}
+  .paper{margin:0}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+
+<div class="safe-top" aria-hidden="true"></div>
+
+<header class="top">
+  <h1 class="brand"><svg class="mark" viewBox="50 50 412 412" aria-hidden="true" focusable="false"><g transform="translate(256 256)"><path fill="#ec5bcb" d="M6.37,-188.2A11,11,0,0,1,18.38,-199.15A200,200,0,0,1,168.25,108.12A11,11,0,0,1,152.22,110.84L93.50,64.96A11,11,0,0,1,90.68,50.91A104,104,0,0,0,15.71,-102.80A11,11,0,0,1,6.37,-113.68Z"/><path fill="#9c4be0" d="M130.92,110.37A11,11,0,0,1,132.08,126.65A183,183,0,0,1,-108.08,147.66A11,11,0,0,1,-109.76,131.43L-71.33,88.74A11,11,0,0,1,-57.11,86.91A104,104,0,0,0,71.34,75.67A11,11,0,0,1,85.65,75.01Z"/><path fill="#2f7bff" d="M-109.14,111.69A11,11,0,0,1,-125.53,111.64A168,168,0,0,1,-156.15,-61.97A11,11,0,0,1,-140.76,-67.62L-103.36,-47.74A11,11,0,0,1,-98.14,-34.39A104,104,0,0,0,-80.46,65.88A11,11,0,0,1,-80.80,80.21Z"/><path fill="#17cfa8" d="M-122.33,-72.26A11,11,0,0,1,-126.18,-88.28A154,154,0,0,1,-18.70,-152.85A11,11,0,0,1,-6.37,-141.94L-6.37,-113.68A11,11,0,0,1,-15.71,-102.80A104,104,0,0,0,-83.39,-62.13A11,11,0,0,1,-97.38,-58.99Z"/></g><path fill="none" stroke="#fff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" d="M209 257.7l31.5 31.5 66.5-66.5"/></svg><span class="brand-name">Советы</span></h1>
+  <span class="brand-date">цифры на 20.11.2026</span>
+</header>
+
+<div class="wrap">
+  <main id="main">
+    <section class="tips" id="tips">
+      <h2 class="sr-only">Советы: какая модель для какой задачи</h2>
+      <nav class="tips-pills" id="tips-pills" aria-label="Задачи"></nav>
+      <div class="tips-track" id="tips-track" tabindex="0" aria-label="Кольца по задачам, листаются вбок"></div>
+      <h2 class="sr-only">Каждая модель: в каких задачах сильна</h2>
+      <nav class="tips-pills" id="models-pills" aria-label="Модели"></nav>
+      <div class="tips-track" id="models-track" tabindex="0" aria-label="Полоски по моделям, листаются вбок"></div>
+      <h2 class="sr-only">Расход: модель и уровень усилия</h2>
+      <nav class="tips-pills" id="usage-pills" aria-label="Чьи модели"></nav>
+      <div class="tips-track" id="usage-track" tabindex="0" aria-label="Расход по моделям и уровням усилия, листается вбок"></div>
+      <h2 class="sr-only">Быстрые модели для бытовых задач и бота</h2>
+      <nav class="tips-pills" id="fast-pills" aria-label="Быстрые модели"></nav>
+      <div class="tips-track" id="fast-track" tabindex="0" aria-label="Быстрые модели: цена, скорость, ум, листается вбок"></div>
+      <article class="paper about">
+        <details>
+          <summary>Как читать и откуда цифры</summary>
+          <ul>
+            <li>Кольца: доля круга — сила модели в задаче, толщина сектора — цена одной задачи. Галочка — что брать, прозрачно-белый сектор — цифр ещё нет. Нажми на строку или сектор, чтобы увидеть цифры теста.</li>
+            <li>Полоски по моделям: длина — уровень модели в задаче, сверху самые сильные. Пустая полоска — цифр нет. Нажми на полоску, чтобы увидеть основание.</li>
+            <li>Расход: длина полоски — цена одной задачи на этой модели и этом уровне усилия, шкала общая для всех карточек. ×N — во сколько раз это дороже или дешевле точки отсчёта (×1). Нажми на строку, и она станет точкой отсчёта. «Ум» — балл общего индекса Artificial Analysis из 100.</li>
+            <li>Расход посчитан по ценам API на задачах теста Artificial Analysis (индекс v5.0.1, ноябрь 2026). Anthropic пишет, что лимит подписки считается в токенах и зависит от модели и уровня усилия, но точных весов не публикует. Поэтому это ориентир, а не счётчик лимита.</li>
+            <li>У Astra 6.2 цена задачи найдена только для xhigh и max. У Gemini 4 Neon четыре уровня, max нет.</li>
+            <li>Быстрые модели: в каждой карточке одна мера. Цена — 1000 ответов бота по ценам API, если один ответ это 3000 токенов на вход и 300 на выход (расчёт Claude; размышления считаются как выход и увеличивают цену). Первое слово, скорость и ум — замеры Artificial Analysis (индекс v5.0.1) на самой быстрой настройке модели; нажми на строку, чтобы увидеть другие уровни.</li>
+            <li>«Бот Happy» — оценка Claude по этим замерам. Независимых тестов на таких сценариях нет.</li>
+            <li>Уровень: лидер, рядом или ниже. Рядом значит не дальше 15% от лидера, а в тестах с баллами Эло не дальше 70 баллов.</li>
+            <li>Совет «брать»: лидер, если только рядом нет модели дешевле его примерно в четыре раза и больше. Уровни и советы поставил Claude по цифрам тестов, это оценка.</li>
+            <li>Цена: средняя цена одной задачи в индексе Artificial Analysis, модель работает на максимальном усилии. Толщина сектора показывает порядок цен, а не точное отношение: Fable дороже Sol в 26 раз.</li>
+            <li>Opus и Sonnet на максимальном усилии стоят одинаково, поэтому Sonnet здесь не выигрывает.</li>
+            <li>Gemini здесь значит Gemini 4 Neon. В 3D и документах Neon ещё не измерен, там стоит Gemini 4 Argon.</li>
+            <li>Perplexity в свежих тестах моделей нет, поэтому он есть только в поиске, прозрачно-белым и без цифр.</li>
+            <li>«Всё остальное» считаю по общему индексу Artificial Analysis.</li>
+            <li>Тесты идут через API. В приложениях расход лимитов другой, порядок моделей обычно тот же.</li>
+          </ul>
+          <p>Источники: <a href="https://artificialanalysis.ai/evaluations/aa-3d">AA-3D</a>, <a href="https://artificialanalysis.ai/evaluations/gdpval-aa">GDPval-AA</a>, <a href="https://artificialanalysis.ai/articles/gemini-4-neon-intelligence-gain">индексы Artificial Analysis</a>, <a href="https://arena.ai/fi/leaderboard/">Arena</a>, <a href="https://21st.dev/benchmarks/leaderboard">21st.dev</a>, <a href="https://parallel.ai/leaderboard">Parallel</a>. Через сторонние обзоры: <a href="https://www.vktr.com/ai-platforms/gpt62-sol-nears-astra-on-mergeready-code-at-a-fifth-of-the-cost/">FrontierCode 2.0</a>, <a href="https://iacompa.com/news/google-gemini-4-neon">места Gemini 4 Neon в Arena</a>, <a href="https://www.orcarouter.ai/blog/claude-fable-5-2-vs-claude-opus-5-5">цена задачи Fable 5.2</a>.</p>
+          <p>Расход. Anthropic: <a href="https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings">модель и уровень усилия</a>, <a href="https://academy.claude.com/tutorials/how-to-select-the-right-effort-setting-for-claude-cowork-and-chat">как усилие тратит лимит</a>. Цены max: страницы моделей <a href="https://artificialanalysis.ai/models/claude-opus-5-5">Artificial Analysis</a>. Цены остальных уровней через сторонние обзоры: <a href="https://felloai.com/claude-opus-vs-sonnet/">Opus и Sonnet</a>, <a href="https://aiwiz.uk/blog/claude-fable-5-2/">Fable</a>, <a href="https://kingy.ai/blog/gpt-6-2-sol-vs-claude-opus-5-5/">Sol (оценка)</a>, <a href="https://coursiv.io/blog/gpt-6-2-astra-sol">Astra xhigh</a>, <a href="https://www.eesel.ai/blog/gemini-4-neon-pricing">Gemini 4 Neon</a>.</p>
+          <p>Быстрые модели. Компании: <a href="https://www.anthropic.com/claude/haiku">Anthropic о Haiku 5.5</a>, <a href="https://developers.openai.com/api/docs/models">OpenAI о Luna и Terra</a>, <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-6-flash-3-5-flash-lite-3-5-flash-cyber/">Google о Flash-Lite</a>. Замеры: страницы Artificial Analysis — <a href="https://artificialanalysis.ai/models/claude-haiku-5-5">Haiku 5.5</a>, <a href="https://artificialanalysis.ai/models/releases/gpt-6-luna">Luna</a>, <a href="https://artificialanalysis.ai/models/releases/gpt-6-1-terra">Terra</a>, <a href="https://artificialanalysis.ai/models/gemini-4-hydrogen">Hydrogen</a>, <a href="https://artificialanalysis.ai/models/gemini-3-5-flash-lite">Flash-Lite</a>. Через сторонние обзоры: <a href="https://www.technology.org/2026/11/13/google-gemini-4-hydrogen-replaces-gemini-3-8-flash-pricing/">слова Google о Hydrogen</a>, <a href="https://firebase.google.com/docs/ai-logic/models">список действующих моделей Google</a> (страница Google).</p>
+        </details>
+      </article>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Советы 1.0 · цифры сняты 20.11.2026 · Claude</span>
+  </footer>
+</div>
+
+<script type="application/json" id="data-models">[{"model":"fable","label":"Claude Fable 5.2","short":"Fable 5.2","order":1,"usd":27,"cost":26.54},{"model":"opus","label":"Claude Opus 5.5","short":"Opus 5.5","order":2,"usd":10,"cost":10.04},{"model":"sonnet","label":"Claude Sonnet 5.5","short":"Sonnet 5.5","order":3,"usd":10,"cost":10.02},{"model":"astra","label":"GPT-6.2 Astra","short":"Astra 6.2","order":4,"usd":4,"cost":4},{"model":"sol","label":"GPT-6.2 Sol","short":"Sol 6.2","order":5,"usd":1,"cost":1.01},{"model":"gemini","label":"Gemini 4 Neon","short":"Gemini Neon","order":6,"usd":6,"cost":6.44},{"model":"perplexity","label":"Perplexity","short":"Perplexity","order":7,"usd":null,"cost":null}]</script>
+<script type="application/json" id="data-verdicts">[{"task":"ui","model":"fable","label":"Claude Fable 5.2","level":3,"word":"лидер","take":"да","basis":"21st.dev: 85 из 100, первое место. WebDev Arena: первое место. Design Arena: 1351, второе место."},{"task":"ui","model":"opus","label":"Claude Opus 5.5","level":2,"word":"рядом","take":"нет","basis":"21st.dev: 74 из 100, восьмое место. Design Arena: пятое место."},{"task":"ui","model":"sonnet","label":"Claude Sonnet 5.5","level":2,"word":"рядом","take":"нет","basis":"WebDev Arena: третье место на момент выхода. Design Arena: десятое место. В 21st.dev цифры нет."},{"task":"ui","model":"astra","label":"GPT-6.2 Astra","level":0,"word":"нет цифр","take":"нет","basis":"Свежих тестов дизайна для версии 6.2 не нашёл."},{"task":"ui","model":"sol","label":"GPT-6.2 Sol","level":0,"word":"нет цифр","take":"нет","basis":"Свежих тестов дизайна для версии 6.2 не нашёл."},{"task":"ui","model":"gemini","label":"Gemini 4 Neon","level":1,"word":"ниже","take":"нет","basis":"WebDev Arena: седьмое место, 1764 балла на 19.11 (сторонний пересказ). Балл лидера не знаю."},{"task":"code","model":"fable","label":"Claude Fable 5.2","level":3,"word":"лидер","take":"нет","basis":"FrontierCode 2.0: 50.2%, первое место; один запуск стоит $17.73. Индекс кодовых агентов AA: 58."},{"task":"code","model":"opus","label":"Claude Opus 5.5","level":2,"word":"рядом","take":"нет","basis":"FrontierCode 2.0: 47.3%; запуск $12.82. Индекс кодовых агентов AA: 58."},{"task":"code","model":"sonnet","label":"Claude Sonnet 5.5","level":0,"word":"нет цифр","take":"нет","basis":"В этих тестах цифр нет."},{"task":"code","model":"astra","label":"GPT-6.2 Astra","level":2,"word":"рядом","take":"нет","basis":"FrontierCode 2.0: 44.2%; запуск $5.97. Индекс кодовых агентов AA: 53."},{"task":"code","model":"sol","label":"GPT-6.2 Sol","level":2,"word":"рядом","take":"да","basis":"FrontierCode 2.0: 43.8%, это 87% от лидера; запуск $1.29. Индекс кодовых агентов AA: 50."},{"task":"code","model":"gemini","label":"Gemini 4 Neon","level":2,"word":"рядом","take":"нет","basis":"FrontierCode 2.0: 46.2% (данные Google). Индекс кодовых агентов AA: 59, первое место."},{"task":"hard","model":"fable","label":"Claude Fable 5.2","level":3,"word":"лидер","take":"да","basis":"Agent Arena: 30%, первое место с большим отрывом."},{"task":"hard","model":"opus","label":"Claude Opus 5.5","level":1,"word":"ниже","take":"нет","basis":"Agent Arena: 20%, второе место."},{"task":"hard","model":"sonnet","label":"Claude Sonnet 5.5","level":1,"word":"ниже","take":"нет","basis":"Agent Arena: 16% на 11.11 (сторонний пересказ)."},{"task":"hard","model":"astra","label":"GPT-6.2 Astra","level":0,"word":"нет цифр","take":"нет","basis":"В Agent Arena версии 6.2 я не видел. По данным OpenAI, в Agents' Last Exam у Astra 78%, у Fable 73%."},{"task":"hard","model":"sol","label":"GPT-6.2 Sol","level":0,"word":"нет цифр","take":"нет","basis":"В Agent Arena версии 6.2 я не видел. По данным Google, в Agents' Last Exam у Sol 73%."},{"task":"hard","model":"gemini","label":"Gemini 4 Neon","level":1,"word":"ниже","take":"нет","basis":"Agent Arena: третье место на 19.11 (сторонний пересказ), балл в процентах не знаю. AutomationBench: 56% против 51% у Fable (данные Google и Anthropic)."},{"task":"t3d","model":"fable","label":"Claude Fable 5.2","level":2,"word":"рядом","take":"нет","basis":"AA-3D: 1271, делит 2–3 место."},{"task":"t3d","model":"opus","label":"Claude Opus 5.5","level":1,"word":"ниже","take":"нет","basis":"AA-3D: 1202."},{"task":"t3d","model":"sonnet","label":"Claude Sonnet 5.5","level":1,"word":"ниже","take":"нет","basis":"AA-3D: 1204."},{"task":"t3d","model":"astra","label":"GPT-6.2 Astra","level":3,"word":"лидер","take":"нет","basis":"AA-3D: 1318, первое место."},{"task":"t3d","model":"sol","label":"GPT-6.2 Sol","level":2,"word":"рядом","take":"да","basis":"AA-3D: 1259, делит 2–3 место."},{"task":"t3d","model":"gemini","label":"Gemini 4 Argon","level":1,"word":"ниже","take":"нет","basis":"AA-3D: 1147. Gemini 4 Neon в тесте ещё нет."},{"task":"docs","model":"fable","label":"Claude Fable 5.2","level":2,"word":"рядом","take":"нет","basis":"GDPval-AA: 1831."},{"task":"docs","model":"opus","label":"Claude Opus 5.5","level":3,"word":"лидер","take":"да","basis":"GDPval-AA: 1866, первое место."},{"task":"docs","model":"sonnet","label":"Claude Sonnet 5.5","level":2,"word":"рядом","take":"нет","basis":"GDPval-AA: 1838. Задача стоит столько же, сколько у Opus."},{"task":"docs","model":"astra","label":"GPT-6.2 Astra","level":0,"word":"нет цифр","take":"нет","basis":"Версии 6.2 в GDPval-AA ещё нет."},{"task":"docs","model":"sol","label":"GPT-6.2 Sol","level":0,"word":"нет цифр","take":"нет","basis":"Версии 6.2 в GDPval-AA ещё нет."},{"task":"docs","model":"gemini","label":"Gemini 4 Argon","level":1,"word":"ниже","take":"нет","basis":"GDPval-AA: 1634. Gemini 4 Neon в тесте ещё нет."},{"task":"search","model":"fable","label":"Claude Fable 5.2","level":2,"word":"рядом","take":"нет","basis":"Тест Parallel, ответы с поиском: 86.9; тысяча задач стоит $2063."},{"task":"search","model":"opus","label":"Claude Opus 5.5","level":2,"word":"рядом","take":"нет","basis":"Тест Parallel, ответы с поиском: 86.7; тысяча задач стоит $1058."},{"task":"search","model":"sonnet","label":"Claude Sonnet 5.5","level":1,"word":"ниже","take":"нет","basis":"Тест Parallel, ответы с поиском: 74.1; тысяча задач стоит $796."},{"task":"search","model":"astra","label":"GPT-6.2 Astra","level":2,"word":"рядом","take":"нет","basis":"Тест Parallel, ответы с поиском: 84.5; тысяча задач стоит $199."},{"task":"search","model":"sol","label":"GPT-6.2 Sol","level":2,"word":"рядом","take":"нет","basis":"Тест Parallel, ответы с поиском: 83.7; тысяча задач стоит $111."},{"task":"search","model":"gemini","label":"Gemini 4 Neon","level":3,"word":"лидер","take":"да","basis":"Тест Parallel, ответы с поиском: 88.1, первое место; тысяча задач стоит $206."},{"task":"search","model":"perplexity","label":"Perplexity","level":0,"word":"нет цифр","take":"нет","basis":"В свежих тестах его моделей нет. В Search Arena в феврале 2026 модели Sonar стояли на 15-м и 19-м местах из 22."},{"task":"all","model":"fable","label":"Claude Fable 5.2","level":3,"word":"лидер","take":"нет","basis":"Индекс Artificial Analysis: 65, первое место."},{"task":"all","model":"opus","label":"Claude Opus 5.5","level":2,"word":"рядом","take":"нет","basis":"Индекс Artificial Analysis: 59."},{"task":"all","model":"sonnet","label":"Claude Sonnet 5.5","level":1,"word":"ниже","take":"нет","basis":"Индекс Artificial Analysis: 55, это чуть больше чем на 15% ниже лидера. Задача при этом стоит как у Opus."},{"task":"all","model":"astra","label":"GPT-6.2 Astra","level":2,"word":"рядом","take":"нет","basis":"Индекс Artificial Analysis: 62."},{"task":"all","model":"sol","label":"GPT-6.2 Sol","level":2,"word":"рядом","take":"да","basis":"Индекс Artificial Analysis: 57, это 88% от лидера при цене задачи в 26 раз ниже."},{"task":"all","model":"gemini","label":"Gemini 4 Neon","level":2,"word":"рядом","take":"нет","basis":"Индекс Artificial Analysis: 61."}]</script>
+<script type="application/json" id="data-usage">{"groups":[{"id":"claude","name":"Claude","rows":[{"model":"fable","name":"Fable","effort":"low","usd":3.1,"score":54},{"model":"fable","name":"Fable","effort":"medium","usd":3.8,"score":56},{"model":"fable","name":"Fable","effort":"high","usd":9.08,"score":62},{"model":"fable","name":"Fable","effort":"xhigh","usd":14.83,"score":62},{"model":"fable","name":"Fable","effort":"max","usd":26.54,"score":65},{"model":"opus","name":"Opus","effort":"low","usd":0.98,"score":35},{"model":"opus","name":"Opus","effort":"medium","usd":2.45,"score":48},{"model":"opus","name":"Opus","effort":"high","usd":3.47,"score":52},{"model":"opus","name":"Opus","effort":"xhigh","usd":6.05,"score":57},{"model":"opus","name":"Opus","effort":"max","usd":10.04,"score":59},{"model":"sonnet","name":"Sonnet","effort":"low","usd":0.51,"score":26},{"model":"sonnet","name":"Sonnet","effort":"medium","usd":0.78,"score":31},{"model":"sonnet","name":"Sonnet","effort":"high","usd":1.64,"score":42},{"model":"sonnet","name":"Sonnet","effort":"xhigh","usd":4.09,"score":50},{"model":"sonnet","name":"Sonnet","effort":"max","usd":10.02,"score":55}]},{"id":"gpt","name":"GPT","rows":[{"model":"astra","name":"Astra","effort":"low","usd":null,"score":46},{"model":"astra","name":"Astra","effort":"medium","usd":null,"score":57},{"model":"astra","name":"Astra","effort":"high","usd":null,"score":60},{"model":"astra","name":"Astra","effort":"xhigh","usd":2.52,"score":62},{"model":"astra","name":"Astra","effort":"max","usd":4.0,"score":62},{"model":"sol","name":"Sol","effort":"low","usd":0.18,"score":41},{"model":"sol","name":"Sol","effort":"medium","usd":0.41,"score":53},{"model":"sol","name":"Sol","effort":"high","usd":0.56,"score":55},{"model":"sol","name":"Sol","effort":"xhigh","usd":0.65,"score":56},{"model":"sol","name":"Sol","effort":"max","usd":1.01,"score":57}]},{"id":"gemini","name":"Gemini","rows":[{"model":"gemini","name":"Neon","effort":"low","usd":0.75,"score":44},{"model":"gemini","name":"Neon","effort":"medium","usd":1.9,"score":55},{"model":"gemini","name":"Neon","effort":"high","usd":3.74,"score":60},{"model":"gemini","name":"Neon","effort":"xhigh","usd":6.44,"score":61}]}],"base":{"model":"opus","effort":"medium"}}</script>
+<script type="application/json" id="data-fast">{"models":[{"id":"haiku","name":"Haiku 5.5"},{"id":"luna","name":"Luna 6"},{"id":"terra","name":"Terra 6.1"},{"id":"hydrogen","name":"Hydrogen 4"},{"id":"flashlite","name":"Flash-Lite 3.5"},{"id":"sonnet","name":"Sonnet 5.5"}],"slides":[{"id":"price","pill":"Быстрые · цена","title":"Цена 1000 ответов","hint":"меньше — лучше","kind":"bars","better":"low","rows":[{"model":"haiku","value":0.45,"show":"$0,45","tag":"","note":"Токены: $0,10 вход, $0,50 выход за миллион. Если запрос длиннее 100 тысяч токенов, цена в 5 раз выше."},{"model":"luna","value":0.45,"show":"$0,45","tag":"","note":"Токены: $0,10 вход, $0,50 выход за миллион."},{"model":"flashlite","value":1.65,"show":"$1,65","tag":"","note":"Токены: $0,30 вход, $2,50 выход за миллион."},{"model":"terra","value":4.5,"show":"$4,50","tag":"","note":"Токены: $1 вход, $5 выход за миллион."},{"model":"hydrogen","value":6.75,"show":"$6,75","tag":"","note":"Токены: $1,50 вход, $7,50 выход за миллион. Это новое имя Flash; он вдвое дороже прежнего 3.8 Flash."},{"model":"sonnet","value":9.0,"show":"$9,00","tag":"для сравнения","note":"Не быстрая модель, стоит здесь как точка сравнения. Токены: $2 вход, $10 выход за миллион."}]},{"id":"first","pill":"Первое слово","title":"Ждать первое слово","hint":"меньше — лучше","kind":"bars","better":"low","rows":[{"model":"luna","value":1.56,"show":"1,6 с","tag":"без размышлений","note":"На medium: 6,2 с."},{"model":"terra","value":2.51,"show":"2,5 с","tag":"без размышлений","note":"На medium: 5,4 с."},{"model":"flashlite","value":4.73,"show":"4,7 с","tag":"минимум","note":"Уровень по умолчанию."},{"model":"haiku","value":5.91,"show":"5,9 с","tag":"low","note":"На medium: 9,3 с. Без размышлений Haiku в тесте не мерили."},{"model":"hydrogen","value":6.09,"show":"6,1 с","tag":"low","note":"На medium: 12,4 с."}]},{"id":"speed","pill":"Скорость","title":"Скорость текста","hint":"больше — лучше","kind":"bars","better":"high","rows":[{"model":"flashlite","value":314,"show":"314 ток/с","tag":"минимум","note":""},{"model":"haiku","value":216,"show":"216 ток/с","tag":"low","note":""},{"model":"hydrogen","value":158,"show":"158 ток/с","tag":"low","note":""},{"model":"luna","value":82,"show":"82 ток/с","tag":"без размышлений","note":""},{"model":"terra","value":58,"show":"58 ток/с","tag":"без размышлений","note":""}]},{"id":"mind","pill":"Ум","title":"Ум на быстрой настройке","hint":"больше — лучше","kind":"bars","better":"high","rows":[{"model":"terra","value":31,"show":"31","tag":"без размышлений","note":"На medium 38, на max 51 из 100."},{"model":"hydrogen","value":27,"show":"27","tag":"low","note":"На medium 41, на xhigh 54 из 100."},{"model":"haiku","value":19,"show":"19","tag":"low","note":"На medium 25, на max 36 из 100."},{"model":"flashlite","value":12,"show":"12","tag":"минимум","note":"Других уровней в тесте нет."},{"model":"luna","value":9,"show":"9","tag":"без размышлений","note":"На medium 18, на max 28 из 100."}]},{"id":"says","pill":"Что говорят компании","title":"Что говорят компании","hint":"официально","kind":"list","items":[{"model":"haiku","head":"Anthropic · Haiku 5.5","text":"Для чата, голосовых агентов, живой поддержки и помощников внутри приложений, где важнее всего скорость."},{"model":"luna","head":"OpenAI · Luna","text":"Самая экономная модель для узких массовых задач, когда важна цена."},{"model":"terra","head":"OpenAI · Terra","text":"Быстрая модель для ясного письма, работы с картинками и управления компьютером."},{"model":"hydrogen","head":"Google · Hydrogen","text":"Быстро выполняет повседневные задачи и работу агентов. Заменяет 3.8 Flash."},{"model":"flashlite","head":"Google · Flash-Lite","text":"Самая быстрая и дешёвая модель поколения 3.5. В Gemini 4 лёгкой модели пока нет, поэтому она остаётся актуальной."}]},{"id":"bot","pill":"Бот Happy","title":"Бот Happy: кто что делает","hint":"оценка Claude","kind":"list","items":[{"head":"Запись еды и короткий ответ","text":"Важно: цена и первое слово. С 20.11 модель выбираем пробой: Haiku 5.5, Flash-Lite 3.5 и Hydrogen. Haiku по токенам дешевле Flash-Lite в 3–5 раз."},{"head":"Найти продукт или запись в приложении","text":"Дешёвая модель только понимает фразу. Ищет в каталогах и считает само приложение."},{"head":"Совет, разбор дня, рецепт","text":"Важно: знания, а не скорость. Сюда идёт сильная модель. Основной кандидат — Hydrogen, запасной — Terra."},{"head":"Рецепт из интернета","text":"Важно: поиск только по списку сайтов. Он есть у Claude. У Gemini поиск Google так не ограничить (ответ на форуме Google)."},{"head":"Как проверить","text":"Тестов на твоих сценариях нет. Надёжный способ: 20 твоих настоящих фраз прогнать через кандидатов и сравнить ответы, время и цену. Схема пути запроса лежит на доске «Бот Happy · путь запроса», решения записаны в Todoist, в карточках «Бот Meal · 2–4»."}]}]}</script>
+<script src="./assets/d3.min.js?v=7.9.0"></script>
+<script>
+(() => {
+  "use strict";
+  const MODELS = JSON.parse(document.getElementById("data-models").textContent);
+  const VERDICTS = JSON.parse(document.getElementById("data-verdicts").textContent);
+  const TASKS = [
+    { id: "ui", name: "Дизайн" }, { id: "code", name: "Код" }, { id: "hard", name: "Долгие задачи" },
+    { id: "t3d", name: "3D-сцены" }, { id: "docs", name: "Документы" }, { id: "search", name: "Поиск" },
+    { id: "all", name: "Всё остальное" }, { id: "images", name: "Картинки" }
+  ];
+  const byModel = new Map(MODELS.map((m) => [m.model, m]));
+  const maxCost = Math.max(1, ...MODELS.map((m) => Number(m.cost) || 0));
+  const colorOf = (id) => "var(--m-" + id + ")";
+  const band = (cost) => 6 + 32 * Math.sqrt((Number(cost) || 0) / maxCost);
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const CHECK = '<svg viewBox="0 0 24 24" role="img" aria-label="брать"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function dot(id, none) {
+    const d = el("i", "dot" + (none ? " is-none" : ""));
+    d.style.setProperty("--c", colorOf(id));
+    return d;
+  }
+  function rowsOf(task) {
+    return VERDICTS.filter((v) => v.task === task)
+      .map((v) => {
+        const m = byModel.get(v.model) || {};
+        const same = v.label === m.label;
+        return Object.assign({}, v, { m, name: same ? (m.short || v.label) : v.label, price: same && m.usd != null ? "$" + m.usd : "—" });
+      })
+      .sort((a, b) => Number(a.m.order) - Number(b.m.order));
+  }
+
+  function drawRing(svgBox, task, rows, onPick) {
+    const R0 = 70;
+    const svg = d3.select(svgBox).append("svg").attr("viewBox", "0 0 272 272").attr("role", "img")
+      .attr("aria-label", task.name + ". Лидер: " + (rows.filter((r) => r.level === 3).map((r) => r.name).join(", ") || "нет") + ". Брать: " + (rows.filter((r) => r.take === "да").map((r) => r.name).join(", ") || "нет") + ".");
+    const fid = "neon-" + task.id;
+    const f = svg.append("defs").append("filter").attr("id", fid).attr("x", "-30%").attr("y", "-30%").attr("width", "160%").attr("height", "160%").attr("color-interpolation-filters", "sRGB");
+    f.append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", 6).attr("result", "blur");
+    f.append("feComponentTransfer").attr("in", "blur").attr("result", "glow").append("feFuncA").attr("type", "linear").attr("slope", 0.55);
+    const merge = f.append("feMerge"); merge.append("feMergeNode").attr("in", "glow"); merge.append("feMergeNode").attr("in", "SourceGraphic");
+    const root = svg.append("g").attr("transform", "translate(136,136)");
+    const marks = root.append("g").attr("filter", "url(#" + fid + ")");
+    const over = root.append("g");
+    const shapes = new Map();
+    const arcs = d3.pie().sort(null).value((r) => (r.level > 0 ? r.level : 0.8)).padAngle(0.045)(rows);
+    arcs.forEach((a) => {
+      const r = a.data; const take = r.take === "да"; const none = !(r.level > 0);
+      const outer = R0 + band(r.m.cost); const mid = (a.startAngle + a.endAngle) / 2; const off = take ? 5 : 0;
+      const sx = Math.sin(mid), sy = -Math.cos(mid);
+      const shape = marks.append("path").attr("class", "sector" + (none ? " is-none" : ""))
+        .attr("d", d3.arc().innerRadius(R0).outerRadius(outer).cornerRadius(4).padRadius(110)(a))
+        .attr("transform", "translate(" + (sx * off).toFixed(2) + "," + (sy * off).toFixed(2) + ")");
+      if (!none) shape.style("fill", colorOf(r.model));
+      shapes.set(r.model, shape);
+      if (take) {
+        const rad = outer + off + 13;
+        const badge = over.append("g").attr("transform", "translate(" + (sx * rad).toFixed(1) + "," + (sy * rad).toFixed(1) + ")");
+        badge.append("circle").attr("class", "tick-bg").attr("r", 9.5);
+        badge.append("path").attr("class", "tick").attr("d", "M-4.5,0.5L-1.5,3.5L4.5,-3.5");
+      }
+      over.append("path").attr("class", "hit")
+        .attr("d", d3.arc().innerRadius(R0 - 10).outerRadius(134)({ startAngle: a.startAngle, endAngle: a.endAngle }))
+        .attr("tabindex", "0").attr("role", "button").attr("aria-label", r.name + ": " + r.word)
+        .on("click", () => onPick(r.model))
+        .on("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onPick(r.model); } });
+    });
+    return shapes;
+  }
+
+  function buildSlide(task) {
+    const slide = el("article", "tips-slide"); slide.id = "task-" + task.id; slide.setAttribute("aria-label", task.name);
+    const ring = el("div", "ring"); const center = el("div", "ring-center");
+    center.append(el("span", "ring-task", task.name));
+    const rows = rowsOf(task.id);
+    if (!rows.length) {
+      ring.innerHTML = '<svg viewBox="0 0 272 272" role="img" aria-label="' + task.name + ': свежих тестов нет"><circle class="void" cx="136" cy="136" r="81"/></svg>';
+      ring.append(center);
+      slide.append(ring, el("p", "empty", "Свежих независимых тестов нет."));
+      return slide;
+    }
+    const picks = rows.filter((r) => r.take === "да");
+    if (picks.length) {
+      center.append(el("span", "ring-cap", "брать"));
+      picks.forEach((p) => { const line = el("span", "ring-pick"); line.append(dot(p.model), document.createTextNode(p.name)); center.append(line); });
+    }
+    const buttons = new Map(); const notes = new Map(); let open = null; let shapes = new Map();
+    const pick = (id) => {
+      open = open === id ? null : id;
+      buttons.forEach((b, key) => { b.setAttribute("aria-expanded", key === open ? "true" : "false"); notes.get(key).hidden = key !== open; });
+      shapes.forEach((s, key) => s.classed("is-on", key === open));
+    };
+    shapes = drawRing(ring, task, rows, pick);
+    ring.append(center);
+    const cols = el("div", "cols"); cols.append(el("span", null, "модель"), el("span", null, "уровень"), el("span", null, "цена"));
+    const list = el("ul", "rows");
+    rows.forEach((r) => {
+      const li = el("li");
+      const b = el("button", "row" + (r.take === "да" ? " is-pick" : "") + (r.level === 3 ? " is-lead" : "")); b.type = "button"; b.setAttribute("aria-expanded", "false");
+      const name = el("span", "row-name"); name.append(document.createTextNode(r.name));
+      if (r.take === "да") name.insertAdjacentHTML("beforeend", CHECK);
+      b.append(dot(r.model, !(r.level > 0)), name, el("span", "row-level", r.word), el("span", "row-price", r.price));
+      b.addEventListener("click", () => pick(r.model));
+      const note = el("p", "row-basis", r.basis || ""); note.hidden = true;
+      buttons.set(r.model, b); notes.set(r.model, note);
+      li.append(b, note); list.append(li);
+    });
+    slide.append(ring, cols, list);
+    return slide;
+  }
+
+  // One card per model: a stack of bars, one bar per task, the strongest on top.
+  // Bar length = level (leader full, near two thirds, below one third); no figures = empty bar.
+  const LEVEL_W = ["0%", "33.3%", "66.6%", "100%"];
+  function buildModelSlide(m) {
+    const slide = el("article", "tips-slide"); slide.id = "model-" + m.model; slide.setAttribute("aria-label", m.short);
+    const own = new Map(VERDICTS.filter((v) => v.model === m.model).map((v) => [v.task, v]));
+    const rows = TASKS.map((t, i) => {
+      const v = own.get(t.id);
+      return {
+        t, i, level: v ? Number(v.level) || 0 : 0, word: v ? v.word : "нет цифр", take: !!v && v.take === "да",
+        tag: v && v.label !== m.label ? String(v.label).replace(/^Gemini 4 /, "") : "",
+        basis: v ? (v.basis || "") : (t.id === "images" ? "Свежих независимых тестов нет." : "У этой модели в этой задаче свежих независимых тестов нет.")
+      };
+    }).sort((a, b) => b.level - a.level || Number(b.take) - Number(a.take) || a.i - b.i);
+    const head = el("div", "mhead"); const name = el("span", "mname");
+    name.append(dot(m.model), document.createTextNode(m.short));
+    head.append(name, el("span", "mprice", m.usd != null ? "$" + m.usd + " за задачу" : "цены нет"));
+    const picks = rows.filter((r) => r.take).sort((a, b) => a.i - b.i).map((r) => r.t.name);
+    const sum = el("p", "msum"); sum.append(el("span", null, "Брать: "), document.createTextNode(picks.length ? picks.join(", ") : "ни в одной задаче"));
+    const parts = new Map(); let open = null;
+    const toggle = (id) => {
+      open = open === id ? null : id;
+      parts.forEach((p, key) => { p.b.setAttribute("aria-expanded", key === open ? "true" : "false"); p.note.hidden = key !== open; });
+    };
+    const list = el("ul", "rows stack");
+    rows.forEach((r) => {
+      const li = el("li");
+      const b = el("button", "brow" + (r.take ? " is-pick" : "") + (r.level === 3 ? " is-lead" : "")); b.type = "button"; b.setAttribute("aria-expanded", "false");
+      b.dataset.task = r.t.id; b.dataset.level = String(r.level);
+      b.style.setProperty("--c", colorOf(m.model)); b.style.setProperty("--w", LEVEL_W[r.level] || "0%");
+      const nm = el("span", "brow-name"); nm.append(document.createTextNode(r.t.name));
+      if (r.tag) nm.append(el("span", "brow-tag", "по " + r.tag));
+      if (r.take) nm.insertAdjacentHTML("beforeend", CHECK);
+      const top = el("span", "brow-top"); top.append(nm, el("span", "brow-level", r.word));
+      const bar = el("span", "bar"); bar.setAttribute("aria-hidden", "true"); if (r.level > 0) bar.append(el("i"));
+      b.append(top, bar);
+      const note = el("p", "row-basis", r.basis || "Основания нет."); note.hidden = true;
+      b.addEventListener("click", () => toggle(r.t.id));
+      parts.set(r.t.id, { b, note }); li.append(b, note); list.append(li);
+    });
+    slide.append(head, sum, list);
+    return slide;
+  }
+
+  // A carousel: a row of pills over a horizontally snapping track of cards.
+  // The active pill follows the card that is at the left edge.
+  function carousel(pills, track, items) {
+    const slides = new Map(); const pillOf = new Map();
+    function go(id) {
+      const slide = slides.get(id); if (!slide) return;
+      const pad = parseFloat(getComputedStyle(track).paddingLeft) || 0;
+      track.scrollTo({ left: slide.offsetLeft - track.offsetLeft - pad, behavior: calm ? "auto" : "smooth" });
+    }
+    function mark(id) {
+      pillOf.forEach((p, key) => p.setAttribute("aria-current", key === id ? "true" : "false"));
+      const p = pillOf.get(id); if (!p) return;
+      const box = pills.getBoundingClientRect(); const r = p.getBoundingClientRect();
+      if (r.left < box.left + 12 || r.right > box.right - 12) pills.scrollTo({ left: pills.scrollLeft + (r.left - box.left) - 16, behavior: calm ? "auto" : "smooth" });
+    }
+    items.forEach((it) => {
+      slides.set(it.id, it.slide); track.append(it.slide);
+      const p = el("button", "tpill"); p.type = "button"; p.setAttribute("aria-current", "false");
+      if (it.model) p.append(dot(it.model));
+      p.append(document.createTextNode(it.label));
+      p.addEventListener("click", () => go(it.id)); pillOf.set(it.id, p); pills.append(p);
+    });
+    mark(items[0].id);
+    let ticking = false;
+    track.addEventListener("scroll", () => {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const edge = track.getBoundingClientRect().left + (parseFloat(getComputedStyle(track).paddingLeft) || 0);
+        let best = null, dist = Infinity;
+        slides.forEach((s, id) => { const d = Math.abs(s.getBoundingClientRect().left - edge); if (d < dist) { dist = d; best = id; } });
+        if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 2) best = items[items.length - 1].id;
+        if (best) mark(best);
+      });
+    }, { passive: true });
+  }
+
+  // Usage: what one task costs on each model at each effort level, on one common scale.
+  // Every ×N is counted against the reference row; a tap on a priced row makes it the reference.
+  const USAGE = JSON.parse(document.getElementById("data-usage").textContent);
+  const uAll = USAGE.groups.flatMap((g) => g.rows);
+  const uMax = Math.max(...uAll.map((r) => Number(r.usd) || 0));
+  const uKey = (r) => r.model + ":" + r.effort;
+  const uName = (r) => r.name + " · " + r.effort;
+  const fmtMult = (v) => "×" + (v >= 9.95 ? String(Math.round(v)) : v >= 0.095 ? v.toFixed(1) : v.toFixed(2)).replace(".", ",");
+  const fmtUsd = (v) => "$" + Number(v).toFixed(2).replace(".", ",");
+  let uBase = uKey(USAGE.base); let uOpen = null;
+  const uParts = []; const uLabels = [];
+  function refreshUsage() {
+    const base = uAll.find((r) => uKey(r) === uBase);
+    uParts.forEach((p) => {
+      const isBase = p.key === uBase;
+      p.b.classList.toggle("is-pick", isBase); p.b.classList.toggle("is-base", isBase);
+      p.b.setAttribute("aria-expanded", p.key === uOpen ? "true" : "false"); p.note.hidden = p.key !== uOpen;
+      if (p.r.usd != null) p.mult.textContent = isBase ? "×1" : fmtMult(p.r.usd / base.usd);
+    });
+    uLabels.forEach((l) => { l.dot.style.setProperty("--c", colorOf(base.model)); l.text.textContent = uName(base); });
+  }
+  function buildUsageSlide(g) {
+    const slide = el("article", "tips-slide"); slide.id = "usage-" + g.id; slide.setAttribute("aria-label", "Расход: " + g.name);
+    const head = el("div", "mhead"); head.append(el("span", "mname", g.name), el("span", "mprice", "расход на одну задачу"));
+    const baseLine = el("p", "ubase"); const bName = el("b"); const bDot = el("i", "dot"); const bText = el("span");
+    bName.append(bDot, bText); baseLine.append(document.createTextNode("×1 —"), bName, document.createTextNode("Нажми на строку, чтобы сравнивать с ней."));
+    uLabels.push({ dot: bDot, text: bText });
+    const list = el("ul", "rows stack");
+    g.rows.slice().sort((a, b) => (b.usd == null ? -1 : b.usd) - (a.usd == null ? -1 : a.usd) || b.score - a.score).forEach((r) => {
+      const li = el("li"); const priced = r.usd != null;
+      const b = el("button", "brow"); b.type = "button"; b.setAttribute("aria-expanded", "false");
+      b.dataset.key = uKey(r); b.dataset.usd = priced ? String(r.usd) : "";
+      b.style.setProperty("--c", colorOf(r.model));
+      if (priced) b.style.setProperty("--w", Math.max(1.2, (r.usd / uMax) * 100).toFixed(1) + "%");
+      const nm = el("span", "brow-name"); nm.append(dot(r.model, !priced), document.createTextNode(uName(r)), el("span", "brow-tag", "ум " + r.score));
+      const mult = el("span", "umult" + (priced ? "" : " is-none"), priced ? "" : "цены нет");
+      const top = el("span", "brow-top"); top.append(nm, mult);
+      const bar = el("span", "bar"); bar.setAttribute("aria-hidden", "true"); if (priced) bar.append(el("i"));
+      b.append(top, bar);
+      const note = el("p", "row-basis", priced
+        ? fmtUsd(r.usd) + " за одну задачу теста. Балл ума " + r.score + " из 100."
+        : "Цену одной задачи для этого уровня не нашёл. Балл ума " + r.score + " из 100.");
+      note.hidden = true;
+      b.addEventListener("click", () => {
+        const k = uKey(r);
+        if (priced && uBase !== k) { uBase = k; uOpen = k; } else uOpen = uOpen === k ? null : k;
+        refreshUsage();
+      });
+      uParts.push({ key: uKey(r), r, b, mult, note }); li.append(b, note); list.append(li);
+    });
+    slide.append(head, baseLine, list);
+    return slide;
+  }
+
+  // Fast models: each card is one metric (bars, best on top) or a short text list.
+  const FAST = JSON.parse(document.getElementById("data-fast").textContent);
+  const fName = new Map(FAST.models.map((m) => [m.id, m.name]));
+  function buildFastSlide(s) {
+    const slide = el("article", "tips-slide"); slide.id = "fast-" + s.id; slide.setAttribute("aria-label", s.title);
+    const head = el("div", "mhead"); head.append(el("span", "mname", s.title), el("span", "mprice", s.hint));
+    slide.append(head);
+    if (s.kind === "list") {
+      const list = el("ul", "tlist");
+      s.items.forEach((it) => {
+        const li = el("li"); const h = el("p", "tlist-head");
+        if (it.model) h.append(dot(it.model));
+        h.append(document.createTextNode(it.head));
+        li.append(h, el("p", "tlist-text", it.text)); list.append(li);
+      });
+      slide.append(list);
+      return slide;
+    }
+    const max = Math.max(...s.rows.map((r) => r.value));
+    const parts = []; let open = null;
+    const list = el("ul", "rows stack");
+    s.rows.slice().sort((a, b) => (s.better === "low" ? a.value - b.value : b.value - a.value)).forEach((r, i) => {
+      const li = el("li");
+      const b = el("button", "brow" + (i === 0 ? " is-lead" : "")); b.type = "button"; b.setAttribute("aria-expanded", "false");
+      b.dataset.model = r.model; b.dataset.value = String(r.value);
+      b.style.setProperty("--c", colorOf(r.model)); b.style.setProperty("--w", Math.max(1.2, (r.value / max) * 100).toFixed(1) + "%");
+      const nm = el("span", "brow-name"); nm.append(dot(r.model), document.createTextNode(fName.get(r.model) || r.model));
+      if (r.tag) nm.append(el("span", "brow-tag", r.tag));
+      const top = el("span", "brow-top"); top.append(nm, el("span", "umult", r.show));
+      const bar = el("span", "bar"); bar.setAttribute("aria-hidden", "true"); bar.append(el("i"));
+      b.append(top, bar); li.append(b);
+      if (r.note) {
+        const note = el("p", "row-basis", r.note); note.hidden = true; li.append(note);
+        parts.push({ b, note });
+        b.addEventListener("click", () => { open = open === b ? null : b; parts.forEach((p) => { p.b.setAttribute("aria-expanded", p.b === open ? "true" : "false"); p.note.hidden = p.b !== open; }); });
+      } else b.removeAttribute("aria-expanded");
+      list.append(li);
+    });
+    slide.append(list);
+    return slide;
+  }
+
+  carousel(document.getElementById("tips-pills"), document.getElementById("tips-track"),
+    TASKS.map((t) => ({ id: t.id, label: t.name, slide: buildSlide(t) })));
+  carousel(document.getElementById("models-pills"), document.getElementById("models-track"),
+    MODELS.slice().sort((a, b) => Number(a.order) - Number(b.order)).map((m) => ({ id: m.model, label: m.short, model: m.model, slide: buildModelSlide(m) })));
+  carousel(document.getElementById("usage-pills"), document.getElementById("usage-track"),
+    USAGE.groups.map((g) => ({ id: g.id, label: "Расход · " + g.name, slide: buildUsageSlide(g) })));
+  refreshUsage();
+  carousel(document.getElementById("fast-pills"), document.getElementById("fast-track"),
+    FAST.slides.map((s) => ({ id: s.id, label: s.pill, slide: buildFastSlide(s) })));
+
+})();
+</script>
+</body>
+</html>
