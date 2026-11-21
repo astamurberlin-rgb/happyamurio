@@ -1993,10 +1993,11 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
  font-size:14px!important;font-weight:700!important;white-space:nowrap}
 .swipe-delete .icon,.exercise-name-delete .icon{display:none!important}
 .set-swipe[data-swipe-kind="rest"]>.swipe-delete{height:36px!important;min-height:36px!important;max-height:36px!important;margin-top:-18px!important}
-/* Астамур 21.11.2026: значок тренировки в поле «Название» — без рамки; в уголке карандаш (был плюс), кружком */
+/* Астамур 21.11.2026: значок тренировки в поле «Название» — без рамки; в уголке карандаш (был плюс), без кружка */
 .workout-name-input .workout-icon-toggle{border:0!important;background:none!important}
-.workout-name-input .workout-icon-plus{width:18px;height:18px;right:-4px;bottom:-4px;border-radius:50%}
-.workout-name-input .workout-icon-plus .icon{width:11px;height:11px}
+.workout-name-input .workout-icon-plus{width:auto;height:auto;right:-6px;bottom:-4px;border:0;border-radius:0;background:none;color:#fff;
+ filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}   /* карандаш без кружка, как у «Редактировать» (Астамур 21.11.2026) */
+.workout-name-input .workout-icon-plus .icon{width:15px;height:15px}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
