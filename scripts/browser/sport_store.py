@@ -153,6 +153,9 @@ def titles(page):
 
 def journal_shows(page, text):
     page.click(".dock [data-view=journal]")
+    # Журнал показывает записи выбранного периода и открывается на «Сегодня» (Sport 44.7, решение Астамура 21.11.2026).
+    # Тренировка сценария записана на 14.11.2026 (add_workout) — смотрим её день как «Свой период».
+    page.evaluate("()=>{journalPeriod={per:'custom',a:'2026-11-14',b:'2026-11-14'};render()}")
     return text in page.inner_text("#page")
 
 

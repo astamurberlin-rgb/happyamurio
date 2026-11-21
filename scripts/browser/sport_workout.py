@@ -100,6 +100,9 @@ with sync_playwright() as p:
      return {marks:m.sort(),want:[...past.filter(d=>d!==past.at(-2)&&d!==past.at(-1)).map(d=>'skipped '+d+'T19:00'),'skipped '+past.at(-1)+'T08:00','moved '+past.at(-1)+'T19:00'].sort(),cancelled:past.at(-2)}}""", TEMPLATE["id"])
     out["marks"] = marks
     page.click(".dock [data-view=journal]")
+    # Журнал открывается на «Сегодня» и показывает записи выбранного периода (решение Астамура 21.11.2026, Sport 44.7):
+    # пометки за три недели видны за «Месяц» (последние 30 дней).
+    page.click("#page .hp-period [data-hp-per=month]")
     until(page, "()=>!!document.querySelector('#page .plan-mark-tag')")
     tags = page.locator("#page .plan-mark-tag").all_inner_texts()
     out["tags"] = {t: tags.count(t) for t in set(tags)}

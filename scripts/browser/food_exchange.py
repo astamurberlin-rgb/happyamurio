@@ -253,10 +253,10 @@ with sync_playwright() as p:
     # ── 8. счётчик убрали со страницы Day — в Meal он остался, показ в Day выключился; включили в Meal — вернулся ──
     egg_i = dayp.evaluate("()=>{renderTaps();return DB.taps.findIndex(c=>c.mealCounterId==='egg')}")
     dayp.evaluate("i=>document.querySelector('#tapList [data-del=\"p'+i+'\"]').click()", egg_i)
-    dayp.wait_for_selector("#askWrap.on")
-    asked = dayp.inner_text("#askTitle")
-    dayp.click("#askYes")
-    check("Day: счётчик «Яйцо» убран со страницы Day после вопроса; «Рыбий жир» остался", "В Happy Meal он останется" in asked and bool(wait_for(dayp, lambda: len(dayp.evaluate(DAY_ROWS)) == 1 and dayp.evaluate(DAY_ROWS)[0].startswith("Рыбий"), 8, 200)))
+    # Day 60.10 (аудит, решение Астамура 20.11.2026): без вопроса — сразу убран, в сообщении «Вернуть»
+    dayp.wait_for_selector("#toast.on.tAct")
+    said = dayp.inner_text("#toast")
+    check("Day: счётчик «Яйцо» убран со страницы Day без вопроса, в сообщении «Вернуть»; «Рыбий жир» остался", "убран из Happy Day" in said and "Вернуть" in said and not dayp.is_visible("#askWrap.on") and bool(wait_for(dayp, lambda: len(dayp.evaluate(DAY_ROWS)) == 1 and dayp.evaluate(DAY_ROWS)[0].startswith("Рыбий"), 8, 200)))
     check("Meal: счётчик на месте, показ в Day выключился сам, показ в Sport остался", bool(wait_for(meal, lambda: meal.evaluate("()=>{const c=DB.taps.find(c=>c.k==='egg');return !!c&&!!c.targets&&c.targets.day===false&&c.targets.sport===true}"), 10, 200)))
     check("Sport: счётчик «Яйцо» на месте; записанные порции и «съедено» в Meal не изменились", egg_row(sport) != "" and sorted(meal.evaluate(NB)) == ["day:supp:1", "sport:supp:1"] and meal.evaluate(EATEN_MEAL) == base + 40)
     meal.evaluate("()=>{go('day');editTap(DB.taps.findIndex(c=>c.k==='egg'))}")

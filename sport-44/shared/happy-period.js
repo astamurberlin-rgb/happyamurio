@@ -45,7 +45,7 @@
  const ARROW=d=>'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+d+'"/></svg>';
  function html(st,o){
   o=o||{};const t=o.today||localToday(),r=range(st,t),per=st&&st.per||'today';
-  const btn=(k,label,aria)=>'<button type="button" data-hp="'+k+'" class="'+(per===k?'on':'')+'" aria-pressed="'+(per===k)+'"'+(aria?' aria-label="'+aria+'"':'')+'>'+label+'</button>';
+  const btn=(k,label,aria)=>'<button type="button" data-hp-per="'+k+'" class="'+(per===k?'on':'')+'" aria-pressed="'+(per===k)+'"'+(aria?' aria-label="'+aria+'"':'')+'>'+label+'</button>';
   return '<div class="hp-period"><div class="hp-row"><div class="hp-seg" role="group" aria-label="Период">'+
    btn('today',per==='today'&&r.a!==t?'День':'Сегодня')+btn('week','Неделя')+btn('month','Месяц')+btn('custom',CAL,'Свой период')+'</div>'+
    (o.share?'<button type="button" class="hp-share" data-hp-share aria-label="'+escH(o.share)+'">'+SHARE+'</button>':'')+'</div>'+
@@ -83,10 +83,11 @@
  }
  function bind(scope,o){
   scope.addEventListener('click',e=>{
-   const b=e.target.closest('[data-hp],[data-hp-share]');if(!b||!scope.contains(b))return;
+   // Только кнопки самой полоски периода: data-hp у кнопок «Войти», «Выйти», «Профиль», «Цели» — свои (happy-person.js).
+   const b=e.target.closest('.hp-period [data-hp-per],.hp-period [data-hp-share]');if(!b||!scope.contains(b))return;
    const t=o.today?o.today():localToday();
    if(b.hasAttribute('data-hp-share')){if(o.share)o.share(range(o.get(),t));return}
-   const per=b.dataset.hp;
+   const per=b.dataset.hpPer;
    if(per==='custom'){openCalendar(o);return}
    o.set(per==='today'?{per:'today',a:t,b:t}:{per});
   });
