@@ -281,6 +281,13 @@ body.has-theme-float .shell{padding-bottom:110px}
 #buttonGrid{display:flex!important;gap:8px!important;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px 14px;padding:2px 16px 6px;scroll-padding:0 16px}
 #buttonGrid::-webkit-scrollbar{display:none}
 #buttonGrid .button-option{flex:0 0 76px;scroll-snap-align:start}
+/* Общие темы и темы приложения — одна горизонтальная карусель, карточки одного размера (Астамур 21.11.2026) */
+#referenceThemes .ref-cell{flex:0 0 clamp(140px,40vw,190px)!important}
+#presetGrid{display:flex!important;grid-template-columns:none!important;gap:10px!important;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -16px 12px;padding:2px 16px 6px;scroll-padding:0 16px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+#presetGrid::-webkit-scrollbar{display:none}
+#presetGrid .preset{flex:0 0 clamp(140px,40vw,190px);scroll-snap-align:start;display:flex;flex-direction:column;align-items:stretch;padding:7px 7px 12px!important;border-radius:26px!important;text-align:left;min-height:0!important}
+#presetGrid .preset-preview{height:auto!important;aspect-ratio:1;border-radius:19px!important;margin-bottom:10px!important}
+#presetGrid .preset-label{font-size:14px;font-weight:600;padding:0 4px;color:#fff}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Color Studio</h1><p>Дизайн-студия Happy Day, Happy Meal и Happy Sport. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><div class="head-actions"><button class="chipbutton" id="fullPreview">Скрыть настройки</button><span class="hsa-slot" id="accountSlot"></span></div></header>
@@ -817,6 +824,8 @@ function addReferenceMenus(){
   const more=document.createElement('button');more.type='button';more.className='ref-more';more.textContent='⋯';more.setAttribute('aria-label','Примерить тему «'+(card.querySelector('strong')?.textContent||'')+'»');
   more.onclick=e=>{e.stopPropagation();themeTryMenu(card.dataset.themeId)};cell.append(more);
  }
+ // 21.11.2026 (Астамур): все общие темы — в один ряд, одной каруселью
+ const grids=[...document.querySelectorAll('#referenceThemes .reference-grid')];if(grids.length>1){const row=grids[0];row.classList.add('reference-row');for(const g of grids.slice(1)){row.append(...g.querySelectorAll('.ref-cell'));g.remove()}document.querySelectorAll('#referenceThemes .reference-heading').forEach(h=>h.remove())}
  const intro=document.querySelector('#referenceThemes .reference-intro');
  if(intro)intro.textContent='Тап — примерить ко всем трём превью. ⋯ или долгий тап — примерить только к Day, Meal, Sport или к самой студии. Приложения на сайте не меняются.';
 }
