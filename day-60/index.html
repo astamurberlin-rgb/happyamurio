@@ -1206,7 +1206,8 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
          свой период — лист с календарём -->
     <div id="jrPer"></div>
     <div id="jrBody"></div>
-    <div class="jOut">
+    <!-- Астамур 21.11.2026: в журнале только «Поделиться» (iOS сам предложит, что делать); «Скачать данные» — в профиле. -->
+    <div class="jOut" hidden>
       <button class="jPrt" id="jrPrint">Распечатать</button>
       <button class="jLnk" id="jrCsv">Скачать данные</button>
     </div>
@@ -3339,8 +3340,11 @@ var JR_TICK='<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
 var WD_S=['вс','пн','вт','ср','чт','пт','сб'];
 function isoAdd(iso,n){ var d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return isoOf(d) }
 function jrDay(){ var t=todayISO(); if(!JR_DAY||JR_DAY>t) JR_DAY=t; return JR_DAY }
+/* JR_ALL: выгрузка из профиля — за всё время, от первого дня с записями до сегодня (Астамур 21.11.2026). */
+var JR_ALL=false;
 function jrRange(){
   var t=todayISO();
+  if(JR_ALL){ var ks=Object.keys(DB.days||{}).filter(function(k){ return /^\d{4}-\d\d-\d\d$/.test(k)&&k<=t }).sort(); return {a:ks[0]||t,b:t} }
   if(JR_PER==='week') return {a:isoAdd(t,-6),b:t};
   if(JR_PER==='month') return {a:isoAdd(t,-29),b:t};
   if(JR_PER==='custom'){ if(!JR_RNG) JR_RNG={a:isoAdd(t,-13),b:t}; return JR_RNG }
@@ -3653,7 +3657,7 @@ function jrDlgOpen(kind){
   JR_DLG={kind:kind,chk:{}};
   var r=jrRange(), O=jrOpts(kind);
   document.getElementById('jrDlgT').textContent=kind==='csv'?'Скачать данные':'Распечатать';
-  document.getElementById('jrDlgSub').textContent=(kind==='csv'?'Таблица для Excel и Numbers':'Картинка из данных')+' за '+jrRangeTxt(r)+'. Что включить?';
+  document.getElementById('jrDlgSub').textContent=(kind==='csv'?'Таблица для Excel и Numbers':'Картинка из данных')+(JR_ALL?' за всё время':' за '+jrRangeTxt(r))+'. Что включить?';
   document.getElementById('jrDlgOpts').innerHTML=O.map(function(o){
     return '<label class="jCk"><input type="checkbox" data-opt="'+o[0]+'" checked><span class="box">'+JR_TICK+'</span><span><b>'+escH(o[1])+'</b><small>'+escH(o[2])+'</small></span></label>' }).join('');
   document.getElementById('jrDlgGo').textContent=kind==='csv'?'Скачать':'Распечатать';
@@ -3661,16 +3665,16 @@ function jrDlgOpen(kind){
   document.getElementById('jrDlgW').hidden=false;
 }
 function jrDlgSel(){ var o={}, n=0; document.querySelectorAll('#jrDlgOpts [data-opt]').forEach(function(i){ if(i.checked){ o[i.dataset.opt]=true; n++ } }); return n?o:null }
-function jrDlgClose(){ document.getElementById('jrDlgW').hidden=true; JR_DLG=null }
+function jrDlgClose(){ document.getElementById('jrDlgW').hidden=true; JR_DLG=null; JR_ALL=false }
 document.getElementById('jrPrint').addEventListener('click',function(){ jrDlgOpen('print') });
 document.getElementById('jrCsv').addEventListener('click',function(){ jrDlgOpen('csv') });
 document.getElementById('jrDlgOpts').addEventListener('change',function(){ document.getElementById('jrDlgGo').disabled=!jrDlgSel() });
 document.getElementById('jrDlgNo').addEventListener('click',jrDlgClose);
 document.getElementById('jrDlgW').addEventListener('click',function(ev){ if(ev.target===this) jrDlgClose() });
 document.getElementById('jrDlgGo').addEventListener('click',function(){
-  var sel=jrDlgSel(), k=JR_DLG&&JR_DLG.kind; if(!sel||!k) return;
-  jrDlgClose();
-  if(k==='csv') jrCsvSave(sel); else jrPrintMake(sel);
+  var sel=jrDlgSel(), k=JR_DLG&&JR_DLG.kind, all=JR_ALL; if(!sel||!k) return;
+  jrDlgClose(); JR_ALL=all;
+  try{ if(k==='csv') jrCsvSave(sel); else jrPrintMake(sel) } finally { JR_ALL=false }
 });
 /* отдать файл: на телефоне — «Поделиться» (там «Сохранить в Файлы» / «Сохранить изображение»), на компьютере — скачать */
 function jrGive(file,ok){

@@ -190,6 +190,9 @@ function open(){
    '<section class="hs-units"><h2>Единицы измерения</h2><div class="hs-units-row"><span>Вес</span>'+S().segment('wunits',[['kg','кг'],['lb','фунты']],draft.units.weight,'Единицы веса')+'</div>'+
    '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div>'+
    '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+
+   // «Скачать данные» (Астамур 21.11.2026): выгрузка — про сами данные человека, ей место в профиле, в самом низу.
+   // Приложение передаёт cfg.exportData; без неё раздела нет (сейчас — только Day).
+   (typeof cfg.exportData==='function'?'<section class="hs-units hs-export"><h2>Мои данные</h2><div class="hs-group"><button type="button" class="hs-row" data-p="export"><span>Скачать данные</span></button></div></section>':'')+
    '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'});
  }
  const input=n=>main.querySelector('[name="'+n+'"]');
@@ -225,6 +228,7 @@ function open(){
   if(a==='email'){readInputs();root.HappyWelcome.changeEmail(()=>{A.user().then(u=>{pendingEmail=u.newEmail||'';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml()}).catch(()=>{})});return}
   if(a==='email-again'){A.changeEmail(pendingEmail).then(()=>S().toast('Ссылка отправлена повторно')).catch(err=>error(err.message));return}
   if(a==='email-cancel'){A.changeEmail((A.current()||who).email).then(()=>{pendingEmail='';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML='';S().toast('Смена почты отменена')}).catch(err=>error(err.message));return}
+  if(a==='export'){cfg.exportData();return}
   if(a==='cancel'){pageH.close();return}
   if(a==='save'){readInputs();save().catch(err=>error(err.message||String(err)))}
  });

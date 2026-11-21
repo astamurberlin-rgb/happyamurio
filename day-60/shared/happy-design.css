@@ -31,7 +31,8 @@
 .dock .tab span{font-size:12px!important;font-weight:400!important}
 .dock .tab.on span{font-weight:600!important}
 
-/* ── Короткое сообщение после действия: синяя пилюля, текст 14, одна строка; «Вернуть» зелёным, без подчёркивания ── */
+/* ── Короткое сообщение после действия: синяя пилюля, текст 14; «Вернуть» зелёным, без подчёркивания.
+   Длинный текст переносится на вторую строку, а не обрезается (Астамур 21.11.2026, аудит 2 п.2). ── */
 .toast,.hs-toast{box-sizing:border-box;min-height:44px;border-radius:999px!important;padding:12px 20px!important;background:rgba(12,60,110,.92)!important;color:#fff!important;
   font-size:14px!important;font-weight:400!important;line-height:20px!important;white-space:nowrap}
 .toast button,.hs-toast button{min-height:20px;padding:0;border:0;background:none;color:#8EF3DD!important;font:inherit;font-size:14px!important;font-weight:600!important;
@@ -39,3 +40,6 @@
 
 /* аудит 20.11.2026, п. 34: карандаш у даты замера — зона нажатия 44, рисунок прежний (14) */
 .hm-grid .hm-edit{min-width:44px;min-height:44px;margin:-7px auto -8px;padding:0;display:grid;place-items:center}
+
+/* Длинное сообщение — в две строки по центру, не шире экрана без полей 16 (Астамур 21.11.2026). С «Вернуть» — как было, в строку. */
+.toast:not(.tAct),.hs-toast{white-space:normal;max-width:calc(100vw - 32px);text-align:center;text-wrap:balance}

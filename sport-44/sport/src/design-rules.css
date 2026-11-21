@@ -390,3 +390,7 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 
 /* Иконка микрофона как в Day — Астамур 21.11.2026: «иконку пусть как в Day будут у всех». */
 .dockFab svg.dayMic{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Длинное сообщение — в две строки по центру, не обрезается (Астамур 21.11.2026, аудит 2 п.2). */
+.toast:not(:has(button)),.hs-toast{white-space:normal!important;max-width:calc(100vw - 32px)!important;text-align:center;text-wrap:balance}
+.toast:not(:has(button))>span,.toast:not(:has(button))>div{white-space:normal!important;overflow:visible!important}

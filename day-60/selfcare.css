@@ -206,3 +206,10 @@ body.wheel-editing.now-dirty #fab{visibility:visible}
 .care-form .hs-wheel-wrap>.hs-field-title{display:block;margin:0 0 8px;font-size:14px;font-weight:600;color:inherit;text-align:left}
 /* 21.11.2026 (Астамур): кружки дней недели не липнут к полю «Практика» над ними; барабан длительности — отступ, как у полей */
 .care-sheet-form .care-days{margin:16px 0 2px}
+/* Аудит 2 п.3 (Астамур 21.11.2026, принято): строки «Настройки «Сейчас»» — одной карточкой с линиями между строками,
+   как остальные настройки во всех приложениях; текст 600, отступ слева 18. Перетаскивание за ручку остаётся. */
+.care-function-list{background:var(--hs-glass,rgba(255,255,255,.18));border:1px solid var(--hs-border,rgba(255,255,255,.36));border-radius:22px;overflow:hidden}
+.care-function-list>.care-function-row{margin:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0 12px 0 18px!important}
+.care-function-list>.care-function-row+.care-function-row{border-top:1px solid rgba(255,255,255,.22)!important}
+.care-function-list>.care-function-row.dragging{background:var(--hs-glass,rgba(255,255,255,.18))!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;border-radius:16px!important}
+.care-function-open>span{font-weight:600}
