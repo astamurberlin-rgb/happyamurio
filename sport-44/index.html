@@ -1098,7 +1098,8 @@ button.feed-body{cursor:pointer}
  --hm-stripe-dark:#5797df;--hm-stripe-dark-ink:#fff;--hm-stripe-light:#b1d7f8;--hm-stripe-light-ink:#30496d;
  font-size:14px;line-height:1.4;-webkit-user-select:none;user-select:none}
 @supports (color:color-mix(in srgb,red,blue)){
- .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 88%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 26%,#fff);--hm-stripe-light-ink:color-mix(in srgb,var(--hm-pin) 45%,#0b1220)}
+ /* Лаборатория 21.11.2026 (Астамур): третья колонка на тон тусклее первой; светлая полоса — тот же цвет под полупрозрачным белым слоем. */
+ .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 84%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 78%,#fff);--hm-stripe-light-ink:#fff}
 }
 .hm *{box-sizing:border-box}
 :where(.hm) button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -5988,6 +5989,7 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
    css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';}
   // Лаборатория 21.11.2026: тема подменяет общие цвета (shared/happy-colors.css) — текст, подписи, заголовок, акцент.
   const ok=c=>/^#[0-9a-f]{6}$/i.test(c||'');let tokens='';
+  if(t)tokens+='--happy-base:'+t.state.base[2]+';';   // фон столбцов таблицы замеров и других мест, где цвет приложения
   if(t&&t.ui){const u=t.ui;if(ok(u.textColor))tokens+='--happy-ink:'+u.textColor+';';if(ok(u.mutedColor))tokens+='--happy-muted:'+u.mutedColor+';--happy-dim:'+rgba(u.mutedColor,.7)+';';if(ok(u.headingColor||u.textColor))tokens+='--happy-heading:'+(u.headingColor||u.textColor)+';';}
   if(b){const s=b.state,a=s.buttonColor;if(ok(a))tokens+='--happy-accent:'+a+';--happy-dock-accent:'+a+';--hs-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--hs-seg-ink:'+a+';--hs-cancel-ink:'+a+';--hs-pill-on-ink:'+a+';--hs-primary:'+G.css(s.buttonGradient)+';';if(ok(s.buttonTextColor))tokens+='--happy-on-accent:'+s.buttonTextColor+';';}
   if(tokens)css+=' :root:root{'+tokens+'}';
