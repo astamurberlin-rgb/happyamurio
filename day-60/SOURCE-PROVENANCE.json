@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1467349,
-   "sha256": "33ecaefa669f3eb90c634c7182f7bdb1a30ba3c3456eeb51cf2eb7b112d391d8"
+   "size": 1469485,
+   "sha256": "1cb64e7df1d9b0c0f426eb1b8fc2c59044f946ce049f248ad2ceafce0fe9544d"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -254,8 +254,8 @@
   },
   {
    "path": "index.html",
-   "size": 510342,
-   "sha256": "2f5c7e072382e3faf891a472e5d10c7bb2f79d247df4fab5a0107fc7f61e4524"
+   "size": 511978,
+   "sha256": "631fd13928bc9d76fa5fc958fb7b3eee51586542f44d1a664b5934fad67c3426"
   },
   {
    "path": "manifest.webmanifest",
@@ -319,8 +319,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 14969,
-   "sha256": "263979c91fcf785104b538e0aa9265e8b7824503cf82dd815cc80209c9e0ab8a"
+   "size": 15895,
+   "sha256": "c4e7eec827b56a69368516f30d368f239eecd306a831af5f07fac373362b21b4"
   },
   {
    "path": "shared/happy-colors.css",
@@ -389,8 +389,8 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 17726,
-   "sha256": "6a11aca9e0a67c52f01b4a53fe5b4b95f03583d5e50cec59f3249f324a9b03a7"
+   "size": 18226,
+   "sha256": "bd4a262707749dac3ef6084b42af65404d65ce6172a513b52133d4e98ff3e444"
   },
   {
    "path": "shared/happy-measurements.js",
@@ -509,8 +509,8 @@
   },
   {
    "path": "tests/quiet-account.test.cjs",
-   "size": 11317,
-   "sha256": "ed505891939d5b5e07ad1d76444bcf6894a26f5ad7db933d3c993e3c36abf265"
+   "size": 11386,
+   "sha256": "10b85c3fa2d8a292fe74e9af28e29de6f4187c7d619774e1f7504d02db3055e2"
   },
   {
    "path": "tests/section-times.test.cjs",

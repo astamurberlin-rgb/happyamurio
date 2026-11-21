@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 656660,
-   "sha256": "0769c8fe00fa31bd370603404f1579e7ede6ed4e36fec2d5474817e494e0bec5"
+   "size": 658296,
+   "sha256": "78e10ac0cc2a25931b4805b26898eb31a02cb07d0fe05ad4ba0fc95fd200b601"
   },
   {
    "path": "kfct.js",
@@ -869,8 +869,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 14969,
-   "sha256": "263979c91fcf785104b538e0aa9265e8b7824503cf82dd815cc80209c9e0ab8a"
+   "size": 15895,
+   "sha256": "c4e7eec827b56a69368516f30d368f239eecd306a831af5f07fac373362b21b4"
   },
   {
    "path": "shared/happy-colors.css",
@@ -909,8 +909,8 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 17726,
-   "sha256": "6a11aca9e0a67c52f01b4a53fe5b4b95f03583d5e50cec59f3249f324a9b03a7"
+   "size": 18226,
+   "sha256": "bd4a262707749dac3ef6084b42af65404d65ce6172a513b52133d4e98ff3e444"
   },
   {
    "path": "shared/happy-measurements.js",
