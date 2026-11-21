@@ -109,7 +109,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:400;
   background:var(--glass);border:1px solid var(--glassBrd);color:var(--happy-ink);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.chip.on{background:rgba(255,255,255,.9);color:#0C6FA8;border-color:#fff;font-weight:700}
+.chip.on{background:rgba(255,255,255,.9);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff;font-weight:700}
 .chip.add{background:none;border-style:dashed}
 
 .kv{display:flex;justify-content:space-between;gap:12px;padding:11px 0;
@@ -128,7 +128,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
 ::placeholder{color:rgba(255,255,255,.5)}
 .btn{border:1px solid var(--glassBrd);background:var(--glass);color:var(--happy-ink);
   border-radius:14px;padding:11px 16px;font-size:14px;font-weight:600}
-.btn.solid{background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
+.btn.solid{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
 .btn.warn{background:rgba(255,110,140,.24);border-color:rgba(255,150,175,.5)}
 .btnrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
 .scrBar{position:relative;height:46px;border-radius:14px;touch-action:none;
@@ -182,7 +182,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .plus .pl{flex:1;min-width:0;padding:0 9px 0 4px;text-align:center;overflow:hidden}
 .plus .pl b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;transition:opacity .15s}
 .plus:active .plusIn{background:rgba(255,255,255,.3)}
-.hasDraft .plusIn{width:128px;background:rgba(255,255,255,.95);color:#0C6FA8;
+.hasDraft .plusIn{width:128px;background:rgba(255,255,255,.95);color:var(--happy-accent-ink,#0C6FA8);
   border-color:#fff;box-shadow:0 4px 14px rgba(4,40,80,.2)}
 .hasDraft .plus:active .plusIn{background:#fff}
 .plus.pop{animation:plusPop .5s cubic-bezier(.25,.8,.25,1)}
@@ -540,7 +540,7 @@ body.sheet .fab .fabX,body.card-open .fab .fabX{display:block}
   padding:24px;background:rgba(4,40,80,.45);backdrop-filter:blur(8px)}
 .ask.on{display:flex}
 .askBox{width:100%;max-width:400px;border-radius:24px;padding:20px;
-  background:linear-gradient(180deg,rgba(86,205,252,.97),rgba(40,178,248,.97));border:1px solid rgba(255,255,255,.5);
+  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.97),rgba(40,178,248,.97)));border:1px solid rgba(255,255,255,.5);
   box-shadow:0 20px 50px rgba(4,30,70,.45)}
 .askBox h3{margin:0 0 14px;font-size:16px;font-weight:700}
 .askBox input{width:100%;font-size:16px}
@@ -552,7 +552,7 @@ body.sheet .fab .fabX,body.card-open .fab .fabX{display:block}
 .imp.on .impScrim{opacity:1}
 .impSheet{position:absolute;left:0;right:0;bottom:0;
   padding:22px 20px calc(112px + env(safe-area-inset-bottom));
-  background:linear-gradient(180deg,rgba(86,205,252,.96),rgba(40,178,248,.96));
+  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.96),rgba(40,178,248,.96)));
   border-top:1px solid rgba(255,255,255,.55);
   backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
   box-shadow:0 -8px 30px rgba(4,40,80,.18);
@@ -710,7 +710,7 @@ body.card-open .dock .tab{pointer-events:none}
 .lkFreq.lkMeasure button{font-weight:700}
 .lkFreq.lkTight{gap:3px}
 .lkFreq.lkTight button{padding:0 1px}
-.lkFreq button.on{background:rgba(255,255,255,.92);border-color:#fff;color:#0C6FA8;font-weight:700}
+.lkFreq button.on{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8);font-weight:700}
 .lkHist{border-top:1px solid rgba(255,255,255,.22);padding:0 4px;margin:0 0 4px}
 .lkHist>summary,.lkStats>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;
   list-style:none;font-size:16px;font-weight:700;cursor:pointer}
@@ -776,7 +776,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icLayer.on .icScrim{opacity:1}
 .icSheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 40px - env(safe-area-inset-top));display:flex;flex-direction:column;
   padding-top:6px;border-radius:22px 22px 0 0;border-top:1px solid rgba(255,255,255,.55);
-  background:linear-gradient(180deg,rgba(86,205,252,.985),rgba(40,178,248,.985));box-shadow:0 -8px 30px rgba(4,40,80,.18);
+  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.985),rgba(40,178,248,.985)));box-shadow:0 -8px 30px rgba(4,40,80,.18);
   transform:translateY(102%);transition:transform .38s cubic-bezier(.25,.8,.25,1)}
 .icLayer.on .icSheet{transform:none}
 @media (prefers-reduced-motion:reduce){.icSheet{transition:none}}
@@ -848,7 +848,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
   background:rgba(255,255,255,.12);color:var(--happy-ink);font:inherit}
 .scKind b{display:block;font-size:16px;font-weight:700}
 .scKind small{display:block;font-size:12px;line-height:1.35;color:rgba(255,255,255,.78);margin-top:5px}
-.scKind.on{background:rgba(255,255,255,.92);border-color:#fff;color:#0C6FA8}
+.scKind.on{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8)}
 .scKind.on small{color:rgba(12,111,168,.82)}
 .scKind .nw{font-style:normal;white-space:nowrap}
 .scChips .chip{padding:9px 16px;font-size:14px}
@@ -861,7 +861,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .scLv{display:flex;align-items:center;gap:10px;margin:0 0 8px}
 .scLv .scN{flex:none;width:48px;height:42px;border-radius:12px;border:1px solid var(--glassBrd);padding:0;
   font:inherit;font-size:16px;font-weight:700;color:var(--happy-ink);background:rgba(255,255,255,.12);font-variant-numeric:tabular-nums}
-.scLv.on .scN{background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
+.scLv.on .scN{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
 .scLv input{flex:1;min-width:0}
 /* связь с Happy Meal: строка в шторке раздела, кнопка-ссылка */
 .cpMeal{margin:-14px 2px 14px;color:var(--muted)}
@@ -889,7 +889,7 @@ a.btn{display:inline-block;text-decoration:none}
 .jrSeg button{display:grid;place-items:center;min-height:30px;padding:0 7px;border:0;border-radius:999px;background:none;color:var(--happy-ink);
   font:inherit;font-size:12px;font-weight:700;line-height:1;white-space:nowrap;cursor:pointer}
 .jrSeg button[data-per="custom"]{padding:0 8px}
-.jrSeg button.on{background:rgba(255,255,255,.92);color:#0C6FA8}
+.jrSeg button.on{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8)}
 .jrSeg svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .jrPerTxt{margin:0 2px 16px;font-size:14px;font-weight:600;color:var(--muted)}
 .jrRange{display:flex;gap:10px;padding:12px 14px;margin-bottom:14px}
@@ -1008,7 +1008,7 @@ a.btn{display:inline-block;text-decoration:none}
 .jLnk{display:block;margin:14px auto 0;padding:10px 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;opacity:.92}
 .jDlgW{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:calc(90px + env(safe-area-inset-top)) 22px 0;background:rgba(4,40,80,.45)}
 .jDlgW[hidden]{display:none}
-.jDlg{width:100%;max-width:420px;border-radius:24px;padding:20px;color:var(--happy-ink);background:linear-gradient(180deg,rgba(86,205,252,.98),rgba(40,178,248,.98));
+.jDlg{width:100%;max-width:420px;border-radius:24px;padding:20px;color:var(--happy-ink);background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.98),rgba(40,178,248,.98)));
   border:1px solid rgba(255,255,255,.5);box-shadow:0 20px 50px rgba(4,30,70,.45)}
 .jDlg h3{margin:0;font-size:16px;font-weight:700}
 .jCk{position:relative;display:flex;align-items:center;gap:12px;min-height:50px;padding:8px 12px;margin-bottom:7px;border-radius:14px;background:var(--happy-glass);cursor:pointer}
@@ -1041,7 +1041,7 @@ a.btn{display:inline-block;text-decoration:none}
 .happy-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 0;padding:0}
 .happy-actions+.happy-actions{margin-top:12px}
 .happy-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;flex:0 1 auto;width:auto;max-width:100%;min-height:44px;margin:0;padding:11px 16px;border:1px solid var(--happy-line,rgba(255,255,255,.36));border-radius:999px;background:var(--happy-glass,rgba(255,255,255,.17));color:var(--happy-ink);font-family:inherit;font-size:14px;font-weight:600;line-height:20px;text-decoration:none;text-align:center;cursor:pointer;white-space:normal;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
-.happy-button.primary{min-height:48px;white-space:nowrap;background:rgba(255,255,255,.92);color:#0c6fa8;border-color:#fff}
+.happy-button.primary{min-height:48px;white-space:nowrap;background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0c6fa8);border-color:#fff}
 .happy-button:disabled{opacity:.5;cursor:default}
 .happy-button:focus-visible,.happy-input:focus-visible,.happy-password-toggle:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .happy-note{font-family:inherit;font-size:14px;line-height:1.65;color:var(--happy-muted,rgba(255,255,255,.82));margin:12px 0 0}
@@ -5842,7 +5842,7 @@ function renderAll(){
  const G=root.HappyGradients,R=root.HappyReferenceThemes;
  if(!G||!R)return;
  const themes=R.themes||R.items;
- if(!Array.isArray(themes)||themes.length!==10)return;
+ if(!Array.isArray(themes)||!themes.length)return;   // любое число тем: новая тема в happy-reference-themes.js подхватывается сама (21.11.2026)
  const app=document.documentElement.dataset.happyAppearanceApp;
  if(!['day','meal','sport'].includes(app))return;
  const key='happy-'+app+'-appearance-v1';
@@ -5885,9 +5885,9 @@ function renderAll(){
    css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';}
   // Лаборатория 21.11.2026: тема подменяет общие цвета (shared/happy-colors.css) — текст, подписи, заголовок, акцент.
   const ok=c=>/^#[0-9a-f]{6}$/i.test(c||'');let tokens='';
-  if(t)tokens+='--happy-base:'+t.state.base[2]+';';   // фон столбцов таблицы замеров и других мест, где цвет приложения
+  if(t)tokens+='--happy-base:'+t.state.base[2]+';--hs-sheet-bg:'+G.css(t.state.backgroundGradient)+';--happy-sheet:'+G.css(t.state.backgroundGradient)+';';   // листы снизу — фон темы (Астамур 21.11.2026)   // фон столбцов таблицы замеров и других мест, где цвет приложения
   if(t&&t.ui){const u=t.ui;if(ok(u.textColor))tokens+='--happy-ink:'+u.textColor+';';if(ok(u.mutedColor))tokens+='--happy-muted:'+u.mutedColor+';--happy-dim:'+rgba(u.mutedColor,.7)+';';if(ok(u.headingColor||u.textColor))tokens+='--happy-heading:'+(u.headingColor||u.textColor)+';';}
-  if(b){const s=b.state,a=s.buttonColor;if(ok(a))tokens+='--happy-accent:'+a+';--happy-dock-accent:'+a+';--hs-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--hs-seg-ink:'+a+';--hs-cancel-ink:'+a+';--hs-pill-on-ink:'+a+';--hs-primary:'+G.css(s.buttonGradient)+';';if(ok(s.buttonTextColor))tokens+='--happy-on-accent:'+s.buttonTextColor+';';}
+  if(b){const s=b.state,a=s.buttonColor;if(ok(a))tokens+='--happy-accent:'+a+';--happy-dock-accent:'+a+';--hs-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--happy-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--hs-seg-ink:'+a+';--hs-cancel-ink:'+a+';--hs-pill-on-ink:'+a+';--happy-accent-ink:'+a+';--hs-primary:'+G.css(s.buttonGradient)+';';if(ok(s.buttonTextColor))tokens+='--happy-on-accent:'+s.buttonTextColor+';';}
   if(tokens)css+=' :root:root{'+tokens+'}';
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
   if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');

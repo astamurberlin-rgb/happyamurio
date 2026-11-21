@@ -394,3 +394,5 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 /* Длинное сообщение — в две строки по центру, не обрезается (Астамур 21.11.2026, аудит 2 п.2). */
 .toast:not(:has(button)),.hs-toast{white-space:normal!important;max-width:calc(100vw - 32px)!important;text-align:center;text-wrap:balance}
 .toast:not(:has(button))>span,.toast:not(:has(button))>div{white-space:normal!important;overflow:visible!important}
+/* Кнопки действий — по ширине ряда, текст посередине; одна в ряду — во всю ширину (Астамур 21.11.2026, как в Day и Meal). */
+.happy-actions>.happy-button{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;text-align:center}

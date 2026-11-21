@@ -106,6 +106,8 @@
 }
 
 .appearance-swatch svg { width: 15px; height: 15px; }
+/* кружки «Главной кнопки» — без белого контура, как сама кнопка (Астамур 21.11.2026) */
+.appearance-options[data-kind="button"] .appearance-swatch { border: 0; }
 
 .appearance-options[data-kind="theme"] .appearance-choice {
   flex: 0 0 clamp(124px, calc((100% - 24px) / 2), 168px);

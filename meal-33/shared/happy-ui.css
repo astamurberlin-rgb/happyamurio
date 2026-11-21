@@ -42,7 +42,7 @@
 /* Source switches: label and control share one centered row. */
 .happy-switch{appearance:none;-webkit-appearance:none;display:block;flex:0 0 52px;width:52px;height:32px;min-height:32px;margin:0;padding:0;border:1px solid rgba(255,255,255,.4);border-radius:999px;background:rgba(0,0,0,.18);position:relative;cursor:pointer;transition:background .18s ease;box-sizing:border-box}
 .happy-switch::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(4,40,80,.2);transition:transform .18s ease}
-.happy-switch:checked{background:#6b5bd6;border-color:rgba(255,255,255,.65)}
+.happy-switch:checked{background:var(--happy-switch-on,#6b5bd6);border-color:rgba(255,255,255,.65)}
 .happy-switch:checked::after{transform:translateX(20px)}
 .happy-switch:disabled{cursor:default}
 .happy-switch:focus-visible{outline:2px solid #fff;outline-offset:4px}

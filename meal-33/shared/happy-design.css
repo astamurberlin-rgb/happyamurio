@@ -43,3 +43,6 @@
 
 /* Длинное сообщение — в две строки по центру, не шире экрана без полей 16 (Астамур 21.11.2026). С «Вернуть» — как было, в строку. */
 .toast:not(.tAct),.hs-toast{white-space:normal;max-width:calc(100vw - 32px);text-align:center;text-wrap:balance}
+/* Кнопки действий — по ширине ряда и с текстом посередине: одна кнопка в ряду — во всю ширину, две — поровну
+   (Астамур 21.11.2026: «сделай везде одинаково, посредине; если в ряду одна кнопка — лучше посередине»). */
+.happy-actions>.happy-button{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;text-align:center}

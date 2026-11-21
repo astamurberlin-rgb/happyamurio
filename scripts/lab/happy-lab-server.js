@@ -19,7 +19,7 @@ window.HAPPY_LAB=true;
 /* Хранилище браузера во фрейме может быть закрыто: тогда всё живёт в памяти до закрытия страницы. */
 var memoryOnly=false;
 (function(){try{window.localStorage.getItem('happy-lab-probe')}catch(e){memoryOnly=true}
- if(!memoryOnly)return;
+ if(!memoryOnly){try{if(!localStorage.getItem('happy-lab-born'))localStorage.setItem('happy-lab-born',String(Date.now()))}catch(e){}return;}
  function memory(){var m=new Map();return {getItem:function(k){k=String(k);return m.has(k)?m.get(k):null},setItem:function(k,v){m.set(String(k),String(v))},removeItem:function(k){m.delete(String(k))},
   clear:function(){m.clear()},key:function(i){var keys=Array.from(m.keys());return i<keys.length?keys[i]:null},get length(){return m.size}}}
  try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:true});Object.defineProperty(window,'sessionStorage',{value:memory(),configurable:true})}catch(e){}
@@ -190,6 +190,13 @@ function follow(m){
 }
 
 /* ── панель «Проверка»: вне интерфейса приложения ── */
+/* Сохраняется ли память страницы между запусками (тема, вход, записи). В окне артефакта на iPhone её может не быть. 21.11.2026 */
+function memoryNote(){
+ if(memoryOnly)return 'Закрыта: эта страница не может хранить данные на устройстве, всё живёт до её закрытия. Выбор темы, вход и записи после перезапуска пропадут — это ограничение лаборатории, на сайте память работает.';
+ var t=0;try{t=+localStorage.getItem('happy-lab-born')||0}catch(e){}
+ var d=t?new Date(t):null,when=d?d.toLocaleString('ru-RU',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'—';
+ return 'Открыта, хранит с '+when+'. Если после перезапуска это время стало новым — окно стёрло память, и тема тоже пропадёт: это ограничение лаборатории, а не приложения.';
+}
 var panel=null,button=null;
 var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
 var KIND={signup:'Подтверждение регистрации',recovery:'Восстановление пароля',email_change:'Подтверждение новой почты',notice:'Уведомление на прежнюю почту'};
@@ -216,6 +223,7 @@ function paintPanel(){
  panel.innerHTML='<div class="lab-head"><strong>Проверка · лаборатория</strong><button type="button" data-lab="close" aria-label="Закрыть">×</button></div>'+
   '<p>Инструмент лаборатории — в приложение он не попадёт. Аккаунты и записи вымышленные и живут только в этом браузере. Письма никуда не уходят: ссылки из них — здесь.</p>'+
   '<div class="lab-cred"><span>'+esc(u.email)+'</span><code>'+esc(u.password)+'</code></div><button type="button" data-lab="fill">Заполнить пример</button><button type="button" data-lab="wrong">Подставить ошибку</button>'+
+  '<h3>Память устройства</h3><p data-lab-memory>'+memoryNote()+'</p>'+
   '<h3>Письма</h3>'+(mails.length?mails.map(function(m){return '<div class="lab-mail"><b>'+esc(KIND[m.kind]||m.kind)+'</b><span>'+esc(m.to)+'</span>'+
    (m.kind==='notice'?'<small>'+esc(m.text||'Адрес изменён')+'. Это только макет уведомления.</small>':m.status==='pending'?'<button type="button" data-lab="follow" data-mail="'+m.id+'">Перейти по ссылке</button>':
    '<small>'+(m.status==='used'?'Ссылка использована':'Ссылка отменена')+'</small>')+'</div>'}).join(''):'<p>Здесь появится письмо после регистрации, смены почты или восстановления пароля.</p>')+

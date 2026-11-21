@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1469781,
-   "sha256": "67de43351c43f76e8d9ba9efb27db38b0168555fd8a03a82ceb2d56d7e3acbb2"
+   "size": 1471905,
+   "sha256": "8623d761cbb097e252e0d1fe96393116b12f571c982538305a0ccfc76c180322"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -254,8 +254,8 @@
   },
   {
    "path": "index.html",
-   "size": 512274,
-   "sha256": "368ab11c743c4ce79b071c911c708717432216b1a23eb4a159b7602e617df1d6"
+   "size": 512956,
+   "sha256": "e7721310a2760e10f07d01c320651f386d30dbd3e84f559362afc2686e92384b"
   },
   {
    "path": "manifest.webmanifest",
@@ -289,8 +289,8 @@
   },
   {
    "path": "selfcare.css",
-   "size": 22213,
-   "sha256": "e74543a81ed408f3919a8f44d0474d91711bf20702ff85f8398f8852a1694271"
+   "size": 22361,
+   "sha256": "0be5a94b838eb257a3b8c4eb1ddc14a534d58a3e0845e6f1377dc1a7f8f50ade"
   },
   {
    "path": "shared/apps.json",
@@ -319,8 +319,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 15895,
-   "sha256": "c4e7eec827b56a69368516f30d368f239eecd306a831af5f07fac373362b21b4"
+   "size": 16309,
+   "sha256": "fd660a524c00fc2fbc585d79af765b72da833aa9f315cb94afd4b5dd7c26d551"
   },
   {
    "path": "shared/happy-colors.css",
@@ -329,8 +329,8 @@
   },
   {
    "path": "shared/happy-design.css",
-   "size": 5044,
-   "sha256": "790326653c76e7e301d7220135389e42593967e02b8f7fae88e61bf20aeb23d7"
+   "size": 5548,
+   "sha256": "24dbea4601ecc963a96c5a85ac9eefcc593efcdfaaba485a6f17fd5a3e5cf9f3"
   },
   {
    "path": "shared/happy-drum.css",
@@ -449,18 +449,18 @@
   },
   {
    "path": "shared/happy-theme-picker.css",
-   "size": 3957,
-   "sha256": "659ac7b22eaf01781411868f3e0ed3c1628c52579d3b3350d02901387d90ac6f"
+   "size": 4179,
+   "sha256": "5033e094f47a630c3a997f17b00bb104458862e0c7e59b16b40ad5f88a8c0487"
   },
   {
    "path": "shared/happy-theme-picker.js",
-   "size": 11465,
-   "sha256": "e1cfab32eb15ad3cdfe39c643560787a0e3fa4be42a4dfcea4448917516e403e"
+   "size": 11892,
+   "sha256": "d8caaf80327c4a2f565302c58427a9ff3fb70cd9d5df77572ceb4251e63e0195"
   },
   {
    "path": "shared/happy-ui.css",
-   "size": 4142,
-   "sha256": "9f33fae9ea323f5109ad0bdc5823b329670315927e2de09400bbd062686f17f4"
+   "size": 4166,
+   "sha256": "99cc69b565aa53d772963212bcefd12568378ea431b525c4d081abac8a4b0738"
   },
   {
    "path": "shared/happy-welcome.js",

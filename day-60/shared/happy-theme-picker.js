@@ -30,7 +30,10 @@
   /* исходный фон: у Sport — переменная страницы, у Day и Meal — слой .bg или сама страница */
   let background=getComputedStyle(document.documentElement).getPropertyValue('--sport-background').trim();
   if(!background){const layer=document.querySelector('body>.bg')||document.body,ls=getComputedStyle(layer);background=ls.backgroundImage&&ls.backgroundImage!=='none'?ls.backgroundImage:ls.backgroundColor;}
-  original={background:background||'#8c75db',gradient:cs?cs.backgroundImage:'none',ink:cs?cs.color:'#fff'};
+  /* цвет значка — как его видно на самой кнопке: обводка svg (у Day микрофон контурный и белый), иначе цвет текста кнопки */
+  const icon=fab&&(fab.querySelector('svg.fabMic')||fab.querySelector('svg')),is=icon?getComputedStyle(icon):null;
+  const stroke=is&&is.stroke&&is.stroke!=='none'&&!/^url/.test(is.stroke)?is.stroke:'';
+  original={background:background||'#8c75db',gradient:cs?cs.backgroundImage:'none',ink:stroke||(cs?cs.color:'#fff')};
   if(skin)skin.disabled=false;
   return original;
  }

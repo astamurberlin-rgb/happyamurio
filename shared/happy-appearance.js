@@ -7,7 +7,7 @@
  const G=root.HappyGradients,R=root.HappyReferenceThemes;
  if(!G||!R)return;
  const themes=R.themes||R.items;
- if(!Array.isArray(themes)||themes.length!==10)return;
+ if(!Array.isArray(themes)||!themes.length)return;   // любое число тем: новая тема в happy-reference-themes.js подхватывается сама (21.11.2026)
  const app=document.documentElement.dataset.happyAppearanceApp;
  if(!['day','meal','sport'].includes(app))return;
  const key='happy-'+app+'-appearance-v1';
@@ -50,9 +50,9 @@
    css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';}
   // Лаборатория 21.11.2026: тема подменяет общие цвета (shared/happy-colors.css) — текст, подписи, заголовок, акцент.
   const ok=c=>/^#[0-9a-f]{6}$/i.test(c||'');let tokens='';
-  if(t)tokens+='--happy-base:'+t.state.base[2]+';';   // фон столбцов таблицы замеров и других мест, где цвет приложения
+  if(t)tokens+='--happy-base:'+t.state.base[2]+';--hs-sheet-bg:'+G.css(t.state.backgroundGradient)+';--happy-sheet:'+G.css(t.state.backgroundGradient)+';';   // листы снизу — фон темы (Астамур 21.11.2026)   // фон столбцов таблицы замеров и других мест, где цвет приложения
   if(t&&t.ui){const u=t.ui;if(ok(u.textColor))tokens+='--happy-ink:'+u.textColor+';';if(ok(u.mutedColor))tokens+='--happy-muted:'+u.mutedColor+';--happy-dim:'+rgba(u.mutedColor,.7)+';';if(ok(u.headingColor||u.textColor))tokens+='--happy-heading:'+(u.headingColor||u.textColor)+';';}
-  if(b){const s=b.state,a=s.buttonColor;if(ok(a))tokens+='--happy-accent:'+a+';--happy-dock-accent:'+a+';--hs-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--hs-seg-ink:'+a+';--hs-cancel-ink:'+a+';--hs-pill-on-ink:'+a+';--hs-primary:'+G.css(s.buttonGradient)+';';if(ok(s.buttonTextColor))tokens+='--happy-on-accent:'+s.buttonTextColor+';';}
+  if(b){const s=b.state,a=s.buttonColor;if(ok(a))tokens+='--happy-accent:'+a+';--happy-dock-accent:'+a+';--hs-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--happy-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--hs-seg-ink:'+a+';--hs-cancel-ink:'+a+';--hs-pill-on-ink:'+a+';--happy-accent-ink:'+a+';--hs-primary:'+G.css(s.buttonGradient)+';';if(ok(s.buttonTextColor))tokens+='--happy-on-accent:'+s.buttonTextColor+';';}
   if(tokens)css+=' :root:root{'+tokens+'}';
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
   if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');

@@ -1480,7 +1480,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 /* Source switches: label and control share one centered row. */
 .happy-switch{appearance:none;-webkit-appearance:none;display:block;flex:0 0 52px;width:52px;height:32px;min-height:32px;margin:0;padding:0;border:1px solid rgba(255,255,255,.4);border-radius:999px;background:rgba(0,0,0,.18);position:relative;cursor:pointer;transition:background .18s ease;box-sizing:border-box}
 .happy-switch::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(4,40,80,.2);transition:transform .18s ease}
-.happy-switch:checked{background:#6b5bd6;border-color:rgba(255,255,255,.65)}
+.happy-switch:checked{background:var(--happy-switch-on,#6b5bd6);border-color:rgba(255,255,255,.65)}
 .happy-switch:checked::after{transform:translateX(20px)}
 .happy-switch:disabled{cursor:default}
 .happy-switch:focus-visible{outline:2px solid #fff;outline-offset:4px}
@@ -1842,7 +1842,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="happy-appearance-entry" data-happy-appearance-slot></div>
     <div class="eyebrow"><span>Счётчики</span></div>
     <div id="setTaps" class="mlSet"></div>
-    <div class="chips" style="margin-top:4px"><button class="chip add" id="addTap">Добавить счётчик</button></div>
+    <div class="chips" style="margin-top:4px"><button class="chip add" id="addTap" style="flex:1 1 100%;justify-content:center;text-align:center">Добавить счётчик</button></div>
     <p class="note">Для того, что ешь каждый день: одно нажатие — одна порция в раздел по времени.</p>
 
     <div class="eyebrow"><span>Мои продукты</span></div>
@@ -6408,7 +6408,7 @@ function jrNoteTxt(){
  const G=root.HappyGradients,R=root.HappyReferenceThemes;
  if(!G||!R)return;
  const themes=R.themes||R.items;
- if(!Array.isArray(themes)||themes.length!==10)return;
+ if(!Array.isArray(themes)||!themes.length)return;   // любое число тем: новая тема в happy-reference-themes.js подхватывается сама (21.11.2026)
  const app=document.documentElement.dataset.happyAppearanceApp;
  if(!['day','meal','sport'].includes(app))return;
  const key='happy-'+app+'-appearance-v1';
@@ -6451,9 +6451,9 @@ function jrNoteTxt(){
    css+=' .fab svg,.dockFab svg,.mic-fab svg,.mlMic svg,#sport-fab svg,#nowSave svg{stroke:'+s.buttonTextColor+'!important;filter:none!important;} .fab svg [stroke],.dockFab svg [stroke],.mic-fab svg [stroke],#nowSave svg [stroke]{stroke:'+s.buttonTextColor+'!important;}';}
   // Лаборатория 21.11.2026: тема подменяет общие цвета (shared/happy-colors.css) — текст, подписи, заголовок, акцент.
   const ok=c=>/^#[0-9a-f]{6}$/i.test(c||'');let tokens='';
-  if(t)tokens+='--happy-base:'+t.state.base[2]+';';   // фон столбцов таблицы замеров и других мест, где цвет приложения
+  if(t)tokens+='--happy-base:'+t.state.base[2]+';--hs-sheet-bg:'+G.css(t.state.backgroundGradient)+';--happy-sheet:'+G.css(t.state.backgroundGradient)+';';   // листы снизу — фон темы (Астамур 21.11.2026)   // фон столбцов таблицы замеров и других мест, где цвет приложения
   if(t&&t.ui){const u=t.ui;if(ok(u.textColor))tokens+='--happy-ink:'+u.textColor+';';if(ok(u.mutedColor))tokens+='--happy-muted:'+u.mutedColor+';--happy-dim:'+rgba(u.mutedColor,.7)+';';if(ok(u.headingColor||u.textColor))tokens+='--happy-heading:'+(u.headingColor||u.textColor)+';';}
-  if(b){const s=b.state,a=s.buttonColor;if(ok(a))tokens+='--happy-accent:'+a+';--happy-dock-accent:'+a+';--hs-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--hs-seg-ink:'+a+';--hs-cancel-ink:'+a+';--hs-pill-on-ink:'+a+';--hs-primary:'+G.css(s.buttonGradient)+';';if(ok(s.buttonTextColor))tokens+='--happy-on-accent:'+s.buttonTextColor+';';}
+  if(b){const s=b.state,a=s.buttonColor;if(ok(a))tokens+='--happy-accent:'+a+';--happy-dock-accent:'+a+';--hs-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--happy-switch-on:'+(b.mode==='night'?'color-mix(in srgb,'+a+' 55%,#fff)':a)+';--hs-seg-ink:'+a+';--hs-cancel-ink:'+a+';--hs-pill-on-ink:'+a+';--happy-accent-ink:'+a+';--hs-primary:'+G.css(s.buttonGradient)+';';if(ok(s.buttonTextColor))tokens+='--happy-on-accent:'+s.buttonTextColor+';';}
   if(tokens)css+=' :root:root{'+tokens+'}';
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
   if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');
