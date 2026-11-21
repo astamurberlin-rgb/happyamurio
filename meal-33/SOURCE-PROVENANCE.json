@@ -549,8 +549,8 @@
   },
   {
    "path": "collections.js",
-   "size": 22627,
-   "sha256": "aa82d547b069ee5a581f096e6b1647620143606aa2f42f1b370124830c0dd3f5"
+   "size": 22633,
+   "sha256": "20928ecabdb80c1f3f0236f8bc7ee8af68dda92acd922e05f41d867105ec6f61"
   },
   {
    "path": "controls.js",
@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 663343,
-   "sha256": "2e1af6cb46b5842e42ea8dd9d01526cdf6a85af2f45b5bc95cbdf90c8df79bdf"
+   "size": 663661,
+   "sha256": "cb9d68bc81b2a1946bea932ccdfc0a84cc93b114211a726da252fd0fa769ad21"
   },
   {
    "path": "kfct.js",
@@ -874,8 +874,8 @@
   },
   {
    "path": "shared/happy-colors.css",
-   "size": 3114,
-   "sha256": "30e9b0070323f31efd1baa5f3ecb39eeb9e9230f56974fc4509ed1728582b367"
+   "size": 3422,
+   "sha256": "231c63bf0cfcdc92c36342e8c1889abba502465327b26f9816bacec30ae9808e"
   },
   {
    "path": "shared/happy-design.css",
@@ -939,8 +939,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 33056,
-   "sha256": "4c32972090fbc8f1b1eab6c02b7437c9176043309acb0597c77a452296cb796a"
+   "size": 36815,
+   "sha256": "c779fbaa3c7889a76e8b0935f1deeb3f07e8e858c94e00622c691be930cab4a4"
   },
   {
    "path": "shared/happy-screens.js",
