@@ -75,6 +75,15 @@ html body{color:#f6f5ff}html body :is(button,input,select,textarea,label,h2,h3){
 .shared-card{flex:0 0 120px;scroll-snap-align:start;position:relative;padding:6px;min-height:108px;text-align:left;color:#fff;border:1px solid #ffffff2b;background:#ffffff0f;border-radius:12px}
 .shared-card.selected{border-color:#c4b0ff;box-shadow:inset 0 0 0 1px #c4b0ff}
 .reference-card,.shared-card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+/* 21.11.2026: общие темы — горизонтальные карусели; ⋯ на карточке — меню «Примерить» */
+#referenceThemes .reference-grid{display:flex!important;grid-template-columns:none!important;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -16px;padding:2px 16px 6px;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+#referenceThemes .reference-grid::-webkit-scrollbar{display:none}
+#referenceThemes .ref-cell{position:relative;flex:0 0 clamp(150px,44vw,200px);scroll-snap-align:start;display:flex}
+#referenceThemes .ref-cell .reference-card{width:100%}
+#referenceThemes .ref-more{position:absolute;top:12px;right:12px;z-index:2;width:30px;height:30px;border-radius:999px;border:1px solid #ffffff40;background:#180d32a8;color:#fff;font-size:18px;line-height:1;padding:0 0 4px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#referenceThemes .reference-badge{max-width:none;white-space:nowrap;font-size:9px;padding:4px 7px}
+.shared-card.original .shared-more{display:block}
+
 .shared-card.original .shared-thumb{display:flex}.shared-card.original .shared-thumb i{flex:1;display:block}.shared-card.original .shared-status{color:#d9ceff}
 .shared-thumb{height:71px;border-radius:9px;margin-bottom:6px;position:relative;overflow:hidden}
 .shared-mini{position:absolute;left:7px;bottom:6px;display:flex;gap:4px}
@@ -592,7 +601,8 @@ function originalCard(editing){
  for(const k of APP_ORDER){const i=document.createElement('i');i.style.background=gradient(defaults[k]);thumb.append(i)}
  const title=document.createElement('span');title.className='shared-caption';title.textContent='Оригинал · как на сайте';
  const status=document.createElement('span');status.className='shared-status';status.setAttribute('aria-hidden','true');status.textContent=isOn?'✓ Сейчас в превью':'🔒 Всегда хранится';
- btn.append(thumb,title,status);btn.onclick=applyOriginal;card.append(btn);return card;
+ btn.append(thumb,title,status);btn.onclick=applyOriginal;card.append(btn);
+ const more=document.createElement('button');more.type='button';more.className='shared-more';more.textContent='⋯';more.setAttribute('aria-label','Примерить оригинал');more.onclick=()=>themeTryMenu('original');card.append(more);return card;
 }
 async function applyOriginal(){
  const editing=editingTheme(),changed=dirtyApps(editing).length>0;
@@ -640,14 +650,36 @@ function restoreShellTheme(){let id='';try{id=localStorage.getItem(SHELL_KEY)||'
 async function themeTryMenu(id){
  const item=id==='original'?null:themeById(id);if(id!=='original'&&!item)return;
  const name=item?item.name:'Оригинал',tried=document.documentElement.classList.contains('studio-tried-on');
- const buttons=[['Примерить ко всем приложениям','apps','primary']];
+ const buttons=[['Примерить ко всем приложениям','apps','primary'],['Только к Day','day'],['Только к Meal','meal'],['Только к Sport','sport']];
  if(item)buttons.push(['Примерить к Color Studio','studio']);
  if(tried)buttons.push(['Вернуть студии её вид','studio-off']);
  buttons.push(['Отмена',null]);
- const choice=await askDialog({title:'«'+name+'»',text:'',buttons});
+ const choice=await askDialog({title:'Примерить «'+name+'»',text:'Только превью: приложения на сайте не меняются.',buttons});
  if(choice.value==='apps'){id==='original'?applyOriginal():requestApply(id)}
+ else if(APP_ORDER.includes(choice.value))tryOnApp(id,choice.value);
  else if(choice.value==='studio'){tryOnStudio(id);toast('Студия примерила «'+name+'»')}
  else if(choice.value==='studio-off'){tryOnStudio('');toast('Студия — снова в своём виде')}
+}
+// Тема только в одном превью (21.11.2026, Астамур: «по отдельности примерять темы»). Остальные два превью не меняются.
+function tryOnApp(id,k){
+ const item=id==='original'?null:themeById(id);if(id!=='original'&&!item)return;
+ states[k]=clone(item?item.state:defaults[k]);normalizeExtra(states[k]);
+ activeShared='';selectedPreset=-1;paletteUndo=null;selected=k;
+ persist();composeWallpaper(k);draw();
+ const r=$('phones'),el=document.querySelector('[data-phone="'+k+'"]');if(r&&el)r.scrollTo({left:el.offsetLeft-r.offsetLeft-(r.clientWidth-el.offsetWidth)/2,behavior:'smooth'});
+ window.scrollTo({top:0,behavior:'smooth'});
+ toast((item?'«'+item.name+'»':'Оригинал')+' — только в '+APP_NAMES[k]);
+}
+// Заметная кнопка «⋯» на карточке общей темы: то же меню, что и по долгому тапу (на iPhone долгий тап мог не срабатывать).
+function addReferenceMenus(){
+ for(const card of document.querySelectorAll('#referenceThemes .reference-card')){
+  if(card.parentElement.classList.contains('ref-cell'))continue;
+  const cell=document.createElement('div');cell.className='ref-cell';card.replaceWith(cell);cell.append(card);
+  const more=document.createElement('button');more.type='button';more.className='ref-more';more.textContent='⋯';more.setAttribute('aria-label','Примерить тему «'+(card.querySelector('strong')?.textContent||'')+'»');
+  more.onclick=e=>{e.stopPropagation();themeTryMenu(card.dataset.themeId)};cell.append(more);
+ }
+ const intro=document.querySelector('#referenceThemes .reference-intro');
+ if(intro)intro.textContent='Тап — примерить ко всем трём превью. ⋯ или долгий тап — примерить только к Day, Meal, Sport или к самой студии. Приложения на сайте не меняются.';
 }
 function initLongPress(){
  let timer=0,start=null,fired=false;
@@ -774,7 +806,8 @@ async function deleteTheme(id){
 async function themeMenu(id){
  const item=sharedPresets.find(p=>p.id===id);if(!item)return;
  const own=isOwnTheme(id);
- const choice=await askDialog({title:item.name,text:own?(editingId===id?'Эта тема сейчас открыта для правки.':''):'Встроенная тема. Её можно скопировать и менять копию.',buttons:own?[['Записать текущий вид сюда','write'],['Переименовать','rename'],['Дублировать','duplicate'],['Удалить','delete','danger'],['Отмена',null]]:[['Дублировать','duplicate','primary'],['Отмена',null]]});
+ const choice=await askDialog({title:item.name,text:own?(editingId===id?'Эта тема сейчас открыта для правки.':''):'Встроенная тема. Её можно скопировать и менять копию.',buttons:own?[['Примерить…','try','primary'],['Записать текущий вид сюда','write'],['Переименовать','rename'],['Дублировать','duplicate'],['Удалить','delete','danger'],['Отмена',null]]:[['Примерить…','try','primary'],['Дублировать','duplicate'],['Отмена',null]]});
+ if(choice.value==='try')return themeTryMenu(id);
  ({write:overwriteTheme,rename:renameTheme,duplicate:duplicateTheme,delete:deleteTheme})[choice.value]?.(id);
 }
 // ---- Happy cloud for "Мои варианты оформления" (12.7; sign-in in the header since 12.8) ----
@@ -925,7 +958,7 @@ async function importConfig(file){
 function copy(text){if(navigator.clipboard?.writeText){navigator.clipboard.writeText(text).then(()=>toast('CSS скопирован')).catch(()=>fallbackCopy(text))}else fallbackCopy(text)}function fallbackCopy(t){const area=document.createElement('textarea');area.value=t;area.style.position='fixed';area.style.opacity='0';document.body.append(area);area.select();try{document.execCommand('copy');toast('CSS скопирован')}catch(e){toast('Не удалось скопировать CSS')}area.remove()}
 backgroundEditor=HappyGradientEditor.mount($('backgroundGradientEditor'),states[selected].backgroundGradient,m=>{dropNative(states[selected],'background');states[selected].backgroundGradient=m;syncLegacy(states[selected]);selectedPreset=-1;afterChange()});
 buttonEditor=HappyGradientEditor.mount($('buttonGradientEditor'),states[selected].buttonGradient,m=>{dropNative(states[selected],'button');states[selected].buttonGradient=m;states[selected].buttonColor=G.colors(m)[0].color;states[selected].buttonShine=0;selectedPreset=-1;afterChange()});
-referenceGallery=HappyReferenceThemes.mount($('referenceThemes'),id=>requestApply(id));
+referenceGallery=HappyReferenceThemes.mount($('referenceThemes'),id=>requestApply(id));addReferenceMenus();
 workspace=HappyColorWorkspace.mount({
  container:$('studio'),saved:store.workspace,notify:toast,persist,
  readColors(target){return [...new Set(G.colors(states[selected][target==='button'?'buttonGradient':'backgroundGradient']).map(s=>s.color))].slice(0,8).flatMap((c,i,a)=>a.length===1?[c,c]:[c]);},
