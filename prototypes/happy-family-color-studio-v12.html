@@ -196,6 +196,79 @@ body.has-theme-float .shell{padding-bottom:110px}
 /* Без пояснения и без «Скрыть настройки» под названием (Астамур 21.11.2026: и так понятно). Отступ выреза у студии не добавляем:
    окно просмотра на iPhone само ставит страницу ниже своих кнопок, а лишний отступ давал пустое место над названием. */
 .head>div>p,#fullPreview{display:none!important}
+
+/* ══ 21.11.2026 · Оболочка Color Studio в стиле Happy (Астамур: «как пилюли в счётчиках», правила AGENTS.md §4) ══
+   Форма как в приложениях: пилюли 48 / 44, счётчик «− число +» капсулой, поля 12, карточки 26, выключатель 42 × 25,
+   текст 12 / 14 / 16 / 20 / 28, жирность 400 / 600 / 700 / 800. Цвета — стекло Happy на тёмном фоне студии. */
+.shell{--hx-glass:rgba(255,255,255,.12);--hx-glass-2:rgba(255,255,255,.2);--hx-line:rgba(255,255,255,.3);--hx-sep:rgba(255,255,255,.22);--hx-ink:#fff;--hx-muted:rgba(255,255,255,.62);--hx-pick:#e4dfff;--hx-pick-ink:#2c2357;--hx-on:#8b74f0}
+
+/* Заголовок экрана 28 / 800, надпись над ним 12 / 600 */
+.head h1{font-size:28px!important;font-weight:800!important;letter-spacing:-.4px}
+.eyebrow{font-size:12px!important;font-weight:600!important;letter-spacing:.14em}
+
+/* Карточки-разделы: скругление 26, заголовок раздела 16 / 700 */
+.studio-group{border-radius:26px!important}
+.studio-group>summary{font-size:16px!important;font-weight:700!important}
+.studio-panel>summary h2{font-size:16px!important;font-weight:700!important}
+.studio-panel h3,.panel h3,.palette-subtitle,#referenceThemes h3{font-size:16px!important;font-weight:700!important}
+.studio-toolbar,.studio-toolbar p,.palette-library-intro,.panel-note,.hint,.muted{font-size:12px}
+
+/* Кнопки: пилюля 44, текст 14 / 600; главная — пилюля 48, текст 16 / 600 */
+.smallbtn,.action,.theme-btn,.chipbutton,.palette-actions button,.palette-actions select,.palette-card-actions button,.panel-move-menu button,.studio-toolbar button,.backup-row .smallbtn,.hsa-btn,.button-look-text .action,.hg-editor .hg-actions button,.hg-editor>button,.hg-editor .hg-row>button,#siteNoteOk,.st-tool-row button,.save-row button,.shared-save button{
+ box-sizing:border-box;min-height:44px!important;height:auto;padding:0 16px!important;border-radius:999px!important;border:1px solid var(--hx-line)!important;
+ background:var(--hx-glass)!important;color:var(--hx-ink)!important;font-family:inherit;font-size:14px!important;font-weight:600!important;line-height:18px;white-space:nowrap}
+.action.primary,.theme-btn.primary,.palette-actions .primary,.smallbtn.primary,button.primary{min-height:48px!important;padding:0 20px!important;font-size:16px!important;font-weight:600!important;
+ background:var(--hx-pick)!important;border-color:var(--hx-pick)!important;color:var(--hx-pick-ink)!important}
+.theme-btn.danger{background:#b4407d33!important;border-color:#e0679f8c!important;color:#ffd7ea!important}
+.smallbtn:disabled,.action:disabled,.theme-btn:disabled,.palette-actions button:disabled{opacity:.45}
+
+/* Счётчик «− число +»: одна капсула, как в Meal и Sport */
+.hg-stepper{display:inline-flex!important;align-items:stretch;gap:0!important;height:44px;border:1px solid var(--hx-line);border-radius:999px;background:var(--hx-glass);overflow:hidden}
+.hg-editor button.hg-step{min-width:44px!important;width:44px;height:auto!important;border:0!important;border-radius:0!important;background:none!important;font-size:20px!important;font-weight:600!important;line-height:1}
+.hg-editor button.hg-step:active{background:var(--hx-glass-2)!important}
+.shell .hg-stepper input[type=number],.hg-stepper input{width:64px!important;min-height:0!important;height:auto;border:0!important;border-left:1px solid var(--hx-sep)!important;border-right:1px solid var(--hx-sep)!important;
+ border-radius:0!important;background:none!important;padding:0 4px!important;font-size:16px!important;font-weight:600!important;text-align:center}
+
+/* Поля ввода и списки: скругление 12, высота 48, текст 16 */
+.hg-editor select,.hg-editor input[type=text],.hg-editor input[type=number]:not(.hg-stepper input),.shell select,.shell input[type=text],.shell input[type=search],.shell input[type=number],.shell input:not([type]),.palette-editor input[type=text]{
+ box-sizing:border-box;min-height:48px!important;border-radius:12px!important;border:1px solid var(--hx-line)!important;background:var(--hx-glass)!important;color:var(--hx-ink)!important;font-size:16px!important}
+.shell select{-webkit-appearance:none;appearance:none;padding:0 40px 0 14px!important;background:var(--hx-glass) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 14px center/16px no-repeat!important}
+.hg-editor input[type=color]{box-sizing:border-box;width:48px!important;height:48px!important;padding:4px!important;border-radius:12px!important;border:1px solid var(--hx-line)!important;background:var(--hx-glass)!important}
+.shell input[type=color]::-webkit-color-swatch-wrapper{padding:0}.shell input[type=color]::-webkit-color-swatch{border:0;border-radius:8px}
+.hg-type,.st-field,.hg-field-head>span:first-child,.hg-check,.shell label{font-size:14px!important;font-weight:400}
+.st-field>span{font-size:14px}.st-field output{font-size:14px;font-weight:600}
+
+/* Ползунки — один цвет */
+.shell input[type=range]{accent-color:var(--hx-pick)!important}
+
+/* Выключатель 42 × 25 вместо галочки */
+.hg-check input[type=checkbox],.shell label>input[type=checkbox]{-webkit-appearance:none;appearance:none;position:relative;flex:0 0 42px;width:42px!important;height:25px!important;margin:0;border-radius:999px;background:var(--hx-glass-2);border:0;cursor:pointer;transition:background .15s}
+.hg-check input[type=checkbox]::before,.shell label>input[type=checkbox]::before{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0004;transition:transform .15s}
+.hg-check input[type=checkbox]:checked,.shell label>input[type=checkbox]:checked{background:var(--hx-on)}
+.hg-check input[type=checkbox]:checked::before,.shell label>input[type=checkbox]:checked::before{transform:translateX(17px)}
+
+/* Цветовые точки градиента: чип-пилюля 44 — кружок и процент в строку; выбранная — светлая */
+.hg-stop{flex:0 0 auto!important;display:inline-flex!important;align-items:center;gap:8px!important;min-height:44px!important;height:44px;padding:0 14px 0 8px!important;border-radius:999px!important;border:1px solid var(--hx-line)!important;background:var(--hx-glass)!important;font-size:14px!important;font-weight:400}
+.hg-stop .hg-dot{width:26px!important;height:26px!important}
+.hg-stop[aria-pressed=true]{outline:0!important;background:var(--hx-pick)!important;border-color:var(--hx-pick)!important;color:var(--hx-pick-ink)!important;font-weight:600}
+
+/* Выбор цвета кнопки: подпись не мельче 12 */
+.button-option{font-size:12px!important}
+.palette-card small,.palette-card-name{font-size:12px!important}
+.palette-card,.shared-card{border-radius:26px!important}
+.palette-card>button{border-radius:26px}
+/* Шапка: «Войти» — в строке надписи, название 28 — отдельной строкой во всю ширину */
+.head{display:block!important;position:relative}
+.head>div:first-child{min-width:0}
+.head .head-actions{position:absolute;top:0;right:15px}
+.eyebrow{min-height:44px;display:flex;align-items:center;padding-right:130px}
+.head h1{margin:2px 0 6px!important}
+/* Цвет в полях «Стекло» — полоса во всю ширину, высота 48, скругление 12 */
+.st-field input[type=color]{box-sizing:border-box;width:100%!important;height:48px!important;padding:4px!important;border-radius:12px!important;border:1px solid var(--hx-line)!important;background:var(--hx-glass)!important}
+.save-row #savePreset,.shared-save #sharedSave{background:var(--hx-pick)!important;border-color:var(--hx-pick)!important;color:var(--hx-pick-ink)!important}
+.eyebrow{white-space:nowrap;letter-spacing:.1em!important;padding-right:118px}
+.save-row{flex-wrap:wrap}.save-row #presetName{flex:1 1 100%}
+.shared-save{flex-wrap:wrap}.shared-save #sharedName{flex:1 1 100%}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Color Studio</h1><p>Дизайн-студия Happy Day, Happy Meal и Happy Sport. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><div class="head-actions"><button class="chipbutton" id="fullPreview">Скрыть настройки</button><span class="hsa-slot" id="accountSlot"></span></div></header>
