@@ -105,7 +105,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .mini:disabled{opacity:.45}
 
 .chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:500;
+.chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:400;
   background:var(--glass);border:1px solid var(--glassBrd);color:#fff;
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .chip.on{background:rgba(255,255,255,.9);color:#0C6FA8;border-color:#fff;font-weight:700}
@@ -305,7 +305,7 @@ body.loading .app,body.loading .dock{opacity:0}
   background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 8px 22px rgba(4,40,80,.18);
   animation:splashPulse 1.7s ease-in-out infinite}
-.splashName{font-size:19px;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.92)}
+.splashName{font-size:20px;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.92)}
 /* вращение: 0–16 % — медленный дрейф внизу (±4°), дальше разгон и торможение без рывков */
 @keyframes splashSpin{
   0%{transform:rotate(86deg);animation-timing-function:linear}
@@ -851,7 +851,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .scStep{display:flex;align-items:center;gap:10px;padding:6px;border-radius:18px;
   background:rgba(255,255,255,.12);border:1px solid var(--glassBrd)}
 .scStep button{width:46px;height:44px;flex:none;border-radius:13px;border:0;padding:0;
-  background:rgba(255,255,255,.2);color:#fff;font:inherit;font-size:24px;font-weight:600;line-height:1}
+  background:rgba(255,255,255,.2);color:#fff;font:inherit;font-size:20px;font-weight:600;line-height:1}
 .scStep button:disabled{opacity:.3}
 .scStep b{flex:1;text-align:center;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
 .scLv{display:flex;align-items:center;gap:10px;margin:0 0 8px}
@@ -901,7 +901,7 @@ a.btn{display:inline-block;text-decoration:none}
 .slBig{font-size:28px;font-weight:700;letter-spacing:-.02em;margin:6px 0 2px}
 .slSub{margin:0 0 12px;font-size:14px;line-height:1.4;color:var(--muted)}
 .slHyp,.slCols{display:block;width:100%;height:auto;margin:2px 0 6px}
-.slHyp text,.slCols text{fill:rgba(255,255,255,.78);font-size:9px;font-weight:600}
+.slHyp text,.slCols text{fill:rgba(255,255,255,.78);font-size:12px;font-weight:600}
 .slCols [data-night]{cursor:pointer}
 .slRow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.14);font-size:14px}
 .slRow:last-child{border-bottom:0}
@@ -927,7 +927,7 @@ a.btn{display:inline-block;text-decoration:none}
 .nwR .knob.empty b{font-size:28px;opacity:.75}
 .nwRn{font-size:16px;font-weight:700;margin-top:-4px;text-align:center;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nwAdd{width:120px;height:120px;margin:38px;border-radius:50%;border:2px dashed rgba(255,255,255,.6);display:grid;place-items:center;
-  font:inherit;font-size:34px;font-weight:400;color:#fff;background:none;cursor:pointer}
+  font:inherit;font-size:28px;font-weight:400;color:#fff;background:none;cursor:pointer}
 .nwTags{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 0;scrollbar-width:none}
 .nwTags::-webkit-scrollbar{display:none}
 .nwChip{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 15px;border-radius:999px;border:1px solid rgba(255,255,255,.45);
@@ -2922,13 +2922,13 @@ function paint(i){
   var raw=(ringDay().cp[curSec]||{})[m.k];
   var word=paintRing(w,m,raw);
   var vEl=w.querySelector('.kv'), hEl=w.querySelector('.kh');
-  if(word==null){ vEl.textContent='Нажми'; vEl.style.fontSize='26px'; hEl.textContent=SelfCare.isCheckin()?'или удерживай':'и держи'; }
+  if(word==null){ vEl.textContent='Нажми'; vEl.style.fontSize='28px'; hEl.textContent=SelfCare.isCheckin()?'или удерживай':'и держи'; }
   else{
     if(word!==vEl.textContent && (gest==='auto'||gest==='drag')){
       vEl.classList.add('tick'); setTimeout(function(){ vEl.classList.remove('tick') },120);
     }
     vEl.textContent=word;
-    vEl.style.fontSize='21px';
+    vEl.style.fontSize='20px';
     hEl.textContent = gest==='drag'&&dragIdx===i ? 'вверх-вниз'
                     : gest==='auto'&&fillIdx===i ? 'или веди вверх-вниз'
                     : (dirOf(i)>0?'ещё раз — вверх':'ещё раз — вниз');   // в v45 стояло наоборот
@@ -2953,7 +2953,7 @@ function fW(t,px){
   var k=px+'|'+t; if(fCache[k]!=null) return fCache[k];
   if(!fMeas){
     fMeas=document.createElement('span');
-    fMeas.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap;font-weight:800;letter-spacing:-.01em';
+    fMeas.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap;font-weight:700;letter-spacing:-.01em';
     document.body.appendChild(fMeas);
   }
   fMeas.style.fontSize=px+'px'; fMeas.textContent=t;
@@ -2967,7 +2967,7 @@ function fLines(t,px,avail){
   }
   return n;
 }
-function fFit(t,avail){ for(var px=21;px>16;px-=.5){ if(fLines(t,px,avail)<=2) return px } return 16 }
+function fFit(t,avail){ return fLines(t,20,avail)<=2?20:16 }
 function renderFacts(){
   var box=document.getElementById('facts'), W=box.clientWidth, btns=factTrack.children, slides=ringTrack.children;
   /* Day 60.2, шаг 6 (16.11.2026, Claude): раздел открывается без движения — подпись шкалы не въезжает
@@ -2981,7 +2981,7 @@ function renderFacts(){
     var b=btns[i], on=i===cur, t=b.firstChild;
     b.classList.toggle('on',on);
     if(t&&t.style) t.style.fontSize='';
-    if(on&&t&&t.style&&W){ var px=fFit(t.textContent,step-18); if(px<21) t.style.fontSize=px+'px' }
+    if(on&&t&&t.style&&W){ var px=fFit(t.textContent,step-18); if(px<20) t.style.fontSize=px+'px' }
     b.style.flexBasis=step+'px';
   }
   for(var k=0;k<slides.length;k++) slides[k].classList.toggle('side',k!==cur);
@@ -4528,16 +4528,16 @@ function fitFreq(){
   function fit(sz){for(var k=0;k<sz.length;k++){box.style.fontSize=sz[k]+'px';if(!over())return true}return false}
   function put(j){bs.forEach(function(b){var w=b.getAttribute('data-freq');b.textContent=FSHORT[j][w]||SHORT[w]||w})}
   box.classList.add('lkMeasure');box.classList.remove('lkTight');
-  for(j=0;j<FSHORT.length;j++){put(j);if(fit([13,12,11.5,11,10.5,10]))break}
-  if(j===FSHORT.length){put(FSHORT.length-1);box.classList.add('lkTight');fit([10,9.5,9])}
+  for(j=0;j<FSHORT.length;j++){put(j);if(fit([14,12]))break}
+  if(j===FSHORT.length){put(FSHORT.length-1);box.classList.add('lkTight');fit([12])}
   box.classList.remove('lkMeasure');
 }
 
 /* ── график: полосы периодов, ступени или линия, отметки по дням ── */
 function viewWin(){var a=PC.i0,b=PC.i1+1;if(!S.zoom)return [a,b];
   var w=Math.min(S.zoom[1]-S.zoom[0],b-a),va=Math.max(a,Math.min(S.zoom[0],b-w));return [va,va+w]}
-function halo(x,y,t,anchor,size,op,wt){return '<text x="'+x+'" y="'+y+'" text-anchor="'+(anchor||'start')+'" font-size="'+(size||11)+
-  '" font-weight="'+(wt||500)+'" fill="rgba(255,255,255,'+(op||.75)+')" paint-order="stroke" stroke="rgba(0,110,190,.35)" stroke-width="3">'+esc(t)+'</text>'}
+function halo(x,y,t,anchor,size,op,wt){return '<text x="'+x+'" y="'+y+'" text-anchor="'+(anchor||'start')+'" font-size="'+(size||12)+
+  '" font-weight="'+(wt||400)+'" fill="rgba(255,255,255,'+(op||.75)+')" paint-order="stroke" stroke="rgba(0,110,190,.35)" stroke-width="3">'+esc(t)+'</text>'}
 function pairChart(){
   if(!PC)return;
   var el=$('lkChart'),W=Math.max(260,el.clientWidth||320),a=PC.i0,b=PC.i1,vw=viewWin(),va=vw[0],vb=vw[1],sp=vb-va;
@@ -4555,9 +4555,9 @@ function pairChart(){
     else g+='<rect x="'+x0+'" y="'+(T-32)+'" width="'+w+'" height="'+(PH+32)+'" fill="rgba(255,255,255,'+OPL[lv==null?0:lv]+')"/>';
     if(p.a>a) g+='<line x1="'+x0+'" x2="'+x0+'" y1="'+(T-32)+'" y2="'+bot+'" stroke="rgba(255,255,255,.3)"/>';
     var vx0=Math.max(x0,L),vx1=Math.min(x1,L+PW),lab=SHORT[p.word]||p.word,on=p.word===S.freq;
-    var fs=vx1-vx0>=lab.length*5.9+4?11.5:(vx1-vx0>=lab.length*5.1+2?10:0);
+    var fs=vx1-vx0>=lab.length*6.2+4?12:0;
     if(fs) g+='<text x="'+((vx0+vx1)/2)+'" y="'+(T-13)+'" text-anchor="middle" font-size="'+fs+'" font-weight="'+
-      (on?750:550)+'" fill="rgba(255,255,255,'+(on?1:.85)+')">'+esc(lab)+'</text>';
+      (on?700:600)+'" fill="rgba(255,255,255,'+(on?1:.85)+')">'+esc(lab)+'</text>';
   });
   /* выбранная частота подсвечивается заливкой под ступенью или под линией */
   PC.ph.forEach(function(p){
@@ -4586,7 +4586,7 @@ function pairChart(){
       if(prev!=null) g+='<line x1="'+(x0-3)+'" x2="'+(x0-3)+'" y1="'+prev+'" y2="'+yy+'" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-dasharray="3 3"/>';
       g+='<line x1="'+x0+'" x2="'+x1+'" y1="'+yy+'" y2="'+yy+'" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>';
       var wd=wordOf(m,p.mu),vx0=Math.max(x0,L),vx1=Math.min(x1,L+PW);
-      if(vx1-vx0>=wd.length*6+6) g+=halo((vx0+vx1)/2,yy-9,wd,'middle',11.5,.95,650);
+      if(vx1-vx0>=wd.length*6.3+6) g+=halo((vx0+vx1)/2,yy-9,wd,'middle',12,.95,700);
       prev=yy;
     });
   }
@@ -4599,9 +4599,9 @@ function pairChart(){
     else g+='<rect x="'+(Xd(i)-bw/2)+'" y="'+(base-2)+'" width="'+bw+'" height="2" fill="rgba(255,255,255,.45)"/>';
   }
   g+='</g>';
-  g+=halo(L+4,Y(mHiV)+12,wordOf(m,mHiV),'start',11,.7);
-  g+=halo(L+4,bot-6,wordOf(m,mLoV),'start',11,.7);
-  g+='<text x="'+(L+2)+'" y="'+(base+15)+'" font-size="11" fill="rgba(255,255,255,.72)">'+(PC.isTag?'столбик — отмечено':'столбик — время за день')+'</text>';
+  g+=halo(L+4,Y(mHiV)+12,wordOf(m,mHiV),'start',12,.7);
+  g+=halo(L+4,bot-6,wordOf(m,mLoV),'start',12,.7);
+  g+='<text x="'+(L+2)+'" y="'+(base+15)+'" font-size="12" fill="rgba(255,255,255,.72)">'+(PC.isTag?'столбик — отмечено':'столбик — время за день')+'</text>';
   /* даты: края окна, начала месяцев, при приближении — каждую неделю */
   var d0=Math.max(a,Math.ceil(va-.01)),d1=Math.min(b,Math.floor(vb-.01)),cand=[d0,d1],placed=[];
   for(i=d0+1;i<d1;i++) if(ALL[i].getDate()===1||(sp<=35&&(i-a)%7===0)) cand.push(i);
@@ -4609,7 +4609,7 @@ function pairChart(){
     var edge=k===d0||k===d1,x=k===d0?L+2:(k===d1?W-R-2:Xd(k));
     if(!edge&&(placed.some(function(px){return Math.abs(px-x)<46})||x-L<72||L+PW-x<72))return;
     placed.push(x);
-    g+='<text x="'+x+'" y="'+(bot+12)+'" font-size="11" fill="rgba(255,255,255,.85)" text-anchor="'+(k===d0?'start':(k===d1?'end':'middle'))+'">'+ru(ALL[k])+'</text>';
+    g+='<text x="'+x+'" y="'+(bot+12)+'" font-size="12" fill="rgba(255,255,255,.85)" text-anchor="'+(k===d0?'start':(k===d1?'end':'middle'))+'">'+ru(ALL[k])+'</text>';
   });
   el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="height:'+H+'px" role="img" aria-label="'+esc(m.t+' '+whenLong(S.sec))+'">'+g+'</svg>';
   $('lkReset').hidden=!zoomed;
@@ -5433,7 +5433,7 @@ function paintScalePv(){
   var e=SCE; if(!e) return;
   var m=scModel(e), w=document.getElementById('scPv'); if(!w) return;
   var word=paintRing(w,m,scPvVal(e,m)), kv=w.querySelector('.kv');
-  kv.textContent=word||''; kv.style.fontSize=(word&&word.length>11?'15px':'19px');
+  kv.textContent=word||''; kv.style.fontSize=(word&&word.length>11?'14px':'20px');
   document.querySelectorAll('#scEdBody .scLv').forEach(function(r){ r.classList.toggle('on',r.getAttribute('data-lv')===e.sel) });
 }
 document.getElementById('scEdBody').addEventListener('click',function(ev){

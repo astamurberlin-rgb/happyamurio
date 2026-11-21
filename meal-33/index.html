@@ -50,7 +50,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .screen::-webkit-scrollbar{display:none}
 
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 22px}
-.top h1{margin:0;font-size:27px;font-weight:800;letter-spacing:-.02em}
+.top h1{margin:0;font-size:28px;font-weight:800;letter-spacing:-.02em}
 /* Родное поле даты рисует собственную подложку, и внутри нашей плашки
    получалась рамка в рамке. Поэтому подпись своя, а поле лежит поверх
    прозрачным — тап по нему открывает системный выбор даты. */
@@ -59,7 +59,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   border-radius:999px;padding:9px 16px;
   background:var(--glass);border:1px solid var(--glassBrd);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  font-size:13.5px;font-weight:600;white-space:nowrap}
+  font-size:14px;font-weight:600;white-space:nowrap}
 .datePill .calIc{width:17px;height:17px;flex:none;margin-right:2px;fill:none;
   stroke:rgba(255,255,255,.85);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .datePill input{position:absolute;left:0;top:0;width:100%;height:100%;
@@ -78,9 +78,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .locked .card.rowcard,.locked #tapBox,.locked #cntBox,.locked #note{opacity:.72}
 
 .eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
-  font-size:13px;font-weight:700;color:var(--muted);margin:24px 2px 11px}
-.eyebrow button{border:0;background:none;color:#fff;font-size:12.5px;font-weight:600;text-decoration:underline;opacity:.85}
-.note{font-size:12.5px;color:var(--dim);line-height:1.55;margin:10px 2px 0}
+  font-size:14px;font-weight:700;color:var(--muted);margin:24px 2px 11px}
+.eyebrow button{border:0;background:none;color:#fff;font-size:12px;font-weight:600;text-decoration:underline;opacity:.85}
+.note{font-size:12px;color:var(--dim);line-height:1.55;margin:10px 2px 0}
 
 .card{display:block;width:100%;text-align:left;color:#fff;padding:15px 16px;margin-bottom:11px;border-radius:22px;
   background:var(--glass);border:1px solid var(--glassBrd);
@@ -92,7 +92,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .rowcard b{display:block;font-size:16px;font-weight:600}
 .rowcard small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .go{margin-left:auto;width:17px;height:17px;flex:none;fill:none;stroke:rgba(255,255,255,.6);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.tick{margin-left:auto;font-size:15px;font-weight:700;flex:none}
+.tick{margin-left:auto;font-size:16px;font-weight:700;flex:none}
 .act{margin-left:auto;display:flex;gap:7px;flex:none}
 .mini{border:1px solid var(--glassBrd);background:rgba(255,255,255,.12);color:#fff;
   border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600}
@@ -100,19 +100,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .mini:disabled{opacity:.45}
 
 .chips{display:flex;flex-wrap:wrap;gap:10px}
-.chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:500;
+.chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:400;
   background:var(--glass);border:1px solid var(--glassBrd);color:#fff;
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .chip.on{background:rgba(255,255,255,.9);color:#0C6FA8;border-color:#fff;font-weight:700}
 .chip.add{background:none;border-style:dashed}
 
 .kv{display:flex;justify-content:space-between;gap:12px;padding:11px 0;
-  border-bottom:1px solid rgba(255,255,255,.14);font-size:14.5px}
+  border-bottom:1px solid rgba(255,255,255,.14);font-size:14px}
 .kv:last-child{border-bottom:0}
 .kv b{font-weight:600}
-.kv span{color:var(--muted);font-family:var(--mono);font-size:13.5px}
+.kv span{color:var(--muted);font-family:var(--mono);font-size:14px}
 .fieldrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.14);font-size:14.5px}
+  border-bottom:1px solid rgba(255,255,255,.14);font-size:14px}
 .fieldrow:last-child{border-bottom:0}
 input[type=text],input[type=number],input[type=password],input[type=date],textarea,select{
   border:1px solid var(--glassBrd);background:rgba(255,255,255,.14);color:#fff;
@@ -140,7 +140,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
   background:rgba(255,255,255,.55)}
 .limRow{position:relative;height:15px;margin-top:5px}
 .limRow span{position:absolute;top:0;transform:translateX(-50%);
-  font-size:10.5px;color:var(--dim);white-space:nowrap}
+  font-size:12px;color:var(--dim);white-space:nowrap}
 
 /* название счётчика — того же размера, что названия разделов */
 .cName{font-size:16px;font-weight:600;margin-bottom:12px}
@@ -149,15 +149,15 @@ textarea{width:100%;min-height:76px;resize:vertical}
   display:flex;align-items:center;justify-content:center;
   background:rgba(255,255,255,.14);border:1.6px solid rgba(255,255,255,.55);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
-  font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+  font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
 .tval:active{background:rgba(255,255,255,.26)}
 .tval.over{border-color:rgba(255,196,120,.85)}
-.tval.none{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.6);
+.tval.none{font-size:14px;font-weight:600;color:rgba(255,255,255,.6);
   border-style:dashed;border-color:rgba(255,255,255,.45)}
 .scrRow{display:flex;align-items:center;gap:9px;margin-top:12px}
 .scrRow button{flex:1;height:40px;border-radius:12px;border:1px solid var(--glassBrd);
-  background:rgba(255,255,255,.13);color:#fff;font-size:13px;font-weight:600;padding:0}
-.scrEdit span{font-size:13px;color:var(--muted);flex:1}
+  background:rgba(255,255,255,.13);color:#fff;font-size:14px;font-weight:600;padding:0}
+.scrEdit span{font-size:14px;color:var(--muted);flex:1}
 
 /* ── Теги с временем: палец рисует черновик, «+» в углу записывает его строкой ──
    Черновик — бегущая штриховка поверх кирпичика; после «+» она гаснет, и кирпичик
@@ -172,7 +172,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
   transition:width .34s cubic-bezier(.25,.8,.25,1),background .25s,color .25s,border-color .25s,box-shadow .25s}
 .plus svg{flex:none;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round}
 .plus .pl{flex:1;min-width:0;padding:0 9px 0 4px;text-align:center;overflow:hidden}
-.plus .pl b{font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums;transition:opacity .15s}
+.plus .pl b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;transition:opacity .15s}
 .plus:active{background:rgba(255,255,255,.3)}
 .hasDraft .plus{width:128px;background:rgba(255,255,255,.95);color:#0C6FA8;
   border-color:#fff;box-shadow:0 4px 14px rgba(4,40,80,.2)}
@@ -213,8 +213,8 @@ textarea{width:100%;min-height:76px;resize:vertical}
 /* сумма стоит в одной колонке с длительностями строк — справа место под минус */
 .eTot{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 34px 10px 2px;
   border-bottom:1px solid rgba(255,255,255,.12)}
-.eTot span{font-size:13.5px;font-weight:700;color:var(--muted)}
-.eTot b{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.eTot span{font-size:14px;font-weight:700;color:var(--muted)}
+.eTot b{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
 .eTot b.over{color:#FFD9A6}
 .eRow.hl{background:rgba(255,255,255,.16)}
 .eRow{transition:background .3s}
@@ -224,29 +224,29 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .eRow.fresh{animation:rowFresh 1.6s ease-out}
 @keyframes rowFresh{0%,30%{background:rgba(255,255,255,.26)}100%{background:rgba(255,255,255,0)}}
 .cSw{width:12px;height:12px;flex:none;border-radius:4px;background-image:linear-gradient(90deg,rgba(124,227,201,.9),rgba(70,253,252,.75))}
-.eT{flex:1;min-width:0;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
-.eT.untimed{font-weight:500;color:rgba(255,255,255,.78)}
-.eD{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.eT{flex:1;min-width:0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.eT.untimed{font-weight:400;color:rgba(255,255,255,.78)}
+.eD{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .eRow .minusBtn{width:30px;height:30px;margin:0 0 0 4px}
 
 /* ── Счётчики: сколько раз за день. Список, напротив каждого — минус, число, плюс ── */
 .tpSec{padding:16px 16px 4px}
-.tpT{margin:0 0 4px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.tpT{margin:0 0 4px;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
 .tpT + .tpItem{border-top:0}
-.tpNm{flex:1;min-width:0;padding:12px 0;border:0;background:none;color:#fff;font:inherit;font-size:15.5px;font-weight:600;
+.tpNm{flex:1;min-width:0;padding:12px 0;border:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:600;
   text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;
   border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.14)}
 .tpStp button{width:46px;padding:0;border:0;background:none;color:#fff;font:inherit;font-size:20px;font-weight:600;line-height:1}
-.tpStp button.sm{font-size:15px;font-weight:700}
+.tpStp button.sm{font-size:16px;font-weight:700}
 .tpStp button:active{background:rgba(255,255,255,.22)}
-.tpStp .v{min-width:50px;padding:0 8px;display:grid;place-items:center;font-size:16.5px;font-weight:800;
+.tpStp .v{min-width:50px;padding:0 8px;display:grid;place-items:center;font-size:16px;font-weight:700;
   font-variant-numeric:tabular-nums;border-left:1px solid rgba(255,255,255,.4);border-right:1px solid rgba(255,255,255,.4)}
 .tpStp .v.tpZero{color:rgba(255,255,255,.55);font-weight:700}
 .tpAdd{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;border:0;
   border-top:1px solid rgba(255,255,255,.18);background:none;color:rgba(255,255,255,.88);
-  font:inherit;font-size:14.5px;font-weight:600;cursor:pointer}
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 /* нажатия за день: время поправляется, лишнее снимается */
 #tapSheet{max-height:80vh;overflow-y:auto}
@@ -258,7 +258,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .tpTime.tpNo b{color:rgba(255,255,255,.6);font-weight:600}
 .tpTime input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;
   -webkit-appearance:none;appearance:none;font-size:16px}
-.tpAmt{flex:1;text-align:right;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.tpAmt{flex:1;text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
 .tpRow .minusBtn{width:30px;height:30px;margin:0 0 0 4px}
 
 /* ── черточка чекпоинта: тянешь вниз — раздел закрывается ── */
@@ -304,7 +304,7 @@ body.loading .app,body.loading .dock{opacity:0}
   background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 8px 22px rgba(4,40,80,.18);
   animation:splashPulse 1.7s ease-in-out infinite}
-.splashName{font-size:19px;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.92)}
+.splashName{font-size:20px;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.92)}
 /* вращение: 0–16 % — медленный дрейф внизу (±4°), дальше разгон и торможение без рывков */
 @keyframes splashSpin{
   0%{transform:rotate(86deg);animation-timing-function:linear}
@@ -376,53 +376,53 @@ body.loading .app,body.loading .dock{opacity:0}
 .ringWrap .knob .ar.up{top:9%}
 .ringWrap .knob .ar.dn{bottom:9%}
 .ringWrap .knob.drag .ar{opacity:1}
-.knob b{display:block;font-size:26px;font-weight:700;letter-spacing:-.01em}
-.knob small{display:block;font-size:11.5px;color:rgba(255,255,255,.72);margin-top:3px;font-weight:500}
+.knob b{display:block;font-size:28px;font-weight:700;letter-spacing:-.01em}
+.knob small{display:block;font-size:12px;color:rgba(255,255,255,.72);margin-top:3px;font-weight:400}
 
 .noScales{position:absolute;inset:18%;border-radius:50%;display:grid;place-items:center;
   text-align:center;padding:18px;border:2px dashed rgba(255,255,255,.4);
   background:rgba(255,255,255,.08)}
 .noScales b{display:block;font-size:16px;font-weight:700;margin-bottom:6px}
-.noScales span{display:block;font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.45}
+.noScales span{display:block;font-size:12px;color:rgba(255,255,255,.75);line-height:1.45}
 .facts{position:relative;overflow:hidden;margin:26px 0 4px;
   -webkit-mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);
           mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
 .factTrack{display:flex;will-change:transform;transition:transform .38s cubic-bezier(.22,.75,.25,1)}
 .factTrack button{flex:0 0 50%;padding:10px 6px;border:0;background:none;color:var(--dim);
-  font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   transition:color .3s,font-size .3s,opacity .3s;opacity:.55}
-.factTrack button.on{color:#fff;font-size:21px;font-weight:800;letter-spacing:-.01em;opacity:1}
+.factTrack button.on{color:#fff;font-size:20px;font-weight:700;letter-spacing:-.01em;opacity:1}
 .factLine{height:1px;background:rgba(255,255,255,.26);margin:14px 0 0}
-.swipeHint{text-align:center;font-size:11.5px;color:var(--dim);margin:10px 0 0}
+.swipeHint{text-align:center;font-size:12px;color:var(--dim);margin:10px 0 0}
 
 /* ── тренды ── */
 .tr{margin-bottom:22px}
 .trTop{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
 .trDot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c)}
-.trName{flex:1;font-size:15.5px;font-weight:600}
-.trVal{font-size:13px;color:var(--muted);font-family:var(--mono)}
+.trName{flex:1;font-size:16px;font-weight:600}
+.trVal{font-size:14px;color:var(--muted);font-family:var(--mono)}
 .bars{display:flex;align-items:flex-end;gap:6px;height:76px}
 .bars i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.3));min-height:3px}
 .bars i.none{background:rgba(255,255,255,.14)}
 .days{display:flex;gap:6px;margin-top:7px}
-.days span{flex:1;text-align:center;font-size:10px;color:var(--dim)}
+.days span{flex:1;text-align:center;font-size:12px;color:var(--dim)}
 
 /* ── связи ── */
-.scale{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin:0 0 12px 120px}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin:0 0 12px 120px}
 .pair{display:flex;align-items:center;margin-bottom:15px}
-.pairKey{flex:0 0 120px;font-size:12.5px;line-height:1.3;padding-right:8px}
-.pairKey i{display:block;font-style:normal;font-size:10.5px;color:var(--dim);margin-top:2px}
+.pairKey{flex:0 0 120px;font-size:12px;line-height:1.3;padding-right:8px}
+.pairKey i{display:block;font-style:normal;font-size:12px;color:var(--dim);margin-top:2px}
 .track{flex:1;position:relative;height:22px}
 .zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.28)}
 .stem{position:absolute;top:10px;height:2px;border-radius:1px;background:rgba(255,255,255,.85)}
 .dot{position:absolute;top:5px;width:12px;height:12px;border-radius:50%;margin-left:-6px;background:#fff;
   box-shadow:0 0 12px rgba(255,255,255,.7)}
 .dot.weak{background:transparent;border:1.5px solid rgba(255,255,255,.45);box-shadow:none}
-.rho{position:absolute;top:3px;font-size:11px;font-family:var(--mono);color:#fff}
+.rho{position:absolute;top:3px;font-size:12px;font-family:var(--mono);color:#fff}
 .rho.weak{color:var(--dim)}
 .waitRow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:16px;margin-bottom:9px;
-  background:rgba(255,255,255,.10);border:1px dashed var(--glassBrd);font-size:13px}
-.waitRow span{margin-left:auto;font-size:11.5px;color:var(--dim);font-family:var(--mono)}
+  background:rgba(255,255,255,.10);border:1px dashed var(--glassBrd);font-size:14px}
+.waitRow span{margin-left:auto;font-size:12px;color:var(--dim);font-family:var(--mono)}
 .strip{display:flex;gap:3px;margin-bottom:6px}
 .strip i{flex:1;height:26px;border-radius:3px;background:rgba(255,255,255,.15)}
 .strip i.f{background:rgba(255,255,255,.85)}
@@ -464,8 +464,8 @@ body.loading .app,body.loading .dock{opacity:0}
 .swipe{position:relative;margin-bottom:0}
 .swipeInner{display:flex;align-items:center;gap:8px;padding:12px 13px}
 .swipeInner .nm{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.swipeInner .nm b{display:block;font-size:15px;font-weight:600}
-.swipeInner .nm small{display:block;font-size:11.5px;color:rgba(255,255,255,.72);margin-top:2px}
+.swipeInner .nm b{display:block;font-size:16px;font-weight:600}
+.swipeInner .nm small{display:block;font-size:12px;color:rgba(255,255,255,.72);margin-top:2px}
 .dragH{flex:none;width:36px;height:36px;border-radius:10px;border:0;background:none;
   display:grid;place-items:center;padding:0;touch-action:none;cursor:grab}
 .dragH svg{width:24px;height:24px;stroke:rgba(255,255,255,.8);fill:none;
@@ -498,7 +498,7 @@ body.loading .app,body.loading .dock{opacity:0}
 .dockEdge{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;overflow:visible}
 .dockEdge path{fill:none;stroke:rgba(255,255,255,.92);stroke-width:1.2;vector-effect:non-scaling-stroke}
 .tab{position:relative;z-index:2;min-width:0;display:grid;place-items:center;gap:3px;border:0;background:none;
-  font-size:10.5px;color:#2C3E66;opacity:.62;font-weight:600;padding:0 2px}
+  font-size:12px;color:#2C3E66;opacity:.62;font-weight:600;padding:0 2px}
 .tab.on{opacity:1;color:#5A50D1}
 .tab span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -518,7 +518,7 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .askBox{width:100%;max-width:400px;border-radius:24px;padding:20px;
   background:linear-gradient(180deg,rgba(86,205,252,.97),rgba(40,178,248,.97));border:1px solid rgba(255,255,255,.5);
   box-shadow:0 20px 50px rgba(4,30,70,.45)}
-.askBox h3{margin:0 0 14px;font-size:17px;font-weight:700}
+.askBox h3{margin:0 0 14px;font-size:16px;font-weight:700}
 .askBox input{width:100%;font-size:16px}
 .askRow{display:flex;gap:9px;margin-top:14px}
 .imp{position:fixed;inset:0;z-index:8;pointer-events:none}
@@ -534,11 +534,11 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
   border-radius:26px 26px 0 0;
   transform:translateY(102%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
 .imp.on .impSheet{transform:translateY(0)}
-.impSheet h3{margin:0 0 14px;font-size:18px;font-weight:800}
+.impSheet h3{margin:0 0 14px;font-size:16px;font-weight:700}
 .drop{display:block;text-align:center;padding:26px 18px;border-radius:18px;
   border:2px dashed rgba(255,255,255,.65);background:rgba(255,255,255,.18)}
 .drop b{display:block;font-size:16px;font-weight:700;margin-bottom:6px}
-.drop span{display:block;font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.5}
+.drop span{display:block;font-size:12px;color:rgba(255,255,255,.75);line-height:1.5}
 .askRow button{flex:1}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));z-index:60;
   background:#0C3C6E;color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;
@@ -548,14 +548,14 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .toast.tAct{display:flex;align-items:center;gap:14px;white-space:nowrap}
 .toast.tAct span{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .toast.tAct.on{pointer-events:auto}
-.toast .tU{flex:none;padding:0;border:0;background:none;color:#8EF3DD;font:inherit;font-weight:800}
+.toast .tU{flex:none;padding:0;border:0;background:none;color:#8EF3DD;font:inherit;font-weight:700}
 
 /* ── СВЯЗИ: параметры вопроса ── */
 .filters{padding:2px 16px;margin-top:14px}
 .frow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:8px 0;
   border-bottom:1px solid rgba(255,255,255,.14)}
 .frow:last-child{border-bottom:0}
-.frow > label{font-size:14.5px;font-weight:500}
+.frow > label{font-size:14px;font-weight:400}
 .frow.off{display:none}
 /* Родной select лежит поверх прозрачным: подпись и стрелка наши, а тап
    открывает системный выбор. 16px — иначе iOS приближает страницу. */
@@ -571,13 +571,13 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .sel.fixed{background:none;border-color:transparent;justify-content:flex-end;padding-right:4px}
 .sel.fixed .selChev,.sel.fixed select{display:none}
 .dates{display:flex;align-items:center;gap:6px}
-.dates i{font-style:normal;color:var(--dim);font-size:13px}
+.dates i{font-style:normal;color:var(--dim);font-size:14px}
 .dates .datePill{padding:8px 12px}
 
 /* ── СВЯЗИ: ответ ── */
-.q{font-size:21px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margin:26px 2px 4px}
-.qSub{font-size:12.5px;color:var(--muted);margin:0 2px 12px}
-.sum{font-size:15px;line-height:1.55}
+.q{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.25;margin:26px 2px 4px}
+.qSub{font-size:12px;color:var(--muted);margin:0 2px 12px}
+.sum{font-size:16px;line-height:1.55}
 .gdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
 .gdot.up{background:#9FF0D8}
 .gdot.down{background:#FFB3C9}
@@ -585,7 +585,7 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .row + .row{border-top:1px solid rgba(255,255,255,.14)}
 .rowHead{display:block;width:100%;border:0;background:none;color:#fff;font:inherit;text-align:left;padding:13px 0}
 .rowTop{display:flex;align-items:center;gap:10px}
-.rowTop b{flex:1;font-size:15.5px;font-weight:600}
+.rowTop b{flex:1;font-size:16px;font-weight:600}
 /* ряд столбиков: вверх — выше, вниз — ниже, высота — сила связи; подпись у линии середины, с другой стороны */
 .lkBars{padding:16px 0 0;overflow:hidden}
 .lkBScroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
@@ -594,7 +594,7 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .lkBScroll.lkHead{-webkit-mask-image:linear-gradient(90deg,transparent,#000 44px);mask-image:linear-gradient(90deg,transparent,#000 44px)}
 .lkBScroll.lkHead.lkTail{-webkit-mask-image:linear-gradient(90deg,transparent,#000 44px,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,transparent,#000 44px,#000 calc(100% - 44px),transparent)}
 .lkBRow{display:flex;width:max-content;min-width:100%;padding:0 10px;box-sizing:border-box}
-.lkBAx{font-size:13px;font-weight:700;color:var(--muted);padding:0 16px}
+.lkBAx{font-size:14px;font-weight:700;color:var(--muted);padding:0 16px}
 .lkBAx.up{margin-bottom:10px}
 .lkBAx.dn{margin-top:10px}
 .lkBCol{flex:none;display:block;width:86px;padding:0;border:0;background:none;color:#fff;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -612,24 +612,24 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .lkBLab b{display:block;font-weight:600}
 .lkBLab span{display:block;color:rgba(255,255,255,.62)}
 .lkBCol.on .lkBLab,.lkBCol.on .lkBLab span{color:#fff}
-.lkBCol.on .lkBLab b{font-weight:750}
+.lkBCol.on .lkBLab b{font-weight:700}
 .lkBTxt{margin:14px 16px 0;padding:14px 0 16px;border-top:1px solid rgba(255,255,255,.2)}
-.lkBTxt b{display:block;font-size:15.5px;font-weight:600}
-.lkBTxt p{margin:5px 0 0;font-size:13.5px;line-height:1.4;color:rgba(255,255,255,.88)}
+.lkBTxt b{display:block;font-size:16px;font-weight:600}
+.lkBTxt p{margin:5px 0 0;font-size:14px;line-height:1.4;color:rgba(255,255,255,.88)}
 @media (prefers-reduced-motion:no-preference){.lkBTxt.lkFade{animation:lkBFade .22s ease-out}}
 @keyframes lkBFade{from{opacity:.25}to{opacity:1}}
 .rowChev{width:16px;height:16px;flex:none;fill:none;stroke:rgba(255,255,255,.6);stroke-width:2.2;
   stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
 .row.open .rowChev{transform:rotate(180deg)}
-.rowTxt{display:block;font-size:13.5px;color:rgba(255,255,255,.88);margin-top:5px;line-height:1.4}
-.rowMeta{display:block;font-size:11.5px;color:var(--dim);margin-top:3px}
+.rowTxt{display:block;font-size:14px;color:rgba(255,255,255,.88);margin-top:5px;line-height:1.4}
+.rowMeta{display:block;font-size:12px;color:var(--dim);margin-top:3px}
 .more{display:none;padding:0 0 14px}
 .row.open .more{display:block}
 .more svg{display:block;width:100%;overflow:visible}
 .more svg.split{height:136px}
 .more svg.ph{height:190px}
 .subT{font-size:12px;font-weight:700;color:var(--muted);margin:16px 0 6px}
-.ladder{display:none;flex-wrap:wrap;gap:6px 12px;margin:8px 0 6px;font-size:11.5px;color:var(--muted)}
+.ladder{display:none;flex-wrap:wrap;gap:6px 12px;margin:8px 0 6px;font-size:12px;color:var(--muted)}
 .ladder.on{display:flex}
 .ladder span{display:inline-flex;align-items:center;gap:6px}
 .sw{display:inline-block;width:14px;height:10px;border-radius:3px;border:1px solid rgba(255,255,255,.45);flex:none}
@@ -638,7 +638,7 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .sw.l2{background:repeating-linear-gradient(125deg,rgba(255,255,255,.55) 0 3px,transparent 3px 6px)}
 .sw.l3{background:rgba(255,255,255,.32)}
 .sw.l4{background:rgba(255,255,255,.6)}
-.phl{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;border-top:1px solid rgba(255,255,255,.1)}
+.phl{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;border-top:1px solid rgba(255,255,255,.1)}
 .phl .sw{width:12px;height:12px}
 .phl span{flex:1;color:var(--muted)}
 .phl span b{color:#fff;font-weight:600}
@@ -654,46 +654,46 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .lkBack{display:inline-block;margin:14px 2px -18px;padding:6px 0;border:0;background:none;color:var(--muted);font:inherit;font-size:14px;font-weight:600}
 .lkCard{padding:18px 12px 0}
 .lkHead{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:32px;padding:0 4px;margin-bottom:8px}
-.lkHead h3,.lkStory h3{margin:0;font-size:18px;font-weight:700;letter-spacing:-.02em}
-.lkReset{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:12.5px;font-weight:600}
+.lkHead h3,.lkStory h3{margin:0;font-size:16px;font-weight:700;letter-spacing:-.02em}
+.lkReset{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:12px;font-weight:600}
 .lkRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:0 4px;font-size:14px}
 .lkChart{margin-top:16px;touch-action:pan-y;-webkit-user-select:none;user-select:none}
 .lkChart svg{display:block;width:100%}
-.lkFreq{display:flex;gap:4px;margin:14px 0;padding:0 2px;font-size:13px}
+.lkFreq{display:flex;gap:4px;margin:14px 0;padding:0 2px;font-size:14px}
 /* кнопки частот подсвечивают часть графика: всегда в одну строку и одинаковой ширины.
    Если слово не влезает, шрифт уменьшается сразу у всех кнопок (fitFreq), размер кнопок от выбора не прыгает */
 .lkFreq button{flex:1 1 0;min-width:0;min-height:40px;padding:0 3px;border-radius:999px;border:1px solid var(--glassBrd);background:var(--glass);
-  color:#fff;font:inherit;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:clip}
+  color:#fff;font:inherit;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:clip}
 .lkFreq.lkMeasure button{font-weight:700}
 .lkFreq.lkTight{gap:3px}
 .lkFreq.lkTight button{padding:0 1px}
 .lkFreq button.on{background:rgba(255,255,255,.92);border-color:#fff;color:#0C6FA8;font-weight:700}
 .lkHist{border-top:1px solid rgba(255,255,255,.22);padding:0 4px;margin:0 0 4px}
 .lkHist>summary,.lkStats>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;
-  list-style:none;font-size:15px;font-weight:700;cursor:pointer}
+  list-style:none;font-size:16px;font-weight:700;cursor:pointer}
 .lkHist>summary::-webkit-details-marker,.lkStats>summary::-webkit-details-marker{display:none}
 .dChev{width:16px;height:16px;flex:none;fill:none;stroke:rgba(255,255,255,.85);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
 details[open]>summary .dChev{transform:rotate(180deg)}
 .lkItem{padding:15px 0;border-top:1px solid rgba(255,255,255,.17)}
 .lkItem p{margin:0;font-size:14px;line-height:1.6}
 .lkItem .lkAnchLine{margin-bottom:9px}
-.lkShow{margin-top:9px;padding:0;border:0;background:none;color:#fff;font:inherit;font-size:13px;font-weight:700}
+.lkShow{margin-top:9px;padding:0;border:0;background:none;color:#fff;font:inherit;font-size:14px;font-weight:700}
 mark.lkAnch{background:rgba(255,255,255,.16);color:#fff;border-radius:8px;padding:4px 4px 4px 9px;white-space:nowrap;font-size:14px}
-mark.lkAnch i{font-style:normal;font-weight:500}
+mark.lkAnch i{font-style:normal;font-weight:400}
 mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius:6px;background:rgba(255,255,255,.3);font-weight:700}
 .lkStory{padding:20px}
 .lkStory h3{margin-bottom:12px}
-.lkStory p{margin:0 0 12px;font-size:15.5px;line-height:1.62}
+.lkStory p{margin:0 0 12px;font-size:16px;line-height:1.62}
 .lkStory p:last-child{margin-bottom:0}
 .lkStats{padding:0 16px}
 .lkStats dl{margin:0}
-.lkStats dl div{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,.14);font-size:13.5px}
+.lkStats dl div{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
 .lkStats dt{color:var(--muted)}
 .lkStats dd{margin:0;font-weight:700;text-align:right}
-.lkStats dd small{display:block;margin-top:2px;font-size:11.5px;font-weight:500;color:var(--muted)}
-.lkStatHead{margin:18px 0 4px;font-size:13px;font-weight:700}
+.lkStats dd small{display:block;margin-top:2px;font-size:12px;font-weight:400;color:var(--muted)}
+.lkStatHead{margin:18px 0 4px;font-size:14px;font-weight:700}
 .lkStatSub{margin:0 0 6px;font-size:12px;color:var(--muted)}
-.lkStats p{margin:14px 0 0;font-size:12.5px;line-height:1.55;color:var(--muted)}
+.lkStats p{margin:14px 0 0;font-size:12px;line-height:1.55;color:var(--muted)}
 .lkStats p:last-child{margin-bottom:18px}
 .rowChev.go{transform:rotate(-90deg)}
 
@@ -723,7 +723,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icPick svg{width:60%;height:60%}
 .icPick.empty{background:none;box-shadow:none;border:2px dashed rgba(255,255,255,.8)}
 .icPick.empty svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round}
-.edErr{margin:10px 2px 0;font-size:13px;font-weight:600;color:#FFE3BF}
+.edErr{margin:10px 2px 0;font-size:14px;font-weight:600;color:#FFE3BF}
 .edErr:empty{display:none}
 /* сетка иконок — отдельный экран поверх окна */
 .icLayer{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);
@@ -732,8 +732,8 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icLayer.on{transform:none;visibility:visible}
 @media (prefers-reduced-motion:reduce){.icLayer{transition:none}}
 .icHead{flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:12px 14px 6px}
-.icHead b{font-size:16.5px;font-weight:800;text-align:center;white-space:nowrap}
-.icBack{justify-self:start;border:0;background:none;color:#fff;font:inherit;font-size:15px;font-weight:600;padding:9px 6px}
+.icHead b{font-size:16px;font-weight:700;text-align:center;white-space:nowrap}
+.icBack{justify-self:start;border:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:600;padding:9px 6px}
 .icScroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding:6px 20px calc(30px + env(safe-area-inset-bottom))}
 .icScroll::-webkit-scrollbar{display:none}
@@ -777,34 +777,34 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 
 /* ── окно шкалы: вид, отсчёт, деления, подписи ── */
 .icLayer.scEd{z-index:69}
-.scEd .icHead .scDone{justify-self:end;font-weight:800}
+.scEd .icHead .scDone{justify-self:end;font-weight:700}
 .scEd input[type=text]{font-size:16px}
 .scName{display:block;width:100%;margin-top:6px}
-.scUse{font-size:12.5px;color:var(--muted);line-height:1.5;margin:8px 2px 0}
+.scUse{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0}
 .scPvBox{display:grid;place-items:center;margin:16px 0 2px}
 .ringWrap.scPv{width:min(212px,58vw)}
-.ringWrap.scPv .knob small{font-size:11px}
+.ringWrap.scPv .knob small{font-size:12px}
 .ringWrap.scPv .knob{touch-action:manipulation}   /* в окне шкалы кольцо — только показ, листать форму можно и с него */
 .scChips{display:flex;flex-wrap:wrap;gap:8px}
 /* выбор «как делить шкалу»: две плитки с подписью */
 .scKinds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .scKind{display:block;text-align:left;padding:13px 14px 14px;border-radius:18px;border:1px solid var(--glassBrd);
   background:rgba(255,255,255,.12);color:#fff;font:inherit}
-.scKind b{display:block;font-size:15.5px;font-weight:700}
+.scKind b{display:block;font-size:16px;font-weight:700}
 .scKind small{display:block;font-size:12px;line-height:1.35;color:rgba(255,255,255,.78);margin-top:5px}
 .scKind.on{background:rgba(255,255,255,.92);border-color:#fff;color:#0C6FA8}
 .scKind.on small{color:rgba(12,111,168,.82)}
 .scKind .nw{font-style:normal;white-space:nowrap}
-.scChips .chip{padding:9px 16px;font-size:13.5px}
+.scChips .chip{padding:9px 16px;font-size:14px}
 .scStep{display:flex;align-items:center;gap:10px;padding:6px;border-radius:18px;
   background:rgba(255,255,255,.12);border:1px solid var(--glassBrd)}
 .scStep button{width:46px;height:44px;flex:none;border-radius:13px;border:0;padding:0;
-  background:rgba(255,255,255,.2);color:#fff;font:inherit;font-size:24px;font-weight:600;line-height:1}
+  background:rgba(255,255,255,.2);color:#fff;font:inherit;font-size:20px;font-weight:600;line-height:1}
 .scStep button:disabled{opacity:.3}
-.scStep b{flex:1;text-align:center;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.scStep b{flex:1;text-align:center;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
 .scLv{display:flex;align-items:center;gap:10px;margin:0 0 8px}
 .scLv .scN{flex:none;width:48px;height:42px;border-radius:12px;border:1px solid var(--glassBrd);padding:0;
-  font:inherit;font-size:15px;font-weight:800;color:#fff;background:rgba(255,255,255,.12);font-variant-numeric:tabular-nums}
+  font:inherit;font-size:16px;font-weight:700;color:#fff;background:rgba(255,255,255,.12);font-variant-numeric:tabular-nums}
 .scLv.on .scN{background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
 .scLv input{flex:1;min-width:0}
 
@@ -813,8 +813,8 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .mlSug{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
 .mlSug::-webkit-scrollbar{display:none}
 .mlSug:empty{display:none}
-.mlSug .chip{flex:none;padding:9px 16px;font-size:14.5px}
-.mlGo{display:block;width:100%;margin-top:12px;min-height:50px;font-size:16px;font-weight:800}
+.mlSug .chip{flex:none;padding:9px 16px;font-size:14px}
+.mlGo{display:block;width:100%;margin-top:12px;min-height:50px;font-size:16px;font-weight:700}
 .mlGo:disabled{opacity:.45}
 .mlBars{display:flex;align-items:center;gap:3px;height:22px}
 .mlBars i{display:block;width:4px;height:6px;border-radius:2px;background:#fff;animation:mlBar .9s ease-in-out infinite}
@@ -845,19 +845,19 @@ body.sheet:not(.chatOn) .fab .icX{display:block}
   background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   box-shadow:0 2px 4px rgba(4,40,80,.14),0 10px 24px rgba(4,40,80,.2),inset 0 1px 0 rgba(255,255,255,.5)}
-.mlKnob b{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1}
-.mlKnob small{margin-top:4px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.78);white-space:nowrap}
+.mlKnob b{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.mlKnob small{margin-top:4px;font-size:12px;font-weight:600;color:rgba(255,255,255,.78);white-space:nowrap}
 .mlKnob small.ov{margin-top:2px;color:#FFE3BF}
 .mlKbRows{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px}
 .mlKbR{display:grid;grid-template-columns:10px minmax(0,1fr) auto auto;align-items:center;column-gap:7px}
 .mlKbR.goal{grid-template-columns:10px minmax(0,1fr) auto}
 .mlKbR .mlSw{width:10px;height:10px;border-radius:50%}
 .mlKb .dp{background:var(--mP)}.mlKb .df{background:var(--mF)}.mlKb .dc{background:var(--mC)}
-.mlKbR .nm{font-size:14.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mlKbR b{font-size:15.5px;font-weight:800;white-space:nowrap}
-.mlKbR b small{font-size:12.5px;font-weight:600;color:var(--muted)}
+.mlKbR .nm{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mlKbR b{font-size:16px;font-weight:700;white-space:nowrap}
+.mlKbR b small{font-size:12px;font-weight:600;color:var(--muted)}
 .mlKbR b.no{color:var(--dim)}
-.mlKbR .pc{min-width:31px;text-align:right;font-size:12.5px;font-weight:600;color:var(--muted)}
+.mlKbR .pc{min-width:31px;text-align:right;font-size:12px;font-weight:600;color:var(--muted)}
 .mlKbR .bar{grid-column:2/-1;height:6px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.24);overflow:hidden}
 .mlKbR .bar i{display:block;height:100%;border-radius:3px}
 /* Meal 33.21 · плашка идущего фастинга над нижним меню (meal-fast.js) — по образцу полосы свёрнутой тренировки в Sport
@@ -899,7 +899,7 @@ body.mfOn .screen:not(.mlSheet){padding-bottom:184px}
 .mlChat{display:flex;flex-direction:column;gap:10px}
 .mlMsg{display:flex}
 .mlMsg.me{justify-content:flex-end}
-.mlB{max-width:86%;padding:11px 15px;border-radius:22px;font-size:15.5px;line-height:1.42;overflow-wrap:anywhere}
+.mlB{max-width:86%;padding:11px 15px;border-radius:22px;font-size:16px;line-height:1.42;overflow-wrap:anywhere}
 .bot .mlB{background:var(--glass);border:1px solid var(--glassBrd);border-bottom-left-radius:7px;
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 3px rgba(4,40,80,.08),0 10px 24px rgba(4,40,80,.10)}
 .me .mlB{background:rgba(255,255,255,.93);color:#0B4F7C;border-bottom-right-radius:7px;box-shadow:0 8px 20px rgba(4,40,80,.14)}
@@ -912,19 +912,19 @@ body.mfOn .screen:not(.mlSheet){padding-bottom:184px}
 .mlB p{margin:0}
 .mlB p + .mlRows{margin-top:6px}
 .mlB .mlRows + p{margin-top:10px}
-.mlB .mlHint{margin-top:10px;font-size:12.5px;line-height:1.45;color:var(--muted)}
-.mlRow{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid rgba(255,255,255,.18);font-size:14.5px}
+.mlB .mlHint{margin-top:10px;font-size:12px;line-height:1.45;color:var(--muted)}
+.mlRow{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid rgba(255,255,255,.18);font-size:14px}
 .mlRow:first-child{border-top:0}
 .mlRow .g{flex:none;width:20px;height:20px;display:grid;place-items:center;border-radius:50%;border:1.7px solid rgba(255,255,255,.85)}
 .mlRow .g svg{width:12px;height:12px;fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
 .mlRow.warn .g{border-color:#FFD9A6;background:rgba(255,196,120,.22)}
 .mlRow.warn .g svg{stroke:#FFE3BF}
 .mlRow .n{flex:1;min-width:0;font-weight:600}
-.mlRow b{flex:none;font-weight:800;white-space:nowrap}
+.mlRow b{flex:none;font-weight:700;white-space:nowrap}
 .mlDots{display:flex;align-items:center;gap:5px;min-height:44px}
 .mlDots i{width:7px;height:7px;border-radius:50%;background:#fff;animation:mlDot 1.1s ease-in-out infinite}
 .mlDots i:nth-child(2){animation-delay:.15s}.mlDots i:nth-child(3){animation-delay:.3s}
-.mlDots span{margin-left:6px;font-size:13.5px;color:var(--muted)}
+.mlDots span{margin-left:6px;font-size:14px;color:var(--muted)}
 @keyframes mlDot{0%,100%{opacity:.35;transform:none}40%{opacity:1;transform:translateY(-3px)}}
 @media (prefers-reduced-motion:reduce){.mlDots i,.me.live .mlB .tx::after{animation:none}}
 .mlChatGo{margin-top:6px}
@@ -951,10 +951,10 @@ body.rec .mlMic{animation:mlPulse 1.4s ease-in-out infinite}
 body.rec .mlCam{opacity:.5}
 .mlField{flex:1;min-width:0}
 #mlText{display:block;width:100%;height:44px;min-height:44px;max-height:126px;padding:11px 15px;border-radius:22px;
-  font-size:16.5px;line-height:1.25;resize:none;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.55);
+  font-size:16px;line-height:1.25;resize:none;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.55);
   color:#fff;-webkit-user-select:text;user-select:text}
 #mlText:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.26)}
-.mlRec{display:none;align-items:center;gap:10px;height:44px;padding:0 8px 0 12px;font-size:15px;font-weight:700}
+.mlRec{display:none;align-items:center;gap:10px;height:44px;padding:0 8px 0 12px;font-size:16px;font-weight:700}
 .mlRec b{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums;opacity:.9}
 body.rec #mlText{display:none}
 body.rec .mlRec{display:flex}
@@ -981,23 +981,23 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 @media (prefers-reduced-motion:reduce){.mlFanB{transition:opacity .15s}}
 
 /* разделы на главном */
-.mlSecs .rowcard .sum{margin-left:auto;flex:none;font-size:13.5px;font-weight:700;opacity:.92;white-space:nowrap}
+.mlSecs .rowcard .sum{margin-left:auto;flex:none;font-size:14px;font-weight:700;opacity:.92;white-space:nowrap}
 .mlSecs .rowcard small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mlSecs .rowcard > span:nth-child(2){min-width:0}
 #mlTaps{margin-top:22px}
 .tpNm b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis}
-.tpNm small{display:block;margin-top:2px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.tpNm small{display:block;margin-top:2px;font-size:12px;font-weight:600;color:var(--muted)}
 
 /* шторки «Подобрано» и «Раздел» выезжают снизу */
 .screen.mlSheet.on{animation:mlUp .34s cubic-bezier(.22,.75,.25,1)}
 @keyframes mlUp{from{transform:translateY(36%);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.screen.mlSheet.on{animation:none}}
-.mlSaid{font-size:13px;color:var(--muted);margin:-14px 2px 14px;line-height:1.45}
+.mlSaid{font-size:14px;color:var(--muted);margin:-14px 2px 14px;line-height:1.45}
 .mlSaid:empty{display:none}
 .mlMeals{display:flex;gap:8px;overflow-x:auto;margin:0 0 16px;scrollbar-width:none}
 .mlMeals::-webkit-scrollbar{display:none}
 .mlMeals .chip{flex:none;padding:9px 16px;font-size:14px}
-.mlTot{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;font-weight:700;color:var(--muted);margin:-12px 2px 16px}
+.mlTot{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;font-weight:700;color:var(--muted);margin:-12px 2px 16px}
 
 .mlItem{padding:0;overflow:hidden}
 .mlHead{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:0;background:none;color:#fff;
@@ -1016,24 +1016,24 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 .mlFav.on svg{fill:#FFC53D;stroke:#FFC53D}
 .mlHead .nm b{display:block;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mlHead .nm small{display:block;font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mlHead .w{flex:none;text-align:right;font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.mlHead .w{flex:none;text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
 .mlHead .w small{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-top:2px}
 .mlAsk{padding:0 16px 15px}
-.mlAsk p{margin:0 0 10px;font-size:13.5px;font-weight:700;color:#FFE3BF}
+.mlAsk p{margin:0 0 10px;font-size:14px;font-weight:700;color:#FFE3BF}
 .mlAsk .chips{gap:8px}
 .mlAsk .chip{padding:9px 15px;font-size:14px}
 .mlEd{padding:2px 16px 16px;border-top:1px solid rgba(255,255,255,.2)}
 .mlW{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:14px}
 .mlW .tpStp{height:46px}
 .mlW .tpStp .v{min-width:124px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 6px}
-.mlW .v input{width:48px;padding:0;margin:0;border:0;border-radius:0;background:none;color:#fff;font-family:inherit;font-size:17px;font-weight:800;text-align:right;-webkit-appearance:none;appearance:none;-moz-appearance:textfield}
+.mlW .v input{width:48px;padding:0;margin:0;border:0;border-radius:0;background:none;color:#fff;font-family:inherit;font-size:16px;font-weight:700;text-align:right;-webkit-appearance:none;appearance:none;-moz-appearance:textfield}
 .mlW .v input::-webkit-inner-spin-button,.mlW .v input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .mlW .v input:focus{outline:none;text-decoration:underline}
-.mlW .v i{font-style:normal;font-size:15px;font-weight:700;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.mlW .v i{font-style:normal;font-size:16px;font-weight:700;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
 .mlEq{font-size:14px;font-weight:700;color:var(--muted);white-space:nowrap}
 .mlUnits{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:12px -16px 0;padding:0 16px 2px;scroll-padding:0 16px}
 .mlUnits::-webkit-scrollbar{display:none}
-.mlUnits .chip{flex:none;padding:8px 14px;font-size:13.5px;white-space:nowrap}
+.mlUnits .chip{flex:none;padding:8px 14px;font-size:14px;white-space:nowrap}
 .mlUnits .chip small{font-size:12px;font-weight:600;opacity:.72;margin-left:3px}
 .mlUnits .chip.own{border-style:solid;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 .mlUnits .chip.own::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:2px;opacity:.8}
@@ -1046,21 +1046,21 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 .mlUForm .g input{padding-right:30px}
 .mlUForm .g i{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-style:normal;font-weight:700;opacity:.75;pointer-events:none}
 .mlUBtns{grid-column:1/-1;display:flex;gap:8px}
-.mlUNote{grid-column:1/-1;margin:0;font-size:12.5px;opacity:.75}
-.mlUDel{display:block;margin:10px 0 0;padding:4px 0;background:none;border:0;color:#fff;font:inherit;font-size:13.5px;font-weight:600;opacity:.8;text-decoration:underline;text-underline-offset:3px}
+.mlUNote{grid-column:1/-1;margin:0;font-size:12px;opacity:.75}
+.mlUDel{display:block;margin:10px 0 0;padding:4px 0;background:none;border:0;color:#fff;font:inherit;font-size:14px;font-weight:600;opacity:.8;text-decoration:underline;text-underline-offset:3px}
 .mlActs{display:flex;gap:9px;margin-top:14px}
 .mlActs .btn{flex:1;min-height:46px}
 
 .mlFind{margin:4px 0 14px;padding:14px 16px}
-.mlFind h3{margin:0 0 10px;font-size:15.5px;font-weight:800}
+.mlFind h3{margin:0 0 10px;font-size:16px;font-weight:700}
 .mlFind input[type=text]{width:100%;font-size:16px}
 .mlFind input[type=text]:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.22)}
 .mlRes{margin-top:8px;max-height:300px;overflow-y:auto}
 .mlRes button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;min-height:48px;
   padding:8px 2px;border:0;border-top:1px solid rgba(255,255,255,.16);background:none;color:#fff;font:inherit;
-  font-size:15px;font-weight:600;text-align:left;cursor:pointer}
+  font-size:16px;font-weight:600;text-align:left;cursor:pointer}
 .mlRes button:first-child{border-top:0}
-.mlRes button small{flex:none;color:var(--muted);font-size:12.5px;font-weight:600}
+.mlRes button small{flex:none;color:var(--muted);font-size:12px;font-weight:600}
 .mlRes .mlNew{color:#FFE3BF;font-weight:700}
 .mlFind .mlActs{margin-top:10px}
 
@@ -1075,19 +1075,19 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 /* настройки */
 .mlSet .ic{width:30px;height:30px;flex:none;display:grid;place-items:center}
 .mlSet .ic svg{width:100%;height:100%}
-.mlEmpty{font-size:13.5px;color:var(--muted);margin:4px 2px 0}
+.mlEmpty{font-size:14px;color:var(--muted);margin:4px 2px 0}
 
 /* время приёма в шапке шторки: по умолчанию сейчас, задним числом — своё */
 .mlTime{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:112px;height:50px;
   padding:0 14px;border-radius:16px;background:var(--glass);border:1px solid var(--glassBrd);
-  font-size:28px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums;cursor:pointer}
+  font-size:28px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;cursor:pointer}
 .mlTime.none b{color:rgba(255,255,255,.6)}
 .mlTime input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;
   -webkit-appearance:none;appearance:none;font-size:16px}
 /* «Последние» и звёздочка «Избранное»: включается одно, другое гаснет */
 .mlFindHead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .mlFindHead h3{flex:1;min-width:0;margin:0}
-.mlFindHead .chip{flex:none;padding:8px 15px;font-size:13.5px}
+.mlFindHead .chip{flex:none;padding:8px 15px;font-size:14px}
 .mlStar{flex:none;width:42px;height:42px;border-radius:50%;padding:0;display:grid;place-items:center;
   background:var(--glass);border:1px solid var(--glassBrd);cursor:pointer}
 .mlStar svg,.mlStarS svg{width:21px;height:21px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linejoin:round}
@@ -1120,7 +1120,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 :root{--mP:#e34948;--mF:#eda100;--mC:#6250d6}
 .rgDefs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
 .rcNew > span:last-child{min-width:0}
-.rcNew small{display:block;margin-top:3px;font-size:12px;font-weight:500;color:var(--muted);line-height:1.35}
+.rcNew small{display:block;margin-top:3px;font-size:12px;font-weight:400;color:var(--muted);line-height:1.35}
 .rcGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .rcTile{display:flex;flex-direction:column;min-width:0;padding:0;overflow:hidden;border-radius:22px;text-align:left;color:#fff;font:inherit;cursor:pointer;
   background:var(--glass);border:1px solid var(--glassBrd);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
@@ -1128,7 +1128,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .rcTile:active{transform:scale(.985)}
 .rcTile .pic{display:block;aspect-ratio:34/23;overflow:hidden}
 .rcTile .pic svg{display:block;width:100%;height:100%}
-.rcTile b{display:block;padding:11px 12px 0;font-size:15px;font-weight:700;line-height:1.25}
+.rcTile b{display:block;padding:11px 12px 0;font-size:16px;font-weight:700;line-height:1.25}
 .rcTile small{display:block;padding:4px 12px 13px;font-size:12px;color:var(--muted);line-height:1.35}
 .rcTile.ai{background:rgba(255,255,255,.06);border:1.5px dashed rgba(255,255,255,.62);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 .rcTile.ai .pic{display:grid;place-items:center}
@@ -1144,16 +1144,16 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .rcHead .th{flex:none;width:62px;height:62px;border-radius:16px;overflow:hidden}
 .rcHead .th svg{display:block;width:100%;height:100%}
 .rcHead .nm{flex:1;min-width:0}
-.rcHead .nm b{display:block;font-size:15.5px;font-weight:700;line-height:1.25}
-.rcHead .nm small{display:block;margin-top:3px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.rcHead .nm b{display:block;font-size:16px;font-weight:700;line-height:1.25}
+.rcHead .nm small{display:block;margin-top:3px;font-size:12px;font-weight:600;color:var(--muted)}
 .rcHead .go{margin-left:0}
-.rcM{display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12.5px;font-weight:700}
+.rcM{display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;font-weight:700}
 .rcM .mlSw{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:5px}
 .rcM .mlSw:first-child{margin-left:0}
 .rcM .dp{background:var(--mP)}.rcM .df{background:var(--mF)}.rcM .dc{background:var(--mC)}
 .rcBody{padding:2px 16px 16px;border-top:1px solid rgba(255,255,255,.2)}
 .rcIng{margin-top:8px}
-.rcRow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14.5px}
+.rcRow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
 .rcRow:first-child{border-top:0}
 .rcRow b{flex:none;font-weight:700}
 .rcSteps{margin:10px 0 0;font-size:14px;line-height:1.5;color:rgba(255,255,255,.88)}
@@ -1162,7 +1162,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 /* разговор о рецепте и режим рецепта в шторке */
 .mlTime[hidden],.mlMeals[hidden],.mlRcName[hidden]{display:none}
 .mlRcName{margin:-8px 0 16px}
-.mlRcName input{display:block;width:100%;padding:13px 15px;border-radius:16px;font-size:17px;font-weight:700;
+.mlRcName input{display:block;width:100%;padding:13px 15px;border-radius:16px;font-size:16px;font-weight:700;
   background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.55);color:#fff;-webkit-user-select:text;user-select:text}
 .mlRcName input:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.24)}
 .rcSugs{margin-top:6px}
@@ -1171,10 +1171,10 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .rcSug .th{flex:none;width:46px;height:46px;border-radius:12px;overflow:hidden}
 .rcSug .th svg{display:block;width:100%;height:100%}
 .rcSug .nm{flex:1;min-width:0}
-.rcSug .nm b{display:block;font-size:14.5px;font-weight:700;line-height:1.25}
+.rcSug .nm b{display:block;font-size:14px;font-weight:700;line-height:1.25}
 .rcSug .nm small{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
 .rcSug .rcM{margin-top:3px;font-size:12px}
-.rcSug .mini{flex:none;padding:8px 13px;font-size:13px;font-weight:700;background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
+.rcSug .mini{flex:none;padding:8px 13px;font-size:14px;font-weight:700;background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
 #rcMine{margin-top:2px}
 #rcMine .rcItem{margin-top:0}
 .rcBody .mlActs{margin-top:10px}
@@ -1186,7 +1186,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 /* шапка «Рецепты»: большой плюс с подписью */
 .rcHdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .rcAdd{display:flex;align-items:center;gap:10px;padding:0;border:0;background:none;color:#fff;font:inherit;cursor:pointer;text-align:right}
-.rcAdd span{font-size:13.5px;font-weight:700;line-height:1.2}
+.rcAdd span{font-size:14px;font-weight:700;line-height:1.2}
 .rcAdd i{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.7);
   box-shadow:0 2px 3px rgba(4,40,80,.10),0 10px 22px rgba(4,40,80,.16);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .rcAdd svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
@@ -1199,15 +1199,15 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 /* ═══ Журнал: учёт состава ═══ */
 .jrTop{padding-bottom:18px}
 .jrH{display:flex;align-items:center;gap:9px;min-width:0}
-.jrDemo{flex:none;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;letter-spacing:.02em;
+.jrDemo{flex:none;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.02em;
   color:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1)}
 .jrTiles{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 .jrTile{margin:0;padding:14px 14px 13px}
 .jrTl{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700}
 .jrDot{flex:none;width:9px;height:9px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
-.jrTv{margin:9px 0 11px;font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.jrTv{margin:9px 0 11px;font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1}
 .jrTv small{font-size:16px;font-weight:700;letter-spacing:0}
-.jrTc{margin-top:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.jrTc{margin-top:8px;font-size:12px;font-weight:600;color:var(--muted)}
 /* шкала: дорожка — светлая ступень того же цвета, заливка — сам цвет */
 .jrM{position:relative;display:block;height:6px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.24)}
 .jrM i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:rgba(255,255,255,.94)}
@@ -1219,14 +1219,14 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .jrList > .jrRow:first-child,.jrGb > .jrRow:first-child,.jrSub + .jrRow{border-top:0}
 .jrRow.tap{cursor:pointer}
 .jrR1{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-.jrN{min-width:0;font-size:15px;font-weight:600;line-height:1.3}
-.jrV{flex:none;font-size:15px;font-weight:700;white-space:nowrap}
+.jrN{min-width:0;font-size:16px;font-weight:600;line-height:1.3}
+.jrV{flex:none;font-size:16px;font-weight:700;white-space:nowrap}
 .jrR2{display:flex;align-items:center;gap:12px;margin-top:8px}
 .jrR2 .jrM{flex:1}
-.jrC{flex:none;min-width:112px;text-align:right;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.jrC{flex:none;min-width:112px;text-align:right;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
 .jrC.over{color:#fff}
 .jrWi{width:13px;height:13px;margin:0 4px -2px 0;color:#fab219}
-.jrDet{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.86)}
+.jrDet{margin:8px 0 0;font-size:12px;line-height:1.45;color:rgba(255,255,255,.86)}
 .jrSub{margin:14px 0 2px;font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--dim)}
 .jrGroups{margin-top:22px}
 .jrGroup{padding:0 16px}
@@ -1236,7 +1236,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .jrGb{padding-bottom:6px;border-top:1px solid rgba(255,255,255,.16)}
 .jrGb > .jrSub:first-child{margin-top:12px}
 .jrRow.ch{padding:8px 0 8px 16px;border-top-color:rgba(255,255,255,.09)}
-.jrRow.ch .jrN,.jrRow.ch .jrV{font-size:14px;font-weight:500;color:rgba(255,255,255,.86)}
+.jrRow.ch .jrN,.jrRow.ch .jrV{font-size:14px;font-weight:400;color:rgba(255,255,255,.86)}
 /* избранное и свайп строки */
 .jrSw{position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.16)}
 .jrList > .jrSw:first-child,.jrGb > .jrSw:first-child,.jrSub + .jrSw{border-top:0}
@@ -1244,11 +1244,11 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 /* Meal 29: омега-3 в журнале — общий показатель, «в том числе» и подытог ЭПК + ДГК (прототип H068) */
 .jrOmega{border-top:1px solid rgba(255,255,255,.16);padding-bottom:8px}
 .jrOmega > .jrSw:first-child{border-top:0}
-.jrOmega > .jrSw:first-child .jrN,.jrOmega > .jrSw:first-child .jrV{font-weight:750}
+.jrOmega > .jrSw:first-child .jrN,.jrOmega > .jrSw:first-child .jrV{font-weight:700}
 .jrOmegaParts{margin:0 0 3px 2px;padding-left:13px;border-left:2px solid rgba(255,255,255,.28)}
-.jrOmegaLabel{margin:1px 0 4px;font-size:11.5px;font-weight:600;line-height:1.35;color:var(--muted)}
+.jrOmegaLabel{margin:1px 0 4px;font-size:12px;font-weight:600;line-height:1.35;color:var(--muted)}
 .jrOmegaParts .jrRow,.jrOmegaParts .jrRow.ch{padding:10px 0}
-.jrOmegaParts .jrN,.jrOmegaParts .jrV{font-size:14px;font-weight:500;color:rgba(255,255,255,.9)}
+.jrOmegaParts .jrN,.jrOmegaParts .jrV{font-size:14px;font-weight:400;color:rgba(255,255,255,.9)}
 .jrOmegaParts .jrOmegaLabel + .jrSw{border-top:0}
 .jrOmegaSubtotal{margin-left:15px;padding-top:10px;border-top:1px solid rgba(255,255,255,.22)}
 .jrOmegaSubtotal > .jrSw{border-top:0}
@@ -1280,13 +1280,13 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .jrSeg{display:inline-flex;padding:3px;gap:2px;border-radius:999px;background:var(--glass);border:1px solid var(--glassBrd);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .jrSeg button{display:grid;place-items:center;min-height:30px;padding:0 9px;border:0;border-radius:999px;background:none;color:#fff;
-  font:inherit;font-size:12.5px;font-weight:700;line-height:1;white-space:nowrap;cursor:pointer}
+  font:inherit;font-size:12px;font-weight:700;line-height:1;white-space:nowrap;cursor:pointer}
 .jrSeg button.on{background:rgba(255,255,255,.92);color:#0C6FA8}
 .jrSeg svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.jrPerTxt{margin:0 2px 16px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.jrPerTxt{margin:0 2px 16px;font-size:14px;font-weight:600;color:var(--muted)}
 .jrRange{display:flex;gap:10px;padding:12px 14px;margin-bottom:14px}
 .jrRange[hidden]{display:none}
-.jrRange label{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.jrRange label{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--muted)}
 .jrRange input{flex:1;min-width:0;padding:8px 8px;border-radius:12px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.16);
   color:#fff;font:inherit;font-size:14px;-webkit-appearance:none;appearance:none}
 .jrSortRow{align-items:center}
@@ -1298,9 +1298,9 @@ body.matchOn .mlSaveBar[hidden]{display:none}
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:calc(10px + env(safe-area-inset-top)) 14px 0;color:#fff}
 .jrShot[hidden]{display:none}
 .jrShotBar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 8px}
-.jrShotBar b{font-size:15px}
+.jrShotBar b{font-size:16px}
 .jrShotBar .mini[hidden]{visibility:hidden;display:block}
-.jrShotHint{margin:0 2px 10px;font-size:12.5px;color:var(--muted);text-align:center}
+.jrShotHint{margin:0 2px 10px;font-size:12px;color:var(--muted);text-align:center}
 .jrShotBody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
 .jrShotBody img{display:block;width:100%;height:auto;border-radius:18px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
 .jrSeg{gap:0}
@@ -1320,29 +1320,29 @@ i.jrOk.none{visibility:hidden}
 /* PRO и GOLD */
 .tierBadges{display:flex;gap:8px;flex:none}
 .tierBadge{display:inline-grid;place-items:center;min-width:52px;height:30px;padding:0 11px;border-radius:999px;
-  font:inherit;font-size:13px;font-weight:800;letter-spacing:.08em;line-height:1;cursor:pointer}
+  font:inherit;font-size:14px;font-weight:700;letter-spacing:.08em;line-height:1;cursor:pointer}
 button.tierBadge:active{transform:scale(.96)}
 .tierBadge.pro{color:#fff;border:1.5px solid rgba(255,255,255,.75);background:linear-gradient(135deg,#7B6FE8,#5A50D1);
   box-shadow:0 2px 3px rgba(40,32,120,.22),0 8px 18px rgba(40,32,120,.26)}
 .tierBadge.gold{color:#3D2A00;border:1.5px solid rgba(255,244,214,.9);background:linear-gradient(135deg,#FFE08A,#F2B53C 55%,#D9962A);
   box-shadow:0 2px 3px rgba(120,80,10,.22),0 8px 18px rgba(120,80,10,.24)}
 .tierHead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.tierHead h3{margin:0;font-size:17px;line-height:1.25}
+.tierHead h3{margin:0;font-size:16px;line-height:1.25}
 .tierHead .tierBadge{cursor:default;flex:none}
 .tierBody ul{margin:0;padding:0 0 0 18px}
-.tierBody li{margin:0 0 9px;font-size:14.5px;line-height:1.45}
-.tierNote{margin:4px 0 0;font-size:12.5px;color:rgba(255,255,255,.8)}
+.tierBody li{margin:0 0 9px;font-size:14px;line-height:1.45}
+.tierNote{margin:4px 0 0;font-size:12px;color:rgba(255,255,255,.8)}
 .mlSrc{word-break:break-word}
 /* v16: база BLS */
-.mlResSub{margin:10px 2px 2px;font-size:12.5px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+.mlResSub{margin:10px 2px 2px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
 .mlAsk .chip.bls{white-space:normal;text-align:left;line-height:1.3;max-width:100%}
 /* v17: как приготовлено — тот же продукт из базы, лента вариантов */
 .mlVar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 16px 13px;margin-top:-3px}
 .mlVar::-webkit-scrollbar{display:none}
-.mlVar .chip{flex:none;padding:7px 13px;font-size:13.5px}
+.mlVar .chip{flex:none;padding:7px 13px;font-size:14px}
 .mlFam{align-items:center}
 .mlFamT{flex:none;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.02em;padding-right:2px}
-.mlFam .chip small{font-size:11.5px;opacity:.72;margin-left:3px;font-weight:500}
+.mlFam .chip small{font-size:12px;opacity:.72;margin-left:3px;font-weight:400}
 /* строка поиска в разделе */
 .mlFindSec{margin:2px 0 14px}
 .mlFindSec .mlRes:empty{display:none}
@@ -1353,7 +1353,7 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
 
 /* v20 (25 октября): в раскрытой строке — значки «заменить» и «убрать» рядом с граммами вместо больших кнопок */
 .mlIcoA{display:flex;gap:6px;margin-left:auto;order:2}
-.mlW .mlEq{order:3;flex-basis:100%;margin-top:-2px;font-size:13px}
+.mlW .mlEq{order:3;flex-basis:100%;margin-top:-2px;font-size:14px}
 .mlW:has(.mlIcoA){column-gap:8px}
 .mlW:has(.mlIcoA) .tpStp button{width:42px}
 .mlW:has(.mlIcoA) .tpStp .v{min-width:96px}
@@ -1363,7 +1363,7 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
 .mlIco.del{color:#FFD3DA}
 /* «Журнал»: сколько еды без данных о показателе */
 .jrMiss{margin:6px 0 0;font-size:12px;font-weight:600;color:#FFE3BF}
-.jrTm{margin-top:4px;font-size:11.5px;font-weight:600;line-height:1.3;color:#FFE3BF}
+.jrTm{margin-top:4px;font-size:12px;font-weight:600;line-height:1.3;color:#FFE3BF}
 /* избранные рецепты: звёздочка на миниатюре */
 .rcItem{position:relative}
 .rcFav{position:absolute;z-index:2;left:15px;top:15px;width:26px;height:26px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;
@@ -1396,17 +1396,17 @@ a.chip{display:inline-block;text-decoration:none;color:#fff}
   background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   box-shadow:0 2px 4px rgba(4,40,80,.14),0 10px 24px rgba(4,40,80,.2),inset 0 1px 0 rgba(255,255,255,.5)}
-.erKnob b{font-size:calc(var(--ringH) * .18);font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.erKnob b{font-size:calc(var(--ringH) * .18);font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
 .erKnob.long b{font-size:calc(var(--ringH) * .155)}
 .erKnob small{margin-top:3px;font-size:calc(var(--ringH) * .078);font-weight:600;color:rgba(255,255,255,.82);white-space:nowrap}
 .erRows{min-width:0;height:var(--ringH);display:flex;flex-direction:column;justify-content:space-between}
-.erR{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:6px;font-size:var(--erF,12.5px);font-weight:600;line-height:1.2;color:#fff}
+.erR{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:6px;font-size:var(--erF,12px);font-weight:600;line-height:1.2;color:#fff}
 .erDot{width:8px;height:8px;border-radius:50%}
 .erR span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .erR b{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
 .erBar{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden}
 .erBar i{display:block;height:100%;border-radius:3px}
-.erMiss{grid-column:1/-1;margin:12px 0 0;font-size:11.5px;font-weight:600;line-height:1.3;color:#FFE3BF}
+.erMiss{grid-column:1/-1;margin:12px 0 0;font-size:12px;font-weight:600;line-height:1.3;color:#FFE3BF}
 .jrW .card.erCard{margin-bottom:0}
 
 
@@ -1429,19 +1429,19 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .mlW:has([data-act="time"]) .tpStp .v{min-width:64px;padding-inline:6px}
 .mlW:has([data-act="time"]) .tpStp button{width:36px;flex:none}
 .mlW:has([data-act="time"]) .tpStp input{max-width:7ch}
-.mlSectionTime,input.mlSectionTime{flex:none;justify-content:center;min-width:0;height:auto;gap:8px;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff;font-size:13.5px;font-weight:600;letter-spacing:0;line-height:normal;font-variant-numeric:tabular-nums;cursor:pointer}
+.mlSectionTime,input.mlSectionTime{flex:none;justify-content:center;min-width:0;height:auto;gap:8px;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.22);color:#fff;font-size:14px;font-weight:600;letter-spacing:0;line-height:normal;font-variant-numeric:tabular-nums;cursor:pointer}
 .mlSectionTime svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .mlSectionTime:disabled{opacity:.55}
 [data-screen="sec"]>.top h1{min-width:0;overflow-wrap:anywhere}
 #mealTimeDialog .askBox{max-width:360px}
-#mealTimeInput{font-size:24px;min-height:54px;font-variant-numeric:tabular-nums}
+#mealTimeInput{font-size:20px;min-height:54px;font-variant-numeric:tabular-nums}
 #mealTimeDialog .happy-note{margin-top:12px}
 .mealTimeSectionBox{display:block;margin-top:16px;font-size:14px}.mealTimeSectionBox[hidden]{display:none}.mealTimeSectionBox select{display:block;width:100%;margin-top:6px}.mealTimeSectionBox option{color:#222;background:#fff}
 @media(max-width:360px){.mlW:has([data-act="time"]){row-gap:10px}.mlW:has([data-act="time"]) .tpStp{flex-basis:100%;justify-content:space-between}.mlW:has([data-act="time"]) .tpStp .v{flex:1}.mlW:has([data-act="time"]) .mlIcoA{margin-left:auto}}
 
 /* HAPPY_SHARED_STYLE_START */
 /* Shared Happy controls. Happy Meal is the visual reference. */
-.happy-settings{--happy-line:rgba(255,255,255,.36);--happy-glass:rgba(255,255,255,.17);--happy-muted:rgba(255,255,255,.82);font-size:15px;line-height:1.5}
+.happy-settings{--happy-line:rgba(255,255,255,.36);--happy-glass:rgba(255,255,255,.17);--happy-muted:rgba(255,255,255,.82);font-size:16px;line-height:1.5}
 .happy-section{margin:0 0 24px;min-width:0}
 .happy-heading{display:block;font-family:inherit;font-size:14px;font-weight:700;line-height:1.4;color:#fff;margin:22px 2px 12px}
 .happy-section:first-child>.happy-heading{margin-top:0}
@@ -1452,7 +1452,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .happy-button.primary{background:rgba(255,255,255,.92);color:#0c6fa8;border-color:#fff}
 .happy-button:disabled{opacity:.5;cursor:default}
 .happy-button:focus-visible,.happy-input:focus-visible,.happy-password-toggle:focus-visible{outline:2px solid #fff;outline-offset:3px}
-.happy-note{font-family:inherit;font-size:13px;line-height:1.65;color:var(--happy-muted,rgba(255,255,255,.82));margin:12px 0 0}
+.happy-note{font-family:inherit;font-size:14px;line-height:1.65;color:var(--happy-muted,rgba(255,255,255,.82));margin:12px 0 0}
 .happy-note:empty{display:none}
 .happy-error{color:#ffe3bf}
 .happy-input{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;border:1px solid var(--happy-line,rgba(255,255,255,.36));background:rgba(255,255,255,.14);color:#fff;border-radius:12px;padding:11px 12px;font-family:inherit;font-size:16px;font-weight:400;line-height:22px;min-height:46px;-webkit-appearance:none;appearance:none}
@@ -1490,10 +1490,10 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .happy-switch:focus-visible{outline:2px solid #fff;outline-offset:4px}
 /* Meal uses the same row metrics as the current Sport energy widget. */
 .card.erCard{border-radius:24px;box-shadow:0 2px 3px rgba(4,40,80,.07),0 12px 30px rgba(4,40,80,.10);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}
-.erR{row-gap:5px;font-size:var(--erF,11px);color:#ffffffd1}
+.erR{row-gap:5px;font-size:var(--erF,12px);color:#ffffffd1}
 .erR b{color:#fff}
 .erBar{height:5px;background:#ffffff38}
-@media(max-width:360px){.card.erCard{column-gap:10px}.erR{font-size:var(--erF,10px);column-gap:4px}}
+@media(max-width:360px){.card.erCard{column-gap:10px}.erR{font-size:var(--erF,12px);column-gap:4px}}
 @media(prefers-reduced-motion:reduce){.happy-switch,.happy-switch::after{transition:none}}
 /* HAPPY_SHARED_STYLE_END */
 </style>
@@ -1524,7 +1524,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <link rel="stylesheet" href="release-notes.css?v=33.23">
 <style id="meal-settings-structure">/* Update 26: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
 .happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}.happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}.happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:#5c4598;font-weight:600}.happy-journal-content[hidden],.meal-measurements[hidden]{display:none!important}.meal-measurements{padding-bottom:24px}
-.meal-signin{margin:0 0 14px}.meal-signin[hidden]{display:none}.meal-signin h2{margin:0 0 6px;font-size:18px}.meal-signin .note{margin:0 0 12px}</style>
+.meal-signin{margin:0 0 14px}.meal-signin[hidden]{display:none}.meal-signin h2{margin:0 0 6px;font-size:16px}.meal-signin .note{margin:0 0 12px}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
 /* значок кнопки Meal в ленте «Главная кнопка» («Настроить тему») — контурный микрофон, как на самой кнопке */
 .appearance-swatch svg.icMic{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
@@ -1539,7 +1539,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 #happy-appearance-dialog button{font:inherit;cursor:pointer;touch-action:manipulation;min-height:44px}
 #happy-appearance-dialog .ha-close{border:1px solid var(--ha-line);background:var(--ha-glass);border-radius:12px;color:var(--ha-ink);padding:8px 12px}
 #happy-appearance-dialog .ha-body{overflow-y:auto;overscroll-behavior:contain;padding:4px 18px 16px;min-height:0;-webkit-overflow-scrolling:touch}
-#happy-appearance-dialog p{font-size:13px;line-height:1.45;color:var(--ha-ink);margin:8px 0 14px}
+#happy-appearance-dialog p{font-size:14px;line-height:1.45;color:var(--ha-ink);margin:8px 0 14px}
 #happy-appearance-dialog fieldset{border:0;margin:0;padding:0;min-width:0}
 #happy-appearance-dialog legend{font-size:14px;font-weight:700;margin:14px 0 9px}
 #happy-appearance-dialog .ha-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -1547,7 +1547,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 #happy-appearance-dialog .ha-choice:has(input:checked){border:2px solid var(--ha-focus);padding:9px;background:var(--ha-glass)}
 #happy-appearance-dialog .ha-choice:focus-within{outline:3px solid var(--ha-focus);outline-offset:2px}
 #happy-appearance-dialog input{accent-color:var(--ha-focus);width:18px;height:18px;flex:none;margin:0}
-#happy-appearance-dialog .ha-theme{display:flex;flex-direction:column;gap:7px;min-width:0;flex:1;font-size:13px;font-weight:600}
+#happy-appearance-dialog .ha-theme{display:flex;flex-direction:column;gap:7px;min-width:0;flex:1;font-size:14px;font-weight:600}
 #happy-appearance-dialog .ha-swatch{display:block;height:62px;border-radius:9px;border:1px solid #ffffff30}
 #happy-appearance-dialog .ha-actions{padding:12px 18px max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--ha-line);display:flex;gap:10px;flex:none}
 #happy-appearance-dialog .ha-actions button{flex:1;border-radius:12px;border:1px solid var(--ha-line);padding:10px;color:var(--ha-ink);background:var(--ha-glass)}
@@ -1865,7 +1865,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <p class="note">Только для прототипа: сравнить, как смотрятся «Рецепты» с одним блюдом на обложке и с двумя.</p>
     <!--/PHOTO-->
     <div class="happy-app-link"><span class="happy-app-name">Бот записи еды</span><input class="happy-switch" type="checkbox" role="switch" id="mealBotSwitch" aria-label="Бот записи еды"></div>
-    <p class="happy-note" style="margin:6px 4px 14px;font-size:13px;opacity:.8">Проба на этом устройстве. Включён — диалог «Что съел» записывает еду сам и правится словами. Выключен — всё как раньше.</p>
+    <p class="happy-note" style="margin:6px 4px 14px;font-size:14px;opacity:.8">Проба на этом устройстве. Включён — диалог «Что съел» записывает еду сам и правится словами. Выключен — всё как раньше.</p>
     <div class="happy-app-link"><span class="happy-app-name">Диктовки с шортката «Еда»</span><input class="happy-switch" type="checkbox" role="switch" id="mealInboxSwitch" aria-label="Диктовки с шортката «Еда»"></div>
     <p class="happy-note" style="margin:6px 4px 14px;font-size:12px;opacity:.8">Только для владельца шортката. Включён — Meal сам забирает сказанное в шорткат «Еда», бот записывает это временем диктовки, а о непонятном спрашивает в «Что съел».</p>
     <div class="card"><button class="release-link" id="openBotRules"><b>Правила бота</b><small>Куда бот записывает еду: завтрак, обед, ужин, перекус</small></button></div>

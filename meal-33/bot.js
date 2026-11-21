@@ -24,9 +24,9 @@ var MealBot=(function(){
     [/(^|\s)перенеси(\s|$)/,'перенос записи'],
     [/(^|\s)(потом|позже)\s+скажу/,'вес обещан позже'],
     [/(как(ой|ая|ие|их)[- ]то|непонятн|неизвестн)/,'продукт не назван']];
-  var CSS='.mbChips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.mbChips .chip{flex:none;padding:8px 14px;font-size:13.5px}'+
-    '.mlB .mbSum{margin-top:8px;font-size:13px;opacity:.86}'+
-    '.mlB .mbMiss{white-space:pre-wrap;font:13px/1.45 inherit;margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.14);user-select:text;-webkit-user-select:text}';
+  var CSS='.mbChips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.mbChips .chip{flex:none;padding:8px 14px;font-size:14px}'+
+    '.mlB .mbSum{margin-top:8px;font-size:14px;opacity:.86}'+
+    '.mlB .mbMiss{white-space:pre-wrap;font:14px/1.45 inherit;margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.14);user-select:text;-webkit-user-select:text}';
   var booted=false;
   var SP=typeof MealSpeech!=='undefined'&&MealSpeech.ready()?MealSpeech:null, MK=/[≈⊕⊘▽◇△⊙]/g;
 
@@ -58,7 +58,7 @@ var MealBot=(function(){
     return '';
   }
   function row(l,ok,note){ return '<div '+(l.fid?'data-info-food="'+esc(l.fid)+'" data-info-grams="'+Number(l.g||100)+'" ':'')+'class="mlRow'+(ok?'':' warn')+'"><span class="g" aria-hidden="true">'+(ok?CHECKI:WARNI)+'</span><span class="n">'+esc(foodName(l))+
-    (note?' <small style="font-weight:500;opacity:.8">'+esc(note)+'</small>':'')+'</span><b>'+esc((l.approx?'≈ ':'')+amt(l))+'</b></div>' }
+    (note?' <small style="font-weight:400;opacity:.8">'+esc(note)+'</small>':'')+'</span><b>'+esc((l.approx?'≈ ':'')+amt(l))+'</b></div>' }
   /* «5 перепёлка» → «5 шт · 500 г» */
   function amt(l){ /* Meal 33.10: мера USDA — русской подписью: «2 чашки США (237 мл) · 316 г» */
     if(l.u&&l.u!=='г'&&l.q!==1&&typeof MealUSDA!=='undefined'&&MealUSDA.unitLabel(FOODS[l.fid],l.u,l.fid)){ var a=amtShort(l); return /\sг$/.test(a)?a:a+' · '+fmt(l.g)+' г' }
