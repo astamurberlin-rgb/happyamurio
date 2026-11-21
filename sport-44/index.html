@@ -1982,6 +1982,9 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .plan-details>.hf-drum{margin:8px 0 6px}
 /* Астамур 21.11.2026: выбор периода журнала — как в Meal (shared/happy-period.css); строка под переключателем */
 #page>.journal-period>.hp-period{margin:0 0 16px}
+/* Астамур 21.11.2026: свои тренировки в Библиотеке удаляются свайпом влево (delete-rules.js); карточка уезжает целиком,
+   рамка не обрезается у края списка */
+.row-swipe.template-swipe{overflow:visible}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
@@ -7435,6 +7438,13 @@ function deleteOwnTemplate(id){
   return ()=>{const now=(state.templateOverrides?.[id]||state.templates.find(x=>x.id===id));if(now){const {archived,...rest}=now;storeSportTemplate(rest);}for(const s of schedules)s.archived=false;persist();render();};
 }
 window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="delete-template"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();const undo=deleteOwnTemplate(b.dataset.id);if(undo){render();toast('Тренировка удалена',undo);}},true);
+
+/* Библиотека → «Мои тренировки» (Астамур 21.11.2026: «не на главной, а в библиотеке»): своя тренировка удаляется
+   свайпом влево и здесь — так же, как в Настройках: карточка уезжает целиком, справа «Удалить», в сообщении «Вернуть».
+   Рекомендуемые — примеры, их не удаляют. */
+{const libraryTemplateRowBeforeDelete=libraryTemplateRow;
+ libraryTemplateRow=function(t){const row=libraryTemplateRowBeforeDelete(t);if(t.recommended)return row;
+  return `<div class="row-swipe template-swipe" data-id="${esc(t.id)}"><button type="button" class="swipe-delete" data-action="delete-template" data-id="${esc(t.id)}" aria-label="Удалить тренировку ${esc(t.title)}" tabindex="-1">${icon('trash')}<span>Удалить</span></button><div class="swipe-content">${row}</div></div>`;};}
 
 /* Настройки → «Мои тренировки»: список своих тренировок, удаление свайпом влево. */
 function settingsTemplatesMarkup(){

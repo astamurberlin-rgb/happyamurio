@@ -371,3 +371,6 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .plan-details>.hf-drum{margin:8px 0 6px}
 /* Астамур 21.11.2026: выбор периода журнала — как в Meal (shared/happy-period.css); строка под переключателем */
 #page>.journal-period>.hp-period{margin:0 0 16px}
+/* Астамур 21.11.2026: свои тренировки в Библиотеке удаляются свайпом влево (delete-rules.js); карточка уезжает целиком,
+   рамка не обрезается у края списка */
+.row-swipe.template-swipe{overflow:visible}

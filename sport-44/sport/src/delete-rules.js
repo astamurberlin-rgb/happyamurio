@@ -25,6 +25,13 @@ function deleteOwnTemplate(id){
 }
 window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="delete-template"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();const undo=deleteOwnTemplate(b.dataset.id);if(undo){render();toast('Тренировка удалена',undo);}},true);
 
+/* Библиотека → «Мои тренировки» (Астамур 21.11.2026: «не на главной, а в библиотеке»): своя тренировка удаляется
+   свайпом влево и здесь — так же, как в Настройках: карточка уезжает целиком, справа «Удалить», в сообщении «Вернуть».
+   Рекомендуемые — примеры, их не удаляют. */
+{const libraryTemplateRowBeforeDelete=libraryTemplateRow;
+ libraryTemplateRow=function(t){const row=libraryTemplateRowBeforeDelete(t);if(t.recommended)return row;
+  return `<div class="row-swipe template-swipe" data-id="${esc(t.id)}"><button type="button" class="swipe-delete" data-action="delete-template" data-id="${esc(t.id)}" aria-label="Удалить тренировку ${esc(t.title)}" tabindex="-1">${icon('trash')}<span>Удалить</span></button><div class="swipe-content">${row}</div></div>`;};}
+
 /* Настройки → «Мои тренировки»: список своих тренировок, удаление свайпом влево. */
 function settingsTemplatesMarkup(){
   const list=templates().filter(t=>!t.recommended);if(!list.length)return '';
