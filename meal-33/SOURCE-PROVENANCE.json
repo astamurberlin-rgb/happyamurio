@@ -799,13 +799,13 @@
   },
   {
    "path": "meal-periods.css",
-   "size": 8656,
-   "sha256": "ad69026b702a537eadeb47add7485afef6292ea2cb792531b3751ed8a57e48b1"
+   "size": 8854,
+   "sha256": "8242d9370b2deb658d5b9eb4162668c50fb63a72c1642ed1c1c591b527d6bd75"
   },
   {
    "path": "meal-periods.js",
-   "size": 50492,
-   "sha256": "b678012dcbd771e848e12dae7a8c91e0647ff78155b82d9b9c9766b609d339f8"
+   "size": 50554,
+   "sha256": "494ad73b87ea6989351747266a30842533601a6219577f075c079aa573487cb3"
   },
   {
    "path": "portions.js",
