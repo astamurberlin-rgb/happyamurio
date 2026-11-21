@@ -123,3 +123,5 @@
 
 /* аудит 3: цена и «Куплено» в магазине — цвет из темы (без темы — как было) */
 :root[data-happy-appearance] #ccShopGrid .cc-card-meta .cc-price,:root[data-happy-appearance] .cc-card-meta .cc-price.cc-owned,:root[data-happy-appearance] .cc-owned-pill,:root[data-happy-appearance] .cc-buy button:disabled{color:var(--happy-accent-ink,#57365e);background:color-mix(in srgb,var(--happy-accent-ink,#57365e) 14%,#fff)}
+/* аудит 3 (22.11.2026): белые пилюли магазина и БАДов с текстом цвета фона (--base) в теме берут цвет текста темы, как остальные кнопки */
+:root[data-happy-appearance] :is(.cc-pills [aria-pressed=true],.cc-buy button,.sp-filters button[aria-pressed=true],.sp-btn.primary,.mc-download.is-saved){color:var(--happy-accent-ink,var(--base))}
