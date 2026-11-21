@@ -2,6 +2,15 @@
   "_": "Манифест общих файлов Happy (с 09.11.2026). reference — эталонная копия; apps — какие текущие выпуски (каталоги из shared/apps.json) должны содержать побайтно такую же копию в своём shared/. divergent — копии пока разошлись: check-shared предупреждает, а не падает, sync-shared их не трогает. frozenRoot — корневой shared/<name> загружают опубликованные старые страницы day/ и meal/ прямо с сайта, поэтому эталон лежит не в корне. contract — файл формата витрины или общего документа (правило «один код на формат», AGENTS.md, раздел 3): его копии не могут быть в долгах, расхождение — всегда ошибка.",
   "files": [
     {
+      "name": "happy-colors.css",
+      "reference": "shared/happy-colors.css",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
       "name": "happy-account.js",
       "reference": "shared/happy-account.js",
       "apps": [

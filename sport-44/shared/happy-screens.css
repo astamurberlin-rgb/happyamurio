@@ -7,11 +7,11 @@
  * — Claude · 16.11.2026 */
 :root{--hs-glass:rgba(255,255,255,.14);--hs-border:rgba(255,255,255,.34);--hs-muted:rgba(255,255,255,.7);
  --hs-primary:linear-gradient(110deg,#8665dc,#6254cf);--hs-primary-shadow:none;--hs-cancel-ink:#6254cf;
- --hs-seg-bg:#edf8ff;--hs-seg-ink:#5a50d1;--hs-switch-on:#8071df;--hs-sheet-bg:#5a8fe8;--hs-toast-bg:rgba(49,57,105,.94);
+ --hs-seg-bg:#edf8ff;--hs-seg-ink:var(--happy-dock-accent);--hs-switch-on:#8071df;--hs-sheet-bg:#5a8fe8;--hs-toast-bg:rgba(49,57,105,.94);
  --hs-pill-on-ink:#5046c3}
 body.hs-open>*:not(.bg):not(.grain):not(#happy-screens):not([data-hs-keep]),body.hs-open>*:not(.bg):not(.grain):not(#happy-screens):not([data-hs-keep]) *{visibility:hidden!important;pointer-events:none!important}
 body.hs-open{overflow:hidden}
-#happy-screens{position:fixed;inset:0;z-index:2147480000;pointer-events:none;color:#fff;
+#happy-screens{position:fixed;inset:0;z-index:2147480000;pointer-events:none;color:var(--happy-ink);
  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","Helvetica Neue",Arial,sans-serif;font-size:16px;
  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;line-height:normal;letter-spacing:normal;text-align:left}
 #happy-screens *,#happy-screens *::before,#happy-screens *::after{box-sizing:border-box}
@@ -33,10 +33,10 @@ body.hs-open{overflow:hidden}
 
 /* ── поля ── */
 .hs-field{display:flex;flex-direction:column;gap:7px;min-width:0}
-.hs-field-title{display:block;font-size:14px;font-weight:400;line-height:20px;color:#fff}
+.hs-field-title{display:block;font-size:14px;font-weight:400;line-height:20px;color:var(--happy-ink)}
 .hs-input{display:flex;align-items:center;gap:8px;border:1px solid var(--hs-border);border-radius:13px;background:var(--hs-glass);min-height:48px;padding:0 14px;min-width:0}
 #happy-screens .hs-input input{display:block;flex:1;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;
- line-height:24px;height:46px;font-size:16px;color:#fff;color-scheme:dark;-webkit-appearance:none;appearance:none}
+ line-height:24px;height:46px;font-size:16px;color:var(--happy-ink);color-scheme:dark;-webkit-appearance:none;appearance:none}
 #happy-screens .hs-input input::placeholder{color:rgba(255,255,255,.42)}
 /* дата: поле настоящее, но его текст скрыт — видна русская строка по центру (happy-screens.js, dateText) */
 .hs-date{position:relative}
@@ -44,7 +44,7 @@ body.hs-open{overflow:hidden}
 #happy-screens .hs-input.hs-date>input::-webkit-datetime-edit,#happy-screens .hs-input.hs-date>input::-webkit-date-and-time-value{opacity:0}
 #happy-screens .hs-input.hs-date>input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:auto;height:auto;margin:0;padding:0;opacity:0;cursor:pointer}
 .hs-date-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 14px;pointer-events:none;
- font-size:16px;line-height:24px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ font-size:16px;line-height:24px;color:var(--happy-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hs-date-empty>.hs-date-text{color:rgba(255,255,255,.42)}
 .hs-input:focus-within{border-color:#fff;background:rgba(255,255,255,.18)}
 .hs-suffix{font-size:14px;flex-shrink:0;color:rgba(255,255,255,.88)}
@@ -52,16 +52,16 @@ body.hs-open{overflow:hidden}
 .hs-eye{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center}
 .hs-eye svg{width:19px;height:19px;opacity:.85;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 #happy-screens textarea.hs-textarea{display:block;width:100%;min-height:125px;max-height:280px;resize:vertical;margin:0;padding:14px;border:1px solid var(--hs-border);border-radius:14px;
- background:var(--hs-glass);color:#fff;font-size:16px;line-height:1.55;outline:0;box-shadow:none;-webkit-appearance:none;appearance:none}
+ background:var(--hs-glass);color:var(--happy-ink);font-size:16px;line-height:1.55;outline:0;box-shadow:none;-webkit-appearance:none;appearance:none}
 #happy-screens textarea.hs-textarea::placeholder{color:rgba(255,255,255,.65)}
 #happy-screens textarea.hs-textarea:focus{border-color:#fff;background:rgba(255,255,255,.2)}
 
 /* ── кнопки ── */
 .hs-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
 #happy-screens .hs-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:49px;border-radius:14px;font-size:16px;font-weight:600;line-height:22px;padding:12px 16px;text-align:center}
-#happy-screens .hs-primary{background:var(--hs-primary);color:#fff;box-shadow:var(--hs-primary-shadow)}
+#happy-screens .hs-primary{background:var(--hs-primary);color:var(--happy-ink);box-shadow:var(--hs-primary-shadow)}
 #happy-screens .hs-cancel{background:#fff;color:var(--hs-cancel-ink)}
-#happy-screens .hs-glass-btn{background:var(--hs-glass);border:1px solid var(--hs-border);color:#fff}
+#happy-screens .hs-glass-btn{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
 #happy-screens .hs-btn:active{transform:scale(.985);filter:brightness(.97)}
 #happy-screens .hs-btn[aria-busy=true]{opacity:.72}
 #happy-screens .hs-quiet{display:block;background:transparent;color:rgba(255,255,255,.9);font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;text-align:left}
@@ -73,7 +73,7 @@ body.hs-open{overflow:hidden}
 
 /* ── переключатель вариантов ── */
 .hs-segment{display:flex;align-items:stretch;border:1px solid var(--hs-border);border-radius:999px;overflow:hidden;background:rgba(255,255,255,.12);height:43px}
-#happy-screens .hs-segment button{flex:1;background:transparent;border-radius:999px;padding:0 10px;white-space:nowrap;font-size:14px;color:#fff}
+#happy-screens .hs-segment button{flex:1;background:transparent;border-radius:999px;padding:0 10px;white-space:nowrap;font-size:14px;color:var(--happy-ink)}
 #happy-screens .hs-segment button[aria-pressed=true]{background:var(--hs-seg-bg);color:var(--hs-seg-ink);font-weight:600;box-shadow:0 1px 8px rgba(62,15,39,.06)}
 
 /* ── свитч ── */
@@ -88,7 +88,7 @@ body.hs-open{overflow:hidden}
 .hs-sheet-layer{position:fixed;inset:0;pointer-events:auto;display:flex;align-items:flex-end;justify-content:center}
 .hs-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.34);opacity:0;transition:opacity .22s ease}
 .hs-sheet{position:relative;width:100%;max-width:460px;display:flex;flex-direction:column;max-height:calc(100% - 24px - env(safe-area-inset-top));
- border-radius:22px 22px 0 0;border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);color:#fff;box-shadow:0 -16px 48px rgba(0,0,0,.2);
+ border-radius:22px 22px 0 0;border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);color:var(--happy-ink);box-shadow:0 -16px 48px rgba(0,0,0,.2);
  transform:translateY(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1)}
 .hs-sheet-layer.hs-in .hs-backdrop{opacity:1}
 .hs-sheet-layer.hs-in .hs-sheet{transform:translateY(0)}
@@ -151,13 +151,13 @@ body.hs-open{overflow:hidden}
 .hs-welcome-options h1{margin:40px 0 26px;font-size:20px;font-weight:600;line-height:1.2}
 .hs-welcome-buttons{display:grid;gap:12px}
 #happy-screens .hs-provider,#happy-screens .hs-email-start{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:14px;padding:12px 17px;font-size:16px;font-weight:600}
-#happy-screens .hs-provider{background:var(--hs-glass);border:1px solid var(--hs-border);color:#fff}
+#happy-screens .hs-provider{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
 #happy-screens .hs-provider:disabled{cursor:default}
 .hs-provider svg,.hs-email-start svg{width:23px;height:23px;position:absolute;left:18px}
 .hs-provider>span,.hs-email-start>span{padding:0 19px}
 .hs-email-start svg{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round}
 .hs-login-choice{font-size:14px;color:var(--hs-muted);margin:29px 0 13px}
-#happy-screens .hs-login-choice button{padding:8px 3px;font-weight:600;color:#fff;font-size:14px}
+#happy-screens .hs-login-choice button{padding:8px 3px;font-weight:600;color:var(--happy-ink);font-size:14px}
 #happy-screens .hs-guest{display:block;margin:0 auto;text-align:center;font-size:14px;color:var(--hs-muted);padding:9px 6px;min-height:38px}
 .hs-auth{padding-top:calc(56px + env(safe-area-inset-top))}
 .hs-auth h1.hs-title{font-size:20px;font-weight:600;line-height:1.22;margin-bottom:28px}
@@ -171,22 +171,22 @@ body.hs-open{overflow:hidden}
 .hs-gate-reason{font-size:14px;line-height:1.5;color:rgba(255,255,255,.82);margin:0}
 
 /* ── настройки: аватар, имя, аккаунт, связка, выход ── */
-.hs-settings{color:#fff}
+.hs-settings{color:var(--happy-ink)}
 .hs-identity{text-align:center;padding:17px 12px 33px}
 .hs-avatar{width:80px;height:80px;border:1px solid var(--hs-border);border-radius:50%;display:grid;place-items:center;background:var(--hs-glass);margin:0 auto 16px;overflow:hidden}
 .hs-avatar svg{width:37px;height:37px;fill:none;stroke:#fff;stroke-width:1.5;stroke-linecap:round}
 .hs-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.hs-identity h2{overflow-wrap:anywhere;line-height:1.28;font-size:20px;max-width:100%;margin:0 auto;font-weight:600;letter-spacing:-.3px;color:#fff}
+.hs-identity h2{overflow-wrap:anywhere;line-height:1.28;font-size:20px;max-width:100%;margin:0 auto;font-weight:600;letter-spacing:-.3px;color:var(--happy-ink)}
 .hs-section+.hs-section{margin-top:28px}
 .hs-section>h3{font-size:14px;font-weight:600;color:var(--hs-muted);margin:0 3px 10px;text-transform:none;letter-spacing:normal}
 .hs-group{background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:22px;padding:0 17px;overflow:hidden}
-.hs-settings .hs-row{display:flex;flex-direction:column;gap:6px;background:none;width:100%;text-align:left;padding:18px 0;border:0;color:#fff;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0;margin:0;box-shadow:none;min-height:0}
+.hs-settings .hs-row{display:flex;flex-direction:column;gap:6px;background:none;width:100%;text-align:left;padding:18px 0;border:0;color:var(--happy-ink);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0;margin:0;box-shadow:none;min-height:0}
 .hs-settings .hs-row+.hs-row{border-top:1px solid rgba(255,255,255,.22)}
 .hs-settings .hs-row>span{font-size:16px;font-weight:600}
 .hs-settings .hs-row:active{opacity:.6}
-.hs-settings .hs-link-name{font-size:16px;font-weight:600;color:#fff;text-decoration:none;min-width:0;overflow-wrap:anywhere}
+.hs-settings .hs-link-name{font-size:16px;font-weight:600;color:var(--happy-ink);text-decoration:none;min-width:0;overflow-wrap:anywhere}
 .hs-settings .hs-switch{cursor:pointer;-webkit-tap-highlight-color:transparent;margin:0}
-.hs-signout-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-bottom:4px;color:#fff}
+.hs-signout-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
 .hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;border:0;cursor:pointer;margin:0;box-shadow:none}
 .hs-sync{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:right;min-width:0}
 .hs-sync svg{width:13px;height:13px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -199,7 +199,7 @@ body.hs-open{overflow:hidden}
 .hs-links .happy-app-links{padding:0 17px!important;border-radius:22px;background:var(--hs-glass)!important;border:1px solid var(--hs-border)!important;box-shadow:none!important}
 .hs-links .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:65px;padding:0}
 .hs-links .happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.22)}
-.hs-links .happy-app-name{flex:1;min-width:0;padding:14px 0;color:#fff;font-size:16px;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
+.hs-links .happy-app-name{flex:1;min-width:0;padding:14px 0;color:var(--happy-ink);font-size:16px;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
 .hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 46px;width:46px;height:28px;min-height:28px;margin:0;padding:0;border:0;border-radius:18px;
  background:rgba(255,255,255,.23);cursor:pointer;transition:background .18s;box-shadow:none}
 .hs-links .happy-switch::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
@@ -218,7 +218,7 @@ body.hs-open{overflow:hidden}
 .hs-verified svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .hs-email-value{min-height:48px;padding:12px 14px;overflow-wrap:anywhere;word-break:break-word;font-size:16px;line-height:1.4}
 .hs-pending{padding:12px 14px;margin-top:5px;border-radius:12px;background:rgba(255,255,255,.08);font-size:12px;color:var(--hs-muted)}
-.hs-pending strong{display:block;font-size:14px;line-height:1.4;font-weight:400;color:#fff;overflow-wrap:anywhere;margin-top:4px}
+.hs-pending strong{display:block;font-size:14px;line-height:1.4;font-weight:400;color:var(--happy-ink);overflow-wrap:anywhere;margin-top:4px}
 #happy-screens .hs-pending .hs-quiet{display:inline-block;font-size:12px;padding:6px 14px 0 0;min-height:28px}
 .hs-section-title{margin-top:9px;font-size:16px}
 /* «Рост | Пол» и «Вес сейчас | Дата замера» — одни и те же две колонки: края полей совпадают (Астамур, 16.11.2026) */
@@ -228,7 +228,7 @@ body.hs-open{overflow:hidden}
 .hs-history{font-size:14px;margin:0}
 .hs-history summary{list-style:none;display:flex;justify-content:space-between;cursor:pointer;color:var(--hs-muted);padding:7px 0}
 .hs-history summary::-webkit-details-marker{display:none}
-.hs-history summary span{color:#fff}
+.hs-history summary span{color:var(--happy-ink)}
 .hs-history-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
 .hs-units h2{font-size:14px;font-weight:600;color:var(--hs-muted);margin-bottom:10px}
 .hs-units-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
@@ -246,14 +246,14 @@ body.hs-open{overflow:hidden}
 .hs-target{text-align:center;display:block;margin:14px 0 4px}
 .hs-target .hs-field-title{font-size:14px;color:rgba(255,255,255,.86)}
 .hs-target>div{display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:400;gap:6px;margin-top:3px;line-height:36px}
-#happy-screens .hs-target input{font-size:28px;font-weight:400;background:none;border:0;border-radius:0;outline:0;width:85px;text-align:right;color:#fff;padding:0;margin:0;line-height:36px;height:36px;
+#happy-screens .hs-target input{font-size:28px;font-weight:400;background:none;border:0;border-radius:0;outline:0;width:85px;text-align:right;color:var(--happy-ink);padding:0;margin:0;line-height:36px;height:36px;
  border-bottom:1px solid transparent;box-shadow:none;-webkit-appearance:none;appearance:none}
 #happy-screens .hs-target input:focus{border-bottom-color:var(--hs-border)}
 #happy-screens .hs-target input::placeholder{color:var(--hs-muted)}
 .hs-sport-weight>h2,.hs-goal-block>h2{font-size:20px;margin:0 0 22px;font-weight:600}
 .hs-focus-block{margin-top:22px;padding-top:22px;border-top:1px solid rgba(255,255,255,.22)}
 .hs-focus-block .hs-wheel-wrap{margin:0}
-.hs-focus-block .hs-wheel-wrap>.hs-field-title{font-size:20px;font-weight:600;color:#fff;margin-bottom:12px}
+.hs-focus-block .hs-wheel-wrap>.hs-field-title{font-size:20px;font-weight:600;color:var(--happy-ink);margin-bottom:12px}
 .hs-focus-block .hs-wheel-option{font-size:16px}
 .hs-focus-block .hs-wheel-option.hs-on{font-size:16px}
 .hs-goals .hs-actions{margin-top:30px}
@@ -285,7 +285,7 @@ body.hs-open{overflow:hidden}
 .hs-calc-preview>output small{font-size:14px;font-weight:400}
 .hs-calc-macros{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .hs-calc-macros>span{font-size:12px;color:var(--hs-muted)}
-.hs-calc-macros b{display:block;margin-top:3px;font-size:14px;font-weight:600;color:#fff}
+.hs-calc-macros b{display:block;margin-top:3px;font-size:14px;font-weight:600;color:var(--happy-ink)}
 .hs-calc-preview p{font-size:12px;color:var(--hs-muted);margin:8px 0 0}
 .hs-calc-details summary{font-size:14px;list-style:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;color:var(--hs-muted)}
 .hs-calc-details summary::-webkit-details-marker{display:none}
@@ -293,25 +293,25 @@ body.hs-open{overflow:hidden}
 .hs-calc-details p{font-size:14px;line-height:1.5;color:var(--hs-muted);margin:12px 0 0}
 #happy-screens .hs-method-link{display:block;margin:4px auto 0;min-height:44px;padding:0 12px;color:rgba(255,255,255,.85);font-size:14px;text-decoration:underline;text-decoration-color:rgba(255,255,255,.48);text-underline-offset:4px}
 .hs-explain{display:grid;gap:15px;color:rgba(255,255,255,.9);font-size:14px;line-height:1.48}
-.hs-explain h3{margin:0 0 5px;color:#fff;font-size:16px;font-weight:600}
+.hs-explain h3{margin:0 0 5px;color:var(--happy-ink);font-size:16px;font-weight:600}
 .hs-explain p{margin:0;color:inherit;line-height:inherit}
 .hs-explain p+p{margin-top:7px}
-.hs-explain .hs-equation{padding:9px 11px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:10px;color:#fff;font-weight:600}
+.hs-explain .hs-equation{padding:9px 11px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:10px;color:var(--happy-ink);font-weight:600}
 .hs-explain .hs-explain-note{font-size:14px}
 .hs-explain ul{margin:0;padding-left:16px}
 .hs-explain li+li{margin-top:6px}
-.hs-explain a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.hs-explain a{color:var(--happy-ink);text-decoration:underline;text-underline-offset:3px}
 
 /* ── цели Day ── */
 .hs-day-goals .hs-wheel-wrap{margin:0}
-.hs-day-goals .hs-wheel-wrap>.hs-field-title,.hs-day-goals h2{font-size:16px;font-weight:600;color:#fff;line-height:1.4}
+.hs-day-goals .hs-wheel-wrap>.hs-field-title,.hs-day-goals h2{font-size:16px;font-weight:600;color:var(--happy-ink);line-height:1.4}
 .hs-day-goals .hs-wheel{margin-top:12px}
 .hs-day-goals .hs-wheel-option{font-size:16px;line-height:18px;padding:0 20px;white-space:normal}
 .hs-day-goals .hs-wheel-option.hs-on{font-size:16px;font-weight:600}
 .hs-observations{margin-top:30px}
 .hs-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 #happy-screens .hs-topics button{display:flex;align-items:center;justify-content:center;max-width:100%;padding:10px 15px;min-height:41px;border-radius:24px;border:1px solid #ffffff65;background:#ffffff20;
- font-size:14px;line-height:1.3;color:#fff;overflow-wrap:anywhere;text-align:center}
+ font-size:14px;line-height:1.3;color:var(--happy-ink);overflow-wrap:anywhere;text-align:center}
 #happy-screens .hs-topics button[aria-pressed=true]{background:#f4faff;color:var(--hs-pill-on-ink);border-color:#fff;box-shadow:0 2px 7px #145e9314}
 #happy-screens .hs-topics .hs-add-topic{min-width:65px;padding:10px 20px}
 .hs-add-topic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}

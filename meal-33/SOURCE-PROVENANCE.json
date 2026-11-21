@@ -544,8 +544,8 @@
   },
   {
    "path": "collections.css",
-   "size": 10388,
-   "sha256": "493d24218ec20ebba774939b7bdb740bedbbd7fa5d0970ceca758f602143d44c"
+   "size": 10400,
+   "sha256": "d53a4ce96f31a1511275d394536d1ef401053c72c7042f7207d1e4f6d9bec726"
   },
   {
    "path": "collections.js",
@@ -599,8 +599,8 @@
   },
   {
    "path": "index.html",
-   "size": 651526,
-   "sha256": "0de77b76148dc932b83f75e178db261ef0db73014ca1f2b2225d69c8aca225e9"
+   "size": 653595,
+   "sha256": "b2616f1081505e19f041e541f97d0f3fbcf9525701d5eaa3fd6db500eebf4338"
   },
   {
    "path": "kfct.js",
@@ -794,8 +794,8 @@
   },
   {
    "path": "meal-periods.css",
-   "size": 8647,
-   "sha256": "d2001be2f9998a845c889c5c4fa1959bfc273e9426f59f0b5b7b67f8863c475e"
+   "size": 8656,
+   "sha256": "ad69026b702a537eadeb47add7485afef6292ea2cb792531b3751ed8a57e48b1"
   },
   {
    "path": "meal-periods.js",
@@ -819,13 +819,13 @@
   },
   {
    "path": "release-notes.js",
-   "size": 68021,
-   "sha256": "7bb81f2fba0422ee7c862f7e11fabc51a1fde7d2b47be3f74fe4476fc2809ac6"
+   "size": 68624,
+   "sha256": "7e1040b5de86c7881a6b86ad26d9d9c4be74207e526d706c2e275cb9243e692f"
   },
   {
    "path": "report.css",
-   "size": 11537,
-   "sha256": "bb6146137713773e43c86adef66d1923688620edc91a12fe5f4858c8e42779b8"
+   "size": 11593,
+   "sha256": "90418de1c259854d965b257a6d9d273b4d85967eb167a989fd8af3fdb4531ba5"
   },
   {
    "path": "report.js",
@@ -844,8 +844,8 @@
   },
   {
    "path": "shared/food-counters.css",
-   "size": 2889,
-   "sha256": "dfd61713bfc34eafd0b690294107142b32dc5940a8f6600fa5ef45892f92ad89"
+   "size": 2900,
+   "sha256": "a5845871858de84e0475b0554758c76f7c1eb47fffd3c43920c30fb9c8bd5f61"
   },
   {
    "path": "shared/happy-account.js",
@@ -864,8 +864,13 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 12702,
-   "sha256": "019948cdcf2a15381e1f91ba768273e0f0544cd5a87b8b38bc6a5252c1e0233a"
+   "size": 13810,
+   "sha256": "03479df7ffd88a29a484993006270bdcfab3c8c52f005d31bebc75960af5a3f5"
+  },
+  {
+   "path": "shared/happy-colors.css",
+   "size": 3178,
+   "sha256": "50403e42eab9700d7105b56de6c26d7c18d6e500c72fa7b9bed3d04eab97451d"
   },
   {
    "path": "shared/happy-food.js",
@@ -894,8 +899,8 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 17508,
-   "sha256": "1bcd17e2a8d9bcaed5879997457d6b0eea05049427248a573bb654d34c64a50f"
+   "size": 17708,
+   "sha256": "d8f967b272ac8cded42657d125f9b00b61ebb739642d9b9dc70b9e17af579a17"
   },
   {
    "path": "shared/happy-measurements.js",
@@ -909,18 +914,18 @@
   },
   {
    "path": "shared/happy-reference-themes.js",
-   "size": 8719,
-   "sha256": "6386f5b00febbdfb8337d4a0d2701643574bf70edd05ad3cc3bac70e0726691b"
+   "size": 8722,
+   "sha256": "7b317e6be4a53272071a92d61ce883f97d6cfca9eb0a99f28805f29e392e37fe"
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 32063,
-   "sha256": "1475b60ecb068eba14cb76ec6db464fd153c418aa81f7a15efc40c04b8b85577"
+   "size": 32404,
+   "sha256": "8a4415385b2ca813a543f99000b04a34179e919c4eaeda7ee45a776706fb71de"
   },
   {
    "path": "shared/happy-screens.js",
-   "size": 28472,
-   "sha256": "b07335c94e75766ab109404e86ae6d645f8adf520f9910336dbd9a2f894586fc"
+   "size": 28824,
+   "sha256": "3d359304ae6e0da4b87f7f052ff2a07e59de37508a9c2c7f6a00ac2478203fe1"
   },
   {
    "path": "shared/happy-settings-developer.js",
@@ -949,8 +954,8 @@
   },
   {
    "path": "shared/happy-ui.css",
-   "size": 5846,
-   "sha256": "e577ac3c683ba175e461864cfe75485d75e06e37acbc56779d33e9604a497ef7"
+   "size": 5906,
+   "sha256": "8f3b0928c87fe63be48fef49eb4399b0f51410df6bdc48f8dc7274143cadb321"
   },
   {
    "path": "shared/happy-welcome.js",
@@ -1009,8 +1014,8 @@
   },
   {
    "path": "supplements.css",
-   "size": 15245,
-   "sha256": "a0a249487b6f5a9d70c68f7ad80ea04b742687ee79f91535422d240924b54acc"
+   "size": 15279,
+   "sha256": "7f2cd5e8b2b75b94dc41386b95d1873799cfaf4844da42d7a3440f7d2026dbb1"
   },
   {
    "path": "supplements.js",
@@ -1020,7 +1025,7 @@
   {
    "path": "sw.js",
    "size": 3524,
-   "sha256": "9ea6c68293e8ee18dc41511818bbfbe4d00d21fcbc611c7b300db1e062c646f4"
+   "sha256": "b7b5c6975d225ae588968821083c2d1794fa125cec788b7948f7a8a3676c712d"
   },
   {
    "path": "usda-measures.js",
@@ -1034,8 +1039,8 @@
   },
   {
    "path": "user-products.css",
-   "size": 9054,
-   "sha256": "15611d8116df613495466afe243825e952991232659a2fbeff91065f0e4dd09b"
+   "size": 9089,
+   "sha256": "3822b40803e03b23a6ff62d0f8f56602fbc66d6aaaf72fffc7cd41dc8ca18966"
   },
   {
    "path": "user-products.js",

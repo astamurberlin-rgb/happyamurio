@@ -1,4 +1,4 @@
-.food-counter-editor{position:fixed;inset:0;z-index:120;overflow:auto;background:#133b63;color:white;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);overscroll-behavior:contain}
+.food-counter-editor{position:fixed;inset:0;z-index:120;overflow:auto;background:#133b63;color:var(--happy-ink);padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);overscroll-behavior:contain}
 .food-counter-editor[hidden],.food-counter-editor [hidden]{display:none!important}
 .food-counter-open{overflow:hidden}
 .fc-shell{max-width:560px;margin:auto;padding:18px 0 32px}

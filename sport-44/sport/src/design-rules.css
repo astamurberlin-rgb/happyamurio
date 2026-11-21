@@ -40,10 +40,10 @@
 .plan-zone-note .text-btn,.plan-remove{font-size:14px!important}
 
 /* ── Короткое сообщение после действия: тёмная пилюля, текст 14, одна строка ── */
-.toast,.hs-toast{border-radius:999px!important;background:rgba(18,20,32,.92)!important;color:#fff!important;font-size:14px!important;font-weight:400;
+.toast,.hs-toast{border-radius:999px!important;background:rgba(18,20,32,.92)!important;color:var(--happy-ink)!important;font-size:14px!important;font-weight:400;
  line-height:20px!important;white-space:nowrap;padding:12px 20px!important;min-height:44px;box-sizing:border-box;align-items:center}
 .toast>span,.toast>div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.toast button{font-size:14px!important;font-weight:600!important;color:#fff!important;opacity:.9;text-decoration:underline;text-underline-offset:3px;min-height:20px}
+.toast button{font-size:14px!important;font-weight:600!important;color:var(--happy-ink)!important;opacity:.9;text-decoration:underline;text-underline-offset:3px;min-height:20px}
 
 /* ── Карточки: скругление прежнее (Астамур 17.11.2026: в карточках крупные картинки упражнений — правило 26 не подходит) ── */
 
@@ -134,7 +134,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .metric-pill input,.timer-mode-options input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:1;cursor:pointer}
 .metric-pill input:disabled{cursor:default}
 .metric-pill span,.timer-mode-options span{display:flex!important;align-items:center;justify-content:center;height:100%!important;min-height:0!important;padding:0 2px!important;
- border:0!important;border-radius:0!important;background:none!important;color:#fff;font-size:14px!important;font-weight:400!important;white-space:nowrap}
+ border:0!important;border-radius:0!important;background:none!important;color:var(--happy-ink);font-size:14px!important;font-weight:400!important;white-space:nowrap}
 .metric-pill input:checked+span,.timer-mode-options input:checked+span{background:rgba(244,251,255,.96)!important;color:#176b98!important;font-weight:600!important}
 .metric-pill label:has(input:checked)+label:has(input:checked){border-left-color:rgba(23,107,152,.25)}
 /* все выключатели — одинаковые: 42 × 25, кружок 19 (раньше у «Связка с» был 46 × 28 — держала ширина flex) */
@@ -174,21 +174,21 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .sheet:has(.exercise-context-tabs) .sheet-top{display:flex!important;align-items:flex-start!important;gap:4px;padding-right:0!important;position:relative}
 .sheet:has(.exercise-context-tabs) .sheet-top h2{flex:1 1 auto;min-width:0;display:block!important;margin-top:4px}
 .sheet:has(.exercise-context-tabs) .sheet-top .favorite-star{position:static!important;flex:none}
-.exercise-menu-button{flex:none;width:44px;height:44px;min-height:44px;display:grid;place-items:center;border:0;border-radius:999px;background:transparent;color:#fff;padding:0;margin:0}
-.exercise-menu-button[aria-expanded=true]{background:rgba(255,255,255,.16)}
+.exercise-menu-button{flex:none;width:44px;height:44px;min-height:44px;display:grid;place-items:center;border:0;border-radius:999px;background:transparent;color:var(--happy-ink);padding:0;margin:0}
+.exercise-menu-button[aria-expanded=true]{background:var(--happy-glass)}
 .exercise-menu{position:absolute;right:0;top:48px;z-index:5;min-width:220px;display:grid;padding:6px;border-radius:18px;background:rgba(28,22,64,.97);box-shadow:0 12px 32px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14)}
-.exercise-menu button{min-height:44px;text-align:left;padding:0 14px;border:0;border-radius:12px;background:transparent;color:#fff;font-size:16px;font-weight:600}
+.exercise-menu button{min-height:44px;text-align:left;padding:0 14px;border:0;border-radius:12px;background:transparent;color:var(--happy-ink);font-size:16px;font-weight:600}
 .exercise-menu button:active,.exercise-menu button:focus-visible{background:rgba(255,255,255,.12);outline:none}
 .exercise-menu button.danger{color:#ff9aa8}
 .sheet-top h2.renaming{outline:none;caret-color:#fff;-webkit-user-select:text;user-select:text;box-shadow:inset 0 -1px 0 rgba(255,255,255,.55)}
 /* вопрос внутри приложения — только где он нужен (смена хвата в тренировке) */
 .exercise-ask{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;background:rgba(10,8,30,.45);backdrop-filter:blur(4px)}
-.exercise-ask-card{width:min(340px,100%);border-radius:22px;padding:20px;background:rgba(28,22,64,.97);color:#fff;display:grid;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.exercise-ask-card{width:min(340px,100%);border-radius:22px;padding:20px;background:rgba(28,22,64,.97);color:var(--happy-ink);display:grid;gap:12px;box-shadow:0 16px 40px rgba(0,0,0,.4)}
 .exercise-ask-card h3{margin:0;font-size:20px;font-weight:700;line-height:1.3}
 .exercise-ask-card p{margin:0;font-size:14px;line-height:1.4;color:rgba(255,255,255,.8)}
 .exercise-ask-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
 /* «Добавить упражнение» — фиолетовая пилюля, как «Добавить в тренировку» в инструкции подтягиваний (на проверку) */
-#exercise-config-form[data-scope=add] .exercise-save-actions .button.primary{background:#8156dd!important;color:#fff!important;border:1px solid #ffffff33!important}
+#exercise-config-form[data-scope=add] .exercise-save-actions .button.primary{background:#8156dd!important;color:var(--happy-ink)!important;border:1px solid #ffffff33!important}
 /* Аудит единообразия 18.11.2026 · настройки упражнения: «Сохранить» / «Добавить» всегда в конце, внизу листа —
    короткое содержимое прижимает кнопку к низу, длинное — кнопка после всех полей. */
 .sheet:has(.exercise-context-tabs)>form#exercise-config-form:not([hidden]){display:flex!important;flex-direction:column}
@@ -199,7 +199,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* редактор: значок настроек справа от названия упражнения, как в идущей тренировке */
 .template-exercise-heading{display:flex;align-items:center;gap:8px}
 .template-exercise-heading .template-exercise-name{flex:1 1 auto;min-width:0;margin:0}
-.template-exercise-settings{flex:none;width:44px!important;height:44px!important;min-height:44px!important;display:grid;place-items:center;color:#fff;background:transparent;border:0;padding:0}
+.template-exercise-settings{flex:none;width:44px!important;height:44px!important;min-height:44px!important;display:grid;place-items:center;color:var(--happy-ink);background:transparent;border:0;padding:0}
 /* карточка тренировки: (i) справа, как в записи журнала */
 .template-exercise-title{display:flex!important;align-items:center;gap:10px}
 .template-exercise-title b{flex:1 1 auto;min-width:0}
@@ -232,13 +232,13 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .exercise-name-swipe{position:relative;overflow:hidden;border-radius:12px;touch-action:pan-y}
 .exercise-name-swipe>.exercise-card-heading{position:relative;transition:transform .18s ease}
 .exercise-name-swipe.swipe-dragging>.exercise-card-heading{transition:none}
-.exercise-name-delete{position:absolute;right:0;top:0;bottom:0;width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;padding:0;background:#df547d;color:#fff;border-radius:11px;font-size:12px;font-weight:600;visibility:hidden;z-index:0}
+.exercise-name-delete{position:absolute;right:0;top:0;bottom:0;width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;padding:0;background:#df547d;color:var(--happy-ink);border-radius:11px;font-size:12px;font-weight:600;visibility:hidden;z-index:0}
 .exercise-name-swipe.swipe-open>.exercise-name-delete,.exercise-name-swipe.swipe-dragging>.exercise-name-delete{visibility:visible}
 .exercise-name-delete .icon{width:18px;height:18px}
 
 /* Аудит 18.11.2026, часть 4: удалить внутри карточки — красная «Удалить» внизу, сразу, без вопроса; в сообщении «Вернуть».
    Тот же красный, что у «Удалить» в свайпе. */
-.button.button-delete,.hm-button.hm-delete{background:#df547d!important;border-color:#df547d!important;color:#fff!important;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.button.button-delete,.hm-button.hm-delete{background:#df547d!important;border-color:#df547d!important;color:var(--happy-ink)!important;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
 .button.button-delete .icon,.hm-button.hm-delete svg{width:18px;height:18px}
 #group-form .button-delete{margin-top:12px}
 .workout-detail .delete-workout{margin-top:12px}
@@ -270,7 +270,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* Значок тренировки — внутри поля «Название»: квадратик слева, нажал — выбор значка. Поле во всю ширину. */
 .workout-name-inline{display:block!important;margin-right:0!important}
 .template-form-edit .workout-name-row{margin-right:0!important}
-.workout-name-input .workout-icon-toggle{position:relative;flex:0 0 40px;width:40px!important;height:40px!important;margin:0 0 0 5px;padding:0;border:1px solid rgba(255,255,255,.34);border-radius:10px!important;background:rgba(255,255,255,.12);display:grid;place-items:center}
+.workout-name-input .workout-icon-toggle{position:relative;flex:0 0 40px;width:40px!important;height:40px!important;margin:0 0 0 5px;padding:0;border:1px solid var(--happy-line);border-radius:10px!important;background:rgba(255,255,255,.12);display:grid;place-items:center}
 .workout-name-input .workout-icon-toggle>.icon,.workout-name-input .workout-icon-toggle>.sport-icon,.workout-name-input .workout-icon-toggle>img{width:32px!important;height:32px!important}
 .workout-name-input input{padding-left:10px!important}
 
@@ -303,7 +303,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .panel-screen{border-radius:22px 22px 0 0!important}
 
 /* Мелочи аудита 18.11.2026: полоса свёрнутой тренировки нажимается целиком. */
-button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}.active-banner-go{font-size:12px;font-weight:600}
+button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}.active-banner-go{font-size:12px;font-weight:600}
 /* Долгое нажатие на тренировку — меню, а не выделение текста. */
 .home-favorite,.template-library-row{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .workout-quick-menu{display:grid;gap:12px;padding-bottom:8px}
@@ -312,7 +312,7 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 /* Настройки: заголовки разделов одного вида — тусклые и меньше: 14, полужирный, белый 60 % (Астамур 19.11.2026). */
 .happy-settings .happy-heading,.happy-settings .settings-section,.happy-settings .settings-section h3,.happy-settings .hs-section>h3,.happy-settings .hs-links-title{font-size:14px!important;font-weight:600!important;color:rgba(255,255,255,.6)!important;opacity:1!important;text-transform:none!important;letter-spacing:0!important}
 /* Подход: «П» всегда на одном месте — номер в своей ячейке слева, прижат к названию (Астамур 18.11.2026). */
-.set-name-wrap{display:flex;align-items:center;min-width:0;font-size:16px;color:#fff}.set-name-wrap::before{content:attr(data-num);flex:0 0 1.35em;text-align:right;padding-right:.3em;font-variant-numeric:tabular-nums}.set-name-wrap>.set-name{flex:1 1 auto}
+.set-name-wrap{display:flex;align-items:center;min-width:0;font-size:16px;color:var(--happy-ink)}.set-name-wrap::before{content:attr(data-num);flex:0 0 1.35em;text-align:right;padding-right:.3em;font-variant-numeric:tabular-nums}.set-name-wrap>.set-name{flex:1 1 auto}
 /* «+ Подход»: плюс — в той же ячейке, что номера подходов (прижат вправо), «П» — ровно под «П» остальных строк (Астамур 18.11.2026). */
 .active-workout .set-actions .set-add-plus,.plan-add-actions .set-add-plus{display:inline-block;flex:0 0 auto;width:1.35em;padding-right:.3em;box-sizing:content-box;text-align:right}
 .active-workout .set-actions .set-add-digit,.plan-add-actions .set-add-digit{display:none}
@@ -323,7 +323,7 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .workout-pop.on .workout-pop-shade{opacity:1}
 .workout-pop-card{position:absolute;left:0;right:0;bottom:0;display:grid;gap:12px;padding:22px 20px calc(112px + env(safe-area-inset-bottom));background:var(--sport-background);border-top:1px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);box-shadow:0 -8px 30px rgba(4,40,80,.18);border-radius:26px 26px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.25,1)}
 .workout-pop.on .workout-pop-card{transform:translateY(0)}
-.workout-pop-card h3{margin:0 0 2px;font-size:18px;font-weight:800;color:#fff}
+.workout-pop-card h3{margin:0 0 2px;font-size:18px;font-weight:800;color:var(--happy-ink)}
 /* Обзор тренировки и запись журнала: упражнения одним списком в одной рамке, без кнопок «i» (Астамур 18.11.2026). */
 .card.template-exercises,.card.record-exercises{display:block;padding:2px 18px}
 .card.template-exercises>.template-exercise,.card.record-exercises>.record-exercise{margin:0!important;padding:14px 0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
@@ -344,7 +344,7 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
  * п. 26: сообщение после действия — как в Day: синяя пилюля, «Вернуть» бирюзовым, без подчёркивания.
  * — Claude · 20.11.2026 (лаборатория) */
 .plan-row .sport-metric-input{box-sizing:border-box;display:inline-flex!important;align-items:center!important;justify-content:center;gap:5px!important;
-  width:132px!important;flex:0 0 132px!important;height:48px!important;padding:0 10px!important;border:1px solid rgba(255,255,255,.34)!important;border-radius:12px!important;
+  width:132px!important;flex:0 0 132px!important;height:48px!important;padding:0 10px!important;border:1px solid var(--happy-line)!important;border-radius:12px!important;
   background:rgba(255,255,255,.14)!important;box-shadow:none!important}
 .plan-row .sport-metric-input:focus-within{border-color:#fff!important;box-shadow:none!important}
 .plan-row .sport-metric-input input{flex:0 0 auto!important;width:4ch!important;min-width:0!important;max-width:none!important;height:24px!important;min-height:0!important;

@@ -8,7 +8,7 @@
 
 .set-line.set-line{display:grid!important;grid-template-columns:var(--set-cols)!important;column-gap:3px!important;row-gap:0!important;align-items:center!important;justify-content:stretch!important;min-height:48px;margin:0!important;padding:0!important;border:0!important;background:none!important}
 .set-line.set-line>*{grid-row:1!important;grid-column:auto!important;min-width:0}
-.set-line .set-name{all:unset;box-sizing:border-box;display:block;width:100%;min-width:0;min-height:44px;font-size:16px;line-height:44px;color:#fff;caret-color:#fff;cursor:text;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-user-select:text;user-select:text}
+.set-line .set-name{all:unset;box-sizing:border-box;display:block;width:100%;min-width:0;min-height:44px;font-size:16px;line-height:44px;color:var(--happy-ink);caret-color:#fff;cursor:text;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-user-select:text;user-select:text}
 .set-line .set-name::placeholder{color:#e3e6ff;opacity:.45}
 .set-line .set-x{text-align:center;color:#e3e6ff;font-size:16px}
 .set-line.set-line .set-metric{display:block!important;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:none!important;outline:0!important}
@@ -21,7 +21,7 @@
 .plan-set-row.set-line.set-line{border-top:0!important;padding:0!important}
 
 /* Кружок: белый — не сделан; кольцо по краю — идёт перерыв; зелёный с галочкой — перерыв прошёл. */
-.set-check{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:44px;height:44px;min-width:44px;margin:0 0 0 auto;padding:0;border:0;border-radius:50%;background:none;box-shadow:none;display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.set-check{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:44px;height:44px;min-width:44px;margin:0 0 0 auto;padding:0;border:0;border-radius:50%;background:none;box-shadow:none;display:flex;align-items:center;justify-content:center;color:var(--happy-ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .set-check:focus{outline:none}
 .set-check:focus-visible .set-dot{outline:2px solid #fff;outline-offset:3px}
 .set-dot{position:relative;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background-color .2s}
@@ -36,7 +36,7 @@
 @media (prefers-reduced-motion:reduce){.set-ring-fill,.set-dot{transition:none}}
 
 /* Подсказки названия: в цветах Sport, поверх листа; внизу мало места — открываются вверх. */
-.set-name-menu{position:fixed;z-index:400;min-width:150px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:2px 0;background:#5a68d8;color:#fff;border:1px solid #ffffff6e;border-radius:14px;box-shadow:0 8px 20px #1a1f5a55;font-size:14px;font-weight:600;line-height:1.2;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.set-name-menu{position:fixed;z-index:400;min-width:150px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:2px 0;background:#5a68d8;color:var(--happy-ink);border:1px solid #ffffff6e;border-radius:14px;box-shadow:0 8px 20px #1a1f5a55;font-size:14px;font-weight:600;line-height:1.2;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .set-name-menu[hidden]{display:none}
 .set-name-menu button{appearance:none;-webkit-appearance:none;display:block;width:100%;min-height:40px;margin:0;padding:0 14px;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .set-name-menu button+button{border-top:1px solid #ffffff38}
@@ -80,7 +80,7 @@
 .sport-switch:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
 /* Пункт 4: ▶ в строке упражнения на время; во время отсчёта — ■. */
-.set-play .set-play-dot{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px solid #ffffffb0;color:#fff;box-sizing:border-box}
+.set-play .set-play-dot{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px solid #ffffffb0;color:var(--happy-ink);box-sizing:border-box}
 .set-play .set-play-dot svg{width:16px;height:16px}
 .set-play.running .set-play-dot{background:#aff5df;border-color:#aff5df;color:#08392e}
 .exercise-big-timer{width:100%;margin:0 0 14px}
