@@ -1479,11 +1479,11 @@ body.hs-open{overflow:hidden}
 .hs-settings .hs-row:active{opacity:.6}
 .hs-settings .hs-link-name{font-size:16px;font-weight:600;color:var(--happy-ink);text-decoration:none;min-width:0;overflow-wrap:anywhere}
 .hs-settings .hs-switch{cursor:pointer;-webkit-tap-highlight-color:transparent;margin:0}
-.hs-signout-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
+.hs-signout-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
 .hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;border:0;cursor:pointer;margin:0;box-shadow:none}
-.hs-sync{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:right;min-width:0}
+.hs-sync{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:center;min-width:0}
 .hs-sync svg{width:13px;height:13px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hs-newer{margin-top:10px}
+.hs-newer{margin-top:10px;text-align:center}
 .hs-newer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:999px;background:#fff;color:var(--hs-cancel-ink);font-weight:600;text-decoration:none}
 
 /* ── «Связка с»: свитчи связи приложений (разметку и обмен ведёт приложение) в виде прототипа ── */
@@ -10409,7 +10409,7 @@ root.HappyWelcome={init,ask,takeResume,open,signOut,changeEmail,
  *     profileDoc, bodyDoc — функции: общий документ (store.doc / store.shared) или null без входа;
  *     openGoals — открыть цели приложения (без входа — лист «Войдите в аккаунт»);
  *   HappyPerson.top(box)    — верх настроек: аватар, имя, «Настроить профиль / Настроить цели»;
- *   HappyPerson.bottom(box, {status, newer}) — низ настроек: «Выйти» и строка синхронизации (без входа — «Войти»);
+ *   HappyPerson.bottom(box, {status, newer}) — низ настроек: по центру строка синхронизации, под ней «Выйти» (без входа — «Войти»);
  *   HappyPerson.status(text) — обновить строку синхронизации; HappyPerson.statusText(store, error) — её текст
  *                              по статусу общего модуля, один на три приложения;
  *   HappyPerson.open()      — страница профиля;
@@ -10515,8 +10515,8 @@ function top(box){
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;
  const who=cfg.account.current(),st=bottomOpts.status||'';
- bottomBox.innerHTML='<div class="hs-settings"><div class="hs-signout-row">'+(who?'<button type="button" data-hp="signout">Выйти</button>':'<button type="button" data-hp="signin">Войти</button>')+
-  (who?'<span class="hs-sync" data-hp-status aria-live="polite">'+statusHtml(st)+'</span>':'')+'</div>'+
+ bottomBox.innerHTML='<div class="hs-settings"><div class="hs-signout-row">'+(who?'<span class="hs-sync" data-hp-status aria-live="polite">'+statusHtml(st)+'</span>':'')+
+  (who?'<button type="button" data-hp="signout">Выйти</button>':'<button type="button" data-hp="signin">Войти</button>')+'</div>'+
   (bottomOpts.newer?'<div class="hs-newer"><a data-happy-app="'+S().esc(cfg.app)+'" href="./">Открыть последнюю версию</a></div>':'')+'</div>';
  if(bottomOpts.newer&&root.HappyLinks)try{root.HappyLinks.load()}catch(e){}
 }

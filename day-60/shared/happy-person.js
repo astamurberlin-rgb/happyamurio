@@ -21,7 +21,7 @@
  *     profileDoc, bodyDoc — функции: общий документ (store.doc / store.shared) или null без входа;
  *     openGoals — открыть цели приложения (без входа — лист «Войдите в аккаунт»);
  *   HappyPerson.top(box)    — верх настроек: аватар, имя, «Настроить профиль / Настроить цели»;
- *   HappyPerson.bottom(box, {status, newer}) — низ настроек: «Выйти» и строка синхронизации (без входа — «Войти»);
+ *   HappyPerson.bottom(box, {status, newer}) — низ настроек: по центру строка синхронизации, под ней «Выйти» (без входа — «Войти»);
  *   HappyPerson.status(text) — обновить строку синхронизации; HappyPerson.statusText(store, error) — её текст
  *                              по статусу общего модуля, один на три приложения;
  *   HappyPerson.open()      — страница профиля;
@@ -127,8 +127,8 @@ function top(box){
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;
  const who=cfg.account.current(),st=bottomOpts.status||'';
- bottomBox.innerHTML='<div class="hs-settings"><div class="hs-signout-row">'+(who?'<button type="button" data-hp="signout">Выйти</button>':'<button type="button" data-hp="signin">Войти</button>')+
-  (who?'<span class="hs-sync" data-hp-status aria-live="polite">'+statusHtml(st)+'</span>':'')+'</div>'+
+ bottomBox.innerHTML='<div class="hs-settings"><div class="hs-signout-row">'+(who?'<span class="hs-sync" data-hp-status aria-live="polite">'+statusHtml(st)+'</span>':'')+
+  (who?'<button type="button" data-hp="signout">Выйти</button>':'<button type="button" data-hp="signin">Войти</button>')+'</div>'+
   (bottomOpts.newer?'<div class="hs-newer"><a data-happy-app="'+S().esc(cfg.app)+'" href="./">Открыть последнюю версию</a></div>':'')+'</div>';
  if(bottomOpts.newer&&root.HappyLinks)try{root.HappyLinks.load()}catch(e){}
 }
