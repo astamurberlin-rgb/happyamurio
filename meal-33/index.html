@@ -350,7 +350,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
    нажатие — подсказка «Библиотека с данным продуктом отключена». Набранное число остаётся. */
 .tpItem.tpOff{opacity:.42}
 /* Meal 30 (Астамур 12.11 10:24): окно счётчика — черточка вместо «Закрыть» (нажать или потянуть вниз), корзина
-   как у продукта в дневнике. Цвет окна прежний (общий food-counters.css не меняется). */
+   как у продукта в дневнике. Цвет окна: фон экрана, берёт counters.js paint() (аудит 3, 21.11). */
 .food-counter-editor .fc-grip{display:flex;justify-content:center;align-items:center;height:28px;margin:4px 0 4px;touch-action:none;cursor:grab}
 .food-counter-editor .fc-grip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)}
 .food-counter-editor .fc-grip:active i{background:rgba(255,255,255,.75)}
