@@ -35,7 +35,7 @@
 .impSheet h3,.askBox h3{font-size:20px!important;font-weight:700!important}
 
 /* ── Выключатель: 42 × 25 ── */
-.happy-switch{box-sizing:border-box;flex:0 0 42px!important;width:42px!important;height:25px!important;min-height:25px!important;border-radius:999px!important}
+.happy-switch{box-sizing:border-box;flex:0 0 auto!important;width:42px!important;height:25px!important;min-height:25px!important;border-radius:999px!important}
 .happy-switch::after{top:50%!important;left:3px!important;width:19px!important;height:19px!important;transform:translateY(-50%)!important}
 .happy-switch:checked::after{transform:translate(17px,-50%)!important}
 .hs-switch{box-sizing:border-box;width:42px!important;height:25px!important;padding:3px!important;border-radius:999px!important}

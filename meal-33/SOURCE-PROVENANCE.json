@@ -565,7 +565,7 @@
   {
    "path": "design-rules.css",
    "size": 4679,
-   "sha256": "b58c5959e3e6c80676da3244f7168fb83d46bccf7d198bd54dfb8b301b8e3cc8"
+   "sha256": "fcb669810e58bdb9d4d4a1db01fd49f0ef8cb819c111a04f8c801a20c33ed184"
   },
   {
    "path": "desserts.js",
@@ -880,7 +880,7 @@
   {
    "path": "shared/happy-design.css",
    "size": 5548,
-   "sha256": "24dbea4601ecc963a96c5a85ac9eefcc593efcdfaaba485a6f17fd5a3e5cf9f3"
+   "sha256": "7c237c396bac5197058a017ae1a43bf09034f93d0c50521a0011d8a4d1b85dff"
   },
   {
    "path": "shared/happy-food.js",
@@ -940,7 +940,7 @@
   {
    "path": "shared/happy-screens.css",
    "size": 33056,
-   "sha256": "94a00f4316af5e29e610e9182afe16d1cce5b9489b1e8109fc37b6702c6565fe"
+   "sha256": "4c32972090fbc8f1b1eab6c02b7437c9176043309acb0597c77a452296cb796a"
   },
   {
    "path": "shared/happy-screens.js",

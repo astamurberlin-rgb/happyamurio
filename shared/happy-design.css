@@ -19,7 +19,7 @@
 .hm-amplify button{font-weight:600!important;border-radius:999px!important}
 
 /* ── Выключатель: 42 × 25 ── */
-.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 auto!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
 .hs-links .happy-switch::after{top:50%!important;left:3px!important;width:19px!important;height:19px!important;margin:0!important;transform:translateY(-50%)!important}
 .hs-links .happy-switch:checked::after{transform:translate(17px,-50%)!important}
 

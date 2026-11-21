@@ -57,7 +57,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .sheet:has(.exercise-player),.exercise-player-sheet{border-radius:22px 22px 23px 23px!important}
 
 /* ── Выключатель: 42 × 25 ── */
-.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 auto!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
 .sport-switch::after,.hs-links .happy-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
 .sport-switch{border-width:1px}
 .sport-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}

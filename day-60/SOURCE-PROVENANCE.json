@@ -80,7 +80,7 @@
   {
    "path": "Happy-Day-60.html",
    "size": 1478525,
-   "sha256": "fd9cc362f1eca787aecfe0c37ce2518eed281f90a2d2f0aa51b5e4f642dc5c8e"
+   "sha256": "98793f60c8fa8b08704ef2c0fec1ae0d8887a09c00c5b306504d98110ff7d34c"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -240,7 +240,7 @@
   {
    "path": "design-rules.css",
    "size": 6252,
-   "sha256": "9ee5f9a4b4187ebc728a46af99efefe01831b208ce8a4bce4ba8da68c7a71303"
+   "sha256": "6daf2a0d38cff72dc9f43467a93c21111103b3f2b0d928b8fb4e6b47e62bf951"
   },
   {
    "path": "energy-widget.css",
@@ -330,7 +330,7 @@
   {
    "path": "shared/happy-design.css",
    "size": 5548,
-   "sha256": "24dbea4601ecc963a96c5a85ac9eefcc593efcdfaaba485a6f17fd5a3e5cf9f3"
+   "sha256": "7c237c396bac5197058a017ae1a43bf09034f93d0c50521a0011d8a4d1b85dff"
   },
   {
    "path": "shared/happy-drum.css",
@@ -420,7 +420,7 @@
   {
    "path": "shared/happy-screens.css",
    "size": 33056,
-   "sha256": "94a00f4316af5e29e610e9182afe16d1cce5b9489b1e8109fc37b6702c6565fe"
+   "sha256": "4c32972090fbc8f1b1eab6c02b7437c9176043309acb0597c77a452296cb796a"
   },
   {
    "path": "shared/happy-screens.js",

@@ -42,7 +42,7 @@
 .fieldrow .hf-field{flex:0 0 132px;width:132px}
 
 /* ── Выключатель: 42 × 25 ── */
-.care-switch{flex:0 0 42px!important;width:42px!important;height:25px}
+.care-switch{flex:0 0 auto!important;width:42px!important;height:25px}
 .care-switch i:after{margin:2px 0 0 3px!important}
 .care-switch input:checked+i:after{transform:translateX(17px)!important}
 
