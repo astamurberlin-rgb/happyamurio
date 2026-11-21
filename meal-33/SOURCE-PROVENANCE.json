@@ -599,8 +599,8 @@
   },
   {
    "path": "index.html",
-   "size": 649096,
-   "sha256": "383d700345d253b26d3b9027e734506241bcefb207bced753358945730a6ba70"
+   "size": 651702,
+   "sha256": "5970167a5b4564baecf9dcdcb96fbb805b6387e8b2189dc6dcb8185914c5d680"
   },
   {
    "path": "kfct.js",
@@ -789,8 +789,8 @@
   },
   {
    "path": "meal-measurements.js",
-   "size": 2742,
-   "sha256": "2b20aa407f939f0062d168afaf6912f4d54a75f3ae2bd63b3dd7c79ed5dd39d2"
+   "size": 2940,
+   "sha256": "d072c059fbc64f5648ccaba4801adb665ae0b413288c2b8ad2a48c4e7674ca88"
   },
   {
    "path": "meal-periods.css",
@@ -799,8 +799,8 @@
   },
   {
    "path": "meal-periods.js",
-   "size": 50106,
-   "sha256": "7e178e07feb2736996c26d209c95050850a0a30d7aae87c5f16a0e6f49769c19"
+   "size": 50492,
+   "sha256": "b678012dcbd771e848e12dae7a8c91e0647ff78155b82d9b9c9766b609d339f8"
   },
   {
    "path": "portions.js",
@@ -819,8 +819,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 67012,
-   "sha256": "3b90f31934c0f8fa11b330b3427057234b305dbb87bb6efb0f38b5a0c8b18b37"
+   "size": 67606,
+   "sha256": "58497037489f737c676a41280207b6dac5f008a462ae00d60767dfccfeef80d1"
   },
   {
    "path": "report.css",
@@ -938,6 +938,16 @@
    "sha256": "fe62c5b863020e0bffd07bde9dbd79ee8cf0dece18cd8175162d45fbf650a9b7"
   },
   {
+   "path": "shared/happy-theme-picker.css",
+   "size": 3957,
+   "sha256": "659ac7b22eaf01781411868f3e0ed3c1628c52579d3b3350d02901387d90ac6f"
+  },
+  {
+   "path": "shared/happy-theme-picker.js",
+   "size": 11465,
+   "sha256": "e1cfab32eb15ad3cdfe39c643560787a0e3fa4be42a4dfcea4448917516e403e"
+  },
+  {
    "path": "shared/happy-ui.css",
    "size": 5846,
    "sha256": "4cd0b33fe78c641b8a8799ca6e0ae4b61f9104fe04ccb0e4fb9823d7dd3e1c96"
@@ -1010,7 +1020,7 @@
   {
    "path": "sw.js",
    "size": 3524,
-   "sha256": "fc850555113bcd4b74b1192aabae1257f6fdda6da66fafc0470600f3a94dd50b"
+   "sha256": "aa12a705641a9575bfd699c06b6bfa8e1e68d5215b7ca41df291c9bccfd77bec"
   },
   {
    "path": "usda-measures.js",

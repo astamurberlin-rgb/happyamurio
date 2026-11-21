@@ -113,7 +113,7 @@ with sync_playwright() as p:
        apps:[...document.querySelectorAll('[data-happy-section=links] .happy-app-name')].map(a=>a.textContent),bottom:b.innerText.replace(/\\s+/g,' ').trim(),
        order:[...s.querySelectorAll(':scope>section[data-happy-section]')].map(x=>x.dataset.happySection)}}""", seconds=15)
     st = out["settings"] or {}
-    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи» (третья строка — с Meal 33.17), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
+    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи / Настроить тему» (третья строка — с Meal 33.17, «Настроить тему» — последняя, как в Day и Sport), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Настроить тему"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
     check("внизу «Выйти» и строка синхронизации; порядок разделов — как в apps.json", st.get("bottom") == "Выйти Синхронизировано" and st.get("order") == json.loads(open(os.path.join(REPO, "shared", "apps.json"), encoding="utf-8").read())["meal"]["settingsSections"])
 
     # 4. Профиль: необязательные поля, новый вес — замер на дату; имя — общее для приложений

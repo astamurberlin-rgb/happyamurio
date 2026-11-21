@@ -26,8 +26,8 @@
   },
   "meal": {
     "entry": "meal-33/index.html",
-    "version": "33.22",
-    "name": "Happy Meal · Update 33.22",
+    "version": "33.23",
+    "name": "Happy Meal · Update 33.23",
     "sharedDirectory": "meal-33/shared",
     "settingsSections": [
       "account",
