@@ -1,0 +1,49 @@
+/* Оформление Happy (AGENTS.md, раздел 4) — последний слой стилей Meal, как design-rules.css в Day и Sport. Только форма:
+   высота, скругление, размер и жирность; цвета задаёт тема. Общие экраны, нижнее меню и короткое сообщение —
+   в shared/happy-design.css (подключён перед этим файлом). Размеры и жирность текста приведены к шкале в самих стилях
+   Meal (Meal 33.24). Картинки, полоски графиков, ручки, метки и превью не трогаются: это не элементы из правил.
+   Астамур 21.11.2026: «Скругления Meal да через лабораторию». — Claude · 21.11.2026 */
+
+/* ── Карточка: скругление 26 ── */
+.card,.secRow,.happy-card,.mlAddCard,.rcTile,.rcCover,.mlKb,.cc-card,.cc-detail-inline,.sp-catalog-cover,.sp-entry,.sp-tile,.sp-empty,
+.mc-shell,.mp-surface,.askBox,.sp-dialog{border-radius:26px!important}
+
+/* ── Основная кнопка: пилюля 48, текст 16 / 600, одна строка ── */
+.btn,.happy-actions>.happy-button,.cc-buy button,.sp-btn.primary,#happy-appearance-dialog .ha-actions button{box-sizing:border-box;min-height:48px;border-radius:999px!important;
+  font-size:16px!important;font-weight:600!important;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px!important}
+
+/* ── Прочие кнопки, чипы и фильтры: пилюля 44, текст 14 ── */
+.mini,.happy-button,.sp-btn,.scrRow button,.mc-grid button{box-sizing:border-box;min-height:44px;border-radius:999px!important}
+.chip,.cc-pills button,.cc-pills a{box-sizing:border-box;min-height:44px;display:inline-flex;align-items:center;border-radius:999px!important;font-size:14px!important}
+.chip small{font-size:12px!important}
+.sp-filters button{box-sizing:border-box;min-height:44px;border-radius:999px!important;font-size:14px!important;font-weight:400!important}
+.sp-filters button[aria-pressed=true]{font-weight:600!important}
+
+/* ── Вкладки внутри экрана и выбор из вариантов: пилюля 44, текст 14; выбранное — 600 ── */
+.sp-tabs{border-radius:999px!important}
+.sp-tabs button{box-sizing:border-box;min-height:44px;border-radius:999px!important;font-size:14px!important}
+
+/* ── Поля ввода, поле на несколько строк, поиск: скругление 12, высота 48, текст 16 (меньше — iPhone приближает страницу) ── */
+#ccQuery,.sp-search,.mlUForm input[type=text],.mlUForm input[type=number],.mlRcName input,.askBox input,.sp-field input,.sp-field select,.mrField,.portionField{
+  box-sizing:border-box;min-height:48px;border-radius:12px!important;font-size:16px!important}
+#ccQuery,.mlUForm input[type=text],.mlUForm input[type=number]{height:48px}
+.sp-field textarea{border-radius:12px!important;font-size:16px!important}
+
+/* ── Лист снизу: верхние углы 22; заголовок 20 / 700 ── */
+.impSheet,.hs-sheet{border-radius:22px 22px 0 0!important}
+.impSheet h3,.askBox h3{font-size:20px!important;font-weight:700!important}
+
+/* ── Выключатель: 42 × 25 ── */
+.happy-switch{box-sizing:border-box;flex:0 0 42px!important;width:42px!important;height:25px!important;min-height:25px!important;border-radius:999px!important}
+.happy-switch::after{top:50%!important;left:3px!important;width:19px!important;height:19px!important;transform:translateY(-50%)!important}
+.happy-switch:checked::after{transform:translate(17px,-50%)!important}
+.hs-switch{box-sizing:border-box;width:42px!important;height:25px!important;padding:3px!important;border-radius:999px!important}
+.hs-switch>b{width:19px!important;height:19px!important}
+.hs-switch[aria-checked=true]>b{transform:translateX(17px)!important}
+
+/* ── Короткое сообщение БАДов: тёмная пилюля, текст 14, одна строка (остальные — в shared/happy-design.css) ── */
+.sp-toast{border-radius:999px!important;font-size:14px!important;white-space:nowrap}
+
+/* спрятанная кнопка остаётся спрятанной: display у кнопок выше иначе перебивает атрибут hidden */
+.btn[hidden],.chip[hidden],.cc-pills [hidden]{display:none!important}

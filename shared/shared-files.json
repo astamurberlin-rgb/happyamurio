@@ -284,7 +284,8 @@
       "name": "happy-design.css",
       "reference": "shared/happy-design.css",
       "apps": [
-        "day"
+        "day",
+        "meal"
       ]
     },
     {

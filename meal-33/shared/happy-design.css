@@ -1,0 +1,41 @@
+/* Оформление Happy (AGENTS.md, раздел 4) для общих экранов и общих элементов: профиль и цели, замеры тела, настройки,
+   нижнее меню, короткое сообщение. Только форма — высота, скругление, размер и жирность текста; цвета задаёт тема,
+   кроме сообщения (решение Астамура 20.11.2026: во всех приложениях — как в Day, синее, «Вернуть» зелёным без подчёркивания).
+   Подключён в Day (аудит Day 20.11.2026, пункт 9: «Day получает тот же слой правил, что Sport, — общие экраны совпадут»).
+   Sport держит те же правила в своём design-rules.css и переходит на этот файл по слову Астамура; Meal — со своим
+   следующим обновлением. — Claude · 20.11.2026 */
+
+/* ── Кнопки общих экранов: пилюля 48, текст 16 / 600, одна строка ── */
+.hs-btn,.hm-button,.hm-output .hm-button,.happy-actions>.happy-button{box-sizing:border-box;min-height:48px!important;height:48px;border-radius:999px!important;padding:0 20px!important;
+  font-size:16px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap}
+
+/* ── Выбор из вариантов и вкладки: пилюля 44, текст 14; выбранное — 600, остальное — 400 ── */
+.hs-segment,.hm-periods,.happy-measurement-tabs{border-radius:999px!important}
+.hs-segment button,.hm-periods button,.happy-measurement-tabs button{box-sizing:border-box;min-height:44px;height:44px;padding-top:0!important;padding-bottom:0!important;
+  border-radius:999px!important;font-size:14px!important;line-height:18px;white-space:nowrap}
+.hs-segment button:not([aria-pressed=true]),.hm-periods button:not([aria-pressed=true]),.happy-measurement-tabs button:not([aria-pressed=true]){font-weight:400!important}
+.hs-segment button[aria-pressed=true],.hm-periods button[aria-pressed=true],.happy-measurement-tabs button[aria-pressed=true]{font-weight:600!important}
+.hm-text{font-size:14px!important;min-height:44px}
+.hm-amplify button{font-weight:600!important;border-radius:999px!important}
+
+/* ── Выключатель: 42 × 25 ── */
+.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.hs-links .happy-switch::after{top:50%!important;left:3px!important;width:19px!important;height:19px!important;margin:0!important;transform:translateY(-50%)!important}
+.hs-links .happy-switch:checked::after{transform:translate(17px,-50%)!important}
+
+/* ── Заголовки разделов в Настройках — один вид: 14 / 600, тусклые (решение Астамура 20.11.2026, как в Sport 44.4) ── */
+.happy-settings .happy-heading,.happy-settings .hs-links-title,.happy-settings [data-happy-section="account"] h3{font-size:14px!important;font-weight:600!important;color:rgba(255,255,255,.6)!important;
+  letter-spacing:0;text-transform:none}
+
+/* ── Нижнее меню: подписи 12, выбранная — 600 ── */
+.dock .tab span{font-size:12px!important;font-weight:400!important}
+.dock .tab.on span{font-weight:600!important}
+
+/* ── Короткое сообщение после действия: синяя пилюля, текст 14, одна строка; «Вернуть» зелёным, без подчёркивания ── */
+.toast,.hs-toast{box-sizing:border-box;min-height:44px;border-radius:999px!important;padding:12px 20px!important;background:rgba(12,60,110,.92)!important;color:#fff!important;
+  font-size:14px!important;font-weight:400!important;line-height:20px!important;white-space:nowrap}
+.toast button,.hs-toast button{min-height:20px;padding:0;border:0;background:none;color:#8EF3DD!important;font:inherit;font-size:14px!important;font-weight:600!important;
+  text-decoration:none!important;opacity:1!important}
+
+/* аудит 20.11.2026, п. 34: карандаш у даты замера — зона нажатия 44, рисунок прежний (14) */
+.hm-grid .hm-edit{min-width:44px;min-height:44px;margin:-7px auto -8px;padding:0;display:grid;place-items:center}
