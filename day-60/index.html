@@ -3665,7 +3665,7 @@ function jrDlgOpen(kind){
   document.getElementById('jrDlgW').hidden=false;
 }
 function jrDlgSel(){ var o={}, n=0; document.querySelectorAll('#jrDlgOpts [data-opt]').forEach(function(i){ if(i.checked){ o[i.dataset.opt]=true; n++ } }); return n?o:null }
-function jrDlgClose(){ document.getElementById('jrDlgW').hidden=true; JR_DLG=null; JR_ALL=false }
+function jrDlgClose(){ var w=document.getElementById('jrDlgW'); w.hidden=true; w.style.zIndex=''; JR_DLG=null; JR_ALL=false }
 document.getElementById('jrPrint').addEventListener('click',function(){ jrDlgOpen('print') });
 document.getElementById('jrCsv').addEventListener('click',function(){ jrDlgOpen('csv') });
 document.getElementById('jrDlgOpts').addEventListener('change',function(){ document.getElementById('jrDlgGo').disabled=!jrDlgSel() });

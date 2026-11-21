@@ -62,3 +62,6 @@
 /* спрятанная кнопка остаётся спрятанной: display у кнопок выше иначе перебивает атрибут hidden
    (так было видно «Убрать тег» в карточке раздела и «Поделиться» у картинки журнала) */
 .btn[hidden],.jPrt[hidden],.jMb[hidden],.care-submit[hidden]{display:none!important}
+/* Профиль · «Мои данные · Скачать данные» (Астамур 21.11.2026): строка как в настройках — 18 сверху и снизу, текст 16/600. */
+.hs-export .hs-group{padding:0 17px}
+.hs-export .hs-row{padding:18px 0!important;border-top:0!important;font-size:16px;font-weight:600;color:var(--happy-ink)}

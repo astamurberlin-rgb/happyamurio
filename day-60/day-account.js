@@ -73,7 +73,8 @@ function resume(r){
 }
 
 // «Скачать данные» переехала из журнала в профиль (Астамур 21.11.2026) и выгружает всё время, а не период журнала.
-function exportData(){ if(typeof jrDlgOpen!=='function') return; JR_ALL=true; jrDlgOpen('csv') }
+function exportData(){ if(typeof jrDlgOpen!=='function') return; JR_ALL=true; jrDlgOpen('csv');
+  document.getElementById('jrDlgW').style.zIndex='2147480001' }   // поверх страницы профиля
 var profileOptions={app:'day',account:DayBoot.account,features:FEATURES,profileDoc:profileDoc,bodyDoc:bodyDoc,openGoals:openGoals,exportData:exportData};
 HappyPerson.init(profileOptions);
 DayBoot.ready.catch(function(){}).then(function(){
