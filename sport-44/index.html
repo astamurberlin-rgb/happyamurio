@@ -1526,7 +1526,8 @@ body.hs-open{overflow:hidden}
 .hs-history-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
 .hs-units h2{font-size:14px;font-weight:600;color:var(--hs-muted);margin-bottom:10px}
 .hs-units-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
-.hs-units-row>.hs-segment{width:160px;height:36px}
+/* Единицы в профиле: дорожка 44, как у кнопок внутри (было 36 — выбранная пилюля 44 вылезала и казалась сплющенной; Астамур 21.11.2026). */
+.hs-units-row>.hs-segment{width:160px;height:44px}
 .hs-photo-preview{padding:10px}
 .hs-photo-preview .hs-avatar{width:82px;height:82px;margin:0 auto}
 
@@ -10650,10 +10651,11 @@ function open(){
    '<section class="hs-units"><h2>Единицы измерения</h2><div class="hs-units-row"><span>Вес</span>'+S().segment('wunits',[['kg','кг'],['lb','фунты']],draft.units.weight,'Единицы веса')+'</div>'+
    '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div>'+
    '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+
-   // «Скачать данные» (Астамур 21.11.2026): выгрузка — про сами данные человека, ей место в профиле, в самом низу.
-   // Приложение передаёт cfg.exportData; без неё раздела нет (сейчас — только Day).
-   (typeof cfg.exportData==='function'?'<section class="hs-units hs-export"><h2>Мои данные</h2><div class="hs-group"><button type="button" class="hs-row" data-p="export"><span>Скачать данные</span></button></div></section>':'')+
-   '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'});
+
+   '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'})+
+   // «Скачать данные» (Астамур 21.11.2026): в самом низу профиля, под «Отмена», по центру, подчёркнутой строкой, без раздела.
+   // Приложение передаёт cfg.exportData; без неё строки нет (сейчас — только Day).
+   (typeof cfg.exportData==='function'?'<div class="hs-export"><button type="button" class="hs-export-link" data-p="export">Скачать данные</button></div>':'');
  }
  const input=n=>main.querySelector('[name="'+n+'"]');
  function readInputs(){draft.name=input('name').value;draft.birthday=input('birthday').value;shown.height=input('height').value;shown.weight=input('weight').value;shown.date=input('date').value}
