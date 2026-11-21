@@ -544,13 +544,13 @@
   },
   {
    "path": "collections.css",
-   "size": 10400,
-   "sha256": "d53a4ce96f31a1511275d394536d1ef401053c72c7042f7207d1e4f6d9bec726"
+   "size": 10780,
+   "sha256": "9582a1b6abd12c055c7edcd4007fb3601aef9de5ef40872d365f53b2899ac92f"
   },
   {
    "path": "collections.js",
-   "size": 22331,
-   "sha256": "3fd5500ef205204c57bfe2322da7d66b3af4caa55d11fd23a8441fdee2c0fa15"
+   "size": 22627,
+   "sha256": "aa82d547b069ee5a581f096e6b1647620143606aa2f42f1b370124830c0dd3f5"
   },
   {
    "path": "controls.js",
