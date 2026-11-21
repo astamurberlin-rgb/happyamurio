@@ -301,6 +301,16 @@ body.has-theme-float .shell{padding-bottom:110px}
 .hsl-row input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:transparent;border:3px solid #fff;box-shadow:0 0 0 1px #0005}
 .hsl-row input[type=range]::-moz-range-track{background:transparent}
 .hsl-box{grid-column:1/-1;width:100%;box-sizing:border-box}.hsl-box>summary{white-space:nowrap}.hsl-row{width:100%}
+/* Все ползунки студии — как «Тон · насыщенность · яркость»: толстая дорожка 28 и кольцо (Астамур 21.11.2026).
+   Цветовые показывают на дорожке, каким станет цвет; прозрачность — от шахматки к цвету; остальные — заполнение светлым до значения. */
+.shell input[type=range].cs-range{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:6px 0;border-radius:999px;border:1px solid var(--hx-line);box-sizing:border-box;
+ background:var(--trk,linear-gradient(90deg,var(--hx-pick) 0 var(--p,50%),var(--hx-glass) var(--p,50%) 100%))}
+.shell input[type=range].cs-range.cs-alpha{background:var(--trk),repeating-conic-gradient(#9a9aa6 0 25%,#5d5d6a 0 50%) 0 0/14px 14px}
+.shell input[type=range].cs-range::-webkit-slider-runnable-track{background:transparent;border:0;height:100%}
+.shell input[type=range].cs-range::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:0;border-radius:50%;background:transparent;border:3px solid #fff;box-shadow:0 0 0 1px #0005,0 2px 6px #0006}
+.shell input[type=range].cs-range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:transparent;border:3px solid #fff;box-shadow:0 0 0 1px #0005}
+.shell input[type=range].cs-range::-moz-range-track{background:transparent}
+.shell input[type=range].cs-range:not([style*="--trk"])::-webkit-slider-thumb{background:#fff}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Color Studio</h1><p>Дизайн-студия Happy Day, Happy Meal и Happy Sport. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><div class="head-actions"><button class="chipbutton" id="fullPreview">Скрыть настройки</button><span class="hsa-slot" id="accountSlot"></span></div></header>
@@ -1144,7 +1154,7 @@ workspace=HappyColorWorkspace.mount({
  applyColors(target,colors){dropNative(states[selected],target==='button'?'button':'background');const key=target==='button'?'buttonGradient':'backgroundGradient';const m=G.normalize(states[selected][key]);m.type='linear';m.brightness=100;m.saturation=100;m.stops=colors.map((color,i)=>({color,position:i*100/(colors.length-1),brightness:100,saturation:100,hue:0}));m.glow.enabled=false;if(m.extraGlow)m.extraGlow.enabled=false;states[selected][key]=m;if(target==='button')states[selected].buttonColor=colors[0];else syncLegacy(states[selected]);selectedPreset=-1;afterChange();}
 });
 initFrames();bind();restoreGroups();draw();revealTheme(editingId);cloudInit();$('buttonLookColor').addEventListener('input',e=>{const st=states[selected];dropNative(st,'button');st.buttonColor=e.target.value;if(isLookB(st))setLookB(st);else{const m=G.normalize(st.buttonGradient);const s0=m.stops.reduce((x,y)=>x.position<=y.position?x:y);s0.color=e.target.value;st.buttonGradient=m}selectedPreset=-1;afterChange()});$('buttonLookReset').onclick=()=>{setLookB(states[selected]);selectedPreset=-1;afterChange();toast('Вид B вернулся, цвет тот же')};
-initPreviewTabs();initPhoneResize();initHSL();initLongPress();restoreShellTheme();$('siteNoteOk').onclick=()=>{$('siteNote').hidden=true};syncFromSite();
+initPreviewTabs();initPhoneResize();initHSL();initRangeTracks();initLongPress();restoreShellTheme();$('siteNoteOk').onclick=()=>{$('siteNote').hidden=true};syncFromSite();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./happy-family-studio-sw.js').catch(()=>{}))}for(const k of APP_ORDER)if(states[k].wallpaper==='custom')composeWallpaper(k);requestAnimationFrame(()=>scrollPhoneTo(selected,'instant'));
 })();
 
@@ -1159,4 +1169,34 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
    const sync=()=>{if(busy||inp.value===last)return;last=inp.value;const[h,s,l]=toHsl(inp.value);if(s>0||!+r.h.value)r.h.value=h;if(l>0&&l<100||!+r.s.value)r.s.value=s;r.l.value=l;paint()};
    for(const k in r){r[k].addEventListener('input',()=>{busy=true;inp.value=last=toHex(+r.h.value,+r.s.value,+r.l.value);paint();inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}));busy=false})}
    inp.addEventListener('input',sync);box.addEventListener('toggle',sync);sync();setInterval(()=>{if(box.open)sync()},400)}}
+
+ // 21.11.2026 (Астамур: «сразу в ползунке вижу цвет — так для всех настроек цвета»): дорожка каждого ползунка показывает, что он делает
+ function initRangeTracks(){const G=window.HappyGradients;const A=(c,b,s,h)=>{try{return G.adjust(c,b,s,h)}catch(e){return c}};
+  const rgba=(hex,a)=>{const n=parseInt(String(hex).slice(1,7),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'};
+  const lin=arr=>'linear-gradient(90deg,'+arr.join(',')+')';const steps=(min,max,n,f)=>Array.from({length:n},(_,i)=>f(min+(max-min)*i/(n-1)));
+  const val=id=>{const e=document.getElementById(id);return e?e.value:''};
+  function set(r,trk,alpha){r.classList.add('cs-range');r.classList.toggle('cs-alpha',!!alpha);if(trk)r.style.setProperty('--trk',trk);else r.style.removeProperty('--trk')}
+  function paint(){
+   for(const r of document.querySelectorAll('.shell input[type=range]')){const p=(r.value-r.min)/((r.max-r.min)||1)*100;r.style.setProperty('--p',p+'%');if(!r.closest('.hsl-row'))set(r,'',false)}
+   // стекло, границы, кнопки, обои — от прозрачного к своему цвету
+   const fab=(document.getElementById('buttonLookColor')||{}).value||'#6755d6';
+   for(const [id,c] of [['glassAlpha',val('glassColor')],['borderAlpha',val('borderColor')],['stButtonAlpha',fab],['stFabAlpha',fab],['wpAlpha','#ffffff']]){const r=document.getElementById(id);if(r&&c)set(r,lin([rgba(c,0),rgba(c,1)]),true)}
+   // редакторы градиента: цвет точки и свечения
+   for(const ed of document.querySelectorAll('.hg-editor')){const q=k=>ed.querySelector('[data-range='+k+']');const v=k=>{const e=q(k);return e?+e.value:100};
+    const sc=(ed.querySelector('[data-color=stop]')||{}).value,gc=(ed.querySelector('[data-color=glow]')||{}).value;
+    if(sc){const b=v('stopBrightness'),s=v('stopSaturation'),h=q('hue')?v('hue'):0,lb=v('brightness'),ls=v('saturation');const fin=(bb,ss,hh)=>A(A(sc,bb,ss,hh),lb,ls,0);
+     q('hue')&&set(q('hue'),lin(steps(-180,180,13,x=>fin(b,s,x))));
+     q('stopBrightness')&&set(q('stopBrightness'),lin(steps(0,200,9,x=>fin(x,s,h))));
+     q('stopSaturation')&&set(q('stopSaturation'),lin(steps(0,200,9,x=>fin(b,x,h))));
+     q('brightness')&&set(q('brightness'),lin(steps(0,200,9,x=>A(A(sc,b,s,h),x,ls,0))));
+     q('saturation')&&set(q('saturation'),lin(steps(0,200,9,x=>A(A(sc,b,s,h),lb,x,0))));
+     const prev=ed.querySelector('.hg-stops,.hg-stop')&&[...ed.querySelectorAll('.hg-stop .hg-dot')].map(d=>getComputedStyle(d).backgroundColor);
+     if(q('position')&&prev&&prev.length>1)set(q('position'),lin(prev))}
+    if(gc){const b=v('glowBrightness'),s=v('glowSaturation');const g=A(gc,b,s,0);
+     q('glowStrength')&&set(q('glowStrength'),lin([rgba(g,0),rgba(g,1)]),true);
+     q('glowBrightness')&&set(q('glowBrightness'),lin(steps(0,200,9,x=>A(gc,x,s,0))));
+     q('glowSaturation')&&set(q('glowSaturation'),lin(steps(0,200,9,x=>A(gc,b,x,0))))}}}
+  let t=0;const later=()=>{cancelAnimationFrame(t);t=requestAnimationFrame(paint)};
+  document.addEventListener('input',later,true);document.addEventListener('change',later,true);document.addEventListener('click',()=>setTimeout(later,30),true);
+  paint();setInterval(paint,700)}
 </script></body></html>
