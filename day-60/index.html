@@ -1463,6 +1463,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-drum.js?v=60.12"></script>
 <!-- выбор периода журнала — общий кусок Day, Meal и Sport, как в Meal (21.11.2026) -->
 <script src="./shared/happy-period.js?v=60.12"></script>
+<script src="./shared/happy-scroll-lock.js?v=60.12"></script>
 <script src="./shared/happy-store.js?v=60.12"></script>
 <script src="./shared/happy-app-links.js?v=60.12"></script>
 <script src="./shared/happy-sport-summary.js?v=60.12"></script>
@@ -1491,7 +1492,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 .day-signin{margin:0 0 18px}.day-signin[hidden]{display:none}.day-signin h2{margin:0 0 6px;font-size:16px}.day-signin .note{margin:0 0 12px;color:var(--ink);opacity:.86}
 .happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}
 .happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}
-.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:#5c4598;font-weight:600}
+.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600}
 .happy-journal-content[hidden],.day-measurements[hidden]{display:none!important}
 /* Day 59.2: над журналом переключатель «Журнал · Замеры тела» — крупного заголовка «Журнал» под ним нет, дата справа */
 .happy-journal-content>.top{justify-content:flex-end}
@@ -3601,22 +3602,22 @@ function jrSet(st){
   else { if(st.per==='today') JR_DAY=st.a||todayISO(); JR_PER=st.per }
   renderTrends();
 }
-/* лист «Свой период» — как остальные листы Day: ручка, затемнение, закрыть — жестом вниз, ручкой, мимо или «×» */
+/* лист «Свой период» — как в Sport (Астамур 21.11.2026): ручка, размытый фон, лист поверх нижней панели; закрыть — жестом вниз, ручкой или мимо */
 function jrSheet(title,html){
   var w=document.getElementById('jrPerWrap');
   if(!w){
-    w=document.createElement('div'); w.className='imp'; w.id='jrPerWrap';
+    w=document.createElement('div'); w.className='imp hp-sheet-wrap'; w.id='jrPerWrap';
     w.innerHTML='<div class="impScrim"></div><div class="impSheet jr-per-sheet" role="dialog" aria-modal="true"></div>';
     document.getElementById('toast').before(w); w.querySelector('.impScrim').addEventListener('click',jrSheetClose); w._close=jrSheetClose;
   }
   var sh=w.querySelector('.impSheet'); sh.setAttribute('aria-label',title);
   sh.innerHTML='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div><h3>'+escH(title)+'</h3>'+html;
-  void w.offsetWidth; w.classList.add('on'); document.body.classList.add('sheet');
+  void w.offsetWidth; w.classList.add('on');   // как в Sport: микрофон остаётся микрофоном (21.11.2026)
   return sh;
 }
 function jrSheetClose(){
   var w=document.getElementById('jrPerWrap'); if(!w||!w.classList.contains('on')) return false;
-  w.classList.remove('on'); document.body.classList.remove('sheet'); return true;
+  w.classList.remove('on'); return true;
 }
 HappyPeriod.bind(document.getElementById('jrPer'),{get:jrSt,set:jrSet,today:todayISO,sheet:jrSheet,close:jrSheetClose,
   share:function(){ jrDlgOpen('print') }});   // «Поделиться» — картинка журнала за период, как «Распечатать»

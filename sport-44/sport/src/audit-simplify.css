@@ -89,7 +89,7 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 /* «Журнал / Замеры тела» — те же размеры и цвета, что .happy-measurement-tabs в shared/measurements-host.js Day и Meal. */
 #page>.journal-switch{gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;margin:8px 0 20px}
 #page>.journal-switch button{font-size:14px;font-weight:400;padding:10px 8px;color:inherit;box-shadow:none}
-#page>.journal-switch button.selected{background:#fffffff0;color:#5c4598;font-weight:600;box-shadow:none}
+#page>.journal-switch button.selected{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600;box-shadow:none}
 /* «Добавить упражнение»: поиск и круглая кнопка фильтров, как в Библиотеке (15.11.2026) */
 .picker-search-row{margin-bottom:10px}
 #picker-filters .library-filter-box,#template-picker-filters .library-filter-box{margin:0 0 12px}

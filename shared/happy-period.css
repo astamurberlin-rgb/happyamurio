@@ -9,7 +9,7 @@
 .hp-seg button{position:relative;flex:0 1 auto;min-width:36px;height:36px;padding:0 12px;border:0;border-radius:999px;background:none;color:var(--happy-ink);
  font:inherit;font-size:14px;font-weight:400;line-height:1;white-space:nowrap;display:grid;place-items:center;cursor:pointer}
 .hp-seg button::after{content:'';position:absolute;left:0;right:0;top:-4px;bottom:-4px}   /* нажимается вся высота полоски */
-.hp-seg button.on{background:rgba(255,255,255,.94);color:var(--hp-on-ink,#5C4598);font-weight:600}
+.hp-seg button.on{background:rgba(255,255,255,.94);color:var(--hp-on-ink,var(--hs-seg-ink,#5C4598));font-weight:600}
 .hp-seg button[data-hp-per="custom"]{padding:0 10px}
 .hp-seg svg,.hp-share svg,.hp-month svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .hp-share{flex:none;margin-left:auto;width:44px;height:44px;padding:0;border-radius:999px;border:1px solid var(--hp-line,rgba(255,255,255,.38));
@@ -34,5 +34,10 @@
 .hp-grid button{height:44px;padding:0;border:0;border-radius:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:400;
  font-variant-numeric:tabular-nums;cursor:pointer}
 .hp-grid button.in{background:var(--happy-glass)}
-.hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,#5C4598);font-weight:600}
+.hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,var(--hs-seg-ink,#5C4598));font-weight:600}
 .hp-grid button:disabled{opacity:.35;cursor:default}
+/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): размытый фон, лист поверх нижней панели,
+   кнопка микрофона не превращается в крестик. Закрыть — ручкой, жестом вниз или нажатием мимо. */
+.imp.hp-sheet-wrap{z-index:70}
+.imp.hp-sheet-wrap .impSheet{max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
+.imp.hp-sheet-wrap .impScrim{background:rgba(4,60,110,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}

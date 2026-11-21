@@ -1278,12 +1278,6 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .jrEmpty{margin:0;padding:15px 0;font-size:14px;line-height:1.45;color:var(--muted)}
 /* период и сортировка — сегменты */
 .jrTop{flex-wrap:wrap;row-gap:12px;padding-bottom:8px}
-.jrSeg{display:inline-flex;padding:3px;gap:2px;border-radius:999px;background:var(--glass);border:1px solid var(--glassBrd);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.jrSeg button{display:grid;place-items:center;min-height:30px;padding:0 9px;border:0;border-radius:999px;background:none;color:var(--happy-ink);
-  font:inherit;font-size:12px;font-weight:700;line-height:1;white-space:nowrap;cursor:pointer}
-.jrSeg button.on{background:rgba(255,255,255,.92);color:#0C6FA8}
-.jrSeg svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .jrPerTxt{margin:0 2px 16px;font-size:14px;font-weight:600;color:var(--muted)}
 .jrRange{display:flex;gap:10px;padding:12px 14px;margin-bottom:14px}
 .jrRange[hidden]{display:none}
@@ -1304,12 +1298,9 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .jrShotHint{margin:0 2px 10px;font-size:12px;color:var(--muted);text-align:center}
 .jrShotBody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
 .jrShotBody img{display:block;width:100%;height:auto;border-radius:18px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
-.jrSeg{gap:0}
-.jrSeg button{padding:0 7px;font-size:12px}
-.jrSeg button[data-per="custom"]{padding:0 8px}
-/* сегменты внутри строки-заголовка: без подчёркивания и прозрачности, как у ссылок в eyebrow */
-.eyebrow .jrSeg button{text-decoration:none;opacity:1;font-size:12px;font-weight:700}
-.eyebrow .jrSeg button.on{background:rgba(255,255,255,.92);color:#0C6FA8}
+/* «По группам / От дефицита» — полоска как у периода (shared/happy-period.css, вид Sport; Астамур 21.11.2026);
+   в строке-заголовке без подчёркивания и прозрачности ссылок eyebrow */
+.eyebrow .hp-seg button{text-decoration:none;opacity:1}
 /* аминокислоты: птичка — норма закрыта */
 .jrVR{flex:none;display:flex;align-items:center;gap:8px}
 .jrOk{flex:none;width:22px;height:22px;display:block}
@@ -1506,6 +1497,8 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <script src="./shared/meal-products-model.js?v=33.26"></script>
 <script src="./shared/happy-account.js?v=33.26"></script>
 <script src="./shared/happy-input.js?v=33.26"></script>
+<script src="./shared/happy-period.js?v=33.26"></script>
+<script src="./shared/happy-scroll-lock.js?v=33.26"></script>
 <script src="./shared/happy-store.js?v=33.26"></script>
 <script src="./shared/happy-app-links.js?v=33.26"></script>
 <script src="./shared/happy-sport-summary.js?v=33.26"></script>
@@ -1518,13 +1511,14 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <script src="meal-docs.js?v=33.26"></script>
 <script src="meal-data.js?v=33.26"></script>
 <link rel="stylesheet" href="./shared/happy-measurements.css?v=33.26">
+<link rel="stylesheet" href="./shared/happy-period.css?v=33.26">
 <link rel="stylesheet" href="./shared/happy-screens.css?v=33.26">
 <link rel="stylesheet" href="./shared/happy-theme-picker.css?v=33.26">
 <link rel="stylesheet" href="catalog.css?v=33.26">
 <link rel="stylesheet" href="./shared/food-counters.css?v=33.26">
 <link rel="stylesheet" href="release-notes.css?v=33.26">
 <style id="meal-settings-structure">/* Update 26: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
-.happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}.happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}.happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:#5c4598;font-weight:600}.happy-journal-content[hidden],.meal-measurements[hidden]{display:none!important}.meal-measurements{padding-bottom:24px}
+.happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}.happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}.happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600}.happy-journal-content[hidden],.meal-measurements[hidden]{display:none!important}.meal-measurements{padding-bottom:24px}
 .meal-signin{margin:0 0 14px}.meal-signin[hidden]{display:none}.meal-signin h2{margin:0 0 6px;font-size:16px}.meal-signin .note{margin:0 0 12px}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
 /* значок кнопки Meal в ленте «Главная кнопка» («Настроить тему») — контурный микрофон, как на самой кнопке */
@@ -1725,9 +1719,9 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
   <div class="screen" data-screen="journal">
     <div class="top jrTop">
       <h1>Журнал</h1>
-      <div class="jr-period-row"><div id="jrPer"></div><button class="happy-button jr-share" id="mealReportShare" aria-label="Поделиться отчётом за выбранный период"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15V3m-4 4 4-4 4 4M7 10H5v11h14V10h-2"/></svg></button></div>
+      <div id="jrPer"></div><button type="button" id="mealReportShare" hidden aria-label="Поделиться отчётом за выбранный период"></button>
     </div>
-    <p class="jrPerTxt" id="jrPerTxt"></p>
+    <p class="jrPerTxt" id="jrPerTxt" hidden></p>
     <div class="jrW" id="jrTiles"></div>
     <div class="eyebrow"><span>Избранное</span></div>
     <div class="card jrList" id="jrMine"></div>
@@ -5512,8 +5506,36 @@ function jrSorted(){
   t.sort(function(a,b){ return p(a)-p(b) }); l.sort(function(a,b){ return p(b)-p(a) });
   return {t:t,l:l};
 }
+/* Полоска периода — общий shared/happy-period.js, как в Day и Sport (Астамур 21.11.2026, аудит).
+   Состояние Meal (JR_PER, JR_RNG) ↔ состояние полоски {per,a,b}. Лист «Свой период» — как в Sport:
+   ручка, размытый фон, поверх нижней панели; выбранное применяется сразу, закрыть — ручкой или мимо листа. */
+function jrPerSt(){ return JR_PER==='custom'&&JR_RNG?{per:'custom',a:JR_RNG.a,b:JR_RNG.b}:{per:JR_PER} }
+function jrPerSet(st){
+  if(st.per==='custom'){ JR_RNG={a:st.a,b:st.b}; JR_PER='custom' } else JR_PER=st.per;
+  JR_ROW=null; renderJournal();
+}
+function jrPerSheet(title,html){
+  var w=document.getElementById('jrPerWrap');
+  if(!w){
+    w=document.createElement('div'); w.className='imp hp-sheet-wrap'; w.id='jrPerWrap';
+    w.innerHTML='<div class="impScrim"></div><div class="impSheet jr-per-sheet" role="dialog" aria-modal="true"></div>';
+    document.body.appendChild(w);
+    w.addEventListener('click',function(e){ if(e.target.classList.contains('impScrim')||e.target.closest('.imp-grip')) jrPerSheetClose() });
+    w._close=jrPerSheetClose;
+  }
+  var sh=w.querySelector('.impSheet'); sh.setAttribute('aria-label',title);
+  sh.innerHTML='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div><h3>'+escH(title)+'</h3>'+html;
+  void w.offsetWidth; w.classList.add('on');
+  return sh;
+}
+function jrPerSheetClose(){
+  var w=document.getElementById('jrPerWrap'); if(!w||!w.classList.contains('on')) return false;
+  w.classList.remove('on'); return true;
+}
+HappyPeriod.bind(document.getElementById('jrPer'),{get:jrPerSt,set:jrPerSet,today:todayISO,sheet:jrPerSheet,close:jrPerSheetClose,
+  share:function(){ document.getElementById('mealReportShare').click() }});
 function jrSeg(name,opts,cur){
-  return '<div class="jrSeg" role="group">'+opts.map(function(o){
+  return '<div class="hp-seg jrSeg" role="group">'+opts.map(function(o){
     var on=o[0]===cur;
     return '<button class="'+(on?'on':'')+'" data-'+name+'="'+o[0]+'" aria-pressed="'+on+'"'+(o[2]?' aria-label="'+o[2]+'"':'')+'>'+o[1]+'</button>';
   }).join('')+'</div>';
@@ -5546,7 +5568,8 @@ var JR_CAL='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" widt
 
 function renderJournal(){
   JR_SWOPEN=null; jrRefresh();
-  document.getElementById('jrPer').innerHTML=jrSeg('per',[['today','Сегодня'],['week','Неделя'],['month','Месяц'],['custom',JR_CAL,'Свой период']],JR_PER);
+  /* 21.11.2026 (Астамур, аудит): полоска периода — общий shared/happy-period.js, как в Day и Sport */
+  document.getElementById('jrPer').innerHTML=HappyPeriod.html(jrPerSt(),{today:todayISO(),share:'Поделиться отчётом за выбранный период',caption:jrPeriodTxt()+jrModeTxt()});
   document.getElementById('jrPerTxt').textContent=jrPeriodTxt()+jrModeTxt();
   document.getElementById('jrNote').textContent=jrNoteTxt();
   document.getElementById('jrTiles').innerHTML=jrWidgetHTML(); erFit(document.getElementById('jrTiles'));

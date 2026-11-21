@@ -60,7 +60,7 @@
 .plan-repeat label{position:relative;flex:1;min-width:0}
 .plan-repeat input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
 .plan-repeat span{display:grid;place-items:center;min-height:38px;padding:0 6px;border-radius:11px;font-size:12px;font-weight:600;white-space:nowrap}
-.plan-repeat input:checked+span{background:rgba(244,251,255,.96);color:#176b98;box-shadow:0 2px 7px #12426b20}
+.plan-repeat input:checked+span{background:rgba(244,251,255,.96);color:var(--hs-seg-ink,#176b98);box-shadow:0 2px 7px #12426b20}
 .plan-repeat input:focus-visible+span{outline:2px solid #fff;outline-offset:1px}
 .plan-group #plan-inputs .schedule-weekdays{margin:14px 0 4px}
 .plan-group .schedule-date-grid{margin-top:14px}

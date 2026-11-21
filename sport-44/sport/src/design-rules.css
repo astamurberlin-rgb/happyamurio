@@ -23,7 +23,7 @@
 .hs-segment{height:auto!important;min-height:44px}
 .hs-units-row>.hs-segment{height:44px!important}
 .segmented button.on,.segmented button[aria-selected=true],.hs-segment button[aria-pressed=true],button.selected[data-action$=-tab]{font-weight:600!important}
-.segmented button:not(.on):not([aria-selected=true]),[data-action$=-tab]:not(.selected){font-weight:400!important}
+.segmented button:not(.on):not(.selected):not([aria-selected=true]),[data-action$=-tab]:not(.selected){font-weight:400!important}   /* .selected — «Журнал | Замеры тела»: выбранное 600 (Астамур 21.11.2026: «везде 600») */
 
 /* ── Чипы и фильтры: пилюля 44, текст 14 ── */
 .chips button,.date-pill,.hm-pill{
@@ -80,7 +80,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* вкладки карточки упражнения («Инструкции · История · Добавить»): пилюлями, как остальные вкладки */
 .exercise-context-tabs{gap:3px!important;padding:4px;border:1px solid var(--line)!important;background:rgba(0,97,172,.12)}
 .exercise-context-tabs [role=tab]{height:44px;min-height:44px;padding:0 6px!important;border:0!important;border-radius:999px;font-size:14px!important;font-weight:400!important;opacity:1!important}
-.exercise-context-tabs [aria-selected=true]{background:rgba(244,251,255,.96);color:#176b98;font-weight:600!important}
+.exercise-context-tabs [aria-selected=true]{background:rgba(244,251,255,.96);color:var(--hs-seg-ink,#176b98);font-weight:600!important}
 /* замеры тела: периоды — выбор из вариантов; «Поделиться» — основная кнопка; «＋ Замер» — текстовая */
 .hm-periods{border-radius:999px!important}
 .hm-periods button{height:44px;min-height:44px;padding:0 6px!important;border-radius:999px!important;font-size:14px!important}
@@ -135,7 +135,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .metric-pill input:disabled{cursor:default}
 .metric-pill span,.timer-mode-options span{display:flex!important;align-items:center;justify-content:center;height:100%!important;min-height:0!important;padding:0 2px!important;
  border:0!important;border-radius:0!important;background:none!important;color:var(--happy-ink);font-size:14px!important;font-weight:400!important;white-space:nowrap}
-.metric-pill input:checked+span,.timer-mode-options input:checked+span{background:rgba(244,251,255,.96)!important;color:#176b98!important;font-weight:600!important}
+.metric-pill input:checked+span,.timer-mode-options input:checked+span{background:rgba(244,251,255,.96)!important;color:var(--hs-seg-ink,#176b98)!important;font-weight:600!important}
 .metric-pill label:has(input:checked)+label:has(input:checked){border-left-color:rgba(23,107,152,.25)}
 /* все выключатели — одинаковые: 42 × 25, кружок 19 (раньше у «Связка с» был 46 × 28 — держала ширина flex) */
 .toggle{box-sizing:border-box;padding:0!important}

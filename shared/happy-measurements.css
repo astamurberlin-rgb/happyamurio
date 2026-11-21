@@ -54,7 +54,7 @@
 .hm-chart{position:absolute;left:0;top:14px;display:block;width:100%;height:430px;overflow:visible}
 .hm-periods{display:flex;gap:3px;margin:0 0 10px;border:1px solid var(--hm-line);border-radius:24px;padding:4px;background:rgba(0,97,172,.12)}
 .hm-periods button{flex:1 1 0;padding:10px 6px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
-.hm-periods button[aria-pressed="true"]{background:rgba(244,251,255,.96);color:#176b98;box-shadow:0 2px 7px rgba(18,66,107,.125)}
+.hm-periods button[aria-pressed="true"]{background:rgba(244,251,255,.96);color:var(--hs-seg-ink,#176b98);box-shadow:0 2px 7px rgba(18,66,107,.125)}
 
 /* таблица: названия и последние замеры закреплены */
 .hm-grid-wrap{margin-top:20px;width:100%;min-width:0;max-width:100%;contain:inline-size;border:1px solid rgba(255,255,255,.33);border-radius:22px;overflow:auto;isolation:isolate;scrollbar-width:thin;overscroll-behavior-x:contain;background:rgba(255,255,255,.11)}
