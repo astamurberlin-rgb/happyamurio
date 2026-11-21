@@ -1408,8 +1408,9 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
 /* Happy Meal: selected central button — Bordeaux #730074 */
 :root { --fab:var(--happy-accent); }
 .fab {
-  background:radial-gradient(circle at 32% 20%,color-mix(in srgb,var(--happy-accent) 59.4%, white) 0%,var(--happy-accent) 56%,color-mix(in srgb,var(--happy-accent) 75%, black) 100%)!important;
-  box-shadow:0 6px 14px #2a184844,0 0 25px color-mix(in srgb,var(--happy-accent) 50%, transparent)!important;
+  /* Вариант B, Астамур 21.11.2026: «Везде B, лучше один подход» — шар как у Sport из цвета приложения */
+  background:radial-gradient(circle at 35% 25%,color-mix(in srgb,var(--happy-accent) 50%,#fff),color-mix(in srgb,var(--happy-accent) 75%,#fff) 43%,var(--happy-accent) 76%)!important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--happy-accent) 22%,transparent)!important;
 }
 
 /* Happy Meal v20 — Bordeaux / cherry palette; matches the approved #730074 center FAB */
