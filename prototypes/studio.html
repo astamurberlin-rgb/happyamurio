@@ -72,6 +72,7 @@
 .shared-empty{color:#aba5c3;font-size:11px;padding:12px 0}
 .shared-card{flex:0 0 120px;scroll-snap-align:start;position:relative;padding:6px;min-height:108px;text-align:left;color:#fff;border:1px solid #ffffff2b;background:#ffffff0f;border-radius:12px}
 .shared-card.selected{border-color:#c4b0ff;box-shadow:inset 0 0 0 1px #c4b0ff}
+.shared-card.original .shared-thumb{display:flex}.shared-card.original .shared-thumb i{flex:1;display:block}.shared-card.original .shared-status{color:#d9ceff}
 .shared-thumb{height:71px;border-radius:9px;margin-bottom:6px;position:relative;overflow:hidden}
 .shared-mini{position:absolute;left:7px;bottom:6px;display:flex;gap:4px}
 .shared-mini span{width:11px;height:11px;border:1px solid #ffffffa4;border-radius:50%;box-shadow:0 1px 4px #0005}
@@ -552,6 +553,7 @@ function lookUnsaved(){const editing=editingTheme();if(editing)return dirtyApps(
 function drawShared(){
  referenceGallery?.select(activeShared);
  const rail=$('sharedRail'),editing=editingTheme(),dirty=dirtyApps(editing);rail.innerHTML='';
+ rail.append(originalCard(editing));
  if(!sharedPresets.length){const e=document.createElement('span');e.className='shared-empty';e.textContent='Здесь появятся твои сохранённые варианты.';rail.append(e)}
  for(const item of sharedPresets){
   const isEditing=editing?.id===item.id,changed=isEditing&&dirty.length>0;
@@ -568,6 +570,34 @@ function drawShared(){
   rail.append(card);
  }
  updateEditUI(editing,dirty);
+}
+// Lab 21.11.2026 (Астамур: «настройки оригинала где-то хранились в любом случае, даже если я меняю»).
+// The first card is always the apps as they are on the site (defaults, refreshed from the site on open).
+// Themes apply without the «Заменить текущий вид?» question (Астамур 21.11: превью не меняет приложения).
+// It cannot be renamed, overwritten or deleted; a tap brings all three previews back to it.
+function originalCard(editing){
+ const isOn=!editing&&!activeShared&&!lookUnsaved();
+ const card=document.createElement('div');card.className='shared-card original'+(isOn?' selected':'');
+ const btn=document.createElement('button');btn.type='button';btn.title='Вернуть Day, Meal и Sport к виду, как на сайте';btn.style.cssText='background:none;border:none;color:inherit;display:block;text-align:left;width:100%;padding:0';
+ btn.setAttribute('aria-label','Оригинал, как на сайте'+(isOn?' — сейчас в превью':''));
+ const thumb=document.createElement('div');thumb.className='shared-thumb';
+ for(const k of APP_ORDER){const i=document.createElement('i');i.style.background=gradient(defaults[k]);thumb.append(i)}
+ const title=document.createElement('span');title.className='shared-caption';title.textContent='Оригинал · как на сайте';
+ const status=document.createElement('span');status.className='shared-status';status.setAttribute('aria-hidden','true');status.textContent=isOn?'✓ Сейчас в превью':'🔒 Всегда хранится';
+ btn.append(thumb,title,status);btn.onclick=applyOriginal;card.append(btn);return card;
+}
+async function applyOriginal(){
+ const editing=editingTheme(),changed=dirtyApps(editing).length>0;
+ if(editing&&changed){
+  const choice=await askDialog({title:'Сохранить изменения?',text:'В теме «'+editing.name+'» есть несохранённые правки.',buttons:[['Сохранить и вернуть оригинал','save','primary'],['Не сохранять','discard','danger'],['Отмена',null]]});
+  if(choice.value==='save'){if(!await saveThemeChanges())return}else if(choice.value!=='discard')return;
+ }
+ const before=Object.fromEntries(APP_ORDER.map(k=>[k,states[k]])),was=[activeShared,editingId];
+ for(const k of APP_ORDER){states[k]=clone(defaults[k]);normalizeExtra(states[k])}
+ activeShared='';editingId='';selectedPreset=-1;paletteUndo=null;
+ if(!persist()){for(const k of APP_ORDER)states[k]=before[k];[activeShared,editingId]=was;draw();return}
+ for(const k of APP_ORDER)composeWallpaper(k);
+ draw();toast('Day, Meal и Sport — снова как на сайте');
 }
 let floatWanted=false,floatFrame=0;
 function updateEditUI(editing=editingTheme(),dirty=dirtyApps(editing)){
@@ -609,10 +639,6 @@ async function requestApply(id){
  if(editing&&editing.id!==id&&changed){
   const choice=await askDialog({title:'Сохранить изменения?',text:'В теме «'+editing.name+'» есть несохранённые правки.',buttons:[['Сохранить и перейти','save','primary'],['Не сохранять','discard','danger'],['Отмена',null]]});
   if(choice.value==='save'){if(!await saveThemeChanges())return}else if(choice.value!=='discard')return;
- }else if(!editing&&id!==activeShared&&lookUnsaved()){
-  const target=referenceThemes.find(p=>p.id===id)||sharedPresets.find(p=>p.id===id),name=target?.name||'тема';
-  const choice=await askDialog({title:'Заменить текущий вид?',text:'Сейчас в превью вариант, который не сохранён в галерее. Тема «'+name+'» заменит его. Сохранить его можно кнопкой «Сохранить как новую» или через ⋯ на своей теме → «Записать текущий вид сюда».',buttons:[['Применить «'+name+'»','apply','primary'],['Отмена',null]]});
-  if(choice.value!=='apply')return;
  }
  applyShared(id);
 }
