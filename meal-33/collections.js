@@ -41,7 +41,7 @@ function category(c){return c.id==='SUPP'?'supplements':['HM','UZBEK','KAV'].inc
 /* число шаблонов БАДов — из каталога, когда он прочитан */
 function countOf(c){if(c.id!=='SUPP')return c.count;const n=root.HappySupplementsLibrary?root.HappySupplementsLibrary.templates.length:0;return n?n+' '+(n%10===1&&n%100!==11?'шаблон':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'шаблона':'шаблонов'):c.count}
 function enabled(c){return root.MealSources.enabled(root.DB,c.source||c.id)}
-function buyControl(c){if(c.base)return '';const owned=purchased(c);return '<div class="cc-buy"><button type="button" data-cc-buy="'+c.id+'" '+(owned?'disabled':'')+'>'+(owned?'Куплено':'Купить · 2 €')+'</button><small>Тестовая покупка · без оплаты</small></div>'}
+function buyControl(c){if(c.base)return '';const owned=purchased(c);return '<div class="cc-buy"><button type="button" data-cc-buy="'+c.id+'" '+(owned?'disabled':'')+'>'+(owned?'Куплено':'Купить · 2 €')+'</button></div>'   /* аудит 3 (Астамур 21.11): подпись «Тестовая покупка» убрана — ломает композицию */}
 function buy(c){
  if(c.base||purchased(c))return;
  if(typeof root.writeGuard==='function'&&root.writeGuard())return;   // без входа записи не принимаются
