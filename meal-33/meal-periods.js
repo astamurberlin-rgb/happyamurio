@@ -537,11 +537,14 @@ function open(){
 }
 
 /* строка «Настроить приёмы пищи» — третья в верху настроек, после профиля и целей. Верх рисует общий модуль
-   (shared/happy-person.js) и перерисовывает его сам; строка Meal добавляется после каждой перерисовки. */
+   (shared/happy-person.js) и перерисовывает его сам; строка Meal добавляется после каждой перерисовки.
+   «Настроить тему» (shared/happy-theme-picker.js) остаётся последней строкой карточки, как в Day и Sport:
+   её ленты раскрываются вниз и строк ниже себя не сдвигают. — Claude · 21.11.2026 */
 function addEntry(){
   var box=document.getElementById('happy-account-top'); if(!box) return;
   var put=function(){ var g=box.querySelector('.hs-group'); if(!g||g.querySelector('[data-mp-open]')) return;
-    var b=document.createElement('button'); b.type='button'; b.className='hs-row'; b.setAttribute('data-mp-open',''); b.innerHTML='<span>Настроить приёмы пищи</span>'; g.appendChild(b) };
+    var b=document.createElement('button'); b.type='button'; b.className='hs-row'; b.setAttribute('data-mp-open',''); b.innerHTML='<span>Настроить приёмы пищи</span>';
+    var theme=g.querySelector('.appearance-trigger'); if(theme) g.insertBefore(b,theme); else g.appendChild(b) };
   new MutationObserver(put).observe(box,{childList:true,subtree:true}); put();
   box.addEventListener('click',function(e){ if(e.target.closest('[data-mp-open]')) open() });
 }

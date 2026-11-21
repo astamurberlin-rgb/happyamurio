@@ -291,14 +291,16 @@
       "name": "happy-theme-picker.js",
       "reference": "shared/happy-theme-picker.js",
       "apps": [
-        "day"
+        "day",
+        "meal"
       ]
     },
     {
       "name": "happy-theme-picker.css",
       "reference": "shared/happy-theme-picker.css",
       "apps": [
-        "day"
+        "day",
+        "meal"
       ]
     }
   ]

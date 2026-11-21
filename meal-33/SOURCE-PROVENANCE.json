@@ -599,8 +599,8 @@
   },
   {
    "path": "index.html",
-   "size": 649096,
-   "sha256": "ec3da7bec02977aa163bc2608a28b099ec5f9893b908e9c77bdde86bae228607"
+   "size": 651702,
+   "sha256": "eebf68c06bcfa5fefd1a38d82d65032b449a18cd68b43217f8a19fbad6b49e36"
   },
   {
    "path": "kfct.js",
@@ -789,8 +789,8 @@
   },
   {
    "path": "meal-measurements.js",
-   "size": 2742,
-   "sha256": "2b20aa407f939f0062d168afaf6912f4d54a75f3ae2bd63b3dd7c79ed5dd39d2"
+   "size": 2940,
+   "sha256": "d072c059fbc64f5648ccaba4801adb665ae0b413288c2b8ad2a48c4e7674ca88"
   },
   {
    "path": "meal-periods.css",
@@ -799,8 +799,8 @@
   },
   {
    "path": "meal-periods.js",
-   "size": 50106,
-   "sha256": "7e178e07feb2736996c26d209c95050850a0a30d7aae87c5f16a0e6f49769c19"
+   "size": 50492,
+   "sha256": "b678012dcbd771e848e12dae7a8c91e0647ff78155b82d9b9c9766b609d339f8"
   },
   {
    "path": "portions.js",
@@ -936,6 +936,16 @@
    "path": "shared/happy-store.js",
    "size": 37247,
    "sha256": "fe62c5b863020e0bffd07bde9dbd79ee8cf0dece18cd8175162d45fbf650a9b7"
+  },
+  {
+   "path": "shared/happy-theme-picker.css",
+   "size": 3957,
+   "sha256": "659ac7b22eaf01781411868f3e0ed3c1628c52579d3b3350d02901387d90ac6f"
+  },
+  {
+   "path": "shared/happy-theme-picker.js",
+   "size": 11465,
+   "sha256": "e1cfab32eb15ad3cdfe39c643560787a0e3fa4be42a4dfcea4448917516e403e"
   },
   {
    "path": "shared/happy-ui.css",
