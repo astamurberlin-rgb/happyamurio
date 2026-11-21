@@ -2,6 +2,8 @@
 <html lang="ru" data-app-version="12.8"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#15162a"><title>Happy Color Studio v12.8 · Day / Meal / Sport</title><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Studio"><meta name="theme-color" content="#17162b"><link rel="manifest" href="./happy-family-studio.webmanifest">
 <link rel="stylesheet" href="../shared/happy-gradient-editor.css?v=1"><script src="../shared/happy-studio-account.js?v=1"></script><script src="../shared/happy-gradients.js?v=1"></script><script src="../shared/happy-gradient-editor.js?v=1"></script><link rel="stylesheet" href="./color-workspace.css?v=12.5"><script src="../shared/happy-reference-themes.js?v=3"></script><script src="./color-workspace.js?v=12.5"></script><link rel="stylesheet" href="./reference-themes.css?v=2"><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#f6f5ff;color-scheme:dark;background:#161527;font-synthesis:none}
+/* Текст студии всегда светлый, даже если страницу открывают в светлой теме (21.11.2026: тёмный текст «Цветовые точки» на тёмном фоне). */
+html body{color:#f6f5ff}html body :is(button,input,select,textarea,label,h2,h3){color:inherit}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{scroll-behavior:smooth}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse 70% 55% at 9% -6%,#6851ad46,transparent 82%),radial-gradient(ellipse 58% 42% at 95% 12%,#4069a039,transparent 80%),#161527}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #93c5fd;outline-offset:3px}button:disabled{opacity:.38;cursor:default}
 .shell{max-width:1500px;margin:auto;padding:20px clamp(13px,3vw,34px) 38px}.head{display:flex;align-items:start;justify-content:space-between;gap:12px;margin-bottom:10px}.eyebrow{font-weight:800;font-size:10px;letter-spacing:.19em;color:#9d9ab5}.head h1{font-size:clamp(21px,3.3vw,30px);letter-spacing:-.65px;margin:5px 0 6px}.head p{font-size:12px;color:#9d9ab5;margin:0;line-height:1.45}.chipbutton{background:#ffffff13;border:1px solid #ffffff22;border-radius:13px;color:white;padding:9px 12px;white-space:nowrap;font-size:12px}
 .preview-dock{position:sticky;top:0;z-index:15;margin:0 -10px 16px;padding:12px 10px 16px;border-bottom:1px solid #ffffff12;background:linear-gradient(180deg,rgba(20,20,37,.94),rgba(20,20,37,.76) 78%,rgba(20,20,37,.18));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
@@ -72,6 +74,7 @@
 .shared-empty{color:#aba5c3;font-size:11px;padding:12px 0}
 .shared-card{flex:0 0 120px;scroll-snap-align:start;position:relative;padding:6px;min-height:108px;text-align:left;color:#fff;border:1px solid #ffffff2b;background:#ffffff0f;border-radius:12px}
 .shared-card.selected{border-color:#c4b0ff;box-shadow:inset 0 0 0 1px #c4b0ff}
+.reference-card,.shared-card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .shared-card.original .shared-thumb{display:flex}.shared-card.original .shared-thumb i{flex:1;display:block}.shared-card.original .shared-status{color:#d9ceff}
 .shared-thumb{height:71px;border-radius:9px;margin-bottom:6px;position:relative;overflow:hidden}
 .shared-mini{position:absolute;left:7px;bottom:6px;display:flex;gap:4px}
@@ -157,7 +160,7 @@ body.has-theme-float .shell{padding-bottom:110px}
 
   <section class="panel" id="referenceThemes" aria-label="Десять общих цветовых схем"></section>
   <section class="shared-wrap" id="savedThemes" aria-label="Общие сохранённые темы">
-<div class="shared-head"><div><strong>Мои варианты оформления</strong><small>Общая галерея тем Happy. Тап по миниатюре применяет тему ко всем предпросмотрам и открывает её для правки. Правки записываются в эту же тему кнопкой <b>«Сохранить изменения»</b>, ⋯ на миниатюре — другие действия.</small></div></div>
+<div class="shared-head"><div><strong>Мои варианты оформления</strong><small>Общая галерея тем Happy. Тап по миниатюре примеряет тему ко всем превью (приложения не меняются), долгий тап — меню «Примерить к Color Studio» и открывает её для правки. Правки записываются в эту же тему кнопкой <b>«Сохранить изменения»</b>, ⋯ на миниатюре — другие действия.</small></div></div>
 <div class="cloud-box" id="cloudBox"><div class="cloud-line"><span class="cloud-icon" aria-hidden="true">☁︎</span><div class="cloud-text"><strong>Облако Happy</strong><span id="cloudStatus" aria-live="polite"></span></div></div><p class="cloud-note" id="cloudNote" hidden>Синхронизируются «Мои варианты оформления»: новые, изменённые, переименованные и удалённые темы. Фото обоев, палитры и текущий вид превью пока остаются только на этом устройстве.</p><div class="cloud-actions" id="cloudActions"><button class="theme-btn primary" id="cloudLogin" type="button">Войти</button><button class="theme-btn" id="cloudSyncNow" type="button" hidden>Синхронизировать</button></div></div>
 <div class="theme-editbar" id="themeEditBar" hidden><div><span class="theme-editbar-label">✎ Редактируется</span><span class="theme-editbar-name" id="themeEditName"></span><p class="theme-editbar-status" id="themeEditStatus" aria-live="polite"></p></div><div class="theme-editbar-actions"><button class="theme-btn primary" id="themeSaveChanges" type="button">Сохранить изменения</button><button class="theme-btn" id="themeRevert" type="button">Отменить правки</button></div></div>
 <div class="shared-save"><input id="sharedName" type="text" maxlength="30" placeholder="Имя новой темы"><button id="sharedSave" type="button">＋ Сохранить как новую</button></div>
@@ -558,7 +561,7 @@ function drawShared(){
  for(const item of sharedPresets){
   const isEditing=editing?.id===item.id,changed=isEditing&&dirty.length>0;
   const card=document.createElement('div');card.className='shared-card'+(activeShared===item.id?' selected':'')+(isEditing?' editing':'')+(changed?' dirty':'');card.dataset.themeId=item.id;
-  const btn=document.createElement('button');btn.type='button';btn.title=isEditing?'Эта тема сейчас редактируется':'Применить тему ко всем трём приложениям и открыть для правки';btn.style.cssText='background:none;border:none;color:inherit;display:block;text-align:left;width:100%;padding:0';
+  const btn=document.createElement('button');btn.type='button';btn.title=isEditing?'Эта тема сейчас редактируется':'Примерить тему ко всем трём превью и открыть для правки. Долгий тап — примерить к студии';btn.style.cssText='background:none;border:none;color:inherit;display:block;text-align:left;width:100%;padding:0';
   btn.setAttribute('aria-label',item.name+(isEditing?(changed?' — редактируется, есть несохранённые правки':' — редактируется'):''));
   const thumb=document.createElement('div');thumb.className='shared-thumb';thumb.style.background=gradientAdjusted(item.state);
   const dots=document.createElement('span');dots.className='shared-mini';
@@ -598,6 +601,60 @@ async function applyOriginal(){
  if(!persist()){for(const k of APP_ORDER)states[k]=before[k];[activeShared,editingId]=was;draw();return}
  for(const k of APP_ORDER)composeWallpaper(k);
  draw();toast('Day, Meal и Sport — снова как на сайте');
+}
+// Lab 21.11.2026 (Астамур): долгий тап по теме — «Примерить ко всем приложениям» или «Примерить к Color Studio»,
+// чтобы увидеть тему на весь экран и при прокрутке. Студия — рабочий инструмент: без лишних вопросов.
+const SHELL_KEY='happy-studio-shell-theme';
+function themeById(id){return referenceThemes.find(p=>p.id===id)||sharedPresets.find(p=>p.id===id)||null}
+function shellCSS(st){
+ st=clone(st);normalizeExtra(st);
+ const rgba=(hex,a)=>'rgba('+[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)).join(',')+','+a.toFixed(3)+')';
+ const glass=rgba(st.glassColor||'#ffffff',(st.glassAlpha??16)/100),border=rgba(st.borderColor||'#ffffff',(st.borderAlpha??34)/100),blur=(st.glassBlur??12)+'px';
+ const bg=backgroundFor(st,'day'),filter=st.nativeFilter&&st.wallpaper!=='custom'?st.nativeFilter:'';
+ const btn=st.nativeButton||G.css(st.buttonGradient||{type:'solid',stops:[{color:st.buttonColor||'#6755d6',position:0}]});
+ return [
+  ':root{background:#0000!important}',
+  'body{background:transparent!important}',
+  'body::before{content:"";position:fixed;z-index:-1;pointer-events:none;inset:'+(filter?'-20%':'0')+';background:'+bg+';'+(filter?'filter:'+filter+';':'')+'}',
+  'html{background:'+(((/(#[0-9a-f]{3,8}|rgba?\([^)]*\))\s*$/i.exec(bg)||[])[1])||'#161527')+'!important}',
+  '.panel,.studio-group,.shared-wrap,.cloud-box,.theme-editbar,.shared-card{background:'+glass+'!important;border-color:'+border+'!important;-webkit-backdrop-filter:blur('+blur+');backdrop-filter:blur('+blur+')}',
+  '.panel .panel,.studio-group .panel,.studio-group .shared-wrap{background:transparent!important;-webkit-backdrop-filter:none;backdrop-filter:none}',
+  '.preview-dock{background:'+glass+'!important;border-color:'+border+'!important}',
+  '.theme-btn.primary{background:'+btn+'!important;border-color:transparent!important;color:'+(st.buttonTextColor||'#fff')+'!important}'
+ ].join('\n');
+}
+function tryOnStudio(id){
+ const el=$('studioShellTheme')||document.head.appendChild(Object.assign(document.createElement('style'),{id:'studioShellTheme'}));
+ const item=id?themeById(id):null;
+ el.textContent=item?shellCSS(item.state):'';
+ try{item?localStorage.setItem(SHELL_KEY,id):localStorage.removeItem(SHELL_KEY)}catch(e){}
+ document.documentElement.classList.toggle('studio-tried-on',!!item);
+ return item;
+}
+function restoreShellTheme(){let id='';try{id=localStorage.getItem(SHELL_KEY)||''}catch(e){}if(id&&!tryOnStudio(id))tryOnStudio('')}
+async function themeTryMenu(id){
+ const item=id==='original'?null:themeById(id);if(id!=='original'&&!item)return;
+ const name=item?item.name:'Оригинал',tried=document.documentElement.classList.contains('studio-tried-on');
+ const buttons=[['Примерить ко всем приложениям','apps','primary']];
+ if(item)buttons.push(['Примерить к Color Studio','studio']);
+ if(tried)buttons.push(['Вернуть студии её вид','studio-off']);
+ buttons.push(['Отмена',null]);
+ const choice=await askDialog({title:'«'+name+'»',text:'',buttons});
+ if(choice.value==='apps'){id==='original'?applyOriginal():requestApply(id)}
+ else if(choice.value==='studio'){tryOnStudio(id);toast('Студия примерила «'+name+'»')}
+ else if(choice.value==='studio-off'){tryOnStudio('');toast('Студия — снова в своём виде')}
+}
+function initLongPress(){
+ let timer=0,start=null,fired=false;
+ const cardOf=t=>t.closest?.('.reference-card,.shared-card');
+ const idOf=c=>c.classList.contains('original')?'original':c.dataset.themeId;
+ document.addEventListener('pointerdown',e=>{const c=cardOf(e.target);if(!c||e.target.closest('.shared-more'))return;fired=false;start=[e.clientX,e.clientY];clearTimeout(timer);
+  timer=setTimeout(()=>{fired=true;navigator.vibrate?.(10);themeTryMenu(idOf(c))},480)},true);
+ const cancel=()=>clearTimeout(timer);
+ document.addEventListener('pointermove',e=>{if(start&&Math.hypot(e.clientX-start[0],e.clientY-start[1])>9)cancel()},true);
+ document.addEventListener('pointerup',cancel,true);document.addEventListener('pointercancel',cancel,true);
+ document.addEventListener('click',e=>{if(fired&&cardOf(e.target)){e.preventDefault();e.stopPropagation();fired=false}},true);
+ document.addEventListener('contextmenu',e=>{if(cardOf(e.target))e.preventDefault()},true);
 }
 let floatWanted=false,floatFrame=0;
 function updateEditUI(editing=editingTheme(),dirty=dirtyApps(editing)){
@@ -649,7 +706,7 @@ function applyShared(id,message){
  activeShared=id;editingId=isOwnTheme(id)?id:'';selectedPreset=-1;paletteUndo=null;
  if(!persist()){for(const k of APP_ORDER)states[k]=before[k];[activeShared,editingId]=was;draw();return false}
  for(const k of APP_ORDER)composeWallpaper(k);
- draw();toast(message||(editingId?'Тема «'+item.name+'» применена и открыта для правки':'Тема применена ко всем предпросмотрам Happy'));return true;
+ draw();toast(message||(editingId?'Тема «'+item.name+'» примерена и открыта для правки':'Тема примерена ко всем превью'));return true;
 }
 // Writes the look of one preview into an own theme and shows that theme in all three previews.
 function commitTheme(item,src,message){
@@ -675,19 +732,16 @@ async function saveThemeChanges(){
  const item=editingTheme();if(!item){toast('Сначала открой свою тему в галерее');return false}
  const dirty=dirtyApps(item);if(!dirty.length){toast('Изменений нет — тема уже сохранена');return true}
  const src=dirty.includes(selected)?selected:dirty[0];
- if(dirty.length>1){const choice=await askDialog({title:'Правки в нескольких превью',text:'Изменены превью '+appList(dirty)+'. В тему «'+item.name+'» сохранится вид из превью '+APP_NAMES[src]+', и он появится во всех трёх. Чтобы сохранить другой вариант, сначала выбери его превью.',buttons:[['Сохранить вид '+APP_NAMES[src],'save','primary'],['Отмена',null]]});if(choice.value!=='save')return false}
- return commitTheme(item,src,'Изменения сохранены в «'+item.name+'»');
+ return commitTheme(item,src,'Изменения сохранены в «'+item.name+'»'+(dirty.length>1?' — вид из превью '+APP_NAMES[src]:''));
 }
 async function revertTheme(){
  const item=editingTheme();if(!item||!dirtyApps(item).length)return;
- const choice=await askDialog({title:'Отменить правки?',text:'Тема «'+item.name+'» вернётся к сохранённому виду во всех превью.',buttons:[['Отменить правки','revert','danger'],['Оставить правки',null]]});
- if(choice.value==='revert')applyShared(item.id,'Правки отменены');
+ applyShared(item.id,'Правки отменены');
 }
 async function overwriteTheme(id){
  const item=sharedPresets.find(p=>p.id===id);if(!item||!isOwnTheme(id))return;
  const src=editSource();
- const choice=await askDialog({title:'Записать текущий вид в «'+item.name+'»?',text:'Сохранённый вид темы заменится видом из превью '+APP_NAMES[src]+'. Затем тема откроется во всех превью.',buttons:[['Записать','write','primary'],['Отмена',null]]});
- if(choice.value==='write')commitTheme(item,src,'Текущий вид записан в «'+item.name+'»');
+ commitTheme(item,src,'Текущий вид записан в «'+item.name+'»');
 }
 async function renameTheme(id){
  const item=sharedPresets.find(p=>p.id===id);if(!item||!isOwnTheme(id))return;
@@ -872,7 +926,7 @@ workspace=HappyColorWorkspace.mount({
  readColors(target){return [...new Set(G.colors(states[selected][target==='button'?'buttonGradient':'backgroundGradient']).map(s=>s.color))].slice(0,8).flatMap((c,i,a)=>a.length===1?[c,c]:[c]);},
  applyColors(target,colors){dropNative(states[selected],target==='button'?'button':'background');const key=target==='button'?'buttonGradient':'backgroundGradient';const m=G.normalize(states[selected][key]);m.type='linear';m.brightness=100;m.saturation=100;m.stops=colors.map((color,i)=>({color,position:i*100/(colors.length-1),brightness:100,saturation:100,hue:0}));m.glow.enabled=false;if(m.extraGlow)m.extraGlow.enabled=false;states[selected][key]=m;if(target==='button')states[selected].buttonColor=colors[0];else syncLegacy(states[selected]);selectedPreset=-1;afterChange();}
 });
-initFrames();bind();restoreGroups();draw();revealTheme(editingId);cloudInit();initPhoneResize();$('siteNoteOk').onclick=()=>{$('siteNote').hidden=true};syncFromSite();
+initFrames();bind();restoreGroups();draw();revealTheme(editingId);cloudInit();initPhoneResize();initLongPress();restoreShellTheme();$('siteNoteOk').onclick=()=>{$('siteNote').hidden=true};syncFromSite();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./happy-family-studio-sw.js').catch(()=>{}))}for(const k of APP_ORDER)if(states[k].wallpaper==='custom')composeWallpaper(k);requestAnimationFrame(()=>scrollPhoneTo(selected,'instant'));
 })();
 </script></body></html>
