@@ -1,5 +1,5 @@
 .care-knob{cursor:pointer;inset:18%;padding:8px!important;gap:3px;align-content:center;touch-action:manipulation!important}
-.care-knob .care-symbol{display:block;font-size:29px;font-weight:400;line-height:1.1}
+.care-knob .care-symbol{display:block;font-size:28px;font-weight:400;line-height:1.1}
 .care-knob .care-name{font-size:14px;line-height:1.15;max-width:113px;overflow-wrap:normal;font-weight:700}
 .care-symbol svg{position:static!important;transform:none!important;width:27px!important;height:27px!important;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .care-arc{transform:none!important;pointer-events:none}

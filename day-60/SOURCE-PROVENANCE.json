@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1452232,
-   "sha256": "f811e1a40cfd03fe76e7d10c450eb537de30ad1dbf04b42ae08e38feb126591f"
+   "size": 1453332,
+   "sha256": "524a3006173ef636bbf898bfe84b8a9c0acecbe7e8f5692eea56e2889a4a2081"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -254,8 +254,8 @@
   },
   {
    "path": "index.html",
-   "size": 507927,
-   "sha256": "19f5ba1fceabaa5acea332f5fba56c1decac751916388ceafa3df48c797ab082"
+   "size": 507831,
+   "sha256": "0b93242678004c6b21ab1e8d51160481a56cb010a5665eeda8190ee8190d136e"
   },
   {
    "path": "manifest.webmanifest",
@@ -264,8 +264,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 44693,
-   "sha256": "35260c5865e1b74451b7f4d1a743999bdfa087217268460f1e6b0e2c8caea244"
+   "size": 45603,
+   "sha256": "ce8812220fcb2e097344c0e8ed6c37c34e0e8c04374d7f8a5c764c5e8e25ca54"
   },
   {
    "path": "row-swipe.js",
@@ -274,8 +274,8 @@
   },
   {
    "path": "section-wheel.css",
-   "size": 2197,
-   "sha256": "db1527837b1bbaa4a432a53cc168aebbe99b514d2026f7863d205c3f526d6f11"
+   "size": 2181,
+   "sha256": "0e752ae76393c385529ba8703ae355ea00ddf2169af59d34331169f4c0060aa7"
   },
   {
    "path": "selfcare-core.js",
@@ -290,7 +290,7 @@
   {
    "path": "selfcare.css",
    "size": 21025,
-   "sha256": "7ef0cd52ef977254a3e3992747026e0aee720e24f043e24d08e25c770f9761bc"
+   "sha256": "13de4f70484d709c32bf75e2facf644e2c14e90c51323008a973181ed986e9a8"
   },
   {
    "path": "shared/apps.json",
@@ -300,7 +300,7 @@
   {
    "path": "shared/food-counters.css",
    "size": 1936,
-   "sha256": "31a07fee37f6b957e0e28eda32c3a2dfc0bae3254e983382c72ec339b5ec848b"
+   "sha256": "a6e445e9f759179d1dc73a3e2b08cd8f7f2a6279e572a135ed2d5b661c741f56"
   },
   {
    "path": "shared/happy-account.js",
@@ -365,7 +365,7 @@
   {
    "path": "shared/happy-gradient-editor.css",
    "size": 3832,
-   "sha256": "3538876b0a66ba831a65c419e95cd026253044e94ea96e20ba955c3e4cb72d1f"
+   "sha256": "856b4641f37c8e9fb0025203da6db8c4e2e2387f06c13a2b0a9cb6158cf1523b"
   },
   {
    "path": "shared/happy-gradient-editor.js",
