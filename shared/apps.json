@@ -74,7 +74,7 @@
   },
   "colorStudio": {
     "entry": "prototypes/happy-family-color-studio-v12.html",
-    "version": "12.10",
+    "version": "12.11",
     "kind": "studio",
     "storageKey": "happy-family-color-studio-v11"
   },
