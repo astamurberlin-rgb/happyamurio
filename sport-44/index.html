@@ -1571,7 +1571,8 @@ body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!im
 .hf-drum-item.hf-on{font-weight:600}
 .hf-drum-sep{position:relative;align-self:center;font-size:28px;font-weight:600;line-height:1;margin-top:-4px}
 @media (prefers-reduced-motion:reduce){.hf-drum-col{scroll-behavior:auto}}
-/* Выбор периода журнала (shared/happy-period.js), как в Meal: компактная полоска, рядом «Поделиться», ниже дата.
+/* Выбор периода журнала (shared/happy-period.js), как в Meal: компактная полоска, «Поделиться» — у правого края
+   страницы (Астамур 21.11.2026), ниже дата.
    Полоска тоньше переключателя «Журнал | Замеры тела» (Астамур 21.11.2026: «по высоте уже должна быть»):
    вся полоска 44 — как чип и фильтр, кнопки внутри 36, но нажимается вся высота 44; текст 14. — Claude · 21.11.2026 */
 .hp-period{margin:0 0 16px}
@@ -1584,7 +1585,7 @@ body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!im
 .hp-seg button.on{background:rgba(255,255,255,.94);color:var(--hp-on-ink,#5C4598);font-weight:600}
 .hp-seg button[data-hp="custom"]{padding:0 10px}
 .hp-seg svg,.hp-share svg,.hp-month svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hp-share{flex:none;width:44px;height:44px;padding:0;border-radius:999px;border:1px solid var(--hp-line,rgba(255,255,255,.38));
+.hp-share{flex:none;margin-left:auto;width:44px;height:44px;padding:0;border-radius:999px;border:1px solid var(--hp-line,rgba(255,255,255,.38));
  background:var(--hp-glass,rgba(255,255,255,.09));color:#fff;display:grid;place-items:center;cursor:pointer}
 .hp-share svg{width:22px;height:22px;stroke-width:1.9}
 .hp-cap{margin:10px 2px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,.72)}
