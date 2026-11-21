@@ -32,7 +32,11 @@
   function announce(text){live.textContent=text;}
   function order(){return [...container.children].filter(n=>n.dataset.panel).map(n=>n.dataset.panel);}
   function remember(){data.layout.order=order();for(const [id,p] of panels)data.layout.open[id]=p.open;return persist();}
-  function move(panel,direction){const all=[...panels.values()].sort((a,b)=>order().indexOf(a.dataset.panel)-order().indexOf(b.dataset.panel)),i=all.indexOf(panel);if(direction==='top')container.prepend(panel);else if(direction<0&&i>0)container.insertBefore(panel,all[i-1]);else if(direction>0&&i<all.length-1)container.insertBefore(panel,all[i+1].nextSibling);remember();announce('Раздел перемещён');}
+  // 21.11.2026 (Астамур: «экран прыгает, не вижу, что дают»): после «Выше/Ниже» раздел остаётся на том же месте экрана,
+  // после «Под превью» — встаёт сразу под превью; раздел коротко подсвечивается.
+  function keepInView(panel,direction,before){requestAnimationFrame(()=>{const dock=document.querySelector('.preview-dock');const target=direction==='top'?(dock?dock.getBoundingClientRect().bottom+8:16):before;window.scrollBy({top:panel.getBoundingClientRect().top-target,behavior:'instant'});panel.classList.remove('just-moved');void panel.offsetWidth;panel.classList.add('just-moved');setTimeout(()=>panel.classList.remove('just-moved'),900)})}
+  function move(panel,direction){const before=panel.getBoundingClientRect().top;moveRaw(panel,direction);keepInView(panel,direction,before)}
+  function moveRaw(panel,direction){const all=[...panels.values()].sort((a,b)=>order().indexOf(a.dataset.panel)-order().indexOf(b.dataset.panel)),i=all.indexOf(panel);if(direction==='top')container.prepend(panel);else if(direction<0&&i>0)container.insertBefore(panel,all[i-1]);else if(direction>0&&i<all.length-1)container.insertBefore(panel,all[i+1].nextSibling);remember();announce('Раздел перемещён');}
   function wrap(panel,id,title,initialOpen=false){
    const d=el('details','studio-group studio-panel');d.dataset.panel=id;d.open=data.layout.open[id]??initialOpen;
    const summary=el('summary');const heading=typeof title==='string'?el('h2','',title):title;

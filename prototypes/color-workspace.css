@@ -7,3 +7,6 @@
 @media(max-width:710px){.studio-toolbar{margin:8px 12px}}
 
 .studio-toolbar[hidden]{display:none!important}
+
+/* раздел, который только что передвинули, — короткая подсветка рамки */
+.studio-panel.just-moved{border-color:#e4dfff!important;box-shadow:0 0 0 2px #e4dfff66;transition:border-color .3s,box-shadow .3s}
