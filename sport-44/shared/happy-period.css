@@ -20,11 +20,9 @@
 @media (max-width:359px){.hp-seg button{padding:0 9px}}
 /* лист «Свой период» */
 .hp-cal{padding-bottom:8px}
-.hp-ends{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.hp-lab{display:block;margin:0 0 8px;font-size:14px;font-weight:600}
-.hp-end{width:100%;height:48px;box-sizing:border-box;padding:0 8px;border-radius:12px;border:1px solid rgba(255,255,255,.34);
- background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer}
-.hp-end.on{border:2px solid #fff;background:rgba(255,255,255,.24)}
+.hp-sel{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;margin:0;font-size:16px;line-height:24px}
+.hp-sel span{font-weight:600;color:rgba(255,255,255,.72)}
+.hp-sel b{font-weight:600;margin-right:10px}
 .hp-month{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px}
 .hp-month b{font-size:16px;font-weight:600}
 .hp-month button{width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:#fff;display:grid;place-items:center;cursor:pointer}

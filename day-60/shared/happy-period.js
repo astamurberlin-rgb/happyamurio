@@ -1,9 +1,10 @@
 /* Выбор периода журнала — один кусок на Day, Meal и Sport (Астамур 21.11.2026: «в Meal это элегантнее сделано»,
    «я за то, чтобы и в Sport, и в Day было так же»).
    Как в Meal: компактная полоска «Сегодня · Неделя · Месяц · календарик», рядом круглая «Поделиться»,
-   под ними строка с датой. Календарик открывает лист «Свой период»: «С» и «По», месяц со стрелками, дни.
-   Выбранное применяется сразу; лист закрывается жестом вниз, ручкой или нажатием мимо — без «Отмена» и «Готово»
-   (решение 15 аудита Day). Day и Sport перешли на него 21.11.2026, Meal перейдёт со своим следующим обновлением
+   под ними строка с датой. Календарик открывает лист «Свой период»: сверху одной строкой «С: 3 ноября  По: 10 ноября»
+   (Астамур 21.11.2026: даты в полях с рамками — громоздко), ниже месяц со стрелками и дни. Первое нажатие на день —
+   начало, второе — конец, третье начинает заново. Выбранное применяется сразу; лист закрывается жестом вниз, ручкой
+   или нажатием мимо — без «Отмена» и «Готово» (решение 15 аудита Day). Day и Sport перешли на него 21.11.2026, Meal перейдёт со своим следующим обновлением
    (до тех пор у Meal своя копия того же вида).
 
    Состояние st = {per:'today'|'week'|'month'|'custom', a, b}: для «Сегодня» a — показанный день (другой день — «День»),
@@ -50,34 +51,33 @@
    (o.share?'<button type="button" class="hp-share" data-hp-share aria-label="'+escH(o.share)+'">'+SHARE+'</button>':'')+'</div>'+
    '<p class="hp-cap">'+escH(o.caption||caption(st,t))+'</p></div>';
  }
- /* лист «Свой период»: «С» и «По» — какую границу ставит нажатие на день; дальше месяцы — стрелками */
- function calendarHTML(draft,edge,month,t){
+ /* лист «Свой период»: сверху «С: … По: …» одной строкой текстом, ниже месяц со стрелками и дни */
+ function calendarHTML(draft,month,t){
   const y=+month.slice(0,4),m=+month.slice(5,7),first=new Date(Date.UTC(y,m-1,1)),offset=(first.getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0)).getUTCDate();
   let cells='';for(let i=0;i<offset;i++)cells+='<span></span>';
   for(let d=1;d<=count;d++){const iso=month+'-'+pad(d),end=iso===draft.a||iso===draft.b,inside=iso>=draft.a&&iso<=draft.b;
    cells+='<button type="button" data-hp-day="'+iso+'" class="'+(inside?'in ':'')+(end?'end':'')+'" aria-pressed="'+end+'" aria-label="'+dayFull(iso)+'"'+(iso>t?' disabled':'')+'>'+d+'</button>';}
-  const end=(k,label)=>'<div><span class="hp-lab">'+label+'</span><button type="button" data-hp-edge="'+k+'" class="hp-end'+(edge===k?' on':'')+'" aria-pressed="'+(edge===k)+'">'+dayFull(draft[k])+'</button></div>';
-  return '<div class="hp-cal"><div class="hp-ends">'+end('a','С')+end('b','По')+'</div>'+
+  return '<div class="hp-cal"><p class="hp-sel" role="status"><span>С:</span><b>'+day(draft.a,t)+'</b><span>По:</span><b>'+day(draft.b,t)+'</b></p>'+
    '<div class="hp-month"><button type="button" data-hp-month="-1" aria-label="Предыдущий месяц">'+ARROW('M14.5 6l-6 6 6 6')+'</button><b>'+MONTHS_NOM[m-1]+' '+y+'</b>'+
    '<button type="button" data-hp-month="1" aria-label="Следующий месяц"'+(month>=t.slice(0,7)?' disabled':'')+'>'+ARROW('M9.5 6l6 6-6 6')+'</button></div>'+
    '<div class="hp-grid">'+['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(n=>'<small>'+n+'</small>').join('')+cells+'</div></div>';
  }
- function pick(r,iso,edge){
-  if(edge==='a')return {a:iso,b:r.b<iso?iso:r.b,edge:'b'};
-  return iso<r.a?{a:iso,b:r.a,edge:'b'}:{a:r.a,b:iso,edge:'b'};
+ /* первое нажатие — начало (и конец тот же день), второе — конец; раньше начала — меняются местами */
+ function pick(r,iso,stage){
+  if(stage==='a')return {a:iso,b:iso,stage:'b'};
+  return iso<r.a?{a:iso,b:r.a,stage:'a'}:{a:r.a,b:iso,stage:'a'};
  }
  function openCalendar(o){
   const t=o.today?o.today():localToday(),cur=range(o.get(),t);
-  let draft={a:cur.a,b:cur.b},edge='a',month=cur.a.slice(0,7);
+  let draft={a:cur.a,b:cur.b},stage='a',month=cur.b.slice(0,7);
   const el=o.sheet('Свой период','<div data-hp-cal></div>');if(!el)return;
   const box=el.querySelector('[data-hp-cal]')||el;
-  const paint=()=>{box.innerHTML=calendarHTML(draft,edge,month,t);};
+  const paint=()=>{box.innerHTML=calendarHTML(draft,month,t);};
   paint();
   box.addEventListener('click',e=>{
    const b=e.target.closest('button');if(!b||b.disabled)return;
-   if(b.dataset.hpEdge){edge=b.dataset.hpEdge;paint();return}
    if(b.dataset.hpMonth){const d=new Date(month+'-15T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+Number(b.dataset.hpMonth));month=d.toISOString().slice(0,7);if(month>t.slice(0,7))month=t.slice(0,7);paint();return}
-   if(b.dataset.hpDay){const p=pick(draft,b.dataset.hpDay,edge);draft={a:p.a,b:p.b};edge=p.edge;paint();o.set({per:'custom',a:draft.a,b:draft.b});}
+   if(b.dataset.hpDay){const p=pick(draft,b.dataset.hpDay,stage);draft={a:p.a,b:p.b};stage=p.stage;paint();o.set({per:'custom',a:draft.a,b:draft.b});}
   });
  }
  function bind(scope,o){
