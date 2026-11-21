@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1476506,
-   "sha256": "ae5d3bea3bb4055baf480c39270a3afd3f5e863f01763b156dc2b2f4f84e475e"
+   "size": 1478294,
+   "sha256": "262ad780719f37133f185ff10a52ef1a8cd1d318dae3d2e78a415cdb11b04d21"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -255,7 +255,7 @@
   {
    "path": "index.html",
    "size": 517557,
-   "sha256": "6c212969ffd7e849e374ed1d76a27a5331fa9f898efdb4b36e6a665b2096fe8a"
+   "sha256": "7ef0ae39abe8c59d32c0e1687018d851d3235fbc670a365b226698fdb69d5933"
   },
   {
    "path": "manifest.webmanifest",
@@ -264,8 +264,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 47456,
-   "sha256": "3e9c91bff78daa0976ef66284cfc22ef678c91cb5bf41f1a37802f24f9c38c39"
+   "size": 48796,
+   "sha256": "2cd7ac427c7aed82d8bb20fb6e71d8d9eb98bcebc24af3e04af0d3027c532c49"
   },
   {
    "path": "row-swipe.js",
