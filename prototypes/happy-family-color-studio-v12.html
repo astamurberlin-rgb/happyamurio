@@ -23,6 +23,7 @@
 @media(min-width:711px){.phones{justify-content:flex-start;max-width:520px;margin-inline:auto;padding-left:50px;padding-right:50px}.phone-wrap{flex:0 0 420px;min-width:0;max-width:420px}}
 
 .studio[hidden]{display:none!important}
+.app-palette-report{margin-top:12px;padding:12px;border:1px solid #ffffff1f;border-radius:14px;background:#0d0e23;font-size:12px;color:#d8d4ec}.app-palette-report[hidden]{display:none}.app-palette-head{margin:0 0 6px;line-height:1.45}.app-palette-app{font-weight:700;color:#fff;margin:10px 0 4px}.app-palette-row{display:flex;align-items:center;gap:7px;padding:3px 0}.app-palette-row b{color:#9d9ab5;font-weight:400}.app-palette-swatch{width:22px;height:22px;flex:none;border-radius:7px;border:1px solid #ffffff55;background-clip:padding-box;box-shadow:inset 0 0 0 1px #0003}.app-palette-foot{margin:10px 0 0;color:#a8a5bf;line-height:1.45}
 
 /* Studio additions — photo wallpapers, transparency, type */
 .st-extra-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
@@ -158,12 +159,12 @@ body.has-theme-float .shell{padding-bottom:110px}
 <div class="theme-editbar" id="themeEditBar" hidden><div><span class="theme-editbar-label">✎ Редактируется</span><span class="theme-editbar-name" id="themeEditName"></span><p class="theme-editbar-status" id="themeEditStatus" aria-live="polite"></p></div><div class="theme-editbar-actions"><button class="theme-btn primary" id="themeSaveChanges" type="button">Сохранить изменения</button><button class="theme-btn" id="themeRevert" type="button">Отменить правки</button></div></div>
 <div class="shared-save"><input id="sharedName" type="text" maxlength="30" placeholder="Имя новой темы"><button id="sharedSave" type="button">＋ Сохранить как новую</button></div>
 <div class="shared-rail" id="sharedRail"><span class="shared-empty">Здесь появятся твои сохранённые варианты.</span></div></section><main class="studio" id="studio">
-<details class="studio-group" data-group="palette" open><summary><span>🎨 Палитры и обои</span><span class="group-chevron">⌄</span></summary><div class="group-body"><section class="panel"><h2 class="hg-section-title">Градиент фона</h2><p class="st-caption">Выбери цветовую точку — яркость и насыщенность ниже относятся только к ней.</p><div id="backgroundGradientEditor"></div><div class="actions"><button class="action primary" id="copyCSS">Скопировать CSS</button><button class="action" id="copyAll">Все три приложения</button></div><details class="hg-legacy"><summary>Код оформления</summary><div class="code" id="code"></div></details></section><section class="panel wallpaper-panel"><div class="panel-head"><h2>Обои</h2><span class="muted">Все три</span></div><p class="muted">Узор поверх выбранного градиента.</p><div class="wallpaper-grid" id="wallpaperGrid"></div>
+<details class="studio-group" data-group="palette" open><summary><span>🎨 Палитры и обои</span><span class="group-chevron">⌄</span></summary><div class="group-body"><section class="panel"><h2 class="hg-section-title">Градиент фона</h2><p class="st-caption">Выбери цветовую точку — яркость и насыщенность ниже относятся только к ней.</p><div id="backgroundGradientEditor"></div><div class="actions"><button class="action primary" id="copyCSS">Скопировать CSS</button><button class="action" id="copyAll">Все три приложения</button><button class="action" id="copyAppPalette">Скопировать палитру для приложений</button></div><div class="app-palette-report" id="appPaletteReport" hidden></div><details class="hg-legacy"><summary>Код оформления</summary><div class="code" id="code"></div></details></section><section class="panel wallpaper-panel"><div class="panel-head"><h2>Обои</h2><span class="muted">Все три</span></div><p class="muted">Узор поверх выбранного градиента.</p><div class="wallpaper-grid" id="wallpaperGrid"></div>
 <div class="st-section-label">Своё изображение</div>
 <div class="st-tool-row"><button id="wpUpload" type="button">＋ Загрузить фото</button><button id="wpRemove" type="button">Удалить</button><input id="wpFile" type="file" accept="image/*" hidden></div>
 <div class="st-photo-preview" id="wpPreview">Фото не выбрано</div>
 <label class="st-field" style="margin-top:13px"><span>Непрозрачность изображения <output id="wpAlphaOut">55%</output></span><input id="wpAlpha" type="range" min="0" max="100" step="5" value="55"></label>
-<p class="st-caption">Фото ложится поверх градиента, 0% — скрыто, 100% — полностью видно. Автоматически уменьшается для сохранения в браузере.</p></section><section class="panel"><div class="panel-head"><h2>Палитры · <span id="presetApp">Day</span></h2><button class="smallbtn" id="reset">↺ Сброс</button></div><div class="preset-grid" id="presetGrid"></div><div class="save-row"><input id="presetName" placeholder="Название своего варианта" maxlength="28" aria-label="Имя пресета"><button id="savePreset">＋ В общую ленту</button></div><p class="muted" style="margin:11px 0 0">Общая тема применяется ко всем приложениям Happy. Копию настроек можно скачать.</p><div class="backup-row"><button class="smallbtn" id="exportConfig">↓ Скачать настройки</button><button class="smallbtn" id="importConfig">↑ Восстановить</button><input id="importConfigFile" type="file" accept=".json,application/json" hidden aria-label="Загрузить настройки из JSON"></div></section></div></details>
+<p class="st-caption">Фото ложится поверх градиента, 0% — скрыто, 100% — полностью видно. Автоматически уменьшается для сохранения в браузере.</p></section><section class="panel"><div class="panel-head"><h2>Палитры · <span id="presetApp">Day</span></h2><button class="smallbtn" id="reset">↺ Сброс</button></div><div class="preset-grid" id="presetGrid"></div><div class="save-row"><input id="presetName" placeholder="Название своего варианта" maxlength="28" aria-label="Имя пресета"><button id="savePreset">＋ В общую ленту</button></div><p class="muted" style="margin:11px 0 0">Общая тема применяется ко всем приложениям Happy. Копию настроек можно скачать.</p><div class="backup-row"><button class="smallbtn" id="exportConfig">↓ Скачать настройки</button><button class="smallbtn" id="importConfig">↑ Восстановить</button><input id="importConfigFile" type="file" accept=".json,application/json" hidden aria-label="Загрузить настройки из JSON"></div><div class="st-section-label">Скопировать палитру <span id="paletteFrom">Meal</span></div><p class="muted" style="margin:0">Цвета фона, кнопок и карточек перейдут в выбранное приложение. Шрифты, обои и скругления там не меняются.</p><div class="backup-row" id="paletteCopy"></div></section></div></details>
 <details class="studio-group" data-group="glass" open><summary><span>🧩 Карточки и кнопки</span><span class="group-chevron">⌄</span></summary><div class="group-body"><section class="panel" id="glassPanel"><div class="panel-head"><h2>Стеклянные карточки и плашки</h2><span class="muted">свой стиль поверх фона</span></div>
 <p class="st-caption">Отдельный редактор заливки, границ, размытия и скругления карточек.</p>
 <div class="st-extra-grid" style="margin-top:14px">
@@ -352,8 +353,69 @@ function showCode(){
 function drawLayers(){}
 function drawControls(){const st=states[selected];if(backgroundEditor)backgroundEditor.set(st.backgroundGradient);showCode()}
 
-function afterChange(){activeShared='';persist();applyTo(selected);drawLayers();drawControls();drawWallpapers();drawButtons();createPresets();drawExtras();drawGlass();drawShared()}
-function draw(){normalizeExtra(states[selected]);document.querySelectorAll('[data-phone]').forEach(x=>x.classList.toggle('active',x.dataset.phone===selected));$('studio').hidden=previewFull;$('presetApp').textContent=selected.charAt(0).toUpperCase()+selected.slice(1);createPresets();drawLayers();drawControls();drawWallpapers();drawButtons();drawExtras();drawGlass();drawShared();APP_ORDER.forEach(applyTo)}
+// «Палитра для приложений»: the colours of the three previews as the Color Studio block of shared/happy-colors.css.
+// The block is read from the site and rewritten in place: only the --happy- names the studio sets change (plan «Общий файл цветов Happy»); --hs- and the rest stay as in the file.
+const COLORS_FILE='../shared/happy-colors.css',BLOCK_START='/* ── из Color Studio',BLOCK_END='/* ── конец блока из Color Studio ── */';
+const TOKEN_TITLES={'--happy-base':'основной цвет фона','--happy-accent':'главная кнопка','--happy-on-accent':'текст на кнопке','--happy-ink':'основной текст','--happy-heading':'заголовок экрана','--happy-muted':'подписи','--happy-glass':'стекло карточек','--happy-line':'границы','--happy-dock-accent':'выбранная вкладка внизу'};
+function hexOf(c){return '#'+c.slice(0,3).map(v=>Math.round(v).toString(16).padStart(2,'0')).join('')}
+function alphaColor(hex,pct){const a=Math.round(Number(pct))/100;if(a>=1)return hex.toLowerCase();const v=hex.replace('#','');return 'rgba('+[0,2,4].map(i=>parseInt(v.slice(i,i+2),16)).join(',')+','+String(a).replace(/^0(?=\.)/,'')+')'}
+function studioTokens(st){const t={},m=G.normalize(st.backgroundGradient||G.fromLegacy(st));
+ t['--happy-base']=hexOf(G.interpolate(G.colors(m),.5));
+ const accent=(st.buttonColor||G.colors(st.buttonGradient)[0].color).toLowerCase();
+ t['--happy-accent']=accent;t['--happy-dock-accent']=accent;
+ t['--happy-on-accent']=(st.buttonTextColor||'#ffffff').toLowerCase().replace(/^#ffffff$/,'#fff');
+ for(const [key,name] of [['themeTextColor','--happy-ink'],['themeHeadingColor','--happy-heading'],['themeMutedColor','--happy-muted']])if(/^#[0-9a-f]{6}$/i.test(st[key]||''))t[name]=st[key].toLowerCase().replace(/^#ffffff$/,'#fff');
+ t['--happy-glass']=alphaColor(st.glassColor||'#ffffff',st.glassAlpha);
+ t['--happy-line']=alphaColor(st.borderColor||'#ffffff',st.borderAlpha);
+ return t}
+function parseColorBlock(text){const a=text.indexOf(BLOCK_START),b=text.indexOf(BLOCK_END);if(a<0||b<a)throw Error('no block');
+ const body=text.slice(a,b),blocks=[];const re=/([^{}]*?)\{([^{}]*)\}/g;let m;
+ while((m=re.exec(body))){const sel=m[1].replace(/\/\*[\s\S]*?\*\//g,'').trim(),app=(sel.match(/data-happy-appearance-app="(\w+)"/)||[])[1]||(sel===':root'?'root':'');
+  blocks.push({sel,app,start:a+m.index+m[0].indexOf('{')+1,end:a+m.index+m[0].length-1,tokens:[...m[2].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(x=>[x[1],x[2].trim()])})}
+ return {text,blocks}}
+function effective(parsed,app){const v={};for(const b of parsed.blocks)if(b.app==='root'||b.app===app)for(const [k,x] of b.tokens)v[k]=x;return v}
+function sameValue(a,b){return String(a||'').replace(/\s+/g,'').toLowerCase()===String(b||'').replace(/\s+/g,'').toLowerCase()}
+function buildColorBlock(parsed){
+ const want={},now={};for(const k of APP_ORDER){want[k]=studioTokens(states[k]);now[k]=effective(parsed,k)}
+ const blocks=parsed.blocks.map(b=>({...b,tokens:b.tokens.map(x=>x.slice())}));
+ const holder=(app,name)=>blocks.find(b=>b.app===app&&b.tokens.some(([k])=>k.startsWith(name.startsWith('--hs-')?'--hs-':'--happy-')));
+ for(const name of Object.keys(TOKEN_TITLES)){
+  const day=want.day[name]??now.day[name];
+  if(name.startsWith('--happy-')){const root=blocks.find(b=>b.app==='root');const row=root.tokens.find(([k])=>k===name);if(row)row[1]=day;else root.tokens.push([name,day]);}
+  for(const app of APP_ORDER){if(name.startsWith('--happy-')&&app==='day')continue;
+   const value=want[app][name]??now[app][name],b=holder(app,name)||blocks.find(x=>x.app===app);if(!b)continue;const i=b.tokens.findIndex(([k])=>k===name);
+   if(name.startsWith('--happy-')&&sameValue(value,day)){if(i>=0)b.tokens.splice(i,1);continue}
+   if(i>=0)b.tokens[i][1]=value;else b.tokens.push([name,value])}}
+ let out=parsed.text,shift=0;for(const b of blocks){const inner='\n'+b.tokens.map(([k,v])=>'  '+k+':'+v+';').join('\n')+'\n';out=out.slice(0,b.start+shift)+inner+out.slice(b.end+shift);shift+=inner.length-(b.end-b.start)}
+ const a=out.indexOf(BLOCK_START),z=out.indexOf(BLOCK_END)+BLOCK_END.length,next=parseColorBlock(out),changes={};
+ for(const k of APP_ORDER){const after=effective(next,k);changes[k]=Object.keys(TOKEN_TITLES).filter(n=>!sameValue(after[n],now[k][n])).map(n=>({name:n,from:now[k][n],to:after[n]}))}
+ return {block:out.slice(a,z),changes}}
+async function copyAppPalette(){let text;try{const r=await fetch(COLORS_FILE,{cache:'no-store'});if(!r.ok)throw Error(r.status);text=await r.text()}catch(e){toast('Не удалось прочитать файл цветов приложений');return}
+ let result;try{result=buildColorBlock(parseColorBlock(text))}catch(e){toast('Файл цветов не похож на ожидаемый');return}
+ copy(result.block);drawAppPaletteReport(result.changes);setTimeout(()=>toast('Палитра для приложений скопирована'),400)}
+function drawAppPaletteReport(changes){const box=$('appPaletteReport');box.replaceChildren();box.hidden=false;
+ const total=APP_ORDER.reduce((n,k)=>n+changes[k].length,0);
+ const head=document.createElement('p');head.className='app-palette-head';head.textContent=total?'Скопировано. Если вставить этот текст в общий файл цветов, в приложениях поменяется:':'Скопировано. Цвета в студии совпадают с приложениями: после вставки ничего не поменяется.';box.append(head);
+ for(const k of APP_ORDER){if(!changes[k].length)continue;const h=document.createElement('div');h.className='app-palette-app';h.textContent=APP_NAMES[k];box.append(h);
+  for(const c of changes[k]){const row=document.createElement('div');row.className='app-palette-row';const sw=v=>{const s=document.createElement('i');s.className='app-palette-swatch';s.style.background=v||'transparent';s.title=v||'нет';return s};
+   const short=v=>{const m=/rgba\([^)]*,\s*(\d*\.?\d+)\)/.exec(v||'');return m?Math.round(m[1]*100)+'%':(v||'—')};const label=document.createElement('span');label.textContent=TOKEN_TITLES[c.name]+' · '+short(c.from)+' → '+short(c.to);const arrow=document.createElement('b');arrow.textContent='→';row.append(sw(c.from),arrow,sw(c.to),label);box.append(row)}}
+ const foot=document.createElement('p');foot.className='app-palette-foot';foot.textContent='Само ничего не меняется: текст передаётся исполнителю, на сайт он попадает только после «выпускай».';box.append(foot)}
+const PALETTE_KEYS=['backgroundGradient','base','glows','angle','brightness','saturationBoost','buttonGradient','buttonColor','buttonTextColor','buttonShine','buttonAlpha','fabAlpha','glassColor','borderColor','glassAlpha','borderAlpha','glassBlur','themeTextColor','themeMutedColor','themeHeadingColor'];
+let paletteUndo=null;
+// A copied-into preview edited by hand keeps its edits: the undo for it is gone.
+function dropUndoFor(k){if(paletteUndo?.targets.includes(k))paletteUndo=null}
+// Copies the colours of the selected preview into other previews; fonts, wallpaper and corners stay. One step can be undone.
+function copyPalette(targets){const src=states[selected],before={};for(const t of targets){before[t]=clone(states[t]);for(const key of PALETTE_KEYS)if(src[key]!==undefined)states[t][key]=clone(src[key]);normalizeExtra(states[t])}
+ const was=activeShared;activeShared='';if(!persist()){for(const t of targets)states[t]=before[t];activeShared=was;return}
+ paletteUndo={from:selected,targets,before};for(const t of targets)composeWallpaper(t);APP_ORDER.forEach(applyTo);drawShared();drawPaletteCopy();toast('Палитра '+APP_NAMES[selected]+' скопирована в '+appList(targets))}
+function undoPaletteCopy(){if(!paletteUndo)return;const u=paletteUndo,now={};for(const t of u.targets){now[t]=states[t];states[t]=u.before[t]}
+ if(!persist()){for(const t of u.targets)states[t]=now[t];return}paletteUndo=null;for(const t of u.targets)composeWallpaper(t);APP_ORDER.forEach(applyTo);drawShared();drawPaletteCopy();toast('Палитра '+appList(u.targets)+' возвращена')}
+function drawPaletteCopy(){const box=$('paletteCopy');if(!box)return;$('paletteFrom').textContent=APP_NAMES[selected];box.replaceChildren();const others=APP_ORDER.filter(k=>k!==selected);
+ const add=(label,fn,primary)=>{const b=document.createElement('button');b.type='button';b.className='smallbtn';if(primary)b.style.cssText='background:#e4dfff;color:#342965;border-color:#e4dfff;font-weight:700';b.textContent=label;b.onclick=fn;box.append(b)};
+ for(const k of others)add('→ в '+APP_NAMES[k],()=>copyPalette([k]));add('→ в '+appList(others),()=>copyPalette(others));
+ if(paletteUndo)add('↶ Вернуть '+appList(paletteUndo.targets),undoPaletteCopy,true)}
+function afterChange(){activeShared='';dropUndoFor(selected);persist();applyTo(selected);drawLayers();drawControls();drawWallpapers();drawButtons();createPresets();drawExtras();drawGlass();drawShared();drawPaletteCopy()}
+function draw(){normalizeExtra(states[selected]);document.querySelectorAll('[data-phone]').forEach(x=>x.classList.toggle('active',x.dataset.phone===selected));$('studio').hidden=previewFull;$('presetApp').textContent=selected.charAt(0).toUpperCase()+selected.slice(1);createPresets();drawLayers();drawControls();drawWallpapers();drawButtons();drawExtras();drawGlass();drawShared();drawPaletteCopy();APP_ORDER.forEach(applyTo)}
 function scrollPhoneTo(k,behavior='smooth'){const rail=$('phones'),el=document.querySelector('[data-phone="'+k+'"]');if(!rail||!el)return;rail.scrollTo({left:el.offsetLeft-rail.offsetLeft-(rail.clientWidth-el.offsetWidth)/2,behavior})}
 function selectPreview(k){if(!PREVIEW_ORDER.includes(k)||k===selected)return;selected=k;layerIndex=0;selectedPreset=-1;persist();draw()}
 function drawButtons(){const st=states[selected];$('buttonApp').textContent=selected.toUpperCase();$('buttonGrid').innerHTML='';for(const [name,color] of buttonSwatches){const b=document.createElement('button');b.className='button-option';b.title=name;b.innerHTML='<i class="button-swatch" style="background:'+color+'"></i><span>'+name+'</span>';b.onclick=()=>{st.buttonColor=color;st.buttonGradient=G.normalize({type:'solid',stops:[{color,position:0},{color,position:100}]});afterChange()};$('buttonGrid').append(b)}if(buttonEditor)buttonEditor.set(st.buttonGradient);$('sampleFab').style.background=G.css(st.buttonGradient);$('sampleFab').style.color=st.buttonTextColor;$('sampleFab').style.boxShadow=buttonShadow(st);$('buttonTextColor').value=st.buttonTextColor;}
@@ -393,8 +455,8 @@ function drawExtras(){
  $('wpRemove').disabled=!st.wallpaperData;
 }
 function updateExtra(key,value){
- const st=states[selected],old=st[key];st[key]=value;selectedPreset=-1;activeShared='';
- if(!persist()){st[key]=old;drawExtras();drawGlass();return}drawExtras();drawGlass();drawShared();applyTo(selected);
+ const st=states[selected],old=st[key];st[key]=value;selectedPreset=-1;activeShared='';dropUndoFor(selected);
+ if(!persist()){st[key]=old;drawExtras();drawGlass();return}drawExtras();drawGlass();drawShared();drawPaletteCopy();applyTo(selected);
  showCode();
  if(key==='wallpaperAlpha')composeWallpaper(selected);
 }
@@ -490,7 +552,7 @@ function applyShared(id,message){
  const item=referenceThemes.find(p=>p.id===id)||sharedPresets.find(p=>p.id===id);if(!item)return false;
  const before=Object.fromEntries(APP_ORDER.map(k=>[k,states[k]])),was=[activeShared,editingId];
  for(const k of APP_ORDER){states[k]=clone(item.state);normalizeExtra(states[k])}
- activeShared=id;editingId=isOwnTheme(id)?id:'';selectedPreset=-1;
+ activeShared=id;editingId=isOwnTheme(id)?id:'';selectedPreset=-1;paletteUndo=null;
  if(!persist()){for(const k of APP_ORDER)states[k]=before[k];[activeShared,editingId]=was;draw();return false}
  for(const k of APP_ORDER)composeWallpaper(k);
  draw();toast(message||(editingId?'Тема «'+item.name+'» применена и открыта для правки':'Тема применена ко всем предпросмотрам Happy'));return true;
@@ -677,7 +739,7 @@ function bind(){
  $('stCopyFont').onclick=()=>copy(themeCSS(states[selected]));
 
 const ph=$('phones');let scrollEnd;ph.addEventListener('scroll',()=>{clearTimeout(scrollEnd);scrollEnd=setTimeout(()=>{const center=ph.getBoundingClientRect().left+ph.clientWidth/2;let best='day',score=Infinity;document.querySelectorAll('[data-phone]').forEach(n=>{const b=n.getBoundingClientRect(),dist=Math.abs(b.left+b.width/2-center);if(dist<score){score=dist;best=n.dataset.phone}});if(best!==selected)selectPreview(best)},90)},{passive:true});
-$('savePreset').onclick=()=>saveSharedPreset($('presetName').value);$('reset').onclick=()=>{states[selected]=clone(defaults[selected]);normalizeExtra(states[selected]);wallpaperCache[selected]='';++wallpaperJobs[selected];selectedPreset=0;activeShared='';persist();draw()};$('copyCSS').onclick=()=>copy(css(selected));$('copyAll').onclick=()=>copy(APP_ORDER.map(css).join('\n\n'));$('buttonTextColor').oninput=e=>{states[selected].buttonTextColor=e.target.value;afterChange()};$('copyButton').onclick=()=>copy(buttonCSS());$('exportConfig').onclick=exportConfig;$('importConfig').onclick=()=>$('importConfigFile').click();$('importConfigFile').onchange=async e=>{if(e.target.files?.[0])await importConfig(e.target.files[0]);e.target.value=''};
+$('savePreset').onclick=()=>saveSharedPreset($('presetName').value);$('reset').onclick=()=>{states[selected]=clone(defaults[selected]);normalizeExtra(states[selected]);wallpaperCache[selected]='';++wallpaperJobs[selected];selectedPreset=0;activeShared='';persist();draw()};$('copyCSS').onclick=()=>copy(css(selected));$('copyAll').onclick=()=>copy(APP_ORDER.map(css).join('\n\n'));$('copyAppPalette').onclick=copyAppPalette;$('buttonTextColor').oninput=e=>{states[selected].buttonTextColor=e.target.value;afterChange()};$('copyButton').onclick=()=>copy(buttonCSS());$('exportConfig').onclick=exportConfig;$('importConfig').onclick=()=>$('importConfigFile').click();$('importConfigFile').onchange=async e=>{if(e.target.files?.[0])await importConfig(e.target.files[0]);e.target.value=''};
 $('fullPreview').onclick=()=>{previewFull=!previewFull;$('studio').hidden=previewFull;workspace.setVisible(!previewFull);$('fullPreview').textContent=previewFull?'Показать настройки':'Скрыть настройки';document.querySelectorAll('.phone').forEach(e=>e.style.height='')};
 }
 function exportConfig(){
