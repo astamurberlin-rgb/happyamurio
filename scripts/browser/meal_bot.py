@@ -135,6 +135,24 @@ with sync_playwright() as p:
     late = page.evaluate("""()=>{const st=BLS_ST;BLS_ST='loading';openMatch('суп лапша одна тарелка');const a=M.lines[0].st;BLS_ST=st;blsRerender();
       const l=M.lines[0],r={before:a,st:l.st,n:FOODS[l.fid]?FOODS[l.fid].n:'',g:l.g};go('day');return r}""")
     check("база загрузилась после диктовки — «суп лапша одна тарелка» сам стал супом с лапшой, 300 г", late["st"] == "ok" and "лапш" in late["n"] and late["g"] == 300, str(late))
+    # Meal 33.21 · карточка «Записал» (слова Астамура 21.11.2026): «Заменить» — лупа, как в полях поиска; смахнул строку —
+    # корзина по центру строки продукта, и когда название в три строки, и когда под строкой открыт вопрос
+    page.evaluate(RESET); page.evaluate(SAY, ["Лапша для рамена, варёная из свежей 100 г", True])
+    page.evaluate("()=>{go('chat');renderChat()}"); page.wait_for_timeout(600)
+    row = page.evaluate("""()=>{const s=[...document.querySelectorAll('#mlChat .draftSection')].find(x=>x.querySelector('.draftSlide>.chatFoodLine .draftReplace'));if(!s)return null;
+      s.scrollIntoView({block:'center'});const h=s.querySelector('.mlHead').getBoundingClientRect(),i=s.querySelector('.draftReplace svg');
+      return {x:h.left+h.width/2,y:h.top+h.height/2,lens:!!i.querySelector('circle')&&i.querySelectorAll('path').length===1,lines:Math.round(s.querySelector('.mlHead .nm b').getBoundingClientRect().height/20)}}""")
+    if row:
+        page.mouse.move(row["x"], row["y"]); page.mouse.down()
+        for i in range(1, 9): page.mouse.move(row["x"] - 60 * i / 8, row["y"])
+        page.mouse.up(); page.wait_for_timeout(500)
+    trash = page.evaluate("""()=>{const s=document.querySelector('#mlChat .draftSection[data-rest]:not([data-rest="0"])');if(!s)return null;
+      const t=s.querySelector('.draftTrash').getBoundingClientRect(),l=s.querySelector('.draftSlide>.chatFoodLine').getBoundingClientRect(),w=s.getBoundingClientRect();
+      return {dy:Math.round((t.top+t.height/2)-(l.top+l.height/2)),line:Math.round(l.height),block:Math.round(w.height),seen:t.right<=innerWidth&&t.left>=0}}""")
+    out["trash"] = [row, trash]
+    check("«Заменить» в карточке «Записал» — лупа", bool(row) and row["lens"], row)
+    check("смахнул строку — корзина видна и стоит по центру строки продукта (название в %s строки)" % (row or {}).get("lines"), bool(trash) and trash["seen"] and abs(trash["dy"]) <= 1, out["trash"])
+    page.evaluate("()=>{closeSheet&&closeSheet();go('day')}")
     out["errors"] = errors
     check("ошибок на страницах нет", not errors, "; ".join(errors[:3]))
     b.close()

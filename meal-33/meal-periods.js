@@ -11,8 +11,12 @@
  * Ключи разделов прежние, поэтому записи дневника и сводка для Day и Sport не меняются.
  *
  * Правила и фастинг — поле дневника DB.mealRules: {kcal — «меньше, ккал», gap — «пауза больше, мин»,
- * fast:{on,a,b} — фастинг, отдельный слой: может идти через полночь и пересекаться с едой}.
- * Запись еды в период фастинга (вопрос «точно записать?») здесь НЕ сделана — это следующий этап.
+ * fast:{on,a,b,d} — фастинг, отдельный слой: может идти через полночь и пересекаться с едой; d — дни недели, в какие
+ * окно начинается (1 понедельник … 7 воскресенье; без d — каждый день);
+ * fastVersions — история фастинга с моментом каждого изменения (Meal 33.21, meal-fast.js)}.
+ * Дни недели — кружки под шкалой фастинга (слова Астамура 21.11.2026 01:09): по умолчанию отмечен сегодняшний день.
+ * Включённый фастинг без сохранённых дней шёл каждый день — отмечены все. Снял последний день — фастинг выключен.
+ * Запись еды в окне фастинга не останавливается вопросом: окно прерывает сама запись — это считает meal-fast.js.
  *
  * Пока человек не нажал «Сохранить», в дневник ничего не пишется: разделы без a и b получают время на лету
  * (chain), одинаково на всех устройствах. Разделы из другого приложения («· Cronometer») и скрытые (visibleBefore)
@@ -28,7 +32,7 @@ var MealPeriods=(function(){
 'use strict';
 var DAY=1440, STEP=15, PRESET=['am','pm','dn','sn'];
 var DEF={sn:[0,300],am:[300,780],pm:[780,1080],dn:[1080,1440]};
-var RULES={kcal:150,gap:20,fast:{on:false,a:1200,b:720}};
+var RULES={kcal:150,gap:20,fast:{on:false,a:1200,b:720}}, WEEK=[1,2,3,4,5,6,7];
 
 /* ═══════════ МОДЕЛЬ ═══════════ */
 function int(n){ return typeof n==='number'&&isFinite(n)&&Math.floor(n)===n }
@@ -75,10 +79,16 @@ function row(s){ var r={k:s.k,t:s.t,ic:s.ic||null,kind:kindOf(s)}; if(int(s.a)) 
 /* цепочка периодов дневника: копии разделов со временем, в порядке строк */
 function chain(db){ return tile(((db&&db.sections)||[]).filter(inChain).map(row)).filter(hasWin) }
 function validWrap(w){ return !!w&&int(w.a)&&int(w.b)&&w.a>=0&&w.a<DAY&&w.b>=0&&w.b<=DAY&&w.a%STEP===0&&w.b%STEP===0&&w.a!==w.b&&!(w.a===0&&w.b===DAY) }
+/* дни недели фастинга: годный список по порядку, без повторов; иначе null */
+function weekDays(d){
+  if(!Array.isArray(d)||!d.length||!d.every(function(x){ return int(x)&&x>=1&&x<=7 })) return null;
+  return WEEK.filter(function(x){ return d.indexOf(x)>=0 });
+}
+function weekdayOf(t){ return new Date(t).getDay()||7 }
 function rules(db){
-  var r=(db&&db.mealRules)||{}, f=r.fast;
-  return {kcal:int(r.kcal)&&r.kcal>=1&&r.kcal<=1000?r.kcal:RULES.kcal, gap:int(r.gap)&&r.gap>=1&&r.gap<=180?r.gap:RULES.gap,
-          fast:validWrap(f)?{on:!!f.on,a:f.a,b:f.b}:{on:false,a:RULES.fast.a,b:RULES.fast.b}};
+  var r=(db&&db.mealRules)||{}, f=r.fast, fast={on:false,a:RULES.fast.a,b:RULES.fast.b};
+  if(validWrap(f)){ fast={on:!!f.on,a:f.a,b:f.b}; var d=weekDays(f.d); if(d) fast.d=d }
+  return {kcal:int(r.kcal)&&r.kcal>=1&&r.kcal<=1000?r.kcal:RULES.kcal, gap:int(r.gap)&&r.gap>=1&&r.gap<=180?r.gap:RULES.gap, fast:fast};
 }
 function contains(w,m){ return w.a<w.b?m>=w.a&&m<w.b:m>=w.a||m<w.b }
 function duration(w){ return (w.b-w.a+DAY)%DAY||DAY }
@@ -141,11 +151,28 @@ function classify(rows,R,e){
 function at(db,m){ var P=periodAt(chain(db),m); return P?P.k:null }
 function pick(db,m,kcal,recs){ var r=classify(chain(db),rules(db),{m:m,kcal:kcal,recs:recs}); return r?r.k:null }
 
-/* черновик экрана и его запись в дневник */
-function draft(db){ var rows=chain(db); return {rows:rows,rules:rules(db),had:rows.map(function(r){ return r.k })} }
+/* черновик экрана и его запись в дневник. Дни фастинга на экране: сохранённые; не сохранены — включённый фастинг шёл
+   каждый день, у выключенного отмечен сегодняшний день (now — когда открыли экран). keep — дни выбраны: их сохранить;
+   день, отмеченный только по умолчанию, у выключенного фастинга не сохраняется — завтра по умолчанию будет завтрашний */
+function draft(db,now){
+  var rows=chain(db), R=rules(db), f=R.fast;
+  f.keep=!!f.d||f.on; if(!f.d) f.d=f.on?WEEK.slice():[weekdayOf(typeof now==='number'?now:Date.now())];
+  return {rows:rows,rules:R,had:rows.map(function(r){ return r.k })};
+}
+/* выключатель фастинга на экране: включил без отмеченных дней — отмечен сегодняшний */
+function switchFast(f,now){
+  f.on=!f.on; if(!f.on) return;
+  f.keep=true; if(!weekDays(f.d)) f.d=[weekdayOf(typeof now==='number'?now:Date.now())];
+}
+/* кружок дня недели: отметить или снять. Снял последний — фастинг выключен: ни одного дня */
+function toggleDay(f,n){
+  var d=weekDays(f.d)||[], i=d.indexOf(n); if(i>=0) d.splice(i,1); else d.push(n);
+  f.d=weekDays(d)||[]; f.keep=true; if(!f.d.length) f.on=false;
+}
 function sameRows(a,b){ return JSON.stringify(a)===JSON.stringify(b) }
-/* used(k) — в разделе есть записи; today — дата, с которой удалённый раздел с записями больше не показывается */
-function apply(db,d,used,today){
+/* used(k) — в разделе есть записи; today — дата, с которой удалённый раздел с записями больше не показывается;
+   now — момент сохранения (мс), с него действует изменённый фастинг */
+function apply(db,d,used,today,now){
   var old=db.sections||[], byK={}; old.forEach(function(s){ byK[s.k]=s });
   var keep={}, out=d.rows.map(function(r){
     var s=byK[r.k]||{k:r.k}; keep[r.k]=1;
@@ -161,17 +188,23 @@ function apply(db,d,used,today){
     if(used&&used(s.k)){ s.visibleBefore=today; delete s.a; delete s.b; out.push(s) }   // записи целы: раздел виден в прошлых днях
   });
   db.sections=out;
-  db.mealRules={kcal:d.rules.kcal,gap:d.rules.gap,fast:{on:!!d.rules.fast.on,a:d.rules.fast.a,b:d.rules.fast.b}};
+  var f=d.rules.fast, list=weekDays(f.d), fast={on:!!f.on&&!!list,a:f.a,b:f.b}, F=typeof MealFast!=='undefined'?MealFast:null;
+  if(list&&(f.keep||fast.on)) fast.d=list;
+  if(!F&&typeof require==='function'){ try{ F=require('./meal-fast.js') }catch(e){} }
+  var history=F?F.record(db,fast,typeof now==='number'?now:Date.now()):null;   // Meal 33.21: фастинг с историей — прошлые окна не меняются
+  db.mealRules={kcal:d.rules.kcal,gap:d.rules.gap,fast:fast};
+  if(history&&history.length) db.mealRules.fastVersions=history;
 }
-var api={DAY:DAY,STEP:STEP,RULES:RULES,clock:clock,preset:preset,kindOf:kindOf,inChain:inChain,hasWin:hasWin,tiles:tiles,tile:tile,chain:chain,rules:rules,
-  contains:contains,duration:duration,segments:segments,periodAt:periodAt,limits:limits,moveEdge:moveEdge,addRow:addRow,removeRow:removeRow,
-  reorder:reorder,moveWrap:moveWrap,classify:classify,at:at,pick:pick,draft:draft,apply:apply,sameRows:sameRows};
+var api={DAY:DAY,STEP:STEP,RULES:RULES,WEEK:WEEK,clock:clock,preset:preset,kindOf:kindOf,inChain:inChain,hasWin:hasWin,tiles:tiles,tile:tile,chain:chain,rules:rules,
+  weekDays:weekDays,contains:contains,duration:duration,segments:segments,periodAt:periodAt,limits:limits,moveEdge:moveEdge,addRow:addRow,removeRow:removeRow,
+  reorder:reorder,moveWrap:moveWrap,classify:classify,at:at,pick:pick,draft:draft,switchFast:switchFast,toggleDay:toggleDay,apply:apply,sameRows:sameRows};
 if(typeof document==='undefined') return api;
 
 /* ═══════════ ЭКРАН «НАСТРОИТЬ ПРИЁМЫ ПИЩИ» ═══════════ */
 var LOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
 var GRIP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12M6 12h12M6 16h12"/></svg>';
 var CLOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+var DAY_SHORT=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'], DAY_FULL=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 var ROWH=64, WHY={
   named:'Ты назвал приём — он важнее времени и калорий.',
   snackPeriod:'Время попадает в период перекуса. Калории не важны.',
@@ -216,7 +249,7 @@ function open(){
         (editing?'<span class="mp-time">'+clock(f.a)+'–'+clock(f.b)+'</span><span class="mp-lock" role="img" aria-label="Предустановленный период">'+LOCK+'</span><span class="mp-grip-space"></span>'
                 :'<button type="button" class="hs-switch" role="switch" data-mp="fast" aria-label="Включить фастинг" aria-checked="'+!!f.on+'"><b></b></button>')+
         '</div>'+(editing?'':trackHtml('fast','Фастинг'))+'</div></div>'+
-      (editing?'':'<div class="mp-axis" aria-hidden="true">'+[0,6,12,18,24].map(function(h){ return '<span style="left:'+(h/24*100)+'%">'+('0'+h).slice(-2)+'</span>' }).join('')+'</div>')+
+      (editing?'':'<div class="mp-axis" aria-hidden="true">'+[0,6,12,18,24].map(function(h){ return '<span style="left:'+(h/24*100)+'%">'+('0'+h).slice(-2)+'</span>' }).join('')+'</div>'+daysHtml(f))+
       '<button type="button" class="mp-pill mp-add" data-mp="add">＋ Добавить приём</button>'+
       (undo?'<div class="mp-undo" role="status"><span>«'+esc(undo.name)+'» удалён</span><button type="button" data-mp="undo">Вернуть</button></div>':'')+
       (editing?'<p class="mp-note">Смахни влево, чтобы удалить добавленный приём или перекус.</p>':'')+
@@ -236,6 +269,11 @@ function open(){
       '<p class="hs-error mp-error" role="alert"></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'});
     list=main.querySelector('.mp-list');
     paint(); paintExample();
+  }
+  /* дни фастинга — кружки под шкалой: в какие дни окно начинается */
+  function daysHtml(f){
+    return '<div class="mp-days'+(f.on?'':' mp-off')+'" role="group" aria-label="Дни фастинга">'+DAY_SHORT.map(function(t,i){
+      return '<button type="button" class="mp-day" data-mp="day" data-day="'+(i+1)+'" aria-pressed="'+(f.d.indexOf(i+1)>=0)+'" aria-label="'+DAY_FULL[i]+'">'+t+'</button>' }).join('')+'</div>';
   }
   function keepOpen(fn){ var was={}; main.querySelectorAll('details[data-more]').forEach(function(d){ was[d.dataset.more]=d.open }); var top=page.scroller.scrollTop; fn(); main.querySelectorAll('details[data-more]').forEach(function(d){ d.open=!!was[d.dataset.more] }); page.scroller.scrollTop=top }
   function redraw(){ keepOpen(render) }
@@ -457,7 +495,8 @@ function open(){
     var b=e.target.closest('[data-mp],[data-hs]'); if(!b) return;
     var rowEl=b.closest('.mp-list .mp-row'), i=rowEl?+rowEl.dataset.i:-1, act=b.dataset.mp||b.dataset.hs;
     if(act==='edit'){ editing=!editing; setHint(''); redraw() }
-    else if(act==='fast'){ D.rules.fast.on=!D.rules.fast.on; changed(); redraw() }
+    else if(act==='fast'){ switchFast(D.rules.fast); changed(); redraw() }
+    else if(act==='day'){ toggleDay(D.rules.fast,+b.dataset.day); changed(); redraw() }
     else if(act==='add'){ nameSheet(-1) }
     else if(act==='undo'){ if(undo){ D=undo.state; undo=null; redraw() } }
     else if(act==='del'){ removeAt(i) }
@@ -484,8 +523,12 @@ function open(){
     if(typeof RO!=='undefined'&&RO){ if(typeof roWarn==='function') roWarn(); return }
     var used=function(key){ return Object.keys(DB.days||{}).some(function(d){ return ((DB.days[d]||{}).items||[]).some(function(x){ return x.sec===key }) })||
       (typeof supplementRows==='function'&&Object.keys(DB.days||{}).some(function(d){ try{ return supplementRows(d).some(function(r){ return r.sectionKey===key }) }catch(e){ return false } })) };
+    var wasOn=!!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on);
     apply(DB,D,used,typeof todayISO==='function'?todayISO():new Date().toISOString().slice(0,10));
-    save(); renderAll(); page.close(); toast('Приёмы пищи сохранены');
+    save(); renderAll(); page.close();
+    /* Meal 33.21: фастинг включили посреди окна, а еда в нём уже записана — он начнётся со следующего окна (meal-fast.js) */
+    var note=!wasOn&&D.rules.fast.on&&typeof MealFast!=='undefined'&&MealFast.startNote?MealFast.startNote(Date.now()):'';
+    if(note) toast(note,null,null,6000); else toast('Настройки сохранены');   // слова Астамура 21.11.2026: «Приёмы пищи сохранены» звучало как запись еды
   }
   render();
   /* ширина шкал известна после вставки в страницу и меняется при повороте телефона */

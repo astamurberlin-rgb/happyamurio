@@ -99,14 +99,15 @@ ok('pick и at читают дневник; запись черновика: к�
  const db=base();db.sections.push({k:'s1',t:'Перед тренировкой',ic:'dumbbell'},{k:'s2',t:'Пустой'},{k:'c1',t:'Lunch · Cronometer'});
  assert.equal(P.at(db,0),'sn');assert.equal(P.at(db,779),'s1');assert.equal(P.at(db,780),'pm');
  assert.equal(P.pick(db,741,100,[{m:720,k:'s1'}]),'sn');
- const d=P.draft(db);d.rows[0].t='Утро';d.rules.kcal=200;d.rules.fast.on=true;
+ const saved=Date.parse('2026-11-19T15:00:00+03:00');   // четверг
+ const d=P.draft(db,saved);d.rows[0].t='Утро';d.rules.kcal=200;P.switchFast(d.rules.fast,saved);
  P.addRow(d.rows,{k:'new1',t:'Ночной перекус',ic:'moon',kind:'snack'},d.rows.findIndex(r=>r.k==='sn'));
  P.removeRow(d.rows,d.rows.findIndex(r=>r.k==='s1'));P.removeRow(d.rows,d.rows.findIndex(r=>r.k==='s2'));
- P.apply(db,d,k=>k==='s1','2026-11-19');
+ P.apply(db,d,k=>k==='s1','2026-11-19',saved);
  assert.deepEqual(db.sections.map(s=>s.k),['am','pm','dn','sn','new1','s1','c1']);
  assert.equal(db.sections[0].t,'Утро');assert.equal(db.sections[0].ic,'egg');assert.equal(db.sections[4].kind,'snack');assert.equal(db.sections[3].kind,undefined);
  const s1=db.sections.find(s=>s.k==='s1');assert.equal(s1.visibleBefore,'2026-11-19');assert.equal(s1.a,undefined);assert.equal(s1.t,'Перед тренировкой');
- assert.deepEqual(db.mealRules,{kcal:200,gap:20,fast:{on:true,a:1200,b:720}});
+ assert.deepEqual(db.mealRules,{kcal:200,gap:20,fast:{on:true,a:1200,b:720,d:[4]},fastVersions:[{at:saved,on:true,a:1200,b:720,d:[4]}]},'Meal 33.21: включение фастинга — версия с моментом сохранения; по умолчанию отмечен день включения — четверг');
  const rows=P.chain(db);whole(rows);assert.deepEqual(rows.map(r=>r.k),['am','pm','dn','sn','new1']);
  const d2=P.draft(db);db.sections.push({k:'other',t:'С другого телефона'});P.apply(db,d2,()=>false,'2026-11-19');
  assert.ok(db.sections.some(s=>s.k==='other'),'раздел, добавленный на другом устройстве при открытом экране, не теряется');whole(P.chain(db));
