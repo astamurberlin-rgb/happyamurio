@@ -6,7 +6,7 @@
  * Все классы начинаются с hs-, чтобы не задеть стили приложений.
  * — Claude · 16.11.2026 */
 :root{--hs-glass:rgba(255,255,255,.14);--hs-border:rgba(255,255,255,.34);--hs-muted:rgba(255,255,255,.7);
- --hs-primary:linear-gradient(110deg,#8665dc,#6254cf);--hs-primary-shadow:none;--hs-cancel-ink:#6254cf;
+ --hs-primary:#6254cf;--hs-primary-shadow:none;--hs-cancel-ink:#6254cf;
  --hs-seg-bg:#edf8ff;--hs-seg-ink:var(--happy-dock-accent);--hs-switch-on:#8071df;--hs-sheet-bg:#5a8fe8;--hs-toast-bg:rgba(49,57,105,.94);
  --hs-pill-on-ink:#5046c3}
 body.hs-open>*:not(.bg):not(.grain):not(#happy-screens):not([data-hs-keep]),body.hs-open>*:not(.bg):not(.grain):not(#happy-screens):not([data-hs-keep]) *{visibility:hidden!important;pointer-events:none!important}

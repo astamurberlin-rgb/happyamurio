@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 663400,
-   "sha256": "bda930f5d427bb36494841a8a417fd2495d95d89e23253a37f880ee56390ac1d"
+   "size": 663336,
+   "sha256": "5793cfa93fc971e159ce6f4fd0633e6613da36ae05e3f6023e011ce65baf2e84"
   },
   {
    "path": "kfct.js",
@@ -874,8 +874,8 @@
   },
   {
    "path": "shared/happy-colors.css",
-   "size": 3178,
-   "sha256": "50403e42eab9700d7105b56de6c26d7c18d6e500c72fa7b9bed3d04eab97451d"
+   "size": 3114,
+   "sha256": "30e9b0070323f31efd1baa5f3ecb39eeb9e9230f56974fc4509ed1728582b367"
   },
   {
    "path": "shared/happy-design.css",
@@ -939,13 +939,13 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 33088,
-   "sha256": "6df1fc30eba0bff0a10e7c5b4bd269956fb5fe3df1afa7c56cb2411bfc58c504"
+   "size": 33056,
+   "sha256": "94a00f4316af5e29e610e9182afe16d1cce5b9489b1e8109fc37b6702c6565fe"
   },
   {
    "path": "shared/happy-screens.js",
-   "size": 28824,
-   "sha256": "3d359304ae6e0da4b87f7f052ff2a07e59de37508a9c2c7f6a00ac2478203fe1"
+   "size": 28760,
+   "sha256": "f23bc28ae9e06c516b8f866eb650c9565eda0f2ad1ac1525334498869fc6417d"
   },
   {
    "path": "shared/happy-scroll-lock.js",
