@@ -1696,10 +1696,9 @@ html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app
 .hp-grid button.in{background:var(--happy-glass)}
 .hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,var(--hs-seg-ink,#5C4598));font-weight:600}
 .hp-grid button:disabled{opacity:.35;cursor:default}
-/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): размытый фон, лист поверх нижней панели,
-   кнопка микрофона не превращается в крестик. Закрыть — ручкой, жестом вниз или нажатием мимо. */
-.imp.hp-sheet-wrap{z-index:70}
-.imp.hp-sheet-wrap .impSheet{max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
+/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): размытый фон, нижняя панель видна поверх,
+   кнопка микрофона не превращается в крестик, лист цвета приложения (тема). Закрыть — ручкой, жестом вниз или нажатием мимо. */
+.imp.hp-sheet-wrap .impSheet{background:var(--hs-sheet-bg,var(--happy-base,#00a8f5));max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
 .imp.hp-sheet-wrap .impScrim{background:rgba(4,60,110,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 /* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
  * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
