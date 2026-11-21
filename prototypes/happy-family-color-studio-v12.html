@@ -420,11 +420,13 @@ function studioPreviewBridge(key){
   if(typeof data.uiCSS==='string'&&data.uiCSS.length<1800000)style.textContent=data.uiCSS;
  });
 }
+const PREVIEW_DOCK_FIX='function fixDock(){if(document.getElementById(\'sport-fab\'))return;var dock=document.querySelector(\'.dock\'),bg=document.querySelector(\'.dockBg\'),svg=document.getElementById(\'dockEdge\');if(!dock||!bg||!svg)return;var p=svg.querySelector(\'path\');if(!p)return;\n if(!svg.dataset.d0){svg.dataset.d0=p.getAttribute(\'d\');svg.dataset.w0=svg.viewBox.baseVal.width}\n var d0=svg.dataset.d0,W0=+svg.dataset.w0,W=dock.offsetWidth;if(!W||!W0)return;var s=(W-W0)/2,R=+(/^M\\s*([\\d.]+)/.exec(d0)||[])[1]||0;\n var mv=function(x){x=+x;return x<=R+0.01?x:x>=W0-R-0.01?x+2*s:x+s};\n var d=d0.replace(/([MLA])([^MLAZ]*)/g,function(m,c,a){var n=a.trim().split(/[\\s,]+/);if(c===\'A\'){n[5]=mv(n[5]).toFixed(2)}else{n[0]=mv(n[0]).toFixed(2)}return c+n.join(\' \')});\n bg.style.setProperty(\'--dockPath\',\'"\'+d+\'"\');svg.setAttribute(\'viewBox\',\'0 0 \'+W+\' \'+svg.viewBox.baseVal.height);p.setAttribute(\'d\',d)}fixDock();addEventListener(\'load\',fixDock);addEventListener(\'resize\',fixDock);';
 function previewSource(key){
  // 21.11.2026: внутри превью нет выреза и полоски «домой» — отступы safe-area обнуляем. На iPhone окно превью получало отступы телефона,
  // и экран приложения съезжал вниз (пустая полоса сверху, меню выше обычного).
  const original=ORIGINALS[key].replace(/env\(\s*safe-area-inset-(top|right|bottom|left)\s*(,[^()]*(\([^()]*\)[^()]*)*)?\)/g,'0px');const p=original.lastIndexOf('<'+'/body>');
- const script='<scr'+'ipt>('+studioPreviewBridge.toString()+')('+JSON.stringify(key)+');</scr'+'ipt>';
+ // 21.11.2026: контур меню Day/Meal в снимке нарисован под ширину 390 — перестраиваем его под настоящую ширину окна (как dockPath() в приложении).
+ const script='<scr'+'ipt>('+studioPreviewBridge.toString()+')('+JSON.stringify(key)+');'+PREVIEW_DOCK_FIX+'</scr'+'ipt>';
  return p===-1?original+script:original.slice(0,p)+script+original.slice(p);
 }
 const frameReady={day:false,meal:false,sport:false};
