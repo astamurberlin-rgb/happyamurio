@@ -57,7 +57,8 @@
   let cells='';for(let i=0;i<offset;i++)cells+='<span></span>';
   for(let d=1;d<=count;d++){const iso=month+'-'+pad(d),end=iso===draft.a||iso===draft.b,inside=iso>=draft.a&&iso<=draft.b;
    cells+='<button type="button" data-hp-day="'+iso+'" class="'+(inside?'in ':'')+(end?'end':'')+'" aria-pressed="'+end+'" aria-label="'+dayFull(iso)+'"'+(iso>t?' disabled':'')+'>'+d+'</button>';}
-  return '<div class="hp-cal"><p class="hp-sel" role="status"><span>С:</span><b>'+day(draft.a,t)+'</b><span>По:</span><b>'+day(draft.b,t)+'</b></p>'+
+  /* строка делится пополам: «По:» — с середины; каждая дата — по центру между своей подписью и концом половины (21.11.2026) */
+  return '<div class="hp-cal"><p class="hp-sel" role="status"><span class="hp-half"><span>С:</span><b>'+day(draft.a,t)+'</b></span><span class="hp-half"><span>По:</span><b>'+day(draft.b,t)+'</b></span></p>'+
    '<div class="hp-month"><button type="button" data-hp-month="-1" aria-label="Предыдущий месяц">'+ARROW('M14.5 6l-6 6 6 6')+'</button><b>'+MONTHS_NOM[m-1]+' '+y+'</b>'+
    '<button type="button" data-hp-month="1" aria-label="Следующий месяц"'+(month>=t.slice(0,7)?' disabled':'')+'>'+ARROW('M9.5 6l6 6-6 6')+'</button></div>'+
    '<div class="hp-grid">'+['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(n=>'<small>'+n+'</small>').join('')+cells+'</div></div>';
