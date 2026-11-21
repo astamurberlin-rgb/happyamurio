@@ -335,6 +335,52 @@ body.has-theme-float .shell{padding-bottom:110px}
 #buttonGrid .button-option{justify-content:flex-start!important;padding:10px 4px!important;line-height:1.2}
 /* «Тон · насыщенность · яркость»: птичка по центру строки */
 .hsl-box>summary:after{transform:translateY(-2px) rotate(45deg)!important}.hsl-box[open]>summary:after{transform:translateY(2px) rotate(225deg)!important}
+/* Дорожка ползунка рисуется только внутри рамки: под рамкой у левого края больше не просвечивает цвет с правого конца (Астамур 21.11.2026) */
+.shell input[type=range].cs-range,.shell .hsl-row input[type=range]{background-repeat:no-repeat!important}
+.shell input[type=range].cs-range.cs-alpha{background-repeat:no-repeat,repeat!important;background-clip:padding-box!important}
+/* «Мои варианты»: карточки как у тем — та же ширина, картинка во всю ширину квадратом 19, «⋯» на картинке 12 / 12, подпись 14 / 600 (Астамур 21.11.2026) */
+.shared-rail{gap:10px!important;margin:12px -16px 0!important;padding:2px 16px 6px!important;scroll-padding:0 16px;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.shared-rail::-webkit-scrollbar{display:none}
+.shared-card{flex:0 0 clamp(140px,40vw,190px)!important;box-sizing:border-box;padding:7px 7px 12px!important;min-height:0!important;border-radius:26px!important}
+.shared-thumb{width:100%;aspect-ratio:1;height:auto!important;border-radius:19px!important;margin:0 0 10px!important}
+.shared-caption{font-size:14px!important;font-weight:600;line-height:18px;padding:0 4px!important}
+.shared-status{font-size:12px!important;font-weight:600!important;line-height:16px;margin-top:2px!important;padding:0 4px}
+.shared-mini{left:10px!important;bottom:10px!important}
+.shared-more{top:12px!important;right:12px!important}
+.shared-empty{font-size:12px!important;align-self:center}
+/* Заголовок раздела на той же левой линии, что и содержимое (16 от рамки); три черточки правым краем на правой линии содержимого */
+.studio-panel>summary{padding-left:16px!important;padding-right:0!important}
+.studio-panel>summary .panel-grip{margin-right:3px}
+/* «Код оформления» — как остальные подразделы: строка 44, текст с левой линии, птичка справа */
+.hg-legacy>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;cursor:pointer;font-size:14px;font-weight:600}
+.hg-legacy>summary::-webkit-details-marker{display:none}
+.hg-legacy>summary:after{content:"";flex:0 0 auto;width:7px;height:7px;margin-right:4px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.hg-legacy[open]>summary:after{transform:translateY(2px) rotate(225deg)}
+/* Мини-точки на карточке «Моих вариантов» не нужны: у карточек тем их нет, а пустые кружки выглядят как ошибка */
+.shared-mini{display:none!important}
+/* Карточки тем, «Моих вариантов» и палитр приложения (Астамур 21.11.2026: «палитра больше и нагляднее»):
+   палитра почти во всю карточку (отступ 5, скругление 21 = 26 − 5), «⋯» — просто три точки на палитре без кружка,
+   выбранная — яркая рамка 2 px вместо подписи «Сейчас в превью». */
+#referenceThemes .reference-card,.shared-card,#presetGrid .preset{padding:4px 4px 12px!important}
+#referenceThemes .reference-swatch,.shared-thumb,#presetGrid .preset-preview{border-radius:21px!important}
+#referenceThemes .reference-card strong,.shared-caption,#presetGrid .preset-label{padding-left:6px!important;padding-right:6px!important}
+.shared-status{display:none!important}
+#referenceThemes .ref-more,.shared-more{top:5px!important;right:5px!important;width:40px!important;height:28px!important;min-width:0!important;min-height:0!important;border:0!important;border-radius:0 21px 0 0!important;
+ background-color:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.55))}
+#referenceThemes .reference-card[aria-pressed=true],.shared-card.selected,.shared-card.editing,#presetGrid .preset.active,#presetGrid .preset[aria-pressed=true]{border-color:#f1edff!important;box-shadow:inset 0 0 0 1px #f1edff!important}
+.shared-card.editing.dirty{border-color:#ffd27a!important;box-shadow:inset 0 0 0 1px #ffd27a!important}
+#presetGrid .preset.selected{border-color:#f1edff!important;box-shadow:inset 0 0 0 1px #f1edff!important}
+.shared-more{top:4px!important;right:4px!important}
+.shared-card{min-width:0!important;max-width:clamp(140px,40vw,190px)}
+.shared-card>button{min-width:0}
+.shared-caption{white-space:normal!important;overflow-wrap:anywhere}
+#presetGrid .preset-label{text-align:left!important}
+/* Карусель общих тем начиналась от края экрана, а не от линии содержимого: прилипание прокрутки без отступа сдвигало её на 16 */
+#referenceThemes .reference-grid{scroll-padding:0 16px}
+/* Одинаковые подписи на всех карточках: название 14 / 600, пояснение 12 */
+#referenceThemes .reference-card strong{font-size:14px!important;font-weight:600!important;line-height:18px;padding-top:10px!important}
+#referenceThemes .reference-card small{font-size:12px!important;line-height:16px;padding-left:6px!important;padding-right:6px!important;margin-top:2px}
+.shared-thumb,#presetGrid .preset-preview{margin-bottom:10px!important}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Color Studio</h1><p>Дизайн-студия Happy Day, Happy Meal и Happy Sport. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><div class="head-actions"><button class="chipbutton" id="fullPreview">Скрыть настройки</button><span class="hsa-slot" id="accountSlot"></span></div></header>
@@ -697,7 +743,7 @@ function afterChange(){activeShared='';dropUndoFor(selected);persist();applyTo(s
 function draw(){normalizeExtra(states[selected]);document.querySelectorAll('[data-phone]').forEach(x=>x.classList.toggle('active',x.dataset.phone===selected));$('studio').hidden=previewFull;$('presetApp').textContent=selected.charAt(0).toUpperCase()+selected.slice(1);createPresets();drawLayers();drawControls();drawWallpapers();drawButtons();drawExtras();drawGlass();drawShared();drawPaletteCopy();APP_ORDER.forEach(applyTo)}
 function scrollPhoneTo(k,behavior='smooth'){const rail=$('phones'),el=document.querySelector('[data-phone="'+k+'"]');if(!rail||!el)return;rail.scrollTo({left:el.offsetLeft-rail.offsetLeft-(rail.clientWidth-el.offsetWidth)/2,behavior})}
 function selectPreview(k){if(!PREVIEW_ORDER.includes(k)||k===selected)return;selected=k;layerIndex=0;selectedPreset=-1;persist();draw()}
-function drawButtons(){const st=states[selected];$('buttonApp').textContent=selected.toUpperCase();$('buttonGrid').innerHTML='';for(const [name,color] of buttonSwatches){const b=document.createElement('button');b.className='button-option';b.title=name;b.innerHTML='<i class="button-swatch" style="background:'+color+'"></i><span>'+name+'</span>';b.onclick=()=>{dropNative(st,'button');st.buttonColor=color;if(isLookB(st))setLookB(st);else st.buttonGradient=G.normalize({type:'solid',stops:[{color,position:0},{color,position:100}]});afterChange()};$('buttonGrid').append(b)}if(buttonEditor)buttonEditor.set(isLookB(st)&&!st.nativeButton?lookBGradient(st.buttonColor):st.buttonGradient);$('sampleFab').style.background=st.nativeButton||(isLookB(st)?lookBCSS(st.buttonColor):G.css(st.buttonGradient));$('buttonLookColor').value=/^#[0-9a-f]{6}$/i.test(st.buttonColor||'')?st.buttonColor:'#6755d6';$('buttonLookState').textContent=st.nativeButton?'Как на сайте сейчас':isLookB(st)?'Вид B — как у всех, меняется только цвет':'Своя — градиент изменён вручную';$('buttonLookReset').disabled=isLookB(st)&&!st.nativeButton;$('sampleFab').style.color=st.buttonTextColor;$('sampleFab').style.boxShadow=buttonShadow(st);$('buttonTextColor').value=st.buttonTextColor;}
+function drawButtons(){const st=states[selected];$('buttonApp').textContent=selected.toUpperCase();$('buttonGrid').innerHTML='';for(const [name,color] of buttonSwatches){const b=document.createElement('button');b.className='button-option';b.title=name;b.innerHTML='<i class="button-swatch"></i><span>'+name+'</span>';{const sw=b.firstChild;if(isLookB(st)){sw.style.background=lookBCSS(color);sw.style.boxShadow='0 4px 10px '+rgba(color,.22)}else sw.style.background=color}b.onclick=()=>{dropNative(st,'button');st.buttonColor=color;if(isLookB(st))setLookB(st);else st.buttonGradient=G.normalize({type:'solid',stops:[{color,position:0},{color,position:100}]});afterChange()};$('buttonGrid').append(b)}if(buttonEditor)buttonEditor.set(isLookB(st)&&!st.nativeButton?lookBGradient(st.buttonColor):st.buttonGradient);$('sampleFab').style.background=st.nativeButton||(isLookB(st)?lookBCSS(st.buttonColor):G.css(st.buttonGradient));$('buttonLookColor').value=/^#[0-9a-f]{6}$/i.test(st.buttonColor||'')?st.buttonColor:'#6755d6';$('buttonLookState').textContent=st.nativeButton?'Как на сайте сейчас':isLookB(st)?'Вид B — как у всех, меняется только цвет':'Своя — градиент изменён вручную';$('buttonLookReset').disabled=isLookB(st)&&!st.nativeButton;$('sampleFab').style.color=st.buttonTextColor;$('sampleFab').style.boxShadow=buttonShadow(st);$('buttonTextColor').value=st.buttonTextColor;}
 
 function drawWallpapers(){
  const el=$('wallpaperGrid');el.innerHTML='';
