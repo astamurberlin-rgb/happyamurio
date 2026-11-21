@@ -311,12 +311,30 @@ body.has-theme-float .shell{padding-bottom:110px}
 .shell input[type=range].cs-range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:transparent;border:3px solid #fff;box-shadow:0 0 0 1px #0005}
 .shell input[type=range].cs-range::-moz-range-track{background:transparent}
 .shell input[type=range].cs-range:not([style*="--trk"])::-webkit-slider-thumb{background:#fff}
-/* Ручка ползунка — тонкая белая черта по центру дорожки вместо кружка (Астамур 21.11.2026: «кружочки убери, встали неровно») */
-.shell input[type=range].cs-range::-webkit-slider-thumb,.shell .hsl-row input[type=range]::-webkit-slider-thumb,.shell input[type=range].cs-range:not([style*="--trk"])::-webkit-slider-thumb{-webkit-appearance:none;width:6px;height:22px;margin-top:0;border:0;border-radius:3px;background:#fff;box-shadow:0 0 0 1px #0006,0 1px 4px #0007}
-.shell input[type=range].cs-range::-moz-range-thumb,.shell .hsl-row input[type=range]::-moz-range-thumb{width:6px;height:22px;border:0;border-radius:3px;background:#fff;box-shadow:0 0 0 1px #0006}
-.shell input[type=range].cs-range,.shell .hsl-row input[type=range]{padding:0 3px}
-.shell .hg-editor input[type=range].cs-range{min-height:0!important;height:28px;background-color:transparent}
-.shell .hg-editor input[type=range].cs-range::-webkit-slider-thumb{min-width:0!important;min-height:0!important}
+/* Ручка ползунка — тонкая белая черта (Астамур 21.11.2026: «кружочки убери»). Ровно: по высоте — по центру дорожки,
+   по ширине — центр черты точно на краю заливки и на своём цвете; у концов не заходит на скругление (отступ 11 + половина черты = 14 = радиус). */
+.shell input[type=range].cs-range,.shell .hsl-row input[type=range]{padding:0 11px!important;height:28px!important;min-height:0!important}
+.shell input[type=range].cs-range::-webkit-slider-runnable-track,.shell .hsl-row input[type=range]::-webkit-slider-runnable-track{-webkit-appearance:none;height:26px;background:transparent;border:0}
+.shell input[type=range].cs-range::-webkit-slider-thumb,.shell .hsl-row input[type=range]::-webkit-slider-thumb,.shell input[type=range].cs-range:not([style*="--trk"])::-webkit-slider-thumb,.shell .hg-editor input[type=range].cs-range::-webkit-slider-thumb{-webkit-appearance:none;box-sizing:border-box;width:6px;height:18px;min-width:0!important;min-height:0!important;margin-top:4px;border:0;border-radius:3px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45)}
+.shell input[type=range].cs-range::-moz-range-thumb,.shell .hsl-row input[type=range]::-moz-range-thumb{box-sizing:border-box;width:6px;height:18px;border:0;border-radius:3px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.shell .hsl-row input[type=range]{background:var(--trk,#888)}
+/* Ровно по центру (Астамур 21.11.2026: «всё проверь на alignment») */
+/* «⋯» на карточках тем: три точки рисуем сами — точно по центру круга (символ ⋯ у шрифта сидит выше середины) */
+#referenceThemes .ref-more,.shared-more{font-size:0!important;color:transparent!important;padding:0!important;
+ background-image:radial-gradient(circle,#fff 0 1.8px,transparent 2.3px),radial-gradient(circle,#fff 0 1.8px,transparent 2.3px),radial-gradient(circle,#fff 0 1.8px,transparent 2.3px)!important;
+ background-size:6px 6px!important;background-repeat:no-repeat!important;background-position:calc(50% - 6px) 50%,50% 50%,calc(50% + 6px) 50%!important}
+#referenceThemes .ref-more{background-color:#180d32a8!important}
+.shared-more{top:8px!important;right:8px!important;width:30px;height:30px;min-width:30px!important;min-height:30px!important;border-radius:999px!important;border:1px solid #ffffff40!important;background-color:#180d32a8!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+/* Подразделы редактора градиента («Точечное свечение · солнце», «Весь этот слой»): строка 44, текст по центру по высоте, птичка справа — как у остальных разделов */
+.hg-editor details>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;cursor:pointer;font-size:14px;font-weight:600}
+.hg-editor details>summary::-webkit-details-marker{display:none}
+.hg-editor details>summary:after{content:"";flex:0 0 auto;width:7px;height:7px;margin-right:4px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.hg-editor details[open]>summary:after{transform:translateY(2px) rotate(225deg)}
+.hg-editor details{padding-top:4px!important}
+/* Цвета кнопки: кружок сверху на одной высоте у всех, подпись сразу под ним (в одну или две строки) */
+#buttonGrid .button-option{justify-content:flex-start!important;padding:10px 4px!important;line-height:1.2}
+/* «Тон · насыщенность · яркость»: птичка по центру строки */
+.hsl-box>summary:after{transform:translateY(-2px) rotate(45deg)!important}.hsl-box[open]>summary:after{transform:translateY(2px) rotate(225deg)!important}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Color Studio</h1><p>Дизайн-студия Happy Day, Happy Meal и Happy Sport. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><div class="head-actions"><button class="chipbutton" id="fullPreview">Скрыть настройки</button><span class="hsa-slot" id="accountSlot"></span></div></header>
@@ -1171,7 +1189,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   for(const id of ids){const inp=document.getElementById(id);if(!inp||inp.dataset.hsl)continue;inp.dataset.hsl=1;const host=inp.closest('label')||inp;
    const box=document.createElement('details');box.className='hsl-box';box.innerHTML='<summary>Тон · насыщенность · яркость</summary>'+[['h','Тон',360,'°'],['s','Насыщенность',100,'%'],['l','Яркость',100,'%']].map(([k,n,m,u])=>'<label class="hsl-row"><span>'+n+'</span><output data-u="'+u+'"></output><input type="range" min="0" max="'+m+'" step="1" data-k="'+k+'"></label>').join('');
    host.after(box);const r=Object.fromEntries([...box.querySelectorAll('input')].map(x=>[x.dataset.k,x]));let last='',busy=false;
-   const paint=()=>{const h=+r.h.value,s=+r.s.value,l=+r.l.value;r.h.style.setProperty('--trk','linear-gradient(90deg,'+[0,60,120,180,240,300,360].map(x=>'hsl('+x+' '+s+'% '+l+'%)').join(',')+')');r.s.style.setProperty('--trk','linear-gradient(90deg,hsl('+h+' 0% '+l+'%),hsl('+h+' 100% '+l+'%))');r.l.style.setProperty('--trk','linear-gradient(90deg,#000,hsl('+h+' '+s+'% 50%),#fff)');for(const k in r)r[k].previousElementSibling.textContent=r[k].value+r[k].previousElementSibling.dataset.u};
+   const L=a=>'linear-gradient(90deg,'+a.map((c,i)=>c+' calc(14px + (100% - 28px) * '+(i/(a.length-1)).toFixed(4)+')').join(',')+')';const paint=()=>{const h=+r.h.value,s=+r.s.value,l=+r.l.value;r.h.style.setProperty('--trk',L([0,60,120,180,240,300,360].map(x=>'hsl('+x+' '+s+'% '+l+'%)')));r.s.style.setProperty('--trk',L(['hsl('+h+' 0% '+l+'%)','hsl('+h+' 100% '+l+'%)']));r.l.style.setProperty('--trk',L(['#000','hsl('+h+' '+s+'% 50%)','#fff']));for(const k in r)r[k].previousElementSibling.textContent=r[k].value+r[k].previousElementSibling.dataset.u};
    const sync=()=>{if(busy||inp.value===last)return;last=inp.value;const[h,s,l]=toHsl(inp.value);if(s>0||!+r.h.value)r.h.value=h;if(l>0&&l<100||!+r.s.value)r.s.value=s;r.l.value=l;paint()};
    for(const k in r){r[k].addEventListener('input',()=>{busy=true;inp.value=last=toHex(+r.h.value,+r.s.value,+r.l.value);paint();inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}));busy=false})}
    inp.addEventListener('input',sync);box.addEventListener('toggle',sync);sync();setInterval(()=>{if(box.open)sync()},400)}}
@@ -1179,11 +1197,11 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
  // 21.11.2026 (Астамур: «сразу в ползунке вижу цвет — так для всех настроек цвета»): дорожка каждого ползунка показывает, что он делает
  function initRangeTracks(){const G=window.HappyGradients;const A=(c,b,s,h)=>{try{return G.adjust(c,b,s,h)}catch(e){return c}};
   const rgba=(hex,a)=>{const n=parseInt(String(hex).slice(1,7),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'};
-  const lin=arr=>'linear-gradient(90deg,'+arr.join(',')+')';const steps=(min,max,n,f)=>Array.from({length:n},(_,i)=>f(min+(max-min)*i/(n-1)));
+  const lin=arr=>'linear-gradient(90deg,'+arr.map((c,i)=>c+' calc(14px + (100% - 28px) * '+(arr.length>1?i/(arr.length-1):0).toFixed(4)+')').join(',')+')';const steps=(min,max,n,f)=>Array.from({length:n},(_,i)=>f(min+(max-min)*i/(n-1)));
   const val=id=>{const e=document.getElementById(id);return e?e.value:''};
   function set(r,trk,alpha){r.classList.add('cs-range');r.classList.toggle('cs-alpha',!!alpha);if(trk)r.style.setProperty('--trk',trk);else r.style.removeProperty('--trk')}
   function paint(){
-   for(const r of document.querySelectorAll('.shell input[type=range]')){const p=(r.value-r.min)/((r.max-r.min)||1)*100;r.style.setProperty('--p',p+'%');if(!r.closest('.hsl-row'))set(r,'',false)}
+   for(const r of document.querySelectorAll('.shell input[type=range]')){const p=(r.value-r.min)/((r.max-r.min)||1);r.style.setProperty('--p','calc(14px + (100% - 28px) * '+p.toFixed(4)+')');if(!r.closest('.hsl-row'))set(r,'',false)}
    // стекло, границы, кнопки, обои — от прозрачного к своему цвету
    const fab=(document.getElementById('buttonLookColor')||{}).value||'#6755d6';
    for(const [id,c] of [['glassAlpha',val('glassColor')],['borderAlpha',val('borderColor')],['stButtonAlpha',fab],['stFabAlpha',fab],['wpAlpha','#ffffff']]){const r=document.getElementById(id);if(r&&c)set(r,lin([rgba(c,0),rgba(c,1)]),true)}
