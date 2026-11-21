@@ -263,6 +263,24 @@
       ]
     },
     {
+      "name": "happy-period.js",
+      "reference": "shared/happy-period.js",
+      "apps": [
+        "day",
+        "sport"
+      ],
+      "todo": "Meal: свой выбор периода журнала (jrSeg, controls.js openPeriod) — перейти на этот общий файл со следующим обновлением Meal (Астамур 21.11.2026: «в Sport и Day так же», Meal сейчас правят в других чатах)."
+    },
+    {
+      "name": "happy-period.css",
+      "reference": "shared/happy-period.css",
+      "apps": [
+        "day",
+        "sport"
+      ],
+      "todo": "Meal: свой выбор периода журнала (jrSeg, controls.js openPeriod) — перейти на этот общий файл со следующим обновлением Meal (Астамур 21.11.2026: «в Sport и Day так же», Meal сейчас правят в других чатах)."
+    },
+    {
       "name": "happy-design.css",
       "reference": "shared/happy-design.css",
       "apps": [

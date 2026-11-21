@@ -114,10 +114,27 @@ function journalRows(feed){
  for(const r of rows)r.at=String(r.at).replace(' ','T');   // у тренировок «ГГГГ-ММ-ДД ЧЧ:ММ», у остальных — с T
  return rows.sort((a,b)=>b.at.localeCompare(a.at));
 }
+/* ---------- Выбор периода (Астамур 21.11.2026: «в Meal это элегантнее», «в Sport и Day так же»; открывается на «Сегодня») ----------
+   Полоска «Сегодня · Неделя · Месяц · календарик», рядом «Поделиться», ниже строка с датой — общий shared/happy-period.js.
+   Журнал показывает записи выбранного периода; «Поделиться» отдаёт тренировки периода текстом, как «Поделиться тренировкой». */
+let journalPeriod={per:'today'};
+function journalPeriodRange(){return globalThis.HappyPeriod?HappyPeriod.range(journalPeriod,dayNow()):{a:'0000-00-00',b:'9999-12-31'};}
+function journalPeriodHead(){return globalThis.HappyPeriod?`<div class="journal-period">${HappyPeriod.html(journalPeriod,{today:dayNow(),share:'Поделиться тренировками за период'})}</div>`:'';}
+async function shareJournalPeriod(r){
+ const list=state.workouts.filter(w=>{const d=String(w.start).slice(0,10);return d>=r.a&&d<=r.b;}).sort((a,b)=>a.start.localeCompare(b.start));
+ const title='Тренировки · '+HappyPeriod.caption(journalPeriod,dayNow());
+ if(!list.length){toast('За этот период тренировок нет');return;}
+ const text=title+'\n\n'+list.map(w=>`${dateLabel(w.start.slice(0,10))} · ${w.start.slice(11,16)} · ${w.title} · ${durationText(w.duration)}`).join('\n');
+ if(navigator.share){try{await navigator.share({title,text});return}catch(e){if(e.name==='AbortError')return}}
+ try{await navigator.clipboard.writeText(text);toast('Тренировки за период скопированы')}catch{openSheet('Поделиться тренировками',`<textarea class="plan-copy" readonly aria-label="Тренировки за период">${esc(text)}</textarea>`)}
+}
+if(globalThis.HappyPeriod)HappyPeriod.bind(document.body,{get:()=>journalPeriod,set(st){journalPeriod=st;render();},today:dayNow,share:shareJournalPeriod,
+ sheet(title,html){openSheet(title,html,'journal-period');return document.querySelector('#modal-root .sheet');},close:()=>closeSheet()});
 renderHistory=function(){
  // Аудит единообразия 18.11.2026: журнал всегда лентой — со связкой с Day и Meal и без; еда из Meal — только при связке.
- const feed=journalFeedOn(),rows=journalRows(feed);
- if(!rows.length)return '<div class="stack"><div class="empty">Завершённые тренировки появятся здесь.</div></div>';
+ const feed=journalFeedOn(),all=journalRows(feed),r=journalPeriodRange(),rows=all.filter(x=>{const d=x.at.slice(0,10);return d>=r.a&&d<=r.b;});
+ if(!all.length)return '<div class="stack"><div class="empty">Завершённые тренировки появятся здесь.</div></div>';
+ if(!rows.length)return `<div class="stack"><div class="empty">${r.a===r.b&&r.a===dayNow()?'Сегодня записей нет.':'За этот период записей нет.'}</div></div>`;
  {
   const days=new Map();for(const r of rows){const d=String(r.at).slice(0,10);if(!days.has(d))days.set(d,[]);days.get(d).push(r);}
   return `<div class="journal-feed">${[...days].map(([d,list])=>`<section class="feed-daygroup"><h3 class="feed-date">${esc(ruDateText(d))}</h3><ol class="feed-list">${list.map(journalFeedItem).join('')}</ol></section>`).join('')}</div>`;

@@ -1571,6 +1571,41 @@ body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!im
 .hf-drum-item.hf-on{font-weight:600}
 .hf-drum-sep{position:relative;align-self:center;font-size:28px;font-weight:600;line-height:1;margin-top:-4px}
 @media (prefers-reduced-motion:reduce){.hf-drum-col{scroll-behavior:auto}}
+/* Выбор периода журнала (shared/happy-period.js), как в Meal: компактная полоска, рядом «Поделиться», ниже дата.
+   Размеры — по правилам оформления: вкладки 44, текст 14, всё нажимаемое — пилюля. — Claude · 21.11.2026 */
+.hp-period{margin:0 0 16px}
+.hp-row{display:flex;align-items:center;gap:8px}
+.hp-seg{display:inline-flex;flex:0 1 auto;min-width:0;height:54px;padding:4px;box-sizing:border-box;border-radius:999px;
+ border:1px solid var(--hp-line,rgba(255,255,255,.38));background:var(--hp-glass,rgba(255,255,255,.09))}
+.hp-seg button{flex:0 1 auto;min-width:44px;height:44px;padding:0 12px;border:0;border-radius:999px;background:none;color:#fff;
+ font:inherit;font-size:14px;font-weight:400;line-height:1;white-space:nowrap;display:grid;place-items:center;cursor:pointer}
+.hp-seg button.on{background:rgba(255,255,255,.94);color:var(--hp-on-ink,#5C4598);font-weight:600}
+.hp-seg button[data-hp="custom"]{padding:0}
+.hp-seg svg,.hp-share svg,.hp-month svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hp-share{flex:none;width:54px;height:54px;padding:0;border-radius:999px;border:1px solid var(--hp-line,rgba(255,255,255,.38));
+ background:var(--hp-glass,rgba(255,255,255,.09));color:#fff;display:grid;place-items:center;cursor:pointer}
+.hp-share svg{width:22px;height:22px;stroke-width:1.9}
+.hp-cap{margin:10px 2px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,.72)}
+.hp-seg button:focus-visible,.hp-share:focus-visible,.hp-cal button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media (max-width:359px){.hp-seg button{padding:0 9px}}
+/* лист «Свой период» */
+.hp-cal{padding-bottom:8px}
+.hp-ends{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hp-lab{display:block;margin:0 0 8px;font-size:14px;font-weight:600}
+.hp-end{width:100%;height:48px;box-sizing:border-box;padding:0 8px;border-radius:12px;border:1px solid rgba(255,255,255,.34);
+ background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer}
+.hp-end.on{border:2px solid #fff;background:rgba(255,255,255,.24)}
+.hp-month{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px}
+.hp-month b{font-size:16px;font-weight:600}
+.hp-month button{width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:#fff;display:grid;place-items:center;cursor:pointer}
+.hp-month button:disabled{opacity:.35;cursor:default}
+.hp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px}
+.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:600;color:rgba(255,255,255,.72)}
+.hp-grid button{height:44px;padding:0;border:0;border-radius:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:400;
+ font-variant-numeric:tabular-nums;cursor:pointer}
+.hp-grid button.in{background:rgba(255,255,255,.16)}
+.hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,#5C4598);font-weight:600}
+.hp-grid button:disabled{opacity:.35;cursor:default}
 /* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
  * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
  * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
@@ -1942,6 +1977,8 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 
 /* Астамур 21.11.2026: длительность в «Расписании» — общий барабан 00:00 (shared/happy-drum.js), как в Day */
 .plan-details>.hf-drum{margin:8px 0 6px}
+/* Астамур 21.11.2026: выбор периода журнала — как в Meal (shared/happy-period.css); строка под переключателем */
+#page>.journal-period>.hp-period{margin:0 0 16px}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
@@ -2250,6 +2287,101 @@ document.addEventListener('input',event=>clearSportMetricError(event.target));
  const drumTimeCols=t=>[{name:'h',label:'Часы',options:HOURS,value:+String(t||'00:00').slice(0,2)},{sep:':'},{name:'m',label:'Минуты',options:MINS,value:+String(t||'00:00').slice(3,5)}];
  const drumDurationCols=min=>{const m=Math.max(0,Math.round(Number(min)||0));return [{name:'dh',label:'Часы длительности',options:HOURS,value:Math.min(23,Math.floor(m/60))},{sep:':'},{name:'dm',label:'Минуты длительности',options:MINS,value:m%60}];};
  root.HappyFields=Object.assign(root.HappyFields||{},{drum,drumTimeCols,drumDurationCols});
+})(globalThis);
+
+/* Выбор периода журнала — один кусок на Day, Meal и Sport (Астамур 21.11.2026: «в Meal это элегантнее сделано»,
+   «я за то, чтобы и в Sport, и в Day было так же»).
+   Как в Meal: компактная полоска «Сегодня · Неделя · Месяц · календарик», рядом круглая «Поделиться»,
+   под ними строка с датой. Календарик открывает лист «Свой период»: «С» и «По», месяц со стрелками, дни.
+   Выбранное применяется сразу; лист закрывается жестом вниз, ручкой или нажатием мимо — без «Отмена» и «Готово»
+   (решение 15 аудита Day). Day и Sport перешли на него 21.11.2026, Meal перейдёт со своим следующим обновлением
+   (до тех пор у Meal своя копия того же вида).
+
+   Состояние st = {per:'today'|'week'|'month'|'custom', a, b}: для «Сегодня» a — показанный день (другой день — «День»),
+   для своего периода a и b — его начало и конец; для недели и месяца a и b не нужны.
+   HappyPeriod.html(st, {today, share}) → разметка полоски и строки с датой (share — подпись кнопки «Поделиться»);
+   HappyPeriod.range(st, today) → {a, b};   HappyPeriod.caption(st, today) → «Сегодня, 21 ноября», «15–21 ноября»;
+   HappyPeriod.bind(scope, {get, set, today, share(range), sheet(title, html) → элемент, close()}) — один раз:
+     нажатия внутри scope; set(st) приложение сохраняет у себя и перерисовывает журнал.
+   — Claude · 21.11.2026 */
+(function(root){
+ 'use strict';
+ if(!root.document)return;
+ const doc=root.document;
+ const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+ const MONTHS_NOM=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+ const WD=['вс','пн','вт','ср','чт','пт','сб'];
+ const pad=n=>String(n).padStart(2,'0');
+ const escH=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ function localToday(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+ function add(iso,n){const d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);}
+ function day(iso,today){const y=iso.slice(0,4);return +iso.slice(8)+' '+MONTHS[+iso.slice(5,7)-1]+(y!==String(today||localToday()).slice(0,4)?' '+y:'');}
+ function dayFull(iso){const d=new Date(iso+'T12:00:00Z');return WD[d.getUTCDay()]+', '+day(iso,iso);}
+ function range(st,today){
+  const t=today||localToday();st=st||{};
+  if(st.per==='week')return {a:add(t,-6),b:t};
+  if(st.per==='month')return {a:add(t,-29),b:t};
+  if(st.per==='custom'&&st.a&&st.b)return {a:st.a,b:st.b};
+  const d=st.per==='today'&&st.a&&st.a<=t?st.a:t;return {a:d,b:d};
+ }
+ function caption(st,today){
+  const t=today||localToday(),r=range(st,t);
+  if(r.a===r.b)return r.a===t?'Сегодня, '+day(r.a,t):r.a===add(t,-1)?'Вчера, '+day(r.a,t):day(r.a,t);
+  if(r.a.slice(0,7)===r.b.slice(0,7))return +r.a.slice(8)+'–'+day(r.b,t);
+  return day(r.a,t)+' – '+day(r.b,t);
+ }
+ const CAL='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="4"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>';
+ const SHARE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M7 10H5v11h14V10h-2"/></svg>';
+ const ARROW=d=>'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+d+'"/></svg>';
+ function html(st,o){
+  o=o||{};const t=o.today||localToday(),r=range(st,t),per=st&&st.per||'today';
+  const btn=(k,label,aria)=>'<button type="button" data-hp="'+k+'" class="'+(per===k?'on':'')+'" aria-pressed="'+(per===k)+'"'+(aria?' aria-label="'+aria+'"':'')+'>'+label+'</button>';
+  return '<div class="hp-period"><div class="hp-row"><div class="hp-seg" role="group" aria-label="Период">'+
+   btn('today',per==='today'&&r.a!==t?'День':'Сегодня')+btn('week','Неделя')+btn('month','Месяц')+btn('custom',CAL,'Свой период')+'</div>'+
+   (o.share?'<button type="button" class="hp-share" data-hp-share aria-label="'+escH(o.share)+'">'+SHARE+'</button>':'')+'</div>'+
+   '<p class="hp-cap">'+escH(o.caption||caption(st,t))+'</p></div>';
+ }
+ /* лист «Свой период»: «С» и «По» — какую границу ставит нажатие на день; дальше месяцы — стрелками */
+ function calendarHTML(draft,edge,month,t){
+  const y=+month.slice(0,4),m=+month.slice(5,7),first=new Date(Date.UTC(y,m-1,1)),offset=(first.getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0)).getUTCDate();
+  let cells='';for(let i=0;i<offset;i++)cells+='<span></span>';
+  for(let d=1;d<=count;d++){const iso=month+'-'+pad(d),end=iso===draft.a||iso===draft.b,inside=iso>=draft.a&&iso<=draft.b;
+   cells+='<button type="button" data-hp-day="'+iso+'" class="'+(inside?'in ':'')+(end?'end':'')+'" aria-pressed="'+end+'" aria-label="'+dayFull(iso)+'"'+(iso>t?' disabled':'')+'>'+d+'</button>';}
+  const end=(k,label)=>'<div><span class="hp-lab">'+label+'</span><button type="button" data-hp-edge="'+k+'" class="hp-end'+(edge===k?' on':'')+'" aria-pressed="'+(edge===k)+'">'+dayFull(draft[k])+'</button></div>';
+  return '<div class="hp-cal"><div class="hp-ends">'+end('a','С')+end('b','По')+'</div>'+
+   '<div class="hp-month"><button type="button" data-hp-month="-1" aria-label="Предыдущий месяц">'+ARROW('M14.5 6l-6 6 6 6')+'</button><b>'+MONTHS_NOM[m-1]+' '+y+'</b>'+
+   '<button type="button" data-hp-month="1" aria-label="Следующий месяц"'+(month>=t.slice(0,7)?' disabled':'')+'>'+ARROW('M9.5 6l6 6-6 6')+'</button></div>'+
+   '<div class="hp-grid">'+['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(n=>'<small>'+n+'</small>').join('')+cells+'</div></div>';
+ }
+ function pick(r,iso,edge){
+  if(edge==='a')return {a:iso,b:r.b<iso?iso:r.b,edge:'b'};
+  return iso<r.a?{a:iso,b:r.a,edge:'b'}:{a:r.a,b:iso,edge:'b'};
+ }
+ function openCalendar(o){
+  const t=o.today?o.today():localToday(),cur=range(o.get(),t);
+  let draft={a:cur.a,b:cur.b},edge='a',month=cur.a.slice(0,7);
+  const el=o.sheet('Свой период','<div data-hp-cal></div>');if(!el)return;
+  const box=el.querySelector('[data-hp-cal]')||el;
+  const paint=()=>{box.innerHTML=calendarHTML(draft,edge,month,t);};
+  paint();
+  box.addEventListener('click',e=>{
+   const b=e.target.closest('button');if(!b||b.disabled)return;
+   if(b.dataset.hpEdge){edge=b.dataset.hpEdge;paint();return}
+   if(b.dataset.hpMonth){const d=new Date(month+'-15T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+Number(b.dataset.hpMonth));month=d.toISOString().slice(0,7);if(month>t.slice(0,7))month=t.slice(0,7);paint();return}
+   if(b.dataset.hpDay){const p=pick(draft,b.dataset.hpDay,edge);draft={a:p.a,b:p.b};edge=p.edge;paint();o.set({per:'custom',a:draft.a,b:draft.b});}
+  });
+ }
+ function bind(scope,o){
+  scope.addEventListener('click',e=>{
+   const b=e.target.closest('[data-hp],[data-hp-share]');if(!b||!scope.contains(b))return;
+   const t=o.today?o.today():localToday();
+   if(b.hasAttribute('data-hp-share')){if(o.share)o.share(range(o.get(),t));return}
+   const per=b.dataset.hp;
+   if(per==='custom'){openCalendar(o);return}
+   o.set(per==='today'?{per:'today',a:t,b:t}:{per});
+  });
+ }
+ root.HappyPeriod={html,range,caption,bind,day};
 })(globalThis);
 
 /* Sport 42–43 · запись и чтение дневника через общий модуль (документы — sport-docs.js, запуск — sport-boot.js).
@@ -6524,7 +6656,8 @@ selectExerciseContextTab=function(key,focus=false){
    слово уже на переключателе и в меню (Астамур, лаборатория 15.11.2026). */
 renderJournal=function(){
  const tab=(id,label)=>`<button data-action="journal-tab" data-id="${id}" class="${journalTab===id?'selected':''}" aria-pressed="${journalTab===id}">${label}</button>`;
- return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():renderHistory());
+ // 21.11.2026 (Астамур): под переключателем — выбор периода, как в Meal (общий shared/happy-period.js, sport-journal.js)
+ return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():journalPeriodHead()+renderHistory());
 };
 
 /* Один список упражнений в трёх местах — Библиотека, «Добавить упражнение» в тренировке, «Выбрать упражнение» в
@@ -7046,10 +7179,27 @@ function journalRows(feed){
  for(const r of rows)r.at=String(r.at).replace(' ','T');   // у тренировок «ГГГГ-ММ-ДД ЧЧ:ММ», у остальных — с T
  return rows.sort((a,b)=>b.at.localeCompare(a.at));
 }
+/* ---------- Выбор периода (Астамур 21.11.2026: «в Meal это элегантнее», «в Sport и Day так же»; открывается на «Сегодня») ----------
+   Полоска «Сегодня · Неделя · Месяц · календарик», рядом «Поделиться», ниже строка с датой — общий shared/happy-period.js.
+   Журнал показывает записи выбранного периода; «Поделиться» отдаёт тренировки периода текстом, как «Поделиться тренировкой». */
+let journalPeriod={per:'today'};
+function journalPeriodRange(){return globalThis.HappyPeriod?HappyPeriod.range(journalPeriod,dayNow()):{a:'0000-00-00',b:'9999-12-31'};}
+function journalPeriodHead(){return globalThis.HappyPeriod?`<div class="journal-period">${HappyPeriod.html(journalPeriod,{today:dayNow(),share:'Поделиться тренировками за период'})}</div>`:'';}
+async function shareJournalPeriod(r){
+ const list=state.workouts.filter(w=>{const d=String(w.start).slice(0,10);return d>=r.a&&d<=r.b;}).sort((a,b)=>a.start.localeCompare(b.start));
+ const title='Тренировки · '+HappyPeriod.caption(journalPeriod,dayNow());
+ if(!list.length){toast('За этот период тренировок нет');return;}
+ const text=title+'\n\n'+list.map(w=>`${dateLabel(w.start.slice(0,10))} · ${w.start.slice(11,16)} · ${w.title} · ${durationText(w.duration)}`).join('\n');
+ if(navigator.share){try{await navigator.share({title,text});return}catch(e){if(e.name==='AbortError')return}}
+ try{await navigator.clipboard.writeText(text);toast('Тренировки за период скопированы')}catch{openSheet('Поделиться тренировками',`<textarea class="plan-copy" readonly aria-label="Тренировки за период">${esc(text)}</textarea>`)}
+}
+if(globalThis.HappyPeriod)HappyPeriod.bind(document.body,{get:()=>journalPeriod,set(st){journalPeriod=st;render();},today:dayNow,share:shareJournalPeriod,
+ sheet(title,html){openSheet(title,html,'journal-period');return document.querySelector('#modal-root .sheet');},close:()=>closeSheet()});
 renderHistory=function(){
  // Аудит единообразия 18.11.2026: журнал всегда лентой — со связкой с Day и Meal и без; еда из Meal — только при связке.
- const feed=journalFeedOn(),rows=journalRows(feed);
- if(!rows.length)return '<div class="stack"><div class="empty">Завершённые тренировки появятся здесь.</div></div>';
+ const feed=journalFeedOn(),all=journalRows(feed),r=journalPeriodRange(),rows=all.filter(x=>{const d=x.at.slice(0,10);return d>=r.a&&d<=r.b;});
+ if(!all.length)return '<div class="stack"><div class="empty">Завершённые тренировки появятся здесь.</div></div>';
+ if(!rows.length)return `<div class="stack"><div class="empty">${r.a===r.b&&r.a===dayNow()?'Сегодня записей нет.':'За этот период записей нет.'}</div></div>`;
  {
   const days=new Map();for(const r of rows){const d=String(r.at).slice(0,10);if(!days.has(d))days.set(d,[]);days.get(d).push(r);}
   return `<div class="journal-feed">${[...days].map(([d,list])=>`<section class="feed-daygroup"><h3 class="feed-date">${esc(ruDateText(d))}</h3><ol class="feed-list">${list.map(journalFeedItem).join('')}</ol></section>`).join('')}</div>`;

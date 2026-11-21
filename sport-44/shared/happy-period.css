@@ -1,0 +1,35 @@
+/* Выбор периода журнала (shared/happy-period.js), как в Meal: компактная полоска, рядом «Поделиться», ниже дата.
+   Размеры — по правилам оформления: вкладки 44, текст 14, всё нажимаемое — пилюля. — Claude · 21.11.2026 */
+.hp-period{margin:0 0 16px}
+.hp-row{display:flex;align-items:center;gap:8px}
+.hp-seg{display:inline-flex;flex:0 1 auto;min-width:0;height:54px;padding:4px;box-sizing:border-box;border-radius:999px;
+ border:1px solid var(--hp-line,rgba(255,255,255,.38));background:var(--hp-glass,rgba(255,255,255,.09))}
+.hp-seg button{flex:0 1 auto;min-width:44px;height:44px;padding:0 12px;border:0;border-radius:999px;background:none;color:#fff;
+ font:inherit;font-size:14px;font-weight:400;line-height:1;white-space:nowrap;display:grid;place-items:center;cursor:pointer}
+.hp-seg button.on{background:rgba(255,255,255,.94);color:var(--hp-on-ink,#5C4598);font-weight:600}
+.hp-seg button[data-hp="custom"]{padding:0}
+.hp-seg svg,.hp-share svg,.hp-month svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hp-share{flex:none;width:54px;height:54px;padding:0;border-radius:999px;border:1px solid var(--hp-line,rgba(255,255,255,.38));
+ background:var(--hp-glass,rgba(255,255,255,.09));color:#fff;display:grid;place-items:center;cursor:pointer}
+.hp-share svg{width:22px;height:22px;stroke-width:1.9}
+.hp-cap{margin:10px 2px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,.72)}
+.hp-seg button:focus-visible,.hp-share:focus-visible,.hp-cal button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media (max-width:359px){.hp-seg button{padding:0 9px}}
+/* лист «Свой период» */
+.hp-cal{padding-bottom:8px}
+.hp-ends{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hp-lab{display:block;margin:0 0 8px;font-size:14px;font-weight:600}
+.hp-end{width:100%;height:48px;box-sizing:border-box;padding:0 8px;border-radius:12px;border:1px solid rgba(255,255,255,.34);
+ background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer}
+.hp-end.on{border:2px solid #fff;background:rgba(255,255,255,.24)}
+.hp-month{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px}
+.hp-month b{font-size:16px;font-weight:600}
+.hp-month button{width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:#fff;display:grid;place-items:center;cursor:pointer}
+.hp-month button:disabled{opacity:.35;cursor:default}
+.hp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px}
+.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:600;color:rgba(255,255,255,.72)}
+.hp-grid button{height:44px;padding:0;border:0;border-radius:0;background:none;color:#fff;font:inherit;font-size:16px;font-weight:400;
+ font-variant-numeric:tabular-nums;cursor:pointer}
+.hp-grid button.in{background:rgba(255,255,255,.16)}
+.hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,#5C4598);font-weight:600}
+.hp-grid button:disabled{opacity:.35;cursor:default}

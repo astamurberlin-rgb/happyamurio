@@ -190,7 +190,8 @@ selectExerciseContextTab=function(key,focus=false){
    слово уже на переключателе и в меню (Астамур, лаборатория 15.11.2026). */
 renderJournal=function(){
  const tab=(id,label)=>`<button data-action="journal-tab" data-id="${id}" class="${journalTab===id?'selected':''}" aria-pressed="${journalTab===id}">${label}</button>`;
- return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():renderHistory());
+ // 21.11.2026 (Астамур): под переключателем — выбор периода, как в Meal (общий shared/happy-period.js, sport-journal.js)
+ return `<div class="segmented journal-switch" role="group" aria-label="Раздел журнала">${tab('workouts','Журнал')}${tab('measurements','Замеры тела')}</div>`+(journalTab==='measurements'?renderMeasurements():journalPeriodHead()+renderHistory());
 };
 
 /* Один список упражнений в трёх местах — Библиотека, «Добавить упражнение» в тренировке, «Выбрать упражнение» в
