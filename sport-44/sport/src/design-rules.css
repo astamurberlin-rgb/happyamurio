@@ -381,8 +381,9 @@ button.active-banner{color:#fff;font:inherit;text-align:left;cursor:pointer;-web
 .swipe-delete .icon,.exercise-name-delete .icon{display:none!important}
 .set-swipe[data-swipe-kind="rest"]>.swipe-delete{height:36px!important;min-height:36px!important;max-height:36px!important;margin-top:-18px!important}
 /* Астамур 21.11.2026: значок тренировки в поле «Название» — без рамки и без карандаша.
-   Пока значок не выбран — значок «картинка» (как в iPhone), без заливки и рамки */
+   Пока значок не выбран — значок «картинка» (как в iPhone): 28, скруглённые углы, без заливки и рамки */
 .workout-name-input .workout-icon-toggle{border:0!important;background:none!important;min-height:40px!important;margin-left:4px}   /* квадрат 40×40, отступ 4 от краёв поля со всех сторон */
 .workout-name-input .workout-icon-toggle::after{content:"";position:absolute;inset:-3px}   /* нажимается 46×46 */
 .workout-name-input .workout-icon-toggle.is-empty{color:rgba(255,255,255,.73)}   /* цветом подсказки «Моя тренировка» */
-.workout-name-input .workout-icon-toggle.is-empty>.icon{width:24px!important;height:24px!important}
+.workout-name-input .workout-icon-toggle.is-empty>.icon{width:28px!important;height:28px!important}
+.workout-name-input .workout-icon-toggle .workout-icon-empty{fill:none}   /* нарисован линией: общая заливка .icon его не закрашивает */
