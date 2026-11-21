@@ -133,7 +133,7 @@ function mountSupplements(screen){
  const grid=root.document.createElement('div');grid.id='ccPurchasedSupplements';grid.className='cc-grid cc-purchased';section.prepend(grid);
  /* Meal 33.30 (аудит 3, Астамур 21.11): «Купить» — под картинкой, во всю ширину, а не справа от заголовка */
  const head=section.querySelector('.sp-head'),cover=section.querySelector('.sp-catalog-cover'),top=root.document.createElement('div');top.id='ccSupplementBuy';top.className='cc-buy-bottom cc-buy-top';if(cover)cover.after(top);else if(head)head.append(top);
- const bottom=root.document.createElement('div');bottom.id='ccSupplementBuyBottom';bottom.className='cc-buy-bottom';if(e('spList'))e('spList').after(bottom);
+ /* аудит 3 (Астамур 21.11): «Купить» только под картинкой — нижней кнопки в конце списка нет */
 }
 function mount(){
  const screen=root.document.querySelector('[data-screen="recipes"]');if(!screen||!e('rcGrid'))return;

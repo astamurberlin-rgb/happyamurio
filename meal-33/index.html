@@ -65,6 +65,7 @@
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
+  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');   /* галочка Meal — сливовая (аудит 3) */
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
   --hs-toast-bg:rgba(49,20,46,.92);
   --hs-pill-on-ink:#84036d;
@@ -1472,7 +1473,7 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
   box-shadow:0 2px 4px rgba(4,40,80,.14),0 10px 24px rgba(4,40,80,.2),inset 0 1px 0 rgba(255,255,255,.5)}
 .erKnob b{font-size:calc(var(--ringH) * .18);font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
 .erKnob.long b{font-size:calc(var(--ringH) * .155)}
-.erKnob small{margin-top:3px;font-size:calc(var(--ringH) * .078);font-weight:600;color:rgba(255,255,255,.82);white-space:nowrap}
+.erKnob small{margin-top:3px;font-size:max(12px,calc(var(--ringH) * .078));font-weight:600;color:rgba(255,255,255,.82);white-space:nowrap}
 .erRows{min-width:0;height:var(--ringH);display:flex;flex-direction:column;justify-content:space-between}
 .erR{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:6px;font-size:var(--erF,12px);font-weight:600;line-height:1.2;color:var(--happy-ink)}
 .erDot{width:8px;height:8px;border-radius:50%}

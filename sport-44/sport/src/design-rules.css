@@ -396,3 +396,9 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 .toast:not(:has(button))>span,.toast:not(:has(button))>div{white-space:normal!important;overflow:visible!important}
 /* Кнопки действий — по ширине ряда, текст посередине; одна в ряду — во всю ширину (Астамур 21.11.2026, как в Day и Meal). */
 .happy-actions>.happy-button{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+/* Sport 44.12 (аудит 3, Астамур 21.11 «такого быть не должно»): все подзаголовки настроек с одного края, как «Приложение» и «Данные» (2px, shared .happy-heading) */
+.happy-settings .settings-section,.happy-settings .hs-links-title{margin-left:2px!important;margin-right:2px!important}
+/* Sport 44.12 (аудит 3, Астамур 21.11: «как в Day, иначе углы видны за нижним меню»): листы во всю ширину до самого низа,
+   скругление только сверху; низ уходит под нижнее меню, как .impSheet в Day (отступ 112 + безопасная зона) */
+.overlay{padding:0!important}
+.sheet{width:100%!important;border-radius:28px 28px 0 0!important;border-bottom:0!important;max-height:calc(100dvh - 40px - env(safe-area-inset-top))!important;padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}

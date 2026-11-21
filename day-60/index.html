@@ -66,6 +66,7 @@
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
+  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');   /* галочка Meal — сливовая (аудит 3) */
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
   --hs-toast-bg:rgba(49,20,46,.92);
   --hs-pill-on-ink:#84036d;
@@ -3484,7 +3485,7 @@ function jBars(ds,vals,lbl){
     return '<i data-day="'+d+'" class="'+(v?'':'no')+'" style="height:'+(v?Math.max(4,v/mx*100):0).toFixed(1)+'%" title="'+ruDate(d)+'"></i>' }).join('')+'</div>'+
     '<div class="jLt" style="margin-left:0"><span>'+ruDate(ds[0])+'</span><span>'+ruDate(ds[ds.length-1])+'</span></div>';
 }
-function jEmpty(t){ return '<p class="jEmptyT">'+t+'</p>' }   /* аудит 20.11.2026, п. 35: пустое место — просто текст, без рамки */
+function jEmpty(t){ return '' }   /* Day 60.16 (аудит 3, Астамур 21.11): «нет и нет» — пустой раздел журнала не показываем вовсе, без текстов о том, чего нет */   /* аудит 20.11.2026, п. 35: пустое место — просто текст, без рамки */
 var SL_NONE='Данных о сне пока нет.';   // аудит 20.11.2026, п. 38: путь к загрузке спрятан в «Для разработчика» — на обычном экране его не пишем
 function sleepDayHTML(d){
   var c=slOf(d), lbl='', note='';
@@ -3557,10 +3558,11 @@ function partsTxt(o,div){ var ks=Object.keys(o); if(ks.length===1&&!div) return 
 function mindDayHTML(d){
   var o=mindParts(d), s=mindSum(o);
   var own=(DB.days[d]||{}).mind, ownSec=own&&own.sec>0?own.sec:0;   // Day 59: заходы со всех устройств уже сложены
-  var otherTime=ownSec?'<p class="jMut">Время в Day: '+escH(secTxt(ownSec))+'</p>':'';
-  if(!s&&ownSec)return {cnt:'',h:otherTime};
+  if(ownSec<60)ownSec=0;   // аудит 3: «меньше минуты» не показываем
+  var otherTime='';   // аудит 3: время в Day — внутри той же карточки, а не отдельной мелкой строкой
+  if(!s&&ownSec)return {cnt:'',h:'<div class="jCard"><span class="jBig">'+secTxt(ownSec)+'</span> <span class="jMut">в Day</span></div>'};
   if(!s) return {cnt:'',h:jEmpty((d===todayISO()?'Сегодня':'В этот день')+' времени осознанности нет. Считаются сохранённые практики и сессии других приложений из Apple Health.')};
-  return {cnt:'',h:'<div class="jCard"><span class="jBig">'+secTxt(s)+'</span> <span class="jMut">'+escH(partsTxt(o))+'</span></div>'+otherTime};
+  return {cnt:'',h:'<div class="jCard"><span class="jBig">'+secTxt(s)+'</span> <span class="jMut">'+escH(partsTxt(o))+(ownSec?' · в Day '+escH(secTxt(ownSec)):'')+'</span></div>'+otherTime};
 }
 function mindPerHTML(r){
   var ds=jrDates(r), tot={}, vals=ds.map(function(d){ var o=mindParts(d); for(var k in o) tot[k]=(tot[k]||0)+o[k]; return mindSum(o)/60 }), n=vals.filter(Boolean).length;
@@ -3663,7 +3665,7 @@ function daysHTML(r){
   });
   return {cnt:rows.length?jrRangeTxt(r):'',h:rows.length?'<ol class="jDays">'+rows.join('')+'</ol>':jEmpty('За этот период записей нет.')};
 }
-function jrSec(title,right,body){ return '<div class="eyebrow"><span>'+title+'</span><small>'+escH(right||'')+'</small></div>'+body }
+function jrSec(title,right,body){ if(!body) return ''; return '<div class="eyebrow"><span>'+title+'</span><small>'+escH(right||'')+'</small></div>'+body }
 function renderTrends(){
   var r=jrRange(), t=todayISO(), one=JR_PER==='today', sl, wo, mi;
   if(MIND.on) mindTick();
