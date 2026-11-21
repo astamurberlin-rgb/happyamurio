@@ -5,6 +5,7 @@
 function mountSportMeasurements(){
  const box=document.getElementById('happy-measurements');
  if(!box){HappyMeasurements.unmount();return}
+ box.dataset.hmColors='app';   // полосы таблицы — в цвет приложения и темы, как в Day и Meal (Астамур 21.11.2026, лаборатория)
  HappyMeasurements.mount(box,{doc:()=>SportData.signedIn()?SportData.store.doc('body'):null,askSignIn:SportData.askSignIn,toast,
   // цвет разницы по цели веса Sport (снижение, поддержание, рекомпозиция, набор) — Claude · 17.11.2026
   goal:()=>{try{return HappyGoals.weightKind((state.sportGoals||{}).versions)}catch(e){return null}}});   // цель веса одна на аккаунт (18.11.2026)

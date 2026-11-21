@@ -1284,7 +1284,8 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
 .hm-dialog .hm-sheet{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 /* Sport 43 · общий экран замеров (shared/happy-measurements.css): цвета Sport для закреплённого столбца таблицы. */
-.hm{--hm-pin-bg:#717edf}
+/* С темой столбец названий берёт её основной цвет (--base), без темы — прежний #717edf. Лаборатория 21.11.2026. */
+:root:not([data-happy-appearance]) .hm{--hm-pin-bg:#717edf}
 #happy-measurements{margin-top:2px}
 /* Happy: экраны аккаунта, профиля и целей — общие для Day, Meal и Sport (shared/happy-screens.js и соседи).
  * Внешний вид — по согласованным прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026): прозрачное стекло,
@@ -7327,6 +7328,7 @@ renderHistory=function(){
 function mountSportMeasurements(){
  const box=document.getElementById('happy-measurements');
  if(!box){HappyMeasurements.unmount();return}
+ box.dataset.hmColors='app';   // полосы таблицы — в цвет приложения и темы, как в Day и Meal (Астамур 21.11.2026, лаборатория)
  HappyMeasurements.mount(box,{doc:()=>SportData.signedIn()?SportData.store.doc('body'):null,askSignIn:SportData.askSignIn,toast,
   // цвет разницы по цели веса Sport (снижение, поддержание, рекомпозиция, набор) — Claude · 17.11.2026
   goal:()=>{try{return HappyGoals.weightKind((state.sportGoals||{}).versions)}catch(e){return null}}});   // цель веса одна на аккаунт (18.11.2026)
