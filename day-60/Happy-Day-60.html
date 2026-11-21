@@ -7066,7 +7066,19 @@ function renderAll(){
  const copy=value=>JSON.parse(JSON.stringify(value));
  const mix=(hex,target,amount)=>'#'+[1,3,5].map(i=>Math.round(parseInt(hex.slice(i,i+2),16)*(1-amount)+target*amount).toString(16).padStart(2,'0')).join('');
  const glow=(color,x,y,radius,strength)=>({enabled:true,color,x,y,radius,strength});
+ /* 21.11.2026 (Астамур): цвет главной кнопки и цветных мест темы (меню, выделения, переключатели) берётся с фона темы —
+    примерно на 20 % от верха, а не из отдельного цвета. Цвет затемняется, пока белый значок на нём не станет читаемым
+    (контраст 4,5 : 1). Ночные темы и темы-оригиналы приложений (Бордо — Meal, Фиолетовый бриз — Sport) остаются со своим цветом. */
+ const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),hex=a=>'#'+a.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+ const lum=h=>{const c=rgb(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+ function fromTop(colors){
+  const P=[0,17,50,76,100],p=20;let i=0;while(i<P.length-2&&p>P[i+1])i++;
+  const t=(p-P[i])/(P[i+1]-P[i]),a=rgb(colors[i]),b=rgb(colors[i+1]);let c=hex(a.map((v,k)=>v+(b[k]-v)*t));
+  for(let n=0;n<20&&1.05/(lum(c)+.05)<4.5;n++)c=hex(rgb(c).map(v=>v*.93));
+  return c;
+ }
  function theme(id,name,mode,note,colors,angle,lights,accent,ui={}){
+  if(mode!=='night'&&!ui.ownButton)accent=[fromTop(colors)];
   const backgroundGradient=G.normalize({type:'linear',angle,stops:colors.map((color,i)=>({color,position:[0,17,50,76,100][i]})),glow:lights[0],extraGlow:lights[1]});
   const state={angle,base:colors.slice(),glows:lights.map(g=>({color:g.color,opacity:g.strength/100,x:g.x,y:g.y,w:g.radius,h:g.radius})),backgroundGradient,
    wallpaper:'none',wallpaperData:'',brightness:100,saturationBoost:100,buttonColor:accent[0],buttonShine:mode==='night'?12:36,buttonAlpha:100,fabAlpha:100,
@@ -7080,10 +7092,10 @@ function renderAll(){
    [glow('#a7fac5',16,10,76,43),glow('#a7baff',91,28,71,32)],['#329a9b']),
   theme('bordeaux','Бордо','basic','Основной бордово-вишнёвый фон Happy Meal.',
    ['#963452','#983252','#812c4b','#632749','#462747'],165,
-   [glow('#f37ca5',93,15,80,40),glow('#9d57ae',6,-8,73,38)],['#730074']),
+   [glow('#f37ca5',93,15,80,40),glow('#9d57ae',6,-8,73,38)],['#730074'],{ownButton:true}),
   theme('sport','Фиолетовый бриз','basic','Основной фиолетово-синий фон Happy Sport.',
    ['#8c75db','#8275e8','#478bf0','#3989ed','#5a53cc'],165,
-   [glow('#ff8fd2',95,20,76,32),glow('#9e77fb',7,-10,66,33)],['#6450c3']),
+   [glow('#ff8fd2',95,20,76,32),glow('#9e77fb',7,-10,66,33)],['#6450c3'],{ownButton:true}),
   theme('golden-sunset','Золотой закат','regular','Фиолетовое небо, розовый свет и тёплое золото.',
    ['#35205e','#652568','#a03d78','#df8d7c','#ffc977'],172,
    [glow('#ffdf87',78,93,66,90),glow('#ff984b',4,89,57,53)],['#e78c24'],{glassColor:'#35213e',mutedColor:'#f2dfe6'}),

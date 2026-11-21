@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 662062,
-   "sha256": "3f4b7593119eb55378e6d124e0c39753faefa1387fca38c1ba16785f14b53535"
+   "size": 663362,
+   "sha256": "56327416a1d89741db3485079397e4b1556937c65d874f3f54472656340ffff9"
   },
   {
    "path": "kfct.js",
@@ -934,8 +934,8 @@
   },
   {
    "path": "shared/happy-reference-themes.js",
-   "size": 8722,
-   "sha256": "7b317e6be4a53272071a92d61ce883f97d6cfca9eb0a99f28805f29e392e37fe"
+   "size": 10022,
+   "sha256": "7d3617a512bddb383281d6e19b571215cbec319f04c8b17f0a95649f2f2622d7"
   },
   {
    "path": "shared/happy-screens.css",
