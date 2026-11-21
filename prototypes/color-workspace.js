@@ -28,7 +28,7 @@
   const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
   const button=(text,fn,cls='smallbtn')=>{const b=el('button',cls,text);b.type='button';b.onclick=fn;return b;};
   const live=el('div','studio-live');live.setAttribute('aria-live','polite');container.before(live);
-  const toolbar=el('div','studio-toolbar');toolbar.append(el('p','','Тап — свернуть. Потяни за ⠿, чтобы переместить раздел.'),button('Свернуть всё',()=>{for(const p of panels.values())p.open=false;}));container.before(toolbar);
+  const toolbar=el('div','studio-toolbar');toolbar.append(el('p','','Тап — свернуть. Потяни за ≡, чтобы переместить раздел.'),button('Свернуть всё',()=>{for(const p of panels.values())p.open=false;}));container.before(toolbar);
   function announce(text){live.textContent=text;}
   function order(){return [...container.children].filter(n=>n.dataset.panel).map(n=>n.dataset.panel);}
   function remember(){data.layout.order=order();for(const [id,p] of panels)data.layout.open[id]=p.open;return persist();}
