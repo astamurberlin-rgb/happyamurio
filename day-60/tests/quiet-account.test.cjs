@@ -50,7 +50,7 @@ test('без входа — предложение войти на экране 
 });
 
 test('своего хранилища и своих запросов к серверу у Day нет: только общий вход и общий модуль', () => {
-  const allowed = { 'arc-motion.js': 2, 'index.html': 3 };   // вид дуги и оформление — настройки устройства, не записи
+  const allowed = { 'arc-motion.js': 2, 'index.html': 4 };   // вид дуги и оформление — настройки устройства, не записи (4-е — тема до первой отрисовки, 21.11.2026)
   for (const name of own) {
     const text = read(name), storage = (text.match(/localStorage\./g) || []).length;
     assert.equal(storage, allowed[name] || 0, name + ': обращений к памяти браузера ' + storage);

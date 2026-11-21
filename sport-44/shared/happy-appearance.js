@@ -16,13 +16,20 @@
  const validButton=b=>b==='theme'||b==='original'||themes.some(t=>t.id===b);
  const name=id=>themes.find(t=>t.id===id)?.name||'По умолчанию · исходное';
  const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
+ /* 21.11.2026: копия выбранного оформления для первой отрисовки. Скрипт в начале страницы (HAPPY-APPEARANCE-PAINT) ставит её
+    до экрана загрузки, чтобы смайлик и фон сразу были цвета темы, а не исходного. Пишем только сохранённый выбор, не просмотр. */
+ const paintKey='happy-'+app+'-appearance-paint-v1';
+ function remember(id,button,css){
+  if(id!==current||button!==currentButton)return;
+  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css}):'')).catch(()=>{});}catch(e){}
+ }
  function skin(id,button){
   if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
   const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
   const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
   document.documentElement.dataset.happyAppearanceButton=button;
-  if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
+  if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');remember(id,button,'');return;}
   let css='';
   if(t){const s=t.state,bg=G.css(s.backgroundGradient);
    css+='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';}';}
@@ -49,6 +56,7 @@
   if(tokens)css+=' :root:root{'+tokens+'}';
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
   if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');
+  remember(id,button,css);
  }
  function labels(){document.querySelectorAll('[data-happy-appearance-label]').forEach(el=>{el.textContent=name(current)});}
  function entry(){
@@ -121,6 +129,7 @@
  document.addEventListener('click',e=>{const b=e.target.closest?.('[data-happy-appearance-open]');if(b)open(b)});
  async function init(){
   try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;if(validButton(saved.button))currentButton=saved.button;skin(current)}}catch(e){}
+  if(!current&&currentButton==='theme')skin('');   // сохранённого выбора нет — убрать копию в начале страницы, если осталась
   ready=true;entry();labels();
   new MutationObserver(entry).observe(document.body,{childList:true,subtree:true});
  }

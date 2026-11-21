@@ -10,8 +10,10 @@
  --hm-stripe-dark:#5797df;--hm-stripe-dark-ink:#fff;--hm-stripe-light:#b1d7f8;--hm-stripe-light-ink:#30496d;
  font-size:14px;line-height:1.4;-webkit-user-select:none;user-select:none}
 @supports (color:color-mix(in srgb,red,blue)){
- /* Лаборатория 21.11.2026 (Астамур): третья колонка на тон тусклее первой; светлая полоса — тот же цвет под полупрозрачным белым слоем. */
- .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 84%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 78%,#fff);--hm-stripe-light-ink:#fff}
+ /* Без темы — исходный вид, как до 21.11.2026: Day и Meal (data-hm-colors="app") — в цвет приложения, Sport — синие полосы. */
+ :root:not([data-happy-appearance]) .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 88%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 26%,#fff);--hm-stripe-light-ink:color-mix(in srgb,var(--hm-pin) 45%,#0b1220)}
+ /* С темой (Астамур 21.11.2026), во всех трёх приложениях: полосы в цвет темы, третья колонка на тон тусклее первой, светлая — тот же цвет под полупрозрачным белым слоем. */
+ :root[data-happy-appearance] .hm{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 84%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 78%,#fff);--hm-stripe-light-ink:#fff}
 }
 .hm *{box-sizing:border-box}
 :where(.hm) button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;margin:0;padding:0;-webkit-tap-highlight-color:transparent}

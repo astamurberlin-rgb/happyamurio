@@ -1462,8 +1462,10 @@ body.wheel-editing [data-screen="ring"]{position:relative;overflow-x:hidden}
  --hm-stripe-dark:#5797df;--hm-stripe-dark-ink:#fff;--hm-stripe-light:#b1d7f8;--hm-stripe-light-ink:#30496d;
  font-size:14px;line-height:1.4;-webkit-user-select:none;user-select:none}
 @supports (color:color-mix(in srgb,red,blue)){
- /* Лаборатория 21.11.2026 (Астамур): третья колонка на тон тусклее первой; светлая полоса — тот же цвет под полупрозрачным белым слоем. */
- .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 84%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 78%,#fff);--hm-stripe-light-ink:#fff}
+ /* Без темы — исходный вид, как до 21.11.2026: Day и Meal (data-hm-colors="app") — в цвет приложения, Sport — синие полосы. */
+ :root:not([data-happy-appearance]) .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 88%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 26%,#fff);--hm-stripe-light-ink:color-mix(in srgb,var(--hm-pin) 45%,#0b1220)}
+ /* С темой (Астамур 21.11.2026), во всех трёх приложениях: полосы в цвет темы, третья колонка на тон тусклее первой, светлая — тот же цвет под полупрозрачным белым слоем. */
+ :root[data-happy-appearance] .hm{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 84%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 78%,#fff);--hm-stripe-light-ink:#fff}
 }
 .hm *{box-sizing:border-box}
 :where(.hm) button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -2350,7 +2352,7 @@ html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app
 .hs-export{display:flex;justify-content:center;margin-top:6px}
 .hs-export .hs-export-link{min-height:44px;padding:0 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:15px;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 </style>
-</head>
+<script>/* HAPPY-APPEARANCE-PAINT 21.11.2026: выбранная тема до первой отрисовки (экран загрузки со смайликом). Копию пишет shared/happy-appearance.js; потом он же её обновляет. */(function(){try{var d=document.documentElement,p=JSON.parse(localStorage.getItem('happy-'+d.dataset.happyAppearanceApp+'-appearance-paint-v1')||'null');if(!p||p.version!==1||typeof p.css!=='string'||!p.css)return;var s=document.createElement('style');s.id='happy-appearance-skin';s.textContent=p.css;document.head.appendChild(s);if(p.button)d.dataset.happyAppearanceButton=p.button;if(p.id)d.dataset.happyAppearance=p.id;}catch(e){}})();</script></head>
 <body class="loading">
 
 <div class="bg"></div><div class="grain"></div>
@@ -7077,13 +7079,20 @@ function renderAll(){
  const validButton=b=>b==='theme'||b==='original'||themes.some(t=>t.id===b);
  const name=id=>themes.find(t=>t.id===id)?.name||'По умолчанию · исходное';
  const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
+ /* 21.11.2026: копия выбранного оформления для первой отрисовки. Скрипт в начале страницы (HAPPY-APPEARANCE-PAINT) ставит её
+    до экрана загрузки, чтобы смайлик и фон сразу были цвета темы, а не исходного. Пишем только сохранённый выбор, не просмотр. */
+ const paintKey='happy-'+app+'-appearance-paint-v1';
+ function remember(id,button,css){
+  if(id!==current||button!==currentButton)return;
+  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css}):'')).catch(()=>{});}catch(e){}
+ }
  function skin(id,button){
   if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
   const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
   const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
   document.documentElement.dataset.happyAppearanceButton=button;
-  if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');return;}
+  if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');remember(id,button,'');return;}
   let css='';
   if(t){const s=t.state,bg=G.css(s.backgroundGradient);
    css+='html{background:'+bg+'!important;}body{background:transparent!important;} html[data-happy-appearance] body>.bg{background:'+bg+'!important;} :root{--sport-background:'+bg+';}';}
@@ -7110,6 +7119,7 @@ function renderAll(){
   if(tokens)css+=' :root:root{'+tokens+'}';
   if(!style){style=document.createElement('style');style.id='happy-appearance-skin';document.head.append(style);}style.textContent=css;
   if(t)document.documentElement.dataset.happyAppearance=id;else document.documentElement.removeAttribute('data-happy-appearance');
+  remember(id,button,css);
  }
  function labels(){document.querySelectorAll('[data-happy-appearance-label]').forEach(el=>{el.textContent=name(current)});}
  function entry(){
@@ -7182,6 +7192,7 @@ function renderAll(){
  document.addEventListener('click',e=>{const b=e.target.closest?.('[data-happy-appearance-open]');if(b)open(b)});
  async function init(){
   try{const saved=JSON.parse(await root.rawGet(key)||'null');if(saved?.version===1&&valid(saved.presetId)){current=saved.presetId;if(validButton(saved.button))currentButton=saved.button;skin(current)}}catch(e){}
+  if(!current&&currentButton==='theme')skin('');   // сохранённого выбора нет — убрать копию в начале страницы, если осталась
   ready=true;entry();labels();
   new MutationObserver(entry).observe(document.body,{childList:true,subtree:true});
  }
