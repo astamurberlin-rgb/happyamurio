@@ -12,7 +12,7 @@
    wallpaper:'none',wallpaperData:'',brightness:100,saturationBoost:100,buttonColor:accent[0],buttonShine:mode==='night'?12:36,buttonAlpha:100,fabAlpha:100,
    buttonGradient:G.normalize({type:'radial',x:32,y:20,radius:100,stops:[{color:mix(accent[0],255,mode==='night'?.10:.406),position:0},{color:accent[0],position:56},{color:mix(accent[0],0,.25),position:100}]}),buttonTextColor:'#ffffff',
    glassColor:'#ffffff',glassAlpha:18,borderColor:'#ffffff',borderAlpha:36,glassBlur:12,cornerRadius:22,themeMode:mode};
-  return {id:'happy-ref-'+id+'-v1',name,mode,note,colors:[...new Set([...colors,...lights.map(g=>g.color)])].slice(0,8),state};
+  return {id:'happy-ref-'+id+'-v1',name,mode,note,ui,colors:[...new Set([...colors,...lights.map(g=>g.color)])].slice(0,8),state};
  }
  const themes=[
   theme('mint','Мята','basic','Свежая мята, бирюза и мягкое сиреневое основание.',

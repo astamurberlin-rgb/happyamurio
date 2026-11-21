@@ -35,7 +35,7 @@
 /* ── Поиск по дневникам: как остальные поля — полупрозрачный, со значком лупы ── */
 #careDiarySearch{box-sizing:border-box;height:48px!important;padding:0 16px 0 44px!important;border-radius:12px!important;border:1px solid var(--glassBrd)!important;
   background:rgba(255,255,255,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='.85' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4.5 4.5'/%3E%3C/svg%3E") no-repeat 14px center/18px 18px!important;
-  color:#fff!important;font-size:16px!important;-webkit-appearance:none;appearance:none}
+  color:var(--happy-ink)!important;font-size:16px!important;-webkit-appearance:none;appearance:none}
 #careDiarySearch::-webkit-search-cancel-button{-webkit-appearance:none}
 
 /* ── Числа в «Порогах под тебя»: поле числа с единицей внутри, справа в строке ── */

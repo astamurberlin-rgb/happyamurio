@@ -1,0 +1,40 @@
+/* Happy — общие цвета трёх приложений (✱ design tokens). Лаборатория 21.11.2026, план «Общий файл цветов Happy».
+   Цвета в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
+   Блок «из Color Studio» — палитра каждого приложения: значения как в Color Studio, руками не править.
+   Тема (Настроить тему) подменяет эти же имена на цвета темы: shared/happy-appearance.js, функция skin().
+   Белый и чёрный в тенях и масках остаются числом: от темы они не зависят. */
+
+/* ── из Color Studio: палитра приложения ── */
+:root{
+  --happy-base:#00a8f5;
+  --happy-accent:#5a50d1;
+  --happy-on-accent:#fff;
+  --happy-ink:#fff;
+  --happy-heading:#fff;
+  --happy-muted:rgba(255,255,255,.72);
+  --happy-dim:rgba(255,255,255,.45);
+  --happy-glass:rgba(255,255,255,.16);
+  --happy-line:rgba(255,255,255,.34);
+  --happy-dock-bg:rgba(233,243,253,.92);
+  --happy-dock-ink:#2c3e66;
+  --happy-dock-accent:#5a50d1;
+}
+:root[data-happy-appearance-app="meal"]{
+  --happy-base:#812c4b;
+  --happy-accent:#730074;
+}
+:root[data-happy-appearance-app="sport"]{
+  --happy-base:#8c75db;
+  --happy-dock-ink:#6e8396;
+}
+/* ── конец блока из Color Studio ── */
+
+/* Цвета смысла: одинаковые в трёх приложениях, тема их не меняет. */
+:root{
+  --happy-danger:#ff6b78;
+  --happy-success:#52d7c1;
+  --happy-warning:#ffc53d;
+  --happy-protein:#e34948;
+  --happy-fat:#eda100;
+  --happy-carbs:#6250d6;
+}

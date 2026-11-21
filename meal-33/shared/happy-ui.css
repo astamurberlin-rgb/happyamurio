@@ -1,19 +1,19 @@
 /* Shared Happy controls. Happy Meal is the visual reference. */
 .happy-settings{--happy-line:rgba(255,255,255,.36);--happy-glass:rgba(255,255,255,.17);--happy-muted:rgba(255,255,255,.82);font-size:15px;line-height:1.5}
 .happy-section{margin:0 0 24px;min-width:0}
-.happy-heading{display:block;font-family:inherit;font-size:14px;font-weight:700;line-height:1.4;color:#fff;margin:22px 2px 12px}
+.happy-heading{display:block;font-family:inherit;font-size:14px;font-weight:700;line-height:1.4;color:var(--happy-ink);margin:22px 2px 12px}
 .happy-section:first-child>.happy-heading{margin-top:0}
-.happy-card{display:block;width:100%;box-sizing:border-box;text-align:left;color:#fff;padding:15px 16px;border-radius:22px;background:var(--happy-glass,rgba(255,255,255,.17));border:1px solid var(--happy-line,rgba(255,255,255,.36));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14)}
+.happy-card{display:block;width:100%;box-sizing:border-box;text-align:left;color:var(--happy-ink);padding:15px 16px;border-radius:22px;background:var(--happy-glass,rgba(255,255,255,.17));border:1px solid var(--happy-line,rgba(255,255,255,.36));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14)}
 .happy-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 0;padding:0}
 .happy-actions+.happy-actions{margin-top:12px}
-.happy-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;flex:0 1 auto;width:auto;max-width:100%;min-height:44px;margin:0;padding:11px 16px;border:1px solid var(--happy-line,rgba(255,255,255,.36));border-radius:14px;background:var(--happy-glass,rgba(255,255,255,.17));color:#fff;font-family:inherit;font-size:14px;font-weight:600;line-height:20px;text-decoration:none;text-align:center;cursor:pointer;white-space:normal;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
+.happy-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;flex:0 1 auto;width:auto;max-width:100%;min-height:44px;margin:0;padding:11px 16px;border:1px solid var(--happy-line,rgba(255,255,255,.36));border-radius:14px;background:var(--happy-glass,rgba(255,255,255,.17));color:var(--happy-ink);font-family:inherit;font-size:14px;font-weight:600;line-height:20px;text-decoration:none;text-align:center;cursor:pointer;white-space:normal;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
 .happy-button.primary{background:rgba(255,255,255,.92);color:#0c6fa8;border-color:#fff}
 .happy-button:disabled{opacity:.5;cursor:default}
 .happy-button:focus-visible,.happy-input:focus-visible,.happy-password-toggle:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .happy-note{font-family:inherit;font-size:13px;line-height:1.65;color:var(--happy-muted,rgba(255,255,255,.82));margin:12px 0 0}
 .happy-note:empty{display:none}
 .happy-error{color:#ffe3bf}
-.happy-input{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;border:1px solid var(--happy-line,rgba(255,255,255,.36));background:rgba(255,255,255,.14);color:#fff;border-radius:12px;padding:11px 12px;font-family:inherit;font-size:16px;font-weight:400;line-height:22px;min-height:46px;-webkit-appearance:none;appearance:none}
+.happy-input{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;border:1px solid var(--happy-line,rgba(255,255,255,.36));background:rgba(255,255,255,.14);color:var(--happy-ink);border-radius:12px;padding:11px 12px;font-family:inherit;font-size:16px;font-weight:400;line-height:22px;min-height:46px;-webkit-appearance:none;appearance:none}
 .happy-input::placeholder{color:rgba(255,255,255,.62);opacity:1}
 .happy-password{position:relative;margin-bottom:8px}
 .happy-password .happy-input{margin-bottom:0;padding-right:48px!important}
@@ -49,7 +49,7 @@
 /* Meal uses the same row metrics as the current Sport energy widget. */
 .card.erCard{border-radius:24px;box-shadow:0 2px 3px rgba(4,40,80,.07),0 12px 30px rgba(4,40,80,.10);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}
 .erR{row-gap:5px;font-size:var(--erF,11px);color:#ffffffd1}
-.erR b{color:#fff}
+.erR b{color:var(--happy-ink)}
 .erBar{height:5px;background:#ffffff38}
 @media(max-width:360px){.card.erCard{column-gap:10px}.erR{font-size:var(--erF,10px);column-gap:4px}}
 @media(prefers-reduced-motion:reduce){.happy-switch,.happy-switch::after{transition:none}}
