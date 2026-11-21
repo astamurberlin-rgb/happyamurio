@@ -549,8 +549,8 @@
   },
   {
    "path": "collections.js",
-   "size": 22633,
-   "sha256": "20928ecabdb80c1f3f0236f8bc7ee8af68dda92acd922e05f41d867105ec6f61"
+   "size": 22711,
+   "sha256": "f7c73e1d6334eef690dbcebdbb73bf7c87feb9634c736c7942ec56ffca7ac819"
   },
   {
    "path": "controls.js",
@@ -1044,8 +1044,8 @@
   },
   {
    "path": "supplements.js",
-   "size": 55959,
-   "sha256": "9f745c82e6f2f23119e48fe456563144bef0c0d56b6908a7ac68c3bb274e9c10"
+   "size": 55890,
+   "sha256": "34871e2455d3e8ded8f37c84e14c250f3292c844fa5243291ee56d251bda1770"
   },
   {
    "path": "sw.js",
