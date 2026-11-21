@@ -2,7 +2,8 @@
 странице, экран 393×852, придуманный аккаунт. Третья строка настроек; шкалы и общая граница; точное время; замки
 исходных периодов; свой приём и ночной перекус; перестановка «время остаётся у места»; свайп-удаление и возврат; фастинг
 и штриховка; пороги и пример; «Отмена» ничего не пишет, «Сохранить» — в дневник, после перезагрузки и на втором телефоне
-то же; бот и счётчики берут приём по новым периодам; старый список разделов из настроек убран."""
+то же; бот и счётчики берут приём по новым периодам; старый список разделов из настроек убран. Дни фастинга (Meal 33.21,
+слова Астамура 21.11.2026) — семь кружков под шкалой фастинга: у выключенного отмечен сегодняшний день (четверг)."""
 import datetime, json, sys
 from playwright.sync_api import sync_playwright
 from common import *
@@ -85,6 +86,16 @@ with sync_playwright() as p:
     check("экран без заголовка и карандаша, «Редактировать» текстом, кнопок 16:8 / 18:6 / 20:4 нет", not look["h1"] and not look["pen"] and not look["presets"] and look["edit"] == "Редактировать", look)
     check("фастинг — после периодов еды и перед «Добавить приём», выключен; правила и пример свёрнуты", look["fastBeforeAdd"] and look["fastAfterList"] and look["fastOn"] == "false" and look["closed"], look)
     check("на узком экране ничего не вылезает за край, текста мельче 12 нет", not look["over"] and look["small"] == 0, look)
+    days = page.evaluate("""()=>{const m=document.querySelector('#happy-screens .mp-page'),g=m.querySelector('.mp-days'),b=[...g.querySelectorAll('.mp-day')],q=s=>m.querySelector(s).getBoundingClientRect();
+      const r=b.map(x=>x.getBoundingClientRect()),cs=getComputedStyle(b[0]);
+      return {names:b.map(x=>x.textContent).join(' '),on:b.filter(x=>x.getAttribute('aria-pressed')==='true').map(x=>x.textContent),
+       under:q('.mp-axis').bottom<=g.getBoundingClientRect().top+1&&g.getBoundingClientRect().bottom<=q('.mp-add').top+1,
+       size:[...new Set(r.map(x=>Math.round(x.width)+'×'+Math.round(x.height)))],font:cs.fontSize,weight:cs.fontWeight,round:cs.borderRadius,
+       dim:getComputedStyle(g).opacity,fit:r[0].left>=q('.mp-track').left-1&&r[6].right<=q('.mp-track').right+1}}""")
+    out["days"] = days
+    check("под шкалой фастинга — дни Пн … Вс кружками 44 × 44, текст 14; у выключенного отмечен сегодняшний день — четверг, кружки приглушены",
+          days["names"] == "Пн Вт Ср Чт Пт Сб Вс" and days["on"] == ["Чт"] and days["under"] and days["size"] == ["44×44"] and days["font"] == "14px"
+          and days["weight"] == "600" and days["round"] == "999px" and days["dim"] == "0.5" and days["fit"], days)
     labels = page.evaluate("""()=>[...document.querySelectorAll('#happy-screens .mp-track')].map(t=>{const a=t.querySelector('[data-edge=a] span').getBoundingClientRect(),b=t.querySelector('[data-edge=b] span').getBoundingClientRect(),m=document.querySelector('#happy-screens .mp-page').getBoundingClientRect();
       return {gap:Math.round(Math.max(b.left-a.right,a.left-b.right)),in:Math.min(a.left,b.left)>=m.left-1&&Math.max(a.right,b.right)<=m.right+1}})""")
     check("подписи времени на шкалах не накладываются и не выходят за край", all(x["gap"] >= 4 and x["in"] for x in labels), labels)
@@ -162,12 +173,21 @@ with sync_playwright() as p:
     click(page, "#happy-screens [data-mp=fast]")
     f = page.evaluate("()=>({on:JSON.parse(document.querySelector('#happy-screens [name=mp-state]').value).rules.fast,shade:document.querySelectorAll('#happy-screens .mp-list .mp-shade').length,white:getComputedStyle(document.querySelector('#happy-screens .mp-fast .mp-fill')).backgroundColor,parts:document.querySelectorAll('#happy-screens .mp-fast .mp-fill').length})")
     out["fast"] = f
-    check("фастинг включён: 20:00–12:00 белой полосой с двух краёв шкалы, пересечения с едой заштрихованы", f["on"] == {"on": True, "a": 1200, "b": 720} and f["parts"] == 2 and f["white"] == "rgb(255, 255, 255)" and f["shade"] >= 3, f)
+    check("фастинг включён: 20:00–12:00 белой полосой с двух краёв шкалы, пересечения с едой заштрихованы; отмечен четверг", f["on"] == {"on": True, "a": 1200, "b": 720, "keep": True, "d": [4]} and f["parts"] == 2 and f["white"] == "rgb(255, 255, 255)" and f["shade"] >= 3, f)
+    click(page, "#happy-screens [data-day='6']"); click(page, "#happy-screens [data-day='4']")
+    dd = page.evaluate("()=>({d:JSON.parse(document.querySelector('#happy-screens [name=mp-state]').value).rules.fast.d,on:[...document.querySelectorAll('#happy-screens .mp-day[aria-pressed=true]')].map(x=>x.textContent),dim:getComputedStyle(document.querySelector('#happy-screens .mp-days')).opacity})")
+    check("нажал «Сб» и снял «Чт» — отмечена суббота, кружки не приглушены", dd == {"d": [6], "on": ["Сб"], "dim": "1"}, dd)
+    click(page, "#happy-screens [data-day='6']")
+    dd = page.evaluate("()=>({fast:JSON.parse(document.querySelector('#happy-screens [name=mp-state]').value).rules.fast,sw:document.querySelector('#happy-screens [data-mp=fast]').getAttribute('aria-checked')})")
+    check("снял последний день — фастинг выключился", dd["fast"]["on"] is False and dd["fast"]["d"] == [] and dd["sw"] == "false", dd)
+    click(page, "#happy-screens [data-mp=fast]")
+    dd = page.evaluate("()=>JSON.parse(document.querySelector('#happy-screens [name=mp-state]').value).rules.fast")
+    check("включил снова — отмечен сегодняшний день", dd == {"on": True, "a": 1200, "b": 720, "keep": True, "d": [4]}, dd)
     food = [(x["a"], x["b"]) for x in page.evaluate(STATE)["rows"]]
     wf = box(page, "#happy-screens [data-track=fast]")["w"]
     drag(page, "#happy-screens [data-track=fast] [data-edge=b]", dx=wf * 120 / 1440)
     st = page.evaluate(STATE)
-    check("границы фастинга двигаются свободно и еду не трогают", st["rules"]["fast"] == {"on": True, "a": 1200, "b": 840} and [(x["a"], x["b"]) for x in st["rows"]] == food, st["rules"])
+    check("границы фастинга двигаются свободно и еду не трогают", st["rules"]["fast"] == {"on": True, "a": 1200, "b": 840, "keep": True, "d": [4]} and [(x["a"], x["b"]) for x in st["rows"]] == food, st["rules"])
     page.evaluate("()=>document.querySelectorAll('#happy-screens details').forEach(d=>d.open=true)")
     page.fill("#happy-screens [name=mp-kcal]", "200"); page.fill("#happy-screens [name=mp-gap]", "30")
     click(page, "#happy-screens [data-scene=later]")
@@ -181,10 +201,10 @@ with sync_playwright() as p:
     page.fill("#happy-screens [name=mp-kcal]", "150")
     want = page.evaluate(STATE)
     click(page, "#happy-screens [data-hs=save]"); page.wait_for_timeout(600)
-    saved = page.evaluate("()=>({secs:DB.sections,rules:DB.mealRules,chain:MealPeriods.chain(DB),open:!!document.querySelector('#happy-screens .mp-page.hs-in')})"); out["saved"] = saved
+    saved = page.evaluate("()=>({secs:DB.sections,rules:MealPeriods.rules(DB),versions:MealFast.versions(DB).map(v=>[v.on,v.a,v.b]),chain:MealPeriods.chain(DB),open:!!document.querySelector('#happy-screens .mp-page.hs-in')})"); out["saved"] = saved
     keys = [x["k"] for x in want["rows"]]
     check("«Сохранить»: периоды, названия, виды и время — в разделах дневника, ключи исходных прежние", not saved["open"] and [(x["k"], x["t"], x["a"], x["b"]) for x in saved["chain"]] == [(x["k"], x["t"], x["a"], x["b"]) for x in want["rows"]] and keys[:2] == ["am", "pm"] and whole(saved["chain"]), saved["chain"])
-    check("пороги и фастинг сохранены", saved["rules"] == {"kcal": 150, "gap": 20, "fast": {"on": True, "a": 1200, "b": 840}}, saved["rules"])
+    check("пороги и фастинг сохранены с днём — четвергом; включение фастинга — версия в истории (Meal 33.21)", saved["rules"] == {"kcal": 150, "gap": 20, "fast": {"on": True, "a": 1200, "b": 840, "d": [4]}} and saved["versions"] == [[True, 1200, 840]], [saved["rules"], saved["versions"]])
     synced(page)
     page.reload(); enter(page); ready(page)
     check("после перезагрузки настройки те же", page.evaluate(CHAIN) == [[x["k"], x["t"], x["a"], x["b"], x["kind"]] for x in want["rows"]] and page.evaluate("()=>MealPeriods.rules(DB)") == saved["rules"], page.evaluate(CHAIN))

@@ -1,6 +1,7 @@
 """Meal 28: «Сборники» и настройки каталогов (с Meal 29 — и каталог «БАДы», пилюля «Мои добавки»). Один телефон, придуманный аккаунт, касания; каталоги — из ветки meal-libraries
-этого репозитория. Meal открывается на дне; вкладка «Сборники»: пилюли, шесть карточек магазина без БАДов, цена;
-страница узбекской кухни — 60 блюд, плов 255,4 ккал; тестовая покупка — «Куплено» в магазине и карточка в «Моих
+этого репозитория. Meal открывается на дне; вкладка «Сборники»: пилюли, десять карточек магазина, цена;
+страница узбекской кухни — 60 блюд, плов 255,4 ккал; с Meal 33.21 страница «Кавказской кухни» — 103 позиции из каталога kav
+по тем же кодам, обложка, «Абыста» и «Хинкали» в общем поиске по одному разу; национальные базы (BLS, USDA, MEXT, KFCT) — без цены и покупки (Астамур 20.11.2026); тестовая покупка — «Куплено» в магазине и карточка в «Моих
 рецептах»; десерты в «Моих продуктах» со свитчем, который выключает каталог и в настройках; поиск по каталогам и
 продуктам. Настройки: «Каталоги» вместо «Пищевых баз», карусель листается, «Показать больше / меньше». Без «≥»."""
 from common import *
@@ -32,17 +33,57 @@ with sync_playwright() as p:
     pills = meal.evaluate("()=>[...document.querySelectorAll('[data-cc-route]')].map(b=>b.textContent+(b.getAttribute('aria-pressed')==='true'?'*':''))")
     out["pills"] = pills
     check("пилюли: Магазин (выбран) · Мои рецепты · Мои продукты · Мои добавки", pills == ["Магазин*", "Мои рецепты", "Мои продукты", "Мои добавки"])
-    cards = meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid .cc-card')].map(c=>c.querySelector('b').textContent+' | '+c.querySelector('.cc-price').textContent)")
+    cards = meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid .cc-card')].map(c=>c.querySelector('b').textContent+' | '+((c.querySelector('.cc-price')||{}).textContent||'без цены'))")
     out["shop"] = cards
-    check("магазин: девять каталогов, первый — БАДы, цена «2 евро»", len(cards) == 9 and cards[0].startswith("БАДы") and all(c.endswith("| 2 евро") for c in cards))
+    BASES = ["BLS · Германия", "USDA · США", "MEXT · Япония", "KFCT · Южная Корея"]
+    check("магазин: десять каталогов, первый — БАДы, «Кавказская кухня» после узбекской; своё — «2 евро», национальные базы — без цены (Астамур 20.11.2026)",
+          len(cards) == 10 and cards[0].startswith("БАДы") and cards[2].startswith("Кавказская кухня")
+          and all(c.endswith("| без цены") if c.split(" | ")[0] in BASES else c.endswith("| 2 евро") for c in cards) and sum(c.split(" | ")[0] in BASES for c in cards) == 4)
     check("обложки загрузились", meal.evaluate("()=>[...document.querySelectorAll('#ccShopGrid img')].every(i=>i.complete&&i.naturalWidth>0)"))
     meal.screenshot(path=SHOTS + "meal_shop-1-shop.png")
+    # национальная база: страница без «Купить», покупка не действует, старая тестовая отметка не учитывается
+    meal.locator('#ccShopGrid [data-cc-open="BLS"]').tap()
+    meal.wait_for_timeout(400)
+    base = meal.evaluate("""()=>({buy:document.querySelectorAll('.cc-detail-inline .cc-buy,.cc-detail-inline .cc-buy-bottom').length,
+      note:document.querySelector('.cc-detail-inline').textContent.includes('Подключение каталога — в настройках, раздел «Каталоги».'),
+      bought:HappyCollections.buy('BLS'),mark:!!(DB.purchases&&DB.purchases.BLS)})""")
+    out["base"] = base
+    check("страница BLS: без «Купить», подсказка про настройки; покупка базы не записывается", base == {"buy": 0, "note": True, "bought": False, "mark": False})
+    meal.evaluate("()=>{DB.purchases=Object.assign({},DB.purchases,{USDA:true});HappyCollections.render()}")
+    meal.wait_for_timeout(200)
+    old = meal.evaluate("""()=>({shop:!!document.querySelector('#ccShopGrid [data-cc-card="USDA"] .cc-price'),mine:!!document.querySelector('#ccPurchasedProducts [data-cc-card="USDA"]'),owned:HappyCollections.isPurchased('USDA')})""")
+    out["old_mark"] = old
+    check("старая тестовая отметка «Куплено» у базы не учитывается: ни цены, ни карточки в «Моих продуктах»", old == {"shop": False, "mine": False, "owned": False})
+    meal.evaluate("()=>{const p=Object.assign({},DB.purchases);delete p.USDA;DB.purchases=p;HappyCollections.render()}")
+    meal.locator('[data-cc-route="shop"]').tap()
+    meal.wait_for_timeout(300)
     meal.locator('#ccShopGrid [data-cc-open="UZBEK"]').tap()
     meal.wait_for_timeout(500)
     foods = meal.evaluate("()=>[...document.querySelectorAll('.cc-detail-inline .cc-food')].map(f=>f.querySelector('h3').textContent+' '+f.querySelector('.cc-macros b').textContent)")
     check("страница узбекской кухни: 60 блюд, «Плов узбекский с бараниной» — 255,4 ккал", len(foods) == 60 and foods[0] == "Плов узбекский с бараниной 255,4")
     check("покупка как в прототипе: «Купить · 2 €», «Тестовая покупка · без оплаты»", meal.locator(".cc-detail-heading .cc-buy button").inner_text() == "Купить · 2 €" and meal.locator(".cc-detail-heading .cc-buy small").inner_text() == "Тестовая покупка · без оплаты")
     meal.screenshot(path=SHOTS + "meal_shop-2-uzbek.png")
+    # Meal 33.21: «Кавказская кухня» — список из самого каталога kav по тем же кодам, без копий
+    meal.locator('[data-cc-route="shop"]').tap()
+    meal.wait_for_timeout(300)
+    meal.locator('#ccShopGrid [data-cc-open="KAV"]').tap()
+    wait_for(meal, lambda: meal.evaluate("()=>document.querySelectorAll('.cc-detail-inline .cc-food').length") > 0, 10, 200)
+    kav = meal.evaluate("""()=>({n:document.querySelectorAll('.cc-detail-inline .cc-food').length,first:(f=>f.querySelector('h3').textContent+' '+f.querySelector('.cc-macros b').textContent)(document.querySelector('.cc-detail-inline .cc-food')),
+      ids:[...document.querySelectorAll('.cc-detail-inline .cc-food')].map(f=>f.dataset.food),codes:KAV.f.map(r=>'bls:'+r[0]),count:document.querySelector('.cc-detail-inline .cc-count').textContent,
+      img:(i=>i.complete&&i.naturalWidth>0)(document.querySelector('.cc-detail-inline .cc-detail-image')),note:document.querySelector('.cc-detail-inline').textContent.includes('Кухня включается в поиск вместе с каталогом Happy Meal. Отдельного переключателя нет.')})""")
+    out["kav"] = {k: v for k, v in kav.items() if k not in ("ids", "codes")}
+    check("страница «Кавказская кухня»: 103 позиции, первая — «Абыста — чистая, без соли и масла», 123,8 ккал", kav["n"] == 103 and kav["count"] == "103 позиции" and kav["first"] == "Абыста — чистая, без соли и масла 123,8")
+    check("блюда — те же коды каталога kav, что в поиске, в том же порядке, без повторов", kav["ids"] == kav["codes"] and len(set(kav["ids"])) == 103)
+    check("обложка кавказской кухни загрузилась; кухня в составе Happy Meal, без своего переключателя", kav["img"] and kav["note"])
+    meal.screenshot(path=SHOTS + "meal_shop-2a-kav.png")
+    for q, want in (("абыста", ["bls:ZA01A", "bls:ZA01B"]), ("хинкали", ["bls:ZG01", "bls:ZG02", "bls:ZG03"])):
+        found = meal.evaluate("(q)=>searchLib(q).map(f=>f.id)", q)
+        out["search_" + q] = found
+        check("общий поиск «%s»: блюда кавказской кухни на месте, по одному разу, повторов нет" % q, all(found.count(i) == 1 for i in want) and len(found) == len(set(found)))
+    meal.locator('[data-cc-route="shop"]').tap()   # назад к узбекской кухне: дальше её тестовая покупка
+    meal.wait_for_timeout(300)
+    meal.locator('#ccShopGrid [data-cc-open="UZBEK"]').tap()
+    meal.wait_for_timeout(500)
     meal.locator(".cc-detail-heading .cc-buy button").tap()
     meal.wait_for_timeout(400)
     check("после покупки — «Куплено» и подсказка, что деньги не списываются", meal.locator(".cc-detail-heading .cc-buy button").inner_text() == "Куплено" and "деньги не списываются" in meal.locator("#toast").inner_text())
@@ -99,7 +140,7 @@ with sync_playwright() as p:
     meal.wait_for_timeout(300)
     check("«Показать меньше» после раскрытия", meal.locator('[data-source-more="USDA"]').inner_text() == "Показать меньше")
     meal.screenshot(path=SHOTS + "meal_shop-5-settings.png")
-    text = meal.evaluate("()=>document.getElementById('mlKb').innerText+' '+document.getElementById('mlKbHint').textContent")
+    text = meal.evaluate("()=>document.querySelector('[data-screen=day]').innerText")
     check("на главном нет знака «≥»", "≥" not in text)
     check("на странице нет ошибок", not errors)
     out["errors"] = errors

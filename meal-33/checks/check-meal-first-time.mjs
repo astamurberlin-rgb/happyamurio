@@ -62,14 +62,13 @@ let items=c.mlIntakeItems([{fid:'coffee',t:'06:50',tm:1},{fid:'soup',t:'09:00'}]
 assert.equal(items.length,4);assert.equal(c.mlFirstTime(items,null,false,c.mlNotOpening).t,'08:15','протеин раньше еды открывает приём');
 assert.equal(c.mlFirstTime(c.mlIntakeItems([{fid:'soup',t:'09:00'}],[capsule]),null,false,c.mlNotOpening).t,'09:00','капсулы приём не открывают');
 assert.equal(c.mlFirstTime(c.mlIntakeItems([],[capsule]),null,false,c.mlNotOpening).t,'07:00','только капсулы — их время, как у напитков');
-// Голодание прерывает первая запись с калориями: еда и напитки больше 4 ккал на 100, БАДы больше 4 ккал за приём
-c.supplementRows=()=>[capsule,shake];
-c.DB={days:{'2026-11-12':{items:[{fid:'coffee',t:'06:30'},{fid:'milk',t:'07:30'},{fid:'soup',t:'13:00'}]}}};
-assert.deepEqual(JSON.parse(JSON.stringify(c.mlFastBreak('2026-11-12'))),{t:'07:00',name:'Рыбий жир'},'рыбий жир в капсулах прервал голодание раньше молока; кофе — нет');
-c.supplementRows=()=>[];assert.deepEqual(JSON.parse(JSON.stringify(c.mlFastBreak('2026-11-12'))),{t:'07:30',name:'Молоко'});
-c.DB={days:{'2026-11-12':{items:[{fid:'coffee',t:'06:30',g:250},{fid:'milk',t:'06:30',g:5},{fid:'milk',t:'07:45',g:30},{fid:'soup',t:'13:00',g:300}]}}};
-assert.deepEqual(JSON.parse(JSON.stringify(c.mlFastBreak('2026-11-12'))),{t:'07:45',name:'Молоко'},'капля молока в кофе в 06:30 голодание не прервала, 30 мл в 07:45 — прервали');
-c.DB={days:{'2026-11-12':{items:[{fid:'coffee',t:'06:30'},{fid:'tea',t:'10:00'}]}}};assert.equal(c.mlFastBreak('2026-11-12'),null,'кофе и чай без сахара голодание не прерывают');
+// Голодание (фастинг) прерывает запись с калориями: еда и напитки больше 4 ккал в записи (продукт до 4 ккал на 100 —
+// никогда), БАДы больше 4 ккал за приём. Окно фастинга по этому правилу считает meal-fast.js (check-meal-fast.mjs)
+const brk=x=>c.mlBreaksFast(x);
+assert.deepEqual(c.mlIntakeItems([],[capsule]).map(brk),[true],'рыбий жир в капсулах прерывает голодание');
+assert.deepEqual([brk({fid:'coffee',t:'06:30'}),brk({fid:'milk',t:'07:30'}),brk({fid:'soup',t:'13:00'})],[false,true,true],'кофе — нет; молоко и суп без массы — да');
+assert.deepEqual([brk({fid:'coffee',t:'06:30',g:250}),brk({fid:'milk',t:'06:30',g:5}),brk({fid:'milk',t:'07:45',g:30})],[false,false,true],'капля молока в кофе 5 мл (3,2 ккал) голодание не прерывает, 30 мл — прерывают');
+assert.deepEqual([brk({fid:'tea',t:'10:00'}),brk({fid:'tea',t:'10:00',g:1000})],[false,false],'чай без сахара — никогда, хоть литр');
 
 // Правило БАДов из supplement-nutrition.js: калории приёма, форма, свой выбор в варианте
 const nut=vm.createContext({});nut.globalThis=nut;vm.runInContext(await readFile(new URL('../supplement-nutrition.js',import.meta.url),'utf8'),nut);
@@ -138,8 +137,7 @@ assert.deepEqual([c.mlOpens(tap('supp:fish',0.3,'капсула',0.3,'07:00')),c
 // снимок в самой записи (counterFood) сильнее копии в библиотеке: Day и Sport присылают его вместе с нажатием
 const own=tap('other:id',2,'капсула',2,'07:00',{counterFood:fish});c.MealProducts.forItem=(x,foods)=>x.counterFood||foods[x.fid];
 assert.equal(c.mlBreaksFast(own),true,'продукт-добавка из самой записи');
-c.DB={days:{'2026-11-12':{items:[d3,{fid:'coffee',t:'06:30'},fish2,{fid:'soup',t:'13:00'}]}}};c.supplementRows=()=>[];
-assert.deepEqual(plain(c.mlFastBreak('2026-11-12')),{t:'07:00',name:'Рыбий жир'},'голодание прервал рыбий жир со счётчика, не витамин D и не кофе');
+assert.deepEqual([c.mlBreaksFast(d3),c.mlBreaksFast({fid:'coffee',t:'06:30'}),c.mlBreaksFast(fish2)],[false,false,true],'голодание прерывает рыбий жир со счётчика, не витамин D и не кофе');
 assert.equal(c.mlFirstTime(c.mlIntakeItems([fish2,{fid:'soup',t:'13:00'}],[]),null,false,c.mlNotOpening).t,'07:00','Meal 30: капсулы со счётчика больше 4 ккал открывают приём — сбрасывают окно голодания');
 // сводка для Day: капсулы со счётчика — не «только напитки» и не еда; калории — как у записи
 c.DB={sections:[{k:'am',t:'Завтрак'}],days:{'2026-11-13':{items:[Object.assign({id:'f1',sec:'am'},fish2)]},'2026-11-14':{items:[Object.assign({id:'p1',sec:'am'},scoop),Object.assign({id:'c1',sec:'am'},{fid:'coffee',t:'07:00',g:200})]}}};
@@ -159,4 +157,4 @@ assert.deepEqual([sum.days['2026-11-14'].sec.am.food,sum.days['2026-11-14'].sec.
 assert.equal((html.match(/mlLastTime\(/g)||[]).length,1,'mlLastTime остаётся только определением');
 assert.ok(!/mlFirstTime\([^)]*isDrink\)/.test(html),'время приёма нигде не считается по старому правилу напитков');
 assert.ok(!/id="mealTimeInput"[^>]*maxlength|maxlength="5"[^>]*id="mealTimeInput"/.test(html),'у поля времени нет ограничения в 5 знаков');
-console.log('Passed: счётчик добавки — запись еды с продуктом-добавкой, правило БАДов, подписи без условных граммов; время приёма — первое, что его открывает (раньше — сдвигает, позже — нет); открывает запись больше 4 ккал, напиток или нет, «без калорий» (≤ 4 на 100) — никогда, без калорийности — как раньше; БАДы: порошок больше 4 ккал открывает, капсулы — нет, но прерывают голодание; «Голодание прервано» — первая запись с калориями; правило вариантов (форма, свой выбор, по БЖУ); сводка для Day с калориями БАДов; набор поверх полного времени.');
+console.log('Passed: счётчик добавки — запись еды с продуктом-добавкой, правило БАДов, подписи без условных граммов; время приёма — первое, что его открывает (раньше — сдвигает, позже — нет); открывает запись больше 4 ккал, напиток или нет, «без калорий» (≤ 4 на 100) — никогда, без калорийности — как раньше; БАДы: порошок больше 4 ккал открывает, капсулы — нет, но прерывают голодание; голодание прерывает запись с калориями; правило вариантов (форма, свой выбор, по БЖУ); сводка для Day с калориями БАДов; набор поверх полного времени.');
