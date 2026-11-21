@@ -67,10 +67,10 @@ with sync_playwright() as p:
     page.goto(BASE + MEAL + "index.html")
     check("вход", enter(page)); ready(page)
 
-    # настройки: третья строка, старого списка разделов нет
+    # настройки: третья строка, «Настроить тему» — последняя (как в Day и Sport), старого списка разделов нет
     page.evaluate("()=>go('settings')"); page.wait_for_timeout(400)
     top = page.evaluate("()=>[...document.querySelectorAll('#happy-account-top .hs-row')].map(x=>x.textContent.trim())")
-    check("«Настроить приёмы пищи» — третья строка после профиля и целей", top == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи"], top)
+    check("«Настроить приёмы пищи» — третья строка после профиля и целей, «Настроить тему» — последняя", top == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Настроить тему"], top)
     check("прежнего списка разделов и «Добавить раздел» в настройках нет", page.evaluate("()=>!document.getElementById('setSecs')&&!document.getElementById('addSec')&&!/Добавить раздел/.test(document.querySelector('[data-screen=settings]').textContent)"))
     before = page.evaluate("()=>JSON.stringify(DB.sections)")
 

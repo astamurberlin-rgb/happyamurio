@@ -111,7 +111,9 @@
         "day",
         "meal",
         "sport"
-      ]
+      ],
+      "divergent": true,
+      "todo": "Meal 33.22 — новый файл (полосы таблицы в цвет приложения по отметке data-hm-colors); Day и Sport получат его с выпуском Day (ветка day-time-field), тогда отметку divergent снять"
     },
     {
       "name": "happy-sport-summary.js",
@@ -230,6 +232,20 @@
         "day",
         "meal",
         "sport"
+      ]
+    },
+    {
+      "name": "happy-theme-picker.js",
+      "reference": "shared/happy-theme-picker.js",
+      "apps": [
+        "meal"
+      ]
+    },
+    {
+      "name": "happy-theme-picker.css",
+      "reference": "shared/happy-theme-picker.css",
+      "apps": [
+        "meal"
       ]
     }
   ]

@@ -11,6 +11,7 @@
   /* Meal 32.2: слово «Журнал» уже на переключателе и в меню — крупный заголовок под переключателем не показывается (Астамур 15.11.2026) */
   const title=content.querySelector(':scope>.top>h1');if(title)title.hidden=true;
   const panel=document.createElement('section');panel.className='meal-measurements';panel.hidden=true;
+  panel.dataset.hmColors='app';   // полосы таблицы — в цвет приложения, как в Day (Астамур 21.11.2026 02:59: «темы в журнале замеров»)
   screen.append(tabs,content,panel);
   const buttons=[...tabs.querySelectorAll('button')];
   const doc=()=>root.MealData&&root.MealData.signedIn()?root.MealData.store.shared(root.HappyMeasurements.DOC.app,root.HappyMeasurements.DOC.name):null;
