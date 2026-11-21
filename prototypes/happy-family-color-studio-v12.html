@@ -222,12 +222,14 @@ const defaults=Object.fromEntries(['day','meal','sport'].map((app,i)=>[app,JSON.
  defaults.day.nativeBg='radial-gradient(42% 26% at 18% 14%,rgba(70,253,252,.62),transparent 70%),radial-gradient(38% 24% at 84% 20%,rgba(3,222,234,.55),transparent 72%),radial-gradient(46% 28% at 12% 52%,rgba(188,97,254,.40),transparent 72%),radial-gradient(40% 26% at 88% 62%,rgba(253,147,253,.34),transparent 72%),radial-gradient(50% 30% at 30% 88%,rgba(70,253,252,.42),transparent 74%),#00a8f5';
  defaults.meal.nativeBg='radial-gradient(ellipse 80% 41% at 93% 15%,rgba(243,124,165,.40) 0%,transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%,rgba(157,87,174,.38) 0%,transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)';
  defaults.sport.nativeBg='radial-gradient(ellipse 76% 38% at 95% 20%,rgba(255,143,210,.32) 0%,transparent 84%),radial-gradient(ellipse 66% 36% at 7% -10%,rgba(158,119,251,.33) 0%,transparent 84%),linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%)';
+ // Day's light is blurred on the site (.bg filter): without the blur the five lights show as separate spots.
+ defaults.day.nativeFilter='blur(46px) saturate(1.15)';
  defaults.day.nativeButton='radial-gradient(circle at 32% 20%,color-mix(in srgb,#5a50d1 58%,#fff) 0%,#5a50d1 56%,color-mix(in srgb,#5a50d1 72%,#000) 100%)';
  defaults.meal.nativeButton='radial-gradient(circle at 32% 20%,color-mix(in srgb,#730074 58%,#fff) 0%,#730074 56%,color-mix(in srgb,#730074 72%,#000) 100%)';
  defaults.sport.nativeButton='radial-gradient(circle at 35% 25%,#de98de,#ac72df 43%,#7957d9 76%)';
 })();
 // A saved state from before 21.11.2026 that has its own background or button keeps it: the exact app look applies only to untouched parts.
-function dropNative(st,part){if(part!=='button')delete st.nativeBg;if(part!=='background')delete st.nativeButton}
+function dropNative(st,part){if(part!=='button'){delete st.nativeBg;delete st.nativeFilter}if(part!=='background')delete st.nativeButton}
 const EXTRA_DEFAULT={wallpaperData:'',wallpaperAlpha:55,buttonAlpha:100,fabAlpha:100,fontFamily:'system',fontWeight:700,textSize:15,titleSize:29,spacing:0,lineHeight:1.4,brightness:100,saturationBoost:100,glassColor:'#ffffff',borderColor:'#ffffff',glassAlpha:18,borderAlpha:36,glassBlur:12,cornerRadius:22};
 const FONT_STACKS={system:'-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif',rounded:'ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif',serif:'ui-serif,Georgia,serif',georgia:'Georgia,"Times New Roman",serif',mono:'ui-monospace,Menlo,Consolas,monospace'};
 function normalizeExtra(st){
@@ -290,7 +292,7 @@ async function uploadWallpaper(file){
 function clone(o){return JSON.parse(JSON.stringify(o))}
 const store=(()=>{try{return JSON.parse(localStorage.getItem(STORAGE)||localStorage.getItem('happy-family-color-studio-v8')||localStorage.getItem('happy-family-color-studio-v7')||localStorage.getItem('happy-family-color-studio-v5'))||{}}catch(e){return {}}})();
 let workspaceRecovery=store.workspaceRecovery||null;try{HappyColorWorkspace.validate(store.workspace)}catch(e){workspaceRecovery=store.workspace;}
-const states={},custom={};APP_ORDER.forEach(k=>{const saved=store.states?.[k]||{};states[k]=Object.assign(clone(defaults[k]),saved);if(saved.backgroundGradient&&!('nativeBg' in saved))delete states[k].nativeBg;if(saved.buttonGradient&&!('nativeButton' in saved))delete states[k].nativeButton;states[k].base=saved.base||clone(defaults[k].base);states[k].glows=saved.glows||clone(defaults[k].glows);if(!states[k].wallpaper)states[k].wallpaper='none';normalizeExtra(states[k]);custom[k]=store.custom?.[k]||[]});
+const states={},custom={};APP_ORDER.forEach(k=>{const saved=store.states?.[k]||{};states[k]=Object.assign(clone(defaults[k]),saved);if(saved.backgroundGradient&&!('nativeBg' in saved)){delete states[k].nativeBg;delete states[k].nativeFilter}if(saved.buttonGradient&&!('nativeButton' in saved))delete states[k].nativeButton;states[k].base=saved.base||clone(defaults[k].base);states[k].glows=saved.glows||clone(defaults[k].glows);if(!states[k].wallpaper)states[k].wallpaper='none';normalizeExtra(states[k]);custom[k]=store.custom?.[k]||[]});
 let selected=PREVIEW_ORDER.includes(store.ui?.active)?store.ui.active:'meal',layerIndex=0,selectedPreset=-1,previewFull=false;
 let sharedPresets=Array.isArray(store.sharedPresets)?store.sharedPresets.slice(0,60).filter(x=>x&&x.name&&x.state&&Array.isArray(x.state.base)):[];
 let activeShared=typeof store.ui?.sharedId==='string'?store.ui.sharedId:'';
@@ -339,9 +341,12 @@ function studioPreviewBridge(key){
   const data=ev.data;
   if(ev.source!==parent||!data||data.kind!=='HAPPY_COLOR_STUDIO'||data.key!==key)return;
   if(typeof data.bg==='string'&&data.bg.length<1800000){
-   document.documentElement.style.setProperty('background',data.bg,'important');
+   const back=document.querySelector('.bg');
+   document.documentElement.style.setProperty('background',back&&data.bgBase?data.bgBase:data.bg,'important');
    document.body.style.setProperty('background','transparent','important');
-   const back=document.querySelector('.bg');if(back)back.style.setProperty('background',data.bg,'important');
+   if(back){back.style.setProperty('background',data.bg,'important');
+    if(data.bgFilter){back.style.setProperty('filter',data.bgFilter,'important');back.style.setProperty('inset','-20%','important');back.style.setProperty('position','fixed','important')}
+    else{back.style.removeProperty('filter');back.style.removeProperty('inset');back.style.removeProperty('position')}}
   }
   if(typeof data.uiCSS==='string'&&data.uiCSS.length<1800000)style.textContent=data.uiCSS;
  });
@@ -352,7 +357,7 @@ function previewSource(key){
  return p===-1?original+script:original.slice(0,p)+script+original.slice(p);
 }
 const frameReady={day:false,meal:false,sport:false};
-function packet(k){const st=states[k];return {kind:"HAPPY_COLOR_STUDIO",key:k,bg:backgroundFor(st,k),uiCSS:themeCSS(st),buttonColor:st.buttonColor||"#6755d6",buttonShine:st.buttonShine??30}}
+function packet(k){const st=states[k],native=!!st.nativeBg&&st.wallpaper!=='custom',bg=backgroundFor(st,k);return {kind:"HAPPY_COLOR_STUDIO",key:k,bg,bgFilter:native?(st.nativeFilter||''):'',bgBase:native&&st.nativeFilter?((/(#[0-9a-f]{3,8}|rgba?\([^)]*\))\s*$/i.exec(bg)||[])[1]||''):'',uiCSS:themeCSS(st),buttonColor:st.buttonColor||"#6755d6",buttonShine:st.buttonShine??30}}
 function notify(k){const f=document.querySelector('[data-phone="'+k+'"] iframe');if(f?.contentWindow)f.contentWindow.postMessage(packet(k),'*')}
 function initFrames(){for(const k of PREVIEW_ORDER){const f=document.querySelector('[data-phone="'+k+'"] iframe');f.addEventListener('load',()=>{frameReady[k]=true;notify(k)});if(k==='sport'){f.src='./happy-sport-color-preview-v2.html';}else{f.srcdoc=previewSource(k);}}window.addEventListener('message',e=>{if(e.data?.kind==='HAPPY_COLOR_STUDIO_READY'&&PREVIEW_ORDER.includes(e.data.key)){frameReady[e.data.key]=true;notify(e.data.key)}})}
 function applyTo(k){const bg=backgroundFor(states[k],k),phone=$('phone-'+k);if(!phone)return;phone.style.background=bg;phone.querySelector('.phone-inner').style.background=bg;notify(k)}
@@ -430,18 +435,18 @@ function layerCSS(win,el){if(!el)return '';const s=win.getComputedStyle(el),clea
 function readAppLook(entry){return new Promise(ok=>{const f=document.createElement('iframe');f.setAttribute('sandbox','allow-same-origin');f.setAttribute('aria-hidden','true');f.tabIndex=-1;
  f.style.cssText='position:fixed;left:-10000px;top:0;width:390px;height:844px;border:0;visibility:hidden;pointer-events:none';let done=false;
  const finish=v=>{if(done)return;done=true;f.remove();ok(v)};
- f.onload=()=>{try{const w=f.contentWindow,d=w.document;const bg=layerCSS(w,d.querySelector('body>.bg'))||layerCSS(w,d.body);
+ f.onload=()=>{try{const w=f.contentWindow,d=w.document;const back=d.querySelector('body>.bg'),bg=layerCSS(w,back)||layerCSS(w,d.body),filter=back?w.getComputedStyle(back).filter:'';
   let fab=['#sport-fab','#fab','.fab','.dockFab'].map(q=>d.querySelector(q)).find(Boolean);if(!fab){fab=d.createElement('button');fab.id='sport-fab';fab.className='dockFab';d.body.append(fab)}
-  const button=w.getComputedStyle(fab).backgroundImage;finish({bg,button:button&&button!=='none'?button:''})}catch(e){finish(null)}};
+  const button=w.getComputedStyle(fab).backgroundImage;finish({bg,filter:filter&&filter!=='none'?filter:'',button:button&&button!=='none'?button:''})}catch(e){finish(null)}};
  setTimeout(()=>finish(null),15000);f.src='../'+entry;document.body.append(f)})}
 async function syncFromSite(){let apps;try{const r=await fetch('../shared/apps.json',{cache:'no-store'});if(!r.ok)return;apps=await r.json()}catch(e){return}
  let saved={};try{saved=JSON.parse(localStorage.getItem(LOOK_KEY)||'{}')||{}}catch(e){}
  const looks={},changed=[];
  for(const k of APP_ORDER){const entry=apps[k]?.entry;if(!entry)continue;const l=await readAppLook(entry);if(!l||!l.bg)continue;looks[k]={...l,version:apps[k].version||''};
-  const was=saved[k],parts=[];if(was&&was.bg!==l.bg)parts.push('фон');if(was&&l.button&&was.button!==l.button)parts.push('кнопку');
+  const was=saved[k],parts=[];if(was&&(was.bg!==l.bg||(was.filter||'')!==(l.filter||'')))parts.push('фон');if(was&&l.button&&was.button!==l.button)parts.push('кнопку');
   if(parts.length)changed.push(APP_NAMES[k]+' '+looks[k].version+': '+parts.join(' и '));
-  defaults[k].nativeBg=l.bg;if(l.button)defaults[k].nativeButton=l.button;
-  if('nativeBg' in states[k])states[k].nativeBg=l.bg;if(l.button&&'nativeButton' in states[k])states[k].nativeButton=l.button}
+  defaults[k].nativeBg=l.bg;if(l.filter)defaults[k].nativeFilter=l.filter;else delete defaults[k].nativeFilter;if(l.button)defaults[k].nativeButton=l.button;
+  if('nativeBg' in states[k]){states[k].nativeBg=l.bg;if(l.filter)states[k].nativeFilter=l.filter;else delete states[k].nativeFilter}if(l.button&&'nativeButton' in states[k])states[k].nativeButton=l.button}
  if(!Object.keys(looks).length)return;
  try{localStorage.setItem(LOOK_KEY,JSON.stringify(looks))}catch(e){}
  persist();APP_ORDER.forEach(applyTo);createPresets();
@@ -466,7 +471,7 @@ let paletteUndo=null;
 // A copied-into preview edited by hand keeps its edits: the undo for it is gone.
 function dropUndoFor(k){if(paletteUndo?.targets.includes(k))paletteUndo=null}
 // Copies the colours of the selected preview into other previews; fonts, wallpaper and corners stay. One step can be undone.
-function copyPalette(targets){const src=states[selected],before={};for(const t of targets){before[t]=clone(states[t]);for(const key of PALETTE_KEYS)if(src[key]!==undefined)states[t][key]=clone(src[key]);for(const key of ['nativeBg','nativeButton'])if(src[key]!==undefined)states[t][key]=src[key];else delete states[t][key];normalizeExtra(states[t])}
+function copyPalette(targets){const src=states[selected],before={};for(const t of targets){before[t]=clone(states[t]);for(const key of PALETTE_KEYS)if(src[key]!==undefined)states[t][key]=clone(src[key]);for(const key of ['nativeBg','nativeFilter','nativeButton'])if(src[key]!==undefined)states[t][key]=src[key];else delete states[t][key];normalizeExtra(states[t])}
  const was=activeShared;activeShared='';if(!persist()){for(const t of targets)states[t]=before[t];activeShared=was;return}
  paletteUndo={from:selected,targets,before};for(const t of targets)composeWallpaper(t);APP_ORDER.forEach(applyTo);drawShared();drawPaletteCopy();toast('Палитра '+APP_NAMES[selected]+' скопирована в '+appList(targets))}
 function undoPaletteCopy(){if(!paletteUndo)return;const u=paletteUndo,now={};for(const t of u.targets){now[t]=states[t];states[t]=u.before[t]}
