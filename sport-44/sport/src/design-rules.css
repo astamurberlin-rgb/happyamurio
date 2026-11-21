@@ -387,3 +387,6 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 .workout-name-input .workout-icon-toggle.is-empty{color:rgba(255,255,255,.73)}   /* цветом подсказки «Моя тренировка» */
 .workout-name-input .workout-icon-toggle.is-empty>.icon{width:28px!important;height:28px!important}
 .workout-name-input .workout-icon-toggle .workout-icon-empty{fill:none}   /* нарисован линией: общая заливка .icon его не закрашивает */
+
+/* Иконка микрофона как в Day — Астамур 21.11.2026: «иконку пусть как в Day будут у всех». */
+.dockFab svg.dayMic{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
