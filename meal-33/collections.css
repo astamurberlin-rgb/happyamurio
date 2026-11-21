@@ -120,3 +120,6 @@
 .cc-buy-top{margin:0 0 18px}
 .cc-buy-bottom .cc-buy button{border-radius:999px;min-height:48px}
 .cc-buy-bottom .cc-buy small{font-size:12px;opacity:.55;font-weight:400}
+
+/* аудит 3: цена и «Куплено» в магазине — цвет из темы (без темы — как было) */
+:root[data-happy-appearance] #ccShopGrid .cc-card-meta .cc-price,:root[data-happy-appearance] .cc-card-meta .cc-price.cc-owned,:root[data-happy-appearance] .cc-owned-pill,:root[data-happy-appearance] .cc-buy button:disabled{color:var(--happy-accent-ink,#57365e);background:color-mix(in srgb,var(--happy-accent-ink,#57365e) 14%,#fff)}

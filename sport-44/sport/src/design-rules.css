@@ -402,3 +402,6 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
    скругление только сверху; низ уходит под нижнее меню, как .impSheet в Day (отступ 112 + безопасная зона) */
 .overlay{padding:0!important}
 .sheet{width:100%!important;border-radius:28px 28px 0 0!important;border-bottom:0!important;max-height:calc(100dvh - 40px - env(safe-area-inset-top))!important;padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
+
+/* аудит 3: выбранные сегменты и в «Каталоге» берут цвет текста из темы (без темы — как было) */
+:root[data-happy-appearance] .segmented .selected{color:var(--hs-seg-ink,#176b98)!important}

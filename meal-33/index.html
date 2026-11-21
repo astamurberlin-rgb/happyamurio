@@ -184,7 +184,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:400;
   background:var(--glass);border:1px solid var(--glassBrd);color:var(--happy-ink);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.chip.on{background:rgba(255,255,255,.9);color:#0C6FA8;border-color:#fff;font-weight:700}
+.chip.on{background:rgba(255,255,255,.9);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff;font-weight:700}
 .chip.add{background:none;border-style:dashed}
 
 .kv{display:flex;justify-content:space-between;gap:12px;padding:11px 0;
@@ -203,7 +203,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
 ::placeholder{color:rgba(255,255,255,.5)}
 .btn{border:1px solid var(--glassBrd);background:var(--glass);color:var(--happy-ink);
   border-radius:14px;padding:11px 16px;font-size:14px;font-weight:600}
-.btn.solid{background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
+.btn.solid{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
 .btn.warn{background:rgba(255,110,140,.24);border-color:rgba(255,150,175,.5)}
 .btnrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
 .scrBar{position:relative;height:46px;border-radius:14px;touch-action:none;
@@ -255,7 +255,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .plus .pl{flex:1;min-width:0;padding:0 9px 0 4px;text-align:center;overflow:hidden}
 .plus .pl b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;transition:opacity .15s}
 .plus:active{background:rgba(255,255,255,.3)}
-.hasDraft .plus{width:128px;background:rgba(255,255,255,.95);color:#0C6FA8;
+.hasDraft .plus{width:128px;background:rgba(255,255,255,.95);color:var(--happy-accent-ink,#0C6FA8);
   border-color:#fff;box-shadow:0 4px 14px rgba(4,40,80,.2)}
 .hasDraft .plus:active{background:#fff}
 .plus.pop{animation:plusPop .5s cubic-bezier(.25,.8,.25,1)}
@@ -750,7 +750,7 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .lkFreq.lkMeasure button{font-weight:700}
 .lkFreq.lkTight{gap:3px}
 .lkFreq.lkTight button{padding:0 1px}
-.lkFreq button.on{background:rgba(255,255,255,.92);border-color:#fff;color:#0C6FA8;font-weight:700}
+.lkFreq button.on{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8);font-weight:700}
 .lkHist{border-top:1px solid rgba(255,255,255,.22);padding:0 4px;margin:0 0 4px}
 .lkHist>summary,.lkStats>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;
   list-style:none;font-size:16px;font-weight:700;cursor:pointer}
@@ -875,7 +875,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
   background:rgba(255,255,255,.12);color:var(--happy-ink);font:inherit}
 .scKind b{display:block;font-size:16px;font-weight:700}
 .scKind small{display:block;font-size:12px;line-height:1.35;color:rgba(255,255,255,.78);margin-top:5px}
-.scKind.on{background:rgba(255,255,255,.92);border-color:#fff;color:#0C6FA8}
+.scKind.on{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8)}
 .scKind.on small{color:rgba(12,111,168,.82)}
 .scKind .nw{font-style:normal;white-space:nowrap}
 .scChips .chip{padding:9px 16px;font-size:14px}
@@ -888,7 +888,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .scLv{display:flex;align-items:center;gap:10px;margin:0 0 8px}
 .scLv .scN{flex:none;width:48px;height:42px;border-radius:12px;border:1px solid var(--glassBrd);padding:0;
   font:inherit;font-size:16px;font-weight:700;color:var(--happy-ink);background:rgba(255,255,255,.12);font-variant-numeric:tabular-nums}
-.scLv.on .scN{background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
+.scLv.on .scN{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
 .scLv input{flex:1;min-width:0}
 
 /* ══════════ MEAL: КБЖУ, диалог, разделы, шторка «Подобрано» ══════════ */
@@ -1257,7 +1257,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .rcSug .nm b{display:block;font-size:14px;font-weight:700;line-height:1.25}
 .rcSug .nm small{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
 .rcSug .rcM{margin-top:3px;font-size:12px}
-.rcSug .mini{flex:none;padding:8px 13px;font-size:14px;font-weight:700;background:rgba(255,255,255,.92);color:#0C6FA8;border-color:#fff}
+.rcSug .mini{flex:none;padding:8px 13px;font-size:14px;font-weight:700;background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
 #rcMine{margin-top:2px}
 #rcMine .rcItem{margin-top:0}
 .rcBody .mlActs{margin-top:10px}
@@ -5515,7 +5515,7 @@ function jrHasChk(x){ return !!x.np&&jrNorm(x)!=null&&jrV(x,x.id)!=null }
 var JR_OK_D='M7.6 12.5l3 3 5.9-6.3';
 function jrOk(on,ttl){
   return '<svg class="jrOk'+(on?' on':'')+'" viewBox="0 0 24 24" role="img" aria-label="'+ttl+'">'+
-    (on?'<circle cx="12" cy="12" r="10" fill="#fff"/><path d="'+JR_OK_D+'" fill="none" stroke="#0C6FA8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'
+    (on?'<circle cx="12" cy="12" r="10" fill="#fff"/><path d="'+JR_OK_D+'" fill="none" style="stroke:var(--happy-accent-ink,#0C6FA8)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'
        :'<circle cx="12" cy="12" r="9.2" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="1.8"/><path d="'+JR_OK_D+'" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>')+'</svg>';
 }
 var JR_WARN='<svg class="jrWi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.8 19.5h18.4z" fill="currentColor" stroke="none"/><path d="M12 9.5v4.6M12 16.9v.2" stroke="#1d3557" stroke-width="2.2" stroke-linecap="round"/></svg>';
@@ -6430,8 +6430,8 @@ function jrNoteTxt(){
    ['#8c75db','#8275e8','#478bf0','#3989ed','#5a53cc'],165,
    [glow('#ff8fd2',95,20,76,32),glow('#9e77fb',7,-10,66,33)],['#6450c3'],{ownButton:true}),
   theme('golden-sunset','Золотой закат','regular','Фиолетовое небо, розовый свет и тёплое золото.',
-   ['#35205e','#652568','#a03d78','#df8d7c','#ffc977'],172,
-   [glow('#ffdf87',78,93,66,90),glow('#ff984b',4,89,57,53)],['#e78c24'],{glassColor:'#35213e',mutedColor:'#f2dfe6'}),
+   ['#35205e','#652568','#9c3a72','#b9566a','#b8613f'],172,
+   [glow('#ffb36b',78,96,55,38),glow('#ff8a4b',4,92,50,35)],['#e78c24'],{glassColor:'#35213e',mutedColor:'#f2dfe6'}),
   theme('orchid','Орхидея','regular','Мягкий сиреневый свет на сливовом фоне.',
    ['#982bb7','#a037ad','#810d91','#650778','#59096c'],165,
    [glow('#efb0e9',100,7,95,94),glow('#ab40d1',8,6,61,25)],['#850c9e'],{glassColor:'#350d42',mutedColor:'#f1d3f0'}),
