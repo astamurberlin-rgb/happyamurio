@@ -177,9 +177,17 @@ body.has-theme-float .shell{padding-bottom:110px}
 .button-custom{margin:14px 0 0}.button-custom>summary{cursor:pointer;list-style:none;padding:10px 0;font-size:13px;font-weight:600;color:#e4dcff}.button-custom>summary::-webkit-details-marker{display:none}
 
 /* ── 21.11.2026 (Астамур): без пилюль Day/Meal/Sport, экран приложения — в настоящую ширину, без уменьшения ── */
-/* На iPhone уменьшенный через transform экран не дорисовывался при прокрутке: сверху оставалась пустая полоса.
-   Теперь уменьшает zoom у самого окна превью: внутри экран по-прежнему шириной 390, как iPhone, но рисуется обычным образом. */
-.phone-inner iframe{width:100%!important;height:100%!important;transform:none!important;zoom:var(--pv-s,1)}
+
+.phone-inner iframe{width:100%!important;height:100%!important;transform:none!important;zoom:1!important}
+/* На телефоне превью — во всю ширину экрана, без рамки: экран приложения рисуется в настоящую ширину телефона, ничего не уменьшается.
+   (transform на iPhone не дорисовывал экран при прокрутке, zoom в Safari разваливал вёрстку.) Соседние превью — свайпом вбок. */
+@media (max-width:560px){
+ .phones{padding-left:0!important;padding-right:0!important;gap:0!important;scroll-padding:0!important}
+ .phone-wrap{flex:0 0 100%!important;min-width:100%!important;max-width:100%!important;transform:none!important}
+ .phone{padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important}
+ .phone-wrap.active .phone{box-shadow:none!important}
+ .phone-inner{border-radius:24px!important}
+}
 .phone-wrap:not(.active) .phone-inner iframe{pointer-events:none!important}
 .phone-wrap:not(.active) .phone{cursor:pointer}
 #referenceThemes .reference-badge{display:none!important}
