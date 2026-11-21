@@ -311,6 +311,12 @@ body.has-theme-float .shell{padding-bottom:110px}
 .shell input[type=range].cs-range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:transparent;border:3px solid #fff;box-shadow:0 0 0 1px #0005}
 .shell input[type=range].cs-range::-moz-range-track{background:transparent}
 .shell input[type=range].cs-range:not([style*="--trk"])::-webkit-slider-thumb{background:#fff}
+/* Ручка ползунка — тонкая белая черта по центру дорожки вместо кружка (Астамур 21.11.2026: «кружочки убери, встали неровно») */
+.shell input[type=range].cs-range::-webkit-slider-thumb,.shell .hsl-row input[type=range]::-webkit-slider-thumb,.shell input[type=range].cs-range:not([style*="--trk"])::-webkit-slider-thumb{-webkit-appearance:none;width:6px;height:22px;margin-top:0;border:0;border-radius:3px;background:#fff;box-shadow:0 0 0 1px #0006,0 1px 4px #0007}
+.shell input[type=range].cs-range::-moz-range-thumb,.shell .hsl-row input[type=range]::-moz-range-thumb{width:6px;height:22px;border:0;border-radius:3px;background:#fff;box-shadow:0 0 0 1px #0006}
+.shell input[type=range].cs-range,.shell .hsl-row input[type=range]{padding:0 3px}
+.shell .hg-editor input[type=range].cs-range{min-height:0!important;height:28px;background-color:transparent}
+.shell .hg-editor input[type=range].cs-range::-webkit-slider-thumb{min-width:0!important;min-height:0!important}
 </style></head>
 <body><div class="shell">
   <header class="head"><div><div class="eyebrow">HAPPY FAMILY / DESIGN STUDIO</div><h1>Happy Color Studio</h1><p>Дизайн-студия Happy Day, Happy Meal и Happy Sport. Палитры, стекло, шрифты, кнопки и сохранённые темы.</p></div><div class="head-actions"><button class="chipbutton" id="fullPreview">Скрыть настройки</button><span class="hsa-slot" id="accountSlot"></span></div></header>
