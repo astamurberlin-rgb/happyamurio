@@ -559,8 +559,8 @@
   },
   {
    "path": "counters.js",
-   "size": 34458,
-   "sha256": "608dddc169d24daf3815c727ae1abbc8e31af107d95c2795cc9f510593336c2a"
+   "size": 34967,
+   "sha256": "4382968a1399d0de0bae415e9883b07fbc93ca9e198abdba44d242467b9f441a"
   },
   {
    "path": "design-rules.css",
@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 663336,
-   "sha256": "2b840e5039ca8b67e44b624ee0e0661888f9d2f43f8fbaa6c6c3091c9d7dbf22"
+   "size": 663343,
+   "sha256": "2e1af6cb46b5842e42ea8dd9d01526cdf6a85af2f45b5bc95cbdf90c8df79bdf"
   },
   {
    "path": "kfct.js",
