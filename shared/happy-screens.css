@@ -34,7 +34,7 @@ body.hs-open{overflow:hidden}
 /* ── поля ── */
 .hs-field{display:flex;flex-direction:column;gap:7px;min-width:0}
 .hs-field-title{display:block;font-size:14px;font-weight:400;line-height:20px;color:var(--happy-ink)}
-.hs-input{display:flex;align-items:center;gap:8px;border:1px solid var(--hs-border);border-radius:13px;background:var(--hs-glass);min-height:48px;padding:0 14px;min-width:0}
+.hs-input{display:flex;align-items:center;gap:8px;border:1px solid var(--hs-border);border-radius:12px;background:var(--hs-glass);min-height:48px;padding:0 14px;min-width:0}
 #happy-screens .hs-input input{display:block;flex:1;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;
  line-height:24px;height:46px;font-size:16px;color:var(--happy-ink);color-scheme:dark;-webkit-appearance:none;appearance:none}
 #happy-screens .hs-input input::placeholder{color:rgba(255,255,255,.42)}
@@ -51,14 +51,14 @@ body.hs-open{overflow:hidden}
 .hs-password{padding-right:3px}
 .hs-eye{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center}
 .hs-eye svg{width:19px;height:19px;opacity:.85;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-#happy-screens textarea.hs-textarea{display:block;width:100%;min-height:125px;max-height:280px;resize:vertical;margin:0;padding:14px;border:1px solid var(--hs-border);border-radius:14px;
+#happy-screens textarea.hs-textarea{display:block;width:100%;min-height:125px;max-height:280px;resize:vertical;margin:0;padding:14px;border:1px solid var(--hs-border);border-radius:12px;
  background:var(--hs-glass);color:var(--happy-ink);font-size:16px;line-height:1.55;outline:0;box-shadow:none;-webkit-appearance:none;appearance:none}
 #happy-screens textarea.hs-textarea::placeholder{color:rgba(255,255,255,.65)}
 #happy-screens textarea.hs-textarea:focus{border-color:#fff;background:rgba(255,255,255,.2)}
 
 /* ── кнопки ── */
 .hs-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
-#happy-screens .hs-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:49px;border-radius:14px;font-size:16px;font-weight:600;line-height:22px;padding:12px 16px;text-align:center}
+#happy-screens .hs-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border-radius:999px;font-size:16px;font-weight:600;line-height:22px;padding:12px 16px;text-align:center}
 #happy-screens .hs-primary{background:var(--hs-primary);color:var(--happy-ink);box-shadow:var(--hs-primary-shadow)}
 #happy-screens .hs-cancel{background:#fff;color:var(--hs-cancel-ink)}
 #happy-screens .hs-glass-btn{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
@@ -67,7 +67,7 @@ body.hs-open{overflow:hidden}
 #happy-screens .hs-quiet{display:block;background:transparent;color:rgba(255,255,255,.9);font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;text-align:left}
 #happy-screens .hs-quiet.hs-center{text-align:center;margin:0 auto}
 .hs-error[hidden]{display:none}
-.hs-error{font-size:14px;line-height:1.5;padding:10px 12px;background:rgba(255,255,255,.15);border-radius:10px;margin:15px 0 0}
+.hs-error{font-size:14px;line-height:1.5;padding:10px 12px;background:rgba(255,255,255,.15);border-radius:12px;margin:15px 0 0}
 .hs-note{font-size:14px;line-height:1.5;color:rgba(255,255,255,.77);margin:20px 0}
 .hs-note.hs-center{text-align:center}
 
@@ -79,10 +79,10 @@ body.hs-open{overflow:hidden}
 /* ── свитч ── */
 .hs-switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:65px}
 .hs-switch-row+.hs-switch-row{border-top:1px solid rgba(255,255,255,.22)}
-#happy-screens .hs-switch,.hs-settings .hs-switch{flex-shrink:0;width:46px;height:28px;padding:3px;border-radius:18px;background:rgba(255,255,255,.23);transition:background .18s;border:0;display:block}
-.hs-switch>b{display:block;width:22px;height:22px;background:#fff;border-radius:50%;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
+#happy-screens .hs-switch,.hs-settings .hs-switch{flex-shrink:0;width:42px;height:25px;padding:2px;border-radius:999px;background:rgba(255,255,255,.23);transition:background .18s;border:0;display:block}
+.hs-switch>b{display:block;width:21px;height:21px;background:#fff;border-radius:50%;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
 .hs-switch[aria-checked=true]{background:var(--hs-switch-on)!important}
-.hs-switch[aria-checked=true]>b{transform:translateX(18px)}
+.hs-switch[aria-checked=true]>b{transform:translateX(17px)}
 
 /* ── нижний лист ── */
 .hs-sheet-layer{position:fixed;inset:0;pointer-events:auto;display:flex;align-items:flex-end;justify-content:center}
@@ -105,7 +105,7 @@ body.hs-open{overflow:hidden}
 
 /* ── всплывающее сообщение ── */
 .hs-toast{position:fixed;left:20px;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;
- max-width:420px;margin:0 auto;background:var(--hs-toast-bg);border:1px solid var(--hs-border);border-radius:16px;box-shadow:0 10px 30px #35132930;font-size:14px;line-height:1.35;
+ max-width:420px;margin:0 auto;background:var(--hs-toast-bg);border:1px solid var(--hs-border);border-radius:999px;box-shadow:0 10px 30px #35132930;font-size:14px;line-height:1.35;
  text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s}
 .hs-toast.hs-in{opacity:1;transform:none}
 .hs-toast svg{width:15px;height:15px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -124,7 +124,7 @@ body.hs-open{overflow:hidden}
 /* ── линейка веса ── */
 .hs-ruler{height:62px;position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:ew-resize;
  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);outline:0}
-.hs-ruler:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important;border-radius:10px}
+.hs-ruler:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important;border-radius:12px}
 .hs-tick{position:absolute;top:12px;height:11px;width:1px;background:rgba(255,255,255,.68)}
 .hs-tick.hs-mid{height:18px}
 .hs-tick.hs-major{height:26px}
@@ -150,7 +150,7 @@ body.hs-open{overflow:hidden}
 .hs-welcome-options.hs-settled{opacity:1;visibility:visible;pointer-events:auto}
 .hs-welcome-options h1{margin:40px 0 26px;font-size:20px;font-weight:600;line-height:1.2}
 .hs-welcome-buttons{display:grid;gap:12px}
-#happy-screens .hs-provider,#happy-screens .hs-email-start{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:14px;padding:12px 17px;font-size:16px;font-weight:600}
+#happy-screens .hs-provider,#happy-screens .hs-email-start{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border-radius:999px;padding:12px 17px;font-size:16px;font-weight:600}
 #happy-screens .hs-provider{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
 #happy-screens .hs-provider:disabled{cursor:default}
 .hs-provider svg,.hs-email-start svg{width:23px;height:23px;position:absolute;left:18px}
@@ -179,7 +179,7 @@ body.hs-open{overflow:hidden}
 .hs-identity h2{overflow-wrap:anywhere;line-height:1.28;font-size:20px;max-width:100%;margin:0 auto;font-weight:600;letter-spacing:-.3px;color:var(--happy-ink)}
 .hs-section+.hs-section{margin-top:28px}
 .hs-section>h3{font-size:14px;font-weight:600;color:var(--hs-muted);margin:0 3px 10px;text-transform:none;letter-spacing:normal}
-.hs-group{background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:22px;padding:0 17px;overflow:hidden}
+.hs-group{background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:26px;padding:0 17px;overflow:hidden}
 .hs-settings .hs-row{display:flex;flex-direction:column;gap:6px;background:none;width:100%;text-align:left;padding:18px 0;border:0;color:var(--happy-ink);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0;margin:0;box-shadow:none;min-height:0}
 .hs-settings .hs-row+.hs-row{border-top:1px solid rgba(255,255,255,.22)}
 .hs-settings .hs-row>span{font-size:16px;font-weight:600}
@@ -191,20 +191,20 @@ body.hs-open{overflow:hidden}
 .hs-sync{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:right;min-width:0}
 .hs-sync svg{width:13px;height:13px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .hs-newer{margin-top:10px}
-.hs-newer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:14px;background:#fff;color:var(--hs-cancel-ink);font-weight:600;text-decoration:none}
+.hs-newer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:999px;background:#fff;color:var(--hs-cancel-ink);font-weight:600;text-decoration:none}
 
 /* ── «Связка с»: свитчи связи приложений (разметку и обмен ведёт приложение) в виде прототипа ── */
 .hs-links{margin-top:28px!important}
 .hs-links .hs-links-title{display:block;font-size:14px;font-weight:600;line-height:1.4;color:rgba(255,255,255,.7);margin:0 3px 10px;text-transform:none;letter-spacing:normal}
-.hs-links .happy-app-links{padding:0 17px!important;border-radius:22px;background:var(--hs-glass)!important;border:1px solid var(--hs-border)!important;box-shadow:none!important}
+.hs-links .happy-app-links{padding:0 17px!important;border-radius:26px;background:var(--hs-glass)!important;border:1px solid var(--hs-border)!important;box-shadow:none!important}
 .hs-links .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:65px;padding:0}
 .hs-links .happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.22)}
 .hs-links .happy-app-name{flex:1;min-width:0;padding:14px 0;color:var(--happy-ink);font-size:16px;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
-.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 46px;width:46px;height:28px;min-height:28px;margin:0;padding:0;border:0;border-radius:18px;
+.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 42px;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:999px;
  background:rgba(255,255,255,.23);cursor:pointer;transition:background .18s;box-shadow:none}
-.hs-links .happy-switch::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
+.hs-links .happy-switch::after{content:"";position:absolute;left:2px;top:2px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
 .hs-links .happy-switch:checked{background:var(--hs-switch-on);border:0}
-.hs-links .happy-switch:checked::after{transform:translateX(18px)}
+.hs-links .happy-switch:checked::after{transform:translateX(17px)}
 .hs-links .happy-switch:focus-visible{outline:2px solid #fff;outline-offset:4px}
 
 /* ── профиль ── */
@@ -280,7 +280,7 @@ body.hs-open{overflow:hidden}
 .hs-macro-2 .hs-macro-fill{background:linear-gradient(135deg,#f0b0b7,#dc8d99)}
 .hs-macro-thumb{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;left:calc(50% - 9px);box-shadow:0 2px 5px rgba(80,25,60,.2);pointer-events:none}
 .hs-fiber{margin-top:22px}
-.hs-calc-preview{padding:14px;background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:14px}
+.hs-calc-preview{padding:14px;background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:12px}
 .hs-calc-preview>output{display:block;font-size:28px;font-weight:400;line-height:34px;margin-top:3px}
 .hs-calc-preview>output small{font-size:14px;font-weight:400}
 .hs-calc-macros{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
@@ -296,7 +296,7 @@ body.hs-open{overflow:hidden}
 .hs-explain h3{margin:0 0 5px;color:var(--happy-ink);font-size:16px;font-weight:600}
 .hs-explain p{margin:0;color:inherit;line-height:inherit}
 .hs-explain p+p{margin-top:7px}
-.hs-explain .hs-equation{padding:9px 11px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:10px;color:var(--happy-ink);font-weight:600}
+.hs-explain .hs-equation{padding:9px 11px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:12px;color:var(--happy-ink);font-weight:600}
 .hs-explain .hs-explain-note{font-size:14px}
 .hs-explain ul{margin:0;padding-left:16px}
 .hs-explain li+li{margin-top:6px}
@@ -310,7 +310,7 @@ body.hs-open{overflow:hidden}
 .hs-day-goals .hs-wheel-option.hs-on{font-size:16px;font-weight:600}
 .hs-observations{margin-top:30px}
 .hs-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-#happy-screens .hs-topics button{display:flex;align-items:center;justify-content:center;max-width:100%;padding:10px 15px;min-height:41px;border-radius:24px;border:1px solid #ffffff65;background:#ffffff20;
+#happy-screens .hs-topics button{display:flex;align-items:center;justify-content:center;max-width:100%;padding:10px 15px;min-height:44px;border-radius:999px;border:1px solid #ffffff65;background:#ffffff20;
  font-size:14px;line-height:1.3;color:var(--happy-ink);overflow-wrap:anywhere;text-align:center}
 #happy-screens .hs-topics button[aria-pressed=true]{background:#f4faff;color:var(--hs-pill-on-ink);border-color:#fff;box-shadow:0 2px 7px #145e9314}
 #happy-screens .hs-topics .hs-add-topic{min-width:65px;padding:10px 20px}
@@ -342,3 +342,7 @@ body.hs-sheet-open{overflow:hidden}
    тоже, и сразу везде»). Низ листа — с запасом под меню. Страница на весь экран (вход) меню по-прежнему закрывает. */
 body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!important}
 .hs-page-sheet>.hs-scroll{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
+/* Cards: 26; Day 22 (lighter feel), Sport 24 (large exercise images) — AGENTS.md section 4. */
+html[data-happy-appearance-app="day"] .hs-group,html[data-happy-appearance-app="day"] .hs-links .happy-app-links{border-radius:22px}
+html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app="sport"] .hs-links .happy-app-links{border-radius:24px}
