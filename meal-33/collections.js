@@ -131,7 +131,8 @@ function mountSupplements(screen){
  const section=root.document.createElement('section');section.id='ccSupplements';section.hidden=true;
  while(original.firstChild)section.append(original.firstChild);original.remove();screen.append(section);
  const grid=root.document.createElement('div');grid.id='ccPurchasedSupplements';grid.className='cc-grid cc-purchased';section.prepend(grid);
- const head=section.querySelector('.sp-head'),top=root.document.createElement('div');top.id='ccSupplementBuy';if(head)head.append(top);
+ /* Meal 33.30 (аудит 3, Астамур 21.11): «Купить» — под картинкой, во всю ширину, а не справа от заголовка */
+ const head=section.querySelector('.sp-head'),cover=section.querySelector('.sp-catalog-cover'),top=root.document.createElement('div');top.id='ccSupplementBuy';top.className='cc-buy-bottom cc-buy-top';if(cover)cover.after(top);else if(head)head.append(top);
  const bottom=root.document.createElement('div');bottom.id='ccSupplementBuyBottom';bottom.className='cc-buy-bottom';if(e('spList'))e('spList').after(bottom);
 }
 function mount(){

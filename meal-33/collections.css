@@ -116,3 +116,7 @@
 .cc-card-open img.cc-ready{opacity:1}
 .cc-detail-image{background:rgba(255,255,255,.10)}
 @media (prefers-reduced-motion:reduce){.cc-card-open img{transition:none}}
+/* Meal 33.30 (аудит 3): кнопка покупки — пилюля под картинкой; подпись «Тестовая покупка» тише (12 — минимум по правилам) */
+.cc-buy-top{margin:0 0 18px}
+.cc-buy-bottom .cc-buy button{border-radius:999px;min-height:48px}
+.cc-buy-bottom .cc-buy small{font-size:12px;opacity:.55;font-weight:400}
