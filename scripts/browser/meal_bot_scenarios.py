@@ -565,6 +565,11 @@ dict(id="Мк15", msgs=["рожки 150 г"], mode="none", ask=True),
 dict(id="Мк16", msgs=["рожок"], mode="none", ask=True),
 dict(id="Мк17", msgs=["рожки с курицей 200 г"], mode="rec|safe", want=[("макарон вар", None), ("кур", None)]),
 dict(id="Мк18", msgs=["сварил рожки 200 г"], want=[("макарон вар", 200)]),
+dict(id="Рч1", msgs=["чихуа 100 г"], want=[("фейхоа", 100)]),
+dict(id="Рч2", msgs=["омлет сырам 150 г"], want=[("омлет сыр", 150)]),
+dict(id="Рч3", msgs=["ass ball 20 г"], want=[("асыдзбал", 20)]),
+dict(id="Рч4", msgs=["lobo 150 г"], want=[("лобио", 150)]),
+dict(id="Рч5", msgs=["americano 200 мл"], want=[("кофе", 200)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
