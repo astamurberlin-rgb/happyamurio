@@ -2807,7 +2807,7 @@ function parseText(text){
   var lines=[], corrNext=false;
   chunks.forEach(function(ch){
     /* жирность: «3,5%», «10 %», «20 процентов», «жирность 2,5» */
-    var fat=null, fm=ch.match(/(\d+(?:#\d+)?)\s*(%|процент\S*)/)||ch.match(/жирн\S*\s+(\d+(?:#\d+)?)/);
+    var fat=null, fm=ch.match(/(\d+(?:#\d+)?)\s*(%|процент\S*)/)||ch.match(/жирност\S*\s+(\d+(?:#\d+)?)/);   // «жирность 2,5»; «творог жирный 100 г» — не жирность 100 (Meal 33.30, разбор молочного 22.11.2026)
     if(fm){ fat=parseFloat(fm[1].replace('#','.')); ch=ch.replace(fm[0],' ') }
     var toks=ch.split(/[^a-zа-яё0-9#%]+/).filter(Boolean).map(norm);
     /* «без кожи», «с кожей», «без сахара» — условия, а не слова названия */
