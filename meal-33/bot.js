@@ -1493,13 +1493,15 @@ var MealBot=(function(){
       var unavailable=MealReplacement.catalogMessage();
       /* вопрос отдельным сообщением (диктовка шортката): строки списка, которую можно смахнуть, у него нет — «Пропустить» кнопкой, как раньше */
       var skip=inlinePhrase(S,q)?'':chips([['skip:'+id,'Пропустить']]);
+      /* Meal 33.36: «нет в базе» — можно сразу завести свой продукт; после сохранения строка запишется с ним */
+      var own=typeof MealOwnProductFlow!=='undefined'&&MealOwnProductFlow?chips([['ownnew:'+id,'Завести свой продукт']]):'';
       if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>'+skip;
       missLog('нет в базе',heard,l.raw);
       var options=similarFoods(l.spoken||l.name,l.formContext);
       var message=options.length?'К сожалению, в базе отсутствует «'+esc(heard)+'». Предлагаю на замену:':
         'Не нашёл «'+esc(heard)+'» в подключённых базах.';
       return p(message)+'<div data-replacement-slot="'+id+'">'+(options.length?
-        '<div class="mbChips mrOptions">'+options.map(function(f){return '<button type="button" class="chip" data-replacement-food="'+esc(f.id)+'">'+esc(f.n)+'</button>'}).join('')+'</div>':'')+'</div>'+skip;
+        '<div class="mbChips mrOptions">'+options.map(function(f){return '<button type="button" class="chip" data-replacement-food="'+esc(f.id)+'">'+esc(f.n)+'</button>'}).join('')+'</div>':'')+'</div>'+own+skip;
     }
     var clarifying=canClarify(l), prefix='';
     if(clarifying){
@@ -2224,6 +2226,9 @@ var MealBot=(function(){
     if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(ORIG)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(ORIG)) return todayTotals();
     if(/что\s+(я\s+)?(уже\s+|сегодня\s+)*(записал|записано|съел|ел)(\s|$)/.test(ORIG)||/^(покажи|что)\s+(записи|день|записано|за сегодня)/.test(ORIG)) return todayList();
     if(/(список|чего)\s+(недостающ|не хватает|нет в базе)|что\s+не\s+нашел|ненайденн/.test(bare)) return missShow();
+    var opq=typeof MealOwnProduct!=='undefined'&&!m.inbox&&MealOwnProduct.request(bare);
+    if(opq&&opq.dish) return p('Своё блюдо собирается в чате «Рецепт»: продиктуй состав, например «салат: огурец 150 г, помидоры 200 г, ложка масла», и сохрани в «Мои рецепты».')+chips([['recipechat:x','Открыть «Рецепт»']]);
+    if(opq&&opq.how&&typeof MealOwnProductFlow!=='undefined'&&MealOwnProductFlow) return p('Могу завести прямо здесь: спрошу название, калории и БЖУ с упаковки и вес штуки. Ещё — в «Библиотеке», кнопка «Создать свой продукт».')+chips([['st:own:@start','Завести продукт']]);
     var rp=bare.match(/^(?:замени|поменяй|исправь|перепиши|переделай)\s+(.+?)\s+на\s+(.+)$/)||bare.match(/^вместо\s+(.+?)\s+(?:запиши\s+|был[аио]?\s+|пил\S*\s+|ел\S*\s+)?(.+)$/)||bare.match(/^(?:нет\s*,?\s*)?не\s+(.+?)\s*,?\s+а\s+(.+)$/)||bare.match(/^(?:у\s+)?(.+?)\s+(?:было\s+|была\s+)?не\s+[\d.,]+\s*[а-я]*\s*,?\s+а\s+(.+)$/);
     if(rp){ var rr=replaceCmd(S,rp[1],rp[2]); if(rr) return rr }
     var del=bare.match(/^(удали|убери|сотри)\s+(.+)$/);
@@ -2403,7 +2408,7 @@ var MealBot=(function(){
     var othH=others.length?'<p class="mlHint">Не записал — это не съедено тобой: «'+esc(others.join('», «').replace(MK,'').replace(/\s+/g,' ').trim())+'».</p>':'';
     if(!ready.length&&!asks.length&&othH) return othH;
     if(!ready.length&&!asks.length){
-      if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); return p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'». Ничего не записал, добавил в список недостающего.') }
+      if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); return p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'». Ничего не записал, добавил в список недостающего.')+ownChip(miss) }
       return p('Не нашёл здесь еды. Ничего не записал.');
     }
     /* то же сообщение второй раз подряд за две минуты — возможно, повтор, а не вторая порция */
@@ -2444,7 +2449,7 @@ var MealBot=(function(){
       if(c===false) return p('Чтобы записывать, войди в аккаунт.');
       h+=commitHTML(c,!!phraseId)+phrasePart(phraseId,(guessed?timeNote(guessed):'')+othH); S.last={key:key,at:+now,phraseId:phraseId}; othH='';
     }
-    if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); h+=p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'» — не записал, добавил в список недостающего.') }
+    if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); h+=p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'» — не записал, добавил в список недостающего.')+ownChip(miss) }
     /* новое неясное — вперёд: человек сейчас об этом; прежний вопрос вернётся следом */
     var waiting=S.pend.length;
     if(asks.length){ S.pend=asks.concat(S.pend) }
@@ -2513,6 +2518,7 @@ var MealBot=(function(){
       }catch(err){}
     },150);
   }
+  function ownChip(miss){ return miss.length===1&&typeof MealOwnProductFlow!=='undefined'&&MealOwnProductFlow?chips([['ownname:'+encodeURIComponent(miss[0].name),'Завести свой продукт']]):'' }
   function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
 
   /* ── совет блюда: «что на завтрак», «быстро», «белковое на ужин», «осталось 400 калорий» (решение Астамура 22.11.2026 «да»).
@@ -2774,7 +2780,7 @@ var MealBot=(function(){
       syncLines(chat); renderChat();
       return;
     }
-    var inlineAction=S.ask&&S.ask.id===a[1]&&inlinePhrase(S,S.ask.q);
+    var inlineAction=a[0]!=='ownnew'&&S.ask&&S.ask.id===a[1]&&inlinePhrase(S,S.ask.q);
     var step=!inlineAction&&S.ask&&S.ask.id===a[1]&&['pick','num','unit','cnt'].includes(a[0])?choiceStep(chat,S):null;
     var before=S.commits.length;
     if(SP) SP.on(true);
@@ -2801,6 +2807,11 @@ var MealBot=(function(){
     else if(/^adv/.test(a[0])){ h=advTap(S,a); if(h==='') return }
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='st'){ h=typeof MealBotSteps!=='undefined'?MealBotSteps.tap(chat,S,a):null }
+    else if(a[0]==='ownnew'||a[0]==='ownname'){ if(typeof MealBotSteps==='undefined') return;
+      var oq=a[0]==='ownnew'&&S.ask&&S.ask.id===a[1]?S.ask.q:null, onm=oq?(oq.heard||oq.line.spoken||oq.line.name||''):decodeURIComponent(a.slice(1).join(':'));
+      if(a[0]==='ownnew'&&!oq) return;
+      h=MealBotSteps.start(chat,'own',oq?{suggest:onm,askId:a[1]}:{suggest:onm}) }
+    else if(a[0]==='recipechat'){ if(typeof openChat==='function') openChat('text','recipe'); return }
     else if(a[0]==='misscopy'){ var mt=missText(); try{ navigator.clipboard.writeText(mt).then(function(){ toast('Список скопирован') },function(){ toast('Не скопировалось — выдели текст вручную') }) }catch(e){ toast('Не скопировалось — выдели текст вручную') } return }
     else if(a[0]==='missclear'){ try{ localStorage.removeItem(MISSK) }catch(e){} h=p('Список очистил.') }
     else h=tapDo(S,a[0],a[1],a[2]);

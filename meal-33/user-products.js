@@ -185,6 +185,30 @@ function change(ev){
 }
 /* Meal 32: продукт записывается через общий модуль (meal-data.js). Перед записью дневник собирается из хранилища
    заново — со всеми правками другой вкладки и другого устройства, — чтобы открытый давно редактор не затёр их. */
+function commit(draft,expected,pro,failText){
+ var next=P.upsert(root.DB,draft,{expectedRevision:expected});next.db.productToolsPro=pro;
+ if(next.db.units)delete next.db.units[draft.id];
+ P.snapshotItems(next.db,Object.assign({},root.FOODS,{[next.food.id]:next.food}));
+ root.DB=next.db;root.rebuildLib();root.save();if(root.saveNow()===false)throw Error(failText);
+ return root.FOODS[next.food.id];
+}
+/* Meal 33.36: свой продукт из чата бота (bot-own-product.js) — тот же путь сохранения, что у формы, без открытия формы.
+   spec: {name, per100:{kcal,prot,fat,carb} (что не сказано — «нет данных»), from: продукт базы для копии, por:{мера:граммы}} */
+function quick(spec){
+ if(root.writeGuard())return null;
+ if(root.DB.productsVersion>1)throw Error('Продукты сохранены в более новой версии приложения. Открой последнюю версию.');
+ var from=spec.from||null,info=null;
+ if(from&&from.b&&root.BLS_ST!=='ok')throw Error('Дождись загрузки каталога состава');
+ if(from&&from.b){var bls=root.BLS;info={source:bls&&bls.src||from.src,url:bls&&bls.url,version:bls&&bls.v,note:bls&&bls.note,code:from.b}}
+ var draft=P.fromFood(from,from?catalog():null,root.blsVal,{copy:!!from,name:spec.name,sourceInfo:info});
+ draft.n=String(spec.name||'').trim();
+ if(from){draft.por=usdaNames(from,Object.assign({},draft.por,(root.DB.units||{})[from.id]||{}));draft.drink=!!root.isDrink(from.id)}
+ Object.keys(spec.per100||{}).forEach(function(k){var f=draft.composition.fields.find(function(x){return x.key===k});var v=spec.per100[k];if(!f||v==null)return;f.value=v;f.status='value';f.origin='user';delete f.copiedFrom});
+ Object.keys(spec.por||{}).forEach(function(k){draft.por[k]=spec.por[k]});
+ P.validate(draft);root.adoptRemote(true);
+ var food=commit(draft,0,!!root.DB.productToolsPro,'Не удалось сохранить продукт');
+ root.renderAll();return food;
+}
 async function save(){
  if(session.saving)return;
  var s=session;
@@ -198,11 +222,7 @@ async function save(){
    var storedFood=(root.DB.foods||[]).find(function(f){return f.id===s.draft.id});
    if(storedFood&&(storedFood.revision||0)!==s.expected)throw Error('Продукт изменён в другом окне. Закрой редактор и открой его заново.');
    if(s.original&&!storedFood)throw Error('Продукт удалён в другом окне. Закрой редактор и открой библиотеку.');
-   var next=P.upsert(root.DB,s.draft,{expectedRevision:s.expected});next.db.productToolsPro=s.pro;
-   if(next.db.units)delete next.db.units[s.draft.id];
-   P.snapshotItems(next.db,Object.assign({},root.FOODS,{[next.food.id]:next.food}));
-   root.DB=next.db;root.rebuildLib();root.save();if(root.saveNow()===false)throw Error('Не удалось сохранить продукт. Черновик оставлен в редакторе.');
-   var callback=s.cb,food=root.FOODS[next.food.id];close(true);root.renderAll();if(doc.querySelector('[data-screen="journal"].on'))root.renderJournal();root.toast('«'+food.n+'» сохранён');if(callback)callback(food);
+   var food=commit(s.draft,s.expected,s.pro,'Не удалось сохранить продукт. Черновик оставлен в редакторе.'),callback=s.cb;close(true);root.renderAll();if(doc.querySelector('[data-screen="journal"].on'))root.renderJournal();root.toast('«'+food.n+'» сохранён');if(callback)callback(food);
  }catch(ex){s.saving=false;if(box)box.querySelectorAll('[data-up="save"]').forEach(function(b){b.disabled=false});error(ex.message)}
 }
 function exportProduct(format){
@@ -259,7 +279,7 @@ function renderJournalProperties(){
  var list=Object.values(sums);node.hidden=!list.length;
  node.innerHTML=list.length?'<div class="eyebrow"><span>Пользовательские свойства</span></div><section class="happy-card"><p class="happy-note">'+(range.a===range.b?'За день':'В среднем за день с записями')+' · свойства учитываются отдельно. Частичный итог включает только известные значения.</p>'+list.map(function(p){return '<div class="up-journal-property"><span>'+esc(p.name)+'<small>'+(p.mapsTo?'Сопоставлено: '+esc(p.mapsTo):'Без сопоставления')+(p.missing?' · нет данных: '+p.missing+' порц.':'')+(p.notDetected?' · не обнаружено: '+p.notDetected+' порц.':'')+'</small></span><b>'+(p.value==null?p.notDetected?'Не обнаружено':'—':num(p.value/days)+' '+esc(p.unit))+'</b></div>'}).join('')+'</section>':'';
 }
-root.MealProductEditor={isOpen:function(){return !!session},create:function(name,callback){return open(null,{name:name,onSave:callback})},edit:function(food){return open(food)},copy:function(food,callback){return open(food,{copy:true,onSave:callback})},renderJournalProperties:renderJournalProperties,renderLibrary:renderOwnLibrary};
+root.MealProductEditor={isOpen:function(){return !!session},quick:quick,create:function(name,callback){return open(null,{name:name,onSave:callback})},edit:function(food){return open(food)},copy:function(food,callback){return open(food,{copy:true,onSave:callback})},renderJournalProperties:renderJournalProperties,renderLibrary:renderOwnLibrary};
 if(e('libraryCreateProduct'))e('libraryCreateProduct').addEventListener('click',function(){root.MealProductEditor.create('')});
 if(e('libraryOwnProducts'))e('libraryOwnProducts').addEventListener('click',function(ev){var b=ev.target.closest('[data-own-product]');if(b&&root.FOODS[b.dataset.ownProduct])root.MealControls.product({fid:b.dataset.ownProduct,g:100})});
 doc.getElementById('addOwnProduct').addEventListener('click',function(){root.MealProductEditor.create('')});
