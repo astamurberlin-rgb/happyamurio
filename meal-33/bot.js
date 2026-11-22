@@ -546,7 +546,10 @@ var MealBot=(function(){
         /* «рыба жареная», «мясо отварное»: общее слово со способом — тот же вопрос «какая?», способ остаётся в кнопках (решение Астамура 22.11.2026) */
         var gdM=null, mws=fw.slice(1);
         if(SP&&!oneWord&&!fv&&!l.pin&&fw.length>1&&fw.length<=3&&tokensOf(c.text).length===fw.length&&mws.every(function(w){ return METHW.test(norm(w)) })){ var g0=SP.generic(fw[0]); if(g0&&g0.ask) gdM=g0 }
-        var gd=oneWord&&!fv?SP.generic(fw[0]):gdM;
+        /* целая фраза из словаря: «мороженое в вафельном рожке» без вкуса — тот же вопрос «какое?» (решение Астамура 22.11.2026) */
+        var gdP=SP&&!oneWord&&!fv&&!gdM&&!l.pin&&fw.length>1?SP.generic(fw.join(' ')):null;
+        if(gdP&&!gdP.ask) gdP=null;
+        var gd=oneWord&&!fv?SP.generic(fw[0]):(gdM||gdP);
         if(gd){
           var wasG=lastNamed(gd.history), gid=null;
           if(gdM&&wasG&&!mws.every(function(w){ return norm(FOODS[wasG.fid].n).indexOf(norm(w).slice(0,4))>=0 })) wasG=null;   // раньше была жареная треска — «рыба отварная» не она
