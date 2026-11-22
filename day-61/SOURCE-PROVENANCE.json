@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1549113,
-   "sha256": "648427a6b9a7520e239365eb8fcc3269b18bbe70555132273643270931a60969"
+   "size": 1553637,
+   "sha256": "e5c9dd5efb63414a99e1ec84b92bd6db904076b075a69085795a37413f49fb3d"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -236,8 +236,8 @@
   },
   {
    "path": "shared/happy-account.js",
-   "size": 31576,
-   "sha256": "eb454ba09061708c6576137e05e1cf462f3ee5be5f5a9a73e77811c5ba501dd9"
+   "size": 32565,
+   "sha256": "5944a85d9caa90abdb7b698b5e7873c4abb315e611c7f9d2bc392ecbb5e89236"
   },
   {
    "path": "shared/happy-app-links.js",
@@ -341,8 +341,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 25462,
-   "sha256": "683ffd1335f8e57602525e0448789d5f3964c75f9ef90084ca83d9dffd950a95"
+   "size": 25531,
+   "sha256": "ca25f19cc26d4952d273dd6e47f1df140e220d87c90c0cd4f82ea7fd01c31cde"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -401,8 +401,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 29789,
-   "sha256": "184459dbc414780bed6d6e1f6f7ab430fec38cf240fff5581a4396cc2d2a8a4b"
+   "size": 32127,
+   "sha256": "efbc9ab80f9fde3bc45c47d6a79248431e0d8d9add88c75c8a894c0f0df4f452"
   },
   {
    "path": "shared/release-notes.js",

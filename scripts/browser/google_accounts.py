@@ -25,6 +25,7 @@ class Fixture:
         self.registered = False
         self.confirmed = False
         self.recovery_password_sent = False
+        self.link_requests = []
 
     def browser(self, engine, name, uid):
         ctx = engine.new_context(viewport={"width": 393, "height": 852}, locale="ru-RU",
@@ -77,7 +78,7 @@ class Fixture:
             target = redirect + ("&" if "?" in redirect else "?") + urlencode({"code": code})
             if path.endswith("/identities/authorize"):
                 # GoTrue возвращает URL страницы провайдера, затем браузер открывает callback.
-                self.linked.add(chosen)
+                self.link_requests.append((device, uid))
                 return reply({"url": BACKEND + "/mock/provider?" + urlencode({"target": target})})
             return redirect_to_callback(target)
         if path == "/mock/provider":
@@ -190,13 +191,6 @@ def flush(page):
     assert page.evaluate("() => DayData.store.flush(12000)")
 
 
-def access(page):
-    if page.locator("#happy-screens [data-hw=migrate], #happy-screens [data-hw=link-google]").first.is_visible():
-        return
-    page.click(".tab[data-go=settings]")
-    page.click("[data-hp=access]")
-
-
 def local_records(page, uid):
     return page.evaluate("""async uid => {
         const db = await new Promise((resolve, reject) => {
@@ -301,17 +295,27 @@ with sync_playwright() as p:
     assert sibling.evaluate("() => MealData.store.flush(12000)")
     assert sibling.evaluate("() => HappyPerson.data().profile.heightCm === 181")
     sibling.close()
-    access(l)
-    check("до согласия прежний аккаунт продолжил запись со старым ключом",
-          LEGACY not in fixture.keys and all(r["v"] == 2 for r in fixture.rows.values() if r["user_id"] == LEGACY))
+    l.click(".tab[data-go=settings]")
+    connect = l.locator("[data-hp=access]")
+    check("настройки прежнего профиля предлагают подключить Google", connect.is_visible() and "Google" in connect.inner_text())
+    connect.click()
+    confirm = l.locator("[data-hw=migrate-google]")
+    confirm.wait_for()
+    check("до подтверждения показано, что Happy сможет восстановить доступ на новом телефоне",
+          "восстанов" in " ".join(l.locator("#happy-screens .hs-note").all_text_contents()).lower()
+          and LEGACY not in fixture.keys and all(r["v"] == 2 for r in fixture.rows.values() if r["user_id"] == LEGACY))
     l.click("[data-hw=cancel]")
+    check("отказ от подключения Google оставил прежний аккаунт разблокированным",
+          l.evaluate("() => DayData.signedIn() && DayData.account.current().keyVersion === 1")
+          and LEGACY not in fixture.keys and not fixture.link_requests)
     fixture.offline.add("old")
     note(l, "Не успела уйти в облако")
     l.wait_for_function("() => DayData.store.status().state === 'offline'")
-    access(l)
+    l.click(".tab[data-go=settings]")
+    connect.click()
     fixture.fail_after = 1
     fixture.offline.clear()
-    l.click("[data-hw=migrate]")
+    confirm.click()
     check("переход переживает сбой после частичной записи",
           wait_for(l, lambda: fixture.interrupted, 20, 100) and fixture.states[LEGACY] == "migrating"
           and {r["v"] for r in fixture.rows.values() if r["user_id"] == LEGACY} == {2, 3})
@@ -320,7 +324,9 @@ with sync_playwright() as p:
     l.reload()
     signed_in(l, "day", LEGACY)
     check("перезапуск завершил добровольный переход", wait_for(l, lambda: fixture.states[LEGACY] == "active", 18, 200))
-    l.wait_for_function("() => window.DayData && DayData.signedIn() && DayData.account.current().keyVersion === 2")
+    l.wait_for_function("() => window.DayData && DayData.signedIn() && DayData.account.current().keyVersion === 2 && DayData.account.current().google")
+    check("после перезапуска перенос сам продолжился выбором Google для прежнего ID",
+          fixture.link_requests == [("old", LEGACY)] and l.evaluate("() => DayData.account.current().uid") == LEGACY)
     flush(l)
     check("на устройстве перешифрованы записи владельца", sealed(l, LEGACY, "Не успела уйти"))
     check("другой старый аккаунт на устройстве сохранил записи и прежний формат",
@@ -332,10 +338,6 @@ with sync_playwright() as p:
           sibling.evaluate("() => MealData.account.current().keyVersion === 2 && HappyPerson.data().profile.heightCm === 181"))
     sibling.close()
     fixture.offline.clear()
-    l.click("[data-hw=link-google]")
-    l.wait_for_function("() => window.DayData && DayData.account.current()?.google")
-    signed_in(l, "day", LEGACY)
-    check("Google привязан к прежнему ID", LEGACY in fixture.linked)
     old.close()
 
     clean = fixture.browser(recovery_browser, "clean", LEGACY)
@@ -372,7 +374,13 @@ with sync_playwright() as p:
     tab.click("[data-hw=google]")
     recovery = tab.locator("[data-hw=complete-recovery]")
     recovery.wait_for()
-    assert tab.evaluate("() => !DayData.account.current() && !DayData.signedIn()")
+    profile_email = tab.locator("#happy-screens input[name=username][readonly]")
+    check("экран объясняет, что профиль уже существует, и подставляет его подтверждённую почту",
+          tab.get_by_role("heading", name="Открой свои записи").is_visible()
+          and tab.get_by_text("У тебя уже есть профиль Happy с этой почтой.", exact=True).is_visible()
+          and profile_email.is_visible() and profile_email.input_value() == fixture.user(OTHER_LEGACY)["email"]
+          and recovery.inner_text() == "Открыть записи"
+          and tab.evaluate("() => !DayData.account.current() && !DayData.signedIn()"))
     tab.click("[data-hw=cancel-recovery]")
     tab.locator("[data-hw=google]").wait_for()
     check("отказ от восстановления после Google сохранил прежние ключ и записи",
@@ -382,8 +390,10 @@ with sync_playwright() as p:
     recovery.wait_for()
     tab.reload()
     recovery.wait_for()
-    recovery.click()
     password = tab.locator("[name=legacyPassword]")
+    password.wait_for()
+    check("на чистом устройстве прежний пароль предложен сразу вместе с согласием",
+          recovery.is_visible() and fixture.states[OTHER_LEGACY] == "legacy" and OTHER_LEGACY not in fixture.keys)
     password.fill("wrong-local-password")
     recovery.click()
     tab.wait_for_function("() => document.querySelector('[name=legacyPassword]')?.value === '' && !document.querySelector('[data-hw=complete-recovery]').disabled")
@@ -404,7 +414,12 @@ with sync_playwright() as p:
     empty = fixture.browser(b, "empty-legacy", empty_id)
     tab = page_for(empty, "meal")
     tab.click("[data-hw=google]")
-    tab.click("[data-hw=complete-recovery]")
+    open_records = tab.get_by_role("button", name="Открыть записи")
+    open_records.wait_for()
+    check("пустому прежнему профилю предложен его адрес без запроса ненужного пароля",
+          tab.locator("input[name=username][readonly]").input_value() == fixture.user(empty_id)["email"]
+          and tab.locator("[name=legacyPassword]").count() == 0)
+    open_records.click()
     signed_in(tab, "meal", empty_id)
     check("пустой прежний аккаунт открылся под тем же ID после согласия без пароля",
           fixture.states[empty_id] == "active" and tab.evaluate("() => MealData.account.current().keyVersion === 2"))

@@ -78,7 +78,7 @@ function create(options){
  let session=null,kraw=null,key=null,generation=0,refreshing=null,migration=null,stopped=false;
  const listeners=new Set(),location=o.location||root.location,history=o.history||root.history;
  const oauthCell=CELL+':google',recoveryCell=CELL+':google-recovery';
- let recoveryRun=null;
+ let recoveryRun=null,recoveryRefresh=null;
  const oauthStorage=()=>o.oauthStorage||root.sessionStorage;
  const deviceKeys=new Map();
  function wrappingKey(app){
@@ -419,32 +419,56 @@ function create(options){
   const raw=b64(new Uint8Array(await unwrap(uid,box,purpose)));
   return {raw,key:await importKey(raw)};
  }
- function completeRecovery(previousPassword){
-  const pending=readRecovery();
-  if(stopped||!pending||session||disk())return Promise.reject(changed());
-  if(recoveryRun?.id===pending.id)return recoveryRun.promise;
+ function recoveryContext(pending){
   const mark=generation;
   function record(){
    const p=readRecovery();
-   if(stopped||generation!==mark||p?.id!==pending.id||session||disk())throw changed();
+   if(stopped||generation!==mark||!pending||p?.id!==pending.id||session||disk())throw changed();
    return p;
   }
-  async function accessToken(refused){
-   const old=record().s;
-   if(refused?old.at!==refused:now()<old.exp-60000)return old.at;
+  async function refresh(old){
    let j;
    try{j=await auth('token?grant_type=refresh_token',{refresh_token:old.rt})}
    catch(e){if(e.code==='auth'){record();oauthStorage().removeItem(recoveryCell)}throw e}
    const s=sessionFrom(j,old),p=record();
    if(s.uid!==old.uid||!s.at||!s.rt)throw changed();
-   saveRecovery({...p,s});return s.at;
+   saveRecovery({...p,s});
   }
-  const client={current:()=>({uid:record().s.uid}),token:accessToken};
+  async function accessToken(refused){
+   const old=record().s;
+   if(refused?old.at!==refused:now()<old.exp-60000)return old.at;
+   // The display check and the consent action may overlap. Rotate a refresh
+   // token only once and re-check which pending account owns the result.
+   if(recoveryRefresh?.id!==pending.id){
+    const promise=refresh(old);
+    recoveryRefresh={id:pending.id,promise};
+    const done=()=>{if(recoveryRefresh?.promise===promise)recoveryRefresh=null};
+    promise.then(done,done);
+   }
+   await recoveryRefresh.promise;return record().s.at;
+  }
+  return {record,client:{current:()=>({uid:record().s.uid}),token:accessToken}};
+ }
+ async function recoveryNeedsPassword(){
+  const context=recoveryContext(readRecovery());
+  if(context.record().box)return false;
+  try{
+   await root.HappyStore.verifyLegacyKey({account:context.client,legacyKey:null,url,key:apikey,fetch:request});
+   context.record();return false;
+  }catch(e){
+   context.record();if(e.code==='legacy_password')return true;throw e;
+  }
+ }
+ function completeRecovery(previousPassword){
+  const pending=readRecovery();
+  if(stopped||!pending||session||disk())return Promise.reject(changed());
+  if(recoveryRun?.id===pending.id)return recoveryRun.promise;
+  const {record,client}=recoveryContext(pending);
   const purpose='recovery:'+pending.id;
   const promise=(async()=>{
    const uid=record().s.uid;
    const old=await recoveryKey(previousPassword,uid,pending.box,purpose);
-   const state=await migrateWith(client,action=>keyRequest(action,accessToken,record),old?.key||null,async verified=>{
+   const state=await migrateWith(client,action=>keyRequest(action,client.token,record),old?.key||null,async verified=>{
     // Only a verified passphrase is cached for a retry; the passphrase itself
     // never travels to Auth or the key service and is never written to disk.
     const box=verified?await wrap(uid,old.raw,o.app,purpose):null;
@@ -502,7 +526,7 @@ function create(options){
  }
  if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume)}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,

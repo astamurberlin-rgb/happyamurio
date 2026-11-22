@@ -123,7 +123,7 @@ function top(box){
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
   '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button>'+
-  (who?'<button type="button" class="hs-row" data-hp="access"><span>Способы входа</span></button>':'')+'</div></section></div>';
+  (who?'<button type="button" class="hs-row" data-hp="access"><span>'+(who.google?'Способы входа':'Подключить вход через Google')+'</span></button>':'')+'</div></section></div>';
 }
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;
