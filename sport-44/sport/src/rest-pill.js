@@ -113,9 +113,19 @@ function stackFloating(){
   const banner=document.querySelector('.active-banner');
   if(shown(banner)&&banner.style.bottom!==above(dock))banner.style.bottom=above(dock);
   refreshRestPillPosition();
-  const free=document.getElementById('free-timer-root');if(!free)return;
-  const top=[dock,banner,document.querySelector('#rest-pill-root .floating-rest-pill')].filter(shown).sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top)[0];
-  if(free.style.bottom!==above(top))free.style.bottom=above(top);
+  const pill=document.querySelector('#rest-pill-root .floating-rest-pill');
+  const free=document.getElementById('free-timer-root');
+  if(free){
+   const top=[dock,banner,pill].filter(shown).sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top)[0];
+   if(free.style.bottom!==above(top))free.style.bottom=above(top);
+  }
+  /* Астамур 22.11.2026: короткое сообщение без плашек — низко, над кнопкой микрофона (из CSS); есть плашка
+     тренировки, перерыва или таймер посередине — сообщение над самой верхней из них с зазором 8 и её не закрывает. */
+  const mid=innerWidth/2,fab=document.querySelector('#free-timer-root .free-clock-fab');
+  const middle=el=>{const r=el.getBoundingClientRect();return r.left<mid+120&&r.right>mid-120};
+  const bars=[banner,pill,shown(fab)&&middle(fab)?fab:null].filter(shown);
+  const want=bars.length&&!document.querySelector('.overlay:not(:empty)')?Math.round(height-Math.min(...bars.map(el=>el.getBoundingClientRect().top))+8)+'px':'';
+  if(document.body.style.getPropertyValue('--toast-bottom')!==want){if(want)document.body.style.setProperty('--toast-bottom',want);else document.body.style.removeProperty('--toast-bottom');}
  }catch{}
 }
 setInterval(stackFloating,100);
