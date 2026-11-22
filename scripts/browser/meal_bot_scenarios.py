@@ -702,6 +702,15 @@ dict(id="Мр6", msgs=["мороженое 100 г"], mode="none", ask=True),
  dict(id="Фо49", eaten=True, msgs=["Три Лерочки петрушки три веточки укропа"], want=[("петрушка", 3), ("укроп", 3)]),
  dict(id="Фо50", eaten=True, msgs=["киш-миш 100 г"], want=[("изюм", 100)]),
  dict(id="Фо51", eaten=True, msgs=["перчик 100 г"], want=[("перец сладк", 100)]),
+dict(id="Фо52", eaten=True, msgs=["листья кинзы 10 г"], want=[("кориандр, листья", 10)]),
+dict(id="Фо53", eaten=True, msgs=["кочан красной капусты"], want=[("капуста, красная", 840)]),
+dict(id="Фо55", msgs=["кориандр 100 г"], mode="none", ask=True),
+dict(id="Фо56", eaten=True, msgs=["кориандр семена 5 г"], want=[("кориандр, семена", 5)]),
+dict(id="Фо57", eaten=True, msgs=["перо лука"], want=[("лук зелен", 5)]),
+dict(id="Фо58", eaten=True, msgs=["перья лука"], want=[("лук зелен", 5)]),
+dict(id="Фо59", eaten=True, msgs=["3 пера лука"], want=[("лук зелен", 15)]),
+dict(id="Фо60", eaten=True, msgs=["перекусил яблочком"], want=[("яблоко !сок", 182)]),
+dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("опята осенние, обжаренные", 100)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
