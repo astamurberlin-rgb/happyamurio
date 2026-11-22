@@ -312,7 +312,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    wordForms:function(){ return (D&&D.dish_word_forms)||[] }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
+    wordForms:function(){ return (D&&D.dish_word_forms)||[] }, advice:function(){ return (D&&D.dish_advice)||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();

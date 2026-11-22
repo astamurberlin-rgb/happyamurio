@@ -25,6 +25,7 @@ var MealBot=(function(){
     [/(как(ой|ая|ие|их)[- ]то|непонятн|неизвестн)/,'продукт не назван']];
   var CSS='.mbChips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.mbChips .chip{flex:none;padding:8px 14px;font-size:14px}'+
     '.mlB .mbSum{margin-top:8px;font-size:14px;opacity:.86}'+
+    '.mlB .mbAdv{margin-top:12px}.mlB .mbAdv .mbSum{margin-top:2px}.mlB .mbAdv .mbChips{margin-top:6px}'+
     '.mlB .mbMiss{white-space:pre-wrap;font:14px/1.45 inherit;margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.14);user-select:text;-webkit-user-select:text}';
   var booted=false;
   var SP=typeof MealSpeech!=='undefined'&&MealSpeech.ready()?MealSpeech:null, MK=/[≈⊕⊘▽◇△⊙]/g;
@@ -1893,6 +1894,7 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
@@ -2218,6 +2220,89 @@ var MealBot=(function(){
     return p('Чего не хватает в базе:')+'<pre class="mbMiss">'+esc(t)+'</pre>'+chips([['misscopy:x','Скопировать список'],['missclear:x','Очистить список']]);
   }
   function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
+
+  /* ── совет блюда: «что на завтрак», «быстро», «белковое на ужин», «осталось 400 калорий» (решение Астамура 22.11.2026 «да»).
+     Слова и пороги — в словаре (dish_advice). Отбор — из рецептов подборок экрана «Сборники» и «Моих рецептов»;
+     в дневник совет не идёт: «Записать» открывает шторку «Подобрано», как в рецепте. Кухни — следующий шаг: такой вопрос идёт прежним путём */
+  function kcalLeft(){
+    var g=typeof goalOf==='function'?goalOf('k'):0; if(!(g>0)) return null;
+    var d=todayISO(), it=day(d).items, s=typeof intakeSum==='function'?intakeSum(it,typeof supplementRows==='function'?supplementRows(d):[]):sumOf(it);
+    return Math.round(g-(s&&s.k||0));
+  }
+  function has(t,forms){ return (forms||[]).some(function(f){ return t.indexOf(f)>=0 }) }
+  function advice(S,raw){
+    var A=SP&&SP.advice?SP.advice():null; if(!A) return null;
+    var t=nrm(raw).replace(/[?!.,…]/g,' ').replace(/\s+/g,' '), T=' '+t.trim()+' ';
+    var strong=(A.ask_strong||[]).some(function(r){ return new RegExp('(^|\\s)'+r).test(t.trim()) });
+    var weak=!strong&&(A.ask_weak||[]).some(function(w){ return new RegExp('(^|\\s)'+w+'(\\s|$)').test(T) })&&has(t,A.food_context);
+    if(!strong&&!weak&&has(t,(A.no_cook||{}).forms)&&!/\d/.test(t)) strong=true;   // «перекус без готовки»
+    var cuisine=has(t,A.not_yet);
+    if(!strong&&!weak&&!(cuisine&&(A.ask_weak||[]).some(function(w){ return new RegExp('(^|\\s)'+w+'(\\s|$)').test(T) }))) return null;
+    if(/(^|\s)(сколько|съел|съела|ел|ела|поел|поела|скушал|выпил|выпила|перекусил|перекусила|позавтракал|пообедал|поужинал|запиши|записал|записала|добавь)(\s|$)/.test(T)) return null;   // это запись или вопрос о продукте, а не совет
+    if(cuisine) return p(esc((A.reply_ru||{}).cuisine||''));               // кухни — следующий шаг
+    var want={meal:null,max:null,protein:has(t,(A.protein||{}).forms),light:has(t,(A.light||{}).forms),filling:has(t,(A.filling||{}).forms),kmax:null,ing:null,note:''};
+    (A.meals||[]).some(function(m){ if(has(t,m.forms)){ want.meal=m; return true } return false });
+    if(has(t,(A.no_cook||{}).forms)) want.max=(A.no_cook||{}).max_min||3;
+    else if(has(t,(A.quick||{}).forms)) want.max=(A.quick||{}).max_min||15;
+    var mm=t.match(/(?:за|до|минут за|не больше|не дольше)\s+(\d{1,3})\s*(?:мин|минут\S*)|(\d{1,3})\s*(?:мин|минут\S*)/); if(mm) want.max=+(mm[1]||mm[2]);
+    var km=t.match(/(\d{2,4})\s*(?:ккал|калори\S*|кал)(\s|$)/); if(km) want.kmax=+km[1];
+    else if(has(t,A.left_forms)&&/калори|ккал|норм|цел/.test(t)){ var left=kcalLeft();
+      if(left==null) want.note=(A.reply_ru||{}).no_goal||''; else if(left<=0){ want.note=(A.reply_ru||{}).over||''; want.light=true } else { want.kmax=left; want.left=true } }
+    var im=t.match(/(?:^|\s)(?:из|с|со)\s+([а-я-]{3,})/); if(im&&!/^(собой|утра|вечера|работы|тренировк|зала|чем|того|белк|протеин|калори|ккал|быстр)/.test(im[1])) want.ing=norm(im[1]).slice(0,4);
+    if(!want.meal&&!want.max&&!want.protein&&!want.light&&!want.filling&&!want.kmax&&!want.ing){
+      var h=(S.clock?new Date(S.clock):new Date()).getHours(), mid=((A.meal_by_hour||[]).filter(function(x){ return h>=x[0]&&h<x[1] })[0]||[])[2];
+      want.meal=(A.meals||[]).filter(function(m){ return m.id===mid })[0]||null; want.byHour=true }
+    S.adv={want:want,list:pool(A,want),shown:0};
+    return advShow(S,A,true);
+  }
+  /* КБЖУ рецепта для совета: строка, где разбор оставил выбор («молоко» — какое?), считается по первому варианту, как справка «сколько калорий в…»;
+     иначе такой рецепт выглядел бы легче, чем он есть, и попадал бы в «лёгкое» и «до 300 ккал» */
+  function advNut(r){
+    var ls=r.x?parseText(r.x).lines:recipeLinesAny(r), items=[];
+    ls.forEach(function(l){ var id=l.fid||(l.alts&&l.alts[0]); if(!id||!FOODS[id]) return;
+      var g=l.fid&&l.g>0?l.g:gramsFor(id,l.q,l.u); if(g>0) items.push({fid:id,g:g}) });
+    return sumOf(items);
+  }
+  function pool(A,w){
+    var out=[], favs=Array.isArray(DB.rfav)?DB.rfav:[];
+    (typeof COLS!=='undefined'?COLS:[]).forEach(function(c){
+      if(w.meal&&(w.meal.collections||[]).indexOf(c.k)<0) return;
+      c.items.forEach(function(r){ out.push({r:r,col:c,min:r.min,text:r.x}) }) });
+    if(!w.meal&&w.max==null) (DB.recipes||[]).forEach(function(r){ out.push({r:r,col:null,min:null,mine:true,text:(r.lines||[]).map(function(l){ return FOODS[l.fid]?FOODS[l.fid].n:'' }).join(' ')}) });
+    out=out.filter(function(x){
+      var n=advNut(x.r); x.k=n.k||0; x.p=n.p||0; if(!(x.k>0)) return false;
+      if(w.max!=null&&!(x.min!=null&&x.min<=w.max)) return false;
+      if(w.protein&&x.p*4/x.k<((A.protein||{}).min_share||0.25)) return false;
+      if(w.light&&x.k>((A.light||{}).max_kcal||400)) return false;
+      if(w.filling&&x.k<((A.filling||{}).min_kcal||400)) return false;
+      if(w.kmax!=null&&x.k>w.kmax) return false;
+      if(w.ing&&norm(x.text||'').split(/[^а-яa-z]+/).every(function(s){ return s.slice(0,4)!==w.ing })) return false;
+      return true });
+    out.forEach(function(x,i){ x.i=i; x.fav=favs.indexOf(x.r.id)>=0 });
+    out.sort(function(a,b){ return ((b.mine?1:0)-(a.mine?1:0))||((b.fav?1:0)-(a.fav?1:0))||(w.protein?b.p-a.p:0)||(w.light||w.kmax!=null?a.k-b.k:0)||(w.max!=null?a.min-b.min:0)||a.i-b.i });
+    return out;
+  }
+  function advShow(S,A,first){
+    var R=A.reply_ru||{}, a=S.adv, n=A.count||3, w=a.want, part=a.list.slice(a.shown,a.shown+n);
+    if(!part.length) return p(esc(first?R.none:R.more_none));
+    a.shown+=part.length;
+    var bits=[w.meal?w.meal.name_ru:'', w.max!=null?'до '+w.max+' мин':'', w.protein?'с белком':'', w.light?'лёгкое':'', w.filling?'сытное':'', w.kmax!=null?(w.left?'осталось ':'до ')+w.kmax+' ккал':''].filter(Boolean);
+    var h=(w.note?p(esc(w.note)):'')+p(first?(bits.length?'Вот что подойдёт ('+esc(bits.join(', '))+'):':'Вот что можно:'):'Ещё варианты:');
+    h+=part.map(function(x){
+      var meta=[x.min!=null?x.min+' мин':'', Math.round(x.k)+' ккал', 'белок '+Math.round(x.p)+' г', x.mine?'мой рецепт':''].filter(Boolean).join(' · ');
+      return '<div class="mbAdv"><b>'+esc(x.r.t)+'</b><div class="mbSum">'+esc(meta)+'</div>'+
+        chips((x.col?[['advopen:'+x.r.id,'Открыть']]:[]).concat([['advlog:'+x.r.id,'Записать']]))+'</div>' }).join('');
+    if(a.shown<a.list.length) h+=chips([['advmore','Ещё']]);
+    return h+(first?'<p class="mlHint">'+esc(R.hint||'')+'</p>':'');
+  }
+  function advTap(S,a){
+    var A=SP&&SP.advice?SP.advice():null;
+    if(a[0]==='advmore') return S.adv&&A?advShow(S,A,false):null;
+    var x=typeof findRecipe==='function'?findRecipe(a[1]):null; if(!x) return null;
+    if(a[0]==='advopen'&&x.col){ openCol(x.col.k); ROPEN=x.r.id; renderCol(); return '' }
+    if(a[0]==='advlog'){ openMatchLines(recipeLinesAny(x.r),{back:'chat',from:'recipe'}); return '' }
+    return null;
+  }
   function deferred(why){
     return p('Пока так не умею — '+esc(why)+'. Ничего не записал.')+'<p class="mlHint">Это разберёт модель (этап 2). Сейчас можно сказать проще: продукт и вес.</p>';
   }
@@ -2417,6 +2502,7 @@ var MealBot=(function(){
     else if(a[0]==='offer'){ if(!S.offer) return;
       if(a[1]==='2'&&S.offer.alt){ var of2=S.offer; S.offer=null; h=handle(chat,S,{kind:'text',text:of2.alt,eaten:of2.eaten||undefined,inbox:of2.inbox||undefined,at:of2.at||undefined}); if(S.offer) h=handle(chat,S,{kind:'text',text:'да'}) }
       else h=handle(chat,S,{kind:'text',text:'да'}) }
+    else if(/^adv/.test(a[0])){ h=advTap(S,a); if(h==='') return }
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='misscopy'){ var mt=missText(); try{ navigator.clipboard.writeText(mt).then(function(){ toast('Список скопирован') },function(){ toast('Не скопировалось — выдели текст вручную') }) }catch(e){ toast('Не скопировалось — выдели текст вручную') } return }
     else if(a[0]==='missclear'){ try{ localStorage.removeItem(MISSK) }catch(e){} h=p('Список очистил.') }
