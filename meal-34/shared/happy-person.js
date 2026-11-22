@@ -120,11 +120,14 @@ function top(box){
  if(box)topBox=box;if(!topBox||!cfg)return;
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
  const name=who?(who.name||'Мой профиль'):'Гость';
+ let accessLabel='';
+ if(who&&!who.google)accessLabel='Подключить вход через Google';
+ else if(who&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
   '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button>'+
-  (who?'<button type="button" class="hs-row" data-hp="access"><span>'+(who.google?'Способы входа':'Подключить вход через Google')+'</span></button>':'')+'</div></section></div>';
+  (accessLabel?'<button type="button" class="hs-row" data-hp="access"><span>'+accessLabel+'</span></button>':'')+'</div></section></div>';
 }
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;

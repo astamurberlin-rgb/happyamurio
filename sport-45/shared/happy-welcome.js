@@ -144,7 +144,8 @@ function accessHtml(){
    'Выбери Google-аккаунт для входа в этот профиль. Вход по почте сохранится.';
   if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary');
  }
- return title(who.google?'Способы входа':'Подключить вход через Google')+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
+ const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Подключить вход через Google';
+ return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
   '<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div>';
 }
 function smile(label){
@@ -403,7 +404,7 @@ function init(o){
  if(cfg.app!=='meal'&&root.isSecureContext&&root.navigator.serviceWorker&&
     /^(https?:)$/.test(root.location.protocol)&&/\/(?:index\.html)?$/.test(root.location.pathname)){
   const version=doc.querySelector('[data-app-version]')?.dataset.appVersion||'1';
-  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-5',{scope:'./'}).catch(()=>{});
+  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-6',{scope:'./'}).catch(()=>{});
  }
  let cell=false;
  try{cell=!!(cfg.account.cell&&root.localStorage.getItem(cfg.account.cell))}catch(e){}

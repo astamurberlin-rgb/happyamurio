@@ -22,6 +22,14 @@ def check(name, condition):
     assert condition, name
 
 
+def check_google_settings(page, app):
+    page.click('.tab[data-view=profile]' if app == 'sport' else '.tab[data-go=settings]')
+    page.get_by_role('button', name='Настроить профиль', exact=True).wait_for()
+    check('после входа Google в настройках ' + app + ' остались профиль и цели без лишней строки',
+          page.get_by_role('button', name='Настроить цели', exact=True).is_visible()
+          and not page.locator('[data-hp=access]').count())
+
+
 with sync_playwright() as p:
     b = launch(p)
     recovery_browser = p.webkit.launch() if os.environ.get("HAPPY_RECOVERY_BROWSER") == "webkit" else b
@@ -41,10 +49,12 @@ with sync_playwright() as p:
     google(i, "day", ALICE)
     check("чистый браузер открыл прежний профиль и дневник с первого входа Google", note(i) == "Заметка после Google"
           and i.evaluate("() => HappyPerson.data().profile.heightCm") == 173 and fixture.password_logins == 0)
+    check_google_settings(i, "day")
     for app in ("meal", "sport"):
         tab = page_for(iphone, app)
         google(tab, app, ALICE)
         check("Google в " + app + " открыл общий профиль", tab.evaluate("() => HappyPerson.data().profile.heightCm") == 173)
+        check_google_settings(tab, app)
         tab.close()
 
     fixture.offline.add("iphone")
@@ -159,6 +169,9 @@ with sync_playwright() as p:
     check("регистрация по почте после подтверждения открыла аккаунт с собственным случайным ключом",
           fixture.registered and reg.evaluate("() => DayData.account.current().keyVersion") == 2
           and fixture.keys[NEW_EMAIL] not in (fixture.keys[ALICE], fixture.keys[LEGACY]))
+    reg.click('.tab[data-go=settings]')
+    check('профилю по почте доступно подключение Google',
+          reg.get_by_role('button', name='Подключить вход через Google', exact=True).is_visible())
     # Google автоматически привязан к прежнему профилю. На чистом устройстве нет ключа,
     # а Auth больше не принимает его старый пароль. Он нужен только Web Crypto на устройстве.
     clean_legacy = fixture.browser(recovery_browser, "clean-legacy", OTHER_LEGACY)

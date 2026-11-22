@@ -1516,9 +1516,9 @@ body.hs-open{overflow:hidden}
 #happy-screens .hs-profile-photo .hs-quiet{text-align:center;margin:0 auto}
 .hs-profile-form{display:flex;flex-direction:column;gap:17px}
 #happy-screens .hs-export{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:6px}
-#happy-screens .hs-export button{min-height:44px;padding:0 12px;font-size:16px;font-weight:600}
-#happy-screens .hs-export-link{color:var(--happy-ink);text-decoration:underline;text-underline-offset:4px}
-#happy-screens .hs-delete-link{color:var(--happy-danger);text-shadow:0 1px 2px #000,0 0 2px #000}
+#happy-screens .hs-export button{min-height:44px;padding:0 12px;font-weight:600}
+#happy-screens .hs-export-link{color:var(--happy-ink);font-size:16px;text-decoration:underline;text-underline-offset:4px}
+#happy-screens .hs-delete-link{color:var(--happy-danger);font-size:14px;text-shadow:none}
 .hs-delete-dialog{position:fixed;inset:auto 0 0;margin:0 auto;width:100%;max-width:460px;max-height:calc(100% - 24px - env(safe-area-inset-top));
  overflow:auto;overscroll-behavior:contain;pointer-events:auto;padding:24px 20px calc(24px + env(safe-area-inset-bottom));
  border:1px solid var(--hs-border);border-bottom:0;border-radius:22px 22px 0 0;background:var(--hs-sheet-bg);color:var(--happy-ink)}
@@ -5478,7 +5478,7 @@ const SportTaps=(()=>{
 })(typeof window!=='undefined'?window:globalThis);
 
 /* Add newest releases first; also update the daily briefing. */
-const sportReleases=[{"version": "45", "date": "2026-11-22", "author": "Codex", "changes": ["Профиль Sport можно открыть через Google. Вход по почте и записи сохраняются.", "В настройках появился раздел «Способы входа». Переход на ключ, который можно восстановить на новом устройстве, выполняется с твоего согласия."]},
+const sportReleases=[{"version": "45", "date": "2026-11-22", "author": "Codex", "changes": ["Профиль Sport можно открыть через Google. Вход по почте и записи сохраняются.", "В настройках профиля с паролем можно подключить Google. Переход на ключ, который можно восстановить на новом устройстве, выполняется с твоего согласия."]},
  {"version": "44.14", "date": "2026-11-22", "time": "18:20", "author": "Claude", "changes": ["Короткое сообщение без плашки стоит низко, сразу над кнопкой микрофона.", "Есть плашка тренировки, перерыва или таймер посередине — сообщение стоит над самой верхней из них и не закрывает её."]},
  {"version": "44.13", "date": "2026-11-22", "time": "16:00", "author": "Claude", "changes": ["Все тексты обращаются на «ты», и экраны входа, профиля и целей тоже: «Войди в аккаунт», «Проверь адрес почты», «Не помню пароль».", "«Выбери, что записать»; «Время: минуты и секунды, например 1:30» — одна фраза везде; «Файл копии готов — сохрани его» вместо «JSON подготовлен»; диктовка — «Диктовка здесь не работает…».", "Короткие сообщения на iPhone больше не наезжают на кнопку с микрофоном: висят чуть выше неё."]},
  {"version": "44.12", "date": "2026-11-22", "time": "04:35", "author": "Claude", "changes": ["«Настроить тему» → «Главная кнопка»: кружки с микрофоном как в Color Studio — настоящий цвет и тень кнопки, белый микрофон.", "Профиль: списка замеров веса больше нет (замеры — в журнале), подписи полей жирнее, «Пол» и единицы — переключатели с отступом внутри контура, подписи по центру.", "Переключатели между вариантами везде одного вида: контур 44, выбранная пилюля 36.", "Выключатели одного вида во всех приложениях, галочки — белый квадрат, листы снизу как в Day, текст в белых кнопках — цвета темы.", "«Библиотека» теперь «Каталог», первая вкладка — «Дневник».", "«+ Круг» в таймере крупный, как «Старт».", "Лист выбора периода как в Day.", "Служебное (Иконки, Датчики) — в «Для разработчика».", "Новые значки «Журнал» (лист с секундомером) и «Каталог» (книга с гирей).", "«Золотой закат» с тёмным низом."]},
@@ -11188,7 +11188,8 @@ function accessHtml(){
    'Выбери Google-аккаунт для входа в этот профиль. Вход по почте сохранится.';
   if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary');
  }
- return title(who.google?'Способы входа':'Подключить вход через Google')+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
+ const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Подключить вход через Google';
+ return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
   '<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div>';
 }
 function smile(label){
@@ -11447,7 +11448,7 @@ function init(o){
  if(cfg.app!=='meal'&&root.isSecureContext&&root.navigator.serviceWorker&&
     /^(https?:)$/.test(root.location.protocol)&&/\/(?:index\.html)?$/.test(root.location.pathname)){
   const version=doc.querySelector('[data-app-version]')?.dataset.appVersion||'1';
-  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-5',{scope:'./'}).catch(()=>{});
+  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-6',{scope:'./'}).catch(()=>{});
  }
  let cell=false;
  try{cell=!!(cfg.account.cell&&root.localStorage.getItem(cfg.account.cell))}catch(e){}
@@ -11631,11 +11632,14 @@ function top(box){
  if(box)topBox=box;if(!topBox||!cfg)return;
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
  const name=who?(who.name||'Мой профиль'):'Гость';
+ let accessLabel='';
+ if(who&&!who.google)accessLabel='Подключить вход через Google';
+ else if(who&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
   '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button>'+
-  (who?'<button type="button" class="hs-row" data-hp="access"><span>'+(who.google?'Способы входа':'Подключить вход через Google')+'</span></button>':'')+'</div></section></div>';
+  (accessLabel?'<button type="button" class="hs-row" data-hp="access"><span>'+accessLabel+'</span></button>':'')+'</div></section></div>';
 }
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;

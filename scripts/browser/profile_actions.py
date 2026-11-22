@@ -101,6 +101,9 @@ def confirm_dialog(page, app, email):
     link = parent.get_by_role('button', name='Скачать данные', exact=True)
     remove = parent.get_by_role('button', name='Удалить аккаунт', exact=True)
     remove.scroll_into_view_if_needed()
+    assert remove.evaluate('el => getComputedStyle(el).fontSize') == '14px'
+    assert remove.evaluate('el => getComputedStyle(el).textShadow') == 'none'
+    assert remove.bounding_box()['height'] >= 44
     assert remove.bounding_box()['y'] >= link.bounding_box()['y'] + link.bounding_box()['height'] - 1
     assert link.evaluate('el => getComputedStyle(el).color') == 'rgb(255, 255, 255)'
     red = remove.evaluate(r'el => getComputedStyle(el).color.match(/\d+/g).map(Number)')
