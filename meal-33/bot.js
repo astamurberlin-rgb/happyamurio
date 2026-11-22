@@ -1493,7 +1493,7 @@ var MealBot=(function(){
       var unavailable=MealReplacement.catalogMessage();
       /* вопрос отдельным сообщением (диктовка шортката): строки списка, которую можно смахнуть, у него нет — «Пропустить» кнопкой, как раньше */
       var skip=inlinePhrase(S,q)?'':chips([['skip:'+id,'Пропустить']]);
-      /* Meal 33.36: «нет в базе» — можно сразу завести свой продукт; после сохранения строка запишется с ним */
+      /* Meal 33.37: «нет в базе» — можно сразу завести свой продукт; после сохранения строка запишется с ним */
       var own=typeof MealOwnProductFlow!=='undefined'&&MealOwnProductFlow?chips([['ownnew:'+id,'Завести свой продукт']]):'';
       if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>'+skip;
       missLog('нет в базе',heard,l.raw);
@@ -2477,7 +2477,7 @@ var MealBot=(function(){
     var t=missText(); if(!t) return p('Список недостающего пуст: пока всё нашлось.');
     return p('Чего не хватает в базе:')+'<pre class="mbMiss">'+esc(t)+'</pre>'+chips([['misscopy:x','Скопировать список'],['missclear:x','Очистить список']]);
   }
-  /* Meal 33.36 · справка о приложении (решение Астамура 22.11.2026): «где / как» о функции — ответ из словаря bot/household-ru.js (app_help)
+  /* Meal 33.37 · справка о приложении (решение Астамура 22.11.2026): «где / как» о функции — ответ из словаря bot/household-ru.js (app_help)
      и кнопка, которая открывает нужный экран. В дневник ничего не идёт, в список недостающего — тоже. Покупку, выход и удаление бот сам не делает. */
   function helpData(){ var D0=typeof window!=='undefined'&&window.HappyMealSpeechData; return D0&&D0.app_help||null }
   function helpEntry(id){ var H=helpData(); return H?(H.entries||[]).filter(function(e){ return e.id===id })[0]||null:null }

@@ -428,6 +428,16 @@
    "sha256": "087feafc7f39d8fc5b025786f2311204ff117112195a3578b0134cdf2d4de409"
   },
   {
+   "path": "bot-goals.js",
+   "size": 18361,
+   "sha256": "e6ab5673201aafc10efe91eb55c8dfa757ec2782b82781ba31b3052ab99b5c47"
+  },
+  {
+   "path": "bot-own-product.js",
+   "size": 19595,
+   "sha256": "7fbcf2e7888e32836af32ece34cb2cda5109435fe4a095b1161b18e733fe8cff"
+  },
+  {
    "path": "bot-replacement.css",
    "size": 3197,
    "sha256": "4f34a8b21be54ae9ff29b1e8684526ac2487d2bf1b393177c193c38113765f48"
@@ -443,14 +453,19 @@
    "sha256": "e25b44cd435ac5e7ca46aafd8e5c94fcec4d4d2b0372146fb4a16072615297f3"
   },
   {
+   "path": "bot-steps.js",
+   "size": 16443,
+   "sha256": "b60e7379dcb1c1fafa3f8e92b6fe7944c28c54825255cd05420f7c8d24ba59b3"
+  },
+  {
    "path": "bot.js",
-   "size": 281977,
-   "sha256": "375d24f7105fbce0c637e35221977a519b30342d1b85cff095248949ae3101e3"
+   "size": 289647,
+   "sha256": "d17150bf461410488296422e32fc7f41527cb4d9b588d65f5458c68634401567"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 577186,
-   "sha256": "99e78b3192f4d365f664bc66d8240562c36118b58f5a597820d9374525c12ae0"
+   "size": 614517,
+   "sha256": "972cbd5beed6ff92674144315bfafa22a88c37a64e4139edfa380e41a49d341e"
   },
   {
    "path": "catalog-offline.js",
@@ -604,8 +619,8 @@
   },
   {
    "path": "index.html",
-   "size": 695394,
-   "sha256": "7f071df0f6c8bf7a88437ecd0f4bb26947f4086095bb23198e529bb4ccb97057"
+   "size": 702287,
+   "sha256": "e0dc996abfb25a46cb454b5c7f98a4b2bdd8372279a4060aa582785071ad62e1"
   },
   {
    "path": "kfct.js",
@@ -619,8 +634,8 @@
   },
   {
    "path": "meal-account.js",
-   "size": 7960,
-   "sha256": "1d18f9aa161f9927dd1806a7346e73977851ef8a499dba9db3fc09e95a73726a"
+   "size": 8124,
+   "sha256": "fa406a7ce456b071fec57974490a2f81fdd62760cd7207b9cd4269ec95a8062e"
   },
   {
    "path": "meal-data.js",
@@ -824,8 +839,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 83079,
-   "sha256": "933aca05638f390e8782512790c14e8be7854dbe6ba294c63dbf80f0cf35ae91"
+   "size": 84419,
+   "sha256": "f5b4fb3912ed3e4021d657ad8755d65f25f6e453fe9910858ae6fc4832345a69"
   },
   {
    "path": "report.css",
@@ -1050,7 +1065,7 @@
   {
    "path": "sw.js",
    "size": 3524,
-   "sha256": "34b37ae7df2f67951771b2f74cc8fb51012f4d65948d64333d09e7b700ccd56a"
+   "sha256": "57d2234db8d33528d6ddd6d0725a2bd31d211e3a954337589abfcf11dead01eb"
   },
   {
    "path": "usda-measures.js",
@@ -1069,8 +1084,8 @@
   },
   {
    "path": "user-products.js",
-   "size": 42067,
-   "sha256": "62c623349047d9064c0e0611827fb026200212edf4c4a679e40aa986170c3083"
+   "size": 43837,
+   "sha256": "7413681fe4e6e0fec0a18a65ac1df25008927f9e43fc9ad6a28955dfcc386028"
   },
   {
    "path": "uzbek.js",

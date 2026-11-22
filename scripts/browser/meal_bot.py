@@ -149,7 +149,7 @@ with sync_playwright() as p:
         out["rows"].append({"id": s["id"], "now": "ошибка" if why else "верно", "why": "; ".join(why), "reply": text[:300]})
         if why: gbad.append("%s: %s" % (s["id"], "; ".join(why)))
     check("мастер целей: %d сценариев" % len(GOALS), not gbad, " | ".join(gbad[:6]))
-    # Meal 33.36 · свой продукт через чат: шаги кнопками и словами, «нет в базе» → свой продукт → запись, сверка калорий, похожий из базы
+    # Meal 33.37 · свой продукт через чат: шаги кнопками и словами, «нет в базе» → свой продукт → запись, сверка калорий, похожий из базы
     obad = []
     FOOD = """(n)=>{const f=(DB.foods||[]).find(x=>x.n===n);if(!f)return null;const v=k=>MealProducts.value(f,k);return {n:f.n,k:v('kcal'),p:v('prot'),f:v('fat'),c:v('carb'),por:f.por||{},copied:f.copiedFrom?f.copiedFrom.name:null}}"""
     # кнопка в ответе или в вопросе строки списка (вопрос «нет в базе» показывается в открытой строке)

@@ -192,7 +192,7 @@ function commit(draft,expected,pro,failText){
  root.DB=next.db;root.rebuildLib();root.save();if(root.saveNow()===false)throw Error(failText);
  return root.FOODS[next.food.id];
 }
-/* Meal 33.36: свой продукт из чата бота (bot-own-product.js) — тот же путь сохранения, что у формы, без открытия формы.
+/* Meal 33.37: свой продукт из чата бота (bot-own-product.js) — тот же путь сохранения, что у формы, без открытия формы.
    spec: {name, per100:{kcal,prot,fat,carb} (что не сказано — «нет данных»), from: продукт базы для копии, por:{мера:граммы}} */
 function quick(spec){
  if(root.writeGuard())return null;
