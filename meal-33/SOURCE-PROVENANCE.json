@@ -969,13 +969,13 @@
   },
   {
    "path": "shared/happy-theme-picker.css",
-   "size": 4179,
-   "sha256": "5033e094f47a630c3a997f17b00bb104458862e0c7e59b16b40ad5f88a8c0487"
+   "size": 5541,
+   "sha256": "7c4ed93d711b38e232fea3799cce5501ee782cc22dae09a92d375ebbcfb39b3a"
   },
   {
    "path": "shared/happy-theme-picker.js",
-   "size": 11892,
-   "sha256": "d8caaf80327c4a2f565302c58427a9ff3fb70cd9d5df77572ceb4251e63e0195"
+   "size": 13242,
+   "sha256": "f6f2fe5c6d8b9ca428214a388428814f665c60ebaf4b2598daed4fa04d2d63e3"
   },
   {
    "path": "shared/happy-ui.css",

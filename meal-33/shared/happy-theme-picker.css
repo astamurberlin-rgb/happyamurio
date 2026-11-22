@@ -105,9 +105,26 @@
   background: var(--swatch);
 }
 
-.appearance-swatch svg { width: 15px; height: 15px; }
-/* кружки «Главной кнопки» — без белого контура, как сама кнопка (Астамур 21.11.2026) */
-.appearance-options[data-kind="button"] .appearance-swatch { border: 0; }
+/* «Главная кнопка» (Астамур 22.11.2026: «перерисуй кнопки с микрофонами как в Happy Color Studio»):
+   как ряд сравнения кнопок в студии — круг 60 с градиентом и тенью самой кнопки, белый микрофон 26 с линией 2,2,
+   без контура; подпись 12 под кружком. Выбранная — белое кольцо и подпись 600. */
+.appearance-options[data-kind="button"] { gap: 6px; padding: 6px 4px 14px; scroll-padding-inline: 4px; }
+.appearance-options[data-kind="button"] .appearance-choice {
+  flex: 0 0 76px; flex-direction: column; justify-content: flex-start; align-items: center; gap: 8px;
+  min-height: 0; padding: 0; overflow: visible; border: 0; border-radius: 0; background: none; box-shadow: none;
+}
+.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] { background: none; box-shadow: none; }
+.appearance-options[data-kind="button"] .appearance-swatch {
+  flex: none; width: 60px; height: 60px; border: 0; color: #fff;
+  box-shadow: var(--swatch-shadow, none);
+}
+.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] .appearance-swatch { outline: 2px solid #fff; outline-offset: 3px; }
+.appearance-options[data-kind="button"] .appearance-choice-name {
+  max-width: 76px; font-size: 12px; line-height: 16px; font-weight: 400; text-align: center; white-space: normal; overflow-wrap: anywhere;
+}
+.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] .appearance-choice-name { font-weight: 600; }
+.appearance-options[data-kind="button"] .appearance-choice:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 12px; }
+.appearance-mic { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
 .appearance-options[data-kind="theme"] .appearance-choice {
   flex: 0 0 clamp(124px, calc((100% - 24px) / 2), 168px);
@@ -145,5 +162,4 @@
   white-space: nowrap;
 }
 
-/* значок кнопки Day в ленте «Главная кнопка» — контурный микрофон, как на самой кнопке */
-.appearance-swatch svg.fabMic { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
