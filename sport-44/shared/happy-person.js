@@ -162,11 +162,6 @@ function open(){
  const main=pageH.main;
  function weightLabel(){return draft.units.weight==='kg'?'кг':'фунты'}
  function heightLabel(){return draft.units.height==='cm'?'см':'футы'}
- function history(){
-  const list=data().weights.slice().reverse();
-  return '<details class="hs-history"><summary>Замеры веса <span>'+list.length+'</span></summary>'+list.map(w=>'<div class="hs-history-row"><time>'+w.date.slice(8,10)+'.'+w.date.slice(5,7)+'.'+w.date.slice(0,4)+'</time><span>'+
-   fmt(S().toUnits(w.kg,draft.units.weight))+' '+weightLabel()+'</span></div>').join('')+'</details>';
- }
  function pendingHtml(){
   if(!pendingEmail)return '';
   return '<div class="hs-pending"><span>Ожидает подтверждения</span><strong>'+esc(pendingEmail)+'</strong><button type="button" class="hs-quiet" data-p="email-again">Отправить повторно</button>'+
@@ -186,7 +181,7 @@ function open(){
    '<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('sex',[['','—','Не указан'],['male','М','Мужской'],['female','Ж','Женский']],draft.sex,'Пол','hs-compact-sex')+'</div></div>'+
    '<div class="hs-field-pair">'+F({label:'Вес сейчас',name:'weight',inputmode:'decimal',value:shown.weight,suffix:weightLabel(),placeholder:'Не указан',quick:true})+
    F({label:'Дата замера',name:'date',type:'date',max:today,value:shown.date})+'</div>'+
-   '<div data-p-history>'+history()+'</div>'+
+   /* Замеры веса здесь не показываем: для них есть журнал замеров (Астамур 22.11.2026: «в профиле этому не место»). */
    '<section class="hs-units"><h2>Единицы измерения</h2><div class="hs-units-row"><span>Вес</span>'+S().segment('wunits',[['kg','кг'],['lb','фунты']],draft.units.weight,'Единицы веса')+'</div>'+
    '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div>'+
    '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+

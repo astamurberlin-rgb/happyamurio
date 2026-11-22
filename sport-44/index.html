@@ -67,9 +67,11 @@
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
+  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');   /* галочка Meal — сливовая (аудит 3) */
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
   --hs-toast-bg:rgba(49,20,46,.92);
   --hs-pill-on-ink:#84036d;
+  --happy-accent-ink:#84036d;   /* текст в белых кнопках Meal («Выгрузить отчёт», «Русский») — сливовый, как вкладки, не синий Day (аудит 3, 22.11) */
 }
 :root[data-happy-appearance-app="sport"]{
   --hs-glass:rgba(255,255,255,.16);
@@ -309,7 +311,7 @@ body{width:100%;max-width:100%;overflow-x:clip}
 .happy-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 0;padding:0}
 .happy-actions+.happy-actions{margin-top:12px}
 .happy-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;flex:0 1 auto;width:auto;max-width:100%;min-height:44px;margin:0;padding:11px 16px;border:1px solid var(--happy-line,rgba(255,255,255,.36));border-radius:999px;background:var(--happy-glass,rgba(255,255,255,.17));color:var(--happy-ink);font-family:inherit;font-size:14px;font-weight:600;line-height:20px;text-decoration:none;text-align:center;cursor:pointer;white-space:normal;overflow-wrap:anywhere;-webkit-appearance:none;appearance:none}
-.happy-button.primary{min-height:48px;white-space:nowrap;background:rgba(255,255,255,.92);color:#0c6fa8;border-color:#fff}
+.happy-button.primary{min-height:48px;white-space:nowrap;background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0c6fa8);border-color:#fff}
 .happy-button:disabled{opacity:.5;cursor:default}
 .happy-button:focus-visible,.happy-input:focus-visible,.happy-password-toggle:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .happy-note{font-family:inherit;font-size:14px;line-height:1.65;color:var(--happy-muted,rgba(255,255,255,.82));margin:12px 0 0}
@@ -766,7 +768,7 @@ button.tpNm{display:block;min-width:0;padding:4px 0;text-align:left;background:n
 .exercise-player .player-face{width:min(100%,286px);margin:0 auto}
 .timer-simple-controls{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:320px;gap:16px;margin:10px auto 0}
 .timer-simple-controls>button{display:flex;align-items:center;justify-content:center;min-width:90px;min-height:48px;padding:4px 0;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;font-weight:400}
-.timer-simple-controls .timer-stop-text{font-size:28px;letter-spacing:.7px}.timer-simple-controls .timer-round-text{font-size:16px;gap:5px}.timer-round-text>span{font-size:28px}
+.timer-simple-controls .timer-stop-text{font-size:28px;letter-spacing:.7px}.timer-simple-controls .timer-round-text{font-size:28px;letter-spacing:.7px;gap:6px}.timer-round-text>span{font-size:28px}
 .timer-actions-trigger{min-height:44px;margin:0 auto 8px;padding:7px 20px;background:none;border:0;color:inherit;font-size:14px;text-decoration:underline;text-underline-offset:5px}
 .timer-history-controls{display:flex;width:100%;justify-content:space-between;gap:12px}.timer-return-link{display:block;margin:14px auto 0;min-height:44px}
 .exercise-player .free-timer-hint{position:static;margin:0 0 8px;min-height:0}
@@ -1474,7 +1476,7 @@ body.hs-open{overflow:hidden}
 .hs-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .hs-identity h2{overflow-wrap:anywhere;line-height:1.28;font-size:20px;max-width:100%;margin:0 auto;font-weight:600;letter-spacing:-.3px;color:var(--happy-ink)}
 .hs-section+.hs-section{margin-top:28px}
-.hs-section>h3{font-size:14px;font-weight:600;color:var(--hs-muted);margin:0 3px 10px;text-transform:none;letter-spacing:normal}
+.hs-section>h3{font-size:14px;font-weight:600;color:var(--hs-muted);margin:0 2px 10px;text-transform:none;letter-spacing:normal}
 .hs-group{background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:26px;padding:0 17px;overflow:hidden}
 .hs-settings .hs-row{display:flex;flex-direction:column;gap:6px;background:none;width:100%;text-align:left;padding:18px 0;border:0;color:var(--happy-ink);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0;margin:0;box-shadow:none;min-height:0}
 .hs-settings .hs-row+.hs-row{border-top:1px solid rgba(255,255,255,.22)}
@@ -1491,12 +1493,12 @@ body.hs-open{overflow:hidden}
 
 /* ── «Связка с»: свитчи связи приложений (разметку и обмен ведёт приложение) в виде прототипа ── */
 .hs-links{margin-top:28px!important}
-.hs-links .hs-links-title{display:block;font-size:14px;font-weight:600;line-height:1.4;color:rgba(255,255,255,.7);margin:0 3px 10px;text-transform:none;letter-spacing:normal}
+.hs-links .hs-links-title{display:block;font-size:14px;font-weight:600;line-height:1.4;color:rgba(255,255,255,.7);margin:0 2px 10px;text-transform:none;letter-spacing:normal}
 .hs-links .happy-app-links{padding:0 17px!important;border-radius:26px;background:var(--hs-glass)!important;border:1px solid var(--hs-border)!important;box-shadow:none!important}
 .hs-links .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:65px;padding:0}
 .hs-links .happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.22)}
 .hs-links .happy-app-name{flex:1;min-width:0;padding:14px 0;color:var(--happy-ink);font-size:16px;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
-.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 42px;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:999px;
+.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 auto;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:999px;
  background:rgba(255,255,255,.23);cursor:pointer;transition:background .18s;box-shadow:none}
 .hs-links .happy-switch::after{content:"";position:absolute;left:2px;top:2px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
 .hs-links .happy-switch:checked{background:var(--hs-switch-on);border:0}
@@ -1526,7 +1528,7 @@ body.hs-open{overflow:hidden}
 .hs-history summary::-webkit-details-marker{display:none}
 .hs-history summary span{color:var(--happy-ink)}
 .hs-history-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
-.hs-units h2{font-size:14px;font-weight:600;color:var(--hs-muted);margin-bottom:10px}
+.hs-units h2{font-size:16px;font-weight:600;color:#fff;margin-bottom:10px}   /* раздел профиля — как «Аккаунт» и «Личные данные»: 16 / 600 (Астамур 22.11.2026) */
 .hs-units-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
 /* Единицы в профиле: дорожка 44, как у кнопок внутри (было 36 — выбранная пилюля 44 вылезала и казалась сплющенной; Астамур 21.11.2026). */
 .hs-units-row>.hs-segment{width:160px;height:44px}
@@ -1643,6 +1645,27 @@ body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!im
 /* Cards: 26; Day 22 (lighter feel), Sport 24 (large exercise images) — AGENTS.md section 4. */
 html[data-happy-appearance-app="day"] .hs-group,html[data-happy-appearance-app="day"] .hs-links .happy-app-links{border-radius:22px}
 html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app="sport"] .hs-links .happy-app-links{border-radius:24px}
+
+/* Галочки (чекбоксы) — один вид во всех приложениях, вариант 2 «Белый квадрат» (Астамур, аудит 3, 21.11.2026):
+   выкл — стеклянный квадрат 24×24, скругление 7, светлая рамка; вкл — белый квадрат, галочка цветом приложения (--hs-check).
+   :where — нулевая сила селектора: спрятанные галочки внутри пилюль-кнопок своими правилами остаются как были. */
+:root{--hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%238071df" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E')}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)){-webkit-appearance:none;appearance:none;box-sizing:border-box;flex:none;width:24px;height:24px;margin:0;border-radius:7px;border:1.6px solid rgba(255,255,255,.7);background:rgba(255,255,255,.16) center/18px 18px no-repeat;cursor:pointer;vertical-align:middle}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):checked{background-color:#fff;border-color:#fff;background-image:var(--hs-check)}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):disabled{opacity:.55;cursor:default}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* Выключатели — один вид во всех приложениях, вариант B «С рамкой» (Астамур, аудит 3, 21.11.2026):
+   42×25, тонкая светлая рамка; выкл — полупрозрачный синий, вкл — цвет приложения или темы (--hs-switch-on); ручка 19, белая, без тени.
+   Касается общего выключателя настроек, .toggle и мятного .sport-switch в Sport, выключателей окна счётчика Meal. */
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input){-webkit-appearance:none!important;appearance:none!important;position:relative!important;box-sizing:border-box!important;flex:0 0 auto!important;width:42px!important;min-width:0!important;height:25px!important;min-height:25px!important;margin:0!important;padding:0!important;border:1px solid rgba(255,255,255,.27)!important;border-radius:999px!important;background:rgba(0,106,159,.38)!important;box-shadow:none!important;cursor:pointer}
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):checked{background:var(--hs-switch-on,#8071df)!important;border-color:rgba(255,255,255,.27)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)::after,html body :is(.toggle,.fc-sync-row input)::before{content:""!important;position:absolute!important;top:50%!important;left:2px!important;width:19px!important;height:19px!important;margin:0!important;border-radius:50%!important;background:#fff!important;box-shadow:none!important;transform:translateY(-50%)!important;transition:transform .18s!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch):checked::after,html body :is(.toggle,.fc-sync-row input):checked::before{left:2px!important;transform:translate(17px,-50%)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* Профиль: подписи полей (Почта, Имя, Дата рождения, Рост, Пол, Вес сейчас, Дата замера, строки единиц) — жирные 600 и белые,
+   как заголовок «Единицы измерения» (Астамур 22.11.2026). Светлые заголовки на самой странице Настроек не меняются. */
+.hs-profile .hs-field-title,.hs-profile .hs-email-label>span:first-child,.hs-profile .hs-units-row>span{font-weight:600!important;color:#fff!important}
 /* Барабан Happy (shared/happy-drum.js) — решения Астамура 21.11.2026 по макету «Day · Осознанность»:
    две колонки, подпись над своим барабаном, длительность справа (один барабан — тоже справа);
    три строки, выбранная — на светлой полосе без рамки, как в iPhone. — Claude · 21.11.2026 */
@@ -1730,6 +1753,10 @@ html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app
 .hs-units-row>.hs-segment{height:44px!important}
 .segmented button.on,.segmented button[aria-selected=true],.hs-segment button[aria-pressed=true],button.selected[data-action$=-tab]{font-weight:600!important}
 .segmented button:not(.on):not(.selected):not([aria-selected=true]),[data-action$=-tab]:not(.selected){font-weight:400!important}   /* .selected — «Журнал | Замеры тела»: выбранное 600 (Астамур 21.11.2026: «везде 600») */
+/* Переключатель из вариантов — по образцу Day («Сегодня | Неделя | Месяц», Астамур 22.11.2026): контур 44 с отступом 3 внутри,
+   выбранная пилюля 36 не касается контура, подписи по центру своей половины. */
+.segmented,.hs-segment,#page>.journal-switch,.library-tabs,.exercise-context-tabs,.happy-measurement-tabs{box-sizing:border-box!important;height:44px!important;min-height:44px!important;padding:3px!important;gap:0!important;align-items:stretch!important;border-radius:999px!important}
+.segmented button,.hs-segment button,#page>.journal-switch button,.library-tabs button,.exercise-context-tabs button,.happy-measurement-tabs button{box-sizing:border-box!important;height:36px!important;min-height:36px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;border-radius:999px!important;margin:0!important}
 
 /* ── Чипы и фильтры: пилюля 44, текст 14 ── */
 .chips button,.date-pill,.hm-pill{
@@ -1763,7 +1790,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .sheet:has(.exercise-player),.exercise-player-sheet{border-radius:22px 22px 23px 23px!important}
 
 /* ── Выключатель: 42 × 25 ── */
-.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.sport-switch,.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 auto!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
 .sport-switch::after,.hs-links .happy-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
 .sport-switch{border-width:1px}
 .sport-switch::after{top:2px!important;left:2px!important;width:19px!important;height:19px!important}
@@ -2102,6 +2129,15 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 .toast:not(:has(button))>span,.toast:not(:has(button))>div{white-space:normal!important;overflow:visible!important}
 /* Кнопки действий — по ширине ряда, текст посередине; одна в ряду — во всю ширину (Астамур 21.11.2026, как в Day и Meal). */
 .happy-actions>.happy-button{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+/* Sport 44.12 (аудит 3, Астамур 21.11 «такого быть не должно»): все подзаголовки настроек с одного края, как «Приложение» и «Данные» (2px, shared .happy-heading) */
+.happy-settings .settings-section,.happy-settings .hs-links-title{margin-left:2px!important;margin-right:2px!important}
+/* Sport 44.12 (аудит 3, Астамур 21.11: «как в Day, иначе углы видны за нижним меню»): листы во всю ширину до самого низа,
+   скругление только сверху; низ уходит под нижнее меню, как .impSheet в Day (отступ 112 + безопасная зона) */
+.overlay{padding:0!important}
+.sheet{width:100%!important;border-radius:28px 28px 0 0!important;border-bottom:0!important;max-height:calc(100dvh - 40px - env(safe-area-inset-top))!important;padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
+
+/* аудит 3: выбранные сегменты и в «Каталоге» берут цвет текста из темы (без темы — как было) */
+:root[data-happy-appearance] .segmented .selected{color:var(--hs-seg-ink,#176b98)!important}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
@@ -2144,6 +2180,8 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
   line-height: 1.35;
   font-weight: 700;
 }
+/* заголовки лент «Тема» и «Главная кнопка» — белые во всех приложениях (Астамур 22.11.2026) */
+.appearance-wheel h3 { color: #fff; }
 
 .appearance-options {
   position: relative;
@@ -2209,7 +2247,26 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
   background: var(--swatch);
 }
 
-.appearance-swatch svg { width: 15px; height: 15px; }
+/* «Главная кнопка» (Астамур 22.11.2026: «перерисуй кнопки с микрофонами как в Happy Color Studio»):
+   как ряд сравнения кнопок в студии — круг 60 с градиентом и тенью самой кнопки, белый микрофон 26 с линией 2,2,
+   без контура; подпись 12 под кружком. Выбранная — белое кольцо и подпись 600. */
+.appearance-options[data-kind="button"] { gap: 6px; padding: 6px 4px 14px; scroll-padding-inline: 4px; }
+.appearance-options[data-kind="button"] .appearance-choice {
+  flex: 0 0 76px; flex-direction: column; justify-content: flex-start; align-items: center; gap: 8px;
+  min-height: 0; padding: 0; overflow: visible; border: 0; border-radius: 0; background: none; box-shadow: none;
+}
+.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] { background: none; box-shadow: none; }
+.appearance-options[data-kind="button"] .appearance-swatch {
+  flex: none; width: 60px; height: 60px; border: 0; color: #fff;
+  box-shadow: var(--swatch-shadow, none);
+}
+.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] .appearance-swatch { outline: 2px solid #fff; outline-offset: 3px; }
+.appearance-options[data-kind="button"] .appearance-choice-name {
+  max-width: 76px; font-size: 12px; line-height: 16px; font-weight: 400; text-align: center; white-space: normal; overflow-wrap: anywhere;
+}
+.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] .appearance-choice-name { font-weight: 600; }
+.appearance-options[data-kind="button"] .appearance-choice:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 12px; }
+.appearance-mic { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
 .appearance-options[data-kind="theme"] .appearance-choice {
   flex: 0 0 clamp(124px, calc((100% - 24px) / 2), 168px);
@@ -2674,13 +2731,13 @@ function toast(text,undo=null){clearTimeout(toastTimer);undoAction=undo;$('#toas
 function goto(v){closeSheet();view=v;render();window.scrollTo({top:0,behavior:'instant'})}
 function renderTop(title,date=true){return `<header class="top"><div><div class="brand">happy sport</div><h1>${title}</h1></div>${date?`<label class="date-pill">${icon('calendar-blank')}<span>${dateLabel(selectedDate)}</span><input aria-label="День дневника" type="date" value="${selectedDate}" id="day-picker"></label>`:''}</header>`}
 function backTop(title){return `<header class="back-heading"><button class="icon-btn" data-action="back" aria-label="Назад">${icon('arrow-left')}</button><h1>${esc(title)}</h1></header>`}
-function nav(){const items=[['diary','calendar-blank','Дневник'],['library','books','Библиотека'],null,['journal','notebook','Журнал'],['profile','user-circle','Профиль']];$('#dock').innerHTML=items.map(i=>i?`<button class="nav-btn ${view===i[0]?'selected':''}" data-action="navigate" data-view="${i[0]}" aria-current="${view===i[0]?'page':'false'}">${icon(i[1])}<span>${i[2]}</span></button>`:'<div></div>').join('')+`<button class="mic-fab" data-action="voice" aria-label="Записать голосом или текстом">${icon('microphone')}</button>`;$('#active-banner').innerHTML=state.active&&view!=='active'?`<div class="active-banner"><span class="row">${icon('timer')}<b style="font-size:12px">${esc(state.active.title)}</b></span><button data-action="resume">Продолжить</button></div>`:''}
+function nav(){const items=[['diary','calendar-blank','Дневник'],['library','books','Каталог'],null,['journal','notebook','Журнал'],['profile','user-circle','Профиль']];$('#dock').innerHTML=items.map(i=>i?`<button class="nav-btn ${view===i[0]?'selected':''}" data-action="navigate" data-view="${i[0]}" aria-current="${view===i[0]?'page':'false'}">${icon(i[1])}<span>${i[2]}</span></button>`:'<div></div>').join('')+`<button class="mic-fab" data-action="voice" aria-label="Записать голосом или текстом">${icon('microphone')}</button>`;$('#active-banner').innerHTML=state.active&&view!=='active'?`<div class="active-banner"><span class="row">${icon('timer')}<b style="font-size:12px">${esc(state.active.title)}</b></span><button data-action="resume">Продолжить</button></div>`:''}
 function render(){nav();$('#page').innerHTML=({diary:renderDiary,library:renderLibrary,journal:renderJournal,profile:renderProfile,active:renderActive,detail:renderDetail}[view]||renderDiary)();updateClock()}
 function arc(r,part,color,width=12){const len=2*Math.PI*r,p=Math.max(0,Math.min(1,part));return `<circle cx="125" cy="125" r="${r}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-dasharray="${len*.76*p} ${len}" transform="rotate(133.2 125 125)"/>`}
 function renderDiary(){const e=state.energy,dayWork=state.workouts.filter(w=>w.start.slice(0,10)===selectedDate);return renderTop('Дневник')+`<section class="card energy"><div class="energy-header"><span>Энергия дня</span><button class="badge demo" data-action="energy">Демо ${icon('sliders-horizontal')}</button></div><div class="energy-layout"><div class="ring" role="img" aria-label="Демо: расход ${e.burn}, питание ${e.intake} килокалорий"><svg viewBox="0 0 250 250">${arc(106,1,'#ffffff24',14)}${arc(99,1,'#ffffff14',14)}${arc(106,e.burn/3200,'#8af7e9cc',15)}${arc(99,e.intake/3200,'#f5b0e2c9',15)}</svg><div class="ring-center"><small>расход</small><strong>${fmt(e.burn)}</strong><span class="unit">ккал</span></div></div><div class="metrics"><div class="metric"><span class="dot"></span><b>${fmt(e.steps)}</b><small>шагов</small></div><div class="metric"><span class="dot pink"></span><b>${fmt(e.training)}</b><small>ккал на тренировке</small></div><div class="metric"><span class="dot yellow"></span><b>${fmt(e.minutes)} <span style="font-size:12px">мин</span></b><small>активности</small></div></div></div><div class="energy-legend"><span><i class="dot"></i> Расход</span><span><i class="dot pink"></i> Питание · Happy Meal</span></div><div class="balance"><span>Потреблено <strong style="color:white">${fmt(e.intake)} ккал</strong></span><button class="text-btn" data-action="energy">Баланс ${fmt(e.intake-e.burn)} ${icon('caret-right')}</button></div></section><div class="quick-actions"><button class="button primary" data-action="start-menu">${icon('play')} Начать тренировку</button><button class="button" data-action="past">${icon('plus')} Добавить запись</button></div><div class="section-title"><h2>Мои тренировки</h2><button class="text-btn" data-action="templates">Все ${icon('caret-right')}</button></div><div class="pin-grid">${[['sea','waves','Море','Плавание'],['gym','barbell','Зал','Силовая'],['bars','person-simple','Турники','Свой вес']].map(([k,i,t,s])=>`<button class="card pin" data-action="preview-template" data-id="${k}" aria-label="${k==='sea'?'Плавание в море':k==='gym'?'Тренажёрный зал':'Турники'}"><span class="pin-icon">${icon(i)}</span><b>${t}</b><small>${s}</small></button>`).join('')}</div><button class="card voice-prompt" data-action="voice">${icon('microphone')}<span class="grow"><b>Скажи, что сделал</b><small>«Жим 60 кг, три подхода по десять»</small></span>${icon('caret-right')}</button><div class="section-title"><h2>${dayWork.length?'Тренировки за день':'Последняя тренировка'}</h2><button class="text-btn" data-action="navigate" data-view="journal">Журнал ${icon('caret-right')}</button></div><div class="stack">${(dayWork.length?dayWork:[...state.workouts].sort((a,b)=>b.start.localeCompare(a.start)).slice(0,1)).map(w=>workoutCard(w,true)).join('')||'<div class="card empty">Здесь появятся твои тренировки.</div>'}</div><p class="fineprint">Показатели энергии — пример синхронизации. Энергия тренировки уже входит в общий расход.</p>`}
 function workoutCard(w,showDate=false){const sets=w.exercises.reduce((n,e)=>n+e.sets.filter(s=>s.done).length,0);return `<button class="card workout-row" data-action="open-workout" data-id="${esc(w.id)}"><span class="symbol">${icon(workoutIconName(w))}</span><div class="grow">${showDate?`<div class="record-date">${dateLabel(w.start.slice(0,10))} · ${w.start.slice(11,16)}</div>`:''}<h3>${esc(w.title)}</h3><div class="sub">${durationText(w.duration)}${w.exercises.length?` · ${sets} подход${plural(sets)}`:''}${w.demo?' · Демо':''}</div></div>${icon('caret-right')}</button>`}
 function plural(n){return n%10===1&&n%100!==11?'':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'а':'ов'}
-function renderLibrary(){return renderTop('Библиотека',false)+`<div class="segmented">${[['exercises','Упражнения'],['templates','Тренировки'],['activities','Виды спорта']].map(([k,t])=>`<button class="${libraryTab===k?'selected':''}" data-action="library-tab" data-id="${k}">${t}</button>`).join('')}</div>${libraryTab==='templates'?renderTemplates():libraryTab==='activities'?renderActivities():`<label class="search">${icon('magnifying-glass')}<input id="library-search" placeholder="Название, оборудование…" value="${esc(query)}" aria-label="Поиск упражнений"></label>${muscleGroupChips()}<div class="chips">${[['all','Оборудование'],['barbell','Штанга'],['dumbbell','Гантели'],['machine','Тренажёры'],['bodyweight','Без оборудования'],['cardio','Кардио'],['mobility','Разминка и заминка']].map(([k,t])=>`<button data-action="category" data-id="${k}" class="${category===k?'selected':''}">${t}</button>`).join('')}</div><div id="library-results">${libraryResults()}</div><button class="button dashed" data-action="custom-exercise" style="margin-top:15px">${icon('plus')} Создать своё упражнение</button>`}`}
+function renderLibrary(){return renderTop('Каталог',false)+`<div class="segmented">${[['exercises','Упражнения'],['templates','Тренировки'],['activities','Виды спорта']].map(([k,t])=>`<button class="${libraryTab===k?'selected':''}" data-action="library-tab" data-id="${k}">${t}</button>`).join('')}</div>${libraryTab==='templates'?renderTemplates():libraryTab==='activities'?renderActivities():`<label class="search">${icon('magnifying-glass')}<input id="library-search" placeholder="Название, оборудование…" value="${esc(query)}" aria-label="Поиск упражнений"></label>${muscleGroupChips()}<div class="chips">${[['all','Оборудование'],['barbell','Штанга'],['dumbbell','Гантели'],['machine','Тренажёры'],['bodyweight','Без оборудования'],['cardio','Кардио'],['mobility','Разминка и заминка']].map(([k,t])=>`<button data-action="category" data-id="${k}" class="${category===k?'selected':''}">${t}</button>`).join('')}</div><div id="library-results">${libraryResults()}</div><button class="button dashed" data-action="custom-exercise" style="margin-top:15px">${icon('plus')} Создать своё упражнение</button>`}`}
 function matches(e,q){return [e.name,e.en,...(e.aliases||[]),...(e.equipment||[]).map(x=>SEED.equipment[x]||x)].join(' ').toLowerCase().replaceAll('ё','е').includes(q.toLowerCase().replaceAll('ё','е'))}
 function filteredExercises(q=query){return allExercises().filter(e=>matches(e,q)&&(category==='all'||(category==='barbell'&&e.id.startsWith('barbell'))||(category==='dumbbell'&&e.id.startsWith('dumbbell'))||(category==='machine'&&/^(machine|cable|smith)/.test(e.id))||(category==='bodyweight'&&e.category==='Без оборудования')||(category==='cardio'&&e.category==='Кардио')||(category==='mobility'&&(/stretch|cat-cow|hip-90|ankle|thoracic/.test(e.id)))))}
 function exerciseCard(e,action='exercise-detail'){return `<button class="card exercise-card" data-action="${action}" data-id="${esc(e.id)}"><span class="placeholder sport-thumbnail">${icon(exerciseSportIcon(e))}</span><span class="grow"><h3>${esc(e.name)}</h3><small>${esc(e.category)}${e.scope==='user'?' · Моё':''}</small></span>${icon('caret-right')}</button>`}
@@ -2795,7 +2852,7 @@ for(const base of ['pull-up','chin-up'])for(const width of ['narrow','wide']){co
 // Full names of the variants for workouts and history; the earlier name stays as a search synonym.
 for(const v of [...(pullFamily?pullFamily.variants:[]),...pullCards]){const ex=SEED.exercises.find(e=>e.id===v.exerciseId);if(!ex)continue;ex.aliases=[...new Set([...(ex.aliases||[]),...(v.aliases||[]),...(v.name&&ex.name!==v.name?[ex.name.toLowerCase()]:[])])];if(v.name)ex.name=v.name}
 function pullFrameUrl(id){const current={'pull-up-wide':'wide-pull-up','chin-up-wide':'chin-up'}[id]||id,page=pullCards.some(c=>c.exerciseId===current)?current:'pull-up';return './exercises/'+page+'.html?variant='+encodeURIComponent(current)}
-const navAssets={"day": "<svg viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"17\" rx=\"3\"/><path d=\"M8 2v4M16 2v4M3 10h18\"/></svg>", "catalog": "<svg viewBox=\"0 0 24 24\"><path d=\"M4 5.5h16M4 11h16M4 16.5h11\"/><circle cx=\"19\" cy=\"17\" r=\"2\"/></svg>", "trends": "<svg viewBox=\"0 0 24 24\"><path d=\"M4 19V11m5 8V6m5 13v-9m5 9V4\"/></svg>", "settings": "<svg viewBox=\"0 0 24 24\" stroke-linejoin=\"round\"><path d=\"M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z\"/><circle cx=\"12\" cy=\"12\" r=\"3.3\"/></svg>"}
+const navAssets={"day": "<svg viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"17\" rx=\"3\"/><path d=\"M8 2v4M16 2v4M3 10h18\"/></svg>", "catalog": "<svg viewBox=\"0 0 24 24\"><path d=\"M3.6 18V5.1a2.6 2.6 0 0 1 2.6-2.6h14.2V18Z\"/><path d=\"M3.6 18a2.6 2.6 0 0 0 2.6 2.6h14.2v-2.6\"/><path d=\"M7.3 2.6v15.3\"/><g transform=\"translate(13.9 10.3) scale(1.05)\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\".5\"><path d=\"M-3.2 1.4a3.2 3.2 0 1 0 6.4 0 3.2 3.2 0 1 0-6.4 0Z\"/><path d=\"M-1.9-1.6V-2.6A1.9 1.6 0 0 1 1.9-2.6V-1.6\" fill=\"none\" stroke-width=\"1.25\"/></g></svg>", "trends": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><defs><mask id=\"spJstopwatch\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"24\" height=\"24\"><rect width=\"24\" height=\"24\" fill=\"#fff\"/><g transform=\"translate(18.2 15.4) scale(1.32)\" fill=\"#000\" stroke=\"#000\" stroke-width=\"2.4\" stroke-linejoin=\"round\"><circle cx=\"0\" cy=\".8\" r=\"3.3\" stroke-width=\"1.3\"/><path d=\"M0 .8V-1\" stroke-width=\"1.2\"/><rect x=\"-1\" y=\"-3.9\" width=\"2\" height=\"1\" rx=\".4\"/></g></mask></defs><rect x=\"2.70\" y=\"1.70\" width=\"14.80\" height=\"19.20\" rx=\"3\" mask=\"url(#spJstopwatch)\"/><path d=\"M6.30 6.70h6.80M6.30 10.70h4.60M6.30 14.70h2.40\" stroke-width=\"2.3\" mask=\"url(#spJstopwatch)\"/><g transform=\"translate(18.2 15.4) scale(1.32)\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\".5\"><circle cx=\"0\" cy=\".8\" r=\"3.3\" fill=\"none\" stroke-width=\"1.3\"/><path d=\"M0 .8V-1\" fill=\"none\" stroke-width=\"1.2\"/><rect x=\"-1\" y=\"-3.9\" width=\"2\" height=\"1\" rx=\".4\"/></g></svg>", "settings": "<svg viewBox=\"0 0 24 24\" stroke-linejoin=\"round\"><path d=\"M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z\"/><circle cx=\"12\" cy=\"12\" r=\"3.3\"/></svg>"}
 ;
 const oldProfile=renderProfile,oldExerciseDetails=showExercise;
 document.querySelector('.app').insertAdjacentHTML('afterend','<div id="panel-root"></div>');
@@ -2807,7 +2864,7 @@ goto=function(v){closeSheet();if(v==='active'||v==='detail'){panelStack=[];openP
 backTop=function(title){return `<h1 class="view-title">${esc(title)}</h1>`};
 renderTop=function(title,date=true){return `<header class="top"><h1>${esc(title)}</h1>${date?`<label class="date-pill">${navAssets.day}<span>${dateLabel(selectedDate)}</span><input aria-label="День дневника" type="date" value="${selectedDate}" id="day-picker"></label>`:''}</header>`};
 nav=function(){const chosen=typeof activePanel==='function'&&activePanel()?.type==='active'?'diary':baseView;   // идёт тренировка открыта — подсвечены «Тренировки» (мелочи аудита 18.11.2026)
-$('#dock').innerHTML='<div class="dockBg" id="dockBg"></div><svg class="dockEdge" id="dockEdge" preserveAspectRatio="none" aria-hidden="true"><path></path></svg>'+[['diary','day','Тренировки'],['journal','trends','Журнал'],null,['library','catalog','Библиотека'],['profile','settings','Настройки']].map(i=>i?`<button class="tab ${chosen===i[0]?'on':''}" data-action="navigate" data-view="${i[0]}" aria-current="${chosen===i[0]?'page':'false'}">${navAssets[i[1]]}<span>${i[2]}</span></button>`:'<span class="gap"></span>').join('')+`<button class="dockFab" id="sport-fab" data-action="voice" aria-label="Записать голосом или текстом"><svg class="dayMic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg></button>`;shapeDock();$('#active-banner').innerHTML=state.active&&!panelStack.length?`<button type="button" class="active-banner" data-action="resume" aria-label="Продолжить тренировку ${esc(state.active.title)}"><span class="row">${icon('timer')}<b style="font-size:12px">${esc(state.active.title)}</b></span><span class="active-banner-go">Продолжить</span></button>`:''};
+$('#dock').innerHTML='<div class="dockBg" id="dockBg"></div><svg class="dockEdge" id="dockEdge" preserveAspectRatio="none" aria-hidden="true"><path></path></svg>'+[['diary','day','Дневник'],['journal','trends','Журнал'],null,['library','catalog','Каталог'],['profile','settings','Настройки']].map(i=>i?`<button class="tab ${chosen===i[0]?'on':''}" data-action="navigate" data-view="${i[0]}" aria-current="${chosen===i[0]?'page':'false'}">${navAssets[i[1]]}<span>${i[2]}</span></button>`:'<span class="gap"></span>').join('')+`<button class="dockFab" id="sport-fab" data-action="voice" aria-label="Записать голосом или текстом"><svg class="dayMic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg></button>`;shapeDock();$('#active-banner').innerHTML=state.active&&!panelStack.length?`<button type="button" class="active-banner" data-action="resume" aria-label="Продолжить тренировку ${esc(state.active.title)}"><span class="row">${icon('timer')}<b style="font-size:12px">${esc(state.active.title)}</b></span><span class="active-banner-go">Продолжить</span></button>`:''};
 const legacyDiary=renderDiary;
 renderDiary=function(){const html=legacyDiary().replaceAll(icon('caret-right'),'');const p=document.createElement('div');p.innerHTML=html;p.querySelector('h1').textContent='Тренировки';const pins=p.querySelector('.pin-grid');if(pins){pins.className='section-list';pins.innerHTML=[['sea','waves','Плавание в море'],['gym','barbell','Тренажёрный зал'],['bars','person-simple','Турники']].map(([k,i,t])=>{const all=state.workouts.filter(w=>w.kind===k).sort((a,b)=>b.start.localeCompare(a.start)),today=all.filter(w=>w.start.slice(0,10)===selectedDate);return `<button class="card section-row" data-action="sport-section" data-id="${k}"><span class="symbol">${icon(i)}</span><span><b>${t}</b><small>${today.length?today.length+' · '+durationText(today.reduce((n,w)=>n+w.duration,0)):all.length?'Последняя · '+dateLabel(all[0].start.slice(0,10)):'Пока нет записей'}</small></span></button>`}).join('')}p.querySelectorAll('svg.icon').forEach(el=>{if(el.outerHTML===icon('caret-right'))el.remove()});const firstTitle=p.querySelector('.section-title');if(firstTitle)firstTitle.querySelector('h2').textContent='Мои разделы';return p.innerHTML};
 const legacyWorkoutCard=workoutCard;
@@ -3598,7 +3655,7 @@ function templateSport(t){return t.sport||({gym:'gym',bars:'bars',sea:'swimming'
 const previousFilteredExercises=filteredExercises;
 filteredExercises=function(q=query){return previousFilteredExercises(q).filter(e=>(librarySport==='all'||exerciseSports(e).includes(librarySport))&&(libraryMuscle==='all'||exerciseMuscles(e).includes(libraryMuscle)))};
 function sportFilter(){return `<label class="library-sport"><select id="library-sport" aria-label="Вид спорта">${librarySports.map(([k,n])=>`<option value="${k}" ${librarySport===k?'selected':''}>${n}</option>`).join('')}</select></label>`}
-renderLibrary=function(){if(libraryTab==='activities')libraryTab='templates';if(!equipmentFilterVisible()||!equipmentAvailable().some(([id])=>id===category))category='all';if(!muscleAvailable().some(([id])=>id===libraryMuscle))libraryMuscle='all';return renderTop('Библиотека',false)+libraryTabs()+librarySearch()+sportFilter()+`<div class="library-filters">${muscleGroupChips()}${equipmentDropdown()}</div>`+(libraryTab==='templates'?`<div id="template-results">${renderTemplates()}</div>`:`<div id="library-results">${libraryResults()}</div><button class="button dashed" data-action="custom-exercise" style="margin-top:15px">${icon('plus')} Создать своё упражнение</button>`)};
+renderLibrary=function(){if(libraryTab==='activities')libraryTab='templates';if(!equipmentFilterVisible()||!equipmentAvailable().some(([id])=>id===category))category='all';if(!muscleAvailable().some(([id])=>id===libraryMuscle))libraryMuscle='all';return renderTop('Каталог',false)+libraryTabs()+librarySearch()+sportFilter()+`<div class="library-filters">${muscleGroupChips()}${equipmentDropdown()}</div>`+(libraryTab==='templates'?`<div id="template-results">${renderTemplates()}</div>`:`<div id="library-results">${libraryResults()}</div><button class="button dashed" data-action="custom-exercise" style="margin-top:15px">${icon('plus')} Создать своё упражнение</button>`)};
 function libraryTabs(){return `<div class="segmented library-tabs">${[['exercises','Упражнения'],['templates','Мои тренировки']].map(([k,n])=>`<button data-action="library-tab" data-id="${k}" class="${libraryTab===k?'selected':''}" aria-pressed="${libraryTab===k}">${n}</button>`).join('')}</div>`}
 libraryResults=function(){const arr=filteredExercises(),ids=new Set(state.favoriteExercises||[]),fav=arr.filter(e=>ids.has(e.id)),rest=arr.filter(e=>!ids.has(e.id));return `${fav.length?`<div class="section-title"><h2>Избранные упражнения</h2></div><div class="exercise-list">${fav.map(e=>exerciseCard(e)).join('')}</div><div class="section-title"><h2>Упражнения</h2></div>`:''}<div class="library-count">${arr.length} упражнений</div><div class="exercise-list">${rest.map(e=>exerciseCard(e)).join('')||(!arr.length?'<div class="empty">Ничего не найдено.</div>':'')}</div>`};
 function libraryTemplateRow(t){return `<button class="card section-row template-library-row" data-action="preview-template" data-id="${esc(t.id)}"><span class="symbol">${icon(workoutIconName(t))}</span><span><b>${esc(t.title)}</b><small>${esc(t.description||`${t.items.length} упражнений`)}</small></span></button>`}
@@ -4021,9 +4078,9 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="44.11">${sportVersionFooter()}</footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="44.12">${sportVersionFooter()}</footer>`};
 // Update 38.3: version line comes from the shared release-notes module (date, time, author of the latest entry); plain label if the module is absent.
-function sportVersionFooter(){const label='Happy Sport · Update 44.11';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
+function sportVersionFooter(){const label='Happy Sport · Update 44.12';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
 
 /* One set at a time, shared by exercise settings and workout templates. */
 const setPlanDrafts=new Map();let setPlanSerial=0;
@@ -4295,7 +4352,7 @@ function openExerciseEditor(id,ei=null,source=null){
     <button class="button primary" type="submit" name="saveMode" value="replace">${active?'Сохранить':e?'Сохранить в библиотеке':'Создать упражнение'}</button>
     ${e&&!active?'<button class="button" type="submit" name="saveMode" value="copy">Сохранить как новое упражнение</button>':''}
     ${e&&!active&&e.name!==original?`<button class="text-btn" type="button" data-action="restore-exercise-name" data-id="${esc(e.id)}">Вернуть исходное название: ${esc(original)}</button>`:''}</div>
-    <p class="fineprint">${active?'Изменения относятся только к этому упражнению в текущей тренировке. Библиотека и другие тренировки не изменятся.':e?'Сохранение обновит название в библиотеке и текущей тренировке. История сохранится; изменение названия появится отдельной строкой в журнале.':''}</p></form>`,'exercise-config');
+    <p class="fineprint">${active?'Изменения относятся только к этому упражнению в текущей тренировке. Каталог и другие тренировки не изменятся.':e?'Сохранение обновит название в библиотеке и текущей тренировке. История сохранится; изменение названия появится отдельной строкой в журнале.':''}</p></form>`,'exercise-config');
   if(active)$('#exercise-config-form .exercise-extra').hidden=true;
   updateExerciseEditor();
   if(scope==='active'&&typeof mountExerciseContext==='function')mountExerciseContext(id,ei,'active');
@@ -5101,7 +5158,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)tickFreeTi
 
 syncFreeTimerFab();
 
-function openFreeSettings(){const d=freeTimer();openSheet('Настройки отдельного таймера',`<button type="button" class="text-btn sheet-back" data-action="free-back">← К таймеру</button><form id="free-settings-form">${metricPill(d.metrics,['distance','seconds','reps','weight'],['seconds'])}<p class="fineprint">Только для отдельного таймера. Библиотека и текущая тренировка не изменятся.</p><button class="button primary" type="submit">Сохранить настройки</button></form>`,'free-settings');}
+function openFreeSettings(){const d=freeTimer();openSheet('Настройки отдельного таймера',`<button type="button" class="text-btn sheet-back" data-action="free-back">← К таймеру</button><form id="free-settings-form">${metricPill(d.metrics,['distance','seconds','reps','weight'],['seconds'])}<p class="fineprint">Только для отдельного таймера. Каталог и текущая тренировка не изменятся.</p><button class="button primary" type="submit">Сохранить настройки</button></form>`,'free-settings');}
 document.addEventListener('submit',event=>{if(event.target.id!=='free-settings-form')return;event.preventDefault();event.stopImmediatePropagation();const f=new FormData(event.target);freeTimer().metrics=['distance','weight','reps'].filter(k=>f.getAll('metrics').includes(k));persist();openFreeTimer();},true);
 
 /* Счётчики Sport.
@@ -5396,7 +5453,8 @@ const SportTaps=(()=>{
 })(typeof window!=='undefined'?window:globalThis);
 
 /* Add newest releases first; also update the daily briefing. */
-const sportReleases=[{"version": "44.11", "date": "2026-11-21", "time": "21:50", "author": "Claude", "changes": ["Кнопка «Войти» и другие главные кнопки на экранах входа — ровного цвета, без выпуклого блика: в теме — цвет темы, без темы — цвет приложения."]},
+const sportReleases=[{"version": "44.12", "date": "2026-11-22", "time": "04:35", "author": "Claude", "changes": ["«Настроить тему» → «Главная кнопка»: кружки с микрофоном как в Color Studio — настоящий цвет и тень кнопки, белый микрофон.", "Профиль: списка замеров веса больше нет (замеры — в журнале), подписи полей жирнее, «Пол» и единицы — переключатели с отступом внутри контура, подписи по центру.", "Переключатели между вариантами везде одного вида: контур 44, выбранная пилюля 36.", "Выключатели одного вида во всех приложениях, галочки — белый квадрат, листы снизу как в Day, текст в белых кнопках — цвета темы.", "«Библиотека» теперь «Каталог», первая вкладка — «Дневник».", "«+ Круг» в таймере крупный, как «Старт».", "Лист выбора периода как в Day.", "Служебное (Иконки, Датчики) — в «Для разработчика».", "Новые значки «Журнал» (лист с секундомером) и «Каталог» (книга с гирей).", "«Золотой закат» с тёмным низом."]},
+ {"version": "44.11", "date": "2026-11-21", "time": "21:50", "author": "Claude", "changes": ["Кнопка «Войти» и другие главные кнопки на экранах входа — ровного цвета, без выпуклого блика: в теме — цвет темы, без темы — цвет приложения."]},
  {"version": "44.10", "date": "2026-11-21", "time": "20:40", "author": "Claude", "changes": ["Экран загрузки со смайликом сразу в цвете выбранной темы, без вспышки старого цвета.", "Без темы таблица замеров снова с синими полосками, как раньше.", "С темой в её цвет окрашиваются листы снизу, «Свой период» и календарь, выключатели.", "Цвет кнопок «Как у темы» берётся с фона темы у самого верха, на уровне шапки, и затемняется, пока белый значок на нём хорошо читается. Ночные темы, «Бордо» и «Фиолетовый бриз» — со своим цветом."]},
  {"version": "44.9", "date": "2026-11-21", "time": "14:50", "author": "Claude", "changes": ["«Расписание» без «+»; в Настройках → «Главная» выключатель «Расписание на главной».", "«Замеры тела» выбранные — жирность 600, как везде.", "Журнал начинается на той же высоте, что в Day и Meal.", "Пока открыт лист или окно, страница за размытым фоном не прокручивается пальцем.", "Иконка микрофона — как в Day.", "Центральная кнопка в любой теме строится по тому же правилу из цвета кнопок темы, без свечения.", "Выбранное в переключателях — жирность 600 и цвет из темы.", "Длинное сообщение внизу переносится на вторую строку, а не обрезается.", "Профиль: пилюли единиц измерения больше не сплющены.", "Экраны аккаунта и настроек — по общим правилам формы: пилюли, поля 12, выключатели 42 × 25, карточки как в приложении.", "Настройки внизу: строка синхронизации по центру, под ней «Выйти»."]}, {"version": "44.8", "date": "2026-11-21", "time": "12:35", "author": "Claude", "changes": ["Цвета приложения собраны в одном общем файле: тема меняет не только фон и главную кнопку, но и текст, подписи, переключатели и выбранную вкладку внизу.", "Таблица замеров — в цвет темы: третья колонка на тон тусклее первой, следующие — тот же цвет под полупрозрачным белым слоем."]}, {"version": "44.7", "date": "2026-11-21", "time": "05:25", "author": "Claude", "changes": ["Журнал: выбор периода, как в Meal — «Сегодня · Неделя · Месяц» и календарик. Журнал показывает тренировки периода, «Поделиться» отдаёт их текстом.", "Расписание: длительность — барабаном, как в iPhone; форма без лишних рамок; ссылка «Выбрать другой часовой пояс».", "Свои тренировки удаляются свайпом влево и в Библиотеке. «Удалить» в свайпе везде — красная пилюля.", "Значок тренировки в поле «Название» — без рамки. Пока значок не выбран — значок «картинка»; нажатие открывает выбор.", "Дата в шапке — пилюлей, как в Day. Сообщение — синее, «Вернуть» без подчёркивания."]}, {"version": "44.6", "date": "2026-11-20", "time": "12:57", "author": "Claude", "changes": ["Замеры: и новый замер, и правка — прямо в таблице, без отдельного листа. Карандаш у даты открывает правку в том же столбце, корзина под столбцом удаляет замер.", "В углу таблицы сначала «Отмена», после ввода — «Сохранить». Вписанное сохраняется и само, когда выходишь из поля.", "Шапка с датами закреплена, история листается вбок полосатыми столбцами по одному. Выбор периода сравнения — над силуэтом."]}, {"version": "44.5", "date": "2026-11-19", "time": "03:52", "author": "Claude", "changes": ["«Настроить тему» в настройках: ленты «Тема» и «Главная кнопка». Свайп листает, нажатие сразу применяет и сохраняет; «Как у темы» меняет цвет микрофона вместе с темой.", "Нижнее меню всегда поверх листов Sport и общих листов (профиль, цели); нажал вкладку меню — лист закрылся.", "Замеры: новый замер вписывается прямо в таблицу. «+ Замер» — в углу таблицы; нажал — столбцы уезжают вправо, в белом столбце подчёркнутые поля и сегодняшняя дата. «Отмена» в углу, «Сохранить замер» под таблицей.", "Тренировка без упражнений: вместо пустой рамки — «Добавить упражнение» во всю ширину, сразу с выбором упражнения."]}, {"version": "44.4", "date": "2026-11-19", "time": "01:57", "author": "Claude", "changes": ["Цель веса — одна на профиль: поменял в Meal или Sport — поменялась везде. Силуэт замеров во всех трёх приложениях красит разницу по этой цели (при наборе прибавка бирюзовая, при снижении — розовая).", "Расписание: у каждой тренировки её картинка, строки одной высоты; «Добавить в расписание» — значок и текст по центру, без стрелки. Из списка форма открывается без «← К выбору тренировки»; закрыл или сохранил — главный экран. Нижнее меню видно поверх листа расписания.", "Долгое нажатие на тренировку на главной или в «Мои тренировки» — лист снизу: «Начать тренировку» и «Открыть тренировку».", "Обзор тренировки и запись журнала: упражнения одним списком в одной рамке, без кнопок «i»; «Редактировать» на одной линии с названием.", "Пока тренировка открыта, подсвечены «Тренировки»; полоса «Продолжить» нажимается целиком. В плашке перерыва — «Пропустить».", "Подход: «П» всегда на одном месте, номер — в своей ячейке слева, и у «+ Подход» тоже.", "Настройки: заголовки разделов одного вида — тусклые и меньше; «Данные» — одним разделом.", "Пустые замеры: простой текст и под ним «+ Замер»."]}, {"version": "44.3", "date": "2026-11-18", "time": "21:14", "author": "Claude", "changes": ["Оформление по общим правилам Happy: всё, на что нажимают, — пилюля (кнопки 48, вкладки и выбор 44, текст 14); поля 12, карточки 24, листы 22; выключатели одного размера; сообщения — тёмная пилюля в одну строку.", "Страница упражнения одна везде: вкладки «Инструкции · История · Настроить», в шапке звезда и «⋯». В «⋯» — «Сделать своим»; у своих — «Изменить», «Переименовать», «Сбросить историю», «Удалить»; в тренировке — «Заменить упражнение».", "«Что записываем» — одна пилюля «Дист. · Время · Повт. · Вес». В редакторе тренировки у упражнения те же настройки, что в тренировке. «Сохранить» всегда внизу.", "Листы закрываются одинаково: ручкой сверху или нажатием мимо; вложенный лист — на шаг назад. Закрыл, не сохранив, — «Правки не сохранены · Вернуть». Профиль, цели и большой таймер — тоже листы.", "Удаление — свайпом влево, «Удалить» справа; в карточке — красная «Удалить» внизу, «Вернуть» в сообщении. Свои тренировки и группы — в Настройках: «Мои тренировки», «Мои группы».", "Большой таймер работает от упражнения: круги — это подходы, «Сохранить» отмечает подходы. В «Плеере упражнения» только режим: время, перерыв и число кругов берутся у подходов.", "Журнал всегда лентой. «Создать тренировку» — одно название везде; создал тренировку из расписания — сразу форма расписания с ней.", "Расписание: одно поле «Дата и время», «В календарь» во всю ширину, «Поделиться» — значок у названия.", "Замеры тела: широкие бёдра плавно переходят в ноги — без «ушей»; цвет разницы — по цели веса.", "Выйти без изменений — «Отмена»; откат во всех сообщениях — «Вернуть»."]}, {"version": "44.2", "date": "2026-11-18", "time": "18:57", "author": "Claude", "changes": ["Профиль → «Единицы измерения»: новая строка «Еда» — граммы и миллилитры или унции. Одна на аккаунт: поменял в Day, Meal или Sport — поменялось во всех трёх."]}, {"version": "44.1", "date": "2026-11-16", "time": "17:40", "author": "Claude", "changes": ["Замеры тела: новый силуэт — ноги и стопы естественнее, голова крупнее, углы сглажены. Силуэт учитывает рост из профиля: при тех же замерах невысокий человек выглядит плотнее, высокий — стройнее.", "Счётчик на главной можно убрать свайпом влево; 6 секунд — «Отменить». Счётчик из Happy Meal при этом в Meal остаётся.", "Название строки подхода: в подсказке все свои названия, которые уже вбивали у этого упражнения; опечатки в список не попадают.", "Кнопки «Happy Day» и «Happy Meal» в настройках всегда открывают текущие версии."]}, {"version": "44", "date": "2026-11-16", "time": "03:48", "author": "Claude", "changes": ["Без входа приложение открывается первым экраном: стеклянный смайлик, дуга докручивается до улыбки снизу, потом появляются кнопки «Продолжить с почтой», «Уже есть аккаунт? Войти» и «Познакомиться со Sport». Кнопки Apple и Google пока не нажимаются — этот вход ещё не подключён.", "Регистрация: почта, пароль и повтор пароля, пароль можно показать. Затем — ожидание письма: «Отправить повторно» и «Изменить почту». Подтвердили почту и вернулись — приложение открывается само, без анкеты.", "Без входа приложение можно смотреть. Попробовали записать — лист «Войдите в аккаунт»; после входа приложение возвращается туда же. Неверный пароль — понятная ошибка.", "Настройки без большого заголовка: вверху фото и имя, карточка «Настроить профиль» и «Настроить цели», ниже «Связка с» двумя свитчами. Остальные настройки — как были. В самом низу — «Выйти» и строка синхронизации.", "Профиль один на Day, Meal и Sport: фото, имя и фамилия, почта с отметкой «Подтверждена», дата рождения, рост, пол, вес с датой замера; единицы веса и роста — отдельно. Новый вес — новый замер с датой, прежние не меняются.", "Цели Sport: вес и желаемый вес — полем или линейкой, отдельно — «Фокус тренировок» (сила, выносливость, соревнования и другие). Фокус пока только запоминается: программ, нагрузок и таймеров он не меняет."]},
  {"version": "43.3", "date": "2026-11-16", "time": "00:42", "author": "Claude", "changes": ["Время везде одним видом: 0:58, 2:00, 12:34 — без сотых долей и без «м:с». Время набирается цифрами: 130 — это 1:30, двоеточие ставится само; ушёл, ничего не набрав, — вернулось прежнее.", "Подход — одна строка: название слева, числа столбиками под шапкой «кг × повт.», справа кружок. Нажал — по краю идёт кольцо перерыва, замкнулось — кружок зелёный с галочкой. Название строки выбирается: «Разминка», «Заминка», «Подход» или своё.", "Перерыв: «−» и «+» по бокам цифр, шаг 30 секунд; во время тренировки они меняют только текущий перерыв. После последнего подхода тренировки перерыв не запускается и в запись не попадает.", "Один перерыв на упражнение: строка «Перерыв» под подходами — в «Редактировать тренировку» и в «Настроить». Поменял — поменялось у всех подходов.", "Упражнение на время: ▶ прямо в строке подхода — время вышло, подход отмечен сам и начинается перерыв; ■ — закончить раньше. Большой таймер — кнопкой вверху «Настроить».", "Тренировка: стрелка у названия упражнения — нажал, упражнение свернулось. Шапка с таймером уезжает при прокрутке и возвращается у конца страницы с «Завершить». «＋ Подход» — сразу под подходами.", "Редактор тренировки проще: ✓ вверху — сохранить, удаления свайпом, без лишних полей. Расписание и «Показывать на главной» — на карточке тренировки, «Начать тренировку» — внизу карточки.", "Расписание: у занятия «Начать тренировку», «Перенести», «Отменить»; заметка к занятию сохраняется сама. В журнале — пометки «Пропущено» и «Перенесено».", "Журнал: включена связь с Day или Meal — лента по дням, с приёмами пищи из Happy Meal. В записи тренировки и в истории упражнения строки названы как в тренировке.", "Упражнения: один список с фильтрами в Библиотеке и при добавлении в тренировку; «＋ Добавить группу» — в конце списка групп; переименование — нажал карандаш, и сам заголовок стал полем; карточка упражнения не прыгает при переключении вкладок.", "Силуэт на экране замеров точнее: таз и бёдра — одна плавная линия, между ног ничего не торчит; плечи и грудь меняют фигуру; при сравнении «Было» и «Сейчас» руки не съезжают — нет ложного розового; у полного человека плечи без «подплечников». Формат замеров не менялся."]},
@@ -5583,7 +5641,7 @@ function mountExerciseContext(id,ei=null,context='active'){
   for(const extra of form.querySelectorAll('.exercise-extra'))extra.hidden=true;   // все блоки описания: здесь их нечем сохранить
   const mine=templates().filter(t=>!t.recommended);
   form.querySelector('.exercise-save-actions').innerHTML=`<label class="field">Куда добавить<select name="addDestination" aria-label="Куда добавить упражнение"><option value="" selected disabled>Выбери тренировку</option><option value="current">${state.active?'В текущую тренировку':'В новую тренировку'}</option>${mine.map(t=>`<option value="template:${esc(t.id)}">${esc(t.title)}</option>`).join('')}</select></label><button class="button primary" type="submit" name="saveMode" value="add">Добавить упражнение</button>`;
-  const last=form.lastElementChild;if(last?.classList.contains('fineprint'))last.textContent='Настройки применятся только к добавляемому упражнению. Библиотека и прежние тренировки не изменятся.';
+  const last=form.lastElementChild;if(last?.classList.contains('fineprint'))last.textContent='Настройки применятся только к добавляемому упражнению. Каталог и прежние тренировки не изменятся.';
  }
  exerciseContext={id,ei,context,form,sheet,nav,panels,tab:null,scroll:{},loaded:{}};
  selectExerciseContextTab(context==='library'?'instructions':'configure');return true;
@@ -5983,8 +6041,8 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
    ['#8c75db','#8275e8','#478bf0','#3989ed','#5a53cc'],165,
    [glow('#ff8fd2',95,20,76,32),glow('#9e77fb',7,-10,66,33)],['#6450c3'],{ownButton:true}),
   theme('golden-sunset','Золотой закат','regular','Фиолетовое небо, розовый свет и тёплое золото.',
-   ['#35205e','#652568','#a03d78','#df8d7c','#ffc977'],172,
-   [glow('#ffdf87',78,93,66,90),glow('#ff984b',4,89,57,53)],['#e78c24'],{glassColor:'#35213e',mutedColor:'#f2dfe6'}),
+   ['#35205e','#652568','#9c3a72','#b9566a','#b8613f'],172,
+   [glow('#ffb36b',78,96,55,38),glow('#ff8a4b',4,92,50,35)],['#e78c24'],{glassColor:'#35213e',mutedColor:'#f2dfe6'}),
   theme('orchid','Орхидея','regular','Мягкий сиреневый свет на сливовом фоне.',
    ['#982bb7','#a037ad','#810d91','#650778','#59096c'],165,
    [glow('#efb0e9',100,7,95,94),glow('#ab40d1',8,6,61,25)],['#850c9e'],{glassColor:'#350d42',mutedColor:'#f1d3f0'}),
@@ -6638,13 +6696,14 @@ function sportSettingsLayout(html){
    continue;
   }
   if(n.matches('section[data-happy-section="links"]')){place('links',...unwrap(n));continue;}
-  if(n.matches('section[data-happy-section="icons"]')){place('app',label('Иконки'),...unwrap(n));continue;}
+  if(n.matches('section[data-happy-section="icons"]')){place('developer',label('Иконки'),...unwrap(n));continue;}   // аудит 3 (Астамур 21.11): «Icon Studio · недоступна» — служебное, только для разработчика
   if(n.matches('section.happy-section')){const h=n.querySelector(':scope>h2.happy-heading');place('app',h?label(text(h)):null,...unwrap(n));continue;}
   if(n.matches('h2.happy-heading')){pendingLabel=text(n);continue;}
   if(n.matches('div.settings-section')){
    // Sport's own small labels: «Мои данные» (counts) belong to Данные, the rest to the app group.
    const next=nodes[i+1],own=text(n);
-   if(own==='Мои данные'&&next?.matches('.card')){place('data',next);i++;continue;}   // один заголовок «Данные» (мелочи аудита 18.11.2026)
+   if(own==='Мои данные'&&next?.matches('.card')){place('data',next);i++;continue;}
+   if(own==='Датчики'&&next?.matches('.card')){place('developer',n,next);i++;continue;}   // аудит 3: «Нужна нативная интеграция», демо пульса — служебное   // один заголовок «Данные» (мелочи аудита 18.11.2026)
    pendingLabel=null;if(next?.matches('.card,.happy-card')){place('app',n,next);i++;}else place('app',n);continue;
   }
   if(pendingLabel&&(n.matches('.happy-card')||n.matches('.card'))){place('app',label(pendingLabel),n);pendingLabel=null;continue;}
@@ -6656,7 +6715,7 @@ function sportSettingsLayout(html){
  if(pendingLabel)place('app',label(pendingLabel));
  // Blocks inside a group are (label, cards…) runs; order them the same way in every release.
  // Sport 44.5 (19.11.2026): оформление выбирается в «Настроить тему» под «Настроить цели» (appearance-carousels.js) — здесь его больше нет.
- const order={app:['Оформление','Главная','Создать','Таймер','Датчики','Настройки тренировок','Иконки'],data:['Мои данные'],developer:['Резервная копия']};
+ const order={app:['Оформление','Главная','Создать','Таймер','Датчики','Настройки тренировок','Иконки'],data:['Мои данные'],developer:['Резервная копия','Датчики','Иконки']};
  for(const group of Object.keys(order)){
   const runs=[];for(const n of groups[group]){if(n.matches('.settings-section')||!runs.length)runs.push([n]);else runs.at(-1).push(n);}
   const rank=run=>{const i=order[group].indexOf(run[0].matches('.settings-section')?text(run[0]):'');return i<0?order[group].length:i};
@@ -7875,15 +7934,26 @@ window.addEventListener('click',e=>{
   const skin=document.getElementById('happy-appearance-skin');if(skin)skin.disabled=true;
   const fab=document.getElementById('sport-fab'),cs=fab?getComputedStyle(fab):null;
   original={background:getComputedStyle(document.documentElement).getPropertyValue('--sport-background').trim()||'#8c75db',
-   gradient:cs?cs.backgroundImage:'none',ink:cs?cs.color:'#fff'};
+   gradient:cs?cs.backgroundImage:'none',shadow:cs&&cs.boxShadow!=='none'?cs.boxShadow:'',ink:cs?cs.color:'#fff'};
   if(skin)skin.disabled=false;
   return original;
  }
+ /* Кружки «Главной кнопки» рисуются 1:1 как кнопка приложения (Астамур 22.11.2026: «перерисуй как в Color Studio»):
+    тот же градиент и та же тень, что ставит тема на .fab (вариант B или своя кнопка темы), белый контурный микрофон. */
+ const MIC='<svg class="appearance-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"></rect><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"></path></svg>';
+ const hex=c=>/^#[0-9a-f]{6}$/i.test(c||'');
+ const white=(h,a)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*(1-a)+255*a).toString(16).padStart(2,'0')).join('');
+ const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
  function buttonLook(id){
-  const st=themes.get(id)?.state;
-  return st?{gradient:G.css(st.buttonGradient),ink:st.buttonTextColor}:{gradient:originals().gradient,ink:originals().ink};
+  const s=themes.get(id)?.state;
+  if(!s)return {gradient:originals().gradient,shadow:originals().shadow,ink:'#fff'};
+  const fc=hex(s.buttonColor)?s.buttonColor:G.colors(s.buttonGradient)[0].color;
+  const custom=s.buttonStyle==='custom'&&s.buttonGradient,shine=Number(s.buttonShine);
+  const gradient=custom?G.css(s.buttonGradient):'radial-gradient(circle at 35% 25%,'+white(fc,.5)+','+white(fc,.25)+' 43%,'+fc+' 76%)';
+  const shadow=custom?(shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(fc,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40'):'0 8px 20px '+rgba(fc,.22);
+  return {gradient,shadow,ink:'#fff'};
  }
- function paintButtonSwatch(swatch,id){const {gradient,ink}=buttonLook(id);swatch.style.setProperty('--swatch',gradient);swatch.style.setProperty('--swatch-ink',ink)}
+ function paintButtonSwatch(swatch,id){const {gradient,shadow,ink}=buttonLook(id);swatch.style.setProperty('--swatch',gradient);swatch.style.setProperty('--swatch-shadow',shadow||'none');swatch.style.setProperty('--swatch-ink',ink)}
  const updateMask=list=>list.toggleAttribute('data-end',list.scrollLeft>=list.scrollWidth-list.clientWidth-2);
  function reveal(group,option){
   const {list}=group;if(!option)return;const left=option.offsetLeft;
@@ -7924,7 +7994,7 @@ window.addEventListener('click',e=>{
    const swatch=option.querySelector('.appearance-swatch');
    if(key==='theme')swatch.style.setProperty('--swatch',item.state?G.css(item.state.backgroundGradient):originals().background);
    else{
-    const icon=document.querySelector('#sport-fab svg');if(icon)swatch.append(icon.cloneNode(true));
+    swatch.innerHTML=MIC;
     paintButtonSwatch(swatch,item.id==='theme'?sel().theme:item.id);if(item.id==='theme')autoSwatch=swatch;
    }
    option.addEventListener('click',()=>choose(group,option,item,title,status));
@@ -10649,11 +10719,6 @@ function open(){
  const main=pageH.main;
  function weightLabel(){return draft.units.weight==='kg'?'кг':'фунты'}
  function heightLabel(){return draft.units.height==='cm'?'см':'футы'}
- function history(){
-  const list=data().weights.slice().reverse();
-  return '<details class="hs-history"><summary>Замеры веса <span>'+list.length+'</span></summary>'+list.map(w=>'<div class="hs-history-row"><time>'+w.date.slice(8,10)+'.'+w.date.slice(5,7)+'.'+w.date.slice(0,4)+'</time><span>'+
-   fmt(S().toUnits(w.kg,draft.units.weight))+' '+weightLabel()+'</span></div>').join('')+'</details>';
- }
  function pendingHtml(){
   if(!pendingEmail)return '';
   return '<div class="hs-pending"><span>Ожидает подтверждения</span><strong>'+esc(pendingEmail)+'</strong><button type="button" class="hs-quiet" data-p="email-again">Отправить повторно</button>'+
@@ -10673,7 +10738,7 @@ function open(){
    '<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('sex',[['','—','Не указан'],['male','М','Мужской'],['female','Ж','Женский']],draft.sex,'Пол','hs-compact-sex')+'</div></div>'+
    '<div class="hs-field-pair">'+F({label:'Вес сейчас',name:'weight',inputmode:'decimal',value:shown.weight,suffix:weightLabel(),placeholder:'Не указан',quick:true})+
    F({label:'Дата замера',name:'date',type:'date',max:today,value:shown.date})+'</div>'+
-   '<div data-p-history>'+history()+'</div>'+
+   /* Замеры веса здесь не показываем: для них есть журнал замеров (Астамур 22.11.2026: «в профиле этому не место»). */
    '<section class="hs-units"><h2>Единицы измерения</h2><div class="hs-units-row"><span>Вес</span>'+S().segment('wunits',[['kg','кг'],['lb','фунты']],draft.units.weight,'Единицы веса')+'</div>'+
    '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div>'+
    '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+

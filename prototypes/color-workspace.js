@@ -58,7 +58,7 @@
   const ids=['background','wallpapers','presets','glass','opacity','button','fonts'];
   source.forEach((panel,i)=>{const title=panel.querySelector('h2');wrap(panel,ids[i],title,ids[i]==='background');const head=panel.querySelector('.panel-head');if(head&&!head.children.length)head.remove();});
   container.querySelectorAll(':scope > details[data-group]').forEach(n=>n.remove());
-  const references=document.getElementById('referenceThemes');wrap(references,'reference-themes','Общие темы · 10 вариантов',true);
+  const references=document.getElementById('referenceThemes');wrap(references,'reference-themes','Общие темы · '+((window.HappyReferenceThemes&&window.HappyReferenceThemes.themes.length)||10)+' вариантов',true);
   const themes=document.getElementById('savedThemes');wrap(themes,'themes','Мои варианты оформления');themes.querySelector('.shared-head strong')?.remove();
   const library=el('section','panel palette-library');library.append(el('p','palette-library-intro','Наборы цветов для фона и кнопок. Свои палитры сохраняются на этом устройстве и в JSON-копии настроек.'));
   const actions=el('div','palette-actions');actions.append(button('＋ Создать палитру',()=>edit(null),'primary'),button('Из текущего фона',()=>edit(null,options.readColors('background'))),button('Из текущей кнопки',()=>edit(null,options.readColors('button'))));library.append(actions,el('h3','palette-subtitle','Наборы Happy'));

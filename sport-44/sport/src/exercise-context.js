@@ -27,7 +27,7 @@ function mountExerciseContext(id,ei=null,context='active'){
   for(const extra of form.querySelectorAll('.exercise-extra'))extra.hidden=true;   // все блоки описания: здесь их нечем сохранить
   const mine=templates().filter(t=>!t.recommended);
   form.querySelector('.exercise-save-actions').innerHTML=`<label class="field">Куда добавить<select name="addDestination" aria-label="Куда добавить упражнение"><option value="" selected disabled>Выбери тренировку</option><option value="current">${state.active?'В текущую тренировку':'В новую тренировку'}</option>${mine.map(t=>`<option value="template:${esc(t.id)}">${esc(t.title)}</option>`).join('')}</select></label><button class="button primary" type="submit" name="saveMode" value="add">Добавить упражнение</button>`;
-  const last=form.lastElementChild;if(last?.classList.contains('fineprint'))last.textContent='Настройки применятся только к добавляемому упражнению. Библиотека и прежние тренировки не изменятся.';
+  const last=form.lastElementChild;if(last?.classList.contains('fineprint'))last.textContent='Настройки применятся только к добавляемому упражнению. Каталог и прежние тренировки не изменятся.';
  }
  exerciseContext={id,ei,context,form,sheet,nav,panels,tab:null,scroll:{},loaded:{}};
  selectExerciseContextTab(context==='library'?'instructions':'configure');return true;

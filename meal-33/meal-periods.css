@@ -1,7 +1,8 @@
 /* Happy Meal · экран «Настроить приёмы пищи» (meal-periods.js). Размеры и скругления — по AGENTS.md, раздел «Оформление»:
    текст 12 / 14 / 16 / 20, жирность 400 / 600, пилюля 999, поле 12, карточка 26. Цвета — белый поверх темы. */
 .mp-page{--mp-muted:rgba(255,255,255,.72)}
-.mp-page .mp-bar{display:flex;justify-content:flex-end;min-height:44px}
+.mp-page .mp-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px}
+.mp-page .mp-title{margin:0;min-width:0}   /* аудит 3 (Астамур 21.11): у листа есть заголовок, как у других листов */
 #happy-screens .mp-edit{min-height:44px;padding:4px 0 4px 12px;font-size:14px;font-weight:600}
 .mp-list{margin:0 -8px}
 .mp-row{position:relative;isolation:isolate;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}

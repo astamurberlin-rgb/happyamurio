@@ -178,7 +178,7 @@ body.hs-open{overflow:hidden}
 .hs-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .hs-identity h2{overflow-wrap:anywhere;line-height:1.28;font-size:20px;max-width:100%;margin:0 auto;font-weight:600;letter-spacing:-.3px;color:var(--happy-ink)}
 .hs-section+.hs-section{margin-top:28px}
-.hs-section>h3{font-size:14px;font-weight:600;color:var(--hs-muted);margin:0 3px 10px;text-transform:none;letter-spacing:normal}
+.hs-section>h3{font-size:14px;font-weight:600;color:var(--hs-muted);margin:0 2px 10px;text-transform:none;letter-spacing:normal}
 .hs-group{background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:26px;padding:0 17px;overflow:hidden}
 .hs-settings .hs-row{display:flex;flex-direction:column;gap:6px;background:none;width:100%;text-align:left;padding:18px 0;border:0;color:var(--happy-ink);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0;margin:0;box-shadow:none;min-height:0}
 .hs-settings .hs-row+.hs-row{border-top:1px solid rgba(255,255,255,.22)}
@@ -195,12 +195,12 @@ body.hs-open{overflow:hidden}
 
 /* ── «Связка с»: свитчи связи приложений (разметку и обмен ведёт приложение) в виде прототипа ── */
 .hs-links{margin-top:28px!important}
-.hs-links .hs-links-title{display:block;font-size:14px;font-weight:600;line-height:1.4;color:rgba(255,255,255,.7);margin:0 3px 10px;text-transform:none;letter-spacing:normal}
+.hs-links .hs-links-title{display:block;font-size:14px;font-weight:600;line-height:1.4;color:rgba(255,255,255,.7);margin:0 2px 10px;text-transform:none;letter-spacing:normal}
 .hs-links .happy-app-links{padding:0 17px!important;border-radius:26px;background:var(--hs-glass)!important;border:1px solid var(--hs-border)!important;box-shadow:none!important}
 .hs-links .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:65px;padding:0}
 .hs-links .happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.22)}
 .hs-links .happy-app-name{flex:1;min-width:0;padding:14px 0;color:var(--happy-ink);font-size:16px;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
-.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 42px;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:999px;
+.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 auto;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:999px;
  background:rgba(255,255,255,.23);cursor:pointer;transition:background .18s;box-shadow:none}
 .hs-links .happy-switch::after{content:"";position:absolute;left:2px;top:2px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
 .hs-links .happy-switch:checked{background:var(--hs-switch-on);border:0}
@@ -230,7 +230,7 @@ body.hs-open{overflow:hidden}
 .hs-history summary::-webkit-details-marker{display:none}
 .hs-history summary span{color:var(--happy-ink)}
 .hs-history-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
-.hs-units h2{font-size:14px;font-weight:600;color:var(--hs-muted);margin-bottom:10px}
+.hs-units h2{font-size:16px;font-weight:600;color:#fff;margin-bottom:10px}   /* раздел профиля — как «Аккаунт» и «Личные данные»: 16 / 600 (Астамур 22.11.2026) */
 .hs-units-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
 /* Единицы в профиле: дорожка 44, как у кнопок внутри (было 36 — выбранная пилюля 44 вылезала и казалась сплющенной; Астамур 21.11.2026). */
 .hs-units-row>.hs-segment{width:160px;height:44px}
@@ -347,3 +347,24 @@ body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!im
 /* Cards: 26; Day 22 (lighter feel), Sport 24 (large exercise images) — AGENTS.md section 4. */
 html[data-happy-appearance-app="day"] .hs-group,html[data-happy-appearance-app="day"] .hs-links .happy-app-links{border-radius:22px}
 html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app="sport"] .hs-links .happy-app-links{border-radius:24px}
+
+/* Галочки (чекбоксы) — один вид во всех приложениях, вариант 2 «Белый квадрат» (Астамур, аудит 3, 21.11.2026):
+   выкл — стеклянный квадрат 24×24, скругление 7, светлая рамка; вкл — белый квадрат, галочка цветом приложения (--hs-check).
+   :where — нулевая сила селектора: спрятанные галочки внутри пилюль-кнопок своими правилами остаются как были. */
+:root{--hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%238071df" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E')}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)){-webkit-appearance:none;appearance:none;box-sizing:border-box;flex:none;width:24px;height:24px;margin:0;border-radius:7px;border:1.6px solid rgba(255,255,255,.7);background:rgba(255,255,255,.16) center/18px 18px no-repeat;cursor:pointer;vertical-align:middle}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):checked{background-color:#fff;border-color:#fff;background-image:var(--hs-check)}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):disabled{opacity:.55;cursor:default}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* Выключатели — один вид во всех приложениях, вариант B «С рамкой» (Астамур, аудит 3, 21.11.2026):
+   42×25, тонкая светлая рамка; выкл — полупрозрачный синий, вкл — цвет приложения или темы (--hs-switch-on); ручка 19, белая, без тени.
+   Касается общего выключателя настроек, .toggle и мятного .sport-switch в Sport, выключателей окна счётчика Meal. */
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input){-webkit-appearance:none!important;appearance:none!important;position:relative!important;box-sizing:border-box!important;flex:0 0 auto!important;width:42px!important;min-width:0!important;height:25px!important;min-height:25px!important;margin:0!important;padding:0!important;border:1px solid rgba(255,255,255,.27)!important;border-radius:999px!important;background:rgba(0,106,159,.38)!important;box-shadow:none!important;cursor:pointer}
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):checked{background:var(--hs-switch-on,#8071df)!important;border-color:rgba(255,255,255,.27)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)::after,html body :is(.toggle,.fc-sync-row input)::before{content:""!important;position:absolute!important;top:50%!important;left:2px!important;width:19px!important;height:19px!important;margin:0!important;border-radius:50%!important;background:#fff!important;box-shadow:none!important;transform:translateY(-50%)!important;transition:transform .18s!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch):checked::after,html body :is(.toggle,.fc-sync-row input):checked::before{left:2px!important;transform:translate(17px,-50%)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* Профиль: подписи полей (Почта, Имя, Дата рождения, Рост, Пол, Вес сейчас, Дата замера, строки единиц) — жирные 600 и белые,
+   как заголовок «Единицы измерения» (Астамур 22.11.2026). Светлые заголовки на самой странице Настроек не меняются. */
+.hs-profile .hs-field-title,.hs-profile .hs-email-label>span:first-child,.hs-profile .hs-units-row>span{font-weight:600!important;color:#fff!important}
