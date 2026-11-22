@@ -148,7 +148,7 @@ function openExerciseEditor(id,ei=null,source=null){
     <button class="button primary" type="submit" name="saveMode" value="replace">${active?'Сохранить':e?'Сохранить в библиотеке':'Создать упражнение'}</button>
     ${e&&!active?'<button class="button" type="submit" name="saveMode" value="copy">Сохранить как новое упражнение</button>':''}
     ${e&&!active&&e.name!==original?`<button class="text-btn" type="button" data-action="restore-exercise-name" data-id="${esc(e.id)}">Вернуть исходное название: ${esc(original)}</button>`:''}</div>
-    <p class="fineprint">${active?'Изменения относятся только к этому упражнению в текущей тренировке. Библиотека и другие тренировки не изменятся.':e?'Сохранение обновит название в библиотеке и текущей тренировке. История сохранится; изменение названия появится отдельной строкой в журнале.':''}</p></form>`,'exercise-config');
+    <p class="fineprint">${active?'Изменения относятся только к этому упражнению в текущей тренировке. Каталог и другие тренировки не изменятся.':e?'Сохранение обновит название в библиотеке и текущей тренировке. История сохранится; изменение названия появится отдельной строкой в журнале.':''}</p></form>`,'exercise-config');
   if(active)$('#exercise-config-form .exercise-extra').hidden=true;
   updateExerciseEditor();
   if(scope==='active'&&typeof mountExerciseContext==='function')mountExerciseContext(id,ei,'active');
