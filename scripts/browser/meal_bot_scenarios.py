@@ -570,6 +570,10 @@ dict(id="Рч2", msgs=["омлет сырам 150 г"], want=[("омлет сы�
 dict(id="Рч3", msgs=["ass ball 20 г"], want=[("асыдзбал", 20)]),
 dict(id="Рч4", msgs=["lobo 150 г"], want=[("лобио", 150)]),
 dict(id="Рч5", msgs=["americano 200 мл"], want=[("кофе", 200)]),
+dict(id="Гт1", msgs=["перепелки 2 штуки"], eaten=True, want=[("перепел !сыр", None)]),
+dict(id="Гт2", eaten=True, msgs=["75 г куриная отбивная"], want=[("филе грудки жар", 75)]),
+dict(id="Гт3", eaten=True, msgs=["свиная отбивная 150 г"], want=[("свиная отбивная жарен", 150)]),
+dict(id="Гт4", eaten=True, msgs=["борщ с говядиной одна тарелка"], want=[("борщ", None)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
