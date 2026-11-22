@@ -77,7 +77,8 @@ function create(options){
  try{storage.removeItem(LEGACY)}catch(e){}   // прежняя общая ячейка входа: в ней лежал ключ шифрования
  let session=null,kraw=null,key=null,generation=0,refreshing=null,migration=null,stopped=false;
  const listeners=new Set(),location=o.location||root.location,history=o.history||root.history;
- const oauthCell=CELL+':google';
+ const oauthCell=CELL+':google',recoveryCell=CELL+':google-recovery';
+ let recoveryRun=null;
  const oauthStorage=()=>o.oauthStorage||root.sessionStorage;
  const deviceKeys=new Map();
  function wrappingKey(app){
@@ -99,7 +100,7 @@ function create(options){
  }
  async function cachedKey(s,k){
   if((s.keyVersion||1)===1)return importKey(k);
-  if(s.keyVersion!==2)throw fail('version','Откройте актуальную версию Happy');
+  if(s.keyVersion!==2)throw fail('version','Открой актуальную версию Happy');
   return crypto.subtle.importKey('raw',await unwrap(s.uid,k),{name:'AES-GCM'},false,['encrypt','decrypt']);
  }
  /* Обновлять токен может одно окно этого приложения за раз: остальные дождутся и возьмут готовый из ячейки входа. */
@@ -153,6 +154,7 @@ function create(options){
    catch(e){if(mark===generation){session=null;kraw=null;key=null;if(before)emit()}throw e}
    if(mark!==generation)return;session=a.s;kraw=a.k;key=k;
   }
+  if(session&&readRecovery())await cancelRecovery();
   if(mine()!==before)emit();
  }
  async function auth(path,body,token,method){
@@ -161,7 +163,7 @@ function create(options){
   catch(e){throw fail('offline','Нет связи с сервером')}
   let j=null;try{j=await r.json()}catch(e){}
   if(!r.ok){
-   if(r.status>=500||r.status===408)throw fail('offline','Сервер временно недоступен. Повторите позже.');
+   if(r.status>=500||r.status===408)throw fail('offline','Сервер временно недоступен. Повтори позже.');
    throw fail(r.status===429?'busy':'auth',errorText(j,r.status));
   }
   return j;
@@ -178,16 +180,21 @@ function create(options){
   let r;
   try{r=await request(url+'/functions/v1/account-key',{method:'POST',cache:'no-store',
    headers:{apikey,Authorization:'Bearer '+access,'Content-Type':'application/json'},body:JSON.stringify({action})})}
-  catch(e){throw fail('offline','Нет связи с сервером. Подключитесь к интернету и повторите.')}
-  if(!r.ok)throw fail(r.status===401?'session':'key-service','Не удалось получить ключ аккаунта. Повторите вход или попробуйте позже.');
+  catch(e){throw fail('offline','Нет связи с сервером. Подключись к интернету и повтори.')}
+  if(!r.ok){
+   const detail=await r.json().catch(()=>null);
+   if(r.status===409&&detail?.code==='legacy_password')throw fail('legacy_password','Чтобы открыть прежние записи, введи пароль, которым они были зашифрованы.');
+   throw fail(r.status===401?'session':'key-service','Не удалось получить ключ аккаунта. Повтори вход или попробуй позже.');
+  }
   const j=await r.json();
   if(j.state==='legacy')return j;
   if(!['migrating','active'].includes(j.state)||j.keyVersion!==2||typeof j.key!=='string'||unb64(j.key).length!==32)
-   throw fail('key-service','Неизвестная версия ключа аккаунта. Откройте актуальную версию Happy.');
+   throw fail('key-service','Неизвестная версия ключа аккаунта. Открой актуальную версию Happy.');
   return j;
  }
- function changed(){return fail('account','Вход изменился. Повторите.')}
+ function changed(){return fail('account','Вход изменился. Повтори.')}
  function commit(next,stored,cipher){
+  if(next.keyVersion===2)delete next.migrationKey;
   persist(next,stored);session=next;kraw=stored;key=cipher;
   if(next.keyVersion===2)storage.removeItem(offerCell(o.app));
   emit();
@@ -205,9 +212,14 @@ function create(options){
    next.keyVersion=2;stored=await wrap(next.uid,state.key);cipher=await importKey(state.key);
   }else{
    const saved=disk();
-   if(saved&&saved.s.uid===next.uid&&(saved.s.keyVersion||1)===1)stored=saved.k;
-   else if(password)stored=(await deriveKey(password,next.uid)).raw;
-   if(!stored)throw fail('legacy','Войдите по почте и включите восстановление ключа в настройках аккаунта. Затем вы сможете входить через Google.');
+   if(saved&&saved.s.uid===next.uid&&(saved.s.keyVersion||1)===1){
+    stored=saved.k;if(saved.s.migrationKey)next.migrationKey=saved.s.migrationKey;
+   }else if(password)stored=(await deriveKey(password,next.uid)).raw;
+   if(!stored){
+    if(stopped||generation!==mark||session||disk()||previous)throw changed();
+    saveRecovery({id:base64url(crypto.getRandomValues(new Uint8Array(24))),url,s:next,migrating:state.state==='migrating'});
+    return 'recovery';
+   }
    next.keyVersion=1;next.migrating=state.state==='migrating';cipher=await importKey(stored);
   }
   if(stopped||generation!==mark||identity(disk())!==previous)throw changed();
@@ -216,16 +228,18 @@ function create(options){
   return 'ok';
  }
  async function passwordEntry(path,body,password){
+  await cancelRecovery();
   const mark=++generation,previous=identity(disk());
   return enter(await auth(path,body),password,null,mark,previous);
  }
  const signIn=(email,password)=>passwordEntry('token?grant_type=password',{email,password},password);
  const signUp=(email,password,name)=>passwordEntry(withBack('signup'),{email,password,data:{display_name:String(name||'').trim().slice(0,60),happy_key_mode:'managed-v1'}},password);
  async function signOut(){
+  if(!session&&readRecovery()){await cancelRecovery();return}
   const token=session&&session.at;++generation;
   persist(null);storage.removeItem(offerCell(o.app));session=null;kraw=null;key=null;try{oauthStorage().removeItem(oauthCell)}catch(e){}emit();
   /* scope=local: сервер закрывает только этот вход; входы других приложений и устройств остаются */
-  if(token)Promise.resolve().then(()=>request(url+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey,Authorization:'Bearer '+token}})).catch(()=>{});
+  if(token)logoutToken(token);
  }
  /* Токен доступа. Обновление — одно за раз; если его уже обновило другое окно тем же входом, берём готовый. */
  async function token(refused){   // refused — токен, который сервер только что не принял
@@ -265,11 +279,12 @@ function create(options){
  /* A verifier belongs to this tab and this app. Supabase keeps the OAuth state
     and exchanges its single-use code for the same Happy user's session. */
  async function startGoogle(link){
+  await cancelRecovery();
   if(link&&current()?.keyVersion!==2)
-   throw fail('legacy','Сначала включите восстановление ключа в настройках аккаунта.');
+   throw fail('legacy','Сначала включи восстановление ключа в настройках аккаунта.');
   const uid=session?.uid||null,verifier=base64url(crypto.getRandomValues(new Uint8Array(48)));
   const challenge=base64url(new Uint8Array(await crypto.subtle.digest('SHA-256',utf(verifier))));
-  const redirect=back();if(!redirect)throw fail('auth','Откройте веб-версию приложения, чтобы войти через Google.');
+  const redirect=back();if(!redirect)throw fail('auth','Открой веб-версию приложения, чтобы войти через Google.');
   const params=new URLSearchParams({provider:'google',redirect_to:redirect,code_challenge:challenge,
    code_challenge_method:'s256',prompt:'select_account'});
   let destination=url+'/auth/v1/authorize?'+params;
@@ -297,32 +312,47 @@ function create(options){
   history.replaceState(history.state,'',page.href);
   const pending=saved&&JSON.parse(saved);
   if(!pending||pending.redirect!==back()||now()-pending.created>15*60*1000||!pending.verifier)
-   throw fail('auth','Ссылка входа истекла. Выберите Google ещё раз.');
-  if(error)throw fail('auth','Вход через Google отменён или недоступен. Попробуйте ещё раз.');
+   throw fail('auth','Ссылка входа истекла. Выбери Google ещё раз.');
+  if(error)throw fail('auth','Вход через Google отменён или недоступен. Попробуй ещё раз.');
   if((session?.uid||null)!==pending.uid)throw changed();
   const mark=++generation,previous=identity(disk());
   const j=await auth('token?grant_type=pkce',{auth_code:code,code_verifier:pending.verifier});
   if(!j?.access_token)throw fail('auth','Не удалось подтвердить вход через Google.');
-  await enter(j,null,pending.link?pending.uid:null,mark,previous);
-  return pending.link?'linked':'ok';
+  const result=await enter(j,null,pending.link?pending.uid:null,mark,previous);
+  return pending.link?'linked':result;
  }
 
  function guard(who){if(stopped||mine()!==who||identity(disk())!==who)throw changed()}
- async function ownedRequest(action,who){
-  guard(who);
-  const access=await token();
-  guard(who);
+ async function keyRequest(action,accessToken,check){
+  check();const access=await accessToken();check();
   let state;
   try{state=await broker(action,access)}
   catch(e){
    if(e.code!=='session')throw e;
-   guard(who);
-   const fresh=await token(access);guard(who);state=await broker(action,fresh);
+   check();const fresh=await accessToken(access);check();state=await broker(action,fresh);
   }
-  guard(who);return state;
+  check();return state;
+ }
+ const ownedRequest=(action,who)=>keyRequest(action,token,()=>guard(who));
+ // Verify an old ciphertext before the server fences old writers. begin_empty
+ // repeats the empty check under the server's lock in case another device wrote.
+ async function migrateWith(client,requestKey,legacy,checkpoint){
+  let state=await requestKey('open');
+  if(state.state==='active')return state;
+  const options={account:client,url,key:apikey,fetch:request,backend:o.backend,indexedDB:o.indexedDB};
+  const proof=await root.HappyStore.verifyLegacyKey({...options,legacyKey:legacy});
+  await checkpoint(proof.verified);
+  state=await requestKey(proof.empty?'begin_empty':'begin');
+  if(state.state==='migrating'){
+   const cipher=await importKey(state.key);
+   await root.HappyStore.migrateAccount({...options,legacyKey:legacy,cipherKey:cipher,keyVersion:2});
+   state=await requestKey('finish');
+  }
+  if(state.state!=='active')throw fail('key-service','Перенос ещё не завершён. Повтори.');
+  return state;
  }
  async function activate(state,who,previous){
-  if(state.state!=='active')throw fail('key-service','Перенос ещё не завершён. Повторите.');
+  if(state.state!=='active')throw fail('key-service','Перенос ещё не завершён. Повтори.');
   guard(who);
   const uid=session.uid,stored=await wrap(uid,state.key),cipher=await importKey(state.key);
   guard(who);await offerToSignedInApps(uid,kraw,state.key,previous);guard(who);
@@ -336,21 +366,101 @@ function create(options){
   const who=mine();
   const run=migration=(async()=>{
    guard(who);
-   if(!session.migrating){
-    // Persist consent before begin: if its reply is lost, reload resumes the same operation.
-    const next={...session,migrating:true};persist(next,kraw);session=next;emit();
-   }
-   let state=await ownedRequest('begin',who),previous;
-   if(state.state==='migrating'){
-    if(previousPassword)previous=await deriveKey(previousPassword,session.uid);
-    const legacy=previous?.key||key;
-    const cipher=await importKey(state.key);guard(who);
-    await root.HappyStore.migrateAccount({account:api,legacyKey:legacy,cipherKey:cipher,keyVersion:2,url,key:apikey,fetch:request,backend:o.backend});
-    state=await ownedRequest('finish',who);
-   }
+   const uid=session.uid,purpose='legacy-migration';
+   const previous=await recoveryKey(previousPassword,uid,session.migrationKey,purpose);
+   const state=await migrateWith(api,action=>ownedRequest(action,who),previous?.key||key,async verified=>{
+    guard(who);
+    const newBox=verified&&previousPassword?await wrap(uid,previous.raw,o.app,purpose):null;
+    guard(who);
+    if(!session.migrating||newBox){
+     const next={...session,migrating:true};
+     if(newBox)next.migrationKey=newBox;
+     persist(next,kraw);session=next;emit();
+    }
+   });
    await activate(state,who,previous?.raw);
   })();
   const done=()=>{if(migration===run)migration=null};run.then(done,done);return run;
+ }
+ // An authenticated Google user can still lack the legacy decryption key.
+ // Keep this grant in the callback tab only, separate from the app's usable account.
+ function readRecovery(){
+  try{
+   const p=JSON.parse(oauthStorage().getItem(recoveryCell)||'null');
+   return p?.url===url&&p.id&&p.s?.uid&&p.s.at&&p.s.rt?p:null;
+  }catch(e){return null}
+ }
+ function saveRecovery(p){oauthStorage().setItem(recoveryCell,JSON.stringify(p))}
+ function pendingRecovery(){
+  const p=readRecovery();
+  return p&&!session&&!disk()?{uid:p.s.uid,email:p.s.email,migrating:!!p.migrating}:null;
+ }
+ function logoutToken(access){
+  return Promise.resolve().then(()=>request(url+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey,Authorization:'Bearer '+access}})).catch(()=>{});
+ }
+ async function cancelRecovery(){
+  const p=readRecovery();if(!p)return;
+  oauthStorage().removeItem(recoveryCell);
+  const normal=disk()?.s;
+  if(session?.at===p.s.at||normal?.at===p.s.at||normal?.rt===p.s.rt)return;
+  const result=await logoutToken(p.s.at);
+  if(result?.status===401){
+   // The access token may have expired while the consent screen was open.
+   // Refresh only this tab's grant, then close that Supabase session.
+   try{
+    const j=await auth('token?grant_type=refresh_token',{refresh_token:p.s.rt});
+    if(j?.user?.id===p.s.uid&&j.access_token)await logoutToken(j.access_token);
+   }catch(e){}
+  }
+ }
+ async function recoveryKey(password,uid,box,purpose){
+  if(password)return deriveKey(password,uid);
+  if(!box)return null;
+  const raw=b64(new Uint8Array(await unwrap(uid,box,purpose)));
+  return {raw,key:await importKey(raw)};
+ }
+ function completeRecovery(previousPassword){
+  const pending=readRecovery();
+  if(stopped||!pending||session||disk())return Promise.reject(changed());
+  if(recoveryRun?.id===pending.id)return recoveryRun.promise;
+  const mark=generation;
+  function record(){
+   const p=readRecovery();
+   if(stopped||generation!==mark||p?.id!==pending.id||session||disk())throw changed();
+   return p;
+  }
+  async function accessToken(refused){
+   const old=record().s;
+   if(refused?old.at!==refused:now()<old.exp-60000)return old.at;
+   let j;
+   try{j=await auth('token?grant_type=refresh_token',{refresh_token:old.rt})}
+   catch(e){if(e.code==='auth'){record();oauthStorage().removeItem(recoveryCell)}throw e}
+   const s=sessionFrom(j,old),p=record();
+   if(s.uid!==old.uid||!s.at||!s.rt)throw changed();
+   saveRecovery({...p,s});return s.at;
+  }
+  const client={current:()=>({uid:record().s.uid}),token:accessToken};
+  const purpose='recovery:'+pending.id;
+  const promise=(async()=>{
+   const uid=record().s.uid;
+   const old=await recoveryKey(previousPassword,uid,pending.box,purpose);
+   const state=await migrateWith(client,action=>keyRequest(action,accessToken,record),old?.key||null,async verified=>{
+    // Only a verified passphrase is cached for a retry; the passphrase itself
+    // never travels to Auth or the key service and is never written to disk.
+    const box=verified?await wrap(uid,old.raw,o.app,purpose):null;
+    saveRecovery({...record(),box,consent:true,migrating:true});
+   });
+   const stored=await wrap(uid,state.key),cipher=await importKey(state.key);
+   record();await offerToSignedInApps(uid,old?.raw,state.key);
+   const s=record().s;
+   commit({...s,keyVersion:2,migrating:false},stored,cipher);
+   oauthStorage().removeItem(recoveryCell);
+   await root.HappyStore.prepareLocal({uid,cipherKey:cipher,backend:o.backend,indexedDB:o.indexedDB});
+   return 'ok';
+  })();
+  recoveryRun={id:pending.id,promise};
+  const done=()=>{if(recoveryRun?.promise===promise)recoveryRun=null};
+  promise.then(done,done);return promise;
  }
  async function refreshKey(){
   if(!session||session.keyVersion===2)return false;
@@ -360,7 +470,11 @@ function create(options){
   if(state.state==='migrating')await beginMigration();else await activate(state,who);
   return true;
  }
- function resume(){if(session?.migrating&&!stopped)return beginMigration().catch(()=>{})}
+ function resume(){
+  if(stopped)return;
+  if(session?.migrating)return beginMigration().catch(()=>{});
+  if(!session&&readRecovery()?.consent)return completeRecovery().catch(()=>{});
+ }
  async function load(){await adopt();await acceptOffer();await resume()}
 
  /* повторить письмо подтверждения регистрации */
@@ -388,7 +502,7 @@ function create(options){
  }
  if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume)}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,beginMigration,refreshKey,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,

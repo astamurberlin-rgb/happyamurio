@@ -361,6 +361,22 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
    throw fail('unreadable','Документ в облаке не удалось расшифровать. Он не заменён.');
   }
  }
+ // До согласия сервер ничего не меняет. Одного подлинного шифротекста достаточно,
+ // чтобы проверить ключ. На устройство не записываются ни документ, ни результат расшифровки.
+ async function verifyLegacyKey(legacyKey){
+  const fields=legacyKey?'user_id,app,kind,v,iv,data':'user_id,app,kind,v';
+  const rows=await rest('GET','?select='+fields+'&v=eq.2'+mine+'&order=app,kind&limit=1');
+  checkOwner();
+  if(!Array.isArray(rows))throw fail('server','Не удалось проверить записи аккаунта.');
+  if(!rows.length)return {verified:false,empty:true};
+  const r=rows[0];
+  if(r.user_id!==c.uid||r.v!==ROW_VERSION||!APPS.includes(r.app)||!NAME.test(r.kind))
+   throw fail('unreadable','Не удалось проверить документ аккаунта.');
+  if(!legacyKey)throw fail('legacy_password','Для этих записей нужен прежний пароль Happy.');
+  const proof=await decrypt(r,r.app,r.kind,legacyKey,true);
+  proof.fill(0);checkOwner();
+  return {verified:true};
+ }
  async function get(app,kind){
   const r=await fetchRow(app,kind);if(!r)return null;
   if(r.v===MANAGED_ROW&&!managed)throw fail('key_changed','Для этого аккаунта обновился ключ.');
@@ -400,6 +416,7 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
    const heads=await rest('GET','?select=app,kind,iv,at&v=eq.2'+mine+'&limit=16');
    if(!Array.isArray(heads))throw fail('server','Не удалось прочитать список записей для переноса');
    if(!heads.length)break;
+   if(!legacyKey)throw fail('legacy_password','Для этих записей нужен прежний пароль Happy.');
    let progress=false;
    for(const {app,kind} of heads){
     if(!APPS.includes(app)||!NAME.test(kind))throw fail('unreadable','Неизвестный документ в аккаунте');
@@ -432,15 +449,22 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
    await backend.write(scope,merged,{iv:stored.iv,settle:local.meta.seq});
   }
  }
- return {list,get,put,migrate};
+ return {list,get,put,migrate,verifyLegacyKey};
 }
 
-async function migrateAccount(options){
- const o=options,uid=o.account.current()?.uid;
- if(!uid||o.keyVersion!==2||!o.legacyKey||!o.cipherKey)throw fail('account','Для переноса нужны оба ключа аккаунта');
- const transport=cloud({uid,account:o.account,cipherKey:o.cipherKey,keyVersion:o.keyVersion,
+function accountCloud(o){
+ const uid=o.account.current()?.uid;
+ if(!uid)throw fail('account','Не удалось проверить вход в аккаунт.');
+ return cloud({uid,account:o.account,cipherKey:o.cipherKey,keyVersion:o.keyVersion,
   url:o.url||root.HappyAccount.CLOUD.url,key:o.key||root.HappyAccount.CLOUD.key,
   fetch:o.fetch||((...a)=>root.fetch(...a)),limit:CIPHER_LIMIT,now:Date.now});
+}
+async function verifyLegacyKey(o){
+ return accountCloud(o).verifyLegacyKey(o.legacyKey);
+}
+async function migrateAccount(o){
+ if(o.keyVersion!==2||!o.cipherKey)throw fail('account','Для переноса нужен ключ аккаунта.');
+ const transport=accountCloud(o);
  const backend=o.backend||idbBackend(o.indexedDB);
  try{await transport.migrate(o.legacyKey,backend)}finally{if(!o.backend)await backend.close()}
 }
@@ -726,5 +750,5 @@ async function open(options){
   get closed(){return closed}
  };
 }
-root.HappyStore={open,migrateAccount,prepareLocal,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
+root.HappyStore={open,verifyLegacyKey,migrateAccount,prepareLocal,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
 })(typeof globalThis!=='undefined'?globalThis:this);

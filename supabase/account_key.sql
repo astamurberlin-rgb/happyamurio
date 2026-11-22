@@ -1,5 +1,7 @@
 -- Install as one transaction on a Happy project with Auth and public.app_sync.
 begin;
+-- Fail and retry the transaction if installing triggers would stall live writers.
+set local lock_timeout = '2s';
 create schema if not exists happy_private;
 revoke all on schema happy_private from public, anon, authenticated;
 

@@ -1,4 +1,4 @@
-// The private Meal test runs entirely inside the test Supabase project.
+// This broker uses the Vault master in its own Supabase project.
 import { createHandler } from './handler.mjs';
 import { url, verify, keyRecord } from './supabase.ts';
 import { vaultEnvelope } from './vault.mjs';

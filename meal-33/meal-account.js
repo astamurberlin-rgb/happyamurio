@@ -23,7 +23,7 @@ HappyScreens.dismissed=function(h){ toast('Правки не сохранены'
 var shown=MealBoot.ready.catch(function(){}).then(function(){ return new Promise(function(done){
   var t0=Date.now();(function wait(){ if(!document.body.classList.contains('loading')||Date.now()-t0>8000) return done(); setTimeout(wait,60) })();
 }) });
-HappyWelcome.init({app:'meal',name:'Meal',account:MealBoot.account,boot:MealBoot,ready:shown,features:FEATURES,
+HappyWelcome.init({app:'meal',name:'Meal',account:MealBoot.account,ready:shown,features:FEATURES,
   beforeSignOut:async function(){ if(!MealData.signedIn()) return; saveNow(); await MealData.store.flush(15000) }});
 
 /* ── цели Meal ── */

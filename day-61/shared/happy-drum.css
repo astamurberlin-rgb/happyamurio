@@ -1,0 +1,19 @@
+/* Барабан Happy (shared/happy-drum.js) — решения Астамура 21.11.2026 по макету «Day · Осознанность»:
+   две колонки, подпись над своим барабаном, длительность справа (один барабан — тоже справа);
+   три строки, выбранная — на светлой полосе без рамки, как в iPhone. — Claude · 21.11.2026 */
+.hf-drum{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0 0}
+.hf-drum-cell{display:flex;flex-direction:column;min-width:0}
+.hf-drum-cap{display:block;margin:0 0 6px;text-align:center;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap}
+.hf-drum-group{position:relative;display:flex;align-items:stretch;justify-content:center;gap:2px;height:132px;
+ -webkit-mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent);mask-image:linear-gradient(transparent,#000 24%,#000 76%,transparent)}
+.hf-drum-band{position:absolute;left:0;right:0;top:44px;height:44px;border-radius:999px;background:var(--hf-band,rgba(255,255,255,.22));pointer-events:none}
+.hf-drum-col{position:relative;width:52px;height:132px;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;
+ -webkit-overflow-scrolling:touch;touch-action:pan-y;outline:0;cursor:ns-resize}
+.hf-drum-col::-webkit-scrollbar{display:none}
+.hf-drum-col:focus-visible{outline:2px solid #fff;outline-offset:-2px;border-radius:12px}
+.hf-drum-pad{height:44px}
+.hf-drum-item{height:44px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-size:28px;font-weight:400;line-height:1;
+ font-variant-numeric:tabular-nums;white-space:nowrap;transform-origin:center;will-change:transform,opacity;cursor:pointer}
+.hf-drum-item.hf-on{font-weight:600}
+.hf-drum-sep{position:relative;align-self:center;font-size:28px;font-weight:600;line-height:1;margin-top:-4px}
+@media (prefers-reduced-motion:reduce){.hf-drum-col{scroll-behavior:auto}}

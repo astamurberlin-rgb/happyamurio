@@ -25,7 +25,7 @@ export function createHandler({verify, keyRecord, generate, unwrap, wrapVersion 
     if (!bearer) return reply(401, {error: 'Sign in required'});
     let body;
     try { body = await request.json(); } catch { return reply(400, {error: 'Invalid request'}); }
-    if (!body || Object.keys(body).length !== 1 || !['open','begin','finish'].includes(body.action)) {
+    if (!body || Object.keys(body).length !== 1 || !['open','begin','begin_empty','finish'].includes(body.action)) {
       return reply(400, {error: 'Invalid account key request'});
     }
     try {
@@ -52,6 +52,7 @@ export function createHandler({verify, keyRecord, generate, unwrap, wrapVersion 
     } catch (error) {
       if (error.code === 'HAP03') return reply(401, {error: 'Session expired'});
       if (error.code === 'HAP04') return reply(409, {error: 'Migration incomplete'});
+      if (error.code === 'HAP07') return reply(409, {code: 'legacy_password', error: 'Legacy key verification required'});
       if (error.code === 'HAP06') return reply(409, {error: 'Unsupported key storage provider'});
       if (error.code === 'HAP05') return reply(409, {error: 'Unsupported cloud document version'});
       return reply(503, {error: 'Account key temporarily unavailable'});

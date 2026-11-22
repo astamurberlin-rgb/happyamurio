@@ -1,0 +1,38 @@
+/* The header and existing meal selector stay accessible as the chat scrolls. */
+.screen[data-screen="chat"].on {display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+.screen[data-screen="chat"] > :not(.mlChat) {flex-shrink:0}
+#chatMeals {gap:6px}
+#chatMeals .chip {padding-inline:12px;min-height:44px}
+#mlChat {flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 0 calc(166px + env(safe-area-inset-bottom));scrollbar-width:none}
+#mlChat > * {flex-shrink:0}
+.mrSearch {margin-top:12px}
+.mrField {display:flex;align-items:center;gap:8px;min-height:44px;margin-inline:6px;padding-inline:12px 2px;background:rgba(255,255,255,.94);border-radius:12px;color:#0b4f7c}
+.mrField:focus-within {outline:2px solid var(--ink,#fff);outline-offset:2px}
+.mrField svg {width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.mrField input[type=text] {min-width:0;flex:1;width:100%;border:none;outline:none;box-shadow:none;border-radius:0;background:transparent;color:inherit;padding:10px 0;font:inherit;font-size:16px}
+.mrField input::placeholder {color:#386781;opacity:1}
+.mrClose {width:40px;height:40px;border:0;border-radius:999px;background:transparent;color:inherit;font-size:20px}
+.mrClose[hidden],.mrSearch .mlRes:empty {display:none}
+.mrSearch .mlRes {max-height:196px;overscroll-behavior:contain;scrollbar-width:thin}
+.mrSearch .mlResPick {min-height:44px}
+.mrSearch .mlEmpty {text-align:left;margin:8px 0 0;color:inherit;font-size:14px}
+
+#mlChat .mbChips[hidden] {display:none}
+
+#mlChat .mrSearch > .mbChips {margin:0 0 12px;}
+.mrSearch .mrOptions {display:flex;flex-wrap:wrap;gap:6px}
+.mrOptions .chip {min-height:44px;max-width:100%;white-space:normal;text-align:left;font-size:14px}
+#mlChat :is([data-info-food],[data-replacement-food],[data-bot^="pick:"]){-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+
+#mlChat [data-optional-search][hidden],#mlChat [data-clarify-controls][hidden],#mlChat .clarifyReplace[hidden],
+#mlChat [data-optional-search]:not([hidden]) + [data-clarify-controls]{display:none}
+.clarifyHead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.clarifyHead .clarifyReplace{display:grid;place-items:center;flex:0 0 44px;height:44px;padding:0;border:0;background:none;color:inherit}
+.clarifyHead .clarifyReplace svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+#mlChat [data-clarify-controls] .chip{min-height:44px;max-width:100%;height:auto;white-space:normal;overflow-wrap:anywhere;text-align:left}
+.portionForm{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 4px 4px}
+.portionField{display:flex;align-items:center;flex:1 1 100px;min-width:0;gap:6px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.94);color:#0b4f7c}
+.portionField:focus-within{outline:2px solid var(--ink,#fff);outline-offset:2px}
+#mlChat .portionField input{flex:1;min-width:0;width:100%;height:44px;padding:0;border:0;outline:0;box-shadow:none;background:transparent;color:inherit;font:inherit;font-size:16px}
+.portionField input::placeholder{color:#386781}
+.portionForm .chip:disabled{opacity:.5}

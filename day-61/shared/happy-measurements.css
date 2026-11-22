@@ -1,0 +1,199 @@
+/* Happy: общий экран замеров тела — к shared/happy-measurements.js. Один вид в Day, Meal и Sport.
+   Цвета берутся из приложения (--ink, --muted, --base); приложение может задать свои:
+   --hm-pin-bg — фон закреплённого столбца названий, --hm-sheet-bg — фон окна. — Claude · 14.11.2026
+   Полосы истории в таблице: --hm-stripe-dark и --hm-stripe-light (и цвет текста в них, …-ink). Без отметки они прежние,
+   синие. С отметкой data-hm-colors="app" на месте экрана полосы берутся из цвета приложения — того же, что у столбца
+   названий: тёмная полоса — этот цвет чуть темнее, светлая — он же, разбавленный белым. Отметку ставит приложение
+   (Day — с 20.11.2026, решение Астамура; Meal и Sport — когда он посмотрит их цвета). — Claude · 20.11.2026 */
+.hm{--hm-line:rgba(255,255,255,.36);--hm-glass:rgba(255,255,255,.16);--hm-soft:var(--muted,rgba(255,255,255,.8));
+ --hm-pin:var(--hm-pin-bg,var(--base,#717edf));--hm-sheet:var(--hm-sheet-bg,var(--base,#5d6fdc));
+ --hm-stripe-dark:#5797df;--hm-stripe-dark-ink:#fff;--hm-stripe-light:#b1d7f8;--hm-stripe-light-ink:#30496d;
+ font-size:14px;line-height:1.4;-webkit-user-select:none;user-select:none}
+@supports (color:color-mix(in srgb,red,blue)){
+ /* Без темы — исходный вид, как до 21.11.2026: Day и Meal (data-hm-colors="app") — в цвет приложения, Sport — синие полосы. */
+ :root:not([data-happy-appearance]) .hm[data-hm-colors="app"]{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 88%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 26%,#fff);--hm-stripe-light-ink:color-mix(in srgb,var(--hm-pin) 45%,#0b1220)}
+ /* С темой (Астамур 21.11.2026), во всех трёх приложениях: полосы в цвет темы, третья колонка на тон тусклее первой, светлая — тот же цвет под полупрозрачным белым слоем. */
+ :root[data-happy-appearance] .hm{--hm-stripe-dark:color-mix(in srgb,var(--hm-pin) 84%,#000);--hm-stripe-light:color-mix(in srgb,var(--hm-pin) 78%,#fff);--hm-stripe-light-ink:#fff}
+}
+.hm *{box-sizing:border-box}
+:where(.hm) button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+.hm-icon{width:16px;height:16px;flex:0 0 16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hm-text{display:inline-flex;align-items:center;gap:5px;padding:8px 0;font-size:12px;font-weight:600;min-height:40px}
+.hm-card{background:var(--hm-glass);border:1px solid var(--hm-line);border-radius:26px}
+.hm-outer{padding:11px}
+.hm-empty{padding:0;margin:4px 0 14px;font-size:14px;color:var(--hm-soft)}
+.hm-button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:14px;padding:12px 18px;background:var(--hm-glass);border:1px solid var(--hm-line);border-radius:22px;font-size:14px;font-weight:700;text-align:center}
+.hm-button.hm-primary{background:rgba(244,251,255,.96);color:#2f5f99;border-color:transparent}
+.hm-button.hm-delete{background:rgba(114,28,88,.2);border-color:rgba(255,209,228,.48)}
+.hm-output{display:flex;justify-content:center}
+.hm-output .hm-button{width:auto;flex:0 1 auto;min-height:44px;padding:10px 22px;border-radius:22px}
+/* «Поделиться»: маленькое меню у кнопки (.hm-menu) — 15.11.2026 */
+.hm-share-item{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:12px 16px;text-align:left;font-size:16px;font-weight:600}
+.hm-share-item .hm-icon{width:20px;height:20px;flex-basis:20px}
+.hm-menu{position:fixed;z-index:80;min-width:212px;padding:6px;border-radius:18px;background:#f4fbff;color:#2f5f99;box-shadow:0 12px 34px rgba(8,50,100,.28);border:1px solid #fff}
+.hm-menu .hm-share-item{min-height:46px;border-radius:13px;font-size:14px}
+.hm-menu .hm-share-item+.hm-share-item{border-top:1px solid rgba(47,95,153,.12);border-radius:0 0 13px 13px}
+.hm-menu .hm-share-item:first-child{border-radius:13px 13px 0 0}
+.hm-menu .hm-share-item:active{background:rgba(47,95,153,.08)}
+.hm-menu-down{animation:hm-pop-down .14s ease}.hm-menu-up{animation:hm-pop-up .14s ease}
+@keyframes hm-pop-down{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes hm-pop-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hm-note{font-size:12px;line-height:1.55;margin:13px 0 0;color:var(--hm-soft)}
+.hm-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:10px 14px;border-radius:16px;background:var(--hm-glass);border:1px solid var(--hm-line);font-size:12px}
+.hm-notice button{font-weight:700;text-decoration:underline;text-underline-offset:4px;min-height:32px}
+
+/* силуэт по замерам (макет «Что изменилось», 15.11.2026): светлая карточка, цвета не зависят от темы приложения */
+.hm-viz{position:relative;background:rgba(255,255,255,.92);border-radius:16px;height:456px;overflow:hidden;color:#344266}
+.hm-legend{position:absolute;left:12px;top:13px;display:grid;gap:8px;font-size:12px;font-weight:600;line-height:1;z-index:2;color:#2C3E66}
+.hm-legend span{display:flex;align-items:center;gap:7px}
+.hm-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.hm-dot{width:12px;height:12px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55)}
+.hm-amplify-box{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;align-items:flex-end;gap:5px;z-index:2}
+.hm-amplify-box>span{padding-right:6px;font-size:12px;font-weight:600;color:#5C6F95}
+.hm-amplify{display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(44,62,102,.08)}
+.hm-amplify button{min-width:44px;min-height:36px;padding:0 10px;border-radius:999px;font-size:14px;font-weight:700;color:#2C3E66}
+.hm-amplify button[aria-pressed="true"]{background:#fff;box-shadow:0 1px 3px rgba(44,62,102,.18)}
+.hm-chart{position:absolute;left:0;top:14px;display:block;width:100%;height:430px;overflow:visible}
+.hm-periods{display:flex;gap:3px;margin:0 0 10px;border:1px solid var(--hm-line);border-radius:24px;padding:4px;background:rgba(0,97,172,.12)}
+.hm-periods button{flex:1 1 0;padding:10px 6px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.hm-periods button[aria-pressed="true"]{background:rgba(244,251,255,.96);color:var(--hs-seg-ink,#176b98);box-shadow:0 2px 7px rgba(18,66,107,.125)}
+
+/* таблица: названия и последние замеры закреплены */
+.hm-grid-wrap{margin-top:20px;width:100%;min-width:0;max-width:100%;contain:inline-size;border:1px solid rgba(255,255,255,.33);border-radius:22px;overflow:auto;isolation:isolate;scrollbar-width:thin;overscroll-behavior-x:contain;background:rgba(255,255,255,.11)}
+.hm-grid{border-collapse:separate;border-spacing:0;table-layout:fixed;width:max-content;font-size:12px;font-variant-numeric:tabular-nums;text-align:center}
+.hm-grid th,.hm-grid td{width:110px;min-width:110px;max-width:110px;padding:11px 8px;border-bottom:1px solid rgba(255,255,255,.19);height:64px;font-weight:inherit}
+.hm-grid thead th{height:92px;font-weight:600}
+.hm-grid tr:last-child>*{border-bottom:0}
+.hm-grid small{display:block;font-size:12px;opacity:.75;margin-top:3px}
+.hm-grid b{font-size:16px;font-weight:700}
+.hm-grid .hm-label{position:sticky;left:0;z-index:3;width:90px;min-width:90px;max-width:90px;text-align:left;font-size:12px;line-height:1.35;font-weight:600;background:var(--hm-pin)}
+.hm-grid .hm-latest{position:sticky;left:90px;z-index:3;background:#eaf7ff;color:#405183;box-shadow:5px 0 10px rgba(51,77,144,.15)}
+.hm-grid thead .hm-latest b{display:block;font-size:12px;margin-top:5px}
+.hm-grid thead .hm-latest span{font-size:12px}
+/* Each historical date carries its stripe as it scrolls past the pinned latest measurement. */
+@media screen{
+ .hm-grid-wrap{
+  --hm-pinned-width:200px;--hm-date-width:110px;
+  display:flex;container-type:inline-size;scroll-snap-type:x mandatory;
+  scroll-padding-inline-start:var(--hm-pinned-width);
+  scroll-padding-block-start:92px;
+  scroll-margin-top:var(--hm-grid-top);
+  max-height:max(180px,calc(100svh - var(--hm-grid-top) - 136px));
+ }
+ .hm-grid tr > :nth-child(2n + 3){background-color:var(--hm-stripe-dark);color:var(--hm-stripe-dark-ink)}
+ .hm-grid tr > :nth-child(2n + 4){background-color:var(--hm-stripe-light);color:var(--hm-stripe-light-ink)}
+ .hm-grid-wrap>.hm-grid{flex:none}
+ /* Give the last date exactly enough room to reach a whole-column stop. */
+ .hm-grid-wrap::after{
+  content:"";flex:none;width:var(--hm-scroll-room,0px);
+  width:calc(mod(max(0px,100cqi - var(--hm-pinned-width)),var(--hm-date-width)) + var(--hm-scroll-room,0px));
+ }
+ .hm-grid thead th:nth-child(n + 3){scroll-snap-align:none start;scroll-snap-stop:always}
+ .hm-grid thead th{position:sticky;top:0;z-index:4}
+ .hm-grid thead .hm-label,.hm-grid thead .hm-latest{z-index:5}
+ .hm-add .hm-grid-wrap{overscroll-behavior-y:contain}
+ .hm-grid-wrap.hm-moving{scroll-snap-type:none}
+}
+.hm-grid button{font-size:12px;font-weight:700;padding:4px;min-height:40px}
+.hm-grid button[data-hm="compare"][aria-pressed="true"]{text-decoration:underline;text-underline-offset:5px}
+.hm-grid .hm-edit{display:block;margin:1px auto 0;padding:4px;min-height:28px;min-width:28px;line-height:1}
+.hm-edit .hm-icon{width:14px;height:14px;flex-basis:14px}
+.hm-paired{display:grid;grid-template-columns:1fr 1fr;gap:5px;text-align:center}
+.hm-paired span{min-width:0}
+.hm-grid .hm-paired small{font-size:12px;margin:0 0 4px;opacity:.7}
+.hm-grid .hm-paired b{font-size:14px}
+.hm-grid .hm-latest .hm-paired small{color:#526485;opacity:1;font-size:12px}
+@media screen and (max-width:460px){
+ .hm-grid-wrap{scrollbar-width:none}
+ .hm-grid-wrap::-webkit-scrollbar{display:none}
+}
+@media (max-width:370px){
+ .hm-viz{height:420px}.hm-chart{height:396px}
+ .hm-legend{font-size:12px;gap:6px;left:9px}.hm-amplify-box{right:7px}.hm-amplify button{min-width:40px;font-size:12px;padding:0 8px}
+ .hm-grid-wrap{--hm-pinned-width:176px;--hm-date-width:102px}
+ .hm-grid .hm-label{width:80px;min-width:80px;max-width:80px}
+ .hm-grid .hm-latest{left:80px;width:96px;min-width:96px;max-width:96px}
+ .hm-grid th,.hm-grid td{width:102px;min-width:102px;max-width:102px}
+ .hm-grid .hm-paired b{font-size:14px}
+}
+
+/* Команды в углу таблицы занимают одно положение при просмотре и вводе замера. */
+.hm-grid .hm-corner{padding:6px 8px;vertical-align:middle}
+.hm-grid .hm-corner-button{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:100%;gap:5px;min-height:44px;padding:0;line-height:18px;font-size:12px;font-weight:600;white-space:nowrap}
+.hm-grid thead .hm-corner:has(.hm-corner-button),.hm-grid thead .hm-latest:not(.hm-new){vertical-align:top;padding-top:12px}
+.hm-grid thead .hm-latest:not(.hm-new)>span{display:block;line-height:18px}
+.hm-corner-button .hm-icon{width:32px;height:32px;flex:none;stroke-width:2}
+.hm-moving .hm-new > *{animation:hm-fields-in .3s ease-out both}
+@keyframes hm-fields-in{0%,20%{opacity:0}100%{opacity:1}}
+.hm-grid td.hm-new{padding:8px 6px}
+/* Keep both text baselines stable when the saved date’s pencil disappears. */
+.hm-grid thead th{vertical-align:top;padding:12px 8px 8px}
+.hm-grid thead th>span,.hm-grid thead th small,.hm-grid thead th b{
+ display:block;font-size:12px;line-height:18px;margin:0;white-space:nowrap}
+.hm-grid thead th>b,.hm-grid thead .hm-latest b,.hm-grid thead [data-hm="compare"] b{margin:4px 0 0}
+.hm-grid thead [data-hm="compare"]{display:block;margin:0 auto;min-height:40px;padding:0 5px;line-height:18px}
+.hm-grid thead .hm-date{position:relative;display:block;width:max-content;margin:4px auto 0}
+.hm-grid thead th .hm-date b{margin:0;text-decoration:underline;text-underline-offset:3px}
+.hm-date input{position:absolute;inset:0;width:100%!important;height:100%!important;min-height:0!important;margin:0;padding:0!important;border:0!important;opacity:0;font-size:16px;cursor:pointer;-webkit-appearance:none;appearance:none}
+/* поля нового замера: вид не берётся у полей приложения (там рамка и скругление 12) */
+.hm-add .hm-in{display:block!important;width:100%!important;max-width:64px;height:34px!important;min-height:0!important;margin:0 auto!important;padding:0 2px!important;border:0!important;border-bottom:1.5px solid rgba(64,81,131,.45)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;outline:0;color:#405183!important;font:inherit;font-size:16px!important;font-weight:700!important;line-height:1.2;text-align:center!important;-webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text}
+.hm-add .hm-in::placeholder{color:currentColor;opacity:.55}
+.hm-add .hm-in:focus{border-bottom:2px solid #405183!important}
+.hm-add td:not(.hm-latest) .hm-in{color:inherit!important;border-bottom-color:currentColor!important}
+.hm-add .hm-paired label{display:block;min-width:0}
+.hm-add .hm-paired .hm-in{max-width:none;height:28px!important}
+.hm-add .hm-grid .hm-paired small{margin:0 0 2px}
+.hm-add .hm-error{text-align:center}
+.hm-grid .hm-bin{display:inline-grid;place-items:center;width:44px;height:44px;padding:0;border-radius:50%;background:#ffe3e5;color:#a42941}
+.hm-grid .hm-bin .hm-icon{width:19px;height:19px}
+.hm-grid tfoot .hm-latest{padding:5px}
+
+/* окно: форма замера, удалённые замеры */
+dialog.hm-dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;padding:0;border:0;width:min(100%,460px);max-width:100%;max-height:calc(100dvh - 28px);background:transparent;color:var(--ink,#fff);overflow:visible}
+dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
+.hm-sheet{max-height:calc(100dvh - 28px);overflow:auto;overscroll-behavior:contain;padding:18px 20px calc(25px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;border:1px solid rgba(255,255,255,.27);background:var(--hm-sheet);box-shadow:0 -12px 60px rgba(8,60,120,.25);-webkit-user-select:text;user-select:text}
+.hm-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px}
+.hm-sheet-top h2{margin:0;font-size:20px;line-height:1.2;font-weight:700}
+.hm-sheet .hm-grid-wrap{margin-top:0}
+.hm-field{display:flex;flex-direction:column;gap:7px;margin:0 0 15px;font-size:14px;font-weight:600}
+.hm-field input{width:100%;min-height:48px;margin:0;padding:10px 14px;border-radius:16px;border:1px solid var(--hm-line);background:var(--hm-glass);color:inherit;font:inherit;font-size:16px;text-align:left;box-shadow:none;outline-offset:2px;-webkit-appearance:none;appearance:none}
+.hm-field input::placeholder{color:inherit;opacity:.6}
+.hm-field input[type=number]{-moz-appearance:textfield}
+.hm-field input[type=number]::-webkit-outer-spin-button,.hm-field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.hm-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;margin:18px 0}
+.hm-pair-fields{grid-column:1/-1;border:0;padding:0;margin:0 0 10px;min-width:0}
+.hm-pair-fields legend{font-size:14px;font-weight:700;margin-bottom:9px;padding:0}
+.hm-pair-fields .hm-field{font-size:12px;color:var(--hm-soft)}
+.hm-pair-fields .hm-field input{color:var(--ink,#fff)}
+.hm-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hm-error{color:#fff2cf;line-height:1.5;font-size:12px;margin:10px 0}
+.hm-error:empty{display:none}
+.hm-trash-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.2)}
+
+/* печать: на бумаге только замеры */
+#hm-print{display:none}
+@media print{
+ body>*:not(#hm-print){display:none!important}
+ html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+ #hm-print{display:block;color:#111;background:#fff;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+ #hm-print h1{font-size:16px;margin:0 0 12px}
+ #hm-print .hm-viz{height:330px;border:1px solid #ccd;break-inside:avoid}
+ #hm-print .hm-chart{height:310px}
+ #hm-print .hm-amplify-box,#hm-print .hm-edit{display:none}
+ #hm-print .hm-grid-wrap{overflow:visible;border:1px solid #ccd;background:none;contain:none}
+ #hm-print .hm-grid{width:100%;table-layout:auto}
+ #hm-print .hm-grid th,#hm-print .hm-grid td{position:static;width:auto;min-width:0;max-width:none;height:auto;padding:6px 8px;border-bottom:1px solid #dde;background:none;color:#111;box-shadow:none}
+ #hm-print .hm-grid button{color:#111;min-height:0;padding:0;text-decoration:none}
+}
+
+/* Аудит единообразия Sport 18.11.2026: ручка окна замера — как у листов приложения */
+.hm-grip{display:block;width:100%;height:30px;margin:-6px 0 2px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;position:relative}
+.hm-dialog .hm-grip:focus{outline:none}
+.hm-dialog .hm-grip:focus-visible::before{background:#fff;outline:2px solid currentColor;outline-offset:2px}
+.hm-grip::before{content:"";position:absolute;left:50%;top:12px;width:42px;height:5px;margin-left:-21px;border-radius:999px;background:rgba(255,255,255,.55)}
+
+/* Окно замера под нижним меню приложения (19.11.2026): затемнение, окно, меню поверх, низ с запасом под меню. */
+.hm-dialog-shade{position:fixed;inset:0;z-index:2147479990;background:rgba(18,32,70,.46)}
+.hm-dialog[open]{z-index:2147479995}
+body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
+.hm-dialog .hm-sheet{padding-bottom:calc(96px + env(safe-area-inset-bottom))}

@@ -6,9 +6,9 @@
 
 | Приложение | Открыть | Папка |
 | --- | --- | --- |
-| Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-60/ | `day-60/` |
-| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-33/ | `meal-33/` |
-| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-44/ | `sport-44/`, исходники — `sport-44/sport/src/` |
+| Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-61/ | `day-61/` |
+| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-34/ | `meal-34/` |
+| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-45/ | `sport-45/`, исходники — `sport-45/sport/src/` |
 
 Точный номер версии виден внизу настроек приложения. Служебно он записан в `shared/apps.json`: по этому файлу приложения находят друг друга, а проверки узнают, что проверять.
 
@@ -16,11 +16,14 @@
 
 | Приложение | Открыть |
 | --- | --- |
+| Happy Day 60.17 | https://astamurberlin-rgb.github.io/happyamurio/day-60/ |
+| Happy Meal 33.36 | https://astamurberlin-rgb.github.io/happyamurio/meal-33/ |
+| Happy Sport 44.14 | https://astamurberlin-rgb.github.io/happyamurio/sport-44/ |
 | Happy Day 59 | https://astamurberlin-rgb.github.io/happyamurio/day-59/ |
 | Happy Meal 32 | https://astamurberlin-rgb.github.io/happyamurio/meal-32/ |
 | Happy Sport 43 | https://astamurberlin-rgb.github.io/happyamurio/sport-43/ |
 
-Они хранят записи через тот же общий модуль, что и текущие. Если устройство какого-то документа с тех пор изменилось, прежняя версия этот документ не откроет и предложит открыть последнюю. Более старые папки убраны с сайта 20.11.2026 по слову Астамура; вернуть их можно из истории Git.
+Они хранят записи через тот же общий модуль, что и текущие. Если устройство какого-то документа с тех пор изменилось, прежняя версия этот документ не откроет и предложит открыть последнюю. Профили с восстановимым ключом используют текущий выпуск. Более старые папки убраны с сайта 20.11.2026 по слову Астамура; вернуть их можно из истории Git.
 
 Старые адреса `day/`, `meal/`, `sport/`, `happyday-v50_1.html` и `happyday-meal-v22.html` сами открывают текущий выпуск.
 

@@ -24,6 +24,7 @@ class Fixture:
         self.password_logins = 0
         self.registered = False
         self.confirmed = False
+        self.recovery_password_sent = False
 
     def browser(self, engine, name, uid):
         ctx = engine.new_context(viewport={"width": 393, "height": 852}, locale="ru-RU",
@@ -49,6 +50,8 @@ class Fixture:
         if device in self.offline:
             return route.abort("internetdisconnected")
         body = json.loads(req.post_data or "{}")
+        if device == "clean-legacy" and any(v in (req.post_data or "") for v in (PW, "wrong-local-password")):
+            self.recovery_password_sent = True
         token = req.headers.get("authorization", "").removeprefix("Bearer ")
         uid = self.tokens.get(token)
 
@@ -95,7 +98,8 @@ class Fixture:
                 self.linked.add(uid)
             elif q.get("grant_type") == "password" and body.get("password") == PW:
                 uid = next((u for u in (LEGACY, OTHER_LEGACY, NEW_EMAIL) if self.user(u)["email"] == body.get("email")), None)
-                if not uid:
+                if not uid or (uid == OTHER_LEGACY and uid in self.linked):
+                    # Supabase может убрать неподтверждённый пароль при автоматической привязке Google.
                     return reply({"message": "Invalid credentials"}, 400)
                 if uid == NEW_EMAIL and not (self.registered and self.confirmed):
                     return reply({"message": "Email not confirmed"}, 400)
@@ -114,6 +118,11 @@ class Fixture:
             return route.fulfill(status=204, headers=HDR)
         if path == "/functions/v1/account-key":
             state = self.states.get(uid, "legacy" if uid in (LEGACY, OTHER_LEGACY) else "active")
+            if body == {"action": "begin_empty"}:
+                if any(r["v"] == 2 and r["user_id"] == uid for r in self.rows.values()):
+                    return reply({"message": "Legacy records appeared"}, 409)
+                if state == "legacy":
+                    state = "migrating"
             if body == {"action": "begin"} and state == "legacy":
                 state = "migrating"
             if body == {"action": "finish"} and state == "migrating":
@@ -348,7 +357,7 @@ with sync_playwright() as p:
     reg.fill("#happy-screens [name=password]", PW)
     reg.fill("#happy-screens [name=repeat]", PW)
     reg.click("[data-hw=register]")
-    reg.get_by_role("heading", name="Подтвердите почту").wait_for()
+    reg.get_by_role("heading", name="Подтверди почту").wait_for()
     assert not reg.evaluate("() => DayData.account.current()")
     fixture.confirmed = True
     reg.evaluate("() => window.dispatchEvent(new Event('focus'))")
@@ -356,6 +365,50 @@ with sync_playwright() as p:
     check("регистрация по почте после подтверждения открыла аккаунт с собственным случайным ключом",
           fixture.registered and reg.evaluate("() => DayData.account.current().keyVersion") == 2
           and fixture.keys[NEW_EMAIL] not in (fixture.keys[ALICE], fixture.keys[LEGACY]))
+    # Google автоматически привязан к прежнему профилю. На чистом устройстве нет ключа,
+    # а Auth больше не принимает его старый пароль. Он нужен только Web Crypto на устройстве.
+    clean_legacy = fixture.browser(recovery_browser, "clean-legacy", OTHER_LEGACY)
+    tab = page_for(clean_legacy, "day")
+    tab.click("[data-hw=google]")
+    recovery = tab.locator("[data-hw=complete-recovery]")
+    recovery.wait_for()
+    assert tab.evaluate("() => !DayData.account.current() && !DayData.signedIn()")
+    tab.click("[data-hw=cancel-recovery]")
+    tab.locator("[data-hw=google]").wait_for()
+    check("отказ от восстановления после Google сохранил прежние ключ и записи",
+          fixture.states[OTHER_LEGACY] == "legacy" and OTHER_LEGACY not in fixture.keys
+          and not tab.evaluate("() => DayData.account.pendingRecovery()"))
+    tab.click("[data-hw=google]")
+    recovery.wait_for()
+    tab.reload()
+    recovery.wait_for()
+    recovery.click()
+    password = tab.locator("[name=legacyPassword]")
+    password.fill("wrong-local-password")
+    recovery.click()
+    tab.wait_for_function("() => document.querySelector('[name=legacyPassword]')?.value === '' && !document.querySelector('[data-hw=complete-recovery]').disabled")
+    check("неверный прежний пароль не открыл пустой профиль и не начал перенос",
+          tab.evaluate("() => !DayData.account.current() && !DayData.signedIn()")
+          and fixture.states[OTHER_LEGACY] == "legacy" and OTHER_LEGACY not in fixture.keys)
+    password.fill(PW)
+    recovery.click()
+    signed_in(tab, "day", OTHER_LEGACY)
+    check("Google и локальная разблокировка открыли прежний ID и записи при удалённом пароле Auth",
+          note(tab) == "Оставить в другом аккаунте" and not fixture.recovery_password_sent
+          and sealed(tab, OTHER_LEGACY, "Оставить в другом аккаунте"))
+    clean_legacy.close()
+
+    # У существующего аккаунта без зашифрованных документов старый пароль не требуется.
+    empty_id = "00000000-0000-4000-8000-000000000006"
+    fixture.states[empty_id] = "legacy"
+    empty = fixture.browser(b, "empty-legacy", empty_id)
+    tab = page_for(empty, "meal")
+    tab.click("[data-hw=google]")
+    tab.click("[data-hw=complete-recovery]")
+    signed_in(tab, "meal", empty_id)
+    check("пустой прежний аккаунт открылся под тем же ID после согласия без пароля",
+          fixture.states[empty_id] == "active" and tab.evaluate("() => MealData.account.current().keyVersion === 2"))
+    empty.close()
     if recovery_browser != b:
         recovery_browser.close()
     b.close()

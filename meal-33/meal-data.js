@@ -18,7 +18,6 @@ var MealBoot={account:null,store:null,error:'',ready:null};
 MealBoot.ready=(async()=>{
  const account=HappyAccount.create({app:'meal'});MealBoot.account=account;
  try{await account.load()}catch(e){MealBoot.error='Не удалось прочитать вход на устройстве'}
- try{MealBoot.google=await account.finishGoogle()}catch(e){MealBoot.googleError=e.message||'Не удалось завершить вход через Google'}
  if(account.current()){
   /* Номера форматов: свои документы — формат раскладки Meal; витрина — номера из её общих файлов. */
   const formats={'meal/supps':1,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,'day/foodtaps':HappyFood.FORMAT,'sport/foodtaps':HappyFood.FORMAT,'meal/foodtaps':HappyFood.FORMAT,

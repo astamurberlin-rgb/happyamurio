@@ -544,7 +544,7 @@ function addEntry(){
   var box=document.getElementById('happy-account-top'); if(!box) return;
   var put=function(){ var g=box.querySelector('.hs-group'); if(!g||g.querySelector('[data-mp-open]')) return;
     var b=document.createElement('button'); b.type='button'; b.className='hs-row'; b.setAttribute('data-mp-open',''); b.innerHTML='<span>Настроить приёмы пищи</span>';
-    var goals=g.querySelector('[data-hp="goals"]'); if(goals) goals.after(b); else g.appendChild(b) };
+    var theme=g.querySelector('.appearance-trigger'); if(theme) g.insertBefore(b,theme); else g.appendChild(b) };
   new MutationObserver(put).observe(box,{childList:true,subtree:true}); put();
   box.addEventListener('click',function(e){ if(e.target.closest('[data-mp-open]')) open() });
 }

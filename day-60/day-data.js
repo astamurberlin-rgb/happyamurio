@@ -17,7 +17,6 @@ var DayBoot={account:null,store:null,error:'',ready:null};
 DayBoot.ready=(async()=>{
  const account=HappyAccount.create({app:'day'});DayBoot.account=account;
  try{await account.load()}catch(e){DayBoot.error='Не удалось прочитать вход на устройстве'}
- try{DayBoot.google=await account.finishGoogle()}catch(e){DayBoot.googleError=e.message||'Не удалось завершить вход через Google'}
  if(account.current()){
   /* Номера форматов: свои документы — формат раскладки Day; витрина — номера из её общих файлов. */
   const formats={'day/foodtaps':HappyFood.FORMAT,'meal/foodtaps':HappyFood.FORMAT,'sport/foodtaps':HappyFood.FORMAT,'day/pairs':HappyAppLinks.FORMAT,'meal/summary':HappyFood.FORMAT,'meal/foods':HappyFood.FORMAT,

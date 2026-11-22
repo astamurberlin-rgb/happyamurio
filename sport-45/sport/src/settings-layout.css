@@ -1,0 +1,20 @@
+/* Update 38 · settings structure: group labels, developer section, long-press affordance on the version line. */
+.happy-settings .happy-heading+.settings-section{margin-top:4px}
+.happy-settings .settings-section+.happy-card,.happy-settings .settings-section+.card{margin-top:0}
+.happy-settings .happy-card+.settings-section,.happy-settings .card+.settings-section,.happy-settings .happy-note+.settings-section,.happy-settings .happy-actions+.settings-section{margin-top:18px}
+
+
+.happy-settings [data-settings-developer="toggle"]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;cursor:pointer;transition:opacity .25s}
+.happy-settings .sport-version-pressing{opacity:.5}
+.happy-settings section[data-happy-section="developer"] .happy-card{border-style:dashed}
+.happy-settings section[data-happy-section="developer"] .happy-card+.happy-card{margin-top:12px}
+.happy-settings section[data-happy-section="version"]{margin-bottom:0}
+/* Update 38.6: the appearance picker sits in a slot under «Приложение → Оформление». */
+.happy-settings [data-happy-appearance-slot]{margin:0 0 18px}
+
+/* Sport 41 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
+.happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
+.happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px}
+.happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.18)}
+.happy-app-name{flex:1;color:inherit;font-size:16px;font-weight:600;text-decoration:none;padding:14px 0}
+.happy-app-link.is-off .happy-app-name{opacity:.6}

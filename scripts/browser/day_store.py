@@ -484,7 +484,7 @@ checks = [
     ("второй аккаунт не видит записей, тренировок и счётчиков первого и пишет в свои строки", out["second_account_sees"] == [0, "", None, 0, False] and out["second_account_cloud"]),
     ("записи двух аккаунтов на устройстве лежат раздельно", out["device_accounts"] == [uid1, uid2]),
     ("первый аккаунт вернулся к своим записям", bool(out["first_account_back"])),
-    ("записи более новой версии Day: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and "более новой версии" in out["newer_card"] and out["newer_refuses"][0] and "более новой версии" in out["newer_refuses"][1]),
+    ("записи более новой версии Day: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and "более новой версией" in out["newer_card"] and out["newer_refuses"][0] and "более новой версией" in out["newer_refuses"][1]),
     ("на сервере только шифр, строки нового вида", not out["plaintext_on_server"] and out["row_versions"] == [2]),
     ("Day писал только свои новые документы и общий документ замеров, отказов сервера нет", bool(out["day_write_kinds"]) and all(k.startswith("day/") and k.split("/")[1] not in ("journal", "link", "counters", "supplements", "measurements") or k == "sport/body" for k in out["day_write_kinds"]) and not out["refused"]),
     ("прежние строки облака Day не прочитаны и не изменены", out["old_rows"] and not out["old_read"]),

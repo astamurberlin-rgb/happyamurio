@@ -8,7 +8,6 @@ var SportBoot={account:null,store:null,error:'',ready:null};
 SportBoot.ready=(async()=>{
  const account=HappyAccount.create({app:'sport'});SportBoot.account=account;
  try{await account.load()}catch(e){SportBoot.error='Не удалось прочитать вход на устройстве'}
- try{SportBoot.google=await account.finishGoogle()}catch(e){SportBoot.googleError=e.message||'Не удалось завершить вход через Google'}
  if(account.current()){
   /* Свои документы, общие документы (свитчи связи, нажатия на счётчики еды) и витрина питания Meal (сводка и счётчики еды — только чтение);
      номера форматов витрины дают их общие файлы. */

@@ -122,8 +122,7 @@ function top(box){
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
-  '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button>'+
-  (who?'<button type="button" class="hs-row" data-hp="access"><span>Способы входа</span></button>':'')+'</div></section></div>';
+  '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button></div></section></div>';
 }
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;
@@ -140,7 +139,6 @@ if(root.document)root.document.addEventListener('click',e=>{
  const b=e.target.closest&&e.target.closest('[data-hp]');if(!b||!cfg)return;
  if(!((topBox&&topBox.contains(b))||(bottomBox&&bottomBox.contains(b))))return;
  e.preventDefault();const a=b.dataset.hp;
- if(a==='access'){root.HappyWelcome.access();return}
  if(a==='profile'){if(signedIn())open();else root.HappyWelcome.ask({reason:'Чтобы настроить профиль.',resume:{open:'profile'}});return}
  if(a==='goals'){if(signedIn()&&cfg.openGoals)cfg.openGoals();else root.HappyWelcome.ask({reason:'Чтобы настроить цели.',resume:{open:'goals'}});return}
  if(a==='signin'){root.HappyWelcome.open('login');return}

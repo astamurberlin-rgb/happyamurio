@@ -1,0 +1,473 @@
+{
+ "release": "Happy Day Update 61",
+ "source_release": "day-60 (Happy Day Update 60.17)",
+ "source_commit": "907ca2498c91dbf1a44783839d488fa91efca2d2",
+ "source_app_version": "60.17",
+ "destination_app_version": "61",
+ "standalone": {
+  "path": "Happy-Day-61.html",
+  "builder": "scripts/build-day-standalone.py day-61"
+ },
+ "runtime_files": [
+  {
+   "path": "Happy-Day-61.html",
+   "size": 1549113,
+   "sha256": "648427a6b9a7520e239365eb8fcc3269b18bbe70555132273643270931a60969"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-152.png",
+   "size": 12756,
+   "sha256": "defbeefd746b52b99f49ef9d72275d7a5a706a11a1fff6d920e2c8847ed599ea"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-167.png",
+   "size": 14221,
+   "sha256": "4af439baa0216c392a24480c6794b8dc9337d1ce9c2a280275c201c4888bf306"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-180.png",
+   "size": 15625,
+   "sha256": "36dd86d37c31969d2ba1a4865354652541d2255abce9597b33046796b868e4b5"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-192.png",
+   "size": 16951,
+   "sha256": "957db02e860359e9ea4806da98bbb4346f37317f0a2d7afeda93224c6681c683"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-32.png",
+   "size": 2214,
+   "sha256": "7460e7d9b27a6f7345c7f18c482f4afff80ef5a00f3fb1b6e407aec2057f0b53"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-48.png",
+   "size": 3406,
+   "sha256": "e9dfe65941612dcdc1c94e26d1781a7ec93017298fa43d1d24582468d36acea5"
+  },
+  {
+   "path": "app-icons/happy-day-20261029-512.png",
+   "size": 51938,
+   "sha256": "3afb8fbe4fb95a1a3a21aac06e15ca6e53fb7e4c2d3cc496a1433ec8bce0b72b"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-152.png",
+   "size": 19840,
+   "sha256": "c6ceb670c89d3a0352c295031939c45cf8104469191316dcc841ee7cb2eb453a"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-167.png",
+   "size": 23097,
+   "sha256": "ceb9892a6ec0f1f4e718f1f29e01ffda7a123ce75836bf753fc194eb20bf7706"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-180.png",
+   "size": 26023,
+   "sha256": "bee1e1984640fae71d741e0a582d0603d83687f5e42e68a6cc952dad3dd63c52"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-192.png",
+   "size": 29211,
+   "sha256": "e64db7d279c78670debb9ad6443dcf2446a8a3ce3f08af5c52490c1596cb843d"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-32.png",
+   "size": 2003,
+   "sha256": "848605298c992873f0d3efa4c3e47c8709f002c6ef316801eb673624ae1a76f1"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-48.png",
+   "size": 3550,
+   "sha256": "acab8ee8d8f89f3b4a981d13b6654f516ff7d9bec5b0ba411116e133ccdf614c"
+  },
+  {
+   "path": "app-icons/happy-day-20261030-v3-cap-512.png",
+   "size": 185208,
+   "sha256": "070359a516b9bd384a8db9e9e787dd50c6cc5e7666b0a4261a0a46892c319f71"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-152.png",
+   "size": 18144,
+   "sha256": "b79f18c01d2f8be00aaaca97c483d04ee47dc0fbe09ebe3ace95e13cf5f66a5d"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-167.png",
+   "size": 21335,
+   "sha256": "40e83039b9ae2d0371cbc7fb5a31e1c872eafd5a1c62451429475fa816c25754"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-180.png",
+   "size": 24042,
+   "sha256": "704eed958784ed72aaf8ae804655b02f7301e3e41d4eaded144414ce8776d6ac"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-192.png",
+   "size": 26901,
+   "sha256": "bd9e4648220f025cb8ff51cfd0ac305ca1a4d3d6d361726dc2a3749c1c4d6174"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-32.png",
+   "size": 1861,
+   "sha256": "d2b44f8613c8f29f1be9c2ae6b03b775d27c315e95284e2de1edd6dc4a5ea069"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-48.png",
+   "size": 3207,
+   "sha256": "f9ca40edc72996874fcd7f92f80c3b6973016d34e929240dc94141173e559c53"
+  },
+  {
+   "path": "app-icons/happy-day-20261031-v4-512.png",
+   "size": 172490,
+   "sha256": "dcfeebfa92f8feaa95cf3bd922b4b42b6ce0d2daf8a97bb2a484808eaa198444"
+  },
+  {
+   "path": "app-links.js",
+   "size": 3838,
+   "sha256": "a5cea0a11dbe087db15a9b740500077e6c4a96a7377725b524f4f7cca96f14c9"
+  },
+  {
+   "path": "arc-home.js",
+   "size": 1977,
+   "sha256": "b1c01b628fb0928642ac3ceb9a622d7394525e5c13dc65a5fc8e5996f395cd1f"
+  },
+  {
+   "path": "arc-motion.css",
+   "size": 544,
+   "sha256": "382426838d27fe751aadb8b4bdaec167447e595bb12ec951fc160ad8c178e890"
+  },
+  {
+   "path": "arc-motion.js",
+   "size": 19072,
+   "sha256": "db437aa2d03649dbda668d8b44ef249dc91e4bb73abadf630b603844db7e8fae"
+  },
+  {
+   "path": "assets/activity-side-bend.svg",
+   "size": 2592,
+   "sha256": "6d9e702d87c984ceb3e8d60a347870a738035d03e105a6db19b4fac9e057237f"
+  },
+  {
+   "path": "counters.js",
+   "size": 9961,
+   "sha256": "71b25c95a8eabea6a19a74a82944d58a98edbcce36f1aab8bf0033b93f052a2b"
+  },
+  {
+   "path": "day-account.js",
+   "size": 6849,
+   "sha256": "62ff349638622bab5be9f15445c8d3173c517505c5cac32db7a4d10bed39d44f"
+  },
+  {
+   "path": "day-data.js",
+   "size": 8102,
+   "sha256": "1c65f7415b396a0ba927750adfd84223ba4df93b773ee9712ac531b95dcebf0d"
+  },
+  {
+   "path": "day-docs.js",
+   "size": 27047,
+   "sha256": "74aacd48e159856af637ad1020113878b317a1141ebe34eb02a6fc88876885cf"
+  },
+  {
+   "path": "day-measurements.js",
+   "size": 2803,
+   "sha256": "2a81154a19a609107d42051190e9fe094c19ae041c96439574c30f3254aee6b6"
+  },
+  {
+   "path": "design-rules.css",
+   "size": 6252,
+   "sha256": "6daf2a0d38cff72dc9f43467a93c21111103b3f2b0d928b8fb4e6b47e62bf951"
+  },
+  {
+   "path": "energy-widget.css",
+   "size": 2776,
+   "sha256": "a9827c70341c1149fdbc4ea616fda83cad159db55a7f68dae61501cc2eb87d27"
+  },
+  {
+   "path": "energy-widget.js",
+   "size": 13303,
+   "sha256": "d2a3c260aa48b89660305c22dbb717f735023fb9e94b989843e9978e0ac398df"
+  },
+  {
+   "path": "index.html",
+   "size": 520138,
+   "sha256": "41e8b165e9890b8da210ddf8d9eebd1dd2abb31742fa5b5dad09deb7c403ac2c"
+  },
+  {
+   "path": "manifest.webmanifest",
+   "size": 513,
+   "sha256": "ceeffc40324b81833711fc2ede76c8afdb18369b9dc639a05c026fd318ed3806"
+  },
+  {
+   "path": "release-notes.js",
+   "size": 52122,
+   "sha256": "d514889971b3bdbab48516abc4b2dac1359945c766e799ae7fbd9c6c84b2b55a"
+  },
+  {
+   "path": "row-swipe.js",
+   "size": 5249,
+   "sha256": "924143468740d46bf94df2cad0b939b9d9eef70888539434446985d3bc7497e7"
+  },
+  {
+   "path": "section-wheel.css",
+   "size": 2421,
+   "sha256": "2f2e62187e48ac3f91c9fd33c7a96d392b6cd855cddc7848dc0e8f9cc5e8d943"
+  },
+  {
+   "path": "selfcare-core.js",
+   "size": 17056,
+   "sha256": "a4eba74c4d296871cb6ebc73ccff344393a7f324b2ef11981228528ec6855e9e"
+  },
+  {
+   "path": "selfcare-ui.js",
+   "size": 78581,
+   "sha256": "c21eaf8a5ce92cb608aec71abccb0f845c303239d4c2dcc02032c06c392a2823"
+  },
+  {
+   "path": "selfcare.css",
+   "size": 22988,
+   "sha256": "8f98f338758b4aa73fa2608a0642651865072f5f35c2a0ca9eaf27a45ff3e21b"
+  },
+  {
+   "path": "shared/apps.json",
+   "size": 69,
+   "sha256": "218e7835f60fdc221a7911122b2955aa7ec04126abd699093b54447658112971"
+  },
+  {
+   "path": "shared/food-counters.css",
+   "size": 1936,
+   "sha256": "a6e445e9f759179d1dc73a3e2b08cd8f7f2a6279e572a135ed2d5b661c741f56"
+  },
+  {
+   "path": "shared/happy-account.js",
+   "size": 31576,
+   "sha256": "eb454ba09061708c6576137e05e1cf462f3ee5be5f5a9a73e77811c5ba501dd9"
+  },
+  {
+   "path": "shared/happy-app-links.js",
+   "size": 7191,
+   "sha256": "bac5ac2555110243bf6f39715481f21b5fda976bab7685cffaa0b7cbdf91270c"
+  },
+  {
+   "path": "shared/happy-appearance.css",
+   "size": 4371,
+   "sha256": "bfb61859f0414968fef1b1386d085916e416ba6f5673d5b23b9f194c628bfad8"
+  },
+  {
+   "path": "shared/happy-appearance.js",
+   "size": 16312,
+   "sha256": "4c0dd63b867aa3db8c58f5a493bff1b260db5118a705de522937e89a542cbb86"
+  },
+  {
+   "path": "shared/happy-colors.css",
+   "size": 3648,
+   "sha256": "823668fe66cfa354ff23a60af85593c40be9024604125daf3a049ded9f8d6804"
+  },
+  {
+   "path": "shared/happy-design.css",
+   "size": 6439,
+   "sha256": "59d2893e5209f91bc25ca5e1acd358c2ff378b452cd02624e6dee8d4eac06a34"
+  },
+  {
+   "path": "shared/happy-drum.css",
+   "size": 2076,
+   "sha256": "90bbd3437809289780c42b1e69c3d6d34514a3f7390eab7f5a06be9e78fc6f6b"
+  },
+  {
+   "path": "shared/happy-drum.js",
+   "size": 5796,
+   "sha256": "776cc03ffbad0659699d266785da521e11992c4d4e27c09f1388dd03a56dadf1"
+  },
+  {
+   "path": "shared/happy-fields.css",
+   "size": 3555,
+   "sha256": "8fccd035b1aed869666c9ed0c21efb63871ba5872c18a50592cdfd0e3fdf6f3b"
+  },
+  {
+   "path": "shared/happy-fields.js",
+   "size": 6603,
+   "sha256": "f1bf66e0a915b4f9df08273ec47bb91677959b6d6d76a5d10ce174da423dfb9f"
+  },
+  {
+   "path": "shared/happy-food.js",
+   "size": 18082,
+   "sha256": "7825ff2f8bf42b571e6edcb57c3771c72eb4aae97c6ba26c04f2591b51ccd6b0"
+  },
+  {
+   "path": "shared/happy-goals.js",
+   "size": 41734,
+   "sha256": "96c729a77c50f541ce2640753bad6ca40d2bf9f70fabc75755b369df787f7caf"
+  },
+  {
+   "path": "shared/happy-gradient-editor.css",
+   "size": 3832,
+   "sha256": "856b4641f37c8e9fb0025203da6db8c4e2e2387f06c13a2b0a9cb6158cf1523b"
+  },
+  {
+   "path": "shared/happy-gradient-editor.js",
+   "size": 10590,
+   "sha256": "ff39901bdf35193f5f30397d8ca29f47c54e577f636e0dd274d8c0c0e094a2db"
+  },
+  {
+   "path": "shared/happy-gradients.js",
+   "size": 6546,
+   "sha256": "d6cac534f3d0cdfa9c5ed3c1d67f10e6d4212c99fbffecd72346b3e3cf510c61"
+  },
+  {
+   "path": "shared/happy-input.js",
+   "size": 1810,
+   "sha256": "faaff4eec98970e3c29b9ae6b3db8fbfb25174a32736ec1aa5ded66925acd49d"
+  },
+  {
+   "path": "shared/happy-links.js",
+   "size": 1850,
+   "sha256": "4b85d0f744bb3bf5590c01943f743ccc04d671386a621ede79076cf36cf1bad4"
+  },
+  {
+   "path": "shared/happy-measurements.css",
+   "size": 18226,
+   "sha256": "bd4a262707749dac3ef6084b42af65404d65ce6172a513b52133d4e98ff3e444"
+  },
+  {
+   "path": "shared/happy-measurements.js",
+   "size": 68644,
+   "sha256": "59b9b25aea565464ccbf3b497b94a947d2397a7b9e0fbaa9584f7e860dd9c820"
+  },
+  {
+   "path": "shared/happy-period.css",
+   "size": 4578,
+   "sha256": "55b49302a6765b6bfc93f369cefc0652386af9dcd42381860fe49320e99c360a"
+  },
+  {
+   "path": "shared/happy-period.js",
+   "size": 8792,
+   "sha256": "98efb2ea570d58fce247b795057b17939fc68d84d4a0f9faeccc857db24a799f"
+  },
+  {
+   "path": "shared/happy-person.js",
+   "size": 25462,
+   "sha256": "683ffd1335f8e57602525e0448789d5f3964c75f9ef90084ca83d9dffd950a95"
+  },
+  {
+   "path": "shared/happy-reference-themes.js",
+   "size": 10057,
+   "sha256": "9c8aec121592b92c773cb225302fc882a7a5da51c1f56dcc8e4c68509cb0ac87"
+  },
+  {
+   "path": "shared/happy-screens.css",
+   "size": 37517,
+   "sha256": "5da58b19d6bd47c57bec0c644fdef5d5a63088f26c4ceb9ec9cee6693136808e"
+  },
+  {
+   "path": "shared/happy-screens.js",
+   "size": 28760,
+   "sha256": "f23bc28ae9e06c516b8f866eb650c9565eda0f2ad1ac1525334498869fc6417d"
+  },
+  {
+   "path": "shared/happy-scroll-lock.js",
+   "size": 3076,
+   "sha256": "4a490a0ff88319ae3b83311abb6b1c469558184a902af639013b4b7eebacc17f"
+  },
+  {
+   "path": "shared/happy-settings-developer.js",
+   "size": 2670,
+   "sha256": "6ed637ccf576bb652956ac2aaa3af4d2c454f495a37666b748e8eb4fcf1a6dbc"
+  },
+  {
+   "path": "shared/happy-shell-worker.js",
+   "size": 2981,
+   "sha256": "03facff43346a4cdeeddcba2733c6cd8f9cc7c0b3e41c63ec0de1446da0521b8"
+  },
+  {
+   "path": "shared/happy-sport-summary.js",
+   "size": 7197,
+   "sha256": "70effc895cdf8b8c5f7211c4a7eedb78ce0174790393886c2146213bcbdd9875"
+  },
+  {
+   "path": "shared/happy-store.js",
+   "size": 52566,
+   "sha256": "dd64f22305bca26877e212cccc6e53c75f6f9dac88481946107eaa6b54aa2a22"
+  },
+  {
+   "path": "shared/happy-theme-picker.css",
+   "size": 5741,
+   "sha256": "4461ee37bee08c6798e2e2bb7eaa7a554090ebbdbd0a79f88f5af86a3116d9a0"
+  },
+  {
+   "path": "shared/happy-theme-picker.js",
+   "size": 13242,
+   "sha256": "f6f2fe5c6d8b9ca428214a388428814f665c60ebaf4b2598daed4fa04d2d63e3"
+  },
+  {
+   "path": "shared/happy-ui.css",
+   "size": 4166,
+   "sha256": "99cc69b565aa53d772963212bcefd12568378ea431b525c4d081abac8a4b0738"
+  },
+  {
+   "path": "shared/happy-welcome.js",
+   "size": 29789,
+   "sha256": "184459dbc414780bed6d6e1f6f7ab430fec38cf240fff5581a4396cc2d2a8a4b"
+  },
+  {
+   "path": "shared/release-notes.js",
+   "size": 3156,
+   "sha256": "b2b96a57602e29a4ca711439e23b801522c8d1be6c79864fb7a4dae203f2d5a5"
+  },
+  {
+   "path": "sheet-grip.js",
+   "size": 2324,
+   "sha256": "3a005e166fa3712d97e4cac4e547a57d758a0c9d0adcc7024bc4c3eda004b24a"
+  },
+  {
+   "path": "sw.js",
+   "size": 49,
+   "sha256": "6401b0e6061386bbbe62cd98111d28192d3b01c4bc43c05904029f7509078f45"
+  },
+  {
+   "path": "tap-swipe.js",
+   "size": 3158,
+   "sha256": "49450c730948d94aace87d9a8f3dbac921cae28e74cfb64f963314d50ee6a192"
+  },
+  {
+   "path": "tests/checkin-tag.test.cjs",
+   "size": 2264,
+   "sha256": "986b1bfd9f03ce8172bc8b3e14a1b1528df4f4854a5d9410aaaba867b908d640"
+  },
+  {
+   "path": "tests/counter-portion.test.cjs",
+   "size": 2895,
+   "sha256": "3bf67437b19231674f577bb1df7841c1675ad1b8ec7d10bcce5969baab10cc2b"
+  },
+  {
+   "path": "tests/counters-eaten.test.cjs",
+   "size": 24288,
+   "sha256": "62ee900b7696663dba8a175852e6d91ae3be91590afe9e374ea9643d666c743c"
+  },
+  {
+   "path": "tests/day-docs.test.cjs",
+   "size": 37254,
+   "sha256": "5562f522c04cee289ef0eeb4583c736478c0d2c5d09da5b35a55e80b08405dc5"
+  },
+  {
+   "path": "tests/meal-start.test.cjs",
+   "size": 7763,
+   "sha256": "11ead80bbdeb682fdf4afc88be7ac55b8fa3af5b7fa463ed6ae19cd17b9f1bf9"
+  },
+  {
+   "path": "tests/quiet-account.test.cjs",
+   "size": 11382,
+   "sha256": "2acfbe5b8efce717c556955809d73a9cd8635bafcd0f1759ca77c44cfccc2237"
+  },
+  {
+   "path": "tests/section-times.test.cjs",
+   "size": 4775,
+   "sha256": "4b3683bd05dac96151ab973cc2cea5b4e4b4bc91717a243051c690960d7b52d3"
+  },
+  {
+   "path": "tests/sport-summary.test.cjs",
+   "size": 13860,
+   "sha256": "869a526b071c1765e4d47b75c0ccc0faabd88909ff240e23e266acea22e0fe3e"
+  },
+  {
+   "path": "tests/standalone.test.cjs",
+   "size": 3106,
+   "sha256": "5a22f926ba12b1baaf50d21037d91279690edf87db783d2953d6f40949d185cf"
+  }
+ ]
+}

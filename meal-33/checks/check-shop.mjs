@@ -101,7 +101,6 @@ function fetchEvent(url,mode){let res=null;listeners.fetch({request:{url,method:
 for(const u of ['https://geqziziycpclhnucnsyx.supabase.co/rest/v1/app_sync','https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json','https://astamurberlin-rgb.github.io/happyamurio/shared/apps.json','https://astamurberlin-rgb.github.io/happyamurio/day-57/'])
  assert.equal(fetchEvent(u),null,'не перехватывает: '+u);
 assert.equal(fetchEvent(SCOPE+'sw.js'),null,'сам себя не кэширует');
-assert.equal(fetchEvent(SCOPE+'?code=one-use','navigate'),null,'адрес возврата Google не сохраняется в кэш');
 online=false;const offline=await fetchEvent(SCOPE+'?test=1','navigate');assert.ok(offline,'без сети страница открывается из копии');
 assert.ok(await fetchEvent(SCOPE+'catalog.js?v='+V).catch(()=>null),'без сети скрипт выпуска — из копии');
 online=true;

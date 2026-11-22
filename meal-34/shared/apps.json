@@ -1,0 +1,10 @@
+{
+  "meal": {
+    "entry": "index.html",
+    "version": "23"
+  },
+  "sport": {
+    "entry": "sport/index.html",
+    "version": "36.26"
+  }
+}

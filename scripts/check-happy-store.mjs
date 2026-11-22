@@ -27,6 +27,7 @@ function makeCloud(){
  const json=(status,body)=>new Response(status===204?null:JSON.stringify(body),{status,headers:{'content-type':'application/json'}});
  const issue=u=>{const at='at-'+(++n),rt='rt-'+n;access.set(at,u.id);refresh.set(rt,u.id);pair.set(at,rt);return {access_token:at,refresh_token:rt,expires_in:3600,user:{id:u.id,email:u.email,user_metadata:{display_name:u.name}}}};
  cloud.addUser=(email,password,name)=>{const id='00000000-0000-4000-8000-'+String(users.size+1).padStart(12,'0');users.set(email,{id,email,password,name:name||''});return id};
+ cloud.googleSession=email=>{const grant=issue(users.get(email));grant.user.identities=[{provider:'google'}];return grant};
  cloud.expireAccess=()=>access.clear();
  cloud.revokeRefresh=()=>refresh.clear();
  cloud.row=(uid,app,kind)=>rows.get(uid+'|'+app+'|'+kind);
@@ -585,8 +586,10 @@ section('Перенос всех приложений, сбой обмена и 
  const legacy=session(legacyKey,1),managed=session(managedKey,2);
  const open=(device,app,account,own,opts={})=>HappyStore.open({app,account,own,backend:device.backend,
   channel:device.tab().channel,url:URL_BASE,key:'test',fetch:server.fetchFor(device,app),auto:false,...opts});
- const migrate=()=>HappyStore.migrateAccount({account:legacy,legacyKey,cipherKey:managedKey,keyVersion:2,
+ const verify=key=>HappyStore.verifyLegacyKey({account:legacy,legacyKey:key,url:URL_BASE,key:'test',fetch:request});
+ const migrate=(old=legacyKey)=>HappyStore.migrateAccount({account:legacy,legacyKey:old,cipherKey:managedKey,keyVersion:2,
   url:URL_BASE,key:'test',fetch:request,backend:source.backend});
+ check('пустой аккаунт не требует проверки прежнего пароля',(await verify(null)).empty===true);
  const day=await open(source,'day',legacy,['diary']),meal=await open(source,'meal',legacy,['private_meal','pending_only']);
  await day.doc('diary').put('cloud','запись в Day');await day.sync();
  await meal.doc('private_meal').put('saved','продукт');await meal.sync();
@@ -598,6 +601,13 @@ section('Перенос всех приложений, сбой обмена и 
  const foreign={...server.row(uid,'meal','private_meal'),user_id:stranger};
  server.rows.set(stranger+'|meal|private_meal',foreign);
  const before=structuredClone(server.row(uid,'meal','private_meal'));
+ const start=server.log.length;
+ check('при наличии шифра нужен прежний пароль',(await rejects(verify(null)))?.code==='legacy_password');
+ check('ошибочный пароль отклонён до переноса',(await rejects(verify(managedKey)))?.code==='legacy_password');
+ check('прежний ключ подтверждён на устройстве',(await verify(legacyKey)).verified===true);
+ check('без старого ключа непустой перенос не пишет в облако',(await rejects(migrate(null)))?.code==='legacy_password');
+ check('проверка ключа только читает облако и оставляет очереди',server.log.slice(start).every(r=>r.method==='GET')&&
+  (await source.backend.pendingScopes(uid)).length===2);
  let patches=0;
  server.before=async e=>{if(e.method==='PATCH'&&++patches===2)throw Error('Прервано соединение')};
  check('сбой прерывает переход с возможностью повтора',(await rejects(migrate()))?.code==='offline');
@@ -606,6 +616,10 @@ section('Перенос всех приложений, сбой обмена и 
   completed.v===3&&JSON.stringify(server.row(uid,'meal','private_meal'))===JSON.stringify(before));
  check('неотправленные записи остались в очереди',(await source.backend.pendingScopes(uid)).length===2);
  server.before=null;await migrate();
+ const resume=server.log.length;
+ await migrate(null);
+ check('завершённый перенос продолжается без старого ключа, чужой шифр не учитывается',
+  (await verify(null)).empty===true&&server.log.slice(resume).every(r=>r.method==='GET'));
  check('при продолжении готовый документ не шифруется повторно',completed.iv===server.row(uid,'day','diary').iv);
  check('все исходные и отложенные документы зашифрованы новым ключом',
   [...server.rows.values()].filter(r=>r.user_id===uid).length===3&&

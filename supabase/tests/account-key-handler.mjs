@@ -87,3 +87,13 @@ const response = await handler(new Request(project, {method:'POST',
   headers:{authorization:'Bearer '+token},body:JSON.stringify({action:'open'})}));
 assert.deepEqual(await response.json(),{state:'active',keyVersion:2,key:firstKey});
 console.log('Vault envelope passed: AES-256-GCM, owner/project/version binding, integrity and private response');
+
+const needsPassword = createHandler({
+  verify: () => ({id:owner}),
+  keyRecord: () => { throw Object.assign(new Error('Legacy row present'), {code:'HAP07'}); },
+  ...adapter
+});
+const changed = await needsPassword(new Request(project, {method:'POST',
+  headers:{authorization:'Bearer '+token},body:JSON.stringify({action:'begin_empty'})}));
+assert.equal(changed.status,409);
+assert.equal((await changed.json()).code,'legacy_password');

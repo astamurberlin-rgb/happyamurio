@@ -1,0 +1,67 @@
+/* Оформление Happy (AGENTS.md, раздел 4) — последний слой стилей Day, как design-rules.css в Sport. Только форма: высота,
+   скругление, размер и жирность; цвета задаёт тема. Общие экраны и элементы — в shared/happy-design.css, поля — в shared/happy-fields.css.
+   Решения Астамура по аудиту Day 20.11.2026: основная кнопка — пилюля 48 (п. 8); вкладки — 44 / 14 (п. 10); поля — 48, текст 16 (п. 1);
+   поиск как остальные поля (п. 6); выключатели 42 × 25 (п. 7); листы снизу — 22 и ручка (п. 14); заголовки Настроек 14 / 600, тусклые (п. 20);
+   нажимаемое — не меньше 44 (п. 34). Карточки Day остаются 22, теги-пилюли («Умывание» …) не трогаются (решения 20.11.2026).
+   Размеры и жирность текста приведены к шкале в самих стилях Day (п. 19). — Claude · 20.11.2026 */
+
+/* ── Основная кнопка: пилюля 48, текст 16 / 600, одна строка ── */
+.btn,.jPrt,.jMb{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;height:48px;padding:0 20px!important;border-radius:999px!important;
+  font-size:16px!important;font-weight:600!important;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.care-submit{display:flex;width:100%;margin-top:20px}
+.jPrt{width:100%}
+
+/* ── Текстовые кнопки и кнопки-значки: нажимаемая зона 44 ── */
+.mini{min-height:44px;font-size:14px!important;font-weight:600!important}
+.jLnk{min-height:44px;font-size:14px!important;font-weight:600!important}
+.penBtn,.dragH{width:44px!important;height:44px!important}
+.lockBtn{width:44px;height:44px}
+.icBack{min-height:44px}
+
+/* ── Вкладки и выбор из вариантов: пилюля 44, текст 14; выбранное — 600 ── */
+.jSeg{min-height:44px;height:44px;font-weight:400!important}
+.jSeg.on{font-weight:600!important}
+
+/* ── Поля ввода: высота 48, текст 16 (меньше — iPhone приближает страницу), скругление 12 ── */
+.care-form input[type=text]:not([data-hf]),.care-form input[type=search],.askBox input[type=text],#scEd input[type=text],#apiKey{box-sizing:border-box;height:48px;min-height:48px;
+  padding:0 16px;font-size:16px!important;border-radius:12px!important}
+.care-form textarea,#note,#wheelNote{font-size:16px!important;border-radius:12px!important}
+.care-form .hf-field{margin:0}
+/* две колонки формы («Время» и «Длительность»): поля стоят на одной линии и не прыгают вверх-вниз */
+.care-grid{align-items:end}
+.care-grid>div{display:flex;flex-direction:column;justify-content:flex-end;min-width:0}
+.care-grid>div>label{margin-top:14px}
+
+/* ── Поиск по дневникам: как остальные поля — полупрозрачный, со значком лупы ── */
+#careDiarySearch{box-sizing:border-box;height:48px!important;padding:0 16px 0 44px!important;border-radius:12px!important;border:1px solid var(--glassBrd)!important;
+  background:rgba(255,255,255,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='.85' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4.5 4.5'/%3E%3C/svg%3E") no-repeat 14px center/18px 18px!important;
+  color:var(--happy-ink)!important;font-size:16px!important;-webkit-appearance:none;appearance:none}
+#careDiarySearch::-webkit-search-cancel-button{-webkit-appearance:none}
+
+/* ── Числа в «Порогах под тебя»: поле числа с единицей внутри, справа в строке ── */
+.fieldrow .hf-field{flex:0 0 132px;width:132px}
+
+/* ── Выключатель: 42 × 25 ── */
+.care-switch{flex:0 0 auto!important;width:42px!important;height:25px}
+.care-switch i:after{margin:2px 0 0 3px!important}
+.care-switch input:checked+i:after{transform:translateX(17px)!important}
+
+/* ── Лист снизу: верхние углы 22, сверху ручка; заголовок 20 / 700 ── */
+.impSheet{border-radius:22px 22px 0 0!important;padding-top:6px!important}
+.impSheet>.grip{margin:0 0 6px}
+.impSheet h3,#tapSheet h3{font-size:20px!important;font-weight:700!important;margin-top:4px}
+/* окна посреди экрана и окно выбора — заголовок как у листа */
+.askBox h3,.jDlg h3{font-size:20px!important;font-weight:700!important}
+
+/* ── Заголовки разделов в Настройках — один вид: 14 / 600, тусклые (п. 20) ── */
+.happy-settings .eyebrow,.care-settings .eyebrow{font-size:14px!important;font-weight:600!important;color:rgba(255,255,255,.6)!important}
+
+/* ── Пустое место — просто текст, без рамки (п. 35) ── */
+.jEmptyT{margin:0 2px;font-size:14px;line-height:1.45;color:var(--muted)}
+
+/* спрятанная кнопка остаётся спрятанной: display у кнопок выше иначе перебивает атрибут hidden
+   (так было видно «Убрать тег» в карточке раздела и «Поделиться» у картинки журнала) */
+.btn[hidden],.jPrt[hidden],.jMb[hidden],.care-submit[hidden]{display:none!important}
+/* Профиль · «Скачать данные» (Астамур 21.11.2026): под «Отмена», по центру, подчёркнутая строка. */
+.hs-export{display:flex;justify-content:center;margin-top:6px}
+.hs-export .hs-export-link{min-height:44px;padding:0 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:15px;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}

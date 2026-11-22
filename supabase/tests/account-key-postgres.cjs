@@ -104,7 +104,16 @@ async function main() {
         return gen_random_uuid();
       end $$;
     `);
-    await query(await readFile(resolve(__dirname,'../account_key_vault.sql'),'utf8'));
+    const vaultBootstrap = await readFile(resolve(__dirname,'../account_key_vault.sql'),'utf8');
+    const vaultAPI = await readFile(resolve(__dirname,'../account_key_vault_api.sql'),'utf8');
+    await assert.rejects(query(vaultBootstrap),{code:'HAP06'});
+    await query('rollback');
+    assert.equal((await rpc(old)).ciphertext,'wrapped'); // Original provider still works.
+    // This disposable database has just served as the old-provider fixture.
+    // Remove only those generated users before simulating the fresh rollout.
+    await query('delete from auth.users where id in (select user_id from happy_private.account_keys where ciphertext is not null)');
+    await query(vaultBootstrap);
+    await query(vaultAPI);
     const vRPC = async({uid,session},action='open',ciphertext=null) => (await query(
       'select public.happy_vault_account_key($1,$2,$3,$4) as result',[uid,session,action,ciphertext])).rows[0].result;
     const secondVault = await createUser('google');
@@ -115,7 +124,6 @@ async function main() {
     assert.notEqual((await vRPC(secondVault)).wrappingKey,pending.wrappingKey);
     assert.deepEqual(await vRPC(email),{state:'legacy'});
     await assert.rejects(vRPC({uid:preVaultNew.uid,session:secondVault.session}),{code:'HAP03'});
-    await assert.rejects(vRPC(old),{code:'HAP06'}); // Existing AWS data stays intact.
     await assert.rejects(rpc(secondVault),{code:'42501'});
     await assert.rejects(vRPC(preVaultNew,'open','bad'),{code:'22023'});
     const {vaultEnvelope} = await import('../functions/account-key/vault.mjs');
@@ -131,6 +139,30 @@ async function main() {
     await query('reset role');
     const keyRow = (await query('select wrap_version,ciphertext from happy_private.account_keys where user_id=$1',[preVaultNew.uid])).rows[0];
     assert.deepEqual(keyRow,{wrap_version:2,ciphertext:built.p_ciphertext});
+    // Upgrade an already installed Vault endpoint without rotating its master.
+    await query(vaultAPI);
+    assert.equal(await envelope.unwrap(preVaultNew.uid,await vRPC(preVaultNew)),firstKey);
+    const noData = await createUser('email'), changed = await createUser('email');
+    assert.deepEqual(await vRPC(noData),{state:'legacy'});
+    const emptyPending = await vRPC(noData,'begin_empty');
+    assert.equal(emptyPending.state,'provision');
+    const emptyKey = await envelope.generate(noData.uid,2,emptyPending);
+    assert.equal((await vRPC(noData,'begin_empty',emptyKey.p_ciphertext)).state,'migrating');
+    assert.equal((await vRPC(noData,'finish')).state,'active');
+    assert.equal((await vRPC(noData,'begin_empty',built.p_ciphertext)).ciphertext,emptyKey.p_ciphertext);
+    const beforeRace = await vRPC(changed,'begin_empty');
+    const racedKey = await envelope.generate(changed.uid,2,beforeRace);
+    await writer.query('begin');
+    await writer.query("insert into public.app_sync (user_id,app,kind,v,iv,data,at) values($1,'meal','setup',2,'AAAAAAAAAAAAAAAA','test',1)",[changed.uid]);
+    const blocked = assert.rejects(vRPC(changed,'begin_empty',racedKey.p_ciphertext),{code:'HAP07'});
+    await writer.query('commit');
+    await blocked;
+    assert.deepEqual(await vRPC(changed),{state:'legacy'});
+    await query('set role authenticated');
+    await query("select set_config('request.jwt.claim.sub',$1,false)",[changed.uid]);
+    await insert(changed,'care',2); // Old releases can continue writing after a rejected transition.
+    await query('reset role');
+    await assert.rejects(vRPC({uid:changed.uid,session:noData.session},'begin_empty'),{code:'HAP03'});
     await query('set role authenticated');
     await assert.rejects(vRPC(preVaultNew),{code:'42501'});
     await assert.rejects(query('select * from vault.decrypted_secrets'),{code:'42501'});

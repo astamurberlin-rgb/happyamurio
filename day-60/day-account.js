@@ -22,7 +22,7 @@ HappyScreens.dismissed=function(h){ toast('Правки не сохранены'
 var shown=DayBoot.ready.catch(function(){}).then(function(){ return new Promise(function(done){
   var t0=Date.now();(function wait(){ if(!document.body.classList.contains('loading')||Date.now()-t0>8000) return done(); setTimeout(wait,60) })();
 }) });
-HappyWelcome.init({app:'day',name:'Day',account:DayBoot.account,boot:DayBoot,ready:shown,features:FEATURES,
+HappyWelcome.init({app:'day',name:'Day',account:DayBoot.account,ready:shown,features:FEATURES,
   beforeSignOut:async function(){ if(!DayData.signedIn()) return; if(MIND.on) mindEnd(); saveNow(); await DayData.store.flush(8000) }});
 
 /* ── цели Day ── */
