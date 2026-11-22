@@ -32,6 +32,7 @@ var MealBot=(function(){
 
   function boot(){
     if(booted) return; booted=true;
+    try{ if(typeof HappyCookingLibrary!=='undefined') HappyCookingLibrary.load() }catch(e){}   // справочник «как готовить» — заранее, файл маленький
     /* меры, которых не было в разборе: шот (эспрессо), миска и пиала как тарелка, бокал как стакан */
     DEF['шот']=30; UFORMS['шот']=['шот','шота','шотов'];
     /* Meal 33.9: слова-меры (кружка, пиала, бокал, половник, кусок…) и их веса — из словаря bot/household-ru.js (bot-speech.js) */
@@ -1889,6 +1890,24 @@ var MealBot=(function(){
     out=out.slice(0,n+1).sort(function(a,b){ return b[0]-a[0] }).slice(0,n).map(function(x){ var nm=blsName(x[1]); return esc(nm.charAt(0).toLowerCase()+nm.slice(1))+' — '+nutrNum(x[0])+'\u00a0'+u });
     return out.length?'Где много: '+out.join('; ')+' (на 100 г).':'';
   }
+  /* ── ступень 2 · «как готовить»: «сколько варить гречку», «до какой температуры жарить свинину» (решение Астамура 22.11.2026 «да»).
+     Ответ — только из справочника (cooking-library.js, библиотека cooking в meal-libraries): карточка сверена по двум источникам,
+     под ответом одной строкой — откуда. Нет карточки — честное «пока не знаю», вопрос — в список «без ответа», в недостающее не идёт. */
+  var COOK_V=/(^|\s)(?:с|по|от|за|при|до|у|об|пере)?(?:вар(?:и|я|ю|к)|жар(?:и|я|к)|запек|запечь|(?:ис)?печь(?:\s|$)|печ(?:ет|ется|ешь|ем)(?:\s|$)|пекут|испеч|туш(?:и|а)|готов(?:и|я|н)|приготов|замач|замоч|отвар(?:и|ив))\S*/,
+      COOK_Q=/(^|\s)(сколько|как|какой|какая|какое|какую|за сколько|до какой|при какой)(\s|$)/;
+  function cookAsk(o,asked){
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    var head=/^(?:а\s+|скажи,?\s+|подскажи,?\s+)?(?:сколько|как|какая|какое|какой|за сколько|до какой|при какой)(\s|$)/.test(o)||/^(?:а\s+)?температура\s+готовности(\s|$)/.test(o);
+    if(!(head||asked&&COOK_Q.test(' '+o+' '))||!COOK_V.test(' '+o+' ')) return null;
+    if(/(^|\s)(что|чего)\s+(?:бы\s+)?(?:мне\s+)?(?:при)?готов/.test(o)) return null;   // «что приготовить на ужин» — совет блюда, не «как готовить»
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null, HINT='<p class="mlHint">В дневник ничего не записал.</p>';
+    if(!L||L.state==='fail'){ if(L) L.load(); return p('Справочник готовки сейчас не открылся: нужен интернет. Спроси ещё раз чуть позже.')+HINT }
+    if(L.state!=='ok'){ L.load(); return p('Справочник готовки ещё загружается. Спроси ещё раз через пару секунд.')+HINT }
+    var c=L.find(o);
+    if(!c){ missLog('вопросы без ответа (не продукты)',o,o); return p('Пока не знаю, как это готовить: такой карточки в справочнике ещё нет. Вопрос записал, чтобы добавить.')+HINT }
+    var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
+    return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
+  }
   function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
   function nutrAsk(o){
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
@@ -2202,6 +2221,7 @@ var MealBot=(function(){
     if(!/\d/.test(bare)&&/(подожди|погоди|секунд|минутк|сейчас взвешу|взвешиваю|взвешу)/.test(bare)&&tokensOf(bare.replace(/подожди|погоди|секунд\S*|минутк\S*|взвеш\S*/g,' ').replace(FILL,' ')).length===0)
       return p('Жду. Ничего не записываю, пока не скажешь.');
     /* «сколько калорий в 100 г риса?» — вопрос о продукте, а не об итоге дня: ответ из базы, в дневник ничего не идёт */
+    if(m.kind!=='photo'&&!m.inbox){ var ck=cookAsk(ORIG.trim(),asked); if(ck) return ck }   // «сколько варить гречку» — справочник готовки
     if(m.kind!=='photo'&&!m.inbox){ var nq=nutrAsk(ORIG.trim()); if(nq) return nq }
     var pq=bare.match(/^(?:а\s+)?(?:сколько|какое количество)\s+(.+?)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/), pk=pq&&m.kind!=='photo'?substanceOf(pq[1]):null;
     if(pk){ var pi=productInfo(pq[2],pk); return pi||notSure(pq[2]) }

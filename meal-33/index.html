@@ -1577,7 +1577,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 </style>
 <link rel="stylesheet" href="report.css?v=33.36">
 <link rel="stylesheet" href="user-products.css?v=33.36">
-<script src="food-libraries.js?v=33.36"></script>
+<script src="food-libraries.js?v=33.36"></script><script src="cooking-library.js?v=33.36"></script>
 <script src="portions.js?v=33.36"></script>
 <script src="sources.js?v=33.36"></script>
 <script src="./shared/meal-products-model.js?v=33.36"></script>
@@ -1854,6 +1854,14 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       <li>Приём не назван — по времени: до 11 завтрак, до 16 обед, до 18 перекус, потом ужин.</li>
       <li>Совет в дневник не идёт. «Записать» открывает состав, как в рецепте: сохраняешь сам.</li>
       <li>Кухни («грузинское», «узбекское») бот пока не подбирает.</li>
+    </ul></article>
+    <!-- ступень 2 · «как готовить»: правила в bot.js (cookAsk), карточки — справочник cooking (cooking-library.js, data/cooking-1.0.json) — поменял правило, поправь и текст -->
+    <article class="card release-card"><h2>Как готовить</h2><ul>
+      <li>«Сколько варить гречку», «как варить чечевицу», «до какой температуры жарить свинину» — бот отвечает из своего справочника. Под ответом одной строкой — откуда это взято.</li>
+      <li>Каждая карточка справочника сверена минимум по двум источникам. Если источники расходятся, в ответе обе цифры или вилка.</li>
+      <li>Сейчас в справочнике крупы (гречка, рис, пшено, булгур, перловка, киноа), чечевица, нут, фасоль, яйца вкрутую и температуры готовности курицы, фарша, говядины, свинины и рыбы.</li>
+      <li>Такой карточки нет — бот честно говорит «пока не знаю» и записывает вопрос в список «без ответа». В список недостающих продуктов такой вопрос не идёт.</li>
+      <li>Ответ — справка: в дневник ничего не записывается.</li>
     </ul></article>
     <!-- Meal 33.12 · разбор живых диктовок с шортката «Еда» (107 штук): правила в bot.js и словаре bot/household-ru.js (product_pins) — поменял правило, поправь и текст -->
     <article class="card release-card"><h2>Живая диктовка</h2><ul>
@@ -3855,12 +3863,13 @@ function sendText(){
   var m={id:'m'+(++D.seq),who:'me',kind:'text',text:t};
   D.msgs.push(m);
   TA.value=''; syncInput(true);
-  if(D.kind==='meal'&&MealBot.on()&&MealReplacement.loading()){
+  var cookWait=function(){ return typeof HappyCookingLibrary!=='undefined'&&HappyCookingLibrary.state==='loading' };   // справочник «как готовить» ещё читается (cooking-library.js)
+  if(D.kind==='meal'&&MealBot.on()&&(MealReplacement.loading()||cookWait())){
     var chat=D, pending={id:'b'+(++D.seq),who:'bot',kind:'reply',html:'<p role="status">Ищу в каталогах…</p>'};
     chat.msgs.push(pending);chat.busy++;renderChat();
     function resume(){
       if(!chat.msgs.includes(pending))return;
-      if(MealReplacement.loading()||D!==chat){setTimeout(resume,200);return}
+      if(MealReplacement.loading()||cookWait()||D!==chat){setTimeout(resume,200);return}
       chat.busy--;pending.html=respond(m);renderChat();
     }
     setTimeout(resume,200);return;
