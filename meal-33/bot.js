@@ -450,11 +450,13 @@ var MealBot=(function(){
   }
   /* способ не назван — обычный продукт: «пучок укропа» — свежий укроп, а не семена и не сушёный (правило Астамура 24.10: без способа — сырое) */
   var DRYW=/(семен|сушен|молот|сублимир|порош|консерв|маринов|солен|копчен|вялен|заморож)/;
+  /* «сухая колбаса», «сухие грибы» — сушёное названо словом «сухой» (диктовки шортката id 123, 23.11.2026) */
+  var DRYS=/\sсух(ой|ая|ое|ие|ую|ого|их|им|ими)\s/;
   function preferPlain(l){
     if(l.pin) return;
     var ids=(l.fid?[l.fid]:[]).concat(l.alts||[]).filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i }); if(ids.length<2) return;
     var said=norm(String(l.spoken||l.name||'')), fw=said.split(' ').filter(Boolean);
-    if(!DRYW.test(norm(FOODS[ids[0]].n))||DRYW.test(said)) return;
+    if(!DRYW.test(norm(FOODS[ids[0]].n))||DRYW.test(said)||DRYS.test(' '+said+' ')) return;
     var ok=ids.filter(function(x){ return !DRYW.test(norm(FOODS[x].n))&&headOk(x,fw) })[0]; if(!ok) return;
     l.fid=ok; l.alts=[ok].concat(ids.filter(function(x){ return x!==ok })); l.st='ok'; l.picked=true; l.g=gramsFor(ok,l.q,l.u);
   }
@@ -716,6 +718,9 @@ var MealBot=(function(){
         if(l.st==='pick'&&l.alts.length&&!l.gdAsk){
           hist=hist||histCount();
           var used=l.alts.filter(function(a){ return hist[a] });
+          /* способ назван словом: «сухая колбаса», а раньше была варёная — прошлая не подходит, берётся названная (диктовки шортката id 123, 23.11.2026) */
+          var qsU=statesOf(fw);
+          if(used.length&&Object.keys(qsU).length) used=used.filter(function(a){ var fs=statesOf(words(a)); return Object.keys(qsU).every(function(k){ return k==='raw'||fs[k] }) });
           /* записывал раньше несколько из предложенных (курица варёная и на гриле) — тот, что последним, а не «чистый» по словам («Курица, без мяса» — растительная замена). Решение Астамура 22.11.2026 */
           if(used.length>1&&!WEIGHED) used=[lastUsedOf(used)];
           if(used.length===1&&!WEIGHED){ l.fid=used[0]; l.st='ok'; l.g=gramsFor(l.fid,l.q,l.u); l.asBefore=true }   // «взвесил» — сырое, а не «как раньше»
