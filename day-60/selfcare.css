@@ -213,3 +213,9 @@ body.wheel-editing.now-dirty #fab{visibility:visible}
 .care-function-list>.care-function-row+.care-function-row{border-top:1px solid rgba(255,255,255,.22)!important}
 .care-function-list>.care-function-row.dragging{background:var(--hs-glass,rgba(255,255,255,.18))!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;border-radius:16px!important}
 .care-function-open>span{font-weight:600}
+
+/* аудит 3 (22.11.2026): барабан выбора дневника — одна колонка во всю ширину, названия не обрезаются */
+.care-book-drum.hf-drum{grid-template-columns:1fr!important}
+.care-book-drum .hf-drum-cell:empty{display:none}
+.care-book-drum .hf-drum-cell,.care-book-drum .hf-drum-group,.care-book-drum .hf-drum-col{width:100%!important;max-width:none!important;flex:1 1 auto!important}
+.care-book-drum .hf-drum-item{font-variant-numeric:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%!important;justify-content:center;text-align:center}

@@ -16,10 +16,14 @@
 .hs-segment button:not([aria-pressed=true]),.hm-periods button:not([aria-pressed=true]),.happy-measurement-tabs button:not([aria-pressed=true]){font-weight:400!important}
 .hs-segment button[aria-pressed=true],.hm-periods button[aria-pressed=true],.happy-measurement-tabs button[aria-pressed=true]{font-weight:600!important}
 .hm-text{font-size:14px!important;min-height:44px}
+/* Переключатель из вариантов — по образцу Day («Сегодня | Неделя | Месяц», Астамур 22.11.2026): контур 44 с отступом 3 внутри,
+   выбранная пилюля 36 не касается контура, подписи по центру своей половины. */
+.hs-segment,.hm-periods,.happy-measurement-tabs{box-sizing:border-box!important;height:44px!important;min-height:44px!important;padding:3px!important;gap:0!important;align-items:stretch!important;border-radius:999px!important}
+.hs-segment button,.hm-periods button,.happy-measurement-tabs button{box-sizing:border-box!important;height:36px!important;min-height:36px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;border-radius:999px!important;margin:0!important}
 .hm-amplify button{font-weight:600!important;border-radius:999px!important}
 
 /* ── Выключатель: 42 × 25 ── */
-.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 42px!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
+.hs-links .happy-switch,.hs-switch{box-sizing:border-box;flex:0 0 auto!important;min-width:0!important;min-height:25px!important;width:42px!important;height:25px!important;border-radius:999px!important;padding:0}
 .hs-links .happy-switch::after{top:50%!important;left:3px!important;width:19px!important;height:19px!important;margin:0!important;transform:translateY(-50%)!important}
 .hs-links .happy-switch:checked::after{transform:translate(17px,-50%)!important}
 
