@@ -19,3 +19,6 @@ body.wheel-editing [data-screen="ring"]{position:relative;overflow-x:hidden}
 .section-form-header .cpMeal{margin:0 0 4px}
 
 .activity-icon{display:block;width:76px;height:76px;background:currentColor;-webkit-mask:url('./assets/activity-side-bend.svg') center/contain no-repeat;mask:url('./assets/activity-side-bend.svg') center/contain no-repeat}
+
+/* Кнопка на экране отметки — как главная кнопка, без светлого контура от .now-save (Астамур 22.11.2026). */
+body.wheel-editing .now-save:not([data-dirty="true"]){border:0}
