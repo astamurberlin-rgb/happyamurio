@@ -2462,38 +2462,79 @@ var MealBot=(function(){
 
   /* ── совет блюда: «что на завтрак», «быстро», «белковое на ужин», «осталось 400 калорий» (решение Астамура 22.11.2026 «да»).
      Слова и пороги — в словаре (dish_advice). Отбор — из рецептов подборок экрана «Сборники» и «Моих рецептов»;
-     в дневник совет не идёт: «Записать» открывает шторку «Подобрано», как в рецепте. Кухни — следующий шаг: такой вопрос идёт прежним путём */
+     в дневник совет не идёт: «Записать» открывает шторку «Подобрано», как в рецепте. Кухни и «из того, что есть» — из каталогов кухонь и состава (Астамур 23.11.2026 «да») */
   function kcalLeft(){
     var g=typeof goalOf==='function'?goalOf('k'):0; if(!(g>0)) return null;
     var d=todayISO(), it=day(d).items, s=typeof intakeSum==='function'?intakeSum(it,typeof supplementRows==='function'?supplementRows(d):[]):sumOf(it);
     return Math.round(g-(s&&s.k||0));
   }
   function has(t,forms){ return (forms||[]).some(function(f){ return t.indexOf(f)>=0 }) }
+  /* продукты в тексте (фраза или состав): начало слова (stems) или слово целиком (words); text_fix склеивает «томатная паста», «яйцо куриное», «перец чёрный» */
+  function advTxt(A,s){ s=nrm(s).replace(/[.,;:()«»"—–\/+-]+/g,' ').replace(/\s+/g,' ');
+    (A.text_fix||[]).forEach(function(f){ s=s.replace(new RegExp(f[0],'g'),f[1]) }); return s.trim() }
+  function ingHit(g,w){ return (g.words||[]).indexOf(w)>=0||(g.stems||[]).some(function(s){ return w.indexOf(s)===0 }) }
+  function ingsIn(A,s){ var ws=advTxt(A,s).split(' '); return (A.ingredients||[]).filter(function(g){ return ws.some(function(w){ return ingHit(g,w) }) }) }
+  function isBasic(A,c){ var s=advTxt(A,c); return (A.basics||[]).some(function(b){ return s.indexOf(b)===0 }) }
+  /* «нужно ещё»: продукты состава, которых человек не назвал, без соли, воды, масла и специй; название — из словаря продуктов, иначе начало строки состава */
+  function advNeed(A,x,ings){
+    var out=[];
+    (x.comps||[]).forEach(function(c){ if(!c||isBasic(A,c)) return;
+      var gs=ingsIn(A,c); if(gs.some(function(g){ return ings.indexOf(g)>=0 })) return;
+      var n=gs.length?gs[0].name_ru:String(c).split(/[,(—]/)[0].replace(/\s*\d.*$/,'').trim().toLowerCase(); if(n&&out.indexOf(n)<0) out.push(n) });
+    return out;
+  }
+  function cuisineOf(A,t){ var c=null; (A.cuisines||[]).some(function(x){ if(has(t,x.forms)){ c=x; return true } return false }); return c }
+  function cuisineMissing(A,t){ var c=null; (A.cuisines_missing||[]).some(function(x){ if(has(t,x.forms)){ c=x; return true } return false }); return c }
+  function catOn(){ return typeof MealSources==='undefined'||MealSources.enabled(DB,'HM') }
+  /* блюда своих каталогов кухонь: кавказские (kav, основной вариант df) и узбекские (с составом, не готовые продукты вроде катыка) */
+  function catDishes(A,cui){
+    var out=[], want=cui?cui.c||null:null;
+    if((!cui||cui.from==='kav')&&typeof KAV!=='undefined'&&KAV&&KAV.done){ var seen={};
+      KAV.f.forEach(function(r){ var m=(KAV.m||{})[r[0]]||{}; if(!m.c||(m.g&&!m.df)) return; if(want&&want.indexOf(m.c)<0) return;
+        var head=String(r[1]).split(' — ')[0].trim(); if(seen[head.toLowerCase()]) return; seen[head.toLowerCase()]=1;
+        var u=m.du||'порция', g=(m.por||{})[u]||100;
+        out.push({kind:'kav',code:r[0],t:head,u:u,g:g,k:(r[4]||0)*g/100,p:(r[5]||0)*g/100,cui:m.c,text:head+' '+(r[2]||''),comps:null}) }) }
+    if((!cui||cui.from==='uzbek')&&typeof FOODS!=='undefined') Object.keys(FOODS).forEach(function(id){ var f=FOODS[id];
+      if(!f||f.catalogSource!=='HM-UZ'||!f.recipe||!Array.isArray(f.recipe.ingredients)||f.recipe.ingredients.length<2) return;
+      var pk=Object.keys(f.por||{}), u=(f.por||{})['порция']?'порция':(f.defU&&(f.por||{})[f.defU]?f.defU:(pk[0]||'г')), g=u==='г'?100:gramsFor(id,1,u), n=sumOf([{fid:id,g:g}]);
+      out.push({kind:'uz',fid:id,t:f.n,u:u,g:g,k:n.k||0,p:n.p||0,cui:'узбекская',text:f.n+' '+f.recipe.ingredients.map(function(i){ return i.name }).join(' '),comps:f.recipe.ingredients.map(function(i){ return i.name })}) });
+    return out;
+  }
+  function catReady(cui){
+    if(!cui||cui.from==='kav') return typeof KAV!=='undefined'&&KAV&&KAV.done;
+    return typeof MealUzbek==='undefined'||MealUzbek.status()!=='loading';
+  }
   function advice(S,raw){
     var A=SP&&SP.advice?SP.advice():null; if(!A) return null;
-    var t=nrm(raw).replace(/[?!.,…]/g,' ').replace(/\s+/g,' '), T=' '+t.trim()+' ';
+    var R=A.reply_ru||{}, t=nrm(raw).replace(/[?!.,…]/g,' ').replace(/\s+/g,' '), T=' '+t.trim()+' ';
     var strong=(A.ask_strong||[]).some(function(r){ return new RegExp('(^|\\s)'+r).test(t.trim()) });
-    var weak=!strong&&(A.ask_weak||[]).some(function(w){ return new RegExp('(^|\\s)'+w+'(\\s|$)').test(T) })&&has(t,A.food_context);
+    var askW=(A.ask_weak||[]).some(function(w){ return new RegExp('(^|\\s)'+w+'(\\s|$)').test(T) });
+    var weak=!strong&&askW&&has(t,A.food_context);
     if(!strong&&!weak&&has(t,(A.no_cook||{}).forms)&&!/\d/.test(t)) strong=true;   // «перекус без готовки»
-    var cuisine=has(t,A.not_yet);
-    if(!strong&&!weak&&!(cuisine&&(A.ask_weak||[]).some(function(w){ return new RegExp('(^|\\s)'+w+'(\\s|$)').test(T) }))) return null;
+    var cui=cuisineOf(A,t), miss=cui?null:cuisineMissing(A,t), anyCui=!cui&&!miss&&has(t,A.cuisine_any), hv=has(T,A.have_forms), ings=ingsIn(A,raw);
+    if(!strong&&!weak&&ings.length&&(A.ask_with_food||[]).some(function(r){ return new RegExp('(^|\\s)'+r).test(t.trim()) })) strong=true;   // «курица и рис — что сделать?»
+    if(!strong&&!weak&&!((cui||miss||anyCui||hv)&&askW)) return null;
     if(/(^|\s)(сколько|съел|съела|ел|ела|поел|поела|скушал|выпил|выпила|перекусил|перекусила|позавтракал|пообедал|поужинал|запиши|записал|записала|добавь)(\s|$)/.test(T)) return null;   // это запись или вопрос о продукте, а не совет
-    if(cuisine) return p(esc((A.reply_ru||{}).cuisine||''));               // кухни — следующий шаг
-    var want={meal:null,max:null,protein:has(t,(A.protein||{}).forms),light:has(t,(A.light||{}).forms),filling:has(t,(A.filling||{}).forms),kmax:null,ing:null,note:''};
-    (A.meals||[]).some(function(m){ if(has(t,m.forms)){ want.meal=m; return true } return false });
+    if(miss){ missLog('кухня',miss.name_ru.replace(/ой$/,'ая'),raw); return p(esc(String(R.cuisine_missing||'').replace('{name}',cap(miss.name_ru)))) }
+    if(cui&&!catOn()) return p(esc(R.cuisine_off||''));
+    if(cui&&!catReady(cui)) return p(esc(R.cuisine_loading||''));
+    if(anyCui&&!ings.length) return p(esc(R.cuisine_ask||''))+chips((A.cuisines||[]).map(function(c){ return ['advcui:'+c.id,cap(c.name_ru)] }));
+    var want={meal:null,max:null,protein:has(t,(A.protein||{}).forms),light:has(t,(A.light||{}).forms),filling:has(t,(A.filling||{}).forms),kmax:null,ing:null,ings:ings,cui:cui,note:''};
+    if(!cui) (A.meals||[]).some(function(m){ if(has(t,m.forms)){ want.meal=m; return true } return false });   // у блюд каталога нет приёма пищи
     if(has(t,(A.no_cook||{}).forms)) want.max=(A.no_cook||{}).max_min||3;
     else if(has(t,(A.quick||{}).forms)) want.max=(A.quick||{}).max_min||15;
     var mm=t.match(/(?:за|до|минут за|не больше|не дольше)\s+(\d{1,3})\s*(?:мин|минут\S*)|(\d{1,3})\s*(?:мин|минут\S*)/); if(mm) want.max=+(mm[1]||mm[2]);
     var km=t.match(/(\d{2,4})\s*(?:ккал|калори\S*|кал)(\s|$)/); if(km) want.kmax=+km[1];
     else if(has(t,A.left_forms)&&/калори|ккал|норм|цел/.test(t)){ var left=kcalLeft();
-      if(left==null) want.note=(A.reply_ru||{}).no_goal||''; else if(left<=0){ want.note=(A.reply_ru||{}).over||''; want.light=true } else { want.kmax=left; want.left=true } }
-    var im=t.match(/(?:^|\s)(?:из|с|со)\s+([а-я-]{3,})/); if(im&&!/^(собой|утра|вечера|работы|тренировк|зала|чем|того|белк|протеин|калори|ккал|быстр)/.test(im[1])) want.ing=norm(im[1]).slice(0,4);
-    if(!want.meal&&!want.max&&!want.protein&&!want.light&&!want.filling&&!want.kmax&&!want.ing){
+      if(left==null) want.note=R.no_goal||''; else if(left<=0){ want.note=R.over||''; want.light=true } else { want.kmax=left; want.left=true } }
+    if(!ings.length){ var im=t.match(/(?:^|\s)(?:из|с|со)\s+([а-я-]{3,})/); if(im&&!/^(собой|утра|вечера|работы|тренировк|зала|чем|того|белк|протеин|калори|ккал|быстр)/.test(im[1])) want.ing=norm(im[1]).slice(0,4) }
+    if(hv&&!ings.length&&!want.ing&&!cui) return p(esc(R.have_ask||''));   // «из того, что есть дома» — а что есть?
+    if(!cui&&!want.meal&&!want.max&&!want.protein&&!want.light&&!want.filling&&!want.kmax&&!want.ing&&!ings.length){
       var h=(S.clock?new Date(S.clock):new Date()).getHours(), mid=((A.meal_by_hour||[]).filter(function(x){ return h>=x[0]&&h<x[1] })[0]||[])[2];
       want.meal=(A.meals||[]).filter(function(m){ return m.id===mid })[0]||null; want.byHour=true }
-    S.adv={want:want,list:pool(A,want),shown:0};
-    return advShow(S,A,true);
+    return advStart(S,A,want);
   }
+  function advStart(S,A,want){ S.adv={want:want,list:pool(A,want),shown:0,seq:(S.adv&&S.adv.seq||0)+1}; return advShow(S,A,true) }
   /* КБЖУ рецепта для совета: строка, где разбор оставил выбор («молоко» — какое?), считается по первому варианту, как справка «сколько калорий в…»;
      иначе такой рецепт выглядел бы легче, чем он есть, и попадал бы в «лёгкое» и «до 300 ккал» */
   function advNut(r){
@@ -2502,44 +2543,72 @@ var MealBot=(function(){
       var g=l.fid&&l.g>0?l.g:gramsFor(id,l.q,l.u); if(g>0) items.push({fid:id,g:g}) });
     return sumOf(items);
   }
+  function recComps(r){
+    if(r.x) return parseText(r.x).lines.map(function(l){ var id=l.fid||(l.alts&&l.alts[0]); return l.raw||(id&&FOODS[id]?FOODS[id].n:'') });
+    return (r.lines||[]).map(function(l){ return FOODS[l.fid]?FOODS[l.fid].n:'' });
+  }
   function pool(A,w){
-    var out=[], favs=Array.isArray(DB.rfav)?DB.rfav:[];
-    (typeof COLS!=='undefined'?COLS:[]).forEach(function(c){
-      if(w.meal&&(w.meal.collections||[]).indexOf(c.k)<0) return;
-      c.items.forEach(function(r){ out.push({r:r,col:c,min:r.min,text:r.x}) }) });
-    if(!w.meal&&w.max==null) (DB.recipes||[]).forEach(function(r){ out.push({r:r,col:null,min:null,mine:true,text:(r.lines||[]).map(function(l){ return FOODS[l.fid]?FOODS[l.fid].n:'' }).join(' ')}) });
+    var out=[], favs=Array.isArray(DB.rfav)?DB.rfav:[], ings=w.ings||[];
+    if(!w.cui){
+      (typeof COLS!=='undefined'?COLS:[]).forEach(function(c){
+        if(w.meal&&(w.meal.collections||[]).indexOf(c.k)<0) return;
+        c.items.forEach(function(r){ out.push({kind:'col',r:r,col:c,t:r.t,min:r.min,text:r.x}) }) });
+      if(!w.meal&&w.max==null) (DB.recipes||[]).forEach(function(r){ out.push({kind:'mine',r:r,col:null,t:r.t,min:null,mine:true,text:(r.lines||[]).map(function(l){ return FOODS[l.fid]?FOODS[l.fid].n:'' }).join(' ')}) });
+      out.forEach(function(x){ var n=advNut(x.r); x.k=n.k||0; x.p=n.p||0 });
+    }
+    /* блюда каталогов кухонь: по кухне, а в «из курицы и риса» — тоже, если приём пищи не назван или это обед и ужин */
+    if((w.cui||ings.length)&&w.max==null&&catOn()&&(!w.meal||(A.catalog_meals||[]).indexOf(w.meal.id)>=0)) out=out.concat(catDishes(A,w.cui));
     out=out.filter(function(x){
-      var n=advNut(x.r); x.k=n.k||0; x.p=n.p||0; if(!(x.k>0)) return false;
+      if(!(x.k>0)) return false;
       if(w.max!=null&&!(x.min!=null&&x.min<=w.max)) return false;
       if(w.protein&&x.p*4/x.k<((A.protein||{}).min_share||0.25)) return false;
       if(w.light&&x.k>((A.light||{}).max_kcal||400)) return false;
       if(w.filling&&x.k<((A.filling||{}).min_kcal||400)) return false;
       if(w.kmax!=null&&x.k>w.kmax) return false;
       if(w.ing&&norm(x.text||'').split(/[^а-яa-z]+/).every(function(s){ return s.slice(0,4)!==w.ing })) return false;
+      if(ings.length){ var ws=advTxt(A,x.text||'').split(' '); x.hit=ings.filter(function(g){ return ws.some(function(s){ return ingHit(g,s) }) }); if(!x.hit.length) return false;
+        if(x.kind!=='kav'){ if(!x.comps&&x.r) x.comps=recComps(x.r); x.need=advNeed(A,x,ings) } }
       return true });
-    out.forEach(function(x,i){ x.i=i; x.fav=favs.indexOf(x.r.id)>=0 });
-    out.sort(function(a,b){ return ((b.mine?1:0)-(a.mine?1:0))||((b.fav?1:0)-(a.fav?1:0))||(w.protein?b.p-a.p:0)||(w.light||w.kmax!=null?a.k-b.k:0)||(w.max!=null?a.min-b.min:0)||a.i-b.i });
+    out.forEach(function(x,i){ x.i=i; x.fav=!!(x.r&&favs.indexOf(x.r.id)>=0); x.need=x.need||null });
+    out.sort(function(a,b){ return (ings.length?(b.hit.length-a.hit.length)||((a.need?a.need.length:9)-(b.need?b.need.length:9)):0)||((b.mine?1:0)-(a.mine?1:0))||((b.fav?1:0)-(a.fav?1:0))||(w.protein?b.p-a.p:0)||(w.light||w.kmax!=null?a.k-b.k:0)||(w.max!=null?a.min-b.min:0)||a.i-b.i });
+    if(w.cui&&!ings.length&&!w.protein&&!w.light&&w.kmax==null){   // по кухне — разные блюда подряд, а не три хинкали
+      var B={}, order=[]; out.forEach(function(x){ var k=String(x.t).toLowerCase().split(/\s+/)[0]; if(!B[k]){ B[k]=[]; order.push(k) } B[k].push(x) });
+      var mix=[]; for(var r=0;mix.length<out.length;r++) order.forEach(function(k){ if(B[k][r]) mix.push(B[k][r]) }); out=mix }
     return out;
   }
   function advShow(S,A,first){
     var R=A.reply_ru||{}, a=S.adv, n=A.count||3, w=a.want, part=a.list.slice(a.shown,a.shown+n);
-    if(!part.length) return p(esc(first?R.none:R.more_none));
-    a.shown+=part.length;
-    var bits=[w.meal?w.meal.name_ru:'', w.max!=null?'до '+w.max+' мин':'', w.protein?'с белком':'', w.light?'лёгкое':'', w.filling?'сытное':'', w.kmax!=null?(w.left?'осталось ':'до ')+w.kmax+' ккал':''].filter(Boolean);
+    if(!part.length) return p(esc(first?(w.cui?R.cuisine_none:R.none):R.more_none));
+    var from=a.shown; a.shown+=part.length;
+    var bits=[w.cui?w.cui.name_ru+' кухня':'', (w.ings||[]).length?'из: '+w.ings.map(function(g){ return g.name_ru }).join(', '):'', w.meal?w.meal.name_ru:'', w.max!=null?'до '+w.max+' мин':'', w.protein?'с белком':'', w.light?'лёгкое':'', w.filling?'сытное':'', w.kmax!=null?(w.left?'осталось ':'до ')+w.kmax+' ккал':''].filter(Boolean);
     var h=(w.note?p(esc(w.note)):'')+p(first?(bits.length?'Вот что подойдёт ('+esc(bits.join(', '))+'):':'Вот что можно:'):'Ещё варианты:');
-    h+=part.map(function(x){
-      var meta=[x.min!=null?x.min+' мин':'', Math.round(x.k)+' ккал', 'белок '+Math.round(x.p)+' г', x.mine?'мой рецепт':''].filter(Boolean).join(' · ');
-      return '<div class="mbAdv"><b>'+esc(x.r.t)+'</b><div class="mbSum">'+esc(meta)+'</div>'+
-        chips((x.col?[['advopen:'+x.r.id,'Открыть']]:[]).concat([['advlog:'+x.r.id,'Записать']]))+'</div>' }).join('');
+    h+=part.map(function(x,j){
+      var key=a.seq+'.'+(from+j), cat=x.kind==='kav'||x.kind==='uz', por=cat?(x.u==='г'?Math.round(x.g)+' г':'1 '+x.u+' '+Math.round(x.g)+' г'):'';
+      var meta=[por, x.min!=null?x.min+' мин':'', Math.round(x.k)+' ккал', 'белок '+Math.round(x.p)+' г', x.mine?'мой рецепт':'', cat&&!w.cui?x.cui+' кухня':''].filter(Boolean).join(' · ');
+      var need=(w.ings||[]).length&&x.kind!=='kav'&&x.need?(x.need.length?(R.need||'нужно ещё')+': '+x.need.slice(0,4).join(', ')+(x.need.length>4?' и ещё '+(x.need.length-4):''):(R.have_all||'')):'';
+      return '<div class="mbAdv"><b>'+esc(x.t)+'</b><div class="mbSum">'+esc(meta)+'</div>'+(need?'<div class="mbSum">'+esc(need)+'</div>':'')+
+        chips((x.col||cat?[['advopen:'+key,'Открыть']]:[]).concat([['advlog:'+key,'Записать']]))+'</div>' }).join('');
     if(a.shown<a.list.length) h+=chips([['advmore','Ещё']]);
     return h+(first?'<p class="mlHint">'+esc(R.hint||'')+'</p>':'');
   }
   function advTap(S,a){
     var A=SP&&SP.advice?SP.advice():null;
     if(a[0]==='advmore') return S.adv&&A?advShow(S,A,false):null;
-    var x=typeof findRecipe==='function'?findRecipe(a[1]):null; if(!x) return null;
-    if(a[0]==='advopen'&&x.col){ openCol(x.col.k); ROPEN=x.r.id; renderCol(); return '' }
-    if(a[0]==='advlog'){ openMatchLines(recipeLinesAny(x.r),{back:'chat',from:'recipe'}); return '' }
+    if(a[0]==='advcui'){ var c=A&&(A.cuisines||[]).filter(function(x){ return x.id===a[1] })[0]; if(!c) return null;
+      if(!catOn()) return p(esc((A.reply_ru||{}).cuisine_off||'')); if(!catReady(c)) return p(esc((A.reply_ru||{}).cuisine_loading||''));
+      return advStart(S,A,{meal:null,max:null,protein:false,light:false,filling:false,kmax:null,ing:null,ings:[],cui:c,note:''}) }
+    var k=String(a[1]||'').split('.'), x=S.adv&&S.adv.seq===+k[0]?S.adv.list[+k[1]]:null;
+    if(!x){ var fr=typeof findRecipe==='function'?findRecipe(a[1]):null; if(fr) x={kind:fr.col?'col':'mine',r:fr.r,col:fr.col} }   // кнопки старых сообщений
+    if(!x) return null;
+    var fid=x.kind==='kav'?bindTmp(x.code):x.fid;
+    if(a[0]==='advopen'){
+      if(x.col){ openCol(x.col.k); ROPEN=x.r.id; renderCol(); return '' }
+      if(fid&&FOODS[fid]&&typeof MealControls!=='undefined'){ MealControls.product({fid:fid,g:x.g}); return '' }
+      return null }
+    if(a[0]==='advlog'){
+      if(x.r){ openMatchLines(recipeLinesAny(x.r),{back:'chat',from:'recipe'}); return '' }
+      if(!fid||!FOODS[fid]) return null;
+      openMatchLines([{id:'l'+(++SEQ),raw:'',q:x.u==='г'?x.g:1,u:x.u,g:x.g,fid:fid,alts:[],st:'ok',name:''}],{back:'chat',from:'recipe'}); return '' }
     return null;
   }
   function deferred(why){
