@@ -91,6 +91,51 @@ async function main() {
     await query('reset role');
     await query('delete from auth.sessions where id=$1',[google.session]);
     await assert.rejects(rpc(google),{code:'HAP03'});
+    const preVaultNew = await createUser('google');
+    // Standard PostgreSQL ships pgcrypto. This private fixture supplies the
+    // two Supabase Vault interfaces used by the migration on hosted Postgres.
+    await query(`
+      create schema vault;
+      create table vault.test_secrets(name text primary key,decrypted_secret text);
+      create view vault.decrypted_secrets as select * from vault.test_secrets;
+      create function vault.create_secret(value text, key_name text, description text) returns uuid
+      language plpgsql as $$ begin
+        insert into vault.test_secrets values(key_name,value);
+        return gen_random_uuid();
+      end $$;
+    `);
+    await query(await readFile(resolve(__dirname,'../account_key_vault.sql'),'utf8'));
+    const vRPC = async({uid,session},action='open',ciphertext=null) => (await query(
+      'select public.happy_vault_account_key($1,$2,$3,$4) as result',[uid,session,action,ciphertext])).rows[0].result;
+    const secondVault = await createUser('google');
+    await query('set role service_role');
+    const pending = await vRPC(preVaultNew);
+    assert.equal(pending.state,'provision');
+    assert.equal(Buffer.from(pending.wrappingKey,'base64').length,32);
+    assert.notEqual((await vRPC(secondVault)).wrappingKey,pending.wrappingKey);
+    assert.deepEqual(await vRPC(email),{state:'legacy'});
+    await assert.rejects(vRPC({uid:preVaultNew.uid,session:secondVault.session}),{code:'HAP03'});
+    await assert.rejects(vRPC(old),{code:'HAP06'}); // Existing AWS data stays intact.
+    await assert.rejects(rpc(secondVault),{code:'42501'});
+    await assert.rejects(vRPC(preVaultNew,'open','bad'),{code:'22023'});
+    const {vaultEnvelope} = await import('../functions/account-key/vault.mjs');
+    const envelope = vaultEnvelope('https://private-test.invalid');
+    const built = await envelope.generate(preVaultNew.uid,2,pending);
+    const created = await vRPC(preVaultNew,'open',built.p_ciphertext);
+    assert.equal(created.wrapVersion,2);
+    const firstKey = await envelope.unwrap(preVaultNew.uid,created);
+    const loser = await envelope.generate(preVaultNew.uid,2,pending);
+    assert.equal(await envelope.unwrap(preVaultNew.uid,await vRPC(preVaultNew,'open',loser.p_ciphertext)),firstKey);
+    assert.equal((await vRPC(email,'begin',built.p_ciphertext)).state,'migrating');
+    await assert.rejects(vRPC(email,'finish'),{code:'HAP04'});
+    await query('reset role');
+    const keyRow = (await query('select wrap_version,ciphertext from happy_private.account_keys where user_id=$1',[preVaultNew.uid])).rows[0];
+    assert.deepEqual(keyRow,{wrap_version:2,ciphertext:built.p_ciphertext});
+    await query('set role authenticated');
+    await assert.rejects(vRPC(preVaultNew),{code:'42501'});
+    await assert.rejects(query('select * from vault.decrypted_secrets'),{code:'42501'});
+    await query('reset role');
+    console.log('Vault SQL passed: session check, two accounts, retry, envelope version, consent, private KEK');
     console.log('PostgreSQL passed: enrollment, wrapping race, fenced writes, retry, versions, RLS and session revocation');
   } finally {
     await Promise.all([client.end(),writer.end()]);

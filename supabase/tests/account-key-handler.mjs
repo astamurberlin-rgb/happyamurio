@@ -57,3 +57,33 @@ export async function checkKeyHandler() {
   console.log('Account key handler passed: two phones, racing login, second account, revoked session and KMS retry');
 }
 await checkKeyHandler();
+
+// Exercise the private test provider's real WebCrypto implementation. Capture
+// what is persisted and what reaches the browser across two isolated sessions.
+import {vaultEnvelope} from '../functions/account-key/vault.mjs';
+const project = 'https://private-test.invalid';
+const adapter = vaultEnvelope(project), owner = randomUUID(), other = randomUUID();
+const wrappingKey = randomBytes(32).toString('base64');
+const candidate = await adapter.generate(owner,2,{wrappingKey});
+const stored = {ciphertext:candidate.p_ciphertext,keyVersion:2,wrapVersion:2,wrappingKey};
+const firstKey = await adapter.unwrap(owner,stored);
+assert.equal(Buffer.from(firstKey,'base64').length,32);
+assert.equal(Buffer.from(candidate.p_ciphertext,'base64').length,60);
+assert.notEqual(candidate.p_ciphertext,firstKey);
+assert.notEqual((await adapter.generate(owner,2,{wrappingKey})).p_ciphertext,candidate.p_ciphertext);
+await assert.rejects(adapter.unwrap(other,stored));
+await assert.rejects(adapter.unwrap(owner,{...stored,keyVersion:3}));
+await assert.rejects(vaultEnvelope('https://other.invalid').unwrap(owner,stored));
+const tampered = Buffer.from(stored.ciphertext,'base64');
+tampered[59] ^= 1;
+await assert.rejects(adapter.unwrap(owner,{...stored,ciphertext:tampered.toString('base64')}));
+const handler = createHandler({
+  verify: () => ({id:owner}),
+  keyRecord: () => ({...stored,state:'active'}),
+  ...adapter
+});
+const token = 'test.' + Buffer.from(JSON.stringify({session_id:randomUUID()})).toString('base64url') + '.test';
+const response = await handler(new Request(project, {method:'POST',
+  headers:{authorization:'Bearer '+token},body:JSON.stringify({action:'open'})}));
+assert.deepEqual(await response.json(),{state:'active',keyVersion:2,key:firstKey});
+console.log('Vault envelope passed: AES-256-GCM, owner/project/version binding, integrity and private response');
