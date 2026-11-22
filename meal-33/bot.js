@@ -1829,16 +1829,18 @@ var MealBot=(function(){
       return HappyGoals.LABELS[g.kind]+(g.targetKg&&(g.kind==='loss'||g.kind==='gain')?', желаемый вес '+fmt(g.targetKg)+' кг':'') }catch(e){ return '' }
   }
   var GOAL_HINT='<p class="mlHint">Поменять — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+  /* целей нет — кнопка мастера целей в чате (bot-goals.js) */
+  function goalSetChip(){ return typeof MealBotSteps!=='undefined'&&MealBotSteps.flow('goals')?chips([['st:goals:@start','Настроить цель в чате']]):'' }
   function goalInfo(why){
     var kind=goalKindTxt(); kind=kind&&kind.charAt(0).toLowerCase()+kind.slice(1); var rows=GOAL_M.filter(function(m){ return goalNum(m[0])>0 }).map(function(m){ return m[1]+' '+fmt(goalNum(m[0]))+' '+m[2] });
-    if(!kind&&!rows.length) return (why?p('Цвет полосок зависит от нормы дня, а она пока не задана.'):'')+p('Цели на день пока не заданы.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    if(!kind&&!rows.length) return (why?p('Цвет полосок зависит от нормы дня, а она пока не задана.'):'')+p('Цели на день пока не заданы.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>'+goalSetChip();
     var goal=p((kind?'Цель: <b>'+esc(kind)+'</b>.':'Цель веса не выбрана.')+(rows.length?' В день: '+esc(rows.join(' · ')).toLowerCase().replace(/^./,function(c){ return c.toUpperCase() })+'.':'')),
       col=p('Цель веса меняет только норму калорий. Цвет полосок от неё не зависит: полоска темнеет, когда съеденное подходит к норме, а значок ⚠ в журнале веществ — только у того, что стоит ограничивать (сахар, соль и т. п.), когда его больше нормы.');
     return (why?col+goal:goal+col)+GOAL_HINT;
   }
   function goalLeft(k){
     var m=GOAL_M.filter(function(x){ return x[0]===k })[0]||GOAL_M[0], g=goalNum(m[0]);
-    if(!(g>0)) return p('Норма: '+m[1].toLowerCase()+' в день пока не задана.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    if(!(g>0)) return p('Норма: '+m[1].toLowerCase()+' в день пока не задана.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>'+goalSetChip();
     var s=dayEaten(), v=m[0]==='fib'?null:s[m[0]], when=curDate===todayISO()?'сегодня':'за этот день';
     if(m[0]==='fib'){ try{ v=typeof dayFib==='function'?dayFib(day(curDate).items):null }catch(e){ v=null } }
     if(v==null) return p('Норма: '+m[1].toLowerCase()+' '+fmt(g)+' '+m[2]+' в день. Сколько съедено '+when+' — посчитать не могу: у части записей нет данных.')+GOAL_HINT;
