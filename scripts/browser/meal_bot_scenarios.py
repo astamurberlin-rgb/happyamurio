@@ -693,6 +693,8 @@ dict(id="Мр6", msgs=["мороженое 100 г"], mode="none", ask=True),
  dict(id="Сд38", eaten=True, msgs=["съел полплитки, нет, всю плитку шоколада"], want=[("шоколад", 100)]),
  dict(id="Сд39", eaten=True, msgs=["конфета"], mode="none", ask=True),
  dict(id="Сд40", eaten=True, msgs=["две конфеты"], want=[("конфеты шоколадные пралине", 24)]),
+ dict(id="Сд41", eaten=True, msgs=["печений 3 штуки"], mode="none", ask=True),
+ dict(id="Сд42", eaten=True, msgs=["что-то сладкое"], mode="none", ask=True),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
