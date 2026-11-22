@@ -1278,6 +1278,8 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Бд02", msgs=["Омега 3 3 капсулы и на одни и тоже три капсулы магния они одни ни одни а магний"], mode="none", reply="каталоге БАДов"),
  dict(id="Бд03", eaten=True, msgs=["две таблетки магния и груша 150 г"], want=[("груш", 150)], reply="каталоге БАДов"),
  dict(id="Бд04", msgs=["витамин д 2 капсулы"], mode="none", reply="Витамин D3"),
+ dict(id="Хв36", eaten=True, msgs=["овсяное молоко 200 мл"], want=[("овсяное молоко напиток", 200)]),
+ dict(id="Хв37", eaten=True, msgs=["овсянка на молоке 200 г"], want=[("каша овсяная", 200)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
