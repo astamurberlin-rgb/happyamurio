@@ -316,13 +316,14 @@ var MealBot=(function(){
     /* у выбранного продукта нет такой меры, а у соседнего есть («пять колец лука» — лук, а не луковый сок) */
     /* …или у соседнего мера своя, а у выбранного только общая («ложка мисо» — паста, а не мисо-суп) */
     function own(fx,u){ return (fx.own&&fx.own[u])||(fx.por&&fx.por[u])||SP.group(fx,u) }
-    if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!own(f,l.u)&&!(l.u==='кусок'&&SP.weight(f,'ломтик'))){
+    if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!own(f,l.u)&&!(l.u==='кусок'&&own(f,'ломтик'))){
       var fw0=String(l.spoken||l.name||'').split(' ').filter(Boolean), had=SP.weight(f,l.u),
           alt=(l.alts||[]).filter(function(x){ return x!==id&&FOODS[x]&&(had?own(FOODS[x],l.u):SP.weight(FOODS[x],l.u))&&headOk(x,fw0) })[0];
       if(alt){ l.alts=[alt].concat(l.alts.filter(function(x){ return x!==alt })); l.fid=alt; l.st='ok'; id=alt; f=FOODS[alt]; l.g=gramsFor(id,l.q,l.u) }
     }
     if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!SP.weight(f,l.u)){
-      if(l.u==='кусок'&&SP.weight(f,'ломтик')){ l.u='ломтик'; l.g=gramsFor(id,l.q,l.u) }
+      if(l.u==='кусок'&&own(f,'ломтик')){ l.u='ломтик';   /* кусок — ломтик только своей мерой продукта (хлеб, сыр, колбаса); общий ломтик 30 г не берётся — спросить один раз */
+        l.g=gramsFor(id,l.q,l.u) }
       else if(l.u==='порция'&&SP.usual(f,false)){ l.u=SP.usual(f,false); l.g=gramsFor(id,l.q,l.u); l.approx=true }
       else { l.count=l.q; l.countU=l.u; l.explicit=false }
     }

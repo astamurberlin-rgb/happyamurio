@@ -177,8 +177,10 @@ var MealSpeech=(function(){
     /* заголовок перед списком с весами: «бутерброд: хлеб 30 г, масло 5 г» — записываются части, а не «бутерброд» поверх них */
     s=s.replace(/^\s*([а-я][а-я ]{2,28}):\s*(?=[^:]*\d[^:]*,[^:]*\d)/,function(m,hd){ return /(завтрак|обед|ужин|перекус|полдник|вчера|сегодня|утр|вечер|ноч)/.test(hd)?m:' ' });
     /* «кефир ноль пять» — пол-литра */
+    /* …а перед процентом, ложкой, граммами — просто число: «сахар ноль пять ложки» — 0,5 ложки (слова — в словаре) */
+    var NB=NV.spoken_decimals_as_number_before?new RegExp('^\\s+'+NV.spoken_decimals_as_number_before):null;
     Object.keys(NV.spoken_decimals||{}).sort(function(a,b){ return b.length-a.length }).forEach(function(k){
-      s=s.replace(new RegExp(B0+rx(k)+B1,'g'),function(m,a){ return a+NV.spoken_decimals[k]+' мл' }) });
+      s=s.replace(new RegExp(B0+rx(k)+B1,'g'),function(m,a,off,str){ var v=NV.spoken_decimals[k]; return a+(NB&&NB.test(str.slice(off+m.length))?out(v/1000):v+' мл') }) });
     /* доли словами */
     s=s.replace(/(^|\s)три\s+четверти(?=\s)/g,'$1 0,75').replace(/(^|\s)две\s+трети(?=\s)/g,'$1 0,67');
     s=s.replace(CARDRE,function(m,a,run,off){ if(/\sна\s*$/.test(s.slice(0,off)+a)&&/^пар/.test(run)) return m; return a+numberRun(run) });
