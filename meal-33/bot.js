@@ -1829,16 +1829,18 @@ var MealBot=(function(){
       return HappyGoals.LABELS[g.kind]+(g.targetKg&&(g.kind==='loss'||g.kind==='gain')?', желаемый вес '+fmt(g.targetKg)+' кг':'') }catch(e){ return '' }
   }
   var GOAL_HINT='<p class="mlHint">Поменять — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+  /* целей нет — кнопка мастера целей в чате (bot-goals.js) */
+  function goalSetChip(){ return typeof MealBotSteps!=='undefined'&&MealBotSteps.flow('goals')?chips([['st:goals:@start','Настроить цель в чате']]):'' }
   function goalInfo(why){
     var kind=goalKindTxt(); kind=kind&&kind.charAt(0).toLowerCase()+kind.slice(1); var rows=GOAL_M.filter(function(m){ return goalNum(m[0])>0 }).map(function(m){ return m[1]+' '+fmt(goalNum(m[0]))+' '+m[2] });
-    if(!kind&&!rows.length) return (why?p('Цвет полосок зависит от нормы дня, а она пока не задана.'):'')+p('Цели на день пока не заданы.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    if(!kind&&!rows.length) return (why?p('Цвет полосок зависит от нормы дня, а она пока не задана.'):'')+p('Цели на день пока не заданы.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>'+goalSetChip();
     var goal=p((kind?'Цель: <b>'+esc(kind)+'</b>.':'Цель веса не выбрана.')+(rows.length?' В день: '+esc(rows.join(' · ')).toLowerCase().replace(/^./,function(c){ return c.toUpperCase() })+'.':'')),
       col=p('Цель веса меняет только норму калорий. Цвет полосок от неё не зависит: полоска темнеет, когда съеденное подходит к норме, а значок ⚠ в журнале веществ — только у того, что стоит ограничивать (сахар, соль и т. п.), когда его больше нормы.');
     return (why?col+goal:goal+col)+GOAL_HINT;
   }
   function goalLeft(k){
     var m=GOAL_M.filter(function(x){ return x[0]===k })[0]||GOAL_M[0], g=goalNum(m[0]);
-    if(!(g>0)) return p('Норма: '+m[1].toLowerCase()+' в день пока не задана.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    if(!(g>0)) return p('Норма: '+m[1].toLowerCase()+' в день пока не задана.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>'+goalSetChip();
     var s=dayEaten(), v=m[0]==='fib'?null:s[m[0]], when=curDate===todayISO()?'сегодня':'за этот день';
     if(m[0]==='fib'){ try{ v=typeof dayFib==='function'?dayFib(day(curDate).items):null }catch(e){ v=null } }
     if(v==null) return p('Норма: '+m[1].toLowerCase()+' '+fmt(g)+' '+m[2]+' в день. Сколько съедено '+when+' — посчитать не могу: у части записей нет данных.')+GOAL_HINT;
@@ -2109,11 +2111,22 @@ var MealBot=(function(){
     if(m.inbox) return h+p('Поправку «не '+esc(x)+', а '+esc(y)+'» из шортката не выполняю. Скажи её здесь, в диалоге.');
     var rr=replaceCmd(S,x,y,it); return h+(rr||'');
   }
+  /* Meal 33.37 · пошаговые вопросы в чате (bot-steps.js, мастер целей bot-goals.js): ответ на вопрос мастера — ему;
+     еда посреди вопросов записывается как обычно, вопрос мастера повторяется */
+  function isFood(text){ try{ var u=understand(fixes(nrm(text))); return u.lines.some(function(l){ return l.fid||l.alts&&l.alts.length }) }catch(e){ return false } }
+  function steps(chat,S,m){
+    if(typeof MealBotSteps==='undefined'||m.inbox||m.dry||m.kind==='photo'||typeof m.text!=='string') return null;
+    return MealBotSteps.turn(chat,S,m.text,isFood);
+  }
   function reply(chat,m){
     boot();
-    var S=state(chat), h;
+    var S=state(chat), h, st;
     if(SP) SP.on(true);
-    try{ h=withSwap(chat,S,m) } finally { if(SP) SP.on(false) }
+    try{
+      st=steps(chat,S,m);
+      if(st!=null) h=st;
+      else { h=withSwap(chat,S,m); if(typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)&&!m.inbox) h+=MealBotSteps.again(S) }
+    } finally { if(SP) SP.on(false) }
     syncLines(chat);
     if(typeof MealInbox!=='undefined') MealInbox.settle();
     return h;
@@ -2787,6 +2800,7 @@ var MealBot=(function(){
       else h=handle(chat,S,{kind:'text',text:'да'}) }
     else if(/^adv/.test(a[0])){ h=advTap(S,a); if(h==='') return }
     else if(a[0]==='sheet'){ openSheet(chat); return }
+    else if(a[0]==='st'){ h=typeof MealBotSteps!=='undefined'?MealBotSteps.tap(chat,S,a):null }
     else if(a[0]==='misscopy'){ var mt=missText(); try{ navigator.clipboard.writeText(mt).then(function(){ toast('Список скопирован') },function(){ toast('Не скопировалось — выдели текст вручную') }) }catch(e){ toast('Не скопировалось — выдели текст вручную') } return }
     else if(a[0]==='missclear'){ try{ localStorage.removeItem(MISSK) }catch(e){} h=p('Список очистил.') }
     else h=tapDo(S,a[0],a[1],a[2]);
@@ -2882,5 +2896,6 @@ var MealBot=(function(){
       if(typeof toast==='function') toast(sw.checked?'Бот записи еды включён':'Бот записи еды выключен') });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
-  return {portionEntry:portionEntry,renderGroups:renderGroups,similarFoods:similarFoods,on:on,setOn:setOn,replaceMissing:replaceMissing,feed:feed,probe:probe,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
+  function hello(chat){ if(!on()||typeof MealBotGoals==='undefined'||!MealBotGoals) return ''; var h=MealBotGoals.hello(chat); if(h) boot(); return h }
+  return {hello:hello,portionEntry:portionEntry,renderGroups:renderGroups,similarFoods:similarFoods,on:on,setOn:setOn,replaceMissing:replaceMissing,feed:feed,probe:probe,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
 })();
