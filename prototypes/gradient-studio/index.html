@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru" data-app-version="1.0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161527">
+<title>Студия градиентов · Happy</title>
+<meta name="description" content="Градиенты дуг Day, кольца энергии Meal и Sport и полосок строк — в одной студии, по темам.">
+<link rel="stylesheet" href="./studio.css?v=1.0">
+<script src="../../shared/happy-gradients.js?v=1"></script>
+<script src="../../shared/happy-reference-themes.js?v=3"></script>
+<script src="../../day-60/arc-motion.js?v=60.16"></script>
+<script src="./presets.js?v=1.0"></script>
+</head>
+<body>
+<div class="shell">
+  <header class="head">
+    <div><div class="eyebrow">Happy Family / Design Studio</div><h1>Студия градиентов</h1></div>
+    <div class="ver">1.0 · лаборатория<br><span id="base">Day 60.16 · Meal 33.30 · Sport 44.12</span></div>
+  </header>
+
+  <div class="dock" id="dock">
+    <div class="seg" id="widgets" role="group" aria-label="Виджет">
+      <button type="button" data-widget="day-arcs">Дуги Day</button>
+      <button type="button" data-widget="meal">Meal</button>
+      <button type="button" data-widget="sport">Sport</button>
+      <button type="button" data-widget="day-energy">Day · энергия</button>
+    </div>
+    <div class="screen" id="screen">
+      <div class="bgl"></div>
+      <div class="app-top"><h2 id="appTitle">Еда</h2><span class="pill"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>22 ноября</span></div>
+      <div class="stage" id="stage"></div>
+    </div>
+    <div class="dock-foot"><span>Тема: <b id="footTheme"></b></span><span>Пресет: <b id="footPreset"></b></span></div>
+    <button type="button" class="grip" id="grip"><i></i><span id="gripText">Уменьшить превью</span></button>
+  </div>
+
+  <div class="grid">
+    <details class="panel" open>
+      <summary><h2>Тема</h2><span class="tag" id="themeTag"></span></summary>
+      <div class="body">
+        <p class="note">Те же темы, что в Color Studio. Фон меняется только в превью студии — приложения на сайте не меняются.</p>
+        <div class="cards" id="themes"></div>
+      </div>
+    </details>
+
+    <details class="panel" open>
+      <summary><h2>Пресеты темы</h2><span class="tag" id="presetTag"></span></summary>
+      <div class="body">
+        <p class="note">Пресет — готовый набор цветов заливки для этой темы: дуги, кольцо и полоски сразу. Нажми, чтобы <b>примерить</b>. Три места ждут пресеты от Fable.</p>
+        <div class="presets" id="presets"></div>
+        <p class="sub">Сравнить рядом <span class="edited" id="editedMark" hidden>есть правки</span></p>
+        <p class="note">Тот же виджет и те же данные в разных пресетах. Нажми на любой — он откроется крупно сверху.</p>
+        <div class="compare" id="compare"></div>
+      </div>
+    </details>
+
+    <details class="panel" open>
+      <summary><h2>Данные</h2><span class="tag">подставь свои</span></summary>
+      <div class="body" id="dataBody"></div>
+    </details>
+
+    <details class="panel" open>
+      <summary><h2>Цвета заливки</h2><span class="tag">правка пресета</span></summary>
+      <div class="body">
+        <div id="editors" class="body" style="padding:0"></div>
+        <div class="actions"><button type="button" class="btn" id="reset">Вернуть пресет</button></div>
+      </div>
+    </details>
+
+    <details class="panel">
+      <summary><h2>Мои варианты</h2><span class="tag">на этом устройстве</span></summary>
+      <div class="body">
+        <div class="save"><input id="saveName" maxlength="40" placeholder="Название варианта" aria-label="Название варианта"><button type="button" class="btn primary" id="saveBtn">Сохранить</button></div>
+        <div class="mine" id="mine"></div>
+        <p class="sub">Пресет текстом</p>
+        <p class="note">Скопируй и пришли в чат: по этому тексту цвета переносятся в приложения или в пресеты темы.</p>
+        <textarea class="out" id="out" readonly aria-label="Пресет текстом"></textarea>
+        <div class="actions"><button type="button" class="btn primary" id="copy">Скопировать пресет</button></div>
+      </div>
+    </details>
+  </div>
+  <p class="foot">Студия градиентов 1.0 · объединяет Студию дуг 1.2 и «Пробу кольца энергии». Кольцо энергии и полоски рисуются тем же расчётом, что в Meal 33 и Sport 44, дуги Day — движком самого Day 60.</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="./studio.js?v=1.0"></script>
+</body>
+</html>
