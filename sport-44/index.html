@@ -10348,7 +10348,7 @@ function html(name){
    S().passwordField({label:'Пароль',name:'password',autocomplete:'new-password'})+S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+
    '<div class="hs-actions">'+btn('register','Создать аккаунт','hs-primary',true)+btn('cancel','Отмена','hs-cancel')+'</div></form>';
  case 'login':return title('Войти')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+S().passwordField({label:'Пароль',name:'password'})+'</div>'+
-   (form.note?'<p class="hs-note">'+esc(form.note)+'</p>':'')+errorBox()+(cfg.features.recovery?quiet('to-forgot','Забыл пароль?','hs-forgot'):'')+
+   (form.note?'<p class="hs-note">'+esc(form.note)+'</p>':'')+errorBox()+(cfg.features.recovery?quiet('to-forgot','Не помню пароль','hs-forgot'):'')+
    '<div class="hs-actions">'+btn('login','Войти','hs-primary',true)+btn('cancel','Отмена','hs-cancel')+'</div>'+quiet('to-register','Создать аккаунт','hs-center hs-form-signup')+'</form>';
  case 'forgot':return title('Восстановить пароль')+'<form novalidate><div class="hs-auth-fields">'+emailInput()+'</div><p class="hs-note">Отправим ссылку для восстановления пароля.</p>'+errorBox()+
    '<div class="hs-actions">'+btn('forgot','Продолжить','hs-primary',true)+btn('to-login','Отмена','hs-cancel')+'</div></form>';
