@@ -61,7 +61,7 @@
 /* Meal 30 (Астамур 12.11 10:14): «Мои микроэлементы» — своя рамка внизу журнала; строка как остальные показатели
      журнала: смахнуть влево — звёздочка, отмеченное появляется в «Избранном» (id custom:<ключ>). */
   function customAll(range){return customTotals(range,entries().concat(counterEntries()));}
-  function customRowHTML(g,days,ctx,fav){var id='custom:'+g.id,key=ctx+':'+id,note=g.conflicts?'есть конфликт значений или единиц':g.missing&&g.value!==null?'часть значений неизвестна':'';
+  function customRowHTML(g,days,ctx,fav){var id='custom:'+g.id,key=ctx+':'+id,note=g.conflicts?'есть конфликт значений или единиц':'';
     var value=g.value===null?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(g.value/(days||1))+' '+g.unit;
     var star=typeof root.jrStarSvg==='function'?root.jrStarSvg(fav,'jrSi'):'★';
     return '<div class="jrSw" data-sw="'+esc(key)+'"><button class="jrStar'+(fav?' on':'')+'" data-star="'+esc(id)+'" aria-label="'+(fav?'Убрать из избранного':'В избранное')+': '+esc(g.name)+'">'+star+'</button><div class="jrRow"><div class="jrR1"><span class="jrN">'+esc(g.name)+'</span><span class="jrVR"><b class="jrV">'+esc(value)+'</b></span></div>'+(note?'<p class="jrMiss">'+esc(note)+'</p>':'')+'</div></div>';}

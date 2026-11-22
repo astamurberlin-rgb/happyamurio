@@ -1347,7 +1347,6 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .jrOmegaFav > .jrSw{border-top:0}
 .jrOmegaFavToggle{display:block;width:100%;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border:0}
 .jrOmegaFavToggle .jrVR{display:flex;align-items:center;gap:9px}
-.jrOmegaFavToggle .jrDet{display:block;margin-top:5px}
 .jrOmegaFavToggle svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .jrOmegaFavBody{padding-bottom:10px}
 .jrOmegaFavBody[hidden]{display:none}
@@ -1484,7 +1483,6 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
 .erR b{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
 .erBar{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden}
 .erBar i{display:block;height:100%;border-radius:3px}
-.erMiss{grid-column:1/-1;margin:12px 0 0;font-size:12px;font-weight:600;line-height:1.3;color:#FFE3BF}
 .jrW .card.erCard{margin-bottom:0}
 
 
@@ -5616,30 +5614,32 @@ function jrTint(hex){
 function jrRow(id,ctx){
   if(String(id).indexOf('custom:')===0) return window.HappySupplementNutrition&&HappySupplementNutrition.customFavHTML?HappySupplementNutrition.customFavHTML(id,jrRange(),JR_DATA&&JR_DATA.days):'';   // Meal 30: свой микроэлемент в «Избранном»
   var x=JR_N[id]; if(!x) return '';
-  var key=ctx+':'+id, v=jrV(x,id), pct=jrPctOf(x,id), hasN=jrHasN(x), chk=jrHasChk(x), mt=v!=null?jrMissTxt(id):'',
-      tap=hasN||chk||!!mt, open=JR_ROW===key&&tap, fav=jrIsFav(id);
+  var key=ctx+':'+id, v=jrV(x,id), pct=jrPctOf(x,id), hasN=jrHasN(x), chk=jrHasChk(x);
+  var tap=hasN||chk, open=JR_ROW===key&&tap, fav=jrIsFav(id);
   var slot=x.np||ctx==='aa', ok=chk?jrOk(pct>=100,pct>=100?'норма закрыта':'норма не закрыта'):(slot?'<i class="jrOk none" aria-hidden="true"></i>':'');
   var mark=(fav&&ctx!=='fav')?jrStarSvg(true,'jrFm'):'';
   var h='<div class="jrSw'+(x.ch?' ch':'')+'" data-sw="'+key+'">'+
     '<button class="jrStar'+(fav?' on':'')+'" data-star="'+id+'" aria-label="'+(fav?'Убрать из избранного':'В избранное')+': '+escH(x.t)+'">'+jrStarSvg(fav,'jrSi')+'</button>'+
     '<div class="jrRow'+(x.ch?' ch':'')+(tap?' tap':'')+(open?' open':'')+'"'+(tap?' data-jr="'+key+'" role="button" tabindex="0" aria-expanded="'+open+'"':'')+'>'+
-    '<div class="jrR1"><span class="jrN">'+escH(x.t)+mark+'</span><span class="jrVR"><b class="jrV">'+(v==null?'—':(id==='n3'&&JR_DATA&&JR_DATA.omegaCoverage&&JR_DATA.omegaCoverage.missing?'':'')+((id==='n3'||id==='ala3')?new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(v):jrNum(v))+'\u00a0'+x.u)+'</b>'+ok+'</span></div>';
+    '<div class="jrR1"><span class="jrN">'+escH(x.t)+mark+'</span><span class="jrVR"><b class="jrV">'+(v==null?'—':((id==='n3'||id==='ala3')?new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(v):jrNum(v))+'\u00a0'+x.u)+'</b>'+ok+'</span></div>';
   if(hasN) h+='<div class="jrR2">'+jrMeter(pct,x)+jrCap(x,pct)+'</div>';
-  if(id==='n3'&&JR_DATA&&JR_DATA.omegaCoverage&&JR_DATA.omegaCoverage.missing)h+='<p class="jrMiss">'+(v==null?'Общий показатель не указан':'Известная часть · общий показатель есть не во всех записях')+'</p>';
-  if(mt&&!(id==='n3'&&JR_DATA&&JR_DATA.omegaCoverage&&JR_DATA.omegaCoverage.missing)) h+='<p class="jrMiss">'+mt+'</p>';
   if(open&&chk) h+='<p class="jrDet">Норма '+(x.src||'')+' — '+jrNum(jrNorm(x))+'\u00a0'+x.u+' · '+(pct>=100?'закрыта':'не закрыта')+'</p>';
-  else if(open&&(hasN||!mt)) h+='<p class="jrDet">Своя норма — '+(jrOwn(x)!=null?jrNum(jrOwn(x))+'\u00a0'+x.u:'не задана')+' · Рекомендуемая — '+
+  else if(open&&hasN) h+='<p class="jrDet">Своя норма — '+(jrOwn(x)!=null?jrNum(jrOwn(x))+'\u00a0'+x.u:'не задана')+' · Рекомендуемая — '+
     (x.rec!=null?jrNum(x.rec)+'\u00a0'+x.u+(x.src?' ('+x.src+')':''):'нет')+'</p>';
-  if(open&&mt) h+='<p class="jrDet">'+escH(jrMissWho(id))+'</p>';
   return h+'</div></div>';
 }
 var JR_OMEGA_IDS=['n3','ala3','epa','dpa','dha','epadha'],JR_OMEGA_FAV_OPEN=false;
 function jrOmegaFavorite(){
-  var n=JR_N.n3?jrV(JR_N.n3,'n3'):null,missing=JR_DATA&&JR_DATA.omegaCoverage&&JR_DATA.omegaCoverage.missing;
-  var total=n==null?'—':(missing?'':'')+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(n)+'\u00a0г';
+  var n=JR_N.n3?jrV(JR_N.n3,'n3'):null;
+  var total=n==null?'—':new Intl.NumberFormat('ru-RU',{maximumFractionDigits:3}).format(n)+'\u00a0г';
   var children=['ala3','epa','dpa','dha'].filter(function(id){return JR_N[id]&&jrV(JR_N[id],id)!=null});
-  var subtotal=jrV(JR_N.epadha,'epadha'),on=JR_OMEGA_FAV_OPEN;
-  return '<div class="jrOmegaFav"><div class="jrSw" data-sw="fav:omega"><button class="jrStar on" data-omega-fav-remove aria-label="Убрать из избранного: Омега-3">'+jrStarSvg(true,'jrSi')+'</button><button class="jrRow jrOmegaFavToggle" data-jr-omega-toggle aria-expanded="'+on+'" aria-controls="jrOmegaFavBody"><span class="jrR1"><span class="jrN">Омега-3, всего</span><span class="jrVR"><b class="jrV">'+total+'</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(on?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></span></span>'+(missing?'<span class="jrDet">'+(n==null?'Общий показатель не указан':'Известная часть')+'</span>':'')+'</button></div><div id="jrOmegaFavBody" class="jrOmegaFavBody"'+(on?'':' hidden')+'>'+(children.length?'<div class="jrOmegaParts"><p class="jrOmegaLabel">В том числе</p>'+children.map(function(id){return jrRow(id,'fav-omega')}).join('')+'</div>':'<p class="jrEmpty">Нет данных по отдельным кислотам за выбранный период.</p>')+'</div></div>';
+  var on=JR_OMEGA_FAV_OPEN,head='<span class="jrR1"><span class="jrN">Омега-3, всего</span><span class="jrVR"><b class="jrV">'+total+'</b>';
+  var start='<div class="jrOmegaFav"><div class="jrSw" data-sw="fav:omega"><button class="jrStar on" data-omega-fav-remove aria-label="Убрать из избранного: Омега-3">'+jrStarSvg(true,'jrSi')+'</button>';
+  if(!children.length)return start+'<div class="jrRow">'+head+'</span></span></div></div></div>';
+  return start+'<button class="jrRow jrOmegaFavToggle" data-jr-omega-toggle aria-expanded="'+on+'" aria-controls="jrOmegaFavBody">'+head+
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+(on?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></span></span></button></div>'+
+    '<div id="jrOmegaFavBody" class="jrOmegaFavBody"'+(on?'':' hidden')+'><div class="jrOmegaParts"><p class="jrOmegaLabel">В том числе</p>'+
+    children.map(function(id){return jrRow(id,'fav-omega')}).join('')+'</div></div></div>';
 }
 function jrRows(list,ctx){
   var omega=JR_OMEGA_IDS,shownOmega=false;
@@ -5711,16 +5711,16 @@ var JR_HUE={p:'pink',f:'violet',c:'blue',fib:'teal'};
 erWatch('jrTiles');
 function jrKcal(){ return JR_DATA?JR_DATA.mac.k:0 }          // в примере — из Б/Ж/У и клетчатки примера
 function jrWidgetHTML(){
-  var r=jrRange(), one=r.a===r.b, k=jrKcal(),kPrefix=k!=null&&JR_DATA&&JR_DATA.energyCoverage&&JR_DATA.energyCoverage.missing?'':'', fibV=jrV(JR_MAC[3],'fib'), mt=fibV!=null?jrMissTxt('fib'):'';
+  var r=jrRange(), one=r.a===r.b, k=jrKcal();
   var rows=JR_MAC.map(function(x){
     var v=jrV(x,x.id), n=jrNorm(x);
     return erRowHTML(ER_HUE[JR_HUE[x.id]],x.t,v==null?'—':gTxt(v)+(n?'/'+gTxt(n):'')+'\u00a0'+x.u,v!=null&&n?v/n:null);
   }).join('');
-  var say=(one?'Съедено ':'В среднем за день ')+(k==null?'нет данных о калориях':kPrefix+Math.round(k)+' ккал')+'; '+JR_MAC.map(function(x){
+  var say=(one?'Съедено ':'В среднем за день ')+(k==null?'нет данных о калориях':Math.round(k)+' ккал')+'; '+JR_MAC.map(function(x){
     var v=jrV(x,x.id), n=jrNorm(x); return x.t.toLowerCase()+' '+(v==null?'нет данных':gTxt(v)+(n?' из '+gTxt(n):'')+' '+x.u) }).join(', ');
   return '<div class="card erCard"><div class="erRing" role="img" aria-label="'+escH(say)+'">'+
-    erRingHTML({eat:k,arcs:['eat'],full:goalOf('k')||3000,big:k==null?'—':kPrefix+Math.round(k),cap:one?'съедено':'в среднем'})+'</div>'+
-    '<div class="erRows">'+rows+'</div>'+(mt?'<p class="erMiss">Клетчатка: '+mt+'</p>':'')+'</div>';
+    erRingHTML({eat:k,arcs:['eat'],full:goalOf('k')||3000,big:k==null?'—':Math.round(k),cap:one?'съедено':'в среднем'})+'</div>'+
+    '<div class="erRows">'+rows+'</div></div>';
 }
 var JR_CAL='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="4"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>';
 
@@ -6355,16 +6355,6 @@ function jrCompute(r){
   o.omegaCoverage=omegaCoverage;
   ids.forEach(function(id){o.v[id]=has[id]?v[id]/days:null});Object.keys(miss).forEach(function(id){o.miss[id]=foodK>0?miss[id]/foodK:0});return o;
 }
-/* «нет данных у 20 % еды» — если доля заметная (от 5 %) и сам показатель есть */
-function jrMissPct(id){
-  if(!JR_DATA||!JR_DATA.miss) return 0;
-  var s=JR_DATA.miss[id]||0; return s>=0.05?Math.round(s*100):0;
-}
-function jrMissTxt(id){var p=jrMissPct(id),n=JR_DATA&&JR_DATA.supplementMissing&&JR_DATA.supplementMissing[id],parts=[];if(p)parts.push('нет данных у '+p+' % еды');return parts.join('; ')}
-function jrMissWho(id){
-  var L=(JR_DATA&&JR_DATA.missN&&JR_DATA.missN[id])||[]; if(!L.length) return 'Итог включает только известные значения. Неизвестные и конфликтующие значения добавок не считаются нулём.';
-  return 'Без данных: '+L.slice(0,4).join(', ')+(L.length>4?' и ещё '+(L.length-4):'')+' — '+jrMissPct(id)+' % калорий еды за период. На самом деле съедено больше.';
-}
 function jrRefresh(){ JR_DATA=jrCompute(jrRange()) }
 /* своя норма: пока только Б, Ж, У и клетчатка из «Целей на день»; в примере — как в макете */
 function jrOwn(x){
@@ -6378,12 +6368,9 @@ function jrNoteTxt(){
   var t='Источники состава: '+(JR_DATA.sources||['BLS']).map(function(s){return s==='HM-JP'?'Happy Meal · расчёты по MEXT':s==='Мои'?'свои продукты':s}).join(', ')+'. Источник и версия указаны в карточке. ';
   if(BLS_ST==='fail') t='Каталог BLS здесь не открылся. Используется доступный сохранённый состав, в том числе пользовательский. ';
   else if(BLS_ST==='loading'||BLS_ST==='idle') t='Каталог состава загружается… ';
-  else if(JR_DATA.noBls) t+='У части продуктов нет полного состава. ';
-  if((DB.foods||[]).some(function(f){return !!f.composition}))t+='Учтён сохранённый состав пользовательских продуктов. При неполном составе итог включает только известные значения. ';
-  if(JR_DATA.energyCoverage&&JR_DATA.energyCoverage.missing)t+='Калории: сумма известных значений; прочерк — нет данных. ';
-  if(JR_DATA.missingMacros&&Object.values(JR_DATA.missingMacros).some(function(n){return n>0}))t+='Итоги БЖУ неполные: показана только сумма известных значений. ';
+  if((DB.foods||[]).some(function(f){return !!f.composition}))t+='Учтён сохранённый состав пользовательских продуктов. ';
   if(JR_DATA.supplementCount)t+='Учтены известные значения сохранённых приёмов добавок. Свои вещества показаны отдельно; составные показатели не выводятся из вложенных. ';
-  return t+'Прочерк — нет данных. «Нет данных у N % еды» — на продукты без этого показателя пришлось N % калорий, итог по известным значениям может быть неполным. Норма — своя из Настроек, иначе рекомендуемая.';
+  return t+'Норма — своя из Настроек, иначе рекомендуемая.';
 }
 
 /* ═══════════ АККАУНТ ═══════════
@@ -6717,7 +6704,7 @@ function jrNoteTxt(){
 <!-- «Настроить тему», как в Sport и Day: общий кусок shared/happy-theme-picker.js вместо «Выбрать оформление»
      (аудит Day 20.11.2026, п. 18: во всех приложениях; Астамур 21.11.2026 03:07 — в Meal вместе с обновлением Day) -->
 <script src="./shared/happy-theme-picker.js?v=34"></script>
-<script src="supplement-nutrition.js?v=34"></script>
+<script src="supplement-nutrition.js?v=34-7"></script>
 <script src="supplements-model.js?v=34"></script>
 <script src="supplements-store.js?v=34"></script>
 <script src="supplements-library.js?v=34"></script>
