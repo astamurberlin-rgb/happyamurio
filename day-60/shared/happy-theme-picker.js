@@ -33,15 +33,26 @@
   /* цвет значка — как его видно на самой кнопке: обводка svg (у Day микрофон контурный и белый), иначе цвет текста кнопки */
   const icon=fab&&(fab.querySelector('svg.fabMic')||fab.querySelector('svg')),is=icon?getComputedStyle(icon):null;
   const stroke=is&&is.stroke&&is.stroke!=='none'&&!/^url/.test(is.stroke)?is.stroke:'';
-  original={background:background||'#8c75db',gradient:cs?cs.backgroundImage:'none',ink:stroke||(cs?cs.color:'#fff')};
+  original={background:background||'#8c75db',gradient:cs?cs.backgroundImage:'none',shadow:cs&&cs.boxShadow!=='none'?cs.boxShadow:'',ink:stroke||(cs?cs.color:'#fff')};
   if(skin)skin.disabled=false;
   return original;
  }
+ /* Кружки «Главной кнопки» рисуются 1:1 как кнопка приложения (Астамур 22.11.2026: «перерисуй как в Color Studio»):
+    тот же градиент и та же тень, что ставит тема на .fab (вариант B или своя кнопка темы), белый контурный микрофон. */
+ const MIC='<svg class="appearance-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"></rect><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"></path></svg>';
+ const hex=c=>/^#[0-9a-f]{6}$/i.test(c||'');
+ const white=(h,a)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*(1-a)+255*a).toString(16).padStart(2,'0')).join('');
+ const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+a+')';
  function buttonLook(id){
-  const st=themes.get(id)?.state;
-  return st?{gradient:G.css(st.buttonGradient),ink:st.buttonTextColor}:{gradient:originals().gradient,ink:originals().ink};
+  const s=themes.get(id)?.state;
+  if(!s)return {gradient:originals().gradient,shadow:originals().shadow,ink:'#fff'};
+  const fc=hex(s.buttonColor)?s.buttonColor:G.colors(s.buttonGradient)[0].color;
+  const custom=s.buttonStyle==='custom'&&s.buttonGradient,shine=Number(s.buttonShine);
+  const gradient=custom?G.css(s.buttonGradient):'radial-gradient(circle at 35% 25%,'+white(fc,.5)+','+white(fc,.25)+' 43%,'+fc+' 76%)';
+  const shadow=custom?(shine>0?'0 6px 14px #2a184844,0 0 25px '+rgba(fc,Math.min(.5,shine/72)):'0 5px 14px #00000028,inset 0 1px 0 #ffffff40'):'0 8px 20px '+rgba(fc,.22);
+  return {gradient,shadow,ink:'#fff'};
  }
- function paintButtonSwatch(swatch,id){const {gradient,ink}=buttonLook(id);swatch.style.setProperty('--swatch',gradient);swatch.style.setProperty('--swatch-ink',ink)}
+ function paintButtonSwatch(swatch,id){const {gradient,shadow,ink}=buttonLook(id);swatch.style.setProperty('--swatch',gradient);swatch.style.setProperty('--swatch-shadow',shadow||'none');swatch.style.setProperty('--swatch-ink',ink)}
  const updateMask=list=>list.toggleAttribute('data-end',list.scrollLeft>=list.scrollWidth-list.clientWidth-2);
  function reveal(group,option){
   const {list}=group;if(!option)return;const left=option.offsetLeft;
@@ -82,7 +93,7 @@
    const swatch=option.querySelector('.appearance-swatch');
    if(key==='theme')swatch.style.setProperty('--swatch',item.state?G.css(item.state.backgroundGradient):originals().background);
    else{
-    const f=fabEl(),icon=f&&(f.querySelector('svg.fabMic')||f.querySelector('svg'));if(icon)swatch.append(icon.cloneNode(true));
+    swatch.innerHTML=MIC;
     paintButtonSwatch(swatch,item.id==='theme'?sel().theme:item.id);if(item.id==='theme')autoSwatch=swatch;
    }
    option.addEventListener('click',()=>choose(group,option,item,title,status));

@@ -41,7 +41,7 @@ function category(c){return c.id==='SUPP'?'supplements':['HM','UZBEK','KAV'].inc
 /* число шаблонов БАДов — из каталога, когда он прочитан */
 function countOf(c){if(c.id!=='SUPP')return c.count;const n=root.HappySupplementsLibrary?root.HappySupplementsLibrary.templates.length:0;return n?n+' '+(n%10===1&&n%100!==11?'шаблон':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'шаблона':'шаблонов'):c.count}
 function enabled(c){return root.MealSources.enabled(root.DB,c.source||c.id)}
-function buyControl(c){if(c.base)return '';const owned=purchased(c);return '<div class="cc-buy"><button type="button" data-cc-buy="'+c.id+'" '+(owned?'disabled':'')+'>'+(owned?'Куплено':'Купить · 2 €')+'</button><small>Тестовая покупка · без оплаты</small></div>'}
+function buyControl(c){if(c.base)return '';const owned=purchased(c);return '<div class="cc-buy"><button type="button" data-cc-buy="'+c.id+'" '+(owned?'disabled':'')+'>'+(owned?'Куплено':'Купить · 2 €')+'</button></div>'   /* аудит 3 (Астамур 21.11): подпись «Тестовая покупка» убрана — ломает композицию */}
 function buy(c){
  if(c.base||purchased(c))return;
  if(typeof root.writeGuard==='function'&&root.writeGuard())return;   // без входа записи не принимаются
@@ -131,8 +131,9 @@ function mountSupplements(screen){
  const section=root.document.createElement('section');section.id='ccSupplements';section.hidden=true;
  while(original.firstChild)section.append(original.firstChild);original.remove();screen.append(section);
  const grid=root.document.createElement('div');grid.id='ccPurchasedSupplements';grid.className='cc-grid cc-purchased';section.prepend(grid);
- const head=section.querySelector('.sp-head'),top=root.document.createElement('div');top.id='ccSupplementBuy';if(head)head.append(top);
- const bottom=root.document.createElement('div');bottom.id='ccSupplementBuyBottom';bottom.className='cc-buy-bottom';if(e('spList'))e('spList').after(bottom);
+ /* Meal 33.30 (аудит 3, Астамур 21.11): «Купить» — под картинкой, во всю ширину, а не справа от заголовка */
+ const head=section.querySelector('.sp-head'),cover=section.querySelector('.sp-catalog-cover'),top=root.document.createElement('div');top.id='ccSupplementBuy';top.className='cc-buy-bottom cc-buy-top';if(cover)cover.after(top);else if(head)head.append(top);
+ /* аудит 3 (Астамур 21.11): «Купить» только под картинкой — нижней кнопки в конце списка нет */
 }
 function mount(){
  const screen=root.document.querySelector('[data-screen="recipes"]');if(!screen||!e('rcGrid'))return;
