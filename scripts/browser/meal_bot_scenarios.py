@@ -670,6 +670,11 @@ dict(id="Мр6", msgs=["мороженое 100 г"], mode="none", ask=True),
  dict(id="СБ17", eaten=True, msgs=["люля-кебаб 2 штуки"], want=[("люля", 200)]),
  dict(id="СБ19", eaten=True, msgs=["том ям 300 г"], mode="none"),
  dict(id="СБ20", eaten=True, msgs=["борщик тарелка"], want=[("борщ", 300)]),
+ # 22.11.2026 · закрепление «спагетти в томатном соусе» — только с числом при блюде: без числа не подставлять порцию ресторанного блюда 510 г (находка «Проверить общую ветку»)
+ dict(id="Ис57", eaten=True, msgs=["макароны с томатным соусом и сыром 300 г"], mode="none"),
+ dict(id="Ис58", eaten=True, msgs=["спагетти с томатным соусом и тёртым сыром"], mode="none"),
+ dict(id="Ис59", eaten=True, msgs=["паста с томатным соусом"], mode="none"),
+ dict(id="Ис60", eaten=True, msgs=["макароны с томатным соусом 300 г и сыр 20 г"], want=[("спагетти помодоро", 300), ("сыр", 20)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
