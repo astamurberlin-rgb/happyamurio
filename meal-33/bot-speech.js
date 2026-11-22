@@ -73,6 +73,10 @@ var MealSpeech=(function(){
       if(!c.offer||res) return;
       var m=new RegExp('\\s(?:(\\d+(?:,\\d+)?)\\s+)?(?:'+c.said+')(?:\\s+(\\d+(?:,\\d+)?)\\s*(?:г|гр|грам+[а-я]*))?\\s$').exec(s); if(!m||hasDish(c.dish)) return;
       var tot=c.parts.reduce(function(t,x){ return t+x.g },0), k=m[2]?num(m[2])/tot:(m[1]?num(m[1]):1);
+      /* названный вес всего блюда («творог с изюмом 300 г»): добавка — своими граммами, основа — остаток (решение Астамура 22.11.2026);
+         добавка больше четверти названного («гречка с грибами, всего 200 г») — в той же пропорции, как раньше */
+      var add=c.parts.slice(1).reduce(function(t,x){ return t+x.g },0), W=m[2]?num(m[2]):0;
+      if(W&&add<=W/4){ res={name:c.name,parts:c.parts.map(function(x,i){ return {w:x.search,g:i?x.g:Math.round(W-add)} })}; return }
       res={name:c.name,parts:c.parts.map(function(x){ return {w:x.search,g:Math.round(x.g*k)} })};
     });
     return res;
@@ -281,7 +285,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
+    noGeneral:function(u){ return NOGEN[u]||null }, wordForms:function(){ return (D&&D.dish_word_forms)||[] }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();
