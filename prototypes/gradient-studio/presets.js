@@ -1,5 +1,5 @@
 /* Студия градиентов · пресеты заливки по темам.
-   По 3 пресета на каждую тему. Формат — PRESETS.md рядом.
+   По 3 пресета на каждую тему; у трёх ночных тем есть четвёртый — «Рассвет», по референсу. Формат — PRESETS.md рядом.
    Ключ темы — id из shared/happy-reference-themes.js (например 'happy-ref-mint-v1'), для исходного вида приложений — 'original'.
    Пустой список или отсутствие темы — в студии пустые места «Ждёт пресет».
    Каждый пресет — полный набор: дуги энергии, полоски строк, дуги Day. Чего в пресете нет — берётся из исходного вида приложения. */
@@ -498,6 +498,21 @@ window.HappyGradientPresets={
         balance:{posColor:'#E3EDF1',negColor:'#C8B5D6',blend:55,fade:35,alpha:90},
         progress:['#CBC2DE','#C2CFDE','#DCE7EA','#ECF3F5']
       }
+    },
+    {
+      name:'Рассвет',
+      note:'Референс: ночной экран Sleep Cycle — бирюза, светлая середина и персик.',
+      energy:{
+        eat:  {c0:'#7DCDD9',cm:'#E3DDD1',c1:'#E8B184',mw:8,s0:20,s1:86,a0:72,a1:92},
+        spent:{c0:'#E8B184',cm:'#E3DDD1',c1:'#7DCDD9',mw:8,s0:14,s1:80,a0:76,a1:95},
+        track:15
+      },
+      bars:{hues:{pink:58,violet:82,blue:192,teal:210},chroma:.07,from:.86,to:.72,over:.56,dot:.8,track:15},
+      day:{
+        flow:{mode:'flow',colors:['#6BC8D3','#E5CEA5','#EFAE7C'],intensity:60,softness:84,duration:24},
+        balance:{posColor:'#8ED9E2',negColor:'#E3A97D',blend:55,fade:35,alpha:96},
+        progress:['#E3A97D','#E1CFAC','#A8D8D8','#7DCDD9']
+      }
     }
   ],
 
@@ -547,6 +562,21 @@ window.HappyGradientPresets={
         balance:{posColor:'#F0E8EF',negColor:'#E0AEB8',blend:55,fade:35,alpha:90},
         progress:['#E5BFC6','#E2C9D8','#EBE1E9','#F5F0F4']
       }
+    },
+    {
+      name:'Рассвет',
+      note:'Референс: ночной экран Sleep Cycle — бирюза, светлая середина и персик.',
+      energy:{
+        eat:  {c0:'#7DCDD9',cm:'#E3DDD1',c1:'#E8B184',mw:8,s0:20,s1:86,a0:72,a1:92},
+        spent:{c0:'#E8B184',cm:'#E3DDD1',c1:'#7DCDD9',mw:8,s0:14,s1:80,a0:76,a1:95},
+        track:15
+      },
+      bars:{hues:{pink:58,violet:82,blue:192,teal:210},chroma:.07,from:.86,to:.72,over:.56,dot:.8,track:15},
+      day:{
+        flow:{mode:'flow',colors:['#6BC8D3','#E5CEA5','#EFAE7C'],intensity:60,softness:84,duration:24},
+        balance:{posColor:'#8ED9E2',negColor:'#E3A97D',blend:55,fade:35,alpha:96},
+        progress:['#E3A97D','#E1CFAC','#A8D8D8','#7DCDD9']
+      }
     }
   ],
 
@@ -595,6 +625,21 @@ window.HappyGradientPresets={
         flow:{mode:'breathe',colors:['#B4B5CE','#D6D6E1','#BEA8C3'],intensity:40,softness:88,duration:11},
         balance:{posColor:'#EAEAF5',negColor:'#D2B1D3',blend:55,fade:35,alpha:90},
         progress:['#DAC1DF','#D5CCE8','#E3E3F2','#F1F1F8']
+      }
+    },
+    {
+      name:'Рассвет',
+      note:'Референс: ночной экран Sleep Cycle — бирюза, светлая середина и персик.',
+      energy:{
+        eat:  {c0:'#7DCDD9',cm:'#E3DDD1',c1:'#E8B184',mw:8,s0:20,s1:86,a0:72,a1:92},
+        spent:{c0:'#E8B184',cm:'#E3DDD1',c1:'#7DCDD9',mw:8,s0:14,s1:80,a0:76,a1:95},
+        track:15
+      },
+      bars:{hues:{pink:58,violet:82,blue:192,teal:210},chroma:.07,from:.86,to:.72,over:.56,dot:.8,track:15},
+      day:{
+        flow:{mode:'flow',colors:['#6BC8D3','#E5CEA5','#EFAE7C'],intensity:60,softness:84,duration:24},
+        balance:{posColor:'#8ED9E2',negColor:'#E3A97D',blend:55,fade:35,alpha:96},
+        progress:['#E3A97D','#E1CFAC','#A8D8D8','#7DCDD9']
       }
     }
   ]

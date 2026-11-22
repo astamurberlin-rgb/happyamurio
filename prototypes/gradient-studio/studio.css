@@ -126,17 +126,18 @@ body[data-tab=anim] #widgets{display:none}
 .cmp .art>.bgl{position:absolute;inset:0;z-index:-1}
 .cmp .art>.bgl.aurora{inset:-30%;filter:blur(30px) saturate(1.15)}
 .cmp.empty .art{border-style:dashed;background:#ffffff05;color:#8f8aa8;font-size:20px}
-.cmp .erCard{--ringH:58px;grid-template-columns:1fr;row-gap:7px;padding:6px;border-radius:14px;justify-items:center;width:100%}
+.cmp .art{container-type:inline-size}
+.cmp .erCard{--ringH:min(58px,68cqw);grid-template-columns:1fr;row-gap:7px;padding:6px;border-radius:14px;justify-items:center;width:100%}
 .cmp .erRows{height:auto;width:100%;gap:4px}
 .cmp .erR{grid-template-columns:1fr;row-gap:0}
 .cmp .erR>span:not(.erBar),.cmp .erR>b,.cmp .erDot,.cmp .erKnob small{display:none}
 .cmp .erBar{height:4px}
-.cmp .erKnob b{font-size:12px}
+.cmp .erKnob b{display:none}
 .cmp .nwSl{flex:none;width:100%}
 .cmp .ringWrap{width:100%}
 .cmp .knob>*,.cmp .care-ring-label{display:none}
 .dotEd{display:inline-block;width:6px;height:6px;border-radius:50%;background:#ffcf7a;margin-left:4px;vertical-align:middle}
-@media(min-width:620px){.cmp .erCard{--ringH:96px;padding:10px}.cmp .art{min-height:170px}}
+@media(min-width:620px){.cmp .erCard{--ringH:min(96px,68cqw);padding:10px}.cmp .art{min-height:170px}}
 
 /* мини-кольца «Оживления» */
 .minis{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 12px;padding:2px 16px;scroll-padding:0 16px}
