@@ -4,7 +4,7 @@
 import datetime, json, re, sys
 from playwright.sync_api import sync_playwright
 from common import *
-from meal_bot_scenarios import S, GOALS, D as D0
+from meal_bot_scenarios import S, GOALS, OWN, D as D0
 
 RESET = """()=>{DB.days={};DB.favs=[];try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),q:x.q,u:x.u,g:x.g,t:x.t||null,tm:x.tm||0,sec:x.sec,tap:x.tap||null})}));return o}"""
@@ -149,6 +149,46 @@ with sync_playwright() as p:
         out["rows"].append({"id": s["id"], "now": "ошибка" if why else "верно", "why": "; ".join(why), "reply": text[:300]})
         if why: gbad.append("%s: %s" % (s["id"], "; ".join(why)))
     check("мастер целей: %d сценариев" % len(GOALS), not gbad, " | ".join(gbad[:6]))
+    # Meal 33.36 · свой продукт через чат: шаги кнопками и словами, «нет в базе» → свой продукт → запись, сверка калорий, похожий из базы
+    obad = []
+    FOOD = """(n)=>{const f=(DB.foods||[]).find(x=>x.n===n);if(!f)return null;const v=k=>MealProducts.value(f,k);return {n:f.n,k:v('kcal'),p:v('prot'),f:v('fat'),c:v('carb'),por:f.por||{},copied:f.copiedFrom?f.copiedFrom.name:null}}"""
+    # кнопка в ответе или в вопросе строки списка (вопрос «нет в базе» показывается в открытой строке)
+    TAPQ = """(label)=>{const last=[...D.msgs].reverse().find(m=>m.who==='bot'&&m.html);const S=D.bot||{};const box=document.createElement('div');box.innerHTML=(last?last.html:'')+(S.ask&&S.ask.q&&S.ask.q.question||'');
+ const b=[...box.querySelectorAll('[data-bot]')].find(x=>x.textContent.trim()===label);if(!b)return {html:'',missing:true};MealBot.tap(b.dataset.bot,label);return {n:1}}"""
+    FIRST = """(pre)=>{const last=[...D.msgs].reverse().find(m=>m.who==='bot'&&m.html);const box=document.createElement('div');box.innerHTML=last?last.html:'';const b=[...box.querySelectorAll('[data-bot^="'+pre+'"]')][0];if(!b)return {missing:true};MealBot.tap(b.dataset.bot,b.textContent.trim());return {n:1}}"""
+    for s in OWN:
+        page.clock.set_fixed_time(datetime.datetime.fromisoformat(D0))
+        page.evaluate(RESET)
+        page.evaluate("()=>{DB.days={};DB.foods=[];rebuildLib();save();saveNow();return true}")
+        html = ""
+        for m in s["msgs"]:
+            if isinstance(m, dict) or m in ("@first", "@suggest"):   # @first — первый похожий из базы, @suggest — название, как услышал
+                r = page.evaluate(FIRST, "st:own:@from") if m == "@first" else page.evaluate(FIRST, "st:own:@usename") if m == "@suggest" else page.evaluate(TAPQ, m["tap"])
+                if r.get("missing"): html = "нет кнопки «%s»" % (m if m == "@first" else m["tap"]); break
+                page.wait_for_timeout(450); r = page.evaluate(LAST)
+            else: r = page.evaluate(SAY, [m, False])
+            html = r["html"]
+        page.wait_for_timeout(450)
+        text = re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", page.evaluate(LAST)["html"] if html != "" and not html.startswith("нет кнопки") else html)).strip()
+        if html.startswith("нет кнопки"): text = html
+        recs = page.evaluate(RECS); why = []
+        if s.get("reply") and nm(s["reply"]) not in nm(text) and nm(s["reply"]) not in nm(re.sub("<[^>]+>", " ", html)): why.append("нет ответа «%s»" % s["reply"])
+        want = s.get("food")
+        foods = page.evaluate("()=>(DB.foods||[]).map(f=>f.n)")
+        if want:
+            got = page.evaluate(FOOD, want["n"])
+            if not got: why.append("продукт не сохранён (%s)" % ", ".join(foods))
+            else:
+                if want.get("like") and not (got["copied"] and want["like"] in nm(got["copied"])): why.append("не копия похожего: %s" % got["copied"])
+                for k in "kpfc":
+                    if k in want and (want[k] is None) != (got[k] is None) or k in want and want[k] is not None and abs(got[k] - want[k]) > .05: why.append("%s=%s" % (k, got[k]))
+                if "por" in want and got["por"] != want["por"]: why.append("меры %s" % got["por"])
+        elif foods: why.append("сохранён лишний продукт: " + ", ".join(foods))
+        if not exact(s.get("want", []), recs): why.append("дневник: " + "; ".join("%s %s г" % (r["n"], r["g"]) for r in recs))
+        out["rows"].append({"id": s["id"], "now": "ошибка" if why else "верно", "why": "; ".join(why), "reply": text[:300]})
+        if why: obad.append("%s: %s" % (s["id"], "; ".join(why)))
+    page.evaluate("()=>{DB.days={};DB.foods=[];rebuildLib();save();saveNow();return true}")
+    check("свой продукт через чат: %d сценариев" % len(OWN), not obad, " | ".join(obad[:8]))
     page.evaluate(RESET)
     page.evaluate("()=>{DB.goals={k:'',p:'',f:'',c:'',fib:''};return true}")
     h0 = page.evaluate("()=>MealBot.hello(D)")

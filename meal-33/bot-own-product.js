@@ -123,3 +123,111 @@ window.MealOwnProduct=(function(){
   function unknown(text){ var d=data(); return !!d&&has(text,d.unknown_ru) }
   return {request:request,nutrition:nutrition,check:check,per100:per100,grams:grams,pieceWord:pieceWord,unknown:unknown,keys:KEYS};
 })();
+
+/* Сценарий пошаговых вопросов (bot-steps.js): название → калории и БЖУ → на 100 г или на штуку → вес штуки →
+   сверка калорий с БЖУ → вес порции → итог. Сохраняет MealProductEditor.quick — тот же путь, что у формы.
+   Запуск: фраза («заведи продукт…»), кнопка «Завести свой продукт» у «нет в базе» (тогда после сохранения строка записывается). */
+window.MealOwnProductFlow=(function(){
+  if(typeof MealBotSteps==='undefined'||!window.MealOwnProduct) return null;
+  var M=MealBotSteps, O=window.MealOwnProduct, p=M.p, esc=M.esc;
+  var NUT=['kcal','prot','fat','carb'], TITLE={kcal:'Калории',prot:'Белки',fat:'Жиры',carb:'Углеводы'}, UNIT={kcal:'ккал',prot:'г',fat:'г',carb:'г'};
+  function n1(v){ return String(Math.round(v*10)/10).replace('.',',') }
+  function capf(s){ s=String(s||'').trim(); return s?s.charAt(0).toLocaleUpperCase('ru')+s.slice(1):s }
+  function known(st){ return NUT.some(function(k){ return st.v[k]!=null }) }
+  function vals(st){ var o={}; NUT.forEach(function(k){ o[k]=st.v[k]==null?null:st.v[k] }); o.basis=st.v.basis; o.basisG=st.v.basisG; return o }
+  function per100(st){ return O.per100(vals(st)) }
+  /* найденное разбором → поля сценария; одно голое число — в спрошенный показатель */
+  function fromNut(n,key,text){
+    var out={};
+    NUT.forEach(function(k){ if(n[k]!=null) out[k]=n[k] });
+    if(n.basis) out.basis=n.basis;
+    if(n.basisG) out.basisG=n.basisG;
+    /* голое число — в спрошенный показатель; «банан 120 г» — не ответ, а еда (уйдёт в дневник) */
+    if(!n.found&&key&&!/[а-яa-z]{3,}/i.test(String(text).toLowerCase().replace(/ккал|калори[а-я]*|грамм[а-я]*|примерно|около|где-то/g,' '))){ var g=M.numbers(text); if(g.length===1) out[key]=g[0] }
+    return out;
+  }
+  function similar(name){
+    if(typeof searchLib!=='function') return [];
+    /* «кекс от бабушки» целиком не найти — убираем слова с конца, пока не найдётся */
+    var ws=String(name||'').trim().split(/\s+/), list=[];
+    while(ws.length&&!list.length){ list=searchLib(ws.join(' ')).filter(function(f){ return f.src!=='Мои'&&(typeof MealSources==='undefined'||MealSources.available(DB,f)) }); ws.pop() }
+    return list.slice(0,3);
+  }
+  function likeError(st){
+    var list=similar(st.v.name);
+    if(!list.length) return {error:'Похожего в базе не нашёл. Можно сохранить без калорий и дописать потом в форме.',chips:[['@skipnut','Сохранить без калорий'],['@form','Заполню в форме']]};
+    return {error:'Возьму состав у похожего продукта из базы, название оставлю твоё. Какой ближе?',chips:list.map(function(f){ return ['@from:'+f.id,f.n] })};
+  }
+  function nutParse(key){
+    return function(text,st){
+      if(O.unknown(text)) return key==='kcal'?likeError(st):{prot:null,fat:null,carb:null};
+      var r=fromNut(O.nutrition(text),key,text);
+      return Object.keys(r).length?r:null;
+    };
+  }
+  var flow={
+    id:'own', title:'Свой продукт',
+    start:function(text){ var r=O.request(text); if(!r||r.how||r.dish) return null; var init={}; if(r.name) init.name=r.name; if(r.nutrition) Object.assign(init,fromNut(r.nutrition)); return init },
+    intro:function(st){ return st.v.askId?'Заведу свой продукт в «Мои продукты» и сразу запишу его.':'Заведу свой продукт в «Мои продукты».' },
+    fields:{name:['назван*','имя','название'],kcal:['калори*','ккал','калорийн*'],prot:['белк*','белок'],fat:['жир*'],carb:['углевод*'],piece:['порци*','вес штуки','штук*']},
+    steps:[
+      {key:'name',label:'Название',ask:function(st){ var sg=st.v.suggest; return sg?{text:'Как назвать продукт? Можно оставить, как услышал, или сказать своё название.',chips:[['@usename',capf(sg)]]}:{text:'Как назвать продукт? Например: «Сырок Б.Ю. Александров».'} },
+        parse:function(text){ var t=String(text||'').trim(), C=(window.HappyMealSpeechData||{}).chat_steps||{};
+          if(!/[а-яa-z]/i.test(t)) return {error:'Скажи название словами.'};
+          if(M.find(t,C.edit)&&M.find(t,flow.fields.name)) return null;   // «поправь название» — это просьба, а не новое название
+          return {name:capf(t).slice(0,200)} }},
+      {key:'kcal',label:'Калории',when:function(st){ return !st.v.from },
+        ask:function(){ return {text:'Сколько в нём калорий и БЖУ? Скажи как на упаковке: «на 100 г 250 ккал, белки 10, жиры 15, углеводы 20».',chips:[['@like','Не знаю — возьми похожий'],['@form','Заполню в форме']]} },
+        parse:nutParse('kcal'),optional:true},
+      {key:'prot',label:'Белки',when:function(st){ return !st.v.from },
+        ask:function(){ return {text:'А белки, жиры и углеводы? Можно тремя числами: «10 15 20».',chips:[['@nobju','Не знаю']]} },parse:nutParse('prot'),optional:true},
+      {key:'fat',label:'Жиры',when:function(st){ return !st.v.from&&st.v.prot!==null },ask:function(){ return {text:'Сколько жиров?'} },parse:nutParse('fat'),optional:true},
+      {key:'carb',label:'Углеводы',when:function(st){ return !st.v.from&&st.v.prot!==null },ask:function(){ return {text:'Сколько углеводов?'} },parse:nutParse('carb'),optional:true},
+      {key:'basis',label:'На 100 г или на штуку',when:function(st){ return !st.v.from&&known(st) },
+        ask:function(){ return {text:'Это на 100 г или на одну штуку (упаковку)?',chips:[['100','На 100 г'],['piece','На штуку']]} },
+        parse:function(text){ var n=O.nutrition(text); if(n.basis) return n.basisG?{basis:n.basis,basisG:n.basisG}:{basis:n.basis}; if(/100|сто/.test(text)) return {basis:'100'}; if(O.pieceWord(text)) return {basis:'piece'}; return null }},
+      {key:'basisG',label:'Вес штуки',numeric:true,when:function(st){ return st.v.basis==='piece' },
+        ask:function(){ return {text:'Сколько весит одна штука? Посмотри на упаковке, например «40 г».'} },
+        parse:function(text){ var g=O.grams(text); return g?{basisG:g}:null }},
+      {key:'ok',noEdit:true,when:function(st){ return !st.v.from&&O.check(per100(st))!=null },
+        ask:function(st){ var v=per100(st); return {text:'По белкам, жирам и углеводам выходит около '+n1(O.check(v))+' ккал на 100 г, а сказано '+n1(v.kcal)+'. Так и записать?',chips:[['yes','Да, так на упаковке'],['@fix:kcal','Скажу заново']]} },
+        chip:function(){ return {ok:true} },
+        parse:function(text,st){ if(M.only(text,(window.HappyMealSpeechData.chat_steps||{}).yes)) return {ok:true}; var n=O.nutrition(text); if(n.found){ var r=fromNut(n); delete st.v.ok; return r } return null }},
+      {key:'piece',label:'Вес порции',optional:true,numeric:true,when:function(st){ return st.v.basis!=='piece' },
+        ask:function(st){ return {text:'Сколько весит одна штука или порция? Например «40 г». Не нужно — скажи «пропусти».'} },
+        parse:function(text){ var g=O.grams(text); return g?{piece:g,pieceWord:O.pieceWord(text)}:null }}
+    ],
+    summary:function(st){
+      var v=per100(st), f=st.v.from&&typeof FOODS!=='undefined'&&FOODS[st.v.from], rows=[];
+      if(f) rows.push('Состав — как у «'+esc(f.n)+'»');
+      else NUT.forEach(function(k){ rows.push(TITLE[k]+': '+(v[k]==null?'нет данных':n1(v[k])+' '+UNIT[k])) });
+      var g=st.v.basis==='piece'?st.v.basisG:st.v.piece;
+      return {text:p('«'+esc(st.v.name)+'»'+(f?'':' — на 100 г:'))+'<ul class="mlHintList">'+rows.map(function(r){ return '<li>'+r+'</li>' }).join('')+'</ul>'+(g?p('Одна штука — '+n1(g)+' г.'):'')+p('Сохранить в «Мои продукты»?'),
+        chips:[['@save','Сохранить'],['@edit','Поправить'],['@form','В форме'],['@cancel','Отмена']]};
+    },
+    command:function(name,st,S,args){
+      if(name==='like') return M.chips?(function(){ var e=likeError(st); return p(e.error)+M.chips(e.chips.map(function(c){ return ['st:own:'+c[0],c[1]] })) })():null;
+      if(name==='from'){ var fid=args.join(':'); if(String(fid).indexOf('bls:')===0&&typeof blsUse==='function') blsUse(fid); return FOODS[fid]?{set:{from:fid}}:null }
+      if(name==='usename') return st.v.suggest?{set:{name:capf(st.v.suggest).slice(0,200)}}:null;
+      if(name==='nobju') return {set:{prot:null,fat:null,carb:null}};
+      if(name==='skipnut') return {set:{kcal:null,prot:null,fat:null,carb:null}};
+      if(name==='form'){ var nm=st.v.name||'', ask=st.v.askId, chat=CH.meal; S.steps=null;
+        if(window.MealProductEditor) MealProductEditor.create(nm,function(food){ if(ask&&window.MealBot) MealBot.replaceMissing(chat,ask,food.id) });
+        return p('Открыл форму своего продукта.') }
+      return null;
+    },
+    save:function(st){
+      var v=per100(st), g=st.v.basis==='piece'?st.v.basisG:st.v.piece, por={}, food;
+      if(g) por[st.v.basis==='piece'||!st.v.pieceWord?'шт':st.v.pieceWord]=g;
+      try{ food=MealProductEditor.quick({name:st.v.name,per100:st.v.from?{}:v,from:st.v.from?FOODS[st.v.from]:null,por:por}) }
+      catch(e){ return {html:p(esc(e.message))+(/уже есть/.test(e.message)?p('Скажи другое название: «поправь название».'):''),keep:true} }
+      if(!food) return {html:p('Сначала войди в аккаунт — без входа продукт не сохранить.'),keep:true};
+      var ask=st.v.askId, chat=CH.meal;
+      if(ask&&window.MealBot) setTimeout(function(){ MealBot.replaceMissing(chat,ask,food.id) },0);
+      return p('Сохранил «'+esc(food.n)+'» в «Мои продукты».'+(ask?'':' Теперь его можно называть, когда записываешь еду.'));
+    },
+    cancelled:'Хорошо, продукт не завёл.'
+  };
+  M.define(flow);
+  return flow;
+})();
