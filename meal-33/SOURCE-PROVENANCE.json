@@ -939,8 +939,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 36815,
-   "sha256": "7909f2592d7b7e077612e57e2c2a411a729892de15432ffe8f0b4773c1106073"
+   "size": 36804,
+   "sha256": "f404637a502492976435fcd7b8d788bd21007b158160371a6a41506529d23599"
   },
   {
    "path": "shared/happy-screens.js",

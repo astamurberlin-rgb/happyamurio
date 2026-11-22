@@ -230,7 +230,7 @@ body.hs-open{overflow:hidden}
 .hs-history summary::-webkit-details-marker{display:none}
 .hs-history summary span{color:var(--happy-ink)}
 .hs-history-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
-.hs-units h2{font-size:14px;font-weight:600;color:var(--hs-muted);margin-bottom:10px}
+.hs-units h2{font-size:14px;font-weight:600;color:#fff;margin-bottom:10px}
 .hs-units-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
 /* Единицы в профиле: дорожка 44, как у кнопок внутри (было 36 — выбранная пилюля 44 вылезала и казалась сплющенной; Астамур 21.11.2026). */
 .hs-units-row>.hs-segment{width:160px;height:44px}
