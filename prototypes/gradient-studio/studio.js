@@ -1,10 +1,10 @@
-/* Студия градиентов · Happy 1.0 (лаборатория, 22.11.2026 · Claude)
+/* Студия градиентов · Happy 1.1 (лаборатория, 22.11.2026 · Claude)
    Одна студия для всех градиентных заливок: дуги Day («Сейчас»: поток, баланс самочувствия, заливка колец),
    кольцо энергии Meal / Sport / Day с полосками строк (КБЖУ, расход, баланс). Заменяет Студию дуг 1.2 и «Пробу кольца энергии».
    Виджеты рисуются так же, как в приложениях:
    — кольцо энергии и полоски — тот же расчёт, что в meal-33/index.html (erLayerHTML, erRowHTML) и sport-44/…/energy-widget.js;
    — дуги Day — сам движок приложения day-60/arc-motion.js (HappyArc), разметка — как в day-60/selfcare-ui.js.
-   Пресеты тем — presets.js, формат — PRESETS.md. Студия ничего не меняет в приложениях. */
+   Пресеты тем — presets.js (1.1: по три на каждую тему — в тон, контраст, мягкий), формат — PRESETS.md. Студия ничего не меняет в приложениях. */
 (function(){
 'use strict';
 const G=window.HappyGradients, REF=window.HappyReferenceThemes, ARC=window.HappyArc, LIB=window.HappyGradientPresets||{themes:{}};
@@ -291,6 +291,7 @@ function renderPresets(){
     h+=p?'<button type="button" class="pcard" data-src="f'+i+'" aria-pressed="'+(src==='f'+i)+'"><span class="ps" style="--pbg:'+bg+'">'+swatchHTML(fromPreset(p),app)+'</span><span>'+esc(p.name||'Пресет '+(i+1))+'</span></button>'
         :'<div class="pcard empty"><span class="ps">+</span><span>Пресет '+(i+1)+' · ждёт Fable</span></div>' }
   $('presets').innerHTML=h;
+  $('presetNotes').innerHTML=list.slice(0,3).map((p,i)=>p&&p.note?'<p class="pn'+(src==='f'+i?' on':'')+'"><b>'+esc(p.name||'Пресет '+(i+1))+'.</b> '+esc(p.note)+'</p>':'').join('');   // идея каждого пресета — одной фразой
   const mine=st.mine[st.theme]||[];
   $('mine').innerHTML=mine.length?mine.map((m,i)=>'<div class="mine-row"><button type="button" class="name" data-src="m'+i+'" aria-pressed="'+(src==='m'+i)+'">'+(src==='m'+i?'● ':'')+esc(m.name)+'</button><button type="button" class="del" data-del="'+i+'" aria-label="Удалить вариант «'+esc(m.name)+'»">×</button></div>').join(''):'<p class="note">Своих вариантов для этой темы пока нет.</p>';
   $('editedMark').hidden=!edited();
