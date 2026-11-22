@@ -4,7 +4,7 @@
 import datetime, json, re, sys
 from playwright.sync_api import sync_playwright
 from common import *
-from meal_bot_scenarios import S
+from meal_bot_scenarios import S, GOALS, D as D0
 
 RESET = """()=>{DB.days={};DB.favs=[];try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),q:x.q,u:x.u,g:x.g,t:x.t||null,tm:x.tm||0,sec:x.sec,tap:x.tap||null})}));return o}"""
@@ -120,6 +120,42 @@ with sync_playwright() as p:
     n_ok = sum(1 for r in out["rows"] if r["now"] == "записал верно")
     out["summary"] = {"всего": len(S), "записал верно": n_ok, "спросил или отложил": len(S) - n_ok - len(bad), "ошибка": len(bad)}
     check("ошибочных записей нет (%d фраз, верно %d)" % (len(S), n_ok), not bad, " | ".join(bad[:6]))
+    # Meal 33.36 · мастер целей в чате: шаги кнопками и словами, назад, отмена, поправка, еда посреди вопросов, возраст вне расчёта
+    gbad = []
+    for s in GOALS:
+        page.clock.set_fixed_time(datetime.datetime.fromisoformat(D0))
+        page.evaluate(RESET)
+        page.evaluate("()=>{DB.goals={k:'',p:'',f:'',c:'',fib:''};DB.goalVersions=[];return true}")
+        if s.get("profile") is not None: page.evaluate("async(p)=>{await HappyPerson.update(p);return true}", s["profile"])
+        html = ""
+        for m in s["msgs"]:
+            if isinstance(m, dict):
+                r = page.evaluate(TAP, m["tap"])
+                if r.get("missing"): html = "нет кнопки «%s»" % m["tap"]; break
+                page.wait_for_timeout(450); r = page.evaluate(LAST)
+            else: r = page.evaluate(SAY, [m, False])
+            html = r["html"]
+        page.wait_for_timeout(300)
+        got = page.evaluate("()=>({k:DB.goals.k,p:DB.goals.p,prof:HappyPerson.data().profile,latest:(HappyPerson.data().latest||{}).kg||null})")
+        recs = page.evaluate(RECS); why = []
+        text = re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", html)).strip()
+        if s.get("reply") and nm(s["reply"]) not in nm(text): why.append("нет ответа «%s»" % s["reply"])
+        if str(got["k"]) != str(s["k"]): why.append("калории %s, а не %s" % (got["k"] or "—", s["k"] or "—"))
+        if "p" in s and abs(float(got["p"] or 0) - s["p"]) > .01: why.append("белки %s" % got["p"])
+        for f, v in (s.get("prof") or {}).items():
+            if got["prof"].get(f) != v: why.append("профиль %s=%s" % (f, got["prof"].get(f)))
+        if "latest" in s and got["latest"] != s["latest"]: why.append("замер %s" % got["latest"])
+        if not exact(s.get("want", []), recs): why.append("дневник: " + "; ".join("%s %s г" % (r["n"], r["g"]) for r in recs))
+        out["rows"].append({"id": s["id"], "now": "ошибка" if why else "верно", "why": "; ".join(why), "reply": text[:300]})
+        if why: gbad.append("%s: %s" % (s["id"], "; ".join(why)))
+    check("мастер целей: %d сценариев" % len(GOALS), not gbad, " | ".join(gbad[:6]))
+    page.evaluate(RESET)
+    page.evaluate("()=>{DB.goals={k:'',p:'',f:'',c:'',fib:''};return true}")
+    h0 = page.evaluate("()=>MealBot.hello(D)")
+    page.evaluate("()=>{DB.goals.k='2000';return true}")
+    h1 = page.evaluate("()=>MealBot.hello(D)")
+    page.evaluate("()=>{DB.goals={k:'',p:'',f:'',c:'',fib:''};DB.goalVersions=[];return true}")
+    check("целей нет — в пустом чате кнопка «Настроить цель за минуту»; цели есть — кнопки нет", "Настроить цель" in h0 and not h1, h0[:80] + " / " + h1[:80])
     # Meal 33.9 · своя мера человека — первой (решение Астамура 17.11.2026): у борща своя «тарелка» 500 г, у кефира своя «большая кружка» 450 г
     page.evaluate(RESET)
     own = page.evaluate("""()=>{MealSpeech.on(true);const a=parseText('борщ').lines[0],b=parseText('кефир').lines[0];MealSpeech.on(false);

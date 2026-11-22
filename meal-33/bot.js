@@ -1846,11 +1846,22 @@ var MealBot=(function(){
     if(m.inbox) return h+p('Поправку «не '+esc(x)+', а '+esc(y)+'» из шортката не выполняю. Скажи её здесь, в диалоге.');
     var rr=replaceCmd(S,x,y,it); return h+(rr||'');
   }
+  /* Meal 33.36 · пошаговые вопросы в чате (bot-steps.js, мастер целей bot-goals.js): ответ на вопрос мастера — ему;
+     еда посреди вопросов записывается как обычно, вопрос мастера повторяется */
+  function isFood(text){ try{ var u=understand(fixes(nrm(text))); return u.lines.some(function(l){ return l.fid||l.alts&&l.alts.length }) }catch(e){ return false } }
+  function steps(chat,S,m){
+    if(typeof MealBotSteps==='undefined'||m.inbox||m.dry||m.kind==='photo'||typeof m.text!=='string') return null;
+    return MealBotSteps.turn(chat,S,m.text,isFood);
+  }
   function reply(chat,m){
     boot();
-    var S=state(chat), h;
+    var S=state(chat), h, st;
     if(SP) SP.on(true);
-    try{ h=withSwap(chat,S,m) } finally { if(SP) SP.on(false) }
+    try{
+      st=steps(chat,S,m);
+      if(st!=null) h=st;
+      else { h=withSwap(chat,S,m); if(typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)&&!m.inbox) h+=MealBotSteps.again(S) }
+    } finally { if(SP) SP.on(false) }
     syncLines(chat);
     if(typeof MealInbox!=='undefined') MealInbox.settle();
     return h;
@@ -2389,6 +2400,7 @@ var MealBot=(function(){
       if(a[1]==='2'&&S.offer.alt){ var of2=S.offer; S.offer=null; h=handle(chat,S,{kind:'text',text:of2.alt,eaten:of2.eaten||undefined,inbox:of2.inbox||undefined,at:of2.at||undefined}); if(S.offer) h=handle(chat,S,{kind:'text',text:'да'}) }
       else h=handle(chat,S,{kind:'text',text:'да'}) }
     else if(a[0]==='sheet'){ openSheet(chat); return }
+    else if(a[0]==='st'){ h=typeof MealBotSteps!=='undefined'?MealBotSteps.tap(chat,S,a):null }
     else if(a[0]==='misscopy'){ var mt=missText(); try{ navigator.clipboard.writeText(mt).then(function(){ toast('Список скопирован') },function(){ toast('Не скопировалось — выдели текст вручную') }) }catch(e){ toast('Не скопировалось — выдели текст вручную') } return }
     else if(a[0]==='missclear'){ try{ localStorage.removeItem(MISSK) }catch(e){} h=p('Список очистил.') }
     else h=tapDo(S,a[0],a[1],a[2]);
@@ -2484,5 +2496,6 @@ var MealBot=(function(){
       if(typeof toast==='function') toast(sw.checked?'Бот записи еды включён':'Бот записи еды выключен') });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
-  return {portionEntry:portionEntry,renderGroups:renderGroups,similarFoods:similarFoods,on:on,setOn:setOn,replaceMissing:replaceMissing,feed:feed,probe:probe,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
+  function hello(chat){ if(!on()||typeof MealBotGoals==='undefined'||!MealBotGoals) return ''; var h=MealBotGoals.hello(chat); if(h) boot(); return h }
+  return {hello:hello,portionEntry:portionEntry,renderGroups:renderGroups,similarFoods:similarFoods,on:on,setOn:setOn,replaceMissing:replaceMissing,feed:feed,probe:probe,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
 })();
