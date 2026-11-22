@@ -605,7 +605,7 @@
   {
    "path": "index.html",
    "size": 664109,
-   "sha256": "8bd10cb650024d2fe87c2584f217c50588e99065423324e5fe719d05230b3870"
+   "sha256": "35d9a074baa4d109aed549914299a2e1e4ea168d5bd7bc9aa29cc16917134613"
   },
   {
    "path": "kfct.js",
@@ -824,8 +824,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 72344,
-   "sha256": "e4db45a4fa593d43e0e248f35b40cbed7639d2fdf985e18834ccad218d781b53"
+   "size": 73844,
+   "sha256": "1a2161195236f1ffe6d08ce3dbb40a1142021c95f518960004e0b00144a36964"
   },
   {
    "path": "report.css",
@@ -1050,7 +1050,7 @@
   {
    "path": "sw.js",
    "size": 3524,
-   "sha256": "c7468f84abd5119831c7179daadab2aa07012f31fbdee03bf0eb07899e1565ab"
+   "sha256": "dfff65bd124d30f56338a8d5354ed545b9648dec83d64dc730585070cc4d2352"
   },
   {
    "path": "usda-measures.js",
