@@ -17,6 +17,15 @@ body[data-tab=anim] #widgets{display:none}
 .shell{max-width:760px;margin:auto;padding:12px 16px calc(96px + env(safe-area-inset-bottom))}
 .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 8px}
 .head h1{font-size:20px;letter-spacing:-.4px;margin:0}
+.hr{display:flex;align-items:center;gap:6px;flex:none}
+.head h1{white-space:nowrap}
+.ver{white-space:nowrap}
+.acct{display:grid;place-items:center;width:28px;height:28px;color:#cfc4ff}
+.acct svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acct .ok{opacity:0;transition:opacity .2s}
+.acct[data-state=ok] .ok{opacity:1}
+.acct[data-state=wait]{opacity:.55}
+.acct[data-state=err]{color:#ffb4a8}
 .ver{font-size:12px;font-weight:700;color:#cfc4ff;padding:4px 9px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff1f}
 
 /* ── превью: прилипает сверху; шторка — тянуть за черточку ── */

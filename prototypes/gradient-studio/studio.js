@@ -1,8 +1,9 @@
-/* Студия градиентов · Happy 1.4 (лаборатория, 22.11.2026 · Claude)
+/* Студия градиентов · Happy 1.5 (лаборатория, 22.11.2026 · Claude)
    Одна студия для всех градиентных заливок: дуги Day («Сейчас»: поток, баланс самочувствия, заливка колец),
    кольцо энергии Meal / Sport / Day с полосками строк (КБЖУ, расход, баланс).
    1.2: меньше текста, таб-бар «Заливка · Оживление · Мои», пресеты — мини-виджеты в один ряд,
    вкладка «Оживление» (эффект дуги и свет внутри из Студии дуг 2.2), варианты стыка дуг в балансе (из «Пробы кольца энергии»).
+   1.5: вход — сохранения в аккаунте claude.ai (db артефакта, документ saves/<id>), с любого устройства; иконка-облачко в шапке.
    1.4: сверху уезжают заголовок и выбор виджета; прилипает только превью, его можно свернуть шторкой за черточку.
    1.3: «Дуги» — три строки на всю ширину: Съедено · Наложение (стык) · Потрачено; четвёртый цвет перехода (cm2, только студия).
    Виджеты рисуются так же, как в приложениях:
@@ -95,9 +96,12 @@ const CASES={
 
 /* ── Состояние ── */
 const st={tab:'fill',widget:'meal',theme:'original',work:{},data:copy(DATA0),mode:{meal:'eat',sport:'spent','day-energy':'bal'},center:'mood',mine:{},grp:{},ag:'rhythm',kase:{},arc:'eat'};
-try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.v===1){Object.assign(st,{tab:['fill','anim','mine'].includes(s.tab)?s.tab:'fill',widget:WIDGETS[s.widget]?s.widget:st.widget,theme:s.theme||st.theme,work:s.work||{},mine:s.mine||{},mode:Object.assign(st.mode,s.mode||{}),center:s.center||'mood',grp:s.grp||{},ag:s.ag==='light'?'light':'rhythm',arc:['spent','join'].includes(s.arc)?s.arc:'eat',fold:!!s.fold});Object.assign(st.data,s.data||{})}}catch(e){}
+function load(s){ if(!s||s.v!==1) return false; Object.assign(st,{tab:['fill','anim','mine'].includes(s.tab)?s.tab:'fill',widget:WIDGETS[s.widget]?s.widget:st.widget,theme:s.theme||st.theme,work:s.work||{},mine:s.mine||{},mode:Object.assign(st.mode,s.mode||{}),center:s.center||'mood',grp:s.grp||{},ag:s.ag==='light'?'light':'rhythm',arc:['spent','join'].includes(s.arc)?s.arc:'eat',fold:!!s.fold});Object.assign(st.data,s.data||{}); st.ts=s.ts||0; return true }
+try{ load(JSON.parse(localStorage.getItem(KEY)||'null')) }catch(e){}
 if(!themes().some(t=>t.id===st.theme)) st.theme='original';
-function save(){ try{localStorage.setItem(KEY,JSON.stringify({v:1,tab:st.tab,widget:st.widget,theme:st.theme,work:st.work,mine:st.mine,mode:st.mode,center:st.center,grp:st.grp,ag:st.ag,arc:st.arc,fold:!!st.fold,data:st.data}))}catch(e){} }
+function snap(){ return {v:1,ts:st.ts||0,tab:st.tab,widget:st.widget,theme:st.theme,work:st.work,mine:st.mine,mode:st.mode,center:st.center,grp:st.grp,ag:st.ag,arc:st.arc,fold:!!st.fold,data:st.data} }
+let boot=true;                                            // перерисовка при старте — не правка: метку времени не двигаем
+function save(){ if(!boot) st.ts=Date.now(); try{localStorage.setItem(KEY,JSON.stringify(snap()))}catch(e){} if(!boot) cloudSave() }
 /* во вкладке «Оживление» превью всегда — дуги Day */
 function wid(){ return st.tab==='anim'?'day-arcs':st.widget }
 function appOf(){ return WIDGETS[wid()].app }
@@ -620,7 +624,32 @@ $('showOut').onclick=()=>{ const o=$('out'); o.hidden=!o.hidden; $('showOut').se
 $('saveBtn').onclick=()=>{ const name=$('saveName').value.trim(); if(!name){ $('saveName').focus(); return toast('Назови вариант') }
   const list=st.mine[st.theme]=st.mine[st.theme]||[]; const ex=exportPreset(); list.push({name,preset:ex}); st.work[st.theme]={source:'m'+(list.length-1),P:fromPreset(ex)}; $('saveName').value=''; paintAll(); toast('Сохранено: '+name) };
 
+/* ── Аккаунт: всё, что в студии, хранится в аккаунте claude.ai (база артефакта), видно с любого устройства.
+   Вне claude.ai (локально, в лаборатории без входа) — как раньше, только в этом браузере. ── */
+let cloud=null, cloudT=0, cloudBusy=false, cloudAgain=false;
+function cloudMark(state){ const el=$('acct'); if(!el) return; el.dataset.state=state; el.hidden=false;
+  el.setAttribute('aria-label',state==='ok'?'Сохранено в аккаунте':state==='err'?'Не удалось сохранить в аккаунт':'Сохраняю в аккаунт') }
+function cloudSave(){ if(!cloud) return; clearTimeout(cloudT); cloudMark('wait'); cloudT=setTimeout(cloudPush,1200) }
+async function cloudPush(){
+  if(cloudBusy){ cloudAgain=true; return } cloudBusy=true;
+  try{ const json=JSON.stringify(snap()); if(json.length>240000) throw new Error('too big');
+    await cloud.set({v:1,ts:st.ts,state:json}); cloudMark('ok') }catch(e){ cloudMark('err') }
+  cloudBusy=false; if(cloudAgain){ cloudAgain=false; cloudPush() }
+}
+async function cloudStart(){
+  try{
+    if(!window.claude||typeof window.claude.use!=='function') return;
+    const [db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]); if(!db||!user) return;
+    const id=await user.id(); if(!id) return;
+    const ref=db.collection('saves').doc(id), d=await ref.get(); cloud=ref;
+    const r=d.exists?d.data():null; let remote=null; try{ remote=r&&r.state?JSON.parse(r.state):null }catch(e){}
+    if(remote&&(remote.ts||0)>(st.ts||0)){ load(remote); if(!themes().some(t=>t.id===st.theme)) st.theme='original'; boot=true; paintAll(); boot=false; cloudMark('ok') }
+    else if(st.ts) cloudPush(); else cloudMark('ok');
+  }catch(e){ cloudMark('err') }
+}
+
 /* ── Старт ── */
-paintAll();
+paintAll(); boot=false;
+cloudStart();
 fetch('../../shared/apps.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{ if(j&&j.day) $('base').textContent='Day '+j.day.version+' · Meal '+j.meal.version+' · Sport '+j.sport.version }).catch(()=>{});
 })();
