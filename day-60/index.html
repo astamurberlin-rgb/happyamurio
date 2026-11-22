@@ -2090,7 +2090,7 @@ function dupWarn(what){ toast('Такое название уже есть: '+wh
 function isLocked(d){ return !!day(d||curDate).locked }
 function lockGuard(){
   if(writeGuard())return true;
-  if(SelfCare.checkinReadOnly()){toast('Отметка уже сохранена — её можно только смотреть');return true;}
+  if(SelfCare.checkinReadOnly()){toast('Это прошлая отметка. Новую можно сделать на главной');return true;}
   if(!isLocked()) return false;
   toast('День закрыт — открой замок, чтобы менять');
   return true;

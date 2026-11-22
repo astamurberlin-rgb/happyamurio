@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1492899,
-   "sha256": "c47ff75abf96fede408439a65d609aa2f2946f62db9d359921f77d55d0fc5a2a"
+   "size": 1492903,
+   "sha256": "ef88732b4742242f4fabfe1c509e8952a71b01bdc83937238c9638804bc0f224"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -254,8 +254,8 @@
   },
   {
    "path": "index.html",
-   "size": 520223,
-   "sha256": "7a22ad0ba004ba84b5a8031b9ec5a8427fdfbb418ea0a8546dae23fe5c91c4f7"
+   "size": 520227,
+   "sha256": "e1b30582427a9768faccf8abaac315205332bcb94605f78754621cdaa6a9d54d"
   },
   {
    "path": "manifest.webmanifest",
