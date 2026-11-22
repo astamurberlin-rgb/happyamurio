@@ -1200,7 +1200,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 #happy-appearance-dialog #happy-appearance-help,#happy-appearance-dialog legend{background:var(--ha-glass);padding:8px 10px;border-radius:10px}
 </style>
 <link rel="stylesheet" href="./shared/happy-measurements.css?v=61">
-<link rel="stylesheet" href="./shared/happy-screens.css?v=61">
+<link rel="stylesheet" href="./shared/happy-screens.css?v=61-2">
 <!-- Аудит Day 20.11.2026: общие поля, общие правила оформления общих экранов и последний слой правил Day -->
 <link rel="stylesheet" href="./shared/happy-fields.css?v=61">
 <link rel="stylesheet" href="./shared/happy-drum.css?v=61">
@@ -1558,7 +1558,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-food.js?v=61"></script>
 <script src="./shared/happy-measurements.js?v=61"></script>
 <script src="./shared/happy-screens.js?v=61"></script>
-<script src="./shared/happy-welcome.js?v=61"></script>
+<script src="./shared/happy-welcome.js?v=61-2"></script>
 <script src="./shared/happy-person.js?v=61"></script>
 <script src="./shared/happy-goals.js?v=61"></script>
 <script src="./day-docs.js?v=61"></script>
@@ -5766,8 +5766,11 @@ function renderAll(){
   if(DayBoot.error) setTimeout(function(){ toastLong(DayBoot.error) },1500);
   MIND.ready=DayData.signedIn(); mindBegin();      // время в HappyDay — с этой минуты
   setTimeout(function(){ SelfCare.center(false) },80);   // виджет стартует со второй шкалы
-  /* заставку держим хотя бы полсекунды, иначе она просто моргнёт */
-  setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
+  // При возврате из Google виден общий смайлик. Как только дневник нарисован, скрытая заставка уже не нужна.
+  if(HappyWelcome.screen==='opening'){
+    document.getElementById('splash').style.display='none';
+    hideSplash(true);
+  }else setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
 })();
 </script>
 <script src="./day-measurements.js?v=61"></script>

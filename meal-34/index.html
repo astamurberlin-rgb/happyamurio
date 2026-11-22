@@ -1591,14 +1591,14 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <script src="./shared/happy-food.js?v=34"></script>
 <script src="./shared/happy-measurements.js?v=34"></script>
 <script src="./shared/happy-screens.js?v=34"></script>
-<script src="./shared/happy-welcome.js?v=34"></script>
+<script src="./shared/happy-welcome.js?v=34-2"></script>
 <script src="./shared/happy-person.js?v=34"></script>
 <script src="./shared/happy-goals.js?v=34"></script>
 <script src="meal-docs.js?v=34"></script>
 <script src="meal-data.js?v=34"></script>
 <link rel="stylesheet" href="./shared/happy-measurements.css?v=34">
 <link rel="stylesheet" href="./shared/happy-period.css?v=34">
-<link rel="stylesheet" href="./shared/happy-screens.css?v=34">
+<link rel="stylesheet" href="./shared/happy-screens.css?v=34-2">
 <link rel="stylesheet" href="./shared/happy-theme-picker.css?v=34">
 <link rel="stylesheet" href="catalog.css?v=34">
 <link rel="stylesheet" href="./shared/food-counters.css?v=34">
@@ -4911,7 +4911,11 @@ document.getElementById('bkOut').addEventListener('click',bkExport);
   if(RO) setTimeout(roWarn,1500);
   if(MealBoot.error) setTimeout(function(){ jrToastLong(MealBoot.error) },1500);
   syncInput(true);
-  setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
+  // При возврате из Google виден общий смайлик. Как только дневник нарисован, скрытая заставка уже не нужна.
+  if(HappyWelcome.screen==='opening'){
+    document.getElementById('splash').style.display='none';
+    hideSplash(true);
+  }else setTimeout(hideSplash,Math.max(0,520-(performance.now()-BOOT_T0)));
 })();
 
 /* фото блюд — файлы в папке meal-img рядом со страницей */
