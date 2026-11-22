@@ -1834,6 +1834,74 @@ var MealBot=(function(){
     if(/(^| )почему .*(красн|оранжев|темн|треугол|значок)/.test(w)) return goalInfo(true);
     return null;
   }
+  /* БАДы голосом: «омега-3 три капсулы», «две таблетки магния». Записывает приём своего сохранённого варианта
+     в раздел БАДов (как кнопка «Записать» на карточке добавки); шаблон каталога без своей этикетки — подсказка, не запись.
+     В еду и в список недостающего такие слова не идут. Тема «БАДы голосом», ступень 1 (Астамур 22.11.2026) */
+  var SUP_UNIT=/(^|\s)(капсул\S*|таблет\S*|драже|мерн\S*\s+ложк\S*|скуп\S*|саше)(?=\s|$)/;
+  var SUP_NUM={'одна':1,'одну':1,'один':1,'одни':1,'две':2,'два':2,'три':3,'четыре':4,'пять':5,'шесть':6,'семь':7,'восемь':8,'девять':9,'десять':10,'пол':0.5,'половину':0.5,'половинку':0.5};
+  var SUP_FILL=/(^|\s)(и|а|на|ещё|еще|тоже|то|же|же|одни|выпил\S*|принял\S*|съел\S*|по|штук\S*|шт|мг|мкг|ме|г|утром|вечером|днем|днём|сегодня|значит|так|ну|это|вот|они|ни|он|она|него|нее|неё)(?=\s|$)/g;
+  function supStem(w){ w=String(w||''); return /^\d/.test(w)?w:w.slice(0,Math.max(4,Math.min(5,w.length-1))) }
+  function supNameStems(x){ var N=typeof HappySupplementsSearch!=='undefined'?HappySupplementsSearch.normalize:function(s){ return String(s).toLowerCase() };
+    return N([x.name,x.form].filter(Boolean).join(' ')).split(/[^\p{L}\p{N}]+/u).filter(function(w){ return w.length>=3||/^\d+$/.test(w)&&w.length<=2 }).map(supStem) }
+  function supFind(seg){
+    var S=typeof HappySupplements!=='undefined'?HappySupplements:null; if(!S) return null;
+    var N=typeof HappySupplementsSearch!=='undefined'?HappySupplementsSearch.normalize:function(s){ return String(s).toLowerCase() };
+    var words=N(seg.replace(SUP_UNIT,' ').replace(SUP_FILL,' ')).split(/[^\p{L}\p{N}]+/u).filter(function(w){ return w.length>=3&&!SUP_NUM[w] });
+    if(!words.length) return null;
+    var ws=words.map(supStem);
+    function score(x){ var st=supNameStems(x); if(!st.length||ws[0]!==st[0]&&ws.indexOf(st[0])<0) return 0;   // первое слово названия должно прозвучать
+      return ws.filter(function(w){ return st.indexOf(w)>=0 }).length }
+    var used={}; try{ (S.getEntries()||[]).forEach(function(r){ used[r.variantId]=Math.max(used[r.variantId]||0,Date.parse(r.at)||0) }) }catch(e){}
+    var vs=(S.getVariants()||[]).map(function(v){ return {v:v,s:score(v)} }).filter(function(x){ return x.s>0 })
+      .sort(function(a,b){ return b.s-a.s||(used[b.v.id]||0)-(used[a.v.id]||0) });
+    if(vs.length){ var st0=supNameStems(vs[0].v); return {variant:vs[0].v,all:ws.every(function(w){ return st0.indexOf(w)>=0 })} }
+    var ts=(S.templates||[]).filter(function(x){ return x.id!=='custom' }).map(function(v){ return {v:v,s:score(v)} }).filter(function(x){ return x.s>0 }).sort(function(a,b){ return b.s-a.s });
+    return ts.length?{template:ts[0].v}:{none:words.join(' ')};
+  }
+  function supQty(seg){
+    var n=seg.match(/(\d+(?:[.,]\d+)?)\s*(?=капсул|таблет|драже|мерн|скуп|саше)/)||seg.match(/(?:^|\s)(одн[аиу]|один|две|два|три|четыре|пять|шесть|семь|восемь|девять|десять|пол|половин\S*)\s+(?=капсул|таблет|драже|мерн|скуп|саше)/);
+    if(n) return SUP_NUM[n[1]]!=null?SUP_NUM[n[1]]:/^половин/.test(n[1])?0.5:+String(n[1]).replace(',','.');
+    var u=seg.match(SUP_UNIT); if(!u) return null;
+    var w=seg.match(/(?:^|\s)(\d{1,2}|одн[аиу]|один|две|два|три|четыре|пять|шесть)(?:\s|$)/g); if(!w) return 1;
+    var last=String(w[w.length-1]).trim(); return SUP_NUM[last]!=null?SUP_NUM[last]:+last;
+  }
+  function supMeasure(v,seg){
+    var opts=HappySupplementsModel.measureOptions(v), u=seg.match(SUP_UNIT); if(!u) return opts[0];
+    var said=supStem(u[2].split(/\s+/)[0]);
+    return opts.filter(function(m){ return supStem(String(m.name).toLowerCase().split(/\s+/)[0])===said })[0]||null;
+  }
+  function supPlural(n,u){ var F={'капсула':['капсула','капсулы','капсул'],'таблетка':['таблетка','таблетки','таблеток'],'мерная ложка':['мерная ложка','мерные ложки','мерных ложек'],'порция':['порция','порции','порций'],'драже':['драже','драже','драже']}[u];
+    if(!F) return u; if(n%1) return F[1]; var a=n%10, b=n%100; return a===1&&b!==11?F[0]:a>=2&&a<=4&&(b<12||b>14)?F[1]:F[2] }
+  function suppAsk(chat,S,m,bare){
+    if(typeof HappySupplements==='undefined'||typeof HappySupplementsModel==='undefined') return null;
+    if(!SUP_UNIT.test(' '+bare+' ')&&!/(омег|магни|витамин|креатин|цинк|кальци|селен|коллаген|протеин|мультивитамин|электролит|рыбий жир)/.test(bare)) return null;
+    var segs=bare.split(/\s*[,;]\s*|\s+(?:и|а также|плюс)\s+/).map(function(x){ return x.trim() }).filter(Boolean);
+    var sup=[], rest=[];
+    segs.forEach(function(s){ var f=SUP_UNIT.test(' '+s+' ')?supFind(s):null; if(!f&&!SUP_UNIT.test(' '+s+' ')){ var f2=supFind(s); if(f2&&f2.variant&&f2.all&&!/\d\s*(г|гр|грамм\S*|мл|л)(\s|$)/.test(s)) f=f2 }   // без меры — только если всё сказанное есть в названии своей добавки: «выпил омегу»
+      if(f) sup.push({seg:s,f:f}); else if(s.replace(SUP_FILL,' ').trim()) rest.push(s) });
+    if(!sup.length||!sup.some(function(x){ return SUP_UNIT.test(' '+x.seg+' ')||x.f.variant })) return null;
+    var done=[], tips=[];
+    sup.forEach(function(x){
+      if(x.f.variant){ var v=x.f.variant, ms=supMeasure(v,x.seg), q=supQty(x.seg)||1;
+        if(!ms){ tips.push('«'+esc(v.name)+'»: такой меры у добавки нет, есть '+esc(HappySupplementsModel.measureOptions(v).map(function(o){ return o.name }).join(', '))+'. Скажи в ней.'); return }
+        done.push({v:v,m:ms,q:q}) }
+      else if(x.f.template) tips.push('«'+esc(x.f.template.name)+'» есть в каталоге БАДов, но своей добавки по этикетке ещё нет. Открой «БАДы», выбери шаблон и сохрани по своей упаковке — дальше смогу записывать голосом.');
+      else tips.push('«'+esc(x.f.none)+'» — такой добавки не нашёл ни у тебя, ни в каталоге БАДов. Добавь её в «БАДы» → «Добавить».');
+    });
+    if(m.dry) return {dry:1,clean:!tips.length&&!rest.length,n:done.length};
+    if(done.length&&typeof writeGuard==='function'&&writeGuard()) return p('Чтобы записывать, войди в аккаунт.');
+    var d=cd(), now=m.at?new Date(m.at):new Date(), tm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    var sec=typeof autoSec==='function'?autoSec():null;
+    done.forEach(function(x){ try{ HappySupplements.logIntake({variantId:x.v.id,quantity:x.q,measureId:x.m.id,date:d,time:m.at?tm:null,section:sec}).catch(function(e){ try{ toast(e.message) }catch(_){} }) }catch(e){ x.err=e.message } });
+    var ok=done.filter(function(x){ return !x.err });
+    var h=(ok.length?p('Записал в БАДы: '+ok.map(function(x){ return '<b>'+esc(x.v.name)+'</b> — '+fmt(x.q)+' '+esc(supPlural(x.q,x.m.name)) }).join('; ')+'.'):'')+
+      done.filter(function(x){ return x.err }).map(function(x){ return p('«'+esc(x.v.name)+'» не записал: '+esc(x.err)) }).join('')+tips.map(p).join('');
+    if(rest.length&&tokensOf(rest.join(' ').replace(FILL,' ')).length){
+      var hR; NEST++; try{ hR=handle(chat,S,{kind:'text',text:rest.join(', '),eaten:m.eaten,at:m.at,inbox:m.inbox}) }catch(e){ hR='' } finally { NEST-- }
+      h+=hR||'';
+    }
+    return h+(ok.length?'<p class="mlHint">Приём виден в дне и в разделе БАДов; убрать — там же.</p>':'');
+  }
   function todayTotals(){
     var items=day(curDate).items, s=sumOf(items), when=curDate===todayISO()?'сегодня':'за этот день';
     if(!items.length) return p('За '+(curDate===todayISO()?'сегодня':'этот день')+' пока ничего не записано.');
@@ -2061,6 +2129,7 @@ var MealBot=(function(){
     }
     if(ORD[bare]!=null&&!S.ask&&lastAdd(S)&&lastAdd(S).line.picked){ var sw1=swapTo(S,lastAdd(S),lastAdd(S).line.alts[ORD[bare]]); if(sw1) return sw1 }
     if(/^(ага|угу|да|ок|окей|хорошо|ладно|спасибо|понял|ясно|привет)[.!]*$/.test(bare)) return p('Ок.')+(S.pend.length?askHTML(S):'');
+    if(m.kind!=='photo'&&!S.ask){ var sa=suppAsk(chat,S,m,bare); if(sa) return sa }   // БАДы голосом
     /* время и разбор */
     t=t.replace(/^\s*(да|ага|угу)[\s,]+(?=\S)/,' ');
     if(SP) t=t.replace(/\s(?:а\s+|и\s+)?(?:до этого|перед этим|потом|затем|еще)\s+в\s+\d{1,2}\s*$/,' ');   // Meal 33.12
