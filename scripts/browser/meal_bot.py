@@ -4,7 +4,7 @@
 import datetime, json, re, sys
 from playwright.sync_api import sync_playwright
 from common import *
-from meal_bot_scenarios import S, GOALS, OWN, D as D0
+from meal_bot_scenarios import S, GOALS, OWN, ACTS, D as D0
 
 RESET = """()=>{DB.days={};DB.favs=[];try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),q:x.q,u:x.u,g:x.g,t:x.t||null,tm:x.tm||0,sec:x.sec,tap:x.tap||null})}));return o}"""
@@ -189,6 +189,30 @@ with sync_playwright() as p:
         if why: obad.append("%s: %s" % (s["id"], "; ".join(why)))
     page.evaluate("()=>{DB.days={};DB.foods=[];rebuildLib();save();saveNow();return true}")
     check("свой продукт через чат: %d сценариев" % len(OWN), not obad, " | ".join(obad[:8]))
+    # Meal 33.38 · короткие команды «внеси за меня»: избранное, фастинг, базы, прошлые дни; «Отменить» возвращает как было
+    KEEP = page.evaluate("()=>JSON.stringify({r:DB.mealRules||null,s:DB.foodSources||null,x:DB.sections||null,t:DB.taps||[],c:DB.recipes||[]})")
+    abad = []
+    for s in ACTS:
+        page.clock.set_fixed_time(datetime.datetime.fromisoformat(s.get("clock", D0)))
+        page.evaluate(RESET)
+        page.evaluate("(k)=>{const o=JSON.parse(k);DB.mealRules=o.r;if(!o.r)delete DB.mealRules;DB.foodSources=o.s;if(!o.s)delete DB.foodSources;DB.sections=o.x;if(!o.x)delete DB.sections;DB.taps=o.t;DB.recipes=o.c;rebuildLib();return true}", KEEP)
+        if s.get("fav"): page.evaluate(FAV, s["fav"])
+        html = ""
+        for m in s["msgs"]:
+            if isinstance(m, dict):
+                r = page.evaluate(TAP, m["tap"])
+                if r.get("missing"): html = "нет кнопки «%s»" % m["tap"]; break
+                page.wait_for_timeout(450); r = page.evaluate(LAST)
+            else: r = page.evaluate(SAY, [m, False])
+            html = r["html"]
+        text = re.sub(r"\s+", " ", re.sub("<[^>]+>", " ", html)).strip(); why = []
+        if html.startswith("нет кнопки"): why.append(html)
+        elif s.get("reply") and nm(s["reply"]) not in nm(text): why.append("нет ответа «%s»" % s["reply"])
+        if not page.evaluate(s["ok"]): why.append("состояние не то")
+        out["rows"].append({"id": s["id"], "now": "ошибка" if why else "верно", "why": "; ".join(why), "reply": text[:300]})
+        if why: abad.append("%s: %s — %s" % (s["id"], "; ".join(why), text[:90]))
+    page.evaluate("(k)=>{const o=JSON.parse(k);DB.mealRules=o.r;if(!o.r)delete DB.mealRules;DB.foodSources=o.s;if(!o.s)delete DB.foodSources;DB.sections=o.x;if(!o.x)delete DB.sections;DB.taps=o.t;DB.recipes=o.c;DB.favs=[];curDate=todayISO();rebuildLib();save();return true}", KEEP)
+    check("короткие команды и шаги гида: %d сценариев" % len(ACTS), not abad, " | ".join(abad[:8]))
     page.evaluate(RESET)
     page.evaluate("()=>{DB.goals={k:'',p:'',f:'',c:'',fib:''};return true}")
     h0 = page.evaluate("()=>MealBot.hello(D)")

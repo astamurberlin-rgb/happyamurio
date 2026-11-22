@@ -2180,6 +2180,7 @@ var MealBot=(function(){
       return m.dry?{dry:1,clean:true,n:0}:p('Это похоже на поправку, а не на еду. Из диктовок шортката поправки не выполняю — скажи это здесь, в диалоге.');
     /* служебные фразы */
     if(/^тест(\s|$|овая|овое|овый)/.test(bare)) return p('Это тест. В дневник ничего не добавляю.');
+    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&!prepped){ var ac=appAct(S,m.text); if(ac) return ac+(S.pend.length?askHTML(S):'') }   // Meal 33.38: короткие команды «внеси за меня»
     /* «отмени кофе» — убрать одну запись; «перепиши: груша 250 г» — убрать последнее и записать заново */
     CD=null;
     if(/^(отмени|отменить|убери|удали|сотри|замени|поменяй|исправь|перепиши|вместо|перенеси|перемести)(\s|$)/.test(bare)){
@@ -2519,6 +2520,149 @@ var MealBot=(function(){
     },150);
   }
   function ownChip(miss){ return miss.length===1&&typeof MealOwnProductFlow!=='undefined'&&MealOwnProductFlow?chips([['ownname:'+encodeURIComponent(miss[0].name),'Завести свой продукт']]):'' }
+  /* ── Meal 33.38 · короткие команды «внеси за меня» (слой 2 бота-гида, Астамур 23.11.2026): избранное, фастинг вкл/выкл
+     и статус, базы продуктов, прошлые дни и среднее за неделю. Слова и ответы — в словаре (app_actions); каждое изменение —
+     с кнопкой «Отменить». Покупка, выход, удаление и выгрузка через бота не делаются ── */
+  function actData(){ var D0=typeof window!=='undefined'&&window.HappyMealSpeechData; return D0&&D0.app_actions||null }
+  function actRx(s){ try{ return s?new RegExp(s):null }catch(e){ return null } }
+  function actT(s,v){ return String(s||'').replace(/\{(\w+)\}/g,function(m,k){ return v&&v[k]!=null?v[k]:'' }) }
+  function actUndoChip(S,fn,extra){ var A=actData(); S.acts=S.acts||[]; S.acts.push(fn); return chips([['act:undo:'+(S.acts.length-1),A.undo_button||'Отменить']].concat(extra||[])) }
+  function actSignIn(){ return typeof writeGuard==='function'&&writeGuard()?p(esc(actData().answer_sign_in)):null }
+  /* продукт из слов: {fid} — один; {alts} — выбрать; null — нет в базе */
+  function actFood(t){ var u; FILLOK=false; try{ u=core(fixes(' '+t+' ')) }catch(e){ return null }
+    var l=u&&u.lines.length===1?u.lines[0]:null; if(!l) return null;
+    var al=(l.alts||[]).filter(function(id){ return FOODS[id]&&MealSources.available(DB,FOODS[id]) });
+    if(l.fid&&FOODS[l.fid]&&l.ask!=='pick') return {fid:l.fid};
+    if(al.length===1) return {fid:al[0]};
+    return al.length?{alts:al.slice(0,4)}:(l.fid&&FOODS[l.fid]?{fid:l.fid}:null) }
+  function actFav(S,on,fid){
+    var A=actData().favorites, f=FOODS[fid]; if(!f) return null;
+    if(isFav(fid)===on) return p(esc(on?A.answer_already_on:A.answer_already_off)+' <b>'+esc(f.n)+'</b>.');
+    var g=actSignIn(); if(g) return g;
+    setMealRowFavorite(fid,on); touch();
+    return p(esc(on?A.answer_added:A.answer_removed))+'<div class="mlRows">'+row({fid:fid,q:100,u:'г',g:100,name:''},true,'')+'</div>'+
+      actUndoChip(S,function(){ if(isFav(fid)!==on) return false; setMealRowFavorite(fid,!on); touch(); return true });
+  }
+  function actFavSaid(S,on,what){
+    var A=actData().favorites, r=actFood(what);
+    if(!r) return p(esc(actT(A.answer_none,{food:what})));
+    if(r.fid) return actFav(S,on,r.fid);
+    return p(esc(A.answer_pick))+chips(r.alts.map(function(id){ return ['act:fav:'+(on?1:0)+':'+id,FOODS[id].n] }));
+  }
+  function actFavList(){
+    var A=actData().favorites, L=(DB.favs||[]).filter(function(id){ return FOODS[id] });
+    if(!L.length) return p(esc(A.answer_list_empty));
+    return p(esc(A.answer_list))+'<div class="mlRows">'+L.slice(0,12).map(function(id){ return row({fid:id,q:100,u:'г',g:100,name:''},true,'') }).join('')+'</div>'+
+      (L.length>12?'<p class="mlHint">И ещё '+(L.length-12)+'.</p>':'')+(helpEntry('favorites')?chips([['go:favorites','Открыть избранное']]):'');
+  }
+  function actFastOK(){ return typeof MealFast!=='undefined'&&typeof MealPeriods!=='undefined'&&MealPeriods.rules&&MealFast.turned }
+  function actFastSet(S,on,said){
+    var A=actData().fasting; if(!actFastOK()) return null;
+    var R=MealPeriods.rules(DB), f=R.fast, ck=MealPeriods.clock, v={a:ck(f.a),b:ck(f.b)};
+    var sc=on&&said&&String(said).match(actRx(A.scheme)), h=Math.round(((f.b-f.a+1440)%1440||1440)/6)/10;
+    if(sc&&+sc[1]+ +sc[2]===24&&+sc[1]!==h) return p(esc(actT(A.answer_scheme_other,{a:v.a,b:v.b,h:String(h).replace('.',','),s:sc[1],e:sc[2]})))+chips([['go:fasting','Открыть']]);
+    if(!!f.on===on) return p(esc(actT(on?A.answer_already_on:A.answer_already_off,v)));
+    var g=actSignIn(); if(g) return g;
+    var before=JSON.stringify(DB.mealRules||null), now=Date.now(), nf=MealFast.turned(f,on), hist=MealFast.record(DB,nf,now);
+    DB.mealRules=Object.assign({kcal:R.kcal,gap:R.gap},DB.mealRules||{},{fast:nf,fastVersions:hist}); touch();
+    var after=JSON.stringify(DB.mealRules), note='';
+    if(on){ try{ note=MealFast.startNote?MealFast.startNote(now):'' }catch(e){} if(nf.d&&nf.d.length<7) note=(note?note+'. ':'')+A.answer_days }
+    return p(esc(actT(on?A.answer_on:A.answer_off,v)))+(note?'<p class="mlHint">'+esc(note.replace(/\.?$/,'.'))+'</p>':'')+
+      actUndoChip(S,function(){ if(JSON.stringify(DB.mealRules)!==after) return false; DB.mealRules=JSON.parse(before); if(!DB.mealRules) delete DB.mealRules; touch(); return true });
+  }
+  function actFastStatus(){
+    var A=actData().fasting; if(!actFastOK()) return null;
+    var R=MealPeriods.rules(DB), f=R.fast, ck=MealPeriods.clock, v={a:ck(f.a),b:ck(f.b)}, now=Date.now(), st=null;
+    try{ st=MealFast.live(DB,now,MealFast.rows) }catch(e){}
+    if(st&&st.state==='run'){ var pr=MealFast.progress(st,now); return p(actT(A.answer_run,{till:esc(pr.till),left:esc(pr.left)})) }
+    if(st&&st.state==='broken') return p(esc(actT(A.answer_broken,{at:MealFast.clock(st.at),by:st.by&&st.by.name?' — '+st.by.name:''})));
+    if(!f.on) return p(esc(actT(A.answer_off_status,v)))+chips([['act:fast:on','Включить фастинг']]);
+    var up=null; try{ up=MealFast.nextStart(DB,now,MealFast.rows)||MealFast.upcoming(DB,now) }catch(e){}
+    if(up) return p(esc(actT(A.answer_upcoming,{when:MealFast.when(up,now),at:MealFast.clock(up)})));
+    return p(esc(actT(A.answer_on_idle,v)));
+  }
+  function actCatName(id){ var c=MealSources.catalog.filter(function(x){ return x.id===id })[0]; return c?c.name:id }
+  function actCatApply(id,on){
+    if(!MealSources.setEnabled(DB,id,on)) return false;
+    var L={USDA:'MealUSDA',DESSERT:'MealDesserts',PRESERVE:'MealPreserves',KFCT:'MealKfct'}[id];
+    if(on&&L&&window[L]&&window[L].load) try{ window[L].load() }catch(e){}
+    try{ if(typeof rebuildLib==='function') rebuildLib() }catch(e){}
+    touch(); return true;
+  }
+  function actCat(S,on,id){
+    var A=actData().catalogs, v={name:actCatName(id)};
+    if(MealSources.paid(id)&&!MealSources.purchased(id)) return p(esc(actT(A.answer_paid,v)))+chips([['go:store','Открыть «Сборники»']]);
+    if(MealSources.enabled(DB,id)===on) return p(esc(actT(on?A.answer_already_on:A.answer_already_off,v)));
+    var g=actSignIn(); if(g) return g;
+    if(!actCatApply(id,on)) return p(esc(actT(A.answer_last,v)));
+    return p(esc(actT(on?A.answer_on:A.answer_off,v)))+actUndoChip(S,function(){ if(MealSources.enabled(DB,id)!==on) return false; return actCatApply(id,!on) });
+  }
+  function actCatList(){
+    var A=actData().catalogs;
+    return p(esc(A.answer_list))+'<p class="mbSum">'+MealSources.catalog.filter(function(c){ return !MealSources.paid(c.id)||MealSources.purchased(c.id) })
+      .map(function(c){ return esc(c.name)+' — '+(MealSources.enabled(DB,c.id)?'включена':'выключена') }).join('<br>')+'</p>'+chips([['go:catalogs','Открыть базы']]);
+  }
+  function actWhen(iso){ var t=todayISO(), y=new Date(t+'T12:00:00'); y.setDate(y.getDate()-1);
+    if(iso===isoOf(y)) return 'вчера'; y.setDate(y.getDate()-1); if(iso===isoOf(y)) return 'позавчера';
+    var d=new Date(iso+'T12:00:00'); return d.getDate()+' '+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'][d.getMonth()] }
+  function actItems(iso){ var e=DB.days&&DB.days[iso]; return (e&&e.items)||[] }
+  function actDay(iso,kcalOnly){
+    var A=actData().past_days, items=actItems(iso), w=actWhen(iso), open=chips([['act:day:'+iso,A.button_open]]);
+    if(!items.length) return p(esc(actT(A.answer_day_empty,{when:w})))+open;
+    var s=sumOf(items), h=p(esc(actT(A.answer_day,{when:w}))+' <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г · записей: '+items.length+'</p>';
+    if(!kcalOnly) sectionsForDate(iso).forEach(function(S0){
+      var it=items.filter(function(x){ return x.sec===S0.k }); if(!it.length) return;
+      h+=p('«'+esc(S0.t)+'» · '+Math.round(sumOf(it).k)+' ккал')+'<div class="mlRows">'+it.map(function(x){ return row({fid:x.fid,q:x.q,u:x.u,g:x.g,name:''},true,x.t||'') }).join('')+'</div>';
+    });
+    return h+open;
+  }
+  function actWeek(){
+    var A=actData().past_days, end=new Date(todayISO()+'T12:00:00'), got=[], from='', to='';
+    for(var i=6;i>=0;i--){ var d=new Date(end); d.setDate(d.getDate()-i); var iso=isoOf(d), it=actItems(iso); if(i===6) from=iso; if(i===0) to=iso; if(it.length) got.push(sumOf(it)) }
+    if(!got.length) return p(esc(A.answer_week_empty));
+    var n=got.length, s=got.reduce(function(a,x){ a.k+=x.k; a.p+=x.p; a.f+=x.f; a.c+=x.c; return a },{k:0,p:0,f:0,c:0}), dm=function(iso){ var d=new Date(iso+'T12:00:00'); return d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0') };
+    return p(esc(actT(A.answer_week,{n:n,from:dm(from),to:dm(to)}))+' <b>'+Math.round(s.k/n)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p/n)+' г · Ж '+fmt(s.f/n)+' г · У '+fmt(s.c/n)+' г в день</p>';
+  }
+  function actPast(t){
+    var A=actData().past_days, ate=actRx(A.ate).test(t), kc=actRx(A.kcal).test(t), sh=actRx(A.show).test(t);
+    if(actRx(A.week_alone)&&actRx(A.week_alone).test(t)) return actWeek();
+    if(!ate&&!kc&&!sh) return null;
+    if((ate||kc)&&actRx(A.week).test(' '+t+' ')&&actRx(A.week_need).test(' '+t+' ')) return actWeek();
+    var dw=dayWords(' '+t.replace(/(^|\s)(?:за\s+)?((?:прошл\S+\s+)?(?:понедельник|вторник|среду|четверг|пятницу|субботу|воскресенье))(?=\s|$)/,' в $2')+' ');
+    if(!dw.shift) return null;
+    var d=new Date(curDate+'T12:00:00'); d.setDate(d.getDate()+dw.shift);
+    return actDay(isoOf(d),kc&&!ate);
+  }
+  /* команда из фразы; не команда — null */
+  function appAct(S,text){
+    var A=actData(); if(!A) return null;
+    var t=nrm(text).trim().replace(/[?!.,…\s]+$/,'').replace(/[,]/g,' ').replace(/\s+/g,' ').trim(), m0; if(!t) return null;
+    var F=A.favorites;
+    if(F){ if(actRx(F.list).test(t)) return actFavList();
+      if((m0=t.match(actRx(F.remove)))) return actFavSaid(S,false,m0[1]);
+      if((m0=t.match(actRx(F.add))||t.match(actRx(F.add_short)))&&tokensOf(m0[1]).length) return actFavSaid(S,true,m0[1]) }
+    var Fa=A.fasting;
+    if(Fa&&actFastOK()){ if(actRx(Fa.off).test(t)) return actFastSet(S,false);
+      if((m0=t.match(actRx(Fa.on)))) return actFastSet(S,true,m0[1]||'');
+      if(actRx(Fa.status).test(' '+t+' ')) return actFastStatus() }
+    var C=A.catalogs;
+    if(C&&typeof MealSources!=='undefined'){
+      if(actRx(C.list).test(t)) return actCatList();
+      var on=actRx(C.on).test(t), off=!on&&actRx(C.off).test(t);
+      if(on||off){ var noun=actRx(C.noun).test(' '+t+' '), hit=(C.names||[]).filter(function(n){ return actRx(n.said).test(' '+t+' ')&&(noun||(n.strong&&actRx(n.strong).test(' '+t+' '))) });
+        if(hit.length===1) return actCat(S,on,hit[0].id) } }
+    if(A.past_days) return actPast(t);
+    return null;
+  }
+  function actTap(S,a){
+    var A=actData(); if(!A) return null;
+    if(a[1]==='undo'){ var fn=S.acts&&S.acts[+a[2]]; if(!fn) return null; S.acts[+a[2]]=null; var g=actSignIn(); if(g) return g; return p(esc(fn()?A.answer_undone:A.answer_undo_late)) }
+    if(a[1]==='fav') return actFav(S,a[2]==='1',a.slice(3).join(':'));
+    if(a[1]==='fast') return actFastSet(S,a[2]==='on');
+    if(a[1]==='day'){ curDate=a.slice(2).join(':'); try{ if(typeof renderDay==='function') renderDay(); if(typeof go==='function') go('day') }catch(e){} return null }
+    return null;
+  }
+
   function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
 
   /* ── совет блюда: «что на завтрак», «быстро», «белковое на ужин», «осталось 400 калорий» (решение Астамура 22.11.2026 «да»).
@@ -2768,6 +2912,7 @@ var MealBot=(function(){
     var S=state(chat), a=action.split(':'), h=null;
     if(a[0]==='cancelPhrase'){cancelPhrase(chat,S,a[1]);return}
     if(a[0]==='go'){ helpOpen(a[1]); return }
+    if(a[0]==='act'&&a[1]==='day'){ actTap(S,a); return }
     if(a[0]==='help'){ var he=helpEntry(a[1]); if(!he) return; chat.msgs.push({id:'m'+(++chat.seq),who:'me',kind:'text',text:label,tapped:1}); botSay(helpReply(he),260); return }
     var latest=S.commits[S.commits.length-1];
     if(a[0]==='undo'&&latest&&latest.id===a[1]&&latest.choiceStep&&
@@ -2794,6 +2939,7 @@ var MealBot=(function(){
   }
   function tapInner(chat,S,a){
     var h=null;
+    if(a[0]==='act') return actTap(S,a);
     if(a[0]==='undo'){ var c=S.commits.filter(function(x){ return x.id===a[1] })[0]; if(!c||c.undone) return;
       h=undo(S,c)?p(c.del?'Вернул запись.':'Отменил. Этих записей в дневнике больше нет.'):null }
     else if(a[0]==='swap'){ var c2=S.commits.filter(function(x){ return x.id===a[1] })[0], ad=c2&&!c2.undone&&c2.add[+a[2]]; if(!ad) return;
@@ -2908,5 +3054,5 @@ var MealBot=(function(){
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire); else wire();
   function hello(chat){ if(!on()||typeof MealBotGoals==='undefined'||!MealBotGoals) return ''; var h=MealBotGoals.hello(chat); if(h) boot(); return h }
-  return {hello:hello,portionEntry:portionEntry,renderGroups:renderGroups,similarFoods:similarFoods,on:on,setOn:setOn,replaceMissing:replaceMissing,feed:feed,probe:probe,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state};
+  return {hello:hello,portionEntry:portionEntry,renderGroups:renderGroups,similarFoods:similarFoods,on:on,setOn:setOn,replaceMissing:replaceMissing,feed:feed,probe:probe,reply:reply,tap:tap,openSheet:openSheet,loose:loose,headOk:headOk,rank:rank,understand:understand,takeTimes:takeTimes,state:state,foodOf:actFood,supFind:supFind,linesOf:function(t){ FILLOK=false; try{ return core(fixes(' '+t+' ')).lines.map(function(l){ var id=l.fid&&l.ask!=='pick'?l.fid:(l.alts||[]).filter(function(x){ return FOODS[x]&&MealSources.available(DB,FOODS[x]) })[0]||l.fid||null; return {fid:id&&FOODS[id]?id:null,q:l.q,u:l.u,g:l.g,name:l.name||l.spoken||''} }) }catch(e){ return null } },rowHTML:function(l){ return row({fid:l.fid,q:l.q,u:l.u,g:l.g,name:''},true,'') },undoChip:function(fn){ return actUndoChip(state(CH.meal),fn) }};
 })();
