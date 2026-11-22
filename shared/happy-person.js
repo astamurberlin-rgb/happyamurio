@@ -118,7 +118,7 @@ function avatar(photo){return '<div class="hs-avatar">'+(photo?'<img alt="Фот
 function top(box){
  if(box)topBox=box;if(!topBox||!cfg)return;
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
- const name=who?(who.name||'Ваш профиль'):'Гость';
+ const name=who?(who.name||'Мой профиль'):'Гость';
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
@@ -175,7 +175,7 @@ function open(){
    '<div class="hs-input hs-email-value" data-p-email>'+esc((A.current()||who).email)+'</div>'+
    (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
-   F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как вас зовут'})+
+   F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как тебя зовут'})+
    F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
    '<div class="hs-height-sex">'+F({label:'Рост',name:'height',inputmode:'decimal',value:shown.height,suffix:heightLabel(),placeholder:'Не указан',quick:true})+
    '<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('sex',[['','—','Не указан'],['male','М','Мужской'],['female','Ж','Женский']],draft.sex,'Пол','hs-compact-sex')+'</div></div>'+

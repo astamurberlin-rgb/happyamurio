@@ -52,7 +52,7 @@ const SCREENS=['happy-screens.js','happy-welcome.js','happy-person.js','happy-go
  assert.equal((bottom.innerHTML.match(/data-hp-status/g)||[]).length,1);assert.match(bottom.innerHTML,/<svg[^>]*>.*<\/svg>Синхронизировано/);
  P.bottom(bottom,{status:'Нет связи · записи сохранены на устройстве'});assert.ok(!/<svg/.test(bottom.innerHTML),'галочка — только у «Синхронизировано»');
  P.bottom(bottom,{status:'x',newer:true});assert.match(bottom.innerHTML,/<a data-happy-app="day" href="\.\/">Открыть последнюю версию<\/a>/);
- who={uid:'u',email:'a@b.c',name:''};P.top();assert.match(top.innerHTML,/<h2>Ваш профиль<\/h2>/);
+ who={uid:'u',email:'a@b.c',name:''};P.top();assert.match(top.innerHTML,/<h2>Мой профиль<\/h2>/);
  const store=(state,newer=[])=>({closed:false,status:()=>({state,detail:'',newer})});
  assert.equal(P.statusText(null,''),'');assert.equal(P.statusText(null,'Хранилище недоступно'),'Хранилище недоступно');
  assert.equal(P.statusText(store('cloud'),''),'Синхронизировано');assert.equal(P.statusText(store('saving'),''),'Подожди, идёт синхронизация…');
