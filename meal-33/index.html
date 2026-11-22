@@ -5211,7 +5211,7 @@ function renderRecipes(){
 document.getElementById('rcGrid').addEventListener('click',function(e){
   var t=e.target.closest('[data-col]');
   if(t){ openCol(t.dataset.col); return }
-  if(e.target.closest('[data-ai]')) toast('Позже: подсказки по тому, что уже записано за день');
+  if(e.target.closest('[data-ai]')) toast('Скоро: подсказки по записанному за день');
 });
 document.getElementById('rcNew').addEventListener('click',function(){ openChat('none','recipe') });
 

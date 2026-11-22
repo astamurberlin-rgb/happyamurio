@@ -2782,7 +2782,7 @@ function parseVoice(forced){const raw=$('#voice-text').value.trim();let text=raw
 let candidates=[];if(forced)candidates=[exercise(forced)];else if(/подтяг/.test(text))candidates=[exercise('pull-up')];else if(/отжим/.test(text))candidates=[exercise('push-up')];else if(/присед/.test(text)&&/штанг/.test(text))candidates=[exercise('barbell-back-squat')];else if(/жим.*леж/.test(text))candidates=[exercise(/гантел/.test(text)?'dumbbell-bench-press':'barbell-bench-press')];else if(/жим/.test(text))candidates=[exercise('barbell-bench-press'),exercise('barbell-incline-press'),exercise('barbell-overhead-press')];else candidates=allExercises().filter(e=>[e.name,...e.aliases].some(n=>n.length>3&&text.includes(n.toLowerCase().replaceAll('ё','е'))));
 if(candidates.length!==1){$('#voice-choice').innerHTML=`<label class="field">${candidates.length?'Какое упражнение?':'Выбери упражнение для этой записи'}<select id="voice-exercise"><option value="">Выбрать…</option>${(candidates.length?candidates:allExercises()).map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></label>`;err('Числа не записаны. Уточни упражнение и нажми «Записать».');return}
 const e=candidates[0];let weight=+(text.match(/(\d+(?:\.\d+)?)\s*(?:кг|kg)/)?.[1]||0),count=+(text.match(/(\d+)\s*подх/)?.[1]||1),reps=+(text.match(/(?:по|на)\s*(\d+)/)?.[1]||text.match(/(\d+)\s*(?:повт|раз)/)?.[1]||0);const mult=text.match(/(\d+)\s*[хx×]\s*(\d+)/);if(mult){if(!weight){weight=+mult[1];reps=+mult[2]}else{count=+mult[1];reps=+mult[2]}}const minutes=+(text.match(/(\d+(?:\.\d+)?)\s*мин/)?.[1]||0);if(isTimed(e)?!minutes:!reps){err(isTimed(e)?'Не вижу длительность. Например: «Плавание 12 минут».':'Не вижу повторения. Например: «3 подхода по 10».');return}if(isLoaded(e)&&!text.match(/(\d+(?:\.\d+)?)\s*(кг|kg)/)&&!mult){err('Укажи вес в кг. Его нельзя определить из этой фразы.');return}if(count>50||reps>1000||weight>2000){err('Проверь числа: похоже на ошибку распознавания.');return}const snapshot=clone(state.active);if(!state.active)startWorkout();let target=state.active.exercises.findLast(x=>x.id===e.id&&x.phase==='main');if(!target){target=prepareWorkoutExercise({id:e.id,name:e.name,phase:'main',sets:[],notes:''},true);state.active.exercises.push(target)}target.sets.push(...Array.from({length:count},()=>({type:'main',weight,reps,seconds:minutes*60,distance:0,done:true})));persist();closeSheet();goto('active');toast(`${e.name}: ${count} подход${plural(count)} записано`,()=>{state.active=snapshot;persist();render()})}
-function dictate(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('#voice-feedback').textContent='Здесь браузерная диктовка недоступна. Используй микрофон клавиатуры или введи текст.';$('#voice-text').focus();return}const recognition=new SR();recognition.lang='ru-RU';recognition.interimResults=true;recognition.onresult=e=>{if($('#voice-text'))$('#voice-text').value=Array.from(e.results).map(x=>x[0].transcript).join(' ')};recognition.onerror=()=>{if($('#voice-feedback'))$('#voice-feedback').textContent='Не удалось получить речь. Попробуй диктовку клавиатуры или текст.'};recognition.onend=()=>{if($('#voice-feedback'))$('#voice-feedback').textContent='Проверь распознанный текст и нажми «Записать».'};$('#voice-feedback').textContent='Слушаю… Распознавание выполняет браузер.';try{recognition.start()}catch{recognition.onerror()}}
+function dictate(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('#voice-feedback').textContent='Диктовка здесь не работает. Нажми микрофон на клавиатуре или напиши текст.';$('#voice-text').focus();return}const recognition=new SR();recognition.lang='ru-RU';recognition.interimResults=true;recognition.onresult=e=>{if($('#voice-text'))$('#voice-text').value=Array.from(e.results).map(x=>x[0].transcript).join(' ')};recognition.onerror=()=>{if($('#voice-feedback'))$('#voice-feedback').textContent='Не удалось разобрать речь. Попробуй ещё раз или напиши текст.'};recognition.onend=()=>{if($('#voice-feedback'))$('#voice-feedback').textContent='Проверь распознанный текст и нажми «Записать».'};$('#voice-feedback').textContent='Слушаю… Распознавание выполняет браузер.';try{recognition.start()}catch{recognition.onerror()}}
 function downloadData(){const blob=new Blob([JSON.stringify({app:'Happy Sport',version:1,exportedAt:new Date().toISOString(),...state},null,2)],{type:'application/json'}),a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download='happy-sport-backup-'+dayNow()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000);toast('Подготовлена копия всех записей')}
 document.addEventListener('click',ev=>{const b=ev.target.closest('[data-action]');if(!b)return;const a=b.dataset.action,id=b.dataset.id;switch(a){
 case'navigate':goto(b.dataset.view);break;case'back':goto(state.active&&view==='active'?'diary':'journal');break;case'close':closeSheet();break;case'undo':if(undoAction)undoAction();$('#toast-root').innerHTML='';undoAction=null;break;
@@ -2803,7 +2803,7 @@ document.addEventListener('input',ev=>{const t=ev.target;if(t.id==='library-sear
 document.addEventListener('change',ev=>{const t=ev.target;if(t.id==='day-picker'){selectedDate=t.value;render()}if(t.id==='demo-pulse'){state.demoPulse=t.checked;persist()}if(t.dataset.setType){const [ei,si]=t.dataset.setType.split(',').map(Number);state.active.exercises[ei].sets[si].type=t.value;persist()}});
 document.addEventListener('submit',ev=>{const form=ev.target;ev.preventDefault();const f=new FormData(form),get=k=>String(f.get(k)||''),error=t=>{$('#form-error').textContent=t};
 if(form.id==='workout-form'){const start=get('start'),end=get('end'),mode=form.dataset.mode;if(mode==='active'){if(start>localNow()){error('Начало текущей тренировки не может быть в будущем.');return}state.active.start=start;state.active.title=get('title').trim();state.active.icon=workoutIconValue(f.get('icon'));persist();closeSheet();render();return}if(end<start){error('Окончание должно быть позже начала. Можно выбрать следующий день.');return}let w;if(mode==='finish'){w=clone(state.active);closeWorkoutPause(w,end);w.exercises=w.exercises.map(e=>({...e,sets:e.sets.filter(s=>s.done)})).filter(e=>e.sets.length||e.timerResults?.length);state.active=null}else if(mode==='edit')w=state.workouts.find(x=>x.id===form.dataset.id);else w={id:'manual-'+Date.now(),kind:get('kind'),source:'Моя запись',exercises:[],demo:false,warnings:[]};Object.assign(w,{title:get('title').trim(),icon:workoutIconValue(f.get('icon')),start,end,notes:get('notes'),duration:workoutActiveSeconds(w,start,end)});if(mode==='edit'){w.source+=' · время/заметка изменены';w.warnings=[]}else state.workouts.push(w);persist();detailId=w.id;goto('detail');toast('Тренировка сохранена в журнале');return}
-if(form.id==='exercise-form'){const id=form.dataset.id||'custom-'+Date.now(),entry={id,name:get('name').trim(),en:'',aliases:get('aliases').split(',').map(x=>x.trim()).filter(Boolean),equipment:get('equipment').split(',').map(x=>x.trim()).filter(Boolean),category:'Мои упражнения',metrics:metricOrder().filter(k=>f.getAll('metrics').includes(k)),scope:'user',loadBasis:null,muscleGroups:f.getAll('muscleGroups')};if(!entry.name)return;if(!entry.metrics.length){toast('Выберите, что записываем');return}entry.profile=exerciseProfile(entry.metrics);const old=state.customExercises.findIndex(e=>e.id===id);if(old>=0)state.customExercises[old]=entry;else if(SEED.exercises.some(e=>e.id===id)){state.exerciseOverrides??={};state.exerciseOverrides[id]=entry}else state.customExercises.push(entry);persist();closeSheet();libraryTab='exercises';libraryScope='all';libraryMuscle='all';librarySport='all';category='all';query='';goto('library');toast('Упражнение сохранено');return}
+if(form.id==='exercise-form'){const id=form.dataset.id||'custom-'+Date.now(),entry={id,name:get('name').trim(),en:'',aliases:get('aliases').split(',').map(x=>x.trim()).filter(Boolean),equipment:get('equipment').split(',').map(x=>x.trim()).filter(Boolean),category:'Мои упражнения',metrics:metricOrder().filter(k=>f.getAll('metrics').includes(k)),scope:'user',loadBasis:null,muscleGroups:f.getAll('muscleGroups')};if(!entry.name)return;if(!entry.metrics.length){toast('Выбери, что записать');return}entry.profile=exerciseProfile(entry.metrics);const old=state.customExercises.findIndex(e=>e.id===id);if(old>=0)state.customExercises[old]=entry;else if(SEED.exercises.some(e=>e.id===id)){state.exerciseOverrides??={};state.exerciseOverrides[id]=entry}else state.customExercises.push(entry);persist();closeSheet();libraryTab='exercises';libraryScope='all';libraryMuscle='all';librarySport='all';category='all';query='';goto('library');toast('Упражнение сохранено');return}
 if(form.id==='template-form'){const items=serializeTemplateItems(form);const id=form.dataset.id||'template-'+Date.now(),t={id,title:get('title').trim(),kind:get('kind'),items};if(baseTemplates.some(x=>x.id===id)){state.templateOverrides??={};state.templateOverrides[id]=t}else{const index=state.templates.findIndex(x=>x.id===id);if(index>=0)state.templates[index]=t;else state.templates.push(t)}persist();libraryTab='templates';goto('library');toast('Добавлено в «Мои тренировки»');return}
 
 if(form.id==='energy-form'){if(+get('training')>+get('burn')){error('Энергия тренировки не может превышать общий расход.');return}Object.keys(state.energy).forEach(k=>state.energy[k]=+get(k));persist();goto('diary');toast('Демонстрационные показатели обновлены')}
@@ -3078,7 +3078,7 @@ const previousSection=renderSection,previousTemplateCard=renderTemplateCard;
 renderSection=function(id){return previousSection(id)+nextPlanCard(templates().find(t=>t.id===id));};
 renderTemplateCard=function(id){return previousTemplateCard(id)+nextPlanCard(templates().find(t=>t.id===id));};
 function planText(t){const s=templateSchedule(t.id);if(!s)return t.title;return `${t.title}\n${s.mode==='weekly'?s.days.map(d=>scheduleWeekdays.find(x=>x[0]===d)[1]).join(', ')+' · с ':''}${ruDateText(s.startDate)} · ${s.time}${s.timeZone&&s.timeZone!==scheduleZone()?' · по времени '+s.timeZone:''}\nДлительность: ${s.minutes} мин${s.note?'\n'+s.note:''}`;}
-function downloadPlan(t){const s=templateSchedule(t.id);if(!s)return;try{const u=URL.createObjectURL(new Blob([scheduleCalendar(s)],{type:'text/calendar;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='happy-sport-plan.ics';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000);s.exportedAt=new Date().toISOString();persist();toast('Файл готов · открой его в календаре');}catch(e){toast(e.message);}}
+function downloadPlan(t){const s=templateSchedule(t.id);if(!s)return;try{const u=URL.createObjectURL(new Blob([scheduleCalendar(s)],{type:'text/calendar;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='happy-sport-plan.ics';a.click();setTimeout(()=>URL.revokeObjectURL(u),10000);s.exportedAt=new Date().toISOString();persist();toast('Файл готов — открой его в календаре');}catch(e){toast(e.message);}}
 async function sharePlan(t){const text=planText(t);if(navigator.share){try{await navigator.share({title:t.title,text});return;}catch(e){if(e.name==='AbortError')return;}}openSheet('Поделиться планом',`<textarea class="plan-copy" readonly aria-label="Текст плана">${esc(text)}</textarea><button class="button" data-action="copy-plan" data-id="${esc(t.id)}">Скопировать</button>`);}
 function openOccurrence(id){const o=resolveOccurrence(id);if(!o)return;const s=state.schedules.find(s=>s.id===o.scheduleId);openSheet(o.title,`<form id="occurrence-form" data-id="${esc(id)}"><p class="sheet-info">${state.active?.occurrenceId===id?'Тренировка идёт · ':''}${esc(s?.mode==='weekly'?'Изменения только для этого занятия':'Разовое занятие')}${o.timeZone&&o.timeZone!==scheduleZone()?' · по времени '+esc(o.timeZone):''}</p><label class="field">Дата и время<input type="datetime-local" name="start" required value="${esc(o.start)}"></label><label class="field">Статус<select name="status">${['planned','skipped','cancelled'].concat(o.workoutId?['completed','partial']:[]).map(v=>`<option value="${v}" ${o.status===v?'selected':''}>${scheduleStatusNames[v]}</option>`).join('')}</select></label><label class="field">Заметка<textarea name="note">${esc(o.note||'')}</textarea></label><div class="form-error" role="alert"></div><div class="sheet-actions">${state.active?.occurrenceId===id?`<button class="button primary" type="button" data-action="schedule-resume" data-id="${esc(id)}">Вернуться к тренировке</button>`:`<button class="button primary" type="button" data-action="schedule-start" data-id="${esc(id)}" ${o.workoutId?'disabled':''}>Начать тренировку</button>`}<button class="button" type="submit">Сохранить этот день</button>${s?`<button class="text-btn" type="button" data-action="plan-template" data-id="${esc(s.templateId)}">Изменить всю серию</button>`:''}${o.workoutId?`<button class="text-btn" type="button" data-action="open-workout" data-id="${esc(o.workoutId)}">Открыть факт</button>`:''}</div></form>`);}
 function startScheduledWorkout(id){const o=resolveOccurrence(id);if(!o||o.workoutId)return;if(state.active){closeSheet();goto('active');if(state.active.occurrenceId!==id)toast('Сначала заверши текущую тренировку');return;}startWorkout(o.templateId,o.title);if(!state.active)return;state.active.exercises=o.items.map(([id,phase,count,options])=>{const e=exercise(id);return applyStrongOccurrenceSettings(prepareWorkoutExercise({id,name:options?.name||e?.name||id,...(options?.timerConfig?{timerConfig:clone(options.timerConfig)}:{}),phase,notes:'',metrics:options?.metrics||exerciseMetrics(e||{profile:'reps'}),sets:options?.sets?.map(setPlanCopy)||Array.from({length:count},()=>setPlanDefaults(e,phase))},true),strongOccurrenceSnapshot(options));});state.active.templateId=o.templateId;state.active.occurrenceId=id;state.active.plannedStart=o.start;storeOccurrence(o);persist();goto('active');}
@@ -3772,7 +3772,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action="fi
 function parseSetTime(value){const s=String(value).trim();if(!s)return 0;if(/^\d{1,4}:[0-5]\d(?:\.\d{1,2})?$/.test(s)){const [m,sec]=s.split(':').map(Number);return m*60+sec}if(/^\d{1,5}$/.test(s))return Number(s);return null}
 function setTimeInput(e,ei,si,s){const t=matchingCountdown('set',ei,si),value=t?(t.stopwatch?countdownElapsed(t):countdownRemaining(t)):(s.seconds||0);return `<label class="set-metric set-time-metric">${sportMetricInput(`type="text" inputmode="text" data-set-time="${ei},${si}" value="${t?countdownTime(value):sportDurationValue(value)}" ${t&&!t.finished?'readonly':''} aria-label="Время подхода ${si+1} ${esc(e.name)}, минуты:секунды" title="Минуты:секунды, например 1:30"`,'')}</label>`}
 
-document.addEventListener('change',e=>{const input=e.target;if(input.dataset.setTime==null)return;const [ei,si]=input.dataset.setTime.split(',').map(Number),s=state.active?.exercises[ei]?.sets[si];if(!s)return;const seconds=parseSetTime(input.value);if(seconds==null||seconds>86400){input.value=sportDurationValue(s.seconds||0);sportMetricError(input,'Время, например 1:30');toast('Время: минуты:секунды, например 1:30');return}s.seconds=seconds;delete s.timerTargetSeconds;if(matchingCountdown('set',ei,si))state.active.countdown=null;input.value=sportDurationValue(seconds);persist()});
+document.addEventListener('change',e=>{const input=e.target;if(input.dataset.setTime==null)return;const [ei,si]=input.dataset.setTime.split(',').map(Number),s=state.active?.exercises[ei]?.sets[si];if(!s)return;const seconds=parseSetTime(input.value);if(seconds==null||seconds>86400){input.value=sportDurationValue(s.seconds||0);sportMetricError(input,'Время, например 1:30');toast('Время: минуты и секунды, например 1:30');return}s.seconds=seconds;delete s.timerTargetSeconds;if(matchingCountdown('set',ei,si))state.active.countdown=null;input.value=sportDurationValue(seconds);persist()});
 
 function swipeSetRow(kind,ei,si,html){return `<div class="set-swipe" data-swipe-kind="${kind}" data-ei="${ei}" data-si="${si}" tabindex="0" role="group" aria-label="${kind==='rest'?'Перерыв после подхода':'Подход'} ${si+1}. Свайп влево для удаления" aria-keyshortcuts="Delete"><button type="button" class="swipe-delete" data-action="delete-set-row" data-row-kind="${kind}" data-ei="${ei}" data-si="${si}" aria-label="Удалить ${kind==='rest'?'перерыв после подхода':'подход'} ${si+1}">${icon('trash')}<span>Удалить</span></button><div class="swipe-content">${html}</div></div>`}
 function deleteWorkoutRow(kind,ei,si){if(kind==='rest')return deleteWorkoutRest(ei,si);const w=state.active,e=w?.exercises[ei];if(!e?.sets[si])return null;const previous=clone(e.sets),countdown=clone(w.countdown||null),player=clone(w.exercisePlayer||null);if(kind==='rest')removeSetRest(ei,si);else{if(w.exercisePlayer?.ei===ei)w.exercisePlayer=null;e.sets.splice(si,1);const t=w.countdown;if(t?.ei===ei){if(t.si===si)w.countdown=null;else if(t.si>si)t.si--}}persist();return ()=>{if(state.active!==w)return;e.sets=previous;w.countdown=countdown;w.exercisePlayer=player;persist();render()}}
@@ -4074,7 +4074,7 @@ async function downloadData(){
   const blob=new Blob([JSON.stringify(sportBackup(),null,2)],{type:'application/json'}),name='happy-sport-backup-'+dayNow()+'.json';
   const file=typeof File==='function'?new File([blob],name,{type:'application/json'}):null;
   try{if(file&&navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:'Копия Happy Sport'});toast('Копия передана');return}
-  const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);toast('JSON подготовлен для сохранения');
+  const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);toast('Файл копии готов — сохрани его');
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
@@ -7045,7 +7045,7 @@ function openTemplateExerciseSettings(row){
  templateExerciseApply=({metrics,sets,timerConfig})=>{
   draft.metrics=metrics;draft.sets=sets;draft.localTimerConfig=timerConfig;draft.lastRestSeconds=setPlanLastRest(sets)||draft.lastRestSeconds;
   restoreTemplateSheetTo('exercise');
-  root.innerHTML=setPlanRows(draft);toast('Настройки упражнения в тренировке');
+  root.innerHTML=setPlanRows(draft);toast('Настройки перенесены в тренировку');
   row.querySelector('[data-action="template-exercise-settings"]')?.focus({preventScroll:true});
  };
 }
@@ -7586,7 +7586,7 @@ commitPlayerPreset=function(input){
   const [a,b,key]=input.dataset.playerPreset.split(','),ei=Number(a),index=Number(b),e=state.active?.exercises[ei],p=state.active?.exercisePlayer;
   if(!e||!timerBound(e)||key!=='workSeconds'||(p?.ei===ei&&!p.finished&&(p.running||p.elapsed>0)))return commitPlayerPresetBeforeSets(input);
   const n=parsePlayerPreset(input.value),si=timerPendingIndices(e)[index];
-  if(!Number.isInteger(n)||n<0||n>86400||si==null){toast('Время — минуты:секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(ei))[index]?.workSeconds||0);return;}
+  if(!Number.isInteger(n)||n<0||n>86400||si==null){toast('Время: минуты и секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(ei))[index]?.workSeconds||0);return;}
   e.sets[si].seconds=n;e.timerDraft=timerDraftFromSets(e,e.timerDraft.mode!=='stopwatch');
   if(p?.ei===ei)state.active.exercisePlayer=null;persist();
   input.value=sportDurationValue(n);const display=$('[data-player-time]');if(display)display.textContent=playerDisplay(exercisePlayerStatus(playerPreview(ei)).remaining,true);
@@ -8109,15 +8109,15 @@ function fail(code,message){const e=Error(message);e.code=code;return e}
 function errorText(j,status){
  const m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
  if(/invalid login|invalid_credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
- if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Эта почта уже зарегистрирована. Войдите в аккаунт.';
- if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейдите по ссылке в письме.';
- if(/refresh token/i.test(m))return 'Вход устарел. Войдите заново.';
+ if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Эта почта уже зарегистрирована. Войди в аккаунт.';
+ if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейди по ссылке в письме.';
+ if(/refresh token/i.test(m))return 'Вход устарел. Войди заново.';
  if(/signups? (are )?(not allowed|disabled)/i.test(m))return 'Новые аккаунты сейчас закрыты';
- if(/address .*invalid|invalid email|email_address_invalid/i.test(m))return 'Проверьте формат почты';
+ if(/address .*invalid|invalid email|email_address_invalid/i.test(m))return 'Проверь адрес почты';
  if(/should be different|same_password/i.test(m))return 'Новый пароль должен отличаться от прежнего';
  if(/password/i.test(m))return 'Пароль не подходит: нужно не меньше 8 знаков';
- if(/expired|otp_expired|invalid.*(token|link)|token.*invalid/i.test(m))return 'Ссылка больше не действует. Запросите новую.';
- if(status===429)return 'Слишком много попыток. Подождите минуту.';
+ if(/expired|otp_expired|invalid.*(token|link)|token.*invalid/i.test(m))return 'Ссылка больше не действует. Запроси новую.';
+ if(status===429)return 'Слишком много попыток. Подожди минуту.';
  return m||('Сервер ответил ошибкой '+status);
 }
 
@@ -8175,7 +8175,7 @@ function create(options){
   if(!j||!j.access_token)return 'confirm';                         // сервер ждёт подтверждения почты
   const next=sessionFrom(j);if(!next.uid)throw fail('auth','Не удалось проверить вход');
   const mark=++generation,derived=await deriveKey(password,next.uid);
-  if(mark!==generation)throw fail('auth','Вход изменился в другом окне. Повторите.');
+  if(mark!==generation)throw fail('auth','Вход изменился в другом окне. Попробуй ещё раз.');
   persist(next,derived.raw);session=next;kraw=derived.raw;key=derived.key;emit();return 'ok';
  }
  const signIn=async(email,password)=>enter(await auth('token?grant_type=password',{email,password}),password);
@@ -8202,7 +8202,7 @@ function create(options){
      if(e.code==='auth'&&mine()===who)await signOut();
      throw e;
     }
-    if(mine()!==who)throw fail('auth','Вход изменился. Повторите.');
+    if(mine()!==who)throw fail('auth','Вход изменился. Попробуй ещё раз.');
     const next=sessionFrom(j,old);if(!next.at||next.uid!==old.uid)throw fail('auth','Не удалось обновить вход');
     persist(next,kraw);session=next;
    });
@@ -10264,7 +10264,7 @@ root.HappyScreens={theme,page,sheet,toast,field,passwordField,actions,segment,se
  *  - регистрация (почта, пароль и повтор) → ожидание письма: «Отправить повторно», «Изменить почту»; как только
  *    почту подтвердили по ссылке и человек вернулся в приложение, оно открывается само — пароль ещё в памяти экрана;
  *  - вход с понятной ошибкой; «Забыли пароль?» → письмо → новый пароль (включается настройкой features.recovery);
- *  - гость смотрит приложение; запись без входа открывает лист «Войдите в аккаунт», после входа приложение
+ *  - гость смотрит приложение; запись без входа открывает лист «Войди в аккаунт», после входа приложение
  *    возвращается к тому же действию (ask / takeResume);
  *  - смена почты из профиля: прежняя почта действует, пока новую не подтвердят (features.emailChange).
  * Вход у каждого приложения свой (shared/happy-account.js); после входа и выхода приложение открывается заново.
@@ -10272,7 +10272,7 @@ root.HappyScreens={theme,page,sheet,toast,field,passwordField,actions,segment,se
  *
  *   HappyWelcome.init({app, name, account, ready, features, beforeSignOut})
  *     name — 'Meal' | 'Sport' | 'Day' для «Познакомиться с …»; ready — обещание: приложение нарисовано;
- *   HappyWelcome.ask({reason, resume}) — лист «Войдите в аккаунт»; resume — что сделать после входа (решает приложение);
+ *   HappyWelcome.ask({reason, resume}) — лист «Войди в аккаунт»; resume — что сделать после входа (решает приложение);
  *   HappyWelcome.takeResume()          — после входа: отложенное действие или null (один раз);
  *   HappyWelcome.open('login' | 'register') — экран входа или регистрации;
  *   HappyWelcome.signOut()             — выйти: записи уходят в облако, затем вход закрывается;
@@ -10294,7 +10294,7 @@ const guestKey=()=>'happy-guest:'+cfg.app,resumeKey=()=>'happy-resume:'+cfg.app;
 const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim());
 const norm=v=>String(v||'').trim().toLowerCase();
 function passwordProblem(pw,repeat){
- if(!pw)return 'Введите пароль';
+ if(!pw)return 'Введи пароль';
  if(repeat!==undefined&&pw!==repeat)return 'Пароли не совпадают';
  if(pw.length<8)return 'Пароль — не меньше 8 знаков';
  return '';
@@ -10357,8 +10357,8 @@ function html(name){
    '<div class="hs-actions">'+btn('reset','Сохранить пароль','hs-primary',true)+btn('to-login','Отмена','hs-cancel')+'</div></form>';
  case 'resetDone':return title('Пароль изменён')+'<div class="hs-mail-symbol">'+I.check+'</div><div class="hs-actions">'+btn('to-login','Войти','hs-primary')+'</div>';
  case 'verify':case 'resetSent':case 'emailConfirm':{
-  const t=name==='emailConfirm'?'Подтвердите новую почту':name==='resetSent'?'Проверьте почту':'Подтвердите почту';
-  const note=name==='resetSent'?'Если аккаунт с этой почтой существует, на неё придёт ссылка.':'Перейдите по ссылке в письме.';
+  const t=name==='emailConfirm'?'Подтверди новую почту':name==='resetSent'?'Проверь почту':'Подтверди почту';
+  const note=name==='resetSent'?'Если аккаунт с этой почтой существует, на неё придёт ссылка.':'Перейди по ссылке в письме.';
   const second=name==='verify'?btn('to-signup-email','Изменить почту','hs-cancel')+quiet('close','Закрыть','hs-center'):name==='emailConfirm'?btn('back-profile','Вернуться в профиль','hs-cancel'):btn('to-login','Закрыть','hs-cancel');
   return title(t)+'<div class="hs-mail-symbol">'+I.envelope+'</div><p class="hs-confirm-address">'+esc(form.email)+'</p><p class="hs-note hs-center">'+note+'</p>'+errorBox()+
    '<div class="hs-actions">'+btn(name==='resetSent'?'forgot-again':name==='emailConfirm'?'email-again':'resend','Отправить повторно','hs-primary')+second+'</div>';
@@ -10409,40 +10409,40 @@ function act(a){
  case 'back-profile':{const f=emailBack;emailBack=null;closePage();if(f)try{f()}catch(e){}return}
  case 'register':{
   const email=norm(val('email')),pw=val('password'),repeat=val('repeat');form.email=email;
-  const problem=!emailOk(email)?'Проверьте формат почты':passwordProblem(pw,repeat);if(problem)return fail(problem);
+  const problem=!emailOk(email)?'Проверь адрес почты':passwordProblem(pw,repeat);if(problem)return fail(problem);
   return busy(a,async()=>{const r=await A.signUp(email,pw,'');if(r==='confirm'){pending={email,password:pw};show('verify',{email});startPoll()}});
  }
  case 'login':{
   const email=norm(val('email')),pw=val('password');form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');if(!pw)return fail('Введите пароль');
+  if(!emailOk(email))return fail('Проверь адрес почты');if(!pw)return fail('Введи пароль');
   return busy(a,async()=>{try{await A.signIn(email,pw)}catch(e){const p=pageH&&pageH.main.querySelector('[name="password"]');if(p)p.value='';throw e}});
  }
  case 'resend':return busy(a,async()=>{if(!pending)return show('register',{email:form.email});await A.resend(pending.email);S().toast('Ссылка отправлена повторно');startPoll()});
  case 'signup-email':{
   const email=norm(val('email'));form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');if(!pending)return show('register',{email});
-  if(email===pending.email)return fail('Укажите новый адрес');
+  if(!emailOk(email))return fail('Проверь адрес почты');if(!pending)return show('register',{email});
+  if(email===pending.email)return fail('Укажи новый адрес');
   return busy(a,async()=>{const r=await A.signUp(email,pending.password,'');pending={email,password:pending.password};if(r==='confirm'){show('verify',{email});startPoll()}});
  }
  case 'forgot':case 'forgot-again':{
   const email=a==='forgot'?norm(val('email')):form.email;form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');
+  if(!emailOk(email))return fail('Проверь адрес почты');
   return busy(a,async()=>{await A.recover(email);if(a==='forgot')show('resetSent',{email});else S().toast('Ссылка отправлена повторно')});
  }
  case 'reset':{
   const pw=val('password'),repeat=val('repeat'),problem=passwordProblem(pw,repeat);if(problem)return fail(problem);
-  if(!linkToken)return fail('Ссылка больше не действует. Запросите новую.');
+  if(!linkToken)return fail('Ссылка больше не действует. Запроси новую.');
   return busy(a,async()=>{await A.setPassword(linkToken,pw);linkToken=null;show('resetDone')});
  }
  case 'change-email':{
   const email=norm(val('email')),cur=norm((A.current()||{}).email);form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');if(email===cur)return fail('Укажите новый адрес');
+  if(!emailOk(email))return fail('Проверь адрес почты');if(email===cur)return fail('Укажи новый адрес');
   return busy(a,async()=>{try{await A.changeEmail(email)}catch(e){if(/уже есть/.test(message(e)))throw Error('Этот адрес уже используется');throw e}show('emailConfirm',{email})});
  }
  case 'email-again':return busy(a,async()=>{await A.changeEmail(form.email);S().toast('Ссылка отправлена повторно')});
  }
 }
-/* Отмена: был открыт лист «Войдите» — вернуться в приложение; иначе — к первому экрану. */
+/* Отмена: был открыт лист «Войди» — вернуться в приложение; иначе — к первому экрану. */
 function welcomeOrApp(){
  if(store.get(resumeKey())||cfg.account.current()||store.get(guestKey())){store.del(resumeKey());return closePage()}
  show('welcome',{instant:true});
@@ -10487,11 +10487,11 @@ function startSmile(instant){
  smileTimer=setTimeout(()=>{ready=true},9000);   // страховка: что бы ни случилось, кнопки появятся
 }
 
-/* ── лист «Войдите в аккаунт» ── */
+/* ── лист «Войди в аккаунт» ── */
 function ask(o){
  o=o||{};if(gate&&!gate.closed)return;
  const resume=o.resume||null;
- gate=S().sheet({title:'Войдите в аккаунт',onClose:()=>{gate=null}});
+ gate=S().sheet({title:'Войди в аккаунт',onClose:()=>{gate=null}});
  gate.body.innerHTML='<p class="hs-gate-reason">'+esc(o.reason||'Чтобы сохранить изменения.')+'</p><div class="hs-actions">'+
   '<button type="button" class="hs-btn hs-primary" data-g="login">Войти</button><button type="button" class="hs-btn hs-glass-btn" data-g="register">Создать аккаунт</button>'+
   '<button type="button" class="hs-btn hs-cancel" data-g="cancel">Отмена</button></div>';
@@ -10516,7 +10516,7 @@ function init(o){
  try{cell=!!(cfg.account.cell&&root.localStorage.getItem(cfg.account.cell))}catch(e){}
  Promise.resolve(cfg.ready).catch(()=>{}).then(()=>{ready=true});
  if(link&&link.error){
-  setTimeout(()=>S().toast('Ссылка больше не действует. Запросите новую.'),400);
+  setTimeout(()=>S().toast('Ссылка больше не действует. Запроси новую.'),400);
  }
  if(cfg.account.current()||cell){
   Promise.resolve(cfg.ready).catch(()=>{}).then(()=>{if(cfg.account.current())signedIn(link);else signedOut(link)});
@@ -10526,14 +10526,14 @@ function init(o){
 }
 function signedIn(link){
  store.del(guestKey());
- if(link&&link.type==='email_change')cfg.account.user().then(u=>{S().toast(u.newEmail?'Подтвердите адрес и по ссылке во втором письме':'Почта изменена')}).catch(()=>{});
+ if(link&&link.type==='email_change')cfg.account.user().then(u=>{S().toast(u.newEmail?'Подтверди адрес по ссылке во втором письме':'Почта изменена')}).catch(()=>{});
  else if(link&&link.type==='signup')setTimeout(()=>S().toast('Почта подтверждена'),400);
  else if(link&&link.type==='recovery'&&cfg.features.recovery&&link.token){linkToken=link.token;show('reset')}
 }
 function signedOut(link){
  if(link&&link.type==='recovery'&&link.token&&cfg.features.recovery){linkToken=link.token;show('reset');return}
  if(link&&link.type==='signup'&&link.token){
-  form.note='Почта подтверждена. Войдите, чтобы открыть записи.';show('login',{email:''});
+  form.note='Почта подтверждена. Войди, чтобы открыть записи.';show('login',{email:''});
   cfg.account.linkUser(link.token).then(u=>{if(screen==='login'&&u.email){const i=pageH&&pageH.main.querySelector('[name="email"]');if(i&&!i.value)i.value=u.email;form.email=u.email}}).catch(()=>{});
   return;
  }
@@ -10576,7 +10576,7 @@ root.HappyWelcome={init,ask,takeResume,open,signOut,changeEmail,
  * Экраны — по прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026):
  *   HappyPerson.init({app, account, profileDoc, bodyDoc, openGoals, features})
  *     profileDoc, bodyDoc — функции: общий документ (store.doc / store.shared) или null без входа;
- *     openGoals — открыть цели приложения (без входа — лист «Войдите в аккаунт»);
+ *     openGoals — открыть цели приложения (без входа — лист «Войди в аккаунт»);
  *   HappyPerson.top(box)    — верх настроек: аватар, имя, «Настроить профиль / Настроить цели»;
  *   HappyPerson.bottom(box, {status, newer}) — низ настроек: по центру строка синхронизации, под ней «Выйти» (без входа — «Войти»);
  *   HappyPerson.status(text) — обновить строку синхронизации; HappyPerson.statusText(store, error) — её текст
@@ -10617,8 +10617,8 @@ function weightGoalOf(records){
 function changes(before,after){
  const a=Object.assign(BLANK(),before||{}),b=Object.assign(BLANK(),after||{}),out=[];
  const put=(id,v)=>out.push({id,value:{v}});
- if(a.birthday!==b.birthday){if(b.birthday&&!validDate(b.birthday))throw Error('Проверьте дату рождения');put('birthday',b.birthday||'')}
- if(a.heightCm!==b.heightCm){if(b.heightCm!==null&&!(Number.isFinite(b.heightCm)&&b.heightCm>=50&&b.heightCm<=260))throw Error('Проверьте рост');put('height',b.heightCm)}
+ if(a.birthday!==b.birthday){if(b.birthday&&!validDate(b.birthday))throw Error('Проверь дату рождения');put('birthday',b.birthday||'')}
+ if(a.heightCm!==b.heightCm){if(b.heightCm!==null&&!(Number.isFinite(b.heightCm)&&b.heightCm>=50&&b.heightCm<=260))throw Error('Проверь рост');put('height',b.heightCm)}
  if(a.sex!==b.sex)put('sex',b.sex==='male'||b.sex==='female'?b.sex:'');
  const fa=a.units.food==='oz'?'oz':'metric',fb=b.units.food==='oz'?'oz':'metric';
  if(a.units.weight!==b.units.weight||a.units.height!==b.units.height||fa!==fb)put('units',{weight:b.units.weight==='lb'?'lb':'kg',height:b.units.height==='ft'?'ft':'cm',food:fb});
@@ -10632,8 +10632,8 @@ function weightsOf(bodyRecords){
 }
 /* новый вес на дату: замер этой даты дополняется весом, другие даты не меняются */
 function weightChanges(bodyRecords,date,kg){
- const M=root.HappyMeasurements;if(!validDate(date))throw Error('Проверьте дату замера');
- if(!(Number.isFinite(kg)&&kg>=20&&kg<=350))throw Error('Проверьте вес');
+ const M=root.HappyMeasurements;if(!validDate(date))throw Error('Проверь дату замера');
+ if(!(Number.isFinite(kg)&&kg>=20&&kg<=350))throw Error('Проверь вес');
  const state=M.read(bodyRecords),old=state.list.find(m=>m.date===date);
  const m=old?Object.assign({},old,{values:Object.assign({},old.values,{weight:Math.round(kg*10)/10})}):{date,values:{weight:Math.round(kg*10)/10},source:'Мой замер',note:''};
  return M.saveChanges(state,m,old?date:undefined);
@@ -10654,18 +10654,18 @@ function data(){
  return {profile,weights,latest:weights.length?weights[weights.length-1]:null,weightGoal:pd&&!pd.newer?weightGoalOf(pd.all()):[],newer:!!((pd&&pd.newer)||(bd&&bd.newer))};
 }
 async function update(patch){
- const pd=cfg.profileDoc();if(!pd)throw Error('Войдите в аккаунт, чтобы записывать');
- if(pd.newer)throw Error('Профиль записан более новой версией приложения. Откройте последнюю версию.');
+ const pd=cfg.profileDoc();if(!pd)throw Error('Войди в аккаунт, чтобы записывать');
+ if(pd.newer)throw Error('Профиль сохранён в более новой версии приложения. Открой последнюю версию.');
  const before=read(pd.all()),after=Object.assign({},before,patch,{units:Object.assign({},before.units,patch&&patch.units||{})});
  const list=changes(before,after);if(list.length)await pd.putMany(list);
 }
 async function setWeightGoal(versions){
- const pd=cfg&&cfg.profileDoc();if(!pd)throw Error('Войдите в аккаунт, чтобы записывать');
- if(pd.newer)throw Error('Профиль записан более новой версией приложения. Откройте последнюю версию.');
+ const pd=cfg&&cfg.profileDoc();if(!pd)throw Error('Войди в аккаунт, чтобы записывать');
+ if(pd.newer)throw Error('Профиль сохранён в более новой версии приложения. Открой последнюю версию.');
  await pd.putMany([{id:'weightGoal',value:{v:(Array.isArray(versions)?versions:[]).slice(-60)}}]);
 }
 async function addWeight(date,kg){
- const bd=cfg.bodyDoc();if(!bd)throw Error('Войдите в аккаунт, чтобы записывать');
+ const bd=cfg.bodyDoc();if(!bd)throw Error('Войди в аккаунт, чтобы записывать');
  if(bd.newer)throw Error(root.HappyMeasurements.NEWER);
  await bd.putMany(weightChanges(bd.all(),date,kg));
 }
@@ -10700,7 +10700,7 @@ if(root.document)root.document.addEventListener('click',e=>{
  if(a==='goals'){if(signedIn()&&cfg.openGoals)cfg.openGoals();else root.HappyWelcome.ask({reason:'Чтобы настроить цели.',resume:{open:'goals'}});return}
  if(a==='signin'){root.HappyWelcome.open('login');return}
  if(a==='signout'){
-  if(busyOut)return;busyOut=true;status('Подождите, идёт синхронизация…');
+  if(busyOut)return;busyOut=true;status('Подожди, идёт синхронизация…');
   root.HappyWelcome.signOut().catch(err=>{busyOut=false;S().toast((err&&err.message)||'Не удалось выйти')});
  }
 });
@@ -10710,7 +10710,7 @@ function open(){
  if(!signedIn())return;
  if(pageH&&!pageH.closed)return;
  const A=cfg.account,who=A.current(),d=data(),fmt=S().fmt,num=S().num,esc=S().esc,today=S().day();
- if(d.newer){S().toast('Профиль записан более новой версией приложения. Откройте последнюю версию.');return}
+ if(d.newer){S().toast('Профиль сохранён в более новой версии приложения. Открой последнюю версию.');return}
  const draft={name:who.name||'',birthday:d.profile.birthday,heightCm:d.profile.heightCm,sex:d.profile.sex,units:Object.assign({},d.profile.units),photo:d.profile.photo};
  const original=d.latest;let pendingEmail='';
  const shown={weight:original?fmt(S().toUnits(original.kg,draft.units.weight)):'',date:original?original.date:today,
@@ -10799,9 +10799,9 @@ function open(){
   const weightText=String(shown.weight).trim(),heightText=String(shown.height).trim();
   const kg=weightText?S().fromUnits(num(weightText),draft.units.weight):null;
   const cm=heightText?num(heightText)*(draft.units.height==='cm'?1:30.48):null;
-  if(cm!==null&&(!Number.isFinite(cm)||cm<50||cm>260))throw Error('Проверьте рост');
-  if(draft.birthday&&(draft.birthday>today||!(ageAt(draft.birthday,today)<=120)))throw Error('Проверьте дату рождения');
-  if(kg!==null&&(!Number.isFinite(kg)||kg<20||kg>350||!shown.date||shown.date>today))throw Error('Проверьте вес и дату замера');
+  if(cm!==null&&(!Number.isFinite(cm)||cm<50||cm>260))throw Error('Проверь рост');
+  if(draft.birthday&&(draft.birthday>today||!(ageAt(draft.birthday,today)<=120)))throw Error('Проверь дату рождения');
+  if(kg!==null&&(!Number.isFinite(kg)||kg<20||kg>350||!shown.date||shown.date>today))throw Error('Проверь вес и дату замера');
   if(draft.name.trim().length>60)throw Error('Имя — не длиннее 60 знаков');
   saving=true;
   try{
@@ -10816,7 +10816,7 @@ function open(){
 /* фото из файла: квадрат по центру, 192 точки, JPEG — помещается в запись профиля */
 function photoFrom(file){
  return new Promise((resolve,reject)=>{
-  if(!/^image\//.test(file.type||''))return reject(Error('Выберите фото'));
+  if(!/^image\//.test(file.type||''))return reject(Error('Выбери фото'));
   const url=URL.createObjectURL(file),img=new Image();
   img.onload=()=>{try{
    const side=Math.min(img.naturalWidth,img.naturalHeight),c=root.document.createElement('canvas');c.width=c.height=192;
@@ -10834,8 +10834,8 @@ function statusText(store,error){
  if(error)return error;
  if(!store||store.closed)return '';
  const s=store.status();
- if(s.newer&&s.newer.length)return root.HappyStore?root.HappyStore.NEWER:'Записано более новой версией приложения. Откройте последнюю версию.';
- if(s.state==='saving')return 'Подождите, идёт синхронизация…';
+ if(s.newer&&s.newer.length)return root.HappyStore?root.HappyStore.NEWER:'Сохранено в более новой версии приложения. Открой последнюю версию.';
+ if(s.state==='saving')return 'Подожди, идёт синхронизация…';
  if(s.state==='offline')return 'Нет связи · записи сохранены на устройстве';
  if(s.state==='error')return 'Не удалось сохранить в облако · записи на устройстве';
  return 'Синхронизировано';
@@ -10873,7 +10873,7 @@ root.HappyPerson={FORMAT,DOC,KEYS,read,changes,weightsOf,weightChanges,weightGoa
 'use strict';
 const KINDS=['loss','maintain','recomp','gain'];
 const LABELS={loss:'Снижение веса',maintain:'Поддержание веса',recomp:'Рекомпозиция тела',gain:'Набор веса'};
-const ACTIVITY=[{value:0,label:'Выберите активность'},{value:1.4,label:'Преимущественно сидя'},{value:1.6,label:'Немного движения'},{value:1.8,label:'Много движения'},{value:2,label:'Высокая активность'}];
+const ACTIVITY=[{value:0,label:'Выбери активность'},{value:1.4,label:'Преимущественно сидя'},{value:1.6,label:'Немного движения'},{value:1.8,label:'Много движения'},{value:2,label:'Высокая активность'}];
 const FOCUS=[{value:'none',label:'Пока не выбран'},{value:'health',label:'Поддержание здоровья'},{value:'consistency',label:'Регулярность тренировок'},{value:'strength',label:'Сила'},
  {value:'endurance',label:'Выносливость'},{value:'muscle',label:'Рост мышц'},{value:'mobility',label:'Гибкость и подвижность'},{value:'coordination',label:'Баланс и координация'},
  {value:'skill',label:'Техника и навыки'},{value:'power',label:'Скорость и мощность'},{value:'competition',label:'Подготовка к соревнованиям'},{value:'return',label:'Возвращение после перерыва'}];
@@ -11004,7 +11004,7 @@ function dayDraft(saved){
 }
 /* своя цель или тема: пустое — ошибка, повтор без учёта регистра выбирает существующее */
 function addCustom(draft,kind,text,id){
- const label=cleanName(text).slice(0,NAME_MAX);if(!label)return {draft,error:'Введите название'};
+ const label=cleanName(text).slice(0,NAME_MAX);if(!label)return {draft,error:'Введи название'};
  const d=copy(draft),low=label.toLocaleLowerCase('ru');
  if(kind==='topic'){
   const all=[...TOPICS,...d.customTopics],existing=all.find(t=>t.toLocaleLowerCase('ru')===low),topic=existing||label;
@@ -11084,7 +11084,7 @@ function openWeight(o){
   main.innerHTML=h;
   const rb=main.querySelector('[data-gw="ruler"]');
   if(rb&&effectiveCurrent()!==null)ruler=S().ruler(rb,{target:g.targetKg!==null?g.targetKg:effectiveCurrent(),current:effectiveCurrent(),band:g.bandKg,units,onChange:kg=>{g=moveWeight(g,kg,effectiveCurrent());paint()}});
-  kindWheel=S().wheel(main.querySelector('[data-gw="kind"]'),{id:'hs-kind',label:meal?'Выберите цель':'Цель по весу',ariaLabel:meal?'Цель питания':'Цель веса',
+  kindWheel=S().wheel(main.querySelector('[data-gw="kind"]'),{id:'hs-kind',label:meal?'Выбери цель':'Цель по весу',ariaLabel:meal?'Цель питания':'Цель веса',
    options:KINDS.map(k=>({value:k,label:LABELS[k]})),value:g.kind,onChange:k=>{g=chooseKind(g,k,effectiveCurrent());paint()}});
   const ab=main.querySelector('[data-gw="activity"]');
   if(ab)activityWheel=S().wheel(ab,{id:'hs-activity',label:'Уровень активности',options:ACTIVITY,value:g.calc.activity,onChange:a=>{g=calculateGoal(g,calcProfile,effectiveCurrent(),Object.assign({},g.calc,{activity:a}),date);paint()}});
@@ -11122,7 +11122,7 @@ function openWeight(o){
   const t=main.querySelector('[name="target"]');if(!t)return true;const text=t.value.trim();
   if(!text){g=Object.assign({},g,{targetKg:null});paint();return true}
   const kg=S().fromUnits(num(text),units);
-  if(!Number.isFinite(kg)||kg<20||kg>350){errorBox(main,'Проверьте желаемый вес');return false}
+  if(!Number.isFinite(kg)||kg<20||kg>350){errorBox(main,'Проверь желаемый вес');return false}
   g=effectiveCurrent()!==null?moveWeight(g,kg,effectiveCurrent()):Object.assign({},g,{targetKg:round1(kg)});errorBox(main,'');paint();return true;
  }
  /* доли БЖУ: тянуть столбик пальцем */
@@ -11163,7 +11163,7 @@ function openWeight(o){
    if(b.dataset.hs==='cancel'){sh.close();return}
    const n=S().fromUnits(num(sh.body.querySelector('[name="band"]').value),units);
    if(Number.isFinite(n)&&n>=.1&&n<=5){const next=Object.assign({},g,{bandKg:round1(n)});g=effectiveCurrent()!==null&&g.targetKg!==null?moveWeight(next,g.targetKg,effectiveCurrent()):next;sh.close();paint()}
-   else errorBox(sh.body,'Укажите от '+fmt(S().toUnits(.1,units))+' до '+fmt(S().toUnits(5,units))+' '+wu);
+   else errorBox(sh.body,'Укажи от '+fmt(S().toUnits(.1,units))+' до '+fmt(S().toUnits(5,units))+' '+wu);
   });
  }
  function calcSheet(){
@@ -11183,7 +11183,7 @@ function openWeight(o){
    const ok=g.calculationBase!==undefined,gr=grams(g);
    out.innerHTML=(ok?fmt(g.calories,0):'—')+' <small>ккал</small>';
    more.innerHTML=ok?'<div class="hs-calc-macros">'+['Белки','Жиры','Углеводы'].map((n,i)=>'<span>'+n+'<b>'+fmt(gr[i])+' г</b></span>').join('')+'</div>':
-    '<p>'+(needsProfile()?'Заполните недостающие данные':!g.calc.activity?'Выберите активность на экране целей':'Проверьте данные. Расчёт доступен для возраста 19–78 лет.')+'</p>';
+    '<p>'+(needsProfile()?'Заполни недостающие данные':!g.calc.activity?'Выбери активность на экране целей':'Проверь данные. Расчёт доступен для возраста 19–78 лет.')+'</p>';
   };
   const recalc=()=>{g=calculateGoal(g,calcProfile,effectiveCurrent(),g.calc,date);paint()};
   sh.body.addEventListener('input',e=>{
@@ -11218,13 +11218,13 @@ function openWeight(o){
  async function save(){
   if(saving)return;errorBox(main,'');
   if(!commitTarget())return;
-  if(meal&&g.method==='calculate'&&g.calculationBase===undefined){if(!g.calc.activity&&!needsProfile())throw Error('Выберите уровень активности');calcSheet();return}
+  if(meal&&g.method==='calculate'&&g.calculationBase===undefined){if(!g.calc.activity&&!needsProfile())throw Error('Выбери уровень активности');calcSheet();return}
   let calories=null;
   if(meal){
    const text=main.querySelector('[name="calories"]').value.trim();
-   if(text!==''){calories=num(text);if(!Number.isFinite(calories)||calories<=0||calories>20000)throw Error('Укажите дневную цель по калориям')}
+   if(text!==''){calories=num(text);if(!Number.isFinite(calories)||calories<=0||calories>20000)throw Error('Укажи дневную цель по калориям')}
    if(g.method==='calculate')calories=g.calories;
-   const fb=String(fiber).trim();if(fb!==''&&!(num(fb)>0&&num(fb)<=500))throw Error('Проверьте клетчатку');
+   const fb=String(fiber).trim();if(fb!==''&&!(num(fb)>0&&num(fb)<=500))throw Error('Проверь клетчатку');
   }
   saving=true;
   try{

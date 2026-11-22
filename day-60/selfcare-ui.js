@@ -56,7 +56,7 @@ let session=null,railTimer=null,railPainting=false,pendingWheel=null;
 const CURRENT='care_current';
 function data(){return C.init(DB,todayISO());}
 function block(name){return document.querySelector('[data-screen="care-'+name+'"]');}
-function guard(date){if(writeGuard())return false;if(date>todayISO()){toast('Будущие события пока не отмечаем');return false;}if(DB.days[date]?.locked){toast('День закрыт — сначала открой замок');return false;}return true;}
+function guard(date){if(writeGuard())return false;if(date>todayISO()){toast('Будущие события пока не отмечаем');return false;}if(DB.days[date]?.locked){toast('День закрыт — открой замок, чтобы менять');return false;}return true;}
 /* Day 59: запись сразу, через общий модуль (saveNow в index.html); без входа и для записей более новой версии — отказ. */
 async function commit(){
  if(RO)throw Error(RO_TEXT);
@@ -181,7 +181,7 @@ async function submitNow(){
  const original=session,draft=C.copy(session);let record;pendingWheel={session:original,value:JSON.stringify(draft.checkpoint)};
  const ok=await transact(()=>{record=C.saveSectionCheckin(DB,draft.date,draft.id,draft.checkpoint,DB.metrics,checkinSection());if(!record)throw Error('Сначала отметь самочувствие или тег');record.note=draft.checkpoint.note||'';delete data().wheelDrafts?.[draft.date]?.[CURRENT];});
  pendingWheel=null;if(!ok){updateNowSave();return;}
- undoNow=draft;if(session===original&&JSON.stringify(session.checkpoint)===JSON.stringify(draft.checkpoint)){session=null;go('day');renderDay();toast('Запись сохранена в журнал',undoNowSave,'Вернуть',6000);}else if(session===original){stashWheel();updateNowSave();}
+ undoNow=draft;if(session===original&&JSON.stringify(session.checkpoint)===JSON.stringify(draft.checkpoint)){session=null;go('day');renderDay();toast('Запись сохранена в журнале',undoNowSave,'Вернуть',6000);}else if(session===original){stashWheel();updateNowSave();}
 }
 async function saveTravellingCheckin(){
  if(busy||!session?.dirty||!guard(session.date))return;
@@ -222,8 +222,8 @@ function renderNote(){
  let note=$('wheelNote');if(!note){note=document.createElement('textarea');note.id='wheelNote';note.placeholder='Заметка к этому разделу';note.setAttribute('aria-label','Заметка к выбранному разделу');$('cpTags').after(note);note.addEventListener('input',()=>{if(session&&!session.readOnly){session.checkpoint.note=note.value;saveCheckin();}});}if(document.activeElement!==note)note.value=session.checkpoint.note||'';
 }
 function dictateWheel(){
- const Speech=root.SpeechRecognition||root.webkitSpeechRecognition;if(!Speech){toastLong('Голосовой ввод недоступен в этом браузере. Отметь шкалу или тег — появится «Сохранить».');return;}
- if(recognition)return;const target=session;recognition=new Speech();const engine=recognition;recognition.lang='ru-RU';recognition.onresult=e=>{if(recognition!==engine)return;target.checkpoint.note=(target.checkpoint.note?target.checkpoint.note+'\n':'')+e.results[0][0].transcript;if(target.autosave){if(session===target){const note=$('wheelNote');if(note)note.value=target.checkpoint.note;}commitSection(target);toast('Заметка добавлена');return;}target.dirty=true;const d=data();d.wheelDrafts=d.wheelDrafts||{};d.wheelDrafts[target.date]=d.wheelDrafts[target.date]||{};d.wheelDrafts[target.date][wheelDraftKey(target)]=C.copy(target);save();if(session===target)updateNowSave();toastLong('Диктовка добавлена в черновик: '+(DB.sections.find(s=>s.k===target.target)?.t||'Сейчас'));};recognition.onerror=()=>toast('Не удалось распознать речь');recognition.onend=()=>{if(recognition===engine)recognition=null;};try{recognition.start();}catch(e){recognition=null;toast('Голосовой ввод недоступен');}
+ const Speech=root.SpeechRecognition||root.webkitSpeechRecognition;if(!Speech){toastLong('Диктовка здесь не работает. Отметь шкалу или тег — появится «Сохранить».');return;}
+ if(recognition)return;const target=session;recognition=new Speech();const engine=recognition;recognition.lang='ru-RU';recognition.onresult=e=>{if(recognition!==engine)return;target.checkpoint.note=(target.checkpoint.note?target.checkpoint.note+'\n':'')+e.results[0][0].transcript;if(target.autosave){if(session===target){const note=$('wheelNote');if(note)note.value=target.checkpoint.note;}commitSection(target);toast('Заметка добавлена');return;}target.dirty=true;const d=data();d.wheelDrafts=d.wheelDrafts||{};d.wheelDrafts[target.date]=d.wheelDrafts[target.date]||{};d.wheelDrafts[target.date][wheelDraftKey(target)]=C.copy(target);save();if(session===target)updateNowSave();toastLong('Диктовка добавлена в черновик: '+(DB.sections.find(s=>s.k===target.target)?.t||'Сейчас'));};recognition.onerror=()=>toast('Не удалось разобрать речь. Попробуй ещё раз');recognition.onend=()=>{if(recognition===engine)recognition=null;};try{recognition.start();}catch(e){recognition=null;toast('Диктовка здесь не работает');}
 }
 
 function openMood(recordId,returnTo='day',explicitKey=null){

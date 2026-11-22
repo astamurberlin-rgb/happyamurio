@@ -30,7 +30,7 @@ function openTemplateExerciseSettings(row){
  templateExerciseApply=({metrics,sets,timerConfig})=>{
   draft.metrics=metrics;draft.sets=sets;draft.localTimerConfig=timerConfig;draft.lastRestSeconds=setPlanLastRest(sets)||draft.lastRestSeconds;
   restoreTemplateSheetTo('exercise');
-  root.innerHTML=setPlanRows(draft);toast('Настройки упражнения в тренировке');
+  root.innerHTML=setPlanRows(draft);toast('Настройки перенесены в тренировку');
   row.querySelector('[data-action="template-exercise-settings"]')?.focus({preventScroll:true});
  };
 }

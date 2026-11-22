@@ -36,7 +36,7 @@ function mount(){
 async function open(food,options){
  options=options||{};
  if(box)return;
- if(root.DB.productsVersion>1){root.toast('Формат продуктов новее редактора. Обнови Happy Meal.');return}
+ if(root.DB.productsVersion>1){root.toast('Продукты сохранены в более новой версии приложения. Открой последнюю версию.');return}
  if(food&&food.b&&root.BLS_ST!=='ok'){root.toast('Дождись загрузки каталога состава, чтобы скопировать все нутриенты');return}
  var draft,sourceInfo=food&&food.sourceInfo||null;
  if(food&&food.b){var kav=root.kavOf&&root.kavOf(food.b),bls=root.BLS;sourceInfo=kav?{source:root.KAV&&root.KAV.src||'Happy Meal · Кавказская кухня',record:P.clone(kav),version:root.KAV&&root.KAV.v,code:food.b}:{source:bls&&bls.src||food.src,url:bls&&bls.url,version:bls&&bls.v,note:bls&&bls.note,code:food.b}}

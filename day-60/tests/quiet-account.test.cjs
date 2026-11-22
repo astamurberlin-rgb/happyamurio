@@ -41,7 +41,7 @@ test('без входа — предложение войти на экране 
   const account = read('day-account.js');
   assert.ok(account.includes("window.paintSignIn=function(){\n  var box=document.getElementById('daySignIn'); if(box) box.hidden=DayData.signedIn();"));
   assert.ok(account.includes("closest('#daySignInGo')) HappyWelcome.open('login')"), '«Войти» на карточке — сразу экран входа');
-  assert.ok(account.includes('HappyWelcome.ask({reason:'), 'запись без входа — лист «Войдите в аккаунт»');
+  assert.ok(account.includes('HappyWelcome.ask({reason:'), 'запись без входа — лист «Войди в аккаунт»');
   const guard = between(page, 'function writeGuard(){', '\n}');
   assert.ok(guard.includes('if(RO){ roWarn(); return true }') && guard.includes('if(!DayData.signedIn()){ askSignIn(); return true }'));
   assert.ok(between(page, 'function lockGuard(){', '\n}').includes('if(writeGuard())return true;'), 'закрытый день, вход и версия проверяются одной функцией');

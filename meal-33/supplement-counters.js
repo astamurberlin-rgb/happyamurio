@@ -68,7 +68,7 @@
   /* перед сохранением счётчика: свежий вариант из «Мои добавки»; шаблон — сохранить вариантом */
   function resolve(f){var s=f.supplement;
     if(s.variantId){var v=variants().filter(function(x){return String(x.id)===s.variantId})[0];return Promise.resolve(v?food(v):clone(f))}
-    if(s.templateId){if(!root.HappySupplements||!root.HappySupplements.saveTemplate)return Promise.reject(Error('Каталог БАДов ещё не готов. Попробуй ещё раз.'));
+    if(s.templateId){if(!root.HappySupplements||!root.HappySupplements.saveTemplate)return Promise.reject(Error('Добавки ещё загружаются. Попробуй через секунду'));
       return root.HappySupplements.saveTemplate(s.templateId).then(food)}
     return Promise.resolve(clone(f));
   }

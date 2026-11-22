@@ -83,7 +83,7 @@ commitPlayerPreset=function(input){
   const [a,b,key]=input.dataset.playerPreset.split(','),ei=Number(a),index=Number(b),e=state.active?.exercises[ei],p=state.active?.exercisePlayer;
   if(!e||!timerBound(e)||key!=='workSeconds'||(p?.ei===ei&&!p.finished&&(p.running||p.elapsed>0)))return commitPlayerPresetBeforeSets(input);
   const n=parsePlayerPreset(input.value),si=timerPendingIndices(e)[index];
-  if(!Number.isInteger(n)||n<0||n>86400||si==null){toast('Время — минуты:секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(ei))[index]?.workSeconds||0);return;}
+  if(!Number.isInteger(n)||n<0||n>86400||si==null){toast('Время: минуты и секунды, например 1:30');input.value=sportDurationValue(playerProgram(playerPreview(ei))[index]?.workSeconds||0);return;}
   e.sets[si].seconds=n;e.timerDraft=timerDraftFromSets(e,e.timerDraft.mode!=='stopwatch');
   if(p?.ei===ei)state.active.exercisePlayer=null;persist();
   input.value=sportDurationValue(n);const display=$('[data-player-time]');if(display)display.textContent=playerDisplay(exercisePlayerStatus(playerPreview(ei)).remaining,true);

@@ -30,15 +30,15 @@ function fail(code,message){const e=Error(message);e.code=code;return e}
 function errorText(j,status){
  const m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
  if(/invalid login|invalid_credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
- if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Эта почта уже зарегистрирована. Войдите в аккаунт.';
- if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейдите по ссылке в письме.';
- if(/refresh token/i.test(m))return 'Вход устарел. Войдите заново.';
+ if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Эта почта уже зарегистрирована. Войди в аккаунт.';
+ if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейди по ссылке в письме.';
+ if(/refresh token/i.test(m))return 'Вход устарел. Войди заново.';
  if(/signups? (are )?(not allowed|disabled)/i.test(m))return 'Новые аккаунты сейчас закрыты';
- if(/address .*invalid|invalid email|email_address_invalid/i.test(m))return 'Проверьте формат почты';
+ if(/address .*invalid|invalid email|email_address_invalid/i.test(m))return 'Проверь адрес почты';
  if(/should be different|same_password/i.test(m))return 'Новый пароль должен отличаться от прежнего';
  if(/password/i.test(m))return 'Пароль не подходит: нужно не меньше 8 знаков';
- if(/expired|otp_expired|invalid.*(token|link)|token.*invalid/i.test(m))return 'Ссылка больше не действует. Запросите новую.';
- if(status===429)return 'Слишком много попыток. Подождите минуту.';
+ if(/expired|otp_expired|invalid.*(token|link)|token.*invalid/i.test(m))return 'Ссылка больше не действует. Запроси новую.';
+ if(status===429)return 'Слишком много попыток. Подожди минуту.';
  return m||('Сервер ответил ошибкой '+status);
 }
 
@@ -96,7 +96,7 @@ function create(options){
   if(!j||!j.access_token)return 'confirm';                         // сервер ждёт подтверждения почты
   const next=sessionFrom(j);if(!next.uid)throw fail('auth','Не удалось проверить вход');
   const mark=++generation,derived=await deriveKey(password,next.uid);
-  if(mark!==generation)throw fail('auth','Вход изменился в другом окне. Повторите.');
+  if(mark!==generation)throw fail('auth','Вход изменился в другом окне. Попробуй ещё раз.');
   persist(next,derived.raw);session=next;kraw=derived.raw;key=derived.key;emit();return 'ok';
  }
  const signIn=async(email,password)=>enter(await auth('token?grant_type=password',{email,password}),password);
@@ -123,7 +123,7 @@ function create(options){
      if(e.code==='auth'&&mine()===who)await signOut();
      throw e;
     }
-    if(mine()!==who)throw fail('auth','Вход изменился. Повторите.');
+    if(mine()!==who)throw fail('auth','Вход изменился. Попробуй ещё раз.');
     const next=sessionFrom(j,old);if(!next.at||next.uid!==old.uid)throw fail('auth','Не удалось обновить вход');
     persist(next,kraw);session=next;
    });

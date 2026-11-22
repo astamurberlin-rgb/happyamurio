@@ -25,7 +25,7 @@ const W=world();
 function device(uid,name,signedIn=true){
  const store=W.device(uid),asked=[];
  const ctx={console,crypto,TextEncoder,TextDecoder,Uint8Array,JSON,Math,Date,Promise,Error,Set,Map,Object,Array,String,Number,setTimeout,clearTimeout,
-  HappyStore:{NEWER:'Записано более новой версией приложения. Открой последнюю версию.'},askSignIn:()=>asked.push(1),
+  HappyStore:{NEWER:'Записано более новой версии приложения. Открой последнюю версию.'},askSignIn:()=>asked.push(1),
   MealData:{signedIn:()=>ctx.in,outdated:()=>false,store}};
  ctx.in=signedIn;ctx.globalThis=ctx;vm.createContext(ctx);
  for(const f of ['substances.js','supplements-model.js','supplements-store.js'])vm.runInContext(code[f],ctx,{filename:f});

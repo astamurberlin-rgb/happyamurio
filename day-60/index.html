@@ -2090,7 +2090,7 @@ function dupWarn(what){ toast('Такое название уже есть: '+wh
 function isLocked(d){ return !!day(d||curDate).locked }
 function lockGuard(){
   if(writeGuard())return true;
-  if(SelfCare.checkinReadOnly()){toast('Сохранённая отметка');return true;}
+  if(SelfCare.checkinReadOnly()){toast('Отметка уже сохранена — её можно только смотреть');return true;}
   if(!isLocked()) return false;
   toast('День закрыт — открой замок, чтобы менять');
   return true;
@@ -2814,7 +2814,7 @@ document.getElementById('cntBox').addEventListener('click',function(ev){
       var r=G.bar.getBoundingClientRect(), fx=r.left+floor/F*r.width;
       if(!G.hinted && fx-x>24){
         G.hinted=true;
-        if(cntRows(day(curDate),G.k).length) toast('Убрать — минус у записи ниже');
+        if(cntRows(day(curDate),G.k).length) toast('Чтобы убрать, нажми «−» у записи ниже');
       }
     }
     setCdr(G.k,v-floor);
@@ -3400,7 +3400,7 @@ function nwAddTag(){
 function nwRemove(h){
   var C=nwCfg(), isK=h.slice(0,2)==='k:', id=h.slice(2), m=isK?nwSc(id):null, name=isK?(m&&m.t):id;
   if(!name) return;
-  if(isK&&C.sc.length<2){ toast('Хотя бы одна шкала остаётся'); return }
+  if(isK&&C.sc.length<2){ toast('Оставь хотя бы одну шкалу'); return }
   if(RO){ roWarn(); return }
   var sc=C.sc.slice(), tags=C.tags.slice();   // отметки в журнале остаются; «Вернуть» возвращает строку на её место
   delUndo('«'+name+'» убрано из «Как ты сейчас»',
@@ -3771,7 +3771,7 @@ function jrGive(file,ok){
       if(!(err&&err.name==='AbortError')) toastLong('«Поделиться» не открылось'); });
     return;
   }
-  if(IOS_DEV||IN_FRAME){ toastLong('Здесь файл не сохранить: это окно не даёт. Открой HappyDay в Safari'); return }
+  if(IOS_DEV||IN_FRAME){ toastLong('В этом окне файл не сохранить. Открой Happy Day в Safari'); return }
   var u=URL.createObjectURL(file), a=document.createElement('a');
   a.href=u; a.download=file.name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(function(){ URL.revokeObjectURL(u) },1500);
@@ -4932,7 +4932,7 @@ function download(name,text,type){
     });
     return;
   }
-  if(IOS_DEV||IN_FRAME){ toastLong('Здесь файл не сохранить: это окно не даёт. Открой HappyDay в Safari'); return }
+  if(IOS_DEV||IN_FRAME){ toastLong('В этом окне файл не сохранить. Открой Happy Day в Safari'); return }
   var b=new Blob([text],{type:type||'application/json'});
   var u=URL.createObjectURL(b), a=document.createElement('a');
   a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove();
@@ -5339,7 +5339,7 @@ document.getElementById('addCnt').addEventListener('click',function(){
     var m=parseFloat(r.b); if(isNaN(m)||m<=0) m=4;
     DB.counters.push({k:'n'+Date.now(), t:t, max:Math.min(24,m)});
     save(); renderCounters(); renderDay(); renderLinks();
-    toast('Добавлено · войдёт в анализ после '+MIN_OBS+' дней');
+    toast('Добавлено. Войдёт в анализ, когда наберётся '+MIN_OBS+' дней');
   });
 });
 

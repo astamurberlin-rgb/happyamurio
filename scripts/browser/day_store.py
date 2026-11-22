@@ -453,7 +453,7 @@ out["row_versions"] = sorted(set(r.get("v") for k, r in rows.items() if k[2] not
 sec = out.get("section_a") or {}
 log = sorted([x["v"] for x in sec.get("log", [])]) if sec else []
 checks = [
-    ("без входа: карточка «Войди, чтобы записывать», нажатие и заметка открывают лист «Войдите в аккаунт», ничего не записано", out["signin_card"] and out["no_login_screen"] and "Войдите в аккаунт" in out["no_login_toast"] and out["no_login_count"] == 0 and out["no_login_note"] == ["day", "", True] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
+    ("без входа: карточка «Войди, чтобы записывать», нажатие и заметка открывают лист «Войди в аккаунт», ничего не записано", out["signin_card"] and out["no_login_screen"] and "Войди в аккаунт" in out["no_login_toast"] and out["no_login_count"] == 0 and out["no_login_note"] == ["day", "", True] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("без входа экраны листаются, вход открывает только запись", out["no_login_walk"] == ["trends", "links", "day"]),
     ("вошёл в одной вкладке — вторая вкладка Day вошла сама; ячейка входа своя — happy-account:day, пароль не сохранён, карточка «Войди» убрана", out["second_tab_signed_in"] and out["cells"] == ["happy-account:day"] and not out["password_stored"] and not out["signin_card_after"]),
     ("в настройках имя, «Настроить профиль / цели», «Выйти» и одна строка синхронизации; служебных блоков нет", bool(out["status_line"]) and "Настроить профиль" in out["account_card"] and "Настроить цели" in out["account_card"] and "Выйти" in out["account_card"] and "облак" not in out["account_card"].lower().replace("в облако", "")),
@@ -482,7 +482,7 @@ checks = [
     ("второй аккаунт не видит записей, тренировок и счётчиков первого и пишет в свои строки", out["second_account_sees"] == [0, "", None, 0, False] and out["second_account_cloud"]),
     ("записи двух аккаунтов на устройстве лежат раздельно", out["device_accounts"] == [uid1, uid2]),
     ("первый аккаунт вернулся к своим записям", bool(out["first_account_back"])),
-    ("записи более новой версии Day: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and "более новой версией" in out["newer_card"] and out["newer_refuses"][0] and "более новой версией" in out["newer_refuses"][1]),
+    ("записи более новой версии Day: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and "более новой версии" in out["newer_card"] and out["newer_refuses"][0] and "более новой версии" in out["newer_refuses"][1]),
     ("на сервере только шифр, строки нового вида", not out["plaintext_on_server"] and out["row_versions"] == [2]),
     ("Day писал только свои новые документы и общий документ замеров, отказов сервера нет", bool(out["day_write_kinds"]) and all(k.startswith("day/") and k.split("/")[1] not in ("journal", "link", "counters", "supplements", "measurements") or k == "sport/body" for k in out["day_write_kinds"]) and not out["refused"]),
     ("прежние строки облака Day не прочитаны и не изменены", out["old_rows"] and not out["old_read"]),

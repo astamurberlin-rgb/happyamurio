@@ -7,7 +7,7 @@
  *  - регистрация (почта, пароль и повтор) → ожидание письма: «Отправить повторно», «Изменить почту»; как только
  *    почту подтвердили по ссылке и человек вернулся в приложение, оно открывается само — пароль ещё в памяти экрана;
  *  - вход с понятной ошибкой; «Забыли пароль?» → письмо → новый пароль (включается настройкой features.recovery);
- *  - гость смотрит приложение; запись без входа открывает лист «Войдите в аккаунт», после входа приложение
+ *  - гость смотрит приложение; запись без входа открывает лист «Войди в аккаунт», после входа приложение
  *    возвращается к тому же действию (ask / takeResume);
  *  - смена почты из профиля: прежняя почта действует, пока новую не подтвердят (features.emailChange).
  * Вход у каждого приложения свой (shared/happy-account.js); после входа и выхода приложение открывается заново.
@@ -15,7 +15,7 @@
  *
  *   HappyWelcome.init({app, name, account, ready, features, beforeSignOut})
  *     name — 'Meal' | 'Sport' | 'Day' для «Познакомиться с …»; ready — обещание: приложение нарисовано;
- *   HappyWelcome.ask({reason, resume}) — лист «Войдите в аккаунт»; resume — что сделать после входа (решает приложение);
+ *   HappyWelcome.ask({reason, resume}) — лист «Войди в аккаунт»; resume — что сделать после входа (решает приложение);
  *   HappyWelcome.takeResume()          — после входа: отложенное действие или null (один раз);
  *   HappyWelcome.open('login' | 'register') — экран входа или регистрации;
  *   HappyWelcome.signOut()             — выйти: записи уходят в облако, затем вход закрывается;
@@ -37,7 +37,7 @@ const guestKey=()=>'happy-guest:'+cfg.app,resumeKey=()=>'happy-resume:'+cfg.app;
 const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim());
 const norm=v=>String(v||'').trim().toLowerCase();
 function passwordProblem(pw,repeat){
- if(!pw)return 'Введите пароль';
+ if(!pw)return 'Введи пароль';
  if(repeat!==undefined&&pw!==repeat)return 'Пароли не совпадают';
  if(pw.length<8)return 'Пароль — не меньше 8 знаков';
  return '';
@@ -100,8 +100,8 @@ function html(name){
    '<div class="hs-actions">'+btn('reset','Сохранить пароль','hs-primary',true)+btn('to-login','Отмена','hs-cancel')+'</div></form>';
  case 'resetDone':return title('Пароль изменён')+'<div class="hs-mail-symbol">'+I.check+'</div><div class="hs-actions">'+btn('to-login','Войти','hs-primary')+'</div>';
  case 'verify':case 'resetSent':case 'emailConfirm':{
-  const t=name==='emailConfirm'?'Подтвердите новую почту':name==='resetSent'?'Проверьте почту':'Подтвердите почту';
-  const note=name==='resetSent'?'Если аккаунт с этой почтой существует, на неё придёт ссылка.':'Перейдите по ссылке в письме.';
+  const t=name==='emailConfirm'?'Подтверди новую почту':name==='resetSent'?'Проверь почту':'Подтверди почту';
+  const note=name==='resetSent'?'Если аккаунт с этой почтой существует, на неё придёт ссылка.':'Перейди по ссылке в письме.';
   const second=name==='verify'?btn('to-signup-email','Изменить почту','hs-cancel')+quiet('close','Закрыть','hs-center'):name==='emailConfirm'?btn('back-profile','Вернуться в профиль','hs-cancel'):btn('to-login','Закрыть','hs-cancel');
   return title(t)+'<div class="hs-mail-symbol">'+I.envelope+'</div><p class="hs-confirm-address">'+esc(form.email)+'</p><p class="hs-note hs-center">'+note+'</p>'+errorBox()+
    '<div class="hs-actions">'+btn(name==='resetSent'?'forgot-again':name==='emailConfirm'?'email-again':'resend','Отправить повторно','hs-primary')+second+'</div>';
@@ -152,40 +152,40 @@ function act(a){
  case 'back-profile':{const f=emailBack;emailBack=null;closePage();if(f)try{f()}catch(e){}return}
  case 'register':{
   const email=norm(val('email')),pw=val('password'),repeat=val('repeat');form.email=email;
-  const problem=!emailOk(email)?'Проверьте формат почты':passwordProblem(pw,repeat);if(problem)return fail(problem);
+  const problem=!emailOk(email)?'Проверь адрес почты':passwordProblem(pw,repeat);if(problem)return fail(problem);
   return busy(a,async()=>{const r=await A.signUp(email,pw,'');if(r==='confirm'){pending={email,password:pw};show('verify',{email});startPoll()}});
  }
  case 'login':{
   const email=norm(val('email')),pw=val('password');form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');if(!pw)return fail('Введите пароль');
+  if(!emailOk(email))return fail('Проверь адрес почты');if(!pw)return fail('Введи пароль');
   return busy(a,async()=>{try{await A.signIn(email,pw)}catch(e){const p=pageH&&pageH.main.querySelector('[name="password"]');if(p)p.value='';throw e}});
  }
  case 'resend':return busy(a,async()=>{if(!pending)return show('register',{email:form.email});await A.resend(pending.email);S().toast('Ссылка отправлена повторно');startPoll()});
  case 'signup-email':{
   const email=norm(val('email'));form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');if(!pending)return show('register',{email});
-  if(email===pending.email)return fail('Укажите новый адрес');
+  if(!emailOk(email))return fail('Проверь адрес почты');if(!pending)return show('register',{email});
+  if(email===pending.email)return fail('Укажи новый адрес');
   return busy(a,async()=>{const r=await A.signUp(email,pending.password,'');pending={email,password:pending.password};if(r==='confirm'){show('verify',{email});startPoll()}});
  }
  case 'forgot':case 'forgot-again':{
   const email=a==='forgot'?norm(val('email')):form.email;form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');
+  if(!emailOk(email))return fail('Проверь адрес почты');
   return busy(a,async()=>{await A.recover(email);if(a==='forgot')show('resetSent',{email});else S().toast('Ссылка отправлена повторно')});
  }
  case 'reset':{
   const pw=val('password'),repeat=val('repeat'),problem=passwordProblem(pw,repeat);if(problem)return fail(problem);
-  if(!linkToken)return fail('Ссылка больше не действует. Запросите новую.');
+  if(!linkToken)return fail('Ссылка больше не действует. Запроси новую.');
   return busy(a,async()=>{await A.setPassword(linkToken,pw);linkToken=null;show('resetDone')});
  }
  case 'change-email':{
   const email=norm(val('email')),cur=norm((A.current()||{}).email);form.email=email;
-  if(!emailOk(email))return fail('Проверьте формат почты');if(email===cur)return fail('Укажите новый адрес');
+  if(!emailOk(email))return fail('Проверь адрес почты');if(email===cur)return fail('Укажи новый адрес');
   return busy(a,async()=>{try{await A.changeEmail(email)}catch(e){if(/уже есть/.test(message(e)))throw Error('Этот адрес уже используется');throw e}show('emailConfirm',{email})});
  }
  case 'email-again':return busy(a,async()=>{await A.changeEmail(form.email);S().toast('Ссылка отправлена повторно')});
  }
 }
-/* Отмена: был открыт лист «Войдите» — вернуться в приложение; иначе — к первому экрану. */
+/* Отмена: был открыт лист «Войди» — вернуться в приложение; иначе — к первому экрану. */
 function welcomeOrApp(){
  if(store.get(resumeKey())||cfg.account.current()||store.get(guestKey())){store.del(resumeKey());return closePage()}
  show('welcome',{instant:true});
@@ -230,11 +230,11 @@ function startSmile(instant){
  smileTimer=setTimeout(()=>{ready=true},9000);   // страховка: что бы ни случилось, кнопки появятся
 }
 
-/* ── лист «Войдите в аккаунт» ── */
+/* ── лист «Войди в аккаунт» ── */
 function ask(o){
  o=o||{};if(gate&&!gate.closed)return;
  const resume=o.resume||null;
- gate=S().sheet({title:'Войдите в аккаунт',onClose:()=>{gate=null}});
+ gate=S().sheet({title:'Войди в аккаунт',onClose:()=>{gate=null}});
  gate.body.innerHTML='<p class="hs-gate-reason">'+esc(o.reason||'Чтобы сохранить изменения.')+'</p><div class="hs-actions">'+
   '<button type="button" class="hs-btn hs-primary" data-g="login">Войти</button><button type="button" class="hs-btn hs-glass-btn" data-g="register">Создать аккаунт</button>'+
   '<button type="button" class="hs-btn hs-cancel" data-g="cancel">Отмена</button></div>';
@@ -259,7 +259,7 @@ function init(o){
  try{cell=!!(cfg.account.cell&&root.localStorage.getItem(cfg.account.cell))}catch(e){}
  Promise.resolve(cfg.ready).catch(()=>{}).then(()=>{ready=true});
  if(link&&link.error){
-  setTimeout(()=>S().toast('Ссылка больше не действует. Запросите новую.'),400);
+  setTimeout(()=>S().toast('Ссылка больше не действует. Запроси новую.'),400);
  }
  if(cfg.account.current()||cell){
   Promise.resolve(cfg.ready).catch(()=>{}).then(()=>{if(cfg.account.current())signedIn(link);else signedOut(link)});
@@ -269,14 +269,14 @@ function init(o){
 }
 function signedIn(link){
  store.del(guestKey());
- if(link&&link.type==='email_change')cfg.account.user().then(u=>{S().toast(u.newEmail?'Подтвердите адрес и по ссылке во втором письме':'Почта изменена')}).catch(()=>{});
+ if(link&&link.type==='email_change')cfg.account.user().then(u=>{S().toast(u.newEmail?'Подтверди адрес по ссылке во втором письме':'Почта изменена')}).catch(()=>{});
  else if(link&&link.type==='signup')setTimeout(()=>S().toast('Почта подтверждена'),400);
  else if(link&&link.type==='recovery'&&cfg.features.recovery&&link.token){linkToken=link.token;show('reset')}
 }
 function signedOut(link){
  if(link&&link.type==='recovery'&&link.token&&cfg.features.recovery){linkToken=link.token;show('reset');return}
  if(link&&link.type==='signup'&&link.token){
-  form.note='Почта подтверждена. Войдите, чтобы открыть записи.';show('login',{email:''});
+  form.note='Почта подтверждена. Войди, чтобы открыть записи.';show('login',{email:''});
   cfg.account.linkUser(link.token).then(u=>{if(screen==='login'&&u.email){const i=pageH&&pageH.main.querySelector('[name="email"]');if(i&&!i.value)i.value=u.email;form.email=u.email}}).catch(()=>{});
   return;
  }

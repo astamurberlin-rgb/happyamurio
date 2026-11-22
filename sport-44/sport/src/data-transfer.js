@@ -41,7 +41,7 @@ async function downloadData(){
   const blob=new Blob([JSON.stringify(sportBackup(),null,2)],{type:'application/json'}),name='happy-sport-backup-'+dayNow()+'.json';
   const file=typeof File==='function'?new File([blob],name,{type:'application/json'}):null;
   try{if(file&&navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:'Копия Happy Sport'});toast('Копия передана');return}
-  const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);toast('JSON подготовлен для сохранения');
+  const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);toast('Файл копии готов — сохрани его');
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;

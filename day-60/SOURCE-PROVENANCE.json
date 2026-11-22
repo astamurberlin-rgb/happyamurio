@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1493104,
-   "sha256": "27a1852bb8284c97af87aafe20e9ac94ece8cd7c2394637ab5451c2a5c15ab12"
+   "size": 1492895,
+   "sha256": "03ba8b8f2391ba85f76e1424d4abf7bd67aaa188310ab2cfb1fe6b9cda349b7f"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -254,8 +254,8 @@
   },
   {
    "path": "index.html",
-   "size": 520180,
-   "sha256": "960c33bdb1a4569240e10442cb42973dbfaa707d9b6fcdacf00914c723505b25"
+   "size": 520223,
+   "sha256": "7a22ad0ba004ba84b5a8031b9ec5a8427fdfbb418ea0a8546dae23fe5c91c4f7"
   },
   {
    "path": "manifest.webmanifest",
@@ -284,8 +284,8 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 78566,
-   "sha256": "6f63233cd5d79de497b8b9881cd7f14039c9f8687cabd9d1173f6db1bc37c6ce"
+   "size": 78581,
+   "sha256": "94243372378d09833164a689185da537f0e87cc9930c7cbd04098fd49f5535e4"
   },
   {
    "path": "selfcare.css",
@@ -304,8 +304,8 @@
   },
   {
    "path": "shared/happy-account.js",
-   "size": 13848,
-   "sha256": "3366656ddab9e1eccafa2efd8e6dd0f716737c0a5de9eff0f0f13971bf8b1b2b"
+   "size": 13846,
+   "sha256": "c7d223257ad177707e7b579085d7895842dc26cfb25f6b47421a83a2251df983"
   },
   {
    "path": "shared/happy-app-links.js",
@@ -359,8 +359,8 @@
   },
   {
    "path": "shared/happy-goals.js",
-   "size": 41778,
-   "sha256": "0dc47b6019cb9d1c1e34be3133ed8910553c00fe2b218b3b45ba6b5a806d3f09"
+   "size": 41734,
+   "sha256": "96c729a77c50f541ce2640753bad6ca40d2bf9f70fabc75755b369df787f7caf"
   },
   {
    "path": "shared/happy-gradient-editor.css",
@@ -409,8 +409,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 25348,
-   "sha256": "9a68b92911191ba658dd6de8ad0c39256acf4fdfcc7f2e1bcf2f86d17e754883"
+   "size": 25288,
+   "sha256": "895bc96bd0dca06fc700a53995d4eb76a7e1a41fa239dc518c02881de1bc2088"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -464,8 +464,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 22897,
-   "sha256": "0cca82d4a3a269195d8c9187cffbbf1bca79e44d157e88e0d6676d2bb4a63132"
+   "size": 22796,
+   "sha256": "f54d1edd836355ee18b6c0de75f451f3743bf5ecc7b4da7aa4deef371bb9b788"
   },
   {
    "path": "shared/release-notes.js",
@@ -509,8 +509,8 @@
   },
   {
    "path": "tests/quiet-account.test.cjs",
-   "size": 11386,
-   "sha256": "10b85c3fa2d8a292fe74e9af28e29de6f4187c7d619774e1f7504d02db3055e2"
+   "size": 11382,
+   "sha256": "2acfbe5b8efce717c556955809d73a9cd8635bafcd0f1759ca77c44cfccc2237"
   },
   {
    "path": "tests/section-times.test.cjs",

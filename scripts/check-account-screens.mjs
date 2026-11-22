@@ -79,7 +79,7 @@ const P=ctx.HappyPerson,G=ctx.HappyGoals,M=ctx.HappyMeasurements,plain=x=>JSON.p
  assert.equal(G.dayDraft({focus:'none',focusInitialized:true,topics:[]}).focus,'none','сохранённое «Пока не выбран» остаётся');
  assert.equal(G.dayDraft({focus:'sleep',focusInitialized:true}).focus,'sleep','сохранённая цель не заменяется начальной');
  let d=G.dayDraft(null);
- assert.equal(G.addCustom(d,'focus','   ').error,'Введите название');
+ assert.equal(G.addCustom(d,'focus','   ').error,'Введи название');
  let r=G.addCustom(d,'focus','  Больше   времени для себя ','a1');assert.equal(r.error,'');d=r.draft;
  assert.equal(d.customFocuses[0].label,'Больше времени для себя','пробелы по краям убираются, повторные схлопываются');assert.equal(d.focus,'custom-a1','новая цель выбрана');
  r=G.addCustom(d,'focus','больше времени ДЛЯ себя','a2');assert.equal(r.draft.customFocuses.length,1,'повтор без учёта регистра выбирает существующую');
