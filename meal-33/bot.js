@@ -795,6 +795,15 @@ var MealBot=(function(){
       if(mm) return {text:(t1.slice(0,mm.index)+' '+t1.slice(mm.index+mm[0].length)).replace(/\s+/g,' ').trim(),k:null,minus:/^\d/.test(mm[1])?+mm[1]:({'один':1,'одна':1,'одно':1,'одну':1,'одни':1,'два':2,'две':2,'три':3,'четыре':4,'пять':5})[mm[1].toLowerCase()],mg:/^г/.test(mm[2]||''),said:mm[0].replace(/^[\s,]+/,'')} }
     var r=takeLeft0(t1); return r||pre;
   }
+  /* «груша 200 г и рис 100 г, но рис не доел, половину оставил» — не доеден только названный продукт: «но рис» уходит из текста, доля — только рису (журнал ошибок, 22.11.2026) */
+  function leftTarget(lf){
+    if(!lf||lf.minus) return lf;
+    var mt=/[\s,]+(?:но|а|только)\s+([а-яё]{3,})(?:\s+([а-яё]{3,}))?\s*,?\s*$/i.exec(lf.text);
+    if(!mt||/^(я|ее|его|их|это|все|всё|половину|треть|четверть)$/i.test(mt[1])) return lf;
+    lf.text=lf.text.slice(0,mt.index).replace(/[\s,]+$/,'').trim(); lf.target=[mt[1],mt[2]].filter(Boolean).map(function(w){ return norm(w).slice(0,Math.max(3,Math.min(5,w.length-1))) });
+    return lf;
+  }
+  function leftHit(l){ if(!LEFT||!LEFT.target) return true; var n=norm(FOODS[l.fid]?FOODS[l.fid].n:''); return LEFT.target.every(function(st){ return n.split(/[^a-zа-я0-9]+/).some(function(w){ return w.indexOf(st)===0 }) }) }
   function takeLeft0(raw){
     var t=String(raw), out=null;
     LEFTRE.forEach(function(re){ if(out) return; var m=re.exec(t); if(!m) return;
@@ -1885,7 +1894,7 @@ var MealBot=(function(){
         var keepS=String(raw).split(/(?<=[.!?;])\s+/).filter(function(x){ return !NOCOUNT.test(x) });
         if(!keepS.length||!tokensOf(keepS.join(' ')).length) return p('Хорошо, это не записываю.');
         raw=keepS.join(' ') }
-      LEFT=null; var lf=takeLeft(raw); if(lf&&tokensOf(lf.text).length){ LEFT=lf; raw=lf.text }
+      LEFT=null; var lf=leftTarget(takeLeft(raw)); if(lf&&tokensOf(lf.text).length){ LEFT=lf; raw=lf.text }
     }
     var ORIG=nrm(String(raw)).trim().replace(/[?!.,…\s]+$/,'');
     if(SP&&m.kind!=='photo'&&!S.ask&&/(получил(ось|ась|ись|ся)|вышло)\s+\S+\s+(штук\S*|шт)(\s|,|$)/.test(ORIG)) return p('Похоже, это готовка: сколько получилось штук. В дневник не записал. Скажи, сколько съел ты.');   // как сказано, до разбора речи: по этому тексту узнаются вопросы «что я съел», «сколько я съел»
@@ -1970,6 +1979,7 @@ var MealBot=(function(){
     /* время и разбор */
     t=t.replace(/^\s*(да|ага|угу)[\s,]+(?=\S)/,' ');
     if(SP) t=t.replace(/\s(?:а\s+|и\s+)?(?:до этого|перед этим|потом|затем|еще)\s+в\s+\d{1,2}\s*$/,' ');   // Meal 33.12
+    t=t.replace(/(^|\s)(и|а|потом)\s+час\s+(еще|ещё)(?=\s)/g,'$1$2 $3 в час');   // «и час ещё кофе» — «в» потерялось: «час» — время, а не продукт (разбор диктовок 22.11.2026)
     var tt=takeTimes(t,now), work=fixes(tt.text);
     var why=DEFER.filter(function(d){ return d[0].test(work) })[0];
     if(why){
@@ -2076,7 +2086,7 @@ var MealBot=(function(){
         if(lr&&lr.tap){ if(!LEFT.mg&&lr.tap.n>LEFT.minus) lr.tap.n-=LEFT.minus }
         else if(ll&&(LEFT.mg?ll.u==='г':ll.u!=='г')&&ll.q>LEFT.minus){ ll.q=Math.round((ll.q-LEFT.minus)*100)/100; ll.g=gramsFor(ll.fid,ll.q,ll.u); ll.left='не доедено — записал съеденную часть' }
         else if(ll){ ll.approx=true; ll.usual=true; ll.left='не доедено — сколько осталось? «Меньше» — половина' } }
-      else if(LEFT) ready.forEach(function(en){ var l=en.line; if(en.tap||!l.fid||!(l.g>0)) return;
+      else if(LEFT) ready.forEach(function(en){ var l=en.line; if(en.tap||!l.fid||!(l.g>0)||!leftHit(l)) return;
         if(LEFT.k){ l.q=l.u==='г'||l.u==='мл'?Math.round(l.q*LEFT.k):Math.round(l.q*LEFT.k*100)/100; l.g=gramsFor(l.fid,l.q,l.u); l.approx=true; l.left='не доедено — записал съеденную часть' }
         else { l.approx=true; l.usual=true; l.left='не доедено — сколько осталось? «Меньше» — половина' } });
     }

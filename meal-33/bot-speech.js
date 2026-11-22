@@ -172,6 +172,8 @@ var MealSpeech=(function(){
   function prepare(raw){
     if(!D) return raw;
     var s=' '+nz(raw).replace(/[«»"“”]/g,' ').replace(/\s+/g,' ').trim()+' ', keep=[], NV=D.named_volumes||{}, N=D.numbers||{};
+    /* ранние искажения речи (speech_fixes с early): до разбора блюд и мер — «макароны с курицей сливочном соусе» → «… в сливочном соусе» (22.11.2026) */
+    (D.speech_fixes||[]).forEach(function(e){ if(e.early) s=s.replace(new RegExp(e.match,'g'),e.to) });
     function hold(txt){ keep.push(txt); return '\u0001'+String.fromCharCode(0x2460+keep.length-1) }
     PROT.forEach(function(p){ s=s.replace(new RegExp(rx(p).replace(/\s+/g,'\\s+'),'g'),function(m){ return hold(m) }) });
     s=s.replace(/(мук\S*\s+)типа(\s+\d)/g,function(m,a,b){ return a+hold('типа')+b });
