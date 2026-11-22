@@ -152,7 +152,8 @@ var MealBotGoals=(function(){
     },
     any:function(text,st){
       var g=G(); if(M.find(text,g.manual)) return {set:{kind:'manual'},say:'Хорошо, калории задашь вручную.'};
-      var k=M.pick(text,g.kinds_switch);   // только явные слова цели: «держать вес», «похудеть» if(!k||k===st.v.kind) return null;
+      var k=M.pick(text,g.kinds_switch);   // только явные слова цели: «держать вес», «похудеть»
+      if(!k||k===st.v.kind) return null;
       var o={kind:k}, tg=targetIn(text); if(tg&&(k==='loss'||k==='gain')) o.target=tg; return {set:o,say:'Понял, цель: '+KIND_LABEL[k].toLowerCase()+'.'};
     },
     command:function(cmd,st,S){

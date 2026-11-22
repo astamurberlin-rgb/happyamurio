@@ -160,7 +160,7 @@ var MealBotSteps=(function(){
     var s=stepOf(fl,st.cur);
     if(only(text,C.back)) return back(fl,st);
     if(only(text,C.cancel)) return cancel(S,fl);
-    if(s.numeric&&isFood&&isFood(text)) return null;   // «банан 120 г» на вопрос о весе — это еда, а не ответ
+    if(s.numeric&&isFood&&extra(text)&&isFood(text)) return null;   // «банан 120 г» на вопрос о весе — это еда, а не ответ
     var vals=s.parse?s.parse(text,st):null;
     if(vals&&vals.error) return errHTML(fl,st,s,vals);
     var any=fl.any&&fl.any(text,st);   // ответ на другой вопрос сценария («не худеть, держать вес» на вопрос о поле)
@@ -174,6 +174,11 @@ var MealBotSteps=(function(){
     if(fs2&&fs2.key!==s.key&&(find(text,C.edit)||fs2.vals)){ if(fs2.vals){ setVals(st,fs2.vals); return advance(fl,st) } return reask(fl,st,fs2.key) }
     if(isFood&&isFood(text)) return null;
     return p('Не понял.')+askHTML(fl,st,s);
+  }
+  /* в ответе-числе есть слова кроме чисел и слов при числе («до 75», «82 кг», «80, нет, 82») — может быть еда */
+  function extra(text){
+    var C=D().chat_steps||{}, N=(D().numbers||{}).cardinals||{}, SC=(D().numbers||{}).scales||{}, NW=C.number_words||[];
+    return words(text).some(function(w){ return w.length>=3&&!/\d/.test(w)&&N[w]==null&&SC[w]==null&&!NW.some(function(p){ return wordOk(p,w) }) });
   }
   function back(fl,st){
     var prev=st.hist.pop(); if(!prev) return p('Это первый вопрос.')+askHTML(fl,st,stepOf(fl,st.cur));
