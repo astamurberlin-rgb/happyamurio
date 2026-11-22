@@ -645,7 +645,7 @@ var MealBot=(function(){
         l.ask=null; l.spoken=l.spoken||l.name;
         if(minus){ l.whole=l.g; l.waste=minus; if(minus>=l.g){ l.ask='waste' } else { l.q=Math.round((l.g-minus)*10)/10; l.u='г'; l.g=l.q; l.explicit=true } minus=0 }
         var fw=String(l.name||'').split(' ').filter(Boolean);
-        if(SP&&fw.length&&SP.missing(fw[0])){ l.fid=null; l.alts=[]; l.st='none' }   // «пельмени»: настоящих в базе нет — не подставлять похожее по слову
+        if(SP&&fw.length&&(SP.missing(fw[0])||fw.length>1&&SP.missing(fw.join(' ')))){ l.fid=null; l.alts=[]; l.st='none' }   // «пельмени», «овощи на гриле»: настоящих в базе нет — не подставлять похожее по слову
         /* Meal 33.9: просто «сыр» — последний записанный сыр, иначе гауда; просто «сок» — последний записанный, иначе вопрос (решение Астамура 17.11.2026).
            Раньше них — избранное: в избранном сулугуни, сказано просто «сыр» — пишется сулугуни (решение Астамура 20.11.2026) */
         var oneWord=SP&&fw.length===1&&tokensOf(c.text).length===1&&(l.fid||l.alts.length), fv=oneWord&&!l.pin?favOf(fw[0]):null;
