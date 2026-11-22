@@ -72,7 +72,7 @@ assert.ok(manifest.libraries.supplements&&manifest.libraries.supplements.templat
 assert.ok(/root\.DB\.purchases=/.test(shopCode)&&!/localStorage/.test(shopCode),'тестовая покупка — в дневнике аккаунта, а не в памяти браузера');
 const goes=[...shopCode.matchAll(/go\(['"]recipes['"]\)/g)];assert.equal(goes.length,1,'на «Сборники» — только из openSupplements');
 assert.ok(/openSupplements:mode=>\{if\(typeof root\.go==='function'\)root\.go\('recipes'\)/.test(shopCode),'переход — только по «Мои добавки» / «+ Записать», не при запуске');
-assert.ok(shop.includes("'Купить · 2 €'")&&shop.includes('Тестовая покупка · без оплаты'),'покупка — как в прототипе');
+assert.ok(shop.includes("'Купить · 2 €'")&&!shop.includes('Тестовая покупка · без оплаты'),'покупка — «Купить · 2 €», без подписи о тестовой покупке (аудит 3, 21.11.2026)');
 /* решение Астамура 20.11.2026: национальные базы не продаём — мы их только перевели, они входят в Meal по умолчанию */
 assert.deepEqual([...shop.matchAll(/\{id:'([A-Z]+)'[^\n]*,base:true\}/g)].map(m=>m[1]),['BLS','USDA','MEXT','KFCT'],'национальные базы отмечены base:true, остальные — нет');
 assert.ok(/function buyControl\(c\)\{if\(c\.base\)return '';/.test(shopCode)&&/function purchased\(c\)\{return !c\.base&&/.test(shopCode)&&/if\(c\.base\|\|purchased\(c\)\)return;/.test(shopCode)

@@ -307,7 +307,10 @@ function renderDiary(){
  /* аудит 20.11.2026, п. 5 (Астамур): дневник выбирается колесом — три строки, выбранная посередине, листается
     вверх-вниз; кнопки с выпадающим списком нет. Колесо — общее, как «Выберите цель» в Meal (HappyScreens.wheel). */
  const wb=block('diary').querySelector('[data-diary-wheel]'),hid=$('careBook');
- if(wb&&hid&&root.HappyScreens)root.HappyScreens.wheel(wb,{id:'care-book',label:'Дневник',ariaLabel:'Дневник для записи',options:c.books.map(b=>({value:b.id,label:b.name})),value:hid.value,onChange:v=>{hid.value=v;}});
+ /* 22.11.2026 (Астамур, аудит 3): дневник выбирается тем же барабаном, что и время (shared/happy-drum.js),
+    одной широкой колонкой с подписью «Дневник». — Claude */
+ if(wb&&hid&&HF&&HF.drum){wb.classList.add('care-book-drum');const i0=Math.max(0,c.books.findIndex(b=>b.id===hid.value));
+  HF.drum(wb,{groups:[{label:'Дневник',cols:[{name:'b',label:'Дневник для записи',options:c.books.map((b,i)=>({v:i,t:b.name})),value:i0}]}],onChange:v=>{const b=c.books[v.b];if(b)hid.value=b.id;}});}
 }
 function renderDiaryList(query){const c=data(),q=query.trim().toLocaleLowerCase('ru'),entries=c.entries.filter(x=>(x.title+' '+x.text+' '+x.additions.map(a=>a.text).join(' ')).toLocaleLowerCase('ru').includes(q));
  $('careDiaryList').innerHTML=entries.slice().sort((a,b)=>b.createdAt-a.createdAt).map(e=>'<button class="card care-record" data-care-entry="'+h(e.id)+'"><time>'+h(ruDate(e.date))+' · '+h(e.time)+' · '+h(c.books.find(b=>b.id===e.bookId)?.name||'Дневник')+'</time><b>'+h(e.title)+'</b><p>'+h(e.text.slice(0,160))+(e.text.length>160?'…':'')+'</p><p class="care-help">'+(e.additions.length?'Дополнений: '+e.additions.length:'Открыть запись')+'</p></button>').join('')||empty(q?'Ничего не найдено.':'Здесь будут твои записи.');

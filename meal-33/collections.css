@@ -116,3 +116,12 @@
 .cc-card-open img.cc-ready{opacity:1}
 .cc-detail-image{background:rgba(255,255,255,.10)}
 @media (prefers-reduced-motion:reduce){.cc-card-open img{transition:none}}
+/* Meal 33.30 (аудит 3): кнопка покупки — пилюля под картинкой; подпись «Тестовая покупка» тише (12 — минимум по правилам) */
+.cc-buy-top{margin:0 0 18px}
+.cc-buy-bottom .cc-buy button{border-radius:999px;min-height:48px}
+.cc-buy-bottom .cc-buy small{font-size:12px;opacity:.55;font-weight:400}
+
+/* аудит 3: цена и «Куплено» в магазине — цвет из темы (без темы — как было) */
+:root[data-happy-appearance] #ccShopGrid .cc-card-meta .cc-price,:root[data-happy-appearance] .cc-card-meta .cc-price.cc-owned,:root[data-happy-appearance] .cc-owned-pill,:root[data-happy-appearance] .cc-buy button:disabled{color:var(--happy-accent-ink,#57365e);background:color-mix(in srgb,var(--happy-accent-ink,#57365e) 14%,#fff)}
+/* аудит 3 (22.11.2026): белые пилюли магазина и БАДов с текстом цвета фона (--base) в теме берут цвет текста темы, как остальные кнопки */
+:root[data-happy-appearance] :is(.cc-pills [aria-pressed=true],.cc-buy button,.sp-filters button[aria-pressed=true],.sp-btn.primary,.mc-download.is-saved){color:var(--happy-accent-ink,var(--base))}

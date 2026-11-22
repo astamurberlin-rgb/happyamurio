@@ -190,6 +190,8 @@
     sync();
     if(signedIn()&&!root.RO)try{publish()}catch(e){}
   }
+  /* Meal 33.30 (аудит 3, Астамур 21.11): окно счётчика берёт фон экрана (тема или исходный вид), а не тёмно-синий #133b63; синий сохранён темой «Спокойный синий» в Color Studio */
+  function paint(){const bg=document.querySelector('body>.bg'),img=bg?getComputedStyle(bg).backgroundImage:'none';dialog.style.background=img&&img!=='none'?img:getComputedStyle(document.documentElement).background;}
   function ensure(){if(dialog)return;dialog=document.createElement('section');dialog.id='foodCounterEditor';dialog.className='food-counter-editor';dialog.hidden=true;dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','fcTitle');document.body.appendChild(dialog);
     dialog.addEventListener('click',e=>{const b=e.target.closest('[data-fc]');if(!b)return;const act=b.dataset.fc;
       if(act==='close'&&!(b.classList.contains('fc-grip')&&gdy>=6))close();
@@ -218,7 +220,7 @@
     dialog.addEventListener('change',e=>{if(e.target.id==='fcUnit'){draft.u=e.target.value;const box=$('fcCustom');if(box)box.hidden=draft.u!=='__custom';preview()}});
     dialog.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();close()}if(e.key==='Tab'){const nodes=[...dialog.querySelectorAll('button,input,select,a[href]')].filter(x=>!x.disabled&&x.getClientRects().length),i=nodes.indexOf(document.activeElement);if((e.shiftKey&&i<=0)||(!e.shiftKey&&i===nodes.length-1)){e.preventDefault();nodes[e.shiftKey?nodes.length-1:0].focus()}}});
   }
-  function edit(i){ensure();const c=root.DB.taps[i],ok=ready(c);draft={key:c&&c.k,index:i,fid:ok?c.fid:null,food:ok?clone(supplementFood(c)||root.FOODS[c.fid]):null,title:c?c.t:'',q:c?c.q:1,u:c?c.u:'г',query:'',prior:document.activeElement};dialog.hidden=false;
+  function edit(i){ensure();const c=root.DB.taps[i],ok=ready(c);draft={key:c&&c.k,index:i,fid:ok?c.fid:null,food:ok?clone(supplementFood(c)||root.FOODS[c.fid]):null,title:c?c.t:'',q:c?c.q:1,u:c?c.u:'г',query:'',prior:document.activeElement};paint();dialog.hidden=false;
     draft.outside=[...document.body.children].filter(n=>n!==dialog).map(n=>{const prev=n.inert;n.inert=true;return[n,prev]});document.body.classList.add('food-counter-open');render();
   }
   function close(){if(!draft)return;const prior=draft.prior;draft.outside.forEach(([n,prev])=>n.inert=prev);dialog.hidden=true;draft=null;document.body.classList.remove('food-counter-open');if(prior&&document.contains(prior))prior.focus()}

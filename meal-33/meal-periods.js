@@ -243,7 +243,7 @@ function open(){
   function render(){
     var R=D.rules, f=R.fast, snack=D.rows.filter(function(r){ return kindOf(r)==='snack'&&hasWin(r) });
     main.innerHTML='<input type="hidden" name="mp-state">'+
-      '<div class="mp-bar"><button type="button" class="mp-edit" data-mp="edit" aria-pressed="'+editing+'">'+(editing?'Готово':'Редактировать')+'</button></div>'+
+      '<div class="mp-bar"><h2 class="hs-sheet-title mp-title">Приёмы пищи</h2><button type="button" class="mp-edit" data-mp="edit" aria-pressed="'+editing+'">'+(editing?'Готово':'Редактировать')+'</button></div>'+
       '<div class="mp-list'+(editing?' mp-editing':'')+'" role="list" aria-label="Приёмы по порядку">'+D.rows.map(rowHtml).join('')+'</div>'+
       '<div class="mp-row mp-fast'+(editing?' mp-compact':'')+(f.on?'':' mp-off')+'"><div class="mp-surface"><div class="mp-head"><span class="mp-ic">'+CLOCK+'</span><span class="mp-name"><span>Фастинг</span></span>'+
         (editing?'<span class="mp-time">'+clock(f.a)+'–'+clock(f.b)+'</span><span class="mp-lock" role="img" aria-label="Предустановленный период">'+LOCK+'</span><span class="mp-grip-space"></span>'
