@@ -1,8 +1,9 @@
-/* Студия градиентов · Happy 1.3 (лаборатория, 22.11.2026 · Claude)
+/* Студия градиентов · Happy 1.4 (лаборатория, 22.11.2026 · Claude)
    Одна студия для всех градиентных заливок: дуги Day («Сейчас»: поток, баланс самочувствия, заливка колец),
    кольцо энергии Meal / Sport / Day с полосками строк (КБЖУ, расход, баланс).
    1.2: меньше текста, таб-бар «Заливка · Оживление · Мои», пресеты — мини-виджеты в один ряд,
    вкладка «Оживление» (эффект дуги и свет внутри из Студии дуг 2.2), варианты стыка дуг в балансе (из «Пробы кольца энергии»).
+   1.4: сверху уезжают заголовок и выбор виджета; прилипает только превью, его можно свернуть шторкой за черточку.
    1.3: «Дуги» — три строки на всю ширину: Съедено · Наложение (стык) · Потрачено; четвёртый цвет перехода (cm2, только студия).
    Виджеты рисуются так же, как в приложениях:
    — кольцо энергии и полоски — тот же расчёт, что в meal-33/index.html (erLayerHTML, erRowHTML) и sport-44/…/energy-widget.js;
@@ -94,9 +95,9 @@ const CASES={
 
 /* ── Состояние ── */
 const st={tab:'fill',widget:'meal',theme:'original',work:{},data:copy(DATA0),mode:{meal:'eat',sport:'spent','day-energy':'bal'},center:'mood',mine:{},grp:{},ag:'rhythm',kase:{},arc:'eat'};
-try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.v===1){Object.assign(st,{tab:['fill','anim','mine'].includes(s.tab)?s.tab:'fill',widget:WIDGETS[s.widget]?s.widget:st.widget,theme:s.theme||st.theme,work:s.work||{},mine:s.mine||{},mode:Object.assign(st.mode,s.mode||{}),center:s.center||'mood',grp:s.grp||{},ag:s.ag==='light'?'light':'rhythm',arc:s.arc==='spent'?'spent':'eat'});Object.assign(st.data,s.data||{})}}catch(e){}
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.v===1){Object.assign(st,{tab:['fill','anim','mine'].includes(s.tab)?s.tab:'fill',widget:WIDGETS[s.widget]?s.widget:st.widget,theme:s.theme||st.theme,work:s.work||{},mine:s.mine||{},mode:Object.assign(st.mode,s.mode||{}),center:s.center||'mood',grp:s.grp||{},ag:s.ag==='light'?'light':'rhythm',arc:['spent','join'].includes(s.arc)?s.arc:'eat',fold:!!s.fold});Object.assign(st.data,s.data||{})}}catch(e){}
 if(!themes().some(t=>t.id===st.theme)) st.theme='original';
-function save(){ try{localStorage.setItem(KEY,JSON.stringify({v:1,tab:st.tab,widget:st.widget,theme:st.theme,work:st.work,mine:st.mine,mode:st.mode,center:st.center,grp:st.grp,ag:st.ag,arc:st.arc,data:st.data}))}catch(e){} }
+function save(){ try{localStorage.setItem(KEY,JSON.stringify({v:1,tab:st.tab,widget:st.widget,theme:st.theme,work:st.work,mine:st.mine,mode:st.mode,center:st.center,grp:st.grp,ag:st.ag,arc:st.arc,fold:!!st.fold,data:st.data}))}catch(e){} }
 /* во вкладке «Оживление» превью всегда — дуги Day */
 function wid(){ return st.tab==='anim'?'day-arcs':st.widget }
 function appOf(){ return WIDGETS[wid()].app }
@@ -556,6 +557,21 @@ function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show
 
 /* ── События ── */
 $('tabbar').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(!b||b.dataset.tab===st.tab) return; st.tab=b.dataset.tab; paintAll(); window.scrollTo({top:0}) });
+/* шторка превью: тянуть черточку вверх — свернуть, вниз — развернуть; нажатие — переключить */
+(function(){
+  const dock=$('dock'), fold=$('fold'), grab=$('grab'); let y0=null, h0=0, moved=false;
+  const set=open=>{ const h=fold.scrollHeight; fold.classList.add('anim'); fold.style.height=(dock.classList.contains('closed')?0:fold.offsetHeight)+'px'; fold.style.opacity=''; void fold.offsetHeight;
+    dock.classList.toggle('closed',!open); fold.style.height=open?h+'px':'0px'; grab.setAttribute('aria-expanded',String(open)); grab.setAttribute('aria-label',open?'Свернуть превью':'Развернуть превью');
+    setTimeout(()=>{ if(open) fold.style.height=''; },300); st.fold=!open; save() };
+  grab.addEventListener('pointerdown',e=>{ y0=e.clientY; h0=dock.classList.contains('closed')?0:fold.offsetHeight; moved=false; fold.classList.remove('anim'); grab.setPointerCapture(e.pointerId) });
+  grab.addEventListener('pointermove',e=>{ if(y0==null) return; const dy=e.clientY-y0; if(Math.abs(dy)>4) moved=true; if(!moved) return;
+    const full=fold.scrollHeight, h=clamp(h0+dy,0,full); dock.classList.remove('closed'); fold.style.height=h+'px'; fold.style.opacity=String(clamp(h/full*1.4,0,1)) });
+  const end=e=>{ if(y0==null) return; const dy=e.clientY-y0; y0=null;
+    if(!moved){ set(dock.classList.contains('closed')); return }
+    const full=fold.scrollHeight, h=clamp(h0+dy,0,full); set(h>full*.5) };
+  grab.addEventListener('pointerup',end); grab.addEventListener('pointercancel',end);
+  if(st.fold){ dock.classList.add('closed'); grab.setAttribute('aria-expanded','false'); grab.setAttribute('aria-label','Развернуть превью') }
+})();
 $('widgets').addEventListener('click',e=>{ const b=e.target.closest('[data-widget]'); if(!b) return; st.widget=b.dataset.widget; paintAll() });
 $('stage').addEventListener('click',e=>{ if(e.target.closest('[data-ring]')){ const w=wid(); st.mode[w]=NEXT[st.mode[w]]; renderPreview(); renderPills(); renderCompare(); if(grp()==='data'||(grp()==='arcs'&&st.arc==='join')) renderEditors(); save() } });
 $('stage').addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-ring]')){ e.preventDefault(); e.target.click() } });

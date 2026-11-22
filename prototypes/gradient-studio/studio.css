@@ -19,8 +19,15 @@ body[data-tab=anim] #widgets{display:none}
 .head h1{font-size:20px;letter-spacing:-.4px;margin:0}
 .ver{font-size:12px;font-weight:700;color:#cfc4ff;padding:4px 9px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff1f}
 
-/* ── превью: прилипает сверху ── */
-.dock{position:sticky;top:0;z-index:20;margin:0 -16px 12px;padding:8px 16px 8px;background:linear-gradient(180deg,rgba(22,21,39,.97),rgba(22,21,39,.92) 88%,rgba(22,21,39,.6));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid #ffffff10}
+/* ── превью: прилипает сверху; шторка — тянуть за черточку ── */
+.fold{overflow:hidden;transform-origin:top}
+.fold.anim{transition:height .28s cubic-bezier(.2,.8,.2,1),opacity .28s}
+.dock.closed .fold{height:0;opacity:0}
+.grab{display:flex;justify-content:center;align-items:center;width:100%;height:24px;padding:0;border:0;background:none;touch-action:none;cursor:grab}
+.grab i{display:block;width:40px;height:5px;border-radius:999px;background:#ffffff59}
+.grab:active i{background:#ffffff99}
+.wsel{margin:0 0 8px}
+.dock{position:sticky;top:0;z-index:20;margin:0 -16px 12px;padding:8px 16px 0;background:linear-gradient(180deg,rgba(22,21,39,.97),rgba(22,21,39,.92) 88%,rgba(22,21,39,.6));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid #ffffff10}
 .seg{display:flex;padding:3px;border:1px solid #ffffff2c;border-radius:999px;background:#ffffff0d;overflow-x:auto;scrollbar-width:none}
 .seg::-webkit-scrollbar{display:none}
 .seg button{flex:1 0 auto;height:36px;padding:0 14px;border:0;border-radius:999px;background:none;color:#cfcae4;font-size:14px;font-weight:600;white-space:nowrap}
