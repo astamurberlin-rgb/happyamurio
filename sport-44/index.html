@@ -1750,6 +1750,10 @@ html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input)
 .hs-units-row>.hs-segment{height:44px!important}
 .segmented button.on,.segmented button[aria-selected=true],.hs-segment button[aria-pressed=true],button.selected[data-action$=-tab]{font-weight:600!important}
 .segmented button:not(.on):not(.selected):not([aria-selected=true]),[data-action$=-tab]:not(.selected){font-weight:400!important}   /* .selected — «Журнал | Замеры тела»: выбранное 600 (Астамур 21.11.2026: «везде 600») */
+/* Переключатель из вариантов — по образцу Day («Сегодня | Неделя | Месяц», Астамур 22.11.2026): контур 44 с отступом 3 внутри,
+   выбранная пилюля 36 не касается контура, подписи по центру своей половины. */
+.segmented,.hs-segment,#page>.journal-switch,.library-tabs,.exercise-context-tabs,.happy-measurement-tabs{box-sizing:border-box!important;height:44px!important;min-height:44px!important;padding:3px!important;gap:0!important;align-items:stretch!important;border-radius:999px!important}
+.segmented button,.hs-segment button,#page>.journal-switch button,.library-tabs button,.exercise-context-tabs button,.happy-measurement-tabs button{box-sizing:border-box!important;height:36px!important;min-height:36px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;border-radius:999px!important;margin:0!important}
 
 /* ── Чипы и фильтры: пилюля 44, текст 14 ── */
 .chips button,.date-pill,.hm-pill{
@@ -2173,6 +2177,8 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
   line-height: 1.35;
   font-weight: 700;
 }
+/* заголовки лент «Тема» и «Главная кнопка» — белые во всех приложениях (Астамур 22.11.2026) */
+.appearance-wheel h3 { color: #fff; }
 
 .appearance-options {
   position: relative;
@@ -10709,11 +10715,6 @@ function open(){
  const main=pageH.main;
  function weightLabel(){return draft.units.weight==='kg'?'кг':'фунты'}
  function heightLabel(){return draft.units.height==='cm'?'см':'футы'}
- function history(){
-  const list=data().weights.slice().reverse();
-  return '<details class="hs-history"><summary>Замеры веса <span>'+list.length+'</span></summary>'+list.map(w=>'<div class="hs-history-row"><time>'+w.date.slice(8,10)+'.'+w.date.slice(5,7)+'.'+w.date.slice(0,4)+'</time><span>'+
-   fmt(S().toUnits(w.kg,draft.units.weight))+' '+weightLabel()+'</span></div>').join('')+'</details>';
- }
  function pendingHtml(){
   if(!pendingEmail)return '';
   return '<div class="hs-pending"><span>Ожидает подтверждения</span><strong>'+esc(pendingEmail)+'</strong><button type="button" class="hs-quiet" data-p="email-again">Отправить повторно</button>'+
@@ -10733,7 +10734,7 @@ function open(){
    '<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('sex',[['','—','Не указан'],['male','М','Мужской'],['female','Ж','Женский']],draft.sex,'Пол','hs-compact-sex')+'</div></div>'+
    '<div class="hs-field-pair">'+F({label:'Вес сейчас',name:'weight',inputmode:'decimal',value:shown.weight,suffix:weightLabel(),placeholder:'Не указан',quick:true})+
    F({label:'Дата замера',name:'date',type:'date',max:today,value:shown.date})+'</div>'+
-   '<div data-p-history>'+history()+'</div>'+
+   /* Замеры веса здесь не показываем: для них есть журнал замеров (Астамур 22.11.2026: «в профиле этому не место»). */
    '<section class="hs-units"><h2>Единицы измерения</h2><div class="hs-units-row"><span>Вес</span>'+S().segment('wunits',[['kg','кг'],['lb','фунты']],draft.units.weight,'Единицы веса')+'</div>'+
    '<div class="hs-units-row"><span>Рост</span>'+S().segment('hunits',[['cm','см'],['ft','футы']],draft.units.height,'Единицы роста')+'</div>'+
    '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+

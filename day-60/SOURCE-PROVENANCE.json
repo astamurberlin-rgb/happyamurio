@@ -79,8 +79,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-60.html",
-   "size": 1489775,
-   "sha256": "105d28c57e5c7e8926a777d9b7cdd71664a26c29aa4ed3892946d48b29b5cc69"
+   "size": 1490522,
+   "sha256": "59905e7a03ad3f1bd41ed643357962f63f51e42e4c516a01ec58a00611cdf8b0"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -329,8 +329,8 @@
   },
   {
    "path": "shared/happy-design.css",
-   "size": 5548,
-   "sha256": "7c237c396bac5197058a017ae1a43bf09034f93d0c50521a0011d8a4d1b85dff"
+   "size": 6439,
+   "sha256": "59d2893e5209f91bc25ca5e1acd358c2ff378b452cd02624e6dee8d4eac06a34"
   },
   {
    "path": "shared/happy-drum.css",
@@ -409,8 +409,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 25607,
-   "sha256": "dfaf08a0780902c59e22b29cbac4625d28fa9b70cb6884e526a6d318076b8586"
+   "size": 25348,
+   "sha256": "9a68b92911191ba658dd6de8ad0c39256acf4fdfcc7f2e1bcf2f86d17e754883"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -449,8 +449,8 @@
   },
   {
    "path": "shared/happy-theme-picker.css",
-   "size": 5541,
-   "sha256": "7c4ed93d711b38e232fea3799cce5501ee782cc22dae09a92d375ebbcfb39b3a"
+   "size": 5741,
+   "sha256": "4461ee37bee08c6798e2e2bb7eaa7a554090ebbdbd0a79f88f5af86a3116d9a0"
   },
   {
    "path": "shared/happy-theme-picker.js",
