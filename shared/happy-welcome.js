@@ -333,18 +333,21 @@ function welcomeOrApp(){
 }
 
 /* ── ожидание письма регистрации: вернулся в приложение — пробуем войти тем же паролем ── */
+let pollAttempt=null;
 function startPoll(){
- stopPoll();pollUntil=Date.now()+POLL_FOR;
+ clearInterval(pollTimer);pollUntil=Date.now()+POLL_FOR;
  pollTimer=setInterval(tryEnter,POLL_MS);
 }
-function stopPoll(){if(pollTimer){clearInterval(pollTimer);pollTimer=null}}
-let trying=false;
+function stopPoll(){
+ clearInterval(pollTimer);pollTimer=null;
+ if(pollAttempt){pollAttempt.abort();pollAttempt=null}
+}
 async function tryEnter(){
- if(!pending||screen!=='verify'||trying)return;
+ if(!pending||screen!=='verify'||pollAttempt)return;
  if(Date.now()>pollUntil){stopPoll();return}
- trying=true;
- try{await cfg.account.signIn(pending.email,pending.password)}catch(e){/* ещё не подтверждена или нет связи — ждём */}
- finally{trying=false}
+ const attempt=pollAttempt=new AbortController();
+ try{await cfg.account.signIn(pending.email,pending.password,attempt.signal)}catch(e){/* ещё не подтверждена или нет связи — ждём */}
+ finally{if(pollAttempt===attempt)pollAttempt=null}
 }
 if(doc){
  doc.addEventListener('visibilitychange',()=>{if(!doc.hidden)tryEnter()});
@@ -400,7 +403,7 @@ function init(o){
  if(cfg.app!=='meal'&&root.isSecureContext&&root.navigator.serviceWorker&&
     /^(https?:)$/.test(root.location.protocol)&&/\/(?:index\.html)?$/.test(root.location.pathname)){
   const version=doc.querySelector('[data-app-version]')?.dataset.appVersion||'1';
-  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-3',{scope:'./'}).catch(()=>{});
+  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-4',{scope:'./'}).catch(()=>{});
  }
  let cell=false;
  try{cell=!!(cfg.account.cell&&root.localStorage.getItem(cfg.account.cell))}catch(e){}

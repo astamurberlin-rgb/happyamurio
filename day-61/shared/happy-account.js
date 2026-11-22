@@ -204,11 +204,13 @@ function create(options){
   if(next.keyVersion===2)storage.removeItem(offerCell(o.app));
   emit();
  }
- async function enter(j,password,expectedUid,mark,previous){
+ async function enter(j,password,expectedUid,mark,previous,signal){
+  if(signal?.aborted)throw changed();
   if(!j||!j.access_token)return 'confirm';
   const next=sessionFrom(j);
   if(!next.uid||!next.rt||(expectedUid&&next.uid!==expectedUid))throw changed();
   const state=await broker('open',next.at);
+  if(signal?.aborted)throw changed();
   let stored,cipher;
   if(state.state==='active'){
    const cached=disk();
@@ -221,23 +223,24 @@ function create(options){
     stored=saved.k;if(saved.s.migrationKey)next.migrationKey=saved.s.migrationKey;
    }else if(password)stored=(await deriveKey(password,next.uid)).raw;
    if(!stored){
-    if(stopped||generation!==mark||session||disk()||previous)throw changed();
+    if(signal?.aborted||stopped||generation!==mark||session||disk()||previous)throw changed();
     saveRecovery({id:base64url(crypto.getRandomValues(new Uint8Array(24))),url,s:next,migrating:state.state==='migrating'});
     return 'recovery';
    }
    next.keyVersion=1;next.migrating=state.state==='migrating';cipher=await importKey(stored);
   }
-  if(stopped||generation!==mark||identity(disk())!==previous)throw changed();
+  if(signal?.aborted||stopped||generation!==mark||identity(disk())!==previous)throw changed();
   commit(next,stored,cipher);
   if(next.migrating)await beginMigration();
   return 'ok';
  }
- async function passwordEntry(path,body,password){
+ async function passwordEntry(path,body,password,signal){
   await cancelRecovery();
+  if(signal?.aborted)throw changed();
   const mark=++generation,previous=identity(disk());
-  return enter(await auth(path,body),password,null,mark,previous);
+  return enter(await auth(path,body),password,null,mark,previous,signal);
  }
- const signIn=(email,password)=>passwordEntry('token?grant_type=password',{email,password},password);
+ const signIn=(email,password,signal)=>passwordEntry('token?grant_type=password',{email,password},password,signal);
  const signUp=(email,password,name)=>passwordEntry(withBack('signup'),{email,password,data:{display_name:String(name||'').trim().slice(0,60),happy_key_mode:'managed-v1'}},password);
  async function signOut(){
   if(!session&&readRecovery()){await cancelRecovery();return}
