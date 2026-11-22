@@ -19,7 +19,7 @@ FAV = """(names)=>{MealSpeech.on(true);try{DB.favs=names.map(q=>{const r=parseTe
 CHIP = """(k)=>{D.section=k;D.sectionPicked=true;return true}"""
 OLD = """(text)=>{const r=parseText(text);return r.lines.map(l=>({n:l.fid&&FOODS[l.fid]?FOODS[l.fid].n:null,q:l.q,u:l.u,g:l.g,st:l.st}))}"""
 
-def nm(s): return s.lower().replace("ё", "е")
+def nm(s): return s.lower().replace("ё", "е").replace("\xa0", " ")
 def name_ok(spec, name):
     name = nm(name or "")
     for w in spec.split():
@@ -120,7 +120,7 @@ with sync_playwright() as p:
     n_ok = sum(1 for r in out["rows"] if r["now"] == "записал верно")
     out["summary"] = {"всего": len(S), "записал верно": n_ok, "спросил или отложил": len(S) - n_ok - len(bad), "ошибка": len(bad)}
     check("ошибочных записей нет (%d фраз, верно %d)" % (len(S), n_ok), not bad, " | ".join(bad[:6]))
-    # Meal 33.36 · мастер целей в чате: шаги кнопками и словами, назад, отмена, поправка, еда посреди вопросов, возраст вне расчёта
+    # Meal 33.37 · мастер целей в чате: шаги кнопками и словами, назад, отмена, поправка, еда посреди вопросов, возраст вне расчёта
     gbad = []
     for s in GOALS:
         page.clock.set_fixed_time(datetime.datetime.fromisoformat(D0))
