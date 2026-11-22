@@ -19,7 +19,7 @@ FAV = """(names)=>{MealSpeech.on(true);try{DB.favs=names.map(q=>{const r=parseTe
 CHIP = """(k)=>{D.section=k;D.sectionPicked=true;return true}"""
 OLD = """(text)=>{const r=parseText(text);return r.lines.map(l=>({n:l.fid&&FOODS[l.fid]?FOODS[l.fid].n:null,q:l.q,u:l.u,g:l.g,st:l.st}))}"""
 
-def nm(s): return s.lower().replace("ё", "е")
+def nm(s): return s.lower().replace("ё", "е").replace("\xa0", " ")
 def name_ok(spec, name):
     name = nm(name or "")
     for w in spec.split():

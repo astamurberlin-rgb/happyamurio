@@ -25,6 +25,7 @@ var MealBot=(function(){
     [/(как(ой|ая|ие|их)[- ]то|непонятн|неизвестн)/,'продукт не назван']];
   var CSS='.mbChips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.mbChips .chip{flex:none;padding:8px 14px;font-size:14px}'+
     '.mlB .mbSum{margin-top:8px;font-size:14px;opacity:.86}'+
+    '.mlB .mbAdv{margin-top:12px}.mlB .mbAdv .mbSum{margin-top:2px}.mlB .mbAdv .mbChips{margin-top:6px}'+
     '.mlB .mbMiss{white-space:pre-wrap;font:14px/1.45 inherit;margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.14);user-select:text;-webkit-user-select:text}';
   var booted=false;
   var SP=typeof MealSpeech!=='undefined'&&MealSpeech.ready()?MealSpeech:null, MK=/[≈⊕⊘▽◇△⊙]/g;
@@ -257,6 +258,8 @@ var MealBot=(function(){
       if(k==='N'&&/^(сыра|сезона|сезонов)$/.test(norm(ws[i+1]||''))) k='F';   // пицца «Четыре сыра» — название, а не 4 штуки (как в parseText)
       if(hasN&&hasF&&!PREP.test(norm(prevW))){
         if((k==='N'||k==='U')&&last==='F') cut=true;                 // «три фейхоа | два мандарина», «…грудки | чашка бульона»
+        /* «два яйца хлеб 50 г»: число и продукт, а за ним другой продукт со своим числом — две еды (хвосты разборов, 22.11.2026) */
+        if(SP&&k==='F'&&last==='F'&&cur.length===2&&kindOf(cur[0])==='N'&&kindOf(ws[i+1]||'')==='N'&&!descr(w)&&!descr(cur[1])&&!J_ADJ.test(norm(w))) cut=true;
         if(SP&&cut&&k==='N'&&i===ws.length-1&&cur[0]==='1'&&/^\d{2,4}$/.test(w)&&cur.slice(1).every(function(x){ return kindOf(x)==='F' })) cut=false;   // Meal 33.12: «одна груша 180» — вес этой груши
         if(k==='F'&&(last==='N'||last==='U')){                       // «груша 160 | хурма 110»
           var tail=true, more=false; for(var j=i+1;j<ws.length;j++){ var kj=kindOf(ws[j]); if(kj==='F'){ tail=false; break } if(kj==='N'||kj==='U') break }
@@ -357,7 +360,16 @@ var MealBot=(function(){
   }
   function one(c0){
     return [c0].filter(Boolean).map(function(c){ if(!/\d/.test(c)) return c; var seen={}; return c.split(' ').filter(function(w,i,ws){ if(kindOf(w)!=='F') return true; if(seen[w]&&ws[i-1]!==w) return false; seen[w]=1; return true }).join(' ') })
-      .reduce(function(a,c){ return a.concat(splitItems(c)) },[]);
+      .reduce(function(a,c){ return a.concat(bareList(c)||splitItems(c)) },[]);
+  }
+  /* «яблоко огурец помидор» — список без запятых и «и»: каждое слово — отдельный понятный продукт, и блюда со всеми этими словами в базе нет (хвосты разборов, 22.11.2026) */
+  function bareList(c){
+    if(!SP||/\d/.test(c)) return null;
+    var ws=c.split(' ').filter(Boolean); if(ws.length<2||ws.length>5) return null;
+    if(ws.some(function(w,i){ return ws.slice(0,i).some(function(x){ return norm(x).slice(0,4)===norm(w).slice(0,4) }) })) return null;   // «американо американо» — повтор, а не список
+    if(!ws.every(function(w){ var n=norm(w); return /^[а-я]{3,}$/.test(n)&&kindOf(w)==='F'&&!descr(w)&&!J_INS.test(n)&&!J_ADJ.test(n)&&!SIZE.test(n) })) return null;
+    if(dishHas(c,tokensOf(c))) return null;
+    return ws.every(function(w){ var r; try{ r=parseText(w).lines }catch(e){ return false } return r.length===1&&(r[0].st==='ok'&&r[0].fid||r[0].st==='pick'&&(r[0].alts||[]).length&&related(r[0].alts[0],[norm(w)])) }) ? ws : null;   // «какое яблоко?» — вопрос о каждом слове, а не одно блюдо
   }
   function prepChunk(c){
     var o={text:c,raw:c,dup:null,range:null,size:null,corr:c.charAt(0)==='¶'};
@@ -661,7 +673,7 @@ var MealBot=(function(){
         l.ask=null; l.spoken=l.spoken||l.name;
         if(minus){ l.whole=l.g; l.waste=minus; if(minus>=l.g){ l.ask='waste' } else { l.q=Math.round((l.g-minus)*10)/10; l.u='г'; l.g=l.q; l.explicit=true } minus=0 }
         var fw=String(l.name||'').split(' ').filter(Boolean);
-        if(SP&&fw.length&&(SP.missing(fw[0])||fw.length>1&&SP.missing(fw.join(' ')))){ l.fid=null; l.alts=[]; l.st='none' }   // «пельмени», «овощи на гриле»: настоящих в базе нет — не подставлять похожее по слову
+        if(SP&&fw.length&&(SP.missing(fw[0])||fw.length>1&&SP.missing(fw.join(' ')))){ l.fid=null; l.alts=[]; l.st='none'; l.km=true }   // «пельмени», «овощи на гриле»: настоящих в базе нет — не подставлять похожее по слову
         /* Meal 33.9: просто «сыр» — последний записанный сыр, иначе гауда; просто «сок» — последний записанный, иначе вопрос (решение Астамура 17.11.2026).
            Раньше них — избранное: в избранном сулугуни, сказано просто «сыр» — пишется сулугуни (решение Астамура 20.11.2026) */
         var oneWord=SP&&fw.length===1&&tokensOf(c.text).length===1&&(l.fid||l.alts.length), fv=oneWord&&!l.pin?favOf(fw[0]):null;
@@ -746,7 +758,8 @@ var MealBot=(function(){
       parts.forEach(proc);
       /* первая часть не понята («слойка с пеканом» — какая слойка?) — блюдо остаётся целым, как раньше: вопрос о нём, а не запись одной начинки */
       var a0=cp.lines[0];
-      var a0ok=a0&&(a0.fid&&!a0.ask&&a0.g>0||a0.ask==='pick'&&!a0.noAuto&&a0.alts.some(function(x){ return covers(x,String(a0.name||'').split(' ').filter(Boolean)) }));
+      var a0ok=a0&&(a0.fid&&!a0.ask&&a0.g>0||a0.ask==='pick'&&!a0.noAuto&&a0.alts.some(function(x){ return covers(x,String(a0.name||'').split(' ').filter(Boolean)) })
+        ||a0.ask==='pick'&&a0.gdAsk&&GENERIC.test(norm(a0.name||''))&&cp.lines.length>1);   // «рыба с овощами» — вопрос «какая рыба?» и овощи, а не «Рыба-меч» целиком (хвосты разборов, 22.11.2026)
       if(!cp.ok&&!cp.named&&!a0ok){ res.lines.length=n0; curMeal=cm; tailMeal=tm; res.meal=rm; res.dupSeen=dp; cps.splice(cps.indexOf(cp),1); proc(c) }
     });
     /* «творог с мёдом 200 г» — названный вес всего блюда делится между частями (splitTotal). Части ещё с вопросом «какой?» — после ответа, в handle0 */
@@ -757,12 +770,14 @@ var MealBot=(function(){
   /* «творог с мёдом 200 г» — названный вес всего блюда (решение Астамура 22.11.2026: «185 г творога и ложка мёда»): добавка — своей обычной мерой,
      основа — остаток. Добавки обычной мерой больше половины названного веса — делится в той же пропорции, как раньше; в сумме всегда ровно названный вес */
   function splitTotal(cp){
-    if(cp.totDone||!cp.total||cp.lines.length<2||!cp.lines.every(function(l){ return l.fid&&(!l.ask||l.ask==='meal')&&l.g>0 })) return;
+    /* часть ещё с вопросом «какое мясо?» — её доля считается по первому варианту и остаётся при ответе: «картошка с мясом 300 г» (хвосты разборов, 22.11.2026) */
+    if(cp.totDone||!cp.total||cp.lines.length<2||!cp.lines.every(function(l){ return (l.fid&&(!l.ask||l.ask==='meal')||l.ask==='pick'&&(l.alts||[]).length)&&l.g>0 })) return;
+    if(!cp.lines.every(function(l){ return l.fid&&(!l.ask||l.ask==='meal') })&&!cp.lines.some(function(l){ return l.ask==='pick'&&GENERIC.test(norm(l.name||'')) })) return;
     cp.totDone=true;
     var h=cp.lines[0], add=cp.lines.slice(1).reduce(function(t,l){ return t+l.g },0);
-    if(add<=cp.total/4){ var g0=Math.max(1,Math.round(cp.total-add)); h.q=g0; h.u='г'; h.g=gramsFor(h.fid,g0,'г'); cp.lines.forEach(function(l){ l.approx=true }); return }
+    if(add<=cp.total/4){ var g0=Math.max(1,Math.round(cp.total-add)); h.q=g0; h.u='г'; h.g=gramsFor(h.fid||h.alts[0],g0,'г'); cp.lines.forEach(function(l){ l.approx=true }); return }
     var k=cp.total/(add+h.g), left=cp.total;
-    cp.lines.forEach(function(l,i){ var g=i===cp.lines.length-1?Math.max(1,Math.round(left)):Math.max(1,Math.round(l.g*k)); left-=g; l.q=g; l.u='г'; l.g=gramsFor(l.fid,g,'г'); l.approx=true });   // Meal 33.13: последняя часть добирает остаток
+    cp.lines.forEach(function(l,i){ var g=i===cp.lines.length-1?Math.max(1,Math.round(left)):Math.max(1,Math.round(l.g*k)); left-=g; l.q=g; l.u='г'; l.g=gramsFor(l.fid||l.alts[0],g,'г'); if(l.ask==='pick') l.explicit=true; l.approx=true });   // Meal 33.13: последняя часть добирает остаток
   }
   /* ── блюдо «А с Б» ──
      Есть такое блюдо в базе или у человека — берётся оно. Нет — части по отдельности обычными порциями; бот предлагает, человек подтверждает или называет свои граммы,
@@ -795,6 +810,15 @@ var MealBot=(function(){
       if(mm) return {text:(t1.slice(0,mm.index)+' '+t1.slice(mm.index+mm[0].length)).replace(/\s+/g,' ').trim(),k:null,minus:/^\d/.test(mm[1])?+mm[1]:({'один':1,'одна':1,'одно':1,'одну':1,'одни':1,'два':2,'две':2,'три':3,'четыре':4,'пять':5})[mm[1].toLowerCase()],mg:/^г/.test(mm[2]||''),said:mm[0].replace(/^[\s,]+/,'')} }
     var r=takeLeft0(t1); return r||pre;
   }
+  /* «груша 200 г и рис 100 г, но рис не доел, половину оставил» — не доеден только названный продукт: «но рис» уходит из текста, доля — только рису (журнал ошибок, 22.11.2026) */
+  function leftTarget(lf){
+    if(!lf||lf.minus) return lf;
+    var mt=/[\s,]+(?:но|а|только)\s+([а-яё]{3,})(?:\s+([а-яё]{3,}))?\s*,?\s*$/i.exec(lf.text);
+    if(!mt||/^(я|ее|его|их|это|все|всё|половину|треть|четверть)$/i.test(mt[1])) return lf;
+    lf.text=lf.text.slice(0,mt.index).replace(/[\s,]+$/,'').trim(); lf.target=[mt[1],mt[2]].filter(Boolean).map(function(w){ return norm(w).slice(0,Math.max(3,Math.min(5,w.length-1))) });
+    return lf;
+  }
+  function leftHit(l){ if(!LEFT||!LEFT.target) return true; var n=norm(FOODS[l.fid]?FOODS[l.fid].n:''); return LEFT.target.every(function(st){ return n.split(/[^a-zа-я0-9]+/).some(function(w){ return w.indexOf(st)===0 }) }) }
   function takeLeft0(raw){
     var t=String(raw), out=null;
     LEFTRE.forEach(function(re){ if(out) return; var m=re.exec(t); if(!m) return;
@@ -894,6 +918,11 @@ var MealBot=(function(){
     /* другой вид продукта — тоже только если сказан: не соевое, не обезжиренное, не постное */
     if(ws.some(function(w,i){ return !segNeg[i]&&DKIND.test(w)&&!W.some(function(q){ return same(q,w) }) })) return false;
     if(f.mine||String(f.src||'')==='Мои') return true;
+    /* «рыба с овощами» — не «Рыба-меч …»: общее слово не узнаётся в составном названии вида; «рис с овощами» — не «… и ветчиной», «рис с курицей» — не «Рис в бульоне»:
+       мясная добавка или бульон, которых человек не называл, — другое блюдо (хвосты разборов, 22.11.2026) */
+    var fn=norm(f.n);
+    if(W.some(function(q){ return GENERIC.test(q)&&new RegExp('(^|[^а-я])'+q.slice(0,3)+'[а-я]*-[а-я]').test(fn) })) return false;
+    if(ws.some(function(w){ return /^(ветчин|бекон|колбас|сосис|сардел|грудинк|бульон)/.test(w)&&!W.some(function(q){ return q.slice(0,4)===w.slice(0,4) }) })) return false;
     var iS=-1; ws.forEach(function(w,i){ if(iS<0&&(w==='с'||w==='со'||w==='в'||w==='под')) iS=i }); if(iS===0) return false;
     /* главное слово сказанного — в главной части названия: до «с», а без «с» — в начале. Остальное (описание, добавки) — где угодно в названии:
        «патыр с кунжутом на сливочном масле» — «Патыр на сливочном масле с кунжутом», «ачма с сыром» — «Ачма — слоёный сырный пирог»,
@@ -1736,12 +1765,246 @@ var MealBot=(function(){
   }
 
   /* ── вопросы о записанном ── */
-  function productInfo(text){
+  /* вопрос о составе продукта: «сколько сахара в шоколаде», «калорийность гречки», «что в составе сникерса».
+     Вещество — из списка веществ Meal (substances.js), значение — из карточки продукта (как на экране продукта).
+     Тема «состав продукта», ступень 1 (Астамур 22.11.2026). В дневник ничего не идёт. */
+  var SUB_STEM=[[/^(калори|ккал|энерги|калорийн)/,'kcal'],[/^(белк|белок|протеин)/,'prot'],[/^жир/,'fat'],[/^углевод/,'carb'],
+    [/^сахар/,'sug'],[/^клетчат/,'fib'],[/^(соль|соли|солей)$/,'salt'],[/^вод[аыу]$/,'water'],[/^алкогол/,'alc'],[/^кофеин/,'caf']];
+  var VIT_LETTER={'а':'A','a':'A','б':'B','b':'B','с':'C','ц':'C','c':'C','д':'D','d':'D','е':'E','e':'E','к':'K','k':'K'};
+  function substanceOf(words){
+    var w=String(words||'').replace(/[?!.,]+/g,' ').replace(/\s+/g,' ').trim(); if(!w) return null;
+    var ws=w.split(' ');
+    if(ws.length===1){ var hit=SUB_STEM.filter(function(s){ return s[0].test(ws[0]) })[0]; if(hit) return hit[1] }
+    var HS=typeof HappySubstances!=='undefined'?HappySubstances:null; if(!HS) return null;
+    /* «витамина с», «витамин д3» → «Витамин C», «Витамин D» */
+    var vm=w.match(/^витамин\S*\s+([а-яa-z])(\d*)$/);
+    if(vm&&VIT_LETTER[vm[1]]){ var vx=HS.exact('Витамин '+VIT_LETTER[vm[1]]+(VIT_LETTER[vm[1]]==='B'?vm[2]:'')); if(vx) return vx.key }
+    var ex=HS.exact(w); if(ex) return ex.key;
+    /* «железа», «магния», «омеги 3»: каждое слово — начало слова в названии вещества */
+    var st=ws.map(function(x){ return x.replace(/(ов|ей|ия|ии|ою|ой|а|ы|и|у|е)$/,'') }).filter(function(x){ return x.length>=3||/^\d+$/.test(x) });
+    if(!st.length||st.length!==ws.length) return null;
+    var c=HS.fields.filter(function(f){ var tw=HS.norm(f.title).split(' ');
+      return tw.length>=st.length&&st.every(function(s){ return tw.some(function(x){ return x.indexOf(s)===0 }) }) });
+    if(c.length>1) c=c.filter(function(f){ return HS.norm(f.title).split(' ').length===st.length });
+    return c.length===1?c[0].key:null;
+  }
+  function productFood(text){
     var u; FILLOK=false; try{ u=core(fixes(' '+text+' ')) }catch(e){ return null }
     var l=u&&u.lines.length===1?u.lines[0]:null; if(!l) return null;
     var id=l.fid||(l.ask==='pick'&&!l.noAuto?l.alts[0]:null); if(!id||!FOODS[id]) return null;
-    var g=l.explicit&&l.fid&&l.g>0?l.g:100, s=sumOf([{fid:id,g:g,q:g,u:'г'}]); if(!(s.k>0)&&!(s.p>0)&&!(s.c>0)) return null;
-    return p(esc(FOODS[id].n)+', '+fmt(g)+' г: <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г</p><p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
+    var f=(typeof MealProducts!=='undefined'&&MealProducts.forItem)?(MealProducts.forItem({fid:id},FOODS,DB)||FOODS[id]):FOODS[id];
+    var g=100; if(l.explicit&&l.q>0){ var g1=l.fid===id&&l.g>0?l.g:gramsFor(id,l.q,l.u); if(g1>0) g=g1 }
+    return {id:id,f:f,g:g};
+  }
+  function subVal(f,key){
+    try{ if(typeof MealProducts!=='undefined') return MealProducts.value(f,key,typeof blsVal==='function'?blsVal:null) }catch(e){}
+    var M={kcal:'k',prot:'p',fat:'f',carb:'c'}; return M[key]&&typeof f[M[key]]==='number'?f[M[key]]:null;
+  }
+  function subAmount(v,unit){ return fmt(v)+' '+unit }
+  /* продукт в вопросе не узнан однозначно: ничего не записываем и в недостающее не кладём */
+  function notSure(text){ return p('Не понял, какой продукт: «'+esc(String(text).trim())+'». Скажи точнее, например «говяжья печень» или «молочный шоколад».')+'<p class="mlHint">Это вопрос о составе. В дневник ничего не записал.</p>' }
+  function productInfo(text,key){
+    var pf=productFood(text); if(!pf) return null;
+    var f=pf.f, g=pf.g, name=esc(FOODS[pf.id].n)+', '+fmt(g)+' г';
+    var HINT='<p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
+    if(key&&key!=='all'&&['kcal','prot','fat','carb'].indexOf(key)<0){
+      var sx=typeof HappySubstances!=='undefined'?HappySubstances.get(key):null; if(!sx) return null;
+      var v=subVal(f,key), lab=sx.title.replace(/,\s*всего$/,''); lab=lab.charAt(0).toLowerCase()+lab.slice(1);
+      if(v==null) return p(name+': '+esc(lab)+' — в базе нет данных для этого продукта.')+HINT;
+      return p(name+': '+esc(lab)+' <b>'+subAmount(v*g/100,sx.unit)+'</b>')+HINT;
+    }
+    var s=sumOf([{fid:pf.id,g:g,q:g,u:'г'}]); if(!(s.k>0)&&!(s.p>0)&&!(s.c>0)) return null;
+    var more='';
+    if(key==='all'){
+      more=[['sug','Сахара'],['fib','Клетчатка'],['salt','Соль']].map(function(x){ var v=subVal(f,x[0]); return v==null?'':' · '+x[1]+' '+fmt(v*g/100)+' г' }).join('');
+    }
+    return p(name+': <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г'+more+'</p>'+HINT;
+  }
+  /* цель и остаток за день — из «Целей на день» и записей дня, как кольцо на главном экране. Тема «цель и остаток», ступень 1 (Астамур 22.11.2026) */
+  var GOAL_M=[['k','Калории','ккал'],['p','Белки','г'],['f','Жиры','г'],['c','Углеводы','г'],['fib','Клетчатка','г']];
+  function goalNum(k){ return typeof goalOf==='function'?goalOf(k):0 }
+  function dayEaten(){ var d=curDate, it=day(d).items; try{ return intakeSum(it,typeof supplementRows==='function'?supplementRows(d):[]) }catch(e){ return sumOf(it) } }
+  function goalKindTxt(){
+    try{ if(typeof HappyGoals==='undefined') return ''; var g=HappyGoals.weightGoal(DB.goalVersions||[],curDate); if(!g) return '';
+      return HappyGoals.LABELS[g.kind]+(g.targetKg&&(g.kind==='loss'||g.kind==='gain')?', желаемый вес '+fmt(g.targetKg)+' кг':'') }catch(e){ return '' }
+  }
+  var GOAL_HINT='<p class="mlHint">Поменять — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+  function goalInfo(why){
+    var kind=goalKindTxt(); kind=kind&&kind.charAt(0).toLowerCase()+kind.slice(1); var rows=GOAL_M.filter(function(m){ return goalNum(m[0])>0 }).map(function(m){ return m[1]+' '+fmt(goalNum(m[0]))+' '+m[2] });
+    if(!kind&&!rows.length) return (why?p('Цвет полосок зависит от нормы дня, а она пока не задана.'):'')+p('Цели на день пока не заданы.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    var goal=p((kind?'Цель: <b>'+esc(kind)+'</b>.':'Цель веса не выбрана.')+(rows.length?' В день: '+esc(rows.join(' · ')).toLowerCase().replace(/^./,function(c){ return c.toUpperCase() })+'.':'')),
+      col=p('Цель веса меняет только норму калорий. Цвет полосок от неё не зависит: полоска темнеет, когда съеденное подходит к норме, а значок ⚠ в журнале веществ — только у того, что стоит ограничивать (сахар, соль и т. п.), когда его больше нормы.');
+    return (why?col+goal:goal+col)+GOAL_HINT;
+  }
+  function goalLeft(k){
+    var m=GOAL_M.filter(function(x){ return x[0]===k })[0]||GOAL_M[0], g=goalNum(m[0]);
+    if(!(g>0)) return p('Норма: '+m[1].toLowerCase()+' в день пока не задана.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    var s=dayEaten(), v=m[0]==='fib'?null:s[m[0]], when=curDate===todayISO()?'сегодня':'за этот день';
+    if(m[0]==='fib'){ try{ v=typeof dayFib==='function'?dayFib(day(curDate).items):null }catch(e){ v=null } }
+    if(v==null) return p('Норма: '+m[1].toLowerCase()+' '+fmt(g)+' '+m[2]+' в день. Сколько съедено '+when+' — посчитать не могу: у части записей нет данных.')+GOAL_HINT;
+    var left=g-v, r=m[0]==='k'?Math.round:function(x){ return Math.round(x*10)/10 };
+    return p(m[1]+': норма '+fmt(g)+' '+m[2]+' в день, съедено '+when+' '+fmt(r(v))+' '+m[2]+'.')+
+      p(left>=0?'Осталось <b>'+fmt(r(left))+' '+m[2]+'</b>.':'<b>Больше нормы на '+fmt(r(-left))+' '+m[2]+'</b>.')+GOAL_HINT;
+  }
+  function goalKey(w){ var hit=SUB_STEM.filter(function(s){ return s[0].test(w||'') })[0], k=hit&&{kcal:'k',prot:'p',fat:'f',carb:'c',fib:'fib'}[hit[1]]; return k||null }
+  function goalAsk(b){
+    /* «у меня», «мне», «моя» не меняют смысла вопроса; «мне» и «у меня» к этому месту уже заменены пометкой ⊙ */
+    var w=(' '+b.replace(/[?!.,⊙]+/g,' ')+' ').replace(/ (?:у меня|у него|мне|моя|мой|мои)(?= )/g,' ').replace(/\s+/g,' ');
+    /* «сколько мне осталось калорий», «сколько ещё можно съесть», «остаток белка», «сколько белка осталось» */
+    var lm=w.match(/^ (?:а )?(?:сколько|какой|каков) (?:еще |ещё )?(?:(\S+) )?(?:еще |ещё )?(?:осталось|остается|остаётся|остаток|можно съесть|могу съесть|можно)(?: (\S+))?/)||w.match(/^ (?:а )?(?:остаток|осталось) (\S+)?/);
+    if(lm){ var k=goalKey(lm[1])||goalKey(lm[2]); if(k||!lm[1]&&(!lm[2]||/^(съесть|сегодня|до|на|в|за)$/.test(lm[2]))) return goalLeft(k||'k') }
+    /* «какая у меня норма калорий», «моя норма белка», «норма калорий» */
+    var nm=w.match(/^ (?:а )?(?:какая |какова |сколько )?(?:дневная |суточная )?норма (\S+)/);
+    if(nm&&goalKey(nm[1])) return goalLeft(goalKey(nm[1]));
+    if(/^ (?:а )?(?:какая |какова )?(?:дневная |суточная )?норма $/.test(w)) return goalLeft('k');
+    /* «какая у меня цель», «какие у меня настройки цели», «похудение или набор», «почему красное» */
+    if(/(^| )(какая|какие|какой|что за|покажи) (цель|цели|настройк\S*)( |$)/.test(w)&&!/(рецепт|готов)/.test(w)) return goalInfo();
+    if(/настройк|цел[ьи]/.test(w)&&/(похуд|потолст|набор|снижени|рекомпоз|репозиц|поддержан)/.test(w)) return goalInfo();
+    if(/(^| )почему .*(красн|оранжев|темн|треугол|значок)/.test(w)) return goalInfo(true);
+    return null;
+  }
+  /* Meal 33.36 · вопросы о веществах за день: «сколько клетчатки я сегодня съел», «хватает ли мне железа», «чего мне не хватает».
+     Съеденное — тем же расчётом, что журнал (jrCompute), норма — своя из «Целей на день» или рекомендуемая, как в журнале.
+     Слова веществ и обычные продукты-источники — в словаре (bot/household-ru.js, nutrient_sources). В дневник ничего не идёт.
+     Вопрос о продукте («сколько клетчатки в гречке») сюда не попадает: его разбирает productInfo. Астамур 22.11.2026 15:59. */
+  var NUTR=null;
+  function nutrList(){
+    if(NUTR) return NUTR;
+    var D=window.HappyMealSpeechData; NUTR=((D&&D.nutrient_sources)||[]).map(function(e){ try{ return {id:e.id,title:e.title,group:e.group,re:new RegExp('(?:^|[^а-яa-z])(?:'+e.said+')'),sources:e.sources||[]} }catch(x){ return null } }).filter(Boolean);
+    return NUTR;
+  }
+  function nutrMeta(id){
+    var mac=(typeof JR_MAC!=='undefined'?JR_MAC:[]).filter(function(x){ return x.id===id })[0];
+    if(mac){ var own=parseFloat(String((DB.goals||{})[id]||'').replace(',','.')); return {u:mac.u,norm:own>0?own:mac.rec,own:own>0,lim:false} }
+    var n=typeof JR_N!=='undefined'?JR_N[id]:null; return n?{u:n.u,norm:n.rec!=null?n.rec:null,own:false,lim:!!n.lim}:null;
+  }
+  function nutrSrcVal(code,id){
+    if(id==='p') return blsVal(code,'prot'); if(id==='fib') return blsVal(code,'fib');
+    var k=typeof JR_BLS!=='undefined'?JR_BLS[id]:null; if(!k) return null;
+    if(Array.isArray(k)){ var s=null; k.forEach(function(x){ var v=blsVal(code,x); if(v!=null) s=(s||0)+v }); return s }
+    return blsVal(code,k);
+  }
+  function nutrSources(e,u,n){
+    var out=[]; e.sources.forEach(function(code){ if(!BLS_BY[code]) return; var v=nutrSrcVal(code,e.id); if(v==null||!(v>0)) return; out.push([v,code]) });
+    out=out.slice(0,n+1).sort(function(a,b){ return b[0]-a[0] }).slice(0,n).map(function(x){ var nm=blsName(x[1]); return esc(nm.charAt(0).toLowerCase()+nm.slice(1))+' — '+nutrNum(x[0])+'\u00a0'+u });
+    return out.length?'Где много: '+out.join('; ')+' (на 100 г).':'';
+  }
+  function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
+  function nutrAsk(o){
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    var L=nutrList(); if(!L.length) return null;
+    var hit=L.filter(function(e){ return e.re.test(o) }), grp=null;
+    if(!hit.length){ if(/(^|\s)витамин(ы|ов|ами)?(\s|$)/.test(o)) grp='vit'; else if(/(^|\s)минерал\S*/.test(o)) grp='min' }
+    var gap=/(не\s+хвата\S*|не\s+хватило|недобрал\S*|недостаточно|добрать|доесть|дефицит)/.test(o)&&!/(баз[еаы]|продукт|недостающ|не\s+наш[её]л|ненайден|список)/.test(o);
+    var self=/(^|\s)(я|мне|меня|у меня|сегодня|вчера|за\s+(?:день|сегодня|вчера|неделю|7 дней|семь дней|последн\S* неделю)|съел\S*|поел\S*|получил\S*|набрал\S*|хватает|хватило|достаточно)(\s|$)/.test(o);
+    var asks=/(^|\s)(сколько|хватает|хватило|достаточно|чего|каких|какого|какой|какие|что|много ли|мало ли|покажи|скажи|подскажи)(\s|$)/.test(o);
+    /* «сколько калорий / белков, жиров и углеводов я съел» — итог дня, как раньше (todayTotals) */
+    if(/(калори|ккал|(^|\s)жир|углевод|бжу|кбжу)/.test(o)) return null;
+    if(grp&&self&&asks) gap=true;
+    if(!(gap&&(asks||self)&&!hit.length)&&!(hit.length&&self&&asks)) return null;
+    /* «сколько железа в гречке» — вопрос о продукте; «в обед», «в день», «в меня» — нет */
+    if(/(^|\s)во?\s+(?!меня|мне|день|сутки|обед|завтрак|ужин|перекус|сумме|итоге|целом|среднем|этот|эти|прошл|последн|неделю|рацион|питани|еде|меню|дневник)\S/.test(o)) return null;
+    if(typeof jrCompute!=='function'||typeof JR_N==='undefined') return null;
+    if(BLS_ST!=='ok'){ try{ blsLoad() }catch(x){} return p('Загружаю базу продуктов, без неё не посчитать. Спроси ещё раз через пару секунд.') }
+    var today=todayISO(), r, when;
+    if(/(^|\s)вчера(\s|$)/.test(o)){ var y=new Date(today+'T12:00:00'); y.setDate(y.getDate()-1); r={a:isoOf(y),b:isoOf(y)}; when='вчера' }
+    else if(/(^|\s)за\s+(?:неделю|7 дней|семь дней|последн\S* неделю)/.test(o)){ var w=new Date(today+'T12:00:00'); w.setDate(w.getDate()-6); r={a:isoOf(w),b:today}; when='week' }
+    else { r={a:curDate,b:curDate}; when=curDate===today?'сегодня':'за этот день' }
+    var d=jrCompute(r);
+    if(!d||d.empty) return p(when==='week'?'За последние 7 дней записей нет.':when==='вчера'?'Вчера ничего не записано.':'За '+(when==='сегодня'?'сегодня':'этот день')+' пока ничего не записано.');
+    function row(e){
+      var m=nutrMeta(e.id); if(!m) return null;
+      var v=e.id==='fib'?d.mac.fib:e.id==='p'?d.mac.p:d.v[e.id], miss=(d.miss&&d.miss[e.id])||0;
+      return {e:e,m:m,v:v,pct:v!=null&&m.norm?v/m.norm*100:null,miss:miss,who:(d.missN&&d.missN[e.id])||[]};
+    }
+    var head=when==='week'?'В среднем за день (дней с записями: '+d.days+')':when==='вчера'?'Вчера':when==='сегодня'?'Сегодня':'За этот день';
+    if(/(^|\s)(в|на|за)\s+(обед|завтрак|ужин|перекус)/.test(o)) head+=' за весь день (по приёмам пищи пока не считаю)';
+    var tail=(when==='сегодня'?'<p class="mlHint">Считаю по уже записанному. ':'<p class="mlHint">')+'Это справка из дневника и базы, в дневник ничего не записал.</p>';
+    function line(x){
+      var s='<b>'+esc(x.e.title)+'</b>: ';
+      if(x.v==null) return s+'в базе нет данных ни у одной записи.';
+      s+=nutrNum(x.v)+' '+x.m.u;
+      if(x.m.norm) s+=' из '+fmt(x.m.norm)+' '+x.m.u+' ('+Math.round(x.pct)+' %'+(x.m.own?', твоя цель':'')+')';
+      if(x.miss>=0.05) s+='. Нет данных у '+Math.round(x.miss*100)+' % еды'+(x.who.length?' ('+esc(x.who.slice(0,3).join(', '))+(x.who.length>3?' и др.':'')+')':'')+' — на самом деле больше';
+      return s+'.';
+    }
+    if(hit.length){
+      var rows=hit.map(row).filter(Boolean); if(!rows.length) return null;
+      return p(head+':')+rows.map(function(x){ var src=x.pct!=null&&x.pct<100?nutrSources(x.e,x.m.u,3):''; return p(line(x))+(src?'<p class="mbSum">'+src+'</p>':'') }).join('')+tail;
+    }
+    var all=L.filter(function(e){ return !grp||e.group===grp }).map(row).filter(function(x){ return x&&x.pct!=null&&!x.m.lim&&x.miss<0.3 });
+    if(!all.length) return p('Посчитать не из чего: у записей '+(when==='сегодня'?'за сегодня ':'')+'нет данных о составе.')+tail;
+    var low=all.filter(function(x){ return x.pct<70 }).sort(function(a,b){ return a.pct-b.pct }).slice(0,3);
+    if(!low.length) return p(head+' по главным веществам'+(grp==='vit'?' (витаминам)':grp==='min'?' (минералам)':'')+' всё не меньше 70 % нормы.')+tail;
+    return p(head+' меньше всего от нормы:')+low.map(function(x){ var src=nutrSources(x.e,x.m.u,2); return p(line(x))+(src?'<p class="mbSum">'+src+'</p>':'') }).join('')+tail;
+  }
+  /* БАДы голосом: «омега-3 три капсулы», «две таблетки магния». Записывает приём своего сохранённого варианта
+     в раздел БАДов (как кнопка «Записать» на карточке добавки); шаблон каталога без своей этикетки — подсказка, не запись.
+     В еду и в список недостающего такие слова не идут. Тема «БАДы голосом», ступень 1 (Астамур 22.11.2026) */
+  var SUP_UNIT=/(^|\s)(капсул\S*|таблет\S*|драже|мерн\S*\s+ложк\S*|скуп\S*|саше)(?=\s|$)/;
+  var SUP_NUM={'одна':1,'одну':1,'один':1,'одни':1,'две':2,'два':2,'три':3,'четыре':4,'пять':5,'шесть':6,'семь':7,'восемь':8,'девять':9,'десять':10,'пол':0.5,'половину':0.5,'половинку':0.5};
+  var SUP_FILL=/(^|\s)(и|а|на|ещё|еще|тоже|то|же|же|одни|выпил\S*|принял\S*|съел\S*|по|штук\S*|шт|мг|мкг|ме|г|утром|вечером|днем|днём|сегодня|значит|так|ну|это|вот|они|ни|он|она|него|нее|неё)(?=\s|$)/g;
+  function supStem(w){ w=String(w||''); return /^\d/.test(w)?w:w.slice(0,Math.max(4,Math.min(5,w.length-1))) }
+  function supNameStems(x){ var N=typeof HappySupplementsSearch!=='undefined'?HappySupplementsSearch.normalize:function(s){ return String(s).toLowerCase() };
+    return N([x.name,x.form].filter(Boolean).join(' ')).split(/[^\p{L}\p{N}]+/u).filter(function(w){ return w.length>=3||/^\d+$/.test(w)&&w.length<=2 }).map(supStem) }
+  function supFind(seg){
+    var S=typeof HappySupplements!=='undefined'?HappySupplements:null; if(!S) return null;
+    var N=typeof HappySupplementsSearch!=='undefined'?HappySupplementsSearch.normalize:function(s){ return String(s).toLowerCase() };
+    var words=N(seg.replace(SUP_UNIT,' ').replace(SUP_FILL,' ')).split(/[^\p{L}\p{N}]+/u).filter(function(w){ return w.length>=3&&!SUP_NUM[w] });
+    if(!words.length) return null;
+    var ws=words.map(supStem);
+    function score(x){ var st=supNameStems(x); if(!st.length||ws[0]!==st[0]&&ws.indexOf(st[0])<0) return 0;   // первое слово названия должно прозвучать
+      return ws.filter(function(w){ return st.indexOf(w)>=0 }).length }
+    var used={}; try{ (S.getEntries()||[]).forEach(function(r){ used[r.variantId]=Math.max(used[r.variantId]||0,Date.parse(r.at)||0) }) }catch(e){}
+    var vs=(S.getVariants()||[]).map(function(v){ return {v:v,s:score(v)} }).filter(function(x){ return x.s>0 })
+      .sort(function(a,b){ return b.s-a.s||(used[b.v.id]||0)-(used[a.v.id]||0) });
+    if(vs.length){ var st0=supNameStems(vs[0].v); return {variant:vs[0].v,all:ws.every(function(w){ return st0.indexOf(w)>=0 })} }
+    var ts=(S.templates||[]).filter(function(x){ return x.id!=='custom' }).map(function(v){ return {v:v,s:score(v)} }).filter(function(x){ return x.s>0 }).sort(function(a,b){ return b.s-a.s });
+    return ts.length?{template:ts[0].v}:{none:words.join(' ')};
+  }
+  function supQty(seg){
+    var n=seg.match(/(\d+(?:[.,]\d+)?)\s*(?=капсул|таблет|драже|мерн|скуп|саше)/)||seg.match(/(?:^|\s)(одн[аиу]|один|две|два|три|четыре|пять|шесть|семь|восемь|девять|десять|пол|половин\S*)\s+(?=капсул|таблет|драже|мерн|скуп|саше)/);
+    if(n) return SUP_NUM[n[1]]!=null?SUP_NUM[n[1]]:/^половин/.test(n[1])?0.5:+String(n[1]).replace(',','.');
+    var u=seg.match(SUP_UNIT); if(!u) return null;
+    var w=seg.match(/(?:^|\s)(\d{1,2}|одн[аиу]|один|две|два|три|четыре|пять|шесть)(?:\s|$)/g); if(!w) return 1;
+    var last=String(w[w.length-1]).trim(); return SUP_NUM[last]!=null?SUP_NUM[last]:+last;
+  }
+  function supMeasure(v,seg){
+    var opts=HappySupplementsModel.measureOptions(v), u=seg.match(SUP_UNIT); if(!u) return opts[0];
+    var said=supStem(u[2].split(/\s+/)[0]);
+    return opts.filter(function(m){ return supStem(String(m.name).toLowerCase().split(/\s+/)[0])===said })[0]||null;
+  }
+  function supPlural(n,u){ var F={'капсула':['капсула','капсулы','капсул'],'таблетка':['таблетка','таблетки','таблеток'],'мерная ложка':['мерная ложка','мерные ложки','мерных ложек'],'порция':['порция','порции','порций'],'драже':['драже','драже','драже']}[u];
+    if(!F) return u; if(n%1) return F[1]; var a=n%10, b=n%100; return a===1&&b!==11?F[0]:a>=2&&a<=4&&(b<12||b>14)?F[1]:F[2] }
+  function suppAsk(chat,S,m,bare){
+    if(typeof HappySupplements==='undefined'||typeof HappySupplementsModel==='undefined') return null;
+    if(!SUP_UNIT.test(' '+bare+' ')&&!/(омег|магни|витамин|креатин|цинк|кальци|селен|коллаген|протеин|мультивитамин|электролит|рыбий жир)/.test(bare)) return null;
+    var segs=bare.split(/\s*[,;]\s*|\s+(?:и|а также|плюс)\s+/).map(function(x){ return x.trim() }).filter(Boolean);
+    var sup=[], rest=[];
+    segs.forEach(function(s){ var f=SUP_UNIT.test(' '+s+' ')?supFind(s):null; if(!f&&!SUP_UNIT.test(' '+s+' ')){ var f2=supFind(s); if(f2&&f2.variant&&f2.all&&!/\d\s*(г|гр|грамм\S*|мл|л)(\s|$)/.test(s)) f=f2 }   // без меры — только если всё сказанное есть в названии своей добавки: «выпил омегу»
+      if(f) sup.push({seg:s,f:f}); else if(s.replace(SUP_FILL,' ').trim()) rest.push(s) });
+    if(!sup.length||!sup.some(function(x){ return SUP_UNIT.test(' '+x.seg+' ')||x.f.variant })) return null;
+    var done=[], tips=[];
+    sup.forEach(function(x){
+      if(x.f.variant){ var v=x.f.variant, ms=supMeasure(v,x.seg), q=supQty(x.seg)||1;
+        if(!ms){ tips.push('«'+esc(v.name)+'»: такой меры у добавки нет, есть '+esc(HappySupplementsModel.measureOptions(v).map(function(o){ return o.name }).join(', '))+'. Скажи в ней.'); return }
+        done.push({v:v,m:ms,q:q}) }
+      else if(x.f.template) tips.push('«'+esc(x.f.template.name)+'» есть в каталоге БАДов, но своей добавки по этикетке ещё нет. Открой «БАДы», выбери шаблон и сохрани по своей упаковке — дальше смогу записывать голосом.');
+      else tips.push('«'+esc(x.f.none)+'» — такой добавки не нашёл ни у тебя, ни в каталоге БАДов. Добавь её в «БАДы» → «Добавить».');
+    });
+    if(m.dry) return {dry:1,clean:!tips.length&&!rest.length,n:done.length};
+    if(done.length&&typeof writeGuard==='function'&&writeGuard()) return p('Чтобы записывать, войди в аккаунт.');
+    var d=cd(), now=m.at?new Date(m.at):new Date(), tm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    var sec=typeof autoSec==='function'?autoSec():null;
+    done.forEach(function(x){ try{ HappySupplements.logIntake({variantId:x.v.id,quantity:x.q,measureId:x.m.id,date:d,time:m.at?tm:null,section:sec}).catch(function(e){ try{ toast(e.message) }catch(_){} }) }catch(e){ x.err=e.message } });
+    var ok=done.filter(function(x){ return !x.err });
+    var h=(ok.length?p('Записал в БАДы: '+ok.map(function(x){ return '<b>'+esc(x.v.name)+'</b> — '+fmt(x.q)+' '+esc(supPlural(x.q,x.m.name)) }).join('; ')+'.'):'')+
+      done.filter(function(x){ return x.err }).map(function(x){ return p('«'+esc(x.v.name)+'» не записал: '+esc(x.err)) }).join('')+tips.map(p).join('');
+    if(rest.length&&tokensOf(rest.join(' ').replace(FILL,' ')).length){
+      var hR; NEST++; try{ hR=handle(chat,S,{kind:'text',text:rest.join(', '),eaten:m.eaten,at:m.at,inbox:m.inbox}) }catch(e){ hR='' } finally { NEST-- }
+      h+=hR||'';
+    }
+    return h+(ok.length?'<p class="mlHint">Приём виден в дне и в разделе БАДов; убрать — там же.</p>':'');
   }
   function todayTotals(){
     var items=day(curDate).items, s=sumOf(items), when=curDate===todayISO()?'сегодня':'за этот день';
@@ -1865,8 +2128,8 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
-    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'){ var hp=appHelp(raw); if(hp) return hp+(S.pend.length?askHTML(S):'') }
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
     if(!NEST) LEFT=null;   // замена не состоялась, а человек уже говорит о другом
@@ -1886,7 +2149,7 @@ var MealBot=(function(){
         var keepS=String(raw).split(/(?<=[.!?;])\s+/).filter(function(x){ return !NOCOUNT.test(x) });
         if(!keepS.length||!tokensOf(keepS.join(' ')).length) return p('Хорошо, это не записываю.');
         raw=keepS.join(' ') }
-      LEFT=null; var lf=takeLeft(raw); if(lf&&tokensOf(lf.text).length){ LEFT=lf; raw=lf.text }
+      LEFT=null; var lf=leftTarget(takeLeft(raw)); if(lf&&tokensOf(lf.text).length){ LEFT=lf; raw=lf.text }
     }
     var ORIG=nrm(String(raw)).trim().replace(/[?!.,…\s]+$/,'');
     if(SP&&m.kind!=='photo'&&!S.ask&&/(получил(ось|ась|ись|ся)|вышло)\s+\S+\s+(штук\S*|шт)(\s|,|$)/.test(ORIG)) return p('Похоже, это готовка: сколько получилось штук. В дневник не записал. Скажи, сколько съел ты.');   // как сказано, до разбора речи: по этому тексту узнаются вопросы «что я съел», «сколько я съел»
@@ -1939,8 +2202,12 @@ var MealBot=(function(){
     if(!/\d/.test(bare)&&/(подожди|погоди|секунд|минутк|сейчас взвешу|взвешиваю|взвешу)/.test(bare)&&tokensOf(bare.replace(/подожди|погоди|секунд\S*|минутк\S*|взвеш\S*/g,' ').replace(FILL,' ')).length===0)
       return p('Жду. Ничего не записываю, пока не скажешь.');
     /* «сколько калорий в 100 г риса?» — вопрос о продукте, а не об итоге дня: ответ из базы, в дневник ничего не идёт */
-    var pq=bare.match(/^(?:а\s+)?сколько\s+(?:калори\S*|ккал|белк\S*|жир\S*|углевод\S*)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/);
-    if(pq&&m.kind!=='photo'){ var pi=productInfo(pq[1]); return pi||deferred('вопрос о питании') }
+    if(m.kind!=='photo'&&!m.inbox){ var nq=nutrAsk(ORIG.trim()); if(nq) return nq }
+    var pq=bare.match(/^(?:а\s+)?(?:сколько|какое количество)\s+(.+?)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/), pk=pq&&m.kind!=='photo'?substanceOf(pq[1]):null;
+    if(pk){ var pi=productInfo(pq[2],pk); return pi||notSure(pq[2]) }
+    var pc=m.kind==='photo'?null:(bare.match(/^(?:а\s+)?(?:что\s+(?:входит\s+)?в\s+состав[еа]?|какой\s+состав\s+(?:у|в)|состав|кбжу|бжу|пищевая\s+ценность)\s+(.+)$/)||bare.match(/^(?:а\s+)?(?:какая\s+|какова\s+)?(?:калорийность|энергетическая\s+ценность)\s+(?:у\s+)?(.+)$/));
+    if(pc){ var pci=productInfo(pc[1],'all'); return pci||notSure(pc[1]) }
+    if(m.kind!=='photo'){ var ga=goalAsk(bare); if(ga) return ga }
     if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(ORIG)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(ORIG)) return todayTotals();
     if(/что\s+(я\s+)?(уже\s+|сегодня\s+)*(записал|записано|съел|ел)(\s|$)/.test(ORIG)||/^(покажи|что)\s+(записи|день|записано|за сегодня)/.test(ORIG)) return todayList();
     if(/(список|чего)\s+(недостающ|не хватает|нет в базе)|что\s+не\s+нашел|ненайденн/.test(bare)) return missShow();
@@ -1968,9 +2235,12 @@ var MealBot=(function(){
     }
     if(ORD[bare]!=null&&!S.ask&&lastAdd(S)&&lastAdd(S).line.picked){ var sw1=swapTo(S,lastAdd(S),lastAdd(S).line.alts[ORD[bare]]); if(sw1) return sw1 }
     if(/^(ага|угу|да|ок|окей|хорошо|ладно|спасибо|понял|ясно|привет)[.!]*$/.test(bare)) return p('Ок.')+(S.pend.length?askHTML(S):'');
+    if(m.kind!=='photo'&&!S.ask){ var sa=suppAsk(chat,S,m,bare); if(sa) return sa }   // БАДы голосом
+    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&!prepped){ var hp=appHelp(m.text); if(hp) return hp+(S.pend.length?askHTML(S):'') }   // справка о приложении — после ответов из данных
     /* время и разбор */
     t=t.replace(/^\s*(да|ага|угу)[\s,]+(?=\S)/,' ');
     if(SP) t=t.replace(/\s(?:а\s+|и\s+)?(?:до этого|перед этим|потом|затем|еще)\s+в\s+\d{1,2}\s*$/,' ');   // Meal 33.12
+    t=t.replace(/(^|\s)(и|а|потом)\s+час\s+(еще|ещё)(?=\s)/g,'$1$2 $3 в час');   // «и час ещё кофе» — «в» потерялось: «час» — время, а не продукт (разбор диктовок 22.11.2026)
     var tt=takeTimes(t,now), work=fixes(tt.text);
     var why=DEFER.filter(function(d){ return d[0].test(work) })[0];
     if(why){
@@ -2062,7 +2332,7 @@ var MealBot=(function(){
         else if(!l.ask&&needMeal){ l.ask='meal'; asks.push(en) }
         else if(!l.ask) ready.push(en);
         else if(l.ask==='name'&&!/[а-яё]/i.test(String(l.name||''))){}   // Meal 33.12: латиница без единого русского слова — не еда, в список недостающего не идёт
-        else if(l.ask==='name'&&!l.explicit&&!selected) miss.push(l);
+        else if(l.ask==='name'&&(!l.explicit||l.km)&&!selected) miss.push(l);   // «пельмени 200 г» — с весом тоже «в базе нет», а не «что это?» (хвосты разборов, 22.11.2026)
         else asks.push(en);
       });
     });
@@ -2077,7 +2347,7 @@ var MealBot=(function(){
         if(lr&&lr.tap){ if(!LEFT.mg&&lr.tap.n>LEFT.minus) lr.tap.n-=LEFT.minus }
         else if(ll&&(LEFT.mg?ll.u==='г':ll.u!=='г')&&ll.q>LEFT.minus){ ll.q=Math.round((ll.q-LEFT.minus)*100)/100; ll.g=gramsFor(ll.fid,ll.q,ll.u); ll.left='не доедено — записал съеденную часть' }
         else if(ll){ ll.approx=true; ll.usual=true; ll.left='не доедено — сколько осталось? «Меньше» — половина' } }
-      else if(LEFT) ready.forEach(function(en){ var l=en.line; if(en.tap||!l.fid||!(l.g>0)) return;
+      else if(LEFT) ready.forEach(function(en){ var l=en.line; if(en.tap||!l.fid||!(l.g>0)||!leftHit(l)) return;
         if(LEFT.k){ l.q=l.u==='г'||l.u==='мл'?Math.round(l.q*LEFT.k):Math.round(l.q*LEFT.k*100)/100; l.g=gramsFor(l.fid,l.q,l.u); l.approx=true; l.left='не доедено — записал съеденную часть' }
         else { l.approx=true; l.usual=true; l.left='не доедено — сколько осталось? «Меньше» — половина' } });
     }
@@ -2231,6 +2501,89 @@ var MealBot=(function(){
     },150);
   }
   function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
+
+  /* ── совет блюда: «что на завтрак», «быстро», «белковое на ужин», «осталось 400 калорий» (решение Астамура 22.11.2026 «да»).
+     Слова и пороги — в словаре (dish_advice). Отбор — из рецептов подборок экрана «Сборники» и «Моих рецептов»;
+     в дневник совет не идёт: «Записать» открывает шторку «Подобрано», как в рецепте. Кухни — следующий шаг: такой вопрос идёт прежним путём */
+  function kcalLeft(){
+    var g=typeof goalOf==='function'?goalOf('k'):0; if(!(g>0)) return null;
+    var d=todayISO(), it=day(d).items, s=typeof intakeSum==='function'?intakeSum(it,typeof supplementRows==='function'?supplementRows(d):[]):sumOf(it);
+    return Math.round(g-(s&&s.k||0));
+  }
+  function has(t,forms){ return (forms||[]).some(function(f){ return t.indexOf(f)>=0 }) }
+  function advice(S,raw){
+    var A=SP&&SP.advice?SP.advice():null; if(!A) return null;
+    var t=nrm(raw).replace(/[?!.,…]/g,' ').replace(/\s+/g,' '), T=' '+t.trim()+' ';
+    var strong=(A.ask_strong||[]).some(function(r){ return new RegExp('(^|\\s)'+r).test(t.trim()) });
+    var weak=!strong&&(A.ask_weak||[]).some(function(w){ return new RegExp('(^|\\s)'+w+'(\\s|$)').test(T) })&&has(t,A.food_context);
+    if(!strong&&!weak&&has(t,(A.no_cook||{}).forms)&&!/\d/.test(t)) strong=true;   // «перекус без готовки»
+    var cuisine=has(t,A.not_yet);
+    if(!strong&&!weak&&!(cuisine&&(A.ask_weak||[]).some(function(w){ return new RegExp('(^|\\s)'+w+'(\\s|$)').test(T) }))) return null;
+    if(/(^|\s)(сколько|съел|съела|ел|ела|поел|поела|скушал|выпил|выпила|перекусил|перекусила|позавтракал|пообедал|поужинал|запиши|записал|записала|добавь)(\s|$)/.test(T)) return null;   // это запись или вопрос о продукте, а не совет
+    if(cuisine) return p(esc((A.reply_ru||{}).cuisine||''));               // кухни — следующий шаг
+    var want={meal:null,max:null,protein:has(t,(A.protein||{}).forms),light:has(t,(A.light||{}).forms),filling:has(t,(A.filling||{}).forms),kmax:null,ing:null,note:''};
+    (A.meals||[]).some(function(m){ if(has(t,m.forms)){ want.meal=m; return true } return false });
+    if(has(t,(A.no_cook||{}).forms)) want.max=(A.no_cook||{}).max_min||3;
+    else if(has(t,(A.quick||{}).forms)) want.max=(A.quick||{}).max_min||15;
+    var mm=t.match(/(?:за|до|минут за|не больше|не дольше)\s+(\d{1,3})\s*(?:мин|минут\S*)|(\d{1,3})\s*(?:мин|минут\S*)/); if(mm) want.max=+(mm[1]||mm[2]);
+    var km=t.match(/(\d{2,4})\s*(?:ккал|калори\S*|кал)(\s|$)/); if(km) want.kmax=+km[1];
+    else if(has(t,A.left_forms)&&/калори|ккал|норм|цел/.test(t)){ var left=kcalLeft();
+      if(left==null) want.note=(A.reply_ru||{}).no_goal||''; else if(left<=0){ want.note=(A.reply_ru||{}).over||''; want.light=true } else { want.kmax=left; want.left=true } }
+    var im=t.match(/(?:^|\s)(?:из|с|со)\s+([а-я-]{3,})/); if(im&&!/^(собой|утра|вечера|работы|тренировк|зала|чем|того|белк|протеин|калори|ккал|быстр)/.test(im[1])) want.ing=norm(im[1]).slice(0,4);
+    if(!want.meal&&!want.max&&!want.protein&&!want.light&&!want.filling&&!want.kmax&&!want.ing){
+      var h=(S.clock?new Date(S.clock):new Date()).getHours(), mid=((A.meal_by_hour||[]).filter(function(x){ return h>=x[0]&&h<x[1] })[0]||[])[2];
+      want.meal=(A.meals||[]).filter(function(m){ return m.id===mid })[0]||null; want.byHour=true }
+    S.adv={want:want,list:pool(A,want),shown:0};
+    return advShow(S,A,true);
+  }
+  /* КБЖУ рецепта для совета: строка, где разбор оставил выбор («молоко» — какое?), считается по первому варианту, как справка «сколько калорий в…»;
+     иначе такой рецепт выглядел бы легче, чем он есть, и попадал бы в «лёгкое» и «до 300 ккал» */
+  function advNut(r){
+    var ls=r.x?parseText(r.x).lines:recipeLinesAny(r), items=[];
+    ls.forEach(function(l){ var id=l.fid||(l.alts&&l.alts[0]); if(!id||!FOODS[id]) return;
+      var g=l.fid&&l.g>0?l.g:gramsFor(id,l.q,l.u); if(g>0) items.push({fid:id,g:g}) });
+    return sumOf(items);
+  }
+  function pool(A,w){
+    var out=[], favs=Array.isArray(DB.rfav)?DB.rfav:[];
+    (typeof COLS!=='undefined'?COLS:[]).forEach(function(c){
+      if(w.meal&&(w.meal.collections||[]).indexOf(c.k)<0) return;
+      c.items.forEach(function(r){ out.push({r:r,col:c,min:r.min,text:r.x}) }) });
+    if(!w.meal&&w.max==null) (DB.recipes||[]).forEach(function(r){ out.push({r:r,col:null,min:null,mine:true,text:(r.lines||[]).map(function(l){ return FOODS[l.fid]?FOODS[l.fid].n:'' }).join(' ')}) });
+    out=out.filter(function(x){
+      var n=advNut(x.r); x.k=n.k||0; x.p=n.p||0; if(!(x.k>0)) return false;
+      if(w.max!=null&&!(x.min!=null&&x.min<=w.max)) return false;
+      if(w.protein&&x.p*4/x.k<((A.protein||{}).min_share||0.25)) return false;
+      if(w.light&&x.k>((A.light||{}).max_kcal||400)) return false;
+      if(w.filling&&x.k<((A.filling||{}).min_kcal||400)) return false;
+      if(w.kmax!=null&&x.k>w.kmax) return false;
+      if(w.ing&&norm(x.text||'').split(/[^а-яa-z]+/).every(function(s){ return s.slice(0,4)!==w.ing })) return false;
+      return true });
+    out.forEach(function(x,i){ x.i=i; x.fav=favs.indexOf(x.r.id)>=0 });
+    out.sort(function(a,b){ return ((b.mine?1:0)-(a.mine?1:0))||((b.fav?1:0)-(a.fav?1:0))||(w.protein?b.p-a.p:0)||(w.light||w.kmax!=null?a.k-b.k:0)||(w.max!=null?a.min-b.min:0)||a.i-b.i });
+    return out;
+  }
+  function advShow(S,A,first){
+    var R=A.reply_ru||{}, a=S.adv, n=A.count||3, w=a.want, part=a.list.slice(a.shown,a.shown+n);
+    if(!part.length) return p(esc(first?R.none:R.more_none));
+    a.shown+=part.length;
+    var bits=[w.meal?w.meal.name_ru:'', w.max!=null?'до '+w.max+' мин':'', w.protein?'с белком':'', w.light?'лёгкое':'', w.filling?'сытное':'', w.kmax!=null?(w.left?'осталось ':'до ')+w.kmax+' ккал':''].filter(Boolean);
+    var h=(w.note?p(esc(w.note)):'')+p(first?(bits.length?'Вот что подойдёт ('+esc(bits.join(', '))+'):':'Вот что можно:'):'Ещё варианты:');
+    h+=part.map(function(x){
+      var meta=[x.min!=null?x.min+' мин':'', Math.round(x.k)+' ккал', 'белок '+Math.round(x.p)+' г', x.mine?'мой рецепт':''].filter(Boolean).join(' · ');
+      return '<div class="mbAdv"><b>'+esc(x.r.t)+'</b><div class="mbSum">'+esc(meta)+'</div>'+
+        chips((x.col?[['advopen:'+x.r.id,'Открыть']]:[]).concat([['advlog:'+x.r.id,'Записать']]))+'</div>' }).join('');
+    if(a.shown<a.list.length) h+=chips([['advmore','Ещё']]);
+    return h+(first?'<p class="mlHint">'+esc(R.hint||'')+'</p>':'');
+  }
+  function advTap(S,a){
+    var A=SP&&SP.advice?SP.advice():null;
+    if(a[0]==='advmore') return S.adv&&A?advShow(S,A,false):null;
+    var x=typeof findRecipe==='function'?findRecipe(a[1]):null; if(!x) return null;
+    if(a[0]==='advopen'&&x.col){ openCol(x.col.k); ROPEN=x.r.id; renderCol(); return '' }
+    if(a[0]==='advlog'){ openMatchLines(recipeLinesAny(x.r),{back:'chat',from:'recipe'}); return '' }
+    return null;
+  }
   function deferred(why){
     return p('Пока так не умею — '+esc(why)+'. Ничего не записал.')+'<p class="mlHint">Это разберёт модель (этап 2). Сейчас можно сказать проще: продукт и вес.</p>';
   }
@@ -2432,6 +2785,7 @@ var MealBot=(function(){
     else if(a[0]==='offer'){ if(!S.offer) return;
       if(a[1]==='2'&&S.offer.alt){ var of2=S.offer; S.offer=null; h=handle(chat,S,{kind:'text',text:of2.alt,eaten:of2.eaten||undefined,inbox:of2.inbox||undefined,at:of2.at||undefined}); if(S.offer) h=handle(chat,S,{kind:'text',text:'да'}) }
       else h=handle(chat,S,{kind:'text',text:'да'}) }
+    else if(/^adv/.test(a[0])){ h=advTap(S,a); if(h==='') return }
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='misscopy'){ var mt=missText(); try{ navigator.clipboard.writeText(mt).then(function(){ toast('Список скопирован') },function(){ toast('Не скопировалось — выдели текст вручную') }) }catch(e){ toast('Не скопировалось — выдели текст вручную') } return }
     else if(a[0]==='missclear'){ try{ localStorage.removeItem(MISSK) }catch(e){} h=p('Список очистил.') }
