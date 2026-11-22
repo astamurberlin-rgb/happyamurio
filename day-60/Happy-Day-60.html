@@ -3375,7 +3375,7 @@ function dupWarn(what){ toast('Такое название уже есть: '+wh
 function isLocked(d){ return !!day(d||curDate).locked }
 function lockGuard(){
   if(writeGuard())return true;
-  if(SelfCare.checkinReadOnly()){toast('Это прошлая отметка. Новую можно сделать на главной');return true;}
+  if(SelfCare.checkinReadOnly())return true; /* прошлая отметка — только просмотр, без сообщения (Астамур 22.11.2026) */
   if(!isLocked()) return false;
   toast('День закрыт — открой замок, чтобы менять');
   return true;
