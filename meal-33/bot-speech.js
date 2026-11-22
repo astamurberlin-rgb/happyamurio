@@ -8,7 +8,7 @@
 var MealSpeech=(function(){
   var D=window.HappyMealSpeechData||null, active=false;
   var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
-  var MARK={0.5:'▽',1:'◇',1.5:'△'}, FMARK={1.5:'⊕',0.8:'⊘'};
+  var CNT=null, MARK={0.5:'▽',1:'◇',1.5:'△'}, FMARK={1.5:'⊕',0.8:'⊘'};
   var B0='(^|[\\s,.;:!?(])', B1='(?=[\\s,.;:!?)]|$)';
   /* после «с»: «2 ложками мёда 200 г», «двумя столовыми ложками сметаны, всего 300 г» — ложки добавки и вес всего блюда в конце */
   var SPOONTOT=/^\d+(?:,\d+)?\s+(?:(?:(?:чайн|столов|десертн|больш)[а-я]*\s+)?(?:ложк|ложечк)[а-я]*|(?:ст|ч)\.?\s?л\.?|десложк[а-я]*)\s+(?:(?!(?:и|а)\s)[а-я-]+\s+){0,2}[а-я-]+\s*,?\s+(?:(?:это\s+)?(?:всего|итого|в сумме|общий вес|на вс[её])\s+)?\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*)(?=\s*$|\s*[,.;!?]|\s+(?:и|а|потом|плюс|затем)\s)/;
@@ -47,6 +47,7 @@ var MealSpeech=(function(){
     Object.keys(N.scales||{}).forEach(function(k){ CARD[nz(k)]=N.scales[k] });
     Object.keys(N.colloquial_candidates||{}).forEach(function(k){ CARD[nz(k)]=N.colloquial_candidates[k] });
     var cw=alt(Object.keys(CARD));
+    if(N.count_words&&N.count_words.length) CNT=new RegExp('(^|\\s)(\\d+)\\s+(?=(?:'+N.count_words.join('|')+')(?=[\\s,.;!?]|$))','g');
     CARDRE=new RegExp('(^|[\\s,.;:!?(–-])((?:'+cw+')(?:[\\s-]+(?:'+cw+'))*)(?=[\\s,.;:!?)–-]|$)','g');
     var drop=[], corr=[], approx=[], split=[];
     (D.fillers_and_operators||[]).forEach(function(e){ if(e.bot==='drop') drop=drop.concat(e.forms); if(e.bot==='correction') corr=corr.concat(e.forms); if(e.bot==='split') split=split.concat(e.forms) });
@@ -190,6 +191,10 @@ var MealSpeech=(function(){
       s=s.replace(new RegExp(B0+rx(k)+B1,'g'),function(m,a,off,str){ var v=NV.spoken_decimals[k]; return a+(NB&&NB.test(str.slice(off+m.length))?out(v/1000):v+' мл') }) });
     /* доли словами */
     s=s.replace(/(^|\s)три\s+четверти(?=\s)/g,'$1 0,75').replace(/(^|\s)две\s+трети(?=\s)/g,'$1 0,67');
+    /* «одну треть стакана», «одна половина яблока» — одна доля, а не 1 + доля; «полторы тысячи» — 1500, «полтысячи» — 500 (хвосты разборов, 22.11.2026) */
+    s=s.replace(/(^|\s)одн(?:а|у|ой)\s+(?=(?:треть|трети|четверть|четверти|половин[а-я]*)(?=\s))/g,'$1');
+    s=s.replace(/(^|\s)полтор[аы]\s+тысяч[аи]?(?=\s)/g,'$1 1500').replace(/(^|\s)пол[\s-]?тысяч[аи]?(?=\s)/g,'$1 500');
+    s=s.replace(/(^|\s)в(\s+(?:\d+|один|одну|два|две|три|четыре)\s+шот)/g,'$1с$2');   // «американо в два шота» — крепость, а не время «в два»
     s=s.replace(CARDRE,function(m,a,run,off){ if(/\sна\s*$/.test(s.slice(0,off)+a)&&/^пар/.test(run)) return m; return a+numberRun(run) });
     s=s.replace(/(\d+(?:,\d+)?)\s+с\s+половиной(?=\s)/g,function(m,n){ return out(num(n)+0.5) }).replace(/(\d+(?:,\d+)?)\s+с\s+четвертью(?=\s)/g,function(m,n){ return out(num(n)+0.25) });
     s=s.replace(/(^|\s)(?:половин(?:а|у|ы|ка|ку|ки)|пол)(?=\s)/g,'$1 0,5').replace(/(^|\s)треть(?=\s)/g,'$1 0,33').replace(/(^|\s)четверт(?:ь|инк\S*)(?=\s)/g,'$1 0,25')
@@ -204,6 +209,12 @@ var MealSpeech=(function(){
       if(U2[rest]) return a+'0,5 '+rest;                                         // «полтарелки», «полстакана», «полпорции» — половина меры
       if(exact.indexOf(w)>=0||stems.some(function(x){ return w.indexOf(x)===0 })) return m;
       return a+'0,5 '+rest });
+    /* «стакан и ещё полстакана молока» — одна мера: 1,5 стакана (хвосты разборов, 22.11.2026) */
+    s=s.replace(/(^|\s)(?:(\d+(?:,\d+)?)\s+)?([а-я]+)\s+и\s+(?:еще\s+)?(\d+(?:,\d+)?)\s+([а-я]+)(?=\s)/g,function(m,a,n1,w1,n2,w2){
+      return U2[w1]&&U2[w1]===U2[w2]?a+out((n1?num(n1):1)+num(n2))+' '+w2:m });
+    /* «несколько ложек сметаны» — три меры с «≈»; «12 яиц», «15 конфет» — штуки при любом числе (слова — numbers.count_words) */
+    s=s.replace(/(^|\s)несколько\s+([а-я]+)(?=\s)/g,function(m,a,w){ return U2[w]?a+'≈ 3 '+w:m });
+    if(CNT) s=s.replace(CNT,function(m,a,n){ return +n>10?a+n+' шт ':m });
     /* диапазон: середина и «≈» */
     function mid(a,b){ a=num(a); b=num(b); return a<b&&b<=a*4?out((a+b)/2):null }
     s=s.replace(/(^|\s)от\s+(\d+(?:,\d+)?)\s+до\s+(\d+(?:,\d+)?)(?=\s)/g,function(m,p,a,b){ var x=mid(a,b); return x?p+'≈ '+x:m });
@@ -234,13 +245,21 @@ var MealSpeech=(function(){
     }
     /* «яичница из 2 яиц» — два жареных яйца */
     s=s.replace(/(?:яичниц[а-я]*|глазунь[а-я]*)\s+из\s+(\d+)\s+яиц[а-я]*/g,'$1 яйца жареные');
+    /* «омлет из двух яиц» — омлет весом около 60 г на яйцо (яйцо и немного молока), а не яйцо отдельно (хвосты разборов, 22.11.2026) */
+    s=s.replace(/(омлет[а-я]*)\s+из\s+(\d+)\s+яиц[а-я]*/g,function(m,w,n){ return w+' ≈ '+(num(n)*60)+' г' });
+    /* «маленькая тарелка борща» — две трети тарелки (sizes.small_dish) */
+    var SD=(D.sizes||{}).small_dish;
+    if(SD) s=s.replace(new RegExp('(^|\\s)(?:(\\d+(?:,\\d+)?)\\s+)?(?:'+SD.words.join('|')+')[а-я]*\\s+((?:'+SD.units.join('|')+')[а-я]*)','g'),function(m,a,n,u){ return a+out((n?num(n):1)*SD.factor)+' '+u });
     /* толщина рядом с мерой — не продукт: «три тонких ломтика» */
     s=s.replace(/(^|\s)(?:тонк|толст)[а-я]*\s+(?=(?:ломт|кус|кружоч|слайс|дольк|колец|кольц)[а-я]*)/g,'$1');
     /* отдельный продукт со своим количеством: «чай с 2 ложками сахара», «борщ 300 г со сметаной 20 г», «мёд в чай».
        Ложки добавки и вес в конце — блюдо «А с Б»: «творог с двумя ложками мёда 200 г» — 200 г всего блюда, а не мёда (решение Астамура 22.11.2026) */
     s=s.replace(/\sсо?\s+(?=\d+(?:,\d+)?\s+[а-я])(?!\d+(?:,\d+)?\s*(?:%|процент))/g,function(m,off,all){ return SPOONTOT.test(all.slice(off+m.length))?m:', ' });
     s=s.replace(/(\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*|мл)\s+)со?\s+(?=[а-я]+\s+\d)/g,'$1, ');
-    s=s.replace(/\sв\s+(чай|кофе|какао|кашу|суп)(?=[\s,.;!?])/g,', $1');
+    /* «молоко в кофе 50 мл» — 50 мл молока, а не кофе; уже названный напиток второй раз не пишется (хвосты разборов, 22.11.2026) */
+    s=s.replace(/\sв\s+(чай|кофе|какао|кашу|суп)(?:\s+(\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*|мл)))?(?=[\s,.;!?])/g,function(m,d,q,off,all){
+      var seen=q&&new RegExp('(^|\\s)'+d.slice(0,3)).test(all.slice(0,off));
+      return (q?' '+q:'')+(seen?'':', '+d) });
     /* состав после веса блюда: «салат 250 г, там огурцы, помидоры…» — записывается блюдо, части не дублируются */
     s=s.replace(/(\d\s*(?:г|гр|грам+[а-я]*|мл)\s*),?\s+(?:там|в составе|внутри|состав)\s+[^.;!?]*/g,'$1 ');
     /* «стебли 5 г выбросил» — несъедобный остаток: вычитается один раз */
