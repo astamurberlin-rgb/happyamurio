@@ -1201,6 +1201,8 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Хв31", eaten=True, msgs=["творог с мёдом 200 г", "да"], want=[("творог", 193), ("мед", 7)]),
  dict(id="Хв32", eaten=True, msgs=["200 г макарон"], want=[("макароны", 200)]),   # просто «макароны» — как записывал раньше (до этого карбонара)
  dict(id="Хв33", eaten=True, msgs=["кефир банан"], want=[("кефир", 250), ("банан", 118)]),
+ dict(id="Хв34", eaten=True, msgs=["ну блин съел печенье"], mode="none", ask=True),
+ dict(id="Хв35", eaten=True, msgs=["блин съел два яйца"], want=[("яйцо", 44), ("яйцо", 44)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
