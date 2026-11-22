@@ -215,7 +215,8 @@ var MealBot=(function(){
   var GENERIC=/^(мяс(о|а|ом|е)|рыб(а|у|ы|ой)|овощ(и|ей|ами)|фрукт(ы|ов)|ягод(ы|а)|орех(и|ов|а)|сыр(а|ом)?|колбас(а|ы|у)|каш(а|и|у))$/;
   var PREP=/^(с|со|из|в|во|на|без|для|под|по|к|у)$/;
   var SIZE=/^(маленьк|небольш|средн|больш|крупн|глубок)/;
-  function kindOf(w){ var n=norm(w); return /^\d+(,\d+)?$/.test(n)||numOf(n)!==null?'N':unitOf(n)?'U':PREP.test(n)||STOP[n]||SIZE.test(n)?'S':'F' }
+  /* «5%», «2,5%» — жирность, а не еда: «творог 200 г 9%» — одна еда (словарь пишет «5 процентов» как «5%»), 22.11.2026 */
+  function kindOf(w){ var n=norm(w); return /^\d+(,\d+)?$/.test(n)||numOf(n)!==null?'N':unitOf(n)?'U':PREP.test(n)||STOP[n]||SIZE.test(n)||/^\d+(,\d+)?%$/.test(n)?'S':'F' }
   function descr(w){ var n=norm(w); return W_ADJL.test(n)||STF.some(function(p){ return p[1].test(n) }) }
   function splitItems(c){
     var out=[], cur=[], hasN=false, hasF=false, last='', prevW='', lastU='', ws=c.split(' ');
