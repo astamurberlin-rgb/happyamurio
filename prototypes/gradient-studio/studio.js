@@ -1,8 +1,9 @@
-/* Студия градиентов · Happy 1.2 (лаборатория, 22.11.2026 · Claude)
+/* Студия градиентов · Happy 1.3 (лаборатория, 22.11.2026 · Claude)
    Одна студия для всех градиентных заливок: дуги Day («Сейчас»: поток, баланс самочувствия, заливка колец),
    кольцо энергии Meal / Sport / Day с полосками строк (КБЖУ, расход, баланс).
    1.2: меньше текста, таб-бар «Заливка · Оживление · Мои», пресеты — мини-виджеты в один ряд,
    вкладка «Оживление» (эффект дуги и свет внутри из Студии дуг 2.2), варианты стыка дуг в балансе (из «Пробы кольца энергии»).
+   1.3: «Дуги» — три строки на всю ширину: Съедено · Наложение (стык) · Потрачено; четвёртый цвет перехода (cm2, только студия).
    Виджеты рисуются так же, как в приложениях:
    — кольцо энергии и полоски — тот же расчёт, что в meal-33/index.html (erLayerHTML, erRowHTML) и sport-44/…/energy-widget.js;
    — дуги Day — сам движок приложения day-60/arc-motion.js (HappyArc), разметка — как в day-60/selfcare-ui.js.
@@ -152,10 +153,20 @@ function lut(c0,c1){
 function colAt(L,t){                                   // = erColAt (Meal 33) = colAt (Sport 44, Day 60)
   const a=L.s0/100, b=L.s1/100;
   t=clamp(b>a?(t-a)/(b-a):(t>=a?1:0),0,1);
+  if(L.cm2) return colAt4(L,t);
   const h=clamp(L.mw/200,0,0.45);
   if(t<0.5-h) return lut(L.c0,L.cm)[Math.round(t/(0.5-h)*64)];
   if(t>0.5+h) return lut(L.cm,L.c1)[Math.round((t-0.5-h)/(0.5-h)*64)];
   return L.cm;
+}
+/* 1.3: четвёртый цвет перехода (только в студии; в приложениях пока три). Начало → Середина → Середина 2 → Конец, «Середина» держит каждый средний цвет */
+function colAt4(L,t){
+  const N=[L.c0,L.cm,L.cm2,L.c1], hw=Math.min(clamp(L.mw/200,0,0.45)*2/3,1/6);
+  for(let k=0;k<3;k++){ const p=k/3, q=(k+1)/3, x0=k?p+hw:0, x1=k<2?q-hw:1;
+    if(k&&t<x0) return N[k];
+    if(t<=x1||k===2) return lut(N[k],N[k+1])[Math.round(clamp(x1>x0?(t-x0)/(x1-x0):1,0,1)*64)];
+  }
+  return N[3];
 }
 function alphaAt(L,t){ return clamp((L.a0+(L.a1-L.a0)*clamp(t,0,1))/100,0,1) }
 function tone(h,L,C){ return hexOf(L,C,h*Math.PI/180) }
@@ -383,7 +394,7 @@ function renderCompare(){
 }
 
 /* ── Редакторы: группы переключаются сегментом, показана одна ── */
-const GROUPS={day:[['flow','Поток'],['bal','Баланс'],['prog','Кольца'],['data','Данные']],energy:[['arcs','Дуги'],['join','Стык'],['rows','Строки'],['data','Данные']]};
+const GROUPS={day:[['flow','Поток'],['bal','Баланс'],['prog','Кольца'],['data','Данные']],energy:[['arcs','Дуги'],['rows','Строки'],['data','Данные']]};
 function grpList(){ return wid()==='day-arcs'?GROUPS.day:GROUPS.energy }
 function grp(){ const l=grpList(), k=wid()==='day-arcs'?'day':'energy', g=st.grp[k]; return l.some(x=>x[0]===g)?g:l[0][0] }
 function well(id,label,val){ return '<label class="well"><input type="color" id="'+id+'" value="'+val.toLowerCase()+'" aria-label="'+label+'"><span>'+label+'</span></label>' }
@@ -413,24 +424,19 @@ function renderEditors(){
       d.progress.forEach((c,i)=>bindColor('pg'+i,()=>P().day.progress[i],v=>{P().day.progress[i]=v}));
     }
   } else if(g==='arcs'){
-    const per=Pr.apps&&Pr.apps.meal&&Pr.apps.meal.energy, E=energyEditTarget(), k=st.arc==='spent'?'spent':'eat', L=E[k];
-    h='<div class="arcpick">'+[['eat','Съедено'],['spent','Потрачено']].map(([a,l])=>'<button type="button" data-arc="'+a+'" aria-pressed="'+(a===k)+'"><span class="strip" id="strip-'+a+'"></span>'+l+'</button>').join('')+'</div>'+
-      '<div class="grad"><div class="wells">'+[['c0','Начало'],['cm','Середина'],['c1','Конец']].map(([c,l])=>well(k+c,l,L[c])).join('')+'</div></div>'+
+    const per=Pr.apps&&Pr.apps.meal&&Pr.apps.meal.energy, E=energyEditTarget(), k=st.arc==='spent'?'spent':st.arc==='join'?'join':'eat';
+    h='<div class="arcrows">'+[['eat','Съедено'],['join','Наложение'],['spent','Потрачено']].map(([a,l])=>'<button type="button" data-arc="'+a+'" aria-pressed="'+(a===k)+'"><span>'+l+'</span>'+(a==='join'?'<span class="jv" id="strip-join"></span>':'<span class="strip" id="strip-'+a+'"></span>')+'</button>').join('')+'</div>';
+    if(k==='join') h+=joinEd(Pr);
+    else { const L=E[k], four=!!L.cm2, cols=four?[['c0','Начало'],['cm','Середина'],['cm2','Середина 2'],['c1','Конец']]:[['c0','Начало'],['cm','Середина'],['c1','Конец']];
+      h+='<div class="wells">'+cols.map(([c,l])=>well(k+c,l,L[c])).join('')+
+        (four?'<button type="button" class="wadd" data-c4="del" aria-label="Убрать четвёртый цвет"><i>−</i><span>Убрать</span></button>':'<button type="button" class="wadd" data-c4="add" aria-label="Добавить четвёртый цвет"><i>+</i><span>Цвет</span></button>')+'</div>'+
       '<div class="sl2">'+range(k+'s0','Переход от',L.s0,0,100,1,' %')+range(k+'s1','Переход до',L.s1,0,100,1,' %')+range(k+'mw','Середина',L.mw,0,90,1,' %')+range('trk','Дорожка',E.track==null?20:E.track,0,60,1,' %')+
-        range(k+'a0','Плотность: начало',L.a0,0,100,1,' %')+range(k+'a1','Плотность: конец',L.a1,0,100,1,' %')+'</div>'+
-      (app==='meal'?'<div class="line"><span>Свои дуги у Meal</span><div class="seg"><button type="button" id="unify" aria-pressed="'+!per+'">Общие</button><button type="button" id="split" aria-pressed="'+!!per+'">Свои</button></div></div>':'');
-    ['c0','cm','c1'].forEach(c=>bindColor(k+c,()=>energyEditTarget()[k][c],v=>{energyEditTarget()[k][c]=v}));
-    ['mw','s0','s1','a0','a1'].forEach(c=>bind(k+c,()=>energyEditTarget()[k][c],v=>{energyEditTarget()[k][c]=v},' %'));
-    bind('trk',()=>{const e=energyEditTarget();return e.track==null?20:e.track},v=>{energyEditTarget().track=v},' %');
-  } else if(g==='join'){
-    const J=Pr.join;
-    h='<div class="joins">'+JOINS.map(([k,l])=>'<button type="button" class="jo" data-join="'+k+'" aria-pressed="'+(J.kind===k)+'"><span class="jv">'+joinArt(k)+'</span>'+l+'</button>').join('')+'</div>';
-    if(J.kind==='fade'||J.kind==='morph') h+='<div class="sl2">'+range('jLen','Длина перехода',J.len,6,120,1,'°')+(J.kind==='morph'?range('jFrom','Тает с',J.from,0,90,1,' %'):'')+'</div>';
-    if(J.kind==='morph') h+='<div class="chips" id="vias">'+VIAS.map((v,i)=>'<button type="button" data-via="'+i+'" aria-pressed="'+(JSON.stringify(v[1])===JSON.stringify(J.via||[]))+'"><i style="background:'+(v[1].length?'linear-gradient(90deg,'+(v[1].length>1?v[1].join(','):v[1][0]+','+v[1][0])+')':'none')+'"></i>'+v[0]+'</button>').join('')+'</div>';
-    if(J.kind==='shadow') h+='<div class="sl2">'+range('jSh','Сила тени',J.shadow,0,100,1,' %')+range('jSz','Размер',J.size,3,16,.5,'')+'</div>';
-    if(st.mode[wid()]!=='bal'||st.data.spent>st.data.eaten) h+='<p class="muted">Стык виден в «Баланс», когда потрачено меньше, чем съедено. <button type="button" class="tbtn" data-case="5">Показать</button></p>';
-    bind('jLen',()=>P().join.len,v=>{P().join.len=v},'°'); bind('jFrom',()=>P().join.from,v=>{P().join.from=v},' %');
-    bind('jSh',()=>P().join.shadow,v=>{P().join.shadow=v},' %'); bind('jSz',()=>P().join.size,v=>{P().join.size=v},'');
+        range(k+'a0','Плотность: начало',L.a0,0,100,1,' %')+range(k+'a1','Плотность: конец',L.a1,0,100,1,' %')+'</div>';
+      cols.forEach(([c])=>bindColor(k+c,()=>energyEditTarget()[k][c],v=>{energyEditTarget()[k][c]=v}));
+      ['mw','s0','s1','a0','a1'].forEach(c=>bind(k+c,()=>energyEditTarget()[k][c],v=>{energyEditTarget()[k][c]=v},' %'));
+      bind('trk',()=>{const e=energyEditTarget();return e.track==null?20:e.track},v=>{energyEditTarget().track=v},' %');
+    }
+    if(app==='meal') h+='<div class="line"><span>Свои дуги у Meal</span><div class="seg"><button type="button" id="unify" aria-pressed="'+!per+'">Общие</button><button type="button" id="split" aria-pressed="'+!!per+'">Свои</button></div></div>';
   } else {
     const B=Pr.bars;
     h=ROWS.map(([k,l])=>'<div class="hue"><i id="dot-'+k+'"></i><div><div class="strip" id="strip-row-'+k+'"></div><input type="range" id="h'+k+'" min="0" max="360" value="'+B.hues[k]+'" aria-label="'+l+' строка, тон"></div><output id="o-h'+k+'">'+B.hues[k]+'°</output></div>').join('')+
@@ -443,6 +449,17 @@ function renderEditors(){
   }
   $('editors').innerHTML=h;
   renderStrips();
+}
+function joinEd(Pr){
+    const J=Pr.join;
+    let h='<div class="joins">'+JOINS.map(([k,l])=>'<button type="button" class="jo" data-join="'+k+'" aria-pressed="'+(J.kind===k)+'"><span class="jv">'+joinArt(k)+'</span>'+l+'</button>').join('')+'</div>';
+    if(J.kind==='fade'||J.kind==='morph') h+='<div class="sl2">'+range('jLen','Длина перехода',J.len,6,120,1,'°')+(J.kind==='morph'?range('jFrom','Тает с',J.from,0,90,1,' %'):'')+'</div>';
+    if(J.kind==='morph') h+='<div class="chips" id="vias">'+VIAS.map((v,i)=>'<button type="button" data-via="'+i+'" aria-pressed="'+(JSON.stringify(v[1])===JSON.stringify(J.via||[]))+'"><i style="background:'+(v[1].length?'linear-gradient(90deg,'+(v[1].length>1?v[1].join(','):v[1][0]+','+v[1][0])+')':'none')+'"></i>'+v[0]+'</button>').join('')+'</div>';
+    if(J.kind==='shadow') h+='<div class="sl2">'+range('jSh','Сила тени',J.shadow,0,100,1,' %')+range('jSz','Размер',J.size,3,16,.5,'')+'</div>';
+    if(st.mode[wid()]!=='bal'||st.data.spent>st.data.eaten) h+='<p class="muted">Стык виден в «Баланс», когда потрачено меньше, чем съедено. <button type="button" class="tbtn" data-case="5">Показать</button></p>';
+    bind('jLen',()=>P().join.len,v=>{P().join.len=v},'°'); bind('jFrom',()=>P().join.from,v=>{P().join.from=v},' %');
+    bind('jSh',()=>P().join.shadow,v=>{P().join.shadow=v},' %'); bind('jSz',()=>P().join.size,v=>{P().join.size=v},'');
+    return h;
 }
 /* картинка варианта стыка: конец верхней дуги поверх нижней, прямой полосой (как «крупно» в «Пробе») */
 function joinArt(kind){
@@ -462,6 +479,7 @@ function renderStrips(){
   if(wid()==='day-arcs'){ const d=Pr.day; s('strip-flow','linear-gradient(90deg,'+d.flow.colors.join(',')+','+d.flow.colors[0]+')'); s('strip-bal','linear-gradient(90deg,'+d.balance.negColor+' 0%,'+d.balance.negColor+' 35%,'+d.balance.posColor+' 65%,'+d.balance.posColor+')'); s('strip-prog','linear-gradient(90deg,'+d.progress[0]+' 0%,'+d.progress[1]+' 30%,'+d.progress[2]+' 62%,'+d.progress[3]+' 100%)'); return }
   const E=energyEditTarget(); s('strip-eat',stripCss(E.eat)); s('strip-spent',stripCss(E.spent));
   ROWS.forEach(([k])=>{ const c=barColors(Pr.bars,k); s('strip-row-'+k,'linear-gradient(90deg,'+c.from+' 0%,'+c.to+' 70%,'+c.over+' 100%)'); s('dot-'+k,c.dot) });
+  const sj=$('strip-join'); if(sj) sj.innerHTML=joinArt(Pr.join.kind);
   document.querySelectorAll('.jo').forEach(b=>{ b.querySelector('.jv').innerHTML=joinArt(b.dataset.join) });
 }
 
@@ -539,10 +557,10 @@ function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show
 /* ── События ── */
 $('tabbar').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(!b||b.dataset.tab===st.tab) return; st.tab=b.dataset.tab; paintAll(); window.scrollTo({top:0}) });
 $('widgets').addEventListener('click',e=>{ const b=e.target.closest('[data-widget]'); if(!b) return; st.widget=b.dataset.widget; paintAll() });
-$('stage').addEventListener('click',e=>{ if(e.target.closest('[data-ring]')){ const w=wid(); st.mode[w]=NEXT[st.mode[w]]; renderPreview(); renderPills(); renderCompare(); if(['data','join'].includes(grp())) renderEditors(); save() } });
+$('stage').addEventListener('click',e=>{ if(e.target.closest('[data-ring]')){ const w=wid(); st.mode[w]=NEXT[st.mode[w]]; renderPreview(); renderPills(); renderCompare(); if(grp()==='data'||(grp()==='arcs'&&st.arc==='join')) renderEditors(); save() } });
 $('stage').addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-ring]')){ e.preventDefault(); e.target.click() } });
 $('pills').addEventListener('click',e=>{ const c=e.target.closest('[data-case]'); if(c) return applyCase(+c.dataset.case);
-  const m=e.target.closest('[data-mode]'); if(m){ const w=wid(); st.mode[w]=m.dataset.mode; renderPreview(); renderPills(); renderCompare(); if(['data','join'].includes(grp())) renderEditors(); save() } });
+  const m=e.target.closest('[data-mode]'); if(m){ const w=wid(); st.mode[w]=m.dataset.mode; renderPreview(); renderPills(); renderCompare(); if(grp()==='data'||(grp()==='arcs'&&st.arc==='join')) renderEditors(); save() } });
 $('themes').addEventListener('click',e=>{ const b=e.target.closest('[data-theme]'); if(!b) return; st.theme=b.dataset.theme; paintAll() });
 $('compare').addEventListener('click',e=>{ const b=e.target.closest('[data-src]'); if(b) tryOn(b.dataset.src) });
 $('groups').addEventListener('click',e=>{ const b=e.target.closest('[data-grp]'); if(!b) return; st.grp[wid()==='day-arcs'?'day':'energy']=b.dataset.grp; renderEditors(); save() });
@@ -558,6 +576,7 @@ function onInput(e){
 ['editors','animEd'].forEach(id=>$(id).addEventListener('input',onInput));
 $('editors').addEventListener('click',e=>{
   const ar=e.target.closest('[data-arc]'); if(ar){ st.arc=ar.dataset.arc; renderEditors(); save(); return }
+  const c4=e.target.closest('[data-c4]'); if(c4){ const L=energyEditTarget()[st.arc==='spent'?'spent':'eat']; if(c4.dataset.c4==='add') L.cm2=mixHex(L.cm,L.c1,.5); else delete L.cm2; renderEditors(); return paintLight() }
   const j=e.target.closest('[data-join]'); if(j){ P().join.kind=j.dataset.join; renderEditors(); return paintLight() }
   const v=e.target.closest('[data-via]'); if(v){ P().join.via=copy(VIAS[+v.dataset.via][1]); renderEditors(); return paintLight() }
   const c=e.target.closest('[data-case]'); if(c){ applyCase(+c.dataset.case); return renderEditors() }

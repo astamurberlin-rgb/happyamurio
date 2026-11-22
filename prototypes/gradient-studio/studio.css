@@ -217,9 +217,12 @@ textarea.out{width:100%;min-height:140px;padding:10px;border-radius:12px;border:
 .foot{margin:18px 0 0;font-size:12px;color:#8f8aa8;text-align:center}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
-.arcpick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.arcpick button{display:grid;gap:8px;padding:10px;border-radius:14px;border:1px solid #ffffff22;background:#ffffff08;font-size:12px;font-weight:600;color:#cfcae4;text-align:left}
-.arcpick button[aria-pressed=true]{border-color:#e4dfff;box-shadow:0 0 0 1px #e4dfff;background:#bba0fa1c;color:#fff}
+.arcrows{display:grid;gap:6px}
+.arcrows button{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:14px;border:1px solid #ffffff22;background:#ffffff08;font-size:14px;font-weight:600;color:#cfcae4;text-align:left}
+.arcrows button[aria-pressed=true]{border-color:#e4dfff;box-shadow:0 0 0 1px #e4dfff;background:#bba0fa1c;color:#fff}
+.arcrows .strip,.arcrows .jv{height:14px}
+.wadd{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:52px;padding:0;border:0;background:none;color:var(--muted);font-size:12px;font-weight:600}
+.wadd i{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:2px dashed #ffffff55;font-style:normal;font-size:22px;font-weight:400;color:#e4dfff}
 .chips.lc{align-items:flex-start}
 .chips.lc .well{flex:0 0 auto;min-width:44px}
 .chips.lc .well input{width:36px;height:36px}
