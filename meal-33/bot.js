@@ -2129,7 +2129,7 @@ var MealBot=(function(){
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
-    if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
+    if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
     if(!NEST) LEFT=null;   // замена не состоялась, а человек уже говорит о другом
