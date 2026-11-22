@@ -52,6 +52,7 @@
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
   --hs-toast-bg:rgba(49,20,46,.92);
   --hs-pill-on-ink:#84036d;
+  --happy-accent-ink:#84036d;   /* текст в белых кнопках Meal («Выгрузить отчёт», «Русский») — сливовый, как вкладки, не синий Day (аудит 3, 22.11) */
 }
 :root[data-happy-appearance-app="sport"]{
   --hs-glass:rgba(255,255,255,.16);
