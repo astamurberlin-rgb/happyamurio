@@ -215,7 +215,8 @@ var MealBot=(function(){
   var GENERIC=/^(мяс(о|а|ом|е)|рыб(а|у|ы|ой)|овощ(и|ей|ами)|фрукт(ы|ов)|ягод(ы|а)|орех(и|ов|а)|сыр(а|ом)?|колбас(а|ы|у)|каш(а|и|у))$/;
   var PREP=/^(с|со|из|в|во|на|без|для|под|по|к|у)$/;
   var SIZE=/^(маленьк|небольш|средн|больш|крупн|глубок)/;
-  function kindOf(w){ var n=norm(w); return /^\d+(,\d+)?$/.test(n)||numOf(n)!==null?'N':unitOf(n)?'U':PREP.test(n)||STOP[n]||SIZE.test(n)?'S':'F' }
+  /* «5%», «2,5%» — жирность, а не еда: «творог 200 г 9%» — одна еда (словарь пишет «5 процентов» как «5%»), 22.11.2026 */
+  function kindOf(w){ var n=norm(w); return /^\d+(,\d+)?$/.test(n)||numOf(n)!==null?'N':unitOf(n)?'U':PREP.test(n)||STOP[n]||SIZE.test(n)||/^\d+(,\d+)?%$/.test(n)?'S':'F' }
   function descr(w){ var n=norm(w); return W_ADJL.test(n)||STF.some(function(p){ return p[1].test(n) }) }
   function splitItems(c){
     var out=[], cur=[], hasN=false, hasF=false, last='', prevW='', lastU='', ws=c.split(' ');
@@ -244,6 +245,47 @@ var MealBot=(function(){
     return out;
   }
   var WASTE='(?:остат\\S*(?:\\s+несъедобн\\S*\\s+част\\S*)?|несъедобн\\S*(?:\\s+част\\S*)?|кожур\\S*|кожиц\\S*|косточ\\S*|кост(?:и|ей)|скорлуп\\S*|стерж\\S*|кочерыж\\S*|очистк\\S*|шкурк\\S*|отход\\S*)';
+  /* перечисление и описание через запятую — одно блюдо, а не несколько еды (словарь исследования, 22.11.2026):
+     «плов с куриной грудкой, зирой и чёрным перцем», «лагман с говядиной, тянутой лапшой и картошкой» — «с» относится ко всем;
+     «мамалыга без сыра и масла» — «без» ко всем; «орешки, обжаренные без масла», «бульон, без жира», «чак-чак без мёда, с сиропом» — о том же блюде;
+     «зелёная редька с гранатом, салат» — если в базе есть одно блюдо со всеми этими словами */
+  var J_INS=/^[а-я-]{3,}(?:ой|ей|ом|ем|ами|ями|ью)$/, J_ADJ=/^[а-я-]{3,}(?:ым|им|ой|ей|ыми|ими)$/,
+      J_GEN=/^(масла|соли|сахара|сыра|мяса|лука|чеснока|молока|майонеза|сметаны|кожи|костей|глютена|лактозы|яиц|яйца|соуса|заправки|сливок|меда|жира|хлеба|начинки|глазури|крема|перца|специй|сиропа|курдюка|кетчупа|горчицы|зелени|укропа|кинзы|петрушки|орехов|изюма|фундука|сала|теста|риса|картошки|картофеля|грибов|кофеина)$/,
+      J_DESC=/^(обжарен|жарен|поджарен|варен|отварн|тушен|запечен|печен|копчен|солен|малосол|маринов|сушен|вялен|свеж|домашн|охлажд|горяч|тепл|холодн|все$|весь$|вся$)/,
+      J_KIND=/^(салат|суп|супчик|каша|кашка|напиток|десерт|блюдо|пирог|бульон|рагу|запеканк|закуск|соус)/,
+      J_MARK=/[¶⊗⊖▽◇△]/;
+  function instrList(C){ var w=C.split(' '), a=w[0]||'', b=w[1]||'';
+    if((J_ADJ.test(a)||/^\d+(#\d+)?%$/.test(a))&&J_INS.test(b)) return true;                                   // «тянутой лапшой», «20% сметаной»
+    return J_INS.test(a)&&!(b&&/^[а-я-]{3,}$/.test(b)&&!J_INS.test(b)&&!unitOf(b)&&numOf(b)===null&&!PREP.test(b)&&!STOP[b]) }   // «мясной рулет» — не «с мясной»
+  function dishHas(t,need){ var r; try{ r=parseText(t.replace(/#/g,',').replace(MK,' ')) }catch(e){ return false } if(r.lines.length!==1) return false;
+    var l=r.lines[0], id=l.fid||(l.alts||[])[0]; if(!id||!FOODS[id]) return false;
+    var sp=negSplit(need), neg=sp.neg, q=sp.pos;
+    var ws=words(id); return woOk(id,neg)&&q.every(function(x){ return ws.some(function(w){ return dishSame(x,w) })||covers(id,[x]) }) }
+  function joinHow(P,C,sep){
+    if(sep==='и'&&/(^|\s)без\s+[а-я-]+$/.test(P)&&J_GEN.test(C.split(' ')[0])) return 'без ';
+    if(/(^|\s)(с|со)\s[^\d]*$/.test(P)&&instrList(C)){
+      if(!/\d/.test(C)) return 'с ';
+      return dishHas(P+' с '+C,tokensOf(C))?'с ':null }                                                       // с числом — только если такое блюдо есть: число тогда вес всего блюда
+    /* «рамен со шпинатом и шиитаке» — слово не склоняется: продолжение «с …», если в базе есть блюдо со всеми словами */
+    if(/(^|\s)(с|со)\s[^\d]*$/.test(P)&&tokensOf(C).length===1&&/^[а-яa-z-]{3,}(\s+\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*|мл))?$/.test(C)&&!/^(с|со|без|в|на)$/.test(C.split(' ')[0])&&!unitOf(C.split(' ')[0])&&dishHas(P+' с '+C,tokensOf(P).concat(tokensOf(C)))) return 'с ';
+    if(sep!==',') return null;
+    if(/^без\s/.test(C)) return '';
+    if(/^(с|со)\s/.test(C)&&!/^(с|со)\s+(утра|вечера|ночи|обеда|собой|работы|прогулки|тренировки)/.test(C)) return '';
+    var cw=C.split(' ');
+    if(J_DESC.test(cw[0])&&!tokensOf(cw.slice(1).join(' ').replace(/(^|\s)(без|с|со)\s+[а-я-]+/g,' ')).some(function(w){ return !J_DESC.test(w) })) return '';
+    var tc=tokensOf(C), tp=tokensOf(P);
+    if(!/\d/.test(P)&&tc.length&&tc.length<=2&&tc.some(function(w){ return J_KIND.test(w)||tp.some(function(q){ return q.length>=5&&q.slice(0,5)===w.slice(0,5) }) })&&dishHas(P+' '+C,tp.concat(tc))) return '';
+    return null;
+  }
+  function joinBits(b){
+    var out=[b[0]];
+    for(var i=1;i<b.length;i+=2){
+      var sep=b[i].trim(), cur=(b[i+1]||'').replace(/\s+/g,' ').trim(), prev=out[out.length-1].replace(/\s+/g,' ').trim(), j=null;
+      if((sep===','||sep==='и')&&prev&&cur&&!J_MARK.test(prev)&&!J_MARK.test(cur)) j=joinHow(prev,cur,sep);
+      if(j!==null) out[out.length-1]=' '+prev+' '+j+cur+' '; else out.push(b[i],b[i+1]||'');
+    }
+    return out;
+  }
   function chunksOf(s){
     s=' '+s+' ';
     if(SP) s=s.replace(/(^|\s)не\s*⊙/g,'$1⊗ ').replace(NOTATE,' ⊗ ');   // Meal 33.13: «не ел», «не стал» — пометка «не съедено» на весь кусок фразы
@@ -255,7 +297,9 @@ var MealBot=(function(){
     if(SP) s=s.replace(/(\sсо?\s+[а-я]+(?:ой|ей|ом|ем|ами|ями|ью))\s+и\s+([а-я]{3,}(?:ой|ей|ом|ем|ами|ями|ью))(?=[\s,.;:!?]|$)/g,'$1 с $2');   // Meal 33.12
     s=s.replace(/[\s,.;!]+нет(?:\s*,?\s*(?:неправильно|не так|не то|ошибся|ошиблась|исправь|точнее))*[\s,.;!]+/g,' , ¶ ');
     if(SP) s=s.replace(/\sеще\s+(?=\d)/g,' , ').replace(/([а-я])\s+([▽◇△])\s*(?=[а-я])/g,'$1 , $2 ');   // Meal 33.12: «груша 180 ещё 180 г гречки» — две еды
-    return s.split(/[,.;:!?\n…]+|\s(?:и|а|потом|плюс|затем)\s/).map(function(c){ return c.replace(/#/g,',').replace(/\s+/g,' ').trim() }).filter(Boolean)
+    var bits=s.split(/([,.;:!?\n…]+|\s(?:и|а|потом|плюс|затем)\s)/);
+    if(SP) bits=joinBits(bits);
+    return bits.filter(function(x,i){ return i%2===0 }).map(function(c){ return c.replace(/#/g,',').replace(/\s+/g,' ').trim() }).filter(Boolean)
       .map(function(c){ var mk=''; c=c.replace(MK,function(x){ mk+=x; return ' ' }).replace(/\s+/g,' ').trim();
         var neg=c.indexOf('⊗')>=0; if(neg) c=c.replace(/⊗/g,' ').replace(/\s+/g,' ').trim();
         var corr=c.charAt(0)==='¶'; if(corr) c=c.slice(1).trim(); var mn=c.match(/⊖([\d.]+)/); if(mn) c=c.replace(mn[0],' ').replace(/\s+/g,' ').trim();
@@ -302,6 +346,12 @@ var MealBot=(function(){
     var sz=t.match(/\s(маленьк|небольш|средн|больш|крупн)\S*(?=\s)/);
     if(sz){ if(!new RegExp(CUP).test(t)) o.size=/^(маленьк|небольш)/.test(sz[1])?'маленький':/^средн/.test(sz[1])?'средний':'большой'; t=t.replace(sz[0],' ') }
     o.noUnit=!t.trim().split(/\s+/).some(function(w){ return kindOf(w)==='U' });
+    /* «борщ без сметаны», «чурчхела без фундука», «мамалыга без сыра»: чего нет в блюде, того в нём и не ищем; блюдо, где оно есть, не подходит (22.11.2026).
+       «Без масла», «без сахара», «без кожи», «без соуса» — как раньше: такие варианты в базе так и названы. «Без мяса» — тоже как раньше */
+    if(SP){ var wo=[], two=t.replace(/(^|\s)без\s+((?:[а-я-]+(?:ого|его|ой|ей|ых|их)\s+)?)([а-я-]{3,})(?=\s)/g,function(m,a,adj,x){
+        if(typeof COND_W!=='undefined'&&(COND_W.test(x)||adj&&COND_W.test(adj.trim()))||/^(мяс|рыб|овощ|фрукт|ягод|молоч|животн|глютен|лактоз|кофеин|газ|добав)/.test(x)) return m;
+        wo.push(woStem(x)); return a+' ' });
+      if(wo.length){ o.wo=wo; o.textWo=two.replace(/\s+/g,' ').trim() } }
     o.text=t.replace(/\s+/g,' ').trim();
     o.hasNum=/\d/.test(o.text)||o.text.split(' ').some(function(w){ return numOf(norm(w))!==null||!!unitOf(norm(w)) });
     return o;
@@ -522,7 +572,17 @@ var MealBot=(function(){
       if(c.soft){ c.text=c.soft+' '+c.text; c.soft=null }
       var minus=c.minus||0;
       if(c.dup) res.dupSeen=true;
-      var r=parseText(c.text); if(c.mealFix&&!r.meal) r.meal=c.mealFix; if(r.meal){ res.meal=curMeal=r.meal; tailMeal=(c.mealOnly&&!r.lines.length)?r.meal:null }
+      var r=parseText(c.text);
+      if(c.wo&&!c.memPart){   // «борщ без сметаны»: сметана в блюде не ищется; блюда со сметаной не подходят
+        var top0=r.lines.length===1?(r.lines[0].fid||(r.lines[0].alts||[])[0]):null;
+        if(!top0||!woOk(top0,c.wo)){ var r2=parseText(c.textWo); if(r2.lines.length) r=r2 }
+        r.lines.forEach(function(l){ var keep=withVariants(l.alts||[]).filter(function(x){ return woOk(x,c.wo) }); l.alts=keep;
+          if(l.fid&&!woOk(l.fid,c.wo)) l.fid=null; if(!l.fid&&l.st==='ok') l.st=keep.length?'pick':'none'; if(l.st==='pick'&&!keep.length) l.st='none' }) }
+      /* блюдо узнано по названию при разборе «А с Б» (splitComposite) — оно и есть */
+      if(SP&&c.dishId&&!c.memPart&&r.lines.length===1&&FOODS[c.dishId]&&!(r.lines[0].fid===c.dishId&&r.lines[0].st==='ok')){ var l0=r.lines[0];
+        l0.fid=c.dishId; l0.alts=[c.dishId].concat((l0.alts||[]).filter(function(x){ return x!==c.dishId })); l0.st='ok'; l0.bls=0; l0.dish=true; l0.g=gramsFor(c.dishId,l0.q,l0.u) }
+      if(SP&&!c.memPart&&r.lines.length===1){ dishFirst(r.lines[0],c.textWo||c.text); condFirst(r.lines[0],c.text) }
+      if(c.mealFix&&!r.meal) r.meal=c.mealFix; if(r.meal){ res.meal=curMeal=r.meal; tailMeal=(c.mealOnly&&!r.lines.length)?r.meal:null }
       if(r.lines.length) tailMeal=null;
       if(c.memPart&&!r.lines.length) r.lines=[{id:'l'+(++SEQ),raw:c.text,q:null,u:null,fid:null,alts:[],st:'none',name:c.text,explicit:false}];
       r.lines.forEach(function(l,li){
@@ -625,15 +685,20 @@ var MealBot=(function(){
       var a0ok=a0&&(a0.fid&&!a0.ask&&a0.g>0||a0.ask==='pick'&&!a0.noAuto&&a0.alts.some(function(x){ return covers(x,String(a0.name||'').split(' ').filter(Boolean)) }));
       if(!cp.ok&&!cp.named&&!a0ok){ res.lines.length=n0; curMeal=cm; tailMeal=tm; res.meal=rm; res.dupSeen=dp; cps.splice(cps.indexOf(cp),1); proc(c) }
     });
-    /* «творог с изюмом 220 г» — названный вес всего блюда делится между частями в той же пропорции */
-    cps.forEach(function(cp){
-      if(!cp.total||!cp.lines.length||!cp.lines.every(function(l){ return l.fid&&!l.ask&&l.g>0 })) return;
-      var sum=cp.lines.reduce(function(t,l){ return t+l.g },0), k=cp.total/sum;
-      var left=cp.total;
-      cp.lines.forEach(function(l,i){ var g=i===cp.lines.length-1?Math.max(1,Math.round(left)):Math.max(1,Math.round(l.g*k)); left-=g; l.q=g; l.u='г'; l.g=gramsFor(l.fid,g,'г'); l.approx=true });   // Meal 33.13: последняя часть добирает остаток — в сумме ровно названный вес
-    });
+    /* «творог с мёдом 200 г» — названный вес всего блюда делится между частями (splitTotal). Части ещё с вопросом «какой?» — после ответа, в handle0 */
+    cps.forEach(splitTotal);
     res.tailMeal=tailMeal;
     return res;
+  }
+  /* «творог с мёдом 200 г» — названный вес всего блюда (решение Астамура 22.11.2026: «185 г творога и ложка мёда»): добавка — своей обычной мерой,
+     основа — остаток. Добавки обычной мерой больше половины названного веса — делится в той же пропорции, как раньше; в сумме всегда ровно названный вес */
+  function splitTotal(cp){
+    if(cp.totDone||!cp.total||cp.lines.length<2||!cp.lines.every(function(l){ return l.fid&&(!l.ask||l.ask==='meal')&&l.g>0 })) return;
+    cp.totDone=true;
+    var h=cp.lines[0], add=cp.lines.slice(1).reduce(function(t,l){ return t+l.g },0);
+    if(add<=cp.total/4){ var g0=Math.max(1,Math.round(cp.total-add)); h.q=g0; h.u='г'; h.g=gramsFor(h.fid,g0,'г'); cp.lines.forEach(function(l){ l.approx=true }); return }
+    var k=cp.total/(add+h.g), left=cp.total;
+    cp.lines.forEach(function(l,i){ var g=i===cp.lines.length-1?Math.max(1,Math.round(left)):Math.max(1,Math.round(l.g*k)); left-=g; l.q=g; l.u='г'; l.g=gramsFor(l.fid,g,'г'); l.approx=true });   // Meal 33.13: последняя часть добирает остаток
   }
   /* ── блюдо «А с Б» ──
      Есть такое блюдо в базе или у человека — берётся оно. Нет — части по отдельности обычными порциями; бот предлагает, человек подтверждает или называет свои граммы,
@@ -713,18 +778,95 @@ var MealBot=(function(){
   var ADJF=/^.{2,}(н|ск|ов|ев|ян|чат|ист|лив|ч|ж|ш|щ)(ой|ей)$/;
   /* блюдо «А с Б» есть в базе: в названии А стоит до «с», Б — после, и сверх сказанного не больше одного существительного
      («трубочка со сгущёнкой» — «Вафельная трубочка со сливочной начинкой и сгущёнкой»; «хлеб с маслом» — не «Гренки из хлеба, обжаренные в масле») */
+  /* слово сказанного и слово названия — одно: «говядиной» — «говяжьим», «гречка» — «гречневая», «сыром» — «сырный», «картошкой» — «картофелем».
+     Пары — синонимы поиска (BLS_SYN) и словарь (dish_word_forms). 22.11.2026 */
+  var DWF=null;
+  function dwf(){ if(!DWF){ DWF=[]; try{ ((SP&&SP.wordForms)?SP.wordForms():[]).forEach(function(x){ DWF.push([new RegExp(x.said),new RegExp(x.in_name)]) }) }catch(e){} } return DWF }
+  function dishSame(q,w,noForms){
+    if(sim(q,w)>=1.8||!!adjStem(q)&&adjStem(q)===adjStem(w)) return true;
+    if(typeof BLS_SYN!=='undefined'&&BLS_SYN.some(function(p){ return (p[0] instanceof RegExp?p[0].test(q):q.indexOf(p[0])===0)&&w.indexOf(p[1])===0 })) return true;
+    return !noForms&&dwf().some(function(p){ return p[0].test(q)&&p[1].test(w) });
+  }
+  /* где готовили — не лишнее слово: «Пончик берлинер с джемом, жаренный во фритюре» — это и есть «берлинер с джемом» */
+  var DISHN=/^(фритюр\S*|духовк\S*|гриль|грил[а-я]*|сковород\S*|мангал\S*|вертел\S*|углях|казан\S*|пару)$/,
+      DRAW=/^(сыр(ой|ая|ое|ые|ых|ым|ую|ого|ому|ыми)|неприготовл[а-я]*|неварен[а-я]*|полуфабрикат[а-я]*|концентрат[а-я]*|порош[а-я]*)$/,
+      DKIND=/^(соев|безглютен|обезжир|диетич|низкокалор|веган|безлактоз|постн)/;
+  /* слова сказанного: что в блюде есть (pos) и чего нет (neg, основы): «без молочного соуса» — нет соуса, «молочного» к нему */
+  function negSplit(L){ var pos=[], neg=[], GA=/(ого|его|ой|ей|ых|их)$/;
+    for(var i=0;i<L.length;i++){ if(L[i]!=='без'){ pos.push(L[i]); continue }
+      var j=i+1; if(!L[j]) continue; if(GA.test(L[j])&&L[j+1]&&L[j+1]!=='без'&&!GA.test(L[j+1])) j++;
+      neg.push(woStem(L[j])); i=j }
+    return {pos:pos,neg:neg} }
   function dishOk(id,A,B,strict){
     var f=FOODS[id]; if(!f) return false;
-    var ws=words(id), W=A.concat(B), same=function(q,w){ return sim(q,w)>=1.8||!!adjStem(q)&&adjStem(q)===adjStem(w) };
-    if(!W.every(function(q){ return ws.some(function(w){ return same(q,w) }) })) return false;
+    /* «без сметаны», «без мяса»: этого в названии может не быть совсем, но с ним (не после «без») блюдо не подходит */
+    var sa=negSplit(A), sb=negSplit(B), neg=sa.neg.concat(sb.neg); A=sa.pos; B=sb.pos; if(neg.length&&!woOk(id,neg)) return false;
+    var NT=typeof NEUTRAL!=='undefined'?NEUTRAL:/^$/;
+    var ws=words(id), W=A.concat(B).filter(function(q){ return !NT.test(q) }), same=dishSame;
+    var segNeg={}, k0=0; norm(f.n).split(/[,—(]/).forEach(function(seg){ var neg0=false; seg.split(/[^a-zа-я0-9%]+/).filter(Boolean).forEach(function(w){ if(w==='без') neg0=true; else if(neg0) segNeg[k0]=1; k0++ }) });
+    /* слово после «без» в названии сказанное не покрывает: «лодочка с маслом» — не «Лодочка с сыром — без масла и яйца» */
+    if(!W.every(function(q){ return ws.some(function(w,i){ return (!segNeg[i]||w===q)&&same(q,w) }) })) return false;
+    /* блюдо с добавкой: добавка — тем же словом, не словом-производным из словаря: «блины с мёдом» — не «Блины медовые» (мёд в тесте) */
+    if(strict&&B.some(function(q){ return !ws.some(function(w,i){ return !segNeg[i]&&same(q,w,true) }) })) return false;
+    /* сырое, неприготовленное, полуфабрикат — только если так и сказано: «макароны с сыром 200 г» — не сухая смесь из коробки */
+    if(ws.some(function(w,i){ return !segNeg[i]&&DRAW.test(w) })&&!W.some(function(q){ return DRAW.test(q) })) return false;
+    /* другой вид продукта — тоже только если сказан: не соевое, не обезжиренное, не постное */
+    if(ws.some(function(w,i){ return !segNeg[i]&&DKIND.test(w)&&!W.some(function(q){ return same(q,w) }) })) return false;
     if(f.mine||String(f.src||'')==='Мои') return true;
-    var iS=-1; ws.forEach(function(w,i){ if(iS<0&&(w==='с'||w==='со'||w==='в'||w==='под')) iS=i }); if(iS<1) return false;
-    if(!A.every(function(q){ return ws.some(function(w,i){ return i<iS&&same(q,w) }) })) return false;
-    if(!B.every(function(q){ return ws.some(function(w,i){ return i>iS&&same(q,w) }) })) return false;
-    var ex=ws.map(function(w,i){ return {w:w,i:i} }).filter(function(o){ var w=o.w; return w.length>1&&!PREP.test(w)&&w!=='и'&&!W.some(function(q){ return same(q,w) })&&!ADJ.test(w)&&!ADJF.test(w)&&!/^(напиток|блюдо|готов\S*|\d+|%)$/.test(w) });
+    var iS=-1; ws.forEach(function(w,i){ if(iS<0&&(w==='с'||w==='со'||w==='в'||w==='под')) iS=i }); if(iS===0) return false;
+    /* главное слово сказанного — в главной части названия: до «с», а без «с» — в начале. Остальное (описание, добавки) — где угодно в названии:
+       «патыр с кунжутом на сливочном масле» — «Патыр на сливочном масле с кунжутом», «ачма с сыром» — «Ачма — слоёный сырный пирог»,
+       «гречка с молоком» — «Каша гречневая на молоке». «Курица с рисом» — не «Рис с курицей»: главное слово там после «с». 22.11.2026 */
+    var hn=A.filter(function(q){ return !ADJ.test(q)&&!ADJF.test(q)&&!NT.test(q) })[0]||A[A.length-1]||'';
+    var hEnd=iS>0?iS:(function(){ for(var k=1;k<ws.length;k++){ if(/^(на|из|для|и|по|без)$/.test(ws[k])) return Math.min(k,3) } return Math.min(ws.length,3) })();
+    if(hn){ var hw=ws.filter(function(w,i){ return i<hEnd&&same(hn,w) }); if(!hw.length) return false;
+      /* «гречка» узнаётся в «гречневая» только у каши: «Суп гречневый с грибами» — не «гречка с грибами» */
+      if(!hw.some(function(w){ return sim(hn,w)>=1.8||!!adjStem(hn)&&adjStem(hn)===adjStem(w)||!ADJ.test(w) })&&!/^каш/.test(ws[0])) return false }
+    /* лишнее в названии: несказанные существительные. Не лишнее: то, чего в блюде нет («без яйца и курдюка»), где готовили («во фритюре»),
+       вид блюда в пояснении («Ачма — слоёный сырный пирог»); всё сказанное есть до «—» — пояснение после «—» не считается */
+    var dash=norm(f.n).indexOf('—'), pre=dash>0?norm(f.n).slice(0,dash).split(/[^a-zа-я0-9%]+/).filter(Boolean).length:ws.length;
+    if(dash>0&&W.every(function(q){ return ws.some(function(w,i){ return i<pre&&same(q,w) }) })) ws=ws.slice(0,pre);
+    var ex=ws.map(function(w,i){ return {w:w,i:i} }).filter(function(o){ var w=o.w; return w.length>1&&!PREP.test(w)&&w!=='и'&&!segNeg[o.i]&&!W.some(function(q){ return same(q,w) })&&!ADJ.test(w)&&!ADJF.test(w)&&!/^(напиток|блюдо|готов\S*|\d+|%)$/.test(w)&&!DISHN.test(w)&&!(o.i>0&&J_KIND.test(w)) });
     /* блюдо с добавкой («блины со сметаной»): в начинке базы не должно быть ничего несказанного — «блины с грибами и сметаной» это другое блюдо */
     if(strict&&ex.some(function(o){ return o.i>iS })) return false;
     return ex.length<=1;
+  }
+  /* блюдо кавказской кухни с лентой вариантов: поиск показывает один («Лодочка с сыром — масло и яйцо»), сверяем все
+     («— масло, без яйца», «— сало и яйцо»…): сказано «лодочка с маслом без яйца» — это вариант той же лодочки */
+  function withVariants(ids){ var out=[];
+    (ids||[]).forEach(function(id){ if(!id) return; if(out.indexOf(id)<0) out.push(id);
+      var c=String(id).indexOf('bls:')===0?String(id).slice(4):null, g=c&&typeof BLS_GRP!=='undefined'?BLS_GRP[c]:null;
+      if(g==null||String(g).indexOf('kav:')!==0) return;
+      ((typeof BLS_GM!=='undefined'&&BLS_GM[g])||[]).forEach(function(c2){ var id2='bls:'+c2; if(out.indexOf(id2)<0&&availableFood(id2)) out.push(id2) }) });
+    return out }
+  function woStem(x){ return String(x).replace(/(ами|ями|ов|ев|ей|ой|ом|ем|ам|ям|ах|ях|ы|и|а|я|у|ю|е|о)$/,'') }
+  /* в названии есть то, чего в сказанном блюде нет («Чурчхела — с грецким орехом и фундуком» на «без фундука»), и не после «без» — не подходит */
+  function woOk(id,wo){
+    var f=FOODS[id]; if(!f||!wo||!wo.length) return true;
+    return !norm(f.n).split(/[,—(]/).some(function(seg){ var neg=false;
+      return seg.split(/[^a-zа-я0-9%]+/).filter(Boolean).some(function(w){ if(w==='без') neg=true;
+        return !neg&&wo.some(function(s){ return s.length>=3&&w.indexOf(s)===0&&!(s==='сыр'&&typeof W_RAW!=='undefined'&&W_RAW.test(w)) }) }) });
+  }
+  /* блюдо есть в базе — оно в приоритете (решение Астамура 22.11.2026): «праздничный плов с говядиной, нутом и изюмом» — сразу
+     «Праздничный плов с говяжьей лопаткой, нутом и изюмом», а не вопрос «какой?». Только когда все слова есть в названии (dishOk) */
+  function dishFirst(l,txt){
+    if(!SP||l.st!=='pick'||l.noAuto||!(l.alts||[]).length) return;
+    var t=' '+String(txt).replace(MK,' ')+' ', m=t.match(/\s(с|со|в|во|под|на|из)\s/); if(!m) return;
+    var A=tokensOf(t.slice(0,m.index)), B=tokensOf(t.slice(m.index+m[0].length)); if(!A.length||!B.length) return;
+    var id=withVariants(l.alts.slice(0,3)).filter(function(x){ return dishOk(x,A,B,false) })[0]; if(!id) return;
+    l.fid=id; l.alts=[id].concat(l.alts.filter(function(x){ return x!==id })); l.st='ok'; l.bls=0; l.dish=true; l.g=gramsFor(id,l.q,l.u);
+  }
+  /* «абхазская мамалыга без соли и масла», «фундук обжаренный без масла и соли»: сказанное «без масла», «без соли» есть в названии
+     ровно у одного из предложенных — оно, без вопроса «какой?». Только для блюда из двух и больше слов: «йогурт без сахара» — как раньше */
+  function condFirst(l,txt){
+    if(!SP||l.st!=='pick'||l.noAuto||!(l.alts||[]).length||typeof COND_W==='undefined') return;
+    var T=tokensOf(String(txt).replace(MK,' ')), sp=negSplit(T), all=sp.neg, cn=all.filter(function(x){ return COND_W.test(x) });
+    if(!cn.length||sp.pos.length<2) return;
+    var hit=withVariants(l.alts.slice(0,4)).filter(function(x){ var f=FOODS[x]; if(!f||!woOk(x,all)) return false;
+      var negW=[]; norm(f.n).split(/[,—(]/).forEach(function(seg){ var ng=false; seg.split(/[^a-zа-я0-9%]+/).filter(Boolean).forEach(function(w){ if(w==='без') ng=true; else if(ng) negW.push(w) }) });
+      return cn.every(function(s){ return s.length>=3&&negW.some(function(w){ return w.indexOf(s)===0 }) })&&dishOk(x,T,[],false) });
+    if(hit.length!==1) return;
+    var id=hit[0]; l.fid=id; l.alts=[id].concat(l.alts.filter(function(x){ return x!==id })); l.st='ok'; l.bls=0; l.dish=true; l.g=gramsFor(id,l.q,l.u);
   }
   /* «котлеты в сливочном соусе», «рыба под маринадом» — то же, что «А с Б»: блюдо и то, в чём оно (решение Астамура 18.11.2026 00:55) */
   var SEPW=/\s(?:с|со)\s|\s(?:в|под)\s(?=(?:[а-я-]+\s+){0,2}(?:соус|сметан|подлив|кляр|маринад|сливк|сироп|глазур))/;
@@ -754,16 +896,24 @@ var MealBot=(function(){
     var dc=SP.composite(txt);
     if(dc){ cps.push(cp); cp.name=dc.name; cp.named=true; return dc.parts.map(function(x){ return part(x.w+' '+x.g+' г',{approx:true,mealFix:meal0}) }) }
     /* 3. общее правило */
-    var ps=(' '+txt+' ').split(new RegExp(SEPW.source,'g')).map(function(x){ return x.trim() }); if(ps.length<2||ps.length>3||ps.some(function(x){ return !tokensOf(x).length })) return null;
+    var ps=(' '+txt+' ').split(new RegExp(SEPW.source,'g')).map(function(x){ return x.trim() }); if(ps.length<2||ps.length>4||ps.some(function(x){ return !tokensOf(x).length })) return null;
     var head=tokensOf(ps[0]), h0=head[head.length-1]||'';
     /* «суп с лапшой» — вид супа, не делится; «борщ со сметаной», «блины с мёдом» — блюдо и добавка к нему, делится */
     var kh=head.filter(function(w){ return KINDHEAD.test(w) })[0];
     if(kh&&!(TOPHEAD.test(kh)&&ps.slice(1).every(function(x){ return tokensOf(x).some(function(w){ return TOPPING.test(w) }) }))) return null;
-    var r0=parseText(txt).lines[0], ids=r0?[r0.fid].concat(r0.alts||[]).filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i }).slice(0,6):[];
-    var tailW=W.filter(function(w){ return head.indexOf(w)<0 }); if(ids.some(function(id){ return dishOk(id,head,tailW,!!kh) })) return null;
+    /* «… без фундука» — того, чего нет, в названии не ищем, а блюдо, где оно есть, не подходит */
+    var tw=c.wo?c.textWo:txt, r0=parseText(tw).lines[0], ids=r0?[r0.fid].concat((r0.alts||[]).slice(0,6)):[];
+    /* целиком поиск блюдо не нашёл («тухум-барак с начинкой из яйца с молоком», «лодочка с маслом без яйца») — ищем и по названию до «с» */
+    var rh=parseText(ps[0]).lines; if(rh.length===1) ids=ids.concat([rh[0].fid]).concat((rh[0].alts||[]).slice(0,6));
+    ids=withVariants(ids).filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i&&(!c.wo||woOk(x,c.wo)) });
+    var tailW=tokensOf(tw).filter(function(w){ return head.indexOf(w)<0 }), dsh=ids.filter(function(id){ return dishOk(id,head,tailW,!!kh) })[0];
+    if(dsh){ c.dishId=dsh; return null }
     var bread=head.some(function(w){ return BREADHEAD.test(w) });
     if(bread) ps[0]=(cnt?String(Math.round(50*num(cnt[1]))):'50')+' г хлеб';                       // бутерброд — 50 г хлеба и то, что на нём
     if(SP.partAs) ps=ps.map(function(x,i){ return i?SP.partAs(x):x });
+    /* «борщ со сметаной тарелка» — тарелка борща, а не тарелка сметаны: мера блюда без граммов — к самому блюду, добавка — своей обычной мерой (22.11.2026) */
+    var dm=ps[ps.length-1].match(/\s((?:\d+(?:,\d+)?\s+)?(?:тарелк|порци|миск|пиал|половник)[а-я]*)$/);
+    if(dm&&!bread&&!/\d/.test(ps[0])&&tokensOf(ps[ps.length-1].slice(0,dm.index)).length){ ps[0]+=' '+dm[1]; ps[ps.length-1]=ps[ps.length-1].slice(0,dm.index).trim() }
     var okp=ps.every(function(x,i){ if(bread&&i===0) return true; var tk=tokensOf(x), rp=parseText(x).lines[0], id=rp&&(rp.fid||rp.alts[0]); return !!id&&rp.st!=='none'&&(rp.st==='ok'||related(id,tk)) });
     if(!okp) return null;
     /* вес в конце без веса в начале — это вес всего блюда */
@@ -1807,6 +1957,7 @@ var MealBot=(function(){
     if(m.kind!=='photo'){
       var allEn=ready.concat(asks), cpL=[]; allEn.forEach(function(en){ var cp=en.line.comp; if(cp&&!cp.ok&&cpL.indexOf(cp)<0) cpL.push(cp) });
       var cp0=cpL.filter(function(cp){ return cp.lines.length>1&&cp.lines.every(function(l){ return l.fid&&l.g>0&&(!l.ask||l.ask==='meal') }) })[0];
+      if(cp0) splitTotal(cp0);   // части стали понятны только сейчас («творог» — какой?): названный вес всего блюда — тот же
       if(cp0){
         if(m.dry) return {dry:1,clean:false,n:0};
         S.offer={inbox:m.inbox||null,at:m.at||null,raw:RAW0,src:cp0.src,key:cp0.key,n:cp0.n||1,eaten:EATEN,weighed:WEIGHED,left:LEFT,parts:cp0.lines.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} })};
