@@ -15,7 +15,7 @@ var SportAccount=(()=>{
  const FEATURES=Object.assign({recovery:false,emailChange:false},window.HAPPY_FEATURES||{});
  HappyScreens.theme('sport');
  HappyScreens.appToast=t=>{try{toast(t)}catch{}};
- HappyWelcome.init({app:'sport',name:'Sport',account:SportBoot.account,ready:SportBoot.ready,features:FEATURES,
+ HappyWelcome.init({app:'sport',name:'Sport',account:SportBoot.account,boot:SportBoot,ready:SportBoot.ready,features:FEATURES,
   beforeSignOut:async()=>{if(typeof SportData!=='undefined'&&SportData.signedIn())await SportData.store.flush(8000)}});
  const signedIn=()=>typeof SportData!=='undefined'&&SportData.signedIn();
  const profileDoc=()=>signedIn()?SportData.store.doc(HappyPerson.DOC.name):null;

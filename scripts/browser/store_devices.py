@@ -47,6 +47,8 @@ def serve(route, request, device):
             for k in [k for k, v in tokens.items() if v == uid]:
                 tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
+    if path == "/functions/v1/account-key":
+        return legacy_key(route, request, request.headers.get("authorization", "").removeprefix("Bearer ") in tokens)
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
     uid = tokens.get(request.headers.get("authorization", "").replace("Bearer ", ""))
@@ -308,10 +310,56 @@ with sync_playwright() as p:
     out["refused_writes"] = [r for r in writes if r.get("result") == "refused"]
     out["write_kinds"] = sorted(set(r["kind"] for r in writes))
     out["conflicts_seen"] = len([r for r in writes if r.get("result") in ("no match", "duplicate ignored")])
+    # Прерываем шифрование второго документа устройства после атомарной замены первого.
+    out["local_migration"] = a1.evaluate("""async () => {
+      const uid='local-owner', foreign='unconverted-owner', name='local-cipher-check';
+      const old=HappyStore.idbBackend(indexedDB,name);
+      const left=[uid,'day','diary'], right=[uid,'meal','diary'], other=[foreign,'day','diary'];
+      const record=(id,value)=>({id,value,rev:10,writer:'test'});
+      for(const scope of [left,right,other])await old.write(scope,[record('original',scope[0])],{local:true});
+      const key=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+      const managed=()=>HappyStore.idbBackend(indexedDB,name,{uid,key}), first=managed();
+      let count=0,failed=false;
+      const original=crypto.subtle.encrypt;
+      crypto.subtle.encrypt=function(...args){
+        if(++count===2)throw Error('synthetic interruption');
+        return original.apply(this,args);
+      };
+      try{await first.prepare()}catch(e){failed=e.message==='synthetic interruption'}
+      finally{crypto.subtle.encrypt=original}
+      await first.close();
+      async function contents(){
+        const db=await new Promise((resolve,reject)=>{const r=indexedDB.open(name);
+          r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+        return new Promise(resolve=>{
+          const tx=db.transaction(['records','sealed']);
+          const plain=tx.objectStore('records').getAllKeys(),boxes=tx.objectStore('sealed').getAll();
+          tx.oncomplete=()=>{db.close();resolve([plain.result,boxes.result])};
+        });
+      }
+      const [partial,converted]=await contents();
+      const second=managed(),third=managed();await Promise.all([second.prepare(),third.prepare()]);
+      let refused=false;
+      try{await old.write(left,[record('leak','open text')],{local:true})}catch(e){refused=e.code==='key_changed'}
+      await Promise.all([
+        second.write(left,[record('A','one')],{local:true}),third.write(left,[record('B','two')],{local:true}),
+        second.write(left,[record('A','updated')],{local:true})
+      ]);
+      const current=await second.load(left),recovered=await second.load(right),outside=await old.load(other);
+      const [plain,boxes]=await contents();
+      await Promise.all([second.close(),third.close(),old.close()]);
+      return {resumed:failed&&partial.filter(k=>k[0]===uid).length===1&&converted.length===1,
+        isolated:outside.records[0].value===foreign&&plain.length===1&&plain[0][0]===foreign,
+        fenced:refused,encrypted:boxes.length===2&&boxes.every(b=>b.v===2&&b.data instanceof ArrayBuffer),
+        saved:current.records.length===3&&current.records.find(r=>r.id==='A').value==='updated'&&
+          recovered.records[0].value===uid&&recovered.meta.dirty&&current.meta.dirty};
+    }""")
     b.close()
 
 uid1, uid2 = USERS[ONE]["id"], USERS[TWO]["id"]
 checks = [
+    ("шифрование IndexedDB продолжается после сбоя и сохраняет конкурентные правки, очередь и соседний профиль",
+     all(out["local_migration"].values())),
     ("без входа запись не принимается, на устройстве и в облаке пусто", out["no_login_put"] == "signin" and out["no_login_state"] == "signin" and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("вошёл в одной вкладке Day — вторая вкладка Day вошла сама, Meal без своего входа не вошёл", out["sign_in"] == "ok" and out["neighbours_signed_in"] and out["meal_not_signed_in"]),
     ("у каждого приложения своя ячейка входа, пароль не сохранён", out["auth_cells"] == ["happy-account:day"] and out["auth_cells_both"] == ["happy-account:day", "happy-account:meal"] and not out["password_stored"]),

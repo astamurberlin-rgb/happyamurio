@@ -66,6 +66,8 @@ def serve(route, request, device):
             for k in [k for k, v in tokens.items() if v == uid]:
                 tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
+    if path == "/functions/v1/account-key":
+        return legacy_key(route, request, request.headers.get("authorization", "").removeprefix("Bearer ") in tokens)
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
     uid = tokens.get(request.headers.get("authorization", "").replace("Bearer ", ""))
@@ -259,7 +261,7 @@ with sync_playwright() as p:
     offline.add("A")
     plus(a1)
     note(a1, "Заметка без сети")
-    a1.evaluate(EDIT, [section, {mood: 6}, "Умывание"])
+    a1.evaluate(EDIT, [section, {mood: 6}, "Тестовая отметка дня"])
     out["offline_count"] = count(a1)
     out["second_tab_count"] = wait_for(a2, lambda: count(a2) == 1 and 1, 5, 200) or count(a2)
     out["second_tab_note"] = until(a2, "()=>document.getElementById('note').value==='Заметка без сети'", seconds=5)
@@ -441,7 +443,7 @@ with sync_playwright() as p:
 
 uid1, uid2 = USERS[ONE]["id"], USERS[TWO]["id"]
 rows = {k: r for k, r in table.items()}
-secrets = ("Заметка", "телефона", "Умывание", "Зал утром", "Своё название", "второго аккаунта", "Бассейн")
+secrets = ("Заметка", "телефона", "Тестовая отметка дня", "Зал утром", "Своё название", "второго аккаунта", "Бассейн")
 out["plaintext_on_server"] = any(s.encode() in base64.b64decode(r["data"]) for r in rows.values() for s in secrets)
 writes = [r for r in requests if r.get("kind")]
 day_writes = [r for r in writes if r["from"].endswith(urlsplit(DAY_PAGE).path)]
@@ -463,7 +465,7 @@ checks = [
     ("сеть вернулась — записи сами ушли в облако новыми строками по годам", bool(out["online_state"]) and "day/days_" + today[:4] in out["cloud_rows"] and "day/setup" in out["cloud_rows"]),
     ("второй телефон после входа сам видит нажатие, заметку и раздел", out["other_phone"][0] == 1 and out["other_phone"][1] == "Заметка без сети" and (out["other_phone"][2] or {}).get(mood) == 6),
     ("одну шкалу поставили на двух телефонах — везде поставленное позже, прежние значения в журнале раздела по одному разу", out["both_a"] and out["both_b"] and out["both_tab2"] and sec.get(mood) == 5 and log == [6, 7] and out["section_a"] == out["section_b"]),
-    ("разные шкалы и теги раздела с двух телефонов остались все", sec.get(energy) == 3 and set((sec.get("tags") or {}).keys()) == {"Умывание", "С телефона A", "С телефона B"}),
+    ("разные шкалы и теги раздела с двух телефонов остались все", sec.get(energy) == 3 and set((sec.get("tags") or {}).keys()) == {"Тестовая отметка дня", "С телефона A", "С телефона B"}),
     ("нажатия одного счётчика с двух телефонов сложились; у заметки дня осталась поздняя правка", out["counts"] == [4, 4, 4] and out["notes"] == ["Заметка телефона B, позже"] * 2),
     ("удаление дошло до другого телефона и не вернулось", out["delete_reaches"] == 3 and out["delete_stays"] == [3, 3]),
     ("вход у каждого приложения свой: Sport на том же телефоне сам не вошёл, вошёл тем же аккаунтом", out["sport_not_signed_in"] and out["sport_signed_in"]),

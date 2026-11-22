@@ -7,6 +7,8 @@
  * — Claude · 14.11.2026 */
 import {pbkdf2Sync,createDecipheriv,randomBytes} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+await import('../supabase/tests/account-key-handler.mjs');
+if (process.env.HAPPY_TEST_DATABASE_URL) await (await import('../supabase/tests/account-key-postgres.cjs')).default();
 await import('../shared/happy-account.js');
 await import('../shared/happy-store.js');
 const {HappyAccount,HappyStore}=globalThis,M=HappyStore.model;
@@ -46,6 +48,11 @@ function makeCloud(){
    else{for(const [k,v] of [...refresh])if(v===uid)refresh.delete(k);for(const [k,v] of [...access])if(v===uid)access.delete(k)}
    return json(204);
   }
+  if(u.pathname==='/functions/v1/account-key'){
+   const bearer=String(headers.Authorization||'').replace('Bearer ','');
+   if(!access.has(bearer))return json(401,{});
+   return body.action==='open'?json(200,{state:'legacy'}):json(400,{});
+  }
   if(u.pathname!=='/rest/v1/app_sync')return json(404,{});
   const uid=access.get(String(headers.Authorization||'').replace('Bearer ',''));if(!uid)return json(401,{message:'JWT expired'});
   const filters=[...u.searchParams].filter(([,v])=>v.startsWith('eq.')).map(([k,v])=>[k,v.slice(3)]);
@@ -75,6 +82,7 @@ function memoryBackend(){
     if(!old||M.compare(r,old)>0){m.set(r.id,JSON.stringify(r));won.push(JSON.parse(JSON.stringify(r)));writes++}}
    const meta=M.nextMeta(metas.get(key(scope)),o,won.length);metas.set(key(scope),meta);return {won,meta:{...meta}};
   },
+  pendingScopes:async uid=>[...metas].filter(([scope,m])=>m.dirty&&JSON.parse(scope)[0]===uid).map(([scope])=>JSON.parse(scope)),
   scopes:()=>[...buckets.keys()].filter(k=>buckets.get(k).size).map(k=>JSON.parse(k)),
   text:()=>JSON.stringify([...buckets].map(([k,m])=>[k,[...m.values()]])),
   writes:()=>writes
@@ -561,6 +569,68 @@ section('Первый запуск на новом устройстве: сна�
  fourth.store.close();fourth.account.close();
  for(const x of [first,second,third]){x.store.close();x.account.close()}
 }
+
+section('Перенос всех приложений, сбой обмена и чистое устройство');
+{
+ const server=makeCloud(),email='migration@example.invalid',uid=server.addUser(email,PW1);
+ const source=makeDevice(server,'source',clock),fresh=makeDevice(server,'fresh',clock);
+ const request=server.fetchFor(source,'migration');
+ const response=await request(URL_BASE+'/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email,password:PW1})});
+ const {access_token}=await response.json();
+ const legacyKey=(await HappyAccount.deriveKey(PW1,uid)).key;
+ const managedKey=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+ function session(key,version){
+  return {current:()=>({uid,keyVersion:version}),cipherKey:()=>key,token:async()=>access_token,onChange:()=>()=>{}};
+ }
+ const legacy=session(legacyKey,1),managed=session(managedKey,2);
+ const open=(device,app,account,own,opts={})=>HappyStore.open({app,account,own,backend:device.backend,
+  channel:device.tab().channel,url:URL_BASE,key:'test',fetch:server.fetchFor(device,app),auto:false,...opts});
+ const migrate=()=>HappyStore.migrateAccount({account:legacy,legacyKey,cipherKey:managedKey,keyVersion:2,
+  url:URL_BASE,key:'test',fetch:request,backend:source.backend});
+ const day=await open(source,'day',legacy,['diary']),meal=await open(source,'meal',legacy,['private_meal','pending_only']);
+ await day.doc('diary').put('cloud','запись в Day');await day.sync();
+ await meal.doc('private_meal').put('saved','продукт');await meal.sync();
+ source.offline=true;
+ await meal.doc('private_meal').put('unsent','правка без сети');
+ await meal.doc('pending_only').put('new','новый документ без сети');
+ meal.close();day.close();source.offline=false;
+ const stranger=server.addUser('another@example.invalid',PW2);
+ const foreign={...server.row(uid,'meal','private_meal'),user_id:stranger};
+ server.rows.set(stranger+'|meal|private_meal',foreign);
+ const before=structuredClone(server.row(uid,'meal','private_meal'));
+ let patches=0;
+ server.before=async e=>{if(e.method==='PATCH'&&++patches===2)throw Error('Прервано соединение')};
+ check('сбой прерывает переход с возможностью повтора',(await rejects(migrate()))?.code==='offline');
+ const completed=structuredClone(server.row(uid,'day','diary'));
+ check('завершённая часть сохранена, оставшаяся часть доступна со старым ключом',
+  completed.v===3&&JSON.stringify(server.row(uid,'meal','private_meal'))===JSON.stringify(before));
+ check('неотправленные записи остались в очереди',(await source.backend.pendingScopes(uid)).length===2);
+ server.before=null;await migrate();
+ check('при продолжении готовый документ не шифруется повторно',completed.iv===server.row(uid,'day','diary').iv);
+ check('все исходные и отложенные документы зашифрованы новым ключом',
+  [...server.rows.values()].filter(r=>r.user_id===uid).length===3&&
+  [...server.rows.values()].filter(r=>r.user_id===uid).every(r=>r.v===3));
+ check('изолированная строка другого аккаунта сохранена',server.row(stranger,'meal','private_meal')===foreign);
+ check('очередь сохранена до подтверждения записи',!(await source.backend.pendingScopes(uid)).length);
+ fresh.offline=true;
+ check('на чистом устройстве сбой первого обмена не открывает пустой дневник',
+  (await rejects(open(fresh,'meal',managed,['private_meal','pending_only'],{firstSync:1000})))?.code==='first_sync');
+ fresh.offline=false;
+ const restored=await open(fresh,'meal',managed,['private_meal','pending_only'],{firstSync:1000});
+ check('прежние и неотправленные записи восстановились на чистом устройстве',
+  restored.doc('private_meal').get('saved')==='продукт'&&restored.doc('private_meal').get('unsent')==='правка без сети'&&
+  restored.doc('pending_only').get('new')==='новый документ без сети');
+ restored.close();fresh.offline=true;
+ const offline=await open(fresh,'meal',managed,['private_meal','pending_only','next_year'],{firstSync:1000});
+ await offline.doc('pending_only').put('later','после переноса');
+ check('второй запуск без сети принимает записи',offline.doc('pending_only').get('later')==='после переноса'&&await offline.sync()===false);
+ fresh.offline=false;check('после возвращения сети очередь отправлена',await offline.sync());
+ offline.close();
+}
+
+section('Ключ на устройстве, прежний пароль и привязка Google');
+const {accountRecoveryCases}=await import('./account-recovery-cases.mjs');
+await accountRecoveryCases({check,rejects,makeCloud,makeDevice,clock,url:URL_BASE});
 
 for(const x of [dayA,dayB,mealA]){x.store.close();x.account.close()}
 console.log(failed?`Общий модуль хранения и обмена: НЕ ПРОШЛО ${failed} из ${failed+passed}`:`Общий модуль хранения и обмена: ${passed} проверок прошли`);

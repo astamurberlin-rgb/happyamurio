@@ -20,6 +20,14 @@
       ]
     },
     {
+      "name": "happy-shell-worker.js",
+      "reference": "shared/happy-shell-worker.js",
+      "apps": [
+        "day",
+        "sport"
+      ]
+    },
+    {
       "name": "happy-store.js",
       "reference": "shared/happy-store.js",
       "apps": [

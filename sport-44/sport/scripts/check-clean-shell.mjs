@@ -11,7 +11,7 @@ const built=fs.readFileSync(new URL('../../index.html',import.meta.url),'utf8');
 const meta=built.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)"/);assert.ok(meta,'у страницы есть правила');
 const policy=Object.fromEntries(meta[1].split(';').map(x=>x.trim()).filter(Boolean).map(x=>{const [name,...rest]=x.split(/\s+/);return [name,rest.join(' ')]}));
 assert.equal(policy['connect-src'],"'self' https://geqziziycpclhnucnsyx.supabase.co",'обращаться можно только к своему сайту и серверу Happy');
-assert.equal(policy['form-action'],"'none'");assert.equal(policy['worker-src'],"'none'");assert.equal(policy['frame-src'],"'self'");
+assert.equal(policy['form-action'],"'none'");assert.equal(policy['worker-src'],"'self'");assert.equal(policy['frame-src'],"'self'");
 
 // Верх и низ настроек: после входа имя, «Настроить профиль / цели», «Выйти» и одна строка синхронизации; без входа — «Гость» и «Войти».
 const ctx=vm.createContext({});ctx.globalThis=ctx;

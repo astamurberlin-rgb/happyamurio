@@ -26,7 +26,7 @@ async function device(w,uid){
  const store=w.device(uid),spy={compared:0},toasts=[];
  const ctx=vm.createContext({console,setTimeout,clearTimeout,crypto:globalThis.crypto,
   HappyStore:{model:{...model,stable:x=>{spy.compared++;return model.stable(x)}},open:async()=>store,NEWER:'новее'},
-  HappyAccount:{create:()=>({load:async()=>{},current:()=>({uid:store.uid}),onChange(){}})},
+  HappyAccount:{create:()=>({load:async()=>{},finishGoogle:async()=>null,current:()=>({uid:store.uid}),onChange(){}})},
   HappyFood:{FORMAT:1},HappyAppLinks:{FORMAT:1},HappySportSummary:{FORMAT:1},HappyMeasurements:{FORMAT:1},HappyPerson:{FORMAT:1,statusText:()=>''},
   location:{reload(){}},jrToastLong:t=>toasts.push(t)});
  vm.runInContext(docsCode,ctx,{filename:'meal-docs.js'});vm.runInContext(dataCode,ctx,{filename:'meal-data.js'});
