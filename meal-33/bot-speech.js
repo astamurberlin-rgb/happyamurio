@@ -7,7 +7,7 @@
    Решения Астамура 17.11.2026: не спрашивать без крайней необходимости; своя мера человека — первой. — Claude · 17.11.2026 */
 var MealSpeech=(function(){
   var D=window.HappyMealSpeechData||null, active=false;
-  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], NOGEN={}, CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
+  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
   var MARK={0.5:'▽',1:'◇',1.5:'△'}, FMARK={1.5:'⊕',0.8:'⊘'};
   var B0='(^|[\\s,.;:!?(])', B1='(?=[\\s,.;:!?)]|$)';
   function nz(s){ return String(s||'').toLowerCase().replace(/ё/g,'е').replace(/́/g,'') }
@@ -21,7 +21,6 @@ var MealSpeech=(function(){
     if(!D) return;
     (D.measures||[]).forEach(function(m){
       if(!m.unit) return;
-      if(m.no_general) NOGEN[m.unit]=m.no_general;
       var singles=m.forms.map(nz).filter(function(f){ return !/[\s.]/.test(f) });
       singles.forEach(function(f){ if(!m.only_for) U2[f]=m.unit });
       if(m.token) U2[m.token]=m.unit;
@@ -181,8 +180,10 @@ var MealSpeech=(function(){
     /* заголовок перед списком с весами: «бутерброд: хлеб 30 г, масло 5 г» — записываются части, а не «бутерброд» поверх них */
     s=s.replace(/^\s*([а-я][а-я ]{2,28}):\s*(?=[^:]*\d[^:]*,[^:]*\d)/,function(m,hd){ return /(завтрак|обед|ужин|перекус|полдник|вчера|сегодня|утр|вечер|ноч)/.test(hd)?m:' ' });
     /* «кефир ноль пять» — пол-литра */
+    /* …а перед процентом, ложкой, граммами — просто число: «сахар ноль пять ложки» — 0,5 ложки (слова — в словаре) */
+    var NB=NV.spoken_decimals_as_number_before?new RegExp('^\\s+'+NV.spoken_decimals_as_number_before):null;
     Object.keys(NV.spoken_decimals||{}).sort(function(a,b){ return b.length-a.length }).forEach(function(k){
-      s=s.replace(new RegExp(B0+rx(k)+B1,'g'),function(m,a){ return a+NV.spoken_decimals[k]+' мл' }) });
+      s=s.replace(new RegExp(B0+rx(k)+B1,'g'),function(m,a,off,str){ var v=NV.spoken_decimals[k]; return a+(NB&&NB.test(str.slice(off+m.length))?out(v/1000):v+' мл') }) });
     /* доли словами */
     s=s.replace(/(^|\s)три\s+четверти(?=\s)/g,'$1 0,75').replace(/(^|\s)две\s+трети(?=\s)/g,'$1 0,67');
     s=s.replace(CARDRE,function(m,a,run,off){ if(/\sна\s*$/.test(s.slice(0,off)+a)&&/^пар/.test(run)) return m; return a+numberRun(run) });
@@ -285,7 +286,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    noGeneral:function(u){ return NOGEN[u]||null }, wordForms:function(){ return (D&&D.dish_word_forms)||[] }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
+    wordForms:function(){ return (D&&D.dish_word_forms)||[] }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();

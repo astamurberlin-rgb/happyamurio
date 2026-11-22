@@ -222,6 +222,7 @@ var MealBot=(function(){
     var out=[], cur=[], hasN=false, hasF=false, last='', prevW='', lastU='', ws=c.split(' ');
     ws.forEach(function(w,i){
       var k=kindOf(w), cut=false;
+      if(k==='N'&&/^(сыра|сезона|сезонов)$/.test(norm(ws[i+1]||''))) k='F';   // пицца «Четыре сыра» — название, а не 4 штуки (как в parseText)
       if(hasN&&hasF&&!PREP.test(norm(prevW))){
         if((k==='N'||k==='U')&&last==='F') cut=true;                 // «три фейхоа | два мандарина», «…грудки | чашка бульона»
         if(SP&&cut&&k==='N'&&i===ws.length-1&&cur[0]==='1'&&/^\d{2,4}$/.test(w)&&cur.slice(1).every(function(x){ return kindOf(x)==='F' })) cut=false;   // Meal 33.12: «одна груша 180» — вес этой груши
@@ -365,13 +366,14 @@ var MealBot=(function(){
     /* у выбранного продукта нет такой меры, а у соседнего есть («пять колец лука» — лук, а не луковый сок) */
     /* …или у соседнего мера своя, а у выбранного только общая («ложка мисо» — паста, а не мисо-суп) */
     function own(fx,u){ return (fx.own&&fx.own[u])||(fx.por&&fx.por[u])||SP.group(fx,u) }
-    if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!own(f,l.u)&&!(l.u==='кусок'&&SP.weight(f,'ломтик'))){
+    if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!own(f,l.u)&&!(l.u==='кусок'&&own(f,'ломтик'))){
       var fw0=String(l.spoken||l.name||'').split(' ').filter(Boolean), had=SP.weight(f,l.u),
           alt=(l.alts||[]).filter(function(x){ return x!==id&&FOODS[x]&&(had?own(FOODS[x],l.u):SP.weight(FOODS[x],l.u))&&headOk(x,fw0) })[0];
       if(alt){ l.alts=[alt].concat(l.alts.filter(function(x){ return x!==alt })); l.fid=alt; l.st='ok'; id=alt; f=FOODS[alt]; l.g=gramsFor(id,l.q,l.u) }
     }
     if(l.explicit&&l.u&&l.u!=='г'&&l.u!=='шт'&&!SP.weight(f,l.u)){
-      if(l.u==='кусок'&&SP.weight(f,'ломтик')){ l.u='ломтик'; l.g=gramsFor(id,l.q,l.u) }
+      if(l.u==='кусок'&&own(f,'ломтик')){ l.u='ломтик';   /* кусок — ломтик только своей мерой продукта (хлеб, сыр, колбаса); общий ломтик 30 г не берётся — спросить один раз */
+        l.g=gramsFor(id,l.q,l.u) }
       else if(l.u==='порция'&&SP.usual(f,false)){ l.u=SP.usual(f,false); l.g=gramsFor(id,l.q,l.u); l.approx=true }
       else { l.count=l.q; l.countU=l.u; l.explicit=false }
     }
@@ -410,7 +412,7 @@ var MealBot=(function(){
   /* Meal 33.12 · слово человека → точный продукт базы (словарь, product_pins): «квашеная капуста» — капуста, а не её сок */
   var PINC={};
   function pinFid(name){
-    var k=norm(name); if(PINC[k]!==undefined&&PINC[k]!==null) return PINC[k];
+    var k=norm(name); if(PINC[k]!=null&&FOODS[PINC[k]]) return PINC[k];   // продукт BLS убрали из библиотеки — найти заново, а не вернуть пустой id
     var ids=[], r; try{ r=parseText(String(name).replace(/[,—()«»]+/g,' ').replace(/\s+/g,' ').trim()) }catch(e){ r={lines:[]} }
     r.lines.forEach(function(x){ ids=ids.concat([x.fid]).concat(x.alts||[]) });
     var id=ids.filter(function(x){ return x&&FOODS[x]&&norm(FOODS[x].n)===k })[0]||null;
