@@ -2226,6 +2226,14 @@ var MealBot=(function(){
     S.adv={want:want,list:pool(A,want),shown:0};
     return advShow(S,A,true);
   }
+  /* КБЖУ рецепта для совета: строка, где разбор оставил выбор («молоко» — какое?), считается по первому варианту, как справка «сколько калорий в…»;
+     иначе такой рецепт выглядел бы легче, чем он есть, и попадал бы в «лёгкое» и «до 300 ккал» */
+  function advNut(r){
+    var ls=r.x?parseText(r.x).lines:recipeLinesAny(r), items=[];
+    ls.forEach(function(l){ var id=l.fid||(l.alts&&l.alts[0]); if(!id||!FOODS[id]) return;
+      var g=l.fid&&l.g>0?l.g:gramsFor(id,l.q,l.u); if(g>0) items.push({fid:id,g:g}) });
+    return sumOf(items);
+  }
   function pool(A,w){
     var out=[], favs=Array.isArray(DB.rfav)?DB.rfav:[];
     (typeof COLS!=='undefined'?COLS:[]).forEach(function(c){
@@ -2233,7 +2241,7 @@ var MealBot=(function(){
       c.items.forEach(function(r){ out.push({r:r,col:c,min:r.min,text:r.x}) }) });
     if(!w.meal&&w.max==null) (DB.recipes||[]).forEach(function(r){ out.push({r:r,col:null,min:null,mine:true,text:(r.lines||[]).map(function(l){ return FOODS[l.fid]?FOODS[l.fid].n:'' }).join(' ')}) });
     out=out.filter(function(x){
-      var n=recipeNutAny(x.r); x.k=n.k||0; x.p=n.p||0; if(!(x.k>0)) return false;
+      var n=advNut(x.r); x.k=n.k||0; x.p=n.p||0; if(!(x.k>0)) return false;
       if(w.max!=null&&!(x.min!=null&&x.min<=w.max)) return false;
       if(w.protein&&x.p*4/x.k<((A.protein||{}).min_share||0.25)) return false;
       if(w.light&&x.k>((A.light||{}).max_kcal||400)) return false;
