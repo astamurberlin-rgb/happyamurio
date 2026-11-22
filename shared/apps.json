@@ -26,8 +26,8 @@
   },
   "meal": {
     "entry": "meal-33/index.html",
-    "version": "33.34",
-    "name": "Happy Meal · Update 33.34",
+    "version": "33.35",
+    "name": "Happy Meal · Update 33.35",
     "sharedDirectory": "meal-33/shared",
     "settingsSections": [
       "account",
@@ -48,8 +48,8 @@
   },
   "sport": {
     "entry": "sport-44/index.html",
-    "version": "44.13",
-    "name": "Happy Sport · Update 44.13",
+    "version": "44.14",
+    "name": "Happy Sport · Update 44.14",
     "sharedDirectory": "sport-44/shared",
     "sourceDirectory": "sport-44/sport/src",
     "sourceRelease": "sport-43",
