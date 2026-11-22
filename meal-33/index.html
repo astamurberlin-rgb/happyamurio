@@ -5205,9 +5205,13 @@ function recipeNutAny(r){
 /* КБЖУ рецепта — тем же разбором, что и голос: состав строкой → продукты библиотеки */
 function recipeNut(r){
   if(r._n) return r._n;
-  var res=parseText(r.x), s=sumOf(res.lines.map(function(l){ return {fid:l.fid,g:l.g} }));
-  r._n={lines:res.lines,k:s.k,p:s.p,f:s.f,c:s.c};
-  return r._n;
+  /* строка с выбором («молоко» — какое?) берёт первый вариант, как справка бота, а не считается нулём (22.11.2026, Астамур);
+     пока база не загрузилась и строка не нашлась совсем, результат не запоминается — посчитаем заново */
+  var res=parseText(r.x), miss=false;
+  res.lines.forEach(function(l){ if(!l.fid&&l.alts&&l.alts[0]&&FOODS[l.alts[0]]){ l.fid=l.alts[0]; l.st='ok'; l.g=gramsFor(l.fid,l.q,l.u) } if(!l.fid) miss=true });
+  var s=sumOf(res.lines.map(function(l){ return {fid:l.fid,g:l.g} })), n={lines:res.lines,k:s.k,p:s.p,f:s.f,c:s.c};
+  if(!miss) r._n=n;
+  return n;
 }
 
 /* ── экран «Рецепты» ── */
