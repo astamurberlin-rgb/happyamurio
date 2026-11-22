@@ -774,7 +774,9 @@ var MealBot=(function(){
     var t1=pre?pre.text:t0, am=ATERE.exec(t1);
     if(am){ var w=String(am[2]||am[3]).toLowerCase().replace(/\s+/g,' '), kk=ATEK.filter(function(x){ return w.indexOf(x[0])===0 })[0];
       return {text:(t1.slice(0,am.index)+' '+t1.slice(am.index+am[0].length)).replace(/\s+/g,' ').trim(),k:kk?kk[1]:0.5,said:am[0].replace(/^[\s,]+/,'')} }
-    for(var i=0;i<MINUSRE.length;i++){ var mm=MINUSRE[i].exec(t1); if(mm) return {text:(t1.slice(0,mm.index)+' '+t1.slice(mm.index+mm[0].length)).replace(/\s+/g,' ').trim(),k:null,minus:/^\d/.test(mm[1])?+mm[1]:({'один':1,'одна':1,'одно':1,'одну':1,'одни':1,'два':2,'две':2,'три':3,'четыре':4,'пять':5})[mm[1].toLowerCase()],mg:/^г/.test(mm[2]||''),said:mm[0].replace(/^[\s,]+/,'')} }
+    for(var i=0;i<MINUSRE.length;i++){ var mm=MINUSRE[i].exec(t1);
+      if(mm&&/(^|[\s,])жир\s*,?\s*$/i.test(t1.slice(0,mm.index))) mm=null;   // «бульон, жир оставил 100 г» — бульон с жиром 100 г, а не остаток (словарь, sf_fat_left; сборка 33.32)
+      if(mm) return {text:(t1.slice(0,mm.index)+' '+t1.slice(mm.index+mm[0].length)).replace(/\s+/g,' ').trim(),k:null,minus:/^\d/.test(mm[1])?+mm[1]:({'один':1,'одна':1,'одно':1,'одну':1,'одни':1,'два':2,'две':2,'три':3,'четыре':4,'пять':5})[mm[1].toLowerCase()],mg:/^г/.test(mm[2]||''),said:mm[0].replace(/^[\s,]+/,'')} }
     var r=takeLeft0(t1); return r||pre;
   }
   function takeLeft0(raw){
@@ -852,7 +854,7 @@ var MealBot=(function(){
   }
   /* где готовили — не лишнее слово: «Пончик берлинер с джемом, жаренный во фритюре» — это и есть «берлинер с джемом» */
   var DISHN=/^(фритюр\S*|духовк\S*|гриль|грил[а-я]*|сковород\S*|мангал\S*|вертел\S*|углях|казан\S*|пару)$/,
-      DRAW=/^(сыр(ой|ая|ое|ые|ых|ым|ую|ого|ому|ыми)|неприготовл[а-я]*|неварен[а-я]*|полуфабрикат[а-я]*|концентрат[а-я]*|порош[а-я]*)$/,
+      DRAW=/^(сыр(ой|ая|ое|ые|ых|ым|ую|ого|ому|ыми)|сух(ой|ая|ое|ие|их|им|ую|ого|ому|ими)|неприготовл[а-я]*|неварен[а-я]*|полуфабрикат[а-я]*|концентрат[а-я]*|порош[а-я]*)$/,   // «сухая смесь» — тоже только если сказано: «какао с молоком» — напиток (сборка 33.32)
       DKIND=/^(соев|безглютен|обезжир|диетич|низкокалор|веган|безлактоз|постн)/;
   /* слова сказанного: что в блюде есть (pos) и чего нет (neg, основы): «без молочного соуса» — нет соуса, «молочного» к нему */
   function negSplit(L){ var pos=[], neg=[], GA=/(ого|его|ой|ей|ых|их)$/;
