@@ -725,6 +725,18 @@ dict(id="Мр6", msgs=["мороженое 100 г"], mode="none", ask=True),
  dict(id="Ис78", eaten=True, msgs=["сливки 10 процентов 50 мл"], want=[("сливки 10", 50)]),
  dict(id="Ис79", eaten=True, msgs=["кефир 2,5 0,5 литра"], want=[("кефир 2,5%", 500)]),
  dict(id="Ис80", eaten=True, msgs=["молоко 1,5 2 стакана"], want=[("молоко 1,5", 500)]),
+  # 22.11.2026 · аудит словаря, хлеб и выпечка: «блин» как восклицание, тост 25 г и тост с добавкой, одна оладья, кусок пирога, рожки с повидлом
+  dict(id="Ау01", eaten=True, msgs=["блин, съел два яйца"], want=[("яйцо", None), ("яйцо", None)]),
+  dict(id="Ау02", eaten=True, msgs=["ой блин, съел яблоко"], want=[("яблоко", None)]),
+  dict(id="Ау03", eaten=True, msgs=["съел блин, потом яблоко"], want=[("блины", 150), ("яблоко", None)]),
+  dict(id="Ау04", eaten=True, msgs=["один блин"], want=[("блины", 50)]),
+  dict(id="Ау05", eaten=True, msgs=["тост"], want=[("тостовый поджар", 25)]),
+  dict(id="Ау06", eaten=True, msgs=["тост с сыром"], mode="none", reply="25 г и сыр 20 г"),
+  dict(id="Ау07", eaten=True, msgs=["тост с маслом"], mode="none", reply="25 г и масло сливочное 10 г"),
+  dict(id="Ау08", eaten=True, msgs=["оладья 2 штуки"], want=[("оладьи дрожж", 70)]),
+  dict(id="Ау09", eaten=True, msgs=["оладушек"], want=[("оладьи дрожж", None)]),
+  dict(id="Ау10", eaten=True, msgs=["пирог с капустой"], want=[("пирог капуст", 100)]),
+  dict(id="Ау11", eaten=True, msgs=["рожки с повидлом"], mode="none"),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])

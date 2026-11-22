@@ -764,9 +764,9 @@ var MealBot=(function(){
     var kh=head.filter(function(w){ return KINDHEAD.test(w) })[0];
     if(kh&&!(TOPHEAD.test(kh)&&ps.slice(1).every(function(x){ return tokensOf(x).some(function(w){ return TOPPING.test(w) }) }))) return null;
     var r0=parseText(txt).lines[0], ids=r0?[r0.fid].concat(r0.alts||[]).filter(function(x,i,a){ return x&&FOODS[x]&&a.indexOf(x)===i }).slice(0,6):[];
-    var tailW=W.filter(function(w){ return head.indexOf(w)<0 }); if(ids.some(function(id){ return dishOk(id,head,tailW,!!kh) })) return null;
-    var bread=head.some(function(w){ return BREADHEAD.test(w) });
-    if(bread) ps[0]=(cnt?String(Math.round(50*num(cnt[1]))):'50')+' г хлеб';                       // бутерброд — 50 г хлеба и то, что на нём
+    var bread=head.some(function(w){ return BREADHEAD.test(w) }), toast=bread&&!head.some(function(w){ return /^(бутерброд|сэндвич|сендвич)/.test(w) });
+    var tailW=W.filter(function(w){ return head.indexOf(w)<0 }); if(!toast&&ids.some(function(id){ return dishOk(id,head,tailW,!!kh) })) return null;   // «тост с сыром» — тост и сыр, а не «тост со спаржей и ветчиной»
+    if(bread) ps[0]=toast?(cnt?String(Math.round(25*num(cnt[1]))):'25')+' г тост':(cnt?String(Math.round(50*num(cnt[1]))):'50')+' г хлеб';   // бутерброд — 50 г хлеба и то, что на нём; тост — поджаренный ломтик 25 г
     if(SP.partAs) ps=ps.map(function(x,i){ return i?SP.partAs(x):x });
     var okp=ps.every(function(x,i){ if(bread&&i===0) return true; var tk=tokensOf(x), rp=parseText(x).lines[0], id=rp&&(rp.fid||rp.alts[0]); return !!id&&rp.st!=='none'&&(rp.st==='ok'||related(id,tk)) });
     if(!okp) return null;

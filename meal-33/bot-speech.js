@@ -32,7 +32,7 @@ var MealSpeech=(function(){
     (D.diminutives_and_food_aliases||[]).forEach(function(e){
       if(e.bot!=='alias'||!e.search_as) return;
       var to=nz(e.search_as), kf=(e.keep_forms||[]).map(nz), forms=e.forms.map(nz).filter(function(f){ return f!==to&&kf.indexOf(f)<0 });
-      if(forms.length) ALIASES.push({re:phrase(forms),to:to,len:Math.max.apply(null,forms.map(function(f){ return f.length }))});
+      if(forms.length) ALIASES.push({re:phrase(forms),to:to,len:Math.max.apply(null,forms.map(function(f){ return f.length })),sk:e.skip_if?new RegExp(e.skip_if):null});
     });
     ALIASES.sort(function(a,b){ return b.len-a.len });
     PROT=(D.protected_phrases||[]).map(nz);
@@ -263,7 +263,9 @@ var MealSpeech=(function(){
     /* другие названия и уменьшительные */
     var skip=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after||[]).join('|')+')\\s*$');
     var skipStem=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after_stems||['~']).join('|')+')[а-я]*\\s*$');
-    ALIASES.forEach(function(r){ s=s.replace(r.re,function(m,a,off){ var before=s.slice(0,off)+a; return skip.test(before)||(m.trim().indexOf(' ')<0&&skipStem.test(before))?m:a+r.to }) });
+    ALIASES.forEach(function(r){ s=s.replace(r.re,function(m,a,off,all){ var before=s.slice(0,off)+a;
+      if(r.sk&&r.sk.test(before+'«»'+all.slice(off+m.length))) return m;   // «блин, съел два яйца» — восклицание, а не блины
+      return skip.test(before)||(m.trim().indexOf(' ')<0&&skipStem.test(before))?m:a+r.to }) });
     s=s.replace(/\u0001(.)/g,function(m,c){ return keep[c.charCodeAt(0)-0x2460] });
     return s.replace(/\s+/g,' ').replace(/(\s,)+/g,',').replace(/^[\s,]+/,'').trim();
   }
