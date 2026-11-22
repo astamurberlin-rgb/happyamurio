@@ -439,18 +439,18 @@
   },
   {
    "path": "bot-speech.js",
-   "size": 26402,
-   "sha256": "90e8bac2f02cf6f584fb052ca5319dbe38f4813e6e08018af19a058fcc03c71e"
+   "size": 27387,
+   "sha256": "19f8329e25dc9973831773285552d61c09dd2e14c6594ceee68c8e9f8554c7f7"
   },
   {
    "path": "bot.js",
-   "size": 239274,
-   "sha256": "fce98e471a1814b11a3e144bd0491685248e7bcc03acdab96cdc4de0c84bfb91"
+   "size": 241419,
+   "sha256": "25467c021530554bf118fb534eab3d5b03dc705ac2a1ae67fbd692f323a1dfe9"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 548515,
-   "sha256": "68327e0c38726407d78f4c49dbb0401958a23fc063f4269efa4fb5a23d0c2422"
+   "size": 550446,
+   "sha256": "d4980d14d85dd844e81cb65f21a4d9f30fc84f5e77a463b88f19823a32f134c2"
   },
   {
    "path": "catalog-offline.js",
@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 686725,
-   "sha256": "799798901cba8901a6a516eb9ae67a7f25d5b1802b57298bb94f1ca59cac89be"
+   "size": 687117,
+   "sha256": "f243357a5f343a8645cfbd7b580f06bd136fdc41907b5ddb3834b9cce001c43a"
   },
   {
    "path": "kfct.js",
@@ -824,8 +824,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 79342,
-   "sha256": "4429d60ca801d9cd35ccc129d4280d459477629a7a698cfeec63b653e99d0e49"
+   "size": 80060,
+   "sha256": "70e323bc833cc31b2c9e270384e6cea77d7e2c92daa89d318250cab68a66540c"
   },
   {
    "path": "report.css",
@@ -1050,7 +1050,7 @@
   {
    "path": "sw.js",
    "size": 3524,
-   "sha256": "9ff8a91ecb44249cdc3f78c53f6c49fedbd5ee124920f090027638a03bba4990"
+   "sha256": "d33f1dba2175ee873dd9721483dbca3e41f84decadb6b856bcfa3193d0430751"
   },
   {
    "path": "usda-measures.js",
