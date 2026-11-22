@@ -257,6 +257,8 @@ var MealBot=(function(){
       if(k==='N'&&/^(сыра|сезона|сезонов)$/.test(norm(ws[i+1]||''))) k='F';   // пицца «Четыре сыра» — название, а не 4 штуки (как в parseText)
       if(hasN&&hasF&&!PREP.test(norm(prevW))){
         if((k==='N'||k==='U')&&last==='F') cut=true;                 // «три фейхоа | два мандарина», «…грудки | чашка бульона»
+        /* «два яйца хлеб 50 г»: число и продукт, а за ним другой продукт со своим числом — две еды (хвосты разборов, 22.11.2026) */
+        if(SP&&k==='F'&&last==='F'&&cur.length===2&&kindOf(cur[0])==='N'&&kindOf(ws[i+1]||'')==='N'&&!descr(w)&&!descr(cur[1])&&!J_ADJ.test(norm(w))) cut=true;
         if(SP&&cut&&k==='N'&&i===ws.length-1&&cur[0]==='1'&&/^\d{2,4}$/.test(w)&&cur.slice(1).every(function(x){ return kindOf(x)==='F' })) cut=false;   // Meal 33.12: «одна груша 180» — вес этой груши
         if(k==='F'&&(last==='N'||last==='U')){                       // «груша 160 | хурма 110»
           var tail=true, more=false; for(var j=i+1;j<ws.length;j++){ var kj=kindOf(ws[j]); if(kj==='F'){ tail=false; break } if(kj==='N'||kj==='U') break }
@@ -357,7 +359,16 @@ var MealBot=(function(){
   }
   function one(c0){
     return [c0].filter(Boolean).map(function(c){ if(!/\d/.test(c)) return c; var seen={}; return c.split(' ').filter(function(w,i,ws){ if(kindOf(w)!=='F') return true; if(seen[w]&&ws[i-1]!==w) return false; seen[w]=1; return true }).join(' ') })
-      .reduce(function(a,c){ return a.concat(splitItems(c)) },[]);
+      .reduce(function(a,c){ return a.concat(bareList(c)||splitItems(c)) },[]);
+  }
+  /* «яблоко огурец помидор» — список без запятых и «и»: каждое слово — отдельный понятный продукт, и блюда со всеми этими словами в базе нет (хвосты разборов, 22.11.2026) */
+  function bareList(c){
+    if(!SP||/\d/.test(c)) return null;
+    var ws=c.split(' ').filter(Boolean); if(ws.length<2||ws.length>5) return null;
+    if(ws.some(function(w,i){ return ws.slice(0,i).some(function(x){ return norm(x).slice(0,4)===norm(w).slice(0,4) }) })) return null;   // «американо американо» — повтор, а не список
+    if(!ws.every(function(w){ var n=norm(w); return /^[а-я]{3,}$/.test(n)&&kindOf(w)==='F'&&!descr(w)&&!J_INS.test(n)&&!J_ADJ.test(n)&&!SIZE.test(n) })) return null;
+    if(dishHas(c,tokensOf(c))) return null;
+    return ws.every(function(w){ var r; try{ r=parseText(w).lines }catch(e){ return false } return r.length===1&&r[0].st==='ok'&&r[0].fid }) ? ws : null;
   }
   function prepChunk(c){
     var o={text:c,raw:c,dup:null,range:null,size:null,corr:c.charAt(0)==='¶'};
@@ -661,7 +672,7 @@ var MealBot=(function(){
         l.ask=null; l.spoken=l.spoken||l.name;
         if(minus){ l.whole=l.g; l.waste=minus; if(minus>=l.g){ l.ask='waste' } else { l.q=Math.round((l.g-minus)*10)/10; l.u='г'; l.g=l.q; l.explicit=true } minus=0 }
         var fw=String(l.name||'').split(' ').filter(Boolean);
-        if(SP&&fw.length&&(SP.missing(fw[0])||fw.length>1&&SP.missing(fw.join(' ')))){ l.fid=null; l.alts=[]; l.st='none' }   // «пельмени», «овощи на гриле»: настоящих в базе нет — не подставлять похожее по слову
+        if(SP&&fw.length&&(SP.missing(fw[0])||fw.length>1&&SP.missing(fw.join(' ')))){ l.fid=null; l.alts=[]; l.st='none'; l.km=true }   // «пельмени», «овощи на гриле»: настоящих в базе нет — не подставлять похожее по слову
         /* Meal 33.9: просто «сыр» — последний записанный сыр, иначе гауда; просто «сок» — последний записанный, иначе вопрос (решение Астамура 17.11.2026).
            Раньше них — избранное: в избранном сулугуни, сказано просто «сыр» — пишется сулугуни (решение Астамура 20.11.2026) */
         var oneWord=SP&&fw.length===1&&tokensOf(c.text).length===1&&(l.fid||l.alts.length), fv=oneWord&&!l.pin?favOf(fw[0]):null;
@@ -746,7 +757,8 @@ var MealBot=(function(){
       parts.forEach(proc);
       /* первая часть не понята («слойка с пеканом» — какая слойка?) — блюдо остаётся целым, как раньше: вопрос о нём, а не запись одной начинки */
       var a0=cp.lines[0];
-      var a0ok=a0&&(a0.fid&&!a0.ask&&a0.g>0||a0.ask==='pick'&&!a0.noAuto&&a0.alts.some(function(x){ return covers(x,String(a0.name||'').split(' ').filter(Boolean)) }));
+      var a0ok=a0&&(a0.fid&&!a0.ask&&a0.g>0||a0.ask==='pick'&&!a0.noAuto&&a0.alts.some(function(x){ return covers(x,String(a0.name||'').split(' ').filter(Boolean)) })
+        ||a0.ask==='pick'&&a0.gdAsk&&GENERIC.test(norm(a0.name||''))&&cp.lines.length>1);   // «рыба с овощами» — вопрос «какая рыба?» и овощи, а не «Рыба-меч» целиком (хвосты разборов, 22.11.2026)
       if(!cp.ok&&!cp.named&&!a0ok){ res.lines.length=n0; curMeal=cm; tailMeal=tm; res.meal=rm; res.dupSeen=dp; cps.splice(cps.indexOf(cp),1); proc(c) }
     });
     /* «творог с мёдом 200 г» — названный вес всего блюда делится между частями (splitTotal). Части ещё с вопросом «какой?» — после ответа, в handle0 */
@@ -757,12 +769,14 @@ var MealBot=(function(){
   /* «творог с мёдом 200 г» — названный вес всего блюда (решение Астамура 22.11.2026: «185 г творога и ложка мёда»): добавка — своей обычной мерой,
      основа — остаток. Добавки обычной мерой больше половины названного веса — делится в той же пропорции, как раньше; в сумме всегда ровно названный вес */
   function splitTotal(cp){
-    if(cp.totDone||!cp.total||cp.lines.length<2||!cp.lines.every(function(l){ return l.fid&&(!l.ask||l.ask==='meal')&&l.g>0 })) return;
+    /* часть ещё с вопросом «какое мясо?» — её доля считается по первому варианту и остаётся при ответе: «картошка с мясом 300 г» (хвосты разборов, 22.11.2026) */
+    if(cp.totDone||!cp.total||cp.lines.length<2||!cp.lines.every(function(l){ return (l.fid&&(!l.ask||l.ask==='meal')||l.ask==='pick'&&(l.alts||[]).length)&&l.g>0 })) return;
+    if(!cp.lines.every(function(l){ return l.fid&&(!l.ask||l.ask==='meal') })&&!cp.lines.some(function(l){ return l.ask==='pick'&&GENERIC.test(norm(l.name||'')) })) return;
     cp.totDone=true;
     var h=cp.lines[0], add=cp.lines.slice(1).reduce(function(t,l){ return t+l.g },0);
-    if(add<=cp.total/4){ var g0=Math.max(1,Math.round(cp.total-add)); h.q=g0; h.u='г'; h.g=gramsFor(h.fid,g0,'г'); cp.lines.forEach(function(l){ l.approx=true }); return }
+    if(add<=cp.total/4){ var g0=Math.max(1,Math.round(cp.total-add)); h.q=g0; h.u='г'; h.g=gramsFor(h.fid||h.alts[0],g0,'г'); cp.lines.forEach(function(l){ l.approx=true }); return }
     var k=cp.total/(add+h.g), left=cp.total;
-    cp.lines.forEach(function(l,i){ var g=i===cp.lines.length-1?Math.max(1,Math.round(left)):Math.max(1,Math.round(l.g*k)); left-=g; l.q=g; l.u='г'; l.g=gramsFor(l.fid,g,'г'); l.approx=true });   // Meal 33.13: последняя часть добирает остаток
+    cp.lines.forEach(function(l,i){ var g=i===cp.lines.length-1?Math.max(1,Math.round(left)):Math.max(1,Math.round(l.g*k)); left-=g; l.q=g; l.u='г'; l.g=gramsFor(l.fid||l.alts[0],g,'г'); if(l.ask==='pick') l.explicit=true; l.approx=true });   // Meal 33.13: последняя часть добирает остаток
   }
   /* ── блюдо «А с Б» ──
      Есть такое блюдо в базе или у человека — берётся оно. Нет — части по отдельности обычными порциями; бот предлагает, человек подтверждает или называет свои граммы,
@@ -894,6 +908,11 @@ var MealBot=(function(){
     /* другой вид продукта — тоже только если сказан: не соевое, не обезжиренное, не постное */
     if(ws.some(function(w,i){ return !segNeg[i]&&DKIND.test(w)&&!W.some(function(q){ return same(q,w) }) })) return false;
     if(f.mine||String(f.src||'')==='Мои') return true;
+    /* «рыба с овощами» — не «Рыба-меч …»: общее слово не узнаётся в составном названии вида; «рис с овощами» — не «… и ветчиной», «рис с курицей» — не «Рис в бульоне»:
+       мясная добавка или бульон, которых человек не называл, — другое блюдо (хвосты разборов, 22.11.2026) */
+    var fn=norm(f.n);
+    if(W.some(function(q){ return GENERIC.test(q)&&new RegExp('(^|[^а-я])'+q.slice(0,3)+'[а-я]*-[а-я]').test(fn) })) return false;
+    if(ws.some(function(w){ return /^(ветчин|бекон|колбас|сосис|сардел|грудинк|бульон)/.test(w)&&!W.some(function(q){ return q.slice(0,4)===w.slice(0,4) }) })) return false;
     var iS=-1; ws.forEach(function(w,i){ if(iS<0&&(w==='с'||w==='со'||w==='в'||w==='под')) iS=i }); if(iS===0) return false;
     /* главное слово сказанного — в главной части названия: до «с», а без «с» — в начале. Остальное (описание, добавки) — где угодно в названии:
        «патыр с кунжутом на сливочном масле» — «Патыр на сливочном масле с кунжутом», «ачма с сыром» — «Ачма — слоёный сырный пирог»,
@@ -2061,7 +2080,7 @@ var MealBot=(function(){
         else if(!l.ask&&needMeal){ l.ask='meal'; asks.push(en) }
         else if(!l.ask) ready.push(en);
         else if(l.ask==='name'&&!/[а-яё]/i.test(String(l.name||''))){}   // Meal 33.12: латиница без единого русского слова — не еда, в список недостающего не идёт
-        else if(l.ask==='name'&&!l.explicit&&!selected) miss.push(l);
+        else if(l.ask==='name'&&(!l.explicit||l.km)&&!selected) miss.push(l);   // «пельмени 200 г» — с весом тоже «в базе нет», а не «что это?» (хвосты разборов, 22.11.2026)
         else asks.push(en);
       });
     });
