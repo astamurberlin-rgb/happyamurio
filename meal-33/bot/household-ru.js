@@ -5258,10 +5258,12 @@ window.HappyMealSpeechData={
   "not_yet_integrated_into_test_suite": false,
   "extension_cases_count": 40,
   "extension_cases_ids": "N01–N40",
-  "extension_cases_run_status": "not_run",
+  "extension_cases_run_status": "in_test_suite",
+  "run_status_note": "in_test_suite — фраза проверяется в scripts/browser/meal_bot_scenarios.py (Н01–Н40); итог прогона там, здесь не хранится, поэтому actual — null.",
   "count_note": "С Meal 33.9 фразы двух исследований входят в рабочую проверку scripts/browser/meal_bot_scenarios.py (группы «Сл», «Мх», «Н»)."
  },
- "developer_screen_copy_ru": "Бот понимает разные названия одной еды: «курица» и «курятина», «индейка» и «индюшатина». Приготовление, часть и уточнения вроде «без кожи» сохраняются. Меры зависят от продукта; личные меры важнее справочных. Если смысла или количества недостаточно, бот коротко уточняет.",
+ "developer_screen_copy_ru": "Бот понимает разные названия одной еды: «курица» и «курятина», «индейка» и «индюшатина». Приготовление, часть и уточнения вроде «без кожи» сохраняются. Понятное записывается сразу. Не хватает точности — сначала своё (избранное, своя мера), потом как ты записывал раньше, потом обычный вариант из словаря со знаком «≈»; вопрос — только когда не за что зацепиться: непонятно, какой это продукт, или у меры нет веса.",
+ "developer_screen_copy_note": "Краткое описание для чтения, бот и экран его не берут: экран «Правила бота» (meal-33/index.html, data-screen=\"botrules\") написан отдельно — поменял правило, поправь оба.",
  "catalog": {
   "page_url": "https://chatgpt.com/space/page_8247bc3043a08191be8308faeb719e1c",
   "scope": "Речь и поведение бота Happy Meal; не общий реестр задач Happy.",
@@ -5816,7 +5818,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Мясо курицы, варёное, 180 г; часть и кожа не выдумываются.",
    "rule_id": "alias_chicken",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5825,7 +5827,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Тот же смысл, что у N01; вес 180 г.",
    "rule_id": "alias_chicken",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5834,7 +5836,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Мясо индейки, варёное, 150 г.",
    "rule_id": "alias_turkey",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5843,7 +5845,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Тот же смысл, что у N03.",
    "rule_id": "alias_turkey",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5852,7 +5854,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Тот же смысл, что у N03.",
    "rule_id": "alias_turkey",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5861,7 +5863,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Филе индейки, варёное, 150 г; часть не объявляется грудкой.",
    "rule_id": "turkey_species",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5870,7 +5872,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Тот же смысл, что у N06, независимо от порядка слов.",
    "rule_id": "turkey_species",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5879,7 +5881,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Сохранить бедро; не заменить грудкой.",
    "rule_id": "turkey_species",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5888,7 +5890,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Сохранить грудку; отличать от N08.",
    "rule_id": "turkey_species",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5897,7 +5899,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Печень курицы, жареная, 100 г; не общее куриное мясо.",
    "rule_id": "chicken_species",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5906,7 +5908,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Говядина, варёная, 120 г; не телятина.",
    "rule_id": "alias_beef",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5915,7 +5917,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Свинина, варёная, 120 г; не сало.",
    "rule_id": "alias_pork",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5924,7 +5926,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Мясо утки, запечённое, 140 г; кожу не додумывать.",
    "rule_id": "alias_duck",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5933,7 +5935,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Мясо гуся, варёное, 140 г.",
    "rule_id": "alias_goose",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5942,7 +5944,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Сохранить телятину, не заменить обычной говядиной.",
    "rule_id": "alias_veal",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5951,7 +5953,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Лосось, солёный, 80 г; точный вид не выдумывать.",
    "rule_id": "alias_salmon_flesh",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5960,7 +5962,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Помидор свежий, 120 г; не паста.",
    "rule_id": "alias_tomato",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5969,7 +5971,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Тот же смысл и вес, что у N17; уменьшительность не уменьшает граммы.",
    "rule_id": "alias_tomato",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5978,7 +5980,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Картофель варёный, 200 г; не пирожное.",
    "rule_id": "alias_potato",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5987,7 +5989,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Морковь сырая, 70 г; не обязательно маленькая.",
    "rule_id": "alias_carrot",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -5996,7 +5998,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Свёкла варёная, 90 г.",
    "rule_id": "alias_beet",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6005,34 +6007,34 @@ window.HappyMealSpeechData={
    "expected_ru": "Баклажаны запечённые, 150 г; масло не выдумывать.",
    "rule_id": "alias_eggplant",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
    "id": "N23",
    "phrase": "Овсянка 60 г",
-   "expected_ru": "Уточнить: сухая или готовая, если нет однозначного контекста.",
+   "expected_ru": "Без вопроса: своё или прошлое название овсянки, иначе обычный вариант — овсяные хлопья варёные, 60 г (правило обычного варианта, generic_defaults.oatmeal).",
    "rule_id": "generic_defaults.oatmeal",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
    "id": "N24",
    "phrase": "Овсянка сухая 60 г",
-   "expected_ru": "Сохранить сухое состояние и 60 г; при необходимости уточнить крупу/хлопья.",
+   "expected_ru": "Овсяные хлопья сухие, 60 г, без вопроса: состояние названо (product_pins, pin_oatmeal_dry).",
    "rule_id": "generic_defaults.oatmeal",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
    "id": "N25",
    "phrase": "Овсянка на воде готовая 200 г",
-   "expected_ru": "Готовая каша на воде, 200 г; не сухие хлопья.",
+   "expected_ru": "Овсяные хлопья варёные, 200 г, без вопроса; не сухие хлопья (product_pins, pin_oatmeal_cooked).",
    "rule_id": "generic_defaults.oatmeal",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6041,7 +6043,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Свежая зелень, 5 г; не семена.",
    "rule_id": "alias_cilantro_greens",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6050,7 +6052,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Тот же смысл, что у N26.",
    "rule_id": "alias_cilantro_greens",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6059,16 +6061,16 @@ window.HappyMealSpeechData={
    "expected_ru": "Кулинарная пряность, молотые семена, 2 г; не зелень. Правило требует проверки на базе.",
    "rule_id": "alias_coriander_seed_ground",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
    "id": "N29",
    "phrase": "Кориандр 2 г",
-   "expected_ru": "При отсутствии контекста спросить: зелень или семена? Количество уже известно.",
+   "expected_ru": "Без вопроса: своё или прошлое, иначе обычный вариант — зелень (листья кориандра), 2 г. Семена — если названы «семена» или «молотый» (N28).",
    "rule_id": "alias_coriander_ambiguous",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6077,7 +6079,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Половина кочана; вид и вес не выдумывать. Сохранить исходное написание.",
    "rule_id": "cabbage_head",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6086,7 +6088,7 @@ window.HappyMealSpeechData={
    "expected_ru": "400 г уже названной очищенной порции; не делить повторно на два.",
    "rule_id": "cabbage_head",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6095,7 +6097,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Початок кукурузы, не капуста; съедобный вес требует подходящей меры или уточнения.",
    "rule_id": "corn_cob",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6104,7 +6106,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Зелень двух веточек с указанным исключением; не целые растения. Без подходящей меры уточнить вес.",
    "rule_id": "sprig",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6113,7 +6115,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Сохранить неоднозначность: только стебель или со всей зеленью? Вес не выдумывать.",
    "rule_id": "stem",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6122,7 +6124,7 @@ window.HappyMealSpeechData={
    "expected_ru": "5 г; ничего повторно не вычитать.",
    "rule_id": "without_stem",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6131,7 +6133,7 @@ window.HappyMealSpeechData={
    "expected_ru": "15 г съедобной части при одинаковом состоянии взвешивания.",
    "rule_id": "without_stem",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6140,7 +6142,7 @@ window.HappyMealSpeechData={
    "expected_ru": "15 г; не вычитать стебли повторно.",
    "rule_id": "without_leg_contextual",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6149,7 +6151,7 @@ window.HappyMealSpeechData={
    "expected_ru": "60 г шляпок, не минус неизвестный процент и не стебли зелени.",
    "rule_id": "without_leg_contextual",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6158,7 +6160,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Сохранить цветную капусту и меру соцветия; не три кочана. Вес по продукту или вопрос.",
    "rule_id": "floret",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   },
   {
@@ -6167,7 +6169,7 @@ window.HappyMealSpeechData={
    "expected_ru": "Мера пера, не три репчатые луковицы; подходящая мера или вопрос.",
    "rule_id": "onion_feather",
    "origin": "authored_research_case",
-   "run_status": "not_run",
+   "run_status": "in_test_suite",
    "actual": null
   }
  ],
@@ -9023,6 +9025,49 @@ window.HappyMealSpeechData={
    ],
    "name": "Каша манная простая сладкая",
    "rule_ru": "«Манная каша на молоке», «манка на молоке» — обычная манная каша, а не детское питание (аудит словаря, порция «состояние продукта», 22.11.2026)."
+  },
+  {
+   "id": "pin_oatmeal_dry",
+   "all": [
+    "^(овсянк|геркулес)",
+    "^(сух|сыр)"
+   ],
+   "opt": [
+    "^хлоп",
+    "^круп"
+   ],
+   "name": "Овсяные хлопья",
+   "rule_ru": "«Овсянка сухая», «сухой геркулес» — сухие хлопья без вопроса: состояние названо прямо (control_examples N24; аудит словаря, порция «экран», 22.11.2026)."
+  },
+  {
+   "id": "pin_oatmeal_cooked",
+   "all": [
+    "^овсянк",
+    "^(вод|готов)"
+   ],
+   "opt": [
+    "^на$",
+    "^вод",
+    "^готов",
+    "^каш"
+   ],
+   "not": "молок|сух|сыр",
+   "name": "Овсяные хлопья варёные (овсянка, каша)",
+   "rule_ru": "«Овсянка на воде», «овсянка готовая» — варёные хлопья, как просто «овсянка»: без вопроса (control_examples N25; аудит словаря, порция «экран», 22.11.2026)."
+  },
+  {
+   "id": "pin_oatmeal_milk",
+   "all": [
+    "^овсянк",
+    "^молок"
+   ],
+   "opt": [
+    "^на$",
+    "^каш"
+   ],
+   "not": "(^|\\s)со?\\s+молок",
+   "name": "Каша овсяная без сахара на молоке 3,5 %",
+   "rule_ru": "«Овсянка на молоке» — овсяная каша на молоке, а не вопрос с одним вариантом варёных хлопьев (аудит словаря, порция «экран», 22.11.2026)."
   },
   {
    "id": "pin_thousand_island",

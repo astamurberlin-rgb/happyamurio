@@ -744,6 +744,16 @@ dict(id="Мр6", msgs=["мороженое 100 г"], mode="none", ask=True),
  dict(id="Ау66", eaten=True, msgs=["соус тысяча островов 20 г"], want=[("тысяча островов", 20)]),
  dict(id="Ау67", eaten=True, msgs=["картошку посолил 200 г"], want=[("картофел варен", 200), ("соль", 0.5)]),
  dict(id="Ау68", eaten=True, msgs=["огурцы посолила 100 г, хлеб 30 г"], want=[("огурец", 100), ("хлеб ржан", 30), ("соль", 0.5)]),
+ dict(id="Ау69", eaten=True, msgs=["Овсянка сухая 60 г"], want=[("овсян хлопья !варен !каша", 60)]),
+ dict(id="Ау70", eaten=True, msgs=["Овсянка на воде готовая 200 г"], want=[("овсян варен", 200)]),
+ dict(id="Ау71", eaten=True, msgs=["овсянку на воде"], want=[("овсян варен", 200)]),
+ dict(id="Ау72", eaten=True, msgs=["овсянка на молоке 200 г"], want=[("каша овсян молок", 200)]),
+ dict(id="Ау73", eaten=True, msgs=["геркулес сухой 50 г"], want=[("овсян хлопья !варен", 50)]),
+ dict(id="Ау74", eaten=True, msgs=["овсянки сухой 40 г"], want=[("овсян хлопья !варен", 40)]),
+ dict(id="Ау75", eaten=True, msgs=["Кориандр 2 г"], want=[("кориандр лист", 2)]),
+ dict(id="Ау76", eaten=True, msgs=["пиала гречки"], want=[("гречк варен", 250)]),
+ dict(id="Ау77", eaten=True, msgs=["сырник"], want=[("оладьи творож", 150)]),
+ dict(id="Ау78", eaten=True, msgs=["одна сосиска"], want=[("сосиски", 50)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
