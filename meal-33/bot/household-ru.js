@@ -1323,7 +1323,6 @@ window.HappyMealSpeechData={
     "S03",
     "S09"
    ],
-   "default_grams": 45,
    "unit": "головка",
    "general": 45,
    "status": "connected"
@@ -1348,7 +1347,6 @@ window.HappyMealSpeechData={
     "S03",
     "S20"
    ],
-   "default_grams": 3,
    "unit": "зубчик",
    "general": 3,
    "status": "connected"
@@ -1372,7 +1370,6 @@ window.HappyMealSpeechData={
     "C04",
     "ASTAMUR"
    ],
-   "default_grams": 50,
    "unit": "пучок",
    "general": 50,
    "status": "connected"
@@ -1399,7 +1396,6 @@ window.HappyMealSpeechData={
     "C06",
     "ASTAMUR"
    ],
-   "default_grams": 1,
    "unit": "веточка",
    "general": 1,
    "status": "connected"
@@ -1423,7 +1419,6 @@ window.HappyMealSpeechData={
     "S24",
     "BRIEF"
    ],
-   "default_grams": 0.5,
    "unit": "щепотка",
    "general": 0.5,
    "status": "connected"
@@ -1440,7 +1435,6 @@ window.HappyMealSpeechData={
     "S12",
     "BRIEF"
    ],
-   "default_grams": 0.3,
    "unit": "кончик ножа",
    "general": 0.3,
    "token": "кончикножа",
@@ -1468,7 +1462,6 @@ window.HappyMealSpeechData={
     "S06",
     "S25"
    ],
-   "default_grams": 30,
    "unit": "горсть",
    "general": 30,
    "status": "connected"
@@ -1488,7 +1481,6 @@ window.HappyMealSpeechData={
    "source_ids": [
     "BRIEF"
    ],
-   "default_grams": 15,
    "unit": "ст. л.",
    "general": 15,
    "status": "connected"
@@ -1516,7 +1508,6 @@ window.HappyMealSpeechData={
     "S20",
     "S22"
    ],
-   "default_grams": 15,
    "unit": "ст. л.",
    "general": 15,
    "status": "connected"
@@ -1551,7 +1542,6 @@ window.HappyMealSpeechData={
     "S20",
     "S22"
    ],
-   "default_grams": 5,
    "unit": "ч. л.",
    "general": 5,
    "status": "connected"
@@ -1572,7 +1562,6 @@ window.HappyMealSpeechData={
     "BRIEF",
     "DESIGN"
    ],
-   "default_grams": 10,
    "unit": "дес. л.",
    "general": 10,
    "token": "десложка",
@@ -1595,7 +1584,6 @@ window.HappyMealSpeechData={
     "BRIEF",
     "ASTAMUR"
    ],
-   "default_grams": 250,
    "unit": "стакан",
    "general": 250,
    "status": "connected"
@@ -1611,7 +1599,6 @@ window.HappyMealSpeechData={
    "source_ids": [
     "S23"
    ],
-   "default_grams": 250,
    "unit": "стакан",
    "general": 250,
    "status": "connected"
@@ -1634,7 +1621,6 @@ window.HappyMealSpeechData={
     "BRIEF",
     "ASTAMUR"
    ],
-   "default_grams": 300,
    "unit": "кружка",
    "general": 300,
    "status": "connected"
@@ -1658,7 +1644,6 @@ window.HappyMealSpeechData={
     "BRIEF",
     "ASTAMUR"
    ],
-   "default_grams": 200,
    "unit": "чашка",
    "general": 200,
    "status": "connected"
@@ -1679,7 +1664,6 @@ window.HappyMealSpeechData={
    "source_ids": [
     "BRIEF"
    ],
-   "default_grams": 250,
    "unit": "пиала",
    "general": 250,
    "status": "connected"
@@ -1707,7 +1691,6 @@ window.HappyMealSpeechData={
    "source_ids": [
     "BRIEF"
    ],
-   "default_grams": 300,
    "unit": "тарелка",
    "general": 300,
    "status": "connected"
@@ -1725,7 +1708,6 @@ window.HappyMealSpeechData={
    "source_ids": [
     "BRIEF"
    ],
-   "default_grams": 300,
    "unit": "тарелка",
    "general": 300,
    "status": "connected"
@@ -1743,7 +1725,6 @@ window.HappyMealSpeechData={
    "source_ids": [
     "BRIEF"
    ],
-   "default_grams": 300,
    "unit": "тарелка",
    "general": 300,
    "status": "connected"
@@ -1770,7 +1751,6 @@ window.HappyMealSpeechData={
     "BRIEF",
     "DESIGN"
    ],
-   "default_grams": 125,
    "unit": "половник",
    "general": 125,
    "status": "connected"
@@ -1810,7 +1790,6 @@ window.HappyMealSpeechData={
     "S27",
     "BRIEF"
    ],
-   "default_grams": 30,
    "unit": "ломтик",
    "general": 30,
    "status": "connected"
@@ -1835,9 +1814,7 @@ window.HappyMealSpeechData={
     "S13",
     "S16"
    ],
-   "default_grams": null,
    "unit": "кусок",
-   "no_general": "ask_once",
    "status": "connected"
   },
   {
@@ -1855,7 +1832,6 @@ window.HappyMealSpeechData={
     "S20",
     "BRIEF"
    ],
-   "default_grams": 10,
    "unit": "долька",
    "general": 10,
    "status": "connected"
@@ -1876,9 +1852,7 @@ window.HappyMealSpeechData={
     "S20",
     "BRIEF"
    ],
-   "default_grams": null,
    "unit": "кольцо",
-   "no_general": "ask_once",
    "status": "connected"
   },
   {
@@ -1899,9 +1873,7 @@ window.HappyMealSpeechData={
     "S10",
     "BRIEF"
    ],
-   "default_grams": null,
    "unit": "банка",
-   "no_general": "ask_once",
    "status": "connected"
   },
   {
@@ -1921,9 +1893,7 @@ window.HappyMealSpeechData={
     "S19",
     "BRIEF"
    ],
-   "default_grams": null,
    "unit": "пачка",
-   "no_general": "ask_once",
    "status": "connected"
   },
   {
@@ -1945,9 +1915,7 @@ window.HappyMealSpeechData={
    "source_ids": [
     "BRIEF"
    ],
-   "default_grams": null,
    "unit": "упаковка",
-   "no_general": "ask_once",
    "status": "connected"
   },
   {
@@ -1966,9 +1934,7 @@ window.HappyMealSpeechData={
    "source_ids": [
     "BRIEF"
    ],
-   "default_grams": null,
    "unit": "бутылка",
-   "no_general": "ask_once",
    "status": "connected"
   },
   {
@@ -1992,9 +1958,7 @@ window.HappyMealSpeechData={
     "S18",
     "BRIEF"
    ],
-   "default_grams": null,
    "unit": "шт",
-   "no_general": "product",
    "status": "connected"
   },
   {
@@ -2013,17 +1977,14 @@ window.HappyMealSpeechData={
     "кочаном"
    ],
    "meaning_ru": "Капуста: кочан, вилок, головка; «качан» — входное написание из примера пользователя. Вид капусты сохраняется.",
-   "food_scope": "cabbage",
    "source_ids": [
     "S36",
     "BRIEF"
    ],
    "note_ru": "Не смешивать со столовой вилкой и початком кукурузы.",
    "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
-   "default_grams": null,
    "status": "connected",
-   "unit": "кочан",
-   "no_general": "ask_once"
+   "unit": "кочан"
   },
   {
    "id": "corn_cob",
@@ -2034,13 +1995,11 @@ window.HappyMealSpeechData={
     "початком"
    ],
    "meaning_ru": "Кукуруза: початок; разговорный кочан только при названной кукурузе.",
-   "food_scope": "corn",
    "source_ids": [
     "S36"
    ],
    "note_ru": "Не переносить массу капусты и не считать стержень съеденными зёрнами.",
    "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
-   "default_grams": 90,
    "status": "connected",
    "unit": "початок",
    "general": 90
@@ -2058,7 +2017,6 @@ window.HappyMealSpeechData={
     "стеблем"
    ],
    "meaning_ru": "Стебель растения; в бытовой речи может подразумеваться вместе с зеленью.",
-   "food_scope": "plant_specific",
    "source_ids": [
     "S37",
     "S38",
@@ -2067,10 +2025,8 @@ window.HappyMealSpeechData={
    ],
    "note_ru": "Укроп, петрушка и сельдерей требуют своих мер и съедаемых частей.",
    "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
-   "default_grams": null,
    "status": "connected",
-   "unit": "стебель",
-   "no_general": "ask_once"
+   "unit": "стебель"
   },
   {
    "id": "leaf",
@@ -2089,7 +2045,6 @@ window.HappyMealSpeechData={
     "листики"
    ],
    "meaning_ru": "Лист конкретного растения; не веточка и не кочан.",
-   "food_scope": "plant_specific",
    "source_ids": [
     "S37",
     "S38",
@@ -2097,7 +2052,6 @@ window.HappyMealSpeechData={
    ],
    "note_ru": "Вес листа капусты не переносится на базилик или салат.",
    "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
-   "default_grams": 0.5,
    "status": "connected",
    "unit": "лист",
    "general": 0.5
@@ -2110,16 +2064,13 @@ window.HappyMealSpeechData={
     "соцветий"
    ],
    "meaning_ru": "Отдельное соцветие брокколи или цветной капусты.",
-   "food_scope": "broccoli_or_cauliflower",
    "source_ids": [
     "DESIGN"
    ],
    "note_ru": "Предложение по аналогии; подтверждённого веса в этом расширении нет.",
    "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
-   "default_grams": null,
    "status": "connected",
-   "unit": "соцветие",
-   "no_general": "ask_once"
+   "unit": "соцветие"
   },
   {
    "id": "onion_feather",
@@ -2135,13 +2086,11 @@ window.HappyMealSpeechData={
     "перышек"
    ],
    "meaning_ru": "Перо зелёного лука; не луковица.",
-   "food_scope": "green_onion",
    "source_ids": [
     "DESIGN"
    ],
    "note_ru": "Предложение по аналогии; не назначать вес целого лука.",
    "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
-   "default_grams": 5,
    "status": "connected",
    "unit": "перо",
    "general": 5
@@ -2156,16 +2105,13 @@ window.HappyMealSpeechData={
     "стручком"
    ],
    "meaning_ru": "Стручок фасоли, гороха или перца; съедаемая оболочка зависит от продукта.",
-   "food_scope": "plant_specific",
    "source_ids": [
     "DESIGN"
    ],
    "note_ru": "Стручковая фасоль и только горошины не одно и то же.",
    "action": "food_and_part_specific_personal_or_reference_weight_otherwise_ask",
-   "default_grams": null,
    "status": "connected",
-   "unit": "стручок",
-   "no_general": "ask_once"
+   "unit": "стручок"
   },
   {
    "id": "wine_glass",
@@ -2188,7 +2134,6 @@ window.HappyMealSpeechData={
     "ASTAMUR"
    ],
    "action": "food_specific_weight",
-   "default_grams": 150,
    "status": "connected"
   },
   {
@@ -2210,7 +2155,6 @@ window.HappyMealSpeechData={
     "ESTIMATE"
    ],
    "action": "food_specific_weight",
-   "default_grams": 50,
    "status": "connected"
   },
   {
@@ -2231,7 +2175,6 @@ window.HappyMealSpeechData={
     "ESTIMATE"
    ],
    "action": "food_specific_weight",
-   "default_grams": 50,
    "status": "connected"
   },
   {
@@ -2249,13 +2192,11 @@ window.HappyMealSpeechData={
     "LEGACY"
    ],
    "action": "food_specific_weight",
-   "default_grams": 30,
    "status": "connected"
   },
   {
    "id": "cube",
    "unit": "кубик",
-   "no_general": "ask_once",
    "forms": [
     "кубик",
     "кубика",
@@ -2268,13 +2209,11 @@ window.HappyMealSpeechData={
     "ESTIMATE"
    ],
    "action": "food_specific_weight",
-   "default_grams": null,
    "status": "connected"
   },
   {
    "id": "bar",
    "unit": "плитка",
-   "no_general": "ask_once",
    "forms": [
     "плитка",
     "плитки",
@@ -2286,7 +2225,6 @@ window.HappyMealSpeechData={
     "ESTIMATE"
    ],
    "action": "food_specific_weight",
-   "default_grams": null,
    "status": "connected"
   },
   {
@@ -2310,13 +2248,11 @@ window.HappyMealSpeechData={
     "LEGACY"
    ],
    "action": "food_specific_weight",
-   "default_grams": 30,
    "status": "connected"
   },
   {
    "id": "serving",
    "unit": "порция",
-   "no_general": "ask_once",
    "forms": [
     "порция",
     "порции",
@@ -2330,13 +2266,11 @@ window.HappyMealSpeechData={
     "ASTAMUR"
    ],
    "action": "food_specific_weight",
-   "default_grams": null,
    "status": "connected"
   },
   {
    "id": "small_cup",
    "unit": "стаканчик",
-   "no_general": "ask_once",
    "forms": [
     "стаканчик",
     "стаканчика",
@@ -2348,13 +2282,11 @@ window.HappyMealSpeechData={
     "ESTIMATE"
    ],
    "action": "food_specific_weight",
-   "default_grams": null,
    "status": "connected"
   },
   {
    "id": "loaf",
    "unit": "буханка",
-   "no_general": "ask_once",
    "forms": [
     "буханка",
     "буханки",
@@ -2370,7 +2302,6 @@ window.HappyMealSpeechData={
     "ESTIMATE"
    ],
    "action": "food_specific_weight",
-   "default_grams": null,
    "status": "connected"
   },
   {
@@ -2387,7 +2318,6 @@ window.HappyMealSpeechData={
     "ESTIMATE"
    ],
    "action": "food_specific_weight",
-   "default_grams": null,
    "status": "connected"
   }
  ],
@@ -4568,20 +4498,6 @@ window.HappyMealSpeechData={
    "тысячи": 1000,
    "тысяч": 1000
   },
-  "fractions": {
-   "полтора": 1.5,
-   "полторы": 1.5,
-   "половина": 0.5,
-   "половинку": 0.5,
-   "половинка": 0.5,
-   "четверть": 0.25,
-   "пол": 0.5,
-   "треть": 0.3333333333333333,
-   "половины": 0.5,
-   "половинки": 0.5,
-   "четвертинка": 0.25,
-   "четвертинку": 0.25
-  },
   "fused_fraction_examples": [
    "полголовки",
    "полпучка",
@@ -4596,11 +4512,6 @@ window.HappyMealSpeechData={
    "полвилка",
    "полветочки"
   ],
-  "non_number_prefix_exceptions": [
-   "полба",
-   "полдник",
-   "полынь"
-  ],
   "colloquial_candidates": {
    "стописят": 150,
    "сотка": 100,
@@ -4609,36 +4520,6 @@ window.HappyMealSpeechData={
    "сотня": 100,
    "сотню": 100
   },
-  "unit_aliases": {
-   "г": [
-    "г",
-    "гр",
-    "г.",
-    "гр.",
-    "грамм",
-    "грамма",
-    "граммов"
-   ],
-   "кг": [
-    "кг",
-    "килограмм",
-    "килограмма",
-    "килограммов"
-   ],
-   "мл": [
-    "мл",
-    "миллилитр",
-    "миллилитра",
-    "миллилитров"
-   ],
-   "л": [
-    "л",
-    "литр",
-    "литра",
-    "литров"
-   ]
-  },
-  "compose": "Складывать и умножать числовые части по смыслу. Не склеивать строками. Исправление заменяет число вместе с единицей.",
   "source_ids": [
    "S07",
    "S10",
@@ -4654,12 +4535,6 @@ window.HappyMealSpeechData={
    "на четверых",
    "на 100 г на этикетке"
   ],
-  "fraction_phrases": {
-   "три четверти": 0.75,
-   "две трети": 0.67,
-   "с половиной": "+0.5",
-   "с четвертью": "+0.25"
-  },
   "half_prefix_exact": [
    "полба",
    "полбы",
@@ -4704,34 +4579,6 @@ window.HappyMealSpeechData={
   "bot": "numbers"
  },
  "sizes": {
-  "small": [
-   "маленький",
-   "маленькая",
-   "маленькое",
-   "небольшой",
-   "небольшая"
-  ],
-  "medium": [
-   "средний",
-   "средняя",
-   "среднее"
-  ],
-  "large": [
-   "большой",
-   "большая",
-   "большое",
-   "крупный",
-   "крупная"
-  ],
-  "contextual": [
-   "мелкий",
-   "мелкая",
-   "тонкий",
-   "тонкая",
-   "толстый",
-   "толстая"
-  ],
-  "global_multipliers": null,
   "source_ids": [
    "S03",
    "S11",
@@ -4769,312 +4616,6 @@ window.HappyMealSpeechData={
    ]
   },
   "bot": "say_as"
- },
- "volume_references": [
-  {
-   "id": "faceted_rim",
-   "measure": "faceted_glass",
-   "condition": "классический стакан, до ободка/каёмки",
-   "ml": 200,
-   "source_ids": [
-    "S23"
-   ]
-  },
-  {
-   "id": "faceted_full",
-   "measure": "faceted_glass",
-   "condition": "классический стакан, до краёв",
-   "ml": 250,
-   "source_ids": [
-    "S23"
-   ]
-  },
-  {
-   "id": "us_teaspoon",
-   "measure": "US_teaspoon",
-   "ml": 4.93,
-   "source_ids": [
-    "S22"
-   ],
-   "use": "reference_not_every_home_spoon"
-  },
-  {
-   "id": "us_tablespoon",
-   "measure": "US_tablespoon",
-   "ml": 14.79,
-   "source_ids": [
-    "S22"
-   ],
-   "use": "reference_not_every_home_spoon"
-  },
-  {
-   "id": "us_cup",
-   "measure": "US_cup",
-   "ml": 236,
-   "source_ids": [
-    "S22"
-   ],
-   "use": "rounded_reference_not_every_home_cup"
-  }
- ],
- "food_weights": [
-  {
-   "id": "onion_small",
-   "food_key": "onion_raw_edible",
-   "measure": "head",
-   "grams": 70,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 170000,
-   "portion_row_id": "85862",
-   "size": "small",
-   "state": "сырой, съедобная часть",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "onion_medium",
-   "food_key": "onion_raw_edible",
-   "measure": "head",
-   "grams": 110,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 170000,
-   "portion_row_id": "85860",
-   "size": "medium",
-   "state": "сырой, съедобная часть",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "onion_large",
-   "food_key": "onion_raw_edible",
-   "measure": "head",
-   "grams": 150,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 170000,
-   "portion_row_id": "85858",
-   "size": "large",
-   "state": "сырой, съедобная часть",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "onion_rings",
-   "food_key": "onion_raw_edible",
-   "measure": "ring",
-   "grams": 6,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 170000,
-   "portion_row_id": "85864",
-   "derivation": "60 г / 10 колец",
-   "use": "offer_only_thickness_unknown"
-  },
-  {
-   "id": "garlic_clove",
-   "food_key": "garlic_raw_edible",
-   "measure": "clove",
-   "grams": 3,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 169230,
-   "portion_row_id": "84480",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "garlic_wedge",
-   "food_key": "garlic_raw_edible",
-   "measure": "wedge",
-   "grams": 3,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 169230,
-   "portion_row_id": "84480",
-   "derivation": "Долька чеснока трактуется как зубчик",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "olive_tablespoon",
-   "food_key": "olive_oil",
-   "measure": "tablespoon",
-   "grams": 13.5,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 171413,
-   "portion_row_id": "88667",
-   "fill": "level",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "olive_teaspoon",
-   "food_key": "olive_oil",
-   "measure": "teaspoon",
-   "grams": 4.5,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 171413,
-   "portion_row_id": "88669",
-   "fill": "level",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "olive_dessertspoon",
-   "food_key": "olive_oil",
-   "measure": "dessertspoon",
-   "grams": 9,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20",
-    "DESIGN"
-   ],
-   "fdc_id": 171413,
-   "derivation": "2 × 4,5 г; предложенное соглашение о размере десертной ложки",
-   "use": "offer_only_until_agreed"
-  },
-  {
-   "id": "sugar_teaspoon",
-   "food_key": "granulated_sugar",
-   "measure": "teaspoon",
-   "grams": 4.2,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 169655,
-   "portion_row_id": "85287",
-   "fill": "level",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "salt_teaspoon",
-   "food_key": "fine_table_salt",
-   "measure": "teaspoon",
-   "grams": 6,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 173468,
-   "portion_row_id": "92594",
-   "fill": "level",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "salt_tablespoon",
-   "food_key": "fine_table_salt",
-   "measure": "tablespoon",
-   "grams": 18,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20"
-   ],
-   "fdc_id": 173468,
-   "portion_row_id": "92595",
-   "fill": "level",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "salt_pinch_candidate",
-   "food_key": "fine_table_salt",
-   "measure": "pinch",
-   "grams": 0.5,
-   "estimated_for_user": true,
-   "source_ids": [
-    "LEGACY",
-    "DESIGN"
-   ],
-   "derivation": "Существующее предложение бота; не измеренная универсальная щепотка",
-   "use": "offer_only_not_auto"
-  },
-  {
-   "id": "salt_recipe_pinch",
-   "food_key": "fine_table_salt",
-   "measure": "pinch",
-   "grams": 0.375,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S20",
-    "S24"
-   ],
-   "derivation": "6 г × 1/16 чайной ложки по соглашению конкретного рецепта",
-   "use": "only_when_recipe_defines_pinch"
-  },
-  {
-   "id": "honey_tablespoon",
-   "food_key": "honey",
-   "measure": "tablespoon",
-   "grams": 21,
-   "estimated_for_user": true,
-   "source_ids": [
-    "S21"
-   ],
-   "fill": "level",
-   "use": "reference_default_with_visible_estimate"
-  },
-  {
-   "id": "walnut_handful_candidate",
-   "food_key": "walnut_kernels",
-   "measure": "handful",
-   "grams": 30,
-   "estimated_for_user": true,
-   "source_ids": [
-    "DESIGN"
-   ],
-   "derivation": "Удобный вариант кнопки для оценки, не измерение горсти и не универсальная норма",
-   "use": "offer_only_not_auto"
-  }
- ],
- "food_binding_contract": {
-  "meaning": "food_key — смысловой ключ, не поиск по подстроке; привязка к проверенным продуктам приложения потребуется при подключении",
-  "direct_fdc_ids": "Использовать указанные номера USDA для этой же еды и состояния. Для BLS/другой базы сначала подтвердить эквивалентность.",
-  "must_preserve": [
-   "raw_or_cooked",
-   "edible_basis",
-   "drained_or_total",
-   "whole_or_chopped",
-   "oil_kind",
-   "salt_grind",
-   "species",
-   "cut_or_plant_part",
-   "skin_and_bone",
-   "stem_and_leaves",
-   "before_or_after_removal",
-   "age_class_if_explicit"
-  ]
- },
- "quantity_priority": [
-  "explicit_mass_or_volume",
-  "named_container_volume",
-  "explicit_fraction_of_known_package",
-  "personal_food_specific_measure",
-  "product_measure",
-  "food_group_measure",
-  "general_measure",
-  "ask_once_and_remember"
- ],
- "quantity_rules": {
-  "explicit_mass_overrides_piece_count": true,
-  "ml_is_not_g": true,
-  "unknown_density": "Сохранить объём; использовать проверенную меру этого продукта или спросить вес. Не считать любой продукт водой.",
-  "unknown_default_grams": "Спросить один раз и запомнить своей мерой продукта.",
-  "range": "Сохранять исходные границы, если названы. Не изобретать доверительные интервалы.",
-  "personal_measures": "Хранить отдельно в личных данных пользователя; не добавлять частные граммы и записи в общий репозиторий.",
-  "ordinary_portion": "Решение D13: обычная мера записывается сразу с «≈»; вопрос — только если у продукта нет никакой меры."
  },
  "compound_and_intent_rules": [
   {
@@ -5205,16 +4746,6 @@ window.HappyMealSpeechData={
    ]
   }
  ],
- "short_questions": {
-  "oil": "Примерно сколько масла: чайная ложка, столовая или свой вес?",
-  "cheese": "Сыра примерно сколько — граммов или ломтиков?",
-  "package": "Сколько граммов в целой упаковке?",
-  "bottle": "Какой объём у целой бутылки?",
-  "unknown_spoon": "Чайная или столовая ложка?",
-  "inclusion": "Сметана входит в эти 300 г или добавлена сверху?",
-  "recipe": "Это рецепт или твоя съеденная порция?",
-  "glass": "Стакан 200 или 250 мл? Можно свой объём."
- },
  "maintenance": [
   "Новая фраза → запись/уточнение в этом словаре с источником либо пометкой «пример пользователя» → проверочная фраза → при необходимости изменение разбора.",
   "Не дублировать эти списки вручную в bot.js, описании экрана и запросе Gemini.",
@@ -5271,109 +4802,6 @@ window.HappyMealSpeechData={
   "data_status": "connected",
   "new_research_scope": "Синонимы, формы названий, части растений и мяса. 16 новых внешних источников; не исследование частот или аудиозаписей."
  },
- "food_modifier_aliases": [
-  {
-   "id": "turkey_species",
-   "forms": [
-    "индюшиное",
-    "индюшиный",
-    "индюшиная",
-    "индюшачье",
-    "индюшачий",
-    "индюшиные",
-    "индюшиного",
-    "индейки",
-    "индюшки"
-   ],
-   "assign": {
-    "species": "turkey"
-   },
-   "allowed_head_nouns": [
-    "мясо",
-    "филе",
-    "грудка",
-    "бедро",
-    "голень",
-    "печень",
-    "сердце",
-    "крыло"
-   ],
-   "meaning_ru": "Добавляет вид птицы к названной части; не заменяет часть общим мясом.",
-   "source_ids": [
-    "S30",
-    "BRIEF"
-   ],
-   "status": "proposed"
-  },
-  {
-   "id": "chicken_species",
-   "forms": [
-    "куриное",
-    "куриный",
-    "куриная",
-    "куриные",
-    "куриного",
-    "курицы"
-   ],
-   "assign": {
-    "species": "chicken"
-   },
-   "allowed_head_nouns": [
-    "мясо",
-    "филе",
-    "грудка",
-    "бедро",
-    "голень",
-    "печень",
-    "сердце",
-    "крыло"
-   ],
-   "meaning_ru": "Куриная печень остаётся печенью. Куриные яйца — самостоятельный продукт.",
-   "source_ids": [
-    "S29",
-    "DESIGN"
-   ],
-   "status": "proposed"
-  },
-  {
-   "id": "boiled",
-   "forms": [
-    "варёный",
-    "вареный",
-    "варёная",
-    "вареная",
-    "варёное",
-    "вареное",
-    "варёные",
-    "вареные",
-    "отварной",
-    "отварная",
-    "отварное",
-    "отварные",
-    "отварного",
-    "варёного",
-    "вареного"
-   ],
-   "assign": {
-    "cooking": "boiled"
-   },
-   "meaning_ru": "Один способ приготовления, если это свободный признак продукта.",
-   "protect": [
-    "варёная колбаса",
-    "вареная колбаса",
-    "варёная сгущёнка",
-    "вареная сгущенка",
-    "варёно-копчёный",
-    "варено-копченый"
-   ],
-   "source_ids": [
-    "S31",
-    "S43",
-    "DESIGN"
-   ],
-   "status": "proposed"
-  }
- ],
  "semantic_model": {
   "status": "proposed_not_implemented",
   "fields_ru": {
@@ -5561,44 +4989,6 @@ window.HappyMealSpeechData={
     "S36"
    ],
    "status": "proposed"
-  }
- ],
- "edible_weight_rules": [
-  {
-   "id": "final_weight",
-   "rule_ru": "Граммы уже относятся к очищенной съедобной части — записать один раз. «Укроп 15 г, это уже без ножек» = 15 г.",
-   "source_ids": [
-    "DESIGN"
-   ]
-  },
-  {
-   "id": "known_subtraction",
-   "rule_ru": "Взвешено до очистки и отдельно назван вес удалённого — вычесть один раз в одинаковом состоянии. 20 г со стеблями минус 5 г выброшенных = 15 г.",
-   "source_ids": [
-    "DESIGN"
-   ]
-  },
-  {
-   "id": "unknown_subtraction",
-   "rule_ru": "Вес до очистки, удалённая масса неизвестна — спросить вес после очистки или предложить подходящую явную оценку. Нет постоянного процента для всех ножек.",
-   "source_ids": [
-    "DESIGN"
-   ]
-  },
-  {
-   "id": "cooked_weight",
-   "rule_ru": "Не вычитать сырой остаток из готовой массы и не переводить сырой вес в готовый без подходящего выхода приготовления.",
-   "source_ids": [
-    "DESIGN"
-   ]
-  },
-  {
-   "id": "used_not_eaten",
-   "rule_ru": "Зелень, положенная в бульон и вынутая, не равна съеденным стеблям. Не добавлять всю исходную массу в дневник отдельной едой.",
-   "source_ids": [
-    "S38",
-    "DESIGN"
-   ]
   }
  ],
  "decision_catalog": [
@@ -9326,5 +8716,6 @@ window.HappyMealSpeechData={
    "to": "$1",
    "meaning_ru": "«Курица без кожи и костей 200 г» — 200 г мяса без кожи: «и костей» не вес костей. Аудит словаря, порция «служебные слова», 22.11.2026."
   }
- ]
+ ],
+ "reference_removed_ru": "22.11.2026 (аудит словаря, рекомендуемый вариант по разрешению Астамура): убраны разделы и поля, которые бот не читал и которые расходились с его поведением — food_weights, volume_references, quantity_priority, quantity_rules, short_questions, food_binding_contract, food_modifier_aliases, edible_weight_rules, numbers.fractions/fraction_phrases/unit_aliases/non_number_prefix_exceptions/compose, sizes.small/medium/large/contextual/global_multipliers, у мер default_grams/no_general/food_scope. Рабочие веса — в measures, food_measures, usual_measures. Вернуть — из истории репозитория."
 };
