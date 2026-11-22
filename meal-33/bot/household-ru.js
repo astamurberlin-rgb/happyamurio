@@ -1185,11 +1185,9 @@ window.HappyMealSpeechData={
     "на глаз",
     "на глазок",
     "по вкусу",
-    "сколько не жалко",
     "как обычно",
     "сколько-то",
-    "сколько то",
-    "несколько"
+    "сколько то"
    ],
    "meaning_ru": "Человек не измерял или выбирал по вкусу; числа нет.",
    "action": "usual_measure_times_factor_mark_estimate",
@@ -1244,7 +1242,8 @@ window.HappyMealSpeechData={
     "от души",
     "хорошо так",
     "прилично",
-    "сколько не жалко"
+    "сколько не жалко",
+    "несколько"
    ],
    "meaning_ru": "Большое относительно ситуации количество.",
    "action": "usual_measure_times_factor_mark_estimate",
@@ -1402,8 +1401,8 @@ window.HappyMealSpeechData={
     "щепоткой",
     "щепоточку"
    ],
-   "meaning_ru": "Пальцевая мера; помол и пальцы меняют вес.",
-   "action": "offer_explicit_estimate_or_ask",
+   "meaning_ru": "Пальцевая мера, 0,5 г без вопроса; помол и пальцы меняют вес.",
+   "action": "food_specific_weight",
    "source_ids": [
     "S24",
     "BRIEF"
@@ -1419,8 +1418,8 @@ window.HappyMealSpeechData={
     "на кончике ножа",
     "кончик ножа"
    ],
-   "meaning_ru": "Нет универсального объёма или массы.",
-   "action": "ask_or_offer_explicit_estimate",
+   "meaning_ru": "Точного объёма нет; 0,3 г без вопроса.",
+   "action": "food_specific_weight",
    "source_ids": [
     "S12",
     "BRIEF"
@@ -1464,14 +1463,12 @@ window.HappyMealSpeechData={
     "ложка",
     "ложки",
     "ложек",
-    "ложечка",
-    "ложечки",
     "ложку",
     "ложкой",
     "ложками"
    ],
-   "meaning_ru": "Без уточнения тип ложки неизвестен.",
-   "action": "ask_spoon_kind",
+   "meaning_ru": "Ложка без уточнения — столовая, 15 г; «ложечка» — чайная.",
+   "action": "food_specific_weight",
    "source_ids": [
     "BRIEF"
    ],
@@ -1524,6 +1521,8 @@ window.HappyMealSpeechData={
     "ложечки",
     "ложечку",
     "ложечек",
+    "ложечкой",
+    "ложечками",
     "чайную ложку",
     "чайной ложкой",
     "чайную ложечку",
@@ -1574,7 +1573,7 @@ window.HappyMealSpeechData={
     "стаканами"
    ],
    "meaning_ru": "Решение Астамура (D14): стакан 250 мл, чашка 200 мл, кружка 300 мл, без переспрашивания. Названный объём («пол-литровая кружка») важнее.",
-   "action": "personal_volume_or_ask",
+   "action": "personal_volume_or_default",
    "source_ids": [
     "S04",
     "BRIEF",
@@ -1966,7 +1965,6 @@ window.HappyMealSpeechData={
     "шт",
     "штучка",
     "штучки",
-    "одна штучка",
     "штуку",
     "штучку",
     "штучек",
@@ -2501,48 +2499,6 @@ window.HappyMealSpeechData={
    "canonical": null
   },
   {
-   "id": "alias_oil_ambiguous",
-   "forms": [
-    "маслице",
-    "маслица",
-    "масличко"
-   ],
-   "meaning_ru": "Вид масла не следует из уменьшительности.",
-   "action": "clarify_oil_kind",
-   "source_ids": [
-    "BRIEF"
-   ],
-   "canonical": null,
-   "superseded_by": "alias_butter"
-  },
-  {
-   "id": "protected_food_names",
-   "forms": [
-    "сырок",
-    "сырки",
-    "сливки",
-    "маслёнок",
-    "масленок",
-    "творожок",
-    "блинчики",
-    "пирожок",
-    "булочка",
-    "батончик",
-    "шоколадка",
-    "палочки",
-    "трубочка",
-    "сосиска",
-    "селедка",
-    "маточное молочко",
-    "сгущенное молоко"
-   ],
-   "meaning_ru": "Самостоятельные названия, не обрезать до сыр/слива/масло.",
-   "action": "protect_food_identity",
-   "source_ids": [
-    "DESIGN"
-   ]
-  },
-  {
    "id": "alias_chicken",
    "forms": [
     "курятина",
@@ -2973,32 +2929,9 @@ window.HappyMealSpeechData={
    "bot": "alias"
   },
   {
-   "id": "alias_oatmeal_ambiguous",
-   "forms": [
-    "овсянка",
-    "овсянки",
-    "овсянку"
-   ],
-   "canonical": "овсянка",
-   "canonical_food_key": null,
-   "source_ids": [
-    "S41"
-   ],
-   "meaning_ru": "Крупа или готовая каша; количество 60 г само по себе не доказывает сухое состояние.",
-   "action": "resolve_state_or_ask",
-   "weight_multiplier": 1,
-   "evidence_status": "supported_meaning",
-   "implementation_status": "not_connected",
-   "scope": "пищевое значение самостоятельного продукта; не замена внутри другого названия",
-   "candidate_food_keys": [
-    "oat_grain_or_flakes",
-    "oat_porridge"
-   ],
-   "short_question_ru": "Это сухая овсянка или готовая каша?"
-  },
-  {
    "id": "alias_coriander_seed_ground",
    "forms": [
+    "семена кориандра",
     "кориандр молотый",
     "молотый кориандр",
     "семена кориандра молотые"
@@ -5883,7 +5816,7 @@ window.HappyMealSpeechData={
    "id": "N23",
    "phrase": "Овсянка 60 г",
    "expected_ru": "Уточнить: сухая или готовая, если нет однозначного контекста.",
-   "rule_id": "alias_oatmeal_ambiguous",
+   "rule_id": "generic_defaults.oatmeal",
    "origin": "authored_research_case",
    "run_status": "not_run",
    "actual": null
@@ -5892,7 +5825,7 @@ window.HappyMealSpeechData={
    "id": "N24",
    "phrase": "Овсянка сухая 60 г",
    "expected_ru": "Сохранить сухое состояние и 60 г; при необходимости уточнить крупу/хлопья.",
-   "rule_id": "alias_oatmeal_ambiguous",
+   "rule_id": "generic_defaults.oatmeal",
    "origin": "authored_research_case",
    "run_status": "not_run",
    "actual": null
@@ -5901,7 +5834,7 @@ window.HappyMealSpeechData={
    "id": "N25",
    "phrase": "Овсянка на воде готовая 200 г",
    "expected_ru": "Готовая каша на воде, 200 г; не сухие хлопья.",
-   "rule_id": "alias_oatmeal_ambiguous",
+   "rule_id": "generic_defaults.oatmeal",
    "origin": "authored_research_case",
    "run_status": "not_run",
    "actual": null
@@ -6672,10 +6605,6 @@ window.HappyMealSpeechData={
    "unit": "упаковка"
   },
   {
-   "match": "^лапша.*(удон|соба).*(варен|приготовл)",
-   "unit": "порция"
-  },
-  {
    "match": "^натто",
    "unit": "упаковка"
   },
@@ -7022,6 +6951,14 @@ window.HappyMealSpeechData={
    "g": 100,
    "source_ids": [
     "ESTIMATE"
+   ]
+  },
+  {
+   "match": "^лапша для рамена, варен",
+   "unit": "порция",
+   "g": 230,
+   "source_ids": [
+    "J05"
    ]
   },
   {
@@ -7514,23 +7451,6 @@ window.HappyMealSpeechData={
    "source_ids": [
     "J05",
     "ESTIMATE"
-   ]
-  },
-  {
-   "match": "^лапша для рамена, варен",
-   "unit": "порция",
-   "g": 230,
-   "source_ids": [
-    "J05"
-   ]
-  },
-  {
-   "match": "^лапша.*(удон|соба).*(варен|приготовл)",
-   "unit": "порция",
-   "g": 200,
-   "source_ids": [
-    "J02",
-    "J05"
    ]
   },
   {
@@ -8060,7 +7980,6 @@ window.HappyMealSpeechData={
   "птичье молоко",
   "кокосовое молочко",
   "семена кинзы",
-  "семена кориандра",
   "семена укропа",
   "гусиная печень",
   "утиная грудка",
@@ -8792,7 +8711,7 @@ window.HappyMealSpeechData={
   },
   {
    "id": "sf_with_cheese",
-   "match": "(^|\\s)сырам(?=\\s|$)",
+   "match": "(^|\\s)(?:со?\\s+)?сырам(?=\\s|$)",
    "to": "$1с сыром",
    "meaning_ru": "«сырам» — «с сыром»"
   },

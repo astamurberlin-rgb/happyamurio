@@ -676,6 +676,16 @@ dict(id="Мр6", msgs=["мороженое 100 г"], mode="none", ask=True),
  dict(id="Ис78", eaten=True, msgs=["сливки 10 процентов 50 мл"], want=[("сливки 10", 50)]),
  dict(id="Ис79", eaten=True, msgs=["кефир 2,5 0,5 литра"], want=[("кефир 2,5%", 500)]),
  dict(id="Ис80", eaten=True, msgs=["молоко 1,5 2 стакана"], want=[("молоко 1,5", 500)]),
+ dict(id="Ау1", eaten=True, msgs=["семена кориандра молотые 5 г"], want=[("кориандр семена", 5)]),
+ dict(id="Ау2", eaten=True, msgs=["сметана сколько не жалко"], want=[("сметана", 22.5)]),
+ dict(id="Ау3", eaten=True, msgs=["гречки сколько не жалко"], want=[("гречка", 300)]),
+ dict(id="Ау4", eaten=True, msgs=["чай сколько не жалко сахара"], want=[("чай", 200), ("сахар", 7.5)]),
+ dict(id="Ау5", eaten=True, msgs=["ложечкой мёда"], want=[("мед", 7)]),
+ dict(id="Ау6", eaten=True, msgs=["порция лапши для рамена варёной"], want=[("лапша для рамена", 230)]),
+ dict(id="Ау7", eaten=True, msgs=["сахара несколько"], want=[("сахар", 7.5)]),
+ dict(id="Ау8", eaten=True, msgs=["творог с ложечкой мёда", T("Записать так")], want=[("творог 5%", 200), ("мед", 7)]),
+ dict(id="Ау9", eaten=True, msgs=["макароны с сырам", T("Записать так")], want=[("макарон !сыр", 200), ("сыр", 20)]),
+ dict(id="Ау10", eaten=True, msgs=["семена кориандра 5 г"], want=[("кориандр семена", 5)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
