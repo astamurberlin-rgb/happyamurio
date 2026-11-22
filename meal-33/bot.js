@@ -364,6 +364,9 @@ var MealBot=(function(){
     var ids=[], r; try{ r=parseText(String(name).replace(/[,—()«»]+/g,' ').replace(/\s+/g,' ').trim()) }catch(e){ r={lines:[]} }
     r.lines.forEach(function(x){ ids=ids.concat([x.fid]).concat(x.alts||[]) });
     var id=ids.filter(function(x){ return x&&FOODS[x]&&norm(FOODS[x].n)===k })[0]||null;
+    /* разбор названия мог уйти к недавнему соседу (после «лодочка без масла» — только она): тогда точное название ищется в списке и в BLS. Разбор хлеба и круп 22.11.2026 */
+    if(!id&&typeof LIST!=='undefined'){ var hitL=LIST.filter(function(f){ return f&&norm(f.n)===k })[0]; if(hitL&&FOODS[hitL.id]) id=hitL.id }
+    if(!id&&typeof BLS!=='undefined'&&BLS&&BLS.f&&typeof bindTmp==='function'){ var row=BLS.f.filter(function(r){ return norm(r[1])===k })[0]; if(row){ var bid=bindTmp(row[0]); if(FOODS[bid]) id=bid } }
     if(id) PINC[k]=id; return id;
   }
   function pinLine(l,c){
@@ -480,8 +483,8 @@ var MealBot=(function(){
       /* Meal 33.13: «а рис 100 г не ел» — названное с «не ел», «не стал», «не трогал» в дневник не идёт («не доел» — отдельное правило выше) */
       if(c.neg) notEaten=true;
       if(other||notEaten){
-        if(other){ carryOther=true; var lf0=tokensOf(c.text.replace(RECIP,' ').replace(SUBJ,' ')).join(' ');
-          if(lf0&&/\d/.test(c.text)){ lastOtherFood=lf0; wantFood=false } else if(/\d/.test(c.text)) wantFood=true }
+        if(other){ carryOther=true; var lf0=tokensOf(c.text.replace(RECIP,' ').replace(SUBJ,' ').replace(/(^|\s)(испек\S*|пожарил\S*|сварил\S*|приготовил\S*|сделал\S*|положил\S*|налил\S*|дал|дала)(?=\s|$)/g,' ')).join(' ');
+          if(lf0){ lastOtherFood=lf0; wantFood=false } else if(/\d/.test(c.text)) wantFood=true }   // «испекла блины детям, сама съела два» — два блина (22.11.2026)
         (res.others=res.others||[]).push(c.text); return }
       if(c.own||hasW(OWNW,T)){
         carryOther=false; c.text=T.replace(OWNW,' ').replace(/\s+/g,' ').trim();
@@ -642,7 +645,7 @@ var MealBot=(function(){
       SUBJ=/(^|\s)(ребенок|дети|малыш|сын|сынок|дочь|дочка|муж|жена|мама|папа|бабушка|дедушка|брат|сестра|гости|гость|друг|подруга|кот|кошка|собака|пес)(?=\s|$)/g,
       OWNW=/(^|\s)(мне|себе|я|сам|сама|у меня)(?=\s|$)/g,
       NOTATE=/(^|\s)не\s+(ел|ела|ели|съел|съела|съели|пил|пила|пили|выпил|выпила|стал|стала|трогал|трогала|брал|брала|кушал|кушала|буду|хочу|хотел|хотела)(?=\s|$)/,
-      NOTEATEN=/(^|\s)(уронил\S*|выбросил\S*|выкинул\S*|пролил\S*|разлил\S*|просыпал\S*)(?=\s|$)/;
+      NOTEATEN=/(^|\s)(уронил\S*|выбросил\S*|выкинул\S*|пролил\S*|разлил\S*|просыпал\S*|купил\S*|покупал\S*)(?=\s|$)/;   // «купил батон» — покупка, а не еда (Meal 33.30, разбор хлеба и круп 22.11.2026)
   function hasW(re,t){ re.lastIndex=0; var r=re.test(t); re.lastIndex=0; return r }
   /* «…но не доела, половину оставила» — пишется съеденная часть; сколько осталось, не сказано — целиком со знаком «≈» и кнопкой «Меньше» */
   var LEFT=null, LEFTK={'половин':0.5,'треть':0.67,'четверт':0.75,'немного':0.9,'чуть':0.9,'почти':0.1};
@@ -1721,7 +1724,14 @@ var MealBot=(function(){
       }
       return deferred(why[1]);
     }
-    if(asked||/^(сколько|почему|зачем|как|какой|какая|какие|чего|можно ли|посоветуй|что лучше)(\s|$)/.test(bare)) return deferred('вопрос о питании');
+    if(asked||/^(сколько|почему|зачем|как|какой|какая|какие|чего|чем|можно ли|посоветуй|что лучше)(\s|$)/.test(bare)){
+      /* вопрос без единого слова о еде («какая погода завтра») — не по теме: короткий отказ. Разбор хлеба и круп 22.11.2026 */
+      var QW=/^(сколько|почему|зачем|как|какой|какая|какие|какое|чего|чем|можно|посоветуй|что|лучше|для|при|без)$/, qf=false;
+      try{ qf=work.split(/[^а-яёa-z0-9-]+/).filter(function(w){ return w.length>2&&!QW.test(w) }).some(function(w){
+        var l=(parseText(w).lines||[])[0]; if(!l) return false; if(l.fid&&l.st==='ok') return true;
+        var st=norm(w).slice(0,4); return (l.alts||[]).some(function(id){ return FOODS[id]&&norm(FOODS[id].n).indexOf(st)===0 }) }) }catch(e){ qf=true }
+      return qf?deferred('вопрос о питании'):offTopic();
+    }
     var multi=tt.hits.length>1, clauses;
     if(multi){
       /* несколько времён в одной диктовке: части фразы режутся по «ещё / потом / затем», у каждой — своё время */
@@ -1910,6 +1920,7 @@ var MealBot=(function(){
     var t=missText(); if(!t) return p('Список недостающего пуст: пока всё нашлось.');
     return p('Чего не хватает в базе:')+'<pre class="mbMiss">'+esc(t)+'</pre>'+chips([['misscopy:x','Скопировать список'],['missclear:x','Очистить список']]);
   }
+  function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
   function deferred(why){
     return p('Пока так не умею — '+esc(why)+'. Ничего не записал.')+'<p class="mlHint">Это разберёт модель (этап 2). Сейчас можно сказать проще: продукт и вес.</p>';
   }
