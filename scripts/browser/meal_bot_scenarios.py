@@ -1168,6 +1168,19 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="СБ17", eaten=True, msgs=["люля-кебаб 2 штуки"], want=[("люля", 200)]),
  dict(id="СБ19", eaten=True, msgs=["том ям 300 г"], mode="none"),
  dict(id="СБ20", eaten=True, msgs=["борщик тарелка"], want=[("борщ", 300)]),
+# Состав продукта (тема 1 «вышло за рамки», 22.11.2026): справка из карточки продукта, в дневник ничего
+ dict(id="Сп01", msgs=["сколько сахара в шоколаде"], mode="none", reply="сахара"),
+ dict(id="Сп02", msgs=["сколько сахара в банане 150 г"], mode="none", reply="150 г: сахара"),
+ dict(id="Сп03", msgs=["калорийность гречки"], mode="none", reply="ккал"),
+ dict(id="Сп04", msgs=["что в составе сникерса"], mode="none", reply="Сахара"),
+ dict(id="Сп05", msgs=["кбжу творога"], mode="none", reply="ккал"),
+ dict(id="Сп06", msgs=["сколько клетчатки в овсянке"], mode="none", reply="клетчатка"),
+ dict(id="Сп07", msgs=["сколько витамина с в апельсине"], mode="none", reply="витамин C"),
+ dict(id="Сп08", msgs=["сколько железа в говяжьей печени"], mode="none", reply="железо"),
+ dict(id="Сп09", msgs=["сколько кофеина в эспрессо"], mode="none", reply="нет данных"),
+ dict(id="Сп10", msgs=["сколько белка в 200 г курицы"], mode="none", reply="200 г"),
+ dict(id="Сп11", msgs=["состав абвгд"], mode="none", reply="какой продукт"),
+ dict(id="Сп12", msgs=["Груша 200 г", "какая калорийность у банана"], want=[("груш", 200)], reply="ккал"),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])

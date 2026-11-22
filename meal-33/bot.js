@@ -1736,12 +1736,60 @@ var MealBot=(function(){
   }
 
   /* ── вопросы о записанном ── */
-  function productInfo(text){
+  /* вопрос о составе продукта: «сколько сахара в шоколаде», «калорийность гречки», «что в составе сникерса».
+     Вещество — из списка веществ Meal (substances.js), значение — из карточки продукта (как на экране продукта).
+     Тема «состав продукта», ступень 1 (Астамур 22.11.2026). В дневник ничего не идёт. */
+  var SUB_STEM=[[/^(калори|ккал|энерги|калорийн)/,'kcal'],[/^(белк|белок|протеин)/,'prot'],[/^жир/,'fat'],[/^углевод/,'carb'],
+    [/^сахар/,'sug'],[/^клетчат/,'fib'],[/^(соль|соли|солей)$/,'salt'],[/^вод[аыу]$/,'water'],[/^алкогол/,'alc'],[/^кофеин/,'caf']];
+  var VIT_LETTER={'а':'A','a':'A','б':'B','b':'B','с':'C','ц':'C','c':'C','д':'D','d':'D','е':'E','e':'E','к':'K','k':'K'};
+  function substanceOf(words){
+    var w=String(words||'').replace(/[?!.,]+/g,' ').replace(/\s+/g,' ').trim(); if(!w) return null;
+    var ws=w.split(' ');
+    if(ws.length===1){ var hit=SUB_STEM.filter(function(s){ return s[0].test(ws[0]) })[0]; if(hit) return hit[1] }
+    var HS=typeof HappySubstances!=='undefined'?HappySubstances:null; if(!HS) return null;
+    /* «витамина с», «витамин д3» → «Витамин C», «Витамин D» */
+    var vm=w.match(/^витамин\S*\s+([а-яa-z])(\d*)$/);
+    if(vm&&VIT_LETTER[vm[1]]){ var vx=HS.exact('Витамин '+VIT_LETTER[vm[1]]+(VIT_LETTER[vm[1]]==='B'?vm[2]:'')); if(vx) return vx.key }
+    var ex=HS.exact(w); if(ex) return ex.key;
+    /* «железа», «магния», «омеги 3»: каждое слово — начало слова в названии вещества */
+    var st=ws.map(function(x){ return x.replace(/(ов|ей|ия|ии|ою|ой|а|ы|и|у|е)$/,'') }).filter(function(x){ return x.length>=3||/^\d+$/.test(x) });
+    if(!st.length||st.length!==ws.length) return null;
+    var c=HS.fields.filter(function(f){ var tw=HS.norm(f.title).split(' ');
+      return tw.length>=st.length&&st.every(function(s){ return tw.some(function(x){ return x.indexOf(s)===0 }) }) });
+    if(c.length>1) c=c.filter(function(f){ return HS.norm(f.title).split(' ').length===st.length });
+    return c.length===1?c[0].key:null;
+  }
+  function productFood(text){
     var u; FILLOK=false; try{ u=core(fixes(' '+text+' ')) }catch(e){ return null }
     var l=u&&u.lines.length===1?u.lines[0]:null; if(!l) return null;
     var id=l.fid||(l.ask==='pick'&&!l.noAuto?l.alts[0]:null); if(!id||!FOODS[id]) return null;
-    var g=l.explicit&&l.fid&&l.g>0?l.g:100, s=sumOf([{fid:id,g:g,q:g,u:'г'}]); if(!(s.k>0)&&!(s.p>0)&&!(s.c>0)) return null;
-    return p(esc(FOODS[id].n)+', '+fmt(g)+' г: <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г</p><p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
+    var f=(typeof MealProducts!=='undefined'&&MealProducts.forItem)?(MealProducts.forItem({fid:id},FOODS,DB)||FOODS[id]):FOODS[id];
+    var g=100; if(l.explicit&&l.q>0){ var g1=l.fid===id&&l.g>0?l.g:gramsFor(id,l.q,l.u); if(g1>0) g=g1 }
+    return {id:id,f:f,g:g};
+  }
+  function subVal(f,key){
+    try{ if(typeof MealProducts!=='undefined') return MealProducts.value(f,key,typeof blsVal==='function'?blsVal:null) }catch(e){}
+    var M={kcal:'k',prot:'p',fat:'f',carb:'c'}; return M[key]&&typeof f[M[key]]==='number'?f[M[key]]:null;
+  }
+  function subAmount(v,unit){ return fmt(v)+' '+unit }
+  /* продукт в вопросе не узнан однозначно: ничего не записываем и в недостающее не кладём */
+  function notSure(text){ return p('Не понял, какой продукт: «'+esc(String(text).trim())+'». Скажи точнее, например «говяжья печень» или «молочный шоколад».')+'<p class="mlHint">Это вопрос о составе. В дневник ничего не записал.</p>' }
+  function productInfo(text,key){
+    var pf=productFood(text); if(!pf) return null;
+    var f=pf.f, g=pf.g, name=esc(FOODS[pf.id].n)+', '+fmt(g)+' г';
+    var HINT='<p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
+    if(key&&key!=='all'&&['kcal','prot','fat','carb'].indexOf(key)<0){
+      var sx=typeof HappySubstances!=='undefined'?HappySubstances.get(key):null; if(!sx) return null;
+      var v=subVal(f,key), lab=sx.title.replace(/,\s*всего$/,''); lab=lab.charAt(0).toLowerCase()+lab.slice(1);
+      if(v==null) return p(name+': '+esc(lab)+' — в базе нет данных для этого продукта.')+HINT;
+      return p(name+': '+esc(lab)+' <b>'+subAmount(v*g/100,sx.unit)+'</b>')+HINT;
+    }
+    var s=sumOf([{fid:pf.id,g:g,q:g,u:'г'}]); if(!(s.k>0)&&!(s.p>0)&&!(s.c>0)) return null;
+    var more='';
+    if(key==='all'){
+      more=[['sug','Сахара'],['fib','Клетчатка'],['salt','Соль']].map(function(x){ var v=subVal(f,x[0]); return v==null?'':' · '+x[1]+' '+fmt(v*g/100)+' г' }).join('');
+    }
+    return p(name+': <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г'+more+'</p>'+HINT;
   }
   function todayTotals(){
     var items=day(curDate).items, s=sumOf(items), when=curDate===todayISO()?'сегодня':'за этот день';
@@ -1938,8 +1986,10 @@ var MealBot=(function(){
     if(!/\d/.test(bare)&&/(подожди|погоди|секунд|минутк|сейчас взвешу|взвешиваю|взвешу)/.test(bare)&&tokensOf(bare.replace(/подожди|погоди|секунд\S*|минутк\S*|взвеш\S*/g,' ').replace(FILL,' ')).length===0)
       return p('Жду. Ничего не записываю, пока не скажешь.');
     /* «сколько калорий в 100 г риса?» — вопрос о продукте, а не об итоге дня: ответ из базы, в дневник ничего не идёт */
-    var pq=bare.match(/^(?:а\s+)?сколько\s+(?:калори\S*|ккал|белк\S*|жир\S*|углевод\S*)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/);
-    if(pq&&m.kind!=='photo'){ var pi=productInfo(pq[1]); return pi||deferred('вопрос о питании') }
+    var pq=bare.match(/^(?:а\s+)?(?:сколько|какое количество)\s+(.+?)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/), pk=pq&&m.kind!=='photo'?substanceOf(pq[1]):null;
+    if(pk){ var pi=productInfo(pq[2],pk); return pi||notSure(pq[2]) }
+    var pc=m.kind==='photo'?null:(bare.match(/^(?:а\s+)?(?:что\s+(?:входит\s+)?в\s+состав[еа]?|какой\s+состав\s+(?:у|в)|состав|кбжу|бжу|пищевая\s+ценность)\s+(.+)$/)||bare.match(/^(?:а\s+)?(?:какая\s+|какова\s+)?(?:калорийность|энергетическая\s+ценность)\s+(?:у\s+)?(.+)$/));
+    if(pc){ var pci=productInfo(pc[1],'all'); return pci||notSure(pc[1]) }
     if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(ORIG)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(ORIG)) return todayTotals();
     if(/что\s+(я\s+)?(уже\s+|сегодня\s+)*(записал|записано|съел|ел)(\s|$)/.test(ORIG)||/^(покажи|что)\s+(записи|день|записано|за сегодня)/.test(ORIG)) return todayList();
     if(/(список|чего)\s+(недостающ|не хватает|нет в базе)|что\s+не\s+нашел|ненайденн/.test(bare)) return missShow();
