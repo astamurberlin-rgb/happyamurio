@@ -532,7 +532,11 @@ var MealBot=(function(){
         /* «…, нет, …»: поправка последнего названного. Только число — меняется количество; назван продукт — меняется продукт */
         res.corrected=true;
         if(!food.length&&c.hasNum){ last.text=foodOf(last.text)+' '+c.text; last.hasNum=true; last.soft=null; last.range=c.range; if(c.approx) last.approx=true; return }
-        if(food.length){ merged.pop(); if(!c.hasNum&&last.hasNum) c.soft=last.soft||qtyOf(last.text); merged.push(c); return }
+        /* «гречка и масло, нет, гречки 150» — поправка того, что названо: меняется гречка, масло остаётся (22.11.2026) */
+        if(food.length){ var st4=function(w){ return norm(w).slice(0,4) }, fs=food.map(st4), hi=-1;
+          for(var mi=merged.length-1;mi>=0&&hi<0;mi--){ if(tokensOf(foodOf(merged[mi].text)).some(function(w){ return w.length>=3&&fs.indexOf(st4(w))>=0 })) hi=mi }
+          if(hi>=0&&hi<merged.length-1){ var was=merged[hi]; if(!c.hasNum&&was.hasNum) c.soft=was.soft||qtyOf(was.text); merged[hi]=c; return }
+          merged.pop(); if(!c.hasNum&&last.hasNum) c.soft=last.soft||qtyOf(last.text); merged.push(c); return }
         return;
       }
       if(c.corr&&!last){ res.leadNo=true }
