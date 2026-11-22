@@ -2129,7 +2129,7 @@ var MealBot=(function(){
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
-    if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask) return p(esc(rcp)) }
+    if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
     if(!NEST) LEFT=null;   // замена не состоялась, а человек уже говорит о другом
@@ -2236,6 +2236,7 @@ var MealBot=(function(){
     if(ORD[bare]!=null&&!S.ask&&lastAdd(S)&&lastAdd(S).line.picked){ var sw1=swapTo(S,lastAdd(S),lastAdd(S).line.alts[ORD[bare]]); if(sw1) return sw1 }
     if(/^(ага|угу|да|ок|окей|хорошо|ладно|спасибо|понял|ясно|привет)[.!]*$/.test(bare)) return p('Ок.')+(S.pend.length?askHTML(S):'');
     if(m.kind!=='photo'&&!S.ask){ var sa=suppAsk(chat,S,m,bare); if(sa) return sa }   // БАДы голосом
+    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&!prepped){ var hp=appHelp(m.text); if(hp) return hp+(S.pend.length?askHTML(S):'') }   // справка о приложении — после ответов из данных
     /* время и разбор */
     t=t.replace(/^\s*(да|ага|угу)[\s,]+(?=\S)/,' ');
     if(SP) t=t.replace(/\s(?:а\s+|и\s+)?(?:до этого|перед этим|потом|затем|еще)\s+в\s+\d{1,2}\s*$/,' ');   // Meal 33.12
@@ -2457,6 +2458,47 @@ var MealBot=(function(){
   function missShow(){
     var t=missText(); if(!t) return p('Список недостающего пуст: пока всё нашлось.');
     return p('Чего не хватает в базе:')+'<pre class="mbMiss">'+esc(t)+'</pre>'+chips([['misscopy:x','Скопировать список'],['missclear:x','Очистить список']]);
+  }
+  /* Meal 33.36 · справка о приложении (решение Астамура 22.11.2026): «где / как» о функции — ответ из словаря bot/household-ru.js (app_help)
+     и кнопка, которая открывает нужный экран. В дневник ничего не идёт, в список недостающего — тоже. Покупку, выход и удаление бот сам не делает. */
+  function helpData(){ var D0=typeof window!=='undefined'&&window.HappyMealSpeechData; return D0&&D0.app_help||null }
+  function helpEntry(id){ var H=helpData(); return H?(H.entries||[]).filter(function(e){ return e.id===id })[0]||null:null }
+  function helpFill(txt){
+    var R=typeof MealPeriods!=='undefined'&&MealPeriods.rules?MealPeriods.rules(DB):{kcal:150,gap:20,fast:{on:false}}, f=R.fast||{}, ck=typeof MealPeriods!=='undefined'&&MealPeriods.clock?MealPeriods.clock:function(m){ return pad2(Math.floor(m/60)%24)+':'+pad2(m%60) };
+    var ver=(String(document.title||'').match(/Update\s+([\d.]+)/)||[])[1];
+    return String(txt).replace('{kcal}',R.kcal).replace('{gap}',R.gap).replace('{version}',ver?'Happy Meal '+ver:'последняя версия')
+      .replace('{fast}',f.on?'Сейчас включён: '+ck(f.a)+'–'+ck(f.b)+'.':'Сейчас выключен.').replace(/\s+$/,'');
+  }
+  function helpReply(e){ return p(esc(helpFill(e.answer)))+chips([['go:'+e.id,e.button]])+'<p class="mlHint">Это справка. В дневник ничего не записал.</p>' }
+  function helpFood(t){ var u; FILLOK=false; try{ u=core(fixes(' '+t+' ')) }catch(err){ return false } return !!(u&&u.lines.some(function(l){ return l.fid||(l.alts&&l.alts.length) })) }
+  function appHelp(text){
+    var H=helpData(); if(!H) return null;
+    var t=nrm(text).trim().replace(/[?!.,…\s]+$/,'').replace(/[,]/g,' ').replace(/\s+/g,' ').trim(); if(!t) return null;
+    if(H.menu&&new RegExp(H.menu.said).test(t)) return p(esc(H.menu.answer))+chips((H.menu.buttons||[]).map(helpEntry).filter(Boolean).map(function(e){ return ['help:'+e.id,e.title] }));
+    var cm=H.composition&&t.match(new RegExp(H.composition.said));
+    if(cm){ var food=(cm[1]||'').trim(), id=null;
+      if(food){ try{ var u=core(fixes(' '+food+' ')), l=u&&u.lines.length===1?u.lines[0]:null; id=l&&(l.fid||(l.ask==='pick'&&!l.noAuto?l.alts[0]:null)) }catch(err){} }
+      if(id&&FOODS[id]) return p(esc(H.composition.answer_food))+'<div class="mlRows">'+row({fid:id,q:100,u:'г',g:100,name:''},true,'')+'</div>';
+      return p(esc(H.composition.answer)) }
+    var q=new RegExp(H.question_words).test(t)||/\?\s*$/.test(String(text));
+    var bare=!q&&!/\d/.test(t)&&t.split(' ').length<=(H.max_bare_words||4);
+    if(!q&&!bare) return null;
+    var hit=(H.entries||[]).filter(function(e){ return (q||e.bare_ok)&&new RegExp(e.said).test(t) })[0];
+    if(!hit) return null;
+    if(bare&&(helpFood(t)||(SP&&SP.eaten&&SP.eaten(String(text))))) return null;
+    return helpReply(hit);
+  }
+  function helpOpen(id){
+    var e=helpEntry(id), o=e&&e.open; if(!o||typeof go!=='function') return;
+    go(o.screen);
+    setTimeout(function(){
+      try{
+        if(o.call==='periods'&&typeof MealPeriods!=='undefined'&&MealPeriods.open){ MealPeriods.open(); return }
+        var box=document.querySelector('[data-screen="'+o.screen+'"]'), label=o.click||o.find; if(!box||!label) return;
+        var el=[].slice.call(box.querySelectorAll(o.click?'button':'h2,h3,button')).filter(function(x){ return x.offsetParent&&x.textContent.replace(/\s+/g,' ').trim().indexOf(label)===0 })[0];
+        if(!el) return; el.scrollIntoView({block:'center'}); if(o.click) el.click();
+      }catch(err){}
+    },150);
   }
   function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
 
@@ -2706,6 +2748,8 @@ var MealBot=(function(){
     var chat=CH.meal; if(D!==chat) return;
     var S=state(chat), a=action.split(':'), h=null;
     if(a[0]==='cancelPhrase'){cancelPhrase(chat,S,a[1]);return}
+    if(a[0]==='go'){ helpOpen(a[1]); return }
+    if(a[0]==='help'){ var he=helpEntry(a[1]); if(!he) return; chat.msgs.push({id:'m'+(++chat.seq),who:'me',kind:'text',text:label,tapped:1}); botSay(helpReply(he),260); return }
     var latest=S.commits[S.commits.length-1];
     if(a[0]==='undo'&&latest&&latest.id===a[1]&&latest.choiceStep&&
        chat.msgs.length===latest.choiceStep.messages+2){
