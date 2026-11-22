@@ -1,4 +1,7 @@
-/* Студия градиентов · Happy 1.5 (лаборатория, 22.11.2026 · Claude)
+/* Студия градиентов · Happy 1.6 (лаборатория, 22.11.2026 · Claude)
+   1.6: эталонный виджет энергии «Общий» — один на Day, Meal и Sport (вид Sport, поведение Meal, концы дуг тем же градиентом,
+   цвет «от цели» из «Пробы кольца энергии», цифра 28 и текст 12 всегда); 10 цветовых схем для всех тем (ночью — приглушённее);
+   10 готовых вариантов «жизни» кольца во вкладке «Оживление»; «Вернуть» и «В Мои» видны на всех вкладках; свой вариант можно обновить.
    Одна студия для всех градиентных заливок: дуги Day («Сейчас»: поток, баланс самочувствия, заливка колец),
    кольцо энергии Meal / Sport / Day с полосками строк (КБЖУ, расход, баланс).
    1.2: меньше текста, таб-бар «Заливка · Оживление · Мои», пресеты — мини-виджеты в один ряд,
@@ -38,7 +41,8 @@ const ORIGINAL={
   id:'original',name:'Как сейчас',note:'Исходный вид приложений, без пресета.',
   energy:{eat:DAY_EAT,spent:DAY_SPENT,track:20},
   apps:{meal:{energy:{eat:MEAL_EAT,spent:MEAL_SPENT,track:20}}},
-  join:{kind:'cap',len:28,from:15,via:[],shadow:38,size:7.5},                                                 // стык в «Баланс»: в приложениях — круглый конец
+  join:{kind:'cap',len:28,from:15,via:[],shadow:38,size:7.5},
+  ref:{circle:'reserve',tick:true,color:'place',goal:'lose'},                                                // эталонный виджет «Общий» (1.6)                                                 // стык в «Баланс»: в приложениях — круглый конец
   bars:{hues:{pink:350,violet:305,blue:262,teal:180},chroma:.12,dot:.8,from:.86,to:.72,over:.56,track:22},   // ER_HUE, erTone(h,L), полоска 5 px #ffffff38
   day:{
     flow:FLOW0,                                                                                                // HappyArc.DEFAULT
@@ -71,7 +75,8 @@ const WIDGETS={
   'day-arcs':{app:'day',label:'Дуги Day'},
   meal:{app:'meal',label:'Meal'},
   sport:{app:'sport',label:'Sport'},
-  'day-energy':{app:'day',label:'Day · энергия'}
+  'day-energy':{app:'day',label:'Day · энергия'},
+  ref:{app:'day',label:'Общий'}
 };
 const BG_ORIGINAL={
   day:{cls:'aurora',css:'radial-gradient(42% 26% at 18% 14%,rgba(70,253,252,.62),transparent 70%),radial-gradient(38% 24% at 84% 20%,rgba(3,222,234,.55),transparent 72%),radial-gradient(46% 28% at 12% 52%,rgba(188,97,254,.40),transparent 72%),radial-gradient(40% 26% at 88% 62%,rgba(253,147,253,.34),transparent 72%),radial-gradient(50% 30% at 30% 88%,rgba(70,253,252,.42),transparent 74%),#00A8F5',swatch:'linear-gradient(160deg,#46fdfc,#00a8f5 45%,#9a74f0)'},
@@ -95,16 +100,17 @@ const CASES={
 };
 
 /* ── Состояние ── */
-const st={tab:'fill',widget:'meal',theme:'original',work:{},data:copy(DATA0),mode:{meal:'eat',sport:'spent','day-energy':'bal'},center:'mood',mine:{},grp:{},ag:'rhythm',kase:{},arc:'eat'};
-function load(s){ if(!s||s.v!==1) return false; Object.assign(st,{tab:['fill','anim','mine'].includes(s.tab)?s.tab:'fill',widget:WIDGETS[s.widget]?s.widget:st.widget,theme:s.theme||st.theme,work:s.work||{},mine:s.mine||{},mode:Object.assign(st.mode,s.mode||{}),center:s.center||'mood',grp:s.grp||{},ag:s.ag==='light'?'light':'rhythm',arc:['spent','join'].includes(s.arc)?s.arc:'eat',fold:!!s.fold});Object.assign(st.data,s.data||{}); st.ts=s.ts||0; return true }
+const st={tab:'fill',widget:'meal',theme:'original',work:{},data:copy(DATA0),mode:{meal:'eat',sport:'spent','day-energy':'bal',ref:'eat'},center:'mood',mine:{},grp:{},ag:'rhythm',kase:{},arc:'eat',refBg:'day',nightK:82};
+function load(s){ if(!s||s.v!==1) return false; Object.assign(st,{tab:['fill','anim','mine'].includes(s.tab)?s.tab:'fill',widget:WIDGETS[s.widget]?s.widget:st.widget,theme:s.theme||st.theme,work:s.work||{},mine:s.mine||{},mode:Object.assign(st.mode,s.mode||{}),center:s.center||'mood',grp:s.grp||{},ag:s.ag==='light'?'light':'rhythm',arc:['spent','join'].includes(s.arc)?s.arc:'eat',fold:!!s.fold,refBg:['day','meal','sport'].includes(s.refBg)?s.refBg:'day',nightK:s.nightK==null?82:s.nightK});Object.assign(st.data,s.data||{}); st.ts=s.ts||0; return true }
 try{ load(JSON.parse(localStorage.getItem(KEY)||'null')) }catch(e){}
 if(!themes().some(t=>t.id===st.theme)) st.theme='original';
-function snap(){ return {v:1,ts:st.ts||0,tab:st.tab,widget:st.widget,theme:st.theme,work:st.work,mine:st.mine,mode:st.mode,center:st.center,grp:st.grp,ag:st.ag,arc:st.arc,fold:!!st.fold,data:st.data} }
+function snap(){ return {v:1,ts:st.ts||0,tab:st.tab,widget:st.widget,theme:st.theme,work:st.work,mine:st.mine,mode:st.mode,center:st.center,grp:st.grp,ag:st.ag,arc:st.arc,fold:!!st.fold,refBg:st.refBg,nightK:st.nightK,data:st.data} }
 let boot=true;                                            // перерисовка при старте — не правка: метку времени не двигаем
 function save(){ if(!boot) st.ts=Date.now(); try{localStorage.setItem(KEY,JSON.stringify(snap()))}catch(e){} if(!boot) cloudSave() }
 /* во вкладке «Оживление» превью всегда — дуги Day */
 function wid(){ return st.tab==='anim'?'day-arcs':st.widget }
-function appOf(){ return WIDGETS[wid()].app }
+function appOf(){ return wid()==='ref'?st.refBg:WIDGETS[wid()].app }
+function casesOf(w){ return w==='day-arcs'?CASES.day:w==='ref'?CASES.energy.concat([['Нет данных']]):CASES.energy }
 
 /* пресет: полный набор. Что не задано — из ORIGINAL */
 function deepMerge(base,over){
@@ -118,13 +124,14 @@ function sourcePreset(themeId,src){
   if(src==='orig') return copy(ORIGINAL);
   if(src.startsWith('f')){ const p=fable(themeId)[+src.slice(1)]; return p?fromPreset(p):null }
   if(src.startsWith('m')){ const p=(st.mine[themeId]||[])[+src.slice(1)]; return p?fromPreset(p.preset):null }
+  if(src.startsWith('s')){ const p=scheme(themeId,+src.slice(1)); return p?fromPreset(p):null }
   return null;
 }
-function W(){ let w=st.work[st.theme]; if(!w||!w.P){ w=st.work[st.theme]={source:'orig',P:copy(ORIGINAL)} } const d=w.P.day=w.P.day||copy(ORIGINAL.day); d.flow=Object.assign(copy(FLOW0),d.flow||{}); if(!w.P.join) w.P.join=copy(ORIGINAL.join); return w }   // сохранённое в 1.0–1.1 — без полей оживления и стыка
+function W(){ let w=st.work[st.theme]; if(!w||!w.P){ w=st.work[st.theme]={source:'orig',P:copy(ORIGINAL)} } const d=w.P.day=w.P.day||copy(ORIGINAL.day); d.flow=Object.assign(copy(FLOW0),d.flow||{}); if(!w.P.join) w.P.join=copy(ORIGINAL.join); w.P.ref=Object.assign(copy(ORIGINAL.ref),w.P.ref||{}); return w }   // сохранённое в 1.0–1.1 — без полей оживления и стыка
 function P(){ return st.work[st.theme].P }
 function edited(){ const w=st.work[st.theme], base=sourcePreset(st.theme,w.source); return !base||JSON.stringify(base)!==JSON.stringify(w.P) }
 function energyOf(Pr,app){ return (Pr.apps&&Pr.apps[app]&&Pr.apps[app].energy)||Pr.energy }
-function energyEditTarget(){ const Pr=P(), app=appOf(); return Pr.apps&&Pr.apps[app]&&Pr.apps[app].energy?Pr.apps[app].energy:Pr.energy }
+function energyEditTarget(){ const Pr=P(), app=appOf(); if(wid()==='ref') return Pr.energy; return Pr.apps&&Pr.apps[app]&&Pr.apps[app].energy?Pr.apps[app].energy:Pr.energy }
 
 /* ── Цвет: тот же расчёт, что в приложениях (OKLCH, переход коротким путём по кругу оттенков) ── */
 function rgb(h){ return [1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255) }
@@ -156,6 +163,7 @@ function lut(c0,c1){
   out[0]=c0; out[64]=c1; return (LUTS[key]=out);
 }
 function colAt(L,t){                                   // = erColAt (Meal 33) = colAt (Sport 44, Day 60)
+  if(L.G) return goalCol(L.G,t*SWEEP);                   // 1.6, «Общий»: цвет от цели (из «Пробы кольца энергии»)
   const a=L.s0/100, b=L.s1/100;
   t=clamp(b>a?(t-a)/(b-a):(t>=a?1:0),0,1);
   if(L.cm2) return colAt4(L,t);
@@ -194,6 +202,7 @@ function arcStops(L,len,join,step){
       if(join.kind==='morph'){ const w=join.via&&join.via.length?clamp(u/0.7,0,1):smooth(u/0.7), cu=colAt(join.under,t/SWEEP); if(cu!==c) c=pathMix(c,join.via,cu,w); a*=1-smooth((u-join.from)/(1-join.from)) }
       else a*=1-smooth(u);
     }
+    if(L.B) a=L.B(t,a);
     out.push({t,c,a});
   }
   return out;
@@ -266,6 +275,151 @@ function energyHTML(app,mode,Pr,D){
     ringHTML(E,{eat:D.eaten,spent:D.spent,arcs,full,big,cap:CAP[mode]},Pr.join)+'</div><div class="erRows">'+rows+'</div></div>';
 }
 
+/* ══ 1.6 · Эталонный виджет энергии «Общий» — один на Day, Meal и Sport ══
+   Вид — как в Sport (стеклянный шарик, толщина 16, цифра 28 и подпись 12 — всегда, не от размера кольца).
+   Поведение — как в Meal: три вида по нажатию (съедено → баланс → потрачено). Строки — 12, не мельче; подпись режется многоточием, цифры — никогда.
+   Концы дуг — не кружок одного цвета, а тот же градиент, продолженный за конец (решение Астамура в «Пробе кольца энергии»).
+   Полный круг: «Цель» (как Meal), «Цель + запас» (цель на ¾ круга, видно перебор) или «3000» (как Day и Sport). Цвет: по месту на круге или от цели. */
+const SM=x=>{ x=clamp(x,0,1); return x*x*(3-2*x) };
+function goalCol(G,x){                                   // = goalCol из «Пробы кольца энергии»
+  const lo=Math.max(0,G.T-G.w), hi=G.T+G.w; let a=G.a, b=G.b, m=G.mid;
+  if(x>=lo){ if(x<=hi||!G.up) return G.teal; return pathMix(G.teal,G.via,G.pink,SM((x-hi)/G.r)) }
+  if(a+b>lo){ const k=lo/(a+b); m=G.mk||(G.mk=mixHex(mixHex(G.pink,G.teal,a/(a+b)),G.mid,SM(k))); a*=k; b*=k }
+  if(x<a) return lut(G.pink,m)[Math.round(SM(x/a)*64)];
+  if(x>lo-b) return lut(m,G.teal)[Math.round(SM((x-(lo-b))/b)*64)];
+  return m;
+}
+function dens2(a,b){ return n2(100-(100-a)*(100-b)/100) }
+function refFull(R,D){ return R.circle==='goal'?(D.goal||3000):R.circle==='3000'?(D.scale||3000):(D.goal||2200)/0.75 }
+function refGeom(R,D){ const full=refFull(R,D); return {full,de:clamp(D.eaten/full,0,1)*SWEEP,ds:clamp(D.spent/full,0,1)*SWEEP,gd:clamp((D.goal||0)/full,0,1)*SWEEP} }
+/* дуга для рисования (= AL из «Пробы»): в режиме «от цели» цвет по месту относительно цели, плотность ленты — как у двух дуг вместе */
+function refArc(E,R,g,arc,view,J){
+  const L=E[arc]; if(R.color!=='goal') return L;
+  const o=Object.assign({},L), t=R.goal, p=SWEEP/100;
+  const T=view==='eat'?g.gd:view==='spent'?g.de:Math.min(g.de,g.ds);
+  const up=view==='eat'?t!=='gain':view==='spent'?t!=='lose':t==='keep'||(t==='lose'?g.de>g.ds:g.ds>g.de);
+  o.G={T,up,w:1.5*p,r:3*p,a:25*p,b:10*p,pink:E.eat.c1,mid:E.spent.cm,teal:E.eat.c0,via:[]};
+  if(view!=='bal'){ o.a0=dens2(E.eat.a0,E.spent.a0); o.a1=dens2(E.eat.a1,E.spent.a1) }
+  else if(arc==='eat'&&g.de>g.ds&&g.ds>0.05){
+    const Ls=E.spent, kind=J&&(J.kind==='fade'||J.kind==='morph')?J.kind:'', F=kind?Math.min(J.len,g.ds):0, from=clamp(J?J.from:15,0,90)/100;
+    o.B=(t,a)=>{ const full=alphaAt(Ls,Math.min(t,g.ds)/g.ds); let act;
+      if(t>=g.ds) act=0; else if(F>0&&t>g.ds-F){ const u=(t-(g.ds-F))/F; act=full*(kind==='morph'?1-SM((u-from)/(1-from)):1-SM(u)) } else return a;
+      return act>=0.995?a:clamp(1-(1-a)*(1-full)/(1-act),0,1) };
+  } else if(arc==='spent'&&g.ds>g.de&&g.de>0.05){ const ae=alphaAt(E.eat,1); o.B=(t,a)=>t<=g.de?a:1-(1-a)*(1-ae) }
+  return o;
+}
+/* слой дуги с концами тем же градиентом (= layerHTML из «Пробы»); through — конец верхней дуги красится по месту, как дуга под ним */
+function layerG(L,len,join,through){
+  if(len<=0.05) return '';
+  const A=212, S=arcStops(L,len,join,2), col=[], msk=[];
+  S.forEach(p=>{ col.push(p.c+' '+n2(p.t)+'deg'); msk.push('rgba(0,0,0,'+n2(p.a)+') '+n2(p.t)+'deg') });
+  col.push('transparent '+n2(len)+'deg');
+  const half=len+(360-len)/2;
+  msk.push('rgba(0,0,0,'+(join?0:n2(S[S.length-1].a))+') '+n2(half)+'deg','rgba(0,0,0,'+n2(S[0].a)+') '+n2(half)+'deg');
+  const X=8, c0=colAt(L,0), c1=colAt(L,len/SWEEP), ext=[c0+' 0deg',c0+' '+X+'deg'], cnt=Math.max(1,Math.ceil(len/2));
+  for(let i=0;i<=cnt;i++){ const t=Math.min(len,i*2); ext.push(colAt(L,t/SWEEP)+' '+n2(t+X)+'deg') }
+  if(through) for(let i=1;i<=4;i++) ext.push(colAt(L,(len+i*X/4)/SWEEP)+' '+n2(len+X+i*X/4)+'deg'); else ext.push(c1+' '+n2(len+2*X)+'deg');
+  ext.push('transparent '+n2(len+2*X)+'deg');
+  const gr='conic-gradient(from '+(A-X)+'deg,'+ext.join(',')+')';
+  const cap=th=>{ const f=(122+th)*Math.PI/180, at=n2(50+46*Math.cos(f))+'% '+n2(50+46*Math.sin(f))+'%'; return '<i class="erCapG" style="background:'+gr+';-webkit-clip-path:circle(4% at '+at+');clip-path:circle(4% at '+at+')"></i>' };
+  const m='conic-gradient(from '+A+'deg,'+msk.join(',')+')';
+  return '<div class="erLayer" style="-webkit-mask-image:'+m+';mask-image:'+m+'"><div class="erSweep" style="background:conic-gradient(from '+A+'deg,'+col.join(',')+')"></div>'+cap(0)+(join?'':cap(len))+'</div>';
+}
+function refRing(E,R,J,D,mode,big){
+  const g=refGeom(R,D), none=D.none; let body='';
+  if(!none){
+    if(mode!=='spent') body+=layerG(refArc(E,R,g,'eat',mode,J),g.de);
+    if(mode!=='eat'){ const bal=mode==='bal', over=bal&&g.de>0.05&&g.ds<=g.de;
+      if(over&&J.kind==='shadow') body+=shadeHTML(g.ds,J);
+      body+=layerG(refArc(E,R,g,'spent',mode,J),g.ds,over&&(J.kind==='fade'||J.kind==='morph')?{kind:J.kind,under:refArc(E,R,g,'eat','bal',J),F:J.len,via:J.via||[],from:clamp(J.from,0,90)/100}:null,over&&R.color==='goal');
+    }
+  }
+  /* отметка цели: тонкая риска поперёк дорожки — видно, где норма и сколько перебора */
+  const tick=R.tick&&R.circle!=='goal'&&mode!=='spent'&&g.gd>0.5&&g.gd<SWEEP-0.5;
+  if(tick){ const th=122+g.gd, f=th*Math.PI/180; body+='<i class="erTick" style="left:'+n2(50+46*Math.cos(f))+'%;top:'+n2(50+46*Math.sin(f))+'%;transform:translate(-50%,-50%) rotate('+n2(th)+'deg)"></i>' }
+  const tr='rgba(255,255,255,'+n2((E.track==null?20:E.track)/100)+')';
+  return '<svg viewBox="20 20 200 186" aria-hidden="true"><g transform="rotate(122 120 120)">'+arcSvg(16,SWEEP,tr)+'</g></svg>'+
+    (body?'<div class="erArcs" aria-hidden="true">'+body+'</div>':'')+
+    '<div class="erKnob"><b>'+esc(none?'—':String(big))+'</b><small>'+CAP[mode]+'</small></div>';
+}
+function refHTML(mode,Pr,D,bg){
+  const E=Pr.energy, B=Pr.bars, R=Pr.ref, none=!!D.none, ratio=(v,goal)=>none||!goal?null:v/goal;
+  const v=(x,goal,u)=>none?'—':(u==='г'?gTxt(x)+(goal?'/'+gTxt(goal):''):num(x)+(goal?'/'+num(goal):''))+(u?' '+u:'');
+  let rows, big;
+  if(mode==='eat'){ big=Math.round(D.eaten);
+    rows=rowHTML(B,'pink','Белки',v(D.p,D.pg,'г'),ratio(D.p,D.pg))+rowHTML(B,'violet','Жиры',v(D.f,D.fg,'г'),ratio(D.f,D.fg))+
+         rowHTML(B,'blue','Углеводы',v(D.c,D.cg,'г'),ratio(D.c,D.cg))+rowHTML(B,'teal','Клетчатка',v(D.fib,D.fibg,'г'),ratio(D.fib,D.fibg));
+  } else if(mode==='spent'){ big=Math.round(D.spent);                   // без «ккал» в строках: ккал уже в кольце, так строка влезает при 12
+    rows=rowHTML(B,'violet','Покой',v(D.rest,D.restg,''),ratio(D.rest,D.restg))+rowHTML(B,'pink','Тренировки',v(D.wo,D.wog,''),ratio(D.wo,D.wog))+
+         rowHTML(B,'blue','Шаги',none?'—':kNum(D.steps)+'/'+kNum(D.stepsg),ratio(D.steps,D.stepsg))+rowHTML(B,'teal','Время',v(D.min,D.ming,'мин'),ratio(D.min,D.ming));
+  } else { const d=D.eaten-D.spent, wk=D.steps/100+Math.max(0,d)/5; big=signed(d);
+    rows=rowHTML(B,'teal',d>=0?'Сжечь':'Запас',none?'—':num(Math.abs(d))+' ккал',none?null:Math.max(D.eaten,D.spent)>0?Math.min(D.eaten,D.spent)/Math.max(D.eaten,D.spent):0)+
+         rowHTML(B,'blue','Шаги до цели',none?'—':D.steps>=D.stepsg?'есть':num(D.stepsg-D.steps),ratio(D.steps,D.stepsg))+
+         rowHTML(B,'violet','Ходьба',none?'—':d>0?'+'+Math.round(d/5)+' мин':'не нужно',none?null:wk>0?(D.steps/100)/wk:null)+
+         rowHTML(B,'pink','Белка до цели',none?'—':D.p>=D.pg?'есть':gTxt(D.pg-D.p)+' г',ratio(D.p,D.pg));
+  }
+  return '<div class="erCard he ref'+(bg==='day'?' r22':'')+'"><div class="erRing" role="button" tabindex="0" data-ring aria-label="Кольцо энергии, '+CAP[mode]+'. Нажми — '+CAP[NEXT[mode]]+'">'+
+    refRing(E,R,Pr.join,D,mode,big)+'</div><div class="erRows">'+rows+'</div></div>';
+}
+/* шаги от 10 000 — в тысячах: «10,5/10 тыс», чтобы строка влезала при 12 */
+function kNum(v){ return v>=10000?gTxt(v/1000)+'к':num(v) }
+function widgetHTML(w,Pr,D){ return w==='ref'?refHTML(st.mode.ref,Pr,D,st.refBg):energyHTML(appOf(),st.mode[w],Pr,D) }
+function lookHTML(R){
+  const seg=(attr,list,cur)=>'<div class="seg">'+list.map(([k,l])=>'<button type="button" '+attr+'="'+k+'" aria-pressed="'+(String(cur)===String(k))+'">'+l+'</button>').join('')+'</div>';
+  return '<div class="line"><span>Фон</span>'+seg('data-rbg',[['day','Day'],['meal','Meal'],['sport','Sport']],st.refBg)+'</div>'+
+    '<div class="line"><span>Полный круг</span>'+seg('data-rcircle',[['goal','Цель'],['reserve','Цель + запас'],['3000','3000']],R.circle)+'</div>'+
+    '<div class="line"><span>Риска цели</span>'+seg('data-rtick',[['1','Есть'],['0','Нет']],R.tick?1:0)+'</div>'+
+    '<div class="line"><span>Цвет дуги</span>'+seg('data-rcolor',[['place','По месту'],['goal','От цели']],R.color)+'</div>'+
+    (R.color==='goal'?'<div class="line"><span>Цель человека</span>'+seg('data-rgoal',[['lose','Похудеть'],['keep','Держать'],['gain','Набрать']],R.goal)+'</div>':'')+
+    '<p class="muted">Один виджет для Day, Meal и Sport. Вид Sport, нажатие меняет вид, как в Meal. Концы дуг — тем же градиентом. Цифра 28, текст 12 — всегда.'+
+    (R.circle==='goal'?' Круг = цель: перебор не виден, как сейчас в Meal.':R.circle==='reserve'?' Цель — на ¾ круга, перебор виден.':' Круг всегда 3000, как сейчас в Day и Sport.')+'</p>';
+}
+
+/* ══ 1.6 · 10 цветовых схем для всех тем. На ночных темах — приглушённее: светлота и насыщенность ниже (ползунок «Ночью») ══
+   Схема задаёт всё сразу: дуги энергии, полоски строк, кольца Day, баланс и поток самочувствия. */
+const SCHEMES=[
+  {name:'Лёд и роза',   c0:'#7FF3FF',cm:'#8C7BFF',c1:'#FFB3D9',x:'#9DF2DA'},
+  {name:'Мята и персик',c0:'#7DF5C8',cm:'#5FB8FF',c1:'#FFB98A',x:'#C8F7A8'},
+  {name:'Лаванда',      c0:'#C6B6FF',cm:'#8F7BFF',c1:'#FFC8F0',x:'#B8E6FF'},
+  {name:'Море',         c0:'#5EF0E0',cm:'#2E7CFF',c1:'#9DB8FF',x:'#7FE7FF'},
+  {name:'Цитрус',       c0:'#FFF08A',cm:'#6CE7A0',c1:'#FF9E7A',x:'#B9F27A'},
+  {name:'Сакура',       c0:'#FFE0EE',cm:'#F08CC0',c1:'#FF6F91',x:'#FFC4D6'},
+  {name:'Сияние',       c0:'#6BFFB8',cm:'#39C6FF',c1:'#B48CFF',x:'#9CFFE0'},
+  {name:'Закатный',     c0:'#FFD08A',cm:'#FF8FA3',c1:'#C27BFF',x:'#FFE3B0'},
+  {name:'Серебро',      c0:'#E9F1FF',cm:'#A9B8D9',c1:'#F3D9FF',x:'#D6F5EE'},
+  {name:'Тихий неон',   c0:'#4DF7FF',cm:'#A35CFF',c1:'#FF5CC8',x:'#7DFFD8'}
+];
+function isNight(themeId){ const t=themeOf(themeId); return t.mode==='night' }
+function dim(hex,k){ if(k===1) return hex; const c=lch(hex); return hexOf(clamp(c.L*(k<1?1-(1-k)*0.55:1+(k-1)*0.5),0,0.99),c.C*(k<1?k:Math.min(1.25,k)),c.h) }
+function hueOf(hex){ const h=lch(hex).h*180/Math.PI; return Math.round((h+360)%360) }
+function scheme(themeId,i){
+  const S=SCHEMES[i]; if(!S) return null;
+  const k=isNight(themeId)?st.nightK/100:1, d=c=>dim(c,k), night=k!==1;
+  const A={c0:d(S.c0),cm:d(S.cm),c1:d(S.c1)}, X=d(S.x);
+  const a0=night?47:57, a1=night?68:75;
+  return {name:S.name,
+    energy:{eat:{c0:A.c0,cm:A.cm,c1:A.c1,mw:30,s0:59,s1:77,a0,a1},spent:{c0:A.c1,cm:A.cm,c1:A.c0,mw:30,s0:17,s1:45,a0:night?54:64,a1:night?80:89},track:night?14:20},
+    join:copy(ORIGINAL.join),
+    bars:{hues:{pink:hueOf(S.c1),violet:hueOf(S.cm),blue:Math.round((hueOf(S.cm)+hueOf(S.c0))/2+(Math.abs(hueOf(S.cm)-hueOf(S.c0))>180?180:0))%360,teal:hueOf(S.c0)},
+      chroma:night?.085:.12,dot:night?.74:.8,from:night?.8:.86,to:night?.66:.72,over:night?.5:.56,track:night?16:22},
+    day:{flow:Object.assign(copy(FLOW0),{colors:[A.c0,X,A.cm]}),balance:{posColor:A.c0,negColor:A.c1,blend:55,fade:35,alpha:night?85:100},progress:[A.c1,A.cm,A.c0,X]}};
+}
+
+/* ══ 1.6 · «Жизнь» кольца: 10 готовых тихих вариантов оживления (эффект + ритм + свет). Цвета потока не трогают ══ */
+const LIFE=[
+  {id:'sleep',  name:'Сон',          set:{mode:'breathe',duration:12,breathDepth:28,intensity:45,softness:90,light:'none'}},
+  {id:'calm',   name:'Тихий вдох',   set:{mode:'breathe',duration:8,breathDepth:40,intensity:55,softness:86,light:'inhale',lightColor:'#F4FFFC',lightDuration:10,glow:40,span:46,halo:30,ease:'even',pause:20,edgeFade:30,lightSides:'one'}},
+  {id:'tide',   name:'Прилив',       set:{mode:'flow',duration:28,intensity:48,softness:88,direction:1,light:'none'}},
+  {id:'glint',  name:'Блик',         set:{mode:'shimmer',duration:20,intensity:45,softness:90,light:'none'}},
+  {id:'firefly',name:'Светлячок',    set:{mode:'still',intensity:60,softness:80,light:'comet',lightColor:'#FFE9A8',lightDuration:14,glow:46,span:30,halo:40,ease:'even',pause:35,edgeFade:40,lightSides:'one'}},
+  {id:'whisper',name:'Шёпот света',  set:{mode:'flow',duration:24,intensity:50,softness:85,light:'stream',lightColor:'#FFFFFF',lightDuration:16,glow:38,span:40,halo:26,ease:'top',pause:30,edgeFade:30,lightSides:'one'}},
+  {id:'swing',  name:'Маятник',      set:{mode:'still',intensity:58,softness:80,light:'pendulum',lightColor:'#BFEFFF',lightDuration:12,glow:42,span:36,halo:34,ease:'edges',pause:0,edgeFade:25,lightSides:'one'}},
+  {id:'aurora', name:'Ночное сияние',set:{mode:'flow',duration:30,intensity:42,softness:90,light:'aurora',lightColor:'#D9C2FF',lightDuration:30,glow:38,span:60,halo:24,edgeFade:20,lightSides:'one'}},
+  {id:'pulse',  name:'Пульс покоя',  set:{mode:'breathe',duration:5,breathDepth:34,intensity:58,softness:84,light:'none'}},
+  {id:'bloom',  name:'Раскрытие',    set:{mode:'wave',duration:26,intensity:50,softness:82,light:'bloom',lightColor:'#FFF3E0',lightDuration:11,glow:44,span:40,halo:34,ease:'even',pause:30,edgeFade:30,lightSides:'one'}}
+];
+function lifeOn(L,f){ return Object.keys(L.set).every(k=>f[k]===L.set[k]) }
+
 /* ── Дуги Day (разметка как в selfcare-ui.js; холсты рисует HappyArc из day-60/arc-motion.js) ── */
 const DAY_KEYS=['mood','mind','diary','activity'];
 const DAY_TITLES={mood:'Сейчас',mind:'Осознанность',diary:'Дневник',activity:'Активность'};
@@ -322,13 +476,14 @@ function renderPreview(){
       const k=DAY_KEYS[best]; if(k!==st.center){ st.center=k; [...rail.children].forEach(s=>s.classList.toggle('side',s.dataset.key!==k)); ARC.refresh(); renderCompareSoon(); save() } },90) },{passive:true});
     rail.querySelectorAll('.nwSl').forEach(sl=>sl.addEventListener('click',()=>{ rail.scrollTo({left:sl.offsetLeft-(rail.clientWidth-sl.offsetWidth)/2,behavior:'smooth'}) }));
   } else {
-    stage.innerHTML=energyHTML(app,st.mode[w],P(),st.data);
+    stage.innerHTML=widgetHTML(w,P(),st.data);
   }
 }
 function presetName(themeId,src){
   if(src==='orig') return 'Как сейчас';
   if(src.startsWith('f')){ const p=fable(themeId)[+src.slice(1)]; return p&&p.name?p.name:'Пресет '+(+src.slice(1)+1) }
   if(src.startsWith('m')){ const p=(st.mine[themeId]||[])[+src.slice(1)]; return p?p.name:'Мой вариант' }
+  if(src.startsWith('s')){ const p=SCHEMES[+src.slice(1)]; return p?p.name:'Схема' }
   return '';
 }
 function paintAll(){
@@ -345,20 +500,32 @@ function paintLight(){                                     // правка: бе
   renderReset(); renderStrips(); renderOut(); save();
   if(st.tab==='anim'){ ARC.refresh(); syncMinis() } else renderCompareSoon();
 }
-function renderReset(){ $('reset').hidden=!edited() }
+/* «Вернуть» во вкладке «Оживление» возвращает только оживление: к выбранному варианту «жизни» или к пресету, откуда взята работа */
+function flowTarget(){ const w=st.work[st.theme], base=sourcePreset(st.theme,w.source), f=Object.assign(copy(FLOW0),(base&&base.day&&base.day.flow)||{}), L=LIFE.find(x=>x.id===P().day.life);
+  if(L) Object.assign(f,L.set); f.colors=copy(P().day.flow.colors); return f }
+function flowEdited(){ return JSON.stringify(flowTarget())!==JSON.stringify(P().day.flow) }
+function renderReset(){ $('reset').hidden=!edited(); $('resetA').hidden=!flowEdited();
+  const m=st.work[st.theme].source.startsWith('m'); [$('quick'),$('quickA')].forEach(b=>{ b.textContent=m?'Обновить «'+presetName(st.theme,st.work[st.theme].source)+'»':'＋ В Мои'; b.hidden=m&&!edited() }) }
+function quickSave(){
+  const w=st.work[st.theme], list=st.mine[st.theme]=st.mine[st.theme]||[], ex=exportPreset();
+  if(w.source.startsWith('m')&&list[+w.source.slice(1)]){ const it=list[+w.source.slice(1)]; ex.name=it.name; it.preset=ex; w.P=fromPreset(ex); paintAll(); return toast('Обновлено: '+it.name) }
+  let base=presetName(st.theme,w.source)+(edited()?' · мой':''), name=base, n=2; while(list.some(x=>x.name===name)) name=base+' '+(n++);
+  ex.name=name; list.push({name,preset:ex}); st.work[st.theme]={source:'m'+(list.length-1),P:fromPreset(ex)}; paintAll(); toast('Сохранено в «Мои»: '+name);
+}
 
 /* ── Пилюли данных: вид кольца и готовые случаи — одной каруселью ── */
 function renderPills(){
   const w=wid(), day=w==='day-arcs', k=st.kase[w];
   let h='';
   if(!day){ const m=st.mode[w]; h+=['eat','bal','spent'].map(x=>'<button type="button" data-mode="'+x+'" aria-pressed="'+(x===m)+'">'+{eat:'Съедено',bal:'Баланс',spent:'Потрачено'}[x]+'</button>').join('')+'<i></i>' }
-  h+=(day?CASES.day:CASES.energy).map((c,i)=>'<button type="button" data-case="'+i+'" aria-pressed="'+(k===i)+'">'+c[0]+'</button>').join('');
+  h+=casesOf(w).map((c,i)=>'<button type="button" data-case="'+i+'" aria-pressed="'+(k===i)+'">'+c[0]+'</button>').join('');
   $('pills').innerHTML=h;
 }
 function applyCase(i){
   const D=st.data, w=wid(); st.kase[w]=i;
   if(w==='day-arcs'){ const c=CASES.day[i]; D.pos=c[1]; D.neg=c[2]; D.mind=D.diary=D.activity=c[3]; }
-  else { const c=CASES.energy[i], base=w==='meal'?D.goal:2200, r=v=>Math.round(v/10)*10;
+  else { const c=casesOf(w)[i]; D.none=c.length===1; if(D.none){ renderPreview(); renderPills(); if(st.tab!=='anim') renderCompare(); save(); return }
+    const base=w==='meal'||w==='ref'?D.goal:2200, r=v=>Math.round(v/10)*10;
     D.eaten=r(c[1]*base); D.spent=r(c[2]*base); ['p','f','c','fib'].forEach(k=>{ D[k]=Math.round(c[3]*D[k+'g']) });
     D.rest=r(Math.min(1,c[2])*D.restg); D.wo=r(c[2]*D.wog*(c[2]>1?1.1:1)); D.steps=Math.round(c[2]*D.stepsg/100)*100; D.min=Math.round(c[2]*D.ming);
     if(c[0]==='Стык') st.mode[w]='bal' }
@@ -384,24 +551,32 @@ function renderCompare(){
   if(st.tab==='anim') return;
   const w=wid(), app=appOf(), list=fable(st.theme), src=st.work[st.theme].source, ed=edited();
   const items=[['orig','Как сейчас',copy(ORIGINAL)]].concat(list.map((p,i)=>['f'+i,p.name||'Пресет '+(i+1),fromPreset(p)]));
-  if(src.startsWith('m')) items.push([src,presetName(st.theme,src),sourcePreset(st.theme,src)]);
+  (st.mine[st.theme]||[]).forEach((m,i)=>items.push(['m'+i,m.name,sourcePreset(st.theme,'m'+i)]));   // 1.6: все свои варианты темы — в том же ряду
   const host=$('compare');
   host.style.gridTemplateColumns='repeat('+Math.max(4,items.length)+',minmax(0,1fr))';
+  host.classList.toggle('many',items.length>4);
+  cmpFill(host,items,src,ed);
+  const sch=SCHEMES.map((x,i)=>['s'+i,x.name,sourcePreset(st.theme,'s'+i)]);
+  cmpFill($('schemes'),sch,src,ed);
+  $('nightK').hidden=!isNight(st.theme);
+  [...$('nightK').querySelectorAll('[data-nk]')].forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.nk===st.nightK)));
+  if(w==='day-arcs') paintBalance($('stage'),P(),st.data,true);              // главный холст баланса рисуется последним — он и доводит движение
+}
+function cmpFill(host,items,src,ed){
+  const w=wid(), app=appOf();
   host.innerHTML=items.map(([s,name,Pr])=>{
     const on=s===src, use=on?P():Pr;          // выбранный показывает и правки
-    const body=w==='day-arcs'?dayRingHTML(st.center,use,st.data,st.center):energyHTML(app,st.mode[w],use,st.data);
+    const body=w==='day-arcs'?dayRingHTML(st.center,use,st.data,st.center):widgetHTML(w,use,st.data);
     return '<button type="button" class="cmp" data-src="'+s+'" aria-pressed="'+on+'"><span class="art">'+bgLayer(st.theme,app)+body+'</span><span>'+esc(name)+(on&&ed?'<i class="dotEd" title="есть правки"></i>':'')+'</span></button>';
   }).join('');
-  if(w==='day-arcs'){
-    host.querySelectorAll('.cmp').forEach((el,i)=>{ const s=items[i][0], Pr=s===src?P():items[i][2]; attachDay(el,()=>Pr,()=>st.data,false) });
-    paintBalance($('stage'),P(),st.data,true);              // главный холст баланса рисуется последним — он и доводит движение
-  }
+  if(w==='day-arcs') host.querySelectorAll('.cmp').forEach((el,i)=>{ const s=items[i][0], Pr=s===src?P():items[i][2]; attachDay(el,()=>Pr,()=>st.data,false) });
 }
 
 /* ── Редакторы: группы переключаются сегментом, показана одна ── */
-const GROUPS={day:[['flow','Поток'],['bal','Баланс'],['prog','Кольца'],['data','Данные']],energy:[['arcs','Дуги'],['rows','Строки'],['data','Данные']]};
-function grpList(){ return wid()==='day-arcs'?GROUPS.day:GROUPS.energy }
-function grp(){ const l=grpList(), k=wid()==='day-arcs'?'day':'energy', g=st.grp[k]; return l.some(x=>x[0]===g)?g:l[0][0] }
+const GROUPS={day:[['flow','Поток'],['bal','Баланс'],['prog','Кольца'],['data','Данные']],energy:[['arcs','Дуги'],['rows','Строки'],['data','Данные']],ref:[['look','Вид'],['arcs','Дуги'],['rows','Строки'],['data','Данные']]};
+function gkey(){ return wid()==='day-arcs'?'day':wid()==='ref'?'ref':'energy' }
+function grpList(){ return GROUPS[gkey()] }
+function grp(){ const l=grpList(), g=st.grp[gkey()]; return l.some(x=>x[0]===g)?g:l[0][0] }
 function well(id,label,val){ return '<label class="well"><input type="color" id="'+id+'" value="'+val.toLowerCase()+'" aria-label="'+label+'"><span>'+label+'</span></label>' }
 function range(id,label,val,min,max,step,unit){ return '<div class="row"><label for="'+id+'">'+label+'</label><output id="o-'+id+'">'+val+(unit||'')+'</output><input type="range" id="'+id+'" min="'+min+'" max="'+max+'" step="'+(step||1)+'" value="'+val+'"></div>' }
 const BINDS={}, COLOR_BINDS={};
@@ -413,6 +588,7 @@ function renderEditors(){
   const Pr=P(), app=appOf(), g=grp(); let h='';
   $('groups').innerHTML=grpList().map(([k,l])=>'<button type="button" data-grp="'+k+'" aria-pressed="'+(k===g)+'">'+l+'</button>').join('');
   if(g==='data') h=dataHTML();
+  else if(g==='look') h=lookHTML(Pr.ref);
   else if(wid()==='day-arcs'){
     const d=Pr.day;
     if(g==='flow'){
@@ -441,7 +617,7 @@ function renderEditors(){
       ['mw','s0','s1','a0','a1'].forEach(c=>bind(k+c,()=>energyEditTarget()[k][c],v=>{energyEditTarget()[k][c]=v},' %'));
       bind('trk',()=>{const e=energyEditTarget();return e.track==null?20:e.track},v=>{energyEditTarget().track=v},' %');
     }
-    if(app==='meal') h+='<div class="line"><span>Свои дуги у Meal</span><div class="seg"><button type="button" id="unify" aria-pressed="'+!per+'">Общие</button><button type="button" id="split" aria-pressed="'+!!per+'">Свои</button></div></div>';
+    if(app==='meal'&&wid()!=='ref') h+='<div class="line"><span>Свои дуги у Meal</span><div class="seg"><button type="button" id="unify" aria-pressed="'+!per+'">Общие</button><button type="button" id="split" aria-pressed="'+!!per+'">Свои</button></div></div>';
   } else {
     const B=Pr.bars;
     h=ROWS.map(([k,l])=>'<div class="hue"><i id="dot-'+k+'"></i><div><div class="strip" id="strip-row-'+k+'"></div><input type="range" id="h'+k+'" min="0" max="360" value="'+B.hues[k]+'" aria-label="'+l+' строка, тон"></div><output id="o-h'+k+'">'+B.hues[k]+'°</output></div>').join('')+
@@ -468,7 +644,7 @@ function joinEd(Pr){
 }
 /* картинка варианта стыка: конец верхней дуги поверх нижней, прямой полосой (как «крупно» в «Пробе») */
 function joinArt(kind){
-  const Pr=P(), E=energyOf(Pr,appOf()), J=Object.assign({},Pr.join,{kind}), ds=200, de=270, x0=150, x1=222, Wd=x1-x0;
+  const Pr=P(), E=wid()==='ref'?Pr.energy:energyOf(Pr,appOf()), J=Object.assign({},Pr.join,{kind}), ds=200, de=270, x0=150, x1=222, Wd=x1-x0;
   const pos=t=>n2((t-x0)/Wd*100);
   const under=arcStops(E.eat,de,null,2).filter(p=>p.t>=x0-2&&p.t<=x1+2).map(p=>rgba(p.c,p.a)+' '+pos(p.t)+'%');
   const top=arcStops(E.spent,ds,joinOf(Pr,E,J),2).filter(p=>p.t>=x0-2).map(p=>rgba(p.c,p.a)+' '+pos(p.t)+'%');
@@ -492,7 +668,8 @@ function renderStrips(){
 function dataHTML(){
   const w=wid(), m=st.mode[w];
   if(w==='day-arcs') return '<div class="sl2">'+dr('pos','Хорошее',0,100)+dr('neg','Тяжёлое',0,100)+dr('mind','Осознанность',0,100)+dr('diary','Дневник',0,100)+dr('activity','Активность',0,100)+'</div>';
-  let h=dr('eaten','Съедено',0,6000,10)+dr('spent','Потрачено',0,6000,10)+(w==='meal'?dr('goal','Цель = круг',500,6000,50):dr('scale','Круг, ккал',500,6000,50));
+  const R=P().ref;
+  let h=dr('eaten','Съедено',0,6000,10)+dr('spent','Потрачено',0,6000,10)+(w==='meal'?dr('goal','Цель = круг',500,6000,50):w==='ref'?dr('goal','Цель по еде',500,6000,50)+(R.circle==='3000'?dr('scale','Круг, ккал',500,6000,50):''):dr('scale','Круг, ккал',500,6000,50));
   if(m==='eat') h+=dr('p','Белки',0,300)+dr('f','Жиры',0,200)+dr('c','Углеводы',0,600)+dr('fib','Клетчатка',0,80);
   else if(m==='spent') h+=dr('rest','Покой',0,3000,10)+dr('wo','Тренировки',0,2000,10)+dr('steps','Шаги',0,25000,100)+dr('min','Время, мин',0,240);
   else h+=dr('steps','Шаги',0,25000,100)+dr('p','Белки',0,300);
@@ -506,13 +683,15 @@ function lightName(id){ const e=LIGHTS.find(x=>x.id===id); return e?e.name:id }
 function miniHTML(attr,name,on){ return '<button type="button" class="mini" '+attr+' aria-pressed="'+on+'"><span class="art">'+bgLayer(st.theme,'day')+'<canvas aria-hidden="true"></canvas><svg viewBox="0 0 240 240" aria-hidden="true"><path d="'+TRACK_PATH+'"/></svg></span><span>'+esc(name)+'</span></button>' }
 function renderMinis(){
   const f=P().day.flow;
+  $('life').innerHTML=LIFE.map(L=>miniHTML('data-life="'+L.id+'"',L.name,lifeOn(L,f))).join('');
+  $('life').querySelectorAll('[data-life]').forEach(b=>{ const L=LIFE.find(x=>x.id===b.dataset.life); ARC.renderer(b.querySelector('canvas'),()=>Object.assign({},ARC.DEFAULT,P().day.flow,L.set,{enabled:true})) });
   $('effects').innerHTML=EFFECTS.map(e=>miniHTML('data-effect="'+e.id+'"',e.name,f.mode===e.id)).join('');
   $('lights').innerHTML=LIGHTS.map(l=>miniHTML('data-light="'+l.id+'"',l.name,f.light===l.id)).join('');
   $('effects').querySelectorAll('[data-effect]').forEach(b=>{ const id=b.dataset.effect; ARC.renderer(b.querySelector('canvas'),()=>Object.assign({},ARC.DEFAULT,P().day.flow,{mode:id,enabled:true})) });
   $('lights').querySelectorAll('[data-light]').forEach(b=>{ const L=LIGHTS.find(x=>x.id===b.dataset.light), cur=()=>P().day.flow;
     ARC.renderer(b.querySelector('canvas'),()=>{ const f=cur(), own=f.light===L.id; return Object.assign({},ARC.DEFAULT,f,own?{}:lightFields(L),{light:L.id,enabled:true}) }) });
 }
-function syncMinis(){ const f=P().day.flow; document.querySelectorAll('[data-effect]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.effect===f.mode))); document.querySelectorAll('[data-light]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.light===f.light))) }
+function syncMinis(){ const f=P().day.flow; document.querySelectorAll('[data-life]').forEach(b=>b.setAttribute('aria-pressed',String(lifeOn(LIFE.find(x=>x.id===b.dataset.life),f)))); document.querySelectorAll('[data-effect]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.effect===f.mode))); document.querySelectorAll('[data-light]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.light===f.light))) }
 function lightFields(L){ const o={}; Object.keys(L).forEach(k=>{ if(k!=='id'&&k!=='name') o[k]=L[k] }); return o }
 function renderAnimEd(){
   clearBinds();
@@ -548,7 +727,7 @@ function renderMine(){
 }
 function exportPreset(){
   const Pr=copy(P()), name=$('saveName').value.trim()||presetName(st.theme,st.work[st.theme].source);
-  const out={name,note:'',energy:Pr.energy,join:Pr.join,bars:Pr.bars,day:Pr.day};
+  const out={name,note:'',energy:Pr.energy,join:Pr.join,bars:Pr.bars,day:Pr.day,ref:Pr.ref};
   if(Pr.apps) out.apps=Pr.apps;
   delete out.bars.rows; if(Pr.bars.rows&&Object.keys(Pr.bars.rows).length) out.bars.rows=Pr.bars.rows;
   return out;
@@ -583,11 +762,11 @@ $('pills').addEventListener('click',e=>{ const c=e.target.closest('[data-case]')
   const m=e.target.closest('[data-mode]'); if(m){ const w=wid(); st.mode[w]=m.dataset.mode; renderPreview(); renderPills(); renderCompare(); if(grp()==='data'||(grp()==='arcs'&&st.arc==='join')) renderEditors(); save() } });
 $('themes').addEventListener('click',e=>{ const b=e.target.closest('[data-theme]'); if(!b) return; st.theme=b.dataset.theme; paintAll() });
 $('compare').addEventListener('click',e=>{ const b=e.target.closest('[data-src]'); if(b) tryOn(b.dataset.src) });
-$('groups').addEventListener('click',e=>{ const b=e.target.closest('[data-grp]'); if(!b) return; st.grp[wid()==='day-arcs'?'day':'energy']=b.dataset.grp; renderEditors(); save() });
+$('groups').addEventListener('click',e=>{ const b=e.target.closest('[data-grp]'); if(!b) return; st.grp[gkey()]=b.dataset.grp; renderEditors(); save() });
 $('agroups').addEventListener('click',e=>{ const b=e.target.closest('[data-ag]'); if(!b) return; st.ag=b.dataset.ag; renderAnimEd(); save() });
 function onInput(e){
   const t=e.target, id=t.id;
-  if(t.dataset.d){ const k=t.dataset.d; st.data[k]=+t.value; $('o-d-'+k).textContent=num(st.data[k]); st.kase[wid()]=null; renderPills();
+  if(t.dataset.d){ const k=t.dataset.d; st.data[k]=+t.value; st.data.none=false; $('o-d-'+k).textContent=num(st.data[k]); st.kase[wid()]=null; renderPills();
     if(wid()==='day-arcs'&&(k==='pos'||k==='neg')) paintBalance($('stage'),P(),st.data,false); else renderPreview();
     renderCompareSoon(); save(); return }
   if(BINDS[id]){ const v=parseFloat(t.value); BINDS[id][1](v); const o=$('o-'+id); if(o) o.textContent=v+BINDS[id][2]; return paintLight() }
@@ -595,6 +774,11 @@ function onInput(e){
 }
 ['editors','animEd'].forEach(id=>$(id).addEventListener('input',onInput));
 $('editors').addEventListener('click',e=>{
+  const lk=e.target.closest('[data-rbg],[data-rcircle],[data-rtick],[data-rcolor],[data-rgoal]');
+  if(lk){ const R=P().ref, d=lk.dataset;
+    if(d.rbg){ st.refBg=d.rbg; paintAll(); return }
+    if(d.rcircle) R.circle=d.rcircle; if(d.rtick) R.tick=d.rtick==='1'; if(d.rcolor) R.color=d.rcolor; if(d.rgoal) R.goal=d.rgoal;
+    renderEditors(); return paintLight() }
   const ar=e.target.closest('[data-arc]'); if(ar){ st.arc=ar.dataset.arc; renderEditors(); save(); return }
   const c4=e.target.closest('[data-c4]'); if(c4){ const L=energyEditTarget()[st.arc==='spent'?'spent':'eat']; if(c4.dataset.c4==='add') L.cm2=mixHex(L.cm,L.c1,.5); else delete L.cm2; renderEditors(); return paintLight() }
   const j=e.target.closest('[data-join]'); if(j){ P().join.kind=j.dataset.join; renderEditors(); return paintLight() }
@@ -616,13 +800,20 @@ $('animEd').addEventListener('click',e=>{ const f=P().day.flow, b=e.target.close
   else return;
   renderAnimEd(); paintLight() });
 $('reset').onclick=()=>{ tryOn(st.work[st.theme].source) };
+$('resetA').onclick=()=>{ P().day.flow=flowTarget(); renderAnimEd(); paintLight(); toast('Оживление вернулось') };
+$('quick').onclick=quickSave; $('quickA').onclick=quickSave;
+$('schemes').addEventListener('click',e=>{ const b=e.target.closest('[data-src]'); if(b) tryOn(b.dataset.src) });
+$('nightK').addEventListener('click',e=>{ const b=e.target.closest('[data-nk]'); if(!b) return; st.nightK=+b.dataset.nk; const src=st.work[st.theme].source; if(src.startsWith('s')&&!edited()) st.work[st.theme].P=sourcePreset(st.theme,src); paintAll() });
+$('life').addEventListener('click',e=>{ const b=e.target.closest('[data-life]'); if(!b) return; const L=LIFE.find(x=>x.id===b.dataset.life), f=P().day.flow; Object.assign(f,L.set); P().day.life=L.id; renderAnimEd(); paintLight(); toast('Примерено: '+L.name) });
 $('mine').addEventListener('click',e=>{ const b=e.target.closest('[data-src]'); if(b) return tryOn(b.dataset.src);
   const d=e.target.closest('[data-del]'); if(!d) return; const list=st.mine[st.theme]||[], i=+d.dataset.del;
   list.splice(i,1); const w=st.work[st.theme]; if(w.source==='m'+i) w.source='orig'; else if(w.source.startsWith('m')&&+w.source.slice(1)>i) w.source='m'+(+w.source.slice(1)-1); paintAll() });
 $('copy').onclick=()=>{ renderOut(); const t=$('out').value; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Пресет скопирован'),()=>{ $('out').hidden=false; $('out').select(); document.execCommand('copy'); toast('Пресет скопирован') }) };
 $('showOut').onclick=()=>{ const o=$('out'); o.hidden=!o.hidden; $('showOut').setAttribute('aria-expanded',String(!o.hidden)) };
 $('saveBtn').onclick=()=>{ const name=$('saveName').value.trim(); if(!name){ $('saveName').focus(); return toast('Назови вариант') }
-  const list=st.mine[st.theme]=st.mine[st.theme]||[]; const ex=exportPreset(); list.push({name,preset:ex}); st.work[st.theme]={source:'m'+(list.length-1),P:fromPreset(ex)}; $('saveName').value=''; paintAll(); toast('Сохранено: '+name) };
+  const list=st.mine[st.theme]=st.mine[st.theme]||[]; const ex=exportPreset(); ex.name=name; const at=list.findIndex(x=>x.name===name);
+  if(at>=0){ list[at].preset=ex; st.work[st.theme]={source:'m'+at,P:fromPreset(ex)}; $('saveName').value=''; paintAll(); return toast('Обновлено: '+name) }
+  list.push({name,preset:ex}); st.work[st.theme]={source:'m'+(list.length-1),P:fromPreset(ex)}; $('saveName').value=''; paintAll(); toast('Сохранено: '+name) };
 
 /* ── Аккаунт: всё, что в студии, хранится в аккаунте claude.ai (база артефакта), видно с любого устройства.
    Вне claude.ai (локально, в лаборатории без входа) — как раньше, только в этом браузере. ── */

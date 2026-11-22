@@ -1,4 +1,4 @@
-/* Студия градиентов 1.2 · Happy — оболочка в стиле Color Studio (тёмная, панели 22, текст не мельче 12). Меньше текста, всё рядом, таб-бар внизу.
+/* Студия градиентов 1.6 · Happy — оболочка в стиле Color Studio (тёмная, панели 22, текст не мельче 12). Меньше текста, всё рядом, таб-бар внизу.
    Виджеты внутри превью — копии разметки и стилей приложений (Day 60, Meal 33, Sport 44). 22.11.2026 · Claude */
 :root{--act-icon:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTYuNDUgNC42NyBMMTYuMTYgNC43NSBMMTUuNzUgNC45NiBMMTUuMjYgNS40MiBMMTUuMDUgNS43NiBMMTQuOTIgNi4xMiBMMTQuOTIgNi45NSBMMTUuMTMgNy41MSBMMTUuMzEgNy43NyBMMTUuNzIgOC4xNiBMMTYuMDEgOC4zMiBMMTYuNDIgOC40NSBMMTcuMjcgOC40NSBMMTcuODIgOC4yMSBMMTguMDggOC4wMyBMMTguMzEgNy44MCBMMTguNTcgNy40MSBMMTguNzUgNi43NiBMMTguNzUgNi4zMyBMMTguNzAgNi4wNyBMMTguMzkgNS40MiBMMTguMTUgNS4xNiBMMTcuODIgNC45MCBMMTcuMjIgNC42N1ogTTE2LjYwIDUuMjQgTDE3LjA3IDUuMjQgTDE3LjYxIDUuNDcgTDE3Ljc5IDUuNjMgTDE4LjAyIDUuOTQgTDE4LjE1IDYuMzMgTDE4LjE1IDYuODIgTDE3Ljk3IDcuMjggTDE3LjUxIDcuNzIgTDE3LjAyIDcuOTAgTDE2LjQyIDcuODUgTDE2LjAxIDcuNjQgTDE1LjY3IDcuMjggTDE1LjU0IDcuMDIgTDE1LjQ2IDYuNjkgTDE1LjUyIDYuMTcgTDE1LjcwIDUuODEgTDE2LjExIDUuNDJaIE0xNi42OCAxLjA1IEwxNi41MCAxLjAwIEwxNi4wOCAxLjAwIEwxNS44MyAxLjA4IEwxNS4yMSAxLjQxIEwxNC4wMiAyLjE2IEwxMy4xNiAyLjgxIEwxMi41MiAzLjQ2IEwxMi4yMyAzLjg3IEwxMS45NSA0LjQxIEwxMS41NiA1LjUwIEwxMS4zOCA2LjE3IEwxMC45NyA4LjM3IEwxMC43MyA4LjgxIEw5LjcwIDEwLjM2IEw4LjYxIDEyLjU2IEw1LjI4IDIxLjM3IEw1LjI1IDIxLjkxIEw1LjMzIDIyLjIwIEw1LjU0IDIyLjUzIEw1LjgwIDIyLjc3IEw2LjAzIDIyLjkwIEw2LjQ3IDIzLjAwIEw2LjkzIDIyLjk1IEw3LjM1IDIyLjc0IEw3LjYxIDIyLjQ4IEw4Ljg3IDE5Ljg1IEwxMC41OCAxNi4wNyBMMTAuNzEgMTUuODkgTDEwLjgxIDE1Ljk0IEwxNC4wNCAyMi40OCBMMTQuMjcgMjIuNzIgTDE0LjY0IDIyLjkyIEwxNS4yMyAyMy4wMCBMMTUuNTQgMjIuOTIgTDE1Ljg4IDIyLjc0IEwxNi4xNCAyMi40OCBMMTYuMzIgMjIuMTcgTDE2LjM5IDIxLjg5IEwxNi4zNyAyMS4zNSBMMTQuMjIgMTYuMDcgTDE0LjIwIDE1Ljg2IEwxNC44NCAxNS42OCBMMTUuOTMgMTUuMjcgTDE2Ljk5IDE0Ljc1IEwxNy41OCAxNC4zOSBMMTcuOTUgMTQuMTEgTDE4LjE4IDEzLjgwIEwxOC4zMyAxMy4zNiBMMTguMzMgMTIuOTcgTDE4LjIzIDEyLjU4IEwxNy44NyAxMS44MSBMMTcuNTYgMTEuMjQgTDE2Ljg5IDEwLjI4IEwxNi42MCA5Ljk0IEwxNS42MiA4Ljk5IEwxMy45NiA3LjcwIEwxMy44NCA3LjQ5IEwxMy44NCA3LjI2IEwxNC4wNyA1Ljk0IEwxNC4yMCA1LjUwIEwxNC40MCA1LjA2IEwxNS4yMSA0LjI4IEwxNi44OSAyLjk5IEwxNy4yNSAyLjU4IEwxNy4zNSAyLjI3IEwxNy4zMyAxLjcyIEwxNy4wOSAxLjM0WiBNMTUuMTAgMTIuMDQgTDE1LjQxIDEyLjQzIEwxNS42MiAxMi44MSBMMTUuNTQgMTIuODkgTDE0LjMzIDEzLjQ2IEwxNC4yNyAxMy4zOCBMMTQuOTcgMTIuMTJaIE0xNi40NSAxLjU5IEwxNi41NSAxLjY1IEwxNi43NiAxLjg4IEwxNi43OCAyLjE0IEwxNi43MSAyLjM0IEwxNi41MCAyLjU1IEwxNC41OSA0LjA1IEwxNC4yNSA0LjM2IEwxMy44NCA0Ljg4IEwxMy42NSA1LjI5IEwxMy40NyA1Ljk0IEwxMy4yNyA3LjE4IEwxMy4yNyA3LjU5IEwxMy40NSA4LjAxIEwxNS4zNiA5LjUzIEwxNi4yMSAxMC4zOCBMMTcuMDQgMTEuNTIgTDE3LjMzIDEyLjAxIEwxNy43NCAxMi45MiBMMTcuNzYgMTMuMjAgTDE3LjY2IDEzLjU0IEwxNy40MCAxMy44MCBMMTYuOTkgMTQuMDggTDE1LjgzIDE0LjY4IEwxNC44NyAxNS4wNiBMMTQuMjAgMTUuMjcgTDEzLjkxIDE1LjIyIEwxMy43NiAxNC45NiBMMTMuNjggMTQuNjUgTDEzLjczIDE0LjQ5IEwxMy45NCAxNC4yOSBMMTUuNzUgMTMuNDMgTDE2LjI3IDEzLjEyIEwxNi4zMiAxMy4wNSBMMTYuMzIgMTIuNzkgTDE1Ljc1IDExLjkxIEwxNS4xOCAxMS4yMSBMMTQuOTcgMTEuMTkgTDE0Ljc5IDExLjMxIEwxMy41MCAxMy41OSBMMTMuMTQgMTQuMzkgTDEzLjExIDE0Ljc1IEwxMy4xOSAxNS4wOSBMMTMuNTMgMTUuODEgTDE1LjgzIDIxLjU4IEwxNS44MyAyMS44NCBMMTUuNzcgMjEuOTkgTDE1LjUyIDIyLjMwIEwxNS4xOCAyMi40MyBMMTQuODIgMjIuMzggTDE0LjUzIDIyLjE3IEwxNC4zNSAyMS44OSBMMTEuMjIgMTUuNTAgTDEwLjkxIDE1LjI3IEwxMC42MyAxNS4yNCBMMTAuNDIgMTUuMzIgTDEwLjIyIDE1LjUzIEw3LjE5IDIyLjA3IEw3LjA0IDIyLjI1IEw2Ljc1IDIyLjQxIEw2LjQ5IDIyLjQzIEw2LjIxIDIyLjM1IEw1Ljk4IDIyLjE3IEw1Ljg3IDIxLjk5IEw1LjgyIDIxLjgxIEw1Ljg3IDIxLjQwIEw3LjI0IDE3Ljg2IEw4LjI1IDE1LjA2IEw5LjIzIDEyLjU4IEwxMC4xOSAxMC42NyBMMTEuMjggOS4wNCBMMTEuNDggOC42MyBMMTEuNjEgOC4xNCBMMTEuOTIgNi4zOCBMMTIuMTYgNS41MiBMMTIuNDcgNC43MCBMMTIuNzAgNC4yMyBMMTIuOTggMy44MiBMMTMuMzQgMy40MyBMMTMuOTQgMi45NCBMMTQuOTIgMi4yNyBMMTUuODAgMS43NSBMMTYuMjEgMS41N1oiLz48L3N2Zz4K");font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#f6f5ff;color-scheme:dark;background:#161527;font-synthesis:none;
   --line:#ffffff1f;--muted:#a8a5bf;--accent:#b8a5ff;--panel:linear-gradient(143deg,#27243dd9,#211f36ed)}
@@ -242,3 +242,29 @@ textarea.out{width:100%;min-height:140px;padding:10px;border-radius:12px;border:
 .chips.lc{align-items:flex-start}
 .chips.lc .well{flex:0 0 auto;min-width:44px}
 .chips.lc .well input{width:36px;height:36px}
+
+/* ── 1.6 · эталонный виджет «Общий»: вид Sport, цифра 28 и подпись 12 всегда, карточка 26 (на фоне Day — 22, как карточки Day) ── */
+.erCard.ref{border-radius:26px}
+.erCard.ref.r22{border-radius:22px}
+.erCard.ref .erKnob b{font-size:28px}
+.erCard.ref .erKnob small{font-size:12px}
+.erCard.ref .erR{font-size:12px}
+.erArcs .erCapG{position:absolute;inset:0}
+.erArcs .erTick{position:absolute;width:11%;height:2.5px;border-radius:2px;background:#fff;box-shadow:0 0 0 1px rgba(14,22,74,.22)}
+.cmp .erCard.ref{border-radius:14px}
+.cmp .erArcs .erTick{height:1.5px}
+/* ── 1.6 · ряды: «Вернуть» и «В Мои» рядом; схемы — карусель; «Ночью» ── */
+.acts{display:flex;gap:14px;align-items:center}
+.compare.row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 4px;scroll-padding:0 16px}
+.compare.row::-webkit-scrollbar{display:none}
+.compare.row .cmp{flex:0 0 calc((100% - 24px)/4.4);min-width:72px}
+.compare.many{display:flex!important;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 4px}
+.compare.many::-webkit-scrollbar{display:none}
+.compare.many .cmp{flex:0 0 calc((100% - 24px)/4.4);min-width:72px}
+.line.night{margin:0 2px 10px}
+.erCard.ref{column-gap:12px}
+.erCard.ref{--ringH:min(146px,34vw)}
+/* 1.6: на телефоне превью на 16 px шире — карточка виджета такой же ширины, как в приложении (поля экрана 16) */
+@media(max-width:451px){.fold{margin:0 -8px}.fold .pills{margin:8px 0 0;padding:0 8px;scroll-padding:0 8px}}
+.cmp .erCard.ref{--ringH:min(58px,68cqw)}
+@media(min-width:620px){.cmp .erCard.ref{--ringH:min(96px,68cqw)}}
