@@ -1184,6 +1184,10 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Сов13", msgs=["Посоветуй рецепт"], mode="none", reply="Записать"),
  dict(id="Сов14", eaten=True, msgs=["Съел на завтрак овсянку 50 г"], want=[("овся", 50)]),
  dict(id="Сов15", msgs=["Готовлю плов на всю семью"], mode="none", reply="готовка"),
+ # Молоко без процента — 2,5 % (решение Астамура 22.11.2026)
+ dict(id="Сов16", eaten=True, msgs=["молоко 200 мл"], want=[("молоко 2,5", 200)]),
+ dict(id="Сов17", eaten=True, msgs=["стакан молока"], want=[("молоко 2,5", 250)]),
+ dict(id="Сов18", eaten=True, msgs=["молоко 3,5% 200 мл"], want=[("молоко 3,5", 200)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
