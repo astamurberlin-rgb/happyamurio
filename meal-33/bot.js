@@ -249,8 +249,9 @@ var MealBot=(function(){
   /* «5%», «2,5%» — жирность, а не еда: «творог 200 г 9%» — одна еда (словарь пишет «5 процентов» как «5%»), 22.11.2026 */
   function kindOf(w){ var n=norm(w); return /^\d+(,\d+)?$/.test(n)||numOf(n)!==null?'N':unitOf(n)?'U':PREP.test(n)||STOP[n]||SIZE.test(n)||/^\d+(,\d+)?%$/.test(n)?'S':'F' }
   function descr(w){ var n=norm(w); return W_ADJL.test(n)||STF.some(function(p){ return p[1].test(n) }) }
+  function spoonU(w){ return /^(ч|ст|дес)\. л\.$/.test(unitOf(norm(w||''))||'') }   // чайная, столовая, десертная ложка
   function splitItems(c){
-    var out=[], cur=[], hasN=false, hasF=false, last='', prevW='', lastU='', ws=c.split(' ');
+    var out=[], cur=[], hasN=false, hasF=false, last='', prevW='', lastU='', ws=c.split(' '), withAt=-1, withN0=false, withF=false;
     ws.forEach(function(w,i){
       var k=kindOf(w), cut=false;
       if(k==='N'&&/^(сыра|сезона|сезонов)$/.test(norm(ws[i+1]||''))) k='F';   // пицца «Четыре сыра» — название, а не 4 штуки (как в parseText)
@@ -270,7 +271,15 @@ var MealBot=(function(){
       }
       /* Meal 33.12: мера без числа тоже начинает новую еду: «щепотка соли | щепотка перца» */
       if(SP&&!cut&&k==='U'&&last==='F'&&hasF&&!hasN&&!PREP.test(norm(prevW))&&cur.some(function(x){ return kindOf(x)==='U' })) cut=true;
-      if(cut){ out.push(cur.join(' ')); cur=[]; hasN=hasF=false; lastU='' }
+      /* ложки после «с» — мера добавки (решение Астамура 22.11.2026): «творог с 2 ложками мёда 200 г» — одна еда, блюдо «А с Б», вес в конце — всего блюда;
+         «творог 200 г со столовой ложкой мёда» — у творога свой вес, а ложка — мёда, а не творога */
+      if(SP&&cut&&withAt>=0&&!withF&&k==='F'&&(last==='N'||last==='U')){
+        if(withN0){ out.push(cur.slice(0,withAt).join(' ')); cur=cur.slice(withAt); hasN=cur.some(function(x){ return kindOf(x)==='N' }); hasF=false; withAt=-1 }
+        cut=false }
+      if(SP&&cut&&withAt>=0&&withF&&k==='N'&&last==='F'&&i===ws.length-2&&/^(г|гр|грам+[а-я]*)$/.test(norm(ws[i+1]||''))) cut=false;
+      if(cut){ out.push(cur.join(' ')); cur=[]; hasN=hasF=false; lastU=''; withAt=-1 }
+      if(SP&&/^(с|со)$/.test(norm(w))&&(spoonU(ws[i+1])||kindOf(ws[i+1]||'')==='N'&&spoonU(ws[i+2]))){ withAt=cur.length; withN0=hasN; withF=false }
+      if(withAt>=0&&k==='F') withF=true;
       cur.push(w); if(k==='N') hasN=true; if(k==='F') hasF=true; if(k==='U') lastU=unitOf(norm(w))||''; if(k!=='S') last=k; prevW=w;
     });
     if(cur.length) out.push(cur.join(' '));
@@ -364,11 +373,18 @@ var MealBot=(function(){
       t=t.replace(new RegExp('\\s(?:(?:один|одна|одну|больш\\S*|маленьк\\S*)\\s+)?'+CUP+'(?=\\s)','g'),' ');
     /* Meal 33.9: названы граммы или миллилитры — они главнее куска, штуки и другой меры рядом: «кусок хлеба 20 г» — 20 г */
     if(SP&&new RegExp('\\d\\s*'+VOL+'(?=\\s)').test(t)){
-      var w0=t.trim().split(/\s+/), keep=[];
-      w0.forEach(function(w,i){ var un=unitOf(norm(w));
-        if(un&&!/^(г|кг|мл|л)$/.test(un)){ var pv=keep[keep.length-1]; if(pv!=null&&(/^\d+(,\d+)?$/.test(pv)||numOf(norm(pv))!==null)&&!new RegExp('^'+VOL+'$').test(w0[i+1]||'')) keep.pop(); return }
-        keep.push(w) });
-      t=' '+keep.join(' ')+' ';
+      var w0=t.trim().split(/\s+/), isNum=function(x){ return /^\d+(,\d+)?$/.test(x)||numOf(norm(x))!==null };
+      var gramsFirst=function(add){ var keep=[];
+        w0.forEach(function(w,i){ var un=unitOf(norm(w));
+          if(un&&!/^(г|кг|мл|л)$/.test(un)){
+            if(add&&spoonU(w)){ var j=keep.length-1; while(j>=0&&(isNum(keep[j])||spoonU(keep[j]))) j--; if(j>=0&&/^(с|со)$/.test(norm(keep[j]))){ keep.push(w); return } }
+            var pv=keep[keep.length-1]; if(pv!=null&&isNum(pv)&&!new RegExp('^'+VOL+'$').test(w0[i+1]||'')) keep.pop(); return }
+          keep.push(w) });
+        return keep.join(' ') };
+      t=' '+gramsFirst(false)+' ';
+      /* «творог со столовой ложкой мёда 200 г», «творог с 2 ложками мёда 200 г»: ложки сразу после «с» — мера добавки, а не всего блюда.
+         Её видит только разбор «А с Б» (splitComposite); всё остальное — как раньше (решение Астамура 22.11.2026) */
+      var tAdd=gramsFirst(true); if(tAdd!==t.trim()) o.textAdd=tAdd;
     }
     /* Meal 33.12: «одна груша 180» — штука названа, а число в конце без меры — её вес в граммах */
     if(SP){ var og=t.match(/^\s1\s+((?:[а-я-]+\s+){1,3})(\d{2,4})\s$/); if(og&&!og[1].trim().split(/\s+/).some(function(w){ return kindOf(w)!=='F' })) t=' '+og[1]+og[2]+' г ' }
@@ -392,7 +408,7 @@ var MealBot=(function(){
         if(typeof COND_W!=='undefined'&&(COND_W.test(x)||adj&&COND_W.test(adj.trim()))||/^(мяс|рыб|овощ|фрукт|ягод|молоч|животн|глютен|лактоз|кофеин|газ|добав)/.test(x)) return m;
         wo.push(woStem(x)); return a+' ' });
       if(wo.length){ o.wo=wo; o.textWo=two.replace(/\s+/g,' ').trim() } }
-    o.text=t.replace(/\s+/g,' ').trim();
+    o.text=t.replace(/\s+/g,' ').trim(); if(o.textAdd) o.textAt=o.text;
     o.hasNum=/\d/.test(o.text)||o.text.split(' ').some(function(w){ return numOf(norm(w))!==null||!!unitOf(norm(w)) });
     return o;
   }
@@ -937,7 +953,7 @@ var MealBot=(function(){
   var SEPW=/\s(?:с|со)\s|\s(?:в|под)\s(?=(?:[а-я-]+\s+){0,2}(?:соус|сметан|подлив|кляр|маринад|сливк|сироп|глазур))/;
   function splitComposite(c,cps){
     if(c.corr||c.dup||c.range||c.minus||c.mealOnly||c.soft||c.size) return null;
-    var txt=String(c.text).trim(); if(!SEPW.test(' '+txt+' ')||/^\s*(с|со|в|под)\s/.test(txt)) return null;
+    var txt=String(c.textAdd&&c.textAt===c.text?c.textAdd:c.text).trim(); if(!SEPW.test(' '+txt+' ')||/^\s*(с|со|в|под)\s/.test(txt)) return null;   // мера добавки после «с» — из prepChunk
     if(SP.pin&&SP.pin(tokensOf(txt),txt,'',false,false)) return null;   // «грудка с кожей», «грудки с копчёной» — одно название
     var W=tokensOf(txt); if(W.length<2) return null;
     var key=compKey(txt), cp={key:key,src:txt,name:cap(txt.split(' ').filter(function(w){ var k=kindOf(w); return k!=='N'&&k!=='U' }).join(' ')),lines:[]};
