@@ -524,8 +524,8 @@
   },
   {
    "path": "checks/check-supplements-store.mjs",
-   "size": 12368,
-   "sha256": "0ef8897621a5f828b25453defc0fe6a8b062fec5498d2173f55ed1d5555bd6df"
+   "size": 12366,
+   "sha256": "5d4201f8775b2bba4ba657b1a62faa2e696414666fd56a9a254e5d6fc881503d"
   },
   {
    "path": "checks/check-usda-carbs.mjs",
@@ -559,8 +559,8 @@
   },
   {
    "path": "counters.js",
-   "size": 34967,
-   "sha256": "4382968a1399d0de0bae415e9883b07fbc93ca9e198abdba44d242467b9f441a"
+   "size": 35008,
+   "sha256": "83b7ed99a7c4807a98308ee1ce22d882d433095c170bb9539e3b726c31f1a4df"
   },
   {
    "path": "design-rules.css",
@@ -604,8 +604,8 @@
   },
   {
    "path": "index.html",
-   "size": 686742,
-   "sha256": "d5ba097a8a95d619252006237aa1b14b9a81811ffe0baf0a18bd8e58c87ca30a"
+   "size": 686725,
+   "sha256": "799798901cba8901a6a516eb9ae67a7f25d5b1802b57298bb94f1ca59cac89be"
   },
   {
    "path": "kfct.js",
@@ -824,8 +824,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 78601,
-   "sha256": "d57cc8d8d0dc85beadb6cbd7da9289201fd335abaf736a59489c8d2cd6afdd93"
+   "size": 79342,
+   "sha256": "4429d60ca801d9cd35ccc129d4280d459477629a7a698cfeec63b653e99d0e49"
   },
   {
    "path": "report.css",
@@ -854,8 +854,8 @@
   },
   {
    "path": "shared/happy-account.js",
-   "size": 13848,
-   "sha256": "3366656ddab9e1eccafa2efd8e6dd0f716737c0a5de9eff0f0f13971bf8b1b2b"
+   "size": 13846,
+   "sha256": "c7d223257ad177707e7b579085d7895842dc26cfb25f6b47421a83a2251df983"
   },
   {
    "path": "shared/happy-app-links.js",
@@ -889,8 +889,8 @@
   },
   {
    "path": "shared/happy-goals.js",
-   "size": 41778,
-   "sha256": "0dc47b6019cb9d1c1e34be3133ed8910553c00fe2b218b3b45ba6b5a806d3f09"
+   "size": 41734,
+   "sha256": "96c729a77c50f541ce2640753bad6ca40d2bf9f70fabc75755b369df787f7caf"
   },
   {
    "path": "shared/happy-gradients.js",
@@ -929,8 +929,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 25348,
-   "sha256": "9a68b92911191ba658dd6de8ad0c39256acf4fdfcc7f2e1bcf2f86d17e754883"
+   "size": 25290,
+   "sha256": "06ec928e6c1386d910c558b56e6c4afaeb99771f70d6b2b88189d98ec9dea763"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -984,8 +984,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 22897,
-   "sha256": "0cca82d4a3a269195d8c9187cffbbf1bca79e44d157e88e0d6676d2bb4a63132"
+   "size": 22798,
+   "sha256": "8c2c2b46229be0c60ef5fef85d46cb7976289d5e552c8132491ce244afefd639"
   },
   {
    "path": "shared/meal-products-model.js",
@@ -1009,8 +1009,8 @@
   },
   {
    "path": "supplement-counters.js",
-   "size": 12189,
-   "sha256": "60272a0894915687620edb11aa3a93a4041a40ff484d07cff1dac84e9302af33"
+   "size": 12196,
+   "sha256": "6ab14a2a231dc6591a83a65aa53c33cf4876ecaa253b4ebf88c52abdc0a43de4"
   },
   {
    "path": "supplement-nutrition.js",
@@ -1034,8 +1034,8 @@
   },
   {
    "path": "supplements-store.js",
-   "size": 10298,
-   "sha256": "efa78d0e95525308070ffbd84a032f647d637cb1d930d4b31fd0853304ef93d3"
+   "size": 10297,
+   "sha256": "cf81728bc8c1ddc603d19023e64ee526e8f853364b3e87d422bf93b102d968ac"
   },
   {
    "path": "supplements.css",
@@ -1044,13 +1044,13 @@
   },
   {
    "path": "supplements.js",
-   "size": 55890,
-   "sha256": "34871e2455d3e8ded8f37c84e14c250f3292c844fa5243291ee56d251bda1770"
+   "size": 55889,
+   "sha256": "9dbe64b77d3e9c486dc53d615e9f3ca56137fbc787d06614dd2a719e2d5ca03c"
   },
   {
    "path": "sw.js",
    "size": 3524,
-   "sha256": "b4dd9c38e9d5507c69b6af10e4c53654f5beee0528927239c9d3c585bf86231a"
+   "sha256": "9ff8a91ecb44249cdc3f78c53f6c49fedbd5ee124920f090027638a03bba4990"
   },
   {
    "path": "usda-measures.js",
@@ -1069,8 +1069,8 @@
   },
   {
    "path": "user-products.js",
-   "size": 42013,
-   "sha256": "abccdacfdbffc2a9aa23a76845616e4771653d190304b66530c2b66f829ac2c6"
+   "size": 42067,
+   "sha256": "62c623349047d9064c0e0611827fb026200212edf4c4a679e40aa986170c3083"
   },
   {
    "path": "uzbek.js",

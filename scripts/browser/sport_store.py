@@ -175,7 +175,7 @@ with sync_playwright() as p:
     tap(a1)
     a1.wait_for_timeout(600)
     out["no_login_screen"] = a1.evaluate("()=>baseView") == "diary" and a1.is_visible("#happy-screens .hs-sheet [data-g=login]")
-    out["no_login_toast"] = "Войдите в аккаунт" in a1.inner_text("#happy-screens .hs-sheet")
+    out["no_login_toast"] = "Войди в аккаунт" in a1.inner_text("#happy-screens .hs-sheet")
     a1.click("#happy-screens [data-g=cancel]")
     a1.wait_for_timeout(400)
     out["no_login_state"] = a1.evaluate("()=>(state.customCounters||[]).length+state.workouts.length")
@@ -334,7 +334,7 @@ out["old_row"] = rows.get((uid1, "sport", "journal")) == OLD
 out["old_read"] = [r for r in requests if r.get("kinds") and "sport/journal" in r["kinds"]]
 out["row_versions"] = sorted(set(r.get("v") for k, r in rows.items() if k[2] != "journal"))
 checks = [
-    ("без входа: карточка «Войди, чтобы записывать», нажатие открывает лист «Войдите в аккаунт», ничего не записано", out["signin_card"] and out["no_login_screen"] and out["no_login_toast"] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
+    ("без входа: карточка «Войди, чтобы записывать», нажатие открывает лист «Войди в аккаунт», ничего не записано", out["signin_card"] and out["no_login_screen"] and out["no_login_toast"] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("вошёл в одной вкладке — вторая вкладка Sport вошла сама; ячейка входа своя — happy-account:sport, пароль не сохранён", out["second_tab_signed_in"] and out["cells"] == ["happy-account:sport"] and not out["password_stored"]),
     ("под аккаунтом одна строка состояния", bool(out["status_line"])),
     ("без сети тренировка и нажатие приняты и видны во второй вкладке без сообщений", out["offline_taps"] == 1 and out["second_tab_workout"] and out["second_tab_taps"] == 1 and not out["second_tab_toasts"].strip()),

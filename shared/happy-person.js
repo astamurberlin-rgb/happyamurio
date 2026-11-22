@@ -19,7 +19,7 @@
  * Экраны — по прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026):
  *   HappyPerson.init({app, account, profileDoc, bodyDoc, openGoals, features})
  *     profileDoc, bodyDoc — функции: общий документ (store.doc / store.shared) или null без входа;
- *     openGoals — открыть цели приложения (без входа — лист «Войдите в аккаунт»);
+ *     openGoals — открыть цели приложения (без входа — лист «Войди в аккаунт»);
  *   HappyPerson.top(box)    — верх настроек: аватар, имя, «Настроить профиль / Настроить цели»;
  *   HappyPerson.bottom(box, {status, newer}) — низ настроек: по центру строка синхронизации, под ней «Выйти» (без входа — «Войти»);
  *   HappyPerson.status(text) — обновить строку синхронизации; HappyPerson.statusText(store, error) — её текст
@@ -60,8 +60,8 @@ function weightGoalOf(records){
 function changes(before,after){
  const a=Object.assign(BLANK(),before||{}),b=Object.assign(BLANK(),after||{}),out=[];
  const put=(id,v)=>out.push({id,value:{v}});
- if(a.birthday!==b.birthday){if(b.birthday&&!validDate(b.birthday))throw Error('Проверьте дату рождения');put('birthday',b.birthday||'')}
- if(a.heightCm!==b.heightCm){if(b.heightCm!==null&&!(Number.isFinite(b.heightCm)&&b.heightCm>=50&&b.heightCm<=260))throw Error('Проверьте рост');put('height',b.heightCm)}
+ if(a.birthday!==b.birthday){if(b.birthday&&!validDate(b.birthday))throw Error('Проверь дату рождения');put('birthday',b.birthday||'')}
+ if(a.heightCm!==b.heightCm){if(b.heightCm!==null&&!(Number.isFinite(b.heightCm)&&b.heightCm>=50&&b.heightCm<=260))throw Error('Проверь рост');put('height',b.heightCm)}
  if(a.sex!==b.sex)put('sex',b.sex==='male'||b.sex==='female'?b.sex:'');
  const fa=a.units.food==='oz'?'oz':'metric',fb=b.units.food==='oz'?'oz':'metric';
  if(a.units.weight!==b.units.weight||a.units.height!==b.units.height||fa!==fb)put('units',{weight:b.units.weight==='lb'?'lb':'kg',height:b.units.height==='ft'?'ft':'cm',food:fb});
@@ -75,8 +75,8 @@ function weightsOf(bodyRecords){
 }
 /* новый вес на дату: замер этой даты дополняется весом, другие даты не меняются */
 function weightChanges(bodyRecords,date,kg){
- const M=root.HappyMeasurements;if(!validDate(date))throw Error('Проверьте дату замера');
- if(!(Number.isFinite(kg)&&kg>=20&&kg<=350))throw Error('Проверьте вес');
+ const M=root.HappyMeasurements;if(!validDate(date))throw Error('Проверь дату замера');
+ if(!(Number.isFinite(kg)&&kg>=20&&kg<=350))throw Error('Проверь вес');
  const state=M.read(bodyRecords),old=state.list.find(m=>m.date===date);
  const m=old?Object.assign({},old,{values:Object.assign({},old.values,{weight:Math.round(kg*10)/10})}):{date,values:{weight:Math.round(kg*10)/10},source:'Мой замер',note:''};
  return M.saveChanges(state,m,old?date:undefined);
@@ -97,18 +97,18 @@ function data(){
  return {profile,weights,latest:weights.length?weights[weights.length-1]:null,weightGoal:pd&&!pd.newer?weightGoalOf(pd.all()):[],newer:!!((pd&&pd.newer)||(bd&&bd.newer))};
 }
 async function update(patch){
- const pd=cfg.profileDoc();if(!pd)throw Error('Войдите в аккаунт, чтобы записывать');
- if(pd.newer)throw Error('Профиль записан более новой версией приложения. Откройте последнюю версию.');
+ const pd=cfg.profileDoc();if(!pd)throw Error('Войди в аккаунт, чтобы записывать');
+ if(pd.newer)throw Error('Профиль сохранён в более новой версии приложения. Открой последнюю версию.');
  const before=read(pd.all()),after=Object.assign({},before,patch,{units:Object.assign({},before.units,patch&&patch.units||{})});
  const list=changes(before,after);if(list.length)await pd.putMany(list);
 }
 async function setWeightGoal(versions){
- const pd=cfg&&cfg.profileDoc();if(!pd)throw Error('Войдите в аккаунт, чтобы записывать');
- if(pd.newer)throw Error('Профиль записан более новой версией приложения. Откройте последнюю версию.');
+ const pd=cfg&&cfg.profileDoc();if(!pd)throw Error('Войди в аккаунт, чтобы записывать');
+ if(pd.newer)throw Error('Профиль сохранён в более новой версии приложения. Открой последнюю версию.');
  await pd.putMany([{id:'weightGoal',value:{v:(Array.isArray(versions)?versions:[]).slice(-60)}}]);
 }
 async function addWeight(date,kg){
- const bd=cfg.bodyDoc();if(!bd)throw Error('Войдите в аккаунт, чтобы записывать');
+ const bd=cfg.bodyDoc();if(!bd)throw Error('Войди в аккаунт, чтобы записывать');
  if(bd.newer)throw Error(root.HappyMeasurements.NEWER);
  await bd.putMany(weightChanges(bd.all(),date,kg));
 }
@@ -118,7 +118,7 @@ function avatar(photo){return '<div class="hs-avatar">'+(photo?'<img alt="Фот
 function top(box){
  if(box)topBox=box;if(!topBox||!cfg)return;
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
- const name=who?(who.name||'Ваш профиль'):'Гость';
+ const name=who?(who.name||'Мой профиль'):'Гость';
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
@@ -143,7 +143,7 @@ if(root.document)root.document.addEventListener('click',e=>{
  if(a==='goals'){if(signedIn()&&cfg.openGoals)cfg.openGoals();else root.HappyWelcome.ask({reason:'Чтобы настроить цели.',resume:{open:'goals'}});return}
  if(a==='signin'){root.HappyWelcome.open('login');return}
  if(a==='signout'){
-  if(busyOut)return;busyOut=true;status('Подождите, идёт синхронизация…');
+  if(busyOut)return;busyOut=true;status('Подожди, идёт синхронизация…');
   root.HappyWelcome.signOut().catch(err=>{busyOut=false;S().toast((err&&err.message)||'Не удалось выйти')});
  }
 });
@@ -153,7 +153,7 @@ function open(){
  if(!signedIn())return;
  if(pageH&&!pageH.closed)return;
  const A=cfg.account,who=A.current(),d=data(),fmt=S().fmt,num=S().num,esc=S().esc,today=S().day();
- if(d.newer){S().toast('Профиль записан более новой версией приложения. Откройте последнюю версию.');return}
+ if(d.newer){S().toast('Профиль сохранён в более новой версии приложения. Открой последнюю версию.');return}
  const draft={name:who.name||'',birthday:d.profile.birthday,heightCm:d.profile.heightCm,sex:d.profile.sex,units:Object.assign({},d.profile.units),photo:d.profile.photo};
  const original=d.latest;let pendingEmail='';
  const shown={weight:original?fmt(S().toUnits(original.kg,draft.units.weight)):'',date:original?original.date:today,
@@ -175,7 +175,7 @@ function open(){
    '<div class="hs-input hs-email-value" data-p-email>'+esc((A.current()||who).email)+'</div>'+
    (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
-   F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как вас зовут'})+
+   F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как тебя зовут'})+
    F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
    '<div class="hs-height-sex">'+F({label:'Рост',name:'height',inputmode:'decimal',value:shown.height,suffix:heightLabel(),placeholder:'Не указан',quick:true})+
    '<div class="hs-field"><span class="hs-field-title">Пол</span>'+S().segment('sex',[['','—','Не указан'],['male','М','Мужской'],['female','Ж','Женский']],draft.sex,'Пол','hs-compact-sex')+'</div></div>'+
@@ -242,9 +242,9 @@ function open(){
   const weightText=String(shown.weight).trim(),heightText=String(shown.height).trim();
   const kg=weightText?S().fromUnits(num(weightText),draft.units.weight):null;
   const cm=heightText?num(heightText)*(draft.units.height==='cm'?1:30.48):null;
-  if(cm!==null&&(!Number.isFinite(cm)||cm<50||cm>260))throw Error('Проверьте рост');
-  if(draft.birthday&&(draft.birthday>today||!(ageAt(draft.birthday,today)<=120)))throw Error('Проверьте дату рождения');
-  if(kg!==null&&(!Number.isFinite(kg)||kg<20||kg>350||!shown.date||shown.date>today))throw Error('Проверьте вес и дату замера');
+  if(cm!==null&&(!Number.isFinite(cm)||cm<50||cm>260))throw Error('Проверь рост');
+  if(draft.birthday&&(draft.birthday>today||!(ageAt(draft.birthday,today)<=120)))throw Error('Проверь дату рождения');
+  if(kg!==null&&(!Number.isFinite(kg)||kg<20||kg>350||!shown.date||shown.date>today))throw Error('Проверь вес и дату замера');
   if(draft.name.trim().length>60)throw Error('Имя — не длиннее 60 знаков');
   saving=true;
   try{
@@ -259,7 +259,7 @@ function open(){
 /* фото из файла: квадрат по центру, 192 точки, JPEG — помещается в запись профиля */
 function photoFrom(file){
  return new Promise((resolve,reject)=>{
-  if(!/^image\//.test(file.type||''))return reject(Error('Выберите фото'));
+  if(!/^image\//.test(file.type||''))return reject(Error('Выбери фото'));
   const url=URL.createObjectURL(file),img=new Image();
   img.onload=()=>{try{
    const side=Math.min(img.naturalWidth,img.naturalHeight),c=root.document.createElement('canvas');c.width=c.height=192;
@@ -277,8 +277,8 @@ function statusText(store,error){
  if(error)return error;
  if(!store||store.closed)return '';
  const s=store.status();
- if(s.newer&&s.newer.length)return root.HappyStore?root.HappyStore.NEWER:'Записано более новой версией приложения. Откройте последнюю версию.';
- if(s.state==='saving')return 'Подождите, идёт синхронизация…';
+ if(s.newer&&s.newer.length)return root.HappyStore?root.HappyStore.NEWER:'Сохранено в более новой версии приложения. Открой последнюю версию.';
+ if(s.state==='saving')return 'Подожди, идёт синхронизация…';
  if(s.state==='offline')return 'Нет связи · записи сохранены на устройстве';
  if(s.state==='error')return 'Не удалось сохранить в облако · записи на устройстве';
  return 'Синхронизировано';

@@ -182,7 +182,7 @@
       e.items.splice(e.items.indexOf(it),1);root.save();root.renderDay();root.toast(root.tapDef(k).t+' −'+root.amtShort(it));
     };
     const oldTaps=root.tapsHTML;root.tapsHTML=function(){let html=oldTaps();root.DB.taps.forEach(c=>{const before='<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(root.portTxt(c))+'</small>';const note=ready(c)?root.portTxt(c):'Выбрать продукт';html=html.replace(before,'<button class="tpNm" data-tinfo="'+esc(c.k)+'"><b>'+esc(c.t)+'</b><small>'+esc(note)+'</small>')});return html};
-    document.getElementById('mlTaps').addEventListener('click',e=>{if(e.target.closest('.tpOff')){e.stopImmediatePropagation();e.preventDefault();root.toast('Библиотека с данным продуктом отключена');return}const b=e.target.closest('[data-tinfo]');if(!b)return;e.stopImmediatePropagation();edit(root.DB.taps.findIndex(c=>c.k===b.dataset.tinfo))},true);
+    document.getElementById('mlTaps').addEventListener('click',e=>{if(e.target.closest('.tpOff')){e.stopImmediatePropagation();e.preventDefault();root.toast('Каталог этого продукта выключен. Включи его в настройках');return}const b=e.target.closest('[data-tinfo]');if(!b)return;e.stopImmediatePropagation();edit(root.DB.taps.findIndex(c=>c.k===b.dataset.tinfo))},true);
     const oldRebuild=root.rebuildLib;root.rebuildLib=function(){oldRebuild();if(dialog&&!dialog.hidden&&draft&&!draft.fid)results()};
     document.addEventListener('happy-supplements-changed',()=>{if(dialog&&!dialog.hidden&&draft&&!draft.fid)results()});
     /* свою правку порции соседа вид уже содержит; остальное — другая вкладка, сосед, другое устройство */
@@ -262,7 +262,7 @@
     let f;
     if(d.food&&d.food.supplement){
       // Meal 29: добавка — свежий вариант из «Мои добавки» (шаблон каталога сначала сохраняется туда)
-      const S=SUP();if(!S)throw new Error('Добавки ещё загружаются. Попробуй ещё раз.');
+      const S=SUP();if(!S)throw new Error('Добавки ещё загружаются. Попробуй через секунду');
       if(button)button.disabled=true;try{f=await S.resolve(d.food)}finally{if(button)button.disabled=false}
       if(draft!==d)return;
       const per=p.u==='г'?(f.supplement.massUnknown?0:1):f.por&&f.por[p.u];if(!(per>0))throw new Error('Мера «'+p.u+'» изменилась в «Мои добавки». Выбери её снова.');

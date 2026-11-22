@@ -100,7 +100,7 @@ function init(){
    Правки идут по одной: следующая видит результат предыдущей. */
 function write(mutator){
  const run=queue.then(async()=>{
-  if(!ready)throw Error('Добавки ещё загружаются — повтори через секунду');
+  if(!ready)throw Error('Добавки ещё загружаются. Попробуй через секунду');
   if(!signedIn()){if(typeof root.askSignIn==='function')root.askSignIn();throw Error('Войди в аккаунт Happy, чтобы записывать')}
   if(data().outdated()||doc().newer)throw Error(root.HappyStore.NEWER);
   const before=visible(doc().all()),seen=view(before),next=seen.state;mutator(next);

@@ -22,7 +22,7 @@
 'use strict';
 const KINDS=['loss','maintain','recomp','gain'];
 const LABELS={loss:'Снижение веса',maintain:'Поддержание веса',recomp:'Рекомпозиция тела',gain:'Набор веса'};
-const ACTIVITY=[{value:0,label:'Выберите активность'},{value:1.4,label:'Преимущественно сидя'},{value:1.6,label:'Немного движения'},{value:1.8,label:'Много движения'},{value:2,label:'Высокая активность'}];
+const ACTIVITY=[{value:0,label:'Выбери активность'},{value:1.4,label:'Преимущественно сидя'},{value:1.6,label:'Немного движения'},{value:1.8,label:'Много движения'},{value:2,label:'Высокая активность'}];
 const FOCUS=[{value:'none',label:'Пока не выбран'},{value:'health',label:'Поддержание здоровья'},{value:'consistency',label:'Регулярность тренировок'},{value:'strength',label:'Сила'},
  {value:'endurance',label:'Выносливость'},{value:'muscle',label:'Рост мышц'},{value:'mobility',label:'Гибкость и подвижность'},{value:'coordination',label:'Баланс и координация'},
  {value:'skill',label:'Техника и навыки'},{value:'power',label:'Скорость и мощность'},{value:'competition',label:'Подготовка к соревнованиям'},{value:'return',label:'Возвращение после перерыва'}];
@@ -153,7 +153,7 @@ function dayDraft(saved){
 }
 /* своя цель или тема: пустое — ошибка, повтор без учёта регистра выбирает существующее */
 function addCustom(draft,kind,text,id){
- const label=cleanName(text).slice(0,NAME_MAX);if(!label)return {draft,error:'Введите название'};
+ const label=cleanName(text).slice(0,NAME_MAX);if(!label)return {draft,error:'Введи название'};
  const d=copy(draft),low=label.toLocaleLowerCase('ru');
  if(kind==='topic'){
   const all=[...TOPICS,...d.customTopics],existing=all.find(t=>t.toLocaleLowerCase('ru')===low),topic=existing||label;
@@ -233,7 +233,7 @@ function openWeight(o){
   main.innerHTML=h;
   const rb=main.querySelector('[data-gw="ruler"]');
   if(rb&&effectiveCurrent()!==null)ruler=S().ruler(rb,{target:g.targetKg!==null?g.targetKg:effectiveCurrent(),current:effectiveCurrent(),band:g.bandKg,units,onChange:kg=>{g=moveWeight(g,kg,effectiveCurrent());paint()}});
-  kindWheel=S().wheel(main.querySelector('[data-gw="kind"]'),{id:'hs-kind',label:meal?'Выберите цель':'Цель по весу',ariaLabel:meal?'Цель питания':'Цель веса',
+  kindWheel=S().wheel(main.querySelector('[data-gw="kind"]'),{id:'hs-kind',label:meal?'Выбери цель':'Цель по весу',ariaLabel:meal?'Цель питания':'Цель веса',
    options:KINDS.map(k=>({value:k,label:LABELS[k]})),value:g.kind,onChange:k=>{g=chooseKind(g,k,effectiveCurrent());paint()}});
   const ab=main.querySelector('[data-gw="activity"]');
   if(ab)activityWheel=S().wheel(ab,{id:'hs-activity',label:'Уровень активности',options:ACTIVITY,value:g.calc.activity,onChange:a=>{g=calculateGoal(g,calcProfile,effectiveCurrent(),Object.assign({},g.calc,{activity:a}),date);paint()}});
@@ -271,7 +271,7 @@ function openWeight(o){
   const t=main.querySelector('[name="target"]');if(!t)return true;const text=t.value.trim();
   if(!text){g=Object.assign({},g,{targetKg:null});paint();return true}
   const kg=S().fromUnits(num(text),units);
-  if(!Number.isFinite(kg)||kg<20||kg>350){errorBox(main,'Проверьте желаемый вес');return false}
+  if(!Number.isFinite(kg)||kg<20||kg>350){errorBox(main,'Проверь желаемый вес');return false}
   g=effectiveCurrent()!==null?moveWeight(g,kg,effectiveCurrent()):Object.assign({},g,{targetKg:round1(kg)});errorBox(main,'');paint();return true;
  }
  /* доли БЖУ: тянуть столбик пальцем */
@@ -312,7 +312,7 @@ function openWeight(o){
    if(b.dataset.hs==='cancel'){sh.close();return}
    const n=S().fromUnits(num(sh.body.querySelector('[name="band"]').value),units);
    if(Number.isFinite(n)&&n>=.1&&n<=5){const next=Object.assign({},g,{bandKg:round1(n)});g=effectiveCurrent()!==null&&g.targetKg!==null?moveWeight(next,g.targetKg,effectiveCurrent()):next;sh.close();paint()}
-   else errorBox(sh.body,'Укажите от '+fmt(S().toUnits(.1,units))+' до '+fmt(S().toUnits(5,units))+' '+wu);
+   else errorBox(sh.body,'Укажи от '+fmt(S().toUnits(.1,units))+' до '+fmt(S().toUnits(5,units))+' '+wu);
   });
  }
  function calcSheet(){
@@ -332,7 +332,7 @@ function openWeight(o){
    const ok=g.calculationBase!==undefined,gr=grams(g);
    out.innerHTML=(ok?fmt(g.calories,0):'—')+' <small>ккал</small>';
    more.innerHTML=ok?'<div class="hs-calc-macros">'+['Белки','Жиры','Углеводы'].map((n,i)=>'<span>'+n+'<b>'+fmt(gr[i])+' г</b></span>').join('')+'</div>':
-    '<p>'+(needsProfile()?'Заполните недостающие данные':!g.calc.activity?'Выберите активность на экране целей':'Проверьте данные. Расчёт доступен для возраста 19–78 лет.')+'</p>';
+    '<p>'+(needsProfile()?'Заполни недостающие данные':!g.calc.activity?'Выбери активность на экране целей':'Проверь данные. Расчёт доступен для возраста 19–78 лет.')+'</p>';
   };
   const recalc=()=>{g=calculateGoal(g,calcProfile,effectiveCurrent(),g.calc,date);paint()};
   sh.body.addEventListener('input',e=>{
@@ -367,13 +367,13 @@ function openWeight(o){
  async function save(){
   if(saving)return;errorBox(main,'');
   if(!commitTarget())return;
-  if(meal&&g.method==='calculate'&&g.calculationBase===undefined){if(!g.calc.activity&&!needsProfile())throw Error('Выберите уровень активности');calcSheet();return}
+  if(meal&&g.method==='calculate'&&g.calculationBase===undefined){if(!g.calc.activity&&!needsProfile())throw Error('Выбери уровень активности');calcSheet();return}
   let calories=null;
   if(meal){
    const text=main.querySelector('[name="calories"]').value.trim();
-   if(text!==''){calories=num(text);if(!Number.isFinite(calories)||calories<=0||calories>20000)throw Error('Укажите дневную цель по калориям')}
+   if(text!==''){calories=num(text);if(!Number.isFinite(calories)||calories<=0||calories>20000)throw Error('Укажи дневную цель по калориям')}
    if(g.method==='calculate')calories=g.calories;
-   const fb=String(fiber).trim();if(fb!==''&&!(num(fb)>0&&num(fb)<=500))throw Error('Проверьте клетчатку');
+   const fb=String(fiber).trim();if(fb!==''&&!(num(fb)>0&&num(fb)<=500))throw Error('Проверь клетчатку');
   }
   saving=true;
   try{

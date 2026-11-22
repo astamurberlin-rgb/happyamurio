@@ -418,7 +418,7 @@ with sync_playwright() as p:
 
 checks = [
     ("без входа: карточка «Войди, чтобы записывать»", out["signin_card"] is True),
-    ("без входа: нажатие открывает лист «Войдите в аккаунт» на том же экране и ничего не записывает", out["no_login_screen"] and "Войдите в аккаунт" in out["no_login_toast"] and out["no_login_count"] == 0),
+    ("без входа: нажатие открывает лист «Войди в аккаунт» на том же экране и ничего не записывает", out["no_login_screen"] and "Войди в аккаунт" in out["no_login_toast"] and out["no_login_count"] == 0),
     ("без входа: правка другим путём тоже не остаётся", out["no_login_goal"][1] == ""),
     ("без входа: на устройстве и в облаке пусто", out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("без входа: экраны листаются", out["no_login_walk"] == ["journal", "recipes", "day"]),
@@ -454,7 +454,7 @@ checks = [
     ("вышли в Meal — Day и Sport остались в аккаунте и сохраняют в облако; на сервере закрыт только вход Meal; дневник Meal без входа пустой", out["others_stay"] == [True, True] and out["logout_scope"] and set(out["logout_scope"]) == {"local"} and out["sport_saves_after_meal_out"] and out["after_sign_out"] == [0, "Завтрак", True]),
     ("второй аккаунт на том же телефоне не видит записей первого", out["second_account"] == [0, "Завтрак", ["egg", "cfm", "wal"], 0]),
     ("первый аккаунт вернулся и видит свои записи", out["first_account_back"] == [2, "Раннее утро"]),
-    ("записи более новой версии Meal: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and out["newer_refuses"][0] and "более новой версией" in out["newer_refuses"][1]),
+    ("записи более новой версии Meal: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and out["newer_refuses"][0] and "более новой версии" in out["newer_refuses"][1]),
     ("ошибок на страницах нет", not errors),
 ]
 out["errors"] = errors

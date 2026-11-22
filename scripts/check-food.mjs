@@ -166,7 +166,7 @@ ok('одно число на счётчике: нажатия из трёх до
  // связь Sport с Meal была выключена в момент нажатия — такое нажатие не считает никто; нажатия самого Meal считаются всегда
  const asked=[],cut=F.all(docs,(app,t)=>{asked.push(app);return app!=='sport'});
  assert.deepEqual(cut.map(t=>t.id),['day-100','meal-200','meal-250','day-300']);assert.ok(!asked.includes('meal'));
- // документ не прочитан (записан более новой версией) — его нажатия просто не называются
+ // документ не прочитан (записан более новой версии) — его нажатия просто не называются
  assert.deepEqual(F.all({day:docs.day}).map(t=>t.id),['day-100','day-300']);assert.deepEqual(F.all(null),[]);assert.deepEqual(F.all({meal:'строка'}),[]);
  assert.deepEqual(F.TAP_APPS,['day','meal','sport']);
 });
