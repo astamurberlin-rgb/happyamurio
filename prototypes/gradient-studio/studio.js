@@ -1,6 +1,7 @@
 /* Студия градиентов · Happy 1.7 (лаборатория, 22.11.2026 · Claude)
    1.7: 6 радужных схем — соседние цвета радуги по 3–4 подряд, переход на всю дугу (референс Астамура: дуга роутера красный → зелёный).
    1.7.1: рамка выбранной плитки больше не прячется под залипшим превью (отступ сверху у рядов плиток).
+   1.7.2: карусели на компьютере листаются колесом мыши и перетаскиванием (на Windows раньше не листались).
    1.6: эталонный виджет энергии «Общий» — один на Day, Meal и Sport (вид Sport, поведение Meal, концы дуг тем же градиентом,
    цвет «от цели» из «Пробы кольца энергии», цифра 28 и текст 12 всегда); 10 цветовых схем для всех тем (ночью — приглушённее);
    10 готовых вариантов «жизни» кольца во вкладке «Оживление»; «Вернуть» и «В Мои» видны на всех вкладках; свой вариант можно обновить.
@@ -851,6 +852,32 @@ async function cloudStart(){
     else if(st.ts) cloudPush(); else cloudMark('ok');
   }catch(e){ cloudMark('err') }
 }
+
+/* ── Карусели на компьютере (1.7.2): колесо мыши листает вбок, карусель можно тянуть мышью.
+   На телефоне ничего не меняется — там листает палец. ── */
+(function(){
+  const hx=el=>{ for(;el&&el!==document.body;el=el.parentElement){ if(el.scrollWidth>el.clientWidth+1){ const o=getComputedStyle(el).overflowX; if(o==='auto'||o==='scroll') return el } } return null };
+  document.addEventListener('wheel',e=>{
+    if(e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY)) return;           // тачпад и так листает вбок
+    const el=hx(e.target); if(!el) return;
+    const max=el.scrollWidth-el.clientWidth, d=e.deltaY*(e.deltaMode===1?32:1);
+    if((d<0&&el.scrollLeft<=0)||(d>0&&el.scrollLeft>=max-1)) return;       // упёрлись в край — дальше листается страница
+    e.preventDefault(); el.scrollLeft=clamp(el.scrollLeft+d,0,max);
+  },{passive:false});
+  let drag=null;
+  document.addEventListener('pointerdown',e=>{
+    if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('input,textarea,select,.grab')) return;
+    const el=hx(e.target); if(el) drag={el,x:e.clientX,l:el.scrollLeft,moved:false};
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!drag) return; const dx=e.clientX-drag.x;
+    if(!drag.moved&&Math.abs(dx)>5){ drag.moved=true; drag.el.style.scrollSnapType='none'; drag.el.style.cursor='grabbing'; document.body.style.userSelect='none' }
+    if(drag.moved) drag.el.scrollLeft=drag.l-dx;
+  });
+  const end=()=>{ if(!drag) return; const d=drag; drag=null; d.el.style.scrollSnapType=''; d.el.style.cursor=''; document.body.style.userSelect='';
+    if(d.moved) document.addEventListener('click',ev=>{ ev.stopPropagation(); ev.preventDefault() },{capture:true,once:true}) };   // отпустил после протяжки — это не нажатие
+  document.addEventListener('pointerup',end); document.addEventListener('pointercancel',end);
+})();
 
 /* ── Старт ── */
 paintAll(); boot=false;
