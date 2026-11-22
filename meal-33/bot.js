@@ -368,7 +368,7 @@ var MealBot=(function(){
     if(ws.some(function(w,i){ return ws.slice(0,i).some(function(x){ return norm(x).slice(0,4)===norm(w).slice(0,4) }) })) return null;   // «американо американо» — повтор, а не список
     if(!ws.every(function(w){ var n=norm(w); return /^[а-я]{3,}$/.test(n)&&kindOf(w)==='F'&&!descr(w)&&!J_INS.test(n)&&!J_ADJ.test(n)&&!SIZE.test(n) })) return null;
     if(dishHas(c,tokensOf(c))) return null;
-    return ws.every(function(w){ var r; try{ r=parseText(w).lines }catch(e){ return false } return r.length===1&&r[0].st==='ok'&&r[0].fid }) ? ws : null;
+    return ws.every(function(w){ var r; try{ r=parseText(w).lines }catch(e){ return false } return r.length===1&&(r[0].st==='ok'&&r[0].fid||r[0].st==='pick'&&(r[0].alts||[]).length&&related(r[0].alts[0],[norm(w)])) }) ? ws : null;   // «какое яблоко?» — вопрос о каждом слове, а не одно блюдо
   }
   function prepChunk(c){
     var o={text:c,raw:c,dup:null,range:null,size:null,corr:c.charAt(0)==='¶'};
