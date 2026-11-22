@@ -191,6 +191,11 @@ var MealBot=(function(){
     for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ var x=it[j]; if(FOODS[x.fid]&&!x.tap&&headOk(x.fid,[word])) return x } }
     return null;
   }
+  function lastUsedOf(ids){
+    var ds=Object.keys(DB.days||{}).sort();
+    for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ if(ids.indexOf(it[j].fid)>=0) return it[j].fid } }
+    return ids[0];
+  }
   function lastNamed(re){
     var ds=Object.keys(DB.days||{}).sort();
     for(var i=ds.length-1;i>=0;i--){ var it=(DB.days[ds[i]].items)||[]; for(var j=it.length-1;j>=0;j--){ var x=it[j]; if(FOODS[x.fid]&&!x.tap&&re.test(norm(FOODS[x.fid].n))) return x } }
@@ -242,7 +247,9 @@ var MealBot=(function(){
   function chunksOf(s){
     s=' '+s+' ';
     if(SP) s=s.replace(/(^|\s)не\s*⊙/g,'$1⊗ ').replace(NOTATE,' ⊗ ');   // Meal 33.13: «не ел», «не стал» — пометка «не съедено» на весь кусок фразы
-    s=s.replace(new RegExp('[\\s,]+(?:и\\s+|а\\s+)?(?:весит\\s+|было\\s+)?'+WASTE+'(?:\\s+(?:весит|было|вес|после еды|осталось|остался|осталась))*\\s+(\\d+(?:[.,]\\d+)?)\\s*(?:г|гр|грам+\\S*)?(?=[\\s,.;!?]|$)','g'),function(m,n){ return ' ⊖'+n.replace(',','.')+' ' });
+    s=s.replace(new RegExp('[\\s,]+(?:и\\s+|а\\s+)?(?:весит\\s+|было\\s+)?'+WASTE+'(?:\\s+(?:весит|было|вес|после еды|осталось|остался|осталась))*\\s+(\\d+(?:[.,]\\d+)?)\\s*(?:г|гр|грам+\\S*)?(?=[\\s,.;!?]|$)','g'),function(m,n,at,all){
+      if(/(^|\s)(на|с|со)$/.test(all.slice(0,at))&&/^[\s,]+кост/.test(m)) return m;   // «баранина на кости 300» — мясо на кости, а не 300 г костей (22.11.2026)
+      return ' ⊖'+n.replace(',','.')+' ' });
     s=s.replace(/(\d)[,.](\d)/g,'$1#$2');
     s=s.replace(/(\sиз\s+[а-я]+(ов|ев|ей|ок|ек))\s+и\s+([а-я]+(ов|ев|ей|ок|ек))(?=[\s,.;:!?]|$)/g,'$1 $3');
     if(SP) s=s.replace(/(\sсо?\s+[а-я]+(?:ой|ей|ом|ем|ами|ями|ью))\s+и\s+([а-я]{3,}(?:ой|ей|ом|ем|ами|ями|ью))(?=[\s,.;:!?]|$)/g,'$1 с $2');   // Meal 33.12
@@ -536,15 +543,20 @@ var MealBot=(function(){
         var oneWord=SP&&fw.length===1&&tokensOf(c.text).length===1&&(l.fid||l.alts.length), fv=oneWord&&!l.pin?favOf(fw[0]):null;
         if(fv&&fv.fid){ l.alts=[fv.fid].concat(l.alts.filter(function(x){ return x!==fv.fid })); l.fid=fv.fid; l.st='ok'; l.bls=0; l.fav=true; l.generic=true; l.g=gramsFor(fv.fid,l.q,l.u) }
         else if(fv){ l.alts=fv.ask.slice(); l.fid=null; l.st='pick'; l.noAuto=true; l.gdAsk=true; l.bls=0 }
-        var gd=oneWord&&!fv?SP.generic(fw[0]):null;
+        /* «рыба жареная», «мясо отварное»: общее слово со способом — тот же вопрос «какая?», способ остаётся в кнопках (решение Астамура 22.11.2026) */
+        var gdM=null, mws=fw.slice(1);
+        if(SP&&!oneWord&&!fv&&!l.pin&&fw.length>1&&fw.length<=3&&tokensOf(c.text).length===fw.length&&mws.every(function(w){ return METHW.test(norm(w)) })){ var g0=SP.generic(fw[0]); if(g0&&g0.ask) gdM=g0 }
+        var gd=oneWord&&!fv?SP.generic(fw[0]):gdM;
         if(gd){
           var wasG=lastNamed(gd.history), gid=null;
+          if(gdM&&wasG&&!mws.every(function(w){ return norm(FOODS[wasG.fid].n).indexOf(norm(w).slice(0,4))>=0 })) wasG=null;   // раньше была жареная треска — «рыба отварная» не она
           if(wasG){ gid=wasG.fid; l.asBefore=true }
           else if(gd.search){ var rg=parseText(gd.search).lines[0]; gid=rg&&(rg.fid||rg.alts[0])||null; if(gid) l.picked=true }
           if(gid){ l.alts=[gid].concat(l.alts.filter(function(x){ return x!==gid })); l.fid=gid; l.st='ok'; l.bls=0; l.generic=true; l.g=gramsFor(gid,l.q,l.u) }
-          else if(gd.ask){ var op=gd.options.map(function(sx){ var rf=parseText(sx).lines[0]; return rf&&(rf.fid||rf.alts[0])||null }).filter(function(x,i,a){ return x&&a.indexOf(x)===i });
+          else if(gd.ask){ var op=gd.options.map(function(sx){ var rf=gdM&&parseText(sx+' '+mws.join(' ')).lines[0], rid=rf&&(rf.fid||rf.alts[0]); if(!rid||!sameMethod(rid,mws)) rf=parseText(sx).lines[0]; return rf&&(rf.fid||rf.alts[0])||null }).filter(function(x,i,a){ return x&&a.indexOf(x)===i });
             if(EATEN) op=op.map(function(x){ return cookedId(x)||x }).filter(function(x,i,a){ return a.indexOf(x)===i });
-            if(op.length) l.alts=op.concat(l.alts.filter(function(x){ return op.indexOf(x)<0 })).slice(0,3); l.fid=null; l.st='pick'; l.noAuto=true; l.gdAsk=true; l.bls=0 }
+            if(gdM){ var opM=op.filter(function(x){ return sameMethod(x,mws) }); if(opM.length) op=opM; if(!l.explicit&&l.u!=='г'){ l.q=100; l.u='г'; l.g=100 } }
+            if(op.length) l.alts=op.concat(l.alts.filter(function(x){ return op.indexOf(x)<0&&(!gdM||sameMethod(x,mws)) })).slice(0,3); l.fid=null; l.st='pick'; l.noAuto=true; l.gdAsk=true; l.bls=0 }
         }
         /* ответ на предложение своими граммами: «соуса 100 г» — тот самый соус, что был предложен, а не первый попавшийся */
         var ofp=OFP&&fw.length===1&&fw[0].length>=4?OFP.filter(function(x){ return FOODS[x.fid]&&norm(FOODS[x.fid].n).split(/[^а-яё]+/).some(function(w){ return w.length>=4&&w.slice(0,4)===norm(fw[0]).slice(0,4) }) })[0]:null;
@@ -565,6 +577,8 @@ var MealBot=(function(){
         if(l.st==='pick'&&l.alts.length&&!l.gdAsk){
           hist=hist||histCount();
           var used=l.alts.filter(function(a){ return hist[a] });
+          /* записывал раньше несколько из предложенных (курица варёная и на гриле) — тот, что последним, а не «чистый» по словам («Курица, без мяса» — растительная замена). Решение Астамура 22.11.2026 */
+          if(used.length>1&&!WEIGHED) used=[lastUsedOf(used)];
           if(used.length===1&&!WEIGHED){ l.fid=used[0]; l.st='ok'; l.g=gramsFor(l.fid,l.q,l.u); l.asBefore=true }   // «взвесил» — сырое, а не «как раньше»
           else {
             /* среди предложенных ровно один «чистый»: все слова названы, слово — само название, лишнего способа нет
@@ -644,6 +658,10 @@ var MealBot=(function(){
   /* «съел курицы 200 г» — сырую курицу не едят: берётся готовая. «Курица 200 г», «взвесил курицу» — сырая, как раньше.
      Овощи, фрукты, зелень без слов о способе — сырые. Решение Астамура 17.11.2026 23:11 */
   var COOKEDN=/(варен|отварн|тушен|жарен|запечен|приготовл|грил)/, WEIGHED=false;
+  var METHW=/^(жарен|обжарен|варен|отварн|тушен|запечен|печен|копчен|гриль|грил|паров)/;
+  /* продукт приготовлен тем же способом, что сказан: «отварная» — варёная, «запечённая» — в духовке */
+  function sameMethod(id,ws){ var n=norm(FOODS[id]?FOODS[id].n:''), G=[[/жар/,/жар/],[/вар/,/вар/],[/туш/,/туш/],[/печ/,/(печ|духовк)/],[/копч/,/копч/],[/грил/,/грил/],[/пар/,/пар/]];
+    return ws.every(function(w){ var g=G.filter(function(x){ return x[0].test(norm(w)) })[0]; return !g||g[1].test(n) }) }
   /* один и тот же продукт в разном приготовлении: «Треска, сырая» и «Треска, жаренная в духовке», «Мясо курицы…, сырое» и «…, варёное» */
   function kindKey(id){return FOODS[id]?foodKindKey(FOODS[id].n):''}
   function foodKindKey(title){var ws=norm(title).split(/[^a-zа-я0-9%]+/).filter(Boolean);return !ws.length?'':ws[0]==='мясо'&&ws[1]?'мясо '+ws[1].slice(0,5):ws[0].slice(0,5) }
