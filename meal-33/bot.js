@@ -362,7 +362,7 @@ var MealBot=(function(){
   /* Meal 33.12 · слово человека → точный продукт базы (словарь, product_pins): «квашеная капуста» — капуста, а не её сок */
   var PINC={};
   function pinFid(name){
-    var k=norm(name); if(PINC[k]!==undefined&&PINC[k]!==null) return PINC[k];
+    var k=norm(name); if(PINC[k]!=null&&FOODS[PINC[k]]) return PINC[k];   // продукт BLS убрали из библиотеки — найти заново, а не вернуть пустой id
     var ids=[], r; try{ r=parseText(String(name).replace(/[,—()«»]+/g,' ').replace(/\s+/g,' ').trim()) }catch(e){ r={lines:[]} }
     r.lines.forEach(function(x){ ids=ids.concat([x.fid]).concat(x.alts||[]) });
     var id=ids.filter(function(x){ return x&&FOODS[x]&&norm(FOODS[x].n)===k })[0]||null;
