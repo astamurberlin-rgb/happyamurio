@@ -1772,6 +1772,81 @@ var MealBot=(function(){
     var g=l.explicit&&l.fid&&l.g>0?l.g:100, s=sumOf([{fid:id,g:g,q:g,u:'г'}]); if(!(s.k>0)&&!(s.p>0)&&!(s.c>0)) return null;
     return p(esc(FOODS[id].n)+', '+fmt(g)+' г: <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г</p><p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
   }
+  /* Meal 33.36 · вопросы о веществах за день: «сколько клетчатки я сегодня съел», «хватает ли мне железа», «чего мне не хватает».
+     Съеденное — тем же расчётом, что журнал (jrCompute), норма — своя из «Целей на день» или рекомендуемая, как в журнале.
+     Слова веществ и обычные продукты-источники — в словаре (bot/household-ru.js, nutrient_sources). В дневник ничего не идёт.
+     Вопрос о продукте («сколько клетчатки в гречке») сюда не попадает: его разбирает productInfo. Астамур 22.11.2026 15:59. */
+  var NUTR=null;
+  function nutrList(){
+    if(NUTR) return NUTR;
+    var D=window.HappyMealSpeechData; NUTR=((D&&D.nutrient_sources)||[]).map(function(e){ try{ return {id:e.id,title:e.title,group:e.group,re:new RegExp('(?:^|[^а-яa-z])(?:'+e.said+')'),sources:e.sources||[]} }catch(x){ return null } }).filter(Boolean);
+    return NUTR;
+  }
+  function nutrMeta(id){
+    var mac=(typeof JR_MAC!=='undefined'?JR_MAC:[]).filter(function(x){ return x.id===id })[0];
+    if(mac){ var own=parseFloat(String((DB.goals||{})[id]||'').replace(',','.')); return {u:mac.u,norm:own>0?own:mac.rec,own:own>0,lim:false} }
+    var n=typeof JR_N!=='undefined'?JR_N[id]:null; return n?{u:n.u,norm:n.rec!=null?n.rec:null,own:false,lim:!!n.lim}:null;
+  }
+  function nutrSrcVal(code,id){
+    if(id==='p') return blsVal(code,'prot'); if(id==='fib') return blsVal(code,'fib');
+    var k=typeof JR_BLS!=='undefined'?JR_BLS[id]:null; if(!k) return null;
+    if(Array.isArray(k)){ var s=null; k.forEach(function(x){ var v=blsVal(code,x); if(v!=null) s=(s||0)+v }); return s }
+    return blsVal(code,k);
+  }
+  function nutrSources(e,u,n){
+    var out=[]; e.sources.forEach(function(code){ if(!BLS_BY[code]) return; var v=nutrSrcVal(code,e.id); if(v==null||!(v>0)) return; out.push([v,code]) });
+    out=out.slice(0,n+1).sort(function(a,b){ return b[0]-a[0] }).slice(0,n).map(function(x){ var nm=blsName(x[1]); return esc(nm.charAt(0).toLowerCase()+nm.slice(1))+' — '+nutrNum(x[0])+'\u00a0'+u });
+    return out.length?'Где много: '+out.join('; ')+' (на 100 г).':'';
+  }
+  function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
+  function nutrAsk(o){
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    var L=nutrList(); if(!L.length) return null;
+    var hit=L.filter(function(e){ return e.re.test(o) }), grp=null;
+    if(!hit.length){ if(/(^|\s)витамин(ы|ов|ами)?(\s|$)/.test(o)) grp='vit'; else if(/(^|\s)минерал\S*/.test(o)) grp='min' }
+    var gap=/(не\s+хвата\S*|не\s+хватило|недобрал\S*|недостаточно|добрать|доесть|дефицит)/.test(o)&&!/(баз[еаы]|продукт|недостающ|не\s+наш[её]л|ненайден|список)/.test(o);
+    var self=/(^|\s)(я|мне|меня|у меня|сегодня|вчера|за\s+(?:день|сегодня|вчера|неделю|7 дней|семь дней|последн\S* неделю)|съел\S*|поел\S*|получил\S*|набрал\S*|хватает|хватило|достаточно)(\s|$)/.test(o);
+    var asks=/(^|\s)(сколько|хватает|хватило|достаточно|чего|каких|какого|какой|какие|что|много ли|мало ли|покажи|скажи|подскажи)(\s|$)/.test(o);
+    /* «сколько калорий / белков, жиров и углеводов я съел» — итог дня, как раньше (todayTotals) */
+    if(/(калори|ккал|(^|\s)жир|углевод|бжу|кбжу)/.test(o)) return null;
+    if(grp&&self&&asks) gap=true;
+    if(!(gap&&(asks||self)&&!hit.length)&&!(hit.length&&self&&asks)) return null;
+    /* «сколько железа в гречке» — вопрос о продукте; «в обед», «в день», «в меня» — нет */
+    if(/(^|\s)во?\s+(?!меня|мне|день|сутки|обед|завтрак|ужин|перекус|сумме|итоге|целом|среднем|этот|эти|прошл|последн|неделю|рацион|питани|еде|меню|дневник)\S/.test(o)) return null;
+    if(typeof jrCompute!=='function'||typeof JR_N==='undefined') return null;
+    if(BLS_ST!=='ok'){ try{ blsLoad() }catch(x){} return p('Загружаю базу продуктов, без неё не посчитать. Спроси ещё раз через пару секунд.') }
+    var today=todayISO(), r, when;
+    if(/(^|\s)вчера(\s|$)/.test(o)){ var y=new Date(today+'T12:00:00'); y.setDate(y.getDate()-1); r={a:isoOf(y),b:isoOf(y)}; when='вчера' }
+    else if(/(^|\s)за\s+(?:неделю|7 дней|семь дней|последн\S* неделю)/.test(o)){ var w=new Date(today+'T12:00:00'); w.setDate(w.getDate()-6); r={a:isoOf(w),b:today}; when='week' }
+    else { r={a:curDate,b:curDate}; when=curDate===today?'сегодня':'за этот день' }
+    var d=jrCompute(r);
+    if(!d||d.empty) return p(when==='week'?'За последние 7 дней записей нет.':when==='вчера'?'Вчера ничего не записано.':'За '+(when==='сегодня'?'сегодня':'этот день')+' пока ничего не записано.');
+    function row(e){
+      var m=nutrMeta(e.id); if(!m) return null;
+      var v=e.id==='fib'?d.mac.fib:e.id==='p'?d.mac.p:d.v[e.id], miss=(d.miss&&d.miss[e.id])||0;
+      return {e:e,m:m,v:v,pct:v!=null&&m.norm?v/m.norm*100:null,miss:miss,who:(d.missN&&d.missN[e.id])||[]};
+    }
+    var head=when==='week'?'В среднем за день (дней с записями: '+d.days+')':when==='вчера'?'Вчера':when==='сегодня'?'Сегодня':'За этот день';
+    if(/(^|\s)(в|на|за)\s+(обед|завтрак|ужин|перекус)/.test(o)) head+=' за весь день (по приёмам пищи пока не считаю)';
+    var tail=(when==='сегодня'?'<p class="mlHint">Считаю по уже записанному. ':'<p class="mlHint">')+'Это справка из дневника и базы, в дневник ничего не записал.</p>';
+    function line(x){
+      var s='<b>'+esc(x.e.title)+'</b>: ';
+      if(x.v==null) return s+'в базе нет данных ни у одной записи.';
+      s+=nutrNum(x.v)+' '+x.m.u;
+      if(x.m.norm) s+=' из '+fmt(x.m.norm)+' '+x.m.u+' ('+Math.round(x.pct)+' %'+(x.m.own?', твоя цель':'')+')';
+      if(x.miss>=0.05) s+='. Нет данных у '+Math.round(x.miss*100)+' % еды'+(x.who.length?' ('+esc(x.who.slice(0,3).join(', '))+(x.who.length>3?' и др.':'')+')':'')+' — на самом деле больше';
+      return s+'.';
+    }
+    if(hit.length){
+      var rows=hit.map(row).filter(Boolean); if(!rows.length) return null;
+      return p(head+':')+rows.map(function(x){ var src=x.pct!=null&&x.pct<100?nutrSources(x.e,x.m.u,3):''; return p(line(x))+(src?'<p class="mbSum">'+src+'</p>':'') }).join('')+tail;
+    }
+    var all=L.filter(function(e){ return !grp||e.group===grp }).map(row).filter(function(x){ return x&&x.pct!=null&&!x.m.lim&&x.miss<0.3 });
+    if(!all.length) return p('Посчитать не из чего: у записей '+(when==='сегодня'?'за сегодня ':'')+'нет данных о составе.')+tail;
+    var low=all.filter(function(x){ return x.pct<70 }).sort(function(a,b){ return a.pct-b.pct }).slice(0,3);
+    if(!low.length) return p(head+' по главным веществам'+(grp==='vit'?' (витаминам)':grp==='min'?' (минералам)':'')+' всё не меньше 70 % нормы.')+tail;
+    return p(head+' меньше всего от нормы:')+low.map(function(x){ var src=nutrSources(x.e,x.m.u,2); return p(line(x))+(src?'<p class="mbSum">'+src+'</p>':'') }).join('')+tail;
+  }
   function todayTotals(){
     var items=day(curDate).items, s=sumOf(items), when=curDate===todayISO()?'сегодня':'за этот день';
     if(!items.length) return p('За '+(curDate===todayISO()?'сегодня':'этот день')+' пока ничего не записано.');
@@ -1968,6 +2043,7 @@ var MealBot=(function(){
     if(!/\d/.test(bare)&&/(подожди|погоди|секунд|минутк|сейчас взвешу|взвешиваю|взвешу)/.test(bare)&&tokensOf(bare.replace(/подожди|погоди|секунд\S*|минутк\S*|взвеш\S*/g,' ').replace(FILL,' ')).length===0)
       return p('Жду. Ничего не записываю, пока не скажешь.');
     /* «сколько калорий в 100 г риса?» — вопрос о продукте, а не об итоге дня: ответ из базы, в дневник ничего не идёт */
+    if(m.kind!=='photo'&&!m.inbox){ var nq=nutrAsk(ORIG.trim()); if(nq) return nq }
     var pq=bare.match(/^(?:а\s+)?сколько\s+(?:калори\S*|ккал|белк\S*|жир\S*|углевод\S*)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/);
     if(pq&&m.kind!=='photo'){ var pi=productInfo(pq[1]); return pi||deferred('вопрос о питании') }
     if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(ORIG)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(ORIG)) return todayTotals();
