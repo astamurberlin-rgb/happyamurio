@@ -359,7 +359,8 @@ with sync_playwright() as p:
     reg.fill("#happy-screens [name=password]", PW)
     reg.fill("#happy-screens [name=repeat]", PW)
     reg.click("[data-hw=register]")
-    reg.get_by_role("heading", name="Подтверди почту").wait_for()
+    reg.get_by_role("heading", name="Проверь почту").wait_for()
+    assert reg.get_by_text("ждать письма не нужно", exact=False).is_visible() and reg.get_by_role("button", name="Войти", exact=True).is_enabled()
     assert not reg.evaluate("() => DayData.account.current()")
     fixture.confirmed = True
     reg.evaluate("() => window.dispatchEvent(new Event('focus'))")

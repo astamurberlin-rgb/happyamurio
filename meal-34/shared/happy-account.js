@@ -27,10 +27,10 @@ const utf=t=>new TextEncoder().encode(t);
 function fail(code,message){const e=Error(message);e.code=code;return e}
 
 /* понятные слова вместо ответов сервера */
-function errorText(j,status){
- const m=String((j&&(j.msg||j.error_description||j.message||j.error))||'');
+const registeredEmail='Эта почта уже зарегистрирована. Войди в аккаунт.';
+function errorText(m,status){
  if(/invalid login|invalid_credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
- if(/already (been )?registered|user_already_exists|already exists/i.test(m))return 'Эта почта уже зарегистрирована. Войди в аккаунт.';
+ if(/already (been )?registered|user_already_exists|already exists/i.test(m))return registeredEmail;
  if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейди по ссылке в письме.';
  if(/refresh token/i.test(m))return 'Вход устарел. Войди заново.';
  if(/signups? (are )?(not allowed|disabled)/i.test(m))return 'Новые аккаунты сейчас закрыты';
@@ -164,7 +164,12 @@ function create(options){
   let j=null;try{j=await r.json()}catch(e){}
   if(!r.ok){
    if(r.status>=500||r.status===408)throw fail('offline','Сервер временно недоступен. Повтори позже.');
-   throw fail(r.status===429?'busy':'auth',errorText(j,r.status));
+   const msg=String(j?.msg||j?.error_description||j?.message||j?.error||''),code=j?.error_code||j?.code;
+   if(path.split('?')[0]==='signup'&&r.status!==429&&
+      (code==='user_already_exists'||code==='email_exists'||/\b(?:user|email)\b.*\balready (?:been )?(?:registered|exists)\b/i.test(msg))){
+    throw fail('user_already_exists',registeredEmail);
+   }
+   throw fail(r.status===429?'busy':'auth',errorText(msg,r.status));
   }
   return j;
  }

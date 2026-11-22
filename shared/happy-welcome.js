@@ -87,7 +87,7 @@ function show(next,o){
  p.main.innerHTML=html(next);
  if(next==='welcome')startSmile(o.instant);
  else{stopSmile();const first=p.main.querySelector('input:not([type=hidden]):not([readonly])');if(first&&o.focus!==false&&!matchMedia('(pointer:coarse)').matches)try{first.focus({preventScroll:true})}catch(e){}}
- if(next!=='verify')stopPoll();
+ if(next==='verify')startPoll();else stopPoll();
 }
 const title=t=>'<h1 class="hs-title">'+esc(t)+'</h1>';
 const errorBox=()=>'<p class="hs-error" role="alert"'+(form.error?'':' hidden')+'>'+esc(form.error)+'</p>';
@@ -165,8 +165,8 @@ function html(name){
  case 'register':return title('Создать аккаунт')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+
    S().passwordField({label:'Пароль',name:'password',autocomplete:'new-password'})+S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+
    '<div class="hs-actions">'+btn('register','Создать аккаунт','hs-primary',true)+googleButton()+btn('cancel','Отмена','hs-cancel')+'</div></form>';
- case 'login':return title('Войти')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+S().passwordField({label:'Пароль',name:'password'})+'</div>'+
-   (form.note?'<p class="hs-note">'+esc(form.note)+'</p>':'')+errorBox()+(cfg.features.recovery?quiet('to-forgot','Не помню пароль','hs-forgot'):'')+
+ case 'login':return title('Войти')+(form.note?'<p class="hs-note">'+esc(form.note)+'</p>':'')+
+   '<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+S().passwordField({label:'Пароль',name:'password'})+'</div>'+errorBox()+(cfg.features.recovery?quiet('to-forgot','Не помню пароль','hs-forgot'):'')+
    '<div class="hs-actions">'+btn('login','Войти','hs-primary',true)+googleButton()+btn('cancel','Отмена','hs-cancel')+'</div>'+quiet('to-register','Создать аккаунт','hs-center hs-form-signup')+'</form>';
  case 'access':return accessHtml();
  case 'googleRecovery':return recoveryHtml();
@@ -178,10 +178,12 @@ function html(name){
    '<div class="hs-actions">'+btn('reset','Сохранить пароль','hs-primary',true)+btn('to-login','Отмена','hs-cancel')+'</div></form>';
  case 'resetDone':return title('Пароль изменён')+'<div class="hs-mail-symbol">'+I.check+'</div><div class="hs-actions">'+btn('to-login','Войти','hs-primary')+'</div>';
  case 'verify':case 'resetSent':case 'emailConfirm':{
-  const t=name==='emailConfirm'?'Подтверди новую почту':name==='resetSent'?'Проверь почту':'Подтверди почту';
-  const note=name==='resetSent'?'Если аккаунт с этой почтой существует, на неё придёт ссылка.':'Перейди по ссылке в письме.';
-  const second=name==='verify'?btn('to-signup-email','Изменить почту','hs-cancel')+quiet('close','Закрыть','hs-center'):name==='emailConfirm'?btn('back-profile','Вернуться в профиль','hs-cancel'):btn('to-login','Закрыть','hs-cancel');
-  return title(t)+'<div class="hs-mail-symbol">'+I.envelope+'</div><p class="hs-confirm-address">'+esc(form.email)+'</p><p class="hs-note hs-center">'+note+'</p>'+errorBox()+
+  const t=name==='emailConfirm'?'Подтверди новую почту':'Проверь почту';
+  const note=name==='verify'?'Если это новый аккаунт, подтверди почту по ссылке в письме.':name==='resetSent'?'Если аккаунт с этой почтой существует, на неё придёт ссылка.':'Перейди по ссылке в письме.';
+  const existing=name==='verify'?'<p class="hs-note hs-center">Если у тебя уже есть аккаунт с этой почтой, ждать письма не нужно. Войди по паролю или через Google.</p>':'';
+  const second=name==='verify'?btn('to-login','Войти','hs-cancel')+quiet('to-signup-email','Изменить почту','hs-center')+quiet('close','Закрыть','hs-center'):
+   name==='emailConfirm'?btn('back-profile','Вернуться в профиль','hs-cancel'):btn('to-login','Закрыть','hs-cancel');
+  return title(t)+'<div class="hs-mail-symbol">'+I.envelope+'</div><p class="hs-confirm-address">'+esc(form.email)+'</p><p class="hs-note hs-center">'+note+'</p>'+existing+errorBox()+
    '<div class="hs-actions">'+btn(name==='resetSent'?'forgot-again':name==='emailConfirm'?'email-again':'resend','Отправить повторно','hs-primary')+second+'</div>';
  }
  case 'signupEmail':case 'emailChange':{
@@ -215,6 +217,22 @@ function onClick(e){
 }
 function submit(){
  const b=pageH&&pageH.main.querySelector('button[type=submit]');if(b)act(b.dataset.hw);
+}
+async function registerEmail(email,password){
+ const page=pageH,source=page.main.querySelector('form');
+ let result;
+ try{result=await cfg.account.signUp(email,password,'')}
+ catch(e){
+  if(pageH!==page||!source.isConnected)return;
+  if(e.code!=='user_already_exists')throw e;
+  pending=null;
+  form.note='У тебя уже есть аккаунт Happy с этой почтой. Войди по паролю или через Google.';
+  show('login',{email});
+  return;
+ }
+ if(pageH===page&&source.isConnected&&result==='confirm'){
+  pending={email,password};show('verify',{email});
+ }
 }
 function act(a){
  const A=cfg.account;
@@ -261,7 +279,7 @@ function act(a){
  case 'retry-open':return root.location.reload();
  case 'signout':return busy(a,signOut);
  case 'to-register':form.note='';return show('register',{email:''});
- case 'to-login':form.note='';return show('login',{email:form.email||''});
+ case 'to-login':pending=null;form.note='';return show('login',{email:form.email||''});
  case 'to-forgot':return show('forgot',{email:val('email')||form.email});
  case 'to-verify':return show('verify',{email:pending?pending.email:form.email});
  case 'to-signup-email':return show('signupEmail',{email:''});
@@ -272,19 +290,23 @@ function act(a){
  case 'register':{
   const email=norm(val('email')),pw=val('password'),repeat=val('repeat');form.email=email;
   const problem=!emailOk(email)?'Проверь адрес почты':passwordProblem(pw,repeat);if(problem)return fail(problem);
-  return busy(a,async()=>{const r=await A.signUp(email,pw,'');if(r==='confirm'){pending={email,password:pw};show('verify',{email});startPoll()}});
+  return busy(a,()=>registerEmail(email,pw));
  }
  case 'login':{
   const email=norm(val('email')),pw=val('password');form.email=email;
   if(!emailOk(email))return fail('Проверь адрес почты');if(!pw)return fail('Введи пароль');
   return busy(a,async()=>{try{await A.signIn(email,pw)}catch(e){const p=pageH&&pageH.main.querySelector('[name="password"]');if(p)p.value='';throw e}});
  }
- case 'resend':return busy(a,async()=>{if(!pending)return show('register',{email:form.email});await A.resend(pending.email);S().toast('Ссылка отправлена повторно');startPoll()});
+ case 'resend':return busy(a,async()=>{
+  const attempt=pending;if(!attempt)return show('register',{email:form.email});
+  await A.resend(attempt.email);
+  if(pending===attempt&&screen==='verify'){S().toast('Если почту нужно подтвердить, проверь входящие.');startPoll()}
+ });
  case 'signup-email':{
   const email=norm(val('email'));form.email=email;
   if(!emailOk(email))return fail('Проверь адрес почты');if(!pending)return show('register',{email});
   if(email===pending.email)return fail('Укажи новый адрес');
-  return busy(a,async()=>{const r=await A.signUp(email,pending.password,'');pending={email,password:pending.password};if(r==='confirm'){show('verify',{email});startPoll()}});
+  return busy(a,()=>registerEmail(email,pending.password));
  }
  case 'forgot':case 'forgot-again':{
   const email=a==='forgot'?norm(val('email')):form.email;form.email=email;
@@ -378,7 +400,7 @@ function init(o){
  if(cfg.app!=='meal'&&root.isSecureContext&&root.navigator.serviceWorker&&
     /^(https?:)$/.test(root.location.protocol)&&/\/(?:index\.html)?$/.test(root.location.pathname)){
   const version=doc.querySelector('[data-app-version]')?.dataset.appVersion||'1';
-  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-2',{scope:'./'}).catch(()=>{});
+  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-3',{scope:'./'}).catch(()=>{});
  }
  let cell=false;
  try{cell=!!(cfg.account.cell&&root.localStorage.getItem(cfg.account.cell))}catch(e){}
