@@ -1791,6 +1791,49 @@ var MealBot=(function(){
     }
     return p(name+': <b>'+Math.round(s.k)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p)+' г · Ж '+fmt(s.f)+' г · У '+fmt(s.c)+' г'+more+'</p>'+HINT;
   }
+  /* цель и остаток за день — из «Целей на день» и записей дня, как кольцо на главном экране. Тема «цель и остаток», ступень 1 (Астамур 22.11.2026) */
+  var GOAL_M=[['k','Калории','ккал'],['p','Белки','г'],['f','Жиры','г'],['c','Углеводы','г'],['fib','Клетчатка','г']];
+  function goalNum(k){ return typeof goalOf==='function'?goalOf(k):0 }
+  function dayEaten(){ var d=curDate, it=day(d).items; try{ return intakeSum(it,typeof supplementRows==='function'?supplementRows(d):[]) }catch(e){ return sumOf(it) } }
+  function goalKindTxt(){
+    try{ if(typeof HappyGoals==='undefined') return ''; var g=HappyGoals.weightGoal(DB.goalVersions||[],curDate); if(!g) return '';
+      return HappyGoals.LABELS[g.kind]+(g.targetKg&&(g.kind==='loss'||g.kind==='gain')?', желаемый вес '+fmt(g.targetKg)+' кг':'') }catch(e){ return '' }
+  }
+  var GOAL_HINT='<p class="mlHint">Поменять — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+  function goalInfo(why){
+    var kind=goalKindTxt(); kind=kind&&kind.charAt(0).toLowerCase()+kind.slice(1); var rows=GOAL_M.filter(function(m){ return goalNum(m[0])>0 }).map(function(m){ return m[1]+' '+fmt(goalNum(m[0]))+' '+m[2] });
+    if(!kind&&!rows.length) return (why?p('Цвет полосок зависит от нормы дня, а она пока не задана.'):'')+p('Цели на день пока не заданы.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    var goal=p((kind?'Цель: <b>'+esc(kind)+'</b>.':'Цель веса не выбрана.')+(rows.length?' В день: '+esc(rows.join(' · ')).toLowerCase().replace(/^./,function(c){ return c.toUpperCase() })+'.':'')),
+      col=p('Цель веса меняет только норму калорий. Цвет полосок от неё не зависит: полоска темнеет, когда съеденное подходит к норме, а значок ⚠ в журнале веществ — только у того, что стоит ограничивать (сахар, соль и т. п.), когда его больше нормы.');
+    return (why?col+goal:goal+col)+GOAL_HINT;
+  }
+  function goalLeft(k){
+    var m=GOAL_M.filter(function(x){ return x[0]===k })[0]||GOAL_M[0], g=goalNum(m[0]);
+    if(!(g>0)) return p('Норма: '+m[1].toLowerCase()+' в день пока не задана.')+'<p class="mlHint">Задать — «Настройки» → «Цели на день». В дневник ничего не записал.</p>';
+    var s=dayEaten(), v=m[0]==='fib'?null:s[m[0]], when=curDate===todayISO()?'сегодня':'за этот день';
+    if(m[0]==='fib'){ try{ v=typeof dayFib==='function'?dayFib(day(curDate).items):null }catch(e){ v=null } }
+    if(v==null) return p('Норма: '+m[1].toLowerCase()+' '+fmt(g)+' '+m[2]+' в день. Сколько съедено '+when+' — посчитать не могу: у части записей нет данных.')+GOAL_HINT;
+    var left=g-v, r=m[0]==='k'?Math.round:function(x){ return Math.round(x*10)/10 };
+    return p(m[1]+': норма '+fmt(g)+' '+m[2]+' в день, съедено '+when+' '+fmt(r(v))+' '+m[2]+'.')+
+      p(left>=0?'Осталось <b>'+fmt(r(left))+' '+m[2]+'</b>.':'<b>Больше нормы на '+fmt(r(-left))+' '+m[2]+'</b>.')+GOAL_HINT;
+  }
+  function goalKey(w){ var hit=SUB_STEM.filter(function(s){ return s[0].test(w||'') })[0], k=hit&&{kcal:'k',prot:'p',fat:'f',carb:'c',fib:'fib'}[hit[1]]; return k||null }
+  function goalAsk(b){
+    /* «у меня», «мне», «моя» не меняют смысла вопроса; «мне» и «у меня» к этому месту уже заменены пометкой ⊙ */
+    var w=(' '+b.replace(/[?!.,⊙]+/g,' ')+' ').replace(/ (?:у меня|у него|мне|моя|мой|мои)(?= )/g,' ').replace(/\s+/g,' ');
+    /* «сколько мне осталось калорий», «сколько ещё можно съесть», «остаток белка», «сколько белка осталось» */
+    var lm=w.match(/^ (?:а )?(?:сколько|какой|каков) (?:еще |ещё )?(?:(\S+) )?(?:еще |ещё )?(?:осталось|остается|остаётся|остаток|можно съесть|могу съесть|можно)(?: (\S+))?/)||w.match(/^ (?:а )?(?:остаток|осталось) (\S+)?/);
+    if(lm){ var k=goalKey(lm[1])||goalKey(lm[2]); if(k||!lm[1]&&(!lm[2]||/^(съесть|сегодня|до|на|в|за)$/.test(lm[2]))) return goalLeft(k||'k') }
+    /* «какая у меня норма калорий», «моя норма белка», «норма калорий» */
+    var nm=w.match(/^ (?:а )?(?:какая |какова |сколько )?(?:дневная |суточная )?норма (\S+)/);
+    if(nm&&goalKey(nm[1])) return goalLeft(goalKey(nm[1]));
+    if(/^ (?:а )?(?:какая |какова )?(?:дневная |суточная )?норма $/.test(w)) return goalLeft('k');
+    /* «какая у меня цель», «какие у меня настройки цели», «похудение или набор», «почему красное» */
+    if(/(^| )(какая|какие|какой|что за|покажи) (цель|цели|настройк\S*)( |$)/.test(w)&&!/(рецепт|готов)/.test(w)) return goalInfo();
+    if(/настройк|цел[ьи]/.test(w)&&/(похуд|потолст|набор|снижени|рекомпоз|репозиц|поддержан)/.test(w)) return goalInfo();
+    if(/(^| )почему .*(красн|оранжев|темн|треугол|значок)/.test(w)) return goalInfo(true);
+    return null;
+  }
   function todayTotals(){
     var items=day(curDate).items, s=sumOf(items), when=curDate===todayISO()?'сегодня':'за этот день';
     if(!items.length) return p('За '+(curDate===todayISO()?'сегодня':'этот день')+' пока ничего не записано.');
@@ -1990,6 +2033,7 @@ var MealBot=(function(){
     if(pk){ var pi=productInfo(pq[2],pk); return pi||notSure(pq[2]) }
     var pc=m.kind==='photo'?null:(bare.match(/^(?:а\s+)?(?:что\s+(?:входит\s+)?в\s+состав[еа]?|какой\s+состав\s+(?:у|в)|состав|кбжу|бжу|пищевая\s+ценность)\s+(.+)$/)||bare.match(/^(?:а\s+)?(?:какая\s+|какова\s+)?(?:калорийность|энергетическая\s+ценность)\s+(?:у\s+)?(.+)$/));
     if(pc){ var pci=productInfo(pc[1],'all'); return pci||notSure(pc[1]) }
+    if(m.kind!=='photo'){ var ga=goalAsk(bare); if(ga) return ga }
     if(/сколько\s+(я\s+)?(уже\s+|сегодня\s+|всего\s+)*(калори|ккал|набрал|съел)/.test(ORIG)||/(калори\S*|ккал)\s+(я\s+)?(уже\s+)?(набрал|съел|за сегодня|сегодня)/.test(ORIG)) return todayTotals();
     if(/что\s+(я\s+)?(уже\s+|сегодня\s+)*(записал|записано|съел|ел)(\s|$)/.test(ORIG)||/^(покажи|что)\s+(записи|день|записано|за сегодня)/.test(ORIG)) return todayList();
     if(/(список|чего)\s+(недостающ|не хватает|нет в базе)|что\s+не\s+нашел|ненайденн/.test(bare)) return missShow();
