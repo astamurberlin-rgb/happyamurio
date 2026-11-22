@@ -1942,6 +1942,17 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       <li>Своя порция из блюда на несколько человек («плов 1 кг на четверых») — пока не считаю: бот спросит, сколько съел ты.</li>
       <li>«Это не считай» — сказанное в этом предложении не записывается.</li>
     </ul></article>
+    <!-- Meal 33.36 · мастер целей в чате: bot-steps.js (вопросы по шагам), bot-goals.js (цели), словарь bot/household-ru.js (chat_steps, goal_setup) — поменял правило, поправь и текст -->
+    <article class="card release-card"><h2>Настроить цель в чате</h2><ul>
+      <li>«Настрой цели», «рассчитай мою норму», «хочу похудеть», «хочу набрать массу до 90» — бот по шагам спрашивает цель, пол, дату рождения, рост, вес, желаемый вес и активность. Целей ещё нет — в пустом чате кнопка «Настроить цель за минуту».</li>
+      <li>Под вопросом кнопки, но можно ответить словами: «метр восемьдесят», «восемьдесят два с половиной», «15 мая 1990», «сижу в офисе». Сказал два числа — «80, нет, 82» — берётся последнее.</li>
+      <li>Что уже есть в профиле, бот не спрашивает: в итоге видно, что взято из профиля.</li>
+      <li>«Назад» — прошлый вопрос, «пропусти» — дальше (только желаемый вес), «отмена» — выйти, ничего не сохранив. «Не худеть, держать вес» посреди вопросов меняет цель.</li>
+      <li>Еда посреди вопросов («банан 120 г») записывается как обычно, вопрос повторяется.</li>
+      <li>В итоге — норма калорий, белки, жиры, углеводы и из чего это посчитано. «Сохранить» записывает так же, как «Настройки → Настроить цели» с «Рассчитать»: та же формула (Миффлин — Сан Жеор × активность), поправка 10 % при снижении и наборе, профиль, замер веса и цель веса. Клетчатку мастер не трогает. «Поправить» — изменить один ответ.</li>
+      <li>Возраст вне 19–78 лет — расчёта нет: можно задать калории вручную. «Знаю свои калории» — одно число, без остальных вопросов.</li>
+      <li>«Я вешу 80 кг» — бот предложит записать замер или настроить цель.</li>
+    </ul></article>
   </div></section>
   <div class="screen happy-settings" data-screen="settings">
     <div class="top" hidden><div class="tierBadges" hidden></div></div>
@@ -3739,7 +3750,7 @@ var HELLO={meal:'Привет, давай запишем еду.',
   recipe:'Подскажу рецепт или соберу твой. Спроси: «быстрый завтрак с творогом» — или продиктуй состав: «салат: огурец 150 г, помидоры 200 г, ложка масла».'};
 function renderChat(options){
   var rec=D.kind==='recipe', n=rec?D.draft.lines.length:D.lines.length, live=D.msgs.some(function(m){ return m.live });
-  var hello='<div class="mlMsg bot"><div class="mlB">'+HELLO[D.kind]+'</div></div>';
+  var hello='<div class="mlMsg bot"><div class="mlB">'+HELLO[D.kind]+(!rec&&typeof MealBot!=='undefined'&&MealBot.hello?MealBot.hello(D):'')+'</div></div>';
   var activeAsk=!rec&&D.bot&&D.bot.ask;
   var replacing=activeAsk&&(activeAsk.kind==='name'||activeAsk.kind==='pick'||activeAsk.kind==='qty'&&!activeAsk.q.line.count);
   var meals=document.getElementById('chatMeals');
@@ -6371,7 +6382,7 @@ function jrNoteTxt(){
 <script src="desserts.js?v=33.35"></script>
 <script src="preserves.js?v=33.35"></script><script src="kfct.js?v=33.35"></script>
 <script src="user-products.js?v=33.35"></script>
-<script src="bot/household-ru.js?v=33.35"></script><script src="bot-speech.js?v=33.35"></script><script src="meal-periods.js?v=33.35"></script><script src="meal-fast.js?v=33.35"></script><script src="bot.js?v=33.35"></script><script src="meal-inbox.js?v=33.35"></script><script src="meal-measurements.js?v=33.35"></script>
+<script src="bot/household-ru.js?v=33.35"></script><script src="bot-speech.js?v=33.35"></script><script src="meal-periods.js?v=33.35"></script><script src="meal-fast.js?v=33.35"></script><script src="bot.js?v=33.35"></script><script src="bot-steps.js?v=33.35"></script><script src="bot-goals.js?v=33.35"></script><script src="meal-inbox.js?v=33.35"></script><script src="meal-measurements.js?v=33.35"></script>
 
 <script src="./shared/release-notes.js?v=33.35"></script>
 <script src="release-notes.js?v=33.35"></script>
