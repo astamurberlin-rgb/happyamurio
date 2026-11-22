@@ -3620,6 +3620,25 @@ window.HappyMealSpeechData={
    "implementation_status": "connected"
   },
   {
+   "id": "alias_pasta_horns_in",
+   "forms": [
+    "рожки в",
+    "рожков в",
+    "рожки под",
+    "рожков под"
+   ],
+   "search_as": "макароны в",
+   "meaning_ru": "«Рожки в томатном соусе», «рожки под сыром» — макароны с соусом или под ним. Рожок мороженого так не говорят (22.11.2026).",
+   "canonical": "макароны в",
+   "bot": "alias",
+   "action": "alias_food",
+   "weight_multiplier": 1,
+   "source_ids": [
+    "ASTAMUR"
+   ],
+   "implementation_status": "connected"
+  },
+  {
    "id": "alias_pasta_horns_boiled",
    "forms": [
     "сварил рожки",
