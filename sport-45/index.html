@@ -90,6 +90,7 @@
 /* Цвета смысла: одинаковые в трёх приложениях, тема их не меняет. */
 :root{
   --happy-danger:#ff6b78;
+  --happy-on-danger:#40121a;
   --happy-success:#52d7c1;
   --happy-warning:#ffc53d;
   --happy-protein:#e34948;
@@ -1514,6 +1515,16 @@ body.hs-open{overflow:hidden}
 .hs-profile-photo .hs-avatar{width:86px;height:86px;margin-bottom:5px}
 #happy-screens .hs-profile-photo .hs-quiet{text-align:center;margin:0 auto}
 .hs-profile-form{display:flex;flex-direction:column;gap:17px}
+#happy-screens .hs-export{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:6px}
+#happy-screens .hs-export button{min-height:44px;padding:0 12px;font-size:16px;font-weight:600}
+#happy-screens .hs-export-link{color:var(--happy-ink);text-decoration:underline;text-underline-offset:4px}
+#happy-screens .hs-delete-link{color:var(--happy-danger);text-shadow:0 1px 2px #000,0 0 2px #000}
+.hs-delete-dialog{position:fixed;inset:auto 0 0;margin:0 auto;width:100%;max-width:460px;max-height:calc(100% - 24px - env(safe-area-inset-top));
+ overflow:auto;overscroll-behavior:contain;pointer-events:auto;padding:24px 20px calc(24px + env(safe-area-inset-bottom));
+ border:1px solid var(--hs-border);border-bottom:0;border-radius:22px 22px 0 0;background:var(--hs-sheet-bg);color:var(--happy-ink)}
+.hs-delete-dialog::backdrop{background:rgba(0,0,0,.45)}
+.hs-delete-dialog .hs-note{color:var(--happy-ink);overflow-wrap:anywhere}
+#happy-screens .hs-delete-confirm{background:var(--happy-danger);color:var(--happy-on-danger)}
 .hs-profile-account h2{margin-bottom:17px}
 .hs-email-label{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:14px;margin-bottom:7px}
 .hs-verified{display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,.78)}
@@ -8176,6 +8187,10 @@ function create(options){
  const oauthCell=CELL+':google',recoveryCell=CELL+':google-recovery';
  let recoveryRun=null,recoveryRefresh=null;
  const oauthStorage=()=>o.oauthStorage||root.sessionStorage;
+ const removalPrefix='happy-account:removed:'+url+':';
+ const removalKey=uid=>removalPrefix+uid;
+ const deletionConfirmed=uid=>['cleanup','done'].includes(storage.getItem(removalKey(uid)));
+ let deletionRun=null;
  const deviceKeys=new Map();
  function wrappingKey(app){
   if(!deviceKeys.has(app)){
@@ -8219,6 +8234,7 @@ function create(options){
   }
   if(!recipients.some(([app])=>app!==o.app))return;
   const offers=await Promise.all(recipients.map(async ([app,k])=>[app,await wrap(uid,raw,app,k)]));
+  if(deletionConfirmed(uid))return;
   for(const [app,k] of offers)storage.setItem(offerCell(app),JSON.stringify({uid,k}));
  }
  async function acceptOffer(){
@@ -8236,12 +8252,15 @@ function create(options){
   keyVersion:session.keyVersion||1,migrating:!!session.migrating,google:!!session.google}:null}
 
  function persist(next,raw){
+  if(next&&deletionConfirmed(next.uid))throw fail('deleted','Этот аккаунт уже удалён.');
   if(next){const text=JSON.stringify({s:next,k:raw});storage.setItem(CELL,text);if(storage.getItem(CELL)!==text)throw fail('storage','Не удалось сохранить вход на устройстве')}
   else storage.removeItem(CELL);
  }
  /* Принять то, что лежит в ячейке: при запуске и когда вход поменяло другое окно или приложение. */
  async function adopt(){
-  const mark=++generation,a=disk(),before=mine();
+  const mark=++generation,before=mine();
+  let a=disk();
+  if(a&&deletionConfirmed(a.s.uid)){storage.removeItem(CELL);a=null}
   if(!a){session=null;kraw=null;key=null}
   else if(identity(a)===before)session=a.s;                       // тот же вход, свежий токен
   else{
@@ -8341,9 +8360,82 @@ function create(options){
  async function signOut(){
   if(!session&&readRecovery()){await cancelRecovery();return}
   const token=session&&session.at;++generation;
+  if(session&&storage.getItem(removalKey(session.uid))==='requested')storage.removeItem(removalKey(session.uid));
   persist(null);storage.removeItem(offerCell(o.app));session=null;kraw=null;key=null;try{oauthStorage().removeItem(oauthCell)}catch(e){}emit();
   /* scope=local: сервер закрывает только этот вход; входы других приложений и устройств остаются */
   if(token)logoutToken(token);
+ }
+ // A lost network response is inconclusive. The next explicit confirmation
+ // retries against the same UID. Only a matching server receipt permits a wipe.
+ function clearDeletedSessions(uid){
+  for(const app of APPS){
+   const cell=cellOf(app);
+   if(parse(storage.getItem(cell))?.s.uid===uid)storage.removeItem(cell);
+   const offer=storage.getItem(offerCell(app));
+   if(offer){try{if(JSON.parse(offer).uid===uid)storage.removeItem(offerCell(app))}catch(e){}}
+   for(const name of [cell+':google',cell+':google-recovery']){
+    try{
+     const pending=JSON.parse(oauthStorage()?.getItem(name)||'null');
+     if((pending?.uid||pending?.s?.uid)===uid)oauthStorage().removeItem(name);
+    }catch(e){}
+   }
+  }
+  if(session?.uid===uid){++generation;session=null;kraw=null;key=null;emit()}
+ }
+ async function finishRemoval(uid){
+  try{
+   await root.HappyStore.removeLocalAccount({uid,backend:o.backend,indexedDB:o.indexedDB});
+   clearDeletedSessions(uid);
+   storage.setItem(removalKey(uid),'done');
+  }catch(e){
+   clearDeletedSessions(uid);
+   throw fail('cleanup','Аккаунт удалён. Не удалось очистить записи на устройстве. Happy повторит очистку при открытии.');
+  }
+ }
+ async function resumeRemoval(){
+  // Enumerate individual receipts: simultaneous deletions in separate tabs
+  // must not overwrite a shared queue. No network request is made on startup.
+  const uids=new Set();
+  for(let i=0;i<storage.length;i++){
+   const name=storage.key(i);
+   if(name?.startsWith(removalPrefix)&&storage.getItem(name)==='cleanup')uids.add(name.slice(removalPrefix.length));
+  }
+  const uid=disk()?.s.uid;
+  if(uid&&storage.getItem(removalKey(uid))==='cleanup')uids.add(uid);
+  for(const owner of uids)await finishRemoval(owner).catch(()=>{});
+ }
+ function deleteAccount(expectedUid){
+  if(!expectedUid||session?.uid!==expectedUid||disk()?.s.uid!==expectedUid)return Promise.reject(changed());
+  if(deletionRun?.uid===expectedUid)return deletionRun.promise;
+  const who=mine();
+  const promise=(async()=>{
+   const marker=removalKey(expectedUid);
+   if(deletionConfirmed(expectedUid)){await finishRemoval(expectedUid);return}
+   if(root.navigator?.onLine===false)throw fail('offline','Для удаления аккаунта подключись к интернету.');
+   // Keep using an unexpired access token after an ambiguous reply, even if the
+   // previous request removed the Auth session. No extra token is persisted.
+   const access=now()<session.exp?session.at:await token();
+   guard(who);
+   if(deletionConfirmed(expectedUid)){await finishRemoval(expectedUid);return}
+   storage.setItem(marker,'requested'); // reserve space before sending the irreversible request
+   let r;
+   try{
+    r=await request(url+'/rest/v1/rpc/happy_delete_my_account',{method:'POST',cache:'no-store',redirect:'error',
+     headers:{apikey,Authorization:'Bearer '+access,'Content-Type':'application/json'},
+     body:JSON.stringify({p_expected_uid:expectedUid})});
+   }catch(e){throw fail('offline','Не удалось подтвердить удаление. Проверь подключение и повтори.')}
+   if(!r.ok){
+    if(r.status===401||r.status===403)throw fail('auth','Сервер не подтвердил удаление. Войди в аккаунт снова.');
+    throw fail('delete','Сервер не подтвердил удаление аккаунта. Повтори позже.');
+   }
+   const receipt=await r.json().catch(()=>null);
+   if(receipt?.deleted!==true||receipt.uid!==expectedUid)throw fail('delete','Сервер не подтвердил удаление этого аккаунта.');
+   storage.setItem(marker,'cleanup');
+   await finishRemoval(expectedUid);
+  })();
+  deletionRun={uid:expectedUid,promise};
+  const done=()=>{if(deletionRun?.promise===promise)deletionRun=null};
+  promise.then(done,done);return promise;
  }
  /* Токен доступа. Обновление — одно за раз; если его уже обновило другое окно тем же входом, берём готовый. */
  async function token(refused){   // refused — токен, который сервер только что не принял
@@ -8491,10 +8583,14 @@ function create(options){
  function readRecovery(){
   try{
    const p=JSON.parse(oauthStorage().getItem(recoveryCell)||'null');
+   if(p?.s?.uid&&deletionConfirmed(p.s.uid)){oauthStorage().removeItem(recoveryCell);return null}
    return p?.url===url&&p.id&&p.s?.uid&&p.s.at&&p.s.rt?p:null;
   }catch(e){return null}
  }
- function saveRecovery(p){oauthStorage().setItem(recoveryCell,JSON.stringify(p))}
+ function saveRecovery(p){
+  if(deletionConfirmed(p.s.uid))throw changed();
+  oauthStorage().setItem(recoveryCell,JSON.stringify(p));
+ }
  function pendingRecovery(){
   const p=readRecovery();
   return p&&!session&&!disk()?{uid:p.s.uid,email:p.s.email,migrating:!!p.migrating}:null;
@@ -8600,10 +8696,11 @@ function create(options){
  }
  function resume(){
   if(stopped)return;
+  if(session&&deletionConfirmed(session.uid)){clearDeletedSessions(session.uid);return}
   if(session?.migrating)return beginMigration().catch(()=>{});
   if(!session&&readRecovery()?.consent)return completeRecovery().catch(()=>{});
  }
- async function load(){await adopt();await acceptOffer();await resume()}
+ async function load(){await resumeRemoval();await adopt();await acceptOffer();await resume()}
 
  /* повторить письмо подтверждения регистрации */
  const resend=email=>auth('resend',{type:'signup',email});
@@ -8625,17 +8722,20 @@ function create(options){
  const setPassword=(access,password)=>auth('user',{password},access,'PUT');
  function onStorage(e){
   if(stopped)return;
+  if(e.key?.startsWith(removalPrefix)&&['cleanup','done'].includes(e.newValue)){
+   clearDeletedSessions(e.key.slice(removalPrefix.length));return;
+  }
   if(e.key===offerCell(o.app)&&e.newValue){acceptOffer().catch(()=>{});return}
   if(e.key===null||e.key===CELL)adopt().catch(()=>{});
  }
- if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume)}
+ if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume)}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,
   onChange(fn){listeners.add(fn);return ()=>listeners.delete(fn)},
-  close(){stopped=true;listeners.clear();if(events&&events.removeEventListener){events.removeEventListener('storage',onStorage);events.removeEventListener('online',resume)}}
+  close(){stopped=true;listeners.clear();if(events&&events.removeEventListener){events.removeEventListener('storage',onStorage);events.removeEventListener('online',resume);events.removeEventListener('pageshow',resume)}}
  };
  return api;
 }
@@ -8785,7 +8885,7 @@ function idbBackend(factory,name,managed){
   const db=await open();
   return new Promise((resolve,reject)=>{
    let tx,result,problem;
-   try{tx=db.transaction(stores,mode)}catch(e){opening=null;reject(storageError(e));return}
+   try{tx=db.transaction(stores||Array.from(db.objectStoreNames),mode)}catch(e){opening=null;reject(storageError(e));return}
    const abort=e=>{problem=e;tx.abort()};
    work(tx,value=>{result=value},abort);
    tx.oncomplete=()=>resolve(result);
@@ -8794,12 +8894,13 @@ function idbBackend(factory,name,managed){
  }
  function withScope(scope,stores,mode,work){
   return transaction(stores,mode,(tx,done,abort)=>{
-   if(managed){
-    if(scope[0]!==managed.uid){abort(fail('account','Аккаунт изменился'));return}
-    work(tx,done);return;
-   }
+   if(managed&&scope[0]!==managed.uid){abort(fail('account','Аккаунт изменился'));return}
    const marker=tx.objectStore('meta').get([scope[0]]);
-   marker.onsuccess=()=>{if(marker.result?.keyVersion)abort(keyChanged());else work(tx,done)};
+   marker.onsuccess=()=>{
+    if(marker.result?.removed){abort(fail('account_removed','Аккаунт удалён.'));return}
+    if(!managed&&marker.result?.keyVersion){abort(keyChanged());return}
+    work(tx,done,abort);
+   };
   });
  }
  async function checkOwner(uid){
@@ -8897,7 +8998,7 @@ function idbBackend(factory,name,managed){
  }
  async function prepare(){
   const owner=[managed.uid];
-  const ready=await transaction(['meta'],'readwrite',(tx,done,abort)=>{
+  const ready=await withScope(owner,['meta'],'readwrite',(tx,done,abort)=>{
    const metas=tx.objectStore('meta'),read=metas.get(owner);
    read.onsuccess=()=>{
     if(read.result&&read.result.keyVersion!==2){abort(fail('newer','Обнови приложение, чтобы открыть записи устройства.'));return}
@@ -8908,7 +9009,7 @@ function idbBackend(factory,name,managed){
   if(ready)return;
   // После отметки ни одна вкладка не может записать открытый текст этого UID.
   // Перечисляются только ключи: имена и значения записей не копируются в meta.
-  const scopes=await transaction(['records'],'readonly',(tx,done)=>{
+  const scopes=await withScope(owner,['records','meta'],'readonly',(tx,done)=>{
    const found=[],read=tx.objectStore('records').openKeyCursor(range(owner));
    read.onsuccess=()=>{
     const cursor=read.result;if(!cursor){done(found);return}
@@ -8916,12 +9017,12 @@ function idbBackend(factory,name,managed){
    };
   });
   for(const scope of scopes){
-   const records=await transaction(['records'],'readonly',(tx,done)=>{
+   const records=await withScope(scope,['records','meta'],'readonly',(tx,done)=>{
     const read=tx.objectStore('records').getAll(range(scope));read.onsuccess=()=>done(read.result);
    });
    if(!records.length)continue;
    const box=await seal(scope,records);
-   await transaction(['records','sealed'],'readwrite',(tx,done)=>{
+   await withScope(scope,['records','sealed','meta'],'readwrite',(tx,done)=>{
     const sealed=tx.objectStore('sealed'),existing=sealed.get(scope);
     existing.onsuccess=()=>{
      if(!existing.result)sealed.put(box,scope);
@@ -8929,7 +9030,7 @@ function idbBackend(factory,name,managed){
     };
    });
   }
-  await transaction(['meta'],'readwrite',tx=>tx.objectStore('meta').put({keyVersion:2,ready:true},owner));
+  await withScope(owner,['meta'],'readwrite',tx=>tx.objectStore('meta').put({keyVersion:2,ready:true},owner));
  }
  async function pendingScopes(uid){
   return withScope([uid],['meta'],'readonly',(tx,done)=>{
@@ -8941,11 +9042,26 @@ function idbBackend(factory,name,managed){
    };
   });
  }
+ // Одна транзакция очищает весь UID, включая очередь и отметки первого обмена.
+ // Минимальная отметка закрывает уже начатые записи и шифрование в соседних вкладках.
+ async function removeLocalAccount(uid){
+  if(typeof uid!=='string'||!uid||(managed&&managed.uid!==uid))throw fail('account','Не удалось проверить аккаунт.');
+  await transaction(null,'readwrite',tx=>{
+   for(const name of ['records','meta','sealed']){
+    if(tx.objectStoreNames.contains(name))tx.objectStore(name).delete(range([uid]));
+   }
+   tx.objectStore('meta').put({keyVersion:2,removed:true},[uid]);
+  });
+ }
  async function close(){
   if(opening){const db=await opening;db.close();opening=null}
  }
  return {load:managed?sealedLoad:plainLoad,write:managed?sealedWrite:plainWrite,pendingScopes,
-  checkOwner,prepare:managed?prepare:null,close};
+  checkOwner,prepare:managed?prepare:null,removeLocalAccount,close};
+}
+async function removeLocalAccount(o){
+ const backend=o.backend||idbBackend(o.indexedDB);
+ try{await backend.removeLocalAccount(o.uid)}finally{if(!o.backend)await backend.close()}
 }
 async function prepareLocal(o){
  const backend=o.backend||idbBackend(o.indexedDB,undefined,{uid:o.uid,key:o.cipherKey});
@@ -9192,7 +9308,7 @@ async function open(options){
   return ids;
  }
  async function load(d){
-  const s=await backend.load(d.scope),before=d.records,next=new Map(),ids=[];
+  const s=await backend.load(d.scope),before=d.records,next=new Map(),ids=[];guard();
   for(const r of s.records){next.set(r.id,r);if(r.rev>d.maxRev)d.maxRev=r.rev;const old=before.get(r.id);if(!old||compare(r,old)!==0)ids.push(r.id)}
   for(const id of before.keys())if(!next.has(id))ids.push(id);
   d.records=next;d.meta=s.meta;relock(d);return ids;
@@ -9219,14 +9335,18 @@ async function open(options){
   notify(d,ids,'local');
   let result;
   try{result=await backend.write(d.scope,records,{local:true})}
-  catch(e){try{await load(d)}catch(_){}notify(d,ids,'local');setStatus('error',e.code==='full'?'нет места на устройстве':'');throw e}
+  catch(e){
+   if(e.code==='account_removed'){close();throw e}
+   try{await load(d)}catch(_){}notify(d,ids,'local');setStatus('error',e.code==='full'?'нет места на устройстве':'');throw e;
+  }
+  guard();
   for(const r of result.won){if(r.rev>d.maxRev)d.maxRev=r.rev;const cur=d.records.get(r.id);if(!cur||compare(r,cur)>=0)d.records.set(r.id,r)}
   adoptMeta(d,result.meta);announce(d,result.won,result.meta);
   if(!closed){if(status.state!=='offline')setStatus('saving');queue()}
  }
  const reader=d=>({
-  get(id){if(d.newer)return undefined;const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
-  all(){const out=[];if(d.newer)return out;for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
+  get(id){if(closed||d.newer)return undefined;const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
+  all(){const out=[];if(closed||d.newer)return out;for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
   subscribe(fn){d.subs.add(fn);return ()=>d.subs.delete(fn)},
   get newer(){return d.newer}
  });
@@ -9394,7 +9514,7 @@ async function open(options){
   get closed(){return closed}
  };
 }
-root.HappyStore={open,verifyLegacyKey,migrateAccount,prepareLocal,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
+root.HappyStore={open,verifyLegacyKey,migrateAccount,prepareLocal,removeLocalAccount,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
 })(typeof globalThis!=='undefined'?globalThis:this);
 
 /* Happy: витрина Sport для Day и Meal — прошедшие и плановые тренировки. Формат, номер 1.
@@ -11327,7 +11447,7 @@ function init(o){
  if(cfg.app!=='meal'&&root.isSecureContext&&root.navigator.serviceWorker&&
     /^(https?:)$/.test(root.location.protocol)&&/\/(?:index\.html)?$/.test(root.location.pathname)){
   const version=doc.querySelector('[data-app-version]')?.dataset.appVersion||'1';
-  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-4',{scope:'./'}).catch(()=>{});
+  root.navigator.serviceWorker.register('./sw.js?v='+encodeURIComponent(version)+'-5',{scope:'./'}).catch(()=>{});
  }
  let cell=false;
  try{cell=!!(cfg.account.cell&&root.localStorage.getItem(cfg.account.cell))}catch(e){}
@@ -11408,9 +11528,10 @@ root.HappyWelcome={init,ask,takeResume,open,signOut,changeEmail,access,
  * запись без food читается как 'metric'.
  *
  * Экраны — по прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026):
- *   HappyPerson.init({app, account, profileDoc, bodyDoc, openGoals, features})
+ *   HappyPerson.init({app, account, profileDoc, bodyDoc, openGoals, exportData, features})
  *     profileDoc, bodyDoc — функции: общий документ (store.doc / store.shared) или null без входа;
  *     openGoals — открыть цели приложения (без входа — лист «Войди в аккаунт»);
+ *     exportData — скачать данные этого приложения;
  *   HappyPerson.top(box)    — верх настроек: аватар, имя, «Настроить профиль / Настроить цели»;
  *   HappyPerson.bottom(box, {status, newer}) — низ настроек: по центру строка синхронизации, под ней «Выйти» (без входа — «Войти»);
  *   HappyPerson.status(text) — обновить строку синхронизации; HappyPerson.statusText(store, error) — её текст
@@ -11580,9 +11701,8 @@ function open(){
    '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+
 
    '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'})+
-   // «Скачать данные» (Астамур 21.11.2026): в самом низу профиля, под «Отмена», по центру, подчёркнутой строкой, без раздела.
-   // Приложение передаёт cfg.exportData; без неё строки нет (сейчас — только Day).
-   (typeof cfg.exportData==='function'?'<div class="hs-export"><button type="button" class="hs-export-link" data-p="export">Скачать данные</button></div>':'');
+   '<div class="hs-export">'+(typeof cfg.exportData==='function'?'<button type="button" class="hs-export-link" data-p="export">Скачать данные</button>':'')+
+   '<button type="button" class="hs-delete-link" data-p="delete-account">Удалить аккаунт</button></div>';
  }
  const input=n=>main.querySelector('[name="'+n+'"]');
  function readInputs(){draft.name=input('name').value;draft.birthday=input('birthday').value;shown.height=input('height').value;shown.weight=input('weight').value;shown.date=input('date').value}
@@ -11618,9 +11738,47 @@ function open(){
   if(a==='email-again'){A.changeEmail(pendingEmail).then(()=>S().toast('Ссылка отправлена повторно')).catch(err=>error(err.message));return}
   if(a==='email-cancel'){A.changeEmail((A.current()||who).email).then(()=>{pendingEmail='';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML='';S().toast('Смена почты отменена')}).catch(err=>error(err.message));return}
   if(a==='export'){cfg.exportData();return}
+  if(a==='delete-account'){confirmDelete(b);return}
   if(a==='cancel'){pageH.close();return}
   if(a==='save'){readInputs();save().catch(err=>error(err.message||String(err)))}
  });
+ function confirmDelete(trigger){
+  const owner=A.current();
+  if(!owner||owner.uid!==who.uid){error('Аккаунт изменился. Открой профиль заново.');return}
+  const dialog=root.document.createElement('dialog');
+  dialog.className='hs-delete-dialog';
+  dialog.setAttribute('aria-labelledby','hs-delete-title');dialog.setAttribute('aria-describedby','hs-delete-description');
+  dialog.innerHTML='<h2 class="hs-sheet-title" id="hs-delete-title" tabindex="-1">Удалить аккаунт?</h2>'+
+   '<p class="hs-note" id="hs-delete-description">Будут удалены профиль <strong>'+esc(owner.email)+'</strong> и записи в Happy Day, Happy Meal и Happy Sport. Восстановить их не получится.</p>'+
+   '<p class="hs-error" role="alert" hidden></p><div class="hs-actions">'+
+   '<button type="button" class="hs-btn hs-cancel" data-delete="cancel" autofocus>Отмена</button>'+
+   '<button type="button" class="hs-btn hs-delete-confirm" data-delete="confirm">Удалить навсегда</button></div>';
+  S().mount().appendChild(dialog);
+  const cancel=dialog.querySelector('[data-delete=cancel]'),confirm=dialog.querySelector('[data-delete=confirm]'),alert=dialog.querySelector('[role=alert]');
+  let deleting=false;
+  cancel.addEventListener('click',()=>dialog.close());
+  // Escape обслуживает этот диалог. Лист профиля под ним должен остаться открытым.
+  dialog.addEventListener('keydown',e=>{if(e.key==='Escape')e.stopPropagation()});
+  dialog.addEventListener('cancel',e=>{if(deleting)e.preventDefault()});
+  dialog.addEventListener('close',()=>{
+   dialog.remove();if(trigger.isConnected&&A.current()?.uid===owner.uid)trigger.focus({preventScroll:true});
+  });
+  confirm.addEventListener('click',async()=>{
+   if(deleting)return;
+   deleting=true;cancel.disabled=true;confirm.disabled=true;alert.hidden=true;
+   confirm.setAttribute('aria-busy','true');confirm.textContent='Удаляем…';dialog.querySelector('h2').focus();
+   try{
+    await A.deleteAccount(owner.uid);
+    dialog.close();
+   }catch(e){
+    deleting=false;cancel.disabled=false;confirm.disabled=A.current()?.uid!==owner.uid;
+    confirm.removeAttribute('aria-busy');confirm.textContent='Удалить навсегда';
+    alert.textContent=e.message||'Не удалось удалить аккаунт. Проверь соединение и попробуй ещё раз.';
+    alert.hidden=false;cancel.focus({preventScroll:true});
+   }
+  });
+  dialog.showModal();
+ }
  function photoSheet(){
   const sh=S().sheet({title:'Фото профиля'});
   sh.body.innerHTML='<div class="hs-photo-preview">'+avatar(draft.photo)+'</div><div class="hs-actions"><button type="button" class="hs-btn hs-primary" data-ph="pick">Выбрать другое фото</button>'+
@@ -12318,7 +12476,7 @@ var SportAccount=(()=>{
    if(r.view)goto(r.view);
   }catch{}
  }
- const options={app:'sport',account:SportBoot.account,features:FEATURES,profileDoc,bodyDoc,openGoals};
+ const options={app:'sport',account:SportBoot.account,features:FEATURES,profileDoc,bodyDoc,openGoals,exportData:()=>downloadData()};
  HappyPerson.init(options);
  SportBoot.ready.catch(()=>{}).then(()=>{
   HappyPerson.init(options);   // хранилище открыто: профиль следит за своим документом

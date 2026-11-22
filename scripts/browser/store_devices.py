@@ -354,10 +354,69 @@ with sync_playwright() as p:
         saved:current.records.length===3&&current.records.find(r=>r.id==='A').value==='updated'&&
           recovered.records[0].value===uid&&recovered.meta.dirty&&current.meta.dirty};
     }""")
+    out["local_removal"] = a1.evaluate("""async () => {
+      const uid='closed-owner', other='retained-owner', name='local-removal-check';
+      const legacy=HappyStore.idbBackend(indexedDB,name), scope=id=>[id,'day','diary'];
+      const entry=(id,value)=>({id,value,rev:10,writer:'test'});
+      // Первая очистка в базе v1: чужой открытый дневник и его очередь остаются.
+      for(const id of [uid,other,'old-account'])await legacy.write(scope(id),[entry('saved',id)],{local:true});
+      const erase=id=>HappyStore.removeLocalAccount({uid:id,backend:legacy});
+      await erase('old-account');
+      const version=(await indexedDB.databases()).find(d=>d.name===name).version;
+      const failure=promise=>promise.then(()=>null,e=>e.code);
+      const oldBlocked=await failure(legacy.write(scope('old-account'),[entry('later',1)],{local:true}));
+      const key=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+      const backend=HappyStore.idbBackend(indexedDB,name,{uid,key});
+      const session={current:()=>({uid,keyVersion:2}),cipherKey:()=>key,onChange:()=>()=>{}};
+      const store=await HappyStore.open({app:'day',account:session,own:['diary'],backend,auto:false});
+      const doc=store.doc('diary');
+      // Держим шифрование внутри штатной записи: удаление завершается до позднего commit.
+      async function removeDuringEncryption(owner,operation){
+        const encrypt=crypto.subtle.encrypt;let notify,release;
+        const started=new Promise(r=>notify=r),gate=new Promise(r=>release=r);
+        crypto.subtle.encrypt=async function(...args){
+          if(new TextDecoder().decode(args[0].additionalData).includes(owner)){notify();await gate}
+          return encrypt.apply(this,args);
+        };
+        let late;
+        try{
+          late=failure(operation());
+          await Promise.race([started,late.then(()=>{throw Error('Ожидалось шифрование')})]);
+          await erase(owner);await erase(owner);
+        }finally{crypto.subtle.encrypt=encrypt;release()}
+        return late;
+      }
+      const lateCode=await removeDuringEncryption(uid,()=>doc.put('pending','отложенная запись'));
+      const blocked=await failure(backend.prepare());
+      const migrating='converting-owner';
+      await legacy.write(scope(migrating),[entry('before','запись до переноса')],{local:true});
+      const conversion=HappyStore.idbBackend(indexedDB,name,{uid:migrating,key});
+      const interrupted=await removeDuringEncryption(migrating,()=>conversion.prepare());
+      const staysRemoved=await failure(conversion.prepare());await conversion.close();
+      const saved=await legacy.load(scope(other));await legacy.write(scope(other),[entry('another',true)],{local:true});
+      const next=await legacy.load(scope('new-signup'));
+      const keys=await new Promise((resolve,reject)=>{
+        const r=indexedDB.open(name);
+        r.onerror=()=>reject(r.error);r.onsuccess=()=>{
+          const db=r.result,tx=db.transaction(['records','meta','sealed']);
+          const reads=['records','meta','sealed'].map(k=>tx.objectStore(k).getAllKeys());
+          tx.oncomplete=()=>{db.close();resolve(reads.map(r=>r.result.filter(k=>k[0]===uid||k[0]===migrating)))};
+        };
+      });
+      store.close();await Promise.all([backend.close(),legacy.close()]);
+      return {legacy:version===1&&oldBlocked==='account_removed',race:lateCode==='account_removed',
+        closed:store.closed&&!doc.all().length&&!(await store.sync()),
+        migration:interrupted==='account_removed'&&staysRemoved==='account_removed',
+        device:blocked==='account_removed'&&!keys[0].length&&!keys[2].length&&
+          keys[1].length===2&&keys[1].every(k=>k.length===1),
+        separate:saved.records[0].value===other&&saved.meta.dirty&&!next.records.length&&!next.meta.dirty};
+    }""")
     b.close()
 
 uid1, uid2 = USERS[ONE]["id"], USERS[TWO]["id"]
 checks = [
+    ("удаление очищает UID в базах v1 и v2 и останавливает позднюю запись, остальные аккаунты сохраняются",
+     all(out["local_removal"].values())),
     ("шифрование IndexedDB продолжается после сбоя и сохраняет конкурентные правки, очередь и соседний профиль",
      all(out["local_migration"].values())),
     ("без входа запись не принимается, на устройстве и в облаке пусто", out["no_login_put"] == "signin" and out["no_login_state"] == "signin" and out["no_login_device"] == 0 and out["no_login_requests"] == 0),

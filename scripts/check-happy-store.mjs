@@ -72,12 +72,18 @@ function makeCloud(){
 
 /* ── «Устройство»: общая ячейка входа, общее хранилище, вкладки ──────────────────────────────────── */
 function memoryBackend(){
- const buckets=new Map(),metas=new Map(),key=s=>JSON.stringify(s);let writes=0;
+ const buckets=new Map(),metas=new Map(),removed=new Set(),key=s=>JSON.stringify(s);let writes=0;
+ const checkOwner=uid=>{if(removed.has(uid))throw Object.assign(Error('Аккаунт удалён'),{code:'account_removed'})};
  const bucket=s=>{if(!buckets.has(key(s)))buckets.set(key(s),new Map());return buckets.get(key(s))};
  return {
-  async load(scope){await tick(0);return {records:[...bucket(scope).values()].map(x=>JSON.parse(x)),meta:M.nextMeta(metas.get(key(scope)),{},0)}},
+  checkOwner,
+  async removeLocalAccount(uid){
+   removed.add(uid);
+   for(const map of [buckets,metas])for(const k of map.keys())if(JSON.parse(k)[0]===uid)map.delete(k);
+  },
+  async load(scope){await tick(0);checkOwner(scope[0]);return {records:[...bucket(scope).values()].map(x=>JSON.parse(x)),meta:M.nextMeta(metas.get(key(scope)),{},0)}},
   async write(scope,list,o={}){
-   await tick(0);const m=bucket(scope),won=[];
+   await tick(0);checkOwner(scope[0]);const m=bucket(scope),won=[];
    for(const given of list){let r=given;const old=m.has(r.id)?JSON.parse(m.get(r.id)):null;
     if(o.local&&old&&old.rev>=r.rev)r={...r,rev:old.rev+1};
     if(!old||M.compare(r,old)>0){m.set(r.id,JSON.stringify(r));won.push(JSON.parse(JSON.stringify(r)));writes++}}

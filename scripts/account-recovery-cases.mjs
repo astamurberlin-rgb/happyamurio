@@ -139,4 +139,69 @@ export async function accountRecoveryCases({check, rejects, makeCloud, makeDevic
  check('пустой подтверждённый Google-аккаунт переходит по согласию без старого пароля',
   await recovering.completeRecovery()==='ok'&&recovering.current()?.uid===uid&&recovering.current().google&&actions.includes('begin_empty'));
  recovering.close();
+ await accountDeletionCases({check,rejects,makeCloud,makeDevice,clock,url});
+}
+
+async function accountDeletionCases({check,rejects,makeCloud,makeDevice,clock,url}){
+ const server=makeCloud(),device=makeDevice(server,'delete-owner',clock),password='fixture-password';
+ const email='remove@example.invalid',otherEmail='keep@example.invalid';
+ const owner=server.addUser(email,password),other=server.addUser(otherEmail,password);
+ const requests=[],tabs=[],webTabs=new Map();
+ let mode='offline',unblock,start;
+ const called=new Promise(r=>start=r);
+ function app(name){
+  const tab=device.tab(),basic=server.fetchFor(device,name);
+  const storage=Object.create(tab.storage,{length:{get:()=>device.cell.size}});
+  storage.key=index=>[...device.cell.keys()][index];
+  const temp=webTabs.get(name)||new Map();webTabs.set(name,temp);
+  const oauthStorage={getItem:k=>temp.get(k),setItem:(k,v)=>temp.set(k,v),removeItem:k=>temp.delete(k)};
+  const fetch=async(path,options)=>{
+   if(!path.endsWith('/rest/v1/rpc/happy_delete_my_account'))return basic(path,options);
+   const {p_expected_uid:uid}=JSON.parse(options.body);
+   requests.push({uid,access:options.headers.Authorization});
+   if(mode==='offline')throw Error('connection lost');
+   if(mode==='forbidden')return new Response(null,{status:403});
+   if(mode==='wrong')return Response.json({deleted:true,uid:other});
+   if(mode==='delayed'){start();await new Promise(resolve=>unblock=resolve)}
+   return Response.json({deleted:true,uid});
+  };
+  const a=HappyAccount.create({app:name,url,key:'test',storage,oauthStorage,events:tab.events,backend:device.backend,fetch});
+  tabs.push(a);return a;
+ }
+ const day=app('day'),meal=app('meal'),sport=app('sport');
+ await day.signIn(email,password);await meal.signIn(email,password);await sport.signIn(otherEmail,password);
+ const note={id:'entry',rev:1,writer:'test',value:'fixture'};
+ for(const uid of [owner,other])await device.backend.write([uid,'day','notes'],[note],{local:true});
+ const ownerSession=JSON.parse(device.cell.get(day.cell)).s,otherCell=device.cell.get(sport.cell);
+ check('подтверждение прошлого профиля не отправляет запрос',
+  !!await rejects(day.deleteAccount(other))&&requests.length===0);
+ for(const failure of ['offline','forbidden','wrong']){
+  mode=failure;
+  check('нет подходящей квитанции — сохранены обе учётные записи и дневники ('+failure+')',
+   !!await rejects(day.deleteAccount(owner))&&day.current()?.uid===owner&&meal.current()?.uid===owner&&
+   device.cell.get(sport.cell)===otherCell&&device.backend.scopes().length===2);
+ }
+ mode='delayed';
+ const attempt=day.deleteAccount(owner),again=day.deleteAccount(owner);await called;
+ check('повторное нажатие объединено и привязано к исходному владельцу',
+  attempt===again&&requests.length===4&&requests.every(r=>r.uid===owner&&r.access==='Bearer '+ownerSession.at));
+ // While the receipt is in flight another profile signs in. It must survive
+ // both the response and a restart during local cleanup.
+ await day.signIn(otherEmail,password);const newDay=device.cell.get(day.cell);
+ const remove=device.backend.removeLocalAccount;
+ device.backend.removeLocalAccount=async()=>{throw Error('temporary database failure')};
+ unblock();
+ check('после квитанции сбой устройства закрывает удалённый аккаунт и сохраняет новый',
+  (await rejects(attempt))?.code==='cleanup'&&day.current()?.uid===other&&device.cell.get(day.cell)===newDay&&
+  !device.cell.has(meal.cell)&&device.cell.get(sport.cell)===otherCell);
+ for(const a of tabs)a.close();
+ device.backend.removeLocalAccount=remove;
+ const reopened=app('meal');await reopened.load();
+ check('после перезапуска без сессии повторяется только локальная очистка удалённого UID',
+  !reopened.current()&&(await rejects(device.backend.load([owner,'day','notes'])))?.code==='account_removed'&&
+  !device.backend.scopes().some(s=>s[0]===owner)&&
+  (await device.backend.load([other,'day','notes'])).records.length===1&&requests.length===4);
+ const neighbor=app('day');await neighbor.load();
+ check('соседний профиль открывается с исходными токенами после очистки',neighbor.current()?.uid===other&&device.cell.get(day.cell)===newDay);
+ reopened.close();neighbor.close();
 }

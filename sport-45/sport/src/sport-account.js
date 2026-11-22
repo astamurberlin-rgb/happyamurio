@@ -36,7 +36,7 @@ var SportAccount=(()=>{
    if(r.view)goto(r.view);
   }catch{}
  }
- const options={app:'sport',account:SportBoot.account,features:FEATURES,profileDoc,bodyDoc,openGoals};
+ const options={app:'sport',account:SportBoot.account,features:FEATURES,profileDoc,bodyDoc,openGoals,exportData:()=>downloadData()};
  HappyPerson.init(options);
  SportBoot.ready.catch(()=>{}).then(()=>{
   HappyPerson.init(options);   // хранилище открыто: профиль следит за своим документом

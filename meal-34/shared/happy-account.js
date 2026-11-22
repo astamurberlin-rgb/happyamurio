@@ -80,6 +80,10 @@ function create(options){
  const oauthCell=CELL+':google',recoveryCell=CELL+':google-recovery';
  let recoveryRun=null,recoveryRefresh=null;
  const oauthStorage=()=>o.oauthStorage||root.sessionStorage;
+ const removalPrefix='happy-account:removed:'+url+':';
+ const removalKey=uid=>removalPrefix+uid;
+ const deletionConfirmed=uid=>['cleanup','done'].includes(storage.getItem(removalKey(uid)));
+ let deletionRun=null;
  const deviceKeys=new Map();
  function wrappingKey(app){
   if(!deviceKeys.has(app)){
@@ -123,6 +127,7 @@ function create(options){
   }
   if(!recipients.some(([app])=>app!==o.app))return;
   const offers=await Promise.all(recipients.map(async ([app,k])=>[app,await wrap(uid,raw,app,k)]));
+  if(deletionConfirmed(uid))return;
   for(const [app,k] of offers)storage.setItem(offerCell(app),JSON.stringify({uid,k}));
  }
  async function acceptOffer(){
@@ -140,12 +145,15 @@ function create(options){
   keyVersion:session.keyVersion||1,migrating:!!session.migrating,google:!!session.google}:null}
 
  function persist(next,raw){
+  if(next&&deletionConfirmed(next.uid))throw fail('deleted','Этот аккаунт уже удалён.');
   if(next){const text=JSON.stringify({s:next,k:raw});storage.setItem(CELL,text);if(storage.getItem(CELL)!==text)throw fail('storage','Не удалось сохранить вход на устройстве')}
   else storage.removeItem(CELL);
  }
  /* Принять то, что лежит в ячейке: при запуске и когда вход поменяло другое окно или приложение. */
  async function adopt(){
-  const mark=++generation,a=disk(),before=mine();
+  const mark=++generation,before=mine();
+  let a=disk();
+  if(a&&deletionConfirmed(a.s.uid)){storage.removeItem(CELL);a=null}
   if(!a){session=null;kraw=null;key=null}
   else if(identity(a)===before)session=a.s;                       // тот же вход, свежий токен
   else{
@@ -245,9 +253,82 @@ function create(options){
  async function signOut(){
   if(!session&&readRecovery()){await cancelRecovery();return}
   const token=session&&session.at;++generation;
+  if(session&&storage.getItem(removalKey(session.uid))==='requested')storage.removeItem(removalKey(session.uid));
   persist(null);storage.removeItem(offerCell(o.app));session=null;kraw=null;key=null;try{oauthStorage().removeItem(oauthCell)}catch(e){}emit();
   /* scope=local: сервер закрывает только этот вход; входы других приложений и устройств остаются */
   if(token)logoutToken(token);
+ }
+ // A lost network response is inconclusive. The next explicit confirmation
+ // retries against the same UID. Only a matching server receipt permits a wipe.
+ function clearDeletedSessions(uid){
+  for(const app of APPS){
+   const cell=cellOf(app);
+   if(parse(storage.getItem(cell))?.s.uid===uid)storage.removeItem(cell);
+   const offer=storage.getItem(offerCell(app));
+   if(offer){try{if(JSON.parse(offer).uid===uid)storage.removeItem(offerCell(app))}catch(e){}}
+   for(const name of [cell+':google',cell+':google-recovery']){
+    try{
+     const pending=JSON.parse(oauthStorage()?.getItem(name)||'null');
+     if((pending?.uid||pending?.s?.uid)===uid)oauthStorage().removeItem(name);
+    }catch(e){}
+   }
+  }
+  if(session?.uid===uid){++generation;session=null;kraw=null;key=null;emit()}
+ }
+ async function finishRemoval(uid){
+  try{
+   await root.HappyStore.removeLocalAccount({uid,backend:o.backend,indexedDB:o.indexedDB});
+   clearDeletedSessions(uid);
+   storage.setItem(removalKey(uid),'done');
+  }catch(e){
+   clearDeletedSessions(uid);
+   throw fail('cleanup','Аккаунт удалён. Не удалось очистить записи на устройстве. Happy повторит очистку при открытии.');
+  }
+ }
+ async function resumeRemoval(){
+  // Enumerate individual receipts: simultaneous deletions in separate tabs
+  // must not overwrite a shared queue. No network request is made on startup.
+  const uids=new Set();
+  for(let i=0;i<storage.length;i++){
+   const name=storage.key(i);
+   if(name?.startsWith(removalPrefix)&&storage.getItem(name)==='cleanup')uids.add(name.slice(removalPrefix.length));
+  }
+  const uid=disk()?.s.uid;
+  if(uid&&storage.getItem(removalKey(uid))==='cleanup')uids.add(uid);
+  for(const owner of uids)await finishRemoval(owner).catch(()=>{});
+ }
+ function deleteAccount(expectedUid){
+  if(!expectedUid||session?.uid!==expectedUid||disk()?.s.uid!==expectedUid)return Promise.reject(changed());
+  if(deletionRun?.uid===expectedUid)return deletionRun.promise;
+  const who=mine();
+  const promise=(async()=>{
+   const marker=removalKey(expectedUid);
+   if(deletionConfirmed(expectedUid)){await finishRemoval(expectedUid);return}
+   if(root.navigator?.onLine===false)throw fail('offline','Для удаления аккаунта подключись к интернету.');
+   // Keep using an unexpired access token after an ambiguous reply, even if the
+   // previous request removed the Auth session. No extra token is persisted.
+   const access=now()<session.exp?session.at:await token();
+   guard(who);
+   if(deletionConfirmed(expectedUid)){await finishRemoval(expectedUid);return}
+   storage.setItem(marker,'requested'); // reserve space before sending the irreversible request
+   let r;
+   try{
+    r=await request(url+'/rest/v1/rpc/happy_delete_my_account',{method:'POST',cache:'no-store',redirect:'error',
+     headers:{apikey,Authorization:'Bearer '+access,'Content-Type':'application/json'},
+     body:JSON.stringify({p_expected_uid:expectedUid})});
+   }catch(e){throw fail('offline','Не удалось подтвердить удаление. Проверь подключение и повтори.')}
+   if(!r.ok){
+    if(r.status===401||r.status===403)throw fail('auth','Сервер не подтвердил удаление. Войди в аккаунт снова.');
+    throw fail('delete','Сервер не подтвердил удаление аккаунта. Повтори позже.');
+   }
+   const receipt=await r.json().catch(()=>null);
+   if(receipt?.deleted!==true||receipt.uid!==expectedUid)throw fail('delete','Сервер не подтвердил удаление этого аккаунта.');
+   storage.setItem(marker,'cleanup');
+   await finishRemoval(expectedUid);
+  })();
+  deletionRun={uid:expectedUid,promise};
+  const done=()=>{if(deletionRun?.promise===promise)deletionRun=null};
+  promise.then(done,done);return promise;
  }
  /* Токен доступа. Обновление — одно за раз; если его уже обновило другое окно тем же входом, берём готовый. */
  async function token(refused){   // refused — токен, который сервер только что не принял
@@ -395,10 +476,14 @@ function create(options){
  function readRecovery(){
   try{
    const p=JSON.parse(oauthStorage().getItem(recoveryCell)||'null');
+   if(p?.s?.uid&&deletionConfirmed(p.s.uid)){oauthStorage().removeItem(recoveryCell);return null}
    return p?.url===url&&p.id&&p.s?.uid&&p.s.at&&p.s.rt?p:null;
   }catch(e){return null}
  }
- function saveRecovery(p){oauthStorage().setItem(recoveryCell,JSON.stringify(p))}
+ function saveRecovery(p){
+  if(deletionConfirmed(p.s.uid))throw changed();
+  oauthStorage().setItem(recoveryCell,JSON.stringify(p));
+ }
  function pendingRecovery(){
   const p=readRecovery();
   return p&&!session&&!disk()?{uid:p.s.uid,email:p.s.email,migrating:!!p.migrating}:null;
@@ -504,10 +589,11 @@ function create(options){
  }
  function resume(){
   if(stopped)return;
+  if(session&&deletionConfirmed(session.uid)){clearDeletedSessions(session.uid);return}
   if(session?.migrating)return beginMigration().catch(()=>{});
   if(!session&&readRecovery()?.consent)return completeRecovery().catch(()=>{});
  }
- async function load(){await adopt();await acceptOffer();await resume()}
+ async function load(){await resumeRemoval();await adopt();await acceptOffer();await resume()}
 
  /* повторить письмо подтверждения регистрации */
  const resend=email=>auth('resend',{type:'signup',email});
@@ -529,17 +615,20 @@ function create(options){
  const setPassword=(access,password)=>auth('user',{password},access,'PUT');
  function onStorage(e){
   if(stopped)return;
+  if(e.key?.startsWith(removalPrefix)&&['cleanup','done'].includes(e.newValue)){
+   clearDeletedSessions(e.key.slice(removalPrefix.length));return;
+  }
   if(e.key===offerCell(o.app)&&e.newValue){acceptOffer().catch(()=>{});return}
   if(e.key===null||e.key===CELL)adopt().catch(()=>{});
  }
- if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume)}
+ if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume)}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,
   onChange(fn){listeners.add(fn);return ()=>listeners.delete(fn)},
-  close(){stopped=true;listeners.clear();if(events&&events.removeEventListener){events.removeEventListener('storage',onStorage);events.removeEventListener('online',resume)}}
+  close(){stopped=true;listeners.clear();if(events&&events.removeEventListener){events.removeEventListener('storage',onStorage);events.removeEventListener('online',resume);events.removeEventListener('pageshow',resume)}}
  };
  return api;
 }

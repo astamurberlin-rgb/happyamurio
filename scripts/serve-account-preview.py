@@ -24,13 +24,38 @@ class Demo:
     def __init__(self):
         self.choices, self.codes, self.tokens, self.refresh = {}, {}, {}, {}
         self.rows, self.keys, self.states = {}, {}, {OLD: 'legacy'}
-        self.names = dict(LABELS)
-        self.linked = {ALICE, BOB}
+        self.profiles = {uid: uid for uid in (ALICE, BOB, OLD)}
+        self.names = {uid: LABELS[uid] for uid in self.profiles}
+        self.google_users = {ALICE: ALICE, BOB: BOB}
+        self.deleted_tokens = {}
         self.email_users = {LEGACY_EMAIL: OLD}
 
+    def create_profile(self, person):
+        uid = str(uuid.uuid4())
+        self.profiles[uid] = person
+        self.names[uid] = LABELS[person]
+        return uid
+
+    def delete_profile(self, uid):
+        person = self.profiles.pop(uid)
+        self.names.pop(uid)
+        self.states.pop(uid, None)
+        self.keys.pop(uid, None)
+        if self.google_users.get(person) == uid:
+            self.google_users[person] = None  # Вымышленный Google доступен для новой регистрации.
+        self.email_users = {email: u for email, u in self.email_users.items() if u != uid}
+        self.rows = {key: row for key, row in self.rows.items() if key[0] != uid}
+        self.codes = {k: v for k, v in self.codes.items() if v[0] != uid}
+        self.choices = {k: v for k, v in self.choices.items() if v[2] != uid}
+        for access, owner in list(self.tokens.items()):
+            if owner == uid:
+                self.deleted_tokens[access] = self.tokens.pop(access)
+        self.refresh = {r: a for r, a in self.refresh.items() if a in self.tokens}
+
     def user(self, uid):
-        providers = (['email'] if uid in self.email_users.values() else []) + (['google'] if uid in self.linked else [])
-        return {'id': uid, 'email': {OLD: LEGACY_EMAIL, MAIL: NEW_EMAIL}.get(uid, uid[-1] + '@happy.example.invalid'),
+        person = self.profiles[uid]
+        providers = (['email'] if uid in self.email_users.values() else []) + (['google'] if self.google_users.get(person) == uid else [])
+        return {'id': uid, 'email': {OLD: LEGACY_EMAIL, MAIL: NEW_EMAIL}.get(person, person[-1] + '@happy.example.invalid'),
                 'email_confirmed_at': '2026-01-01T00:00:00Z', 'user_metadata': {'display_name': self.names[uid]},
                 'app_metadata': {'provider': providers[0], 'providers': providers},
                 'identities': [{'user_id': uid, 'identity_id': uid, 'provider': p} for p in providers]}
@@ -151,7 +176,7 @@ class Preview(BaseHTTPRequestHandler):
         if path == '/demo/google':
             ticket = q['ticket']
             redirect, challenge, owner = demo.choices[ticket]
-            options = [owner] if owner else sorted(demo.linked)
+            options = [demo.profiles[owner]] if owner else sorted(demo.google_users)
             if 'id' not in q:
                 buttons = ''.join(f'<button type="submit" name="id" value="{u}">{LABELS[u]}</button>' for u in options)
                 return self.send(200, '<!doctype html><html lang="ru"><meta charset="utf-8">'
@@ -163,17 +188,22 @@ class Preview(BaseHTTPRequestHandler):
             if selected not in options:
                 return self.send(403, {})
             del demo.choices[ticket]
-            demo.linked.add(selected)
+            linked = demo.google_users.get(selected)
+            if owner and linked and linked != owner:
+                return self.send(409, {'message': 'Identity already belongs to another account'})
+            chosen = owner or linked or demo.create_profile(selected)
+            demo.google_users[selected] = chosen
             code = secrets.token_urlsafe(32)
-            demo.codes[code] = (selected, challenge)
+            demo.codes[code] = (chosen, challenge)
             return self.send(302, {}, location=redirect + '?' + urlencode({'code': code}))
         if path == '/auth/v1/signup':
             if body.get('email') != NEW_EMAIL or body.get('password') != PASSWORD:
                 return self.send(400, {'message': 'Для регистрации используйте тестовую почту и пароль из README.md.'})
-            if NEW_EMAIL in demo.email_users:
+            if NEW_EMAIL in demo.email_users or demo.google_users.get(MAIL):
                 return self.send(400, {'message': 'User already registered'})
-            demo.email_users[NEW_EMAIL] = MAIL
-            return self.send(200, demo.session(MAIL))
+            user = demo.create_profile(MAIL)
+            demo.email_users[NEW_EMAIL] = user
+            return self.send(200, demo.session(user))
         if path == '/auth/v1/token':
             grant = q.get('grant_type')
             if grant == 'pkce':
@@ -188,6 +218,18 @@ class Preview(BaseHTTPRequestHandler):
             else:
                 return self.send(400, {'message': 'Use only the demo account from README.md'})
             return self.send(200, demo.session(uid))
+        if path == '/rest/v1/rpc/happy_delete_my_account':
+            if self.command != 'POST':
+                return self.send(405, {})
+            confirmed = body.get('p_expected_uid')
+            if not uid:
+                if confirmed and demo.deleted_tokens.get(bearer) == confirmed:
+                    return self.send(200, {'uid': confirmed, 'deleted': True})
+                return self.send(401, {'message': 'Session required'})
+            if confirmed != uid:
+                return self.send(403, {'message': 'Confirmed account does not match the session'})
+            demo.delete_profile(uid)
+            return self.send(200, {'uid': uid, 'deleted': True})
         if not uid:
             return self.send(401, {'message': 'Session required'})
         if path == '/auth/v1/logout':

@@ -141,7 +141,7 @@ function idbBackend(factory,name,managed){
   const db=await open();
   return new Promise((resolve,reject)=>{
    let tx,result,problem;
-   try{tx=db.transaction(stores,mode)}catch(e){opening=null;reject(storageError(e));return}
+   try{tx=db.transaction(stores||Array.from(db.objectStoreNames),mode)}catch(e){opening=null;reject(storageError(e));return}
    const abort=e=>{problem=e;tx.abort()};
    work(tx,value=>{result=value},abort);
    tx.oncomplete=()=>resolve(result);
@@ -150,12 +150,13 @@ function idbBackend(factory,name,managed){
  }
  function withScope(scope,stores,mode,work){
   return transaction(stores,mode,(tx,done,abort)=>{
-   if(managed){
-    if(scope[0]!==managed.uid){abort(fail('account','Аккаунт изменился'));return}
-    work(tx,done);return;
-   }
+   if(managed&&scope[0]!==managed.uid){abort(fail('account','Аккаунт изменился'));return}
    const marker=tx.objectStore('meta').get([scope[0]]);
-   marker.onsuccess=()=>{if(marker.result?.keyVersion)abort(keyChanged());else work(tx,done)};
+   marker.onsuccess=()=>{
+    if(marker.result?.removed){abort(fail('account_removed','Аккаунт удалён.'));return}
+    if(!managed&&marker.result?.keyVersion){abort(keyChanged());return}
+    work(tx,done,abort);
+   };
   });
  }
  async function checkOwner(uid){
@@ -253,7 +254,7 @@ function idbBackend(factory,name,managed){
  }
  async function prepare(){
   const owner=[managed.uid];
-  const ready=await transaction(['meta'],'readwrite',(tx,done,abort)=>{
+  const ready=await withScope(owner,['meta'],'readwrite',(tx,done,abort)=>{
    const metas=tx.objectStore('meta'),read=metas.get(owner);
    read.onsuccess=()=>{
     if(read.result&&read.result.keyVersion!==2){abort(fail('newer','Обнови приложение, чтобы открыть записи устройства.'));return}
@@ -264,7 +265,7 @@ function idbBackend(factory,name,managed){
   if(ready)return;
   // После отметки ни одна вкладка не может записать открытый текст этого UID.
   // Перечисляются только ключи: имена и значения записей не копируются в meta.
-  const scopes=await transaction(['records'],'readonly',(tx,done)=>{
+  const scopes=await withScope(owner,['records','meta'],'readonly',(tx,done)=>{
    const found=[],read=tx.objectStore('records').openKeyCursor(range(owner));
    read.onsuccess=()=>{
     const cursor=read.result;if(!cursor){done(found);return}
@@ -272,12 +273,12 @@ function idbBackend(factory,name,managed){
    };
   });
   for(const scope of scopes){
-   const records=await transaction(['records'],'readonly',(tx,done)=>{
+   const records=await withScope(scope,['records','meta'],'readonly',(tx,done)=>{
     const read=tx.objectStore('records').getAll(range(scope));read.onsuccess=()=>done(read.result);
    });
    if(!records.length)continue;
    const box=await seal(scope,records);
-   await transaction(['records','sealed'],'readwrite',(tx,done)=>{
+   await withScope(scope,['records','sealed','meta'],'readwrite',(tx,done)=>{
     const sealed=tx.objectStore('sealed'),existing=sealed.get(scope);
     existing.onsuccess=()=>{
      if(!existing.result)sealed.put(box,scope);
@@ -285,7 +286,7 @@ function idbBackend(factory,name,managed){
     };
    });
   }
-  await transaction(['meta'],'readwrite',tx=>tx.objectStore('meta').put({keyVersion:2,ready:true},owner));
+  await withScope(owner,['meta'],'readwrite',tx=>tx.objectStore('meta').put({keyVersion:2,ready:true},owner));
  }
  async function pendingScopes(uid){
   return withScope([uid],['meta'],'readonly',(tx,done)=>{
@@ -297,11 +298,26 @@ function idbBackend(factory,name,managed){
    };
   });
  }
+ // Одна транзакция очищает весь UID, включая очередь и отметки первого обмена.
+ // Минимальная отметка закрывает уже начатые записи и шифрование в соседних вкладках.
+ async function removeLocalAccount(uid){
+  if(typeof uid!=='string'||!uid||(managed&&managed.uid!==uid))throw fail('account','Не удалось проверить аккаунт.');
+  await transaction(null,'readwrite',tx=>{
+   for(const name of ['records','meta','sealed']){
+    if(tx.objectStoreNames.contains(name))tx.objectStore(name).delete(range([uid]));
+   }
+   tx.objectStore('meta').put({keyVersion:2,removed:true},[uid]);
+  });
+ }
  async function close(){
   if(opening){const db=await opening;db.close();opening=null}
  }
  return {load:managed?sealedLoad:plainLoad,write:managed?sealedWrite:plainWrite,pendingScopes,
-  checkOwner,prepare:managed?prepare:null,close};
+  checkOwner,prepare:managed?prepare:null,removeLocalAccount,close};
+}
+async function removeLocalAccount(o){
+ const backend=o.backend||idbBackend(o.indexedDB);
+ try{await backend.removeLocalAccount(o.uid)}finally{if(!o.backend)await backend.close()}
 }
 async function prepareLocal(o){
  const backend=o.backend||idbBackend(o.indexedDB,undefined,{uid:o.uid,key:o.cipherKey});
@@ -548,7 +564,7 @@ async function open(options){
   return ids;
  }
  async function load(d){
-  const s=await backend.load(d.scope),before=d.records,next=new Map(),ids=[];
+  const s=await backend.load(d.scope),before=d.records,next=new Map(),ids=[];guard();
   for(const r of s.records){next.set(r.id,r);if(r.rev>d.maxRev)d.maxRev=r.rev;const old=before.get(r.id);if(!old||compare(r,old)!==0)ids.push(r.id)}
   for(const id of before.keys())if(!next.has(id))ids.push(id);
   d.records=next;d.meta=s.meta;relock(d);return ids;
@@ -575,14 +591,18 @@ async function open(options){
   notify(d,ids,'local');
   let result;
   try{result=await backend.write(d.scope,records,{local:true})}
-  catch(e){try{await load(d)}catch(_){}notify(d,ids,'local');setStatus('error',e.code==='full'?'нет места на устройстве':'');throw e}
+  catch(e){
+   if(e.code==='account_removed'){close();throw e}
+   try{await load(d)}catch(_){}notify(d,ids,'local');setStatus('error',e.code==='full'?'нет места на устройстве':'');throw e;
+  }
+  guard();
   for(const r of result.won){if(r.rev>d.maxRev)d.maxRev=r.rev;const cur=d.records.get(r.id);if(!cur||compare(r,cur)>=0)d.records.set(r.id,r)}
   adoptMeta(d,result.meta);announce(d,result.won,result.meta);
   if(!closed){if(status.state!=='offline')setStatus('saving');queue()}
  }
  const reader=d=>({
-  get(id){if(d.newer)return undefined;const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
-  all(){const out=[];if(d.newer)return out;for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
+  get(id){if(closed||d.newer)return undefined;const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
+  all(){const out=[];if(closed||d.newer)return out;for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
   subscribe(fn){d.subs.add(fn);return ()=>d.subs.delete(fn)},
   get newer(){return d.newer}
  });
@@ -750,5 +770,5 @@ async function open(options){
   get closed(){return closed}
  };
 }
-root.HappyStore={open,verifyLegacyKey,migrateAccount,prepareLocal,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
+root.HappyStore={open,verifyLegacyKey,migrateAccount,prepareLocal,removeLocalAccount,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
 })(typeof globalThis!=='undefined'?globalThis:this);

@@ -24,7 +24,12 @@ async function main() {
         if not exists(select from pg_roles where rolname='service_role') then create role service_role; end if;
       end $$;
       create table auth.users(id uuid primary key, raw_app_meta_data jsonb, raw_user_meta_data jsonb);
-      create table auth.sessions(id uuid primary key, user_id uuid,not_after timestamptz);
+      create table auth.sessions(id uuid primary key, user_id uuid references auth.users on delete cascade,not_after timestamptz);
+      create table auth.identities(user_id uuid references auth.users on delete cascade);
+      create table auth.refresh_tokens(session_id uuid references auth.sessions on delete cascade);
+      create table auth.flow_state(user_id uuid);
+      create function auth.jwt() returns jsonb language sql stable as
+        $$select jsonb_build_object('session_id',nullif(current_setting('request.jwt.claim.session_id',true),''))$$;
       create function auth.uid() returns uuid language sql stable as
         $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
     `);
@@ -167,6 +172,41 @@ async function main() {
     await assert.rejects(vRPC(preVaultNew),{code:'42501'});
     await assert.rejects(query('select * from vault.decrypted_secrets'),{code:'42501'});
     await query('reset role');
+    await query(await readFile(resolve(__dirname,'../account_delete.sql'),'utf8'));
+    const disposable = await createUser('google');
+    const me = disposable.uid;
+    await vRPC(disposable,'open',built.p_ciphertext);
+    await query("select set_config('request.jwt.claim.sub',$1,false)",[me]);
+    for (const app of ['day','meal','sport']) {
+      await query("insert into public.app_sync(user_id,app,kind,v,iv,data,at) values($1,$2,'test',3,'AAAAAAAAAAAAAAAA','test',1)",[me,app]);
+    }
+    await query('insert into auth.identities values($1)',[me]);
+    await query('insert into auth.refresh_tokens values($1)',[disposable.session]);
+    await query('insert into auth.flow_state values($1)',[me]);
+    const remove = async(uid) => (await query('select public.happy_delete_my_account($1) as r',[uid])).rows[0].r;
+    const jwt = async(uid,sid) => query("select set_config('request.jwt.claim.sub',$1,false),set_config('request.jwt.claim.session_id',$2,false)",[uid,sid]);
+    await query('set role anon');
+    await assert.rejects(remove(me),{code:'42501'});
+    await query('reset role');
+    await query('set role authenticated');
+    await jwt(me,disposable.session);
+    await assert.rejects(remove(preVaultNew.uid),{code:'42501'});
+    await jwt(me,secondVault.session);
+    await assert.rejects(remove(me),{code:'42501'});
+    await jwt(me,disposable.session);
+    assert.deepEqual(await remove(me),{deleted:true,uid:me});
+    assert.deepEqual(await remove(me),{deleted:true,uid:me});
+    await query('reset role');
+    for (const [table,column,id] of [
+      ['auth.users','id',me],['auth.sessions','user_id',me],['auth.identities','user_id',me],
+      ['auth.refresh_tokens','session_id',disposable.session],['auth.flow_state','user_id',me],
+      ['public.app_sync','user_id',me],['happy_private.account_keys','user_id',me]
+    ]) {
+      assert.equal((await query('select count(*)::int n from '+table+' where '+column+'=$1',[id])).rows[0].n,0);
+    }
+    await assert.rejects(insert(disposable,'after',3),e => ['23503','HAP02'].includes(e.code));
+    assert.equal(await envelope.unwrap(preVaultNew.uid,await vRPC(preVaultNew)),firstKey);
+    console.log('Self deletion passed: confirmed owner, live session, cascade, retry and another account');
     console.log('Vault SQL passed: session check, two accounts, retry, envelope version, consent, private KEK');
     console.log('PostgreSQL passed: enrollment, wrapping race, fenced writes, retry, versions, RLS and session revocation');
   } finally {

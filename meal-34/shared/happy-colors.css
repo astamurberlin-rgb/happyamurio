@@ -71,6 +71,7 @@
 /* Цвета смысла: одинаковые в трёх приложениях, тема их не меняет. */
 :root{
   --happy-danger:#ff6b78;
+  --happy-on-danger:#40121a;
   --happy-success:#52d7c1;
   --happy-warning:#ffc53d;
   --happy-protein:#e34948;

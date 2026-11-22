@@ -110,7 +110,7 @@ def build():
         shutil.copyfile(SCRIPT, bundle / SCRIPT.name)
         shutil.copyfile(SCRIPT.parent / 'serve-account-preview.py', bundle / 'serve-account-preview.py')
         backend = root.parent / 'supabase' if packaged else root / 'supabase'
-        for relative in ['app_sync_test_setup.sql', 'account_key.sql', 'account_key_vault.sql', 'account_key_vault_api.sql',
+        for relative in ['app_sync_test_setup.sql', 'account_key.sql', 'account_key_vault.sql', 'account_key_vault_api.sql', 'account_delete.sql',
                          'functions/account-key/index.ts', 'functions/account-key/supabase.ts',
                          'functions/account-key/handler.mjs', 'functions/account-key/vault.mjs']:
             dest = bundle / 'supabase' / relative

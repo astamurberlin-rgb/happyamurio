@@ -81,7 +81,7 @@ function resume(r){
   }catch(e){}
 }
 
-var profileOptions={app:'meal',account:MealBoot.account,features:FEATURES,profileDoc:profileDoc,bodyDoc:bodyDoc,openGoals:openGoals};
+var profileOptions={app:'meal',account:MealBoot.account,features:FEATURES,profileDoc:profileDoc,bodyDoc:bodyDoc,openGoals:openGoals,exportData:function(){bkExport()}};
 HappyPerson.init(profileOptions);
 /* Meal 33.10: единицы еды из профиля («Единицы измерения» → «Еда»): подписи мер USDA — в г и мл или в унциях.
    Поменяли в профиле любого из трёх приложений — подписи меняются сами; граммы записей не трогаются. */

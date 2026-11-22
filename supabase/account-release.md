@@ -18,6 +18,8 @@
 supabase functions deploy account-key --project-ref geqziziycpclhnucnsyx --no-verify-jwt
 ```
 
+4. Перед выпуском клиента с кнопкой «Удалить аккаунт» выполнить `supabase/account_delete.sql` в том же проекте. Операция удаляет пользователя, которому принадлежит действующая сессия, вместе с его ключом и записями. Проверять удаление на стенде на отдельном тестовом аккаунте с вымышленными записями.
+
 ## Настройки входа и публикация
 
 1. В рабочем Google OAuth web client разрешить origin `https://astamurberlin-rgb.github.io` и callback `https://geqziziycpclhnucnsyx.supabase.co/auth/v1/callback`. Настроить рабочие Client ID и Client Secret в Google provider рабочего Supabase. Включить Google и manual identity linking. Сохранить настройки регистрации и входа по почте.
