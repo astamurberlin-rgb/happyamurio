@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#00A8F5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.3</title>
+<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#00A8F5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.4</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-sport-20261029-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-sport-20261029-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-sport-20261029-152.png">
@@ -1682,6 +1682,12 @@ html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input)
 /* Профиль: подписи полей (Почта, Имя, Дата рождения, Рост, Пол, Вес сейчас, Дата замера, строки единиц) — жирные 600 и белые,
    как заголовок «Единицы измерения» (Астамур 22.11.2026). Светлые заголовки на самой странице Настроек не меняются. */
 .hs-profile .hs-field-title,.hs-profile .hs-email-label>span:first-child,.hs-profile .hs-units-row>span{font-weight:600!important;color:#fff!important}
+
+#happy-screens .hs-privacy-consent{display:flex;align-items:flex-start;gap:10px;margin:16px 0 0;font-size:16px;line-height:22px}
+#happy-screens .hs-privacy-consent input{width:20px;height:20px;flex:none;margin:1px 0;appearance:auto;accent-color:var(--hs-primary)}
+#happy-screens .hs-privacy-consent a,#happy-screens .hs-policy-link{color:inherit;text-decoration:underline;text-underline-offset:3px}
+#happy-screens .hs-policy-link{font-size:16px;font-weight:600;line-height:44px}
+#happy-screens [data-hw="register"]:disabled{opacity:.52}
 /* Барабан Happy (shared/happy-drum.js) — решения Астамура 21.11.2026 по макету «Day · Осознанность»:
    две колонки, подпись над своим барабаном, длительность справа (один барабан — тоже справа);
    три строки, выбранная — на светлой полосе без рамки, как в iPhone. — Claude · 21.11.2026 */
@@ -4176,9 +4182,9 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.3">${sportVersionFooter()}</footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.4">${sportVersionFooter()}</footer>`};
 // Update 38.3: version line comes from the shared release-notes module (date, time, author of the latest entry); plain label if the module is absent.
-function sportVersionFooter(){const label='Happy Sport · Update 45.3';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
+function sportVersionFooter(){const label='Happy Sport · Update 45.4';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
 
 /* One set at a time, shared by exercise settings and workout templates. */
 const setPlanDrafts=new Map();let setPlanSerial=0;
@@ -5561,7 +5567,8 @@ const SportTaps=(()=>{
 })(typeof window!=='undefined'?window:globalThis);
 
 /* Add newest releases first; also update the daily briefing. */
-const sportReleases=[{"version": "45.3", "date": "2026-11-23", "time": "19:55", "author": "Claude", "changes": ["На первом экране под «Уже есть аккаунт? Войти» — строка «Тестовая версия: покупки бесплатные, деньги не списываются».", "«Познакомиться с …» теперь называется «Заглянуть в Sport без аккаунта» и стала яркой, как «Войти»."]},
+const sportReleases=[{"version": "45.4", "date": "2026-11-23", "time": "21:00", "author": "Codex", "changes": ["В профиле над «Удалить аккаунт» появилась ссылка на политику конфиденциальности. При регистрации по паролю нужно отметить согласие с ней."]},
+ {"version": "45.3", "date": "2026-11-23", "time": "19:55", "author": "Claude", "changes": ["На первом экране под «Уже есть аккаунт? Войти» — строка «Тестовая версия: покупки бесплатные, деньги не списываются».", "«Познакомиться с …» теперь называется «Заглянуть в Sport без аккаунта» и стала яркой, как «Войти»."]},
  {"version": "45.2", "date": "2026-11-23", "time": "17:10", "author": "Claude", "changes": ["Зелёная тема теперь одна — «Мята»: бирюза, отмель и тёплый песок, как лагуна в полдень.", "Тема «Лагуна» убрана. Если она была выбрана, сама включится новая «Мята»."]},
  {"version": "45.1", "date": "2026-11-23", "time": "16:40", "author": "Claude", "changes": ["Кольцо энергии рисуется по-новому: на конце дуги больше нет заметной точки, цвет переходит ровно до самого края.", "У тем «Бордо», «Ночная бухта», «Полуночный ирис» и «Неоновая ночь» кольцо и его строки теперь в цветах темы. В остальных темах цвета прежние."]},
  {"version": "45", "date": "2026-11-23", "author": "Codex", "changes": ["В Sport можно войти через Google или по почте. При первом входе через Google приложение поможет открыть прежние записи.", "В настройках профиля можно скачать данные и удалить аккаунт. Перед удалением приложение попросит подтвердить выбор."], "time": "04:31"},
@@ -11126,6 +11133,56 @@ root.HappyScreens={theme,page,sheet,toast,field,passwordField,actions,segment,se
  set appToast(fn){appToast=fn},set dismissed(fn){dismissedHook=fn},unsaved,get app(){return app},get open(){return openPages().length>0},
  closeAll(){for(const s of sheets.slice())s.close();for(const p of openPages())p.close()}};
 })(typeof globalThis!=='undefined'?globalThis:this);
+
+(function(){
+'use strict';
+const privacyUrl='https://astamurberlin-rgb.github.io/happyamurio/privacy/';
+const accountScreens=HappyScreens.mount();
+function privacyLink(text){
+  const link=document.createElement('a');
+  link.href=privacyUrl;
+  link.target='_blank';
+  link.rel='noopener';
+  link.textContent=text;
+  return link;
+}
+function updatePrivacyControls(){
+  const remove=accountScreens.querySelector('[data-p="delete-account"]');
+  if(remove&&!remove.parentElement.querySelector('.hs-policy-link')){
+    const link=privacyLink('Политика конфиденциальности');
+    link.className='hs-policy-link';
+    remove.before(link);
+  }
+  const submit=accountScreens.querySelector('[data-hw="register"]');
+  if(!submit)return;
+  const form=submit.form;
+  let consent=form.elements.privacyConsent;
+  if(!consent){
+    const label=document.createElement('label'),text=document.createElement('span');
+    label.className='hs-privacy-consent';
+    consent=document.createElement('input');
+    consent.type='checkbox';
+    consent.name='privacyConsent';
+    consent.required=true;
+    consent.addEventListener('change',updatePrivacyControls);
+    text.append('Я принимаю ',privacyLink('политику конфиденциальности'));
+    label.append(consent,text);
+    form.querySelector('.hs-auth-fields').after(label);
+  }
+  const disabled=!consent.checked||submit.getAttribute('aria-busy')==='true';
+  if(submit.disabled!==disabled)submit.disabled=disabled;
+}
+new MutationObserver(updatePrivacyControls).observe(accountScreens,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled']});
+accountScreens.addEventListener('submit',function(event){
+  const form=event.target;
+  if(form.querySelector('[data-hw="register"]')&&!form.elements.privacyConsent?.checked){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    form.elements.privacyConsent?.reportValidity();
+  }
+},true);
+
+})();
 
 /* Happy: первый экран и вход — общие для Day, Meal и Sport.
  *
