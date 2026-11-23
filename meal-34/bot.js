@@ -2076,7 +2076,7 @@ var MealBot=(function(){
       return p('Пока не знаю, что ответить: такого совета в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
     var mine=advMine(c);
-    return p(esc(c.answer))+(mine?p(esc(mine)):'')+'<p class="mlHint">Источник: '+src+'. Это общий совет для здоровых взрослых. В дневник ничего не записал.</p>';
+    return p(esc(c.answer))+(mine?p(esc(mine)):'')+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p><p class="mlHint">Польза и вред у всех разные. Если плохо себя чувствуешь или есть болезнь, лучше спроси врача.</p>';
   }
   function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
   function nutrAsk(o){
