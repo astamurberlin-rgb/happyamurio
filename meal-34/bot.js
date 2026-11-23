@@ -2037,6 +2037,46 @@ var MealBot=(function(){
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
     return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
   }
+  /* ── ступень 2 · советы по питанию: «можно ли есть сладкое на ночь», «сколько соли в день», «можно ли пропускать завтрак»
+     (решение Астамура 23.11.2026 «да»). Карточки advice справочника cooking: общие нормы для здоровых взрослых (ВОЗ, EFSA, NHS, DGE),
+     у каждой два источника; где наука спорит — обе версии. Под нормой — своя цифра за сегодня из дневника (mine).
+     Болезни, беременность, дети, лекарства — короткое «это к врачу», без совета. Только вопрос; «съел/сегодня» — счётчики (nutrAsk). */
+  var ADV_MED=/(диабет|беремен|кормлю грудью|кормящ|гв(\s|$)|гастрит|(^|\s)язв|давлени|гипертон|холестерин|подагр|аллерги|болезн|болею|болит|лекарств|таблетк|антибиотик|(^|\s)(ребен|ребенк|детям|детей|дети|ребенку)|сердц|почк[аеиуо]|щитовидк|онколог|(^|\s)рак(\s|$)|панкреат|желчн|диагноз)/;
+  function advMine(c){
+    var key=c.mine; if(!key||typeof jrCompute!=='function') return '';
+    var t=todayISO(), d; try{ d=jrCompute({a:t,b:t}) }catch(x){ return '' }
+    if(!d||d.empty) return '';
+    var v=key==='sug'?d.v.sug:key==='salt'?(d.v.na!=null?d.v.na*2.5/1000:null):key==='fib'?d.mac.fib:key==='prot'?d.mac.p:key==='caf'?d.v.caf:null;
+    if(v==null) return '';
+    var n=nutrNum(v);
+    if(key==='sug') return 'Сегодня по дневнику у тебя '+n+' г всех сахаров — вместе с сахаром фруктов и молока, так что свободного из них меньше.';
+    if(key==='salt') return 'Сегодня по дневнику около '+n+' г соли — без той, что ты досаливал сам.';
+    if(key==='fib') return 'Сегодня по дневнику у тебя '+n+' г клетчатки.';
+    if(key==='caf') return 'Сегодня по дневнику у тебя '+n+' мг кофеина.';
+    if(key==='prot'){ var kg=null; try{ var pd=window.HappyPerson&&HappyPerson.data(); kg=pd&&pd.latest&&pd.latest.kg }catch(x){}
+      return (kg?'При твоём весе '+nutrNum(kg)+' кг это около '+Math.round(kg*0.8)+' г в день. ':'')+'Сегодня по дневнику у тебя '+n+' г белка.' }
+    return '';
+  }
+  function adviceAsk(raw){
+    var o=nrm(raw).trim().replace(/[!.,…\s]+$/,''), q=/\?$/.test(o); o=o.replace(/\?+$/,'').trim();
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    if(!q&&!/(^|\s)(сколько|можно|нельзя|нужно|надо|стоит|ли|как|какая|какой|какую|норма|почему|зачем|правда|вредн\S*|вред(ен|на|но|ны)|полезн\S*|полез(ен|на|но|ны)|опасн\S*)(\s|$)/.test(o)) return null;   // «стакан воды», «вода полтора литра» — запись, а не вопрос
+    if(/(посовет|подскажи\s+(блюд|рецепт|что)|приготов|рецепт|что (съесть|поесть|покушать)|меню)/.test(o)) return null;   // «посоветуй полезный десерт» — совет блюда
+    if(/(^|\s)(моя|мою|мой|у меня|мне)(\s|$)/.test(o)&&/(норм|цел)/.test(o)) return null;   // «какая у меня норма» — цели из настроек (goalAsk)
+    if(/(^|\s)во?\s+(?!день|сутки|неделю|обед|ужин|завтрак|возрасте|целом|среднем|норме|жару|течение)\S/.test(o)&&!/(на ночь|перед сном|завтрак)/.test(o)) return null;   // «сколько сахара в банане» — вопрос о продукте
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    var c=L&&L.state==='ok'?L.find(o,'advice'):null;
+    var ask=!!c||ADV_MED.test(o)&&/(можно|нельзя|сколько|вредн|вред(ен|на|но|ны)|полез|нужно|надо|стоит)/.test(o)||/(^|\s)(полезн\S*|вредн\S*|полез(ен|на|но|ны)|вред(ен|на|но|ны))(\s|$)|(^|\s)(можно|нужно|надо|стоит)\s+ли\s+(есть|пить|кушать|употреблять|съедать|пропускать)(\s|$)|(^|\s)сколько\s+(можно|нужно|надо)\s+(есть|пить|съедать|кушать)/.test(o);
+    if(!ask) return null;
+    var med=o.match(ADV_MED);
+    if(med) return p('С вопросами о болезнях, беременности, детях и лекарствах — к врачу. Я даю только общие советы для здоровых взрослых.')+'<p class="mlHint">В дневник ничего не записал.</p>';
+    if(!L||L.state!=='ok'){ if(L&&L.state!=='loading') L.load(); return p('Справочник советов ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
+      return p('Пока не знаю, что ответить: такого совета в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
+    var mine=advMine(c);
+    return p(esc(c.answer))+(mine?p(esc(mine)):'')+'<p class="mlHint">Источник: '+src+'. Это общий совет для здоровых взрослых. В дневник ничего не записал.</p>';
+  }
   function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
   function nutrAsk(o){
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
@@ -2290,7 +2330,8 @@ var MealBot=(function(){
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var sw=swapAsk(raw); if(sw) return sw }   // «чем заменить муку в сырниках» — замена из справочника
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var tq=tipAsk(raw); if(tq) return tq }   // «когда солить рис» — кулинарный приём
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var rq=rcpAsk(S,raw); if(rq) return rq }   // «рецепт плова» — рецепт из готового, а не «готовка на несколько человек»
-    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var ad=adviceAsk(raw); if(ad) return ad }   // «сколько соли в день», «можно ли есть на ночь» — общий совет из справочника   // совет блюда — раньше «рецепт = готовка»
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
