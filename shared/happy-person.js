@@ -17,9 +17,10 @@
  * запись без food читается как 'metric'.
  *
  * Экраны — по прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026):
- *   HappyPerson.init({app, account, profileDoc, bodyDoc, openGoals, features})
+ *   HappyPerson.init({app, account, profileDoc, bodyDoc, openGoals, exportData, features})
  *     profileDoc, bodyDoc — функции: общий документ (store.doc / store.shared) или null без входа;
  *     openGoals — открыть цели приложения (без входа — лист «Войди в аккаунт»);
+ *     exportData — скачать данные этого приложения;
  *   HappyPerson.top(box)    — верх настроек: аватар, имя, «Настроить профиль / Настроить цели»;
  *   HappyPerson.bottom(box, {status, newer}) — низ настроек: по центру строка синхронизации, под ней «Выйти» (без входа — «Войти»);
  *   HappyPerson.status(text) — обновить строку синхронизации; HappyPerson.statusText(store, error) — её текст
@@ -119,10 +120,14 @@ function top(box){
  if(box)topBox=box;if(!topBox||!cfg)return;
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
  const name=who?(who.name||'Мой профиль'):'Гость';
+ let accessLabel='';
+ if(who&&!who.google)accessLabel='Подключить вход через Google';
+ else if(who&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
-  '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button></div></section></div>';
+  '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button>'+
+  (accessLabel?'<button type="button" class="hs-row" data-hp="access"><span>'+accessLabel+'</span></button>':'')+'</div></section></div>';
 }
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;
@@ -139,6 +144,7 @@ if(root.document)root.document.addEventListener('click',e=>{
  const b=e.target.closest&&e.target.closest('[data-hp]');if(!b||!cfg)return;
  if(!((topBox&&topBox.contains(b))||(bottomBox&&bottomBox.contains(b))))return;
  e.preventDefault();const a=b.dataset.hp;
+ if(a==='access'){root.HappyWelcome.access();return}
  if(a==='profile'){if(signedIn())open();else root.HappyWelcome.ask({reason:'Чтобы настроить профиль.',resume:{open:'profile'}});return}
  if(a==='goals'){if(signedIn()&&cfg.openGoals)cfg.openGoals();else root.HappyWelcome.ask({reason:'Чтобы настроить цели.',resume:{open:'goals'}});return}
  if(a==='signin'){root.HappyWelcome.open('login');return}
@@ -187,9 +193,8 @@ function open(){
    '<div class="hs-units-row"><span>Еда</span>'+S().segment('funits',[['metric','г и мл','Граммы и миллилитры'],['oz','унции','Унции']],draft.units.food,'Единицы еды')+'</div></section>'+
 
    '</div><p class="hs-error" role="alert" hidden></p>'+S().actions({label:'Сохранить',action:'save'},{label:'Отмена',action:'cancel'})+
-   // «Скачать данные» (Астамур 21.11.2026): в самом низу профиля, под «Отмена», по центру, подчёркнутой строкой, без раздела.
-   // Приложение передаёт cfg.exportData; без неё строки нет (сейчас — только Day).
-   (typeof cfg.exportData==='function'?'<div class="hs-export"><button type="button" class="hs-export-link" data-p="export">Скачать данные</button></div>':'');
+   '<div class="hs-export">'+(typeof cfg.exportData==='function'?'<button type="button" class="hs-export-link" data-p="export">Скачать данные</button>':'')+
+   '<button type="button" class="hs-delete-link" data-p="delete-account">Удалить аккаунт</button></div>';
  }
  const input=n=>main.querySelector('[name="'+n+'"]');
  function readInputs(){draft.name=input('name').value;draft.birthday=input('birthday').value;shown.height=input('height').value;shown.weight=input('weight').value;shown.date=input('date').value}
@@ -225,9 +230,47 @@ function open(){
   if(a==='email-again'){A.changeEmail(pendingEmail).then(()=>S().toast('Ссылка отправлена повторно')).catch(err=>error(err.message));return}
   if(a==='email-cancel'){A.changeEmail((A.current()||who).email).then(()=>{pendingEmail='';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML='';S().toast('Смена почты отменена')}).catch(err=>error(err.message));return}
   if(a==='export'){cfg.exportData();return}
+  if(a==='delete-account'){confirmDelete(b);return}
   if(a==='cancel'){pageH.close();return}
   if(a==='save'){readInputs();save().catch(err=>error(err.message||String(err)))}
  });
+ function confirmDelete(trigger){
+  const owner=A.current();
+  if(!owner||owner.uid!==who.uid){error('Аккаунт изменился. Открой профиль заново.');return}
+  const dialog=root.document.createElement('dialog');
+  dialog.className='hs-delete-dialog';
+  dialog.setAttribute('aria-labelledby','hs-delete-title');dialog.setAttribute('aria-describedby','hs-delete-description');
+  dialog.innerHTML='<h2 class="hs-sheet-title" id="hs-delete-title" tabindex="-1">Удалить аккаунт?</h2>'+
+   '<p class="hs-note" id="hs-delete-description">Будут удалены профиль <strong>'+esc(owner.email)+'</strong> и записи в Happy Day, Happy Meal и Happy Sport. Восстановить их не получится.</p>'+
+   '<p class="hs-error" role="alert" hidden></p><div class="hs-actions">'+
+   '<button type="button" class="hs-btn hs-cancel" data-delete="cancel" autofocus>Отмена</button>'+
+   '<button type="button" class="hs-btn hs-delete-confirm" data-delete="confirm">Удалить навсегда</button></div>';
+  S().mount().appendChild(dialog);
+  const cancel=dialog.querySelector('[data-delete=cancel]'),confirm=dialog.querySelector('[data-delete=confirm]'),alert=dialog.querySelector('[role=alert]');
+  let deleting=false;
+  cancel.addEventListener('click',()=>dialog.close());
+  // Escape обслуживает этот диалог. Лист профиля под ним должен остаться открытым.
+  dialog.addEventListener('keydown',e=>{if(e.key==='Escape')e.stopPropagation()});
+  dialog.addEventListener('cancel',e=>{if(deleting)e.preventDefault()});
+  dialog.addEventListener('close',()=>{
+   dialog.remove();if(trigger.isConnected&&A.current()?.uid===owner.uid)trigger.focus({preventScroll:true});
+  });
+  confirm.addEventListener('click',async()=>{
+   if(deleting)return;
+   deleting=true;cancel.disabled=true;confirm.disabled=true;alert.hidden=true;
+   confirm.setAttribute('aria-busy','true');confirm.textContent='Удаляем…';dialog.querySelector('h2').focus();
+   try{
+    await A.deleteAccount(owner.uid);
+    dialog.close();
+   }catch(e){
+    deleting=false;cancel.disabled=false;confirm.disabled=A.current()?.uid!==owner.uid;
+    confirm.removeAttribute('aria-busy');confirm.textContent='Удалить навсегда';
+    alert.textContent=e.message||'Не удалось удалить аккаунт. Проверь соединение и попробуй ещё раз.';
+    alert.hidden=false;cancel.focus({preventScroll:true});
+   }
+  });
+  dialog.showModal();
+ }
  function photoSheet(){
   const sh=S().sheet({title:'Фото профиля'});
   sh.body.innerHTML='<div class="hs-photo-preview">'+avatar(draft.photo)+'</div><div class="hs-actions"><button type="button" class="hs-btn hs-primary" data-ph="pick">Выбрать другое фото</button>'+

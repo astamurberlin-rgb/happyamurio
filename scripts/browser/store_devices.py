@@ -47,6 +47,8 @@ def serve(route, request, device):
             for k in [k for k, v in tokens.items() if v == uid]:
                 tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
+    if path == "/functions/v1/account-key":
+        return legacy_key(route, request, request.headers.get("authorization", "").removeprefix("Bearer ") in tokens)
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
     uid = tokens.get(request.headers.get("authorization", "").replace("Bearer ", ""))
@@ -308,10 +310,115 @@ with sync_playwright() as p:
     out["refused_writes"] = [r for r in writes if r.get("result") == "refused"]
     out["write_kinds"] = sorted(set(r["kind"] for r in writes))
     out["conflicts_seen"] = len([r for r in writes if r.get("result") in ("no match", "duplicate ignored")])
+    # Прерываем шифрование второго документа устройства после атомарной замены первого.
+    out["local_migration"] = a1.evaluate("""async () => {
+      const uid='local-owner', foreign='unconverted-owner', name='local-cipher-check';
+      const old=HappyStore.idbBackend(indexedDB,name);
+      const left=[uid,'day','diary'], right=[uid,'meal','diary'], other=[foreign,'day','diary'];
+      const record=(id,value)=>({id,value,rev:10,writer:'test'});
+      for(const scope of [left,right,other])await old.write(scope,[record('original',scope[0])],{local:true});
+      const key=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+      const managed=()=>HappyStore.idbBackend(indexedDB,name,{uid,key}), first=managed();
+      let count=0,failed=false;
+      const original=crypto.subtle.encrypt;
+      crypto.subtle.encrypt=function(...args){
+        if(++count===2)throw Error('synthetic interruption');
+        return original.apply(this,args);
+      };
+      try{await first.prepare()}catch(e){failed=e.message==='synthetic interruption'}
+      finally{crypto.subtle.encrypt=original}
+      await first.close();
+      async function contents(){
+        const db=await new Promise((resolve,reject)=>{const r=indexedDB.open(name);
+          r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+        return new Promise(resolve=>{
+          const tx=db.transaction(['records','sealed']);
+          const plain=tx.objectStore('records').getAllKeys(),boxes=tx.objectStore('sealed').getAll();
+          tx.oncomplete=()=>{db.close();resolve([plain.result,boxes.result])};
+        });
+      }
+      const [partial,converted]=await contents();
+      const second=managed(),third=managed();await Promise.all([second.prepare(),third.prepare()]);
+      let refused=false;
+      try{await old.write(left,[record('leak','open text')],{local:true})}catch(e){refused=e.code==='key_changed'}
+      await Promise.all([
+        second.write(left,[record('A','one')],{local:true}),third.write(left,[record('B','two')],{local:true}),
+        second.write(left,[record('A','updated')],{local:true})
+      ]);
+      const current=await second.load(left),recovered=await second.load(right),outside=await old.load(other);
+      const [plain,boxes]=await contents();
+      await Promise.all([second.close(),third.close(),old.close()]);
+      return {resumed:failed&&partial.filter(k=>k[0]===uid).length===1&&converted.length===1,
+        isolated:outside.records[0].value===foreign&&plain.length===1&&plain[0][0]===foreign,
+        fenced:refused,encrypted:boxes.length===2&&boxes.every(b=>b.v===2&&b.data instanceof ArrayBuffer),
+        saved:current.records.length===3&&current.records.find(r=>r.id==='A').value==='updated'&&
+          recovered.records[0].value===uid&&recovered.meta.dirty&&current.meta.dirty};
+    }""")
+    out["local_removal"] = a1.evaluate("""async () => {
+      const uid='closed-owner', other='retained-owner', name='local-removal-check';
+      const legacy=HappyStore.idbBackend(indexedDB,name), scope=id=>[id,'day','diary'];
+      const entry=(id,value)=>({id,value,rev:10,writer:'test'});
+      // Первая очистка в базе v1: чужой открытый дневник и его очередь остаются.
+      for(const id of [uid,other,'old-account'])await legacy.write(scope(id),[entry('saved',id)],{local:true});
+      const erase=id=>HappyStore.removeLocalAccount({uid:id,backend:legacy});
+      await erase('old-account');
+      const version=(await indexedDB.databases()).find(d=>d.name===name).version;
+      const failure=promise=>promise.then(()=>null,e=>e.code);
+      const oldBlocked=await failure(legacy.write(scope('old-account'),[entry('later',1)],{local:true}));
+      const key=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+      const backend=HappyStore.idbBackend(indexedDB,name,{uid,key});
+      const session={current:()=>({uid,keyVersion:2}),cipherKey:()=>key,onChange:()=>()=>{}};
+      const store=await HappyStore.open({app:'day',account:session,own:['diary'],backend,auto:false});
+      const doc=store.doc('diary');
+      // Держим шифрование внутри штатной записи: удаление завершается до позднего commit.
+      async function removeDuringEncryption(owner,operation){
+        const encrypt=crypto.subtle.encrypt;let notify,release;
+        const started=new Promise(r=>notify=r),gate=new Promise(r=>release=r);
+        crypto.subtle.encrypt=async function(...args){
+          if(new TextDecoder().decode(args[0].additionalData).includes(owner)){notify();await gate}
+          return encrypt.apply(this,args);
+        };
+        let late;
+        try{
+          late=failure(operation());
+          await Promise.race([started,late.then(()=>{throw Error('Ожидалось шифрование')})]);
+          await erase(owner);await erase(owner);
+        }finally{crypto.subtle.encrypt=encrypt;release()}
+        return late;
+      }
+      const lateCode=await removeDuringEncryption(uid,()=>doc.put('pending','отложенная запись'));
+      const blocked=await failure(backend.prepare());
+      const migrating='converting-owner';
+      await legacy.write(scope(migrating),[entry('before','запись до переноса')],{local:true});
+      const conversion=HappyStore.idbBackend(indexedDB,name,{uid:migrating,key});
+      const interrupted=await removeDuringEncryption(migrating,()=>conversion.prepare());
+      const staysRemoved=await failure(conversion.prepare());await conversion.close();
+      const saved=await legacy.load(scope(other));await legacy.write(scope(other),[entry('another',true)],{local:true});
+      const next=await legacy.load(scope('new-signup'));
+      const keys=await new Promise((resolve,reject)=>{
+        const r=indexedDB.open(name);
+        r.onerror=()=>reject(r.error);r.onsuccess=()=>{
+          const db=r.result,tx=db.transaction(['records','meta','sealed']);
+          const reads=['records','meta','sealed'].map(k=>tx.objectStore(k).getAllKeys());
+          tx.oncomplete=()=>{db.close();resolve(reads.map(r=>r.result.filter(k=>k[0]===uid||k[0]===migrating)))};
+        };
+      });
+      store.close();await Promise.all([backend.close(),legacy.close()]);
+      return {legacy:version===1&&oldBlocked==='account_removed',race:lateCode==='account_removed',
+        closed:store.closed&&!doc.all().length&&!(await store.sync()),
+        migration:interrupted==='account_removed'&&staysRemoved==='account_removed',
+        device:blocked==='account_removed'&&!keys[0].length&&!keys[2].length&&
+          keys[1].length===2&&keys[1].every(k=>k.length===1),
+        separate:saved.records[0].value===other&&saved.meta.dirty&&!next.records.length&&!next.meta.dirty};
+    }""")
     b.close()
 
 uid1, uid2 = USERS[ONE]["id"], USERS[TWO]["id"]
 checks = [
+    ("удаление очищает UID в базах v1 и v2 и останавливает позднюю запись, остальные аккаунты сохраняются",
+     all(out["local_removal"].values())),
+    ("шифрование IndexedDB продолжается после сбоя и сохраняет конкурентные правки, очередь и соседний профиль",
+     all(out["local_migration"].values())),
     ("без входа запись не принимается, на устройстве и в облаке пусто", out["no_login_put"] == "signin" and out["no_login_state"] == "signin" and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("вошёл в одной вкладке Day — вторая вкладка Day вошла сама, Meal без своего входа не вошёл", out["sign_in"] == "ok" and out["neighbours_signed_in"] and out["meal_not_signed_in"]),
     ("у каждого приложения своя ячейка входа, пароль не сохранён", out["auth_cells"] == ["happy-account:day"] and out["auth_cells_both"] == ["happy-account:day", "happy-account:meal"] and not out["password_stored"]),

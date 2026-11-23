@@ -1,0 +1,36 @@
+/* Лаборатория Sport · пункты 10, 13–18 (Астамур 15.11.2026): лист занятия, пометки и лента журнала. — Claude */
+.read-set.custom-metrics{grid-template-columns:minmax(76px,auto) repeat(var(--read-fields),minmax(0,1fr))}
+.read-set.custom-metrics .type{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.occurrence-sheet{display:flex;flex-direction:column;gap:12px}
+.occurrence-sheet .sheet-info{margin:0}
+.occurrence-main .button{width:100%}
+.occurrence-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.occurrence-actions[hidden],.occurrence-move[hidden]{display:none}
+.occurrence-move{display:grid;gap:10px}
+.occurrence-series{align-self:flex-start;padding:4px 0;color:#ffffffc7;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.occurrence-note-card p{margin:6px 0 0;white-space:pre-wrap}
+
+.plan-mark-tag{display:inline-block;margin-right:4px;padding:1px 8px;border-radius:9px;font-size:12px;font-weight:600;line-height:18px}
+.plan-mark-skipped .plan-mark-tag,.feed-skipped .plan-mark-tag{background:#f3b6b6;color:#4a1414}
+.plan-mark-moved .plan-mark-tag,.feed-moved .plan-mark-tag{background:#ffe2a3;color:#5b4a1d}
+.plan-mark{opacity:.92}
+
+/* Лента: линия слева, кружок у каждой записи, бирка — откуда запись. */
+.journal-feed{display:flex;flex-direction:column;gap:18px}
+.feed-date{margin:0 0 8px;font-size:16px;font-weight:600}
+.feed-date::first-letter{text-transform:uppercase}
+.feed-list{position:relative;list-style:none;margin:0;padding:0 0 0 22px}
+.feed-list::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;border-radius:2px;background:#ffffff40}
+.feed-item{position:relative;margin:0 0 8px}
+.feed-dot{position:absolute;left:-21px;top:16px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #ffffff30}
+.feed-sport .feed-dot{background:#aff5df}.feed-meal .feed-dot{background:#ffd29a}.feed-day .feed-dot{background:#c9b8ff}
+.feed-skipped .feed-dot{background:#f3b6b6}.feed-moved .feed-dot{background:#ffe2a3}
+.feed-body{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;column-gap:8px;width:100%;margin:0;padding:10px 12px;border:1px solid var(--line,#ffffff40);border-radius:16px;background:#ffffff14;color:inherit;font:inherit;text-align:left;box-shadow:none}
+button.feed-body{cursor:pointer}
+.feed-body b{grid-column:2;font-size:16px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.feed-body small{grid-column:2;font-size:12px;color:#ffffffc0}
+.feed-time{grid-column:1;grid-row:1 / span 2;font-size:14px;font-variant-numeric:tabular-nums;color:#ffffffd0}
+.feed-tag{grid-column:3;grid-row:1 / span 2;padding:2px 8px;border-radius:9px;background:#ffffff26;font-size:12px;font-weight:600}
+.feed-meal .feed-tag{background:#ffd29a;color:#5b3a12}.feed-sport .feed-tag,.feed-mark .feed-tag{background:#aff5df;color:#08392e}.feed-day .feed-tag{background:#c9b8ff;color:#2d1a66}
+.feed-plain{display:block;padding:0;border:0;background:none}

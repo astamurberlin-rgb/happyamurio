@@ -1,0 +1,80 @@
+/* Update 27: search-names.js — русские поисковые названия десертов BLS и русские названия 15 записей USDA.
+   Meal 33.3: обычный русский порядок слов у 15 джемов и соков MEXT («Клубничный джем, …»): коды есть в полной MEXT,
+   каталог ставит это название, прежнее остаётся в словах поиска, английское и японское не меняются.
+   Данные — реальные файлы ветки meal-libraries (git show origin/meal-libraries:data/…): все 44 кода BLS и 15 FDC ID
+   существуют; слова попадают в индекс (фраза — в строку синонимов, «имена» — в список имён), общие слова именами
+   не становятся; USDA: с 17.11.2026 names.ru у всех записей в каталоге, у 15 — те же, что в USDA_RU; без names.ru запись получает его без изменения names.en, кода и состава; повторное применение ничего не дублирует. */
+import {readFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import {gunzipSync} from 'node:zlib';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const app=new URL('../',import.meta.url),repo=new URL('../',app);
+const REF=process.env.HAPPY_LIBRARIES_REF||'origin/meal-libraries';
+const show=p=>execFileSync('git',['show',REF+':'+p],{cwd:repo,maxBuffer:256*1024*1024});
+const win={};win.window=win;win.globalThis=win;const ctx=vm.createContext(win);
+vm.runInContext(await readFile(new URL('search-names.js',app),'utf8'),ctx);
+const N=win.MealSearchNames,plain=x=>JSON.parse(JSON.stringify(x));
+assert.deepEqual(plain(N.counts()),{bls:44,usda:15,mext:15});
+// Нормализация: регистр, ё → е, дефис — граница слова.
+assert.deepEqual(plain(N.words('Крем-Брюле, чЁрный лес')),['крем','брюле','черный','лес']);
+// Никаких марок среди поисковых слов.
+const all=Object.values(N.BLS).flat().join(' ').toLowerCase();
+for(const brand of ['cinnabon','синнабон','nutella','нутелла','нью-йорк','каталана'])assert.ok(!all.includes(brand),'нет марки/чужой рецептуры: '+brand);
+
+// BLS: реальный файл.
+const bls=JSON.parse(show('data/bls40.json').toString('utf8')),by={};bls.f.forEach((r,i)=>by[r[0]]=i);
+for(const code of Object.keys(N.BLS))assert.ok(by[code]!=null,'код BLS существует: '+code);
+const words=bls.f.map(r=>N.words(r[1])),extra=bls.f.map(r=>(r[2]+' '+r[3]).toLowerCase()),aliases={},before=extra.slice();
+const vocab=new Set();words.forEach(w=>w.forEach(x=>{if(x.length>=3)vocab.add(x)}));
+const o={rows:bls.f,words,extra,aliases,isVocabulary:w=>vocab.has(w)};
+const first=plain(N.applyBls(o));
+assert.equal(first.rows,44,'все 44 строки получили слова');
+for(const [code,phrases] of Object.entries(N.BLS)){const i=by[code];
+ for(const p of phrases)assert.ok((' '+extra[i]+' ').includes(' '+N.words(p).join(' ')+' '),code+': фраза в строке синонимов — '+p);
+ assert.ok(extra[i].startsWith(before[i].trim())||before[i].trim()==='','исходные синонимы BLS сохранены: '+code);
+ for(const w of aliases[i]||[]){assert.ok(!vocab.has(w),'общее слово не стало именем: '+w);assert.ok(w.length>2)}}
+// Имена, которых нет среди обычных продуктов базы, становятся именами блюда.
+const has=(code,w)=>(aliases[by[code]]||[]).includes(w)||words[by[code]].includes(w)||vocab.has(w);
+for(const [code,w] of [['Y8A5020','панакота'],['D300600','шварцвальд'],['Y855053','ротегрютце'],['S491000','грильяж'],['D741000','донат'],['Y996440','сорбе']])assert.ok(has(code,w),code+' ищется по «'+w+'»');
+// Строки без десертных слов не тронуты.
+let untouched=0;extra.forEach((x,i)=>{if(!N.BLS[bls.f[i][0]]){assert.equal(x,before[i]);untouched++}});assert.equal(untouched,bls.f.length-44);
+// Повторное применение ничего не добавляет.
+const snap=JSON.stringify([extra,aliases]);assert.deepEqual(plain(N.applyBls(o)),{rows:0,names:0});assert.equal(JSON.stringify([extra,aliases]),snap);
+// Без проверки словаря и с неполными аргументами — без ошибок.
+assert.deepEqual(plain(N.applyBls(null)),{rows:0,names:0});
+
+// USDA: реальный файл. С 17.11.2026 русские названия у всех 7 793 записей лежат в самом каталоге (names.ru);
+// у 15 записей USDA_RU в каталоге то же название, поэтому localizeUsda их не меняет. Без names.ru — ставит своё.
+const usda=JSON.parse(gunzipSync(show('data/usda-sr-legacy.json.gz')).toString('utf8')),byId={};usda.foods.forEach(r=>byId[r.id]=r);
+assert.ok(usda.foods.every(r=>r.names&&r.names.ru&&r.names.en),'у всех записей USDA есть русское и английское название');
+let same=0;
+for(const [fdc,ru] of Object.entries(N.USDA_RU)){const r=byId['usda:'+fdc];assert.ok(r,'FDC существует: '+fdc);
+ assert.equal(r.names.ru,ru,'в каталоге то же русское название: '+fdc);same++;
+ const copy=JSON.stringify(r);assert.equal(N.localizeUsda(r),false,'название уже есть — не меняет');assert.equal(JSON.stringify(r),copy,'запись не тронута');
+ const bare=JSON.parse(copy);delete bare.names.ru;delete bare.nameOrigins;const en=bare.names.en,nut=JSON.stringify(bare.nut);
+ assert.equal(N.localizeUsda(bare),true);assert.equal(bare.names.ru,ru);assert.equal(bare.nameOrigins.ru,N.ORIGIN);
+ assert.equal(bare.names.en,en,'английский оригинал не тронут');assert.equal(JSON.stringify(bare.nut),nut,'состав не тронут');
+ assert.equal(N.localizeUsda(bare),false,'повторно не меняет')}
+assert.equal(same,15);
+const other=usda.foods.find(r=>!N.USDA_RU[String(r.code)]),copy=JSON.stringify(other);assert.equal(N.localizeUsda(other),false);assert.equal(JSON.stringify(other),copy,'прочие записи USDA не тронуты');
+// MEXT: реальный файл полной MEXT (запись манифеста mext).
+const mextUrl=JSON.parse(show('manifest.json').toString('utf8')).libraries.mext.url,mext=JSON.parse(gunzipSync(show('data/'+mextUrl.split('/data/')[1])).toString('utf8'));
+const mextById={};mext.foods.forEach(r=>mextById[r.code]=r);
+for(const [code,ru] of Object.entries(N.MEXT_RU)){const r=mextById[code];assert.ok(r,'MEXT: код существует: '+code);
+ const x=N.mext(code);assert.equal(x.ru,ru);assert.notEqual(r.names.ru,ru,'MEXT '+code+': название правда другое');
+ assert.ok(/^[А-ЯЁ]/.test(ru)&&!/ по MEXT$/.test(ru),'MEXT '+code+': русское название');
+ assert.ok(/джем|сок/i.test(ru)&&/джем|сок|мармелад/i.test(r.names.ru),'MEXT '+code+': только джемы и соки')}
+assert.equal(N.mext('01004'),null,'прочие продукты MEXT — без замены');assert.equal(N.mext(null),null);
+assert.equal(N.mext('07156').variant,'сок, свежевыжатый');assert.equal(mextById['07156'].family,'lemon','лимон — семейство с вариантами');
+assert.deepEqual(plain(N.mext('07125').words),['голубичный джем']);
+assert.deepEqual(plain(N.mext('07013').words),['джем из клубники']);
+{const a=N.mext('07052');a.words.push('x');assert.deepEqual(plain(N.mext('07052').words),[],'слова — копия')}
+// Проводка в приложении.
+const catalogCode=await readFile(new URL('catalog.js',app),'utf8');
+assert.ok(catalogCode.includes('root.MealSearchNames.mext(r.code)')&&/f\.w=norm\(Object\.values\(r\.names\)\.join\(' '\)\+' '\+\(loc\?loc\.ru/.test(catalogCode),'MEXT: каталог ставит название и сохраняет прежние слова поиска');
+const page=await readFile(new URL('index.html',app),'utf8'),adapter=await readFile(new URL('usda.js',app),'utf8');
+assert.ok(page.indexOf('search-names.js?v=')<page.indexOf('usda.js?v=')&&page.indexOf('search-names.js?v=')>0,'модуль загружается до usda.js');   // Meal 28: без номера выпуска в проверке
+assert.ok(page.includes('MealSearchNames.applyBls({rows:d.f,words:BLS_W,extra:BLS_X,aliases:BLS_AL,isVocabulary:isVoc})'),'индекс BLS получает слова при загрузке базы');
+assert.ok(adapter.includes('root.MealSearchNames.localizeUsda(r)')&&adapter.indexOf('localizeUsda(r)')<adapter.indexOf('r.searchWords='),'русское название — до построения поисковых слов USDA');
+console.log('Passed: 44 BLS dessert codes exist and receive search phrases ('+first.names+' name words), common words stay plain; all 7793 USDA records carry names.ru, the 15 USDA_RU names match the catalog and localizeUsda adds them only where missing; 15 MEXT jams and juices get natural Russian names; wiring in index.html, usda.js and catalog.js.');

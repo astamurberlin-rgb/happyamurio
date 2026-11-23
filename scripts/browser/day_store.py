@@ -66,6 +66,8 @@ def serve(route, request, device):
             for k in [k for k, v in tokens.items() if v == uid]:
                 tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
+    if path == "/functions/v1/account-key":
+        return legacy_key(route, request, request.headers.get("authorization", "").removeprefix("Bearer ") in tokens)
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
     uid = tokens.get(request.headers.get("authorization", "").replace("Bearer ", ""))
@@ -259,7 +261,7 @@ with sync_playwright() as p:
     offline.add("A")
     plus(a1)
     note(a1, "Заметка без сети")
-    a1.evaluate(EDIT, [section, {mood: 6}, "Умывание"])
+    a1.evaluate(EDIT, [section, {mood: 6}, "Тестовая отметка дня"])
     out["offline_count"] = count(a1)
     out["second_tab_count"] = wait_for(a2, lambda: count(a2) == 1 and 1, 5, 200) or count(a2)
     out["second_tab_note"] = until(a2, "()=>document.getElementById('note').value==='Заметка без сети'", seconds=5)
@@ -441,7 +443,7 @@ with sync_playwright() as p:
 
 uid1, uid2 = USERS[ONE]["id"], USERS[TWO]["id"]
 rows = {k: r for k, r in table.items()}
-secrets = ("Заметка", "телефона", "Умывание", "Зал утром", "Своё название", "второго аккаунта", "Бассейн")
+secrets = ("Заметка", "телефона", "Тестовая отметка дня", "Зал утром", "Своё название", "второго аккаунта", "Бассейн")
 out["plaintext_on_server"] = any(s.encode() in base64.b64decode(r["data"]) for r in rows.values() for s in secrets)
 writes = [r for r in requests if r.get("kind")]
 day_writes = [r for r in writes if r["from"].endswith(urlsplit(DAY_PAGE).path)]
@@ -455,7 +457,7 @@ log = sorted([x["v"] for x in sec.get("log", [])]) if sec else []
 checks = [
     ("без входа: карточка «Войди, чтобы записывать», нажатие и заметка открывают лист «Войди в аккаунт», ничего не записано", out["signin_card"] and out["no_login_screen"] and "Войди в аккаунт" in out["no_login_toast"] and out["no_login_count"] == 0 and out["no_login_note"] == ["day", "", True] and out["no_login_state"] == 0 and out["no_login_device"] == 0 and out["no_login_requests"] == 0),
     ("без входа экраны листаются, вход открывает только запись", out["no_login_walk"] == ["trends", "links", "day"]),
-    ("вошёл в одной вкладке — вторая вкладка Day вошла сама; ячейка входа своя — happy-account:day, пароль не сохранён, карточка «Войди» убрана", out["second_tab_signed_in"] and out["cells"] == ["happy-account:day"] and not out["password_stored"] and not out["signin_card_after"]),
+    ("вошёл в одной вкладке — вторая вкладка Day вошла сама; ячейка входа своя — happy-account:day, пароль не сохранён, карточка «Войди» убрана", out["second_tab_signed_in"] and set(out["cells"]) - {"happy-day-appearance-paint-v1"} == {"happy-account:day"} and not out["password_stored"] and not out["signin_card_after"]),
     ("в настройках имя, «Настроить профиль / цели», «Выйти» и одна строка синхронизации; служебных блоков нет", bool(out["status_line"]) and "Настроить профиль" in out["account_card"] and "Настроить цели" in out["account_card"] and "Выйти" in out["account_card"] and "облак" not in out["account_card"].lower().replace("в облако", "")),
     ("без сети нажатие, заметка и отметка раздела приняты и видны во второй вкладке без сообщений", out["offline_count"] == 1 and out["second_tab_count"] == 1 and out["second_tab_note"] and (out["second_tab_section"] or {}).get(mood) == 6 and not out["second_tab_toast"]),
     ("без сети строка «Нет связи · записи сохранены на устройстве», в облаке нового нет", out["offline_status"] == "Нет связи · записи сохранены на устройстве" and not [k for k in out["cloud_while_offline"] if k.startswith("day/days_")]),
@@ -463,7 +465,7 @@ checks = [
     ("сеть вернулась — записи сами ушли в облако новыми строками по годам", bool(out["online_state"]) and "day/days_" + today[:4] in out["cloud_rows"] and "day/setup" in out["cloud_rows"]),
     ("второй телефон после входа сам видит нажатие, заметку и раздел", out["other_phone"][0] == 1 and out["other_phone"][1] == "Заметка без сети" and (out["other_phone"][2] or {}).get(mood) == 6),
     ("одну шкалу поставили на двух телефонах — везде поставленное позже, прежние значения в журнале раздела по одному разу", out["both_a"] and out["both_b"] and out["both_tab2"] and sec.get(mood) == 5 and log == [6, 7] and out["section_a"] == out["section_b"]),
-    ("разные шкалы и теги раздела с двух телефонов остались все", sec.get(energy) == 3 and set((sec.get("tags") or {}).keys()) == {"Умывание", "С телефона A", "С телефона B"}),
+    ("разные шкалы и теги раздела с двух телефонов остались все", sec.get(energy) == 3 and set((sec.get("tags") or {}).keys()) == {"Тестовая отметка дня", "С телефона A", "С телефона B"}),
     ("нажатия одного счётчика с двух телефонов сложились; у заметки дня осталась поздняя правка", out["counts"] == [4, 4, 4] and out["notes"] == ["Заметка телефона B, позже"] * 2),
     ("удаление дошло до другого телефона и не вернулось", out["delete_reaches"] == 3 and out["delete_stays"] == [3, 3]),
     ("вход у каждого приложения свой: Sport на том же телефоне сам не вошёл, вошёл тем же аккаунтом", out["sport_not_signed_in"] and out["sport_signed_in"]),
@@ -482,7 +484,7 @@ checks = [
     ("второй аккаунт не видит записей, тренировок и счётчиков первого и пишет в свои строки", out["second_account_sees"] == [0, "", None, 0, False] and out["second_account_cloud"]),
     ("записи двух аккаунтов на устройстве лежат раздельно", out["device_accounts"] == [uid1, uid2]),
     ("первый аккаунт вернулся к своим записям", bool(out["first_account_back"])),
-    ("записи более новой версии Day: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and "более новой версии" in out["newer_card"] and out["newer_refuses"][0] and "более новой версии" in out["newer_refuses"][1]),
+    ("записи более новой версии Day: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and "более новой версией" in out["newer_card"] and out["newer_refuses"][0] and "более новой версией" in out["newer_refuses"][1]),
     ("на сервере только шифр, строки нового вида", not out["plaintext_on_server"] and out["row_versions"] == [2]),
     ("Day писал только свои новые документы и общий документ замеров, отказов сервера нет", bool(out["day_write_kinds"]) and all(k.startswith("day/") and k.split("/")[1] not in ("journal", "link", "counters", "supplements", "measurements") or k == "sport/body" for k in out["day_write_kinds"]) and not out["refused"]),
     ("прежние строки облака Day не прочитаны и не изменены", out["old_rows"] and not out["old_read"]),

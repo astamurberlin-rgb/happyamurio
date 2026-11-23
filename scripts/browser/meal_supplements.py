@@ -5,6 +5,7 @@
 шифр без открытого текста; в документы дневника они не пишутся. Устройство B — Meal: после входа видны оба приёма и
 свой вариант; правка количества уходит в облако и приходит на A. Устройство B — Day: «съедено» с калориями БАДов,
 завтрак отмечен, время — 08:15. В конце на A: «Выгрузить дневник» — в файле и добавки."""
+import re
 from common import *
 
 out, errors, checks = {}, [], []
@@ -151,6 +152,36 @@ with sync_playwright() as p:
     sup = backup.get("supplements") or {}
     check("«Выгрузить дневник»: в файле и добавки — 2 приёма со снимком состава, 2 варианта", sup.get("schema") == "happy.meal.supplements.v1" and len(sup.get("entries", [])) == 2 and len(sup.get("variants", [])) == 2 and all(e.get("snapshot") and e.get("portion") for e in sup["entries"]))
     check("загрузки дневника из файла и возврата больше нет", meal.locator("#bkIn").count() == 0 and meal.locator("#bkRestore").count() == 0)
+
+    # Две порции по 100 ккал в отдельном дне. У второй нет данных по кальцию и клетчатке.
+    meal.evaluate("""() => {
+        const date=jrIsoAdd(todayISO(), -1);
+        const foods=[{id:'known-test',n:'Тестовая каша',k:100,counterValues:{ca:120,fib:4}},
+                     {id:'unknown-test',n:'Тестовое пюре',k:100}];
+        day(date).items=foods.map(f=>({id:f.id,fid:f.id,sec:'am',t:'09:00',q:100,u:'г',g:100,productSnapshot:f}));
+        JR_PER='custom'; JR_RNG={a:date,b:date};
+    }""")
+    meal.locator('.tab[data-go=journal]').tap()
+    minerals = meal.locator('[data-jg=min]')
+    if minerals.get_attribute('aria-expanded') == 'false':
+        minerals.tap()
+    calcium = meal.locator('[data-jr="min:ca"]')
+    missing = re.compile(r'50\s*%|(?:без|нет) данных|Тестовое пюре', re.IGNORECASE)
+    collapsed = calcium.inner_text()
+    check("закрытый кальций показывает 120 мг без предупреждения о составе",
+          calcium.get_attribute('aria-expanded') == 'false' and '120 мг' in ' '.join(collapsed.split())
+          and not missing.search(collapsed))
+    calcium.tap()
+    expanded = ' '.join(calcium.inner_text().split())
+    check("касание открывает норму кальция без процента нехватки и списка продуктов",
+          calcium.get_attribute('aria-expanded') == 'true' and '120 мг' in expanded
+          and 'Рекомендуемая' in expanded and not missing.search(expanded))
+    calcium.tap()
+    check("повторное касание полностью закрывает пояснение к кальцию",
+          calcium.get_attribute('aria-expanded') == 'false' and calcium.inner_text() == collapsed)
+    summary = meal.locator('#jrTiles').inner_text()
+    check("сводка содержит клетчатку без повторного предупреждения о данных",
+          'Клетчатка' in summary and not missing.search(summary))
 
     out["writes"] = sorted(set(str(r.get("kind")) for r in log if r["method"] in ("POST", "PATCH") and r["path"] == "/rest/v1/app_sync"))
     check("в облако пишутся только новые строки Meal и строки Day; прежние строки Meal не пишутся", all((str(k).startswith("meal/") and str(k) not in ("meal/journal", "meal/link", "meal/supplements", "meal/counters")) or str(k).startswith("day/") for k in out["writes"]) and "meal/supps" in out["writes"])

@@ -83,7 +83,7 @@ with sync_playwright() as p:
     out["welcome"] = w = welcome(m)
     check("первый экран: сначала только смайлик, кнопки проявляются после остановки дуги, смайлик не сдвинулся", w["start"]["options"] == "0" and w["options"] == "1" and w["start"]["smile"] == w["smile"] and w["app_hidden"])
     check("дуга останавливается улыбкой строго снизу", round(w["angle"]) % 360 == 90)
-    check("кнопки первого экрана; Apple и Google не нажимаются", w["buttons"] == [["Продолжить с Apple", True], ["Продолжить с Google", True], ["Продолжить с почтой", False], ["Войти", False], ["Познакомиться с Meal", False]])
+    check("кнопки первого экрана; Google доступен, Apple выключен", w["buttons"] == [["Продолжить с Apple", True], ["Продолжить с Google", False], ["Продолжить с почтой", False], ["Войти", False], ["Познакомиться с Meal", False]])
 
     # 2. Гость: смотреть можно; запись — лист «Войди в аккаунт»; неверный пароль — ошибка; после входа — тот же раздел
     m.click("[data-hw=guest]")
@@ -113,8 +113,17 @@ with sync_playwright() as p:
        apps:[...document.querySelectorAll('[data-happy-section=links] .happy-app-name')].map(a=>a.textContent),bottom:b.innerText.replace(/\\s+/g,' ').trim(),
        order:[...s.querySelectorAll(':scope>section[data-happy-section]')].map(x=>x.dataset.happySection)}}""", seconds=15)
     st = out["settings"] or {}
-    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи / Настроить тему» (третья строка — с Meal 33.17, «Настроить тему» — последняя, как в Day и Sport), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Настроить тему"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
-    check("внизу «Выйти» и строка синхронизации; порядок разделов — как в apps.json", st.get("bottom") == "Выйти Синхронизировано" and st.get("order") == json.loads(open(os.path.join(REPO, "shared", "apps.json"), encoding="utf-8").read())["meal"]["settingsSections"])
+    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи / Подключить вход через Google / Настроить тему» (третья строка — с Meal 33.17, «Настроить тему» — последняя, как в Day и Sport), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Подключить вход через Google", "Настроить тему"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
+    check("внизу «Выйти» и строка синхронизации; порядок разделов — как в apps.json", st.get("bottom") == "Синхронизировано Выйти" and st.get("order") == json.loads(open(os.path.join(REPO, "shared", "apps.json"), encoding="utf-8").read())["meal"]["settingsSections"])
+
+    m.click("[data-hp=access]")
+    consent = m.locator("#happy-screens .hs-note").inner_text()
+    check("прежний аккаунт получает объяснение о восстановлении доступа на новом телефоне",
+          "Happy сможет восстановить доступ" in consent and "на новом телефоне" in consent
+          and m.locator("[data-hw=migrate]").is_visible())
+    m.click("[data-hw=cancel]")
+    check("отказ от перехода оставляет открытым прежний аккаунт",
+          m.evaluate("() => MealData.signedIn() && MealData.account.current().keyVersion === 1"))
 
     # 4. Профиль: необязательные поля, новый вес — замер на дату; имя — общее для приложений
     m.evaluate("()=>document.querySelector('[data-hp=profile]').click()")
@@ -177,6 +186,7 @@ with sync_playwright() as p:
     opened(d, "day")
     d.evaluate("()=>go('settings')")
     out["profile_day"] = profile_values(d)
+    out["weights_day"] = d.evaluate("()=>HappyPerson.data().weights")
     d.evaluate("()=>document.querySelector('[data-hp=goals]').click()")
     d.wait_for_selector("#happy-screens [data-page=goals] .hs-topics")
     out["day_first_row"] = d.evaluate("()=>document.querySelector('#happy-screens .hs-wheel .hs-wheel-option.hs-on').textContent")
@@ -188,7 +198,7 @@ with sync_playwright() as p:
     out["day_topics"] = d.evaluate("()=>[...document.querySelectorAll('#happy-screens .hs-topics button')].map(b=>b.textContent.trim()+(b.getAttribute('aria-pressed')==='true'?'*':''))")
     save_screen(d)
     out["day_goals"] = until(d, "()=>!!DB.lifeGoals&&DB.lifeGoals.focusInitialized&&{focus:DB.lifeGoals.focus,topics:DB.lifeGoals.topics,custom:DB.lifeGoals.customTopics}", seconds=6)
-    check("Day на том же телефоне входит своим входом и видит тот же профиль и оба замера", out["day_welcome"] == ["Познакомиться с Day", False] and out["profile_day"]["birthday"] == "1990-05-14" and out["profile_day"]["height"] == "178" and len(out["profile_day"]["history"]) == 2)
+    check("Day на том же телефоне входит своим входом и видит тот же профиль и оба замера", out["day_welcome"] == ["Познакомиться с Day", False] and out["profile_day"]["birthday"] == "1990-05-14" and out["profile_day"]["height"] == "178" and out["profile_day"]["history"] == [] and out["weights_day"] == out["weights"])
     check("цели Day: новый выбор — со второй строки; своя тема добавлена «+», выбрана, плюс остаётся последним; сохранено", out["day_first_row"] == "Сформировать полезные привычки" and out["day_topics"][-2:] == ["Творчество*", ""] and out["day_goals"] == {"focus": "habits", "topics": ["Творчество"], "custom": ["Творчество"]})
 
     # 7. Телефон B — Sport: тот же профиль и замеры; фокус тренировок отдельно от веса; «Выйти» — первый экран

@@ -3,7 +3,7 @@
  * Приложение только называет свои документы. Документ — набор записей; у записи есть номер (id),
  * время правки (rev) и значение. Правила одни на всех:
  *  - записывать можно только после входа; запись сразу ложится на устройство, в область своего аккаунта;
- *  - в облако документ уходит зашифрованным на устройстве (AES-GCM, ключ от пароля, как раньше);
+ *  - в облако документ уходит зашифрованным на устройстве (AES-GCM, личный ключ аккаунта);
  *  - запись в облако условная: если документ за это время поменяло другое устройство, модуль читает его
  *    заново, сводит и повторяет — чужая свежая правка не затирается;
  *  - правки сводятся по записям: разные записи остаются обе, у одной и той же побеждает поздняя;
@@ -19,7 +19,7 @@
  * — Claude · 14.11.2026 */
 (function(root){
 'use strict';
-const FORMAT='happy-store',ROW_VERSION=2,APPS=['day','meal','sport'],NAME=/^[a-z][a-z0-9_]{0,31}$/;
+const FORMAT='happy-store',ROW_VERSION=2,MANAGED_ROW=3,APPS=['day','meal','sport'],NAME=/^[a-z][a-z0-9_]{0,31}$/;
 const CIPHER_LIMIT=2900000;   // предел шифра одного документа, байт: в таблице облака помещается с запасом
 /* Витрина: что приложения показывают друг другу. Значение — кто пишет документ. Документ, которого здесь нет,
    сосед назвать не может: это внутреннее дело приложения, и оно меняет его свободно. Общий документ пишут несколько
@@ -107,53 +107,221 @@ function place(keys,was){
 const model={valid,validId,clean,compare,nextMeta,stable,copy,place};
 
 /* ── Хранилище на устройстве: IndexedDB, одна база на три приложения ───────────────────────────────
-   Ключ записи — [аккаунт, приложение, документ, номер записи]: записи разных аккаунтов лежат раздельно. */
-function idbBackend(factory,name){
- const idb=factory||root.indexedDB;let opening;
+   Область документа — [аккаунт, приложение, документ]. */
+/* До добровольного перехода формат записей прежний. У управляемого аккаунта в sealed лежит
+   один шифротекст на документ (включая идентификаторы записей). В meta остаются только
+   отметки обмена. Версия базы 2 не пускает старые клиенты, пишущие без проверки ключа. */
+function idbBackend(factory,name,managed){
+ const idb=factory||root.indexedDB;let opening;const pendingWrites=new Map();
+ const storageError=e=>fail(e?.name==='QuotaExceededError'?'full':'storage',e?.message||'Не удалось сохранить на устройстве');
+ const keyChanged=()=>fail('key_changed','Ключ аккаунта обновлён. Подключись к сети и повтори открытие.');
+ const range=scope=>root.IDBKeyRange.bound(scope,scope.concat([[]]));
  function open(){
   if(!opening)opening=new Promise((resolve,reject)=>{
    if(!idb){reject(fail('storage','Хранилище на устройстве недоступно'));return}
-   const r=idb.open(name||'happy',1);
-   r.onupgradeneeded=()=>{r.result.createObjectStore('records');r.result.createObjectStore('meta')};
-   r.onsuccess=()=>{const db=r.result;db.onversionchange=()=>{db.close();opening=null};db.onclose=()=>{opening=null};resolve(db)};
-   r.onerror=()=>reject(r.error||fail('storage','Не удалось открыть хранилище на устройстве'));
-   r.onblocked=()=>reject(fail('storage','Хранилище занято другой вкладкой'));
+   let blocked=false;
+   const r=managed?idb.open(name||'happy',2):idb.open(name||'happy');
+   r.onupgradeneeded=()=>{
+    const db=r.result;
+    for(const store of ['records','meta',...(managed?['sealed']:[])])
+     if(!db.objectStoreNames.contains(store))db.createObjectStore(store);
+   };
+   r.onsuccess=()=>{
+    const db=r.result;
+    if(blocked){db.close();return}
+    db.onversionchange=()=>{db.close();opening=null};db.onclose=()=>{opening=null};resolve(db);
+   };
+   r.onerror=()=>reject(storageError(r.error));
+   r.onblocked=()=>{blocked=true;reject(fail('storage','Закрой другие вкладки Happy и повтори открытие.'))};
   }).catch(e=>{opening=null;throw e});
   return opening;
  }
- const storageError=e=>{const x=fail(e&&e.name==='QuotaExceededError'?'full':'storage',(e&&e.message)||'Не удалось сохранить на устройстве');return x};
- const range=scope=>root.IDBKeyRange.bound(scope,scope.concat([[]]));
- async function load(scope){
+ // Все проверки владельца и условные изменения выполняются внутри той же транзакции.
+ async function transaction(stores,mode,work){
   const db=await open();
   return new Promise((resolve,reject)=>{
-   let tx;try{tx=db.transaction(['records','meta'],'readonly')}catch(e){opening=null;reject(storageError(e));return}
-   const a=tx.objectStore('records').getAll(range(scope)),b=tx.objectStore('meta').get(scope);
-   tx.oncomplete=()=>resolve({records:a.result||[],meta:nextMeta(b.result,{},0)});
-   tx.onerror=tx.onabort=()=>reject(storageError(tx.error));
+   let tx,result,problem;
+   try{tx=db.transaction(stores||Array.from(db.objectStoreNames),mode)}catch(e){opening=null;reject(storageError(e));return}
+   const abort=e=>{problem=e;tx.abort()};
+   work(tx,value=>{result=value},abort);
+   tx.oncomplete=()=>resolve(result);
+   tx.onabort=()=>reject(problem||storageError(tx.error));
   });
  }
- /* Одна транзакция: запись остаётся, только если она новее лежащей. Своя новая запись (local) всегда новее. */
- async function write(scope,list,o){
-  o=o||{};const db=await open();
-  return new Promise((resolve,reject)=>{
-   let tx;try{tx=db.transaction(['records','meta'],'readwrite')}catch(e){opening=null;reject(storageError(e));return}
-   const records=tx.objectStore('records'),metas=tx.objectStore('meta'),won=[];let meta,left=list.length;
-   const finish=()=>{const g=metas.get(scope);g.onsuccess=()=>{meta=nextMeta(g.result,o,won.length);metas.put(meta,scope)}};
+ function withScope(scope,stores,mode,work){
+  return transaction(stores,mode,(tx,done,abort)=>{
+   if(managed&&scope[0]!==managed.uid){abort(fail('account','Аккаунт изменился'));return}
+   const marker=tx.objectStore('meta').get([scope[0]]);
+   marker.onsuccess=()=>{
+    if(marker.result?.removed){abort(fail('account_removed','Аккаунт удалён.'));return}
+    if(!managed&&marker.result?.keyVersion){abort(keyChanged());return}
+    work(tx,done,abort);
+   };
+  });
+ }
+ async function checkOwner(uid){
+  await withScope([uid],['meta'],'readonly',()=>{});
+ }
+ function plainLoad(scope){
+  return withScope(scope,['records','meta'],'readonly',(tx,done)=>{
+   const records=tx.objectStore('records').getAll(range(scope)),meta=tx.objectStore('meta').get(scope);
+   meta.onsuccess=()=>done({records:records.result,meta:nextMeta(meta.result,{},0)});
+  });
+ }
+ function plainWrite(scope,list,o={}){
+  return withScope(scope,['records','meta'],'readwrite',(tx,done)=>{
+   const records=tx.objectStore('records'),metas=tx.objectStore('meta'),won=[];let left=list.length;
+   const finish=()=>{const read=metas.get(scope);read.onsuccess=()=>{
+    const meta=nextMeta(read.result,o,won.length);metas.put(meta,scope);done({won,meta});
+   }};
    if(!left)finish();
    for(const given of list){
-    const key=scope.concat([given.id]),g=records.get(key);
-    g.onsuccess=()=>{
-     let r=given;const old=g.result;
-     if(o.local&&old&&old.rev>=r.rev)r=Object.assign({},r,{rev:old.rev+1});
-     if(!old||compare(r,old)>0){records.put(r,key);won.push(r)}
+    const key=scope.concat([given.id]),read=records.get(key);
+    read.onsuccess=()=>{
+     const old=read.result,r=winner(given,old,o.local);
+     if(r){records.put(r,key);won.push(r)}
      if(!--left)finish();
     };
    }
-   tx.oncomplete=()=>resolve({won,meta});
-   tx.onerror=ev=>reject(storageError((ev&&ev.target&&ev.target.error)||tx.error));tx.onabort=()=>reject(storageError(tx.error));
   });
  }
- return {load,write};
+ const aad=scope=>utf(JSON.stringify(['happy-local',2,...scope]));
+ async function seal(scope,records){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const data=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad(scope)},managed.key,
+   await gzip(utf(JSON.stringify(records))));
+  return {v:2,iv:b64(iv),data};
+ }
+ async function unseal(scope,box){
+  if(!box)return [];
+  if(box.v!==2)throw fail('newer','Обнови приложение, чтобы открыть записи устройства.');
+  try{
+   const bytes=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv),additionalData:aad(scope)},managed.key,box.data);
+   return JSON.parse(new TextDecoder().decode(await gunzip(new Uint8Array(bytes))));
+  }catch(e){throw fail('unreadable','Не удалось расшифровать записи на устройстве. Они сохранены.')}
+ }
+ function readBox(scope){
+  return withScope(scope,['sealed','meta'],'readonly',(tx,done)=>{
+   const box=tx.objectStore('sealed').get(scope),meta=tx.objectStore('meta').get(scope);
+   meta.onsuccess=()=>done({box:box.result,meta:nextMeta(meta.result,{},0)});
+  });
+ }
+ async function sealedLoad(scope){
+  await pendingWrites.get(JSON.stringify(scope));
+  const {box,meta}=await readBox(scope);return {records:await unseal(scope,box),meta};
+ }
+ function winner(given,old,local){
+  if(local&&old&&old.rev>=given.rev)return {...given,rev:old.rev+1};
+  return !old||compare(given,old)>0?given:null;
+ }
+ function sealedWrite(scope,list,o={}){
+  // WebCrypto завершается в произвольном порядке. Две последовательные правки из одной
+  // вкладки должны применяться ровно в порядке, в котором их сделал человек.
+  const id=JSON.stringify(scope),run=() => commitSealed(scope,list,o);
+  const next=(pendingWrites.get(id)||Promise.resolve()).then(run,run);
+  pendingWrites.set(id,next);
+  const done=()=>{if(pendingWrites.get(id)===next)pendingWrites.delete(id)};
+  next.then(done,done);return next;
+ }
+ async function commitSealed(scope,list,o){
+  for(;;){
+   let before,after;const won=[];
+   if(list.length){
+    before=(await readBox(scope)).box;
+    const records=new Map((await unseal(scope,before)).map(r=>[r.id,r]));
+    for(const given of list){
+     const r=winner(given,records.get(given.id),o.local);
+     if(r){records.set(r.id,r);won.push(r)}
+    }
+    if(won.length)after=await seal(scope,[...records.values()]);
+   }
+   // WebCrypto не удерживает транзакцию IDB. CAS по IV связывает прочитанное состояние
+   // с записью шифра и очереди, даже если другую вкладку разбудили во время шифрования.
+   const result=await withScope(scope,['sealed','meta'],'readwrite',(tx,done)=>{
+    const boxes=tx.objectStore('sealed'),metas=tx.objectStore('meta');
+    const finish=()=>{
+     if(after)boxes.put(after,scope);
+     const read=metas.get(scope);read.onsuccess=()=>{
+      const meta=nextMeta(read.result,o,won.length);metas.put(meta,scope);done({won,meta});
+     };
+    };
+    if(!list.length){finish();return}
+    const current=boxes.get(scope);
+    current.onsuccess=()=>{if(current.result?.iv===before?.iv)finish()};
+   });
+   if(result)return result;
+  }
+ }
+ async function prepare(){
+  const owner=[managed.uid];
+  const ready=await withScope(owner,['meta'],'readwrite',(tx,done,abort)=>{
+   const metas=tx.objectStore('meta'),read=metas.get(owner);
+   read.onsuccess=()=>{
+    if(read.result&&read.result.keyVersion!==2){abort(fail('newer','Обнови приложение, чтобы открыть записи устройства.'));return}
+    if(!read.result)metas.put({keyVersion:2,ready:false},owner);
+    done(read.result?.ready);
+   };
+  });
+  if(ready)return;
+  // После отметки ни одна вкладка не может записать открытый текст этого UID.
+  // Перечисляются только ключи: имена и значения записей не копируются в meta.
+  const scopes=await withScope(owner,['records','meta'],'readonly',(tx,done)=>{
+   const found=[],read=tx.objectStore('records').openKeyCursor(range(owner));
+   read.onsuccess=()=>{
+    const cursor=read.result;if(!cursor){done(found);return}
+    const scope=cursor.key.slice(0,3);found.push(scope);cursor.continue(scope.concat([[]]));
+   };
+  });
+  for(const scope of scopes){
+   const records=await withScope(scope,['records','meta'],'readonly',(tx,done)=>{
+    const read=tx.objectStore('records').getAll(range(scope));read.onsuccess=()=>done(read.result);
+   });
+   if(!records.length)continue;
+   const box=await seal(scope,records);
+   await withScope(scope,['records','sealed','meta'],'readwrite',(tx,done)=>{
+    const sealed=tx.objectStore('sealed'),existing=sealed.get(scope);
+    existing.onsuccess=()=>{
+     if(!existing.result)sealed.put(box,scope);
+     tx.objectStore('records').delete(range(scope));
+    };
+   });
+  }
+  await withScope(owner,['meta'],'readwrite',tx=>tx.objectStore('meta').put({keyVersion:2,ready:true},owner));
+ }
+ async function pendingScopes(uid){
+  return withScope([uid],['meta'],'readonly',(tx,done)=>{
+   const found=[],read=tx.objectStore('meta').openCursor(range([uid]));
+   read.onsuccess=()=>{
+    const cursor=read.result;if(!cursor){done(found);return}
+    if(cursor.value.dirty)found.push(cursor.key);
+    cursor.continue();
+   };
+  });
+ }
+ // Одна транзакция очищает весь UID, включая очередь и отметки первого обмена.
+ // Минимальная отметка закрывает уже начатые записи и шифрование в соседних вкладках.
+ async function removeLocalAccount(uid){
+  if(typeof uid!=='string'||!uid||(managed&&managed.uid!==uid))throw fail('account','Не удалось проверить аккаунт.');
+  await transaction(null,'readwrite',tx=>{
+   for(const name of ['records','meta','sealed']){
+    if(tx.objectStoreNames.contains(name))tx.objectStore(name).delete(range([uid]));
+   }
+   tx.objectStore('meta').put({keyVersion:2,removed:true},[uid]);
+  });
+ }
+ async function close(){
+  if(opening){const db=await opening;db.close();opening=null}
+ }
+ return {load:managed?sealedLoad:plainLoad,write:managed?sealedWrite:plainWrite,pendingScopes,
+  checkOwner,prepare:managed?prepare:null,removeLocalAccount,close};
+}
+async function removeLocalAccount(o){
+ const backend=o.backend||idbBackend(o.indexedDB);
+ try{await backend.removeLocalAccount(o.uid)}finally{if(!o.backend)await backend.close()}
+}
+async function prepareLocal(o){
+ const backend=o.backend||idbBackend(o.indexedDB,undefined,{uid:o.uid,key:o.cipherKey});
+ try{if(backend.prepare)await backend.prepare()}finally{if(!o.backend)await backend.close()}
 }
 /* Вкладки одного устройства сообщают друг другу о новых записях. */
 function tabChannel(){
@@ -182,13 +350,15 @@ async function gunzip(bytes){
 function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
  const table=c.url+'/rest/v1/app_sync',mine='&user_id=eq.'+encodeURIComponent(c.uid);
  const row=(app,kind)=>mine+'&app=eq.'+app+'&kind=eq.'+kind;
- const aad=(app,kind)=>utf(c.uid+'|'+app+'|'+kind);
+ const managed=c.keyVersion===2,version=managed?MANAGED_ROW:ROW_VERSION;
+ const aad=(app,kind,v)=>utf(c.uid+'|'+app+'|'+kind+(v===MANAGED_ROW?'|key:2':''));
+ const checkOwner=()=>{if(c.account.current()?.uid!==c.uid)throw fail('account','Аккаунт изменился. Открой приложение снова.')};
  async function rest(method,query,body,prefer,refused){
-  const token=await c.account.token(refused);
+  checkOwner();const token=await c.account.token(refused);checkOwner();
   const headers={apikey:c.key,Authorization:'Bearer '+token,'Content-Type':'application/json'};if(prefer)headers.Prefer=prefer;
   let r;try{r=await c.fetch(table+query,{method,headers,body:body?JSON.stringify(body):undefined})}catch(e){throw fail('offline','Нет связи с сервером')}
   if(r.status===401&&!refused)return rest(method,query,body,prefer,token);
-  if(!r.ok){let j=null;try{j=await r.json()}catch(e){}throw fail('server',(j&&j.message)||('Сервер ответил ошибкой '+r.status))}
+  if(!r.ok){let j=null;try{j=await r.json()}catch(e){}throw fail(j&&j.code==='HAP01'?'key_changed':'server',(j&&j.message)||('Сервер ответил ошибкой '+r.status))}
   if(r.status===204)return null;
   const text=await r.text();return text?JSON.parse(text):null;
  }
@@ -197,12 +367,37 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
   const rows=await rest('GET','?select=app,kind,iv,at'+mine)||[],out=new Map();
   for(const r of rows)out.set(r.app+'/'+r.kind,{iv:r.iv,at:r.at});return out;
  }
+ async function fetchRow(app,kind){
+  const rows=await rest('GET','?select=v,iv,data,at'+row(app,kind));return rows&&rows[0];
+ }
+ async function decrypt(r,app,kind,key,legacyMigration=false){
+  try{return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(r.iv),additionalData:aad(app,kind,r.v)},key,unb64(r.data)))}
+  catch(e){
+   if(legacyMigration)throw fail('legacy_password','Для этих записей нужен прежний пароль Happy.');
+   throw fail('unreadable','Документ в облаке не удалось расшифровать. Он не заменён.');
+  }
+ }
+ // До согласия сервер ничего не меняет. Одного подлинного шифротекста достаточно,
+ // чтобы проверить ключ. На устройство не записываются ни документ, ни результат расшифровки.
+ async function verifyLegacyKey(legacyKey){
+  const fields=legacyKey?'user_id,app,kind,v,iv,data':'user_id,app,kind,v';
+  const rows=await rest('GET','?select='+fields+'&v=eq.2'+mine+'&order=app,kind&limit=1');
+  checkOwner();
+  if(!Array.isArray(rows))throw fail('server','Не удалось проверить записи аккаунта.');
+  if(!rows.length)return {verified:false,empty:true};
+  const r=rows[0];
+  if(r.user_id!==c.uid||r.v!==ROW_VERSION||!APPS.includes(r.app)||!NAME.test(r.kind))
+   throw fail('unreadable','Не удалось проверить документ аккаунта.');
+  if(!legacyKey)throw fail('legacy_password','Для этих записей нужен прежний пароль Happy.');
+  const proof=await decrypt(r,r.app,r.kind,legacyKey,true);
+  proof.fill(0);checkOwner();
+  return {verified:true};
+ }
  async function get(app,kind){
-  const rows=await rest('GET','?select=v,iv,data,at'+row(app,kind));if(!rows||!rows[0])return null;
-  const r=rows[0];if(r.v!==ROW_VERSION)throw fail('unreadable','В облаке лежит документ другого формата. Он не заменён.');
-  let bytes;
-  try{bytes=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(r.iv),additionalData:aad(app,kind)},c.cipherKey,unb64(r.data)))}
-  catch(e){throw fail('unreadable','Документ в облаке не удалось расшифровать. Он не заменён.')}
+  const r=await fetchRow(app,kind);if(!r)return null;
+  if(r.v===MANAGED_ROW&&!managed)throw fail('key_changed','Для этого аккаунта обновился ключ.');
+  if(r.v!==version)throw fail('unreadable','В облаке лежит документ другого формата. Он не заменён.');
+  const bytes=await decrypt(r,app,kind,c.cipherKey);
   let d;try{d=JSON.parse(new TextDecoder().decode(await gunzip(bytes)))}catch(e){if(e.code)throw e;throw fail('unreadable','Документ в облаке повреждён. Он не заменён.')}
   const ids=new Set();
   if(!object(d)||d.f!==FORMAT||d.v!==1||d.owner!==c.uid||d.app!==app||d.doc!==kind||!Array.isArray(d.records)||
@@ -214,17 +409,80 @@ function cloud(c){   // c: {url,key,fetch,account,app,uid,cipherKey,limit,now}
     Возвращает отметку новой копии или null, если строку за это время поменяли. */
  async function put(app,kind,records,expected,schema){
   if(app!==c.app&&!(PUBLIC[app+'/'+kind]||[]).includes(c.app))throw fail('foreign','Приложение пишет только свои документы');
+  return putRecords(app,kind,records,expected,schema);
+ }
+ async function putRecords(app,kind,records,expected,schema){
   const plain=utf(JSON.stringify({f:FORMAT,v:1,owner:c.uid,app,doc:kind,schema:formatOf(schema),records}));
+  return writeCiphertext(app,kind,await gzip(plain),expected);
+ }
+ async function writeCiphertext(app,kind,bytes,expected){
   const iv=crypto.getRandomValues(new Uint8Array(12));
-  const data=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad(app,kind)},c.cipherKey,await gzip(plain)));
+  const data=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:aad(app,kind,version)},c.cipherKey,bytes));
   if(data.length>c.limit)throw fail('large','Документ больше предела облака. Записи на устройстве сохранены.');
-  const next={user_id:c.uid,app,kind,v:ROW_VERSION,iv:b64(iv),data:b64(data),at:Math.max(c.now(),((expected&&expected.at)||0)+1)};
+  const next={user_id:c.uid,app,kind,v:version,iv:b64(iv),data:b64(data),at:Math.max(c.now(),((expected&&expected.at)||0)+1)};
   const result=expected
    ?await rest('PATCH','?iv=eq.'+encodeURIComponent(expected.iv)+row(app,kind),next,'return=representation')
    :await rest('POST','?on_conflict=user_id,app,kind',next,'resolution=ignore-duplicates,return=representation');
   return result&&result.length?{iv:next.iv,at:next.at}:null;
  }
- return {list,get,put};
+ // Массовый перенос не выдаёт приложению содержимое соседних документов. Локальные записи
+ // и очередь остаются на месте. Строка v3 с новым IV сама служит отметкой завершённого шага.
+ async function migrate(legacyKey,backend){
+  for(;;){
+   const heads=await rest('GET','?select=app,kind,iv,at&v=eq.2'+mine+'&limit=16');
+   if(!Array.isArray(heads))throw fail('server','Не удалось прочитать список записей для переноса');
+   if(!heads.length)break;
+   if(!legacyKey)throw fail('legacy_password','Для этих записей нужен прежний пароль Happy.');
+   let progress=false;
+   for(const {app,kind} of heads){
+    if(!APPS.includes(app)||!NAME.test(kind))throw fail('unreadable','Неизвестный документ в аккаунте');
+    const r=await fetchRow(app,kind);
+    if(!r||r.v===MANAGED_ROW){progress=true;continue}
+    if(r.v!==ROW_VERSION)throw fail('unreadable','Неизвестная версия шифрования');
+    const bytes=await decrypt(r,app,kind,legacyKey,true);
+    const saved=await writeCiphertext(app,kind,bytes,r);
+    if(saved||(await fetchRow(app,kind))?.v===MANAGED_ROW)progress=true;
+   }
+   if(!progress)throw fail('retry','Записи меняются на другом устройстве. Продолжи переход ещё раз.');
+  }
+  // Очереди трёх приложений лежат в одной базе. Включаем незагруженные записи
+  // этого устройства в переход, даже если приложение-владелец сейчас закрыто.
+  for(const scope of await backend.pendingScopes(c.uid)){
+   const [uid,app,kind]=scope;
+   if(uid!==c.uid||!APPS.includes(app)||!NAME.test(kind))throw fail('storage','Неизвестный документ на устройстве');
+   const local=await backend.load(scope);if(!local.meta.dirty)continue;
+   const remote=await get(app,kind),schema=formatOf(local.meta.format);
+   if(remote&&remote.schema!==schema)throw fail('newer','Разные форматы записей на устройстве и в облаке. Заверши обмен в последней версии приложения.');
+   const records=new Map((remote?.records||[]).map(r=>[r.id,r]));
+   for(const r of local.records){
+    if(!valid(r))throw fail('storage','Не удалось прочитать запись на устройстве');
+    const other=records.get(r.id);
+    if(!other||compare(r,other)>0)records.set(r.id,r);
+   }
+   const merged=[...records.values()],stored=await putRecords(app,kind,merged,remote,schema);
+   if(!stored)throw fail('retry','Записи изменились на другом устройстве. Продолжи переход ещё раз.');
+   // При одновременной правке seq уже другой: транзакция оставит новую запись в очереди.
+   await backend.write(scope,merged,{iv:stored.iv,settle:local.meta.seq});
+  }
+ }
+ return {list,get,put,migrate,verifyLegacyKey};
+}
+
+function accountCloud(o){
+ const uid=o.account.current()?.uid;
+ if(!uid)throw fail('account','Не удалось проверить вход в аккаунт.');
+ return cloud({uid,account:o.account,cipherKey:o.cipherKey,keyVersion:o.keyVersion,
+  url:o.url||root.HappyAccount.CLOUD.url,key:o.key||root.HappyAccount.CLOUD.key,
+  fetch:o.fetch||((...a)=>root.fetch(...a)),limit:CIPHER_LIMIT,now:Date.now});
+}
+async function verifyLegacyKey(o){
+ return accountCloud(o).verifyLegacyKey(o.legacyKey);
+}
+async function migrateAccount(o){
+ if(o.keyVersion!==2||!o.cipherKey)throw fail('account','Для переноса нужен ключ аккаунта.');
+ const transport=accountCloud(o);
+ const backend=o.backend||idbBackend(o.indexedDB);
+ try{await transport.migrate(o.legacyKey,backend)}finally{if(!o.backend)await backend.close()}
 }
 
 /* ── Хранилище приложения ──────────────────────────────────────────────────────────────────────────
@@ -240,10 +498,25 @@ async function open(options){
  if(!APPS.includes(app))throw Error('Неизвестное приложение: '+app);
  if(!account)throw Error('Нужен общий вход (HappyAccount)');
  const who=account.current(),uid=who?who.uid:null,cipherKey=account.cipherKey();
- const backend=o.backend||idbBackend(o.indexedDB),channel=o.channel||tabChannel(),now=o.now||Date.now;
+ const managed=who?.keyVersion===2;
+ const backend=o.backend||idbBackend(o.indexedDB,undefined,managed?{uid,key:cipherKey}:null);
+ try{
+  if(managed&&backend.prepare)await backend.prepare();
+  else if(uid&&backend.checkOwner)await backend.checkOwner(uid);
+ }catch(e){
+  if(!o.backend)await backend.close().catch(()=>{});
+  if(e.code==='key_changed'&&account.refreshKey&&await account.refreshKey()&&account.current()?.uid===uid)
+   return open(options);
+  throw e;
+ }
+ if((account.current()?.uid||null)!==uid||account.cipherKey()!==cipherKey){
+  if(!o.backend)await backend.close();
+  throw fail('account','Аккаунт изменился. Открой приложение снова.');
+ }
+ const channel=o.channel||tabChannel(),now=o.now||Date.now;
  const events=o.events||root,auto=o.auto!==false,tab=randomId(),docs=new Map();
  const transport=uid?cloud({url:o.url||root.HappyAccount.CLOUD.url,key:o.key||root.HappyAccount.CLOUD.key,fetch:o.fetch||((...a)=>root.fetch(...a)),
-  account,app,uid,cipherKey,limit:o.limit||CIPHER_LIMIT,now}):null;
+  account,app,uid,cipherKey,keyVersion:who.keyVersion,limit:o.limit||CIPHER_LIMIT,now}):null;
  let closed=false,busy=null,again=false,timer=null,ticker=null,status={state:uid?'cloud':'signin',detail:''};
  const statusListeners=new Set(),closeListeners=new Set(),cleanups=[];
 
@@ -291,13 +564,13 @@ async function open(options){
   return ids;
  }
  async function load(d){
-  const s=await backend.load(d.scope),before=d.records,next=new Map(),ids=[];
+  const s=await backend.load(d.scope),before=d.records,next=new Map(),ids=[];guard();
   for(const r of s.records){next.set(r.id,r);if(r.rev>d.maxRev)d.maxRev=r.rev;const old=before.get(r.id);if(!old||compare(r,old)!==0)ids.push(r.id)}
   for(const id of before.keys())if(!next.has(id))ids.push(id);
   d.records=next;d.meta=s.meta;relock(d);return ids;
  }
  function announce(d,won,meta){
-  try{channel.post(won.length>200?{scope:d.scope,from:tab,reload:true}:{scope:d.scope,from:tab,records:won,meta})}catch(e){}
+  try{channel.post(managed||won.length>200?{scope:d.scope,from:tab,reload:true}:{scope:d.scope,from:tab,records:won,meta})}catch(e){}
  }
 
  /* Запись своего документа: сразу в память и на устройство, потом в очередь на облако. */
@@ -318,14 +591,18 @@ async function open(options){
   notify(d,ids,'local');
   let result;
   try{result=await backend.write(d.scope,records,{local:true})}
-  catch(e){try{await load(d)}catch(_){}notify(d,ids,'local');setStatus('error',e.code==='full'?'нет места на устройстве':'');throw e}
+  catch(e){
+   if(e.code==='account_removed'){close();throw e}
+   try{await load(d)}catch(_){}notify(d,ids,'local');setStatus('error',e.code==='full'?'нет места на устройстве':'');throw e;
+  }
+  guard();
   for(const r of result.won){if(r.rev>d.maxRev)d.maxRev=r.rev;const cur=d.records.get(r.id);if(!cur||compare(r,cur)>=0)d.records.set(r.id,r)}
   adoptMeta(d,result.meta);announce(d,result.won,result.meta);
   if(!closed){if(status.state!=='offline')setStatus('saving');queue()}
  }
  const reader=d=>({
-  get(id){if(d.newer)return undefined;const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
-  all(){const out=[];if(d.newer)return out;for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
+  get(id){if(closed||d.newer)return undefined;const r=d.records.get(id);return r&&!r.deleted?copy(r.value):undefined},
+  all(){const out=[];if(closed||d.newer)return out;for(const r of d.records.values())if(!r.deleted)out.push({id:r.id,value:copy(r.value),at:r.rev});return out.sort((a,b)=>order(a.id,b.id))},
   subscribe(fn){d.subs.add(fn);return ()=>d.subs.delete(fn)},
   get newer(){return d.newer}
  });
@@ -401,7 +678,11 @@ async function open(options){
     for(const r of results)if(r.status==='rejected'&&(!problem||problem.code==='retry'))problem=r.reason;
    }catch(e){problem=e}
    if(closed)return false;
-   if(problem&&problem.code==='retry'){again=true;problem=null}
+   if(problem?.code==='key_changed'&&account.refreshKey){
+    try{await account.refreshKey()}catch(e){problem=e}
+    if(closed)return false;
+   }
+   if(problem&&problem.code==='retry'){again=true;setStatus('saving');return false}
    if(problem){setStatus(problem.code==='offline'?'offline':'error',problem.code==='offline'?'':problem.message);return false}
    /* обмен прошёл: устройство сверилось с облаком по каждому документу — в следующий раз приложение его не ждёт */
    for(const d of docs.values())if(!d.meta.met){try{const r=await backend.write(d.scope,[],{met:true});if(closed)return false;adoptMeta(d,r.meta);announce(d,[],r.meta)}catch(e){}}
@@ -431,6 +712,7 @@ async function open(options){
   if(closed)return;closed=true;clearTimeout(timer);clearInterval(ticker);
   for(const fn of cleanups){try{fn()}catch(e){}}
   try{channel.close&&channel.close()}catch(e){}
+  if(!o.backend)backend.close().catch(()=>{});
   for(const d of docs.values()){d.records=new Map();d.subs.clear()}
   setStatus('signin');for(const fn of [...closeListeners]){try{fn()}catch(e){}}
   statusListeners.clear();closeListeners.clear();
@@ -447,9 +729,24 @@ async function open(options){
      назвало firstSync (мс), ждёт первого обмена не дольше этого времени: иначе оно открылось бы с пустого и первой же
      записью положило бы своё начальное (разделы, счётчики) поверх того, что уже лежит в аккаунте, — поздняя правка
      побеждает. Ждёт один раз: после удачного обмена у документов стоит отметка met. Нет связи или обмен не успел —
-     приложение открывается как есть, записи придут позже. */
-  if(o.firstSync>0&&[...docs.values()].every(d=>d.meta.iv===null&&!d.meta.met&&!d.records.size))
-   await Promise.race([sync().catch(()=>false),new Promise(resolve=>setTimeout(resolve,o.firstSync))]);
+     прежний режим допускает отложенный обмен. Для управляемого аккаунта первый обмен обязателен. */
+  const baselineScope=[uid,'baseline',app];
+  const markBaseline=o.firstSync>0&&managed&&!(await backend.load(baselineScope)).meta.met;
+  const baselineMissing=managed?markBaseline&&[...docs.values()].some(d=>!d.meta.met):
+   [...docs.values()].every(d=>d.meta.iv===null&&!d.meta.met&&!d.records.size);
+  if(o.firstSync>0&&baselineMissing){
+   let timeout;
+   try{
+    const ok=await Promise.race([sync(),new Promise(resolve=>{timeout=setTimeout(()=>resolve(false),o.firstSync)})]);
+    if(managed&&(!ok||[...docs.values()].some(d=>!d.meta.met))){
+     const detail=status.detail;close();
+     throw fail('first_sync',detail||'Для первого открытия загрузи записи аккаунта. Проверь соединение и повтори.');
+    }
+   }finally{clearTimeout(timeout)}
+  }
+  // Завершённый первый обмен — свой для каждой пары аккаунт/приложение.
+  // Он действует и при добавлении нового документа в следующей версии приложения.
+  if(markBaseline&&!closed)await backend.write(baselineScope,[],{met:true});
   if(closed)throw fail('account','Аккаунт изменился. Открой приложение снова.');
   if(auto){
    const listen=(target,type,fn)=>{if(target&&target.addEventListener){target.addEventListener(type,fn);cleanups.push(()=>target.removeEventListener(type,fn))}};
@@ -473,5 +770,5 @@ async function open(options){
   get closed(){return closed}
  };
 }
-root.HappyStore={open,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
+root.HappyStore={open,verifyLegacyKey,migrateAccount,prepareLocal,removeLocalAccount,idbBackend,tabChannel,model,FORMAT,ROW_VERSION,PUBLIC,NEWER};
 })(typeof globalThis!=='undefined'?globalThis:this);

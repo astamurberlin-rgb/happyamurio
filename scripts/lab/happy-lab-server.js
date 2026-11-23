@@ -30,11 +30,13 @@ var memoryOnly=false;
   real=v;if(!v||!v.idbBackend||v.__lab)return;var idb=v.idbBackend;
   v.idbBackend=function(){var b=idb.apply(null,arguments),fallback=null;
    function mem(){if(fallback)return fallback;var records=new Map(),metas=new Map(),k=function(s){return JSON.stringify(s)},m=v.model;
-    fallback={load:async function(scope){var box=records.get(k(scope))||new Map();return {records:Array.from(box.values()).map(m.copy),meta:m.nextMeta(metas.get(k(scope)),{},0)}},
+    fallback={pendingScopes:async function(uid){return Array.from(metas).filter(function(entry){return entry[1].dirty}).map(function(entry){return JSON.parse(entry[0])}).filter(function(scope){return scope[0]===uid})},
+     load:async function(scope){var box=records.get(k(scope))||new Map();return {records:Array.from(box.values()).map(m.copy),meta:m.nextMeta(metas.get(k(scope)),{},0)}},
      write:async function(scope,list,o){o=o||{};var key=k(scope);if(!records.has(key))records.set(key,new Map());var box=records.get(key),won=[];
       list.forEach(function(given){var r=given,old=box.get(r.id);if(o.local&&old&&old.rev>=r.rev)r=Object.assign({},r,{rev:old.rev+1});if(!old||m.compare(r,old)>0){box.set(r.id,m.copy(r));won.push(r)}});
       var meta=m.nextMeta(metas.get(key),o,won.length);metas.set(key,meta);return {won:won,meta:meta}}};return fallback}
-   return {load:function(s){return fallback?fallback.load(s):b.load(s).catch(function(){return mem().load(s)})},
+   return {pendingScopes:function(uid){return fallback?fallback.pendingScopes(uid):b.pendingScopes(uid)},
+    load:function(s){return fallback?fallback.load(s):b.load(s).catch(function(){return mem().load(s)})},
     write:function(s,l,o){return fallback?fallback.write(s,l,o):b.write(s,l,o).catch(function(){return mem().write(s,l,o)})}}};
   v.__lab=true;
  }});
@@ -80,7 +82,7 @@ async function auth(path,method,body,headers){
   if(!body.password||body.password.length<6)return bad('Password should be at least 6 characters','weak_password');
   var u=userBy(e);
   if(u&&u.confirmed)return bad('User already registered','user_already_exists');
-  if(!u){u={id:uuid(),email:e,password:body.password,confirmed:false,name:String((body.data||{}).display_name||''),newEmail:''};db.users.push(u)}
+  if(!u){u={id:uuid(),email:e,password:body.password,confirmed:false,keyMode:body.data&&body.data.happy_key_mode,name:String((body.data||{}).display_name||''),newEmail:''};db.users.push(u)}
   else u.password=body.password;
   mail('signup',e,u.id);save();return reply(200,userJson(u));
  }
@@ -116,6 +118,25 @@ async function auth(path,method,body,headers){
   save();return reply(200,userJson(u5));
  }
  return reply(404,{msg:'not found'});
+}
+/* Только вымышленные аккаунты лаборатории. Реальный KMS вызывается сервером Happy. */
+function accountKey(body,headers){
+ var me=who(headers);
+ if(!me||!me.user||me.kind!=='access')return reply(401,{});
+ var u=me.user;
+ if(!['open','begin','finish'].includes(body.action))return reply(400,{});
+ if(!u.keyState){
+  if(u.keyMode==='managed-v1')u.keyState='active';
+  else if(body.action==='begin')u.keyState='migrating';
+  else return reply(200,{state:'legacy'});
+  u.fixtureKey=btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
+ }
+ if(body.action==='finish'){
+  if(Object.values(rows).some(r=>r.user_id===u.id&&r.v===2))return reply(409,{});
+  u.keyState='active';
+ }
+ save();
+ return reply(200,{state:u.keyState,key:u.fixtureKey,keyVersion:2});
 }
 function rest(url,method,body,headers){
  var me=who(headers);if(!me||!me.user)return reply(401,{message:'JWT expired'});
@@ -159,6 +180,7 @@ window.fetch=async function(input,init){
  init=init||{};var method=(init.method||'GET').toUpperCase(),body={};try{body=init.body?JSON.parse(init.body):{}}catch(e){}
  await new Promise(function(r){setTimeout(r,120)});   // как будто по сети
  if(url.indexOf(BACKEND+'/auth/v1/')===0)return auth(url.slice((BACKEND+'/auth/v1/').length),method,body,init.headers||{});
+ if(url===BACKEND+'/functions/v1/account-key')return accountKey(body,init.headers||{});
  if(url.indexOf(BACKEND+'/rest/v1/app_sync')===0)return rest(url,method,body,init.headers||{});
  if(url.indexOf(BACKEND+'/rest/v1/rpc/meal_inbox_')===0)return inbox(url.slice((BACKEND+'/rest/v1/rpc/').length),body);
  return reply(404,{});
@@ -261,6 +283,11 @@ function mount(){
 }
 /* соседнее приложение открывается здесь же, в лаборатории */
 document.addEventListener('click',function(ev){
+ if(ev.target.closest?.('[data-hw="google"],[data-hw="link-google"]')){
+  ev.preventDefault();ev.stopImmediatePropagation();
+  toastLab('Здесь вымышленный аккаунт. Google доступен на подключённом тестовом стенде.');
+  return;
+ }
  var a=ev.target.closest&&ev.target.closest('a[data-happy-app]');if(!a)return;
  ev.preventDefault();ev.stopImmediatePropagation();location.href=a.href;
 },true);

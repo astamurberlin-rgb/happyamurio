@@ -9,7 +9,7 @@
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
   HAPPY_MEAL, HAPPY_DAY_STORE, HAPPY_SPORT_STORE — выпуски Meal, Day и Sport для сценариев (по умолчанию текущие:
-                 meal-33/, day-60/ и sport-44/). Все три работают на общем входе и общем модуле хранения;
+                 meal-34/, day-61/ и sport-45/). Все три работают на общем входе и общем модуле хранения;
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """
@@ -22,12 +22,21 @@ OUT = os.environ.get("HAPPY_OUT", "/tmp/happy-browser")
 CHROME = os.environ.get("HAPPY_CHROME", "/usr/bin/google-chrome")
 os.makedirs(OUT, exist_ok=True)
 SHOTS = OUT + "/"
-BACKEND = "https://geqziziycpclhnucnsyx.supabase.co"
+BACKEND = os.environ.get("HAPPY_TEST_BACKEND", "https://geqziziycpclhnucnsyx.supabase.co")
 UID = "00000000-0000-4000-8000-000000000001"
 EMAIL, PW = "fixture@example.invalid", "synthetic-only-password"
 rows, log = {}, []
 account = {"name": "Проверка"}   # имя аккаунта на поддельном сервере: «Изменить имя» в профиле его меняет
 HDR = {"content-type": "application/json", "access-control-allow-origin": "*", "access-control-expose-headers": "*"}
+
+
+def legacy_key(route, request, authenticated):
+    """Аккаунты прежних сценариев созданы до появления восстановления ключей."""
+    if not authenticated:
+        return route.fulfill(status=401, headers=HDR, body="{}")
+    if json.loads(request.post_data or "{}").get("action") != "open":
+        return route.fulfill(status=400, headers=HDR, body="{}")
+    return route.fulfill(status=200, headers=HDR, body=json.dumps({"state": "legacy"}))
 
 
 def handle(route, request, device=None):
@@ -52,14 +61,22 @@ def handle(route, request, device=None):
         return route.fulfill(status=200, headers=HDR, body=json.dumps({"id": UID, "email": EMAIL, "user_metadata": {"display_name": account["name"]}}))
     if path == "/auth/v1/logout":
         return route.fulfill(status=204, headers=HDR, body="")
+    if path == "/functions/v1/account-key":
+        return legacy_key(route, request, request.headers.get("authorization") == "Bearer synthetic-at")
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
     if request.headers.get("authorization") != "Bearer synthetic-at":
         return route.fulfill(status=401, headers=HDR, body=json.dumps({"message": "JWT"}))
+    return app_sync(route, request, UID, rows, entry)
+
+
+def app_sync(route, request, uid, rows, entry):
+    """PostgREST с проверкой владельца по сессии и условной записью шифротекста."""
+    q, method = parse_qs(urlsplit(request.url).query, keep_blank_values=True), request.method
     eq = {k: v[0][3:] for k, v in q.items() if v and v[0].startswith("eq.")}
     prefer = request.headers.get("prefer", "")
     if method in ("GET", "HEAD"):
-        found = [r for r in rows.values() if all(str(r.get(k)) == v for k, v in eq.items())]
+        found = [r for r in rows.values() if r["user_id"] == uid and all(str(r.get(k)) == v for k, v in eq.items())]
         select = q.get("select", ["*"])[0]
         if select != "*":
             cols = select.split(",")
@@ -69,7 +86,7 @@ def handle(route, request, device=None):
     key = (body.get("user_id"), body.get("app"), body.get("kind"))
     entry["kind"] = "%s/%s" % (body.get("app"), body.get("kind"))
     entry["bytes"] = len(body.get("data", ""))
-    if body.get("user_id") != UID:
+    if body.get("user_id") != uid:
         return route.fulfill(status=403, headers=HDR, body=json.dumps({"message": "RLS"}))
     if method == "POST":
         if key in rows and "merge-duplicates" not in prefer:
@@ -79,7 +96,7 @@ def handle(route, request, device=None):
         entry["result"] = "stored"
         return route.fulfill(status=201, headers=HDR, body=json.dumps([body]) if "return=representation" in prefer else "")
     if method == "PATCH":
-        target = [k for k, r in rows.items() if all(str(r.get(c)) == v for c, v in eq.items()) and r["user_id"] == UID]
+        target = [k for k, r in rows.items() if all(str(r.get(c)) == v for c, v in eq.items()) and r["user_id"] == uid]
         if len(target) != 1:
             entry["result"] = "no match"
             return route.fulfill(status=200, headers=HDR, body="[]")
@@ -159,8 +176,8 @@ def sign_out_settings(page):
 
 
 # Day и Sport на общем входе и общем модуле хранения — их сценарии: day_store, day_sections, sport_store.
-DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-60/")
-SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-44/")
+DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-61/")
+SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-45/")
 # Страница-заглушка для сценариев на общем модуле: вход и общий модуль под названием более новой версии
 # приложения (номер формата новее).
 # Страницу отдаёт сам сценарий; в репозитории и на сайте её нет.
@@ -227,7 +244,7 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 LIBS = "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/"
 # Выпуск Meal для сценариев (HAPPY_MEAL — другой). Day и Sport — DAY_STORE и SPORT_STORE выше; DAY и SPORT — те же
 # выпуски под короткими именами для сценариев, где три приложения открыты на одном телефоне.
-MEAL = os.environ.get("HAPPY_MEAL", "meal-33/")
+MEAL = os.environ.get("HAPPY_MEAL", "meal-34/")
 DAY, SPORT = DAY_STORE, SPORT_STORE
 _lib_files = {}
 

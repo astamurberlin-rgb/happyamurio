@@ -1,0 +1,85 @@
+{
+ "day": {
+  "entry": "day-58/index.html",
+  "version": "58",
+  "sharedDirectory": "day-58/shared",
+  "links": {
+   "meal": "meal-31/",
+   "sport": "sport-41/"
+  },
+  "download": "day-58/Happy-Day-58.html",
+  "previous": {
+   "entry": "day-57/index.html",
+   "version": "57.7",
+   "sourceCommit": "f80989f198289177446d00da3f28436393dfd4e4"
+  },
+  "name": "Happy Day · Update 58",
+  "settingsSections": [
+   "account",
+   "links",
+   "app",
+   "developer",
+   "version"
+  ],
+  "profileOptions": "{storage:dayStorage}"
+ },
+ "meal": {
+  "entry": "meal-31/index.html",
+  "version": "31.1",
+  "name": "Happy Meal · Update 31.1",
+  "sharedDirectory": "meal-31/shared",
+  "accountScript": "meal-31/account-ui.js",
+  "settingsSections": [
+   "account",
+   "links",
+   "app",
+   "data",
+   "developer",
+   "version"
+  ],
+  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
+  "previous": {
+   "entry": "meal-30/index.html",
+   "version": "30",
+   "sourceCommit": "262ca2e"
+  }
+ },
+ "sport": {
+  "entry": "sport-42/index.html",
+  "version": "42",
+  "name": "Happy Sport · Update 42",
+  "sharedDirectory": "sport-42/shared",
+  "sourceDirectory": "sport-42/sport/src",
+  "sourceRelease": "sport-41",
+  "sourceCommit": "42114ef6bdd2262b445a9fc86b66e1f061188e5d",
+  "settingsSections": [
+   "account",
+   "links",
+   "app",
+   "data",
+   "developer",
+   "version"
+  ],
+  "previous": {
+   "entry": "sport-41/index.html",
+   "version": "41",
+   "sourceCommit": "42114ef6bdd2262b445a9fc86b66e1f061188e5d"
+  },
+  "iconLibrary": "assets/sport-icons/v1",
+  "exerciseLibrary": "assets/exercise-library/v1",
+  "exerciseMedia": "assets/exercise-media/v1"
+ },
+ "colorStudio": {
+  "entry": "prototypes/happy-family-color-studio-v12.html",
+  "version": "12.8",
+  "kind": "studio",
+  "storageKey": "happy-family-color-studio-v11"
+ },
+ "iconStudio": {
+  "entry": "icon-studio/index.html",
+  "version": "2.18",
+  "kind": "studio",
+  "storageKey": "happy_icon_studio_v1",
+  "storageScript": "icon-studio/studio.js"
+ }
+}

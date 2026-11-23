@@ -20,7 +20,7 @@ USERS = {
 ONE, TWO = "one@example.invalid", "two@example.invalid"
 tokens, table, requests, offline = {}, {}, [], set()
 out, errors = {}, []
-MEAL_STORE = os.environ.get("HAPPY_MEAL_STORE", "meal-33/")
+MEAL_STORE = os.environ.get("HAPPY_MEAL_STORE", "meal-34/")
 MEAL_PAGE, DAY_PAGE, SPORT_PAGE = BASE + MEAL_STORE, BASE + DAY_STORE, BASE + SPORT_STORE
 # прежние строки облака Meal первого аккаунта: модуль их не читает и не трогает
 OLD = {kind: {"user_id": USERS[ONE]["id"], "app": "meal", "kind": kind, "v": 1, "iv": "b2xkLWl2LW9sZC1pdg==", "data": "b2xkLWNpcGhlcnRleHQ=", "at": 1} for kind in ("journal", "link", "counters", "supplements")}
@@ -63,6 +63,8 @@ def serve(route, request, device):
             for k in [k for k, v in tokens.items() if v == uid]:
                 tokens.pop(k, None)
         return route.fulfill(status=204, headers=HDR, body="")
+    if path == "/functions/v1/account-key":
+        return legacy_key(route, request, request.headers.get("authorization", "").removeprefix("Bearer ") in tokens)
     if path != "/rest/v1/app_sync":
         return route.fulfill(status=404, headers=HDR, body="{}")
     uid = tokens.get(request.headers.get("authorization", "").replace("Bearer ", ""))
@@ -454,7 +456,7 @@ checks = [
     ("вышли в Meal — Day и Sport остались в аккаунте и сохраняют в облако; на сервере закрыт только вход Meal; дневник Meal без входа пустой", out["others_stay"] == [True, True] and out["logout_scope"] and set(out["logout_scope"]) == {"local"} and out["sport_saves_after_meal_out"] and out["after_sign_out"] == [0, "Завтрак", True]),
     ("второй аккаунт на том же телефоне не видит записей первого", out["second_account"] == [0, "Завтрак", ["egg", "cfm", "wal"], 0]),
     ("первый аккаунт вернулся и видит свои записи", out["first_account_back"] == [2, "Раннее утро"]),
-    ("записи более новой версии Meal: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and out["newer_refuses"][0] and "более новой версии" in out["newer_refuses"][1]),
+    ("записи более новой версии Meal: эта версия не пишет и предлагает открыть последнюю", out["newer_put"] == "ok" and bool(out["newer_seen"]) and bool(out["newer_card"]) and "Открыть последнюю версию" in out["newer_card"] and out["newer_refuses"][0] and "более новой версией" in out["newer_refuses"][1]),
     ("ошибок на страницах нет", not errors),
 ]
 out["errors"] = errors
