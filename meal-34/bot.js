@@ -1917,6 +1917,77 @@ var MealBot=(function(){
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
     return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
   }
+  /* ── ступень 2 · «рецепты из готового»: «рецепт плова», «как приготовить гречку с курицей» (решение Астамура 23.11.2026 «да»).
+     Ищет только то, что уже есть в приложении, по порядку: «Мои рецепты» → рецепты подборок (состав и шаги) → блюда узбекского каталога
+     (состав на порцию и рецептура-источник). Своих рецептов бот не пишет: нет такого — «пока нет», вопрос — в список «без ответа». */
+  var RCP_STOP=/^(с|со|и|на|из|в|во|для|без|по|мне|пожалуйста|пж|какой|какой-нибудь|нибудь|какую|домашн\S*|вкусн\S*|прост\S*|хорош\S*|настоящ\S*|классическ\S*|правильн\S*|самый|самого|самые|рецепт\S*|блюд\S*|человек\S*|порци\S*|четверых|двоих|троих|семью|всех)$/;
+  function rcpStem(w){ w=String(w).toLowerCase().replace(/ё/g,'е').replace(/[^а-яa-z-]/g,''); var s=w.replace(/(ами|ями|ов|ев|ей|ой|ий|ый|ая|ое|ые|ую|ом|ем|ам|ям|ах|ях|а|я|ы|и|у|ю|е|о|ь)$/,''); return s.length>=3?s:w }
+  function rcpWords(t){ return String(t).toLowerCase().replace(/ё/g,'е').split(/[^а-яa-z-]+/).filter(function(w){ return w&&!RCP_STOP.test(w)&&!/^\d/.test(w) }).map(rcpStem).filter(function(w){ return w.length>=2 }) }
+  /* одно слово — «плова» и «плов», «курицей» и «куриной»; «мёдом» и «медовик» — разные */
+  function rcpHit(a,b){ if(a===b) return true; if(a.length<3||b.length<3) return false;
+    var n=0; while(n<a.length&&n<b.length&&a[n]===b[n]) n++; return n>=Math.min(a.length,b.length)-1&&n>=Math.max(3,Math.max(a.length,b.length)-3) }
+  function rcpPool(){
+    var out=[];
+    (DB.recipes||[]).forEach(function(r){ if(r&&r.t) out.push({kind:'mine',r:r,col:null,t:r.t,pr:0}) });
+    (typeof COLS!=='undefined'?COLS:[]).forEach(function(c){ c.items.forEach(function(r){ out.push({kind:'col',r:r,col:c,t:r.t,min:r.min,pr:1}) }) });
+    if(catOn()) catDishes(null,{from:'uzbek'}).forEach(function(x){ var f=FOODS[x.fid]; x.pr=2; x.alias=((f.recipe||{}).aliases||[]).filter(function(a){ return !/кухня/.test(a) }); out.push(x) });
+    return out;
+  }
+  function rcpFind(q){
+    var want=rcpWords(q); if(!want.length) return [];
+    return rcpPool().map(function(x,i){
+      var own=rcpWords(x.t), al=(x.alias||[]).map(rcpStem);
+      if(!want.every(function(w){ return own.concat(al).some(function(o){ return rcpHit(w,o) }) })) return null;
+      x.extra=own.filter(function(o){ return !want.some(function(w){ return rcpHit(w,o) }) }).length; x.i=i; return x }).filter(Boolean)
+      .sort(function(a,b){ return a.pr-b.pr||a.extra-b.extra||a.i-b.i });
+  }
+  function uzHow(f){   // из заметки каталога — только первая фраза и только если это про готовку, а не служебная пометка о расчёте
+    var s=String((f.recipe||{}).processNote||'').split(/[.;]/)[0].trim();
+    return s&&!/\d/.test(s)&&s.length<=160&&/(обжар|туш|вар|на пару|запек|выпек|жар|готов|печ)/i.test(s)&&!/(масс|расч|вес|ингредиент)/i.test(s)?s+'.':'';
+  }
+  function rcpShow(S,list,more){
+    var x=list[0], seq=(S.adv&&S.adv.seq||0)+1, h='', HINT='В дневник ничего не записал.';
+    S.adv={want:{ings:[]},list:list,shown:list.length,seq:seq};
+    var key=seq+'.0';
+    if(x.kind==='col'){
+      h=p('<b>'+esc(x.t)+'</b>'+(x.min?' · '+x.min+' мин':''))+p('Состав: '+esc(String(x.r.x).replace(/\.$/,''))+'.')+p(esc(x.r.st))+
+        chips([['advopen:'+key,'Открыть'],['advlog:'+key,'Записать']])+'<p class="mlHint">Рецепт из подборки «'+esc(x.col.t)+'» в приложении. '+HINT+'</p>';
+    } else if(x.kind==='mine'){
+      var comp=(x.r.lines||[]).filter(function(l){ return FOODS[l.fid] }).map(function(l){ return FOODS[l.fid].n+' '+Math.round(l.g)+' г' }).join(', ');
+      h=p('<b>'+esc(x.t)+'</b> — твой рецепт')+(comp?p('Состав: '+esc(comp)+'.'):'')+chips([['advlog:'+key,'Записать']])+'<p class="mlHint">Шагов в «Моих рецептах» нет, только состав. '+HINT+'</p>';
+    } else {
+      var f=FOODS[x.fid], r=f.recipe||{}, y=r.yieldGrams>0?r.yieldGrams:null, k=y?x.g/y:1, how=uzHow(f), url=r.source&&r.source.url;
+      var ing=(r.ingredients||[]).map(function(i){ return String(i.name).split(',')[0].trim().toLowerCase()+' '+Math.max(1,Math.round(i.grams*k))+' г' }).join(', ');
+      var lab=String(r.sourceLabel||'').split(';')[0].split(' · ')[0].replace(/,\s*с\.\s*[\d–-]+/,'').trim().replace(/\.$/,'');
+      h=p('<b>'+esc(x.t)+'</b> · узбекская кухня')+p('Состав на '+(x.u==='г'?Math.round(x.g)+' г':x.u==='порция'?'порцию '+Math.round(x.g)+' г':'1 '+esc(x.u)+' '+Math.round(x.g)+' г')+' (сырые продукты): '+esc(ing)+'.')+(how?p(esc(how)):'')+
+        chips([['advopen:'+key,'Открыть'],['advlog:'+key,'Записать порцию']])+
+        '<p class="mlHint">'+(url?'Источник: <a href="'+esc(url)+'" target="_blank" rel="noopener">'+esc(lab||'рецептура')+'</a>. ':'')+HINT+'</p>';
+    }
+    var rest=list.slice(1,4);
+    if(rest.length) h+=p('Есть ещё:')+chips(rest.map(function(y,j){ return ['rcpshow:'+seq+'.'+(j+1),y.t] }));
+    return h;
+  }
+  /* «рецепт X», «дай рецепт X», «как приготовить / сделать / испечь X» */
+  function rcpAsk(S,raw){
+    var o=nrm(raw).trim().replace(/[?!.,…\s]+$/,'').replace(/,/g,' ').replace(/\s+/g,' ');
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    var lead='^(?:а\\s+)?(?:(?:скажи|подскажи|дай|покажи|напиши|пришли|скинь|знаешь|нужен|есть|хочу)\\s+)?(?:мне\\s+)?(?:у тебя\\s+)?(?:(?:какой-нибудь|какой|хороший|простой)\\s+)?';
+    var mr=o.match(new RegExp(lead+'рецепт(?:ы|ик)?\\s+(.+)$')), mh=!mr&&o.match(/^(?:а\s+)?(?:(?:скажи|подскажи)\s+)?(?:мне\s+)?как\s+(?:(?:правильно|лучше|вкусно|быстро)\s+)?(приготовить|сделать|испечь|готовить|готовят|делают)\s+(.+)$/);
+    if(!mr&&!mh) return null;
+    var q=(mr?mr[1]:mh[2]).replace(/\s+на\s+(\S+\s+)?(человек\S*|персон\S*|четверых|двоих|троих|семью|всех|компанию)(\s|$).*/,'').trim();
+    if(/^(сохран|добав|созда|запис|удал|измен|поменя|отред|свой|своего|мой|моего|мои|в приложени|в дневник)/.test(q)) return null;
+    if(/^(для|без|на\s+(завтрак|обед|ужин|перекус|вечер|утро))(\s|$)/.test(q)) return null;   // «рецепт на ужин» — это совет блюда (advice)
+    if(/^(из|с|со)\s/.test(q)){ var av=advice(S,'что приготовить '+q); if(av) return av; q=q.replace(/^\S+\s+/,'') }   // «рецепт с курицей» — тоже совет: что приготовить с курицей   // «рецепт — как сохранить свой» — справка о приложении
+    if(mh&&/^(отч|цел|напомин|шорткат|экспорт|импорт|скрин|фото|голос|диктов|аккаунт|вход|норм)/.test(q)) return null;
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    if(mh&&L&&L.state==='ok'&&L.find(o)&&rcpWords(q).length<2) return null;   // «как приготовить гречку» — карточка «как готовить»
+    var list=rcpFind(q);
+    if(list.length) return rcpShow(S,list);
+    if(mh) return null;   // «как испечь медовик» — дальше справочник готовки: «пока не знаю» и список «без ответа»
+    if(catOn()&&typeof MealUzbek!=='undefined'&&MealUzbek.status()==='loading') return p('Каталог блюд ещё загружается. Спроси ещё раз через пару секунд.');
+    missLog('вопросы без ответа (не продукты)',o,o);
+    return p('Такого рецепта у меня пока нет. Ищу только среди «Моих рецептов», подборок приложения и узбекских блюд, свои не придумываю. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>';
+  }
   function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
   function nutrAsk(o){
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
@@ -2167,6 +2238,7 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var rq=rcpAsk(S,raw); if(rq) return rq }   // «рецепт плова» — рецепт из готового, а не «готовка на несколько человек»
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
@@ -3045,6 +3117,8 @@ var MealBot=(function(){
     else if(a[0]==='offer'){ if(!S.offer) return;
       if(a[1]==='2'&&S.offer.alt){ var of2=S.offer; S.offer=null; h=handle(chat,S,{kind:'text',text:of2.alt,eaten:of2.eaten||undefined,inbox:of2.inbox||undefined,at:of2.at||undefined}); if(S.offer) h=handle(chat,S,{kind:'text',text:'да'}) }
       else h=handle(chat,S,{kind:'text',text:'да'}) }
+    else if(a[0]==='rcpshow'){ var rk=String(a[1]||'').split('.'), rl=S.adv&&S.adv.seq===+rk[0]?S.adv.list:null, rx=rl&&rl[+rk[1]]; if(!rx) return;
+      h=rcpShow(S,[rx].concat(rl.filter(function(y){ return y!==rx }))) }   // «Есть ещё: плов с говядиной» — показать этот рецепт
     else if(/^adv/.test(a[0])){ h=advTap(S,a); if(h==='') return }
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='st'){ h=typeof MealBotSteps!=='undefined'?MealBotSteps.tap(chat,S,a):null }
