@@ -391,8 +391,8 @@
   },
   {
    "path": "design-rules.css",
-   "size": 4679,
-   "sha256": "fcb669810e58bdb9d4d4a1db01fd49f0ef8cb819c111a04f8c801a20c33ed184"
+   "size": 5217,
+   "sha256": "ab4567698a42f1d96661f5ee4b7f7540ad354bf14f8dd68a9fc0e1b566c9163f"
   },
   {
    "path": "desserts.js",
@@ -431,8 +431,8 @@
   },
   {
    "path": "index.html",
-   "size": 714017,
-   "sha256": "ec7ce65cf223c664d46bb0a429a2a9983d6f94d6c10674e8d6f306a6659a0bb6"
+   "size": 715221,
+   "sha256": "c8043fb89d93702e5252c07e9c1c2958d497a1338322a30f5b3dd2226d9981e8"
   },
   {
    "path": "kfct.js",
@@ -446,8 +446,8 @@
   },
   {
    "path": "meal-account.js",
-   "size": 8172,
-   "sha256": "3366e86bb872b147855e3c0580ff16ed4abc02838ca969057a6f63a706f91296"
+   "size": 10274,
+   "sha256": "e2d34a138a9efa9273d22d5f4a919b44a0478f035a655b8fe4430596e7b3c396"
   },
   {
    "path": "meal-data.js",
@@ -651,8 +651,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 90525,
-   "sha256": "340753cab92d1bccaf0121106ffbfc0ed9555aa4626edd4b3c6df9821fe2108c"
+   "size": 90849,
+   "sha256": "522173ebafe7aac1ed09e03303e4fa2134a682341a9459fc3e21e1555c14f35f"
   },
   {
    "path": "report.css",
@@ -696,8 +696,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 16568,
-   "sha256": "eec7fcacf9fd5af6bdb3cfa07c4c70e47a88712c03ecd811833e8beee3c9c3b2"
+   "size": 16614,
+   "sha256": "78b576a205d01506394abab826aedad0e46d4ec393f77c0cc4bfb0aab7e22c04"
   },
   {
    "path": "shared/happy-colors.css",
@@ -711,8 +711,8 @@
   },
   {
    "path": "shared/happy-energy-ring.js",
-   "size": 9229,
-   "sha256": "857c46d8a9bc118284b86f824d777f9c82c2aae7af04410361f5d05ea71a7d5e"
+   "size": 12823,
+   "sha256": "9dee0b24f6dcfcaef65962cb70082a7b3281154ab6e46b11d09652dce3d02e16"
   },
   {
    "path": "shared/happy-food.js",
@@ -766,8 +766,8 @@
   },
   {
    "path": "shared/happy-reference-themes.js",
-   "size": 9938,
-   "sha256": "2aa3e3daac232cf6c71a3f5b3129cfeab4a3ead391c247dd206bb9a0751fcd31"
+   "size": 11096,
+   "sha256": "a1b11756b3fb301555bc4aae565810f2368caf5a85aa936ddeee092b2d099bff"
   },
   {
    "path": "shared/happy-screens.css",
@@ -882,7 +882,7 @@
   {
    "path": "sw.js",
    "size": 3778,
-   "sha256": "07cdeb5dae3252da7210267506d81066a8399c7635336280eebbbb401aaa2ea0"
+   "sha256": "9b36233c1bb3ef3690a4d75839f57d8c3158932169ebed2724bfab5af9f67219"
   },
   {
    "path": "usda-measures.js",

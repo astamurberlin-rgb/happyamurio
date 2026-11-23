@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1584694,
-   "sha256": "77af20fb2985c18e29129d49174a9298f17e29552c9bf3e837431d9f74df2932"
+   "size": 1594376,
+   "sha256": "8cf63cebaa4dc2817c21c4134a854da4ec412a78cc0d70a4ba1ad9979885c35f"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -186,8 +186,8 @@
   },
   {
    "path": "index.html",
-   "size": 521207,
-   "sha256": "2279a89a36196407518cc5b9ea5e502787b4557c9cf315a8213f55431ab2ab7b"
+   "size": 522533,
+   "sha256": "72dda570de195f1adb0de7d429192e1f21a04d10cbb59d189985a84ef0494205"
   },
   {
    "path": "manifest.webmanifest",
@@ -196,8 +196,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 53770,
-   "sha256": "fd74417057fd7018bb3494d8d10eccb75578a3f4079230365e51505e52f03a20"
+   "size": 54121,
+   "sha256": "2ebca5355964eb2adc4dc1badafdc21a3228bf7021c63f0f94ac5f4aa1641b0e"
   },
   {
    "path": "row-swipe.js",
@@ -251,8 +251,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 16568,
-   "sha256": "eec7fcacf9fd5af6bdb3cfa07c4c70e47a88712c03ecd811833e8beee3c9c3b2"
+   "size": 16614,
+   "sha256": "78b576a205d01506394abab826aedad0e46d4ec393f77c0cc4bfb0aab7e22c04"
   },
   {
    "path": "shared/happy-colors.css",
@@ -276,8 +276,8 @@
   },
   {
    "path": "shared/happy-energy-ring.js",
-   "size": 9229,
-   "sha256": "857c46d8a9bc118284b86f824d777f9c82c2aae7af04410361f5d05ea71a7d5e"
+   "size": 12823,
+   "sha256": "9dee0b24f6dcfcaef65962cb70082a7b3281154ab6e46b11d09652dce3d02e16"
   },
   {
    "path": "shared/happy-fields.css",
@@ -350,9 +350,19 @@
    "sha256": "adb506b14b9868aca0721386b9944d1fdeb5b29087db76081b9c7328cfcefd6e"
   },
   {
+   "path": "shared/happy-privacy.css",
+   "size": 537,
+   "sha256": "108785cbaedb2ea4b2f4ec8909e1aefa7deab09a9924f5cc2beffa5a22b20df0"
+  },
+  {
+   "path": "shared/happy-privacy.js",
+   "size": 1957,
+   "sha256": "4e34b4d715fe78b78e556addfd081049d4f4d5c499286ed3a3054106ea6178f6"
+  },
+  {
    "path": "shared/happy-reference-themes.js",
-   "size": 9938,
-   "sha256": "2aa3e3daac232cf6c71a3f5b3129cfeab4a3ead391c247dd206bb9a0751fcd31"
+   "size": 11096,
+   "sha256": "a1b11756b3fb301555bc4aae565810f2368caf5a85aa936ddeee092b2d099bff"
   },
   {
    "path": "shared/happy-screens.css",
