@@ -433,6 +433,11 @@
    "sha256": "e6ab5673201aafc10efe91eb55c8dfa757ec2782b82781ba31b3052ab99b5c47"
   },
   {
+   "path": "bot-guide-steps.js",
+   "size": 27370,
+   "sha256": "48ded30eef6f967aaf816ca54374b6d573dcdb4d11a583a1ecb56affe9490743"
+  },
+  {
    "path": "bot-own-product.js",
    "size": 19595,
    "sha256": "7fbcf2e7888e32836af32ece34cb2cda5109435fe4a095b1161b18e733fe8cff"
@@ -459,13 +464,13 @@
   },
   {
    "path": "bot.js",
-   "size": 289647,
-   "sha256": "d17150bf461410488296422e32fc7f41527cb4d9b588d65f5458c68634401567"
+   "size": 314165,
+   "sha256": "f592f22f15ec396dcf817ec713580d28e5fcc68f3ed27c27c4ae3e96336042e2"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 614517,
-   "sha256": "972cbd5beed6ff92674144315bfafa22a88c37a64e4139edfa380e41a49d341e"
+   "size": 649346,
+   "sha256": "c0787e7034bff708a3093b3c59267a4f5a6ce10e5750387ff83f640a51c92f66"
   },
   {
    "path": "catalog-offline.js",
@@ -573,6 +578,11 @@
    "sha256": "5f4f371dd5a99fac4cff085df7211378022bc211e21e7c475cb29efa5617a3e5"
   },
   {
+   "path": "cooking-library.js",
+   "size": 3540,
+   "sha256": "51609af73430915c3036eac9b46783fae637db562c6c3b8ac23ae459d0ef39ca"
+  },
+  {
    "path": "counters.js",
    "size": 35008,
    "sha256": "83b7ed99a7c4807a98308ee1ce22d882d433095c170bb9539e3b726c31f1a4df"
@@ -619,8 +629,8 @@
   },
   {
    "path": "index.html",
-   "size": 702287,
-   "sha256": "e0dc996abfb25a46cb454b5c7f98a4b2bdd8372279a4060aa582785071ad62e1"
+   "size": 709637,
+   "sha256": "75d3e0f6ce6b962e9d798607cf82f156e5593c2d371a08e7e8f93fb359b51bb4"
   },
   {
    "path": "kfct.js",
@@ -839,8 +849,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 84419,
-   "sha256": "f5b4fb3912ed3e4021d657ad8755d65f25f6e453fe9910858ae6fc4832345a69"
+   "size": 85387,
+   "sha256": "97cc28141b2467d13c58d9d5113fc4f9a16aac2fc12de6bd522248e655761295"
   },
   {
    "path": "report.css",
