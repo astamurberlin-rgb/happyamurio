@@ -2683,6 +2683,7 @@ var MealBot=(function(){
     var A=actData(); if(!A) return null;
     if(a[1]==='undo'){ var fn=S.acts&&S.acts[+a[2]]; if(!fn) return null; S.acts[+a[2]]=null; var g=actSignIn(); if(g) return g; return p(esc(fn()?A.answer_undone:A.answer_undo_late)) }
     if(a[1]==='fav') return actFav(S,a[2]==='1',a.slice(3).join(':'));
+    if(a[1]==='suplog'){ var g0=actSignIn(); if(g0) return g0; var dt0=curDate, sc0=typeof autoSec==='function'?autoSec():null; Promise.resolve(typeof MealBotGuide!=='undefined'&&MealBotGuide&&MealBotGuide.pending(a[2])).then(function(){ return HappySupplements.logIntake({variantId:a[2],quantity:1,measureId:a[3]||'basis',date:dt0,time:null,section:sc0}) }).catch(function(e){ try{ toast(e.message) }catch(_){} }); return p('Записал приём. Он виден в дне и в разделе БАДов.') }   // своя добавка из чата: «Записать 1 капсулу»
     if(a[1]==='fast') return actFastSet(S,a[2]==='on');
     if(a[1]==='day'){ curDate=a.slice(2).join(':'); try{ if(typeof renderDay==='function') renderDay(); if(typeof go==='function') go('day') }catch(e){} return null }
     return null;
