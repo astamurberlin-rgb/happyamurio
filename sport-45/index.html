@@ -1461,7 +1461,8 @@ body.hs-open{overflow:hidden}
 .hs-email-start svg{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round}
 .hs-login-choice{font-size:14px;color:var(--hs-muted);margin:29px 0 13px}
 #happy-screens .hs-login-choice button{padding:8px 3px;font-weight:600;color:var(--happy-ink);font-size:14px}
-#happy-screens .hs-guest{display:block;margin:0 auto;text-align:center;font-size:14px;color:var(--hs-muted);padding:9px 6px;min-height:38px}
+#happy-screens .hs-guest{display:block;margin:0 auto;text-align:center;font-size:14px;color:var(--hs-muted);padding:9px 6px;min-height:38px;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.hs-test-note{font-size:12px;line-height:1.45;color:var(--hs-muted);margin:0 auto 4px}
 .hs-auth{padding-top:calc(56px + env(safe-area-inset-top))}
 .hs-auth h1.hs-title{font-size:20px;font-weight:600;line-height:1.22;margin-bottom:28px}
 .hs-auth-fields{display:flex;flex-direction:column;gap:20px}
@@ -11289,6 +11290,7 @@ function html(name){
    googleButton()+
    '<button type="button" class="hs-btn hs-primary hs-email-start" data-hw="to-register">'+I.envelope+'<span>Продолжить с почтой</span></button></div>'+
    errorBox()+'<p class="hs-login-choice">Уже есть аккаунт? <button type="button" data-hw="to-login">Войти</button></p>'+
+   '<p class="hs-test-note">Тестовая версия:<br>покупки бесплатные, деньги не списываются</p>'+   /* Астамур 23.11.2026: здесь пропустить нельзя */
    '<button type="button" class="hs-guest" data-hw="guest">Познакомиться '+(/^[SС]/.test(app)?'со':'с')+' '+esc(app)+'</button></div>';
  case 'register':return title('Создать аккаунт')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+
    S().passwordField({label:'Пароль',name:'password',autocomplete:'new-password'})+S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+

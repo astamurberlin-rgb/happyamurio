@@ -162,6 +162,7 @@ function html(name){
    googleButton()+
    '<button type="button" class="hs-btn hs-primary hs-email-start" data-hw="to-register">'+I.envelope+'<span>Продолжить с почтой</span></button></div>'+
    errorBox()+'<p class="hs-login-choice">Уже есть аккаунт? <button type="button" data-hw="to-login">Войти</button></p>'+
+   '<p class="hs-test-note">Тестовая версия:<br>покупки бесплатные, деньги не списываются</p>'+   /* Астамур 23.11.2026: здесь пропустить нельзя */
    '<button type="button" class="hs-guest" data-hw="guest">Познакомиться '+(/^[SС]/.test(app)?'со':'с')+' '+esc(app)+'</button></div>';
  case 'register':return title('Создать аккаунт')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+
    S().passwordField({label:'Пароль',name:'password',autocomplete:'new-password'})+S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+
