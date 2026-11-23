@@ -97,7 +97,7 @@ with sync_playwright() as p:
         if same >= 3: break
         page.wait_for_timeout(500)
     page.evaluate("()=>MealBot.setOn(true)")
-    # Meal 33.38: настройки до всех сценариев — команды и шаги гида начинают с них (фраза «включи фастинг 16 на 8» в S включает фастинг)
+    # Meal 33.37: настройки до всех сценариев — команды и шаги гида начинают с них (фраза «включи фастинг 16 на 8» в S включает фастинг)
     KEEP = page.evaluate("()=>JSON.stringify({r:DB.mealRules||null,s:DB.foodSources||null,x:DB.sections||null,t:DB.taps||[],c:DB.recipes||[]})")
     bad = []
     for s in S:
@@ -191,7 +191,7 @@ with sync_playwright() as p:
         if why: obad.append("%s: %s" % (s["id"], "; ".join(why)))
     page.evaluate("()=>{DB.days={};DB.foods=[];rebuildLib();save();saveNow();return true}")
     check("свой продукт через чат: %d сценариев" % len(OWN), not obad, " | ".join(obad[:8]))
-    # Meal 33.38 · короткие команды «внеси за меня»: избранное, фастинг, базы, прошлые дни; «Отменить» возвращает как было
+    # Meal 33.37 · короткие команды «внеси за меня»: избранное, фастинг, базы, прошлые дни; «Отменить» возвращает как было
     abad = []
     for s in ACTS:
         page.clock.set_fixed_time(datetime.datetime.fromisoformat(s.get("clock", D0)))

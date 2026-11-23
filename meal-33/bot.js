@@ -2204,7 +2204,7 @@ var MealBot=(function(){
       return m.dry?{dry:1,clean:true,n:0}:p('Это похоже на поправку, а не на еду. Из диктовок шортката поправки не выполняю — скажи это здесь, в диалоге.');
     /* служебные фразы */
     if(/^тест(\s|$|овая|овое|овый)/.test(bare)) return p('Это тест. В дневник ничего не добавляю.');
-    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&!prepped){ var ac=appAct(S,m.text); if(ac) return ac+(S.pend.length?askHTML(S):'') }   // Meal 33.38: короткие команды «внеси за меня»
+    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&!prepped){ var ac=appAct(S,m.text); if(ac) return ac+(S.pend.length?askHTML(S):'') }   // Meal 33.37: короткие команды «внеси за меня»
     /* «отмени кофе» — убрать одну запись; «перепиши: груша 250 г» — убрать последнее и записать заново */
     CD=null;
     if(/^(отмени|отменить|убери|удали|сотри|замени|поменяй|исправь|перепиши|вместо|перенеси|перемести)(\s|$)/.test(bare)){
@@ -2545,7 +2545,7 @@ var MealBot=(function(){
     },150);
   }
   function ownChip(miss){ return miss.length===1&&typeof MealOwnProductFlow!=='undefined'&&MealOwnProductFlow?chips([['ownname:'+encodeURIComponent(miss[0].name),'Завести свой продукт']]):'' }
-  /* ── Meal 33.38 · короткие команды «внеси за меня» (слой 2 бота-гида, Астамур 23.11.2026): избранное, фастинг вкл/выкл
+  /* ── Meal 33.37 · короткие команды «внеси за меня» (слой 2 бота-гида, Астамур 23.11.2026): избранное, фастинг вкл/выкл
      и статус, базы продуктов, прошлые дни и среднее за неделю. Слова и ответы — в словаре (app_actions); каждое изменение —
      с кнопкой «Отменить». Покупка, выход, удаление и выгрузка через бота не делаются ── */
   function actData(){ var D0=typeof window!=='undefined'&&window.HappyMealSpeechData; return D0&&D0.app_actions||null }
