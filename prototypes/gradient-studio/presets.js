@@ -303,6 +303,67 @@ window.HappyGradientPresets={
         balance:{posColor:'#FFFFFF',negColor:'#FDC5DE',blend:55,fade:35,alpha:96},
         progress:['#FDD9E9','#F5E9FF','#FFFFFF','#F3F4FE']
       }
+    },
+    /* 23.11.2026: ещё четыре варианта для новой «Орхидеи» (Астамур: «придумай мне орхидею тоже, несколько вариантов») */
+    {
+      name:'Сирень',
+      note:'Прохладная: сирень, барвинок и лёд — спокойнее фона.',
+      energy:{
+        eat:  {c0:'#EADFFF',cm:'#BDB6FF',c1:'#A6DDFF',mw:30,s0:59,s1:77,a0:74,a1:94},
+        spent:{c0:'#A6DDFF',cm:'#BDB6FF',c1:'#EADFFF',mw:30,s0:17,s1:45,a0:78,a1:96},
+        track:18
+      },
+      bars:{hues:{pink:320,violet:295,blue:270,teal:235},chroma:.09,from:.93,to:.83,over:.68,dot:.88,track:18},
+      day:{
+        flow:{mode:'flow',colors:['#E0D2FF','#BFC4FF','#CBEAFF'],intensity:52,softness:82,duration:18},
+        balance:{posColor:'#C4E6FF',negColor:'#F0B8E6',blend:55,fade:35,alpha:100},
+        progress:['#F0B8E6','#D6BEFA','#BDC6FF','#A6DDFF']
+      }
+    },
+    {
+      name:'Шампань',
+      note:'Тёплая: сливки, шампань и персик — золотой свет на фиолетовом.',
+      energy:{
+        eat:  {c0:'#FFF3D6',cm:'#FFDCA6',c1:'#FFB9A6',mw:30,s0:59,s1:77,a0:78,a1:96},
+        spent:{c0:'#FFB9A6',cm:'#FFDCA6',c1:'#FFF3D6',mw:30,s0:17,s1:45,a0:82,a1:97},
+        track:18
+      },
+      bars:{hues:{pink:25,violet:50,blue:75,teal:92},chroma:.1,from:.93,to:.82,over:.66,dot:.87,track:18},
+      day:{
+        flow:{mode:'flow',colors:['#FFF0D0','#FFFFFF','#FFDCCB'],intensity:48,softness:84,duration:18},
+        balance:{posColor:'#FFF3D6',negColor:'#FFB9A6',blend:55,fade:35,alpha:100},
+        progress:['#FFB9A6','#FFCDA4','#FFE2B6','#FFF3D6']
+      }
+    },
+    {
+      name:'Слива',
+      note:'В тон кнопке: светлая слива, орхидея и фиалка.',
+      energy:{
+        eat:  {c0:'#F6CDF2',cm:'#DBA0EE',c1:'#B692F6',mw:30,s0:59,s1:77,a0:70,a1:90},
+        spent:{c0:'#B692F6',cm:'#DBA0EE',c1:'#F6CDF2',mw:30,s0:17,s1:45,a0:74,a1:94},
+        track:18
+      },
+      bars:{hues:{pink:335,violet:318,blue:300,teal:282},chroma:.12,from:.88,to:.77,over:.62,dot:.82,track:18},
+      day:{
+        flow:{mode:'flow',colors:['#F2C6F0','#D3A6F2','#FBE0F6'],intensity:52,softness:80,duration:16},
+        balance:{posColor:'#F6CDF2',negColor:'#B692F6',blend:55,fade:35,alpha:100},
+        progress:['#B692F6','#CD9CF1','#E4B4F0','#F6CDF2']
+      }
+    },
+    {
+      name:'Северное сияние',
+      note:'Свежая: мята, небо и сирень — холодный свет без жёлтого.',
+      energy:{
+        eat:  {c0:'#B9F7E4',cm:'#A9D8FF',c1:'#D4BCFF',mw:30,s0:59,s1:77,a0:76,a1:95},
+        spent:{c0:'#D4BCFF',cm:'#A9D8FF',c1:'#B9F7E4',mw:30,s0:17,s1:45,a0:80,a1:97},
+        track:18
+      },
+      bars:{hues:{pink:300,violet:270,blue:230,teal:175},chroma:.09,from:.94,to:.84,over:.68,dot:.89,track:18},
+      day:{
+        flow:{mode:'flow',colors:['#C4F6E6','#B6DCFF','#E0D0FF'],intensity:50,softness:82,duration:20},
+        balance:{posColor:'#B9F7E4',negColor:'#D4BCFF',blend:55,fade:35,alpha:100},
+        progress:['#D4BCFF','#B9CDFF','#A9E2F6','#B9F7E4']
+      }
     }
   ],
 
