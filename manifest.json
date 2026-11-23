@@ -1,6 +1,6 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-23.1",
+  "revision": "2026-11-23.2",
   "updated": "2026-11-23",
   "libraries": {
     "bls": {
@@ -119,12 +119,21 @@
       "firstReader": "Happy Meal 33.4 and later (kfct.js)"
     },
     "cooking": {
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/794637e807a4d7f1ae0b55327bb4c732fce57c32/data/cooking-1.0.json",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/d99511fae3dd19c4e68506737f100696841af47c/data/cooking-1.1.json",
       "encoding": "json",
-      "bytes": 9186,
-      "sha256": "4737b41a8de27a78a20870da32420fdd9a85ae4f51f100772b181fbc5acb9d2a",
-      "version": "1.0.0",
-      "cardCount": 15
+      "bytes": 13363,
+      "sha256": "5c7c8174038d77188d5e34e390b00288c20eec8d4b7326c5e2d83c1612d863d7",
+      "version": "1.1.0",
+      "cardCount": 21
+    },
+    "home": {
+      "version": "1.0",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/d99511fae3dd19c4e68506737f100696841af47c/data/home-1.0.json",
+      "encoding": "json",
+      "bytes": 10348,
+      "sha256": "12f620c8b79923be59429019100229e116181393e6c3ee43650beea6ea1fcf9b",
+      "foodCount": 12,
+      "notes": "data/HOME.md"
     }
   }
 }
