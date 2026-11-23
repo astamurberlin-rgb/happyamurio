@@ -1,4 +1,7 @@
-/* Студия градиентов · Happy 1.6 (лаборатория, 22.11.2026 · Claude)
+/* Студия градиентов · Happy 1.7 (лаборатория, 22.11.2026 · Claude)
+   1.7: 6 радужных схем — соседние цвета радуги по 3–4 подряд, переход на всю дугу (референс Астамура: дуга роутера красный → зелёный).
+   1.7.1: рамка выбранной плитки больше не прячется под залипшим превью (отступ сверху у рядов плиток).
+   1.7.2: карусели на компьютере листаются колесом мыши и перетаскиванием (на Windows раньше не листались).
    1.6: эталонный виджет энергии «Общий» — один на Day, Meal и Sport (вид Sport, поведение Meal, концы дуг тем же градиентом,
    цвет «от цели» из «Пробы кольца энергии», цифра 28 и текст 12 всегда); 10 цветовых схем для всех тем (ночью — приглушённее);
    10 готовых вариантов «жизни» кольца во вкладке «Оживление»; «Вернуть» и «В Мои» видны на всех вкладках; свой вариант можно обновить.
@@ -387,7 +390,14 @@ const SCHEMES=[
   {name:'Сияние',       c0:'#6BFFB8',cm:'#39C6FF',c1:'#B48CFF',x:'#9CFFE0'},
   {name:'Закатный',     c0:'#FFD08A',cm:'#FF8FA3',c1:'#C27BFF',x:'#FFE3B0'},
   {name:'Серебро',      c0:'#E9F1FF',cm:'#A9B8D9',c1:'#F3D9FF',x:'#D6F5EE'},
-  {name:'Тихий неон',   c0:'#4DF7FF',cm:'#A35CFF',c1:'#FF5CC8',x:'#7DFFD8'}
+  {name:'Тихий неон',   c0:'#4DF7FF',cm:'#A35CFF',c1:'#FF5CC8',x:'#7DFFD8'},
+  /* 1.7 · радуга: соседние цвета по порядку, 3–4 подряд; wide — переход на всю дугу, как на референсе */
+  {name:'Радуга · роутер',  wide:1,c0:'#FF5A5F',cm:'#FF9F43',cm2:'#FFD84D',c1:'#6EE07A',x:'#FFC2A0',pos:'#6EE07A',neg:'#FF5A5F'},
+  {name:'Радуга · к цели',  wide:1,c0:'#6EE07A',cm:'#FFD84D',cm2:'#FF9F43',c1:'#FF5A5F',x:'#C8F2A0',pos:'#6EE07A',neg:'#FF5A5F'},
+  {name:'Радуга · солнце',  wide:1,c0:'#FF9F43',cm:'#FFD84D',cm2:'#9BE870',c1:'#4FD8C8',x:'#FFE9A0'},
+  {name:'Радуга · луг',     wide:1,c0:'#FFE36B',cm:'#7BE495',c1:'#5EE0F0',x:'#D8F5A8'},
+  {name:'Радуга · море',    wide:1,c0:'#6EE7A0',cm:'#4FD8F0',c1:'#4C8DFF',x:'#A8F0E8'},
+  {name:'Радуга · вечер',   wide:1,c0:'#5ED8F5',cm:'#5A7CFF',cm2:'#A06BFF',c1:'#F07BD8',x:'#B8D8FF'}
 ];
 function isNight(themeId){ const t=themeOf(themeId); return t.mode==='night' }
 function dim(hex,k){ if(k===1) return hex; const c=lch(hex); return hexOf(clamp(c.L*(k<1?1-(1-k)*0.55:1+(k-1)*0.5),0,0.99),c.C*(k<1?k:Math.min(1.25,k)),c.h) }
@@ -395,14 +405,18 @@ function hueOf(hex){ const h=lch(hex).h*180/Math.PI; return Math.round((h+360)%3
 function scheme(themeId,i){
   const S=SCHEMES[i]; if(!S) return null;
   const k=isNight(themeId)?st.nightK/100:1, d=c=>dim(c,k), night=k!==1;
-  const A={c0:d(S.c0),cm:d(S.cm),c1:d(S.c1)}, X=d(S.x);
+  const A={c0:d(S.c0),cm:d(S.cm),c1:d(S.c1)}, X=d(S.x), M2=S.cm2?d(S.cm2):null;
   const a0=night?47:57, a1=night?68:75;
+  /* радуга: переход на всю дугу (s0 4 → s1 96), середины почти нет; плотнее, чтобы цвета читались, как на референсе */
+  const eat=S.wide?{c0:A.c0,cm:A.cm,c1:A.c1,mw:6,s0:4,s1:96,a0:night?64:74,a1:night?84:92}:{c0:A.c0,cm:A.cm,c1:A.c1,mw:30,s0:59,s1:77,a0,a1};
+  const spent=S.wide?{c0:A.c1,cm:M2||A.cm,c1:A.c0,mw:6,s0:4,s1:96,a0:night?64:74,a1:night?84:92}:{c0:A.c1,cm:A.cm,c1:A.c0,mw:30,s0:17,s1:45,a0:night?54:64,a1:night?80:89};
+  if(M2){ eat.cm2=M2; spent.cm2=A.cm }
   return {name:S.name,
-    energy:{eat:{c0:A.c0,cm:A.cm,c1:A.c1,mw:30,s0:59,s1:77,a0,a1},spent:{c0:A.c1,cm:A.cm,c1:A.c0,mw:30,s0:17,s1:45,a0:night?54:64,a1:night?80:89},track:night?14:20},
+    energy:{eat,spent,track:night?14:20},
     join:copy(ORIGINAL.join),
     bars:{hues:{pink:hueOf(S.c1),violet:hueOf(S.cm),blue:Math.round((hueOf(S.cm)+hueOf(S.c0))/2+(Math.abs(hueOf(S.cm)-hueOf(S.c0))>180?180:0))%360,teal:hueOf(S.c0)},
       chroma:night?.085:.12,dot:night?.74:.8,from:night?.8:.86,to:night?.66:.72,over:night?.5:.56,track:night?16:22},
-    day:{flow:Object.assign(copy(FLOW0),{colors:[A.c0,X,A.cm]}),balance:{posColor:A.c0,negColor:A.c1,blend:55,fade:35,alpha:night?85:100},progress:[A.c1,A.cm,A.c0,X]}};
+    day:{flow:Object.assign(copy(FLOW0),{colors:S.wide?[A.c0,A.cm,M2||A.c1]:[A.c0,X,A.cm]}),balance:{posColor:S.pos?d(S.pos):A.c0,negColor:S.neg?d(S.neg):A.c1,blend:55,fade:35,alpha:night?85:100},progress:S.wide?[A.c0,A.cm,M2||X,A.c1]:[A.c1,A.cm,A.c0,X]}};
 }
 
 /* ══ 1.6 · «Жизнь» кольца: 10 готовых тихих вариантов оживления (эффект + ритм + свет). Цвета потока не трогают ══ */
@@ -838,6 +852,32 @@ async function cloudStart(){
     else if(st.ts) cloudPush(); else cloudMark('ok');
   }catch(e){ cloudMark('err') }
 }
+
+/* ── Карусели на компьютере (1.7.2): колесо мыши листает вбок, карусель можно тянуть мышью.
+   На телефоне ничего не меняется — там листает палец. ── */
+(function(){
+  const hx=el=>{ for(;el&&el!==document.body;el=el.parentElement){ if(el.scrollWidth>el.clientWidth+1){ const o=getComputedStyle(el).overflowX; if(o==='auto'||o==='scroll') return el } } return null };
+  document.addEventListener('wheel',e=>{
+    if(e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY)) return;           // тачпад и так листает вбок
+    const el=hx(e.target); if(!el) return;
+    const max=el.scrollWidth-el.clientWidth, d=e.deltaY*(e.deltaMode===1?32:1);
+    if((d<0&&el.scrollLeft<=0)||(d>0&&el.scrollLeft>=max-1)) return;       // упёрлись в край — дальше листается страница
+    e.preventDefault(); el.scrollLeft=clamp(el.scrollLeft+d,0,max);
+  },{passive:false});
+  let drag=null;
+  document.addEventListener('pointerdown',e=>{
+    if(e.pointerType!=='mouse'||e.button!==0||e.target.closest('input,textarea,select,.grab')) return;
+    const el=hx(e.target); if(el) drag={el,x:e.clientX,l:el.scrollLeft,moved:false};
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!drag) return; const dx=e.clientX-drag.x;
+    if(!drag.moved&&Math.abs(dx)>5){ drag.moved=true; drag.el.style.scrollSnapType='none'; drag.el.style.cursor='grabbing'; document.body.style.userSelect='none' }
+    if(drag.moved) drag.el.scrollLeft=drag.l-dx;
+  });
+  const end=()=>{ if(!drag) return; const d=drag; drag=null; d.el.style.scrollSnapType=''; d.el.style.cursor=''; document.body.style.userSelect='';
+    if(d.moved) document.addEventListener('click',ev=>{ ev.stopPropagation(); ev.preventDefault() },{capture:true,once:true}) };   // отпустил после протяжки — это не нажатие
+  document.addEventListener('pointerup',end); document.addEventListener('pointercancel',end);
+})();
 
 /* ── Старт ── */
 paintAll(); boot=false;
