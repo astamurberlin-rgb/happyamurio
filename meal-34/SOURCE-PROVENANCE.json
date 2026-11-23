@@ -2,9 +2,9 @@
  "release": "Happy Meal Update 34",
  "entry": "meal-34/index.html",
  "source": {
-  "release": "meal-33 (Happy Meal Update 33.36)",
-  "commit": "907ca2498c91dbf1a44783839d488fa91efca2d2",
-  "version": "33.36"
+  "release": "meal-33 (Happy Meal Update 33.37)",
+  "commit": "886ffffe77582239889ce05b7a58c35d229e015e",
+  "version": "33.37"
  },
  "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
  "libraries": {
@@ -230,6 +230,21 @@
    "sha256": "087feafc7f39d8fc5b025786f2311204ff117112195a3578b0134cdf2d4de409"
   },
   {
+   "path": "bot-goals.js",
+   "size": 18361,
+   "sha256": "e6ab5673201aafc10efe91eb55c8dfa757ec2782b82781ba31b3052ab99b5c47"
+  },
+  {
+   "path": "bot-guide-steps.js",
+   "size": 27370,
+   "sha256": "48ded30eef6f967aaf816ca54374b6d573dcdb4d11a583a1ecb56affe9490743"
+  },
+  {
+   "path": "bot-own-product.js",
+   "size": 19595,
+   "sha256": "7fbcf2e7888e32836af32ece34cb2cda5109435fe4a095b1161b18e733fe8cff"
+  },
+  {
    "path": "bot-replacement.css",
    "size": 3197,
    "sha256": "4f34a8b21be54ae9ff29b1e8684526ac2487d2bf1b393177c193c38113765f48"
@@ -245,14 +260,19 @@
    "sha256": "e25b44cd435ac5e7ca46aafd8e5c94fcec4d4d2b0372146fb4a16072615297f3"
   },
   {
+   "path": "bot-steps.js",
+   "size": 16443,
+   "sha256": "b60e7379dcb1c1fafa3f8e92b6fe7944c28c54825255cd05420f7c8d24ba59b3"
+  },
+  {
    "path": "bot.js",
-   "size": 281977,
-   "sha256": "375d24f7105fbce0c637e35221977a519b30342d1b85cff095248949ae3101e3"
+   "size": 314165,
+   "sha256": "f592f22f15ec396dcf817ec713580d28e5fcc68f3ed27c27c4ae3e96336042e2"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 577186,
-   "sha256": "99e78b3192f4d365f664bc66d8240562c36118b58f5a597820d9374525c12ae0"
+   "size": 649346,
+   "sha256": "c0787e7034bff708a3093b3c59267a4f5a6ce10e5750387ff83f640a51c92f66"
   },
   {
    "path": "catalog-offline.js",
@@ -360,6 +380,11 @@
    "sha256": "5f4f371dd5a99fac4cff085df7211378022bc211e21e7c475cb29efa5617a3e5"
   },
   {
+   "path": "cooking-library.js",
+   "size": 3540,
+   "sha256": "51609af73430915c3036eac9b46783fae637db562c6c3b8ac23ae459d0ef39ca"
+  },
+  {
    "path": "counters.js",
    "size": 35008,
    "sha256": "83b7ed99a7c4807a98308ee1ce22d882d433095c170bb9539e3b726c31f1a4df"
@@ -406,8 +431,8 @@
   },
   {
    "path": "index.html",
-   "size": 695157,
-   "sha256": "0d49faaffc8648861f1fd234ff3fec18ee2b52fe93c735332fd4cc6a22029a5f"
+   "size": 706774,
+   "sha256": "f9496c04d3b2a488da301b4b477a9f4beaa2d4df3c08f920f0fd43448aac3df8"
   },
   {
    "path": "kfct.js",
@@ -421,8 +446,8 @@
   },
   {
    "path": "meal-account.js",
-   "size": 7974,
-   "sha256": "3542962ba2db7cf0d8e96dce1f53adbdf2b8e8308bf24eb273873abbc1f234dd"
+   "size": 8172,
+   "sha256": "3366e86bb872b147855e3c0580ff16ed4abc02838ca969057a6f63a706f91296"
   },
   {
    "path": "meal-data.js",
@@ -626,8 +651,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 83550,
-   "sha256": "89e9f0753eb9226192975221ffef949451a3018f08cee777a973ae614ad5c968"
+   "size": 85870,
+   "sha256": "318215be86fa59f6bc2c7b80fcb48df5f7c3ef04fcb914f3acfd4331f995bb80"
   },
   {
    "path": "report.css",
@@ -656,8 +681,8 @@
   },
   {
    "path": "shared/happy-account.js",
-   "size": 32565,
-   "sha256": "5944a85d9caa90abdb7b698b5e7873c4abb315e611c7f9d2bc392ecbb5e89236"
+   "size": 38084,
+   "sha256": "3ec62c9fc8718916279a23829d476c1b1a4f73fccab60a1553c955b5c2c9555a"
   },
   {
    "path": "shared/happy-app-links.js",
@@ -676,8 +701,8 @@
   },
   {
    "path": "shared/happy-colors.css",
-   "size": 3648,
-   "sha256": "823668fe66cfa354ff23a60af85593c40be9024604125daf3a049ded9f8d6804"
+   "size": 3677,
+   "sha256": "9b1123ab55a6cf1dd21813216496bec19a73097969b1be3f5d4e42d180ac721e"
   },
   {
    "path": "shared/happy-design.css",
@@ -731,8 +756,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 25531,
-   "sha256": "ca25f19cc26d4952d273dd6e47f1df140e220d87c90c0cd4f82ea7fd01c31cde"
+   "size": 28187,
+   "sha256": "adb506b14b9868aca0721386b9944d1fdeb5b29087db76081b9c7328cfcefd6e"
   },
   {
    "path": "shared/happy-reference-themes.js",
@@ -741,8 +766,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 37517,
-   "sha256": "5da58b19d6bd47c57bec0c644fdef5d5a63088f26c4ceb9ec9cee6693136808e"
+   "size": 38787,
+   "sha256": "4e0a3b9f1f743faf5cfcaea41be843a1ec7a6827beceae168cc52b48cb278515"
   },
   {
    "path": "shared/happy-screens.js",
@@ -766,8 +791,8 @@
   },
   {
    "path": "shared/happy-store.js",
-   "size": 52566,
-   "sha256": "dd64f22305bca26877e212cccc6e53c75f6f9dac88481946107eaa6b54aa2a22"
+   "size": 53790,
+   "sha256": "55ecd6ae805c39a1240dec0699da2618e9d32561a169b116b6d6ecb712f321c5"
   },
   {
    "path": "shared/happy-theme-picker.css",
@@ -786,8 +811,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 32127,
-   "sha256": "efbc9ab80f9fde3bc45c47d6a79248431e0d8d9add88c75c8a894c0f0df4f452"
+   "size": 33619,
+   "sha256": "764a10bc1e156c4862d0f04320781ff2a78989f67feac9e8384c012f073c66d5"
   },
   {
    "path": "shared/meal-products-model.js",
@@ -816,8 +841,8 @@
   },
   {
    "path": "supplement-nutrition.js",
-   "size": 11688,
-   "sha256": "421d445908a3f76311ad8f4541514d98f87ffc978f8a792c8fa37e9aa277c054"
+   "size": 11611,
+   "sha256": "f8ab09abb69d15e0e2f1b7d50f7d6ac1ac6fa36ff0adbafe2e63843976d84795"
   },
   {
    "path": "supplements-library.js",
@@ -851,8 +876,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3776,
-   "sha256": "abfc38a83fd00a50d1b885effc69ccc4eebd39049f0132bc68c4aad481234ab9"
+   "size": 3778,
+   "sha256": "211b36b0eedb90e5b494728d33bd82752ccad606ecc34438b3a3d05a2d5315fd"
   },
   {
    "path": "usda-measures.js",
@@ -871,8 +896,8 @@
   },
   {
    "path": "user-products.js",
-   "size": 42067,
-   "sha256": "62c623349047d9064c0e0611827fb026200212edf4c4a679e40aa986170c3083"
+   "size": 43837,
+   "sha256": "7413681fe4e6e0fec0a18a65ac1df25008927f9e43fc9ad6a28955dfcc386028"
   },
   {
    "path": "uzbek.js",

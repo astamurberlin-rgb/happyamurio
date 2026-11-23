@@ -27,15 +27,17 @@ HappyWelcome.init({app:'meal',name:'Meal',account:MealBoot.account,boot:MealBoot
   beforeSignOut:async function(){ if(!MealData.signedIn()) return; saveNow(); await MealData.store.flush(15000) }});
 
 /* ── цели Meal ── */
+/* запись целей Meal — одна для экрана целей и мастера целей в чате бота (bot-goals.js) */
+function saveGoals(next){
+  if(RO){ roWarn(); throw Error(HappyStore.NEWER) }
+  DB.goalVersions=next.versions;
+  DB.goals=Object.assign({},DB.goals||{},next.goals);
+  save(); renderAll();
+}
 function openGoals(){
   HappyGoals.open({app:'meal',
     load:function(){ return {versions:DB.goalVersions||[],goals:DB.goals||{}} },
-    save:function(next){
-      if(RO){ roWarn(); throw Error(HappyStore.NEWER) }
-      DB.goalVersions=next.versions;
-      DB.goals=Object.assign({},DB.goals||{},next.goals);
-      save(); renderAll();
-    }});
+    save:saveGoals});
 }
 function profileDoc(){ return MealData.signedIn()?MealData.store.shared(HappyPerson.DOC.app,HappyPerson.DOC.name):null }
 function bodyDoc(){ return MealData.signedIn()?MealData.store.shared(HappyMeasurements.DOC.app,HappyMeasurements.DOC.name):null }
@@ -102,5 +104,5 @@ MealBoot.ready.catch(function(){}).then(function(){
   MealBoot.account.onChange(function(){ HappyPerson.top() });   // имя поменяли в профиле
   shown.then(function(){ resume(HappyWelcome.takeResume()) });
 });
-window.MealAccount={openGoals:openGoals};
+window.MealAccount={openGoals:openGoals,saveGoals:saveGoals};
 })();

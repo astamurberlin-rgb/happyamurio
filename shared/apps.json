@@ -41,8 +41,8 @@
     "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
     "previous": {
       "entry": "meal-33/index.html",
-      "version": "33.36",
-      "sourceCommit": "907ca2498c91dbf1a44783839d488fa91efca2d2"
+      "version": "33.37",
+      "sourceCommit": "886ffffe77582239889ce05b7a58c35d229e015e"
     },
     "storageScript": "meal-34/meal-data.js"
   },
