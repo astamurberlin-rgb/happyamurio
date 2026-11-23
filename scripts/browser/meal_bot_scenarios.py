@@ -1435,6 +1435,18 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Пр16", msgs=["сколько варить рис"], mode="none", reply="Белый рис"),
  dict(id="Пр17", eaten=True, msgs=["соль 2 г"], want=[("сол", 2)]),
  dict(id="Пр18", eaten=True, msgs=["рис 200 г"], want=[("рис", 200)]),
+# шоколад (справочник cooking, карточки tip, поток «Шоколад» 23.11.2026, лаборатория)
+ dict(id="Шк01", msgs=["как растопить шоколад"], mode="none", reply="водяной бане"),
+ dict(id="Шк02", msgs=["при какой температуре топить шоколад"], mode="none", reply="не выше 45–50"),
+ dict(id="Шк03", msgs=["шоколад схватился комками что делать"], mode="none", reply="кипяток по 1 чайной ложке"),
+ dict(id="Шк04", msgs=["как темперировать шоколад"], mode="none", reply="Guittard"),
+ dict(id="Шк05", msgs=["почему шоколад не блестит?"], mode="none", reply="засевом"),
+ dict(id="Шк06", msgs=["белый налет на шоколаде можно есть?"], mode="none", reply="не плесень"),
+ dict(id="Шк07", msgs=["можно ли хранить шоколад в холодильнике"], mode="none", reply="Холодильник не нужен"),
+ dict(id="Шк08", msgs=["можно ли какао вместо шоколада"], mode="none", reply="3 столовые ложки какао"),
+ dict(id="Шк09", msgs=["как растопить белый шоколад в микроволновке"], mode="none", reply="по 15–30 секунд"),
+ dict(id="Шк10", eaten=True, msgs=["шоколад 30 г"], want=[("шоколад", 30)]),
+ dict(id="Шк11", eaten=True, msgs=["шоколадку 25 г"], want=[("шоколад", 25)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
