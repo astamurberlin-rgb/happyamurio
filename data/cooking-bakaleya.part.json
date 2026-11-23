@@ -1,0 +1,274 @@
+{
+ "sources": [
+  {
+   "id": "wikibooks_griess",
+   "title": "Wikibooks (Kochbuch): Grießbrei",
+   "url": "https://de.wikibooks.org/wiki/Kochbuch/_Grie%C3%9Fbrei"
+  },
+  {
+   "id": "lecker_griess",
+   "title": "Lecker.de: Grießbrei — Omas Grundrezept",
+   "url": "https://www.lecker.de/griessbrei-kochen-omas-grundrezept-84262.html"
+  },
+  {
+   "id": "lh_manka",
+   "title": "Лайфхакер: как сварить манную кашу",
+   "url": "https://lifehacker.ru/mannaya-kasha/"
+  },
+  {
+   "id": "fn_couscous",
+   "title": "Food Network: how to cook couscous",
+   "url": "https://www.foodnetwork.com/how-to/packages/food-network-essentials/how-to-cook-couscous"
+  },
+  {
+   "id": "ll_couscous",
+   "title": "Love and Lemons: how to cook couscous",
+   "url": "https://www.loveandlemons.com/how-to-cook-couscous/"
+  },
+  {
+   "id": "saga_couscous",
+   "title": "Saga: how to cook couscous",
+   "url": "https://www.saga.co.uk/magazine/homes/how-to-cook-couscous"
+  },
+  {
+   "id": "atk_polenta",
+   "title": "America's Test Kitchen: basic polenta",
+   "url": "https://www.americastestkitchen.com/recipes/1958-basic-polenta"
+  },
+  {
+   "id": "leites_polenta",
+   "title": "Leite's Culinaria: basic polenta",
+   "url": "https://leitesculinaria.com/69825/recipes-basic-polenta.html"
+  },
+  {
+   "id": "ws_polenta",
+   "title": "Williams-Sonoma: all about polenta",
+   "url": "https://www.williams-sonoma.com/m/recipe/tip/all-about-polenta.html"
+  },
+  {
+   "id": "clemson_pantry",
+   "title": "Университет Клемсона: хранение продуктов в шкафу",
+   "url": "https://hgic.clemson.edu/factsheet/food-storage-pantry/"
+  },
+  {
+   "id": "ksu_cupboard",
+   "title": "Университет штата Канзас: хранение в шкафу (MF3131)",
+   "url": "https://bookstore.ksre.ksu.edu/download/safe-food-storage-the-cupboard_MF3131"
+  },
+  {
+   "id": "osu_pantry",
+   "title": "Университет штата Огайо: хранение в шкафу (HYG-5401)",
+   "url": "https://ohioline.osu.edu/factsheet/HYG-5401"
+  },
+  {
+   "id": "ka_flour",
+   "title": "King Arthur Baking: как хранить муку",
+   "url": "https://www.kingarthurbaking.com/blog/2023/02/23/how-to-store-flour"
+  },
+  {
+   "id": "usarice_store",
+   "title": "USA Rice: как хранить рис",
+   "url": "https://www.usarice.com/thinkrice/how-to/how-to-store-rice"
+  },
+  {
+   "id": "ufl_pests",
+   "title": "Университет Флориды: насекомые в кладовой (IG095)",
+   "url": "https://ask.ifas.ufl.edu/publication/IG095"
+  },
+  {
+   "id": "oregon_pests",
+   "title": "Университет штата Орегон: вредители в продуктах",
+   "url": "https://solvepestproblems.oregonstate.edu/insects-spiders/food-pantry-pests"
+  },
+  {
+   "id": "uaex_pests",
+   "title": "Университет Арканзаса: насекомые в продуктах (FSA-7024)",
+   "url": "https://www.uaex.uada.edu/publications/PDF/FSA-7024.pdf"
+  },
+  {
+   "id": "ucdavis_nuts",
+   "title": "Калифорнийский университет в Дейвисе: хранение орехов",
+   "url": "https://postharvest.ucdavis.edu/ask-produce-docs-category/nuts"
+  },
+  {
+   "id": "food52_nuts",
+   "title": "Food52: как хранить орехи и семечки",
+   "url": "https://food52.com/blog/11275-how-to-store-nuts-and-seeds"
+  },
+  {
+   "id": "unl_toast",
+   "title": "Университет Небраски: как обжарить орехи и семечки",
+   "url": "https://food.unl.edu/article/toasting-nuts-and-seeds-using-microwave-oven-or-stovetop"
+  },
+  {
+   "id": "atk_toast",
+   "title": "America's Test Kitchen: как обжарить орехи",
+   "url": "https://www.americastestkitchen.com/lessons/articles/1707-how-to-toast-nuts"
+  },
+  {
+   "id": "mccormick_spices",
+   "title": "McCormick: сколько хранятся специи",
+   "url": "https://www.mccormick.com/blogs/how-to/how-long-do-spices-last"
+  },
+  {
+   "id": "tamu_spices",
+   "title": "Техасский университет A&M: хранение сушёных трав и специй",
+   "url": "https://agrilifeextension.tamu.edu/wp-content/uploads/2025/04/Storing-Dried-Herbs-Spices.pdf"
+  },
+  {
+   "id": "rouxbe_quinoa",
+   "title": "Rouxbe: зачем промывать киноа",
+   "url": "https://rouxbe.com/tips-techniques/452-rinsing-quinoa-how-why"
+  },
+  {
+   "id": "fn_quinoa",
+   "title": "Food Network: how to rinse quinoa",
+   "url": "https://www.foodnetwork.com/how-to/packages/food-network-essentials/how-to-rinse-quinoa0"
+  }
+ ],
+ "cards": [
+  {
+   "id": "mannaya",
+   "kind": "cook",
+   "said": "манн(ая|ую|ой) каш|манк|(^|\\s)манн(ая|ую|ой)?(\\s|$)|грис|griess|grieß",
+   "answer": "Манку всыпают в кипящее молоко тонкой струйкой и всё время мешают венчиком — так не будет комков. Немецкий рецепт: 100 г манки на литр молока, довести до кипения и 5 минут дать постоять под крышкой (Lecker). Русский: около 6 ложек без горки на литр, варить 3–4 минуты на слабом огне, помешивая (Лайфхакер).",
+   "sources": [
+    "lecker_griess",
+    "wikibooks_griess",
+    "lh_manka"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "kuskus",
+   "kind": "cook",
+   "said": "кус-?\\s?кус",
+   "answer": "Кускус не варят: заливают кипятком, накрывают крышкой, снимают с огня и через 5 минут разрыхляют вилкой. Воды — столько же, сколько крупы (Food Network, Love and Lemons). Saga берёт воды в полтора раза больше и держит 10 минут. Крупный «израильский» кускус варят в подсоленной воде, как макароны, 7–10 минут.",
+   "sources": [
+    "fn_couscous",
+    "ll_couscous",
+    "saga_couscous"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "polenta",
+   "kind": "cook",
+   "said": "полент|мамалыг|кукурузн\\S* (круп|каш)",
+   "answer": "Кукурузную крупу всыпают в кипящую подсоленную воду тонкой струйкой, мешая венчиком. America's Test Kitchen: воды в 4 раза больше крупы, около 30 минут на самом слабом огне под крышкой, мешать каждые 5 минут. Leite's Culinaria: воды в 3,5 раза больше, 25–30 минут, мешать всё время. Быстрая полента — около 15 минут (Williams-Sonoma) или по упаковке.",
+   "sources": [
+    "atk_polenta",
+    "leites_polenta",
+    "ws_polenta"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-hranit-muku",
+   "kind": "tip",
+   "said": "(?=.*(хран|срок\\S* годност|испорт|портит|портят|протух|прогорк|выдыха|залежал))(?=.*(^|\\s)мук)",
+   "answer": "Муку хранят в плотно закрытой банке или контейнере в прохладном тёмном месте. Белая мука лежит 6–8 месяцев (Университет Канзаса) или 10–15 месяцев (Университет Клемсона). Цельнозерновая и ореховая портятся быстрее, их лучше держать в холодильнике или морозилке (King Arthur).",
+   "sources": [
+    "ksu_cupboard",
+    "clemson_pantry",
+    "ka_flour"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-hranit-krupy",
+   "kind": "tip",
+   "said": "(?=.*(хран|срок\\S* годност|испорт|портит|портят|протух|прогорк|выдыха|залежал))(?=.*((^|\\s)рис(а|у|ом|е)?(\\s|$)|круп|гречк|пшен|перлов|булгур|киноа|овсян|геркулес))",
+   "answer": "Крупы хранят в плотно закрытой банке в сухом прохладном месте. Белый рис лежит очень долго: «почти бессрочно» (USA Rice), 1 год (Университет Клемсона), 1–2 года (Университет Канзаса). Бурый рис портится быстрее, около 6 месяцев (USA Rice, Клемсон); в холодильнике или морозилке он хранится дольше.",
+   "sources": [
+    "usarice_store",
+    "clemson_pantry",
+    "ksu_cupboard"
+   ],
+   "checked": "2026-11-23",
+   "not": "варен|сварен|готов(ый|ого|ую|ом)|отварн|каш(а|у|ей|и)(\\s|$)"
+  },
+  {
+   "id": "tip-zhuki",
+   "kind": "tip",
+   "said": "(?=.*(жук|жучк|моль|мол(ь|и|ью)(\\s|$)|личинк|червяч|букашк|насеком|мошк))(?=.*(круп|мук|рис|гречк|макарон|сухофрукт|орех|шкаф|кладов|продукт|пшен|овсян))",
+   "answer": "Продукт с жучками лучше выбросить. Если жалко — жучков убивает мороз: в морозилку при −18 °C на 4 дня (Университет Флориды) или 3–4 дня (Университет Орегона); Университет Арканзаса советует 7 дней. Крупу и муку держи в стеклянных или плотных пластиковых банках с плотной крышкой: пакеты и картон насекомых не держат.",
+   "sources": [
+    "ufl_pests",
+    "oregon_pests",
+    "uaex_pests"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-hranit-orehi",
+   "kind": "tip",
+   "said": "(?=.*(хран|срок\\S* годност|испорт|портит|портят|протух|прогорк|выдыха|залежал))(?=.*(орех|миндал|фундук|кешью|фисташ|пекан|кедров|семечк|тыквенн\\S* сем|кунжут))",
+   "answer": "Орехи горкнут из-за масла, особенно в тепле и на свету. Держи их в плотно закрытой банке в холодильнике или морозилке (Калифорнийский университет, Университет Канзаса). Food52: в шкафу — несколько месяцев, в холодильнике — до полугода, в морозилке — до года. Целые орехи хранятся дольше, чем рубленые и обжаренные.",
+   "sources": [
+    "ucdavis_nuts",
+    "food52_nuts",
+    "ksu_cupboard"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-obzharit-orehi",
+   "kind": "tip",
+   "said": "(?=.*(обжар|поджар|(^|\\s)жар(ить|ят|ю|им|ишь)|калит|подсуш))(?=.*(орех|миндал|фундук|кешью|фисташ|пекан|кедров|семечк|тыквенн\\S* сем|кунжут))",
+   "answer": "Орехи обжаривают без масла. Немного — на сухой сковороде на среднем огне, всё время помешивая, 2–5 минут (America's Test Kitchen). Много — в духовке при 175 °C одним слоем, 5–10 минут, встряхивая (ATK, Университет Небраски). Снимай, как только запахли и стали золотистыми.",
+   "sources": [
+    "atk_toast",
+    "unl_toast"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-hranit-specii",
+   "kind": "tip",
+   "said": "(?=.*(хран|срок\\S* годност|испорт|портит|портят|протух|прогорк|выдыха|залежал))(?=.*(специ|пряност|приправ|сушен\\S* трав|молот\\S* (перец|паприк|кориц|имбир)|паприк|кориц|куркум|зир(а|у|ы)(\\s|$)|кумин))",
+   "answer": "Специи хранят в плотно закрытых баночках в тёмном шкафу, подальше от плиты, мойки и посудомойки. Они не портятся, а выдыхаются: целые держат вкус 3–4 года, молотые — 2–4 года, сушёные травы — 1–3 года (McCormick, Техасский университет A&M). Пахнут сильно и цвет яркий — ещё хороши.",
+   "sources": [
+    "mccormick_spices",
+    "tamu_spices"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-hranit-sahar-sol",
+   "kind": "tip",
+   "said": "(?=.*(хран|срок\\S* годност|испорт|портит|портят|протух|прогорк|выдыха|залежал))(?=.*(сахар|(^|\\s)сол(ь|и|ью)(\\s|$)))",
+   "answer": "Белый сахар и соль почти не портятся, если лежат в плотно закрытой посуде в сухом месте, иначе комкуются. Университет Клемсона пишет для обоих «бессрочно», для соли то же у McCormick; Университет Канзаса даёт сахару 2 года. Коричневый сахар — около полутора лет и только в герметичной банке, иначе твердеет.",
+   "sources": [
+    "clemson_pantry",
+    "mccormick_spices",
+    "ksu_cupboard"
+   ],
+   "checked": "2026-11-23",
+   "not": "кров|диабет"
+  },
+  {
+   "id": "tip-promyt-kinoa",
+   "kind": "tip",
+   "said": "(?=.*(промыв|промыт|промой|(^|\\s)мыть|помыть|моют|полоска))(?=.*(кино?а|кинуа|кинва))",
+   "answer": "Киноа промывают, если на упаковке не написано, что она уже промыта. На зёрнах бывает сапонин: он горчит и даёт мыльный привкус. Высыпь крупу в мелкое сито и промывай холодной водой около минуты, перебирая рукой, пока вода не станет прозрачной и без пены.",
+   "sources": [
+    "fn_quinoa",
+    "rouxbe_quinoa"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-hranit-suhofrukty",
+   "kind": "tip",
+   "said": "(?=.*(хран|срок\\S* годност|испорт|портит|портят|протух|прогорк|выдыха|залежал))(?=.*(сухофрукт|изюм|кураг|чернослив|финик|инжир сушен|сушен\\S* (инжир|абрикос|яблок|клюкв|вишн)))",
+   "answer": "Сухофрукты держат в плотно закрытой банке в прохладном месте, лучше в холодильнике: около 6 месяцев (Университеты Канзаса и Огайо). Университет Клемсона: изюм и чернослив — 9 месяцев, курага — 3 месяца, после вскрытия пачки — в холодильник.",
+   "sources": [
+    "ksu_cupboard",
+    "osu_pantry",
+    "clemson_pantry"
+   ],
+   "checked": "2026-11-23"
+  }
+ ]
+}
