@@ -1,7 +1,7 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-17.4",
-  "updated": "2026-11-17",
+  "revision": "2026-11-23.1",
+  "updated": "2026-11-23",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
@@ -117,6 +117,14 @@
       "date": "2026-11-17",
       "notes": "data/KFCT.md",
       "firstReader": "Happy Meal 33.4 and later (kfct.js)"
+    },
+    "cooking": {
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/794637e807a4d7f1ae0b55327bb4c732fce57c32/data/cooking-1.0.json",
+      "encoding": "json",
+      "bytes": 9186,
+      "sha256": "4737b41a8de27a78a20870da32420fdd9a85ae4f51f100772b181fbc5acb9d2a",
+      "version": "1.0.0",
+      "cardCount": 15
     }
   }
 }
