@@ -12,7 +12,7 @@
  if(!['day','meal','sport'].includes(app))return;
  const key='happy-'+app+'-appearance-v1';
  let current='',currentButton='theme',previewId=null,ready=false,dialog=null,opener=null,busy=false,outsideStart=null;
- const moved=id=>({'happy-ref-lagoon-v1':'happy-ref-mint-v1'})[id]||id;   // 23.11.2026: «Лагуна» убрана — её выбор переходит на «Мяту»
+ const moved=id=>({'happy-ref-lagoon-v1':'happy-ref-mint-v1','happy-ref-amethyst-v1':'happy-ref-orchid-v1'})[id]||id;   // 23.11.2026: «Лагуна» убрана — её выбор переходит на «Мяту»
  const valid=id=>id===''||themes.some(t=>t.id===id);
  const validButton=b=>b==='theme'||b==='original'||themes.some(t=>t.id===b);
  const name=id=>themes.find(t=>t.id===id)?.name||'По умолчанию · исходное';
