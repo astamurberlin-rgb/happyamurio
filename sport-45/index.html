@@ -6175,6 +6175,10 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
   theme('orchid','Орхидея','regular','Мягкий сиреневый свет на сливовом фоне.',
    ['#982bb7','#a037ad','#810d91','#650778','#59096c'],165,
    [glow('#efb0e9',100,7,72,46),glow('#ab40d1',8,6,61,25)],['#7d3aa8'],{ownButton:true,glassColor:'#350d42',mutedColor:'#f1d3f0'}),
+  /* 23.11.2026 (Астамур): «Ягодное небо» — фон стартовой страницы лаборатории, угол «Малиновая роза» */
+  theme('berry-sky','Ягодное небо','regular','Малиновая роза сверху, сирень и голубое небо внизу.',
+   ['#c4467f','#a84892','#6f4bb8','#4f6dd0','#2f8fe8'],160,
+   [glow('#ff8fbf',6,2,66,36),glow('#7fb6ff',4,98,60,16)],['#b4478a']),
   theme('night-bay','Ночная бухта','night','Почти чёрный берег, тихий бирюзовый и угасающий янтарный отблеск.',
    ['#080d12','#0b1419','#11171a','#111214','#080b0e'],90,
    [glow('#23484c',17,13,55,24),glow('#69412b',42,85,68,18)],['#623d29'],{glassColor:'#101e25',textColor:'#eef8f7',mutedColor:'#c3dedc',buttonTextColor:'#142b30'}),
@@ -6204,7 +6208,7 @@ window.addEventListener('lostpointercapture',event=>finishTimerWheelGesture(even
  function mount(host,onSelect){
   const buttons=new Map();host.replaceChildren();
   const intro=document.createElement('p');intro.className='reference-intro';intro.textContent='Одна схема для Day, Meal и Sport. Нажми, чтобы увидеть её сразу во всех трёх превью. Любую схему можно изменить и сохранить как свой вариант.';host.append(intro);
-  for(const [mode,label] of [['basic','Основные · 3'],['regular','На выбор · 4'],['night','Ночные · 3']]){
+  for(const [mode,label] of [['basic','Основные · 3'],['regular','На выбор · 5'],['night','Ночные · 3']]){
    const heading=document.createElement('h3');heading.className='reference-heading';heading.textContent=label;host.append(heading);
    const grid=document.createElement('div');grid.className='reference-grid reference-grid-'+mode;
    for(const item of themes.filter(t=>t.mode===mode)){
