@@ -1,6 +1,8 @@
 /* Студия градиентов · Happy 1.7 (лаборатория, 22.11.2026 · Claude)
    1.7: 6 радужных схем — соседние цвета радуги по 3–4 подряд, переход на всю дугу (референс Астамура: дуга роутера красный → зелёный).
    1.7.1: рамка выбранной плитки больше не прячется под залипшим превью (отступ сверху у рядов плиток).
+   1.8 (23.11): дуги колец рисует общий движок shared/happy-energy-ring.js на холсте, как в приложениях (точки на конце дуги больше нет);
+        «Как сейчас» у Бордо и ночных тем — их новый вид по умолчанию в приложениях.
    1.7.2: карусели на компьютере листаются колесом мыши и перетаскиванием (на Windows раньше не листались).
    1.6: эталонный виджет энергии «Общий» — один на Day, Meal и Sport (вид Sport, поведение Meal, концы дуг тем же градиентом,
    цвет «от цели» из «Пробы кольца энергии», цифра 28 и текст 12 всегда); 10 цветовых схем для всех тем (ночью — приглушённее);
@@ -107,6 +109,7 @@ const st={tab:'fill',widget:'meal',theme:'original',work:{},data:copy(DATA0),mod
 function load(s){ if(!s||s.v!==1) return false; Object.assign(st,{tab:['fill','anim','mine'].includes(s.tab)?s.tab:'fill',widget:WIDGETS[s.widget]?s.widget:st.widget,theme:s.theme||st.theme,work:s.work||{},mine:s.mine||{},mode:Object.assign(st.mode,s.mode||{}),center:s.center||'mood',grp:s.grp||{},ag:s.ag==='light'?'light':'rhythm',arc:['spent','join'].includes(s.arc)?s.arc:'eat',fold:!!s.fold,refBg:['day','meal','sport'].includes(s.refBg)?s.refBg:'day',nightK:s.nightK==null?82:s.nightK});Object.assign(st.data,s.data||{}); st.ts=s.ts||0; return true }
 try{ load(JSON.parse(localStorage.getItem(KEY)||'null')) }catch(e){}
 if(!themes().some(t=>t.id===st.theme)) st.theme='original';
+migrateOrig();
 function snap(){ return {v:1,ts:st.ts||0,tab:st.tab,widget:st.widget,theme:st.theme,work:st.work,mine:st.mine,mode:st.mode,center:st.center,grp:st.grp,ag:st.ag,arc:st.arc,fold:!!st.fold,refBg:st.refBg,nightK:st.nightK,data:st.data} }
 let boot=true;                                            // перерисовка при старте — не правка: метку времени не двигаем
 function save(){ if(!boot) st.ts=Date.now(); try{localStorage.setItem(KEY,JSON.stringify(snap()))}catch(e){} if(!boot) cloudSave() }
@@ -122,15 +125,26 @@ function deepMerge(base,over){
 }
 /* пресет поверх исходного вида. Дуги пресета — для всех приложений: отдельные дуги Meal только если они есть в самом пресете (apps.meal) */
 function fromPreset(p){ const base=copy(ORIGINAL); if(p&&p.energy) delete base.apps; return deepMerge(base,p) }
+/* 1.8 (23.11.2026): у Бордо и трёх ночных тем в приложениях теперь свой вид по умолчанию (shared/happy-energy-ring.js, выбор Астамура).
+   «Как сейчас» у этих тем — он, у остальных — исходный вид приложений. */
+function orig(themeId){
+  const T=typeof HappyEnergyRing!=='undefined'&&HappyEnergyRing.palette(themeId); if(!T) return copy(ORIGINAL);
+  const o=copy(ORIGINAL); delete o.apps; o.note='Как сейчас в приложениях с этой темой: '+T.name+'.';
+  o.energy={eat:copy(T.eat),spent:copy(T.spent),track:T.track}; o.bars=copy(T.bars);
+  o.day.flow=Object.assign(o.day.flow,copy(T.day.flow)); o.day.balance=Object.assign(o.day.balance,copy(T.day.balance)); o.day.progress=copy(T.day.progress);
+  return o;
+}
+/* сохранённый «Как сейчас» без правок — на новый вид темы */
+function migrateOrig(){ Object.keys(st.work).forEach(id=>{ const w=st.work[id]; if(w&&w.source==='orig'&&w.P&&JSON.stringify(w.P)===JSON.stringify(ORIGINAL)) w.P=orig(id) }) }
 function fable(themeId){ const list=(LIB.themes||{})[themeId]; return Array.isArray(list)?list:[] }
 function sourcePreset(themeId,src){
-  if(src==='orig') return copy(ORIGINAL);
+  if(src==='orig') return orig(themeId);
   if(src.startsWith('f')){ const p=fable(themeId)[+src.slice(1)]; return p?fromPreset(p):null }
   if(src.startsWith('m')){ const p=(st.mine[themeId]||[])[+src.slice(1)]; return p?fromPreset(p.preset):null }
   if(src.startsWith('s')){ const p=scheme(themeId,+src.slice(1)); return p?fromPreset(p):null }
   return null;
 }
-function W(){ let w=st.work[st.theme]; if(!w||!w.P){ w=st.work[st.theme]={source:'orig',P:copy(ORIGINAL)} } const d=w.P.day=w.P.day||copy(ORIGINAL.day); d.flow=Object.assign(copy(FLOW0),d.flow||{}); if(!w.P.join) w.P.join=copy(ORIGINAL.join); w.P.ref=Object.assign(copy(ORIGINAL.ref),w.P.ref||{}); return w }   // сохранённое в 1.0–1.1 — без полей оживления и стыка
+function W(){ let w=st.work[st.theme]; if(!w||!w.P){ w=st.work[st.theme]={source:'orig',P:orig(st.theme)} } const d=w.P.day=w.P.day||copy(ORIGINAL.day); d.flow=Object.assign(copy(FLOW0),d.flow||{}); if(!w.P.join) w.P.join=copy(ORIGINAL.join); w.P.ref=Object.assign(copy(ORIGINAL.ref),w.P.ref||{}); return w }   // сохранённое в 1.0–1.1 — без полей оживления и стыка
 function P(){ return st.work[st.theme].P }
 function edited(){ const w=st.work[st.theme], base=sourcePreset(st.theme,w.source); return !base||JSON.stringify(base)!==JSON.stringify(w.P) }
 function energyOf(Pr,app){ return (Pr.apps&&Pr.apps[app]&&Pr.apps[app].energy)||Pr.energy }
@@ -210,17 +224,10 @@ function arcStops(L,len,join,step){
   }
   return out;
 }
+/* 1.8: дуга — общий движок shared/happy-energy-ring.js (одна линия на холсте, концы — продолжение того же градиента), как в Day, Meal и Sport */
 function layerHTML(L,len,join){
   if(len<=0.05) return '';
-  const A=212, S=arcStops(L,len,join), col=[], msk=[];
-  S.forEach(p=>{ col.push(p.c+' '+n2(p.t)+'deg'); msk.push('rgba(0,0,0,'+n2(p.a)+') '+n2(p.t)+'deg') });
-  col.push('transparent '+n2(len)+'deg');
-  const half=len+(360-len)/2;
-  msk.push('rgba(0,0,0,'+(join?0:n2(S[S.length-1].a))+') '+n2(half)+'deg','rgba(0,0,0,'+n2(S[0].a)+') '+n2(half)+'deg');
-  const cap=(th,c)=>{ const f=(122+th)*Math.PI/180; return '<i class="erCap" style="left:'+n2(46+46*Math.cos(f))+'%;top:'+n2(46+46*Math.sin(f))+'%;background:'+c+'"></i>' };
-  const m='conic-gradient(from '+A+'deg,'+msk.join(',')+')';
-  return '<div class="erLayer" style="-webkit-mask-image:'+m+';mask-image:'+m+'"><div class="erSweep" style="background:conic-gradient(from '+A+'deg,'+col.join(',')+')"></div>'+
-    cap(0,colAt(L,0))+(join?'':cap(len,colAt(L,len/SWEEP)))+'</div>';
+  return '<div class="erLayer">'+HappyEnergyRing.arcHTML(arcStops(L,len,join),16)+'</div>';
 }
 /* мягкая тень под концом верхней дуги: чуть впереди конца, только в трубке кольца */
 function shadeHTML(len,J){
@@ -311,22 +318,10 @@ function refArc(E,R,g,arc,view,J){
   } else if(arc==='spent'&&g.ds>g.de&&g.de>0.05){ const ae=alphaAt(E.eat,1); o.B=(t,a)=>t<=g.de?a:1-(1-a)*(1-ae) }
   return o;
 }
-/* слой дуги с концами тем же градиентом (= layerHTML из «Пробы»); through — конец верхней дуги красится по месту, как дуга под ним */
-function layerG(L,len,join,through){
+/* слой дуги эталонного виджета — тот же общий движок на холсте (1.8) */
+function layerG(L,len,join){
   if(len<=0.05) return '';
-  const A=212, S=arcStops(L,len,join,2), col=[], msk=[];
-  S.forEach(p=>{ col.push(p.c+' '+n2(p.t)+'deg'); msk.push('rgba(0,0,0,'+n2(p.a)+') '+n2(p.t)+'deg') });
-  col.push('transparent '+n2(len)+'deg');
-  const half=len+(360-len)/2;
-  msk.push('rgba(0,0,0,'+(join?0:n2(S[S.length-1].a))+') '+n2(half)+'deg','rgba(0,0,0,'+n2(S[0].a)+') '+n2(half)+'deg');
-  const X=8, c0=colAt(L,0), c1=colAt(L,len/SWEEP), ext=[c0+' 0deg',c0+' '+X+'deg'], cnt=Math.max(1,Math.ceil(len/2));
-  for(let i=0;i<=cnt;i++){ const t=Math.min(len,i*2); ext.push(colAt(L,t/SWEEP)+' '+n2(t+X)+'deg') }
-  if(through) for(let i=1;i<=4;i++) ext.push(colAt(L,(len+i*X/4)/SWEEP)+' '+n2(len+X+i*X/4)+'deg'); else ext.push(c1+' '+n2(len+2*X)+'deg');
-  ext.push('transparent '+n2(len+2*X)+'deg');
-  const gr='conic-gradient(from '+(A-X)+'deg,'+ext.join(',')+')';
-  const cap=th=>{ const f=(122+th)*Math.PI/180, at=n2(50+46*Math.cos(f))+'% '+n2(50+46*Math.sin(f))+'%'; return '<i class="erCapG" style="background:'+gr+';-webkit-clip-path:circle(4% at '+at+');clip-path:circle(4% at '+at+')"></i>' };
-  const m='conic-gradient(from '+A+'deg,'+msk.join(',')+')';
-  return '<div class="erLayer" style="-webkit-mask-image:'+m+';mask-image:'+m+'"><div class="erSweep" style="background:conic-gradient(from '+A+'deg,'+col.join(',')+')"></div>'+cap(0)+(join?'':cap(len))+'</div>';
+  return '<div class="erLayer">'+HappyEnergyRing.arcHTML(arcStops(L,len,join,2),16)+'</div>';
 }
 function refRing(E,R,J,D,mode,big){
   const g=refGeom(R,D), none=D.none; let body='';
@@ -564,7 +559,7 @@ function renderCompareSoon(){ clearTimeout(cmpTimer); cmpTimer=setTimeout(render
 function renderCompare(){
   if(st.tab==='anim') return;
   const w=wid(), app=appOf(), list=fable(st.theme), src=st.work[st.theme].source, ed=edited();
-  const items=[['orig','Как сейчас',copy(ORIGINAL)]].concat(list.map((p,i)=>['f'+i,p.name||'Пресет '+(i+1),fromPreset(p)]));
+  const items=[['orig','Как сейчас',orig(st.theme)]].concat(list.map((p,i)=>['f'+i,p.name||'Пресет '+(i+1),fromPreset(p)]));
   (st.mine[st.theme]||[]).forEach((m,i)=>items.push(['m'+i,m.name,sourcePreset(st.theme,'m'+i)]));   // 1.6: все свои варианты темы — в том же ряду
   const host=$('compare');
   host.style.gridTemplateColumns='repeat('+Math.max(4,items.length)+',minmax(0,1fr))';
@@ -848,7 +843,7 @@ async function cloudStart(){
     const id=await user.id(); if(!id) return;
     const ref=db.collection('saves').doc(id), d=await ref.get(); cloud=ref;
     const r=d.exists?d.data():null; let remote=null; try{ remote=r&&r.state?JSON.parse(r.state):null }catch(e){}
-    if(remote&&(remote.ts||0)>(st.ts||0)){ load(remote); if(!themes().some(t=>t.id===st.theme)) st.theme='original'; boot=true; paintAll(); boot=false; cloudMark('ok') }
+    if(remote&&(remote.ts||0)>(st.ts||0)){ load(remote); if(!themes().some(t=>t.id===st.theme)) st.theme='original'; migrateOrig(); boot=true; paintAll(); boot=false; cloudMark('ok') }
     else if(st.ts) cloudPush(); else cloudMark('ok');
   }catch(e){ cloudMark('err') }
 }
