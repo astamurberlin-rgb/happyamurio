@@ -266,8 +266,8 @@
   },
   {
    "path": "bot.js",
-   "size": 326270,
-   "sha256": "89355005a9db4860da0f040c27aef78b68a0f075fd17f600c3261f5fd57c82ba"
+   "size": 330592,
+   "sha256": "c885b35b9b2c381be30999fb40fe295a8dd4b9d9dc1ec3f10a546d07cf016371"
   },
   {
    "path": "bot/household-ru.js",
@@ -381,8 +381,8 @@
   },
   {
    "path": "cooking-library.js",
-   "size": 3540,
-   "sha256": "51609af73430915c3036eac9b46783fae637db562c6c3b8ac23ae459d0ef39ca"
+   "size": 3799,
+   "sha256": "700acde0d700507a4ad7f31699b5d631a18aca0e7999cb0ffc7f8bfadac1edf1"
   },
   {
    "path": "counters.js",
@@ -431,8 +431,8 @@
   },
   {
    "path": "index.html",
-   "size": 712760,
-   "sha256": "ac3d8e77f47f056f2142da410c2e725e705e2d93619779ef05b5da501ca24615"
+   "size": 714017,
+   "sha256": "ec7ce65cf223c664d46bb0a429a2a9983d6f94d6c10674e8d6f306a6659a0bb6"
   },
   {
    "path": "kfct.js",
@@ -651,8 +651,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 88824,
-   "sha256": "65c70ec2ac444f230417216c1a301778a5939b078e670882bb7607f62f2a2173"
+   "size": 90525,
+   "sha256": "340753cab92d1bccaf0121106ffbfc0ed9555aa4626edd4b3c6df9821fe2108c"
   },
   {
    "path": "report.css",
@@ -771,8 +771,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 38787,
-   "sha256": "4e0a3b9f1f743faf5cfcaea41be843a1ec7a6827beceae168cc52b48cb278515"
+   "size": 38891,
+   "sha256": "090ebc1506b5a0e2987e93ba35e51fcefff324751f6b19ac6d9f5599233bb656"
   },
   {
    "path": "shared/happy-screens.js",
@@ -816,8 +816,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 33619,
-   "sha256": "764a10bc1e156c4862d0f04320781ff2a78989f67feac9e8384c012f073c66d5"
+   "size": 33843,
+   "sha256": "28535dc83c37a140d3cabe30f5dcb5f05bffc315e85c6a780f3fd5aa7c6239c7"
   },
   {
    "path": "shared/meal-products-model.js",
@@ -882,7 +882,7 @@
   {
    "path": "sw.js",
    "size": 3778,
-   "sha256": "d1cbf3155da812a9b905985774a7148c30229c552bb63900af88c68a1999799e"
+   "sha256": "07cdeb5dae3252da7210267506d81066a8399c7635336280eebbbb401aaa2ea0"
   },
   {
    "path": "usda-measures.js",
