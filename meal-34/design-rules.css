@@ -47,3 +47,9 @@
 
 /* спрятанная кнопка остаётся спрятанной: display у кнопок выше иначе перебивает атрибут hidden */
 .btn[hidden],.chip[hidden],.cc-pills [hidden]{display:none!important}
+
+#happy-screens .hs-privacy-consent{display:flex;align-items:flex-start;gap:10px;margin:16px 0 0;font-size:16px;line-height:22px}
+#happy-screens .hs-privacy-consent input{width:20px;height:20px;flex:none;margin:1px 0;appearance:auto;accent-color:var(--hs-primary)}
+#happy-screens .hs-privacy-consent a,#happy-screens .hs-policy-link{color:inherit;text-decoration:underline;text-underline-offset:3px}
+#happy-screens .hs-policy-link{font-size:16px;font-weight:600;line-height:44px}
+#happy-screens [data-hw="register"]:disabled{opacity:.52}
