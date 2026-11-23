@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#00A8F5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45</title>
+<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#00A8F5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.1</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-sport-20261029-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-sport-20261029-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-sport-20261029-152.png">
@@ -3875,12 +3875,118 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
 document.addEventListener('change',e=>{if(e.target.name==='kind'&&e.target.form?.querySelector('.workout-icon-toggle'))updateWorkoutIconPreview(e.target.form)});
 document.addEventListener('input',e=>{if(e.target.name==='title'&&e.target.form?.querySelector('.workout-icon-toggle'))updateWorkoutIconPreview(e.target.form)});
 
+/* Happy energy ring · общий движок дуги кольца энергии (Day, Meal, Sport и Студия градиентов) · 23.11.2026 · Claude
+   Астамур 23.11: «всё должно быть на одинаковых движках» — на конце дуги был виден кружок.
+   Раньше дуга была коническим градиентом CSS, а круглые концы — отдельными кружками одного цвета поверх; при быстром переходе
+   цвета на конце кружок читался точкой. Теперь дуга — одна линия на холсте (canvas) с круглыми концами самого холста, как дуги
+   Day «Сейчас» (day-NN/arc-motion.js). Цвет и прозрачность по месту на дуге приходят из приложения готовыми точками, холст
+   кладёт их в один конический градиент; концы окрашены продолжением этого же градиента, поэтому шва и точки нет.
+
+   Разметка: <happy-er-arc data-s="t,#RRGGBB,a;…" data-w="16"></happy-er-arc> внутри квадрата слоя кольца (200 × 200 единиц,
+   центр кольца посередине, радиус 92). t — градусы от начала дуги, a — 0…1. Элемент рисует себя сам, как только попал в
+   страницу, и перерисовывается при смене размера.
+
+   Цвета колец по теме: HappyEnergyRing.palette() — набор для темы, выбранной в «Настроить тему» (html[data-happy-appearance]),
+   или null, если у темы свой набор не задан (тогда у приложения его исходные цвета). Наборы взяты из Студии градиентов,
+   выбор Астамура 23.11.2026: Бордо — «Сакура», Ночная бухта — «Костёр», Полуночный ирис — «Ирис», Неоновая ночь — «Лаванда» (ночью «Мягко»). */
+(function(root){
+ 'use strict';
+ const doc=root.document;
+ if(!doc||root.HappyEnergyRing)return;
+ const KR=92;
+ const n=v=>Math.round(v*1000)/1000;
+ function parse(s){
+  return String(s||'').split(';').map(x=>{ const p=x.split(','); return {t:+p[0],c:p[1],a:p.length>2?+p[2]:1} }).filter(p=>Number.isFinite(p.t)&&/^#[0-9a-f]{6}$/i.test(p.c||''));
+ }
+ const rgba=(h,a)=>'rgba('+[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',')+','+Math.max(0,Math.min(1,a))+')';
+ /* одна линия: от 122° по часовой на длину дуги; концы круглые, окрашены продолжением градиента */
+ function draw(el){
+  const cv=el.firstChild; if(!cv)return;
+  const size=el.clientWidth; if(!size)return;
+  const dpr=Math.min(root.devicePixelRatio||1,3), px=Math.round(size*dpr);
+  if(cv.width!==px){cv.width=px;cv.height=px}
+  const ctx=cv.getContext('2d'); if(!ctx)return;
+  ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,px,px);
+  const S=parse(el.dataset.s); if(!S.length)return;
+  const len=S[S.length-1].t; if(len<=0.05)return;
+  const c=px/2, R=px*KR/200, w=px*(+el.dataset.w||16)/200;
+  const a0=122*Math.PI/180, a1=(122+len)*Math.PI/180;
+  ctx.lineWidth=w; ctx.lineCap='round';
+  if(ctx.createConicGradient){
+   const X=Math.asin(Math.min(1,(w/2)/R))*180/Math.PI+1;              // на сколько градусов круглый конец выходит за дугу
+   const g=ctx.createConicGradient((122-X)*Math.PI/180,c,c), at=d=>Math.min(1,(d+X)/360);
+   g.addColorStop(0,rgba(S[0].c,S[0].a));
+   S.forEach(p=>g.addColorStop(at(p.t),rgba(p.c,p.a)));
+   const e=S[S.length-1]; g.addColorStop(at(len+X),rgba(e.c,e.a));
+   ctx.strokeStyle=g; ctx.beginPath(); ctx.arc(c,c,R,a0,a1); ctx.stroke();
+  }else{                                                                // старый браузер без конического градиента: короткими отрезками
+   ctx.lineCap='butt';
+   for(let i=0;i<S.length-1;i++){ const p=S[i],q=S[i+1]; ctx.strokeStyle=rgba(p.c,p.a); ctx.beginPath(); ctx.arc(c,c,R,(122+p.t)*Math.PI/180,(122+q.t+.4)*Math.PI/180); ctx.stroke() }
+   [[S[0],0],[S[S.length-1],len]].forEach(([p,t])=>{ const f=(122+t)*Math.PI/180; ctx.fillStyle=rgba(p.c,p.a); ctx.beginPath(); ctx.arc(c+R*Math.cos(f),c+R*Math.sin(f),w/2,0,2*Math.PI); ctx.fill() });
+  }
+ }
+ const ro=root.ResizeObserver?new ResizeObserver(list=>list.forEach(x=>draw(x.target))):null;
+ class Arc extends root.HTMLElement{
+  connectedCallback(){
+   if(!this.firstChild){ const cv=doc.createElement('canvas'); cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block'; this.append(cv) }
+   this.style.cssText='position:absolute;inset:0;display:block;pointer-events:none';
+   draw(this); if(ro)ro.observe(this);
+  }
+  disconnectedCallback(){ if(ro)ro.unobserve(this) }
+  static get observedAttributes(){ return ['data-s','data-w'] }
+  attributeChangedCallback(){ if(this.isConnected)draw(this) }
+ }
+ if(root.customElements&&!root.customElements.get('happy-er-arc'))root.customElements.define('happy-er-arc',Arc);
+
+ /* разметка слоя: точки {t,c,a} → элемент */
+ function arcHTML(points,w){
+  return '<happy-er-arc data-w="'+(w||16)+'" data-s="'+points.map(p=>n(p.t)+','+p.c+','+n(p.a==null?1:p.a)).join(';')+'"></happy-er-arc>';
+ }
+
+ /* ── наборы цветов кольца и строк по теме (из Студии градиентов). eat / spent — как ER_EAT / ER_SPENT в Meal;
+    track — дорожка кольца, %; bars — строки: тон каждой строки, насыщенность и светлота начала, конца, «за целью» и точки, дорожка %;
+    day — дуги Day «Сейчас»: поток (три цвета), баланс самочувствия и кольцо прогресса; действуют, пока в Day не выбран свой вид дуги ── */
+ const THEMES={
+  'happy-ref-bordeaux-v1':{name:'Сакура',
+   eat:{c0:'#FFE0EE',cm:'#F08CC0',c1:'#FF6F91',mw:30,s0:59,s1:77,a0:57,a1:75},
+   spent:{c0:'#FF6F91',cm:'#F08CC0',c1:'#FFE0EE',mw:30,s0:17,s1:45,a0:64,a1:89},track:20,
+   bars:{hues:{pink:8,violet:348,blue:349,teal:349},chroma:.12,dot:.8,from:.86,to:.72,over:.56,track:22},
+   day:{flow:{colors:['#FFE0EE','#FFC4D6','#F08CC0'],intensity:62,softness:76,duration:16},balance:{posColor:'#FFE0EE',negColor:'#FF6F91',alpha:100},progress:['#FF6F91','#F08CC0','#FFE0EE','#FFC4D6']}},
+  'happy-ref-night-bay-v1':{name:'Костёр',
+   eat:{c0:'#EFDCB5',cm:'#E4AA71',c1:'#D67D5E',mw:30,s0:59,s1:77,a0:74,a1:92},
+   spent:{c0:'#D67D5E',cm:'#E4AA71',c1:'#EFDCB5',mw:30,s0:17,s1:45,a0:78,a1:95},track:16,
+   bars:{hues:{pink:38,violet:55,blue:72,teal:90},chroma:.085,dot:.8,from:.86,to:.72,over:.56,track:16},
+   day:{flow:{colors:['#C89A6F','#BB7A60','#D3C2A0'],intensity:52,softness:82,duration:24},balance:{posColor:'#F0DCB1',negColor:'#D77C60',alpha:96},progress:['#D67D5E','#DF9D6F','#E8BF8E','#EFE0BC']}},
+  'happy-ref-midnight-iris-v1':{name:'Ирис',
+   eat:{c0:'#D0C2ED',cm:'#BF8FD4',c1:'#DF879B',mw:30,s0:59,s1:77,a0:70,a1:90},
+   spent:{c0:'#DF879B',cm:'#BF8FD4',c1:'#D0C2ED',mw:30,s0:17,s1:45,a0:74,a1:94},track:16,
+   bars:{hues:{pink:5,violet:340,blue:315,teal:290},chroma:.08,dot:.79,from:.85,to:.71,over:.55,track:16},
+   day:{flow:{colors:['#A989C2','#AB7097','#BAB0DA'],intensity:50,softness:82,duration:24},balance:{posColor:'#D5C9F4',negColor:'#DF879B',alpha:96},progress:['#DF879B','#CF8AC0','#C4A1DB','#D2C6F1']}},
+  'happy-ref-neon-night-v1':{name:'Лаванда · ночью мягко',
+   eat:{c0:'#AC9FDA',cm:'#7C6DD6',c1:'#DCB0CF',mw:30,s0:59,s1:77,a0:47,a1:68},
+   spent:{c0:'#DCB0CF',cm:'#7C6DD6',c1:'#AC9FDA',mw:30,s0:17,s1:45,a0:54,a1:80},track:14,
+   bars:{hues:{pink:336,violet:287,blue:291,teal:294},chroma:.085,dot:.74,from:.8,to:.66,over:.5,track:16},
+   day:{flow:{colors:['#AC9FDA','#A3C8DC','#7C6DD6'],intensity:62,softness:76,duration:16},balance:{posColor:'#AC9FDA',negColor:'#DCB0CF',alpha:85},progress:['#DCB0CF','#7C6DD6','#AC9FDA','#A3C8DC']}}
+ };
+ function palette(id){
+  if(id===undefined)id=doc.documentElement.dataset.happyAppearance||'';
+  const p=THEMES[id]; return p?JSON.parse(JSON.stringify(p)):null;
+ }
+ /* смена темы: приложения перерисовывают кольцо (подписываются через onTheme) */
+ const subs=[]; let last=doc.documentElement.dataset.happyAppearance||'';
+ if(root.MutationObserver)new MutationObserver(()=>{ const id=doc.documentElement.dataset.happyAppearance||''; if(id===last)return; last=id; subs.forEach(f=>{try{f(id)}catch(e){}}) }).observe(doc.documentElement,{attributes:true,attributeFilter:['data-happy-appearance']});
+ root.HappyEnergyRing={version:1,arcHTML,draw,palette,themes:THEMES,onTheme:f=>subs.push(f)};
+})(typeof window!=='undefined'?window:globalThis);
+
 /* Shared energy widget. Renderer derived from the supplied variant 6. */
 (function(){
 const meal=typeof SEED==='undefined';let mode=meal?'eat':'spent';
 var SWEEP=296,KR=92,uid=0,S={scale:3000,bal:false,knob:mode};
+/* цвета кольца и строк по теме (shared/happy-energy-ring.js): у темы свой набор — берём его, нет — исходные цвета */
+function pal(){return typeof HappyEnergyRing!=='undefined'?HappyEnergyRing.palette():null}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function n(v){return Math.round(v*100)/100}
-const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:{c0:'#00FFFF',cm:'#7C5AFF',c1:'#FDA6FF',mw:30,s0:59,s1:77,a0:57,a1:75},spent:{c0:'#FDA6FF',cm:'#7C5AFF',c1:'#00FFFF',mw:30,s0:17,s1:45,a0:64,a1:89}};
+const config0={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:{c0:'#00FFFF',cm:'#7C5AFF',c1:'#FDA6FF',mw:30,s0:59,s1:77,a0:57,a1:75},spent:{c0:'#FDA6FF',cm:'#7C5AFF',c1:'#00FFFF',mw:30,s0:17,s1:45,a0:64,a1:89}};
+let config=config0;
   function hexRgb(h) { return [1, 3, 5].map(function (i) { return parseInt(h.slice(i, i + 2), 16) / 255; }); }
   function toLin(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
   function toGam(c) { return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; }
@@ -3956,13 +4062,10 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
       '" stroke-linecap="' + (cap || 'round') + '" stroke-dasharray="' + n(Math.max(0.01, deg * k)) + ' ' + n(circ) + '"' +
       (start ? ' stroke-dashoffset="' + n(-start * k) + '"' : '') + (attrs ? ' ' + attrs : '') + '/>';
   }
-  /* Day 58, Sport 41 (Астамур 12.11 11:29, «черточки» на дуге; в Meal поправлено в 30): дуга — плавный конический градиент CSS
-     поверх дорожки SVG, а не сотня коротких отрезков SVG под маской: Safari на iPhone показывал стыки отрезков полосками,
-     а круглые концы — отдельными пятнами. Цвет и прозрачность по месту на дуге — прежние (colAt, alphaAt). Внутри слоя всё
-     непрозрачное (дуга и кружки-концы), прозрачность — одной маской слоя, поэтому на концах нет двойного наложения.
-     Слой — квадрат 200 × 200 единиц SVG с центром кольца (120, 120); у CSS ноль сверху, поэтому начало дуги — 122° + 90°.
-     Стекло (glass) в Day и Sport выключено — его рисунок убран вместе с отрезками. */
-  var CSS_FROM = 212;
+  /* 23.11.2026 (Астамур: «всё должно быть на одинаковых движках», на конце дуги был виден кружок): дуга — одна линия на холсте,
+     общий движок shared/happy-energy-ring.js (как дуги Day «Сейчас»). Цвет и прозрачность по месту на дуге — прежние (colAt, alphaAt);
+     круглые концы рисует сам холст продолжением того же градиента, отдельных кружков одного цвета больше нет. До 23.11 — конический
+     градиент CSS и кружки-концы (Day 58, Sport 41), ещё раньше — отрезки SVG под маской. */
   function layer(Pp, L, len, w, other) {
     if (len <= 0.05) return '';
     // по балансу: до конца другой дуги — цвет начала; за ним переход к цвету конца, полный — у конца кольца
@@ -3971,34 +4074,11 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
       if (Pp.map === 'balance') return x <= other ? 0 : (SWEEP - other < 0.5 ? 1 : (x - other) / (SWEEP - other));
       return x / len;
     }
-    var step = 3, cnt = Math.max(1, Math.ceil(len / step)), col = [], msk = [], i, t, style = '';
+    var step = 1.5, cnt = Math.max(1, Math.ceil(len / step)), pts = [], i, t;
     var ramp = L.a0 < 100 || L.a1 < 100;
-    for (i = 0; i <= cnt; i++) {
-      t = Math.min(len, i * step);
-      col.push(colAt(L, tOf(t)) + ' ' + n(t) + 'deg');
-      if (ramp) msk.push('rgba(0,0,0,' + n(alphaAt(L, t / len)) + ') ' + n(t) + 'deg');
-    }
-    col.push('transparent ' + n(len) + 'deg');
-    if (Pp.blend && Pp.blend !== 'normal') style += 'mix-blend-mode:' + Pp.blend + ';';
-    if (ramp) {
-      // за концом дуги — прозрачность конца (там круглый конец), с середины просвета — прозрачность начала
-      var half = len + (360 - len) / 2;
-      msk.push('rgba(0,0,0,' + n(alphaAt(L, 1)) + ') ' + n(half) + 'deg', 'rgba(0,0,0,' + n(alphaAt(L, 0)) + ') ' + n(half) + 'deg');
-      var m = 'conic-gradient(from ' + CSS_FROM + 'deg,' + msk.join(',') + ')';
-      style += '-webkit-mask-image:' + m + ';mask-image:' + m + ';';
-    }
-    // трубка: от KR − w/2 до KR + w/2 при радиусе слоя 100 единиц
-    var r0 = n(KR - w / 2), r1 = n(KR + w / 2);
-    var tube = 'radial-gradient(closest-side,transparent calc(' + r0 + '% - .3px),#000 calc(' + r0 + '% + .3px),#000 calc(' + r1 + '% - .3px),transparent calc(' + r1 + '% + .3px))';   // край сглажен поровну по обе стороны, как у кружков-концов
-    // круглый конец — кружок диаметром w единиц на средней линии трубки
-    function cap(th, color) {
-      var f = (122 + th) * Math.PI / 180, d = w / 2;
-      return '<i class="he-cap" style="width:' + n(d) + '%;height:' + n(d) + '%;left:' + n(50 + KR / 2 * Math.cos(f) - d / 2) +
-        '%;top:' + n(50 + KR / 2 * Math.sin(f) - d / 2) + '%;background:' + color + '"></i>';
-    }
-    return '<div class="he-layer"' + (style ? ' style="' + style + '"' : '') + '><div class="he-sweep" style="background:conic-gradient(from ' +
-      CSS_FROM + 'deg,' + col.join(',') + ');-webkit-mask:' + tube + ';mask:' + tube + '"></div>' +
-      cap(0, colAt(L, tOf(0))) + cap(len, colAt(L, tOf(len))) + '</div>';
+    for (i = 0; i <= cnt; i++) { t = Math.min(len, i * step); pts.push({ t: t, c: colAt(L, tOf(t)), a: ramp ? alphaAt(L, t / len) : 1 }); }
+    var style = Pp.blend && Pp.blend !== 'normal' ? ' style="mix-blend-mode:' + Pp.blend + '"' : '';
+    return '<div class="he-layer"' + style + '>' + HappyEnergyRing.arcHTML(pts, w) + '</div>';
   }
   function signed(d) { d = Math.round(d); return d > 0 ? '+' + d : d < 0 ? '−' + (-d) : '0'; }
   function ringSvg(Pp, eaten, spent, step, label) {
@@ -4019,7 +4099,7 @@ const config={map:'scale',blend:'normal',top:'spent',nest:false,glass:false,eat:
     var cap = S.bal ? 'баланс' : (S.knob === 'eat' ? 'съедено' : 'потрачено');
     var knob = '<div class="he-knob' + (big.length >= 5 ? ' long' : '') + '" style="' + kpos + '"><b>' + big + '</b><small>' + cap + '</small></div>';
     return '<svg viewBox="' + vb.join(' ') + '"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
-      '<g transform="rotate(122 120 120)">' + arc(KR, 16, SWEEP, 'none', 0, 'style="stroke:var(--trk)"') + '</g></svg>' +
+      '<g transform="rotate(122 120 120)">' + arc(KR, 16, SWEEP, 'none', 0, 'style="stroke:' + (S.trk || 'var(--trk)') + '"') + '</g></svg>' +
       (body ? '<div class="he-arcs" aria-hidden="true" style="' + apos + '">' + body + '</div>' : '') + knob;
   }
 
@@ -4032,9 +4112,10 @@ function date(){return selectedDate}
 function nutrition(){try{return typeof SportFood!=='undefined'?SportFood.eaten(date()):null}catch(e){return null}}
 function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
 function number(v){return v==null?'—':Math.round(v).toLocaleString('ru-RU')}
-const hues={pink:350,violet:305,blue:262,teal:180};
-function metricRow(color,name,value,unit,goal,progress){const h=hues[color],tone=(l)=>lchHex(l,.12,h*Math.PI/180);const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?number(value)+(g?'/'+number(g):'')+(unit?' '+unit:''):'—';return `<div class="he-metric"><i class="he-dot" style="background:${tone(.8)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(.86)},${tone(.72-.16*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
-function widget(){const f=facts(),g=f.food?.g||{};S.bal=mode==='balance';S.knob=mode==='balance'?(meal?'eat':'spent'):mode;const missing=mode==='balance'?(f.eaten==null||f.spent==null):f[mode==='eat'?'eaten':'spent']==null;let svg=ringSvg(config,f.eaten||0,f.spent||0,1.5,'Кольцо энергии');if(missing)svg=svg.replace(/<b>[^<]*<\/b>/,'<b>—</b>');let rows='';if(mode==='eat')rows=metricRow('pink','Белки',f.food?.p,'г',g.p)+metricRow('violet','Жиры',f.food?.f,'г',g.f)+metricRow('blue','Углеводы',f.food?.c,'г',g.c)+metricRow('teal','Клетчатка',f.food?.fib,'г',g.fib);else if(mode==='spent')rows=metricRow('violet','Покой',f.rest,'ккал')+metricRow('pink','Тренировки',f.training,'ккал')+metricRow('blue','Шаги',f.steps,'')+metricRow('teal','Время',f.minutes,'мин');else{const d=f.eaten!=null&&f.spent!=null?f.eaten-f.spent:null;rows=metricRow('teal',d!=null&&d>0?'Сжечь':'Запас',d==null?null:Math.abs(d),'ккал')+metricRow('blue','Шаги до цели',null,'')+metricRow('violet','Ходьба',null,'мин')+metricRow('pink','Белка до цели',Number(g.p)>0&&f.food?.p!=null?Math.max(0,Number(g.p)-f.food.p):null,'г')}
+const hues0={pink:350,violet:305,blue:262,teal:180};
+const BARS0={hues:hues0,chroma:.12,dot:.8,from:.86,to:.72,over:.56,track:22};let bars=BARS0;
+function metricRow(color,name,value,unit,goal,progress){const B=bars,h=B.hues[color],tone=(l)=>lchHex(l,B.chroma,h*Math.PI/180);const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?number(value)+(g?'/'+number(g):'')+(unit?' '+unit:''):'—';return `<div class="he-metric"><i class="he-dot" style="background:${tone(B.dot)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"${B===BARS0?'':` style="background:rgba(255,255,255,${B.track/100})"`}><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(B.from)},${tone(B.to-(B.to-B.over)*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
+function widget(){const f=facts(),g=f.food?.g||{};{const P=pal();config=P?Object.assign({},config0,{eat:P.eat,spent:P.spent}):config0;bars=P?P.bars:BARS0;S.trk=P?'rgba(255,255,255,'+P.track/100+')':''}S.bal=mode==='balance';S.knob=mode==='balance'?(meal?'eat':'spent'):mode;const missing=mode==='balance'?(f.eaten==null||f.spent==null):f[mode==='eat'?'eaten':'spent']==null;let svg=ringSvg(config,f.eaten||0,f.spent||0,1.5,'Кольцо энергии');if(missing)svg=svg.replace(/<b>[^<]*<\/b>/,'<b>—</b>');let rows='';if(mode==='eat')rows=metricRow('pink','Белки',f.food?.p,'г',g.p)+metricRow('violet','Жиры',f.food?.f,'г',g.f)+metricRow('blue','Углеводы',f.food?.c,'г',g.c)+metricRow('teal','Клетчатка',f.food?.fib,'г',g.fib);else if(mode==='spent')rows=metricRow('violet','Покой',f.rest,'ккал')+metricRow('pink','Тренировки',f.training,'ккал')+metricRow('blue','Шаги',f.steps,'')+metricRow('teal','Время',f.minutes,'мин');else{const d=f.eaten!=null&&f.spent!=null?f.eaten-f.spent:null;rows=metricRow('teal',d!=null&&d>0?'Сжечь':'Запас',d==null?null:Math.abs(d),'ккал')+metricRow('blue','Шаги до цели',null,'')+metricRow('violet','Ходьба',null,'мин')+metricRow('pink','Белка до цели',Number(g.p)>0&&f.food?.p!=null?Math.max(0,Number(g.p)-f.food.p):null,'г')}
 return '<div class="he-layout"><div class="he-plate">'+svg+'<button type="button" class="he-center" data-energy-cycle aria-label="Сменить режим энергии. Сейчас: '+(mode==='eat'?'съедено':mode==='spent'?'потрачено':'баланс')+'"></button></div><div class="he-info">'+rows+'</div></div>'}
 function paint(){const el=document.getElementById('happy-energy');if(el){el.classList.add('happy-energy');el.innerHTML=widget()}}
 function refresh(){paint()}
@@ -4043,7 +4124,8 @@ function refresh(){paint()}
    открытии Sport снова показывает «потрачено» (решение владельца 11.11.2026). */
 document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=['spent','balance','eat'];mode=modes[(modes.indexOf(mode)+1)%3];paint()}});
 window.addEventListener('pageshow',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});refresh();
-globalThis.HappyEnergy={refresh};   // кольцо перерисовывается, когда пришла еда из Meal (food-counters.js)
+globalThis.HappyEnergy={refresh};
+if(typeof HappyEnergyRing!=='undefined')HappyEnergyRing.onTheme(refresh);   // тема сменилась — кольцо в цветах темы   // кольцо перерисовывается, когда пришла еда из Meal (food-counters.js)
 })();
 
 /* Выгрузка дневника файлом. Вход, сеанс и ключи в файл не попадают.
@@ -4093,9 +4175,9 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45">${sportVersionFooter()}</footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.1">${sportVersionFooter()}</footer>`};
 // Update 38.3: version line comes from the shared release-notes module (date, time, author of the latest entry); plain label if the module is absent.
-function sportVersionFooter(){const label='Happy Sport · Update 45';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
+function sportVersionFooter(){const label='Happy Sport · Update 45.1';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
 
 /* One set at a time, shared by exercise settings and workout templates. */
 const setPlanDrafts=new Map();let setPlanSerial=0;
@@ -5478,7 +5560,8 @@ const SportTaps=(()=>{
 })(typeof window!=='undefined'?window:globalThis);
 
 /* Add newest releases first; also update the daily briefing. */
-const sportReleases=[{"version": "45", "date": "2026-11-23", "author": "Codex", "changes": ["В Sport можно войти через Google или по почте. При первом входе через Google приложение поможет открыть прежние записи.", "В настройках профиля можно скачать данные и удалить аккаунт. Перед удалением приложение попросит подтвердить выбор."], "time": "04:31"},
+const sportReleases=[{"version": "45.1", "date": "2026-11-23", "time": "16:40", "author": "Claude", "changes": ["Кольцо энергии рисуется по-новому: на конце дуги больше нет заметной точки, цвет переходит ровно до самого края.", "У тем «Бордо», «Ночная бухта», «Полуночный ирис» и «Неоновая ночь» кольцо и его строки теперь в цветах темы. В остальных темах цвета прежние."]},
+ {"version": "45", "date": "2026-11-23", "author": "Codex", "changes": ["В Sport можно войти через Google или по почте. При первом входе через Google приложение поможет открыть прежние записи.", "В настройках профиля можно скачать данные и удалить аккаунт. Перед удалением приложение попросит подтвердить выбор."], "time": "04:31"},
  {"version": "44.14", "date": "2026-11-22", "time": "18:20", "author": "Claude", "changes": ["Короткое сообщение без плашки стоит низко, сразу над кнопкой микрофона.", "Есть плашка тренировки, перерыва или таймер посередине — сообщение стоит над самой верхней из них и не закрывает её."]},
  {"version": "44.13", "date": "2026-11-22", "time": "16:00", "author": "Claude", "changes": ["Все тексты обращаются на «ты», и экраны входа, профиля и целей тоже: «Войди в аккаунт», «Проверь адрес почты», «Не помню пароль».", "«Выбери, что записать»; «Время: минуты и секунды, например 1:30» — одна фраза везде; «Файл копии готов — сохрани его» вместо «JSON подготовлен»; диктовка — «Диктовка здесь не работает…».", "Короткие сообщения на iPhone больше не наезжают на кнопку с микрофоном: висят чуть выше неё."]},
  {"version": "44.12", "date": "2026-11-22", "time": "04:35", "author": "Claude", "changes": ["«Настроить тему» → «Главная кнопка»: кружки с микрофоном как в Color Studio — настоящий цвет и тень кнопки, белый микрофон.", "Профиль: списка замеров веса больше нет (замеры — в журнале), подписи полей жирнее, «Пол» и единицы — переключатели с отступом внутри контура, подписи по центру.", "Переключатели между вариантами везде одного вида: контур 44, выбранная пилюля 36.", "Выключатели одного вида во всех приложениях, галочки — белый квадрат, листы снизу как в Day, текст в белых кнопках — цвета темы.", "«Библиотека» теперь «Каталог», первая вкладка — «Дневник».", "«+ Круг» в таймере крупный, как «Старт».", "Лист выбора периода как в Day.", "Служебное (Иконки, Датчики) — в «Для разработчика».", "Новые значки «Журнал» (лист с секундомером) и «Каталог» (книга с гирей).", "«Золотой закат» с тёмным низом."]},

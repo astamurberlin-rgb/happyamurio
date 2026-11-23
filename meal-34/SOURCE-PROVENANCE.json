@@ -431,8 +431,8 @@
   },
   {
    "path": "index.html",
-   "size": 712321,
-   "sha256": "0df91c700ee344ece95f104ba84e6db4a297b940296adea0babe07cf021c3da4"
+   "size": 712623,
+   "sha256": "2560c937a0ee2bb1648b4ed048ec8383a946f80c77e91e08640ef5bb0e671dad"
   },
   {
    "path": "kfct.js",
@@ -651,8 +651,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 87808,
-   "sha256": "3633cc4aa805a133939fa6bf9a330e3148200f0f7f367abb4cae855a04536e4b"
+   "size": 88432,
+   "sha256": "af810aae5e16d989c45bbfb6006c939aafb1a18b8203199e306c4e519bab7d0b"
   },
   {
    "path": "report.css",
@@ -708,6 +708,11 @@
    "path": "shared/happy-design.css",
    "size": 6439,
    "sha256": "59d2893e5209f91bc25ca5e1acd358c2ff378b452cd02624e6dee8d4eac06a34"
+  },
+  {
+   "path": "shared/happy-energy-ring.js",
+   "size": 9229,
+   "sha256": "857c46d8a9bc118284b86f824d777f9c82c2aae7af04410361f5d05ea71a7d5e"
   },
   {
    "path": "shared/happy-food.js",
@@ -877,7 +882,7 @@
   {
    "path": "sw.js",
    "size": 3778,
-   "sha256": "99cb4ae405fa5607551b64c37302e2f4bf4ae767bd463e09a77b17792fe0fe2d"
+   "sha256": "9c153e7e660f4f882d7d3803c10c56cfc4bfb10bfbb0823cbeaae6eedfffd7ff"
   },
   {
    "path": "usda-measures.js",

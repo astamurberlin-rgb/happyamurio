@@ -329,6 +329,15 @@
         "meal",
         "sport"
       ]
+    },
+    {
+      "name": "happy-energy-ring.js",
+      "reference": "shared/happy-energy-ring.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
     }
   ]
 }
