@@ -236,8 +236,8 @@
   },
   {
    "path": "bot-guide-steps.js",
-   "size": 27370,
-   "sha256": "48ded30eef6f967aaf816ca54374b6d573dcdb4d11a583a1ecb56affe9490743"
+   "size": 33899,
+   "sha256": "c6a726a2187e322fb9e647007772c1baf8633de8cdbbf7be682d6a5131b1aab8"
   },
   {
    "path": "bot-own-product.js",
@@ -266,13 +266,13 @@
   },
   {
    "path": "bot.js",
-   "size": 314165,
-   "sha256": "f592f22f15ec396dcf817ec713580d28e5fcc68f3ed27c27c4ae3e96336042e2"
+   "size": 326270,
+   "sha256": "89355005a9db4860da0f040c27aef78b68a0f075fd17f600c3261f5fd57c82ba"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 649346,
-   "sha256": "c0787e7034bff708a3093b3c59267a4f5a6ce10e5750387ff83f640a51c92f66"
+   "size": 654202,
+   "sha256": "55bad7f3345e0c017b9751308ca9f9e591b1aa368b765a33b80323d3c4676d23"
   },
   {
    "path": "catalog-offline.js",
@@ -281,8 +281,8 @@
   },
   {
    "path": "catalog-preview.js",
-   "size": 28100,
-   "sha256": "86ec5045b388b49320be4360313f628623fef22c85adb4016acdc7fb915d1bb3"
+   "size": 28331,
+   "sha256": "c548b05484b14b4f56d6562fda588c620582d46112309a0480fdba0096fdf314"
   },
   {
    "path": "catalog.css",
@@ -296,8 +296,8 @@
   },
   {
    "path": "checks/check-catalog-offline.mjs",
-   "size": 11105,
-   "sha256": "586f3f3243a0c7e2b798fb755adefe619003604f3e02da32e6989a78da689f5b"
+   "size": 11112,
+   "sha256": "edefe003c035cb2b0f3b692b55526b528bff37bea39508e00116d70823da72da"
   },
   {
    "path": "checks/check-desserts.mjs",
@@ -371,8 +371,8 @@
   },
   {
    "path": "collections.js",
-   "size": 22711,
-   "sha256": "f7c73e1d6334eef690dbcebdbb73bf7c87feb9634c736c7942ec56ffca7ac819"
+   "size": 23191,
+   "sha256": "0fbcf829e89eff1a376eb73adf21b3803c2214cf8bbdd384f31767e7ec7c8445"
   },
   {
    "path": "controls.js",
@@ -401,8 +401,8 @@
   },
   {
    "path": "food-libraries.js",
-   "size": 11684,
-   "sha256": "ca6d62728482171c13beeef8fbb4bb52d66895761e4f53570646ac300bbcd270"
+   "size": 11971,
+   "sha256": "e9ed00ecdeba8621ebdd39f8dfbf8465738e38da646c0dc1b8195a53d46348b3"
   },
   {
    "path": "images/desserts.jpg",
@@ -431,8 +431,8 @@
   },
   {
    "path": "index.html",
-   "size": 706774,
-   "sha256": "f9496c04d3b2a488da301b4b477a9f4beaa2d4df3c08f920f0fd43448aac3df8"
+   "size": 712321,
+   "sha256": "0df91c700ee344ece95f104ba84e6db4a297b940296adea0babe07cf021c3da4"
   },
   {
    "path": "kfct.js",
@@ -651,8 +651,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 86034,
-   "sha256": "69aaa32a606bc8df7873766f5cf384e0f0e0963bbcf93c527178fbfdf3bad89c"
+   "size": 87808,
+   "sha256": "3633cc4aa805a133939fa6bf9a330e3148200f0f7f367abb4cae855a04536e4b"
   },
   {
    "path": "report.css",
@@ -871,13 +871,13 @@
   },
   {
    "path": "supplements.js",
-   "size": 57058,
-   "sha256": "2b725f91fde5c4b0488b289ed43d3f8eb4a6a8e97bca2462cbc37d88c2934c25"
+   "size": 58120,
+   "sha256": "aacf7a143a91dcc68170e85370500dc44a706391a5e7ac53a779d28cbf5dcddb"
   },
   {
    "path": "sw.js",
    "size": 3778,
-   "sha256": "211b36b0eedb90e5b494728d33bd82752ccad606ecc34438b3a3d05a2d5315fd"
+   "sha256": "99cb4ae405fa5607551b64c37302e2f4bf4ae767bd463e09a77b17792fe0fe2d"
   },
   {
    "path": "usda-measures.js",
@@ -896,8 +896,8 @@
   },
   {
    "path": "user-products.js",
-   "size": 43837,
-   "sha256": "7413681fe4e6e0fec0a18a65ac1df25008927f9e43fc9ad6a28955dfcc386028"
+   "size": 43864,
+   "sha256": "e56a1da15ae39bef838506042d780681181f535c0207b384809763b6574e0669"
   },
   {
    "path": "uzbek.js",
