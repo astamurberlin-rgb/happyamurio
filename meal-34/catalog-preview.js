@@ -17,4 +17,6 @@
   return {version:K.v||'',count:K.f.length,groups:GROUPS.filter(function(g){ return g[1].some(function(k){ return at(k)>=0 }) }).map(function(g){ return g[0] }),
    foods:K.f.map(function(r){ return {id:'bls:'+r[0],name:String(r[1]),kcal:val(r,'kcal'),protein:val(r,'prot'),fat:val(r,'fat'),carb:val(r,'carb')} })};
  };
+ /* «Домашние блюда» (23.11.2026): тот же список из своего файла data/home-1.0.json (HOME в index.html) */
+ root.MealCatalogPreview.home=function(H){ return root.MealCatalogPreview.kav(H) };
 })(typeof window!=='undefined'?window:globalThis);

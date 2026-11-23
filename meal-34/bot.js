@@ -716,6 +716,11 @@ var MealBot=(function(){
           else if(l.alts.some(function(a){ return hist[a] })||(!exactName(l.fid,fw)&&!sameKcal(l.alts))){ l.fid=null; l.st='pick' }
         }
         if(l.st==='pick'&&!l.noAuto&&l.alts.length&&!l.alts.some(function(a){ return related(a,fw) })){ l.st='none'; l.alts=[] }   // предложенное не похоже ни на одно слово
+        /* «суп с фрикадельками»: общее слово блюда названо, а в вариантах только другие супы — блюда нет в базе, посторонние не предлагать (Астамур, 23.11.2026) */
+        if(l.st==='pick'&&!l.noAuto&&!l.gdAsk&&l.alts.length&&fw.length>1&&GENW.test(norm(fw[0]))){ var exW=fw.slice(1).filter(function(w){ return !PREP.test(w)&&!NEUTRAL.test(w)&&!/^(горяч|холодн|тепл|вкусн|остыв|разогр)/.test(norm(w)) });
+          if(exW.length&&!l.alts.some(function(a){ return related(a,exW)||words(a).some(function(w){ return exW.some(function(q){ return norm(q).slice(0,4)===norm(w).slice(0,4) }) }) })){ l.st='none'; l.alts=[]; l.km=true } }
+        /* «вареники с вишней»: блюдо названо, а в вариантах только вишня — блюда нет в базе, ягоду вместо вареников не предлагать (Астамур, 23.11.2026) */
+        if(l.st==='pick'&&!l.noAuto&&!l.gdAsk&&l.alts.length&&fw.length>1&&KINDHEAD.test(norm(fw[0]))&&!l.alts.some(function(a){ return related(a,[fw[0]])||words(a).some(function(w){ return norm(w).slice(0,5)===norm(fw[0]).slice(0,5) }) })){ l.st='none'; l.alts=[]; l.km=true }
         if(l.st==='pick'&&l.alts.length&&!l.gdAsk){
           hist=hist||histCount();
           var used=l.alts.filter(function(a){ return hist[a] });
@@ -837,7 +842,7 @@ var MealBot=(function(){
   /* «съел курицы 200 г» — сырую курицу не едят: берётся готовая. «Курица 200 г», «взвесил курицу» — сырая, как раньше.
      Овощи, фрукты, зелень без слов о способе — сырые. Решение Астамура 17.11.2026 23:11 */
   var COOKEDN=/(варен|отварн|тушен|жарен|запечен|приготовл|грил)/, WEIGHED=false;
-  var METHW=/^(жарен|обжарен|варен|отварн|тушен|запечен|печен|копчен|гриль|грил|паров)/;
+  var METHW=/^(жарен|обжарен|варен|отварн|тушен|запечен|печен(?=[ыоау])|копчен|гриль|грил|паров)/;   // «печёный», но не «печенью», «печени» (пирожок с печенью, 23.11.2026)
   /* продукт приготовлен тем же способом, что сказан: «отварная» — варёная, «запечённая» — в духовке */
   function sameMethod(id,ws){ var n=norm(FOODS[id]?FOODS[id].n:''), G=[[/жар/,/жар/],[/вар/,/вар/],[/туш/,/туш/],[/печ/,/(печ|духовк)/],[/копч/,/копч/],[/грил/,/грил/],[/пар/,/пар/]];
     return ws.every(function(w){ var g=G.filter(function(x){ return x[0].test(norm(w)) })[0]; return !g||g[1].test(n) }) }
@@ -1549,6 +1554,8 @@ var MealBot=(function(){
     return nw.some(function(q){ return ws.some(function(w){ return sim(q,w)>=1.8 }) });
   }
   function byPiece(l){
+    /* общее слово со своим вопросом («два пирожка»): количество штуками, вопрос «какой?» остаётся — не брать первый вариант молча (23.11.2026) */
+    if(l.gdAsk&&l.st==='pick'&&!l.fid&&(l.alts||[]).length){ l.u='шт'; l.q=l.count; l.g=gramsFor(l.alts[0],l.q,'шт'); l.explicit=true; l.ask='pick'; return true }
     /* Meal 33.9: вес штуки из словаря («два онигири», «шесть суши») */
     if(SP&&l.fid&&FOODS[l.fid]&&!pieceUnit(l.fid)&&SP.group(FOODS[l.fid],'шт')){ l.st='ok'; l.u='шт'; l.q=l.count; l.g=gramsFor(l.fid,l.q,'шт'); l.explicit=true; l.ask=null; return true }
     var ids=[l.fid].concat(l.alts||[]);

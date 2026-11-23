@@ -26,6 +26,7 @@ const catalogs=[
  {id:'SUPP',name:'БАДы',image:'images/supplements.jpg',tag:'Добавки и спортивное питание',count:'Шаблоны по этикеткам',description:'Омега-3, магний, креатин, протеины. Твой состав по этикетке.',keywords:'омега omega рыбий жир магний протеин креатин коллаген витамины epa dha бад добавки'},
  {id:'UZBEK',source:'HM',name:'Узбекская кухня',image:'meal-img/r7.jpg',tag:'Кухни мира',count:'60 блюд',description:'Плов, манты, самса и домашние вкусы Узбекистана.',preview:'uzbek'},
  {id:'KAV',source:'HM',name:'Кавказская кухня',image:'images/kav.jpg',tag:'Кухни мира',count:'103 позиции',description:'Абыста, хинкали, хачапури и домашние вкусы Кавказа.',preview:'kav'},   // Meal 33.21: блюда — из каталога kav по тем же кодам
+ {id:'HOME',source:'HM',name:'Домашние блюда',image:'meal-img/cover-tl-2.jpg',tag:'Кухни мира',count:'12 блюд',description:'Супы с фрикадельками, свадебный суп и пирожки: русская и немецкая домашняя кухня.',preview:'home'},   // 23.11.2026: блюда — из каталога home (data/home-1.0.json), как у «Кавказской кухни»
  {id:'DESSERT',name:'Десерты мира',image:'images/desserts.jpg',tag:'Дополнительный каталог',count:'103 карточки',description:'От крема каталана до чизкейка. Любимые сладости в одном поиске.',preview:'desserts'},
  {id:'PRESERVE',name:'Сладкие заготовки',image:'images/preserves.jpg',tag:'Дополнительный каталог',count:'27 позиций',description:'От кизилового варенья до цукатов. Варенья, джемы, компоты и фрукты в сиропе в одном поиске.',preview:'preserves'},
  {id:'HM',name:'Happy Meal',image:'meal-img/cover-tl-2.jpg',tag:'Кухни и рецепты',description:'Кухни народов мира'},
@@ -37,7 +38,7 @@ const catalogs=[
 /* Meal 32: отметки «Куплено» — в дневнике аккаунта (DB.purchases, документ setup общего модуля), а не в памяти браузера */
 function purchases(){const x=root.DB&&root.DB.purchases;return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}
 function purchased(c){return !c.base&&purchases()[c.id]===true}
-function category(c){return c.id==='SUPP'?'supplements':['HM','UZBEK','KAV'].includes(c.id)?'recipes':'products'}
+function category(c){return c.id==='SUPP'?'supplements':['HM','UZBEK','KAV','HOME'].includes(c.id)?'recipes':'products'}
 /* число шаблонов БАДов — из каталога, когда он прочитан */
 function countOf(c){if(c.id!=='SUPP')return c.count;const n=root.HappySupplementsLibrary?root.HappySupplementsLibrary.templates.length:0;return n?n+' '+(n%10===1&&n%100!==11?'шаблон':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'шаблона':'шаблонов'):c.count}
 function enabled(c){return root.MealSources.enabled(root.DB,c.source||c.id)}
@@ -106,7 +107,7 @@ function nutrition(f){
 }
 /* список блюд страницы каталога: данные из catalog-preview.js; у «Кавказской кухни» (Meal 33.21) — сам каталог kav, когда он
    прочитан (KAV, index.html), по тем же кодам, что в поиске и дневнике; ещё не прочитан — null */
-function previewOf(c){const x=c.preview&&root.MealCatalogPreview&&root.MealCatalogPreview[c.preview];return typeof x==='function'?x(root.KAV):x||null}
+function previewOf(c){const x=c.preview&&root.MealCatalogPreview&&root.MealCatalogPreview[c.preview];return typeof x==='function'?x(c.preview==='home'?root.HOME:root.KAV):x||null}
 let waitPreview=null;
 function openCatalog(id){
  const c=catalogs.find(x=>x.id===id);if(!c)return;

@@ -11,7 +11,7 @@ const manifestURL='https://raw.githubusercontent.com/astamurberlin-rgb/happyamur
 const sourceURL=/^https:\/\/raw\.githubusercontent\.com\/astamurberlin-rgb\/happyamurio\/[a-f0-9]{40}\/data\/[a-z0-9.-]+$/;
 const STORE='happy-meal-libraries-v1',INDEX=manifestURL+'?happy-saved=1',LOCK='happy-meal-libraries';
 /* каталог в настройках → его библиотеки */
-const CATALOGS={BLS:['bls'],USDA:['usda'],MEXT:['mext'],KFCT:['kfct'],HM:['kav','uzbek'],DESSERT:['desserts2'],PRESERVE:['sweet-preserves'],SUPP:['supplements']};   // Meal 29: каталог БАДов
+const CATALOGS={BLS:['bls'],USDA:['usda'],MEXT:['mext'],KFCT:['kfct'],HM:['kav','uzbek','home'],DESSERT:['desserts2'],PRESERVE:['sweet-preserves'],SUPP:['supplements']};   // Meal 29: каталог БАДов
 let manifestPending;const pending=new Map();
 function checkManifest(m){
  if(!m||m.schema!=='happy.food-libraries.v1'||!m.libraries||typeof m.libraries!=='object')throw Error('Несовместимый каталог библиотек');
@@ -102,7 +102,7 @@ function librariesOf(catalog){return (CATALOGS[catalog]||[]).slice()}
 async function status(catalog,live){
  const ids=librariesOf(catalog);if(!ids.length||!available())return {state:'none',size:0,downloadable:!!ids.length&&available()};
  const saved=(await readIndex()).libraries;let size=0,all=true,outdated=false;
- for(const id of ids){const e=saved[id];if(!e){all=false;continue}size+=e.stored||0;if(live&&live.libraries&&live.libraries[id]&&live.libraries[id].url!==e.url)outdated=true}
+ for(const id of ids){const e=saved[id];if(!e){if(!(id==='home'&&live&&live.libraries&&!live.libraries[id]))all=false;continue}size+=e.stored||0;if(live&&live.libraries&&live.libraries[id]&&live.libraries[id].url!==e.url)outdated=true}
  return {state:!all?'none':outdated?'update':'saved',size:size,downloadable:true};
 }
 /* читает тело ответа частями, сообщает долю; signal — отмена */
@@ -119,7 +119,7 @@ async function readBody(response,expected,onBytes,signal){
 async function download(catalog,onProgress,signal){
  const ids=librariesOf(catalog);if(!ids.length)throw Error('Этот каталог уже на устройстве');
  if(!available())throw Error('Это устройство не даёт сохранять каталоги');
- const m=await liveManifest(),entries=ids.map(id=>[id,m.libraries[id]]);
+ const m=await liveManifest(),entries=ids.filter(id=>id!=='home'||m.libraries[id]).map(id=>[id,m.libraries[id]]);   // «Домашние блюда» (23.11.2026): пока их нет в описании каталогов — каталог Happy Meal скачивается без них
  if(entries.some(([,e])=>!validEntry(e)))throw Error('Неверное описание библиотеки');
  const weight=entries.reduce((s,[,e])=>s+e.bytes,0),share={};
  const tell=()=>{if(onProgress)onProgress(entries.reduce((s,[id,e])=>s+e.bytes*(share[id]||0),0)/weight)};
