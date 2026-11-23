@@ -431,8 +431,8 @@
   },
   {
    "path": "index.html",
-   "size": 712623,
-   "sha256": "2560c937a0ee2bb1648b4ed048ec8383a946f80c77e91e08640ef5bb0e671dad"
+   "size": 712760,
+   "sha256": "ac3d8e77f47f056f2142da410c2e725e705e2d93619779ef05b5da501ca24615"
   },
   {
    "path": "kfct.js",
@@ -651,8 +651,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 88432,
-   "sha256": "af810aae5e16d989c45bbfb6006c939aafb1a18b8203199e306c4e519bab7d0b"
+   "size": 88824,
+   "sha256": "65c70ec2ac444f230417216c1a301778a5939b078e670882bb7607f62f2a2173"
   },
   {
    "path": "report.css",
@@ -696,8 +696,8 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 16312,
-   "sha256": "4c0dd63b867aa3db8c58f5a493bff1b260db5118a705de522937e89a542cbb86"
+   "size": 16568,
+   "sha256": "eec7fcacf9fd5af6bdb3cfa07c4c70e47a88712c03ecd811833e8beee3c9c3b2"
   },
   {
    "path": "shared/happy-colors.css",
@@ -766,8 +766,8 @@
   },
   {
    "path": "shared/happy-reference-themes.js",
-   "size": 10057,
-   "sha256": "9c8aec121592b92c773cb225302fc882a7a5da51c1f56dcc8e4c68509cb0ac87"
+   "size": 9938,
+   "sha256": "2aa3e3daac232cf6c71a3f5b3129cfeab4a3ead391c247dd206bb9a0751fcd31"
   },
   {
    "path": "shared/happy-screens.css",
@@ -882,7 +882,7 @@
   {
    "path": "sw.js",
    "size": 3778,
-   "sha256": "9c153e7e660f4f882d7d3803c10c56cfc4bfb10bfbb0823cbeaae6eedfffd7ff"
+   "sha256": "d1cbf3155da812a9b905985774a7148c30229c552bb63900af88c68a1999799e"
   },
   {
    "path": "usda-measures.js",
