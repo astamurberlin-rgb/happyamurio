@@ -55,7 +55,7 @@ const sportDocs=await read('src/sport-docs.js'),sportData=await read('src/sport-
 // Sport 44 (прототип Sport v2): первый экран, вход, профиль и цели — общие экраны shared/happy-screens.js, happy-welcome.js,
 // happy-person.js, happy-goals.js; связь со Sport — src/sport-account.js. Они — часть запуска: первый экран появляется сразу.
 const boot=[await readShared('happy-input.js'),await readShared('happy-account.js'),await readShared('happy-store.js'),await readShared('happy-sport-summary.js'),await readShared('happy-measurements.js'),await readShared('happy-app-links.js'),await readShared('happy-food.js'),
- await readShared('happy-screens.js'),await readShared('happy-welcome.js'),await readShared('happy-person.js'),await readShared('happy-goals.js'),sportDocs,
+ await readShared('happy-screens.js'),await readShared('happy-privacy.js'),await readShared('happy-welcome.js'),await readShared('happy-person.js'),await readShared('happy-goals.js'),sportDocs,
  // Лаборатория (ветка sport-lab-44, 16.11.2026): вместо sport-boot.js — lab-boot.js (вход «Лаборатория», без сервера, пример
  // данных), после sport-account.js — lab-head.js (строка внизу настроек). Выпуск берёт только sport-boot.js.
  await read(LAB?'src/lab-boot.js':'src/sport-boot.js'),await read('src/sport-account.js'),...(LAB?[await read('src/lab-head.js')]:[])].join('\n');
@@ -82,7 +82,7 @@ const periodJs=await readShared('happy-period.js'),periodCss=await readShared('h
 const scrollLockJs=await readShared('happy-scroll-lock.js');
 // Общие цвета трёх приложений (лаборатория 21.11.2026): shared/happy-colors.css, первым среди стилей.
 const colorsCss=await readShared('happy-colors.css');
-const sharedCss=await readShared('happy-ui.css'),measurementsCss=await readShared('happy-measurements.css'),screensCss=await readShared('happy-screens.css');
+const sharedCss=await readShared('happy-ui.css'),measurementsCss=await readShared('happy-measurements.css'),screensCss=await readShared('happy-screens.css')+'\n'+await readShared('happy-privacy.css');
 // Sport 41: связь приложений — общий модуль shared/happy-app-links.js и свитчи Sport (src/app-links.js)
 const sportAppLinks=await read('src/app-links.js');
 const sportFoodCounters=await read('src/food-counters.js');
@@ -113,7 +113,7 @@ const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappi
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 45.3'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 45.4'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}

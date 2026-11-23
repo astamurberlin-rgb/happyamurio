@@ -338,6 +338,22 @@
         "meal",
         "sport"
       ]
+    },
+    {
+      "name": "happy-privacy.js",
+      "reference": "shared/happy-privacy.js",
+      "apps": [
+        "day",
+        "sport"
+      ]
+    },
+    {
+      "name": "happy-privacy.css",
+      "reference": "shared/happy-privacy.css",
+      "apps": [
+        "day",
+        "sport"
+      ]
     }
   ]
 }
