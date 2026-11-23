@@ -2071,6 +2071,7 @@ var MealBot=(function(){
     var med=o.match(ADV_MED);
     if(med) return p('С вопросами о болезнях, беременности, детях и лекарствах — к врачу. Я даю только общие советы для здоровых взрослых.')+'<p class="mlHint">В дневник ничего не записал.</p>';
     if(!L||L.state!=='ok'){ if(L&&L.state!=='loading') L.load(); return p('Справочник советов ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    if(!c&&(L.find(o,'cook')||L.find(o,'tip'))) return null;   // «можно ли есть сырую фасоль» — ответит справочник готовки (cookAsk)
     if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
       return p('Пока не знаю, что ответить: такого совета в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
