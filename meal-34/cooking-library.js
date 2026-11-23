@@ -10,12 +10,13 @@ const api={schema:SCHEMA,id:'cooking',version:null,date:null,cards,sources,state
 const text=(x,n)=>typeof x==='string'&&x.trim()!==''&&x.length<=n;
 function rx(s){try{return s?new RegExp(s):null}catch(e){return null}}
 function valid(c,src){
- return !!c&&typeof c.id==='string'&&/^[a-z0-9][a-z0-9-]{0,63}$/.test(c.id)&&(c.kind==='cook'||c.kind==='tip')&&text(c.answer,400)&&
+ return !!c&&typeof c.id==='string'&&/^[a-z0-9][a-z0-9-]{0,63}$/.test(c.id)&&(c.kind==='cook'||c.kind==='tip'||c.kind==='swap')&&text(c.answer,400)&&
   text(c.said,400)&&!!rx(c.said)&&(c.not==null||(text(c.not,400)&&!!rx(c.not)))&&
   Array.isArray(c.sources)&&c.sources.length>=2&&c.sources.every(id=>src[id]);
 }
-/* t — текст вопроса (нижний регистр, ё → е): первая карточка вида kind (cook — «как готовить», tip — приём «когда солить»),
-   чьё «said» есть в тексте, а «not» нет. Старые выпуски знают только cook и карточки tip пропускают. */
+/* t — текст вопроса (нижний регистр, ё → е): первая карточка вида kind (cook — «как готовить», tip — приём «когда солить»,
+   swap — замена «чем заменить муку в сырниках»), чьё «said» есть в тексте, а «not» нет.
+   Старые выпуски знают только cook (и tip) и карточки других видов пропускают. */
 function find(t,kind){
  const s=' '+String(t||'').toLowerCase().replace(/ё/g,'е')+' ', k=kind||'cook';
  for(const c of cards){if(c.kind===k&&c._said.test(s)&&!(c._not&&c._not.test(s)))return c}

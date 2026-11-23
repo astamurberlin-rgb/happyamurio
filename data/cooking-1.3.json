@@ -1,0 +1,794 @@
+{
+ "schema": "happy.cooking.cards.v1",
+ "version": "1.3.0",
+ "date": "2026-11-23",
+ "about_ru": "Справочник бота Meal «как готовить», кулинарные приёмы («когда солить» и др.) и замены («чем заменить муку в сырниках»). Каждая карточка сверена минимум по двум источникам (22–23.11.2026). Где источники расходятся — в ответе вилка или обе версии.",
+ "sources": [
+  {
+   "id": "foodsafety",
+   "title": "FoodSafety.gov: безопасные температуры (США)",
+   "url": "https://www.foodsafety.gov/print/pdf/node/10"
+  },
+  {
+   "id": "illinois",
+   "title": "Университет Иллинойса: температуры готовности",
+   "url": "https://extension.illinois.edu/food-safety/temperatures"
+  },
+  {
+   "id": "hc_temp",
+   "title": "Health Canada: безопасные температуры готовки",
+   "url": "https://www.canada.ca/en/health-canada/services/general-food-safety-tips/safe-internal-cooking-temperatures.html"
+  },
+  {
+   "id": "hc_beans",
+   "title": "Health Canada: лектины в бобовых",
+   "url": "https://www.canada.ca/en/health-canada/services/food-nutrition/food-safety/chemical-contaminants/natural-toxins/lectins-legumes.html"
+  },
+  {
+   "id": "wgc",
+   "title": "Whole Grains Council: как варить цельные злаки",
+   "url": "https://wholegrainscouncil.org/node/13105"
+  },
+  {
+   "id": "almanac",
+   "title": "Old Farmer’s Almanac: таблица варки круп",
+   "url": "https://www.almanac.com/how-cook-grains-chart"
+  },
+  {
+   "id": "betty",
+   "title": "Betty Crocker: время варки риса и круп",
+   "url": "https://bettycrocker.com/how-to/tipslibrary/charts-timetables-measuring/timetable-cooking-rice-other-grains"
+  },
+  {
+   "id": "ndsu",
+   "title": "Университет Северной Дакоты: как готовить бобовые",
+   "url": "https://www.ndsu.edu/agriculture/extension/publications/pocket-guide-preparing-pulse-foods"
+  },
+  {
+   "id": "umaine",
+   "title": "Университет Мэна: как варить сухие бобовые",
+   "url": "https://extension.umaine.edu/food-health/2021/09/02/how-to-store-and-cook-dried-beans/"
+  },
+  {
+   "id": "unl",
+   "title": "Университет Небраски: как варить яйца",
+   "url": "https://food.unl.edu/sites/unl.edu.ianr.extension.food/files/articles/documents/how-do-you-like-your-eggs-fffyc.pdf"
+  },
+  {
+   "id": "quaker",
+   "title": "Quaker Oats: как варить овсяные хлопья",
+   "url": "https://www.quakeroats.com/cooking-and-recipes/how-to-prepare-oats"
+  },
+  {
+   "id": "kstate_pasta",
+   "title": "Университет Канзаса: как варить макароны",
+   "url": "https://www.k-state.edu/lafene/services/nutrition/cooking/Cooking-Pasta.pdf"
+  },
+  {
+   "id": "oldways",
+   "title": "Oldways (Ассоциация пасты США): советы по варке пасты",
+   "url": "https://oldwayspt.org/system/files/atoms/files/NPA_PastaCookingTips.pdf"
+  },
+  {
+   "id": "msu",
+   "title": "Университет Миссисипи: как варить пасту",
+   "url": "https://happyhealthy.extension.msstate.edu/node/365"
+  },
+  {
+   "id": "montana",
+   "title": "Университет Монтаны: картофель",
+   "url": "https://www.montana.edu/extension/nutrition/nutrition-cooking-culture/food-fact-sheets/potato.html"
+  },
+  {
+   "id": "foodnetwork",
+   "title": "Food Network: как варить картофель",
+   "url": "https://www.foodnetwork.com/how-to/packages/food-network-essentials/how-to-boil-potatoes"
+  },
+  {
+   "id": "kstate_veg",
+   "title": "Университет Канзаса: как готовить овощи",
+   "url": "https://www.k-state.edu/lafene/services/nutrition/cooking/Cooking-Vegetables.pdf"
+  },
+  {
+   "id": "va",
+   "title": "Министерство ветеранов США: простое руководство по овощам",
+   "url": "https://www.va.gov/files/2023-10/Simple%20Guide%20to%20Vegetable%20Preparation.pdf"
+  },
+  {
+   "id": "usu",
+   "title": "Университет Юты: свёкла",
+   "url": "https://extension.usu.edu/files-ou/publications/publication/FN_168.pdf"
+  },
+  {
+   "id": "atk_rice",
+   "title": "America’s Test Kitchen: отварной рис",
+   "url": "https://www.americastestkitchen.com/recipes/615-boiled-rice-for-rice-salad"
+  },
+  {
+   "id": "vkusvill_rice",
+   "title": "ВкусВилл: как правильно варить рис",
+   "url": "https://vkusvill.ru/media/journal/kak-pravilno-varit-ris.html"
+  },
+  {
+   "id": "tj_salt",
+   "title": "Т—Ж: сколько соли класть",
+   "url": "https://t-j.ru/cooking-issue-skolko-soli/"
+  },
+  {
+   "id": "lh_potato",
+   "title": "Лайфхакер: как пожарить картошку",
+   "url": "https://lifehacker.ru/kak-pozharit-kartoshku/amp/"
+  },
+  {
+   "id": "popsci_salt",
+   "title": "Popular Science: когда солить еду",
+   "url": "https://www.popsci.com/diy/when-salt-food/"
+  },
+  {
+   "id": "atk_steak",
+   "title": "America’s Test Kitchen: как солить стейк",
+   "url": "https://www.americastestkitchen.com/articles/3355-the-easiest-way-to-make-steak-taste-even-better-salt-twice"
+  },
+  {
+   "id": "fn_salt",
+   "title": "Food Network: когда солить",
+   "url": "https://www.foodnetwork.com/fn-dish/2013/05/know-when-to-salt"
+  },
+  {
+   "id": "splendid",
+   "title": "The Splendid Table: лук и чеснок",
+   "url": "https://www.splendidtable.org/story/7-tips-for-cooking-with-onions-and-garlic"
+  },
+  {
+   "id": "atk_garlic",
+   "title": "America’s Test Kitchen: когда добавлять чеснок",
+   "url": "https://www.americastestkitchen.com/articles/7557-why-you-should-wait-to-add-garlic"
+  },
+  {
+   "id": "scifocus",
+   "title": "BBC Science Focus: когда солить стейк",
+   "url": "https://sciencefocus.com/science/when-to-salt-a-steak"
+  },
+  {
+   "id": "atk_beans",
+   "title": "America’s Test Kitchen: замачивание фасоли в солёной воде",
+   "url": "https://www.americastestkitchen.com/articles/7720-how-to-brine-beans"
+  },
+  {
+   "id": "ranchogordo",
+   "title": "Rancho Gordo: когда солить фасоль",
+   "url": "https://www.ranchogordo.com/blogs/blog/when-top-salt-t"
+  },
+  {
+   "id": "atk_rest",
+   "title": "America’s Test Kitchen: отдых мяса после готовки",
+   "url": "https://www.americastestkitchen.com/articles/5710-resting-meat-is-worth-it-and-we-ve-got-the-data-to-prove-it"
+  },
+  {
+   "id": "amazingribs",
+   "title": "AmazingRibs: нужен ли мясу отдых",
+   "url": "https://amazingribs.com/more-technique-and-science/more-cooking-science/science-of-resting-meat/"
+  },
+  {
+   "id": "ci_rinse",
+   "title": "Cook’s Illustrated: зачем промывать рис",
+   "url": "https://www.cooksillustrated.com/articles/666-why-rinse-rice"
+  },
+  {
+   "id": "conv_rice",
+   "title": "The Conversation: нужно ли мыть рис",
+   "url": "https://theconversation.com/do-you-need-to-wash-rice-before-cooking-heres-the-science-204692"
+  },
+  {
+   "id": "fn_eggs",
+   "title": "Food Network: яйца вкрутую",
+   "url": "https://www.foodnetwork.com/recipes/food-network-kitchen/the-best-hard-boiled-eggs-24692802"
+  },
+  {
+   "id": "milkstreet",
+   "title": "Milk Street: как варить яйца, чтобы чистились",
+   "url": "https://prod.177milkstreet.com/stories/04-2025-how-to-cook-eggs-that-will-peel"
+  },
+  {
+   "id": "nmsu_subs",
+   "title": "NMSU: замены ингредиентов «In a Pinch»",
+   "url": "https://pubs.nmsu.edu/_e/E131/index.html"
+  },
+  {
+   "id": "illinois_subs",
+   "title": "Университет Иллинойса: замены в рецептах",
+   "url": "https://extension.illinois.edu/food/recipe-substitutions"
+  },
+  {
+   "id": "usu_subs",
+   "title": "Университет Юты: список замен для готовки и выпечки",
+   "url": "https://extension.usu.edu/archive/list-of-ingredient-substitutions-for-cooking-and-baking"
+  },
+  {
+   "id": "ndsu_subs",
+   "title": "Университет Северной Дакоты: замены ингредиентов",
+   "url": "https://www.ndsu.edu/agriculture/extension/publications/ingredient-substitutions"
+  },
+  {
+   "id": "csu_subs",
+   "title": "Университет Колорадо: замены ингредиентов",
+   "url": "https://extension.colostate.edu/resource/ingredient-substitutions"
+  },
+  {
+   "id": "illinois_eggs",
+   "title": "Университет Иллинойса: чем заменить яйца в выпечке",
+   "url": "https://extension.illinois.edu/blogs/live-well-eat-well/2023-02-10-egg-substitutes-when-baking"
+  },
+  {
+   "id": "wisc_eggs",
+   "title": "Университет Висконсина: замены яиц в выпечке",
+   "url": "https://green.extension.wisc.edu/files/2025/03/Egg-Substitutes-for-Baking-Eggs.pdf"
+  },
+  {
+   "id": "cc_eggs",
+   "title": "Cleveland Clinic: 16 замен яиц",
+   "url": "https://health.clevelandclinic.org/egg-substitutes"
+  },
+  {
+   "id": "tj_syrniki",
+   "title": "Т—Ж: сырники с манкой",
+   "url": "https://t-j.ru/syrniki-remastered/"
+  },
+  {
+   "id": "mel_syrniki",
+   "title": "Мел: сырники с манкой и без яйца",
+   "url": "https://mel.fm/zhizn/retsepty/1568390-3-retsepta-idealnykh-syrnikov-s-mankoy-bez-yaytsa-i-s-sekretnym-ingrediyentom"
+  },
+  {
+   "id": "lh_syrniki",
+   "title": "Лайфхакер: 20 рецептов сырников",
+   "url": "https://lifehacker.ru/kak-prigotovit-syrniki/"
+  }
+ ],
+ "cards": [
+  {
+   "id": "grechka",
+   "kind": "cook",
+   "said": "греч|ядриц",
+   "answer": "Гречку варят около 20 минут на слабом огне под крышкой. Воды берут в 2 раза больше, чем крупы: на стакан крупы — два стакана воды.",
+   "sources": [
+    "wgc",
+    "almanac"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "ris",
+   "kind": "cook",
+   "said": "(^|\\s)рис(а|у|ом|е)?(\\s|$)",
+   "answer": "Белый рис варят 15–20 минут на слабом огне под крышкой, воды в 2 раза больше, чем риса. Бурый варится дольше: от 25 до 60 минут, смотри упаковку.",
+   "sources": [
+    "betty",
+    "almanac",
+    "wgc"
+   ],
+   "checked": "2026-11-22",
+   "not": "лапш|бумаг"
+  },
+  {
+   "id": "psheno",
+   "kind": "cook",
+   "said": "пшен",
+   "answer": "Пшено варят 20–30 минут. Воды берут в 2,5–3 раза больше, чем крупы.",
+   "sources": [
+    "wgc",
+    "almanac",
+    "betty"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "bulgur",
+   "kind": "cook",
+   "said": "булгур",
+   "answer": "Булгур варят 5–12 минут, воды в 2 раза больше, чем крупы. Можно и не варить: залить кипятком и оставить под крышкой на 20–60 минут.",
+   "sources": [
+    "wgc",
+    "almanac",
+    "betty"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "perlovka",
+   "kind": "cook",
+   "said": "перлов",
+   "answer": "Перловку варят 45–60 минут. Воды берут в 3 раза больше, чем крупы.",
+   "sources": [
+    "almanac",
+    "wgc"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "kinoa",
+   "kind": "cook",
+   "said": "киноа|кинуа",
+   "answer": "Киноа сначала промывают, потом варят 15–20 минут. Воды в 2 раза больше, чем крупы.",
+   "sources": [
+    "wgc",
+    "almanac",
+    "betty"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "chechevica",
+   "kind": "cook",
+   "said": "чечевиц",
+   "answer": "Чечевицу замачивать не нужно. Варят 15–20 минут, крупную зелёную или коричневую — дольше, до часа.",
+   "sources": [
+    "ndsu",
+    "umaine"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "nut",
+   "kind": "cook",
+   "said": "(^|\\s)нут(а|у|ом)?(\\s|$)",
+   "answer": "Нут замачивают на 6–8 часов или на ночь, воду потом сливают. Варят до мягкости: от 30 минут до 2 часов, смотря по размеру.",
+   "sources": [
+    "ndsu",
+    "umaine"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "fasol",
+   "kind": "cook",
+   "said": "фасол",
+   "answer": "Фасоль замачивают минимум на 5 часов, воду сливают. Первые 10 минут варят на сильном кипении — для красной фасоли это обязательно, в медленноварке её так не сварить. Дальше до мягкости, 1–2 часа.",
+   "sources": [
+    "hc_beans",
+    "ndsu",
+    "umaine"
+   ],
+   "checked": "2026-11-22",
+   "not": "стручков|зелен"
+  },
+  {
+   "id": "yaica",
+   "kind": "cook",
+   "said": "яйц|яичк|(^|\\s)яйко",
+   "answer": "Вкрутую: положи яйца в холодную воду, доведи до кипения, сними с огня и оставь под крышкой — средние на 9 минут, крупные на 12, очень крупные на 15. Готовы, когда белок и желток твёрдые.",
+   "sources": [
+    "unl",
+    "foodsafety"
+   ],
+   "checked": "2026-11-22",
+   "not": "яичниц|омлет|перепел"
+  },
+  {
+   "id": "farsh",
+   "kind": "cook",
+   "said": "фарш|котлет|тефтел|фрикадел|бургер|люля",
+   "answer": "Котлеты и всё из фарша говядины или свинины готовы, когда внутри 71 °C. Из куриного или индюшиного фарша — 74 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "kurica",
+   "kind": "cook",
+   "said": "кур(иц|ин|ятин|очк)|цыпл|бройлер|индей|индюш",
+   "answer": "Курица и индейка готовы, когда внутри 74 °C: мерят термометром в самом толстом месте. Целую тушку по канадским нормам доводят до 82 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "govyadina",
+   "kind": "cook",
+   "said": "говяд|телят|стейк|ростбиф",
+   "answer": "Кусок говядины безопасен от 63 °C внутри, потом ему дают отдохнуть 3 минуты — это слабая прожарка. Средняя — 71 °C, полная — 77 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "svinina",
+   "kind": "cook",
+   "said": "свин|карбонад|корейк|буженин",
+   "answer": "Кусок свинины по нормам США готов при 63 °C внутри и 3 минутах отдыха, по канадским — при 71 °C. Фарш и котлеты — 71 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "ryba",
+   "kind": "cook",
+   "said": "рыб|лосос|семг|форел|треск|минта|хек|судак|окун|тилапи|дорад|сибас|горбуш|кет[аыу](\\s|$)|скумбри|сельд|тунц|тунец|палтус|камбал",
+   "answer": "Рыба готова, когда мякоть стала непрозрачной и легко расслаивается вилкой. Внутри — 63 °C по нормам США, канадские советуют 70 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "ovsyanka",
+   "kind": "cook",
+   "said": "овсян|геркулес|(^|\\s)ов(ес|са|сом)(\\s|$)",
+   "answer": "Геркулес варят около 5 минут, жидкости в 2 раза больше; для совсем мягкой каши — до 15 минут и в 3 раза больше жидкости. Быстрые хлопья — 1 минута.",
+   "sources": [
+    "quaker",
+    "almanac"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "makarony",
+   "kind": "cook",
+   "said": "макарон|спагетт|вермишел|(^|\\s)паст(а|у|ы|ой)(\\s|$)|рожк|ракушк|фузилли|пенне|фарфалле|лапш",
+   "not": "томатн|зубн|орехов|кунжутн",
+   "answer": "Воды около литра на 100 г макарон. Время сильно зависит от формы, смотри упаковку.",
+   "sources": [
+    "kstate_pasta",
+    "msu",
+    "oldways"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "kartofel",
+   "kind": "cook",
+   "said": "картош|картоф",
+   "not": "жар|фри|запек|запеч|духовк|печ(ь|ен|ет)|туш",
+   "answer": "Картофель кусками варят 20–30 минут, целым — 30–45. Готов, когда нож входит легко.",
+   "sources": [
+    "montana",
+    "foodnetwork"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "brokkoli",
+   "kind": "cook",
+   "said": "брокколи|брокол",
+   "answer": "Брокколи на пару — 5–6 минут. В духовке при 220–245 °C — 15–20 минут.",
+   "sources": [
+    "kstate_veg",
+    "va"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "morkov",
+   "kind": "cook",
+   "said": "морков",
+   "answer": "Морковь кружками на пару — 4–8 минут. В духовке при 200–245 °C — 20–30 минут.",
+   "sources": [
+    "kstate_veg",
+    "va"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "svekla",
+   "kind": "cook",
+   "said": "свекл|свекол|бурак",
+   "answer": "Целую свёклу варят или готовят на пару от 25–30 минут, крупную дольше: готова, когда нож входит легко. Дольками в духовке при 200–245 °C — 30–40 минут.",
+   "sources": [
+    "va",
+    "usu",
+    "kstate_veg"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-sol-ris",
+   "kind": "tip",
+   "said": "(?=.*(^|\\s)(соль|соли|солью|солить|солят|солю|солим|солишь|солит|посол\\S*|подсол\\S*|досол\\S*)(\\s|$))(?=.*(^|\\s)рис(а|у|ом|е)?(\\s|$))",
+   "not": "лапш|бумаг",
+   "answer": "Рис солят в начале: соль кладут в воду до того, как засыпали крупу, или сразу после. Пока рис варится, он впитывает соль и солится ровно.",
+   "sources": [
+    "atk_rice",
+    "vkusvill_rice",
+    "tj_salt"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-sol-makarony",
+   "kind": "tip",
+   "said": "(?=.*(^|\\s)(соль|соли|солью|солить|солят|солю|солим|солишь|солит|посол\\S*|подсол\\S*|досол\\S*)(\\s|$))(?=.*(макарон|спагетт|вермишел|(^|\\s)паст(а|у|ы)(\\s|$)))",
+   "answer": "Воду для макарон солят, когда она закипела, до того как бросить макароны. Обычно берут около 7 г соли (чайная ложка без горки) на литр воды, а литр воды — на 100 г макарон.",
+   "sources": [
+    "oldways",
+    "tj_salt"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-sol-kartofel",
+   "kind": "tip",
+   "said": "(?=.*(^|\\s)(соль|соли|солью|солить|солят|солю|солим|солишь|солит|посол\\S*|подсол\\S*|досол\\S*)(\\s|$))(?=.*(картош|картоф))(?=.*(жар|сковород|фри))",
+   "answer": "Жареную картошку солят в конце. Соль вытягивает из картошки влагу: она начинает тушиться, слипается и не даёт корочки.",
+   "sources": [
+    "lh_potato",
+    "popsci_salt"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-ne-tushit",
+   "kind": "tip",
+   "said": "(?=.*(тушит(ся)?|тушатся|не\\s+жарит|корочк|слипа|не\\s+(под)?румян))(?=.*(жар|сковород|картош|картоф|мяс|куриц|котлет|гриб|овощ|кабач|баклажан))",
+   "answer": "Чтобы жарилось, а не тушилось: обсушите продукт бумажным полотенцем, кладите его в хорошо разогретое масло одним слоем. Если не помещается, жарьте в два приёма. Картошку первые 4–5 минут не мешайте, а солите в конце.",
+   "sources": [
+    "lh_potato",
+    "atk_steak"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-sol-griby",
+   "kind": "tip",
+   "said": "(?=.*(^|\\s)(соль|соли|солью|солить|солят|солю|солим|солишь|солит|посол\\S*|подсол\\S*|досол\\S*)(\\s|$))(?=.*(гриб|шампиньон|вешенк|опят|лисичк))",
+   "answer": "Грибы солят в конце, когда они уже подрумянились. Если посолить сразу, соль вытянет сок, и грибы будут тушиться вместо того, чтобы жариться.",
+   "sources": [
+    "fn_salt",
+    "popsci_salt"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-sol-luk",
+   "kind": "tip",
+   "said": "(?=.*(^|\\s)(соль|соли|солью|солить|солят|солю|солим|солишь|солит|посол\\S*|подсол\\S*|досол\\S*)(\\s|$))(?=.*(^|\\s)лук(а|у|ом|е)?(\\s|$))",
+   "not": "зелен",
+   "answer": "Лук при жарке солят сразу: соль вытягивает влагу, и лук быстрее становится мягким и золотистым.",
+   "sources": [
+    "fn_salt",
+    "splendid"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-chesnok",
+   "kind": "tip",
+   "said": "(?=.*чеснок)(?=.*(когда|в какой момент|в начале|в конце|(^|\\s)до(\\s|$)|после|сразу|горч|подгор|сначала|раньше|позже))",
+   "answer": "Чеснок кладут в конце, когда лук и остальное уже почти мягкие, и держат на огне 30–60 секунд. Мелко нарезанный чеснок быстро пригорает и начинает горчить.",
+   "sources": [
+    "atk_garlic",
+    "lh_potato"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-sol-myaso",
+   "kind": "tip",
+   "said": "(?=.*(^|\\s)(соль|соли|солью|солить|солят|солю|солим|солишь|солит|посол\\S*|подсол\\S*|досол\\S*)(\\s|$))(?=.*(стейк|мяс|говядин|свинин|отбивн|рибай|баранин))",
+   "answer": "Мясо для жарки лучше посолить заранее, минимум за 40–45 минут (можно до суток в холодильнике): соль успеет уйти вглубь. Можно и прямо перед жаркой, тогда посолится только поверхность. Перед жаркой мясо обсушите.",
+   "sources": [
+    "atk_steak",
+    "scifocus"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-sol-fasol",
+   "kind": "tip",
+   "said": "(?=.*(^|\\s)(соль|соли|солью|солить|солят|солю|солим|солишь|солит|посол\\S*|подсол\\S*|досол\\S*)(\\s|$))(?=.*(фасол|бобов|(^|\\s)нут(а|у|ом)?(\\s|$)))",
+   "answer": "Здесь мнения расходятся. America’s Test Kitchen советует замачивать фасоль в солёной воде (3 ст. л. соли на 4 л, 8–24 часа) и потом промыть: кожица выходит мягче и меньше лопается. По традиции солят, когда фасоль почти сварилась, но по опыту Rancho Gordo ранняя соль фасоль не портит.",
+   "sources": [
+    "atk_beans",
+    "ranchogordo"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-otdyh-myasa",
+   "kind": "tip",
+   "said": "(?=.*(отдох|отдых|отлежат|постоят|полежат|резать сразу|сразу резать|сразу нарезать))(?=.*(мяс|стейк|куриц|свинин|говядин|запечен|жарен|буженин))",
+   "answer": "Здесь мнения расходятся. По опытам America’s Test Kitchen, если дать мясу постоять 10 минут, сока при нарезке вытекает на 60 % меньше. AmazingRibs считает разницу небольшой: важнее довести мясо до нужной температуры.",
+   "sources": [
+    "atk_rest",
+    "amazingribs"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-promyt-ris",
+   "kind": "tip",
+   "said": "(?=.*(промыв|промыт|промой|(^|\\s)мыть|помыть|полоска))(?=.*(^|\\s)рис(а|у|ом|е)?(\\s|$))",
+   "answer": "Рис лучше промыть: вода смывает пыль, шелуху и большую часть мышьяка. Белый рис после промывки меньше липнет. Тут источники спорят: одно исследование разницы не нашло, липкость больше зависит от сорта.",
+   "sources": [
+    "ci_rinse",
+    "conv_rice"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-yaica-voda",
+   "kind": "tip",
+   "said": "(?=.*(яйц|яйк|яичк))(?=.*(холодн|кипящ|кипят|кипени|почист|чистил|чистят|чистить|ледян|остуд))",
+   "not": "сколько|минут",
+   "answer": "Яйца кладут в кипящую воду, можно прямо из холодильника: так они лучше чистятся. После варки сразу переложите их в воду со льдом минимум на 3 минуты, лучше на 10.",
+   "sources": [
+    "fn_eggs",
+    "milkstreet"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-muka-syrniki",
+   "kind": "swap",
+   "said": "(?=.*сырник)(?=.*(мук|мучн))",
+   "answer": "В сырниках муку заменяют манкой: примерно 2 столовые ложки на 200 г творога. Манке дают набухнуть, а сколько — источники расходятся: от 10–30 минут до нескольких часов или ночи в холодильнике. Ещё берут рисовую муку: около 3 ложек на 400 г творога.",
+   "sources": [
+    "lh_syrniki",
+    "mel_syrniki",
+    "tj_syrniki"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-yaica-syrniki",
+   "kind": "swap",
+   "said": "(?=.*сырник)(?=.*(яиц|яйц|яйк|яичк|(^|\\s)без яйц))",
+   "answer": "Сырники можно делать без яиц. Вместо них берут манку (около 2 ложек на 200 г творога, дать постоять 15–30 минут) или спелый банан, размятый в пюре: 1 банан на 200–400 г творога.",
+   "sources": [
+    "lh_syrniki",
+    "mel_syrniki"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-yaica",
+   "kind": "swap",
+   "said": "(яиц|яйц|яйк|яичк)",
+   "answer": "Одно яйцо в выпечке и блинах заменяет: столовая ложка молотого льна с 3 ложками воды (постоять 5 минут) или четверть стакана (около 60 г) спелого банана, яблочного пюре без сахара или йогурта. Банан и пюре — для кексов, маффинов, блинов; лён — ещё и для печенья.",
+   "sources": [
+    "illinois_eggs",
+    "wisc_eggs",
+    "cc_eggs"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-saxar-med",
+   "kind": "swap",
+   "said": "(сахар|сахаp)",
+   "answer": "Сахар в выпечке можно заменить мёдом. Сколько мёда — источники расходятся: столько же, сколько сахара, или на четверть меньше. Жидкости в тесте тогда берут меньше: на стакан мёда — на четверть стакана.",
+   "sources": [
+    "usu_subs",
+    "ndsu_subs",
+    "nmsu_subs"
+   ],
+   "checked": "2026-11-23",
+   "not": "сахарн(ая|ой|ую) пудр"
+  },
+  {
+   "id": "swap-smetana",
+   "kind": "swap",
+   "said": "сметан",
+   "answer": "Сметану можно заменить натуральным йогуртом без добавок — столько же. Для выпечки подходит и пахта или скисшее молоко с маслом: на стакан сметаны — около 7/8 стакана пахты и треть стакана сливочного масла.",
+   "sources": [
+    "usu_subs",
+    "ndsu_subs",
+    "csu_subs"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-mayonez",
+   "kind": "swap",
+   "said": "майонез",
+   "answer": "Майонез в салатах и соусах заменяют сметаной или натуральным йогуртом — столько же. Можно смешать пополам: половина йогурта, половина майонеза. Ещё подходит творог, взбитый в блендере до гладкости.",
+   "sources": [
+    "illinois_subs",
+    "ndsu_subs",
+    "nmsu_subs"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-maslo-slivochnoe",
+   "kind": "swap",
+   "said": "сливочн\\S* масл|масл\\S* сливочн",
+   "answer": "Сливочное масло в выпечке можно заменить растительным, но его берут чуть меньше: на стакан сливочного — 7/8 стакана растительного (на 8 ложек — 7). Две таблицы советуют добавить полчайной ложки соли на стакан.",
+   "sources": [
+    "usu_subs",
+    "ndsu_subs",
+    "csu_subs"
+   ],
+   "checked": "2026-11-23",
+   "not": "сливочн\\S* соус"
+  },
+  {
+   "id": "swap-slivki",
+   "kind": "swap",
+   "said": "сливк|сливок",
+   "answer": "Жирные сливки для выпечки и готовки заменяют молоком со сливочным маслом: на стакан сливок — 3/4 стакана молока и треть стакана сливочного масла. Взбить такую смесь не получится.",
+   "sources": [
+    "illinois_subs",
+    "usu_subs",
+    "ndsu_subs"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-moloko",
+   "kind": "swap",
+   "said": "(^|\\s)молок",
+   "answer": "Если молока нет, его делают из сухого: на стакан воды — 3 столовые ложки обычного сухого молока или треть стакана быстрорастворимого. Ещё молоко заменяют сгущённым без сахара пополам с водой.",
+   "sources": [
+    "illinois_subs",
+    "usu_subs",
+    "ndsu_subs"
+   ],
+   "checked": "2026-11-23",
+   "not": "сгущ|кокос|миндал|овсян\\S* молок|соев"
+  },
+  {
+   "id": "swap-pahta",
+   "kind": "swap",
+   "said": "пахт|скисш|кисл\\S* молок|сыворотк",
+   "answer": "Пахту или скисшее молоко в тесте заменяют так: в стакан налей столовую ложку лимонного сока или уксуса и долей молока доверху, подожди 5–10 минут. Подходит и натуральный йогурт — столько же.",
+   "sources": [
+    "nmsu_subs",
+    "usu_subs",
+    "ndsu_subs"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-razryhlitel",
+   "kind": "swap",
+   "said": "разрыхлит",
+   "answer": "Чайную ложку разрыхлителя заменяет четверть ложки соды с кислым: 5/8 чайной ложки винного камня или полстакана пахты, скисшего молока или йогурта — тогда другой жидкости в тесте на полстакана меньше.",
+   "sources": [
+    "illinois_subs",
+    "usu_subs",
+    "ndsu_subs",
+    "csu_subs"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "swap-krahmal",
+   "kind": "swap",
+   "said": "крахмал",
+   "answer": "Чтобы загустить соус или подливу, столовую ложку кукурузного крахмала заменяют двумя ложками обычной пшеничной муки.",
+   "sources": [
+    "nmsu_subs",
+    "illinois_subs",
+    "usu_subs",
+    "ndsu_subs"
+   ],
+   "checked": "2026-11-23",
+   "not": "сырник"
+  },
+  {
+   "id": "swap-suhari",
+   "kind": "swap",
+   "said": "сухар|панировк",
+   "answer": "Панировочные сухари делают из хлеба: подсуши ломтик и натри или измельчи — один ломтик даёт примерно четверть-треть стакана сухарей. Ещё вместо сухарей берут толчёные крекеры.",
+   "sources": [
+    "ndsu_subs",
+    "csu_subs"
+   ],
+   "checked": "2026-11-23"
+  }
+ ]
+}
