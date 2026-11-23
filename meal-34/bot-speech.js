@@ -7,7 +7,7 @@
    Решения Астамура 17.11.2026: не спрашивать без крайней необходимости; своя мера человека — первой. — Claude · 17.11.2026 */
 var MealSpeech=(function(){
   var D=window.HappyMealSpeechData||null, active=false;
-  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, FACT=[], VAGUE=[];
+  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, CHOICE=null, FACT=[], VAGUE=[];
   var CNT=null, MARK={0.5:'▽',1:'◇',1.5:'△'}, FMARK={1.5:'⊕',0.8:'⊘'};
   var B0='(^|[\\s,.;:!?(])', B1='(?=[\\s,.;:!?)]|$)';
   /* после «с»: «2 ложками мёда 200 г», «двумя столовыми ложками сметаны, всего 300 г» — ложки добавки и вес всего блюда в конце */
@@ -49,8 +49,9 @@ var MealSpeech=(function(){
     var cw=alt(Object.keys(CARD));
     if(N.count_words&&N.count_words.length) CNT=new RegExp('(^|\\s)(\\d+)\\s+(?=(?:'+N.count_words.join('|')+')(?=[\\s,.;!?]|$))','g');
     CARDRE=new RegExp('(^|[\\s,.;:!?(–-])((?:'+cw+')(?:[\\s-]+(?:'+cw+'))*)(?=[\\s,.;:!?)–-]|$)','g');
-    var drop=[], corr=[], approx=[], split=[];
-    (D.fillers_and_operators||[]).forEach(function(e){ if(e.bot==='drop') drop=drop.concat(e.forms); if(e.bot==='correction') corr=corr.concat(e.forms); if(e.bot==='split') split=split.concat(e.forms) });
+    var drop=[], corr=[], approx=[], split=[], choice=[];
+    (D.fillers_and_operators||[]).forEach(function(e){ if(e.bot==='drop') drop=drop.concat(e.forms); if(e.bot==='correction') corr=corr.concat(e.forms); if(e.bot==='split') split=split.concat(e.forms); if(e.bot==='choice') choice=choice.concat(e.forms) });
+    CHOICE=choice.length?phrase(choice):null;
     SPLIT=split.length?phrase(split):null;
     (D.approximation||[]).forEach(function(e){
       if(e.bot==='approx') approx=approx.concat(e.forms);
@@ -312,7 +313,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    wordForms:function(){ return (D&&D.dish_word_forms)||[] }, advice:function(){ return (D&&D.dish_advice)||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null },
+    wordForms:function(){ return (D&&D.dish_word_forms)||[] }, advice:function(){ return (D&&D.dish_advice)||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null }, choice:function(){ return CHOICE },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();

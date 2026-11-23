@@ -360,6 +360,7 @@ var MealBot=(function(){
       .reduce(function(a,c){ return a.concat(c) },[]);
   }
   function one(c0){
+    var chRe=SP&&SP.choice?SP.choice():null; if(chRe){ chRe.lastIndex=0; var hc=chRe.test(' '+c0+' '); chRe.lastIndex=0; if(hc) return [c0] }   // «гречка или рис» — выбор, а не список (choiceOf в core)
     return [c0].filter(Boolean).map(function(c){ if(!/\d/.test(c)) return c; var seen={}; return c.split(' ').filter(function(w,i,ws){ if(kindOf(w)!=='F') return true; if(seen[w]&&ws[i-1]!==w) return false; seen[w]=1; return true }).join(' ') })
       .reduce(function(a,c){ return a.concat(bareList(c)||splitItems(c)) },[]);
   }
@@ -765,9 +766,49 @@ var MealBot=(function(){
         res.lines.push(l);
       });
     }
+    /* «гречка или рис», «кофе или чай» — выбор из двух (словарь, choice_or): ничего не пишется, вопрос «какой вариант записать?» двумя кнопками,
+       названный вес — выбранному. Не вышло понять обе стороны — «или» просто выбрасывается и продуктом не ищется
+       (раньше находилось «Масло с чесноком или зеленью»). Разбор диктовок с id 125, решение Астамура 23.11.2026 */
+    function choiceOf(c){
+      var re=SP&&SP.choice?SP.choice():null; if(!re) return null;
+      var t=' '+c.text+' ', ms=[], m; re.lastIndex=0;
+      while((m=re.exec(t))){ ms.push(m); if(!m[0]) re.lastIndex++ }
+      if(!ms.length) return null;
+      var strip=function(){ var x=t; ms.slice().reverse().forEach(function(k){ x=x.slice(0,k.index)+k[1]+' '+x.slice(k.index+k[0].length) }); return x.replace(/\s+/g,' ').trim() };
+      if(ms.length>1) return {strip:strip()};
+      m=ms[0];
+      var a=t.slice(0,m.index+m[1].length).replace(/[\s,]+$/,'').trim(), b=t.slice(m.index+m[0].length).replace(/^[\s,]+/,'').trim();
+      if(/^(без|не|нет)(\s|$)/.test(norm(b))) return {strip:strip()};
+      var fa=foodOf(a), fb=foodOf(b);
+      if(!tokensOf(fa).length||!tokensOf(fb).length) return {strip:strip()};
+      /* «или» в самом названии продукта: «масло с чесноком или зеленью» — это он */
+      var r0=null; try{ r0=parseText(c.text).lines }catch(e){}
+      var i0=r0&&r0.length===1&&(r0[0].fid||r0[0].alts[0]), t0=i0&&FOODS[i0]; if(t0&&/\sили\s/.test(norm(t0.n))&&tokensOf(fa).concat(tokensOf(fb)).every(function(w){ return norm(t0.n).indexOf(norm(w).slice(0,4))>=0 })) return null;
+      /* «курица с рисом или гречкой» — курица и выбор между рисом и гречкой */
+      var hm=fa.match(/^(.*\S)\s+(с|со)\s+(\S.*)$/), head=null;
+      if(hm&&tokensOf(hm[1]).length){ head=hm[1]; fa=hm[3] }
+      return {a:fa.trim(),b:fb.trim(),head:head,qty:qtyOf(c.text),strip:strip()};
+    }
+    function procChoice(c){
+      var ch=choiceOf(c); if(!ch){ proc(c); return }
+      if(!ch.a){ c.text=ch.strip; proc(c); return }
+      var n0=res.lines.length, cm=curMeal, tm=tailMeal, rm=res.meal, two=[], cp=function(t,q){ var cx={}; for(var k in c) cx[k]=c[k]; cx.text=t+(q?' '+q:''); cx.hasNum=!!q; return cx };
+      if(ch.head){ proc(cp(ch.head,ch.qty)); if(res.lines.length!==n0+1){ res.lines.length=n0; curMeal=cm; tailMeal=tm; res.meal=rm; c.text=ch.strip; proc(c); return } n0++ }   // вес — основе блюда, добавка — обычной порцией
+      [ch.a,ch.b].forEach(function(x){ var k0=res.lines.length; proc(cp(x,ch.head?'':ch.qty)); two.push(res.lines.slice(k0)) });
+      var la=two[0][0], lb=two[1][0], ia=la&&(la.fid||la.alts[0]), ib=lb&&(lb.fid||lb.alts[0]);
+      var okA=!!(ia&&FOODS[ia]), okB=!!(ib&&FOODS[ib]);
+      /* «щи или борщ», щей в базе нет — вопрос с одним понятным вариантом: молча не пишется ничего */
+      if(two[0].length===1&&two[1].length===1&&okA!==okB){ if(okB){ two[0]=two[1]; la=lb; ia=ib } else { lb=la; ib=ia } okA=okB=true }
+      if(two[0].length!==1||two[1].length!==1||!okA||!okB){ res.lines.length=n0-(ch.head?1:0); curMeal=cm; tailMeal=tm; res.meal=rm; c.text=ch.strip; proc(c); return }
+      res.lines.length=n0; res.lines.push(la);
+      la.choiceQ={}; la.choiceQ[ia]={q:la.q,u:la.u}; la.choiceQ[ib]={q:lb.q,u:lb.u};
+      la.alts=ia===ib?[ia]:[ia,ib]; la.fid=null; la.st='pick'; la.ask='pick'; la.noAuto=true; la.gdAsk=true; la.bls=0; la.choice=true; la.asBefore=false; la.fav=false;
+      la.name=la.spoken=ch.a+' или '+ch.b; la.raw=c.text;
+    }
     merged.forEach(function(c){
-      var parts=SP&&!NOSPLIT?splitComposite(c,cps):null;
-      if(!parts){ proc(c); return }
+      var chRe=SP&&SP.choice?SP.choice():null, hasCh=false; if(chRe){ chRe.lastIndex=0; hasCh=chRe.test(' '+c.text+' '); chRe.lastIndex=0 }
+      var parts=SP&&!NOSPLIT&&!hasCh?splitComposite(c,cps):null;   // «гречка или рис» — не блюдо из частей
+      if(!parts){ procChoice(c); return }
       var n0=res.lines.length, cm=curMeal, tm=tailMeal, rm=res.meal, dp=res.dupSeen, cp=parts[0].comp;
       parts.forEach(proc);
       /* первая часть не понята («слойка с пеканом» — какая слойка?) — блюдо остаётся целым, как раньше: вопрос о нём, а не запись одной начинки */
@@ -1771,7 +1812,7 @@ var MealBot=(function(){
       mine.forEach(function(x){ x.line.ask=null; x.sec=arg; x.secSet=true; x.t=gt; x.tm=false });
       var cm=commit(S,mine); if(cm===false){ mine.forEach(function(x){ x.line.ask='meal'; x.secSet=false }); S.pend=mine.concat(S.pend); return p('Чтобы записывать, войди в аккаунт.') }
       return commitHTML(cm)+(gt?timeNote(gt):'')+askHTML(S) }
-    if(kind==='pick'){ var fid=l.alts[+arg]; if(!fid) return null; l.fid=fid; l.st='ok'; l.g=gramsFor(fid,l.q,l.u);
+    if(kind==='pick'){ var fid=l.alts[+arg]; if(!fid) return null; l.fid=fid; l.st='ok'; if(l.choiceQ&&l.choiceQ[fid]){ l.q=l.choiceQ[fid].q; l.u=l.choiceQ[fid].u } l.g=gramsFor(fid,l.q,l.u);
       if(needQty(l)){ l.ask='qty'; return askHTML(S) } return finish(S,resolved(S)) }
     if(kind==='num'){ if(!Number.isFinite(+arg)||+arg<=0)return null; setGrams(l,+arg); return finish(S,resolved(S)) }
     if(kind==='unit'){ var f=FOODS[l.fid]; l.q=1; l.u=defUnit(f); l.g=gramsFor(l.fid,1,l.u); l.explicit=true; return finish(S,resolved(S)) }
