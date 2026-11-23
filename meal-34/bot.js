@@ -713,6 +713,9 @@ var MealBot=(function(){
         if(l.st==='ok'&&l.bls&&l.alts.length>1){
           hist=hist||histCount();
           if(hist[l.fid]) l.asBefore=true;
+          /* названо само блюдо («суп с фрикадельками» = «Суп с фрикадельками — мясные…»), а раньше записано другое, лишь похожее по описанию
+             («Свадебный суп — бульон, фрикадельки…»): прошлое не перебивает названное (23.11.2026) */
+          else if(headExact(l.fid,fw)&&!l.alts.some(function(a){ return hist[a]&&headExact(a,fw) })){}
           else if(l.alts.some(function(a){ return hist[a] })||(!exactName(l.fid,fw)&&!sameKcal(l.alts))){ l.fid=null; l.st='pick' }
         }
         if(l.st==='pick'&&!l.noAuto&&l.alts.length&&!l.alts.some(function(a){ return related(a,fw) })){ l.st='none'; l.alts=[] }   // предложенное не похоже ни на одно слово
@@ -3192,6 +3195,9 @@ var MealBot=(function(){
   function covers(id,food){ var ws=words(id), fs=statesOf(ws); return food.every(function(q){ return ws.some(function(w){ return sim(q,w)>=1.8||adjStem(q)&&adjStem(q)===adjStem(w) })||STF.some(function(pp){ return pp[1].test(q)&&fs[pp[0]] }) }) }
   function related(id,food){ var ws=words(id); return food.some(function(q){ return ws.some(function(w){ return sim(q,w)>=1||adjStem(q)&&adjStem(q)===adjStem(w) }) }) }
   /* название — это и есть сказанное слово: «Груша, сырая» для «груша»; «Грибы шиитаке» для «грибы» — нет */
+  /* название до « — » (у блюд каталогов кухонь после тире — описание) целиком названо словами человека */
+  function headExact(id,food){ var f=FOODS[id]; if(!f) return false; var ws=norm(String(f.n).split(' — ')[0]).split(/[^a-zа-я0-9%]+/).filter(Boolean);
+    return ws.length>0&&ws.every(function(w){ return PREP.test(w)||NEUTRAL.test(w)||/^\d/.test(w)||food.some(function(q){ return sim(q,w)>=1.8||adjStem(q)&&adjStem(q)===adjStem(w) }) }) }
   function exactName(id,food){ return words(id).every(function(w){
     return PREP.test(w)||NEUTRAL.test(w)||/^(напиток|сырой|сырая|сырое|сырые|\d.*)$/.test(w)||food.some(function(q){ return sim(q,w)>=1.8||adjStem(q)&&adjStem(q)===adjStem(w) }) }) }
   /* варианты почти не отличаются по калориям — вопрос ничего не меняет («соль морская» или «каменная») */
@@ -3205,6 +3211,9 @@ var MealBot=(function(){
   function loose(id,food){
     var f=FOODS[id]; if(!f) return false;
     var src=String(f.src||'');
+    /* блюдо каталога кухни (bls:Z…), уже записанное раньше и потому лежащее в списке: слово не в начале его названия — как у справочников,
+       ищем дальше по базе. Иначе после «свадебного супа» «бульон с фрикадельками» находил свадебный суп (23.11.2026) */
+    if(src==='BLS'&&/^bls:Z/.test(String(id))&&!f.mine&&!headOk(id,food)) return true;
     if(src==='BLS'||src==='Мои'||f.mine) return false;      // свой короткий список и свои продукты — как раньше
     if(!headOk(id,food)||extraState(id,food)) return true;  // «говядина» → «Машкичири с говядиной», «хурма» → «Хурма сушёная»
     return /MEXT|USDA|KFCT/.test(src);                      // большие справочники — после основной базы (Meal 33.9: и корейский KFCT — иначе один и тот же продукт находился то в нём, то в основной базе)
