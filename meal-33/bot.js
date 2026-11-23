@@ -716,6 +716,11 @@ var MealBot=(function(){
           else if(l.alts.some(function(a){ return hist[a] })||(!exactName(l.fid,fw)&&!sameKcal(l.alts))){ l.fid=null; l.st='pick' }
         }
         if(l.st==='pick'&&!l.noAuto&&l.alts.length&&!l.alts.some(function(a){ return related(a,fw) })){ l.st='none'; l.alts=[] }   // предложенное не похоже ни на одно слово
+        /* «суп с фрикадельками»: общее слово блюда названо, а в вариантах только другие супы — блюда нет в базе, посторонние не предлагать (Астамур, 23.11.2026) */
+        if(l.st==='pick'&&!l.noAuto&&!l.gdAsk&&l.alts.length&&fw.length>1&&GENW.test(norm(fw[0]))){ var exW=fw.slice(1).filter(function(w){ return !PREP.test(w)&&!NEUTRAL.test(w)&&!/^(горяч|холодн|тепл|вкусн|остыв|разогр)/.test(norm(w)) });
+          if(exW.length&&!l.alts.some(function(a){ return related(a,exW)||words(a).some(function(w){ return exW.some(function(q){ return norm(q).slice(0,4)===norm(w).slice(0,4) }) }) })){ l.st='none'; l.alts=[]; l.km=true } }
+        /* «вареники с вишней»: блюдо названо, а в вариантах только вишня — блюда нет в базе, ягоду вместо вареников не предлагать (Астамур, 23.11.2026) */
+        if(l.st==='pick'&&!l.noAuto&&!l.gdAsk&&l.alts.length&&fw.length>1&&KINDHEAD.test(norm(fw[0]))&&!l.alts.some(function(a){ return related(a,[fw[0]])||words(a).some(function(w){ return norm(w).slice(0,5)===norm(fw[0]).slice(0,5) }) })){ l.st='none'; l.alts=[]; l.km=true }
         if(l.st==='pick'&&l.alts.length&&!l.gdAsk){
           hist=hist||histCount();
           var used=l.alts.filter(function(a){ return hist[a] });
