@@ -1975,6 +1975,24 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       <li>«Где посмотреть состав гречки» — покажу гречку строкой: нажми, откроется карточка с полным составом.</li>
       <li>Покупку, выход из аккаунта и удаление делаешь сам: я только открою нужный экран.</li>
     </ul></article>
+    <!-- Meal 33.38 · короткие команды: bot.js (appAct), словарь bot/household-ru.js (app_actions) — поменял правило, поправь и текст -->
+    <article class="card release-card"><h2>Сделать за тебя одной фразой</h2><ul>
+      <li>«Добавь овсянку в избранное», «убери гречку из избранного», «что у меня в избранном». Продуктов с таким словом несколько — дам выбрать кнопкой.</li>
+      <li>«Включи фастинг», «выключи фастинг» — с тем же окном, что в «Настроить приёмы пищи». «Сколько ещё голодать», «когда можно есть» — сколько осталось и до скольки.</li>
+      <li>«Включи американскую базу», «выключи японскую базу», «какие базы включены». Последнюю включённую базу не выключаю. Платный набор не покупаю — открою «Сборники».</li>
+      <li>«Что я ел вчера», «сколько калорий в понедельник», «сколько в среднем калорий за неделю» — покажу записи и итог, кнопка «Открыть день».</li>
+      <li>Под каждым изменением — «Отменить»: вернёт как было.</li>
+    </ul></article>
+    <!-- Meal 33.38 · шаги гида: bot-guide-steps.js на bot-steps.js, словарь bot/household-ru.js (guide_steps) — поменял правило, поправь и текст -->
+    <article class="card release-card"><h2>Настроить по шагам в чате</h2><ul>
+      <li>«Настрой фастинг», «хочу голодать», «включи фастинг 18 на 6» — спрошу, сколько часов без еды, во сколько первая еда и в какие дни. Сохраню и включу фастинг.</li>
+      <li>«Добавь счётчик воды», «заведи счётчик» — спрошу продукт, порцию за нажатие, показывать ли в Happy Day и Happy Sport, название.</li>
+      <li>«Поменяй время обеда на 14:00», «сдвинь ужин с 19», «настрой приёмы пищи» — спрошу начало и конец. Соседний приём сдвигается сам: покажу, какой. Ужин кончается в полночь, перекус начинается в полночь — эти края не двигаются.</li>
+      <li>Первая настройка цепочкой: после цели — «Дальше: время приёмов пищи», потом фастинг, базы продуктов и счётчик. Любое звено можно пропустить кнопкой «Пропустить».</li>
+      <li>«Создай рецепт» — спрошу название и состав словами («овсянка 50 г, молоко 200 мл, банан»), покажу итог и сохраню в «Мои рецепты». Общее слово («молоко») — обычный выбор, его видно в итоге.</li>
+      <li>«Добавь бад омега-3» — своя добавка уже есть — запишу приём; есть в каталоге или нет нигде — открою «БАДы»: свою добавку заводят там, с составом по этикетке.</li>
+      <li>После «Сохранить» — «Отменить»: вернёт как было.</li>
+    </ul></article>
     <!-- Meal 33.37 · мастер целей в чате: bot-steps.js (вопросы по шагам), bot-goals.js (цели), словарь bot/household-ru.js (chat_steps, goal_setup) — поменял правило, поправь и текст -->
     <article class="card release-card"><h2>Настроить цель в чате</h2><ul>
       <li>«Настрой цели», «рассчитай мою норму», «хочу похудеть», «хочу набрать массу до 90» — бот по шагам спрашивает цель, пол, дату рождения, рост, вес, желаемый вес и активность. Целей ещё нет — в пустом чате кнопка «Настроить цель за минуту».</li>
@@ -6432,7 +6450,7 @@ function jrNoteTxt(){
 <script src="desserts.js?v=33.37"></script>
 <script src="preserves.js?v=33.37"></script><script src="kfct.js?v=33.37"></script>
 <script src="user-products.js?v=33.37"></script>
-<script src="bot/household-ru.js?v=33.37"></script><script src="bot-speech.js?v=33.37"></script><script src="meal-periods.js?v=33.37"></script><script src="meal-fast.js?v=33.37"></script><script src="bot.js?v=33.37"></script><script src="bot-steps.js?v=33.37"></script><script src="bot-goals.js?v=33.37"></script><script src="bot-own-product.js?v=33.37"></script><script src="meal-inbox.js?v=33.37"></script><script src="meal-measurements.js?v=33.37"></script>
+<script src="bot/household-ru.js?v=33.37"></script><script src="bot-speech.js?v=33.37"></script><script src="meal-periods.js?v=33.37"></script><script src="meal-fast.js?v=33.37"></script><script src="bot.js?v=33.37"></script><script src="bot-steps.js?v=33.37"></script><script src="bot-goals.js?v=33.37"></script><script src="bot-own-product.js?v=33.37"></script><script src="bot-guide-steps.js?v=33.37"></script><script src="meal-inbox.js?v=33.37"></script><script src="meal-measurements.js?v=33.37"></script>
 
 <script src="./shared/release-notes.js?v=33.37"></script>
 <script src="release-notes.js?v=33.37"></script>
