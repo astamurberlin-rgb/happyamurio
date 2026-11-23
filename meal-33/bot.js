@@ -1988,6 +1988,23 @@ var MealBot=(function(){
     missLog('вопросы без ответа (не продукты)',o,o);
     return p('Такого рецепта у меня пока нет. Ищу только среди «Моих рецептов», подборок приложения и узбекских блюд, свои не придумываю. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>';
   }
+  /* ── ступень 2 · кулинарные приёмы: «когда солить рис», «почему картошка тушится», «яйца в холодную или кипящую воду»
+     (решение Астамура 23.11.2026 «да»). Карточки tip справочника cooking, у каждой два источника; где спорят — обе версии.
+     Только вопрос: «посолил рис» без вопроса — не сюда. */
+  function tipAsk(raw){
+    var o=nrm(raw).trim().replace(/[!.,…\s]+$/,''), q=/\?$/.test(o); o=o.replace(/\?+$/,'').trim();
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    if(!q&&!/(^|\s)(когда|как|почему|зачем|нужно ли|надо ли|можно ли|стоит ли|в начале|в конце|до или после|сразу или|правильно ли|чем|что|какую|какой|сколько|отчего|или)(\s|$)/.test(o)) return null;
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    if(!L||L.state!=='ok'){ if(L&&L.state!=='loading') L.load(); return null }   // справочник не готов — дальше «как готовить» скажет, что с ним
+    var c=L.find(o,'tip');
+    if(!c){   // «когда солить суп» — приём, которого ещё нет: честно «пока не знаю», в список «без ответа», а не в недостающие продукты
+      if(!/(^|\s)(солить|солят|посолить|подсолить|досолить|соль)(\s|$)/.test(o)||!/(когда|в начале|в конце|до или после|сразу|заранее|в какой момент|нужно ли|надо ли|можно ли)/.test(o)) return null;
+      missLog('вопросы без ответа (не продукты)',o,o);
+      return p('Пока не знаю, когда это солить: такого приёма в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
+    return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
+  }
   function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
   function nutrAsk(o){
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
@@ -2238,6 +2255,7 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var tq=tipAsk(raw); if(tq) return tq }   // «когда солить рис» — кулинарный приём
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var rq=rcpAsk(S,raw); if(rq) return rq }   // «рецепт плова» — рецепт из готового, а не «готовка на несколько человек»
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка

@@ -1382,6 +1382,25 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Рц15", eaten=True, msgs=["плов 300 г"], want=[("плов", 300)]),
  dict(id="Рц16", msgs=["рецепт плова на 4 человека"], mode="none", reply="Плов узбекский с бараниной"),
  dict(id="Рц17", msgs=["как приготовить гречку"], mode="none", reply="Гречку варят около 20 минут"),
+ # кулинарные приёмы (справочник cooking 1.2, карточки tip, 23.11.2026, Астамур «да»)
+ dict(id="Пр01", msgs=["когда солить рис"], mode="none", reply="Рис солят в начале"),
+ dict(id="Пр02", msgs=["в начале или в конце солить рис?"], mode="none", reply="ВкусВилл"),
+ dict(id="Пр03", msgs=["сколько соли класть в воду для макарон"], mode="none", reply="около 7 г соли"),
+ dict(id="Пр04", msgs=["когда солить картошку при жарке"], mode="none", reply="Жареную картошку солят в конце"),
+ dict(id="Пр05", msgs=["почему картошка тушится а не жарится"], mode="none", reply="одним слоем"),
+ dict(id="Пр06", msgs=["когда солить грибы"], mode="none", reply="Грибы солят в конце"),
+ dict(id="Пр07", msgs=["солить лук сразу?"], mode="none", reply="Лук при жарке солят сразу"),
+ dict(id="Пр08", msgs=["когда добавлять чеснок"], mode="none", reply="30–60 секунд"),
+ dict(id="Пр09", msgs=["когда солить стейк"], mode="none", reply="за 40–45 минут"),
+ dict(id="Пр10", msgs=["можно ли солить фасоль в начале варки"], mode="none", reply="Rancho Gordo"),
+ dict(id="Пр11", msgs=["надо ли мясу отдохнуть после жарки"], mode="none", reply="AmazingRibs"),
+ dict(id="Пр12", msgs=["нужно ли промывать рис"], mode="none", reply="Рис лучше промыть"),
+ dict(id="Пр13", msgs=["яйца класть в холодную или кипящую воду"], mode="none", reply="в воду со льдом"),
+ dict(id="Пр14", msgs=["когда солить суп"], mode="none", reply="Пока не знаю, когда это солить"),
+ dict(id="Пр15", msgs=["сколько варить яйца вкрутую"], mode="none", reply="крупные на 12"),
+ dict(id="Пр16", msgs=["сколько варить рис"], mode="none", reply="Белый рис"),
+ dict(id="Пр17", eaten=True, msgs=["соль 2 г"], want=[("сол", 2)]),
+ dict(id="Пр18", eaten=True, msgs=["рис 200 г"], want=[("рис", 200)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
