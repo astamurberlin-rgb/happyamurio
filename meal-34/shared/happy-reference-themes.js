@@ -27,9 +27,10 @@
   return {id:'happy-ref-'+id+'-v1',name,mode,note,ui,colors:[...new Set([...colors,...lights.map(g=>g.color)])].slice(0,8),state};
  }
  const themes=[
-  theme('mint','Мята','basic','Свежая мята, бирюза и мягкое сиреневое основание.',
-   ['#5cd2b0','#4dc8c5','#3bb8d4','#609ed8','#7976ce'],165,
-   [glow('#a7fac5',16,10,76,43),glow('#a7baff',91,28,71,32)],['#329a9b']),
+  /* 23.11.2026 (Астамур): «Мята» — бывший «Бирюзовый полдень» (лагуна в полдень, отмель и песок); «Лагуна» убрана, её выбор переходит на «Мяту» */
+  theme('mint','Мята','basic','Бирюза, отмель и тёплый песок — лагуна в полдень.',
+   ['#0a9fc6','#0cb0c2','#14bcab','#38c4a6','#c9c886'],176,
+   [glow('#fff2a0',90,4,54,24),glow('#7ff0d0',6,58,52,30)],['#0b7f96']),
   theme('bordeaux','Бордо','basic','Основной бордово-вишнёвый фон Happy Meal.',
    ['#963452','#983252','#812c4b','#632749','#462747'],165,
    [glow('#f37ca5',93,15,80,40),glow('#9d57ae',6,-8,73,38)],['#730074'],{ownButton:true}),
@@ -45,9 +46,6 @@
   theme('amethyst','Аметист','regular','Насыщенный фиолетовый с малиновым отблеском.',
    ['#7520b3','#7c159f','#74028d','#61077c','#50066c'],176,
    [glow('#d887d3',100,4,83,86),glow('#ae008d',100,65,72,24)],['#79049b'],{glassColor:'#290d3b',mutedColor:'#e8cff2'}),
-  theme('lagoon','Лагуна','regular','Мята и изумруд переходят в глубину моря.',
-   ['#40c7b8','#2bb79b','#148e80','#056175','#04355b'],177,
-   [glow('#24bd77',100,18,96,55),glow('#0872ab',0,84,66,25)],['#086293'],{glassColor:'#063345',textColor:'#f1fffc',mutedColor:'#d1eee8',headingColor:'#073b43',buttonTextColor:'#06383b'}),
   theme('night-bay','Ночная бухта','night','Почти чёрный берег, тихий бирюзовый и угасающий янтарный отблеск.',
    ['#080d12','#0b1419','#11171a','#111214','#080b0e'],90,
    [glow('#23484c',17,13,55,24),glow('#69412b',42,85,68,18)],['#623d29'],{glassColor:'#101e25',textColor:'#eef8f7',mutedColor:'#c3dedc',buttonTextColor:'#142b30'}),
@@ -77,7 +75,7 @@
  function mount(host,onSelect){
   const buttons=new Map();host.replaceChildren();
   const intro=document.createElement('p');intro.className='reference-intro';intro.textContent='Одна схема для Day, Meal и Sport. Нажми, чтобы увидеть её сразу во всех трёх превью. Любую схему можно изменить и сохранить как свой вариант.';host.append(intro);
-  for(const [mode,label] of [['basic','Основные · 3'],['regular','На выбор · 4'],['night','Ночные · 3']]){
+  for(const [mode,label] of [['basic','Основные · 3'],['regular','На выбор · 3'],['night','Ночные · 3']]){
    const heading=document.createElement('h3');heading.className='reference-heading';heading.textContent=label;host.append(heading);
    const grid=document.createElement('div');grid.className='reference-grid reference-grid-'+mode;
    for(const item of themes.filter(t=>t.mode===mode)){
