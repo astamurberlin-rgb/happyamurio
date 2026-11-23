@@ -1435,6 +1435,18 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Пр16", msgs=["сколько варить рис"], mode="none", reply="Белый рис"),
  dict(id="Пр17", eaten=True, msgs=["соль 2 г"], want=[("сол", 2)]),
  dict(id="Пр18", eaten=True, msgs=["рис 200 г"], want=[("рис", 200)]),
+ # кремы (справочник cooking, карточки tip, 23.11.2026)
+ dict(id="Кр01", msgs=["как сварить заварной крем"], mode="none", reply="около минуты"),
+ dict(id="Кр02", msgs=["почему заварной крем жидкий?"], mode="none", reply="фермент из желтков"),
+ dict(id="Кр03", msgs=["как взбить сливки"], mode="none", reply="от 30 % жирности"),
+ dict(id="Кр04", msgs=["перебил сливки что делать"], mode="none", reply="холодных жидких сливок"),
+ dict(id="Кр05", msgs=["почему взбитые сливки оседают"], mode="none", reply="желатин"),
+ dict(id="Кр06", msgs=["как сделать масляный крем"], mode="none", reply="до 71 °C"),
+ dict(id="Кр07", msgs=["масляный крем свернулся что делать"], mode="none", reply="слишком холодный"),
+ dict(id="Кр08", msgs=["почему крем-чиз жидкий"], mode="none", reply="в брикете"),
+ dict(id="Кр09", msgs=["как сделать ганаш"], mode="none", reply="тёмный 1:1"),
+ dict(id="Кр10", msgs=["ганаш расслоился что делать"], mode="none", reply="тёплое молоко"),
+ dict(id="Кр11", eaten=True, msgs=["сливки 10% 20 г"], want=[("сливк", 20)]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
