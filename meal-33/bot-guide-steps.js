@@ -286,11 +286,12 @@ var MealBotGuide=(function(){
       if(f.variant){ var ms=HappySupplementsModel.measureOptions(f.variant)[0]; st.v._v=f.variant.id; st.v._m=ms&&ms.id;
         return {text:p(esc(T(U.mine,{n:f.variant.name,m:ms?ms.name:''}))),chips:[['@log',T(U.log_button,{m:ms?ms.name:''})],['@open','Открыть «БАДы»'],['@cancel','Не надо']]} }
       if(f.template) return {text:p(esc(T(U.template,{n:f.template.name}))),chips:[['@open','Открыть «БАДы»'],['@cancel','Не надо']]};
-      return {text:p(esc(T(U.none,{n:f.none||st.v.name}))),chips:[['@open','Открыть «БАДы»'],['@cancel','Не надо']]};
+      return {text:p(esc(T(U.none_new,{n:f.none||st.v.name}))),chips:[['@new','Завести здесь'],['@open','Открыть «БАДы»'],['@cancel','Не надо']]};
     },
     command:function(name,st,S){
       var U=G().supp||{};
       if(name==='open'){ S.steps=null; openSupp(); return p(esc(U.opened||'Открываю «БАДы».')) }
+      if(name==='new'){ S.steps=null; return M.start(CH.meal,'suppnew',{name:cap(st.v.name)}) }
       if(name==='log'){ if(guard()) return p('Чтобы записать, войди в аккаунт.'); S.steps=null;
         try{ HappySupplements.logIntake({variantId:st.v._v,quantity:1,measureId:st.v._m,date:typeof curDate!=='undefined'?curDate:null,time:null,section:typeof autoSec==='function'?autoSec():null}).catch(function(e){ try{ toast(e.message) }catch(_){} }) }catch(e){ return p(esc(e.message)) }
         return p(esc(U.logged||'Записал приём.')) }
@@ -298,6 +299,72 @@ var MealBotGuide=(function(){
     },
     save:function(){ return '' },
     cancelled:(G().supp||{}).cancelled||'Хорошо.'
+  });
+
+  /* ═══════ своя добавка шагами (Астамур 23.11.2026, «Да, делай»): название → форма → состав на одну штуку → итог.
+     Вещество из каталога (HappySubstances) привязывается и считается в веществах дня; незнакомое — своё, считается
+     отдельно, как на экране. Запись — HappySupplements.saveOwn: те же проверки, что у «Сохранить» в редакторе ═══════ */
+  function SN(){ return G().supp_new||{} }
+  var PENDING={};
+  /* слова названия как сказаны (регистр «B6»), по числу слов из разбора */
+  function rawTail(text,n){ var ws=String(text||'').trim().replace(/[.!?]+$/,'').split(/\s+/); var k=String(n||'').trim().split(/\s+/).filter(Boolean).length; return k?ws.slice(-k).join(' '):'' }
+  function subOf(name){
+    var Sb=window.HappySubstances; if(!Sb) return null;
+    var n=nt(name), A=SN().substance_words||{};
+    Object.keys(A).forEach(function(k){ n=(' '+n+' ').replace(new RegExp('(витамин\\s+)'+k+'(?=\\s)','g'),'$1'+A[k]).trim() });   // «витамин д3» → «витамин d»
+    var x=Sb.exact(n); if(x) return x;
+    var L=Sb.search(n,8); if(L.length===1) return L[0];
+    return L.filter(function(f){ return Sb.norm(f.title)===Sb.norm(n)||Sb.norm(f.title).indexOf(Sb.norm(n))===0 })[0]||null;
+  }
+  var UNIT={'мг':'мг','mg':'мг','мкг':'мкг','mcg':'мкг','г':'г','гр':'г','грамм':'г','грамма':'г','граммов':'г','ме':'МЕ','iu':'МЕ','миллиграмм':'мг','миллиграмма':'мг','миллиграммов':'мг','микрограмм':'мкг','микрограмма':'мкг','микрограммов':'мкг'};
+  function compsIn(text){
+    var U=SN(), parts=String(text||'').toLowerCase().replace(/ё/g,'е').split(/\s*[;,]\s*|\s+и\s+(?=\S+\s+\d|\d)/).map(function(x){ return x.trim() }).filter(Boolean), out=[], bad=[];
+    var own=[]; try{ (HappySupplements.getVariants()||[]).forEach(function(v){ (v.components||[]).forEach(function(c){ if(!c.substanceId&&c.customId) own.push(c) }) }) }catch(e){}
+    parts.forEach(function(seg,i){
+      var m=seg.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s*([a-zа-я]+)\.?$/)||null, name, amt, u;
+      if(m){ name=m[1]; amt=m[2]; u=m[3] } else { var m2=seg.match(/^(\d+(?:[.,]\d+)?)\s*([a-zа-я]+)\.?\s+(.+)$/); if(m2){ amt=m2[1]; u=m2[2]; name=m2[3] } }
+      u=u&&UNIT[u]; if(!name||!u){ bad.push(seg); return }
+      name=name.trim(); var amount=String(amt).replace(',','.'), sub=subOf(name);
+      if(sub){ if(window.HappySubstances.units(sub.key).indexOf(u)<0) return bad.push(seg+' — '+T(U.unit_bad,{n:sub.title,u:window.HappySubstances.units(sub.key).join(', ')}));
+        out.push({id:'component-'+i,name:sub.title,unit:u,amount:amount,kind:'amount',substanceId:sub.key}); return }
+      var nm=cap(name), same=own.filter(function(c){ return window.HappySubstances.norm(c.name)===window.HappySubstances.norm(nm) })[0];
+      out.push({id:'component-'+i,name:same?same.name:nm,unit:u,amount:amount,kind:'amount',customId:same?same.customId:'custom:'+(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+i),custom:true});
+    });
+    if(bad.length) return {error:esc(T(U.bad_comp,{w:bad.join('; ')}))};
+    return out.length?{comps:out}:null;
+  }
+  function inOne(u){ return (SN().in_one||{})[u]||('в 1 '+u) }
+  function variantOf(v){ return {id:(window.crypto&&crypto.randomUUID?crypto.randomUUID():'v'+Date.now().toString(36)),templateId:'custom',name:v.name,form:'',category:'custom',
+    basis:{quantity:1,unit:v.form,gramsPerUnit:null},components:JSON.parse(JSON.stringify(v.comps)),measures:[],notes:'',source:'Этикетка пользователя',revision:0} }
+  M.define({
+    id:'suppnew', title:'Своя добавка',
+    start:function(text){
+      if(typeof HappySupplements==='undefined'||!HappySupplements.saveOwn) return null;
+      var m=nt(text).replace(/[.]+$/,'').match(rx(SN().start)); if(!m) return null;
+      var n=rawTail(text,m[1]); return n?{name:cap(n)}:true },
+    steps:[
+      { key:'name', label:'Название',
+        ask:function(){ return {text:esc(SN().ask_name)} },
+        parse:function(text){ var t=String(text||'').trim().replace(/[.!]+$/,'').slice(0,200); return t?{name:cap(t)}:null } },
+      { key:'form', label:'Форма',
+        ask:function(){ return {text:esc(SN().ask_form),chips:SN().form_chips||[]} },
+        parse:function(text){ var k=M.pick(text,SN().forms); return k?{form:k}:null } },
+      { key:'comps', label:'Состав',
+        ask:function(st){ return {text:esc(T(SN().ask_comp,{in:inOne(st.v.form)})),hint:esc(SN().hint_comp||'')} },
+        parse:function(text){ return compsIn(text) } }
+    ],
+    summary:function(st){ var v=st.v, U=SN(), own=v.comps.filter(function(c){ return !c.substanceId });
+      return {text:p(T(U.summary,{n:esc(v.name),f:esc(v.form),in:esc(inOne(v.form))}))+'<p class="mbSum">'+v.comps.map(function(c){ return esc(c.name)+' — '+esc(String(c.amount).replace('.',','))+' '+esc(c.unit)+(c.substanceId?'':' · '+esc(U.own_mark)) }).join('<br>')+'</p>'+
+        (own.length?'<p class="mlHint">'+esc(U.own_note)+'</p>':'')} },
+    save:function(st){
+      if(guard()) return signIn();
+      var x=variantOf(st.v), U=SN();
+      try{ HappySupplementsModel.validateNames(HappySupplementsModel.normalize(x),null,HappySupplements.getVariants()) }catch(e){ return {html:p(esc(e.message)),keep:true} }
+      PENDING[x.id]=HappySupplements.saveOwn(x).catch(function(e){ try{ toast(e.message) }catch(_){} throw e });   // «Записать» и «Отменить» ждут, пока запись дойдёт
+      return p(esc(T(U.saved,{n:x.name,one:(U.one||{})[st.v.form]||st.v.form})))+M.chips([['act:suplog:'+x.id+':basis',T(U.log_button,{acc:(U.acc||{})[st.v.form]||('1 '+st.v.form)})]])+
+        undo(function(){ Promise.resolve(PENDING[x.id]).then(function(){ return HappySupplements.removeOwn(x.id) }).catch(function(e){ try{ toast(e.message) }catch(_){} }); return true });
+    },
+    cancelled:SN().cancelled||'Хорошо, добавку не завёл.'
   });
   /* ═══════ первая настройка цепочкой (слой 3 · В): цель → приёмы пищи → фастинг → базы → счётчик. После каждого звена —
      «Дальше: …» (механизм) и «Пропустить …» — следующее звено можно пропустить ═══════ */
@@ -313,5 +380,5 @@ var MealBotGuide=(function(){
       return h+M.chips([['st:'+nn+':@start',T((G().chain||{}).skip,{t:nf.title,n:nnf.title})]]);
     };
   });
-  return {timeOf:timeOf,portionIn:portionIn};
+  return {timeOf:timeOf,portionIn:portionIn,pending:function(id){ return PENDING[id]||null }};
 })();
