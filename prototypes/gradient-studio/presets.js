@@ -364,6 +364,23 @@ window.HappyGradientPresets={
         balance:{posColor:'#B9F7E4',negColor:'#D4BCFF',blend:55,fade:35,alpha:100},
         progress:['#D4BCFF','#B9CDFF','#A9E2F6','#B9F7E4']
       }
+    },
+    /* 23.11.2026: собрал Астамур в студии (скриншоты 21:13): кольцо и строки — его значения; стык «Тает», 55° */
+    {
+      name:'Фуксия',
+      note:'Собрал Астамур: фуксия, фиалка и пурпур — ярко, в цвет самой орхидеи.',
+      energy:{
+        eat:  {c0:'#FF60FF',cm:'#7C5CFF',c1:'#FF00FF',mw:6,s0:4,s1:96,a0:74,a1:92},
+        spent:{c0:'#FF00FF',cm:'#892AFC',c1:'#C934FF',mw:6,s0:4,s1:96,a0:74,a1:92},
+        track:20
+      },
+      join:{kind:'fade',len:55,from:15,via:[],shadow:38,size:7.5},
+      bars:{hues:{pink:323,violet:323,blue:323,teal:323},chroma:.275,dot:.83,from:.86,to:.72,over:.65,track:27},
+      day:{
+        flow:{mode:'flow',colors:['#FF8CFF','#9C7CFF','#E05CFF'],intensity:62,softness:76,duration:16},
+        balance:{posColor:'#9C7CFF',negColor:'#FF60FF',blend:55,fade:35,alpha:100},
+        progress:['#FF00FF','#C934FF','#892AFC','#7C5CFF']
+      }
     }
   ],
 

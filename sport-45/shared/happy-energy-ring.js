@@ -11,7 +11,8 @@
 
    Цвета колец по теме: HappyEnergyRing.palette() — набор для темы, выбранной в «Настроить тему» (html[data-happy-appearance]),
    или null, если у темы свой набор не задан (тогда у приложения его исходные цвета). Наборы взяты из Студии градиентов,
-   выбор Астамура 23.11.2026: Бордо — «Сакура», Ночная бухта — «Костёр», Полуночный ирис — «Ирис», Неоновая ночь — «Лаванда» (ночью «Мягко»). */
+   выбор Астамура 23.11.2026: Бордо — «Сакура», Ночная бухта — «Костёр», Полуночный ирис — «Ирис», Неоновая ночь — «Лаванда» (ночью «Мягко»).
+   Позже 23.11.2026: Мята — «Отмель», Малахит — «Изумруд», Спокойный синий — «Морозное утро», Орхидея — «Фуксия» (собрал сам). Ягодное небо — исходные цвета. */
 (function(root){
  'use strict';
  const doc=root.document;
@@ -89,7 +90,31 @@
    eat:{c0:'#AC9FDA',cm:'#7C6DD6',c1:'#DCB0CF',mw:30,s0:59,s1:77,a0:47,a1:68},
    spent:{c0:'#DCB0CF',cm:'#7C6DD6',c1:'#AC9FDA',mw:30,s0:17,s1:45,a0:54,a1:80},track:14,
    bars:{hues:{pink:336,violet:287,blue:291,teal:294},chroma:.085,dot:.74,from:.8,to:.66,over:.5,track:16},
-   day:{flow:{colors:['#AC9FDA','#A3C8DC','#7C6DD6'],intensity:62,softness:76,duration:16},balance:{posColor:'#AC9FDA',negColor:'#DCB0CF',alpha:85},progress:['#DCB0CF','#7C6DD6','#AC9FDA','#A3C8DC']}}
+   day:{flow:{colors:['#AC9FDA','#A3C8DC','#7C6DD6'],intensity:62,softness:76,duration:16},balance:{posColor:'#AC9FDA',negColor:'#DCB0CF',alpha:85},progress:['#DCB0CF','#7C6DD6','#AC9FDA','#A3C8DC']}},
+  /* Мята — «Отмель» (выбор Астамура 23.11.2026) */
+  'happy-ref-mint-v1':{name:'Отмель',
+   eat:{c0:'#C8FFD2',cm:'#D7FEA6',c1:'#F8F676',mw:30,s0:59,s1:77,a0:76,a1:95},
+   spent:{c0:'#F8F676',cm:'#D7FEA6',c1:'#C8FFD2',mw:30,s0:17,s1:45,a0:80,a1:97},track:20,
+   bars:{chroma:0.13,dot:0.92,from:0.96,to:0.87,over:0.72,track:20,hues:{pink:100,violet:120,blue:140,teal:160}},
+   day:{flow:{mode:'flow',colors:['#C0F5C0','#E3F5B1','#D4FDEA'],intensity:54,softness:80,duration:16},balance:{posColor:'#E4FEDE',negColor:'#ABCDFA',alpha:100},progress:['#F8F676','#E0FD98','#CFFEC5','#D2FEE5']}},
+  /* Малахит — «Изумруд» (выбор Астамура 23.11.2026) */
+  'happy-ref-malachite-v1':{name:'Изумруд',
+   eat:{c0:'#C6F7E6',cm:'#74E0C0',c1:'#3CC4CC',mw:30,s0:59,s1:77,a0:78,a1:96},
+   spent:{c0:'#3CC4CC',cm:'#74E0C0',c1:'#C6F7E6',mw:30,s0:17,s1:45,a0:82,a1:97},track:18,
+   bars:{chroma:0.11,dot:0.86,from:0.92,to:0.8,over:0.64,track:18,hues:{pink:150,violet:168,blue:186,teal:204}},
+   day:{flow:{mode:'flow',colors:['#8FE3C8','#5CCFCB','#C9F6E6'],intensity:54,softness:80,duration:18},balance:{posColor:'#C6F7E6',negColor:'#F2B6A0',alpha:100},progress:['#3CC4CC','#5FD6C4','#93E8CD','#C6F7E6']}},
+  /* Спокойный синий — «Морозное утро» (выбор Астамура 23.11.2026) */
+  'happy-ref-calm-blue-v1':{name:'Морозное утро',
+   eat:{c0:'#BFF2FF',cm:'#8CC3FC',c1:'#B3A7FB',mw:30,s0:59,s1:77,a0:66,a1:86},
+   spent:{c0:'#B3A7FB',cm:'#8CC3FC',c1:'#BFF2FF',mw:30,s0:17,s1:45,a0:72,a1:94},track:20,
+   bars:{chroma:0.09,dot:0.84,from:0.9,to:0.78,over:0.62,track:20,hues:{pink:300,violet:275,blue:250,teal:215}},
+   day:{flow:{mode:'flow',colors:['#92CEE7','#8AB4EA','#B9E8F0'],intensity:55,softness:82,duration:20},balance:{posColor:'#BFF2FD',negColor:'#B9A9FE',alpha:100},progress:['#B3A7FB','#98BBFB','#9DDAFE','#BEF2FD']}},
+  /* Орхидея — «Фуксия»: Астамур собрал сам в Студии градиентов 23.11.2026 (кольцо и строки — его; дуги Day подобраны к ним) */
+  'happy-ref-orchid-v1':{name:'Фуксия',
+   eat:{c0:'#FF60FF',cm:'#7C5CFF',c1:'#FF00FF',mw:6,s0:4,s1:96,a0:74,a1:92},
+   spent:{c0:'#FF00FF',cm:'#892AFC',c1:'#C934FF',mw:6,s0:4,s1:96,a0:74,a1:92},track:20,
+   bars:{hues:{pink:323,violet:323,blue:323,teal:323},chroma:.275,dot:.83,from:.86,to:.72,over:.65,track:27},
+   day:{flow:{colors:['#FF8CFF','#9C7CFF','#E05CFF'],intensity:62,softness:76,duration:16},balance:{posColor:'#9C7CFF',negColor:'#FF60FF',alpha:100},progress:['#FF00FF','#C934FF','#892AFC','#7C5CFF']}}
  };
  function palette(id){
   if(id===undefined)id=doc.documentElement.dataset.happyAppearance||'';
