@@ -1445,8 +1445,7 @@ body.hs-open{overflow:hidden}
 .hs-smile-glass{position:absolute;inset:21%;border-radius:50%;background:radial-gradient(circle at 38% 30%,rgba(255,255,255,.38),rgba(255,255,255,.12) 60%,rgba(255,255,255,.06));
  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 22px rgba(4,40,80,.18)}
 .hs-smile-glass svg{width:100%;height:100%;fill:#fff;filter:drop-shadow(0 1px 1.5px rgba(4,40,80,.25))}
-.hs-main.hs-wait{display:grid;place-items:center;padding:0}
-.hs-wait .hs-smile{width:84px;height:84px}
+.hs-wait-status{flex-shrink:0}
 .hs-wait-actions{position:absolute;left:20px;right:20px;bottom:calc(24px + env(safe-area-inset-bottom))}
 .hs-wait-actions .hs-btn{width:100%}
 .hs-welcome-options{opacity:0;visibility:hidden;transition:opacity .55s ease;pointer-events:none}
@@ -11297,8 +11296,8 @@ function showWait(p,next){
  let status=p.main.querySelector('.hs-wait-status');
  if(!status){
   stopSmile();
-  p.main.className='hs-main hs-wait';
-  p.main.innerHTML='<div class="hs-wait-status" role="status"></div><div class="hs-wait-actions"></div>';
+  p.main.className='hs-main hs-welcome hs-wait';
+  p.main.innerHTML='<div class="hs-wait-status" role="status"></div>'+welcomeOptions()+'<div class="hs-wait-actions"></div>';
   status=p.main.querySelector('.hs-wait-status');
   smileTimer=setTimeout(()=>{status.innerHTML=smile();startSmile()},200);
  }
@@ -11379,17 +11378,20 @@ function smile(label){
    '<circle class="hs-smile-arc" cx="60" cy="60" r="52" stroke-dasharray="63.05 400" transform="rotate(-34.735 60 60)"/></svg>'+
    '<div class="hs-smile-glass"><svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="34" cy="44" rx="6.8" ry="9.2"/><ellipse cx="66" cy="44" rx="6.8" ry="9.2"/></svg></div></div>';
 }
-function html(name){
+function welcomeOptions(){
  const I=S().ICONS,app=cfg.name;
- switch(name){
- case 'welcome':return smile('Happy')+
-   '<div class="hs-welcome-options" inert aria-hidden="true"><h1>Создать аккаунт</h1><div class="hs-welcome-buttons">'+
+ return '<div class="hs-welcome-options" inert aria-hidden="true"><h1>Создать аккаунт</h1><div class="hs-welcome-buttons">'+
    '<button type="button" class="hs-provider" disabled>'+I.apple+'<span>Продолжить с Apple</span></button>'+
    googleButton()+
    '<button type="button" class="hs-btn hs-primary hs-email-start" data-hw="to-register">'+I.envelope+'<span>Продолжить с почтой</span></button></div>'+
    errorBox()+'<p class="hs-login-choice">Уже есть аккаунт? <button type="button" data-hw="to-login">Войти</button></p>'+
    '<p class="hs-test-note">Тестовая версия:<br>покупки бесплатные, деньги не списываются</p>'+   /* Астамур 23.11.2026: здесь пропустить нельзя */
    '<button type="button" class="hs-guest" data-hw="guest">Заглянуть в '+esc(app)+' без аккаунта</button></div>';
+}
+function html(name){
+ const I=S().ICONS;
+ switch(name){
+ case 'welcome':return smile('Happy')+welcomeOptions();
  case 'register':return title('Создать аккаунт')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+
    S().passwordField({label:'Пароль',name:'password',autocomplete:'new-password'})+S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+
    '<div class="hs-actions">'+btn('register','Создать аккаунт','hs-primary',true)+googleButton()+btn('cancel','Отмена','hs-cancel')+'</div></form>';
@@ -11587,7 +11589,7 @@ let ready=false,frame=0;
 function stopSmile(){if(frame)cancelAnimationFrame(frame);frame=0;clearTimeout(smileTimer)}
 function startSmile(instant){
  stopSmile();const p=pageH;if(!p)return;
- const svg=p.main.querySelector('[data-hs-ring]'),options=p.main.querySelector('.hs-welcome-options');
+ const svg=p.main.querySelector('[data-hs-ring]'),options=screen==='welcome'&&p.main.querySelector('.hs-welcome-options');
  const settle=()=>{if(!options?.isConnected)return;options.classList.add('hs-settled');options.removeAttribute('inert');options.removeAttribute('aria-hidden')};
  const reduced=root.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
  if(instant||reduced){svg.style.transform='rotate(90deg)';settle();return}
