@@ -60,26 +60,27 @@ window.HappyGradientPresets={
     }
   ],
 
+  /* 23.11.2026: «Мята» теперь бирюза с песком (бывший «Бирюзовый полдень»), пресеты подобраны заново */
   /* ── Мята ── */
   'happy-ref-mint-v1':[
     {
-      name:'Глубина',
-      note:'В тон: тёмная бирюза, синий и индиго — цвета самой мяты, но глубже фона.',
+      name:'Отмель',
+      note:'В тон: пена, салатовый и лайм — солнечная вода над песком.',
       energy:{
-        eat:  {c0:'#219196',cm:'#2171CC',c1:'#6243CC',mw:30,s0:59,s1:77,a0:86,a1:98},
-        spent:{c0:'#6243CC',cm:'#2171CC',c1:'#219196',mw:30,s0:17,s1:45,a0:88,a1:98},
-        track:22
+        eat:  {c0:'#C8FFD2',cm:'#D7FEA6',c1:'#F8F676',mw:30,s0:59,s1:77,a0:76,a1:95},
+        spent:{c0:'#F8F676',cm:'#D7FEA6',c1:'#C8FFD2',mw:30,s0:17,s1:45,a0:80,a1:97},
+        track:20
       },
-      bars:{hues:{pink:340,violet:295,blue:255,teal:200},chroma:.16,from:.64,to:.5,over:.36,dot:.56,track:28},
+      bars:{hues:{pink:100,violet:120,blue:140,teal:160},chroma:.13,from:.96,to:.87,over:.72,dot:.92,track:20},
       day:{
-        flow:{mode:'shimmer',colors:['#EAFBF5','#FFFFFF','#DCE9FE'],intensity:40,softness:85,duration:20},
-        balance:{posColor:'#03999D',negColor:'#7552DB',blend:50,fade:35,alpha:96},
-        progress:['#6243CC','#3368D0','#1587A9','#03999D']
+        flow:{mode:'flow',colors:['#C0F5C0','#E3F5B1','#D4FDEA'],intensity:54,softness:80,duration:16},
+        balance:{posColor:'#E4FEDE',negColor:'#ABCDFA',blend:55,fade:35,alpha:100},
+        progress:['#F8F676','#E0FD98','#CFFEC5','#D2FEE5']
       }
     },
     {
       name:'Коралл',
-      note:'Контраст: персик, коралл и малина — тёплая пара к мяте.',
+      note:'Контраст: персик, коралл и малина — тёплая пара к бирюзе.',
       energy:{
         eat:  {c0:'#FDD5B8',cm:'#FEA195',c1:'#FA618E',mw:30,s0:59,s1:77,a0:80,a1:96},
         spent:{c0:'#FA618E',cm:'#FEA195',c1:'#FDD5B8',mw:30,s0:17,s1:45,a0:84,a1:98},
@@ -94,17 +95,17 @@ window.HappyGradientPresets={
     },
     {
       name:'Жемчуг',
-      note:'Мягкий: белая заливка с лёгким сиреневым и розовым отливом.',
+      note:'Мягкий: белая заливка с голубым и сиреневым отливом.',
       energy:{
-        eat:  {c0:'#FFFFFF',cm:'#F4EFFF',c1:'#FDDDF1',mw:30,s0:59,s1:77,a0:78,a1:96},
-        spent:{c0:'#FDDDF1',cm:'#F4EFFF',c1:'#FFFFFF',mw:30,s0:17,s1:45,a0:80,a1:97},
+        eat:  {c0:'#FFFFFF',cm:'#E6FAFA',c1:'#E9E9FF',mw:30,s0:59,s1:77,a0:78,a1:96},
+        spent:{c0:'#E9E9FF',cm:'#E6FAFA',c1:'#FFFFFF',mw:30,s0:17,s1:45,a0:80,a1:97},
         track:18
       },
-      bars:{hues:{pink:350,violet:305,blue:265,teal:105},chroma:.04,from:.985,to:.93,over:.8,dot:.96,track:14},
+      bars:{hues:{pink:350,violet:305,blue:270,teal:100},chroma:.04,from:.985,to:.93,over:.8,dot:.96,track:14},
       day:{
-        flow:{mode:'shimmer',colors:['#EFFFF9','#FFFFFF','#EAE8FE'],intensity:46,softness:88,duration:22},
-        balance:{posColor:'#FFFFFF',negColor:'#FDC7F0',blend:55,fade:35,alpha:98},
-        progress:['#FED7F0','#F1EBFE','#FFFFFF','#E5FCEE']
+        flow:{mode:'shimmer',colors:['#F0FFFA','#FFFFFF','#E4EBFD'],intensity:46,softness:88,duration:22},
+        balance:{posColor:'#FFFFFF',negColor:'#E1D2FF',blend:55,fade:35,alpha:98},
+        progress:['#E7E5FD','#E7F4FE','#FFFFFF','#EDFDF5']
       }
     }
   ],
@@ -305,100 +306,101 @@ window.HappyGradientPresets={
     }
   ],
 
-  /* ── Аметист ── */
-  'happy-ref-amethyst-v1':[
+  /* 23.11.2026: новые темы «Малахит» и «Ягодное небо» */
+  /* ── Малахит ── */
+  'happy-ref-malachite-v1':[
     {
-      name:'Кристалл',
-      note:'В тон: ледяная лаванда, сиреневый и малиновый отблеск.',
+      name:'Изумруд',
+      note:'В тон: светлая мята, изумруд и морская волна — тот же камень, но на свету.',
       energy:{
-        eat:  {c0:'#CBC1FE',cm:'#C98AFC',c1:'#FE66C5',mw:30,s0:59,s1:77,a0:66,a1:86},
-        spent:{c0:'#FE66C5',cm:'#C98AFC',c1:'#CBC1FE',mw:30,s0:17,s1:45,a0:72,a1:94},
-        track:20
+        eat:  {c0:'#C6F7E6',cm:'#74E0C0',c1:'#3CC4CC',mw:30,s0:59,s1:77,a0:78,a1:96},
+        spent:{c0:'#3CC4CC',cm:'#74E0C0',c1:'#C6F7E6',mw:30,s0:17,s1:45,a0:82,a1:97},
+        track:18
       },
-      bars:{hues:{pink:345,violet:322,blue:300,teal:278},chroma:.14,from:.88,to:.76,over:.61,dot:.82,track:20},
+      bars:{hues:{pink:150,violet:168,blue:186,teal:204},chroma:.11,from:.92,to:.8,over:.64,dot:.86,track:18},
       day:{
-        flow:{mode:'flow',colors:['#C8AEF9','#DF92D8','#D3D3FD'],intensity:54,softness:80,duration:16},
-        balance:{posColor:'#DDD9FD',negColor:'#FE66C5',blend:55,fade:35,alpha:100},
-        progress:['#FE66C5','#DC81F0','#C9ACFE','#D6D1FF']
+        flow:{mode:'flow',colors:['#8FE3C8','#5CCFCB','#C9F6E6'],intensity:54,softness:80,duration:18},
+        balance:{posColor:'#C6F7E6',negColor:'#F2B6A0',blend:55,fade:35,alpha:100},
+        progress:['#3CC4CC','#5FD6C4','#93E8CD','#C6F7E6']
       }
     },
     {
-      name:'Цитрин',
-      note:'Контраст: жёлтый камень рядом с аметистом — лимон, золото, янтарь.',
+      name:'Медь',
+      note:'Контраст: сливочный, медь и терракота — как прожилки в малахите.',
       energy:{
-        eat:  {c0:'#FCF5B6',cm:'#FCDA88',c1:'#FAB780',mw:30,s0:59,s1:77,a0:80,a1:96},
-        spent:{c0:'#FAB780',cm:'#FCDA88',c1:'#FCF5B6',mw:30,s0:17,s1:45,a0:84,a1:98},
-        track:20
+        eat:  {c0:'#FBE6C4',cm:'#F2B88C',c1:'#E5866E',mw:30,s0:59,s1:77,a0:80,a1:96},
+        spent:{c0:'#E5866E',cm:'#F2B88C',c1:'#FBE6C4',mw:30,s0:17,s1:45,a0:84,a1:98},
+        track:18
       },
-      bars:{hues:{pink:45,violet:68,blue:88,teal:105},chroma:.12,from:.94,to:.82,over:.66,dot:.88,track:20},
+      bars:{hues:{pink:25,violet:42,blue:60,teal:80},chroma:.11,from:.88,to:.76,over:.6,dot:.81,track:18},
       day:{
-        flow:{mode:'flow',colors:['#FAF6DC','#FFFFFF','#FFEBD5'],intensity:46,softness:82,duration:18},
-        balance:{posColor:'#FDF5AE',negColor:'#FFAF78',blend:55,fade:35,alpha:100},
-        progress:['#FAB780','#FFD486','#FEF0A9','#FCFBDC']
+        flow:{mode:'flow',colors:['#F6DDBB','#EDB592','#FDF0DC'],intensity:50,softness:82,duration:18},
+        balance:{posColor:'#FBE6C4',negColor:'#E5866E',blend:55,fade:35,alpha:100},
+        progress:['#E5866E','#EDA47F','#F5C8A0','#FBE6C4']
       }
     },
     {
-      name:'Лунный камень',
-      note:'Мягкий: холодный белый с голубым и сиреневым отливом.',
+      name:'Перламутр',
+      note:'Мягкий: белая заливка с мятным и розовым отливом.',
       energy:{
-        eat:  {c0:'#F7FBFF',cm:'#E1ECFF',c1:'#EFDCFE',mw:30,s0:59,s1:77,a0:68,a1:90},
-        spent:{c0:'#EFDCFE',cm:'#E1ECFF',c1:'#F7FBFF',mw:30,s0:17,s1:45,a0:74,a1:94},
-        track:20
+        eat:  {c0:'#FFFFFF',cm:'#DFF7EF',c1:'#F7DDEB',mw:30,s0:59,s1:77,a0:74,a1:94},
+        spent:{c0:'#F7DDEB',cm:'#DFF7EF',c1:'#FFFFFF',mw:30,s0:17,s1:45,a0:78,a1:96},
+        track:16
       },
-      bars:{hues:{pink:330,violet:300,blue:262,teal:215},chroma:.045,from:.975,to:.9,over:.78,dot:.94,track:16},
+      bars:{hues:{pink:350,violet:305,blue:200,teal:165},chroma:.04,from:.985,to:.93,over:.8,dot:.96,track:14},
       day:{
-        flow:{mode:'shimmer',colors:['#D1DEF9','#FFFFFF','#E8D5F7'],intensity:42,softness:85,duration:20},
-        balance:{posColor:'#F7FBFF',negColor:'#EDC9F5',blend:55,fade:35,alpha:96},
-        progress:['#EED7FC','#E1E7FE','#F1F8FF','#FFFFFF']
+        flow:{mode:'shimmer',colors:['#EAFBF5','#FFFFFF','#F9E9F1'],intensity:46,softness:88,duration:22},
+        balance:{posColor:'#FFFFFF',negColor:'#F7CFE0',blend:55,fade:35,alpha:98},
+        progress:['#F7DDEB','#F1F1F4','#FFFFFF','#DFF7EF']
       }
     }
   ],
 
-  /* ── Лагуна ── */
-  'happy-ref-lagoon-v1':[
+  /* ── Ягодное небо ── */
+  'happy-ref-berry-sky-v1':[
     {
-      name:'Отмель',
-      note:'В тон: пена, салатовый и лайм — солнечная сторона лагуны.',
+      name:'Зефир',
+      note:'В тон: розовый, сиреневый и небесный — цвета самого фона, но светлые.',
       energy:{
-        eat:  {c0:'#C8FFD2',cm:'#D7FEA6',c1:'#F8F676',mw:30,s0:59,s1:77,a0:76,a1:95},
-        spent:{c0:'#F8F676',cm:'#D7FEA6',c1:'#C8FFD2',mw:30,s0:17,s1:45,a0:80,a1:97},
+        eat:  {c0:'#FFD9EA',cm:'#D9C4FF',c1:'#B5DCFF',mw:30,s0:59,s1:77,a0:78,a1:96},
+        spent:{c0:'#B5DCFF',cm:'#D9C4FF',c1:'#FFD9EA',mw:30,s0:17,s1:45,a0:82,a1:97},
         track:20
       },
-      bars:{hues:{pink:100,violet:120,blue:140,teal:160},chroma:.13,from:.96,to:.87,over:.72,dot:.92,track:20},
+      bars:{hues:{pink:350,violet:315,blue:280,teal:240},chroma:.09,from:.93,to:.83,over:.68,dot:.88,track:20},
       day:{
-        flow:{mode:'flow',colors:['#C0F5C0','#E3F5B1','#D4FDEA'],intensity:54,softness:80,duration:16},
-        balance:{posColor:'#E4FEDE',negColor:'#ABCDFA',blend:55,fade:35,alpha:100},
-        progress:['#F8F676','#E0FD98','#CFFEC5','#D2FEE5']
+        flow:{mode:'flow',colors:['#FFC9E2','#D2C0FA','#BEE0FF'],intensity:54,softness:80,duration:18},
+        balance:{posColor:'#C9E4FF',negColor:'#FFB9D6',blend:55,fade:35,alpha:100},
+        progress:['#FFB9D6','#E4C3F5','#C9CDFF','#B5DCFF']
       }
     },
     {
-      name:'Риф',
-      note:'Контраст: песок, коралл и красный коралл на бирюзе.',
+      name:'Лимонад',
+      note:'Контраст: лимон, абрикос и персик — солнце на ягодном небе.',
       energy:{
-        eat:  {c0:'#FED7A2',cm:'#FEAE8B',c1:'#F9757A',mw:30,s0:59,s1:77,a0:80,a1:96},
-        spent:{c0:'#F9757A',cm:'#FEAE8B',c1:'#FED7A2',mw:30,s0:17,s1:45,a0:84,a1:98},
+        eat:  {c0:'#FFF4B8',cm:'#FFD591',c1:'#FFAE94',mw:30,s0:59,s1:77,a0:80,a1:96},
+        spent:{c0:'#FFAE94',cm:'#FFD591',c1:'#FFF4B8',mw:30,s0:17,s1:45,a0:84,a1:98},
         track:20
       },
-      bars:{hues:{pink:20,violet:42,blue:62,teal:85},chroma:.14,from:.86,to:.74,over:.58,dot:.79,track:22},
+      bars:{hues:{pink:30,violet:55,blue:80,teal:100},chroma:.11,from:.92,to:.8,over:.64,dot:.86,track:20},
       day:{
-        flow:{mode:'flow',colors:['#FEF0D8','#FFFFFF','#FEE5DD'],intensity:48,softness:82,duration:18},
-        balance:{posColor:'#FCDCAB',negColor:'#F9757A',blend:55,fade:35,alpha:100},
-        progress:['#F9757A','#FCA486','#FBC99E','#FCDCAB']
+        flow:{mode:'flow',colors:['#FFF1C2','#FFFFFF','#FFDCC6'],intensity:50,softness:82,duration:18},
+        balance:{posColor:'#FFF4B8',negColor:'#FFAE94',blend:55,fade:35,alpha:100},
+        progress:['#FFAE94','#FFC592','#FFDFA2','#FFF4B8']
       }
     },
     {
       name:'Жемчуг',
-      note:'Мягкий: белая заливка с голубым и сиреневым отливом.',
+      note:'Мягкий: белая заливка с розовым и голубым отливом.',
       energy:{
-        eat:  {c0:'#FFFFFF',cm:'#E6FAFA',c1:'#E9E9FF',mw:30,s0:59,s1:77,a0:78,a1:96},
-        spent:{c0:'#E9E9FF',cm:'#E6FAFA',c1:'#FFFFFF',mw:30,s0:17,s1:45,a0:80,a1:97},
+        eat:  {c0:'#FFFFFF',cm:'#FBEAF5',c1:'#E3EEFF',mw:30,s0:59,s1:77,a0:78,a1:96},
+        spent:{c0:'#E3EEFF',cm:'#FBEAF5',c1:'#FFFFFF',mw:30,s0:17,s1:45,a0:80,a1:97},
         track:18
       },
-      bars:{hues:{pink:350,violet:305,blue:270,teal:100},chroma:.04,from:.985,to:.93,over:.8,dot:.96,track:14},
+      bars:{hues:{pink:350,violet:305,blue:270,teal:240},chroma:.04,from:.985,to:.93,over:.8,dot:.96,track:14},
       day:{
-        flow:{mode:'shimmer',colors:['#F0FFFA','#FFFFFF','#E4EBFD'],intensity:46,softness:88,duration:22},
-        balance:{posColor:'#FFFFFF',negColor:'#E1D2FF',blend:55,fade:35,alpha:98},
-        progress:['#E7E5FD','#E7F4FE','#FFFFFF','#EDFDF5']
+        flow:{mode:'shimmer',colors:['#FFF0F7','#FFFFFF','#E6EFFF'],intensity:46,softness:88,duration:22},
+        balance:{posColor:'#FFFFFF',negColor:'#FFCFE4',blend:55,fade:35,alpha:98},
+        progress:['#FBDDEC','#F3EBFA','#FFFFFF','#E3EEFF']
       }
     }
   ],
