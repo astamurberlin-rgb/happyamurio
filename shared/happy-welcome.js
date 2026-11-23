@@ -14,7 +14,7 @@
  * Записей здесь нет: экраны только вызывают вход. Пароль не сохраняется ни на устройстве, ни на сервере.
  *
  *   HappyWelcome.init({app, name, account, ready, features, beforeSignOut})
- *     name — 'Meal' | 'Sport' | 'Day' для «Познакомиться с …»; ready — обещание: приложение нарисовано;
+ *     name — 'Meal' | 'Sport' | 'Day' для «Заглянуть в … без аккаунта»; ready — обещание: приложение нарисовано;
  *   HappyWelcome.ask({reason, resume}) — лист «Войди в аккаунт»; resume — что сделать после входа (решает приложение);
  *   HappyWelcome.takeResume()          — после входа: отложенное действие или null (один раз);
  *   HappyWelcome.open('login' | 'register') — экран входа или регистрации;
@@ -163,7 +163,7 @@ function html(name){
    '<button type="button" class="hs-btn hs-primary hs-email-start" data-hw="to-register">'+I.envelope+'<span>Продолжить с почтой</span></button></div>'+
    errorBox()+'<p class="hs-login-choice">Уже есть аккаунт? <button type="button" data-hw="to-login">Войти</button></p>'+
    '<p class="hs-test-note">Тестовая версия:<br>покупки бесплатные, деньги не списываются</p>'+   /* Астамур 23.11.2026: здесь пропустить нельзя */
-   '<button type="button" class="hs-guest" data-hw="guest">Познакомиться '+(/^[SС]/.test(app)?'со':'с')+' '+esc(app)+'</button></div>';
+   '<button type="button" class="hs-guest" data-hw="guest">Заглянуть в '+esc(app)+' без аккаунта</button></div>';
  case 'register':return title('Создать аккаунт')+'<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+
    S().passwordField({label:'Пароль',name:'password',autocomplete:'new-password'})+S().passwordField({label:'Повторить пароль',name:'repeat',autocomplete:'new-password'})+'</div>'+errorBox()+
    '<div class="hs-actions">'+btn('register','Создать аккаунт','hs-primary',true)+googleButton()+btn('cancel','Отмена','hs-cancel')+'</div></form>';

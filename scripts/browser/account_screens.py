@@ -83,7 +83,7 @@ with sync_playwright() as p:
     out["welcome"] = w = welcome(m)
     check("первый экран: сначала только смайлик, кнопки проявляются после остановки дуги, смайлик не сдвинулся", w["start"]["options"] == "0" and w["options"] == "1" and w["start"]["smile"] == w["smile"] and w["app_hidden"])
     check("дуга останавливается улыбкой строго снизу", round(w["angle"]) % 360 == 90)
-    check("кнопки первого экрана; Google доступен, Apple выключен", w["buttons"] == [["Продолжить с Apple", True], ["Продолжить с Google", False], ["Продолжить с почтой", False], ["Войти", False], ["Познакомиться с Meal", False]])
+    check("кнопки первого экрана; Google доступен, Apple выключен", w["buttons"] == [["Продолжить с Apple", True], ["Продолжить с Google", False], ["Продолжить с почтой", False], ["Войти", False], ["Заглянуть в Meal без аккаунта", False]])
 
     # 2. Гость: смотреть можно; запись — лист «Войди в аккаунт»; неверный пароль — ошибка; после входа — тот же раздел
     m.click("[data-hw=guest]")
@@ -198,7 +198,7 @@ with sync_playwright() as p:
     out["day_topics"] = d.evaluate("()=>[...document.querySelectorAll('#happy-screens .hs-topics button')].map(b=>b.textContent.trim()+(b.getAttribute('aria-pressed')==='true'?'*':''))")
     save_screen(d)
     out["day_goals"] = until(d, "()=>!!DB.lifeGoals&&DB.lifeGoals.focusInitialized&&{focus:DB.lifeGoals.focus,topics:DB.lifeGoals.topics,custom:DB.lifeGoals.customTopics}", seconds=6)
-    check("Day на том же телефоне входит своим входом и видит тот же профиль и оба замера", out["day_welcome"] == ["Познакомиться с Day", False] and out["profile_day"]["birthday"] == "1990-05-14" and out["profile_day"]["height"] == "178" and out["profile_day"]["history"] == [] and out["weights_day"] == out["weights"])
+    check("Day на том же телефоне входит своим входом и видит тот же профиль и оба замера", out["day_welcome"] == ["Заглянуть в Day без аккаунта", False] and out["profile_day"]["birthday"] == "1990-05-14" and out["profile_day"]["height"] == "178" and out["profile_day"]["history"] == [] and out["weights_day"] == out["weights"])
     check("цели Day: новый выбор — со второй строки; своя тема добавлена «+», выбрана, плюс остаётся последним; сохранено", out["day_first_row"] == "Сформировать полезные привычки" and out["day_topics"][-2:] == ["Творчество*", ""] and out["day_goals"] == {"focus": "habits", "topics": ["Творчество"], "custom": ["Творчество"]})
 
     # 7. Телефон B — Sport: тот же профиль и замеры; фокус тренировок отдельно от веса; «Выйти» — первый экран
@@ -227,7 +227,7 @@ with sync_playwright() as p:
     s.keyboard.press("ArrowUp")
     save_screen(s)
     out["sport_goals_2"] = until(s, "()=>state.sportGoals&&state.sportGoals.focus==='competition'&&[state.sportGoals.focus,state.sportGoals.versions.length]", seconds=6)
-    check("второй телефон (Sport) видит тот же профиль и оба замера", out["sport_welcome"] == ["Познакомиться со Sport", False] and bool(out["profile_b"]) and out["profile_b"]["profile"]["birthday"] == "1990-05-14")
+    check("второй телефон (Sport) видит тот же профиль и оба замера", out["sport_welcome"] == ["Заглянуть в Sport без аккаунта", False] and bool(out["profile_b"]) and out["profile_b"]["profile"]["birthday"] == "1990-05-14")
     check("цели Sport: вес и фокус, без питания; смена одного фокуса не повторяет цель веса", out["sport_has_no_food"] and out["sport_goals_1"] == ["strength", 1] and out["sport_goals_2"] == ["competition", 1])
     s.evaluate("()=>goto('profile')")
     sign_out_settings(s)
