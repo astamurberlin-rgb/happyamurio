@@ -315,6 +315,41 @@
    "url": "https://www.thekitchn.com/what-is-braising-23614335"
   },
   {
+   "id": "gbc_stock",
+   "title": "Great British Chefs: тёмный телячий бульон",
+   "url": "https://www.greatbritishchefs.com/how-to-cook/how-to-make-brown-veal-stock"
+  },
+  {
+   "id": "libre_stock",
+   "title": "Учебник для поваров (LibreTexts): тёмные бульоны и деми-глас",
+   "url": "https://workforce.libretexts.org/Bookshelves/Food_Production_Service_and_Culinary_Arts/Flavors_of_the_Saucier%3A_Stocks_Sauces_and_Soups_(Zeringue_and_Thibodeaux)/01%3A_Chapters/1.02%3A_Brown_Stocks_and_Demi-Glace"
+  },
+  {
+   "id": "britannica_demi",
+   "title": "Britannica: деми-глас",
+   "url": "https://www.britannica.com/topic/demi-glace"
+  },
+  {
+   "id": "rouxbe_demi",
+   "title": "Rouxbe: деми-глас и глас",
+   "url": "https://rouxbe.com/recipes/81-demi-glace-glace-de-viande"
+  },
+  {
+   "id": "htk_stock",
+   "title": "Hot Thai Kitchen: тайский бульон на свиных костях",
+   "url": "https://hot-thai-kitchen.com/pork-and-chicken-stock"
+  },
+  {
+   "id": "htk_lengsaeb",
+   "title": "Hot Thai Kitchen: суп ленг саеб",
+   "url": "https://hot-thai-kitchen.com/thai-pork-bone-soup"
+  },
+  {
+   "id": "hit_lengsaeb",
+   "title": "Hungry in Thailand: ленг саеб",
+   "url": "https://hungryinthailand.com/leng-saeb-recipe/"
+  },
+  {
    "id": "aif_soup",
    "title": "АиФ: семь ошибок, которые испортят суп",
    "url": "https://aif.ru/food/master/bez_kostey_sem_oshibok_kotorye_isportyat_sup"
@@ -727,6 +762,43 @@
     "atk_stock",
     "jbeard",
     "lh_bulon"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-bulon-kosti",
+   "kind": "tip",
+   "said": "(?=.*(бульон|(^|\\s)фон(\\s|$)))(?=.*(кост|мозгов))",
+   "not": "кур|цыпл|птиц|индей|свин|тайск|рыб",
+   "answer": "Тёмный бульон из говяжьих или телячьих костей по-французски: кости не моют, а обжаривают в духовке при 190–200 °C около часа. Потом заливают холодной водой, добавляют морковь, лук, сельдерей и травы и варят на слабом огне 4–6 часов по Great British Chefs или 6–8 по учебнику для поваров. Пену снимают, во время варки не солят.",
+   "sources": [
+    "gbc_stock",
+    "libre_stock",
+    "rouxbe_demi"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-demiglas",
+   "kind": "tip",
+   "said": "деми|(^|\\s)глас(а|ом|е)?(\\s|$)|глейс|глас\\s+де\\s+вьянд",
+   "answer": "Деми-глас — тёмный бульон из говяжьих или телячьих костей, уваренный примерно вдвое: основа соусов к мясу. В классике его смешивают пополам с соусом эспаньоль. Если уварить ещё сильнее, до сиропа, выйдет глас (глас-де-вьянд): из 4 л бульона — 1–2 стакана, это 8–12 часов на очень слабом огне.",
+   "sources": [
+    "libre_stock",
+    "britannica_demi",
+    "gbc_stock"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-bulon-tajskij",
+   "kind": "tip",
+   "said": "(?=.*(тайск|таиланд))(?=.*(бульон|суп))|ленг\\s*са[еэ]б",
+   "answer": "Тайский бульон обычно варят на свиных костях, шее или хребте. Кости заливают холодной водой, доводят до кипения и снимают пену. Потом добавляют чеснок, корень кинзы, белый перец, дайкон или лук и варят на слабом огне около 2 часов. Из него делают острый суп ленг саеб: бульон с лаймом, чили, рыбным соусом и кинзой.",
+   "sources": [
+    "htk_stock",
+    "htk_lengsaeb",
+    "hit_lengsaeb"
    ],
    "checked": "2026-11-23"
   },

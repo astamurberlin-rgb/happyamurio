@@ -1455,6 +1455,10 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Вар17", msgs=["когда солить бульон"], mode="none", reply="за несколько минут до готовности"),
  dict(id="Вар18", eaten=True, msgs=["креветки 150"], want=[("креветки варен", 150)]),
  dict(id="Вар19", eaten=True, msgs=["кукуруза отварная 200 г"], want=[("кукуруз", 200)]),
+ dict(id="Вар20", msgs=["как сварить бульон из говяжьих костей"], mode="none", reply="обжаривают в духовке"),
+ dict(id="Вар21", msgs=["что такое деми-глас"], mode="none", reply="эспаньоль"),
+ dict(id="Вар22", msgs=["как сварить тайский бульон"], mode="none", reply="ленг саеб"),
+ dict(id="Вар23", msgs=["сколько варить куриный бульон из костей"], mode="none", reply="Джеймса Бирда"),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
