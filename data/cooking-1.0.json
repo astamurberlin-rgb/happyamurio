@@ -1,0 +1,238 @@
+{
+ "schema": "happy.cooking.cards.v1",
+ "version": "1.0.0",
+ "date": "2026-11-22",
+ "about_ru": "Справочник бота Meal «как готовить». Каждая карточка сверена минимум по двум источникам (22.11.2026). Где источники расходятся — в ответе вилка или обе нормы. Ждут второго источника: овсяные хлопья, макароны, картофель, брокколи, морковь, свёкла.",
+ "sources": [
+  {
+   "id": "foodsafety",
+   "title": "FoodSafety.gov: безопасные температуры (США)",
+   "url": "https://www.foodsafety.gov/print/pdf/node/10"
+  },
+  {
+   "id": "illinois",
+   "title": "Университет Иллинойса: температуры готовности",
+   "url": "https://extension.illinois.edu/food-safety/temperatures"
+  },
+  {
+   "id": "hc_temp",
+   "title": "Health Canada: безопасные температуры готовки",
+   "url": "https://www.canada.ca/en/health-canada/services/general-food-safety-tips/safe-internal-cooking-temperatures.html"
+  },
+  {
+   "id": "hc_beans",
+   "title": "Health Canada: лектины в бобовых",
+   "url": "https://www.canada.ca/en/health-canada/services/food-nutrition/food-safety/chemical-contaminants/natural-toxins/lectins-legumes.html"
+  },
+  {
+   "id": "wgc",
+   "title": "Whole Grains Council: как варить цельные злаки",
+   "url": "https://wholegrainscouncil.org/node/13105"
+  },
+  {
+   "id": "almanac",
+   "title": "Old Farmer’s Almanac: таблица варки круп",
+   "url": "https://www.almanac.com/how-cook-grains-chart"
+  },
+  {
+   "id": "betty",
+   "title": "Betty Crocker: время варки риса и круп",
+   "url": "https://bettycrocker.com/how-to/tipslibrary/charts-timetables-measuring/timetable-cooking-rice-other-grains"
+  },
+  {
+   "id": "ndsu",
+   "title": "Университет Северной Дакоты: как готовить бобовые",
+   "url": "https://www.ndsu.edu/agriculture/extension/publications/pocket-guide-preparing-pulse-foods"
+  },
+  {
+   "id": "umaine",
+   "title": "Университет Мэна: как варить сухие бобовые",
+   "url": "https://extension.umaine.edu/food-health/2021/09/02/how-to-store-and-cook-dried-beans/"
+  },
+  {
+   "id": "unl",
+   "title": "Университет Небраски: как варить яйца",
+   "url": "https://food.unl.edu/sites/unl.edu.ianr.extension.food/files/articles/documents/how-do-you-like-your-eggs-fffyc.pdf"
+  }
+ ],
+ "cards": [
+  {
+   "id": "grechka",
+   "kind": "cook",
+   "said": "греч|ядриц",
+   "answer": "Гречку варят около 20 минут на слабом огне под крышкой. Воды берут в 2 раза больше, чем крупы: на стакан крупы — два стакана воды.",
+   "sources": [
+    "wgc",
+    "almanac"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "ris",
+   "kind": "cook",
+   "said": "(^|\\s)рис(а|у|ом|е)?(\\s|$)",
+   "answer": "Белый рис варят 15–20 минут на слабом огне под крышкой, воды в 2 раза больше, чем риса. Бурый варится дольше: от 25 до 60 минут, смотри упаковку.",
+   "sources": [
+    "betty",
+    "almanac",
+    "wgc"
+   ],
+   "checked": "2026-11-22",
+   "not": "лапш|бумаг"
+  },
+  {
+   "id": "psheno",
+   "kind": "cook",
+   "said": "пшен",
+   "answer": "Пшено варят 20–30 минут. Воды берут в 2,5–3 раза больше, чем крупы.",
+   "sources": [
+    "wgc",
+    "almanac",
+    "betty"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "bulgur",
+   "kind": "cook",
+   "said": "булгур",
+   "answer": "Булгур варят 5–12 минут, воды в 2 раза больше, чем крупы. Можно и не варить: залить кипятком и оставить под крышкой на 20–60 минут.",
+   "sources": [
+    "wgc",
+    "almanac",
+    "betty"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "perlovka",
+   "kind": "cook",
+   "said": "перлов",
+   "answer": "Перловку варят 45–60 минут. Воды берут в 3 раза больше, чем крупы.",
+   "sources": [
+    "almanac",
+    "wgc"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "kinoa",
+   "kind": "cook",
+   "said": "киноа|кинуа",
+   "answer": "Киноа сначала промывают, потом варят 15–20 минут. Воды в 2 раза больше, чем крупы.",
+   "sources": [
+    "wgc",
+    "almanac",
+    "betty"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "chechevica",
+   "kind": "cook",
+   "said": "чечевиц",
+   "answer": "Чечевицу замачивать не нужно. Варят 15–20 минут, крупную зелёную или коричневую — дольше, до часа.",
+   "sources": [
+    "ndsu",
+    "umaine"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "nut",
+   "kind": "cook",
+   "said": "(^|\\s)нут(а|у|ом)?(\\s|$)",
+   "answer": "Нут замачивают на 6–8 часов или на ночь, воду потом сливают. Варят до мягкости: от 30 минут до 2 часов, смотря по размеру.",
+   "sources": [
+    "ndsu",
+    "umaine"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "fasol",
+   "kind": "cook",
+   "said": "фасол",
+   "answer": "Фасоль замачивают минимум на 5 часов, воду сливают. Первые 10 минут варят на сильном кипении — для красной фасоли это обязательно, в медленноварке её так не сварить. Дальше до мягкости, 1–2 часа.",
+   "sources": [
+    "hc_beans",
+    "ndsu",
+    "umaine"
+   ],
+   "checked": "2026-11-22",
+   "not": "стручков|зелен"
+  },
+  {
+   "id": "yaica",
+   "kind": "cook",
+   "said": "яйц|яичк|(^|\\s)яйко",
+   "answer": "Вкрутую: положи яйца в холодную воду, доведи до кипения, сними с огня и оставь под крышкой — средние на 9 минут, крупные на 12, очень крупные на 15. Готовы, когда белок и желток твёрдые.",
+   "sources": [
+    "unl",
+    "foodsafety"
+   ],
+   "checked": "2026-11-22",
+   "not": "яичниц|омлет|перепел"
+  },
+  {
+   "id": "farsh",
+   "kind": "cook",
+   "said": "фарш|котлет|тефтел|фрикадел|бургер|люля",
+   "answer": "Котлеты и всё из фарша говядины или свинины готовы, когда внутри 71 °C. Из куриного или индюшиного фарша — 74 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "kurica",
+   "kind": "cook",
+   "said": "кур(иц|ин|ятин|очк)|цыпл|бройлер|индей|индюш",
+   "answer": "Курица и индейка готовы, когда внутри 74 °C: мерят термометром в самом толстом месте. Целую тушку по канадским нормам доводят до 82 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "govyadina",
+   "kind": "cook",
+   "said": "говяд|телят|стейк|ростбиф",
+   "answer": "Кусок говядины безопасен от 63 °C внутри, потом ему дают отдохнуть 3 минуты — это слабая прожарка. Средняя — 71 °C, полная — 77 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "svinina",
+   "kind": "cook",
+   "said": "свин|карбонад|корейк|буженин",
+   "answer": "Кусок свинины по нормам США готов при 63 °C внутри и 3 минутах отдыха, по канадским — при 71 °C. Фарш и котлеты — 71 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  },
+  {
+   "id": "ryba",
+   "kind": "cook",
+   "said": "рыб|лосос|семг|форел|треск|минта|хек|судак|окун|тилапи|дорад|сибас|горбуш|кет[аыу](\\s|$)|скумбри|сельд|тунц|тунец|палтус|камбал",
+   "answer": "Рыба готова, когда мякоть стала непрозрачной и легко расслаивается вилкой. Внутри — 63 °C по нормам США, канадские советуют 70 °C.",
+   "sources": [
+    "foodsafety",
+    "illinois",
+    "hc_temp"
+   ],
+   "checked": "2026-11-22"
+  }
+ ]
+}
