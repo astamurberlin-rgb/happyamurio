@@ -42,8 +42,9 @@
   /* 23.11.2026: у ночных тем и Бордо свой вид дуги по умолчанию (набор из Студии градиентов, shared/happy-energy-ring.js).
      Действует, только пока в Day не сохранён свой вид дуги. */
   function themed(){const d=root.HappyEnergyRing?.palette()?.day;return d?{...DEFAULT,...d.flow,balance:{...BALANCE,...d.balance}}:DEFAULT;}
-  function read(){try{return normalize(JSON.parse(localStorage.getItem(KEY))||themed());}catch(_){return normalize(themed());}}
-  root.HappyEnergyRing?.onTheme(()=>{if(!localStorage.getItem(KEY))root.dispatchEvent(new CustomEvent('happy-arc-style',{detail:read()}));});
+  const saved=()=>{try{return JSON.parse(localStorage.getItem(KEY));}catch(_){return null;}};
+  function read(){return normalize(saved()||themed());}
+  root.HappyEnergyRing?.onTheme(()=>{if(!saved())root.dispatchEvent(new CustomEvent('happy-arc-style',{detail:read()}));});
   function write(config){const c=normalize(config);localStorage.setItem(KEY,JSON.stringify(c));root.dispatchEvent(new CustomEvent('happy-arc-style',{detail:c}));return c;}
   function preset(id){const p=PRESETS.find(p=>p.id===id)||PRESETS[1];return normalize({...DEFAULT,...p,mode:p.id});}
   const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));

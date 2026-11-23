@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1569742,
-   "sha256": "d3cdd23ec8e9e3e5c930e326f7ae76ccd47c6d61faf4a930aec890ebb52f69cc"
+   "size": 1582977,
+   "sha256": "f152ccf0f2e223677a529c643714c29bb3619d5108d6a6469f0ed862279ab209"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -136,8 +136,8 @@
   },
   {
    "path": "arc-motion.js",
-   "size": 19072,
-   "sha256": "db437aa2d03649dbda668d8b44ef249dc91e4bb73abadf630b603844db7e8fae"
+   "size": 19651,
+   "sha256": "e7468f507d5f1683c747a6c41b82e1865cad371ec48ba17707ba6104bd789a26"
   },
   {
    "path": "assets/activity-side-bend.svg",
@@ -181,13 +181,13 @@
   },
   {
    "path": "energy-widget.js",
-   "size": 13303,
-   "sha256": "d2a3c260aa48b89660305c22dbb717f735023fb9e94b989843e9978e0ac398df"
+   "size": 12186,
+   "sha256": "e9867df99dd7da45f4abdb9283653d56e22aba96c5c657b184dcaa3fba027ef1"
   },
   {
    "path": "index.html",
-   "size": 520378,
-   "sha256": "29d84cd5cd0fafe3abbc4d35d8ffd875528e9ad1ebd11471d787afecfb650b6e"
+   "size": 521070,
+   "sha256": "ccc901a035953738d878456e9e9f054f2bcb01e653e7832f9ab5bd305483a261"
   },
   {
    "path": "manifest.webmanifest",
@@ -196,8 +196,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 52164,
-   "sha256": "02ed8e0aa05818afea3c022dcfa79e20f4af9d253cb0e2d7276026b4f1b7a82b"
+   "size": 52887,
+   "sha256": "804bd4ee21c127ad513972c131071eca4fd8153570c7755fcab604f332b6dab9"
   },
   {
    "path": "row-swipe.js",
@@ -273,6 +273,11 @@
    "path": "shared/happy-drum.js",
    "size": 5796,
    "sha256": "776cc03ffbad0659699d266785da521e11992c4d4e27c09f1388dd03a56dadf1"
+  },
+  {
+   "path": "shared/happy-energy-ring.js",
+   "size": 9229,
+   "sha256": "857c46d8a9bc118284b86f824d777f9c82c2aae7af04410361f5d05ea71a7d5e"
   },
   {
    "path": "shared/happy-fields.css",
