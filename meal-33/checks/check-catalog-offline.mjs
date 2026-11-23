@@ -52,7 +52,7 @@ assert.equal((await F.getJson('bls')).f.length,3000);
 assert.equal(dataLog().length,1);assert.equal(saved().size,0,'без скачивания на устройстве ничего нет');
 assert.equal((await F.offline.status('BLS')).state,'none');
 assert.equal((await F.offline.status('OWN')).downloadable,false,'«Мои продукты» не скачиваются — они и так на устройстве');
-assert.deepEqual([...F.offline.librariesOf('HM')],['kav','uzbek']);
+assert.deepEqual([...F.offline.librariesOf('HM')],['kav','uzbek','home']);
 // 2. Скачивание: доля растёт до 1, на устройстве файл и список скачанного.
 const steps=[];let st=await F.offline.download('BLS',p=>steps.push(p));
 assert.equal(st.state,'saved');assert.ok(st.size>0);
