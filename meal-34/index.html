@@ -1580,6 +1580,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <script src="portions.js?v=34.1"></script>
 <script src="sources.js?v=34.1"></script>
 <script src="./shared/meal-products-model.js?v=34.1"></script>
+<script src="./shared/happy-energy-ring.js?v=34.1"></script>
 <script src="./shared/happy-account.js?v=34.1"></script>
 <script src="./shared/happy-input.js?v=34.1"></script>
 <script src="./shared/happy-period.js?v=34.1"></script>
@@ -3272,6 +3273,7 @@ document.getElementById('mlKb').addEventListener('keydown',function(e){
 });
 /* витрина Sport поменялась (новая тренировка здесь или на другом устройстве) — перечитать и перерисовать */
 function erRedraw(){ var el=document.getElementById('mlKb'); if(el.firstChild){ el.innerHTML=kbjuHTML(); erFit(el) } }
+if(typeof HappyEnergyRing!=='undefined') HappyEnergyRing.onTheme(erRedraw);   // тема сменилась — кольцо и строки в цветах темы
 function erSportPoll(){ erSportRead(); erRedraw() }
 erWatch('mlKb');
 function renderDay(){
@@ -3684,42 +3686,41 @@ function erLayer(c,L,len){
   return '<g mask="url(#'+id+')">'+segs+'</g>';
 }
 /* o: eat, spent — ккал (null — нет данных), arcs — какие дуги ('eat', 'spent' или обе), full — полный круг, big и cap — в кружке */
-/* Meal 30 (Астамур 12.11 11:29, «черточки» на дуге): дуга — плавный конический градиент CSS поверх дорожки SVG,
-   а не сотня коротких отрезков SVG под маской: Safari на iPhone показывал стыки отрезков полосками, а круглые концы —
-   отдельными пятнами. Цвет и прозрачность по месту на дуге — прежние (erColAt, erAlphaAt). Внутри слоя всё
-   непрозрачное (дуга и кружки-концы), прозрачность — одной маской слоя, поэтому на концах нет двойного наложения. */
+/* 23.11.2026 (Астамур: «всё должно быть на одинаковых движках», на конце дуги был виден кружок): дуга — одна линия на холсте,
+   общий движок shared/happy-energy-ring.js (как дуги Day «Сейчас»). Цвет и прозрачность по месту на дуге — прежние (erColAt, erAlphaAt);
+   круглые концы рисует сам холст продолжением того же градиента, отдельных кружков одного цвета больше нет.
+   До 23.11 — конический градиент CSS и кружки-концы (Meal 30), ещё раньше — отрезки SVG под маской. */
 function erLayerHTML(L,len){
   if(len<=0.05) return '';
-  var A=212, step=3, n=Math.max(1,Math.ceil(len/step)), col=[], msk=[], i, t;   // 212° = поворот кольца 122° + 90° (у CSS ноль сверху)
-  for(i=0;i<=n;i++){ t=Math.min(len,i*step); col.push(erColAt(L,t/ER_SWEEP)+' '+erN(t)+'deg'); msk.push('rgba(0,0,0,'+erN(erAlphaAt(L,t/len))+') '+erN(t)+'deg') }
-  col.push('transparent '+erN(len)+'deg');
-  var half=len+(360-len)/2, a1='rgba(0,0,0,'+erN(erAlphaAt(L,1))+')', a0='rgba(0,0,0,'+erN(erAlphaAt(L,0))+')';
-  msk.push(a1+' '+erN(half)+'deg',a0+' '+erN(half)+'deg');
-  function cap(th,c){ var f=(122+th)*Math.PI/180; return '<i class="erCap" style="left:'+erN(46+46*Math.cos(f))+'%;top:'+erN(46+46*Math.sin(f))+'%;background:'+c+'"></i>' }
-  var m='conic-gradient(from '+A+'deg,'+msk.join(',')+')';
-  return '<div class="erLayer" style="-webkit-mask-image:'+m+';mask-image:'+m+'"><div class="erSweep" style="background:conic-gradient(from '+A+'deg,'+col.join(',')+')"></div>'+
-    cap(0,erColAt(L,0))+cap(len,erColAt(L,len/ER_SWEEP))+'</div>';
+  var step=1.5, n=Math.max(1,Math.ceil(len/step)), pts=[], i, t;
+  for(i=0;i<=n;i++){ t=Math.min(len,i*step); pts.push({t:t,c:erColAt(L,t/ER_SWEEP),a:erAlphaAt(L,t/len)}) }
+  return '<div class="erLayer">'+HappyEnergyRing.arcHTML(pts,16)+'</div>';
 }
+/* цвета кольца и строк по теме (shared/happy-energy-ring.js): у темы свой набор — берём его, нет — исходные ER_EAT, ER_SPENT, ER_HUE */
+var ER_HUE0={pink:350,violet:305,blue:262,teal:180};
+function erPal(){ return typeof HappyEnergyRing!=='undefined'?HappyEnergyRing.palette():null }
 function erRingHTML(o){
-  var body='';
+  var body='', P=erPal();
   (o.arcs||[]).forEach(function(key){
     var v=key==='eat'?o.eat:o.spent; if(v==null) return;
-    body+=erLayerHTML(key==='eat'?ER_EAT:ER_SPENT,erClamp(v/o.full,0,1)*ER_SWEEP);
+    body+=erLayerHTML(key==='eat'?(P?P.eat:ER_EAT):(P?P.spent:ER_SPENT),erClamp(v/o.full,0,1)*ER_SWEEP);
   });
   var big=String(o.big);
-  return '<svg viewBox="20 20 200 186" aria-hidden="true"><g transform="rotate(122 120 120)">'+erArc(16,ER_SWEEP,'rgba(255,255,255,.2)',0)+'</g></svg>'+
+  return '<svg viewBox="20 20 200 186" aria-hidden="true"><g transform="rotate(122 120 120)">'+erArc(16,ER_SWEEP,P?'rgba(255,255,255,'+P.track/100+')':'rgba(255,255,255,.2)',0)+'</g></svg>'+
     (body?'<div class="erArcs" aria-hidden="true">'+body+'</div>':'')+
     '<div class="erKnob'+(big.length>=5?' long':'')+'"><b>'+escH(big)+'</b><small>'+escH(o.cap)+'</small></div>';
 }
 /* строка справа: точка, подпись, «сколько/цель»; под строкой полоска до цели (5 px).
    Полоска — от светлого к чуть более тёмному того же тона; с 85 % цели и за ней конец темнеет сильнее. bar: null — пустая полоска без выдуманной цели */
 function erRowHTML(h,name,val,bar){
-  var b='<span class="erBar" aria-hidden="true"><i style="width:0%"></i></span>';
+  var P=erPal(), B=P&&P.bars, key, tn=function(l){ return erTone(h,l) };
+  if(B){ key=Object.keys(ER_HUE0).filter(function(k){ return ER_HUE0[k]===h })[0]; if(key&&B.hues[key]!=null) h=B.hues[key]; tn=function(l){ return erHex(l,B.chroma,h*Math.PI/180) } }
+  var b='<span class="erBar" aria-hidden="true"'+(B?' style="background:rgba(255,255,255,'+B.track/100+')"':'')+'><i style="width:0%"></i></span>';
   if(bar!=null){
     var r=Math.max(0,bar), w=Math.min(1,r)*100, dk=erClamp((r-0.85)/0.35,0,1);
-    b='<span class="erBar" aria-hidden="true"><i style="width:'+erN(w)+'%;background:linear-gradient(90deg,'+erTone(h,0.86)+','+erTone(h,0.72-0.16*dk)+')"></i></span>';
+    b='<span class="erBar" aria-hidden="true"'+(B?' style="background:rgba(255,255,255,'+B.track/100+')"':'')+'><i style="width:'+erN(w)+'%;background:linear-gradient(90deg,'+tn(B?B.from:0.86)+','+tn(B?B.to-(B.to-B.over)*dk:0.72-0.16*dk)+')"></i></span>';
   }
-  return '<div class="erR"><i class="erDot" style="background:'+erTone(h,0.8)+'" aria-hidden="true"></i><span>'+escH(name)+'</span><b>'+escH(val)+'</b>'+b+'</div>';
+  return '<div class="erR"><i class="erDot" style="background:'+tn(B?B.dot:0.8)+'" aria-hidden="true"></i><span>'+escH(name)+'</span><b>'+escH(val)+'</b>'+b+'</div>';
 }
 /* Шрифт строк совпадает со Sport: 11 px, на экране до 360 px — 10 px. При переполнении уменьшаем до 10 px;
    дальше подпись обрезается многоточием. Пересчёт — после отрисовки и когда меняется размер (экран открылся, телефон повернули) */

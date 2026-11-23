@@ -45,7 +45,8 @@ const measurementsScreen=await read('src/measurements-screen.js'),measurementsSc
 const recommendations=await read('data/recommended-templates.json');JSON.parse(recommendations);
 const muscles=JSON.stringify(exerciseLibrary.muscles);
 const library=(await read('src/library-v2.js')).replace('__RECOMMENDED_TEMPLATES__',()=>recommendations.replaceAll('</','<\\/')).replace('__EXERCISE_MUSCLES__',()=>muscles);
-const energyJs=await read('src/energy-widget.js'),energyCss=await read('src/energy-widget.css');
+// 23.11.2026: дуга кольца энергии — общий движок на холсте shared/happy-energy-ring.js (Day, Meal, Sport, Студия градиентов), вшивается перед виджетом.
+const energyJs=(await readShared('happy-energy-ring.js'))+'\n'+(await read('src/energy-widget.js')),energyCss=await read('src/energy-widget.css');
 const dataTransfer=await read('src/data-transfer.js');
 // Sport 42: запуск — общий вход, общий модуль хранения и документы Sport; приложение стартует после них (sport-boot.js).
 const sportDocs=await read('src/sport-docs.js'),sportData=await read('src/sport-data.js'),sportSignIn=await read('src/sport-signin.js');

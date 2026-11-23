@@ -1587,7 +1587,8 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 .happy-journal-content>.top{justify-content:flex-end}
 .day-measurements{padding-bottom:24px}</style>
 <script id="hd-app-links-adapter" src="./app-links.js?v=61"></script>
-<script src="./energy-widget.js?v=50.14"></script>
+<script src="./shared/happy-energy-ring.js?v=61"></script>
+<script src="./energy-widget.js?v=61-ring"></script>
 <script src="./shared/release-notes.js?v=61"></script>
 <script src="./release-notes.js?v=61-6"></script>
 <script src="./shared/happy-links.js?v=61"></script>
@@ -2971,11 +2972,13 @@ function segLayout(m){
   }
   return out;
 }
+/* 23.11.2026: цвета кольца прогресса — у ночных тем и Бордо свои (Студия градиентов), иначе исходные */
+var RING_STOPS0=['#FD93FD','#BC61FE','#46FDFC','#7CE3C9'], RING_AT=['0','30%','62%','100%'];
+function ringColors(){ var P=window.HappyEnergyRing&&HappyEnergyRing.palette(); return P&&P.day&&P.day.progress||RING_STOPS0 }
+function ringStops(){ var c=ringColors(); return RING_AT.map(function(o,i){return '<stop offset="'+o+'" stop-color="'+c[i]+'"/>'}).join('') }
+if(window.HappyEnergyRing) HappyEnergyRing.onTheme(function(){ var c=ringColors(); document.querySelectorAll('.ringWrap linearGradient').forEach(function(g){ g.querySelectorAll('stop').forEach(function(st,i){ if(c[i])st.setAttribute('stop-color',c[i]) }) }) });
 function ringSvg(m,gid){
-  var s='<svg viewBox="0 0 240 240"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="1" y2="1">'+
-      '<stop offset="0" stop-color="#FD93FD"/><stop offset="30%" stop-color="#BC61FE"/>'+
-      '<stop offset="62%" stop-color="#46FDFC"/><stop offset="100%" stop-color="#7CE3C9"/>'+
-    '</linearGradient></defs>';
+  var s='<svg viewBox="0 0 240 240"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="1" y2="1">'+ringStops()+'</linearGradient></defs>';
   if(!isStep(m)) return s+
     '<circle class="trk" cx="120" cy="120" r="'+R+'" stroke-dasharray="'+TRACK+' '+(CIRC-TRACK)+'"/>'+
     '<circle class="fill" cx="120" cy="120" r="'+R+'" stroke="url(#'+gid+')" stroke-dasharray="0 '+CIRC+'"/></svg>';
