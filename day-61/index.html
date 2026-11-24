@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Day">
-<title>Happy Day · Update 61.6</title>
+<title>Happy Day · Update 61.7</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -1158,7 +1158,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 </style>
 <link rel="stylesheet" href="./shared/food-counters.css?v=2">
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
-<link rel="stylesheet" href="./selfcare.css?v=61">
+<link rel="stylesheet" href="./selfcare.css?v=61.7">
 <link rel="stylesheet" href="./arc-motion.css?v=61">
 <script defer src="./arc-motion.js?v=61.6"></script>
 <script defer src="./arc-home.js?v=61"></script>
@@ -1441,7 +1441,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="61.6" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="61.7" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
@@ -1572,6 +1572,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="tap-swipe.js?v=61"></script>
 <script src="row-swipe.js?v=61"></script>
 <script src="sheet-grip.js?v=61"></script>
+<script src="sheet-fold.js?v=61.7"></script>
 <script src="./selfcare-core.js?v=61"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
@@ -1592,11 +1593,11 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-energy-ring.js?v=61.6"></script>
 <script src="./energy-widget.js?v=61.6"></script>
 <script src="./shared/release-notes.js?v=61"></script>
-<script src="./release-notes.js?v=61.6"></script>
+<script src="./release-notes.js?v=61.7"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.6')}catch(e){}</script>
-<script src="./selfcare-ui.js?v=61"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.7')}catch(e){}</script>
+<script src="./selfcare-ui.js?v=61.7"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════
    Day 59: дневник хранится и обменивается только через общий модуль (shared/happy-store.js; запуск и запись —
@@ -5629,15 +5630,18 @@ document.getElementById('scEd').addEventListener('click',function(ev){
 });
 
 /* ═══════════ НАВИГАЦИЯ ═══════════ */
+if(globalThis.SheetFold) SheetFold.prepareHome=function(){ renderNow(); nwSide() };
 function go(name){
   if(globalThis.DayMeasurements)DayMeasurements.navigate(name);
   SelfCare.onNavigate(name);
   var prevScreen=(document.querySelector('.screen.on')||{}).dataset; prevScreen=prevScreen&&prevScreen.screen;
+  /* Day 61.7: раздел закрывается анимацией — лист заворачивается вниз (sheet-fold.js), главная при этом неподвижна */
+  var fold=name==='day'&&prevScreen==='ring'&&globalThis.SheetFold&&SheetFold.supported();
+  if(globalThis.SheetFold&&SheetFold.active()&&(!fold||SheetFold.closing())) SheetFold.abort();
+  if(fold) SheetFold.begin(false);
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.dataset.screen===name) });
-  /* Day 60.3: с экрана отметок на главную — кольцо остаётся на месте, остальное мягко проявляется */
   /* Day 60.4: вернулись с экрана раздела или отметок — главная в начальном положении, кольцо с кнопкой на своём месте */
   if(name==='day'&&prevScreen&&(prevScreen==='ring'||prevScreen.indexOf('care-')===0)){ var homeScr=document.querySelector('[data-screen="day"]'); if(homeScr) homeScr.scrollTop=0 }
-  if(name==='day'&&prevScreen==='ring'){ var dayScr=document.querySelector('[data-screen="day"]'); dayScr.classList.remove('from-ring'); void dayScr.offsetWidth; dayScr.classList.add('from-ring'); clearTimeout(go.fromRingTimer); go.fromRingTimer=setTimeout(function(){ dayScr.classList.remove('from-ring') },700) }
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name||(name.startsWith('care-settings-')&&t.dataset.go==='settings')) });
   document.body.classList.toggle('sheet',name==='ring'||name.startsWith('care-'));
   if(name==='ring'){ renderFacts(); CURS.forEach(function(_,i){ paint(i) }) }
@@ -5646,6 +5650,7 @@ function go(name){
   if(name==='trends') renderTrends();
   if(name==='links') renderLinks();
   if(name==='data') renderData();
+  if(fold) SheetFold.close();
   if(name==='settings'){ renderData(); renderSections(); renderCounters(); renderTaps(); paintMealSet(); paintAccount() }
 }
 document.querySelectorAll('.tab').forEach(function(t){

@@ -160,10 +160,17 @@ body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 [data-screen="ring"].on #sectionPanel>:not(.swipeZone):not(.section-form-header),[data-screen="ring"].on .section-form-header>:not(#cpGrip){animation:careFadeIn .45s ease-out .08s backwards}
 .screen.on:is([data-screen="care-diary"],[data-screen="care-entry"],[data-screen="care-mind"],[data-screen="care-activity"]){animation:careSheetIn .32s cubic-bezier(.22,.75,.25,1)}
 @media(prefers-reduced-motion:reduce){.screen.on,[data-screen="ring"].on #sectionPanel>*{animation:none!important}}
-/* Day 60.3 (17.11.2026): обратный переход с экрана отметок на главную — кольцо с кнопкой на месте,
-   шапка, соседние кольца, подпись под кнопкой и карточки разделов проявляются так же, как блоки экрана отметок. */
-[data-screen="day"].from-ring>:not(.nwWg),[data-screen="day"].from-ring .nwSl.side,[data-screen="day"].from-ring .nwSl:not(.side) .care-ring-label,[data-screen="day"].from-ring .nwSl:not(.side) .knob b,[data-screen="day"].from-ring .nwSl:not(.side) canvas{animation:careFadeIn .45s ease-out .08s backwards}
-@media(prefers-reduced-motion:reduce){[data-screen="day"].from-ring *{animation:none!important}}
+/* Day 61.7: закрытие раздела (sheet-fold.js). Главная — нижний лист и вся неподвижна: ничего не проявляется и не двигается.
+   Экран раздела — карточка из колоды поверх: плотная, чуть светлее фона, с круглым вырезом под кнопку (маска; вырез уезжает вместе с карточкой); держится за нижний край и заворачивается вниз под нижний край.
+   Кнопка главной стоит на месте и видна через вырез. */
+.screen.fold-under{display:block}
+body .screen.fold-sheet[data-screen="ring"]{display:block;position:absolute;inset:0;z-index:2;overflow:hidden;border-radius:22px 22px 0 0;transform-origin:50% 100%;will-change:transform,opacity}
+body .screen.fold-sheet[data-screen="ring"].fold-closing{pointer-events:none}
+.fold-sheet .fold-bg{position:absolute;z-index:-1;pointer-events:none}
+.fold-sheet::after{content:"";position:absolute;left:0;right:0;top:var(--fold-top,0);height:100%;background:linear-gradient(180deg,rgba(0,70,200,.4),rgba(0,70,200,.12));opacity:var(--fold-dark,0);pointer-events:none;z-index:50}
+.fold-sheet #wheelNote{display:block;min-height:64px;margin-top:16px;width:100%;resize:vertical}
+.fold-sheet .fold-tint{position:absolute;left:0;right:0;top:var(--fold-top,0);height:100%;z-index:-1;pointer-events:none;border-radius:22px 22px 0 0;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75);opacity:var(--fold-card,0)}
+body.fold-on [data-screen="day"] .nwSl:not(.side) .care-name{opacity:var(--fold-in,1)}
 
 /* ── Аудит Day 20.11.2026 (Астамур): страница «Осознанность» и листы расписания и практики ──
    Расписание — на своей странице с «+» над списком (п. 32). Строки: нажал — лист с полями; свайп влево — убрать (п. 27, 28).
