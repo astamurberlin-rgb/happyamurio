@@ -70,8 +70,11 @@
 
  /* ── движение: шарик пробегает с заданной длительностью ── */
  document.querySelectorAll('.ds-mbtn').forEach(b=>b.addEventListener('click',()=>{
-  const i=b.querySelector('i'),w=b.clientWidth-42,d=+b.dataset.d,on=b.classList.toggle('go');
-  i.style.transition='transform '+d+'ms cubic-bezier(.22,.75,.25,1)';i.style.transform=on?'translateX(-'+w+'px)':'translateX(0)';
+  /* каждый клик — один пробег слева направо за заданное время, потом шарик тихо возвращается */
+  const i=b.querySelector('i'),w=b.clientWidth-42,d=+b.dataset.d;
+  clearTimeout(b._t);i.style.transition='none';i.style.transform='translateX(0)';void i.offsetWidth;
+  i.style.transition='transform '+d+'ms cubic-bezier(.22,.75,.25,1)';i.style.transform='translateX('+w+'px)';
+  b._t=setTimeout(()=>{i.style.transition='transform 400ms ease';i.style.transform='translateX(0)'},d+700);
  }));
 
  /* ── живые элементы ── */
