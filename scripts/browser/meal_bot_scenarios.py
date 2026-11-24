@@ -1729,6 +1729,10 @@ for s in S:
 FAVN = "()=>(DB.favs||[]).map(id=>FOODS[id]?FOODS[id].n:id).join('|')"
 FASTON = "()=>!!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on)"
 ANY = "()=>Object.values(DB.days).some(d=>(d.items||[]).length>0)"
+# свои продукты для сценариев «свой продукт первым»: «Мои продукты» очищаются и заводятся заново
+OWN1ST = "()=>{DB.foods=[];rebuildLib();save();saveNow();const v={kcal:200,prot:15,fat:10,carb:18};MealProductEditor.quick({name:'Сырники',per100:v,por:{'шт':60}});return true}"
+OWN2 = OWN1ST.replace("MealProductEditor.quick({name:'Сырники',per100:v,por:{'шт':60}})", "MealProductEditor.quick({name:'Сырники мамины',per100:v,por:{'шт':60}});MealProductEditor.quick({name:'Сырники бабушкины',per100:v,por:{'шт':60}})")
+LASTFOOD = "()=>{const it=day(curDate).items||[];const x=it[it.length-1];return !!x&&!!FOODS[x.fid]&&FOODS[x.fid].n==='%s'&&Math.round(x.g)===%d}"
 ACTS = [
  dict(id="Кк01", msgs=["добавь овсянку в избранное"], reply="Добавил в избранное", ok=FAVN.replace("join('|')", "join('|').includes('Овсян')")),
  dict(id="Кк02", msgs=["добавь овсянку в избранное", {"tap": "Отменить"}], reply="Отменил", ok="()=>!(DB.favs||[]).length"),
@@ -1784,6 +1788,15 @@ ACTS = [
  dict(id="Шд04", msgs=["заведи свою добавку", "Тест", "таблетки", "магний сто"], reply="Не разобрал", ok="()=>!!(D.bot&&D.bot.steps)"),
  dict(id="Шн01", msgs=["добавь кофе 200 г"], ok="()=>!(D.bot&&D.bot.steps)"),
  dict(id="Шн02", msgs=["как добавить счётчик"], reply="Добавить счётчик", ok="()=>!(D.bot&&D.bot.steps)"),
+# Meal 34 · свой продукт первым (решение Астамура 24.11.2026): при своих «Сырниках» — они, а не «Оладьи творожные» из базы.
+ dict(id="Пп01", setup=OWN1ST, msgs=["сырники 2 штуки"], ok=LASTFOOD % ("Сырники", 120)),
+ dict(id="Пп02", setup=OWN1ST, msgs=["съел три сырника"], ok=LASTFOOD % ("Сырники", 180)),
+ dict(id="Пп03", setup=OWN1ST, msgs=["творожники 150 г"], ok=LASTFOOD % ("Сырники", 150)),
+ dict(id="Пп04", setup=OWN1ST, msgs=["оладьи творожные 150 г"], ok=LASTFOOD % ("Оладьи творожные, жареные", 150)),
+ dict(id="Пп05", setup=OWN1ST.replace("'Сырники'", "'Сырники мамины'"), msgs=["сырники 2 штуки"], ok=LASTFOOD % ("Сырники мамины", 120)),
+ dict(id="Пп06", setup=OWN2, msgs=["сырники 2 штуки"], ok="()=>!(day(curDate).items||[]).length&&!!D.bot&&D.bot.pend.length===1&&D.bot.pend[0].line.ask==='pick'&&D.bot.pend[0].line.alts.length===2"),
+ dict(id="Пп07", setup=OWN2, msgs=["сырники 2 штуки", "бабушкины"], ok=LASTFOOD % ("Сырники бабушкины", 120)),
+ dict(id="Пп08", setup=OWN1ST.replace("'Сырники'", "'Сырники с изюмом'"), msgs=["сырники 150 г"], ok=LASTFOOD % ("Оладьи творожные, жареные", 150)),
 ]
 
 GOALS = [

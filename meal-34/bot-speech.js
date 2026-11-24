@@ -33,7 +33,7 @@ var MealSpeech=(function(){
     (D.diminutives_and_food_aliases||[]).forEach(function(e){
       if(e.bot!=='alias'||!e.search_as) return;
       var to=nz(e.search_as), kf=(e.keep_forms||[]).map(nz), forms=e.forms.map(nz).filter(function(f){ return f!==to&&kf.indexOf(f)<0 });
-      if(forms.length) ALIASES.push({re:phrase(forms),to:to,len:Math.max.apply(null,forms.map(function(f){ return f.length })),sk:e.skip_if?new RegExp(e.skip_if):null});
+      if(forms.length) ALIASES.push({re:phrase(forms),to:to,forms:forms,len:Math.max.apply(null,forms.map(function(f){ return f.length })),sk:e.skip_if?new RegExp(e.skip_if):null});
     });
     ALIASES.sort(function(a,b){ return b.len-a.len });
     PROT=(D.protected_phrases||[]).map(nz);
@@ -293,13 +293,29 @@ var MealSpeech=(function(){
     /* другие названия и уменьшительные */
     var skip=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after||[]).join('|')+')\\s*$');
     var skipStem=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after_stems||['~']).join('|')+')[а-я]*\\s*$');
-    ALIASES.forEach(function(r){ s=s.replace(r.re,function(m,a,off,all){ var before=s.slice(0,off)+a;
+    var OWN=ownHeads();
+    ALIASES.forEach(function(r){ var mine=ownFor(r,OWN); s=s.replace(r.re,function(m,a,off,all){ var before=s.slice(0,off)+a;
+      if(mine){ var said=m.slice(a.length).trim(); return a+(mine.length===1&&!sameWords(said,mine[0])?mine[0]:said) }   // свой продукт человека с этим названием — первым: «сырники» не становятся «оладьями творожными»
       if(r.sk&&r.sk.test(before+'«»'+all.slice(off+m.length))) return m;   // «блин, съел два яйца» — восклицание, а не блины
       return skip.test(before)||(m.trim().indexOf(' ')<0&&skipStem.test(before))?m:a+r.to }) });
     s=s.replace(/\u0001(.)/g,function(m,c){ return keep[c.charCodeAt(0)-0x2460] });
     return s.replace(/\s+/g,' ').replace(/(\s,)+/g,',').replace(/^[\s,]+/,'').trim();
   }
 
+  /* свои продукты человека, названные словом из словаря («Сырники», «Сырники мамины»): такое слово не переводим в название базы, синоним — в своё название.
+     Только простое название, без «с …», «под …», «в …»: «Селёдка под шубой» — блюдо, а не селёдка (24.11.2026) */
+  function stemEq(a,b){ var n=Math.min(a.length,b.length), k=0; while(k<n&&a[k]===b[k]) k++; return k===a.length&&k===b.length||k>=4&&k>=n-2 }
+  function sameWords(a,b){ var x=a.split(' '), y=b.split(' '); return x.length===y.length&&x.every(function(w,i){ return stemEq(w,y[i]) }) }
+  function ownHeads(){
+    var foods=typeof DB!=='undefined'&&DB&&DB.foods||[];
+    return foods.filter(function(f){ return f&&f.n&&!f.supplement }).map(function(f){ return nz(f.n).replace(/[^a-zа-я0-9\s-]+/g,' ').replace(/\s+/g,' ').trim() })
+      .filter(function(n){ var w=n.split(' '); return n&&w.length<=3&&!w.some(function(x){ return /^(с|со|под|в|во|на|из|без|и|для|по)$/.test(x) }) });
+  }
+  function ownFor(r,own){
+    var hit=[]; own.forEach(function(n){ var w=n.split(' ');
+      r.forms.forEach(function(f){ var k=f.split(' ').length, h=w.slice(0,k).join(' '); if(k<=w.length&&w.length-k<=1&&sameWords(f,h)&&hit.indexOf(h)<0) hit.push(h) }) });
+    return hit.length?hit:null;
+  }
   /* «готовлю суп на четверых» — рецепт, а не съеденная порция */
   function recipe(raw){
     if(!D) return null;
