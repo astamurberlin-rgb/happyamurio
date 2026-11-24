@@ -32,6 +32,8 @@ function openGoals(){
     save:function(next){
       if(RO){ roWarn(); throw Error(RO_TEXT) }
       DB.lifeGoals=next; save();
+      /* лаборатория 22.11.2026: после «Сохранить» — мастер «Подобрать отметки» (только добавляет, можно пропустить) */
+      if(window.DayMarks) setTimeout(function(){ DayMarks.wizard(next) },450);
     }});
 }
 function profileDoc(){ return DayData.signedIn()?DayData.store.shared(HappyPerson.DOC.app,HappyPerson.DOC.name):null }

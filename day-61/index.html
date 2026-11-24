@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#00A8F5">
+<meta name="theme-color" content="#56B9F7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Day">
-<title>Happy Day · Update 61.8</title>
+<title>Happy Day · Update 61.9</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -106,6 +106,9 @@
 
 :root{
   --base:var(--happy-base);
+  /* лаборатория 22.11.2026: цвет полос Safari сверху (статус-бар) и снизу (адресная строка) — средний тон краёв фона Day.
+     Фон body сам не виден (его закрывает .bg), его берёт только Safari для полос. Сам фон Day не меняется. */
+  --day-edge:#56b9f7;
   --ink:var(--happy-ink); --muted:var(--happy-muted); --dim:var(--happy-dim);
   --glass:var(--happy-glass); --glassBrd:var(--happy-line);
   --fab:var(--happy-accent);
@@ -115,7 +118,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  color:var(--ink);background:var(--base);-webkit-user-select:none;user-select:none}
+  color:var(--ink);background:var(--day-edge);-webkit-user-select:none;user-select:none}
 
 .bg{position:fixed;inset:-20%;z-index:-2;pointer-events:none;
   background:
@@ -1068,6 +1071,13 @@ a.btn{display:inline-block;text-decoration:none}
 .jSub{display:block;margin-top:2px;font-size:12px;opacity:.85}
 .jPills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .jPill{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.2);font-size:12px;font-weight:600}
+/* v46: запись раздела раскрыта — шапка своей кнопкой, у отметок шкал крестик (поле нажатия 32 — в пилюле 26 высоты) */
+.jEvX{cursor:default}
+.jEvH{display:block;width:100%;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.jPillX{padding-right:2px}
+.jDel{display:grid;place-items:center;width:32px;height:32px;margin:-8px -4px -8px 0;padding:0;border:0;background:none;color:var(--happy-ink,#fff);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.jDel svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.jDel:active{opacity:.55}
 .jSrc{flex:none;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.2px}
 .jSrc.meal{background:#E8FFF1;color:#0E6B3A}
 .jSrc.sport{background:#FFF1E2;color:#8A4300}
@@ -1158,7 +1168,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 </style>
 <link rel="stylesheet" href="./shared/food-counters.css?v=2">
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
-<link rel="stylesheet" href="./selfcare.css?v=61.7">
+<link rel="stylesheet" href="./selfcare.css?v=61.9">
 <link rel="stylesheet" href="./arc-motion.css?v=61">
 <script defer src="./arc-motion.js?v=61.6"></script>
 <script defer src="./arc-home.js?v=61"></script>
@@ -1207,6 +1217,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <link rel="stylesheet" href="./shared/happy-fields.css?v=61">
 <link rel="stylesheet" href="./shared/happy-drum.css?v=61">
 <link rel="stylesheet" href="./shared/happy-period.css?v=61">
+<link rel="stylesheet" href="./day-periods.css?v=61.9">
 <link rel="stylesheet" href="./shared/happy-design.css?v=61">
 <link rel="stylesheet" href="./shared/happy-theme-picker.css?v=61">
 <link rel="stylesheet" href="./design-rules.css?v=61">
@@ -1259,9 +1270,10 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     <div id="tapBox" style="margin-top:22px"></div>
     <div id="cntBox"></div>
 
-    <div class="eyebrow"><span>Заметка</span></div>
+    <!-- лаборатория v26 (Астамур 23.11.2026, 15:39): «Заметка» → «Заметка дня»; «Скопировать отчёт дня» убрана —
+         копировать, выгружать и делиться можно в Журнале. «Добавить в дневник» — потом, вместе с системой дневника -->
+    <div class="eyebrow"><span>Заметка дня</span></div>
     <textarea id="note" placeholder="Только необычное: болезнь, перелёт, новая добавка."></textarea>
-    <div class="btnrow dayRep"><button class="btn" id="dayReport">Скопировать отчёт дня</button></div>
   </div>
 
   <!-- ЧЕКПОИНТ -->
@@ -1384,6 +1396,35 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
   </div>
 
   <!-- НАСТРОЙКИ -->
+  <!-- старые списки (разделы, шкалы, теги, теги с временем): на экран больше не выводятся, их обработчики остаются — лаборатория 22.11.2026 -->
+  <div class="screen happy-settings" data-screen="sections" hidden>
+    <div class="top"><h1>Разделы дня</h1><button class="mini" data-go-screen="settings">назад</button></div>
+    <div class="hp-seg dp-tabs" id="daySecTabs" role="group" aria-label="Разделы или периоды"><button type="button" class="on" data-tab="sections" aria-pressed="true">Разделы</button><button type="button" data-tab="periods" aria-pressed="false">Периоды</button></div>
+    <div data-tab-pane="sections">
+    <div class="eyebrow"><span>Разделы</span></div>
+    <div id="secList"></div>
+    <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить раздел</button></div>
+    <p class="note">Нажми на раздел — развернётся список его шкал и тегов. Карандаш — переименовать, свайп влево — убрать.</p>
+
+    <div class="eyebrow"><span>Теги с временем</span></div>
+    <div id="cntList"></div>
+    <div class="chips" style="margin-top:4px"><button class="chip add" id="addCnt">Добавить тег с временем</button></div>
+    <p class="note">Сколько времени ушло на занятие за день: работа, экран, дорога. Каждый такой тег участвует в поиске связей — чем их больше, тем строже поправка, так что лишние лучше убирать.</p>
+
+    </div>
+    <div data-tab-pane="periods" hidden></div>
+  </div>
+  <!-- «Настроить отметки» (лаборатория 22.11.2026, day-periods.js): периоды → страница периода -->
+  <div class="screen happy-settings" data-screen="marks">
+    <div class="grip dp-grip" data-back="settings" role="button" tabindex="0" aria-label="Назад, в настройки"><i></i></div>
+    <div class="top"><h1>Разделы главного экрана</h1></div>
+    <div id="dayPeriods"></div>
+  </div>
+  <div class="screen happy-settings" data-screen="mark-period">
+    <div class="grip dp-grip" data-back="marks" role="button" tabindex="0" aria-label="Назад, к разделам главного экрана"><i></i></div>
+    <div class="top"><h1 id="dayPeriodTitle">Период</h1></div>
+    <div id="dayPeriod"></div>
+  </div>
   <div class="screen happy-settings" data-screen="settings">
     <!-- Одна структура настроек Happy: аккаунт (аватар, имя, «Настроить профиль / цели») → «Связка с» → Приложение → Для разработчика (скрыт, долгое нажатие на строку версии) → версия → «Выйти» и строка синхронизации. По прототипу Day v2 (16.11.2026): верх и низ аккаунта рисует shared/happy-person.js. -->
     <section class="happy-section" data-happy-section="account"><div id="happy-account-top"></div></section>
@@ -1394,21 +1435,6 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     <section class="happy-section" data-happy-section="app"><h2 class="happy-heading">Приложение</h2>
     <div class="happy-appearance-entry" data-happy-appearance-slot></div>
     <div id="daySectionSettingsHeading" hidden></div><!-- якорь: selfcare-ui.js вставляет перед ним блок «Настройки «Сейчас»» -->
-    <div class="eyebrow"><span>Разделы</span></div>
-    <div id="secList"></div>
-    <div class="chips" style="margin-top:4px"><button class="chip add" id="addSec">Добавить раздел</button></div>
-    <p class="note">Нажми на раздел — развернётся список его шкал и тегов. Карандаш — переименовать, свайп влево — убрать.</p>
-
-    <div class="eyebrow"><span>Счётчики</span></div>
-    <div id="tapList"></div>
-    <div class="chips" style="margin-top:4px"><button class="chip add" id="addTap">Добавить счётчик</button></div>
-    <p class="note">Сколько раз за день: шот кофе, таблетка, подход. Каждое нажатие пишется со временем.</p>
-
-    <div class="eyebrow"><span>Теги с временем</span></div>
-    <div id="cntList"></div>
-    <div class="chips" style="margin-top:4px"><button class="chip add" id="addCnt">Добавить тег с временем</button></div>
-    <p class="note">Сколько времени ушло на занятие за день: работа, экран, дорога. Каждый такой тег участвует в поиске связей — чем их больше, тем строже поправка, так что лишние лучше убирать.</p>
-
     <div class="eyebrow"><span>Пороги под тебя</span></div>
     <div class="card">
       <!-- аудит 20.11.2026, п. 3–4: число — в рамке, как время, единица внутри (shared/happy-fields.js) -->
@@ -1440,7 +1466,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="61.8" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="61.9" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
@@ -1558,7 +1584,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-store.js?v=61-5"></script>
 <script src="./shared/happy-app-links.js?v=61"></script>
 <script src="./shared/happy-sport-summary.js?v=61"></script>
-<script src="./shared/happy-food.js?v=61"></script>
+<script src="./shared/happy-food.js?v=61.9"></script>
 <script src="./shared/happy-measurements.js?v=61"></script>
 <script src="./shared/happy-screens.js?v=61"></script>
 <script src="./shared/happy-privacy.js?v=61.6"></script>
@@ -1567,14 +1593,17 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-goals.js?v=61"></script>
 <script src="./day-docs.js?v=61"></script>
 <script src="./day-data.js?v=61"></script>
-<script src="./day-account.js?v=61"></script>
+<script src="./day-account.js?v=61.9"></script>
 
-<script src="counters.js?v=61"></script>
+<script src="counters.js?v=61.9"></script>
+<script src="./arc-knob.js?v=61.9"></script>
+<script src="./day-periods.js?v=61.9"></script>
+<script src="./day-marks.js?v=61.9"></script>
 <script src="tap-swipe.js?v=61"></script>
 <script src="row-swipe.js?v=61"></script>
 <script src="sheet-grip.js?v=61"></script>
 <script src="sheet-fold.js?v=61.7"></script>
-<script src="./selfcare-core.js?v=61"></script>
+<script src="./selfcare-core.js?v=61.9"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
 .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px}
@@ -1596,11 +1625,11 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-energy-ring.js?v=61.6"></script>
 <script src="./energy-widget.js?v=61.6"></script>
 <script src="./shared/release-notes.js?v=61"></script>
-<script src="./release-notes.js?v=61.8"></script>
+<script src="./release-notes.js?v=61.9"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.8')}catch(e){}</script>
-<script src="./selfcare-ui.js?v=61.7"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.9')}catch(e){}</script>
+<script src="./selfcare-ui.js?v=61.9"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════
    Day 59: дневник хранится и обменивается только через общий модуль (shared/happy-store.js; запуск и запись —
@@ -1641,7 +1670,25 @@ function isStep(m){ return !!m && m.lo!=null && m.hi!=null }
 function mLo(m){ return isStep(m)?m.lo:SMIN }
 function mHi(m){ return isStep(m)?m.hi:SMAX }
 function mBip(m){ return isStep(m)&&m.lo<0&&m.hi>0 }
-function mZero(m){ return mBip(m)?0:mLo(m) }          // с неё начинает пустая шкала
+/* v46: отметка дня d по её шкале → то же место на нынешней шкале (без округления: для графиков и слов) */
+function pastOf(m,d){ var P=m&&m.past; if(!P||!d) return null; for(var i=0;i<P.length;i++) if((P[i].d||[]).indexOf(d)>=0) return P[i]; return null }
+function markV(m,d,v){ var p=typeof v==='number'?pastOf(m,d):null; if(!p) return v;
+  var lo=p.lo!=null?p.lo:SMIN, hi=p.hi!=null?p.hi:SMAX, f=hi>lo?Math.max(0,Math.min(1,(v-lo)/(hi-lo))):.5;
+  return mLo(m)+f*(mHi(m)-mLo(m)) }
+/* шкала, по которой отмечен день d: прежний вид (с его подписями) или нынешняя — для журнала и выгрузки */
+function markM(m,d){ var p=pastOf(m,d); if(!p) return m; var o={k:m.k,t:m.t,w:(p.w||[]).slice()}; if(p.lo!=null){ o.lo=p.lo; o.hi=p.hi } else if(o.w.length!==5) o.w=DEFAULT_W.slice(); return o }
+/* открыл кольца дня, отмеченного по прежнему виду, — его отметки этой шкалы встают на нынешнюю шкалу (их и правишь) */
+function markNow(d){ if(!d||!DB.days[d]) return; var cp=DB.days[d].cp||{};
+  DB.metrics.forEach(function(m){ var p=pastOf(m,d); if(!p) return;
+    Object.keys(cp).forEach(function(sk){ var c=cp[sk]; if(!c) return;
+      if(typeof c[m.k]==='number'){ var x=markV(m,d,c[m.k]); c[m.k]=isStep(m)?Math.round(x)+0:Math.round(x*100)/100 }
+      (c.log||[]).forEach(function(r){ if(r&&r.k===m.k&&typeof r.v==='number'){ var y=markV(m,d,r.v); r.v=isStep(m)?Math.round(y)+0:Math.round(y*100)/100 } }) });
+    p.d.splice(p.d.indexOf(d),1); if(!p.d.length) m.past.splice(m.past.indexOf(p),1); if(!m.past.length) delete m.past });
+}
+/* v47 (Астамур 24.11.2026, 01:43: «почему в режиме плавно нельзя в обе стороны?»): плавная шкала тоже бывает «от середины»
+   (m.sm='mid'): те же 1–7, пустая начинает с середины, дуга растёт от верха влево или вправо */
+function sMid(m){ return !!m&&!isStep(m)&&m.sm==='mid' }
+function mZero(m){ return mBip(m)?0:sMid(m)?(SMIN+SMAX)/2:mLo(m) }          // с неё начинает пустая шкала
 function numTxt(m,v){ v=Math.round(v)+0; return v>0&&mBip(m)?'+'+v:(v<0?'\u2212'+(-v):String(v)) }
 function stepWord(m,v){
   var r=Math.round(Math.max(m.lo,Math.min(m.hi,v)))+0, w=(m.w||[])[r-m.lo];
@@ -2394,7 +2441,7 @@ function dayReport(d){
   if(wl.length) L.push('Тренировки: '+wl.join('; '));
   DB.sections.forEach(function(s){
     var c=(e.cp||{})[s.k]||{}, st=secTime(d,s.k), rows=[];
-    scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') rows.push('  '+m.t+': '+valTxt(m,c[m.k])) });
+    scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') rows.push('  '+m.t+': '+valTxt(markM(m,d),c[m.k])) });   // v46: по её шкале
     var tg=Object.keys(c.tags||{}).filter(function(t){ return c.tags[t] });
     if(tg.length) rows.push('  Теги: '+tg.join(', '));
     var ml=mealLine(d,s); if(ml) rows.push('  Happy Meal: '+ml);
@@ -2424,11 +2471,8 @@ function copyText(t,ok){
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ toast(ok) },fall);
   else fall();
 }
-document.getElementById('dayReport').addEventListener('click',function(){
-  var t=dayReport(curDate);
-  if(!t){ toast('За этот день записей нет'); return }
-  copyText(t,'Отчёт дня скопирован');
-});
+/* лаборатория v26: кнопки «Скопировать отчёт дня» на главной больше нет (Астамур 23.11.2026: копировать и выгружать —
+   в Журнале). dayReport и copyText остаются без вызова — пригодятся для дневника */
 
 /* ═══════════ СЧЁТЧИКИ НАЖАТИЙ ═══════════
    Плюс пишет нажатие со временем, минус снимает последнее.
@@ -2951,6 +2995,7 @@ function ringHTML(i,m){
 
 var CURS=[];              // шкалы текущего раздела
 function buildTracks(){
+  if(!(window.SelfCare&&SelfCare.isCheckin())) markNow(curDate);   // v46: день, отмеченный по прежнему виду шкалы, правится уже по нынешнему
   CURS = scalesOf(curSec);
   ringTrack.innerHTML = CURS.length
     ? CURS.map(function(m,i){return ringHTML(i,m)}).join('')
@@ -2967,15 +3012,14 @@ function ringAt(i){ return ringTrack.children[i].querySelector('.ringWrap') }
 function ring2(x){ return Math.round(x*100)/100 }
 /* точка на дорожке: f — доля пути от начала (svg повёрнут на 122°) */
 function ptLocal(f){ var a=f*(360-GAP)*Math.PI/180; return [ring2(120+R*Math.cos(a)),ring2(120+R*Math.sin(a))] }
-/* Вариант Б: ступень ноля — белая точка, остальные — отрезки. Считаем в видимой длине:
-   у дорожки круглые концы по 8 с каждой стороны, между отрезками зазор 8. */
+/* v41 (Астамур 23.11.2026, 23:59: «не нравится эта точка на шкале-дуге… с чего бы ни начиналось, должно быть размером, как
+   и все остальные, на равные части поделено»): у шкалы по делениям каждая ступень — отрезок одной длины, и ступень ноля тоже
+   (раньше, вариант Б, ноль был белой точкой). Считаем в видимой длине: у дорожки круглые концы по 8 с каждой стороны,
+   между отрезками зазор 8. Что горит — как раньше: ступень ноля и всё от неё до отметки */
 function segLayout(m){
-  var z=mZero(m), nSeg=m.hi-m.lo, G=8, D=16, TV=TRACK+16;
-  var V=(TV-D-nSeg*G)/nSeg, pos=-8, out=[];
-  for(var v=m.lo; v<=m.hi; v++){
-    if(v===z){ out.push({lv:v,kind:'dot',c:pos+D/2}); pos+=D+G }
-    else { out.push({lv:v,kind:'seg',s:pos+8,len:Math.max(.5,V-16)}); pos+=V+G }
-  }
+  var n=m.hi-m.lo+1, G=8, TV=TRACK+16;
+  var V=(TV-(n-1)*G)/n, pos=-8, out=[];
+  for(var v=m.lo; v<=m.hi; v++){ out.push({lv:v,kind:'seg',s:pos+8,len:Math.max(.5,V-16)}); pos+=V+G }
   return out;
 }
 /* 23.11.2026: цвета кольца прогресса — у ночных тем и Бордо свои (Студия градиентов), иначе исходные */
@@ -3006,7 +3050,9 @@ function paintRing(w,m,raw){
   if(!isStep(m)){
     var pct=pctOf(raw);
     var fl=w.querySelector('.fill');
-    fl.setAttribute('stroke-dasharray',(TRACK*(pct||0)/100)+' '+CIRC);
+    if(sMid(m)){ var a=Math.min(pct==null?50:pct,50), len=Math.abs((pct==null?50:pct)-50);   // v47: от середины — от верха дорожки в свою сторону
+      fl.setAttribute('stroke-dasharray',(TRACK*len/100)+' '+CIRC); fl.setAttribute('stroke-dashoffset',String(-TRACK*a/100)) }
+    else { fl.setAttribute('stroke-dasharray',(TRACK*(pct||0)/100)+' '+CIRC); fl.removeAttribute('stroke-dashoffset') }
     fl.style.visibility=pct==null?'hidden':'';   // пустая дуга со скруглённым концом рисовала точку в начале дорожки
     return pct==null?null:m.w[Math.min(4,Math.floor(pct/100*5))];
   }
@@ -3155,7 +3201,7 @@ function begin(){
         if(e.cp[curSec][m.k]!==sv){ e.cp[curSec][m.k]=sv; if(SelfCare.isCheckin()&&!SelfCare.checkinDirty())saveRing(); paint(fillIdx) }
       } else {
         var moved=(dt-HOLD_MIN)*RATE;
-        var pct = startedEmpty ? Math.min(100,moved) : Math.max(0,Math.min(100, v0 + dirOf(fillIdx)*moved));
+        var pct = startedEmpty&&!sMid(m) ? Math.min(100,moved) : Math.max(0,Math.min(100, (startedEmpty?50:v0) + dirOf(fillIdx)*moved));   // v47: от середины — с середины
         e.cp[curSec][m.k]=Math.round(valOf(pct)*100)/100;
         if(SelfCare.isCheckin()&&!SelfCare.checkinDirty())saveRing();paint(fillIdx);
       }
@@ -3181,7 +3227,7 @@ function toDrag(y){
   var m=CURS[cur], e=ringDay();
   if(!e.cp[curSec]) e.cp[curSec]={};
   if(!e.cp[curSec].time){ e.cp[curSec].time=nowHM(); paintCpMeal() }
-  dragIdx=cur; dragY=y; dragV=pctOf(e.cp[curSec][m.k]); if(dragV==null) dragV=0;
+  dragIdx=cur; dragY=y; dragV=pctOf(e.cp[curSec][m.k]); if(dragV==null) dragV=sMid(m)?50:0;
   var r0=e.cp[curSec][m.k]; dragS=isStep(m)?(r0==null?mZero(m):Math.round(r0)):0;
   gest='drag';
   var k=knobAt(cur); if(k) k.classList.add('press','drag');
@@ -3235,7 +3281,7 @@ function gEnd(){
     // В unified check-in короткое нажатие тоже задаёт значение (первое — ноль/минимум).
     if(SelfCare.isCheckin()&&!lockGuard()){
       var tm=CURS[cur],tc=ringDay().cp[curSec],previous=tc[tm.k];
-      tc[tm.k]=isStep(tm)?(previous==null?mZero(tm):Math.max(tm.lo,Math.min(tm.hi,previous+dirOf(cur)))):(previous==null?SMIN:Math.max(SMIN,Math.min(SMAX,previous+dirOf(cur)*(SMAX-SMIN)/4)));
+      tc[tm.k]=isStep(tm)?(previous==null?mZero(tm):Math.max(tm.lo,Math.min(tm.hi,previous+dirOf(cur)))):(previous==null?mZero(tm):Math.max(SMIN,Math.min(SMAX,previous+dirOf(cur)*(SMAX-SMIN)/4)));
       if(!tc.time)tc.time=nowHM();if(tc[tm.k]>=mHi(tm))setDirI(cur,-1);else if(tc[tm.k]<=mLo(tm))setDirI(cur,1);
       saveRing();paint(cur);return false;
     }
@@ -3595,14 +3641,14 @@ function jEvents(d){
   mealJournalEntries(d).forEach(function(x){add(x.t,{dot:'#7CE3C9',title:x.title,sub:x.facts.k?Math.round(x.facts.k)+' ккал':'приём пищи',src:['Meal','meal']})});
   DB.sections.forEach(function(s,si){
     var c=(e.cp||{})[s.k]||{}, st=secTime(d,s.k), pills=[], isMeal=MEAL_SECS.indexOf(s.k)>=0, mm=isMeal?mealOf(d,s.k):{};
-    scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') pills.push(m.t+' — '+jWord(m,c[m.k])) });
+    scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') pills.push(m.t+' — '+jWord(markM(m,d),c[m.k])) });
     /* 57.6: у шкал и тегов своё время (at, tagAt), прежние значения шкал — в log. Отметки одного времени — одна
        строка; строка с первой отметкой стоит в начале раздела, поздние — в своё время. */
     var t0=c.time||'', groups={}, order=[];
-    function put(t,kind,text){ t=t||t0; if(!groups[t]){ groups[t]={s:[],g:[],n:[]}; order.push(t) } groups[t][kind].push(text) }
+    function put(t,kind,text,x){ t=t||t0; if(!groups[t]){ groups[t]={s:[],g:[],n:[],x:[]}; order.push(t) } groups[t][kind].push(text); if(kind==='s') groups[t].x.push(x||null) }
     pills=[];
-    scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') put(c.at&&c.at[m.k]&&c.at[m.k].t,'s',m.t+' — '+jWord(m,c[m.k])) });
-    (c.log||[]).forEach(function(x){ var m=scalesOf(s.k).concat(DB.metrics).filter(function(y){ return y.k===x.k })[0]; if(m&&typeof x.v==='number') put(x.t,'s',m.t+' — '+jWord(m,x.v)) });
+    scalesOf(s.k).forEach(function(m){ if(typeof c[m.k]==='number') put(c.at&&c.at[m.k]&&c.at[m.k].t,'s',m.t+' — '+jWord(markM(m,d),c[m.k]),{sk:s.k,k:m.k}) });   // v46: слово — по её шкале; {…} — что удалить
+    (c.log||[]).forEach(function(x){ var m=scalesOf(s.k).concat(DB.metrics).filter(function(y){ return y.k===x.k })[0]; if(m&&typeof x.v==='number') put(x.t,'s',m.t+' — '+jWord(markM(m,d),x.v),{sk:s.k,k:m.k,id:x.id}) });
     Object.keys(c.tags||{}).forEach(function(t){ if(c.tags[t]) put(c.tagAt&&c.tagAt[t],'g',t) });
     if(c.note) put(t0,'n',c.note);
     if(!order.length) return;
@@ -3613,7 +3659,7 @@ function jEvents(d){
       var sub=[nS?nS+' '+ruPlural(nS,['оценка','оценки','оценок']):'', g.g.length?g.g.length+' '+ruPlural(g.g.length,['тег','тега','тегов']):''].filter(Boolean).join(' · ');
       var a=mealMin(mealRecordTime(mm)), b=mealMin(t);
       if(isMeal&&a!=null&&b!=null&&b>=a) sub='через '+durRu(b-a)+' после еды';
-      add(gi===0?(st?st.t:t):t,{dot:si===0?'#7CE3C9':'#FFD166',title:title,sub:sub,pills:ps});
+      add(gi===0?(st?st.t:t):t,{dot:si===0?'#7CE3C9':'#FFD166',title:title,sub:sub,pills:ps,dels:g.x.map(function(x){ return x&&Object.assign({d:d},x) })});   // v46: отметку шкалы можно удалить
     });
   });
   var nw=(e.now||[]).slice().sort(function(x,y){ return hmMin(x.t)-hmMin(y.t) }), grp=null;
@@ -3648,8 +3694,26 @@ function feedHTML(d,ev){
       (on&&o.pills&&o.pills.length?'<span class="jPills">'+o.pills.map(function(p){ return '<span class="jPill">'+escH(p)+'</span>' }).join('')+'</span>':'')+
       (on&&o.quote?'<span class="jSub" style="margin-top:8px;white-space:pre-wrap">'+escH(o.quote)+'</span>':'');
     var tm='<span class="jTm">'+(o.t||'—')+'</span><span class="jDot" style="background:'+o.dot+'"></span>';
+    /* v46 (Астамур 24.11.2026, 01:29, «2А»): у раскрытой записи раздела отметки шкал — с крестиком, как теги периода.
+       Кнопки в кнопке быть не может: шапка записи — своя кнопка, отметки — под ней в той же карточке */
+    if(on&&!o.careKind&&(o.dels||[]).some(Boolean)){
+      var head='<span class="jTh"><b>'+escH(o.title)+'</b>'+(o.src?'<span class="jSrc '+o.src[1]+'">'+o.src[0]+'</span>':'')+'</span>'+(o.sub?'<span class="jSub">'+escH(o.sub)+'</span>':'');
+      return '<li><div class="jEv jEvX">'+tm+'<span class="jT open"><button type="button" class="jEvH" data-ev="'+id+'" aria-expanded="true">'+head+'</button>'+
+        '<span class="jPills">'+o.pills.map(function(p,j){ var x=o.dels[j];
+          return x?'<span class="jPill jPillX">'+escH(p)+'<button type="button" class="jDel" data-jdel="'+escH(JSON.stringify(x))+'" aria-label="Удалить отметку «'+escH(p)+'»"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button></span>'
+            :'<span class="jPill">'+escH(p)+'</span>' }).join('')+'</span>'+
+        (o.quote?'<span class="jSub" style="margin-top:8px;white-space:pre-wrap">'+escH(o.quote)+'</span>':'')+'</span></div></li>' }
     return '<li>'+(can?'<button class="jEv" '+(o.careKind?'data-care-event="'+escH(JSON.stringify({kind:o.careKind,id:o.careId||'',date:d,additionId:o.additionId||''}))+'"':'data-ev="'+id+'"')+' aria-expanded="'+on+'">':'<div class="jEv" style="cursor:default">')+tm+
       '<span class="jT'+(on?' open':'')+'">'+inner+'</span>'+(can?'</button>':'</div>')+'</li>' }).join('')+'</ol></div>';
+}
+/* v46: удалить отметку шкалы. Без id — действующее значение раздела (и его время), с id — прежнее значение из log */
+function delMark(q){
+  var e=DB.days[q.d], c=e&&e.cp&&e.cp[q.sk], m=metricByKey(q.k); if(!c||!m) return;
+  var snap=JSON.stringify(c), sk=q.sk;
+  delUndo('Отметка «'+m.t+'» удалена',function(){
+    if(q.id!=null){ c.log=(c.log||[]).filter(function(x){ return !(x&&x.id===q.id) }); if(!c.log.length) delete c.log }
+    else { delete c[q.k]; if(c.at){ delete c.at[q.k]; if(!Object.keys(c.at).length) delete c.at } }
+  },function(){ e.cp[sk]=c=JSON.parse(snap) },function(){ renderTrends(); renderLinks(); renderDay() });
 }
 /* строка дня для периода */
 function dayLine(d){
@@ -3659,7 +3723,7 @@ function dayLine(d){
   if(mealCount) p1.push(mealCount+' '+ruPlural(mealCount,['приём','приёма','приёмов'])+(kc?' · '+Math.round(kc).toLocaleString('ru-RU')+' ккал':''));
   var acc={};
   DB.sections.forEach(function(s){ var cp=(e.cp||{})[s.k]||{};
-    scalesOf(s.k).forEach(function(m){ if(typeof cp[m.k]==='number'){ (acc[m.k]||(acc[m.k]={m:m,v:[]})).v.push(cp[m.k]) } }) });
+    scalesOf(s.k).forEach(function(m){ if(typeof cp[m.k]==='number'){ (acc[m.k]||(acc[m.k]={m:m,v:[]})).v.push(markV(m,d,cp[m.k])) } }) });
   ['energy','anx'].concat(Object.keys(acc)).filter(function(k,i,a){ return acc[k]&&a.indexOf(k)===i }).slice(0,2).forEach(function(k){
     var o=acc[k], v=o.v.reduce(function(a,b){ return a+b },0)/o.v.length; p2.push((o.m.a||o.m.t.toLowerCase())+' '+jWord(o.m,v)) });
   var wm=woOf(d).reduce(function(a,w){ return a+(w.min||0) },0);
@@ -3724,6 +3788,8 @@ function jrSheetClose(){
 HappyPeriod.bind(document.getElementById('jrPer'),{get:jrSt,set:jrSet,today:todayISO,sheet:jrSheet,close:jrSheetClose,
   share:function(){ jrDlgOpen('print') }});   // «Поделиться» — картинка журнала за период, как «Распечатать»
 document.getElementById('jrBody').addEventListener('click',function(ev){
+  var jd=ev.target.closest('[data-jdel]');   // v46: удалить отметку шкалы из журнала (с «Вернуть»)
+  if(jd){ var q; try{ q=JSON.parse(jd.dataset.jdel) }catch(_){ q=null } if(q) delMark(q); return }
   var x=ev.target.closest('[data-ev]');
   if(x){ var id=x.dataset.ev; JR_OPEN[id]=!JR_OPEN[id]; renderTrends(); return }
   var y=ev.target.closest('[data-dd]');
@@ -3808,7 +3874,8 @@ function jrCsvText(sel){
       DB.sections.forEach(function(s){ var cp=(e.cp||{})[s.k]||{}, st=secTime(d,s.k);
         /* 57.6: у отметки своё время; прежние значения шкал (log) — отдельными строками */
         function when(t){ return t||(st?st.t:'') }
-        function scaleRow(m,v,t){ row(d,when(t),s.t,m.t,n1(v),isStep(m)?'от '+numTxt(m,m.lo)+' до '+numTxt(m,m.hi):'из '+SMAX,jWord(m,v)) }
+        function scaleRow(m,v,t){ var o=markM(m,d);   // v46: число, диапазон и слово — той шкалы, по которой отмечено
+          row(d,when(t),s.t,m.t,n1(v),isStep(o)?'от '+numTxt(o,o.lo)+' до '+numTxt(o,o.hi):'из '+SMAX,jWord(o,v)) }
         scalesOf(s.k).forEach(function(m){ if(typeof cp[m.k]==='number') scaleRow(m,cp[m.k],cp.at&&cp.at[m.k]&&cp.at[m.k].t) });
         (cp.log||[]).forEach(function(x){ var m=scalesOf(s.k).concat(DB.metrics).filter(function(y){ return y.k===x.k })[0]; if(m&&typeof x.v==='number') scaleRow(m,x.v,x.t) });
         Object.keys(cp.tags||{}).forEach(function(g){ if(cp.tags[g]) row(d,when(cp.tagAt&&cp.tagAt[g]),s.t,'Тег',g) });
@@ -4257,10 +4324,10 @@ function tapSeries(k,sk){
     return Object.keys(e.cp||{}).length||a.length?false:null;
   });
 }
-function targetSeries(mk,sk){return REC.map(function(e){
-  if(!e) return null;
-  if(sk!=='day'){var c=e.cp[sk];return c&&c[mk]!=null?c[mk]:null}
-  var v=[];DB.sections.forEach(function(s){if((s.scales||[]).indexOf(mk)>=0){var c=e.cp[s.k];if(c&&c[mk]!=null)v.push(c[mk])}});
+function targetSeries(mk,sk){var M0=metricByKey(mk);return REC.map(function(e,i){
+  if(!e) return null; var d=ALL[i]?isoD(ALL[i]):null;   // v46: каждая отметка — по своей шкале
+  if(sk!=='day'){var c=e.cp[sk];return c&&c[mk]!=null?markV(M0,d,c[mk]):null}
+  var v=[];DB.sections.forEach(function(s){if((s.scales||[]).indexOf(mk)>=0){var c=e.cp[s.k];if(c&&c[mk]!=null)v.push(markV(M0,d,c[mk]))}});
   return v.length?mean(v):null})}
 function whenOf(sk){
   if(sk==='day') return 'за день';
@@ -4973,7 +5040,7 @@ document.getElementById('expCsv').addEventListener('click',function(){
       var v=e.cp[sec.k]||{};
       var tg=Object.keys(v.tags||{}).filter(function(t){return v.tags[t]}).join('; ');
       var r=[d, sec.k, v.time||'']
-        .concat(DB.metrics.map(function(m){ return v[m.k]!=null?v[m.k]:'' }))
+        .concat(DB.metrics.map(function(m){ return v[m.k]!=null?Math.round(markV(m,d,v[m.k])*100)/100:'' }))   // v46
         .concat(cntKeys.map(function(k){ var x=cntVal(e,k); return x!=null?x:'' }))
         .concat(tapKeys.map(function(k){ var x=tapTotal(e,k); return x||'' }))
         .concat(tapKeys.map(function(k){ return q(((e.taps||{})[k]||[]).map(function(x){return (x.t||'?')+(x.n>1?'×'+x.n:'')}).join(' ')) }))
@@ -5054,6 +5121,7 @@ function renderCounters(){
 
 /* Счётчики нажатий в настройках: переименовать, поменять шаг, убрать, переставить */
 function renderTaps(){
+  if(!document.getElementById('tapList')) return;   // лаборатория 22.11: счётчики-нажатия в настройках убраны
   document.getElementById('tapList').innerHTML =
     '<div class="secListInner">'+DB.taps.map(function(c,i){
       var st=c.step||1;
@@ -5097,6 +5165,7 @@ function sectionMarkup(S,si){
 }
 function renderSections(){
  document.getElementById('secList').innerHTML='<div class="secListInner">'+DB.sections.map(sectionMarkup).join('')+'</div>';
+ if(typeof DayPeriods!=='undefined') DayPeriods.render();
  SelfCare.renderCheckinSettings();
 }
 function settingsSection(si){return si===-1?SelfCare.checkinSection():DB.sections[si]}
@@ -5153,7 +5222,7 @@ function bindSectionDrag(host){
   host.addEventListener('touchend',done);
   host.addEventListener('touchcancel',done);
 }
-[document.getElementById('secList'),document.getElementById('cntList'),document.getElementById('tapList')].forEach(bindSectionDrag);
+[document.getElementById('secList'),document.getElementById('cntList'),document.getElementById('tapList')].filter(Boolean).forEach(bindSectionDrag);
 
 function commitDrag(kind, from, to){
   var arr;
@@ -5353,7 +5422,7 @@ document.getElementById('addCnt').addEventListener('click',function(){
   });
 });
 
-document.getElementById('tapList').addEventListener('click',function(e){
+(document.getElementById('tapList')||document.createElement('div')).addEventListener('click',function(e){
   var ren=e.target.closest('[data-ren]'), del=e.target.closest('[data-del]');
   if(ren){
     var i=+ren.dataset.ren.slice(1), c=DB.taps[i]; if(!c) return;
@@ -5372,7 +5441,7 @@ document.getElementById('tapList').addEventListener('click',function(e){
       function(){ renderTaps(); renderDay() });
   }
 });
-document.getElementById('addTap').addEventListener('click',newTap);
+(document.getElementById('addTap')||document.createElement('div')).addEventListener('click',newTap);
 
 document.getElementById('addSec').addEventListener('click',function(){
   editItem({title:'Новый раздел', sub:'', layer:'Иконка раздела',
@@ -5450,6 +5519,7 @@ function scUse(k){ return DB.sections.concat([SelfCare.checkinSection()]).filter
 function scRecs(k){
   var n=0, first=null;
   Object.keys(DB.days).sort().forEach(function(d){ var cp=(DB.days[d]||{}).cp||{};
+    if(pastOf(metricByKey(k),d)) return;   // v46: отмеченные по прежнему виду уже стоят в своей записи
     Object.keys(cp).forEach(function(sk){ var v=(cp[sk]||{})[k]; if(typeof v==='number'){ n++; if(first==null) first=v } }) });
   return {n:n, first:first};
 }
@@ -5464,9 +5534,17 @@ function convV(v,o,nm){
   var f=Math.max(0,Math.min(1,(v-o.lo)/(o.hi-o.lo))), x=mLo(nm)+f*(mHi(nm)-mLo(nm));
   return isStep(nm)?Math.round(x)+0:Math.round(x*100)/100;
 }
-function convertRecs(k,o,nm){
-  Object.keys(DB.days).forEach(function(d){ var cp=(DB.days[d]||{}).cp||{};
-    Object.keys(cp).forEach(function(sk){ var c=cp[sk]; if(c&&typeof c[k]==='number') c[k]=convV(c[k],o,nm) }) });
+/* v46 (Астамур 24.11.2026, 01:29, «1А»): отметки больше не пересчитываются. Когда у шкалы меняется вид или диапазон,
+   шкала запоминает прежний вид и дни, в которые её отмечали по нему: m.past=[{lo,hi (у плавной их нет),at,d:[даты]}].
+   Отметка лежит как была; графики, журнал и связи читают её по её шкале — как ту же долю пути по нынешней (markV).
+   День, отмеченный по прежнему виду, остаётся в своей записи и при следующих сменах */
+function convertRecs(k,o){
+  var m=metricByKey(k); if(!m) return;
+  var ent={at:Date.now(),d:[],w:(m.w||[]).slice()}; if(o.kind?o.kind==='step':isStep(o)){ ent.lo=o.lo; ent.hi=o.hi }   // w — подписи того вида: журнал показывает старую отметку её словами
+  Object.keys(DB.days).sort().forEach(function(d){ var cp=(DB.days[d]||{}).cp||{};
+    if(pastOf(m,d)) return;
+    if(Object.keys(cp).some(function(sk){ var c=cp[sk]; return c&&(typeof c[k]==='number'||(c.log||[]).some(function(x){ return x&&x.k===k&&typeof x.v==='number' })) })) ent.d.push(d) });
+  if(ent.d.length) (m.past||(m.past=[])).push(ent);
 }
 /* k — шкала для правки; k пустой — новая шкала для раздела si */
 function openScaleEd(k,si){
@@ -5475,7 +5553,7 @@ function openScaleEd(k,si){
   if(st) for(var v=m.lo;v<=m.hi;v++) words[v]=(m.w||[])[v-m.lo]||'';
   SCE={k:k||null, si:si==null?null:si, isNew:!m, t:m?m.t:'', kind:st?'step':'smooth',
        origin:st?(m.lo<0?'mid':String(m.lo)):'0', top:st?m.hi:3,
-       words:words, sw:(m&&!st&&m.w&&m.w.length===5?m.w:DEFAULT_W).slice(), sel:null, err:'', neg:m?metricNeg(m):false,
+       words:words, sw:(m&&!st&&m.w&&m.w.length===5?m.w:DEFAULT_W).slice(), sel:null, err:'', neg:m?metricNeg(m):false, good:m&&typeof DayPeriods!=='undefined'?DayPeriods.goodOf(m):'more', mid:m&&typeof m.mid==='number'?m.mid:.5,
        o:m?{kind:st?'step':'smooth', lo:mLo(m), hi:mHi(m)}:null};
   document.getElementById('scEdT').textContent=m?'Шкала':'Новая шкала';
   renderScaleEd();
@@ -5498,25 +5576,68 @@ function scPvVal(e,m){
   var j=e.sel&&e.sel[0]==='s'?+e.sel.slice(1):3; e.sel='s'+j;
   return SMIN+(j*20+10)/100*(SMAX-SMIN);
 }
+/* Лаборатория 22.11.2026 (логика настроек Day, п. 6–7): что хорошо у шкалы — «Меньше лучше» | «Баланс» | «Больше лучше».
+   Два варианта окна, Астамур выберет глазами: 'seg' — три сегмента и под ними живая полоска; 'zone' — только полоска,
+   зона «хорошо» двигается пальцем: у левого края — меньше лучше, у правого — больше лучше, между — баланс. */
+var SC_GOOD_UI='zone';   /* Астамур 22.11.2026 выбрал вариант «Ползунок»: зона «хорошо» двигается прямо по полоске */
+var SC_GOOD={less:'Меньше лучше',mid:'Баланс',more:'Больше лучше'};
+function scEdge(e,m,side){ var w=e.kind==='step'?m.w:e.sw; return (w&&w[side==='l'?0:w.length-1])||'' }
+function scZone(e){ var c=e.good==='less'?.2:e.good==='more'?.8:e.mid; return {l:(c-.2)*100,w:40} }
+function scGoodHtml(e,m){
+  var z=scZone(e);
+  /* одна мысль на блок: подпись и текущий режим в одной строке, под ней полоска, под полоской — слова её краёв */
+  return '<div class="scGoodHead"><span>Что хорошо</span><b id="scGoodNow">'+SC_GOOD[e.good]+'</b></div>'+
+    '<div class="scBar" id="scBar" role="slider" tabindex="0" aria-label="Зона «хорошо»" aria-valuetext="'+SC_GOOD[e.good]+'">'+
+      '<span class="scZone" style="left:'+z.l+'%;width:'+z.w+'%"><b>хорошо</b></span></div>'+
+    '<div class="scEdges"><input type="text" maxlength="28" autocomplete="off" data-edge="l" value="'+escH(scEdge(e,m,'l'))+'" placeholder="слово слева" aria-label="Слово слева">'+
+      '<input type="text" maxlength="28" autocomplete="off" data-edge="r" value="'+escH(scEdge(e,m,'r'))+'" placeholder="слово справа" aria-label="Слово справа"></div>';
+}
+function scZonePaint(){
+  var e=SCE; if(!e) return; var z=scZone(e), el=document.querySelector('#scBar .scZone'); if(!el) return;
+  el.style.left=z.l+'%'; document.getElementById('scBar').setAttribute('aria-valuetext',SC_GOOD[e.good]);
+  var n=document.getElementById('scGoodNow'); if(n) n.textContent=SC_GOOD[e.good];
+  document.querySelectorAll('#scEdBody [data-good]').forEach(function(b){ var on=b.dataset.good===e.good; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)) });
+  scGoodGlow();
+}
+function scZoneAt(f){
+  var e=SCE; if(!e) return;
+  if(SC_GOOD_UI==='seg'){ if(e.good!=='mid') return; e.mid=Math.max(.2,Math.min(.8,f)); }
+  else { e.good=f<=.3?'less':f>=.7?'more':'mid'; if(e.good==='mid') e.mid=Math.max(.3,Math.min(.7,f)) }
+  e.mid=Math.round(e.mid*20)/20; scZonePaint();
+}
+(function(){
+  var body=document.getElementById('scEdBody'), dragZ=null;
+  body.addEventListener('pointerdown',function(ev){ var b=ev.target.closest('#scBar'); if(!b) return; ev.preventDefault(); dragZ=b.getBoundingClientRect(); b.classList.add('dragging'); try{ b.setPointerCapture(ev.pointerId) }catch(_){} scZoneAt((ev.clientX-dragZ.left)/dragZ.width) });
+  body.addEventListener('pointermove',function(ev){ if(dragZ) scZoneAt((ev.clientX-dragZ.left)/dragZ.width) });
+  function endZ(){ dragZ=null; var b=document.getElementById('scBar'); if(b) b.classList.remove('dragging') }
+  body.addEventListener('pointerup',endZ); body.addEventListener('pointercancel',endZ);
+  body.addEventListener('keydown',function(ev){ if(!ev.target.closest||!ev.target.closest('#scBar')||(ev.key!=='ArrowLeft'&&ev.key!=='ArrowRight')) return; ev.preventDefault();
+    var e=SCE, c=e.good==='less'?.2:e.good==='more'?.8:e.mid; scZoneAt(c+(ev.key==='ArrowRight'?.1:-.1)) });
+})();
 function renderScaleEd(){
   var e=SCE, m=scModel(e), st=e.kind==='step', use=e.k?scUse(e.k):[], h='';
-  /* сначала название и выбор, как делить; под выбором — кольцо, оно сразу показывает итог */
-  h+='<input type="text" class="scName" id="scName" maxlength="40" autocomplete="off" placeholder="Название шкалы" value="'+escH(e.t)+'">'+
+  /* Астамур 22.11.2026: сверху живая дуга — нажал, и видно, что пишется на каждой ступени и где «хорошо»;
+     прямо под ней её настройки: название, что хорошо, слова краёв. Остальное — в «Деления и подписи». */
+  var others=use.filter(function(t){ return t!==(SCE.si!=null&&settingsSection(SCE.si)?settingsSection(SCE.si).t:'') });
+  h+='<div class="scPvBox scHero"><div class="ringWrap scPv" id="scPv">'+ringSvg(m,'progPv')+
+       '<button class="knob" id="scPvKnob" aria-label="Следующая ступень"><span><b class="kv"></b><small class="kh"></small></span></button></div>'+
+       '<p class="scTap">нажми на шкалу</p></div>'+   // v27: «шкала», как везде на экране разделов
+     '<input type="text" class="scName scTitle" id="scName" maxlength="40" autocomplete="off" placeholder="Название шкалы" value="'+escH(e.t)+'">'+
      '<p class="edErr" id="scErr">'+escH(e.err||'')+'</p>'+
-     (use.length>1?'<p class="scUse">Стоит в разделах: '+escH(use.join(', '))+'. Настройка общая.</p>':'')+
-     '<div class="subTitle">Как делить шкалу</div>'+
-     '<div class="scKinds">'+
-       '<button class="scKind'+(st?'':' on')+'" data-kind="smooth"><b>Плавно</b><small>без ступеней, как сейчас: пять слов по кругу</small></button>'+
-       '<button class="scKind'+(st?' on':'')+'" data-kind="step"><b>По делениям</b><small>целые отметки: <i class="nw">0–3</i>, <i class="nw">1–5</i>, <i class="nw">−3…+3</i></small></button>'+
+     scGoodHtml(e,m)+
+     (others.length?'<p class="scUse">Ещё в: '+escH(others.join(', '))+'</p>':'')+
+     /* v38 (Астамур 23.11.2026, 23:27, «остатки, нужно доделать»): заголовок раздела — линиями, как «Шкалы»;
+        выбор вида — переключатель-пилюля (контур 44, выбранная 36), пояснение выбранного — строкой под ним */
+     '<details class="scMore"><summary><span>Деления и подписи</span><i aria-hidden="true"></i></summary>'+
+     '<div class="scSeg" role="group" aria-label="Вид шкалы">'+
+       '<button class="scKind'+(st?'':' on')+'" data-kind="smooth" aria-pressed="'+!st+'">Плавно</button>'+
+       '<button class="scKind'+(st?' on':'')+'" data-kind="step" aria-pressed="'+st+'">По делениям</button>'+
      '</div>'+
-     '<div class="scPvBox"><div class="ringWrap scPv" id="scPv">'+ringSvg(m,'progPv')+
-       '<button class="knob" id="scPvKnob" aria-label="Следующая ступень"><span><b class="kv"></b><small class="kh"></small></span></button></div></div>';
-  h+='<div class="subTitle">Что лучше</div><div class="scChips">'+
-     scChip('neg','0','Больше — лучше',e.neg?'1':'0')+scChip('neg','1','Больше — хуже',e.neg?'1':'0')+'</div>';
+     '<p class="scKindTxt">'+(st?'Целые отметки: <i class="nw">0–3</i>, <i class="nw">1–5</i>, <i class="nw">−3…+3</i>':'Без ступеней: пять слов по кругу')+'</p>';
   if(st){
     var lim=SC_TOP[e.origin];
     h+='<div class="subTitle">Откуда отсчёт</div>'+
-       '<div class="scChips">'+scChip('origin','0','от 0',e.origin)+scChip('origin','1','от 1',e.origin)+scChip('origin','mid','от середины',e.origin)+'</div>'+
+       '<div class="scSeg scSeg3" role="group" aria-label="Откуда отсчёт">'+scChip('origin','0','от 0',e.origin)+scChip('origin','1','от 1',e.origin)+scChip('origin','mid','от середины',e.origin)+'</div>'+   // v38: переключатель, как «Плавно | По делениям»
        '<div class="subTitle">'+(e.origin==='mid'?'Делений в каждую сторону':'Делений')+'</div>'+
        '<div class="scStep"><button data-top="-1" aria-label="Меньше делений"'+(e.top<=lim[0]?' disabled':'')+'>−</button>'+
          '<b>'+rangeTxt(m)+'</b>'+
@@ -5528,14 +5649,24 @@ function renderScaleEd(){
     h+='<div class="subTitle">Слова по кругу</div>';
     for(var j=4;j>=0;j--) h+=scLvRow('s'+j,String(j+1),e.sw[j]||'',DEFAULT_W[j],'data-sw="'+j+'"');
   }
+  h+='</details>';
   /* новая шкала: можно взять готовую из других разделов — с её настройками и записями */
   if(e.isNew){
     var S=settingsSection(e.si)||{}, free=DB.metrics.filter(function(x){ return (S.scales||[]).indexOf(x.k)<0 });
     if(free.length) h+='<div class="subTitle">Или взять готовую — с её настройками</div><div class="scChips">'+
       free.map(function(x){ return '<button class="chip" data-reuse="'+escH(x.k)+'">'+escH(x.t)+'</button>' }).join('')+'</div>';
   }
+  var wasOpen=!!document.querySelector('#scEdBody details.scMore[open]');
   document.getElementById('scEdBody').innerHTML=h;
+  if(wasOpen) document.querySelector('#scEdBody details.scMore').open=true;
   paintScalePv();
+}
+/* на дуге видно «хорошо»: ступень в зоне — под словом подпись «хорошо» и мягкое свечение */
+function scGoodGlow(){
+  var e=SCE, w=document.getElementById('scPv'); if(!e||!w) return;
+  var m=scModel(e), v=scPvVal(e,m), f=e.kind==='step'?(m.hi>m.lo?(v-m.lo)/(m.hi-m.lo):.5):(v-SMIN)/(SMAX-SMIN), z=scZone(e);
+  var on=f>=z.l/100-.001&&f<=(z.l+z.w)/100+.001;
+  w.classList.toggle('scGoodOn',on); var kh=w.querySelector('.kh'); if(kh) kh.textContent=on?'хорошо':'';
 }
 function paintScalePv(){
   var e=SCE; if(!e) return;
@@ -5543,6 +5674,7 @@ function paintScalePv(){
   var word=paintRing(w,m,scPvVal(e,m)), kv=w.querySelector('.kv');
   kv.textContent=word||''; kv.style.fontSize=(word&&word.length>11?'14px':'20px');
   document.querySelectorAll('#scEdBody .scLv').forEach(function(r){ r.classList.toggle('on',r.getAttribute('data-lv')===e.sel) });
+  scGoodGlow();
 }
 document.getElementById('scEdBody').addEventListener('click',function(ev){
   var e=SCE; if(!e) return;
@@ -5554,6 +5686,7 @@ document.getElementById('scEdBody').addEventListener('click',function(ev){
     paintScalePv(); return;
   }
   if(b.dataset.neg!=null){ e.neg=b.dataset.neg==='1'; renderScaleEd(); return }
+  if(b.dataset.good){ e.good=b.dataset.good; e.neg=e.good==='less'; scZonePaint(); return }
   if(b.dataset.reuse){ scAddTo(e.si,b.dataset.reuse); return }
   if(b.dataset.kind){ e.kind=b.dataset.kind; e.sel=null; renderScaleEd(); return }
   if(b.dataset.origin){
@@ -5568,6 +5701,9 @@ document.getElementById('scEdBody').addEventListener('click',function(ev){
 document.getElementById('scEdBody').addEventListener('input',function(ev){
   var e=SCE, t=ev.target; if(!e) return;
   if(t.id==='scName'){ e.t=t.value; e.err=''; document.getElementById('scErr').textContent=''; return }
+  if(t.dataset.edge){ var mm=scModel(e), L=t.dataset.edge==='l';
+    if(e.kind==='step'){ e.words[L?mm.lo:mm.hi]=t.value; e.sel=String(L?mm.lo:mm.hi) } else { e.sw[L?0:4]=t.value; e.sel='s'+(L?0:4) }   /* дуга сразу встаёт на этот край — видно слово */
+    var other=document.querySelector('#scEdBody [data-'+(e.kind==='step'?'w':'sw')+'="'+(e.kind==='step'?(L?mm.lo:mm.hi):(L?0:4))+'"]'); if(other) other.value=t.value; paintScalePv(); return }
   if(t.dataset.w!=null){ e.words[+t.dataset.w]=t.value; e.sel=t.dataset.w; paintScalePv() }
   if(t.dataset.sw!=null){ e.sw[+t.dataset.sw]=t.value; e.sel='s'+t.dataset.sw; paintScalePv() }
 });
@@ -5588,7 +5724,8 @@ function scAddTo(si,k){
   toast('Шкала «'+m.t+'» добавлена в «'+S.t+'»');
 }
 function scApply(m,e,nm){
-  m.neg=!!e.neg;
+  m.good=e.good||(e.neg?'less':'more'); m.neg=m.good==='less';
+  if(m.good==='mid') m.mid=e.mid; else delete m.mid;   // лаборатория 22.11: «Баланс» — зона хорошо посередине
   if(isStep(nm)){ m.lo=nm.lo; m.hi=nm.hi; m.w=nm.w.map(function(x){return (x||'').trim()}) }
   else { delete m.lo; delete m.hi; m.w=e.sw.map(function(x,j){ x=(x||'').trim(); return x||DEFAULT_W[j] }) }
 }
@@ -5615,13 +5752,10 @@ function applyScaleEd(force){
   var m=metricByKey(e.k), nm=scModel(e);
   var changed=e.o.kind!==e.kind||e.o.lo!==mLo(nm)||e.o.hi!==mHi(nm), rec=scRecs(e.k);
   if(changed&&rec.n&&!force){
-    var nx=convV(rec.first,e.o,nm);
-    confirmBox('У шкалы «'+t+'» уже '+rec.n+' '+ruPlural(rec.n,['отметка','отметки','отметок'])+
-      '. Пересчитать их в новый диапазон? Например, '+String(rec.first).replace('.',',')+' станет '+
-      (isStep(nm)?numTxt(nm,nx):String(nx).replace('.',','))+'.','Пересчитать').then(function(ok){ if(ok) applyScaleEd(true) });
+    confirmBox('У шкалы «'+t+'» уже есть отметки. Новые настройки применятся только к следующим отметкам. Удалить старые отметки можно в журнале.','Понятно').then(function(ok){ if(ok) applyScaleEd(true) });   // v46: без пересчёта
     return;
   }
-  if(changed&&rec.n) convertRecs(e.k,e.o,nm);
+  if(changed&&rec.n) convertRecs(e.k,e.o);
   m.t=t; scApply(m,e,nm);
   save(); closeScaleEd();
   renderSections(); refreshRing(); renderTrends(); renderLinks();
@@ -5645,7 +5779,7 @@ function go(name){
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.dataset.screen===name) });
   /* Day 60.4: вернулись с экрана раздела или отметок — главная в начальном положении, кольцо с кнопкой на своём месте */
   if(name==='day'&&prevScreen&&(prevScreen==='ring'||prevScreen.indexOf('care-')===0)){ var homeScr=document.querySelector('[data-screen="day"]'); if(homeScr) homeScr.scrollTop=0 }
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name||(name.startsWith('care-settings-')&&t.dataset.go==='settings')) });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on',t.dataset.go===name||((name.startsWith('care-settings-')||name==='sections'||name==='marks'||name==='mark-period')&&t.dataset.go==='settings')) });
   document.body.classList.toggle('sheet',name==='ring'||name.startsWith('care-'));
   if(name==='ring'){ renderFacts(); CURS.forEach(function(_,i){ paint(i) }) }
   if(name==='day'){ renderNow(); nwSide() }   // Day 60.3: соседние кольца сразу бледные — без вспышки при возврате
@@ -5655,6 +5789,8 @@ function go(name){
   if(name==='data') renderData();
   if(fold) SheetFold.close();
   if(name==='settings'){ renderData(); renderSections(); renderCounters(); renderTaps(); paintMealSet(); paintAccount() }
+  if(name==='marks') DayPeriods.open();
+  if(name==='mark-period') DayPeriods.period();
 }
 document.querySelectorAll('.tab').forEach(function(t){
   t.addEventListener('click',function(){ go(t.dataset.go) });

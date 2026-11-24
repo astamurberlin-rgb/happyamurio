@@ -431,8 +431,8 @@
   },
   {
    "path": "index.html",
-   "size": 715221,
-   "sha256": "b3f137acc098aebff55449b42ac7236d1c40d20c34f413a80ba5c91240682590"
+   "size": 715373,
+   "sha256": "956b016aaf3dbc0f3888038548a0a951b6412240b0cbb705a88a495591550787"
   },
   {
    "path": "kfct.js",
@@ -651,8 +651,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 92176,
-   "sha256": "b1679f7e5651721b892c832881a4335a073cfccc70111775ecc763f6095b06c8"
+   "size": 92788,
+   "sha256": "f7a1722c0a574b60dc79838099ca4607ba420356b28f45b1a5e147eaf2472ce4"
   },
   {
    "path": "report.css",
@@ -716,8 +716,8 @@
   },
   {
    "path": "shared/happy-food.js",
-   "size": 18082,
-   "sha256": "7825ff2f8bf42b571e6edcb57c3771c72eb4aae97c6ba26c04f2591b51ccd6b0"
+   "size": 18379,
+   "sha256": "c7e5a422c26ebe72efbb78aaf9aa3aabbbf7920c85d93f4b615c042df71e206d"
   },
   {
    "path": "shared/happy-goals.js",
@@ -771,8 +771,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 38891,
-   "sha256": "090ebc1506b5a0e2987e93ba35e51fcefff324751f6b19ac6d9f5599233bb656"
+   "size": 38819,
+   "sha256": "80205c88b477767a82e06070534f82d044c65d9129982db6c2c34b11e08b7b20"
   },
   {
    "path": "shared/happy-screens.js",
@@ -816,8 +816,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 33843,
-   "sha256": "28535dc83c37a140d3cabe30f5dcb5f05bffc315e85c6a780f3fd5aa7c6239c7"
+   "size": 33965,
+   "sha256": "25c49243f2c1e45a204b44f74c733c35bef1d8540c634f20b347967a6b8585fa"
   },
   {
    "path": "shared/meal-products-model.js",
@@ -882,7 +882,7 @@
   {
    "path": "sw.js",
    "size": 3778,
-   "sha256": "d501e850190792c976038ede457d2bb16f1a1d75df6f8ad559ae224c67b2464a"
+   "sha256": "f50be87dac0d1bb913cc8d89396eb95b1c0ae8d8bf800983dc15382f42e0fb14"
   },
   {
    "path": "usda-measures.js",
