@@ -3,10 +3,10 @@
    дополнено исследованием Claude и решениями Астамура 17.11.2026. — Claude · 17.11.2026 */
 window.HappyMealSpeechData={
  "schema_version": 1,
- "dictionary_version": "0.5.2",
+ "dictionary_version": "0.5.3",
  "locale": "ru",
  "status": "connected",
- "updated_on": "2026-11-22",
+ "updated_on": "2026-11-24",
  "description_ru": "Единый словарь бытовой речи Happy Meal: названия продуктов, выражения, меры, части, основания решений и контрольные примеры. С Meal 33.9 бот записи еды читает этот файл (meal-33/bot-speech.js). Файл — данные в обёртке JS, чтобы приложение читало его сразу и без сети; внутри обычный JSON.",
  "approval": {
   "implementation_requires_user_yes": true,
@@ -13657,6 +13657,13 @@ window.HappyMealSpeechData={
    "meaning_ru": "«чихуа» — так распознаётся «фейхоа»"
   },
   {
+   "id": "sf_kidney_kindi",
+   "match": "(^|\\s)кинди(?=\\s|$)",
+   "to": "$1кидни",
+   "early": true,
+   "meaning_ru": "«кинди» — так распознаётся «кидни» (красная фасоль); решение Астамура 24.11.2026"
+  },
+  {
    "id": "sf_americano",
    "match": "americano",
    "to": "американо",
@@ -16544,6 +16551,25 @@ window.HappyMealSpeechData={
     "G312152",
     "G450100",
     "G770432"
+   ]
+  },
+  {
+   "id": "b3",
+   "title": "B3 — ниацин",
+   "group": "vit",
+   "said": "ниацин|(?:витамин\\S*\\s+)?(?:б|b)\\s?3(?![0-9])|витамин\\S*\\s+(?:пп|pp)(?![а-яa-z])|никотинов",
+   "sources": []
+  },
+  {
+   "id": "b3ne",
+   "title": "B3 — ниациновый эквивалент",
+   "group": "vit",
+   "said": "ниацин|(?:витамин\\S*\\s+)?(?:б|b)\\s?3(?![0-9])|витамин\\S*\\s+(?:пп|pp)(?![а-яa-z])|никотинов",
+   "sources": [
+    "V416162",
+    "V531182",
+    "T121182",
+    "H110600"
    ]
   },
   {

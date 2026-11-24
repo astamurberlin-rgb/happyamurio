@@ -1836,6 +1836,7 @@ var MealBot=(function(){
     if(ws.length===1){ var hit=SUB_STEM.filter(function(s){ return s[0].test(ws[0]) })[0]; if(hit) return hit[1] }
     var HS=typeof HappySubstances!=='undefined'?HappySubstances:null; if(!HS) return null;
     /* «витамина с», «витамин д3» → «Витамин C», «Витамин D» */
+    w=w.replace(/(\s)(б|b)\s+(\d{1,2})$/,'$1$2$3').replace(/^(витамин\S*\s+)(?:пп|pp)$/,'$1b3');   // «витамина б 3», «витамин PP» — B3 (24.11.2026)
     var vm=w.match(/^витамин\S*\s+([а-яa-z])(\d*)$/);
     if(vm&&VIT_LETTER[vm[1]]){ var vx=HS.exact('Витамин '+VIT_LETTER[vm[1]]+(VIT_LETTER[vm[1]]==='B'?vm[2]:'')); if(vx) return vx.key }
     var ex=HS.exact(w); if(ex) return ex.key;
@@ -1844,6 +1845,7 @@ var MealBot=(function(){
     if(!st.length||st.length!==ws.length) return null;
     var c=HS.fields.filter(function(f){ var tw=HS.norm(f.title).split(' ');
       return tw.length>=st.length&&st.every(function(s){ return tw.some(function(x){ return x.indexOf(s)===0 }) }) });
+    if(c.length===2&&c.every(function(f){ return /^b3/.test(f.key) })) return 'b3';   // «ниацина»: обе строки B3 (productInfo)
     if(c.length>1) c=c.filter(function(f){ return HS.norm(f.title).split(' ').length===st.length });
     return c.length===1?c[0].key:null;
   }
@@ -1868,6 +1870,10 @@ var MealBot=(function(){
     var HINT='<p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
     if(key&&key!=='all'&&['kcal','prot','fat','carb'].indexOf(key)<0){
       var sx=typeof HappySubstances!=='undefined'?HappySubstances.get(key):null; if(!sx) return null;
+      /* B3 (Астамур 24.11.2026): ниацин и ниациновый эквивалент — разные показатели; у продукта — тот, что есть в его базе, оба — двумя строками */
+      if(key==='b3'){ var b3=[['b3','ниацин'],['b3ne','ниациновый эквивалент']].map(function(x){ var y=subVal(f,x[0]); return y==null?null:x[1]+' <b>'+subAmount(y*g/100,x[0]==='b3ne'?'мг НЭ':'мг')+'</b>' }).filter(Boolean);
+        if(!b3.length) return p(name+': витамин B3 — в базе нет данных для этого продукта.')+HINT;
+        return p(name+': витамин B3 — '+b3.join('; '))+HINT }
       var v=subVal(f,key), lab=sx.title.replace(/,\s*всего$/,''); lab=lab.charAt(0).toLowerCase()+lab.slice(1);
       if(v==null) return p(name+': '+esc(lab)+' — в базе нет данных для этого продукта.')+HINT;
       return p(name+': '+esc(lab)+' <b>'+subAmount(v*g/100,sx.unit)+'</b>')+HINT;
@@ -1956,6 +1962,7 @@ var MealBot=(function(){
   var COOK_V=/(^|\s)(?:с|по|от|за|при|до|у|об|пере)?(?:вар(?:и|я|ю|к)|жар(?:и|я|к)|запек|запечь|(?:ис)?печь(?:\s|$)|печ(?:ет|ется|ешь|ем)(?:\s|$)|пекут|испеч|туш(?:и|а)|готов(?:и|я|н)|приготов|замач|замоч|отвар(?:и|ив))\S*/,
       COOK_Q=/(^|\s)(сколько|как|какой|какая|какое|какую|за сколько|до какой|при какой)(\s|$)/;
   function cookAsk(o,asked){   // «надо ли замачивать нут» — тоже вопрос «как готовить» (Астамур 23.11.2026); приёмы tipAsk отвечают раньше
+    speechFixes().forEach(function(r){ o=o.replace(r[0],r[1]) });   // «фасоль кинди» — искажения речи из словаря и здесь (24.11.2026)
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
     var head=/^(?:а\s+|скажи,?\s+|подскажи,?\s+)?(?:сколько|как|какая|какое|какой|за сколько|до какой|при какой|надо ли|нужно ли|обязательно ли|стоит ли)(\s|$)/.test(o)||/^(?:а\s+)?температура\s+готовности(\s|$)/.test(o);
     if(!(head||asked&&COOK_Q.test(' '+o+' '))||!COOK_V.test(' '+o+' ')) return null;
@@ -2076,7 +2083,7 @@ var MealBot=(function(){
       if(L&&L.state!=='loading') L.load();
       return p('Справочник замен ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
     var c=L.find(o,'swap');
-    if(!c&&L.find(o,'tip')) return null;   // замены нет, а приём есть («можно ли какао вместо шоколада») — отвечает tipAsk
+    if(!c){ var t=L.find(o,'tip'); if(t&&/вместо|замен/.test(t.said||'')) c=t; else if(t) return null }   // замены нет, а приём о замене есть: «можно заменить шоколад какао» — отвечает он (24.11.2026, Астамур «поправляй»); другой приём — как раньше, через tipAsk
     if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
       return p('Пока не знаю, чем это заменить: такой замены в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
@@ -2116,6 +2123,10 @@ var MealBot=(function(){
     var med=o.match(ADV_MED);
     if(med) return p('С вопросами о болезнях, беременности, детях и лекарствах — к врачу. Я даю только общие советы для здоровых взрослых.')+'<p class="mlHint">В дневник ничего не записал.</p>';
     if(!L||L.state!=='ok'){ if(L&&L.state!=='loading') L.load(); return p('Справочник советов ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    if(!c&&/(^|\s)(сыр(ой|ую|ая|ое|ые|ым|ыми)|недоварен\S*|не\s+доварен\S*)(\s|$)/.test(o)){   // «можно ли есть сырую красную фасоль» — ответ карточки готовки: там, как сделать безопасно (Астамур 24.11.2026)
+      var k=L.find(o,'cook'); if(k&&/(сыр\S*|вредн\S*|токсин\S*|°C|бурном кипении)/i.test(k.answer)){   // только карточки, где сказано о безопасности (фасоль, мясо)
+        var ks=k.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
+        return p(esc(k.answer))+'<p class="mlHint">Источник: '+ks+'. В дневник ничего не записал.</p>' } }
     if(!c&&(L.find(o,'cook')||L.find(o,'tip'))) return null;   // «можно ли есть сырую фасоль» — ответит справочник готовки (cookAsk)
     if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
       return p('Пока не знаю, что ответить: такого совета в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }

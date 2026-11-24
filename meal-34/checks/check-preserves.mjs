@@ -42,8 +42,8 @@ assert.equal(v(kiz,'fib'),null,'старая «клетчатка» не идё�
 assert.equal(field(kiz,'prop:preserve:legacy_crude_fiber_source_g').value,0.2);
 assert.equal(field(kiz,'prop:preserve:legacy_crude_fiber_source_g').name,'Клетчатка (методика справочника 1987)');
 assert.equal(v(kiz,'bcar'),null,'бета-каротин — следы, не число');assert.equal(field(kiz,'bcar').sourceQualifier.state,'trace');
-for(const k of ['b1','b2','b3'])assert.equal(v(kiz,k),null,'кизил '+k+' — нет данных');
-assert.equal(field(kiz,'prop:preserve:vitamin_pp_source_mg').status,'missing');
+for(const k of ['b1','b2','b3','b3ne'])assert.equal(v(kiz,k),null,'кизил '+k+' — нет данных');
+assert.equal(field(kiz,'b3').status,'missing','витамин PP — строка «B3 — ниацин» (Астамур 24.11.2026)');
 assert.equal(field(kiz,'fat').status,'value','жиры 0 напечатаны в справочнике');
 // малиновое варенье: B1, B2 и бета-каротин числом
 const mal=byId['hmpreserve:raspberry-preserve-skurikhin'];
@@ -57,10 +57,10 @@ for(const [id,kcal,carb,vc] of [['hmpreserve:cherry-preserve-gost',248,62,7],['h
  assert.equal(f.p,null,'белки карточки — null, не 0');assert.equal(f.f,null);assert.equal(f.k,kcal);
 }
 
-// 4. Справочник 2002 (компоты): пищевые волокна → «Клетчатка»; НЭ, РЭ, ТЭ → B3, A, E; PP, колонка «A», каротин — своими строками
+// 4. Справочник 2002 (компоты): пищевые волокна → «Клетчатка»; НЭ → B3 НЭ, PP → B3 ниацин, РЭ, ТЭ → A, E; колонка «A», каротин — своими строками
 const kr=byId['hmpreserve:gooseberry-blackcurrant-compote'],ap=byId['hmpreserve:apple-compote-skurikhin-reference'];
-for(const [k,x] of Object.entries({kcal:58,prot:0.3,fat:0.1,carb:13.9,sug:13.9,fib:1.2,vA:5,vE:0.2,b3:0.1,b1:0.01,b2:0.01,vC:13,sfa:0,chol:0,alc:0,sta:0}))assert.equal(v(kr,k),x,'крыжовник '+k);
-assert.equal(field(kr,'prop:preserve:vitamin_pp_source_mg').value,0.1);assert.equal(field(kr,'prop:preserve:vitamin_a_column_a_source_ug').value,0);
+for(const [k,x] of Object.entries({kcal:58,prot:0.3,fat:0.1,carb:13.9,sug:13.9,fib:1.2,vA:5,vE:0.2,b3ne:0.1,b3:0.1,b1:0.01,b2:0.01,vC:13,sfa:0,chol:0,alc:0,sta:0}))assert.equal(v(kr,k),x,'крыжовник '+k);
+assert.ok(!field(kr,'prop:preserve:vitamin_pp_source_mg'),'PP — не своей строкой, а «B3 — ниацин»');assert.equal(field(kr,'prop:preserve:vitamin_a_column_a_source_ug').value,0);
 assert.equal(field(kr,'prop:preserve:carotene_source_ug').value,30);assert.equal(field(kr,'prop:preserve:carotene_source_ug').unit,'мкг');
 assert.equal(v(kr,'bcar'),null,'«Каротин» не перенесён в бета-каротин');
 assert.equal(v(ap,'kcal'),55);assert.equal(v(ap,'carb'),13.6);assert.equal(v(ap,'fib'),0.4);assert.equal(ap.n,'Яблочный компот с плодами');
