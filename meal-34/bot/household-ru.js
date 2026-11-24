@@ -3,10 +3,10 @@
    дополнено исследованием Claude и решениями Астамура 17.11.2026. — Claude · 17.11.2026 */
 window.HappyMealSpeechData={
  "schema_version": 1,
- "dictionary_version": "0.5.2",
+ "dictionary_version": "0.5.3",
  "locale": "ru",
  "status": "connected",
- "updated_on": "2026-11-22",
+ "updated_on": "2026-11-24",
  "description_ru": "Единый словарь бытовой речи Happy Meal: названия продуктов, выражения, меры, части, основания решений и контрольные примеры. С Meal 33.9 бот записи еды читает этот файл (meal-33/bot-speech.js). Файл — данные в обёртке JS, чтобы приложение читало его сразу и без сети; внутри обычный JSON.",
  "approval": {
   "implementation_requires_user_yes": true,
@@ -13655,6 +13655,13 @@ window.HappyMealSpeechData={
    "match": "(^|\\s)чихуа(?=\\s)",
    "to": "$1фейхоа",
    "meaning_ru": "«чихуа» — так распознаётся «фейхоа»"
+  },
+  {
+   "id": "sf_kidney_kindi",
+   "match": "(^|\\s)кинди(?=\\s|$)",
+   "to": "$1кидни",
+   "early": true,
+   "meaning_ru": "«кинди» — так распознаётся «кидни» (красная фасоль); решение Астамура 24.11.2026"
   },
   {
    "id": "sf_americano",
