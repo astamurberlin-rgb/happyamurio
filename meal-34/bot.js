@@ -432,6 +432,8 @@ var MealBot=(function(){
     var id=l.fid||l.alts[0], f=FOODS[id]; if(!f) return;
     var mass=new RegExp('\\d\\s*'+VOL+'(?=\\s)').test(' '+c.text+' ');
     if(!mass){ var ou=SP.ownUnit(f,c.raw||c.text); if(ou&&l.u!==ou){ l.u=ou; if(!l.explicit) l.q=1; l.explicit=true; l.g=gramsFor(id,l.q,l.u) } }
+    /* мера словами у продукта USDA — его своя мера: «ломтик пепперони» — ломтик USDA 9,8 г, а не общий 30 г (журнал ошибок, 24.11.2026) */
+    if(l.explicit&&l.u){ var uk=SP.usdaUnit&&SP.usdaUnit(f,l.u); if(uk){ l.u=uk; l.g=gramsFor(id,l.q,l.u) } }
     /* у выбранного продукта нет такой меры, а у соседнего есть («пять колец лука» — лук, а не луковый сок) */
     /* …или у соседнего мера своя, а у выбранного только общая («ложка мисо» — паста, а не мисо-суп) */
     function own(fx,u){ return (fx.own&&fx.own[u])||(fx.por&&fx.por[u])||SP.group(fx,u) }
