@@ -1937,7 +1937,7 @@ var MealBot=(function(){
   var NUTR=null;
   function nutrList(){
     if(NUTR) return NUTR;
-    var D=window.HappyMealSpeechData; NUTR=((D&&D.nutrient_sources)||[]).map(function(e){ try{ return {id:e.id,title:e.title,group:e.group,re:new RegExp('(?:^|[^а-яa-z])(?:'+e.said+')'),sources:e.sources||[]} }catch(x){ return null } }).filter(Boolean);
+    var D=window.HappyMealSpeechData; NUTR=((D&&D.nutrient_sources)||[]).map(function(e){ try{ return {id:e.id,title:e.title,gen:e.gen||e.title,group:e.group,re:new RegExp('(?:^|[^а-яa-z])(?:'+e.said+')'),sources:e.sources||[]} }catch(x){ return null } }).filter(Boolean);
     return NUTR;
   }
   function nutrMeta(id){
@@ -1955,6 +1955,62 @@ var MealBot=(function(){
     var out=[]; e.sources.forEach(function(code){ if(!BLS_BY[code]) return; var v=nutrSrcVal(code,e.id); if(v==null||!(v>0)) return; out.push([v,code]) });
     out=out.slice(0,n+1).sort(function(a,b){ return b[0]-a[0] }).slice(0,n).map(function(x){ var nm=blsName(x[1]); return esc(nm.charAt(0).toLowerCase()+nm.slice(1))+' — '+nutrNum(x[0])+'\u00a0'+u });
     return out.length?'Где много: '+out.join('; ')+' (на 100 г).':'';
+  }
+  /* «где много железа», «чем добрать белок», «что богато витамином C» (решение Астамура 25.11.2026 «да»).
+     Ответ — короткий список обычных источников из словаря (nutrient_sources), числа на 100 г — из базы; продукт без данных не показывается.
+     Ниже — норма в день и, если за день есть записи, сколько уже съедено. Слова вопроса — в словаре (nutrient_where). В дневник ничего не идёт.
+     Блюдо и рецепт, замена, сравнение двух продуктов сюда не попадают. */
+  var NW=null;
+  function nwRe(){
+    if(NW) return NW;
+    var W=(window.HappyMealSpeechData||{}).nutrient_where; if(!W) return NW={};
+    NW={}; ['ask','rich','strong','other','medical','not'].forEach(function(k){ try{ NW[k]=new RegExp(W[k]) }catch(x){} });
+    return NW;
+  }
+  var NW_VIT=['vA','vD','vC','vE','b12','b9'], NW_MIN=['fe','ca','mg','zn','k','i'];
+  function whereOne(e){
+    var m=nutrMeta(e.id); if(!m) return '';
+    var rows=[]; e.sources.forEach(function(code){ if(!BLS_BY[code]) return; var v=nutrSrcVal(code,e.id); if(v==null||!(v>0)) return; rows.push([v,code]) });
+    if(!rows.length) return '';
+    rows.sort(function(a,b){ return b[0]-a[0] });
+    var h=p('<b>Где много '+esc(e.gen)+'</b> (на 100 г):')+'<p class="mbSum">'+rows.slice(0,8).map(function(x){ var nm=blsName(x[1]); return esc(nm.charAt(0).toLowerCase()+nm.slice(1))+' — '+nutrNum(x[0])+' '+esc(m.u) }).join('<br>')+'</p>';
+    var t='';
+    if(m.norm) t='Норма в день — '+fmt(m.norm)+' '+esc(m.u)+(m.own?' (твоя цель)':'')+'.';
+    if(typeof jrCompute==='function'){ var d=null; try{ d=jrCompute({a:curDate,b:curDate}) }catch(x){}
+      if(d&&!d.empty){ var v=e.id==='fib'?d.mac.fib:e.id==='p'?d.mac.p:d.v[e.id], miss=(d.miss&&d.miss[e.id])||0, wd=curDate===todayISO()?'Сегодня':'За этот день';
+        if(v!=null) t+=' '+wd+' по дневнику у тебя '+nutrNum(v)+' '+esc(m.u)+(m.norm?' ('+Math.round(v/m.norm*100)+' %)':'')+(miss>=0.05?', но у части еды нет данных — на самом деле больше':'')+'.' } }
+    return h+(t?p(t.trim()):'');
+  }
+  function whereReply(list){
+    var h=list.map(whereOne).filter(Boolean).join('');
+    if(!h) return null;
+    return h+'<p class="mlHint">Числа из базы продуктов. В дневник ничего не записал.</p><p class="mlHint">Польза и вред у всех разные. Если плохо себя чувствуешь или есть болезнь, лучше спроси врача.</p>';
+  }
+  function whereAsk(raw){
+    var o=nrm(raw).trim().replace(/[?!.,…\s]+$/,'').replace(/[,?!]/g,' ').replace(/\s+/g,' ');
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    var R=nwRe(); if(!R.ask) return null;
+    var L=nutrList(), hit=L.filter(function(e){ return e.re.test(o) });
+    /* «много ли железа в гречке», «есть ли железо в гречке» — как «сколько железа в гречке» */
+    var ml=o.match(/^(?:а\s+)?(?:много|мало|есть)\s+ли\s+(.+?)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/);
+    if(ml){ var mk=substanceOf(ml[1]); if(!mk) return null; var pi=productInfo(ml[2],mk); return pi||notSure(ml[2]) }
+    if(R.not&&R.not.test(o)) return null;
+    if(!R.ask.test(o)||!R.rich||!R.rich.test(o)) return null;
+    var strong=R.strong&&R.strong.test(o), HINT='<p class="mlHint">В дневник ничего не записал.</p>';
+    if(R.medical&&R.medical.test(o)||hit.length&&ADV_MED.test(o)) return p('С вопросами о болезнях — к врачу. Я подскажу только, в каких продуктах много нужного вещества: например, «где много железа».')+HINT;
+    if(hit.length){
+      if(BLS_ST!=='ok'){ try{ blsLoad() }catch(x){} return p('Загружаю базу продуктов, без неё не ответить. Спроси ещё раз через пару секунд.')+HINT }
+      var r=whereReply(hit); if(r) return r;
+      missLog('вопросы без ответа (не продукты)',o,o);
+      return p('Пока не знаю, где много '+esc(hit[0].gen)+': списка продуктов для него ещё нет. Вопрос записал.')+HINT;
+    }
+    if(!strong) return null;
+    var grp=/(^|\s)витамин(ы|ов|ами|ах)?(\s|$)/.test(o)?NW_VIT:/(^|\s)минерал\S*/.test(o)?NW_MIN:null;
+    if(grp){ var byId={}; L.forEach(function(e){ byId[e.id]=e });
+      return p(grp===NW_VIT?'Какой витамин?':'Какой минерал?')+chips(grp.filter(function(id){ return byId[id] }).map(function(id){ var t=byId[id].title.replace(/^Витамин\s+/,''); return ['nwhere:'+id,t] })) }
+    if(R.other&&R.other.test(o)){ missLog('вопросы без ответа (не продукты)',o,o);
+      return p('Пока подскажу, где много, только для этих веществ: белок, клетчатка, витамины A, D, E, C, B3, B9, B12, железо, кальций, магний, калий, цинк, йод, омега-3. Вопрос записал, чтобы добавить.')+HINT }
+    return null;
   }
   /* ── ступень 2 · «как готовить»: «сколько варить гречку», «до какой температуры жарить свинину» (решение Астамура 22.11.2026 «да»).
      Ответ — только из справочника (cooking-library.js, библиотека cooking в meal-libraries): карточка сверена по двум источникам,
@@ -2384,6 +2440,7 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var wh=whereAsk(raw); if(wh) return wh }   // «где много железа» — обычные источники из словаря, числа из базы
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var sw=swapAsk(raw); if(sw) return sw }   // «чем заменить муку в сырниках» — замена из справочника
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var tq=tipAsk(raw); if(tq) return tq }   // «когда солить рис» — кулинарный приём
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var rq=rcpAsk(S,raw); if(rq) return rq }   // «рецепт плова» — рецепт из готового, а не «готовка на несколько человек»
@@ -3269,6 +3326,7 @@ var MealBot=(function(){
     else if(a[0]==='rcpshow'){ var rk=String(a[1]||'').split('.'), rl=S.adv&&S.adv.seq===+rk[0]?S.adv.list:null, rx=rl&&rl[+rk[1]]; if(!rx) return;
       h=rcpShow(S,[rx].concat(rl.filter(function(y){ return y!==rx }))) }   // «Есть ещё: плов с говядиной» — показать этот рецепт
     else if(/^adv/.test(a[0])){ h=advTap(S,a); if(h==='') return }
+    else if(a[0]==='nwhere'){ var ne=nutrList().filter(function(e){ return e.id===a[1] })[0]; if(!ne) return; h=whereReply([ne]); if(!h) return }   // кнопка «какой витамин»
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='st'){ h=typeof MealBotSteps!=='undefined'?MealBotSteps.tap(chat,S,a):null }
     else if(a[0]==='ownnew'||a[0]==='ownname'){ if(typeof MealBotSteps==='undefined') return;
