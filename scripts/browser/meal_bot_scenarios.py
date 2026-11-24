@@ -1246,6 +1246,19 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Ил11", eaten=True, msgs=["чай с сахаром или без"], mode="safe", want=[("чай", 200)]),
  dict(id="Ил12", eaten=True, msgs=["щи или борщ"], mode="none", ask=True),
  # Общее слово блюда + незнакомое отличие (Астамур, 23.11.2026): «В базе нет», а не посторонние варианты
+ # Meal 34.12 · напиток не в базе — «в базе нет» и похожие того же вида кнопками (вопрос в строке списка; текст вариантов сверен пробой); просто «компот» — вопрос, а не первый попавшийся (Астамур, 24.11.2026)
+ dict(id="Кмп01", eaten=True, msgs=["компот из фейхоа 300 мл"], mode="none", ask=True),
+ dict(id="Кмп02", eaten=True, msgs=["узвар стакан"], mode="none", ask=True),
+ dict(id="Кмп03", eaten=True, msgs=["взвар из сухофруктов"], mode="none", ask=True),   # не сухофрукты
+ dict(id="Кмп04", eaten=True, msgs=["морс 300 мл"], mode="none", ask=True),
+ dict(id="Кмп05", eaten=True, msgs=["иван-чай чашка"], mode="none", ask=True),   # не свежие листья кипрея
+ dict(id="Кмп06", eaten=True, msgs=["компот стакан"], mode="none", ask=True),
+ dict(id="Кмп07", eaten=True, msgs=["компот стакан", "яблочный"], want=[("яблочн компот", 250)]),
+ dict(id="Кмп08", eaten=True, msgs=["компот яблочный стакан"], want=[("яблочн компот", 250)]),
+ dict(id="Кмп09", eaten=True, msgs=["компот вишнёвый стакан"], want=[("компот вишн", 250)]),
+ dict(id="Кмп10", eaten=True, msgs=["клюквенный морс 200 мл"], want=[("клюкв морс", 200)]),
+ dict(id="Кмп11", eaten=True, msgs=["каркаде стакан"], want=[("гибискус", 250)]),
+ dict(id="Кмп12", eaten=True, msgs=["пельмени 200 г"], mode="none", reply="В базе нет"),   # еда не напиток — как было, без похожих
  dict(id="Фк1", eaten=True, msgs=["суп с галушками"], mode="none", reply="В базе нет"),   # «суп с фрикадельками» теперь в каталоге «Домашние блюда»
  dict(id="Фк2", eaten=True, msgs=["торт с вишней"], mode="none", reply="В базе нет"),
  dict(id="Фк3", eaten=True, msgs=["вареники вишней"], mode="none", reply="В базе нет"),

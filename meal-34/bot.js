@@ -1553,6 +1553,8 @@ var MealBot=(function(){
       if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>'+skip;
       missLog('нет в базе',heard,l.raw);
       var options=similarFoods(l.spoken||l.name,l.formContext);
+      var kindQ=SP&&SP.similarKind?SP.similarKind(String(l.name||'')):null;   // напиток того же вида: похожие из поиска — только того же вида, остальное из словаря (missing_similar, 24.11.2026)
+      if(kindQ) options=options.filter(function(f){ return kindQ.kind.test(norm(f.n)) }).concat(kindQ.options.map(function(sx){ var r=parseText(sx).lines[0], id=r&&(r.fid||r.alts[0]); return id&&FOODS[id]?{id:id,n:FOODS[id].n}:null })).filter(function(f,i,a){ return f&&a.findIndex(function(x){ return x.id===f.id })===i }).slice(0,3);
       var message=options.length?'К сожалению, в базе отсутствует «'+esc(heard)+'». Предлагаю на замену:':
         'Не нашёл «'+esc(heard)+'» в подключённых базах.';
       return p(message)+'<div data-replacement-slot="'+id+'">'+(options.length?
@@ -2597,7 +2599,8 @@ var MealBot=(function(){
         else if(!l.ask&&needMeal){ l.ask='meal'; asks.push(en) }
         else if(!l.ask) ready.push(en);
         else if(l.ask==='name'&&!/[а-яё]/i.test(String(l.name||''))){}   // Meal 33.12: латиница без единого русского слова — не еда, в список недостающего не идёт
-        else if(l.ask==='name'&&(!l.explicit||l.km)&&!selected) miss.push(l);   // «пельмени 200 г» — с весом тоже «в базе нет», а не «что это?» (хвосты разборов, 22.11.2026)
+        else if(l.ask==='name'&&(!l.explicit||l.km)&&!selected&&!(SP&&SP.similarKind&&SP.similarKind(String(l.name||'')))) miss.push(l);
+        /* Meal 34.12: напитка нет в базе («компот из фейхоа») — не просто «в базе нет», а вопрос с похожими того же вида (решение Астамура 24.11.2026) */   // «пельмени 200 г» — с весом тоже «в базе нет», а не «что это?» (хвосты разборов, 22.11.2026)
         else asks.push(en);
       });
     });
