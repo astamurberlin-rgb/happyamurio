@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1608440,
-   "sha256": "164cc030cf7c4a178790bfed22233774d29b3330e1d8de0d882c96ef827dea11"
+   "size": 1883564,
+   "sha256": "87907777cdc9086ae6b2f3eaeec0b865812211322fad11ffda6b3486eaa35ef2"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -130,6 +130,11 @@
    "sha256": "b1c01b628fb0928642ac3ceb9a622d7394525e5c13dc65a5fc8e5996f395cd1f"
   },
   {
+   "path": "arc-knob.js",
+   "size": 10980,
+   "sha256": "896042d97b614ac6d4d72e77e4547c3f833f12cea78c8c425c97860bd3bc8aac"
+  },
+  {
    "path": "arc-motion.css",
    "size": 544,
    "sha256": "382426838d27fe751aadb8b4bdaec167447e595bb12ec951fc160ad8c178e890"
@@ -146,13 +151,13 @@
   },
   {
    "path": "counters.js",
-   "size": 9961,
-   "sha256": "71b25c95a8eabea6a19a74a82944d58a98edbcce36f1aab8bf0033b93f052a2b"
+   "size": 10092,
+   "sha256": "a39f634a2c36929e5b4ad869697bcd43c248bc46afe4f1edb91a15d8b0a159fd"
   },
   {
    "path": "day-account.js",
-   "size": 6849,
-   "sha256": "62ff349638622bab5be9f15445c8d3173c517505c5cac32db7a4d10bed39d44f"
+   "size": 7131,
+   "sha256": "e58afc94def5dc7f57c53798933d2d9be43b91f7ef63bfd17fca0382fe7129fb"
   },
   {
    "path": "day-data.js",
@@ -165,9 +170,24 @@
    "sha256": "74aacd48e159856af637ad1020113878b317a1141ebe34eb02a6fc88876885cf"
   },
   {
+   "path": "day-marks.js",
+   "size": 9554,
+   "sha256": "5fa6d447ee68b31ed188b4b68aa95b290b09c461bc5fdce03c37aacdad8676b2"
+  },
+  {
    "path": "day-measurements.js",
    "size": 2803,
    "sha256": "2a81154a19a609107d42051190e9fe094c19ae041c96439574c30f3254aee6b6"
+  },
+  {
+   "path": "day-periods.css",
+   "size": 69109,
+   "sha256": "be973db509ad6783ff211d4f7c07a51a787f248cc08217906e37d5853b8f8e6e"
+  },
+  {
+   "path": "day-periods.js",
+   "size": 116419,
+   "sha256": "a20b44fca1bdc6e5a3f021e499aab5ce35e78e8320dff3d2bb33d02b04b98ffa"
   },
   {
    "path": "design-rules.css",
@@ -186,8 +206,8 @@
   },
   {
    "path": "index.html",
-   "size": 522623,
-   "sha256": "340863db717a5a44305f82ffa511177c1f3867d7d90fed58eea8ca32d992186a"
+   "size": 540367,
+   "sha256": "012665dffb885170c1685cf6bb7d7a32db76f73d4ef909e67d6607cd73acd5e4"
   },
   {
    "path": "manifest.webmanifest",
@@ -196,8 +216,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 56358,
-   "sha256": "bec777699efe88de5f91196c682ad8ba770defc823cd824f6de820e9bc0b0b89"
+   "size": 58491,
+   "sha256": "b3e61d3fafdafb397d94fd8dc1ecb3c5b0e88364bda43ae18951b722b1502dea"
   },
   {
    "path": "row-swipe.js",
@@ -211,18 +231,18 @@
   },
   {
    "path": "selfcare-core.js",
-   "size": 17056,
-   "sha256": "a4eba74c4d296871cb6ebc73ccff344393a7f324b2ef11981228528ec6855e9e"
+   "size": 17379,
+   "sha256": "8dbfa6e6b878d5716d955c2106b10c294d15da8acd42436a45e3a92b57efd6c8"
   },
   {
    "path": "selfcare-ui.js",
-   "size": 78977,
-   "sha256": "e97191086fb4ae828578ccf37fb9ebd1b72b231f64c7708a9be3eb0eab00033a"
+   "size": 79511,
+   "sha256": "beee2132f6c71b33f65247d7af90e9fc0d4dae66d02c4dec195da59ad27a532f"
   },
   {
    "path": "selfcare.css",
-   "size": 23946,
-   "sha256": "f6cd00661df508c5e2c4887c27c96705658f87a370786e9f5514e781151bf4a4"
+   "size": 24709,
+   "sha256": "8fa054976e7937759585951727741f71193c4b9baf8d80d4e10a13fb55f0ae5d"
   },
   {
    "path": "shared/apps.json",
@@ -291,8 +311,8 @@
   },
   {
    "path": "shared/happy-food.js",
-   "size": 18082,
-   "sha256": "7825ff2f8bf42b571e6edcb57c3771c72eb4aae97c6ba26c04f2591b51ccd6b0"
+   "size": 18379,
+   "sha256": "c7e5a422c26ebe72efbb78aaf9aa3aabbbf7920c85d93f4b615c042df71e206d"
   },
   {
    "path": "shared/happy-goals.js",
@@ -471,8 +491,8 @@
   },
   {
    "path": "tests/quiet-account.test.cjs",
-   "size": 11382,
-   "sha256": "2acfbe5b8efce717c556955809d73a9cd8635bafcd0f1759ca77c44cfccc2237"
+   "size": 11623,
+   "sha256": "9147e6fb83380a44a90aa2e2a53350ae37c2ea3f1e8d4a19a04dda70fb89858a"
   },
   {
    "path": "tests/section-times.test.cjs",

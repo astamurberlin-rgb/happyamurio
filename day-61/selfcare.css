@@ -202,10 +202,15 @@ body.fold-on [data-screen="day"] .nwSl:not(.side) .care-name{opacity:var(--fold-
 .care-sheet-form [hidden]{display:none!important}
 .care-danger{display:flex;width:100%;margin-top:12px;background:var(--happy-danger)!important;border-color:#ff6b78!important;color:var(--happy-ink)!important}
 
-/* Аудит Day 20.11.2026, п. 25: «Save» → «Сохранить». Слово в круг 60 не помещается: пока есть что сохранить, кнопка — пилюля 48
-   над меню, а в вырезе меню на это время снова «×» (закрыть; несохранённое ждёт, как и при жесте вниз). Без изменений — в вырезе микрофон. */
-body.wheel-editing .now-save[data-dirty="true"]{width:auto;min-width:160px;height:48px;padding:0 28px;margin-left:0;left:50%;
-  bottom:calc(109px + env(safe-area-inset-bottom));transform:translateX(-50%);border-radius:999px;font-size:16px;font-weight:600}
+/* Аудит Day 20.11.2026, п. 25: «Save» → «Сохранить». Пока есть что сохранить, в вырезе меню снова «×» (закрыть; несохранённое ждёт,
+   как и при жесте вниз), а «Сохранить» — отдельная кнопка (до 24.11.2026 пилюля 48 над меню). Без изменений — в вырезе микрофон. */
+/* 24.11.2026 (Астамур): «Сохранить» — целый круг 132 за меню и кнопкой с микрофоном (z-index ниже меню), центр — в центре кнопки.
+   Слово идёт по дуге посередине: от букв до края круга и от букв до кнопки — по 12. Низ круга спрятан за меню:
+   видна верхняя дуга и кольцо в вырезе меню. Положение по высоте ставит renderNote (selfcare-ui.js). */
+body.wheel-editing .now-save[data-dirty="true"]{z-index:9;width:132px;height:106px;min-width:0;padding:0;margin-left:-66px;
+  transform:none;border:0;border-radius:66px 66px 0 0;box-shadow:inset 0 1px rgba(255,255,255,.35)}
+body.wheel-editing .now-save svg.ns-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#nowSave svg.ns-arc text{fill:currentColor;stroke:none!important;font:600 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body.wheel-editing.now-dirty #fab{visibility:visible}
 
 /* аудит 20.11.2026, п. 5: колесо выбора дневника (общее HappyScreens.wheel) в форме записи — подпись как у полей */

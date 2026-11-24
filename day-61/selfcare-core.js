@@ -84,8 +84,10 @@ function mood(db,date){
   if(c.settings.sectionKeys&&!c.settings.sectionKeys.includes(s.k))return;
   const cp=(d.cp||{})[s.k]||{};
   const v=(s.scales||[]).map(k=>{const m=db.metrics.find(m=>m.k===k);if(!m)return null;
-   const stepped=m.kind==='step'||m.type==='step'||m.mode==='step'||(finite(m.lo)&&finite(m.hi));
-   const lo=stepped?m.lo:1,hi=stepped?m.hi:7;
+   /* v46 (24.11.2026): шкалу поменяли, а день отмечен по прежнему виду — читать по тому виду (m.past, index.html) */
+   const was=Array.isArray(m.past)?m.past.find(e=>e&&Array.isArray(e.d)&&e.d.includes(date)):null;
+   const stepped=was?finite(was.lo)&&finite(was.hi):m.kind==='step'||m.type==='step'||m.mode==='step'||(finite(m.lo)&&finite(m.hi));
+   const lo=stepped?(was||m).lo:1,hi=stepped?(was||m).hi:7;
    return magnitude(cp[k],lo,hi,mapping(c,'metric:'+k,m.neg!=null?m.neg:['anx','sleepy'].includes(k),lo,hi));
   });
   const wake=i===0&&d.sleep&&d.sleep.src&&d.sleep.src!=='manual'&&(d.sleep.w||d.sleep.wake);

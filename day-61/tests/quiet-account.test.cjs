@@ -36,8 +36,9 @@ test('аккаунт в настройках — общие экраны: вер
   for (const id of ['expJson', 'expCsv', 'impJson', 'wipe']) assert.equal((page.match(new RegExp('id="' + id + '"', 'g')) || []).length, 1, id);
 });
 
-test('без входа — предложение войти на экране дня; запись проверяет вход в одном месте', () => {
-  assert.match(page, /<section class="card day-signin" id="daySignIn" hidden><h2>Войди, чтобы записывать<\/h2>.*<button class="btn solid" type="button" id="daySignInGo">Войти<\/button><\/section>/);
+test('без входа — строка «Войди» над меню на экране дня; запись проверяет вход в одном месте', () => {
+  assert.match(page, /<div class="day-signin" id="daySignIn" hidden><span>Войди, чтобы записывать<\/span><button type="button" id="daySignInGo">Войти<\/button><\/div>/);
+  assert.ok(page.indexOf('id="daySignIn"') > page.indexOf('data-screen="settings"'), 'строка входа — над меню, не в экране дня: кольцо на главной стоит там же, где на экране раздела');
   const account = read('day-account.js');
   assert.ok(account.includes("window.paintSignIn=function(){\n  var box=document.getElementById('daySignIn'); if(box) box.hidden=DayData.signedIn();"));
   assert.ok(account.includes("closest('#daySignInGo')) HappyWelcome.open('login')"), '«Войти» на карточке — сразу экран входа');

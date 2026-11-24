@@ -5,7 +5,7 @@
  *                   напитков, sec:{'<раздел>':{food,k,t,t0,t1,dr,…}} — приёмы по разделам, ev:[{s:'<раздел>',…}],
  *                   cs?:{'<id нажатия>':[ккал, белки, жиры, углеводы, клетчатка или null]}}
  *                  cs — нажатия на счётчики, которые Meal уже включил в итог дня;
- *   'secs'    → [{k,t}] — разделы Meal и их названия;
+ *   'secs'    → [{k,t,a?,b?}] — разделы Meal, их названия и время периода (минуты от полуночи);
  *   'goals'   → {k,p,f,c,fib} — цели на день;
  *   'skipped' → [id нажатия…] — нажатия, о которых Meal знает и сам решил, считать или нет.
  * meal/foods — пишет Meal, читают Day и Sport: счётчики еды из продуктов библиотеки Meal. Счётчик принадлежит Meal.
@@ -69,7 +69,7 @@ function summary(records){
  (records||[]).forEach(function(r){
   if(!r||typeof r.id!=='string')return;var v=r.value,taken=true;
   if(validDate(r.id)){if(validDay(v)){out.days[r.id]=copy(v);out.any=true}else taken=false}
-  else if(r.id==='secs'&&Array.isArray(v)){out.secs=v.filter(function(s){return object(s)&&typeof s.k==='string'&&!!s.k&&safeKey(s.k)&&typeof s.t==='string'}).map(function(s){return {k:s.k,t:s.t}});out.any=true}
+  else if(r.id==='secs'&&Array.isArray(v)){out.secs=v.filter(function(s){return object(s)&&typeof s.k==='string'&&!!s.k&&safeKey(s.k)&&typeof s.t==='string'}).map(function(s){var o={k:s.k,t:s.t};if(Number.isInteger(s.a)&&Number.isInteger(s.b)&&s.a>=0&&s.b<=1440&&s.a<s.b){o.a=s.a;o.b=s.b}return o});out.any=true}   // 22.11.2026: и время периода Meal — его показывает Day во вкладке «Периоды»
   else if(r.id==='goals'&&object(v)){['k','p','f','c','fib'].forEach(function(k){if(positive(v[k]))out.goals[k]=v[k]});out.any=true}
   else if(r.id==='skipped'&&Array.isArray(v)){var n=0;v.forEach(function(id){if(typeof id==='string'&&id&&id.length<=200&&n<LIMIT){out.skipped[id]=true;n++}})}
   else taken=false;

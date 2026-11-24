@@ -98,7 +98,7 @@
     const html=root.tapsHTML;root.tapsHTML=function(e){let result=html(e);root.DB.taps.filter(c=>c.mealCounterId).forEach(c=>{
       result=result.replace('>'+root.escH(c.t)+'</button>','>'+root.escH(c.t)+'<small class="fc-day-portion">'+root.escH(c.mealPortion||'')+' · Meal</small></button>');
     });return result};
-    document.getElementById('tapList').addEventListener('click',e=>{
+    (document.getElementById('tapList')||document.createElement('div')).addEventListener('click',e=>{   // лаборатория 22.11: списка счётчиков в настройках нет
       const b=e.target.closest('[data-ren],[data-del]');if(!b)return;
       const c=root.DB.taps[Number((b.dataset.ren||b.dataset.del).slice(1))];if(!c||!c.mealCounterId)return;
       e.stopImmediatePropagation();
