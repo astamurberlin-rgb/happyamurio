@@ -86,7 +86,8 @@ export async function accountRecoveryCases({check, rejects, makeCloud, makeDevic
  keyAvailable=true;
  page.href+='?code=unsolicited';
  check('callback без начатого входа очищается и не обменивается',!!await rejects(account.finishGoogle())&&!page.href.includes('code=')&&exchanges===0);
- await account.linkGoogle();page.href+='?code=link';
+ check('без текущего пароля привязка не начинается',!!await rejects(account.linkGoogle())&&!!await rejects(account.linkGoogle(originalPassword))&&!pending.size);
+ await account.linkGoogle(server.users.get(email).password);page.href+='?code=link';
  check('привязка с другим ID отклоняется до смены аккаунта',!!await rejects(account.finishGoogle())&&account.current()?.uid===uid&&exchanges===1&&tab.storage.getItem(account.cell)===cell);
  page.href+='?code=link';
  check('повторное использование callback отклоняется',!!await rejects(account.finishGoogle())&&exchanges===1);

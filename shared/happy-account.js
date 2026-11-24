@@ -367,7 +367,8 @@ function create(options){
  const withBack=path=>{const b=back();return b?path+(path.includes('?')?'&':'?')+'redirect_to='+encodeURIComponent(b):path};
  /* A verifier belongs to this tab and this app. Supabase keeps the OAuth state
     and exchanges its single-use code for the same Happy user's session. */
- async function startGoogle(link){
+ async function startGoogle(link,password,active=()=>true){
+  const owner=current()?.uid;
   await cancelRecovery();
   if(link&&current()?.keyVersion!==2)
    throw fail('legacy','Сначала включи восстановление ключа в настройках аккаунта.');
@@ -378,13 +379,18 @@ function create(options){
    code_challenge_method:'s256',prompt:'select_account'});
   let destination=url+'/auth/v1/authorize?'+params;
   if(link){
+   if(!password)throw fail('auth','Введи пароль своего аккаунта Happy.');
+   if(!owner||owner!==uid)throw changed();
+   const proof=await auth('token?grant_type=password',{email:session.email,password});
+   if(proof?.access_token&&proof.access_token!==session?.at)await logoutToken(proof.access_token);
+   if(!proof?.access_token||proof.user?.id!==uid||current()?.uid!==uid||!active())throw changed();
    params.set('skip_http_redirect','true');
    const j=await auth('user/identities/authorize?'+params,null,await token(),'GET');
    const target=new URL(j.url);
    if(target.origin!==new URL(url).origin&&target.origin!=='https://accounts.google.com')throw fail('auth','Не удалось открыть Google.');
    destination=target.href;
   }
-  if((session?.uid||null)!==uid)throw changed();
+  if((session?.uid||null)!==uid||!active())throw changed();
   oauthStorage().setItem(oauthCell,JSON.stringify({uid,link,verifier,redirect,created:now()}));
   if(o.navigate)o.navigate(destination);else location.assign(destination);
  }
@@ -623,7 +629,7 @@ function create(options){
  }
  if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume)}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:(password,active)=>startGoogle(true,password,active),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,

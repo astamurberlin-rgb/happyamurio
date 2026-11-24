@@ -113,10 +113,11 @@ with sync_playwright() as p:
        apps:[...document.querySelectorAll('[data-happy-section=links] .happy-app-name')].map(a=>a.textContent),bottom:b.innerText.replace(/\\s+/g,' ').trim(),
        order:[...s.querySelectorAll(':scope>section[data-happy-section]')].map(x=>x.dataset.happySection)}}""", seconds=15)
     st = out["settings"] or {}
-    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи / Подключить вход через Google / Настроить тему» (третья строка — с Meal 33.17, «Настроить тему» — последняя, как в Day и Sport), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Подключить вход через Google", "Настроить тему"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
+    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи / Настроить тему» (третья строка — с Meal 33.17, «Настроить тему» — последняя, как в Day и Sport), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Настроить тему"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
     check("внизу «Выйти» и строка синхронизации; порядок разделов — как в apps.json", st.get("bottom") == "Синхронизировано Выйти" and st.get("order") == json.loads(open(os.path.join(REPO, "shared", "apps.json"), encoding="utf-8").read())["meal"]["settingsSections"])
 
-    m.click("[data-hp=access]")
+    m.click("[data-hp=profile]")
+    m.click("[data-p=google]")
     consent = m.locator("#happy-screens .hs-note").inner_text()
     check("прежний аккаунт получает объяснение о восстановлении доступа на новом телефоне",
           "Happy сможет восстановить доступ" in consent and "на новом телефоне" in consent
@@ -126,7 +127,6 @@ with sync_playwright() as p:
           m.evaluate("() => MealData.signedIn() && MealData.account.current().keyVersion === 1"))
 
     # 4. Профиль: необязательные поля, новый вес — замер на дату; имя — общее для приложений
-    m.evaluate("()=>document.querySelector('[data-hp=profile]').click()")
     m.wait_for_selector("#happy-screens [data-page=profile] [name=height]")
     today = m.evaluate("()=>HappyScreens.day()")
     m.fill("#happy-screens [name=name]", "Александр-Константин Миронов-Воскресенский")

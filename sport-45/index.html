@@ -8606,7 +8606,8 @@ function create(options){
  const withBack=path=>{const b=back();return b?path+(path.includes('?')?'&':'?')+'redirect_to='+encodeURIComponent(b):path};
  /* A verifier belongs to this tab and this app. Supabase keeps the OAuth state
     and exchanges its single-use code for the same Happy user's session. */
- async function startGoogle(link){
+ async function startGoogle(link,password,active=()=>true){
+  const owner=current()?.uid;
   await cancelRecovery();
   if(link&&current()?.keyVersion!==2)
    throw fail('legacy','Сначала включи восстановление ключа в настройках аккаунта.');
@@ -8617,13 +8618,18 @@ function create(options){
    code_challenge_method:'s256',prompt:'select_account'});
   let destination=url+'/auth/v1/authorize?'+params;
   if(link){
+   if(!password)throw fail('auth','Введи пароль своего аккаунта Happy.');
+   if(!owner||owner!==uid)throw changed();
+   const proof=await auth('token?grant_type=password',{email:session.email,password});
+   if(proof?.access_token&&proof.access_token!==session?.at)await logoutToken(proof.access_token);
+   if(!proof?.access_token||proof.user?.id!==uid||current()?.uid!==uid||!active())throw changed();
    params.set('skip_http_redirect','true');
    const j=await auth('user/identities/authorize?'+params,null,await token(),'GET');
    const target=new URL(j.url);
    if(target.origin!==new URL(url).origin&&target.origin!=='https://accounts.google.com')throw fail('auth','Не удалось открыть Google.');
    destination=target.href;
   }
-  if((session?.uid||null)!==uid)throw changed();
+  if((session?.uid||null)!==uid||!active())throw changed();
   oauthStorage().setItem(oauthCell,JSON.stringify({uid,link,verifier,redirect,created:now()}));
   if(o.navigate)o.navigate(destination);else location.assign(destination);
  }
@@ -8862,7 +8868,7 @@ function create(options){
  }
  if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume)}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:(password,active)=>startGoogle(true,password,active),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,
@@ -10630,7 +10636,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=api;
  *                   напитков, sec:{'<раздел>':{food,k,t,t0,t1,dr,…}} — приёмы по разделам, ev:[{s:'<раздел>',…}],
  *                   cs?:{'<id нажатия>':[ккал, белки, жиры, углеводы, клетчатка или null]}}
  *                  cs — нажатия на счётчики, которые Meal уже включил в итог дня;
- *   'secs'    → [{k,t}] — разделы Meal и их названия;
+ *   'secs'    → [{k,t,a?,b?}] — разделы Meal, их названия и время периода (минуты от полуночи);
  *   'goals'   → {k,p,f,c,fib} — цели на день;
  *   'skipped' → [id нажатия…] — нажатия, о которых Meal знает и сам решил, считать или нет.
  * meal/foods — пишет Meal, читают Day и Sport: счётчики еды из продуктов библиотеки Meal. Счётчик принадлежит Meal.
@@ -10694,7 +10700,7 @@ function summary(records){
  (records||[]).forEach(function(r){
   if(!r||typeof r.id!=='string')return;var v=r.value,taken=true;
   if(validDate(r.id)){if(validDay(v)){out.days[r.id]=copy(v);out.any=true}else taken=false}
-  else if(r.id==='secs'&&Array.isArray(v)){out.secs=v.filter(function(s){return object(s)&&typeof s.k==='string'&&!!s.k&&safeKey(s.k)&&typeof s.t==='string'}).map(function(s){return {k:s.k,t:s.t}});out.any=true}
+  else if(r.id==='secs'&&Array.isArray(v)){out.secs=v.filter(function(s){return object(s)&&typeof s.k==='string'&&!!s.k&&safeKey(s.k)&&typeof s.t==='string'}).map(function(s){var o={k:s.k,t:s.t};if(Number.isInteger(s.a)&&Number.isInteger(s.b)&&s.a>=0&&s.b<=1440&&s.a<s.b){o.a=s.a;o.b=s.b}return o});out.any=true}   // 22.11.2026: и время периода Meal — его показывает Day во вкладке «Периоды»
   else if(r.id==='goals'&&object(v)){['k','p','f','c','fib'].forEach(function(k){if(positive(v[k]))out.goals[k]=v[k]});out.any=true}
   else if(r.id==='skipped'&&Array.isArray(v)){var n=0;v.forEach(function(id){if(typeof id==='string'&&id&&id.length<=200&&n<LIMIT){out.skipped[id]=true;n++}})}
   else taken=false;
@@ -11292,7 +11298,7 @@ function ensurePage(){
  return pageH;
 }
 function closePage(){stopPoll();if(pageH){const p=pageH;pageH=null;p.close()}}
-const waitLabels={opening:'Открываем дневник…',googleOpening:'Открываем выбор Google-аккаунта…',googleChecking:'Проверяем записи…'};
+const waitLabels={opening:'Открываем дневник…',googleChecking:'Проверяем записи…'};
 function showWait(p,next){
  let status=p.main.querySelector('.hs-wait-status');
  if(!status){
@@ -11370,8 +11376,9 @@ function accessHtml(){
    'Выбери Google-аккаунт для входа в этот профиль. Вход по почте сохранится.';
   if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary');
  }
- const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Подключить вход через Google';
- return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
+ const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Привязать аккаунт к Google';
+ return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+
+  (!transitioning&&!who.google?S().passwordField({label:'Пароль аккаунта Happy',name:'linkPassword',autocomplete:'current-password'}):'')+errorBox()+
   '<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div>';
 }
 function smile(label){
@@ -11469,7 +11476,11 @@ function act(a){
  const A=cfg.account;
  switch(a){
  case 'google':return busy(a,()=>A.signInGoogle());
- case 'link-google':return busy(a,()=>A.linkGoogle());
+ case 'link-google':return busy(a,async()=>{
+  const input=pageH.main.querySelector('[name="linkPassword"]');
+  const password=input.value;input.value='';
+  await A.linkGoogle(password,()=>pageH?.main.contains(input)&&screen==='access');
+ });
  case 'complete-recovery':return busy(a,async()=>{
   const input=pageH.main.querySelector('[name="legacyPassword"]'),password=input?.value;
   if(input&&!password)throw Error('Введи прежний пароль Happy.');
@@ -11652,12 +11663,7 @@ function init(o){
    if(screen==='opening')closePage();
    signedIn(link);
    const returnToAccess=store.get(accessKey());store.del(accessKey());
-   if(returnToAccess===googleIntent(who.uid)){
-    if(who.keyVersion===2&&!who.google&&!who.migrating){
-     show('googleOpening');
-     cfg.account.linkGoogle().catch(e=>{if(cfg.account.current()?.uid===who.uid)show('access',{error:message(e)})});
-    }else show('access');
-   }else if(returnToAccess===who.uid||boot.google==='linked')show('access');
+   if(returnToAccess===googleIntent(who.uid)||returnToAccess===who.uid||boot.google==='linked')show('access');
   }else{
    if(screen==='opening')closePage();
    signedOut(link);
@@ -11819,8 +11825,7 @@ function top(box){
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
  const name=who?(who.name||'Мой профиль'):'Гость';
  let accessLabel='';
- if(who&&!who.google)accessLabel='Подключить вход через Google';
- else if(who&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
+ if(who&&who.google&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
@@ -11877,7 +11882,8 @@ function open(){
    '<input type="file" accept="image/*" hidden data-p-file></div><div class="hs-profile-form">'+
    '<section class="hs-profile-account"><h2>Аккаунт</h2><div class="hs-email-label"><span>Почта</span><span class="hs-verified">'+S().ICONS.check+'Подтверждена</span></div>'+
    '<div class="hs-input hs-email-value" data-p-email>'+esc((A.current()||who).email)+'</div>'+
-   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
+   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+
+   (!who.google?'<button type="button" class="hs-quiet" data-p="google">Привязать аккаунт к Google</button>':'')+'</section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
    F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как тебя зовут'})+
    F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
@@ -11924,6 +11930,7 @@ function open(){
   const b=e.target.closest('[data-p],[data-hs]');if(!b)return;
   const a=b.dataset.p||b.dataset.hs;
   if(a==='photo'){readInputs();if(!draft.photo){main.querySelector('[data-p-file]').click();return}photoSheet();return}
+  if(a==='google'){readInputs();root.HappyWelcome.access();return}
   if(a==='email'){readInputs();root.HappyWelcome.changeEmail(()=>{A.user().then(u=>{pendingEmail=u.newEmail||'';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml()}).catch(()=>{})});return}
   if(a==='email-again'){A.changeEmail(pendingEmail).then(()=>S().toast('Ссылка отправлена повторно')).catch(err=>error(err.message));return}
   if(a==='email-cancel'){A.changeEmail((A.current()||who).email).then(()=>{pendingEmail='';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML='';S().toast('Смена почты отменена')}).catch(err=>error(err.message));return}

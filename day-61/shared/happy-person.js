@@ -121,8 +121,7 @@ function top(box){
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
  const name=who?(who.name||'Мой профиль'):'Гость';
  let accessLabel='';
- if(who&&!who.google)accessLabel='Подключить вход через Google';
- else if(who&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
+ if(who&&who.google&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
@@ -179,7 +178,8 @@ function open(){
    '<input type="file" accept="image/*" hidden data-p-file></div><div class="hs-profile-form">'+
    '<section class="hs-profile-account"><h2>Аккаунт</h2><div class="hs-email-label"><span>Почта</span><span class="hs-verified">'+S().ICONS.check+'Подтверждена</span></div>'+
    '<div class="hs-input hs-email-value" data-p-email>'+esc((A.current()||who).email)+'</div>'+
-   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
+   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+
+   (!who.google?'<button type="button" class="hs-quiet" data-p="google">Привязать аккаунт к Google</button>':'')+'</section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
    F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как тебя зовут'})+
    F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
@@ -226,6 +226,7 @@ function open(){
   const b=e.target.closest('[data-p],[data-hs]');if(!b)return;
   const a=b.dataset.p||b.dataset.hs;
   if(a==='photo'){readInputs();if(!draft.photo){main.querySelector('[data-p-file]').click();return}photoSheet();return}
+  if(a==='google'){readInputs();root.HappyWelcome.access();return}
   if(a==='email'){readInputs();root.HappyWelcome.changeEmail(()=>{A.user().then(u=>{pendingEmail=u.newEmail||'';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml()}).catch(()=>{})});return}
   if(a==='email-again'){A.changeEmail(pendingEmail).then(()=>S().toast('Ссылка отправлена повторно')).catch(err=>error(err.message));return}
   if(a==='email-cancel'){A.changeEmail((A.current()||who).email).then(()=>{pendingEmail='';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML='';S().toast('Смена почты отменена')}).catch(err=>error(err.message));return}

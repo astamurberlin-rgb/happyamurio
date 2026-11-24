@@ -66,7 +66,7 @@ function ensurePage(){
  return pageH;
 }
 function closePage(){stopPoll();if(pageH){const p=pageH;pageH=null;p.close()}}
-const waitLabels={opening:'Открываем дневник…',googleOpening:'Открываем выбор Google-аккаунта…',googleChecking:'Проверяем записи…'};
+const waitLabels={opening:'Открываем дневник…',googleChecking:'Проверяем записи…'};
 function showWait(p,next){
  let status=p.main.querySelector('.hs-wait-status');
  if(!status){
@@ -144,8 +144,9 @@ function accessHtml(){
    'Выбери Google-аккаунт для входа в этот профиль. Вход по почте сохранится.';
   if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary');
  }
- const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Подключить вход через Google';
- return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
+ const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Привязать аккаунт к Google';
+ return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+
+  (!transitioning&&!who.google?S().passwordField({label:'Пароль аккаунта Happy',name:'linkPassword',autocomplete:'current-password'}):'')+errorBox()+
   '<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div>';
 }
 function smile(label){
@@ -243,7 +244,11 @@ function act(a){
  const A=cfg.account;
  switch(a){
  case 'google':return busy(a,()=>A.signInGoogle());
- case 'link-google':return busy(a,()=>A.linkGoogle());
+ case 'link-google':return busy(a,async()=>{
+  const input=pageH.main.querySelector('[name="linkPassword"]');
+  const password=input.value;input.value='';
+  await A.linkGoogle(password,()=>pageH?.main.contains(input)&&screen==='access');
+ });
  case 'complete-recovery':return busy(a,async()=>{
   const input=pageH.main.querySelector('[name="legacyPassword"]'),password=input?.value;
   if(input&&!password)throw Error('Введи прежний пароль Happy.');
@@ -426,12 +431,7 @@ function init(o){
    if(screen==='opening')closePage();
    signedIn(link);
    const returnToAccess=store.get(accessKey());store.del(accessKey());
-   if(returnToAccess===googleIntent(who.uid)){
-    if(who.keyVersion===2&&!who.google&&!who.migrating){
-     show('googleOpening');
-     cfg.account.linkGoogle().catch(e=>{if(cfg.account.current()?.uid===who.uid)show('access',{error:message(e)})});
-    }else show('access');
-   }else if(returnToAccess===who.uid||boot.google==='linked')show('access');
+   if(returnToAccess===googleIntent(who.uid)||returnToAccess===who.uid||boot.google==='linked')show('access');
   }else{
    if(screen==='opening')closePage();
    signedOut(link);
