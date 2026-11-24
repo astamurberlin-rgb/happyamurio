@@ -209,6 +209,22 @@ function quick(spec){
  var food=commit(draft,0,!!root.DB.productToolsPro,'Не удалось сохранить продукт');
  root.renderAll();return food;
 }
+/* Meal 34 · правка своего продукта из чата бота (bot-mine.js, решение Астамура 24.11.2026): тот же путь записи, что «Сохранить»
+   в форме. per100: {kcal,prot,fat,carb} на 100 г; null — «нет данных». Записанное раньше держит свой снимок (snapshotItems). */
+function quickEdit(id,per100){
+ if(root.writeGuard())return null;
+ if(root.DB.productsVersion>1)throw Error('Продукты сохранены в более новой версии приложения. Открой последнюю версию.');
+ root.adoptRemote(true);
+ var stored=(root.DB.foods||[]).find(function(f){return f.id===id}),food=root.FOODS[id];
+ if(!stored||!food)throw Error('Этого продукта уже нет в «Мои продукты».');
+ var draft=P.fromFood(food,catalog(),root.blsVal,{copy:false,name:'',sourceInfo:food.sourceInfo||null});
+ draft.por=Object.assign({},draft.por,(root.DB.units||{})[draft.id]||{});delete draft.porG;delete draft.porOwn;delete draft.own;
+ Object.keys(per100||{}).forEach(function(k){var f=draft.composition.fields.find(function(x){return x.key===k});if(!f)return;var v=per100[k];
+   if(v==null){f.value=null;f.status='missing'}else{f.value=v;f.status='value'}f.origin='user';delete f.copiedFrom;delete f.sourceQualifier});
+ P.validate(draft);
+ var saved=commit(draft,stored.revision||0,!!root.DB.productToolsPro,'Не удалось сохранить продукт');
+ root.renderAll();return saved;
+}
 async function save(){
  if(session.saving)return;
  var s=session;
@@ -279,7 +295,7 @@ function renderJournalProperties(){
  var list=Object.values(sums);node.hidden=!list.length;
  node.innerHTML=list.length?'<div class="eyebrow"><span>Пользовательские свойства</span></div><section class="happy-card"><p class="happy-note">'+(range.a===range.b?'За день':'В среднем за день с записями')+' · свойства учитываются отдельно. Частичный итог включает только известные значения.</p>'+list.map(function(p){return '<div class="up-journal-property"><span>'+esc(p.name)+'<small>'+(p.mapsTo?'Сопоставлено: '+esc(p.mapsTo):'Без сопоставления')+(p.missing?' · нет данных: '+p.missing+' порц.':'')+(p.notDetected?' · не обнаружено: '+p.notDetected+' порц.':'')+'</small></span><b>'+(p.value==null?p.notDetected?'Не обнаружено':'—':num(p.value/days)+' '+esc(p.unit))+'</b></div>'}).join('')+'</section>':'';
 }
-root.MealProductEditor={isOpen:function(){return !!session},quick:quick,create:function(name,callback){return open(null,{name:name,onSave:callback})},edit:function(food){return open(food)},copy:function(food,callback){return open(food,{copy:true,onSave:callback})},renderJournalProperties:renderJournalProperties,renderLibrary:renderOwnLibrary};
+root.MealProductEditor={isOpen:function(){return !!session},quick:quick,quickEdit:quickEdit,create:function(name,callback){return open(null,{name:name,onSave:callback})},edit:function(food){return open(food)},copy:function(food,callback){return open(food,{copy:true,onSave:callback})},renderJournalProperties:renderJournalProperties,renderLibrary:renderOwnLibrary};
 if(e('libraryCreateProduct'))e('libraryCreateProduct').addEventListener('click',function(){root.MealProductEditor.create('')});
 if(e('libraryOwnProducts'))e('libraryOwnProducts').addEventListener('click',function(ev){var b=ev.target.closest('[data-own-product]');if(b&&root.FOODS[b.dataset.ownProduct])root.MealControls.product({fid:b.dataset.ownProduct,g:100})});
 doc.getElementById('addOwnProduct').addEventListener('click',function(){root.MealProductEditor.create('')});

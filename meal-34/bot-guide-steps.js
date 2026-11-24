@@ -242,17 +242,33 @@ var MealBotGuide=(function(){
     if(bad.length) return {error:esc(T((G().recipe||{}).bad_lines,{w:bad.map(function(l){ return l.name||'?' }).join(', ')}))};
     return {lines:ls.map(function(l){ return {fid:l.fid,q:l.q,u:l.u,g:l.g} })};
   }
+  /* рецепт одной фразой (Астамур 24.11.2026): «сохрани рецепт сырники: творог 500, яйцо 2» — название до двоеточия, состав после;
+     без двоеточия — первые 1–3 слова название, если остальное целиком разбирается как состав и в нём есть количества. Иначе — шагами */
+  function inline(text,tail){
+    var raw=String(text||''), ci=raw.search(/[:—–]/);
+    if(ci>0){ var nm=nt(raw.slice(0,ci)).match(rx((G().recipe||{}).start)), body=raw.slice(ci+1).trim();
+      if(nm&&body&&/\d|(^|\s)(одн|две|два|три|пол)/i.test(body)){ var r=linesIn(body), nn=String(nm[1]||'').trim(); if(r&&r.lines&&r.lines.length) return {name:nn,lines:r.lines}; if(r&&r.error) return {name:nn,linesErr:r.error} } return null }
+    if(!tail||!/\d/.test(tail)) return null;
+    var ws=tail.split(' ');
+    for(var k=1;k<=3&&k<ws.length;k++){ if(/\d/.test(ws[k-1])) break;
+      var rest=ws.slice(k).join(' '); if(!/\d/.test(rest)) continue;
+      var r2=linesIn(rest); if(r2&&r2.lines&&r2.lines.length>=2) return {name:ws.slice(0,k).join(' '),lines:r2.lines} }
+    return null;
+  }
   function recipeName(v){ var n=String(v.name||'').trim(); return n?cap(n):(typeof autoName==='function'?autoName(v.lines):'Мой рецепт') }
   M.define({
     id:'recipe', title:'Рецепт',
-    start:function(text){ var m=nt(text).replace(/[.]+$/,'').match(rx((G().recipe||{}).start)); if(!m) return null;
-      var n=(m[1]||'').replace(/^(?:под названием|с названием|называется|название)\s+/,'').trim(); return n?{name:n}:true },
+    start:function(text){ var m=nt(text).replace(/[.]+$/,'').match(rx((G().recipe||{}).start)); if(!m) return inline(text,'');   // «сохрани рецепт: банан 1, молоко 200 мл»
+      var n=(m[1]||'').replace(/^(?:под названием|с названием|называется|название)\s+/,'').trim();
+      var inl=inline(text,n); if(inl) return inl;
+      n=n.split(/\s*[:—–]/)[0].trim();   // состав после двоеточия не разобрался — название без него, состав спросим
+      return n?{name:n}:true },
     steps:[
       { key:'name', label:'Название', optional:true,
         ask:function(){ var R=G().recipe||{}; return {text:esc(R.ask_name),chips:[['@auto',R.auto_name||'Назови по продуктам']]} },
         parse:function(text){ var t=String(text||'').trim().replace(/[.!]+$/,'').slice(0,60); return t?{name:t}:null } },
       { key:'lines', label:'Состав',
-        ask:function(){ var R=G().recipe||{}; return {text:esc(R.ask_lines),hint:esc(R.hint_lines||'')} },
+        ask:function(st){ var R=G().recipe||{}, e=st.v.linesErr; if(e) delete st.v.linesErr; return {text:(e?e+' ':'')+esc(R.ask_lines),hint:esc(R.hint_lines||'')} },
         parse:function(text){ return linesIn(text) } }
     ],
     command:function(name){ if(name==='auto') return {set:{name:''}}; return null },

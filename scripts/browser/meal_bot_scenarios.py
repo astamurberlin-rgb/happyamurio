@@ -1729,6 +1729,7 @@ for s in S:
 FAVN = "()=>(DB.favs||[]).map(id=>FOODS[id]?FOODS[id].n:id).join('|')"
 FASTON = "()=>!!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on)"
 ANY = "()=>Object.values(DB.days).some(d=>(d.items||[]).length>0)"
+OWNSET = "()=>{const v={kcal:200,prot:15,fat:10,carb:18};const old=(DB.foods||[]).find(f=>f.n==='Сырники');if(old)MealProductEditor.quickEdit(old.id,v);else MealProductEditor.quick({name:'Сырники',per100:v,por:{'шт':60}});return true}"   # тот же продукт между сценариями: удалить его из хранилища на лету нельзя (adoptRemote)
 ACTS = [
  dict(id="Кк01", msgs=["добавь овсянку в избранное"], reply="Добавил в избранное", ok=FAVN.replace("join('|')", "join('|').includes('Овсян')")),
  dict(id="Кк02", msgs=["добавь овсянку в избранное", {"tap": "Отменить"}], reply="Отменил", ok="()=>!(DB.favs||[]).length"),
@@ -1784,6 +1785,29 @@ ACTS = [
  dict(id="Шд04", msgs=["заведи свою добавку", "Тест", "таблетки", "магний сто"], reply="Не разобрал", ok="()=>!!(D.bot&&D.bot.steps)"),
  dict(id="Шн01", msgs=["добавь кофе 200 г"], ok="()=>!(D.bot&&D.bot.steps)"),
  dict(id="Шн02", msgs=["как добавить счётчик"], reply="Добавить счётчик", ok="()=>!(D.bot&&D.bot.steps)"),
+ # Meal 34 · счётчики голосом, «мои счётчики», свой продукт: удалить и поправить, рецепт одной фразой (решение Астамура 24.11.2026, bot-mine.js)
+ dict(id="Мс01", msgs=["ещё чашку кофе по счётчику"], reply="Кофе с молоком +1 чашка", ok="()=>tapCount('cfm')>=1"),
+ dict(id="Мс02", msgs=["две чашки кофе по счётчику"], reply="Кофе с молоком +2 × 1 чашка", ok="()=>tapCount('cfm')>=2"),
+ dict(id="Мс03", msgs=["ещё чашку кофе по счётчику", {"tap": "Отменить"}], reply="Отменил", ok="()=>true"),
+ dict(id="Мс04", msgs=["нажми счётчик яйцо"], reply="Яйцо +1 шт", ok="()=>tapCount('egg')>=1"),
+ dict(id="Мс05", msgs=["ещё стакан воды по счётчику"], reply="Счётчика «стакан воды» нет", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мс06", msgs=["мои счётчики"], reply="Твои счётчики сегодня", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мс07", msgs=["какие у меня счётчики", {"tap": "+ Яйцо"}], reply="Яйцо +1 шт", ok="()=>tapCount('egg')>=1"),
+ dict(id="Мс08", msgs=["минус кофе по счётчику"], reply="ещё ничего нет", ok="()=>tapCount('cfm')===0"),
+ dict(id="Мс09", msgs=["как добавить счётчик"], reply="Добавить счётчик", ok="()=>true"),
+ dict(id="Мс10", setup=OWNSET, msgs=["удали мой продукт сырники"], reply="Убрать «Сырники» из своих продуктов", ok="()=>DB.foods.length===1&&!(D.bot&&D.bot.steps)"),
+ dict(id="Мс11", setup=OWNSET, msgs=["удали мой продукт сырники", {"tap": "Убрать"}], reply="Убрал «Сырники»", ok="()=>DB.foods.length===0"),
+ dict(id="Мс12", setup=OWNSET, msgs=["удали продукт сырники", {"tap": "Убрать"}, {"tap": "Отменить"}], reply="Отменил", ok="()=>DB.foods.length===1"),
+ dict(id="Мс13", setup=OWNSET.replace("return true}", "const f=DB.foods.find(x=>x.n==='Сырники');day(curDate).items.push({id:'iown',sec:'am',fid:f.id,q:120,u:'г',g:120,t:'09:00'});save();return true}"), msgs=["удали мой продукт сырники"], reply="есть в дневнике", ok="()=>DB.foods.length===1"),
+ dict(id="Мс14", setup=OWNSET, msgs=["удали сырники"], ok="()=>DB.foods.length===1"),
+ dict(id="Мс15", setup=OWNSET, msgs=["поменяй калории у сырников на 220"], reply="калории 200 → 220 ккал", ok="()=>FOODS[DB.foods[0].id].k===220"),
+ dict(id="Мс16", setup=OWNSET, msgs=["у моих сырников белка 16 жиры 9"], reply="белки 15 → 16 г, жиры 10 → 9 г", ok="()=>FOODS[DB.foods[0].id].p===16&&FOODS[DB.foods[0].id].f===9&&FOODS[DB.foods[0].id].k===200"),
+ dict(id="Мс17", setup=OWNSET, msgs=["поменяй калории у сырников на 220", {"tap": "Отменить"}], reply="Отменил", ok="()=>FOODS[DB.foods[0].id].k===200"),
+ dict(id="Мс18", setup=OWNSET, msgs=["поменяй калории у творога на 100"], reply="продукт из базы", ok="()=>FOODS[DB.foods[0].id].k===200"),
+ dict(id="Мс19", msgs=["сохрани рецепт омлет: яйцо 2, молоко 100 мл", {"tap": "Сохранить"}], reply="Сохранил рецепт «Омлет»", ok="()=>(DB.recipes||[]).some(r=>r.t==='Омлет'&&r.lines.length===2)"),
+ dict(id="Мс20", msgs=["сохрани рецепт: банан 1, молоко 200 мл", {"tap": "Сохранить"}], reply="Сохранил рецепт", ok="()=>(DB.recipes||[]).some(r=>r.lines.length===2)"),
+ dict(id="Мс21", msgs=["сохрани рецепт омлет яйцо 2 молоко 100 мл", {"tap": "Сохранить"}], reply="Сохранил рецепт «Омлет»", ok="()=>(DB.recipes||[]).some(r=>r.t==='Омлет'&&r.lines.length===2)"),
+ dict(id="Мс22", msgs=["сохрани рецепт плов"], reply="Продиктуй состав", ok="()=>!(DB.recipes||[]).some(r=>r.t==='Плов')"),
 ]
 
 GOALS = [
