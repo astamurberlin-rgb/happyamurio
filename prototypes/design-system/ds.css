@@ -13,7 +13,6 @@ body{margin:0;min-height:100vh;color:var(--happy-ink);
    Фон теперь в слое 0, страница над ним в слое 1, а body прозрачный. */
 body{background:transparent!important}
 .ds{position:relative;z-index:1}
-.grain{z-index:0}
 html[data-happy-appearance] .bgclip{display:none}   /* с темой фон рисует сама тема (skin) */
 .bg{position:absolute;inset:-20%;pointer-events:none;
  background:radial-gradient(42% 26% at 18% 14%,rgba(70,253,252,.62),transparent 70%),radial-gradient(38% 24% at 84% 20%,rgba(3,222,234,.55),transparent 72%),radial-gradient(46% 28% at 12% 52%,rgba(188,97,254,.40),transparent 72%),radial-gradient(40% 26% at 88% 62%,rgba(253,147,253,.34),transparent 72%),radial-gradient(50% 30% at 30% 88%,rgba(70,253,252,.42),transparent 74%),var(--happy-base);
@@ -28,7 +27,7 @@ html[data-happy-appearance-app="sport"] .bg{inset:0;filter:none;animation:none;t
  background:radial-gradient(ellipse 76% 38% at 95% 20%,rgba(255,143,210,.320) 0%,transparent 84%),radial-gradient(ellipse 66% 36% at 7% -10%,rgba(158,119,251,.33) 0%,transparent 84%),linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%)}
 /* с темой фон лежит ровно по экрану, как в Day (аудит 3, 22.11.2026) */
 html[data-happy-appearance] body>.bg{inset:0;filter:none;animation:none;transform:none}
-.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
 /* ── рамка страницы ── */
