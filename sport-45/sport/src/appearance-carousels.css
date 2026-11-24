@@ -41,7 +41,7 @@
   font-weight: 700;
 }
 /* заголовки лент «Тема» и «Главная кнопка» — белые во всех приложениях (Астамур 22.11.2026) */
-.appearance-wheel h3 { color: #fff; }
+.appearance-wheel h3 { color: #fff; font-size: 14px; font-weight: 600; }
 
 .appearance-options {
   position: relative;
@@ -122,9 +122,9 @@
 }
 .appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] .appearance-swatch { outline: 2px solid #fff; outline-offset: 3px; }
 .appearance-options[data-kind="button"] .appearance-choice-name {
-  max-width: 76px; font-size: 12px; line-height: 16px; font-weight: 400; text-align: center; white-space: normal; overflow-wrap: anywhere;
+  max-width: 76px; font-size: 12px; line-height: 16px; font-weight: 400; text-align: center; white-space: normal; overflow-wrap: normal; word-break: normal; hyphens: none; text-wrap: balance; color: rgba(255,255,255,.82);
 }
-.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] .appearance-choice-name { font-weight: 600; }
+.appearance-options[data-kind="button"] .appearance-choice[aria-pressed="true"] .appearance-choice-name { font-weight: 600; color: #fff; }   /* подписи: слово не рвётся, выбранная 600 белая, остальные 400 белый 82 % (24.11.2026) */
 .appearance-options[data-kind="button"] .appearance-choice:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 12px; }
 .appearance-mic { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 

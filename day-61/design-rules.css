@@ -5,9 +5,9 @@
    нажимаемое — не меньше 44 (п. 34). Карточки Day остаются 22, теги-пилюли («Умывание» …) не трогаются (решения 20.11.2026).
    Размеры и жирность текста приведены к шкале в самих стилях Day (п. 19). — Claude · 20.11.2026 */
 
-/* ── Основная кнопка: пилюля 48, текст 16 / 600, одна строка ── */
+/* ── Основная кнопка: пилюля 48, текст 14 / 600, одна строка (16 — только кнопки входа) ── */
 .btn,.jPrt,.jMb{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;height:48px;padding:0 20px!important;border-radius:999px!important;
-  font-size:16px!important;font-weight:600!important;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  font-size:14px!important;font-weight:600!important;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .care-submit{display:flex;width:100%;margin-top:20px}
 .jPrt{width:100%}
 

@@ -14,7 +14,7 @@
 .overlay:has(.exercise-player),.exercise-player-overlay{inset:0;padding:0;align-items:stretch;background:var(--sport-background);backdrop-filter:none}
 .sheet:has(.exercise-player),.exercise-player-sheet{box-sizing:border-box;position:absolute;inset:0;display:flex;flex-direction:column;isolation:isolate;width:100%;max-width:460px;height:100%;max-height:none;margin:0 auto;padding:env(safe-area-inset-top) 0 calc(100px + env(safe-area-inset-bottom));border:0;border-radius:0;overflow:hidden;animation:none}
 .sheet:has(.exercise-player)>.grip{position:relative;top:auto;width:88px;height:22px;min-height:22px;flex:0 0 22px;margin:0 auto 13px;padding:0;background:none}
-.sheet:has(.exercise-player)>.grip:after{width:40px;height:4px}
+.sheet:has(.exercise-player)>.grip:after{width:42px;height:5px}
 .sheet:has(.exercise-player)>.sheet-top{display:none}
 .exercise-player{--player-axis:120px;--player-stroke:1.8px;box-sizing:border-box;position:static;display:flex;flex:1;min-height:0;width:100%;padding:0 20px 16px;flex-direction:column;align-items:center;text-align:left;color:var(--happy-ink);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 .exercise-player .player-exercise-name{flex:none;width:100%;padding:0;margin:32px 0 18px;text-align:left;font-size:20px;line-height:1.4;font-weight:600}

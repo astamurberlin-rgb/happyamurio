@@ -8,7 +8,9 @@
 /* ── Основная кнопка: пилюля 48, одна строка ── */
 .button,.happy-button,.hs-btn,.assign-options .button,.plan-fields .plan-share .button,.quick-actions .button,.template-card .button,.measure-outer .button,.current-bar>.button,.exercise-save-actions .button{
  box-sizing:border-box;min-height:48px;height:48px;border-radius:999px!important;padding:0 20px!important;
- font-size:16px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ font-size:14px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-welcome .hs-btn,.hs-sheet-body:has(>.hs-gate-reason) .hs-btn{font-size:16px!important}   /* кнопки входа — 16, остальные 14 */
+.button:active,.happy-button:active,.hs-btn:active{transform:scale(.985)}
 /* кнопка-строка с подписью внутри («Выбрать оформление», «История обновлений») — это строка настроек, а не кнопка:
    форма карточки-строки, подпись видна */
 .happy-card>.happy-button[data-action=release-history],.happy-button:has(>small),.happy-button:has(>b+small){
@@ -96,7 +98,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 .set-note,textarea{border-radius:12px!important}
 .note-pin{border-radius:999px!important}
 /* кольцо энергии: число 28, подпись 12 */
-.he-knob b{font-size:28px!important}
+/* цифра в кольце — от размера кольца (energy-widget.css), без жёстких 28 */
 .he-knob small{font-size:12px!important}
 /* «Продолжить» в полоске текущей тренировки */
 [data-action=resume]{font-size:14px!important}
