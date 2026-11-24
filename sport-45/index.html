@@ -1683,6 +1683,12 @@ html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input)
 html body :is(.happy-switch,.hs-switch,.sport-switch)::after,html body :is(.toggle,.fc-sync-row input)::before{content:""!important;position:absolute!important;top:50%!important;left:2px!important;width:19px!important;height:19px!important;margin:0!important;border-radius:50%!important;background:#fff!important;box-shadow:none!important;transform:translateY(-50%)!important;transition:transform .18s!important}
 html body :is(.happy-switch,.hs-switch,.sport-switch):checked::after,html body :is(.toggle,.fc-sync-row input):checked::before{left:2px!important;transform:translate(17px,-50%)!important}
 html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* 24.11.2026 (Астамур нашёл на iPhone, Meal «Фастинг»: два белых кружка): выключатель-кнопка (<button role=switch> с <b> внутри)
+   получал и свою ручку <b>, и общую ручку ::after; во «вкл» <b> уезжал вправо, ::after оставался слева. Теперь ручка одна — ::after,
+   а «вкл» у кнопки — aria-checked=true, как :checked у галочки. */
+html body :is(.happy-switch,.hs-switch,.sport-switch)>b{display:none!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]{background:var(--hs-switch-on,#8071df)!important;border-color:rgba(255,255,255,.27)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]::after{transform:translate(17px,-50%)!important}
 /* Профиль: подписи полей (Почта, Имя, Дата рождения, Рост, Пол, Вес сейчас, Дата замера, строки единиц) — жирные 600 и белые,
    как заголовок «Единицы измерения» (Астамур 22.11.2026). Светлые заголовки на самой странице Настроек не меняются. */
 .hs-profile .hs-field-title,.hs-profile .hs-email-label>span:first-child,.hs-profile .hs-units-row>span{font-weight:600!important;color:#fff!important}
