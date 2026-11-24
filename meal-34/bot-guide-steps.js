@@ -33,16 +33,29 @@ var MealBotGuide=(function(){
   var DAYS={all:[1,2,3,4,5,6,7],work:[1,2,3,4,5],weekend:[6,7]}, DAYS_T={all:'каждый день',work:'по будням',weekend:'по выходным'};
   function curHours(){ try{ var f=MealPeriods.rules(DB).fast; return Math.round(MealPeriods.duration(f)/60) }catch(e){ return 16 } }
   function hoursIn(text){ var ns=M.numbers(text).filter(function(n){ return n===Math.floor(n) }); if(!ns.length) return null; return ns[0] }
+  /* «16 на 8 с 8 вечера»: схема — до «с»/«до», время — после; «с X» — начало окна (первая еда = X + часы), «до X», «первая еда в X» — конец */
+  function schemePart(tail){ return String(tail||'').split(/(?:^|\s)(?:с|со|до|начиная|первая|первую|ем|есть|еда)(?=\s|$)/)[0] }
+  function fastTime(tail,h){
+    var t=nt(tail), m, out={};
+    if((m=t.match(/(?:^|\s)(?:до|первая\s+еда(?:\s+в)?|первую\s+еду(?:\s+в)?|ем\s+с|есть\s+с|еда\s+с)\s+(.+)$/))){ var e=timeOf(m[1]); if(e!=null){ out.end=e%1440; out.from='end'; return out } }
+    if((m=t.match(/(?:^|\s)(?:начиная\s+)?(?:с|со)\s+(.+?)(?=\s+до\s|$)/))){ var a=timeOf(m[1]); if(a!=null&&h!=null){ out.end=(a+h*60)%1440; out.from='start' } }
+    return out;
+  }
   function fastWin(v){ return {a:((v.end-v.hours*60)%1440+1440)%1440,b:v.end} }
   var fast=M.define({
     id:'fast', title:'Фастинг',
     start:function(text){
       if(typeof MealFast==='undefined'||typeof MealPeriods==='undefined') return null;
       var t=nt(text).replace(/[.]+$/,''), F=G().fast||{}, m=t.match(rx(F.start)), init={};
-      if(!m){ var s=t.match(rx(F.start_scheme)); if(!s) return null;
-        var h=hoursIn(s[1]); if(h==null||h<12||h>23||h===curHours()) return null;   // та же схема — просто включить (короткая команда)
-        init.hours=h; return init }
-      var h2=m[1]&&hoursIn(m[1]); if(h2>=12&&h2<=23) init.hours=h2;
+      if(!m){ var s=t.match(rx(F.start_scheme)), b=!s&&t.match(rx(F.start_bare)); if(!s&&!b) return null;
+        var tail=(s||b)[1], h=hoursIn(schemePart(tail)), tm=fastTime(tail,h);
+        if(b&&h==null&&tm.end==null) return null;
+        if(h!=null&&(h<12||h>23)) return null;
+        if(s&&tm.end==null&&(h==null||h===curHours())) return null;   // та же схема без времени — просто включить (короткая команда)
+        if(h!=null) init.hours=h; if(tm.end!=null&&h!=null) init.end=tm.end; else if(tm.end!=null&&tm.from==='end') init.end=tm.end;
+        return init }
+      var h2=m[1]&&hoursIn(schemePart(m[1])); if(h2>=12&&h2<=23) init.hours=h2;
+      var tm2=m[1]?fastTime(m[1],init.hours):{}; if(tm2.end!=null&&(init.hours!=null||tm2.from==='end')) init.end=tm2.end;
       return init;
     },
     steps:[
@@ -144,6 +157,7 @@ var MealBotGuide=(function(){
   function rowsNow(){ return MealPeriods.draft(DB,Date.now()) }
   function rowOf(text,rows){ var ws=nt(text).split(' ');
     return (rows||rowsNow().rows).filter(function(r){ var n=nt(r.t), st=n.slice(0,Math.max(3,Math.min(5,n.length-1))); return ws.some(function(w){ return w.indexOf(st)===0 })||(' '+nt(text)+' ').indexOf(' '+n+' ')>=0 })[0]||null }
+  function rowSaid(w){ var n=nt(w); return rowsNow().rows.filter(function(r){ return nt(r.t)===n })[0]||null }   // голая фраза: название приёма целиком
   function edge(d,i,e){ return i>=0&&!!MealPeriods.limits(d.rows,i,e).other }   // у края есть сосед — край можно двигать
   function idx(d,k){ for(var i=0;i<d.rows.length;i++) if(d.rows[i].k===k) return i; return -1 }
   /* черновик с новым временем; ошибка — {error} */
@@ -154,6 +168,17 @@ var MealBotGuide=(function(){
     if(v.b!=null&&v.b!==r.b){ var L2=MealPeriods.limits(d.rows,i,'b'); if(!L2.other) return {error:esc(T(P.fixed_b,{t:r.t,b:ck(r.b)}))}; if(v.b<L2.min||v.b>L2.max) return {error:esc(T(P.limit_b,{t:r.t,min:ck(L2.min),max:ck(L2.max)}))}; MealPeriods.moveEdge(d.rows,i,'b',v.b) }
     return d;
   }
+  /* «с 1 до 5» у обеда — 13–17: час без «утра», «дня», «вечера», «ночи» и без «13:00» — тот из двух (h или h+12), что ближе к нынешнему краю */
+  function near(v,cur,said){ if(v==null||cur==null) return v; if(/(утра|дня|вечера|ночи|полдень|полночь|полудня|полуночи)(\s|$)/.test(said)) return v;
+    if(/(^|\D)(1[3-9]|2\d)(\D|$)/.test(said)||v>=720) return v;
+    var d=function(x){ var q=Math.abs(x-cur)%1440; return Math.min(q,1440-q) }; return d(v+720)<d(v)?v+720:v }
+  function rangeNear(text,r){ var t=nt(text), g=rangeIn(text); if(!g) return null;
+    var ma=t.match(/(?:^|\s)(?:с|со)\s+(.+?)(?=\s+до\s|$)/), mb=t.match(/(?:^|\s)до\s+(.+)$/);
+    if(g.a!=null) g.a=near(g.a,r.a,ma?ma[1]:t); if(g.b!=null&&g.b!==1440) g.b=near(g.b,r.b%1440,mb?mb[1]:t)%1440||(g.b?1440:g.b);
+    return g }
+  /* после «с» и «до» — только время: «обед с 2 котлетами» — еда, а не время */
+  function onlyTime(tail){ var P=G().period||{}, ok=P.time_tokens||[], C=((window.HappyMealSpeechData||{}).numbers||{}).cardinals||{};
+    return nt(tail).replace(/\d{1,2}[:.]\d{2}/g,' ').split(' ').filter(Boolean).every(function(w){ return /^\d{1,2}$/.test(w)||ok.indexOf(w)>=0||C[w]!=null&&C[w]<=24 }) }
   function rangeIn(text){ var t=nt(text), a=null, b=null, m;
     if((m=t.match(/(?:^|\s)(?:с|со)\s+(.+?)(?=\s+до\s|$)/))) a=timeOf(m[1]);
     if((m=t.match(/(?:^|\s)до\s+(.+)$/))) b=timeOf(m[1]);
@@ -165,8 +190,9 @@ var MealBotGuide=(function(){
     id:'period', title:'Время приёмов пищи',
     start:function(text){
       if(typeof MealPeriods==='undefined'||!MealPeriods.draft) return null;
-      var t=nt(text).replace(/[.]+$/,''), P=G().period||{}, m=t.match(rx(P.start_meal));
-      if(m){ var r=rowOf(m[1]); if(!r) return null; var g=rangeIn(m[2]); if(!g) return null;
+      var t=nt(text).replace(/[.]+$/,''), P=G().period||{}, m=t.match(rx(P.start_meal)), bare=false;
+      if(!m&&(m=t.match(rx(P.start_bare)))){ bare=true; if(!onlyTime(m[2])) return null }
+      if(m){ var r=bare?rowSaid(m[1]):rowOf(m[1]); if(!r) return null; var g=rangeNear(m[2],r); if(!g) return null; if(bare&&(g.a==null||g.b==null)) return null;
         var d0=rowsNow(), i0=idx(d0,r.k), init={row:r.k};
         if(g.a!=null&&edge(d0,i0,'a')) init.a=g.a; if(g.b!=null&&edge(d0,i0,'b')) init.b=g.b;
         if(init.a==null) init.a=r.a; if(init.b==null) init.b=r.b;   // последний приём суток кончается в полночь: «до 23» у ужина не меняется
@@ -382,6 +408,74 @@ var MealBotGuide=(function(){
     },
     cancelled:SN().cancelled||'Хорошо, добавку не завёл.'
   });
+  /* ═══════ своя мера одной фразой (Астамур 24.11.2026, «Да»): «моя кружка 350 мл» → для чего? → запомнить.
+     Своя мера в приложении живёт у продукта (DB.units[продукт][мера] = граммы — как «+ своя мера» в карточке записи),
+     поэтому без продукта бот спрашивает, для чего она; «для чая и кофе» — обоим. мл считаем как граммы. Слова — own_unit ═══════ */
+  function OU(){ return G().own_unit||{} }
+  function unitIn(text){
+    var U=OU(), t=nt(String(text||'').replace(/(\d),(\d)/g,'$1.$2')).replace(/[.]+$/,'').replace(/\s*[—=–-]\s*/g,' ').trim(), ws=t.split(' '), owner=false, cont=null, q=null, mul=1, rest=[], i, w;
+    if(/^запомни(?:\s|$)/.test(t)){ owner=true; ws.shift() }
+    for(i=0;i<ws.length;i++){ w=ws[i];
+      if(!cont&&M.find(w,U.owner||[])){ owner=true; continue }
+      if(w==='у'&&ws[i+1]==='меня'){ owner=true; i++; continue }
+      if(!cont){ var k=M.pick(w,U.containers||{}); if(k){ cont=k; continue } }
+      var m=w.match(/^(\d+(?:[.,]\d+)?)(мл|г|гр|л)?$/);
+      if(m&&q==null){ q=parseFloat(m[1].replace(',','.')); var u=m[2]||ws[i+1]||'';
+        if(!m[2]&&M.find(u,U.units_ml||[])){ i++ } else if(!m[2]&&M.find(u,U.units_l||[])){ mul=1000; i++ } else if(!m[2]&&M.find(u,U.units_g||[])){ i++ } else if(m[2]==='л'){ mul=1000 } else if(!m[2]) return null;
+        continue }
+      if(M.find(w,U.fillers||[])) continue;
+      rest.push(w) }
+    if(!owner||!cont||q==null) return null;
+    var g=Math.round(q*mul*10)/10; if(!(g>=5&&g<=3000)) return null;
+    return {unit:cont,g:g,said:rest.join(' ')};
+  }
+  function foodsIn(text){
+    var parts=nt(text).replace(/^(для|под|это)\s+/,'').split(/\s*,\s*|\s+(?:и|или|а также)\s+/).map(function(x){ return x.replace(/^(для|под)\s+/,'').trim() }).filter(Boolean), out=[], miss=[], pick=null;
+    parts.forEach(function(x){ var r=foodOf(x), id=r&&(r.fid||(parts.length>1&&r.alts?r.alts[0]:null));   // несколько продуктов — у общего слова обычный вариант
+      if(id){ if(out.indexOf(id)<0) out.push(id) } else if(r&&r.alts&&!pick) pick=r.alts; else miss.push(x) });
+    return {fids:out,miss:miss,alts:pick};
+  }
+  function unitChips(unit){
+    var U=OU(), seen={}, out=[], kind=(U.kind||{})[unit]||'drink', days=Object.keys(DB.days||{}).sort().reverse().slice(0,30);
+    days.forEach(function(d){ ((DB.days[d]||{}).items||[]).forEach(function(it){ if(out.length>=3||seen[it.fid]||!FOODS[it.fid]) return;
+      if(it.u===unit||(U.same_kind||{})[kind]&&(U.same_kind[kind]||[]).indexOf(it.u)>=0){ seen[it.fid]=1; out.push(it.fid) } }) });
+    ((U.default_foods||{})[kind]||[]).forEach(function(w){ if(out.length>=4) return; var r=foodOf(w), id=r&&(r.fid||(r.alts&&r.alts[0])); if(id&&!seen[id]){ seen[id]=1; out.push(id) } });
+    return out.map(function(id){ return [id,shortName(id)] });
+  }
+  M.define({
+    id:'unit', title:'Своя мера', quick:true, loose:true,
+    start:function(text){
+      if(!DB||typeof rebuildLib!=='function') return null;
+      var u=unitIn(text); if(!u) return null;
+      var init={unit:u.unit,g:u.g}; if(u.said){ var r=foodsIn(u.said); if(r.fids.length&&!r.miss.length&&!r.alts) init.foods=r.fids; else init.said=u.said }
+      return init },
+    steps:[{ key:'foods', label:'Продукт',
+      ask:function(st){ var U=OU(), r=st.v.said?foodsIn(st.v.said):null;
+        if(r&&r.alts) return {text:esc(U.pick),chips:r.alts.slice(0,4).map(function(id){ return [id,fname(id)] })};
+        return {text:esc(T(U.ask,{this:(U.this||{})[st.v.unit]||st.v.unit})),chips:unitChips(st.v.unit),hint:esc(U.hint||'')} },
+      parse:function(text,st){ var U=OU(); if(/\d/.test(text)||M.find(text,U.eat_words||[])) return null;   // «съел тарелку борща», «углеводы 200 г» — не ответ на вопрос
+        var r0=st.v.said?foodsIn(st.v.said):null, ans=nt(text);
+        if(r0&&r0.alts){ var hit=r0.alts.filter(function(id){ return nt(fname(id)).split(/[ ,()]+/).some(function(w){ return w.length>2&&ans.split(' ').some(function(a){ return a.length>2&&w.indexOf(a.slice(0,Math.max(3,a.length-2)))===0 }) }) });
+          if(hit.length===1) return {foods:[hit[0]]} }   // «овощной» на «Какой именно? Суп манный · Суп овощной…»
+        var r=foodsIn(text);
+        if(r.alts&&!r.fids.length) return {error:esc(U.pick),chips:r.alts.slice(0,4).map(function(id){ return ['foods:'+id,fname(id)] })};
+        if(r.miss.length&&!r.fids.length) return ans.split(' ').length>3?null:{error:esc(T(U.none,{food:r.miss.join(', ')}))};
+        return r.fids.length?{foods:r.fids}:null },
+      chip:function(v){ return FOODS[v]?{foods:[v]}:null } }],
+    summary:function(st){ var v=st.v; return {text:p(esc(T(OU().summary,{u:v.unit,g:String(v.g).replace('.',','),foods:(v.foods||[]).map(function(id){ return '«'+fname(id)+'»' }).join(', ')})))} },
+    save:function(st){
+      if(guard()) return signIn();
+      var v=st.v, before=JSON.stringify(DB.units||null);
+      DB.units=DB.units||{};
+      v.foods.forEach(function(id){ var f=FOODS[id]; if(!f) return; DB.units[f.id]=DB.units[f.id]||{}; DB.units[f.id][v.unit]=v.g; if(String(f.id).indexOf('bls:')===0&&typeof blsUse==='function') blsUse(f.id) });
+      try{ rebuildLib() }catch(e){} touch();
+      var after=JSON.stringify(DB.units), names=v.foods.map(function(id){ return '«'+shortName(id)+'»' }).join(', ');
+      return p(esc(T(OU().saved,{u:v.unit,g:String(v.g).replace('.',','),foods:names})))+'<p class="mlHint">'+esc(T(OU().saved_hint,{u:v.unit}))+'</p>'+
+        undo(function(){ if(JSON.stringify(DB.units)!==after) return false; DB.units=JSON.parse(before)||{}; try{ rebuildLib() }catch(e){} touch(); return true });
+    },
+    cancelled:OU().cancelled||'Хорошо, меру не запомнил.'
+  });
+
   /* ═══════ первая настройка цепочкой (слой 3 · В): цель → приёмы пищи → фастинг → базы → счётчик. После каждого звена —
      «Дальше: …» (механизм) и «Пропустить …» — следующее звено можно пропустить ═══════ */
   var CHAIN=['goals','period','fast','catalogs','counter'];
