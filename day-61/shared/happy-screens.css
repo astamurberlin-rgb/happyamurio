@@ -168,7 +168,6 @@ body.hs-open{overflow:hidden}
 .hs-auth h1.hs-title{font-size:20px;font-weight:600;line-height:1.22;margin-bottom:28px}
 .hs-auth-fields{display:flex;flex-direction:column;gap:20px}
 #happy-screens .hs-forgot{margin-top:12px;font-size:14px}
-#happy-screens .hs-form-signup{text-align:center;margin:14px auto 0}
 .hs-mail-symbol{width:68px;height:68px;border:1px solid var(--hs-border);border-radius:50%;display:grid;place-items:center;background:var(--hs-glass);margin:36px auto 12px}
 .hs-mail-symbol svg{width:29px;height:29px;fill:none;stroke:#fff;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
 .hs-confirm-address{font-size:16px;line-height:1.45;overflow-wrap:anywhere;text-align:center;margin:24px 0 10px}
@@ -188,7 +187,6 @@ body.hs-open{overflow:hidden}
 .hs-settings .hs-row+.hs-row{border-top:1px solid rgba(255,255,255,.22)}
 .hs-settings .hs-row>span{font-size:16px;font-weight:600}
 .hs-settings .hs-row:active{opacity:.6}
-.hs-settings .hs-link-name{font-size:16px;font-weight:600;color:var(--happy-ink);text-decoration:none;min-width:0;overflow-wrap:anywhere}
 .hs-settings .hs-switch{cursor:pointer;-webkit-tap-highlight-color:transparent;margin:0}
 .hs-signout-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
 .hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;border:0;cursor:pointer;margin:0;box-shadow:none}
@@ -239,11 +237,6 @@ body.hs-open{overflow:hidden}
 .hs-height-sex,.hs-field-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .hs-compact-sex{height:48px}
 #happy-screens .hs-compact-sex button{font-size:14px}
-.hs-history{font-size:14px;margin:0}
-.hs-history summary{list-style:none;display:flex;justify-content:space-between;cursor:pointer;color:var(--hs-muted);padding:7px 0}
-.hs-history summary::-webkit-details-marker{display:none}
-.hs-history summary span{color:var(--happy-ink)}
-.hs-history-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
 .hs-units h2{font-size:16px;font-weight:600;color:#fff;margin-bottom:10px}   /* раздел профиля — как «Аккаунт» и «Личные данные»: 16 / 600 (Астамур 22.11.2026) */
 .hs-units-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
 /* Единицы в профиле: дорожка 44, как у кнопок внутри (было 36 — выбранная пилюля 44 вылезала и казалась сплющенной; Астамур 21.11.2026). */
@@ -265,7 +258,7 @@ body.hs-open{overflow:hidden}
  border-bottom:1px solid transparent;box-shadow:none;-webkit-appearance:none;appearance:none}
 #happy-screens .hs-target input:focus{border-bottom-color:var(--hs-border)}
 #happy-screens .hs-target input::placeholder{color:var(--hs-muted)}
-.hs-sport-weight>h2,.hs-goal-block>h2{font-size:20px;margin:0 0 22px;font-weight:600}
+.hs-sport-weight>h2{font-size:20px;margin:0 0 22px;font-weight:600}
 .hs-focus-block{margin-top:22px;padding-top:22px;border-top:1px solid rgba(255,255,255,.22)}
 .hs-focus-block .hs-wheel-wrap{margin:0}
 .hs-focus-block .hs-wheel-wrap>.hs-field-title{font-size:20px;font-weight:600;color:var(--happy-ink);margin-bottom:12px}
@@ -291,8 +284,6 @@ body.hs-open{overflow:hidden}
  touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none;outline:0}
 .hs-macro-slider:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important}
 .hs-macro-fill{position:absolute;bottom:0;left:0;right:0;min-height:0;border-radius:11px 11px 0 0;background:linear-gradient(135deg,#eab7da,#d994bf);border-top:1px solid rgba(255,255,255,.4)}
-.hs-macro-1 .hs-macro-fill{background:linear-gradient(135deg,#cfa5e1,#b485cc)}
-.hs-macro-2 .hs-macro-fill{background:linear-gradient(135deg,#f0b0b7,#dc8d99)}
 .hs-macro-thumb{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;left:calc(50% - 9px);box-shadow:0 2px 5px rgba(80,25,60,.2);pointer-events:none}
 .hs-fiber{margin-top:22px}
 .hs-calc-preview{padding:14px;background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:12px}

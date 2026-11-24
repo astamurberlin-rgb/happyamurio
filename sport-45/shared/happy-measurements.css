@@ -23,8 +23,6 @@
 .hm-outer{padding:11px}
 .hm-empty{padding:0;margin:4px 0 14px;font-size:14px;color:var(--hm-soft)}
 .hm-button{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:14px;padding:12px 18px;background:var(--hm-glass);border:1px solid var(--hm-line);border-radius:22px;font-size:14px;font-weight:700;text-align:center}
-.hm-button.hm-primary{background:rgba(244,251,255,.96);color:#2f5f99;border-color:transparent}
-.hm-button.hm-delete{background:rgba(114,28,88,.2);border-color:rgba(255,209,228,.48)}
 .hm-output{display:flex;justify-content:center}
 .hm-output .hm-button{width:auto;flex:0 1 auto;min-height:44px;padding:10px 22px;border-radius:22px}
 /* «Поделиться»: маленькое меню у кнопки (.hm-menu) — 15.11.2026 */
@@ -155,17 +153,6 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 .hm-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px}
 .hm-sheet-top h2{margin:0;font-size:20px;line-height:1.2;font-weight:700}
 .hm-sheet .hm-grid-wrap{margin-top:0}
-.hm-field{display:flex;flex-direction:column;gap:7px;margin:0 0 15px;font-size:14px;font-weight:600}
-.hm-field input{width:100%;min-height:48px;margin:0;padding:10px 14px;border-radius:16px;border:1px solid var(--hm-line);background:var(--hm-glass);color:inherit;font:inherit;font-size:16px;text-align:left;box-shadow:none;outline-offset:2px;-webkit-appearance:none;appearance:none}
-.hm-field input::placeholder{color:inherit;opacity:.6}
-.hm-field input[type=number]{-moz-appearance:textfield}
-.hm-field input[type=number]::-webkit-outer-spin-button,.hm-field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.hm-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;margin:18px 0}
-.hm-pair-fields{grid-column:1/-1;border:0;padding:0;margin:0 0 10px;min-width:0}
-.hm-pair-fields legend{font-size:14px;font-weight:700;margin-bottom:9px;padding:0}
-.hm-pair-fields .hm-field{font-size:12px;color:var(--hm-soft)}
-.hm-pair-fields .hm-field input{color:var(--ink,#fff)}
-.hm-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hm-error{color:#fff2cf;line-height:1.5;font-size:12px;margin:10px 0}
 .hm-error:empty{display:none}
 .hm-trash-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.2)}

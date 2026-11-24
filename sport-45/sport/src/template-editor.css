@@ -1,7 +1,5 @@
 /* Лаборатория Sport, шаг 21: редактор тренировки — ✓ вверху, удаления свайпом (template-editor.js). */
-.sheet>.sheet-done{position:sticky;top:4px;z-index:6;display:grid;place-items:center;width:48px;height:48px;margin:-2px 0 -48px auto;padding:0;border:0;border-radius:24px;background:#f2fbff;color:#11657f;box-shadow:0 4px 14px #1d3b8a40;cursor:pointer}
-.sheet>.sheet-done .icon{width:24px;height:24px}
-.sheet>.sheet-done:active{transform:scale(.96)}
+
 .sheet:has(>.sheet-done) .sheet-top{padding-right:58px;min-height:48px}
 .template-form-edit .workout-name-row{margin-right:58px}
 .template-form-simple>button.primary[type=submit][hidden]{display:none!important}

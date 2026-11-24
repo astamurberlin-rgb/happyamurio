@@ -5,7 +5,7 @@
    Астамур 21.11.2026: «Скругления Meal да через лабораторию». — Claude · 21.11.2026 */
 
 /* ── Карточка: скругление 26 ── */
-.card,.secRow,.happy-card,.mlAddCard,.rcTile,.rcCover,.mlKb,.cc-card,.cc-detail-inline,.sp-catalog-cover,.sp-entry,.sp-tile,.sp-empty,
+.card,.happy-card,.mlAddCard,.rcTile,.rcCover,.mlKb,.cc-card,.cc-detail-inline,.sp-catalog-cover,.sp-entry,.sp-tile,.sp-empty,
 .mc-shell,.mp-surface,.askBox,.sp-dialog{border-radius:26px!important}
 
 /* ── Основная кнопка: пилюля 48, текст 16 / 600, одна строка ── */
@@ -14,18 +14,15 @@
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px!important}
 
 /* ── Прочие кнопки, чипы и фильтры: пилюля 44, текст 14 ── */
-.mini,.happy-button,.sp-btn,.scrRow button,.mc-grid button{box-sizing:border-box;min-height:44px;border-radius:999px!important}
+.mini,.happy-button,.sp-btn,.mc-grid button{box-sizing:border-box;min-height:44px;border-radius:999px!important}
 .chip,.cc-pills button,.cc-pills a{box-sizing:border-box;min-height:44px;display:inline-flex;align-items:center;border-radius:999px!important;font-size:14px!important}
 .chip small{font-size:12px!important}
-.sp-filters button{box-sizing:border-box;min-height:44px;border-radius:999px!important;font-size:14px!important;font-weight:400!important}
-.sp-filters button[aria-pressed=true]{font-weight:600!important}
 
 /* ── Вкладки внутри экрана и выбор из вариантов: пилюля 44, текст 14; выбранное — 600 ── */
-.sp-tabs{border-radius:999px!important}
-.sp-tabs button{box-sizing:border-box;min-height:44px;border-radius:999px!important;font-size:14px!important}
+
 
 /* ── Поля ввода, поле на несколько строк, поиск: скругление 12, высота 48, текст 16 (меньше — iPhone приближает страницу) ── */
-#ccQuery,.sp-search,.mlUForm input[type=text],.mlUForm input[type=number],.mlRcName input,.askBox input,.sp-field input,.sp-field select,.mrField,.portionField{
+#ccQuery,.mlUForm input[type=text],.mlUForm input[type=number],.mlRcName input,.askBox input,.sp-field input,.sp-field select,.mrField,.portionField{
   box-sizing:border-box;min-height:48px;border-radius:12px!important;font-size:16px!important}
 #ccQuery,.mlUForm input[type=text],.mlUForm input[type=number]{height:48px}
 .sp-field textarea{border-radius:12px!important;font-size:16px!important}
