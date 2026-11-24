@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Day">
-<title>Happy Day · Update 61.7</title>
+<title>Happy Day · Update 61.8</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -1249,7 +1249,6 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
       </div>
     </div>
 
-    <section class="card day-signin" id="daySignIn" hidden><h2>Войди, чтобы записывать</h2><p class="note">Записи Day хранятся в аккаунте Happy — одном для Day, Meal и Sport. После входа запись работает и без сети.</p><button class="btn solid" type="button" id="daySignInGo">Войти</button></section>
     <div class="eyebrow nwEb"><span>Сейчас</span></div>
     <section class="nwWg" aria-label="Сейчас">
       <div class="nwRail" id="nwRail" role="group" aria-label="Шкалы: налево — тяжёлые, направо — светлые"></div>
@@ -1441,11 +1440,13 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="61.7" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="61.8" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
 
+  <!-- Day 61.8: без входа — узкая строка над меню, а не карточка над кольцом: кольцо с кнопкой стоит там же, где на экране раздела -->
+  <div class="day-signin" id="daySignIn" hidden><span>Войди, чтобы записывать</span><button type="button" id="daySignInGo">Войти</button></div>
 </div>
 
 <div class="dock">
@@ -1581,7 +1582,9 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 .happy-app-name{flex:1;color:inherit;font-size:16px;font-weight:600;text-decoration:none;padding:14px 0}
 .happy-app-link.is-off .happy-app-name{opacity:.6}</style>
 <style id="day-59">/* Day 59: без входа — предложение войти; вкладки «Журнал · Замеры тела»; общий экран замеров в цветах Day */
-.day-signin{margin:0 0 18px}.day-signin[hidden]{display:none}.day-signin h2{margin:0 0 6px;font-size:16px}.day-signin .note{margin:0 0 12px;color:var(--ink);opacity:.86}
+.day-signin{display:none;position:fixed;z-index:9;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));max-width:440px;margin:0 auto;height:48px;padding:0 6px 0 20px;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--fab);border:0;box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
+[data-screen="day"].on~.day-signin:not([hidden]){display:flex}
+.day-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab);font:600 14px inherit;cursor:pointer}
 .happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}
 .happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}
 .happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600}
@@ -1593,10 +1596,10 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-energy-ring.js?v=61.6"></script>
 <script src="./energy-widget.js?v=61.6"></script>
 <script src="./shared/release-notes.js?v=61"></script>
-<script src="./release-notes.js?v=61.7"></script>
+<script src="./release-notes.js?v=61.8"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.7')}catch(e){}</script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.8')}catch(e){}</script>
 <script src="./selfcare-ui.js?v=61.7"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════
