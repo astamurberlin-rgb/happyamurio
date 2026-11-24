@@ -1404,6 +1404,7 @@ body.hs-open{overflow:hidden}
 .hs-sheet-body{overflow-y:auto;padding:0 20px calc(28px + env(safe-area-inset-bottom));overscroll-behavior:contain;scrollbar-width:none}
 .hs-sheet-body::-webkit-scrollbar{display:none}
 .hs-sheet-body .hs-actions{margin-top:18px}
+.hs-sheet-body>.hs-gate-actions:first-child{margin-top:4px}   /* «Войди в аккаунт»: от подзаголовка до кнопок 18, как было */
 .hs-sheet-fields{display:flex;flex-direction:column;gap:18px}
 .hs-sheet-note{font-size:14px;line-height:1.5;color:var(--hs-muted);margin:12px 0 0}
 
@@ -1770,7 +1771,7 @@ html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]::after{
 .button,.happy-button,.hs-btn,.assign-options .button,.plan-fields .plan-share .button,.quick-actions .button,.template-card .button,.measure-outer .button,.current-bar>.button,.exercise-save-actions .button{
  box-sizing:border-box;min-height:48px;height:48px;border-radius:999px!important;padding:0 20px!important;
  font-size:14px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hs-welcome .hs-btn,.hs-sheet-body:has(>.hs-gate-reason) .hs-btn{font-size:16px!important}   /* кнопки входа — 16, остальные 14 */
+.hs-welcome .hs-btn,.hs-gate-actions .hs-btn{font-size:16px!important}   /* кнопки входа — 16, остальные 14 */
 .button:active,.happy-button:active,.hs-btn:active{transform:scale(.985)}
 /* кнопка-строка с подписью внутри («Выбрать оформление», «История обновлений») — это строка настроек, а не кнопка:
    форма карточки-строки, подпись видна */
@@ -11647,8 +11648,8 @@ function startSmile(instant){
 function ask(o){
  o=o||{};if(gate&&!gate.closed)return;
  const resume=o.resume||null;
- gate=S().sheet({title:'Войди в аккаунт',onClose:()=>{gate=null}});
- gate.body.innerHTML='<p class="hs-gate-reason">'+esc(o.reason||'Чтобы сохранить изменения.')+'</p><div class="hs-actions">'+
+ gate=S().sheet({title:'Войди в аккаунт',description:o.reason||'Чтобы сохранить изменения.',onClose:()=>{gate=null}});   /* подзаголовок — как у всех листов: 4 под заголовком (Астамур 24.11.2026) */
+ gate.body.innerHTML='<div class="hs-actions hs-gate-actions">'+
   '<button type="button" class="hs-btn hs-primary" data-g="login">Войти</button><button type="button" class="hs-btn hs-glass-btn" data-g="register">Создать аккаунт</button>'+
   '<button type="button" class="hs-btn hs-cancel" data-g="cancel">Отмена</button></div>';
  gate.body.addEventListener('click',e=>{

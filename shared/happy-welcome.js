@@ -383,8 +383,8 @@ function startSmile(instant){
 function ask(o){
  o=o||{};if(gate&&!gate.closed)return;
  const resume=o.resume||null;
- gate=S().sheet({title:'Войди в аккаунт',onClose:()=>{gate=null}});
- gate.body.innerHTML='<p class="hs-gate-reason">'+esc(o.reason||'Чтобы сохранить изменения.')+'</p><div class="hs-actions">'+
+ gate=S().sheet({title:'Войди в аккаунт',description:o.reason||'Чтобы сохранить изменения.',onClose:()=>{gate=null}});   /* подзаголовок — как у всех листов: 4 под заголовком (Астамур 24.11.2026) */
+ gate.body.innerHTML='<div class="hs-actions hs-gate-actions">'+
   '<button type="button" class="hs-btn hs-primary" data-g="login">Войти</button><button type="button" class="hs-btn hs-glass-btn" data-g="register">Создать аккаунт</button>'+
   '<button type="button" class="hs-btn hs-cancel" data-g="cancel">Отмена</button></div>';
  gate.body.addEventListener('click',e=>{
