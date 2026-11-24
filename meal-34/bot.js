@@ -2879,6 +2879,76 @@ var MealBot=(function(){
     var d=new Date(curDate+'T12:00:00'); d.setDate(d.getDate()+dw.shift);
     return actDay(isoOf(d),kc&&!ate);
   }
+  /* ── своя норма и правило перекуса одной фразой (Астамур 24.11.2026, «Да»): «поставь 1800 калорий», «белка 120 г в день»,
+     «перекус меньше 200 ккал»; «скрой перекус» — честный ответ. Запись — та же, что экраны «Настроить цели» и «Приёмы пищи».
+     Слова — словарь app_actions.settings: фраза целиком из этих слов и числа, иначе это не настройка («белок 120 грамм» — еда) ── */
+  function setWords(t){ return t.replace(/(\d)\s*(ккал|кк|г|гр)(?=\s|$)/g,'$1 $2').split(' ').filter(Boolean) }
+  function setAll(ws,ok,num){ var C=((window.HappyMealSpeechData||{}).numbers||{}), N=C.cardinals||{}, SC=C.scales||{};
+    return ws.every(function(w){ return /^\d+([.,]\d+)?$/.test(w)||N[w]!=null||SC[w]!=null||ok.some(function(x){ return /\*$/.test(x)?w.indexOf(x.slice(0,-1))===0:w===x }) }) }
+  function setHas(ws,list){ return ws.some(function(w){ return list.some(function(x){ return /\*$/.test(x)?w.indexOf(x.slice(0,-1))===0:w===x }) }) }
+  function setNum(t){ var ns=typeof MealBotSteps!=='undefined'?MealBotSteps.numbers(t):(t.match(/\d+/g)||[]).map(Number); return ns.length===1?ns[0]:null }
+  function goalNow(){
+    var Hg=window.HappyGoals, d=todayISO(), vs=DB.goalVersions||[], last=Hg.goalFor(vs,d), legacy=DB.goals||{}, k=parseFloat(String(legacy.k||'').replace(',','.'));
+    var g=last&&typeof last==='object'&&Object.keys(last).length?Object.assign({calc:{sex:'',activity:0,adjustment:10},shares:[25,27,48],method:'manual',calories:null},Hg.weightOnly(last),last)
+      :Object.assign(Hg.weightOnly(null),{method:'manual',calories:k>0?Math.round(k):null,calc:{sex:'',activity:0,adjustment:10},
+        shares:Hg.sharesFromGrams.apply(null,['p','f','c'].map(function(x){ return parseFloat(String(legacy[x]||'').replace(',','.'))||0 }))||[25,27,48]});
+    if(k>0&&g.method==='manual') g.calories=Math.round(k);
+    if(!Array.isArray(g.shares)||g.shares.length!==3) g.shares=[25,27,48];
+    return g;
+  }
+  function goalSave(S,g){
+    var Hg=window.HappyGoals, gr=Hg.grams(g), r1=function(x){ return String(Math.round(x*10)/10) }, before={v:JSON.parse(JSON.stringify(DB.goalVersions||[])),g:JSON.parse(JSON.stringify(DB.goals||{}))};
+    MealAccount.saveGoals({versions:Hg.saveVersion(DB.goalVersions||[],g,todayISO()),goals:{k:String(Math.round(g.calories)),p:r1(gr[0]),f:r1(gr[1]),c:r1(gr[2])}});
+    var after=JSON.stringify(DB.goals);
+    return actUndoChip(S,function(){ if(JSON.stringify(DB.goals)!==after) return false; DB.goals={}; MealAccount.saveGoals({versions:before.v,goals:before.g}); return true });
+  }
+  function actSettings(S,t){
+    var A=actData().settings; if(!A) return null;
+    var ws=setWords(t), n, v;
+    /* норма калорий */
+    if(setHas(ws,A.kcal_words)&&setAll(ws,A.kcal_ok.concat(A.kcal_words,A.anchor,A.per_day))&&(setHas(ws,A.anchor)||/(^|\s)в (день|сутки)(\s|$)/.test(t))){
+      n=setNum(t); if(n==null) return null;
+      if(!window.HappyGoals||typeof MealAccount==='undefined') return null;
+      if(n<A.kcal_min||n>A.kcal_max) return p(esc(actT(A.answer_kcal_bad,{min:A.kcal_min,max:A.kcal_max})));
+      var g0=actSignIn(); if(g0) return g0;
+      var g=goalNow(); if(g.calories===Math.round(n)) return p(esc(actT(A.answer_kcal_same,{k:Math.round(n)})));
+      g=Object.assign({},g,{method:'manual',calories:Math.round(n)}); delete g.calculationBase;
+      var gr=HappyGoals.grams(g);
+      return p(actT(A.answer_kcal,{k:'<b>'+Math.round(n)+' ккал</b>'}))+'<p class="mbSum">Б '+Math.round(gr[0])+' г · Ж '+Math.round(gr[1])+' г · У '+Math.round(gr[2])+' г</p>'+goalSave(S,g);
+    }
+    /* белок, жиры, углеводы в день */
+    var mk=null; Object.keys(A.macro_words||{}).forEach(function(k){ if(!mk&&setHas(ws,A.macro_words[k])) mk=k });
+    if(mk&&setAll(ws,A.macro_ok.concat(A.macro_words[mk],A.anchor,A.per_day))&&(setHas(ws,A.anchor)||/(^|\s)в (день|сутки)(\s|$)/.test(t))){
+      n=setNum(t); if(n==null||!(n>0)) return null;
+      if(!window.HappyGoals||typeof MealAccount==='undefined') return null;
+      var gm=goalNow(), i={p:0,f:1,c:2}[mk], nm=A.macro_names[mk];
+      if(!(gm.calories>0)) return p(esc(actT(A.answer_macro_no_kcal,{m:nm})))+chips([['st:goals:@start',A.button_goals]]);
+      var share=n*[4,9,4][i]/gm.calories*100;
+      if(!(share>0&&share<95)) return p(esc(actT(A.answer_macro_bad,{m:nm,g:Math.round(n),k:Math.round(gm.calories)})));
+      var g1=actSignIn(); if(g1) return g1;
+      var ng=Object.assign({},gm,{shares:HappyGoals.redistribute(gm.shares,i,share)}), gg=HappyGoals.grams(ng);
+      return p(actT(A.answer_macro,{m:nm,g:'<b>'+Math.round(n)+' г</b>',k:Math.round(gm.calories)}))+'<p class="mbSum">Б '+Math.round(gg[0])+' г · Ж '+Math.round(gg[1])+' г · У '+Math.round(gg[2])+' г</p>'+goalSave(S,ng);
+    }
+    /* правило перекуса: «меньше N ккал» */
+    if(setHas(ws,A.snack_words)&&setHas(ws,A.snack_less)&&(!setHas(ws,['больше','более'])||setHas(ws,['не']))&&setAll(ws,A.snack_ok.concat(A.snack_words,A.snack_less,A.kcal_words))&&typeof MealPeriods!=='undefined'&&MealPeriods.rules){
+      n=setNum(t); if(n==null) return null;
+      if(!(n>=1&&n<=1000)||n!==Math.floor(n)) return p(esc(A.answer_snack_bad));
+      var R=MealPeriods.rules(DB); if(R.kcal===n) return p(esc(actT(A.answer_snack_same,{k:n})));
+      var g2=actSignIn(); if(g2) return g2;
+      var before=JSON.stringify(DB.mealRules||null);
+      DB.mealRules=Object.assign({kcal:R.kcal,gap:R.gap,fast:R.fast},DB.mealRules||{},{kcal:n}); touch();
+      var after=JSON.stringify(DB.mealRules);
+      return p(esc(actT(A.answer_snack,{k:n,was:R.kcal,gap:R.gap})))+actUndoChip(S,function(){ if(JSON.stringify(DB.mealRules)!==after) return false; DB.mealRules=JSON.parse(before); if(!DB.mealRules) delete DB.mealRules; touch(); return true });
+    }
+    /* «скрой перекус»: приём пищи скрыть нельзя */
+    var mh=t.match(actRx(A.hide)); if(mh){
+      var nmh=mh[1].replace(/^(раздел|прием|приемы)\s+/,''), sx=(DB.sections||[]).filter(function(x){ var a=nrm(String(x.t||'')).trim(); return a===nmh||a.indexOf(nmh)===0&&nmh.length>=4 })[0];
+      if(!sx) return null;
+      var preset=['am','pm','dn','sn'].indexOf(sx.k)>=0;
+      return p(esc(actT(preset?A.answer_hide_main:A.answer_hide_own,{t:sx.t})))+(helpEntry('periods')?chips([['go:periods','Открыть приёмы пищи']]):'');
+    }
+    return null;
+  }
   /* команда из фразы; не команда — null */
   function appAct(S,text){
     var A=actData(); if(!A) return null;
@@ -2891,6 +2961,7 @@ var MealBot=(function(){
     if(Fa&&actFastOK()){ if(actRx(Fa.off).test(t)) return actFastSet(S,false);
       if((m0=t.match(actRx(Fa.on)))) return actFastSet(S,true,m0[1]||'');
       if(actRx(Fa.status).test(' '+t+' ')) return actFastStatus() }
+    var st0=actSettings(S,t); if(st0) return st0;
     var C=A.catalogs;
     if(C&&typeof MealSources!=='undefined'){
       if(actRx(C.list).test(t)) return actCatList();
