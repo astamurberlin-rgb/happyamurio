@@ -1,7 +1,7 @@
 /* Meal 28 · «Сборники»: магазин каталогов и личные разделы. Стили — из прототипа магазина (Михалыч и Астамур, 11.11.2026,
    образец «Shop 15»); без правил БАДов. Скрытие [hidden] — только внутри экрана сборников. */
 .cc-screen [hidden]{display:none!important}
-.cc-screen{padding-top:18px!important}
+.cc-screen{padding-top:calc(18px + env(safe-area-inset-top,0px))!important}   /* под часами iPhone — фон, не содержимое (24.11.2026) */
 .cc-tools{margin:0 0 23px}
 .cc-pills{display:flex;gap:8px;overflow:auto;scrollbar-width:none;margin-bottom:10px;align-items:center}
 .cc-pills::-webkit-scrollbar{display:none}
