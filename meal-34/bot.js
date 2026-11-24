@@ -2076,6 +2076,7 @@ var MealBot=(function(){
       if(L&&L.state!=='loading') L.load();
       return p('Справочник замен ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
     var c=L.find(o,'swap');
+    if(!c&&L.find(o,'tip')) return null;   // замены нет, а приём есть («можно ли какао вместо шоколада») — отвечает tipAsk
     if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
       return p('Пока не знаю, чем это заменить: такой замены в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
