@@ -17,15 +17,15 @@ function ruDate(x){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x||''));return 
 var UNIT_RU={g:'г',mg:'мг',ug:'мкг',kcal:'ккал'};
 /* Поле источника → поле Meal [ключ, единица]. Только совместимые по смыслу:
    усвояемые углеводы и «Углеводы» справочников — сахара и крахмал, как «Углеводы» BLS (клетчатка в них отдельной строкой);
-   НЭ, РЭ, ТЭ — как строки B3, A и E у BLS (эквиваленты); «Пищевые волокна» 2002 — клетчатка Meal; NaCl по таблице — соль. */
+   НЭ — строка «ниациновый эквивалент», витамин PP — строка «ниацин» (решение Астамура 24.11.2026); РЭ, ТЭ — как строки A и E у BLS; «Пищевые волокна» 2002 — клетчатка Meal; NaCl по таблице — соль. */
 var MAP={energy_kcal:['kcal','kcal'],protein_g:['prot','g'],fat_g:['fat','g'],available_carbohydrate_source_g:['carb','g'],carbohydrate_as_reported_g:['carb','g'],
  total_sugars_g:['sug','g'],starch_g:['sta','g'],dietary_fiber_source_g:['fib','g'],water_g:['water','g'],alcohol_g:['alc','g'],saturated_fat_source_g:['sfa','g'],
  cholesterol_mg:['chol','mg'],salt_sodium_chloride_source_g:['salt','g'],sodium_mg:['na','mg'],potassium_mg:['k','mg'],calcium_mg:['ca','mg'],magnesium_mg:['mg','mg'],
- phosphorus_mg:['p','mg'],iron_mg:['fe','mg'],vitamin_c_mg:['vC','mg'],thiamin_mg:['b1','mg'],riboflavin_mg:['b2','mg'],niacin_equivalent_source_mg:['b3','mg'],
+ phosphorus_mg:['p','mg'],iron_mg:['fe','mg'],vitamin_c_mg:['vC','mg'],thiamin_mg:['b1','mg'],riboflavin_mg:['b2','mg'],niacin_equivalent_source_mg:['b3ne','mg'],vitamin_pp_source_mg:['b3','mg'],
  retinol_equivalent_source_ug:['vA','ug'],tocopherol_equivalent_source_mg:['vE','mg'],beta_carotene_mg:['bcar','mg']};
-/* Своими строками: старая «клетчатка» — не пищевые волокна; витамин PP — ниацин без триптофана, не НЭ; колонка «A» — ретинол, не РЭ;
+/* Своими строками: старая «клетчатка» — не пищевые волокна; колонка «A» — ретинол, не РЭ;
    «Каротин» — не только бета-каротин; органические кислоты и зола — полей в Meal нет. */
-var OWN={legacy_crude_fiber_source_g:'Клетчатка (методика справочника 1987)',vitamin_pp_source_mg:'Витамин PP (ниацин)',vitamin_a_column_a_source_ug:'Витамин A (ретинол)',
+var OWN={legacy_crude_fiber_source_g:'Клетчатка (методика справочника 1987)',vitamin_a_column_a_source_ug:'Витамин A (ретинол)',
  carotene_source_ug:'Каротин',organic_acids_as_malic_acid_g:'Органические кислоты (в пересчёте на яблочную)',organic_acids_source_g:'Органические кислоты',ash_g:'Зола'};
 function P(){return root.MealProducts}
 function firstSource(r){var s=r.sourceContext&&r.sourceContext.sources;return s&&s[0]&&s[0].title?String(s[0].title):''}

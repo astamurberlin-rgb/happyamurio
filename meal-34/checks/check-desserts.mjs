@@ -130,7 +130,7 @@ assert.ok(MealDesserts.settingsHTML().includes('103 записей')&&MealDesser
 assert.equal(MealDesserts.status(),'ok');
 
 // 8. Снимок в дневник: без служебных полей и с полным составом
-const snap=P.snapshot(dict['hmdessert:label:haribo-goldbears-uk']);assert.ok(!snap.w&&snap.composition.fields.length===77,'76 стандартных полей Meal + 1 своё (кДж)');
+const snap=P.snapshot(dict['hmdessert:label:haribo-goldbears-uk']);assert.ok(!snap.w&&snap.composition.fields.length===78,'77 стандартных полей Meal + 1 своё (кДж)');
 
 // 9. Ревизия карточки — из записи; без поля — прежняя 20261109
 const NY='hmdessert:label:jon-donaire-new-york-25386-us',KZ='hmdessert:seed-kozinaki-deluxe-440g';
@@ -145,13 +145,14 @@ MealDesserts.ingest(structuredClone(data));
 //     (решение Астамура и Михалыча 12.11 17:47), рибофлавин изготовителя 0,013 — в рабочих данных; B3, B9 — нет данных, не ноль
 const ny=MealDesserts.foods().find(f=>f.id===NY),field=k=>ny.composition.fields.find(x=>x.key===k);
 assert.equal(P.value(ny,'b1'),0.021,'B1 — тиамин изготовителя');
-for(const k of ['b3','b9'])assert.equal(P.value(ny,k),null,'чизкейк: '+k+' — нет данных'),assert.equal(field(k).status,'missing');
+for(const k of ['b3ne','b9'])assert.equal(P.value(ny,k),null,'чизкейк: '+k+' — нет данных'),assert.equal(field(k).status,'missing');
 assert.equal(P.value(ny,'b2'),0.19,'B2 — оценка 0,19 мг');assert.equal(field('b2').sourceQualifier.estimated,true,'B2 помечен как оценка (≈)');
 assert.ok(field('b2').source.includes('FDC 172711')&&field('b2').notes.includes('0,193'),'источник оценки B2 — USDA 172711, 0,193 мг');
 const b2=byId[NY].nutrients.find(n=>n.key==='usda:1166');assert.ok(b2&&b2.qualifier==='estimated_from_similar_product'&&b2.estimate.fdcId===172711&&b2.estimate.sourceValue===0.193&&b2.estimate.sourceUrl.endsWith('/172711/nutrients'),'рабочие данные оценки B2');
 for(const x of ny.composition.fields)if(x.key!=='b2')assert.ok(!(x.sourceQualifier&&x.sourceQualifier.estimated),'оценка — только B2: '+x.key);
-assert.equal(field('prop:dessert:niacin').value,0.166);assert.equal(field('prop:dessert:niacin').unit,'мг');assert.equal(field('prop:dessert:niacin').name,'Ниацин (без триптофана)');
-assert.ok(field('prop:dessert:niacin').notes.includes('ниациновый эквивалент'));
+// ниацин этикетки — строка «B3 — ниацин» (Астамур 24.11.2026), ниациновый эквивалент — другая строка
+assert.equal(P.value(ny,'b3'),0.166);assert.ok(!field('prop:dessert:niacin'),'своей строки ниацина больше нет');
+assert.ok(field('b3').notes.includes('ниациновый эквивалент'));
 assert.equal(field('prop:dessert:folic_acid').value,4.307);assert.equal(field('prop:dessert:folic_acid').unit,'мкг');assert.equal(field('prop:dessert:folic_acid').name,'Фолиевая кислота');
 assert.ok(field('prop:dessert:folic_acid').notes.includes('не общий фолат'));
 assert.ok(!ny.composition.fields.some(x=>/riboflavin|рибофлавин/i.test(x.key+' '+(x.kind==='custom'?x.name:''))),'рибофлавин — только в строке B2, своей строки нет');
@@ -212,4 +213,4 @@ assert.equal(at('2026-11-10',2).n,'HARIBO Goldbears, UK','прежняя зап�
 assert.equal(P.value(at('2026-11-13',2),'kcal'),P.value(at('2026-11-10',2),'kcal'),'состав мишек тот же');
 assert.equal(Object.keys(inDiary.productSnapshots).length,6,'по снимку на каждую ревизию трёх карточек');
 
-console.log('Passed desserts 1.2 (desserts2): 34 own cards (6 US labels), 69 marks, 103 total; revision from records (29 changed cards → 20261112, others 20261109); New York cheesecake B1 0.021 mg, niacin and folic acid in own rows, B2 ≈ 0.19 mg estimated from USDA 172711 (manufacturer 0.013 kept in working data), B3/B9 unknown; kozinaki 16 nutrients from one hulled-sesame model; 27 cards renamed without brands/sellers/codes on screen, composition unchanged, original names in working data, brand still searchable via ID; diary snapshots before/after kept apart; portions, bounds, source switch, card and settings text from the library file.');
+console.log('Passed desserts 1.2 (desserts2): 34 own cards (6 US labels), 69 marks, 103 total; revision from records (29 changed cards → 20261112, others 20261109); New York cheesecake B1 0.021 mg, niacin in «B3 — ниацин», folic acid in its own row, B2 ≈ 0.19 mg estimated from USDA 172711 (manufacturer 0.013 kept in working data), B3 НЭ and B9 unknown; kozinaki 16 nutrients from one hulled-sesame model; 27 cards renamed without brands/sellers/codes on screen, composition unchanged, original names in working data, brand still searchable via ID; diary snapshots before/after kept apart; portions, bounds, source switch, card and settings text from the library file.');

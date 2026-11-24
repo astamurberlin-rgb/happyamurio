@@ -1836,6 +1836,7 @@ var MealBot=(function(){
     if(ws.length===1){ var hit=SUB_STEM.filter(function(s){ return s[0].test(ws[0]) })[0]; if(hit) return hit[1] }
     var HS=typeof HappySubstances!=='undefined'?HappySubstances:null; if(!HS) return null;
     /* «витамина с», «витамин д3» → «Витамин C», «Витамин D» */
+    w=w.replace(/(\s)(б|b)\s+(\d{1,2})$/,'$1$2$3').replace(/^(витамин\S*\s+)(?:пп|pp)$/,'$1b3');   // «витамина б 3», «витамин PP» — B3 (24.11.2026)
     var vm=w.match(/^витамин\S*\s+([а-яa-z])(\d*)$/);
     if(vm&&VIT_LETTER[vm[1]]){ var vx=HS.exact('Витамин '+VIT_LETTER[vm[1]]+(VIT_LETTER[vm[1]]==='B'?vm[2]:'')); if(vx) return vx.key }
     var ex=HS.exact(w); if(ex) return ex.key;
@@ -1844,6 +1845,7 @@ var MealBot=(function(){
     if(!st.length||st.length!==ws.length) return null;
     var c=HS.fields.filter(function(f){ var tw=HS.norm(f.title).split(' ');
       return tw.length>=st.length&&st.every(function(s){ return tw.some(function(x){ return x.indexOf(s)===0 }) }) });
+    if(c.length===2&&c.every(function(f){ return /^b3/.test(f.key) })) return 'b3';   // «ниацина»: обе строки B3 (productInfo)
     if(c.length>1) c=c.filter(function(f){ return HS.norm(f.title).split(' ').length===st.length });
     return c.length===1?c[0].key:null;
   }
@@ -1868,6 +1870,10 @@ var MealBot=(function(){
     var HINT='<p class="mlHint">Это справка из базы. В дневник ничего не записал.</p>';
     if(key&&key!=='all'&&['kcal','prot','fat','carb'].indexOf(key)<0){
       var sx=typeof HappySubstances!=='undefined'?HappySubstances.get(key):null; if(!sx) return null;
+      /* B3 (Астамур 24.11.2026): ниацин и ниациновый эквивалент — разные показатели; у продукта — тот, что есть в его базе, оба — двумя строками */
+      if(key==='b3'){ var b3=[['b3','ниацин'],['b3ne','ниациновый эквивалент']].map(function(x){ var y=subVal(f,x[0]); return y==null?null:x[1]+' <b>'+subAmount(y*g/100,x[0]==='b3ne'?'мг НЭ':'мг')+'</b>' }).filter(Boolean);
+        if(!b3.length) return p(name+': витамин B3 — в базе нет данных для этого продукта.')+HINT;
+        return p(name+': витамин B3 — '+b3.join('; '))+HINT }
       var v=subVal(f,key), lab=sx.title.replace(/,\s*всего$/,''); lab=lab.charAt(0).toLowerCase()+lab.slice(1);
       if(v==null) return p(name+': '+esc(lab)+' — в базе нет данных для этого продукта.')+HINT;
       return p(name+': '+esc(lab)+' <b>'+subAmount(v*g/100,sx.unit)+'</b>')+HINT;
