@@ -1,14 +1,14 @@
 {
   "schema": "happy.food-libraries.v1",
-  "revision": "2026-11-24.1",
+  "revision": "2026-11-24.2",
   "updated": "2026-11-24",
   "libraries": {
     "bls": {
       "version": "BLS 4.0 · 2025",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/af1787d64628ecbd1524d41830f74713ae67667f/data/bls40.json",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/6ca8472bf5d5079ada37447fe5f20c35a4949b02/data/bls40.json",
       "encoding": "json",
       "bytes": 3566643,
-      "sha256": "8b76c33ab6baece6e9c8d0501ad9e20424acb153c758ecdb4f3fb05eef31e35f",
+      "sha256": "e2ababee57969f76a7a21f78ce4c083c9aa68e63474d9a9b4c3e1250d815fc75",
       "foodCount": 7140
     },
     "kav": {
@@ -119,19 +119,19 @@
       "firstReader": "Happy Meal 33.4 and later (kfct.js)"
     },
     "cooking": {
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/9695d190f1c7edbbfd010003642b0cad3cf7c8bf/data/cooking-1.5.json",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/6ca8472bf5d5079ada37447fe5f20c35a4949b02/data/cooking-1.5.1.json",
       "encoding": "json",
-      "bytes": 177275,
-      "sha256": "f65fe578f5d4bb51b8731dd16412992df39db88d1d1bffa18f4e73af18b50bb1",
-      "version": "1.5.0",
+      "bytes": 178990,
+      "sha256": "72316b4e03910c5d9cd96a2110a043023871f07499727e67a74abf3a5e4285bd",
+      "version": "1.5.1",
       "cardCount": 155
     },
     "home": {
-      "version": "1.0",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/d99511fae3dd19c4e68506737f100696841af47c/data/home-1.0.json",
+      "version": "1.0.1",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/6ca8472bf5d5079ada37447fe5f20c35a4949b02/data/home-1.0.1.json",
       "encoding": "json",
-      "bytes": 10348,
-      "sha256": "12f620c8b79923be59429019100229e116181393e6c3ee43650beea6ea1fcf9b",
+      "bytes": 10195,
+      "sha256": "41768da63e10f6f910d46e1a95c037ae76e2d527fcd19173adf9cbcf3d2d81e5",
       "foodCount": 12,
       "notes": "data/HOME.md"
     }
