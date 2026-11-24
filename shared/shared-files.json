@@ -238,7 +238,7 @@
       ],
       "divergent": true,
       "frozenRoot": true,
-      "todo": "meal-26 отличается"
+      "todo": "эталон = копия Meal (24.11.2026); у Day нет шага порций Meal"
     },
     {
       "name": "happy-input.js",

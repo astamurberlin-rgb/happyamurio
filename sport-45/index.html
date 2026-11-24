@@ -1249,7 +1249,7 @@ button.feed-body{cursor:pointer}
 /* окно: форма замера, удалённые замеры */
 dialog.hm-dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;padding:0;border:0;width:min(100%,460px);max-width:100%;max-height:calc(100dvh - 28px);background:transparent;color:var(--ink,#fff);overflow:visible}
 dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
-.hm-sheet{max-height:calc(100dvh - 28px);overflow:auto;overscroll-behavior:contain;padding:18px 20px calc(25px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;border:1px solid rgba(255,255,255,.27);background:var(--hm-sheet);box-shadow:0 -12px 60px rgba(8,60,120,.25);-webkit-user-select:text;user-select:text}
+.hm-sheet{max-height:calc(100dvh - 28px);overflow:auto;overscroll-behavior:contain;padding:18px 20px calc(25px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;border:1px solid rgba(255,255,255,.27);background:var(--hm-sheet);box-shadow:0 -12px 60px rgba(8,60,120,.25);-webkit-user-select:text;user-select:text}
 .hm-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px}
 .hm-sheet-top h2{margin:0;font-size:20px;line-height:1.2;font-weight:700}
 .hm-sheet .hm-grid-wrap{margin-top:0}
@@ -2157,7 +2157,7 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 /* Sport 44.12 (аудит 3, Астамур 21.11: «как в Day, иначе углы видны за нижним меню»): листы во всю ширину до самого низа,
    скругление только сверху; низ уходит под нижнее меню, как .impSheet в Day (отступ 112 + безопасная зона) */
 .overlay{padding:0!important}
-.sheet{width:100%!important;border-radius:28px 28px 0 0!important;border-bottom:0!important;max-height:calc(100dvh - 40px - env(safe-area-inset-top))!important;padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
+.sheet{width:100%!important;border-radius:22px 22px 0 0!important;border-bottom:0!important;max-height:calc(100dvh - 40px - env(safe-area-inset-top))!important;padding-bottom:calc(112px + env(safe-area-inset-bottom))!important}
 
 /* аудит 3: выбранные сегменты и в «Каталоге» берут цвет текста из темы (без темы — как было) */
 :root[data-happy-appearance] .segmented .selected{color:var(--hs-seg-ink,#176b98)!important}
