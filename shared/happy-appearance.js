@@ -22,12 +22,29 @@
  const paintKey='happy-'+app+'-appearance-paint-v1';
  function remember(id,button,css){
   if(id!==current||button!==currentButton)return;
-  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css}):'')).catch(()=>{});}catch(e){}
+  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css,top:barColor(id)}):'')).catch(()=>{});}catch(e){}
  }
+ /* 24.11.2026 (Астамур, пункт 12А): полоска браузера сверху (theme-color) — цвет верха фона. Без темы — свой цвет
+    приложения из <meta> (Day #56B9F7, Meal #A13E65, Sport #8E75E1), с темой — цвет её фона в середине верхнего края. */
+ const meta=document.querySelector('meta[name=theme-color]');
+ if(meta&&!meta.dataset.base)meta.dataset.base=meta.content;
+ function topColor(g){
+  const st=G.colors(g);if(!st.length)return '';
+  const m=G.normalize(g);
+  const hex=v=>'#'+v.map(x=>Math.round(x).toString(16).padStart(2,'0')).join('');
+  if(m.type!=='linear'||st.length<2)return st.length<2?st[0].color:hex(G.interpolate(st,G.sample(m,.5,0)));   // радиальный и др. — как считает студия
+  const W=root.innerWidth||390,H=root.innerHeight||844,a=m.angle*Math.PI/180;
+  const L=Math.abs(W*Math.sin(a))+Math.abs(H*Math.cos(a)),dy=-H/2;   // точка: середина верхнего края
+  const pos=Math.max(0,Math.min(100,(0.5+(dy*-Math.cos(a))/L)*100));
+  return hex(G.interpolate(st,pos/100));
+ }
+ function barColor(id){const t=id?themes.find(t=>t.id===id):null;return t?topColor(t.state.backgroundGradient):'';}
+ function paintBar(id){if(!meta)return;const c=barColor(id);meta.content=/^#[0-9a-f]{6}$/i.test(c)?c:meta.dataset.base;}
  function skin(id,button){
   if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
   const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
+  paintBar(id);
   const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
   document.documentElement.dataset.happyAppearanceButton=button;
   if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');remember(id,button,'');return;}
