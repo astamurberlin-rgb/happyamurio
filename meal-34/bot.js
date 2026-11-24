@@ -360,6 +360,7 @@ var MealBot=(function(){
       .reduce(function(a,c){ return a.concat(c) },[]);
   }
   function one(c0){
+    var chRe=SP&&SP.choice?SP.choice():null; if(chRe){ chRe.lastIndex=0; var hc=chRe.test(' '+c0+' '); chRe.lastIndex=0; if(hc) return [c0] }   // «гречка или рис» — выбор, а не список (choiceOf в core)
     return [c0].filter(Boolean).map(function(c){ if(!/\d/.test(c)) return c; var seen={}; return c.split(' ').filter(function(w,i,ws){ if(kindOf(w)!=='F') return true; if(seen[w]&&ws[i-1]!==w) return false; seen[w]=1; return true }).join(' ') })
       .reduce(function(a,c){ return a.concat(bareList(c)||splitItems(c)) },[]);
   }
@@ -765,9 +766,49 @@ var MealBot=(function(){
         res.lines.push(l);
       });
     }
+    /* «гречка или рис», «кофе или чай» — выбор из двух (словарь, choice_or): ничего не пишется, вопрос «какой вариант записать?» двумя кнопками,
+       названный вес — выбранному. Не вышло понять обе стороны — «или» просто выбрасывается и продуктом не ищется
+       (раньше находилось «Масло с чесноком или зеленью»). Разбор диктовок с id 125, решение Астамура 23.11.2026 */
+    function choiceOf(c){
+      var re=SP&&SP.choice?SP.choice():null; if(!re) return null;
+      var t=' '+c.text+' ', ms=[], m; re.lastIndex=0;
+      while((m=re.exec(t))){ ms.push(m); if(!m[0]) re.lastIndex++ }
+      if(!ms.length) return null;
+      var strip=function(){ var x=t; ms.slice().reverse().forEach(function(k){ x=x.slice(0,k.index)+k[1]+' '+x.slice(k.index+k[0].length) }); return x.replace(/\s+/g,' ').trim() };
+      if(ms.length>1) return {strip:strip()};
+      m=ms[0];
+      var a=t.slice(0,m.index+m[1].length).replace(/[\s,]+$/,'').trim(), b=t.slice(m.index+m[0].length).replace(/^[\s,]+/,'').trim();
+      if(/^(без|не|нет)(\s|$)/.test(norm(b))) return {strip:strip()};
+      var fa=foodOf(a), fb=foodOf(b);
+      if(!tokensOf(fa).length||!tokensOf(fb).length) return {strip:strip()};
+      /* «или» в самом названии продукта: «масло с чесноком или зеленью» — это он */
+      var r0=null; try{ r0=parseText(c.text).lines }catch(e){}
+      var i0=r0&&r0.length===1&&(r0[0].fid||r0[0].alts[0]), t0=i0&&FOODS[i0]; if(t0&&/\sили\s/.test(norm(t0.n))&&tokensOf(fa).concat(tokensOf(fb)).every(function(w){ return norm(t0.n).indexOf(norm(w).slice(0,4))>=0 })) return null;
+      /* «курица с рисом или гречкой» — курица и выбор между рисом и гречкой */
+      var hm=fa.match(/^(.*\S)\s+(с|со)\s+(\S.*)$/), head=null;
+      if(hm&&tokensOf(hm[1]).length){ head=hm[1]; fa=hm[3] }
+      return {a:fa.trim(),b:fb.trim(),head:head,qty:qtyOf(c.text),strip:strip()};
+    }
+    function procChoice(c){
+      var ch=choiceOf(c); if(!ch){ proc(c); return }
+      if(!ch.a){ c.text=ch.strip; proc(c); return }
+      var n0=res.lines.length, cm=curMeal, tm=tailMeal, rm=res.meal, two=[], cp=function(t,q){ var cx={}; for(var k in c) cx[k]=c[k]; cx.text=t+(q?' '+q:''); cx.hasNum=!!q; return cx };
+      if(ch.head){ proc(cp(ch.head,ch.qty)); if(res.lines.length!==n0+1){ res.lines.length=n0; curMeal=cm; tailMeal=tm; res.meal=rm; c.text=ch.strip; proc(c); return } n0++ }   // вес — основе блюда, добавка — обычной порцией
+      [ch.a,ch.b].forEach(function(x){ var k0=res.lines.length; proc(cp(x,ch.head?'':ch.qty)); two.push(res.lines.slice(k0)) });
+      var la=two[0][0], lb=two[1][0], ia=la&&(la.fid||la.alts[0]), ib=lb&&(lb.fid||lb.alts[0]);
+      var okA=!!(ia&&FOODS[ia]), okB=!!(ib&&FOODS[ib]);
+      /* «щи или борщ», щей в базе нет — вопрос с одним понятным вариантом: молча не пишется ничего */
+      if(two[0].length===1&&two[1].length===1&&okA!==okB){ if(okB){ two[0]=two[1]; la=lb; ia=ib } else { lb=la; ib=ia } okA=okB=true }
+      if(two[0].length!==1||two[1].length!==1||!okA||!okB){ res.lines.length=n0-(ch.head?1:0); curMeal=cm; tailMeal=tm; res.meal=rm; c.text=ch.strip; proc(c); return }
+      res.lines.length=n0; res.lines.push(la);
+      la.choiceQ={}; la.choiceQ[ia]={q:la.q,u:la.u}; la.choiceQ[ib]={q:lb.q,u:lb.u};
+      la.alts=ia===ib?[ia]:[ia,ib]; la.fid=null; la.st='pick'; la.ask='pick'; la.noAuto=true; la.gdAsk=true; la.bls=0; la.choice=true; la.asBefore=false; la.fav=false;
+      la.name=la.spoken=ch.a+' или '+ch.b; la.raw=c.text;
+    }
     merged.forEach(function(c){
-      var parts=SP&&!NOSPLIT?splitComposite(c,cps):null;
-      if(!parts){ proc(c); return }
+      var chRe=SP&&SP.choice?SP.choice():null, hasCh=false; if(chRe){ chRe.lastIndex=0; hasCh=chRe.test(' '+c.text+' '); chRe.lastIndex=0 }
+      var parts=SP&&!NOSPLIT&&!hasCh?splitComposite(c,cps):null;   // «гречка или рис» — не блюдо из частей
+      if(!parts){ procChoice(c); return }
       var n0=res.lines.length, cm=curMeal, tm=tailMeal, rm=res.meal, dp=res.dupSeen, cp=parts[0].comp;
       parts.forEach(proc);
       /* первая часть не понята («слойка с пеканом» — какая слойка?) — блюдо остаётся целым, как раньше: вопрос о нём, а не запись одной начинки */
@@ -1616,8 +1657,8 @@ var MealBot=(function(){
   /* Meal 33.17 · приём по периодам из «Настроить приёмы пищи» (макет Михалыча и Астамура, 19.11.2026; до этого —
      правила 33.7 с зашитыми окнами). Само правило — MealPeriods.classify (meal-periods.js). Тот же текст обычным
      языком — экран «Правила бота» в «Для разработчика» (index.html, data-screen="botrules"): поменял правило — поправь и его.
-     1) время в периоде перекуса — этот перекус при любой калорийности; 2) первая запись основного периода — основной
-     приём, даже маленькая; 3) не больше «паузы» (20 мин) после последней записи периода — туда же, куда она;
+     1) не больше «паузы» (20 мин) после последней записи дня — туда же, куда она, даже через границу периода (23.11.2026);
+     2) время в периоде перекуса — этот перекус при любой калорийности; 3) первая запись основного периода — основной приём, даже маленькая;
      4) меньше порога (150 ккал) и пауза больше — перекус; 5) иначе основной приём периода. Запись ровно на границе
      относится к следующему периоду. NEAR — не про выбор приёма: это «названный приём уже был больше 1,5 ч назад». */
   var NEAR=90, ORDK=['am','pm','dn'];
@@ -1771,7 +1812,7 @@ var MealBot=(function(){
       mine.forEach(function(x){ x.line.ask=null; x.sec=arg; x.secSet=true; x.t=gt; x.tm=false });
       var cm=commit(S,mine); if(cm===false){ mine.forEach(function(x){ x.line.ask='meal'; x.secSet=false }); S.pend=mine.concat(S.pend); return p('Чтобы записывать, войди в аккаунт.') }
       return commitHTML(cm)+(gt?timeNote(gt):'')+askHTML(S) }
-    if(kind==='pick'){ var fid=l.alts[+arg]; if(!fid) return null; l.fid=fid; l.st='ok'; l.g=gramsFor(fid,l.q,l.u);
+    if(kind==='pick'){ var fid=l.alts[+arg]; if(!fid) return null; l.fid=fid; l.st='ok'; if(l.choiceQ&&l.choiceQ[fid]){ l.q=l.choiceQ[fid].q; l.u=l.choiceQ[fid].u } l.g=gramsFor(fid,l.q,l.u);
       if(needQty(l)){ l.ask='qty'; return askHTML(S) } return finish(S,resolved(S)) }
     if(kind==='num'){ if(!Number.isFinite(+arg)||+arg<=0)return null; setGrams(l,+arg); return finish(S,resolved(S)) }
     if(kind==='unit'){ var f=FOODS[l.fid]; l.q=1; l.u=defUnit(f); l.g=gramsFor(l.fid,1,l.u); l.explicit=true; return finish(S,resolved(S)) }
@@ -1914,9 +1955,9 @@ var MealBot=(function(){
      под ответом одной строкой — откуда. Нет карточки — честное «пока не знаю», вопрос — в список «без ответа», в недостающее не идёт. */
   var COOK_V=/(^|\s)(?:с|по|от|за|при|до|у|об|пере)?(?:вар(?:и|я|ю|к)|жар(?:и|я|к)|запек|запечь|(?:ис)?печь(?:\s|$)|печ(?:ет|ется|ешь|ем)(?:\s|$)|пекут|испеч|туш(?:и|а)|готов(?:и|я|н)|приготов|замач|замоч|отвар(?:и|ив))\S*/,
       COOK_Q=/(^|\s)(сколько|как|какой|какая|какое|какую|за сколько|до какой|при какой)(\s|$)/;
-  function cookAsk(o,asked){
+  function cookAsk(o,asked){   // «надо ли замачивать нут» — тоже вопрос «как готовить» (Астамур 23.11.2026); приёмы tipAsk отвечают раньше
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
-    var head=/^(?:а\s+|скажи,?\s+|подскажи,?\s+)?(?:сколько|как|какая|какое|какой|за сколько|до какой|при какой)(\s|$)/.test(o)||/^(?:а\s+)?температура\s+готовности(\s|$)/.test(o);
+    var head=/^(?:а\s+|скажи,?\s+|подскажи,?\s+)?(?:сколько|как|какая|какое|какой|за сколько|до какой|при какой|надо ли|нужно ли|обязательно ли|стоит ли)(\s|$)/.test(o)||/^(?:а\s+)?температура\s+готовности(\s|$)/.test(o);
     if(!(head||asked&&COOK_Q.test(' '+o+' '))||!COOK_V.test(' '+o+' ')) return null;
     if(/(^|\s)(что|чего)\s+(?:бы\s+)?(?:мне\s+)?(?:при)?готов/.test(o)) return null;   // «что приготовить на ужин» — совет блюда, не «как готовить»
     var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null, HINT='<p class="mlHint">В дневник ничего не записал.</p>';
@@ -2000,20 +2041,87 @@ var MealBot=(function(){
   }
   /* ── ступень 2 · кулинарные приёмы: «когда солить рис», «почему картошка тушится», «яйца в холодную или кипящую воду»
      (решение Астамура 23.11.2026 «да»). Карточки tip справочника cooking, у каждой два источника; где спорят — обе версии.
-     Только вопрос: «посолил рис» без вопроса — не сюда. */
+     Только вопрос: «посолил рис» без вопроса — не сюда. Исключение — карточка с полем always (пожар: «масло загорелось»,
+     решение Астамура 24.11.2026 «да»): если фраза без вопроса подходит под always, карточка отвечает сразу. */
   function tipAsk(raw){
     var o=nrm(raw).trim().replace(/[!.,…\s]+$/,''), q=/\?$/.test(o); o=o.replace(/\?+$/,'').trim();
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
-    if(!q&&!/(^|\s)(когда|как|почему|зачем|нужно ли|надо ли|можно ли|стоит ли|в начале|в конце|до или после|сразу или|правильно ли|чем|что|какую|какой|сколько|отчего|или)(\s|$)/.test(o)) return null;
+    var isQ=q||/(^|\s)(когда|как|почему|зачем|нужно ли|надо ли|можно ли|стоит ли|в начале|в конце|до или после|сразу или|правильно ли|чем|что|какую|какой|сколько|отчего|или)(\s|$)/.test(o);
     var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    if(!isQ&&(!L||L.state!=='ok')) return null;   // без вопроса справочник не ждём и не перечитываем: запись еды идёт, как раньше
     if(!L||L.state!=='ok'){ if(L&&L.state!=='loading') L.load(); return null }   // справочник не готов — дальше «как готовить» скажет, что с ним
     var c=L.find(o,'tip');
+    if(!isQ){ var al=c&&c.always, hit=false; try{ hit=!!al&&new RegExp(al).test(' '+o+' ') }catch(e){} if(!hit) return null }   // без вопроса отвечает только карточка с always, и только на свои слова
     if(!c){   // «когда солить суп» — приём, которого ещё нет: честно «пока не знаю», в список «без ответа», а не в недостающие продукты
       if(!/(^|\s)(солить|солят|посолить|подсолить|досолить|соль)(\s|$)/.test(o)||!/(когда|в начале|в конце|до или после|сразу|заранее|в какой момент|нужно ли|надо ли|можно ли)/.test(o)) return null;
       missLog('вопросы без ответа (не продукты)',o,o);
       return p('Пока не знаю, когда это солить: такого приёма в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
     return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
+  }
+  /* ── ступень 2 · замены: «чем заменить муку в сырниках», «что можно вместо майонеза», «можно ли сметану заменить йогуртом»
+     (решение Астамура 23.11.2026 «да»). Карточки swap справочника cooking, у каждой два источника; где спорят — обе версии.
+     Только вопрос: команды дневника «замени кефир на ряженку», «вместо капучино латте» сюда не попадают. */
+  function swapAsk(raw){
+    var o=nrm(raw).trim().replace(/[!.,…\s]+$/,''), q=/\?$/.test(o); o=o.replace(/\?+$/,'').trim();
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    var ask=/(^|\s)(чем|на что)(\s+(же|бы|еще|ещё|лучше|можно|могу|мне|нам|я|ты))*\s+(замен\S*|подмен\S*)/.test(o)||   // «чем заменить», «на что можно заменить»
+      /^(а\s+|и\s+|какая\s+|какую\s+|есть\s+ли\s+|нужна\s+|подскажи\S*\s+)?замен(а|у|ы)(\s+(для|у))?\s+\S/.test(o)||   // «замена сливочному маслу в выпечке»
+      /(^|\s)(можно|могу|можем|нельзя|получится|подойд\S*|пойд\S*|сгодит\S*|что\s+(можно\s+)?(взять|положить|добавить|использовать|подойдет|подойдёт)?)(\s+\S+){0,3}\s+(вместо|заменить|замен\S*)\s+\S/.test(o)||   // «а можно вместо муки манку», «что можно вместо майонеза», «можно ли заменить сметану»
+      /(^|\s)что\s+вместо\s+\S/.test(o)||
+      q&&/(^|\s)(вместо|заменить|заменят|заменит)\s+\S/.test(o)&&!/^(замени|поменяй|перепиши|вместо\s+\S+\s+(запиши|был|пил|ел))/.test(o);
+    if(!ask) return null;
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    if(!L||L.state!=='ok'){
+      if(L&&L.state!=='loading') L.load();
+      return p('Справочник замен ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    var c=L.find(o,'swap');
+    if(!c&&L.find(o,'tip')) return null;   // замены нет, а приём есть («можно ли какао вместо шоколада») — отвечает tipAsk
+    if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
+      return p('Пока не знаю, чем это заменить: такой замены в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
+    return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
+  }
+  /* ── ступень 2 · советы по питанию: «можно ли есть сладкое на ночь», «сколько соли в день», «можно ли пропускать завтрак»
+     (решение Астамура 23.11.2026 «да»). Карточки advice справочника cooking: общие нормы для здоровых взрослых (ВОЗ, EFSA, NHS, DGE),
+     у каждой два источника; где наука спорит — обе версии. Под нормой — своя цифра за сегодня из дневника (mine).
+     Болезни, беременность, дети, лекарства — короткое «это к врачу», без совета. Только вопрос; «съел/сегодня» — счётчики (nutrAsk). */
+  var ADV_MED=/(диабет|беремен|кормлю грудью|кормящ|гв(\s|$)|гастрит|(^|\s)язв|давлени|гипертон|холестерин|подагр|аллерги|болезн|болею|болит|лекарств|таблетк|антибиотик|(^|\s)(ребен|ребенк|детям|детей|дети|ребенку)|сердц|почк[аеиуо]|щитовидк|онколог|(^|\s)рак(\s|$)|панкреат|желчн|диагноз)/;
+  function advMine(c){
+    var key=c.mine; if(!key||typeof jrCompute!=='function') return '';
+    var t=todayISO(), d; try{ d=jrCompute({a:t,b:t}) }catch(x){ return '' }
+    if(!d||d.empty) return '';
+    var v=key==='sug'?d.v.sug:key==='salt'?(d.v.na!=null?d.v.na*2.5/1000:null):key==='fib'?d.mac.fib:key==='prot'?d.mac.p:key==='caf'?d.v.caf:null;
+    if(v==null) return '';
+    var n=nutrNum(v);
+    if(key==='sug') return 'Сегодня по дневнику у тебя '+n+' г всех сахаров — вместе с сахаром фруктов и молока, так что свободного из них меньше.';
+    if(key==='salt') return 'Сегодня по дневнику около '+n+' г соли — без той, что ты досаливал сам.';
+    if(key==='fib') return 'Сегодня по дневнику у тебя '+n+' г клетчатки.';
+    if(key==='caf') return 'Сегодня по дневнику у тебя '+n+' мг кофеина.';
+    if(key==='prot'){ var kg=null; try{ var pd=window.HappyPerson&&HappyPerson.data(); kg=pd&&pd.latest&&pd.latest.kg }catch(x){}
+      return (kg?'При твоём весе '+nutrNum(kg)+' кг это около '+Math.round(kg*0.8)+' г в день. ':'')+'Сегодня по дневнику у тебя '+n+' г белка.' }
+    return '';
+  }
+  function adviceAsk(raw){
+    var o=nrm(raw).trim().replace(/[!.,…\s]+$/,''), q=/\?$/.test(o); o=o.replace(/\?+$/,'').trim();
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    if(!q&&!/(^|\s)(сколько|можно|нельзя|нужно|надо|стоит|ли|как|какая|какой|какую|норма|почему|зачем|правда|вредн\S*|вред(ен|на|но|ны)|полезн\S*|полез(ен|на|но|ны)|опасн\S*)(\s|$)/.test(o)) return null;   // «стакан воды», «вода полтора литра» — запись, а не вопрос
+    if(/(посовет|подскажи\s+(блюд|рецепт|что)|приготов|рецепт|что (съесть|поесть|покушать)|меню)/.test(o)) return null;   // «посоветуй полезный десерт» — совет блюда
+    if(/(^|\s)(моя|мою|мой|у меня|мне)(\s|$)/.test(o)&&/(норм|цел)/.test(o)) return null;   // «какая у меня норма» — цели из настроек (goalAsk)
+    if(/(^|\s)во?\s+(?!день|сутки|неделю|обед|ужин|завтрак|возрасте|целом|среднем|норме|жару|течение)\S/.test(o)&&!/(на ночь|перед сном|завтрак)/.test(o)) return null;   // «сколько сахара в банане» — вопрос о продукте
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    var c=L&&L.state==='ok'?L.find(o,'advice'):null;
+    var ask=!!c||ADV_MED.test(o)&&/(можно|нельзя|сколько|вредн|вред(ен|на|но|ны)|полез|нужно|надо|стоит)/.test(o)||/(^|\s)(полезн\S*|вредн\S*|полез(ен|на|но|ны)|вред(ен|на|но|ны))(\s|$)|(^|\s)(можно|нужно|надо|стоит)\s+ли\s+(есть|пить|кушать|употреблять|съедать|пропускать)(\s|$)|(^|\s)сколько\s+(можно|нужно|надо)\s+(есть|пить|съедать|кушать)/.test(o);
+    if(!ask) return null;
+    var med=o.match(ADV_MED);
+    if(med) return p('С вопросами о болезнях, беременности, детях и лекарствах — к врачу. Я даю только общие советы для здоровых взрослых.')+'<p class="mlHint">В дневник ничего не записал.</p>';
+    if(!L||L.state!=='ok'){ if(L&&L.state!=='loading') L.load(); return p('Справочник советов ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    if(!c&&(L.find(o,'cook')||L.find(o,'tip'))) return null;   // «можно ли есть сырую фасоль» — ответит справочник готовки (cookAsk)
+    if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
+      return p('Пока не знаю, что ответить: такого совета в справочнике ещё нет. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
+    var mine=advMine(c);
+    return p(esc(c.answer))+(mine?p(esc(mine)):'')+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p><p class="mlHint">Польза и вред у всех разные. Если плохо себя чувствуешь или есть болезнь, лучше спроси врача.</p>';
   }
   function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
   function nutrAsk(o){
@@ -2265,9 +2373,11 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var sw=swapAsk(raw); if(sw) return sw }   // «чем заменить муку в сырниках» — замена из справочника
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var tq=tipAsk(raw); if(tq) return tq }   // «когда солить рис» — кулинарный приём
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var rq=rcpAsk(S,raw); if(rq) return rq }   // «рецепт плова» — рецепт из готового, а не «готовка на несколько человек»
-    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }   // совет блюда — раньше «рецепт = готовка»
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var ad=adviceAsk(raw); if(ad) return ad }   // «сколько соли в день», «можно ли есть на ночь» — общий совет из справочника   // совет блюда — раньше «рецепт = готовка»
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;

@@ -22,9 +22,9 @@
  * (chain), одинаково на всех устройствах. Разделы из другого приложения («· Cronometer») и скрытые (visibleBefore)
  * в цепочку не входят — они только в истории дней.
  *
- * Правило бота «в какой приём записать» — pick(): 1) приём назван — он; 2) время в периоде перекуса — этот
- * перекус при любой калорийности; 3) в основном периоде первая запись — основной приём, даже маленькая;
- * 4) прошло не больше gap минут после последней записи периода — туда же, куда она; 5) меньше kcal ккал и прошло
+ * Правило бота «в какой приём записать» — pick(): 1) приём назван — он; 2) прошло не больше gap минут после
+ * последней записи дня — туда же, куда она, даже через границу периода (23.11.2026); 3) время в периоде перекуса — этот
+ * перекус при любой калорийности; 4) в основном периоде первая запись — основной приём, даже маленькая; 5) меньше kcal ккал и прошло
  * больше gap минут — исходный перекус; 6) иначе основной приём периода. Граница относится к следующему периоду.
  * Тот же текст обычным языком — экран «Правила бота» в «Для разработчика»: поменял правило — поправь и его.
  * — Claude · 19.11.2026 */
@@ -141,10 +141,12 @@ function classify(rows,R,e){
   var has=function(k){ return rows.some(function(r){ return r.k===k }) };
   if(e.explicit) return {k:e.explicit,why:'named'};
   var P=periodAt(rows,e.m); if(!P) return null;
+  /* продолжение — и через границу периода: один приём на стыке (12:56 завтрак, 13:02 — тот же завтрак; Астамур 23.11.2026) */
+  var prev=null; (e.recs||[]).forEach(function(r){ if(has(r.k)&&r.m<=e.m&&(!prev||r.m>=prev.m)) prev=r });
+  if(prev&&e.m-prev.m<=R.gap) return {k:prev.k,why:'near',period:P};
   if(kindOf(P)==='snack') return {k:P.k,why:'snackPeriod',period:P};
   var last=null; (e.recs||[]).forEach(function(r){ if(has(r.k)&&r.m>=P.a&&r.m<P.b&&r.m<=e.m&&(!last||r.m>=last.m)) last=r });
   if(!last) return {k:P.k,why:'first',period:P};
-  if(e.m-last.m<=R.gap) return {k:last.k,why:'near',period:P};
   if(e.kcal!=null&&e.kcal<R.kcal&&has('sn')) return {k:'sn',why:'small',period:P};
   return {k:P.k,why:'period',period:P};
 }
@@ -257,7 +259,7 @@ function open(){
       '<details class="mp-more" data-more="rules"><summary>Правила перекуса<span aria-hidden="true">⌄</span></summary><div class="mp-body">'+
         snack.map(function(r){ return '<p class="mp-rule"><b>'+clock(r.a)+'–'+clock(r.b)+'</b> — '+esc(r.t.toLowerCase())+' при любой калорийности.</p>' }).join('')+
         '<p class="mp-rule"><b>В остальное время</b> — меньше <b data-out="kcal">'+R.kcal+'</b> ккал и прошло больше <b data-out="gap">'+R.gap+'</b> мин после прошлой записи периода.</p>'+
-        '<p class="mp-note">Первая еда в периоде — основной приём. До <span data-out="gap">'+R.gap+'</span> минут включительно — продолжение. Запись ровно на границе относится к следующему периоду. Считаются калории всей новой записи. Назвал приём сам — бот слушается.</p>'+
+        '<p class="mp-note">Первая еда в периоде — основной приём. До <span data-out="gap">'+R.gap+'</span> минут включительно после прошлой записи — продолжение, даже через границу периода. Запись ровно на границе относится к следующему периоду. Считаются калории всей новой записи. Назвал приём сам — бот слушается.</p>'+
         '<div class="mp-two">'+S().field({label:'Меньше, ккал',name:'mp-kcal',inputmode:'numeric',value:R.kcal,maxlength:4,quick:true})+S().field({label:'Пауза больше, мин',name:'mp-gap',inputmode:'numeric',value:R.gap,maxlength:3,quick:true})+'</div>'+
       '</div></details>'+
       '<details class="mp-more" data-more="example"><summary>Проверить на примере<span aria-hidden="true">⌄</span></summary><div class="mp-body"><p class="mp-note">Без записи в дневник.</p>'+
