@@ -2368,7 +2368,9 @@ var MealBot=(function(){
     var S=state(chat), h, st;
     if(SP) SP.on(true);
     try{
-      st=steps(chat,S,m);
+      /* замер тела — раньше шагов: «мой вес 80, талия 82» не уходит в мастер целей; посреди вопросов мастера замер записывается, и вопрос повторяется (один вес — ответ мастеру) */
+      if(!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof m.text==='string'){ st=bodyAct(S,m.text); if(st!=null&&typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)) st+=MealBotSteps.again(S) }
+      if(st==null) st=steps(chat,S,m);
       if(st!=null) h=st;
       else { h=withSwap(chat,S,m); if(typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)&&!m.inbox) h+=MealBotSteps.again(S) }
     } finally { if(SP) SP.on(false) }
@@ -2882,6 +2884,127 @@ var MealBot=(function(){
     var d=new Date(curDate+'T12:00:00'); d.setDate(d.getDate()+dw.shift);
     return actDay(isoOf(d),kc&&!ate);
   }
+  /* ── Meal 34 · замеры тела со слов (Астамур 24.11.2026, «Да» на план): «талия 82, грудь 100» → общие «Замеры тела»
+     (документ sport/body, тот же, что экран журнала, Day и Sport). Формат читает и пишет только shared/happy-measurements.js:
+     здесь — разбор слов (словарь body_measurements) и вызов его read/compose/saveChanges/removeChanges. ── */
+  function bodyData(){ var D0=typeof window!=='undefined'&&window.HappyMealSpeechData; return D0&&D0.body_measurements||null }
+  function bodyDoc(){ try{ return typeof MealData!=='undefined'&&MealData.signedIn()&&typeof HappyMeasurements!=='undefined'?MealData.store.shared(HappyMeasurements.DOC.app,HappyMeasurements.DOC.name):null }catch(e){ return null } }
+  function bodyWords(list){ return (list||[]).map(function(w){ return nrm(w).trim().split(' ') }).sort(function(a,b){ return b.length-a.length }) }
+  function bodyAt(tk,i,ws){ for(var k=0;k<ws.length;k++){ var w=ws[k], ok=w.length&&i+w.length<=tk.length; for(var j=0;ok&&j<w.length;j++) if(tk[i+j]!==w[j]) ok=false; if(ok) return w.length } return 0 }
+  function bodyNum(v){ return String(Math.round(v*10)/10).replace('.',',') }
+  function bodyDate(iso){ return iso.slice(8,10)+'.'+iso.slice(5,7) }
+  function bodyVal(key,v){ return bodyNum(v)+(key==='weight'?' кг':' см') }
+  /* фраза → {segs:[{pl,side,v}], shift, strong} или null, если в ней есть что-то кроме замеров */
+  function bodyParse(text){
+    var B=bodyData(); if(!B) return null;
+    var t=nrm(String(text).replace(/(\d)[,.](\d)/g,'$1·$2')).replace(/[,;:!?.…—–-]+/g,' ').replace(/·/g,'.').replace(/(\d)(см|кг)(?=\s|$)/g,'$1 $2').replace(/\s+/g,' ').trim();
+    if(!t) return null;
+    var tk=t.split(' '), PL=B.places.map(function(x){ return {pl:x,ws:bodyWords(x.words)} }), SD={}, sideKeys=Object.keys(B.sides);
+    sideKeys.forEach(function(k){ SD[k]=bodyWords(B.sides[k]) });
+    var FL=bodyWords(B.fillers), ST=bodyWords(B.strong), DW={}; Object.keys(B.day_words||{}).forEach(function(k){ DW[k]=bodyWords(B.day_words[k]) });
+    var segs=[], cur=null, side=null, last=null, shift=0, strong=false, i=0;
+    while(i<tk.length){
+      var w=tk[i], n, hit=0;
+      for(var a=0;a<PL.length&&!hit;a++){ n=bodyAt(tk,i,PL[a].ws); if(n){ if(cur&&cur.v==null) return null; cur={pl:PL[a].pl,side:side,v:null}; side=null; hit=n;
+        for(var z=i;z<i+n;z++) if(bodyAt(tk,z,ST)) strong=true } }   // «обхват шеи 38» — точно замер
+      if(hit){ i+=hit; continue }
+      for(var b=0;b<sideKeys.length&&!hit;b++){ n=bodyAt(tk,i,SD[sideKeys[b]]); if(n){ hit=n; if(cur&&cur.v==null&&cur.pl.pair) cur.side=sideKeys[b]; else if(!cur&&last&&last.pl.pair&&!last.side) last.side=sideKeys[b]; else side=sideKeys[b] } }   // «бицепс 35 правый», «предплечье 28 оба»
+      if(hit){ i+=hit; continue }
+      if(/^\d+(\.\d+)?$/.test(w)){
+        var v=parseFloat(w);
+        if(!cur&&side&&last&&last.pl.pair){ cur={pl:last.pl,side:side,v:null}; side=null }   // «правый бицепс 35, левый 34»
+        if(!cur||cur.v!=null) return null;
+        cur.v=v; segs.push(cur); last=cur; cur=null; i++; continue }
+      for(var d in DW){ n=bodyAt(tk,i,DW[d]); if(n){ hit=n; if(+d) shift=+d; break } }
+      if(hit){ i+=hit; continue }
+      n=bodyAt(tk,i,ST); if(n) strong=true;
+      n=n||bodyAt(tk,i,FL); if(n){ i+=n; continue }
+      return null;
+    }
+    if(cur||!segs.length) return null;
+    for(var s=0;s<segs.length;s++){ var R=segs[s].pl.unit==='кг'?B.kg_range:B.cm_range; if(segs[s].v<R[0]||segs[s].v>R[1]) return {bad:segs[s]} }
+    return {segs:segs,shift:shift,strong:strong};
+  }
+  /* что ещё спросить: сторона у парного места, верх или низ у живота */
+  function bodyNeed(seg){ return seg.pl.pair&&!seg.side||seg.pl.choose&&!seg.key }
+  function bodyAsk(S){
+    var B=bodyData(), q=S.bodyAsk, seg=q.segs.filter(bodyNeed)[0];
+    if(!seg) return null;
+    var v={name:seg.pl.name.charAt(0).toUpperCase()+seg.pl.name.slice(1),v:bodyNum(seg.v)};
+    if(seg.pl.pair) return p(esc(actT(B.ask_side,v)))+chips(B.side_chips.map(function(c){ return ['act:body:side:'+c[0],c[1]] }));
+    return p(esc(actT(B.ask_choose,v)))+chips(seg.pl.choose.map(function(k){ return ['act:body:pick:'+k,B.choose_chips[k]] }));
+  }
+  function bodyFields(segs){ var f={};
+    segs.forEach(function(s){ var ks=s.pl.pair?(s.side==='L'?[s.pl.pair[0]]:s.side==='R'?[s.pl.pair[1]]:s.pl.pair):[s.key||s.pl.key]; ks.forEach(function(k){ f[k]=s.v }) });
+    return f }
+  function bodySave(S,q){
+    var B=bodyData(), g=actSignIn(); if(g) return g;
+    var d=bodyDoc(); if(!d) return p(esc(actData().answer_sign_in));
+    if(d.newer) return p(esc(B.answer_newer));
+    var H=HappyMeasurements, st=H.read(d.all()), date=q.date, old=st.list.filter(function(x){ return x.date===date })[0]||null, f=bodyFields(q.segs), keys=Object.keys(f), m;
+    var fresh=keys.filter(function(k){ return !old||old.values[k]!==f[k] });
+    if(old&&!fresh.length) return p(esc(actT(B.same,{date:bodyDate(date)})))+'<p class="mbSum">'+keys.map(function(k){ return esc(B.labels[k]+' '+bodyVal(k,f[k])) }).join('<br>')+'</p>';
+    var txt={}; keys.forEach(function(k){ txt[k]=String(f[k]) });
+    try{ m=H.compose(st,date,txt,old); d.putMany(H.saveChanges(st,m,old?old.date:undefined)).catch(function(e){ try{ toast(e.message) }catch(_){} }) }catch(e){ return p(esc(e.message)) }
+    var lines=keys.map(function(k){ var was=old&&old.values[k]!=null&&old.values[k]!==f[k]?' <small style="font-weight:400;opacity:.8">('+esc(actT(B.was,{v:bodyNum(old.values[k])}))+')</small>':''; return esc(B.labels[k]+' '+bodyVal(k,f[k]))+was });
+    var help=typeof helpEntry==='function'&&helpEntry('measurements');
+    return p(esc(actT(B.saved,{date:bodyDate(date)})))+'<p class="mbSum">'+lines.join('<br>')+'</p><p class="mlHint">'+esc(B.saved_hint)+'</p>'+
+      actUndoChip(S,function(){
+        var d2=bodyDoc(); if(!d2||d2.newer) return false;
+        var s2=H.read(d2.all()), now=s2.list.filter(function(x){ return x.date===date })[0];
+        if(!now||JSON.stringify(now)!==JSON.stringify(m)) return false;
+        var ch=old?H.saveChanges(s2,old,old.date):H.removeChanges(s2,date,'measure-deleted-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)).changes;
+        d2.putMany(ch).catch(function(e){ try{ toast(e.message) }catch(_){} }); return true },help?[['go:measurements',B.button_open]]:[]);
+  }
+  function bodyGo(S){ var a=bodyAsk(S); if(a) return a; var q=S.bodyAsk; S.bodyAsk=null; return bodySave(S,q) }
+  /* «какая у меня талия», «мои замеры» — ответ из замеров */
+  function bodyQuery(text){
+    var B=bodyData(), t=nrm(text).trim().replace(/[?!.,…\s]+$/,'').replace(/\s+/g,' '), d=bodyDoc(), m0;
+    var isList=actRx(B.list).test(t), q=!isList&&t.match(actRx(B.query)), pl=null;
+    if(q){ var tk=q[1].trim().split(' '); B.places.forEach(function(x){ if(!pl&&bodyAt(tk,0,bodyWords(x.words))===tk.length) pl=x }); if(!pl) return null }
+    if(!isList&&!pl) return null;
+    if(!d) return actSignIn()||p(esc(actData().answer_sign_in));
+    if(d.newer) return p(esc(B.answer_newer));
+    var L=HappyMeasurements.read(d.all()).list, open=typeof helpEntry==='function'&&helpEntry('measurements')?chips([['go:measurements',B.button_open]]):'';
+    if(isList){ var lst=L[L.length-1]; if(!lst) return p(esc(B.answer_empty));
+      var ks=Object.keys(B.labels).filter(function(k){ return lst.values[k]!=null });
+      return p(esc(actT(B.answer_list,{date:bodyDate(lst.date)})))+'<p class="mbSum">'+ks.map(function(k){ return esc(B.labels[k]+' '+bodyVal(k,lst.values[k])) }).join('<br>')+'</p>'+open }
+    var keys=pl.pair||pl.choose||[pl.key], got=L.filter(function(x){ return keys.some(function(k){ return x.values[k]!=null }) });
+    if(!got.length) return p(esc(actT(B.answer_none,{name:pl.name})))+open;
+    var say=function(x){ return keys.filter(function(k){ return x.values[k]!=null }).map(function(k){ return (keys.length>1?B.labels[k]+' ':'')+bodyVal(k,x.values[k]) }).join(', ') };
+    var a=got[got.length-1], b=got[got.length-2], nm=pl.name.charAt(0).toUpperCase()+pl.name.slice(1);
+    return p(esc(actT(B.answer_last,{name:nm,v:say(a),date:bodyDate(a.date)}))+(b?' '+esc(actT(B.answer_prev,{v:say(b),date:bodyDate(b.date)})):''))+open;
+  }
+  /* фраза человека: замер, ответ на вопрос замера, вопрос о замерах — или null (дальше как обычно) */
+  function bodyAct(S,text){
+    var B=bodyData(); if(!B||typeof HappyMeasurements==='undefined') return null;
+    if(S.bodyAsk){ var t0=nrm(text).trim().replace(/[?!.,…\s]+$/,''), tk0=t0.split(' '), q=S.bodyAsk, seg=q.segs.filter(bodyNeed)[0], got=null;
+      if(seg&&seg.pl.pair) Object.keys(B.sides).forEach(function(k){ if(!got&&bodyAt(tk0,0,bodyWords(B.sides[k]))===tk0.length) got=k });
+      if(seg&&seg.pl.choose) seg.pl.choose.forEach(function(k){ if(!got&&bodyAt(tk0,0,bodyWords([B.choose_chips[k],B.labels[k],k==='upperAbs'?'верх':'низ']))===tk0.length) got=k });
+      if(got){ if(seg.pl.pair) seg.side=got; else seg.key=got; return bodyGo(S) }
+      if(q.food&&/^(замер|да|это замер)$/.test(t0)){ q.food=false; return bodyGo(S) }
+      if(q.food&&/^(еда|это еда|нет)$/.test(t0)){ S.bodyAsk=null; return p(esc(B.answer_food)) }
+      S.bodyAsk=null }
+    var r=bodyParse(text);
+    if(!r) return bodyQuery(text);
+    if(r.bad){ if(r.bad.pl.unit==='кг') return null; return p(esc(actT(B.answer_range,{name:r.bad.pl.name.charAt(0).toUpperCase()+r.bad.pl.name.slice(1),v:bodyVal('',r.bad.v)}))) }   // вес вне границ — как раньше
+    var only=r.segs.every(function(s){ return s.pl.unit==='кг' });
+    if(only&&!r.strong) return null;   // «мой вес 80» — мастер целей, как раньше
+    var d=new Date(curDate+'T12:00:00'); if(r.shift) d.setDate(d.getDate()+r.shift);
+    var iso=isoOf(d); if(iso>todayISO()) iso=todayISO();
+    S.bodyAsk={date:iso,segs:r.segs};
+    if(r.segs.length===1&&r.segs[0].pl.food_like&&!r.strong){ S.bodyAsk.food=true; var s0=r.segs[0];
+      return p(esc(actT(B.ask_food,{name:s0.pl.name,v:bodyNum(s0.v)})))+chips(B.food_chips.map(function(c){ return ['act:body:'+c[0],c[1]] })) }
+    return bodyGo(S);
+  }
+  function bodyTap(S,a){
+    var B=bodyData(), q=S.bodyAsk; if(!B||!q) return null;
+    if(a[2]==='food'){ S.bodyAsk=null; return p(esc(B.answer_food)) }
+    if(a[2]==='body'){ q.food=false; return bodyGo(S) }
+    var seg=q.segs.filter(bodyNeed)[0]; if(!seg) return null;
+    if(a[2]==='side'&&seg.pl.pair) seg.side=a[3]; else if(a[2]==='pick'&&seg.pl.choose) seg.key=a[3]; else return null;
+    return bodyGo(S);
+  }
   /* команда из фразы; не команда — null */
   function appAct(S,text){
     var A=actData(); if(!A) return null;
@@ -2906,6 +3029,7 @@ var MealBot=(function(){
   function actTap(S,a){
     var A=actData(); if(!A) return null;
     if(a[1]==='undo'){ var fn=S.acts&&S.acts[+a[2]]; if(!fn) return null; S.acts[+a[2]]=null; var g=actSignIn(); if(g) return g; return p(esc(fn()?A.answer_undone:A.answer_undo_late)) }
+    if(a[1]==='body') return bodyTap(S,a);
     if(a[1]==='fav') return actFav(S,a[2]==='1',a.slice(3).join(':'));
     if(a[1]==='suplog'){ var g0=actSignIn(); if(g0) return g0; var dt0=curDate, sc0=typeof autoSec==='function'?autoSec():null; Promise.resolve(typeof MealBotGuide!=='undefined'&&MealBotGuide&&MealBotGuide.pending(a[2])).then(function(){ return HappySupplements.logIntake({variantId:a[2],quantity:1,measureId:a[3]||'basis',date:dt0,time:null,section:sc0}) }).catch(function(e){ try{ toast(e.message) }catch(_){} }); return p('Записал приём. Он виден в дне и в разделе БАДов.') }   // своя добавка из чата: «Записать 1 капсулу»
     if(a[1]==='fast') return actFastSet(S,a[2]==='on');
