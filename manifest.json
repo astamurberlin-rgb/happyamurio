@@ -127,11 +127,11 @@
       "cardCount": 155
     },
     "home": {
-      "version": "1.0.1",
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/6ca8472bf5d5079ada37447fe5f20c35a4949b02/data/home-1.0.1.json",
+      "version": "1.1",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/9869130081e509b58e6b644d9a0423a630a907a6/data/home-1.1.json",
       "encoding": "json",
-      "bytes": 10195,
-      "sha256": "41768da63e10f6f910d46e1a95c037ae76e2d527fcd19173adf9cbcf3d2d81e5",
+      "bytes": 10198,
+      "sha256": "5010e940510cfc9d64e419090709ca8d573dfcc62da4960ab202ac872011931c",
       "foodCount": 12,
       "notes": "data/HOME.md"
     }
