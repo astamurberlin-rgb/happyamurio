@@ -480,6 +480,7 @@ var MealBot=(function(){
     var q=Math.round(hb.q*(l.vague||1)*100)/100, g=gramsFor(l.fid,q,hb.u); if(!(g>0)) return false;
     l.q=q; l.u=hb.u; l.g=g; l.explicit=true; l.approx=true; l.usual=true; l.habit=true; return true;
   }
+  function isOwn(id){ return !!id&&(DB.foods||[]).some(function(f){ return f&&f.id===id&&!f.supplement }) }
   /* Meal 33.12 · слово человека → точный продукт базы (словарь, product_pins): «квашеная капуста» — капуста, а не её сок */
   var PINC={};
   function pinFid(name){
@@ -725,6 +726,13 @@ var MealBot=(function(){
           if(exW.length&&!l.alts.some(function(a){ return related(a,exW)||words(a).some(function(w){ return exW.some(function(q){ return norm(q).slice(0,4)===norm(w).slice(0,4) }) }) })){ l.st='none'; l.alts=[]; l.km=true } }
         /* «вареники с вишней»: блюдо названо, а в вариантах только вишня — блюда нет в базе, ягоду вместо вареников не предлагать (Астамур, 23.11.2026) */
         if(l.st==='pick'&&!l.noAuto&&!l.gdAsk&&l.alts.length&&fw.length>1&&KINDHEAD.test(norm(fw[0]))&&!l.alts.some(function(a){ return related(a,[fw[0]])||words(a).some(function(w){ return norm(w).slice(0,5)===norm(fw[0]).slice(0,5) }) })){ l.st='none'; l.alts=[]; l.km=true }
+        /* два своих продукта на одно слово («Сырники мамины» и «Сырники бабушкины»): записывал раньше — тот же, иначе вопрос «какой?» (24.11.2026) */
+        if(l.st!=='none'&&!l.gdAsk&&isOwn(l.fid||l.alts[0])){ var ownA=l.alts.filter(isOwn);
+          var exO=ownA.filter(function(a){ return exactName(a,fw) });   // сказано ровно название одного из них («сырники» при «Сырники» и «Сырники мамины») — оно
+          if(ownA.length>1&&exO.length===1){ l.fid=exO[0]; l.st='ok'; l.g=gramsFor(l.fid,l.q,l.u) }
+          else if(ownA.length>1){ hist=hist||histCount(); var usedO=ownA.filter(function(a){ return hist[a] });
+            if(usedO.length){ l.fid=usedO.length>1?lastUsedOf(usedO):usedO[0]; l.st='ok'; l.g=gramsFor(l.fid,l.q,l.u); l.asBefore=true }
+            else { l.alts=ownA; l.fid=null; l.st='pick'; l.noAuto=true; l.gdAsk=true; l.bls=0 } } }
         if(l.st==='pick'&&l.alts.length&&!l.gdAsk){
           hist=hist||histCount();
           var used=l.alts.filter(function(a){ return hist[a] });
