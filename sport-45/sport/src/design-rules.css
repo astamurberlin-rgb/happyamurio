@@ -414,3 +414,5 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 
 /* 24.11.2026: «История обновлений» и другие строки-кнопки с подписью — заголовок 700, как в Day и Meal (без этого <b> внутри кнопки 600 становился 900) */
 .happy-button:has(>small)>b,.happy-card>.happy-button[data-action=release-history]>b{font-weight:700}
+/* 24.11.2026 (Астамур): подзаголовок листа — на 4 под заголовком, как во всех листах (было 20) */
+.sheet>.sheet-top+.sheet-info{margin-top:-16px}
