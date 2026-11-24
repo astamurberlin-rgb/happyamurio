@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#00A8F5">
-<title>Правила стиля Happy</title>
+<title>Правила стиля Happy · бренд</title>
 <meta name="description" content="Дизайн-система Day, Meal и Sport: цвета, текст, формы и элементы, живые и с примеркой темы.">
 <!-- Живая дизайн-система Happy · черновик 0.1 · 24.11.2026 · Claude.
      Собрана только из того, что уже решено и работает в коде (Day 61.9 · Meal 34.9 · Sport 45.6, main 03a5679).
@@ -42,7 +42,7 @@
  </section>
 
  <nav class="ds-toc" aria-label="Разделы">
-  <a href="#principles">Основа</a><a href="#color">Цвет</a><a href="#type">Текст</a><a href="#shape">Формы</a><a href="#parts">Элементы</a><a href="#motion">Движение</a><a href="#space">Отступы</a><a href="#gaps">Расхождения</a>
+  <a href="#principles">Основа</a><a href="#color">Цвет</a><a href="#type">Текст</a><a href="#shape">Формы</a><a href="#parts">Элементы</a><a href="#motion">Движение</a><a href="#space">Отступы</a><!--BRAND-TOC--><a href="#brand">Бренд</a><!--/BRAND-TOC--><a href="#gaps">Расхождения</a>
  </nav>
 
  <!-- ───────────── 1. Основа ───────────── -->
@@ -206,7 +206,49 @@
   <p class="ds-spec">Поля экрана — 20 (как в настройках). Между карточками — 12. Внутри карточки — 16.</p>
  </section>
 
- 
+ <!--BRAND-->
+ <!-- ───────────── 8. Бренд ───────────── -->
+ <section class="ds-sec" id="brand">
+  <h2>Бренд</h2>
+  <p class="ds-note">Что делает Happy узнаваемым вне экрана. Здесь собрано только то, что уже есть; пустые места помечены.</p>
+
+  <h3>Семья приложений</h3>
+  <div class="ds-icons">
+   <figure><img src="../../day-61/app-icons/happy-day-20261031-v4-192.png" alt="Значок Happy Day" width="88" height="88"><figcaption><b>Happy Day</b>самочувствие и ритм дня</figcaption></figure>
+   <figure><img src="../../meal-34/app-icons/happy-meal-20261102-softserve-cool-192.png" alt="Значок Happy Meal" width="88" height="88"><figcaption><b>Happy Meal</b>питание</figcaption></figure>
+   <figure><img src="../../sport-45/app-icons/happy-sport-20261029-192.png" alt="Значок Happy Sport" width="88" height="88"><figcaption><b>Happy Sport</b>тренировки</figcaption></figure>
+  </div>
+  <p class="ds-spec">Общий приём значков: тёмный силуэт человека на ярком градиенте. Каждый силуэт показывает, чем занято приложение.</p>
+
+  <h3>Имя</h3>
+  <ul class="ds-list">
+   <li>Полное имя — <b>Happy Day</b>, <b>Happy Meal</b>, <b>Happy Sport</b>. Под значком — коротко: <b>Day</b>, <b>Meal</b>, <b>Sport</b>.</li>
+   <li>Версия пишется так: «Happy Day · Update 61.9».</li>
+   <li>Вся семья вместе — <b>Happy</b>.</li>
+  </ul>
+
+  <h3>Голос и тон</h3>
+  <p class="ds-note">Как приложения говорят с человеком (✱ voice &amp; tone).</p>
+  <div class="ds-voice">
+   <div class="ds-vrow ok"><b>Так</b><span>Не помню пароль</span></div><div class="ds-vrow no"><b>Не так</b><span>Забыл(а) пароль?</span></div>
+   <div class="ds-vrow ok"><b>Так</b><span>Выбери начало и конец</span></div><div class="ds-vrow no"><b>Не так</b><span>Пожалуйста, выберите период</span></div>
+   <div class="ds-vrow ok"><b>Так</b><span>Запись удалена · Вернуть</span></div><div class="ds-vrow no"><b>Не так</b><span>Вы уверены, что хотите удалить?</span></div>
+  </div>
+  <ul class="ds-list">
+   <li>На «ты», коротко, простыми словами.</li>
+   <li>Без рода в прошедшем времени.</li>
+   <li>Не переспрашивать: действие сразу, с возможностью «Вернуть».</li>
+  </ul>
+
+  <h3>Чего пока нет</h3>
+  <ul class="ds-list ds-todo">
+   <li><b>Логотип-слово «Happy».</b> Сейчас имя пишется обычным системным шрифтом.</li>
+   <li><b>Правила значков.</b> Сетка, поля, градиенты — не записаны. Мастерская значков есть: icon-studio.</li>
+   <li><b>Иконки внутри приложений.</b> Ты отложил это на потом (21.11).</li>
+   <li><b>Цвет семьи.</b> У каждого приложения свой цвет; общего «цвета Happy» нет.</li>
+  </ul>
+ </section>
+ <!--/BRAND-->
 
  <!-- ───────────── 9. Расхождения ───────────── -->
  <section class="ds-sec" id="gaps">
@@ -219,7 +261,10 @@
    <li><b>Заголовок листа снизу</b> («Свой период») — жирность 600, а заголовки по правилу 700.</li>
    <li><b>Скругления мелких деталей</b> — очень разные: в Sport около 30 значений, в Day и Meal около 20. Для плиток правило есть (12–14), для остального нет.</li>
    <li><b>Цвета числом</b> — в коде приложений ещё много цветов вписаны числом, а не по имени.</li>
-   
+   <!--BRAND-GAPS-->
+   <li><b>Sport · имя под значком</b> — «Sport 43», а должно быть «Sport».</li>
+   <li><b>Meal и Sport · цвет полосы браузера</b> — голубой Day (#00A8F5), а не свой цвет приложения.</li>
+   <!--/BRAND-GAPS-->
   </ol>
   <p class="ds-why">Нарочные отличия, которые не трогаем: карточки Day 22 и Sport 24; бледные заголовки групп в Настройках.</p>
  </section>
