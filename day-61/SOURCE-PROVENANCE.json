@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1596144,
-   "sha256": "43a6d24baf0ce5997efab2a8f1e6a7b11f0bb462df32fc74a190183965effe2c"
+   "size": 1608440,
+   "sha256": "164cc030cf7c4a178790bfed22233774d29b3330e1d8de0d882c96ef827dea11"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -186,8 +186,8 @@
   },
   {
    "path": "index.html",
-   "size": 522533,
-   "sha256": "5fd283f6f5e44758178e2b025021509b390d153f649a93b43edbeafc4c1e3c5b"
+   "size": 522623,
+   "sha256": "340863db717a5a44305f82ffa511177c1f3867d7d90fed58eea8ca32d992186a"
   },
   {
    "path": "manifest.webmanifest",
@@ -196,8 +196,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 55448,
-   "sha256": "1a46b3f817bbad0e194934f78b04a6a36c4faf85cc8bc0680ae9ee278dc26887"
+   "size": 56358,
+   "sha256": "bec777699efe88de5f91196c682ad8ba770defc823cd824f6de820e9bc0b0b89"
   },
   {
    "path": "row-swipe.js",
@@ -216,13 +216,13 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 78581,
-   "sha256": "c21eaf8a5ce92cb608aec71abccb0f845c303239d4c2dcc02032c06c392a2823"
+   "size": 78977,
+   "sha256": "e97191086fb4ae828578ccf37fb9ebd1b72b231f64c7708a9be3eb0eab00033a"
   },
   {
    "path": "selfcare.css",
-   "size": 22988,
-   "sha256": "8f98f338758b4aa73fa2608a0642651865072f5f35c2a0ca9eaf27a45ff3e21b"
+   "size": 23946,
+   "sha256": "f6cd00661df508c5e2c4887c27c96705658f87a370786e9f5514e781151bf4a4"
   },
   {
    "path": "shared/apps.json",
@@ -366,8 +366,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 38891,
-   "sha256": "090ebc1506b5a0e2987e93ba35e51fcefff324751f6b19ac6d9f5599233bb656"
+   "size": 38819,
+   "sha256": "80205c88b477767a82e06070534f82d044c65d9129982db6c2c34b11e08b7b20"
   },
   {
    "path": "shared/happy-screens.js",
@@ -416,13 +416,18 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 33843,
-   "sha256": "28535dc83c37a140d3cabe30f5dcb5f05bffc315e85c6a780f3fd5aa7c6239c7"
+   "size": 33965,
+   "sha256": "25c49243f2c1e45a204b44f74c733c35bef1d8540c634f20b347967a6b8585fa"
   },
   {
    "path": "shared/release-notes.js",
    "size": 3156,
    "sha256": "b2b96a57602e29a4ca711439e23b801522c8d1be6c79864fb7a4dae203f2d5a5"
+  },
+  {
+   "path": "sheet-fold.js",
+   "size": 7057,
+   "sha256": "1fcfaad1c11295a114403efa7eb771ad4f83b55d3008d84e2d452deaabce5903"
   },
   {
    "path": "sheet-grip.js",
