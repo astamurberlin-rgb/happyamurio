@@ -173,7 +173,7 @@ function toNewRecord(s){
 let undoNow=null;
 function wheelHasEntry(){return !!session&&(checkinSection().scales.some(k=>Number.isFinite(session.checkpoint[k]))||Object.values(session.checkpoint.tags||{}).some(Boolean)||!!String(session.checkpoint.note||'').trim());}
 /* 24.11.2026: слово «Сохранить» по дуге круга (центр 66,66; радиус строки 42,25): от верха букв до края круга 12, от строки до кнопки 30 — 12 */
-const SAVE_ARC='<svg class="ns-arc" viewBox="0 0 132 106" aria-hidden="true"><path id="nsArcP" d="M23.75 66A42.25 42.25 0 0 1 108.25 66" fill="none" stroke="none"/><text><textPath href="#nsArcP" startOffset="50%" text-anchor="middle">Сохранить</textPath></text></svg>';
+const SAVE_ARC='<svg class="ns-arc" viewBox="0 0 132 106" aria-hidden="true"><path id="nsArcP" d="M23.75 66A42.25 42.25 0 0 1 108.25 66" fill="none" stroke="none"/><text text-anchor="middle"><textPath href="#nsArcP" xlink:href="#nsArcP" startOffset="50%">Сохранить</textPath></text></svg>';
 function updateNowSave(){
  const b=document.getElementById('nowSave');if(!b)return;
  const canSave=!!session&&session.dirty;b.disabled=busy||!session; b.dataset.dirty=canSave;document.body.classList.toggle('now-dirty',canSave); b.innerHTML=canSave?SAVE_ARC:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg>';b.setAttribute('aria-label',canSave?'Сохранить в журнал':'Продиктовать заметку'); renderNote();
