@@ -318,6 +318,12 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .tpT{margin:0 0 4px;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
 .tpT + .tpItem{border-top:0}
+/* свайп влево убирает счётчик (tap-swipe.js, Астамур 24.11.2026 — вместо корзины в листе), как в Day */
+.tpItem{position:relative;touch-action:pan-y}
+.tpItem>*{transform:translateX(var(--sx,0px));transition:transform .2s ease}
+.tpItem.tpSwiping>*{transition:none}
+.tpItem::before{content:'Убрать';position:absolute;right:0;top:9px;bottom:9px;display:grid;place-items:center;padding:0 16px;
+  border-radius:999px;background:var(--happy-danger);color:var(--happy-ink);font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
 .tpNm{flex:1;min-width:0;padding:12px 0;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:600;
   text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;
@@ -2180,6 +2186,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 
 <script src="supplement-counters.js?v=34.11"></script>
 <script src="counters.js?v=34.11"></script>
+<script src="tap-swipe.js?v=34.11"></script>
 <script>
 /* Meal 32: записи хранит общий модуль (meal-data.js). Здесь — только настройки устройства (оформление): они лежат
    в памяти браузера и между устройствами не ходят. */
