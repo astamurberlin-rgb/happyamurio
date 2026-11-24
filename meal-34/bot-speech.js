@@ -88,6 +88,11 @@ var MealSpeech=(function(){
   function missing(word){
     var w=nz(word); return ((D&&D.known_missing)||[]).some(function(e){ return new RegExp(e.said).test(w)&&!hasDish(new RegExp(e.unless_in_base)) });
   }
+  /* напитка нет в базе («компот из фейхоа», «узвар»): похожие того же вида — поисковые слова из словаря (missing_similar, решение Астамура 24.11.2026) */
+  function similarKind(word){
+    var w=nz(word), e=((D&&D.missing_similar)||[]).filter(function(x){ return new RegExp(x.said).test(w) })[0];
+    return e?{options:e.options.slice(),kind:new RegExp(e.same_kind||'.')}:null;
+  }
   /* Meal 33.12 · слово человека → точное название продукта в базе (product_pins): «квашеная капуста» — капуста, а не её сок.
      tokens — слова еды из куска фразы; text — весь кусок; unit — мера строки; vague — количество без числа. Сам продукт по названию находит бот (bot.js, pinFid) */
   function pin(tokens,text,unit,vague,bare){
@@ -313,7 +318,7 @@ var MealSpeech=(function(){
   }
   build();
   return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
-    wordForms:function(){ return (D&&D.dish_word_forms)||[] }, advice:function(){ return (D&&D.dish_advice)||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null }, choice:function(){ return CHOICE },
+    wordForms:function(){ return (D&&D.dish_word_forms)||[] }, advice:function(){ return (D&&D.dish_advice)||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, similarKind:similarKind, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null }, choice:function(){ return CHOICE },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
 })();

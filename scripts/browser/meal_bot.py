@@ -198,6 +198,7 @@ with sync_playwright() as p:
         page.evaluate(RESET)
         page.evaluate("(k)=>{const o=JSON.parse(k);DB.mealRules=o.r;if(!o.r)delete DB.mealRules;DB.foodSources=o.s;if(!o.s)delete DB.foodSources;DB.sections=o.x;if(!o.x)delete DB.sections;DB.taps=o.t;DB.recipes=o.c;rebuildLib();return true}", KEEP)
         if s.get("fav"): page.evaluate(FAV, s["fav"])
+        if s.get("setup"): page.evaluate(s["setup"])
         html = ""
         for m in s["msgs"]:
             if isinstance(m, dict):
@@ -212,7 +213,8 @@ with sync_playwright() as p:
         if not page.evaluate(s["ok"]): why.append("состояние не то")
         out["rows"].append({"id": s["id"], "now": "ошибка" if why else "верно", "why": "; ".join(why), "reply": text[:300]})
         if why: abad.append("%s: %s — %s" % (s["id"], "; ".join(why), text[:90]))
-    page.evaluate("(k)=>{const o=JSON.parse(k);DB.mealRules=o.r;if(!o.r)delete DB.mealRules;DB.foodSources=o.s;if(!o.s)delete DB.foodSources;DB.sections=o.x;if(!o.x)delete DB.sections;DB.taps=o.t;DB.recipes=o.c;DB.favs=[];curDate=todayISO();rebuildLib();save();return true}", KEEP)
+    page.evaluate("(k)=>{const o=JSON.parse(k);DB.mealRules=o.r;if(!o.r)delete DB.mealRules;DB.foodSources=o.s;if(!o.s)delete DB.foodSources;DB.sections=o.x;if(!o.x)delete DB.sections;DB.taps=o.t;DB.recipes=o.c;DB.favs=[];DB.units={};curDate=todayISO();rebuildLib();save();return true}", KEEP)
+    page.evaluate("()=>{DB.foods=[];rebuildLib();save();return true}")
     check("короткие команды и шаги гида: %d сценариев" % len(ACTS), not abad, " | ".join(abad[:8]))
     page.evaluate(RESET)
     page.evaluate("()=>{DB.goals={k:'',p:'',f:'',c:'',fib:''};return true}")

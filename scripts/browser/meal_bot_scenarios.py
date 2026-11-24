@@ -1246,6 +1246,19 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Ил11", eaten=True, msgs=["чай с сахаром или без"], mode="safe", want=[("чай", 200)]),
  dict(id="Ил12", eaten=True, msgs=["щи или борщ"], mode="none", ask=True),
  # Общее слово блюда + незнакомое отличие (Астамур, 23.11.2026): «В базе нет», а не посторонние варианты
+ # Meal 34.12 · напиток не в базе — «в базе нет» и похожие того же вида кнопками (вопрос в строке списка; текст вариантов сверен пробой); просто «компот» — вопрос, а не первый попавшийся (Астамур, 24.11.2026)
+ dict(id="Кмп01", eaten=True, msgs=["компот из фейхоа 300 мл"], mode="none", ask=True),
+ dict(id="Кмп02", eaten=True, msgs=["узвар стакан"], mode="none", ask=True),
+ dict(id="Кмп03", eaten=True, msgs=["взвар из сухофруктов"], mode="none", ask=True),   # не сухофрукты
+ dict(id="Кмп04", eaten=True, msgs=["морс 300 мл"], mode="none", ask=True),
+ dict(id="Кмп05", eaten=True, msgs=["иван-чай чашка"], mode="none", ask=True),   # не свежие листья кипрея
+ dict(id="Кмп06", eaten=True, msgs=["компот стакан"], mode="none", ask=True),
+ dict(id="Кмп07", eaten=True, msgs=["компот стакан", "яблочный"], want=[("яблочн компот", 250)]),
+ dict(id="Кмп08", eaten=True, msgs=["компот яблочный стакан"], want=[("яблочн компот", 250)]),
+ dict(id="Кмп09", eaten=True, msgs=["компот вишнёвый стакан"], want=[("компот вишн", 250)]),
+ dict(id="Кмп10", eaten=True, msgs=["клюквенный морс 200 мл"], want=[("клюкв морс", 200)]),
+ dict(id="Кмп11", eaten=True, msgs=["каркаде стакан"], want=[("гибискус", 250)]),
+ dict(id="Кмп12", eaten=True, msgs=["пельмени 200 г"], mode="none", reply="В базе нет"),   # еда не напиток — как было, без похожих
  dict(id="Фк1", eaten=True, msgs=["суп с галушками"], mode="none", reply="В базе нет"),   # «суп с фрикадельками» теперь в каталоге «Домашние блюда»
  dict(id="Фк2", eaten=True, msgs=["торт с вишней"], mode="none", reply="В базе нет"),
  dict(id="Фк3", eaten=True, msgs=["вареники вишней"], mode="none", reply="В базе нет"),
@@ -1254,6 +1267,13 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Фк6", eaten=True, msgs=["суп с курицей"], want=[("суп куриц|курин", 300)]),
  dict(id="Фк7", eaten=True, msgs=["пирожок с картошкой"], mode="safe", want=[("пирожок картошкой", None)]),   # Meal 34.1: пирожок из «Домашних блюд»
  dict(id="Фк8", eaten=True, msgs=["суп"], mode="none", ask=True),
+dict(id="Дк25", eaten=True, msgs=["Компот яблочный старка"], want=[("компот", 250)]),   # «старка» — так распознаётся «стакан» (id 129)
+dict(id="Дк26", eaten=True, msgs=["молоко старка"], want=[("молоко", 250)]),
+dict(id="Дк27", eaten=True, msgs=["солёные помидоры 150 г"], mode="none", reply="В базе нет"),   # не свежие помидоры и не паста
+dict(id="Дк28", eaten=True, msgs=["Бурые солёные помидоры 150 г"], mode="none", reply="В базе нет"),
+dict(id="Дк29", eaten=True, msgs=["маринованные помидоры 100 г"], want=[("помидоры маринов", 100)]),
+dict(id="Дк30", eaten=True, msgs=["Картофель жареный 230 г и кофе чашка 200 г"], want=[("картофель жарен", 230), ("кофе", 200)]),
+dict(id="Дк31", eaten=True, msgs=["Ещё 80 г селедки 60 г лаваша"], mode="safe", want=[("сельдь", 80)]),   # лаваша в базе нет — переспрос
 # Хвосты разборов (22.11.2026): то, что прошлые разборы оставили недоделанным
  dict(id="Хв01", eaten=True, msgs=["молоко в кофе 50 мл"], want=[("молоко 2,5", 50), ("кофе черн", 200)]),
  dict(id="Хв02", eaten=True, msgs=["кофе 200 мл и сливки в кофе 30 мл"], want=[("кофе черн", 200), ("сливки", 30)]),
@@ -1730,6 +1750,20 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Вар25", msgs=["как сварить темный бульон"], mode="none", reply="бывает тёмным и светлым"),
  dict(id="Вар26", msgs=["что значит бульон улыбается"], mode="none", reply="примерно 85 °C"),
  dict(id="Вар27", msgs=["бульон должен улыбаться это как"], mode="none", reply="примерно 85 °C"),
+ # Meal 34.12 · повтор, перенос на другой день, «верни овсянку» (Астамур 24.11.2026)
+ dict(id="Пв01", msgs=["вчера на ужин гречка 200 г", "повтори вчерашний ужин"], reply="Записал как вчера", want=[("гречк", 200, {"date": "2026-11-12", "sec": "dn"}), ("гречк", 200, {"date": "2026-11-13", "sec": "dn"})]),
+ dict(id="Пв02", msgs=["вчера на завтрак овсянка 250 г", "вчера на ужин гречка 200 г", "скопируй вчерашний день"], reply="Скопировал вчера", want=[("овсян", 250, {"date": "2026-11-12", "sec": "am"}), ("гречк", 200, {"date": "2026-11-12", "sec": "dn"}), ("овсян", 250, {"date": "2026-11-13", "sec": "am"}), ("гречк", 200, {"date": "2026-11-13", "sec": "dn"})]),
+ dict(id="Пв03", msgs=["вчера на ужин гречка 200 г", "на ужин как вчера", "на ужин как вчера"], reply="Записать ещё раз", want=[("гречк", 200, {"date": "2026-11-12"}), ("гречк", 200, {"date": "2026-11-13", "sec": "dn"})]),
+ dict(id="Пв04", msgs=["вчера на завтрак овсянка 250 г", "вчерашний завтрак запиши на обед"], want=[("овсян", 250, {"date": "2026-11-12", "sec": "am"}), ("овсян", 250, {"date": "2026-11-13", "sec": "pm"})]),
+ dict(id="Пв05", msgs=["повтори вчерашний ужин"], mode="none", reply="в дневнике нет"),
+ dict(id="Пв06", msgs=["на обед гречка 200 г", "перенеси гречку на вчера"], reply="Перенёс на вчера", want=[("гречк", 200, {"date": "2026-11-12", "sec": "pm"})]),
+ dict(id="Пв07", msgs=["на обед каша гречневая 200 г", "перенеси кашу на вчерашний ужин"], want=[("гречк", 200, {"date": "2026-11-12", "sec": "dn"})]),
+ dict(id="Пв08", msgs=["на обед суп гороховый 300 г", "нет, это было вчера"], want=[("суп горох", 300, {"date": "2026-11-12", "sec": "pm"})]),
+ dict(id="Пв09", msgs=["на обед гречка 200 г", "перенеси гречку на вчера", T("Отменить")], want=[("гречк", 200, {"date": "2026-11-13", "sec": "pm"})]),
+ dict(id="Пв10", msgs=["овсянка 250 г", "удали овсянку", "кофе 200 мл", "верни овсянку"], reply="Вернул", want=[("овсян", 250), ("кофе", 200)]),
+ dict(id="Пв11", msgs=["верни банан"], mode="none", reply="Не нашёл удалённой"),
+ dict(id="Пв12", msgs=["на обед каша гречневая 200 г", "перенеси кашу на ужин"], want=[("гречк", 200, {"date": "2026-11-13", "sec": "dn"})]),
+ dict(id="Пв13", msgs=["на обед гречка 200 г", "на ужин кофе 200 мл", "перенеси обед на вчера"], want=[("гречк", 200, {"date": "2026-11-12", "sec": "pm"}), ("кофе", 200, {"date": "2026-11-13", "sec": "dn"})]),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
@@ -1742,6 +1776,7 @@ for s in S:
 FAVN = "()=>(DB.favs||[]).map(id=>FOODS[id]?FOODS[id].n:id).join('|')"
 FASTON = "()=>!!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on)"
 ANY = "()=>Object.values(DB.days).some(d=>(d.items||[]).length>0)"
+OWNSET = "()=>{const v={kcal:200,prot:15,fat:10,carb:18};const old=(DB.foods||[]).find(f=>f.n==='Сырники');if(old)MealProductEditor.quickEdit(old.id,v);else MealProductEditor.quick({name:'Сырники',per100:v,por:{'шт':60}});return true}"   # тот же продукт между сценариями: удалить его из хранилища на лету нельзя (adoptRemote)
 ACTS = [
  dict(id="Кк01", msgs=["добавь овсянку в избранное"], reply="Добавил в избранное", ok=FAVN.replace("join('|')", "join('|').includes('Овсян')")),
  dict(id="Кк02", msgs=["добавь овсянку в избранное", {"tap": "Отменить"}], reply="Отменил", ok="()=>!(DB.favs||[]).length"),
@@ -1776,7 +1811,8 @@ ACTS = [
  dict(id="Шп01", msgs=["поменяй время обеда на 14:00"], reply="Завтрак 05:00–14:00 · сдвинется", ok="()=>!!(D.bot&&D.bot.steps)"),
  dict(id="Шп02", msgs=["поменяй время обеда на 14:00", {"tap": "Сохранить"}], reply="Сохранил время приёмов", ok="()=>{const s=k=>(DB.sections||[]).find(x=>x.k===k)||{};return s('pm').a===840&&s('am').b===840}"),
  dict(id="Шп03", msgs=["настрой приёмы пищи", {"tap": "Ужин"}, "с 19", {"tap": "Сохранить"}], reply="Сохранил время приёмов", ok="()=>{const s=k=>(DB.sections||[]).find(x=>x.k===k)||{};return s('dn').a===1140&&s('pm').b===1140}"),
- dict(id="Шп04", msgs=["сдвинь обед на 4"], reply="может начинаться", ok="()=>true"),
+ dict(id="Шп04", msgs=["сдвинь обед на 4 утра"], reply="может начинаться", ok="()=>true"),
+ dict(id="Шп07", msgs=["сдвинь обед на 4"], reply="Обед 16:00–18:00", ok="()=>!!(D.bot&&D.bot.steps)"),   # час без «утра» — ближе к нынешнему времени приёма (Астамур 24.11.2026, «Да»)
  dict(id="Шп06", msgs=["сдвинь ужин с 19 до 23", {"tap": "Сохранить"}], reply="Сохранил время", ok="()=>{const s=k=>(DB.sections||[]).find(x=>x.k===k)||{};return s('dn').a===1140&&s('dn').b===1440}"),   # ужин — последний приём суток: «до 23» не меняет конец
  dict(id="Шп05", msgs=["поменяй время обеда на 14:00", {"tap": "Сохранить"}, {"tap": "Отменить"}], reply="Отменил", ok="()=>{const s=(DB.sections||[]).find(x=>x.k==='pm');return !s||s.a!==840}"),
  # первая настройка цепочкой: цель → приёмы пищи → фастинг → базы → счётчик; звено можно пропустить
@@ -1797,6 +1833,61 @@ ACTS = [
  dict(id="Шд04", msgs=["заведи свою добавку", "Тест", "таблетки", "магний сто"], reply="Не разобрал", ok="()=>!!(D.bot&&D.bot.steps)"),
  dict(id="Шн01", msgs=["добавь кофе 200 г"], ok="()=>!(D.bot&&D.bot.steps)"),
  dict(id="Шн02", msgs=["как добавить счётчик"], reply="Добавить счётчик", ok="()=>!(D.bot&&D.bot.steps)"),
+ # замеры тела словами (Астамур 24.11.2026, «Да» на план): общий документ sport/body, как экран «Замеры тела»
+ dict(id="Зт01", msgs=["талия 82, грудь 100"], reply="Записал замер на", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.waist===82&&m.values.chest===100}"),
+ dict(id="Зт02", msgs=["бицепс 35", {"tap": "Левый"}], reply="бицепс левый 35 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.bicepsL===35}"),
+ dict(id="Зт03", msgs=["правый бицепс 36 левый 34"], reply="бицепс правый 36 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.bicepsR===36&&m.values.bicepsL===34}"),
+ dict(id="Зт04", msgs=["живот 91", {"tap": "Низ живота"}], reply="низ живота 91 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.lowerAbs===91}"),
+ dict(id="Зт05", msgs=["вчера бёдра 98, вес 79,5"], reply="Записал замер на", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===(()=>{const d=new Date(todayISO()+'T12:00:00');d.setDate(d.getDate()-1);return isoOf(d)})());return !!m&&m.values.hips===98&&m.values.weight===79.5}"),
+ dict(id="Зт06", msgs=["талия 77", {"tap": "Отменить"}], reply="Отменил", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !m||m.values.waist!==77}"),
+ dict(id="Зт07", msgs=["бедро 98"], reply="замер тела или еда", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт08", msgs=["бедро 98", {"tap": "Замер"}, {"tap": "Правый"}], reply="бедро правое 98 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.thighR===98}"),
+ dict(id="Зт09", msgs=["куриное бедро 200 г"], ok="()=>Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт10", msgs=["свиная шея 150 г"], ok="()=>Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт11", msgs=["обхват шеи 38"], reply="шея 38 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.neck===38}"),
+ dict(id="Зт12", msgs=["талия 83", "какая у меня талия"], reply="Талия: 83 см", ok="()=>true"),
+ dict(id="Зт13", msgs=["мой вес 80"], reply="Только записать вес", ok="()=>true"),
+ dict(id="Зт14", msgs=["бицепс 35 бедра 98"], reply="какой?", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт15", msgs=["талия 500"], reply="не похоже на замер", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт16", msgs=["предплечье 28 оба"], reply="предплечье левое 28 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.forearmL===28&&m.values.forearmR===28}"),
+ # Meal 34 · счётчики голосом, «мои счётчики», свой продукт: удалить и поправить, рецепт одной фразой (решение Астамура 24.11.2026, bot-mine.js)
+ dict(id="Мс01", msgs=["ещё чашку кофе по счётчику"], reply="Кофе с молоком +1 чашка", ok="()=>tapCount('cfm')>=1"),
+ dict(id="Мс02", msgs=["две чашки кофе по счётчику"], reply="Кофе с молоком +2 × 1 чашка", ok="()=>tapCount('cfm')>=2"),
+ dict(id="Мс03", msgs=["ещё чашку кофе по счётчику", {"tap": "Отменить"}], reply="Отменил", ok="()=>true"),
+ dict(id="Мс04", msgs=["нажми счётчик яйцо"], reply="Яйцо +1 шт", ok="()=>tapCount('egg')>=1"),
+ dict(id="Мс05", msgs=["ещё стакан воды по счётчику"], reply="Счётчика «стакан воды» нет", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мс06", msgs=["мои счётчики"], reply="Твои счётчики сегодня", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мс07", msgs=["какие у меня счётчики", {"tap": "+ Яйцо"}], reply="Яйцо +1 шт", ok="()=>tapCount('egg')>=1"),
+ dict(id="Мс08", msgs=["минус кофе по счётчику"], reply="ещё ничего нет", ok="()=>tapCount('cfm')===0"),
+ dict(id="Мс09", msgs=["как добавить счётчик"], reply="Добавить счётчик", ok="()=>true"),
+ dict(id="Мс10", setup=OWNSET, msgs=["удали мой продукт сырники"], reply="Убрать «Сырники» из своих продуктов", ok="()=>DB.foods.length===1&&!(D.bot&&D.bot.steps)"),
+ dict(id="Мс11", setup=OWNSET, msgs=["удали мой продукт сырники", {"tap": "Убрать"}], reply="Убрал «Сырники»", ok="()=>DB.foods.length===0"),
+ dict(id="Мс12", setup=OWNSET, msgs=["удали продукт сырники", {"tap": "Убрать"}, {"tap": "Отменить"}], reply="Отменил", ok="()=>DB.foods.length===1"),
+ dict(id="Мс13", setup=OWNSET.replace("return true}", "const f=DB.foods.find(x=>x.n==='Сырники');day(curDate).items.push({id:'iown',sec:'am',fid:f.id,q:120,u:'г',g:120,t:'09:00'});save();return true}"), msgs=["удали мой продукт сырники"], reply="есть в дневнике", ok="()=>DB.foods.length===1"),
+ dict(id="Мс14", setup=OWNSET, msgs=["удали сырники"], ok="()=>DB.foods.length===1"),
+ dict(id="Мс15", setup=OWNSET, msgs=["поменяй калории у сырников на 220"], reply="калории 200 → 220 ккал", ok="()=>FOODS[DB.foods[0].id].k===220"),
+ dict(id="Мс16", setup=OWNSET, msgs=["у моих сырников белка 16 жиры 9"], reply="белки 15 → 16 г, жиры 10 → 9 г", ok="()=>FOODS[DB.foods[0].id].p===16&&FOODS[DB.foods[0].id].f===9&&FOODS[DB.foods[0].id].k===200"),
+ dict(id="Мс17", setup=OWNSET, msgs=["поменяй калории у сырников на 220", {"tap": "Отменить"}], reply="Отменил", ok="()=>FOODS[DB.foods[0].id].k===200"),
+ dict(id="Мс18", setup=OWNSET, msgs=["поменяй калории у творога на 100"], reply="продукт из базы", ok="()=>FOODS[DB.foods[0].id].k===200"),
+ dict(id="Мс19", msgs=["сохрани рецепт омлет: яйцо 2, молоко 100 мл", {"tap": "Сохранить"}], reply="Сохранил рецепт «Омлет»", ok="()=>(DB.recipes||[]).some(r=>r.t==='Омлет'&&r.lines.length===2)"),
+ dict(id="Мс20", msgs=["сохрани рецепт: банан 1, молоко 200 мл", {"tap": "Сохранить"}], reply="Сохранил рецепт", ok="()=>(DB.recipes||[]).some(r=>r.lines.length===2)"),
+ dict(id="Мс21", msgs=["сохрани рецепт омлет яйцо 2 молоко 100 мл", {"tap": "Сохранить"}], reply="Сохранил рецепт «Омлет»", ok="()=>(DB.recipes||[]).some(r=>r.t==='Омлет'&&r.lines.length===2)"),
+ dict(id="Мс22", msgs=["сохрани рецепт плов"], reply="Продиктуй состав", ok="()=>!(DB.recipes||[]).some(r=>r.t==='Плов')"),
+ # своя мера и настройки одной фразой (Астамур 24.11.2026, «Да»): кружка, калории и БЖУ, правило перекуса, время приёма, фастинг, «скрой»
+ dict(id="Нс01", msgs=["моя кружка 350 мл", "для чая и кофе", "выпил кружку чая"], ok="()=>{const u=DB.units||{};return Object.values(u).filter(x=>x['кружка']===350).length===2&&Object.values(DB.days).some(d=>(d.items||[]).some(x=>x.g===350&&/^Чай/.test((FOODS[x.fid]||{}).n||'')))}"),
+ dict(id="Нс02", msgs=["моя тарелка борща 400 г"], reply="Запомнил: тарелка = 400 г", ok="()=>Object.values(DB.units||{}).some(x=>x['тарелка']===400)"),
+ dict(id="Нс03", msgs=["запомни мой стакан 0,3 л", "для чая", {"tap": "Отменить"}], reply="Отменил", ok="()=>!Object.values(DB.units||{}).some(x=>x['стакан']===300)"),
+ dict(id="Нс04", msgs=["поставь 1800 калорий"], reply="1800 ккал", ok="()=>DB.goals.k==='1800'"),
+ dict(id="Нс05", msgs=["поставь 1800 калорий", "белка 120 г в день"], reply="калории те же: 1800 ккал", ok="()=>DB.goals.k==='1800'&&DB.goals.p==='120'"),
+ dict(id="Нс06", msgs=["белок 120 грамм"], ok="()=>Object.values(DB.days).some(d=>(d.items||[]).some(x=>/^Белок куриного/.test((FOODS[x.fid]||{}).n||'')))"),   # без «в день», «норма», «поставь» — еда
+ dict(id="Нс07", msgs=["норма 1700 ккал", {"tap": "Отменить"}], reply="Отменил", ok="()=>DB.goals.k!=='1700'"),
+ dict(id="Нс08", msgs=["перекус меньше 200 ккал"], reply="меньше 200 ккал (было 150)", ok="()=>DB.mealRules.kcal===200"),
+ dict(id="Нс09", msgs=["скрой перекус"], reply="скрыть нельзя", ok="()=>(DB.sections||[]).some(x=>x.k==='sn')||!DB.sections"),
+ dict(id="Нс10", msgs=["обед с часу до пяти", {"tap": "Сохранить"}], reply="Сохранил время", ok="()=>{const s=SEC;return s('pm').a===780&&s('pm').b===1020}".replace("SEC", "(k)=>(DB.sections||[]).find(x=>x.k===k)||{}")),
+ dict(id="Нс11", msgs=["обед с 2 котлетами"], ok="()=>!(D.bot&&D.bot.steps&&D.bot.steps.id==='period')"),
+ dict(id="Нс12", msgs=["фастинг 16 на 8 с 8 вечера", "каждый день", "да"], reply="20:00–12:00, каждый день", ok="()=>{const f=DB.mealRules.fast;return f.on&&f.a===1200&&f.b===720&&f.d.length===7}"),
+ dict(id="Нс13", msgs=["фастинг 18/6", "первая еда в 12", "по будням", "да"], reply="18:00–12:00, по будням", ok="()=>{const f=DB.mealRules.fast;return f.on&&f.a===1080&&f.b===720&&f.d.join()==='1,2,3,4,5'}"),
+ dict(id="Нс14", msgs=["у меня кружка 300 мл", "норма 1900 ккал"], reply="1900 ккал", ok="()=>DB.goals.k==='1900'&&!(D.bot&&D.bot.steps)"),   # вопрос «для чего» снимается другой фразой
 ]
 
 GOALS = [
