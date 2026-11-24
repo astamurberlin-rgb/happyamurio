@@ -25,6 +25,15 @@
 .exercise-player .player-face-center{gap:0}
 .exercise-player .player-face-center strong{font-size:clamp(26px,9vw,36px);font-weight:400;line-height:1;letter-spacing:-.6px;white-space:nowrap;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 .exercise-player .player-face-center strong[data-hours="true"]{font-size:clamp(22px,7vw,28px)}
+.exercise-player .player-main-controls{flex:none;display:grid;grid-template-columns:var(--player-axis) minmax(0,1fr) var(--player-axis);align-items:end;gap:0;width:100%;height:56px;margin:30px 0 26px;padding:0;border:0;background:none;box-shadow:none}
+.exercise-player .player-main-controls>button{box-sizing:border-box;display:flex;align-items:flex-end;justify-content:center;width:var(--player-axis);min-width:0;max-width:none;height:42px;min-height:42px;max-height:none;aspect-ratio:auto;padding:0 0 2px;border:0;border-radius:0;background:none;box-shadow:none;color:var(--happy-ink);line-height:1}
+.exercise-player .player-start{grid-column:1;grid-row:1;font-size:28px;font-weight:400;letter-spacing:1px}
+.exercise-player .player-secondary{grid-column:3;grid-row:1}
+.exercise-player .player-main-controls>button:disabled{opacity:.4}
+.exercise-player .player-plus{position:relative;display:block;flex:none;width:28px;height:28px;margin-bottom:1px}
+.exercise-player .player-plus:before,.exercise-player .player-plus:after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:currentColor}
+.exercise-player .player-plus:before{width:28px;height:var(--player-stroke)}
+.exercise-player .player-plus:after{width:var(--player-stroke);height:28px}
 .exercise-player .player-mode-switch{position:relative;inset:auto;transform:none;grid-column:2;grid-row:1;justify-self:center;align-self:end;display:flex;flex-direction:column;align-items:center;gap:3px;width:max-content;min-width:0;min-height:0;margin:0 0 2px;padding:0;cursor:pointer}
 .exercise-player .player-mode-switch small{font-size:12px;line-height:10px;white-space:nowrap;color:var(--happy-ink)}
 .exercise-player .player-mode-switch input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;z-index:2;cursor:pointer}
@@ -54,19 +63,39 @@
 /* Keep the common footer above the timer; the central microphone becomes X. */
 body.exercise-player-open>#dock{z-index:90}
 body.exercise-player-open #sport-fab .icon{width:26px;height:26px;fill:currentColor;stroke:none}
-@media(max-height:700px){.exercise-player .player-exercise-name{margin-top:16px}}
+@media(max-height:700px){.exercise-player .player-exercise-name{margin-top:16px}.exercise-player .player-main-controls{margin-top:22px;margin-bottom:20px}}
 /* The compact clock starts on the left and can be dragged along the row. */
 .exercise-clock-fab{left:calc(20px + (100% - 102px) * var(--timer-fab-x,0));right:auto;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 .exercise-clock-fab:active{cursor:grabbing}
 
 /* Four curved corner tabs occupy the space around the circular scale. */
-
+.exercise-player .player-tab-face{position:relative;width:100%;aspect-ratio:.96;min-height:0;margin:6px auto 24px}
+.exercise-player .player-tab-face>.player-dial{position:absolute;left:50%;top:50%;width:calc((100% - var(--player-axis)) * 1.2254901960784314);height:auto;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
 .exercise-player .player-corner-tab{position:absolute;z-index:2;display:block;width:calc(50% - 42px);height:27%;min-height:44px;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:var(--happy-ink);isolation:isolate}
 .exercise-player .player-corner-tab>svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#ffffffb3;stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none}
 .exercise-player .player-corner-tab>span{position:absolute;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:400;line-height:1;white-space:nowrap;pointer-events:none}
+.exercise-player .player-corner-top-left{left:0;top:0}
+.exercise-player .player-corner-top-right{right:0;top:0}
+.exercise-player .player-corner-bottom-left{left:0;bottom:0}
+.exercise-player .player-corner-bottom-right{right:0;bottom:0}
+.exercise-player .player-corner-top-left>span{left:12px;top:14px}
+.exercise-player .player-corner-top-right>span{right:12px;top:14px}
+.exercise-player .player-corner-bottom-left>span{left:10px;bottom:12px;font-size:28px;font-weight:400;letter-spacing:1px}
+.exercise-player .player-corner-bottom-right>span{right:12px;bottom:13px}
+.exercise-player .player-corner-bottom-right small{font-size:16px;font-weight:400}
+.exercise-player .player-corner-top-right>svg{transform:scaleX(-1)}
+.exercise-player .player-corner-bottom-left>svg{transform:scaleY(-1)}
+.exercise-player .player-corner-bottom-right>svg{transform:scale(-1)}
 .exercise-player .player-corner-tab:disabled{opacity:.4}
 .exercise-player .player-corner-tab[aria-pressed="true"]>svg{stroke:var(--sport-rest-green);stroke-width:1.7}
 .exercise-player .player-corner-tab:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:10px}
+.exercise-player .player-tab-face>.player-distance-switch{position:absolute;left:50%;top:0;transform:translateX(-50%);gap:5px;margin:0;z-index:3}
+.exercise-player .player-tab-face>.player-main-controls{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;justify-content:center;width:84px;height:44px;margin:0;padding:0;z-index:3}
+.exercise-player .player-tab-face .player-main-controls>.player-mode-switch{align-self:end;gap:5px;margin:0}
+.exercise-player .player-tab-face .player-mode-switch small{font-size:12px;line-height:12px}
+.exercise-player .player-tab-face .player-plus{width:26px;height:26px;margin:0}
+.exercise-player .player-tab-face .player-plus:before{width:26px}
+.exercise-player .player-tab-face .player-plus:after{height:26px}
 .exercise-player .player-round-row{grid-template-columns:var(--player-axis) minmax(0,1fr) var(--player-axis);gap:0}
 .exercise-player .player-round-row>span{overflow:hidden;text-overflow:ellipsis}
 .exercise-player .player-round-row>.player-row-name{grid-column:1;font-size:16px;text-align:left;padding-left:6px;border-bottom:1px solid #ffffff60}
@@ -92,7 +121,7 @@ body.exercise-player-open #sport-fab .icon{width:26px;height:26px;fill:currentCo
 .exercise-player .player-history-table .player-history-current input{color:#405183;border-bottom-color:#40518366}
 .exercise-player .player-history-table .player-distance-field input{height:30px;min-height:30px;font-size:14px;text-align:right}
 .player-history-missing{opacity:.5}
-@media(max-width:360px){.exercise-player{--player-axis:100px}.exercise-player .player-round-row{font-size:16px}.exercise-player .player-round-row>.player-row-name{font-size:16px}}
+@media(max-width:360px){.exercise-player{--player-axis:100px}.exercise-player .player-corner-bottom-left>span{font-size:20px;left:8px}.exercise-player .player-corner-bottom-right>span{right:8px;gap:5px}.exercise-player .player-corner-bottom-right small{font-size:12px}.exercise-player .player-corner-top-left>span{left:8px}.exercise-player .player-corner-top-right>span{right:8px}.exercise-player .player-round-row{font-size:16px}.exercise-player .player-round-row>.player-row-name{font-size:16px}}
 /* Metrics next to the exercise title, shared with the clock. */
 .exercise-card-heading{align-items:flex-start!important;gap:10px}
 .exercise-name-info{display:flex;align-items:flex-start;gap:3px;flex:1;min-width:0}
@@ -105,6 +134,7 @@ body.exercise-player-open #sport-fab .icon{width:26px;height:26px;fill:currentCo
 .exercise-mode-row small{font-size:12px;white-space:nowrap}
 .exercise-mode-row input.toggle{flex:none;width:36px!important;height:22px!important;margin:0}
 .exercise-mode-row input.toggle:before{width:16px;height:16px}
+.exercise-player .player-tab-face>.player-dial{width:84%}
 .exercise-player .player-face-center{inset:20% 15%;justify-content:center;gap:10px;pointer-events:none}
 .exercise-player .player-face-center strong,.exercise-player .player-face-center strong[data-hours="true"]{font-size:clamp(22px,6.5vw,30px);font-weight:400;letter-spacing:-.5px}
 .exercise-player .player-inner-switches{display:flex;flex-direction:column;gap:1px;width:142px;pointer-events:auto;z-index:4}

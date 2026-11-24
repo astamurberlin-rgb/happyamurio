@@ -10,11 +10,16 @@
 .hf-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 40px;font-size:14px;font-weight:600;line-height:1.2;
   color:var(--hf-ink,#fff);pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* значок справа: календарь у даты, часы у времени, стрелка у списка (как у пилюль «Связей» в Day: 16, отступ 12) */
-.hf-date::after,.hf-time::after{content:"";position:absolute;right:12px;top:50%;width:16px;height:16px;margin-top:-8px;pointer-events:none;opacity:.85;
+.hf-date::after,.hf-time::after,.hf-choice::after{content:"";position:absolute;right:12px;top:50%;width:16px;height:16px;margin-top:-8px;pointer-events:none;opacity:.85;
   background:center/16px 16px no-repeat}
 .hf-date::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4.5' width='18' height='16.5' rx='4'/%3E%3Cpath d='M8 2.5v4M16 2.5v4M3 10h18'/%3E%3C/svg%3E")}
 .hf-time::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E")}
+.hf-choice::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")}
 /* число: единица внутри рамки, пустое поле — только единица, бледно; пока в поле курсор — видно само число */
-
+.hf-number>input{cursor:text}
+.hf-number>.hf-text{padding:0 12px}
+.hf-number.hf-empty>.hf-text{opacity:.5;font-weight:400}
+.hf-number.hf-editing>.hf-text{visibility:hidden}
+.hf-number.hf-editing>input{color:var(--hf-ink,#fff)!important;-webkit-text-fill-color:var(--hf-ink,#fff)!important;font-weight:600;caret-color:var(--hf-ink,#fff)}
 .hf-field>input:focus-visible,.hf-field>select:focus-visible{outline:2px solid var(--hf-ink,#fff);outline-offset:2px}
 .hf-field>input:disabled,.hf-field>select:disabled{opacity:.5}

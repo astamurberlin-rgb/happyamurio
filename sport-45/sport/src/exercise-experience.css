@@ -5,7 +5,7 @@
 .exercise-content[hidden],#exercise-config-form [hidden]{display:none!important}
 .active-workout .set-row{grid-template-columns:repeat(var(--set-fields),minmax(0,1fr)) repeat(var(--set-controls,1),var(--set-control));justify-content:end;gap:7px}
 .active-workout .set-metric{justify-content:flex-end;min-width:0;padding:0!important}.active-workout .set-metric+.set-metric::before{display:none}
-.active-workout .set-row .set-metric input,.active-workout .set-row.complete .set-metric input{font-size:20px;text-align:right;padding-right:2px;font-variant-numeric:tabular-nums}
+.active-workout .set-row .set-metric input,.active-workout .set-row.complete .set-metric input{font-size:20px;text-align:right;padding-right:2px;font-variant-numeric:tabular-nums}.active-workout .metrics-4 .set-metric input{font-size:16px}
 .active-workout .set-actions{display:flex;gap:10px}.active-workout .set-actions .set-add{font-size:14px;min-height:44px}.active-workout .set-actions .set-add{background:none!important}
 /* A single thicker strip, with both labels inside and no surrounding frame. */
 
@@ -18,13 +18,14 @@
 .exercise-change-row{display:flex;align-items:flex-start;gap:12px;padding:16px 12px;border-top:1px solid #ffffff30;color:var(--happy-ink)}.exercise-change-row>span .icon{width:18px;height:18px;margin-top:3px}.exercise-change-row small{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.exercise-change-row b{display:block;font-size:12px}.exercise-change-row p{font-size:12px;line-height:1.5;margin-top:5px;color:var(--muted)}
 .exercise-clock-fab{position:absolute;right:20px;bottom:calc(104px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:62px;height:62px;border-radius:50%;border:1px solid #fff8;background:#6a59d9e8;color:var(--happy-ink);box-shadow:0 5px 24px #45338f45;z-index:8}.exercise-clock-fab .icon{width:26px;height:26px}.exercise-clock-fab span{font-size:12px;font-variant-numeric:tabular-nums}.exercise-clock-fab.running{background:#e3fff6;color:#3c7185}
 .sheet:has(.exercise-player) .sheet-top{margin-bottom:0}.sheet:has(.exercise-player) .sheet-top h2{font-size:16px;font-weight:600;color:var(--muted)}.exercise-player{color:var(--happy-ink);text-align:center}.player-exercise-name{font-size:20px;font-weight:600;line-height:1.4;margin:12px 0 5px}.player-face{position:relative;max-width:310px;aspect-ratio:1;margin:12px auto}.player-dial{display:block;width:100%;height:100%}.dial-ticks line{stroke:#ffffff40;stroke-width:1}.dial-ticks line.major{stroke:#ffffffa0;stroke-width:1.6}.dial-progress{color:#a7fff2}.rest-phase .dial-progress{color:#ffd0ee}.player-face-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;pointer-events:none}.player-face-center>span{font-size:14px;color:var(--muted)}.player-face-center strong{font-size:48px;line-height:1.1;font-weight:400;letter-spacing:-1.5px;font-variant-numeric:tabular-nums}.player-face-center small{font-size:12px;color:var(--muted)}
-@media(max-width:370px){.active-workout>.current-bar{padding:12px}.active-workout .set-metric input{font-size:20px}.metric-switches{gap:4px}.metric-switches span{font-size:12px}.player-face{max-width:265px}.player-face-center strong{font-size:42px}}
+.player-main-controls{display:grid;grid-template-columns:1fr 1.25fr 1fr;align-items:center;gap:10px;margin:5px 0 18px}.player-main-controls button{min-height:54px;border-radius:28px;font-size:14px}.player-secondary{background:#ffffff1b;color:var(--happy-ink)}.player-start{background:#defcf6;color:#436f8a;font-weight:600}.player-main-controls button:disabled,.player-footer button:disabled{opacity:.35}.player-program{margin-top:9px}.player-laps{max-height:180px;overflow:auto;overscroll-behavior:contain}.player-laps>div{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:13px 0;border-bottom:1px solid #ffffff30;font-size:14px;font-variant-numeric:tabular-nums}.player-laps span{text-align:left}.player-laps b{font-weight:600}.player-laps small{text-align:right;color:var(--muted)}.player-footer{display:flex;justify-content:space-between;margin-top:18px}.player-footer button{min-height:44px;font-size:14px}
+@media(max-width:370px){.active-workout>.current-bar{padding:12px}.active-workout .set-metric input{font-size:20px}.active-workout .metrics-4 .set-metric input{font-size:16px}.metric-switches{gap:4px}.metric-switches span{font-size:12px}.player-face{max-width:265px}.player-face-center strong{font-size:42px}.player-main-controls{gap:6px}.player-main-controls button{font-size:12px}}
 
 .exercise-clock-fab svg.icon,.note-pin svg.icon{fill:none;stroke:currentColor}.read-set.custom-metrics{grid-template-columns:24px repeat(var(--read-fields),minmax(0,1fr));text-align:right;align-items:center}.read-set.custom-metrics .type{text-align:left}.read-set.custom-metrics>span:not(.type){font-size:12px;line-height:1.5}
 .metric-switches input,.timer-mode-options input{inset:0;width:100%;height:100%;margin:0;z-index:1;cursor:pointer}
 
 /* Keep the values in exactly the same columns before and after completion. */
-
+.active-workout .set-row.metrics-4 .set-metric input{font-size:16px}
 .active-workout .set-row .set-metric input{appearance:textfield;-moz-appearance:textfield}
 .active-workout .set-row .set-metric input::-webkit-inner-spin-button,.active-workout .set-row .set-metric input::-webkit-outer-spin-button{appearance:none;margin:0}
 .active-workout .set-timer-cell{align-self:center}.set-timer:disabled{opacity:.4}
@@ -41,7 +42,7 @@
 .plan-set-values{display:grid;grid-template-columns:repeat(var(--plan-fields),minmax(0,1fr));gap:7px;align-items:end}.plan-set-field{display:block;min-width:0}.plan-set-field>span{display:block;font-size:12px;line-height:1.35;color:#ffffffc0;text-align:right;margin:0 2px 5px}.plan-set-field input{width:100%;min-width:0;padding:10px 7px;text-align:right;font-size:16px;min-height:42px;font-variant-numeric:tabular-nums}.plan-set-field input[readonly]{opacity:.65}
 .plan-rest-row{display:flex;align-items:center;gap:6px;padding:6px 0 12px}.plan-rest-row label{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border-radius:10px;background:#ffffff19;padding:6px 9px;font-size:12px}.plan-rest-row input{width:90px;max-width:50%;min-width:0;margin-left:auto;text-align:right;font-size:16px;padding:7px;font-variant-numeric:tabular-nums}
 .plan-add-actions{display:flex;gap:10px;margin-top:7px}.plan-add-actions .text-btn{display:flex;gap:5px;align-items:center;justify-content:center;flex:1;min-height:44px;font-size:14px;background:none;border:0}.plan-add-actions .text-btn+.text-btn{border-left:1px solid #ffffff35}.plan-add-actions .text-btn:disabled{opacity:.3}.plan-add-actions .icon{width:19px;height:19px}.plan-error:empty{display:none}
-@media(max-width:370px){.active-workout .set-rows{--set-control:32px;--set-gap:4px}.active-workout .set-row{column-gap:4px}.active-workout .set-row .set-metric input{font-size:16px}.set-plan-time-switch{min-width:42px}.plan-set-values{gap:5px}.plan-set-field input{font-size:16px;padding:9px 5px}.template-exercise-heading{gap:3px}}
+@media(max-width:370px){.active-workout .set-rows{--set-control:32px;--set-gap:4px}.active-workout .set-row{column-gap:4px}.active-workout .set-row .set-metric input{font-size:16px}.active-workout .set-row.metrics-4 .set-metric input{font-size:16px}.set-plan-time-switch{min-width:42px}.plan-set-values{gap:5px}.plan-set-field input{font-size:16px;padding:9px 5px}.template-exercise-heading{gap:3px}}
 
 /* Fill the Site viewport; the host application's controls remain outside it. */
 .panel-screen.active-panel{top:0;bottom:0;height:100dvh;max-height:100dvh;border-radius:0;padding-top:env(safe-area-inset-top)}
@@ -49,8 +50,9 @@
 .workout-overview>.current-bar{position:sticky;top:0;z-index:5;margin:0;padding:12px;border:1px solid var(--line);border-radius:19px;background:rgba(31,168,231,.96);backdrop-filter:blur(18px);flex:none}
 .workout-overview>.pulse-card{margin:0;flex:none}
 .overlay:has(.exercise-player){padding:0;align-items:stretch}.sheet:has(.exercise-player){margin:0 auto;width:100%;height:100dvh;max-height:100dvh;border-radius:0;padding:env(safe-area-inset-top) 20px calc(24px + env(safe-area-inset-bottom));scroll-padding-top:40px}
-.sheet:has(.exercise-player) .sheet-top{display:none}.sheet:has(.exercise-player) .grip{flex:none;position:sticky;top:0;background:transparent}.player-exercise-name{padding:8px 0 0;margin-top:4px}.player-mode-switch{min-height:62px}.player-mode-switch small{font-size:12px}.player-mode-switch input:disabled{cursor:default}.player-round-list{display:grid;gap:10px;padding-bottom:16px}
-@media(max-height:700px){.player-face{max-width:240px;margin:6px auto}.player-face-center strong{font-size:40px}}
+.sheet:has(.exercise-player) .sheet-top{display:none}.sheet:has(.exercise-player) .grip{flex:none;position:sticky;top:0;background:transparent}.player-exercise-name{padding:8px 0 0;margin-top:4px}
+.player-main-controls{grid-template-columns:1fr 1fr 1fr;gap:16px;margin:12px 0 24px}.player-main-controls>button{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;min-height:62px;border-radius:50%;width:68px;justify-self:center}.player-main-controls .icon{width:27px;height:27px;fill:none;stroke:currentColor}.player-main-controls small{font-size:12px}.player-mode-switch{min-height:62px}.player-mode-switch small{font-size:12px}.player-mode-switch input:disabled{cursor:default}.player-round-list{display:grid;gap:10px;padding-bottom:16px}.player-round-preset{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #ffffff35}.player-round-preset b{font-size:12px;font-weight:600}.player-round-preset label{font-size:12px;text-align:right;color:var(--muted)}.player-round-preset input{width:100%;min-width:0;margin-top:5px;padding:10px 6px;text-align:right;font-size:16px;font-variant-numeric:tabular-nums}.player-stopwatch-row{display:grid;grid-template-columns:1fr 1fr 40px;align-items:center;gap:10px;min-height:52px;border-top:1px solid #ffffff35;font-size:14px}.player-stopwatch-row b{text-align:right;font-variant-numeric:tabular-nums}.player-stopwatch-row button{width:38px;height:40px;border-radius:12px;background:#ffffff20;display:grid;place-items:center}.player-stopwatch-row button:disabled{opacity:.3}.player-stopwatch-row .icon{fill:none;stroke:currentColor;width:22px;height:22px}
+@media(max-height:700px){.player-face{max-width:240px;margin:6px auto}.player-face-center strong{font-size:40px}.player-main-controls{margin:6px 0 14px}}
 
 /* Quiet replacement input; retain a thin keyboard-only focus marker. */
 input:focus{outline:none!important;box-shadow:none!important}.active-workout .set-row .set-metric:focus-within{outline:none;background:transparent;border-radius:0}.active-workout .set-row input:focus-visible{box-shadow:inset 0 -1px #ffffff85!important}
@@ -82,9 +84,11 @@ body:has(#rest-pill-root:not(:empty)) .exercise-clock-fab{display:none}.active-w
 .floating-rest-clock>span,.floating-rest-clock input{color:var(--sport-lime-ink)!important}
 .floating-rest-toggle{color:var(--sport-lime-ink)}
 .floating-rest-finish{background:#e3fff3;color:var(--sport-lime-ink)}
-.set-done.selected,.set-plan-time-switch input:checked+span{background:var(--sport-lime);color:var(--sport-lime-ink);border-color:var(--sport-lime)}
+.player-start,.set-done.selected,.set-plan-time-switch input:checked+span{background:var(--sport-lime);color:var(--sport-lime-ink);border-color:var(--sport-lime)}
 .player-face-center>span,.player-face-center>small{display:none}
 .dial-progress,.rest-phase .dial-progress{color:var(--sport-lime)}
+.player-round-preset input{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:8px 0!important}
+.player-round-preset input:focus-visible{box-shadow:inset 0 -1px #fff!important}
 
 .catalog-group-filter{display:flex;gap:8px;align-items:center}.catalog-group-filter .library-sport{flex:1;min-width:0}.catalog-group-filter .icon-btn{flex:none}
 .group-memberships{display:grid;gap:9px;margin:12px 0 22px}.group-memberships label{display:flex;gap:10px;align-items:center;min-height:36px;font-size:14px}.group-memberships input{width:20px;height:20px;flex:none;accent-color:var(--sport-lime)}
@@ -96,9 +100,12 @@ body:has(#rest-pill-root:not(:empty)) .exercise-clock-fab{display:none}.active-w
 #new-template-name[hidden],.schedule-end[hidden]{display:none!important}
 
 /* 36.11: the same green as completed-set checkmarks, with true circles. */
-
+.player-main-controls>button{box-sizing:border-box;width:68px;height:68px;min-width:68px;min-height:68px;max-width:68px;max-height:68px;aspect-ratio:1;padding:0;border-radius:50%;flex-shrink:0}
+.player-main-controls .player-secondary{font-size:14px;font-weight:600}
+.player-main-controls .player-mode-switch small{font-size:12px;line-height:1.2;white-space:nowrap}
 .active-workout .set-row:has(.set-timer-cell){grid-template-columns:var(--set-control) repeat(var(--set-fields),minmax(0,1fr)) var(--set-control)}
 .active-workout .set-row>.set-timer-cell{grid-column:1;grid-row:2}
+.player-round-preset input{font-size:16px;font-variant-numeric:tabular-nums}
 /* Rest controls share the workout timer's outline and sit above the fill. */
 .floating-rest-pill{color:var(--happy-ink)}
 .floating-rest-pill>:not(.floating-rest-progress){position:relative;z-index:1;opacity:1}

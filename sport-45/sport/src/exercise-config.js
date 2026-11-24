@@ -205,7 +205,7 @@ function saveExerciseEditor(form,mode){
   persist();closeSheet();render();toast(localOnly?'Сохранено для этой тренировки':mode==='copy'?'Создано отдельное упражнение. Прежняя история сохранена.':!e?'Упражнение создано':'Настройки сохранены'+(e.name!==name?' · история остаётся с упражнением':''));return next;
 }
 function restoreExerciseName(id){const e=exercise(id);if(!e)return;const name=exerciseOriginalName(e);if(name===e.name)return;saveExerciseDefinition(id,{...clone(e),name,metrics:exerciseMetrics(e),timerConfig:exerciseTimerConfig(e)});persist();closeSheet();render();toast('Название вернулось к исходному');}
-function renderExerciseChange(change){return `<article class="exercise-change-row"><span>${icon('pencil-simple')}</span><div><small>${dateLabel(change.at.slice(0,10))} · ${change.at.slice(11,16)}</small><b>${change.kind==='restore'?'Возвращено исходное название':'Упражнение переименовано'}</b><p>${esc(change.oldName)} → ${esc(change.newName)}</p></div></article>`}
+function renderExerciseChange(change){return `<article class="exercise-change-row"><span>${icon('pencil-simple')}</span><div><small>${dateLabel(change.at.slice(0,10))}, ${change.at.slice(11,16)}</small><b>${change.kind==='restore'?'Возвращено исходное название':'Упражнение переименовано'}</b><p>${esc(change.oldName)} → ${esc(change.newName)}</p></div></article>`}
 
 customExercise=function(id){openExerciseEditor(id)};
 const settingsStartWorkout=startWorkout;

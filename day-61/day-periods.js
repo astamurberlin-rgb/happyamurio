@@ -129,7 +129,7 @@ function daysOf(s){ return Array.isArray(s.days)&&s.days.length&&s.days.length<7
 function daysText(s){ var d=daysOf(s); if(!d) return '';
   var on=function(n){ return d.indexOf(n)>=0 }, wk=[1,2,3,4,5].every(on), we=on(6)&&on(0);
   if(wk&&d.length===5) return 'по будням'; if(we&&d.length===2) return 'по выходным';
-  return WD.filter(function(x){ return on(x[0]) }).map(function(x){ return x[1].toLowerCase() }).join(', ') }
+  return WD.filter(function(x){ return on(x[0]) }).map(function(x){ return x[1] }).join(', ') }
 /* кружочки дней — как в расписании практик (selfcare, .care-days) */
 /* v36 (Астамур 23.11.2026, 20:37: «можно вообще не выбирать, тогда это просто каждый день»): можно снять все дни — это «каждый день»,
    как и все семь. Кружки показывают ровно то, что выбрано: ни одного — все сняты. Подсказки «Хотя бы один день остаётся» больше нет */

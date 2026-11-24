@@ -490,9 +490,17 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .sum{font-size:16px;line-height:1.55}
 .list{padding:0 16px}
 .row + .row{border-top:1px solid rgba(255,255,255,.14)}
+.rowHead{display:block;width:100%;border:0;background:none;color:var(--happy-ink);font:inherit;text-align:left;padding:13px 0}
+.rowTop{display:flex;align-items:center;gap:10px}
+.rowTop b{flex:1;font-size:16px;font-weight:600}
 /* ряд столбиков: вверх — выше, вниз — ниже, высота — сила связи; подпись у линии середины, с другой стороны */
 
 @keyframes lkBFade{from{opacity:.25}to{opacity:1}}
+.rowChev{width:16px;height:16px;flex:none;fill:none;stroke:rgba(255,255,255,.6);stroke-width:2.2;
+  stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.row.open .rowChev{transform:rotate(180deg)}
+.rowTxt{display:block;font-size:14px;color:rgba(255,255,255,.88);margin-top:5px;line-height:1.4}
+.rowMeta{display:block;font-size:12px;color:var(--dim);margin-top:3px}
 .more{display:none;padding:0 0 14px}
 .row.open .more{display:block}
 .more svg{display:block;width:100%;overflow:visible}
@@ -509,6 +517,7 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 /* кнопки частот подсвечивают часть графика: всегда в одну строку и одинаковой ширины.
    Если слово не влезает, шрифт уменьшается сразу у всех кнопок (fitFreq), размер кнопок от выбора не прыгает */
 
+.rowChev.go{transform:rotate(-90deg)}
 
 /* ══════════ ИКОНКИ РАЗДЕЛОВ И ТЕГОВ ══════════ */
 /* в строке раздела в настройках иконка не показывалась: span.ic был нулевой ширины */
@@ -1920,7 +1929,8 @@ function dupWarn(what){ toast('Такое название уже есть: '+wh
 function ruDate(iso){
   var M=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   var d=new Date(iso+'T00:00:00');
-  return d.getDate()+' '+M[d.getMonth()];
+  /* год — только если не текущий (формат дат Happy, решение 24.11.2026) */
+  return d.getDate()+' '+M[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'');
 }
 
 /* ═══════════ ИКОНКИ ═══════════ */
@@ -4580,7 +4590,7 @@ function renderAll(){
    в аккаунте и приходит на устройство сам. Порции, нажатые в Day и Sport, — их записи: в файл Meal они не идут. */
 function bkSupp(){ return window.MealSupplementsStore&&MealSupplementsStore.ready()?MealSupplementsStore:null }
 function bkDays(db){ var n=0; Object.keys((db&&db.days)||{}).forEach(function(d){ if(((db.days[d]||{}).items||[]).length) n++ }); return n }
-function bkDate(t){ var d=new Date(t); return isNaN(d)?'':d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) }
+function bkDate(t){ var d=new Date(t); return isNaN(d)?'':ruDate(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) }
 function bkPaint(){ var el=document.getElementById('bkWhen'); if(el) el.textContent=DB.bkAt?'Последняя выгрузка — '+bkDate(DB.bkAt)+'.':'Выгрузок ещё не было.' }
 function bkExport(){
   if(writeGuard()) return;
@@ -5273,9 +5283,10 @@ function jrRangeTxt(r){
 }
 function jrPeriodTxt(){
   var r=jrRange();
-  if(JR_PER==='today') return 'Сегодня, '+ruDate(r.b);
-  if(r.a===r.b) return jrRangeTxt(r);
-  return 'Среднее значение';
+  /* как в Day и Sport: «Сегодня, 24 ноября», «Вчера, 23 ноября», за несколько дней — сам период «18–24 ноября» (24.11.2026) */
+  if(r.a===r.b&&r.b===todayISO()) return 'Сегодня, '+ruDate(r.b);
+  if(r.a===r.b&&r.b===jrIsoAdd(todayISO(),-1)) return 'Вчера, '+ruDate(r.b);
+  return jrRangeTxt(r);
 }
 /* пример: за неделю и месяц цифры чуть другие — как средние за несколько дней */
 function jrHash(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619) } return (h>>>0)/4294967295 }

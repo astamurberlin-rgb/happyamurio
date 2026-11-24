@@ -284,6 +284,8 @@ body.hs-open{overflow:hidden}
  touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none;outline:0}
 .hs-macro-slider:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important}
 .hs-macro-fill{position:absolute;bottom:0;left:0;right:0;min-height:0;border-radius:11px 11px 0 0;background:linear-gradient(135deg,#eab7da,#d994bf);border-top:1px solid rgba(255,255,255,.4)}
+.hs-macro-1 .hs-macro-fill{background:linear-gradient(135deg,#cfa5e1,#b485cc)}
+.hs-macro-2 .hs-macro-fill{background:linear-gradient(135deg,#f0b0b7,#dc8d99)}
 .hs-macro-thumb{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;left:calc(50% - 9px);box-shadow:0 2px 5px rgba(80,25,60,.2);pointer-events:none}
 .hs-fiber{margin-top:22px}
 .hs-calc-preview{padding:14px;background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:12px}

@@ -34,7 +34,7 @@ var USDA={"1003":["prot",1,"Protein","g"],"1004":["fat",1,"Total lipid (fat)","g
 function P(){return root.MealProducts}
 function region(r){var m=/-([a-z]{2})$/.exec(r.id);return m&&REGION[m[1]]||''}
 function libName(){return 'Десерты'+(LIB.version?' '+LIB.version:'')}
-function ruDate(x){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x||''));return m?m[3]+'.'+m[2]+'.'+m[1]:String(x||'')}
+function ruDate(x){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x||''));return m?(+m[3])+' '+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'][+m[2]-1]+(m[1]!==String(new Date().getFullYear())?' '+m[1]:''):String(x||'')}
 function sourceLabel(r){return 'Happy Meal · '+libName()+' · '+(KIND[r.recordKind]||r.recordKind)+(r.sourceUrls&&r.sourceUrls[0]?' · '+r.sourceUrls[0]:'')}
 function target(r,n){
  var parts=n.key.split(':'),ns=parts[0],name=parts[parts.length-1];

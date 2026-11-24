@@ -34,7 +34,10 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .workout-summary-header .text-btn{min-height:44px}
 /* Lab 10.11.2026 19:20 · Решения по «Обсудим». */
 /* 2. Set on one line: «1 подход», value, tick. */
-
+.active-workout .set-row.metrics-1{display:grid!important;grid-template-columns:auto minmax(0,1fr) 44px!important;align-items:center!important;column-gap:12px!important;row-gap:0!important}
+.active-workout .set-row.metrics-1>.set-number{grid-column:1!important;grid-row:1!important;align-self:center;margin:0!important;white-space:nowrap}
+.active-workout .set-row.metrics-1>:not(.set-number):not(.done){grid-column:2!important;grid-row:1!important}
+.active-workout .set-row.metrics-1>.done{grid-column:3!important;grid-row:1!important}
 /* 2. Rest: thin pale line, green fill while it runs, time at the right; tap opens the steps. */
 .active-workout .rest-separator.rest-line{display:flex!important;align-items:center;gap:10px;min-height:44px!important;margin:0!important;padding:0 2px!important;opacity:.6;color:var(--happy-ink);background:none;border:0;width:100%}
 .active-workout .rest-separator.rest-line::before,.active-workout .rest-separator.rest-line::after{content:none!important;display:none!important}

@@ -16796,7 +16796,7 @@ window.HappyMealSpeechData={
    "answer_day_empty": "За {when} ничего не записано.",
    "answer_day": "Записано за {when}:",
    "answer_week_empty": "За последние 7 дней записей нет.",
-   "answer_week": "В среднем за дни с записями ({n} из 7, {from}–{to}):",
+   "answer_week": "В среднем за дни с записями ({n} из 7, {range}):",
    "button_open": "Открыть день"
   },
   "undo_button": "Отменить",

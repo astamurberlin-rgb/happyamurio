@@ -55,7 +55,7 @@
 
 /* ── Поле ввода, поле на несколько строк, поиск: 12 ── */
 input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.search,.workout-name-input,.hs-input,.happy-input,.library-filters select,.template-targets input{border-radius:12px}
-.set-row .set-metric input,.floating-rest-clock input,.exercise-player input,.tap-time input,.exercise-title-input,.sport-metric-input input{border-radius:0}
+.set-row .set-metric input,.floating-rest-clock input,.player-round-preset input,.exercise-player input,.tap-time input,.exercise-title-input,.sport-metric-input input{border-radius:0}
 
 /* ── Лист снизу: 22 у верхних углов ── */
 .sheet,.hs-sheet,.hm-sheet{border-radius:22px 22px 0 0!important}

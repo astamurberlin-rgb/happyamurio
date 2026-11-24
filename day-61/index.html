@@ -680,6 +680,9 @@ body.card-open .dock .tab{pointer-events:none}
 .gdot.down{background:#FFB3C9}
 .list{padding:0 16px}
 .row + .row{border-top:1px solid rgba(255,255,255,.14)}
+.rowHead{display:block;width:100%;border:0;background:none;color:var(--happy-ink);font:inherit;text-align:left;padding:13px 0}
+.rowTop{display:flex;align-items:center;gap:10px}
+.rowTop b{flex:1;font-size:16px;font-weight:600}
 /* ряд столбиков: вверх — выше, вниз — ниже, высота — сила связи; подпись у линии середины, с другой стороны */
 .lkBars{padding:16px 0 0;overflow:hidden}
 .lkBScroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
@@ -715,6 +718,8 @@ body.card-open .dock .tab{pointer-events:none}
 .rowChev{width:16px;height:16px;flex:none;fill:none;stroke:rgba(255,255,255,.6);stroke-width:2.2;
   stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
 .row.open .rowChev{transform:rotate(180deg)}
+.rowTxt{display:block;font-size:14px;color:rgba(255,255,255,.88);margin-top:5px;line-height:1.4}
+.rowMeta{display:block;font-size:12px;color:var(--dim);margin-top:3px}
 .more{display:none;padding:0 0 14px}
 .row.open .more{display:block}
 .more svg{display:block;width:100%;overflow:visible}
@@ -2069,7 +2074,8 @@ function paintLock(){
 function ruDate(iso){
   var M=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   var d=new Date(iso+'T00:00:00');
-  return d.getDate()+' '+M[d.getMonth()];
+  /* год — только если не текущий (формат дат Happy, решение 24.11.2026) */
+  return d.getDate()+' '+M[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'');
 }
 
 /* ═══════════ ИКОНКИ ═══════════ */
@@ -2363,7 +2369,7 @@ function dayReport(d){
   SelfCare.journalEvents(d).forEach(function(x){L.push(x.title+' · '+x.t+' · '+x.sub)});
   if(e.note) L.push('Заметка: '+e.note);
   if(!L.length) return '';
-  return ['HappyDay · '+ruDate(d)+' '+d.slice(0,4)].concat(L).join('\n');
+  return ['HappyDay · '+ruDate(d)].concat(L).join('\n');
 }
 function copyText(t,ok){
   function fall(){
@@ -3818,7 +3824,7 @@ function jrPrintMake(sel){
     function card(fn){ var y0=y; y+=6; fn(); y+=16; var h=y-y0; ctx.save(); ctx.globalCompositeOperation='destination-over'; rr(P,y0,W-2*P,h,20,'rgba(255,255,255,.16)'); ctx.restore() }
     var MUT='rgba(255,255,255,.82)', IN=P+18, CW=W-2*P-36;
     txt('HappyDay · Журнал',P,y+24,26,800); y+=24;
-    txt(one?ruDate(r.a)+' '+r.a.slice(0,4):jrRangeTxt(r)+' '+r.b.slice(0,4),W-P,y,15,600,MUT,'right');
+    txt(one?ruDate(r.a):jrRangeTxt(r),W-P,y,15,600,MUT,'right');
     if(sel.now){
       var nl=jrNowLast(r), vals=nwLast(nl?nl.d:r.b), L=nwList();
       head('Как ты сейчас',nl?(one?'отметка в '+nl.x.t:ruDate(nl.d)+', '+nl.x.t):'отметок нет');
@@ -3896,7 +3902,7 @@ function jrPrintMake(sel){
       }
     }
     function card2(x,w,fn){ var y0=y; fn(); y+=12; ctx.save(); ctx.globalCompositeOperation='destination-over'; rr(x,y0,w,y-y0,16,'rgba(255,255,255,.15)'); ctx.restore() }
-    y+=30; txt('HappyDay · '+ruDate(todayISO())+' '+todayISO().slice(0,4),W/2,y,11.5,600,'rgba(255,255,255,.6)','center');
+    y+=30; txt('HappyDay · '+ruDate(todayISO()),W/2,y,11.5,600,'rgba(255,255,255,.6)','center');
     return y+P;
   }
   var probe=document.createElement('canvas').getContext('2d'), H=Math.ceil(draw(probe));
@@ -4199,10 +4205,10 @@ function rebuild(){
 function isoD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function parse(s){var p=String(s).split('-');return new Date(+p[0],p[1]-1,+p[2])}
 var MID=(SMIN+SMAX)/2;
-var MON=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
-var MON1=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+var MON=['янв','февр','мар','апр','мая','июн','июл','авг','сент','окт','нояб','дек'];   /* короткая дата «24 нояб», как в iOS (решение 24.11.2026) */
 function ru(d){return d.getDate()+' '+MON[d.getMonth()]}
-function ruRange(a,b){return a.getMonth()===b.getMonth()?(a.getDate()===b.getDate()?ru(a):a.getDate()+'–'+b.getDate()+' '+MON[b.getMonth()]):ru(a)+' – '+ru(b)}
+function ruRange(a,b){var full=function(d){return d.getDate()+' '+MONG[d.getMonth()]};   /* период — полными месяцами: «18–24 ноября» */
+ return a.getMonth()===b.getMonth()?(a.getDate()===b.getDate()?full(a):a.getDate()+'–'+full(b)):full(a)+' – '+full(b)}
 function fmtH(min){var H=Math.floor(min/60),M=Math.round((min-H*60)/5)*5;if(M===60){H++;M=0}
   return (H?H+' ч':'')+(H&&M?' ':'')+(M||!H?M+' мин':'')}
 function metricOf(k){return DB.metrics.filter(function(m){return m.k===k})[0]}
@@ -4881,7 +4887,7 @@ function renderData(){
   var e=day(curDate);
   document.getElementById('trackerBox').innerHTML =
     '<div class="kv"><b>Экранное время</b><span>'+
-      (screenTotal(e)!=null?hhmm(screenTotal(e)):'—')+'</span></div>';
+      (screenTotal(e)!=null?durRu(screenTotal(e)):'—')+'</span></div>';
 
 }
 
