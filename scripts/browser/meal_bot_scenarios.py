@@ -1784,6 +1784,23 @@ ACTS = [
  dict(id="Шд04", msgs=["заведи свою добавку", "Тест", "таблетки", "магний сто"], reply="Не разобрал", ok="()=>!!(D.bot&&D.bot.steps)"),
  dict(id="Шн01", msgs=["добавь кофе 200 г"], ok="()=>!(D.bot&&D.bot.steps)"),
  dict(id="Шн02", msgs=["как добавить счётчик"], reply="Добавить счётчик", ok="()=>!(D.bot&&D.bot.steps)"),
+ # замеры тела словами (Астамур 24.11.2026, «Да» на план): общий документ sport/body, как экран «Замеры тела»
+ dict(id="Зт01", msgs=["талия 82, грудь 100"], reply="Записал замер на", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.waist===82&&m.values.chest===100}"),
+ dict(id="Зт02", msgs=["бицепс 35", {"tap": "Левый"}], reply="бицепс левый 35 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.bicepsL===35}"),
+ dict(id="Зт03", msgs=["правый бицепс 36 левый 34"], reply="бицепс правый 36 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.bicepsR===36&&m.values.bicepsL===34}"),
+ dict(id="Зт04", msgs=["живот 91", {"tap": "Низ живота"}], reply="низ живота 91 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.lowerAbs===91}"),
+ dict(id="Зт05", msgs=["вчера бёдра 98, вес 79,5"], reply="Записал замер на", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===(()=>{const d=new Date(todayISO()+'T12:00:00');d.setDate(d.getDate()-1);return isoOf(d)})());return !!m&&m.values.hips===98&&m.values.weight===79.5}"),
+ dict(id="Зт06", msgs=["талия 77", {"tap": "Отменить"}], reply="Отменил", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !m||m.values.waist!==77}"),
+ dict(id="Зт07", msgs=["бедро 98"], reply="замер тела или еда", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт08", msgs=["бедро 98", {"tap": "Замер"}, {"tap": "Правый"}], reply="бедро правое 98 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.thighR===98}"),
+ dict(id="Зт09", msgs=["куриное бедро 200 г"], ok="()=>Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт10", msgs=["свиная шея 150 г"], ok="()=>Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт11", msgs=["обхват шеи 38"], reply="шея 38 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.neck===38}"),
+ dict(id="Зт12", msgs=["талия 83", "какая у меня талия"], reply="Талия: 83 см", ok="()=>true"),
+ dict(id="Зт13", msgs=["мой вес 80"], reply="Только записать вес", ok="()=>true"),
+ dict(id="Зт14", msgs=["бицепс 35 бедра 98"], reply="какой?", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт15", msgs=["талия 500"], reply="не похоже на замер", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Зт16", msgs=["предплечье 28 оба"], reply="предплечье левое 28 см", ok="()=>{const m=HappyMeasurements.read(MealData.store.shared('sport','body').all()).list.find(x=>x.date===todayISO());return !!m&&m.values.forearmL===28&&m.values.forearmR===28}"),
 ]
 
 GOALS = [
