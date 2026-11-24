@@ -1,0 +1,130 @@
+{
+ "about_ru": "Шоколад: карточки-приёмы для справочника «как готовить» (поток «Шоколад», 23.11.2026). Ложатся поверх любой версии cooking скриптом add.py. Ганаш и кремы — у потока «Кремы».",
+ "sources": [
+  {
+   "id": "callebaut_temper",
+   "title": "Callebaut: способы темперирования (температуры)",
+   "url": "https://www.callebaut.com/en/guide-different-tempering-methods"
+  },
+  {
+   "id": "guittard_temper",
+   "title": "Guittard: темперирование засевом",
+   "url": "https://guittard.com/chocolate-studio/fundamentals/tempering"
+  },
+  {
+   "id": "wca_choc",
+   "title": "What's Cooking America: как топить и темперировать шоколад",
+   "url": "https://whatscookingamerica.net/ChocolateMelting.htm"
+  },
+  {
+   "id": "gavin_choc",
+   "title": "Jessica Gavin (кулинарный технолог): как топить шоколад",
+   "url": "https://www.jessicagavin.com/how-to-melt-chocolate/"
+  },
+  {
+   "id": "hotelchoc_seize",
+   "title": "Hotel Chocolat: шоколад схватился — как спасти",
+   "url": "https://www.hotelchocolat.com/uk/blog/chocolate-knowledge/seized-chocolate-what-it-is-and-how-to-fix-it.html"
+  },
+  {
+   "id": "atk_seize",
+   "title": "America's Test Kitchen: как спасти схватившийся шоколад",
+   "url": "https://www.americastestkitchen.com/how_tos/5712-how-to-fix-seized-chocolate"
+  },
+  {
+   "id": "cfia_bloom",
+   "title": "Агентство инспекции продуктов Канады: белый налёт на шоколаде",
+   "url": "https://inspection.canada.ca/en/food-safety-consumers/fact-sheets/specific-products-and-risks/commonly-occurring-issues-food/chocolate-bloom"
+  },
+  {
+   "id": "atk_cocoa",
+   "title": "America's Test Kitchen: какао вместо шоколада",
+   "url": "https://www.americastestkitchen.com/how_tos/6037-cocoa-powder-or-unsweetened-chocolate"
+  },
+  {
+   "id": "wca_subst",
+   "title": "What's Cooking America: таблица замен шоколада",
+   "url": "https://whatscookingamerica.net/chocolatesubstitutionchart.htm"
+  }
+ ],
+ "cards": [
+  {
+   "id": "tip-shokolad-shvatilsya",
+   "kind": "tip",
+   "said": "(?=.*шоколад)(?=.*(схват|комк|комоч|свернул|загустел|крупинк|зернист|попала вода|вода попала|пар попал))",
+   "not": "калори|ккал|съел|съела|поел",
+   "answer": "Шоколад схватывается комками, если в него попала вода или пар. Спасти можно, но блестящей глазури уже не будет: годится для соуса, горячего шоколада или полить сверху. Подмешивай кипяток по 1 чайной ложке, каждый раз хорошо размешивая. Или тёплые сливки, растопленное или растительное масло: около 1 столовой ложки на 170 г шоколада.",
+   "sources": [
+    "atk_seize",
+    "hotelchoc_seize",
+    "wca_choc"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-shokolad-temperirovat",
+   "kind": "tip",
+   "said": "(?=.*шоколад)(?=.*(темперир|темпериров|темперац|блест|блеск|не застыва|не застыл|липн))",
+   "not": "калори|ккал|съел|съела|поел",
+   "answer": "Темперируют, чтобы шоколад застыл с блеском и хрустом. Проще всего засевом: растопить, потом частями вмешивать мелко рубленый твёрдый шоколад, пока не остынет до рабочей температуры. Тёмный — 31–32 °C, молочный — 29–30 °C, белый — 28–29 °C (Callebaut); у Guittard молочный и белый — 30–31 °C. Проверка: капля на ноже за пару минут застывает с ровным блеском.",
+   "sources": [
+    "callebaut_temper",
+    "guittard_temper",
+    "gavin_choc"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-shokolad-rastopit",
+   "kind": "tip",
+   "said": "(?=.*шоколад)(?=.*(растоп|растап|топить|топят|топлю|растаят|расплав|плавить|плавят|водян\\S* бан|микроволн))",
+   "not": "калори|ккал|съел|съела|поел",
+   "answer": "Шоколад топят на водяной бане или в микроволновке. Баня: вода едва кипит и не касается миски, мешай до гладкости. Микроволновка: средняя мощность, по 15–30 секунд, после каждого раза перемешать. Посуда и ложка сухие: от капли воды шоколад схватится комками. Не перегревай: тёмный — не выше 45–50 °C, молочный и белый — около 45 °C.",
+   "sources": [
+    "wca_choc",
+    "gavin_choc",
+    "callebaut_temper"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-shokolad-nalet",
+   "kind": "tip",
+   "said": "(?=.*шоколад)(?=.*(налет|побелел|поседел|посерел|седин|пятн|белесы|белый слой|белым слоем))",
+   "not": "калори|ккал|съел|съела|поел",
+   "answer": "Белый или серый налёт на шоколаде — не плесень. Гладкий серый — от тепла: на поверхность вышло какао-масло. Сухие белые пятнышки — от влаги: сахар выкристаллизовался, часто после холодильника. Есть такой шоколад и печь с ним можно, меняется только вкус и вид. Для глазури и конфет он уже не годится.",
+   "sources": [
+    "cfia_bloom",
+    "wca_choc",
+    "gavin_choc"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-shokolad-hranit",
+   "kind": "tip",
+   "said": "(?=.*шоколад)(?=.*(хран|холодильник|морозилк|в тепле|на солнце|растаял))",
+   "not": "калори|ккал|съел|съела|поел|налет|побелел|седин|пятн",
+   "answer": "Шоколад хранят в прохладном, сухом и тёмном месте, подальше от запахов, например в шкафу. Лучше всего около 15–18 °C; Jessica Gavin советует 13–16 °C. Холодильник не нужен: от влаги и перепадов появится белый налёт. Если всё же убираешь туда, заверни плотно или положи в закрытую коробку.",
+   "sources": [
+    "wca_choc",
+    "gavin_choc",
+    "hotelchoc_seize",
+    "cfia_bloom"
+   ],
+   "checked": "2026-11-23"
+  },
+  {
+   "id": "tip-kakao-vmesto-shokolada",
+   "kind": "tip",
+   "said": "(?=.*какао)(?=.*шоколад)(?=.*(вместо|замен|заменит|подменит))",
+   "not": "калори|ккал|съел|съела|поел",
+   "answer": "Вместо 30 г горького шоколада без сахара возьми 3 столовые ложки какао-порошка без сахара и 1 столовую ложку жира: растительного масла (America's Test Kitchen) или сливочного (What's Cooking America). В выпечке разницы почти не видно.",
+   "sources": [
+    "atk_cocoa",
+    "wca_subst"
+   ],
+   "checked": "2026-11-23"
+  }
+ ]
+}
