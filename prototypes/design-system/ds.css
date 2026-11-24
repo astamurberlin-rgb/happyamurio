@@ -1,0 +1,200 @@
+/* Правила стиля Happy · страница дизайн-системы · 0.1 · 24.11.2026 · Claude
+   Здесь только рамка страницы и копии стилей приложений 1:1 (с пометкой, откуда). Общие стили подключены из shared/ как есть. */
+
+/* ── фон: как у приложений без темы ── */
+html{background:var(--happy-base);color-scheme:dark}
+body{margin:0;min-height:100vh;color:var(--happy-ink);
+ font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.5;
+ -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+/* Day: day-61/index.html (.bg, drift 26s) */
+/* фон в рамке экрана: запас -20 % (дрейф Day) не даёт странице листаться вбок */
+.bgclip{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+html[data-happy-appearance] .bgclip{display:none}   /* с темой фон рисует сама тема (skin) */
+.bg{position:absolute;inset:-20%;pointer-events:none;
+ background:radial-gradient(42% 26% at 18% 14%,rgba(70,253,252,.62),transparent 70%),radial-gradient(38% 24% at 84% 20%,rgba(3,222,234,.55),transparent 72%),radial-gradient(46% 28% at 12% 52%,rgba(188,97,254,.40),transparent 72%),radial-gradient(40% 26% at 88% 62%,rgba(253,147,253,.34),transparent 72%),radial-gradient(50% 30% at 30% 88%,rgba(70,253,252,.42),transparent 74%),var(--happy-base);
+ filter:blur(46px) saturate(1.15);animation:ds-drift 26s ease-in-out infinite alternate}
+@keyframes ds-drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-3%,2%,0) scale(1.07)}}
+@media (prefers-reduced-motion:reduce){.bg{animation:none}}
+/* Meal: meal-34/index.html (.bg) */
+html[data-happy-appearance-app="meal"] .bg{inset:0;filter:none;animation:none;transform:none;
+ background:radial-gradient(ellipse 80% 41% at 93% 15%,rgba(243,124,165,.40) 0%,transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%,rgba(157,87,174,.38) 0%,transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)}
+/* Sport: sport-45/index.html (--sport-background) */
+html[data-happy-appearance-app="sport"] .bg{inset:0;filter:none;animation:none;transform:none;
+ background:radial-gradient(ellipse 76% 38% at 95% 20%,rgba(255,143,210,.320) 0%,transparent 84%),radial-gradient(ellipse 66% 36% at 7% -10%,rgba(158,119,251,.33) 0%,transparent 84%),linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%)}
+/* с темой фон лежит ровно по экрану, как в Day (аудит 3, 22.11.2026) */
+html[data-happy-appearance] body>.bg{inset:0;filter:none;animation:none;transform:none}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ── рамка страницы ── */
+*,*::before,*::after{box-sizing:border-box}
+.ds{max-width:460px;margin:0 auto;padding:calc(26px + env(safe-area-inset-top)) 20px calc(48px + env(safe-area-inset-bottom))}
+.ds p{margin:0}
+.ds h1{margin:2px 0 10px;font-size:28px;font-weight:800;line-height:1.2;letter-spacing:-.5px;color:var(--happy-heading)}
+.ds h2{margin:0 0 8px;font-size:20px;font-weight:700;line-height:1.25;letter-spacing:-.25px;color:var(--happy-heading)}
+.ds h3{margin:26px 0 12px;font-size:14px;font-weight:700;line-height:1.4;color:var(--happy-ink)}
+.ds-kicker{font-size:14px;font-weight:600;color:var(--happy-muted)}
+.ds-ver{display:inline-block;margin-left:4px;padding:0 8px;border-radius:999px;background:var(--happy-glass);font-size:12px;font-weight:600;line-height:20px}
+.ds-lead{font-size:16px;color:var(--happy-ink)}
+.ds-base{margin-top:8px!important;font-size:12px;color:var(--happy-muted)}
+.ds-note{font-size:14px;line-height:1.5;color:var(--happy-muted)}
+.ds-spec{margin-top:10px!important;font-size:14px;line-height:1.5;color:var(--happy-ink)}
+.ds-why{margin-top:12px!important;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.1);font-size:14px;line-height:1.5;color:var(--happy-ink)}
+.ds-src{margin-top:6px!important;font-size:12px;line-height:1.4;color:var(--happy-dim)}
+.ds-cap{margin:18px 0 10px!important;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ds-tag{display:inline-block;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12px;font-weight:600;line-height:22px;color:var(--happy-ink)}
+.ds-tag.warn{background:#ffe3bf;color:#5b3a12}
+.ds-tagline{margin:2px 0 8px!important}
+.ds-sec{margin-top:28px;padding:20px 18px 22px;border-radius:26px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+.ds-top{padding:4px 2px 0}
+.ds-ctl{margin-top:22px}
+.ds-toc{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;margin:22px -20px 0;padding:10px 20px;scrollbar-width:none;
+ background:linear-gradient(to bottom,color-mix(in srgb,var(--happy-base) 70%,transparent),transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.ds-toc::-webkit-scrollbar{display:none}
+.ds-toc a{flex:none;display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:999px;background:var(--happy-glass);border:1px solid var(--happy-line);color:var(--happy-ink);font-size:14px;font-weight:600;text-decoration:none}
+.ds-rules{margin:12px 0 0;padding-left:22px;display:grid;gap:10px;font-size:14px;line-height:1.5}
+.ds-rules b{font-weight:600}
+.ds-list{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px;line-height:1.5}
+.ds-list b{font-weight:600}
+.ds-foot{margin-top:28px;text-align:center;font-size:12px;color:var(--happy-muted)}
+.ds code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--happy-muted);white-space:nowrap}
+.ds-plain{font-size:16px}
+
+/* темы: плитки 12–14 (правило «мелкие плитки») */
+.ds-themes{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px;scrollbar-width:none;cursor:grab}
+.ds-themes::-webkit-scrollbar{display:none}
+.ds-th{flex:none;width:74px;padding:0;border:0;background:none;color:var(--happy-ink);font:inherit;cursor:pointer;text-align:center}
+.ds-th i{display:block;width:74px;height:74px;border-radius:14px;border:2px solid rgba(255,255,255,.35);box-shadow:0 4px 12px rgba(0,0,0,.14)}
+.ds-th span{display:block;margin-top:6px;font-size:12px;line-height:1.25}
+.ds-th[aria-pressed="true"] i{border-color:#fff;box-shadow:0 0 0 2px #fff,0 4px 12px rgba(0,0,0,.2)}
+.ds-th[aria-pressed="true"] span{font-weight:600}
+
+/* цвета */
+.ds-swatches{margin-top:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ds-sw{display:flex;align-items:center;gap:10px;min-width:0}
+.ds-sw i{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.4);
+ background-image:linear-gradient(var(--c),var(--c)),conic-gradient(#ccc 25%,#fff 0 50%,#ccc 0 75%,#fff 0);background-size:100% 100%,10px 10px}
+.ds-sw>div{min-width:0}
+.ds-sw b{display:block;font-size:14px;font-weight:600;line-height:1.25}
+.ds-sw small{display:block;font-size:12px;line-height:1.35;color:var(--happy-muted);overflow-wrap:anywhere}
+.ds-bgs{display:flex;gap:12px;margin-top:12px}
+.ds-bgs figure{margin:0;flex:1;text-align:center;font-size:12px}
+.ds-bgchip{display:block;height:96px;border-radius:14px;border:1px solid rgba(255,255,255,.35)}
+.ds-bgchip[data-bg="day"]{background:radial-gradient(42% 26% at 18% 14%,rgba(70,253,252,.62),transparent 70%),radial-gradient(46% 28% at 12% 52%,rgba(188,97,254,.40),transparent 72%),radial-gradient(40% 26% at 88% 62%,rgba(253,147,253,.34),transparent 72%),#00a8f5}
+.ds-bgchip[data-bg="meal"]{background:radial-gradient(ellipse 80% 41% at 93% 15%,rgba(243,124,165,.40) 0%,transparent 83%),linear-gradient(165deg,#963452 0%,#812c4b 50%,#462747 100%)}
+.ds-bgchip[data-bg="sport"]{background:radial-gradient(ellipse 76% 38% at 95% 20%,rgba(255,143,210,.32) 0%,transparent 84%),linear-gradient(165deg,#8c75db 0%,#478bf0 50%,#5a53cc 100%)}
+.ds-bgs figcaption{margin-top:6px}
+
+/* текст */
+.ds-type{margin-top:14px;display:grid;gap:4px}
+.ds-trow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.16)}
+.ds-trow:last-child{border-bottom:0}
+.t28{font-size:28px;font-weight:800;letter-spacing:-.5px;line-height:1.15}
+.t20{font-size:20px;font-weight:600;line-height:1.25}
+.t16{font-size:16px;font-weight:400}
+.t14b{font-size:14px;font-weight:700}
+.t14{font-size:14px;font-weight:400}
+.t12{font-size:12px;font-weight:400}
+.ds-weights{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.ds-weights span{display:block;padding:10px 4px;border-radius:12px;background:rgba(255,255,255,.1);text-align:center;font-size:20px;line-height:1.2}
+.ds-weights small{display:block;margin-top:4px;font-size:12px;font-weight:400;color:var(--happy-muted)}
+
+/* формы */
+.ds-shapes{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 12px;margin-top:14px}
+.ds-shapes figure{margin:0}
+.ds-shapes .sh{display:block;width:100%;height:64px;background:var(--happy-glass);border:1px solid var(--happy-line)}
+.ds-shapes .sh-card{border-radius:22px}
+html[data-happy-appearance-app="meal"] .ds-shapes .sh-card{border-radius:26px}
+html[data-happy-appearance-app="sport"] .ds-shapes .sh-card{border-radius:24px}
+.ds-shapes figcaption{margin-top:6px;font-size:12px;color:var(--happy-muted);line-height:1.35}
+.ds-shapes figcaption b{display:block;font-size:14px;font-weight:600;color:var(--happy-ink)}
+.ds-shapes figcaption i{font-style:normal}
+
+/* ── копии стилей общих экранов 1:1: shared/happy-screens.css (там под #happy-screens) ── */
+.ds-hs{--hs-border:rgba(255,255,255,.34);--hs-muted:rgba(255,255,255,.7)}
+.ds-hs button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border:0;background:none;margin:0;padding:0}
+.ds-hs .hs-segment{display:flex;align-items:stretch;border:1px solid var(--hs-border);border-radius:999px;overflow:hidden;background:rgba(255,255,255,.12)}
+.ds-hs .hs-segment button{flex:1;background:transparent;border-radius:999px;padding:0 10px;white-space:nowrap;font-size:14px;color:var(--happy-ink)}
+.ds-hs .hs-segment button[aria-pressed=true]{background:var(--hs-seg-bg);color:var(--hs-seg-ink);font-weight:600;box-shadow:0 1px 8px rgba(62,15,39,.06)}
+.ds-hs .hs-segment button{transition:background .18s,color .18s}
+.ds-hs .hs-switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:65px;font-size:16px}
+.ds-hs .hs-switch-row+.hs-switch-row{border-top:1px solid rgba(255,255,255,.22)}
+.ds-hs .hs-switch{flex-shrink:0;width:42px;height:25px;padding:2px;border-radius:999px;background:rgba(255,255,255,.23);transition:background .18s;border:0;display:block}
+.ds-hs .hs-switch>b{display:block;width:21px;height:21px;background:#fff;border-radius:50%;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
+.ds-hs .hs-switch[aria-checked=true]{background:var(--hs-switch-on)!important}
+.ds-hs .hs-switch[aria-checked=true]>b{transform:translateX(17px)}
+.ds-hs .hs-sheet{position:relative;width:100%;display:flex;flex-direction:column;border-radius:22px 22px 0 0;border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);color:var(--happy-ink);box-shadow:0 -16px 48px rgba(0,0,0,.2)}
+.ds-hs .hs-handle-zone{display:grid;height:30px;place-items:center;flex:none}
+.ds-hs .hs-handle{width:42px;height:5px;border-radius:999px;background:rgba(255,255,255,.45)}
+.ds-hs .hs-sheet-head{display:grid;gap:4px;padding:0 20px 14px}
+.ds-hs .hs-sheet-title{font-size:20px;font-weight:600;letter-spacing:-.25px;line-height:1.25}
+.ds-hs .hs-sheet-desc{color:var(--hs-muted);font-size:14px;line-height:1.35}
+.ds-hs .hs-sheet-body{padding:0 20px 22px}
+.ds-apps{width:100%}
+.ds-apps button{font-size:14px}
+.ds-seg{width:100%}
+.ds-sheetwrap{padding:26px 14px 0;border-radius:22px;overflow:hidden;background:rgba(0,0,0,.34)}
+
+/* чипы — общая кнопка-пилюля 44 */
+.ds-chips{display:flex;gap:8px;flex-wrap:wrap}
+.ds-chip[aria-pressed="true"]{background:#fff;color:var(--happy-accent-ink,#0c6fa8);border-color:#fff}
+html[data-happy-appearance-app="meal"] .ds-chip[aria-pressed="true"]{color:var(--hs-pill-on-ink)}
+
+/* карточка */
+.ds-cardx .ds-cardt{font-size:20px;font-weight:700;line-height:1.25}
+.ds-cardx .ds-cardm{margin-top:6px;font-size:14px;color:var(--happy-muted)}
+
+/* сообщение — в потоке страницы, а не внизу экрана */
+.ds-toastrow{display:grid;gap:10px;justify-items:center}
+.ds-toast{position:static;display:flex;align-items:center;justify-content:center;gap:10px;max-width:100%!important}
+
+/* микрофон: day-61/index.html (.fab), вид B */
+.ds-fabrow{display:flex;justify-content:center;padding:10px 0 4px}
+.ds-fab{--fab:var(--happy-accent);position:relative;width:60px;height:60px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;
+ background:radial-gradient(circle at 35% 25%,color-mix(in srgb,var(--fab) 50%,#fff),color-mix(in srgb,var(--fab) 75%,#fff) 43%,var(--fab) 76%);
+ box-shadow:0 8px 20px color-mix(in srgb,var(--fab) 22%,transparent);transition:transform .22s cubic-bezier(.2,.7,.3,1)}
+.ds-fab:active{transform:scale(.94)}
+.ds-fab svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* кольцо */
+.ds-ring{display:flex;align-items:center;gap:16px}
+.ds-ringbox{position:relative;flex:none;width:120px;height:120px}
+.ds-ringbox .trk{position:absolute;inset:0;border-radius:50%}
+.ds-ringtxt b{display:block;font-size:16px;font-weight:600}
+.ds-ringtxt span{display:block;margin-top:4px;font-size:14px;color:var(--happy-muted);line-height:1.45}
+
+/* движение */
+.ds-motion{display:grid;gap:10px;margin-top:12px}
+.ds-mbtn{position:relative;display:block;width:100%;min-height:64px;padding:10px 14px 10px 14px;border:1px solid var(--happy-line);border-radius:22px;background:var(--happy-glass);color:var(--happy-ink);font:inherit;text-align:left;cursor:pointer;overflow:hidden}
+html[data-happy-appearance-app="meal"] .ds-mbtn{border-radius:26px}
+html[data-happy-appearance-app="sport"] .ds-mbtn{border-radius:24px}
+.ds-mbtn b{display:block;font-size:14px;font-weight:600}
+.ds-mbtn span{display:block;font-size:12px;color:var(--happy-muted)}
+.ds-mbtn i{position:absolute;right:14px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transform:translateX(0)}
+
+/* отступы */
+.ds-space{display:grid;gap:8px;margin-top:12px}
+.ds-srow{display:grid;grid-template-columns:28px 90px 1fr;align-items:center;gap:12px;font-size:14px}
+.ds-srow i{display:block;height:20px;border-radius:4px;background:#fff;opacity:.85}
+.ds-srow b{font-weight:600;text-align:right}
+.ds-srow span{color:var(--happy-muted)}
+
+/* бренд */
+.ds-icons{display:flex;gap:12px;justify-content:space-between}
+.ds-icons figure{margin:0;flex:1;text-align:center}
+.ds-icons img{display:block;width:100%;max-width:88px;height:auto;margin:0 auto;border-radius:22.37%;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+.ds-icons figcaption{margin-top:8px;font-size:12px;color:var(--happy-muted);line-height:1.35}
+.ds-icons figcaption b{display:block;font-size:14px;font-weight:600;color:var(--happy-ink)}
+.ds-voice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 14px}
+.ds-vrow{padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.4}
+.ds-vrow b{display:block;font-size:12px;font-weight:600;margin-bottom:2px}
+.ds-vrow.ok{background:rgba(142,243,221,.22)}
+.ds-vrow.no{background:rgba(255,255,255,.08);color:var(--happy-muted)}
+.ds-vrow.no span{text-decoration:line-through;text-decoration-color:rgba(255,255,255,.5)}
+.ds-todo li::marker{content:"○  "}
+
+/* расхождения */
+.ds-gaps{margin:12px 0 0;padding-left:22px;display:grid;gap:10px;font-size:14px;line-height:1.5}
+.ds-gaps b{font-weight:600}
+
+@media(max-width:360px){.ds{padding-left:16px;padding-right:16px}.ds-sec{padding:18px 14px}.ds-swatches{grid-template-columns:1fr}}

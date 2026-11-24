@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ru" data-happy-appearance-app="day" data-ds-version="0.1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#00A8F5">
+<title>Правила стиля Happy</title>
+<meta name="description" content="Дизайн-система Day, Meal и Sport: цвета, текст, формы и элементы, живые и с примеркой темы.">
+<!-- Живая дизайн-система Happy · черновик 0.1 · 24.11.2026 · Claude.
+     Собрана только из того, что уже решено и работает в коде (Day 61.9 · Meal 34.9 · Sport 45.6, main 03a5679).
+     Элементы — настоящие: общие стили подключены прямо из shared/, остальное скопировано 1:1 с пометкой, откуда. -->
+<link rel="stylesheet" href="../../shared/happy-colors.css">
+<link rel="stylesheet" href="../../shared/happy-ui.css">
+<link rel="stylesheet" href="../../shared/happy-design.css">
+<link rel="stylesheet" href="./ds.css">
+<script>
+ /* память устройства для выбора темы — только на этой странице, в приложения не идёт */
+ window.rawGet=k=>{try{return localStorage.getItem('ds-'+k)}catch(e){return null}};
+ window.rawSet=(k,v)=>{try{localStorage.setItem('ds-'+k,v)}catch(e){}};
+</script>
+</head>
+<body>
+<div class="bgclip"><div class="bg" id="bg"></div></div><div class="grain"></div>
+
+<main class="ds">
+ <header class="ds-top">
+  <p class="ds-kicker">Happy · дизайн-система <span class="ds-ver" id="dsVer">0.1</span></p>
+  <h1>Правила стиля</h1>
+  <p class="ds-lead">Один язык для Day, Meal и Sport. Всё на этой странице — живое: переключи приложение или примерь тему, элементы перекрасятся так же, как в приложениях.</p>
+  <p class="ds-base">Собрано по коду: Day 61.9 · Meal 34.9 · Sport 45.6</p>
+ </header>
+
+ <!-- выбор приложения: настоящий переключатель из вариантов (контур 44, пилюля 36) -->
+ <section class="ds-ctl" aria-label="Приложение и тема">
+  <div class="ds-hs"><div class="hs-segment ds-apps" id="apps" role="group" aria-label="Приложение">
+   <button type="button" data-app="day" aria-pressed="true">Day</button>
+   <button type="button" data-app="meal" aria-pressed="false">Meal</button>
+   <button type="button" data-app="sport" aria-pressed="false">Sport</button>
+  </div></div>
+  <p class="ds-cap">Примерить тему <span class="ds-tag">только на этой странице</span></p>
+  <div class="ds-themes" id="themes" role="group" aria-label="Тема"></div>
+ </section>
+
+ <nav class="ds-toc" aria-label="Разделы">
+  <a href="#principles">Основа</a><a href="#color">Цвет</a><a href="#type">Текст</a><a href="#shape">Формы</a><a href="#parts">Элементы</a><a href="#motion">Движение</a><a href="#space">Отступы</a><a href="#gaps">Расхождения</a>
+ </nav>
+
+ <!-- ───────────── 1. Основа ───────────── -->
+ <section class="ds-sec" id="principles">
+  <h2>Основа</h2>
+  <p class="ds-note">Пять правил, из которых растёт всё остальное. Каждое уже принято тобой.</p>
+  <ol class="ds-rules">
+   <li><b>Образец — живые приложения без темы.</b> Инструменты (Color Studio, Студия градиентов, эта страница) повторяют их 1:1, а не наоборот.</li>
+   <li><b>Один стиль на три приложения.</b> Общие элементы живут в одном месте (✱ shared/) и меняются сразу везде.</li>
+   <li><b>Цвет задаёт тема.</b> Форма, размеры и жирность от темы не зависят.</li>
+   <li><b>Без лишнего.</b> Нет лишних экранов, дублей функций и подтверждений обычных действий. Служебное — в «Для разработчика».</li>
+   <li><b>На «ты».</b> Везде, включая вход и профиль. Без рода в прошедшем времени: «Не помню пароль».</li>
+  </ol>
+ </section>
+
+ <!-- ───────────── 2. Цвет ───────────── -->
+ <section class="ds-sec" id="color">
+  <h2>Цвет</h2>
+  <p class="ds-note">Цвета — по именам (✱ дизайн-токены), а не числом. Палитра приложения приходит из Color Studio, тема подменяет эти же имена. Значения ниже читаются со страницы прямо сейчас.</p>
+  <div class="ds-swatches" id="swatches"></div>
+  <p class="ds-src">из кода: shared/happy-colors.css · тема: shared/happy-appearance.js, skin()</p>
+  <h3>Фон приложения</h3>
+  <p class="ds-note">Фон каждого приложения — его собственный, «тяжело выстраданный» у Day. Тема заменяет его целиком.</p>
+  <div class="ds-bgs">
+   <figure><span class="ds-bgchip" data-bg="day"></span><figcaption>Day</figcaption></figure>
+   <figure><span class="ds-bgchip" data-bg="meal"></span><figcaption>Meal</figcaption></figure>
+   <figure><span class="ds-bgchip" data-bg="sport"></span><figcaption>Sport</figcaption></figure>
+  </div>
+ </section>
+
+ <!-- ───────────── 3. Текст ───────────── -->
+ <section class="ds-sec" id="type">
+  <h2>Текст</h2>
+  <p class="ds-note">Пять размеров и четыре жирности (✱ типографическая шкала). Мельче 12 не пишем, промежуточных не заводим. Шрифт — системный (на iPhone это SF Pro).</p>
+  <div class="ds-type">
+   <div class="ds-trow"><span class="t28">Заголовок экрана</span><code>28 · 800</code></div>
+   <div class="ds-trow"><span class="t20">Заголовок листа и крупная цифра</span><code>20</code></div>
+   <div class="ds-trow"><span class="t16">Обычный текст и основная кнопка</span><code>16 · 400 / 600</code></div>
+   <div class="ds-trow"><span class="t14b">Заголовок раздела</span><code>14 · 700</code></div>
+   <div class="ds-trow"><span class="t14">Подпись, чип, вкладка, сообщение</span><code>14 · 400</code></div>
+   <div class="ds-trow"><span class="t12">Нижнее меню, мелкая подпись</span><code>12 · 400</code></div>
+  </div>
+  <div class="ds-weights">
+   <span style="font-weight:400">400<small>текст</small></span><span style="font-weight:600">600<small>кнопки, выбранное</small></span><span style="font-weight:700">700<small>разделы</small></span><span style="font-weight:800">800<small>заголовок экрана</small></span>
+  </div>
+  <p class="ds-src">правило: AGENTS.md §4 (16.11.2026)</p>
+ </section>
+
+ <!-- ───────────── 4. Формы ───────────── -->
+ <section class="ds-sec" id="shape">
+  <h2>Формы</h2>
+  <p class="ds-note">Скругления (✱ border-radius). Всё, что нажимается, — пилюля. Других значений не заводим без твоего слова.</p>
+  <div class="ds-shapes">
+   <figure><span class="sh" style="border-radius:999px;height:44px"></span><figcaption><b>Пилюля</b>половина высоты</figcaption></figure>
+   <figure><span class="sh sh-card" id="shCard"></span><figcaption><b>Карточка <i id="cardR">22</i></b>Meal 26 · Sport 24 · Day 22</figcaption></figure>
+   <figure><span class="sh" style="border-radius:22px 22px 0 0"></span><figcaption><b>Лист снизу 22</b>верхние углы</figcaption></figure>
+   <figure><span class="sh" style="border-radius:12px;height:46px"></span><figcaption><b>Поле ввода 12</b>и поиск</figcaption></figure>
+   <figure><span class="sh" style="border-radius:13px;width:56px;height:56px"></span><figcaption><b>Плитка 12–14</b>обои, цвета</figcaption></figure>
+  </div>
+  <p class="ds-why">Day 22 — нарочно: «Day должен ощущаться чуть воздушнее и легче» (21.11). Sport 24 — из-за крупных картинок упражнений (17.11).</p>
+ </section>
+
+ <!-- ───────────── 5. Элементы ───────────── -->
+ <section class="ds-sec" id="parts">
+  <h2>Элементы</h2>
+  <p class="ds-note">Готовые детали интерфейса (✱ компоненты). Нажимай — они работают.</p>
+
+  <h3>Кнопки</h3>
+  <div class="happy-settings ds-plain">
+   <div class="happy-actions"><button type="button" class="happy-button primary">Сохранить</button></div>
+   <div class="happy-actions"><button type="button" class="happy-button primary">Готово</button><button type="button" class="happy-button">Отмена</button></div>
+  </div>
+  <p class="ds-spec">Основная — пилюля 48, текст 16 · 600, в одну строку. Одна в ряду — во всю ширину, две — поровну.</p>
+  <p class="ds-src">из кода: shared/happy-ui.css · shared/happy-design.css</p>
+
+  <h3>Переключатель из вариантов</h3>
+  <div class="ds-hs"><div class="hs-segment ds-seg" role="group" aria-label="Период">
+   <button type="button" aria-pressed="true">Сегодня</button><button type="button" aria-pressed="false">Неделя</button><button type="button" aria-pressed="false">Месяц</button>
+  </div></div>
+  <p class="ds-spec">Контур 44, отступ 3 внутри, выбранная пилюля 36. Выбранное — 600, остальное — 400. Образец — «Сегодня | Неделя | Месяц» в Day (22.11).</p>
+  <p class="ds-src">из кода: shared/happy-design.css · цвета: shared/happy-screens.css</p>
+
+  <h3>Чипы и фильтры</h3>
+  <div class="ds-chips" role="group" aria-label="Фильтр">
+   <button type="button" class="happy-button ds-chip" aria-pressed="true">Все</button><button type="button" class="happy-button ds-chip" aria-pressed="false">Завтрак</button><button type="button" class="happy-button ds-chip" aria-pressed="false">Обед</button><button type="button" class="happy-button ds-chip" aria-pressed="false">Ужин</button>
+  </div>
+  <p class="ds-spec">Пилюля 44, текст 14.</p>
+
+  <h3>Поле ввода</h3>
+  <div class="happy-settings ds-plain">
+   <input class="happy-input" placeholder="Имя" aria-label="Имя">
+   <div class="happy-password"><input class="happy-input" type="password" value="happyday" aria-label="Пароль"><button type="button" class="happy-password-toggle" aria-label="Показать пароль"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+  </div>
+  <p class="ds-spec">Скругление 12, текст 16 (иначе iPhone приближает экран при вводе).</p>
+  <p class="ds-src">из кода: shared/happy-ui.css</p>
+
+  <h3>Выключатель</h3>
+  <div class="ds-hs ds-switches">
+   <div class="hs-switch-row"><span>Связь с Meal</span><button type="button" class="hs-switch" role="switch" aria-checked="true" aria-label="Связь с Meal"><b></b></button></div>
+   <div class="hs-switch-row"><span>Связь с Sport</span><button type="button" class="hs-switch" role="switch" aria-checked="false" aria-label="Связь с Sport"><b></b></button></div>
+  </div>
+  <p class="ds-spec">42 × 25. Включённый — цвет приложения или темы.</p>
+  <p class="ds-src">из кода: shared/happy-screens.css · shared/happy-design.css</p>
+
+  <h3>Карточка</h3>
+  <div class="happy-card ds-cardx">
+   <p class="ds-cardt">Утро</p>
+   <p class="ds-cardm">Стеклянная карточка (✱ glassmorphism): полупрозрачный белый, тонкая светлая рамка, размытие фона 12.</p>
+  </div>
+  <p class="ds-src">из кода: shared/happy-ui.css</p>
+
+  <h3>Лист снизу</h3>
+  <div class="ds-sheetwrap">
+   <div class="ds-hs"><div class="hs-sheet ds-sheet">
+    <div class="hs-handle-zone"><span class="hs-handle"></span></div>
+    <div class="hs-sheet-head"><p class="hs-sheet-title">Свой период</p><p class="hs-sheet-desc">Выбери начало и конец.</p></div>
+    <div class="hs-sheet-body"><div class="happy-settings ds-plain"><div class="happy-actions"><button type="button" class="happy-button primary">Показать</button></div></div></div>
+   </div></div>
+  </div>
+  <p class="ds-spec">Верхние углы 22, ручка 42 × 5, фон — фон приложения или темы, за листом — размытие. Образец — «Свой период» из Sport (21.11).</p>
+  <p class="ds-src">из кода: shared/happy-screens.css</p>
+
+  <h3>Короткое сообщение</h3>
+  <div class="ds-toastrow">
+   <div class="toast tAct ds-toast">Запись удалена <button type="button">Вернуть</button></div>
+   <div class="toast ds-toast">Длинное сообщение переносится на вторую строку по центру, а не обрезается</div>
+  </div>
+  <p class="ds-spec">Тёмная синяя пилюля во всех приложениях, текст 14. «Вернуть» — зелёным, без подчёркивания (20.11).</p>
+  <p class="ds-src">из кода: shared/happy-design.css</p>
+
+  <h3>Кнопка микрофона</h3>
+  <div class="ds-fabrow"><button type="button" class="fab ds-fab" aria-label="Микрофон"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg></button></div>
+  <p class="ds-spec">Вид B — «шар» из одного цвета: край — цвет, середина +25% белого, блик +50%, мягкая тень. Тема меняет только цвет. Значок — линия Day, 26.</p>
+  <p class="ds-src">из кода: day-61/index.html (.fab) · тема: shared/happy-appearance.js</p>
+
+  <h3>Кольцо энергии</h3>
+  <div class="ds-ring"><div class="ds-ringbox" id="ring"></div><div class="ds-ringtxt"><b id="ringName">Исходные цвета</b><span>Одна линия на холсте (✱ canvas), концы круглые. У части тем свой набор цветов из Студии градиентов.</span></div></div>
+  <p class="ds-why">Общий виджет-эталон собран в Студии градиентов («Общий»), но в приложения ещё не перенесён — ждёт твоего выбора.</p>
+  <p class="ds-src">из кода: shared/happy-energy-ring.js</p>
+ </section>
+
+ <!-- ───────────── 6. Движение ───────────── -->
+ <section class="ds-sec" id="motion">
+  <h2>Движение</h2>
+  <p class="ds-tagline"><span class="ds-tag warn">правила ещё нет — предложение</span></p>
+  <p class="ds-note">Анимации (✱ motion). Сейчас в коде около 15 разных длительностей — от 0,14 до 0,38 секунды. Предлагаю три скорости и одну кривую:</p>
+  <div class="ds-motion">
+   <button type="button" class="ds-mbtn" data-d="160"><i></i><b>Быстро · 0,16 с</b><span>выключатель, нажатие</span></button>
+   <button type="button" class="ds-mbtn" data-d="240"><i></i><b>Обычно · 0,24 с</b><span>затемнение, смена вкладки</span></button>
+   <button type="button" class="ds-mbtn" data-d="340"><i></i><b>Плавно · 0,34 с</b><span>лист снизу, экран</span></button>
+  </div>
+  <p class="ds-spec">Нажми — шарик пробежит. Кривая (✱ easing) — самая частая в коде: cubic-bezier(.22,.75,.25,1). Фон Day «дышит» 26 секунд — это отдельный, живой приём.</p>
+ </section>
+
+ <!-- ───────────── 7. Отступы ───────────── -->
+ <section class="ds-sec" id="space">
+  <h2>Отступы</h2>
+  <p class="ds-tagline"><span class="ds-tag warn">правила ещё нет — предложение</span></p>
+  <p class="ds-note">Расстояния (✱ spacing scale). Сейчас в коде встречается около 20 разных значений. Самые частые — 12, 8, 16, 4, 20. Предлагаю шаг 4:</p>
+  <div class="ds-space" id="space-list"></div>
+  <p class="ds-spec">Поля экрана — 20 (как в настройках). Между карточками — 12. Внутри карточки — 16.</p>
+ </section>
+
+ 
+
+ <!-- ───────────── 9. Расхождения ───────────── -->
+ <section class="ds-sec" id="gaps">
+  <h2>Где код расходится с правилами</h2>
+  <p class="ds-note">Решаешь ты. Часть отличий может быть нарочной.</p>
+  <ol class="ds-gaps">
+   <li><b>Day · «Разделы главного экрана»</b> — подсказка под шкалой размером 13. По правилу 12 или 14.</li>
+   <li><b>Day · профиль · «Скачать данные»</b> — текст 15. По правилу 14 или 16.</li>
+   <li><b>Meal · счётчики еды</b> — размеры 24, 18, 13 и жирность 500. Таких в правилах нет.</li>
+   <li><b>Заголовок листа снизу</b> («Свой период») — жирность 600, а заголовки по правилу 700.</li>
+   <li><b>Скругления мелких деталей</b> — очень разные: в Sport около 30 значений, в Day и Meal около 20. Для плиток правило есть (12–14), для остального нет.</li>
+   <li><b>Цвета числом</b> — в коде приложений ещё много цветов вписаны числом, а не по имени.</li>
+   
+  </ol>
+  <p class="ds-why">Нарочные отличия, которые не трогаем: карточки Day 22 и Sport 24; бледные заголовки групп в Настройках.</p>
+ </section>
+
+ <footer class="ds-foot">Черновик 0.1 · собрано 24.11.2026 по коду Day 61.9 · Meal 34.9 · Sport 45.6 · ничего не выпущено на сайт</footer>
+</main>
+
+<script src="../../shared/happy-gradients.js"></script>
+<script src="../../day-61/shared/happy-reference-themes.js"></script>
+<script src="../../shared/happy-appearance.js"></script>
+<script src="../../shared/happy-energy-ring.js"></script>
+<script src="./ds.js"></script>
+</body>
+</html>
