@@ -11436,7 +11436,7 @@ function html(name){
    '<div class="hs-actions">'+btn('register','Создать аккаунт','hs-primary',true)+googleButton()+btn('cancel','Отмена','hs-cancel')+'</div></form>';
  case 'login':return title('Войти')+(form.note?'<p class="hs-note">'+esc(form.note)+'</p>':'')+
    '<form novalidate autocomplete="on"><div class="hs-auth-fields">'+emailInput()+S().passwordField({label:'Пароль',name:'password'})+'</div>'+errorBox()+(cfg.features.recovery?quiet('to-forgot','Не помню пароль','hs-forgot'):'')+
-   '<div class="hs-actions">'+btn('login','Войти','hs-primary',true)+googleButton()+btn('cancel','Отмена','hs-cancel')+'</div>'+quiet('to-register','Создать аккаунт','hs-center hs-form-signup')+'</form>';
+   '<div class="hs-actions">'+btn('login','Войти','hs-primary',true)+googleButton()+btn('cancel','Отмена','hs-cancel')+'</div>'+'</form>';
  case 'access':return accessHtml();
  case 'googleRecovery':return recoveryHtml();
  case 'syncError':return title('Не удалось открыть записи')+errorBox()+'<div class="hs-actions">'+btn('retry-open','Повторить','hs-primary')+btn('signout','Выйти','hs-cancel')+'</div>';
