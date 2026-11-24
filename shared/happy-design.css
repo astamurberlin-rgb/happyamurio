@@ -8,7 +8,7 @@
 /* ── Кнопки: пилюля 48, текст 14 / 600, одна строка. Исключение — кнопки входа (экран входа и лист «Войди в аккаунт»): 16 ── */
 .hs-btn,.hm-button,.hm-output .hm-button,.happy-actions>.happy-button{box-sizing:border-box;min-height:48px!important;height:48px;border-radius:999px!important;padding:0 20px!important;
   font-size:14px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap}
-.hs-welcome .hs-btn,.hs-gate-actions .hs-btn{font-size:16px!important}
+.hs-welcome .hs-btn,.hs-auth .hs-btn,.hs-gate-actions .hs-btn{font-size:16px!important}
 /* нажатие — лёгкое сжатие у всех кнопок */
 .hs-btn:active,.hm-button:active,.happy-button:active,.btn:active{transform:scale(.985)}
 
