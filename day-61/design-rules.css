@@ -64,4 +64,4 @@
 .btn[hidden],.jPrt[hidden],.jMb[hidden],.care-submit[hidden]{display:none!important}
 /* Профиль · «Скачать данные» (Астамур 21.11.2026): под «Отмена», по центру, подчёркнутая строка. */
 .hs-export{display:flex;justify-content:center;margin-top:6px}
-.hs-export .hs-export-link{min-height:44px;padding:0 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:15px;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.hs-export .hs-export-link{min-height:44px;padding:0 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}

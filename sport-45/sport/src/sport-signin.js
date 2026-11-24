@@ -2,8 +2,9 @@
    Правки с другой вкладки или устройства, пришедшие при открытом окне, показываются после его закрытия. */
 {const diaryBeforeSignIn=renderDiary;renderDiary=function(){
  const html=diaryBeforeSignIn();if(SportData.signedIn())return html;
- const card=`<section class="card sport-signin"><h3>Войди, чтобы записывать</h3><p class="sub">Записи Sport хранятся в аккаунте Happy — одном для Day, Meal и Sport. После входа запись работает и без сети.</p><button class="button primary" type="button" data-sport-signin>Войти</button></section>`;
- const at=html.indexOf('</header>');return at<0?card+html:html.slice(0,at+9)+card+html.slice(at+9);
+ /* лаборатория 24.11: вместо карточки сверху — полоска над микрофоном, как в Day; цвет — Sport или темы */
+ const bar=`<div class="sport-signin"><span>Войди, чтобы записывать</span><button type="button" data-sport-signin>Войти</button></div>`;
+ return html+bar;
 }}
 document.addEventListener('click',e=>{if(e.target.closest?.('[data-sport-signin]'))HappyWelcome.open('login')});
 {const closeBeforeAdopt=closeSheet;closeSheet=function(...args){const r=closeBeforeAdopt(...args);SportData.afterSheet();return r}}

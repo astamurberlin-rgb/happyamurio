@@ -100,7 +100,7 @@ button.dp-head{width:100%;padding:0;border:0;background:none;color:inherit;font:
   font:inherit;font-size:14px;font-weight:600;line-height:1;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .2s,color .2s}
 .scSeg>button.on{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8)}
 .scSeg3{grid-template-columns:1fr 1fr 1.4fr}   /* «от середины» длиннее */
-.scKindTxt{margin:8px 2px 0;font-size:13px;line-height:1.35;color:var(--happy-muted,rgba(255,255,255,.78))}
+.scKindTxt{margin:8px 2px 0;font-size:14px;line-height:1.35;color:var(--happy-muted,rgba(255,255,255,.78))}
 .scKindTxt .nw{font-style:normal;white-space:nowrap}
 
 /* ── главная: счётчики ── */

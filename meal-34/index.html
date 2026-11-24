@@ -82,6 +82,7 @@
   --hs-sheet-bg:linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%);
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
+  --happy-accent-ink:#5a50d1;   /* текст в белых кнопках Sport — фиолетовый Sport по имени, не синий числом (решение Астамура 24.11) */
 }
 /* ── конец блока из Color Studio ── */
 
@@ -1605,7 +1606,10 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <link rel="stylesheet" href="release-notes.css?v=34.10">
 <style id="meal-settings-structure">/* Update 26: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
 .happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}.happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}.happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600}.happy-journal-content[hidden],.meal-measurements[hidden]{display:none!important}.meal-measurements{padding-bottom:24px}
-.meal-signin{margin:0 0 14px}.meal-signin[hidden]{display:none}.meal-signin h2{margin:0 0 6px;font-size:16px}.meal-signin .note{margin:0 0 12px}</style>
+/* Meal 34.11 (лаборатория 24.11): без входа — полоска «Войди, чтобы записывать» над микрофоном, как в Day; цвет — микрофона Meal или темы */
+.meal-signin{display:none;position:fixed;z-index:9;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));max-width:440px;margin:0 auto;height:48px;padding:0 6px 0 20px;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--fab);border:0;box-shadow:0 2px 3px rgba(40,4,30,.10),0 14px 30px rgba(40,4,30,.16);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
+[data-screen="day"].on~.meal-signin:not([hidden]){display:flex}
+.meal-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab);font:inherit;font-size:14px;font-weight:600;cursor:pointer}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
 /* значок кнопки Meal в ленте «Главная кнопка» («Настроить тему») — контурный микрофон, как на самой кнопке */
 .appearance-swatch svg.icMic{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
@@ -1743,7 +1747,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       </div>
     </div>
 
-    <section class="card meal-signin" id="mealSignIn" hidden><h2>Войди, чтобы записывать</h2><p class="note">Записи Meal хранятся в аккаунте Happy — одном для Day, Meal и Sport. После входа запись работает и без сети.</p><button class="happy-button primary" type="button" id="mealSignInGo">Войти</button></section>
     <!-- кольцо энергии (общий виджет Meal и Sport): слева кольцо, справа четыре строки; нажатие — съедено → баланс → потрачено -->
     <div class="card erCard" id="mlKb"></div>
     <p class="mlFast" id="mlFast" role="status" hidden></p>
@@ -2092,6 +2095,7 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
+  <div class="meal-signin" id="mealSignIn" hidden><span>Войди, чтобы записывать</span><button type="button" id="mealSignInGo">Войти</button></div>
 
 </div>
 
