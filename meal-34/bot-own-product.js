@@ -39,6 +39,7 @@ window.MealOwnProduct=(function(){
   function request(text){
     var d=data(); if(!d) return null;
     var t=nz(text).trim(), nouns=word(d.start_nouns), dish=word(d.dish_nouns);
+    if(d.not_start&&d.not_start.length&&new RegExp('^(?:а\\s+|ну\\s+)?('+d.not_start.map(rx).join('|')+')(?=$|[^а-яa-z0-9])').test(t)) return null;   // «удали мой продукт сырники» — убрать, а не завести (24.11.2026)
     if(has(t,d.how_to_ru)&&(nouns.test(t)||(dish.lastIndex=0,dish.test(t)))) return {how:true};
     nouns.lastIndex=0; dish.lastIndex=0;
     var m=nouns.exec(t), isDish=false;

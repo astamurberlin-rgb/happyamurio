@@ -1132,6 +1132,7 @@ var MealBot=(function(){
   function undo(S,c){
     if(!c||c.undone) return false;
     if(writeGuard()) return false;
+    if(c.revert){ c.revert(); c.undone=true; save(); try{ if(typeof renderAll==='function') renderAll() }catch(e){} return true }   // перенос на другой день
     c.add.forEach(function(a){ var e=day(a.date); e.items=e.items.filter(function(x){ return x.id!==a.item.id }) });
     (c.del||[]).forEach(function(a){ day(a.date).items.push(a.item) });
     c.undone=true; save();
@@ -1553,6 +1554,8 @@ var MealBot=(function(){
       if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>'+skip;
       missLog('нет в базе',heard,l.raw);
       var options=similarFoods(l.spoken||l.name,l.formContext);
+      var kindQ=SP&&SP.similarKind?SP.similarKind(String(l.name||'')):null;   // напиток того же вида: похожие из поиска — только того же вида, остальное из словаря (missing_similar, 24.11.2026)
+      if(kindQ) options=options.filter(function(f){ return kindQ.kind.test(norm(f.n)) }).concat(kindQ.options.map(function(sx){ var r=parseText(sx).lines[0], id=r&&(r.fid||r.alts[0]); return id&&FOODS[id]?{id:id,n:FOODS[id].n}:null })).filter(function(f,i,a){ return f&&a.findIndex(function(x){ return x.id===f.id })===i }).slice(0,3);
       var message=options.length?'К сожалению, в базе отсутствует «'+esc(heard)+'». Предлагаю на замену:':
         'Не нашёл «'+esc(heard)+'» в подключённых базах.';
       return p(message)+'<div data-replacement-slot="'+id+'">'+(options.length?
@@ -2273,6 +2276,8 @@ var MealBot=(function(){
       var x=items[i], f=FOODS[x.fid], nw=f?norm(f.n).split(/[^a-zа-я0-9]+/).filter(Boolean):[];
       if(fids.indexOf(x.fid)>=0||(ws.length&&ws.every(function(w){ return nw.some(function(n){ return sim(w,n)>=1.8 }) }))) return x;
     }
+    /* Meal 34.12: и по тому, как человек сказал сам: «каша» найдёт запись «Гречка варёная», сказанную как «каша гречневая» */
+    for(var j=items.length-1;j>=0&&ws.length;j--){ var sw=tokensOf(items[j].said||''); if(sw.length&&ws.every(function(w){ return sw.some(function(n){ return sim(w,n)>=1.8 }) })) return items[j] }
     return null;
   }
   /* «замени американо на флэт уайт», «вместо капучино флэт уайт», «не капучино, а латте» */
@@ -2366,7 +2371,9 @@ var MealBot=(function(){
     var S=state(chat), h, st;
     if(SP) SP.on(true);
     try{
-      st=steps(chat,S,m);
+      /* замер тела — раньше шагов: «мой вес 80, талия 82» не уходит в мастер целей; посреди вопросов мастера замер записывается, и вопрос повторяется (один вес — ответ мастеру) */
+      if(!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof m.text==='string'){ st=bodyAct(S,m.text); if(st!=null&&typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)) st+=MealBotSteps.again(S) }
+      if(st==null) st=steps(chat,S,m);
       if(st!=null) h=st;
       else { h=withSwap(chat,S,m); if(typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)&&!m.inbox) h+=MealBotSteps.again(S) }
     } finally { if(SP) SP.on(false) }
@@ -2384,6 +2391,7 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof MealBotMine!=='undefined'){ var mn=MealBotMine.say(chat,S,raw); if(mn) return mn+(S.pend.length?askHTML(S):'') }   // Meal 34 · счётчик голосом, «мои счётчики», правка и удаление своего продукта (bot-mine.js, 24.11.2026)
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var sw=swapAsk(raw); if(sw) return sw }   // «чем заменить муку в сырниках» — замена из справочника
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var tq=tipAsk(raw); if(tq) return tq }   // «когда солить рис» — кулинарный приём
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var rq=rcpAsk(S,raw); if(rq) return rq }   // «рецепт плова» — рецепт из готового, а не «готовка на несколько человек»
@@ -2421,6 +2429,7 @@ var MealBot=(function(){
     var t=nrm(raw), now=m.at?new Date(m.at):new Date(), bare=t.trim().replace(/[?!.,…\s]+$/,'');
     if(!NEST) S.clock=m.at?+now:null;
     /* Meal 33.15 · диктовка шортката «Еда» (m.inbox) — данные о еде, а не команды: поправки и удаления из неё не выполняются */
+    if(m.inbox&&hisSaid(bare)) return m.dry?{dry:1,clean:true,n:0}:p(esc(hisData().answer_inbox));   // Meal 34.12: «повтори вчерашний ужин» из шортката не выполняется
     if(m.inbox&&/^(отмени|отменить|убери|удали|сотри|замени|поменяй|перепиши|вместо|перенеси|перемести|верни|не записывай|не надо|стоп)(\s|$)/.test(bare))
       return m.dry?{dry:1,clean:true,n:0}:p('Это похоже на поправку, а не на еду. Из диктовок шортката поправки не выполняю — скажи это здесь, в диалоге.');
     /* служебные фразы */
@@ -2458,7 +2467,10 @@ var MealBot=(function(){
       if(S.pend.length){ S.pend=[]; S.ask=null; S.rewrite=null; return p('Хорошо, не записываю.') }
       var lastC=S.commits.filter(function(c){ return !c.undone }).pop();
       if(!lastC) return p('Отменять нечего: в этом диалоге я ещё ничего не записал.');
-      return undo(S,lastC)?p('Отменил последнюю запись: '+esc(lastC.add.filter(function(a){ return !a.hide }).map(function(a){ return foodName(a.line) }).join(', ')||'удаление')+'.'):p('Не получилось отменить.');
+      if(!undo(S,lastC)) return p('Не получилось отменить.');
+      if(lastC.msg) return p(esc(lastC.msg));
+      if(lastC.del&&lastC.del.length&&!lastC.add.length) return p('Вернул: '+esc(lastC.del.map(function(a){ var f=FOODS[a.item.fid]; return f?f.n:'запись' }).join(', '))+'.');
+      return p('Отменил последнюю запись: '+esc(lastC.add.filter(function(a){ return !a.hide }).map(function(a){ return foodName(a.line) }).join(', '))+'.');
     }
     if(!/\d/.test(bare)&&/(подожди|погоди|секунд|минутк|сейчас взвешу|взвешиваю|взвешу)/.test(bare)&&tokensOf(bare.replace(/подожди|погоди|секунд\S*|минутк\S*|взвеш\S*/g,' ').replace(FILL,' ')).length===0)
       return p('Жду. Ничего не записываю, пока не скажешь.');
@@ -2597,7 +2609,8 @@ var MealBot=(function(){
         else if(!l.ask&&needMeal){ l.ask='meal'; asks.push(en) }
         else if(!l.ask) ready.push(en);
         else if(l.ask==='name'&&!/[а-яё]/i.test(String(l.name||''))){}   // Meal 33.12: латиница без единого русского слова — не еда, в список недостающего не идёт
-        else if(l.ask==='name'&&(!l.explicit||l.km)&&!selected) miss.push(l);   // «пельмени 200 г» — с весом тоже «в базе нет», а не «что это?» (хвосты разборов, 22.11.2026)
+        else if(l.ask==='name'&&(!l.explicit||l.km)&&!selected&&!(SP&&SP.similarKind&&SP.similarKind(String(l.name||'')))) miss.push(l);
+        /* Meal 34.12: напитка нет в базе («компот из фейхоа») — не просто «в базе нет», а вопрос с похожими того же вида (решение Астамура 24.11.2026) */   // «пельмени 200 г» — с весом тоже «в базе нет», а не «что это?» (хвосты разборов, 22.11.2026)
         else asks.push(en);
       });
     });
@@ -2879,6 +2892,313 @@ var MealBot=(function(){
     var d=new Date(curDate+'T12:00:00'); d.setDate(d.getDate()+dw.shift);
     return actDay(isoOf(d),kc&&!ate);
   }
+  /* ── Meal 34 · замеры тела со слов (Астамур 24.11.2026, «Да» на план): «талия 82, грудь 100» → общие «Замеры тела»
+     (документ sport/body, тот же, что экран журнала, Day и Sport). Формат читает и пишет только shared/happy-measurements.js:
+     здесь — разбор слов (словарь body_measurements) и вызов его read/compose/saveChanges/removeChanges. ── */
+  function bodyData(){ var D0=typeof window!=='undefined'&&window.HappyMealSpeechData; return D0&&D0.body_measurements||null }
+  function bodyDoc(){ try{ return typeof MealData!=='undefined'&&MealData.signedIn()&&typeof HappyMeasurements!=='undefined'?MealData.store.shared(HappyMeasurements.DOC.app,HappyMeasurements.DOC.name):null }catch(e){ return null } }
+  function bodyWords(list){ return (list||[]).map(function(w){ return nrm(w).trim().split(' ') }).sort(function(a,b){ return b.length-a.length }) }
+  function bodyAt(tk,i,ws){ for(var k=0;k<ws.length;k++){ var w=ws[k], ok=w.length&&i+w.length<=tk.length; for(var j=0;ok&&j<w.length;j++) if(tk[i+j]!==w[j]) ok=false; if(ok) return w.length } return 0 }
+  function bodyNum(v){ return String(Math.round(v*10)/10).replace('.',',') }
+  function bodyDate(iso){ return iso.slice(8,10)+'.'+iso.slice(5,7) }
+  function bodyVal(key,v){ return bodyNum(v)+(key==='weight'?' кг':' см') }
+  /* фраза → {segs:[{pl,side,v}], shift, strong} или null, если в ней есть что-то кроме замеров */
+  function bodyParse(text){
+    var B=bodyData(); if(!B) return null;
+    var t=nrm(String(text).replace(/(\d)[,.](\d)/g,'$1·$2')).replace(/[,;:!?.…—–-]+/g,' ').replace(/·/g,'.').replace(/(\d)(см|кг)(?=\s|$)/g,'$1 $2').replace(/\s+/g,' ').trim();
+    if(!t) return null;
+    var tk=t.split(' '), PL=B.places.map(function(x){ return {pl:x,ws:bodyWords(x.words)} }), SD={}, sideKeys=Object.keys(B.sides);
+    sideKeys.forEach(function(k){ SD[k]=bodyWords(B.sides[k]) });
+    var FL=bodyWords(B.fillers), ST=bodyWords(B.strong), DW={}; Object.keys(B.day_words||{}).forEach(function(k){ DW[k]=bodyWords(B.day_words[k]) });
+    var segs=[], cur=null, side=null, last=null, shift=0, strong=false, i=0;
+    while(i<tk.length){
+      var w=tk[i], n, hit=0;
+      for(var a=0;a<PL.length&&!hit;a++){ n=bodyAt(tk,i,PL[a].ws); if(n){ if(cur&&cur.v==null) return null; cur={pl:PL[a].pl,side:side,v:null}; side=null; hit=n;
+        for(var z=i;z<i+n;z++) if(bodyAt(tk,z,ST)) strong=true } }   // «обхват шеи 38» — точно замер
+      if(hit){ i+=hit; continue }
+      for(var b=0;b<sideKeys.length&&!hit;b++){ n=bodyAt(tk,i,SD[sideKeys[b]]); if(n){ hit=n; if(cur&&cur.v==null&&cur.pl.pair) cur.side=sideKeys[b]; else if(!cur&&last&&last.pl.pair&&!last.side) last.side=sideKeys[b]; else side=sideKeys[b] } }   // «бицепс 35 правый», «предплечье 28 оба»
+      if(hit){ i+=hit; continue }
+      if(/^\d+(\.\d+)?$/.test(w)){
+        var v=parseFloat(w);
+        if(!cur&&side&&last&&last.pl.pair){ cur={pl:last.pl,side:side,v:null}; side=null }   // «правый бицепс 35, левый 34»
+        if(!cur||cur.v!=null) return null;
+        cur.v=v; segs.push(cur); last=cur; cur=null; i++; continue }
+      for(var d in DW){ n=bodyAt(tk,i,DW[d]); if(n){ hit=n; if(+d) shift=+d; break } }
+      if(hit){ i+=hit; continue }
+      n=bodyAt(tk,i,ST); if(n) strong=true;
+      n=n||bodyAt(tk,i,FL); if(n){ i+=n; continue }
+      return null;
+    }
+    if(cur||!segs.length) return null;
+    for(var s=0;s<segs.length;s++){ var R=segs[s].pl.unit==='кг'?B.kg_range:B.cm_range; if(segs[s].v<R[0]||segs[s].v>R[1]) return {bad:segs[s]} }
+    return {segs:segs,shift:shift,strong:strong};
+  }
+  /* что ещё спросить: сторона у парного места, верх или низ у живота */
+  function bodyNeed(seg){ return seg.pl.pair&&!seg.side||seg.pl.choose&&!seg.key }
+  function bodyAsk(S){
+    var B=bodyData(), q=S.bodyAsk, seg=q.segs.filter(bodyNeed)[0];
+    if(!seg) return null;
+    var v={name:seg.pl.name.charAt(0).toUpperCase()+seg.pl.name.slice(1),v:bodyNum(seg.v)};
+    if(seg.pl.pair) return p(esc(actT(B.ask_side,v)))+chips(B.side_chips.map(function(c){ return ['act:body:side:'+c[0],c[1]] }));
+    return p(esc(actT(B.ask_choose,v)))+chips(seg.pl.choose.map(function(k){ return ['act:body:pick:'+k,B.choose_chips[k]] }));
+  }
+  function bodyFields(segs){ var f={};
+    segs.forEach(function(s){ var ks=s.pl.pair?(s.side==='L'?[s.pl.pair[0]]:s.side==='R'?[s.pl.pair[1]]:s.pl.pair):[s.key||s.pl.key]; ks.forEach(function(k){ f[k]=s.v }) });
+    return f }
+  function bodySave(S,q){
+    var B=bodyData(), g=actSignIn(); if(g) return g;
+    var d=bodyDoc(); if(!d) return p(esc(actData().answer_sign_in));
+    if(d.newer) return p(esc(B.answer_newer));
+    var H=HappyMeasurements, st=H.read(d.all()), date=q.date, old=st.list.filter(function(x){ return x.date===date })[0]||null, f=bodyFields(q.segs), keys=Object.keys(f), m;
+    var fresh=keys.filter(function(k){ return !old||old.values[k]!==f[k] });
+    if(old&&!fresh.length) return p(esc(actT(B.same,{date:bodyDate(date)})))+'<p class="mbSum">'+keys.map(function(k){ return esc(B.labels[k]+' '+bodyVal(k,f[k])) }).join('<br>')+'</p>';
+    var txt={}; keys.forEach(function(k){ txt[k]=String(f[k]) });
+    try{ m=H.compose(st,date,txt,old); d.putMany(H.saveChanges(st,m,old?old.date:undefined)).catch(function(e){ try{ toast(e.message) }catch(_){} }) }catch(e){ return p(esc(e.message)) }
+    var lines=keys.map(function(k){ var was=old&&old.values[k]!=null&&old.values[k]!==f[k]?' <small style="font-weight:400;opacity:.8">('+esc(actT(B.was,{v:bodyNum(old.values[k])}))+')</small>':''; return esc(B.labels[k]+' '+bodyVal(k,f[k]))+was });
+    var help=typeof helpEntry==='function'&&helpEntry('measurements');
+    return p(esc(actT(B.saved,{date:bodyDate(date)})))+'<p class="mbSum">'+lines.join('<br>')+'</p><p class="mlHint">'+esc(B.saved_hint)+'</p>'+
+      actUndoChip(S,function(){
+        var d2=bodyDoc(); if(!d2||d2.newer) return false;
+        var s2=H.read(d2.all()), now=s2.list.filter(function(x){ return x.date===date })[0];
+        if(!now||JSON.stringify(now)!==JSON.stringify(m)) return false;
+        var ch=old?H.saveChanges(s2,old,old.date):H.removeChanges(s2,date,'measure-deleted-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)).changes;
+        d2.putMany(ch).catch(function(e){ try{ toast(e.message) }catch(_){} }); return true },help?[['go:measurements',B.button_open]]:[]);
+  }
+  function bodyGo(S){ var a=bodyAsk(S); if(a) return a; var q=S.bodyAsk; S.bodyAsk=null; return bodySave(S,q) }
+  /* «какая у меня талия», «мои замеры» — ответ из замеров */
+  function bodyQuery(text){
+    var B=bodyData(), t=nrm(text).trim().replace(/[?!.,…\s]+$/,'').replace(/\s+/g,' '), d=bodyDoc(), m0;
+    var isList=actRx(B.list).test(t), q=!isList&&t.match(actRx(B.query)), pl=null;
+    if(q){ var tk=q[1].trim().split(' '); B.places.forEach(function(x){ if(!pl&&bodyAt(tk,0,bodyWords(x.words))===tk.length) pl=x }); if(!pl) return null }
+    if(!isList&&!pl) return null;
+    if(!d) return actSignIn()||p(esc(actData().answer_sign_in));
+    if(d.newer) return p(esc(B.answer_newer));
+    var L=HappyMeasurements.read(d.all()).list, open=typeof helpEntry==='function'&&helpEntry('measurements')?chips([['go:measurements',B.button_open]]):'';
+    if(isList){ var lst=L[L.length-1]; if(!lst) return p(esc(B.answer_empty));
+      var ks=Object.keys(B.labels).filter(function(k){ return lst.values[k]!=null });
+      return p(esc(actT(B.answer_list,{date:bodyDate(lst.date)})))+'<p class="mbSum">'+ks.map(function(k){ return esc(B.labels[k]+' '+bodyVal(k,lst.values[k])) }).join('<br>')+'</p>'+open }
+    var keys=pl.pair||pl.choose||[pl.key], got=L.filter(function(x){ return keys.some(function(k){ return x.values[k]!=null }) });
+    if(!got.length) return p(esc(actT(B.answer_none,{name:pl.name})))+open;
+    var say=function(x){ return keys.filter(function(k){ return x.values[k]!=null }).map(function(k){ return (keys.length>1?B.labels[k]+' ':'')+bodyVal(k,x.values[k]) }).join(', ') };
+    var a=got[got.length-1], b=got[got.length-2], nm=pl.name.charAt(0).toUpperCase()+pl.name.slice(1);
+    return p(esc(actT(B.answer_last,{name:nm,v:say(a),date:bodyDate(a.date)}))+(b?' '+esc(actT(B.answer_prev,{v:say(b),date:bodyDate(b.date)})):''))+open;
+  }
+  /* фраза человека: замер, ответ на вопрос замера, вопрос о замерах — или null (дальше как обычно) */
+  function bodyAct(S,text){
+    var B=bodyData(); if(!B||typeof HappyMeasurements==='undefined') return null;
+    if(S.bodyAsk){ var t0=nrm(text).trim().replace(/[?!.,…\s]+$/,''), tk0=t0.split(' '), q=S.bodyAsk, seg=q.segs.filter(bodyNeed)[0], got=null;
+      if(seg&&seg.pl.pair) Object.keys(B.sides).forEach(function(k){ if(!got&&bodyAt(tk0,0,bodyWords(B.sides[k]))===tk0.length) got=k });
+      if(seg&&seg.pl.choose) seg.pl.choose.forEach(function(k){ if(!got&&bodyAt(tk0,0,bodyWords([B.choose_chips[k],B.labels[k],k==='upperAbs'?'верх':'низ']))===tk0.length) got=k });
+      if(got){ if(seg.pl.pair) seg.side=got; else seg.key=got; return bodyGo(S) }
+      if(q.food&&/^(замер|да|это замер)$/.test(t0)){ q.food=false; return bodyGo(S) }
+      if(q.food&&/^(еда|это еда|нет)$/.test(t0)){ S.bodyAsk=null; return p(esc(B.answer_food)) }
+      S.bodyAsk=null }
+    var r=bodyParse(text);
+    if(!r) return bodyQuery(text);
+    if(r.bad){ if(r.bad.pl.unit==='кг') return null; return p(esc(actT(B.answer_range,{name:r.bad.pl.name.charAt(0).toUpperCase()+r.bad.pl.name.slice(1),v:bodyVal('',r.bad.v)}))) }   // вес вне границ — как раньше
+    var only=r.segs.every(function(s){ return s.pl.unit==='кг' });
+    if(only&&!r.strong) return null;   // «мой вес 80» — мастер целей, как раньше
+    var d=new Date(curDate+'T12:00:00'); if(r.shift) d.setDate(d.getDate()+r.shift);
+    var iso=isoOf(d); if(iso>todayISO()) iso=todayISO();
+    S.bodyAsk={date:iso,segs:r.segs};
+    if(r.segs.length===1&&r.segs[0].pl.food_like&&!r.strong){ S.bodyAsk.food=true; var s0=r.segs[0];
+      return p(esc(actT(B.ask_food,{name:s0.pl.name,v:bodyNum(s0.v)})))+chips(B.food_chips.map(function(c){ return ['act:body:'+c[0],c[1]] })) }
+    return bodyGo(S);
+  }
+  function bodyTap(S,a){
+    var B=bodyData(), q=S.bodyAsk; if(!B||!q) return null;
+    if(a[2]==='food'){ S.bodyAsk=null; return p(esc(B.answer_food)) }
+    if(a[2]==='body'){ q.food=false; return bodyGo(S) }
+    var seg=q.segs.filter(bodyNeed)[0]; if(!seg) return null;
+    if(a[2]==='side'&&seg.pl.pair) seg.side=a[3]; else if(a[2]==='pick'&&seg.pl.choose) seg.key=a[3]; else return null;
+    return bodyGo(S);
+  }
+  /* Meal 34.12 · повтор, перенос на другой день, «верни овсянку» (Астамур 24.11.2026, «Да» на план). Слова и ответы — словарь
+     app_actions.history. Еда во фразе — не повтор и не перенос: такие фразы идут обычным разбором. Повтор и перенос — коммиты бота
+     (кнопка «Отменить», «отмени», «нет, на обед» работают как с обычной записью); перенос отменяется своим revert. */
+  function hisRx(s){ return actRx(s)?new RegExp(actRx(s).source,'g'):null }
+  function hisIso(shift){ var d=new Date(curDate+'T12:00:00'); d.setDate(d.getDate()+shift); return isoOf(d) }
+  function hisWhen(iso){ return iso===todayISO()?'сегодня':actWhen(iso) }
+  function hisMeals(text){ var SW=secWords(), ws=String(text).split(/\s+/).filter(Boolean), out=[];
+    ws.forEach(function(w,i){ var n=norm(w); if(n.length<3) return; var k=Object.keys(SW).filter(function(x){ return isSecWord(n,x) })[0]; if(k) out.push({k:SW[k],prep:i>0&&/^(на|в|во|к)$/.test(ws[i-1])}) });
+    return out }
+  function hisRest(text,H){ var s=' '+text+' ';
+    for(var n=0;n<3;n++) ['repeat_verb','copy_verb','same_as','last','whole_day','move_verb','filler'].forEach(function(k){ var r=hisRx(H[k]); if(r) s=s.replace(r,' ') });
+    return s.replace(/\s+/g,' ').trim() }
+  function hisFood(s){ return tokensOf(s).length>0||/\d/.test(s) }
+  function hisSecName(k){ var S0=sec(k); return S0?S0.t:k }
+  function hisRows(list){ return '<div class="mlRows">'+list.map(function(x){ return row({fid:x.fid,q:x.q,u:x.u,g:x.g,name:''},true,x.t||'') }).join('')+'</div>'+
+    '<p class="mbSum">'+Math.round(sumOf(list).k)+' ккал</p>' }
+  function hisCommit(S,date,list,extra){
+    var c={id:'c'+(++S.seq),add:list.map(function(x){ return {date:x.__d||date,item:x,line:{fid:x.fid,q:x.q,u:x.u,g:x.g,name:'',alts:[x.fid]},en:{date:x.__d||date,sec:x.sec,t:x.t}} }),undone:false,at:S.clock||Date.now()};
+    list.forEach(function(x){ delete x.__d });
+    for(var k in extra) c[k]=extra[k];
+    S.commits.push(c); return c }
+  /* повтор: что и куда. null — не повтор */
+  function hisRepeatPlan(t,H){
+    var rv=actRx(H.repeat_verb).test(t), sa=actRx(H.same_as).test(t), dw=dayWords(t), ms=hisMeals(dw.text);
+    if(!rv&&!sa&&dw.shift&&ms.length>1&&actRx(H.copy_verb).test(t)) rv=true;     // «вчерашний завтрак запиши на обед»
+    if(!rv&&!sa) return null;
+    var whole=actRx(H.whole_day).test(dw.text), last=actRx(H.last).test(dw.text);
+    if(hisFood(hisRest(dw.text,H))) return null;                                   // «гречка как вчера 200 г» — это еда
+    if(!rv&&!dw.shift&&!last) return null;                                         // «на ужин тоже» без дня — не повтор
+    if(!dw.shift&&!ms.length&&!whole) return null;                                 // «повтори» одно — как раньше
+    var src=null, tgt=null;
+    if(ms.length>1){ var tp=ms.filter(function(m){ return m.prep }).pop()||ms[ms.length-1]; tgt=tp.k; src=(ms.filter(function(m){ return m!==tp })[0]||tp).k }
+    else if(ms.length){ src=tgt=ms[0].k }
+    var date=null;
+    if(dw.shift) date=hisIso(dw.shift);
+    else for(var n=1;n<=60&&!date;n++){ var iso=hisIso(-n), it=actItems(iso); if(it.some(function(x){ return !src||x.sec===src })) date=iso }
+    return {date:date,src:src,tgt:tgt,shift:dw.shift}
+  }
+  function hisRepeat(S,t,H){
+    var P=hisRepeatPlan(t,H); if(!P) return null;
+    var meal=P.src?hisSecName(P.src):'';
+    if(!P.date) return p(esc(actT(H.answer_no_last_meal,{meal:meal||'день'})));
+    var items=actItems(P.date).filter(function(x){ return !P.src||x.sec===P.src }), w=hisWhen(P.date);
+    if(!items.length) return p(esc(actT(P.src?H.answer_no_source_meal:H.answer_no_source_day,{When:cap(w),when:w,meal:meal})));
+    var to=curDate;
+    function run(){
+      if(writeGuard()) return p(esc(H.answer_sign_in));
+      var nt=P.tgt&&P.tgt!==P.src?mealTime(to,P.tgt,null):null;
+      var made=items.map(function(x){ var y=JSON.parse(JSON.stringify(x)); y.id='i'+MealData.id(); if(P.tgt&&P.tgt!==P.src){ y.sec=P.tgt; y.t=nt; delete y.tm } return y });
+      made.forEach(function(y){ day(to).items.push(y) }); touch();
+      var c=hisCommit(S,to,made), head=!P.src?actT(H.answer_copy_day,{when:w,n:made.length}):P.tgt!==P.src?actT(H.answer_repeat_to,{when:w,src:meal,meal:hisSecName(P.tgt)}):actT(H.answer_repeat,{when:w,meal:meal});
+      return p(esc(head))+hisRows(made)+chips([['undo:'+c.id,actData().undo_button||'Отменить']]) }
+    /* такие же записи уже есть — спросить, а не задвоить молча */
+    var here=actItems(to).filter(function(x){ return !P.tgt||x.sec===P.tgt });
+    var dup=items.every(function(x){ return here.some(function(y){ return y.fid===x.fid&&y.g===x.g }) });
+    if(dup){ S.acts=S.acts||[]; S.acts.push(run); return p(esc(H.answer_dup))+chips([['act:hisrun:'+(S.acts.length-1),H.button_dup_yes],['act:hisno:x',H.button_dup_no]]) }
+    return run();
+  }
+  /* перенос на другой день: «перенеси кашу на вчера», «перенеси ужин на вчера», «нет, это было вчера» */
+  function hisLast(S){ var c0=S.commits.filter(function(x){ return !x.undone&&x.add.some(function(a){ return day(a.date).items.indexOf(a.item)>=0 }) }).pop();
+    return c0?c0.add.filter(function(a){ return day(a.date).items.indexOf(a.item)>=0 }).map(function(a){ return {x:a.item,from:a.date} }):[] }
+  function hisMove(S,t,H){
+    var list=null, to=null, tgt=null, form='';
+    if(actRx(H.move_verb).test(t)){
+      var td=t.match(actRx(H.to_day)); if(!td) return null;                        // «перенеси вчера кофе на обед» — прежний перенос внутри дня
+      var dst=dayWords(' в '+td[1]+' '+t.slice(td.index+td[0].length)+' ');
+      to=/^сегодня/.test(td[1])?curDate:dst.shift?hisIso(dst.shift):null; if(!to) return null;
+      var dm=hisMeals(dst.text); tgt=dm.length?dm[0].k:null;
+      if(hisFood(hisRest(dst.text,H))) return null;
+      var sw=dayWords(' '+t.slice(0,td.index)+' '), from=sw.shift?hisIso(sw.shift):curDate, sm=hisMeals(sw.text), food=hisRest(sw.text,H);
+      if(hisFood(food)){ var keep=CD; CD=from; var x=findItem(food); CD=keep; if(!x) return p('Не нашёл за '+esc(hisWhen(from))+' записи «'+esc(food)+'». Ничего не перенёс.'); list=[{x:x,from:from}] }
+      else if(sm.length) list=actItems(from).filter(function(x){ return x.sec===sm[0].k }).map(function(x){ return {x:x,from:from} });
+      else list=hisLast(S);
+    } else {
+      if(/(^|\s)(что|сколько|какой|какая|какие|чем|покажи|когда|где)(\s|$)/.test(t)) return null;
+      if(!/(^|\s)(было|были|был|была|это|нет|ой)(\s|$)/.test(t)) return null;
+      var dw=dayWords(t); if(!dw.shift) return null;
+      if(hisFood(hisRest(dw.text,H))) return null;                                  // «вчера было 200 г гречки» — это еда
+      to=hisIso(dw.shift); var mm=hisMeals(dw.text); tgt=mm.length?mm[0].k:null; list=hisLast(S); form='it';
+      if(!list.length) return null;
+    }
+    if(!list.length) return p(esc(H.answer_move_none));
+    if(list.every(function(o){ return o.from===to&&(!tgt||o.x.sec===tgt) })) return p(esc(actT(H.answer_move_same,{when:hisWhen(to)})));
+    if(writeGuard()) return p(esc(H.answer_sign_in));
+    var was=list.map(function(o){ return {x:o.x,from:o.from,sec:o.x.sec,t:o.x.t,tm:o.x.tm} });
+    var nt=tgt?mealTime(to,tgt,list.map(function(o){ return o.x })):null;
+    list.forEach(function(o){ var e=day(o.from); e.items=e.items.filter(function(y){ return y!==o.x });
+      if(tgt&&o.x.sec!==tgt){ var mt=movedTime(to,tgt,o.x.t,null); o.x.sec=tgt; if(mt.set||!o.x.t){ o.x.t=mt.t||nt; delete o.x.tm } }
+      day(to).items.push(o.x) });
+    touch();
+    var c=hisCommit(S,to,list.map(function(o){ return o.x }),{msg:'Отменил перенос: записи там, где были.',revert:function(){
+      was.forEach(function(w0){ var e=day(to); e.items=e.items.filter(function(y){ return y!==w0.x }); w0.x.sec=w0.sec; w0.x.t=w0.t; if(w0.tm) w0.x.tm=w0.tm; else delete w0.x.tm; day(w0.from).items.push(w0.x) }) }});
+    var secs=list.map(function(o){ return o.x.sec }).filter(function(k,i,a){ return a.indexOf(k)===i });
+    return p(esc(actT(H.answer_moved,{when:hisWhen(to),meal:secs.map(hisSecName).join('», «')})))+hisRows(list.map(function(o){ return o.x }))+chips([['undo:'+c.id,actData().undo_button||'Отменить']]);
+  }
+  /* «верни овсянку» — удалённое в этом разговоре, по названию */
+  function hisRestore(S,t,H){
+    var m=t.match(actRx(H.restore)); if(!m) return null;
+    var what=m[1].replace(/(^|\s)(назад|обратно|как было|все|всё|это|его|ее|её|их|запись|записи|последн\S*|удаленн\S*|пожалуйста)(?=\s|$)/g,' ').replace(/\s+/g,' ').trim();
+    var ws=tokensOf(what); if(!ws.length) return null;
+    var u=understand(fixes(' '+what+' ')), fids=u.lines.map(function(l){ return l.fid }).concat.apply([],u.lines.map(function(l){ return l.alts||[] })).concat(u.lines.map(function(l){ return l.fid })).filter(Boolean);
+    function hit(x){ var f=FOODS[x.fid], nw=(f?norm(f.n):'').split(/[^a-zа-я0-9]+/).filter(Boolean).concat(tokensOf(x.said||''));
+      return fids.indexOf(x.fid)>=0||ws.every(function(w){ return nw.some(function(n){ return sim(w,n)>=1.8 }) }) }
+    var c=S.commits.filter(function(c){ return !c.undone&&c.del&&c.del.length&&!c.add.length&&c.del.some(function(a){ return hit(a.item) }) }).pop();
+    if(!c) return p(esc(actT(H.answer_restore_none,{food:what})));
+    if(writeGuard()) return p(esc(H.answer_sign_in));
+    if(!undo(S,c)) return p('Не получилось вернуть.');
+    return p(esc(H.answer_restored))+hisRows(c.del.map(function(a){ return a.item }));
+  }
+  function hisAct(S,t){
+    var H=hisData(); if(!H) return null; t=' '+t+' ';
+    return hisRestore(S,t.trim(),H)||hisMove(S,t,H)||hisRepeat(S,t,H);
+  }
+  function hisData(){ var A=actData(); return A&&A.history||null }
+  /* диктовка шортката похожа на повтор или перенос? — такое из шортката не выполняется */
+  function hisSaid(t){ var H=hisData(); if(!H) return false; t=' '+nrm(t).trim()+' '; return !!hisRepeatPlan(t,H) }
+  /* ── своя норма и правило перекуса одной фразой (Астамур 24.11.2026, «Да»): «поставь 1800 калорий», «белка 120 г в день»,
+     «перекус меньше 200 ккал»; «скрой перекус» — честный ответ. Запись — та же, что экраны «Настроить цели» и «Приёмы пищи».
+     Слова — словарь app_actions.settings: фраза целиком из этих слов и числа, иначе это не настройка («белок 120 грамм» — еда) ── */
+  function setWords(t){ return t.replace(/(\d)\s*(ккал|кк|г|гр)(?=\s|$)/g,'$1 $2').split(' ').filter(Boolean) }
+  function setAll(ws,ok,num){ var C=((window.HappyMealSpeechData||{}).numbers||{}), N=C.cardinals||{}, SC=C.scales||{};
+    return ws.every(function(w){ return /^\d+([.,]\d+)?$/.test(w)||N[w]!=null||SC[w]!=null||ok.some(function(x){ return /\*$/.test(x)?w.indexOf(x.slice(0,-1))===0:w===x }) }) }
+  function setHas(ws,list){ return ws.some(function(w){ return list.some(function(x){ return /\*$/.test(x)?w.indexOf(x.slice(0,-1))===0:w===x }) }) }
+  function setNum(t){ var ns=typeof MealBotSteps!=='undefined'?MealBotSteps.numbers(t):(t.match(/\d+/g)||[]).map(Number); return ns.length===1?ns[0]:null }
+  function goalNow(){
+    var Hg=window.HappyGoals, d=todayISO(), vs=DB.goalVersions||[], last=Hg.goalFor(vs,d), legacy=DB.goals||{}, k=parseFloat(String(legacy.k||'').replace(',','.'));
+    var g=last&&typeof last==='object'&&Object.keys(last).length?Object.assign({calc:{sex:'',activity:0,adjustment:10},shares:[25,27,48],method:'manual',calories:null},Hg.weightOnly(last),last)
+      :Object.assign(Hg.weightOnly(null),{method:'manual',calories:k>0?Math.round(k):null,calc:{sex:'',activity:0,adjustment:10},
+        shares:Hg.sharesFromGrams.apply(null,['p','f','c'].map(function(x){ return parseFloat(String(legacy[x]||'').replace(',','.'))||0 }))||[25,27,48]});
+    if(k>0&&g.method==='manual') g.calories=Math.round(k);
+    if(!Array.isArray(g.shares)||g.shares.length!==3) g.shares=[25,27,48];
+    return g;
+  }
+  function goalSave(S,g){
+    var Hg=window.HappyGoals, gr=Hg.grams(g), r1=function(x){ return String(Math.round(x*10)/10) }, before={v:JSON.parse(JSON.stringify(DB.goalVersions||[])),g:JSON.parse(JSON.stringify(DB.goals||{}))};
+    MealAccount.saveGoals({versions:Hg.saveVersion(DB.goalVersions||[],g,todayISO()),goals:{k:String(Math.round(g.calories)),p:r1(gr[0]),f:r1(gr[1]),c:r1(gr[2])}});
+    var after=JSON.stringify(DB.goals);
+    return actUndoChip(S,function(){ if(JSON.stringify(DB.goals)!==after) return false; DB.goals={}; MealAccount.saveGoals({versions:before.v,goals:before.g}); return true });
+  }
+  function actSettings(S,t){
+    var A=actData().settings; if(!A) return null;
+    var ws=setWords(t), n, v;
+    /* норма калорий */
+    if(setHas(ws,A.kcal_words)&&setAll(ws,A.kcal_ok.concat(A.kcal_words,A.anchor,A.per_day))&&(setHas(ws,A.anchor)||/(^|\s)в (день|сутки)(\s|$)/.test(t))){
+      n=setNum(t); if(n==null) return null;
+      if(!window.HappyGoals||typeof MealAccount==='undefined') return null;
+      if(n<A.kcal_min||n>A.kcal_max) return p(esc(actT(A.answer_kcal_bad,{min:A.kcal_min,max:A.kcal_max})));
+      var g0=actSignIn(); if(g0) return g0;
+      var g=goalNow(); if(g.calories===Math.round(n)) return p(esc(actT(A.answer_kcal_same,{k:Math.round(n)})));
+      g=Object.assign({},g,{method:'manual',calories:Math.round(n)}); delete g.calculationBase;
+      var gr=HappyGoals.grams(g);
+      return p(actT(A.answer_kcal,{k:'<b>'+Math.round(n)+' ккал</b>'}))+'<p class="mbSum">Б '+Math.round(gr[0])+' г · Ж '+Math.round(gr[1])+' г · У '+Math.round(gr[2])+' г</p>'+goalSave(S,g);
+    }
+    /* белок, жиры, углеводы в день */
+    var mk=null; Object.keys(A.macro_words||{}).forEach(function(k){ if(!mk&&setHas(ws,A.macro_words[k])) mk=k });
+    if(mk&&setAll(ws,A.macro_ok.concat(A.macro_words[mk],A.anchor,A.per_day))&&(setHas(ws,A.anchor)||/(^|\s)в (день|сутки)(\s|$)/.test(t))){
+      n=setNum(t); if(n==null||!(n>0)) return null;
+      if(!window.HappyGoals||typeof MealAccount==='undefined') return null;
+      var gm=goalNow(), i={p:0,f:1,c:2}[mk], nm=A.macro_names[mk];
+      if(!(gm.calories>0)) return p(esc(actT(A.answer_macro_no_kcal,{m:nm})))+chips([['st:goals:@start',A.button_goals]]);
+      var share=n*[4,9,4][i]/gm.calories*100;
+      if(!(share>0&&share<95)) return p(esc(actT(A.answer_macro_bad,{m:nm,g:Math.round(n),k:Math.round(gm.calories)})));
+      var g1=actSignIn(); if(g1) return g1;
+      var ng=Object.assign({},gm,{shares:HappyGoals.redistribute(gm.shares,i,share)}), gg=HappyGoals.grams(ng);
+      return p(actT(A.answer_macro,{m:nm,g:'<b>'+Math.round(n)+' г</b>',k:Math.round(gm.calories)}))+'<p class="mbSum">Б '+Math.round(gg[0])+' г · Ж '+Math.round(gg[1])+' г · У '+Math.round(gg[2])+' г</p>'+goalSave(S,ng);
+    }
+    /* правило перекуса: «меньше N ккал» */
+    if(setHas(ws,A.snack_words)&&setHas(ws,A.snack_less)&&(!setHas(ws,['больше','более'])||setHas(ws,['не']))&&setAll(ws,A.snack_ok.concat(A.snack_words,A.snack_less,A.kcal_words))&&typeof MealPeriods!=='undefined'&&MealPeriods.rules){
+      n=setNum(t); if(n==null) return null;
+      if(!(n>=1&&n<=1000)||n!==Math.floor(n)) return p(esc(A.answer_snack_bad));
+      var R=MealPeriods.rules(DB); if(R.kcal===n) return p(esc(actT(A.answer_snack_same,{k:n})));
+      var g2=actSignIn(); if(g2) return g2;
+      var before=JSON.stringify(DB.mealRules||null);
+      DB.mealRules=Object.assign({kcal:R.kcal,gap:R.gap,fast:R.fast},DB.mealRules||{},{kcal:n}); touch();
+      var after=JSON.stringify(DB.mealRules);
+      return p(esc(actT(A.answer_snack,{k:n,was:R.kcal,gap:R.gap})))+actUndoChip(S,function(){ if(JSON.stringify(DB.mealRules)!==after) return false; DB.mealRules=JSON.parse(before); if(!DB.mealRules) delete DB.mealRules; touch(); return true });
+    }
+    /* «скрой перекус»: приём пищи скрыть нельзя */
+    var mh=t.match(actRx(A.hide)); if(mh){
+      var nmh=mh[1].replace(/^(раздел|прием|приемы)\s+/,''), sx=(DB.sections||[]).filter(function(x){ var a=nrm(String(x.t||'')).trim(); return a===nmh||a.indexOf(nmh)===0&&nmh.length>=4 })[0];
+      if(!sx) return null;
+      var preset=['am','pm','dn','sn'].indexOf(sx.k)>=0;
+      return p(esc(actT(preset?A.answer_hide_main:A.answer_hide_own,{t:sx.t})))+(helpEntry('periods')?chips([['go:periods','Открыть приёмы пищи']]):'');
+    }
+    return null;
+  }
   /* команда из фразы; не команда — null */
   function appAct(S,text){
     var A=actData(); if(!A) return null;
@@ -2891,19 +3211,24 @@ var MealBot=(function(){
     if(Fa&&actFastOK()){ if(actRx(Fa.off).test(t)) return actFastSet(S,false);
       if((m0=t.match(actRx(Fa.on)))) return actFastSet(S,true,m0[1]||'');
       if(actRx(Fa.status).test(' '+t+' ')) return actFastStatus() }
+    var st0=actSettings(S,t); if(st0) return st0;
     var C=A.catalogs;
     if(C&&typeof MealSources!=='undefined'){
       if(actRx(C.list).test(t)) return actCatList();
       var on=actRx(C.on).test(t), off=!on&&actRx(C.off).test(t);
       if(on||off){ var noun=actRx(C.noun).test(' '+t+' '), hit=(C.names||[]).filter(function(n){ return actRx(n.said).test(' '+t+' ')&&(noun||(n.strong&&actRx(n.strong).test(' '+t+' '))) });
         if(hit.length===1) return actCat(S,on,hit[0].id) } }
+    if(A.history){ var hs=hisAct(S,t); if(hs) return hs }   // Meal 34.12: повтор, перенос на другой день, «верни овсянку»
     if(A.past_days) return actPast(t);
     return null;
   }
   function actTap(S,a){
     var A=actData(); if(!A) return null;
     if(a[1]==='undo'){ var fn=S.acts&&S.acts[+a[2]]; if(!fn) return null; S.acts[+a[2]]=null; var g=actSignIn(); if(g) return g; return p(esc(fn()?A.answer_undone:A.answer_undo_late)) }
+    if(a[1]==='body') return bodyTap(S,a);
     if(a[1]==='fav') return actFav(S,a[2]==='1',a.slice(3).join(':'));
+    if(a[1]==='hisrun'){ var fr=S.acts&&S.acts[+a[2]]; if(!fr) return null; S.acts[+a[2]]=null; return fr() }
+    if(a[1]==='hisno') return p(esc(A.history.answer_dup_no));
     if(a[1]==='suplog'){ var g0=actSignIn(); if(g0) return g0; var dt0=curDate, sc0=typeof autoSec==='function'?autoSec():null; Promise.resolve(typeof MealBotGuide!=='undefined'&&MealBotGuide&&MealBotGuide.pending(a[2])).then(function(){ return HappySupplements.logIntake({variantId:a[2],quantity:1,measureId:a[3]||'basis',date:dt0,time:null,section:sc0}) }).catch(function(e){ try{ toast(e.message) }catch(_){} }); return p('Записал приём. Он виден в дне и в разделе БАДов.') }   // своя добавка из чата: «Записать 1 капсулу»
     if(a[1]==='fast') return actFastSet(S,a[2]==='on');
     if(a[1]==='day'){ curDate=a.slice(2).join(':'); try{ if(typeof renderDay==='function') renderDay(); if(typeof go==='function') go('day') }catch(e){} return null }
@@ -3257,7 +3582,7 @@ var MealBot=(function(){
     var h=null;
     if(a[0]==='act') return actTap(S,a);
     if(a[0]==='undo'){ var c=S.commits.filter(function(x){ return x.id===a[1] })[0]; if(!c||c.undone) return;
-      h=undo(S,c)?p(c.del?'Вернул запись.':'Отменил. Этих записей в дневнике больше нет.'):null }
+      h=undo(S,c)?p(c.msg||(c.del?'Вернул запись.':'Отменил. Этих записей в дневнике больше нет.')):null }
     else if(a[0]==='swap'){ var c2=S.commits.filter(function(x){ return x.id===a[1] })[0], ad=c2&&!c2.undone&&c2.add[+a[2]]; if(!ad) return;
       h=swapTo(S,ad,ad.line.alts[+a[3]]) }
     else if(a[0]==='less'||a[0]==='more'){ var c3=S.commits.filter(function(x){ return x.id===a[1] })[0]; if(!c3||c3.undone||writeGuard()) return;
@@ -3271,6 +3596,7 @@ var MealBot=(function(){
     else if(/^adv/.test(a[0])){ h=advTap(S,a); if(h==='') return }
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='st'){ h=typeof MealBotSteps!=='undefined'?MealBotSteps.tap(chat,S,a):null }
+    else if(a[0]==='mine'){ h=typeof MealBotMine!=='undefined'?MealBotMine.tap(chat,S,a):null }
     else if(a[0]==='ownnew'||a[0]==='ownname'){ if(typeof MealBotSteps==='undefined') return;
       var oq=a[0]==='ownnew'&&S.ask&&S.ask.id===a[1]?S.ask.q:null, onm=oq?(oq.heard||oq.line.spoken||oq.line.name||''):decodeURIComponent(a.slice(1).join(':'));
       if(a[0]==='ownnew'&&!oq) return;

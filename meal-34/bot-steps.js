@@ -20,6 +20,8 @@
      save(st) → html | {html, keep:true},       // запись делает сценарий; keep — остаться в итоге (например, нужен вход)
      command(имя, st, S) → html | {set:{…}},    // свои кнопки «@имя»; {set} — поставить поля и идти дальше
      any(text, st) → {set:{…}} | null,          // ответ, который годится на любом шаге (смена цели посреди вопросов)
+     loose:true,                                // непонятный ответ — не «Не понял», а выход: фразу разбирает бот как обычно
+     quick:true,                                // все шаги известны — сохранить сразу, без итога и «Сохранить»
      next:'id',                                 // после сохранения — кнопка «Дальше: <title>», если такой сценарий есть
      cancelled:'текст при отмене' });
    MealBotSteps.start(chat, id, init) → html — запуск из другого места (кнопка, другой сценарий).
@@ -100,6 +102,11 @@ var MealBotSteps=(function(){
   }
   function advance(fl,st,pre){
     var s=nextStep(fl,st);
+    if(!s&&fl.quick){   // всё понятно — сохранить сразу, без итога (своя мера); нужен вход — итог с «Сохранить»
+      var r=fl.save(st), keep=r&&typeof r==='object'&&r.keep, h=r&&typeof r==='object'?r.html:r||'';
+      if(keep) return summaryHTML(fl,st,(pre||'')+h);
+      st.mode='done'; return (pre||'')+h;
+    }
     if(!s) return summaryHTML(fl,st,pre);
     if(st.cur&&st.cur!==s.key&&st.mode==='ask') st.hist.push(st.cur);
     st.mode='ask'; st.cur=s.key;
@@ -173,6 +180,7 @@ var MealBotSteps=(function(){
     var fs2=fieldSaid(fl,st,text);
     if(fs2&&fs2.key!==s.key&&(find(text,C.edit)||fs2.vals)){ if(fs2.vals){ setVals(st,fs2.vals); return advance(fl,st) } return reask(fl,st,fs2.key) }
     if(isFood&&isFood(text)) return null;
+    if(fl.loose){ S.steps=null; return null }   // короткий сценарий (своя мера): непонятный ответ — это другая фраза, вопрос снимается
     return p('Не понял.')+askHTML(fl,st,s);
   }
   /* в ответе-числе есть слова кроме чисел и слов при числе («до 75», «82 кг», «80, нет, 82») — может быть еда */
@@ -215,5 +223,7 @@ var MealBotSteps=(function(){
   }
   function start(chat,id,init){ var fl=FLOWS[id]; if(!fl) return ''; var S=chat.bot||(window.MealBot&&MealBot.state(chat)); return begin(S,fl,init||{}) }
   function active(S){ return !!(S&&S.steps&&FLOWS[S.steps.id]) }
-  return {define:define,turn:turn,tap:tap,again:again,start:start,active:active,find:find,pick:pick,only:only,words:words,numbers:numbers,chips:chips,p:p,esc:esc,flow:function(id){ return FLOWS[id] }};
+  function fin(S,h){ if(S&&S.steps&&S.steps.mode==='done') S.steps=null; return h }   // быстрый сценарий сохранил — разговор окончен
+  return {define:define,turn:function(chat,S,text,isFood){ return fin(S,turn(chat,S,text,isFood)) },tap:function(chat,S,a){ return fin(S,tap(chat,S,a)) },again:again,
+    start:function(chat,id,init){ var h=start(chat,id,init), S=chat.bot||(window.MealBot&&MealBot.state(chat)); return fin(S,h) },active:active,find:find,pick:pick,only:only,words:words,numbers:numbers,chips:chips,p:p,esc:esc,flow:function(id){ return FLOWS[id] }};
 })();
