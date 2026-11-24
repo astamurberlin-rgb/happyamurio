@@ -32,12 +32,18 @@
  }
  let dragged=false;
  box.addEventListener('click',e=>{if(dragged)return;const b=e.target.closest('.ds-th');if(b)setTheme(b.dataset.theme)});
- /* карусель листается колесом и перетаскиванием мышью (Windows без сенсора) */
- box.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){box.scrollLeft+=e.deltaY;e.preventDefault()}},{passive:false});
- let sx=null,sl=0;
- box.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;sx=e.clientX;sl=box.scrollLeft;dragged=false});
- window.addEventListener('pointermove',e=>{if(sx===null)return;const d=e.clientX-sx;if(Math.abs(d)>4)dragged=true;box.scrollLeft=sl-d});
- window.addEventListener('pointerup',()=>{sx=null;setTimeout(()=>dragged=false,0)});
+ /* карусели (темы и меню разделов) листаются колесом и перетаскиванием мышью (Windows без сенсора) */
+ function dragScroll(el){
+  if(!el)return;
+  el.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&el.scrollWidth>el.clientWidth){el.scrollLeft+=e.deltaY;e.preventDefault()}},{passive:false});
+  let sx=null,sl=0;
+  el.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;sx=e.clientX;sl=el.scrollLeft;dragged=false});
+  window.addEventListener('pointermove',e=>{if(sx===null)return;const d=e.clientX-sx;if(Math.abs(d)>4)dragged=true;el.scrollLeft=sl-d});
+  window.addEventListener('pointerup',()=>{sx=null;setTimeout(()=>dragged=false,0)});
+  el.addEventListener('click',e=>{if(dragged){e.preventDefault();e.stopPropagation()}},true);
+  el.addEventListener('dragstart',e=>e.preventDefault());
+ }
+ dragScroll(box); dragScroll(document.querySelector('.ds-toc'));
 
  /* ── цвета: читаются со страницы ── */
  const TOKENS=[['--happy-base','Основа фона'],['--happy-accent','Акцент'],['--happy-ink','Текст'],['--happy-heading','Заголовок'],['--happy-muted','Подпись'],['--happy-dim','Тусклое'],['--happy-glass','Стекло'],['--happy-line','Линия'],['--hs-switch-on','Выключатель'],['--hs-seg-ink','Выбранное'],['--happy-dock-bg','Нижнее меню'],['--happy-dock-accent','Акцент меню']];
@@ -47,7 +53,7 @@
    const val=cs.getPropertyValue(v).trim(); if(!val)return;
    const d=document.createElement('div');d.className='ds-sw';
    const i=document.createElement('i');i.style.setProperty('--c',val);
-   const t=document.createElement('div');t.innerHTML='<b></b><small></small>';t.firstChild.textContent=label;t.lastChild.textContent=v.replace('--','')+'\n'+val;t.lastChild.style.whiteSpace='pre-line';
+   const t=document.createElement('div');t.innerHTML='<b></b><small></small>';t.firstChild.textContent=label;t.lastChild.textContent=v.replace('--','')+'\n'+val.replace(/,\s*/g,', ');t.lastChild.style.whiteSpace='pre-line';
    d.append(i,t);out.append(d);
   });
  }
