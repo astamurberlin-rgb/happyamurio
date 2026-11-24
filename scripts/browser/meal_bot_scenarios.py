@@ -1462,6 +1462,7 @@ dict(id="Фо61", eaten=True, msgs=["съел опята 100 г"], want=[("оп�
  dict(id="Вар24", msgs=["как сварить светлый бульон"], mode="none", reply="а бланшируют"),
  dict(id="Вар25", msgs=["как сварить темный бульон"], mode="none", reply="бывает тёмным и светлым"),
  dict(id="Вар26", msgs=["что значит бульон улыбается"], mode="none", reply="примерно 85 °C"),
+ dict(id="Вар27", msgs=["бульон должен улыбаться это как"], mode="none", reply="примерно 85 °C"),
 ]
 for s in S:
     s.setdefault("clock", D); s.setdefault("mode", "rec"); s.setdefault("want", [])
