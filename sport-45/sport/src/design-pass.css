@@ -69,3 +69,7 @@ body.sport-fab-x #sport-fab{transform:translate(-50%,-50%) rotate(45deg)!importa
 .sport-swipe-away .swipe-content,.sport-swipe-away>.exercise-card-heading{transition:transform .18s ease!important}
 /* счётчики на главной: «Убрать» — та же пилюля 44, а не плашка 14 × 40 */
 #sport-food-counters .tpItem::before{top:50%!important;bottom:auto!important;height:44px;margin-top:-22px;border-radius:999px!important}
+
+/* iPhone: Safari увеличивает страницу, когда нажимаешь на поле с текстом мельче 16. Поля Sport — 16 · 400, как в правилах
+   (заметки к упражнению и тренировке, «Куда добавить»; поле даты в пилюле невидимое — ему тоже 16, чтобы страница не прыгала). */
+#day-picker,#active-note,textarea#active-note,.set-note,[name="set-note"],.active-note,[name="active-note"],[name="addDestination"],select[name="addDestination"]{font-size:16px!important}
