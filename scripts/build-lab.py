@@ -83,13 +83,14 @@ for app, folder in release.items():
         (r'<head>', '<head>\n<script src="../lab/happy-lab-server.js"></script>', 1),
         (r'<title>[^<]*</title>', '<title>' + names[app] + ' · Лаборатория</title>', 1),
         # соседние приложения — рядом, в этой же лаборатории; страница открывается по имени файла
+        (r"var BASE=root\.location[^;]*;", "var BASE='../';", None),   # Sport: общий файл ссылок встроен в страницу
         (r'/happyamurio/', '../', None),
         (r'href="\.\./((?:day|meal|sport)-\d+)/"', None, None),
         (r"var href=BASE\+d\+'/';", "var href=BASE+d+'/index.html';", None),   # Sport: адреса соседей встроены в страницу
     ])
     links = os.path.join(out, folder, 'shared', 'happy-links.js')
     if os.path.exists(links):
-        edit(folder + '/shared/happy-links.js', [(r"var BASE='/happyamurio/';", "var BASE='../';", 1),
+        edit(folder + '/shared/happy-links.js', [(r"var BASE=root\.location[^;]*;", "var BASE='../';", 1),
                                                  (r"var href=BASE\+d\+'/';", "var href=BASE+d+'/index.html';", 1)])
 
 # каталоги Meal — рядом со страницей, если попросили
