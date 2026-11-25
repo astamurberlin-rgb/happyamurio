@@ -1756,6 +1756,8 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <div class="happy-card"><button class="happy-button" id="mealReportSettings">Открыть отчёт</button><p class="happy-note">Период выбирается в журнале, состав отчёта — перед сохранением. CSV находится в конце журнала. PDF, PNG, печать и полный CSV с продуктами и нутриентами.</p></div>
     </section>
     <section class="happy-section" data-happy-section="developer" hidden><h2 class="happy-heading">Для разработчика</h2>
+    <div id="sampleBox" hidden><div class="eyebrow"><span>Пример Amurio</span></div>
+    <div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" data-sample="fill">Заполнить примером</button><button type="button" class="happy-button" data-sample="clear">Убрать пример</button></div><p class="happy-note">Вымышленная история на 9 месяцев: дневник еды и замеры тела. Только для тестового аккаунта и только в пустой дневник.</p></div></div>
     <div class="eyebrow"><span>Копия дневника</span></div>
     <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="bkOut">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Meal одним файлом: записи, свои продукты, рецепты и добавки (БАДы). На телефоне выбери «Сохранить в Файлы». Дневник хранится в аккаунте и приходит на устройство сам; файл — чтобы осталась своя копия.</p><p class="happy-note" id="bkWhen"></p></div>
     <!--PHOTO-->
@@ -6197,6 +6199,8 @@ function jrNoteTxt(){
 <script src="./shared/happy-links.js?v=34.18"></script>
 <script src="./app-links.js?v=34.18"></script>
 <script src="./shared/happy-settings-developer.js?v=34.18"></script>
+<script src="./shared/happy-sample.js?v=34.18"></script>
+<script src="./meal-sample.js?v=34.18"></script>
 <script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 34.18')}catch(e){}</script>
 <script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
 (function(root){

@@ -359,7 +359,8 @@
       "name": "happy-sample.js",
       "reference": "shared/happy-sample.js",
       "apps": [
-        "day"
+        "day",
+        "meal"
       ]
     }
   ]
