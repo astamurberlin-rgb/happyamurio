@@ -46,11 +46,11 @@ body.meal-report-open{overflow:hidden}
 .mc-product .mc-product-heading{position:sticky;top:0;z-index:2;margin:0 -18px;padding:max(10px,env(safe-area-inset-top)) 18px 10px;background:linear-gradient(155deg,#a44667,#552642) center top/100vw var(--mc-viewport-height,100dvh) no-repeat}
 .mc-product .mc-product-heading .mc-grab{margin:0 auto 2px}
 .mc-product .mc-product-heading .mc-head{margin:0}
-/* «Порция | На 100 г» — сегментный переключатель по design-system/README.md: контур 44, отступ 3, пилюля 36, текст 14,
+/* «Порция | На 100 г» в карточке продукта и в окне «Корректировка» (Астамур 25.11: «Так же») — сегментный переключатель по design-system/README.md: контур 44, отступ 3, пилюля 36, текст 14,
    выбранное 600 на светлой пилюле цвета Meal, остальное 400 (было: контур 56, пилюли 48, всё 600, синий #17628b). */
-.mc-product .mc-basis{display:flex;gap:0;box-sizing:border-box;height:44px;padding:3px;border-radius:999px;background:#ffffff20;border:1px solid #ffffff40}
-.mc-product .mc-basis button{flex:1;box-sizing:border-box;height:36px;min-height:36px;padding:0 12px;margin:0;border:0;border-radius:999px;background:transparent;color:var(--happy-ink);box-shadow:none;font-size:14px;line-height:18px;font-weight:400;display:flex;align-items:center;justify-content:center}
-.mc-product .mc-basis button[aria-pressed="true"]{background:var(--hs-seg-bg,#efdae3);color:var(--hs-seg-ink,#84036d);font-weight:600}
+.mc-product .mc-basis,.mc-correction .mc-basis{display:flex;gap:0;box-sizing:border-box;height:44px;padding:3px;border-radius:999px;background:#ffffff20;border:1px solid #ffffff40}
+.mc-product .mc-basis button,.mc-correction .mc-basis button{flex:1;box-sizing:border-box;height:36px;min-height:36px;padding:0 12px;margin:0;border:0;border-radius:999px;background:transparent;color:var(--happy-ink);box-shadow:none;font-size:14px;line-height:18px;font-weight:400;display:flex;align-items:center;justify-content:center}
+.mc-product .mc-basis button[aria-pressed="true"],.mc-correction .mc-basis button[aria-pressed="true"]{background:var(--hs-seg-bg,#efdae3);color:var(--hs-seg-ink,#84036d);font-weight:600}
 /* Ссылка на источник: цвет текста приложения вместо синего браузерного, без подчёркивания — на ссылку указывает ↗.
    Тот же вид у ссылок в карточках каталогов в Настройках и в «О каталоге» (catalog.css). */
 .mc-source-attribution a{color:var(--happy-ink);font-weight:600;text-decoration:none;white-space:nowrap}
