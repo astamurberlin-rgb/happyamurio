@@ -1349,9 +1349,9 @@ body .screen.fold-sheet[data-screen="ring"].fold-closing{pointer-events:none}
 .fold-sheet .fold-tint{position:absolute;left:0;right:0;top:var(--fold-top,0);height:100%;z-index:-1;pointer-events:none;border-radius:22px 22px 0 0;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75);opacity:var(--fold-card,0)}
 body.fold-on [data-screen="day"] .nwSl:not(.side) .care-name{opacity:var(--fold-in,1)}
 /* 61.13: «призрак» кнопки на карточке — прозрачная выпуклая форма без надписи; .fold-knob-side — её стенка (толщина) */
-.fold-sheet .knob.fold-ghost{z-index:2;transition:none;background:linear-gradient(165deg,rgba(255,255,255,.36),rgba(255,255,255,.12) 55%,rgba(255,255,255,.05));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.75),inset 0 0 0 1px rgba(255,255,255,.34),inset 0 -14px 24px rgba(0,70,200,.10)}
+.fold-sheet .knob.fold-ghost{z-index:2;transition:none;background:linear-gradient(165deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%,rgba(255,255,255,0));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.6),inset 0 0 0 1px rgba(255,255,255,.26);backdrop-filter:none;-webkit-backdrop-filter:none}
 .fold-sheet .knob.fold-ghost>*{opacity:calc(1 - var(--fold-in,1))}
-.fold-sheet .fold-knob-side{position:absolute;z-index:1;border-radius:9999px;pointer-events:none;background:linear-gradient(180deg,rgba(0,70,200,.34),rgba(0,70,200,.14));box-shadow:inset 0 0 0 1px rgba(255,255,255,.26),0 14px 26px rgba(0,60,170,.20);opacity:var(--fold-card,0)}
+.fold-sheet .fold-knob-side{position:absolute;z-index:1;border-radius:9999px;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.05) 60%,rgba(255,255,255,0));box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);opacity:var(--fold-card,0)}
 
 /* ── Аудит Day 20.11.2026 (Астамур): страница «Осознанность» и листы расписания и практики ──
    Расписание — на своей странице с «+» над списком (п. 32). Строки: нажал — лист с полями; свайп влево — убрать (п. 27, 28).
