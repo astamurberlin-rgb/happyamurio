@@ -88,7 +88,7 @@ def exercise(browser, app):
     check(app, "двойное нажатие создало один запрос и сохранило ID",
           model.link_requests == [(app, NEW_EMAIL)] and page.evaluate(f"() => {data}.account.current().uid") == NEW_EMAIL)
     page.click("[data-hw=cancel]")
-    page.get_by_text("Google привязан", exact=True).wait_for()
+    page.get_by_text("Привязан вход через Google", exact=True).wait_for()
     check(app, "в профиле после привязки только статус", link.count() == 0)
     screenshot(page, app, "linked")
     page.click("[data-page=profile] [data-hs=cancel]")

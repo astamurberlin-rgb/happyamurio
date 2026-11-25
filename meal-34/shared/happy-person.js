@@ -172,7 +172,7 @@ function open(){
    '<button type="button" class="hs-quiet" data-p="email-cancel">Отменить смену</button></div>';
  }
  function providerActions(){
-  return A.current()?.google?'<span class="hs-provider-status">Google привязан</span>':
+  return A.current()?.google?'<span class="hs-provider-status">Привязан вход через Google</span>':
    '<button type="button" class="hs-btn hs-glass-btn" data-p="google">Привязать к Google</button>';
  }
  function render(){

@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1936933,
-   "sha256": "72029b75a0a0691d196dfa889b05217f14c6831a1421f2b214938b847ebe387c"
+   "size": 1936961,
+   "sha256": "dd4f7c3ae20ea5770bddc771ec579f6dcb022e489cb9f32d8cf0f758d97fc953"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -406,8 +406,8 @@
   },
   {
    "path": "shared/happy-person.js",
-   "size": 28619,
-   "sha256": "b6fa6b00527c4e14f8d4ee592a7aaf6ab7d3ccf39c952ec5371d0791cbcf85aa"
+   "size": 28639,
+   "sha256": "9a8f1adca870426e3d20e8053aa14b09161f634aa0ec51ec9c8f204d943ee8f2"
   },
   {
    "path": "shared/happy-privacy.css",
