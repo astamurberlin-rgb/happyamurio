@@ -3176,8 +3176,11 @@ setInterval(function(){ if(adoptPending&&!adoptBusy()) adoptRemote() },1200);
    в кружке и этих строках прочерк.
    Сводки нет — прочерк везде. Полный круг — цель по калориям на ¾ круга (видно перебор, 25.11.2026), нет цели — 3000.
    Цели строк — из «Целей на день» (клетчатка — тоже); нет цели — число без полоски. */
-/* вид виджета запоминается на устройстве — каким оставил, таким и откроется; впервые — «съедено» (Астамур 25.11.2026) */
-var ER_MODE=(function(){ try{ var v=localStorage.getItem('happy.meal.energyMode'); if(v==='eat'||v==='bal'||v==='spent') return v }catch(e){} return 'eat' })(), ER_SPORT=null;   // ER_SPORT — тренировки по дням из витрины Sport; null — её нет
+/* вид виджета хранится в аккаунте — поле energyView дневника (документ setup общего модуля), на всех устройствах одинаково;
+   переключил — остаётся, пока сам не поменяешь; не выбран — «съедено» (Астамур 25.11.2026).
+   Без входа записей нет: вид меняется только до закрытия страницы, без просьбы войти. */
+var ER_GUEST=null, ER_SPORT=null;   // ER_SPORT — тренировки по дням из витрины Sport; null — её нет
+function erMode(){ var v=ER_GUEST||DB.energyView; return v==='eat'||v==='bal'||v==='spent'?v:'eat' }
 function gTxt(v){ return v>=10?String(Math.round(v)):fmt(v) }
 function goalOf(k){ var v=parseFloat(String((DB.goals||{})[k]||'').replace(',','.')); return v>0?v:0 }
 function erSportRead(){
@@ -3213,7 +3216,7 @@ function erSportRow(h,name,v,g,u,f){ f=f||erNum; return erRowHTML(h,name,v==null
 function erKNum(v){ return v>=10000?String(Math.round(v/100)/10).replace('.',',')+'к':erNum(v) }
 var ER_NEXT={eat:'bal',bal:'spent',spent:'eat'}, ER_CAP={eat:'съедено',bal:'баланс',spent:'потрачено'};
 function kbjuHTML(){
-  var it=day(curDate).items, supplements=supplementRows(curDate), s=intakeSum(it,supplements), gk=goalOf('k'), sp=erSportDay(curDate), spent=sp&&sp.k!=null?sp.k:null, M=ER_MODE;
+  var it=day(curDate).items, supplements=supplementRows(curDate), s=intakeSum(it,supplements), gk=goalOf('k'), sp=erSportDay(curDate), spent=sp&&sp.k!=null?sp.k:null, M=erMode();
   var rows, big, arcs, say;
   if(M==='eat'){
     var fib=dayFib(it),sf=window.HappySupplementNutrition?HappySupplementNutrition.totals(supplements).fib:0;if(supplements.length)fib=intakeCoverage(it,supplements,'fib').known?(fib||0)+sf:null;
@@ -3237,7 +3240,8 @@ function kbjuHTML(){
     erRingHTML({eat:s.k,spent:spent,arcs:arcs,full:gk?gk/0.75:3000,big:big,cap:ER_CAP[M]})+'</div><div class="erRows">'+rows+'</div>';
 }
 function erNext(key){
-  ER_MODE=ER_NEXT[ER_MODE]; try{ localStorage.setItem('happy.meal.energyMode',ER_MODE) }catch(e){}
+  var next=ER_NEXT[erMode()];
+  if(RO||!MealData.signedIn()) ER_GUEST=next; else { ER_GUEST=null; DB.energyView=next; save() }
   var el=document.getElementById('mlKb'); el.innerHTML=kbjuHTML(); erFit(el);
   if(key){ var r=el.querySelector('.erRing'); if(r) r.focus({preventScroll:true}) }          // с клавиатуры фокус остаётся на кольце
 }
