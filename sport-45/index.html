@@ -2109,7 +2109,9 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
    панель за карточками чуть притемнена, тень едва заметная. Шапка: название слева, справа всегда «Настроить» и правее
    «Свернуть»; длинное название переносится только слева, значки стоят на уровне первой строки ── */
 .panel-screen:has(.active-workout){background:linear-gradient(rgba(20,24,60,.28),rgba(20,24,60,.28)),var(--sport-background)!important;background-attachment:fixed!important}
-/* Карточка упражнения в тренировке — обычная стеклянная карточка, без своей заливки фоном темы (Астамур 26.11.2026: «как тема в теме») */
+/* Карточка упражнения в тренировке — стекло, без заливки фоном темы (Астамур 26.11.2026: «как тема в теме»), но ярче обычной
+   карточки — исключение: белый 24 % вместо 16 %, рамка 44 % (Астамур 26.11.2026: «ярче можно в виде исключения») */
+.active-workout>.set-card{background:rgba(255,255,255,.24)!important;border-color:rgba(255,255,255,.44)!important}
 .active-workout .exercise-name-info{position:relative;display:grid!important;grid-template-columns:minmax(0,1fr) 44px;align-items:start;gap:0;width:100%;margin-right:-10px} /* птичка раскрытия убрана (Астамур 26.11.2026): сворачивание — нажатием на название */
 .active-workout .exercise-name-info>h3{grid-column:1;margin:0;min-width:0;position:static}
 .active-workout .exercise-collapse{position:static!important;display:block!important;width:100%;text-align:left;padding:9px 0 0!important;margin:0!important;min-height:44px;
