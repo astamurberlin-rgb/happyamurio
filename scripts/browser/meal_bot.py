@@ -6,7 +6,9 @@ from playwright.sync_api import sync_playwright
 from common import *
 from meal_bot_scenarios import S, GOALS, OWN, ACTS, D as D0
 
-RESET = """()=>{DB.days={};DB.favs=[];try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
+# сценарии бота идут подряд на одном аккаунте: «правка с другого устройства» (синхронизация хранилища) могла вернуть записи прошлого сценария
+# в уже очищенный дневник. Для проверки бота она не нужна — отключается один раз (25.11.2026)
+RESET = """()=>{if(!window.__noRemote){window.__noRemote=1;try{MealData.onRemote(function(){})}catch(e){}}DB.days={};DB.favs=[];try{localStorage.removeItem('happy-meal-bot-combos')}catch(e){};curDate=todayISO();CH.meal=newChat('meal');D=CH.meal;return true}"""
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({date:d,n:f?f.n:String(x.fid),q:x.q,u:x.u,g:x.g,t:x.t||null,tm:x.tm||0,sec:x.sec,tap:x.tap||null})}));return o}"""
 SAY = """(arg)=>{const text=Array.isArray(arg)?arg[0]:arg;const m={id:'m'+(++D.seq),who:'me',kind:'text',text};if(Array.isArray(arg)&&arg[1])m.eaten=true;D.msgs.push(m);const h=respond(m);D.msgs.push({who:'bot',kind:'reply',html:h});
  const S=D.bot||{pend:[],ask:null};return {html:h,pend:S.pend.length,ask:S.ask?S.ask.kind:null}}"""
