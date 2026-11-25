@@ -2196,6 +2196,23 @@ ACTS = [
  dict(id="Пп06", setup=OWN2, msgs=["сырники 2 штуки"], ok="()=>!(day(curDate).items||[]).length&&!!D.bot&&D.bot.pend.length===1&&D.bot.pend[0].line.ask==='pick'&&D.bot.pend[0].line.alts.length===2"),
  dict(id="Пп07", setup=OWN2, msgs=["сырники 2 штуки", "бабушкины"], ok=LASTFOOD % ("Сырники бабушкины", 120)),
  dict(id="Пп08", setup=OWN1ST.replace("'Сырники'", "'Сырники с изюмом'"), msgs=["сырники 150 г"], ok=LASTFOOD % ("Оладьи творожные, жареные", 150)),
+ # вопрос-умение «ты можешь…?» (Астамур 25.11.2026, «Да» на план): «Да», пример и кнопка; конкретная просьба — делается
+ dict(id="Мж01", msgs=["ты можешь записать замер?"], reply="Продиктуй, например", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж02", msgs=["ты можешь записать замер?"], reply="Открыть замеры", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж03", msgs=["можешь записать вес"], reply="мой вес 80", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж04", msgs=["умеешь повторять ужин"], reply="повтори вчерашний ужин", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж05", msgs=["можешь поставить калории"], reply="поставь 1800 калорий", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж06", msgs=["можешь поменять мой продукт"], reply="заведи продукт", ok="()=>!(D.bot&&D.bot.steps)"),
+ dict(id="Мж07", msgs=["можешь сохранить рецепт"], reply="сохрани рецепт сырники", ok="()=>!(D.bot&&D.bot.steps)"),
+ dict(id="Мж08", msgs=["можешь записать бад"], reply="выпил витамин D", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж09", msgs=["можешь купить грузинскую кухню"], reply="покупку делаешь сам", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж10", msgs=["ты можешь танцевать"], reply="Этого пока не умею", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж11", msgs=["можешь записать банан 120 г"], ok="()=>Object.values(DB.days).some(d=>(d.items||[]).some(x=>x.g===120))"),
+ dict(id="Мж12", msgs=["можешь добавить овсянку в избранное"], reply="Добавил в избранное", ok="()=>(DB.favs||[]).length>0"),
+ dict(id="Мж13", msgs=["можешь добавить в избранное"], reply="добавь овсянку в избранное", ok="()=>!(DB.favs||[]).length"),
+ dict(id="Мж14", msgs=["можно тебе продиктовать замеры"], reply="Продиктуй, например", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж15", msgs=["ты можешь мне помочь"], reply="Записываю еду со слов", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ dict(id="Мж16", msgs=["ты умеешь записывать еду"], reply="Скажи, что съел", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
 ]
 
 GOALS = [
