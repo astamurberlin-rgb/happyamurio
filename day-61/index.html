@@ -3972,7 +3972,7 @@ function jrSet(st){
   else { if(st.per==='today') JR_DAY=st.a||todayISO(); JR_PER=st.per }
   renderTrends();
 }
-/* лист «Свой период» — как в Sport (Астамур 21.11.2026): ручка, размытый фон, лист поверх нижней панели; закрыть — жестом вниз, ручкой или мимо */
+/* лист «Свой период» — как в Sport (Астамур 21.11.2026): ручка, затемнение 34 % по правилу (25.11.2026), лист поверх нижней панели; закрыть — жестом вниз, ручкой или мимо */
 function jrSheet(title,html){
   var w=document.getElementById('jrPerWrap');
   if(!w){

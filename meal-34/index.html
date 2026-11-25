@@ -5706,7 +5706,7 @@ function jrSorted(){
 }
 /* Полоска периода — общий shared/happy-period.js, как в Day и Sport (Астамур 21.11.2026, аудит).
    Состояние Meal (JR_PER, JR_RNG) ↔ состояние полоски {per,a,b}. Лист «Свой период» — как в Sport:
-   ручка, размытый фон, поверх нижней панели; выбранное применяется сразу, закрыть — ручкой или мимо листа. */
+   ручка, затемнение 34 % по правилу (25.11.2026), поверх нижней панели; выбранное применяется сразу, закрыть — ручкой или мимо листа. */
 function jrPerSt(){ return JR_PER==='custom'&&JR_RNG?{per:'custom',a:JR_RNG.a,b:JR_RNG.b}:{per:JR_PER} }
 function jrPerSet(st){
   if(st.per==='custom'){ JR_RNG={a:st.a,b:st.b}; JR_PER='custom' } else JR_PER=st.per;
