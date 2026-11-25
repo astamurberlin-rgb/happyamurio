@@ -31,8 +31,8 @@ test('аккаунт в настройках — общие экраны: вер
     assert.ok(!page.includes(gone), 'убранное вернулось на страницу: ' + gone);
   for (const id of ['clBox', 'bkPrev', 'bkBack', 'backupAge', 'dayDeveloperSync', 'dayDeveloperSyncTools', 'day-auto-status']) assert.ok(!new RegExp('id="' + id + '"').test(page), 'прежний блок: ' + id);
   const developer = between(page, '<section class="happy-section" data-happy-section="developer" hidden>', '<section class="happy-section" data-happy-section="version">');
-  assert.deepEqual([...developer.matchAll(/<div class="eyebrow"><span>([^<]+)</g)].map(m => m[1]), ['Выгрузка', 'Из трекеров', 'Доступ к модели'], 'в разделе для разработчика — выгрузка, файл трекера и ключ модели');
-  assert.deepEqual([...developer.matchAll(/<button[^>]*>([^<]+)<\/button>/g)].map(m => m[1]), ['Выгрузить дневник', 'Выгрузить CSV', 'Данные из трекеров', 'Отключено', 'Скрыть раздел']);
+  assert.deepEqual([...developer.matchAll(/<div class="eyebrow"><span>([^<]+)</g)].map(m => m[1]), ['Выгрузка', 'Из трекеров', 'Пример Amurio', 'Доступ к модели'], 'в разделе для разработчика — выгрузка, файл трекера, пример Amurio и ключ модели');
+  assert.deepEqual([...developer.matchAll(/<button[^>]*>([^<]+)<\/button>/g)].map(m => m[1]), ['Выгрузить дневник', 'Выгрузить CSV', 'Данные из трекеров', 'Заполнить примером', 'Убрать пример', 'Отключено', 'Скрыть раздел']);
   for (const id of ['expJson', 'expCsv', 'impJson', 'wipe']) assert.equal((page.match(new RegExp('id="' + id + '"', 'g')) || []).length, 1, id);
 });
 
