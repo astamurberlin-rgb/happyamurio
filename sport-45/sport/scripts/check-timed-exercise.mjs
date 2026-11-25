@@ -12,6 +12,7 @@ const c=createContext({console,Date,Math,Number,JSON,document,setInterval(){},na
 runInContext(`var SEED={exercises:[{id:'swim',name:'Плавание',profile:'distance_time',metrics:['seconds','distance']}]};
 var state={customExercises:[],workouts:[],active:{start:'2026-10-30T12:00:00',pauses:[],exercises:[{id:'swim',name:'Плавание',metrics:['seconds','distance'],sets:[{seconds:60,distance:50,done:false}],timerConfig:{mode:'intervals',workSeconds:600,restSeconds:30,rounds:3}}]}};
 var now='2026-10-30T12:00:00.000',localNow=()=>now.slice(0,19),clone=x=>JSON.parse(JSON.stringify(x)),exercise=id=>SEED.exercises.find(e=>e.id===id);
+var shortDate=d=>new Date(d+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'}).replace('.','');
 function blankSet(){return {seconds:0,done:false}};
 function setRestSeconds(){return null}function swipeSetRow(kind,ei,si,html){return html}
 function setTimeInput(){return '<input data-set-time="0,0">'}function setMetricInput(){return '<input>'}`,c);
@@ -59,7 +60,7 @@ assert.equal(run('state.active.exercises[0].timerResults[0].distanceEnabled'),tr
 run(`state.workouts=[{id:'past',exercises:[{id:'swim',name:'Старое название',sets:[],timerResults:[{id:'past-swim',mode:'stopwatch',savedAt:'2026-10-28T12:30:00',elapsed:15.75,rows:[{seconds:15.75,name:'Заплыв',distance:25}]}]},{id:'other',sets:[],timerResults:[{id:'unrelated',mode:'stopwatch',savedAt:'2026-10-29T13:00:00',elapsed:99,rows:[{seconds:99}]}]}]}]`);
 click('player-history');
 assert.deepEqual(plain(run('playerHistorySessions(0).map(r=>r.id)')),[run('state.active.exercises[0].timerResults[0].id'),'past-swim']);
-const history=run('exercisePlayerBody(0)');assert.match(history,/player-history-wrap/);assert.match(history,/28.10.2026/);assert.doesNotMatch(history,/unrelated/);
+const history=run('exercisePlayerBody(0)');assert.match(history,/player-history-wrap/);assert.match(history,/28 окт/);assert.doesNotMatch(history,/unrelated/);
 assert.match(history,/data-player-row-name="0,stopwatch,0"/,'Current names stay editable in the carousel');
 change({playerRecord:'name',playerResult:'past-swim',playerEi:'0',playerIndex:'0'},'Техника');
 change({playerRecord:'seconds',playerResult:'past-swim',playerEi:'0',playerIndex:'0'},'00:18.43');
