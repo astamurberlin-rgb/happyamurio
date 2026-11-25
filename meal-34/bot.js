@@ -2372,7 +2372,8 @@ var MealBot=(function(){
     if(SP) SP.on(true);
     try{
       /* замер тела — раньше шагов: «мой вес 80, талия 82» не уходит в мастер целей; посреди вопросов мастера замер записывается, и вопрос повторяется (один вес — ответ мастеру) */
-      if(!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof m.text==='string'){ st=bodyAct(S,m.text); if(st!=null&&typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)) st+=MealBotSteps.again(S) }
+      if(!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof m.text==='string'&&!(typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S))){ var cn=canAct(m.text); if(cn&&cn.html!=null) st=cn.html; else if(cn&&cn.text) m=Object.assign({},m,{text:cn.text}) }   // «ты можешь …?» — умение или просьба
+      if(st==null&&!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof m.text==='string'){ st=bodyAct(S,m.text); if(st!=null&&typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)) st+=MealBotSteps.again(S) }
       if(st==null) st=steps(chat,S,m);
       if(st!=null) h=st;
       else { h=withSwap(chat,S,m); if(typeof MealBotSteps!=='undefined'&&MealBotSteps.active(S)&&!m.inbox) h+=MealBotSteps.again(S) }
@@ -2891,6 +2892,29 @@ var MealBot=(function(){
     if(!dw.shift) return null;
     var d=new Date(curDate+'T12:00:00'); d.setDate(d.getDate()+dw.shift);
     return actDay(isoOf(d),kc&&!ate);
+  }
+  /* ── Meal 34 · вопрос-умение (Астамур 25.11.2026): «ты можешь записать замер?» → «Да», как сказать и кнопка на экран;
+     конкретная просьба после «можешь» — обычная фраза; покупку, выход, выгрузку, тему — «Нет, сам». Слова — словарь can_do. ── */
+  function canData(){ var D0=typeof window!=='undefined'&&window.HappyMealSpeechData; return D0&&D0.can_do||null }
+  function canBtn(id){ var e=id&&typeof helpEntry==='function'&&helpEntry(id); return e?chips([['go:'+e.id,e.button]]):'' }
+  /* {html} — ответ; {text} — просьба без «можешь», дальше как обычная фраза; null — не вопрос-умение */
+  function canMenu(){ var H=typeof helpData==='function'&&helpData(); return H&&H.menu?chips(H.menu.buttons.map(function(id){ var e=helpEntry(id); return e?['go:'+e.id,e.title]:null }).filter(Boolean)):'' }
+  function canAct(text){
+    var C=canData(); if(!C) return null;
+    var t=nrm(text).trim().replace(/[?!.,…\s]+$/,'').replace(/\s+/g,' '), m0=t.match(actRx(C.ask)); if(!m0) return null;
+    var rest=m0[1].trim(), w=rest.split(' '), able=actRx(C.capability).test(' '+t.slice(0,t.length-rest.length)+' ');
+    if(C.verbs[w[0]]) w[0]=C.verbs[w[0]]; var cmd=w.join(' ');
+    for(var i=0;i<C.never.length;i++) if(actRx(C.never[i].said).test(' '+rest+' ')) return {html:p(esc(C.never[i].answer))+canBtn(C.never[i].help)};
+    if(actRx(C.concrete).test(' '+rest+' ')) return {text:cmd};   // «можешь записать банан 120 г» — просто просьба
+    var sk=null; for(var j=0;j<C.skills.length&&!sk;j++) if(actRx(C.skills[j].said).test(' '+rest+' ')||actRx(C.skills[j].said).test(' '+cmd+' ')) sk=C.skills[j];   // «повторять» → «повтори»
+    if(!able){   // «можешь …» с чем-то кроме слов умения — просьба: «можешь удалить мой продукт сырники»
+      var left=' '+w.slice(C.verbs[rest.split(' ')[0]]?1:0).join(' ')+' ';
+      if(sk) left=left.replace(new RegExp(sk.said,'g'),' ').replace(new RegExp(sk.said,'g'),' ');
+      left=left.split(' ').filter(function(x){ return x&&x.length>1&&C.stop.indexOf(x)<0&&!C.verbs[x] }).join(' ');
+      if(left&&(sk||isFood(cmd))) return {text:cmd};
+    }
+    if(sk) return {html:p(esc(sk.answer))+(sk.menu?canMenu():canBtn(sk.help))+(sk.menu?'':'<p class="mlHint">'+esc(C.hint)+'</p>')};
+    return {html:p(esc(C.unknown))+canMenu()};
   }
   /* ── Meal 34 · замеры тела со слов (Астамур 24.11.2026, «Да» на план): «талия 82, грудь 100» → общие «Замеры тела»
      (документ sport/body, тот же, что экран журнала, Day и Sport). Формат читает и пишет только shared/happy-measurements.js:
