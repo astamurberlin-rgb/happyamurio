@@ -125,7 +125,7 @@ assert.ok(!MealDesserts.infoHTML(pasquier).includes('Отметки провер
 assert.ok(MealDesserts.infoHTML(foods.find(f=>f.id==='hmdessert:label:kyivbkk-french-eclair-ua')).includes('Украина'),'регион этикетки Украины назван');
 for(const f of foods)assert.ok(!/Десерты 1\.[01]/.test(MealDesserts.infoHTML(f)+MealDesserts.footer(f)),'в карточке нет прежней версии: '+f.id);
 for(const f of foods)for(const x of f.composition.fields)assert.ok(x.sourceQualifier&&x.sourceQualifier.estimated?x.source.includes('FDC 172711')&&x.source.includes('оценка по близкому продукту'):x.source.startsWith('Happy Meal · Десерты 1.2 · '),'источник поля — версия из файла или сама оценка: '+f.id+' '+x.key);
-assert.equal(MealDesserts.footer(haribo),'Каталог «Десерты» · ChatGPT, 12.11.2026','подпись — автор и дата из файла');
+assert.equal(MealDesserts.footer(haribo),'Каталог «Десерты» · ChatGPT, 12 ноября','подпись — автор и дата из файла');
 assert.ok(MealDesserts.settingsHTML().includes('103 записей')&&MealDesserts.settingsHTML().includes('Библиотека десертов 1.2'));
 assert.equal(MealDesserts.status(),'ok');
 

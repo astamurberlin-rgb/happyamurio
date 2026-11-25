@@ -96,7 +96,7 @@ assert.ok(MealSources.setEnabled(db,'PRESERVE',false));assert.equal(MealSources.
 assert.equal(MealSources.available(db,dict['usda:168819']),true,'…но не карточки USDA');assert.ok(MealSources.setEnabled(db,'PRESERVE',true));
 
 // 8. Карточка, настройки, подпись
-assert.equal(M.footer(kiz),'Каталог «Сладкие заготовки» · ChatGPT, 14.11.2026');
+assert.equal(M.footer(kiz),'Каталог «Сладкие заготовки» · ChatGPT, 14 ноября');
 assert.ok(M.infoHTML(kiz).includes('Скурихин и Волгарев, 1987')&&M.infoHTML(kiz).includes('Готовое варенье'));
 assert.ok(M.settingsHTML().includes('27 позиций: 7 карточек по справочникам и 20 отметок'));
 const BRANDS=/ecofood|ашан|перекр|megamarket|sber/i;for(const f of foods)assert.ok(!BRANDS.test(f.n+' '+f.w.join(' ')+' '+M.infoHTML(f)),'без марок и продавцов: '+f.id);

@@ -28,10 +28,10 @@
   if(kind==='choice'){const o=el.options[el.selectedIndex];return o?o.textContent:'';}
   const v=String(el.value||'').trim();
   if(kind==='number')return v?v+(el.dataset.unit?' '+el.dataset.unit:''):(el.dataset.unit||'');
-  if(!v)return el.type==='time'?'':'Не выбрана';
+  if(!v)return el.type==='time'?'Не указано':'Не выбрана';
   if(el.type==='date')return dateText(v);
   if(el.type==='time')return v.slice(0,5);
-  const parts=v.split('T');return dateText(parts[0])+' · '+String(parts[1]||'').slice(0,5);
+  const parts=v.split('T');return dateText(parts[0])+', '+String(parts[1]||'').slice(0,5);
  }
  function refresh(el){
   const box=el&&el.parentElement;if(!box||!box.classList.contains('hf-field'))return;

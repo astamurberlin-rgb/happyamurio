@@ -6,16 +6,11 @@
 .workout-overview .current-bar{gap:0}
 /* 3. «Добавить» from the library: destination and button first, setup folded. */
 #exercise-config-form[data-scope="add"] .exercise-save-actions{margin-top:4px}
-.add-more,.metrics-fold{margin-top:14px;border-top:1px solid #ffffff30;padding-top:4px}
-.add-more>summary,.metrics-fold>summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer}
+.metrics-fold{margin-top:14px;border-top:1px solid #ffffff30;padding-top:4px}
+.metrics-fold>summary{min-height:44px;display:flex;align-items:center;font-size:14px;font-weight:600;cursor:pointer}
 .metrics-fold>.metric-switches{margin-top:6px}
 /* 4. Переименование: карандаш сразу после текста названия; при правке карандаш прячется, ✓ нет, курсор в конце текста без выделения и линии (15.11.2026 18:58). */
 .sheet-top:has(.rename-exercise){display:block;position:relative}
-.sheet-top h2.rename-title{display:inline;outline:none}
-.sheet-top h2.rename-title.renaming{caret-color:#fff;-webkit-user-select:text;user-select:text}
-.rename-exercise{display:inline-grid;place-items:center;vertical-align:middle;width:44px;height:44px;margin:-8px 0 -6px 4px;padding:0;border-radius:50%;background:none;border:0;color:var(--happy-ink)}
-.rename-exercise .icon{width:20px;height:20px;fill:currentColor}
-.rename-exercise[hidden]{display:none}
 .sheet-top:has(.rename-exercise):has(.favorite-star){padding-right:52px}
 .sheet-top:has(.rename-exercise) .favorite-star{position:absolute;right:0;top:0}
 /* 6. Home schedule: link to the rest. */
@@ -81,7 +76,6 @@ img.sport-icon.is-placeholder{opacity:.55;transform:scale(.82)}
 .tpAdd{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;border:0;border-top:1px solid rgba(255,255,255,.18);background:none;color:rgba(255,255,255,.88);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .library-search-row{margin-bottom:8px}
-.sheet[data-ctx-tab]:not([data-ctx-tab="configure"]) .rename-exercise{display:none}
 /* Аудит п. 23: пустая «История» — одна строка, без переключателя сортировки. */
 .history-empty{margin:24px 4px;text-align:center;color:var(--happy-muted);font-size:16px}
 /* Переключатели — капсулой (скругление в половину высоты), как в Day и Meal. */

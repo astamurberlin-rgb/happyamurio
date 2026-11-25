@@ -31,7 +31,7 @@
 .dp-hd.dp-fx{cursor:default}.dp-hd.dp-fx>i{opacity:.45}
 .dp-hint{margin:10px 2px 0;font-size:14px;color:var(--happy-ink,#fff)}
 .dp-hint:empty{display:none}
-.dp-add{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin-top:14px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.1);color:inherit;font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.dp-add{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin-top:14px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.1);color:inherit;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .dp-add:active{background:rgba(255,255,255,.24)}
 
 /* ── v2 · «Настроить отметки» (логика 22.11.2026): строка-заголовок периода — кнопка, страница периода ── */
@@ -62,8 +62,7 @@ button.dp-head{width:100%;padding:0;border:0;background:none;color:inherit;font:
 .dp-lab>span{font-size:14px;color:var(--happy-muted,rgba(255,255,255,.78))}
 
 /* ── окно шкалы: «Что хорошо» — сегменты и живая полоска ── */
-.scGoodSeg{display:flex;width:100%;margin:2px 0 12px;--hp-on-ink:var(--happy-accent-ink,#0C6FA8)}
-.scGoodSeg button{flex:1 1 0;padding:0 6px;font-size:14px}
+
 .scBar{position:relative;height:44px;margin:4px 0 0;border-radius:999px;cursor:grab;touch-action:none;
   background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.22) 50%,rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
 .scBar.fixed{cursor:default}
@@ -100,15 +99,14 @@ button.dp-head{width:100%;padding:0;border:0;background:none;color:inherit;font:
   font:inherit;font-size:14px;font-weight:600;line-height:1;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .2s,color .2s}
 .scSeg>button.on{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8)}
 .scSeg3{grid-template-columns:1fr 1fr 1.4fr}   /* «от середины» длиннее */
-.scKindTxt{margin:8px 2px 0;font-size:13px;line-height:1.35;color:var(--happy-muted,rgba(255,255,255,.78))}
+.scKindTxt{margin:8px 2px 0;font-size:14px;line-height:1.35;color:var(--happy-muted,rgba(255,255,255,.78))}
 .scKindTxt .nw{font-style:normal;white-space:nowrap}
 
 /* ── главная: счётчики ── */
-.dm-newcnt{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;margin:12px 0 0;border:1px dashed rgba(255,255,255,.4);border-radius:999px;background:none;color:inherit;font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.dm-newcnt{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;margin:12px 0 0;border:1px dashed rgba(255,255,255,.4);border-radius:999px;background:none;color:inherit;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .dm-newcnt svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .dm-newcnt:active{background:rgba(255,255,255,.14)}
 .dm-remove{display:block;width:100%;min-height:44px;margin-top:14px;border:0;border-radius:999px;background:none;color:inherit;font:inherit;font-size:16px;opacity:.85;cursor:pointer}
-.dm-step{margin:0 0 4px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--happy-muted,rgba(255,255,255,.72))}
 .dm-lab{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
 .dm-lab{flex:1;min-width:0}
 label.hs-switch-row{cursor:pointer}
@@ -129,9 +127,6 @@ label.hs-switch-row{cursor:pointer}
 .dp-days{margin:4px 0 0}
 .dp-days label{position:relative;display:block;margin:0}
 .dp-ok{display:block;width:100%;margin-top:24px}
-.scLab{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 4px;padding:10px 12px;border:1px dashed rgba(255,255,255,.4);border-radius:22px}
-.scLab>span{font-size:12px;color:var(--happy-muted,rgba(255,255,255,.78))}
-.scLab .hp-seg button{font-size:14px}
 #dayPeriods,#dayPeriod{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 
 /* ── v4 (Астамур 22.11.2026): страница периода без отдельного листа — название и иконка сверху, цель барабаном, дуги каруселью ── */

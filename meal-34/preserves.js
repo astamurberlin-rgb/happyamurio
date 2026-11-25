@@ -13,7 +13,7 @@ function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){retur
 function norm(x){return String(x||'').normalize('NFKC').toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim()}
 function words(s){return norm(s).split(/[^\p{L}\p{N}]+/u).filter(function(w){return w.length>1})}
 function finite(x){return typeof x==='number'&&Number.isFinite(x)?x:null}
-function ruDate(x){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x||''));return m?m[3]+'.'+m[2]+'.'+m[1]:String(x||'')}
+function ruDate(x){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x||''));return m?(+m[3])+' '+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'][+m[2]-1]+(m[1]!==String(new Date().getFullYear())?' '+m[1]:''):String(x||'')}
 var UNIT_RU={g:'г',mg:'мг',ug:'мкг',kcal:'ккал'};
 /* Поле источника → поле Meal [ключ, единица]. Только совместимые по смыслу:
    усвояемые углеводы и «Углеводы» справочников — сахара и крахмал, как «Углеводы» BLS (клетчатка в них отдельной строкой);

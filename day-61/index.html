@@ -6,9 +6,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#56B9F7">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Day">
-<title>Happy Day · Update 61.9</title>
+<title>Happy Day · Update 61.10</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261031-v4-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261031-v4-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261031-v4-152.png">
@@ -83,6 +83,7 @@
   --hs-sheet-bg:linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%);
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
+  --happy-accent-ink:#5a50d1;   /* текст в белых кнопках Sport — фиолетовый Sport по имени, не синий числом (решение Астамура 24.11) */
 }
 /* ── конец блока из Color Studio ── */
 
@@ -197,7 +198,7 @@ html[data-happy-appearance] body>.bg{inset:0;filter:none;animation:none;transfor
 .chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:400;
   background:var(--glass);border:1px solid var(--glassBrd);color:var(--happy-ink);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.chip.on{background:rgba(255,255,255,.9);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff;font-weight:700}
+.chip.on{background:rgba(255,255,255,.9);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff;font-weight:600}
 .chip.add{background:none;border-style:dashed}
 
 .kv{display:flex;justify-content:space-between;gap:12px;padding:11px 0;
@@ -218,7 +219,6 @@ textarea{width:100%;min-height:76px;resize:vertical}
   border-radius:14px;padding:11px 16px;font-size:14px;font-weight:600}
 .btn.solid{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
 .btn.warn{background:rgba(255,110,140,.24);border-color:rgba(255,150,175,.5)}
-.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
 .scrBar{position:relative;height:46px;border-radius:14px;touch-action:none;
   background:rgba(255,255,255,.12);border:1px solid var(--glassBrd);overflow:hidden}
 .scrBar .fill{position:absolute;left:0;top:0;bottom:0;
@@ -238,20 +238,6 @@ textarea{width:100%;min-height:76px;resize:vertical}
 
 /* название счётчика — того же размера, что названия разделов */
 .cName{font-size:16px;font-weight:600;margin-bottom:12px}
-
-.tval{flex:1.15;height:42px;border-radius:13px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.14);border:1.6px solid rgba(255,255,255,.55);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
-  font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
-.tval:active{background:rgba(255,255,255,.26)}
-.tval.over{border-color:rgba(255,196,120,.85)}
-.tval.none{font-size:14px;font-weight:600;color:rgba(255,255,255,.6);
-  border-style:dashed;border-color:rgba(255,255,255,.45)}
-.scrRow{display:flex;align-items:center;gap:9px;margin-top:12px}
-.scrRow button{flex:1;height:40px;border-radius:12px;border:1px solid var(--glassBrd);
-  background:rgba(255,255,255,.13);color:var(--happy-ink);font-size:14px;font-weight:600;padding:0}
-.scrEdit span{font-size:14px;color:var(--muted);flex:1}
 
 /* ── Теги с временем: палец рисует черновик, «+» в углу записывает его строкой ──
    Черновик — бегущая штриховка поверх кирпичика; после «+» она гаснет, и кирпичик
@@ -366,7 +352,7 @@ textarea{width:100%;min-height:76px;resize:vertical}
 /* ── черточка чекпоинта: тянешь вниз — раздел закрывается ── */
 .grip{display:flex;justify-content:center;align-items:center;height:22px;margin:-4px 0 2px;
   touch-action:none;cursor:grab}
-.grip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)}
+.grip i{display:block;width:42px;height:5px;border-radius:999px;background:rgba(255,255,255,.45)}
 .grip:active i{background:rgba(255,255,255,.75)}
 
 /* ── заставка на время загрузки: то же кольцо со шкалой, что и в чекпоинте, и мордочка.
@@ -486,10 +472,6 @@ body.loading .app,body.loading .dock{opacity:0}
 
 /* ── тренды ── */
 .tr{margin-bottom:22px}
-.trTop{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
-.trDot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c)}
-.trName{flex:1;font-size:16px;font-weight:600}
-.trVal{font-size:14px;color:var(--muted);font-family:var(--mono)}
 .bars{display:flex;align-items:flex-end;gap:6px;height:76px}
 .bars i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.3));min-height:3px}
 .bars i.none{background:rgba(255,255,255,.14)}
@@ -499,19 +481,10 @@ body.loading .app,body.loading .dock{opacity:0}
 /* ── связи ── */
 .scale{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin:0 0 12px 120px}
 .pair{display:flex;align-items:center;margin-bottom:15px}
-.pairKey{flex:0 0 120px;font-size:12px;line-height:1.3;padding-right:8px}
-.pairKey i{display:block;font-style:normal;font-size:12px;color:var(--dim);margin-top:2px}
 .track{flex:1;position:relative;height:22px}
 .zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.28)}
-.stem{position:absolute;top:10px;height:2px;border-radius:1px;background:rgba(255,255,255,.85)}
 .dot{position:absolute;top:5px;width:12px;height:12px;border-radius:50%;margin-left:-6px;background:#fff;
   box-shadow:0 0 12px rgba(255,255,255,.7)}
-.dot.weak{background:transparent;border:1.5px solid rgba(255,255,255,.45);box-shadow:none}
-.rho{position:absolute;top:3px;font-size:12px;font-family:var(--mono);color:var(--happy-ink)}
-.rho.weak{color:var(--dim)}
-.waitRow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:16px;margin-bottom:9px;
-  background:rgba(255,255,255,.10);border:1px dashed var(--glassBrd);font-size:14px}
-.waitRow span{margin-left:auto;font-size:12px;color:var(--dim);font-family:var(--mono)}
 .strip{display:flex;gap:3px;margin-bottom:6px}
 .strip i{flex:1;height:26px;border-radius:3px;background:rgba(255,255,255,.15)}
 .strip i.f{background:rgba(255,255,255,.85)}
@@ -533,12 +506,6 @@ body.loading .app,body.loading .dock{opacity:0}
 .secRow.open .secBody{display:block}
 .secRow.open > .swipe > .swipeInner{
   border-bottom:1px solid rgba(255,255,255,.18)}
-.secHead{display:flex;align-items:center;gap:14px;padding:15px 16px;width:100%;
-  border:0;background:none;color:var(--happy-ink);text-align:left}
-.secHead .ic{width:30px;height:30px;flex:none;display:grid;place-items:center}
-.secHead .ic svg{width:100%;height:100%}
-.secHead b{display:block;font-size:16px;font-weight:600}
-.secHead small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .subTitle{font-size:12px;font-weight:700;color:var(--muted);margin:14px 2px 9px}
 .chip.wide{display:block;width:100%;text-align:center;margin:10px 0 4px;
   background:rgba(255,255,255,.08)}
@@ -569,8 +536,8 @@ body.loading .app,body.loading .dock{opacity:0}
 .swipeInner .nm small{display:block;font-size:12px;color:var(--happy-muted);margin-top:2px}
 .dragH{flex:none;width:36px;height:36px;border-radius:10px;border:0;background:none;
   display:grid;place-items:center;padding:0;touch-action:none;cursor:grab}
-.dragH svg{width:24px;height:24px;stroke:rgba(255,255,255,.8);fill:none;
-  stroke-width:2.1;stroke-linecap:round}
+.dragH svg{width:28px;height:28px;stroke:rgba(255,255,255,.95);fill:none;
+  stroke-width:2.6;stroke-linecap:round} /* лаборатория 24.11: черточки «перетащить» крупнее — предложение Астамура */
 .scaleList,.secListInner{position:relative}
 .scaleList .swipe + .swipe .swipeInner{border-top:1px solid rgba(255,255,255,.16)}
 .scaleList .swipeInner{padding:13px 0}
@@ -707,7 +674,6 @@ body.card-open .dock .tab{pointer-events:none}
 
 /* ── СВЯЗИ: ответ ── */
 .q{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.25;margin:26px 2px 4px}
-.qSub{font-size:12px;color:var(--muted);margin:0 2px 12px}
 .sum{font-size:16px;line-height:1.55}
 .gdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
 .gdot.up{background:#9FF0D8}
@@ -759,23 +725,9 @@ body.card-open .dock .tab{pointer-events:none}
 .more svg{display:block;width:100%;overflow:visible}
 .more svg.split{height:136px}
 .more svg.ph{height:190px}
-.subT{font-size:12px;font-weight:700;color:var(--muted);margin:16px 0 6px}
-.ladder{display:none;flex-wrap:wrap;gap:6px 12px;margin:8px 0 6px;font-size:12px;color:var(--muted)}
-.ladder.on{display:flex}
-.ladder span{display:inline-flex;align-items:center;gap:6px}
 .sw{display:inline-block;width:14px;height:10px;border-radius:3px;border:1px solid rgba(255,255,255,.45);flex:none}
-.sw.l0{background:transparent}
 .sw.l1{background:rgba(255,255,255,.14)}
 .sw.l2{background:repeating-linear-gradient(125deg,rgba(255,255,255,.55) 0 3px,transparent 3px 6px)}
-.sw.l3{background:rgba(255,255,255,.32)}
-.sw.l4{background:rgba(255,255,255,.6)}
-.phl{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;border-top:1px solid rgba(255,255,255,.1)}
-.phl .sw{width:12px;height:12px}
-.phl span{flex:1;color:var(--muted)}
-.phl span b{color:var(--happy-ink);font-weight:600}
-.phl em{font-style:normal;font-weight:600;text-align:right}
-.phl em.up{color:#C8FAEA}
-.phl em.down{color:#FFD3E0}
 .flatBox{font-size:14px;line-height:1.6}
 .flatBox small{display:block;font-size:12px;color:var(--dim);margin-top:6px;line-height:1.45}
 
@@ -865,14 +817,13 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icSheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 40px - env(safe-area-inset-top));display:flex;flex-direction:column;
   padding-top:6px;border-radius:22px 22px 0 0;border-top:1px solid rgba(255,255,255,.55);
   background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.985),rgba(40,178,248,.985)));box-shadow:0 -8px 30px rgba(4,40,80,.18);
-  transform:translateY(102%);transition:transform .38s cubic-bezier(.25,.8,.25,1)}
+  transform:translateY(102%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
 .icLayer.on .icSheet{transform:none}
 @media (prefers-reduced-motion:reduce){.icSheet{transition:none}}
 .icHead{flex:none;padding:4px 20px 10px}
 .icHead b{display:block;font-size:20px;font-weight:700}
 .icFoot{flex:none;padding:12px 20px calc(16px + env(safe-area-inset-bottom))}
 .icFoot .btn{width:100%}
-.icBack{justify-self:start;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:600;padding:9px 6px}
 .icScroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding:6px 20px calc(30px + env(safe-area-inset-bottom))}
 .icScroll::-webkit-scrollbar{display:none}
@@ -882,7 +833,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icCell svg{width:60%;height:60%;pointer-events:none}
 .icCell:active{background:rgba(255,255,255,.26)}
 .icCell.on{background:rgba(255,255,255,.32);box-shadow:inset 0 0 0 2.5px #fff}
-.icCell:focus-visible,.icPick:focus-visible,.icBack:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.icCell:focus-visible,.icPick:focus-visible{outline:2px solid #fff;outline-offset:2px}
 
 /* ── разовая проверка: теги не в своём разделе ── */
 .fixTxt{margin:-4px 0 10px;font-size:14px;line-height:1.5;color:rgba(255,255,255,.92)}
@@ -931,7 +882,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .ringWrap.scPv .knob{touch-action:manipulation}   /* в окне шкалы кольцо — только показ, листать форму можно и с него */
 .scChips{display:flex;flex-wrap:wrap;gap:8px}
 /* выбор «как делить шкалу»: две плитки с подписью */
-.scKinds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
 .scKind{display:block;text-align:left;padding:13px 14px 14px;border-radius:18px;border:1px solid var(--glassBrd);
   background:rgba(255,255,255,.12);color:var(--happy-ink);font:inherit}
 .scKind b{display:block;font-size:16px;font-weight:700}
@@ -971,39 +922,15 @@ a.btn{display:inline-block;text-decoration:none}
 .cpTimeP.trk .icClock{display:none}
 .cpTimeP.trk .icMoon{display:block}
 /* ── Журнал: период — сегменты, как в Happy Meal ── */
-.jrTop{flex-wrap:wrap;row-gap:12px;padding-bottom:8px}
-.jrSeg{display:inline-flex;padding:3px;gap:0;border-radius:999px;background:var(--glass);border:1px solid var(--glassBrd);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.jrSeg button{display:grid;place-items:center;min-height:30px;padding:0 7px;border:0;border-radius:999px;background:none;color:var(--happy-ink);
-  font:inherit;font-size:12px;font-weight:700;line-height:1;white-space:nowrap;cursor:pointer}
-.jrSeg button[data-per="custom"]{padding:0 8px}
-.jrSeg button.on{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8)}
-.jrSeg svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.jrPerTxt{margin:0 2px 16px;font-size:14px;font-weight:600;color:var(--muted)}
+
 .jrRange{display:flex;gap:10px;padding:12px 14px;margin-bottom:14px}
 .jrRange[hidden]{display:none}
 .jrRange label{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--muted)}
 .jrRange input{flex:1;min-width:0;padding:8px 8px;border-radius:12px;border:1px solid rgba(255,255,255,.5);background:var(--happy-glass);
   color:var(--happy-ink);font:inherit;font-size:16px;-webkit-appearance:none;appearance:none}
-.jrEmpty{margin:0;padding:4px 0;font-size:14px;line-height:1.45;color:var(--muted)}
 /* сон: карточка ночи и столбики периода */
-.slCard{padding:16px 16px 8px;margin-bottom:14px}
-.slHd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px;font-weight:700}
-.slHd small{font-weight:400;color:var(--muted);font-size:12px;white-space:nowrap}
-.slBig{font-size:28px;font-weight:700;letter-spacing:-.02em;margin:6px 0 2px}
-.slSub{margin:0 0 12px;font-size:14px;line-height:1.4;color:var(--muted)}
-.slHyp,.slCols{display:block;width:100%;height:auto;margin:2px 0 6px}
-.slHyp text,.slCols text{fill:rgba(255,255,255,.78);font-size:12px;font-weight:600}
-.slCols [data-night]{cursor:pointer}
-.slRow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.14);font-size:14px}
-.slRow:last-child{border-bottom:0}
-.slRow i{flex:none;width:10px;height:10px;border-radius:50%}
-.slRow b{flex:1;font-weight:600}
-.slRow span{color:var(--muted);font-family:var(--mono);font-size:14px}
-.slHint{margin:-4px 2px 14px;font-size:12px;color:var(--muted)}
-.woRow b small{display:block;margin-top:3px;font-size:12px;font-weight:400;color:var(--muted);line-height:1.35}
+
 #jrBody > .eyebrow:first-child{margin-top:6px}
-.dayRep{margin-top:14px}
 
 /* ── v50.1: «Как ты сейчас» ── */
 .nwEb{margin-top:0}
@@ -1017,27 +944,10 @@ a.btn{display:inline-block;text-decoration:none}
 .nwR .knob{touch-action:manipulation;padding:0 6px}
 .nwR .knob b{font-size:20px;line-height:1.1;text-align:center}
 .nwR .knob.empty b{font-size:28px;opacity:.75}
-.nwRn{font-size:16px;font-weight:700;margin-top:-4px;text-align:center;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nwAdd{width:120px;height:120px;margin:38px;border-radius:50%;border:2px dashed rgba(255,255,255,.6);display:grid;place-items:center;
-  font:inherit;font-size:28px;font-weight:400;color:var(--happy-ink);background:none;cursor:pointer}
 .nwTags{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 0;scrollbar-width:none}
 .nwTags::-webkit-scrollbar{display:none}
-.nwChip{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 15px;border-radius:999px;border:1px solid rgba(255,255,255,.45);
-  background:rgba(255,255,255,.14);color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
-.nwChip.on{background:rgba(255,255,255,.94);color:#0B5E8E;border-color:#fff}
-.nwChip.add{background:none;border-style:dashed;font-weight:400}
 /* ── v50.1: Журнал по макету ── */
-.jSegs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--happy-glass)}
-.jSeg{flex:1;min-width:0;min-height:36px;padding:0 4px;border-radius:999px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:700;cursor:pointer;opacity:.82;display:grid;place-items:center}
-.jSeg.on{background:#fff;color:#0B5E8E;opacity:1}
-.jSeg.ic{flex:0 0 48px}
-.jSeg svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.jRange{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;font-weight:600}
-.jRange[hidden]{display:none}
-.jRange .datePill{padding:8px 12px}
-[data-screen="trends"] .jrDateRow{margin:12px 0 0;justify-content:flex-start;min-height:44px}
-.jrDateRow .jRange{margin-top:0}
-.jrDateRow .datePill[hidden]{display:none}
+
 /* лист «Свой период» журнала (shared/happy-period.js, 21.11.2026) */
 .jr-per-sheet{max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
 #jrBody .eyebrow{margin:22px 2px 10px}
@@ -1168,7 +1078,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 </style>
 <link rel="stylesheet" href="./shared/food-counters.css?v=2">
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
-<link rel="stylesheet" href="./selfcare.css?v=61.9">
+<link rel="stylesheet" href="./selfcare.css?v=61.10">
 <link rel="stylesheet" href="./arc-motion.css?v=61">
 <script defer src="./arc-motion.js?v=61.6"></script>
 <script defer src="./arc-home.js?v=61"></script>
@@ -1217,11 +1127,11 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <link rel="stylesheet" href="./shared/happy-fields.css?v=61">
 <link rel="stylesheet" href="./shared/happy-drum.css?v=61">
 <link rel="stylesheet" href="./shared/happy-period.css?v=61">
-<link rel="stylesheet" href="./day-periods.css?v=61.9">
+<link rel="stylesheet" href="./day-periods.css?v=61.10">
 <link rel="stylesheet" href="./shared/happy-design.css?v=61">
 <link rel="stylesheet" href="./shared/happy-theme-picker.css?v=61">
 <link rel="stylesheet" href="./design-rules.css?v=61">
-<script>/* HAPPY-APPEARANCE-PAINT 21.11.2026: выбранная тема до первой отрисовки (экран загрузки со смайликом). Копию пишет shared/happy-appearance.js; потом он же её обновляет. */(function(){try{var d=document.documentElement,p=JSON.parse(localStorage.getItem('happy-'+d.dataset.happyAppearanceApp+'-appearance-paint-v1')||'null');if(!p||p.version!==1||typeof p.css!=='string'||!p.css)return;var s=document.createElement('style');s.id='happy-appearance-skin';s.textContent=p.css;document.head.appendChild(s);if(p.button)d.dataset.happyAppearanceButton=p.button;if(p.id)d.dataset.happyAppearance=p.id;}catch(e){}})();</script></head>
+<script>/* HAPPY-APPEARANCE-PAINT 21.11.2026: выбранная тема до первой отрисовки (экран загрузки со смайликом). Копию пишет shared/happy-appearance.js; потом он же её обновляет. 24.11.2026: и цвет полоски браузера (theme-color) — верх фона темы. */(function(){try{var d=document.documentElement,p=JSON.parse(localStorage.getItem('happy-'+d.dataset.happyAppearanceApp+'-appearance-paint-v1')||'null');if(!p||p.version!==1||typeof p.css!=='string'||!p.css)return;var s=document.createElement('style');s.id='happy-appearance-skin';s.textContent=p.css;document.head.appendChild(s);if(p.button)d.dataset.happyAppearanceButton=p.button;if(p.id)d.dataset.happyAppearance=p.id;var m=document.querySelector('meta[name=theme-color]');if(m&&/^#[0-9a-f]{6}$/i.test(p.top||'')){m.dataset.base=m.content;m.content=p.top;}}catch(e){}})();</script></head>
 <body class="loading">
 
 <div class="bg"></div><div class="grain"></div>
@@ -1466,7 +1376,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="61.9" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="61.10" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
@@ -1584,7 +1494,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-store.js?v=61-5"></script>
 <script src="./shared/happy-app-links.js?v=61"></script>
 <script src="./shared/happy-sport-summary.js?v=61"></script>
-<script src="./shared/happy-food.js?v=61.9"></script>
+<script src="./shared/happy-food.js?v=61.10"></script>
 <script src="./shared/happy-measurements.js?v=61"></script>
 <script src="./shared/happy-screens.js?v=61"></script>
 <script src="./shared/happy-privacy.js?v=61.6"></script>
@@ -1593,17 +1503,17 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-goals.js?v=61"></script>
 <script src="./day-docs.js?v=61"></script>
 <script src="./day-data.js?v=61"></script>
-<script src="./day-account.js?v=61.9"></script>
+<script src="./day-account.js?v=61.10"></script>
 
-<script src="counters.js?v=61.9"></script>
-<script src="./arc-knob.js?v=61.9"></script>
-<script src="./day-periods.js?v=61.9"></script>
-<script src="./day-marks.js?v=61.9"></script>
+<script src="counters.js?v=61.10"></script>
+<script src="./arc-knob.js?v=61.10"></script>
+<script src="./day-periods.js?v=61.10"></script>
+<script src="./day-marks.js?v=61.10"></script>
 <script src="tap-swipe.js?v=61"></script>
 <script src="row-swipe.js?v=61"></script>
 <script src="sheet-grip.js?v=61"></script>
 <script src="sheet-fold.js?v=61.7"></script>
-<script src="./selfcare-core.js?v=61.9"></script>
+<script src="./selfcare-core.js?v=61.10"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
 .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px}
@@ -1613,7 +1523,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <style id="day-59">/* Day 59: без входа — предложение войти; вкладки «Журнал · Замеры тела»; общий экран замеров в цветах Day */
 .day-signin{display:none;position:fixed;z-index:9;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));max-width:440px;margin:0 auto;height:48px;padding:0 6px 0 20px;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--fab);border:0;box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
 [data-screen="day"].on~.day-signin:not([hidden]){display:flex}
-.day-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab);font:600 14px inherit;cursor:pointer}
+.day-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}
 .happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}
 .happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600}
@@ -1625,11 +1535,11 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-energy-ring.js?v=61.6"></script>
 <script src="./energy-widget.js?v=61.6"></script>
 <script src="./shared/release-notes.js?v=61"></script>
-<script src="./release-notes.js?v=61.9"></script>
+<script src="./release-notes.js?v=61.10"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.9')}catch(e){}</script>
-<script src="./selfcare-ui.js?v=61.9"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.10')}catch(e){}</script>
+<script src="./selfcare-ui.js?v=61.10"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════
    Day 59: дневник хранится и обменивается только через общий модуль (shared/happy-store.js; запуск и запись —
@@ -2164,7 +2074,8 @@ function paintLock(){
 function ruDate(iso){
   var M=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   var d=new Date(iso+'T00:00:00');
-  return d.getDate()+' '+M[d.getMonth()];
+  /* год — только если не текущий (формат дат Happy, решение 24.11.2026) */
+  return d.getDate()+' '+M[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'');
 }
 
 /* ═══════════ ИКОНКИ ═══════════ */
@@ -2458,7 +2369,7 @@ function dayReport(d){
   SelfCare.journalEvents(d).forEach(function(x){L.push(x.title+' · '+x.t+' · '+x.sub)});
   if(e.note) L.push('Заметка: '+e.note);
   if(!L.length) return '';
-  return ['HappyDay · '+ruDate(d)+' '+d.slice(0,4)].concat(L).join('\n');
+  return ['HappyDay · '+ruDate(d)].concat(L).join('\n');
 }
 function copyText(t,ok){
   function fall(){
@@ -2549,7 +2460,7 @@ function renderTapSheet(){
   });
   /* аудит 20.11.2026: сверху ручка (п. 14, 16); лишнее снимается свайпом влево, кружка «−» нет (п. 27) */
   var h='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>'+
-    '<h3>'+escH(c.t)+'</h3><p class="note" style="margin:-8px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
+    '<h3>'+escH(c.t)+'</h3><p class="note" style="margin:-10px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
     (lock?'. День закрыт.':'. Время можно поправить, лишнее — смахнуть влево.')+'</p>';
   h+=a.length?a.map(function(o){
     return '<div class="tpRow swRow"><span class="tpTime'+(o.x.t?'':' tpNo')+'"><b>'+(o.x.t||'—:—')+'</b>'+
@@ -3913,7 +3824,7 @@ function jrPrintMake(sel){
     function card(fn){ var y0=y; y+=6; fn(); y+=16; var h=y-y0; ctx.save(); ctx.globalCompositeOperation='destination-over'; rr(P,y0,W-2*P,h,20,'rgba(255,255,255,.16)'); ctx.restore() }
     var MUT='rgba(255,255,255,.82)', IN=P+18, CW=W-2*P-36;
     txt('HappyDay · Журнал',P,y+24,26,800); y+=24;
-    txt(one?ruDate(r.a)+' '+r.a.slice(0,4):jrRangeTxt(r)+' '+r.b.slice(0,4),W-P,y,15,600,MUT,'right');
+    txt(one?ruDate(r.a):jrRangeTxt(r),W-P,y,15,600,MUT,'right');
     if(sel.now){
       var nl=jrNowLast(r), vals=nwLast(nl?nl.d:r.b), L=nwList();
       head('Как ты сейчас',nl?(one?'отметка в '+nl.x.t:ruDate(nl.d)+', '+nl.x.t):'отметок нет');
@@ -3991,7 +3902,7 @@ function jrPrintMake(sel){
       }
     }
     function card2(x,w,fn){ var y0=y; fn(); y+=12; ctx.save(); ctx.globalCompositeOperation='destination-over'; rr(x,y0,w,y-y0,16,'rgba(255,255,255,.15)'); ctx.restore() }
-    y+=30; txt('HappyDay · '+ruDate(todayISO())+' '+todayISO().slice(0,4),W/2,y,11.5,600,'rgba(255,255,255,.6)','center');
+    y+=30; txt('HappyDay · '+ruDate(todayISO()),W/2,y,11.5,600,'rgba(255,255,255,.6)','center');
     return y+P;
   }
   var probe=document.createElement('canvas').getContext('2d'), H=Math.ceil(draw(probe));
@@ -4294,10 +4205,10 @@ function rebuild(){
 function isoD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function parse(s){var p=String(s).split('-');return new Date(+p[0],p[1]-1,+p[2])}
 var MID=(SMIN+SMAX)/2;
-var MON=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
-var MON1=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+var MON=['янв','февр','мар','апр','мая','июн','июл','авг','сент','окт','нояб','дек'];   /* короткая дата «24 нояб», как в iOS (решение 24.11.2026) */
 function ru(d){return d.getDate()+' '+MON[d.getMonth()]}
-function ruRange(a,b){return a.getMonth()===b.getMonth()?(a.getDate()===b.getDate()?ru(a):a.getDate()+'–'+b.getDate()+' '+MON[b.getMonth()]):ru(a)+' – '+ru(b)}
+function ruRange(a,b){var full=function(d){return d.getDate()+' '+MONG[d.getMonth()]};   /* период — полными месяцами: «18–24 ноября» */
+ return a.getMonth()===b.getMonth()?(a.getDate()===b.getDate()?full(a):a.getDate()+'–'+full(b)):full(a)+' – '+full(b)}
 function fmtH(min){var H=Math.floor(min/60),M=Math.round((min-H*60)/5)*5;if(M===60){H++;M=0}
   return (H?H+' ч':'')+(H&&M?' ':'')+(M||!H?M+' мин':'')}
 function metricOf(k){return DB.metrics.filter(function(m){return m.k===k})[0]}
@@ -4976,7 +4887,7 @@ function renderData(){
   var e=day(curDate);
   document.getElementById('trackerBox').innerHTML =
     '<div class="kv"><b>Экранное время</b><span>'+
-      (screenTotal(e)!=null?hhmm(screenTotal(e)):'—')+'</span></div>';
+      (screenTotal(e)!=null?durRu(screenTotal(e)):'—')+'</span></div>';
 
 }
 
@@ -6113,12 +6024,29 @@ function renderAll(){
  const paintKey='happy-'+app+'-appearance-paint-v1';
  function remember(id,button,css){
   if(id!==current||button!==currentButton)return;
-  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css}):'')).catch(()=>{});}catch(e){}
+  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css,top:barColor(id)}):'')).catch(()=>{});}catch(e){}
  }
+ /* 24.11.2026 (Астамур, пункт 12А): полоска браузера сверху (theme-color) — цвет верха фона. Без темы — свой цвет
+    приложения из <meta> (Day #56B9F7, Meal #A13E65, Sport #8E75E1), с темой — цвет её фона в середине верхнего края. */
+ const meta=document.querySelector('meta[name=theme-color]');
+ if(meta&&!meta.dataset.base)meta.dataset.base=meta.content;
+ function topColor(g){
+  const st=G.colors(g);if(!st.length)return '';
+  const m=G.normalize(g);
+  const hex=v=>'#'+v.map(x=>Math.round(x).toString(16).padStart(2,'0')).join('');
+  if(m.type!=='linear'||st.length<2)return st.length<2?st[0].color:hex(G.interpolate(st,G.sample(m,.5,0)));   // радиальный и др. — как считает студия
+  const W=root.innerWidth||390,H=root.innerHeight||844,a=m.angle*Math.PI/180;
+  const L=Math.abs(W*Math.sin(a))+Math.abs(H*Math.cos(a)),dy=-H/2;   // точка: середина верхнего края
+  const pos=Math.max(0,Math.min(100,(0.5+(dy*-Math.cos(a))/L)*100));
+  return hex(G.interpolate(st,pos/100));
+ }
+ function barColor(id){const t=id?themes.find(t=>t.id===id):null;return t?topColor(t.state.backgroundGradient):'';}
+ function paintBar(id){if(!meta)return;const c=barColor(id);meta.content=/^#[0-9a-f]{6}$/i.test(c)?c:meta.dataset.base;}
  function skin(id,button){
   if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
   const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
+  paintBar(id);
   const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
   document.documentElement.dataset.happyAppearanceButton=button;
   if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');remember(id,button,'');return;}

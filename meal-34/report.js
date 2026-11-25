@@ -22,6 +22,7 @@
     (keys||[]).forEach(function(k){if(!known[k])out.push({key:k,title:k,unit:'ед. базы',group:'etc'})});
     return out;
   }
+  function rDay(s){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||''));return m?(+m[3])+' '+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'][+m[2]-1]+(m[1]!==String(new Date().getFullYear())?' '+m[1]:''):String(s||'')}   /* «24 ноября» в заголовках PDF (24.11.2026); CSV остаётся 2026-11-24 */
   function validDate(s){var d=new Date(s+'T12:00:00Z');return /^\d{4}-\d{2}-\d{2}$/.test(s)&&Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===s}
   function copyRange(r){return {a:r.a,b:r.b}}
   function calendarDays(month,today){
@@ -93,7 +94,7 @@
     var pages=[[]],y=270,totals=aggregate(rows,fs),days=new Set(rows.map(function(r){return r.date})).size;
     function add(block,height){
       if(y+height+(block.kind==='heading'?140:0)>1560){pages.push([]);y=270;
-        if(block.kind==='food'||block.kind==='supplement-component'){add({kind:'heading',title:block.row.date+' · '+block.row.section+' (продолжение)'},82)}
+        if(block.kind==='food'||block.kind==='supplement-component'){add({kind:'heading',title:rDay(block.row.date)+' · '+block.row.section+' (продолжение)'},82)}
         else if(block.kind==='nutrient'){var group=GROUPS.filter(function(g){return g[0]===block.field.group})[0];add({kind:'heading',title:(group?group[1]:'Состав')+' (продолжение)'},82)}
       }
       block.y=y;block.h=height;pages[pages.length-1].push(block);y+=height;
@@ -102,7 +103,7 @@
     if(options.summary)add({kind:'summary',totals:totals,days:days,count:rows.length,energy:options.energy,macros:options.macros},options.macros?286:200);
     if(options.foods){
       var last='';rows.forEach(function(r){
-        var title=r.date+' · '+r.section;if(title!==last){add({kind:'heading',title:title},82);last=title}
+        var title=rDay(r.date)+' · '+r.section;if(title!==last){add({kind:'heading',title:title},82);last=title}
         var lines=wrap(r.name+(r.kind==='supplement'?' · БАД':''),55),metaLines=wrap((options.time?(r.time||'время не указано')+' · ':'')+portionText(r),options.energy?54:78);add({kind:'food',row:r,lines:lines,metaLines:metaLines,energy:options.energy,macros:options.macros,time:options.time},lines.length*35+74+(metaLines.length-1)*29+(options.macros?38:0));
         if(r.kind==='supplement')(r.components||[]).forEach(function(component){var lines=wrap(componentText(r,component),78);add({kind:'supplement-component',row:r,lines:lines},lines.length*29+24)});
       });

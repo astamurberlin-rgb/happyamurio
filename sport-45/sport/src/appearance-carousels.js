@@ -136,5 +136,9 @@
  }
  function end(e){if(!drag||drag.id!==e.pointerId)return;if(drag.axis){ignoreClickUntil=performance.now()+240;if(drag.axis==='x')settle(drag.list)}drag=null}
  addEventListener('pointerup',end);addEventListener('pointercancel',end);
+ /* колесо мыши листает ленту вбок (Windows без тачскрина, Астамур 24.11.2026); у края ленты колесо снова листает страницу */
+ document.addEventListener('wheel',e=>{const list=e.target.closest?.('.appearance-options');if(!list||e.ctrlKey)return;
+  const d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY,max=list.scrollWidth-list.clientWidth;if(max<=0||!d)return;
+  if((d<0&&list.scrollLeft<=0)||(d>0&&list.scrollLeft>=max-1))return;e.preventDefault();list.scrollLeft=Math.max(0,Math.min(max,list.scrollLeft+d*(e.deltaMode===1?32:1)));},{passive:false});
  document.addEventListener('click',e=>{if(e.detail>0&&performance.now()<ignoreClickUntil&&e.target.closest?.('.appearance-options')){e.preventDefault();e.stopImmediatePropagation()}},true);
 })();

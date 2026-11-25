@@ -22,3 +22,6 @@ body.wheel-editing [data-screen="ring"]{position:relative;overflow-x:hidden}
 
 /* Кнопка на экране отметки — как главная кнопка, без светлого контура от .now-save (Астамур 22.11.2026). */
 body.wheel-editing .now-save:not([data-dirty="true"]){border:0}
+/* 24.11.2026 (Астамур): после «Сохранить» классы экрана отметки снимаются, и кнопка на миг становилась старым жёлтым диском 116,
+   который уезжал вниз за синей кнопкой (переход transform/visibility .32 с). Вне экрана отметки кнопка прячется сразу. */
+body:not(.wheel-editing):not(.now-editing) .now-save{transition:none}

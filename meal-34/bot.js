@@ -1159,7 +1159,7 @@ var MealBot=(function(){
     var S0=sec(en.sec), parts=[];
     if(S0&&!(en.needMeal&&!en.secSet)) parts.push('«'+S0.t+'»');   // приём ещё спрашивается — в заголовке его нет
     if(en.t) parts.push((en.approx?'около ':'')+en.t);
-    if(en.date!==curDate){ var d=new Date(en.date+'T12:00:00'); parts.push(d.getDate()+'.'+pad2(d.getMonth()+1)) }
+    if(en.date!==curDate){ var d=new Date(en.date+'T12:00:00'); parts.push(d.getDate()+' '+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'][d.getMonth()]) }
     return parts.join(' · ');
   }
   function sameMealGroup(c){
@@ -2906,8 +2906,8 @@ var MealBot=(function(){
     var A=actData().past_days, end=new Date(todayISO()+'T12:00:00'), got=[], from='', to='';
     for(var i=6;i>=0;i--){ var d=new Date(end); d.setDate(d.getDate()-i); var iso=isoOf(d), it=actItems(iso); if(i===6) from=iso; if(i===0) to=iso; if(it.length) got.push(sumOf(it)) }
     if(!got.length) return p(esc(A.answer_week_empty));
-    var n=got.length, s=got.reduce(function(a,x){ a.k+=x.k; a.p+=x.p; a.f+=x.f; a.c+=x.c; return a },{k:0,p:0,f:0,c:0}), dm=function(iso){ var d=new Date(iso+'T12:00:00'); return d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0') };
-    return p(esc(actT(A.answer_week,{n:n,from:dm(from),to:dm(to)}))+' <b>'+Math.round(s.k/n)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p/n)+' г · Ж '+fmt(s.f/n)+' г · У '+fmt(s.c/n)+' г в день</p>';
+    var n=got.length, s=got.reduce(function(a,x){ a.k+=x.k; a.p+=x.p; a.f+=x.f; a.c+=x.c; return a },{k:0,p:0,f:0,c:0}), dm=function(iso){ var d=new Date(iso+'T12:00:00'); return d.getDate()+' '+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'][d.getMonth()] }, rng=function(a,b){ return a.slice(0,7)===b.slice(0,7)?(+a.slice(8))+'–'+dm(b):dm(a)+' – '+dm(b) };
+    return p(esc(actT(A.answer_week,{n:n,range:rng(from,to)}))+' <b>'+Math.round(s.k/n)+' ккал</b>')+'<p class="mbSum">Б '+fmt(s.p/n)+' г · Ж '+fmt(s.f/n)+' г · У '+fmt(s.c/n)+' г в день</p>';
   }
   function actPast(t){
     var A=actData().past_days, ate=actRx(A.ate).test(t), kc=actRx(A.kcal).test(t), sh=actRx(A.show).test(t);

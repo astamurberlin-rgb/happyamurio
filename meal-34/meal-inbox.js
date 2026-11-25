@@ -35,14 +35,14 @@ var MealInbox=(function(){
     return r.json();
   }
   function hm(at){ var d=new Date(at); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2) }
-  function dm(at){ var d=new Date(at), t=new Date(); return d.toDateString()===t.toDateString()?'':', '+d.getDate()+'.'+('0'+(d.getMonth()+1)).slice(-2) }
+  function dm(at){ var d=new Date(at), t=new Date(); return d.toDateString()===t.toDateString()?'':d.getDate()+' '+['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'][d.getMonth()]+', ' }
   function msgOf(r,extra){ var m={kind:'text',text:r.raw_text,eaten:true,at:r.created_at,inbox:r.id}; if(extra) Object.keys(extra).forEach(function(k){ m[k]=extra[k] }); return m }
   function S(){ return MealBot.state(CH.meal) }
   function blocked(){ var s=S(); return !!(s.pend.length||s.ask||s.offer) }
   function openIds(){ var s=S(), o={}; s.pend.forEach(function(q){ if(q.line&&q.line.inbox) o[q.line.inbox]=1 }); if(s.offer&&s.offer.inbox) o[s.offer.inbox]=1; return o }
   function give(r,replay){
     var chat=CH.meal;
-    chat.msgs.push({id:'m'+(++chat.seq),who:'me',kind:'text',text:'Шорткат, '+hm(r.created_at)+dm(r.created_at)+': '+r.raw_text,inbox:r.id});
+    chat.msgs.push({id:'m'+(++chat.seq),who:'me',kind:'text',text:'Шорткат, '+dm(r.created_at)+hm(r.created_at)+': '+r.raw_text,inbox:r.id});
     mark(r.id,'fed');
     var h; try{ h=MealBot.feed(chat,msgOf(r,replay?{onlyAsk:1}:null)) }catch(e){ h='<p>Не получилось разобрать эту диктовку. Скажи её здесь заново.</p>' }
     if(replay&&!openIds()[r.id]){ chat.msgs.pop(); return }   // записана целиком ещё до перезагрузки — показывать нечего

@@ -236,13 +236,18 @@
   },
   {
    "path": "bot-guide-steps.js",
-   "size": 33899,
-   "sha256": "c6a726a2187e322fb9e647007772c1baf8633de8cdbbf7be682d6a5131b1aab8"
+   "size": 44742,
+   "sha256": "503ebf9f0df866412165d92d88c5e0938f0d1993da4c0f6f4192acc7940278d3"
+  },
+  {
+   "path": "bot-mine.js",
+   "size": 14364,
+   "sha256": "8b1709d8f9e80520e0640276c2024e0a06f1b4f2478d3bef6e94c3b6e0021260"
   },
   {
    "path": "bot-own-product.js",
-   "size": 19595,
-   "sha256": "7fbcf2e7888e32836af32ece34cb2cda5109435fe4a095b1161b18e733fe8cff"
+   "size": 19859,
+   "sha256": "ed9d33f0c56f8a2036f517977716586a80a33a159916ca1683e435f631c3c230"
   },
   {
    "path": "bot-replacement.css",
@@ -256,23 +261,23 @@
   },
   {
    "path": "bot-speech.js",
-   "size": 30605,
-   "sha256": "e25b44cd435ac5e7ca46aafd8e5c94fcec4d4d2b0372146fb4a16072615297f3"
+   "size": 31265,
+   "sha256": "6d6464699adb2907f3a079fcdebd932b044badb21a8f5067e829d26aa00a129d"
   },
   {
    "path": "bot-steps.js",
-   "size": 16443,
-   "sha256": "b60e7379dcb1c1fafa3f8e92b6fe7944c28c54825255cd05420f7c8d24ba59b3"
+   "size": 17787,
+   "sha256": "80133f0deb494ddb71ac7369f84334d00e37b882147682ec5a9cd9368d7ef7ba"
   },
   {
    "path": "bot.js",
-   "size": 330592,
-   "sha256": "c885b35b9b2c381be30999fb40fe295a8dd4b9d9dc1ec3f10a546d07cf016371"
+   "size": 381061,
+   "sha256": "0fecbd0c37aa64ec38ad10032dfcf56ba13ec715cee6b15a6d6a23cf23961316"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 654202,
-   "sha256": "55bad7f3345e0c017b9751308ca9f9e591b1aa368b765a33b80323d3c4676d23"
+   "size": 693149,
+   "sha256": "8c6df2dfba68baadbdea17c787cf8f2945ac41ed8e6cdef5635b6f8e0435ceaf"
   },
   {
    "path": "catalog-offline.js",
@@ -286,8 +291,8 @@
   },
   {
    "path": "catalog.css",
-   "size": 9296,
-   "sha256": "710c27285e41fffae93d1eafb5974c1f89d72acef6d1ef7b1861ba8e026217e7"
+   "size": 8380,
+   "sha256": "18bb65e6dd8b38d1495626cb76b99461bb9e875401dc0f9a6810ba63ebb187f2"
   },
   {
    "path": "catalog.js",
@@ -301,8 +306,8 @@
   },
   {
    "path": "checks/check-desserts.mjs",
-   "size": 26553,
-   "sha256": "4182380338f55c53e4cd381ec112e77da724f78736bf6962731bda879e7ad241"
+   "size": 26685,
+   "sha256": "50d2cdaa5ee96199e1a4cf4acb35846ea928d6f72138e00ad8fe9e4502a56f5f"
   },
   {
    "path": "checks/check-kfct.mjs",
@@ -326,13 +331,13 @@
   },
   {
    "path": "checks/check-meal-periods.mjs",
-   "size": 12705,
-   "sha256": "d1db660241e25d6f149613573bf7758dcfead6c4a01d54c115d6d92329e83bfa"
+   "size": 13294,
+   "sha256": "69eaadbf0b75481da3292b4e060774106213f685755ad7e6606ca3ff6c7f26f8"
   },
   {
    "path": "checks/check-preserves.mjs",
-   "size": 12458,
-   "sha256": "4df57a92823fdece385ebb6c677b195274d1055088c763dd079e94afdf320b6d"
+   "size": 12615,
+   "sha256": "d5ee21af4af5fe0a4de51c51bdcd76df87aa2a4305c21acaebdfc4edc59454a5"
   },
   {
    "path": "checks/check-search-names.mjs",
@@ -366,8 +371,8 @@
   },
   {
    "path": "collections.css",
-   "size": 11678,
-   "sha256": "83de89a0c2558d6d5d0f8b8b4daee6f4b670ac285db63398860b499ea943ba81"
+   "size": 11801,
+   "sha256": "c9a87051f298165ae64997436c3b85cd9b823865bd6f6ca712fc1d55d61886df"
   },
   {
    "path": "collections.js",
@@ -381,23 +386,23 @@
   },
   {
    "path": "cooking-library.js",
-   "size": 3799,
-   "sha256": "700acde0d700507a4ad7f31699b5d631a18aca0e7999cb0ffc7f8bfadac1edf1"
+   "size": 4021,
+   "sha256": "b61484b12a7b35957f69bcea74661761d71a94363093c78a70c71ee8e295c4ae"
   },
   {
    "path": "counters.js",
-   "size": 35008,
-   "sha256": "83b7ed99a7c4807a98308ee1ce22d882d433095c170bb9539e3b726c31f1a4df"
+   "size": 34974,
+   "sha256": "64b2991cd07899a74cc2c08f004449b237181f712110d475d1159065624ea031"
   },
   {
    "path": "design-rules.css",
-   "size": 5217,
-   "sha256": "ab4567698a42f1d96661f5ee4b7f7540ad354bf14f8dd68a9fc0e1b566c9163f"
+   "size": 4830,
+   "sha256": "9bbe8efaff5953041eb3dfc19520b20a080e70e1499c1f2fa7d2edb3644535eb"
   },
   {
    "path": "desserts.js",
-   "size": 28343,
-   "sha256": "d928d8626d9bb6827f40b1382837c25e66919a05303ba83633facbe14318405f"
+   "size": 28607,
+   "sha256": "e293da14a8ffb961f421c9a21a79f6285486fd49d899eaf230423aaadf3ca4d9"
   },
   {
    "path": "food-libraries.js",
@@ -431,8 +436,8 @@
   },
   {
    "path": "index.html",
-   "size": 715373,
-   "sha256": "956b016aaf3dbc0f3888038548a0a951b6412240b0cbb705a88a495591550787"
+   "size": 708198,
+   "sha256": "45cdb964b47b9bb3bf5ab6214cb4fb8a23dbe93cfd5fd9b0540adcfe2e975a0e"
   },
   {
    "path": "kfct.js",
@@ -442,7 +447,7 @@
   {
    "path": "manifest.webmanifest",
    "size": 541,
-   "sha256": "eaf4f5149b65cfc0bf85ad2422d9a21bfd00c0c133f47c09d55a5b0cbcb40807"
+   "sha256": "e88e0195fecd0c9562e82a8d778e9ffbc867d27ec54dc1677f55f9ccb428e572"
   },
   {
    "path": "meal-account.js",
@@ -461,8 +466,8 @@
   },
   {
    "path": "meal-fast.js",
-   "size": 30181,
-   "sha256": "367433bcc49afd317542aa7956b1a7e22d4ed30dccbf70f77074772f62851ea5"
+   "size": 30312,
+   "sha256": "1dbc03c84eef16ebe00c1fdefbc7ede43c4ec5a1f9ee8cdb95238d272b7b6271"
   },
   {
    "path": "meal-img/cover-bf-1.jpg",
@@ -616,8 +621,8 @@
   },
   {
    "path": "meal-inbox.js",
-   "size": 8981,
-   "sha256": "73b5c5eb003dfcd0e99686905346d9b22238f143947fa08701922818f487ba80"
+   "size": 9140,
+   "sha256": "9218c2ceda33dc712c6164c74f196e1eaa2737645b796f1c09c86c1a9b62ba5a"
   },
   {
    "path": "meal-measurements.js",
@@ -631,8 +636,8 @@
   },
   {
    "path": "meal-periods.js",
-   "size": 50543,
-   "sha256": "67a11c8d29dc254907499c9d8f1800698af9a4ad9c51a6c2b48c4cbe49d14f2d"
+   "size": 51006,
+   "sha256": "186feabe439d56a4df70d0ad150608b88db0d27a9c19cea5a0363339a779c467"
   },
   {
    "path": "portions.js",
@@ -641,8 +646,8 @@
   },
   {
    "path": "preserves.js",
-   "size": 13393,
-   "sha256": "65dfc7d747bc2a5f89548b8cc1cb25743df4b307916be1cca901c4a51ff4bf13"
+   "size": 13659,
+   "sha256": "5123251e935089fa99195a5d88499ab1ab80c4de9253679d565b7543c122f409"
   },
   {
    "path": "release-notes.css",
@@ -651,18 +656,18 @@
   },
   {
    "path": "release-notes.js",
-   "size": 92788,
-   "sha256": "f7a1722c0a574b60dc79838099ca4607ba420356b28f45b1a5e147eaf2472ce4"
+   "size": 99436,
+   "sha256": "3b42c5d3472458e715335a1d4866d05321d3c0b26ebabdbfa8499cb5db142f7e"
   },
   {
    "path": "report.css",
-   "size": 11593,
-   "sha256": "90418de1c259854d965b257a6d9d273b4d85967eb167a989fd8af3fdb4531ba5"
+   "size": 11283,
+   "sha256": "bcb72762bedba1390ef1b79f80a0b5c717f8b6e1c4807696158fdc295e3707a9"
   },
   {
    "path": "report.js",
-   "size": 33843,
-   "sha256": "6ec58aa71ad6ee373b165ac30a751212c18c69aaae4321febd839bca3a900859"
+   "size": 34387,
+   "sha256": "883ebb046122eb239e986b81b4511511931b111bb78f7290a2cfbcdac68ee753"
   },
   {
    "path": "search-names.js",
@@ -676,8 +681,8 @@
   },
   {
    "path": "shared/food-counters.css",
-   "size": 2900,
-   "sha256": "a5845871858de84e0475b0554758c76f7c1eb47fffd3c43920c30fb9c8bd5f61"
+   "size": 2509,
+   "sha256": "9a29beebf5dcb25eb1ffd691d472ec2d104dcd52d9cfd00235236d079cfd0f62"
   },
   {
    "path": "shared/happy-account.js",
@@ -696,18 +701,18 @@
   },
   {
    "path": "shared/happy-appearance.js",
-   "size": 16614,
-   "sha256": "78b576a205d01506394abab826aedad0e46d4ec393f77c0cc4bfb0aab7e22c04"
+   "size": 18039,
+   "sha256": "ca80cf99fa9263829100797286b910638aef310facd81db01dfadb2a0e15ce6d"
   },
   {
    "path": "shared/happy-colors.css",
-   "size": 3677,
-   "sha256": "9b1123ab55a6cf1dd21813216496bec19a73097969b1be3f5d4e42d180ac721e"
+   "size": 3878,
+   "sha256": "f140ea9bb7cd349b717ec2e2bfb0bdcaf618a1caffac244e406acee4e4f9505c"
   },
   {
    "path": "shared/happy-design.css",
-   "size": 6439,
-   "sha256": "59d2893e5209f91bc25ca5e1acd358c2ff378b452cd02624e6dee8d4eac06a34"
+   "size": 7074,
+   "sha256": "d96e6d0034d5cfe2bb0382c42afe3a278c03b8dbc371ff0573654494525d9dcc"
   },
   {
    "path": "shared/happy-energy-ring.js",
@@ -741,8 +746,8 @@
   },
   {
    "path": "shared/happy-measurements.css",
-   "size": 18226,
-   "sha256": "bd4a262707749dac3ef6084b42af65404d65ce6172a513b52133d4e98ff3e444"
+   "size": 16981,
+   "sha256": "b4dae3355343fa82f26f3167d328b7b9bb0e3895f221be242c2f1284c2fa3528"
   },
   {
    "path": "shared/happy-measurements.js",
@@ -771,8 +776,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 38819,
-   "sha256": "80205c88b477767a82e06070534f82d044c65d9129982db6c2c34b11e08b7b20"
+   "size": 39472,
+   "sha256": "b46d4dfb278ac17743f1d9ff844b8efe2c7a67c5d9ae78899d79e11720b11e54"
   },
   {
    "path": "shared/happy-screens.js",
@@ -801,13 +806,13 @@
   },
   {
    "path": "shared/happy-theme-picker.css",
-   "size": 5741,
-   "sha256": "4461ee37bee08c6798e2e2bb7eaa7a554090ebbdbd0a79f88f5af86a3116d9a0"
+   "size": 6013,
+   "sha256": "55f93c445227ed2097dda766d814ce40c1d2fe1cde025ec3530b3f04189d85e5"
   },
   {
    "path": "shared/happy-theme-picker.js",
-   "size": 13242,
-   "sha256": "f6f2fe5c6d8b9ca428214a388428814f665c60ebaf4b2598daed4fa04d2d63e3"
+   "size": 13886,
+   "sha256": "aa3bf16f3e5410d4e56c4f4890cd3a713820e48c8e19db8bffa7c87eb9eb4da6"
   },
   {
    "path": "shared/happy-ui.css",
@@ -816,8 +821,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 33965,
-   "sha256": "25c49243f2c1e45a204b44f74c733c35bef1d8540c634f20b347967a6b8585fa"
+   "size": 34003,
+   "sha256": "7690b1318c88eba3a7e7a76dcdb329e4a68e973775c938d2a58c132190d37009"
   },
   {
    "path": "shared/meal-products-model.js",
@@ -826,8 +831,8 @@
   },
   {
    "path": "shared/release-notes.js",
-   "size": 3156,
-   "sha256": "b2b96a57602e29a4ca711439e23b801522c8d1be6c79864fb7a4dae203f2d5a5"
+   "size": 3608,
+   "sha256": "81fd71021db8e0a40328951745650b668b8545075470ac9926fff79587451408"
   },
   {
    "path": "sources.js",
@@ -836,8 +841,8 @@
   },
   {
    "path": "substances.js",
-   "size": 12787,
-   "sha256": "ec6e38d46ba0be8d0ea828e1fce88d367eaa86525a80c947f66ec5d0d35751ac"
+   "size": 13066,
+   "sha256": "b82e2cfbd1a4c82a5ca318a389a84304a7ef799876ce4400dd25a7abe33e7c58"
   },
   {
    "path": "supplement-counters.js",
@@ -871,8 +876,8 @@
   },
   {
    "path": "supplements.css",
-   "size": 15279,
-   "sha256": "7f2cd5e8b2b75b94dc41386b95d1873799cfaf4844da42d7a3440f7d2026dbb1"
+   "size": 13172,
+   "sha256": "fab2a1ef0e5df5bfef9ceb3e732c523b141406e6ac12d1f73e861990cbb44e87"
   },
   {
    "path": "supplements.js",
@@ -881,8 +886,13 @@
   },
   {
    "path": "sw.js",
-   "size": 3778,
-   "sha256": "f50be87dac0d1bb913cc8d89396eb95b1c0ae8d8bf800983dc15382f42e0fb14"
+   "size": 3779,
+   "sha256": "4de402b228ed351dc5b14236e9a1f85ccb7a72c4e01dd2ce0b92a7ea4a26947e"
+  },
+  {
+   "path": "tap-swipe.js",
+   "size": 2721,
+   "sha256": "6f8740dc7cf5291b72a11deeff6b0f2296b562b1d44bcdf5cc45df731427bf8b"
   },
   {
    "path": "usda-measures.js",
@@ -896,13 +906,13 @@
   },
   {
    "path": "user-products.css",
-   "size": 9089,
-   "sha256": "3822b40803e03b23a6ff62d0f8f56602fbc66d6aaaf72fffc7cd41dc8ca18966"
+   "size": 8927,
+   "sha256": "f9d53d7324dcb969c00de303235da5cfb1cfa139d2901e6e5ee0b82da046de2a"
   },
   {
    "path": "user-products.js",
-   "size": 43864,
-   "sha256": "e56a1da15ae39bef838506042d780681181f535c0207b384809763b6574e0669"
+   "size": 46013,
+   "sha256": "d15cdfa7c6973bd15721392080fb6dc73a85e44508c988eab6fbf9a00f5a09d2"
   },
   {
    "path": "uzbek.js",

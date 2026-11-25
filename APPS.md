@@ -33,6 +33,7 @@
 | --- | --- | --- | --- |
 | Happy Notes — дневники и заметки | 2.1.1 | https://astamurberlin-rgb.github.io/happyamurio/files-2/ | `files-2/` |
 | Файлы — прежний просмотр тех же документов | 1.7 | https://astamurberlin-rgb.github.io/happyamurio/files/ | `files/` |
+| Дизайн-система — правила стиля и токены | 1.0 | https://astamurberlin-rgb.github.io/happyamurio/design-system/ | `design-system/` |
 | Color Studio — палитры трёх приложений | 12.11 | https://astamurberlin-rgb.github.io/happyamurio/prototypes/studio.html | `prototypes/` |
 | Icon Studio — иконки | 2.18 | https://astamurberlin-rgb.github.io/happyamurio/icon-studio/ | `icon-studio/` |
 | Студия дуг — дуга кольца энергии Day | 1.2 | https://astamurberlin-rgb.github.io/happyamurio/prototypes/arc-studio/ | `prototypes/arc-studio/` |

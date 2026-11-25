@@ -5,9 +5,12 @@
    Sport держит те же правила в своём design-rules.css и переходит на этот файл по слову Астамура; Meal — со своим
    следующим обновлением. — Claude · 20.11.2026 */
 
-/* ── Кнопки общих экранов: пилюля 48, текст 16 / 600, одна строка ── */
+/* ── Кнопки: пилюля 48, текст 14 / 600, одна строка. Исключение — кнопки входа (экран входа и лист «Войди в аккаунт»): 16 ── */
 .hs-btn,.hm-button,.hm-output .hm-button,.happy-actions>.happy-button{box-sizing:border-box;min-height:48px!important;height:48px;border-radius:999px!important;padding:0 20px!important;
-  font-size:16px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap}
+  font-size:14px!important;font-weight:600!important;line-height:20px!important;white-space:nowrap}
+.hs-welcome .hs-btn,.hs-auth .hs-btn,.hs-gate-actions .hs-btn{font-size:16px!important}
+/* нажатие — лёгкое сжатие у всех кнопок */
+.hs-btn:active,.hm-button:active,.happy-button:active,.btn:active{transform:scale(.985)}
 
 /* ── Выбор из вариантов и вкладки: пилюля 44, текст 14; выбранное — 600, остальное — 400 ── */
 .hs-segment,.hm-periods,.happy-measurement-tabs{border-radius:999px!important}
@@ -50,3 +53,6 @@
 /* Кнопки действий — по ширине ряда и с текстом посередине: одна кнопка в ряду — во всю ширину, две — поровну
    (Астамур 21.11.2026: «сделай везде одинаково, посредине; если в ряду одна кнопка — лучше посередине»). */
 .happy-actions>.happy-button{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+
+/* «Тема» и «Главная кнопка» — белые 14 · 600, не бледные, как заголовки групп Настроек (24.11.2026) */
+.happy-settings [data-happy-section="account"] .appearance-wheel h3{color:#fff!important;font-weight:600!important}
