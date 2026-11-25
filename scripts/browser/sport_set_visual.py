@@ -19,7 +19,7 @@ def capture(page, row, button, path):
     right = ceil(max(b["x"] + b["width"] for b in boxes))
     bottom = ceil(max(b["y"] + b["height"] for b in boxes))
     page.screenshot(path=path, animations="disabled", caret="hide",
-                    clip={"x": left, "y": top, "width": right-left, "height": bottom-top})
+                    clip={"x": left, "y": top, "width": right - left, "height": bottom - top})
 
 
 def compare(reference, current, report_path):
@@ -41,7 +41,7 @@ def compare(reference, current, report_path):
               ("Разница" if changed else "Разница · совпадает", highlight)]
     font = ImageFont.truetype("DejaVuSans.ttf", 25)
     pad, label = 20, 43
-    report = Image.new("RGB", (size[0] + 2*pad, pad + len(panels)*(label + size[1] + pad)), "white")
+    report = Image.new("RGB", (size[0] + 2 * pad, pad + len(panels) * (label + size[1] + pad)), "white")
     draw = ImageDraw.Draw(report)
     y = pad
     for caption, picture in panels:
@@ -56,9 +56,9 @@ def check_set_picture(page, row, button, output, probe=False):
     output = Path(output)
     actual = output / "sport-set-current.png"
     # Пробная линия существует только в этой вкладке на время одного снимка.
-    style = page.add_style_tag(content=(
-        "#exercise-body-0 button.set-add { box-shadow: inset 0 1px 0 white !important; }"
-    )) if probe else None
+    style = None
+    if probe:
+        style = page.add_style_tag(content="#exercise-body-0 button.set-add { box-shadow: inset 0 1px 0 white !important; }")
     try:
         capture(page, row, button, actual)
     finally:

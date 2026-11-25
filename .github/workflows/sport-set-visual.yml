@@ -37,7 +37,7 @@ jobs:
       options: --ipc=host
     env:
       HAPPY_OUT: /tmp/happy-sport-visual
-      HAPPY_SPORT_VISUAL: ${{ inputs.probe && 'probe' || 'check' }}
+      HAPPY_SPORT_VISUAL: probe  # Разовая проба в ветке: ожидается красный результат.
     steps:
       - uses: actions/checkout@v4
         with:
