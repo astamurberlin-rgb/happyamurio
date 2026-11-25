@@ -26,8 +26,8 @@
   },
   "meal": {
     "entry": "meal-34/index.html",
-    "version": "34.18",
-    "name": "Happy Meal · Update 34.18",
+    "version": "34.19",
+    "name": "Happy Meal · Update 34.19",
     "sharedDirectory": "meal-34/shared",
     "settingsSections": [
       "account",
@@ -80,7 +80,7 @@
   },
   "iconStudio": {
     "entry": "icon-studio/index.html",
-    "version": "2.18",
+    "version": "2.19",
     "kind": "studio",
     "storageKey": "happy_icon_studio_v1",
     "storageScript": "icon-studio/studio.js"

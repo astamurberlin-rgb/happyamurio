@@ -225,6 +225,46 @@
    "sha256": "6d81cb9bb90f682f2d092183ceac826546e4b746d07bf163f89c08ba3430adb2"
   },
   {
+   "path": "app-icons/happy-meal-20261125-banana-glass-152.png",
+   "size": 17921,
+   "sha256": "76524379069c132956e7ff516e0fc9fbd636c5bca363f94957da84ecf3fd4347"
+  },
+  {
+   "path": "app-icons/happy-meal-20261125-banana-glass-167.png",
+   "size": 20881,
+   "sha256": "915415d95837ea4793c5477709513c7518ad0c6aff9a76bd36b5e6469acc6a37"
+  },
+  {
+   "path": "app-icons/happy-meal-20261125-banana-glass-180.png",
+   "size": 23330,
+   "sha256": "65295e9c55c16c29029bb45fca660116d7b04e2ee04bf9d203b0629fa393dae2"
+  },
+  {
+   "path": "app-icons/happy-meal-20261125-banana-glass-192.png",
+   "size": 25847,
+   "sha256": "1fab8a99b366fe10d185456b9320b25b1796c7325c41b1909292c91cda1626f9"
+  },
+  {
+   "path": "app-icons/happy-meal-20261125-banana-glass-32.png",
+   "size": 1744,
+   "sha256": "005849e65b511e07744c6b242818b1f58a179527d2477edb97a38ed30dced995"
+  },
+  {
+   "path": "app-icons/happy-meal-20261125-banana-glass-48.png",
+   "size": 3156,
+   "sha256": "3f250cf77b41e8145d934dc352d84e9edc26836d04abd5192ac3aa65a16ded04"
+  },
+  {
+   "path": "app-icons/happy-meal-20261125-banana-glass-512.png",
+   "size": 152581,
+   "sha256": "f6236944c6b035edae75ab9a859f50030c10dde6697b51f0af3a8ac000a257ad"
+  },
+  {
+   "path": "app-icons/happy-meal-20261125-banana-glass-original.png",
+   "size": 660236,
+   "sha256": "8105d9504cdf119fe6a1539244d32f571a5660ed368e24d1afc7a5f73426f1cd"
+  },
+  {
    "path": "app-links.js",
    "size": 3555,
    "sha256": "087feafc7f39d8fc5b025786f2311204ff117112195a3578b0134cdf2d4de409"
@@ -261,8 +301,8 @@
   },
   {
    "path": "bot-speech.js",
-   "size": 31265,
-   "sha256": "6d6464699adb2907f3a079fcdebd932b044badb21a8f5067e829d26aa00a129d"
+   "size": 52959,
+   "sha256": "8b160e331a5c49057d0914245c3d133adc33540abe67060fc53c505a4f568a97"
   },
   {
    "path": "bot-steps.js",
@@ -271,13 +311,13 @@
   },
   {
    "path": "bot.js",
-   "size": 381061,
-   "sha256": "0fecbd0c37aa64ec38ad10032dfcf56ba13ec715cee6b15a6d6a23cf23961316"
+   "size": 424015,
+   "sha256": "b9adafec30e8866ed90364704f57d8a1c2e65fa659de908e81cebc35f92c5e29"
   },
   {
    "path": "bot/household-ru.js",
-   "size": 693149,
-   "sha256": "8c6df2dfba68baadbdea17c787cf8f2945ac41ed8e6cdef5635b6f8e0435ceaf"
+   "size": 715051,
+   "sha256": "5fd4703f4facb4c624bb3bbd2febf562b1f04633bbf0fdce6dda39d3d255d6ee"
   },
   {
    "path": "catalog-offline.js",
@@ -306,8 +346,8 @@
   },
   {
    "path": "checks/check-desserts.mjs",
-   "size": 26685,
-   "sha256": "50d2cdaa5ee96199e1a4cf4acb35846ea928d6f72138e00ad8fe9e4502a56f5f"
+   "size": 26690,
+   "sha256": "76a35f1c4c7970b8b06989ee53dc34f80defb65b35ec0c6f49874c7b4fd6a609"
   },
   {
    "path": "checks/check-kfct.mjs",
@@ -321,8 +361,8 @@
   },
   {
    "path": "checks/check-meal-fast.mjs",
-   "size": 37408,
-   "sha256": "010ef2cb653c030c9f172a465856de7f9cc6dd0c9822029fb4b423cacbc5fb91"
+   "size": 37432,
+   "sha256": "10461990e437820bee53600afa14070cff2260a78e2e4a64cadc20e7d527a0d8"
   },
   {
    "path": "checks/check-meal-first-time.mjs",
@@ -336,8 +376,8 @@
   },
   {
    "path": "checks/check-preserves.mjs",
-   "size": 12615,
-   "sha256": "d5ee21af4af5fe0a4de51c51bdcd76df87aa2a4305c21acaebdfc4edc59454a5"
+   "size": 12620,
+   "sha256": "f7d98dd3e53a0db6504be687a04d777163ebb6875fb60a7d70b0878523220495"
   },
   {
    "path": "checks/check-search-names.mjs",
@@ -436,8 +476,8 @@
   },
   {
    "path": "index.html",
-   "size": 708198,
-   "sha256": "45cdb964b47b9bb3bf5ab6214cb4fb8a23dbe93cfd5fd9b0540adcfe2e975a0e"
+   "size": 718964,
+   "sha256": "9b31f5655f2096a5dadf44aed51cf7b967a6ce9bf0aa8a3142f1b7c8f1c81388"
   },
   {
    "path": "kfct.js",
@@ -446,8 +486,8 @@
   },
   {
    "path": "manifest.webmanifest",
-   "size": 541,
-   "sha256": "e88e0195fecd0c9562e82a8d778e9ffbc867d27ec54dc1677f55f9ccb428e572"
+   "size": 537,
+   "sha256": "5e48eba9d7fa6419e5d83e46a8ea19223778101bdab30df15f8304e996a0325a"
   },
   {
    "path": "meal-account.js",
@@ -656,8 +696,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 99436,
-   "sha256": "3b42c5d3472458e715335a1d4866d05321d3c0b26ebabdbfa8499cb5db142f7e"
+   "size": 104894,
+   "sha256": "f1aac4d1786de29d5189aec7cd17ce7eddeb54e1ef7c25b47c4b497397e3a5a1"
   },
   {
    "path": "report.css",
@@ -686,8 +726,8 @@
   },
   {
    "path": "shared/happy-account.js",
-   "size": 38084,
-   "sha256": "3ec62c9fc8718916279a23829d476c1b1a4f73fccab60a1553c955b5c2c9555a"
+   "size": 39102,
+   "sha256": "990413d4f5f9b5fefb71a7ea56d401be2dc6166a31df7bcab2ef625c7e932d33"
   },
   {
    "path": "shared/happy-app-links.js",
@@ -741,8 +781,8 @@
   },
   {
    "path": "shared/happy-links.js",
-   "size": 1850,
-   "sha256": "4b85d0f744bb3bf5590c01943f743ccc04d671386a621ede79076cf36cf1bad4"
+   "size": 2294,
+   "sha256": "c27b4f01b2d760b38d8ce4a3fc38474e906d13a95e104d2d3377108f6339a78a"
   },
   {
    "path": "shared/happy-measurements.css",
@@ -821,8 +861,8 @@
   },
   {
    "path": "shared/happy-welcome.js",
-   "size": 34003,
-   "sha256": "7690b1318c88eba3a7e7a76dcdb329e4a68e973775c938d2a58c132190d37009"
+   "size": 34385,
+   "sha256": "822a623548c87973d11d846d350c096ea4f3407c3bcfaa6f4f6c81a9e801f382"
   },
   {
    "path": "shared/meal-products-model.js",
@@ -886,8 +926,8 @@
   },
   {
    "path": "sw.js",
-   "size": 3779,
-   "sha256": "4de402b228ed351dc5b14236e9a1f85ccb7a72c4e01dd2ce0b92a7ea4a26947e"
+   "size": 3775,
+   "sha256": "f0ea9c2113c31eabdae619f057b8a264e80066c204de81ce7c9ade2bf80570ee"
   },
   {
    "path": "tap-swipe.js",
