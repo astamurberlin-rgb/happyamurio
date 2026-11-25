@@ -8573,7 +8573,16 @@ function create(options){
  const withBack=path=>{const b=back();return b?path+(path.includes('?')?'&':'?')+'redirect_to='+encodeURIComponent(b):path};
  /* A verifier belongs to this tab and this app. Supabase keeps the OAuth state
     and exchanges its single-use code for the same Happy user's session. */
+ /* Один переход к Google на страницу (25.11.2026). Переход начинается не мгновенно: пока страница ещё жива, второе нажатие
+    записало бы новый проверочный код поверх кода уже начатого входа, и сервер отказал бы: «code challenge does not match».
+    Пока переход идёт, повторные вызовы ничего не делают. Вернулись на страницу кнопкой «назад» (pageshow) — можно снова. */
+ let googleLeaving=0;
  async function startGoogle(link){
+  if(googleLeaving&&now()-googleLeaving<30000)return;
+  googleLeaving=now();
+  try{await beginGoogle(link)}catch(e){googleLeaving=0;throw e}
+ }
+ async function beginGoogle(link){
   await cancelRecovery();
   if(link&&current()?.keyVersion!==2)
    throw fail('legacy','Сначала включи восстановление ключа в настройках аккаунта.');
@@ -8595,6 +8604,7 @@ function create(options){
   if(o.navigate)o.navigate(destination);else location.assign(destination);
  }
  async function finishGoogle(){
+  googleLeaving=0;   // вернулись от Google (или страница открыта заново): переход закончен
   if(!location?.href)return null;
   const page=new URL(location.href),params=page.searchParams,hash=new URLSearchParams(page.hash.slice(1));
   const code=params.get('code'),error=params.get('error')||hash.get('error');
@@ -8827,7 +8837,7 @@ function create(options){
   if(e.key===offerCell(o.app)&&e.newValue){acceptOffer().catch(()=>{});return}
   if(e.key===null||e.key===CELL)adopt().catch(()=>{});
  }
- if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume)}
+ if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume);events.addEventListener('pageshow',()=>{googleLeaving=0})}
  const api={
   load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
@@ -11399,6 +11409,8 @@ function fail(text){
  const box=pageH.main.querySelector('.hs-error');if(!box)return;
  box.textContent=text;box.hidden=!text;
 }
+const leaving=()=>new Promise(done=>{const t=root.setTimeout(done,10000);
+ try{root.addEventListener('pageshow',()=>{root.clearTimeout(t);done()},{once:true})}catch(e){}});
 async function busy(button,fn){
  const b=pageH&&pageH.main.querySelector('[data-hw="'+button+'"]');
  if(b){if(b.getAttribute('aria-busy')==='true')return;b.setAttribute('aria-busy','true');b.disabled=true}
@@ -11435,8 +11447,9 @@ async function registerEmail(email,password){
 function act(a){
  const A=cfg.account;
  switch(a){
- case 'google':return busy(a,()=>A.signInGoogle());
- case 'link-google':return busy(a,()=>A.linkGoogle());
+ /* кнопка остаётся выключенной, пока страница уходит к Google: второе нажатие сорвало бы вход (25.11.2026) */
+ case 'google':return busy(a,()=>A.signInGoogle().then(leaving));
+ case 'link-google':return busy(a,()=>A.linkGoogle().then(leaving));
  case 'complete-recovery':return busy(a,async()=>{
   const input=pageH.main.querySelector('[name="legacyPassword"]'),password=input?.value;
   if(input&&!password)throw Error('Введи прежний пароль Happy.');

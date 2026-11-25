@@ -90,6 +90,16 @@ export async function accountRecoveryCases({check, rejects, makeCloud, makeDevic
  check('привязка с другим ID отклоняется до смены аккаунта',!!await rejects(account.finishGoogle())&&account.current()?.uid===uid&&exchanges===1&&tab.storage.getItem(account.cell)===cell);
  page.href+='?code=link';
  check('повторное использование callback отклоняется',!!await rejects(account.finishGoogle())&&exchanges===1);
+{// 25.11.2026: второе нажатие, пока страница уходит к Google, не начинает второй вход и не меняет проверочный код.
+ const gone=[],pendingOne=new Map(),kept=()=>JSON.parse([...pendingOne.values()][0]||'{}').verifier;
+ const twice=HappyAccount.create({...options,oauthStorage:{setItem:(k,v)=>pendingOne.set(k,v),getItem:k=>pendingOne.get(k),removeItem:k=>pendingOne.delete(k)},navigate:u=>gone.push(u)});
+ await twice.load();
+ await twice.linkGoogle();const first=kept();
+ await Promise.all([twice.linkGoogle(),twice.linkGoogle()]);
+ check('повторные нажатия — один переход к Google',gone.length===1);
+ check('проверочный код остаётся от того перехода, который ушёл',!!first&&kept()===first);
+ twice.close();
+}
  account.close();
 
  // The confirmed Google identity gets its own Auth session even when the
