@@ -38,7 +38,7 @@
 | `sport-summary` | Тренировки и плановые занятия из витрины Sport; связь с Sport выключена — начатое после этого не показывается. |
 | `standalone` | Day одним файлом: встроено ровно то, что лежит в папке выпуска. |
 
-После правки Day, из корня репозитория: тесты; `python3 scripts/build-day-standalone.py day-61` — пересобрать Day одним файлом; после правок хранения, входа и обмена — сценарии `scripts/browser/run.sh day_store day_sections account_screens versions`; в конце `git add -A` и `python3 scripts/refresh-provenance.py day-61`.
+После правки Day, из корня репозитория: тесты; `python3 scripts/build-day-standalone.py day-61` — пересобрать Day одним файлом; после правок хранения, входа и обмена — сценарии `scripts/browser/run.sh day_store day_sections account_screens versions`.
 
 ## Meal — папка `meal-34/checks/`
 
@@ -64,7 +64,7 @@
 
 `check-shop.mjs` сравнивает витрину с каталогами того коммита библиотек, на котором собран выпуск. Запускать так: `HAPPY_LIBRARIES_REF=4261588 node meal-34/checks/check-shop.mjs`.
 
-После правки Meal, из корня репозитория: нужные проверки по одной; после правок хранения, входа и обмена — сценарии `scripts/browser/run.sh meal_store food_exchange account_screens`; в конце `git add -A` и `python3 scripts/refresh-provenance.py meal-34`.
+После правки Meal, из корня репозитория: нужные проверки по одной; после правок хранения, входа и обмена — сценарии `scripts/browser/run.sh meal_store food_exchange account_screens`.
 
 ## Sport — папка `sport-45/`
 
@@ -160,7 +160,6 @@
 | `node scripts/sync-shared.mjs` | Копирует общие файлы из `shared/` в текущие выпуски. |
 | `node scripts/sync-shared-ui.mjs` | Встраивает общий стиль настроек в страницы Day и Meal. |
 | `python3 scripts/build-day-standalone.py day-61` | Собирает Day одним файлом `Happy-Day-61.html`. |
-| `python3 scripts/refresh-provenance.py day-61 meal-34` | Обновляет список файлов выпуска с контрольными суммами. С `--check` только сверяет. Запускать после последней правки кода и `git add -A`. Справки `.md` в список не входят: после правки справки ничего запускать не нужно. |
 | `python3 -I scripts/build-lab.py папка` | Собирает лабораторию: Day, Meal и Sport рядом для закрытой страницы, с поддельным сервером в странице (вымышленный аккаунт, письма в панели «Проверка»). |
 | `python3 -I scripts/lab/build-app-lab.py day папка-всех папка-day` | Лаборатория одного приложения (`day`, `meal` или `sport`) из собранной выше папки: открывается сразу приложение, вход вымышленным аккаунтом делается сам (`scripts/lab/app-autologin.js`). Четвёртое слово `--sample-measurements` добавляет пример замеров тела (`scripts/lab/sample-measurements.js`): таблица замеров открывается сразу с историей. Так и выкладываем лабораторию для Астамура (решение 17.11.2026). Вход сам — только в этой копии: в файлах приложений его нет, в выпуск не переносить. |
 
@@ -192,7 +191,6 @@
 | `day-measurements.js` | Вкладка «Замеры тела» в журнале: общий экран замеров; отметка «полосы таблицы — в цвет приложения». |
 | `release-notes.js` | История обновлений внизу настроек. |
 | `tests/` | Тесты. |
-| `SOURCE-PROVENANCE.json` | Список файлов выпуска с контрольными суммами. |
 
 ### Meal — `meal-34/`
 
@@ -222,7 +220,6 @@
 | `release-notes.js`, `release-notes.css` | История обновлений внизу настроек. |
 | `meal-img/`, `images/`, `app-icons/` | Картинки. |
 | `checks/` | Проверки. |
-| `SOURCE-PROVENANCE.json` | Список файлов выпуска с контрольными суммами. |
 
 Осторожно в Meal:
 
