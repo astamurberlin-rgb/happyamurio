@@ -100,8 +100,9 @@ function init(){
  bindCareNavigation();initNowSave();
  renderSettings();
 }
+/* 25.11.2026 (Астамур): дата раздела — пилюля справа вверху, как на главной (была строкой под заголовком); нажатие — выбор дня */
 function header(title,parent='day',date=true){
- return '<div class="grip care-grip" role="button" tabindex="0" data-care-close="'+parent+'" aria-label="Закрыть"><i></i></div><div class="top"><h1>'+h(title)+'</h1></div>'+(date?'<p class="care-date">'+h(ruDate(curDate))+'</p>':'');
+ return '<div class="grip care-grip" role="button" tabindex="0" data-care-close="'+parent+'" aria-label="Закрыть"><i></i></div><div class="top"><h1>'+h(title)+'</h1>'+(date?'<span class="datePill care-datePill"><svg class="calIc" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="4"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg><span>'+h(ruDate(curDate))+'</span><input type="date" data-care-date value="'+h(curDate)+'" aria-label="Выбрать день"></span>':'')+'</div>';
 }
 function closeCurrent(){
  if(closeSheet())return true;
@@ -417,10 +418,15 @@ function mealFood(date){
 }
 /* пришла свежая сводка Meal или изменились счётчики, а экран «Активность» открыт — кольцо пересчитывается на месте */
 function mealChanged(){try{if(ready&&block('activity')?.classList.contains('on'))paintEnergy();}catch(e){}}
+/* 25.11.2026 (Астамур): покой, шаги, «потрачено» и цели строк (покой, тренировки, шаги, время) потом будут приходить
+   из HealthKit / Google Health Connect. Вход для них уже есть: globalThis.HappyHealth.day(дата) → {spent, rest, steps,
+   goals:{rest, training, steps, minutes}}. Пока его нет — строки показывают только число; есть цель — «число/цель» и полоску. */
+function healthDay(iso){try{const h=globalThis.HappyHealth&&HappyHealth.day(iso);return h&&typeof h==='object'?h:null}catch(e){return null}}
 function activityFacts(){
  const c=data(),a=C.activity(c,curDate),d=DB.days[curDate]||{},food=mealFood(curDate);
  const workouts=woOf(curDate),calories=workouts.map(w=>w.kcal??a.workouts.find(x=>x.id===w.id)?.energyKcal);
- return {food:food?{...food,g:DB.mealLink?.goals||{}}:null,eaten:food?.k??null,spent:null,rest:null,training:calories.length&&calories.every(C.finite)?calories.reduce((n,v)=>n+v,0):null,minutes:workouts.length?workouts.reduce((n,w)=>n+(w.min||0),0):a.connected?0:null,steps:null};
+ const H=healthDay(curDate)||{};
+ return {goals:H.goals||{},food:food?{...food,g:DB.mealLink?.goals||{}}:null,eaten:food?.k??null,spent:H.spent??null,rest:H.rest??null,training:calories.length&&calories.every(C.finite)?calories.reduce((n,v)=>n+v,0):null,minutes:workouts.length?workouts.reduce((n,w)=>n+(w.min||0),0):a.connected?0:null,steps:H.steps??null};
 }
 /* 57.4: вид виджета — «Начальный режим» из настроек (по умолчанию «баланс»); в дневник не записывается. */
 /* 25.11.2026 (Астамур): вид запоминается на устройстве — каким оставил, таким и откроется. «Начальный режим» в настройках —
@@ -492,7 +498,7 @@ async function click(ev){
  if(b.dataset.carePractice){const p=C.scheduled(data(),curDate).find(x=>x.id===b.dataset.carePractice);if(p){const f=$('carePracticeForm');fillPractice(f,{planId:p.id,name:p.name,time:p.time,minutes:p.minutes});f.scrollIntoView({block:'start'});}return;}
  if(b.dataset.careRemovePlan){removePlan(b.dataset.careRemovePlan);return;}
 }
-async function change(ev){const el=ev.target;
+async function change(ev){const el=ev.target;if(el.matches?.('[data-care-date]')){if(!el.value)return;curDate=el.value;try{renderAll()}catch(e){}({diary:renderDiary,mind:renderMind,activity:renderActivity}[['diary','mind','activity'].find(k=>block(k)?.classList.contains('on'))]||(()=>{}))();return;}
 
  if(el.dataset.careVisible){const k=el.dataset.careVisible;if(await transact(()=>{const s=data().settings;s.hidden=s.hidden.filter(x=>x!==k);if(!el.checked)s.hidden.push(k);})){renderSettings();if(block('settings-state').classList.contains('on'))renderSettingsPage('state');}return;}
  if(el.id==='careGoalMode'){$('careMindGoal').disabled=el.value==='schedule';HF.refresh($('careMindGoal'));}

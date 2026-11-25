@@ -131,7 +131,12 @@ let config=config0;
    с расчётом энергии тренировок); поля в виджете уже есть. */
 function date(){return selectedDate}
 function nutrition(){try{return typeof SportFood!=='undefined'?SportFood.eaten(date()):null}catch(e){return null}}
-function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
+/* 25.11.2026 (Астамур): покой, шаги, «потрачено» и цели строк (покой, тренировки, шаги, время) потом будут приходить
+   из HealthKit / Google Health Connect. Вход для них уже есть: globalThis.HappyHealth.day(дата) → {spent, rest, steps,
+   goals:{rest, training, steps, minutes}}. Пока его нет — строки показывают только число; есть цель — «число/цель» и полоску. */
+function health(){try{const h=globalThis.HappyHealth&&HappyHealth.day(date());return h&&typeof h==='object'?h:null}catch(e){return null}}
+function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());const H=health()||{};
+return {goals:H.goals||{},food,eaten:food?food.k:null,spent:H.spent??null,rest:H.rest??null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:H.steps??null}}
 function number(v){return v==null?'—':Math.round(v).toLocaleString('ru-RU')}
 const hues0={pink:350,violet:305,blue:262,teal:180};
 const BARS0={hues:hues0,chroma:.12,dot:.8,from:.86,to:.72,over:.56,track:22};let bars=BARS0;

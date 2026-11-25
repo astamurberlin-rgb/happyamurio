@@ -2933,12 +2933,18 @@ function erSportRead(){
    чего Sport не передаёт — null. Тренировок в витрине нет вовсе — null. Тренировки, начатые, пока связь с Sport была
    выключена, не берём. */
 function erSportDay(iso){
-  if(!ER_SPORT) return null;
-  var list=(ER_SPORT[iso]||[]).filter(function(w){ return typeof MealAppLinks==='undefined'||MealAppLinks.sportOn(w.start) }), t=HappySportSummary.totals(list);
-  return {n:t.n,min:t.min,wo:t.wo,k:null,rest:null,steps:null};
+  var h=erHealth(iso);
+  if(!ER_SPORT&&!h) return null;
+  var list=ER_SPORT?(ER_SPORT[iso]||[]).filter(function(w){ return typeof MealAppLinks==='undefined'||MealAppLinks.sportOn(w.start) }):[], t=ER_SPORT?HappySportSummary.totals(list):{n:0,min:null,wo:null};
+  h=h||{};
+  return {n:t.n,min:t.min,wo:t.wo,k:h.spent!=null?h.spent:null,rest:h.rest!=null?h.rest:null,steps:h.steps!=null?h.steps:null};
 }
+/* 25.11.2026 (Астамур): покой, шаги, «потрачено» и цели строк (покой, тренировки, шаги, время) потом будут приходить
+   из HealthKit / Google Health Connect. Вход для них уже есть: globalThis.HappyHealth.day(дата) → {spent, rest, steps,
+   goals:{rest, training, steps, minutes}}. Пока его нет — строки показывают только число; есть цель — «число/цель» и полоску. */
+function erHealth(iso){ try{ var h=window.HappyHealth&&HappyHealth.day(iso); return h&&typeof h==='object'?h:null }catch(e){ return null } }
 function erSportVal(d,k){ return d&&d[k]!=null?d[k]:null }
-function erSportGoal(k){ return 0 }   // целей по расходу Sport пока не передаёт
+function erSportGoal(k){ var h=erHealth(curDate), g=h&&h.goals, key={wo:'training',min:'minutes'}[k]||k; return g&&g[key]>0?g[key]:0 }
 /* клетчатка за день — из BLS по коду продукта; база не открылась или ни у одного продукта нет данных — прочерк */
 function dayFib(list){
   if(!list.length) return 0;
