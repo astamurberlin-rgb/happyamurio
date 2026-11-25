@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#963452">
+<meta name="theme-color" content="#A13E65">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Meal">
-<title>Happy Meal · Update 34.13</title>
+<title>Happy Meal · Update 34.14</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-meal-20261102-softserve-cool-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-meal-20261102-softserve-cool-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-meal-20261102-softserve-cool-152.png">
 <link rel="apple-touch-icon" sizes="167x167" href="./app-icons/happy-meal-20261102-softserve-cool-167.png">
-<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-meal-20261102-softserve-cool-180.png?v=34.13">
-<link rel="manifest" href="./manifest.webmanifest?v=34.13">
+<link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-meal-20261102-softserve-cool-180.png?v=34.14">
+<link rel="manifest" href="./manifest.webmanifest?v=34.14">
 <style id="happy-colors-inline">/* HAPPY_COLORS_START */
 /* Happy — общие цвета трёх приложений (✱ design tokens). Лаборатория 21.11.2026, план «Общий файл цветов Happy».
    Цвета в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
@@ -82,6 +82,7 @@
   --hs-sheet-bg:linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%);
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
+  --happy-accent-ink:#5a50d1;   /* текст в белых кнопках Sport — фиолетовый Sport по имени, не синий числом (решение Астамура 24.11) */
 }
 /* ── конец блока из Color Studio ── */
 
@@ -96,7 +97,7 @@
   --happy-carbs:#6250d6;
 }
 /* HAPPY_COLORS_END */</style>
-<link rel="stylesheet" href="./shared/happy-colors.css?v=34.13">
+<link rel="stylesheet" href="./shared/happy-colors.css?v=34.14">
 <style>
 :root{
   --base:var(--happy-base);
@@ -148,17 +149,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .datePill input{position:absolute;left:0;top:0;width:100%;height:100%;
   opacity:0;border:0;padding:0;margin:0;background:none;
   -webkit-appearance:none;appearance:none}
-
-.lockBtn{width:40px;height:40px;flex:none;border-radius:999px;padding:0;
-  background:var(--glass);border:1px solid var(--glassBrd);
-  display:grid;place-items:center;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.lockBtn svg{width:19px;height:19px;fill:none;stroke:rgba(255,255,255,.85);
-  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.lockBtn.on{background:rgba(255,196,120,.26);border-color:rgba(255,196,120,.85)}
-.lockBtn.on svg{stroke:#FFD9A6}
 /* закрытый день: видно, что он только для просмотра */
-.locked .card.rowcard,.locked #tapBox,.locked #cntBox,.locked #note{opacity:.72}
+.locked .card.rowcard,.locked #note{opacity:.72}
 
 .eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
   font-size:14px;font-weight:700;color:var(--muted);margin:24px 2px 11px}
@@ -186,7 +178,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .chip{padding:11px 20px;border-radius:999px;font-size:14px;font-weight:400;
   background:var(--glass);border:1px solid var(--glassBrd);color:var(--happy-ink);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.chip.on{background:rgba(255,255,255,.9);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff;font-weight:700}
+.chip.on{background:rgba(255,255,255,.9);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff;font-weight:600}
 .chip.add{background:none;border-style:dashed}
 
 .kv{display:flex;justify-content:space-between;gap:12px;padding:11px 0;
@@ -194,9 +186,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 .kv:last-child{border-bottom:0}
 .kv b{font-weight:600}
 .kv span{color:var(--muted);font-family:var(--mono);font-size:14px}
-.fieldrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.14);font-size:14px}
-.fieldrow:last-child{border-bottom:0}
 input[type=text],input[type=number],input[type=password],input[type=date],textarea,select{
   border:1px solid var(--glassBrd);background:rgba(255,255,255,.14);color:var(--happy-ink);
   border-radius:12px;padding:10px 12px;font-size:14px;font-family:inherit}
@@ -207,46 +196,16 @@ textarea{width:100%;min-height:76px;resize:vertical}
   border-radius:14px;padding:11px 16px;font-size:14px;font-weight:600}
 .btn.solid{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
 .btn.warn{background:rgba(255,110,140,.24);border-color:rgba(255,150,175,.5)}
-.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
-.scrBar{position:relative;height:46px;border-radius:14px;touch-action:none;
-  background:rgba(255,255,255,.12);border:1px solid var(--glassBrd);overflow:hidden}
-.scrBar .fill{position:absolute;left:0;top:0;bottom:0;
-  background:linear-gradient(90deg,rgba(124,227,201,.72),rgba(70,253,252,.58));
-  transition:width .18s cubic-bezier(.25,.8,.25,1)}
-.scrBar .knob{position:absolute;top:6px;bottom:6px;width:5px;margin-left:-2.5px;
-  border-radius:3px;background:#fff;box-shadow:0 0 12px rgba(255,255,255,.8);
-  transition:left .18s cubic-bezier(.25,.8,.25,1)}
-.scrBar.dragging .fill,.scrBar.dragging .knob{transition:none}
-.scrBar .fill.over{background:linear-gradient(90deg,rgba(255,196,120,.72),rgba(255,150,120,.62))}
 /* метка лимита: докуда «нормально», дальше запас на перебор */
-.scrBar .lim{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;
-  background:rgba(255,255,255,.55)}
-.limRow{position:relative;height:15px;margin-top:5px}
-.limRow span{position:absolute;top:0;transform:translateX(-50%);
-  font-size:12px;color:var(--dim);white-space:nowrap}
+
 
 /* название счётчика — того же размера, что названия разделов */
-.cName{font-size:16px;font-weight:600;margin-bottom:12px}
 
-.tval{flex:1.15;height:42px;border-radius:13px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.14);border:1.6px solid rgba(255,255,255,.55);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
-  font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
-.tval:active{background:rgba(255,255,255,.26)}
-.tval.over{border-color:rgba(255,196,120,.85)}
-.tval.none{font-size:14px;font-weight:600;color:rgba(255,255,255,.6);
-  border-style:dashed;border-color:rgba(255,255,255,.45)}
-.scrRow{display:flex;align-items:center;gap:9px;margin-top:12px}
-.scrRow button{flex:1;height:40px;border-radius:12px;border:1px solid var(--glassBrd);
-  background:rgba(255,255,255,.13);color:var(--happy-ink);font-size:14px;font-weight:600;padding:0}
-.scrEdit span{font-size:14px;color:var(--muted);flex:1}
 
 /* ── Теги с временем: палец рисует черновик, «+» в углу записывает его строкой ──
    Черновик — бегущая штриховка поверх кирпичика; после «+» она гаснет, и кирпичик
    остаётся на месте уже сплошным. Каждая запись — свой кирпичик и своя строка. */
-.cHead{display:flex;align-items:center;gap:8px;min-height:36px;margin:-7px -5px 10px 0}
-.cHead .cName{flex:1;min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* Раскрытая кнопка всегда одной ширины — под самую длинную надпись («10 ч 55 мин»).
    При протяжке меняется только надпись по центру, сама кнопка не дёргается. */
 .plus{flex:none;display:flex;align-items:center;height:34px;width:34px;padding:0 0 0 7.5px;overflow:hidden;
@@ -257,66 +216,29 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .plus .pl{flex:1;min-width:0;padding:0 9px 0 4px;text-align:center;overflow:hidden}
 .plus .pl b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;transition:opacity .15s}
 .plus:active{background:rgba(255,255,255,.3)}
-.hasDraft .plus{width:128px;background:rgba(255,255,255,.95);color:var(--happy-accent-ink,#0C6FA8);
-  border-color:#fff;box-shadow:0 4px 14px rgba(4,40,80,.2)}
-.hasDraft .plus:active{background:#fff}
 .plus.pop{animation:plusPop .5s cubic-bezier(.25,.8,.25,1)}
 @keyframes plusPop{0%{transform:scale(1)}35%{transform:scale(1.1)}100%{transform:scale(1)}}
-.dX{flex:none;width:30px;height:30px;border-radius:50%;padding:0;display:grid;place-items:center;
-  border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1);
-  opacity:0;transform:scale(.5);pointer-events:none;transition:opacity .2s,transform .28s cubic-bezier(.25,.8,.25,1)}
-.dX svg{width:12px;height:12px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
-.hasDraft .dX{opacity:1;transform:scale(1);pointer-events:auto}
-.barWrap{position:relative}
-.scrBar .lim{z-index:3}
-.scrBar .knob{z-index:5}
 /* по полосе можно листать страницу вверх-вниз; жест вбок забирает сама полоса */
-#cntBox .scrBar{touch-action:pan-y}
-.scrBar .seg{position:absolute;top:0;bottom:0;left:0;width:0;z-index:2;overflow:hidden;
-  border-right:2px solid transparent;background-clip:padding-box;
-  background-image:linear-gradient(90deg,rgba(124,227,201,.72),rgba(70,253,252,.58));
-  transition:left .38s cubic-bezier(.25,.8,.25,1),width .38s cubic-bezier(.25,.8,.25,1),opacity .25s,filter .3s}
-.scrBar .seg::after{content:"";position:absolute;inset:0;opacity:0;transition:opacity .55s ease;
-  background-color:rgba(255,255,255,.22);
-  background-image:linear-gradient(45deg,rgba(255,255,255,.55) 25%,transparent 25%,transparent 50%,
-    rgba(255,255,255,.55) 50%,rgba(255,255,255,.55) 75%,transparent 75%,transparent);
-  background-size:14px 14px}
-.scrBar .seg.draft::after{opacity:1;animation:march .9s linear infinite}
+
 @keyframes march{from{background-position:0 0}to{background-position:14px 0}}
-@media (prefers-reduced-motion:reduce){.scrBar .seg.draft::after{animation:none}}
-.scrBar.over .seg{background-image:linear-gradient(90deg,rgba(255,196,120,.72),rgba(255,150,120,.62))}
-.scrBar .seg.gone{opacity:0}
-.scrBar .seg.hl{filter:brightness(1.35) saturate(1.2)}
-.scrBar.dragging .seg{transition:none}
-.scrBar .knob.bump{animation:knobBump .34s ease}
 @keyframes knobBump{0%,100%{transform:translateX(0)}30%{transform:translateX(6px)}65%{transform:translateX(-2px)}}
 /* записи под полосой: сверху «Всего», у каждой строки минус в кружке — как в списке нажатий счётчика */
-.eList{margin-top:12px;border-top:1px solid rgba(255,255,255,.2)}
-.eList:empty{display:none}
+
 /* сумма стоит в одной колонке с длительностями строк — справа место под минус */
-.eTot{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 34px 10px 2px;
-  border-bottom:1px solid rgba(255,255,255,.12)}
-.eTot span{font-size:14px;font-weight:700;color:var(--muted)}
-.eTot b{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
-.eTot b.over{color:#FFD9A6}
-.eRow.hl{background:var(--happy-glass)}
-.eRow{transition:background .3s}
-.eRow{display:flex;align-items:center;gap:11px;min-height:48px;padding:0 0 0 2px;
-  border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer}
-.eRow:last-child{border-bottom:0}
-.eRow.fresh{animation:rowFresh 1.6s ease-out}
+
 @keyframes rowFresh{0%,30%{background:rgba(255,255,255,.26)}100%{background:rgba(255,255,255,0)}}
-.cSw{width:12px;height:12px;flex:none;border-radius:4px;background-image:linear-gradient(90deg,rgba(124,227,201,.9),rgba(70,253,252,.75))}
-.eT{flex:1;min-width:0;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
-.eT.untimed{font-weight:400;color:rgba(255,255,255,.78)}
-.eD{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
-.eRow .minusBtn{width:30px;height:30px;margin:0 0 0 4px}
 
 /* ── Счётчики: сколько раз за день. Список, напротив каждого — минус, число, плюс ── */
 .tpSec{padding:16px 16px 4px}
 .tpT{margin:0 0 4px;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .tpItem{display:flex;align-items:center;gap:12px;min-height:58px;border-top:1px solid rgba(255,255,255,.18)}
 .tpT + .tpItem{border-top:0}
+/* свайп влево убирает счётчик (tap-swipe.js, Астамур 24.11.2026 — вместо корзины в листе), как в Day */
+.tpItem{position:relative;touch-action:pan-y}
+.tpItem>*{transform:translateX(var(--sx,0px));transition:transform .2s ease}
+.tpItem.tpSwiping>*{transition:none}
+.tpItem::before{content:'Убрать';position:absolute;right:0;top:9px;bottom:9px;display:grid;place-items:center;padding:0 16px;
+  border-radius:999px;background:var(--happy-danger);color:var(--happy-ink);font-size:14px;font-weight:700;opacity:var(--so,0);pointer-events:none}
 .tpNm{flex:1;min-width:0;padding:12px 0;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:600;
   text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
 .tpStp{flex:none;display:flex;align-items:stretch;height:40px;border-radius:999px;overflow:hidden;
@@ -332,22 +254,12 @@ textarea{width:100%;min-height:76px;resize:vertical}
   font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 .tpAdd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 /* нажатия за день: время поправляется, лишнее снимается */
-#tapSheet{max-height:80vh;overflow-y:auto}
-.tpRow{display:flex;align-items:center;gap:12px;padding:8px 0}
-.tpRow + .tpRow{border-top:1px solid rgba(255,255,255,.28)}
-.tpTime{position:relative;display:inline-grid;place-items:center;min-width:86px;height:40px;padding:0 14px;border-radius:12px;
-  border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.18);font-size:16px;font-weight:700;
-  font-variant-numeric:tabular-nums}
-.tpTime.tpNo b{color:rgba(255,255,255,.6);font-weight:600}
-.tpTime input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;
-  -webkit-appearance:none;appearance:none;font-size:16px}
-.tpAmt{flex:1;text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
-.tpRow .minusBtn{width:30px;height:30px;margin:0 0 0 4px}
+
 
 /* ── черточка чекпоинта: тянешь вниз — раздел закрывается ── */
 .grip{display:flex;justify-content:center;align-items:center;height:22px;margin:-4px 0 2px;
   touch-action:none;cursor:grab}
-.grip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)}
+.grip i{display:block;width:42px;height:5px;border-radius:999px;background:rgba(255,255,255,.45)}
 .grip:active i{background:rgba(255,255,255,.75)}
 /* Meal 30 (Астамур 12.11): счётчик продукта из отключённой или не купленной библиотеки — тусклый и неактивный;
    нажатие — подсказка «Библиотека с данным продуктом отключена». Набранное число остаётся. */
@@ -358,9 +270,6 @@ textarea{width:100%;min-height:76px;resize:vertical}
 .food-counter-editor .fc-grip i{display:block;width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.5)}
 .food-counter-editor .fc-grip:active i{background:rgba(255,255,255,.75)}
 .food-counter-editor .fc-shell{padding-top:6px}
-.food-counter-editor .fc-actions.has-delete{grid-template-columns:54px minmax(0,1fr)}
-.food-counter-editor .fc-actions .fc-delete{width:54px;height:54px;min-height:54px;padding:0;border-radius:50%;display:grid;place-items:center}
-.food-counter-editor .fc-actions .fc-delete svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 /* ── заставка на время загрузки: то же кольцо со шкалой, что и в чекпоинте, и мордочка.
    Дуга — рот: вращение тормозит внизу (0,2 с); улыбка начинает расти с 12:00 и к остановке
@@ -431,59 +340,18 @@ body.loading .app,body.loading .dock{opacity:0}
 }
 
 /* ── кольцо ── */
-.swipeZone{touch-action:pan-y}
-.ringRail{overflow:hidden}
-.ringTrack{display:flex;will-change:transform;transition:transform .38s cubic-bezier(.22,.75,.25,1)}
-.ringSlide{flex:0 0 100%;display:grid;place-items:center}
-.ringWrap{position:relative;width:min(280px,76vw);aspect-ratio:1}
-.ringWrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:rotate(122deg)}
-.ringWrap circle{fill:none;stroke-width:16;stroke-linecap:round}
+
 .trk{stroke:rgba(255,255,255,.20)}
 .fill{filter:drop-shadow(0 0 7px rgba(255,255,255,.45))}
-.knob{position:absolute;inset:21%;border-radius:50%;border:0;display:grid;place-items:center;
-  touch-action:pan-y;
-  background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 2px 4px rgba(4,40,80,.14),0 18px 40px rgba(4,40,80,.22),inset 0 1px 0 rgba(255,255,255,.5);
-  color:var(--happy-ink);transition:transform .14s ease}
-.knob.press{transform:scale(.965)}
 /* На кнопке шкалы вертикаль отдана самой шкале: держишь и ведёшь вверх-вниз.
    Листание шкал вбок считается в скрипте, прокрутка страницы ему не нужна. */
-.ringWrap .knob{touch-action:none;-webkit-touch-callout:none}
-.ringWrap .knob b{transition:transform .12s ease}
-.ringWrap .knob b.tick{transform:scale(1.07)}
-.ringWrap .knob .ar{position:absolute;left:50%;width:22px;height:22px;margin-left:-11px;opacity:0;
-  transition:opacity .18s;pointer-events:none}
-.ringWrap .knob .ar svg{position:static;inset:auto;transform:none;display:block;width:100%;height:100%;fill:none;
-  stroke:rgba(255,255,255,.8);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.ringWrap .knob .ar.up{top:9%}
-.ringWrap .knob .ar.dn{bottom:9%}
-.ringWrap .knob.drag .ar{opacity:1}
-.knob b{display:block;font-size:28px;font-weight:700;letter-spacing:-.01em}
-.knob small{display:block;font-size:12px;color:var(--happy-muted);margin-top:3px;font-weight:400}
 
-.noScales{position:absolute;inset:18%;border-radius:50%;display:grid;place-items:center;
-  text-align:center;padding:18px;border:2px dashed rgba(255,255,255,.4);
-  background:rgba(255,255,255,.08)}
-.noScales b{display:block;font-size:16px;font-weight:700;margin-bottom:6px}
-.noScales span{display:block;font-size:12px;color:rgba(255,255,255,.75);line-height:1.45}
 .facts{position:relative;overflow:hidden;margin:26px 0 4px;
   -webkit-mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);
           mask:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
-.factTrack{display:flex;will-change:transform;transition:transform .38s cubic-bezier(.22,.75,.25,1)}
-.factTrack button{flex:0 0 50%;padding:10px 6px;border:0;background:none;color:var(--dim);
-  font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  transition:color .3s,font-size .3s,opacity .3s;opacity:.55}
-.factTrack button.on{color:var(--happy-ink);font-size:20px;font-weight:700;letter-spacing:-.01em;opacity:1}
-.factLine{height:1px;background:rgba(255,255,255,.26);margin:14px 0 0}
-.swipeHint{text-align:center;font-size:12px;color:var(--dim);margin:10px 0 0}
 
 /* ── тренды ── */
 .tr{margin-bottom:22px}
-.trTop{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
-.trDot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c)}
-.trName{flex:1;font-size:16px;font-weight:600}
-.trVal{font-size:14px;color:var(--muted);font-family:var(--mono)}
 .bars{display:flex;align-items:flex-end;gap:6px;height:76px}
 .bars i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.3));min-height:3px}
 .bars i.none{background:rgba(255,255,255,.14)}
@@ -493,19 +361,11 @@ body.loading .app,body.loading .dock{opacity:0}
 /* ── связи ── */
 .scale{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin:0 0 12px 120px}
 .pair{display:flex;align-items:center;margin-bottom:15px}
-.pairKey{flex:0 0 120px;font-size:12px;line-height:1.3;padding-right:8px}
-.pairKey i{display:block;font-style:normal;font-size:12px;color:var(--dim);margin-top:2px}
 .track{flex:1;position:relative;height:22px}
-.zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.28)}
 .stem{position:absolute;top:10px;height:2px;border-radius:1px;background:rgba(255,255,255,.85)}
 .dot{position:absolute;top:5px;width:12px;height:12px;border-radius:50%;margin-left:-6px;background:#fff;
   box-shadow:0 0 12px rgba(255,255,255,.7)}
 .dot.weak{background:transparent;border:1.5px solid rgba(255,255,255,.45);box-shadow:none}
-.rho{position:absolute;top:3px;font-size:12px;font-family:var(--mono);color:var(--happy-ink)}
-.rho.weak{color:var(--dim)}
-.waitRow{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:16px;margin-bottom:9px;
-  background:rgba(255,255,255,.10);border:1px dashed var(--glassBrd);font-size:14px}
-.waitRow span{margin-left:auto;font-size:12px;color:var(--dim);font-family:var(--mono)}
 .strip{display:flex;gap:3px;margin-bottom:6px}
 .strip i{flex:1;height:26px;border-radius:3px;background:rgba(255,255,255,.15)}
 .strip i.f{background:rgba(255,255,255,.85)}
@@ -516,34 +376,9 @@ body.loading .app,body.loading .dock{opacity:0}
 /* Карточка одна на весь раздел: и в свёрнутом виде, и в развёрнутом.
    Внутри — ни рамок, ни фонов, только разделительные линии,
    иначе стекло ложится на стекло и получаются двойные контуры. */
-.secRow{margin-bottom:11px;border-radius:22px;overflow:hidden;
-  background:var(--glass);border:1px solid var(--glassBrd);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14)}
-.secRow > .swipe{border-radius:0;margin-bottom:0;background:none}
-.secRow > .swipe > .swipeInner{padding:15px 16px;background:none;border:0;
-  backdrop-filter:none;-webkit-backdrop-filter:none}
-.secBody{display:none;padding:0 16px 14px}
-.secRow.open .secBody{display:block}
-.secRow.open > .swipe > .swipeInner{
-  border-bottom:1px solid rgba(255,255,255,.18)}
-.secHead{display:flex;align-items:center;gap:14px;padding:15px 16px;width:100%;
-  border:0;background:none;color:var(--happy-ink);text-align:left}
-.secHead .ic{width:30px;height:30px;flex:none;display:grid;place-items:center}
-.secHead .ic svg{width:100%;height:100%}
-.secHead b{display:block;font-size:16px;font-weight:600}
-.secHead small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
-.subTitle{font-size:12px;font-weight:700;color:var(--muted);margin:14px 2px 9px}
+
 .chip.wide{display:block;width:100%;text-align:center;margin:10px 0 4px;
   background:rgba(255,255,255,.08)}
-.tagWrap{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
-.tagPill{display:inline-flex;align-items:center;gap:4px;
-  padding:6px 8px 6px 10px;border-radius:999px;font-size:14px;
-  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.28);color:var(--happy-ink)}
-.tagPill .penBtn{width:30px;height:30px}
-.tagPill .penBtn svg{width:19px;height:19px}
-.tagPill .minusBtn{width:20px;height:20px;margin:0 2px 0 0}
-.tagPill .minusBtn svg{width:12px;height:12px}
 .swipe{position:relative;margin-bottom:0}
 .swipeInner{display:flex;align-items:center;gap:8px;padding:12px 13px}
 .swipeInner .nm{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -551,11 +386,9 @@ body.loading .app,body.loading .dock{opacity:0}
 .swipeInner .nm small{display:block;font-size:12px;color:var(--happy-muted);margin-top:2px}
 .dragH{flex:none;width:36px;height:36px;border-radius:10px;border:0;background:none;
   display:grid;place-items:center;padding:0;touch-action:none;cursor:grab}
-.dragH svg{width:24px;height:24px;stroke:rgba(255,255,255,.8);fill:none;
-  stroke-width:2.1;stroke-linecap:round}
-.scaleList,.secListInner{position:relative}
-.scaleList .swipe + .swipe .swipeInner{border-top:1px solid rgba(255,255,255,.16)}
-.scaleList .swipeInner{padding:13px 0}
+.dragH svg{width:28px;height:28px;stroke:rgba(255,255,255,.95);fill:none;
+  stroke-width:2.6;stroke-linecap:round} /* лаборатория 24.11: черточки «перетащить» крупнее — предложение Астамура */
+
 [data-drag]{transition:transform .18s cubic-bezier(.25,.8,.25,1)}
 [data-drag].dragging{transition:none;z-index:20;position:relative;
   filter:drop-shadow(0 10px 24px rgba(4,40,80,.35))}
@@ -636,12 +469,7 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .toast .tU{flex:none;padding:0;border:0;background:none;color:#8EF3DD;font:inherit;font-weight:700}
 
 /* ── СВЯЗИ: параметры вопроса ── */
-.filters{padding:2px 16px;margin-top:14px}
-.frow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px;padding:8px 0;
-  border-bottom:1px solid rgba(255,255,255,.14)}
-.frow:last-child{border-bottom:0}
-.frow > label{font-size:14px;font-weight:400}
-.frow.off{display:none}
+
 /* Родной select лежит поверх прозрачным: подпись и стрелка наши, а тап
    открывает системный выбор. 16px — иначе iOS приближает страницу. */
 .sel{position:relative;display:inline-flex;align-items:center;justify-content:space-between;gap:10px;
@@ -649,59 +477,24 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
   background:rgba(255,255,255,.14);border:1px solid var(--glassBrd);
   font-size:14px;font-weight:600;white-space:nowrap}
 .sel b{font-weight:600;overflow:hidden;text-overflow:ellipsis}
-.sel .selChev{width:16px;height:16px;flex:none;fill:none;stroke:rgba(255,255,255,.85);
-  stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .sel select{position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;border:0;margin:0;padding:0;
   font-size:16px;color:#123;background:#fff;-webkit-appearance:none;appearance:none}
 .sel.fixed{background:none;border-color:transparent;justify-content:flex-end;padding-right:4px}
-.sel.fixed .selChev,.sel.fixed select{display:none}
+.sel.fixed select{display:none}
 .dates{display:flex;align-items:center;gap:6px}
 .dates i{font-style:normal;color:var(--dim);font-size:14px}
 .dates .datePill{padding:8px 12px}
 
 /* ── СВЯЗИ: ответ ── */
 .q{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.25;margin:26px 2px 4px}
-.qSub{font-size:12px;color:var(--muted);margin:0 2px 12px}
 .sum{font-size:16px;line-height:1.55}
-.gdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
-.gdot.up{background:#9FF0D8}
-.gdot.down{background:#FFB3C9}
 .list{padding:0 16px}
 .row + .row{border-top:1px solid rgba(255,255,255,.14)}
 .rowHead{display:block;width:100%;border:0;background:none;color:var(--happy-ink);font:inherit;text-align:left;padding:13px 0}
 .rowTop{display:flex;align-items:center;gap:10px}
 .rowTop b{flex:1;font-size:16px;font-weight:600}
 /* ряд столбиков: вверх — выше, вниз — ниже, высота — сила связи; подпись у линии середины, с другой стороны */
-.lkBars{padding:16px 0 0;overflow:hidden}
-.lkBScroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
-.lkBScroll::-webkit-scrollbar{display:none}
-.lkBScroll.lkTail{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 44px),transparent)}
-.lkBScroll.lkHead{-webkit-mask-image:linear-gradient(90deg,transparent,#000 44px);mask-image:linear-gradient(90deg,transparent,#000 44px)}
-.lkBScroll.lkHead.lkTail{-webkit-mask-image:linear-gradient(90deg,transparent,#000 44px,#000 calc(100% - 44px),transparent);mask-image:linear-gradient(90deg,transparent,#000 44px,#000 calc(100% - 44px),transparent)}
-.lkBRow{display:flex;width:max-content;min-width:100%;padding:0 10px;box-sizing:border-box}
-.lkBAx{font-size:14px;font-weight:700;color:var(--muted);padding:0 16px}
-.lkBAx.up{margin-bottom:10px}
-.lkBAx.dn{margin-top:10px}
-.lkBCol{flex:none;display:block;width:86px;padding:0;border:0;background:none;color:var(--happy-ink);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.lkBCol:focus-visible{outline:2px solid #fff;outline-offset:-2px;border-radius:12px}
-.lkBU,.lkBD{display:flex;flex-direction:column;align-items:center}
-.lkBU{justify-content:flex-end;border-bottom:1.5px solid rgba(255,255,255,.5)}
-.lkBD{justify-content:flex-start}
-.lkBBar{display:block;flex:none;width:30px;background:rgba(255,255,255,.4)}
-.lkBU .lkBBar{border-radius:8px 8px 2px 2px}
-.lkBD .lkBBar{border-radius:2px 2px 8px 8px}
-.lkBCol.on .lkBBar{background:#fff}
-.lkBLab{display:block;width:100%;padding:8px 4px 0;box-sizing:border-box;text-align:center;font-size:12px;line-height:1.28;
-  color:rgba(255,255,255,.78)}
-.lkBU .lkBLab{padding:0 4px 8px}
-.lkBLab b{display:block;font-weight:600}
-.lkBLab span{display:block;color:rgba(255,255,255,.62)}
-.lkBCol.on .lkBLab,.lkBCol.on .lkBLab span{color:var(--happy-ink)}
-.lkBCol.on .lkBLab b{font-weight:700}
-.lkBTxt{margin:14px 16px 0;padding:14px 0 16px;border-top:1px solid rgba(255,255,255,.2)}
-.lkBTxt b{display:block;font-size:16px;font-weight:600}
-.lkBTxt p{margin:5px 0 0;font-size:14px;line-height:1.4;color:rgba(255,255,255,.88)}
-@media (prefers-reduced-motion:no-preference){.lkBTxt.lkFade{animation:lkBFade .22s ease-out}}
+
 @keyframes lkBFade{from{opacity:.25}to{opacity:1}}
 .rowChev{width:16px;height:16px;flex:none;fill:none;stroke:rgba(255,255,255,.6);stroke-width:2.2;
   stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
@@ -713,86 +506,28 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .more svg{display:block;width:100%;overflow:visible}
 .more svg.split{height:136px}
 .more svg.ph{height:190px}
-.subT{font-size:12px;font-weight:700;color:var(--muted);margin:16px 0 6px}
-.ladder{display:none;flex-wrap:wrap;gap:6px 12px;margin:8px 0 6px;font-size:12px;color:var(--muted)}
-.ladder.on{display:flex}
-.ladder span{display:inline-flex;align-items:center;gap:6px}
 .sw{display:inline-block;width:14px;height:10px;border-radius:3px;border:1px solid rgba(255,255,255,.45);flex:none}
 .sw.l0{background:transparent}
 .sw.l1{background:rgba(255,255,255,.14)}
 .sw.l2{background:repeating-linear-gradient(125deg,rgba(255,255,255,.55) 0 3px,transparent 3px 6px)}
-.sw.l3{background:rgba(255,255,255,.32)}
-.sw.l4{background:rgba(255,255,255,.6)}
-.phl{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;border-top:1px solid rgba(255,255,255,.1)}
-.phl .sw{width:12px;height:12px}
-.phl span{flex:1;color:var(--muted)}
-.phl span b{color:var(--happy-ink);font-weight:600}
-.phl em{font-style:normal;font-weight:600;text-align:right}
-.phl em.up{color:#C8FAEA}
-.phl em.down{color:#FFD3E0}
-.flatBox{font-size:14px;line-height:1.6}
-.flatBox small{display:block;font-size:12px;color:var(--dim);margin-top:6px;line-height:1.45}
 
 /* ══ Связи: страница пары «Связь между» ══ */
 [data-screen="links"] [hidden]{display:none!important}
 [data-screen="links"] .q{margin-bottom:12px}
-.lkBack{display:inline-block;margin:14px 2px -18px;padding:6px 0;border:0;background:none;color:var(--muted);font:inherit;font-size:14px;font-weight:600}
-.lkCard{padding:18px 12px 0}
-.lkHead{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:32px;padding:0 4px;margin-bottom:8px}
-.lkHead h3,.lkStory h3{margin:0;font-size:16px;font-weight:700;letter-spacing:-.02em}
-.lkReset{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:var(--happy-ink);font:inherit;font-size:12px;font-weight:600}
-.lkRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:0 4px;font-size:14px}
-.lkChart{margin-top:16px;touch-action:pan-y;-webkit-user-select:none;user-select:none}
-.lkChart svg{display:block;width:100%}
-.lkFreq{display:flex;gap:4px;margin:14px 0;padding:0 2px;font-size:14px}
 /* кнопки частот подсвечивают часть графика: всегда в одну строку и одинаковой ширины.
    Если слово не влезает, шрифт уменьшается сразу у всех кнопок (fitFreq), размер кнопок от выбора не прыгает */
-.lkFreq button{flex:1 1 0;min-width:0;min-height:40px;padding:0 3px;border-radius:999px;border:1px solid var(--glassBrd);background:var(--glass);
-  color:var(--happy-ink);font:inherit;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:clip}
-.lkFreq.lkMeasure button{font-weight:700}
-.lkFreq.lkTight{gap:3px}
-.lkFreq.lkTight button{padding:0 1px}
-.lkFreq button.on{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8);font-weight:700}
-.lkHist{border-top:1px solid rgba(255,255,255,.22);padding:0 4px;margin:0 0 4px}
-.lkHist>summary,.lkStats>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;
-  list-style:none;font-size:16px;font-weight:700;cursor:pointer}
-.lkHist>summary::-webkit-details-marker,.lkStats>summary::-webkit-details-marker{display:none}
-.dChev{width:16px;height:16px;flex:none;fill:none;stroke:rgba(255,255,255,.85);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
-details[open]>summary .dChev{transform:rotate(180deg)}
-.lkItem{padding:15px 0;border-top:1px solid rgba(255,255,255,.17)}
-.lkItem p{margin:0;font-size:14px;line-height:1.6}
-.lkItem .lkAnchLine{margin-bottom:9px}
-.lkShow{margin-top:9px;padding:0;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:700}
-mark.lkAnch{background:var(--happy-glass);color:var(--happy-ink);border-radius:8px;padding:4px 4px 4px 9px;white-space:nowrap;font-size:14px}
-mark.lkAnch i{font-style:normal;font-weight:400}
-mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius:6px;background:rgba(255,255,255,.3);font-weight:700}
-.lkStory{padding:20px}
-.lkStory h3{margin-bottom:12px}
-.lkStory p{margin:0 0 12px;font-size:16px;line-height:1.62}
-.lkStory p:last-child{margin-bottom:0}
-.lkStats{padding:0 16px}
-.lkStats dl{margin:0}
-.lkStats dl div{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,.14);font-size:14px}
-.lkStats dt{color:var(--muted)}
-.lkStats dd{margin:0;font-weight:700;text-align:right}
-.lkStats dd small{display:block;margin-top:2px;font-size:12px;font-weight:400;color:var(--muted)}
-.lkStatHead{margin:18px 0 4px;font-size:14px;font-weight:700}
-.lkStatSub{margin:0 0 6px;font-size:12px;color:var(--muted)}
-.lkStats p{margin:14px 0 0;font-size:12px;line-height:1.55;color:var(--muted)}
-.lkStats p:last-child{margin-bottom:18px}
+
 .rowChev.go{transform:rotate(-90deg)}
 
 /* ══════════ ИКОНКИ РАЗДЕЛОВ И ТЕГОВ ══════════ */
 /* в строке раздела в настройках иконка не показывалась: span.ic был нулевой ширины */
-.secRow .swipeInner .ic{width:30px;height:30px;flex:none;display:grid;place-items:center}
-.secRow .swipeInner .ic svg{width:100%;height:100%}
+
 /* с иконкой строка уже: длинная подпись обрезается многоточием, а не на полуслове */
-.secRow .swipeInner .nm b,.secRow .swipeInner .nm small{overflow:hidden;text-overflow:ellipsis}
+
 /* иконка у тега: на экране раздела и в настройках */
-.chip.hasIc{display:inline-flex;align-items:center;gap:7px;padding-left:13px}
+
 .tIc{display:grid;place-items:center;flex:none;width:20px;height:20px}
 .tIc svg{width:100%;height:100%}
-.tagPill .tIc{width:18px;height:18px;margin-right:2px}
 /* отмеченный тег белый: светлые значки (капля, снежинка, таблетка) на нём теряются —
    под значком голубой кружок того же цвета, что фон приложения; ширина тега не прыгает */
 .chip.on .tIc{width:24px;height:24px;margin:-2px 0 -2px -4px;border-radius:50%;
@@ -831,21 +566,14 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icCell:focus-visible,.icPick:focus-visible,.icBack:focus-visible{outline:2px solid #fff;outline-offset:2px}
 
 /* ── разовая проверка: теги не в своём разделе ── */
-.fixTxt{margin:-4px 0 10px;font-size:14px;line-height:1.5;color:rgba(255,255,255,.92)}
-.fixList{margin:0;padding:0 0 0 18px;max-height:38vh;overflow-y:auto;font-size:14px;line-height:1.55}
-.fixList b{font-weight:700}
+
 
 /* ── подсказки ── */
 /* длинная подсказка шла узким столбиком в четыре строки — пусть берёт ширину по тексту, до 86% экрана */
 .toast{width:max-content}
 
 /* ── кольцо по делениям, вариант Б: отрезок — ступень, белая точка — ноль ── */
-.ringWrap circle.dotBase{fill:rgba(255,255,255,.20);stroke:none;stroke-width:0}
-.ringWrap circle.zd{fill:#fff;stroke:none;stroke-width:0;opacity:0;transition:opacity .14s;
-  filter:drop-shadow(0 0 6px rgba(255,255,255,.75))}
-.ringWrap circle.zd.on{opacity:1}
-.ringWrap circle.sgOn{opacity:0;transition:opacity .14s;filter:drop-shadow(0 0 7px rgba(255,255,255,.45))}
-.ringWrap circle.sgOn.on{opacity:1}
+
 
 /* ── названия шкал под кольцом: длинное — в две строки (вариант А) ──
    Место под вторую строку есть всегда, текст прижат книзу: короткое название стоит там же,
@@ -853,45 +581,12 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .facts{margin-top:1px}
 .facts.wide{-webkit-mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
                     mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
-.factTrack button{min-width:0;min-height:69px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
-  white-space:normal;overflow:visible;font-family:inherit;
-  transition:color .3s,font-size .3s,opacity .3s,flex-basis .38s cubic-bezier(.22,.75,.25,1)}
-.factTrack .fT{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;transition:font-size .3s}
-.factTrack button.on .fT{white-space:normal;text-overflow:clip;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-  line-height:1.15;text-align:center;text-wrap:balance}
 
 /* ── окно шкалы: вид, отсчёт, деления, подписи ── */
-.icLayer.scEd{z-index:69}
-.scEd .icHead .scDone{justify-self:end;font-weight:700}
-.scEd input[type=text]{font-size:16px}
-.scName{display:block;width:100%;margin-top:6px}
-.scUse{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0}
-.scPvBox{display:grid;place-items:center;margin:16px 0 2px}
-.ringWrap.scPv{width:min(212px,58vw)}
-.ringWrap.scPv .knob small{font-size:12px}
-.ringWrap.scPv .knob{touch-action:manipulation}   /* в окне шкалы кольцо — только показ, листать форму можно и с него */
-.scChips{display:flex;flex-wrap:wrap;gap:8px}
+   /* в окне шкалы кольцо — только показ, листать форму можно и с него */
+
 /* выбор «как делить шкалу»: две плитки с подписью */
-.scKinds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.scKind{display:block;text-align:left;padding:13px 14px 14px;border-radius:18px;border:1px solid var(--glassBrd);
-  background:rgba(255,255,255,.12);color:var(--happy-ink);font:inherit}
-.scKind b{display:block;font-size:16px;font-weight:700}
-.scKind small{display:block;font-size:12px;line-height:1.35;color:rgba(255,255,255,.78);margin-top:5px}
-.scKind.on{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8)}
-.scKind.on small{color:rgba(12,111,168,.82)}
-.scKind .nw{font-style:normal;white-space:nowrap}
-.scChips .chip{padding:9px 16px;font-size:14px}
-.scStep{display:flex;align-items:center;gap:10px;padding:6px;border-radius:18px;
-  background:rgba(255,255,255,.12);border:1px solid var(--glassBrd)}
-.scStep button{width:46px;height:44px;flex:none;border-radius:13px;border:0;padding:0;
-  background:rgba(255,255,255,.2);color:var(--happy-ink);font:inherit;font-size:20px;font-weight:600;line-height:1}
-.scStep button:disabled{opacity:.3}
-.scStep b{flex:1;text-align:center;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
-.scLv{display:flex;align-items:center;gap:10px;margin:0 0 8px}
-.scLv .scN{flex:none;width:48px;height:42px;border-radius:12px;border:1px solid var(--glassBrd);padding:0;
-  font:inherit;font-size:16px;font-weight:700;color:var(--happy-ink);background:rgba(255,255,255,.12);font-variant-numeric:tabular-nums}
-.scLv.on .scN{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);border-color:#fff}
-.scLv input{flex:1;min-width:0}
+
 
 /* ══════════ MEAL: КБЖУ, диалог, разделы, шторка «Подобрано» ══════════ */
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -920,31 +615,8 @@ body.sheet:not(.chatOn) .fab .icX{display:block}
    контраст с фоном ниже 3:1, поэтому у каждого цвета всегда подпись и число рядом. */
 .mlKb{--mP:var(--happy-protein);--mF:var(--happy-fat);--mC:var(--happy-carbs);display:flex;align-items:center;gap:12px;padding:14px 14px 14px 12px;margin-bottom:22px;border-radius:26px}
 /* кольцо как в HappyDay: вырез снизу, круглые концы; в центре — стеклянная кнопка */
-.mlKbRing{position:relative;flex:none;width:138px;height:138px}
-.mlKbRing svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:rotate(122deg)}
-.mlKbRing circle{fill:none;stroke-width:16;stroke-linecap:round}
-.mlKbRing .kt{stroke:rgba(255,255,255,.2)}
-.mlKbRing .ks{filter:drop-shadow(0 0 5px rgba(255,255,255,.3))}
-.mlKbRing .ks.cp{stroke:var(--mP)}.mlKbRing .ks.cf{stroke:var(--mF)}.mlKbRing .ks.cc{stroke:var(--mC)}
-.mlKnob{position:absolute;inset:21%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 2px 4px rgba(4,40,80,.14),0 10px 24px rgba(4,40,80,.2),inset 0 1px 0 rgba(255,255,255,.5)}
-.mlKnob b{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1}
-.mlKnob small{margin-top:4px;font-size:12px;font-weight:600;color:rgba(255,255,255,.78);white-space:nowrap}
-.mlKnob small.ov{margin-top:2px;color:#FFE3BF}
-.mlKbRows{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px}
-.mlKbR{display:grid;grid-template-columns:10px minmax(0,1fr) auto auto;align-items:center;column-gap:7px}
-.mlKbR.goal{grid-template-columns:10px minmax(0,1fr) auto}
-.mlKbR .mlSw{width:10px;height:10px;border-radius:50%}
+
 .mlKb .dp{background:var(--mP)}.mlKb .df{background:var(--mF)}.mlKb .dc{background:var(--mC)}
-.mlKbR .nm{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mlKbR b{font-size:16px;font-weight:700;white-space:nowrap}
-.mlKbR b small{font-size:12px;font-weight:600;color:var(--muted)}
-.mlKbR b.no{color:var(--dim)}
-.mlKbR .pc{min-width:31px;text-align:right;font-size:12px;font-weight:600;color:var(--muted)}
-.mlKbR .bar{grid-column:2/-1;height:6px;margin-top:6px;border-radius:3px;background:rgba(255,255,255,.24);overflow:hidden}
-.mlKbR .bar i{display:block;height:100%;border-radius:3px}
 /* Meal 33.21 · плашка идущего фастинга над нижним меню (meal-fast.js) — по образцу полосы свёрнутой тренировки в Sport
    (.active-banner): высота 48, скругление 16, цвет главной кнопки. Стоит ближе к меню — зазор 6 — и позади кнопки
    микрофона: кнопка заходит на нижний край плашки, текста не касается. Заполнение — светлее, слева направо по доле
@@ -986,15 +658,15 @@ body.mfOn .screen:not(.mlSheet){padding-bottom:184px}
 .mlMsg{display:flex}
 .mlMsg.me{justify-content:flex-end}
 .mlB{max-width:86%;padding:11px 15px;border-radius:22px;font-size:16px;line-height:1.42;overflow-wrap:anywhere}
-.bot .mlB{background:var(--glass);border:1px solid var(--glassBrd);border-bottom-left-radius:7px;
+.bot .mlB{background:var(--glass);border:1px solid var(--glassBrd);border-bottom-left-radius:3px;
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 3px rgba(4,40,80,.08),0 10px 24px rgba(4,40,80,.10)}
-.me .mlB{background:rgba(255,255,255,.93);color:#0B4F7C;border-bottom-right-radius:7px;box-shadow:0 8px 20px rgba(4,40,80,.14)}
+.me .mlB{background:rgba(255,255,255,.93);color:#0B4F7C;border-bottom-right-radius:3px;box-shadow:0 8px 20px rgba(4,40,80,.14)}
 .me .mlB .k{display:flex;align-items:center;gap:5px;margin-bottom:3px;font-size:12px;font-weight:700;color:#4B86B4}
 .me .mlB .k svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .me.live .mlB .tx::after{content:'';display:inline-block;width:2px;height:1.05em;margin-left:2px;vertical-align:-3px;background:currentColor;animation:mlCaret 1s steps(2) infinite}
 @keyframes mlCaret{50%{opacity:0}}
-.mlB.ph{padding:4px;border-bottom-right-radius:7px}
-.mlB.ph img{display:block;width:216px;max-width:100%;height:auto;max-height:280px;object-fit:cover;border-radius:18px;border-bottom-right-radius:5px}
+.mlB.ph{padding:4px;border-bottom-right-radius:3px}
+.mlB.ph img{display:block;width:216px;max-width:100%;height:auto;max-height:280px;object-fit:cover;border-radius:18px;border-bottom-right-radius:2px}
 .mlB p{margin:0}
 .mlB p + .mlRows{margin-top:6px}
 .mlB .mlRows + p{margin-top:10px}
@@ -1078,8 +750,6 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 .screen.mlSheet.on{animation:mlUp .34s cubic-bezier(.22,.75,.25,1)}
 @keyframes mlUp{from{transform:translateY(36%);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.screen.mlSheet.on{animation:none}}
-.mlSaid{font-size:14px;color:var(--muted);margin:-14px 2px 14px;line-height:1.45}
-.mlSaid:empty{display:none}
 .mlMeals{display:flex;gap:8px;overflow-x:auto;margin:0 0 16px;scrollbar-width:none}
 .mlMeals::-webkit-scrollbar{display:none}
 .mlMeals .chip{flex:none;padding:9px 16px;font-size:14px}
@@ -1116,7 +786,6 @@ body.fan .mlFanB{transform:translate(calc(-100% + 26px),-50%) translateY(var(--d
 .mlW .v input::-webkit-inner-spin-button,.mlW .v input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .mlW .v input:focus{outline:none;text-decoration:underline}
 .mlW .v i{font-style:normal;font-size:16px;font-weight:700;white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
-.mlEq{font-size:14px;font-weight:700;color:var(--muted);white-space:nowrap}
 .mlUnits{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:12px -16px 0;padding:0 16px 2px;scroll-padding:0 16px}
 .mlUnits::-webkit-scrollbar{display:none}
 .mlUnits .chip{flex:none;padding:8px 14px;font-size:14px;white-space:nowrap}
@@ -1164,12 +833,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .mlEmpty{font-size:14px;color:var(--muted);margin:4px 2px 0}
 
 /* время приёма в шапке шторки: по умолчанию сейчас, задним числом — своё */
-.mlTime{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:112px;height:50px;
-  padding:0 14px;border-radius:16px;background:var(--glass);border:1px solid var(--glassBrd);
-  font-size:28px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;cursor:pointer}
-.mlTime.none b{color:rgba(255,255,255,.6)}
-.mlTime input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;
-  -webkit-appearance:none;appearance:none;font-size:16px}
+
 /* «Последние» и звёздочка «Избранное»: включается одно, другое гаснет */
 .mlFindHead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .mlFindHead h3{flex:1;min-width:0;margin:0}
@@ -1224,7 +888,6 @@ body.matchOn .mlSaveBar[hidden]{display:none}
   box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);border:1px solid var(--glassBrd)}
 .rcCover svg{display:block;width:100%;height:100%}
 .rcTop{padding-bottom:6px}
-.rcSub{margin:0 2px 18px;font-size:14px;color:var(--muted)}
 .rcItem{padding:0;overflow:hidden}
 .rcHead{display:flex;align-items:center;gap:13px;width:100%;padding:12px 14px 12px 12px;border:0;background:none;color:var(--happy-ink);font:inherit;text-align:left;cursor:pointer}
 .rcHead .th{flex:none;width:62px;height:62px;border-radius:16px;overflow:hidden}
@@ -1246,7 +909,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .rcBody .mlGo{margin-top:14px}
 
 /* разговор о рецепте и режим рецепта в шторке */
-.mlTime[hidden],.mlMeals[hidden],.mlRcName[hidden]{display:none}
+.mlMeals[hidden],.mlRcName[hidden]{display:none}
 .mlRcName{margin:-8px 0 16px}
 .mlRcName input{display:block;width:100%;padding:13px 15px;border-radius:16px;font-size:16px;font-weight:700;
   background:var(--happy-glass);border:1px solid rgba(255,255,255,.55);color:var(--happy-ink);-webkit-user-select:text;user-select:text}
@@ -1284,16 +947,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 
 /* ═══ Журнал: учёт состава ═══ */
 .jrTop{padding-bottom:18px}
-.jrH{display:flex;align-items:center;gap:9px;min-width:0}
-.jrDemo{flex:none;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.02em;
-  color:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.1)}
 .jrTiles{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.jrTile{margin:0;padding:14px 14px 13px}
-.jrTl{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700}
-.jrDot{flex:none;width:9px;height:9px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
-.jrTv{margin:9px 0 11px;font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1}
-.jrTv small{font-size:16px;font-weight:700;letter-spacing:0}
-.jrTc{margin-top:8px;font-size:12px;font-weight:600;color:var(--muted)}
 /* шкала: дорожка — светлая ступень того же цвета, заливка — сам цвет */
 .jrM{position:relative;display:block;height:6px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.24)}
 .jrM i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:rgba(255,255,255,.94)}
@@ -1336,10 +990,6 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 .jrOmegaParts .jrRow,.jrOmegaParts .jrRow.ch{padding:10px 0}
 .jrOmegaParts .jrN,.jrOmegaParts .jrV{font-size:14px;font-weight:400;color:rgba(255,255,255,.9)}
 .jrOmegaParts .jrOmegaLabel + .jrSw{border-top:0}
-.jrOmegaSubtotal{margin-left:15px;padding-top:10px;border-top:1px solid rgba(255,255,255,.22)}
-.jrOmegaSubtotal > .jrSw{border-top:0}
-.jrOmegaSubtotal .jrRow{padding-top:5px}
-.jrOmegaSubtotal .jrN{font-size:14px}
 .jrOmega .jrR1{gap:8px}
 .jrOmega .jrN{overflow-wrap:anywhere}
 .jrOmegaFav{border-top:1px solid rgba(255,255,255,.16)}
@@ -1370,18 +1020,8 @@ body.matchOn .mlSaveBar[hidden]{display:none}
   color:var(--happy-ink);font:inherit;font-size:14px;-webkit-appearance:none;appearance:none}
 .jrSortRow{align-items:center}
 .jrGroups > .card + .eyebrow{margin-top:24px}
-.jrExp{display:flex;gap:9px;margin-top:16px}
-.jrExp .btn{flex:1;min-height:46px}
 /* окно с картинкой */
-.jrShot{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;background:rgba(6,34,70,.8);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:calc(10px + env(safe-area-inset-top)) 14px 0;color:var(--happy-ink)}
-.jrShot[hidden]{display:none}
-.jrShotBar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 8px}
-.jrShotBar b{font-size:16px}
-.jrShotBar .mini[hidden]{visibility:hidden;display:block}
-.jrShotHint{margin:0 2px 10px;font-size:12px;color:var(--muted);text-align:center}
-.jrShotBody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
-.jrShotBody img{display:block;width:100%;height:auto;border-radius:18px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
+
 /* «По группам / От дефицита» — полоска как у периода (shared/happy-period.css, вид Sport; Астамур 21.11.2026);
    в строке-заголовке без подчёркивания и прозрачности ссылок eyebrow */
 .eyebrow .hp-seg button{text-decoration:none;opacity:1}
@@ -1392,8 +1032,7 @@ body.matchOn .mlSaveBar[hidden]{display:none}
 i.jrOk.none{visibility:hidden}
 .jrR1{align-items:center}
 /* связанный с HappyDay раздел: вместо минуса — цепочка, на том же месте */
-.mlLink{flex:none;width:22px;height:22px;margin:7px;display:grid;place-items:center;opacity:.8}
-.mlLink svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 /* PRO и GOLD */
 .tierBadges{display:flex;gap:8px;flex:none}
 .tierBadge{display:inline-grid;place-items:center;min-width:52px;height:30px;padding:0 11px;border-radius:999px;
@@ -1409,9 +1048,8 @@ button.tierBadge:active{transform:scale(.96)}
 .tierBody ul{margin:0;padding:0 0 0 18px}
 .tierBody li{margin:0 0 9px;font-size:14px;line-height:1.45}
 .tierNote{margin:4px 0 0;font-size:12px;color:rgba(255,255,255,.8)}
-.mlSrc{word-break:break-word}
 /* v16: база BLS */
-.mlResSub{margin:10px 2px 2px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+
 .mlAsk .chip.bls{white-space:normal;text-align:left;line-height:1.3;max-width:100%}
 /* v17: как приготовлено — тот же продукт из базы, лента вариантов */
 .mlVar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 16px 13px;margin-top:-3px}
@@ -1430,7 +1068,6 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
 
 /* v20 (25 октября): в раскрытой строке — значки «заменить» и «убрать» рядом с граммами вместо больших кнопок */
 .mlIcoA{display:flex;gap:6px;margin-left:auto;order:2}
-.mlW .mlEq{order:3;flex-basis:100%;margin-top:-2px;font-size:14px}
 .mlW:has(.mlIcoA){column-gap:8px}
 .mlW:has(.mlIcoA) .tpStp button{width:42px}
 .mlW:has(.mlIcoA) .tpStp .v{min-width:96px}
@@ -1440,7 +1077,6 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
 .mlIco.del{color:#FFD3DA}
 /* «Журнал»: сколько еды без данных о показателе */
 .jrMiss{margin:6px 0 0;font-size:12px;font-weight:600;color:#FFE3BF}
-.jrTm{margin-top:4px;font-size:12px;font-weight:600;line-height:1.3;color:#FFE3BF}
 /* избранные рецепты: звёздочка на миниатюре */
 .rcItem{position:relative}
 .rcFav{position:absolute;z-index:2;left:15px;top:15px;width:26px;height:26px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;
@@ -1466,8 +1102,6 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
    край сглажен поровну по обе стороны — как у кружков-концов и дорожки (иначе на стыке с концом ступенька в треть пикселя) */
 .erArcs{position:absolute;left:0;top:0;width:100%;aspect-ratio:1/1;pointer-events:none;isolation:isolate}
 .erArcs .erLayer{position:absolute;inset:0}
-.erArcs .erSweep{position:absolute;inset:0;border-radius:50%;-webkit-mask:radial-gradient(closest-side,transparent calc(84% - .3px),#000 calc(84% + .3px),#000 calc(100% - .3px),transparent calc(100% + .3px));mask:radial-gradient(closest-side,transparent calc(84% - .3px),#000 calc(84% + .3px),#000 calc(100% - .3px),transparent calc(100% + .3px))}
-.erArcs .erCap{position:absolute;width:8%;height:8%;border-radius:50%}
 .erKnob{position:absolute;left:15%;top:16.13%;width:70%;height:75.27%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;pointer-events:none;color:var(--happy-ink);
   background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
@@ -1574,38 +1208,41 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 @media(prefers-reduced-motion:reduce){.happy-switch,.happy-switch::after{transition:none}}
 /* HAPPY_SHARED_STYLE_END */
 </style>
-<link rel="stylesheet" href="report.css?v=34.13">
-<link rel="stylesheet" href="user-products.css?v=34.13">
-<script src="food-libraries.js?v=34.13"></script><script src="cooking-library.js?v=34.13"></script>
-<script src="portions.js?v=34.13"></script>
-<script src="sources.js?v=34.13"></script>
-<script src="./shared/meal-products-model.js?v=34.13"></script>
-<script src="./shared/happy-energy-ring.js?v=34.13"></script>
-<script src="./shared/happy-account.js?v=34.13"></script>
-<script src="./shared/happy-input.js?v=34.13"></script>
-<script src="./shared/happy-period.js?v=34.13"></script>
-<script src="./shared/happy-scroll-lock.js?v=34.13"></script>
-<script src="./shared/happy-store.js?v=34.13"></script>
-<script src="./shared/happy-app-links.js?v=34.13"></script>
-<script src="./shared/happy-sport-summary.js?v=34.13"></script>
-<script src="./shared/happy-food.js?v=34.13"></script>
-<script src="./shared/happy-measurements.js?v=34.13"></script>
-<script src="./shared/happy-screens.js?v=34.13"></script>
-<script src="./shared/happy-welcome.js?v=34.13"></script>
-<script src="./shared/happy-person.js?v=34.13"></script>
-<script src="./shared/happy-goals.js?v=34.13"></script>
-<script src="meal-docs.js?v=34.13"></script>
-<script src="meal-data.js?v=34.13"></script>
-<link rel="stylesheet" href="./shared/happy-measurements.css?v=34.13">
-<link rel="stylesheet" href="./shared/happy-period.css?v=34.13">
-<link rel="stylesheet" href="./shared/happy-screens.css?v=34.13">
-<link rel="stylesheet" href="./shared/happy-theme-picker.css?v=34.13">
-<link rel="stylesheet" href="catalog.css?v=34.13">
-<link rel="stylesheet" href="./shared/food-counters.css?v=34.13">
-<link rel="stylesheet" href="release-notes.css?v=34.13">
+<link rel="stylesheet" href="report.css?v=34.14">
+<link rel="stylesheet" href="user-products.css?v=34.14">
+<script src="food-libraries.js?v=34.14"></script><script src="cooking-library.js?v=34.14"></script>
+<script src="portions.js?v=34.14"></script>
+<script src="sources.js?v=34.14"></script>
+<script src="./shared/meal-products-model.js?v=34.14"></script>
+<script src="./shared/happy-energy-ring.js?v=34.14"></script>
+<script src="./shared/happy-account.js?v=34.14"></script>
+<script src="./shared/happy-input.js?v=34.14"></script>
+<script src="./shared/happy-period.js?v=34.14"></script>
+<script src="./shared/happy-scroll-lock.js?v=34.14"></script>
+<script src="./shared/happy-store.js?v=34.14"></script>
+<script src="./shared/happy-app-links.js?v=34.14"></script>
+<script src="./shared/happy-sport-summary.js?v=34.14"></script>
+<script src="./shared/happy-food.js?v=34.14"></script>
+<script src="./shared/happy-measurements.js?v=34.14"></script>
+<script src="./shared/happy-screens.js?v=34.14"></script>
+<script src="./shared/happy-welcome.js?v=34.14"></script>
+<script src="./shared/happy-person.js?v=34.14"></script>
+<script src="./shared/happy-goals.js?v=34.14"></script>
+<script src="meal-docs.js?v=34.14"></script>
+<script src="meal-data.js?v=34.14"></script>
+<link rel="stylesheet" href="./shared/happy-measurements.css?v=34.14">
+<link rel="stylesheet" href="./shared/happy-period.css?v=34.14">
+<link rel="stylesheet" href="./shared/happy-screens.css?v=34.14">
+<link rel="stylesheet" href="./shared/happy-theme-picker.css?v=34.14">
+<link rel="stylesheet" href="catalog.css?v=34.14">
+<link rel="stylesheet" href="./shared/food-counters.css?v=34.14">
+<link rel="stylesheet" href="release-notes.css?v=34.14">
 <style id="meal-settings-structure">/* Update 26: единая структура настроек — скрытый раздел для разработчика и долгое нажатие на версию */[data-happy-appearance-slot]{margin:0 0 18px}
 .happy-section[data-happy-section="developer"][hidden]{display:none}.happy-version.happy-version-pressing{opacity:.6}.happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}.happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}.happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600}.happy-journal-content[hidden],.meal-measurements[hidden]{display:none!important}.meal-measurements{padding-bottom:24px}
-.meal-signin{margin:0 0 14px}.meal-signin[hidden]{display:none}.meal-signin h2{margin:0 0 6px;font-size:16px}.meal-signin .note{margin:0 0 12px}</style>
+/* Meal 34.11 (лаборатория 24.11): без входа — полоска «Войди, чтобы записывать» над микрофоном, как в Day; цвет — микрофона Meal или темы */
+.meal-signin{display:none;position:fixed;z-index:9;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));max-width:440px;margin:0 auto;height:48px;padding:0 6px 0 20px;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--fab);border:0;box-shadow:0 2px 3px rgba(40,4,30,.10),0 14px 30px rgba(40,4,30,.16);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
+[data-screen="day"].on~.meal-signin:not([hidden]){display:flex}
+.meal-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab);font:inherit;font-size:14px;font-weight:600;cursor:pointer}</style>
 <style id="happy-appearance-controls">/* Only the new picker is styled here. App skins are opt-in and removable. */
 /* значок кнопки Meal в ленте «Главная кнопка» («Настроить тему») — контурный микрофон, как на самой кнопке */
 .appearance-swatch svg.icMic{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
@@ -1643,10 +1280,10 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 #happy-appearance-dialog .ha-error{background:var(--ha-glass);color:var(--ha-ink);font-weight:700}
 #happy-appearance-dialog #happy-appearance-help,#happy-appearance-dialog legend{background:var(--ha-glass);padding:8px 10px;border-radius:10px}
 </style>
-<link rel="stylesheet" href="supplements.css?v=34.13">
-<link rel="stylesheet" href="collections.css?v=34.13">
-<link rel="stylesheet" href="meal-periods.css?v=34.13">
-<link rel="stylesheet" href="bot-replacement.css?v=34.13">
+<link rel="stylesheet" href="supplements.css?v=34.14">
+<link rel="stylesheet" href="collections.css?v=34.14">
+<link rel="stylesheet" href="meal-periods.css?v=34.14">
+<link rel="stylesheet" href="bot-replacement.css?v=34.14">
 <style>
 #mlList.draftGroup{padding:0;overflow:hidden}
 .draftSection{position:relative;margin:0;border-radius:0}
@@ -1705,10 +1342,10 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 .chatFoods .pendingQuestion .mrSearch{margin:12px 0 0}
 .phraseSearch{margin:12px 2px 0}
 </style>
-<link rel="stylesheet" href="./shared/happy-design.css?v=34.13">
-<link rel="stylesheet" href="design-rules.css?v=34.13"><script>/* HAPPY-APPEARANCE-PAINT 21.11.2026: выбранная тема до первой отрисовки (экран загрузки со смайликом). Копию пишет shared/happy-appearance.js; потом он же её обновляет. */(function(){try{var d=document.documentElement,p=JSON.parse(localStorage.getItem('happy-'+d.dataset.happyAppearanceApp+'-appearance-paint-v1')||'null');if(!p||p.version!==1||typeof p.css!=='string'||!p.css)return;var s=document.createElement('style');s.id='happy-appearance-skin';s.textContent=p.css;document.head.appendChild(s);if(p.button)d.dataset.happyAppearanceButton=p.button;if(p.id)d.dataset.happyAppearance=p.id;}catch(e){}})();</script></head>
+<link rel="stylesheet" href="./shared/happy-design.css?v=34.14">
+<link rel="stylesheet" href="design-rules.css?v=34.14"><script>/* HAPPY-APPEARANCE-PAINT 21.11.2026: выбранная тема до первой отрисовки (экран загрузки со смайликом). Копию пишет shared/happy-appearance.js; потом он же её обновляет. 24.11.2026: и цвет полоски браузера (theme-color) — верх фона темы. */(function(){try{var d=document.documentElement,p=JSON.parse(localStorage.getItem('happy-'+d.dataset.happyAppearanceApp+'-appearance-paint-v1')||'null');if(!p||p.version!==1||typeof p.css!=='string'||!p.css)return;var s=document.createElement('style');s.id='happy-appearance-skin';s.textContent=p.css;document.head.appendChild(s);if(p.button)d.dataset.happyAppearanceButton=p.button;if(p.id)d.dataset.happyAppearance=p.id;var m=document.querySelector('meta[name=theme-color]');if(m&&/^#[0-9a-f]{6}$/i.test(p.top||'')){m.dataset.base=m.content;m.content=p.top;}}catch(e){}})();</script></head>
 <body class="loading">
-<script src="meal-account.js?v=34.13"></script>
+<script src="meal-account.js?v=34.14"></script>
 
 <div class="bg"></div><div class="grain"></div>
 
@@ -1743,7 +1380,6 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       </div>
     </div>
 
-    <section class="card meal-signin" id="mealSignIn" hidden><h2>Войди, чтобы записывать</h2><p class="note">Записи Meal хранятся в аккаунте Happy — одном для Day, Meal и Sport. После входа запись работает и без сети.</p><button class="happy-button primary" type="button" id="mealSignInGo">Войти</button></section>
     <!-- кольцо энергии (общий виджет Meal и Sport): слева кольцо, справа четыре строки; нажатие — съедено → баланс → потрачено -->
     <div class="card erCard" id="mlKb"></div>
     <p class="mlFast" id="mlFast" role="status" hidden></p>
@@ -2121,10 +1757,11 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="release-link" id="openReleaseHistory"><b>История обновлений</b><small>Что нового в Happy Meal · версии и изменения</small></button></div>
     <p class="note mlCopy">© 2026 Astamur. Все права защищены.</p>
-    <footer class="app-version happy-version" data-app-version="34.13" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Meal · Update 33</div><small>Обновлено 14.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="34.14" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Meal · Update 33</div><small>Обновлено 14.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
+  <div class="meal-signin" id="mealSignIn" hidden><span>Войди, чтобы записывать</span><button type="button" id="mealSignInGo">Войти</button></div>
 
 </div>
 
@@ -2205,8 +1842,9 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
 <div class="mfBar" id="mfBar" role="status" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 
-<script src="supplement-counters.js?v=34.13"></script>
-<script src="counters.js?v=34.13"></script>
+<script src="supplement-counters.js?v=34.14"></script>
+<script src="counters.js?v=34.14"></script>
+<script src="tap-swipe.js?v=34.14"></script>
 <script>
 /* Meal 32: записи хранит общий модуль (meal-data.js). Здесь — только настройки устройства (оформление): они лежат
    в памяти браузера и между устройствами не ходят. */
@@ -2322,7 +1960,8 @@ function dupWarn(what){ toast('Такое название уже есть: '+wh
 function ruDate(iso){
   var M=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   var d=new Date(iso+'T00:00:00');
-  return d.getDate()+' '+M[d.getMonth()];
+  /* год — только если не текущий (формат дат Happy, решение 24.11.2026) */
+  return d.getDate()+' '+M[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'');
 }
 
 /* ═══════════ ИКОНКИ ═══════════ */
@@ -4986,7 +4625,7 @@ function renderAll(){
    в аккаунте и приходит на устройство сам. Порции, нажатые в Day и Sport, — их записи: в файл Meal они не идут. */
 function bkSupp(){ return window.MealSupplementsStore&&MealSupplementsStore.ready()?MealSupplementsStore:null }
 function bkDays(db){ var n=0; Object.keys((db&&db.days)||{}).forEach(function(d){ if(((db.days[d]||{}).items||[]).length) n++ }); return n }
-function bkDate(t){ var d=new Date(t); return isNaN(d)?'':d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) }
+function bkDate(t){ var d=new Date(t); return isNaN(d)?'':ruDate(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) }
 function bkPaint(){ var el=document.getElementById('bkWhen'); if(el) el.textContent=DB.bkAt?'Последняя выгрузка — '+bkDate(DB.bkAt)+'.':'Выгрузок ещё не было.' }
 function bkExport(){
   if(writeGuard()) return;
@@ -5679,9 +5318,10 @@ function jrRangeTxt(r){
 }
 function jrPeriodTxt(){
   var r=jrRange();
-  if(JR_PER==='today') return 'Сегодня, '+ruDate(r.b);
-  if(r.a===r.b) return jrRangeTxt(r);
-  return 'Среднее значение';
+  /* как в Day и Sport: «Сегодня, 24 ноября», «Вчера, 23 ноября», за несколько дней — сам период «18–24 ноября» (24.11.2026) */
+  if(r.a===r.b&&r.b===todayISO()) return 'Сегодня, '+ruDate(r.b);
+  if(r.a===r.b&&r.b===jrIsoAdd(todayISO(),-1)) return 'Вчера, '+ruDate(r.b);
+  return jrRangeTxt(r);
 }
 /* пример: за неделю и месяц цифры чуть другие — как средние за несколько дней */
 function jrHash(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619) } return (h>>>0)/4294967295 }
@@ -6527,20 +6167,20 @@ function jrNoteTxt(){
    happy-person.js, happy-goals.js): paintAccount, paintSignIn, askSignIn. */
 
 </script>
-<script src="substances.js?v=34.13"></script>
-<script src="widget-image.js?v=34.13"></script><script src="report.js?v=34.13"></script><script src="controls.js?v=34.13"></script><script src="search-names.js?v=34.13"></script><script src="usda-measures.js?v=34.13"></script><script src="usda.js?v=34.13"></script><script src="catalog-offline.js?v=34.13"></script><script src="catalog.js?v=34.13"></script>
-<script src="uzbek.js?v=34.13"></script>
-<script src="desserts.js?v=34.13"></script>
-<script src="preserves.js?v=34.13"></script><script src="kfct.js?v=34.13"></script>
-<script src="user-products.js?v=34.13"></script>
-<script src="bot/household-ru.js?v=34.13"></script><script src="bot-speech.js?v=34.13"></script><script src="meal-periods.js?v=34.13"></script><script src="meal-fast.js?v=34.13"></script><script src="bot.js?v=34.13"></script><script src="bot-steps.js?v=34.13"></script><script src="bot-goals.js?v=34.13"></script><script src="bot-own-product.js?v=34.13"></script><script src="bot-guide-steps.js?v=34.13"></script><script src="bot-mine.js?v=34.13"></script><script src="meal-inbox.js?v=34.13"></script><script src="meal-measurements.js?v=34.13"></script>
+<script src="substances.js?v=34.14"></script>
+<script src="widget-image.js?v=34.14"></script><script src="report.js?v=34.14"></script><script src="controls.js?v=34.14"></script><script src="search-names.js?v=34.14"></script><script src="usda-measures.js?v=34.14"></script><script src="usda.js?v=34.14"></script><script src="catalog-offline.js?v=34.14"></script><script src="catalog.js?v=34.14"></script>
+<script src="uzbek.js?v=34.14"></script>
+<script src="desserts.js?v=34.14"></script>
+<script src="preserves.js?v=34.14"></script><script src="kfct.js?v=34.14"></script>
+<script src="user-products.js?v=34.14"></script>
+<script src="bot/household-ru.js?v=34.14"></script><script src="bot-speech.js?v=34.14"></script><script src="meal-periods.js?v=34.14"></script><script src="meal-fast.js?v=34.14"></script><script src="bot.js?v=34.14"></script><script src="bot-steps.js?v=34.14"></script><script src="bot-goals.js?v=34.14"></script><script src="bot-own-product.js?v=34.14"></script><script src="bot-guide-steps.js?v=34.14"></script><script src="bot-mine.js?v=34.14"></script><script src="meal-inbox.js?v=34.14"></script><script src="meal-measurements.js?v=34.14"></script>
 
-<script src="./shared/release-notes.js?v=34.13"></script>
-<script src="release-notes.js?v=34.13"></script>
-<script src="./shared/happy-links.js?v=34.13"></script>
-<script src="./app-links.js?v=34.13"></script>
-<script src="./shared/happy-settings-developer.js?v=34.13"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 34.13')}catch(e){}</script>
+<script src="./shared/release-notes.js?v=34.14"></script>
+<script src="release-notes.js?v=34.14"></script>
+<script src="./shared/happy-links.js?v=34.14"></script>
+<script src="./app-links.js?v=34.14"></script>
+<script src="./shared/happy-settings-developer.js?v=34.14"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(mealReleases,'Happy Meal · Update 34.14')}catch(e){}</script>
 <script id="happy-appearance-module">/* Happy gradient model v1. Color adjustments belong to a stop or one layer, never the page. */
 (function(root){
  'use strict';
@@ -6730,12 +6370,29 @@ function jrNoteTxt(){
  const paintKey='happy-'+app+'-appearance-paint-v1';
  function remember(id,button,css){
   if(id!==current||button!==currentButton)return;
-  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css}):'')).catch(()=>{});}catch(e){}
+  try{Promise.resolve(root.rawSet(paintKey,css?JSON.stringify({version:1,id,button,css,top:barColor(id)}):'')).catch(()=>{});}catch(e){}
  }
+ /* 24.11.2026 (Астамур, пункт 12А): полоска браузера сверху (theme-color) — цвет верха фона. Без темы — свой цвет
+    приложения из <meta> (Day #56B9F7, Meal #A13E65, Sport #8E75E1), с темой — цвет её фона в середине верхнего края. */
+ const meta=document.querySelector('meta[name=theme-color]');
+ if(meta&&!meta.dataset.base)meta.dataset.base=meta.content;
+ function topColor(g){
+  const st=G.colors(g);if(!st.length)return '';
+  const m=G.normalize(g);
+  const hex=v=>'#'+v.map(x=>Math.round(x).toString(16).padStart(2,'0')).join('');
+  if(m.type!=='linear'||st.length<2)return st.length<2?st[0].color:hex(G.interpolate(st,G.sample(m,.5,0)));   // радиальный и др. — как считает студия
+  const W=root.innerWidth||390,H=root.innerHeight||844,a=m.angle*Math.PI/180;
+  const L=Math.abs(W*Math.sin(a))+Math.abs(H*Math.cos(a)),dy=-H/2;   // точка: середина верхнего края
+  const pos=Math.max(0,Math.min(100,(0.5+(dy*-Math.cos(a))/L)*100));
+  return hex(G.interpolate(st,pos/100));
+ }
+ function barColor(id){const t=id?themes.find(t=>t.id===id):null;return t?topColor(t.state.backgroundGradient):'';}
+ function paintBar(id){if(!meta)return;const c=barColor(id);meta.content=/^#[0-9a-f]{6}$/i.test(c)?c:meta.dataset.base;}
  function skin(id,button){
   if(button===undefined)button=currentButton;
   let style=document.getElementById('happy-appearance-skin');
   const t=id?themes.find(t=>t.id===id):null;if(id&&!t)return;
+  paintBar(id);
   const src=button==='theme'?id:button==='original'?'':button,b=src?themes.find(t=>t.id===src):null;
   document.documentElement.dataset.happyAppearanceButton=button;
   if(!t&&!b){if(style)style.remove();document.documentElement.removeAttribute('data-happy-appearance');remember(id,button,'');return;}
@@ -6855,17 +6512,17 @@ function jrNoteTxt(){
 </script>
 <!-- «Настроить тему», как в Sport и Day: общий кусок shared/happy-theme-picker.js вместо «Выбрать оформление»
      (аудит Day 20.11.2026, п. 18: во всех приложениях; Астамур 21.11.2026 03:07 — в Meal вместе с обновлением Day) -->
-<script src="./shared/happy-theme-picker.js?v=34.13"></script>
-<script src="supplement-nutrition.js?v=34.13"></script>
-<script src="supplements-model.js?v=34.13"></script>
-<script src="supplements-store.js?v=34.13"></script>
-<script src="supplements-library.js?v=34.13"></script>
-<script src="supplements-search.js?v=34.13"></script>
-<script src="supplements.js?v=34.13"></script>
-<script src="catalog-preview.js?v=34.13"></script>
-<script src="collections.js?v=34.13"></script>
+<script src="./shared/happy-theme-picker.js?v=34.14"></script>
+<script src="supplement-nutrition.js?v=34.14"></script>
+<script src="supplements-model.js?v=34.14"></script>
+<script src="supplements-store.js?v=34.14"></script>
+<script src="supplements-library.js?v=34.14"></script>
+<script src="supplements-search.js?v=34.14"></script>
+<script src="supplements.js?v=34.14"></script>
+<script src="catalog-preview.js?v=34.14"></script>
+<script src="collections.js?v=34.14"></script>
 
-<script src="bot-replacement.js?v=34.13"></script>
+<script src="bot-replacement.js?v=34.14"></script>
 <script>/* Meal 28: работа без интернета — копия файлов этого выпуска на устройстве (sw.js, только свой каталог выпуска) */
 if('serviceWorker' in navigator&&window.isSecureContext)navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(function(){});</script>
 </body>

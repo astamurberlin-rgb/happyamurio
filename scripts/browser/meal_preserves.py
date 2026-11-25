@@ -94,7 +94,7 @@ with sync_playwright() as p:
     check("кизиловое варенье: 276 ккал, жиры 0 г (напечатан ноль), углеводы 71,7 г", (rows.get("Калории") or "").startswith("276") and (rows.get("Жиры") or "").startswith("0") and (rows.get("Углеводы") or "").startswith("71,7"))
     check("кизиловое варенье: бета-каротин — «следы», клетчатка Meal — «—», старая клетчатка своей строкой 0,2 г",
           rows.get("Бета-каротин") == "следы" and rows.get("Клетчатка") == "—" and (rows.get("Клетчатка (методика справочника 1987)") or "").startswith("0,2"))
-    check("кизиловое варенье: источник и подпись каталога", "Скурихин и Волгарев, 1987" in whole and "Каталог «Сладкие заготовки» · ChatGPT, 14.11.2026" in whole)
+    check("кизиловое варенье: источник и подпись каталога", "Скурихин и Волгарев, 1987" in whole and "Каталог «Сладкие заготовки» · ChatGPT, 14 ноября" in whole)
     meal.screenshot(path=SHOTS + "meal_preserves-2-kizil.png")
     meal.keyboard.press("Escape"); meal.wait_for_timeout(300)
     rows, whole = card(GOST)

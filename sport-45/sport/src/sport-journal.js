@@ -1,3 +1,5 @@
+/* Заголовок дня в ленте (решение 24.11.2026): «Сегодня», «Вчера», дальше «пн, 22 ноября». */
+function feedDayText(d){const t=dayNow(),y=new Date(t+'T12:00:00Z');y.setUTCDate(y.getUTCDate()-1);return d===t?'Сегодня':d===y.toISOString().slice(0,10)?'Вчера':ruDateText(d)}
 /* Лаборатория Sport, ветка sport-lab-43 · пункты 10, 13–18 списка «Sport: что осталось» (Астамур 15.11.2026).
  *
  * 10 — названия строк («Разминка», «1 Подход») в записи журнала; в «Истории» упражнения — exercise-history.js.
@@ -124,7 +126,7 @@ async function shareJournalPeriod(r){
  const list=state.workouts.filter(w=>{const d=String(w.start).slice(0,10);return d>=r.a&&d<=r.b;}).sort((a,b)=>a.start.localeCompare(b.start));
  const title='Тренировки · '+HappyPeriod.caption(journalPeriod,dayNow());
  if(!list.length){toast('За этот период тренировок нет');return;}
- const text=title+'\n\n'+list.map(w=>`${dateLabel(w.start.slice(0,10))} · ${w.start.slice(11,16)} · ${w.title} · ${durationText(w.duration)}`).join('\n');
+ const text=title+'\n\n'+list.map(w=>`${dateLabel(w.start.slice(0,10))}, ${w.start.slice(11,16)} · ${w.title} · ${durationText(w.duration)}`).join('\n');
  if(navigator.share){try{await navigator.share({title,text});return}catch(e){if(e.name==='AbortError')return}}
  try{await navigator.clipboard.writeText(text);toast('Тренировки за период скопированы')}catch{openSheet('Поделиться тренировками',`<textarea class="plan-copy" readonly aria-label="Тренировки за период">${esc(text)}</textarea>`)}
 }
@@ -137,7 +139,7 @@ renderHistory=function(){
  if(!rows.length)return `<div class="stack"><div class="empty">${r.a===r.b&&r.a===dayNow()?'Сегодня записей нет.':'За этот период записей нет.'}</div></div>`;
  {
   const days=new Map();for(const r of rows){const d=String(r.at).slice(0,10);if(!days.has(d))days.set(d,[]);days.get(d).push(r);}
-  return `<div class="journal-feed">${[...days].map(([d,list])=>`<section class="feed-daygroup"><h3 class="feed-date">${esc(ruDateText(d))}</h3><ol class="feed-list">${list.map(journalFeedItem).join('')}</ol></section>`).join('')}</div>`;
+  return `<div class="journal-feed">${[...days].map(([d,list])=>`<section class="feed-daygroup"><h3 class="feed-date">${esc(feedDayText(d))}</h3><ol class="feed-list">${list.map(journalFeedItem).join('')}</ol></section>`).join('')}</div>`;
  }
  let month='';
  return `<div class="stack">${rows.map(row=>{const m=String(row.at).slice(0,7);let heading='';if(month!==m){month=m;heading=`<div class="month-label">${new Date(m+'-01T12:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</div>`;}

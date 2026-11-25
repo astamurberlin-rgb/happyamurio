@@ -40,7 +40,7 @@ document.addEventListener('submit',e=>{
 // sharing live inside it.
 nextPlanCard=function(t){
  if(!t)return '';const s=templateSchedule(t.id);
- const when=s?(s.mode==='weekly'?s.days.map(d=>scheduleWeekdays.find(x=>x[0]===d)?.[1]).join(' · '):dateLabel(s.startDate))+' · '+s.time+' · '+s.minutes+' мин':'';
+ const when=s?(s.mode==='weekly'?s.days.map(d=>scheduleWeekdays.find(x=>x[0]===d)?.[1]).join(', ')+' · ':dateLabel(s.startDate)+', ')+s.time+' · '+s.minutes+' мин':'';
  return `<div class="section-title"><h2>Расписание</h2></div><button class="card section-row plan-line" data-action="plan-template" data-id="${esc(t.id)}">${icon('calendar-blank')}<b>${s?esc(when):'Добавить в расписание'}</b></button>`   // без стрелки, значок и текст по центру (Астамур 18.11.2026)
   // Пункт 12 (Астамур 15.11.2026): «Показывать на главной» — обычный переключатель, на карточке рядом с расписанием.
   +(t.recommended?'':`<label class="card section-row plan-home-row"><b>Показывать на главной</b><input type="checkbox" role="switch" class="sport-switch" data-template-home="${esc(t.id)}" ${t.favorite!==false?'checked':''}></label>`);

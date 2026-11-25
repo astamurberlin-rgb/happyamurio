@@ -137,8 +137,6 @@
 .now-save{position:fixed;z-index:9;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));width:116px;height:116px;margin-left:-58px;border:1px solid #ffffff60;border-radius:50%;background:linear-gradient(145deg,#ffba75,#f28a42);color:#593419;box-shadow:0 8px 26px #75421e33,inset 0 1px #ffffff75;font:700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transform:translateY(150%);visibility:hidden;transition:transform .32s ease,visibility .32s;padding-bottom:20px;cursor:pointer}
 body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
 .now-save:disabled{filter:saturate(.5);color:#765942;cursor:default}
-.now-notice{position:fixed;z-index:60;bottom:calc(100px + env(safe-area-inset-bottom));left:20px;right:20px;max-width:480px;margin:auto;padding:16px;border:1px solid #ffffff70;border-radius:20px;background:#edf8fff5;color:#264057;box-shadow:0 8px 30px #14385733;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:14px}
-.now-notice[hidden]{display:none}.now-notice button{background:none;border:0;color:#6950c7;font:600 14px inherit;padding:10px 0;cursor:pointer}
 [data-screen="settings"] summary,.care-settings summary,.care-screen summary{list-style:none}
 [data-screen="settings"] summary::-webkit-details-marker,.care-settings summary::-webkit-details-marker,.care-screen summary::-webkit-details-marker{display:none}
 [data-screen="settings"] summary:after,.care-settings summary:after,.care-screen summary:after{display:none!important}

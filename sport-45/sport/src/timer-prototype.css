@@ -9,12 +9,11 @@
 .floating-rest-clock input{width:100%;height:34px;min-height:34px;padding:0!important;font-size:28px;line-height:34px;font-weight:600;letter-spacing:-.6px;font-variant-numeric:tabular-nums;color:var(--happy-ink)!important}
 .floating-rest-clock>span{position:absolute;right:calc(100% + 10px);top:50%;transform:translateY(-50%);width:72px;font-size:12px;line-height:14px;white-space:normal;text-align:right;color:var(--happy-ink)!important}
 .floating-rest-finish{width:108px;min-width:108px;height:42px;min-height:42px;margin-left:auto;padding:0 10px;border:1px solid white;border-radius:23px;background:#fff;color:var(--sport-rest-green);font-size:12px;font-weight:600;box-shadow:none}
-.floating-rest-pill>.floating-rest-extra{position:absolute;left:50%;bottom:1px;transform:translateX(-50%);min-height:18px;height:18px;padding:0 3px;font-size:12px;color:var(--happy-ink)}
 .exercise-clock-fab,.exercise-clock-fab.running{background:var(--sport-rest-green);color:var(--happy-ink);border-color:#ffffff80;box-shadow:inset 0 1px 0 #ffffff26,0 5px 18px #154b4730}
 .overlay:has(.exercise-player),.exercise-player-overlay{inset:0;padding:0;align-items:stretch;background:var(--sport-background);backdrop-filter:none}
 .sheet:has(.exercise-player),.exercise-player-sheet{box-sizing:border-box;position:absolute;inset:0;display:flex;flex-direction:column;isolation:isolate;width:100%;max-width:460px;height:100%;max-height:none;margin:0 auto;padding:env(safe-area-inset-top) 0 calc(100px + env(safe-area-inset-bottom));border:0;border-radius:0;overflow:hidden;animation:none}
 .sheet:has(.exercise-player)>.grip{position:relative;top:auto;width:88px;height:22px;min-height:22px;flex:0 0 22px;margin:0 auto 13px;padding:0;background:none}
-.sheet:has(.exercise-player)>.grip:after{width:40px;height:4px}
+.sheet:has(.exercise-player)>.grip:after{width:42px;height:5px}
 .sheet:has(.exercise-player)>.sheet-top{display:none}
 .exercise-player{--player-axis:120px;--player-stroke:1.8px;box-sizing:border-box;position:static;display:flex;flex:1;min-height:0;width:100%;padding:0 20px 16px;flex-direction:column;align-items:center;text-align:left;color:var(--happy-ink);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 .exercise-player .player-exercise-name{flex:none;width:100%;padding:0;margin:32px 0 18px;text-align:left;font-size:20px;line-height:1.4;font-weight:600}

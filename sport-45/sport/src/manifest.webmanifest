@@ -1,12 +1,12 @@
 {
   "name": "Happy Sport · Update 45",
-  "short_name": "Sport 43",
+  "short_name": "Sport",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#00A8F5",
-  "theme_color": "#00A8F5",
+  "theme_color": "#8E75E1",
   "icons": [
     {
       "src": "./app-icons/happy-sport-20261029-192.png",

@@ -218,7 +218,7 @@ function words(st){
 /* плашка идущего окна: до скольки оно по расписанию, сколько осталось (ч:мм) и доля пройденного */
 function progress(st,now){
   var total=Math.max(1,Math.round((st.win.plan-st.from)/60000)), gone=Math.min(total,Math.max(0,Math.floor((now-st.from)/60000))), left=total-gone;
-  return {till:clock(st.win.plan),left:Math.floor(left/60)+':'+pad(left%60),share:gone/total};
+  return {till:clock(st.win.plan),left:(Math.floor(left/60)?Math.floor(left/60)+' ч'+(left%60?' '+(left%60)+' мин':''):(left%60)+' мин'),   /* сколько осталось — словами (24.11.2026) */share:gone/total};
 }
 function food(x){ try{ return (MealProducts.forItem(x,FOODS,DB)||FOODS[x.fid]||{}).n||'' }catch(e){ return '' } }
 /* записи дня для фастинга из дневника страницы: еда и приёмы БАДов, у которых есть время. Берёт DB, FOODS, mlNormTime,
@@ -276,7 +276,7 @@ function bar(){
     '<span class="mfLeft"></span><button type="button" class="mfAct" data-mf="cancel">Отменить</button>';
   var p=progress(st,now);
   el.querySelector('.mfFill').style.width=(p.share*100).toFixed(2)+'%';
-  el.querySelector('.mfTill').textContent='до '+p.till; el.querySelector('.mfLeft').textContent='\u2212'+p.left;
+  el.querySelector('.mfTill').textContent='до '+p.till; el.querySelector('.mfLeft').textContent=p.left;
   el.setAttribute('aria-label','Фастинг до '+p.till+', осталось '+p.left);
   shown=true;
 }
