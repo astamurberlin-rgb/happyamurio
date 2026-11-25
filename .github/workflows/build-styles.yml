@@ -1,0 +1,42 @@
+# Автосборка общих стилей из дизайн-системы (25.11.2026).
+# Правка design-system/tokens.json в рабочей ветке → GitHub сам пересобирает shared/ и копии в текущих выпусках
+# (sh scripts/build-styles.sh) и добавляет в ту же ветку коммит «Стили собраны из tokens.json».
+# В main ничего не пишет: на сайт стили попадают только с выпуском, после слова Астамура «выпускай».
+# Для main и запросов на слияние — только сверка: файл стилей совпадает с tokens.json.
+name: Стили из tokens.json
+on:
+  push:
+    paths:
+      - 'design-system/tokens.json'
+      - 'scripts/build-tokens.mjs'
+      - 'shared/happy-design.css'
+      - 'shared/happy-screens.css'
+  pull_request:
+    paths:
+      - 'design-system/tokens.json'
+      - 'scripts/build-tokens.mjs'
+      - 'shared/**'
+permissions:
+  contents: write
+jobs:
+  styles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Сверка (main и запросы на слияние)
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        run: |
+          node scripts/build-tokens.mjs --check
+          node scripts/check-shared.mjs
+      - name: Сборка и коммит в рабочую ветку
+        if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+        run: |
+          sh scripts/build-styles.sh
+          if git diff --quiet; then echo "Стили уже совпадают с tokens.json."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Стили собраны из tokens.json"
+          git push
