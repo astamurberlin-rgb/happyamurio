@@ -1107,9 +1107,8 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
   background:radial-gradient(circle at 38% 30%, rgba(255,255,255,.38), rgba(255,255,255,.12) 60%, rgba(255,255,255,.06));
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   box-shadow:0 2px 4px rgba(4,40,80,.14),0 10px 24px rgba(4,40,80,.2),inset 0 1px 0 rgba(255,255,255,.5)}
-.erKnob b{font-size:calc(var(--ringH) * .18);font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
-.erKnob.long b{font-size:calc(var(--ringH) * .155)}
-.erKnob small{margin-top:3px;font-size:max(12px,calc(var(--ringH) * .078));font-weight:600;color:rgba(255,255,255,.82);white-space:nowrap}
+.erKnob b{font-size:min(28px,calc(var(--ringH) * .215));font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.erKnob small{margin-top:3px;font-size:12px;font-weight:600;color:rgba(255,255,255,.82);white-space:nowrap}
 .erRows{min-width:0;height:var(--ringH);display:flex;flex-direction:column;justify-content:space-between}
 .erR{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:6px;font-size:var(--erF,12px);font-weight:600;line-height:1.2;color:var(--happy-ink)}
 .erDot{width:8px;height:8px;border-radius:50%}
@@ -2920,9 +2919,10 @@ setInterval(function(){ if(adoptPending&&!adoptBusy()) adoptRemote() },1200);
    На том же устройстве тренировка видна сразу, с другого — после обмена. В хранилище Meal она не записывается.
    Время и энергия тренировок видны и без общего расхода: «потрачено» за день, покой и шаги Sport пока не считает —
    в кружке и этих строках прочерк.
-   Сводки нет — прочерк везде. Полный круг — цель по калориям из «Целей на день», нет цели — 3000.
+   Сводки нет — прочерк везде. Полный круг — цель по калориям на ¾ круга (видно перебор, 25.11.2026), нет цели — 3000.
    Цели строк — из «Целей на день» (клетчатка — тоже); нет цели — число без полоски. */
-var ER_MODE='eat', ER_SPORT=null;   // ER_SPORT — тренировки по дням из витрины Sport; null — её нет
+/* вид виджета запоминается на устройстве — каким оставил, таким и откроется; впервые — «съедено» (Астамур 25.11.2026) */
+var ER_MODE=(function(){ try{ var v=localStorage.getItem('happy.meal.energyMode'); if(v==='eat'||v==='bal'||v==='spent') return v }catch(e){} return 'eat' })(), ER_SPORT=null;   // ER_SPORT — тренировки по дням из витрины Sport; null — её нет
 function gTxt(v){ return v>=10?String(Math.round(v)):fmt(v) }
 function goalOf(k){ var v=parseFloat(String((DB.goals||{})[k]||'').replace(',','.')); return v>0?v:0 }
 function erSportRead(){
@@ -2947,7 +2947,9 @@ function dayFib(list){
   return any?s:null;
 }
 function erGoalRow(h,name,v,g,u,coverage){ if(coverage&&coverage.missing&&!coverage.known)v=null; return erRowHTML(h,name,v==null?'—':gTxt(v)+(g?'/'+gTxt(g):'')+' '+u,v!=null&&g?v/g:null) }
-function erSportRow(h,name,v,g,u){ return erRowHTML(h,name,v==null?'—':erNum(v)+(g?'/'+erNum(g):'')+(u?' '+u:''),v!=null&&g?v/g:null) }
+function erSportRow(h,name,v,g,u,f){ f=f||erNum; return erRowHTML(h,name,v==null?'—':f(v)+(g?'/'+f(g):'')+(u?' '+u:''),v!=null&&g?v/g:null) }
+/* шаги от 10 000 — «11к/10к», как в образце «Общий»: строка влезает при 12 (25.11.2026) */
+function erKNum(v){ return v>=10000?String(Math.round(v/100)/10).replace('.',',')+'к':erNum(v) }
 var ER_NEXT={eat:'bal',bal:'spent',spent:'eat'}, ER_CAP={eat:'съедено',bal:'баланс',spent:'потрачено'};
 function kbjuHTML(){
   var it=day(curDate).items, supplements=supplementRows(curDate), s=intakeSum(it,supplements), gk=goalOf('k'), sp=erSportDay(curDate), spent=sp&&sp.k!=null?sp.k:null, M=ER_MODE;
@@ -2961,7 +2963,7 @@ function kbjuHTML(){
   } else if(M==='spent'){
     arcs=['spent']; big=spent==null?'—':Math.round(spent); say=spent==null?'Потраченного пока нет — оно придёт из Happy Sport':'Потрачено '+big+' ккал';
     rows=erSportRow(ER_HUE.violet,'Покой',erSportVal(sp,'rest'),erSportGoal('rest'))+erSportRow(ER_HUE.pink,'Тренировки',erSportVal(sp,'wo'),erSportGoal('wo'))+
-         erSportRow(ER_HUE.blue,'Шаги',erSportVal(sp,'steps'),erSportGoal('steps'))+erSportRow(ER_HUE.teal,'Время, мин',erSportVal(sp,'min'),erSportGoal('min'));
+         erSportRow(ER_HUE.blue,'Шаги',erSportVal(sp,'steps'),erSportGoal('steps'),'',erKNum)+erSportRow(ER_HUE.teal,'Время',erSportVal(sp,'min'),erSportGoal('min'),'мин');
   } else {
     var d=spent==null||s.k==null?null:s.k-spent, st=erSportVal(sp,'steps'), gs=erSportGoal('steps'), gp=goalOf('p'), wk=st==null?0:st/100+Math.max(0,d)/5;
     arcs=['eat','spent']; big=d==null?'—':erSigned(d); say=d==null?'Баланса пока нет — потраченное придёт из Happy Sport':'Баланс '+big+' ккал';
@@ -2971,10 +2973,10 @@ function kbjuHTML(){
          erRowHTML(ER_HUE.pink,'Белка до цели',gp?(s.p>=gp?'есть':gTxt(gp-s.p)+' г'):'—',gp?s.p/gp:null);
   }
   return '<div class="erRing" role="button" tabindex="0" aria-label="'+escH(say+'. Нажми — '+ER_CAP[ER_NEXT[M]])+'">'+
-    erRingHTML({eat:s.k,spent:spent,arcs:arcs,full:gk||3000,big:big,cap:ER_CAP[M]})+'</div><div class="erRows">'+rows+'</div>';
+    erRingHTML({eat:s.k,spent:spent,arcs:arcs,full:gk?gk/0.75:3000,big:big,cap:ER_CAP[M]})+'</div><div class="erRows">'+rows+'</div>';
 }
 function erNext(key){
-  ER_MODE=ER_NEXT[ER_MODE];
+  ER_MODE=ER_NEXT[ER_MODE]; try{ localStorage.setItem('happy.meal.energyMode',ER_MODE) }catch(e){}
   var el=document.getElementById('mlKb'); el.innerHTML=kbjuHTML(); erFit(el);
   if(key){ var r=el.querySelector('.erRing'); if(r) r.focus({preventScroll:true}) }          // с клавиатуры фокус остаётся на кольце
 }
@@ -3419,7 +3421,7 @@ function erRingHTML(o){
   var big=String(o.big);
   return '<svg viewBox="20 20 200 186" aria-hidden="true"><g transform="rotate(122 120 120)">'+erArc(16,ER_SWEEP,P?'rgba(255,255,255,'+P.track/100+')':'rgba(255,255,255,.2)',0)+'</g></svg>'+
     (body?'<div class="erArcs" aria-hidden="true">'+body+'</div>':'')+
-    '<div class="erKnob'+(big.length>=5?' long':'')+'"><b>'+escH(big)+'</b><small>'+escH(o.cap)+'</small></div>';
+    '<div class="erKnob"><b>'+escH(big)+'</b><small>'+escH(o.cap)+'</small></div>';
 }
 /* строка справа: точка, подпись, «сколько/цель»; под строкой полоска до цели (5 px).
    Полоска — от светлого к чуть более тёмному того же тона; с 85 % цели и за ней конец темнеет сильнее. bar: null — пустая полоска без выдуманной цели */
@@ -3433,14 +3435,10 @@ function erRowHTML(h,name,val,bar){
   }
   return '<div class="erR"><i class="erDot" style="background:'+tn(B?B.dot:0.8)+'" aria-hidden="true"></i><span>'+escH(name)+'</span><b>'+escH(val)+'</b>'+b+'</div>';
 }
-/* Шрифт строк совпадает со Sport: 11 px, на экране до 360 px — 10 px. При переполнении уменьшаем до 10 px;
-   дальше подпись обрезается многоточием. Пересчёт — после отрисовки и когда меняется размер (экран открылся, телефон повернули) */
+/* Строки — всегда 12, как в Day, Sport и образце «Общий» (Астамур 25.11.2026). Раньше при переполнении шрифт уменьшался
+   до 10–11 — ниже правила «не мельче 12». Теперь не влезает — подпись обрезается многоточием, цифры никогда. */
 function erFit(box){
-  var rows=box&&box.querySelector('.erRows'); if(!rows||!rows.clientWidth) return;
-  var f=window.innerWidth<=360?10:11, L=rows.querySelectorAll('.erR>span:not(.erBar)');
-  function over(){ for(var i=0;i<L.length;i++) if(L[i].scrollWidth>L[i].clientWidth+0.5) return true; return false }
-  rows.style.removeProperty('--erF');
-  while(f>10&&over()){ f-=0.5; rows.style.setProperty('--erF',f+'px') }
+  var rows=box&&box.querySelector('.erRows'); if(rows) rows.style.removeProperty('--erF');
 }
 var ER_RO=typeof ResizeObserver==='function'?new ResizeObserver(function(es){ es.forEach(function(e){ erFit(e.target) }) }):null;
 function erWatch(id){ var el=document.getElementById(id); if(el&&ER_RO) ER_RO.observe(el) }
@@ -5485,7 +5483,7 @@ function jrTileCap(x,v,pct){
 }
 /* виджет как на главном (кольцо энергии), но за период: в кружке — калории, в строках — белки, жиры, углеводы, клетчатка
    «в среднем/норма»; за неделю, месяц и свой период — в среднем за день по дням с записями, за один день — съеденное.
-   Норма — своя из «Целей на день», иначе рекомендуемая; нет нормы — число без полоски. Полный круг — цель по калориям, нет — 3000.
+   Норма — своя из «Целей на день», иначе рекомендуемая; нет нормы — число без полоски. Полный круг — цель по калориям на ¾ круга, нет — 3000.
    Нажатие ничего не переключает: баланс и потраченное — на главном (25 октября, Астамур). */
 var JR_HUE={p:'pink',f:'violet',c:'blue',fib:'teal'};
 erWatch('jrTiles');
@@ -5499,7 +5497,7 @@ function jrWidgetHTML(){
   var say=(one?'Съедено ':'В среднем за день ')+(k==null?'нет данных о калориях':Math.round(k)+' ккал')+'; '+JR_MAC.map(function(x){
     var v=jrV(x,x.id), n=jrNorm(x); return x.t.toLowerCase()+' '+(v==null?'нет данных':gTxt(v)+(n?' из '+gTxt(n):'')+' '+x.u) }).join(', ');
   return '<div class="card erCard"><div class="erRing" role="img" aria-label="'+escH(say)+'">'+
-    erRingHTML({eat:k,arcs:['eat'],full:goalOf('k')||3000,big:k==null?'—':Math.round(k),cap:one?'съедено':'в среднем'})+'</div>'+
+    erRingHTML({eat:k,arcs:['eat'],full:goalOf('k')?goalOf('k')/0.75:3000,big:k==null?'—':Math.round(k),cap:one?'съедено':'в среднем'})+'</div>'+
     '<div class="erRows">'+rows+'</div></div>';
 }
 var JR_CAL='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="4"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>';

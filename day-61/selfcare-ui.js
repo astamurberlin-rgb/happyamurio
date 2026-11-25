@@ -422,9 +422,12 @@ function activityFacts(){
  const workouts=woOf(curDate),calories=workouts.map(w=>w.kcal??a.workouts.find(x=>x.id===w.id)?.energyKcal);
  return {food:food?{...food,g:DB.mealLink?.goals||{}}:null,eaten:food?.k??null,spent:null,rest:null,training:calories.length&&calories.every(C.finite)?calories.reduce((n,v)=>n+v,0):null,minutes:workouts.length?workouts.reduce((n,w)=>n+(w.min||0),0):a.connected?0:null,steps:null};
 }
-/* 57.4: вид виджета — «Начальный режим» из настроек (по умолчанию «баланс»); нажатие на кольцо меняет его до
-   закрытия страницы и в дневник не записывается (решение владельца 11.11.2026). */
-let energyMode=null;
+/* 57.4: вид виджета — «Начальный режим» из настроек (по умолчанию «баланс»); в дневник не записывается. */
+/* 25.11.2026 (Астамур): вид запоминается на устройстве — каким оставил, таким и откроется. «Начальный режим» в настройках —
+   вид при первом открытии; сохранил настройку — виджет сразу переходит на неё. Порядок нажатий общий: съедено → баланс → потрачено. */
+const ENERGY_MODE_KEY='happy.day.energyMode';
+let energyMode=(()=>{try{const v=localStorage.getItem(ENERGY_MODE_KEY);return ['eat','balance','spent'].includes(v)?v:null}catch(e){return null}})();
+function saveEnergyMode(){try{energyMode?localStorage.setItem(ENERGY_MODE_KEY,energyMode):localStorage.removeItem(ENERGY_MODE_KEY)}catch(e){}}
 function paintEnergy(){const el=$('careEnergy');if(el)el.innerHTML=HappyDayEnergy.render(activityFacts(),energyMode||data().activitySettings.start,data().activitySettings.scale);}
 function renderActivity(){
  const c=data(),a=C.activity(c,curDate);
@@ -480,7 +483,7 @@ async function click(ev){
  if(b.hasAttribute('data-care-open')){open(b.dataset.careOpen);return;}
  if(b.dataset.careEntry){open('entry',b.dataset.careEntry);return;}
  if(b.hasAttribute('data-care-book')){const name=await ask('Название дневника','');if(name?.trim()&&await transact(()=>data().books.push({id:C.uid(),name:name.trim().slice(0,80)})))renderSettingsPage('diary');return;}
- if(b.hasAttribute('data-energy-cycle')){const modes=['spent','balance','eat'];energyMode=modes[(modes.indexOf(energyMode||data().activitySettings.start)+1)%3];paintEnergy();return;}
+ if(b.hasAttribute('data-energy-cycle')){const modes=['eat','balance','spent'];energyMode=modes[(modes.indexOf(energyMode||data().activitySettings.start)+1)%3];saveEnergyMode();paintEnergy();return;}
  if(b.hasAttribute('data-care-plan-new')){planSheet(null);return;}
  if(b.dataset.carePlanEdit){planSheet(b.dataset.carePlanEdit);return;}
  if(b.dataset.careLogEdit){practiceSheet(b.dataset.careLogEdit);return;}
@@ -564,7 +567,7 @@ async function submit(ev){const f=ev.target;if(!f.id?.startsWith('care'))return;
  if(f.id==='careMindSettingsForm'&&await transact(()=>{const c=data();Object.assign(c.goals,{scheduleEnabled:v.mindMode==='schedule',mindManual:v.mindManual&&HF.parse(v.mindManual)>0?HF.parse(v.mindManual):v.mindMode==='schedule'?c.goals.mindManual:null});C.rememberPlan(c,todayISO());}))toast('Настройки сохранены');
  if(f.id==='careDiarySettingsForm'&&await transact(()=>{const c=data();Object.assign(c.goals,{diaryGoal:v.diaryGoal&&HF.parse(v.diaryGoal)>0?Math.round(HF.parse(v.diaryGoal)):null,countAdditions:!!v.countAdditions});C.rememberPlan(c,todayISO());}))toast('Настройки сохранены');
  if(f.id==='careActivitySettingsForm'&&!(HF.parse(v.scale)>=100&&HF.parse(v.scale)<=20000)){toast('Масштаб кольца — от 100 до 20000 ккал');return;}
- if(f.id==='careActivitySettingsForm'&&await transact(()=>{data().activitySettings={start:['spent','eat','balance'].includes(v.start)?v.start:'balance',scale:HF.parse(v.scale)};})){energyMode=null;toast('Настройки сохранены');}
+ if(f.id==='careActivitySettingsForm'&&await transact(()=>{data().activitySettings={start:['spent','eat','balance'].includes(v.start)?v.start:'balance',scale:HF.parse(v.scale)};})){energyMode=null;saveEnergyMode();toast('Настройки сохранены');}
 }
 function journalEvents(date){const d=C.readDay(DB,date),entries=data().entries;
  return d.checkins.map(x=>({t:x.time,m:hmMin(x.time),dot:'#7CE3C9',title:x.sectionTitle||'Отметка дня',sub:(x.sourceSectionTitle?'Форма: '+x.sourceSectionTitle+' · ':'')+checkinText(x),careKind:'mood',careId:x.id,careDate:date})).concat(d.events.map(x=>({t:x.time,m:hmMin(x.time),dot:'#BC61FE',title:x.type==='diary-appended'?'Дополнен дневник':'Запись в дневнике',sub:entries.find(e=>e.id===x.entryId)?.title||x.title,careKind:'entry',careId:x.entryId,careDate:date,additionId:x.additionId})),d.practices.map(x=>({t:x.time,m:hmMin(x.time),dot:'#46FDFC',title:'Осознанность',sub:x.name+' · '+num(x.minutes)+' мин',careKind:'mind',careId:x.id,careDate:date})),C.activity(data(),date).workouts.map(w=>({t:w.start.slice(11,16),m:hmMin(w.start.slice(11,16)),dot:'#FFE19A',title:'Активность · Happy Sport',sub:w.title+' · '+num(w.duration/60)+' мин',careKind:'activity',careId:w.id,careDate:date})));
