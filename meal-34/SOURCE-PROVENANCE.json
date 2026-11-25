@@ -477,7 +477,7 @@
   {
    "path": "index.html",
    "size": 719676,
-   "sha256": "65a6a3612b06ba5c3e0fa15ccac1de55b753be1374dfbcbb9a96dde0f4af7330"
+   "sha256": "eed4fa5c44c4722193b6ef85ca39e9a362b02b3a5b8f02f402bf6dd435c8c60c"
   },
   {
    "path": "kfct.js",
@@ -701,8 +701,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 105691,
-   "sha256": "2991138abc2aafdc74eaf46777121d08a073f46af449a0ff204181fd3fb5fe01"
+   "size": 106142,
+   "sha256": "3e3ac707fb39d8f2e73514d893c809b2fea44e218b6bfac4c5a019ba9e71a113"
   },
   {
    "path": "report.css",
@@ -826,8 +826,8 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 39817,
-   "sha256": "6cf3a1c655ec02c9f0469f6a0106e1f958410200a4f7dcecb512ccce2c22322d"
+   "size": 40401,
+   "sha256": "0a3f908d4e142dea6a24dd91a961da28eeddd1252bdc7140c0b76f45706fe33f"
   },
   {
    "path": "shared/happy-screens.js",
@@ -937,7 +937,7 @@
   {
    "path": "sw.js",
    "size": 3775,
-   "sha256": "851696d202555fd5db7a9a4dcaf4017ef6296c8652d127c788097eed5084b9eb"
+   "sha256": "f6400697d0227ce66d7fee6df57ed6856fd448ae96d7caabc07ccaa1ddbd999f"
   },
   {
    "path": "tap-swipe.js",

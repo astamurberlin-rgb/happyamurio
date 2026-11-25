@@ -193,6 +193,8 @@ body.hs-open{overflow:hidden}
 .hs-settings .hs-switch{cursor:pointer;-webkit-tap-highlight-color:transparent;margin:0}
 .hs-signout-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
 .hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;border:0;cursor:pointer;margin:0;box-shadow:none}
+/* «Войти» у гостя внизу Настроек — как кнопки входа: пилюля 48 во всю ширину, стекло и рамка, как «Продолжить с Google», 16 · 600 (Астамур 25.11.2026) */
+.hs-signout-row button[data-hp="signin"]{box-sizing:border-box;width:100%;height:48px;min-height:48px;margin-top:4px;padding:0 17px;border-radius:999px;border:1px solid var(--hs-border,rgba(255,255,255,.34));background:var(--hs-glass,rgba(255,255,255,.16));color:var(--happy-ink,#fff);font-size:16px;font-weight:600;line-height:22px}
 .hs-sync{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:center;min-width:0}
 .hs-sync svg{width:13px;height:13px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .hs-newer{margin-top:10px;text-align:center}

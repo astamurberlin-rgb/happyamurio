@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#8E75E1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.13</title>
+<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#8E75E1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.14</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-sport-20261125-glass-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-sport-20261125-glass-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-sport-20261125-glass-152.png">
@@ -263,7 +263,7 @@ body{width:100%;max-width:100%;overflow-x:clip}
 .workout-icon-picker{max-height:50dvh;overflow:auto;overscroll-behavior:contain}
 @media(max-width:360px){.active-workout>.set-card{padding:16px 4px}.active-workout .set-card h3{font-size:16px}.set-rows{--set-control:36px;--set-gap:4px}.set-row .set-metric input{font-size:20px}.set-row .set-metric+.set-metric{padding-left:4px}.set-actions .set-add{font-size:14px}.workout-icon-options{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .sport-signin{position:fixed;z-index:9;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));max-width:440px;margin:0 auto;height:48px;padding:0 6px 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--happy-accent);border:0;box-shadow:0 2px 3px rgba(20,20,80,.10),0 14px 30px rgba(20,20,80,.16);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
-.sport-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--happy-accent);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.sport-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--happy-accent);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
 /* Sport 43.2: стрелку в конце строки тренировки прячет правило «.workout-row>.icon:last-child» — только прямой
    потомок строки. Прежнее «.workout-row .icon:last-child» прятало и картинку тренировки в .symbol, и в Журнале картинок не было. */
 .workout-row .symbol .sport-icon{width:46px;height:46px;object-fit:contain}
@@ -1428,6 +1428,8 @@ body.hs-open{overflow:hidden}
 .hs-settings .hs-switch{cursor:pointer;-webkit-tap-highlight-color:transparent;margin:0}
 .hs-signout-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
 .hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;border:0;cursor:pointer;margin:0;box-shadow:none}
+/* «Войти» у гостя внизу Настроек — как кнопки входа: пилюля 48 во всю ширину, стекло и рамка, как «Продолжить с Google», 16 · 600 (Астамур 25.11.2026) */
+.hs-signout-row button[data-hp="signin"]{box-sizing:border-box;width:100%;height:48px;min-height:48px;margin-top:4px;padding:0 17px;border-radius:999px;border:1px solid var(--hs-border,rgba(255,255,255,.34));background:var(--hs-glass,rgba(255,255,255,.16));color:var(--happy-ink,#fff);font-size:16px;font-weight:600;line-height:22px}
 .hs-sync{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:center;min-width:0}
 .hs-sync svg{width:13px;height:13px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .hs-newer{margin-top:10px;text-align:center}
@@ -4153,9 +4155,9 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.13">${sportVersionFooter()}</footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.14">${sportVersionFooter()}</footer>`};
 // Update 38.3: version line comes from the shared release-notes module (date, time, author of the latest entry); plain label if the module is absent.
-function sportVersionFooter(){const label='Happy Sport · Update 45.13';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
+function sportVersionFooter(){const label='Happy Sport · Update 45.14';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
 
 /* One set at a time, shared by exercise settings and workout templates. */
 const setPlanDrafts=new Map();let setPlanSerial=0;
@@ -5542,7 +5544,8 @@ const SportTaps=(()=>{
 })(typeof window!=='undefined'?window:globalThis);
 
 /* Add newest releases first; also update the daily briefing. */
-const sportReleases=[{"version": "45.13", "date": "2026-11-25", "author": "Codex", "changes": ["В профиле под почтой можно привязать вход через Google. Подтверди текущий пароль Happy, затем выбери Google-аккаунт. Оба способа входа открывают твои прежние записи."]},
+const sportReleases=[{"version": "45.14", "date": "2026-11-25", "time": "22:45", "author": "Claude", "changes": ["Кнопки «Войти» выглядят как кнопки входа. Внизу Настроек без аккаунта «Войти» — большая кнопка во всю ширину, как «Продолжить с Google». В полоске «Войди, чтобы записывать» текст «Войти» крупнее."]},
+ {"version": "45.13", "date": "2026-11-25", "author": "Codex", "changes": ["В профиле под почтой можно привязать вход через Google. Подтверди текущий пароль Happy, затем выбери Google-аккаунт. Оба способа входа открывают твои прежние записи."]},
  {"version": "45.12", "date": "2026-11-25", "time": "19:11", "author": "Claude", "changes": ["Новый значок приложения: тот же силуэт стал белым матовым стеклом, фон прежний. Чтобы он сменился на экране «Домой» iPhone, удали старый значок и добавь Sport заново из Safari."]},
  {"version": "45.11", "date": "2026-11-25", "time": "19:00", "author": "Claude", "changes": ["Для тестового аккаунта: в «Для разработчика» — «Заполнить примером» и «Убрать пример»: тренировки, прогулки и плавание вымышленного Amurio на 9 месяцев и замеры тела. Кнопки видны только в тестовом аккаунте."]},
  {"version": "45.10", "date": "2026-11-25", "time": "16:40", "author": "Claude", "changes": ["Вход через Google больше не срывается от второго нажатия: пока страница уходит к Google, кнопка выключена."]},
