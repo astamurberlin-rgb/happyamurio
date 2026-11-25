@@ -1365,6 +1365,8 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     <div class="happy-card"><div class="happy-actions"><button class="happy-button" id="expJson">Выгрузить дневник</button><button class="happy-button" id="expCsv">Выгрузить CSV</button></div><p class="happy-note">Весь дневник Day одним файлом. На телефоне выбери «Сохранить в Файлы». Загружать его обратно не нужно: дневник хранится в аккаунте и приходит на устройство сам.</p></div>
     <div class="eyebrow"><span>Из трекеров</span></div>
     <div class="happy-card"><div class="happy-actions"><label class="happy-button" role="button" tabindex="0">Загрузить файл трекера<input type="file" id="impJson" accept=".json" hidden></label><button class="happy-button" data-go-screen="data">Данные из трекеров</button></div><p class="happy-note">Файл из Apple Health: сон, тренировки и осознанность. Записи дневника от него не меняются.</p></div>
+    <div id="sampleBox" hidden><div class="eyebrow"><span>Пример Amurio</span></div>
+    <div class="happy-card"><div class="happy-actions"><button type="button" class="happy-button" data-sample="fill">Заполнить примером</button><button type="button" class="happy-button" data-sample="clear">Убрать пример</button></div><p class="happy-note">Вымышленная история на 9 месяцев: отметки, теги, экранное время, заметки и замеры тела. Только для тестового аккаунта и только в пустой дневник.</p></div></div>
     <div class="eyebrow"><span>Доступ к модели</span></div>
     <div class="card">
       <p class="note" style="margin:0 0 10px">Внешний API и разбор скриншотов недоступны в этой версии. API-ключ вводить не нужно.</p>
@@ -1538,6 +1540,8 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./release-notes.js?v=61.13"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
+<script src="./shared/happy-sample.js?v=61.13"></script>
+<script src="./day-sample.js?v=61.13"></script>
 <script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.13')}catch(e){}</script>
 <script src="./selfcare-ui.js?v=61.13"></script>
 <script>
