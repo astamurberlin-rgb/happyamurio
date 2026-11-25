@@ -66,7 +66,7 @@
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
-  --hs-glass:rgba(255,255,255,.13);
+  --hs-glass:rgba(255,255,255,.16);
   --hs-primary-shadow:none;
   --hs-cancel-ink:#870078;
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
@@ -403,7 +403,7 @@
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
-  --hs-glass:rgba(255,255,255,.13);
+  --hs-glass:rgba(255,255,255,.16);
   --hs-primary-shadow:none;
   --hs-cancel-ink:#870078;
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
@@ -1649,7 +1649,7 @@ a.btn{display:inline-block;text-decoration:none}
 .happy-note{font-family:inherit;font-size:14px;line-height:1.65;color:var(--happy-muted,rgba(255,255,255,.82));margin:12px 0 0}
 .happy-note:empty{display:none}
 .happy-error{color:#ffe3bf}
-.happy-input{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;border:1px solid var(--happy-line,rgba(255,255,255,.36));background:rgba(255,255,255,.14);color:var(--happy-ink);border-radius:12px;padding:11px 12px;font-family:inherit;font-size:16px;font-weight:400;line-height:22px;min-height:46px;-webkit-appearance:none;appearance:none}
+.happy-input{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;border:1px solid var(--happy-line,rgba(255,255,255,.34));background:rgba(255,255,255,.16);color:var(--happy-ink);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:16px;font-weight:400;line-height:22px;min-height:48px;-webkit-appearance:none;appearance:none}
 .happy-input::placeholder{color:rgba(255,255,255,.62);opacity:1}
 .happy-password{position:relative;margin-bottom:8px}
 .happy-password .happy-input{margin-bottom:0;padding-right:48px!important}
@@ -1689,7 +1689,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 
 .fc-sync-row{display:flex;justify-content:space-between;align-items:center;min-height:48px;gap:16px} /* сам выключатель — общий 42 × 25, цвет по имени: shared/happy-screens.css (24.11.2026) */
 </style>
-<style>.happy-energy{--trk:#ffffff33;--rin:#fff;--rin2:#ffffffd1;--he-ring-h:min(146px,36vw);padding:16px!important;backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}.happy-energy .he-layout{display:grid;grid-template-columns:calc(var(--he-ring-h)*200/186) minmax(0,1fr);gap:16px;align-items:center;width:100%}.happy-energy .he-plate{position:relative;width:calc(var(--he-ring-h)*200/186);height:var(--he-ring-h);padding:0;border:0;background:transparent;overflow:visible}.happy-energy .he-plate svg{position:absolute;inset:0;width:100%;height:100%;transform:none;display:block;overflow:visible}.he-knob{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;color:var(--happy-ink);background:radial-gradient(circle at 38% 30%,#ffffff61,#ffffff1f 60%,#ffffff0f);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 4px #04285024,0 10px 24px #04285033,inset 0 1px 0 #ffffff80}.he-knob b{font-size:min(28px,calc(var(--he-ring-h)*.215));font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}.he-knob small{margin-top:3px;font-size:12px;font-weight:600;color:var(--rin2);white-space:nowrap}.happy-energy .he-center{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:0;cursor:pointer;border-radius:24px;touch-action:manipulation}.he-info{height:var(--he-ring-h);min-width:0;display:flex;flex-direction:column;justify-content:space-between}.he-metric{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:5px;font-size:12px;font-weight:600;line-height:1.2;color:#ffffffd1}.he-dot{width:8px;height:8px;border-radius:50%}.he-metric>span:not(.he-bar){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.he-metric b{font:inherit;color:var(--happy-ink);white-space:nowrap;font-variant-numeric:tabular-nums}.he-bar{grid-column:1/-1;display:block;height:5px;border-radius:3px;background:#ffffff38;overflow:hidden}.he-bar i{display:block;height:100%;border-radius:3px}@media(max-width:360px){.happy-energy .he-layout{gap:10px}.he-metric{font-size:12px;column-gap:4px}}
+<style>.happy-energy{--trk:#ffffff33;--rin:#fff;--rin2:#ffffffd1;--he-ring-h:min(146px,36vw);padding:16px!important;backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}.happy-energy .he-layout{display:grid;grid-template-columns:calc(var(--he-ring-h)*200/186) minmax(0,1fr);gap:16px;align-items:center;width:100%}.happy-energy .he-plate{position:relative;width:calc(var(--he-ring-h)*200/186);height:var(--he-ring-h);padding:0;border:0;background:transparent;overflow:visible}.happy-energy .he-plate svg{position:absolute;inset:0;width:100%;height:100%;transform:none;display:block;overflow:visible}.he-knob{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;color:var(--happy-ink);background:radial-gradient(circle at 38% 30%,#ffffff61,#ffffff1f 60%,#ffffff0f);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 4px #04285024,0 10px 24px #04285033,inset 0 1px 0 #ffffff80}.he-knob b{font-size:min(28px,calc(var(--he-ring-h)*.215));font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}.he-knob small{margin-top:3px;font-size:12px;font-weight:400;color:var(--rin2);white-space:nowrap}.happy-energy .he-center{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:0;cursor:pointer;border-radius:24px;touch-action:manipulation}.he-info{height:var(--he-ring-h);min-width:0;display:flex;flex-direction:column;justify-content:space-between}.he-metric{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:5px;font-size:12px;font-weight:400;line-height:1.2;color:#ffffffd1}.he-dot{width:8px;height:8px;border-radius:50%}.he-metric>span:not(.he-bar){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.he-metric b{font:inherit;color:var(--happy-ink);white-space:nowrap;font-variant-numeric:tabular-nums}.he-bar{grid-column:1/-1;display:block;height:5px;border-radius:3px;background:#ffffff38;overflow:hidden}.he-bar i{display:block;height:100%;border-radius:3px}@media(max-width:360px){.happy-energy .he-layout{gap:10px}.he-metric{font-size:12px;column-gap:4px}}
 /* Day 58, Sport 41: дуги энергии — плавный конический градиент поверх дорожки SVG, как в Meal 30; размер и положение слоя — в разметке */
 .he-arcs{position:absolute;pointer-events:none;isolation:isolate}.he-arcs .he-layer{position:absolute;inset:0}
 
@@ -2267,7 +2267,7 @@ body.hs-open{overflow:hidden}
 #happy-screens .hs-glass-btn{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
 #happy-screens .hs-btn:active{transform:scale(var(--happy-press-scale));filter:brightness(.97)}
 #happy-screens .hs-btn[aria-busy=true]{opacity:.72}
-#happy-screens .hs-quiet{display:block;background:transparent;color:rgba(255,255,255,.9);font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;text-align:left}
+#happy-screens .hs-quiet{display:block;background:transparent;color:rgba(255,255,255,.9);font-size:14px;padding:9px 0;line-height:1.4;min-height:var(--happy-size-text-button-zone,44px);text-align:left}
 #happy-screens .hs-quiet.hs-center{text-align:center;margin:0 auto}
 .hs-error[hidden]{display:none}
 .hs-error{font-size:14px;line-height:1.5;padding:10px 12px;background:rgba(255,255,255,.15);border-radius:12px;margin:15px 0 0}
@@ -2365,8 +2365,10 @@ body.hs-open{overflow:hidden}
 .hs-provider>span,.hs-email-start>span{padding:0 19px}
 .hs-email-start svg{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round}
 .hs-login-choice{font-size:14px;color:var(--hs-muted);margin:29px 0 13px}
-#happy-screens .hs-login-choice button{padding:8px 3px;font-weight:600;color:var(--happy-ink);font-size:14px}
-#happy-screens .hs-guest{display:block;margin:0 auto;text-align:center;font-size:14px;font-weight:600;color:var(--happy-ink);padding:9px 6px;min-height:38px}
+#happy-screens .hs-login-choice button{position:relative;padding:8px 3px;font-weight:600;color:var(--happy-ink);font-size:14px}
+/* «Войти» в строке: вид прежний, зона нажатия 44 в высоту (Астамур 25.11.2026) */
+#happy-screens .hs-login-choice button::after{content:"";position:absolute;left:0;right:0;top:50%;height:var(--happy-size-text-button-zone,44px);transform:translateY(-50%)}
+#happy-screens .hs-guest{display:block;margin:0 auto;text-align:center;font-size:14px;font-weight:600;color:var(--happy-ink);padding:9px 6px;min-height:var(--happy-size-text-button-zone,44px)}
 .hs-test-note{font-size:12px;line-height:1.45;color:var(--hs-muted);margin:0 auto 4px}
 .hs-auth{padding-top:calc(56px + env(safe-area-inset-top))}
 .hs-auth h1.hs-title{font-size:20px;font-weight:600;line-height:1.22;margin-bottom:28px}
@@ -2393,7 +2395,7 @@ body.hs-open{overflow:hidden}
 .hs-settings .hs-row:active{opacity:.6}
 .hs-settings .hs-switch{cursor:pointer;-webkit-tap-highlight-color:transparent;margin:0}
 .hs-signout-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
-.hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;border:0;cursor:pointer;margin:0;box-shadow:none}
+.hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:var(--happy-size-text-button-zone,44px);border:0;cursor:pointer;margin:0;box-shadow:none}
 /* «Войти» у гостя внизу Настроек — как кнопки входа: пилюля 48 во всю ширину, стекло и рамка, как «Продолжить с Google», 16 · 600 (Астамур 25.11.2026) */
 .hs-signout-row button[data-hp="signin"]{box-sizing:border-box;width:100%;height:48px;min-height:48px;margin-top:4px;padding:0 17px;border-radius:999px;border:1px solid var(--hs-border,rgba(255,255,255,.34));background:var(--hs-glass,rgba(255,255,255,.16));color:var(--happy-ink,#fff);font-size:16px;font-weight:600;line-height:22px}
 .hs-sync{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:center;min-width:0}
@@ -2417,7 +2419,7 @@ body.hs-open{overflow:hidden}
 
 /* ── профиль ── */
 .hs-profile-photo{text-align:center;margin:0 0 26px}
-.hs-profile-photo .hs-avatar{width:86px;height:86px;margin-bottom:5px}
+.hs-profile-photo .hs-avatar{width:var(--happy-size-avatar,80px);height:var(--happy-size-avatar,80px);margin-bottom:5px}   /* 80 везде (Астамур 25.11.2026; было 86) */
 #happy-screens .hs-profile-photo .hs-quiet{text-align:center;margin:0 auto}
 .hs-profile-form{display:flex;flex-direction:column;gap:17px}
 #happy-screens .hs-export{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:6px}
@@ -2451,7 +2453,7 @@ body.hs-open{overflow:hidden}
 /* Единицы в профиле: дорожка 44, как у кнопок внутри (было 36 — выбранная пилюля 44 вылезала и казалась сплющенной; Астамур 21.11.2026). */
 .hs-units-row>.hs-segment{width:160px;height:44px}
 .hs-photo-preview{padding:10px}
-.hs-photo-preview .hs-avatar{width:82px;height:82px;margin:0 auto}
+.hs-photo-preview .hs-avatar{width:var(--happy-size-avatar,80px);height:var(--happy-size-avatar,80px);margin:0 auto}
 
 /* ── цели: вес ── */
 .hs-goals h1.hs-title{margin-bottom:30px}
@@ -2602,7 +2604,7 @@ html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]::after{
    у числа единица внутри и нет прочерка. Цвета берутся из темы приложения: --hf-bg, --hf-border, --hf-ink (по умолчанию — стекло Day). */
 .hf-field{position:relative;display:block;min-width:0;width:100%;height:48px}
 .hf-field>input,.hf-field>select{-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;height:48px;min-height:48px;margin:0;padding:0 12px;
-  font:inherit;font-size:16px;text-align:center;text-align-last:center;background:var(--hf-bg,rgba(255,255,255,.14));border:1px solid var(--hf-border,var(--happy-line));border-radius:12px;
+  font:inherit;font-size:16px;text-align:center;text-align-last:center;background:var(--hf-bg,rgba(255,255,255,.16));border:1px solid var(--hf-border,var(--happy-line));border-radius:12px;
   color:transparent!important;-webkit-text-fill-color:transparent!important;cursor:pointer}
 .hf-field>input::-webkit-datetime-edit,.hf-field>input::-webkit-date-and-time-value{opacity:0}
 .hf-field>input::-webkit-calendar-picker-indicator{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}
@@ -2676,7 +2678,7 @@ html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]::after{
 .hp-month button{width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:var(--happy-ink);display:grid;place-items:center;cursor:pointer}
 .hp-month button:disabled{opacity:.35;cursor:default}
 .hp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px}
-.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:600;color:var(--happy-muted)}
+.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:400;color:var(--happy-muted)}
 .hp-grid button{height:44px;padding:0;border:0;border-radius:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:400;
  font-variant-numeric:tabular-nums;cursor:pointer}
 .hp-grid button.in{background:var(--happy-glass)}
@@ -3064,7 +3066,7 @@ input#dpNewArc:focus{box-shadow:none;border-bottom-color:var(--happy-ink,#fff)}
 .dp-sugi:active{background:rgba(255,255,255,.18)}
 
 /* ── v9 (набросок Астамура 22.11.2026): время над ручкой — плашка с хвостиком. С v13 — у раскрытой строки списка (.dp-bubs) ── */
-.dp-bubs .dp-hd>span.dp-bub{top:-12px;height:28px;padding:0 10px;line-height:28px;border-radius:10px;font-size:14px;font-weight:700;
+.dp-bubs .dp-hd>span.dp-bub{top:-12px;height:28px;padding:0 10px;line-height:28px;border-radius:var(--happy-radius-bubble,12px);font-size:14px;font-weight:700;
   background:rgba(255,255,255,.94);color:var(--happy-accent-ink,#0C6FA8);box-shadow:0 4px 12px rgba(4,40,80,.22);transform:none;pointer-events:none}
 .dp-bubs .dp-hd>span.dp-bub::after{content:'';position:absolute;bottom:-5px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid rgba(255,255,255,.94)}
 .dp-bubs .dp-hd>span.dp-tr{left:auto;right:calc(50% - 10px);border-bottom-right-radius:3px}
@@ -3570,6 +3572,24 @@ input.dp-nmi:focus{outline:none;border-bottom-color:var(--happy-ink,#fff)}
 /* Профиль · «Скачать данные» (Астамур 21.11.2026): под «Отмена», по центру, подчёркнутая строка. */
 .hs-export{display:flex;justify-content:center;margin-top:6px}
 .hs-export .hs-export-link{min-height:44px;padding:0 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+
+/* ── Правки из правил дизайн-системы, §10 «Решено, но в коде ещё старое» (Астамур 25.11.2026) ── */
+/* 12 пишется только 400; 600 — только у выбранной вкладки нижнего меню */
+.tab{font-weight:400}.tab.on{font-weight:600}
+/* кнопка микрофона: открыт лист — «+» поворачивается на 45° и становится ✕, как в Meal */
+body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
+/* «Что было» на «Сейчас» — чипы 44 */
+.chips>.chip{min-height:44px}
+/* пунктир «Свой тег» и «Новый счётчик времени» — белый 50 % */
+.chip.add{border-color:var(--happy-dashed-line)}
+.dm-newcnt{border-color:var(--happy-dashed-line)}
+/* «Добавить период» — рамка 34 % */
+.dp-add{border-color:var(--happy-line)}
+/* пилюля даты в шапке — 36 */
+.datePill{box-sizing:border-box;height:36px;padding-top:0!important;padding-bottom:0!important}
+/* замок дня — кнопка-значок: круг 44, значок 22, фон 9 %, рамка 38 % */
+.lockBtn{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.38)}
+.lockBtn svg{width:22px;height:22px}
 </style>
 <script>/* HAPPY-APPEARANCE-PAINT 21.11.2026: выбранная тема до первой отрисовки (экран загрузки со смайликом). Копию пишет shared/happy-appearance.js; потом он же её обновляет. 24.11.2026: и цвет полоски браузера (theme-color) — верх фона темы. */(function(){try{var d=document.documentElement,p=JSON.parse(localStorage.getItem('happy-'+d.dataset.happyAppearanceApp+'-appearance-paint-v1')||'null');if(!p||p.version!==1||typeof p.css!=='string'||!p.css)return;var s=document.createElement('style');s.id='happy-appearance-skin';s.textContent=p.css;document.head.appendChild(s);if(p.button)d.dataset.happyAppearanceButton=p.button;if(p.id)d.dataset.happyAppearance=p.id;var m=document.querySelector('meta[name=theme-color]');if(m&&/^#[0-9a-f]{6}$/i.test(p.top||'')){m.dataset.base=m.content;m.content=p.top;}}catch(e){}})();</script></head>
 <body class="loading">
@@ -3835,7 +3855,7 @@ input.dp-nmi:focus{outline:none;border-bottom-color:var(--happy-ink,#fff)}
   <span class="gap"></span>
   <button class="tab" data-go="links"><svg viewBox="0 0 24 24"><g transform="translate(12 12) scale(1.05) translate(-11.6 -12.7)" stroke-width="1.81"><path d="M5.6 17.5c1.9-.3 3.8-1.7 5.3-4.4 1.6-2.4 1.4-6.3-1.3-6.6-2.6-.3-3.4 3.3-1.3 6.2 2 2.8 4.5 4.3 7.6 4.7"/><circle cx="3.6" cy="17.6" r="1.9" fill="currentColor"/><circle cx="19.6" cy="17.6" r="1.9" fill="currentColor"/></g></svg><span>Связи</span></button>
   <button class="tab" data-go="settings"><svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z"/><circle cx="12" cy="12" r="3.3"/></svg><span>Настройки</span></button>
-  <button class="fab" id="fab" aria-label="Отметить самочувствие голосом"><svg class="fabMic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg><svg class="fabX" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></button>
+  <button class="fab" id="fab" aria-label="Отметить самочувствие голосом"><svg class="fabMic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg><svg class="fabX" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
 
 <div class="imp" id="impWrap">

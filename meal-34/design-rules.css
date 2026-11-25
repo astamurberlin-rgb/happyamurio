@@ -50,3 +50,31 @@
 #happy-screens .hs-privacy-consent a,#happy-screens .hs-policy-link{color:inherit;text-decoration:underline;text-underline-offset:3px}
 #happy-screens .hs-policy-link{font-size:16px;font-weight:600;line-height:44px}
 #happy-screens [data-hw="register"]:disabled{opacity:.52}
+
+/* ── Правки из правил дизайн-системы, §10 «Решено, но в коде ещё старое» (Астамур 25.11.2026) ── */
+/* 12 пишется только 400; 600 — только у выбранной вкладки нижнего меню */
+.tab{font-weight:400}.tab.on{font-weight:600}
+.erKnob small,.erR,.erR b,.mlHead .w small,.tpNm small,.jrC,.me .mlB .k{font-weight:400!important}
+.cc-card-meta .cc-price.cc-owned,.cc-owned-pill,.cc-buy button:disabled{font-weight:400!important}
+/* «Очистить» в чате и другие малые кнопки — пилюля 44, 14 · 600 */
+.mini{min-height:44px;font-size:14px;font-weight:600}
+/* «Сборники»: невыбранная пилюля 14 · 400, выбранная — 600 цвета приложения */
+.cc-pills button{font-weight:400!important}
+.cc-pills button[aria-pressed="true"]{font-weight:600!important;color:var(--happy-accent-ink)!important}
+/* пунктир «Добавить счётчик» — белый 50 % */
+.chip.add{border-color:var(--happy-dashed-line)}
+/* пилюля даты в шапке — 36 */
+.datePill{box-sizing:border-box;height:36px;padding-top:0!important;padding-bottom:0!important}
+/* кнопки-значки: круг 44, значок 22; с обводкой — фон 9 %, рамка 38 % */
+.mlStar{width:44px;height:44px;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.38)}
+.mlStar svg{width:22px;height:22px}
+.mc-download{width:44px!important;height:44px!important;flex:0 0 44px!important;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.38)}
+.mc-download::after{inset:0!important}
+.mc-download-ring{width:44px!important;height:44px!important}
+.mc-download-arrow,.mc-download-done{width:22px!important;height:22px!important;stroke-width:2!important}
+.penBtn,.dragH{width:44px!important;height:44px!important;border-radius:999px!important}
+.minusBtn{width:44px!important;height:44px!important;margin:0!important;background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.38)!important}
+.minusBtn svg{width:22px!important;height:22px!important}
+/* редактор своего продукта: кнопки 48, как основная кнопка */
+.up-footer>.happy-button,.up-basis>.happy-button,.mc-product .up-facts-actions button,.up-portion .happy-button,.up-share-actions>*{min-height:48px!important}
+.up-head small{font-weight:400!important}

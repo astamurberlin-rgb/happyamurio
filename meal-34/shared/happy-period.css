@@ -30,7 +30,7 @@
 .hp-month button{width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:var(--happy-ink);display:grid;place-items:center;cursor:pointer}
 .hp-month button:disabled{opacity:.35;cursor:default}
 .hp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px}
-.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:600;color:var(--happy-muted)}
+.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:400;color:var(--happy-muted)}
 .hp-grid button{height:44px;padding:0;border:0;border-radius:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:400;
  font-variant-numeric:tabular-nums;cursor:pointer}
 .hp-grid button.in{background:var(--happy-glass)}
