@@ -206,6 +206,8 @@ function fail(text){
  const box=pageH.main.querySelector('.hs-error');if(!box)return;
  box.textContent=text;box.hidden=!text;
 }
+const leaving=()=>new Promise(done=>{const t=root.setTimeout(done,10000);
+ try{root.addEventListener('pageshow',()=>{root.clearTimeout(t);done()},{once:true})}catch(e){}});
 async function busy(button,fn){
  const b=pageH&&pageH.main.querySelector('[data-hw="'+button+'"]');
  if(b){if(b.getAttribute('aria-busy')==='true')return;b.setAttribute('aria-busy','true');b.disabled=true}
@@ -242,8 +244,9 @@ async function registerEmail(email,password){
 function act(a){
  const A=cfg.account;
  switch(a){
- case 'google':return busy(a,()=>A.signInGoogle());
- case 'link-google':return busy(a,()=>A.linkGoogle());
+ /* кнопка остаётся выключенной, пока страница уходит к Google: второе нажатие сорвало бы вход (25.11.2026) */
+ case 'google':return busy(a,()=>A.signInGoogle().then(leaving));
+ case 'link-google':return busy(a,()=>A.linkGoogle().then(leaving));
  case 'complete-recovery':return busy(a,async()=>{
   const input=pageH.main.querySelector('[name="legacyPassword"]'),password=input?.value;
   if(input&&!password)throw Error('Введи прежний пароль Happy.');

@@ -367,7 +367,16 @@ function create(options){
  const withBack=path=>{const b=back();return b?path+(path.includes('?')?'&':'?')+'redirect_to='+encodeURIComponent(b):path};
  /* A verifier belongs to this tab and this app. Supabase keeps the OAuth state
     and exchanges its single-use code for the same Happy user's session. */
+ /* Один переход к Google на страницу (25.11.2026). Переход начинается не мгновенно: пока страница ещё жива, второе нажатие
+    записало бы новый проверочный код поверх кода уже начатого входа, и сервер отказал бы: «code challenge does not match».
+    Пока переход идёт, повторные вызовы ничего не делают. Вернулись на страницу кнопкой «назад» (pageshow) — можно снова. */
+ let googleLeaving=0;
  async function startGoogle(link){
+  if(googleLeaving&&now()-googleLeaving<30000)return;
+  googleLeaving=now();
+  try{await beginGoogle(link)}catch(e){googleLeaving=0;throw e}
+ }
+ async function beginGoogle(link){
   await cancelRecovery();
   if(link&&current()?.keyVersion!==2)
    throw fail('legacy','Сначала включи восстановление ключа в настройках аккаунта.');
@@ -389,6 +398,7 @@ function create(options){
   if(o.navigate)o.navigate(destination);else location.assign(destination);
  }
  async function finishGoogle(){
+  googleLeaving=0;   // вернулись от Google (или страница открыта заново): переход закончен
   if(!location?.href)return null;
   const page=new URL(location.href),params=page.searchParams,hash=new URLSearchParams(page.hash.slice(1));
   const code=params.get('code'),error=params.get('error')||hash.get('error');
@@ -621,7 +631,7 @@ function create(options){
   if(e.key===offerCell(o.app)&&e.newValue){acceptOffer().catch(()=>{});return}
   if(e.key===null||e.key===CELL)adopt().catch(()=>{});
  }
- if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume)}
+ if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume);events.addEventListener('pageshow',()=>{googleLeaving=0})}
  const api={
   load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
