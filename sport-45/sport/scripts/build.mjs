@@ -93,6 +93,8 @@ const timerActionWheel=await read('src/timer-action-wheel.js'),timerActionWheelC
 const metricField=await read('src/metric-field.js'),metricCss=await read('src/metric-field.css');
 const appearanceCss=await readShared('happy-appearance.css');
 const appearanceJs=(await Promise.all(['happy-gradients.js','happy-reference-themes.js','happy-appearance.js'].map(readShared))).join('\n');
+// Пример Amurio (25.11.2026): сценарий — общий файл, тренировки — свои; кнопки в «Для разработчика».
+const sportSample=(await readShared('happy-sample.js'))+'\n'+(await read('src/sport-sample.js'));
 const settingsLayout=await read('src/settings-layout.js'),settingsLayoutCss=await read('src/settings-layout.css');
 // Lab 10.11.2026 18:50: audit simplifications (decisions «Да» on the audit page), loaded after everything else.
 const auditSimplify=await read('src/audit-simplify.js'),auditSimplifyCss=await read('src/audit-simplify.css');
@@ -127,7 +129,7 @@ const html = labPage(template
   .replace('</style>',()=>colorsCss+css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+drumCss+periodCss+designRulesCss+appearanceCarouselsCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,drumJs,periodJs,scrollLockJs,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules,appearanceCarousels].join('\n'))
+  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,drumJs,periodJs,scrollLockJs,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,sportSample,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules,appearanceCarousels].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 // Всё собранное: путь внутри папки выпуска → текст.
 const files=new Map([['index.html',html]]);

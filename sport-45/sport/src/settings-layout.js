@@ -73,6 +73,7 @@ function sportSettingsLayout(html){
  }
  const section=(id,title,children)=>{if(!children.length)return null;const s=document.createElement('section');s.className='happy-section';s.dataset.happySection=id;if(title){const h=document.createElement('h2');h.className='happy-heading';h.textContent=title;s.append(h)}s.append(...children);return s};
  const out=document.createElement('div');out.className='happy-settings';if(header)out.append(header);
+ if(typeof SportSample!=='undefined'){const c=SportSample.card();if(c)groups.developer.push(...c)}   // пример Amurio (25.11.2026)
  const dev=section('developer','Для разработчика',groups.developer);
  if(dev){dev.hidden=!sportDevVisible;const hide=document.createElement('div');hide.className='happy-actions';const b=document.createElement('button');b.type='button';b.className='happy-button';b.dataset.settingsDeveloper='hide';b.textContent='Скрыть раздел';hide.append(b);const note=document.createElement('p');note.className='happy-note';note.textContent='Выгрузка дневника файлом и перенос истории Strong. Открывается долгим нажатием на строку версии.';dev.insertBefore(note,dev.children[1]||null);dev.append(hide);}
  const version=document.createElement('section');version.className='happy-section';version.dataset.happySection='version';version.append(...groups.version);

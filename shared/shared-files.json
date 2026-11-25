@@ -360,7 +360,8 @@
       "reference": "shared/happy-sample.js",
       "apps": [
         "day",
-        "meal"
+        "meal",
+        "sport"
       ]
     }
   ]
