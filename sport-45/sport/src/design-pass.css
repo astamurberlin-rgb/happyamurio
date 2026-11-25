@@ -53,8 +53,8 @@ body.sport-fab-x #sport-fab{transform:translate(-50%,-50%) rotate(45deg)!importa
   background:var(--happy-glass)!important;border:1px solid var(--happy-line)!important;font-size:16px!important;font-weight:400!important}
 #sport-food-create input::placeholder{color:rgba(255,255,255,.62)}
 
-/* Текстовая кнопка «Редактировать» (вариант А): значок 18 */
-.training-heading .text-btn svg,.training-heading .text-btn .icon{width:18px!important;height:18px!important}
+/* Текстовая кнопка «Редактировать» — без значка (Астамур 25.11.2026): карандаш только там, где правится одно название
+   (сам текст рядом); если правится больше — только слово. Значок убран в разметке (app.js, refinements.js). */
 
 /* Смахивание для удаления: справа красная пилюля «Убрать» 44, --happy-danger, 14 · 700; удаляет само смахивание
    дальше 35 % ширины (не меньше 90). Ширина пилюли растёт за пальцем (design-pass.js). */
