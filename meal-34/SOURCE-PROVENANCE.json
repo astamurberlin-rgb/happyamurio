@@ -701,13 +701,13 @@
   },
   {
    "path": "release-notes.js",
-   "size": 106670,
-   "sha256": "828550629ed628441fdf08243b09c93d431a0390567895689c9616edd785a62e"
+   "size": 106757,
+   "sha256": "035fabab802db5283fc7204e6440f11a2f0490244bc047f00007bf2b6e174869"
   },
   {
    "path": "report.css",
-   "size": 12372,
-   "sha256": "29416611465fc518f80661fa979004047dfd02e9b659e7031b641a1e78c1b1da"
+   "size": 12605,
+   "sha256": "fac30f94ac820c76197a74ecb00edc40eac96a121c963873413d4a8d49210ca4"
   },
   {
    "path": "report.js",
