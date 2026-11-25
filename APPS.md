@@ -6,9 +6,9 @@
 
 | Приложение | Открыть | Папка |
 | --- | --- | --- |
-| Happy Day | https://astamurberlin-rgb.github.io/happyamurio/day-61/ | `day-61/` |
-| Happy Meal | https://astamurberlin-rgb.github.io/happyamurio/meal-34/ | `meal-34/` |
-| Happy Sport | https://astamurberlin-rgb.github.io/happyamurio/sport-45/ | `sport-45/`, исходники — `sport-45/sport/src/` |
+| Happy Day | https://amurio.app/day-61/ | `day-61/` |
+| Happy Meal | https://amurio.app/meal-34/ | `meal-34/` |
+| Happy Sport | https://amurio.app/sport-45/ | `sport-45/`, исходники — `sport-45/sport/src/` |
 
 Точный номер версии виден внизу настроек приложения. Служебно он записан в `shared/apps.json`: по этому файлу приложения находят друг друга, а проверки узнают, что проверять.
 
@@ -16,12 +16,12 @@
 
 | Приложение | Открыть |
 | --- | --- |
-| Happy Day 60.17 | https://astamurberlin-rgb.github.io/happyamurio/day-60/ |
-| Happy Meal 33.36 | https://astamurberlin-rgb.github.io/happyamurio/meal-33/ |
-| Happy Sport 44.14 | https://astamurberlin-rgb.github.io/happyamurio/sport-44/ |
-| Happy Day 59 | https://astamurberlin-rgb.github.io/happyamurio/day-59/ |
-| Happy Meal 32 | https://astamurberlin-rgb.github.io/happyamurio/meal-32/ |
-| Happy Sport 43 | https://astamurberlin-rgb.github.io/happyamurio/sport-43/ |
+| Happy Day 60.17 | https://amurio.app/day-60/ |
+| Happy Meal 33.36 | https://amurio.app/meal-33/ |
+| Happy Sport 44.14 | https://amurio.app/sport-44/ |
+| Happy Day 59 | https://amurio.app/day-59/ |
+| Happy Meal 32 | https://amurio.app/meal-32/ |
+| Happy Sport 43 | https://amurio.app/sport-43/ |
 
 Они хранят записи через тот же общий модуль, что и текущие. Если устройство какого-то документа с тех пор изменилось, прежняя версия этот документ не откроет и предложит открыть последнюю. Профили с восстановимым ключом используют текущий выпуск. Более старые папки убраны с сайта 20.11.2026 по слову Астамура; вернуть их можно из истории Git.
 
@@ -31,13 +31,13 @@
 
 | Страница | Версия | Открыть | Папка |
 | --- | --- | --- | --- |
-| Happy Notes — дневники и заметки | 2.1.1 | https://astamurberlin-rgb.github.io/happyamurio/files-2/ | `files-2/` |
-| Файлы — прежний просмотр тех же документов | 1.7 | https://astamurberlin-rgb.github.io/happyamurio/files/ | `files/` |
-| Дизайн-система — правила стиля и токены | 1.0 | https://astamurberlin-rgb.github.io/happyamurio/design-system/ | `design-system/` |
-| Color Studio — палитры трёх приложений | 12.11 | https://astamurberlin-rgb.github.io/happyamurio/prototypes/studio.html | `prototypes/` |
-| Icon Studio — иконки | 2.18 | https://astamurberlin-rgb.github.io/happyamurio/icon-studio/ | `icon-studio/` |
-| Студия дуг — дуга кольца энергии Day | 1.2 | https://astamurberlin-rgb.github.io/happyamurio/prototypes/arc-studio/ | `prototypes/arc-studio/` |
-| Советы — какую модель ИИ брать под задачу | 1.0 | https://astamurberlin-rgb.github.io/happyamurio/tips/ | `tips/` |
+| Happy Notes — дневники и заметки | 2.1.1 | https://amurio.app/files-2/ | `files-2/` |
+| Файлы — прежний просмотр тех же документов | 1.7 | https://amurio.app/files/ | `files/` |
+| Дизайн-система — правила стиля и токены | 1.0 | https://amurio.app/design-system/ | `design-system/` |
+| Color Studio — палитры трёх приложений | 12.11 | https://amurio.app/prototypes/studio.html | `prototypes/` |
+| Icon Studio — иконки | 2.18 | https://amurio.app/icon-studio/ | `icon-studio/` |
+| Студия дуг — дуга кольца энергии Day | 1.2 | https://amurio.app/prototypes/arc-studio/ | `prototypes/arc-studio/` |
+| Советы — какую модель ИИ брать под задачу | 1.0 | https://amurio.app/tips/ | `tips/` |
 
 Ключ доступа к Happy Notes и «Файлам» живёт только в ссылке и в браузере устройства. В репозиторий он не попадает.
 
