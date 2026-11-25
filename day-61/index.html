@@ -2486,8 +2486,8 @@ function renderTapSheet(){
   /* аудит 20.11.2026: сверху ручка (п. 14, 16); лишнее снимается свайпом влево, кружка «−» нет (п. 27) */
   var h='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>'+
     (TAPREN&&!lock?'<h3 class="tpTitle"><input class="tpNameIn" value="'+escH(c.t)+'" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Название счётчика"></h3>':
-     '<h3 class="tpTitle">'+(lock?escH(c.t):tapNameBtn(c))+'</h3>')+'<p class="note" style="margin:-10px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
-    (lock?'. День закрыт.':'. Время можно поправить, лишнее — смахнуть влево.')+'</p>';
+     '<h3 class="tpTitle">'+(lock?escH(c.t):tapNameBtn(c))+'</h3>')+   /* Астамур 25.11.2026: без строки-пояснения под названием; остаётся только «День закрыт» */
+    (lock?'<p class="note" style="margin:-10px 0 10px;color:rgba(255,255,255,.85)">День закрыт.</p>':'');
   h+=a.length?a.map(function(o){
     return '<div class="tpRow swRow"><span class="tpTime'+(o.x.t?'':' tpNo')+'"><b>'+(o.x.t||'—:—')+'</b>'+
       '<input type="time" value="'+(o.x.t||'')+'" data-tedit="'+o.i+'"'+(lock?' disabled':'')+' aria-label="Время нажатия"></span>'+
