@@ -94,8 +94,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* заметка к упражнению — поле; булавка — круг */
 .set-note,textarea{border-radius:12px!important}
 .note-pin{border-radius:999px!important}
-/* кольцо энергии: число 28, подпись 12 */
-/* цифра в кольце — от размера кольца (energy-widget.css), без жёстких 28 */
+/* кольцо энергии: число 28, подпись 12 — во всех приложениях (energy-widget.css, 25.11.2026) */
 .he-knob small{font-size:12px!important}
 /* «Продолжить» в полоске текущей тренировки */
 [data-action=resume]{font-size:14px!important}

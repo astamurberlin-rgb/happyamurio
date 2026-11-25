@@ -253,12 +253,14 @@ function wheel(box,o){
   '<div class="hs-wheel-selection"></div><div class="hs-wheel-track"></div></div></div>';
  const el=box.querySelector('.hs-wheel'),track=box.querySelector('.hs-wheel-track');
  const indexOf=v=>Math.max(0,options.findIndex(x=>String(x.value)===String(v)));
+ // Высота строки — из дизайн-системы (--happy-size-wheel-row, 44 как у барабана; решение Астамура 25.11.2026). Видно три строки, выбранная — средняя.
+ const row=()=>parseFloat(getComputedStyle(el).getPropertyValue('--happy-size-wheel-row'))||44;
  function paintOptions(){
   track.innerHTML=options.map((x,i)=>'<div class="hs-wheel-option" role="option" id="'+id+'-'+i+'" data-i="'+i+'">'+esc(x.label)+'</div>').join('');
   update();
  }
  function update(){
-  const index=indexOf(value);track.style.transform='translateY('+(46-index*40)+'px)';
+  const index=indexOf(value);track.style.transform='translateY('+(row()-index*row())+'px)';
   track.querySelectorAll('.hs-wheel-option').forEach((n,i)=>{const d=Math.abs(i-index);n.classList.toggle('hs-on',i===index);n.setAttribute('aria-selected',String(i===index));n.style.opacity=d>1?.22:d===1?.52:1});
   el.setAttribute('aria-activedescendant',id+'-'+index);
  }
@@ -269,9 +271,9 @@ function wheel(box,o){
  }
  el.addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const i=indexOf(value);choose(e.key==='Home'?0:e.key==='End'?options.length-1:i+(e.key==='ArrowDown'?1:-1))}});
  el.addEventListener('wheel',e=>{e.preventDefault();e.stopPropagation();if(Date.now()-last>150){last=Date.now();choose(indexOf(value)+(e.deltaY>0?1:-1))}},{passive:false});
- el.addEventListener('pointerdown',e=>{drag={y:e.clientY,index:indexOf(value),scale:el.getBoundingClientRect().height/132,moved:false};try{el.setPointerCapture(e.pointerId)}catch(_){}});
- el.addEventListener('pointermove',e=>{if(!drag)return;const dy=(drag.y-e.clientY)/drag.scale;if(Math.abs(dy)>8){drag.moved=true;choose(drag.index+Math.round(dy/40))}});
- el.addEventListener('pointerup',e=>{const d=drag;drag=null;if(d&&!d.moved){const b=el.getBoundingClientRect();choose(indexOf(value)+Math.round(((e.clientY-b.top)/d.scale-66)/40))}});
+ el.addEventListener('pointerdown',e=>{drag={y:e.clientY,index:indexOf(value),scale:el.getBoundingClientRect().height/(row()*3),moved:false};try{el.setPointerCapture(e.pointerId)}catch(_){}});
+ el.addEventListener('pointermove',e=>{if(!drag)return;const dy=(drag.y-e.clientY)/drag.scale;if(Math.abs(dy)>8){drag.moved=true;choose(drag.index+Math.round(dy/row()))}});
+ el.addEventListener('pointerup',e=>{const d=drag;drag=null;if(d&&!d.moved){const b=el.getBoundingClientRect();choose(indexOf(value)+Math.round(((e.clientY-b.top)/d.scale-row()*1.5)/row()))}});
  el.addEventListener('pointercancel',()=>{drag=null});
  paintOptions();
  return {get value(){return value},set(v){value=v;update()},options(list,v){options=list.slice();if(v!==undefined)value=v;paintOptions()},el};

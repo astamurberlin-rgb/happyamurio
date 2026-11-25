@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#8E75E1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.14</title>
+<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#8E75E1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.15</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-sport-20261125-glass-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-sport-20261125-glass-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-sport-20261125-glass-152.png">
@@ -16,16 +16,17 @@
 @keyframes rise{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}@media(min-width:700px){.app{margin-top:10px}.page{padding-top:25px}.overlay{align-items:center;padding:30px}.sheet{border-radius:28px;max-height:87vh;padding-bottom:25px}.dock{bottom:15px}.body-viz{min-height:435px}.body-viz .body-chart{height:410px}}@media(max-width:370px){.page{padding-left:14px;padding-right:14px}.ring-center strong{font-size:20px}.energy-layout{grid-template-columns:minmax(0,1fr) 94px}.metrics{gap:13px}.metric b{font-size:16px}.pin b{font-size:12px}.date-pill{padding:9px}.top h1{font-size:20px}.sheet{padding-left:15px;padding-right:15px}}@media(prefers-reduced-motion:reduce){*,*:before{animation:none!important;transition:none!important}}
 
 
-/* Happy — общие цвета трёх приложений (✱ design tokens). Лаборатория 21.11.2026, план «Общий файл цветов Happy».
-   Цвета в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
-   Блок «из Color Studio» — палитра каждого приложения: значения как в Color Studio, руками не править.
+/* Happy — общие цвета и размеры трёх приложений (✱ design tokens).
+   ФАЙЛ СОБРАН ИЗ design-system/tokens.json командой node scripts/build-tokens.mjs. Руками не править: править tokens.json.
+   Цвета и размеры в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
+   Блок «из Color Studio» — палитра каждого приложения: значения как в Color Studio.
    Тема (Настроить тему) подменяет эти же имена на цвета темы: shared/happy-appearance.js, функция skin().
    Белый и чёрный в тенях и масках остаются числом: от темы они не зависят. */
-
 /* ── из Color Studio: палитра приложения ── */
 :root{
   --happy-base:#00a8f5;
   --happy-accent:#5a50d1;
+  --happy-accent-ink:#0c6fa8;
   --happy-on-accent:#fff;
   --happy-ink:#fff;
   --happy-heading:#fff;
@@ -40,50 +41,50 @@
 :root[data-happy-appearance-app="meal"]{
   --happy-base:#812c4b;
   --happy-accent:#730074;
+  --happy-accent-ink:#84036d;
 }
 :root[data-happy-appearance-app="sport"]{
   --happy-base:#8c75db;
+  --happy-accent-ink:#5a50d1;
   --happy-dock-ink:#6e8396;
 }
-/* Общие экраны (вход, профиль, листы — shared/happy-screens.css): цвета каждого приложения. До лаборатории 21.11.2026 их ставил код happy-screens.js. */
+/* Общие экраны (вход, профиль, листы — shared/happy-screens.css): цвета каждого приложения. */
 :root[data-happy-appearance-app="day"]{
-  --hs-glass:rgba(255,255,255,.16);
-  --hs-primary:#5A50D1;
-  --hs-primary-shadow:0 6px 16px #37309d30;
-  --hs-cancel-ink:#6254cf;
+  --hs-primary:#5a50d1;
   --hs-seg-bg:#edf8ff;
   --hs-seg-ink:#5a50d1;
   --hs-switch-on:#8071df;
-  --hs-sheet-bg:#00A8F5;
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:0 6px 16px #37309d30;
+  --hs-cancel-ink:#6254cf;
+  --hs-sheet-bg:#00a8f5;
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
 }
 :root[data-happy-appearance-app="meal"]{
-  --hs-glass:rgba(255,255,255,.13);
   --hs-primary:#870078;
-  --hs-primary-shadow:none;
-  --hs-cancel-ink:#870078;
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
-  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');   /* галочка Meal — сливовая (аудит 3) */
+  --hs-glass:rgba(255,255,255,.13);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#870078;
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
   --hs-toast-bg:rgba(49,20,46,.92);
   --hs-pill-on-ink:#84036d;
-  --happy-accent-ink:#84036d;   /* текст в белых кнопках Meal («Выгрузить отчёт», «Русский») — сливовый, как вкладки, не синий Day (аудит 3, 22.11) */
+  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');
 }
 :root[data-happy-appearance-app="sport"]{
-  --hs-glass:rgba(255,255,255,.16);
   --hs-primary:#6254cf;
-  --hs-primary-shadow:none;
-  --hs-cancel-ink:#6254cf;
   --hs-seg-bg:#edf8ff;
   --hs-seg-ink:#5a50d1;
   --hs-switch-on:#8071df;
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#6254cf;
   --hs-sheet-bg:linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%);
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
-  --happy-accent-ink:#5a50d1;   /* текст в белых кнопках Sport — фиолетовый Sport по имени, не синий числом (решение Астамура 24.11) */
 }
 /* ── конец блока из Color Studio ── */
 
@@ -96,6 +97,260 @@
   --happy-protein:#e34948;
   --happy-fat:#eda100;
   --happy-carbs:#6250d6;
+}
+
+/* Остальные цвета дизайн-системы. */
+:root{
+  --happy-toast-bg:rgba(12,60,110,.92);
+  --happy-toast-action:#8ef3dd;
+  --happy-sheet-scrim:rgba(0,0,0,.34);
+  --happy-sheet-handle:rgba(255,255,255,.45);
+  --happy-sheet-subtitle:rgba(255,255,255,.7);
+  --happy-sheet-subtitle-login:rgba(255,255,255,.82);
+  --happy-settings-group-heading:rgba(255,255,255,.6);
+  --happy-stepper-line:rgba(255,255,255,.55);
+  --happy-stepper-bg:rgba(255,255,255,.14);
+  --happy-row-divider:rgba(255,255,255,.18);
+  --happy-bubble-bg:rgba(255,255,255,.94);
+  --happy-slider-rail:rgba(255,255,255,.14);
+  --happy-slider-tick:rgba(255,255,255,.3);
+  --happy-day-on-bg:rgba(255,255,255,.92);
+  --happy-danger-soft:#ffd3da;
+  --happy-time-fill-from:rgba(124,227,201,.72);
+  --happy-time-fill-to:rgba(70,253,252,.58);
+  --happy-time-over-from:rgba(255,196,120,.72);
+  --happy-time-over-to:rgba(255,150,120,.62);
+  --happy-time-over-ink:#ffd9a6;
+  --happy-time-limit:rgba(255,255,255,.55);
+  --happy-time-draft-veil:rgba(255,255,255,.22);
+  --happy-time-draft-stripe:rgba(255,255,255,.55);
+  --happy-time-draft-pill-bg:rgba(255,255,255,.95);
+  --happy-drum-band:rgba(255,255,255,.22);
+  --happy-wheel-band:rgba(255,255,255,.22);
+}
+:root[data-happy-appearance-app="day"]{
+  --happy-theme-color:#56b9f7;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+:root[data-happy-appearance-app="meal"]{
+  --happy-theme-color:#a13e65;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+:root[data-happy-appearance-app="sport"]{
+  --happy-theme-color:#8e75e1;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+
+/* Размеры, скругления, отступы, тени, размытие, движение и шрифты. */
+:root{
+  /* скругления */
+  --happy-radius-pill:999px;
+  --happy-radius-card:26px;
+  --happy-radius-card-sport:24px;
+  --happy-radius-card-day:22px;
+  --happy-radius-sheet:22px;
+  --happy-radius-theme-tile:24px;
+  --happy-radius-theme-picture:16px;
+  --happy-radius-field:12px;
+  --happy-radius-time-bar:14px;
+  --happy-radius-bubble:12px;
+  --happy-radius-level-row:22px;
+  --happy-radius-chat-bubble:22px;
+  --happy-radius-chat-tail:3px;
+  --happy-radius-chat-composer:28px;
+  --happy-radius-list-row:24px;
+  /* отступы */
+  --happy-space-3:3px;
+  --happy-space-8:8px;
+  --happy-space-10:10px;
+  --happy-space-11:11px;
+  --happy-space-12:12px;
+  --happy-space-15:15px;
+  --happy-space-16:16px;
+  --happy-space-20:20px;
+  --happy-space-sheet-sub:4px;
+  --happy-space-sheet-content:18px;
+  --happy-space-sheet-buttons:10px;
+  --happy-space-sheet-bottom:28px;
+  --happy-space-drum-cols:12px;
+  --happy-space-chat-messages:10px;
+  --happy-space-chat-composer-side:14px;
+  --happy-space-tab-bar-side:14px;
+  --happy-space-chat-bubble-y:11px;
+  --happy-space-chat-bubble-x:15px;
+  --happy-space-list-row-y:15px;
+  --happy-space-list-row-x:18px;
+  /* размеры */
+  --happy-size-button:48px;
+  --happy-size-pill:44px;
+  --happy-size-pill-inner:36px;
+  --happy-size-switch-w:42px;
+  --happy-size-switch-h:25px;
+  --happy-size-switch-knob:19px;
+  --happy-size-mic:60px;
+  --happy-size-mic-icon:26px;
+  --happy-size-drag-icon:28px;
+  --happy-size-sheet-handle-w:42px;
+  --happy-size-sheet-handle-h:5px;
+  --happy-size-sheet-handle-zone:30px;
+  --happy-size-sheet-handle-top:13px;
+  --happy-size-stepper:40px;
+  --happy-size-stepper-side:46px;
+  --happy-size-counter-row:58px;
+  --happy-size-counter-add:52px;
+  --happy-size-time-bar:46px;
+  --happy-size-time-draft-step:14px;
+  --happy-size-time-draft-pill:128px;
+  --happy-size-slider-zone:48px;
+  --happy-size-slider-rail:4px;
+  --happy-size-slider-tick:18px;
+  --happy-size-day-circle:44px;
+  --happy-size-scale-ring:280px;
+  --happy-size-scale-knob:162px;
+  --happy-size-level-row:52px;
+  --happy-size-tag:36px;
+  --happy-size-pocket-w:124px;
+  --happy-size-pocket-h:26px;
+  --happy-size-fold-icon-w:52px;
+  --happy-size-drum-row:44px;
+  --happy-size-wheel-row:44px;
+  --happy-size-tab-bar:66px;
+  --happy-size-tab-icon:21px;
+  --happy-size-field:48px;
+  --happy-size-filter:48px;
+  --happy-size-icon-button:44px;
+  --happy-size-icon:22px;
+  --happy-size-list-row:72px;
+  --happy-size-list-image:52px;
+  --happy-size-avatar:80px;
+  --happy-size-text-button-zone:44px;
+  --happy-size-chat-bubble-max:86%;
+  --happy-size-chat-control:44px;
+  --happy-size-chat-field-max:126px;
+  --happy-size-typing-dot:7px;
+  --happy-size-save-arc-w:132px;
+  --happy-size-save-arc-h:106px;
+  --happy-size-mic-hold-action:52px;
+  --happy-size-swipe-pill:44px;
+  --happy-size-catalog-tile-w:168px;
+  --happy-size-catalog-tile-photo:141px;
+  --happy-size-price-pill:29px;
+  --happy-size-date-pill:36px;
+  --happy-size-nutrient-group:52px;
+  /* тени */
+  --happy-shadow-card:0 2px 3px rgba(4,40,80,.10), 0 14px 30px rgba(4,40,80,.14);
+  --happy-shadow-sheet:0 -16px 48px rgba(0,0,0,.2);
+  --happy-shadow-chat-mine:0 8px 20px rgba(4,40,80,.14);
+  --happy-shadow-chat-composer:0 10px 28px rgba(4,40,80,.26);
+  /* размытие */
+  --happy-blur-glass:12px;
+  --happy-blur-tab-bar:18px;
+  --happy-blur-chat-composer:16px;
+  --happy-blur-mic-hold:2px;
+  /* движение */
+  --happy-motion-switch:.18s;
+  --happy-motion-screen:.22s;
+  --happy-motion-sheet:.42s;
+  --happy-ease-sheet:cubic-bezier(.25,.8,.25,1);
+  --happy-motion-toast:.2s;
+  --happy-motion-theme-open:.24s;
+  --happy-press-scale:.985;
+  --happy-motion-day-bg:26s;
+  --happy-motion-swipe-back:.2s;
+  --happy-swipe-threshold-min:90px;
+  --happy-undo-keep:5s;
+  --happy-motion-time-draft:.9s;
+  /* шрифты */
+  --happy-font-sans:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --happy-type-screen-title-size:28px;
+  --happy-type-screen-title-weight:800;
+  --happy-type-screen-title-line:1.2;
+  --happy-type-screen-title-tracking:-.5px;
+  --happy-type-sheet-title-size:20px;
+  --happy-type-sheet-title-weight:700;
+  --happy-type-sheet-title-line:1.25;
+  --happy-type-sheet-title-tracking:-.25px;
+  --happy-type-section-title-size:16px;
+  --happy-type-section-title-weight:700;
+  --happy-type-section-title-line:1.3;
+  --happy-type-row-size:16px;
+  --happy-type-row-weight:600;
+  --happy-type-row-line:1.5;
+  --happy-type-body-size:16px;
+  --happy-type-body-weight:400;
+  --happy-type-body-line:1.5;
+  --happy-type-small-heading-size:14px;
+  --happy-type-small-heading-weight:700;
+  --happy-type-small-heading-line:1.4;
+  --happy-type-button-size:14px;
+  --happy-type-button-weight:600;
+  --happy-type-button-line:20px;
+  --happy-type-caption-size:14px;
+  --happy-type-caption-weight:400;
+  --happy-type-caption-line:1.5;
+  --happy-type-tab-label-size:12px;
+  --happy-type-tab-label-weight:400;
+  --happy-type-tab-label-line:1.2;
+  --happy-type-login-button-size:16px;
+  --happy-type-login-button-weight:600;
+  --happy-type-login-button-line:20px;
+  --happy-type-sheet-subtitle-size:14px;
+  --happy-type-sheet-subtitle-weight:400;
+  --happy-type-sheet-subtitle-line:1.35;
+  --happy-type-group-heading-size:14px;
+  --happy-type-group-heading-weight:600;
+  --happy-type-group-heading-line:1.4;
+  --happy-type-drum-digit-size:28px;
+  --happy-type-drum-digit-weight:600;
+  --happy-type-drum-digit-line:1;
+  --happy-type-chat-message-size:16px;
+  --happy-type-chat-message-weight:400;
+  --happy-type-chat-message-line:1.42;
+  --happy-type-chat-hint-size:12px;
+  --happy-type-chat-hint-weight:400;
+  --happy-type-chat-hint-line:1.45;
+  --happy-type-field-unit-size:14px;
+  --happy-type-field-unit-weight:400;
+  --happy-type-field-unit-line:1.3;
+  --happy-type-swipe-action-size:14px;
+  --happy-type-swipe-action-weight:700;
+  --happy-type-swipe-action-line:1.2;
+  --happy-type-save-arc-size:16px;
+  --happy-type-save-arc-weight:700;
+  --happy-type-save-arc-line:1;
 }
 :root{--glass:var(--happy-glass);--border:var(--happy-line);--muted:var(--happy-muted);--purple:var(--happy-accent);--dockBg:var(--happy-dock-bg)}
 body{background:#00A8F5}.app{max-width:460px;margin:0 auto}.page{padding:20px 20px 130px}.top{padding:6px 0 22px;margin:0;gap:12px}.top h1{font-size:28px;font-weight:700;letter-spacing:-.02em}.brand{display:none}.card{background:var(--glass);border:1px solid var(--border);border-radius:24px;box-shadow:0 10px 24px #006fba16}.date-pill{background:#ffffff24;border:1px solid #ffffff42;border-radius:22px;font-size:12px;padding:10px 13px}
@@ -270,9 +525,12 @@ body{width:100%;max-width:100%;overflow-x:clip}
 
 /* приложение на экране «Домой»: фон заходит под часы, содержимое начинается ниже них (Астамур 24.11.2026) */
 .page{padding-top:calc(20px + env(safe-area-inset-top,0px))}
-.happy-energy{--trk:#ffffff33;--rin:#fff;--rin2:#ffffffd1;--he-ring-h:min(146px,36vw);padding:16px!important;backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}.happy-energy .he-layout{display:grid;grid-template-columns:calc(var(--he-ring-h)*200/186) minmax(0,1fr);gap:16px;align-items:center;width:100%}.happy-energy .he-plate{position:relative;width:calc(var(--he-ring-h)*200/186);height:var(--he-ring-h);padding:0;border:0;background:transparent;overflow:visible}.happy-energy .he-plate svg{position:absolute;inset:0;width:100%;height:100%;transform:none;display:block;overflow:visible}.he-knob{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;color:var(--happy-ink);background:radial-gradient(circle at 38% 30%,#ffffff61,#ffffff1f 60%,#ffffff0f);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 4px #04285024,0 10px 24px #04285033,inset 0 1px 0 #ffffff80}.he-knob b{font-size:calc(var(--he-ring-h)*.18);font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}.he-knob.long b{font-size:calc(var(--he-ring-h)*.155)}.he-knob small{margin-top:3px;font-size:calc(var(--he-ring-h)*.078);font-weight:600;color:var(--rin2);white-space:nowrap}.happy-energy .he-center{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:0;cursor:pointer;border-radius:24px;touch-action:manipulation}.he-info{height:var(--he-ring-h);min-width:0;display:flex;flex-direction:column;justify-content:space-between}.he-metric{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:5px;font-size:12px;font-weight:600;line-height:1.2;color:#ffffffd1}.he-dot{width:8px;height:8px;border-radius:50%}.he-metric>span:not(.he-bar){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.he-metric b{font:inherit;color:var(--happy-ink);white-space:nowrap;font-variant-numeric:tabular-nums}.he-bar{grid-column:1/-1;display:block;height:5px;border-radius:3px;background:#ffffff38;overflow:hidden}.he-bar i{display:block;height:100%;border-radius:3px}@media(max-width:360px){.happy-energy .he-layout{gap:10px}.he-metric{font-size:12px;column-gap:4px}}
+.happy-energy{--trk:#ffffff33;--rin:#fff;--rin2:#ffffffd1;--he-ring-h:min(146px,36vw);padding:16px!important;backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}.happy-energy .he-layout{display:grid;grid-template-columns:calc(var(--he-ring-h)*200/186) minmax(0,1fr);gap:16px;align-items:center;width:100%}.happy-energy .he-plate{position:relative;width:calc(var(--he-ring-h)*200/186);height:var(--he-ring-h);padding:0;border:0;background:transparent;overflow:visible}.happy-energy .he-plate svg{position:absolute;inset:0;width:100%;height:100%;transform:none;display:block;overflow:visible}.he-knob{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none;color:var(--happy-ink);background:radial-gradient(circle at 38% 30%,#ffffff61,#ffffff1f 60%,#ffffff0f);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 2px 4px #04285024,0 10px 24px #04285033,inset 0 1px 0 #ffffff80}.he-knob b{font-size:min(28px,calc(var(--he-ring-h)*.215));font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}.he-knob small{margin-top:3px;font-size:12px;font-weight:600;color:var(--rin2);white-space:nowrap}.happy-energy .he-center{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:0;cursor:pointer;border-radius:24px;touch-action:manipulation}.he-info{height:var(--he-ring-h);min-width:0;display:flex;flex-direction:column;justify-content:space-between}.he-metric{display:grid;grid-template-columns:8px minmax(0,1fr) auto;align-items:center;column-gap:6px;row-gap:5px;font-size:12px;font-weight:600;line-height:1.2;color:#ffffffd1}.he-dot{width:8px;height:8px;border-radius:50%}.he-metric>span:not(.he-bar){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.he-metric b{font:inherit;color:var(--happy-ink);white-space:nowrap;font-variant-numeric:tabular-nums}.he-bar{grid-column:1/-1;display:block;height:5px;border-radius:3px;background:#ffffff38;overflow:hidden}.he-bar i{display:block;height:100%;border-radius:3px}@media(max-width:360px){.happy-energy .he-layout{gap:10px}.he-metric{font-size:12px;column-gap:4px}}
 /* Day 58, Sport 41: дуги энергии — плавный конический градиент поверх дорожки SVG, как в Meal 30; размер и положение слоя — в разметке */
 .he-arcs{position:absolute;pointer-events:none;isolation:isolate}.he-arcs .he-layer{position:absolute;inset:0}
+
+/* 25.11.2026 (Астамур): карточка виджета как в Day/Meal и образце — скругление 26 и та же двойная тень, что у Meal */
+.card.happy-energy{border-radius:26px!important;box-shadow:0 2px 3px rgba(4,40,80,.07),0 12px 30px rgba(4,40,80,.10)!important}
 /* Shared Happy controls. Happy Meal is the visual reference. */
 .happy-settings{--happy-line:rgba(255,255,255,.36);--happy-glass:rgba(255,255,255,.17);--happy-muted:rgba(255,255,255,.82);font-size:16px;line-height:1.5}
 .happy-section{margin:0 0 24px;min-width:0}
@@ -1271,7 +1529,7 @@ body.hs-open{overflow:hidden}
 /* ── поля ── */
 .hs-field{display:flex;flex-direction:column;gap:7px;min-width:0}
 .hs-field-title{display:block;font-size:14px;font-weight:400;line-height:20px;color:var(--happy-ink)}
-.hs-input{display:flex;align-items:center;gap:8px;border:1px solid var(--hs-border);border-radius:12px;background:var(--hs-glass);min-height:48px;padding:0 14px;min-width:0}
+.hs-input{display:flex;align-items:center;gap:8px;border:1px solid var(--hs-border);border-radius:var(--happy-radius-field);background:var(--hs-glass);min-height:var(--happy-size-field);padding:0 14px;min-width:0}
 #happy-screens .hs-input input{display:block;flex:1;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;
  line-height:24px;height:46px;font-size:16px;color:var(--happy-ink);color-scheme:dark;-webkit-appearance:none;appearance:none}
 #happy-screens .hs-input input::placeholder{color:rgba(255,255,255,.42)}
@@ -1288,18 +1546,18 @@ body.hs-open{overflow:hidden}
 .hs-password{padding-right:3px}
 .hs-eye{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center}
 .hs-eye svg{width:19px;height:19px;opacity:.85;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-#happy-screens textarea.hs-textarea{display:block;width:100%;min-height:125px;max-height:280px;resize:vertical;margin:0;padding:14px;border:1px solid var(--hs-border);border-radius:12px;
+#happy-screens textarea.hs-textarea{display:block;width:100%;min-height:125px;max-height:280px;resize:vertical;margin:0;padding:14px;border:1px solid var(--hs-border);border-radius:var(--happy-radius-field);
  background:var(--hs-glass);color:var(--happy-ink);font-size:16px;line-height:1.55;outline:0;box-shadow:none;-webkit-appearance:none;appearance:none}
 #happy-screens textarea.hs-textarea::placeholder{color:rgba(255,255,255,.65)}
 #happy-screens textarea.hs-textarea:focus{border-color:#fff;background:rgba(255,255,255,.2)}
 
 /* ── кнопки ── */
 .hs-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
-#happy-screens .hs-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border-radius:999px;font-size:16px;font-weight:600;line-height:22px;padding:12px 16px;text-align:center}
+#happy-screens .hs-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-button);border-radius:var(--happy-radius-pill);font-size:16px;font-weight:600;line-height:22px;padding:12px 16px;text-align:center}
 #happy-screens .hs-primary{background:var(--hs-primary);color:var(--happy-ink);box-shadow:var(--hs-primary-shadow)}
 #happy-screens .hs-cancel{background:#fff;color:var(--hs-cancel-ink)}
 #happy-screens .hs-glass-btn{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
-#happy-screens .hs-btn:active{transform:scale(.985);filter:brightness(.97)}
+#happy-screens .hs-btn:active{transform:scale(var(--happy-press-scale));filter:brightness(.97)}
 #happy-screens .hs-btn[aria-busy=true]{opacity:.72}
 #happy-screens .hs-quiet{display:block;background:transparent;color:rgba(255,255,255,.9);font-size:14px;padding:9px 0;line-height:1.4;min-height:38px;text-align:left}
 #happy-screens .hs-quiet.hs-center{text-align:center;margin:0 auto}
@@ -1309,28 +1567,28 @@ body.hs-open{overflow:hidden}
 .hs-note.hs-center{text-align:center}
 
 /* ── переключатель вариантов ── */
-.hs-segment{display:flex;align-items:stretch;border:1px solid var(--hs-border);border-radius:999px;overflow:hidden;background:rgba(255,255,255,.12);height:43px}
-#happy-screens .hs-segment button{flex:1;background:transparent;border-radius:999px;padding:0 10px;white-space:nowrap;font-size:14px;color:var(--happy-ink)}
+.hs-segment{display:flex;align-items:stretch;border:1px solid var(--hs-border);border-radius:var(--happy-radius-pill);overflow:hidden;background:rgba(255,255,255,.12);height:43px}
+#happy-screens .hs-segment button{flex:1;background:transparent;border-radius:var(--happy-radius-pill);padding:0 10px;white-space:nowrap;font-size:14px;color:var(--happy-ink)}
 #happy-screens .hs-segment button[aria-pressed=true]{background:var(--hs-seg-bg);color:var(--hs-seg-ink);font-weight:600;box-shadow:0 1px 8px rgba(62,15,39,.06)}
 
 /* ── свитч ── */
 .hs-switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:65px}
 .hs-switch-row+.hs-switch-row{border-top:1px solid rgba(255,255,255,.22)}
-#happy-screens .hs-switch,.hs-settings .hs-switch{flex-shrink:0;width:42px;height:25px;padding:2px;border-radius:999px;background:rgba(255,255,255,.23);transition:background .18s;border:0;display:block}
+#happy-screens .hs-switch,.hs-settings .hs-switch{flex-shrink:0;width:var(--happy-size-switch-w);height:var(--happy-size-switch-h);padding:2px;border-radius:var(--happy-radius-pill);background:rgba(255,255,255,.23);transition:background var(--happy-motion-switch);border:0;display:block}
 .hs-switch>b{display:block;width:21px;height:21px;background:#fff;border-radius:50%;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
 .hs-switch[aria-checked=true]{background:var(--hs-switch-on)!important}
 .hs-switch[aria-checked=true]>b{transform:translateX(17px)}
 
 /* ── нижний лист ── */
 .hs-sheet-layer{position:fixed;inset:0;pointer-events:auto;display:flex;align-items:flex-end;justify-content:center}
-.hs-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.34);opacity:0;transition:opacity .22s ease}
+.hs-backdrop{position:absolute;inset:0;background:var(--happy-sheet-scrim);opacity:0;transition:opacity var(--happy-motion-screen) ease}
 .hs-sheet{position:relative;width:100%;max-width:460px;display:flex;flex-direction:column;max-height:calc(100% - 24px - env(safe-area-inset-top));
- border-radius:22px 22px 0 0;border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);color:var(--happy-ink);box-shadow:0 -16px 48px rgba(0,0,0,.2);
- transform:translateY(100%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}   /* все листы — как календарь Day: 0,42 с (Астамур 24.11.2026) */
+ border-radius:var(--happy-radius-sheet) var(--happy-radius-sheet) 0 0;border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);color:var(--happy-ink);box-shadow:var(--happy-shadow-sheet);
+ transform:translateY(100%);transition:transform var(--happy-motion-sheet) var(--happy-ease-sheet)}   /* все листы — как календарь Day: 0,42 с (Астамур 24.11.2026) */
 .hs-sheet-layer.hs-in .hs-backdrop{opacity:1}
 .hs-sheet-layer.hs-in .hs-sheet{transform:translateY(0)}
 .hs-handle-zone{display:grid;height:30px;place-items:center;touch-action:none;cursor:grab;flex:none}
-.hs-handle{width:42px;height:5px;border-radius:999px;background:rgba(255,255,255,.45)}
+.hs-handle{width:var(--happy-size-sheet-handle-w);height:var(--happy-size-sheet-handle-h);border-radius:var(--happy-radius-pill);background:var(--happy-sheet-handle)}
 .hs-sheet-head{display:grid;gap:4px;padding:0 20px 14px;flex:none}
 .hs-sheet-title{font-size:20px;font-weight:700;letter-spacing:-.25px;line-height:1.25}
 .hs-sheet-desc{color:var(--hs-muted);font-size:14px;line-height:1.35}
@@ -1344,7 +1602,7 @@ body.hs-open{overflow:hidden}
 
 /* ── всплывающее сообщение ── */
 .hs-toast{position:fixed;left:20px;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;
- max-width:420px;margin:0 auto;background:var(--hs-toast-bg);border:1px solid var(--hs-border);border-radius:999px;box-shadow:0 10px 30px #35132930;font-size:14px;line-height:1.35;
+ max-width:420px;margin:0 auto;background:var(--hs-toast-bg);border:1px solid var(--hs-border);border-radius:var(--happy-radius-pill);box-shadow:0 10px 30px #35132930;font-size:14px;line-height:1.35;
  text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s}
 .hs-toast.hs-in{opacity:1;transform:none}
 .hs-toast svg{width:15px;height:15px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -1352,12 +1610,12 @@ body.hs-open{overflow:hidden}
 /* ── колесо выбора ── */
 .hs-wheel-wrap{margin:7px 0 15px}
 .hs-wheel-wrap>.hs-field-title{text-align:left;font-size:14px;color:var(--hs-muted);margin-bottom:1px}
-.hs-wheel{height:132px;position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:ns-resize;
+.hs-wheel{height:calc(var(--happy-size-wheel-row) * 3);position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:ns-resize;
  -webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);outline:0}
 .hs-wheel:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important;border-radius:12px}
-.hs-wheel-selection{position:absolute;left:0;right:0;top:46px;height:40px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25)}
+.hs-wheel-selection{position:absolute;left:0;right:0;top:var(--happy-size-wheel-row);height:var(--happy-size-wheel-row);border-radius:var(--happy-radius-pill);background:var(--happy-wheel-band)}   /* как барабан: строка 44, полоса без рамки (решение Астамура 25.11.2026) */
 .hs-wheel-track{position:absolute;left:0;right:0;top:0;transition:transform 160ms cubic-bezier(.2,.7,.2,1);pointer-events:none}
-.hs-wheel-option{height:40px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:400;letter-spacing:-.15px;transition:opacity .16s;text-align:center;padding:0 12px;line-height:20px;overflow-wrap:anywhere}
+.hs-wheel-option{height:var(--happy-size-wheel-row);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:400;letter-spacing:-.15px;transition:opacity .16s;text-align:center;padding:0 12px;line-height:20px;overflow-wrap:anywhere}
 .hs-wheel-option.hs-on{font-size:16px;font-weight:600}
 
 /* ── линейка веса ── */
@@ -1392,7 +1650,7 @@ body.hs-open{overflow:hidden}
 .hs-welcome-options.hs-settled{opacity:1;visibility:visible;pointer-events:auto}
 .hs-welcome-options h1{margin:40px 0 26px;font-size:20px;font-weight:600;line-height:1.2}
 .hs-welcome-buttons{display:grid;gap:12px}
-#happy-screens .hs-provider,#happy-screens .hs-email-start{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border-radius:999px;padding:12px 17px;font-size:16px;font-weight:600}
+#happy-screens .hs-provider,#happy-screens .hs-email-start{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-button);border-radius:var(--happy-radius-pill);padding:12px 17px;font-size:16px;font-weight:600}
 #happy-screens .hs-provider{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
 #happy-screens .hs-provider:disabled{cursor:default}
 .hs-provider svg,.hs-email-start svg{width:23px;height:23px;position:absolute;left:18px}
@@ -1433,7 +1691,7 @@ body.hs-open{overflow:hidden}
 .hs-sync{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:center;min-width:0}
 .hs-sync svg{width:13px;height:13px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .hs-newer{margin-top:10px;text-align:center}
-.hs-newer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:999px;background:#fff;color:var(--hs-cancel-ink);font-weight:600;text-decoration:none}
+.hs-newer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:var(--happy-radius-pill);background:#fff;color:var(--hs-cancel-ink);font-weight:600;text-decoration:none}
 
 /* ── «Связка с»: свитчи связи приложений (разметку и обмен ведёт приложение) в виде прототипа ── */
 .hs-links{margin-top:28px!important}
@@ -1442,7 +1700,7 @@ body.hs-open{overflow:hidden}
 .hs-links .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:65px;padding:0}
 .hs-links .happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.22)}
 .hs-links .happy-app-name{flex:1;min-width:0;padding:14px 0;color:var(--happy-ink);font-size:16px;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
-.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 auto;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:999px;
+.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 auto;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:var(--happy-radius-pill);
  background:rgba(255,255,255,.23);cursor:pointer;transition:background .18s;box-shadow:none}
 .hs-links .happy-switch::after{content:"";position:absolute;left:2px;top:2px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
 .hs-links .happy-switch:checked{background:var(--hs-switch-on);border:0}
@@ -1460,7 +1718,7 @@ body.hs-open{overflow:hidden}
 #happy-screens .hs-delete-link{color:var(--happy-danger);font-size:14px;text-shadow:none}
 .hs-delete-dialog{position:fixed;inset:auto 0 0;margin:0 auto;width:100%;max-width:460px;max-height:calc(100% - 24px - env(safe-area-inset-top));
  overflow:auto;overscroll-behavior:contain;pointer-events:auto;padding:24px 20px calc(24px + env(safe-area-inset-bottom));
- border:1px solid var(--hs-border);border-bottom:0;border-radius:22px 22px 0 0;background:var(--hs-sheet-bg);color:var(--happy-ink)}
+ border:1px solid var(--hs-border);border-bottom:0;border-radius:var(--happy-radius-sheet) var(--happy-radius-sheet) 0 0;background:var(--hs-sheet-bg);color:var(--happy-ink)}
 .hs-delete-dialog::backdrop{background:rgba(0,0,0,.45)}
 .hs-delete-dialog .hs-note{color:var(--happy-ink);overflow-wrap:anywhere}
 #happy-screens .hs-delete-confirm{background:var(--happy-danger);color:var(--happy-on-danger)}
@@ -1561,7 +1819,7 @@ body.hs-open{overflow:hidden}
 .hs-day-goals .hs-wheel-option.hs-on{font-size:16px;font-weight:600}
 .hs-observations{margin-top:30px}
 .hs-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-#happy-screens .hs-topics button{display:flex;align-items:center;justify-content:center;max-width:100%;padding:10px 15px;min-height:44px;border-radius:999px;border:1px solid #ffffff65;background:#ffffff20;
+#happy-screens .hs-topics button{display:flex;align-items:center;justify-content:center;max-width:100%;padding:10px 15px;min-height:44px;border-radius:var(--happy-radius-pill);border:1px solid #ffffff65;background:#ffffff20;
  font-size:14px;line-height:1.3;color:var(--happy-ink);overflow-wrap:anywhere;text-align:center}
 #happy-screens .hs-topics button[aria-pressed=true]{background:#f4faff;color:var(--hs-pill-on-ink);border-color:#fff;box-shadow:0 2px 7px #145e9314}
 #happy-screens .hs-topics .hs-add-topic{min-width:65px;padding:10px 20px}
@@ -1580,10 +1838,10 @@ body.hs-open{overflow:hidden}
 /* Астамур 18.11.2026 (голосом): страница с ручкой (профиль, цели) — лист. Сверху свободное место, под ним видно
    приложение, затемнённое; нажатие туда закрывает, как ручка. Приложение может задать свои отступы и подложку. */
 .hs-page.hs-page-sheet{opacity:1;transition:none}
-.hs-page-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.34);opacity:0;transition:opacity .22s ease}
+.hs-page-backdrop{position:absolute;inset:0;background:var(--happy-sheet-scrim);opacity:0;transition:opacity var(--happy-motion-screen) ease}
 .hs-page-sheet.hs-in>.hs-page-backdrop{opacity:1}
-.hs-page-sheet>.hs-scroll{top:calc(24px + env(safe-area-inset-top));left:0;right:0;bottom:0;max-width:460px;margin:0 auto;border-radius:22px 22px 0 0;
- border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);box-shadow:0 -16px 48px rgba(0,0,0,.2);transform:translateY(100%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
+.hs-page-sheet>.hs-scroll{top:calc(24px + env(safe-area-inset-top));left:0;right:0;bottom:0;max-width:460px;margin:0 auto;border-radius:var(--happy-radius-sheet) var(--happy-radius-sheet) 0 0;
+ border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);box-shadow:var(--happy-shadow-sheet);transform:translateY(100%);transition:transform var(--happy-motion-sheet) var(--happy-ease-sheet)}
 .hs-page-sheet.hs-in>.hs-scroll{transform:none}
 .hs-page-sheet .hs-main{min-height:0;padding-top:4px}
 body.hs-sheet-open{overflow:hidden}
@@ -1610,9 +1868,9 @@ html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app
 /* Выключатели — один вид во всех приложениях, вариант B «С рамкой» (Астамур, аудит 3, 21.11.2026):
    42×25, тонкая светлая рамка; выкл — полупрозрачный синий, вкл — цвет приложения или темы (--hs-switch-on); ручка 19, белая, без тени.
    Касается общего выключателя настроек, .toggle и мятного .sport-switch в Sport, выключателей окна счётчика Meal. */
-html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input){-webkit-appearance:none!important;appearance:none!important;position:relative!important;box-sizing:border-box!important;flex:0 0 auto!important;width:42px!important;min-width:0!important;height:25px!important;min-height:25px!important;margin:0!important;padding:0!important;border:1px solid rgba(255,255,255,.27)!important;border-radius:999px!important;background:rgba(0,106,159,.38)!important;box-shadow:none!important;cursor:pointer}
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input){-webkit-appearance:none!important;appearance:none!important;position:relative!important;box-sizing:border-box!important;flex:0 0 auto!important;width:var(--happy-size-switch-w)!important;min-width:0!important;height:var(--happy-size-switch-h)!important;min-height:var(--happy-size-switch-h)!important;margin:0!important;padding:0!important;border:1px solid rgba(255,255,255,.27)!important;border-radius:var(--happy-radius-pill)!important;background:rgba(0,106,159,.38)!important;box-shadow:none!important;cursor:pointer}
 html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):checked{background:var(--hs-switch-on,#8071df)!important;border-color:rgba(255,255,255,.27)!important}
-html body :is(.happy-switch,.hs-switch,.sport-switch)::after,html body :is(.toggle,.fc-sync-row input)::before{content:""!important;position:absolute!important;top:50%!important;left:2px!important;width:19px!important;height:19px!important;margin:0!important;border-radius:50%!important;background:#fff!important;box-shadow:none!important;transform:translateY(-50%)!important;transition:transform .18s!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)::after,html body :is(.toggle,.fc-sync-row input)::before{content:""!important;position:absolute!important;top:50%!important;left:2px!important;width:var(--happy-size-switch-knob)!important;height:var(--happy-size-switch-knob)!important;margin:0!important;border-radius:50%!important;background:#fff!important;box-shadow:none!important;transform:translateY(-50%)!important;transition:transform var(--happy-motion-switch)!important}
 html body :is(.happy-switch,.hs-switch,.sport-switch):checked::after,html body :is(.toggle,.fc-sync-row input):checked::before{left:2px!important;transform:translate(17px,-50%)!important}
 html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):focus-visible{outline:2px solid #fff;outline-offset:3px}
 /* 24.11.2026 (Астамур нашёл на iPhone, Meal «Фастинг»: два белых кружка): выключатель-кнопка (<button role=switch> с <b> внутри)
@@ -1787,8 +2045,7 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select,.
 /* заметка к упражнению — поле; булавка — круг */
 .set-note,textarea{border-radius:12px!important}
 .note-pin{border-radius:999px!important}
-/* кольцо энергии: число 28, подпись 12 */
-/* цифра в кольце — от размера кольца (energy-widget.css), без жёстких 28 */
+/* кольцо энергии: число 28, подпись 12 — во всех приложениях (energy-widget.css, 25.11.2026) */
 .he-knob small{font-size:12px!important}
 /* «Продолжить» в полоске текущей тренировки */
 [data-action=resume]{font-size:14px!important}
@@ -3960,7 +4217,8 @@ document.addEventListener('input',e=>{if(e.target.name==='title'&&e.target.form?
 
 /* Shared energy widget. Renderer derived from the supplied variant 6. */
 (function(){
-const meal=typeof SEED==='undefined';let mode=meal?'eat':'spent';
+const meal=typeof SEED==='undefined';/* 25.11.2026 (Астамур): вид виджета запоминается на устройстве — каким оставил, таким и откроется; впервые — «потрачено» */
+const MODE_KEY='happy.sport.energyMode';let mode=(()=>{try{const v=localStorage.getItem(MODE_KEY);if(['eat','balance','spent'].includes(v))return v}catch(e){}return meal?'eat':'spent'})();
 var SWEEP=296,KR=92,uid=0,S={scale:3000,bal:false,knob:mode};
 /* цвета кольца и строк по теме (shared/happy-energy-ring.js): у темы свой набор — берём его, нет — исходные цвета */
 function pal(){return typeof HappyEnergyRing!=='undefined'?HappyEnergyRing.palette():null}
@@ -4077,7 +4335,7 @@ let config=config0;
     var kpos = 'left:' + pc(50 - vb[0], vb[2]) + ';top:' + pc(50 - vb[1], vb[3]) + ';width:' + pc(140, vb[2]) + ';height:' + pc(140, vb[3]);
     var apos = 'left:' + pc(20 - vb[0], vb[2]) + ';top:' + pc(20 - vb[1], vb[3]) + ';width:' + pc(200, vb[2]) + ';height:' + pc(200, vb[3]);
     var cap = S.bal ? 'баланс' : (S.knob === 'eat' ? 'съедено' : 'потрачено');
-    var knob = '<div class="he-knob' + (big.length >= 5 ? ' long' : '') + '" style="' + kpos + '"><b>' + big + '</b><small>' + cap + '</small></div>';
+    var knob = '<div class="he-knob" style="' + kpos + '"><b>' + big + '</b><small>' + cap + '</small></div>';
     return '<svg viewBox="' + vb.join(' ') + '"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
       '<g transform="rotate(122 120 120)">' + arc(KR, 16, SWEEP, 'none', 0, 'style="stroke:' + (S.trk || 'var(--trk)') + '"') + '</g></svg>' +
       (body ? '<div class="he-arcs" aria-hidden="true" style="' + apos + '">' + body + '</div>' : '') + knob;
@@ -4090,19 +4348,28 @@ let config=config0;
    с расчётом энергии тренировок); поля в виджете уже есть. */
 function date(){return selectedDate}
 function nutrition(){try{return typeof SportFood!=='undefined'?SportFood.eaten(date()):null}catch(e){return null}}
-function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
+/* 25.11.2026 (Астамур): покой, шаги, «потрачено» и цели строк (покой, тренировки, шаги, время) потом будут приходить
+   из HealthKit / Google Health Connect. Вход для них уже есть: globalThis.HappyHealth.day(дата) → {spent, rest, steps,
+   goals:{rest, training, steps, minutes}}. Пока его нет — строки показывают только число; есть цель — «число/цель» и полоску. */
+function health(){try{const h=globalThis.HappyHealth&&HappyHealth.day(date());return h&&typeof h==='object'?h:null}catch(e){return null}}
+function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());const H=health()||{};
+return {goals:H.goals||{},food,eaten:food?food.k:null,spent:H.spent??null,rest:H.rest??null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:H.steps??null}}
 function number(v){return v==null?'—':Math.round(v).toLocaleString('ru-RU')}
 const hues0={pink:350,violet:305,blue:262,teal:180};
 const BARS0={hues:hues0,chroma:.12,dot:.8,from:.86,to:.72,over:.56,track:22};let bars=BARS0;
-function metricRow(color,name,value,unit,goal,progress){const B=bars,h=B.hues[color],tone=(l)=>lchHex(l,B.chroma,h*Math.PI/180);const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?number(value)+(g?'/'+number(g):'')+(unit?' '+unit:''):'—';return `<div class="he-metric"><i class="he-dot" style="background:${tone(B.dot)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"${B===BARS0?'':` style="background:rgba(255,255,255,${B.track/100})"`}><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(B.from)},${tone(B.to-(B.to-B.over)*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
-function widget(){const f=facts(),g=f.food?.g||{};{const P=pal();config=P?Object.assign({},config0,{eat:P.eat,spent:P.spent}):config0;bars=P?P.bars:BARS0;S.trk=P?'rgba(255,255,255,'+P.track/100+')':''}S.bal=mode==='balance';S.knob=mode==='balance'?(meal?'eat':'spent'):mode;const missing=mode==='balance'?(f.eaten==null||f.spent==null):f[mode==='eat'?'eaten':'spent']==null;let svg=ringSvg(config,f.eaten||0,f.spent||0,1.5,'Кольцо энергии');if(missing)svg=svg.replace(/<b>[^<]*<\/b>/,'<b>—</b>');let rows='';if(mode==='eat')rows=metricRow('pink','Белки',f.food?.p,'г',g.p)+metricRow('violet','Жиры',f.food?.f,'г',g.f)+metricRow('blue','Углеводы',f.food?.c,'г',g.c)+metricRow('teal','Клетчатка',f.food?.fib,'г',g.fib);else if(mode==='spent')rows=metricRow('violet','Покой',f.rest,'ккал')+metricRow('pink','Тренировки',f.training,'ккал')+metricRow('blue','Шаги',f.steps,'')+metricRow('teal','Время',f.minutes,'мин');else{const d=f.eaten!=null&&f.spent!=null?f.eaten-f.spent:null;rows=metricRow('teal',d!=null&&d>0?'Сжечь':'Запас',d==null?null:Math.abs(d),'ккал')+metricRow('blue','Шаги до цели',null,'')+metricRow('violet','Ходьба',null,'мин')+metricRow('pink','Белка до цели',Number(g.p)>0&&f.food?.p!=null?Math.max(0,Number(g.p)-f.food.p):null,'г')}
+function rowHTML(color,name,label,ratio){const B=bars,h=B.hues[color],tone=(l)=>lchHex(l,B.chroma,h*Math.PI/180);return `<div class="he-metric"><i class="he-dot" style="background:${tone(B.dot)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"${B===BARS0?'':` style="background:rgba(255,255,255,${B.track/100})"`}><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(B.from)},${tone(B.to-(B.to-B.over)*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
+/* 25.11.2026 (Астамур: «как в образце»): строки как в эталоне «Общий» студии градиентов — «значение/цель», без «ккал» в строках
+   «потрачено» (ккал уже в кольце), шаги от 10 000 — «11к/10к»; нет цели — только число и пустая полоска. */
+function kNum(v){return v>=10000?(Math.round(v/100)/10).toLocaleString('ru-RU')+'к':number(v)}
+function metricRow(color,name,value,unit,goal,fmt){const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const f=fmt||number;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?f(value)+(g?'/'+f(g):'')+(unit?' '+unit:''):'—';return rowHTML(color,name,label,ratio)}
+function widget(){const f=facts(),g=f.food?.g||{};S.scale=Number(g.k)>0?Number(g.k)/0.75:3000;{const P=pal();config=P?Object.assign({},config0,{eat:P.eat,spent:P.spent}):config0;bars=P?P.bars:BARS0;S.trk=P?'rgba(255,255,255,'+P.track/100+')':''}S.bal=mode==='balance';S.knob=mode==='balance'?(meal?'eat':'spent'):mode;const missing=mode==='balance'?(f.eaten==null||f.spent==null):f[mode==='eat'?'eaten':'spent']==null;let svg=ringSvg(config,f.eaten||0,f.spent||0,1.5,'Кольцо энергии');if(missing)svg=svg.replace(/<b>[^<]*<\/b>/,'<b>—</b>');let rows='';if(mode==='eat')rows=metricRow('pink','Белки',f.food?.p,'г',g.p)+metricRow('violet','Жиры',f.food?.f,'г',g.f)+metricRow('blue','Углеводы',f.food?.c,'г',g.c)+metricRow('teal','Клетчатка',f.food?.fib,'г',g.fib);else if(mode==='spent')rows=metricRow('violet','Покой',f.rest,'',f.goals?.rest)+metricRow('pink','Тренировки',f.training,'',f.goals?.training)+metricRow('blue','Шаги',f.steps,'',f.goals?.steps,kNum)+metricRow('teal','Время',f.minutes,'мин',f.goals?.minutes);else{const d=f.eaten!=null&&f.spent!=null?f.eaten-f.spent:null,st=Number.isFinite(f.steps)?f.steps:null,gs=Number(f.goals?.steps)>0?Number(f.goals.steps):0,p=f.food?.p,gp=Number(g.p)>0?Number(g.p):0,wk=st==null?0:st/100+Math.max(0,d||0)/5;rows=rowHTML('teal',d!=null&&d>=0?'Сжечь':'Запас',d==null?'—':number(Math.abs(d))+' ккал',d==null?null:Math.max(f.eaten,f.spent)>0?Math.min(f.eaten,f.spent)/Math.max(f.eaten,f.spent):0)+rowHTML('blue','Шаги до цели',st==null||!gs?'—':st>=gs?'есть':number(gs-st),st!=null&&gs?st/gs:null)+rowHTML('violet','Ходьба',d==null?'—':d>0?'+'+Math.round(d/5)+' мин':'не нужно',d!=null&&st!=null&&wk>0?(st/100)/wk:null)+rowHTML('pink','Белка до цели',!gp||p==null?'—':p>=gp?'есть':number(gp-p)+' г',gp&&p!=null?p/gp:null)}
 return '<div class="he-layout"><div class="he-plate">'+svg+'<button type="button" class="he-center" data-energy-cycle aria-label="Сменить режим энергии. Сейчас: '+(mode==='eat'?'съедено':mode==='spent'?'потрачено':'баланс')+'"></button></div><div class="he-info">'+rows+'</div></div>'}
 function paint(){const el=document.getElementById('happy-energy');if(el){el.classList.add('happy-energy');el.innerHTML=widget()}}
 function refresh(){paint()}
 {const original=renderDiary;renderDiary=function(){const root=document.createElement('div');root.innerHTML=original();const old=root.querySelector('.energy');if(old)old.outerHTML='<section class="card happy-energy" id="happy-energy">'+widget()+'</section>';return root.innerHTML};render()}
-/* Нажатие на кольцо меняет вид по кругу: потрачено → баланс → съедено. Выбор не запоминается: при следующем
-   открытии Sport снова показывает «потрачено» (решение владельца 11.11.2026). */
-document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=['spent','balance','eat'];mode=modes[(modes.indexOf(mode)+1)%3];paint()}});
+/* Нажатие на кольцо меняет вид по кругу, как во всех приложениях: съедено → баланс → потрачено. Выбор запоминается
+   (Астамур 25.11.2026: «запоминает то, на чём человек оставил»; до этого — не запоминался, решение 11.11.2026). */
+document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=['eat','balance','spent'];mode=modes[(modes.indexOf(mode)+1)%3];try{localStorage.setItem(MODE_KEY,mode)}catch(err){}paint()}});
 window.addEventListener('pageshow',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});refresh();
 globalThis.HappyEnergy={refresh};
 if(typeof HappyEnergyRing!=='undefined')HappyEnergyRing.onTheme(refresh);   // тема сменилась — кольцо в цветах темы   // кольцо перерисовывается, когда пришла еда из Meal (food-counters.js)
@@ -4155,9 +4422,9 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.14">${sportVersionFooter()}</footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.15">${sportVersionFooter()}</footer>`};
 // Update 38.3: version line comes from the shared release-notes module (date, time, author of the latest entry); plain label if the module is absent.
-function sportVersionFooter(){const label='Happy Sport · Update 45.14';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
+function sportVersionFooter(){const label='Happy Sport · Update 45.15';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
 
 /* One set at a time, shared by exercise settings and workout templates. */
 const setPlanDrafts=new Map();let setPlanSerial=0;
@@ -5544,7 +5811,8 @@ const SportTaps=(()=>{
 })(typeof window!=='undefined'?window:globalThis);
 
 /* Add newest releases first; also update the daily briefing. */
-const sportReleases=[{"version": "45.14", "date": "2026-11-25", "time": "22:45", "author": "Claude", "changes": ["Кнопки «Войти» выглядят как кнопки входа. Внизу Настроек без аккаунта «Войти» — большая кнопка во всю ширину, как «Продолжить с Google». В полоске «Войди, чтобы записывать» текст «Войти» крупнее."]},
+const sportReleases=[{"version": "45.15", "date": "2026-11-25", "time": "23:00", "author": "Claude", "changes": ["Виджет энергии как общий образец: цифра 28, подписи 12, карточка со скруглением 26 и мягкой тенью, вид запоминается."]},
+ {"version": "45.14", "date": "2026-11-25", "time": "22:45", "author": "Claude", "changes": ["Кнопки «Войти» выглядят как кнопки входа. Внизу Настроек без аккаунта «Войти» — большая кнопка во всю ширину, как «Продолжить с Google». В полоске «Войди, чтобы записывать» текст «Войти» крупнее."]},
  {"version": "45.13", "date": "2026-11-25", "author": "Codex", "changes": ["В профиле под почтой можно привязать вход через Google. Подтверди текущий пароль Happy, затем выбери Google-аккаунт. Оба способа входа открывают твои прежние записи."]},
  {"version": "45.12", "date": "2026-11-25", "time": "19:11", "author": "Claude", "changes": ["Новый значок приложения: тот же силуэт стал белым матовым стеклом, фон прежний. Чтобы он сменился на экране «Домой» iPhone, удали старый значок и добавь Sport заново из Safari."]},
  {"version": "45.11", "date": "2026-11-25", "time": "19:00", "author": "Claude", "changes": ["Для тестового аккаунта: в «Для разработчика» — «Заполнить примером» и «Убрать пример»: тренировки, прогулки и плавание вымышленного Amurio на 9 месяцев и замеры тела. Кнопки видны только в тестовом аккаунте."]},
@@ -11350,12 +11618,14 @@ function wheel(box,o){
   '<div class="hs-wheel-selection"></div><div class="hs-wheel-track"></div></div></div>';
  const el=box.querySelector('.hs-wheel'),track=box.querySelector('.hs-wheel-track');
  const indexOf=v=>Math.max(0,options.findIndex(x=>String(x.value)===String(v)));
+ // Высота строки — из дизайн-системы (--happy-size-wheel-row, 44 как у барабана; решение Астамура 25.11.2026). Видно три строки, выбранная — средняя.
+ const row=()=>parseFloat(getComputedStyle(el).getPropertyValue('--happy-size-wheel-row'))||44;
  function paintOptions(){
   track.innerHTML=options.map((x,i)=>'<div class="hs-wheel-option" role="option" id="'+id+'-'+i+'" data-i="'+i+'">'+esc(x.label)+'</div>').join('');
   update();
  }
  function update(){
-  const index=indexOf(value);track.style.transform='translateY('+(46-index*40)+'px)';
+  const index=indexOf(value);track.style.transform='translateY('+(row()-index*row())+'px)';
   track.querySelectorAll('.hs-wheel-option').forEach((n,i)=>{const d=Math.abs(i-index);n.classList.toggle('hs-on',i===index);n.setAttribute('aria-selected',String(i===index));n.style.opacity=d>1?.22:d===1?.52:1});
   el.setAttribute('aria-activedescendant',id+'-'+index);
  }
@@ -11366,9 +11636,9 @@ function wheel(box,o){
  }
  el.addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const i=indexOf(value);choose(e.key==='Home'?0:e.key==='End'?options.length-1:i+(e.key==='ArrowDown'?1:-1))}});
  el.addEventListener('wheel',e=>{e.preventDefault();e.stopPropagation();if(Date.now()-last>150){last=Date.now();choose(indexOf(value)+(e.deltaY>0?1:-1))}},{passive:false});
- el.addEventListener('pointerdown',e=>{drag={y:e.clientY,index:indexOf(value),scale:el.getBoundingClientRect().height/132,moved:false};try{el.setPointerCapture(e.pointerId)}catch(_){}});
- el.addEventListener('pointermove',e=>{if(!drag)return;const dy=(drag.y-e.clientY)/drag.scale;if(Math.abs(dy)>8){drag.moved=true;choose(drag.index+Math.round(dy/40))}});
- el.addEventListener('pointerup',e=>{const d=drag;drag=null;if(d&&!d.moved){const b=el.getBoundingClientRect();choose(indexOf(value)+Math.round(((e.clientY-b.top)/d.scale-66)/40))}});
+ el.addEventListener('pointerdown',e=>{drag={y:e.clientY,index:indexOf(value),scale:el.getBoundingClientRect().height/(row()*3),moved:false};try{el.setPointerCapture(e.pointerId)}catch(_){}});
+ el.addEventListener('pointermove',e=>{if(!drag)return;const dy=(drag.y-e.clientY)/drag.scale;if(Math.abs(dy)>8){drag.moved=true;choose(drag.index+Math.round(dy/row()))}});
+ el.addEventListener('pointerup',e=>{const d=drag;drag=null;if(d&&!d.moved){const b=el.getBoundingClientRect();choose(indexOf(value)+Math.round(((e.clientY-b.top)/d.scale-row()*1.5)/row()))}});
  el.addEventListener('pointercancel',()=>{drag=null});
  paintOptions();
  return {get value(){return value},set(v){value=v;update()},options(list,v){options=list.slice();if(v!==undefined)value=v;paintOptions()},el};
