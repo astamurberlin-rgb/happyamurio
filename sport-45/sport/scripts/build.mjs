@@ -15,8 +15,9 @@ const [template, app, license] = await Promise.all([
 // Update 38.2: exercises/equipment/muscles are embedded from the shared exercise library (see scripts/seed.mjs).
 const seed=await loadSeed(),exerciseLibrary=await loadLibrary();
 // Lab 10.11.2026: HAPPY_SPORT_LAB=1 builds a copy that carries its shared libraries beside it (relative paths), so it
-// can be opened outside GitHub Pages. A release build keeps the permanent /happyamurio/assets/ addresses.
-const LAB=process.env.HAPPY_SPORT_LAB==='1',assetBase=LAB?'./assets/':'/happyamurio/assets/';
+// can be opened outside GitHub Pages. A release build uses ../assets/ from the release folder: the same page works
+// at astamurberlin-rgb.github.io/happyamurio/ and at amurio.app/ (25.11.2026).
+const LAB=process.env.HAPPY_SPORT_LAB==='1',assetBase=LAB?'./assets/':'../assets/';
 const EXERCISE_MEDIA_LIBRARY=assetBase+'exercise-media/'+EXERCISE_MEDIA_VERSION+'/';
 const exerciseMediaItems=await loadMedia(),exerciseMediaPlaceholder=await loadMediaPlaceholder();
 const seedText=JSON.stringify({...seed,exerciseLibrary:{url:EXERCISE_LIBRARY_URL,version:exerciseLibrary.manifest.version,generated:exerciseLibrary.manifest.generated},exerciseFamilies:exerciseLibrary.families,exerciseCards:exerciseLibrary.cards,exerciseMedia:{base:EXERCISE_MEDIA_LIBRARY,items:exerciseMediaItems,placeholder:exerciseMediaPlaceholder&&{...exerciseMediaPlaceholder,cover:EXERCISE_MEDIA_LIBRARY+exerciseMediaPlaceholder.cover}}});
@@ -64,7 +65,7 @@ const happyLinks=(await readShared('happy-links.js')).replace(LAB?'if(!root.fetc
 const iconStudioBridge=await read('src/icon-studio-bridge.js');
 const setPlan=await read('src/set-plan.js'),freeTimerJs=await read('src/free-timer.js');
 const quickValueInput=await read('src/quick-value-input.js'),restPill=await read('src/rest-pill.js');
-// Кнопки соседей ведут на постоянные адреса /happyamurio/day/ и /happyamurio/meal/ (16.11.2026): номера выпусков Day и Meal
+// Кнопки соседей ведут на постоянные адреса ../day/ и ../meal/ (16.11.2026; относительные с 25.11.2026): номера выпусков Day и Meal
 // в страницу не вшиваются, после их выпуска Sport пересобирать не нужно. Текущую папку подставляет shared/happy-links.js.
 const refinements=refinementsSource;
 const exerciseConfig=await read('src/exercise-config.js'),exercisePlayer=await read('src/exercise-player.js'),experienceCss=await read('src/exercise-experience.css'),timerPrototypeCss=await read('src/timer-prototype.css');
@@ -113,7 +114,7 @@ const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappi
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 45.7'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 45.8'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
@@ -138,7 +139,7 @@ const cardPages=exerciseLibrary.cards.map(c=>{const family=exerciseLibrary.famil
 for(const family of [...exerciseLibrary.families.filter(f=>f.page),...cardPages]){
   const source=await read('src/exercises/'+family.page+'.html');
   if(!source.includes('__EXERCISE_FAMILY__')||!source.includes('__EXERCISE_MEDIA__'))throw new Error('Exercise page has no places for family data: '+family.page);
-  const pageBase=(LAB?'../assets/':'/happyamurio/assets/')+'exercise-media/'+EXERCISE_MEDIA_VERSION+'/',media={};
+  const pageBase=(LAB?'../assets/':'../../assets/')+'exercise-media/'+EXERCISE_MEDIA_VERSION+'/',media={};
   for(const v of family.variants){const item=exerciseMediaItems[v.exerciseId];if(item?.frames)media[v.exerciseId]={frames:Object.fromEntries(Object.entries(item.frames).map(([k,path])=>[k,pageBase+path]))}}
   const inline=value=>JSON.stringify(value).replaceAll('</','<\\/');
   // The page shows the full name of the chosen variant when it is opened on its own.

@@ -5,7 +5,8 @@
    Подключение: Meal 26, Day 54, Sport 38.5 (09.11.2026). */
 (function(root){
   'use strict';
-  var BASE='/happyamurio/';
+  // Корень сайта: /happyamurio/ на github.io (и на локальном сервере проверок), / на собственном домене amurio.app (25.11.2026).
+  var BASE=root.location&&/^\/happyamurio\//.test(root.location.pathname)?'/happyamurio/':'/';
   function dir(entry){return String(entry||'').split('/')[0]}
   function apply(apps){
     if(!root.document||!apps)return 0;var n=0;

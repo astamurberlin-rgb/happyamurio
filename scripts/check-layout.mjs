@@ -58,7 +58,7 @@ if(apps.day.links?.meal===false){
 {// Update 38.4: Sport's linked-app buttons point at the current Day and Meal release directories and open a new window.
  // Update 38.5: static hrefs are the build-time fallback (must name existing release directories); the live address comes from apps.json via shared/happy-links.js.
  const sportPage=await read(apps.sport.entry);
- for(const app of ['day','meal']){const m=sportPage.match(new RegExp(`href="/happyamurio/([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'sport: '+app+' link carries data-happy-app');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'sport: '+app+' fallback link names an existing release');}
+ for(const app of ['day','meal']){const m=sportPage.match(new RegExp(`href="\\.\\./([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'sport: '+app+' link carries data-happy-app');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'sport: '+app+' fallback link names an existing release');}
  assert.ok(sportPage.includes('HappyLinks'),'sport: happy-links module embedded');}
 assert.ok((await read(apps.meal.previous.entry)).includes(`data-app-version="${apps.meal.previous.version}"`));
 assert.notEqual(apps.meal.entry,apps.meal.previous.entry);

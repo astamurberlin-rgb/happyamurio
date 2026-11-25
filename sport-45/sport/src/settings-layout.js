@@ -12,7 +12,7 @@ const SPORT_DEV_FLAG='sport-settings-developer-v1';
 let sportDevVisible=(()=>{try{return sessionStorage.getItem(SPORT_DEV_FLAG)==='1'}catch{return false}})();
 function sportDevToggle(on){sportDevVisible=on;try{if(on)sessionStorage.setItem(SPORT_DEV_FLAG,'1');else sessionStorage.removeItem(SPORT_DEV_FLAG)}catch{}}
 const sportLayoutProfile=renderProfile;
-// Кнопки Happy Day и Happy Meal: в разметке постоянные адреса (/happyamurio/day/, /happyamurio/meal/). После отрисовки
+// Кнопки Happy Day и Happy Meal: в разметке постоянные адреса (../day/, ../meal/). После отрисовки
 // настроек общий файл shared/happy-links.js подставляет папку текущего выпуска из shared/apps.json — кнопка открывает
 // приложение сразу, без страницы-перехода. Нет сети — остаётся постоянный адрес. (16.11.2026)
 let sportNeighborApps=null;
