@@ -108,6 +108,8 @@ const sheetRules=await read('src/sheet-rules.js');
 const appearanceCarousels=await read('src/appearance-carousels.js'),appearanceCarouselsCss=await read('src/appearance-carousels.css');
 // Аудит единообразия 18.11.2026: удаление — свайп влево, «Удалить» внизу карточки, свои тренировки в Настройках.
 const deleteRules=await read('src/delete-rules.js');
+// Проход по Sport под дизайн-систему (25.11.2026): слой стилей и поведения — последним.
+const designPass=await read('src/design-pass.js'),designPassCss=await read('src/design-pass.css');
 // Аудит единообразия 18.11.2026: большой таймер — из настроек упражнения, круги = подходы, «Сохранить» отмечает подходы.
 const timerRules=await read('src/timer-rules.js');
 const setLine=await read('src/set-line.js'),setLineCss=await read('src/set-line.css');
@@ -126,10 +128,10 @@ try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:tru
 const labBar='';
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
-  .replace('</style>',()=>colorsCss+css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+drumCss+periodCss+designRulesCss+appearanceCarouselsCss+'\n</style>')
+  .replace('</style>',()=>colorsCss+css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+drumCss+periodCss+designRulesCss+appearanceCarouselsCss+designPassCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,drumJs,periodJs,scrollLockJs,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,sportSample,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules,appearanceCarousels].join('\n'))
+  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,drumJs,periodJs,scrollLockJs,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,sportSample,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules,appearanceCarousels,designPass].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 // Всё собранное: путь внутри папки выпуска → текст.
 const files=new Map([['index.html',html]]);

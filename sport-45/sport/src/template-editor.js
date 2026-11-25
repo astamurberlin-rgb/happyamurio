@@ -9,7 +9,7 @@
  * Свайп — тот же, что у подходов в идущей тренировке (set-swipe.js). Этот файл грузится после audit-simplify.js. */
 
 function templateEditorSwipe(kind,label,deleteAttrs,content){
- return `<div class="set-swipe editor-swipe" data-swipe-kind="${kind}" tabindex="0" role="group" aria-label="${esc(label)}. Свайп влево — удалить" aria-keyshortcuts="Delete"><button type="button" class="swipe-delete" ${deleteAttrs} aria-label="Удалить: ${esc(label)}">${icon('trash')}<span>Удалить</span></button><div class="swipe-content">${content}</div></div>`;
+ return `<div class="set-swipe editor-swipe" data-swipe-kind="${kind}" tabindex="0" role="group" aria-label="${esc(label)}. Свайп влево — удалить" aria-keyshortcuts="Delete"><button type="button" class="swipe-delete" ${deleteAttrs} aria-label="Удалить: ${esc(label)}">${icon('trash')}<span>Убрать</span></button><div class="swipe-content">${content}</div></div>`;
 }
 
 templateItemRow=function(item=['','main',1]){

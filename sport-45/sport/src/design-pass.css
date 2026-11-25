@@ -1,0 +1,71 @@
+
+/* Проход по Sport под дизайн-систему (лаборатория 25.11.2026). Слой стоит последним среди стилей Sport.
+   Правила — design-system/README.md и страница А·Б; здесь закрыт список «ждёт прохода по Sport» (§10).
+   — Claude · 25.11.2026 */
+
+/* Нижнее меню: значок 21, линия 1,9; невыбранные — цвет меню по имени, выбранная — цвет выбранной вкладки */
+.dock .tab{color:var(--happy-dock-ink)}
+.dock .tab.on{color:var(--happy-dock-accent)}
+.dock .tab svg{width:21px;height:21px;stroke-width:1.9}
+
+/* Кнопка микрофона: пока открыт лист — крестик 26 (плюс, повёрнутый на 45°), нажатие закрывает лист; как в Meal */
+#sport-fab{transition:transform .22s cubic-bezier(.2,.7,.3,1)}
+#sport-fab svg.fab-close{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
+body.sport-fab-x #sport-fab{transform:translate(-50%,-50%) rotate(45deg)!important}
+
+/* Пилюля даты в шапке: 36, стекло и рамка как у Day и Meal, значок 17 */
+.top .date-pill{min-height:36px!important;height:36px!important;padding:0 16px!important;gap:8px;font-size:14px!important;font-weight:600!important;
+  border-radius:999px!important;background:var(--happy-glass)!important;border:1px solid var(--happy-line)!important;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.top .date-pill svg{width:17px!important;height:17px!important;flex:0 0 17px!important;stroke-width:1.9!important}
+
+/* Поиск: 48, скругление 12, фон 16 %, рамка 34 %, подсказка 62 % */
+.library-search{height:48px;min-height:48px;border-radius:12px!important;background:var(--happy-glass)!important;border:1px solid var(--happy-line)!important}
+.library-search input::placeholder{color:rgba(255,255,255,.62)}
+/* Кнопка фильтра 48: выключена — стекло кнопки-значка (фон 9 %, рамка 38 %), включена — белая, значок цвета приложения */
+.library-filter-toggle{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.38)!important}
+.library-filter-toggle[aria-expanded="true"]{background:#fff!important;color:var(--happy-accent-ink)!important}
+
+/* Выпадающие списки фильтров (вариант А): как поле ввода — 48, скругление 12, фон 16 %, рамка 34 %, текст 16 · 400 */
+.library-filters select,.library-sport select,.library-muscle select{height:48px!important;min-height:48px!important;padding:0 40px 0 14px!important;
+  border-radius:12px!important;background-color:var(--happy-glass)!important;border:1px solid var(--happy-line)!important;
+  font-size:16px!important;font-weight:400!important}
+
+/* Строка списка с картинкой: упражнения — как тренировки на главной: 72, скругление 24, поля 15/18, картинка 52, промежуток 15,
+   название 16 · 700, подпись 14 · 400 белый 72 % */
+.exercise-card{min-height:72px;padding:15px 18px!important;gap:15px!important;border-radius:24px!important;align-items:center}
+.exercise-card>.sport-thumbnail,.exercise-card>.placeholder{flex:0 0 52px;width:52px!important;height:52px!important}
+.exercise-card>.sport-thumbnail img,.exercise-card>.placeholder img{width:52px!important;height:52px!important}
+.exercise-card h3{font-size:16px!important;font-weight:700!important;margin:0}
+.exercise-card small{font-size:14px!important;font-weight:400!important;color:var(--happy-muted)!important;margin-top:2px}
+
+/* Лист упражнения: заголовок листа 20 · 700 */
+.exercise-context-title{font-size:20px!important;font-weight:700!important;line-height:25px!important}
+/* Звезда и «…» — круг 44, значок 22 */
+.favorite-star{flex:0 0 44px!important;width:44px!important;height:44px!important}
+.favorite-star svg{width:22px!important;height:22px!important}
+
+/* «+ Замер» — кнопка внутри приложения: 14 · 600 */
+.hm-button,.hm-output .hm-button{font-size:14px!important;font-weight:600!important}
+
+/* Лист «Новый счётчик»: поля как поле ввода — 48, фон 16 %, рамка 34 %, поля 14, текст 16 · 400 */
+#sport-food-create input{height:48px!important;min-height:48px!important;padding:0 14px!important;border-radius:12px!important;
+  background:var(--happy-glass)!important;border:1px solid var(--happy-line)!important;font-size:16px!important;font-weight:400!important}
+#sport-food-create input::placeholder{color:rgba(255,255,255,.62)}
+
+/* Текстовая кнопка «Редактировать» (вариант А): значок 18 */
+.training-heading .text-btn svg,.training-heading .text-btn .icon{width:18px!important;height:18px!important}
+
+/* Смахивание для удаления: справа красная пилюля «Убрать» 44, --happy-danger, 14 · 700; удаляет само смахивание
+   дальше 35 % ширины (не меньше 90). Ширина пилюли растёт за пальцем (design-pass.js). */
+.swipe-delete,.exercise-name-delete{top:50%!important;bottom:auto!important;height:44px!important;min-height:44px!important;max-height:44px!important;
+  margin-top:-22px!important;padding:0!important;width:90px;overflow:hidden;white-space:nowrap;flex-direction:row!important;gap:0!important;
+  border:0!important;border-radius:999px!important;background:var(--happy-danger)!important;color:var(--happy-ink)!important;
+  font-size:14px!important;font-weight:700!important}
+.swipe-delete>span,.exercise-name-delete>span{opacity:var(--so,1)}
+.set-swipe,.row-swipe,.exercise-name-swipe{--so:1}
+.swipe-dragging .swipe-content,.swipe-dragging>.exercise-card-heading{transition:none!important}
+.sport-swipe-back .swipe-content,.sport-swipe-back>.exercise-card-heading{transition:transform .2s ease!important}
+.sport-swipe-away .swipe-content,.sport-swipe-away>.exercise-card-heading{transition:transform .18s ease!important}
+/* счётчики на главной: «Убрать» — та же пилюля 44, а не плашка 14 × 40 */
+#sport-food-counters .tpItem::before{top:50%!important;bottom:auto!important;height:44px;margin-top:-22px;border-radius:999px!important}

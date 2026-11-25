@@ -30,18 +30,18 @@ window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="de
    Рекомендуемые — примеры, их не удаляют. */
 {const libraryTemplateRowBeforeDelete=libraryTemplateRow;
  libraryTemplateRow=function(t){const row=libraryTemplateRowBeforeDelete(t);if(t.recommended)return row;
-  return `<div class="row-swipe template-swipe" data-id="${esc(t.id)}"><button type="button" class="swipe-delete" data-action="delete-template" data-id="${esc(t.id)}" aria-label="Удалить тренировку ${esc(t.title)}" tabindex="-1">${icon('trash')}<span>Удалить</span></button><div class="swipe-content">${row}</div></div>`;};}
+  return `<div class="row-swipe template-swipe" data-id="${esc(t.id)}"><button type="button" class="swipe-delete" data-action="delete-template" data-id="${esc(t.id)}" aria-label="Удалить тренировку ${esc(t.title)}" tabindex="-1">${icon('trash')}<span>Убрать</span></button><div class="swipe-content">${row}</div></div>`;};}
 
 /* Настройки → «Мои тренировки»: список своих тренировок, удаление свайпом влево. */
 function settingsTemplatesMarkup(){
   const list=templates().filter(t=>!t.recommended);if(!list.length)return '';
-  return `<div class="settings-section">Мои тренировки</div><div class="happy-card settings-templates">${list.map(t=>`<div class="row-swipe" data-id="${esc(t.id)}"><button type="button" class="swipe-delete" data-action="delete-template" data-id="${esc(t.id)}" aria-label="Удалить тренировку ${esc(t.title)}" tabindex="-1">${icon('trash')}<span>Удалить</span></button><div class="swipe-content"><button type="button" class="settings-template-row" data-action="preview-template" data-id="${esc(t.id)}">${esc(t.title)}</button></div></div>`).join('')}</div><p class="fineprint settings-templates-hint">Свайп влево — удалить.</p>`;
+  return `<div class="settings-section">Мои тренировки</div><div class="happy-card settings-templates">${list.map(t=>`<div class="row-swipe" data-id="${esc(t.id)}"><button type="button" class="swipe-delete" data-action="delete-template" data-id="${esc(t.id)}" aria-label="Удалить тренировку ${esc(t.title)}" tabindex="-1">${icon('trash')}<span>Убрать</span></button><div class="swipe-content"><button type="button" class="settings-template-row" data-action="preview-template" data-id="${esc(t.id)}">${esc(t.title)}</button></div></div>`).join('')}</div><p class="fineprint settings-templates-hint">Свайп влево — удалить.</p>`;
 }
 /* Группы упражнений — только в Настройках: «Создать → Группу упражнений» открывает форму сразу; «Мои группы» —
    свои группы списком: нажать — изменить (внизу красная «Удалить»), свайп влево — удалить. */
 function settingsGroupsMarkup(){
   const list=exerciseGroups().filter(g=>g.type==='user');if(!list.length)return '';
-  return `<div class="settings-section">Мои группы</div><div class="happy-card settings-templates settings-groups">${list.map(g=>`<div class="row-swipe" data-id="${esc(g.id)}"><button type="button" class="swipe-delete" data-action="settings-delete-group" data-id="${esc(g.id)}" aria-label="Удалить группу ${esc(groupPath(g.id))}" tabindex="-1">${icon('trash')}<span>Удалить</span></button><div class="swipe-content"><button type="button" class="settings-template-row" data-action="settings-edit-group" data-id="${esc(g.id)}">${esc(groupPath(g.id))}</button></div></div>`).join('')}</div>`;
+  return `<div class="settings-section">Мои группы</div><div class="happy-card settings-templates settings-groups">${list.map(g=>`<div class="row-swipe" data-id="${esc(g.id)}"><button type="button" class="swipe-delete" data-action="settings-delete-group" data-id="${esc(g.id)}" aria-label="Удалить группу ${esc(groupPath(g.id))}" tabindex="-1">${icon('trash')}<span>Убрать</span></button><div class="swipe-content"><button type="button" class="settings-template-row" data-action="settings-edit-group" data-id="${esc(g.id)}">${esc(groupPath(g.id))}</button></div></div>`).join('')}</div>`;
 }
 function settingsGroupForm(id){editGroup(id||undefined);const form=$('#group-form');if(form)form.dataset.from='settings';}
 function deleteGroupWithUndo(id){
