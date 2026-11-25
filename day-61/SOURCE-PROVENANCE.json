@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1881150,
-   "sha256": "390f56a595b456ebf87164419409fb0684e2427bef3b94cd6c119cb13e7a5dae"
+   "size": 1884618,
+   "sha256": "ddea5dbc71bb2fd74107c549eeee77150273bd1ab7796b086c6d2474fe192537"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -206,8 +206,8 @@
   },
   {
    "path": "index.html",
-   "size": 535670,
-   "sha256": "fc2d4e47378863b3b8542fbedec4fa7cc2142cf35138f0c649a8725e273b68bb"
+   "size": 535425,
+   "sha256": "d712b4b8484111f87dcb544009cc1b2ad2ebd5e655e330d78f3424e51ee43dbb"
   },
   {
    "path": "manifest.webmanifest",
@@ -216,8 +216,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 59802,
-   "sha256": "b137674b28e86522cb13964e731c3f192008e831db9949f1de41359c8eceeca3"
+   "size": 60531,
+   "sha256": "46bb831fdf2313bdc96f807b5c8a08606afa2308d1d2edf3fe452a28bcf7c662"
   },
   {
    "path": "row-swipe.js",
@@ -236,13 +236,13 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 79514,
-   "sha256": "4e0fdd492c77fcf7454cfe8b90a7d3d2ce9964a1eac1453596b46da7c2be8da8"
+   "size": 79482,
+   "sha256": "df2c90c3feb767f948093b9fbab4bec6a5f8afda964b517cdbc024b2e1b0d36e"
   },
   {
    "path": "selfcare.css",
-   "size": 24216,
-   "sha256": "5990acc137ef235a5d643e40fe71212c94fa0c96546a1abd187d2fc5bbfd361b"
+   "size": 25045,
+   "sha256": "e28184eee28165c8d3903b0f77ecc27f49b86f932085a13d583ce6e9826f9ccd"
   },
   {
    "path": "shared/apps.json",
@@ -341,8 +341,8 @@
   },
   {
    "path": "shared/happy-links.js",
-   "size": 1850,
-   "sha256": "4b85d0f744bb3bf5590c01943f743ccc04d671386a621ede79076cf36cf1bad4"
+   "size": 2294,
+   "sha256": "c27b4f01b2d760b38d8ce4a3fc38474e906d13a95e104d2d3377108f6339a78a"
   },
   {
    "path": "shared/happy-measurements.css",
@@ -446,8 +446,8 @@
   },
   {
    "path": "sheet-fold.js",
-   "size": 7057,
-   "sha256": "1fcfaad1c11295a114403efa7eb771ad4f83b55d3008d84e2d452deaabce5903"
+   "size": 8080,
+   "sha256": "109c404e563699d99c51fb6302fa175ca9d908154fa9b0358c455e1b5cf3fe02"
   },
   {
    "path": "sheet-grip.js",
@@ -501,8 +501,8 @@
   },
   {
    "path": "tests/sport-summary.test.cjs",
-   "size": 13860,
-   "sha256": "869a526b071c1765e4d47b75c0ccc0faabd88909ff240e23e266acea22e0fe3e"
+   "size": 13771,
+   "sha256": "454785294137c8d51cdf3e43db60e87e989ad6b92623dd3ba0e0d2673fdf1dc4"
   },
   {
    "path": "tests/standalone.test.cjs",
