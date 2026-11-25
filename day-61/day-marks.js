@@ -1,7 +1,7 @@
 /* Happy Day · связки «Настроить отметки» (лаборатория 22.11.2026, логика настроек — /mnt/project-files/day-periods/logika-nastroek-day.md):
  * 1) строка «Настроить отметки» под «Настроить цели» в карточке аккаунта (верх рисует общий shared/happy-person.js —
  *    строка вставляется со стороны Day, общий файл не меняется);
- * 2) счётчики обоих видов живут только на главной: «Настроить» в листе нажатий, название счётчика времени открывает
+ * 2) счётчики обоих видов живут только на главной: название в листе нажатий (тапом), название счётчика времени открывает
  *    его настройку, «Новый счётчик времени» под счётчиками;
  * 3) после «Сохранить» в целях — «Подобрать отметки»: мастер по шагам, только добавляет шкалы, ничего не убирает;
  * Переключатель лаборатории «вариант окна шкалы» стоит в самом окне шкалы (index.html, scGoodHtml).
@@ -75,16 +75,8 @@ if(cnt){
   add.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Новый счётчик времени';
   add.addEventListener('click',newCounter); cnt.insertAdjacentElement('afterend',add);
 }
-var tapSheet=document.getElementById('tapSheet');
-if(tapSheet){
-  new MutationObserver(function(){
-    var row=tapSheet.querySelector('.askRow'); if(!row||row.querySelector('[data-tcfg]')) return;
-    var b=document.createElement('button'); b.className='btn'; b.dataset.tcfg='1'; b.textContent='Настроить'; row.insertBefore(b,row.firstChild);
-  }).observe(tapSheet,{childList:true});
-  tapSheet.addEventListener('click',function(ev){
-    if(!ev.target.closest('[data-tcfg]')) return; var k=TAPK; closeTaps(); counterSheet('tap',k);
-  });
-}
+/* «Настроить» в листе нажатий убран (Астамур 25.11.2026): название меняется тапом по названию в самом листе (index.html,
+   renderTapSheet), прибавляем всегда по одному. counterSheet('tap',…) больше не открывается. */
 
 /* ── 3. мастер «Подобрать отметки» после целей ── */
 var TOPIC_SCALES={'Стресс':['anx'],'Сон':['wakeup','sleepy'],'Энергия':['energy'],'Настроение':['drive'],'Движение':['energy'],'Экранное время':['focus']};

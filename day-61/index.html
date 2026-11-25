@@ -340,9 +340,15 @@ textarea{width:100%;min-height:76px;resize:vertical}
 #tapSheet{max-height:80vh;overflow-y:auto}
 .tpRow{display:flex;align-items:center;gap:12px;padding:8px 0}
 .tpRow + .tpRow{border-top:1px solid rgba(255,255,255,.28)}
-.tpTime{position:relative;display:inline-grid;place-items:center;min-width:86px;height:40px;padding:0 14px;border-radius:12px;
+/* Астамур 25.11.2026: время в листе счётчика — пилюля 44 (исключение из «поле даты 48 / 12») */
+.tpTime{position:relative;display:inline-grid;place-items:center;min-width:96px;height:44px;padding:0 18px;border-radius:999px;
   border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.18);font-size:16px;font-weight:700;
   font-variant-numeric:tabular-nums}
+.tpTitle{min-height:34px;display:flex;align-items:center}
+.tpName{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin:-5px 0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.tpName svg{flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.6}
+.tpNameIn{display:block;width:100%;min-height:44px;margin:-5px 0;padding:0;border:0;border-bottom:1px solid rgba(255,255,255,.55);border-radius:0;outline:0;background:none;
+  color:#fff;caret-color:#fff;font:inherit;font-size:20px;font-weight:700;-webkit-appearance:none;appearance:none}
 .tpTime.tpNo b{color:rgba(255,255,255,.6);font-weight:600}
 .tpTime input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;
   -webkit-appearance:none;appearance:none;font-size:16px}
@@ -2398,7 +2404,7 @@ function tapDef(k){ return DB.taps.filter(function(c){return c.k===k})[0] }
 function tapTotal(e,k){ var a=((e&&e.taps)||{})[k]; return a?a.reduce(function(s,x){return s+(x.n||1)},0):0 }
 function tapsHTML(e){
   return '<div class="card tpSec"><h2 class="tpT">Счётчики</h2>'+DB.taps.filter(function(c){ return !(c.mealCounterId&&typeof DayAppLinks!=='undefined'&&!DayAppLinks.on('meal')) }).map(function(c){   // Day 58: связь с Meal выключена — его счётчиков нет
-    var n=tapTotal(e,c.k), st=c.step||1;
+    var n=tapTotal(e,c.k), st=1;   // Астамур 25.11.2026: прибавляем всегда по одному, шаг не настраивается
     return '<div class="tpItem"><button class="tpNm" data-tlist="'+escH(c.k)+'" aria-label="'+escH(c.t)+': нажатия за день">'+escH(c.t)+'</button>'+
       '<div class="tpStp"><button data-tminus="'+escH(c.k)+'" aria-label="Снять последнее нажатие">−</button>'+
       '<span class="v'+(n?'':' tpZero')+'">'+n+'</span>'+
@@ -2409,7 +2415,7 @@ function tapAdd(k){
   if(lockGuard()) return;
   var c=tapDef(k); if(!c) return;
   var e=day(curDate); if(!e.taps) e.taps={}; if(!e.taps[k]) e.taps[k]=[];
-  var now=curDate===todayISO(), rec={t:now?nowHM():null, n:c.step||1};
+  var now=curDate===todayISO(), rec={t:now?nowHM():null, n:1};
   e.taps[k].push(rec);
   save(); renderDay(); renderTapSheet();
   toast(c.t+' +'+rec.n+(now?' в '+rec.t:', без времени'));
@@ -2441,16 +2447,31 @@ document.getElementById('tapBox').addEventListener('click',function(ev){
 });
 
 /* список нажатий за день — шторка снизу, как у загрузки отчётов */
-var TAPK=null;
+var TAPK=null, TAPREN=false;   /* TAPREN: название открыто для правки (Астамур 25.11.2026: переименовать — тапом по названию, без второго экрана) */
 function openTaps(k){
   TAPK=k; renderTapSheet();
   document.getElementById('tapWrap').classList.add('on');
   document.body.classList.add('sheet');
 }
 function closeTaps(){
-  TAPK=null;
+  if(TAPREN) tapRenameDone();
+  TAPK=null; TAPREN=false;
   document.getElementById('tapWrap').classList.remove('on');
   document.body.classList.remove('sheet');
+}
+/* новое название: Enter, уход из поля или закрытие листа — записано; пустое или занятое — остаётся прежнее */
+function tapNameBtn(c){
+  return '<button type="button" class="tpName" data-tren aria-label="Переименовать: '+escH(c.t)+'">'+escH(c.t)+
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4"/></svg></button>';
+}
+function tapRenameDone(){
+  var f=document.querySelector('#tapSheet .tpNameIn'); TAPREN=false;
+  var c=TAPK&&tapDef(TAPK); if(!f||!c) return;
+  var t=f.value.trim(), i=DB.taps.indexOf(c);
+  if(t&&t!==c.t){
+    if(nameTaken(DB.taps,t,i)) dupWarn(t);
+    else{ c.t=t; save(); renderDay(); try{ renderLinks() }catch(_){} }
+  }
 }
 function renderTapSheet(){
   if(!TAPK) return;
@@ -2464,7 +2485,8 @@ function renderTapSheet(){
   });
   /* аудит 20.11.2026: сверху ручка (п. 14, 16); лишнее снимается свайпом влево, кружка «−» нет (п. 27) */
   var h='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>'+
-    '<h3>'+escH(c.t)+'</h3><p class="note" style="margin:-10px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
+    (TAPREN&&!lock?'<h3 class="tpTitle"><input class="tpNameIn" value="'+escH(c.t)+'" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Название счётчика"></h3>':
+     '<h3 class="tpTitle">'+(lock?escH(c.t):tapNameBtn(c))+'</h3>')+'<p class="note" style="margin:-10px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
     (lock?'. День закрыт.':'. Время можно поправить, лишнее — смахнуть влево.')+'</p>';
   h+=a.length?a.map(function(o){
     return '<div class="tpRow swRow"><span class="tpTime'+(o.x.t?'':' tpNo')+'"><b>'+(o.x.t||'—:—')+'</b>'+
@@ -2483,6 +2505,8 @@ function renderTapSheet(){
     var inp=ev.target.closest('input[type=time]');
     if(inp){ if(!inp.disabled&&inp.showPicker) try{inp.showPicker()}catch(_){} return }
     var b=ev.target.closest('button'); if(!b) return;
+    if(b.hasAttribute('data-tren')){ if(lockGuard()) return; TAPREN=true; renderTapSheet();
+      var f=sh.querySelector('.tpNameIn'); if(f){ try{ f.focus({preventScroll:true}); f.setSelectionRange(f.value.length,f.value.length) }catch(_){} } return }
     if(b.hasAttribute('data-tclose')) closeTaps();
     else if(b.dataset.tdel!=null){
       if(lockGuard()) return;
@@ -2495,6 +2519,17 @@ function renderTapSheet(){
         list.splice(Math.min(j,list.length),0,rec); save(); renderDay(); renderTapSheet();
       },'Вернуть',5000);
     }
+  });
+  sh.addEventListener('keydown',function(ev){
+    if(ev.key==='Enter'&&ev.target.classList.contains('tpNameIn')){ ev.preventDefault(); ev.target.blur() }
+    else if(ev.key==='Escape'&&ev.target.classList.contains('tpNameIn')){ var c=tapDef(TAPK); if(c) ev.target.value=c.t; ev.target.blur() }
+  });
+  sh.addEventListener('focusout',function(ev){
+    if(!ev.target.classList.contains('tpNameIn')||!TAPREN) return;
+    tapRenameDone();
+    /* меняем только заголовок: полная перерисовка листа съела бы нажатие на «Готово», которое и увело фокус */
+    var c=TAPK&&tapDef(TAPK), h=ev.target.closest('.tpTitle'); if(!c||!h) return;
+    h.innerHTML=tapNameBtn(c);
   });
   sh.addEventListener('change',function(ev){
     var t=ev.target; if(t.dataset.tedit==null) return;
