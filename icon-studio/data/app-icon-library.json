@@ -142,6 +142,38 @@
           "role": "reference",
           "type": "image/png",
           "size": 1136797
+        },
+        {
+          "id": "day-glass-20261125",
+          "name": "Версия 5 · Белое матовое стекло.png",
+          "src": "./assets/app-icons/day/glass-20261125/04_glass_vplotnuyu_1024.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 705588
+        },
+        {
+          "id": "day-glass-bg-20261125",
+          "name": "Стекло · фон 1024.png",
+          "src": "./assets/app-icons/day/glass-20261125/01_background_1024.png",
+          "role": "background",
+          "type": "image/png",
+          "size": 395885
+        },
+        {
+          "id": "day-glass-fg-20261125",
+          "name": "Стекло · белый силуэт 1024.png",
+          "src": "./assets/app-icons/day/glass-20261125/02_silhouette_white_1024.png",
+          "role": "foreground",
+          "type": "image/png",
+          "size": 33406
+        },
+        {
+          "id": "day-glass-guide-20261125",
+          "name": "Стекло · настройки и как повторить.md",
+          "src": "./assets/app-icons/day/glass-20261125/README_RU.md",
+          "role": "document",
+          "type": "text/markdown",
+          "size": 4157
         }
       ],
       "revision": 4,
@@ -170,6 +202,11 @@
           "id": "day-v4-original-2026-10-31",
           "version": 4,
           "title": "Оригинал · Крупный план"
+        },
+        {
+          "id": "day-glass-20261125",
+          "version": 5,
+          "title": "Оригинал · белое матовое стекло"
         }
       ]
     },
@@ -378,6 +415,118 @@
           "role": "document",
           "type": "application/zip",
           "size": 5891664
+        },
+        {
+          "id": "meal-banana-glass-20261125",
+          "name": "Банан · белое матовое стекло «вплотную» 1024.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/04_glass_vplotnuyu_1024.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 660236
+        },
+        {
+          "id": "meal-banana-source-20261125",
+          "name": "Банан · исходная картинка Астамура.jpg",
+          "src": "assets/app-icons/meal/banana-glass-20261125/00_source_from_astamur.jpg",
+          "role": "reference",
+          "type": "image/jpeg",
+          "size": 54633
+        },
+        {
+          "id": "meal-banana-bg-20261125",
+          "name": "Банан · фон 1024.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/01_background_1024.png",
+          "role": "background",
+          "type": "image/png",
+          "size": 188181
+        },
+        {
+          "id": "meal-banana-fg-20261125",
+          "name": "Банан · белый силуэт 1024.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/02_silhouette_white_1024.png",
+          "role": "foreground",
+          "type": "image/png",
+          "size": 22786
+        },
+        {
+          "id": "meal-banana-flat-20261125",
+          "name": "Банан · плоская без стекла 1024.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/03_flat_white_1024.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 146540
+        },
+        {
+          "id": "meal-banana-web-512-20261125",
+          "name": "Банан · значок для сайта 512.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/05_web_icon_512.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 152581
+        },
+        {
+          "id": "meal-banana-web-192-20261125",
+          "name": "Банан · значок для сайта 192.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/05_web_icon_192.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 25847
+        },
+        {
+          "id": "meal-banana-web-180-20261125",
+          "name": "Банан · значок для сайта 180.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/05_web_icon_180.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 23330
+        },
+        {
+          "id": "meal-banana-web-167-20261125",
+          "name": "Банан · значок для сайта 167.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/05_web_icon_167.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 20881
+        },
+        {
+          "id": "meal-banana-web-152-20261125",
+          "name": "Банан · значок для сайта 152.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/05_web_icon_152.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 17921
+        },
+        {
+          "id": "meal-banana-web-48-20261125",
+          "name": "Банан · значок для сайта 48.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/05_web_icon_48.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 3156
+        },
+        {
+          "id": "meal-banana-web-32-20261125",
+          "name": "Банан · значок для сайта 32.png",
+          "src": "assets/app-icons/meal/banana-glass-20261125/05_web_icon_32.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 1744
+        },
+        {
+          "id": "meal-banana-guide-20261125",
+          "name": "Банан · настройки стекла и как повторить.md",
+          "src": "assets/app-icons/meal/banana-glass-20261125/README_RU.md",
+          "role": "document",
+          "type": "text/markdown",
+          "size": 5227
+        },
+        {
+          "id": "meal-banana-code-20261125",
+          "name": "Банан · код стекла (scripts) и описание.zip",
+          "src": "assets/app-icons/meal/banana-glass-20261125/Happy_icon_glass_code.zip",
+          "role": "document",
+          "type": "application/zip",
+          "size": 13646
         }
       ],
       "revision": 3,
@@ -410,6 +559,11 @@
           "id": "meal-softserve-cool-20261102",
           "version": 5,
           "title": "Дэн с софти · бирюза и синий"
+        },
+        {
+          "id": "meal-banana-glass-20261125",
+          "version": 6,
+          "title": "Дэн с бананом · белое матовое стекло"
         }
       ]
     },
@@ -458,6 +612,42 @@
           "role": "document",
           "type": "application/zip",
           "size": 2201022
+        },
+        {
+          "id": "sport-glass-20261125",
+          "name": "Версия 2 · Белое матовое стекло.png",
+          "src": "./assets/app-icons/sport/glass-20261125/04_glass_vplotnuyu_1024.png",
+          "role": "reference",
+          "type": "image/png",
+          "size": 722618
+        },
+        {
+          "id": "sport-glass-fg-20261125",
+          "name": "Стекло · белый силуэт 1024.png",
+          "src": "./assets/app-icons/sport/glass-20261125/02_silhouette_white_1024.png",
+          "role": "foreground",
+          "type": "image/png",
+          "size": 61442
+        },
+        {
+          "id": "sport-glass-guide-20261125",
+          "name": "Стекло · настройки и как повторить.md",
+          "src": "./assets/app-icons/sport/glass-20261125/README_RU.md",
+          "role": "document",
+          "type": "text/markdown",
+          "size": 4278
+        }
+      ],
+      "variants": [
+        {
+          "id": "sport-approved",
+          "version": 1,
+          "title": "Денис со штангой"
+        },
+        {
+          "id": "sport-glass-20261125",
+          "version": 2,
+          "title": "Денис со штангой · белое матовое стекло"
         }
       ]
     },

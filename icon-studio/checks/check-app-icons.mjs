@@ -51,15 +51,21 @@ assert(initial.apps.studio.materials.some(file=>file.id==='studio-gradient-layer
 assert(initial.apps.studio.materials.some(file=>file.id==='studio-word-svg'&&file.data.startsWith('data:image/svg+xml;base64,')));
 assert(initial.apps.studio.materials.some(file=>file.id==='studio-pack'&&file.data.startsWith('data:application/zip;base64,')));
 assert.equal(initial.apps.day.masterId,'day-v4-original-2026-10-31');
+assert(first.grid.innerHTML.includes('data-variant-id="day-glass-20261125"'));
+for(const id of ['day-glass-bg-20261125','day-glass-fg-20261125','day-glass-guide-20261125']) assert(initial.apps.day.materials.some(file=>file.id===id));
 for(const id of ['day-approved-2026-10-29','day-v2-rear-2026-10-30','day-v3-cap-2026-10-30','day-v4-original-2026-10-31']){
   assert(initial.apps.day.materials.some(file=>file.id===id&&file.data.startsWith('data:image/png;base64,')));
   assert(first.grid.innerHTML.includes('data-variant-id="'+id+'"'));
 }
 assert.equal(initial.apps.sport.masterId,'sport-approved');
-assert.equal(initial.apps.sport.materials.length,5);
+assert.equal(initial.apps.sport.materials.length,8);
+for(const id of ['sport-approved','sport-glass-20261125']) assert(first.grid.innerHTML.includes('data-variant-id="'+id+'"'));
+assert(initial.apps.sport.materials.some(file=>file.id==='sport-glass-fg-20261125'&&file.data.startsWith('data:image/png;base64,')));
 assert(initial.apps.sport.materials.find(file=>file.id==='sport-guide').data.startsWith('data:text/markdown;base64,'));
 assert.equal(initial.apps.meal.masterId,'meal-spoon-cap-2026-10-31');
-assert.equal(initial.apps.meal.materials.length,25);
+assert.equal(initial.apps.meal.materials.length,39);
+assert(first.grid.innerHTML.includes('data-variant-id="meal-banana-glass-20261125"'));
+for(const id of ['meal-banana-bg-20261125','meal-banana-fg-20261125','meal-banana-flat-20261125','meal-banana-source-20261125','meal-banana-guide-20261125','meal-banana-code-20261125','meal-banana-web-180-20261125']) assert(initial.apps.meal.materials.some(file=>file.id===id));
 for(const id of ['meal-softserve-warm-20261102','meal-softserve-cool-20261102']) assert(first.grid.innerHTML.includes('data-variant-id="'+id+'"'));
 for(const id of ['meal-softserve-warm-bg-20261102','meal-softserve-cool-bg-20261102','meal-softserve-warm-fg-20261102','meal-softserve-cool-fg-20261102','meal-softserve-pack-20261102']) assert(initial.apps.meal.materials.some(file=>file.id===id));
 for(const id of ['meal-approved-2026-10-29','meal-dan-waist-2026-10-30','meal-spoon-cap-2026-10-31']) assert(first.grid.innerHTML.includes('data-variant-id=\"'+id+'\"'));

@@ -35,7 +35,7 @@
 | Файлы — прежний просмотр тех же документов | 1.7 | https://amurio.app/files/ | `files/` |
 | Дизайн-система — правила стиля и токены | 1.0 | https://amurio.app/design-system/ | `design-system/` |
 | Color Studio — палитры трёх приложений | 12.11 | https://amurio.app/prototypes/studio.html | `prototypes/` |
-| Icon Studio — иконки | 2.18 | https://amurio.app/icon-studio/ | `icon-studio/` |
+| Icon Studio — иконки | 2.19 | https://amurio.app/icon-studio/ | `icon-studio/` |
 | Студия дуг — дуга кольца энергии Day | 1.2 | https://amurio.app/prototypes/arc-studio/ | `prototypes/arc-studio/` |
 | Советы — какую модель ИИ брать под задачу | 1.0 | https://amurio.app/tips/ | `tips/` |
 

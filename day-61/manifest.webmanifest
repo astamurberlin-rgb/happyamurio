@@ -7,13 +7,13 @@
   "theme_color": "#56B9F7",
   "icons": [
     {
-      "src": "./app-icons/happy-day-20261031-v4-192.png",
+      "src": "./app-icons/happy-day-20261125-glass-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./app-icons/happy-day-20261031-v4-512.png",
+      "src": "./app-icons/happy-day-20261125-glass-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
