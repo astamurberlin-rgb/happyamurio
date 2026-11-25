@@ -1,12 +1,11 @@
 /* Day 61.7 (лаборатория): закрытие раздела — карточка уходит вниз под нижний край.
    Модель: главная — нижний лист, и она ВСЯ неподвижна. Экран раздела — карточка из колоды поверх: плотная, чуть светлее фона,
-   со светлой кромкой и круглым вырезом под кнопку. Вырез — часть карточки: в перспективе он сужается в овал и уезжает с ней,
-   кнопка главной видна только через него. Карточка держится за нижний край: верх приподнимается к зрителю, потом она
+   со светлой кромкой. На месте кнопки — её прозрачный «призрак» с толщиной (61.17; до этого был круглый вырез). Карточка держится за нижний край: верх приподнимается к зрителю, потом она
    опрокидывается вниз и уходит под нижний край. Прозрачной становится только в самом конце.
-   На карточке — transform и одна маска (вырез); кадры ведёт requestAnimationFrame, таймер-страховка в любом случае убирает все следы. */
+   На карточке — transform; кадры ведёт requestAnimationFrame, таймер-страховка в любом случае убирает все следы. */
 (function(){
   'use strict';
-  const PERSPECTIVE=2600,MAX_ANGLE=88,CLOSE_MS=520,BACK_MS=300;
+  const PERSPECTIVE=2600,MAX_ANGLE=88,CLOSE_MS=520,BACK_MS=300,THICK=16;
   const $=s=>document.querySelector(s);
   let st=null;
 
@@ -38,15 +37,24 @@
     const tint=document.createElement('div');
     tint.className='fold-tint';
     sheet.prepend(layer,tint);
-    /* вырез под кнопку — часть карточки: уезжает и сужается в овал вместе с ней; кнопка главной видна только через него */
-    const knob=day.querySelector('.nwSl:not(.side) .knob');
-    if(knob){
-      const q=knob.getBoundingClientRect(),R=q.width/2,cx=q.left+q.width/2,cy=q.top+q.height/2;
-      const mask='radial-gradient(circle at '+cx+'px '+cy+'px,transparent '+(R-.6)+'px,#000 '+R+'px)';
-      sheet.style.webkitMaskImage=mask;sheet.style.maskImage=mask;
+    /* 61.17: вместо выреза — «призрак» кнопки на самой карточке: прозрачная выпуклая форма без надписи. У неё есть толщина:
+       при наклоне верхняя грань съезжает по карточке вниз, и сверху открывается стенка. Кнопка главной под карточкой ждёт на месте. */
+    let ghost=null,side=null,R=0;
+    const home=day.querySelector('.nwSl:not(.side) .knob');
+    if(home){
+      const q=home.getBoundingClientRect(),cx=q.left+q.width/2,cy=q.top+q.height/2;let best=1e9;
+      sheet.querySelectorAll('.ringWrap .knob').forEach(k=>{const r=k.getBoundingClientRect();if(!r.width)return;
+        const d=Math.hypot(r.left+r.width/2-cx,r.top+r.height/2-cy);if(d<best){best=d;ghost=k}});
+    }
+    if(ghost){
+      R=ghost.offsetWidth/2;
+      side=document.createElement('i');side.className='fold-knob-side';
+      side.style.left=ghost.offsetLeft+'px';side.style.top=ghost.offsetTop+'px';
+      side.style.width=ghost.offsetWidth+'px';side.style.height=ghost.offsetHeight+'px';
+      side.style.setProperty('--r',R+'px');ghost.before(side);ghost.classList.add('fold-ghost');
     }
     document.body.classList.add('fold-on');
-    st={sheet,day,layer,tint,H:sheet.offsetHeight||innerHeight,p:0,raf:0,safety:0,closing:false};
+    st={sheet,day,layer,tint,ghost,side,R,H:sheet.offsetHeight||innerHeight,p:0,raf:0,safety:0,closing:false};
     apply(0);
     return st;
   }
@@ -59,6 +67,11 @@
     s.transform='translateY('+(-H/2)+'px) perspective('+PERSPECTIVE+'px) translateY('+(H/2)+'px) rotateX('+(-th)+'deg)';
     s.opacity=p<.62?'':String(clamp(1-(p-.62)/.34,0,1));   /* плотная почти две трети пути, дальше плавно гаснет */
     s.setProperty('--fold-dark',String(clamp(k*.5,0,.5)));   /* лёгкая чистая тень по мере наклона — без серого */
+    if(st.ghost){   /* толщина кнопки: верхняя грань на THICK точек выше карточки — на экране это сдвиг вниз по карточке */
+      const lift=Math.min(THICK*Math.tan(th*Math.PI/180),st.R*.9);
+      st.ghost.style.translate='0 '+lift.toFixed(2)+'px';
+      st.side.style.height=(st.R*2+lift).toFixed(2)+'px';st.side.style.setProperty('--lift',lift.toFixed(2)+'px');   /* стенка видна только между двумя окружностями: под верхней гранью она вырезана */
+    }
     const b=document.body.style;
     b.setProperty('--fold-in',String(clamp(p/.15,0,1)));   /* надпись кнопки главной проявляется на месте вместо «Нажми» */
     b.setProperty('--fold-card',String(clamp(p/.14,0,1)));   /* светлый тон и кромка карточки проступают в начале движения */
@@ -69,11 +82,13 @@
     const S=st;st=null;
     cancelAnimationFrame(S.raf);clearTimeout(S.safety);
     const s=S.sheet.style;
-    ['transform','opacity','backgroundColor','webkitMaskImage','maskImage'].forEach(k=>{s[k]=''});
+    ['transform','opacity','backgroundColor'].forEach(k=>{s[k]=''});
     s.removeProperty('--fold-top');s.removeProperty('--fold-dark');
     S.sheet.classList.remove('fold-sheet','fold-closing');
     S.day.classList.remove('fold-under');
     S.layer.remove();S.tint.remove();
+    if(S.ghost){S.ghost.classList.remove('fold-ghost');S.ghost.style.translate=''}
+    if(S.side)S.side.remove();
     document.body.classList.remove('fold-on');
     ['--fold-in','--fold-card'].forEach(k=>document.body.style.removeProperty(k));
   }
