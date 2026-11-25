@@ -477,7 +477,7 @@
   {
    "path": "index.html",
    "size": 719676,
-   "sha256": "a7bdd33fb5bbee3b806f78f9adc9b101e30e6868f6924f050ad9b453b063e73a"
+   "sha256": "65a6a3612b06ba5c3e0fa15ccac1de55b753be1374dfbcbb9a96dde0f4af7330"
   },
   {
    "path": "kfct.js",
@@ -701,8 +701,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 105324,
-   "sha256": "b2be995fd5e56b39b280ccd1aa0351fe2a513947eaa7b2984c6e427879787e40"
+   "size": 105691,
+   "sha256": "2991138abc2aafdc74eaf46777121d08a073f46af449a0ff204181fd3fb5fe01"
   },
   {
    "path": "report.css",
@@ -937,7 +937,7 @@
   {
    "path": "sw.js",
    "size": 3775,
-   "sha256": "97fd2b487de13d8231076284af1e8a6ac199301f770f03c1805c074d264262b4"
+   "sha256": "851696d202555fd5db7a9a4dcaf4017ef6296c8652d127c788097eed5084b9eb"
   },
   {
    "path": "tap-swipe.js",
