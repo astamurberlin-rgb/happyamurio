@@ -7,7 +7,7 @@
    Решения Астамура 17.11.2026: не спрашивать без крайней необходимости; своя мера человека — первой. — Claude · 17.11.2026 */
 var MealSpeech=(function(){
   var D=window.HappyMealSpeechData||null, active=false;
-  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, CHOICE=null, FACT=[], VAGUE=[];
+  var U2={}, MW=[], ALIASES=[], PROT=[], FM=[], COMP=[], UM=[], CARD={}, CARDRE=null, SPLIT=null, EATRE=null, DROP=null, APPROX=null, CORR=null, CORRM=null, CORRN=null, CHOICE=null, FACT=[], VAGUE=[];
   var CNT=null, MARK={0.5:'▽',1:'◇',1.5:'△'}, FMARK={1.5:'⊕',0.8:'⊘'};
   var B0='(^|[\\s,.;:!?(])', B1='(?=[\\s,.;:!?)]|$)';
   /* после «с»: «2 ложками мёда 200 г», «двумя столовыми ложками сметаны, всего 300 г» — ложки добавки и вес всего блюда в конце */
@@ -49,8 +49,8 @@ var MealSpeech=(function(){
     var cw=alt(Object.keys(CARD));
     if(N.count_words&&N.count_words.length) CNT=new RegExp('(^|\\s)(\\d+)\\s+(?=(?:'+N.count_words.join('|')+')(?=[\\s,.;!?]|$))','g');
     CARDRE=new RegExp('(^|[\\s,.;:!?(–-])((?:'+cw+')(?:[\\s-]+(?:'+cw+'))*)(?=[\\s,.;:!?)–-]|$)','g');
-    var drop=[], corr=[], approx=[], split=[], choice=[];
-    (D.fillers_and_operators||[]).forEach(function(e){ if(e.bot==='drop') drop=drop.concat(e.forms); if(e.bot==='correction') corr=corr.concat(e.forms); if(e.bot==='split') split=split.concat(e.forms); if(e.bot==='choice') choice=choice.concat(e.forms) });
+    var drop=[], corr=[], corrM=[], corrN=[], approx=[], split=[], choice=[];
+    (D.fillers_and_operators||[]).forEach(function(e){ if(e.bot==='drop') drop=drop.concat(e.forms); if(e.bot==='correction') corr=corr.concat(e.forms); if(e.bot==='correction_mid') corrM=corrM.concat(e.forms); if(e.bot==='correction_number') corrN=corrN.concat(e.forms); if(e.bot==='split') split=split.concat(e.forms); if(e.bot==='choice') choice=choice.concat(e.forms) });
     CHOICE=choice.length?phrase(choice):null;
     SPLIT=split.length?phrase(split):null;
     (D.approximation||[]).forEach(function(e){
@@ -61,7 +61,7 @@ var MealSpeech=(function(){
     (D.part_qualifiers||[]).forEach(function(e){ if(e.bot==='drop') drop=drop.concat(e.forms) });
     (D.qualitative_amounts||[]).forEach(function(e){ if(e.bot==='vague') VAGUE.push({forms:e.forms,mark:MARK[e.factor]||'◇'}) });
     EATRE=D.eaten_context&&D.eaten_context.verbs?phrase(D.eaten_context.verbs.filter(function(v){ return (D.eaten_context.meal_verbs||[]).indexOf(v)<0 })):null;   // «перекусил», «пообедал» остаются словами: по ним узнаётся приём пищи
-    DROP=phrase(drop); CORR=phrase(corr); APPROX=phrase(approx.filter(function(f){ return nz(f)!=='типа' }));
+    DROP=phrase(drop); CORR=phrase(corr); CORRM=corrM.length?phrase(corrM):null; CORRN=corrN.length?new RegExp(B0+'(?:'+alt(corrN)+')\\s+(?=\\d)','g'):null; APPROX=phrase(approx.filter(function(f){ return nz(f)!=='типа' }));
     /* меры Meal: общий вес и подписи — из словаря */
     if(typeof DEF!=='undefined') (D.measures||[]).forEach(function(m){ if(m.unit&&m.general!=null&&m.unit!=='шт') DEF[m.unit]=m.general });
     if(typeof UFORMS!=='undefined') Object.keys(D.unit_forms||{}).forEach(function(u){ if(!UFORMS[u]) UFORMS[u]=D.unit_forms[u] });
@@ -197,12 +197,28 @@ var MealSpeech=(function(){
       s=s.replace(new RegExp(B0+rx(k)+B1,'g'),function(m,a,off,str){ var v=NV.spoken_decimals[k]; return a+(NB&&NB.test(str.slice(off+m.length))?out(v/1000):v+' мл') }) });
     /* доли словами */
     s=s.replace(/(^|\s)три\s+четверти(?=\s)/g,'$1 0,75').replace(/(^|\s)две\s+трети(?=\s)/g,'$1 0,67');
+    s=s.replace(/(^|\s)(?:одн[ау]\s+)?пят(?:ую|ая)(?=\s)/g,'$1 0,2').replace(/(^|\s)две\s+пятых(?=\s)/g,'$1 0,4');   // «одну пятую пачки» (Т2, 25.11.2026)
     /* «одну треть стакана», «одна половина яблока» — одна доля, а не 1 + доля; «полторы тысячи» — 1500, «полтысячи» — 500 (хвосты разборов, 22.11.2026) */
     s=s.replace(/(^|\s)одн(?:а|у|ой)\s+(?=(?:треть|трети|четверть|четверти|половин[а-я]*)(?=\s))/g,'$1');
     s=s.replace(/(^|\s)полтор[аы]\s+тысяч[аи]?(?=\s)/g,'$1 1500').replace(/(^|\s)пол[\s-]?тысяч[аи]?(?=\s)/g,'$1 500');
     s=s.replace(/(^|\s)в(\s+(?:\d+|один|одну|два|две|три|четыре)\s+шот)/g,'$1с$2');   // «американо в два шота» — крепость, а не время «в два»
+    s=s.replace(/(^|\s)(я|сам|сама)\s+(?:одна|один|одни)(?=\s)/g,'$1$2');
+    s=s.replace(/(\S)\s+да\s+(?=(?:я|сам|сама)\s)/g,'$1 ');   // «съели, да я одна всё съела» — «да» не еда   // «я одна всё съела» — не число (Т3, 25.11.2026)
     s=s.replace(CARDRE,function(m,a,run,off){ if(/\sна\s*$/.test(s.slice(0,off)+a)&&/^пар/.test(run)) return m; return a+numberRun(run) });
     s=s.replace(/(\d+(?:,\d+)?)\s+с\s+половиной(?=\s)/g,function(m,n){ return out(num(n)+0.5) }).replace(/(\d+(?:,\d+)?)\s+с\s+четвертью(?=\s)/g,function(m,n){ return out(num(n)+0.25) });
+    /* числа-ловушки (разбор отчёта GPT, тема Т3, решение Астамура 25.11.2026):
+       «килограмм без ста граммов» — 900 г, «литр без ста» — 900 мл; «сорок штук, господи, граммов сорок» — 40 г: то же число, мера поменялась на граммы;
+       «две штуки, съел по двенадцать» — 24 г */
+    s=s.replace(/(^|\s)(?:(\d+(?:,\d+)?)\s+)?(кг|кило|килограм+[а-я]*|л|литр[а-я]*)\s+без\s+(\d+(?:,\d+)?)(?:\s*(?:г|гр|грам+[а-я]*|мл|мил+илитр[а-я]*))?(?=[\s,.;!?])/g,function(m,a,n,u,k){
+      var big=(n?num(n):1)*1000, v=big-num(k); return v>0&&num(k)<big/2?a+out(v)+(/^(л|литр)/.test(u)?' мл':' г'):m });
+    s=unitSwap(s);
+    function unitSwap(s){ return s.replace(/(^|\s)(\d+(?:,\d+)?)\s+(?:штук[а-я]*|шт)\s*,?\s+(?:(?:нет|то есть|вернее|точнее|[а-я]{4,})\s*,?\s+)?(?:граммов|грамм|грамма|гр|г)\s+(\d+(?:,\d+)?)((?:\s+[а-я]+)?)(?=[\s,.;!?])/g,function(m,a,n,k,w,off,all){
+      if(num(n)!==num(k)) return m;
+      var t=w.trim(), prev=all.slice(Math.max(0,off-40),off).split(/\s+/).filter(Boolean);
+      if(t&&t.length>=4&&prev.some(function(x){ return x.slice(0,4)===t.slice(0,4) })) w='';   // «…граммов сорок вишни» — продукт назван второй раз
+      return a+k+' г'+w }) }
+    s=s.replace(/(^|\s)(\d+)\s+(штук[а-я]*|шт)((?:\s+[а-я]+){0,2}?)\s+по\s+(\d+(?:,\d+)?)(?:\s*(?:г|гр|грам+[а-я]*))?(?=[\s,.;!?])/g,function(m,a,n,u,mid,k){
+      return num(k)>=5&&num(n)<=20?a+out(num(n)*num(k))+' г'+mid:m });
     s=s.replace(/(^|\s)(?:половин(?:а|у|ы|ка|ку|ки)|пол)(?=\s)/g,'$1 0,5').replace(/(^|\s)треть(?=\s)/g,'$1 0,33').replace(/(^|\s)четверт(?:ь|инк\S*)(?=\s)/g,'$1 0,25')
        .replace(/(^|\s)полтор[аы](?=\s)/g,'$1 1,5');
     /* «полбанана», «полпачки», «пол-литра», «полкило» */
@@ -249,6 +265,30 @@ var MealSpeech=(function(){
       if(um){ var q=um[1]?num(um[1]):1;
         s=before.slice(0,um.index)+out(q*grams(dm[2],dm[3]))+' '+unitWord(dm[3])+before.slice(um.index+um[0].length)+' '+s.slice(dm.index+dm[0].length) }
     }
+    /* часть от целого и остаток (разбор отчёта GPT, тема Т2, решение Астамура 25.11.2026):
+       «пачка 200 г, я от неё одну пятую съела» — 40 г; «половину отлил, остальное выпил» — другая половина;
+       «сыр был 160 г, … у оставшегося куска 117» — 43 г; «две горстки по 20» — 40 г, «от пачки в 120 г» — откуда взято, не съедено;
+       «тарелка пустая 180 г, с кашей 480, после еды с остатком 230» — 250 г */
+    var FR={'0,67':2/3,'0,33':1/3};
+    /* «киви четыре, хотя одно ещё лежит, съела три» — три: лежит, осталось — не съедено */
+    s=s.replace(/(^|\s)(\d+)\s*,?\s+(?:хотя\s+|но\s+)?(\d+)\s+(?:еще|ещё)\s+(?:лежит|лежат|осталось|остался|осталась|остались)(?:\s*,?\s+(?:съел[аи]?|съели)\s+(\d+))?(?=[\s,.;!?]|$)/g,function(m,a,n,k,e){
+      var v=num(n)-num(k); if(!(v>0)) return m; return a+(e&&num(e)!==v?e:out(v)) });
+    s=s.replace(/(^|\s)(\d+(?:,\d+)?)\s*(г|гр|грам+[а-я]*|мл|мил+илитр[а-я]*)(?=\s)((?:\s+(?!(?:и|а|потом|плюс)\s)[^\s\d,.;]+){0,6}?)\s+(0,\d+)((?:\s+[^\s\d,.;]+){0,3})(?=[\s,.;!?]|$)/g,function(m,a,n,u,mid,f,tail){
+      var k=FR[f]||num(f); if(!(k>0&&k<1)) return m;
+      var TW=/^(?:съел[аи]?|выпил[аи]?|отпил[аи]?|отъел[аи]?|поел[аи]?|отлил[аи]?|вылил[аи]?|оставил[аи]?|убрал[аи]?|отложил[аи]?|отдал[аи]?|его|ее|нее|него|их|них|банки|пачки|пакета|бутылки|упаковки|коробки|обратно|остальное|я)$/,
+          VB=/(^|\s)(?:съел|выпил|отпил|отъел|поел|отлил|вылил|оставил|убрал|отложил|отдал)[аи]?(?=\s|$)/, tw=tail.trim().split(/\s+/).filter(Boolean);
+      if(!tw.length||!tw.every(function(x){ return TW.test(x) })||!VB.test(mid+' '+tail)) return m;
+      if(/^\s*(?:отлил|отлила|вылил|вылила|оставил|оставила|убрал|убрала|отложил|отложила|отдал|отдала)(?=\s|$)/.test(tail)) k=1-k;
+      mid=mid.split(/\s+/).filter(function(x){ return x&&!TW.test(x)&&!/^(от|у)$/.test(x) }).join(' ');   // «я от неё», «отлил обратно» — уже учтено в граммах
+      return a+out(Math.round(num(n)*k))+' '+(/^м/.test(u)?'мл':'г')+(mid?' '+mid:'')+(VB.test(mid+' '+tail)&&/(съел|выпил|отпил|поел|отъел)/.test(mid+' '+tail)?' съела':'') });
+    s=s.replace(/(^|\s)(\d+(?:,\d+)?)\s*(г|гр|грам+[а-я]*|мл)(?=\s)([^\d]{0,80}?)\s(?:у\s+)?(?:оставш[а-я]*|остат(?:ок|ка|ком)|осталось|остался|осталась)((?:\s+[а-я]+){0,2}?)\s+(\d+(?:,\d+)?)(?:\s*(?:г|гр|грам+[а-я]*|мл))?(?=[\s,.;!?]|$)/g,function(m,a,n,u,mid,w,b){
+      if(/(^|\s)(?:с|со)\s*$/.test(mid)) return m;
+      return num(b)<num(n)?a+out(num(n)-num(b))+' '+u+' ':m });
+    s=s.replace(/(^|\s)(?:тарелк[а-я]*\s+)?пуст[а-я]*\s+\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*)?\s+(?:с|со)\s+([а-я]+)\s+(\d+(?:,\d+)?)\s*(?:г|гр|грам+[а-я]*)?\s+(?:после\s+еды\s+)?(?:с\s+)?остат[а-я]*\s+(\d+(?:,\d+)?)(?:\s*(?:г|гр|грам+[а-я]*))?(?=[\s,.;!?]|$)/g,function(m,a,w,x,y){
+      return num(y)<num(x)?a+w+' '+out(num(x)-num(y))+' г ':m });
+    s=s.replace(/(^|\s)от\s+(?:пачк|упаковк|банк|пакет|коробк)[а-я]*\s+(?:в|на)?\s*\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*|мл)(?=\s)(?=.*\d)/g,'$1');
+    s=s.replace(/(^|\s)(\d+)((?:\s+[а-я]+(?:ые|ых|ие|их))?)\s+(горст[а-я]*|ложк[а-я]*|кусоч[а-я]*|кусок|куска|кусков|ломтик[а-я]*)\s+по\s+(\d+(?:,\d+)?)(?:\s*(?:г|гр|грам+[а-я]*))?(?=[\s,.;!?]|$)/g,function(m,a,n,adj,u,k){
+      return num(n)<=20?a+out(num(n)*num(k))+' г':m });
     /* «яичница из 2 яиц» — два жареных яйца */
     s=s.replace(/(?:яичниц[а-я]*|глазунь[а-я]*)\s+из\s+(\d+)\s+яиц[а-я]*/g,'$1 яйца жареные');
     /* «омлет из двух яиц» — омлет весом около 60 г на яйцо (яйцо и немного молока), а не яйцо отдельно (хвосты разборов, 22.11.2026) */
@@ -274,6 +314,15 @@ var MealSpeech=(function(){
     /* «ой, не сто, а сто пятьдесят грамм риса» — в начале диктовки; «груша не 200, а 180» остаётся поправкой записи */
     s=s.replace(/^(\s*(?:(?:ой|ах|ну|так|блин|нет)[\s,]+)*)не\s+\d+(?:,\d+)?\s*(?:[а-я.]+\s*)?,?\s+а\s+(?=\d)/,'$1');
     s=s.replace(CORR,function(m,a){ return a+', нет, ' });
+    /* Meal 34.13 · поправка посреди фразы: «поправка», «оговорка», «стоп», «перепутал наоборот», «не то сказал», «хотя» — как «вернее»,
+       но только после уже названного числа (в начале фразы «стоп» — не поправка) и если дальше что-то сказано. «Двести с небольшим, ну запиши двести» — число заменяет число */
+    if(CORRM) s=s.replace(CORRM,function(m,a,off,all){ return /\d/.test(all.slice(0,off))&&/[а-я0-9]/.test(all.slice(off+m.length))?a+', нет, '+(/\sне$/.test(m)?'не ':''):m });
+    s=s.replace(/,\s*нет,\s*не\s+[а-я]{3,}\s+(?=[а-я]{3,})/g,', нет, ');   // «хотя не суп, бульон грибной» — назван новый продукт
+    s=s.replace(/(^|\s)([а-я]{3,})\s+(?:оставил|оставила|оставили|не стал[аи]?\s+есть)(?=[\s,.;!?]|$)/g,function(m,a,w){ return U2[w]||/^(последн|остальн|половин|треть|четверт)/.test(w)?m:a });   // «желток съела, белок оставила» — оставленное не съедено
+    if(CORRN) s=s.replace(CORRN,function(m,a,off,all){ return /\d/.test(all.slice(0,off))?a+', нет, ':m });
+    /* после поправки: «нет, 5 грамм это сыр» — сыр 5 г; «два с половиной это дома» — пояснение, не еда (Т1, 25.11.2026) */
+    s=s.replace(/(,\s*нет,\s*)(\d+(?:,\d+)?\s*(?:г|гр|грам+[а-я]*|мл))\s+это\s+([а-я]{3,})(?=[\s,.;!?]|$)/g,'$1$3 $2');
+    s=s.replace(/(?:\s(?:\d+(?:,\d+)?\s+)?)это\s+(?:дома|обычно|раньше|на работе|у мамы)(?=[\s,.;!?]|$)/g,function(m,off,all){ return /,\s*нет,/.test(all.slice(0,off))?' ':m });
     s=s.replace(/(^|[\s,])нет[\s,]+(?:нет[\s,]+)+/g,'$1нет, ');
     /* многословные меры → одно слово */
     MW.forEach(function(r){ s=s.replace(r.re,function(m,a,tail){ return a+r.to+(r.keep?tail:'') }) });
@@ -290,6 +339,7 @@ var MealSpeech=(function(){
     if(EATRE) s=s.replace(EATRE,function(m,a){ return a+'⊙' });   // «съел», «поела» — пометка: дальше то, что человек съел сам
     s=s.replace(DROP,function(m,a){ return a });
     s=s.replace(DROP,function(m,a){ return a });
+    s=unitSwap(s);   // «сорок штук, господи, граммов сорок» — после того как убраны вставки
     VAGUE.slice().sort(function(a,b){ return 0 }).forEach(function(v){ s=s.replace(phrase(v.forms),function(m,a){ return a+v.mark }) });
     /* «щедро посыпал сыром»: пометка количества остаётся при продукте, который назван после глагола */
     s=s.replace(/([≈▽◇△])\s*,\s*(?=[а-я])/g,', $1 ');

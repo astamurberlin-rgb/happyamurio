@@ -156,8 +156,10 @@ var MealBot=(function(){
     s=s.replace(new RegExp('(^|\\s)('+NW+')((?:\\s+[а-я%]+){1,3}?)\\s*[,.]?\\s+'+CORW+'\\s*[,.]?\\s+('+NW+')(?=\\s*$|\\s*[,.;]|\\s+(?:и|еще|потом|а)\\s)','g'),function(m,a,n1,mid,n2){ return a+nwv(n2)+mid });
     s=s.replace(new RegExp('(^|\\s)(кусок|кусочек|ломтик|стакан|чашк[ау]|тарелк[ау]|штук[ау]|ложк[ау]|порци[юя])((?:\\s+(?!'+CORW+'(?:\\s|$))[а-я]+){0,2})\\s*[,.]?\\s+'+CORW+'\\s*[,.]?\\s+('+NW+')(?=\\s*$|\\s*[,.;]|\\s+(?:и|еще|потом|а)\\s)','g'),function(m,a,u,rest,n2){ return a+nwv(n2)+' '+u+rest });
     /* «100 г, нет, 200 г» — остаётся последнее число; «стакан, нет, большая чашка» — последняя тара */
-    s=s.replace(new RegExp('(\\d+(?:[.,]\\d+)?)\\s*'+VOL+'?\\s*[,.]?\\s*нет\\s*[,.]?\\s*(?=\\d)','g'),' ');
+    s=s.replace(new RegExp('(\\d+(?:[.,]\\d+)?)\\s*'+VOL+'?\\s*[,.]?\\s*нет\\s*[,.]?\\s*(?=\\d)(?!\\d+(?:[.,]\\d+)?\\s*(?:%|процент))','g'),' ');   // «160 мл, нет, 1 %» — поправка жирности, а не количества
     s=s.replace(new RegExp(CUP+'\\s*[,.]?\\s*нет\\s*[,.]?\\s*(?=(?:больш\\S*|маленьк\\S*)?\\s*'+CUP+')','g'),' ');
+    /* «маленький стакан, но выпила два таких» — два маленьких стакана: «два таких» — число этой меры (Т1, 25.11.2026) */
+    s=s.replace(new RegExp('((?:больш\\S*|маленьк\\S*|средн\\S*)\\s+'+CUP+')((?:\\s+[а-я]+){0,3}?)\\s*,?\\s+(?:но\\s+)?(?:[⊙]\\s*)?(\\d+|два|две|три)\\s+(?:таких|такие|таких же)(?=[\\s,.;!?]|$)','g'),function(m,u,mid,n){ return ' '+nwv(n)+' '+u+mid });
     s=s.replace(/(^|\s)(глубок\S*|по вкусу)(?=\s|$)/g,' ');
     if(SP) s=s.replace(/\s*,?\s+(?:это\s+)?(?:всего|итого|в сумме|в общей сложности|общий вес|общим весом|на вс[её])\s+(?=\d)/g,' ');   // Meal 33.13: «гречка с грибами, всего 200 г» — вес всего блюда, а не продукт «Всего»
     if(SP) s=s.replace(/(американо|капучино|латте|раф|флэт уайт|кофе)\s+(?:в\s+котор\S+|с|на)\s+(?:\d+|одним|двумя|тремя|двух|трех)\s+шот\S*(?:\s+(?:кофе|эспрессо))?(?=\s|$)/g,'$1')
@@ -334,7 +336,7 @@ var MealBot=(function(){
   function chunksOf(s){
     s=' '+s+' ';
     if(SP) s=s.replace(/(^|\s)не\s*⊙/g,'$1⊗ ').replace(NOTATE,' ⊗ ');   // Meal 33.13: «не ел», «не стал» — пометка «не съедено» на весь кусок фразы
-    s=s.replace(new RegExp('[\\s,]+(?:и\\s+|а\\s+)?(?:весит\\s+|было\\s+)?'+WASTE+'(?:\\s+(?:весит|было|вес|после еды|осталось|остался|осталась))*\\s+(\\d+(?:[.,]\\d+)?)\\s*(?:г|гр|грам+\\S*)?(?=[\\s,.;!?]|$)','g'),function(m,n,at,all){
+    s=s.replace(new RegExp('[\\s,]+(?:и\\s+|а\\s+)?(?:весит\\s+|было\\s+)?'+WASTE+'(?:\\s+и\\s+(?:'+WASTE+'|кость))?(?:\\s+(?:весит|было|вес|вместе|после еды|осталось|остался|осталась))*\\s+(\\d+(?:[.,]\\d+)?)\\s*(?:г|гр|грам+\\S*)?(?=[\\s,.;!?]|$)','g'),function(m,n,at,all){
       if(/(^|\s)(на|с|со)$/.test(all.slice(0,at))&&/^[\s,]+кост/.test(m)) return m;   // «баранина на кости 300» — мясо на кости, а не 300 г костей (22.11.2026)
       return ' ⊖'+n.replace(',','.')+' ' });
     s=s.replace(/(\d)[,.](\d)/g,'$1#$2');
@@ -348,15 +350,17 @@ var MealBot=(function(){
     /* «3 веточки укропа помидор 300 г» — после «число мера продукт» новое слово со своим числом — следующая еда */
     s=s.replace(/((?:^|\s)\d+\s*(?:веточ|ломт|кус|стакан|чашк|круж|ложк|штук|зубч|пуч|дол[еь]|горст|тарел|банк|пачк|бутыл|миск|пиал|порци)[а-я]*\s+[а-я]{3,})\s+(?=(?![а-я]*(?:ого|ой|ый|ий|ая|ое|ые|их|ых|ую|яя)\s)[а-я]{3,}\s+\d)/g,'$1 , ');
     if(SP) s=s.replace(/(\sсо?\s+[а-я]+(?:ой|ей|ом|ем|ами|ями|ью))\s+и\s+([а-я]{3,}(?:ой|ей|ом|ем|ами|ями|ью))(?=[\s,.;:!?]|$)/g,'$1 с $2');   // Meal 33.12
+    s=s.replace(/(\s[а-я]{3,})\s+(?:(?:там|тут|в н[её]м|в ней)\s+(?:нет|не было)(?=[\s,.;!?]|$)|нет(?=\s*$))/g,'$1 ⊗ ');   // «а масла там нет» — этого не было (Т1, 25.11.2026)
     s=s.replace(/[\s,.;!]+нет(?:\s*,?\s*(?:неправильно|не так|не то|ошибся|ошиблась|исправь|точнее))*[\s,.;!]+/g,' , ¶ ');
-    if(SP) s=s.replace(/\sеще\s+(?=\d)/g,' , ').replace(/([а-я])\s+([▽◇△])\s*(?=[а-я])/g,'$1 , $2 ');   // Meal 33.12: «груша 180 ещё 180 г гречки» — две еды
+    /* «масло ещё 4 грамма оливковое» — вес этого масла, а не новая еда (Т4, 25.11.2026) */
+    if(SP) s=s.replace(/\sеще\s+(?=\d)/g,function(m,off,all){ var seg=all.slice(0,off).split(/[,.;:!?]|\s(?:и|а|потом|плюс|затем)\s/).pop(); return /\d/.test(seg)||!/[а-я]/.test(seg)?' , ':' ' }).replace(/([а-я])\s+([▽◇△])\s*(?=[а-я])/g,'$1 , $2 ');   // Meal 33.12: «груша 180 ещё 180 г гречки» — две еды
     var bits=s.split(/([,.;:!?\n…]+|\s(?:и|а|потом|плюс|затем)\s)/);
     if(SP) bits=joinBits(bits);
     return bits.filter(function(x,i){ return i%2===0 }).map(function(c){ return c.replace(/#/g,',').replace(/\s+/g,' ').trim() }).filter(Boolean)
       .map(function(c){ var mk=''; c=c.replace(MK,function(x){ mk+=x; return ' ' }).replace(/\s+/g,' ').trim();
         var neg=c.indexOf('⊗')>=0; if(neg) c=c.replace(/⊗/g,' ').replace(/\s+/g,' ').trim();
         var corr=c.charAt(0)==='¶'; if(corr) c=c.slice(1).trim(); var mn=c.match(/⊖([\d.]+)/); if(mn) c=c.replace(mn[0],' ').replace(/\s+/g,' ').trim();
-        var parts=one(c); if(corr&&parts.length) parts[0]='¶'+parts[0]; if(mn&&parts.length) parts[parts.length-1]+=' ⊖'+mn[1]; if(mk&&parts.length){ parts[parts.length-1]+=' '+mk; if(mk.indexOf('⊙')>=0) parts=parts.map(function(x,i){ return i<parts.length-1?x+' ⊙':x }) } if(neg) parts=parts.map(function(x){ return x+' ⊗' }); return parts })
+        var parts=one(c); if(corr&&parts.length) parts=parts.map(function(x,i){ return (i?'¤':'¶')+x });   /* «нет, огурца 80 редиски 45» — поправка и у второй названной еды (Т1, 25.11.2026) */ if(mn&&parts.length) parts[parts.length-1]+=' ⊖'+mn[1]; if(mk&&parts.length){ parts[parts.length-1]+=' '+mk; if(mk.indexOf('⊙')>=0) parts=parts.map(function(x,i){ return i<parts.length-1?x+' ⊙':x }) } if(neg) parts=parts.map(function(x){ return x+' ⊗' }); return parts })
       .reduce(function(a,c){ return a.concat(c) },[]);
   }
   function one(c0){
@@ -374,7 +378,8 @@ var MealBot=(function(){
     return ws.every(function(w){ var r; try{ r=parseText(w).lines }catch(e){ return false } return r.length===1&&(r[0].st==='ok'&&r[0].fid||r[0].st==='pick'&&(r[0].alts||[]).length&&related(r[0].alts[0],[norm(w)])) }) ? ws : null;   // «какое яблоко?» — вопрос о каждом слове, а не одно блюдо
   }
   function prepChunk(c){
-    var o={text:c,raw:c,dup:null,range:null,size:null,corr:c.charAt(0)==='¶'};
+    var o={text:c,raw:c,dup:null,range:null,size:null,corr:c.charAt(0)==='¶',corr2:c.charAt(0)==='¤'};
+    if(o.corr2){ c=c.slice(1); o.text=o.raw=c }
     if(c.indexOf('⊗')>=0){ o.neg=true; c=c.replace(/⊗/g,' ').replace(/\s+/g,' ').trim(); o.text=o.raw=c }
     if(o.corr) c=c.slice(1);
     /* пометки словаря: ≈ примерно; ⊕ ⊘ множитель меры; ▽ ◇ △ количество без числа */
@@ -615,9 +620,18 @@ var MealBot=(function(){
         if(!c.text) return }
       else if(carryOther){ var lf1=tokensOf(c.text).join(' '); if(lf1&&(wantFood||/\d/.test(c.text))){ lastOtherFood=lf1; wantFood=false } (res.others=res.others||[]).push(c.text); return }
       var food=tokensOf(c.text), last=merged[merged.length-1];
+      /* вторая еда в поправке («нет, огурца 80 редиски 45»): названа раньше — меняется она, новая — просто добавляется */
+      if(c.corr2&&food.length){ var s5=function(w){ return norm(w).slice(0,4) }, f5=food.map(s5);
+        for(var mj=merged.length-1;mj>=0;mj--){ if(merged[mj].fromCorr) continue; if(tokensOf(foodOf(merged[mj].text)).some(function(w){ return w.length>=3&&f5.indexOf(s5(w))>=0 })){ c.fromCorr=true; merged[mj]=c; return } } }
       if(c.corr&&last){
         /* «…, нет, …»: поправка последнего названного. Только число — меняется количество; назван продукт — меняется продукт */
-        res.corrected=true;
+        res.corrected=true; c.fromCorr=true;
+        /* «кефир 2,5 % 160 мл, нет, 1 %» — поменялась только жирность, количество прежнее (Т1, 25.11.2026) */
+        var pc=/^(\d+(?:[#,]\d+)?)\s*(?:%|процент\S*)$/.exec(c.text.trim());
+        /* «овсянка на воде 170 г, стоп, на молоке…» — поменялось только «на чём»: остальное прежнее, хвост поправки — пояснение */
+        var pm=/^(на|с|со|без)\s+([а-я]{3,})/.exec(c.text.trim());
+        if(pm&&!c.hasNum){ var pre=new RegExp('(^|\\s)'+pm[1]+'\\s+[а-я]{3,}'); if(pre.test(last.text)){ last.text=last.text.replace(pre,'$1'+pm[0]); return } }
+        if(pc&&/\d\s*(?:%|процент)/.test(last.text)){ last.text=last.text.replace(/\d+(?:[#,]\d+)?\s*(?:%|процент\S*)/,pc[1]+'%'); return }
         if(!food.length&&c.hasNum){ last.text=foodOf(last.text)+' '+c.text; last.hasNum=true; last.soft=null; last.range=c.range; if(c.approx) last.approx=true; return }
         /* «гречка и масло, нет, гречки 150» — поправка того, что названо: меняется гречка, масло остаётся (22.11.2026) */
         if(food.length){ var st4=function(w){ return norm(w).slice(0,4) }, fs=food.map(st4), hi=-1;
@@ -762,6 +776,8 @@ var MealBot=(function(){
           else if(isDrink(l.fid)){ var ff=FOODS[l.fid]; if(!Object.keys(ff.por||{}).length){ l.q=1; l.u=/эспрессо|ристретто/i.test(ff.n)?'шот':'чашка'; l.g=gramsFor(l.fid,l.q,l.u) } }
           else if(!fillUsual(l)) l.ask='qty';                         // количество не названо: обычная мера продукта; нет меры — вопрос
         }
+        /* предохранитель: одна запись тяжелее 3 кг — скорее ошибка числа («килограмм без ста граммов» стал 101 000 г). Не пишется молча, бот переспрашивает (Т3, 25.11.2026) */
+        if(!l.ask&&l.fid&&l.g>3000) l.ask='heavy';
         if(c.comp){ l.comp=c.comp; c.comp.lines.push(l) }
         res.lines.push(l);
       });
@@ -1111,7 +1127,7 @@ var MealBot=(function(){
     });
     save();
     try{ if(typeof renderAll==='function') renderAll() }catch(e){}
-    var c={id:'c'+(++S.seq),add:add,undone:false,at:S.clock||Date.now()}; S.commits.push(c);
+    var c={id:'c'+(++S.seq),add:add,undone:false,at:S.clock||Date.now(),turn:S.turn||0}; S.commits.push(c);
     /* «перепиши: …» — прежняя запись убирается только теперь, когда новая уже записана (раньше убиралась заранее и могла пропасть) */
     if(S.rewrite){ var old=S.rewrite; S.rewrite=null; if(!old.undone&&old!==c){ undo(S,old); c.replaced=true } }
     /* Meal 33.21: запись прервала окно фастинга — «Фастинг прерван» с «Отменить запись» (meal-fast.js). У диктовки шортката —
@@ -1577,6 +1593,7 @@ var MealBot=(function(){
     if(l.ask==='again') return p('Такое же сообщение я только что записал. Это ещё одна порция?')+chips([['again:'+id+':1','Да, ещё одна'],['again:'+id+':0','Нет, повтор']]);
     var f=FOODS[l.fid], u=f?defUnit(f):'г', one={q:1,u:u,fid:l.fid}; one.g=gramsFor(l.fid,1,u);
     var opts=u==='г'?[['num:'+id+':100','100 г']]:[['unit:'+id,'1 '+uLab(l.fid,1,u)+' · ≈ '+fmt(one.g)+' г']];
+    if(l.ask==='heavy') return prefix+'<div data-clarify-controls="'+id+'">'+p(esc(foodName(l))+' — '+fmt(l.g)+' г, это больше 3 кг. Записать так? Или скажи, сколько граммов.')+chips([['num:'+id+':'+l.g,'Да, '+fmt(l.g)+' г']])+'</div>';
     if(l.ask==='waste') return p(esc(foodName(l))+': несъедобное '+fmt(l.waste)+' г больше или равно целому '+fmt(l.whole)+' г. Проверь числа — сколько было целиком?');
     if(l.ask==='inc') return p(esc(foodName(l))+': часть '+fmt(l.inc.g)+' г больше всего блюда '+fmt(l.g)+' г. Сколько весило блюдо целиком?');
     if(l.count&&!l.countU) missLog('нет веса штуки',foodName(l),l.raw);
@@ -1712,6 +1729,7 @@ var MealBot=(function(){
        после любого другого сообщения строка ждёт явной замены («замени на…», кнопка в строке) и чужую еду на себя не берёт */
     if(a.kind==='name'&&inlinePhrase(S,q)&&!explicitReplacement&&q.nameTurn!==(S.turn||0)-1)return null;
     if(a.kind==='meal'){ var mm=mealIn(t.replace(/^(да|ну|в|на|во)\s+/,'')).mk; return mm?tapDo(S,'meal',a.id,mm):null }
+    if(a.kind==='heavy'&&/^(да|ага|угу|верно|все верно|всё верно|так|записывай|запиши|правильно)[\s,.!]*$/.test(t)) return tapDo(S,'num',a.id,String(l.g));
     if(a.kind==='again'){ if(/^(да|ещ|еще|ага|угу)/.test(t)) return tapDo(S,'again',a.id,'1'); if(/^(нет|не|повтор)/.test(t)) return tapDo(S,'again',a.id,'0'); return null }
     if(a.kind==='pick'){ var tt0=t.replace(/^(да|ну|давай|пусть|будет)\s+/,'').replace(/[,.!]+$/,''); if(ORD[tt0]!=null&&l.alts[ORD[tt0]]) return tapDo(S,'pick',a.id,String(ORD[tt0]));
       var ws0=tokensOf(tt0), hitA=ws0.length?l.alts.slice(0,3).map(function(x,i){ return i }).filter(function(i){ return ws0.every(function(q){ return /^\d/.test(q)?words(l.alts[i]).indexOf(q)>=0:words(l.alts[i]).some(function(wd){ return sim(q,wd)>=1.8||adjStem(q)&&adjStem(q)===adjStem(wd) }) }) }):[];
@@ -1769,7 +1787,7 @@ var MealBot=(function(){
     /* одно число с мерой или без: «200 г», «две», «стакан» */
     if(!u.lines.length&&u.orphan&&l.fid){
       var r=parseText((l.name||'продукт')+' '+u.orphan).lines[0];
-      if(r&&r.explicit){ l.q=r.q; l.u=r.u; l.g=gramsFor(l.fid,l.q,l.u); l.explicit=true; if(a.kind==='qty'||a.kind==='range'||a.kind==='dup') return finish(S,resolved(S)) }
+      if(r&&r.explicit){ l.q=r.q; l.u=r.u; l.g=gramsFor(l.fid,l.q,l.u); l.explicit=true; if(a.kind==='qty'||a.kind==='range'||a.kind==='dup'||a.kind==='heavy') return finish(S,resolved(S)) }
       return null;
     }
     if(u.lines.length!==1) return null;
@@ -2337,7 +2355,12 @@ var MealBot=(function(){
   function stemOf(w){ return w.slice(0,Math.max(4,w.length-2)) }
   function withSwap(chat,S,m){
     if(!m||typeof m.text!=='string'||(m.kind&&m.kind!=='text')) return handle(chat,S,m);
-    var t=nrm(m.text), mm=SWRE.exec(t);
+    var t=nrm(m.text);
+    /* «гречку 125 г и курицу 130 г, не курицу, забыл положить, а гречку всю съел» — курицы не было, гречка уже названа: курица убирается (Т1, 25.11.2026) */
+    var nx=/[\s,.;]+не\s+([а-я]{3,})(?:\s*,?\s*(?:я\s+)?(?:забыл[аи]?|не\s+положил[аи]?|не\s+брал[аи]?)(?:\s+(?:положить|взять|добавить|купить|сварить|приготовить))?)?\s*,?\s+а\s+([а-я]{3,})(?=[\s,.;!?]|$)/.exec(t);
+    if(nx){ var bx=t.slice(0,nx.index), sx=stemOf(nx[1]), sy=stemOf(nx[2]), rx0=new RegExp('(?:\\s+(?:и|а))?\\s+'+sx+'[а-я]*(?:\\s+[а-я]+)?(?:\\s+\\d+(?:[.,]\\d+)?\\s*(?:г|гр|грам+[а-я]*|мл|шт[а-я]*)?)?(?=[\\s,.;!?]|$)');
+      if(sx!==sy&&new RegExp('(^|\\s)'+sy).test(bx)&&rx0.test(bx)){ var keep0=m.text; m.text=(bx.replace(rx0,' ')+' '+t.slice(nx.index+nx[0].length)).replace(/\s+/g,' ').trim(); try{ return handle(chat,S,m) } finally { m.text=keep0 } } }
+    var mm=SWRE.exec(t);
     if(!mm) return handle(chat,S,m);
     var x=mm[1].trim(), y=mm[2].trim(), before=t.slice(0,mm.index), after=t.slice(mm.index+mm[0].length);
     var xs=x.split(' '), st=stemOf(xs[0]), re=new RegExp('(^|\\s)'+st+'[а-я]*'+(xs[1]?'\\s+'+stemOf(xs[1])+'[а-я]*':'')+'(?=[\\s,.;!?]|$)'), keep=m.text, h;
@@ -2435,6 +2458,8 @@ var MealBot=(function(){
     /* служебные фразы */
     if(/^тест(\s|$|овая|овое|овый)/.test(bare)) return p('Это тест. В дневник ничего не добавляю.');
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&!prepped){ var ac=appAct(S,m.text); if(ac) return ac+(S.pend.length?askHTML(S):'') }   // Meal 33.37: короткие команды «внеси за меня»
+    /* Meal 34.13 · уточнение вторым сообщением и команды «отмени последнюю», «удали вчерашний», «убери изюм, оставь орехи» (Т4, Т8) */
+    if(!m.inbox&&!m.dry&&m.kind!=='photo'&&!NEST){ var fu=followUp(chat,S,m,bare); if(fu!=null) return fu+(S.pend.length?askHTML(S):'') }
     /* «отмени кофе» — убрать одну запись; «перепиши: груша 250 г» — убрать последнее и записать заново */
     CD=null;
     if(/^(отмени|отменить|убери|удали|сотри|замени|поменяй|исправь|перепиши|вместо|перенеси|перемести)(\s|$)/.test(bare)){
@@ -2492,6 +2517,8 @@ var MealBot=(function(){
     if(rp){ var rr=replaceCmd(S,rp[1],rp[2]); if(rr) return rr }
     var del=bare.match(/^(удали|убери|сотри)\s+(.+)$/);
     if(del) return removeCmd(S,del[2]);
+    /* остаток или отход следующим сообщением («остаток взвесила 35 г», «ветку выбросил, она 9 грамм») — правится прошлая запись, а не пишется новая (Т2, 25.11.2026) */
+    if(!m.inbox&&!m.dry&&m.kind!=='photo'){ var lo=leftover(S,bare); if(lo!=null) return lo }
     /* «нет, …» — поправка последней записи; раньше ответа на вопрос, кроме вопроса «да / нет» */
     var no=bare.match(/^(?:(?:ой|ах|ай|блин|стоп|так)[\s,.!]+)*(?:нет|не так|неправильно|ошибся|ошиблась|исправь|поправь)(?:[\s,.!]+(.*))?$/);
     if(!no&&!S.ask&&lastAdd(S)&&hasMeal(bare)&&!tokensOf(bare.replace(FILL,' ')).length&&!/\d/.test(bare)) no=[bare,bare];
@@ -3453,6 +3480,116 @@ var MealBot=(function(){
   }
   function lastAdd(S){ var c=S.commits.filter(function(x){ return !x.undone&&x.add.some(function(a){ return day(a.date).items.indexOf(a.item)>=0 }) }).pop(); if(!c) return null; var al=c.add.filter(function(a){ return day(a.date).items.indexOf(a.item)>=0 }); return al[al.length-1] }
   var ORD={'первый':0,'первая':0,'первое':0,'первую':0,'второй':1,'вторая':1,'второе':1,'вторую':1,'третий':2,'третья':2,'третье':2,'третью':2};
+  /* Meal 34.13 · остаток и отход следующим сообщением (разбор отчёта GPT, тема Т2, решение Астамура 25.11.2026).
+     Только когда в сообщении нет другой еды. Вес сказан — из прошлой записи вычитается; доля («отпил четверть») — пишется доля;
+     сказано без веса («последние две ложки оставила», «вместе с веткой») — бот спрашивает вес и ждёт число */
+  var LO_W='(?:ветк\\S*|веточк\\S*|кожур\\S*|кожиц\\S*|косточк\\S*|кост[ьи]\\S*|шкурк\\S*|хвост\\S*|огрыз\\S*|скорлуп\\S*|кочерыж\\S*|очистк\\S*|отход\\S*)';
+  var LO_X=/^(?:я|она|он|оно|они|их|его|ее|и|а|на|весах|весит|весила|весил|было|были|была|взвесил[аи]?|выбросил[аи]?|выкинул[аи]?|убрал[аи]?|срезал[аи]?|отрезал[аи]?|остальное|остальную|все|вс[её]|обратно|потом|г|гр|грамм\S*|мл|⊙|,)$/;
+  function leftover(S,bare){
+    var ad=lastAdd(S); if(!ad) return null;
+    var x=ad.item, l=ad.line, G=x.g; if(!(G>0)) return null;
+    var t=' '+String(bare).replace(/[.!]+|,(?!\d)/g,' ').replace(/\s+/g,' ').trim()+' ';
+    if(S.ask&&!(S.ask.kind==='left'&&S.left)) return null;
+    function only(re){ var r=t.replace(re,' ').trim(); return !r||r.split(/\s+/).every(function(w){ return LO_X.test(w) }) }
+    function set(g,said){ g=Math.round(g*10)/10; if(!(g>0&&g<G)) return p(esc(foodName(l))+': было '+fmt(G)+' г, так не сходится. Скажи ещё раз, сколько осталось или ушло в отход.');
+      if(writeGuard()) return p('Чтобы менять записи, войди в аккаунт.');
+      S.left=null; if(S.ask&&S.ask.kind==='left') S.ask=null;
+      x.q=g; x.u='г'; x.g=gramsFor(x.fid,g,'г'); l.q=x.q; l.u=x.u; l.g=x.g; l.explicit=true; touch();
+      return p('Поправил: было '+fmt(G)+' г, '+said+' — записал '+fmt(g)+' г.')+'<div class="mlRows">'+row(l,true)+'</div>' }
+    var m1;
+    /* ответ на вопрос «сколько осталось?» одним числом */
+    if(S.left&&(m1=/^\s*(\d+(?:,\d+)?)\s*(?:г|гр|грамм\S*|мл)?\s*$/.exec(t))) return set(G-+m1[1].replace(',','.'),(S.left==='w'?'отход ':'осталось ')+m1[1]+' г');
+    S.left=null;
+    var NUM='(\\d+(?:,\\d+)?)\\s*(?:г|гр|грам+\\S*|мл)?';
+    if((m1=new RegExp('(?:^|\\s)(?:остат\\S*|осталось|остался|осталась|оставш\\S*)\\s+(?:\\S+\\s+){0,2}?'+NUM+'(?=\\s)').exec(t))&&only(m1[0])) return set(G-+m1[1].replace(',','.'),'осталось '+m1[1]+' г');
+    if((m1=new RegExp('(?:^|\\s)'+LO_W+'\\s+(?:\\S+\\s+){0,3}?'+NUM+'(?=\\s)').exec(t))&&only(m1[0])) return set(G-+m1[1].replace(',','.'),'отход '+m1[1]+' г');
+    var fr=/(?:^|\s)(отпил[аи]?|отъел[аи]?|съел[аи]?|выпил[аи]?|поел[аи]?|отлил[аи]?|вылил[аи]?|оставил[аи]?|убрал[аи]?)?\s*(0,\d+)\s*(отпил[аи]?|отъел[аи]?|съел[аи]?|выпил[аи]?|поел[аи]?|отлил[аи]?|вылил[аи]?|оставил[аи]?|убрал[аи]?)?(?=\s)/.exec(t);
+    if(fr&&(fr[1]||fr[3])&&only(fr[0])&&!/\d/.test(t.replace(fr[0],' '))){ var K={'0,67':2/3,'0,33':1/3}, k=K[fr[2]]||+fr[2].replace(',','.'), v=fr[1]||fr[3];
+      if(/^(отлил|вылил|оставил|убрал)/.test(v)) k=1-k; return set(G*k,'съедено '+fmt(Math.round(k*100))+' %') }
+    /* остаток или отход без веса — спросить вес */
+    if(!/\d\s*(?:г|гр|грам|мл)/.test(t)&&(m1=/(?:^|\s)(?:вместе\s+)?(?:с\s+)?(ветк\S*|веточк\S*|кожур\S*|косточк\S*|кост\S*|шкурк\S*|хвост\S*|скорлуп\S*)(?=\s)/.exec(t))&&only(new RegExp('(?:^|\\s)(?:вместе|с|со|'+LO_W.slice(3,-1)+')(?=\\s)','g'))){
+      S.left='w'; return p(esc(foodName(l))+' — '+fmt(G)+' г вместе с отходом. Сколько весит то, что не съедено? Скажи вес — вычту.') }
+    if(!/\d\s*(?:г|гр|грам|мл)/.test(t)&&/(?:^|\s)(?:оставил[аи]?|не\s+дое\S*|остатки?)(?=\s)/.test(t)&&only(/(?:^|\s)(?:последн\S*|\d+|оставил[аи]?|не|дое\S*|остатки?|ложк\S*|ложечк\S*|кусоч\S*|кусок|куска|немного|чуть|чуть-чуть)(?=\s)/g)){
+      S.left='r'; return p(esc(foodName(l))+' — записано '+fmt(G)+' г. Сколько граммов осталось? Скажи вес остатка — поправлю запись.') }
+    if(/^\s*(?:мякоть|остальное|остальную)(?:\s+вс\S*)?\s*⊙?\s*$/.test(t)) return p('Так и записано: '+esc(foodName(l))+' — '+fmt(G)+' г.');
+    return null;
+  }
+  /* Meal 34.13 · уточнение вторым сообщением и команды (разбор отчёта GPT, темы Т4 и Т8, решение Астамура 25.11.2026):
+     второе сообщение о том же — правит прошлую запись, а не добавляет новую; «отмени только последнюю», «удали вчерашний», «убери изюм, оставь орехи» — выполняются */
+  function followUp(chat,S,m,bare){
+    var t=' '+String(bare).replace(/[.!]+|,(?!\d)/g,' ').replace(/\s+/g,' ').trim()+' ', mm, ad=lastAdd(S);
+    /* команды: «нет, отмени только последнюю запись», «убери изюм, оставь орехи», «удали вчерашний» */
+    if((mm=/^\s*(?:(?:нет|ой|стоп)\s+)+((?:отмени|удали|убери|сотри)\s.*)$/.exec(t))) t=' '+mm[1];
+    t=t.replace(/^(\s*(?:отмени|удали|убери|сотри))\s+только\s+/,'$1 ');
+    if(/^\s*(?:отмени|удали|убери|сотри)\s+(?:последн\S*)(?:\s+(?:запис\S*|продукт|еду))?\s*$/.test(t)){
+      var c0=S.commits.filter(function(x){ return !x.undone&&x.add.some(function(a){ return day(a.date).items.indexOf(a.item)>=0 }) }).pop();
+      if(!c0) return p('Отменять пока нечего: в этом диалоге я ещё ничего не записал.');
+      if(writeGuard()) return p('Чтобы менять записи, войди в аккаунт.');
+      var a0=c0.add.filter(function(a){ return day(a.date).items.indexOf(a.item)>=0 }).pop(), e0=day(a0.date); e0.items=e0.items.filter(function(x){ return x!==a0.item }); touch();
+      var cc={id:'c'+(++S.seq),add:[],del:[{date:a0.date,item:a0.item}],undone:false}; S.commits.push(cc);
+      return p('Удалил последнюю запись:')+'<div class="mlRows">'+row({fid:a0.item.fid,q:a0.item.q,u:a0.item.u,g:a0.item.g,name:''},true,a0.item.t||'')+'</div>'+chips([['undo:'+cc.id,'Вернуть']]) }
+    if((mm=/^\s*(?:удали|убери|сотри|отмени)\s+(вчерашн\S*|позавчерашн\S*|сегодняшн\S*)(?:\s+([а-я]{3,}))?\s*$/.exec(t))){
+      var dd=new Date(curDate+'T12:00:00'); if(/^вчер/.test(mm[1])) dd.setDate(dd.getDate()-1); if(/^позавч/.test(mm[1])) dd.setDate(dd.getDate()-2);
+      var di=isoOf(dd), its=day(di).items, w=mm[2]?norm(mm[2]):'', hit=null;
+      var recent=S.commits.filter(function(x){ return !x.undone }).reduce(function(a,x){ return a.concat(x.add) },[]).filter(function(a){ return a.date===di&&its.indexOf(a.item)>=0 });
+      var pool=recent.length?recent.map(function(a){ return a.item }):its.slice();
+      for(var i=pool.length-1;i>=0&&!hit;i--){ var f=FOODS[pool[i].fid]; if(!w||f&&norm(f.n).split(/[^a-zа-я0-9]+/).some(function(n){ return sim(w,n)>=1.8 })) hit=pool[i] }
+      if(!hit) return p('Не нашёл такой записи за '+(/^вчер/.test(mm[1])?'вчера':'этот день')+'. Ничего не удалил.');
+      if(writeGuard()) return p('Чтобы менять записи, войди в аккаунт.');
+      var e1=day(di); e1.items=e1.items.filter(function(x){ return x!==hit }); touch();
+      var c1={id:'c'+(++S.seq),add:[],del:[{date:di,item:hit}],undone:false}; S.commits.push(c1);
+      return p('Удалил:')+'<div class="mlRows">'+row({fid:hit.fid,q:hit.q,u:hit.u,g:hit.g,name:''},true,hit.t||'')+'</div>'+chips([['undo:'+c1.id,'Вернуть']]) }
+    if((mm=/^\s*((?:удали|убери|сотри)\s+.+?)\s+(?:а\s+)?(?:оставь|остав|не трогай)\s+.+$/.exec(t))) return removeCmd(S,mm[1].replace(/^\S+\s+/,''));
+    if(ad&&/^\s*(?:второе|второй|вторую|остальное)\s+целиком\s*$/.test(t)) return p('Понял, так и записано.');
+    if(!ad||S.ask) return null;
+    var x=ad.item, l=ad.line, fx=FOODS[x.fid], nm=fx?norm(fx.n).split(/[^a-zа-я0-9]+/).filter(Boolean):[];
+    function isLast(w){ return nm.some(function(n){ return sim(norm(w),n)>=1.8 })||String(l.spoken||l.name||'').split(' ').some(function(n){ return n&&sim(norm(w),norm(n))>=1.8 }) }
+    function setG(g,q,u){ if(writeGuard()) return p('Чтобы менять записи, войди в аккаунт.');
+      x.q=q!=null?q:g; x.u=u||'г'; x.g=u?gramsFor(x.fid,x.q,x.u):g; l.q=x.q; l.u=x.u; l.g=x.g; l.explicit=true; touch();
+      return p('Поправил:')+'<div class="mlRows">'+row(l,true)+'</div>' }
+    /* время и день: «завтрак сегодня был в одиннадцать», «ой, это было вчера в два ночи», «десять минут назад, нет, пять минут назад» */
+    if((mm=/^\s*(?:ой\s+)?(?:(?:завтрак|обед|ужин|перекус|полдник)\s+(?:сегодня\s+)?был\S*|(?:это|он|она|оно)?\s*был[аио]?)\s+((?:вчера|позавчера|сегодня|в\s|до\s|около\s|\d).*)$/.exec(t))) return correct(S,mm[1]);
+    if((mm=/^\s*\d+\s+минут\S*\s+назад\s+нет\s+(\d+\s+минут\S*\s+назад)\s*$/.exec(t))) return correct(S,mm[1]);
+    /* «первый был 28 г, второй 31» — общий вес штук */
+    if((mm=/^\s*(?:перв\S*)\s+(?:был\S*\s+)?(\d+(?:,\d+)?)\s*(?:г|гр|грам\S*)?\s+(?:а\s+)?(?:втор\S*)\s+(?:был\S*\s+)?(\d+(?:,\d+)?)\s*(?:г|гр|грам\S*)?\s*$/.exec(t))){ var sg=+mm[1].replace(',','.')+ +mm[2].replace(',','.'); return setG(sg) }
+    /* «тоже 125 г, каждое взвешивала отдельно» — вес последней записи */
+    if((mm=/^\s*(?:и\s+)?(тоже\s+)?(\d+(?:,\d+)?)\s*(?:г|гр|грам\S*)((?:\s+(?:каждое|каждая|каждый|отдельно|взвешивал\S*))*)\s*$/.exec(t))&&(mm[1]||mm[3])) return setG(+mm[2].replace(',','.'));
+    /* «чайную, самую маленькую» — мера последней записи */
+    if((mm=/^\s*(чайн|столов|десертн)\S*(?:\s+(?:вот|самую|самая|маленьк\S*|ложк\S*|ложечк\S*))*\s*$/.exec(t))&&/(ст|ч|дес)\. л\./.test(String(x.u))){ var su={'чайн':'ч. л.','столов':'ст. л.','десертн':'дес. л.'}[mm[1]]; return setG(null,x.q,su) }
+    /* «это вес без масла», «просто полила сверху, вес риса до этого был» — пояснение, в дневник ничего нового */
+    if(/^\s*(?:это\s+)?(?:вес\s+)?без\s+[а-я]+\s*$/.test(t)||/(?:^|\s)вес\s+(?:\S+\s+)?до\s+этого\s+был/.test(t)) return p('Понял, '+esc(foodName(l))+' — '+fmt(x.g)+' г, так и записано.');
+    /* «груша была ещё до полуночи, правильно», «второе целиком» — подтверждение */
+    if((mm=/^\s*([а-я]{3,})\s+был[аио]?\s+(?:еще\s+|ещё\s+)?(.*?)\s*(?:правильно|верно|да|так)\s*$/.exec(t))&&isLast(mm[1])&&!/\d/.test(t)) return p('Да, так и записано: '+esc(foodName(l))+(x.t?', '+esc(x.t):'')+'.');
+    /* «у одного желток не ела» после двух яиц — одно яйцо целиком и белок второго */
+    if((mm=/^\s*у\s+(?:1|одного|одной)\s+(желток|белок)\s+не\s+(?:⊙|ел[аи]?|съел[аи]?)\s*$/.exec(t))&&/^яйц/.test(nm[0]||'')&&x.q>=2&&x.u!=='г'){
+      if(writeGuard()) return p('Чтобы менять записи, войди в аккаунт.');
+      x.q=x.q-1; x.g=gramsFor(x.fid,x.q,x.u); l.q=x.q; l.g=x.g; touch();
+      var other=mm[1]==='желток'?'белок':'желток'; NEST++; var h2; try{ h2=handle0(chat,S,Object.assign({},m,{text:'1 '+other+' яйца',eaten:true})) } finally { NEST-- }
+      return p('Поправил: '+esc(foodName(l))+' — '+fmt(x.q)+' '+esc(uLab(x.fid,x.q,x.u))+'.')+h2 }
+    /* «не фиников, инжиров сушёных», «беру назад, это про питьевой был» — тот же продукт, другое название: количество прежнее */
+    if((mm=/^\s*не\s+([а-я]{3,})\s+(?:а\s+)?([а-я].*?)\s*$/.exec(t))&&isLast(mm[1])&&!/\d/.test(mm[2])) return correct(S,mm[2]);
+    var head=String(l.spoken||l.name||'').split(' ').filter(function(w){ return w&&!W_ADJL.test(norm(w))&&!/^\d/.test(w) })[0]||'';
+    if((mm=/^\s*(?:беру назад|я ошиб\S*|ошибся|ошиблась)\s+(?:это\s+)?(?:про\s+)?([а-я]+)(?:\s+был\S*)?\s*$/.exec(t))) return correct(S,(isLast(mm[1])?'':head+' ')+mm[1]);
+    /* «каша овсяная» сразу после «кашей 250 г» — уточнение того же блюда; «оба ржаные» — уточнение того же продукта */
+    var tw=t.trim().replace(/^(?:оба|обе|все|они|он|она|оно)\s+/,'').split(/\s+/).filter(Boolean);
+    if(!/\d/.test(t)&&tw.length&&tw.length<=3&&(S.turn||0)-((S.commits.filter(function(c){ return c.add&&c.add.indexOf(ad)>=0 })[0]||{}).turn||-9)<=2){
+      if(tw.every(function(w){ return DESCR.test(w)||W_ADJL.test(norm(w))||/[а-я]{3,}(ый|ий|ой|ая|яя|ое|ее|ые|ие)$/.test(norm(w)) })) return correct(S,(tw.every(function(w){ return DESCR.test(w) })?'':head+' ')+tw.join(' '));
+      if(tw.length>=2&&isLast(tw[0])&&!isLast(tw[1])&&tw.slice(1).every(function(w){ return W_ADJL.test(norm(w))||DESCR.test(w) })) return correct(S,tw.join(' '));
+    }
+    /* «сам чай не пила, сахар так съела», «выпил стакан кефира, а йогурт запечатан» — названное раньше не съедено: запись убирается */
+    var nr=/(?:^|\s)(?:а\s+)?(?:сам[аио]?\s+)?([а-я]{3,})\s+(?:не\s+(?:пил[аи]?|ел[аи]?|ели|пили|трогал[аи]?|открывал[аи]?)|запечатан\S*|не\s+открыт\S*)(?=\s|$)/.exec(t);
+    if(nr){ var items=S.commits.filter(function(c){ return !c.undone }).slice(-2).reduce(function(a,c){ return a.concat(c.add) },[]).filter(function(a){ return day(a.date).items.indexOf(a.item)>=0 }), w2=norm(nr[1]);
+      var hitA=items.filter(function(a){ var f=FOODS[a.item.fid]; return f&&norm(f.n).split(/[^a-zа-я0-9]+/).some(function(n){ return sim(w2,n)>=1.8 }) }).pop();
+      if(hitA){ if(writeGuard()) return p('Чтобы менять записи, войди в аккаунт.');
+        var e2=day(hitA.date); e2.items=e2.items.filter(function(y){ return y!==hitA.item }); touch();
+        var c2={id:'c'+(++S.seq),add:[],del:[{date:hitA.date,item:hitA.item}],undone:false}; S.commits.push(c2);
+        var restT=(t.slice(0,nr.index)+' '+t.slice(nr.index+nr[0].length)).replace(/(^|\s)(?:так|тоже|все|вс[её]|⊙|сам[аио]?)(?=\s|$)/g,' ').trim(), h3='';
+        var ws3=tokensOf(restT).filter(function(w){ return !items.some(function(a){ var f=FOODS[a.item.fid]; return f&&norm(f.n).split(/[^a-zа-я0-9]+/).some(function(n){ return sim(norm(w),n)>=1.8 }) }) });
+        if(ws3.length){ NEST++; try{ h3=handle0(chat,S,Object.assign({},m,{text:restT})) } finally { NEST-- } }
+        return p('Убрал — не съедено:')+'<div class="mlRows">'+row({fid:hitA.item.fid,q:hitA.item.q,u:hitA.item.u,g:hitA.item.g,name:''},true,hitA.item.t||'')+'</div>'+chips([['undo:'+c2.id,'Вернуть']])+h3 }
+    }
+    return null;
+  }
   function correct(S,rest){
     var ad=lastAdd(S); if(!ad) return p('Поправлять пока нечего: в этом диалоге я ещё ничего не записал.');
     var mv=moveLast(S,rest); if(mv) return mv;
