@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1884625,
-   "sha256": "36b89301b8f5e4d825ca6f27f6be326e25be2f00ee5bee621fad30ee77be4caa"
+   "size": 1885231,
+   "sha256": "b4cead41e6939e209866a3dd721b4a10f8ed0b76798e92dd8b7a3d9ab8240e1f"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -241,8 +241,8 @@
   },
   {
    "path": "selfcare.css",
-   "size": 25052,
-   "sha256": "2310152828b2183aca5c6549673d04010e9d8eb046ad46d41edda7453b480cdd"
+   "size": 25330,
+   "sha256": "354041de98ebcf20e01fba0d3f73a10cdf491f144e4f0dd97edd1c2dd662c0b7"
   },
   {
    "path": "shared/apps.json",
@@ -446,8 +446,8 @@
   },
   {
    "path": "sheet-fold.js",
-   "size": 8080,
-   "sha256": "109c404e563699d99c51fb6302fa175ca9d908154fa9b0358c455e1b5cf3fe02"
+   "size": 8326,
+   "sha256": "59e9a0cf0d77fd0b997b8478eec1d76294b5b82ff52ff3fdcf0f659bcf8bd596"
   },
   {
    "path": "sheet-grip.js",

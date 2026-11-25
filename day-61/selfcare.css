@@ -172,7 +172,7 @@ body.fold-on [data-screen="day"] .nwSl:not(.side) .care-name{opacity:var(--fold-
 /* 61.13: «призрак» кнопки на карточке — прозрачная выпуклая форма без надписи; .fold-knob-side — её стенка (толщина) */
 .fold-sheet .knob.fold-ghost{z-index:2;transition:none;background:linear-gradient(165deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%,rgba(255,255,255,0));box-shadow:inset 0 1.5px 0 rgba(255,255,255,.6),inset 0 0 0 1px rgba(255,255,255,.26);backdrop-filter:none;-webkit-backdrop-filter:none}
 .fold-sheet .knob.fold-ghost>*{opacity:calc(1 - var(--fold-in,1))}
-.fold-sheet .fold-knob-side{position:absolute;z-index:1;border-radius:9999px;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.05) 60%,rgba(255,255,255,0));box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);opacity:var(--fold-card,0)}
+.fold-sheet .fold-knob-side{position:absolute;z-index:1;border-radius:9999px;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.2));box-shadow:inset 0 0 0 1px rgba(255,255,255,.34);-webkit-mask-image:radial-gradient(circle var(--r,0px) at 50% calc(var(--r,0px) + var(--lift,0px)),transparent calc(var(--r,0px) - 1px),#000 var(--r,0px));mask-image:radial-gradient(circle var(--r,0px) at 50% calc(var(--r,0px) + var(--lift,0px)),transparent calc(var(--r,0px) - 1px),#000 var(--r,0px));opacity:var(--fold-card,0)}
 
 /* ── Аудит Day 20.11.2026 (Астамур): страница «Осознанность» и листы расписания и практики ──
    Расписание — на своей странице с «+» над списком (п. 32). Строки: нажал — лист с полями; свайп влево — убрать (п. 27, 28).

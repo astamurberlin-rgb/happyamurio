@@ -51,7 +51,7 @@
       side=document.createElement('i');side.className='fold-knob-side';
       side.style.left=ghost.offsetLeft+'px';side.style.top=ghost.offsetTop+'px';
       side.style.width=ghost.offsetWidth+'px';side.style.height=ghost.offsetHeight+'px';
-      ghost.before(side);ghost.classList.add('fold-ghost');
+      side.style.setProperty('--r',R+'px');ghost.before(side);ghost.classList.add('fold-ghost');
     }
     document.body.classList.add('fold-on');
     st={sheet,day,layer,tint,ghost,side,R,H:sheet.offsetHeight||innerHeight,p:0,raf:0,safety:0,closing:false};
@@ -70,7 +70,7 @@
     if(st.ghost){   /* толщина кнопки: верхняя грань на THICK точек выше карточки — на экране это сдвиг вниз по карточке */
       const lift=Math.min(THICK*Math.tan(th*Math.PI/180),st.R*.9);
       st.ghost.style.translate='0 '+lift.toFixed(2)+'px';
-      st.side.style.height=(st.R*2+lift).toFixed(2)+'px';
+      st.side.style.height=(st.R*2+lift).toFixed(2)+'px';st.side.style.setProperty('--lift',lift.toFixed(2)+'px');   /* стенка видна только между двумя окружностями: под верхней гранью она вырезана */
     }
     const b=document.body.style;
     b.setProperty('--fold-in',String(clamp(p/.15,0,1)));   /* надпись кнопки главной проявляется на месте вместо «Нажми» */
