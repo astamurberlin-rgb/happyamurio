@@ -143,6 +143,17 @@ var MealSpeech=(function(){
     var n=nz(f.n), src=String(f.src||''), hit=FM.filter(function(r){ return r.unit===u&&r.re.test(n)&&(!r.src||r.src.test(src)) })[0];
     return gc[k]=hit?hit.g:0;
   }
+  /* мера словами у продукта USDA («банка», «ломтик»): его собственная мера по русской подписи — ключ f.por («can (6 oz)», «slice»), иначе null. Подписи — словарь usda_measures */
+  function usdaUnit(f,u){
+    var heads=((D&&D.usda_measures)||{})[u]; if(!heads||!f||!f.por||f.por[u]||typeof MealUSDA==='undefined'||!MealUSDA.unitLabel) return null;
+    var best=null, rank=99;
+    Object.keys(f.por).forEach(function(k){
+      if(!(f.por[k]>0)) return; var lab=MealUSDA.unitLabel(f,k,f.id); if(!lab) return;
+      lab=nz(lab).replace(/\s*\(.*$/,'').replace(/,.*$/,'').trim();
+      heads.forEach(function(h,i){ h=nz(h); var r=lab===h?i*3:lab==='средний '+h||lab==='средняя '+h?i*3+1:lab.split(' ').length===2&&lab.split(' ')[1]===h?i*3+2:99; if(r<rank){ rank=r; best=k } });
+    });
+    return best;
+  }
   function weight(f,u){ return (f&&f.por&&f.por[u])||group(f,u)||(typeof DEF!=='undefined'&&DEF[u])||0 }
   /* обычная мера продукта, когда количество не названо: своя мера → мера продукта → мера по словарю */
   function usual(f,vague){
@@ -333,7 +344,7 @@ var MealSpeech=(function(){
     return e?{id:e.id,history:new RegExp(e.history),search:e.default_search||null,ask:!!e.ask,options:e.ask_options||(e.first_search?[e.first_search]:[])}:null;
   }
   build();
-  return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
+  return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usdaUnit:usdaUnit, usual:usual, ownUnit:ownUnit,
     wordForms:function(){ return (D&&D.dish_word_forms)||[] }, advice:function(){ return (D&&D.dish_advice)||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, similarKind:similarKind, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null }, choice:function(){ return CHOICE },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
