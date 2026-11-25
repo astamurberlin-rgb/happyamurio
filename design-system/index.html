@@ -739,7 +739,7 @@ html[data-happy-appearance-app="sport"] .ds-shapes .sh-card{border-radius:24px}
 /* ── полоска входа для гостя: day-61/index.html (.day-signin); на странице стоит в потоке ── */
 .ds-signin{display:flex;height:48px;padding:0 6px 0 20px;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;
  background:var(--fab,var(--happy-accent));border:0;box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
-.ds-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab,var(--happy-accent));font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.ds-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab,var(--happy-accent));font:inherit;font-size:16px;font-weight:600;cursor:pointer}
 
 /* ── микрофон: day-61/index.html (.fab) ── */
 .ds-fabrow{display:flex;justify-content:center;padding:10px 0 4px}
@@ -925,15 +925,16 @@ html[data-happy-appearance-app="sport"] .ds-mbtn{border-radius:24px}
    <button type="button" class="hs-provider"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 12.536c.031 3.233 2.836 4.309 2.867 4.323-.024.076-.448 1.533-1.478 3.039-.89 1.302-1.813 2.599-3.27 2.626-1.432.026-1.892-.849-3.529-.849-1.636 0-2.148.823-3.504.875-1.407.053-2.478-1.409-3.375-2.707-1.835-2.654-3.238-7.5-1.355-10.77.936-1.624 2.609-2.652 4.424-2.678 1.382-.026 2.686.929 3.53.929.843 0 2.426-1.149 4.084-.98.694.029 2.642.28 3.894 2.113-.1.062-2.325 1.353-2.288 4.079zM14.365 4.565c.745-.902 1.246-2.158 1.109-3.408-1.074.043-2.373.716-3.143 1.617-.69.798-1.295 2.076-1.132 3.301 1.197.093 2.421-.609 3.166-1.51z"/></svg><span>Продолжить с Apple</span></button>
    <button type="button" class="hs-provider"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.61 24.46c0-1.36-.12-2.66-.35-3.92H24v7.42h11a9.41 9.41 0 0 1-4.08 6.18v5.14h6.61c3.86-3.55 6.08-8.77 6.08-14.82Z"/><path fill="#34A853" d="M24 44c5.51 0 10.13-1.83 13.51-4.96l-6.61-5.14C29.07 35.13 26.73 35.88 24 35.88c-5.3 0-9.8-3.58-11.41-8.4H5.76v5.3A20 20 0 0 0 24 44Z"/><path fill="#FBBC05" d="M12.59 27.48A12 12 0 0 1 12 24c0-1.21.21-2.38.59-3.48v-5.3H5.76A20 20 0 0 0 4 24c0 3.23.77 6.28 2.13 8.98l6.46-5.5Z"/><path fill="#EA4335" d="M24 12.12c3 0 5.68 1.03 7.8 3.05l5.85-5.85A19.6 19.6 0 0 0 24 4a20 20 0 0 0-18.24 11.22l6.83 5.3c1.61-4.82 6.11-8.4 11.41-8.4Z"/></svg><span>Продолжить с Google</span></button>
    <button type="button" class="hs-email-start"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3.8 7.2 12 13l8.2-5.8"/></svg><span>Продолжить с почтой</span></button>
+   <button type="button" class="hs-provider"><span>Войти</span></button>
   </div>
-  <p class="ds-spec">Пилюля 48, текст 16 · 600. Это исключение: остальные кнопки — 14. Сюда же относятся «Войти» и «Отмена» на экране входа.</p>
+  <p class="ds-spec">Пилюля 48, текст 16 · 600. Это исключение: остальные кнопки — 14. Каждая кнопка «Войти» в аккаунт выглядит так же: на экране входа, в листе «Войди в аккаунт», внизу Настроек у гостя (образец выше — стекло, как «Продолжить с Google»). В полоске для гостя «Войти» — пилюля 36, текст тоже 16. Решено 25.11.</p>
   <p class="ds-src">Код: shared/happy-screens.css · shared/happy-welcome.js</p>
 
   <h3>Сегментный переключатель</h3>
   <div class="ds-hs"><div class="hs-segment ds-seg" role="group" aria-label="Период">
    <button type="button" aria-pressed="true">Сегодня</button><button type="button" aria-pressed="false">Неделя</button><button type="button" aria-pressed="false">Месяц</button>
   </div></div>
-  <p class="ds-spec">Выбор из нескольких вариантов (✱&nbsp;segmented control). Контур 44, отступ 3, выбранная пилюля 36. Текст 14: выбранное — 600, остальное — 400. Одиночная пилюля (кнопка, чип) — 44.</p>
+  <p class="ds-spec">Выбор из нескольких вариантов (✱&nbsp;segmented control). Контур 44, отступ 3, выбранная пилюля 36. Текст 14: выбранное — 600, остальное — 400. Чип и малая кнопка в строке — 44, основная кнопка — 48.</p>
   <p class="ds-src">Код: shared/happy-design.css · shared/happy-screens.css</p>
 
   <h3>Чипы (выбор варианта)</h3>
@@ -1026,7 +1027,7 @@ html[data-happy-appearance-app="sport"] .ds-mbtn{border-radius:24px}
 
   <h3>Полоска входа для гостя</h3>
   <div class="ds-signin"><span>Войди, чтобы записывать</span><button type="button">Войти</button></div>
-  <p class="ds-spec">Гостевой режим во всех трёх приложениях. Пилюля 48 над кнопкой микрофона, текст 14 · 600. Кнопка «Войти» — пилюля 36, 14 · 600. Цвета — из темы.</p>
+  <p class="ds-spec">Гостевой режим во всех трёх приложениях. Пилюля 48 над кнопкой микрофона, текст 14 · 600. Кнопка «Войти» — пилюля 36, 16 · 600, как кнопки входа (решено 25.11). Цвета — из темы.</p>
   <p class="ds-src">Код: day-61/index.html · meal-34/index.html · sport-45/sport/src/sport-signin.js</p>
 
   <h3>Кнопка микрофона</h3>
@@ -1451,7 +1452,7 @@ html[data-happy-appearance-app="sport"] .ds-mbtn{border-radius:24px}
   <h2>Исключения</h2>
   <p class="ds-note">Места, где значение нарочно отличается от общего правила.</p>
   <ol class="ds-rules">
-   <li><b>Кнопки входа</b> («Продолжить с Apple», «с Google», «с почтой», а на экране входа и в листе «Войди в аккаунт» — «Войти» и «Отмена») — текст 16 вместо 14.</li>
+   <li><b>Кнопки входа</b> («Продолжить с Apple», «с Google», «с почтой», а на экране входа и в листе «Войди в аккаунт» — «Войти» и «Отмена») — текст 16 вместо 14. Так же — каждая «Войти» в аккаунт: внизу Настроек у гостя пилюля 48, в полоске для гостя пилюля 36, текст 16.</li>
    <li><b>Лист «Войди в аккаунт»</b> — подзаголовок белый 82 % вместо 70 % (ярче).</li>
    <li><b>Маленькая пилюля 36</b> внутри полоски или контура 44–48: «Войти» в полоске входа, выбранный вариант в сегментном переключателе.</li>
    <li><b>Цифра в кольце энергии и в таймере</b> — зависит от размера кольца, около 25.</li>
