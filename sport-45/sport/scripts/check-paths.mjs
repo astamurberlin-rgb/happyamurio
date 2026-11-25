@@ -38,7 +38,8 @@ for (const page of pages) {
     if(/\+\s*$/.test(html.slice(Math.max(0,match.index-3),match.index)))continue;
     await check(match[2], page);}
 }
-const library='/happyamurio/assets/sport-icons/v1/';
+// Адреса в странице относительные (25.11.2026): одна сборка работает и на github.io/happyamurio/, и на amurio.app/.
+const library='../assets/sport-icons/v1/';
 const catalog = JSON.parse(await readFile(new URL('../assets/sport-icons/v1/catalog.json', repo), 'utf8'));
 assert.ok(catalog.length>=85,'Existing icon catalog retained');
 assert.equal(new Set(catalog.map(item => item.id)).size, catalog.length);
@@ -57,6 +58,7 @@ for (const [path, text] of files) {
 }
 // Номера выпусков Day и Meal в страницу не вшиты: их выпуск не требует пересборки Sport.
 assert.doesNotMatch(built, /\/happyamurio\/(day|meal)-\d/, 'В странице Sport нет адресов Day и Meal с номером выпуска');
+for (const [path, text] of files) assert.doesNotMatch(text, /["'(]\/happyamurio\/[a-z]/, 'Нет адресов от корня /happyamurio/ (на amurio.app их нет): ' + path);
 assert.equal(failures.length, 0, failures.join('\n'));
 console.log(`Passed: ${checked.size} local paths across Sport, Day and Meal; ${catalog.length} icons from the shared library; GitHub Pages prefix; release pages match the build; no Day/Meal release numbers inside.`);
 if (process.argv.includes('--list')) console.log([...checked].sort().join('\n'));

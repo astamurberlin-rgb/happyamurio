@@ -72,7 +72,7 @@ def edit(path, pairs):
     for old, new, count in pairs:
         n = len(re.findall(old, s))
         assert n == count if count is not None else True, (path, old, n)
-        s = re.sub(old, (lambda m: new) if new is not None else (lambda m: 'href="../' + m.group(1) + '/index.html"'), s)
+        s = re.sub(old, (lambda m: new) if new is not None else (lambda m: 'href="../' + release[m.group(1)] + '/index.html"'), s)
     open(p, 'w', encoding='utf-8').write(s)
 
 
@@ -83,14 +83,16 @@ for app, folder in release.items():
         (r'<head>', '<head>\n<script src="../lab/happy-lab-server.js"></script>', 1),
         (r'<title>[^<]*</title>', '<title>' + names[app] + ' · Лаборатория</title>', 1),
         # соседние приложения — рядом, в этой же лаборатории; страница открывается по имени файла
+        (r"var BASE=root\.location[^;]*;", "var BASE='../';", None),   # Sport: общий файл ссылок встроен в страницу
         (r'/happyamurio/', '../', None),
-        (r'href="\.\./((?:day|meal|sport)-\d+)/"', None, None),
-        (r"var href=BASE\+d\+'/';", "var href=BASE+d+'/index.html';", None),   # Sport: адреса соседей встроены в страницу
+        # короткие адреса соседей (../day/) в лаборатории ведут в папку выпуска: страница открывается по имени файла
+        (r'href="\.\./(day|meal|sport)/"', None, None),
+        (r"var href=BASE\+key\+'/';", "var href=BASE+dir(cfg.entry)+'/index.html';", None),
     ])
     links = os.path.join(out, folder, 'shared', 'happy-links.js')
     if os.path.exists(links):
-        edit(folder + '/shared/happy-links.js', [(r"var BASE='/happyamurio/';", "var BASE='../';", 1),
-                                                 (r"var href=BASE\+d\+'/';", "var href=BASE+d+'/index.html';", 1)])
+        edit(folder + '/shared/happy-links.js', [(r"var BASE=root\.location[^;]*;", "var BASE='../';", 1),
+                                                 (r"var href=BASE\+key\+'/';", "var href=BASE+dir(cfg.entry)+'/index.html';", 1)])
 
 # каталоги Meal — рядом со страницей, если попросили
 meal = release['meal']

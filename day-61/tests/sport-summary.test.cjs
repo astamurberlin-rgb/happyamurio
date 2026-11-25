@@ -123,10 +123,10 @@ test('страница подключает общие файлы витрины
   assert.ok(order.every(i => i > 0), 'все файлы подключены: ' + order.join());
   assert.deepEqual(order.slice().sort((a, b) => a - b), order, 'общий вход и модуль — раньше документов Day, они — раньше интерфейса');
   assert.ok(!page.includes('happy-summaries.js') && !page.includes('day-sport-bootstrap') && !page.includes('measurements-host'), 'прежний разбор сводок и прежняя вкладка замеров не подключены');
-  const apps = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'shared', 'apps.json'), 'utf8')), sport = apps.sport.entry.split('/')[0];
-  assert.ok(page.includes("var SPORT_DIR='" + sport + "';"), 'запасной адрес записи в Sport — текущий выпуск');
+  const sport = 'sport'; // постоянный короткий адрес Sport (25.11.2026)
+  assert.ok(page.includes("var SPORT_DIR='" + sport + "';"), 'адрес записи в Sport — постоянный короткий');
   assert.ok(page.includes('href="../' + sport + '/" data-happy-app="sport"'));
-  assert.ok(ui.includes("const STRONG_URL='https://astamurberlin-rgb.github.io/happyamurio/" + sport + "/';"));
+  assert.ok(ui.includes("const STRONG_URL='https://amurio.app/" + sport + "/';"));
   assert.ok(page.includes(`href="'+escH(sportWorkoutHref(w.strongId))+'"`));
   const hrefCode = page.slice(page.indexOf('function sportWorkoutHref(id){'), page.indexOf('function woOf(d){')) + ";sportWorkoutHref('local-1 2')";
   const sportDir = 'var SPORT_DIR=' + JSON.stringify(sport) + ';';

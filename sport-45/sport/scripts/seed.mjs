@@ -4,7 +4,7 @@
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 export const EXERCISE_LIBRARY_VERSION='v1';
-export const EXERCISE_LIBRARY_URL='/happyamurio/assets/exercise-library/'+EXERCISE_LIBRARY_VERSION+'/';
+export const EXERCISE_LIBRARY_URL='../assets/exercise-library/'+EXERCISE_LIBRARY_VERSION+'/';
 const sportRoot=new URL('../',import.meta.url);
 export const libraryRoot=new URL('../../assets/exercise-library/'+EXERCISE_LIBRARY_VERSION+'/',sportRoot);
 async function json(url){return JSON.parse(await readFile(url,'utf8'))}

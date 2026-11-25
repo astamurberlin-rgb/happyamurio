@@ -1,6 +1,8 @@
 import {readFile,stat as statFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
+import {lstatSync,readlinkSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
 const root=new URL('../',import.meta.url);
 const read=p=>readFile(new URL(p,root),'utf8');
 const apps=JSON.parse(await read('shared/apps.json'));
@@ -32,11 +34,11 @@ for(const [old,app] of [['happyday-v50_1.html','day'],['happyday-meal-v22.html',
  vm.runInNewContext(code,{location:{search:'?test=1',hash:'#settings',replace:url=>target=url}});
  assert.equal(target,`${app==='icon-studio'?'..':'.'}/${app}/?test=1#settings`);
 }
-// 13.11.2026: day/, meal/, sport/ are redirects to the current release named in shared/apps.json; the static fallback must name an existing release.
+// 25.11.2026: day/, meal/, sport/ — постоянные короткие адреса: ссылки (symlink) на папку текущего выпуска из shared/apps.json.
 for(const app of ['day','meal','sport']){
- const html=await read(app+'/index.html'),m=/var fallback='\.\.\/([a-z0-9-]+)\/'/.exec(html);
- assert.ok(m,app+': redirect fallback');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),app+': redirect fallback names an existing release');
- assert.ok(html.includes("a['"+app+"']"),app+': redirect reads its own entry in apps.json');
+ const link=fileURLToPath(new URL(app,root));
+ assert.ok(lstatSync(link).isSymbolicLink(),app+'/ — ссылка на папку выпуска, а не папка');
+ assert.equal(readlinkSync(link),apps[app].entry.split('/')[0],app+'/ ведёт на текущий выпуск: ln -sfn '+apps[app].entry.split('/')[0]+' '+app);
 }
 const dayPage=await read(apps.day.entry);
 if(apps.day.links?.meal===false){
@@ -45,7 +47,7 @@ if(apps.day.links?.meal===false){
 }else{
  // Update 53: the linked-app buttons point at the release directories named in apps.json (meal-23/, sport-38/).
  // Update 55: static hrefs are fallbacks naming existing release directories; shared/happy-links.js resolves the live address.
- for(const app of ['meal','sport']){const m=dayPage.match(new RegExp(`href="\\.\\./([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'day: '+app+' link carries data-happy-app');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'day: '+app+' fallback link names an existing release');}
+ for(const app of ['meal','sport']){const m=dayPage.match(new RegExp(`href="\\.\\./([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'day: '+app+' link carries data-happy-app');assert.equal(m[1],app,'day: '+app+' link is the short permanent address');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'day: '+app+' fallback link names an existing release');}
  assert.ok(dayPage.includes('happy-links.js'),'day: happy-links module referenced');
  assert.ok(!dayPage.includes('chatgpt.site'),'day: no Sites test addresses');
 }
@@ -53,12 +55,12 @@ if(apps.day.links?.meal===false){
  // Update 55 / 26.1: with shared/happy-links.js the static href is a fallback that must name an existing release directory;
  // the live address comes from apps.json at run time, so a Day release no longer needs a Meal point release (and vice versa).
  const mealPage=await read(apps.meal.entry);
- for(const app of ['day','sport']){const m=mealPage.match(new RegExp(`href="\\.\\./([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'meal: '+app+' link carries data-happy-app');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'meal: '+app+' fallback link names an existing release');}
+ for(const app of ['day','sport']){const m=mealPage.match(new RegExp(`href="\\.\\./([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'meal: '+app+' link carries data-happy-app');assert.equal(m[1],app,'meal: '+app+' link is the short permanent address');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'meal: '+app+' fallback link names an existing release');}
  assert.ok(mealPage.includes('happy-links.js'),'meal: happy-links module referenced');}
 {// Update 38.4: Sport's linked-app buttons point at the current Day and Meal release directories and open a new window.
  // Update 38.5: static hrefs are the build-time fallback (must name existing release directories); the live address comes from apps.json via shared/happy-links.js.
  const sportPage=await read(apps.sport.entry);
- for(const app of ['day','meal']){const m=sportPage.match(new RegExp(`href="/happyamurio/([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'sport: '+app+' link carries data-happy-app');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'sport: '+app+' fallback link names an existing release');}
+ for(const app of ['day','meal']){const m=sportPage.match(new RegExp(`href="\\.\\./([a-z0-9-]+)/" data-happy-app="${app}" target="_blank"`));assert.ok(m,'sport: '+app+' link carries data-happy-app');assert.equal(m[1],app,'sport: '+app+' link is the short permanent address');assert.ok((await statFile(new URL(m[1]+'/index.html',root))).isFile(),'sport: '+app+' fallback link names an existing release');}
  assert.ok(sportPage.includes('HappyLinks'),'sport: happy-links module embedded');}
 assert.ok((await read(apps.meal.previous.entry)).includes(`data-app-version="${apps.meal.previous.version}"`));
 assert.notEqual(apps.meal.entry,apps.meal.previous.entry);
