@@ -6,9 +6,9 @@
 
 | Приложение | Открыть | Папка |
 | --- | --- | --- |
-| Happy Day | https://amurio.app/day-61/ | `day-61/` |
-| Happy Meal | https://amurio.app/meal-34/ | `meal-34/` |
-| Happy Sport | https://amurio.app/sport-45/ | `sport-45/`, исходники — `sport-45/sport/src/` |
+| Happy Day | https://amurio.app/day/ | `day-61/` |
+| Happy Meal | https://amurio.app/meal/ | `meal-34/` |
+| Happy Sport | https://amurio.app/sport/ | `sport-45/`, исходники — `sport-45/sport/src/` |
 
 Точный номер версии виден внизу настроек приложения. Служебно он записан в `shared/apps.json`: по этому файлу приложения находят друг друга, а проверки узнают, что проверять.
 

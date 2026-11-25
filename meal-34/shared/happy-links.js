@@ -12,8 +12,9 @@
     if(!root.document||!apps)return 0;var n=0;
     root.document.querySelectorAll('a[data-happy-app]').forEach(function(a){
       var cfg=apps[a.getAttribute('data-happy-app')];if(!cfg||!cfg.entry)return;
-      var d=dir(cfg.entry);if(!/^[a-z0-9][a-z0-9-]*$/.test(d))return;
-      var href=BASE+d+'/';if(a.getAttribute('href')!==href){a.setAttribute('href',href);n++;}
+      var key=a.getAttribute('data-happy-app');if(!/^(day|meal|sport)$/.test(key))return;
+      // Постоянный короткий адрес (/day/, /meal/, /sport/) — он всегда открывает текущий выпуск (25.11.2026).
+      var href=BASE+key+'/';if(a.getAttribute('href')!==href){a.setAttribute('href',href);n++;}
       if(cfg.name)a.setAttribute('title',cfg.name);
     });
     return n;

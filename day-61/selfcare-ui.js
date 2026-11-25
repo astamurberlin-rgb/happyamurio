@@ -8,7 +8,7 @@ icons.activity='<span class="activity-icon"></span>';
 /* 57.3: «Открыть Sport ↗» ведёт на текущий выпуск Sport. Адрес подставляет shared/happy-links.js из shared/apps.json
    (как у кнопки «Happy Sport» в настройках); ниже — запасной, если список выпусков не загрузился. Раньше здесь стоял
    адрес тестовой сборки от 04.11. */
-const STRONG_URL='https://astamurberlin-rgb.github.io/happyamurio/sport-45/';
+const STRONG_URL='https://amurio.app/sport/';
 let strongLinks=null;
 function strongLink(){try{if(!root.HappyLinks)return;strongLinks=strongLinks||root.HappyLinks.load();strongLinks.then(function(apps){if(apps)root.HappyLinks.apply(apps)})}catch(e){}}
 /* Day 59: тренировки и плановые занятия Happy Sport приходят из его витрины — документы summary и plans общего
