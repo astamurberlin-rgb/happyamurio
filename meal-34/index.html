@@ -696,7 +696,8 @@ body.sheet:not(.chatOn) .fab{transform:translate(-50%,-50%) rotate(-45deg)!impor
 .askRow{display:flex;gap:9px;margin-top:14px}
 .imp{position:fixed;inset:0;z-index:8;pointer-events:none}
 .imp.on{pointer-events:auto}
-.impScrim{position:absolute;inset:0;background:rgba(4,40,80,.18);opacity:0;transition:opacity .3s}
+/* Затемнение за листом — правило дизайн-системы: чёрный 34 %, 0,22 с (решение 24.11.2026, как у листа «Войди») */
+.impScrim{position:absolute;inset:0;background:var(--happy-sheet-scrim);opacity:0;transition:opacity var(--happy-motion-screen) ease}
 .imp.on .impScrim{opacity:1}
 .impSheet{position:absolute;left:0;right:0;bottom:0;
   padding:22px 20px calc(112px + env(safe-area-inset-bottom));

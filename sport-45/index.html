@@ -1451,7 +1451,7 @@ button.feed-body{cursor:pointer}
 
 /* окно: форма замера, удалённые замеры */
 dialog.hm-dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;padding:0;border:0;width:min(100%,460px);max-width:100%;max-height:calc(100dvh - 28px);background:transparent;color:var(--ink,#fff);overflow:visible}
-dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
+dialog.hm-dialog::backdrop{background:var(--happy-sheet-scrim,rgba(0,0,0,.34))}
 .hm-sheet{max-height:calc(100dvh - 28px);overflow:auto;overscroll-behavior:contain;padding:18px 20px calc(25px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;border:1px solid rgba(255,255,255,.27);background:var(--hm-sheet);box-shadow:0 -12px 60px rgba(8,60,120,.25);-webkit-user-select:text;user-select:text}
 .hm-sheet-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px}
 .hm-sheet-top h2{margin:0;font-size:20px;line-height:1.2;font-weight:700}
@@ -1483,7 +1483,7 @@ dialog.hm-dialog::backdrop{background:rgba(18,32,70,.46)}
 .hm-grip::before{content:"";position:absolute;left:50%;top:12px;width:42px;height:5px;margin-left:-21px;border-radius:999px;background:rgba(255,255,255,.55)}
 
 /* Окно замера под нижним меню приложения (19.11.2026): затемнение, окно, меню поверх, низ с запасом под меню. */
-.hm-dialog-shade{position:fixed;inset:0;z-index:2147479990;background:rgba(18,32,70,.46)}
+.hm-dialog-shade{position:fixed;inset:0;z-index:2147479990;background:var(--happy-sheet-scrim,rgba(0,0,0,.34))} /* правило листов 34 % (24.11.2026) */
 .hm-dialog[open]{z-index:2147479995}
 body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
 .hm-dialog .hm-sheet{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
@@ -1947,10 +1947,10 @@ html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]::after{
 .hp-grid button.in{background:var(--happy-glass)}
 .hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,var(--hs-seg-ink,#5C4598));font-weight:600}
 .hp-grid button:disabled{opacity:.35;cursor:default}
-/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): размытый фон, нижняя панель видна поверх,
+/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): затемнение 34 % по правилу, нижняя панель видна поверх,
    кнопка микрофона не превращается в крестик, лист цвета приложения (тема). Закрыть — ручкой, жестом вниз или нажатием мимо. */
 .imp.hp-sheet-wrap .impSheet{background:var(--hs-sheet-bg,var(--happy-base,#00a8f5));max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
-.imp.hp-sheet-wrap .impScrim{background:rgba(4,60,110,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.imp.hp-sheet-wrap .impScrim{background:var(--happy-sheet-scrim);-webkit-backdrop-filter:none;backdrop-filter:none} /* правило 34 % без размытия (24.11.2026) */
 /* Оформление Happy (AGENTS.md, раздел 4; решение Астамура 16.11.2026) — последний слой стилей Sport.
  * Только форма: высота, скругление, размер и жирность текста. Цвета не трогаются — их задаёт тема.
  * Пилюля — всё нажимаемое: основная кнопка 48, вкладки и выбор из вариантов 44 / текст 14, чип и фильтр 44 / 14,
