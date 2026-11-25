@@ -1371,6 +1371,19 @@ dict(id="Дк31", eaten=True, msgs=["Ещё 80 г селедки 60 г лава�
  dict(id="Сп14", msgs=["сколько витамина б3 в куриной грудке"], mode="none", reply="витамин B3"),
  dict(id="Сп15", msgs=["сколько витамина PP в курице"], mode="none", reply="витамин B3"),
  dict(id="Вещ11", msgs=["Груша 200 г", "сколько ниацина я сегодня съел"], want=[("груш", 200)], reply="B3 — ниациновый эквивалент"),
+ # «где много X» — обычные источники из словаря, числа из базы, в дневник ничего (Астамур 25.11.2026)
+ dict(id="Вещ12", msgs=["где много железа"], mode="none", reply="Где много железа"),
+ dict(id="Вещ13", msgs=["чем добрать белок"], mode="none", reply="Где много белка"),
+ dict(id="Вещ14", msgs=["что богато витамином с"], mode="none", reply="Где много витамина C"),
+ dict(id="Вещ15", msgs=["в каких продуктах есть омега 3"], mode="none", reply="омега-3 из рыбы"),
+ dict(id="Вещ16", msgs=["источники витамина д"], mode="none", reply="Где много витамина D"),
+ dict(id="Вещ17", msgs=["Груша 200 г", "где много клетчатки?"], want=[("груш", 200)], reply="Сегодня по дневнику у тебя 5,6 г"),
+ dict(id="Вещ18", msgs=["где много витаминов", T("C")], mode="none", reply="Где много витамина C"),
+ dict(id="Вещ19", msgs=["где много сахара"], mode="none", reply="Пока подскажу, где много, только"),
+ dict(id="Вещ20", msgs=["что есть при анемии"], mode="none", reply="к врачу"),
+ dict(id="Вещ21", msgs=["много ли железа в гречке"], mode="none", reply="0,8 мг"),
+ dict(id="Вещ22", msgs=["какие продукты богаты магнием"], mode="none", reply="Где много магния"),
+ dict(id="Вещ23", msgs=["железа баранья 100 г"], want=[("зобная железа баранья", 100)]),
 # Цель и остаток за день (тема 2 «вышло за рамки», 22.11.2026): ответ из «Целей на день», в дневник ничего
  dict(id="Цо01", msgs=["какая у меня цель"], mode="none", reply="Цели на день"),
  dict(id="Цо02", msgs=["сколько мне осталось калорий"], mode="none", reply="Цели на день"),
@@ -1751,6 +1764,16 @@ dict(id="Дк31", eaten=True, msgs=["Ещё 80 г селедки 60 г лава�
  dict(id="Пв11", msgs=["верни банан"], mode="none", reply="Не нашёл удалённой"),
  dict(id="Пв12", msgs=["на обед каша гречневая 200 г", "перенеси кашу на ужин"], want=[("гречк", 200, {"date": "2026-11-13", "sec": "dn"})]),
  dict(id="Пв13", msgs=["на обед гречка 200 г", "на ужин кофе 200 мл", "перенеси обед на вчера"], want=[("гречк", 200, {"date": "2026-11-12", "sec": "pm"}), ("кофе", 200, {"date": "2026-11-13", "sec": "dn"})]),
+# Меры словами у продуктов американской базы USDA — их своя мера из базы, а не общий вес меры (журнал ошибок, 24.11.2026; «да» Астамура)
+ dict(id="Мю01", msgs=["ломтик пепперони"], want=[("салями сух", 9.8)]),
+ dict(id="Мю02", msgs=["банка энергетика"], want=[("red bull !без", 258)]),
+ dict(id="Мю03", msgs=["domino's 2 ломтика"], want=[("domino's пепперони", 158)]),
+ dict(id="Мю04", msgs=["суп campbell's chunky 1 банка"], want=[("campbell's", 519)]),
+ dict(id="Мю05", msgs=["рисовые крекеры 1 порция"], want=[("рисовые крекеры", 30)]),
+ dict(id="Мю06", msgs=["пепперони 1 кусок"], want=[("салями сух", 9.8)]),
+ dict(id="Мю07", msgs=["oscar mayer 2 ломтика"], want=[("oscar mayer", 18)]),
+ dict(id="Мю08", msgs=["ломтик колбасы"], want=[("колбас", 15)]),
+ dict(id="Мю09", msgs=["две банки колы"], want=[("кола", 660)]),
 ]
 # Meal 34.13 · разбор отчёта GPT (25.11.2026, решения Астамура): Т3 числа-ловушки, Т1 поправка внутри фразы, предохранитель 3 кг,
 # Т2 часть от целого и остаток, Т4 уточнение вторым сообщением, Т8 команды «отмени последнюю», «удали вчерашний», «убери …, оставь …»
@@ -1809,6 +1832,10 @@ FAVN = "()=>(DB.favs||[]).map(id=>FOODS[id]?FOODS[id].n:id).join('|')"
 FASTON = "()=>!!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on)"
 ANY = "()=>Object.values(DB.days).some(d=>(d.items||[]).length>0)"
 OWNSET = "()=>{const v={kcal:200,prot:15,fat:10,carb:18};const old=(DB.foods||[]).find(f=>f.n==='Сырники');if(old)MealProductEditor.quickEdit(old.id,v);else MealProductEditor.quick({name:'Сырники',per100:v,por:{'шт':60}});return true}"   # тот же продукт между сценариями: удалить его из хранилища на лету нельзя (adoptRemote)
+# свои продукты для сценариев «свой продукт первым»: «Мои продукты» очищаются и заводятся заново
+OWN1ST = "()=>{DB.foods=[];rebuildLib();save();saveNow();const v={kcal:200,prot:15,fat:10,carb:18};MealProductEditor.quick({name:'Сырники',per100:v,por:{'шт':60}});return true}"
+OWN2 = OWN1ST.replace("MealProductEditor.quick({name:'Сырники',per100:v,por:{'шт':60}})", "MealProductEditor.quick({name:'Сырники мамины',per100:v,por:{'шт':60}});MealProductEditor.quick({name:'Сырники бабушкины',per100:v,por:{'шт':60}})")
+LASTFOOD = "()=>{const it=day(curDate).items||[];const x=it[it.length-1];return !!x&&!!FOODS[x.fid]&&FOODS[x.fid].n==='%s'&&Math.round(x.g)===%d}"
 ACTS = [
  dict(id="Кк01", msgs=["добавь овсянку в избранное"], reply="Добавил в избранное", ok=FAVN.replace("join('|')", "join('|').includes('Овсян')")),
  dict(id="Кк02", msgs=["добавь овсянку в избранное", {"tap": "Отменить"}], reply="Отменил", ok="()=>!(DB.favs||[]).length"),
@@ -1920,6 +1947,15 @@ ACTS = [
  dict(id="Нс12", msgs=["фастинг 16 на 8 с 8 вечера", "каждый день", "да"], reply="20:00–12:00, каждый день", ok="()=>{const f=DB.mealRules.fast;return f.on&&f.a===1200&&f.b===720&&f.d.length===7}"),
  dict(id="Нс13", msgs=["фастинг 18/6", "первая еда в 12", "по будням", "да"], reply="18:00–12:00, по будням", ok="()=>{const f=DB.mealRules.fast;return f.on&&f.a===1080&&f.b===720&&f.d.join()==='1,2,3,4,5'}"),
  dict(id="Нс14", msgs=["у меня кружка 300 мл", "норма 1900 ккал"], reply="1900 ккал", ok="()=>DB.goals.k==='1900'&&!(D.bot&&D.bot.steps)"),   # вопрос «для чего» снимается другой фразой
+# Meal 34 · свой продукт первым (решение Астамура 24.11.2026): при своих «Сырниках» — они, а не «Оладьи творожные» из базы.
+ dict(id="Пп01", setup=OWN1ST, msgs=["сырники 2 штуки"], ok=LASTFOOD % ("Сырники", 120)),
+ dict(id="Пп02", setup=OWN1ST, msgs=["съел три сырника"], ok=LASTFOOD % ("Сырники", 180)),
+ dict(id="Пп03", setup=OWN1ST, msgs=["творожники 150 г"], ok=LASTFOOD % ("Сырники", 150)),
+ dict(id="Пп04", setup=OWN1ST, msgs=["оладьи творожные 150 г"], ok=LASTFOOD % ("Оладьи творожные, жареные", 150)),
+ dict(id="Пп05", setup=OWN1ST.replace("'Сырники'", "'Сырники мамины'"), msgs=["сырники 2 штуки"], ok=LASTFOOD % ("Сырники мамины", 120)),
+ dict(id="Пп06", setup=OWN2, msgs=["сырники 2 штуки"], ok="()=>!(day(curDate).items||[]).length&&!!D.bot&&D.bot.pend.length===1&&D.bot.pend[0].line.ask==='pick'&&D.bot.pend[0].line.alts.length===2"),
+ dict(id="Пп07", setup=OWN2, msgs=["сырники 2 штуки", "бабушкины"], ok=LASTFOOD % ("Сырники бабушкины", 120)),
+ dict(id="Пп08", setup=OWN1ST.replace("'Сырники'", "'Сырники с изюмом'"), msgs=["сырники 150 г"], ok=LASTFOOD % ("Оладьи творожные, жареные", 150)),
 ]
 
 GOALS = [

@@ -66,7 +66,7 @@ def judge(s, recs, asked, html):
 
 checks, out, errors = [], {"rows": []}, []
 def check(name, ok, detail=""):
-    checks.append((name + ((" — " + detail) if detail and not ok else ""), bool(ok)))
+    checks.append((name + ((" — " + str(detail)) if detail and not ok else ""), bool(ok)))
 
 with sync_playwright() as p:
     b = launch(p)

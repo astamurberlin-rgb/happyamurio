@@ -33,7 +33,7 @@ var MealSpeech=(function(){
     (D.diminutives_and_food_aliases||[]).forEach(function(e){
       if(e.bot!=='alias'||!e.search_as) return;
       var to=nz(e.search_as), kf=(e.keep_forms||[]).map(nz), forms=e.forms.map(nz).filter(function(f){ return f!==to&&kf.indexOf(f)<0 });
-      if(forms.length) ALIASES.push({re:phrase(forms),to:to,len:Math.max.apply(null,forms.map(function(f){ return f.length })),sk:e.skip_if?new RegExp(e.skip_if):null});
+      if(forms.length) ALIASES.push({re:phrase(forms),to:to,forms:forms,len:Math.max.apply(null,forms.map(function(f){ return f.length })),sk:e.skip_if?new RegExp(e.skip_if):null});
     });
     ALIASES.sort(function(a,b){ return b.len-a.len });
     PROT=(D.protected_phrases||[]).map(nz);
@@ -142,6 +142,17 @@ var MealSpeech=(function(){
     var k=f.id+'|'+u; if(gc[k]!=null) return gc[k];
     var n=nz(f.n), src=String(f.src||''), hit=FM.filter(function(r){ return r.unit===u&&r.re.test(n)&&(!r.src||r.src.test(src)) })[0];
     return gc[k]=hit?hit.g:0;
+  }
+  /* мера словами у продукта USDA («банка», «ломтик»): его собственная мера по русской подписи — ключ f.por («can (6 oz)», «slice»), иначе null. Подписи — словарь usda_measures */
+  function usdaUnit(f,u){
+    var heads=((D&&D.usda_measures)||{})[u]; if(!heads||!f||!f.por||f.por[u]||typeof MealUSDA==='undefined'||!MealUSDA.unitLabel) return null;
+    var best=null, rank=99;
+    Object.keys(f.por).forEach(function(k){
+      if(!(f.por[k]>0)) return; var lab=MealUSDA.unitLabel(f,k,f.id); if(!lab) return;
+      lab=nz(lab).replace(/\s*\(.*$/,'').replace(/,.*$/,'').trim();
+      heads.forEach(function(h,i){ h=nz(h); var r=lab===h?i*3:lab==='средний '+h||lab==='средняя '+h?i*3+1:lab.split(' ').length===2&&lab.split(' ')[1]===h?i*3+2:99; if(r<rank){ rank=r; best=k } });
+    });
+    return best;
   }
   function weight(f,u){ return (f&&f.por&&f.por[u])||group(f,u)||(typeof DEF!=='undefined'&&DEF[u])||0 }
   /* обычная мера продукта, когда количество не названо: своя мера → мера продукта → мера по словарю */
@@ -348,13 +359,29 @@ var MealSpeech=(function(){
     /* другие названия и уменьшительные */
     var skip=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after||[]).join('|')+')\\s*$');
     var skipStem=new RegExp('(?:^|[\\s,])(?:'+(D.alias_skip_after_stems||['~']).join('|')+')[а-я]*\\s*$');
-    ALIASES.forEach(function(r){ s=s.replace(r.re,function(m,a,off,all){ var before=s.slice(0,off)+a;
+    var OWN=ownHeads();
+    ALIASES.forEach(function(r){ var mine=ownFor(r,OWN); s=s.replace(r.re,function(m,a,off,all){ var before=s.slice(0,off)+a;
+      if(mine){ var said=m.slice(a.length).trim(); return a+(mine.length===1&&!sameWords(said,mine[0])?mine[0]:said) }   // свой продукт человека с этим названием — первым: «сырники» не становятся «оладьями творожными»
       if(r.sk&&r.sk.test(before+'«»'+all.slice(off+m.length))) return m;   // «блин, съел два яйца» — восклицание, а не блины
       return skip.test(before)||(m.trim().indexOf(' ')<0&&skipStem.test(before))?m:a+r.to }) });
     s=s.replace(/\u0001(.)/g,function(m,c){ return keep[c.charCodeAt(0)-0x2460] });
     return s.replace(/\s+/g,' ').replace(/(\s,)+/g,',').replace(/^[\s,]+/,'').trim();
   }
 
+  /* свои продукты человека, названные словом из словаря («Сырники», «Сырники мамины»): такое слово не переводим в название базы, синоним — в своё название.
+     Только простое название, без «с …», «под …», «в …»: «Селёдка под шубой» — блюдо, а не селёдка (24.11.2026) */
+  function stemEq(a,b){ var n=Math.min(a.length,b.length), k=0; while(k<n&&a[k]===b[k]) k++; return k===a.length&&k===b.length||k>=4&&k>=n-2 }
+  function sameWords(a,b){ var x=a.split(' '), y=b.split(' '); return x.length===y.length&&x.every(function(w,i){ return stemEq(w,y[i]) }) }
+  function ownHeads(){
+    var foods=typeof DB!=='undefined'&&DB&&DB.foods||[];
+    return foods.filter(function(f){ return f&&f.n&&!f.supplement }).map(function(f){ return nz(f.n).replace(/[^a-zа-я0-9\s-]+/g,' ').replace(/\s+/g,' ').trim() })
+      .filter(function(n){ var w=n.split(' '); return n&&w.length<=3&&!w.some(function(x){ return /^(с|со|под|в|во|на|из|без|и|для|по)$/.test(x) }) });
+  }
+  function ownFor(r,own){
+    var hit=[]; own.forEach(function(n){ var w=n.split(' ');
+      r.forms.forEach(function(f){ var k=f.split(' ').length, h=w.slice(0,k).join(' '); if(k<=w.length&&w.length-k<=1&&sameWords(f,h)&&hit.indexOf(h)<0) hit.push(h) }) });
+    return hit.length?hit:null;
+  }
   /* «готовлю суп на четверых» — рецепт, а не съеденная порция */
   function recipe(raw){
     if(!D) return null;
@@ -367,7 +394,7 @@ var MealSpeech=(function(){
     return e?{id:e.id,history:new RegExp(e.history),search:e.default_search||null,ask:!!e.ask,options:e.ask_options||(e.first_search?[e.first_search]:[])}:null;
   }
   build();
-  return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usual:usual, ownUnit:ownUnit,
+  return {ready:function(){ return !!D }, version:function(){ return D?D.dictionary_version:'' }, prepare:prepare, group:group, weight:weight, usdaUnit:usdaUnit, usual:usual, ownUnit:ownUnit,
     wordForms:function(){ return (D&&D.dish_word_forms)||[] }, advice:function(){ return (D&&D.dish_advice)||null }, recipe:recipe, generic:generic, composite:composite, partAs:partAs, missing:missing, similarKind:similarKind, pin:pin, eaten:eaten, weighed:weighed, cooked:cooked, unitKnown:function(t){ return U2[t]||null }, choice:function(){ return CHOICE },
     on:function(v){ active=!!v }, isOn:function(){ return active },
     marks:{approx:'≈',fac:{'⊕':1.5,'⊘':0.8},vague:{'▽':0.5,'◇':1,'△':1.5},own:'⊙',all:/[≈⊕⊘▽◇△⊙]/g}};
