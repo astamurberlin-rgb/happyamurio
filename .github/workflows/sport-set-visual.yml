@@ -2,7 +2,7 @@ name: Sport · строка подхода
 
 on:
   push:
-    branches: ['**']
+    branches-ignore: [main]
     paths:
       - 'sport'
       - 'sport-*/**'
@@ -61,7 +61,10 @@ jobs:
         run: |
           cp "${HAPPY_SPORT_STORE}index.html" "$RUNNER_TEMP/sport-as-committed.html"
           node "${HAPPY_SPORT_STORE}sport/scripts/build.mjs"
-          cmp "$RUNNER_TEMP/sport-as-committed.html" "${HAPPY_SPORT_STORE}index.html"
+          if ! cmp -s "$RUNNER_TEMP/sport-as-committed.html" "${HAPPY_SPORT_STORE}index.html"; then
+            echo "::error::Собранная страница Sport отличается от сохранённой в этой ветке. Пересобери Sport."
+            exit 1
+          fi
           bash scripts/browser/run.sh sport_workout
       - name: Снимок для ручного принятия
         id: current

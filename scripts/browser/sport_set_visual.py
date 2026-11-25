@@ -39,7 +39,7 @@ def compare(reference, current, report_path):
     highlight.paste((255, 38, 106), mask=mask)
     panels = [("Было", reference), ("Стало", current),
               ("Разница" if changed else "Разница · совпадает", highlight)]
-    font = ImageFont.truetype("DejaVuSans.ttf", 25)
+    font = ImageFont.truetype("LiberationSans-Regular.ttf", 25)
     pad, label = 20, 43
     report = Image.new("RGB", (size[0] + 2 * pad, pad + len(panels) * (label + size[1] + pad)), "white")
     draw = ImageDraw.Draw(report)
