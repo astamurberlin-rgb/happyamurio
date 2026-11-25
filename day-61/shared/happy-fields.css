@@ -2,7 +2,7 @@
    у числа единица внутри и нет прочерка. Цвета берутся из темы приложения: --hf-bg, --hf-border, --hf-ink (по умолчанию — стекло Day). */
 .hf-field{position:relative;display:block;min-width:0;width:100%;height:48px}
 .hf-field>input,.hf-field>select{-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;height:48px;min-height:48px;margin:0;padding:0 12px;
-  font:inherit;font-size:16px;text-align:center;text-align-last:center;background:var(--hf-bg,rgba(255,255,255,.14));border:1px solid var(--hf-border,var(--happy-line));border-radius:12px;
+  font:inherit;font-size:16px;text-align:center;text-align-last:center;background:var(--hf-bg,rgba(255,255,255,.16));border:1px solid var(--hf-border,var(--happy-line));border-radius:12px;
   color:transparent!important;-webkit-text-fill-color:transparent!important;cursor:pointer}
 .hf-field>input::-webkit-datetime-edit,.hf-field>input::-webkit-date-and-time-value{opacity:0}
 .hf-field>input::-webkit-calendar-picker-indicator{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}

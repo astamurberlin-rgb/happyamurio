@@ -30,13 +30,13 @@
 .hp-month button{width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:var(--happy-ink);display:grid;place-items:center;cursor:pointer}
 .hp-month button:disabled{opacity:.35;cursor:default}
 .hp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px}
-.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:600;color:var(--happy-muted)}
+.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:400;color:var(--happy-muted)}
 .hp-grid button{height:44px;padding:0;border:0;border-radius:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:400;
  font-variant-numeric:tabular-nums;cursor:pointer}
 .hp-grid button.in{background:var(--happy-glass)}
 .hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,var(--hs-seg-ink,#5C4598));font-weight:600}
 .hp-grid button:disabled{opacity:.35;cursor:default}
-/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): размытый фон, нижняя панель видна поверх,
+/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): затемнение 34 % по правилу, нижняя панель видна поверх,
    кнопка микрофона не превращается в крестик, лист цвета приложения (тема). Закрыть — ручкой, жестом вниз или нажатием мимо. */
 .imp.hp-sheet-wrap .impSheet{background:var(--hs-sheet-bg,var(--happy-base,#00a8f5));max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
-.imp.hp-sheet-wrap .impScrim{background:rgba(4,60,110,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.imp.hp-sheet-wrap .impScrim{background:var(--happy-sheet-scrim);-webkit-backdrop-filter:none;backdrop-filter:none} /* правило 34 % без размытия (24.11.2026) */
