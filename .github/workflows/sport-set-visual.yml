@@ -1,8 +1,9 @@
 name: Sport · строка подхода
 
 on:
-  pull_request:
-    paths: &sport_paths
+  push:
+    branches: ['**']
+    paths:
       - 'sport'
       - 'sport-*/**'
       - 'assets/**'
@@ -14,9 +15,6 @@ on:
       - 'scripts/browser/sport_set_visual.py'
       - 'scripts/browser/baselines/sport-set.png'
       - '.github/workflows/sport-set-visual.yml'
-  push:
-    branches: [main]
-    paths: *sport_paths
   workflow_dispatch:
     inputs:
       probe:
@@ -29,6 +27,9 @@ permissions:
 
 jobs:
   visual:
+    concurrency:
+      group: sport-set-${{ github.ref }}-${{ inputs.probe || false }}
+      cancel-in-progress: true
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     container:
@@ -58,8 +59,9 @@ jobs:
           PY
       - name: Собрать Sport и проверить снимок
         run: |
+          cp "${HAPPY_SPORT_STORE}index.html" "$RUNNER_TEMP/sport-as-committed.html"
           node "${HAPPY_SPORT_STORE}sport/scripts/build.mjs"
-          git diff --exit-code -- "${HAPPY_SPORT_STORE}index.html"
+          cmp "$RUNNER_TEMP/sport-as-committed.html" "${HAPPY_SPORT_STORE}index.html"
           bash scripts/browser/run.sh sport_workout
       - name: Снимок для ручного принятия
         id: current
