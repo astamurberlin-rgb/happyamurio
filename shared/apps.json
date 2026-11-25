@@ -1,7 +1,7 @@
 {
   "day": {
     "entry": "day-61/index.html",
-    "version": "61.13",
+    "version": "61.14",
     "sharedDirectory": "day-61/shared",
     "links": {
       "meal": "meal-34/",
@@ -13,7 +13,7 @@
       "version": "60.17",
       "sourceCommit": "907ca2498c91dbf1a44783839d488fa91efca2d2"
     },
-    "name": "Happy Day · Update 61.13",
+    "name": "Happy Day · Update 61.14",
     "settingsSections": [
       "account",
       "links",
