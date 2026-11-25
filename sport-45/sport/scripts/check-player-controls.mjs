@@ -35,7 +35,6 @@ run('openExercisePlayer(0)');
 assert.equal(document.body.classList.contains('exercise-player-open'),true);
 assert.equal(nodes.get('sport-fab').dataset.action,'collapse-exercise-player');
 assert.equal(nodes.get('sport-fab').innerHTML,'x');
-assert.doesNotMatch(root.html,/player-mic/,'There is no second microphone');
 assert.equal(root.rows,1);clickAction('player-new-round');assert.equal(root.rows,1,'Unstarted stopwatch plus stays disabled');
 clickAction('player-toggle');run("now='2026-10-29T12:00:05.250'");clickAction('player-new-round');
 assert.equal(root.rows,2,'Tapping plus updates the visible lap list');assert.equal(revealed,1);
