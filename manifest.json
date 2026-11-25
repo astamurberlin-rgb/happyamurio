@@ -119,11 +119,11 @@
       "firstReader": "Happy Meal 33.4 and later (kfct.js)"
     },
     "cooking": {
-      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/6ca8472bf5d5079ada37447fe5f20c35a4949b02/data/cooking-1.5.1.json",
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/b42044295a7650dd447afd16d9bbd5ff02004622/data/cooking-1.5.2.json",
       "encoding": "json",
-      "bytes": 178990,
-      "sha256": "72316b4e03910c5d9cd96a2110a043023871f07499727e67a74abf3a5e4285bd",
-      "version": "1.5.1",
+      "bytes": 182220,
+      "sha256": "65f25ffc829cc7e601e3942c604f75a5e5e860d2adb93c27d084caaa4622e1e2",
+      "version": "1.5.2",
       "cardCount": 155
     },
     "home": {
