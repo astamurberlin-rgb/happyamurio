@@ -331,8 +331,8 @@
   },
   {
    "path": "catalog.css",
-   "size": 8380,
-   "sha256": "18bb65e6dd8b38d1495626cb76b99461bb9e875401dc0f9a6810ba63ebb187f2"
+   "size": 8374,
+   "sha256": "9d984f73454b86c89c0a34a25297e25351fb7e511543f59f248c34a87793db82"
   },
   {
    "path": "catalog.js",
@@ -476,8 +476,8 @@
   },
   {
    "path": "index.html",
-   "size": 719676,
-   "sha256": "eed4fa5c44c4722193b6ef85ca39e9a362b02b3a5b8f02f402bf6dd435c8c60c"
+   "size": 729540,
+   "sha256": "72299ef79d586fd992c32f6d706517eae71b8e0db8fa477261776d15f1386b9c"
   },
   {
    "path": "kfct.js",
@@ -701,13 +701,13 @@
   },
   {
    "path": "release-notes.js",
-   "size": 106142,
-   "sha256": "3e3ac707fb39d8f2e73514d893c809b2fea44e218b6bfac4c5a019ba9e71a113"
+   "size": 106670,
+   "sha256": "828550629ed628441fdf08243b09c93d431a0390567895689c9616edd785a62e"
   },
   {
    "path": "report.css",
-   "size": 11283,
-   "sha256": "bcb72762bedba1390ef1b79f80a0b5c717f8b6e1c4807696158fdc295e3707a9"
+   "size": 12372,
+   "sha256": "29416611465fc518f80661fa979004047dfd02e9b659e7031b641a1e78c1b1da"
   },
   {
    "path": "report.js",
@@ -751,13 +751,13 @@
   },
   {
    "path": "shared/happy-colors.css",
-   "size": 3878,
-   "sha256": "f140ea9bb7cd349b717ec2e2bfb0bdcaf618a1caffac244e406acee4e4f9505c"
+   "size": 12566,
+   "sha256": "ccd75e1bfd43078da27821ddd611e5398ef8ee34a501acb56f04296dda8a51a9"
   },
   {
    "path": "shared/happy-design.css",
-   "size": 7074,
-   "sha256": "d96e6d0034d5cfe2bb0382c42afe3a278c03b8dbc371ff0573654494525d9dcc"
+   "size": 7574,
+   "sha256": "f9585c0145215764a9b772af713fc092fe526ff12ef1bda2354d1e6691bdcab2"
   },
   {
    "path": "shared/happy-energy-ring.js",
@@ -826,13 +826,13 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 40401,
-   "sha256": "0a3f908d4e142dea6a24dd91a961da28eeddd1252bdc7140c0b76f45706fe33f"
+   "size": 41423,
+   "sha256": "df0d2a03ca8c76dacc4787332a67a35f6f9b7f1dc84a27654f486e66d3044b6c"
   },
   {
    "path": "shared/happy-screens.js",
-   "size": 28760,
-   "sha256": "f23bc28ae9e06c516b8f866eb650c9565eda0f2ad1ac1525334498869fc6417d"
+   "size": 29120,
+   "sha256": "a142977db4de1573aa4b6d7f27d3d238d1e12ab24c38f8106287551127fc9b90"
   },
   {
    "path": "shared/happy-scroll-lock.js",
@@ -937,7 +937,7 @@
   {
    "path": "sw.js",
    "size": 3775,
-   "sha256": "f6400697d0227ce66d7fee6df57ed6856fd448ae96d7caabc07ccaa1ddbd999f"
+   "sha256": "0c91e2b82bfd4d1e09824f046159c0692871348ffede020f87dbc3e4d9c8a72a"
   },
   {
    "path": "tap-swipe.js",

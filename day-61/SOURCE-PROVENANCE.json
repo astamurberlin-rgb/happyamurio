@@ -11,8 +11,8 @@
  "runtime_files": [
   {
    "path": "Happy-Day-61.html",
-   "size": 1938633,
-   "sha256": "51cf6cb4d39707ed7b1ccf0065f77f89c574862baded7ea86220f8bf43f872cb"
+   "size": 1967096,
+   "sha256": "5fd70ad81f253e347ab6c969061fa49b1adbbb1c523f4717f4c744f96d2cfad6"
   },
   {
    "path": "app-icons/happy-day-20261029-152.png",
@@ -206,8 +206,8 @@
   },
   {
    "path": "day-marks.js",
-   "size": 9554,
-   "sha256": "5fa6d447ee68b31ed188b4b68aa95b290b09c461bc5fdce03c37aacdad8676b2"
+   "size": 9354,
+   "sha256": "c4c50e28bf48af917aef617891567ac10d5418f52ab5e1b2e31a88ba8301afa9"
   },
   {
    "path": "day-measurements.js",
@@ -236,18 +236,18 @@
   },
   {
    "path": "energy-widget.css",
-   "size": 2627,
-   "sha256": "be3730e32f522903bd2a39d78280cc4b85d85b2452e10d67e6dff6a305ca3d5b"
+   "size": 2947,
+   "sha256": "7c54d6cf42c7127c3910a617d483004b565c4a2f93813f92231c11327c9a0762"
   },
   {
    "path": "energy-widget.js",
-   "size": 12186,
-   "sha256": "e9867df99dd7da45f4abdb9283653d56e22aba96c5c657b184dcaa3fba027ef1"
+   "size": 13254,
+   "sha256": "d8e1ca0d09013a36a5100539fa4bd4ffa906c724084b2dfa3ee32f22dec694fc"
   },
   {
    "path": "index.html",
-   "size": 536102,
-   "sha256": "1dc8bfad24c5a7443b7ee624c8c849929d7a61f13ff5e8c32da88698428f4b8c"
+   "size": 548019,
+   "sha256": "2e2a0f64c55cd26ac32bc1246ff9e8da66072cebe4a1931d295f46b134a3c629"
   },
   {
    "path": "manifest.webmanifest",
@@ -256,8 +256,8 @@
   },
   {
    "path": "release-notes.js",
-   "size": 63345,
-   "sha256": "083094da6aeaf03289b747d1c302fb30996db228eae156074c96cc2cb9b7777c"
+   "size": 64166,
+   "sha256": "cd82b7e56ad298c2591476b5ea647b05ce54b1c6194d9532f7e0e85ab161c4b3"
   },
   {
    "path": "row-swipe.js",
@@ -276,13 +276,13 @@
   },
   {
    "path": "selfcare-ui.js",
-   "size": 79482,
-   "sha256": "df2c90c3feb767f948093b9fbab4bec6a5f8afda964b517cdbc024b2e1b0d36e"
+   "size": 81670,
+   "sha256": "1d33a35ced83632a74d24c7131dea4ba36a949912e6ba9bd9a963cfc166ebc1b"
   },
   {
    "path": "selfcare.css",
-   "size": 26991,
-   "sha256": "675d271a3f7330194928a8536034f08bdf9cefbf02e582c1500107d2837d253d"
+   "size": 27355,
+   "sha256": "da5adff5f150f94c590182bc0203871cc1ea5723000c4864f4464257b788a120"
   },
   {
    "path": "shared/apps.json",
@@ -316,13 +316,13 @@
   },
   {
    "path": "shared/happy-colors.css",
-   "size": 3878,
-   "sha256": "f140ea9bb7cd349b717ec2e2bfb0bdcaf618a1caffac244e406acee4e4f9505c"
+   "size": 12566,
+   "sha256": "ccd75e1bfd43078da27821ddd611e5398ef8ee34a501acb56f04296dda8a51a9"
   },
   {
    "path": "shared/happy-design.css",
-   "size": 7074,
-   "sha256": "d96e6d0034d5cfe2bb0382c42afe3a278c03b8dbc371ff0573654494525d9dcc"
+   "size": 7574,
+   "sha256": "f9585c0145215764a9b772af713fc092fe526ff12ef1bda2354d1e6691bdcab2"
   },
   {
    "path": "shared/happy-drum.css",
@@ -431,13 +431,13 @@
   },
   {
    "path": "shared/happy-screens.css",
-   "size": 40401,
-   "sha256": "0a3f908d4e142dea6a24dd91a961da28eeddd1252bdc7140c0b76f45706fe33f"
+   "size": 41423,
+   "sha256": "df0d2a03ca8c76dacc4787332a67a35f6f9b7f1dc84a27654f486e66d3044b6c"
   },
   {
    "path": "shared/happy-screens.js",
-   "size": 28760,
-   "sha256": "f23bc28ae9e06c516b8f866eb650c9565eda0f2ad1ac1525334498869fc6417d"
+   "size": 29120,
+   "sha256": "a142977db4de1573aa4b6d7f27d3d238d1e12ab24c38f8106287551127fc9b90"
   },
   {
    "path": "shared/happy-scroll-lock.js",
