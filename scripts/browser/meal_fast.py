@@ -33,7 +33,13 @@ SEEN = """document.addEventListener('DOMContentLoaded',()=>{const t=document.get
 RECS = """()=>{const o=[];Object.keys(DB.days).sort().forEach(d=>(DB.days[d].items||[]).forEach(x=>{const f=FOODS[x.fid];o.push({d,n:f?f.n:String(x.fid),g:x.g,t:x.t||null,id:x.id})}));return o}"""
 SEED = """()=>{DB.mealRules={kcal:150,gap:20,fast:{on:true,a:1200,b:720},fastVersions:[{at:Date.parse('2026-11-19T15:00:00+03:00'),on:true,a:1200,b:720}]};
  newFood('Батончик тестовый',100,0,0,25);save();renderAll();return MealFast.versions(DB).length}"""
-RUN = "Фастинг до %s \u2212%s Отменить"
+RUN = "Фастинг до %s %s Отменить"
+
+
+def words(left):
+    """«4:30» → «4 ч 30 мин»: с 25.11.2026 (Meal 34.13) остаток фастинга пишется словами."""
+    h, m = (int(x) for x in left.split(":"))
+    return " ".join(([f"{h} ч"] if h else []) + ([f"{m} мин"] if m or not h else []))
 FAST_TOAST = {"text": "Фастинг прерван", "button": "Отменить запись"}
 IS_ON = "()=>DB.mealRules.fast.on"                                           # выключатель «Фастинг», как его хранит дневник
 HISTORY = "()=>MealFast.versions(DB).map(x=>x.on?'on':'off')"                 # история выключателя: включён, выключен
@@ -63,7 +69,7 @@ def toast(page, wait=250):
 def bar(page, wait=150):
     page.wait_for_timeout(wait); return page.evaluate(BAR)
 def running(page, till, left):
-    b = bar(page); return bool(b) and b["text"] == RUN % (till, left) and b["act"] == "cancel"
+    b = bar(page); return bool(b) and b["text"] == RUN % (till, words(left)) and b["act"] == "cancel"
 def say(page, text):
     page.evaluate(SAY, text); return toast(page)
 def toast_button(page):
@@ -107,7 +113,7 @@ with sync_playwright() as p:
 
     # плашка идущего окна
     b0 = bar(page); out["run"] = b0
-    check("плашка: «Фастинг до 12:00 · −4:30 · Отменить», заполнена на 72 %", b0 == {"text": RUN % ("12:00", "4:30"), "fill": 72, "act": "cancel"}, b0)
+    check("плашка: «Фастинг до 12:00 · −4:30 · Отменить», заполнена на 72 %", b0 == {"text": RUN % ("12:00", words("4:30")), "fill": 72, "act": "cancel"}, b0)
     look = page.evaluate("""()=>{const e=document.getElementById('mfBar'),r=e.getBoundingClientRect(),d=document.querySelector('.dock').getBoundingClientRect(),cs=getComputedStyle(e),f=e.querySelector('.mfFill').getBoundingClientRect();
       const fab=document.querySelector('.fab').getBoundingClientRect(),top=document.elementFromPoint(fab.left+fab.width/2,fab.top+2);
       const words=[...e.querySelectorAll('.mfName,.mfTill,.mfLeft')].map(x=>x.getBoundingClientRect());
@@ -117,7 +123,7 @@ with sync_playwright() as p:
     out["look"] = look
     check("плашка: высота 48, по 20 от краёв, скругление 16, близко к меню — зазор 6", look["h"] == 48 and look["left"] == 20 and look["right"] == 20 and look["gap"] == 6 and look["radius"] == "16px", look)
     check("плашка позади кнопки микрофона: кнопка заходит на её нижний край и текста не закрывает", 3 <= look["under"] <= 9 and look["front"] and look["clear"] >= 6, look)
-    check("заполнение — доля пройденного; текста мельче 12 нет, ничего не вылезает; для чтения вслух — «осталось»", 70 <= look["fill"] <= 73 and look["small"] == 0 and not look["over"] and look["label"] == "Фастинг до 12:00, осталось 4:30", look)
+    check("заполнение — доля пройденного; текста мельче 12 нет, ничего не вылезает; для чтения вслух — «осталось»", 70 <= look["fill"] <= 73 and look["small"] == 0 and not look["over"] and look["label"] == "Фастинг до 12:00, осталось 4 ч 30 мин", look)
     check("об идущем окне под кольцом строки нет", page.evaluate(MARK) is None, page.evaluate(MARK))
     page.evaluate("()=>toast('Проверка места')"); page.wait_for_timeout(250)
     tb = page.evaluate("""()=>{const t=document.getElementById('toast'),r=t.getBoundingClientRect(),b=document.getElementById('mfBar').getBoundingClientRect(),

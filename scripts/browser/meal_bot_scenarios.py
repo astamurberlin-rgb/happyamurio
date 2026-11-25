@@ -1774,7 +1774,7 @@ ACTS = [
  dict(id="Кк07", msgs=["включи фастинг", "выключи фастинг"], reply="Выключил фастинг", ok="()=>!DB.mealRules.fast.on&&DB.mealRules.fast.a===1200"),
  dict(id="Кк08", msgs=["включи фастинг", {"tap": "Отменить"}], reply="Отменил", ok="()=>!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on)"),
  dict(id="Кк09", msgs=["включи фастинг 18 на 6"], reply="Во сколько первая еда", ok="()=>!(DB.mealRules&&DB.mealRules.fast&&DB.mealRules.fast.on)"),
- dict(id="Кк10", clock="2026-11-13T22:00:00", msgs=["включи фастинг", "сколько ещё голодать"], reply="осталось 14:00", ok=FASTON),
+ dict(id="Кк10", clock="2026-11-13T22:00:00", msgs=["включи фастинг", "сколько ещё голодать"], reply="осталось 14 ч", ok=FASTON),
  dict(id="Кк11", msgs=["когда можно есть"], reply="Фастинг выключен", ok="()=>true"),
  dict(id="Кк12", msgs=["выключи японскую базу"], reply="Выключил базу «MEXT", ok="()=>!MealSources.enabled(DB,'MEXT')"),
  dict(id="Кк13", msgs=["выключи японскую базу", {"tap": "Отменить"}], reply="Отменил", ok="()=>MealSources.enabled(DB,'MEXT')"),
