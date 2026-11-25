@@ -3,7 +3,7 @@
  * По согласованным прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026):
  *  - первый экран: сначала только стеклянный Happy; дуга кружит, пока приложение загружается, докручивается до улыбки
  *    строго снизу и останавливается; затем плавно появляются надпись и кнопки — у нижнего края, смайлик не сдвигается;
- *  - Google открывает выбор аккаунта; Apple пока недоступен;
+ *  - Google открывает выбор аккаунта;
  *  - регистрация (почта, пароль и повтор) → ожидание письма: «Отправить повторно», «Изменить почту»; как только
  *    почту подтвердили по ссылке и человек вернулся в приложение, оно открывается само — пароль ещё в памяти экрана;
  *  - вход с понятной ошибкой; «Забыли пароль?» → письмо → новый пароль (включается настройкой features.recovery);
@@ -29,6 +29,8 @@ const esc=v=>S().esc(v);
 const googleReturn=/(?:^|[?&#])(?:code|error|error_description|error_code)=/.test((root.location?.search||'')+(root.location?.hash||''));
 const RESUME_MS=30*60*1000,POLL_MS=20000,POLL_FOR=30*60*1000;
 let cfg=null,pageH=null,screen='',form={email:'',error:''},pending=null,linkToken=null,smileTimer=null,pollTimer=null,pollUntil=0,gate=null,emailBack=null;
+
+let linkRequest=null,returnToProfile=false;
 
 const store={
  get(k){try{return root.sessionStorage.getItem(k)}catch(e){return null}},
@@ -60,13 +62,13 @@ function readLink(){
 /* ── страница входа ── */
 function ensurePage(){
  if(pageH&&!pageH.closed)return pageH;
- pageH=S().page({id:'welcome',className:'hs-auth-root',label:'Вход в Happy',onClose:()=>{pageH=null;stopSmile()}});
+ pageH=S().page({id:'welcome',className:'hs-auth-root',label:'Вход в Happy',onClose:()=>{linkRequest?.abort();pageH=null;stopSmile()}});
  pageH.main.addEventListener('click',onClick);
  pageH.main.addEventListener('submit',e=>{e.preventDefault();submit()});
  return pageH;
 }
 function closePage(){stopPoll();if(pageH){const p=pageH;pageH=null;p.close()}}
-const waitLabels={opening:'Открываем дневник…',googleOpening:'Открываем выбор Google-аккаунта…',googleChecking:'Проверяем записи…'};
+const waitLabels={opening:'Открываем дневник…',googleChecking:'Проверяем записи…'};
 function showWait(p,next){
  let status=p.main.querySelector('.hs-wait-status');
  if(!status){
@@ -82,6 +84,8 @@ function showWait(p,next){
 function show(next,o){
  o=o||{};screen=next;form.error=o.error||'';form.needLegacyPassword=!!o.needLegacyPassword;if(o.email!==undefined)form.email=o.email;
  const p=ensurePage();p.top();
+ p.el.classList.toggle('hs-account-access',next==='access');
+ if(next==='access')p.el.setAttribute('aria-label','Настройка аккаунта');
  if(waitLabels[next]){stopPoll();showWait(p,next);return}
  p.main.className='hs-main '+(next==='welcome'?'hs-welcome':'hs-auth');
  p.main.innerHTML=html(next);
@@ -141,12 +145,13 @@ function accessHtml(){
   }
  }else{
   note=who.google?'Вход через Google подключён. На новом телефоне выбери тот же Google-аккаунт, чтобы открыть свои записи.':
-   'Выбери Google-аккаунт для входа в этот профиль. Вход по почте сохранится.';
-  if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary');
+   'Введи текущий пароль Happy. Google станет ещё одним способом входа в этот профиль. Твои записи сохранятся.';
+  if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary',true);
  }
- const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Подключить вход через Google';
- return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
-  '<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div>';
+ const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Привязать к Google';
+ const password=!transitioning&&!who.google?S().passwordField({label:'Текущий пароль Happy',name:'linkPassword'}):'';
+ return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p><form>'+
+  password+legacyPasswordField()+errorBox()+'<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div></form>';
 }
 function smile(label){
  return '<div class="hs-smile" '+(label?'role="img" aria-label="'+esc(label)+'"':'aria-hidden="true"')+'><svg viewBox="0 0 120 120" data-hs-ring><circle class="hs-smile-track" cx="60" cy="60" r="52"/>'+
@@ -156,7 +161,6 @@ function smile(label){
 function welcomeOptions(){
  const I=S().ICONS,app=cfg.name;
  return '<div class="hs-welcome-options" inert aria-hidden="true"><h1>Создать аккаунт</h1><div class="hs-welcome-buttons">'+
-   '<button type="button" class="hs-provider" disabled>'+I.apple+'<span>Продолжить с Apple</span></button>'+
    googleButton()+
    '<button type="button" class="hs-btn hs-primary hs-email-start" data-hw="to-register">'+I.envelope+'<span>Продолжить с почтой</span></button></div>'+
    errorBox()+'<p class="hs-login-choice">Уже есть аккаунт? <button type="button" data-hw="to-login">Войти</button></p>'+
@@ -246,7 +250,16 @@ function act(a){
  switch(a){
  /* кнопка остаётся выключенной, пока страница уходит к Google: второе нажатие сорвало бы вход (25.11.2026) */
  case 'google':return busy(a,()=>A.signInGoogle().then(leaving));
- case 'link-google':return busy(a,()=>A.linkGoogle().then(leaving));
+ case 'link-google':return busy(a,async()=>{
+  const input=pageH.main.querySelector('[name="linkPassword"]');
+  const password=input.value;
+  if(!password){input.focus();throw Error('Введи текущий пароль Happy.')}
+  input.value='';
+  const request=linkRequest=new AbortController();
+  try{await A.linkGoogle(password,request.signal);await leaving()}
+  catch(e){if(!request.signal.aborted)throw e}
+  finally{if(linkRequest===request)linkRequest=null}
+ });
  case 'complete-recovery':return busy(a,async()=>{
   const input=pageH.main.querySelector('[name="legacyPassword"]'),password=input?.value;
   if(input&&!password)throw Error('Введи прежний пароль Happy.');
@@ -293,7 +306,7 @@ function act(a){
  case 'to-signup-email':return show('signupEmail',{email:''});
  case 'guest':store.set(guestKey(),'1');return closePage();
  case 'close':pending=null;return welcomeOrApp();
- case 'cancel':if(screen==='access')store.del(accessKey());return welcomeOrApp();
+ case 'cancel':if(screen==='access')return closeAccess();return welcomeOrApp();
  case 'back-profile':{const f=emailBack;emailBack=null;closePage();if(f)try{f()}catch(e){}return}
  case 'register':{
   const email=norm(val('email')),pw=val('password'),repeat=val('repeat');form.email=email;
@@ -423,18 +436,14 @@ function init(o){
   const link=readLink(),who=cfg.account.current();
   if(cfg.account.pendingRecovery()){showRecovery(boot.googleError);return}
   if(who&&cfg.boot&&!boot.store&&boot.error){show('syncError',{error:boot.error});return}
-  if(boot.googleError){show(who?'access':'login',{error:boot.googleError});return}
+  if(boot.googleError){if(who)access(true,boot.googleError);else show('login',{error:boot.googleError});return}
   if(link&&link.error)S().toast('Ссылка больше не действует. Запроси новую.');
   if(who){
    if(screen==='opening')closePage();
    signedIn(link);
    const returnToAccess=store.get(accessKey());store.del(accessKey());
-   if(returnToAccess===googleIntent(who.uid)){
-    if(who.keyVersion===2&&!who.google&&!who.migrating){
-     show('googleOpening');
-     cfg.account.linkGoogle().catch(e=>{if(cfg.account.current()?.uid===who.uid)show('access',{error:message(e)})});
-    }else show('access');
-   }else if(returnToAccess===who.uid||boot.google==='linked')show('access');
+   if(returnToAccess===googleIntent(who.uid)||boot.google==='linked')access(true);
+   else if(returnToAccess===who.uid)show('access');
   }else{
    if(screen==='opening')closePage();
    signedOut(link);
@@ -466,7 +475,33 @@ async function signOut(){
 function open(name){form.note='';show(name==='register'?'register':'login',{email:''})}
 function changeEmail(onBack){if(!cfg.features.emailChange)return;emailBack=onBack||null;show('emailChange',{email:''})}
 
-function access(){if(cfg.account.current())show('access')}
+function access(fromProfile=false,error=''){
+ if(!cfg.account.current())return;
+ returnToProfile=fromProfile;
+ if(fromProfile&&!root.history.state?.happyProfileAccess)
+  root.history.pushState({...root.history.state,happyProfileAccess:true},'');
+ show('access',{error});
+}
+function closeAccess(fromHistory=false){
+ store.del(accessKey());
+ pageH.el.hidden=true;pageH.el.classList.remove('hs-account-access');
+ closePage();
+ if(returnToProfile){
+  returnToProfile=false;
+  if(!fromHistory&&root.history.state?.happyProfileAccess)root.history.back();
+  root.HappyPerson.open();
+  doc.querySelector('[data-page="profile"] [data-p="google"]')?.focus({preventScroll:true});
+ }
+}
+root.addEventListener?.('popstate',()=>{
+ if(pageH&&screen==='access'&&returnToProfile&&!root.history.state?.happyProfileAccess)closeAccess(true);
+});
+doc?.addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&pageH&&screen==='access'){
+  event.preventDefault();event.stopImmediatePropagation();
+  if(!pageH.main.querySelector('[data-hw="cancel"]')?.disabled)closeAccess();
+ }
+},true);
 root.HappyWelcome={init,ask,takeResume,open,signOut,changeEmail,access,
  get features(){return cfg?cfg.features:{}},get screen(){return pageH?screen:''},
  /* для проверок: письмо подтвердили — попробовать войти сейчас */

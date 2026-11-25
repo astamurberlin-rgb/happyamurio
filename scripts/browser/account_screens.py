@@ -83,7 +83,7 @@ with sync_playwright() as p:
     out["welcome"] = w = welcome(m)
     check("первый экран: сначала только смайлик, кнопки проявляются после остановки дуги, смайлик не сдвинулся", w["start"]["options"] == "0" and w["options"] == "1" and w["start"]["smile"] == w["smile"] and w["app_hidden"])
     check("дуга останавливается улыбкой строго снизу", round(w["angle"]) % 360 == 90)
-    check("кнопки первого экрана; Google доступен, Apple выключен", w["buttons"] == [["Продолжить с Apple", True], ["Продолжить с Google", False], ["Продолжить с почтой", False], ["Войти", False], ["Заглянуть в Meal без аккаунта", False]])
+    check("кнопки первого экрана; Google доступен, Apple скрыт", w["buttons"] == [["Продолжить с Google", False], ["Продолжить с почтой", False], ["Войти", False], ["Заглянуть в Meal без аккаунта", False]])
 
     # 2. Гость: смотреть можно; запись — лист «Войди в аккаунт»; неверный пароль — ошибка; после входа — тот же раздел
     m.click("[data-hw=guest]")
@@ -91,7 +91,7 @@ with sync_playwright() as p:
     m.click("#mlSecs [data-sec=am]")
     m.evaluate("()=>{document.dispatchEvent(new Event('pointerdown'));writeGuard()}")
     m.wait_for_selector("#happy-screens .hs-sheet [data-g=login]")
-    out["gate"] = [m.inner_text("#happy-screens .hs-sheet-title"), m.inner_text("#happy-screens .hs-gate-reason"), look(m, "()=>document.querySelector('.screen.on').dataset.screen")]
+    out["gate"] = [m.inner_text("#happy-screens .hs-sheet-title"), m.inner_text("#happy-screens .hs-sheet-desc"), look(m, "()=>document.querySelector('.screen.on').dataset.screen")]
     m.click("#happy-screens [data-g=login]")
     sign_in_screen(m, EMAIL, "wrong-password")
     out["wrong"] = until(m, "()=>{const e=document.querySelector('#happy-screens .hs-error');return !!e&&!e.hidden&&e.textContent}", seconds=8)
@@ -113,11 +113,12 @@ with sync_playwright() as p:
        apps:[...document.querySelectorAll('[data-happy-section=links] .happy-app-name')].map(a=>a.textContent),bottom:b.innerText.replace(/\\s+/g,' ').trim(),
        order:[...s.querySelectorAll(':scope>section[data-happy-section]')].map(x=>x.dataset.happySection)}}""", seconds=15)
     st = out["settings"] or {}
-    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи / Подключить вход через Google / Настроить тему» (третья строка — с Meal 33.17, «Настроить тему» — последняя, как в Day и Sport), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Подключить вход через Google", "Настроить тему"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
+    check("настройки: без заголовка, имя по центру, «Настроить профиль / Настроить цели / Настроить приёмы пищи / Настроить тему» (третья строка — с Meal 33.17, «Настроить тему» — последняя, как в Day и Sport), «Связка с» Day и Sport", st.get("title") == [] and st.get("name") == "Проверка" and st.get("rows") == ["Настроить профиль", "Настроить цели", "Настроить приёмы пищи", "Настроить тему"] and st.get("links") == "Связка с" and st.get("apps") == ["Happy Day", "Happy Sport"])
     check("внизу «Выйти» и строка синхронизации; порядок разделов — как в apps.json", st.get("bottom") == "Синхронизировано Выйти" and st.get("order") == json.loads(open(os.path.join(REPO, "shared", "apps.json"), encoding="utf-8").read())["meal"]["settingsSections"])
 
-    m.click("[data-hp=access]")
-    consent = m.locator("#happy-screens .hs-note").inner_text()
+    m.click("[data-hp=profile]")
+    m.click("[data-p=google]")
+    consent = m.locator("[data-page=welcome] .hs-note").inner_text()
     check("прежний аккаунт получает объяснение о восстановлении доступа на новом телефоне",
           "Happy сможет восстановить доступ" in consent and "на новом телефоне" in consent
           and m.locator("[data-hw=migrate]").is_visible())
@@ -126,7 +127,6 @@ with sync_playwright() as p:
           m.evaluate("() => MealData.signedIn() && MealData.account.current().keyVersion === 1"))
 
     # 4. Профиль: необязательные поля, новый вес — замер на дату; имя — общее для приложений
-    m.evaluate("()=>document.querySelector('[data-hp=profile]').click()")
     m.wait_for_selector("#happy-screens [data-page=profile] [name=height]")
     today = m.evaluate("()=>HappyScreens.day()")
     m.fill("#happy-screens [name=name]", "Александр-Константин Миронов-Воскресенский")

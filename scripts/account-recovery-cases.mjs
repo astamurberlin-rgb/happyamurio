@@ -15,7 +15,7 @@ export async function accountRecoveryCases({check, rejects, makeCloud, makeDevic
  const history={replaceState(_,__,next){page.href=next}};
  const oauthStorage={setItem:(k,v)=>pending.set(k,v),getItem:k=>pending.get(k),removeItem:k=>pending.delete(k)};
  let state='legacy',keyAvailable=true,authAvailable=true,exchanges=0,googleGrant;
- let rejectEmpty=false,failFinish=false;
+ let rejectEmpty=false,failFinish=false,authorizeCalls=0;
  const recoveryBodies=[],actions=[];
  const json=(status,data)=>new Response(JSON.stringify(data),{status});
  async function fetch(endpoint,init){
@@ -31,7 +31,7 @@ export async function accountRecoveryCases({check, rejects, makeCloud, makeDevic
    if(action==='finish')state='active';
    return json(200,state==='legacy'?{state}:{state,key:managedKey,keyVersion:2});
   }
-  if(u.pathname==='/auth/v1/user/identities/authorize')return json(200,{url:'https://accounts.google.com/test'});
+  if(u.pathname==='/auth/v1/user/identities/authorize'){authorizeCalls++;return json(200,{url:'https://accounts.google.com/test'})}
   if(u.searchParams.get('grant_type')==='pkce'){
    exchanges++;
    if(googleGrant)return json(200,googleGrant);
@@ -86,7 +86,22 @@ export async function accountRecoveryCases({check, rejects, makeCloud, makeDevic
  keyAvailable=true;
  page.href+='?code=unsolicited';
  check('callback без начатого входа очищается и не обменивается',!!await rejects(account.finishGoogle())&&!page.href.includes('code=')&&exchanges===0);
- await account.linkGoogle();page.href+='?code=link';
+ const currentPassword=server.users.get(email).password;
+ check('пустой и неправильный пароль не начинают привязку Google',
+  (await rejects(account.linkGoogle('')))?.code==='auth'&&(await rejects(account.linkGoogle(originalPassword)))?.code==='auth'
+  &&authorizeCalls===0&&!pending.size&&tab.storage.getItem(account.cell)===cell);
+ const abort=new AbortController();
+ server.before=entry=>{if(entry.query==='?grant_type=password')abort.abort()};
+ const cancelled=await rejects(account.linkGoogle(currentPassword,abort.signal));server.before=null;
+ check('отмена во время проверки пароля оставляет прежний вход и не открывает Google',
+  cancelled?.code==='cancelled'&&authorizeCalls===0&&!pending.size&&tab.storage.getItem(account.cell)===cell);
+ const different=HappyAccount.create({...options,fetch:(endpoint,init)=>
+  new URL(endpoint).searchParams.get('grant_type')==='password'?json(200,{access_token:'other-proof',user:{id:'other'}}):fetch(endpoint,init)});
+ await different.load();
+ check('подтверждение чужого ID не открывает Google',!!await rejects(different.linkGoogle(currentPassword))
+  &&authorizeCalls===0&&!pending.size&&tab.storage.getItem(account.cell)===cell);
+ different.close();
+ await account.linkGoogle(currentPassword);page.href+='?code=link';
  check('привязка с другим ID отклоняется до смены аккаунта',!!await rejects(account.finishGoogle())&&account.current()?.uid===uid&&exchanges===1&&tab.storage.getItem(account.cell)===cell);
  page.href+='?code=link';
  check('повторное использование callback отклоняется',!!await rejects(account.finishGoogle())&&exchanges===1);
@@ -94,11 +109,20 @@ export async function accountRecoveryCases({check, rejects, makeCloud, makeDevic
  const gone=[],pendingOne=new Map(),kept=()=>JSON.parse([...pendingOne.values()][0]||'{}').verifier;
  const twice=HappyAccount.create({...options,oauthStorage:{setItem:(k,v)=>pendingOne.set(k,v),getItem:k=>pendingOne.get(k),removeItem:k=>pendingOne.delete(k)},navigate:u=>gone.push(u)});
  await twice.load();
- await twice.linkGoogle();const first=kept();
- await Promise.all([twice.linkGoogle(),twice.linkGoogle()]);
+ await Promise.all([twice.linkGoogle(currentPassword),twice.linkGoogle(currentPassword)]);const first=kept();
+ await twice.linkGoogle(currentPassword);
  check('повторные нажатия — один переход к Google',gone.length===1);
  check('проверочный код остаётся от того перехода, который ушёл',!!first&&kept()===first);
  twice.close();
+}
+{
+ const sibling=HappyAccount.create({...mealOptions,fetch:(endpoint,init)=>
+  new URL(endpoint).pathname==='/auth/v1/user'?json(200,{id:uid,email,identities:[{provider:'email'},{provider:'google'}]}):fetch(endpoint,init)});
+ await sibling.load();const at=await sibling.token();
+ await sibling.user();
+ check('уже открытый Meal узнаёт о привязке в Day без смены аккаунта или сессии',
+  sibling.current()?.google&&sibling.current().uid===uid&&await sibling.token()===at);
+ sibling.close();
 }
  account.close();
 

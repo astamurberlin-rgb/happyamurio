@@ -29,7 +29,7 @@ function fail(code,message){const e=Error(message);e.code=code;return e}
 /* понятные слова вместо ответов сервера */
 const registeredEmail='Эта почта уже зарегистрирована. Войди в аккаунт.';
 function errorText(m,status){
- if(/invalid login|invalid_credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
+ if(/invalid login|invalid[ _]credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
  if(/already (been )?registered|user_already_exists|already exists/i.test(m))return registeredEmail;
  if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейди по ссылке в письме.';
  if(/refresh token/i.test(m))return 'Вход устарел. Войди заново.';
@@ -181,13 +181,17 @@ function create(options){
   }
   return j;
  }
+ function hasGoogle(u,previous){
+  if(Array.isArray(u.identities))return u.identities.some(i=>i.provider==='google');
+  if(Array.isArray(u.app_metadata?.providers))return u.app_metadata.providers.includes('google');
+  return !!previous;
+ }
  function sessionFrom(j,old){
   const u=j.user||{},meta=u.user_metadata||{};
   return Object.assign({},old,{at:j.access_token,rt:j.refresh_token,exp:now()+(j.expires_in||3600)*1000,
    uid:u.id||(old&&old.uid),email:u.email||(old&&old.email)||'',
    name:String(meta.display_name||meta.full_name||(old&&old.name)||''),
-   google:Array.isArray(u.identities)?u.identities.some(i=>i.provider==='google'):
-    (Array.isArray(u.app_metadata?.providers)?u.app_metadata.providers.includes('google'):!!old?.google)});
+   google:hasGoogle(u,old?.google)});
  }
  async function broker(action,access){
   let r;
@@ -370,14 +374,23 @@ function create(options){
  /* Один переход к Google на страницу (25.11.2026). Переход начинается не мгновенно: пока страница ещё жива, второе нажатие
     записало бы новый проверочный код поверх кода уже начатого входа, и сервер отказал бы: «code challenge does not match».
     Пока переход идёт, повторные вызовы ничего не делают. Вернулись на страницу кнопкой «назад» (pageshow) — можно снова. */
- let googleLeaving=0;
- async function startGoogle(link){
-  if(googleLeaving&&now()-googleLeaving<30000)return;
-  googleLeaving=now();
-  try{await beginGoogle(link)}catch(e){googleLeaving=0;throw e}
+ let googleLeaving=null;
+ async function startGoogle(link,password,signal){
+  if(googleLeaving&&!googleLeaving.signal?.aborted&&
+    (googleLeaving.sent===null||now()-googleLeaving.sent<30000))return;
+  const attempt={signal,sent:null},owner=mine();
+  function check(){
+   if(googleLeaving!==attempt||signal?.aborted)throw fail('cancelled','Действие отменено.');
+   if(link)guard(owner);
+  }
+  googleLeaving=attempt;
+  try{
+   await beginGoogle(link,password,check);
+   attempt.sent=now();
+  }catch(e){if(googleLeaving===attempt)googleLeaving=null;throw e}
  }
- async function beginGoogle(link){
-  await cancelRecovery();
+ async function beginGoogle(link,password,check){
+  check();await cancelRecovery();check();
   if(link&&current()?.keyVersion!==2)
    throw fail('legacy','Сначала включи восстановление ключа в настройках аккаунта.');
   const uid=session?.uid||null,verifier=base64url(crypto.getRandomValues(new Uint8Array(48)));
@@ -387,18 +400,26 @@ function create(options){
    code_challenge_method:'s256',prompt:'select_account'});
   let destination=url+'/auth/v1/authorize?'+params;
   if(link){
+   check();
+   if(!password)throw fail('auth','Введи текущий пароль Happy.');
+   // The password grant proves ownership. Never adopt it as the app session or derive keys from it.
+   const proof=await auth('token?grant_type=password',{email:session.email,password});
+   if(proof?.access_token&&proof.access_token!==session?.at)await logoutToken(proof.access_token);
+   check();
+   if(!proof?.access_token||proof.user?.id!==uid)throw changed();
+   const access=await token();check();
    params.set('skip_http_redirect','true');
-   const j=await auth('user/identities/authorize?'+params,null,await token(),'GET');
+   const j=await auth('user/identities/authorize?'+params,null,access,'GET');
    const target=new URL(j.url);
    if(target.origin!==new URL(url).origin&&target.origin!=='https://accounts.google.com')throw fail('auth','Не удалось открыть Google.');
    destination=target.href;
   }
-  if((session?.uid||null)!==uid)throw changed();
+  check();if((session?.uid||null)!==uid)throw changed();
   oauthStorage().setItem(oauthCell,JSON.stringify({uid,link,verifier,redirect,created:now()}));
   if(o.navigate)o.navigate(destination);else location.assign(destination);
  }
  async function finishGoogle(){
-  googleLeaving=0;   // вернулись от Google (или страница открыта заново): переход закончен
+  googleLeaving=null;   // вернулись от Google (или страница открыта заново): переход закончен
   if(!location?.href)return null;
   const page=new URL(location.href),params=page.searchParams,hash=new URLSearchParams(page.hash.slice(1));
   const code=params.get('code'),error=params.get('error')||hash.get('error');
@@ -612,9 +633,9 @@ function create(options){
  /* сведения аккаунта с сервера: почта, ожидающая подтверждения новая почта, имя */
  async function user(){
   const who=mine(),j=await auth('user',null,await token(),'GET');
-  if(mine()===who&&j&&j.id===session.uid){
-   const next=Object.assign({},session,{email:j.email||session.email,name:String(((j.user_metadata)||{}).display_name||session.name||'')});
-   if(next.email!==session.email||next.name!==session.name){session=next;persist(session,kraw);emit()}
+  if(mine()===who&&identity(disk())===who&&j&&j.id===session?.uid){
+   const next=Object.assign({},session,{email:j.email||session.email,name:String(((j.user_metadata)||{}).display_name||session.name||''),google:hasGoogle(j,session.google)});
+   if(next.email!==session.email||next.name!==session.name||next.google!==!!session.google){persist(next,kraw);session=next;emit()}
   }
   return {email:(j&&j.email)||'',newEmail:(j&&j.new_email)||''};
  }
@@ -631,9 +652,9 @@ function create(options){
   if(e.key===offerCell(o.app)&&e.newValue){acceptOffer().catch(()=>{});return}
   if(e.key===null||e.key===CELL)adopt().catch(()=>{});
  }
- if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume);events.addEventListener('pageshow',()=>{googleLeaving=0})}
+ if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume);events.addEventListener('pageshow',()=>{googleLeaving=null})}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:(password,signal)=>startGoogle(true,password,signal),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,

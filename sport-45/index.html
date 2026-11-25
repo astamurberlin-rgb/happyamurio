@@ -1260,6 +1260,8 @@ body.hs-open{overflow:hidden}
 /* ── страница ── */
 .hs-page{position:fixed;inset:0;pointer-events:auto;overflow:hidden;opacity:0;transition:opacity .22s ease}
 .hs-page.hs-in{opacity:1}
+.hs-page.hs-account-access{opacity:1;transition:none;background:var(--hs-sheet-bg)}
+#happy-screens:has(.hs-account-access) [data-page="profile"]{visibility:hidden}
 .hs-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none}
 .hs-scroll::-webkit-scrollbar{display:none}
 .hs-main{position:relative;min-height:100%;max-width:460px;margin:0 auto;padding:calc(26px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom))}
@@ -1460,6 +1462,9 @@ body.hs-open{overflow:hidden}
 .hs-delete-dialog::backdrop{background:rgba(0,0,0,.45)}
 .hs-delete-dialog .hs-note{color:var(--happy-ink);overflow-wrap:anywhere}
 #happy-screens .hs-delete-confirm{background:var(--happy-danger);color:var(--happy-on-danger)}
+.hs-profile-providers{display:grid;gap:10px;margin-top:12px}
+#happy-screens .hs-profile-providers .hs-btn{font-size:14px}
+.hs-provider-status{font-size:14px;color:var(--happy-ink)}
 .hs-profile-account h2{margin-bottom:17px}
 .hs-email-label{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:14px;margin-bottom:7px}
 .hs-verified{display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,.78)}
@@ -8470,7 +8475,7 @@ function fail(code,message){const e=Error(message);e.code=code;return e}
 /* понятные слова вместо ответов сервера */
 const registeredEmail='Эта почта уже зарегистрирована. Войди в аккаунт.';
 function errorText(m,status){
- if(/invalid login|invalid_credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
+ if(/invalid login|invalid[ _]credentials|invalid grant/i.test(m))return 'Неверная почта или пароль';
  if(/already (been )?registered|user_already_exists|already exists/i.test(m))return registeredEmail;
  if(/not confirmed|email_not_confirmed/i.test(m))return 'Почта не подтверждена. Перейди по ссылке в письме.';
  if(/refresh token/i.test(m))return 'Вход устарел. Войди заново.';
@@ -8622,13 +8627,17 @@ function create(options){
   }
   return j;
  }
+ function hasGoogle(u,previous){
+  if(Array.isArray(u.identities))return u.identities.some(i=>i.provider==='google');
+  if(Array.isArray(u.app_metadata?.providers))return u.app_metadata.providers.includes('google');
+  return !!previous;
+ }
  function sessionFrom(j,old){
   const u=j.user||{},meta=u.user_metadata||{};
   return Object.assign({},old,{at:j.access_token,rt:j.refresh_token,exp:now()+(j.expires_in||3600)*1000,
    uid:u.id||(old&&old.uid),email:u.email||(old&&old.email)||'',
    name:String(meta.display_name||meta.full_name||(old&&old.name)||''),
-   google:Array.isArray(u.identities)?u.identities.some(i=>i.provider==='google'):
-    (Array.isArray(u.app_metadata?.providers)?u.app_metadata.providers.includes('google'):!!old?.google)});
+   google:hasGoogle(u,old?.google)});
  }
  async function broker(action,access){
   let r;
@@ -8811,14 +8820,23 @@ function create(options){
  /* Один переход к Google на страницу (25.11.2026). Переход начинается не мгновенно: пока страница ещё жива, второе нажатие
     записало бы новый проверочный код поверх кода уже начатого входа, и сервер отказал бы: «code challenge does not match».
     Пока переход идёт, повторные вызовы ничего не делают. Вернулись на страницу кнопкой «назад» (pageshow) — можно снова. */
- let googleLeaving=0;
- async function startGoogle(link){
-  if(googleLeaving&&now()-googleLeaving<30000)return;
-  googleLeaving=now();
-  try{await beginGoogle(link)}catch(e){googleLeaving=0;throw e}
+ let googleLeaving=null;
+ async function startGoogle(link,password,signal){
+  if(googleLeaving&&!googleLeaving.signal?.aborted&&
+    (googleLeaving.sent===null||now()-googleLeaving.sent<30000))return;
+  const attempt={signal,sent:null},owner=mine();
+  function check(){
+   if(googleLeaving!==attempt||signal?.aborted)throw fail('cancelled','Действие отменено.');
+   if(link)guard(owner);
+  }
+  googleLeaving=attempt;
+  try{
+   await beginGoogle(link,password,check);
+   attempt.sent=now();
+  }catch(e){if(googleLeaving===attempt)googleLeaving=null;throw e}
  }
- async function beginGoogle(link){
-  await cancelRecovery();
+ async function beginGoogle(link,password,check){
+  check();await cancelRecovery();check();
   if(link&&current()?.keyVersion!==2)
    throw fail('legacy','Сначала включи восстановление ключа в настройках аккаунта.');
   const uid=session?.uid||null,verifier=base64url(crypto.getRandomValues(new Uint8Array(48)));
@@ -8828,18 +8846,26 @@ function create(options){
    code_challenge_method:'s256',prompt:'select_account'});
   let destination=url+'/auth/v1/authorize?'+params;
   if(link){
+   check();
+   if(!password)throw fail('auth','Введи текущий пароль Happy.');
+   // The password grant proves ownership. Never adopt it as the app session or derive keys from it.
+   const proof=await auth('token?grant_type=password',{email:session.email,password});
+   if(proof?.access_token&&proof.access_token!==session?.at)await logoutToken(proof.access_token);
+   check();
+   if(!proof?.access_token||proof.user?.id!==uid)throw changed();
+   const access=await token();check();
    params.set('skip_http_redirect','true');
-   const j=await auth('user/identities/authorize?'+params,null,await token(),'GET');
+   const j=await auth('user/identities/authorize?'+params,null,access,'GET');
    const target=new URL(j.url);
    if(target.origin!==new URL(url).origin&&target.origin!=='https://accounts.google.com')throw fail('auth','Не удалось открыть Google.');
    destination=target.href;
   }
-  if((session?.uid||null)!==uid)throw changed();
+  check();if((session?.uid||null)!==uid)throw changed();
   oauthStorage().setItem(oauthCell,JSON.stringify({uid,link,verifier,redirect,created:now()}));
   if(o.navigate)o.navigate(destination);else location.assign(destination);
  }
  async function finishGoogle(){
-  googleLeaving=0;   // вернулись от Google (или страница открыта заново): переход закончен
+  googleLeaving=null;   // вернулись от Google (или страница открыта заново): переход закончен
   if(!location?.href)return null;
   const page=new URL(location.href),params=page.searchParams,hash=new URLSearchParams(page.hash.slice(1));
   const code=params.get('code'),error=params.get('error')||hash.get('error');
@@ -9053,9 +9079,9 @@ function create(options){
  /* сведения аккаунта с сервера: почта, ожидающая подтверждения новая почта, имя */
  async function user(){
   const who=mine(),j=await auth('user',null,await token(),'GET');
-  if(mine()===who&&j&&j.id===session.uid){
-   const next=Object.assign({},session,{email:j.email||session.email,name:String(((j.user_metadata)||{}).display_name||session.name||'')});
-   if(next.email!==session.email||next.name!==session.name){session=next;persist(session,kraw);emit()}
+  if(mine()===who&&identity(disk())===who&&j&&j.id===session?.uid){
+   const next=Object.assign({},session,{email:j.email||session.email,name:String(((j.user_metadata)||{}).display_name||session.name||''),google:hasGoogle(j,session.google)});
+   if(next.email!==session.email||next.name!==session.name||next.google!==!!session.google){persist(next,kraw);session=next;emit()}
   }
   return {email:(j&&j.email)||'',newEmail:(j&&j.new_email)||''};
  }
@@ -9072,9 +9098,9 @@ function create(options){
   if(e.key===offerCell(o.app)&&e.newValue){acceptOffer().catch(()=>{});return}
   if(e.key===null||e.key===CELL)adopt().catch(()=>{});
  }
- if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume);events.addEventListener('pageshow',()=>{googleLeaving=0})}
+ if(events&&events.addEventListener){events.addEventListener('storage',onStorage);events.addEventListener('online',resume);events.addEventListener('pageshow',resume);events.addEventListener('pageshow',()=>{googleLeaving=null})}
  const api={
-  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:()=>startGoogle(true),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
+  load,current,signInGoogle:()=>startGoogle(false),linkGoogle:(password,signal)=>startGoogle(true,password,signal),finishGoogle,pendingRecovery,recoveryNeedsPassword,completeRecovery,cancelRecovery,beginMigration,refreshKey,signIn,signUp,signOut,deleteAccount,token,rename,resend,recover,user,changeEmail,linkUser,setPassword,
   app:o.app,cell:CELL,
   keyVersion:()=>current()?.keyVersion||0,
   cipherKey:version=>(version===undefined||current()?.keyVersion===version)?key:null,
@@ -11441,7 +11467,7 @@ accountScreens.addEventListener('submit',function(event){
  * По согласованным прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026):
  *  - первый экран: сначала только стеклянный Happy; дуга кружит, пока приложение загружается, докручивается до улыбки
  *    строго снизу и останавливается; затем плавно появляются надпись и кнопки — у нижнего края, смайлик не сдвигается;
- *  - Google открывает выбор аккаунта; Apple пока недоступен;
+ *  - Google открывает выбор аккаунта;
  *  - регистрация (почта, пароль и повтор) → ожидание письма: «Отправить повторно», «Изменить почту»; как только
  *    почту подтвердили по ссылке и человек вернулся в приложение, оно открывается само — пароль ещё в памяти экрана;
  *  - вход с понятной ошибкой; «Забыли пароль?» → письмо → новый пароль (включается настройкой features.recovery);
@@ -11467,6 +11493,8 @@ const esc=v=>S().esc(v);
 const googleReturn=/(?:^|[?&#])(?:code|error|error_description|error_code)=/.test((root.location?.search||'')+(root.location?.hash||''));
 const RESUME_MS=30*60*1000,POLL_MS=20000,POLL_FOR=30*60*1000;
 let cfg=null,pageH=null,screen='',form={email:'',error:''},pending=null,linkToken=null,smileTimer=null,pollTimer=null,pollUntil=0,gate=null,emailBack=null;
+
+let linkRequest=null,returnToProfile=false;
 
 const store={
  get(k){try{return root.sessionStorage.getItem(k)}catch(e){return null}},
@@ -11498,13 +11526,13 @@ function readLink(){
 /* ── страница входа ── */
 function ensurePage(){
  if(pageH&&!pageH.closed)return pageH;
- pageH=S().page({id:'welcome',className:'hs-auth-root',label:'Вход в Happy',onClose:()=>{pageH=null;stopSmile()}});
+ pageH=S().page({id:'welcome',className:'hs-auth-root',label:'Вход в Happy',onClose:()=>{linkRequest?.abort();pageH=null;stopSmile()}});
  pageH.main.addEventListener('click',onClick);
  pageH.main.addEventListener('submit',e=>{e.preventDefault();submit()});
  return pageH;
 }
 function closePage(){stopPoll();if(pageH){const p=pageH;pageH=null;p.close()}}
-const waitLabels={opening:'Открываем дневник…',googleOpening:'Открываем выбор Google-аккаунта…',googleChecking:'Проверяем записи…'};
+const waitLabels={opening:'Открываем дневник…',googleChecking:'Проверяем записи…'};
 function showWait(p,next){
  let status=p.main.querySelector('.hs-wait-status');
  if(!status){
@@ -11520,6 +11548,8 @@ function showWait(p,next){
 function show(next,o){
  o=o||{};screen=next;form.error=o.error||'';form.needLegacyPassword=!!o.needLegacyPassword;if(o.email!==undefined)form.email=o.email;
  const p=ensurePage();p.top();
+ p.el.classList.toggle('hs-account-access',next==='access');
+ if(next==='access')p.el.setAttribute('aria-label','Настройка аккаунта');
  if(waitLabels[next]){stopPoll();showWait(p,next);return}
  p.main.className='hs-main '+(next==='welcome'?'hs-welcome':'hs-auth');
  p.main.innerHTML=html(next);
@@ -11579,12 +11609,13 @@ function accessHtml(){
   }
  }else{
   note=who.google?'Вход через Google подключён. На новом телефоне выбери тот же Google-аккаунт, чтобы открыть свои записи.':
-   'Выбери Google-аккаунт для входа в этот профиль. Вход по почте сохранится.';
-  if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary');
+   'Введи текущий пароль Happy. Google станет ещё одним способом входа в этот профиль. Твои записи сохранятся.';
+  if(!who.google)action=btn('link-google','Выбрать Google-аккаунт','hs-primary',true);
  }
- const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Подключить вход через Google';
- return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p>'+legacyPasswordField()+errorBox()+
-  '<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div>';
+ const heading=who.google?(transitioning?'Восстановление записей':'Вход через Google'):'Привязать к Google';
+ const password=!transitioning&&!who.google?S().passwordField({label:'Текущий пароль Happy',name:'linkPassword'}):'';
+ return title(heading)+'<p class="hs-current-email">'+esc(who.email||'')+'</p><p class="hs-note">'+esc(note)+'</p><form>'+
+  password+legacyPasswordField()+errorBox()+'<div class="hs-actions">'+action+btn('cancel',transitioning?'Позже':'Закрыть','hs-cancel')+'</div></form>';
 }
 function smile(label){
  return '<div class="hs-smile" '+(label?'role="img" aria-label="'+esc(label)+'"':'aria-hidden="true"')+'><svg viewBox="0 0 120 120" data-hs-ring><circle class="hs-smile-track" cx="60" cy="60" r="52"/>'+
@@ -11594,7 +11625,6 @@ function smile(label){
 function welcomeOptions(){
  const I=S().ICONS,app=cfg.name;
  return '<div class="hs-welcome-options" inert aria-hidden="true"><h1>Создать аккаунт</h1><div class="hs-welcome-buttons">'+
-   '<button type="button" class="hs-provider" disabled>'+I.apple+'<span>Продолжить с Apple</span></button>'+
    googleButton()+
    '<button type="button" class="hs-btn hs-primary hs-email-start" data-hw="to-register">'+I.envelope+'<span>Продолжить с почтой</span></button></div>'+
    errorBox()+'<p class="hs-login-choice">Уже есть аккаунт? <button type="button" data-hw="to-login">Войти</button></p>'+
@@ -11684,7 +11714,16 @@ function act(a){
  switch(a){
  /* кнопка остаётся выключенной, пока страница уходит к Google: второе нажатие сорвало бы вход (25.11.2026) */
  case 'google':return busy(a,()=>A.signInGoogle().then(leaving));
- case 'link-google':return busy(a,()=>A.linkGoogle().then(leaving));
+ case 'link-google':return busy(a,async()=>{
+  const input=pageH.main.querySelector('[name="linkPassword"]');
+  const password=input.value;
+  if(!password){input.focus();throw Error('Введи текущий пароль Happy.')}
+  input.value='';
+  const request=linkRequest=new AbortController();
+  try{await A.linkGoogle(password,request.signal);await leaving()}
+  catch(e){if(!request.signal.aborted)throw e}
+  finally{if(linkRequest===request)linkRequest=null}
+ });
  case 'complete-recovery':return busy(a,async()=>{
   const input=pageH.main.querySelector('[name="legacyPassword"]'),password=input?.value;
   if(input&&!password)throw Error('Введи прежний пароль Happy.');
@@ -11731,7 +11770,7 @@ function act(a){
  case 'to-signup-email':return show('signupEmail',{email:''});
  case 'guest':store.set(guestKey(),'1');return closePage();
  case 'close':pending=null;return welcomeOrApp();
- case 'cancel':if(screen==='access')store.del(accessKey());return welcomeOrApp();
+ case 'cancel':if(screen==='access')return closeAccess();return welcomeOrApp();
  case 'back-profile':{const f=emailBack;emailBack=null;closePage();if(f)try{f()}catch(e){}return}
  case 'register':{
   const email=norm(val('email')),pw=val('password'),repeat=val('repeat');form.email=email;
@@ -11861,18 +11900,14 @@ function init(o){
   const link=readLink(),who=cfg.account.current();
   if(cfg.account.pendingRecovery()){showRecovery(boot.googleError);return}
   if(who&&cfg.boot&&!boot.store&&boot.error){show('syncError',{error:boot.error});return}
-  if(boot.googleError){show(who?'access':'login',{error:boot.googleError});return}
+  if(boot.googleError){if(who)access(true,boot.googleError);else show('login',{error:boot.googleError});return}
   if(link&&link.error)S().toast('Ссылка больше не действует. Запроси новую.');
   if(who){
    if(screen==='opening')closePage();
    signedIn(link);
    const returnToAccess=store.get(accessKey());store.del(accessKey());
-   if(returnToAccess===googleIntent(who.uid)){
-    if(who.keyVersion===2&&!who.google&&!who.migrating){
-     show('googleOpening');
-     cfg.account.linkGoogle().catch(e=>{if(cfg.account.current()?.uid===who.uid)show('access',{error:message(e)})});
-    }else show('access');
-   }else if(returnToAccess===who.uid||boot.google==='linked')show('access');
+   if(returnToAccess===googleIntent(who.uid)||boot.google==='linked')access(true);
+   else if(returnToAccess===who.uid)show('access');
   }else{
    if(screen==='opening')closePage();
    signedOut(link);
@@ -11904,7 +11939,33 @@ async function signOut(){
 function open(name){form.note='';show(name==='register'?'register':'login',{email:''})}
 function changeEmail(onBack){if(!cfg.features.emailChange)return;emailBack=onBack||null;show('emailChange',{email:''})}
 
-function access(){if(cfg.account.current())show('access')}
+function access(fromProfile=false,error=''){
+ if(!cfg.account.current())return;
+ returnToProfile=fromProfile;
+ if(fromProfile&&!root.history.state?.happyProfileAccess)
+  root.history.pushState({...root.history.state,happyProfileAccess:true},'');
+ show('access',{error});
+}
+function closeAccess(fromHistory=false){
+ store.del(accessKey());
+ pageH.el.hidden=true;pageH.el.classList.remove('hs-account-access');
+ closePage();
+ if(returnToProfile){
+  returnToProfile=false;
+  if(!fromHistory&&root.history.state?.happyProfileAccess)root.history.back();
+  root.HappyPerson.open();
+  doc.querySelector('[data-page="profile"] [data-p="google"]')?.focus({preventScroll:true});
+ }
+}
+root.addEventListener?.('popstate',()=>{
+ if(pageH&&screen==='access'&&returnToProfile&&!root.history.state?.happyProfileAccess)closeAccess(true);
+});
+doc?.addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&pageH&&screen==='access'){
+  event.preventDefault();event.stopImmediatePropagation();
+  if(!pageH.main.querySelector('[data-hw="cancel"]')?.disabled)closeAccess();
+ }
+},true);
 root.HappyWelcome={init,ask,takeResume,open,signOut,changeEmail,access,
  get features(){return cfg?cfg.features:{}},get screen(){return pageH?screen:''},
  /* для проверок: письмо подтвердили — попробовать войти сейчас */
@@ -12033,14 +12094,12 @@ function top(box){
  if(box)topBox=box;if(!topBox||!cfg)return;
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
  const name=who?(who.name||'Мой профиль'):'Гость';
- let accessLabel='';
- if(who&&!who.google)accessLabel='Подключить вход через Google';
- else if(who&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
+ const needsRecovery=who?.google&&(who.keyVersion===1||who.migrating);
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
   '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button>'+
-  (accessLabel?'<button type="button" class="hs-row" data-hp="access"><span>'+accessLabel+'</span></button>':'')+'</div></section></div>';
+  (needsRecovery?'<button type="button" class="hs-row" data-hp="access"><span>Восстановление записей</span></button>':'')+'</div></section></div>';
 }
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;
@@ -12086,13 +12145,18 @@ function open(){
   return '<div class="hs-pending"><span>Ожидает подтверждения</span><strong>'+esc(pendingEmail)+'</strong><button type="button" class="hs-quiet" data-p="email-again">Отправить повторно</button>'+
    '<button type="button" class="hs-quiet" data-p="email-cancel">Отменить смену</button></div>';
  }
+ function providerActions(){
+  return A.current()?.google?'<span class="hs-provider-status">Google привязан</span>':
+   '<button type="button" class="hs-btn hs-glass-btn" data-p="google">Привязать к Google</button>';
+ }
  function render(){
   const F=S().field;
   main.innerHTML='<div class="hs-profile-photo">'+avatar(draft.photo)+'<button type="button" class="hs-quiet" data-p="photo">'+(draft.photo?'Изменить фото':'Добавить фото')+'</button>'+
    '<input type="file" accept="image/*" hidden data-p-file></div><div class="hs-profile-form">'+
    '<section class="hs-profile-account"><h2>Аккаунт</h2><div class="hs-email-label"><span>Почта</span><span class="hs-verified">'+S().ICONS.check+'Подтверждена</span></div>'+
    '<div class="hs-input hs-email-value" data-p-email>'+esc((A.current()||who).email)+'</div>'+
-   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
+   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+
+   '<div class="hs-profile-providers">'+providerActions()+'</div></section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
    F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как тебя зовут'})+
    F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
@@ -12113,7 +12177,13 @@ function open(){
  function readInputs(){draft.name=input('name').value;draft.birthday=input('birthday').value;shown.height=input('height').value;shown.weight=input('weight').value;shown.date=input('date').value}
  function error(t){const e=main.querySelector('.hs-error');e.textContent=t;e.hidden=!t;if(t)e.scrollIntoView({block:'center',behavior:'smooth'})}
  render();
- if(cfg.features.emailChange)A.user().then(u=>{pendingEmail=u.newEmail||'';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml();const em=main.querySelector('[data-p-email]');if(em)em.textContent=u.email||who.email}).catch(()=>{});
+ A.user().then(u=>{
+  const current=A.current();if(current?.uid!==who.uid||pageH?.main!==main)return;
+  if(current.google!==who.google)main.querySelector('.hs-profile-providers').innerHTML=providerActions();
+  pendingEmail=u.newEmail||'';
+  const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml();
+  main.querySelector('[data-p-email]').textContent=u.email||who.email;
+ }).catch(()=>{});
  /* новый вес — замер на сегодня; вернули прежний вес — и дата прежняя */
  let autoDate=false;
  main.addEventListener('input',e=>{
@@ -12139,6 +12209,7 @@ function open(){
   const b=e.target.closest('[data-p],[data-hs]');if(!b)return;
   const a=b.dataset.p||b.dataset.hs;
   if(a==='photo'){readInputs();if(!draft.photo){main.querySelector('[data-p-file]').click();return}photoSheet();return}
+  if(a==='google'){if(A.current()?.uid===who.uid)root.HappyWelcome.access(true);return}
   if(a==='email'){readInputs();root.HappyWelcome.changeEmail(()=>{A.user().then(u=>{pendingEmail=u.newEmail||'';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml()}).catch(()=>{})});return}
   if(a==='email-again'){A.changeEmail(pendingEmail).then(()=>S().toast('Ссылка отправлена повторно')).catch(err=>error(err.message));return}
   if(a==='email-cancel'){A.changeEmail((A.current()||who).email).then(()=>{pendingEmail='';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML='';S().toast('Смена почты отменена')}).catch(err=>error(err.message));return}
