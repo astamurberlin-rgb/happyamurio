@@ -2,8 +2,8 @@
  * 1. Один порядок значений везде: вес × повторы, время × расстояние (раньше в итоге и в карточке было «10 повт. · 60 кг»).
  * 2. В полях — последние значения: тренировка и новое упражнение берут то, что было сделано в прошлый раз.
  * 3. Тренировки (программы) — только на главном: вкладки «Мои тренировки» в Каталоге и списка в Настройках нет;
- *    скрытые с главной — в свёрнутой строке «Ещё тренировки» на главном (образцы убраны 26.11.2026).
- * 4. Лист тренировки: маленький переключатель «На главном экране» у названия, упражнения крупно и со значениями,
+ *    все свои всегда на главной, образцов и переключателя «На главном экране» нет (26.11.2026).
+ * 4. Лист тренировки: упражнения крупно и со значениями,
  *    «Начать тренировку» последней и выше (56, исключение по слову Астамура), под ней мелкое розовое «Удалить тренировку».
  * 5. «Настроить» в тренировке: у каждого подхода круг ✓, как в самой тренировке; нажал — подход отмечен.
  * 6. Итог тренировки: «Удалить» — мелкая розовая надпись вместо большой красной кнопки (стиль в workout-flow.css). */
@@ -41,20 +41,8 @@ libraryTabs=function(){return '';};
 {const libraryBeforeFlow=renderLibrary;renderLibrary=function(){libraryTab='exercises';return libraryBeforeFlow.apply(this,arguments);};}
 {const gotoBeforeFlow=goto;goto=function(v,...rest){if(v==='library'&&libraryTab==='templates'){libraryTab='exercises';v='diary';}return gotoBeforeFlow(v,...rest);};}
 settingsTemplatesMarkup=function(){return '';};
-let workoutFlowMoreOpen=false;
-{const diaryBeforeFlow=renderDiary;
- renderDiary=function(){
-  const html=diaryBeforeFlow.apply(this,arguments),all=templates();
-  // Астамур 26.11.2026 (лаборатория): «убери образцы тренировок» — рекомендуемых здесь больше нет, только свои скрытые с главной.
-  const more=all.filter(t=>!t.recommended&&t.favorite===false);
-  if(!more.length)return html;
-  const root=document.createElement('div');root.innerHTML=html;
-  const create=root.querySelector('[data-action="new-template"]');if(!create)return html;
-  create.insertAdjacentHTML('afterend',`<button type="button" class="card section-row wf-more" data-action="wf-more" aria-expanded="${workoutFlowMoreOpen}"><b>Ещё тренировки · ${more.length}</b><span class="wf-more-caret" aria-hidden="true">${icon('caret-right')}</span></button>`
-   +(workoutFlowMoreOpen?more.map(t=>homeTemplateRow(t).replace('class="card section-row home-favorite"','class="card section-row home-favorite wf-more-row"')).join(''):''));
-  return root.innerHTML;
- };}
-window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="wf-more"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();workoutFlowMoreOpen=!workoutFlowMoreOpen;render();},true);
+/* Астамур 26.11.2026: образцов и строки «Ещё тренировки» на главной нет, переключателя «На главном экране» тоже —
+   все свои тренировки всегда в «Мои тренировки» (фильтр в planning.js, renderDiary); лишнюю удаляешь. */
 
 /* 4. Лист тренировки */
 function workoutFlowRange(values,text){const v=values.filter(n=>Number(n)>0).map(Number);if(!v.length)return '';const lo=Math.min(...v),hi=Math.max(...v);return lo===hi?text(lo):text(lo)+'–'+text(hi);}
@@ -77,8 +65,7 @@ function workoutFlowPreview(t){
 function workoutFlowSheet(html,id){
  const t=templates().find(t=>t.id===id);if(!t||t.recommended)return html;
  const root=document.createElement('div');root.innerHTML=html;
- const heading=root.querySelector('.training-heading'),home=root.querySelector('.plan-home-row'),list=root.querySelector('.template-exercises,.template-add-first'),start=root.querySelector('.card-start');
- if(home){const on=home.querySelector('input')?.checked;home.remove();heading?.insertAdjacentHTML('afterend',`<label class="wf-home"><span>На главном экране</span><input type="checkbox" role="switch" class="sport-switch" data-template-home="${esc(t.id)}" ${on?'checked':''}></label>`);}
+ const heading=root.querySelector('.training-heading'),list=root.querySelector('.template-exercises,.template-add-first'),start=root.querySelector('.card-start');
  if(list)list.outerHTML=workoutFlowPreview(t);
  if(start){start.querySelector('[data-action="start"]')?.classList.add('wf-start');start.insertAdjacentHTML('beforeend',`<button type="button" class="wf-delete" data-action="wf-delete-template" data-id="${esc(t.id)}">Удалить тренировку</button>`);}
  return root.innerHTML;

@@ -1,6 +1,4 @@
 /* Ввод тренировки, лаборатория 26.11.2026 (workout-flow.js). Только токены. */
-/* Лист тренировки: маленький переключатель у названия */
-.wf-home{display:flex;align-items:center;justify-content:space-between;gap:var(--happy-space-12);min-height:var(--happy-size-pill);margin:calc(-1 * var(--happy-space-8)) 0 var(--happy-space-8);font-size:14px;font-weight:400;color:var(--happy-muted);cursor:pointer}
 /* Упражнения в листе — крупно и со значениями */
 .wf-preview{padding:var(--happy-space-sheet-buttons) var(--happy-space-list-row-x)}
 .wf-preview-row{display:flex;flex-direction:column;gap:var(--happy-space-3);padding:var(--happy-space-12) 0;border-top:1px solid var(--happy-row-divider)}
@@ -12,9 +10,6 @@
 .card-start .button.primary.wf-start{min-height:var(--happy-size-button-start);height:var(--happy-size-button-start)}
 .card-start .wf-delete,#wf-note-form .wf-delete{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-pill);margin-top:var(--happy-space-8);border:0;border-radius:var(--happy-radius-pill);background:none;color:var(--happy-danger-soft);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 /* Главная: «Ещё тренировки» свёрнуто */
-.wf-more{display:flex;align-items:center;justify-content:space-between;width:100%}
-.wf-more .wf-more-caret{display:flex;color:var(--happy-muted);transition:transform .2s}
-.wf-more[aria-expanded="true"] .wf-more-caret{transform:rotate(90deg)}
 /* «Настроить» в тренировке: круг ✓ у каждого подхода */
 .wf-plan-check{display:flex;align-items:center;justify-content:flex-end;padding:0;border:0;background:none;color:inherit;cursor:pointer;min-height:var(--happy-size-pill)}
 .wf-plan-check:not(.is-done) .set-tick{visibility:hidden}

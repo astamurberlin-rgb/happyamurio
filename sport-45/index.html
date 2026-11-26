@@ -2637,8 +2637,6 @@ body.sport-fab-x #sport-fab{transform:translate(-50%,-50%) rotate(45deg)!importa
    (заметки к упражнению и тренировке, «Куда добавить»; поле даты в пилюле невидимое — ему тоже 16, чтобы страница не прыгала). */
 #day-picker,#active-note,textarea#active-note,.set-note,[name="set-note"],.active-note,[name="active-note"],[name="addDestination"],select[name="addDestination"]{font-size:16px!important}
 /* Ввод тренировки, лаборатория 26.11.2026 (workout-flow.js). Только токены. */
-/* Лист тренировки: маленький переключатель у названия */
-.wf-home{display:flex;align-items:center;justify-content:space-between;gap:var(--happy-space-12);min-height:var(--happy-size-pill);margin:calc(-1 * var(--happy-space-8)) 0 var(--happy-space-8);font-size:14px;font-weight:400;color:var(--happy-muted);cursor:pointer}
 /* Упражнения в листе — крупно и со значениями */
 .wf-preview{padding:var(--happy-space-sheet-buttons) var(--happy-space-list-row-x)}
 .wf-preview-row{display:flex;flex-direction:column;gap:var(--happy-space-3);padding:var(--happy-space-12) 0;border-top:1px solid var(--happy-row-divider)}
@@ -2650,9 +2648,6 @@ body.sport-fab-x #sport-fab{transform:translate(-50%,-50%) rotate(45deg)!importa
 .card-start .button.primary.wf-start{min-height:var(--happy-size-button-start);height:var(--happy-size-button-start)}
 .card-start .wf-delete,#wf-note-form .wf-delete{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-pill);margin-top:var(--happy-space-8);border:0;border-radius:var(--happy-radius-pill);background:none;color:var(--happy-danger-soft);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 /* Главная: «Ещё тренировки» свёрнуто */
-.wf-more{display:flex;align-items:center;justify-content:space-between;width:100%}
-.wf-more .wf-more-caret{display:flex;color:var(--happy-muted);transition:transform .2s}
-.wf-more[aria-expanded="true"] .wf-more-caret{transform:rotate(90deg)}
 /* «Настроить» в тренировке: круг ✓ у каждого подхода */
 .wf-plan-check{display:flex;align-items:center;justify-content:flex-end;padding:0;border:0;background:none;color:inherit;cursor:pointer;min-height:var(--happy-size-pill)}
 .wf-plan-check:not(.is-done) .set-tick{visibility:hidden}
@@ -3639,7 +3634,7 @@ const scheduleWeekdays=[[1,'Пн'],[2,'Вт'],[3,'Ср'],[4,'Чт'],[5,'Пт'],[
 const scheduleStatusNames={planned:'По плану',completed:'Выполнено',partial:'Частично',skipped:'Пропущено',cancelled:'Отменено'};
 function homeTemplateRow(t){return `<button class="card section-row home-favorite" data-action="${baseTemplates.some(b=>b.id===t.id)?'sport-section':'preview-template'}" data-id="${esc(t.id)}"><span class="symbol">${icon(workoutIconName(t))}</span><span><b>${esc(t.title)}</b></span></button>`;}
 function occurrenceRow(o){const t=templates().find(t=>t.id===o.templateId);return `<button class="card section-row occurrence-row" data-action="schedule-open" data-id="${esc(o.id)}"><span class="symbol">${icon(t?workoutIconName(t):'calendar-blank')}</span><span><b>${esc(o.title)}</b><small>${esc(dateLabel(o.start.slice(0,10)))}, ${esc(o.start.slice(11,16))}${state.active?.occurrenceId===o.id?' · идёт':o.status!=='planned'?' · '+scheduleStatusNames[o.status]:''}</small></span></button>`;}
-renderDiary=function(){const shell=document.createElement('div');shell.innerHTML=legacyDiary().replaceAll(icon('caret-right'),'');shell.querySelector('.energy .demo')?.remove();shell.querySelector('.energy .balance')?.remove();const energy=shell.querySelector('.energy').outerHTML,all=templates(),planned=plannedOccurrences(selectedDate,plusDays(selectedDate,14)).filter(o=>o.status!=='cancelled'),favorites=all.filter(t=>!t.recommended&&t.favorite!==false);return renderTop('Тренировки')+energy+(state.homeScheduleHidden===true?'':`<div class="section-title"><h2>Расписание</h2></div><div class="section-list">${planned.map(occurrenceRow).join('')}<button class="card section-row create-workout plan-placeholder" data-action="plan-workout">${icon('calendar-blank')}<b>Запланировать тренировку</b></button></div>`)+`<div class="section-title"><h2>Мои тренировки</h2></div><div class="section-list">${favorites.map(homeTemplateRow).join('')}<button class="section-row create-workout" data-action="new-template">${icon('plus')}<b>Создать тренировку</b></button></div>`;};
+renderDiary=function(){const shell=document.createElement('div');shell.innerHTML=legacyDiary().replaceAll(icon('caret-right'),'');shell.querySelector('.energy .demo')?.remove();shell.querySelector('.energy .balance')?.remove();const energy=shell.querySelector('.energy').outerHTML,all=templates(),planned=plannedOccurrences(selectedDate,plusDays(selectedDate,14)).filter(o=>o.status!=='cancelled'),favorites=all.filter(t=>!t.recommended);return renderTop('Тренировки')+energy+(state.homeScheduleHidden===true?'':`<div class="section-title"><h2>Расписание</h2></div><div class="section-list">${planned.map(occurrenceRow).join('')}<button class="card section-row create-workout plan-placeholder" data-action="plan-workout">${icon('calendar-blank')}<b>Запланировать тренировку</b></button></div>`)+`<div class="section-title"><h2>Мои тренировки</h2></div><div class="section-list">${favorites.map(homeTemplateRow).join('')}<button class="section-row create-workout" data-action="new-template">${icon('plus')}<b>Создать тренировку</b></button></div>`;};
 function templateSchedule(id){return state.schedules.find(s=>s.templateId===id&&!s.archived);}
 /* Lab 10.11.2026 17:05: «Добавить в расписание» laid out like a calendar event (Apple Calendar, Google Calendar):
    1) when — one-time or by weekdays, date and time side by side; the time zone is the phone's and stays out of view
@@ -3701,7 +3696,6 @@ function openScheduleSheet(id){
  const top=sheet?.querySelector('.sheet-top');
  if(top&&!top.querySelector('.sheet-share'))top.insertAdjacentHTML('beforeend','<button type="submit" form="schedule-form" class="icon-btn sheet-share" data-plan-export="reminder" aria-label="Поделиться расписанием"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M7 10H5v11h14V10h-2"/></svg></button>');
 }
-document.addEventListener('change',e=>{const input=e.target;if(!input?.dataset?.templateHome)return;const t=templates().find(t=>t.id===input.dataset.templateHome);if(!t||t.recommended)return;storeSportTemplate({...t,favorite:input.checked});persist();render();});
 function scheduleFromForm(f,form,templateId){
  const mode=f.get('scheduleMode'),prior=state.schedules.find(s=>s.id===form.dataset.scheduleId);
  return {prior,schedule:mode&&mode!=='none'?validateSchedule({...prior,id:prior?.id||sportId('schedule'),templateId,mode,startDate:String(f.get('scheduleWhen')||'').slice(0,10),time:String(f.get('scheduleWhen')||'').slice(11,16),endDate:String(f.get('scheduleEnd')||''),timeZone:String(f.get('scheduleZone')||scheduleZone()).trim(),days:f.getAll('scheduleDays').map(Number),minutes:Number(f.get('planMinutes')),note:String(f.get('planNote')||''),reminder:Number(f.get('planReminder')),revision:(prior?.revision||0)+1,archived:false}):null};
@@ -7877,9 +7871,8 @@ document.addEventListener('submit',e=>{
 nextPlanCard=function(t){
  if(!t)return '';const s=templateSchedule(t.id);
  const when=s?(s.mode==='weekly'?s.days.map(d=>scheduleWeekdays.find(x=>x[0]===d)?.[1]).join(', ')+' · ':dateLabel(s.startDate)+', ')+s.time+' · '+s.minutes+' мин':'';
- return `<div class="section-title"><h2>Расписание</h2></div><button class="card section-row plan-line" data-action="plan-template" data-id="${esc(t.id)}">${icon('calendar-blank')}<b>${s?esc(when):'Добавить в расписание'}</b></button>`   // без стрелки, значок и текст по центру (Астамур 18.11.2026)
-  // Пункт 12 (Астамур 15.11.2026): «Показывать на главной» — обычный переключатель, на карточке рядом с расписанием.
-  +(t.recommended?'':`<label class="card section-row plan-home-row"><b>Показывать на главной</b><input type="checkbox" role="switch" class="sport-switch" data-template-home="${esc(t.id)}" ${t.favorite!==false?'checked':''}></label>`);
+ return `<div class="section-title"><h2>Расписание</h2></div><button class="card section-row plan-line" data-action="plan-template" data-id="${esc(t.id)}">${icon('calendar-blank')}<b>${s?esc(when):'Добавить в расписание'}</b></button>`   // без стрелки, значок и текст по центру (Астамур 18.11.2026);
+  // Пункт 12 «Показывать на главной» убран 26.11.2026 (Астамур): все свои тренировки всегда на главной.
 };
 
 // 6. Home: today and the next three planned sessions; the rest behind «Всё расписание».
@@ -9227,8 +9220,8 @@ function syncSportFabClose(){
  * 1. Один порядок значений везде: вес × повторы, время × расстояние (раньше в итоге и в карточке было «10 повт. · 60 кг»).
  * 2. В полях — последние значения: тренировка и новое упражнение берут то, что было сделано в прошлый раз.
  * 3. Тренировки (программы) — только на главном: вкладки «Мои тренировки» в Каталоге и списка в Настройках нет;
- *    скрытые с главной — в свёрнутой строке «Ещё тренировки» на главном (образцы убраны 26.11.2026).
- * 4. Лист тренировки: маленький переключатель «На главном экране» у названия, упражнения крупно и со значениями,
+ *    все свои всегда на главной, образцов и переключателя «На главном экране» нет (26.11.2026).
+ * 4. Лист тренировки: упражнения крупно и со значениями,
  *    «Начать тренировку» последней и выше (56, исключение по слову Астамура), под ней мелкое розовое «Удалить тренировку».
  * 5. «Настроить» в тренировке: у каждого подхода круг ✓, как в самой тренировке; нажал — подход отмечен.
  * 6. Итог тренировки: «Удалить» — мелкая розовая надпись вместо большой красной кнопки (стиль в workout-flow.css). */
@@ -9266,20 +9259,8 @@ libraryTabs=function(){return '';};
 {const libraryBeforeFlow=renderLibrary;renderLibrary=function(){libraryTab='exercises';return libraryBeforeFlow.apply(this,arguments);};}
 {const gotoBeforeFlow=goto;goto=function(v,...rest){if(v==='library'&&libraryTab==='templates'){libraryTab='exercises';v='diary';}return gotoBeforeFlow(v,...rest);};}
 settingsTemplatesMarkup=function(){return '';};
-let workoutFlowMoreOpen=false;
-{const diaryBeforeFlow=renderDiary;
- renderDiary=function(){
-  const html=diaryBeforeFlow.apply(this,arguments),all=templates();
-  // Астамур 26.11.2026 (лаборатория): «убери образцы тренировок» — рекомендуемых здесь больше нет, только свои скрытые с главной.
-  const more=all.filter(t=>!t.recommended&&t.favorite===false);
-  if(!more.length)return html;
-  const root=document.createElement('div');root.innerHTML=html;
-  const create=root.querySelector('[data-action="new-template"]');if(!create)return html;
-  create.insertAdjacentHTML('afterend',`<button type="button" class="card section-row wf-more" data-action="wf-more" aria-expanded="${workoutFlowMoreOpen}"><b>Ещё тренировки · ${more.length}</b><span class="wf-more-caret" aria-hidden="true">${icon('caret-right')}</span></button>`
-   +(workoutFlowMoreOpen?more.map(t=>homeTemplateRow(t).replace('class="card section-row home-favorite"','class="card section-row home-favorite wf-more-row"')).join(''):''));
-  return root.innerHTML;
- };}
-window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="wf-more"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();workoutFlowMoreOpen=!workoutFlowMoreOpen;render();},true);
+/* Астамур 26.11.2026: образцов и строки «Ещё тренировки» на главной нет, переключателя «На главном экране» тоже —
+   все свои тренировки всегда в «Мои тренировки» (фильтр в planning.js, renderDiary); лишнюю удаляешь. */
 
 /* 4. Лист тренировки */
 function workoutFlowRange(values,text){const v=values.filter(n=>Number(n)>0).map(Number);if(!v.length)return '';const lo=Math.min(...v),hi=Math.max(...v);return lo===hi?text(lo):text(lo)+'–'+text(hi);}
@@ -9302,8 +9283,7 @@ function workoutFlowPreview(t){
 function workoutFlowSheet(html,id){
  const t=templates().find(t=>t.id===id);if(!t||t.recommended)return html;
  const root=document.createElement('div');root.innerHTML=html;
- const heading=root.querySelector('.training-heading'),home=root.querySelector('.plan-home-row'),list=root.querySelector('.template-exercises,.template-add-first'),start=root.querySelector('.card-start');
- if(home){const on=home.querySelector('input')?.checked;home.remove();heading?.insertAdjacentHTML('afterend',`<label class="wf-home"><span>На главном экране</span><input type="checkbox" role="switch" class="sport-switch" data-template-home="${esc(t.id)}" ${on?'checked':''}></label>`);}
+ const heading=root.querySelector('.training-heading'),list=root.querySelector('.template-exercises,.template-add-first'),start=root.querySelector('.card-start');
  if(list)list.outerHTML=workoutFlowPreview(t);
  if(start){start.querySelector('[data-action="start"]')?.classList.add('wf-start');start.insertAdjacentHTML('beforeend',`<button type="button" class="wf-delete" data-action="wf-delete-template" data-id="${esc(t.id)}">Удалить тренировку</button>`);}
  return root.innerHTML;
