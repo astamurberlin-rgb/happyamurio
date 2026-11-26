@@ -10,7 +10,7 @@
 .wf-preview-sets{color:var(--happy-muted)}
 /* «Начать тренировку» — 56, последней; под ней мелкое розовое «Удалить тренировку» */
 .card-start .button.primary.wf-start{min-height:var(--happy-size-button-start);height:var(--happy-size-button-start)}
-.card-start .wf-delete{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-pill);margin-top:var(--happy-space-8);border:0;border-radius:var(--happy-radius-pill);background:none;color:var(--happy-danger-soft);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.card-start .wf-delete,#wf-note-form .wf-delete{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-pill);margin-top:var(--happy-space-8);border:0;border-radius:var(--happy-radius-pill);background:none;color:var(--happy-danger-soft);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 /* Главная: «Ещё тренировки» свёрнуто */
 .wf-more{display:flex;align-items:center;justify-content:space-between;width:100%}
 .wf-more .wf-more-caret{display:flex;color:var(--happy-muted);transition:transform .2s}
@@ -36,3 +36,17 @@
 /* Тонкая линия перерыва между подходами */
 .wf-rest-line{display:flex;align-items:center;gap:var(--happy-space-10);width:100%;min-height:var(--happy-size-pill);margin:0;padding:0;border:0;background:none;color:var(--happy-muted);font:inherit;font-size:12px;font-weight:400;cursor:pointer}
 .wf-rest-line::before,.wf-rest-line::after{content:"";flex:1;height:1px;background:var(--happy-row-divider)}
+/* Карточка упражнения: ⋯ напротив названия и его меню (меню — то же, что «Ещё» в листе упражнения) */
+.wf-ex-menu-wrap{position:relative;flex:none;display:flex;align-self:flex-start}
+.exercise-menu.wf-ex-menu{position:fixed;left:auto;z-index:60}
+/* Заметка под подходами: подпись и первая строка; нажал — лист */
+.wf-note-row{align-items:center}
+.wf-note-show{flex:1;min-width:0;min-height:var(--happy-size-pill);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:var(--happy-space-3);padding:0;border:0;background:none;color:var(--happy-ink);font:inherit;text-align:left;cursor:pointer}
+.wf-note-label{font-size:12px;font-weight:400;color:var(--happy-muted)}
+.wf-note-title{max-width:100%;font-size:14px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Лист «Заметка» */
+#wf-note-form{display:grid;gap:var(--happy-space-12)}
+.wf-note-for{margin:0;font-size:14px;font-weight:400;color:var(--happy-sheet-subtitle)}
+.wf-note-input{box-sizing:border-box;width:100%;min-height:calc(var(--happy-size-field) * 3);padding:var(--happy-space-12);border:1px solid var(--happy-field-line);border-radius:var(--happy-radius-field);background:var(--happy-field-bg);color:var(--happy-ink);font:inherit;font-size:16px;font-weight:400;line-height:1.45;resize:vertical}
+.wf-note-input::placeholder{color:var(--happy-field-placeholder)}
+#wf-note-form .wf-delete{margin-top:0}

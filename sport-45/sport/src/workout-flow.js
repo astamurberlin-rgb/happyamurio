@@ -129,10 +129,46 @@ function workoutFlowNoteCols(e,metrics){
   const html=linesBeforeNote(e,ei),metrics=setLineMetrics(exerciseMetrics(e)),cols=workoutFlowNoteCols(e,metrics);
   const root=document.createElement('div');root.innerHTML=html;
   root.querySelector('.set-head')?.remove();
-  root.querySelectorAll('.set-row.set-line').forEach(r=>{r.classList.add('wf-note');r.style.setProperty('--set-cols',cols);});
+  root.querySelectorAll('.set-row.set-line').forEach(r=>{r.classList.add('wf-note');r.style.setProperty('--set-cols',cols);r.querySelectorAll('input[data-set]:not([placeholder])').forEach(i=>i.setAttribute('placeholder','—'));});
   const rows=[...root.querySelectorAll('.set-rows>.set-swipe')];
   rows.forEach((row,si)=>{if(si===rows.length-1)return;const rest=setRestSeconds(e.sets[si])??[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);
    row.insertAdjacentHTML('afterend',`<button type="button" class="wf-rest-line" data-action="wf-rest-open" data-ei="${ei}" data-si="${si}" aria-label="Перерыв после подхода ${si+1}: ${sportDurationValue(rest)}"><span>перерыв ${sportDurationValue(rest)}</span></button>`);});
   return root.innerHTML;
  };}
 window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="wf-rest-open"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(typeof openRestWidget==='function')openRestWidget(Number(b.dataset.ei),Number(b.dataset.si));},true);
+
+/* 9. Карточка упражнения (Астамур 26.11.2026): напротив названия — ⋯, в меню «Настройки упражнения» и «Заметка».
+ *    Строки «Добавить заметку…» в карточке нет; заметка пишется в листе снизу. Есть заметка — её первая строка
+ *    под подходами (нажал — открылся лист), рядом прежняя булавка. Нет заметки — строки нет совсем. */
+function workoutFlowNoteTitle(text){const line=String(text||'').trim().split('\n')[0];return line.length>60?line.slice(0,60).trim()+'…':line;}
+{const exerciseBeforeMenu=activeExercise;
+ activeExercise=function(e,ei){
+  const root=document.createElement('div');root.innerHTML=exerciseBeforeMenu(e,ei);
+  const tech=root.querySelector('.exercise-technique[data-action="configure-exercise"]');
+  if(tech)tech.outerHTML=`<span class="wf-ex-menu-wrap"><button type="button" class="exercise-menu-button" data-action="wf-ex-menu" data-ei="${ei}" aria-haspopup="menu" aria-expanded="false" aria-label="Ещё: ${esc(e.name)}">${EXERCISE_DOTS}</button></span>`;
+  const row=root.querySelector('.exercise-note-row');
+  if(row){const text=String(e.notes||'').trim(),pin=row.querySelector('.note-pin');
+   if(!text)row.remove();
+   else row.outerHTML=`<div class="exercise-note-row wf-note-row"><button type="button" class="wf-note-show" data-action="wf-note-edit" data-ei="${ei}" aria-label="Заметка: ${esc(text)}"><span class="wf-note-label">Заметка</span><span class="wf-note-title">${esc(workoutFlowNoteTitle(text))}</span></button>${pin?pin.outerHTML:''}</div>`;}
+  return root.innerHTML;
+ };}
+function workoutFlowCloseMenu(){const m=document.querySelector('.wf-ex-menu');if(!m)return false;m.remove();document.querySelectorAll('[data-action="wf-ex-menu"][aria-expanded="true"]').forEach(b=>b.setAttribute('aria-expanded','false'));return true;}
+function workoutFlowNoteSheet(ei){
+ const e=state.active?.exercises[ei];if(!e)return;const has=!!String(e.notes||'').trim();
+ openSheet('Заметка',`<form id="wf-note-form" data-ei="${ei}"><p class="wf-note-for">${esc(e.name)}</p><textarea class="wf-note-input" name="note" rows="5" maxlength="4000" placeholder="Что запомнить: техника, ощущения, вес на следующий раз" aria-label="Заметка: ${esc(e.name)}">${esc(e.notes||'')}</textarea><button class="button primary wf-note-save" type="submit">Сохранить</button>${has?`<button type="button" class="wf-delete" data-action="wf-note-delete" data-ei="${ei}">Удалить заметку</button>`:''}</form>`);
+ setTimeout(()=>{const t=document.querySelector('#wf-note-form textarea');if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length);}},60);
+}
+function workoutFlowSaveNote(ei,text){const e=state.active?.exercises[ei];if(!e)return;e.notes=text;if(typeof updatePinnedExerciseNote==='function')updatePinnedExerciseNote(ei,text);persist();closeSheet();render();}
+window.addEventListener('click',ev=>{
+ const b=ev.target.closest?.('[data-action="wf-ex-menu"],[data-wf-menu],[data-action="wf-note-edit"],[data-action="wf-note-delete"]');
+ if(!b){if(!ev.target.closest?.('.wf-ex-menu'))workoutFlowCloseMenu();return;}
+ ev.preventDefault();ev.stopImmediatePropagation();const ei=Number(b.dataset.ei);
+ if(b.dataset.action==='wf-ex-menu'){if(workoutFlowCloseMenu())return;const menu=document.createElement('div');menu.className='exercise-menu wf-ex-menu';menu.setAttribute('role','menu');menu.setAttribute('aria-label','Действия с упражнением');
+  menu.innerHTML=`<button type="button" role="menuitem" data-wf-menu="settings" data-ei="${ei}">Настройки упражнения</button><button type="button" role="menuitem" data-wf-menu="note" data-ei="${ei}">${String(state.active?.exercises[ei]?.notes||'').trim()?'Изменить заметку':'Добавить заметку'}</button>`;
+  const r=b.getBoundingClientRect();menu.style.top=Math.round(r.bottom+4)+'px';menu.style.right=Math.round(document.documentElement.clientWidth-r.right)+'px';document.body.append(menu);const swipe=b.closest('.exercise-name-swipe');if(swipe)requestAnimationFrame(()=>{swipe.scrollLeft=0;});b.setAttribute('aria-expanded','true');menu.querySelector('button')?.focus({preventScroll:true});return;}
+ if(b.dataset.wfMenu==='settings'){workoutFlowCloseMenu();openExerciseEditor(state.active.exercises[ei].id,ei);return;}
+ if(b.dataset.wfMenu==='note'||b.dataset.action==='wf-note-edit'){workoutFlowCloseMenu();workoutFlowNoteSheet(ei);return;}
+ if(b.dataset.action==='wf-note-delete'){const old=state.active?.exercises[ei]?.notes||'';workoutFlowSaveNote(ei,'');toast('Заметка удалена',()=>{workoutFlowSaveNote(ei,old);});}
+},true);
+window.addEventListener('submit',ev=>{if(ev.target.id!=='wf-note-form')return;ev.preventDefault();ev.stopImmediatePropagation();workoutFlowSaveNote(Number(ev.target.dataset.ei),String(new FormData(ev.target).get('note')||'').trim());},true);
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&workoutFlowCloseMenu())ev.stopPropagation();},true);
