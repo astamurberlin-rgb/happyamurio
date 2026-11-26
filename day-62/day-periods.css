@@ -180,8 +180,8 @@ input.dp-tagin:focus{outline:none}
 /* v47.4 (Астамур 24.11.2026, 04:55): зелёное свечение кнопки в «хорошо» убрано — кнопка как на экране отметки */
 .scPv .kh{font-size:12px;font-weight:600;letter-spacing:.02em}
 .scTap{margin:4px 0 0;text-align:center;font-size:12px;color:var(--happy-muted,rgba(255,255,255,.72))}
-input.scTitle{margin-top:14px;text-align:center;font-size:20px;font-weight:700;border-color:transparent;background:none}
-input.scTitle:focus{border-color:var(--happy-line,rgba(255,255,255,.34));background:rgba(255,255,255,.12);outline:none}
+.scTitle{margin:14px 0 0;text-align:center;font-size:20px;font-weight:700}
+
 .scGoodHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 2px 10px}
 .scGoodHead span{font-size:16px;font-weight:700;color:var(--happy-ink,#fff)}
 .scGoodHead b{font-size:14px;font-weight:600;color:var(--happy-ink,#fff)}
@@ -299,17 +299,9 @@ input.scTitle:focus{border-color:var(--happy-line,rgba(255,255,255,.34));backgro
 .dp-rings .ringSlide.side{opacity:.5}
 .dp-rings .facts{margin-top:-13px}
 .dp-rings .factTrack .dp-f{flex:0 0 50%;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:6px;transition:flex-basis .38s cubic-bezier(.22,.75,.25,1)}
-input.dp-fname{display:block;width:100%;box-sizing:border-box;margin:0;padding:0 2px;border:0;border-radius:0;background:none;box-shadow:none;
-  color:var(--happy-ink,#fff);font:inherit;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.2;text-align:center;-webkit-appearance:none;appearance:none;text-overflow:ellipsis}
-input.dp-fname::placeholder{color:var(--happy-ink,#fff);opacity:.55}
-input.dp-fname:focus{outline:none;box-shadow:inset 0 -2px 0 rgba(255,255,255,.55)}
-/* ── v34 (Астамур 23.11.2026, 18:33: «эту часть тоже через аккордеон… рядом с энергией значок настроек, шестерёнка»):
-   имя шкалы по ширине текста (зеркало data-v, как имя периода в шапке v31) и по центру под дугой, как на главной; шестерёнка
-   сразу за ним — та же, что «Настройки» в нижнем меню (21 → 22, линия 1,9). Поле нажатия 44 × 44. Свёрнуто — цвет --happy-muted,
-   раскрыто — --happy-ink на подложке --happy-glass и поворот на 90°. Имя не шире ячейки минус место под шестерёнку, длинное — с многоточием ── */
-.dp-fnw{position:relative;display:block;max-width:calc(100% - 88px);min-width:12px}   /* v45.2: справа место под корзину, имя по-прежнему по центру */   /* v37: шестерёнки нет — имя шире, длинное с многоточием */
-.dp-fnw::after{content:attr(data-v) " ";display:block;height:24px;padding:0 2px;overflow:hidden;visibility:hidden;white-space:pre;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
-.dp-fnw input.dp-fname{position:absolute;left:0;top:0;width:100%;height:24px}
+.dp-fnw{position:relative;display:block;max-width:calc(100% - 88px)}
+.dp-rings .dp-f.on .fT{font-size:20px;font-weight:700;color:var(--happy-ink)}
+.dp-scale-choices{justify-content:center;margin:8px 0 16px}
 /* аккордеон: высота 0 → по содержимому (строки сетки 0fr → 1fr), содержимое проявляется и чуть съезжает вниз — как раскрытие
    периода (.dp-body); свёрнутое невидимо и для фокуса. Раскрылось до конца (.dp-done) — подсказки и тени не обрезаются */
 .dp-arcset{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s cubic-bezier(.22,.75,.25,1)}
@@ -358,22 +350,6 @@ input.dp-fname:focus{outline:none;box-shadow:inset 0 -2px 0 rgba(255,255,255,.55
 .dp-scw{grid-template-columns:minmax(0,1fr)}
 .dp-scw>.dp-arcin{min-width:0}
 .dp-body .dp-scw>.dp-arcin{margin:0 -12px;padding:0 12px}
-/* v24: поле новой дуги — с линией, как имя в шапке строки (v23): видно, что сюда пишут */
-input#dpNewArc{width:min(100%,200px);margin:0 auto;padding:0 2px 3px;border-bottom:1px solid var(--happy-line,rgba(255,255,255,.34));transition:border-color .2s}
-input#dpNewArc:focus{box-shadow:none;border-bottom-color:var(--happy-ink,#fff)}
-.dp-arced-new{position:relative;height:0;margin:0;z-index:20}
-.dp-sug{position:absolute;left:0;right:0;top:6px;display:flex;flex-direction:column;max-height:min(340px,48vh);overflow-y:auto;border-radius:22px;
-  background:rgba(46,166,236,.97);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 18px 40px rgba(4,40,80,.28);animation:dpSugIn .16s ease-out}
-@keyframes dpSugIn{from{opacity:0;transform:translateY(-4px)}}
-.dp-sugi{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 16px;border:0;border-top:1px solid rgba(255,255,255,.14);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.dp-sugi:first-child{border-top:0}
-.dp-sugi span{display:flex;flex-direction:column;gap:2px}
-.dp-sugi b{font-size:16px;font-weight:600}
-.dp-sugi small{font-size:12px;color:var(--happy-muted,rgba(255,255,255,.78))}
-.dp-sug-new{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;background:rgba(255,255,255,.1)}
-.dp-sugi:active{background:rgba(255,255,255,.18)}
-
 /* ── v9 (набросок Астамура 22.11.2026): время над ручкой — плашка с хвостиком. С v13 — у раскрытой строки списка (.dp-bubs) ── */
 .dp-bubs .dp-hd>span.dp-bub{top:-12px;height:28px;padding:0 10px;line-height:28px;border-radius:var(--happy-radius-bubble,12px);font-size:14px;font-weight:700;
   background:rgba(255,255,255,.94);color:var(--happy-accent-ink,#0C6FA8);box-shadow:0 4px 12px rgba(4,40,80,.22);transform:none;pointer-events:none}

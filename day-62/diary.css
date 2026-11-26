@@ -9,6 +9,8 @@
 .jd-editor,.jd-history,.jd-detail {min-width:0}
 .jd-editor [hidden],.jd-history [hidden],.jd-detail [hidden] {display:none!important}
 .jd-editor.card {padding:15px 16px 16px}
+/* The glass card creates its own stacking context. Raise the card while its menu overlaps the history. */
+.jd-editor:has(.jd-popover:not([hidden])),.jd-history .jd-head:has(.jd-menu[open]) {position:relative;z-index:1}
 .jd-meta {color:var(--muted);font-size:14px}
 .jd-meta summary,.jd-menu summary {list-style:none;cursor:pointer}
 .jd-meta summary::-webkit-details-marker,.jd-menu summary::-webkit-details-marker{display:none}

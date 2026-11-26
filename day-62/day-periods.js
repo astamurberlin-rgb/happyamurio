@@ -572,23 +572,20 @@ function ringHtmlDp(m,i){
       '<i class="ar dn"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></i>'+
     '</button></div></div>';
 }
-/* v24 (Астамур 23.11.2026, 15:13: «новая дуга… нужно понять, что добавлять имя можно»): в поле новой дуги — призыв
-   «Назови дугу» и линия под ним, как у имени в шапке строки (v23); сбоку, пока дуга не выбрана, подпись прежняя — «Новая дуга» */
-var NEW_ARC_PH='Название';   // v26 (Астамур 15:37: «вместо „Назови дугу“ просто написать „Название“»)
-/* v27 (Астамур 23.11.2026, 15:55, выбор «А»): на этом экране везде «шкала» — заголовок «Шкалы», подпись «Новая шкала»,
-   подсказки и озвучка (aria-label) тоже; дуга — только то, как шкала нарисована. Так же в остальном Day */
 /* v45.2 (Астамур 24.11.2026, 01:01, скрин: «мусорное ведро цветом розовым, как текст „Удалить“ внизу»): справа от названия
    текущей шкалы — корзина, та же, что у продукта в Meal (BINI), цвет #FFD3DA как у «Удалить период». Она убирает шкалу из
    периода (с «Вернуть»), поэтому ссылка «Убрать из периода» внизу настроек снята — одна функция, одно место */
 var BIN_I='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15"/><path d="M9.6 7V5.2c0-.6.4-1 1-1h2.8c.6 0 1 .4 1 1V7"/><path d="M6.6 7l.8 11.6c.1 1 .9 1.7 1.8 1.7h5.6c1 0 1.7-.7 1.8-1.7L17.4 7"/><path d="M10.2 10.8v5.6M13.8 10.8v5.6"/></svg>';
 function factsHtml(ks){
-  return ks.map(function(k,i){ var m=M(k);
-      return i===arcIdx?'<div class="dp-f dp-fcur"><span class="dp-fnw" data-v="'+esc(m.t)+'"><input type="text" class="fT dp-fname" id="dpArcName" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Название шкалы" value="'+esc(m.t)+'">'+
-          '<button type="button" class="dp-fbin" data-dp-unscale="'+((secByKey(cur)||{}).scales||[]).indexOf(k)+'" aria-label="Убрать шкалу «'+esc(m.t)+'» из периода">'+BIN_I+'</button>'+
-          '</span></div>'   // v34: имя по ширине текста (как имя периода в шапке, v31); v37: без шестерёнки; v45.2: корзина справа от имени
-        :'<button type="button" data-f="'+i+'"><span class="fT">'+esc(m.t)+'</span></button>' }).join('')+
-    (arcIdx===ks.length?'<label class="dp-f"><input type="text" class="fT dp-fname" id="dpNewArc" maxlength="40" autocomplete="off" enterkeyhint="done" role="combobox" aria-autocomplete="list" aria-controls="dpSug" aria-label="Название новой шкалы" placeholder="'+NEW_ARC_PH+'"></label>'
-      :'<button type="button" data-f="'+ks.length+'"><span class="fT">Новая шкала</span></button>');
+  var S=secByKey(cur);
+  return ks.map(function(k,i){
+    var title=esc(M(k).t);
+    if(i!==arcIdx) return '<button type="button" data-f="'+i+'"><span class="fT">'+title+'</span></button>';
+    return '<div class="dp-f dp-fcur"><span class="dp-fnw"><span class="fT">'+title+'</span>'+
+      '<button type="button" class="dp-fbin" data-dp-unscale="'+S.scales.indexOf(k)+'" aria-label="Убрать шкалу «'+title+'» из периода">'+BIN_I+'</button></span></div>';
+  }).join('')+(arcIdx===ks.length
+    ? '<div class="dp-f"><span class="fT">Выбери шкалу</span></div>'
+    : '<button type="button" data-f="'+ks.length+'"><span class="fT">Добавить шкалу</span></button>');
 }
 /* «добавить дугу» (Астамур 23.11.2026, по скрину «Сейчас»): пустая дорожка — та же, что у неотмеченной дуги на экране отметки
    (R, TRACK, CIRC из index.html), и пустой круг на месте кнопки, будто кнопки ещё нет. Класса .knob нет — ArcKnob её не трогает.
@@ -639,7 +636,6 @@ function arcFoldUp(){
       (function step(t){ if(!t0) t0=t; var f=D?Math.min(1,(t-t0)/D):1, e=1-Math.pow(1-f,3); sc.scrollTop=from+(to-from)*e; if(f<1) requestAnimationFrame(step) })(performance.now()) } }
   arcSetSync(true);
 }
-function fnFit(x){ var w=x&&x.parentNode; if(w&&w.classList&&w.classList.contains('dp-fnw')) w.setAttribute('data-v',x.value||x.placeholder||'') }
 function paintFacts(){ var t=document.getElementById('dpFacts'); if(t) t.innerHTML=factsHtml(arcKeys()) }
 /* предпросмотр: «хорошо» подсвечивает кнопку, строка ступени, на которой стоит дуга, подсвечена */
 function onPaint(i,raw){
@@ -729,9 +725,8 @@ function setShape(k,ns){
 function renderArcEd(){
   var host=document.getElementById('dpArcEd'), S=secByKey(cur); if(!host||!S) return;
   var ks=arcKeys(), k=ks[arcIdx]; arcKey=k||null;
-  host.classList.toggle('dp-arced-new',!k);
   arcSetSync(false);   // v34
-  if(!k){ host.innerHTML=''; var ni=document.getElementById('dpNewArc'); if(ni&&document.activeElement===ni) renderSug(); return }
+  if(!k){ host.innerHTML=scaleChoices(S); return }
   var m=M(k), n=lvN(m), z=zoneOf(m), others=typeof scUse==='function'?scUse(k).filter(function(t){ return t!==S.t }):[];
   var rows='';
   /* v41 (Астамур 23.11.2026, 23:59): у шкалы по делениям «от начала» в первой строке вместо цифры — переключатель 0 | 1:
@@ -749,36 +744,10 @@ function renderArcEd(){
     '<h3 class="dp-lvh">Ступени</h3>'+shapeHtml(m)+'<div class="dp-lvs" id="dpLvs">'+rows+'</div>';   // v45.2: «Убрать из периода» — корзина у названия
   if(AK) AK.paint(arcIdx);
 }
-/* «Новая дуга»: в поле названия — подсказки (✱ autocomplete) из готовых шкал; своё название — новая дуга */
-function sugList(q){
-  var S=secByKey(cur), have=(S&&S.scales)||[], low=String(q||'').trim().toLowerCase();
-  return ((typeof DB!=='undefined'&&DB.metrics)||[]).filter(function(m){ return m&&m.k&&have.indexOf(m.k)<0&&(!low||String(m.t).toLowerCase().indexOf(low)>=0) });
-}
-/* меню-подсказка лежит поверх страницы и видно его, только пока курсор в поле «Новая дуга» */
-function closeSug(){ var h=document.getElementById('dpArcEd'); if(h&&h.classList.contains('dp-arced-new')) h.innerHTML='' }
-function renderSug(){
-  var host=document.getElementById('dpArcEd'); if(!host) return;
-  var inp=document.getElementById('dpNewArc'), q=inp?inp.value.trim():'', list=sugList(q);
-  var exact=q&&((typeof DB!=='undefined'&&DB.metrics)||[]).some(function(m){ return String(m.t).trim().toLowerCase()===q.toLowerCase() });
-  host.innerHTML='<div class="dp-sug" id="dpSug" role="listbox" aria-label="Подсказки">'+
-    (q&&!exact?'<button type="button" class="dp-sugi dp-sug-new" role="option" data-dp-new="1"><b>Создать «'+esc(q)+'»</b><small>новая шкала</small></button>':'')+
-    list.map(function(m){ return '<button type="button" class="dp-sugi" role="option" data-dp-pick="'+esc(m.k)+'"><i class="dp-dot" style="background:'+esc(m.c||'#fff')+'"></i><span><b>'+esc(m.t)+'</b><small>'+GOOD[goodOf(m)]+'</small></span></button>' }).join('')+
-    (!q&&!list.length?'<p class="dp-arc-empty">Напиши название новой шкалы</p>':'')+'</div>';
-}
-/* v24: фокус сразу, в том же нажатии (раньше — через 60 мс, и iPhone не показывал клавиатуру). switchTo рисует поле сразу */
-function focusNew(){ var n=document.getElementById('dpNewArc'); if(n) try{ n.focus({preventScroll:true}) }catch(_){ n.focus() } }
 function addArc(k){
-  var S=secByKey(cur); if(!S||(typeof writeGuard==='function'&&writeGuard())) return;
+  var S=secByKey(cur); if(!S||!M(k)||(typeof writeGuard==='function'&&writeGuard())) return;
   S.scales=S.scales||[]; if(S.scales.indexOf(k)<0) S.scales.push(k);
   arcIdx=arcKeys().indexOf(k); store(); renderPeriod(); after();
-}
-function newArc(t){
-  t=String(t||'').trim(); if(!t) return;
-  var same=DB.metrics.filter(function(x){ return String(x.t).trim().toLowerCase()===t.toLowerCase() })[0];
-  if(same){ addArc(same.k); return }
-  var pal=typeof PALETTE!=='undefined'?PALETTE:['#fff'];
-  var mm={k:'u'+Date.now(),t:t,built:false,c:pal[DB.metrics.length%pal.length],w:DEFAULT_W.slice(),good:'more'};
-  DB.metrics.push(mm); addArc(mm.k);
 }
 /* v28 (Астамур 16:12): кнопка «хорошо» ходит с отступом ZI от краёв дорожки — как сверху и снизу (top/bottom 4 в CSS) */
 var ZI=4;
@@ -822,7 +791,7 @@ function bindArcs(page){
     metric:function(i){ return M(arcKeys()[i]) },
     get:function(i){ var k=arcKeys()[i]; return k&&pv[k]!=null?pv[k]:null },
     set:function(i,v){ var k=arcKeys()[i]; if(k){ if(v==null) delete pv[k]; else pv[k]=v } },
-    onSwitch:function(i){ var a=document.activeElement; if(a&&a.classList&&a.classList.contains('dp-fname')) a.blur(); arcIdx=i; paintFacts(); AK.layout(); renderArcEd() },
+    onSwitch:function(i){ arcIdx=i; paintFacts(); AK.layout(); renderArcEd() },
     onPaint:onPaint});
   /* v40: пилюлю переключателя можно тащить вбок; отпустил — дотягивается до ближайшего варианта */
   page.addEventListener('pointerdown',function(ev){ var el=ev.target.closest('.dp-sw'); if(!el||(ev.pointerType==='mouse'&&ev.button)) return;
@@ -861,9 +830,6 @@ function bindArcs(page){
   }
   page.addEventListener('pointerup',up); page.addEventListener('pointercancel',up);
   page.addEventListener('keydown',function(ev){
-    if(ev.target.id==='dpNewArc'&&ev.key==='Enter'){ ev.preventDefault(); var q=ev.target.value.trim(), l=sugList(q);
-      var hit=l.filter(function(m){ return String(m.t).trim().toLowerCase()===q.toLowerCase() })[0]; if(hit) addArc(hit.k); else newArc(q); return }
-    if(ev.target.id==='dpArcName'&&ev.key==='Enter'){ ev.preventDefault(); ev.target.blur(); return }
     var zb=ev.target.id==='dpZBar'; if(!zb||(ev.key!=='ArrowLeft'&&ev.key!=='ArrowRight')) return; ev.preventDefault();
     /* v28: шаг 0,1 с округлением; из «Меньше лучше» вправо и из «Больше лучше» влево — сразу в «Баланс»
        (раньше 0,8 − 0,1 давало 0,7 и снова «Больше лучше»: влево стрелкой было не уйти) */
@@ -872,21 +838,15 @@ function bindArcs(page){
     zoneSet(f); store(); after();
   });
   page.addEventListener('input',function(ev){
-    var t=ev.target; if(t.id==='dpNewArc'){ renderSug(); return }
-    if(t.id==='dpArcName'){ fnFit(t); return }   // v34: поле по ширине текста, шестерёнка едет следом
+    var t=ev.target;
     var m=M(arcKey); if(!m) return;
     if(t.dataset.dpW!=null){ var i=+t.dataset.dpW; m.w=(m.w||[]).slice(); m.w[i]=t.value; setLv(arcKey,i);
       var e=document.querySelectorAll('#dpArcEd .dp-zends span'); if(e.length){ e[0].textContent=lvWord(m,0); e[1].textContent=lvWord(m,lvN(m)-1) } }
   });
-  page.addEventListener('focusin',function(ev){ var t=ev.target; if(t.id==='dpNewArc'){ renderSug(); return } if(t.dataset&&t.dataset.dpW!=null&&arcKey) setLv(arcKey,+t.dataset.dpW) });
-  page.addEventListener('focusout',function(ev){ if(ev.target.id==='dpNewArc') setTimeout(function(){ var n=document.getElementById('dpNewArc'); if(!n||document.activeElement!==n) closeSug() },0) });
-  page.addEventListener('pointerdown',function(ev){ if(ev.target.closest('.dp-sugi')) ev.preventDefault() });   // нажатие на подсказку не уводит курсор из поля
+  page.addEventListener('focusin',function(ev){ var t=ev.target; if(t.dataset.dpW!=null&&arcKey) setLv(arcKey,+t.dataset.dpW) });
   page.addEventListener('change',function(ev){
     var t=ev.target, m=M(arcKey); if(!m) return;
     if(t.dataset.dpW!=null){ var i=+t.dataset.dpW, v=t.value.trim(); if(!isStep(m)&&!v){ v=(typeof DEFAULT_W!=='undefined'&&DEFAULT_W[i])||String(i+1); t.value=v } m.w[i]=v; store(); after(); return }
-    if(t.id==='dpArcName'){ var nm=t.value.trim(), same=DB.metrics.filter(function(x){ return x!==m&&String(x.t).trim().toLowerCase()===nm.toLowerCase() })[0];
-      if(!nm||same){ t.value=m.t; fnFit(t); toast(!nm?'Напиши название шкалы':'Такое название уже есть: '+nm); return }
-      m.t=nm; store(); after() }
   });
 }
 /* v24 (Астамур 23.11.2026, 15:14: «новый тег… сразу вписывать там имя при нажатии… а не поп-ап»): «＋ Тег» сам становится
@@ -1128,9 +1088,8 @@ function bind(){
     var S=secByKey(cur); if(!S) return; var si=secs().indexOf(S), b;
     if(ev.target.closest('[data-dp-knob]')) return;
     if((b=ev.target.closest('#dpGoal .hf-drum-item'))){ if(GD&&GD.get('g')==='add-custom'&&+b.dataset.i===goalOpts().length-1) goalOpen(); return }   // v30: докрутил и нажал — поле на месте
-    if((b=ev.target.closest('#dpFacts [data-f]'))){ AK.switchTo(+b.dataset.f); if(arcIdx===arcKeys().length) focusNew(); return }
-    if((b=ev.target.closest('[data-dp-pick]'))){ addArc(b.dataset.dpPick); return }
-    if(ev.target.closest('[data-dp-new]')){ var ni=document.getElementById('dpNewArc'); newArc(ni&&ni.value); return }
+    if((b=ev.target.closest('#dpFacts [data-f]'))){ AK.switchTo(+b.dataset.f); return }
+    if((b=ev.target.closest('[data-scale-choice]'))){ addArc(b.dataset.scaleChoice); return }
     if((b=ev.target.closest('[data-dp-unscale]'))){ var i=+b.dataset.dpUnscale, k=S.scales[i];
       delUndo('Шкала убрана из «'+S.t+'»',function(){ S.scales.splice(i,1) },function(){ S.scales.splice(i,0,k) },function(){ renderPeriod(); after() }); return }
     if((b=ev.target.closest('[data-dp-untag]'))){ var j=+b.dataset.dpUntag, t=S.tags[j];
@@ -1143,7 +1102,11 @@ function bind(){
     if(a==='arcset'){ toggleArcSet(); return }   // v37: строка «Шкалы»
     if(a==='arcfold'){ if(arcSet) arcFoldUp(); else toggleArcSet(); return }   // v37.2: линии в строке «Теги»: свёрнуто — раскрыть, раскрыто — свернуть вверх
     if(a==='fold'){ foldUp(); return }
-    if(a==='newarc'){ if(arcIdx!==arcKeys().length) AK.switchTo(arcKeys().length); focusNew() }
+    if(a==='newarc'){
+      if(arcIdx!==arcKeys().length) AK.switchTo(arcKeys().length);
+      var choice=page.querySelector('[data-scale-choice]');
+      if(choice) choice.focus();
+    }
     else if(a==='tag') tagOpen();
     else if(a==='delete'){ if(typeof writeGuard==='function'&&writeGuard()) return;
       var at=si, nm=S.t;

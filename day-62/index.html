@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Day">
-<title>Happy Day · Update 62</title>
+<title>Happy Day · Update 62.1</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261125-glass-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261125-glass-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261125-glass-152.png">
@@ -1136,13 +1136,12 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icLayer.scEd{z-index:69}
 .scEd .icScroll{padding-bottom:8px}
 .scEd input[type=text]{font-size:16px}
-.scName{display:block;width:100%;margin-top:6px}
+
 .scUse{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0}
 .scPvBox{display:grid;place-items:center;margin:16px 0 2px}
 .ringWrap.scPv{width:min(212px,58vw)}
 .ringWrap.scPv .knob small{font-size:12px}
 .ringWrap.scPv .knob{touch-action:manipulation}   /* в окне шкалы кольцо — только показ, листать форму можно и с него */
-.scChips{display:flex;flex-wrap:wrap;gap:8px}
 /* выбор «как делить шкалу»: две плитки с подписью */
 
 .scKind{display:block;text-align:left;padding:13px 14px 14px;border-radius:18px;border:1px solid var(--glassBrd);
@@ -1152,7 +1151,6 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .scKind.on{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8)}
 .scKind.on small{color:rgba(12,111,168,.82)}
 .scKind .nw{font-style:normal;white-space:nowrap}
-.scChips .chip{padding:9px 16px;font-size:14px}
 .scStep{display:flex;align-items:center;gap:10px;padding:6px;border-radius:18px;
   background:rgba(255,255,255,.12);border:1px solid var(--glassBrd)}
 .scStep button{width:46px;height:44px;flex:none;border-radius:13px;border:0;padding:0;
@@ -1389,10 +1387,10 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <link rel="stylesheet" href="./shared/happy-fields.css?v=61">
 <link rel="stylesheet" href="./shared/happy-drum.css?v=61">
 <link rel="stylesheet" href="./shared/happy-period.css?v=61">
-<link rel="stylesheet" href="./day-periods.css?v=62">
+<link rel="stylesheet" href="./day-periods.css?v=62.1">
 <link rel="stylesheet" href="./shared/happy-design.css?v=61">
 <link rel="stylesheet" href="./shared/happy-theme-picker.css?v=61">
-<link rel="stylesheet" href="./design-rules.css?v=61">
+<link rel="stylesheet" href="./design-rules.css?v=62.1">
 <script>/* HAPPY-APPEARANCE-PAINT 21.11.2026: выбранная тема до первой отрисовки (экран загрузки со смайликом). Копию пишет shared/happy-appearance.js; потом он же её обновляет. 24.11.2026: и цвет полоски браузера (theme-color) — верх фона темы. */(function(){try{var d=document.documentElement,p=JSON.parse(localStorage.getItem('happy-'+d.dataset.happyAppearanceApp+'-appearance-paint-v1')||'null');if(!p||p.version!==1||typeof p.css!=='string'||!p.css)return;var s=document.createElement('style');s.id='happy-appearance-skin';s.textContent=p.css;document.head.appendChild(s);if(p.button)d.dataset.happyAppearanceButton=p.button;if(p.id)d.dataset.happyAppearance=p.id;var m=document.querySelector('meta[name=theme-color]');if(m&&/^#[0-9a-f]{6}$/i.test(p.top||'')){m.dataset.base=m.content;m.content=p.top;}}catch(e){}})();</script></head>
 <body class="loading">
 
@@ -1606,14 +1604,6 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     <section class="happy-section" data-happy-section="app"><h2 class="happy-heading">Приложение</h2>
     <div class="happy-appearance-entry" data-happy-appearance-slot></div>
     <div id="daySectionSettingsHeading" hidden></div><!-- якорь: selfcare-ui.js вставляет перед ним блок «Настройки «Сейчас»» -->
-    <div class="eyebrow"><span>Пороги под тебя</span></div>
-    <div class="card">
-      <!-- аудит 20.11.2026, п. 3–4: число — в рамке, как время, единица внутри (shared/happy-fields.js) -->
-      <div class="fieldrow"><span>Вес</span><input type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" data-unit="кг" id="cfgWeight" aria-label="Вес, кг"></div>
-      <div class="fieldrow"><span>Цель по калориям</span><input type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" data-unit="ккал" id="cfgKcal" aria-label="Цель по калориям, ккал"></div>
-      <div class="fieldrow"><span>Белок</span><input type="text" inputmode="decimal" autocomplete="off" enterkeyhint="done" data-unit="г/кг" id="cfgProt" aria-label="Белок, г на кг веса"></div>
-    </div>
-
     <div class="eyebrow"><span>Связь с питанием</span></div>
     <div class="card">
       <p class="note" id="mealState" style="margin:0 0 10px;color:var(--muted)"></p>
@@ -1640,7 +1630,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="62" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 62</div><small>Обновлено 26.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="62.1" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 62.1</div><small>Обновлено 27.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
@@ -1772,7 +1762,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 
 <script src="counters.js?v=62"></script>
 <script src="./arc-knob.js?v=62"></script>
-<script src="./day-periods.js?v=62"></script>
+<script src="./day-periods.js?v=62.1"></script>
 <script src="./day-marks.js?v=62"></script>
 <script src="tap-swipe.js?v=61"></script>
 <script src="row-swipe.js?v=61"></script>
@@ -1800,13 +1790,13 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-energy-ring.js?v=61.6"></script>
 <script src="./energy-widget.js?v=61.6"></script>
 <script src="./shared/release-notes.js?v=61"></script>
-<script src="./release-notes.js?v=62"></script>
+<script src="./release-notes.js?v=62.1"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
 <script src="./shared/happy-sample.js?v=62"></script>
 <script src="./day-sample.js?v=62"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 62')}catch(e){}</script>
-<link rel="stylesheet" href="./diary.css?v=9">
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 62.1')}catch(e){}</script>
+<link rel="stylesheet" href="./diary.css?v=10">
 <link rel="stylesheet" href="./diary-navigation.css?v=1">
 <link rel="stylesheet" href="./diary-composer.css?v=9">
 <link rel="stylesheet" href="./diary-wave.css?v=4">
@@ -1889,7 +1879,7 @@ function ruPlural(n,f){var a=n%10,b=n%100;return f[(a===1&&b!==11)?0:(a>=2&&a<=4
 /* Больше — хуже (m.neg): в Связях «Помогало» и «Мешало» меняются местами.
    У встроенных Тревожности и Сонливости так по умолчанию, у остальных — «больше — лучше». */
 function metricNeg(m){ return !!m&&(m.neg!=null?!!m.neg:(m.k==='anx'||m.k==='sleepy')) }
-var PALETTE=['#FFD166','#7CE3C9','#BC61FE','#8FD0FF','#FF9ECB','#46FDFC','#FFB4A2','#B8F2A0'];
+
 
 var DB={
   /* У раздела свой набор шкал и тегов. DB.metrics и DB.tags —
@@ -1939,6 +1929,22 @@ var DB={
 };
 /* дневник нового аккаунта: разделы, шкалы, теги и счётчики по умолчанию — из них собирается дневник без записей */
 var DB_DEFAULTS=JSON.stringify(DB);
+function loadDay(){
+  var defaults=JSON.parse(DB_DEFAULTS), loaded=DayData.load(defaults);
+  if(loaded){
+    var titles=new Map(defaults.metrics.map(function(m){ return [m.k,m.t] }));
+    loaded.db.metrics.forEach(function(m){ if(titles.has(m.k)) m.t=titles.get(m.k) });
+  }
+  return loaded;
+}
+function scaleChoices(section){
+  var used=section.scales||[];
+  var choices=DB.metrics.filter(function(m){ return used.indexOf(m.k)<0 });
+  if(!choices.length) return '<p class="dp-arc-empty" role="status">Все шкалы уже добавлены</p>';
+  return '<div class="chips dp-scale-choices" role="group" aria-label="Доступные шкалы">'+choices.map(function(m){
+    return '<button type="button" class="chip" data-scale-choice="'+escH(m.k)+'">'+escH(m.t)+'</button>';
+  }).join('')+'</div>';
+}
 var CFG={weight:null,kcal:null,prot:null};
 var APIKEY='';
 
@@ -2012,18 +2018,15 @@ function adoptRemote(){
   if(adoptBusy()){ adoptPending=true; return }
   adoptPending=false;
   if(saveT){ saveNow() }                      // своё несохранённое сначала уходит в хранилище
-  var loaded=DayData.load(JSON.parse(DB_DEFAULTS)); if(!loaded) return;
+  var loaded=loadDay(); if(!loaded) return;
   var keep={mealLink:DB.mealLink};
   Object.keys(DB).forEach(function(k){ delete DB[k] }); Object.assign(DB,loaded.db,keep.mealLink?keep:{});
-  CFG=loaded.cfg; paintCfg();
+  CFG=loaded.cfg;
   mindRebind();
   try{ if(window.HappyDayCounters) HappyDayCounters.apply() }catch(e){}
   try{ SelfCare.init(); renderAll(); renderNow(); paintLock() }catch(e){}
 }
 setInterval(function(){ if(adoptPending&&!adoptBusy()) adoptRemote() },1200);
-function paintCfg(){
-  ['weight','kcal','prot'].forEach(function(k){ var el=document.getElementById('cfg'+k[0].toUpperCase()+k.slice(1)); if(el&&document.activeElement!==el){ el.value=CFG[k]!=null?String(CFG[k]).replace('.',','):''; if(globalThis.HappyFields) HappyFields.refresh(el) } });
-}
 
 /* ═══════════ СВЯЗЬ С HAPPY MEAL ═══════════
    Meal кладёт сводку по дням в свою витрину (общий модуль); HappyDay её только читает и держит
@@ -5672,14 +5675,6 @@ document.getElementById('addSec').addEventListener('click',function(){
 });
 
 
-['cfgWeight','cfgKcal','cfgProt'].forEach(function(id){
-  document.getElementById(id).addEventListener('input',function(){
-    if(writeGuard()){ this.value=''; return }
-    var key=id.replace('cfg','').toLowerCase(), n=HappyFields.parse(this.value);   // «80,5» и «80.5» — число
-    if(this.value.trim()==='') CFG[key]=null; else if(!isNaN(n)) CFG[key]=n; else return;
-    save();
-  });
-});
 document.getElementById('saveKey').addEventListener('click',function(){
   toast('Внешний API и сохранение ключа недоступны.');
 });
@@ -5769,9 +5764,10 @@ function openScaleEd(k,si){
   if(st) for(var v=m.lo;v<=m.hi;v++) words[v]=(m.w||[])[v-m.lo]||'';
   SCE={k:k||null, si:si==null?null:si, isNew:!m, t:m?m.t:'', kind:st?'step':'smooth',
        origin:st?(m.lo<0?'mid':String(m.lo)):'0', top:st?m.hi:3,
-       words:words, sw:(m&&!st&&m.w&&m.w.length===5?m.w:DEFAULT_W).slice(), sel:null, err:'', neg:m?metricNeg(m):false, good:m&&typeof DayPeriods!=='undefined'?DayPeriods.goodOf(m):'more', mid:m&&typeof m.mid==='number'?m.mid:.5,
+       words:words, sw:(m&&!st&&m.w&&m.w.length===5?m.w:DEFAULT_W).slice(), sel:null, neg:m?metricNeg(m):false, good:m&&typeof DayPeriods!=='undefined'?DayPeriods.goodOf(m):'more', mid:m&&typeof m.mid==='number'?m.mid:.5,
        o:m?{kind:st?'step':'smooth', lo:mLo(m), hi:mHi(m)}:null};
-  document.getElementById('scEdT').textContent=m?'Шкала':'Новая шкала';
+  document.getElementById('scEdT').textContent=m?'Шкала':'Добавить шкалу';
+  document.querySelector('#scEd [data-sc="done"]').hidden=!m;
   renderScaleEd();
   document.getElementById('scEdScroll').scrollTop=0;
   document.getElementById('scEd').classList.add('on');
@@ -5831,15 +5827,16 @@ function scZoneAt(f){
     var e=SCE, c=e.good==='less'?.2:e.good==='more'?.8:e.mid; scZoneAt(c+(ev.key==='ArrowRight'?.1:-.1)) });
 })();
 function renderScaleEd(){
-  var e=SCE, m=scModel(e), st=e.kind==='step', use=e.k?scUse(e.k):[], h='';
+  var e=SCE;
+  if(e.isNew){ document.getElementById('scEdBody').innerHTML=scaleChoices(settingsSection(e.si)); return }
+  var m=scModel(e), st=e.kind==='step', use=scUse(e.k), h='';
   /* Астамур 22.11.2026: сверху живая дуга — нажал, и видно, что пишется на каждой ступени и где «хорошо»;
      прямо под ней её настройки: название, что хорошо, слова краёв. Остальное — в «Деления и подписи». */
   var others=use.filter(function(t){ return t!==(SCE.si!=null&&settingsSection(SCE.si)?settingsSection(SCE.si).t:'') });
   h+='<div class="scPvBox scHero"><div class="ringWrap scPv" id="scPv">'+ringSvg(m,'progPv')+
        '<button class="knob" id="scPvKnob" aria-label="Следующая ступень"><span><b class="kv"></b><small class="kh"></small></span></button></div>'+
        '<p class="scTap">нажми на шкалу</p></div>'+   // v27: «шкала», как везде на экране разделов
-     '<input type="text" class="scName scTitle" id="scName" maxlength="40" autocomplete="off" placeholder="Название шкалы" value="'+escH(e.t)+'">'+
-     '<p class="edErr" id="scErr">'+escH(e.err||'')+'</p>'+
+     '<p class="scTitle">'+escH(e.t)+'</p>'+
      scGoodHtml(e,m)+
      (others.length?'<p class="scUse">Ещё в: '+escH(others.join(', '))+'</p>':'')+
      /* v38 (Астамур 23.11.2026, 23:27, «остатки, нужно доделать»): заголовок раздела — линиями, как «Шкалы»;
@@ -5866,12 +5863,6 @@ function renderScaleEd(){
     for(var j=4;j>=0;j--) h+=scLvRow('s'+j,String(j+1),e.sw[j]||'',DEFAULT_W[j],'data-sw="'+j+'"');
   }
   h+='</details>';
-  /* новая шкала: можно взять готовую из других разделов — с её настройками и записями */
-  if(e.isNew){
-    var S=settingsSection(e.si)||{}, free=DB.metrics.filter(function(x){ return (S.scales||[]).indexOf(x.k)<0 });
-    if(free.length) h+='<div class="subTitle">Или взять готовую — с её настройками</div><div class="scChips">'+
-      free.map(function(x){ return '<button class="chip" data-reuse="'+escH(x.k)+'">'+escH(x.t)+'</button>' }).join('')+'</div>';
-  }
   var wasOpen=!!document.querySelector('#scEdBody details.scMore[open]');
   document.getElementById('scEdBody').innerHTML=h;
   if(wasOpen) document.querySelector('#scEdBody details.scMore').open=true;
@@ -5903,7 +5894,7 @@ document.getElementById('scEdBody').addEventListener('click',function(ev){
   }
   if(b.dataset.neg!=null){ e.neg=b.dataset.neg==='1'; renderScaleEd(); return }
   if(b.dataset.good){ e.good=b.dataset.good; e.neg=e.good==='less'; scZonePaint(); return }
-  if(b.dataset.reuse){ scAddTo(e.si,b.dataset.reuse); return }
+  if(b.dataset.scaleChoice&&e.isNew){ scAddTo(e.si,b.dataset.scaleChoice); return }
   if(b.dataset.kind){ e.kind=b.dataset.kind; e.sel=null; renderScaleEd(); return }
   if(b.dataset.origin){
     e.origin=b.dataset.origin; var lim=SC_TOP[e.origin];
@@ -5916,7 +5907,7 @@ document.getElementById('scEdBody').addEventListener('click',function(ev){
 });
 document.getElementById('scEdBody').addEventListener('input',function(ev){
   var e=SCE, t=ev.target; if(!e) return;
-  if(t.id==='scName'){ e.t=t.value; e.err=''; document.getElementById('scErr').textContent=''; return }
+
   if(t.dataset.edge){ var mm=scModel(e), L=t.dataset.edge==='l';
     if(e.kind==='step'){ e.words[L?mm.lo:mm.hi]=t.value; e.sel=String(L?mm.lo:mm.hi) } else { e.sw[L?0:4]=t.value; e.sel='s'+(L?0:4) }   /* дуга сразу встаёт на этот край — видно слово */
     var other=document.querySelector('#scEdBody [data-'+(e.kind==='step'?'w':'sw')+'="'+(e.kind==='step'?(L?mm.lo:mm.hi):(L?0:4))+'"]'); if(other) other.value=t.value; paintScalePv(); return }
@@ -5928,8 +5919,6 @@ document.getElementById('scEdBody').addEventListener('focusin',function(ev){
   if(t.dataset.w!=null){ e.sel=t.dataset.w; paintScalePv() }
   if(t.dataset.sw!=null){ e.sel='s'+t.dataset.sw; paintScalePv() }
 });
-function scErr(msg){ SCE.err=msg; var p=document.getElementById('scErr'); if(p) p.textContent=msg;
-  document.getElementById('scEdScroll').scrollTop=0 }
 /* поставить шкалу в раздел и закрыть окно */
 function scAddTo(si,k){
   var S=settingsSection(si), m=metricByKey(k); if(!S||!m) return;
@@ -5946,33 +5935,16 @@ function scApply(m,e,nm){
   else { delete m.lo; delete m.hi; m.w=e.sw.map(function(x,j){ x=(x||'').trim(); return x||DEFAULT_W[j] }) }
 }
 function applyScaleEd(force){
-  var e=SCE; if(!e) return;
-  var t=(document.getElementById('scName').value||'').trim();
-  if(!t){ scErr('Напиши название шкалы'); return }
-  var same=DB.metrics.filter(function(x){ return x.k!==e.k&&String(x.t).trim().toLowerCase()===t.toLowerCase() })[0];
-  if(same){
-    if(!e.isNew){ scErr('Такое название уже есть: '+t); return }
-    var S=settingsSection(e.si);
-    if((S.scales||[]).indexOf(same.k)>=0){ scErr('В разделе «'+S.t+'» такая шкала уже есть'); return }
-    confirmBox('Шкала «'+same.t+'» уже есть. Добавить её в «'+S.t+'» с её настройками?','Добавить')
-      .then(function(ok){ if(ok) scAddTo(e.si,same.k) });
-    return;
-  }
-  e.t=t;
-  if(e.isNew){
-    var nk='u'+Date.now(), nm0=scModel(e),
-        mm={k:nk,t:t,built:false,c:PALETTE[DB.metrics.length%PALETTE.length]};
-    scApply(mm,e,nm0); DB.metrics.push(mm);
-    scAddTo(e.si,nk); return;
-  }
-  var m=metricByKey(e.k), nm=scModel(e);
+  var e=SCE; if(!e||e.isNew) return;
+  var m=metricByKey(e.k); if(!m) return;
+  var t=m.t, nm=scModel(e);
   var changed=e.o.kind!==e.kind||e.o.lo!==mLo(nm)||e.o.hi!==mHi(nm), rec=scRecs(e.k);
   if(changed&&rec.n&&!force){
     confirmBox('У шкалы «'+t+'» уже есть отметки. Новые настройки применятся только к следующим отметкам. Удалить старые отметки можно в журнале.','Понятно').then(function(ok){ if(ok) applyScaleEd(true) });   // v46: без пересчёта
     return;
   }
   if(changed&&rec.n) convertRecs(e.k,e.o);
-  m.t=t; scApply(m,e,nm);
+  scApply(m,e,nm);
   save(); closeScaleEd();
   renderSections(); refreshRing(); renderTrends(); renderLinks();
   toast('Шкала «'+t+'» сохранена');
@@ -6108,7 +6080,7 @@ function renderAll(){
   /* Day 59: сначала общий вход и общий модуль хранения (day-data.js), потом дневник. Без входа дневник пустой. */
   try{ await DayBoot.ready }catch(e){}
   try{
-    var loaded=DayData.load(JSON.parse(DB_DEFAULTS));
+    var loaded=loadDay();
     if(loaded){ Object.keys(DB).forEach(function(k){ delete DB[k] }); Object.assign(DB,loaded.db); CFG=loaded.cfg }
   }catch(e){ console.warn('дневник:',e) }
   RO=DayData.outdated();             // записи сделаны более новой версией — только чтение
@@ -6116,7 +6088,6 @@ function renderAll(){
   try{ syncMeal() }catch(e){}
   if(window.HappyDayCounters) HappyDayCounters.init();
   MEAL_READY=true;
-  paintCfg();
   document.getElementById('apiKey').value=APIKEY;
   document.getElementById('keyState').textContent='Внешний API и сохранение ключа недоступны.';
   SelfCare.init(); SelfCare.sportStart();

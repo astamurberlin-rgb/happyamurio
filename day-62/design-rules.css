@@ -36,9 +36,6 @@
   color:var(--happy-ink)!important;font-size:16px!important;-webkit-appearance:none;appearance:none}
 #careDiarySearch::-webkit-search-cancel-button{-webkit-appearance:none}
 
-/* ── Числа в «Порогах под тебя»: поле числа с единицей внутри, справа в строке ── */
-.fieldrow .hf-field{flex:0 0 132px;width:132px}
-
 /* ── Выключатель: 42 × 25 ── */
 .care-switch{flex:0 0 auto!important;width:42px!important;height:25px}
 .care-switch i:after{margin:2px 0 0 3px!important}
@@ -68,7 +65,7 @@
 /* 12 пишется только 400; 600 — только у выбранной вкладки нижнего меню */
 .tab{font-weight:400}.tab.on{font-weight:600}
 /* кнопка микрофона: открыт лист — «+» поворачивается на 45° и становится ✕, как в Meal */
-body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
+body.sheet:not(.diary-open) .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
 /* «Что было» на «Сейчас» — чипы 44 */
 .chips>.chip{min-height:44px}
 /* пунктир «Свой тег» и «Новый счётчик времени» — белый 50 % */
