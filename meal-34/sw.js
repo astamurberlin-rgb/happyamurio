@@ -6,7 +6,7 @@
    shared/apps.json и соседние приложения сюда не попадают и идут мимо. Свои копии — под именем
    happy-meal-34-shell-<версия>; прежние копии этого выпуска удаляются при обновлении, чужие не трогаются. */
 'use strict';
-const VERSION='34.26',PREFIX='happy-meal-34-shell-',CACHE=PREFIX+VERSION;
+const VERSION='34.27',PREFIX='happy-meal-34-shell-',CACHE=PREFIX+VERSION;
 const SCOPE=new URL('./',self.location).href,INDEX=new URL('./index.html',SCOPE).href;
 const EXTRA=['./','./images/desserts.jpg','./images/preserves.jpg','./images/kfct.jpg','./images/supplements.jpg','./images/kav.jpg','./meal-img/r7.jpg','./meal-img/cover-tl-2.jpg','./meal-img/cover-bf-1.jpg','./meal-img/cover-sn-1.jpg','./meal-img/cover-dn-1.jpg','./app-icons/happy-meal-20261125-banana-glass-192.png','./app-icons/happy-meal-20261125-banana-glass-512.png'];
 function local(u){return !/^(?:[a-z]+:|\/\/|\.\.\/|#|')/i.test(u)&&!u.includes("'")}
