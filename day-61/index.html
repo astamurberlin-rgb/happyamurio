@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="day" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
+<html class="happy-viewport" data-happy-appearance-app="day" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
@@ -355,8 +355,6 @@
 /* HAPPY_COLORS_END */</style>
 <link rel="stylesheet" href="./shared/happy-colors.css?v=61-5">
 <style>
-/* Отступ под вырез экрана. Состояние обмена — одна строка под аккаунтом в настройках. */
-.day-sync-bar{flex:0 0 auto;padding:env(safe-area-inset-top,0px) 0 0}
 .happy-settings details.happy-card>summary{cursor:pointer;font-weight:600;line-height:1.5}
 .happy-settings details.happy-card[open]>summary{margin-bottom:12px}
 
@@ -1413,7 +1411,6 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 </div>
 
 <div class="app">
-<div class="day-sync-bar"></div>
 <aside id="day-auth-pause" hidden style="padding:12px;background:#fff0d5;color:#4d3000"><b>Вход изменился в другой вкладке. Эта копия приостановлена.</b><p>Экран и незавершённый текст оставлены на месте. Сначала сохрани или скопируй текст из редактора. JSON включает только уже записанные данные. В другой аккаунт ничего не переносится.</p><label><input type="checkbox" id="day-auth-restart-ready"> Я сохранил или скопировал незавершённый текст</label><button type="button" id="day-auth-restart" disabled>Перезапустить с новым входом</button></aside>
 
 

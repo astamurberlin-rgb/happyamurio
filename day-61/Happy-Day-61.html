@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="day" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
+<html class="happy-viewport" data-happy-appearance-app="day" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
@@ -691,8 +691,6 @@
 }
 </style>
 <style>
-/* Отступ под вырез экрана. Состояние обмена — одна строка под аккаунтом в настройках. */
-.day-sync-bar{flex:0 0 auto;padding:env(safe-area-inset-top,0px) 0 0}
 .happy-settings details.happy-card>summary{cursor:pointer;font-weight:600;line-height:1.5}
 .happy-settings details.happy-card[open]>summary{margin-bottom:12px}
 
@@ -2204,8 +2202,26 @@ body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
  * внешние подписи над полями, основная кнопка в цвете приложения, «Отменить» белая, без стрелок «Назад».
  * Цвета приложения — переменные --hs-*, их ставит HappyScreens.theme(приложение). Фон страницы — фон самого
  * приложения: пока открыт экран, остальное приложение скрыто, видна только его подложка.
- * Все классы начинаются с hs-, чтобы не задеть стили приложений.
+ * Классы экранов аккаунта начинаются с hs-.
  * — Claude · 16.11.2026 */
+
+/* В Day и Meal прокручивается открытый экран. Фон, экраны и меню привязаны
+   к одному окну. Во вкладке его высота меняется вместе с панелями браузера.
+   Нижний отступ меню включает одну безопасную зону. */
+@media screen{
+  @supports (height:100dvh){
+    html.happy-viewport,.happy-viewport>body{height:100dvh}
+    html.happy-viewport{background-color:var(--happy-theme-color)}
+    .happy-viewport>body{contain:layout}
+  }
+  @media (display-mode:standalone){
+    html.happy-viewport,.happy-viewport>body{height:100vh}
+  }
+  /* WebKit берёт цвет за краем страницы из однотонной подложки под градиентом.
+     Тема рисует свой градиент на html и оставляет body прозрачным. */
+  :root[data-happy-appearance-app][data-happy-appearance]{background-color:var(--happy-base)!important}
+}
+
 :root{--hs-glass:rgba(255,255,255,.14);--hs-border:rgba(255,255,255,.34);--hs-muted:rgba(255,255,255,.7);
  --hs-primary:#6254cf;--hs-primary-shadow:none;--hs-cancel-ink:#6254cf;
  --hs-seg-bg:#edf8ff;--hs-seg-ink:var(--happy-dock-accent);--hs-switch-on:#8071df;--hs-sheet-bg:#5a8fe8;--hs-toast-bg:rgba(49,57,105,.94);
@@ -3612,7 +3628,6 @@ body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg
 </div>
 
 <div class="app">
-<div class="day-sync-bar"></div>
 <aside id="day-auth-pause" hidden style="padding:12px;background:#fff0d5;color:#4d3000"><b>Вход изменился в другой вкладке. Эта копия приостановлена.</b><p>Экран и незавершённый текст оставлены на месте. Сначала сохрани или скопируй текст из редактора. JSON включает только уже записанные данные. В другой аккаунт ничего не переносится.</p><label><input type="checkbox" id="day-auth-restart-ready"> Я сохранил или скопировал незавершённый текст</label><button type="button" id="day-auth-restart" disabled>Перезапустить с новым входом</button></aside>
 
 

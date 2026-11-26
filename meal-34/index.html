@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="meal" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
+<html class="happy-viewport" data-happy-appearance-app="meal" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -366,7 +366,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  color:var(--ink);background:var(--base);-webkit-user-select:none;user-select:none}
+  color:var(--ink);background-color:var(--happy-theme-color);-webkit-user-select:none;user-select:none}
 
 .bg{position:fixed;inset:-20%;z-index:-2;pointer-events:none;
   background:
@@ -1385,7 +1385,7 @@ a.chip{display:inline-block;text-decoration:none;color:var(--happy-ink)}
 
 /* Happy Meal v20 — Bordeaux / cherry palette; matches the approved #730074 center FAB */
 :root { --base:var(--happy-base); }
-body { background:radial-gradient(ellipse 80% 41% at 93% 15%, rgba(243,124,165,.40) 0%, transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%, rgba(157,87,174,.38) 0%, transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)!important; }
+body { background-image:radial-gradient(ellipse 80% 41% at 93% 15%, rgba(243,124,165,.40) 0%, transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%, rgba(157,87,174,.38) 0%, transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)!important; }
 body>.bg { inset:0!important; filter:none!important; animation:none!important; background:radial-gradient(ellipse 80% 41% at 93% 15%, rgba(243,124,165,.40) 0%, transparent 83%),radial-gradient(ellipse 73% 43% at 6% -8%, rgba(157,87,174,.38) 0%, transparent 82%),linear-gradient(165deg,#963452 0%,#983252 17%,#812c4b 50%,#632749 76%,#462747 100%)!important; }
 
 /* Product and whole-meal timestamps; compact circular controls remain beside quantity. */
