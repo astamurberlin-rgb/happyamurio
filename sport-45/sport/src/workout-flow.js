@@ -131,7 +131,8 @@ function workoutFlowNoteCols(e,metrics){
   root.querySelector('.set-head')?.remove();
   root.querySelectorAll('.set-row.set-line').forEach(r=>{r.classList.add('wf-note');r.style.setProperty('--set-cols',cols);r.querySelectorAll('input[data-set]:not([placeholder])').forEach(i=>i.setAttribute('placeholder','—'));});
   const rows=[...root.querySelectorAll('.set-rows>.set-swipe')];
-  rows.forEach((row,si)=>{if(si===rows.length-1)return;const rest=setRestSeconds(e.sets[si])??[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);
+  rows.forEach((row,si)=>{if(si===rows.length-1||e.sets[si]?.lap)return;   // между кругами секундомера перерыва нет
+  const rest=setRestSeconds(e.sets[si])??[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);
    row.insertAdjacentHTML('afterend',`<button type="button" class="wf-rest-line" data-action="wf-rest-open" data-ei="${ei}" data-si="${si}" aria-label="Перерыв после подхода ${si+1}: ${sportDurationValue(rest)}"><span>перерыв ${sportDurationValue(rest)}</span></button>`);});
   return root.innerHTML;
  };}

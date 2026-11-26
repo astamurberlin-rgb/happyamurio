@@ -65,7 +65,7 @@ function goToNextSet(ei,si){
   return true;
 }
 function floatingSetContext(){const t=state.active?.countdown;if(!t||t.kind!=='set'||t.finished)return null;const e=state.active.exercises[t.ei];if(!e?.sets[t.si])return null;return {t,e,ei:t.ei,si:t.si,value:t.stopwatch?countdownElapsed(t):countdownRemaining(t),progress:t.stopwatch?0:countdownProgress(t)};}
-function floatingSetMarkup(c){const paused=!c.t.running||workoutIsPaused(state.active);return `<section class="floating-rest-pill floating-set-pill" role="region" tabindex="0" aria-label="Идёт подход: ${esc(c.e.name)}" style="--rest-fill:${c.progress}%"><span class="floating-rest-progress" aria-hidden="true"></span><button type="button" class="floating-rest-toggle" data-set-pill="toggle" aria-label="${paused?'Продолжить подход':'Приостановить подход'}">${icon(paused?'play':'pause')}</button><div class="floating-rest-mid"><label class="floating-rest-clock"><span>${esc(c.e.name)}</span><span class="sport-metric-input"><input type="text" readonly tabindex="-1" data-set-pill-time value="${countdownTime(c.value)}" aria-label="${c.t.stopwatch?'Прошло':'Осталось'} времени подхода"></span></label></div><button type="button" class="floating-rest-finish" data-set-pill="done">Дальше</button></section>`;}
+function floatingSetMarkup(c){const paused=!c.t.running||workoutIsPaused(state.active);return `<section class="floating-rest-pill floating-set-pill" role="region" tabindex="0" aria-label="Идёт подход: ${esc(c.e.name)}" style="--rest-fill:${c.progress}%"><span class="floating-rest-progress" aria-hidden="true"></span><button type="button" class="floating-rest-toggle" data-set-pill="toggle" aria-label="${paused?'Продолжить подход':'Приостановить подход'}">${icon(paused?'play':'pause')}</button><div class="floating-rest-mid"><label class="floating-rest-clock"><span>${esc(c.e.name)}</span><span class="sport-metric-input"><input type="text" readonly tabindex="-1" data-set-pill-time value="${countdownTime(c.value)}" aria-label="${c.t.stopwatch?'Прошло':'Осталось'} времени подхода"></span></label></div><button type="button" class="floating-rest-finish" data-set-pill="${c.t.stopwatch?'lap':'done'}">${c.t.stopwatch?'Круг':'Дальше'}</button></section>`;}
 function updateFloatingSet(root){
   const c=floatingSetContext();if(!c){if(root.dataset.signature?.startsWith('set:')){root.innerHTML='';root.dataset.signature='';}return false;}
   const paused=!c.t.running||workoutIsPaused(state.active),signature=['set',c.ei,c.si,paused].join(':');
@@ -78,6 +78,11 @@ document.addEventListener('click',event=>{
   const button=event.target.closest('[data-set-pill]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const c=floatingSetContext();if(!c)return;
   const a=button.dataset.setPill;
   if(a==='toggle')toggleSetCountdown('set',c.ei,c.si);
+  // Секундомер (Астамур 26.11.2026): «Круг» записывает время в этот подход и сразу запускает следующий, без перерыва.
+  // Есть следующий незаполненный подход упражнения — идёт он; список пройден — добавляется новый подход.
+  if(a==='lap'){const e=c.e,at=typeof playerNow==='function'?playerNow():localNow();toggleWorkoutSetDone(c.ei,c.si,at);const s=e.sets[c.si];s.lap=true;s.restDone=true;s.restActualSeconds=0;if(state.active.countdown?.kind==='rest')state.active.countdown=null;
+   let next=e.sets.findIndex((x,i)=>i>c.si&&!x.done);if(next<0){addWorkoutSet(c.ei);next=e.sets.length-1;}
+   e.sets[next].seconds=0;delete e.sets[next].lap;toggleSetCountdown('set',c.ei,next,at);}
   if(a==='done'){toggleWorkoutSetDone(c.ei,c.si);persist();render();if(!activeRestContext())goToNextSet(c.ei,c.si);}
   persist();render();updateFloatingRest();
 },true);
