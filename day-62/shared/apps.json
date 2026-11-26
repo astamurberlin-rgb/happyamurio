@@ -1,0 +1,88 @@
+{
+  "day": {
+    "entry": "day-62/index.html",
+    "version": "62",
+    "sharedDirectory": "day-62/shared",
+    "links": {
+      "meal": "meal-34/",
+      "sport": "sport-45/"
+    },
+    "download": "day-62/Happy-Day-62.html",
+    "previous": {
+      "entry": "day-61/index.html",
+      "version": "61.24",
+      "sourceCommit": "87dafacbab066738c6419ac2e160413f61fba198"
+    },
+    "name": "Happy Day · Update 62",
+    "settingsSections": [
+      "account",
+      "links",
+      "app",
+      "developer",
+      "version",
+      "signout"
+    ],
+    "storageScript": "day-62/day-data.js"
+  },
+  "meal": {
+    "entry": "meal-34/index.html",
+    "version": "34.29",
+    "name": "Happy Meal · Update 34.29",
+    "sharedDirectory": "meal-34/shared",
+    "settingsSections": [
+      "account",
+      "links",
+      "app",
+      "data",
+      "developer",
+      "version",
+      "signout"
+    ],
+    "librariesManifest": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/meal-libraries/manifest.json",
+    "previous": {
+      "entry": "meal-33/index.html",
+      "version": "33.37",
+      "sourceCommit": "886ffffe77582239889ce05b7a58c35d229e015e"
+    },
+    "storageScript": "meal-34/meal-data.js"
+  },
+  "sport": {
+    "entry": "sport-45/index.html",
+    "version": "45.19",
+    "name": "Happy Sport · Update 45.19",
+    "sharedDirectory": "sport-45/shared",
+    "sourceDirectory": "sport-45/sport/src",
+    "sourceRelease": "sport-44",
+    "sourceCommit": "907ca2498c91dbf1a44783839d488fa91efca2d2",
+    "settingsSections": [
+      "account",
+      "links",
+      "app",
+      "data",
+      "developer",
+      "version",
+      "signout"
+    ],
+    "previous": {
+      "entry": "sport-44/index.html",
+      "version": "44.14",
+      "sourceCommit": "907ca2498c91dbf1a44783839d488fa91efca2d2"
+    },
+    "iconLibrary": "assets/sport-icons/v1",
+    "exerciseLibrary": "assets/exercise-library/v1",
+    "exerciseMedia": "assets/exercise-media/v1"
+  },
+  "colorStudio": {
+    "entry": "prototypes/happy-family-color-studio-v12.html",
+    "version": "12.12",
+    "kind": "studio",
+    "storageKey": "happy-family-color-studio-v11"
+  },
+  "iconStudio": {
+    "entry": "icon-studio/index.html",
+    "version": "2.19",
+    "kind": "studio",
+    "storageKey": "happy_icon_studio_v1",
+    "storageScript": "icon-studio/studio.js"
+  }
+}

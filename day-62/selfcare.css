@@ -1,0 +1,245 @@
+.care-knob{cursor:pointer;inset:18%;padding:8px!important;gap:3px;align-content:center;touch-action:manipulation!important}
+.care-knob .care-symbol{display:block;font-size:28px;font-weight:400;line-height:1.1}
+.care-knob .care-name{font-size:14px;line-height:1.15;max-width:113px;overflow-wrap:normal;font-weight:700}
+.care-symbol svg{position:static!important;transform:none!important;width:27px!important;height:27px!important;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.care-arc{transform:none!important;pointer-events:none}
+.care-arc path{fill:none;stroke-width:16;stroke-linecap:round}
+.care-arc .care-track{stroke:rgba(255,255,255,.2)}
+.care-meta{font-size:12px;line-height:1.45;color:var(--muted);margin:2px 0 5px;text-align:center;max-width:196px;min-height:35px}
+.care-meta b{font-size:14px;color:var(--ink)}
+.care-links{display:flex;justify-content:center;gap:10px;width:100%;padding:0 0 4px}
+.nwTags{flex-direction:column;align-items:center;gap:0;padding-top:5px}
+.care-pagination{display:flex;justify-content:center;gap:3px}
+.care-pagination button{width:28px;height:24px;display:grid;place-items:center;border:0;background:none;cursor:pointer}
+.care-pagination i{height:5px;width:5px;border-radius:9px;background:var(--ink);opacity:.35}
+.care-pagination [aria-pressed=true] i{width:16px;opacity:.9}
+.care-external{display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink);box-sizing:border-box}
+.care-workout-link{display:flex;align-items:center;justify-content:space-between;color:var(--ink);text-decoration:none;gap:12px;padding:14px 0;border-bottom:1px solid var(--glassBrd)}
+.care-workout-link small{display:block;margin-top:5px;color:var(--muted)}
+.care-file-picker{display:flex!important;align-items:center;justify-content:center;cursor:pointer;font-weight:400!important}
+.care-file-picker input{position:absolute;width:1px!important;height:1px;opacity:0}
+.care-file-picker:focus-within{outline:2px solid white;outline-offset:3px}
+.care-strong{background:linear-gradient(125deg,rgba(255,255,255,.17),rgba(122,88,230,.18))}
+.care-strong>p{font-size:16px;line-height:1.45}
+.care-links button{font:inherit;font-size:12px;color:var(--ink);background:none;border:0;min-height:30px;text-decoration:underline;text-underline-offset:3px}
+.care-screen .top{padding:6px 0 22px}
+.care-screen .top h1{font-size:28px;min-width:0}
+.care-screen .card h2,.care-settings h3{font-size:16px;margin:0 0 14px}
+.care-form label,.care-form .care-label{display:block;font-size:14px;font-weight:600;margin:14px 0 8px}
+.care-form input:not([type=checkbox]),.care-form select,.care-form textarea{width:100%;max-width:100%;box-sizing:border-box;text-align:left}
+/* Поля даты, времени, выбора и числа — общий кусок shared/happy-fields.css (аудит Day 20.11.2026). */
+.care-form textarea{min-height:120px;user-select:text;-webkit-user-select:text}
+.care-form input,.care-form select,.care-form textarea{font-size:16px}
+.care-form option{color:#20324b;background:white}
+.care-choices{display:flex;gap:5px;flex-wrap:wrap}
+.care-choice{flex:1;min-width:33px;min-height:45px;border-radius:14px;border:1px solid var(--glassBrd);background:var(--glass);color:var(--ink);font:inherit;font-size:16px}
+.care-choice[aria-pressed=true]{background:#fff;color:#075a85;border-color:#fff;font-weight:700}
+.care-endpoints{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);margin:7px 0 18px}
+.care-help{font-size:12px;line-height:1.5;color:var(--muted);margin:10px 0}
+.care-help strong{color:var(--ink)}
+.care-submit{width:100%;min-height:46px;margin-top:18px;font-size:16px}
+.care-stat{font-size:28px;font-weight:700;margin:8px 0}
+.care-status{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.care-status span{padding:6px 10px;border-radius:20px;font-size:12px;background:rgba(255,255,255,.13)}
+.care-empty{color:var(--muted);font-size:14px;line-height:1.5;padding:14px 0}
+.care-record{width:100%;text-align:left;font:inherit;cursor:pointer}
+.care-record b{font-size:16px;display:block}.care-record time{font-size:12px;color:var(--muted);display:block;margin-bottom:7px}
+.care-record p{margin:9px 0 0;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
+.care-long{white-space:pre-wrap;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text;font-size:16px;line-height:1.6}
+.care-addition{border-top:1px solid var(--glassBrd);margin-top:18px;padding-top:14px}
+.care-addition:target{outline:2px solid #fff;border-radius:10px;padding:12px}
+.care-summary{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;min-height:40px;font-weight:700}
+.care-settings{scroll-margin-top:18px}
+.care-setting-row{display:flex;align-items:center;gap:7px;padding:10px 0;border-bottom:1px solid var(--glassBrd)}
+.care-setting-row>span{flex:1;font-size:14px;min-width:0}
+.care-setting-row .mini{min-width:34px;min-height:36px;padding:4px 8px}
+.care-setting-row input[type=checkbox]{width:21px;height:21px;accent-color:var(--happy-accent)}
+.care-setting-row:last-child{border:0}
+.care-check{display:flex!important;align-items:center;gap:10px;font-weight:400!important;font-size:14px!important;line-height:1.45}
+/* аудит 20.11.2026, п. 7: галочка — скруглённый квадрат, как в окне печати журнала (углы 7) */
+.care-check input{flex:none;appearance:none;-webkit-appearance:none;width:24px;height:24px;margin:0;border-radius:7px;border:2px solid rgba(255,255,255,.9);
+  background:none;display:grid;place-items:center;cursor:pointer}
+.care-check input:checked{background:#fff;border-color:#fff}
+.care-check input:checked::after{content:'';width:6px;height:11px;margin-top:-3px;border:solid var(--happy-accent-ink,#0C6FA8);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.care-check input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.care-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.care-grid>div{min-width:0}
+.care-mapping{border-top:1px solid var(--glassBrd);padding:12px 0}
+.care-mapping .care-label{margin-top:0}
+/* аудит 20.11.2026, п. 7 и 31: дни недели — круги, как в Sport */
+.care-days{display:flex;justify-content:space-between;gap:4px;margin:4px 0 2px}
+.care-days[hidden]{display:none}
+.care-form .care-days label{position:relative;display:block;margin:0}
+.care-days span{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;box-sizing:border-box;font-size:14px;font-weight:600;
+  background:rgba(255,255,255,.14);border:1px solid var(--happy-line)}
+.care-days input:checked+span{background:rgba(255,255,255,.92);border-color:#fff;color:var(--happy-accent-ink,#0C6FA8)}
+.care-days input:focus-visible+span{outline:2px solid #fff;outline-offset:2px}
+.care-days input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.care-form [hidden]{display:none!important}
+.care-form select:disabled,.care-form input:disabled{opacity:.5}
+.care-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.care-file-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.care-file-links a{color:var(--ink);font-size:12px}
+@media(min-width:700px){.care-screen{max-width:650px;width:100%;margin:auto}.care-settings{max-width:760px}}
+
+.care-period-link{border:0;background:none;color:inherit;text-align:left;padding:0;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.nwWg [hidden]{display:none!important}
+.nwWg{padding:14px 0}
+.care-settings-menu{padding:0 16px}
+.care-settings-menu>summary{padding:12px 0;list-style:none;font-size:16px}
+.care-settings-menu>summary::after{content:'⌄';font-size:20px;font-weight:400;transform:rotate(-90deg)}
+.care-settings-menu[open]>summary::after{transform:none}
+.care-settings-link{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;background:none;border:0;border-top:1px solid var(--glassBrd);color:var(--ink);font:inherit;text-align:left;padding:13px 0}
+.care-settings-link span{flex:1}
+.care-grip:focus-visible{outline:2px solid white;outline-offset:3px;border-radius:20px}
+#careSectionConfig{margin-bottom:16px}
+.care-screen .happy-energy{margin-bottom:24px}
+
+/* Shared ring geometry: home and check-in keep the same centre and diameter. */
+[data-screen="day"]>.top,[data-screen="ring"]>.top{height:68px;box-sizing:border-box}
+/* Day 60.3: мелкой надписи «Сейчас» над кольцами нет — «Сейчас» уже подписано под кнопкой; место надписи остаётся, чтобы кольца не сдвинулись */
+[data-screen="day"]>.nwEb{height:20px;margin:0;display:flex;align-items:center;visibility:hidden}
+.nwWg{border:0;border-radius:0;background:none;box-shadow:none;padding:0;margin:-10px 0 23px;overflow:visible}
+/* Day 60.2, шаг 3 (16.11.2026, Claude): по полосе колец вбок листаются кольца, вверх-вниз — страница */
+.nwRail{gap:0;padding:0 max(0px,calc((100% - min(280px,76vw))/2));overflow-x:auto;overflow-y:hidden;touch-action:pan-x pan-y;overscroll-behavior-x:none;scroll-snap-type:x mandatory}
+.nwSl{flex:0 0 min(280px,76vw);gap:0;scroll-snap-stop:always;transform:none!important}
+/* Day 60.2, шаги 4 и 9: соседние кольца заходят друг на друга на --ring-overlap — по краям видно их дуги, понятно, что можно листать */
+.nwSl:not(:last-child){margin-right:calc(-1*var(--ring-overlap))}
+/* Шаг 9: соседние кольца чуть дальше (заход 9 точек вместо 22); то же расстояние — у колец шкал в разделах */
+:root{--ring-overlap:9px}
+[data-screen="ring"] .ringSlide{flex:0 0 min(280px,76vw);transition:opacity .25s ease-out}
+[data-screen="ring"] .ringSlide:not(:last-child){margin-right:calc(-1*var(--ring-overlap))}
+[data-screen="ring"] .ringSlide.side{opacity:.5}
+.nwSl.side{opacity:.5}
+.ringWrap.nwR{width:min(280px,76vw)}
+.care-knob{inset:21%;touch-action:manipulation!important}
+.care-knob .care-name{font-size:20px;font-weight:700;max-width:100%;line-height:1.15}
+.care-symbol svg{width:42px!important;height:42px!important}
+/* Day 60.2, шаги 2 и 4: подпись — в просвете внизу дуги, 32 точки от концов дуги, как от подписи до разделов (16.11.2026, Claude) */
+.care-ring-label{min-height:0;margin-top:-17px;padding:9px 6px;position:relative;display:flex;align-items:flex-end;justify-content:center;border:0;background:none;color:var(--ink);font-family:inherit;font-weight:700;font-size:20px;line-height:1.2;letter-spacing:-.01em;cursor:pointer;width:100%;touch-action:manipulation}
+.care-function-row{display:flex;align-items:center;gap:10px;padding:0 12px!important;margin-bottom:8px;position:relative}
+.care-function-open{display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:62px;padding:12px 0;border:0;background:none;color:inherit;font:inherit;text-align:left}
+.care-function-open>span{flex:1;font-weight:700}
+.care-function-open>svg{width:18px;height:18px}
+.care-function-drag{touch-action:none;cursor:grab;flex:none}
+.care-function-row.dragging{z-index:5;opacity:.85;box-shadow:0 10px 25px #154b6633}
+.care-function-drag:focus-visible{outline:2px solid white;border-radius:8px}
+.care-switch{display:block;position:relative;flex:0 0 40px;width:40px;height:25px}
+.care-switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1;width:100%;height:100%}
+.care-switch i{display:block;height:25px;border-radius:20px;background:rgba(255,255,255,.25);border:1px solid var(--glassBrd);box-sizing:border-box;transition:background .2s}
+.care-switch i:after{content:'';display:block;width:19px;height:19px;border-radius:50%;background:white;margin:2px;transition:transform .2s}
+.care-switch input:checked+i{background:var(--happy-switch-on,#7261dc)}   /* с темой — её цвет (21.11.2026) */
+.care-switch input:checked+i:after{transform:translateX(15px)}
+.care-switch input:focus-visible+i{outline:2px solid white;outline-offset:3px}
+
+/* Explicit draft commit, emerging from behind the existing dock. */
+.now-save{position:fixed;z-index:9;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));width:116px;height:116px;margin-left:-58px;border:1px solid #ffffff60;border-radius:50%;background:linear-gradient(145deg,#ffba75,#f28a42);color:#593419;box-shadow:0 8px 26px #75421e33,inset 0 1px #ffffff75;font:700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transform:translateY(150%);visibility:hidden;transition:transform .32s ease,visibility .32s;padding-bottom:20px;cursor:pointer}
+body.now-editing .now-save{transform:translateY(-48px);visibility:visible}
+.now-save:disabled{filter:saturate(.5);color:#765942;cursor:default}
+[data-screen="settings"] summary,.care-settings summary,.care-screen summary{list-style:none}
+[data-screen="settings"] summary::-webkit-details-marker,.care-settings summary::-webkit-details-marker,.care-screen summary::-webkit-details-marker{display:none}
+[data-screen="settings"] summary:after,.care-settings summary:after,.care-screen summary:after{display:none!important}
+.care-function-open>svg{display:none}
+@media(prefers-reduced-motion:reduce){.now-save{transition:none}}
+
+.update-history-link{display:flex;flex-direction:column;gap:6px;width:100%;border:0;background:transparent;color:var(--ink);text-align:left;font:inherit;padding:4px 0;cursor:pointer}
+.update-history-link>span{font-weight:700;font-size:16px}
+.update-history-link>small{font-size:14px;line-height:1.4;color:var(--muted)}
+.release-card time{font-size:14px;color:var(--muted)}
+.release-card ul{padding-left:20px;margin:14px 0 0;line-height:1.5;font-size:16px}
+.release-card li+li{margin-top:9px}
+/* Day 60.2, шаг 7 (16.11.2026, Claude): переход с главной на экран отметок. Кольцо с кнопкой и подпись под ним
+   стоят там же, где на главной, и не двигаются; всё, чего на главной нет (шапка, «Что было», теги, заметка), проявляется
+   чуть позже. Экраны «Дневник», «Активность», «Осознанность» проявляются целиком. */
+@keyframes careFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes careSheetIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+/* Черточка закрытия свайпом вниз (#cpGrip) не проявляется — она сразу на месте и сразу ловит палец (исправление 16.11 22:40) */
+[data-screen="ring"].on #sectionPanel>:not(.swipeZone):not(.section-form-header),[data-screen="ring"].on .section-form-header>:not(#cpGrip){animation:careFadeIn .45s ease-out .08s backwards}
+.screen.on:is([data-screen="care-diary"],[data-screen="care-entry"],[data-screen="care-mind"],[data-screen="care-activity"]){animation:careSheetIn .32s cubic-bezier(.22,.75,.25,1)}
+@media(prefers-reduced-motion:reduce){.screen.on,[data-screen="ring"].on #sectionPanel>*{animation:none!important}}
+/* Day 61.7: закрытие раздела (sheet-fold.js). Главная — нижний лист и вся неподвижна: ничего не проявляется и не двигается.
+   Экран раздела — карточка из колоды поверх: плотная, чуть светлее фона, с круглым вырезом под кнопку (маска; вырез уезжает вместе с карточкой); держится за нижний край и заворачивается вниз под нижний край.
+   Кнопка главной стоит на месте и видна через вырез. */
+.screen.fold-under{display:block}
+body .screen.fold-sheet[data-screen="ring"]{display:block;position:absolute;inset:0;z-index:2;overflow:hidden;border-radius:22px 22px 0 0;transform-origin:50% 100%;will-change:transform,opacity}
+body .screen.fold-sheet[data-screen="ring"].fold-closing{pointer-events:none}
+.fold-sheet .fold-bg{position:absolute;z-index:-1;pointer-events:none}
+.fold-sheet::after{content:"";position:absolute;left:0;right:0;top:var(--fold-top,0);height:100%;background:linear-gradient(180deg,rgba(0,70,200,.4),rgba(0,70,200,.12));opacity:var(--fold-dark,0);pointer-events:none;z-index:50}
+.fold-sheet #wheelNote{display:block;min-height:64px;margin-top:16px;width:100%;resize:vertical}
+.fold-sheet .fold-tint{position:absolute;left:0;right:0;top:var(--fold-top,0);height:100%;z-index:-1;pointer-events:none;border-radius:22px 22px 0 0;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75);opacity:var(--fold-card,0)}
+body.fold-on [data-screen="day"] .nwSl:not(.side) .care-name{opacity:var(--fold-in,1)}
+/* 61.17: «призрак» кнопки на карточке — прозрачная выпуклая форма без надписи; .fold-knob-side — её стенка (толщина).
+   Объём по правилу «свет сверху»: стенка сверху освещена (светлее карточки), низ кнопки чуть глубже, тень падает вниз на карточку.
+   Тёмная стенка сверху читалась бы как ямка, белая дымка и серо-синие тени — как серое пятно.
+   Светлое и тёмное — тона цвета приложения (--happy-base с белым или чёрным): кнопка не сереет и в любой теме остаётся в своём цвете.
+   Обводок нет: края читаются по разнице светлого и тёмного. Тень подрезана (отрицательный разлёт), чтобы не заходить вверх на стенку.
+   Края чуть смягчены, как скруглённая фаска: верх грани мягко светлеет к стенке, внешний край стенки мягко сходит в карточку (Астамур 25.11). */
+.fold-sheet{--fold-ghost-lit:color-mix(in oklab,var(--happy-base),#fff 34%);--fold-ghost-deep:color-mix(in oklab,var(--happy-base),#000 32%)}
+.fold-sheet .knob.fold-ghost{z-index:2;transition:none;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0) 45%,color-mix(in oklab,var(--fold-ghost-deep) 12%,transparent));box-shadow:inset 0 2px 3px -1px color-mix(in oklab,var(--fold-ghost-lit) 55%,transparent),inset 0 -2px 4px color-mix(in oklab,var(--fold-ghost-deep) 18%,transparent),0 6px 8px -3px color-mix(in oklab,var(--fold-ghost-deep) 42%,transparent),0 16px 24px -6px color-mix(in oklab,var(--fold-ghost-deep) 34%,transparent);backdrop-filter:none;-webkit-backdrop-filter:none}
+.fold-sheet .knob.fold-ghost>*{opacity:calc(1 - var(--fold-in,1))}
+.fold-sheet .fold-knob-side{position:absolute;z-index:1;border-radius:9999px;pointer-events:none;background:linear-gradient(90deg,color-mix(in oklab,var(--happy-base),#fff 8%),var(--fold-ghost-lit) 34%,var(--fold-ghost-lit) 66%,color-mix(in oklab,var(--happy-base),#fff 8%));box-shadow:inset 0 1px 2px color-mix(in oklab,var(--happy-base),#fff 8%);-webkit-mask-image:radial-gradient(circle var(--r,0px) at 50% calc(var(--r,0px) + var(--lift,0px)),transparent calc(var(--r,0px) - 1px),#000 var(--r,0px));mask-image:radial-gradient(circle var(--r,0px) at 50% calc(var(--r,0px) + var(--lift,0px)),transparent calc(var(--r,0px) - 1px),#000 var(--r,0px));opacity:var(--fold-card,0)}
+
+/* ── Аудит Day 20.11.2026 (Астамур): страница «Осознанность» и листы расписания и практики ──
+   Расписание — на своей странице с «+» над списком (п. 32). Строки: нажал — лист с полями; свайп влево — убрать (п. 27, 28).
+   Лист снизу: ручка, верхние углы 22, заголовок 20, «Сохранить» внизу, у правки — красная «Удалить» под ней (п. 14, 24).
+   «Повторение» — пилюля «Один раз / По дням недели», как в Sport (п. 5, 31). — Claude · 20.11.2026 */
+.care-head-add{display:flex;align-items:center;justify-content:space-between}
+.care-add{flex:none;width:44px;height:44px;margin:-12px -10px -12px 0;border:0;border-radius:50%;background:none;color:var(--happy-ink);display:grid;place-items:center;cursor:pointer}
+.care-add svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.care-add:focus-visible{outline:2px solid #fff}
+.card.care-card{padding:0 16px;margin-bottom:8px}   /* строка расписания и выполненной практики — своя карточка (21.11.2026) */
+.care-row{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 0;cursor:pointer}
+.care-row+.care-row{border-top:1px solid rgba(255,255,255,.18)}
+.care-row:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:12px}
+.care-row-t{flex:1;min-width:0}
+.care-row-t b{display:block;font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.care-row-t small{display:block;margin-top:2px;font-size:12px;color:rgba(255,255,255,.75)}
+.care-row .mini{flex:none}
+.care-note{margin:8px 4px 0}
+.care-function-name{flex:1;min-width:0;min-height:62px;display:flex;align-items:center;font-weight:700}
+.care-sheet{max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
+.care-sheet-form h3{margin:4px 0 16px;font-size:20px;font-weight:700}
+.care-sheet-form>label:first-of-type{margin-top:0}
+.care-seg{display:flex;height:44px;padding:3px;box-sizing:border-box;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid var(--happy-line)}
+.care-seg button{flex:1;min-width:0;border:0;border-radius:999px;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:400;cursor:pointer}
+.care-seg button[aria-checked="true"]{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);font-weight:600}
+.care-sheet-form .care-seg+input+label{margin-top:16px}
+.care-sheet-form .fieldrow{border:0;padding:0;margin:16px 0 0}
+.care-sheet-form .fieldrow label{margin:0;font-size:16px;font-weight:600}
+.care-sheet-form [hidden]{display:none!important}
+.care-danger{display:flex;width:100%;margin-top:12px;background:var(--happy-danger)!important;border-color:#ff6b78!important;color:var(--happy-ink)!important}
+
+/* Аудит Day 20.11.2026, п. 25: «Save» → «Сохранить». Пока есть что сохранить, в вырезе меню снова «×» (закрыть; несохранённое ждёт,
+   как и при жесте вниз), а «Сохранить» — отдельная кнопка (до 24.11.2026 пилюля 48 над меню). Без изменений — в вырезе микрофон. */
+/* 24.11.2026 (Астамур): «Сохранить» — целый круг 132 за меню и кнопкой с микрофоном (z-index ниже меню), центр — в центре кнопки.
+   Слово идёт по дуге посередине: от букв до края круга и от букв до кнопки — по 12. Низ круга спрятан за меню:
+   видна верхняя дуга и кольцо в вырезе меню. Положение по высоте ставит renderNote (selfcare-ui.js). */
+body.wheel-editing .now-save[data-dirty="true"]{z-index:9;width:132px;height:106px;min-width:0;padding:0;margin-left:-66px;
+  transform:none;border:0;border-radius:66px 66px 0 0;box-shadow:inset 0 1px rgba(255,255,255,.35)}
+body.wheel-editing .now-save svg.ns-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#nowSave svg.ns-arc text{fill:currentColor;stroke:none!important;font:600 16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.wheel-editing.now-dirty #fab{visibility:visible}
+
+/* аудит 20.11.2026, п. 5: колесо выбора дневника (общее HappyScreens.wheel) в форме записи — подпись как у полей */
+.care-form .hs-wheel-wrap{margin:14px 0 2px}
+.care-form .hs-wheel-wrap>.hs-field-title{display:block;margin:0 0 8px;font-size:14px;font-weight:600;color:inherit;text-align:left}
+/* 21.11.2026 (Астамур): кружки дней недели не липнут к полю «Практика» над ними; барабан длительности — отступ, как у полей */
+.care-sheet-form .care-days{margin:16px 0 2px}
+/* Аудит 2 п.3 (Астамур 21.11.2026, принято): строки «Настройки «Сейчас»» — одной карточкой с линиями между строками,
+   как остальные настройки во всех приложениях; текст 600, отступ слева 18. Перетаскивание за ручку остаётся. */
+.care-function-list{background:var(--hs-glass,rgba(255,255,255,.18));border:1px solid var(--hs-border,rgba(255,255,255,.36));border-radius:22px;overflow:hidden}
+.care-function-list>.care-function-row{margin:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0 12px 0 18px!important}
+.care-function-list>.care-function-row+.care-function-row{border-top:1px solid rgba(255,255,255,.22)!important}
+.care-function-list>.care-function-row.dragging{background:var(--hs-glass,rgba(255,255,255,.18))!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important;border-radius:16px!important}
+.care-function-open>span{font-weight:600}
+
+/* аудит 3 (22.11.2026): барабан выбора дневника — одна колонка во всю ширину, названия не обрезаются */
+.care-book-drum.hf-drum{grid-template-columns:1fr!important}
+.care-book-drum .hf-drum-cell:empty{display:none}
+.care-book-drum .hf-drum-cell,.care-book-drum .hf-drum-group,.care-book-drum .hf-drum-col{width:100%!important;max-width:none!important;flex:1 1 auto!important}
+.care-book-drum .hf-drum-item{font-variant-numeric:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%!important;justify-content:center;text-align:center}
+
+/* 25.11.2026: «Открыть Sport ↗» — обычная кнопка-пилюля: правило «a.btn{display:inline-block}» перебивало flex, текст прилипал к верху */
+a.btn.care-external{display:inline-flex;align-items:center;justify-content:center}
+/* дата раздела — пилюля справа в шапке, как на главной */
+.care-screen .top .care-datePill{flex:none}

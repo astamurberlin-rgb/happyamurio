@@ -1,0 +1,42 @@
+/* Выбор периода журнала (shared/happy-period.js), как в Meal: компактная полоска, «Поделиться» — у правого края
+   страницы (Астамур 21.11.2026), ниже дата.
+   Полоска тоньше переключателя «Журнал | Замеры тела» (Астамур 21.11.2026: «по высоте уже должна быть»):
+   вся полоска 44 — как чип и фильтр, кнопки внутри 36, но нажимается вся высота 44; текст 14. — Claude · 21.11.2026 */
+.hp-period{margin:0 0 16px}
+.hp-row{display:flex;align-items:center;gap:8px}
+.hp-seg{display:inline-flex;flex:0 1 auto;min-width:0;height:44px;padding:3px;box-sizing:border-box;border-radius:999px;
+ border:1px solid var(--hp-line,rgba(255,255,255,.38));background:var(--hp-glass,rgba(255,255,255,.09))}
+.hp-seg button{position:relative;flex:0 1 auto;min-width:36px;height:36px;padding:0 12px;border:0;border-radius:999px;background:none;color:var(--happy-ink);
+ font:inherit;font-size:14px;font-weight:400;line-height:1;white-space:nowrap;display:grid;place-items:center;cursor:pointer}
+.hp-seg button::after{content:'';position:absolute;left:0;right:0;top:-4px;bottom:-4px}   /* нажимается вся высота полоски */
+.hp-seg button.on{background:rgba(255,255,255,.94);color:var(--hp-on-ink,var(--hs-seg-ink,#5C4598));font-weight:600}
+.hp-seg button[data-hp-per="custom"]{padding:0 10px}
+.hp-seg svg,.hp-share svg,.hp-month svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hp-share{flex:none;margin-left:auto;width:44px;height:44px;padding:0;border-radius:999px;border:1px solid var(--hp-line,rgba(255,255,255,.38));
+ background:var(--hp-glass,rgba(255,255,255,.09));color:var(--happy-ink);display:grid;place-items:center;cursor:pointer}
+.hp-share svg{width:22px;height:22px;stroke-width:1.9}
+.hp-cap{margin:10px 2px 0;font-size:14px;font-weight:600;color:var(--happy-muted)}
+.hp-seg button:focus-visible,.hp-share:focus-visible,.hp-cal button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media (max-width:359px){.hp-seg button{padding:0 9px}}
+/* лист «Свой период» */
+.hp-cal{padding-bottom:8px}
+/* «По:» — ровно с середины строки; дата — по центру между своей подписью и следующей подписью или концом строки */
+.hp-sel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:0;font-size:16px;line-height:24px}
+.hp-half{display:flex;align-items:baseline;gap:0;min-width:0}
+.hp-half>span{flex:none;font-weight:600;color:var(--happy-muted)}
+.hp-half>b{flex:1;min-width:0;text-align:center;font-weight:600;white-space:nowrap}
+.hp-month{display:flex;align-items:center;justify-content:space-between;margin:16px 0 6px}
+.hp-month b{font-size:16px;font-weight:600}
+.hp-month button{width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:var(--happy-ink);display:grid;place-items:center;cursor:pointer}
+.hp-month button:disabled{opacity:.35;cursor:default}
+.hp-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:2px}
+.hp-grid small{display:grid;place-items:center;height:28px;font-size:12px;font-weight:400;color:var(--happy-muted)}
+.hp-grid button{height:44px;padding:0;border:0;border-radius:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;font-weight:400;
+ font-variant-numeric:tabular-nums;cursor:pointer}
+.hp-grid button.in{background:var(--happy-glass)}
+.hp-grid button.end{border-radius:999px;background:rgba(255,255,255,.94);color:var(--hp-on-ink,var(--hs-seg-ink,#5C4598));font-weight:600}
+.hp-grid button:disabled{opacity:.35;cursor:default}
+/* Лист «Свой период» в Day и Meal — как в Sport (Астамур 21.11.2026, аудит): затемнение 34 % по правилу, нижняя панель видна поверх,
+   кнопка микрофона не превращается в крестик, лист цвета приложения (тема). Закрыть — ручкой, жестом вниз или нажатием мимо. */
+.imp.hp-sheet-wrap .impSheet{background:var(--hs-sheet-bg,var(--happy-base,#00a8f5));max-height:calc(100% - 40px - env(safe-area-inset-top));overflow-y:auto;overscroll-behavior:contain}
+.imp.hp-sheet-wrap .impScrim{background:var(--happy-sheet-scrim);-webkit-backdrop-filter:none;backdrop-filter:none} /* правило 34 % без размытия (24.11.2026) */

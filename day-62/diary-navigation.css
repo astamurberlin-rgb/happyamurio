@@ -1,0 +1,59 @@
+.jd-book-row .jd-inline-wheel {
+  margin: 0;
+}
+
+.jd-inline-wheel .hf-drum-cap {
+  display: none;
+}
+
+.jd-inline-wheel .hf-drum-item {
+  padding-inline: 14px;
+  font-size: 16px;
+}
+
+.jd-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--happy-size-filter);
+  align-items: center;
+  gap: var(--happy-space-10);
+}
+
+.jd-search-field {
+  position: relative;
+  display: block;
+}
+
+.jd-search-field > svg {
+  position: absolute;
+  inset-inline-start: 14px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  color: var(--ink);
+  pointer-events: none;
+}
+
+.jd-search-field .jd-query {
+  height: var(--happy-size-field);
+  padding-inline-start: 43px;
+}
+
+.jd-search-row [data-jd="filters"] {
+  width: var(--happy-size-filter);
+  height: var(--happy-size-filter);
+  padding: 0;
+  border-radius: 50%;
+}
+
+.jd-search-row [data-jd="filters"] svg {
+  width: 22px;
+  height: 22px;
+}
+
+.jd-history .jd-search-row [aria-expanded="true"],
+.jd-history .jd-filters .jd-btn[aria-pressed="true"] {
+  color: var(--happy-dock-ink);
+  background: var(--hs-seg-bg);
+  border-color: var(--hs-seg-bg);
+}

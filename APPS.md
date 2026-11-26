@@ -6,7 +6,7 @@
 
 | Приложение | Открыть | Папка |
 | --- | --- | --- |
-| Happy Day | https://amurio.app/day/ | `day-61/` |
+| Happy Day | https://amurio.app/day/ | `day-62/` |
 | Happy Meal | https://amurio.app/meal/ | `meal-34/` |
 | Happy Sport | https://amurio.app/sport/ | `sport-45/`, исходники — `sport-45/sport/src/` |
 
@@ -16,6 +16,7 @@
 
 | Приложение | Открыть |
 | --- | --- |
+| Happy Day 61.24 | https://amurio.app/day-61/ |
 | Happy Day 60.17 | https://amurio.app/day-60/ |
 | Happy Meal 33.36 | https://amurio.app/meal-33/ |
 | Happy Sport 44.14 | https://amurio.app/sport-44/ |
