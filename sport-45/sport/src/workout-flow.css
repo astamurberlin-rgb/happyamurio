@@ -58,3 +58,14 @@
 .wf-rest-line.wf-rest-plain::after{content:none}
 /* Подпись перерыва — на стеклянной пилюле, чтобы не сливалась с линией и фоном карточки (Астамур 26.11.2026) */
 .wf-rest-line>span{padding:var(--happy-space-3) var(--happy-space-10);border-radius:var(--happy-radius-pill);background:var(--happy-glass);color:var(--happy-ink);line-height:1.4}
+
+/* 10. Рекорд: кубок вместо галочки и хлопушка. Новое: золотой кружок (happy-warning) и конфетти цветами системы. */
+.set-check.wf-record .set-dot{background:var(--happy-warning);color:var(--happy-accent-ink)}
+.set-check.wf-record .set-ring{visibility:hidden}
+.wf-trophy{position:relative;width:70%;height:70%;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.set-check.wf-record-pop .set-dot{animation:wf-pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes wf-pop{0%{transform:scale(.4)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.wf-confetti{position:fixed;width:0;height:0;z-index:500;pointer-events:none}
+.wf-confetti i{position:absolute;left:-3px;top:-4px;width:6px;height:8px;border-radius:1px;opacity:0;animation:wf-confetti .9s cubic-bezier(.15,.7,.4,1) forwards}
+@keyframes wf-confetti{0%{opacity:1;transform:translate(0,0) rotate(0) scale(.6)}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy) + 18px)) rotate(var(--rot)) scale(1)}}
+@media (prefers-reduced-motion:reduce){.set-check.wf-record-pop .set-dot{animation:none}}

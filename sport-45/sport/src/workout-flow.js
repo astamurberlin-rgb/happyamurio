@@ -175,3 +175,55 @@ window.addEventListener('click',ev=>{
 },true);
 window.addEventListener('submit',ev=>{if(ev.target.id!=='wf-note-form')return;ev.preventDefault();ev.stopImmediatePropagation();workoutFlowSaveNote(Number(ev.target.dataset.ei),String(new FormData(ev.target).get('note')||'').trim());},true);
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&workoutFlowCloseMenu())ev.stopPropagation();},true);
+
+/* 10. Рекорд (идея Астамура 26.11.2026): отметил ✓ подход, а он лучше всех прошлых по этому упражнению —
+ *     хлопушка конфетти, и на месте галочки кубок.
+ *     Правило: сравниваются отмеченные подходы прошлых тренировок (не демо) и более ранние подходы этой.
+ *     Вес — больше вес, или тот же вес и больше повторов. С поддержкой (гравитрон) — меньше поддержка, или та же и больше повторов.
+ *     Без веса: дистанция — дальше, время — дольше, повторы — больше. Первый раз в истории — не рекорд: сравнивать не с чем. */
+const WF_TROPHY='<svg class="wf-trophy" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5.5a2.5 2.5 0 0 0 2.6 3.6M16 6h2.5a2.5 2.5 0 0 1-2.6 3.6M12 13v3.5M8.5 20h7M9.5 20l.6-3.5h3.8l.6 3.5"/></svg>';
+function workoutFlowRecordScore(kind,s){
+ const n=k=>Number.isFinite(Number(s?.[k]))&&Number(s[k])>0?Number(s[k]):null;
+ if(kind==='weight'){const w=n('weight');return w==null?null:[w,n('reps')||0];}
+ if(kind==='assisted'){const w=Number(s?.weight);return Number.isFinite(w)?[-w,n('reps')||0]:null;}
+ const v=n(kind==='distance'?'distance':kind==='time'?'seconds':'reps');return v==null?null:[v,0];
+}
+function workoutFlowBeats(a,b){return a[0]>b[0]||a[0]===b[0]&&a[1]>b[1];}
+function workoutFlowIsRecord(ei,si){
+ const e=state.active?.exercises[ei],s=e?.sets[si];if(!s?.done||s.type==='warmup')return false;
+ const kind=exerciseHistoryKind(e.id),mine=workoutFlowRecordScore(kind,s);if(!mine)return false;
+ const past=[];
+ for(const w of state.workouts)if(!w.demo&&w.id!==state.active.id)for(const x of w.exercises||[])if(x.id===e.id)for(const p of x.sets||[])if(p.done&&p.type!=='warmup')past.push(p);
+ state.active.exercises.forEach((x,i)=>{if(x.id===e.id)x.sets.forEach((p,j)=>{if(p.done&&p.type!=='warmup'&&(i<ei||i===ei&&j<si))past.push(p);});});
+ const scores=past.map(p=>workoutFlowRecordScore(kind,p)).filter(Boolean);if(!scores.length)return false;
+ return scores.every(b=>workoutFlowBeats(mine,b));
+}
+let workoutFlowBurst=null;
+{const toggleBeforeRecord=toggleWorkoutSetDone;
+ toggleWorkoutSetDone=function(ei,si,...rest){
+  const ok=toggleBeforeRecord(ei,si,...rest),s=state.active?.exercises[ei]?.sets[si];
+  if(ok&&s){if(s.done&&workoutFlowIsRecord(ei,si)){s.record=true;workoutFlowBurst={ei,si};setTimeout(workoutFlowPlayBurst,0);}else delete s.record;}
+  return ok;
+ };}
+function workoutFlowPlayBurst(){
+ const t=workoutFlowBurst;workoutFlowBurst=null;if(!t)return;
+ const b=document.querySelector(`.set-check[data-action="set-done"][data-ei="${t.ei}"][data-si="${t.si}"]`);if(!b)return;
+ b.classList.add('wf-record-pop');
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const r=b.getBoundingClientRect(),box=document.createElement('div');box.className='wf-confetti';box.setAttribute('aria-hidden','true');
+ box.style.left=r.left+r.width/2+'px';box.style.top=r.top+r.height/2+'px';
+ const colors=['var(--happy-warning)','var(--happy-success)','var(--happy-protein)','var(--happy-ink)','var(--happy-accent)'];
+ for(let i=0;i<18;i++){const p=document.createElement('i'),a=(i/18)*Math.PI*2+Math.random()*.4,d=34+Math.random()*30;
+  p.style.setProperty('--dx',Math.cos(a)*d+'px');p.style.setProperty('--dy',Math.sin(a)*d-10+'px');p.style.setProperty('--rot',Math.round(Math.random()*540-270)+'deg');
+  p.style.background=colors[i%colors.length];if(i%3===0)p.style.borderRadius='50%';box.appendChild(p);}
+ document.body.appendChild(box);setTimeout(()=>box.remove(),1000);
+}
+{const linesBeforeRecord=activeSetLines;
+ activeSetLines=function(e,ei){
+  let html=linesBeforeRecord(e,ei);if(!(e.sets||[]).some(s=>s.done&&s.record))return html;
+  const root=document.createElement('div');root.innerHTML=html;
+  e.sets.forEach((s,si)=>{if(!s.done||!s.record)return;const b=root.querySelector(`.set-check[data-action="set-done"][data-si="${si}"]`);if(!b)return;
+   b.classList.add('wf-record');b.setAttribute('aria-label',b.getAttribute('aria-label').replace('Снять отметку','Рекорд. Снять отметку'));
+   const tick=b.querySelector('.set-tick');if(tick)tick.outerHTML=WF_TROPHY;});
+  return root.innerHTML;
+ };}
