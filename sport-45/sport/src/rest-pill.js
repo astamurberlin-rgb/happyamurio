@@ -64,7 +64,9 @@ function updateFloatingRest(){
   const input=root.querySelector('[data-rest-pill-time]');if(input&&document.activeElement!==input)input.value=countdownTime(Math.ceil(c.remaining));
   const toggle=root.querySelector('[data-rest-pill=toggle]'),label=c.kind==='preview'?'Запустить перерыв':c.running?'Приостановить перерыв':'Продолжить перерыв';
   if(toggle.getAttribute('aria-label')!==label){toggle.setAttribute('aria-label',label);toggle.innerHTML=icon(c.running?'pause':'play');}toggle.disabled=c.finished;
-  root.querySelector('.floating-rest-clock>span:first-child').textContent=c.kind==='preview'?'Перерыв':c.finished?'Перерыв окончен':c.running?'Перерыв':'Пауза';
+  root.querySelector('.floating-rest-clock>span:first-child').textContent=c.kind==='preview'?'Перерыв':c.running||c.finished?'Перерыв':'Пауза';
+  // Перерыв прошёл — «Завершить» вместо «Пропустить» (Астамур 26.11.2026).
+  const finish=root.querySelector('[data-rest-pill=finish]'),word=c.finished?'Завершить':'Пропустить';if(finish&&finish.textContent!==word)finish.textContent=word;
   const minus=root.querySelector('[data-rest-pill=minus]');if(minus)minus.disabled=c.finished||(c.kind==='preview'&&(setRestSeconds(c.set)||60)<=30);
   positionFloatingRest(root);
 }

@@ -111,3 +111,6 @@ window.addEventListener('click',e=>{
  try{const draft=readSetPlanInputs(root),s=draft?.sets[Number(b.dataset.planIndex)];if(!s)return;s.done=!s.done;if(!s.done)delete s.restDone;root.innerHTML=setPlanRows(draft);}
  catch(error){const box=root.querySelector('.plan-error');if(box)box.textContent=error.message;}
 },true);
+
+/* 7. Виджет перерыва (Астамур 26.11.2026): правка в rest-pill.js — без «окончен», «Завершить» вместо «Пропустить»;
+ *    кнопка длиннее и контур у ▶/❚❚ — в workout-flow.css. */

@@ -21,3 +21,6 @@
 /* Итог тренировки: «Удалить» — мелкая розовая надпись вместо большой красной кнопки */
 .workout-detail .button.button-delete.delete-workout{background:none!important;border:0!important;box-shadow:none!important;color:var(--happy-danger-soft)!important;font-size:14px;font-weight:600;min-height:var(--happy-size-pill);width:auto}
 .workout-detail .button.button-delete.delete-workout .icon{display:none}
+/* Виджет перерыва: «Пропустить» / «Завершить» помещается, у ▶/❚❚ снова контур */
+.floating-rest-pill .floating-rest-finish{width:auto;min-width:0;padding:0 var(--happy-space-15)}
+.floating-rest-pill .floating-rest-toggle{border:1px solid var(--happy-stepper-line)!important}
