@@ -411,6 +411,14 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 .happy-button:has(>small)>b,.happy-card>.happy-button[data-action=release-history]>b{font-weight:700}
 /* 24.11.2026 (Астамур): подзаголовок листа — на 4 под заголовком, как во всех листах (было 20) */
 .sheet>.sheet-top+.sheet-info{margin-top:-16px}
-/* Астамур 26.11.2026: «Напоминание» — барабан со словами слева от «Длительности», колесо на всю ширину колонки (как «Дневник» в Day) */
-.plan-details .hf-drum-cell:first-child .hf-drum-group,.plan-details .hf-drum-col[data-name="r"]{width:100%;max-width:none;flex:1 1 auto}
-.plan-details .hf-drum-col[data-name="r"] .hf-drum-item{font-variant-numeric:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}
+/* Астамур 26.11.2026 (как «Напоминания» iPhone): строки «Напоминание» и «Длительность» в стеклянной карточке,
+   значение справа; нажал — барабан раскрывается под строкой на всю ширину. */
+.plan-wheels{margin:var(--happy-space-12) 0 0;border-radius:var(--happy-radius-card-sport);background:var(--happy-glass);overflow:hidden}
+.plan-wheel-row{display:flex;align-items:center;justify-content:space-between;gap:var(--happy-space-12);width:100%;min-height:var(--happy-size-button);padding:0 var(--happy-space-15);border:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;text-align:left;cursor:pointer}
+.plan-wheel-row+.plan-wheel,.plan-wheel+.plan-wheel-row{border-top:1px solid var(--happy-row-divider)}
+.plan-wheel-row b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.plan-wheel.hf-drum{grid-template-columns:1fr;margin:0;padding:var(--happy-space-8) var(--happy-space-15)}
+.plan-wheel[hidden]{display:none}
+.plan-wheel .hf-drum-cell:empty,.plan-wheel .hf-drum-cap{display:none}
+.plan-wheel .hf-drum-col[data-name="r"]{width:100%}
+.plan-wheel .hf-drum-col[data-name="r"] .hf-drum-item{font-variant-numeric:normal}

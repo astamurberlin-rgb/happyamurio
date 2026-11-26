@@ -2385,9 +2385,17 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 .happy-button:has(>small)>b,.happy-card>.happy-button[data-action=release-history]>b{font-weight:700}
 /* 24.11.2026 (Астамур): подзаголовок листа — на 4 под заголовком, как во всех листах (было 20) */
 .sheet>.sheet-top+.sheet-info{margin-top:-16px}
-/* Астамур 26.11.2026: «Напоминание» — барабан со словами слева от «Длительности», колесо на всю ширину колонки (как «Дневник» в Day) */
-.plan-details .hf-drum-cell:first-child .hf-drum-group,.plan-details .hf-drum-col[data-name="r"]{width:100%;max-width:none;flex:1 1 auto}
-.plan-details .hf-drum-col[data-name="r"] .hf-drum-item{font-variant-numeric:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}
+/* Астамур 26.11.2026 (как «Напоминания» iPhone): строки «Напоминание» и «Длительность» в стеклянной карточке,
+   значение справа; нажал — барабан раскрывается под строкой на всю ширину. */
+.plan-wheels{margin:var(--happy-space-12) 0 0;border-radius:var(--happy-radius-card-sport);background:var(--happy-glass);overflow:hidden}
+.plan-wheel-row{display:flex;align-items:center;justify-content:space-between;gap:var(--happy-space-12);width:100%;min-height:var(--happy-size-button);padding:0 var(--happy-space-15);border:0;background:none;color:var(--happy-ink);font:inherit;font-size:16px;text-align:left;cursor:pointer}
+.plan-wheel-row+.plan-wheel,.plan-wheel+.plan-wheel-row{border-top:1px solid var(--happy-row-divider)}
+.plan-wheel-row b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.plan-wheel.hf-drum{grid-template-columns:1fr;margin:0;padding:var(--happy-space-8) var(--happy-space-15)}
+.plan-wheel[hidden]{display:none}
+.plan-wheel .hf-drum-cell:empty,.plan-wheel .hf-drum-cap{display:none}
+.plan-wheel .hf-drum-col[data-name="r"]{width:100%}
+.plan-wheel .hf-drum-col[data-name="r"] .hf-drum-item{font-variant-numeric:normal}
 /* Sport 44.5 · «Настроить тему»: раскрытие карточки и две ленты (геометрия и стеклянные состояния — макет Михалыча, версия 6). */
 .hs-group .appearance-trigger{width:100%}
 .happy-settings [data-happy-appearance-slot]:empty {
@@ -3652,21 +3660,32 @@ function scheduleFields(s){
  +`<label class="field schedule-end" ${s?.mode==='weekly'?'':'hidden'}>До даты · необязательно<input type="date" name="scheduleEnd" value="${esc(s?.endDate||'')}"></label>`
  +`<p class="plan-zone-note">${otherZone?'Время по поясу '+esc(planZoneName(zone)):'Время телефона · '+esc(planZoneName(phoneZone))}${otherZone?'':' <button type="button" class="text-btn" data-action="plan-zone">Выбрать другой часовой пояс</button>'}</p>`
  +`<label class="field plan-zone" ${otherZone?'':'hidden'}>Часовой пояс<input name="scheduleZone" required value="${esc(zone)}" list="schedule-zones" autocomplete="off"></label><datalist id="schedule-zones">${[phoneZone,'Europe/Moscow','Europe/Berlin','Asia/Tbilisi','UTC'].filter((x,i,a)=>a.indexOf(x)===i).map(x=>`<option value="${x}">`).join('')}</datalist></div></div>`
- // Астамур 21.11.2026: длительность — тот же барабан 00:00, что в Day (shared/happy-drum.js): справа, подпись сверху.
- +`<div class="plan-group plan-details"><div class="plan-drum" data-plan-drum></div><input type="hidden" name="planMinutes" value="${s?.minutes||60}">`
- // Астамур 26.11.2026 (лаборатория): «Напоминание» — тоже барабан, слева от «Длительности», в пустой колонке.
- +`<input type="hidden" name="planReminder" value="${s?.reminder??30}">`
+ // Астамур 26.11.2026 (скриншоты «Напоминаний» iPhone): «Напоминание» и «Длительность» — строки с значением справа;
+ // нажал строку — под ней на месте раскрывается барабан, нажал ещё раз — свернулся. Открыт один барабан за раз.
+ +`<div class="plan-group plan-details"><div class="plan-wheels">`
+ +`<button type="button" class="plan-wheel-row" data-plan-wheel="r" aria-expanded="false"><span>Напоминание</span><b data-plan-wheel-value="r"></b></button><div class="plan-wheel" data-plan-wheel-box="r" hidden></div>`
+ +`<button type="button" class="plan-wheel-row" data-plan-wheel="d" aria-expanded="false"><span>Длительность</span><b data-plan-wheel-value="d"></b></button><div class="plan-wheel" data-plan-wheel-box="d" hidden></div>`
+ +`</div><input type="hidden" name="planMinutes" value="${s?.minutes||60}"><input type="hidden" name="planReminder" value="${s?.reminder??30}">`
  +`<label class="field plan-note">Заметка<textarea name="planNote" maxlength="2000" rows="2" placeholder="Например: взять резинку">${esc(s?.note||'')}</textarea></label></div>`
  // «В календарь» — на всю ширину; «Поделиться» — значок справа от названия листа (openScheduleSheet), Астамур 18.11.2026.
  +`<div class="plan-share plan-share-one"><button class="button" type="submit" data-plan-export="calendar">${icon('calendar-blank')} В календарь</button></div>`
  +`<p class="fineprint">Сохранит расписание и откроет файл для календаря телефона. ${s?`<button type="button" class="text-btn plan-remove" data-action="plan-remove">Убрать из расписания</button>`:''}</p></section><div id="plan-error" class="form-error" role="alert"></div>`;
 }
-/* Длительность в расписании — барабан 00:00, как в Day: часы и минуты, пишет в скрытое поле planMinutes (21.11.2026) */
+/* Напоминание и длительность в расписании — строки, которые раскрываются в барабан Happy (shared/happy-drum.js), 26.11.2026 */
+const PLAN_REMIND=[[-1,'нет'],[0,'в начале'],[15,'за 15 мин'],[30,'за 30 мин'],[60,'за час'],[1440,'за день']].map(([v,t])=>({v,t}));
+const planDurText=m=>{m=Math.round(Number(m)||0);const h=Math.floor(m/60),r=m%60;return h&&r?`${h} ч ${r} мин`:h?`${h} ч`:`${r} мин`;};
 function mountPlanDrum(form){
- const host=form.querySelector('[data-plan-drum]'),input=form.elements.planMinutes,rem=form.elements.planReminder,HF=globalThis.HappyFields;
- if(!host||!input||!HF?.drum)return;
- const remind=[[-1,'нет'],[0,'в начале'],[15,'за 15 мин'],[30,'за 30 мин'],[60,'за час'],[1440,'за день']].map(([v,t])=>({v,t}));
- HF.drum(host,{groups:[{label:'Напоминание',cols:[{name:'r',label:'Напоминание',options:remind,value:rem?.value??30}]},{label:'Длительность',cols:HF.drumDurationCols(input.value)}],onChange:v=>{input.value=v.dh*60+v.dm;if(rem)rem.value=v.r;}});
+ const input=form.elements.planMinutes,rem=form.elements.planReminder,HF=globalThis.HappyFields;if(!input||!rem||!HF?.drum)return;
+ const val=k=>form.querySelector(`[data-plan-wheel-value="${k}"]`),box=k=>form.querySelector(`[data-plan-wheel-box="${k}"]`);
+ const paint=()=>{val('r').textContent=PLAN_REMIND.find(x=>String(x.v)===String(rem.value))?.t||'нет';val('d').textContent=planDurText(input.value);};
+ paint();
+ const mount={r:()=>HF.drum(box('r'),{groups:[{label:'',cols:[{name:'r',label:'Напоминание',options:PLAN_REMIND,value:rem.value}]}],onChange:v=>{rem.value=v.r;paint();}}),
+  d:()=>HF.drum(box('d'),{groups:[{label:'',cols:HF.drumDurationCols(input.value)}],onChange:v=>{input.value=v.dh*60+v.dm;paint();}})};
+ form.querySelectorAll('[data-plan-wheel]').forEach(btn=>btn.addEventListener('click',()=>{
+  const k=btn.dataset.planWheel,open=box(k).hidden;
+  form.querySelectorAll('[data-plan-wheel]').forEach(b=>{b.setAttribute('aria-expanded','false');box(b.dataset.planWheel).hidden=true;});
+  if(open){btn.setAttribute('aria-expanded','true');box(k).hidden=false;mount[k]();}
+ }));
 }
 function applyPlanMode(form){const mode=form.querySelector('[name=scheduleMode]:checked')?.value||'none';form.querySelector('#plan-inputs').hidden=mode==='none';form.querySelector('.schedule-weekdays').hidden=mode!=='weekly';form.querySelector('.schedule-end').hidden=mode!=='weekly';const label=form.querySelector('.plan-date-label');if(label)label.textContent=mode==='weekly'?'С даты · время':'Дата и время';}
 function setPlanMode(form,mode){const input=form.querySelector(`[name=scheduleMode][value="${mode}"]`);if(input)input.checked=true;applyPlanMode(form);}
