@@ -1,13 +1,14 @@
-/* Happy — общие цвета трёх приложений (✱ design tokens). Лаборатория 21.11.2026, план «Общий файл цветов Happy».
-   Цвета в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
-   Блок «из Color Studio» — палитра каждого приложения: значения как в Color Studio, руками не править.
+/* Happy — общие цвета и размеры трёх приложений (✱ design tokens).
+   ФАЙЛ СОБРАН ИЗ design-system/tokens.json командой node scripts/build-tokens.mjs. Руками не править: править tokens.json.
+   Цвета и размеры в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
+   Блок «из Color Studio» — палитра каждого приложения: значения как в Color Studio.
    Тема (Настроить тему) подменяет эти же имена на цвета темы: shared/happy-appearance.js, функция skin().
    Белый и чёрный в тенях и масках остаются числом: от темы они не зависят. */
-
 /* ── из Color Studio: палитра приложения ── */
 :root{
   --happy-base:#00a8f5;
   --happy-accent:#5a50d1;
+  --happy-accent-ink:#0c6fa8;
   --happy-on-accent:#fff;
   --happy-ink:#fff;
   --happy-heading:#fff;
@@ -22,50 +23,50 @@
 :root[data-happy-appearance-app="meal"]{
   --happy-base:#812c4b;
   --happy-accent:#730074;
+  --happy-accent-ink:#84036d;
 }
 :root[data-happy-appearance-app="sport"]{
   --happy-base:#8c75db;
+  --happy-accent-ink:#5a50d1;
   --happy-dock-ink:#6e8396;
 }
-/* Общие экраны (вход, профиль, листы — shared/happy-screens.css): цвета каждого приложения. До лаборатории 21.11.2026 их ставил код happy-screens.js. */
+/* Общие экраны (вход, профиль, листы — shared/happy-screens.css): цвета каждого приложения. */
 :root[data-happy-appearance-app="day"]{
-  --hs-glass:rgba(255,255,255,.16);
-  --hs-primary:#5A50D1;
-  --hs-primary-shadow:0 6px 16px #37309d30;
-  --hs-cancel-ink:#6254cf;
+  --hs-primary:#5a50d1;
   --hs-seg-bg:#edf8ff;
   --hs-seg-ink:#5a50d1;
   --hs-switch-on:#8071df;
-  --hs-sheet-bg:#00A8F5;
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:0 6px 16px #37309d30;
+  --hs-cancel-ink:#6254cf;
+  --hs-sheet-bg:#00a8f5;
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
 }
 :root[data-happy-appearance-app="meal"]{
-  --hs-glass:rgba(255,255,255,.13);
   --hs-primary:#870078;
-  --hs-primary-shadow:none;
-  --hs-cancel-ink:#870078;
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
-  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');   /* галочка Meal — сливовая (аудит 3) */
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#870078;
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
   --hs-toast-bg:rgba(49,20,46,.92);
   --hs-pill-on-ink:#84036d;
-  --happy-accent-ink:#84036d;   /* текст в белых кнопках Meal («Выгрузить отчёт», «Русский») — сливовый, как вкладки, не синий Day (аудит 3, 22.11) */
+  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');
 }
 :root[data-happy-appearance-app="sport"]{
-  --hs-glass:rgba(255,255,255,.16);
   --hs-primary:#6254cf;
-  --hs-primary-shadow:none;
-  --hs-cancel-ink:#6254cf;
   --hs-seg-bg:#edf8ff;
   --hs-seg-ink:#5a50d1;
   --hs-switch-on:#8071df;
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#6254cf;
   --hs-sheet-bg:linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%);
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
-  --happy-accent-ink:#5a50d1;   /* текст в белых кнопках Sport — фиолетовый Sport по имени, не синий числом (решение Астамура 24.11) */
 }
 /* ── конец блока из Color Studio ── */
 
@@ -78,4 +79,258 @@
   --happy-protein:#e34948;
   --happy-fat:#eda100;
   --happy-carbs:#6250d6;
+}
+
+/* Остальные цвета дизайн-системы. */
+:root{
+  --happy-toast-bg:rgba(12,60,110,.92);
+  --happy-toast-action:#8ef3dd;
+  --happy-sheet-scrim:rgba(0,0,0,.34);
+  --happy-sheet-handle:rgba(255,255,255,.45);
+  --happy-sheet-subtitle:rgba(255,255,255,.7);
+  --happy-sheet-subtitle-login:rgba(255,255,255,.82);
+  --happy-settings-group-heading:rgba(255,255,255,.6);
+  --happy-stepper-line:rgba(255,255,255,.55);
+  --happy-stepper-bg:rgba(255,255,255,.14);
+  --happy-row-divider:rgba(255,255,255,.18);
+  --happy-bubble-bg:rgba(255,255,255,.94);
+  --happy-slider-rail:rgba(255,255,255,.14);
+  --happy-slider-tick:rgba(255,255,255,.3);
+  --happy-day-on-bg:rgba(255,255,255,.92);
+  --happy-danger-soft:#ffd3da;
+  --happy-time-fill-from:rgba(124,227,201,.72);
+  --happy-time-fill-to:rgba(70,253,252,.58);
+  --happy-time-over-from:rgba(255,196,120,.72);
+  --happy-time-over-to:rgba(255,150,120,.62);
+  --happy-time-over-ink:#ffd9a6;
+  --happy-time-limit:rgba(255,255,255,.55);
+  --happy-time-draft-veil:rgba(255,255,255,.22);
+  --happy-time-draft-stripe:rgba(255,255,255,.55);
+  --happy-time-draft-pill-bg:rgba(255,255,255,.95);
+  --happy-drum-band:rgba(255,255,255,.22);
+  --happy-wheel-band:rgba(255,255,255,.22);
+}
+:root[data-happy-appearance-app="day"]{
+  --happy-theme-color:#56b9f7;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+:root[data-happy-appearance-app="meal"]{
+  --happy-theme-color:#a13e65;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+:root[data-happy-appearance-app="sport"]{
+  --happy-theme-color:#8e75e1;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+
+/* Размеры, скругления, отступы, тени, размытие, движение и шрифты. */
+:root{
+  /* скругления */
+  --happy-radius-pill:999px;
+  --happy-radius-card:26px;
+  --happy-radius-card-sport:24px;
+  --happy-radius-card-day:22px;
+  --happy-radius-sheet:22px;
+  --happy-radius-theme-tile:24px;
+  --happy-radius-theme-picture:16px;
+  --happy-radius-field:12px;
+  --happy-radius-time-bar:14px;
+  --happy-radius-bubble:12px;
+  --happy-radius-level-row:22px;
+  --happy-radius-chat-bubble:22px;
+  --happy-radius-chat-tail:3px;
+  --happy-radius-chat-composer:28px;
+  --happy-radius-list-row:24px;
+  /* отступы */
+  --happy-space-3:3px;
+  --happy-space-8:8px;
+  --happy-space-10:10px;
+  --happy-space-11:11px;
+  --happy-space-12:12px;
+  --happy-space-15:15px;
+  --happy-space-16:16px;
+  --happy-space-20:20px;
+  --happy-space-sheet-sub:4px;
+  --happy-space-sheet-content:18px;
+  --happy-space-sheet-buttons:10px;
+  --happy-space-sheet-bottom:28px;
+  --happy-space-drum-cols:12px;
+  --happy-space-chat-messages:10px;
+  --happy-space-chat-composer-side:14px;
+  --happy-space-tab-bar-side:14px;
+  --happy-space-chat-bubble-y:11px;
+  --happy-space-chat-bubble-x:15px;
+  --happy-space-list-row-y:15px;
+  --happy-space-list-row-x:18px;
+  /* размеры */
+  --happy-size-button:48px;
+  --happy-size-pill:44px;
+  --happy-size-pill-inner:36px;
+  --happy-size-switch-w:42px;
+  --happy-size-switch-h:25px;
+  --happy-size-switch-knob:19px;
+  --happy-size-mic:60px;
+  --happy-size-mic-icon:26px;
+  --happy-size-drag-icon:28px;
+  --happy-size-sheet-handle-w:42px;
+  --happy-size-sheet-handle-h:5px;
+  --happy-size-sheet-handle-zone:30px;
+  --happy-size-sheet-handle-top:13px;
+  --happy-size-stepper:40px;
+  --happy-size-stepper-side:46px;
+  --happy-size-counter-row:58px;
+  --happy-size-counter-add:52px;
+  --happy-size-time-bar:46px;
+  --happy-size-time-draft-step:14px;
+  --happy-size-time-draft-pill:128px;
+  --happy-size-slider-zone:48px;
+  --happy-size-slider-rail:4px;
+  --happy-size-slider-tick:18px;
+  --happy-size-day-circle:44px;
+  --happy-size-scale-ring:280px;
+  --happy-size-scale-knob:162px;
+  --happy-size-level-row:52px;
+  --happy-size-tag:36px;
+  --happy-size-pocket-w:124px;
+  --happy-size-pocket-h:26px;
+  --happy-size-fold-icon-w:52px;
+  --happy-size-drum-row:44px;
+  --happy-size-wheel-row:44px;
+  --happy-size-tab-bar:66px;
+  --happy-size-tab-icon:21px;
+  --happy-size-field:48px;
+  --happy-size-filter:48px;
+  --happy-size-icon-button:44px;
+  --happy-size-icon:22px;
+  --happy-size-list-row:72px;
+  --happy-size-list-image:52px;
+  --happy-size-avatar:80px;
+  --happy-size-text-button-zone:44px;
+  --happy-size-chat-bubble-max:86%;
+  --happy-size-chat-control:44px;
+  --happy-size-chat-field-max:126px;
+  --happy-size-typing-dot:7px;
+  --happy-size-save-arc-w:132px;
+  --happy-size-save-arc-h:106px;
+  --happy-size-mic-hold-action:52px;
+  --happy-size-swipe-pill:44px;
+  --happy-size-catalog-tile-w:168px;
+  --happy-size-catalog-tile-photo:141px;
+  --happy-size-price-pill:29px;
+  --happy-size-date-pill:36px;
+  --happy-size-nutrient-group:52px;
+  /* тени */
+  --happy-shadow-card:0 2px 3px rgba(4,40,80,.10), 0 14px 30px rgba(4,40,80,.14);
+  --happy-shadow-sheet:0 -16px 48px rgba(0,0,0,.2);
+  --happy-shadow-chat-mine:0 8px 20px rgba(4,40,80,.14);
+  --happy-shadow-chat-composer:0 10px 28px rgba(4,40,80,.26);
+  /* размытие */
+  --happy-blur-glass:12px;
+  --happy-blur-tab-bar:18px;
+  --happy-blur-chat-composer:16px;
+  --happy-blur-mic-hold:2px;
+  /* движение */
+  --happy-motion-switch:.18s;
+  --happy-motion-screen:.22s;
+  --happy-motion-sheet:.42s;
+  --happy-ease-sheet:cubic-bezier(.25,.8,.25,1);
+  --happy-motion-toast:.2s;
+  --happy-motion-theme-open:.24s;
+  --happy-press-scale:.985;
+  --happy-motion-day-bg:26s;
+  --happy-motion-swipe-back:.2s;
+  --happy-swipe-threshold-min:90px;
+  --happy-undo-keep:5s;
+  --happy-motion-time-draft:.9s;
+  /* шрифты */
+  --happy-font-sans:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --happy-type-screen-title-size:28px;
+  --happy-type-screen-title-weight:800;
+  --happy-type-screen-title-line:1.2;
+  --happy-type-screen-title-tracking:-.5px;
+  --happy-type-sheet-title-size:20px;
+  --happy-type-sheet-title-weight:700;
+  --happy-type-sheet-title-line:1.25;
+  --happy-type-sheet-title-tracking:-.25px;
+  --happy-type-section-title-size:16px;
+  --happy-type-section-title-weight:700;
+  --happy-type-section-title-line:1.3;
+  --happy-type-row-size:16px;
+  --happy-type-row-weight:600;
+  --happy-type-row-line:1.5;
+  --happy-type-body-size:16px;
+  --happy-type-body-weight:400;
+  --happy-type-body-line:1.5;
+  --happy-type-small-heading-size:14px;
+  --happy-type-small-heading-weight:700;
+  --happy-type-small-heading-line:1.4;
+  --happy-type-button-size:14px;
+  --happy-type-button-weight:600;
+  --happy-type-button-line:20px;
+  --happy-type-caption-size:14px;
+  --happy-type-caption-weight:400;
+  --happy-type-caption-line:1.5;
+  --happy-type-tab-label-size:12px;
+  --happy-type-tab-label-weight:400;
+  --happy-type-tab-label-line:1.2;
+  --happy-type-login-button-size:16px;
+  --happy-type-login-button-weight:600;
+  --happy-type-login-button-line:20px;
+  --happy-type-sheet-subtitle-size:14px;
+  --happy-type-sheet-subtitle-weight:400;
+  --happy-type-sheet-subtitle-line:1.35;
+  --happy-type-group-heading-size:14px;
+  --happy-type-group-heading-weight:600;
+  --happy-type-group-heading-line:1.4;
+  --happy-type-drum-digit-size:28px;
+  --happy-type-drum-digit-weight:600;
+  --happy-type-drum-digit-line:1;
+  --happy-type-chat-message-size:16px;
+  --happy-type-chat-message-weight:400;
+  --happy-type-chat-message-line:1.42;
+  --happy-type-chat-hint-size:12px;
+  --happy-type-chat-hint-weight:400;
+  --happy-type-chat-hint-line:1.45;
+  --happy-type-field-unit-size:14px;
+  --happy-type-field-unit-weight:400;
+  --happy-type-field-unit-line:1.3;
+  --happy-type-swipe-action-size:14px;
+  --happy-type-swipe-action-weight:700;
+  --happy-type-swipe-action-line:1.2;
+  --happy-type-save-arc-size:16px;
+  --happy-type-save-arc-weight:700;
+  --happy-type-save-arc-line:1;
 }

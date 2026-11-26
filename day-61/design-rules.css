@@ -63,3 +63,21 @@
 /* Профиль · «Скачать данные» (Астамур 21.11.2026): под «Отмена», по центру, подчёркнутая строка. */
 .hs-export{display:flex;justify-content:center;margin-top:6px}
 .hs-export .hs-export-link{min-height:44px;padding:0 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+
+/* ── Правки из правил дизайн-системы, §10 «Решено, но в коде ещё старое» (Астамур 25.11.2026) ── */
+/* 12 пишется только 400; 600 — только у выбранной вкладки нижнего меню */
+.tab{font-weight:400}.tab.on{font-weight:600}
+/* кнопка микрофона: открыт лист — «+» поворачивается на 45° и становится ✕, как в Meal */
+body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg)!important}
+/* «Что было» на «Сейчас» — чипы 44 */
+.chips>.chip{min-height:44px}
+/* пунктир «Свой тег» и «Новый счётчик времени» — белый 50 % */
+.chip.add{border-color:var(--happy-dashed-line)}
+.dm-newcnt{border-color:var(--happy-dashed-line)}
+/* «Добавить период» — рамка 34 % */
+.dp-add{border-color:var(--happy-line)}
+/* пилюля даты в шапке — 36 */
+.datePill{box-sizing:border-box;height:36px;padding-top:0!important;padding-bottom:0!important}
+/* замок дня — кнопка-значок: круг 44, значок 22, фон 9 %, рамка 38 % */
+.lockBtn{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.38)}
+.lockBtn svg{width:22px;height:22px}

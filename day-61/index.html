@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="day" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
+<html class="happy-viewport" data-happy-appearance-app="day" data-happy-appearance-entry="inline" lang="ru" data-theme="aurora">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="form-action 'none'; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co">
@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Day">
-<title>Happy Day · Update 61.17</title>
+<title>Happy Day · Update 61.24</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261125-glass-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261125-glass-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261125-glass-152.png">
@@ -16,16 +16,17 @@
 <link rel="apple-touch-icon" sizes="180x180" href="./app-icons/happy-day-20261125-glass-180.png">
 <link rel="manifest" href="./manifest.webmanifest?v=20261125-glass">
 <style id="happy-colors-inline">/* HAPPY_COLORS_START */
-/* Happy — общие цвета трёх приложений (✱ design tokens). Лаборатория 21.11.2026, план «Общий файл цветов Happy».
-   Цвета в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
-   Блок «из Color Studio» — палитра каждого приложения: значения как в Color Studio, руками не править.
+/* Happy — общие цвета и размеры трёх приложений (✱ design tokens).
+   ФАЙЛ СОБРАН ИЗ design-system/tokens.json командой node scripts/build-tokens.mjs. Руками не править: править tokens.json.
+   Цвета и размеры в стилях приложений и общих экранов берутся отсюда по имени, а не вписываются числом.
+   Блок «из Color Studio» — палитра каждого приложения: значения как в Color Studio.
    Тема (Настроить тему) подменяет эти же имена на цвета темы: shared/happy-appearance.js, функция skin().
    Белый и чёрный в тенях и масках остаются числом: от темы они не зависят. */
-
 /* ── из Color Studio: палитра приложения ── */
 :root{
   --happy-base:#00a8f5;
   --happy-accent:#5a50d1;
+  --happy-accent-ink:#0c6fa8;
   --happy-on-accent:#fff;
   --happy-ink:#fff;
   --happy-heading:#fff;
@@ -40,50 +41,50 @@
 :root[data-happy-appearance-app="meal"]{
   --happy-base:#812c4b;
   --happy-accent:#730074;
+  --happy-accent-ink:#84036d;
 }
 :root[data-happy-appearance-app="sport"]{
   --happy-base:#8c75db;
+  --happy-accent-ink:#5a50d1;
   --happy-dock-ink:#6e8396;
 }
-/* Общие экраны (вход, профиль, листы — shared/happy-screens.css): цвета каждого приложения. До лаборатории 21.11.2026 их ставил код happy-screens.js. */
+/* Общие экраны (вход, профиль, листы — shared/happy-screens.css): цвета каждого приложения. */
 :root[data-happy-appearance-app="day"]{
-  --hs-glass:rgba(255,255,255,.16);
-  --hs-primary:#5A50D1;
-  --hs-primary-shadow:0 6px 16px #37309d30;
-  --hs-cancel-ink:#6254cf;
+  --hs-primary:#5a50d1;
   --hs-seg-bg:#edf8ff;
   --hs-seg-ink:#5a50d1;
   --hs-switch-on:#8071df;
-  --hs-sheet-bg:#00A8F5;
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:0 6px 16px #37309d30;
+  --hs-cancel-ink:#6254cf;
+  --hs-sheet-bg:#00a8f5;
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
 }
 :root[data-happy-appearance-app="meal"]{
-  --hs-glass:rgba(255,255,255,.13);
   --hs-primary:#870078;
-  --hs-primary-shadow:none;
-  --hs-cancel-ink:#870078;
   --hs-seg-bg:#efdae3;
   --hs-seg-ink:#84036d;
   --hs-switch-on:#b25191;
-  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');   /* галочка Meal — сливовая (аудит 3) */
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#870078;
   --hs-sheet-bg:linear-gradient(150deg,#973a5b,#612649);
   --hs-toast-bg:rgba(49,20,46,.92);
   --hs-pill-on-ink:#84036d;
-  --happy-accent-ink:#84036d;   /* текст в белых кнопках Meal («Выгрузить отчёт», «Русский») — сливовый, как вкладки, не синий Day (аудит 3, 22.11) */
+  --hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%23b25191" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');
 }
 :root[data-happy-appearance-app="sport"]{
-  --hs-glass:rgba(255,255,255,.16);
   --hs-primary:#6254cf;
-  --hs-primary-shadow:none;
-  --hs-cancel-ink:#6254cf;
   --hs-seg-bg:#edf8ff;
   --hs-seg-ink:#5a50d1;
   --hs-switch-on:#8071df;
+  --hs-glass:rgba(255,255,255,.16);
+  --hs-primary-shadow:none;
+  --hs-cancel-ink:#6254cf;
   --hs-sheet-bg:linear-gradient(165deg,#8c75db 0%,#8275e8 17%,#478bf0 50%,#3989ed 76%,#5a53cc 100%);
   --hs-toast-bg:rgba(49,57,105,.94);
   --hs-pill-on-ink:#5046c3;
-  --happy-accent-ink:#5a50d1;   /* текст в белых кнопках Sport — фиолетовый Sport по имени, не синий числом (решение Астамура 24.11) */
 }
 /* ── конец блока из Color Studio ── */
 
@@ -97,11 +98,263 @@
   --happy-fat:#eda100;
   --happy-carbs:#6250d6;
 }
+
+/* Остальные цвета дизайн-системы. */
+:root{
+  --happy-toast-bg:rgba(12,60,110,.92);
+  --happy-toast-action:#8ef3dd;
+  --happy-sheet-scrim:rgba(0,0,0,.34);
+  --happy-sheet-handle:rgba(255,255,255,.45);
+  --happy-sheet-subtitle:rgba(255,255,255,.7);
+  --happy-sheet-subtitle-login:rgba(255,255,255,.82);
+  --happy-settings-group-heading:rgba(255,255,255,.6);
+  --happy-stepper-line:rgba(255,255,255,.55);
+  --happy-stepper-bg:rgba(255,255,255,.14);
+  --happy-row-divider:rgba(255,255,255,.18);
+  --happy-bubble-bg:rgba(255,255,255,.94);
+  --happy-slider-rail:rgba(255,255,255,.14);
+  --happy-slider-tick:rgba(255,255,255,.3);
+  --happy-day-on-bg:rgba(255,255,255,.92);
+  --happy-danger-soft:#ffd3da;
+  --happy-time-fill-from:rgba(124,227,201,.72);
+  --happy-time-fill-to:rgba(70,253,252,.58);
+  --happy-time-over-from:rgba(255,196,120,.72);
+  --happy-time-over-to:rgba(255,150,120,.62);
+  --happy-time-over-ink:#ffd9a6;
+  --happy-time-limit:rgba(255,255,255,.55);
+  --happy-time-draft-veil:rgba(255,255,255,.22);
+  --happy-time-draft-stripe:rgba(255,255,255,.55);
+  --happy-time-draft-pill-bg:rgba(255,255,255,.95);
+  --happy-drum-band:rgba(255,255,255,.22);
+  --happy-wheel-band:rgba(255,255,255,.22);
+}
+:root[data-happy-appearance-app="day"]{
+  --happy-theme-color:#56b9f7;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+:root[data-happy-appearance-app="meal"]{
+  --happy-theme-color:#a13e65;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+:root[data-happy-appearance-app="sport"]{
+  --happy-theme-color:#8e75e1;
+  --happy-tab-bar-bg:rgba(233,243,253,.92);
+  --happy-field-bg:rgba(255,255,255,.16);
+  --happy-field-line:rgba(255,255,255,.34);
+  --happy-field-placeholder:rgba(255,255,255,.42);
+  --happy-empty-text:rgba(255,255,255,.72);
+  --happy-dashed-line:rgba(255,255,255,.5);
+  --happy-chat-bot-bg:rgba(255,255,255,.16);
+  --happy-chat-mine-bg:rgba(255,255,255,.93);
+  --happy-chat-mine-ink:#0B4F7C;
+  --happy-price-bg:#E7DCE9;
+  --happy-price-ink:#57365E;
+  --happy-mic-hold-scrim:rgba(4,40,80,.32);
+}
+
+/* Размеры, скругления, отступы, тени, размытие, движение и шрифты. */
+:root{
+  /* скругления */
+  --happy-radius-pill:999px;
+  --happy-radius-card:26px;
+  --happy-radius-card-sport:24px;
+  --happy-radius-card-day:22px;
+  --happy-radius-sheet:22px;
+  --happy-radius-theme-tile:24px;
+  --happy-radius-theme-picture:16px;
+  --happy-radius-field:12px;
+  --happy-radius-time-bar:14px;
+  --happy-radius-bubble:12px;
+  --happy-radius-level-row:22px;
+  --happy-radius-chat-bubble:22px;
+  --happy-radius-chat-tail:3px;
+  --happy-radius-chat-composer:28px;
+  --happy-radius-list-row:24px;
+  /* отступы */
+  --happy-space-3:3px;
+  --happy-space-8:8px;
+  --happy-space-10:10px;
+  --happy-space-11:11px;
+  --happy-space-12:12px;
+  --happy-space-15:15px;
+  --happy-space-16:16px;
+  --happy-space-20:20px;
+  --happy-space-sheet-sub:4px;
+  --happy-space-sheet-content:18px;
+  --happy-space-sheet-buttons:10px;
+  --happy-space-sheet-bottom:28px;
+  --happy-space-drum-cols:12px;
+  --happy-space-chat-messages:10px;
+  --happy-space-chat-composer-side:14px;
+  --happy-space-tab-bar-side:14px;
+  --happy-space-chat-bubble-y:11px;
+  --happy-space-chat-bubble-x:15px;
+  --happy-space-list-row-y:15px;
+  --happy-space-list-row-x:18px;
+  /* размеры */
+  --happy-size-button:48px;
+  --happy-size-pill:44px;
+  --happy-size-pill-inner:36px;
+  --happy-size-switch-w:42px;
+  --happy-size-switch-h:25px;
+  --happy-size-switch-knob:19px;
+  --happy-size-mic:60px;
+  --happy-size-mic-icon:26px;
+  --happy-size-drag-icon:28px;
+  --happy-size-sheet-handle-w:42px;
+  --happy-size-sheet-handle-h:5px;
+  --happy-size-sheet-handle-zone:30px;
+  --happy-size-sheet-handle-top:13px;
+  --happy-size-stepper:40px;
+  --happy-size-stepper-side:46px;
+  --happy-size-counter-row:58px;
+  --happy-size-counter-add:52px;
+  --happy-size-time-bar:46px;
+  --happy-size-time-draft-step:14px;
+  --happy-size-time-draft-pill:128px;
+  --happy-size-slider-zone:48px;
+  --happy-size-slider-rail:4px;
+  --happy-size-slider-tick:18px;
+  --happy-size-day-circle:44px;
+  --happy-size-scale-ring:280px;
+  --happy-size-scale-knob:162px;
+  --happy-size-level-row:52px;
+  --happy-size-tag:36px;
+  --happy-size-pocket-w:124px;
+  --happy-size-pocket-h:26px;
+  --happy-size-fold-icon-w:52px;
+  --happy-size-drum-row:44px;
+  --happy-size-wheel-row:44px;
+  --happy-size-tab-bar:66px;
+  --happy-size-tab-icon:21px;
+  --happy-size-field:48px;
+  --happy-size-filter:48px;
+  --happy-size-icon-button:44px;
+  --happy-size-icon:22px;
+  --happy-size-list-row:72px;
+  --happy-size-list-image:52px;
+  --happy-size-avatar:80px;
+  --happy-size-text-button-zone:44px;
+  --happy-size-chat-bubble-max:86%;
+  --happy-size-chat-control:44px;
+  --happy-size-chat-field-max:126px;
+  --happy-size-typing-dot:7px;
+  --happy-size-save-arc-w:132px;
+  --happy-size-save-arc-h:106px;
+  --happy-size-mic-hold-action:52px;
+  --happy-size-swipe-pill:44px;
+  --happy-size-catalog-tile-w:168px;
+  --happy-size-catalog-tile-photo:141px;
+  --happy-size-price-pill:29px;
+  --happy-size-date-pill:36px;
+  --happy-size-nutrient-group:52px;
+  /* тени */
+  --happy-shadow-card:0 2px 3px rgba(4,40,80,.10), 0 14px 30px rgba(4,40,80,.14);
+  --happy-shadow-sheet:0 -16px 48px rgba(0,0,0,.2);
+  --happy-shadow-chat-mine:0 8px 20px rgba(4,40,80,.14);
+  --happy-shadow-chat-composer:0 10px 28px rgba(4,40,80,.26);
+  /* размытие */
+  --happy-blur-glass:12px;
+  --happy-blur-tab-bar:18px;
+  --happy-blur-chat-composer:16px;
+  --happy-blur-mic-hold:2px;
+  /* движение */
+  --happy-motion-switch:.18s;
+  --happy-motion-screen:.22s;
+  --happy-motion-sheet:.42s;
+  --happy-ease-sheet:cubic-bezier(.25,.8,.25,1);
+  --happy-motion-toast:.2s;
+  --happy-motion-theme-open:.24s;
+  --happy-press-scale:.985;
+  --happy-motion-day-bg:26s;
+  --happy-motion-swipe-back:.2s;
+  --happy-swipe-threshold-min:90px;
+  --happy-undo-keep:5s;
+  --happy-motion-time-draft:.9s;
+  /* шрифты */
+  --happy-font-sans:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --happy-type-screen-title-size:28px;
+  --happy-type-screen-title-weight:800;
+  --happy-type-screen-title-line:1.2;
+  --happy-type-screen-title-tracking:-.5px;
+  --happy-type-sheet-title-size:20px;
+  --happy-type-sheet-title-weight:700;
+  --happy-type-sheet-title-line:1.25;
+  --happy-type-sheet-title-tracking:-.25px;
+  --happy-type-section-title-size:16px;
+  --happy-type-section-title-weight:700;
+  --happy-type-section-title-line:1.3;
+  --happy-type-row-size:16px;
+  --happy-type-row-weight:600;
+  --happy-type-row-line:1.5;
+  --happy-type-body-size:16px;
+  --happy-type-body-weight:400;
+  --happy-type-body-line:1.5;
+  --happy-type-small-heading-size:14px;
+  --happy-type-small-heading-weight:700;
+  --happy-type-small-heading-line:1.4;
+  --happy-type-button-size:14px;
+  --happy-type-button-weight:600;
+  --happy-type-button-line:20px;
+  --happy-type-caption-size:14px;
+  --happy-type-caption-weight:400;
+  --happy-type-caption-line:1.5;
+  --happy-type-tab-label-size:12px;
+  --happy-type-tab-label-weight:400;
+  --happy-type-tab-label-line:1.2;
+  --happy-type-login-button-size:16px;
+  --happy-type-login-button-weight:600;
+  --happy-type-login-button-line:20px;
+  --happy-type-sheet-subtitle-size:14px;
+  --happy-type-sheet-subtitle-weight:400;
+  --happy-type-sheet-subtitle-line:1.35;
+  --happy-type-group-heading-size:14px;
+  --happy-type-group-heading-weight:600;
+  --happy-type-group-heading-line:1.4;
+  --happy-type-drum-digit-size:28px;
+  --happy-type-drum-digit-weight:600;
+  --happy-type-drum-digit-line:1;
+  --happy-type-chat-message-size:16px;
+  --happy-type-chat-message-weight:400;
+  --happy-type-chat-message-line:1.42;
+  --happy-type-chat-hint-size:12px;
+  --happy-type-chat-hint-weight:400;
+  --happy-type-chat-hint-line:1.45;
+  --happy-type-field-unit-size:14px;
+  --happy-type-field-unit-weight:400;
+  --happy-type-field-unit-line:1.3;
+  --happy-type-swipe-action-size:14px;
+  --happy-type-swipe-action-weight:700;
+  --happy-type-swipe-action-line:1.2;
+  --happy-type-save-arc-size:16px;
+  --happy-type-save-arc-weight:700;
+  --happy-type-save-arc-line:1;
+}
 /* HAPPY_COLORS_END */</style>
 <link rel="stylesheet" href="./shared/happy-colors.css?v=61-5">
 <style>
-/* Отступ под вырез экрана. Состояние обмена — одна строка под аккаунтом в настройках. */
-.day-sync-bar{flex:0 0 auto;padding:env(safe-area-inset-top,0px) 0 0}
 .happy-settings details.happy-card>summary{cursor:pointer;font-weight:600;line-height:1.5}
 .happy-settings details.happy-card[open]>summary{margin-bottom:12px}
 
@@ -340,9 +593,15 @@ textarea{width:100%;min-height:76px;resize:vertical}
 #tapSheet{max-height:80vh;overflow-y:auto}
 .tpRow{display:flex;align-items:center;gap:12px;padding:8px 0}
 .tpRow + .tpRow{border-top:1px solid rgba(255,255,255,.28)}
-.tpTime{position:relative;display:inline-grid;place-items:center;min-width:86px;height:40px;padding:0 14px;border-radius:12px;
+/* Астамур 25.11.2026: время в листе счётчика — пилюля 44 (исключение из «поле даты 48 / 12») */
+.tpTime{position:relative;display:inline-grid;place-items:center;min-width:96px;height:44px;padding:0 18px;border-radius:999px;
   border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.18);font-size:16px;font-weight:700;
   font-variant-numeric:tabular-nums}
+.tpTitle{min-height:34px;display:flex;align-items:center}
+.tpName{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin:-5px 0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.tpName svg{flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.6}
+.tpNameIn{display:block;width:100%;min-height:44px;margin:-5px 0;padding:0;border:0;border-bottom:1px solid rgba(255,255,255,.55);border-radius:0;outline:0;background:none;
+  color:#fff;caret-color:#fff;font:inherit;font-size:20px;font-weight:700;-webkit-appearance:none;appearance:none}
 .tpTime.tpNo b{color:rgba(255,255,255,.6);font-weight:600}
 .tpTime input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer;
   -webkit-appearance:none;appearance:none;font-size:16px}
@@ -556,7 +815,7 @@ body.loading .app,body.loading .dock{opacity:0}
   stroke-width:2.6;stroke-linecap:round}
 
 /* ══════════ ФУТЕР — НЕ МЕНЯТЬ ══════════ */
-.dock{position:fixed;left:14px;right:14px;bottom:calc(8px + env(safe-area-inset-bottom));
+.dock{position:fixed;left:14px;right:14px;bottom:calc(8px + min(23px,env(safe-area-inset-bottom,0px)));
   height:66px;z-index:10;
   display:grid;grid-template-columns:1fr 1fr var(--gapW,74px) 1fr 1fr;align-items:center}
 .dockBg{position:absolute;inset:0;z-index:0;background:var(--dockBg);
@@ -602,8 +861,8 @@ body.sheet .fab .fabX,body.card-open .fab .fabX{display:block}
 .askRow{display:flex;gap:9px;margin-top:14px}
 .imp{position:fixed;inset:0;z-index:8;pointer-events:none}
 .imp.on{pointer-events:auto}
-/* Фон за листом размыт, как за листами Sport (Астамур 21.11.2026): было лёгкое затемнение без размытия */
-.impScrim{position:absolute;inset:0;background:rgba(6,76,117,.28);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;transition:opacity .3s}
+/* Затемнение за листом — правило дизайн-системы: чёрный 34 % без размытия, 0,22 с (решение 24.11.2026, как у листа «Войди») */
+.impScrim{position:absolute;inset:0;background:var(--happy-sheet-scrim);opacity:0;transition:opacity var(--happy-motion-screen) ease}
 .imp.on .impScrim{opacity:1}
 .impSheet{position:absolute;left:0;right:0;bottom:0;
   padding:22px 20px calc(112px + env(safe-area-inset-bottom));
@@ -628,7 +887,7 @@ body.sheet .fab .fabX,body.card-open .fab .fabX{display:block}
 .ask.card .askBox>.grip{display:flex;margin:0 0 4px}
 body.card-open .dock{z-index:80}
 body.card-open .dock .tab{pointer-events:none}
-.ask.card.on{z-index:75;align-items:flex-end;padding:0 14px var(--card-bottom,78px);background:rgba(4,40,80,.30)}
+.ask.card.on{z-index:75;align-items:flex-end;padding:0 14px var(--card-bottom,78px);background:var(--happy-sheet-scrim);-webkit-backdrop-filter:none;backdrop-filter:none}
 .ask.card .askBox{max-width:none;border-radius:26px;padding:6px 18px 26px}
 .ask.card .askBox h3{font-size:20px;font-weight:700;margin:4px 0 14px}
 .ask.card .askRow{display:none}
@@ -812,7 +1071,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 /* аудит 20.11.2026, п. 17: выбор иконки и редактор шкалы — листы снизу: ручка сверху, углы 22, затемнение позади */
 .icLayer{position:fixed;inset:0;z-index:80;visibility:hidden;transition:visibility 0s .38s}
 .icLayer.on{visibility:visible;transition:none}
-.icScrim{position:absolute;inset:0;background:rgba(6,76,117,.28);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;transition:opacity .3s}
+.icScrim{position:absolute;inset:0;background:var(--happy-sheet-scrim);opacity:0;transition:opacity var(--happy-motion-screen) ease}
 .icLayer.on .icScrim{opacity:1}
 .icSheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 40px - env(safe-area-inset-top));display:flex;flex-direction:column;
   padding-top:6px;border-radius:22px 22px 0 0;border-top:1px solid rgba(255,255,255,.55);
@@ -1052,7 +1311,7 @@ a.btn{display:inline-block;text-decoration:none}
 .happy-note{font-family:inherit;font-size:14px;line-height:1.65;color:var(--happy-muted,rgba(255,255,255,.82));margin:12px 0 0}
 .happy-note:empty{display:none}
 .happy-error{color:#ffe3bf}
-.happy-input{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;border:1px solid var(--happy-line,rgba(255,255,255,.36));background:rgba(255,255,255,.14);color:var(--happy-ink);border-radius:12px;padding:11px 12px;font-family:inherit;font-size:16px;font-weight:400;line-height:22px;min-height:46px;-webkit-appearance:none;appearance:none}
+.happy-input{display:block;width:100%;box-sizing:border-box;margin:0 0 8px;border:1px solid var(--happy-line,rgba(255,255,255,.34));background:rgba(255,255,255,.16);color:var(--happy-ink);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:16px;font-weight:400;line-height:22px;min-height:48px;-webkit-appearance:none;appearance:none}
 .happy-input::placeholder{color:rgba(255,255,255,.62);opacity:1}
 .happy-password{position:relative;margin-bottom:8px}
 .happy-password .happy-input{margin-bottom:0;padding-right:48px!important}
@@ -1078,7 +1337,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 </style>
 <link rel="stylesheet" href="./shared/food-counters.css?v=2">
 <link rel="stylesheet" href="./energy-widget.css?v=50.14">
-<link rel="stylesheet" href="./selfcare.css?v=61.17">
+<link rel="stylesheet" href="./selfcare.css?v=61.24">
 <link rel="stylesheet" href="./arc-motion.css?v=61">
 <script defer src="./arc-motion.js?v=61.6"></script>
 <script defer src="./arc-home.js?v=61"></script>
@@ -1121,13 +1380,13 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 #happy-appearance-dialog #happy-appearance-help,#happy-appearance-dialog legend{background:var(--ha-glass);padding:8px 10px;border-radius:10px}
 </style>
 <link rel="stylesheet" href="./shared/happy-measurements.css?v=61">
-<link rel="stylesheet" href="./shared/happy-screens.css?v=61.6">
+<link rel="stylesheet" href="./shared/happy-screens.css?v=61.24">
 <link rel="stylesheet" href="./shared/happy-privacy.css?v=61.6">
 <!-- Аудит Day 20.11.2026: общие поля, общие правила оформления общих экранов и последний слой правил Day -->
 <link rel="stylesheet" href="./shared/happy-fields.css?v=61">
 <link rel="stylesheet" href="./shared/happy-drum.css?v=61">
 <link rel="stylesheet" href="./shared/happy-period.css?v=61">
-<link rel="stylesheet" href="./day-periods.css?v=61.17">
+<link rel="stylesheet" href="./day-periods.css?v=61.24">
 <link rel="stylesheet" href="./shared/happy-design.css?v=61">
 <link rel="stylesheet" href="./shared/happy-theme-picker.css?v=61">
 <link rel="stylesheet" href="./design-rules.css?v=61">
@@ -1152,7 +1411,6 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 </div>
 
 <div class="app">
-<div class="day-sync-bar"></div>
 <aside id="day-auth-pause" hidden style="padding:12px;background:#fff0d5;color:#4d3000"><b>Вход изменился в другой вкладке. Эта копия приостановлена.</b><p>Экран и незавершённый текст оставлены на месте. Сначала сохрани или скопируй текст из редактора. JSON включает только уже записанные данные. В другой аккаунт ничего не переносится.</p><label><input type="checkbox" id="day-auth-restart-ready"> Я сохранил или скопировал незавершённый текст</label><button type="button" id="day-auth-restart" disabled>Перезапустить с новым входом</button></aside>
 
 
@@ -1378,7 +1636,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="61.17" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="61.24" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 60</div><small>Обновлено 14.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
@@ -1395,7 +1653,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
   <span class="gap"></span>
   <button class="tab" data-go="links"><svg viewBox="0 0 24 24"><g transform="translate(12 12) scale(1.05) translate(-11.6 -12.7)" stroke-width="1.81"><path d="M5.6 17.5c1.9-.3 3.8-1.7 5.3-4.4 1.6-2.4 1.4-6.3-1.3-6.6-2.6-.3-3.4 3.3-1.3 6.2 2 2.8 4.5 4.3 7.6 4.7"/><circle cx="3.6" cy="17.6" r="1.9" fill="currentColor"/><circle cx="19.6" cy="17.6" r="1.9" fill="currentColor"/></g></svg><span>Связи</span></button>
   <button class="tab" data-go="settings"><svg viewBox="0 0 24 24" stroke-linejoin="round"><path d="M18.5 9.5L21.5 9.6L21.5 14.4L18.5 14.5L18.4 14.8L20.4 17.0L17.0 20.4L14.8 18.4L14.5 18.5L14.4 21.5L9.6 21.5L9.5 18.5L9.2 18.4L7.0 20.4L3.6 17.0L5.6 14.8L5.5 14.5L2.5 14.4L2.5 9.6L5.5 9.5L5.6 9.2L3.6 7.0L7.0 3.6L9.2 5.6L9.5 5.5L9.6 2.5L14.4 2.5L14.5 5.5L14.8 5.6L17.0 3.6L20.4 7.0L18.4 9.2Z"/><circle cx="12" cy="12" r="3.3"/></svg><span>Настройки</span></button>
-  <button class="fab" id="fab" aria-label="Отметить самочувствие голосом"><svg class="fabMic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg><svg class="fabX" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></button>
+  <button class="fab" id="fab" aria-label="Отметить самочувствие голосом"><svg class="fabMic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 10.5v1a6.5 6.5 0 0 0 13 0v-1M12 18v3.5"/></svg><svg class="fabX" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
 
 <div class="imp" id="impWrap">
@@ -1485,7 +1743,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <div class="toast" id="toast"></div>
 
 <!-- Day 59: общий вход, общий модуль хранения и обмена, общие файлы витрины; затем запуск и раскладка Day. -->
-<script src="./shared/happy-account.js?v=61-5"></script>
+<script src="./shared/happy-account.js?v=61.24"></script>
 <script src="./shared/happy-input.js?v=61"></script>
 <script src="./shared/happy-fields.js?v=61"></script>
 <!-- барабан времени и длительности — общий кусок Day и Sport (21.11.2026) -->
@@ -1493,29 +1751,30 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <!-- выбор периода журнала — общий кусок Day, Meal и Sport, как в Meal (21.11.2026) -->
 <script src="./shared/happy-period.js?v=61"></script>
 <script src="./shared/happy-scroll-lock.js?v=61"></script>
+<script src="./shared/happy-select.js?v=61.24"></script>
 <script src="./shared/happy-store.js?v=61-5"></script>
 <script src="./shared/happy-app-links.js?v=61"></script>
 <script src="./shared/happy-sport-summary.js?v=61"></script>
-<script src="./shared/happy-food.js?v=61.17"></script>
+<script src="./shared/happy-food.js?v=61.24"></script>
 <script src="./shared/happy-measurements.js?v=61"></script>
 <script src="./shared/happy-screens.js?v=61"></script>
 <script src="./shared/happy-privacy.js?v=61.6"></script>
-<script src="./shared/happy-welcome.js?v=61.6"></script>
-<script src="./shared/happy-person.js?v=61-6"></script>
+<script src="./shared/happy-welcome.js?v=61.24"></script>
+<script src="./shared/happy-person.js?v=61.24"></script>
 <script src="./shared/happy-goals.js?v=61"></script>
 <script src="./day-docs.js?v=61"></script>
 <script src="./day-data.js?v=61"></script>
-<script src="./day-account.js?v=61.17"></script>
+<script src="./day-account.js?v=61.24"></script>
 
-<script src="counters.js?v=61.17"></script>
-<script src="./arc-knob.js?v=61.17"></script>
-<script src="./day-periods.js?v=61.17"></script>
-<script src="./day-marks.js?v=61.17"></script>
+<script src="counters.js?v=61.24"></script>
+<script src="./arc-knob.js?v=61.24"></script>
+<script src="./day-periods.js?v=61.24"></script>
+<script src="./day-marks.js?v=61.24"></script>
 <script src="tap-swipe.js?v=61"></script>
 <script src="row-swipe.js?v=61"></script>
 <script src="sheet-grip.js?v=61"></script>
 <script src="sheet-fold.js?v=61.7"></script>
-<script src="./selfcare-core.js?v=61.17"></script>
+<script src="./selfcare-core.js?v=61.24"></script>
 <style id="day-app-links">/* Day 58 (Астамур 12.11 11:50): соседние приложения — стопкой под аккаунтом: название открывает приложение, свитч — связь */
 .happy-app-links-section{margin-top:12px}.happy-app-links{padding:4px 16px!important}
 .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:54px}
@@ -1523,9 +1782,9 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 .happy-app-name{flex:1;color:inherit;font-size:16px;font-weight:600;text-decoration:none;padding:14px 0}
 .happy-app-link.is-off .happy-app-name{opacity:.6}</style>
 <style id="day-59">/* Day 59: без входа — предложение войти; вкладки «Журнал · Замеры тела»; общий экран замеров в цветах Day */
-.day-signin{display:none;position:fixed;z-index:9;left:20px;right:20px;bottom:calc(96px + env(safe-area-inset-bottom));max-width:440px;margin:0 auto;height:48px;padding:0 6px 0 20px;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--fab);border:0;box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
+.day-signin{display:none;position:fixed;z-index:9;left:20px;right:20px;bottom:calc(96px + min(23px,env(safe-area-inset-bottom,0px)));max-width:440px;margin:0 auto;height:48px;padding:0 6px 0 20px;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--fab);border:0;box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);color:var(--happy-ink);font-size:14px;font-weight:600;line-height:1.2}
 [data-screen="day"].on~.day-signin:not([hidden]){display:flex}
-.day-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.day-signin button{flex:none;height:36px;padding:0 18px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--fab);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
 .happy-measurement-tabs{display:flex;gap:4px;padding:4px;border:1px solid #ffffff60;background:#ffffff16;border-radius:24px;margin:8px 0 20px}
 .happy-measurement-tabs button{flex:1;border:0;background:transparent;color:inherit;font:inherit;font-size:14px;padding:10px 8px;border-radius:20px;cursor:pointer}
 .happy-measurement-tabs button[aria-pressed=true]{background:#fffffff0;color:var(--hs-seg-ink,#5c4598);font-weight:600}
@@ -1537,13 +1796,13 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-energy-ring.js?v=61.6"></script>
 <script src="./energy-widget.js?v=61.6"></script>
 <script src="./shared/release-notes.js?v=61"></script>
-<script src="./release-notes.js?v=61.17"></script>
+<script src="./release-notes.js?v=61.24"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
-<script src="./shared/happy-sample.js?v=61.17"></script>
-<script src="./day-sample.js?v=61.17"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.17')}catch(e){}</script>
-<script src="./selfcare-ui.js?v=61.17"></script>
+<script src="./shared/happy-sample.js?v=61.24"></script>
+<script src="./day-sample.js?v=61.24"></script>
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 61.24')}catch(e){}</script>
+<script src="./selfcare-ui.js?v=61.24"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════
    Day 59: дневник хранится и обменивается только через общий модуль (shared/happy-store.js; запуск и запись —
@@ -2398,7 +2657,7 @@ function tapDef(k){ return DB.taps.filter(function(c){return c.k===k})[0] }
 function tapTotal(e,k){ var a=((e&&e.taps)||{})[k]; return a?a.reduce(function(s,x){return s+(x.n||1)},0):0 }
 function tapsHTML(e){
   return '<div class="card tpSec"><h2 class="tpT">Счётчики</h2>'+DB.taps.filter(function(c){ return !(c.mealCounterId&&typeof DayAppLinks!=='undefined'&&!DayAppLinks.on('meal')) }).map(function(c){   // Day 58: связь с Meal выключена — его счётчиков нет
-    var n=tapTotal(e,c.k), st=c.step||1;
+    var n=tapTotal(e,c.k), st=1;   // Астамур 25.11.2026: прибавляем всегда по одному, шаг не настраивается
     return '<div class="tpItem"><button class="tpNm" data-tlist="'+escH(c.k)+'" aria-label="'+escH(c.t)+': нажатия за день">'+escH(c.t)+'</button>'+
       '<div class="tpStp"><button data-tminus="'+escH(c.k)+'" aria-label="Снять последнее нажатие">−</button>'+
       '<span class="v'+(n?'':' tpZero')+'">'+n+'</span>'+
@@ -2409,7 +2668,7 @@ function tapAdd(k){
   if(lockGuard()) return;
   var c=tapDef(k); if(!c) return;
   var e=day(curDate); if(!e.taps) e.taps={}; if(!e.taps[k]) e.taps[k]=[];
-  var now=curDate===todayISO(), rec={t:now?nowHM():null, n:c.step||1};
+  var now=curDate===todayISO(), rec={t:now?nowHM():null, n:1};
   e.taps[k].push(rec);
   save(); renderDay(); renderTapSheet();
   toast(c.t+' +'+rec.n+(now?' в '+rec.t:', без времени'));
@@ -2441,16 +2700,31 @@ document.getElementById('tapBox').addEventListener('click',function(ev){
 });
 
 /* список нажатий за день — шторка снизу, как у загрузки отчётов */
-var TAPK=null;
+var TAPK=null, TAPREN=false;   /* TAPREN: название открыто для правки (Астамур 25.11.2026: переименовать — тапом по названию, без второго экрана) */
 function openTaps(k){
   TAPK=k; renderTapSheet();
   document.getElementById('tapWrap').classList.add('on');
   document.body.classList.add('sheet');
 }
 function closeTaps(){
-  TAPK=null;
+  if(TAPREN) tapRenameDone();
+  TAPK=null; TAPREN=false;
   document.getElementById('tapWrap').classList.remove('on');
   document.body.classList.remove('sheet');
+}
+/* новое название: Enter, уход из поля или закрытие листа — записано; пустое или занятое — остаётся прежнее */
+function tapNameBtn(c){
+  return '<button type="button" class="tpName" data-tren aria-label="Переименовать: '+escH(c.t)+'">'+escH(c.t)+
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4"/></svg></button>';
+}
+function tapRenameDone(){
+  var f=document.querySelector('#tapSheet .tpNameIn'); TAPREN=false;
+  var c=TAPK&&tapDef(TAPK); if(!f||!c) return;
+  var t=f.value.trim(), i=DB.taps.indexOf(c);
+  if(t&&t!==c.t){
+    if(nameTaken(DB.taps,t,i)) dupWarn(t);
+    else{ c.t=t; save(); renderDay(); try{ renderLinks() }catch(_){} }
+  }
 }
 function renderTapSheet(){
   if(!TAPK) return;
@@ -2464,8 +2738,9 @@ function renderTapSheet(){
   });
   /* аудит 20.11.2026: сверху ручка (п. 14, 16); лишнее снимается свайпом влево, кружка «−» нет (п. 27) */
   var h='<div class="grip imp-grip" role="button" tabindex="0" aria-label="Закрыть"><i></i></div>'+
-    '<h3>'+escH(c.t)+'</h3><p class="note" style="margin:-10px 0 10px;color:rgba(255,255,255,.85)">'+ruDate(curDate)+(n?', всего '+n:'')+
-    (lock?'. День закрыт.':'. Время можно поправить, лишнее — смахнуть влево.')+'</p>';
+    (TAPREN&&!lock?'<h3 class="tpTitle"><input class="tpNameIn" value="'+escH(c.t)+'" maxlength="40" autocomplete="off" enterkeyhint="done" aria-label="Название счётчика"></h3>':
+     '<h3 class="tpTitle">'+(lock?escH(c.t):tapNameBtn(c))+'</h3>')+   /* Астамур 25.11.2026: без строки-пояснения под названием; остаётся только «День закрыт» */
+    (lock?'<p class="note" style="margin:-10px 0 10px;color:rgba(255,255,255,.85)">День закрыт.</p>':'');
   h+=a.length?a.map(function(o){
     return '<div class="tpRow swRow"><span class="tpTime'+(o.x.t?'':' tpNo')+'"><b>'+(o.x.t||'—:—')+'</b>'+
       '<input type="time" value="'+(o.x.t||'')+'" data-tedit="'+o.i+'"'+(lock?' disabled':'')+' aria-label="Время нажатия"></span>'+
@@ -2483,6 +2758,8 @@ function renderTapSheet(){
     var inp=ev.target.closest('input[type=time]');
     if(inp){ if(!inp.disabled&&inp.showPicker) try{inp.showPicker()}catch(_){} return }
     var b=ev.target.closest('button'); if(!b) return;
+    if(b.hasAttribute('data-tren')){ if(lockGuard()) return; TAPREN=true; renderTapSheet();
+      var f=sh.querySelector('.tpNameIn'); if(f){ try{ f.focus({preventScroll:true}); f.setSelectionRange(f.value.length,f.value.length) }catch(_){} } return }
     if(b.hasAttribute('data-tclose')) closeTaps();
     else if(b.dataset.tdel!=null){
       if(lockGuard()) return;
@@ -2495,6 +2772,17 @@ function renderTapSheet(){
         list.splice(Math.min(j,list.length),0,rec); save(); renderDay(); renderTapSheet();
       },'Вернуть',5000);
     }
+  });
+  sh.addEventListener('keydown',function(ev){
+    if(ev.key==='Enter'&&ev.target.classList.contains('tpNameIn')){ ev.preventDefault(); ev.target.blur() }
+    else if(ev.key==='Escape'&&ev.target.classList.contains('tpNameIn')){ var c=tapDef(TAPK); if(c) ev.target.value=c.t; ev.target.blur() }
+  });
+  sh.addEventListener('focusout',function(ev){
+    if(!ev.target.classList.contains('tpNameIn')||!TAPREN) return;
+    tapRenameDone();
+    /* меняем только заголовок: полная перерисовка листа съела бы нажатие на «Готово», которое и увело фокус */
+    var c=TAPK&&tapDef(TAPK), h=ev.target.closest('.tpTitle'); if(!c||!h) return;
+    h.innerHTML=tapNameBtn(c);
   });
   sh.addEventListener('change',function(ev){
     var t=ev.target; if(t.dataset.tedit==null) return;
@@ -3682,7 +3970,7 @@ function jrSet(st){
   else { if(st.per==='today') JR_DAY=st.a||todayISO(); JR_PER=st.per }
   renderTrends();
 }
-/* лист «Свой период» — как в Sport (Астамур 21.11.2026): ручка, размытый фон, лист поверх нижней панели; закрыть — жестом вниз, ручкой или мимо */
+/* лист «Свой период» — как в Sport (Астамур 21.11.2026): ручка, затемнение 34 % по правилу (25.11.2026), лист поверх нижней панели; закрыть — жестом вниз, ручкой или мимо */
 function jrSheet(title,html){
   var w=document.getElementById('jrPerWrap');
   if(!w){

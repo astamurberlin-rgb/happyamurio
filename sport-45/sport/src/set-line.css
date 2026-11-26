@@ -45,9 +45,6 @@
 /* Пункт 6 (Астамур 15.11.2026): стрелка сразу после названия упражнения — нажал на название, упражнение свернулось.
    Развёрнуто — стрелка вниз, свёрнуто — вправо. Под названием ничего не подписываем. */
 .active-workout .exercise-name-info .exercise-collapse{display:block;width:auto;text-align:left}
-.collapse-chevron{display:inline-block;margin-left:6px;vertical-align:-1px;color:#ffffffa6;line-height:0}
-.collapse-chevron .icon{width:17px;height:17px;transform:rotate(90deg);transition:transform .15s}
-.is-collapsed .collapse-chevron .icon{transform:none}
 
 /* Пункт 2 (Астамур 15.11.2026): шапка тренировки не закреплена — при прокрутке уезжает. Докрутил до конца страницы —
    шапка опускается сверху и снова видна, с «Завершить». Место шапки в ленте держится, чтобы страница не прыгала. */

@@ -97,7 +97,8 @@ with sync_playwright() as p:
     assert sibling.evaluate("() => HappyPerson.data().profile.heightCm === 181")
     sibling.close()
     l.click(".tab[data-go=settings]")
-    connect = l.locator("[data-hp=access]")
+    l.click("[data-hp=profile]")
+    connect = l.locator("[data-p=google]")
     check("настройки прежнего профиля предлагают подключить Google", connect.is_visible() and "Google" in connect.inner_text())
     connect.click()
     confirm = l.locator("[data-hw=migrate-google]")
@@ -109,10 +110,12 @@ with sync_playwright() as p:
     check("отказ от подключения Google оставил прежний аккаунт разблокированным",
           l.evaluate("() => DayData.signedIn() && DayData.account.current().keyVersion === 1")
           and LEGACY not in fixture.keys and not fixture.link_requests)
+    l.click("[data-page=profile] [data-hs=cancel]")
     fixture.offline.add("old")
     note(l, "Не успела уйти в облако")
     l.wait_for_function("() => DayData.store.status().state === 'offline'")
     l.click(".tab[data-go=settings]")
+    l.click("[data-hp=profile]")
     connect.click()
     fixture.fail_after = 1
     fixture.offline.clear()
@@ -125,8 +128,11 @@ with sync_playwright() as p:
     l.reload()
     signed_in(l, "day", LEGACY)
     check("перезапуск завершил добровольный переход", wait_for(l, lambda: fixture.states[LEGACY] == "active", 18, 200))
+    assert not fixture.link_requests
+    l.fill("[name=linkPassword]", PW)
+    l.click("[data-hw=link-google]")
     l.wait_for_function("() => window.DayData && DayData.signedIn() && DayData.account.current().keyVersion === 2 && DayData.account.current().google")
-    check("после перезапуска перенос сам продолжился выбором Google для прежнего ID",
+    check("после перезапуска перенос продолжился подтверждением пароля и выбором Google для прежнего ID",
           fixture.link_requests == [("old", LEGACY)] and l.evaluate("() => DayData.account.current().uid") == LEGACY)
     flush(l)
     check("на устройстве перешифрованы записи владельца", sealed(l, LEGACY, "Не успела уйти"))
@@ -145,7 +151,7 @@ with sync_playwright() as p:
     c = page_for(clean, "day")
     google(c, "day", LEGACY)
     check("на чистом телефоне Google открыл старый профиль и несинхронизированную запись без пароля",
-          fixture.password_logins == 3 and c.evaluate("() => HappyPerson.data().profile.heightCm") == 181
+          fixture.password_logins == 4 and c.evaluate("() => HappyPerson.data().profile.heightCm") == 181
           and note(c) == "Не успела уйти в облако")
     c.click(".tab[data-go=settings]")
     sign_out_settings(c)
@@ -159,6 +165,7 @@ with sync_playwright() as p:
     reg.fill("#happy-screens [name=email]", fixture.user(NEW_EMAIL)["email"])
     reg.fill("#happy-screens [name=password]", PW)
     reg.fill("#happy-screens [name=repeat]", PW)
+    reg.check("[name=privacyConsent]")
     reg.click("[data-hw=register]")
     reg.get_by_role("heading", name="Проверь почту").wait_for()
     assert reg.get_by_text("ждать письма не нужно", exact=False).is_visible() and reg.get_by_role("button", name="Войти", exact=True).is_enabled()
@@ -170,8 +177,9 @@ with sync_playwright() as p:
           fixture.registered and reg.evaluate("() => DayData.account.current().keyVersion") == 2
           and fixture.keys[NEW_EMAIL] not in (fixture.keys[ALICE], fixture.keys[LEGACY]))
     reg.click('.tab[data-go=settings]')
+    reg.click('[data-hp=profile]')
     check('профилю по почте доступно подключение Google',
-          reg.get_by_role('button', name='Подключить вход через Google', exact=True).is_visible())
+          reg.get_by_role('button', name='Привязать к Google', exact=True).is_visible())
     # Google автоматически привязан к прежнему профилю. На чистом устройстве нет ключа,
     # а Auth больше не принимает его старый пароль. Он нужен только Web Crypto на устройстве.
     clean_legacy = fixture.browser(recovery_browser, "clean-legacy", OTHER_LEGACY)

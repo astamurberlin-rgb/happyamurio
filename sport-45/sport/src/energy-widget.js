@@ -1,6 +1,12 @@
 /* Shared energy widget. Renderer derived from the supplied variant 6. */
 (function(){
-const meal=typeof SEED==='undefined';let mode=meal?'eat':'spent';
+const meal=typeof SEED==='undefined';
+/* 25.11.2026 (Астамур): выбранный вид хранится в аккаунте — поле energyView дневника (документ prefs общего модуля), на всех
+   устройствах одинаково; переключил — остаётся, пока сам не поменяешь; не выбран — «потрачено».
+   Без входа записей нет: вид меняется только до закрытия страницы, без просьбы войти. */
+const MODES=['eat','balance','spent'];let guest=null,mode=meal?'eat':'spent';
+function current(){const v=guest||(typeof state!=='undefined'&&state?state.energyView:null);return MODES.includes(v)?v:(meal?'eat':'spent')}
+function signedIn(){try{return !!(SportBoot.store&&!SportBoot.store.closed)}catch(e){return false}}
 var SWEEP=296,KR=92,uid=0,S={scale:3000,bal:false,knob:mode};
 /* цвета кольца и строк по теме (shared/happy-energy-ring.js): у темы свой набор — берём его, нет — исходные цвета */
 function pal(){return typeof HappyEnergyRing!=='undefined'?HappyEnergyRing.palette():null}
@@ -117,7 +123,7 @@ let config=config0;
     var kpos = 'left:' + pc(50 - vb[0], vb[2]) + ';top:' + pc(50 - vb[1], vb[3]) + ';width:' + pc(140, vb[2]) + ';height:' + pc(140, vb[3]);
     var apos = 'left:' + pc(20 - vb[0], vb[2]) + ';top:' + pc(20 - vb[1], vb[3]) + ';width:' + pc(200, vb[2]) + ';height:' + pc(200, vb[3]);
     var cap = S.bal ? 'баланс' : (S.knob === 'eat' ? 'съедено' : 'потрачено');
-    var knob = '<div class="he-knob' + (big.length >= 5 ? ' long' : '') + '" style="' + kpos + '"><b>' + big + '</b><small>' + cap + '</small></div>';
+    var knob = '<div class="he-knob" style="' + kpos + '"><b>' + big + '</b><small>' + cap + '</small></div>';
     return '<svg viewBox="' + vb.join(' ') + '"' + (label ? ' role="img" aria-label="' + label + '"' : ' aria-hidden="true"') + '>' +
       '<g transform="rotate(122 120 120)">' + arc(KR, 16, SWEEP, 'none', 0, 'style="stroke:' + (S.trk || 'var(--trk)') + '"') + '</g></svg>' +
       (body ? '<div class="he-arcs" aria-hidden="true" style="' + apos + '">' + body + '</div>' : '') + knob;
@@ -130,19 +136,28 @@ let config=config0;
    с расчётом энергии тренировок); поля в виджете уже есть. */
 function date(){return selectedDate}
 function nutrition(){try{return typeof SportFood!=='undefined'?SportFood.eaten(date()):null}catch(e){return null}}
-function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());return {food,eaten:food?food.k:null,spent:null,rest:null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:null}}
+/* 25.11.2026 (Астамур): покой, шаги, «потрачено» и цели строк (покой, тренировки, шаги, время) потом будут приходить
+   из HealthKit / Google Health Connect. Вход для них уже есть: globalThis.HappyHealth.day(дата) → {spent, rest, steps,
+   goals:{rest, training, steps, minutes}}. Пока его нет — строки показывают только число; есть цель — «число/цель» и полоску. */
+function health(){try{const h=globalThis.HappyHealth&&HappyHealth.day(date());return h&&typeof h==='object'?h:null}catch(e){return null}}
+function facts(){const food=nutrition(),workouts=state.workouts.filter(w=>!w.demo&&w.start?.slice(0,10)===date());const H=health()||{};
+return {goals:H.goals||{},food,eaten:food?food.k:null,spent:H.spent??null,rest:H.rest??null,training:workouts.length&&workouts.every(w=>Number.isFinite(w.energyKcal))?workouts.reduce((n,w)=>n+w.energyKcal,0):null,minutes:workouts.reduce((n,w)=>n+Math.max(0,w.duration||0)/60,0),steps:H.steps??null}}
 function number(v){return v==null?'—':Math.round(v).toLocaleString('ru-RU')}
 const hues0={pink:350,violet:305,blue:262,teal:180};
 const BARS0={hues:hues0,chroma:.12,dot:.8,from:.86,to:.72,over:.56,track:22};let bars=BARS0;
-function metricRow(color,name,value,unit,goal,progress){const B=bars,h=B.hues[color],tone=(l)=>lchHex(l,B.chroma,h*Math.PI/180);const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?number(value)+(g?'/'+number(g):'')+(unit?' '+unit:''):'—';return `<div class="he-metric"><i class="he-dot" style="background:${tone(B.dot)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"${B===BARS0?'':` style="background:rgba(255,255,255,${B.track/100})"`}><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(B.from)},${tone(B.to-(B.to-B.over)*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
-function widget(){const f=facts(),g=f.food?.g||{};{const P=pal();config=P?Object.assign({},config0,{eat:P.eat,spent:P.spent}):config0;bars=P?P.bars:BARS0;S.trk=P?'rgba(255,255,255,'+P.track/100+')':''}S.bal=mode==='balance';S.knob=mode==='balance'?(meal?'eat':'spent'):mode;const missing=mode==='balance'?(f.eaten==null||f.spent==null):f[mode==='eat'?'eaten':'spent']==null;let svg=ringSvg(config,f.eaten||0,f.spent||0,1.5,'Кольцо энергии');if(missing)svg=svg.replace(/<b>[^<]*<\/b>/,'<b>—</b>');let rows='';if(mode==='eat')rows=metricRow('pink','Белки',f.food?.p,'г',g.p)+metricRow('violet','Жиры',f.food?.f,'г',g.f)+metricRow('blue','Углеводы',f.food?.c,'г',g.c)+metricRow('teal','Клетчатка',f.food?.fib,'г',g.fib);else if(mode==='spent')rows=metricRow('violet','Покой',f.rest,'ккал')+metricRow('pink','Тренировки',f.training,'ккал')+metricRow('blue','Шаги',f.steps,'')+metricRow('teal','Время',f.minutes,'мин');else{const d=f.eaten!=null&&f.spent!=null?f.eaten-f.spent:null;rows=metricRow('teal',d!=null&&d>0?'Сжечь':'Запас',d==null?null:Math.abs(d),'ккал')+metricRow('blue','Шаги до цели',null,'')+metricRow('violet','Ходьба',null,'мин')+metricRow('pink','Белка до цели',Number(g.p)>0&&f.food?.p!=null?Math.max(0,Number(g.p)-f.food.p):null,'г')}
+function rowHTML(color,name,label,ratio){const B=bars,h=B.hues[color],tone=(l)=>lchHex(l,B.chroma,h*Math.PI/180);return `<div class="he-metric"><i class="he-dot" style="background:${tone(B.dot)}"></i><span>${name}</span><b>${label}</b><span class="he-bar"${B===BARS0?'':` style="background:rgba(255,255,255,${B.track/100})"`}><i style="width:${ratio==null?0:Math.min(1,ratio)*100}%;background:linear-gradient(90deg,${tone(B.from)},${tone(B.to-(B.to-B.over)*clamp(((ratio||0)-.85)/.35,0,1))})"></i></span></div>`}
+/* 25.11.2026 (Астамур: «как в образце»): строки как в эталоне «Общий» студии градиентов — «значение/цель», без «ккал» в строках
+   «потрачено» (ккал уже в кольце), шаги от 10 000 — «11к/10к»; нет цели — только число и пустая полоска. */
+function kNum(v){return v>=10000?(Math.round(v/100)/10).toLocaleString('ru-RU')+'к':number(v)}
+function metricRow(color,name,value,unit,goal,fmt){const valid=Number.isFinite(value),g=Number(goal)>0?Number(goal):null;const f=fmt||number;const ratio=valid&&g?Math.max(0,value/g):null;const label=valid?f(value)+(g?'/'+f(g):'')+(unit?' '+unit:''):'—';return rowHTML(color,name,label,ratio)}
+function widget(){mode=current();const f=facts(),g=f.food?.g||{};S.scale=Number(g.k)>0?Number(g.k)/0.75:3000;{const P=pal();config=P?Object.assign({},config0,{eat:P.eat,spent:P.spent}):config0;bars=P?P.bars:BARS0;S.trk=P?'rgba(255,255,255,'+P.track/100+')':''}S.bal=mode==='balance';S.knob=mode==='balance'?(meal?'eat':'spent'):mode;const missing=mode==='balance'?(f.eaten==null||f.spent==null):f[mode==='eat'?'eaten':'spent']==null;let svg=ringSvg(config,f.eaten||0,f.spent||0,1.5,'Кольцо энергии');if(missing)svg=svg.replace(/<b>[^<]*<\/b>/,'<b>—</b>');let rows='';if(mode==='eat')rows=metricRow('pink','Белки',f.food?.p,'г',g.p)+metricRow('violet','Жиры',f.food?.f,'г',g.f)+metricRow('blue','Углеводы',f.food?.c,'г',g.c)+metricRow('teal','Клетчатка',f.food?.fib,'г',g.fib);else if(mode==='spent')rows=metricRow('violet','Покой',f.rest,'',f.goals?.rest)+metricRow('pink','Тренировки',f.training,'',f.goals?.training)+metricRow('blue','Шаги',f.steps,'',f.goals?.steps,kNum)+metricRow('teal','Время',f.minutes,'мин',f.goals?.minutes);else{const d=f.eaten!=null&&f.spent!=null?f.eaten-f.spent:null,st=Number.isFinite(f.steps)?f.steps:null,gs=Number(f.goals?.steps)>0?Number(f.goals.steps):0,p=f.food?.p,gp=Number(g.p)>0?Number(g.p):0,wk=st==null?0:st/100+Math.max(0,d||0)/5;rows=rowHTML('teal',d!=null&&d>=0?'Сжечь':'Запас',d==null?'—':number(Math.abs(d))+' ккал',d==null?null:Math.max(f.eaten,f.spent)>0?Math.min(f.eaten,f.spent)/Math.max(f.eaten,f.spent):0)+rowHTML('blue','Шаги до цели',st==null||!gs?'—':st>=gs?'есть':number(gs-st),st!=null&&gs?st/gs:null)+rowHTML('violet','Ходьба',d==null?'—':d>0?'+'+Math.round(d/5)+' мин':'не нужно',d!=null&&st!=null&&wk>0?(st/100)/wk:null)+rowHTML('pink','Белка до цели',!gp||p==null?'—':p>=gp?'есть':number(gp-p)+' г',gp&&p!=null?p/gp:null)}
 return '<div class="he-layout"><div class="he-plate">'+svg+'<button type="button" class="he-center" data-energy-cycle aria-label="Сменить режим энергии. Сейчас: '+(mode==='eat'?'съедено':mode==='spent'?'потрачено':'баланс')+'"></button></div><div class="he-info">'+rows+'</div></div>'}
 function paint(){const el=document.getElementById('happy-energy');if(el){el.classList.add('happy-energy');el.innerHTML=widget()}}
 function refresh(){paint()}
 {const original=renderDiary;renderDiary=function(){const root=document.createElement('div');root.innerHTML=original();const old=root.querySelector('.energy');if(old)old.outerHTML='<section class="card happy-energy" id="happy-energy">'+widget()+'</section>';return root.innerHTML};render()}
-/* Нажатие на кольцо меняет вид по кругу: потрачено → баланс → съедено. Выбор не запоминается: при следующем
-   открытии Sport снова показывает «потрачено» (решение владельца 11.11.2026). */
-document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const modes=['spent','balance','eat'];mode=modes[(modes.indexOf(mode)+1)%3];paint()}});
+/* Нажатие на кольцо меняет вид по кругу, как во всех приложениях: съедено → баланс → потрачено. Выбор хранится в аккаунте
+   (Астамур 25.11.2026: «запоминает то, на чём человек оставил», на всех устройствах). */
+document.addEventListener('click',e=>{if(e.target.closest('[data-energy-cycle]')){const next=MODES[(MODES.indexOf(current())+1)%3];if(signedIn()){guest=null;state.energyView=next;persist()}else guest=next;paint()}});
 window.addEventListener('pageshow',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});refresh();
 globalThis.HappyEnergy={refresh};
 if(typeof HappyEnergyRing!=='undefined')HappyEnergyRing.onTheme(refresh);   // тема сменилась — кольцо в цветах темы   // кольцо перерисовывается, когда пришла еда из Meal (food-counters.js)

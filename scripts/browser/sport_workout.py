@@ -8,9 +8,11 @@ Sport 15.11.2026 (список «Sport: что осталось», пункты 
 тренировки), отменённое не показано; лист занятия — «Перенести» и «Отменить».
 Придуманный аккаунт, поддельный сервер, снимки экрана в HAPPY_OUT. — Claude · 16.11.2026"""
 import re
+from datetime import datetime, timezone
 from common import *
 
 out, errors = {}, []
+visual_mode = os.environ.get("HAPPY_SPORT_VISUAL")
 TEMPLATE = {"id": "t-check", "title": "Проверка тренировки", "kind": "gym", "description": "",
             "items": [["barbell-bench-press", "main", 2], ["forearm-plank", "main", 1]]}
 
@@ -31,6 +33,8 @@ with sync_playwright() as p:
     b = launch(p)
     ctx = phone(b, "A")
     page = ctx.new_page()
+    if visual_mode:
+        page.clock.install(time=datetime(2026, 11, 25, 12, tzinfo=timezone.utc))
     page.on("pageerror", lambda e: errors.append(str(e)[:300]))
     page.goto(BASE + SPORT)
     out["signed_in"] = enter(page, "sport")
@@ -50,6 +54,11 @@ with sync_playwright() as p:
     add0 = box(page, "#exercise-body-0 .set-add")
     out["add_under_sets"] = bool(add0) and add0["y"] >= rows0.nth(1).bounding_box()["y"] + rows0.nth(1).bounding_box()["height"] - 1
     page.screenshot(path=SHOTS + "sport_workout-1-workout.png")
+    if visual_mode:
+        from sport_set_visual import check_set_picture
+        out["set_picture"] = check_set_picture(
+            page, rows0.last, page.locator("#exercise-body-0 .set-add"), OUT
+        )
 
     # кружок: подход отмечен, пошёл перерыв, кольцо на кружке
     page.click('[data-action=set-done][data-ei="0"][data-si="0"]')
@@ -148,4 +157,6 @@ checks = [
     ("«Отменить» отменяет занятие", out["cancelled"]),
     ("без ошибок на странице", not errors),
 ]
+if visual_mode:
+    checks.append((out["set_picture"]["message"], out["set_picture"]["matches"]))
 sys.exit(finish("sport_workout", out, checks))

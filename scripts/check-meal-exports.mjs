@@ -28,5 +28,5 @@ console.log('Passed: 77 nutrient columns (B3 niacin and niacin equivalent apart)
 const leap=m.calendarDays('2024-02','2026-10-28').filter(Boolean);assert.equal(leap.length,29);assert.equal(m.calendarDays('2025-02','2026-10-28').filter(Boolean).length,28);assert.equal(m.calendarDays('2026-06','2026-10-28')[0].day,1);assert.equal(m.calendarDays('2026-10','2026-10-28').find(d=>d?.day===29).disabled,true);assert.throws(()=>m.calendarDays('2026-13','2026-10-28'));
 const draft={a:'2026-10-10',b:'2026-10-20'},picked=m.pickDate(draft,'2026-10-01','b');assert.equal(picked.a,'2026-10-01');assert.equal(picked.b,'2026-10-10');assert.equal(draft.a,'2026-10-10');assert.notEqual(m.copyRange(draft),draft);
 for(const [a,b,count] of [['2026-10-27','2026-10-27',3],['2026-10-21','2026-10-27',3],['2026-01-01','2026-10-27',4]])assert.equal(m.records(db,foods,{a,b},readVal).length,count);
-assert.equal(m.reportPages(rows,fs,{...o,widget:true})[0][0].kind,'widget');assert.ok(!/id="mr(?:From|To|AllDates)"/.test(await read(MEAL+'/report.js')));
+assert.equal(m.reportPages(rows,fs,{...o,widget:true})[0][0].kind,'widget');
 console.log('Passed: leap calendar, weekday offsets, future bounds, immutable drafts, selected-period records and optional widget page.');

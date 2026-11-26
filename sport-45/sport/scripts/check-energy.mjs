@@ -8,10 +8,10 @@ const source=await read('src/energy-widget.js');
 assert.ok(/\}\)\(\);\s*$/.test(source));
 const instrumented=source.replace(/\}\)\(\);\s*$/,'globalThis.probe={nutrition,widget,facts,mode:()=>mode,refresh};})();');
 const DATE='2026-11-11';
-function env({workouts=[]}={}){
+function env({workouts=[],signedIn=false,state:saved={}}={}){
  const store=new Map(),handlers={},writes=[],reads=[];let fetches=0;
  const el={classList:{add(){}},innerHTML:''};
- const c=createContext({console,Date,Math,Number,JSON,Object,Array,Promise,SEED:{},selectedDate:DATE,state:{workouts},
+ const c=createContext({console,Date,Math,Number,JSON,Object,Array,Promise,SEED:{},selectedDate:DATE,state:{workouts,...saved},SportBoot:{store:signedIn?{closed:false}:null},persist(){c.saved++},saved:0,
   localStorage:{getItem:k=>{reads.push(k);return store.has(k)?store.get(k):null},setItem:(k,v)=>{writes.push(k);store.set(k,String(v))}},
   navigator:{onLine:true},fetch:()=>{fetches++;throw Error('no network in this check')},
   document:{hidden:false,getElementById:id=>id==='happy-energy'?el:null,addEventListener:(type,fn)=>{handlers[type]=fn},createElement:()=>({innerHTML:'',querySelector:()=>null})},
@@ -25,16 +25,21 @@ const tap=e=>e.handlers.click({target:{closest:selector=>selector==='[data-energ
 const shown=e=>{const html=e.el.innerHTML,knob=html.match(/<b>([^<]*)<\/b><small>([^<]*)<\/small>/);return {big:knob&&knob[1],cap:knob&&knob[2],rows:[...html.matchAll(/<span>([^<]*)<\/span><b>([^<]*)<\/b>/g)].map(m=>m[1]+': '+m[2])}};
 let groups=0;
 
-// 1. The three views: Sport opens on «потрачено»; a tap goes потрачено → баланс → съедено → потрачено; nothing is remembered.
+// 1. The three views: Sport opens on «потрачено»; a tap goes the common way: съедено → баланс → потрачено → съедено.
+//    Signed in, the choice goes into the journal (field energyView, document prefs of the shared module) and stays on every device;
+//    a guest's choice lives only until the page closes; the browser memory is never used (Астамур 25.11.2026).
 {
- const e=env();
+ const e=env({signedIn:true});
  assert.equal(e.run('probe.mode()'),'spent');assert.match(e.run('probe.widget()'),/Сейчас: потрачено/);assert.equal(shown(e).cap,'потрачено');
- const seen=[];for(let i=0;i<3;i++){tap(e);seen.push(e.run('probe.mode()'))}
- assert.deepEqual(seen,['balance','eat','spent']);
- tap(e);assert.equal(shown(e).cap,'баланс');
- assert.deepEqual(e.writes,[],'the chosen view is not stored anywhere');
- assert.equal(env().run('probe.mode()'),'spent','a new opening starts on «потрачено» again');
- e.handlers.click({target:{closest:()=>null}});assert.equal(e.run('probe.mode()'),'balance','other taps do not switch the view');
+ const seen=[];for(let i=0;i<3;i++){tap(e);seen.push(e.run('state.energyView'))}
+ assert.deepEqual(seen,['eat','balance','spent']);assert.equal(e.run('saved'),3,'each choice is written through the journal');
+ tap(e);assert.equal(shown(e).cap,'съедено');
+ assert.deepEqual(e.writes,[],'the browser memory is not used');
+ const other=env({signedIn:true,state:{energyView:e.run('state.energyView')}});
+ assert.equal(other.run('probe.widget()').includes('Сейчас: съедено'),true,'another device opens on the chosen view');
+ e.handlers.click({target:{closest:()=>null}});assert.equal(e.run('state.energyView'),'eat','other taps do not switch the view');
+ const g=env();tap(g);assert.equal(shown(g).cap,'съедено');assert.equal(g.run('saved'),0);assert.equal(g.run('state.energyView'),undefined,'a guest\'s choice is not written');
+ assert.equal(env().run('probe.widget()').includes('Сейчас: потрачено'),true,'a guest opens on «потрачено» again');
  groups++;
 }
 // 2. No Meal summary: «съедено» is unknown, not zero; minutes come from this journal's workouts, energy only when every workout has it.
@@ -54,4 +59,4 @@ let groups=0;
  assert.deepEqual(e.reads,[]);assert.equal(e.fetches,0);assert.equal(e.run('probe.facts().eaten'),null);
  groups++;
 }
-console.log('Passed: Sport energy widget — '+groups+' groups: default «потрачено», tap order, nothing remembered; no invented totals; the former Meal summary is not read.');
+console.log('Passed: Sport energy widget — '+groups+' groups: default «потрачено», tap order, the choice kept in the account; no invented totals; the former Meal summary is not read.');

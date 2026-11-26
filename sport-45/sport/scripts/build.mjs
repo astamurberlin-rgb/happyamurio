@@ -81,6 +81,8 @@ const drumJs=await readShared('happy-drum.js'),drumCss=await readShared('happy-d
 const periodJs=await readShared('happy-period.js'),periodCss=await readShared('happy-period.css');
 // Астамур 21.11.2026: за открытым листом страница не прокручивается — общий shared/happy-scroll-lock.js.
 const scrollLockJs=await readShared('happy-scroll-lock.js');
+// Астамур 26.11.2026: выпадающий список Happy вместо системного меню — общий shared/happy-select.js.
+const selectJs=await readShared('happy-select.js');
 // Общие цвета трёх приложений (лаборатория 21.11.2026): shared/happy-colors.css, первым среди стилей.
 const colorsCss=await readShared('happy-colors.css');
 const sharedCss=await readShared('happy-ui.css'),measurementsCss=await readShared('happy-measurements.css'),screensCss=await readShared('happy-screens.css')+'\n'+await readShared('happy-privacy.css');
@@ -108,6 +110,8 @@ const sheetRules=await read('src/sheet-rules.js');
 const appearanceCarousels=await read('src/appearance-carousels.js'),appearanceCarouselsCss=await read('src/appearance-carousels.css');
 // Аудит единообразия 18.11.2026: удаление — свайп влево, «Удалить» внизу карточки, свои тренировки в Настройках.
 const deleteRules=await read('src/delete-rules.js');
+// Проход по Sport под дизайн-систему (25.11.2026): слой стилей и поведения — последним.
+const designPass=await read('src/design-pass.js'),designPassCss=await read('src/design-pass.css');
 // Аудит единообразия 18.11.2026: большой таймер — из настроек упражнения, круги = подходы, «Сохранить» отмечает подходы.
 const timerRules=await read('src/timer-rules.js');
 const setLine=await read('src/set-line.js'),setLineCss=await read('src/set-line.css');
@@ -116,7 +120,7 @@ const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappi
 // Lab 10.11.2026: a lab copy says so in its title and version line and lists its own note first in the update history;
 // links to the neighbouring apps point at the published site, because the lab copy lives elsewhere.
 const labNote=LAB?JSON.parse(await readFile(new URL('../LAB-NOTES.json',root),'utf8')):null;
-const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 45.12'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
+const labText=text=>!LAB?text:text.replaceAll("'Happy Sport · Update 45.19'",()=>JSON.stringify(labNote.label)).replace('const sportReleases=[',()=>'const sportReleases=['+JSON.stringify(labNote.release)+',');
 // Some viewers frame a hosted page without storage access (localStorage throws). The lab copy then keeps its journal
 // in memory for the visit instead of stopping at «Журнал защищён». Release builds are not touched.
 const labStorageShim=`<script>(function(){try{window.localStorage.getItem('happy-lab-probe');return}catch(e){}
@@ -126,10 +130,10 @@ try{Object.defineProperty(window,'localStorage',{value:memory(),configurable:tru
 const labBar='';
 const labPage=page=>!LAB?page:page.replace(/connect-src [^;]*;/,()=>"connect-src 'none';").replace('<body><div class="bg"></div>',()=>'<body>'+labBar+'<div class="bg"></div>').replace(/<title>[^<]*<\/title>/,()=>'<title>'+labNote.label+'</title>').replaceAll('href="/happyamurio/',()=>'href="https://astamurberlin-rgb.github.io/happyamurio/').replace('<script',()=>labStorageShim+'<script');
 const html = labPage(template
-  .replace('</style>',()=>colorsCss+css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+drumCss+periodCss+designRulesCss+appearanceCarouselsCss+'\n</style>')
+  .replace('</style>',()=>colorsCss+css+energyCss+sharedCss+experienceCss+timerPrototypeCss+metricCss+exerciseContextCss+timerActionWheelCss+appearanceCss+settingsLayoutCss+auditSimplifyCss+templateEditorCss+setLineCss+sportJournalCss+measurementsCss+measurementsScreenCss+screensCss+drumCss+periodCss+designRulesCss+appearanceCarouselsCss+designPassCss+'\n</style>')
   .replace('__BOOT__',()=>boot)
   .replace('__SEED__', () => seedText.replaceAll('</', '<\\/'))
-  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,drumJs,periodJs,scrollLockJs,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,sportSample,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules,appearanceCarousels].join('\n'))
+  .replace('__APP__', () => [sportAppLinks,sportIcons,metricField,drumJs,periodJs,scrollLockJs,selectJs,sportData,app,dock,refinements.replace('__NAV_ICONS__',()=>navIcons),scheduleModel,scheduleCalendarJs,planning,library,rests,pause,countdown,setTime,setSwipe,exerciseHistory,workoutIdentity,energyJs,labText(dataTransfer),setPlan,exerciseConfig,exercisePlayer,quickValueInput,restPill,iconStudioBridge,catalogGroups,planFact,freeTimerJs,sportFoodCounters,releaseNotesShared,happyLinks,labText(releaseNotes),templatePicker,workoutInteractions,exerciseContext,timerActionWheel,appearanceJs,strongNativeCore,strongNativeMappings,strongNativeUI,sportSignIn,sportSample,settingsLayout,auditSimplify,templateEditor,setLine,sportJournal,measurementsScreen,timerRules,deleteRules,sheetRules,appearanceCarousels,designPass].join('\n'))
   .replace('</body>', () => `<!-- Phosphor Icons license\n${license.replaceAll('\r\n', '\n')}\n--></body>`));
 // Всё собранное: путь внутри папки выпуска → текст.
 const files=new Map([['index.html',html]]);

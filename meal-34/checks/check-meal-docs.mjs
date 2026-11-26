@@ -174,4 +174,22 @@ assert.equal(new Set(D.OWN).size,D.OWN.length);
  P('summary',new Map([['secs',[{k:'am',t:'Завтрак'}]]]));assert.deepEqual(a.store.doc('summary').all().map(r=>r.id),['secs'],'день без еды убран из сводки');
  assert.equal(a.ctx.MealData.stored('summary'),1);
 }
-console.log('Passed: Meal diary in the shared store — lossless round trip, one record per entry, product, counter and section; two devices merge by record (later edit wins, both additions stay, deletions stay, neighbours untouched); untouched default sections and counters are never written and never overwrite another device; Day and Sport portions are not stored; nothing is written without changes; document names differ from the old cloud rows.');
+/* вид кольца энергии (Астамур 25.11.2026): выбор хранится в аккаунте — поле energyView дневника, документ setup; второе
+   устройство открывается на нём; по умолчанию «съедено»; в память браузера не пишется. Код кольца — настоящий из index.html. */
+{
+ const page=await readFile(new URL('index.html',here),'utf8');
+ const ring=page.slice(page.indexOf('var ER_GUEST=null'),page.indexOf('function gTxt(v){'))+page.slice(page.indexOf('function erNext(key){'),page.indexOf("document.getElementById('mlKb').addEventListener('click'"));
+ assert.ok(ring.includes('function erMode()')&&ring.includes('DB.energyView=next; save()'),'выбор вида пишется в дневник');
+ assert.ok(!/localStorage|sessionStorage|indexedDB/.test(ring),'вид кольца не пишется в память браузера');
+ const run=(db,signedIn)=>{const ctx=vm.createContext({DB:db,RO:false,saved:0,MealData:{signedIn:()=>signedIn},ER_NEXT:{eat:'bal',bal:'spent',spent:'eat'},
+  document:{getElementById:()=>({innerHTML:'',querySelector:()=>null})},kbjuHTML:()=>'',erFit(){}});
+  vm.runInContext(ring+';function save(){saved++}',ctx);return ctx};
+ const w=world(),a=await device(w),b=await device(w);
+ const phone=run(a.db,true);assert.equal(phone.erMode(),'eat','по умолчанию Meal — «съедено»');
+ phone.erNext(false);assert.equal(phone.erMode(),'bal');assert.equal(phone.saved,1);a.save();
+ assert.ok(a.ids('setup').includes('["f","energyView"]'),'вид лежит в документе setup');
+ a.sync();b.sync();assert.equal(run(b.db,true).erMode(),'bal','второе устройство открывается на выбранном виде');
+ const guest=run(plain(defaults()),false);guest.erNext(false);assert.equal(guest.erMode(),'bal');assert.equal(guest.saved,0,'без входа — только на экране');
+ assert.equal(guest.DB.energyView,undefined);
+}
+console.log('Passed: Meal diary in the shared store — lossless round trip, one record per entry, product, counter and section; two devices merge by record (later edit wins, both additions stay, deletions stay, neighbours untouched); untouched default sections and counters are never written and never overwrite another device; Day and Sport portions are not stored; nothing is written without changes; document names differ from the old cloud rows; the energy ring view is kept in the account and reaches the second device.');

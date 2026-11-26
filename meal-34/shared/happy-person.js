@@ -120,14 +120,12 @@ function top(box){
  if(box)topBox=box;if(!topBox||!cfg)return;
  const who=cfg.account.current(),p=signedIn()?data().profile:BLANK();
  const name=who?(who.name||'Мой профиль'):'Гость';
- let accessLabel='';
- if(who&&!who.google)accessLabel='Подключить вход через Google';
- else if(who&&(who.keyVersion===1||who.migrating))accessLabel='Восстановление записей';
+ const needsRecovery=who?.google&&(who.keyVersion===1||who.migrating);
  topBox.innerHTML='<div class="hs-settings"><div class="hs-identity">'+avatar(p.photo)+'<h2>'+S().esc(name)+'</h2></div>'+
   '<section class="hs-section"><h3>Настроить аккаунт</h3><div class="hs-group">'+
   '<button type="button" class="hs-row" data-hp="profile"><span>Настроить профиль</span></button>'+
   '<button type="button" class="hs-row" data-hp="goals"><span>Настроить цели</span></button>'+
-  (accessLabel?'<button type="button" class="hs-row" data-hp="access"><span>'+accessLabel+'</span></button>':'')+'</div></section></div>';
+  (needsRecovery?'<button type="button" class="hs-row" data-hp="access"><span>Восстановление записей</span></button>':'')+'</div></section></div>';
 }
 function bottom(box,o){
  if(box)bottomBox=box;if(o)bottomOpts=o;if(!bottomBox||!cfg)return;
@@ -173,13 +171,18 @@ function open(){
   return '<div class="hs-pending"><span>Ожидает подтверждения</span><strong>'+esc(pendingEmail)+'</strong><button type="button" class="hs-quiet" data-p="email-again">Отправить повторно</button>'+
    '<button type="button" class="hs-quiet" data-p="email-cancel">Отменить смену</button></div>';
  }
+ function providerActions(){
+  return A.current()?.google?'<span class="hs-provider-status">Привязан вход через Google</span>':
+   '<button type="button" class="hs-btn hs-glass-btn" data-p="google">Привязать к Google</button>';
+ }
  function render(){
   const F=S().field;
   main.innerHTML='<div class="hs-profile-photo">'+avatar(draft.photo)+'<button type="button" class="hs-quiet" data-p="photo">'+(draft.photo?'Изменить фото':'Добавить фото')+'</button>'+
    '<input type="file" accept="image/*" hidden data-p-file></div><div class="hs-profile-form">'+
    '<section class="hs-profile-account"><h2>Аккаунт</h2><div class="hs-email-label"><span>Почта</span><span class="hs-verified">'+S().ICONS.check+'Подтверждена</span></div>'+
    '<div class="hs-input hs-email-value" data-p-email>'+esc((A.current()||who).email)+'</div>'+
-   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+'</section>'+
+   (cfg.features.emailChange?'<button type="button" class="hs-quiet" data-p="email">Изменить почту</button><div data-p-pending>'+pendingHtml()+'</div>':'')+
+   '<div class="hs-profile-providers">'+providerActions()+'</div></section>'+
    '<h2 class="hs-section-title">Личные данные</h2>'+
    F({label:'Имя и фамилия',name:'name',autocomplete:'name',maxlength:60,value:draft.name,placeholder:'Как тебя зовут'})+
    F({label:'Дата рождения',name:'birthday',type:'date',max:today,value:draft.birthday,placeholder:'Не указана'})+
@@ -200,7 +203,13 @@ function open(){
  function readInputs(){draft.name=input('name').value;draft.birthday=input('birthday').value;shown.height=input('height').value;shown.weight=input('weight').value;shown.date=input('date').value}
  function error(t){const e=main.querySelector('.hs-error');e.textContent=t;e.hidden=!t;if(t)e.scrollIntoView({block:'center',behavior:'smooth'})}
  render();
- if(cfg.features.emailChange)A.user().then(u=>{pendingEmail=u.newEmail||'';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml();const em=main.querySelector('[data-p-email]');if(em)em.textContent=u.email||who.email}).catch(()=>{});
+ A.user().then(u=>{
+  const current=A.current();if(current?.uid!==who.uid||pageH?.main!==main)return;
+  if(current.google!==who.google)main.querySelector('.hs-profile-providers').innerHTML=providerActions();
+  pendingEmail=u.newEmail||'';
+  const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml();
+  main.querySelector('[data-p-email]').textContent=u.email||who.email;
+ }).catch(()=>{});
  /* новый вес — замер на сегодня; вернули прежний вес — и дата прежняя */
  let autoDate=false;
  main.addEventListener('input',e=>{
@@ -226,6 +235,7 @@ function open(){
   const b=e.target.closest('[data-p],[data-hs]');if(!b)return;
   const a=b.dataset.p||b.dataset.hs;
   if(a==='photo'){readInputs();if(!draft.photo){main.querySelector('[data-p-file]').click();return}photoSheet();return}
+  if(a==='google'){if(A.current()?.uid===who.uid)root.HappyWelcome.access(true);return}
   if(a==='email'){readInputs();root.HappyWelcome.changeEmail(()=>{A.user().then(u=>{pendingEmail=u.newEmail||'';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML=pendingHtml()}).catch(()=>{})});return}
   if(a==='email-again'){A.changeEmail(pendingEmail).then(()=>S().toast('Ссылка отправлена повторно')).catch(err=>error(err.message));return}
   if(a==='email-cancel'){A.changeEmail((A.current()||who).email).then(()=>{pendingEmail='';const box=main.querySelector('[data-p-pending]');if(box)box.innerHTML='';S().toast('Смена почты отменена')}).catch(err=>error(err.message));return}

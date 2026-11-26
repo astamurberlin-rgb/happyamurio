@@ -322,6 +322,15 @@
       ]
     },
     {
+      "name": "happy-select.js",
+      "reference": "shared/happy-select.js",
+      "apps": [
+        "day",
+        "meal",
+        "sport"
+      ]
+    },
+    {
       "name": "happy-scroll-lock.js",
       "reference": "shared/happy-scroll-lock.js",
       "apps": [
