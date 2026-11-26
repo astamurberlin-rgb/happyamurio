@@ -53,8 +53,29 @@ function positionFloatingRest(root){
   const bannerTop=banner&&banner.getClientRects().length?banner.getBoundingClientRect().top:null;
   root.style.bottom=restPillBottom(height,viewport?.height||height,viewport?.offsetTop||0,bannerTop,safeInset)+'px';
 }
+/* Один виджет внизу, два режима (Астамур 26.11.2026): идёт подход на время — виджет подхода (название упражнения,
+   время подхода, ❚❚/▶, −/+ 30 с, «Готово» — то же, что ■ в строке); нет — перерыв, как раньше. Подход важнее перерыва. */
+function floatingSetContext(){const t=state.active?.countdown;if(!t||t.kind!=='set'||t.finished)return null;const e=state.active.exercises[t.ei];if(!e?.sets[t.si])return null;return {t,e,ei:t.ei,si:t.si,value:t.stopwatch?countdownElapsed(t):countdownRemaining(t),progress:t.stopwatch?0:countdownProgress(t)};}
+function floatingSetMarkup(c){const paused=!c.t.running||workoutIsPaused(state.active);return `<section class="floating-rest-pill floating-set-pill" role="region" tabindex="0" aria-label="Идёт подход: ${esc(c.e.name)}" style="--rest-fill:${c.progress}%"><span class="floating-rest-progress" aria-hidden="true"></span><button type="button" class="floating-rest-toggle" data-set-pill="toggle" aria-label="${paused?'Продолжить подход':'Приостановить подход'}">${icon(paused?'play':'pause')}</button><div class="floating-rest-mid"><button type="button" class="floating-rest-step" data-set-pill="minus" aria-label="Убавить время подхода на 30 секунд" ${c.t.stopwatch?'disabled':''}>−</button><label class="floating-rest-clock"><span>${esc(c.e.name)}</span><span class="sport-metric-input"><input type="text" readonly tabindex="-1" data-set-pill-time value="${countdownTime(c.value)}" aria-label="${c.t.stopwatch?'Прошло':'Осталось'} времени подхода"></span></label><button type="button" class="floating-rest-step" data-set-pill="plus" aria-label="Добавить к подходу 30 секунд" ${c.t.stopwatch?'disabled':''}>+</button></div><button type="button" class="floating-rest-finish" data-set-pill="done">Готово</button></section>`;}
+function updateFloatingSet(root){
+  const c=floatingSetContext();if(!c){if(root.dataset.signature?.startsWith('set:')){root.innerHTML='';root.dataset.signature='';}return false;}
+  const paused=!c.t.running||workoutIsPaused(state.active),signature=['set',c.ei,c.si,paused].join(':');
+  if(root.dataset.signature!==signature){root.innerHTML=floatingSetMarkup(c);root.dataset.signature=signature;}
+  const pill=root.querySelector('.floating-set-pill');if(!pill)return true;pill.style.setProperty('--rest-fill',c.progress+'%');
+  const input=root.querySelector('[data-set-pill-time]');if(input)input.value=countdownTime(c.value);
+  positionFloatingRest(root);return true;
+}
+document.addEventListener('click',event=>{
+  const button=event.target.closest('[data-set-pill]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const c=floatingSetContext();if(!c)return;
+  const a=button.dataset.setPill;
+  if(a==='toggle')toggleSetCountdown('set',c.ei,c.si);
+  if(a==='minus'||a==='plus'){const elapsed=countdownElapsed(c.t);c.t.duration=Math.max(Math.ceil(elapsed)+1,Math.min(86400,c.t.duration+(a==='plus'?30:-30)));}
+  if(a==='done')toggleWorkoutSetDone(c.ei,c.si);
+  persist();render();updateFloatingRest();
+},true);
 function updateFloatingRest(){
   let root=document.getElementById('rest-pill-root');if(!root){root=document.createElement('div');root.id='rest-pill-root';document.body.append(root);}
+  if(updateFloatingSet(root))return;
   const c=activeRestContext();if(!c||(restWidgetHidden?.owner===restWidgetIdentity(c)&&restWidgetHidden?.si===c.si)){root.innerHTML='';root.dataset.signature='';return;}
   // Only a different rest creates a new element. Pause never replays the entrance.
   const signature=[c.kind,c.ei,c.si].join(':');

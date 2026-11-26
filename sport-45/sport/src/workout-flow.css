@@ -50,3 +50,7 @@
 .wf-note-input{box-sizing:border-box;width:100%;min-height:calc(var(--happy-size-field) * 3);padding:var(--happy-space-12);border:1px solid var(--happy-field-line);border-radius:var(--happy-radius-field);background:var(--happy-field-bg);color:var(--happy-ink);font:inherit;font-size:16px;font-weight:400;line-height:1.45;resize:vertical}
 .wf-note-input::placeholder{color:var(--happy-field-placeholder)}
 #wf-note-form .wf-delete{margin-top:0}
+/* Виджет подхода (rest-pill.js): время подхода не бледное, хотя поле только для чтения */
+.floating-set-pill .floating-rest-clock input[readonly]{opacity:1!important;color:var(--happy-ink)!important;-webkit-text-fill-color:var(--happy-ink)}
+.floating-set-pill .floating-rest-clock>span:first-child{max-width:calc(var(--happy-size-button) * 3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.floating-set-pill .floating-rest-clock .sport-metric-input{opacity:1!important}
