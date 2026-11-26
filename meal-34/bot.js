@@ -33,6 +33,7 @@ var MealBot=(function(){
   function boot(){
     if(booted) return; booted=true;
     try{ if(typeof HappyCookingLibrary!=='undefined') HappyCookingLibrary.load() }catch(e){}   // справочник «как готовить» — заранее, файл маленький
+    try{ if(typeof HappyRecipesLibrary!=='undefined') HappyRecipesLibrary.load() }catch(e){}   // справочник рецептов (Meal 34.29)
     /* меры, которых не было в разборе: шот (эспрессо), миска и пиала как тарелка, бокал как стакан */
     DEF['шот']=30; UFORMS['шот']=['шот','шота','шотов'];
     /* Meal 33.9: слова-меры (кружка, пиала, бокал, половник, кусок…) и их веса — из словаря bot/household-ru.js (bot-speech.js) */
@@ -2079,9 +2080,10 @@ var MealBot=(function(){
     return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
   }
   /* ── ступень 2 · «рецепты из готового»: «рецепт плова», «как приготовить гречку с курицей» (решение Астамура 23.11.2026 «да»).
-     Ищет только то, что уже есть в приложении, по порядку: «Мои рецепты» → рецепты подборок (состав и шаги) → блюда узбекского каталога
+     Ищет только то, что уже есть в приложении, по порядку: «Мои рецепты» → рецепты подборок (состав и шаги) и справочника рецептов
+     (recipes-library.js, Meal 34.29: состав, шаги, источник; при равном совпадении первым — справочник) → блюда узбекского каталога
      (состав на порцию и рецептура-источник). Своих рецептов бот не пишет: нет такого — «пока нет», вопрос — в список «без ответа». */
-  var RCP_STOP=/^(с|со|и|на|из|в|во|для|без|по|мне|пожалуйста|пж|какой|какой-нибудь|нибудь|какую|домашн\S*|вкусн\S*|прост\S*|хорош\S*|настоящ\S*|классическ\S*|правильн\S*|самый|самого|самые|рецепт\S*|блюд\S*|человек\S*|порци\S*|четверых|двоих|троих|семью|всех)$/;
+  var RCP_STOP=/^(с|со|и|на|из|в|во|для|без|по|мне|пожалуйста|пж|дома|какой|какой-нибудь|нибудь|какую|домашн\S*|вкусн\S*|прост\S*|хорош\S*|настоящ\S*|классическ\S*|правильн\S*|самый|самого|самые|рецепт\S*|блюд\S*|человек\S*|порци\S*|четверых|двоих|троих|семью|всех)$/;
   function rcpStem(w){ w=String(w).toLowerCase().replace(/ё/g,'е').replace(/[^а-яa-z-]/g,''); var s=w.replace(/(ами|ями|ов|ев|ей|ой|ий|ый|ая|ое|ые|ую|ом|ем|ам|ям|ах|ях|а|я|ы|и|у|ю|е|о|ь)$/,''); return s.length>=3?s:w }
   function rcpWords(t){ return String(t).toLowerCase().replace(/ё/g,'е').split(/[^а-яa-z-]+/).filter(function(w){ return w&&!RCP_STOP.test(w)&&!/^\d/.test(w) }).map(rcpStem).filter(function(w){ return w.length>=2 }) }
   /* одно слово — «плова» и «плов», «курицей» и «куриной»; «мёдом» и «медовик» — разные */
@@ -2090,6 +2092,8 @@ var MealBot=(function(){
   function rcpPool(){
     var out=[];
     (DB.recipes||[]).forEach(function(r){ if(r&&r.t) out.push({kind:'mine',r:r,col:null,t:r.t,pr:0}) });
+    var RL=typeof HappyRecipesLibrary!=='undefined'&&HappyRecipesLibrary.state==='ok'?HappyRecipesLibrary:null;
+    if(RL) RL.recipes.forEach(function(r){ out.push({kind:'lib',lib:r,t:r.t,min:r.min,alias:r.aka||[],pr:1}) });   // при равном совпадении — раньше подборки: «хлеб» — это хлеб, а не «творог с хлебом»
     (typeof COLS!=='undefined'?COLS:[]).forEach(function(c){ c.items.forEach(function(r){ out.push({kind:'col',r:r,col:c,t:r.t,min:r.min,pr:1}) }) });
     if(catOn()) catDishes(null,{from:'uzbek'}).forEach(function(x){ var f=FOODS[x.fid]; x.pr=2; x.alias=((f.recipe||{}).aliases||[]).filter(function(a){ return !/кухня/.test(a) }); out.push(x) });
     return out;
@@ -2106,6 +2110,30 @@ var MealBot=(function(){
     var s=String((f.recipe||{}).processNote||'').split(/[.;]/)[0].trim();
     return s&&!/\d/.test(s)&&s.length<=160&&/(обжар|туш|вар|на пару|запек|выпек|жар|готов|печ)/i.test(s)&&!/(масс|расч|вес|ингредиент)/i.test(s)?s+'.':'';
   }
+  /* справочник рецептов: время («45 мин», «1 ч 20 мин») и порции («5 порций по 200 г», «18 ст. л. по 15 г») */
+  function rcpTime(m){ m=Math.round(m); if(m<60) return m+' мин'; var h=Math.floor(m/60), r=m%60; return h+' ч'+(r?' '+r+' мин':'') }
+  function rcpPortions(r){
+    var n=r.serves, u=r.unit, k=n%10===1&&n%100!==11?0:n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?1:2;
+    var W={'порция':['порцию','порции','порций'],'кусок':['кусок','куска','кусков'],'тарелка':['тарелку','тарелки','тарелок'],'ломтик':['ломтик','ломтика','ломтиков'],'шар теста':['шар теста','шара теста','шаров теста']};
+    var uw=W[u]?W[u][k]:/^порция /.test(u)?W['порция'][k]:u;
+    return uw+' по '+(r.pg>=50?Math.round(r.pg/5)*5:r.pg)+' г';
+  }
+  /* «Записать порцию»: состав рецепта на одну порцию; продукт с кодом BLS — сразу, без кода («укроп») — разбором строки, как голос */
+  function rcpLibLines(r){
+    if(typeof BLS_ST!=='undefined'&&BLS_ST!=='ok'){ if(typeof blsLoad==='function') blsLoad(); return null }
+    var out=[];
+    r.lines.forEach(function(l){ var g=Math.round(l.g/r.serves*10)/10; if(!(g>0)) return;
+      if(l.b){ var fid=bindTmp(l.b); if(FOODS[fid]){ out.push({id:'l'+(++SEQ),raw:'',q:g,u:'г',g:g,fid:fid,alts:[],st:'ok',name:''}); return } }
+      parseText((l.q||l.n)+' '+(g<1?g:Math.round(g))+' г').lines.forEach(function(x){ out.push(x) }) });
+    return out;
+  }
+  function rcpSteps(x){
+    var r=x.lib, RS=HappyRecipesLibrary.sources;
+    var h=p('<b>'+esc(r.t)+'</b> · по шагам')+'<ol>'+r.steps.map(function(s){ return '<li>'+esc(s)+'</li>' }).join('')+'</ol>';
+    (r.safety||[]).forEach(function(s){ var sr=RS[s.src]; h+=p('⚠️ '+esc(s.text)+(sr?' (<a href="'+esc(sr.url)+'" target="_blank" rel="noopener">'+esc(sr.title)+'</a>)':'')) });
+    var also=(r.also||[]).map(function(id){ return RS[id] }).filter(Boolean);
+    return h+'<p class="mlHint">'+(also.length?'Сверено ещё с: '+also.map(function(sr){ return '<a href="'+esc(sr.url)+'" target="_blank" rel="noopener">'+esc(sr.title)+'</a>' }).join('; ')+'. ':'')+'В дневник ничего не записал.</p>';
+  }
   function rcpShow(S,list,more){
     var x=list[0], seq=(S.adv&&S.adv.seq||0)+1, h='', HINT='В дневник ничего не записал.';
     S.adv={want:{ings:[]},list:list,shown:list.length,seq:seq};
@@ -2113,6 +2141,11 @@ var MealBot=(function(){
     if(x.kind==='col'){
       h=p('<b>'+esc(x.t)+'</b>'+(x.min?' · '+x.min+' мин':''))+p('Состав: '+esc(String(x.r.x).replace(/\.$/,''))+'.')+p(esc(x.r.st))+
         chips([['advopen:'+key,'Открыть'],['advlog:'+key,'Записать']])+'<p class="mlHint">Рецепт из подборки «'+esc(x.col.t)+'» в приложении. '+HINT+'</p>';
+    } else if(x.kind==='lib'){
+      var RS=HappyRecipesLibrary.sources, r=x.lib, sr=RS[r.src];
+      h=p('<b>'+esc(r.t)+'</b> · '+esc(r.time||rcpTime(r.min)))+p('Состав на '+r.serves+' '+esc(rcpPortions(r))+': '+esc(String(r.x).replace(/\.$/,''))+'.')+p(esc(r.st))+
+        chips([['advsteps:'+key,'Подробно по шагам'],['advlog:'+key,'Записать порцию']])+
+        '<p class="mlHint">'+(sr?'Источник: <a href="'+esc(sr.url)+'" target="_blank" rel="noopener">'+esc(sr.title)+'</a>. ':'')+HINT+'</p>';
     } else if(x.kind==='mine'){
       var comp=(x.r.lines||[]).filter(function(l){ return FOODS[l.fid] }).map(function(l){ return FOODS[l.fid].n+' '+Math.round(l.g)+' г' }).join(', ');
       h=p('<b>'+esc(x.t)+'</b> — твой рецепт')+(comp?p('Состав: '+esc(comp)+'.'):'')+chips([['advlog:'+key,'Записать']])+'<p class="mlHint">Шагов в «Моих рецептах» нет, только состав. '+HINT+'</p>';
@@ -2133,7 +2166,7 @@ var MealBot=(function(){
     var o=nrm(raw).trim().replace(/[?!.,…\s]+$/,'').replace(/,/g,' ').replace(/\s+/g,' ');
     if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
     var lead='^(?:а\\s+)?(?:(?:скажи|подскажи|дай|покажи|напиши|пришли|скинь|знаешь|нужен|есть|хочу)\\s+)?(?:мне\\s+)?(?:у тебя\\s+)?(?:(?:какой-нибудь|какой|хороший|простой)\\s+)?';
-    var mr=o.match(new RegExp(lead+'рецепт(?:ы|ик)?\\s+(.+)$')), mh=!mr&&o.match(/^(?:а\s+)?(?:(?:скажи|подскажи)\s+)?(?:мне\s+)?как\s+(?:(?:правильно|лучше|вкусно|быстро)\s+)?(приготовить|сделать|испечь|готовить|готовят|делают)\s+(.+)$/);
+    var mr=o.match(new RegExp(lead+'рецепт(?:ы|ик)?\\s+(.+)$')), mh=!mr&&o.match(/^(?:а\s+)?(?:(?:скажи|подскажи)\s+)?(?:мне\s+)?как\s+(?:(?:правильно|лучше|вкусно|быстро)\s+)?(приготовить|сделать|испечь|готовить|готовят|делают|сварить|варить|пожарить|запечь)\s+(.+)$/);
     if(!mr&&!mh) return null;
     var q=(mr?mr[1]:mh[2]).replace(/\s+на\s+(\S+\s+)?(человек\S*|персон\S*|четверых|двоих|троих|семью|всех|компанию)(\s|$).*/,'').trim();
     if(/^(сохран|добав|созда|запис|удал|измен|поменя|отред|свой|своего|мой|моего|мои|в приложени|в дневник)/.test(q)) return null;
@@ -2145,9 +2178,9 @@ var MealBot=(function(){
     var list=rcpFind(q);
     if(list.length) return rcpShow(S,list);
     if(mh) return null;   // «как испечь медовик» — дальше справочник готовки: «пока не знаю» и список «без ответа»
-    if(catOn()&&typeof MealUzbek!=='undefined'&&MealUzbek.status()==='loading') return p('Каталог блюд ещё загружается. Спроси ещё раз через пару секунд.');
+    if(catOn()&&typeof MealUzbek!=='undefined'&&MealUzbek.status()==='loading'||typeof HappyRecipesLibrary!=='undefined'&&HappyRecipesLibrary.state==='loading') return p('Каталог блюд ещё загружается. Спроси ещё раз через пару секунд.');
     missLog('вопросы без ответа (не продукты)',o,o);
-    return p('Такого рецепта у меня пока нет. Ищу только среди «Моих рецептов», подборок приложения и узбекских блюд, свои не придумываю. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>';
+    return p('Такого рецепта у меня пока нет. Ищу только среди «Моих рецептов», подборок приложения, проверенных рецептов справочника и узбекских блюд, свои не придумываю. Вопрос записал, чтобы добавить.')+'<p class="mlHint">В дневник ничего не записал.</p>';
   }
   /* ── ступень 2 · кулинарные приёмы: «когда солить рис», «почему картошка тушится», «яйца в холодную или кипящую воду»
      (решение Астамура 23.11.2026 «да»). Карточки tip справочника cooking, у каждой два источника; где спорят — обе версии.
@@ -3561,7 +3594,9 @@ var MealBot=(function(){
       if(x.col){ openCol(x.col.k); ROPEN=x.r.id; renderCol(); return '' }
       if(fid&&FOODS[fid]&&typeof MealControls!=='undefined'){ MealControls.product({fid:fid,g:x.g}); return '' }
       return null }
+    if(a[0]==='advsteps') return x.kind==='lib'?rcpSteps(x):null;
     if(a[0]==='advlog'){
+      if(x.kind==='lib'){ var ll=rcpLibLines(x.lib); if(!ll) return p('База продуктов ещё загружается. Нажми «Записать порцию» ещё раз через пару секунд.'); openMatchLines(ll,{back:'chat',from:'recipe'}); return '' }
       if(x.r){ openMatchLines(recipeLinesAny(x.r),{back:'chat',from:'recipe'}); return '' }
       if(!fid||!FOODS[fid]) return null;
       openMatchLines([{id:'l'+(++SEQ),raw:'',q:x.u==='г'?x.g:1,u:x.u,g:x.g,fid:fid,alts:[],st:'ok',name:''}],{back:'chat',from:'recipe'}); return '' }
