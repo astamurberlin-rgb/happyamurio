@@ -54,3 +54,5 @@
 .floating-set-pill .floating-rest-clock input[readonly]{opacity:1!important;color:var(--happy-ink)!important;-webkit-text-fill-color:var(--happy-ink)}
 .floating-set-pill .floating-rest-clock>span:first-child{max-width:calc(var(--happy-size-button) * 3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .floating-set-pill .floating-rest-clock .sport-metric-input{opacity:1!important}
+.wf-rest-line.wf-rest-plain{cursor:default;gap:0}
+.wf-rest-line.wf-rest-plain::after{content:none}
