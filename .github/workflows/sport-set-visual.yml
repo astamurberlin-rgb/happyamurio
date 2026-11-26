@@ -1,0 +1,92 @@
+name: Sport · строка подхода
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'sport'
+      - 'sport-*/**'
+      - 'assets/**'
+      - 'shared/**'
+      - 'design-system/tokens.json'
+      - 'scripts/browser/common.py'
+      - 'scripts/browser/run.sh'
+      - 'scripts/browser/sport_workout.py'
+      - 'scripts/browser/sport_set_visual.py'
+      - 'scripts/browser/baselines/sport-set.png'
+      - '.github/workflows/sport-set-visual.yml'
+  workflow_dispatch:
+    inputs:
+      probe:
+        description: 'Проверить реакцию на добавленную линию (ожидается красная проверка)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    concurrency:
+      group: sport-set-${{ github.ref }}-${{ inputs.probe || false }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.64.1-noble
+      options: --ipc=host
+    env:
+      HAPPY_OUT: /tmp/happy-sport-visual
+      HAPPY_SPORT_VISUAL: ${{ inputs.probe && 'probe' || 'check' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Подготовить браузер и текущую версию Sport
+        run: |
+          python -m pip install playwright==1.64.1 Pillow==12.0.0
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          from pathlib import Path
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as browser:
+              print("HAPPY_CHROME=" + browser.chromium.executable_path)
+          sport = Path(json.loads(Path("shared/apps.json").read_text())["sport"]["entry"]).parent
+          print(f"HAPPY_SPORT_STORE={sport}/")
+          PY
+      - name: Собрать Sport и проверить снимок
+        run: |
+          cp "${HAPPY_SPORT_STORE}index.html" "$RUNNER_TEMP/sport-as-committed.html"
+          node "${HAPPY_SPORT_STORE}sport/scripts/build.mjs"
+          if ! cmp -s "$RUNNER_TEMP/sport-as-committed.html" "${HAPPY_SPORT_STORE}index.html"; then
+            echo "::error::Собранная страница Sport отличается от сохранённой в этой ветке. Пересобери Sport."
+            exit 1
+          fi
+          bash scripts/browser/run.sh sport_workout
+      - name: Снимок для ручного принятия
+        id: current
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          path: /tmp/happy-sport-visual/sport-set-current.png
+          archive: false
+          if-no-files-found: ignore
+      - name: Было, стало, разница
+        id: report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          path: /tmp/happy-sport-visual/sport-set-report.png
+          archive: false
+          if-no-files-found: ignore
+      - name: Ссылки на снимки
+        if: ${{ !cancelled() }}
+        env:
+          REPORT: ${{ steps.report.outputs.artifact-url }}
+          CURRENT: ${{ steps.current.outputs.artifact-url }}
+        run: |
+          if [ -n "$REPORT" ]; then echo "[Было, стало, разница (PNG)]($REPORT)" >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -n "$CURRENT" ]; then echo "[Текущий снимок (PNG)]($CURRENT)" >> "$GITHUB_STEP_SUMMARY"; fi
