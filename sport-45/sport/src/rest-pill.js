@@ -54,9 +54,18 @@ function positionFloatingRest(root){
   root.style.bottom=restPillBottom(height,viewport?.height||height,viewport?.offsetTop||0,bannerTop,safeInset)+'px';
 }
 /* Один виджет внизу, два режима (Астамур 26.11.2026): идёт подход на время — виджет подхода (название упражнения,
-   время подхода, ❚❚/▶, −/+ 30 с, «Готово» — то же, что ■ в строке); нет — перерыв, как раньше. Подход важнее перерыва. */
+   время подхода, ❚❚/▶, без −/+); нет — перерыв (с −/+). Подход важнее перерыва. Справа везде «Дальше» — цепочка:
+   подход → «Дальше» (подход отмечен) → перерыв → «Дальше» или перерыв прошёл и «Дальше» → следующий подход.
+   Следующий подход на время запускается сам; с весом и повторами — строка подхода прокручивается на середину экрана. */
+function nextOpenSet(ei,si){const list=state.active?.exercises||[];for(let i=ei;i<list.length;i++){const sets=list[i].sets||[];for(let j=i===ei?si+1:0;j<sets.length;j++)if(!sets[j].done)return {ei:i,si:j};}return null;}
+function goToNextSet(ei,si){
+  const n=nextOpenSet(ei,si);if(!n)return false;const e=state.active.exercises[n.ei];
+  if(exerciseMetrics(e).includes('seconds')){toggleSetCountdown('set',n.ei,n.si);persist();render();}
+  requestAnimationFrame(()=>document.querySelector(`.set-swipe[data-swipe-kind="set"][data-ei="${n.ei}"][data-si="${n.si}"]`)?.scrollIntoView({block:'center',behavior:'smooth'}));
+  return true;
+}
 function floatingSetContext(){const t=state.active?.countdown;if(!t||t.kind!=='set'||t.finished)return null;const e=state.active.exercises[t.ei];if(!e?.sets[t.si])return null;return {t,e,ei:t.ei,si:t.si,value:t.stopwatch?countdownElapsed(t):countdownRemaining(t),progress:t.stopwatch?0:countdownProgress(t)};}
-function floatingSetMarkup(c){const paused=!c.t.running||workoutIsPaused(state.active);return `<section class="floating-rest-pill floating-set-pill" role="region" tabindex="0" aria-label="Идёт подход: ${esc(c.e.name)}" style="--rest-fill:${c.progress}%"><span class="floating-rest-progress" aria-hidden="true"></span><button type="button" class="floating-rest-toggle" data-set-pill="toggle" aria-label="${paused?'Продолжить подход':'Приостановить подход'}">${icon(paused?'play':'pause')}</button><div class="floating-rest-mid"><button type="button" class="floating-rest-step" data-set-pill="minus" aria-label="Убавить время подхода на 30 секунд" ${c.t.stopwatch?'disabled':''}>−</button><label class="floating-rest-clock"><span>${esc(c.e.name)}</span><span class="sport-metric-input"><input type="text" readonly tabindex="-1" data-set-pill-time value="${countdownTime(c.value)}" aria-label="${c.t.stopwatch?'Прошло':'Осталось'} времени подхода"></span></label><button type="button" class="floating-rest-step" data-set-pill="plus" aria-label="Добавить к подходу 30 секунд" ${c.t.stopwatch?'disabled':''}>+</button></div><button type="button" class="floating-rest-finish" data-set-pill="done">Готово</button></section>`;}
+function floatingSetMarkup(c){const paused=!c.t.running||workoutIsPaused(state.active);return `<section class="floating-rest-pill floating-set-pill" role="region" tabindex="0" aria-label="Идёт подход: ${esc(c.e.name)}" style="--rest-fill:${c.progress}%"><span class="floating-rest-progress" aria-hidden="true"></span><button type="button" class="floating-rest-toggle" data-set-pill="toggle" aria-label="${paused?'Продолжить подход':'Приостановить подход'}">${icon(paused?'play':'pause')}</button><div class="floating-rest-mid"><label class="floating-rest-clock"><span>${esc(c.e.name)}</span><span class="sport-metric-input"><input type="text" readonly tabindex="-1" data-set-pill-time value="${countdownTime(c.value)}" aria-label="${c.t.stopwatch?'Прошло':'Осталось'} времени подхода"></span></label></div><button type="button" class="floating-rest-finish" data-set-pill="done">Дальше</button></section>`;}
 function updateFloatingSet(root){
   const c=floatingSetContext();if(!c){if(root.dataset.signature?.startsWith('set:')){root.innerHTML='';root.dataset.signature='';}return false;}
   const paused=!c.t.running||workoutIsPaused(state.active),signature=['set',c.ei,c.si,paused].join(':');
@@ -69,8 +78,7 @@ document.addEventListener('click',event=>{
   const button=event.target.closest('[data-set-pill]');if(!button)return;event.preventDefault();event.stopImmediatePropagation();const c=floatingSetContext();if(!c)return;
   const a=button.dataset.setPill;
   if(a==='toggle')toggleSetCountdown('set',c.ei,c.si);
-  if(a==='minus'||a==='plus'){const elapsed=countdownElapsed(c.t);c.t.duration=Math.max(Math.ceil(elapsed)+1,Math.min(86400,c.t.duration+(a==='plus'?30:-30)));}
-  if(a==='done')toggleWorkoutSetDone(c.ei,c.si);
+  if(a==='done'){toggleWorkoutSetDone(c.ei,c.si);persist();render();if(!activeRestContext())goToNextSet(c.ei,c.si);}
   persist();render();updateFloatingRest();
 },true);
 function updateFloatingRest(){
@@ -86,8 +94,8 @@ function updateFloatingRest(){
   const toggle=root.querySelector('[data-rest-pill=toggle]'),label=c.kind==='preview'?'Запустить перерыв':c.running?'Приостановить перерыв':'Продолжить перерыв';
   if(toggle.getAttribute('aria-label')!==label){toggle.setAttribute('aria-label',label);toggle.innerHTML=icon(c.running?'pause':'play');}toggle.disabled=c.finished;
   root.querySelector('.floating-rest-clock>span:first-child').textContent=c.kind==='preview'?'Перерыв':c.running||c.finished?'Перерыв':'Пауза';
-  // Перерыв прошёл — «Завершить» вместо «Пропустить» (Астамур 26.11.2026).
-  const finish=root.querySelector('[data-rest-pill=finish]'),word=c.finished?'Завершить':'Пропустить';if(finish&&finish.textContent!==word)finish.textContent=word;
+  // Везде «Дальше» (Астамур 26.11.2026): перерыв идёт или прошёл — «Дальше» ведёт к следующему подходу.
+  const finish=root.querySelector('[data-rest-pill=finish]'),word='Дальше';if(finish&&finish.textContent!==word)finish.textContent=word;
   const minus=root.querySelector('[data-rest-pill=minus]');if(minus)minus.disabled=c.finished||(c.kind==='preview'&&(setRestSeconds(c.set)||60)<=30);
   positionFloatingRest(root);
 }
@@ -97,7 +105,7 @@ document.addEventListener('click',event=>{
   if(button.dataset.restPill==='toggle'){if(c.kind==='player')toggleExercisePlayer(c.ei);else toggleSetCountdown('rest',c.ei,c.si);restWidgetSelection=null;restWidgetHidden=null;persist();}
   if(button.dataset.restPill==='extend')shiftFloatingRest(30);
   if(button.dataset.restPill==='minus')shiftFloatingRest(-30);
-  if(button.dataset.restPill==='finish')finishFloatingRest();
+  if(button.dataset.restPill==='finish'){const from=c.kind==='preview'?null:{ei:c.ei,si:c.si};finishFloatingRest();if(from){render();goToNextSet(from.ei,from.si);}}
   if(['finish','toggle'].includes(button.dataset.restPill))render();updateFloatingRest();
 },true);
 document.addEventListener('change',event=>{const input=event.target;if(!input.matches?.('[data-rest-pill-time]'))return;if(!setFloatingRestTime(input.value)){toast('Перерыв: от 0:01 до 60:00');const c=activeRestContext();if(c)input.value=countdownTime(Math.ceil(c.remaining));}updateFloatingRest();});
