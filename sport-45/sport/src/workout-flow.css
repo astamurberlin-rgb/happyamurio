@@ -24,3 +24,15 @@
 /* Виджет перерыва: «Пропустить» / «Завершить» помещается, у ▶/❚❚ снова контур */
 .floating-rest-pill .floating-rest-finish{width:auto;min-width:0;padding:0 var(--happy-space-15)}
 .floating-rest-pill .floating-rest-toggle{border:1px solid var(--happy-stepper-line)!important}
+/* Строка подхода «как в блокноте»: без шапки и подчёркиваний, единица после числа, цифры и × крупнее */
+.set-rows .set-line.set-line.wf-note{min-height:52px}
+.set-rows .set-line.wf-note .set-x{font-size:24px;font-weight:400;color:var(--happy-muted)}
+.set-rows .set-line.set-line.wf-note .sport-metric-input{display:flex!important;align-items:baseline;justify-content:flex-end;gap:var(--happy-space-3);border-bottom:0!important;box-shadow:none!important}
+.set-rows .set-line.set-line.wf-note .sport-metric-input:focus-within{border-bottom:0!important;box-shadow:none!important}
+.set-rows .set-line.set-line.wf-note .sport-metric-input input{flex:1 1 auto;width:auto!important;min-width:0;padding:var(--happy-space-10) 0!important;font-size:20px!important;font-weight:700!important;line-height:24px!important;text-align:right!important;border:0!important;background:none!important}
+.set-rows .set-line.set-line.wf-note .sport-metric-input input:focus{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.set-rows .set-line.set-line.wf-note .sport-metric-input input::placeholder{color:var(--happy-dim)}
+.set-rows .set-line.set-line.wf-note .sport-metric-unit{display:inline!important;flex:none;padding:0!important;font-size:14px!important;font-weight:400!important;color:var(--happy-muted)!important;opacity:1!important}
+/* Тонкая линия перерыва между подходами */
+.wf-rest-line{display:flex;align-items:center;gap:var(--happy-space-10);width:100%;min-height:var(--happy-size-pill);margin:0;padding:0;border:0;background:none;color:var(--happy-muted);font:inherit;font-size:12px;font-weight:400;cursor:pointer}
+.wf-rest-line::before,.wf-rest-line::after{content:"";flex:1;height:1px;background:var(--happy-row-divider)}

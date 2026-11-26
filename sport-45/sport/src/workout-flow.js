@@ -27,7 +27,7 @@ function workoutFlowApplyLast(e){
  for(const s of e.sets||[]){
   if(s.done)continue;
   const list=byType[s.type]||byType.main||last,i=seen[s.type]=(seen[s.type]??-1)+1,src=list[Math.min(i,list.length-1)];
-  for(const k of metrics)if(Number(src[k])>0)s[k]=src[k];
+  for(const k of metrics)if(Number(src[k])>0){s[k]=src[k];if(k==='weight')s.weightEdited=true;}   // вес прошлого раза не перезаписывается весом соседнего подхода
  }
  return true;
 }
@@ -114,3 +114,25 @@ window.addEventListener('click',e=>{
 
 /* 7. Виджет перерыва (Астамур 26.11.2026): правка в rest-pill.js — без «окончен», «Завершить» вместо «Пропустить»;
  *    кнопка длиннее и контур у ▶/❚❚ — в workout-flow.css. */
+
+/* 8. Строка подхода «как в блокноте» (Астамур 26.11.2026, голосом): без шапки и без подчёркиваний под числами;
+ *    единица сразу после числа («60 кг × 10 повт.»); цифры и × крупнее; между подходами, если есть перерыв, —
+ *    тонкая линия со словом «перерыв» посередине (нажал — открылся перерыв этого подхода). Ввод прежний: с клавиатуры. */
+function workoutFlowNoteCols(e,metrics){
+ const unit=k=>k==='seconds'?0:setLineUnit(k,e.id).length;
+ const cols=['minmax(0,1fr)'];
+ metrics.forEach((k,j)=>{const chars=Math.max(1,...e.sets.map(s=>setLineValueText(s,k)==='—'?2:setLineValueText(s,k).length));if(j)cols.push('16px');cols.push(Math.ceil(chars*12.5+unit(k)*7.5+(unit(k)?6:0)+4)+'px');});
+ cols.push('46px');return cols.join(' ');
+}
+{const linesBeforeNote=activeSetLines;
+ activeSetLines=function(e,ei){
+  const html=linesBeforeNote(e,ei),metrics=setLineMetrics(exerciseMetrics(e)),cols=workoutFlowNoteCols(e,metrics);
+  const root=document.createElement('div');root.innerHTML=html;
+  root.querySelector('.set-head')?.remove();
+  root.querySelectorAll('.set-row.set-line').forEach(r=>{r.classList.add('wf-note');r.style.setProperty('--set-cols',cols);});
+  const rows=[...root.querySelectorAll('.set-rows>.set-swipe')];
+  rows.forEach((row,si)=>{if(si===rows.length-1)return;const rest=setRestSeconds(e.sets[si])??[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);
+   row.insertAdjacentHTML('afterend',`<button type="button" class="wf-rest-line" data-action="wf-rest-open" data-ei="${ei}" data-si="${si}" aria-label="Перерыв после подхода ${si+1}: ${sportDurationValue(rest)}"><span>перерыв ${sportDurationValue(rest)}</span></button>`);});
+  return root.innerHTML;
+ };}
+window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="wf-rest-open"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(typeof openRestWidget==='function')openRestWidget(Number(b.dataset.ei),Number(b.dataset.si));},true);
