@@ -65,8 +65,6 @@
   padding: 5px;
   border: 1px solid var(--happy-field-line);
   border-radius: 15px;
-  background: var(--hs-seg-bg);
-  color: var(--happy-dock-ink);
   box-shadow: 0 8px 26px color-mix(in srgb, var(--happy-dock-ink) 20%, transparent);
 }
 .jd-toolbar .jd-popover button {
@@ -78,8 +76,9 @@
   font-size: 15px;
   border-radius: 8px;
 }
-.jd-popover button:is(:hover,:focus-visible) { background: var(--jd-control-fill); }
-.jd-list-menu { inset-inline:auto 0; background:var(--hs-seg-bg); color:var(--happy-dock-ink); }
+.jd-popover button:is(:hover,:focus-visible),
+.jd-menu>div .jd-btn:is(:hover,:focus-visible) { background: var(--hs-glass); }
+.jd-list-menu { inset-inline:auto 0; }
 .jd-toolbar .jd-list-menu button { display:flex; align-items:center; gap:8px; color:inherit; }
 .jd-list-menu button span { width:1.5em; text-align:center; }
 .jd-prose :is(ul,ol),.jd-prose-read :is(ul,ol) { margin:.25em 0; padding-inline-start:1.65em; }
@@ -117,23 +116,7 @@
 [data-screen="care-entry"]>.top h1 {white-space:normal;overflow-wrap:anywhere;font-size:clamp(28px,5vw,36px);line-height:1.15}
 .jd-gallery>:has(.jd-portrait):not(:only-child) {flex-basis:36.45%}
 .jd-gallery .jd-portrait img {aspect-ratio:2/3}
-body.sheet .jd-menu[open]>div {
-  background: var(--hs-seg-bg);
-  color: var(--happy-dock-ink);
-  opacity: 1;
-  backdrop-filter: none;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--happy-dock-ink) 18%, transparent);
-}
-body.sheet dialog.jd-book-dialog[open] {
-  background: var(--happy-sheet, var(--hs-sheet-bg, var(--happy-base)));
-  background-color: var(--happy-base);
-  color:var(--ink);
-  border-color:var(--glassBrd);
-  opacity:1;
-  backdrop-filter:none;
-}
-body.sheet dialog.jd-book-dialog .jd-btn,
-body.sheet .jd-menu[open]>div .jd-btn {
+body.sheet dialog.jd-book-dialog .jd-btn {
   background: var(--jd-control-fill);
   color: var(--happy-dock-ink);
 }

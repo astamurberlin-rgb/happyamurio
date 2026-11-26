@@ -77,9 +77,22 @@
 .jd-detail .jd-head{align-items:flex-start}.jd-detail.card h2{font-size:20px}
 .jd-detail .care-long{margin:8px 0 14px}.jd-detail .care-long:empty{display:none}
 .jd-addition{border-top:1px solid var(--glassBrd);margin-top:15px;padding-top:13px}
-.jd-menu{position:relative}.jd-menu>div{position:absolute;right:0;top:46px;z-index:3;display:grid;gap:5px;min-width:150px;padding:6px;background:var(--happy-sheet);border:1px solid var(--glassBrd);border-radius:18px}
-.jd-dialog{box-sizing:border-box;position:fixed;width:min(calc(100% - 24px),660px);max-height:86dvh;overflow:auto;border:1px solid var(--glassBrd);border-radius:22px;padding:14px;color:var(--ink);background:var(--happy-sheet);box-shadow:0 14px 45px #0004}
-.jd-dialog::backdrop{background:#0008}.jd-dialog-head{margin-bottom:12px}
+.jd-menu{position:relative}
+.jd-dialog,.jd-popover,.jd-menu>div{
+  color:var(--happy-ink);
+}
+.jd-menu>div{
+  position:absolute;right:0;top:46px;z-index:3;display:grid;gap:5px;min-width:150px;padding:6px;
+  border:1px solid var(--glassBrd);border-radius:18px;
+  box-shadow:0 8px 24px color-mix(in srgb, var(--happy-dock-ink) 18%, transparent);
+}
+.jd-menu>div .jd-btn{color:inherit}
+.jd-dialog{
+  box-sizing:border-box;position:fixed;width:min(calc(100% - 24px),660px);max-height:86dvh;overflow:auto;padding:14px;
+  border:1px solid var(--hs-border);border-radius:var(--happy-radius-sheet);box-shadow:var(--happy-shadow-sheet);
+}
+.jd-dialog::backdrop{background:var(--happy-sheet-scrim)}
+.jd-dialog-head{margin-bottom:var(--happy-space-12)}
 .jd-dialog-foot{justify-content:flex-end;margin-top:12px}
 .jd-paper{padding:15px 17px;background:white;color:#151515;border-radius:12px;overflow-wrap:anywhere}
 .jd-paper article+article{margin-top:18px;padding-top:16px;border-top:1px solid #bbb}

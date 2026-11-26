@@ -855,8 +855,11 @@ body.diary-open:not(.card-open) .fab .fabX{display:none}
 .ask{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
   padding:24px;background:rgba(4,40,80,.45);backdrop-filter:blur(8px)}
 .ask.on{display:flex}
+.askBox,.impSheet,.icSheet,.jDlg,.jd-dialog,.jd-popover,.jd-menu>div{
+  background:var(--hs-sheet-bg, var(--happy-base));
+}
 .askBox{width:100%;max-width:400px;border-radius:24px;padding:20px;
-  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.97),rgba(40,178,248,.97)));border:1px solid rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.5);
   box-shadow:0 20px 50px rgba(4,30,70,.45)}
 .askBox h3{margin:0 0 14px;font-size:16px;font-weight:700}
 .askBox input{width:100%;font-size:16px}
@@ -868,9 +871,7 @@ body.diary-open:not(.card-open) .fab .fabX{display:none}
 .imp.on .impScrim{opacity:1}
 .impSheet{position:absolute;left:0;right:0;bottom:0;
   padding:22px 20px calc(112px + env(safe-area-inset-bottom));
-  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.96),rgba(40,178,248,.96)));
   border-top:1px solid rgba(255,255,255,.55);
-  backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
   box-shadow:0 -8px 30px rgba(4,40,80,.18);
   border-radius:26px 26px 0 0;
   transform:translateY(102%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
@@ -1077,7 +1078,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icLayer.on .icScrim{opacity:1}
 .icSheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 40px - env(safe-area-inset-top));display:flex;flex-direction:column;
   padding-top:6px;border-radius:22px 22px 0 0;border-top:1px solid rgba(255,255,255,.55);
-  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.985),rgba(40,178,248,.985)));box-shadow:0 -8px 30px rgba(4,40,80,.18);
+  box-shadow:0 -8px 30px rgba(4,40,80,.18);
   transform:translateY(102%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
 .icLayer.on .icSheet{transform:none}
 @media (prefers-reduced-motion:reduce){.icSheet{transition:none}}
@@ -1274,7 +1275,7 @@ a.btn{display:inline-block;text-decoration:none}
 .jLnk{display:block;margin:14px auto 0;padding:10px 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;opacity:.92}
 .jDlgW{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:calc(90px + env(safe-area-inset-top)) 22px 0;background:rgba(4,40,80,.45)}
 .jDlgW[hidden]{display:none}
-.jDlg{width:100%;max-width:420px;border-radius:24px;padding:20px;color:var(--happy-ink);background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.98),rgba(40,178,248,.98)));
+.jDlg{width:100%;max-width:420px;border-radius:24px;padding:20px;color:var(--happy-ink);
   border:1px solid rgba(255,255,255,.5);box-shadow:0 20px 50px rgba(4,30,70,.45)}
 .jDlg h3{margin:0;font-size:16px;font-weight:700}
 .jCk{position:relative;display:flex;align-items:center;gap:12px;min-height:50px;padding:8px 12px;margin-bottom:7px;border-radius:14px;background:var(--happy-glass);cursor:pointer}
@@ -1805,9 +1806,9 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-sample.js?v=62"></script>
 <script src="./day-sample.js?v=62"></script>
 <script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 62')}catch(e){}</script>
-<link rel="stylesheet" href="./diary.css?v=8">
+<link rel="stylesheet" href="./diary.css?v=9">
 <link rel="stylesheet" href="./diary-navigation.css?v=1">
-<link rel="stylesheet" href="./diary-composer.css?v=8">
+<link rel="stylesheet" href="./diary-composer.css?v=9">
 <link rel="stylesheet" href="./diary-wave.css?v=4">
 <script src="./diary-media.js?v=2"></script>
 <script src="./diary-wave.js?v=2"></script>

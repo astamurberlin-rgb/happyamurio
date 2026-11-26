@@ -1191,8 +1191,11 @@ body.diary-open:not(.card-open) .fab .fabX{display:none}
 .ask{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
   padding:24px;background:rgba(4,40,80,.45);backdrop-filter:blur(8px)}
 .ask.on{display:flex}
+.askBox,.impSheet,.icSheet,.jDlg,.jd-dialog,.jd-popover,.jd-menu>div{
+  background:var(--hs-sheet-bg, var(--happy-base));
+}
 .askBox{width:100%;max-width:400px;border-radius:24px;padding:20px;
-  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.97),rgba(40,178,248,.97)));border:1px solid rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.5);
   box-shadow:0 20px 50px rgba(4,30,70,.45)}
 .askBox h3{margin:0 0 14px;font-size:16px;font-weight:700}
 .askBox input{width:100%;font-size:16px}
@@ -1204,9 +1207,7 @@ body.diary-open:not(.card-open) .fab .fabX{display:none}
 .imp.on .impScrim{opacity:1}
 .impSheet{position:absolute;left:0;right:0;bottom:0;
   padding:22px 20px calc(112px + env(safe-area-inset-bottom));
-  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.96),rgba(40,178,248,.96)));
   border-top:1px solid rgba(255,255,255,.55);
-  backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
   box-shadow:0 -8px 30px rgba(4,40,80,.18);
   border-radius:26px 26px 0 0;
   transform:translateY(102%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
@@ -1413,7 +1414,7 @@ mark.lkAnch b{display:inline-block;margin-left:3px;padding:1px 8px;border-radius
 .icLayer.on .icScrim{opacity:1}
 .icSheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 40px - env(safe-area-inset-top));display:flex;flex-direction:column;
   padding-top:6px;border-radius:22px 22px 0 0;border-top:1px solid rgba(255,255,255,.55);
-  background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.985),rgba(40,178,248,.985)));box-shadow:0 -8px 30px rgba(4,40,80,.18);
+  box-shadow:0 -8px 30px rgba(4,40,80,.18);
   transform:translateY(102%);transition:transform .42s cubic-bezier(.25,.8,.25,1)}
 .icLayer.on .icSheet{transform:none}
 @media (prefers-reduced-motion:reduce){.icSheet{transition:none}}
@@ -1610,7 +1611,7 @@ a.btn{display:inline-block;text-decoration:none}
 .jLnk{display:block;margin:14px auto 0;padding:10px 12px;border:0;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;opacity:.92}
 .jDlgW{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:calc(90px + env(safe-area-inset-top)) 22px 0;background:rgba(4,40,80,.45)}
 .jDlgW[hidden]{display:none}
-.jDlg{width:100%;max-width:420px;border-radius:24px;padding:20px;color:var(--happy-ink);background:var(--happy-sheet,linear-gradient(180deg,rgba(86,205,252,.98),rgba(40,178,248,.98)));
+.jDlg{width:100%;max-width:420px;border-radius:24px;padding:20px;color:var(--happy-ink);
   border:1px solid rgba(255,255,255,.5);box-shadow:0 20px 50px rgba(4,30,70,.45)}
 .jDlg h3{margin:0;font-size:16px;font-weight:700}
 .jCk{position:relative;display:flex;align-items:center;gap:12px;min-height:50px;padding:8px 12px;margin-bottom:7px;border-radius:14px;background:var(--happy-glass);cursor:pointer}
@@ -4101,9 +4102,22 @@ body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg
 .jd-detail .jd-head{align-items:flex-start}.jd-detail.card h2{font-size:20px}
 .jd-detail .care-long{margin:8px 0 14px}.jd-detail .care-long:empty{display:none}
 .jd-addition{border-top:1px solid var(--glassBrd);margin-top:15px;padding-top:13px}
-.jd-menu{position:relative}.jd-menu>div{position:absolute;right:0;top:46px;z-index:3;display:grid;gap:5px;min-width:150px;padding:6px;background:var(--happy-sheet);border:1px solid var(--glassBrd);border-radius:18px}
-.jd-dialog{box-sizing:border-box;position:fixed;width:min(calc(100% - 24px),660px);max-height:86dvh;overflow:auto;border:1px solid var(--glassBrd);border-radius:22px;padding:14px;color:var(--ink);background:var(--happy-sheet);box-shadow:0 14px 45px #0004}
-.jd-dialog::backdrop{background:#0008}.jd-dialog-head{margin-bottom:12px}
+.jd-menu{position:relative}
+.jd-dialog,.jd-popover,.jd-menu>div{
+  color:var(--happy-ink);
+}
+.jd-menu>div{
+  position:absolute;right:0;top:46px;z-index:3;display:grid;gap:5px;min-width:150px;padding:6px;
+  border:1px solid var(--glassBrd);border-radius:18px;
+  box-shadow:0 8px 24px color-mix(in srgb, var(--happy-dock-ink) 18%, transparent);
+}
+.jd-menu>div .jd-btn{color:inherit}
+.jd-dialog{
+  box-sizing:border-box;position:fixed;width:min(calc(100% - 24px),660px);max-height:86dvh;overflow:auto;padding:14px;
+  border:1px solid var(--hs-border);border-radius:var(--happy-radius-sheet);box-shadow:var(--happy-shadow-sheet);
+}
+.jd-dialog::backdrop{background:var(--happy-sheet-scrim)}
+.jd-dialog-head{margin-bottom:var(--happy-space-12)}
 .jd-dialog-foot{justify-content:flex-end;margin-top:12px}
 .jd-paper{padding:15px 17px;background:white;color:#151515;border-radius:12px;overflow-wrap:anywhere}
 .jd-paper article+article{margin-top:18px;padding-top:16px;border-top:1px solid #bbb}
@@ -4252,8 +4266,6 @@ body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg
   padding: 5px;
   border: 1px solid var(--happy-field-line);
   border-radius: 15px;
-  background: var(--hs-seg-bg);
-  color: var(--happy-dock-ink);
   box-shadow: 0 8px 26px color-mix(in srgb, var(--happy-dock-ink) 20%, transparent);
 }
 .jd-toolbar .jd-popover button {
@@ -4265,8 +4277,9 @@ body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg
   font-size: 15px;
   border-radius: 8px;
 }
-.jd-popover button:is(:hover,:focus-visible) { background: var(--jd-control-fill); }
-.jd-list-menu { inset-inline:auto 0; background:var(--hs-seg-bg); color:var(--happy-dock-ink); }
+.jd-popover button:is(:hover,:focus-visible),
+.jd-menu>div .jd-btn:is(:hover,:focus-visible) { background: var(--hs-glass); }
+.jd-list-menu { inset-inline:auto 0; }
 .jd-toolbar .jd-list-menu button { display:flex; align-items:center; gap:8px; color:inherit; }
 .jd-list-menu button span { width:1.5em; text-align:center; }
 .jd-prose :is(ul,ol),.jd-prose-read :is(ul,ol) { margin:.25em 0; padding-inline-start:1.65em; }
@@ -4304,23 +4317,7 @@ body.sheet .fab,body.card-open .fab{transform:translate(-50%,-50%) rotate(-45deg
 [data-screen="care-entry"]>.top h1 {white-space:normal;overflow-wrap:anywhere;font-size:clamp(28px,5vw,36px);line-height:1.15}
 .jd-gallery>:has(.jd-portrait):not(:only-child) {flex-basis:36.45%}
 .jd-gallery .jd-portrait img {aspect-ratio:2/3}
-body.sheet .jd-menu[open]>div {
-  background: var(--hs-seg-bg);
-  color: var(--happy-dock-ink);
-  opacity: 1;
-  backdrop-filter: none;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--happy-dock-ink) 18%, transparent);
-}
-body.sheet dialog.jd-book-dialog[open] {
-  background: var(--happy-sheet, var(--hs-sheet-bg, var(--happy-base)));
-  background-color: var(--happy-base);
-  color:var(--ink);
-  border-color:var(--glassBrd);
-  opacity:1;
-  backdrop-filter:none;
-}
-body.sheet dialog.jd-book-dialog .jd-btn,
-body.sheet .jd-menu[open]>div .jd-btn {
+body.sheet dialog.jd-book-dialog .jd-btn {
   background: var(--jd-control-fill);
   color: var(--happy-dock-ink);
 }
