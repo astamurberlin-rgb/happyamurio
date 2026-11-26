@@ -90,3 +90,12 @@
 .wf-mid .floating-rest-step.floating-rest-step{flex:none;width:var(--happy-size-pill)!important;min-width:0!important;height:var(--happy-size-pill)!important;border-radius:50%!important;border:0!important;background:var(--happy-glass)!important;color:var(--happy-ink)!important}
 .floating-set-pill .floating-rest-clock>span:first-child{max-width:100%}
 .floating-set-pill .floating-rest-finish{color:var(--hs-primary)!important}
+
+/* 12. Картинка упражнения 52 слева от названия в карточке тренировки (макет «Фокус»). */
+.active-workout .exercise-name-info:has(.wf-ex-pic){grid-template-columns:var(--happy-size-list-image) minmax(0,1fr) var(--happy-size-pill);align-items:center;column-gap:var(--happy-space-12)}
+.exercise-name-info>h3{flex:1;min-width:0}
+.wf-ex-pic{flex:none;width:var(--happy-size-list-image);height:var(--happy-size-list-image);display:grid;place-items:center}
+.wf-ex-pic .sport-icon{width:100%;height:100%;object-fit:contain}
+.active-workout .exercise-name-info:has(.wf-ex-pic)>.wf-ex-pic{grid-column:1;grid-row:1}
+.active-workout .exercise-name-info:has(.wf-ex-pic)>h3{grid-column:2;grid-row:1}
+.active-workout .exercise-name-info:has(.wf-ex-pic)>.wf-ex-menu-wrap{grid-column:3;grid-row:1;align-self:center}

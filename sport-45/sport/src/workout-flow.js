@@ -149,6 +149,9 @@ function workoutFlowNoteTitle(text){const line=String(text||'').trim().split('\n
   const root=document.createElement('div');root.innerHTML=exerciseBeforeMenu(e,ei);
   const tech=root.querySelector('.exercise-technique[data-action="configure-exercise"]');
   if(tech)tech.outerHTML=`<span class="wf-ex-menu-wrap"><button type="button" class="exercise-menu-button" data-action="wf-ex-menu" data-ei="${ei}" aria-haspopup="menu" aria-expanded="false" aria-label="Ещё: ${esc(e.name)}">${EXERCISE_DOTS}</button></span>`;
+  // Картинка упражнения 52 у названия (Астамур 26.11.2026 о макете «Фокус»: «хорошая идея, крючки для глаз»).
+  const h=root.querySelector('.exercise-name-info>h3'),def=exercise(e.id)||e,pic=typeof exerciseSportIcon==='function'?sportIconMarkup(exerciseSportIcon(def)):'';
+  if(h&&pic)h.insertAdjacentHTML('beforebegin',`<span class="wf-ex-pic" aria-hidden="true">${pic}</span>`);
   const row=root.querySelector('.exercise-note-row');
   if(row){const text=String(e.notes||'').trim(),pin=row.querySelector('.note-pin');
    if(!text)row.remove();
