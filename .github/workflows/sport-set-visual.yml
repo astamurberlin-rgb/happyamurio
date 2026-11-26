@@ -16,11 +16,6 @@ on:
       - 'scripts/browser/baselines/sport-set.png'
       - '.github/workflows/sport-set-visual.yml'
   workflow_dispatch:
-    inputs:
-      probe:
-        description: 'Проверить реакцию на добавленную линию (ожидается красная проверка)'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -28,7 +23,7 @@ permissions:
 jobs:
   visual:
     concurrency:
-      group: sport-set-${{ github.ref }}-${{ inputs.probe || false }}
+      group: sport-set-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -37,7 +32,7 @@ jobs:
       options: --ipc=host
     env:
       HAPPY_OUT: /tmp/happy-sport-visual
-      HAPPY_SPORT_VISUAL: ${{ inputs.probe && 'probe' || 'check' }}
+      HAPPY_SPORT_VISUAL: check
     steps:
       - uses: actions/checkout@v4
         with:

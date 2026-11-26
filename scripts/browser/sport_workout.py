@@ -57,7 +57,7 @@ with sync_playwright() as p:
     if visual_mode:
         from sport_set_visual import check_set_picture
         out["set_picture"] = check_set_picture(
-            page, rows0.last, page.locator("#exercise-body-0 .set-add"), OUT, visual_mode == "probe"
+            page, rows0.last, page.locator("#exercise-body-0 .set-add"), OUT
         )
 
     # кружок: подход отмечен, пошёл перерыв, кольцо на кружке

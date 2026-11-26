@@ -52,18 +52,10 @@ def compare(reference, current, report_path):
     return changed
 
 
-def check_set_picture(page, row, button, output, probe=False):
+def check_set_picture(page, row, button, output):
     output = Path(output)
     actual = output / "sport-set-current.png"
-    # Пробная линия существует только в этой вкладке на время одного снимка.
-    style = None
-    if probe:
-        style = page.add_style_tag(content="#exercise-body-0 button.set-add { box-shadow: inset 0 1px 0 white !important; }")
-    try:
-        capture(page, row, button, actual)
-    finally:
-        if style:
-            style.evaluate("node => node.remove()")
+    capture(page, row, button, actual)
 
     if not REFERENCE.is_file():
         return {"matches": False, "message": "Эталон отсутствует. Снимок сохранён в sport-set-current.png."}
