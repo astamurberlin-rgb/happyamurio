@@ -375,7 +375,7 @@ input#dpNewArc:focus{box-shadow:none;border-bottom-color:var(--happy-ink,#fff)}
 .dp-sugi:active{background:rgba(255,255,255,.18)}
 
 /* ── v9 (набросок Астамура 22.11.2026): время над ручкой — плашка с хвостиком. С v13 — у раскрытой строки списка (.dp-bubs) ── */
-.dp-bubs .dp-hd>span.dp-bub{top:-12px;height:28px;padding:0 10px;line-height:28px;border-radius:10px;font-size:14px;font-weight:700;
+.dp-bubs .dp-hd>span.dp-bub{top:-12px;height:28px;padding:0 10px;line-height:28px;border-radius:var(--happy-radius-bubble,12px);font-size:14px;font-weight:700;
   background:rgba(255,255,255,.94);color:var(--happy-accent-ink,#0C6FA8);box-shadow:0 4px 12px rgba(4,40,80,.22);transform:none;pointer-events:none}
 .dp-bubs .dp-hd>span.dp-bub::after{content:'';position:absolute;bottom:-5px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid rgba(255,255,255,.94)}
 .dp-bubs .dp-hd>span.dp-tr{left:auto;right:calc(50% - 10px);border-bottom-right-radius:3px}

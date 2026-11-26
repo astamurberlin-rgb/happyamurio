@@ -20,7 +20,7 @@ function init(db,today){
  c.checkinSection=c.checkinSection||{k:'care_current',t:'Текущие отметки',h:'',scales:['energy','focus','drive','anx'].filter(k=>(db.metrics||[]).some(m=>m.k===k)),tags:[]};
  /* 57.4: «Начальный режим» виджета энергии — поле start, по умолчанию «баланс» (решение владельца 11.11.2026).
     Прежнее поле mode менялось каждым нажатием на кольцо и поэтому настройкой не считается: оно остаётся в записях,
-    но больше не читается. Выбор нажатием теперь живёт до закрытия страницы и в дневник не пишется. */
+    но больше не читается. Выбор нажатием — отдельное поле energyView (25.11.2026, Астамур): хранится в аккаунте. */
  c.activitySettings=Object.assign({start:'balance',scale:3000},c.activitySettings||{});
  if(!['spent','eat','balance'].includes(c.activitySettings.start))c.activitySettings.start='balance';
  c.planHistory=c.planHistory||[];

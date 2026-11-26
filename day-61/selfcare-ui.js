@@ -429,12 +429,19 @@ function activityFacts(){
  return {goals:H.goals||{},food:food?{...food,g:DB.mealLink?.goals||{}}:null,eaten:food?.k??null,spent:H.spent??null,rest:H.rest??null,training:calories.length&&calories.every(C.finite)?calories.reduce((n,v)=>n+v,0):null,minutes:workouts.length?workouts.reduce((n,w)=>n+(w.min||0),0):a.connected?0:null,steps:H.steps??null};
 }
 /* 57.4: вид виджета — «Начальный режим» из настроек (по умолчанию «баланс»); в дневник не записывается. */
-/* 25.11.2026 (Астамур): вид запоминается на устройстве — каким оставил, таким и откроется. «Начальный режим» в настройках —
-   вид при первом открытии; сохранил настройку — виджет сразу переходит на неё. Порядок нажатий общий: съедено → баланс → потрачено. */
-const ENERGY_MODE_KEY='happy.day.energyMode';
-let energyMode=(()=>{try{const v=localStorage.getItem(ENERGY_MODE_KEY);return ['eat','balance','spent'].includes(v)?v:null}catch(e){return null}})();
-function saveEnergyMode(){try{energyMode?localStorage.setItem(ENERGY_MODE_KEY,energyMode):localStorage.removeItem(ENERGY_MODE_KEY)}catch(e){}}
-function paintEnergy(){const el=$('careEnergy');if(el)el.innerHTML=HappyDayEnergy.render(activityFacts(),energyMode||data().activitySettings.start,data().activitySettings.scale);}
+/* 25.11.2026 (Астамур): выбранный вид хранится в аккаунте — поле energyView в документе care общего модуля, на всех
+   устройствах одинаково; переключил — остаётся, пока сам не поменяешь. Не выбран — «Начальный режим» из настроек
+   (по умолчанию «баланс»); сохранил настройку — виджет сразу переходит на неё. Порядок нажатий общий: съедено → баланс → потрачено.
+   Без входа записей нет: вид меняется только до закрытия страницы, без просьбы войти. */
+const ENERGY_MODES=['eat','balance','spent'];
+let guestEnergyView=null;
+function energyView(){const c=data(),v=guestEnergyView||c.energyView;return ENERGY_MODES.includes(v)?v:c.activitySettings.start;}
+function cycleEnergy(){
+ const next=ENERGY_MODES[(ENERGY_MODES.indexOf(energyView())+1)%3];
+ if(RO||!DayData.signedIn()){guestEnergyView=next;paintEnergy();return;}
+ guestEnergyView=null;data().energyView=next;save();paintEnergy();
+}
+function paintEnergy(){const el=$('careEnergy');if(el)el.innerHTML=HappyDayEnergy.render(activityFacts(),energyView(),data().activitySettings.scale);}
 function renderActivity(){
  const c=data(),a=C.activity(c,curDate);
  block('activity').innerHTML=header('Активность')+'<section class="card happy-energy" id="careEnergy" aria-label="Энергия и активность"></section><div class="eyebrow">Расписание</div>'+a.plans.map(p=>'<div class="card"><b>'+h(p.start.slice(11,16))+' · '+h(p.title)+'</b><p class="care-help">'+p.minutes+' мин · '+(p.status==='completed'||p.status==='partial'?'выполнено':'план')+'</p>'+(p.note?'<p class="care-long">'+h(p.note)+'</p>':'')+'</div>').join('')+(a.plans.length?'':empty('На этот день тренировок в расписании нет.'))+'<div class="card"><h2>Happy Sport</h2><p class="care-help">Тренировки и плановые занятия приходят из Happy Sport сами.</p><a class="btn solid care-external" href="'+STRONG_URL+'" data-happy-app="sport" target="_blank" rel="noopener">Открыть Sport ↗</a></div>';
@@ -477,7 +484,7 @@ function renderSettingsPage(kind){
  if(kind==='mood')html+='<form id="careMoodSettingsForm" class="card care-form">'+moodSettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
  if(kind==='mind')html+='<form id="careMindSettingsForm" class="card care-form">'+mindSettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form><p class="care-help care-note">Расписание практик — на странице «Осознанность»: «+» над списком.</p>';
  if(kind==='diary')html+='<div class="card"><h2>Мои дневники</h2>'+c.books.map(b=>'<div class="care-setting-row"><span>'+h(b.name)+'</span></div>').join('')+'<button class="btn care-submit" data-care-book>Добавить дневник</button></div><form id="careDiarySettingsForm" class="card care-form">'+diarySettings(c,s)+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
- if(kind==='activity')html+='<form id="careActivitySettingsForm" class="card care-form"><h2>Виджет энергии</h2><label for="careEnergyMode">Начальный режим</label><select id="careEnergyMode" name="start">'+options(c.activitySettings.start,[['balance','Баланс'],['eat','Съедено'],['spent','Потрачено']])+'</select><p class="care-help">С этого вида виджет открывается. Нажатие на кольцо меняет вид до следующего открытия.</p><label for="careEnergyScale">Масштаб кольца, ккал</label>'+numField('id="careEnergyScale" name="scale" required value="'+c.activitySettings.scale+'"','ккал')+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
+ if(kind==='activity')html+='<form id="careActivitySettingsForm" class="card care-form"><h2>Виджет энергии</h2><label for="careEnergyMode">Начальный режим</label><select id="careEnergyMode" name="start">'+options(c.activitySettings.start,[['balance','Баланс'],['eat','Съедено'],['spent','Потрачено']])+'</select><p class="care-help">С этого вида виджет открывается. Нажатие на кольцо меняет вид, и он остаётся таким на всех устройствах.</p><label for="careEnergyScale">Масштаб кольца, ккал</label>'+numField('id="careEnergyScale" name="scale" required value="'+c.activitySettings.scale+'"','ккал')+'<button type="submit" class="btn solid care-submit">Сохранить</button></form>';
  screen.innerHTML=html;
  if(host){if(kind==='mood'){screen.querySelector('form').before(host);renderCheckinSettings();}else block('settings-mood').append(host);}
 }
@@ -489,7 +496,7 @@ async function click(ev){
  if(b.hasAttribute('data-care-open')){open(b.dataset.careOpen);return;}
  if(b.dataset.careEntry){open('entry',b.dataset.careEntry);return;}
  if(b.hasAttribute('data-care-book')){const name=await ask('Название дневника','');if(name?.trim()&&await transact(()=>data().books.push({id:C.uid(),name:name.trim().slice(0,80)})))renderSettingsPage('diary');return;}
- if(b.hasAttribute('data-energy-cycle')){const modes=['eat','balance','spent'];energyMode=modes[(modes.indexOf(energyMode||data().activitySettings.start)+1)%3];saveEnergyMode();paintEnergy();return;}
+ if(b.hasAttribute('data-energy-cycle')){cycleEnergy();return;}
  if(b.hasAttribute('data-care-plan-new')){planSheet(null);return;}
  if(b.dataset.carePlanEdit){planSheet(b.dataset.carePlanEdit);return;}
  if(b.dataset.careLogEdit){practiceSheet(b.dataset.careLogEdit);return;}
@@ -573,7 +580,7 @@ async function submit(ev){const f=ev.target;if(!f.id?.startsWith('care'))return;
  if(f.id==='careMindSettingsForm'&&await transact(()=>{const c=data();Object.assign(c.goals,{scheduleEnabled:v.mindMode==='schedule',mindManual:v.mindManual&&HF.parse(v.mindManual)>0?HF.parse(v.mindManual):v.mindMode==='schedule'?c.goals.mindManual:null});C.rememberPlan(c,todayISO());}))toast('Настройки сохранены');
  if(f.id==='careDiarySettingsForm'&&await transact(()=>{const c=data();Object.assign(c.goals,{diaryGoal:v.diaryGoal&&HF.parse(v.diaryGoal)>0?Math.round(HF.parse(v.diaryGoal)):null,countAdditions:!!v.countAdditions});C.rememberPlan(c,todayISO());}))toast('Настройки сохранены');
  if(f.id==='careActivitySettingsForm'&&!(HF.parse(v.scale)>=100&&HF.parse(v.scale)<=20000)){toast('Масштаб кольца — от 100 до 20000 ккал');return;}
- if(f.id==='careActivitySettingsForm'&&await transact(()=>{data().activitySettings={start:['spent','eat','balance'].includes(v.start)?v.start:'balance',scale:HF.parse(v.scale)};})){energyMode=null;saveEnergyMode();toast('Настройки сохранены');}
+ if(f.id==='careActivitySettingsForm'&&await transact(()=>{data().activitySettings={start:['spent','eat','balance'].includes(v.start)?v.start:'balance',scale:HF.parse(v.scale)};delete data().energyView;})){guestEnergyView=null;toast('Настройки сохранены');}
 }
 function journalEvents(date){const d=C.readDay(DB,date),entries=data().entries;
  return d.checkins.map(x=>({t:x.time,m:hmMin(x.time),dot:'#7CE3C9',title:x.sectionTitle||'Отметка дня',sub:(x.sourceSectionTitle?'Форма: '+x.sourceSectionTitle+' · ':'')+checkinText(x),careKind:'mood',careId:x.id,careDate:date})).concat(d.events.map(x=>({t:x.time,m:hmMin(x.time),dot:'#BC61FE',title:x.type==='diary-appended'?'Дополнен дневник':'Запись в дневнике',sub:entries.find(e=>e.id===x.entryId)?.title||x.title,careKind:'entry',careId:x.entryId,careDate:date,additionId:x.additionId})),d.practices.map(x=>({t:x.time,m:hmMin(x.time),dot:'#46FDFC',title:'Осознанность',sub:x.name+' · '+num(x.minutes)+' мин',careKind:'mind',careId:x.id,careDate:date})),C.activity(data(),date).workouts.map(w=>({t:w.start.slice(11,16),m:hmMin(w.start.slice(11,16)),dot:'#FFE19A',title:'Активность · Happy Sport',sub:w.title+' · '+num(w.duration/60)+' мин',careKind:'activity',careId:w.id,careDate:date})));

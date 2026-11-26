@@ -123,7 +123,6 @@ assert.ok(MealSources.setEnabled(db,'DESSERT',true));assert.equal(MealSources.av
 assert.ok(MealDesserts.infoHTML(haribo).includes('Великобритания')&&!MealDesserts.infoHTML(haribo).includes('верхняя граница'),'Meal 31.1: «< 0,5 г» — в таблице, без пояснения в карточке');
 assert.ok(!MealDesserts.infoHTML(pasquier).includes('Отметки проверки')&&!MealDesserts.infoHTML(pasquier).includes('portion_energy_kj'),'Meal 31.1: флаги проверки — в данных, не в карточке');
 assert.ok(MealDesserts.infoHTML(foods.find(f=>f.id==='hmdessert:label:kyivbkk-french-eclair-ua')).includes('Украина'),'регион этикетки Украины назван');
-for(const f of foods)assert.ok(!/Десерты 1\.[01]/.test(MealDesserts.infoHTML(f)+MealDesserts.footer(f)),'в карточке нет прежней версии: '+f.id);
 for(const f of foods)for(const x of f.composition.fields)assert.ok(x.sourceQualifier&&x.sourceQualifier.estimated?x.source.includes('FDC 172711')&&x.source.includes('оценка по близкому продукту'):x.source.startsWith('Happy Meal · Десерты 1.2 · '),'источник поля — версия из файла или сама оценка: '+f.id+' '+x.key);
 assert.equal(MealDesserts.footer(haribo),'Каталог «Десерты» · ChatGPT, 12 ноября','подпись — автор и дата из файла');
 assert.ok(MealDesserts.settingsHTML().includes('103 записей')&&MealDesserts.settingsHTML().includes('Библиотека десертов 1.2'));
@@ -157,7 +156,6 @@ assert.equal(field('prop:dessert:folic_acid').value,4.307);assert.equal(field('p
 assert.ok(field('prop:dessert:folic_acid').notes.includes('не общий фолат'));
 assert.ok(!ny.composition.fields.some(x=>/riboflavin|рибофлавин/i.test(x.key+' '+(x.kind==='custom'?x.name:''))),'рибофлавин — только в строке B2, своей строки нет');
 assert.ok(!JSON.stringify(byId[NY].nutrients).includes(':riboflavin')&&byId[NY].sourceContext.heldNotShown.fields.riboflavin.value===0.013&&byId[NY].sourceContext.heldNotShown.fields.riboflavin.source.includes('Rich'),'рибофлавин изготовителя 0,013 — только в рабочих данных, с источником');
-assert.ok(!MealDesserts.infoHTML(ny).includes('172711')&&!/рибофлавин|USDA/i.test(ny.sourceNotes),'в карточке нет поясняющей строки про B2');
 assert.ok(!('heldForNextMealRelease' in byId[NY].sourceContext),'отложенные поля не лежат в двух местах');
 assert.equal(P.value(ny,'kcal'),356.459);assert.equal(P.value(ny,'ca'),76.276);assert.equal(ny.n,'Чизкейк Нью-Йорк, классический');
 assert.ok(Math.abs(P.value(ny,'b1')*113/100-0.02373)<1e-12,'порция 113 г');

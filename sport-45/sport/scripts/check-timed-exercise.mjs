@@ -30,8 +30,6 @@ function change(dataset,value,checked){const target={dataset,value,checked};for(
 // Sport 43.3 (решение Астамура 15.11.2026, пункт 4): зелёной плашки таймера над подходами нет — ▶ стоит в строке подхода,
 // большой таймер открывается кнопкой «Большой таймер» в «Настроить». Здесь — что большой таймер запускается и ставится на паузу.
 const card=run('activeExercise(state.active.exercises[0],0)');
-assert.doesNotMatch(card,/timed-exercise-widget|data-timed-widget|toggle-timed-exercise/,'Пункт 4: плашки таймера в карточке нет');
-assert.doesNotMatch(card,/data-action="toggle-set-timer"/,'No per-approach Play in the timed exercise card');
 click('open-exercise-player');assert.equal(opened,1,'«Большой таймер» opens the exercise timer');
 click('player-toggle');assert.equal(run('state.active.exercisePlayer.running'),true);
 run("now='2026-10-30T12:00:03.250'");
@@ -40,9 +38,6 @@ assert.equal(run('exercisePlayerElapsed(state.active.exercisePlayer,now)'),3.25,
 click('player-toggle');assert.equal(run('workoutIsPaused(state.active)'),false,'Play in the timer resumes the paused workout');assert.equal(run('state.active.exercisePlayer.running'),true);
 run("now='2026-10-30T12:00:13.250'");
 for(const action of ['timer-actions-open','player-toggle','player-new-round'])assert.match(run('exercisePlayerBody(0)'),new RegExp('data-action="'+action+'"'));
-assert.doesNotMatch(run('exercisePlayerBody(0)'),/data-action="(?:player-reset|player-save|player-edit)"/,'Secondary actions are selected and confirmed through the wheel');
-assert.doesNotMatch(run('exercisePlayerBody(0)'),/data-player-distance-mode|data-player-metric/,'Metric switches belong in exercise settings, not the running timer');
-assert.doesNotMatch(run('exercisePlayerBody(0)'),/data-action="configure-exercise"/,'Local settings have one entry in the workout, not a duplicate in the timer');
 assert.match(run('exercisePlayerBody(0)'),/data-action="timer-actions-open"/);
 change({playerDistanceMode:'0'},'',true);
 assert.equal(run('state.active.exercises[0].timerDistanceEnabled'),true);

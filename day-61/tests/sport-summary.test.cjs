@@ -1,8 +1,8 @@
 'use strict';
 /* Day 59 · Тренировки и плановые занятия Happy Sport приходят в Day сами — из витрины Sport в общем модуле хранения
    (документы sport/summary и sport/plans, формат — shared/happy-sport-summary.js). В дневник Day они не записываются.
-   Пока связь с Sport выключена, начатое после выключения не показывается. Виджет энергии открывается на «баланс»,
-   выбор вида нажатием не запоминается. Настоящий код selfcare-core.js, блок чтения витрины из selfcare-ui.js,
+   Пока связь с Sport выключена, начатое после выключения не показывается. Виджет энергии открывается на «баланс»;
+   выбранный нажатием вид хранится в аккаунте через общий модуль и приходит на второе устройство (Астамур 25.11.2026). Настоящий код selfcare-core.js, блок чтения витрины из selfcare-ui.js,
    свитчи связи из app-links.js, shared/happy-sport-summary.js и shared/happy-app-links.js; хранилище — заглушка,
    записи придуманные. */
 const fs = require('node:fs');
@@ -107,9 +107,35 @@ test('связь с Sport выключена: начатое после выкл
   assert.deepEqual(plain(C.activity(c, DATE).plans.map(p => p.id)), ['до', 'после']);
 });
 
-test('выбранный вид кольца в дневник не пишется; тренировки и замеры Sport в дневнике Day не хранятся', () => {
+test('выбранный вид кольца хранится в аккаунте и приходит на второе устройство; тренировки и замеры Sport в дневнике Day не хранятся', () => {
   const ui = read('selfcare-ui.js'), core = read('selfcare-core.js'), docs = read('day-docs.js');
-  assert.ok(ui.includes("if(b.hasAttribute('data-energy-cycle')){const modes=['spent','balance','eat'];energyMode=modes[(modes.indexOf(energyMode||data().activitySettings.start)+1)%3];paintEnergy();return;}"), 'нажатие меняет вид только в памяти');
+  const D = require('../day-docs.js');
+  /* настоящий код нажатия на кольцо из selfcare-ui.js; запись — раскладка day-docs.js в «облако», второе устройство собирает дневник из него */
+  const code = ui.slice(ui.indexOf('const ENERGY_MODES='), ui.indexOf('function paintEnergy(){'));
+  assert.ok(code.length > 0 && !/localStorage|sessionStorage|indexedDB/.test(code), 'вид не пишется в память браузера');
+  const cloud = new Map(), defaults = { sections: [], metrics: [], days: {} };
+  const save = db => { cloud.clear(); for (const [name, map] of D.project({ db, cfg: {} })) for (const [id, value] of map) cloud.set(name + '\n' + id, plain(value)); };
+  const open = () => { const records = {}; for (const [key, value] of cloud) { const [name, id] = key.split('\n'); (records[name] = records[name] || []).push({ id, value }); } return D.build(records, plain(defaults)).db; };
+  function device(db, signedIn = true) {
+    const ctx = { DB: db, C, DATE, RO: false, saved: 0, DayData: { signedIn: () => signedIn } };
+    vm.createContext(ctx);
+    vm.runInContext('const todayISO=()=>DATE;function data(){return C.init(DB,todayISO())}function save(){saved++}function paintEnergy(){}' + code + ';this.api={energyView,cycleEnergy}', ctx);
+    return ctx;
+  }
+  const phone = device(open());
+  assert.equal(phone.api.energyView(), 'balance', 'по умолчанию Day — «баланс»');
+  phone.api.cycleEnergy();
+  assert.equal(phone.api.energyView(), 'spent'); assert.equal(phone.saved, 1, 'выбор записывается через общую запись дневника');
+  save(phone.DB);
+  assert.ok([...cloud.keys()].some(k => k.startsWith('care\n') && k.includes('energyView')), 'вид лежит в документе care общего модуля');
+  const computer = device(open());
+  assert.equal(computer.api.energyView(), 'spent', 'второе устройство открывается на выбранном виде');
+  computer.api.cycleEnergy(); save(computer.DB);
+  assert.equal(device(open()).api.energyView(), 'eat', 'остаётся тем, что выбрали последним, пока человек сам не поменяет');
+  const guest = device(open(), false); guest.api.cycleEnergy();
+  assert.equal(guest.api.energyView(), 'balance'); assert.equal(guest.saved, 0, 'без входа вид меняется только на экране, запись не просится');
+  assert.ok(ui.includes("if(b.hasAttribute('data-energy-cycle')){cycleEnergy();return;}"), 'нажатие на кольцо идёт через cycleEnergy');
+  assert.ok(ui.includes('delete data().energyView;'), 'сохранил «Начальный режим» — виджет переходит на него');
   assert.ok(!/activitySettings\.mode/.test(ui));
   assert.ok(ui.includes('<select id="careEnergyMode" name="start">'));
   assert.ok(!/strongSnapshot|c\.strong\b|data\(\)\.strong\b/.test(ui + core), 'снимок журнала Sport убран');
