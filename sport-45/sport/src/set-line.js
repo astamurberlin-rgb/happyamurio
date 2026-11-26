@@ -219,7 +219,7 @@ window.addEventListener('resize',setNamePlace);
    строка отмечается сама и начинается перерыв (кольцо). Во время отсчёта на кнопке ■: нажал — подход закончен раньше
    и отмечен с тем временем, что прошло. Время 0:00 — секундомер: идёт вверх до ■. Зелёной плашки «Секундомер» над
    подходами нет; большой таймер — в «Настроить» (временно, до своего большого таймера — карточка в Todoist). */
-const SET_PLAY_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>',SET_STOP_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></svg>';
+const SET_PLAY_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>',SET_STOP_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor"/></svg>';
 function setPlayButton(e,ei,si,name){
  const t=matchingCountdown('set',ei,si),running=!!(t&&!t.finished);
  return `<button type="button" class="set-check set-play ${running?'running':''}" data-action="set-play" data-ei="${ei}" data-si="${si}" aria-label="${running?'Закончить подход':'Запустить подход'}: ${esc(name)}, ${esc(e.name)}" aria-pressed="${running}"><span class="set-dot set-play-dot">${running?SET_STOP_ICON:SET_PLAY_ICON}</span></button>`;

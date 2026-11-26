@@ -154,3 +154,21 @@
 .active-workout .set-actions.wf-add-row .set-add{flex:1;justify-content:flex-start;padding:0 var(--happy-space-8)}
 .active-workout .set-actions.wf-add-row .wf-add-sep{flex:none;width:1px;margin:var(--happy-space-10) 0;background:var(--happy-row-divider)}
 .active-workout .set-actions.wf-add-row .wf-add-rest{justify-content:flex-start;padding-left:var(--happy-space-15)}
+
+/* 16. ⋯ без кружка ни в каком состоянии (Астамур 26.11.2026). */
+.exercise-menu-button,.exercise-menu-button[aria-expanded=true],.exercise-menu-button:hover,.exercise-menu-button:active{background:transparent!important;box-shadow:none!important;border:0!important}
+
+/* 17. Настройки упражнения — тот же блокнот. */
+.plan-set-list .set-line.set-line.wf-note{min-height:52px}
+.plan-set-list .set-line.wf-note .set-x{font-size:24px;font-weight:400;color:var(--happy-muted)}
+.plan-set-list .set-line.set-line.wf-note .sport-metric-input{display:flex!important;align-items:baseline;justify-content:flex-end;gap:var(--happy-space-3);border-bottom:0!important;box-shadow:none!important}
+.plan-set-list .set-line.set-line.wf-note .sport-metric-input:focus-within{border-bottom:0!important;box-shadow:none!important}
+.plan-set-list .set-line.set-line.wf-note .sport-metric-input input{flex:1 1 auto;width:auto!important;min-width:0;padding:var(--happy-space-10) 0!important;font-size:20px!important;font-weight:700!important;line-height:24px!important;text-align:right!important;border:0!important;background:none!important}
+.plan-set-list .set-line.set-line.wf-note .sport-metric-input input:focus{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.plan-set-list .set-line.set-line.wf-note .sport-metric-input input::placeholder{color:var(--happy-dim)}
+.plan-set-list .set-line.set-line.wf-note .sport-metric-unit{display:inline!important;flex:none;padding:0!important;font-size:14px!important;font-weight:400!important;color:var(--happy-muted)!important;opacity:1!important}
+.plan-set-list .set-line.set-line.wf-note .set-name{font-size:16px}
+.set-plan-editor .plan-rest-row .sport-metric-input{border-bottom:0!important;box-shadow:none!important}
+.set-plan-editor .plan-rest-row .sport-metric-input input{font-size:20px!important;font-weight:700!important;border:0!important;background:none!important}
+.set-plan-editor .plan-rest-row .sport-metric-input input:focus{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.plan-set-list .set-line.set-line.wf-note .sport-metric-input:has(input[data-plan-value=seconds]) .sport-metric-unit{display:none!important}

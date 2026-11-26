@@ -332,3 +332,15 @@ document.addEventListener('pointerup',ev=>{const g=wfPlanGesture;wfPlanGesture=n
 document.addEventListener('pointercancel',()=>{const g=wfPlanGesture;wfPlanGesture=null;if(g?.kind==='drag'){g.card.classList.remove('is-dragging');g.card.style.transform='';}if(g?.sw){g.sw.classList.remove('is-dragging');g.sw.style.removeProperty('--wf-swipe');}});
 
 window.addEventListener('click',ev=>{const b=ev.target.closest?.('[data-action="wf-add-rest"]');if(!b)return;ev.preventDefault();ev.stopImmediatePropagation();const e=state.active?.exercises[Number(b.dataset.ei)],last=e?.sets.at(-1);if(!last)return;last.restAfter=true;if(setRestSeconds(last)==null)last.restSeconds=[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);persist();const y=window.scrollY;render();window.scrollTo(0,y);},true);
+
+/* 17. Настройки упражнения: подходы тем же «блокнотом», что и в тренировке (Астамур 26.11.2026:
+ *     «шрифты должны быть так же, как в открытой тренировке») — без строки подписей, числа 20 · 700, единицы 14. */
+{const planRowsBeforeNote=setPlanRows;
+ setPlanRows=function(draft){
+  const html=planRowsBeforeNote(draft);if(!draft)return html;
+  const root=document.createElement('div');root.innerHTML=html;
+  const metrics=setLineMetrics(draft.metrics);
+  root.querySelector('.plan-set-list>.set-head')?.remove();
+  root.querySelectorAll('.plan-set-row.set-line').forEach(r=>{const last=String(r.style.getPropertyValue('--set-cols')||'').trim().split(/\s+/).pop()||'34px';r.classList.add('wf-note');r.style.setProperty('--set-cols',workoutFlowNoteCols({id:draft.id,sets:draft.sets},metrics).replace(/46px$/,last));r.querySelectorAll('input[data-plan-value]:not([placeholder])').forEach(i=>i.setAttribute('placeholder','—'));});
+  return root.innerHTML;
+ };}
