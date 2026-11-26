@@ -2185,6 +2185,7 @@ var MealBot=(function(){
     if(!L||L.state!=='ok'){
       if(L&&L.state!=='loading') L.load();
       return p('Справочник замен ещё загружается. Спроси ещё раз через пару секунд.')+'<p class="mlHint">В дневник ничего не записал.</p>' }
+    if(L.find(o,'advice')) return null;   // «если вместо сахара всегда брать подсластитель, есть смысл» — совет (adviceAsk / knowAsk), а не замена в рецепте (пакет C, 26.11.2026)
     var c=L.find(o,'swap');
     if(!c){ var t=L.find(o,'tip'); if(t&&/вместо|замен/.test(t.said||'')) c=t; else if(t) return null }   // замены нет, а приём о замене есть: «можно заменить шоколад какао» — отвечает он (24.11.2026, Астамур «поправляй»); другой приём — как раньше, через tipAsk
     if(!c){ missLog('вопросы без ответа (не продукты)',o,o);
@@ -2236,6 +2237,48 @@ var MealBot=(function(){
     var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
     var mine=advMine(c);
     return p(esc(c.answer))+(mine?p(esc(mine)):'')+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p><p class="mlHint">Польза и вред у всех разные. Если плохо себя чувствуешь или есть болезнь, лучше спроси врача.</p>';
+  }
+  /* ── вопрос к справочнику без «как / почему» (пакет C GPT, решение Астамура 26.11.2026 «да»): «слушай, суп третий день ещё годится»,
+     «где хранить бананы», «срок хранения супа», «а если снять скорлупу, срок у варёных яиц такой же». Срабатывает после tipAsk,
+     swapAsk, adviceAsk и до разбора еды и отказа «условие «если»»: только если фраза похожа на вопрос (вопросительное слово,
+     «годится / можно / пора…», «хранение / срок / пропорция…») и под неё есть карточка. Без карточки — разбор идёт как раньше. */
+  var KQ_LEAD=/^((слушай|скажи|подскажи|а|и|ну|вот|так|кстати|короче)[,\s]+)+/,
+      KQ_W=/(^|\s)(где|куда|когда|как|каким|каком|какие|каких|какую|какой|какая|какое|почему|зачем|сколько|чем|что|отчего|или|ли)(\s|$)/,
+      KQ_P=/(^|\s)(годит\S*|годн\S*|пойдет|подойдет|подойдут|можно|нельзя|нормально|выбрасыват\S*|выбросит\S*|съедобн\S*|безопасн\S*|обязательно|пора|получится|спасти|долежит|пролежит|считается|брать|достаточно|смысл|стоит|нужн\S*|надо|правильно|опасн\S*)(\s|$)/,
+      KQ_N=/(^|\s)(хранени\S*|срок|разморозк\S*|заморозк\S*|пропорци\S*|соотношени\S*|признак\S*|готовност\S*|замачивани\S*|комк\S*|комочк\S*|расслоил\S*|пружинит|рвется|рвутся|проверк\S*|варка|частота)(\s|$)/;
+  function libReply(L,c){
+    var src=c.sources.map(function(id){ var x=L.sources[id]; return x?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.title)+'</a>':'' }).filter(Boolean).join(', ');
+    if(c.kind!=='advice') return p(esc(c.answer))+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p>';
+    var mine=advMine(c);
+    return p(esc(c.answer))+(mine?p(esc(mine)):'')+'<p class="mlHint">Источник: '+src+'. В дневник ничего не записал.</p><p class="mlHint">Польза и вред у всех разные. Если плохо себя чувствуешь или есть болезнь, лучше спроси врача.</p>';
+  }
+  function knowAsk(raw){
+    var o=nrm(raw).trim().replace(/[!.,…\s]+$/,''), q=/\?$/.test(o); o=o.replace(/\?+$/,'').replace(/,/g,' ').replace(/\s+/g,' ').trim();
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    if(!L||L.state!=='ok') return null;
+    speechFixes().forEach(function(r){ o=o.replace(r[0],r[1]) });   // «фасоль кинди» — как в cookAsk
+    var b=o.replace(KQ_LEAD,'').trim();
+    if(!b||!(q||KQ_W.test(b)||KQ_P.test(b)||KQ_N.test(b))) return null;
+    /* карточки готовки и замен широки («гречк», «сахар»): они отвечают, только если в вопросе есть готовка или замена, и после
+       приёмов и советов («уйти с сахара на сахарозаменитель» — совет, а не замена в выпечке);
+       совет — не на вопрос о продукте («сколько сахара в банане» — справка из базы) */
+    var cookW=COOK_V.test(' '+b+' ')||/(минут|держат|кипят|кипящ|таймер|всмятк|пашот|вынимат|сделать)/.test(b),
+        swapW=/(вместо|замен|подмен|подойд|пойд|годит)/.test(b),
+        advOk=!/(^|\s)во?\s+(?!день|сутки|неделю|обед|ужин|завтрак|возрасте|целом|среднем|норме|жару|течение|этом|том)\S/.test(b)||/(на ночь|перед сном|завтрак)/.test(b);
+    var c=null; [['tip',true],['advice',advOk],['cook',cookW],['swap',swapW]].some(function(k){ if(!k[1]) return false; c=L.find(b,k[0])||L.find(o,k[0]); return !!c });
+    if(!c) return null;
+    if(c.kind==='advice'&&ADV_MED.test(o)) return p('С вопросами о болезнях, беременности, детях и лекарствах — к врачу. Я даю только общие советы для здоровых взрослых.')+'<p class="mlHint">В дневник ничего не записал.</p>';
+    return libReply(L,c);
+  }
+  /* «что съесть перед тренировкой» — сначала совет из справочника (карточка с dishes), под ним блюда подборок, как раньше */
+  function advLead(raw){
+    var L=typeof HappyCookingLibrary!=='undefined'?HappyCookingLibrary:null;
+    if(!L||L.state!=='ok') return '';
+    var o=nrm(raw).trim().replace(/[?!.,…\s]+$/,'').replace(/,/g,' ').replace(/\s+/g,' ').replace(KQ_LEAD,'').trim();
+    if(ADV_MED.test(o)) return '';
+    var c=L.find(o,'advice'); if(!c||!c.dishes) return '';
+    return libReply(L,c);
   }
   function nutrNum(v){ return v<1?String(Math.round(v*100)/100).replace('.',','):fmt(v<10?v:Math.round(v)) }
   function nutrAsk(o){
@@ -2502,8 +2545,9 @@ var MealBot=(function(){
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var sw=swapAsk(raw); if(sw) return sw }   // «чем заменить муку в сырниках» — замена из справочника
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var tq=tipAsk(raw); if(tq) return tq }   // «когда солить рис» — кулинарный приём
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var rq=rcpAsk(S,raw); if(rq) return rq }   // «рецепт плова» — рецепт из готового, а не «готовка на несколько человек»
-    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return adv }
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return advLead(raw)+adv }   // «что съесть перед тренировкой» — совет из справочника, под ним блюда
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var ad=adviceAsk(raw); if(ad) return ad }   // «сколько соли в день», «можно ли есть на ночь» — общий совет из справочника   // совет блюда — раньше «рецепт = готовка»
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var kq=knowAsk(raw); if(kq) return kq }   // «суп третий день ещё годится», «где хранить бананы» — справочник без «как / почему»
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
