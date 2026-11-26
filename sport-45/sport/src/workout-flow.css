@@ -57,7 +57,7 @@
 .wf-rest-line.wf-rest-plain{cursor:default;gap:0}
 .wf-rest-line.wf-rest-plain::after{content:none}
 /* Подпись перерыва — на стеклянной пилюле, чтобы не сливалась с линией и фоном карточки (Астамур 26.11.2026) */
-.wf-rest-line>span{padding:var(--happy-space-3) var(--happy-space-10);border-radius:var(--happy-radius-pill);background:var(--happy-glass);color:var(--happy-ink);line-height:1.4}
+.wf-rest-line>span{box-sizing:border-box;display:inline-flex;align-items:center;height:var(--happy-space-20);padding:0 var(--happy-space-10);border-radius:var(--happy-radius-pill);background:var(--happy-glass);color:var(--happy-ink);font-size:14px;font-weight:400;line-height:1}
 
 /* 10. Рекорд: кубок вместо галочки и хлопушка. Новое: золотой кружок (happy-warning) и конфетти цветами системы. */
 .set-check.wf-record .set-dot{background:var(--happy-warning);color:var(--happy-accent-ink)}
@@ -99,3 +99,58 @@
 .active-workout .exercise-name-info:has(.wf-ex-pic)>.wf-ex-pic{grid-column:1;grid-row:1}
 .active-workout .exercise-name-info:has(.wf-ex-pic)>h3{grid-column:2;grid-row:1}
 .active-workout .exercise-name-info:has(.wf-ex-pic)>.wf-ex-menu-wrap{grid-column:3;grid-row:1;align-self:center}
+
+/* 13. Лист тренировки — гармошка. */
+.wf-plan{display:flex;flex-direction:column;gap:var(--happy-space-10)}
+.wf-plan-list{display:flex;flex-direction:column;gap:var(--happy-space-10)}
+.wf-plan-card.card{position:relative;padding:0;overflow:hidden;margin:0}
+.wf-plan-swipe{position:relative;touch-action:pan-y}
+.wf-plan-head{position:relative;z-index:1;display:flex;align-items:center;gap:var(--happy-space-8);min-height:var(--happy-size-list-row);padding:var(--happy-space-10) var(--happy-space-8) var(--happy-space-10) var(--happy-space-12);transform:translateX(var(--wf-swipe,0));transition:transform .2s ease}
+.wf-plan-swipe.is-open .wf-plan-head{transform:translateX(calc(-1 * var(--wf-kill-w,110px)))}
+.wf-plan-swipe.is-dragging .wf-plan-head{transition:none}
+.wf-plan-toggle{flex:1;min-width:0;display:flex;align-items:center;gap:var(--happy-space-12);padding:0;border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}
+.wf-plan-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.wf-plan-text b{font-size:16px;font-weight:700;line-height:1.25}
+.wf-plan-text small{font-size:14px;font-weight:400;color:var(--happy-muted);line-height:1.35}
+.wf-plan-card.is-open .wf-plan-head{border-bottom:1px solid var(--happy-row-divider)}
+.wf-plan-kill{position:absolute;top:0;right:0;bottom:0;width:var(--wf-kill-w,110px);border:0;border-radius:var(--happy-radius-pill) 0 0 var(--happy-radius-pill);background:var(--happy-danger);color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600}
+.wf-plan-more,.wf-plan-handle{flex:none;width:var(--happy-size-pill);height:var(--happy-size-pill);display:grid;place-items:center;border:0;background:none;color:var(--happy-ink)}
+.wf-plan-handle{cursor:grab;touch-action:none;color:var(--happy-muted)}
+.wf-plan-card.is-dragging{z-index:5;box-shadow:0 14px 30px #04285040;transition:none}
+.wf-plan-body{padding:0 var(--happy-space-15) var(--happy-space-8)}
+.wf-plan-set{display:flex;align-items:center;justify-content:space-between;gap:var(--happy-space-8);min-height:var(--happy-size-button);border-bottom:1px solid var(--happy-row-divider)}
+.wf-plan-label{font-size:16px;white-space:nowrap}
+.wf-plan-values{display:flex;align-items:baseline;gap:var(--happy-space-3);min-width:0}
+.wf-plan-field{display:inline-flex;align-items:baseline;gap:var(--happy-space-3)}
+.wf-plan-field input{width:3.2ch;padding:0;border:0;border-bottom:1px solid transparent;border-radius:0;background:none;color:var(--happy-ink);font:inherit;font-size:20px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.wf-plan-field input[inputmode="text"]{width:4ch}
+.wf-plan-field input::-webkit-outer-spin-button,.wf-plan-field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.wf-plan-field input:focus{outline:none;border-bottom-color:var(--happy-ink)}
+.wf-plan-field input::placeholder{color:var(--happy-dim)}
+.wf-plan-unit{font-size:14px;color:var(--happy-muted)}
+.wf-plan-x{font-size:20px;color:var(--happy-muted);margin:0 var(--happy-space-3)}
+.wf-plan-add-set{display:flex;align-items:center;min-height:var(--happy-size-pill);padding:0;border:0;border-bottom:1px solid var(--happy-row-divider);width:100%;background:none;color:var(--happy-ink);font:inherit;font-size:14px;font-weight:600;text-align:left}
+.wf-plan-rest{display:flex;align-items:center;justify-content:space-between;min-height:var(--happy-size-button)}
+.wf-plan-rest span{font-size:16px;color:var(--happy-muted)}
+.wf-plan-rest input{width:5ch;padding:0;border:0;border-bottom:1px solid transparent;background:none;color:var(--happy-ink);font:inherit;font-size:20px;font-weight:700;text-align:right}
+.wf-plan-rest input:focus{outline:none;border-bottom-color:var(--happy-ink)}
+.wf-plan-add{display:flex;align-items:center;gap:var(--happy-space-12);min-height:var(--happy-size-list-row);padding:0 var(--happy-space-15);border:1px dashed var(--happy-stepper-line);border-radius:var(--happy-radius-card-sport);background:none;color:var(--happy-ink);font:inherit;font-size:16px}
+.wf-plan-add b{font-weight:700}
+.wf-plan-empty{margin:var(--happy-space-8) 0 0;font-size:16px;color:var(--happy-muted)}
+.wf-plan-bar{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--happy-muted)}
+.wf-plan-menu .danger{color:var(--happy-danger-soft)}
+@media (prefers-reduced-motion:reduce){.wf-plan-head{transition:none}}
+.wf-plan-kill{opacity:0;pointer-events:none;transition:opacity .15s}
+.wf-plan-swipe.is-open .wf-plan-kill,.wf-plan-swipe.is-dragging .wf-plan-kill{opacity:1;pointer-events:auto}
+
+/* 14. Всплывающие меню ⋯ — тот же фон, что у подсказок названия подхода (Астамур 26.11.2026: «вот он»). */
+.exercise-menu.wf-ex-menu{min-width:200px;display:block;padding:2px 0;background:var(--happy-menu-bg);color:var(--happy-ink);border:1px solid #ffffff6e;border-radius:var(--happy-radius-menu);box-shadow:var(--happy-shadow-menu);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.exercise-menu.wf-ex-menu button{display:block;width:100%;min-height:var(--happy-size-pill);padding:0 14px;border-radius:0;font-size:14px;font-weight:600}
+.exercise-menu.wf-ex-menu button+button{border-top:1px solid #ffffff38}
+.exercise-menu.wf-ex-menu button:active,.exercise-menu.wf-ex-menu button:focus-visible{background:#ffffff26}
+
+/* 15. «+ Подход | + Перерыв» под подходами (набросок Астамура 26.11.2026). */
+.active-workout .set-actions.wf-add-row{display:flex;align-items:stretch;justify-content:flex-start;gap:0;margin-top:0;border-top:1px solid var(--happy-row-divider);border-radius:0;background:none;padding:0}
+.active-workout .set-actions.wf-add-row .set-add{flex:1;justify-content:flex-start;padding:0 var(--happy-space-8)}
+.active-workout .set-actions.wf-add-row .wf-add-sep{flex:none;width:1px;margin:var(--happy-space-10) 0;background:var(--happy-row-divider)}
+.active-workout .set-actions.wf-add-row .wf-add-rest{justify-content:flex-start;padding-left:var(--happy-space-15)}

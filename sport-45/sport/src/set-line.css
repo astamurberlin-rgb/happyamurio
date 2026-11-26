@@ -36,7 +36,7 @@
 @media (prefers-reduced-motion:reduce){.set-ring-fill,.set-dot{transition:none}}
 
 /* Подсказки названия: в цветах Sport, поверх листа; внизу мало места — открываются вверх. */
-.set-name-menu{position:fixed;z-index:400;min-width:150px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:2px 0;background:#5a68d8;color:var(--happy-ink);border:1px solid #ffffff6e;border-radius:14px;box-shadow:0 8px 20px #1a1f5a55;font-size:14px;font-weight:600;line-height:1.2;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.set-name-menu{position:fixed;z-index:400;min-width:150px;max-width:calc(100vw - 16px);box-sizing:border-box;padding:2px 0;background:var(--happy-menu-bg);color:var(--happy-ink);border:1px solid #ffffff6e;border-radius:var(--happy-radius-menu);box-shadow:var(--happy-shadow-menu);font-size:14px;font-weight:600;line-height:1.2;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .set-name-menu[hidden]{display:none}
 .set-name-menu button{appearance:none;-webkit-appearance:none;display:block;width:100%;min-height:40px;margin:0;padding:0 14px;border:0;border-radius:0;background:none;box-shadow:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .set-name-menu button+button{border-top:1px solid #ffffff38}

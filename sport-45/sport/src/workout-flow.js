@@ -136,6 +136,8 @@ function workoutFlowNoteCols(e,metrics){
    if(e.sets[si]?.lap){row.insertAdjacentHTML('afterend','<div class="wf-rest-line wf-rest-plain" aria-hidden="true"></div>');return;}
   const rest=setRestSeconds(e.sets[si])??[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);
    row.insertAdjacentHTML('afterend',`<button type="button" class="wf-rest-line" data-action="wf-rest-open" data-ei="${ei}" data-si="${si}" aria-label="Перерыв после подхода ${si+1}: ${sportDurationValue(rest)}"><span>перерыв ${sportDurationValue(rest)}</span></button>`);});
+  const last=e.sets?.at(-1),lastRow=rows.at(-1);
+  if(last?.restAfter&&lastRow){const rest=setRestSeconds(last)??[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);const si=e.sets.length-1;lastRow.insertAdjacentHTML('afterend',`<button type="button" class="wf-rest-line" data-action="wf-rest-open" data-ei="${ei}" data-si="${si}" aria-label="Перерыв после подхода ${si+1}: ${sportDurationValue(rest)}"><span>перерыв ${sportDurationValue(rest)}</span></button>`);}
   return root.innerHTML;
  };}
 window.addEventListener('click',e=>{const b=e.target.closest?.('[data-action="wf-rest-open"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(typeof openRestWidget==='function')openRestWidget(Number(b.dataset.ei),Number(b.dataset.si));},true);
@@ -152,6 +154,10 @@ function workoutFlowNoteTitle(text){const line=String(text||'').trim().split('\n
   // Картинка упражнения 52 у названия (Астамур 26.11.2026 о макете «Фокус»: «хорошая идея, крючки для глаз»).
   const h=root.querySelector('.exercise-name-info>h3'),def=exercise(e.id)||e,pic=typeof exerciseSportIcon==='function'?sportIconMarkup(exerciseSportIcon(def)):'';
   if(h&&pic)h.insertAdjacentHTML('beforebegin',`<span class="wf-ex-pic" aria-hidden="true">${pic}</span>`);
+  // «+ Подход | + Перерыв» под подходами (набросок Астамура 26.11.2026): линия сверху, между ними вертикальная черта.
+  const acts=root.querySelector('.set-actions');const last=e.sets?.at(-1);
+  if(acts&&last&&!last.restAfter&&!last.lap)acts.insertAdjacentHTML('beforeend',`<span class="wf-add-sep" aria-hidden="true"></span><button type="button" class="set-add wf-add-rest" data-action="wf-add-rest" data-ei="${ei}" aria-label="Добавить перерыв после последнего подхода"><span class="set-add-word">+ Перерыв</span></button>`);
+  if(acts)acts.classList.add('wf-add-row');
   const row=root.querySelector('.exercise-note-row');
   if(row){const text=String(e.notes||'').trim(),pin=row.querySelector('.note-pin');
    if(!text)row.remove();
@@ -230,3 +236,99 @@ function workoutFlowPlayBurst(){
    const tick=b.querySelector('.set-tick');if(tick)tick.outerHTML=WF_TROPHY;});
   return root.innerHTML;
  };}
+
+/* 13. Лист тренировки — «гармошка» (решения Астамура 26.11.2026 по странице макетов, вариант A с правками B и C).
+ *     Каждое упражнение — карточка: картинка 52, название, план одной строкой, справа ⋯. Нажал — раскрылась на месте
+ *     с подходами (числа правятся сразу) и перерывом; нажал на название — свернулась. Стрелки нет.
+ *     ⋯: «Настройки упражнения», «Изменить порядок», «Убрать». Порядка за черточки в обычном виде нет:
+ *     черточки появляются только в режиме «Изменить порядок» (кнопка «Готово» его закрывает).
+ *     Смахнуть шапку влево — справа от края карточки выезжает красная «Убрать» на высоту шапки, подходы стоят.
+ *     Пустая тренировка: «Начнём новую тренировку:» и «+ Добавить упражнение». */
+let wfPlanOpen=null,wfPlanReorder=null;
+function wfPlanTemplate(id){return templates().find(t=>t.id===id);}
+function wfPlanEdit(id,fn,later=false){const t=clone(wfPlanTemplate(id));if(!t||t.recommended)return;fn(t);storeSportTemplate(t);persist();if(later)setTimeout(wfPlanRender,0);else wfPlanRender();}
+function wfPlanRender(){const sc=document.querySelector('#panel-root .panel-scroll, #panel-root .panel, #panel-root')||null,y=[...document.querySelectorAll('#panel-root *')].find(n=>n.scrollTop>0)?.scrollTop||0,wy=window.scrollY;render();const n=[...document.querySelectorAll('#panel-root *')].find(n=>n.scrollHeight>n.clientHeight+20&&getComputedStyle(n).overflowY!=='visible');if(n)n.scrollTop=y;window.scrollTo(0,wy);}
+function wfPlanSets(t,i){const item=t.items[i];item[3]=item[3]&&typeof item[3]==='object'?item[3]:{};if(!Array.isArray(item[3].sets)||!item[3].sets.length)item[3].sets=clone(workoutFlowItemSets(t,item)).map(s=>{const c={...s};delete c.done;return c;});return item[3].sets;}
+function wfPlanMetrics(item){return setLineMetrics(exerciseMetrics(item[3]?.metrics?{metrics:item[3].metrics}:exercise(item[0])||{profile:'reps'}));}
+function wfPlanRest(t,item){const sets=workoutFlowItemSets(t,item);return sets.map(s=>setRestSeconds(s)).find(n=>n!=null)??[exercise(item[0])?.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);}
+function wfPlanPic(eid){const d=exercise(eid);const pic=d&&typeof exerciseSportIcon==='function'?sportIconMarkup(exerciseSportIcon(d)):'';return `<span class="wf-ex-pic" aria-hidden="true">${pic}</span>`;}
+function wfPlanField(i,si,key,s){
+ const unit={seconds:'',distance:'м',reps:'повт.',weight:'кг'}[key],v=s[key];
+ const attrs=key==='seconds'?`type="text" inputmode="text" value="${Number(v)>0?sportDurationValue(v):''}" placeholder="0:00"`:`type="number" min="0" step="${key==='weight'?'.5':'1'}" inputmode="decimal" value="${Number(v)>0?v:''}" placeholder="—"`;
+ return `<label class="wf-plan-field"><input ${attrs} data-wf-plan="${i},${si},${key}" aria-label="${metricName(key)}, подход ${si+1}">${unit?`<span class="wf-plan-unit">${unit}</span>`:''}</label>`;
+}
+function wfPlanCard(t,item,i){
+ const d=exercise(item[0]),name=item[3]?.name||d?.name||item[0],open=wfPlanOpen?.id===t.id&&wfPlanOpen.i===i&&!wfPlanReorder,v=workoutFlowItemValues(t,item),rest=wfPlanRest(t,item);
+ const plan=`${v.count} ${v.count===1?'подход':v.count<5?'подхода':'подходов'}${v.text?' · '+v.text:''}${rest?' · перерыв '+sportDurationValue(rest):''}`;
+ const right=wfPlanReorder===t.id?`<span class="wf-plan-handle" data-wf-drag="${i}" aria-label="Перетащить: ${esc(name)}" role="button" tabindex="0"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 9h14M5 15h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>`:`<button type="button" class="exercise-menu-button wf-plan-more" data-action="wf-plan-menu" data-id="${esc(t.id)}" data-i="${i}" aria-haspopup="menu" aria-label="Ещё: ${esc(name)}">${EXERCISE_DOTS}</button>`;
+ const head=`<div class="wf-plan-head"><button type="button" class="wf-plan-toggle" data-action="wf-plan-toggle" data-id="${esc(t.id)}" data-i="${i}" aria-expanded="${open}">${wfPlanPic(item[0])}<span class="wf-plan-text"><b>${esc(name)}</b>${open?'':`<small>${esc(plan)}</small>`}</span></button>${right}</div>`;
+ let body='';
+ if(open){const sets=workoutFlowItemSets(t,item),metrics=wfPlanMetrics(item);
+  body=`<div class="wf-plan-body">${sets.map((s,si)=>`<div class="wf-plan-set"><span class="wf-plan-label">${si+1} Подход</span><span class="wf-plan-values">${metrics.map((k,n)=>(n?'<span class="wf-plan-x">×</span>':'')+wfPlanField(i,si,k,s)).join('')}</span></div>`).join('')}<button type="button" class="wf-plan-add-set" data-action="wf-plan-add-set" data-id="${esc(t.id)}" data-i="${i}">+ Подход</button><label class="wf-plan-rest"><span>Перерыв</span><input type="text" inputmode="text" value="${rest?sportDurationValue(rest):''}" placeholder="0:00" data-wf-plan-rest="${i}" aria-label="Перерыв между подходами: ${esc(name)}"></label></div>`;}
+ return `<div class="card wf-plan-card${open?' is-open':''}" data-wf-item="${i}"><div class="wf-plan-swipe"><button type="button" class="wf-plan-kill" data-action="wf-plan-remove" data-id="${esc(t.id)}" data-i="${i}" tabindex="-1">Убрать</button>${head}</div>${body}</div>`;
+}
+workoutFlowPreview=function(t){
+ const add=`<button type="button" class="wf-plan-add" data-action="wf-plan-add" data-id="${esc(t.id)}">${icon('plus')}<b>Добавить упражнение</b></button>`;
+ if(!t?.items?.length)return `<div class="wf-plan" data-wf-plan-id="${esc(t.id)}"><p class="wf-plan-empty">Начнём новую тренировку:</p>${add}</div>`;
+ const bar=wfPlanReorder===t.id?`<div class="wf-plan-bar"><span>Перетащи за черточки</span><button type="button" class="text-btn" data-action="wf-plan-reorder-done">Готово</button></div>`:'';
+ return `<div class="wf-plan" data-wf-plan-id="${esc(t.id)}">${bar}<div class="wf-plan-list">${t.items.map((item,i)=>wfPlanCard(t,item,i)).join('')}</div>${wfPlanReorder===t.id?'':add}</div>`;
+};
+function wfPlanCloseMenu(){document.querySelectorAll('.wf-plan-menu').forEach(m=>m.remove());}
+function wfPlanAddPicker(id){
+ const list=q=>`<div class="exercise-list">${templateExerciseResults(q).slice(0,80).map(e=>exerciseCard(e,'wf-plan-pick')).join('')||'<p class="empty">Ничего не найдено.</p>'}</div>`;
+ openSheet('Добавить упражнение',`<label class="search">${icon('magnifying-glass')}<input id="wf-plan-search" placeholder="Название, оборудование…" aria-label="Поиск упражнения"></label><div id="wf-plan-results" data-wf-plan-target="${esc(id)}">${list('')}</div>`);
+ const input=document.getElementById('wf-plan-search');input?.addEventListener('input',()=>{document.getElementById('wf-plan-results').innerHTML=list(input.value);});
+}
+window.addEventListener('click',ev=>{
+ const b=ev.target.closest?.('[data-action^="wf-plan-"],[data-wf-plan-menu]');
+ if(!b){if(!ev.target.closest?.('.wf-plan-menu'))wfPlanCloseMenu();if(!ev.target.closest?.('.wf-plan-swipe'))document.querySelectorAll('.wf-plan-swipe.is-open').forEach(s=>s.classList.remove('is-open'));return;}
+ ev.preventDefault();ev.stopImmediatePropagation();
+ if(Date.now()-wfPlanSwipedAt<350)return;
+ const a=b.dataset.action,id=b.dataset.id,i=Number(b.dataset.i);
+ if(a==='wf-plan-toggle'){const sw=b.closest('.wf-plan-swipe');if(sw?.classList.contains('is-open')){sw.classList.remove('is-open');return;}if(wfPlanReorder)return;wfPlanOpen=wfPlanOpen?.id===id&&wfPlanOpen.i===i?null:{id,i};wfPlanRender();return;}
+ if(a==='wf-plan-menu'){const had=document.querySelector(`.wf-plan-menu[data-for="${id}:${i}"]`);wfPlanCloseMenu();if(had)return;const r=b.getBoundingClientRect(),m=document.createElement('div');m.className='exercise-menu wf-ex-menu wf-plan-menu';m.dataset.for=id+':'+i;m.setAttribute('role','menu');
+  m.innerHTML=`<button type="button" role="menuitem" data-wf-plan-menu="settings" data-id="${esc(id)}" data-i="${i}">Настройки упражнения</button><button type="button" role="menuitem" data-wf-plan-menu="reorder" data-id="${esc(id)}" data-i="${i}">Изменить порядок</button><button type="button" role="menuitem" class="danger" data-wf-plan-menu="remove" data-id="${esc(id)}" data-i="${i}">Убрать</button>`;
+  document.body.appendChild(m);const w=m.offsetWidth,h=m.offsetHeight;m.style.left=Math.max(8,Math.min(innerWidth-w-8,r.right-w))+'px';m.style.top=(r.bottom+h+8>innerHeight?r.top-h-4:r.bottom+4)+'px';m.querySelector('button')?.focus({preventScroll:true});return;}
+ const menu=b.dataset.wfPlanMenu;
+ if(menu){wfPlanCloseMenu();const t=wfPlanTemplate(id),eid=t?.items[i]?.[0];
+  if(menu==='settings'&&eid){if(typeof openExerciseEditor==='function')openExerciseEditor(eid);return;}
+  if(menu==='reorder'){wfPlanReorder=id;wfPlanOpen=null;wfPlanRender();return;}
+  if(menu==='remove'){wfPlanRemove(id,i);return;}return;}
+ if(a==='wf-plan-remove'){wfPlanRemove(id,i);return;}
+ if(a==='wf-plan-reorder-done'){wfPlanReorder=null;wfPlanRender();return;}
+ if(a==='wf-plan-add-set'){wfPlanEdit(id,t=>{const sets=wfPlanSets(t,i),last=sets.at(-1)||{};sets.push({...last});t.items[i][2]=sets.length;});return;}
+ if(a==='wf-plan-add'){wfPlanAddPicker(id);return;}
+},true);
+document.addEventListener('click',ev=>{const b=ev.target.closest?.('[data-action="wf-plan-pick"]');if(!b)return;ev.preventDefault();ev.stopImmediatePropagation();const id=document.getElementById('wf-plan-results')?.dataset.wfPlanTarget,d=exercise(b.dataset.id);if(!id||!d)return;closeSheet();
+ wfPlanEdit(id,t=>{t.items.push([d.id,'main',d.defaultSets?.length||1,{metrics:exerciseMetrics(d),sets:d.defaultSets?.map(setPlanCopy)||[setPlanDefaults(d)]}]);wfPlanOpen={id,i:t.items.length-1};});},true);
+function wfPlanRemove(id,i){const before=clone(wfPlanTemplate(id));if(!before)return;const name=exercise(before.items[i]?.[0])?.name||'Упражнение';wfPlanOpen=null;wfPlanEdit(id,t=>{t.items.splice(i,1);});toast(name+' убрано',()=>{storeSportTemplate(before);persist();wfPlanRender();});}
+document.addEventListener('change',ev=>{
+ const f=ev.target.dataset?.wfPlan,r=ev.target.dataset?.wfPlanRest;if(f==null&&r==null)return;
+ const id=ev.target.closest('[data-wf-plan-id]')?.dataset.wfPlanId;if(!id)return;
+ if(f!=null){const [i,si,key]=f.split(',');const raw=ev.target.value,val=key==='seconds'?parseSetTime(raw):Number(raw||0);if(!Number.isFinite(val)||val<0){sportMetricError?.(ev.target,'Проверь значение');return;}
+  wfPlanEdit(id,t=>{const sets=wfPlanSets(t,Number(i));if(sets[si])sets[si][key]=val;},true);return;}
+ const sec=parseSetTime(ev.target.value);if(!Number.isFinite(sec)||sec<0){sportMetricError?.(ev.target,'Проверь значение');return;}
+ wfPlanEdit(id,t=>{for(const s of wfPlanSets(t,Number(r)))s.restSeconds=sec;},true);
+},true);
+// Смахивание шапки влево и перетаскивание в режиме порядка.
+let wfPlanGesture=null,wfPlanSwipedAt=0;
+document.addEventListener('pointerdown',ev=>{
+ const handle=ev.target.closest?.('[data-wf-drag]');
+ if(handle){const card=handle.closest('.wf-plan-card'),list=card?.parentElement;if(!list)return;ev.preventDefault();wfPlanGesture={kind:'drag',card,list,from:Number(handle.dataset.wfDrag),id:card.closest('[data-wf-plan-id]').dataset.wfPlanId,y:ev.clientY,pid:ev.pointerId};card.classList.add('is-dragging');handle.setPointerCapture?.(ev.pointerId);return;}
+ const sw=ev.target.closest?.('.wf-plan-swipe');if(!sw||ev.button>0||ev.target.closest('.wf-plan-kill')||wfPlanReorder)return;
+ wfPlanGesture={kind:'swipe',sw,x:ev.clientX,y:ev.clientY,dx:0,on:false,start:sw.classList.contains('is-open')?-1:0};
+});
+document.addEventListener('pointermove',ev=>{const g=wfPlanGesture;if(!g)return;
+ if(g.kind==='drag'){const dy=ev.clientY-g.y;g.card.style.transform=`translateY(${dy}px)`;const cards=[...g.list.children];const others=cards.filter(c=>c!==g.card);const mid=g.card.getBoundingClientRect();const center=mid.top+mid.height/2;let target=others.findIndex(c=>{const r=c.getBoundingClientRect();return center<r.top+r.height/2;});if(target<0)target=others.length;const cur=cards.indexOf(g.card);if(target!==cur){const before=g.card.getBoundingClientRect().top;g.list.insertBefore(g.card,others[target]||null);const after=g.card.getBoundingClientRect().top;g.y+=after-before;g.card.style.transform=`translateY(${ev.clientY-g.y}px)`;}return;}
+ const dx=ev.clientX-g.x,dy=ev.clientY-g.y;if(!g.on){if(Math.abs(dx)<8||Math.abs(dx)<Math.abs(dy))return;g.on=true;g.sw.classList.add('is-dragging');}
+ g.dx=dx;const base=g.start?-g.sw.querySelector('.wf-plan-kill').offsetWidth:0;g.sw.style.setProperty('--wf-swipe',Math.min(0,Math.max(base+dx,-160))+'px');ev.preventDefault();
+},{passive:false});
+document.addEventListener('pointerup',ev=>{const g=wfPlanGesture;wfPlanGesture=null;if(!g)return;
+ if(g.kind==='drag'){g.card.classList.remove('is-dragging');g.card.style.transform='';const order=[...g.list.children].map(c=>Number(c.dataset.wfItem));if(order.some((n,k)=>n!==k))wfPlanEdit(g.id,t=>{t.items=order.map(n=>t.items[n]);});return;}
+ if(!g.on)return;g.sw.classList.remove('is-dragging');g.sw.style.removeProperty('--wf-swipe');const open=g.start?g.dx<40:g.dx<-50;
+ document.querySelectorAll('.wf-plan-swipe.is-open').forEach(s=>{if(s!==g.sw)s.classList.remove('is-open');});g.sw.classList.toggle('is-open',open);
+ wfPlanSwipedAt=Date.now();
+});
+document.addEventListener('pointercancel',()=>{const g=wfPlanGesture;wfPlanGesture=null;if(g?.kind==='drag'){g.card.classList.remove('is-dragging');g.card.style.transform='';}if(g?.sw){g.sw.classList.remove('is-dragging');g.sw.style.removeProperty('--wf-swipe');}});
+
+window.addEventListener('click',ev=>{const b=ev.target.closest?.('[data-action="wf-add-rest"]');if(!b)return;ev.preventDefault();ev.stopImmediatePropagation();const e=state.active?.exercises[Number(b.dataset.ei)],last=e?.sets.at(-1);if(!last)return;last.restAfter=true;if(setRestSeconds(last)==null)last.restSeconds=[e.defaultRestSeconds,state.lastRestSeconds,60].map(Number).find(n=>Number.isFinite(n)&&n>0);persist();const y=window.scrollY;render();window.scrollTo(0,y);},true);
