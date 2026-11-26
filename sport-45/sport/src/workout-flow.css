@@ -172,3 +172,11 @@
 .set-plan-editor .plan-rest-row .sport-metric-input input{font-size:20px!important;font-weight:700!important;border:0!important;background:none!important}
 .set-plan-editor .plan-rest-row .sport-metric-input input:focus{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
 .plan-set-list .set-line.set-line.wf-note .sport-metric-input:has(input[data-plan-value=seconds]) .sport-metric-unit{display:none!important}
+
+/* §18 Астамур 26.11.2026: когда виджет таймера на экране, низ страницы и панели получает место под него —
+   виджет стоит на 100px над низом и высотой в строку списка, так последняя строка не прячется под ним. */
+body:has(#rest-pill-root:not(:empty)) :is(.panel-body,.page){padding-bottom:calc(100px + var(--happy-size-list-row) + var(--happy-space-20) + env(safe-area-inset-bottom))!important}
+
+/* §19 Астамур 26.11.2026: ⋯ в карточке листа тренировки — напротив первой строки (названия), а не по центру */
+.wf-plan-more,.wf-plan-handle{align-self:flex-start;margin-top:calc(-1 * var(--happy-space-8))}
+.wf-plan-card.is-open .wf-plan-more{align-self:center;margin-top:0}

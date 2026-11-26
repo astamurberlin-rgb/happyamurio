@@ -411,3 +411,6 @@ button.active-banner{color:var(--happy-ink);font:inherit;text-align:left;cursor:
 .happy-button:has(>small)>b,.happy-card>.happy-button[data-action=release-history]>b{font-weight:700}
 /* 24.11.2026 (Астамур): подзаголовок листа — на 4 под заголовком, как во всех листах (было 20) */
 .sheet>.sheet-top+.sheet-info{margin-top:-16px}
+/* Астамур 26.11.2026: «Напоминание» — барабан со словами слева от «Длительности», колесо на всю ширину колонки (как «Дневник» в Day) */
+.plan-details .hf-drum-cell:first-child .hf-drum-group,.plan-details .hf-drum-col[data-name="r"]{width:100%;max-width:none;flex:1 1 auto}
+.plan-details .hf-drum-col[data-name="r"] .hf-drum-item{font-variant-numeric:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center}

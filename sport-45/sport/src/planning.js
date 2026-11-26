@@ -26,8 +26,8 @@ function scheduleFields(s){
  +`<label class="field plan-zone" ${otherZone?'':'hidden'}>Часовой пояс<input name="scheduleZone" required value="${esc(zone)}" list="schedule-zones" autocomplete="off"></label><datalist id="schedule-zones">${[phoneZone,'Europe/Moscow','Europe/Berlin','Asia/Tbilisi','UTC'].filter((x,i,a)=>a.indexOf(x)===i).map(x=>`<option value="${x}">`).join('')}</datalist></div></div>`
  // Астамур 21.11.2026: длительность — тот же барабан 00:00, что в Day (shared/happy-drum.js): справа, подпись сверху.
  +`<div class="plan-group plan-details"><div class="plan-drum" data-plan-drum></div><input type="hidden" name="planMinutes" value="${s?.minutes||60}">`
- // Аудит 20.11.2026, п. 3 (Астамур): «Напоминание» одной ширины с «Длительностью», подписи короче («за 30 мин»).
- +`<label class="plan-row">Напоминание<select name="planReminder">${[[-1,'нет'],[0,'в начале'],[15,'за 15 мин'],[30,'за 30 мин'],[60,'за час'],[1440,'за день']].map(([v,n])=>`<option value="${v}" ${(s?.reminder??30)===v?'selected':''}>${n}</option>`).join('')}</select></label>`
+ // Астамур 26.11.2026 (лаборатория): «Напоминание» — тоже барабан, слева от «Длительности», в пустой колонке.
+ +`<input type="hidden" name="planReminder" value="${s?.reminder??30}">`
  +`<label class="field plan-note">Заметка<textarea name="planNote" maxlength="2000" rows="2" placeholder="Например: взять резинку">${esc(s?.note||'')}</textarea></label></div>`
  // «В календарь» — на всю ширину; «Поделиться» — значок справа от названия листа (openScheduleSheet), Астамур 18.11.2026.
  +`<div class="plan-share plan-share-one"><button class="button" type="submit" data-plan-export="calendar">${icon('calendar-blank')} В календарь</button></div>`
@@ -35,9 +35,10 @@ function scheduleFields(s){
 }
 /* Длительность в расписании — барабан 00:00, как в Day: часы и минуты, пишет в скрытое поле planMinutes (21.11.2026) */
 function mountPlanDrum(form){
- const host=form.querySelector('[data-plan-drum]'),input=form.elements.planMinutes,HF=globalThis.HappyFields;
+ const host=form.querySelector('[data-plan-drum]'),input=form.elements.planMinutes,rem=form.elements.planReminder,HF=globalThis.HappyFields;
  if(!host||!input||!HF?.drum)return;
- HF.drum(host,{groups:[{label:'Длительность',cols:HF.drumDurationCols(input.value)}],onChange:v=>{input.value=v.dh*60+v.dm;}});
+ const remind=[[-1,'нет'],[0,'в начале'],[15,'за 15 мин'],[30,'за 30 мин'],[60,'за час'],[1440,'за день']].map(([v,t])=>({v,t}));
+ HF.drum(host,{groups:[{label:'Напоминание',cols:[{name:'r',label:'Напоминание',options:remind,value:rem?.value??30}]},{label:'Длительность',cols:HF.drumDurationCols(input.value)}],onChange:v=>{input.value=v.dh*60+v.dm;if(rem)rem.value=v.r;}});
 }
 function applyPlanMode(form){const mode=form.querySelector('[name=scheduleMode]:checked')?.value||'none';form.querySelector('#plan-inputs').hidden=mode==='none';form.querySelector('.schedule-weekdays').hidden=mode!=='weekly';form.querySelector('.schedule-end').hidden=mode!=='weekly';const label=form.querySelector('.plan-date-label');if(label)label.textContent=mode==='weekly'?'С даты · время':'Дата и время';}
 function setPlanMode(form,mode){const input=form.querySelector(`[name=scheduleMode][value="${mode}"]`);if(input)input.checked=true;applyPlanMode(form);}
