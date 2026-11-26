@@ -2573,6 +2573,7 @@ var MealBot=(function(){
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo') S.turn=(S.turn||0)+1;   // счёт сообщений человека в диалоге
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var jk=jokeAsk(S,raw); if(jk) return jk }   // «расскажи анекдот» — кулинарный анекдот из словаря, без ИИ (26.11.2026)
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof MealBotMine!=='undefined'){ var mn=MealBotMine.say(chat,S,raw); if(mn) return mn+(S.pend.length?askHTML(S):'') }   // Meal 34 · счётчик голосом, «мои счётчики», правка и удаление своего продукта (bot-mine.js, 24.11.2026)
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var wh=whereAsk(raw); if(wh) return wh }   // «где много железа» — обычные источники из словаря, числа из базы
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var sw=swapAsk(raw); if(sw) return sw }   // «чем заменить муку в сырниках» — замена из справочника
@@ -2682,6 +2683,13 @@ var MealBot=(function(){
     if(!m.inbox&&!m.dry&&m.kind!=='photo'){ var lo=leftover(S,bare); if(lo!=null) return lo }
     /* «нет, …» — поправка последней записи; раньше ответа на вопрос, кроме вопроса «да / нет» */
     var no=bare.match(/^(?:(?:ой|ах|ай|блин|стоп|так)[\s,.!]+)*(?:нет|не так|неправильно|ошибся|ошиблась|исправь|поправь)(?:[\s,.!]+(.*))?$/);
+    /* «ой, рис» после «гречка 200 г» — поправка последней записи, как «нет, рис»: продукт меняется, мера та же; «ой, не гречка, рис» — так же
+       (решение Астамура 26.11.2026). Только одно название без числа; «ой, ещё рис», «ой, и рис», «ой, забыл…», «ой, рис 150» — добавление, как раньше */
+    if(!no&&!S.ask&&!m.inbox&&!m.dry&&lastAdd(S)){ var oj=bare.match(/^(?:ой|ах|ай|блин)[\s,.!]+(.+)$/);
+      if(oj){ var oy=oj[1].replace(/[,.!]+/g,' ').replace(/\s+/g,' ').trim(), on=oy.match(/^не\s+([а-яё]{3,})\s+(.+)$/);
+        if(on&&headOk(lastAdd(S).item.fid,tokensOf(on[1]))) oy=on[2];
+        if(oy&&!/\d/.test(oy)&&!/(^|\s)(ещ[её]|и|а|плюс|забыл\S*|добав\S*|тоже|также|потом|не|без|с|со)(\s|$)/.test(oy)&&!hasMeal(oy)){
+          var ou=understand(fixes(' '+oy+' ')); if(ou.lines.length===1&&!ou.orphan&&(ou.lines[0].fid||ou.lines[0].alts.length)) no=[bare,oy] } } }
     if(!no&&!S.ask&&lastAdd(S)&&hasMeal(bare)&&!tokensOf(bare.replace(FILL,' ')).length&&!/\d/.test(bare)) no=[bare,bare];
     if(no&&!m.inbox&&!(S.ask&&S.ask.kind==='again')&&lastAdd(S)){ var fixd=correct(S,no[1]||''); if(fixd!=null) return fixd+(S.pend.length?askHTML(S):'') }
     /* ответ на заданный вопрос */
@@ -3447,6 +3455,19 @@ var MealBot=(function(){
     return null;
   }
 
+  /* Meal 34.29 · анекдоты (решение Астамура 26.11.2026): «расскажи анекдот», «пошути» — кулинарный анекдот из словаря (jokes), на «ещё один» — следующий.
+     На четвёртую просьбу подряд — шуточный отказ «серьёзная программа» и предложение записать еду. Любое другое сообщение начинает счёт заново.
+     Только когда в просьбе нет еды: «анекдот про борщ» — тоже анекдот, а «шуточный торт 100 г» — еда */
+  function jokeAsk(S,raw){
+    var J=(typeof window!=='undefined'&&window.HappyMealSpeechData||{}).jokes; if(!J||!(J.items||[]).length){ S.joke=0; return null }
+    var t=nrm(raw).replace(/[?!.,…]+/g,' ').replace(/\s+/g,' ').trim();
+    var ask=!/\d/.test(t)&&(J.ask||[]).some(function(w){ return new RegExp('(^|\\s)'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(t) });
+    var more=!ask&&S.joke>0&&(J.more||[]).some(function(w){ return t===w||t===w+' анекдот'||t===w+' шутку' });
+    if(!ask&&!more){ S.joke=0; return null }
+    S.joke=(S.joke||0)+1;
+    if(S.joke>J.items.length) return p(esc(J.enough));
+    return p(esc(J.items[(S.joke-1)%J.items.length]))+(S.joke<J.items.length?'<p class="mlHint">Ещё один — скажи «ещё».</p>':'');
+  }
   function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
 
   /* ── совет блюда: «что на завтрак», «быстро», «белковое на ужин», «осталось 400 калорий» (решение Астамура 22.11.2026 «да»).

@@ -7,7 +7,7 @@ Happy Day, Happy Meal и Happy Sport — приложения Astamur.
 - [История обновлений](CHANGELOG.md)
 - [Где хранятся данные](DATA-STORAGE.md)
 
-Задачи, решения и приёмка ведутся в Todoist: проекты Happy Hub, Happy Day, Happy Meal, Happy Sport.
+В Todoist — идеи и недоделанное: проекты Happy Hub, Happy Day, Happy Meal, Happy Sport. Решения записываются в `AGENTS.md` и дизайн-систему, вопросы и приёмка — в чате.
 
 © 2026 Astamur. Все права защищены. Код, тексты и дизайн в этом репозитории нельзя копировать и использовать без разрешения автора.
 
