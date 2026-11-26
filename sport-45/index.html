@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#8E75E1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.17</title>
+<html data-happy-appearance-app="sport" data-happy-appearance-entry="inline" lang="ru"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https://geqziziycpclhnucnsyx.supabase.co; form-action 'none'; object-src 'none'; base-uri 'none'; script-src 'self' 'unsafe-inline'; worker-src 'self'; frame-src 'self'; img-src 'self' data: blob:"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#8E75E1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Happy Sport"><title>Happy Sport · Update 45.18</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-sport-20261125-glass-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-sport-20261125-glass-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-sport-20261125-glass-152.png">
@@ -1493,8 +1493,26 @@ body.hm-dialog-open .dock{z-index:2147480001!important;opacity:1!important}
  * внешние подписи над полями, основная кнопка в цвете приложения, «Отменить» белая, без стрелок «Назад».
  * Цвета приложения — переменные --hs-*, их ставит HappyScreens.theme(приложение). Фон страницы — фон самого
  * приложения: пока открыт экран, остальное приложение скрыто, видна только его подложка.
- * Все классы начинаются с hs-, чтобы не задеть стили приложений.
+ * Классы экранов аккаунта начинаются с hs-.
  * — Claude · 16.11.2026 */
+
+/* В Day и Meal прокручивается открытый экран. Фон, экраны и меню привязаны
+   к одному окну. Во вкладке его высота меняется вместе с панелями браузера.
+   Нижний отступ меню включает одну безопасную зону. */
+@media screen{
+  @supports (height:100dvh){
+    html.happy-viewport,.happy-viewport>body{height:100dvh}
+    html.happy-viewport{background-color:var(--happy-theme-color)}
+    .happy-viewport>body{contain:layout}
+  }
+  @media (display-mode:standalone){
+    html.happy-viewport,.happy-viewport>body{height:100vh}
+  }
+  /* WebKit берёт цвет за краем страницы из однотонной подложки под градиентом.
+     Тема рисует свой градиент на html и оставляет body прозрачным. */
+  :root[data-happy-appearance-app][data-happy-appearance]{background-color:var(--happy-base)!important}
+}
+
 :root{--hs-glass:rgba(255,255,255,.14);--hs-border:rgba(255,255,255,.34);--hs-muted:rgba(255,255,255,.7);
  --hs-primary:#6254cf;--hs-primary-shadow:none;--hs-cancel-ink:#6254cf;
  --hs-seg-bg:#edf8ff;--hs-seg-ink:var(--happy-dock-accent);--hs-switch-on:#8071df;--hs-sheet-bg:#5a8fe8;--hs-toast-bg:rgba(49,57,105,.94);
@@ -4611,9 +4629,9 @@ async function downloadData(){
   }catch(e){toast(e.name==='AbortError'?'Сохранение отменено':e.message)}
 }
 const sportTransferProfile=renderProfile;
-renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.17">${sportVersionFooter()}</footer>`};
+renderProfile=function(){return sportTransferProfile().replace('__HAPPY_SPORT_BACKUP__',`<div class="happy-card"><div class="happy-actions"><button class="happy-button" data-action="export">Выгрузить дневник</button></div><p class="happy-note">Весь дневник Sport одним файлом: тренировки, подходы, веса, заметки, замеры и библиотека.</p></div>`)+`<div class="happy-card"><button class="happy-button" style="width:100%;text-align:left;display:block" data-action="release-history"><b>История обновлений</b><small style="display:block;font-size:14px;opacity:.75;margin-top:6px">Что нового в Happy Sport · версии и изменения</small></button></div><footer class="app-version happy-version" data-app-version="45.18">${sportVersionFooter()}</footer>`};
 // Update 38.3: version line comes from the shared release-notes module (date, time, author of the latest entry); plain label if the module is absent.
-function sportVersionFooter(){const label='Happy Sport · Update 45.17';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
+function sportVersionFooter(){const label='Happy Sport · Update 45.18';try{return HappyReleaseNotes.footer(sportReleases,label)}catch(e){return '<div>'+label+'</div>'}}
 
 /* One set at a time, shared by exercise settings and workout templates. */
 const setPlanDrafts=new Map();let setPlanSerial=0;
@@ -6000,7 +6018,8 @@ const SportTaps=(()=>{
 })(typeof window!=='undefined'?window:globalThis);
 
 /* Add newest releases first; also update the daily briefing. */
-const sportReleases=[{"version": "45.17", "date": "2026-11-26", "author": "Claude", "changes": ["Вид кольца энергии хранится в аккаунте: переключил — на всех устройствах остаётся тот же, пока сам не поменяешь. По умолчанию — «потрачено»."]},
+const sportReleases=[{"version": "45.18", "date": "2026-11-26", "author": "Codex", "changes": ["При выборе темы страница использует её цвет под градиентом и у системных панелей."]},
+ {"version": "45.17", "date": "2026-11-26", "author": "Claude", "changes": ["Вид кольца энергии хранится в аккаунте: переключил — на всех устройствах остаётся тот же, пока сам не поменяешь. По умолчанию — «потрачено»."]},
  {"version": "45.16", "date": "2026-11-26", "author": "Claude", "changes": ["Sport приведён к общему дизайну: значки меню, пилюля даты, поиск и фильтр, строки упражнений, звезда 44, поля 48.", "Микрофон при открытом листе — ✕, нажатие закрывает лист. Смахивание «Убрать» удаляет сразу, вернуть можно из сообщения.", "«Редактировать» без карандаша. Поля 16, чтобы iPhone не увеличивал страницу. Под «Замерами тела» — ровное затемнение.", "Выпадающие списки (группа упражнений в «Каталоге» и другие) открывают меню в стиле Happy, а не системное. У упражнения в тренировке нет птички раскрытия: свернуть — нажатием на название.", "Карточка упражнения в тренировке — яркое стекло без своей копии фона темы."], "time": "01:45"},
  {"version": "45.15", "date": "2026-11-25", "time": "23:00", "author": "Claude", "changes": ["Виджет энергии как общий образец: цифра 28, подписи 12, карточка со скруглением 26 и мягкой тенью, вид запоминается."]},
  {"version": "45.14", "date": "2026-11-25", "time": "22:45", "author": "Claude", "changes": ["Кнопки «Войти» выглядят как кнопки входа. Внизу Настроек без аккаунта «Войти» — большая кнопка во всю ширину, как «Продолжить с Google». В полоске «Войди, чтобы записывать» текст «Войти» крупнее."]},
