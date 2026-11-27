@@ -64,9 +64,9 @@
   }
   function onWin(){ close(false) }
   function onScroll(e){ if(open&&!open.menu.contains(e.target)) close(false) }
-  function pick(sel,i){
+  function pick(sel,i,focusBack){
     if(sel.selectedIndex!==i){ sel.selectedIndex=i; sel.dispatchEvent(new Event('input',{bubbles:true})); sel.dispatchEvent(new Event('change',{bubbles:true})) }
-    close(true);
+    close(focusBack);
   }
   function show(sel){
     close(false);
@@ -105,10 +105,11 @@
     else menu.style.top=(anchor.bottom+gap)+'px';
     menu.style.maxHeight=Math.max(0,Math.min(upward?above:below,maxHeight))+'px';
     layer.addEventListener('pointerdown',function(e){ if(!menu.contains(e.target)){ e.preventDefault(); close(false) } });
-    layer.addEventListener('click',function(e){ var b=e.target.closest('.hsel-opt'); if(b&&!b.disabled) pick(sel,+b.dataset.i) });
+    layer.addEventListener('click',function(e){ var b=e.target.closest('.hsel-opt'); if(b&&!b.disabled) pick(sel,+b.dataset.i,false) });
     menu.addEventListener('keydown',function(e){
       var list=Array.prototype.filter.call(menu.querySelectorAll('.hsel-opt'),function(b){ return !b.disabled }), k=list.indexOf(document.activeElement);
       if(e.key==='Escape'||e.key==='Tab'){ e.preventDefault(); close(true) }
+      else if((e.key==='Enter'||e.key===' ')&&k>=0){ e.preventDefault(); pick(sel,+list[k].dataset.i,true) }
       else if(e.key==='ArrowDown'){ e.preventDefault(); (list[Math.min(k+1,list.length-1)]||list[0]).focus() }
       else if(e.key==='ArrowUp'){ e.preventDefault(); (list[Math.max(k-1,0)]||list[0]).focus() }
       else if(!list.length) return;
@@ -120,18 +121,36 @@
     open={sel:sel,layer:layer,menu:menu};
     window.addEventListener('resize',onWin); window.addEventListener('scroll',onScroll,true);
   }
-  /* Мышь и перо: системное меню открывается на mousedown — гасим его и открываем своё. */
-  document.addEventListener('mousedown',function(e){ if(e.button!==0) return; var s=ours(e.target); if(!s) return; e.preventDefault(); try{ s.focus({preventScroll:true}) }catch(x){} if(open&&open.sel===s) close(false); else show(s) },true);
-  /* Палец (iPhone): системный список открывается после касания — гасим конец касания, если палец не листал страницу. */
-  var touch=null;
-  document.addEventListener('touchstart',function(e){ var s=ours(e.target); touch=s?{s:s,x:e.touches[0].clientX,y:e.touches[0].clientY}:null },{capture:true,passive:true});
-  document.addEventListener('touchend',function(e){
-    if(!touch) return; var t=touch, c=e.changedTouches[0]; touch=null;
-    var slop=parseFloat(getComputedStyle(t.s).getPropertyValue('--happy-space-10'));
-    if(Math.abs(c.clientX-t.x)>slop||Math.abs(c.clientY-t.y)>slop) return;
-    e.preventDefault(); show(t.s);
+  // Нажатие на подпись поля тоже может вызвать системный выбор.
+  function trigger(target){
+    var el=target.closest?.('select,label,button,input,textarea,a[href]');
+    return ours(el?.tagName==='LABEL'?el.control:el);
+  }
+  /* При нажатии указателем фокус не переносим на select: iOS может открыть системное меню. */
+  document.addEventListener('mousedown',function(e){ if(e.button!==0) return; var s=trigger(e.target); if(!s) return; e.preventDefault(); if(open&&open.sel===s) close(false); else show(s) },true);
+  // Отменяем мышиные события совместимости от пальца. Прокрутку браузер обрабатывает сам.
+  document.addEventListener('pointerdown',function(e){
+    if(e.pointerType==='touch'&&trigger(e.target)) e.preventDefault();
   },{capture:true,passive:false});
-  document.addEventListener('click',function(e){ if(ours(e.target)) e.preventDefault() },true);
+  var touch=null;
+  function moved(t,c){ return Math.abs(c.clientX-t.x)>t.slop||Math.abs(c.clientY-t.y)>t.slop }
+  document.addEventListener('touchstart',function(e){
+    var s=trigger(e.target), c=e.changedTouches[0];
+    touch=s&&e.touches.length===1?{s:s,id:c.identifier,x:c.clientX,y:c.clientY,
+      slop:parseFloat(getComputedStyle(s).getPropertyValue('--happy-space-10'))}:null;
+  },{capture:true,passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(touch&&moved(touch,e.touches[0])) touch=null;
+  },{capture:true,passive:true});
+  document.addEventListener('touchcancel',function(){ touch=null },{capture:true,passive:true});
+  document.addEventListener('touchend',function(e){
+    var s=trigger(e.target), t=touch, c=e.changedTouches[0]; touch=null;
+    if(!s) return;
+    // Даже после сдвига отменяем нативное нажатие. Только короткий тап открывает меню Happy.
+    if(e.cancelable) e.preventDefault();
+    if(t&&s===t.s&&c.identifier===t.id&&!moved(t,c)) show(s);
+  },{capture:true,passive:false});
+  document.addEventListener('click',function(e){ if(trigger(e.target)) e.preventDefault() },true);
   document.addEventListener('keydown',function(e){
     var s=ours(e.target); if(!s||open) return;
     if(e.key==='Enter'||e.key===' '||e.key==='F4'||(e.altKey&&(e.key==='ArrowDown'||e.key==='ArrowUp'))){ e.preventDefault(); show(s) }
