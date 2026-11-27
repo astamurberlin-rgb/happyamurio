@@ -1,0 +1,52 @@
+/* Таймер-циферблат (Астамур 27.11.2026, макет «Сейчас»): верх закреплён, подходы прокручиваются под ним.
+   Отступы: переключатель → циферблат 36, циферблат → кнопки 4, кнопки → подходы 18. Круги 80, циферблат 270. */
+.exercise-player.td-root{display:flex;flex-direction:column;align-items:stretch;padding:0 20px;overflow:hidden;text-align:left;color:var(--happy-ink)}
+.sheet:has(.td-root) .sheet-top{display:none}
+.td-top{flex:none}
+.td-name-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin:0 0 6px}
+.td-name-row h3{margin:0;font-size:20px;font-weight:700;line-height:1.2;color:var(--happy-ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-more{width:44px;height:44px;margin-right:-10px;display:grid;place-items:center;flex:none}
+.segmented.td-mode{display:grid;grid-template-columns:1fr 1fr;width:100%;margin:4px 0 36px}
+.td-dial{position:relative;width:270px;height:270px;margin:0 auto}
+.td-dial svg{position:absolute;inset:0;width:100%;height:100%}
+.td-ticks line{stroke:var(--happy-ink);opacity:.3;stroke-width:1.6;stroke-linecap:round}
+.td-ticks line.major{stroke-width:3}
+.td-ticks line.lit{opacity:1}
+.td-hands line{stroke-width:4;stroke-linecap:round}
+.td-hands line.lap{stroke:var(--happy-warning)}
+.td-hands line.now{stroke:var(--happy-ink)}
+.td-hands text{fill:var(--happy-warning);font-size:14px;font-weight:700;text-anchor:middle;font-family:inherit}
+.td-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.td-center strong{font-size:56px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--happy-ink)}
+.td-sub{margin-top:8px;font-size:14px;color:var(--happy-dim)}
+.td-split{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--happy-muted);pointer-events:auto;min-height:44px;cursor:pointer}
+.td-split input{position:absolute;opacity:0;width:1px;height:1px}
+.td-switch{position:relative;width:42px;height:25px;border-radius:999px;background:var(--happy-glass);border:1px solid var(--happy-line);box-sizing:border-box}
+.td-switch span{position:absolute;left:2px;top:2px;width:19px;height:19px;border-radius:50%;background:var(--happy-ink);transition:left .15s}
+.td-split input:checked+.td-switch{background:var(--happy-success);border-color:var(--happy-success)}
+.td-split input:checked+.td-switch span{left:19px}
+.td-split input:focus-visible+.td-switch{outline:2px solid var(--happy-ink);outline-offset:2px}
+.td-controls{display:flex;align-items:center;justify-content:space-between;margin:4px 0 18px}
+.td-btn{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;padding:0;font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.td-btn-glass{border:1.5px solid rgba(255,255,255,.62);background:rgba(255,255,255,.22);color:var(--happy-ink)}
+.td-btn.button{min-height:80px;height:80px;padding:0;border-radius:50%;box-sizing:border-box}
+.td-btn svg{width:31px;height:31px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.td-btn:disabled{opacity:.45;cursor:default}
+.td-sets{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;border-top:1px solid var(--happy-row-divider);padding:0 2px calc(var(--dock-space,110px) + 8px)}
+.td-set{display:grid;grid-template-columns:84px minmax(0,1fr) auto 44px;grid-auto-flow:column;column-gap:6px;align-items:center;min-height:48px;border-bottom:1px solid var(--happy-row-divider)}
+.td-set:has(.set-x){grid-template-columns:84px minmax(0,1fr) 14px minmax(0,1fr) 44px}
+.td-name{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-name.is-live{font-weight:700}
+.td-time{justify-self:end;text-align:right}
+.td-time.live,.td-set .td-time input,.td-set .set-metric input{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.td-set .set-x{text-align:center;font-size:14px;color:var(--happy-dim)}
+.td-set .set-metric{justify-self:end}
+.td-check{justify-self:end;width:36px;height:36px;border-radius:50%;border:2px solid var(--happy-muted);background:none;color:var(--happy-ink);display:grid;place-items:center;padding:0;cursor:pointer;position:relative}
+.td-check::after{content:"";position:absolute;inset:-4px}
+.td-check svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.td-check.done{background:var(--happy-success);border-color:var(--happy-success);color:#0d3c35}
+.td-set .sport-metric-input{border-bottom-color:transparent!important;justify-content:flex-end}
+.td-set .sport-metric-input:focus-within{border-bottom-color:var(--happy-ink)!important}
+.td-set .sport-metric-input input{text-align:right}
+.td-set .td-time .set-metric,.td-set .set-metric{display:block;width:100%}
+.td-set .set-metric{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;min-height:44px;display:flex!important;align-items:center;justify-content:flex-end}

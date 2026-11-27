@@ -259,7 +259,7 @@ workoutFlowPreview=function(t){
  const add=`<button type="button" class="wf-plan-add" data-action="wf-plan-add" data-id="${esc(t.id)}">${icon('plus')}<b>Добавить упражнение</b></button>`;
  if(!t?.items?.length)return `<div class="wf-plan" data-wf-plan-id="${esc(t.id)}"><p class="wf-plan-empty">Начнём новую тренировку:</p>${add}</div>`;
  const bar=wfPlanReorder===t.id?`<div class="wf-plan-bar"><span>Перетащи за черточки</span><button type="button" class="text-btn" data-action="wf-plan-reorder-done">Готово</button></div>`:'';
- return `<div class="wf-plan" data-wf-plan-id="${esc(t.id)}">${bar}<div class="wf-plan-list">${t.items.map((item,i)=>wfPlanCard(t,item,i)).join('')}</div>${wfPlanReorder===t.id?'':add}</div>`;
+ return `<div class="wf-plan" data-wf-plan-id="${esc(t.id)}">${bar}<div class="section-title wf-plan-title"><h2>Упражнения</h2></div><div class="wf-plan-list">${t.items.map((item,i)=>wfPlanCard(t,item,i)).join('')}</div>${wfPlanReorder===t.id?'':add}</div>`;
 };
 function wfPlanCloseMenu(){document.querySelectorAll('.wf-plan-menu').forEach(m=>m.remove());}
 function wfPlanAddPicker(id){
