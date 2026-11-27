@@ -2786,6 +2786,7 @@ var MealBot=(function(){
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var adv=advice(S,raw); if(adv) return advLead(raw)+adv }   // «что съесть перед тренировкой» — совет из справочника, под ним блюда
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var ad=adviceAsk(raw); if(ad) return ad }   // «сколько соли в день», «можно ли есть на ночь» — общий совет из справочника   // совет блюда — раньше «рецепт = готовка»
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var kq=knowAsk(raw); if(kq) return kq }   // «суп третий день ещё годится», «где хранить бананы» — справочник без «как / почему»
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var fa=fruitAsk(raw); if(fa) return fa }   // «сочная ягодка с одной косточкой» — по описанию не угадывать (словарь unknown_fruit, 27.11.2026)
     if(SP&&m.kind!=='photo'){ var rcp=SP.recipe(raw); if(rcp&&!state(chat).ask){ var hp0=!m.inbox&&!m.dry&&!NEST&&appHelp(m.text); return hp0||p(esc(rcp)) } }   // «как сохранить свой рецепт» — справка, а не готовка
     /* ответ на предложение записать блюдо по частям: «да» — как предложено; свои граммы — как сказал человек; так же блюдо запишется и в следующий раз */
     if(!NEST&&S.rewrite&&!S.pend.length&&!S.offer) S.rewrite=null;
@@ -3722,6 +3723,20 @@ var MealBot=(function(){
     S.joke=(S.joke||0)+1;
     if(S.joke>J.items.length) return p(esc(J.enough));
     return p(esc(J.items[(S.joke-1)%J.items.length]))+(S.joke<J.items.length?'<p class="mlHint">Ещё один — скажи «ещё».</p>':'');
+  }
+  /* «сочная ягодка с одной косточкой», «похоже на личи, но кожура гладкая» — по описанию не угадывать: попросить название, предупредить про двойников.
+     Слова — в словаре (unknown_fruit); ничего не записывает и в список недостающего не добавляет (решение Астамура 27.11.2026, пачка 4 «плоды») */
+  var UFR=null;
+  function fruitAsk(raw){
+    var U=(typeof window!=='undefined'&&window.HappyMealSpeechData||{}).unknown_fruit; if(!U||!U.reply_ru) return null;
+    if(!UFR) try{ UFR={}; ['subject','describe','compare_strong','compare_weak','not','names','quantity','strip_count'].forEach(function(k){ UFR[k]=new RegExp(U[k],k==='describe'?'g':'') }) }catch(e){ UFR=null; return null }
+    var t=nrm(raw).replace(/[?!…;:,.]+/g,' ').replace(/\s+/g,' ').trim();
+    t=t.replace(UFR.strip_count,' ');
+    if(UFR.not.test(t)) return null;
+    var name=UFR.names.test(t), qty=UFR.quantity.test(t), subj=UFR.subject.test(t), weak=UFR.compare_weak.test(t), d={};
+    (t.match(UFR.describe)||[]).forEach(function(w){ d[w.slice(0,4)]=1 }); var nd=Object.keys(d).length;
+    var hit=UFR.compare_strong.test(t)?!(qty&&name):!qty&&(subj&&!name&&(nd||weak)||subj&&name&&(nd>=2||weak)||name&&nd>=3||name&&weak&&nd>=1);
+    return hit?p(esc(U.reply_ru))+(U.warn_ru?'<p class="mlHint">'+esc(U.warn_ru)+'</p>':''):null;
   }
   function offTopic(){ return p('Я помогаю только с едой и дневником Meal. Ничего не записал.') }
 
