@@ -92,6 +92,9 @@
  .hm-add .hm-grid-wrap{overscroll-behavior-y:contain}
  .hm-grid-wrap.hm-moving{scroll-snap-type:none}
 }
+.hm-no-history .hm-grid{width:100%}
+.hm-no-history .hm-grid .hm-latest{width:auto;max-width:none}
+.hm-no-history::after{display:none}
 .hm-grid button{font-size:12px;font-weight:700;padding:4px;min-height:40px}
 .hm-grid button[data-hm="compare"][aria-pressed="true"]{text-decoration:underline;text-underline-offset:5px}
 .hm-grid .hm-edit{display:block;margin:1px auto 0;padding:4px;min-height:28px;min-width:28px;line-height:1}
