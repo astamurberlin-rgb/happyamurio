@@ -127,6 +127,10 @@
   --happy-time-draft-pill-bg:rgba(255,255,255,.95);
   --happy-drum-band:rgba(255,255,255,.22);
   --happy-wheel-band:rgba(255,255,255,.22);
+  --happy-select-divider:color-mix(in srgb, var(--happy-ink) 14%, transparent);
+  --happy-select-hover:color-mix(in srgb, var(--happy-ink) 12%, transparent);
+  --happy-select-pressed:color-mix(in srgb, var(--happy-ink) 18%, transparent);
+  --happy-select-disabled:color-mix(in srgb, var(--happy-ink) 45%, transparent);
 }
 :root[data-happy-appearance-app="day"]{
   --happy-theme-color:#56b9f7;
@@ -213,6 +217,8 @@
   --happy-space-chat-bubble-x:15px;
   --happy-space-list-row-y:15px;
   --happy-space-list-row-x:18px;
+  --happy-space-select-gap:6px;
+  --happy-space-4:4px;
   /* размеры */
   --happy-size-button:48px;
   --happy-size-pill:44px;
@@ -270,11 +276,23 @@
   --happy-size-price-pill:29px;
   --happy-size-date-pill:36px;
   --happy-size-nutrient-group:52px;
+  --happy-size-button-start:56px;
+  --happy-size-day-link-pill:39px;
+  --happy-size-select-row:44px;
+  --happy-size-select-line:22px;
+  --happy-size-select-check:20px;
+  --happy-size-select-check-stroke:2.2;
+  --happy-size-select-rule:1px;
+  --happy-size-select-min-width:200px;
+  --happy-size-select-max-height:340px;
+  --happy-size-select-preferred-height:200px;
+  --happy-layer-select:2147483000;
   /* тени */
   --happy-shadow-card:0 2px 3px rgba(4,40,80,.10), 0 14px 30px rgba(4,40,80,.14);
   --happy-shadow-sheet:0 -16px 48px rgba(0,0,0,.2);
   --happy-shadow-chat-mine:0 8px 20px rgba(4,40,80,.14);
   --happy-shadow-chat-composer:0 10px 28px rgba(4,40,80,.26);
+  --happy-shadow-select:inset 0 0 0 1px rgba(255,255,255,.28), 0 18px 40px rgba(0,0,0,.28);
   /* размытие */
   --happy-blur-glass:12px;
   --happy-blur-tab-bar:18px;
@@ -293,6 +311,8 @@
   --happy-swipe-threshold-min:90px;
   --happy-undo-keep:5s;
   --happy-motion-time-draft:.9s;
+  --happy-motion-select-open:.16s;
+  --happy-ease-select-open:ease-out;
   /* шрифты */
   --happy-font-sans:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --happy-type-screen-title-size:28px;

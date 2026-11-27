@@ -42,7 +42,7 @@
 .jd-edit-media:not(:has(.jd-photo)),.jd-flow-media:not(:has(.jd-photo)) { flex:1 0 100%; width:100%; margin-inline:0; }
 .jd-tile-actions { display: none; gap: 4px; padding: 4px 0; }
 .jd-edit-media.is-selected .jd-tile-actions,.jd-edit-media:focus-within .jd-tile-actions { display:flex; flex-wrap:wrap; }
-.jd-tile-actions button,.jd-popover button {
+.jd-tile-actions button {
   font: inherit;
   cursor: pointer;
   color: inherit;
@@ -56,30 +56,13 @@
 .jd-toolbar [aria-expanded=true] { background:var(--glass); }
 .jd-popover {
   position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  display: grid;
-  min-width: 175px;
-  max-width: calc(100vw - 68px);
+  top: calc(100% + var(--happy-space-select-gap));
+  inset-inline-start: 0;
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--happy-space-16));
   z-index: 5;
-  padding: 5px;
-  border: 1px solid var(--happy-field-line);
-  border-radius: 15px;
-  box-shadow: 0 8px 26px color-mix(in srgb, var(--happy-dock-ink) 20%, transparent);
 }
-.jd-toolbar .jd-popover button {
-  min-height: 42px;
-  justify-content: flex-start;
-  text-align: left;
-  padding: 8px 11px;
-  color: inherit;
-  font-size: 15px;
-  border-radius: 8px;
-}
-.jd-popover button:is(:hover,:focus-visible),
-.jd-menu>div .jd-btn:is(:hover,:focus-visible) { background: var(--hs-glass); }
 .jd-list-menu { inset-inline:auto 0; }
-.jd-toolbar .jd-list-menu button { display:flex; align-items:center; gap:8px; color:inherit; }
 .jd-list-menu button span { width:1.5em; text-align:center; }
 .jd-prose :is(ul,ol),.jd-prose-read :is(ul,ol) { margin:.25em 0; padding-inline-start:1.65em; }
 .jd-prose li[data-jd-check],.jd-prose-read li[data-jd-check] { position:relative; list-style:none; }
@@ -121,9 +104,9 @@ body.sheet dialog.jd-book-dialog .jd-btn {
   color: var(--happy-dock-ink);
 }
 body.sheet dialog.jd-book-dialog input {
-  background: var(--hs-seg-bg);
-  border-color: color-mix(in srgb, var(--happy-dock-ink) 40%, var(--hs-seg-bg));
-  color: var(--happy-dock-ink);
+  background: var(--happy-field-bg);
+  border-color: var(--happy-field-line);
+  color: var(--happy-ink);
   caret-color: currentColor;
 }
 .jd-copy small svg {width:15px;height:15px;vertical-align:-2px;margin-inline-end:4px}

@@ -66,13 +66,13 @@ window.HappyDiary = function (api) {
     return '<form class="card jd-editor" data-editor="'+h(key)+'">'+title+
       '<div class="jd-compose-body" data-compose-body></div><div data-live-holder hidden></div><div class="jd-toolbar">'+
       '<div class="jd-tool-wrap">'+btn('styles','Аа','','data-icon-only aria-label="Стиль текста" title="Стиль текста" aria-expanded="false"')+
-      '<div class="jd-popover jd-style-menu" data-style-menu role="group" aria-label="Стиль текста" hidden>'+
+      '<div class="jd-popover jd-style-menu" data-happy-menu data-style-menu role="group" aria-label="Стиль текста" hidden>'+
       [['body','Обычный текст'],['heading','Подзаголовок'],['bold','Полужирный'],['italic','Курсив'],['underline','Подчёркнутый']].map(([k,t])=>'<button type="button" data-format="'+k+'">'+t+'</button>').join('')+'</div></div>'+
       '<div class="jd-tool-wrap">'+btn('photo','','photo','data-icon-only aria-label="Добавить фото" title="Добавить фото" aria-expanded="false"')+
-      '<div data-choices hidden class="jd-popover" role="group" aria-label="Добавить фото">'+btn('camera','Снять камерой')+btn('gallery','Из фотографий')+btn('files','Из файлов')+'</div></div>'+
+      '<div data-choices data-happy-menu hidden class="jd-popover" role="group" aria-label="Добавить фото">'+btn('camera','Снять камерой')+btn('gallery','Из фотографий')+btn('files','Из файлов')+'</div></div>'+
       onlyIcon('voice','Записать голос','record')+onlyIcon('audio','Прикрепить аудиофайл','clip')+
       '<div class="jd-tool-wrap">'+btn('lists','','list','data-icon-only aria-label="Список" title="Список" aria-expanded="false"')+
-      '<div class="jd-popover jd-list-menu" role="group" aria-label="Вид списка" hidden>'+
+      '<div class="jd-popover jd-list-menu" data-happy-menu role="group" aria-label="Вид списка" hidden>'+
       [['number','1.','Нумерованный'],['bullet','•','С точками'],['check','☑','Чек-лист']].map(([type,mark,label])=>'<button type="button" data-list-format="'+type+'"><span aria-hidden="true">'+mark+'</span>'+label+'</button>').join('')+'</div></div>'+
       onlyIcon('feelings','Отметить чувства сейчас','feelings')+'<button type="button" class="jd-btn jd-paste" data-compose="paste" hidden>Вставить</button></div>'+filesMarkup()+
       '<div data-record-status role="status"></div><div class="jd-save-row"><button type="submit" class="btn solid jd-save">Сохранить</button>'+(key.startsWith('edit:')?btn('cancel-edit','Отмена'):'')+'</div></form>';
@@ -160,7 +160,7 @@ window.HappyDiary = function (api) {
     const root=block('diary');
     const form=editorMarkup('new');
     root.innerHTML=header('Дневник','day',false)+bookChooserMarkup()+form+
-      '<div class="jd-history"><div class="jd-head"><h2>Мои записи</h2><details class="jd-menu"><summary aria-label="Действия с записями">'+icon('more')+'</summary><div>'+btn('select','Выбрать и распечатать','print')+'</div></details></div>'+
+      '<div class="jd-history"><div class="jd-head"><h2>Мои записи</h2><details class="jd-menu"><summary aria-label="Действия с записями">'+icon('more')+'</summary><div data-happy-menu>'+btn('select','Выбрать и распечатать','print')+'</div></details></div>'+
       '<div class="jd-search-row"><label class="jd-search-field">'+icon('search')+'<input type="search" class="jd-query" aria-label="Поиск по дневнику" placeholder="Найти запись" value="'+h(state.query)+'"></label>'+
       btn('filters','','filters','aria-label="Фильтры записей" title="Фильтры записей" aria-controls="jd-media-filters" aria-expanded="'+state.filtersOpen+'"')+'</div>'+
       '<div id="jd-media-filters" class="jd-filters" role="group" aria-label="Фильтр по вложениям" '+(state.filtersOpen?'':'hidden')+'>'+
@@ -202,7 +202,7 @@ window.HappyDiary = function (api) {
     state.entryId=id;state.mode=mode;activeView='care-entry';activeKey=mode==='read'?'':mode+':'+id;
     let view=header(mode==='edit'?'Редактировать':e.title||e.text?.split('\n')[0]||'Без заголовка',state.parent,false);
     if(mode==='read'){
-      view+='<article class="card jd-detail"><div class="jd-head"><span class="jd-date">'+h(dateText(e.date))+' · '+h(e.time)+'</span><details class="jd-menu"><summary aria-label="Действия с записью">'+icon('more')+'</summary><div>'+btn('edit','Редактировать')+btn('print-one','Печать','print')+'</div></details></div>'+
+      view+='<article class="card jd-detail"><div class="jd-head"><span class="jd-date">'+h(dateText(e.date))+' · '+h(e.time)+'</span><details class="jd-menu"><summary aria-label="Действия с записью">'+icon('more')+'</summary><div data-happy-menu>'+btn('edit','Редактировать')+btn('print-one','Печать','print')+'</div></details></div>'+
         composer.reading(e)+additions(e)+'</article>';
     }else{
       const form=editorMarkup(activeKey);
@@ -322,6 +322,31 @@ window.HappyDiary = function (api) {
     draft[el.name]=el.value;
     retain(state.key,draft);refreshEditor();
   }
+  // Лист прокручивается за нижним меню. Открываем панель там, где видны её команды.
+  function placeMenu(menu){
+    const trigger=menu.previousElementSibling.getBoundingClientRect();
+    const screen=menu.closest('.screen').getBoundingClientRect(), vp=window.visualViewport;
+    const top=Math.max(screen.top,vp?.offsetTop||0);
+    const bottom=Math.min(screen.bottom,vp?vp.offsetTop+vp.height:innerHeight,
+      document.querySelector('.dock').getBoundingClientRect().top,document.getElementById('fab').getBoundingClientRect().top);
+    const gap=parseFloat(getComputedStyle(menu).getPropertyValue('--happy-space-select-gap'));
+    const below=bottom-trigger.bottom-gap, above=trigger.top-top-gap;
+    const up=below<menu.scrollHeight&&above>below;
+    menu.toggleAttribute('data-above',up);
+    menu.style.maxHeight=Math.max(0,Math.floor(up?above:below))+'px';
+  }
+  function placeOpenMenus(){
+    document.querySelectorAll('.screen.on .jd-popover:not([hidden]),.screen.on .jd-menu[open]>[data-happy-menu]').forEach(placeMenu);
+  }
+  document.addEventListener('toggle',event=>{
+    if(event.target.matches('.jd-menu[open]'))placeMenu(event.target.querySelector('[data-happy-menu]'));
+  },true);
+  document.addEventListener('scroll',event=>{
+    if(event.target.matches?.('.screen.on'))placeOpenMenus();
+  },{capture:true,passive:true});
+  window.addEventListener('resize',placeOpenMenus);
+  window.visualViewport?.addEventListener('resize',placeOpenMenus);
+  window.visualViewport?.addEventListener('scroll',placeOpenMenus);
   function click(event){
     document.querySelectorAll('.jd-menu[open]').forEach(menu=>{
       if(!menu.contains(event.target)||event.target.closest('[data-jd]'))menu.open=false;
@@ -339,6 +364,7 @@ window.HappyDiary = function (api) {
     switch(act){
       case 'photo': case 'styles': case 'lists': {
         const menu=b.nextElementSibling;menu.hidden=!menu.hidden;
+        if(!menu.hidden)placeMenu(menu);
         b.setAttribute('aria-expanded',String(!menu.hidden));break;
       }
       case 'gallery': case 'camera': case 'audio': case 'files':

@@ -27,6 +27,11 @@
 #ccQuery,.mlUForm input[type=text],.mlUForm input[type=number]{height:48px}
 .sp-field textarea{border-radius:12px!important;font-size:16px!important}
 
+/* Окно нового счётчика следует за активной темой, в том числе пока открыто. */
+#foodCounterEditor{background:var(--hs-sheet-bg);color:var(--happy-ink)}
+#foodCounterEditor input.happy-input{background:var(--happy-field-bg);border-color:var(--happy-field-line);color:var(--happy-ink)}
+#foodCounterEditor input.happy-input::placeholder{color:var(--happy-field-placeholder)}
+
 /* ── Лист снизу: верхние углы 22; заголовок 20 / 700 ── */
 .impSheet,.hs-sheet{border-radius:22px 22px 0 0!important}
 .impSheet h3,.askBox h3{font-size:20px!important;font-weight:700!important}
