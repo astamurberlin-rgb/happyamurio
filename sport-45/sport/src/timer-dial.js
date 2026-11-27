@@ -143,3 +143,32 @@ function tdialRefresh(){
   const big=root.querySelector('[data-player-time]');if(big)big.textContent=playerDisplay(p.mode!=='stopwatch'?s.remaining:s.elapsed,p.mode!=='stopwatch');
 }
 setInterval(tdialRefresh,100);
+
+/* Вход в таймер (Астамур 28.11.2026): «у нас нет к этому таймеру доступа в интерфейсе».
+ * 1. Значок таймера справа от ⋯ у упражнения в тренировке (только у упражнений со временем).
+ * 2. Тап по виджету подхода или перерыва внизу (не по кнопкам) открывает таймер этого упражнения.
+ *    Идёт подход на время — таймер подхватывает его: то же время, тот же ход, виджет уступает место таймеру. */
+{const activeExerciseBeforeDial=activeExercise;
+ activeExercise=function(e,ei){
+  const html=activeExerciseBeforeDial(e,ei);if(!tdialOn(e)&&!exerciseHasMetric(e,'seconds'))return html;
+  const root=document.createElement('div');root.innerHTML=html;const wrap=root.querySelector('.wf-ex-menu-wrap');
+  if(wrap)wrap.insertAdjacentHTML('beforeend',`<button type="button" class="exercise-menu-button td-open" data-action="open-exercise-player" data-ei="${ei}" aria-label="Таймер: ${esc(e.name)}">${clockFaceIcon()}</button>`);
+  return root.innerHTML;
+ };}
+function tdialFromWidget(ei){
+  const w=state.active,t=w?.countdown,e=w?.exercises[ei];if(!e)return;
+  if(t&&t.kind==='set'&&t.ei===ei&&!t.finished&&!w.exercisePlayer?.running&&exerciseHasMetric(e,'seconds')){
+    e.timerDraft=timerDraftFromSets(e,!t.stopwatch);const p=createExercisePlayer(ei);
+    if(p&&(p.mode==='stopwatch'?true:p.setIndices?.[0]===t.si)){
+      if(p.mode==='stopwatch')p.setIndices=[t.si];
+      const at=playerNow();p.elapsed=countdownElapsed(t,at);p.running=!!t.running;p.startedAt=at;w.exercisePlayer=p;w.countdown=null;persist();
+    }
+  }
+  openExercisePlayer(ei);
+}
+window.addEventListener('click',event=>{
+  const pill=event.target.closest?.('#rest-pill-root .floating-rest-pill');if(!pill||event.target.closest('button,input'))return;
+  const set=typeof floatingSetContext==='function'?floatingSetContext():null,rest=!set&&typeof engineRestContext==='function'?engineRestContext():null;
+  const ei=set?set.ei:rest?.ei;if(!Number.isInteger(ei))return;
+  event.preventDefault();event.stopImmediatePropagation();tdialFromWidget(ei);
+},true);
