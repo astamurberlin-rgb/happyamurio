@@ -40,8 +40,8 @@ var MealDocs=(()=>{
  const OWN=NAMES.concat(['supps','summary','foods','foodtaps']);  // все свои документы Meal для общего модуля
  /* списки — по записям: ключ элемента; словари — по записям; остальное — полем целиком */
  const LISTS={sections:'k',taps:'k',foods:'id',recipes:'id',propertyDefs:'id'};
- const MAPS=new Set(['goals','purchases','units','bls','referenceFoods','productSnapshots','counterSnaps']);
- const DOC={foods:'products',recipes:'products',propertyDefs:'products',units:'products',bls:'products',referenceFoods:'products',productSnapshots:'snaps',counterSnaps:'snaps'};
+ const MAPS=new Set(['goals','purchases','units','words','bls','referenceFoods','productSnapshots','counterSnaps']);
+ const DOC={foods:'products',recipes:'products',propertyDefs:'products',units:'products',words:'products',bls:'products',referenceFoods:'products',productSnapshots:'snaps',counterSnaps:'snaps'};
  /* в документы не идёт: дни раскладываются отдельно; остальное — служебное прежних выпусков */
  const SKIP=new Set(['days','mealCounters','__journalSync','__journalBaseline']);
  const BAD=new Set(['__proto__','constructor','prototype']);

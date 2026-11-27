@@ -2004,6 +2004,15 @@ body>.bg { inset:0!important; filter:none!important; animation:none!important; b
       <li>«Поменяй калории у сырников на 220», «у моих сырников белка 16, жиры 9» — правлю свой продукт на 100 г, как форма. Уже записанное в дневнике не меняется. Под ответом — «Отменить». Продукты из базы не правлю.</li>
       <li>«Удали мой продукт сырники», «убери продукт сырники» — спрошу «Убрать?», как экран «Мои продукты». Продукт есть в дневнике, счётчике или рецепте — не убираю и говорю где. «Удали сырники» без слова «продукт» — убрать запись из дневника, как раньше.</li>
     </ul></article>
+    <!-- Meal 34 · личные слова: bot-words.js, словарь bot/household-ru.js (my_words) — поменял правило, поправь и текст -->
+    <article class="card release-card"><h2>Твои слова для еды</h2><ul>
+      <li>Называешь продукт по-своему — скажи, и я запомню: «булка — это белый хлеб», «гречей я называю гречку», «запомни: кура — это курица». Бот не узнал слово — ответь «я так называю» или «это белый хлеб, я так называю»: запомню и запишу сказанное.</li>
+      <li>«У нас это называется кура» сразу после записи — твоё слово для только что записанного.</li>
+      <li>Слова живут в твоём аккаунте Meal, на всех твоих устройствах. Другим людям они не видны и в общий словарь не попадают.</li>
+      <li>Твоё слово понимаю в любой форме («две булки», «булку») и раньше общего словаря: у тебя булка — белый хлеб, у других — как в словаре. Дальше всё как обычно: твой продукт и мера, как записывал раньше, избранное.</li>
+      <li>Не запоминаю, если не знаю и обычное название, если слово — мера или команда («ложка», «удали»), и из диктовок шортката: скажи это здесь, в диалоге.</li>
+      <li>«Мои слова» — список и кнопки «Забыть». «Забудь булку», «удали слово булка» — убрать одно; «забудь мои слова» — все. Под ответом — «Отменить».</li>
+    </ul></article>
     <!-- Meal 34 · свой продукт через чат: те же правила, что в bot-own-product.js и словаре (own_product) — поменял правило, поправь и текст -->
     <article class="card release-card"><h2>Завести свой продукт в чате</h2><ul>
       <li>«Заведи продукт», «добавь свой продукт протеиновый батончик», «создай продукт сырок» — бот по шагам спрашивает название, калории и БЖУ как на упаковке и вес штуки, в конце — итог и «Сохранить». Ингредиент заводится так же.</li>
@@ -6487,7 +6496,7 @@ function jrNoteTxt(){
 <script src="desserts.js?v=34.31"></script>
 <script src="preserves.js?v=34.31"></script><script src="kfct.js?v=34.31"></script>
 <script src="user-products.js?v=34.31"></script>
-<script src="bot/household-ru.js?v=34.31"></script><script src="bot-speech.js?v=34.31"></script><script src="meal-periods.js?v=34.31"></script><script src="meal-fast.js?v=34.31"></script><script src="bot.js?v=34.31"></script><script src="bot-steps.js?v=34.31"></script><script src="bot-goals.js?v=34.31"></script><script src="bot-own-product.js?v=34.31"></script><script src="bot-guide-steps.js?v=34.31"></script><script src="bot-mine.js?v=34.31"></script><script src="meal-inbox.js?v=34.31"></script><script src="meal-measurements.js?v=34.31"></script>
+<script src="bot/household-ru.js?v=34.31"></script><script src="bot-speech.js?v=34.31"></script><script src="meal-periods.js?v=34.31"></script><script src="meal-fast.js?v=34.31"></script><script src="bot.js?v=34.31"></script><script src="bot-steps.js?v=34.31"></script><script src="bot-goals.js?v=34.31"></script><script src="bot-own-product.js?v=34.31"></script><script src="bot-guide-steps.js?v=34.31"></script><script src="bot-mine.js?v=34.31"></script><script src="bot-words.js?v=34.31"></script><script src="meal-inbox.js?v=34.31"></script><script src="meal-measurements.js?v=34.31"></script>
 
 <script src="./shared/release-notes.js?v=34.31"></script>
 <script src="release-notes.js?v=34.31"></script>
