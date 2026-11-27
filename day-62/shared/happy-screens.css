@@ -1,0 +1,411 @@
+/* Happy: экраны аккаунта, профиля и целей — общие для Day, Meal и Sport (shared/happy-screens.js и соседи).
+ * Внешний вид — по согласованным прототипам Михалыча (Meal v7, Sport v2, Day v2, 15.11.2026): прозрачное стекло,
+ * внешние подписи над полями, основная кнопка в цвете приложения, «Отменить» белая, без стрелок «Назад».
+ * Цвета приложения — переменные --hs-*, их ставит HappyScreens.theme(приложение). Фон страницы — фон самого
+ * приложения: пока открыт экран, остальное приложение скрыто, видна только его подложка.
+ * Классы экранов аккаунта начинаются с hs-.
+ * — Claude · 16.11.2026 */
+
+/* В Day и Meal прокручивается открытый экран. Фон, экраны и меню привязаны
+   к одному окну. Во вкладке его высота меняется вместе с панелями браузера.
+   Нижний отступ меню включает одну безопасную зону. */
+@media screen{
+  @supports (height:100dvh){
+    html.happy-viewport,.happy-viewport>body{height:100dvh}
+    html.happy-viewport{background-color:var(--happy-theme-color)}
+    .happy-viewport>body{contain:layout}
+  }
+  @media (display-mode:standalone){
+    html.happy-viewport,.happy-viewport>body{height:100vh}
+  }
+  /* WebKit берёт цвет за краем страницы из однотонной подложки под градиентом.
+     Тема рисует свой градиент на html и оставляет body прозрачным. */
+  :root[data-happy-appearance-app][data-happy-appearance]{background-color:var(--happy-base)!important}
+}
+
+:root{--hs-glass:rgba(255,255,255,.14);--hs-border:rgba(255,255,255,.34);--hs-muted:rgba(255,255,255,.7);
+ --hs-primary:#6254cf;--hs-primary-shadow:none;--hs-cancel-ink:#6254cf;
+ --hs-seg-bg:#edf8ff;--hs-seg-ink:var(--happy-dock-accent);--hs-switch-on:#8071df;--hs-sheet-bg:#5a8fe8;--hs-toast-bg:rgba(49,57,105,.94);
+ --hs-pill-on-ink:#5046c3}
+body.hs-open>*:not(.bg):not(.grain):not(#happy-screens):not([data-hs-keep]),body.hs-open>*:not(.bg):not(.grain):not(#happy-screens):not([data-hs-keep]) *{visibility:hidden!important;pointer-events:none!important}
+body.hs-open{overflow:hidden}
+#happy-screens{position:fixed;inset:0;z-index:2147480000;pointer-events:none;color:var(--happy-ink);
+ font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","Helvetica Neue",Arial,sans-serif;font-size:16px;
+ -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;line-height:normal;letter-spacing:normal;text-align:left}
+#happy-screens *,#happy-screens *::before,#happy-screens *::after{box-sizing:border-box}
+#happy-screens button,#happy-screens input,#happy-screens textarea,#happy-screens select{font:inherit;color:inherit;letter-spacing:inherit}
+#happy-screens button{cursor:pointer;-webkit-tap-highlight-color:transparent;border:0;background:none;margin:0;padding:0;transform:none;box-shadow:none;text-transform:none}
+#happy-screens button:disabled{cursor:default;opacity:1}
+#happy-screens button:focus{outline:0}
+#happy-screens button:focus-visible,#happy-screens [tabindex]:focus-visible,#happy-screens a:focus-visible{outline:2px solid #fff;outline-offset:4px}
+:where(#happy-screens) :where(h1,h2,h3,p){margin:0}   /* без веса: поля заголовков задают правила экранов ниже */
+
+/* ── страница ── */
+.hs-page{position:fixed;inset:0;pointer-events:auto;overflow:hidden;opacity:0;transition:opacity .22s ease}
+.hs-page.hs-in{opacity:1}
+.hs-page.hs-account-access{opacity:1;transition:none;background:var(--hs-sheet-bg)}
+#happy-screens:has(.hs-account-access) [data-page="profile"]{visibility:hidden}
+.hs-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none}
+.hs-scroll::-webkit-scrollbar{display:none}
+.hs-main{position:relative;min-height:100%;max-width:460px;margin:0 auto;padding:calc(26px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom))}
+.hs-main h1.hs-title{font-size:20px;font-weight:600;letter-spacing:-.5px;line-height:1.2;margin:0 0 22px}
+.hs-main h2{font-size:16px;font-weight:600;line-height:1.3}
+
+/* ── поля ── */
+.hs-field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.hs-field-title{display:block;font-size:14px;font-weight:400;line-height:20px;color:var(--happy-ink)}
+.hs-input{display:flex;align-items:center;gap:8px;border:1px solid var(--hs-border);border-radius:var(--happy-radius-field);background:var(--hs-glass);min-height:var(--happy-size-field);padding:0 14px;min-width:0}
+#happy-screens .hs-input input{display:block;flex:1;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:0;outline:0;background:transparent;box-shadow:none;
+ line-height:24px;height:46px;font-size:16px;color:var(--happy-ink);color-scheme:dark;-webkit-appearance:none;appearance:none}
+#happy-screens .hs-input input::placeholder{color:rgba(255,255,255,.42)}
+/* дата: поле настоящее, но его текст скрыт — видна русская строка по центру (happy-screens.js, dateText) */
+.hs-date{position:relative}
+#happy-screens .hs-input.hs-date>input{color:transparent;-webkit-text-fill-color:transparent;caret-color:transparent;cursor:pointer}
+#happy-screens .hs-input.hs-date>input::-webkit-datetime-edit,#happy-screens .hs-input.hs-date>input::-webkit-date-and-time-value{opacity:0}
+#happy-screens .hs-input.hs-date>input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:auto;height:auto;margin:0;padding:0;opacity:0;cursor:pointer}
+.hs-date-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 14px;pointer-events:none;
+ font-size:16px;line-height:24px;color:var(--happy-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-date-empty>.hs-date-text{color:rgba(255,255,255,.42)}
+.hs-input:focus-within{border-color:#fff;background:rgba(255,255,255,.18)}
+.hs-suffix{font-size:14px;flex-shrink:0;color:rgba(255,255,255,.88)}
+.hs-password{padding-right:3px}
+.hs-eye{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center}
+.hs-eye svg{width:19px;height:19px;opacity:.85;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#happy-screens textarea.hs-textarea{display:block;width:100%;min-height:125px;max-height:280px;resize:vertical;margin:0;padding:14px;border:1px solid var(--hs-border);border-radius:var(--happy-radius-field);
+ background:var(--hs-glass);color:var(--happy-ink);font-size:16px;line-height:1.55;outline:0;box-shadow:none;-webkit-appearance:none;appearance:none}
+#happy-screens textarea.hs-textarea::placeholder{color:rgba(255,255,255,.65)}
+#happy-screens textarea.hs-textarea:focus{border-color:#fff;background:rgba(255,255,255,.2)}
+
+/* ── кнопки ── */
+.hs-actions{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+#happy-screens .hs-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-button);border-radius:var(--happy-radius-pill);font-size:16px;font-weight:600;line-height:22px;padding:12px 16px;text-align:center}
+#happy-screens .hs-primary{background:var(--hs-primary);color:var(--happy-ink);box-shadow:var(--hs-primary-shadow)}
+#happy-screens .hs-cancel{background:#fff;color:var(--hs-cancel-ink)}
+#happy-screens .hs-glass-btn{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
+#happy-screens .hs-btn:active{transform:scale(var(--happy-press-scale));filter:brightness(.97)}
+#happy-screens .hs-btn[aria-busy=true]{opacity:.72}
+#happy-screens .hs-quiet{display:block;background:transparent;color:rgba(255,255,255,.9);font-size:14px;padding:9px 0;line-height:1.4;min-height:var(--happy-size-text-button-zone,44px);text-align:left}
+#happy-screens .hs-quiet.hs-center{text-align:center;margin:0 auto}
+.hs-error[hidden]{display:none}
+.hs-error{font-size:14px;line-height:1.5;padding:10px 12px;background:rgba(255,255,255,.15);border-radius:12px;margin:15px 0 0}
+.hs-note{font-size:14px;line-height:1.5;color:rgba(255,255,255,.77);margin:20px 0}
+.hs-note.hs-center{text-align:center}
+
+/* ── переключатель вариантов ── */
+.hs-segment{display:flex;align-items:stretch;border:1px solid var(--hs-border);border-radius:var(--happy-radius-pill);overflow:hidden;background:rgba(255,255,255,.12);height:43px}
+#happy-screens .hs-segment button{flex:1;background:transparent;border-radius:var(--happy-radius-pill);padding:0 10px;white-space:nowrap;font-size:14px;color:var(--happy-ink)}
+#happy-screens .hs-segment button[aria-pressed=true]{background:var(--hs-seg-bg);color:var(--hs-seg-ink);font-weight:600;box-shadow:0 1px 8px rgba(62,15,39,.06)}
+
+/* ── свитч ── */
+.hs-switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:65px}
+.hs-switch-row+.hs-switch-row{border-top:1px solid rgba(255,255,255,.22)}
+#happy-screens .hs-switch,.hs-settings .hs-switch{flex-shrink:0;width:var(--happy-size-switch-w);height:var(--happy-size-switch-h);padding:2px;border-radius:var(--happy-radius-pill);background:rgba(255,255,255,.23);transition:background var(--happy-motion-switch);border:0;display:block}
+.hs-switch>b{display:block;width:21px;height:21px;background:#fff;border-radius:50%;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
+.hs-switch[aria-checked=true]{background:var(--hs-switch-on)!important}
+.hs-switch[aria-checked=true]>b{transform:translateX(17px)}
+
+/* ── нижний лист ── */
+.hs-sheet-layer{position:fixed;inset:0;pointer-events:auto;display:flex;align-items:flex-end;justify-content:center}
+.hs-backdrop{position:absolute;inset:0;background:var(--happy-sheet-scrim);opacity:0;transition:opacity var(--happy-motion-screen) ease}
+.hs-sheet{position:relative;width:100%;max-width:460px;display:flex;flex-direction:column;max-height:calc(100% - 24px - env(safe-area-inset-top));
+ border-radius:var(--happy-radius-sheet) var(--happy-radius-sheet) 0 0;border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);color:var(--happy-ink);box-shadow:var(--happy-shadow-sheet);
+ transform:translateY(100%);transition:transform var(--happy-motion-sheet) var(--happy-ease-sheet)}   /* все листы — как календарь Day: 0,42 с (Астамур 24.11.2026) */
+.hs-sheet-layer.hs-in .hs-backdrop{opacity:1}
+.hs-sheet-layer.hs-in .hs-sheet{transform:translateY(0)}
+.hs-handle-zone{display:grid;height:30px;place-items:center;touch-action:none;cursor:grab;flex:none}
+.hs-handle{width:var(--happy-size-sheet-handle-w);height:var(--happy-size-sheet-handle-h);border-radius:var(--happy-radius-pill);background:var(--happy-sheet-handle)}
+.hs-sheet-head{display:grid;gap:4px;padding:0 20px 14px;flex:none}
+.hs-sheet-title{font-size:20px;font-weight:700;letter-spacing:-.25px;line-height:1.25}
+.hs-sheet-desc{color:var(--hs-muted);font-size:14px;line-height:1.35}
+.hs-sheet-body{overflow-y:auto;padding:0 20px calc(28px + env(safe-area-inset-bottom));overscroll-behavior:contain;scrollbar-width:none}
+.hs-sheet-body::-webkit-scrollbar{display:none}
+.hs-sheet-body .hs-actions{margin-top:18px}
+.hs-sheet-body>.hs-gate-actions:first-child{margin-top:4px}   /* «Войди в аккаунт»: от подзаголовка до кнопок 18, как было */
+.hs-sheet:has(.hs-gate-actions) .hs-sheet-desc{color:rgba(255,255,255,.82)}   /* исключение (Астамур 24.11): подзаголовок «Войди в аккаунт» ярче — белый 82 %, как было */
+.hs-sheet-fields{display:flex;flex-direction:column;gap:18px}
+.hs-sheet-note{font-size:14px;line-height:1.5;color:var(--hs-muted);margin:12px 0 0}
+
+/* ── всплывающее сообщение ── */
+.hs-toast{position:fixed;left:20px;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;
+ max-width:420px;margin:0 auto;background:var(--hs-toast-bg);border:1px solid var(--hs-border);border-radius:var(--happy-radius-pill);box-shadow:0 10px 30px #35132930;font-size:14px;line-height:1.35;
+ text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s}
+.hs-toast.hs-in{opacity:1;transform:none}
+.hs-toast svg{width:15px;height:15px;flex:none;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── колесо выбора ── */
+.hs-wheel-wrap{margin:7px 0 15px}
+.hs-wheel-wrap>.hs-field-title{text-align:left;font-size:14px;color:var(--hs-muted);margin-bottom:1px}
+.hs-wheel{height:calc(var(--happy-size-wheel-row) * 3);position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:ns-resize;
+ -webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);outline:0}
+.hs-wheel:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important;border-radius:12px}
+.hs-wheel-selection{position:absolute;left:0;right:0;top:var(--happy-size-wheel-row);height:var(--happy-size-wheel-row);border-radius:var(--happy-radius-pill);background:var(--happy-wheel-band)}   /* как барабан: строка 44, полоса без рамки (решение Астамура 25.11.2026) */
+.hs-wheel-track{position:absolute;left:0;right:0;top:0;transition:transform 160ms cubic-bezier(.2,.7,.2,1);pointer-events:none}
+.hs-wheel-option{height:var(--happy-size-wheel-row);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:400;letter-spacing:-.15px;transition:opacity .16s;text-align:center;padding:0 12px;line-height:20px;overflow-wrap:anywhere}
+.hs-wheel-option.hs-on{font-size:16px;font-weight:600}
+
+/* ── линейка веса ── */
+.hs-ruler{height:62px;position:relative;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:ew-resize;
+ -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);outline:0}
+.hs-ruler:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important;border-radius:12px}
+.hs-tick{position:absolute;top:12px;height:11px;width:1px;background:rgba(255,255,255,.68)}
+.hs-tick.hs-mid{height:18px}
+.hs-tick.hs-major{height:26px}
+.hs-tick span{position:absolute;top:32px;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,.85)}
+.hs-band{position:absolute;top:4px;height:37px;background:rgba(255,255,255,.18);border-radius:9px;border:1px solid rgba(255,255,255,.14)}
+.hs-pointer{position:absolute;top:4px;left:50%;height:37px;width:2px;border-radius:2px;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.3)}
+.hs-now{position:absolute;top:44px;width:3px;height:3px;border-radius:50%;background:#fff;transform:translateX(-1px);z-index:1}
+#happy-screens .hs-range{background:transparent;display:block;text-align:center;margin:0 auto;padding:3px 10px 4px;color:var(--hs-muted);font-size:12px;min-height:28px;
+ text-decoration:underline;text-decoration-color:rgba(255,255,255,.25);text-underline-offset:4px}
+
+/* ── первый экран и вход ── */
+.hs-welcome{display:flex;flex-direction:column;justify-content:flex-end;text-align:center;padding-top:calc(74px + env(safe-area-inset-top));padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+.hs-welcome>.hs-smile,.hs-welcome>.hs-welcome-options{flex-shrink:0}
+.hs-smile{position:relative;width:134px;height:134px;margin:0 auto}
+.hs-smile>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;transform:rotate(-90deg)}
+.hs-smile>svg circle{fill:none;stroke-width:10;stroke-linecap:round}
+.hs-smile-track{stroke:rgba(255,255,255,.2)}
+.hs-smile-arc{stroke:#fff;filter:drop-shadow(0 0 7px rgba(255,255,255,.45))}
+.hs-smile-glass{position:absolute;inset:21%;border-radius:50%;background:radial-gradient(circle at 38% 30%,rgba(255,255,255,.38),rgba(255,255,255,.12) 60%,rgba(255,255,255,.06));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 22px rgba(4,40,80,.18)}
+.hs-smile-glass svg{width:100%;height:100%;fill:#fff;filter:drop-shadow(0 1px 1.5px rgba(4,40,80,.25))}
+.hs-wait-status{flex-shrink:0}
+.hs-wait-actions{position:absolute;left:20px;right:20px;bottom:calc(24px + env(safe-area-inset-bottom))}
+.hs-wait-actions .hs-btn{width:100%}
+.hs-welcome-options{opacity:0;visibility:hidden;transition:opacity .55s ease;pointer-events:none}
+.hs-welcome-options.hs-settled{opacity:1;visibility:visible;pointer-events:auto}
+.hs-welcome-options h1{margin:40px 0 26px;font-size:20px;font-weight:600;line-height:1.2}
+.hs-welcome-buttons{display:grid;gap:12px}
+#happy-screens .hs-provider,#happy-screens .hs-email-start{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--happy-size-button);border-radius:var(--happy-radius-pill);padding:12px 17px;font-size:16px;font-weight:600}
+#happy-screens .hs-provider{background:var(--hs-glass);border:1px solid var(--hs-border);color:var(--happy-ink)}
+#happy-screens .hs-provider:disabled{cursor:default}
+.hs-provider svg,.hs-email-start svg{width:23px;height:23px;position:absolute;left:18px}
+.hs-provider>span,.hs-email-start>span{padding:0 19px}
+.hs-email-start svg{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round}
+.hs-login-choice{font-size:14px;color:var(--hs-muted);margin:29px 0 13px}
+#happy-screens .hs-login-choice button{position:relative;padding:8px 3px;font-weight:600;color:var(--happy-ink);font-size:14px}
+/* «Войти» в строке: вид прежний, зона нажатия 44 в высоту (Астамур 25.11.2026) */
+#happy-screens .hs-login-choice button::after{content:"";position:absolute;left:0;right:0;top:50%;height:var(--happy-size-text-button-zone,44px);transform:translateY(-50%)}
+#happy-screens .hs-guest{display:block;margin:0 auto;text-align:center;font-size:14px;font-weight:600;color:var(--happy-ink);padding:9px 6px;min-height:var(--happy-size-text-button-zone,44px)}
+.hs-test-note{font-size:12px;line-height:1.45;color:var(--hs-muted);margin:0 auto 4px}
+.hs-auth{padding-top:calc(56px + env(safe-area-inset-top))}
+.hs-auth h1.hs-title{font-size:20px;font-weight:600;line-height:1.22;margin-bottom:28px}
+.hs-auth-fields{display:flex;flex-direction:column;gap:20px}
+#happy-screens .hs-forgot{margin-top:12px;font-size:14px}
+.hs-mail-symbol{width:68px;height:68px;border:1px solid var(--hs-border);border-radius:50%;display:grid;place-items:center;background:var(--hs-glass);margin:36px auto 12px}
+.hs-mail-symbol svg{width:29px;height:29px;fill:none;stroke:#fff;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.hs-confirm-address{font-size:16px;line-height:1.45;overflow-wrap:anywhere;text-align:center;margin:24px 0 10px}
+.hs-current-email{font-size:16px;line-height:1.45;color:var(--hs-muted);overflow-wrap:anywhere;margin:-6px 0 28px}
+
+/* ── настройки: аватар, имя, аккаунт, связка, выход ── */
+.hs-settings{color:var(--happy-ink)}
+.hs-identity{text-align:center;padding:17px 12px 33px}
+.hs-avatar{width:80px;height:80px;border:1px solid var(--hs-border);border-radius:50%;display:grid;place-items:center;background:var(--hs-glass);margin:0 auto 16px;overflow:hidden}
+.hs-avatar svg{width:37px;height:37px;fill:none;stroke:#fff;stroke-width:1.5;stroke-linecap:round}
+.hs-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.hs-identity h2{overflow-wrap:anywhere;line-height:1.28;font-size:20px;max-width:100%;margin:0 auto;font-weight:600;letter-spacing:-.3px;color:var(--happy-ink)}
+.hs-section+.hs-section{margin-top:28px}
+.hs-section>h3{font-size:14px;font-weight:600;color:var(--hs-muted);margin:0 2px 10px;text-transform:none;letter-spacing:normal}
+.hs-group{background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:26px;padding:0 17px;overflow:hidden}
+.hs-settings .hs-row{display:flex;flex-direction:column;gap:6px;background:none;width:100%;text-align:left;padding:18px 0;border:0;color:var(--happy-ink);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:0;margin:0;box-shadow:none;min-height:0}
+.hs-settings .hs-row+.hs-row{border-top:1px solid rgba(255,255,255,.22)}
+.hs-settings .hs-row>span{font-size:16px;font-weight:600}
+.hs-settings .hs-row:active{opacity:.6}
+.hs-settings .hs-switch{cursor:pointer;-webkit-tap-highlight-color:transparent;margin:0}
+.hs-signout-row{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;margin-top:14px;padding-bottom:4px;color:var(--happy-ink)}
+.hs-signout-row button{background:transparent;color:rgba(255,255,255,.9);font:inherit;font-size:14px;padding:9px 0;line-height:1.4;min-height:var(--happy-size-text-button-zone,44px);border:0;cursor:pointer;margin:0;box-shadow:none}
+/* «Войти» у гостя внизу Настроек — как кнопки входа: пилюля 48 во всю ширину, стекло и рамка, как «Продолжить с Google», 16 · 600 (Астамур 25.11.2026) */
+.hs-signout-row button[data-hp="signin"]{box-sizing:border-box;width:100%;height:48px;min-height:48px;margin-top:4px;padding:0 17px;border-radius:999px;border:1px solid var(--hs-border,rgba(255,255,255,.34));background:var(--hs-glass,rgba(255,255,255,.16));color:var(--happy-ink,#fff);font-size:16px;font-weight:600;line-height:22px}
+.hs-sync{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--hs-muted);text-align:center;min-width:0}
+.hs-sync svg{width:13px;height:13px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hs-newer{margin-top:10px;text-align:center}
+.hs-newer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:var(--happy-radius-pill);background:#fff;color:var(--hs-cancel-ink);font-weight:600;text-decoration:none}
+
+/* ── «Связка с»: свитчи связи приложений (разметку и обмен ведёт приложение) в виде прототипа ── */
+.hs-links{margin-top:28px!important}
+.hs-links .hs-links-title{display:block;font-size:14px;font-weight:600;line-height:1.4;color:rgba(255,255,255,.7);margin:0 2px 10px;text-transform:none;letter-spacing:normal}
+.hs-links .happy-app-links{padding:0 17px!important;border-radius:26px;background:var(--hs-glass)!important;border:1px solid var(--hs-border)!important;box-shadow:none!important}
+.hs-links .happy-app-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:65px;padding:0}
+.hs-links .happy-app-link+.happy-app-link{border-top:1px solid rgba(255,255,255,.22)}
+.hs-links .happy-app-name{flex:1;min-width:0;padding:14px 0;color:var(--happy-ink);font-size:16px;font-weight:600;text-decoration:none;overflow-wrap:anywhere}
+.hs-links .happy-switch{appearance:none;-webkit-appearance:none;position:relative;display:block;flex:0 0 auto;width:42px;height:25px;min-height:25px;margin:0;padding:0;border:0;border-radius:var(--happy-radius-pill);
+ background:rgba(255,255,255,.23);cursor:pointer;transition:background .18s;box-shadow:none}
+.hs-links .happy-switch::after{content:"";position:absolute;left:2px;top:2px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #40293b44;transition:transform .18s}
+.hs-links .happy-switch:checked{background:var(--hs-switch-on);border:0}
+.hs-links .happy-switch:checked::after{transform:translateX(17px)}
+.hs-links .happy-switch:focus-visible{outline:2px solid #fff;outline-offset:4px}
+
+/* ── профиль ── */
+.hs-profile-photo{text-align:center;margin:0 0 26px}
+.hs-profile-photo .hs-avatar{width:var(--happy-size-avatar,80px);height:var(--happy-size-avatar,80px);margin-bottom:5px}   /* 80 везде (Астамур 25.11.2026; было 86) */
+#happy-screens .hs-profile-photo .hs-quiet{text-align:center;margin:0 auto}
+.hs-profile-form{display:flex;flex-direction:column;gap:17px}
+#happy-screens .hs-export{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:6px}
+#happy-screens .hs-export button{min-height:44px;padding:0 12px;font-weight:600}
+#happy-screens .hs-export-link{color:var(--happy-ink);font-size:16px;text-decoration:underline;text-underline-offset:4px}
+#happy-screens .hs-delete-link{color:var(--happy-danger);font-size:14px;text-shadow:none}
+.hs-delete-dialog{position:fixed;inset:auto 0 0;margin:0 auto;width:100%;max-width:460px;max-height:calc(100% - 24px - env(safe-area-inset-top));
+ overflow:auto;overscroll-behavior:contain;pointer-events:auto;padding:24px 20px calc(24px + env(safe-area-inset-bottom));
+ border:1px solid var(--hs-border);border-bottom:0;border-radius:var(--happy-radius-sheet) var(--happy-radius-sheet) 0 0;background:var(--hs-sheet-bg);color:var(--happy-ink)}
+.hs-delete-dialog::backdrop{background:rgba(0,0,0,.45)}
+.hs-delete-dialog .hs-note{color:var(--happy-ink);overflow-wrap:anywhere}
+#happy-screens .hs-delete-confirm{background:var(--happy-danger);color:var(--happy-on-danger)}
+.hs-profile-providers{display:grid;gap:10px;margin-top:12px}
+#happy-screens .hs-profile-providers .hs-btn{font-size:14px}
+.hs-provider-status{font-size:14px;color:var(--happy-ink)}
+.hs-profile-account h2{margin-bottom:17px}
+.hs-email-label{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:14px;margin-bottom:7px}
+.hs-verified{display:flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,.78)}
+.hs-verified svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hs-email-value{min-height:48px;padding:12px 14px;overflow-wrap:anywhere;word-break:break-word;font-size:16px;line-height:1.4}
+.hs-pending{padding:12px 14px;margin-top:5px;border-radius:12px;background:rgba(255,255,255,.08);font-size:12px;color:var(--hs-muted)}
+.hs-pending strong{display:block;font-size:14px;line-height:1.4;font-weight:400;color:var(--happy-ink);overflow-wrap:anywhere;margin-top:4px}
+#happy-screens .hs-pending .hs-quiet{display:inline-block;font-size:12px;padding:6px 14px 0 0;min-height:28px}
+.hs-section-title{margin-top:9px;font-size:16px}
+/* «Рост | Пол» и «Вес сейчас | Дата замера» — одни и те же две колонки: края полей совпадают (Астамур, 16.11.2026) */
+.hs-height-sex,.hs-field-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.hs-compact-sex{height:48px}
+#happy-screens .hs-compact-sex button{font-size:14px}
+.hs-units h2{font-size:16px;font-weight:600;color:#fff;margin-bottom:10px}   /* раздел профиля — как «Аккаунт» и «Личные данные»: 16 / 600 (Астамур 22.11.2026) */
+.hs-units-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
+/* Единицы в профиле: дорожка 44, как у кнопок внутри (было 36 — выбранная пилюля 44 вылезала и казалась сплющенной; Астамур 21.11.2026). */
+.hs-units-row>.hs-segment{width:160px;height:44px}
+.hs-photo-preview{padding:10px}
+.hs-photo-preview .hs-avatar{width:var(--happy-size-avatar,80px);height:var(--happy-size-avatar,80px);margin:0 auto}
+
+/* ── цели: вес ── */
+.hs-goals h1.hs-title{margin-bottom:30px}
+.hs-method{height:44px;margin-bottom:17px}
+#happy-screens .hs-method button:last-child{flex:1.28}
+.hs-weight-section{margin-bottom:9px}
+.hs-current-weight{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.hs-current-weight time{font-size:14px;color:var(--hs-muted)}
+.hs-target{text-align:center;display:block;margin:14px 0 4px}
+.hs-target .hs-field-title{font-size:14px;color:rgba(255,255,255,.86)}
+.hs-target>div{display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:400;gap:6px;margin-top:3px;line-height:36px}
+#happy-screens .hs-target input{font-size:28px;font-weight:400;background:none;border:0;border-radius:0;outline:0;width:85px;text-align:right;color:var(--happy-ink);padding:0;margin:0;line-height:36px;height:36px;
+ border-bottom:1px solid transparent;box-shadow:none;-webkit-appearance:none;appearance:none}
+#happy-screens .hs-target input:focus{border-bottom-color:var(--hs-border)}
+#happy-screens .hs-target input::placeholder{color:var(--hs-muted)}
+.hs-sport-weight>h2{font-size:20px;margin:0 0 22px;font-weight:600}
+.hs-focus-block{margin-top:22px;padding-top:22px;border-top:1px solid rgba(255,255,255,.22)}
+.hs-focus-block .hs-wheel-wrap{margin:0}
+.hs-focus-block .hs-wheel-wrap>.hs-field-title{font-size:20px;font-weight:600;color:var(--happy-ink);margin-bottom:12px}
+.hs-focus-block .hs-wheel-option{font-size:16px}
+.hs-focus-block .hs-wheel-option.hs-on{font-size:16px}
+.hs-goals .hs-actions{margin-top:30px}
+
+/* ── цели Meal: калории и БЖУ ── */
+.hs-line{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.hs-line>span{font-size:12px;color:var(--hs-muted)}
+.hs-calorie-field{min-height:46px}
+#happy-screens .hs-calorie-field input{font-size:20px;font-weight:400;letter-spacing:.4px}
+#happy-screens .hs-text-action{padding:0;font-size:12px;color:rgba(255,255,255,.8);text-decoration:underline;text-underline-offset:3px}
+.hs-macros{margin-top:22px}
+.hs-macros h2{font-size:16px;font-weight:600}
+.hs-macro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:23px;margin-top:17px;padding:0 12px}
+.hs-macro{display:flex;flex-direction:column;align-items:center;min-width:0}
+.hs-macro-name{font-size:14px;white-space:nowrap}
+.hs-macro-grams{font-size:20px;font-weight:600;white-space:nowrap;letter-spacing:-.4px;margin-top:5px}
+.hs-macro-grams small{font-size:16px;font-weight:400}
+.hs-macro-share{font-size:14px;margin-top:4px;color:rgba(255,255,255,.88)}
+.hs-macro-slider{position:relative;height:164px;width:100%;max-width:80px;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.39);background:rgba(255,255,255,.12);margin-top:10px;
+ touch-action:none;cursor:ns-resize;user-select:none;-webkit-user-select:none;outline:0}
+.hs-macro-slider:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important}
+.hs-macro-fill{position:absolute;bottom:0;left:0;right:0;min-height:0;border-radius:11px 11px 0 0;background:linear-gradient(135deg,#eab7da,#d994bf);border-top:1px solid rgba(255,255,255,.4)}
+.hs-macro-1 .hs-macro-fill{background:linear-gradient(135deg,#cfa5e1,#b485cc)}
+.hs-macro-2 .hs-macro-fill{background:linear-gradient(135deg,#f0b0b7,#dc8d99)}
+.hs-macro-thumb{position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;left:calc(50% - 9px);box-shadow:0 2px 5px rgba(80,25,60,.2);pointer-events:none}
+.hs-fiber{margin-top:22px}
+.hs-calc-preview{padding:14px;background:var(--hs-glass);border:1px solid var(--hs-border);border-radius:12px}
+.hs-calc-preview>output{display:block;font-size:28px;font-weight:400;line-height:34px;margin-top:3px}
+.hs-calc-preview>output small{font-size:14px;font-weight:400}
+.hs-calc-macros{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.hs-calc-macros>span{font-size:12px;color:var(--hs-muted)}
+.hs-calc-macros b{display:block;margin-top:3px;font-size:14px;font-weight:600;color:var(--happy-ink)}
+.hs-calc-preview p{font-size:12px;color:var(--hs-muted);margin:8px 0 0}
+.hs-calc-details summary{font-size:14px;list-style:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;color:var(--hs-muted)}
+.hs-calc-details summary::-webkit-details-marker{display:none}
+.hs-calc-details .hs-field{margin-top:12px}
+.hs-calc-details p{font-size:14px;line-height:1.5;color:var(--hs-muted);margin:12px 0 0}
+#happy-screens .hs-method-link{display:block;margin:4px auto 0;min-height:44px;padding:0 12px;color:rgba(255,255,255,.85);font-size:14px;text-decoration:underline;text-decoration-color:rgba(255,255,255,.48);text-underline-offset:4px}
+.hs-explain{display:grid;gap:15px;color:rgba(255,255,255,.9);font-size:14px;line-height:1.48}
+.hs-explain h3{margin:0 0 5px;color:var(--happy-ink);font-size:16px;font-weight:600}
+.hs-explain p{margin:0;color:inherit;line-height:inherit}
+.hs-explain p+p{margin-top:7px}
+.hs-explain .hs-equation{padding:9px 11px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:12px;color:var(--happy-ink);font-weight:600}
+.hs-explain .hs-explain-note{font-size:14px}
+.hs-explain ul{margin:0;padding-left:16px}
+.hs-explain li+li{margin-top:6px}
+.hs-explain a{color:var(--happy-ink);text-decoration:underline;text-underline-offset:3px}
+
+/* ── цели Day ── */
+.hs-day-goals .hs-wheel-wrap{margin:0}
+.hs-day-goals .hs-wheel-wrap>.hs-field-title,.hs-day-goals h2{font-size:16px;font-weight:600;color:var(--happy-ink);line-height:1.4}
+.hs-day-goals .hs-wheel{margin-top:12px}
+.hs-day-goals .hs-wheel-option{font-size:16px;line-height:18px;padding:0 20px;white-space:normal}
+.hs-day-goals .hs-wheel-option.hs-on{font-size:16px;font-weight:600}
+.hs-observations{margin-top:30px}
+.hs-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+#happy-screens .hs-topics button{display:flex;align-items:center;justify-content:center;max-width:100%;padding:10px 15px;min-height:44px;border-radius:var(--happy-radius-pill);border:1px solid #ffffff65;background:#ffffff20;
+ font-size:14px;line-height:1.3;color:var(--happy-ink);overflow-wrap:anywhere;text-align:center}
+#happy-screens .hs-topics button[aria-pressed=true]{background:#f4faff;color:var(--hs-pill-on-ink);border-color:#fff;box-shadow:0 2px 7px #145e9314}
+#happy-screens .hs-topics .hs-add-topic{min-width:65px;padding:10px 20px}
+.hs-add-topic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.hs-intention{margin-top:28px}
+.hs-intention .hs-field-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 8px;font-size:16px;font-weight:600;line-height:1.4}
+.hs-intention small{font-size:12px;font-weight:400;color:#ffffffb3}
+.hs-day-goals .hs-actions{margin-top:26px}
+
+@media (prefers-reduced-motion:reduce){.hs-wheel-track,.hs-wheel-option,.hs-welcome-options,.hs-switch,.hs-switch>b,.hs-page,.hs-sheet,.hs-backdrop,.hs-toast{transition:none}}
+@media (max-width:359px){.hs-main{padding-left:16px;padding-right:16px}.hs-macro-grid{gap:12px;padding:0}.hs-units-row>.hs-segment{width:140px}}
+
+/* Аудит единообразия Sport 18.11.2026: ручка у страницы (профиль, цели) — как у листов */
+.hs-page .hs-page-handle{position:sticky;top:0;z-index:3;height:30px;display:flex;justify-content:center;align-items:center;cursor:grab;touch-action:none}
+
+/* Астамур 18.11.2026 (голосом): страница с ручкой (профиль, цели) — лист. Сверху свободное место, под ним видно
+   приложение, затемнённое; нажатие туда закрывает, как ручка. Приложение может задать свои отступы и подложку. */
+.hs-page.hs-page-sheet{opacity:1;transition:none}
+.hs-page-backdrop{position:absolute;inset:0;background:var(--happy-sheet-scrim);opacity:0;transition:opacity var(--happy-motion-screen) ease}
+.hs-page-sheet.hs-in>.hs-page-backdrop{opacity:1}
+.hs-page-sheet>.hs-scroll{top:calc(24px + env(safe-area-inset-top));left:0;right:0;bottom:0;max-width:460px;margin:0 auto;border-radius:var(--happy-radius-sheet) var(--happy-radius-sheet) 0 0;
+ border:1px solid var(--hs-border);border-bottom:0;background:var(--hs-sheet-bg);box-shadow:var(--happy-shadow-sheet);transform:translateY(100%);transition:transform var(--happy-motion-sheet) var(--happy-ease-sheet)}
+.hs-page-sheet.hs-in>.hs-scroll{transform:none}
+.hs-page-sheet .hs-main{min-height:0;padding-top:4px}
+body.hs-sheet-open{overflow:hidden}
+@media (prefers-reduced-motion:reduce){.hs-page-backdrop,.hs-page-sheet>.hs-scroll{transition:none}}
+
+/* Нижнее меню приложения поверх листов (профиль, цели, «Новый замер») — как у листов Sport (Астамур 19.11.2026: «и там
+   тоже, и сразу везде»). Низ листа — с запасом под меню. Страница на весь экран (вход) меню по-прежнему закрывает. */
+body.hs-sheet-open:not(.hs-open) .dock{z-index:2147480001!important;opacity:1!important}
+.hs-page-sheet>.hs-scroll{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
+/* Cards: 26; Day 22 (lighter feel), Sport 24 (large exercise images) — AGENTS.md section 4. */
+html[data-happy-appearance-app="day"] .hs-group,html[data-happy-appearance-app="day"] .hs-links .happy-app-links{border-radius:22px}
+html[data-happy-appearance-app="sport"] .hs-group,html[data-happy-appearance-app="sport"] .hs-links .happy-app-links{border-radius:24px}
+
+/* Галочки (чекбоксы) — один вид во всех приложениях, вариант 2 «Белый квадрат» (Астамур, аудит 3, 21.11.2026):
+   выкл — стеклянный квадрат 24×24, скругление 7, светлая рамка; вкл — белый квадрат, галочка цветом приложения (--hs-check).
+   :where — нулевая сила селектора: спрятанные галочки внутри пилюль-кнопок своими правилами остаются как были. */
+:root{--hs-check:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M6 12.5l4 4L18 8" fill="none" stroke="%238071df" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E')}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)){-webkit-appearance:none;appearance:none;box-sizing:border-box;flex:none;width:24px;height:24px;margin:0;border-radius:7px;border:1.6px solid rgba(255,255,255,.7);background:rgba(255,255,255,.16) center/18px 18px no-repeat;cursor:pointer;vertical-align:middle}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):checked{background-color:#fff;border-color:#fff;background-image:var(--hs-check)}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):disabled{opacity:.55;cursor:default}
+:where(input[type=checkbox]:not([role=switch]):not(.happy-switch):not(.hs-switch):not(.sport-switch):not(.toggle)):focus-visible{outline:2px solid #fff;outline-offset:3px}
+
+/* Выключатели — один вид во всех приложениях, вариант B «С рамкой» (Астамур, аудит 3, 21.11.2026):
+   42×25, тонкая светлая рамка; выкл — полупрозрачный синий, вкл — цвет приложения или темы (--hs-switch-on); ручка 19, белая, без тени.
+   Касается общего выключателя настроек, .toggle и мятного .sport-switch в Sport, выключателей окна счётчика Meal. */
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input){-webkit-appearance:none!important;appearance:none!important;position:relative!important;box-sizing:border-box!important;flex:0 0 auto!important;width:var(--happy-size-switch-w)!important;min-width:0!important;height:var(--happy-size-switch-h)!important;min-height:var(--happy-size-switch-h)!important;margin:0!important;padding:0!important;border:1px solid rgba(255,255,255,.27)!important;border-radius:var(--happy-radius-pill)!important;background:rgba(0,106,159,.38)!important;box-shadow:none!important;cursor:pointer}
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):checked{background:var(--hs-switch-on,#8071df)!important;border-color:rgba(255,255,255,.27)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)::after,html body :is(.toggle,.fc-sync-row input)::before{content:""!important;position:absolute!important;top:50%!important;left:2px!important;width:var(--happy-size-switch-knob)!important;height:var(--happy-size-switch-knob)!important;margin:0!important;border-radius:50%!important;background:#fff!important;box-shadow:none!important;transform:translateY(-50%)!important;transition:transform var(--happy-motion-switch)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch):checked::after,html body :is(.toggle,.fc-sync-row input):checked::before{left:2px!important;transform:translate(17px,-50%)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch,.toggle,.fc-sync-row input):focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* 24.11.2026 (Астамур нашёл на iPhone, Meal «Фастинг»: два белых кружка): выключатель-кнопка (<button role=switch> с <b> внутри)
+   получал и свою ручку <b>, и общую ручку ::after; во «вкл» <b> уезжал вправо, ::after оставался слева. Теперь ручка одна — ::after,
+   а «вкл» у кнопки — aria-checked=true, как :checked у галочки. */
+html body :is(.happy-switch,.hs-switch,.sport-switch)>b{display:none!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]{background:var(--hs-switch-on,#8071df)!important;border-color:rgba(255,255,255,.27)!important}
+html body :is(.happy-switch,.hs-switch,.sport-switch)[aria-checked=true]::after{transform:translate(17px,-50%)!important}
+/* Профиль: подписи полей (Почта, Имя, Дата рождения, Рост, Пол, Вес сейчас, Дата замера, строки единиц) — жирные 600 и белые,
+   как заголовок «Единицы измерения» (Астамур 22.11.2026). Светлые заголовки на самой странице Настроек не меняются. */
+.hs-profile .hs-field-title,.hs-profile .hs-email-label>span:first-child,.hs-profile .hs-units-row>span{font-weight:600!important;color:#fff!important}

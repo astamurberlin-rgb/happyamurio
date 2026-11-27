@@ -1,0 +1,117 @@
+/* Diary uses the active Day palette and the existing sheets and gestures. */
+:root {
+  --jd-control-fill: color-mix(in srgb, var(--hs-seg-bg) 84%, var(--happy-base));
+}
+:is([data-screen="care-diary"],[data-screen="care-entry"]) .jd-editor,
+:is([data-screen="care-diary"],[data-screen="care-entry"]) .jd-history,
+[data-screen="care-entry"] .jd-detail {max-width:620px;margin-inline:auto}
+:is([data-screen="care-diary"],[data-screen="care-entry"])>.top {max-width:620px;margin-inline:auto}
+.jd-editor,.jd-history,.jd-detail {min-width:0}
+.jd-editor [hidden],.jd-history [hidden],.jd-detail [hidden] {display:none!important}
+.jd-editor.card {padding:15px 16px 16px}
+/* The glass card creates its own stacking context. Raise the card while its menu overlaps the history. */
+.jd-editor:has(.jd-popover:not([hidden])),.jd-history .jd-head:has(.jd-menu[open]) {position:relative;z-index:1}
+.jd-meta {color:var(--muted);font-size:14px}
+.jd-meta summary,.jd-menu summary {list-style:none;cursor:pointer}
+.jd-meta summary::-webkit-details-marker,.jd-menu summary::-webkit-details-marker{display:none}
+.jd-meta summary {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 10px;min-height:36px}
+.jd-meta summary::after{content:'';width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);flex:none}
+.jd-meta[open] summary::after{transform:translateY(2px) rotate(225deg)}.jd-meta summary [data-book-label]{margin-left:auto}
+.jd-fields {display:grid;gap:10px;margin:8px 0 14px}
+.jd-fields label {display:grid;gap:5px;font-size:14px;color:var(--ink)}
+.jd-fields input,.jd-fields select,.jd-query {appearance:auto;width:100%;min-width:0;height:44px;border-radius:12px;padding:5px 10px;color:var(--ink);background:var(--glass);border:1px solid var(--glassBrd);font:inherit;font-size:16px}
+.jd-fields select option{color:CanvasText;background:Canvas}
+/* The title uses the same translucent field as the body. */
+.jd-title-wrap{position:relative}
+.jd-editor .jd-title{display:block;width:100%;height:46px;padding:10px 12px;border:1px solid var(--glassBrd);border-radius:12px;box-shadow:none;background:rgba(255,255,255,.14);color:var(--happy-ink);caret-color:#fff;font:inherit;font-size:18px;font-weight:600;-webkit-user-select:text;user-select:text}
+.jd-title-wrap:has(input:placeholder-shown:not(:focus))::after{content:"";position:absolute;top:12px;bottom:12px;left:10px;width:2px;border-radius:2px;background:#fff;pointer-events:none}
+.jd-editor .jd-title::placeholder{color:rgba(255,255,255,.5);opacity:1}
+.jd-editor textarea{display:block;margin:8px 0 10px;min-height:152px;font-size:16px;-webkit-user-select:text;user-select:text}
+.jd-query::placeholder{color:var(--muted);opacity:1}
+.jd-book-row{max-width:620px;margin:-16px auto 10px}
+.jd-book-row [data-jd=book]{padding:0 10px;border:0;background:none;min-height:44px}
+.jd-book-row [data-jd=book]>svg{width:16px;height:16px}
+.jd-book-dialog .jd-book-wheel{margin-top:6px}
+.jd-book-dialog .hf-drum-cap{display:none}
+.jd-book-dialog .hf-drum-item{padding-inline:8px;font-size:clamp(20px,6vw,26px)}
+.jd-book-dialog .jd-book-create label{display:grid;gap:8px}
+.jd-book-dialog .jd-book-create input{min-height:46px;width:100%;font-size:16px}
+.jd-book-dialog [hidden]{display:none!important}
+.jd-btn,.jd-menu summary{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:4px 13px;border-radius:999px;border:1px solid var(--glassBrd);background:var(--glass);color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.jd-btn svg,.jd-audio svg,.jd-menu svg {width:19px;height:19px;flex:none}
+.jd-btn[data-icon-only],.jd-menu summary{flex:none;width:44px;padding:0;border-color:transparent;background:transparent}
+.jd-btn:disabled,.jd-save:disabled{opacity:.48;cursor:default}
+.jd-toolbar,.jd-choices,.jd-save-row,.jd-filters,.jd-head>div,.jd-pick,.jd-dialog-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.jd-toolbar{border-top:1px solid var(--glassBrd);padding-top:10px;gap:0}
+.jd-toolbar .jd-btn{border:0;background:transparent}
+.jd-toolbar [data-icon-only]{width:42px}
+.jd-toolbar .jd-btn:focus-visible{outline:2px solid currentColor;outline-offset:-3px}
+.jd-toolbar .jd-btn.jd-recording{background:var(--jd-control-fill);color:var(--happy-dock-ink)}
+.jd-toolbar .jd-btn svg{display:block;width:24px;height:24px}
+.jd-toolbar [data-jd="voice"]:not(.jd-recording) svg{width:28px;height:28px}
+.jd-choices{padding-top:8px}.jd-save-row{margin-top:10px}
+.jd-save-row .jd-save{flex:1;min-height:48px;border-radius:999px;font:inherit;font-weight:600}
+.jd-editor [role=status]:not(:empty){font-size:14px;margin-top:8px}
+.jd-filters [aria-pressed=true]{background:var(--ink);color:var(--happy-accent-ink)}
+.jd-history{margin-top:23px!important;padding:0 2px 18px}
+.jd-head,.jd-dialog-head,.jd-pick{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.jd-head h2,.jd-dialog-head h2{font-size:20px;margin:0;font-weight:700}
+.jd-head{margin-bottom:10px}.jd-head>div{gap:5px}
+.jd-filters{margin:8px 0}.jd-pick{padding:5px 0 10px;font-size:14px}
+.jd-day{font-size:14px;color:var(--muted);font-weight:600;margin:16px 0 5px}
+.jd-row.card{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:start;min-height:48px;font:inherit;cursor:pointer}
+.jd-check{display:grid;place-items:center;width:18px;height:18px;margin:2px 0;border:1px solid var(--glassBrd);border-radius:4px;font-weight:700}
+.jd-row[aria-pressed=true] .jd-check{background:var(--ink);color:var(--happy-accent-ink)}
+.jd-row time,.jd-date,.jd-addition small{font-size:14px;color:var(--muted);line-height:1.5}
+.jd-copy{display:grid;min-width:0;gap:4px}.jd-copy b,.jd-copy span{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow-wrap:anywhere}
+.jd-copy b{font-size:16px}.jd-copy span,.jd-copy small{font-size:14px;color:var(--muted)}
+.jd-copy>span{color:var(--ink);opacity:.85}
+.jd-pick>span{margin-inline-end:auto}
+.jd-thumb{width:46px;height:46px;object-fit:cover;border-radius:12px}
+.jd-media:not(:empty){display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin:10px 0}
+.jd-photo{position:relative;margin:0;max-width:100%}
+.jd-photo>button:first-child{border:0;padding:0;background:none;cursor:zoom-in;display:block}
+.jd-photo img{width:90px;height:84px;display:block;object-fit:cover;border-radius:12px}
+.jd-media [data-jd=remove-media]{position:absolute;right:2px;top:2px;width:32px;min-height:32px;border-radius:8px;background:var(--happy-base);color:var(--ink)}
+.jd-audio{flex:1 1 100%;position:relative;min-width:0;padding:10px 12px;border:1px solid var(--glassBrd);border-radius:12px}
+.jd-audio span{display:flex;align-items:center;gap:7px;font-size:14px}
+.jd-audio audio{width:100%;height:38px;margin-top:8px}
+.jd-detail .jd-head{align-items:flex-start}.jd-detail.card h2{font-size:20px}
+.jd-detail .care-long{margin:8px 0 14px}.jd-detail .care-long:empty{display:none}
+.jd-addition{border-top:1px solid var(--glassBrd);margin-top:15px;padding-top:13px}
+.jd-menu{position:relative}
+.jd-dialog,.jd-popover,.jd-menu>div{
+  color:var(--happy-ink);
+}
+.jd-menu>div{
+  position:absolute;right:0;top:46px;z-index:3;display:grid;gap:5px;min-width:150px;padding:6px;
+  border:1px solid var(--glassBrd);border-radius:18px;
+  box-shadow:0 8px 24px color-mix(in srgb, var(--happy-dock-ink) 18%, transparent);
+}
+.jd-menu>div .jd-btn{color:inherit}
+.jd-dialog{
+  box-sizing:border-box;position:fixed;width:min(calc(100% - 24px),660px);max-height:86dvh;overflow:auto;padding:14px;
+  border:1px solid var(--hs-border);border-radius:var(--happy-radius-sheet);box-shadow:var(--happy-shadow-sheet);
+}
+.jd-dialog::backdrop{background:var(--happy-sheet-scrim)}
+.jd-dialog-head{margin-bottom:var(--happy-space-12)}
+.jd-dialog-foot{justify-content:flex-end;margin-top:12px}
+.jd-paper{padding:15px 17px;background:white;color:#151515;border-radius:12px;overflow-wrap:anywhere}
+.jd-paper article+article{margin-top:18px;padding-top:16px;border-top:1px solid #bbb}
+.jd-paper p,.jd-paper .care-long{white-space:pre-wrap;line-height:1.5;margin:8px 0}
+.jd-paper .jd-print-date,.jd-paper small{font-size:14px;color:#444}.jd-paper h2{font-size:20px}
+.jd-paper .jd-audio{padding:4px 0;border:0}.jd-paper .jd-addition{border-color:#ccc}
+.jd-full-img{display:block;max-width:100%;max-height:66dvh;object-fit:contain;margin:auto}
+@media print{
+  @page{margin:17mm}
+  html:has(.jd-printing),body.jd-printing{position:static!important;display:block!important;height:auto!important;min-height:0!important;overflow:visible!important;background:white!important}
+  body.jd-printing>*:not(.jd-print-preview){display:none!important}
+  .jd-print-preview[open]{position:static!important;display:block!important;inset:auto!important;overflow:visible!important;width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;background:white!important;box-shadow:none!important}
+  .jd-print-preview::backdrop,.jd-print-preview .jd-dialog-head,.jd-print-preview .jd-dialog-foot{display:none!important}
+  .jd-paper{padding:0;border:0;color:black;font-size:11pt}.jd-paper article+article{break-before:page;border:0;margin:0;padding:0}
+  .jd-paper .jd-media{display:block}.jd-paper .jd-photo{display:inline-block;break-inside:avoid;margin:3mm 3mm 0 0}
+  .jd-paper .jd-photo img{max-width:75mm;max-height:90mm;width:auto;height:auto;border-radius:0}.jd-paper h2{break-after:avoid}
+}
+
+
+.jd-day::first-letter{text-transform:uppercase}

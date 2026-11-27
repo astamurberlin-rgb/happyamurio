@@ -1,0 +1,129 @@
+.jd-compose-body {
+  display: flex;
+  align-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  min-height: 152px;
+  margin: 8px 0 10px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: var(--happy-field-bg);
+  border: 1px solid var(--glassBrd);
+  border-radius: var(--happy-radius-field);
+  cursor: text;
+}
+.jd-compose-body:focus-within { border-color: currentColor; }
+.jd-prose,.jd-prose-read {
+  font: inherit;
+  font-size: var(--happy-type-body-size);
+  line-height: var(--happy-type-body-line);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  min-width: 0;
+}
+.jd-prose {
+  flex: 0 0 100%;
+  min-height: 26px;
+  outline: 0;
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+}
+.jd-prose:only-child { min-height: 128px; }
+.jd-prose:only-child:empty::before { content: attr(data-placeholder); color: var(--muted); pointer-events: none; }
+.jd-prose h3,.jd-prose-read h3 { font-size: 1.18em; font-weight: 750; margin: 0; line-height: 1.4; }
+.jd-prose p,.jd-prose-read p { margin: 0; }
+.jd-edit-media,.jd-flow-media { max-width: 100%; min-width: 0; }
+.jd-edit-media { position: relative; border-radius: 12px; margin: 5px 6px 5px 0; cursor: default; }
+.jd-edit-media:has(.jd-photo).is-selected,.jd-edit-media:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.jd-edit-media:has(.jd-photo) { align-self: flex-start; }
+.jd-edit-media .jd-photo-remove { position:absolute; top:2px; right:2px; width:30px; height:30px; border:1px solid #ffffffaa; border-radius:50%; color:#fff; background:#162b3de6; font:600 20px/1 sans-serif; cursor:pointer; }
+[data-live-holder]:not([hidden]) { border-top:1px solid var(--glassBrd); padding-top:6px; }
+.jd-edit-media:not(:has(.jd-photo)),.jd-flow-media:not(:has(.jd-photo)) { flex:1 0 100%; width:100%; margin-inline:0; }
+.jd-tile-actions { display: none; gap: 4px; padding: 4px 0; }
+.jd-edit-media.is-selected .jd-tile-actions,.jd-edit-media:focus-within .jd-tile-actions { display:flex; flex-wrap:wrap; }
+.jd-tile-actions button,.jd-popover button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+}
+.jd-tile-actions button { font-size: 14px; min-height: 36px; padding: 4px 8px; background: var(--glass); }
+.jd-tool-wrap { position: relative; }
+.jd-toolbar .jd-btn[data-jd=styles] { font-size:20px; letter-spacing:-.04em; font-weight:400; }
+.jd-toolbar [aria-expanded=true] { background:var(--glass); }
+.jd-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  display: grid;
+  min-width: 175px;
+  max-width: calc(100vw - 68px);
+  z-index: 5;
+  padding: 5px;
+  border: 1px solid var(--happy-field-line);
+  border-radius: 15px;
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--happy-dock-ink) 20%, transparent);
+}
+.jd-toolbar .jd-popover button {
+  min-height: 42px;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 8px 11px;
+  color: inherit;
+  font-size: 15px;
+  border-radius: 8px;
+}
+.jd-popover button:is(:hover,:focus-visible),
+.jd-menu>div .jd-btn:is(:hover,:focus-visible) { background: var(--hs-glass); }
+.jd-list-menu { inset-inline:auto 0; }
+.jd-toolbar .jd-list-menu button { display:flex; align-items:center; gap:8px; color:inherit; }
+.jd-list-menu button span { width:1.5em; text-align:center; }
+.jd-prose :is(ul,ol),.jd-prose-read :is(ul,ol) { margin:.25em 0; padding-inline-start:1.65em; }
+.jd-prose li[data-jd-check],.jd-prose-read li[data-jd-check] { position:relative; list-style:none; }
+.jd-check-toggle {
+  position:absolute; inset-inline-start:-1.52em; top:.13em; width:1.25em; height:1.25em;
+  box-sizing:border-box; margin:0; appearance:none; border:1.5px solid currentColor; border-radius:50%;
+  background:transparent; color:inherit; font:inherit; cursor:pointer;
+}
+.jd-check-toggle:checked::after {
+  content:''; position:absolute; inset-inline-start:29%; top:12%; width:28%; height:50%;
+  border:solid currentColor; border-width:0 1.8px 1.8px 0; transform:rotate(45deg);
+}
+.jd-check-toggle:disabled { opacity:1; cursor:default; }
+.jd-check-toggle:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+.jd-popover [data-format=heading] { font-weight: 750; }
+.jd-popover [data-format=bold] { font-weight: 700; }
+.jd-popover [data-format=italic] { font-style: italic; }
+.jd-popover [data-format=underline] { text-decoration: underline; }
+.jd-body-flow { display:flex; align-items:flex-start; gap:6px; flex-wrap:wrap; margin:8px 0; }
+.jd-prose-read { flex:1 0 100%; }
+.jd-flow-media .jd-photo img,.jd-edit-media .jd-photo img { width:90px; height:84px; }
+@media print {
+  .jd-body-flow { display:block; }
+  .jd-flow-media:has(.jd-photo) { display:inline-block; margin:4px; break-inside:avoid; }
+  .jd-flow-media .jd-photo img { width:auto; height:auto; max-width:75mm; max-height:90mm; object-fit:contain; }
+}
+.jd-gallery {display:flex; flex:0 0 100%; width:100%; min-width:0; overflow-x:auto; gap:9px; scroll-snap-type:x mandatory; overscroll-behavior-x:contain; scrollbar-width:none; border-radius:12px}
+.jd-gallery>.jd-edit-media,.jd-gallery>.jd-flow-media {flex:0 0 82%; margin:0; scroll-snap-align:start}
+.jd-gallery>:only-child {flex-basis:100%}
+.jd-gallery .jd-photo,.jd-gallery .jd-photo>button:first-child {width:100%}
+.jd-gallery .jd-photo img {display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.jd-gallery>:only-child .jd-photo img {aspect-ratio:auto}
+.jd-gallery::-webkit-scrollbar {display:none}
+[data-screen="care-entry"]>.top h1 {white-space:normal;overflow-wrap:anywhere;font-size:clamp(28px,5vw,36px);line-height:1.15}
+.jd-gallery>:has(.jd-portrait):not(:only-child) {flex-basis:36.45%}
+.jd-gallery .jd-portrait img {aspect-ratio:2/3}
+body.sheet dialog.jd-book-dialog .jd-btn {
+  background: var(--jd-control-fill);
+  color: var(--happy-dock-ink);
+}
+body.sheet dialog.jd-book-dialog input {
+  background: var(--hs-seg-bg);
+  border-color: color-mix(in srgb, var(--happy-dock-ink) 40%, var(--hs-seg-bg));
+  color: var(--happy-dock-ink);
+  caret-color: currentColor;
+}
+.jd-copy small svg {width:15px;height:15px;vertical-align:-2px;margin-inline-end:4px}

@@ -9,7 +9,7 @@
   HAPPY_OUT    — куда класть результаты и снимки (по умолчанию /tmp/happy-browser);
   HAPPY_CHROME — путь к Chrome;
   HAPPY_MEAL, HAPPY_DAY_STORE, HAPPY_SPORT_STORE — выпуски Meal, Day и Sport для сценариев (по умолчанию текущие:
-                 meal-34/, day-61/ и sport-45/). Все три работают на общем входе и общем модуле хранения;
+                 meal-34/, day-62/ и sport-45/). Все три работают на общем входе и общем модуле хранения;
   HAPPY_LIBRARIES_REF — ветка каталогов Meal (по умолчанию origin/meal-libraries, без каталога БАДов в ней —
                  origin/meal-libraries-supplements).
 """
@@ -176,7 +176,7 @@ def sign_out_settings(page):
 
 
 # Day и Sport на общем входе и общем модуле хранения — их сценарии: day_store, day_sections, sport_store.
-DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-61/")
+DAY_STORE = os.environ.get("HAPPY_DAY_STORE", "day-62/")
 SPORT_STORE = os.environ.get("HAPPY_SPORT_STORE", "sport-45/")
 # Страница-заглушка для сценариев на общем модуле: вход и общий модуль под названием более новой версии
 # приложения (номер формата новее).

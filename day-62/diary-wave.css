@@ -1,0 +1,68 @@
+.jd-wave {
+  --jd-wave-position: 0%;
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: var(--happy-space-10);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 2px 14px 2px 4px;
+  border-radius: var(--happy-radius-pill);
+  background: var(--jd-control-fill);
+  color: var(--happy-dock-ink);
+  line-height: 1.2;
+  text-align: start;
+}
+.jd-wave.jd-wave-live {
+  grid-template-columns: auto auto minmax(0,1fr) auto;
+  margin: .4rem 0;
+}
+.jd-wave .jd-wave-toggle {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 4px solid transparent;
+  border-radius: 50%;
+  background: var(--hs-seg-bg);
+  background-clip: padding-box;
+  color: inherit;
+  cursor: pointer;
+}
+.jd-wave .jd-wave-toggle svg { width: 16px; height: 16px; }
+.jd-wave-live .jd-wave-toggle svg { color: var(--happy-accent); }
+.jd-wave .jd-wave-track { position: relative; display: grid; align-items: center; min-width: 0; height: 44px; }
+.jd-wave .jd-wave-graph { display: block; width: 100%; height: 24px; color: inherit; }
+.jd-wave-graph path { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.jd-wave:not(.jd-wave-live) .jd-wave-track > .jd-wave-graph { opacity: .68; }
+.jd-wave .jd-wave-played {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  clip-path: inset(0 calc(100% - var(--jd-wave-position)) 0 0);
+  pointer-events: none;
+}
+.jd-wave .jd-wave-seek {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.jd-wave .jd-wave-toggle:focus-visible,
+.jd-wave-track:has(.jd-wave-seek:focus-visible) { outline: 2px solid currentColor; outline-offset: -2px; border-radius: 8px; }
+.jd-wave-time, .jd-wave-status { font-size: .875rem; font-weight: 600; white-space: nowrap; }
+.jd-wave .jd-wave-time { font-size: 13px; font-variant-numeric: tabular-nums; }
+.jd-wave audio { display: none; }
+.jd-wave .jd-wave-error { grid-column: 1/-1; padding-inline: .5rem; font-size: .875rem; }
+.jd-wave-paper { font-size: .875rem; }
+@media (forced-colors:active) {
+  .jd-wave, .jd-wave-live .jd-wave-toggle { border: 1px solid ButtonText; }
+}

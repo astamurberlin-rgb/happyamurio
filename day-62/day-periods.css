@@ -1,0 +1,566 @@
+/* Happy Day · страница «Разделы дня» и вкладка «Периоды» (day-periods.js). Шкала — копия «Приёмов пищи» Meal
+   (meal-34/meal-periods.css) в цветах Day; текст 12 / 14 / 16, пилюли 999, переключатель 44 / 36. — Claude · 22.11.2026 */
+.dp-tabs{display:flex;width:100%;margin:0 0 20px}
+.dp-tabs button{flex:1 1 0}
+.dp-entry{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dp-entry span{flex:1;font-size:16px;font-weight:600}
+.dp-entry small{display:block;font-size:12px;font-weight:400;color:var(--happy-muted,rgba(255,255,255,.72))}
+.dp-entry b{font-size:22px;font-weight:400;color:var(--happy-muted,rgba(255,255,255,.72))}
+.dp-row{margin:0 0 2px}
+.dp-head{display:flex;align-items:center;gap:6px;min-height:44px}
+.dp-ic{display:grid;place-items:center;flex:none;width:34px;height:44px}
+.dp-ic svg{width:26px;height:26px}
+.dp-nm{flex:1;min-width:0;font-size:16px;font-weight:600}
+.dp-lk{display:grid;place-items:center;flex:none;width:24px;color:var(--happy-muted,rgba(255,255,255,.72))}   /* v35: цвет — токеном, как у кнопки «i» рядом */
+.dp-lk svg{width:16px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+.dp-trk{position:relative;height:48px;margin:0 5px 4px;touch-action:pan-y}
+.dp-rail{position:absolute;left:0;right:0;top:30px;height:4px;border-radius:999px;background:rgba(255,255,255,.14)}
+/* v37.3: засечки, как в Meal (.mp-tick) */
+.dp-tick{position:absolute;top:-4px;width:1px;height:12px;background:var(--happy-glass,rgba(255,255,255,.16))}
+.dp-tick.dp-mj{top:-7px;height:18px;background:rgba(255,255,255,.3)}
+.dp-fill{position:absolute;top:27px;height:10px;border-radius:999px;background:#fff}
+/* v37.4: свою полоску можно вести за середину; поле нажатия выше полоски (44), ручки на концах поверх */
+.dp-trk:not(.dp-lock) .dp-fill{z-index:1;cursor:grab;touch-action:none}
+.dp-trk:not(.dp-lock) .dp-fill::before{content:'';position:absolute;left:0;right:0;top:-17px;bottom:-17px}
+.dp-lock .dp-fill{background:rgba(255,255,255,.46);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+.dp-hd{position:absolute;top:0;width:44px;height:48px;transform:translateX(-50%);z-index:2;touch-action:none;cursor:ew-resize;border-radius:12px}
+.dp-hd>span{position:absolute;left:50%;top:-2px;transform:translateX(-50%);font-size:14px;font-weight:600;line-height:22px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dp-hd>i{position:absolute;left:20px;top:20px;width:4px;height:24px;border-radius:999px;background:#fff;box-shadow:0 1px 4px rgba(4,40,80,.3);pointer-events:none}
+.dp-hd:active>i,.dp-hd:focus-visible>i{box-shadow:0 0 0 5px rgba(255,255,255,.16),0 0 12px rgba(255,255,255,.4)}
+.dp-hd:focus-visible{outline:none}
+.dp-hd.dp-fx{cursor:default}.dp-hd.dp-fx>i{opacity:.45}
+.dp-hint{margin:10px 2px 0;font-size:14px;color:var(--happy-ink,#fff)}
+.dp-hint:empty{display:none}
+.dp-add{display:flex;align-items:center;justify-content:center;width:100%;min-height:44px;margin-top:14px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.1);color:inherit;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.dp-add:active{background:rgba(255,255,255,.24)}
+
+/* ── v2 · «Настроить отметки» (логика 22.11.2026): строка-заголовок периода — кнопка, страница периода ── */
+button.dp-head{width:100%;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dp-go{flex:none;width:20px;text-align:center;font-size:22px;line-height:1;color:var(--happy-muted,rgba(255,255,255,.72))}
+.dp-row+.dp-row{margin-top:6px}
+.dp-one{margin:0 0 4px}
+.dp-h{margin:26px 2px 10px;font-size:16px;font-weight:700;color:var(--happy-ink,#fff)}
+.dp-h:first-child{margin-top:4px}
+.dp-when{display:block;margin:18px 0 0}
+.dp-when span{display:block;margin:0 2px 8px;font-size:14px;font-weight:600}
+.dp-when input{display:block;width:100%;box-sizing:border-box;font-size:16px}
+.dp-sc{display:flex;align-items:center;gap:6px;min-height:56px;border-bottom:1px solid rgba(255,255,255,.16)}
+.dp-sc-main{display:flex;align-items:center;gap:12px;flex:1;min-width:0;min-height:56px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dp-sc-main span{min-width:0}
+.dp-sc-main b{display:block;font-size:16px;font-weight:600}
+.dp-sc-main small{display:block;margin-top:2px;font-size:12px;color:var(--happy-muted,rgba(255,255,255,.78));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-dot{flex:none;width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.dp-x{flex:none;width:44px;height:44px;padding:0;border:0;border-radius:999px;background:none;color:var(--happy-muted,rgba(255,255,255,.78));font:inherit;font-size:22px;line-height:1;cursor:pointer}
+.dp-x:active{background:rgba(255,255,255,.16)}
+.dp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.dp-chips:empty{display:none}
+.dp-chip{display:inline-flex;align-items:center;gap:2px;min-height:36px;padding:0 4px 0 14px;border-radius:999px;background:rgba(255,255,255,.16);font-size:14px;font-weight:600}
+.dp-chip button{width:32px;height:32px;padding:0;border:0;border-radius:999px;background:none;color:inherit;font:inherit;font-size:18px;line-height:1;cursor:pointer}
+.dp-foot{margin-top:30px}
+.dp-del{border-color:transparent;background:none;color:var(--happy-danger-soft,#FFD3DA)}   /* v18: без рамки (Астамур 23.11.2026); пилюля видна только при нажатии. v37.8: бледно-розовый, как корзинка продукта в Meal (.mlIco.del) */
+.dp-lab{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:32px 0 8px;padding-top:16px;border-top:1px dashed rgba(255,255,255,.3)}
+.dp-lab>span{font-size:14px;color:var(--happy-muted,rgba(255,255,255,.78))}
+
+/* ── окно шкалы: «Что хорошо» — сегменты и живая полоска ── */
+
+.scBar{position:relative;height:44px;margin:4px 0 0;border-radius:999px;cursor:grab;touch-action:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.22) 50%,rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.scBar.fixed{cursor:default}
+.scBar:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.scZone{position:absolute;top:4px;bottom:4px;display:grid;place-items:center;border-radius:999px;pointer-events:none;
+  background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(4,40,80,.22);transition:left .28s cubic-bezier(.3,.7,.2,1)}
+.scBar.dragging .scZone{transition:none}
+.scZone b{font-size:14px;font-weight:600;color:var(--happy-accent-ink,#0C6FA8)}
+.scBar:not(.fixed) .scZone::before,.scBar:not(.fixed) .scZone::after{content:'';position:absolute;top:50%;width:2px;height:14px;margin-top:-7px;border-radius:2px;background:rgba(12,111,168,.35)}
+.scBar:not(.fixed) .scZone::before{left:12px}
+.scBar:not(.fixed) .scZone::after{right:12px}
+.scGoodNow{margin:10px 2px 0;text-align:center;font-size:16px;font-weight:600}
+.scEdges{display:flex;gap:10px;margin:10px 0 0}
+.scEdges input{flex:1 1 0;min-width:0;box-sizing:border-box;font-size:16px}
+.scEdges input[data-edge=r]{text-align:right}
+.scMore{margin-top:22px}
+.scMore>summary{display:flex;align-items:center;min-height:44px;font-size:16px;font-weight:600;cursor:pointer;list-style:none}
+.scMore>summary::-webkit-details-marker{display:none}
+/* v38 (Астамур 23.11.2026, 23:27): вместо галочки — две линии, как у «Шкалы» (.dp-sch), но справа: длинное название
+   посередине их бы задевало;
+   свёрнуто — цвет контура, раскрыто — белые. Строка 700, как «Шкалы» */
+.scMore>summary{position:relative;font-weight:700;-webkit-tap-highlight-color:transparent}
+.scMore>summary i{position:absolute;right:4px;top:50%;width:52px;height:11px;margin:-5.5px 0 0;color:var(--happy-line,rgba(255,255,255,.34));transition:color .2s}
+.scMore[open]>summary i,.scMore>summary:active i{color:var(--happy-ink,#fff)}
+.scMore>summary i::before,.scMore>summary i::after{content:'';position:absolute;left:50%;height:3px;border-radius:2px;background:currentColor;transform:translateX(-50%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 1px rgba(4,40,80,.3)}
+.scMore>summary i::before{top:0;width:52px}.scMore>summary i::after{bottom:0;width:28px}
+.scMore>summary:focus-visible{outline:none}
+.scMore>summary:focus-visible i{outline:2px solid rgba(255,255,255,.55);outline-offset:6px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){.scMore>summary i{transition:none}}
+/* выбор вида и «Откуда отсчёт»: переключатель-пилюля по правилу AGENTS.md §4 — контур 44 с отступом 3, выбранная пилюля 36 */
+.scSeg{display:grid;grid-template-columns:1fr 1fr;box-sizing:border-box;min-height:44px;padding:3px;border-radius:999px;background:var(--glass,rgba(255,255,255,.16));border:1px solid var(--glassBrd,rgba(255,255,255,.34))}
+.scSeg>button{display:grid;place-items:center;min-height:36px;padding:0 10px;border:0;border-radius:999px;background:none;color:var(--happy-ink,#fff);
+  font:inherit;font-size:14px;font-weight:600;line-height:1;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .2s,color .2s}
+.scSeg>button.on{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8)}
+.scSeg3{grid-template-columns:1fr 1fr 1.4fr}   /* «от середины» длиннее */
+.scKindTxt{margin:8px 2px 0;font-size:14px;line-height:1.35;color:var(--happy-muted,rgba(255,255,255,.78))}
+.scKindTxt .nw{font-style:normal;white-space:nowrap}
+
+/* ── главная: счётчики ── */
+.dm-newcnt{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;margin:12px 0 0;border:1px dashed rgba(255,255,255,.4);border-radius:999px;background:none;color:inherit;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.dm-newcnt svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.dm-newcnt:active{background:rgba(255,255,255,.14)}
+.dm-remove{display:block;width:100%;min-height:44px;margin-top:14px;border:0;border-radius:999px;background:none;color:inherit;font:inherit;font-size:16px;opacity:.85;cursor:pointer}
+.dm-lab{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.dm-lab{flex:1;min-width:0}
+label.hs-switch-row{cursor:pointer}
+
+/* ── v3 (iPhone, Астамур 22.11.2026): без «назад» — черточка сверху; лист «Новый период» со временем и днями ── */
+.dp-grip{touch-action:none;cursor:grab}
+.dp-nm small{display:block;margin-top:2px;font-size:12px;font-weight:400;color:var(--happy-muted,rgba(255,255,255,.78))}
+.dp-sheet h3{margin:0 0 14px}
+.dp-nmrow{display:flex;align-items:center;gap:12px}
+.dp-nmrow input{flex:1;min-width:0;box-sizing:border-box;font-size:16px}
+.dp-icb{flex:none;display:grid;place-items:center;width:56px;height:56px;padding:0;border-radius:50%;border:1px solid var(--happy-line,rgba(255,255,255,.34));background:rgba(255,255,255,.16);color:inherit;cursor:pointer}
+.dp-icb svg{width:30px;height:30px}
+.dp-icb.empty svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.dp-err{min-height:0;margin:6px 2px 0;font-size:14px;color:var(--happy-ink,#fff)}
+.dp-err:empty{display:none}
+.dp-sh{margin:20px 2px 8px;font-size:16px;font-weight:700}
+.dp-dtrk .dp-trk{margin-top:0}
+.dp-days{margin:4px 0 0}
+.dp-days label{position:relative;display:block;margin:0}
+.dp-ok{display:block;width:100%;margin-top:24px}
+#dayPeriods,#dayPeriod{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
+/* ── v4 (Астамур 22.11.2026): страница периода без отдельного листа — название и иконка сверху, цель барабаном, дуги каруселью ── */
+[data-screen="mark-period"] .top{display:none}
+.dp-titlerow{display:flex;align-items:center;gap:12px;margin:4px 0 0}
+.dp-titlerow .dp-icb{width:56px;height:56px}
+.dp-icb svg{width:30px;height:30px}
+input.dp-title{flex:1;min-width:0;box-sizing:border-box;height:56px;padding:0 14px;border-radius:12px;border:1px solid transparent;background:none;color:var(--happy-ink,#fff);font:inherit;font-size:28px;font-weight:800;letter-spacing:-.01em}
+input.dp-title:focus{outline:none;border-color:var(--happy-line,rgba(255,255,255,.34));background:rgba(255,255,255,.12)}
+.dp-goalcap{display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 0}
+.dp-goalcap span{font-size:16px;font-weight:700}
+.dp-goalcap small{font-size:12px;color:var(--happy-muted,rgba(255,255,255,.78))}
+.dp-goal.hf-drum{margin-top:6px}
+.dp-goal .hf-drum-cap{display:none}
+.dp-goal .hf-drum-item{font-size:16px}
+/* v30 (Астамур 23.11.2026, 16:45): «Добавить свою цель» без нижнего окна — выбранная пилюля барабана сама становится полем ввода,
+   как «＋ Тег»: белая линия вокруг, мигающий белый курсор по центру, как строки барабана; текст 16 (меньше iPhone увеличивает страницу) */
+.dp-goal-in{position:absolute;left:0;right:0;top:44px;z-index:2;display:flex;align-items:center;height:44px;box-sizing:border-box;padding:0 14px;
+  border:1px solid var(--happy-ink,#fff);border-radius:999px;background:none;cursor:text}
+.dp-goal-in[hidden]{display:none}
+input.dp-goalin{flex:1;min-width:0;height:42px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:var(--happy-ink,#fff);
+  font:inherit;font-size:16px;font-weight:600;text-align:center;color-scheme:dark;-webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text}
+input.dp-goalin:focus{outline:none}
+.dp-goal-edit .hf-drum-item.hf-on{visibility:hidden}
+.dp-goal-edit .hf-drum-col{pointer-events:none}
+.dp-chip-add{border:1px dashed rgba(255,255,255,.5);background:none;color:inherit;font:inherit;font-size:14px;font-weight:600;padding:0 14px;cursor:pointer}
+/* v24 (Астамур 23.11.2026, 15:14): «＋ Тег» становится полем на том же месте — пилюля с линией вокруг, занимает остаток строки */
+.dp-chip-add[hidden],.dp-chip-in[hidden]{display:none}
+/* v29 (Астамур 23.11.2026, 16:29): поле не тянется на всю строку — пилюля по ширине текста (не уже подсказки «Название»),
+   длиннее текст — пилюля шире, до ширины строки. Ширину задаёт невидимая копия текста в той же клетке сетки (data-v, data-ph) */
+.dp-chip-in{display:inline-grid;align-items:center;flex:0 1 auto;max-width:100%;min-width:0;box-sizing:border-box;padding:0 14px;border:1px solid var(--happy-ink,#fff);background:rgba(255,255,255,.16);cursor:text}
+.dp-chip-in::before,.dp-chip-in::after{grid-area:1/1;height:0;overflow:hidden;visibility:hidden;white-space:pre;font-size:16px;font-weight:600}
+.dp-chip-in::before{content:attr(data-ph)}
+.dp-chip-in::after{content:attr(data-v) " "}
+input.dp-tagin{grid-area:1/1;width:100%;min-width:0;height:34px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:var(--happy-ink,#fff);
+  font:inherit;font-size:16px;font-weight:600;color-scheme:dark;-webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text}
+input.dp-tagin::placeholder{color:var(--happy-ink,#fff);opacity:.55}   /* v30: подсказки на экране одинаково светлые, как «Название» под шкалой (было --happy-dim .45) */
+input.dp-tagin:focus{outline:none}
+.dp-pick{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:0;border:0;border-bottom:1px solid rgba(255,255,255,.16);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dp-pick span{flex:1;min-width:0}
+.dp-pick b{display:block;font-size:16px;font-weight:600}
+.dp-pick small{display:block;font-size:12px;color:var(--happy-muted,rgba(255,255,255,.78))}
+.dp-pick em{font-style:normal;font-size:22px;width:44px;text-align:center}
+.dm-gap{margin-top:18px}
+
+/* ── v5 · окно шкалы (Астамур 22.11.2026): сверху живая дуга, под ней её настройки; вариант «Ползунок» ── */
+.scEd .icHead{display:none}
+.scHero{margin:2px 0 0}
+.scHero .ringWrap.scPv{width:min(220px,60vw)}
+.scPv .knob{transition:box-shadow .3s ease}
+/* v47.4 (Астамур 24.11.2026, 04:55): зелёное свечение кнопки в «хорошо» убрано — кнопка как на экране отметки */
+.scPv .kh{font-size:12px;font-weight:600;letter-spacing:.02em}
+.scTap{margin:4px 0 0;text-align:center;font-size:12px;color:var(--happy-muted,rgba(255,255,255,.72))}
+.scTitle{margin:14px 0 0;text-align:center;font-size:20px;font-weight:700}
+
+.scGoodHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 2px 10px}
+.scGoodHead span{font-size:16px;font-weight:700;color:var(--happy-ink,#fff)}
+.scGoodHead b{font-size:14px;font-weight:600;color:var(--happy-ink,#fff)}
+.scEd .scEdges{margin-top:10px}
+.scEd .scEdges input{font-size:14px;height:44px;padding:0 14px}
+.scEd .scUse{margin-top:14px;text-align:center}
+
+/* ── v6 · дуги на месте (Астамур 22.11.2026, набросок): карусель живых дуг, под текущей — её настройка ── */
+/* v15 (Астамур 23.11.2026, скрин «Сейчас»): «добавить дугу» — пустая дорожка, как у неотмеченной дуги, и пустой круг
+   ровно на месте кнопки (inset 21 %, как .knob), будто кнопки ещё нет. Пунктирный круг с «＋» убран.
+   v16 (Астамур 23.11, выбрал «Б»): круг ровный бледный, без ободка */
+.dp-addknob{position:absolute;inset:21%;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.12);box-shadow:none;
+  color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .14s ease,background-color .2s}   /* v29: без font:inherit — шрифт кнопки, как у .knob «Нажми» */
+.dp-addknob:active{transform:scale(.965);background-color:rgba(255,255,255,.18)}
+.dp-addknob:focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* v26 (Астамур 23.11.2026, 15:37): пунктир — по краю самой круглой кнопки (как пустой выбор иконки Day .icPick.empty:
+   2 белым .8), на кнопке «Добавить / шкалу» — шрифт надписи кнопки на главной («Отметить самочувствие», .care-name: 20, жирный, 1.15).
+   Пунктирный кружок с плюсом в середине (v24) убран */
+.dp-addknob{display:grid;place-items:center;box-sizing:border-box;border:2px dashed var(--happy-line,rgba(255,255,255,.34))}   /* v28 (Астамур 16:11: «яркость слабее, слишком кричит»): было белым .8 */
+/* v29 (Астамур 23.11.2026, 16:29): «Добавить шкалу» тем же шрифтом, что «Нажми» на кнопке шкалы (шрифт кнопки, .knob b: 28, жирный 700, −0,01em),
+   и светлым, как подсказка «Название» под шкалой (белый .55), а не ярко-белым */
+.dp-addname{display:block;font-size:28px;font-weight:700;letter-spacing:-.01em;line-height:1.1;color:var(--happy-ink,#fff);opacity:.55;text-align:center;pointer-events:none}
+/* v33 (Астамур 23.11.2026, 18:09: «под добавить шкалу тоже плюс»): под надписью — плюс тем же светлым (белый .55), линией
+   со скруглёнными концами, как стрелки на кнопке шкалы (.knob .ar); надпись вместе с плюсом стоит по центру круга */
+.dp-addin{display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.dp-addplus{display:block;width:26px;height:26px;margin:4px 0 -30px;color:var(--happy-ink,#fff);opacity:.55}   /* низ −30: в расчёт центра идёт только надпись — она стоит там же, что в v29–v32
+   (поднять её нельзя: «Добавить» заденет пунктир, запас до него 6 px), плюс висит под ней, до пунктира внизу 17 px */
+.ringWrap .dp-addplus svg{position:static;inset:auto;transform:none;display:block;width:100%;height:100%;overflow:visible;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}   /* 3 из 24: толщина как у жирных букв надписи */
+.dp-arced{margin-top:14px}
+.dp-arc-empty{margin:8px 2px 0;text-align:center;font-size:14px;color:var(--happy-muted,rgba(255,255,255,.78))}
+.dp-also{margin:0;text-align:center;font-size:12px;color:var(--happy-muted,rgba(255,255,255,.72))}
+.dp-goodh{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 10px}
+.dp-goodh span,.dp-lvh{font-size:16px;font-weight:700;color:var(--happy-ink,#fff)}
+.dp-goodh b{font-size:14px;font-weight:600}
+.dp-zbar{position:relative;height:44px;border-radius:999px;touch-action:none;cursor:grab;
+  background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.22) 50%,rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.dp-zbar:focus-visible{outline:2px solid #fff;outline-offset:3px}
+/* v23 (Астамур 23.11.2026, 05:37): дорожка «Что хорошо» — градиентом дуги (ringSvg в index.html): под кнопкой «хорошо»
+   и по бокам от неё фиолетовый, к краям — бирюзовый, потом мятный. --zl / --zr — края кнопки; цвет едет за ней.
+   Цвета — числами, как в градиенте дуги */
+@property --zl{syntax:'<percentage>';inherits:false;initial-value:30%}
+@property --zr{syntax:'<percentage>';inherits:false;initial-value:70%}
+/* v28: --dp-r1…3 — цвета кольца темы (ringVars в day-periods.js); без них — исходные числа */
+.dp-zbar{background:linear-gradient(90deg,var(--dp-r3,#7CE3C9) calc(var(--zl) - 40%),var(--dp-r2,#46FDFC) calc(var(--zl) - 20%),var(--dp-r1,#BC61FE) calc(var(--zl) - 6%),
+    var(--dp-r1,#BC61FE) calc(var(--zr) + 6%),var(--dp-r2,#46FDFC) calc(var(--zr) + 20%),var(--dp-r3,#7CE3C9) calc(var(--zr) + 40%));
+  transition:--zl .28s cubic-bezier(.3,.7,.2,1),--zr .28s cubic-bezier(.3,.7,.2,1)}
+.dp-zbar.dragging{transition:none}
+.dp-zone{position:absolute;top:4px;bottom:4px;width:40%;display:grid;place-items:center;border-radius:999px;pointer-events:none;background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(4,40,80,.22);transition:left .28s cubic-bezier(.3,.7,.2,1)}
+.dp-zbar.dragging .dp-zone{transition:none}
+.dp-zone b{font-size:14px;font-weight:600;color:var(--happy-accent-ink,#0C6FA8)}
+/* v28 (Астамур 23.11.2026, 16:11–16:12): кнопка «хорошо» у края не упирается в контур — отступ 4 со всех сторон, как сверху
+   и снизу (дорожка кнопки от 4 до ширина − 4; left ставит zLeft в day-periods.js). Под дорожкой — черточки ступеней
+   (✱ tick marks): по одной на ступень, на тех же местах, что и ступени на дорожке; те, что под «хорошо», — хорошие ступени */
+.dp-zone{width:calc((100% - 8px) * .4)}
+.dp-ticks{position:relative;height:6px;margin:6px 0 0}
+.dp-ticks i{position:absolute;top:0;width:2px;height:6px;margin-left:-1px;border-radius:1px;background:var(--happy-line,rgba(255,255,255,.34))}
+.dp-zends{display:flex;justify-content:space-between;gap:12px;margin:4px 4px 0;font-size:12px;color:var(--happy-muted,rgba(255,255,255,.78))}
+.dp-lvh{margin:24px 2px 8px}
+.dp-lvs{display:flex;flex-direction:column;gap:6px}
+.dp-lv{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 4px 0 14px;border-radius:22px;background:rgba(255,255,255,.1);transition:background .2s,box-shadow .2s}
+.dp-lv.on{background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8)}
+.dp-lv.on input{color:var(--happy-accent-ink,#0C6FA8)}
+.dp-lv.lift{box-shadow:0 10px 24px rgba(4,40,80,.28);background:rgba(255,255,255,.26)}
+.dp-lvn{flex:none;width:22px;font-size:14px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums;opacity:.75}
+.dp-lv input{flex:1;min-width:0;height:44px;padding:0;border:0;background:none;color:var(--happy-ink,#fff);font:inherit;font-size:16px;box-shadow:none}
+.dp-lv input:focus{outline:none}
+.dp-grab{flex:none;display:flex;flex-direction:column;justify-content:center;gap:4px;width:44px;height:44px;align-items:center;touch-action:none;cursor:grab}
+.dp-grab i{display:block;width:18px;height:2px;border-radius:2px;background:currentColor;opacity:.6}
+.dp-arcfoot{display:flex;justify-content:flex-end;gap:12px;margin-top:10px}   /* v39: «Деления» ушли в «Ступени», осталась одна ссылка справа */
+/* v39: вид шкалы под «Ступени» — переключатели и счётчик делений, те же, что были в окне шкалы */
+.dp-shape{display:grid;gap:8px;margin:0 0 12px}
+/* v40 (Астамур 23.11.2026, 23:52: «эти пилюльки свайпом в бок перетаскивать… с таким дотягиванием до позиции»):
+   выбранная пилюля — отдельная плашка под подписями; тащится пальцем, отпустил — дотягивается до варианта с лёгким перелётом.
+   Варианты одной ширины. Вертикальная прокрутка страницы с переключателя работает (pan-y) */
+.dp-sw{position:relative;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:1fr;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.dp-sw>.dp-swt{position:absolute;left:3px;top:3px;bottom:3px;width:calc((100% - 6px)/2);border-radius:999px;background:rgba(255,255,255,.92);
+  box-shadow:0 1px 3px rgba(4,40,80,.14);transform:translateX(calc(var(--i,0)*100%));transition:transform .34s cubic-bezier(.3,1.4,.5,1);pointer-events:none}
+.dp-sw.dp-drag>.dp-swt{transition:none}
+.dp-sw>button{position:relative;z-index:1}
+.dp-sw>button.on{background:none}
+.dp-sw.dp-drag>button{transition:none}
+@media (prefers-reduced-motion:reduce){.dp-sw>.dp-swt{transition:none}}
+/* v45 (Астамур 24.11.2026, 00:52, набросок «Может так дойдёт?»; уточняет v43): настоящий переключатель (✱ toggle switch).
+   Кружок всегда с «1». Счёт с нуля — кружок справа, в колонке цифр строк стоит «0», ниже 1, 2, 3. Тап или свайп —
+   кружок с «1» уезжает влево, на место нуля, «0» встаёт справа, ниже 2, 3, 4. Пилюля 44, кружок 36 (правило §4) */
+.dp-01{flex:none;position:relative;box-sizing:border-box;width:76px;height:44px;margin:0;padding:0;border-radius:999px;
+  border:1px solid var(--glassBrd,rgba(255,255,255,.34));background:var(--glass,rgba(255,255,255,.16));color:var(--happy-ink,#fff);
+  font:inherit;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.dp-01>span{position:absolute;top:3px;left:3px;width:36px;height:36px;display:grid;place-items:center;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;
+  transition:transform .34s cubic-bezier(.3,1.25,.5,1)}
+.dp-01>.dp-01a{border-radius:50%;background:rgba(255,255,255,.92);color:var(--happy-accent-ink,#0C6FA8);box-shadow:0 1px 3px rgba(4,40,80,.14);transform:translateX(32px)}
+.dp-01.dp-on>.dp-01a{transform:none}
+.dp-01.dp-on>.dp-01z{transform:translateX(32px)}
+.dp-01:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:2px}
+.dp-lv:has(>.dp-01){padding-left:4px}
+.dp-lv.on>.dp-01{border-color:rgba(12,111,168,.22);background:rgba(12,111,168,.08);color:var(--happy-accent-ink,#0C6FA8)}
+@media (prefers-reduced-motion:reduce){.dp-01>span{transition:none}}
+/* v42 (Астамур 24.11.2026, 00:04): «Количество делений» — строка как счётчик на главной: подпись слева (.tpNm: 16/600),
+   справа пилюля .tpStp (минус, число, плюс) из index.html. Класс .tpItem не берём: на нём свайп «Убрать» */
+.dp-cnt{display:flex;align-items:center;gap:12px;min-height:58px;padding:0 2px}
+.dp-cntn{flex:1;min-width:0;font-size:16px;font-weight:600;color:var(--happy-ink,#fff)}
+.dp-cnt .tpStp button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dp-cnt .tpStp button:disabled{opacity:.35;cursor:default}
+.dp-link{min-height:44px;padding:0 4px;border:0;background:none;color:var(--happy-muted,rgba(255,255,255,.78));font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+
+/* ── v7 (Астамур 22.11.2026, iPhone): кнопка-дуга и название — копия главной 1:1 (кольцо min(280px,76vw), подписи .facts/.factTrack);
+   при прокрутке дуга с названием залипает сверху (sticky) и уменьшается, настройки уходят под неё. ── */
+.dp-also b{font-weight:600;color:var(--happy-ink,#fff)}
+
+/* ── v8 (Астамур 22.11.2026): залипания нет; кнопка-дуга — как на экране отметки: кольца и подписи с теми же размерами,
+   соседние кольца заходят на --ring-overlap и бледнее (selfcare.css, [data-screen="ring"]). Жест — arc-knob.js. ── */
+.dp-rings{margin:0 -20px}
+.dp-rings .ringSlide{flex:0 0 min(280px,76vw);transition:opacity .25s ease-out}
+.dp-rings .ringSlide:not(:last-child){margin-right:calc(-1*var(--ring-overlap))}
+.dp-rings .ringSlide.side{opacity:.5}
+.dp-rings .facts{margin-top:-13px}
+.dp-rings .factTrack .dp-f{flex:0 0 50%;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:6px;transition:flex-basis .38s cubic-bezier(.22,.75,.25,1)}
+.dp-fnw{position:relative;display:block;max-width:calc(100% - 88px)}
+.dp-rings .dp-f.on .fT{font-size:20px;font-weight:700;color:var(--happy-ink)}
+.dp-scale-choices{justify-content:center;margin:8px 0 16px}
+/* аккордеон: высота 0 → по содержимому (строки сетки 0fr → 1fr), содержимое проявляется и чуть съезжает вниз — как раскрытие
+   периода (.dp-body); свёрнутое невидимо и для фокуса. Раскрылось до конца (.dp-done) — подсказки и тени не обрезаются */
+.dp-arcset{display:grid;grid-template-rows:0fr;transition:grid-template-rows .34s cubic-bezier(.22,.75,.25,1)}
+.dp-arcset.dp-on{grid-template-rows:1fr}
+.dp-arcin{min-height:0;overflow:hidden}
+.dp-arcset.dp-done>.dp-arcin{overflow:visible}
+.dp-arcin>.dp-arced{visibility:hidden;opacity:0;transform:translateY(-10px);transition:opacity .16s ease-in,transform .3s cubic-bezier(.22,.75,.25,1),visibility 0s linear .34s}
+.dp-arcset.dp-on .dp-arcin>.dp-arced{visibility:visible;opacity:1;transform:none;transition:opacity .3s ease-out .05s,transform .44s cubic-bezier(.22,.75,.25,1),visibility 0s}
+@media (prefers-reduced-motion:reduce){.dp-arcset,.dp-arcin>.dp-arced,.dp-sch i{transition:none!important}}
+/* v37: «Шкалы» (v37.1, было «Настроить шкалы») — строка на месте заголовка «Шкалы» (тот же шрифт), справа две линии «Р3». Свёрнуто — линии цвета
+   контура (--happy-line), как у закрытого кармана; раскрыто — белые. Поле нажатия во всю ширину, высота 44 */
+.dp-sch{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin:14px 0 0;padding:0 2px;border:0;background:none;
+  font:inherit;font-size:16px;font-weight:700;color:var(--happy-ink,#fff);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dp-sch i,.dp-scfold i{position:relative;display:block;flex:none;width:52px;height:11px}
+.dp-sch i{margin-right:4px;color:var(--happy-line,rgba(255,255,255,.34));transition:color .2s}
+.dp-sch.dp-on i,.dp-sch:active i{color:var(--happy-ink,#fff)}
+.dp-sch i::before,.dp-sch i::after,.dp-scfold i::before,.dp-scfold i::after{content:'';position:absolute;left:50%;height:3px;border-radius:2px;background:currentColor;transform:translateX(-50%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 1px rgba(4,40,80,.3)}
+/* v37.1 (Астамур 23.11.2026, 21:28): у строки «Шкалы» линии посередине строки, длинная сверху, короткая снизу;
+   в конце раздела наоборот — короткая сверху, длинная снизу */
+.dp-sch{position:relative}
+.dp-sch i{position:absolute;left:50%;top:50%;margin:-5.5px 0 0 -26px}
+.dp-sch i::before{top:0;width:52px}.dp-sch i::after{bottom:0;width:28px}
+.dp-scfold i::before{top:0;width:28px}.dp-scfold i::after{bottom:0;width:52px}
+/* v37.2: нижние линии стоят посередине строки «Теги» (как верхние в строке «Шкалы»); свёрнуто — цвет контура, раскрыто — белые */
+.dp-tagrow{position:relative}
+.dp-scfold{position:absolute;left:50%;bottom:-10px;display:grid;place-items:center;width:64px;height:44px;margin:0 0 0 -32px;padding:0;border:0;background:none;
+  color:var(--happy-line,rgba(255,255,255,.34));cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .2s}
+.dp-scfold.dp-on{color:var(--happy-ink,#fff)}
+.dp-scfold:active i{opacity:.55}
+.dp-sch:focus-visible,.dp-scfold:focus-visible{outline:none}
+/* v45.1 (Астамур 24.11.2026, 00:54): линии — без слова, под названием текущей шкалы; на «Добавить шкалу» их нет (место остаётся) */
+.dp-sch{display:flex;min-height:44px;margin:0;padding:0 2px}
+/* v45.2 (Астамур 24.11.2026, 01:01): слева от линий — «Настройка», как заголовки «Шкалы» / «Теги» */
+.dp-sch>span{font-size:16px;font-weight:700;color:var(--happy-ink,#fff)}
+/* v45.2: корзина справа от названия шкалы — без рамки, цвет как у «Удалить период»; поле нажатия 44 */
+.factTrack button.dp-fbin{position:absolute;left:100%;top:50%;flex:none;display:grid;place-items:center;width:40px;min-width:40px;height:44px;min-height:44px;margin:-22px 0 0 2px;padding:0;border:0;background:none;opacity:1;
+  color:var(--happy-danger-soft,#FFD3DA);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dp-fbin svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.dp-fbin:active{opacity:.55}
+.dp-fbin:focus-visible{outline:2px solid rgba(255,255,255,.55);outline-offset:-4px;border-radius:12px}
+.dp-sch.dp-off{visibility:hidden;pointer-events:none}
+.dp-sch+.dp-arcset .dp-arced{margin-top:2px}
+.dp-sch:focus-visible i,.dp-scfold:focus-visible i{outline:2px solid rgba(255,255,255,.55);outline-offset:6px;border-radius:6px}
+/* кнопки-дуги шире карточки на 12 с каждой стороны: обёртка раздела тоже, чтобы при раскрытии края не обрезались */
+.dp-scw{grid-template-columns:minmax(0,1fr)}
+.dp-scw>.dp-arcin{min-width:0}
+.dp-body .dp-scw>.dp-arcin{margin:0 -12px;padding:0 12px}
+/* ── v9 (набросок Астамура 22.11.2026): время над ручкой — плашка с хвостиком. С v13 — у раскрытой строки списка (.dp-bubs) ── */
+.dp-bubs .dp-hd>span.dp-bub{top:-12px;height:28px;padding:0 10px;line-height:28px;border-radius:var(--happy-radius-bubble,12px);font-size:14px;font-weight:700;
+  background:rgba(255,255,255,.94);color:var(--happy-accent-ink,#0C6FA8);box-shadow:0 4px 12px rgba(4,40,80,.22);transform:none;pointer-events:none}
+.dp-bubs .dp-hd>span.dp-bub::after{content:'';position:absolute;bottom:-5px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid rgba(255,255,255,.94)}
+.dp-bubs .dp-hd>span.dp-tr{left:auto;right:calc(50% - 10px);border-bottom-right-radius:3px}
+.dp-bubs .dp-hd>span.dp-tr::after{right:4px}
+.dp-bubs .dp-hd>span.dp-tl{left:calc(50% - 10px);border-bottom-left-radius:3px}
+.dp-bubs .dp-hd>span.dp-tl::after{left:4px}
+.dp-bubs .dp-hd>span.dp-gone{visibility:hidden}
+
+/* ── v13 (Астамур 22.11.2026, вечер): ручка напротив названия и раскрытие настроек на месте (✱ аккордеон).
+   Ручка — с v14 по центру строки, с v17 — две линии «Р3» (не путается с черточкой листа), с v20 — в вырезе кромки карточки, с v21 — во вдавленном кармане.
+   Карточка выходит за края строки на 12 px, поэтому при раскрытии ничего внутри строки не сдвигается.
+   Высоту настроек ведёт day-periods.js (пружина без отскока), здесь — только вид. ── */
+[data-screen="marks"]{overflow-anchor:none}
+/* v24: заголовок «Разделы главного экрана» на телефоне — в две ровные строки («Разделы / главного экрана»), не «…/ экрана» */
+[data-screen="marks"]>.top h1{text-wrap:balance}
+/* v25 (Астамур 23.11.2026, 15:32, скрин с iPhone: «черточка только наша белая… а не черная, и мигала»): курсор ввода
+   (✱ caret) во всех полях экрана — белый, в цвет линии под полем; мигает он сам. iPhone без этого рисует его тёмным.
+   Как у переименования в Sport (caret-color:#fff), здесь — через токен цвета текста */
+[data-screen="marks"] input,[data-screen="mark-period"] input{caret-color:var(--happy-ink,#fff)}
+#dayPeriods .dp-list{position:relative}
+#dayPeriods .dp-row{position:relative;isolation:isolate;margin:0;transition:scale .2s ease-out}
+/* v21 — вариант А «Карман-вырез» с рельефом (Астамур 23.11.2026, 04:47 и набросок 04:51: «за вырезом тоже как будто фон»,
+   верх выреза закрыт линией, как контур раздела; черточки светлые, в тон поля, рельефом). Форму карточки делает заливка, линия помогает.
+   Каждая строка — карточка Day (22): лёгкое стекло (::before) и контур (::after); контур замкнут и над карманом.
+   У своих периодов у верхней кромки вдавленный карман (✱ deboss, inset): плавная выемка, её дно чуть темнее к кромке
+   (слой .dp-pk), край — той же линией, что контур (.dp-tab). В кармане ручка «Р3» — выпуклые линии в цвет контура.
+   У периодов из Meal кармана нет, замок справа в строке названия. Внизу раскрытой карточки — такой же карман
+   с линиями «свернуть». Раскрытая — стекло карточки и мягкая тень, поднятая — ярче и с глубокой тенью (отдельный слой .dp-shd).
+   v22 (Астамур 23.11.2026, 05:08: «в позиции открытой фон выреза светлеть»; 05:26 выбрал «1. Б» — тише; 05:28: «покажи
+   ещё тише плюс дно тоном как свечение под линиями»): у свёрнутой дно кармана едва темнее карточки, у раскрытой (и пока
+   ручку держат или строку тащат) под линиями свечение, как вариант 2Б; тон меняется плавно, 0,3 с.
+   Цвет дна — числом, как у теней Day (rgba(4,40,80)) и стекла (белый).
+   Карточка выходит за строку на 6 сверху и на 12 сбоку и снизу, между карточками 10: строки через 28 */
+#dayPeriods .dp-row+.dp-row{margin-top:28px}
+#dayPeriods .dp-list{margin:8px 0 24px}
+#dayPeriods .dp-row::before,#dayPeriods .dp-row::after,#dayPeriods .dp-shd{content:'';position:absolute;z-index:-1;inset:-6px -12px -12px;border-radius:22px;pointer-events:none}
+#dayPeriods .dp-row::before{background-color:rgba(255,255,255,.08);transition:background-color .3s ease-out}
+#dayPeriods .dp-row.dp-open::before{background-color:var(--glass,rgba(255,255,255,.16))}
+#dayPeriods .dp-row.dp-lift::before,#dayPeriods .dp-row.dp-settle::before{background-color:rgba(255,255,255,.2)}
+/* дно кармана (124 × 26): слой под контуром, форма — та же выемка, что край .dp-tab, но на 1 ниже линии контура.
+   Свёрнута — едва темнее карточки к кромке (линейный градиент --pkA → --pkB); раскрыта — свечение под линиями (✱ glow:
+   белое пятно по центру кармана --pkG, к краям гаснет). Цвета — регистрируемые свойства (@property), поэтому тон
+   переливается, а не прыгает */
+@property --pkA{syntax:'<color>';inherits:false;initial-value:transparent}
+@property --pkB{syntax:'<color>';inherits:false;initial-value:transparent}
+@property --pkG{syntax:'<color>';inherits:false;initial-value:transparent}
+.dp-pk{position:absolute;z-index:-1;left:50%;width:124px;height:26px;transform:translateX(-50%);pointer-events:none;
+  --pkA:rgba(4,40,80,.035);--pkB:rgba(4,40,80,.005);--pkG:rgba(255,255,255,0);
+  background:radial-gradient(farthest-side,var(--pkG),rgba(255,255,255,0)),linear-gradient(var(--pkA),var(--pkB));
+  clip-path:path('M0 1C12 1 16 6 20 13C24 20 28 26 40 26L84 26C96 26 100 20 104 13C108 6 112 1 124 1Z');
+  transition:--pkA .3s ease-out,--pkB .3s ease-out,--pkG .3s ease-out}
+.dp-head>.dp-pk{top:-6px}
+.dp-locked .dp-head>.dp-pk{display:none}
+/* раскрыта, поднята или ручку держат — свечение под линиями */
+#dayPeriods .dp-open>.dp-head>.dp-pk,#dayPeriods .dp-lift>.dp-head>.dp-pk,#dayPeriods .dp-settle>.dp-head>.dp-pk,
+#dayPeriods .dp-head:has(>.dp-rh.dp-press)>.dp-pk{--pkA:rgba(4,40,80,0);--pkB:rgba(4,40,80,0);--pkG:rgba(255,255,255,.34)}
+/* нижний карман «свернуть» есть только у раскрытой: сразу со свечением */
+.dp-fold>.dp-pk{bottom:8px;--pkA:rgba(4,40,80,0);--pkB:rgba(4,40,80,0);--pkG:rgba(255,255,255,.34);
+  clip-path:path('M0 25C12 25 16 20 20 13C24 6 28 0 40 0L84 0C96 0 100 6 104 13C108 20 112 25 124 25Z');transition:none}
+#dayPeriods .dp-row::after{box-shadow:inset 0 0 0 1px var(--glassBrd,rgba(255,255,255,.34))}
+/* тень: у раскрытой — мягкая, у поднятой (и пока она встаёт на место) — глубокая */
+#dayPeriods .dp-shd{box-shadow:0 2px 3px rgba(4,40,80,.10),0 14px 30px rgba(4,40,80,.14);opacity:0;transition:opacity .3s ease-out,box-shadow .2s ease-out}
+#dayPeriods .dp-open>.dp-shd,#dayPeriods .dp-lift>.dp-shd,#dayPeriods .dp-settle>.dp-shd{opacity:1}
+#dayPeriods .dp-lift>.dp-shd{box-shadow:0 4px 8px rgba(4,40,80,.12),0 22px 44px rgba(4,40,80,.3)}
+/* v24 (Астамур 23.11.2026, 15:19: «цвет разделов в настройках светлее, чем на главном… сделать так, как на главном»):
+   свёрнутая карточка — 1:1 карточка раздела на главной Day (.card в index.html): стекло var(--glass), размытие 12,
+   мягкая тень всегда; контур — та же линия var(--glassBrd). Раскрытая выглядит так же, поднятая — по-прежнему ярче и глубже */
+#dayPeriods .dp-row::before{background-color:var(--glass,rgba(255,255,255,.16));-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+#dayPeriods .dp-shd{opacity:1}
+/* край кармана — той же линией, что контур карточки (124 × 26) */
+.dp-tab,.dp-tab-up{position:absolute;left:50%;width:124px;height:26px;transform:translateX(-50%);overflow:visible;pointer-events:none;
+  fill:none;stroke:var(--glassBrd,rgba(255,255,255,.34));stroke-width:1}
+/* v37.9–v37.10 (Астамур 23.11.2026, 23:14 и 23:17: «резкое наложение и обрыв контура»; «верхняя граница кармана
+   должна быть за карточкой, а сейчас наоборот»): у кармана впереди его линия, а прямой отрезок контура над карманом
+   уходит под неё (✱ z-order): там, где линия кармана лежит на контуре, контура нет (не двоится и не обрывается),
+   дальше он проявляется за 18 и над карманом виден вполсилы, как будто за стеклом карточки.
+   Форма, фон и сама линия кармана не меняются; так же у нижнего кармана раскрытой карточки */
+#dayPeriods .dp-row:not(.dp-locked)::after{-webkit-mask:linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 0/100% 1px no-repeat,linear-gradient(#000,#000) 0 1px/100% calc(100% - 2px) no-repeat,linear-gradient(#000,#000) 0 100%/100% 1px no-repeat;mask:linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 0/100% 1px no-repeat,linear-gradient(#000,#000) 0 1px/100% calc(100% - 2px) no-repeat,linear-gradient(#000,#000) 0 100%/100% 1px no-repeat}
+#dayPeriods .dp-row.dp-open:not(.dp-locked)::after{-webkit-mask:linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 0/100% 1px no-repeat,linear-gradient(#000,#000) 0 1px/100% calc(100% - 2px) no-repeat,linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 100%/100% 1px no-repeat;mask:linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 0/100% 1px no-repeat,linear-gradient(#000,#000) 0 1px/100% calc(100% - 2px) no-repeat,linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 100%/100% 1px no-repeat}
+#dayPeriods .dp-row.dp-open.dp-locked::after{-webkit-mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 1px) no-repeat,linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 100%/100% 1px no-repeat;mask:linear-gradient(#000,#000) 0 0/100% calc(100% - 1px) no-repeat,linear-gradient(to right,#000 calc(50% - 62px),transparent calc(50% - 62px),rgba(0,0,0,.5) calc(50% - 44px),rgba(0,0,0,.5) calc(50% + 44px),transparent calc(50% + 62px),#000 calc(50% + 62px)) 0 100%/100% 1px no-repeat}
+.dp-tab{top:-6px}
+.dp-locked .dp-tab{display:none}
+#dayPeriods .dp-head{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.dp-tog{display:flex;align-items:center;gap:6px;flex:1;min-width:0;min-height:44px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dp-tog:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:12px}
+.dp-nmt{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* v14 (набросок Астамура 23.11.2026): ручка и замок — по центру строки, ровно под черточкой сверху экрана.
+   Свайп по ручке листает страницу (pan-y), строку берёт только зажатие — палец подержал, потом тащит */
+#dayPeriods .dp-head{position:relative}
+.dp-tog{max-width:calc(50% - 62px)}   /* v20: название не заходит под карман */
+.dp-locked .dp-tog{max-width:calc(100% - 68px)}   /* у периодов из Meal выреза нет, справа «i» и замок (v35) */
+/* v23 (Астамур 23.11.2026, 05:31): иконка и имя — как на главной Day (.rowcard): иконка 32, отступ 14, имя 16 жирное.
+   У раскрытой строки вместо них поля (.dp-ed) на том же месте: кружок вокруг иконки — её можно поменять,
+   линия под именем — его можно переписать; у периода без своей иконки — пустой кружок пунктиром (как .icPick.empty) */
+#dayPeriods .dp-tog,.dp-ed{gap:14px}
+#dayPeriods .dp-ic{width:32px;margin-left:4px}
+#dayPeriods .dp-ic svg{width:32px;height:32px}
+.dp-ed{display:none;align-items:center;flex:1;min-width:0;max-width:calc(50% - 62px);min-height:44px}
+.dp-locked .dp-ed{max-width:calc(100% - 68px)}
+#dayPeriods .dp-open .dp-tog{display:none}
+#dayPeriods .dp-open .dp-ed{display:flex}
+/* v36 (Астамур 23.11.2026, 20:24: «при тапе и раскрытии аккордеона название с иконкой плавно чуть-чуть опускаются вниз под этот
+   рычажок с ямкой»): у раскрытого своего периода шапка (иконка и название) плавно опускается под дно кармана, вместе
+   с раскрытием (0,34 с, та же кривая, что у шкалы): на 18, а если под названием дни — на 26, чтобы название в обоих случаях
+   стояло на той же высоте, на 6–8 ниже дна кармана. Когда раскрытие закончилось, поле названия тянется дальше кармана,
+   до 44 от правого края: длинное название больше не уходит под рычажок, а справа остаётся место нажать и свернуть (v31).
+   Свернули — шапка так же плавно поднимается, название снова до кармана. У Завтрака, Обеда и Ужина рычажка нет, их шапка на месте */
+#dayPeriods .dp-head{transition:padding-top .34s cubic-bezier(.22,.75,.25,1)}
+#dayPeriods .dp-open:not(.dp-locked) .dp-head{padding-top:18px}
+#dayPeriods .dp-open:not(.dp-locked) .dp-head:has(.dp-ed small){padding-top:26px}
+#dayPeriods .dp-ed{transition:max-width .28s ease-out}
+#dayPeriods .dp-open:not(.dp-locked):has(>.dp-body.dp-done) .dp-ed{max-width:calc(100% - 44px)}
+@media (prefers-reduced-motion:reduce){#dayPeriods .dp-head,#dayPeriods .dp-ed{transition:none}}
+.dp-icbtn{position:relative;height:44px;padding:0;border:0;background:none;color:var(--happy-ink,#fff);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dp-icbtn::before{content:'';position:absolute;left:50%;top:50%;width:42px;height:42px;margin:-21px 0 0 -21px;box-sizing:border-box;border-radius:50%;
+  border:1px solid var(--happy-line,rgba(255,255,255,.34))}
+.dp-icbtn:focus-visible{outline:none}
+.dp-icbtn:focus-visible::before{border:2px solid var(--happy-ink,#fff)}
+#dayPeriods .dp-ic.dp-noic::after{content:'';grid-area:1/1;width:32px;height:32px;box-sizing:border-box;border-radius:50%;border:1.5px dashed rgba(255,255,255,.6)}
+#dayPeriods .dp-icbtn.dp-noic::before{display:none}
+#dayPeriods .dp-icbtn.dp-noic svg{grid-area:1/1;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+input.dp-nmi{display:block;width:100%;box-sizing:border-box;height:24px;margin:0;padding:0;border:0;border-bottom:1px solid var(--happy-line,rgba(255,255,255,.34));border-radius:0;
+  background:none;color:var(--happy-ink,#fff);font:inherit;font-size:16px;font-weight:600;line-height:23px;color-scheme:dark;-webkit-appearance:none;appearance:none;
+  -webkit-user-select:text;user-select:text;-webkit-touch-callout:default;transition:border-color .2s}
+input.dp-nmi::placeholder{color:var(--happy-ink,#fff);opacity:.55}   /* v30: как «Название» под шкалой (было --happy-dim .45) */
+input.dp-nmi:focus{outline:none;border-bottom-color:var(--happy-ink,#fff)}
+.dp-nm small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* v31 (Астамур 23.11.2026, 17:01, скрин: «поле названия слишком длинное, тапнуть некуда для закрытия»): у раскрытой строки
+   поле имени по ширине текста (✱ hug content), как пилюля тега, а не до замка или кармана; остальная шапка сворачивает раздел.
+   Ширину задаёт невидимая копия текста (data-v), поле лежит поверх неё; дни под именем — своей строкой, поле не растягивают */
+.dp-ed .dp-nm{flex:0 1 auto;display:flex;flex-direction:column;align-items:flex-start}
+.dp-ed .dp-nm small{max-width:100%}
+.dp-nmw{position:relative;display:block;min-width:0;max-width:100%}
+.dp-nmw::after{content:attr(data-v) " ";display:block;height:24px;overflow:hidden;visibility:hidden;white-space:pre;font-size:16px;font-weight:600}
+.dp-nmw input.dp-nmi{position:absolute;left:0;top:0;width:100%}   /* поле лежит поверх копии и не влияет на ширину: та ровно по тексту */
+.dp-rh,#dayPeriods .dp-lk{position:absolute;left:50%;top:-6px;width:64px;height:44px;margin:0;transform:translateX(-50%)}
+/* v20: ручка лежит в кармане, посередине его глубины (линии 7…18 от кромки); поле нажатия по-прежнему 64 × 44.
+   Замок — справа в строке названия, без кармана */
+.dp-rh{display:grid;place-items:start center;box-sizing:border-box;padding-top:7px;touch-action:pan-y;cursor:grab;-webkit-tap-highlight-color:transparent}
+#dayPeriods .dp-lk{left:auto;right:2px;top:0;width:24px;height:44px;transform:none}
+/* v35 (Астамур 23.11.2026, 19:52): у Завтрака, Обеда и Ужина слева от замка кнопка «i» (✱ info button) — линией, как замок,
+   поле нажатия 44 × 44. Нажатие — плашка-подсказка (✱ tooltip) под кнопкой, хвостиком к ней, как время над ручкой:
+   текст цветом акцента, та же тень. Фон белый без прозрачности: плашка лежит на времени над ручками, сквозь .94 оно просвечивало.
+   Пока плашка открыта, «i» белая */
+#dayPeriods .dp-info{position:absolute;right:20px;top:0;z-index:1;display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:12px;
+  background:none;color:var(--happy-muted,rgba(255,255,255,.72));font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .15s}
+#dayPeriods .dp-info svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+#dayPeriods .dp-info .dp-idot{fill:currentColor;stroke:none}
+#dayPeriods .dp-info[aria-expanded="true"],#dayPeriods .dp-info:active{color:var(--happy-ink,#fff)}
+#dayPeriods .dp-info:focus-visible{outline:2px solid var(--happy-ink,#fff);outline-offset:-6px}
+#dayPeriods .dp-tip{position:absolute;right:8px;top:42px;z-index:5;box-sizing:border-box;width:max-content;max-width:calc(100% - 16px);padding:8px 12px;border-radius:12px;
+  background:#fff;color:var(--happy-accent-ink,#0C6FA8);font-size:14px;font-weight:600;line-height:20px;text-align:left;
+  box-shadow:0 4px 12px rgba(4,40,80,.22);cursor:default;animation:dpTipIn .18s ease-out}
+#dayPeriods .dp-tip::before{content:'';position:absolute;top:-6px;right:28px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:6px solid #fff}
+@keyframes dpTipIn{from{opacity:0;transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){#dayPeriods .dp-tip{animation:none}#dayPeriods .dp-info{transition:none}}
+/* v36 (Астамур 23.11.2026, 20:37, «2.Б»): та же плашка у неподвижной ручки 00:00 / 24:00 (без связки с Happy Meal) — под ручкой,
+   хвостиком к ней; плашка начинается от края ручки, угол у хвостика 3, как у времени над ручкой у края шкалы (.dp-tl / .dp-tr).
+   Строка с плашкой — поверх следующих строк, чтобы плашку не закрыла карточка ниже */
+#dayPeriods .dp-tip.dp-tip-edge{top:52px;max-width:262px}
+#dayPeriods .dp-tip-l{left:-10px;right:auto;border-top-left-radius:3px}
+#dayPeriods .dp-tip-l::before{left:4px;right:auto}
+#dayPeriods .dp-tip-r{right:-10px;border-top-right-radius:3px}
+#dayPeriods .dp-tip-r::before{right:4px}
+#dayPeriods .dp-row.dp-tipon{z-index:3}
+/* v17 (Астамур 23.11.2026, выбрал «Р3»): черточка была слишком похожа на черточку листа сверху. Теперь две линии:
+   короткая сверху (28), длинная снизу (52), толщина 3. v21 (Астамур 23.11.2026: «черточки светлые, в тон поля, рельефом»):
+   цвет контура карточки (--happy-line) и выпуклость (✱ emboss): светлый край сверху, тень снизу; нажата, раскрыта или поднята — белая */
+.dp-rh i,.dp-fold i{position:relative;display:block;width:52px;height:11px}
+.dp-rh i{color:var(--happy-line,rgba(255,255,255,.34));transition:color .2s}
+.dp-rh i::before,.dp-rh i::after,.dp-fold i::before,.dp-fold i::after{content:'';position:absolute;left:50%;height:3px;border-radius:2px;background:currentColor;transform:translateX(-50%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 1px rgba(4,40,80,.3)}
+.dp-rh i::before,.dp-fold i::before{top:0;width:28px}
+.dp-rh i::after,.dp-fold i::after{bottom:0;width:52px}
+.dp-rh:focus-visible,.dp-fold:focus-visible{outline:none}
+.dp-rh:focus-visible i,.dp-fold:focus-visible i{outline:2px solid rgba(255,255,255,.55);outline-offset:6px;border-radius:6px}
+.dp-rh.dp-press i,.dp-open .dp-rh i,.dp-lift .dp-rh i{color:var(--happy-ink,#fff)}
+.dp-lift .dp-rh{cursor:grabbing}
+/* шкала раскрытой строки: время плашками, над ними место */
+#dayPeriods .dp-trk{transition:margin-top .34s cubic-bezier(.22,.75,.25,1)}
+#dayPeriods .dp-open .dp-trk{margin-top:10px}
+.dp-hd>span{transition:opacity .22s ease-out}
+.dp-trk.dp-lbl-off .dp-hd>span{opacity:0;transition:none}
+/* настройки в строке: содержимое проявляется и чуть съезжает вниз, пока строка раскрывается */
+.dp-body{height:0;overflow:hidden}
+.dp-body.dp-done{height:auto;overflow:visible}
+.dp-body>#dayPeriod,.dp-body>.dp-still{display:flow-root;padding:0 0 4px;opacity:0;transform:translateY(-10px);transition:opacity .16s ease-in,transform .3s cubic-bezier(.22,.75,.25,1)}
+.dp-body.dp-in>#dayPeriod,.dp-body.dp-in>.dp-still{opacity:1;transform:none;transition:opacity .3s ease-out .05s,transform .44s cubic-bezier(.22,.75,.25,1)}
+.dp-body .dp-h{margin-top:24px}
+.dp-body .dp-rings{margin:0 -12px}
+.dp-body .dp-foot{margin-top:26px}
+/* v18 (Астамур 23.11.2026): внизу раскрытых настроек — те же две линии «Р3», белые, как ручка раскрытой строки.
+   Нажатие складывает настройки вверх (day-periods.js foldUp). С v20 линии лежат в нижнем кармане карточки, зеркально
+   верхним: 7 от кромки; поле нажатия 64 × 44 выходит за низ карточки на 8, в промежуток до следующей */
+.dp-fold{display:none}
+.dp-body .dp-fold{display:grid;place-items:center;position:relative;width:64px;height:44px;margin:22px auto -24px;padding:3px 0 0;border:0;background:none;
+  color:var(--happy-ink,#fff);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dp-tab-up{bottom:8px}
+.dp-fold i{transition:opacity .15s}
+.dp-fold:active i{opacity:.55}
+/* перестановка: соседи расступаются, поднятая строка чуть больше и с глубокой тенью */
+#dayPeriods .dp-list.dp-sorting .dp-row{transition:transform .26s cubic-bezier(.22,.75,.25,1),scale .2s ease-out}
+#dayPeriods .dp-list.dp-sorting .dp-row.dp-lift{z-index:5;scale:1.02;transition:scale .2s ease-out}
+#dayPeriods .dp-list.dp-sorting .dp-row.dp-settle{z-index:5}
+/* поднятая карточка — матовое стекло, как меню вкладок: строки под ней размываются, а не просвечивают */
+#dayPeriods .dp-row.dp-lift::before,#dayPeriods .dp-row.dp-settle::before{-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%)}
+#dayPeriods.dp-now .dp-row,#dayPeriods.dp-now .dp-trk,#dayPeriods.dp-now .dp-row::before,#dayPeriods.dp-now .dp-shd,#dayPeriods.dp-now .dp-pk{transition:none!important}
+/* новая строка появляется, удалённая тает */
+#dayPeriods .dp-row.dp-born{animation:dpBorn .34s ease-out}
+@keyframes dpBorn{from{opacity:0;transform:translateY(8px)}}
+#dayPeriods .dp-row.dp-leave{overflow:hidden;opacity:0;margin-top:0!important;margin-bottom:0!important;transition:opacity .22s ease-out,margin .3s ease-out}
+@media (prefers-reduced-motion:reduce){#dayPeriods .dp-row,#dayPeriods .dp-row::before,#dayPeriods .dp-shd,#dayPeriods .dp-pk,#dayPeriods .dp-trk,.dp-body>#dayPeriod,.dp-body>.dp-still{transition:none!important;animation:none!important}}

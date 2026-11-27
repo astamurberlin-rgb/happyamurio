@@ -23,9 +23,9 @@
 | `check-gradients.mjs` | Движок градиентов для студий. |
 | `check-studio-account.mjs` | Вход в студиях отдельный от входа в приложениях. |
 
-## Day — папка `day-61/tests/`
+## Day — папка `day-62/tests/`
 
-Запуск всех: `node --test day-61/tests/*.test.cjs`.
+Запуск всех: `node --test day-62/tests/*.test.cjs`.
 
 | Файл | Что смотрит |
 | --- | --- |
@@ -39,7 +39,7 @@
 | `sport-summary` | Тренировки и плановые занятия из витрины Sport; связь с Sport выключена — начатое после этого не показывается; выбранный вид кольца энергии хранится в аккаунте и приходит на второе устройство. |
 | `standalone` | Day одним файлом: встроено ровно то, что лежит в папке выпуска. |
 
-После правки Day, из корня репозитория: тесты; `python3 scripts/build-day-standalone.py day-61` — пересобрать Day одним файлом; после правок хранения, входа и обмена — сценарии `scripts/browser/run.sh day_store day_sections account_screens versions`.
+После правки Day, из корня репозитория: тесты; `python3 scripts/build-day-standalone.py day-62` — пересобрать Day одним файлом; после правок хранения, входа и обмена — сценарии `scripts/browser/run.sh day_store day_sections account_screens versions`.
 
 ## Meal — папка `meal-34/checks/`
 
@@ -94,7 +94,7 @@
 
 - Python с Playwright и Chrome.
 - Собранный Sport: `node sport-45/sport/scripts/build.mjs`.
-- Собранный Day одним файлом: `python3 scripts/build-day-standalone.py day-61`.
+- Собранный Day одним файлом: `python3 scripts/build-day-standalone.py day-62`.
 - Ветка каталогов в том же репозитории: `git fetch --depth=1 origin meal-libraries:refs/remotes/origin/meal-libraries`.
 
 | Сценарий | Что смотрит |
@@ -132,7 +132,7 @@
 
 | Переменная | Что задаёт | По умолчанию |
 | --- | --- | --- |
-| `HAPPY_MEAL`, `HAPPY_DAY_STORE`, `HAPPY_SPORT_STORE` | Выпуски Meal, Day и Sport для сценариев. | `meal-34/`, `day-61/`, `sport-45/` |
+| `HAPPY_MEAL`, `HAPPY_DAY_STORE`, `HAPPY_SPORT_STORE` | Выпуски Meal, Day и Sport для сценариев. | `meal-34/`, `day-62/`, `sport-45/` |
 | `HAPPY_LIBRARIES_REF` | Ветка или коммит каталогов Meal. | `origin/meal-libraries` |
 | `HAPPY_CHROME` | Путь к Chrome. | `/usr/bin/google-chrome` |
 | `HAPPY_PORT` | Порт временного сервера. | `8767` |
@@ -165,7 +165,7 @@
 | --- | --- |
 | `node scripts/sync-shared.mjs` | Копирует общие файлы из `shared/` в текущие выпуски. |
 | `node scripts/sync-shared-ui.mjs` | Встраивает общий стиль настроек в страницы Day и Meal. |
-| `python3 scripts/build-day-standalone.py day-61` | Собирает Day одним файлом `Happy-Day-61.html`. |
+| `python3 scripts/build-day-standalone.py day-62` | Собирает Day одним файлом `Happy-Day-62.html`. |
 | `python3 -I scripts/build-lab.py папка` | Собирает лабораторию: Day, Meal и Sport рядом для закрытой страницы, с поддельным сервером в странице (вымышленный аккаунт, письма в панели «Проверка»). |
 | `python3 -I scripts/lab/build-app-lab.py day папка-всех папка-day` | Лаборатория одного приложения (`day`, `meal` или `sport`) из собранной выше папки: открывается сразу приложение, вход вымышленным аккаунтом делается сам (`scripts/lab/app-autologin.js`). Четвёртое слово `--sample-measurements` добавляет пример замеров тела (`scripts/lab/sample-measurements.js`): таблица замеров открывается сразу с историей. Так и выкладываем лабораторию для Астамура (решение 17.11.2026). Вход сам — только в этой копии: в файлах приложений его нет, в выпуск не переносить. |
 
@@ -177,10 +177,10 @@
 
 - Файлы в `shared/` внутри папки выпуска. Они меняются в корневой папке `shared/` и копируются командой `node scripts/sync-shared.mjs`.
 - Блок `HAPPY_SHARED_STYLE` внутри `index.html` Day и Meal. Его встраивает `node scripts/sync-shared-ui.mjs`.
-- `Happy-Day-61.html` — тот же Day одним файлом для скачивания. Его собирает `python3 scripts/build-day-standalone.py day-61`.
+- `Happy-Day-62.html` — тот же Day одним файлом для скачивания. Его собирает `python3 scripts/build-day-standalone.py day-62`.
 - В папке Sport — `index.html`, `exercises/`, `app-icons/` и `manifest.webmanifest`. Их пишет сборка из `sport/src/`.
 
-### Day — `day-61/`
+### Day — `day-62/`
 
 | Файлы | Что делают |
 | --- | --- |

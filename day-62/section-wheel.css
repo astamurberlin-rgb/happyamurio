@@ -1,0 +1,27 @@
+/* Экран отметок (body.wheel-editing): кнопка «Save» в вырезе меню, поле заметки, шапка раздела. Колеса разделов нет с Day 60.3, его стили убраны в 60.4. */
+body.wheel-editing .now-save{z-index:10;bottom:calc(31px + env(safe-area-inset-bottom));width:60px;height:60px;margin-left:-30px;padding-bottom:0;transform:translateY(0);background:radial-gradient(circle at 36% 28%,#7B6FE8,var(--fab) 70%);color:var(--happy-ink);box-shadow:0 4px 8px rgba(40,32,120,.30),0 14px 30px rgba(40,32,120,.40)}
+.now-save svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.7}
+body.wheel-editing #fab{visibility:hidden}
+body.wheel-editing .tabs{z-index:11}
+#wheelNote{display:none}body.wheel-editing #wheelNote{display:block;min-height:64px;margin-top:16px;width:100%;resize:vertical}
+
+body.wheel-editing .now-save{visibility:visible;transition:none;font-size:16px}body.wheel-editing .now-save[data-dirty="true"]::before,body.wheel-editing .now-save[data-dirty="true"]::after{content:none!important}
+
+body.wheel-editing .dockBg{background:#d6f0fb;backdrop-filter:none;-webkit-backdrop-filter:none}
+
+
+/* 51.11: fixed arc anchor and real section carousel. Header copy cannot push the arc. */
+#sectionPanel{position:relative;min-height:100%}
+body.wheel-editing [data-screen="ring"]{position:relative;overflow-x:hidden}
+.section-form-header{box-sizing:border-box;height:calc(var(--section-arc-top,150px) - 14px - env(safe-area-inset-top));min-height:72px;overflow-y:auto;scrollbar-width:none;padding-bottom:0}   /* шаг 8: шапка не прокручивается сама на 1 точку — иначе на iPhone жест за черточку уходит в её прокрутку */
+.section-form-header .top{padding-bottom:8px;min-height:46px}
+.section-form-header .top h1{font-size:28px;overflow-wrap:anywhere}
+.section-form-header .cpMeal{margin:0 0 4px}
+
+.activity-icon{display:block;width:76px;height:76px;background:currentColor;-webkit-mask:url('./assets/activity-side-bend.svg') center/contain no-repeat;mask:url('./assets/activity-side-bend.svg') center/contain no-repeat}
+
+/* Кнопка на экране отметки — как главная кнопка, без светлого контура от .now-save (Астамур 22.11.2026). */
+body.wheel-editing .now-save:not([data-dirty="true"]){border:0}
+/* 24.11.2026 (Астамур): после «Сохранить» классы экрана отметки снимаются, и кнопка на миг становилась старым жёлтым диском 116,
+   который уезжал вниз за синей кнопкой (переход transform/visibility .32 с). Вне экрана отметки кнопка прячется сразу. */
+body:not(.wheel-editing):not(.now-editing) .now-save{transition:none}
