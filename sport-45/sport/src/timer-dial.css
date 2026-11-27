@@ -56,3 +56,6 @@
 .floating-rest-pill .floating-rest-mid{cursor:pointer}
 .active-workout .exercise-name-info:has(.wf-ex-pic):has(.td-open){grid-template-columns:var(--happy-size-list-image) minmax(0,1fr) auto}
 .td-open svg,.td-open svg *{fill:none!important;stroke:currentColor!important}
+/* Таймер открывается до самого верха, всплывающие виджеты подхода и перерыва на это время прячутся (Астамур 28.11.2026). */
+.exercise-player-sheet:has(.td-root){top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;padding-top:env(safe-area-inset-top)!important}
+body.exercise-player-open:has(.td-root) #rest-pill-root,body.exercise-player-open:has(.td-root) .floating-rest-pill{display:none!important}

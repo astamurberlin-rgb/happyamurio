@@ -152,7 +152,7 @@ setInterval(tdialRefresh,100);
  activeExercise=function(e,ei){
   const html=activeExerciseBeforeDial(e,ei);if(!tdialOn(e)&&!exerciseHasMetric(e,'seconds'))return html;
   const root=document.createElement('div');root.innerHTML=html;const wrap=root.querySelector('.wf-ex-menu-wrap');
-  if(wrap)wrap.insertAdjacentHTML('beforeend',`<button type="button" class="exercise-menu-button td-open" data-action="open-exercise-player" data-ei="${ei}" aria-label="Таймер: ${esc(e.name)}">${clockFaceIcon()}</button>`);
+  if(wrap)wrap.insertAdjacentHTML('beforeend',`<button type="button" class="exercise-menu-button td-open" data-action="tdial-open" data-ei="${ei}" aria-label="Таймер: ${esc(e.name)}">${clockFaceIcon()}</button>`);
   return root.innerHTML;
  };}
 function tdialFromWidget(ei){
@@ -172,3 +172,4 @@ window.addEventListener('click',event=>{
   const ei=set?set.ei:rest?.ei;if(!Number.isInteger(ei))return;
   event.preventDefault();event.stopImmediatePropagation();tdialFromWidget(ei);
 },true);
+window.addEventListener('click',event=>{const b=event.target.closest?.('[data-action="tdial-open"]');if(!b)return;event.preventDefault();event.stopImmediatePropagation();tdialFromWidget(Number(b.dataset.ei));},true);
