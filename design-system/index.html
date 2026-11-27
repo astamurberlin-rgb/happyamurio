@@ -529,9 +529,45 @@ html[data-happy-appearance-app="sport"] .ds-sw-orig{--swatch:var(--ds-bg-sport)}
  color:var(--happy-ink);
  font:var(--happy-type-body-weight) var(--happy-type-body-size)/var(--happy-type-body-line) var(--happy-font-sans);
 }
-html[data-happy-appearance-app="day"] #ds-menu-select {
+/* Стрелки закрытых полей: Sport (refinements.css), Day «Связи» (.selChev). Codex · 27.11.2026. */
+.ds-menu-picker {
+ position:relative;
+ min-width:0;
+ --picker-arrow:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 7 4-4 4 4M4 15l4 4 4-4'/%3E%3C/svg%3E");
+}
+.ds-menu-picker select {
+ display:block;
+ -webkit-appearance:none;
+ appearance:none;
+ padding-inline-end:calc(var(--happy-space-20) * 2);
+}
+.ds-menu-picker::after {
+ content:"";
+ position:absolute;
+ pointer-events:none;
+ inset-block:0;
+ margin-block:auto;
+ inset-inline-end:var(--happy-space-tab-bar-side);
+ width:var(--happy-space-12);
+ height:var(--happy-space-sheet-content);
+ background-color:var(--happy-ink);
+ -webkit-mask:var(--picker-arrow) center / contain no-repeat;
+ mask:var(--picker-arrow) center / contain no-repeat;
+}
+html[data-happy-appearance-app="day"] .ds-period-picker {
  justify-self:end;
+ --picker-arrow:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+html[data-happy-appearance-app="day"] .ds-period-picker::after {
+ inset-inline-end:var(--happy-space-12);
+ width:var(--happy-space-16);
+ height:var(--happy-space-16);
+}
+html[data-happy-appearance-app="day"] #ds-menu-select {
  width:auto;
+ max-width:100%;
+ padding-inline-start:var(--happy-space-16);
+ padding-inline-end:calc(var(--happy-space-10) + var(--happy-space-16) + var(--happy-space-12));
  height:var(--happy-size-day-link-pill);
  border-radius:var(--happy-radius-pill);
  background:var(--happy-stepper-bg);
@@ -1198,11 +1234,15 @@ html[data-happy-appearance-app="sport"] .ds-mbtn{border-radius:24px}
   <h3 id="ds-menu">Выпадающий список Happy</h3>
   <div class="ds-menu-sample">
    <label for="ds-menu-theme">Тема</label>
-   <select id="ds-menu-theme" class="ds-menu-field"><option value="">По умолчанию</option></select>
+   <span class="ds-menu-picker">
+    <select id="ds-menu-theme" class="ds-menu-field"><option value="">По умолчанию</option></select>
+   </span>
    <label for="ds-menu-select">Период</label>
-   <select id="ds-menu-select" class="ds-menu-field">
-    <option>Сегодня</option><option>Неделя</option><option>Месяц</option>
-   </select>
+   <span class="ds-menu-picker ds-period-picker">
+    <select id="ds-menu-select" class="ds-menu-field">
+     <option>Сегодня</option><option>Неделя</option><option>Месяц</option>
+    </select>
+   </span>
    <button id="ds-input-open" type="button" class="happy-button" aria-haspopup="dialog" aria-controls="ds-input-dialog">Открыть окно ввода</button>
   </div>
   <dialog id="ds-input-dialog" aria-labelledby="ds-input-title">
