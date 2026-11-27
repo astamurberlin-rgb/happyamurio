@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Day">
-<title>Happy Day · Update 62.1</title>
+<title>Happy Day · Update 62.2</title>
 <link rel="icon" type="image/png" sizes="32x32" href="./app-icons/happy-day-20261125-glass-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="./app-icons/happy-day-20261125-glass-48.png">
 <link rel="apple-touch-icon" sizes="152x152" href="./app-icons/happy-day-20261125-glass-152.png">
@@ -127,6 +127,10 @@
   --happy-time-draft-pill-bg:rgba(255,255,255,.95);
   --happy-drum-band:rgba(255,255,255,.22);
   --happy-wheel-band:rgba(255,255,255,.22);
+  --happy-select-divider:color-mix(in srgb, var(--happy-ink) 14%, transparent);
+  --happy-select-hover:color-mix(in srgb, var(--happy-ink) 12%, transparent);
+  --happy-select-pressed:color-mix(in srgb, var(--happy-ink) 18%, transparent);
+  --happy-select-disabled:color-mix(in srgb, var(--happy-ink) 45%, transparent);
 }
 :root[data-happy-appearance-app="day"]{
   --happy-theme-color:#56b9f7;
@@ -213,6 +217,8 @@
   --happy-space-chat-bubble-x:15px;
   --happy-space-list-row-y:15px;
   --happy-space-list-row-x:18px;
+  --happy-space-select-gap:6px;
+  --happy-space-4:4px;
   /* размеры */
   --happy-size-button:48px;
   --happy-size-pill:44px;
@@ -270,11 +276,23 @@
   --happy-size-price-pill:29px;
   --happy-size-date-pill:36px;
   --happy-size-nutrient-group:52px;
+  --happy-size-button-start:56px;
+  --happy-size-day-link-pill:39px;
+  --happy-size-select-row:44px;
+  --happy-size-select-line:22px;
+  --happy-size-select-check:20px;
+  --happy-size-select-check-stroke:2.2;
+  --happy-size-select-rule:1px;
+  --happy-size-select-min-width:200px;
+  --happy-size-select-max-height:340px;
+  --happy-size-select-preferred-height:200px;
+  --happy-layer-select:2147483000;
   /* тени */
   --happy-shadow-card:0 2px 3px rgba(4,40,80,.10), 0 14px 30px rgba(4,40,80,.14);
   --happy-shadow-sheet:0 -16px 48px rgba(0,0,0,.2);
   --happy-shadow-chat-mine:0 8px 20px rgba(4,40,80,.14);
   --happy-shadow-chat-composer:0 10px 28px rgba(4,40,80,.26);
+  --happy-shadow-select:inset 0 0 0 1px rgba(255,255,255,.28), 0 18px 40px rgba(0,0,0,.28);
   /* размытие */
   --happy-blur-glass:12px;
   --happy-blur-tab-bar:18px;
@@ -293,6 +311,8 @@
   --happy-swipe-threshold-min:90px;
   --happy-undo-keep:5s;
   --happy-motion-time-draft:.9s;
+  --happy-motion-select-open:.16s;
+  --happy-ease-select-open:ease-out;
   /* шрифты */
   --happy-font-sans:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --happy-type-screen-title-size:28px;
@@ -353,7 +373,7 @@
   --happy-type-save-arc-line:1;
 }
 /* HAPPY_COLORS_END */</style>
-<link rel="stylesheet" href="./shared/happy-colors.css?v=61-5">
+<link rel="stylesheet" href="./shared/happy-colors.css?v=62.2">
 <style>
 .happy-settings details.happy-card>summary{cursor:pointer;font-weight:600;line-height:1.5}
 .happy-settings details.happy-card[open]>summary{margin-bottom:12px}
@@ -1630,7 +1650,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
     </section>
     <section class="happy-section" data-happy-section="version">
     <div class="card"><button class="update-history-link" data-care-open="updates"><span>История обновлений</span><small>Что нового в Happy Day · версии и изменения</small></button></div>
-    <footer class="app-version happy-version" data-app-version="62.1" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 62.1</div><small>Обновлено 27.11.2026</small></footer>
+    <footer class="app-version happy-version" data-app-version="62.2" data-settings-developer="toggle" title="Долгое нажатие открывает раздел для разработчика"><div>Happy Day · Update 62.2</div><small>Обновлено 27.11.2026</small></footer>
     </section>
     <section class="happy-section" data-happy-section="signout"><div id="happy-account-bottom"></div></section>
   </div>
@@ -1745,7 +1765,7 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <!-- выбор периода журнала — общий кусок Day, Meal и Sport, как в Meal (21.11.2026) -->
 <script src="./shared/happy-period.js?v=61"></script>
 <script src="./shared/happy-scroll-lock.js?v=61"></script>
-<script src="./shared/happy-select.js?v=62"></script>
+<script src="./shared/happy-select.js?v=62.2"></script>
 <script src="./shared/happy-store.js?v=61-5"></script>
 <script src="./shared/happy-app-links.js?v=61"></script>
 <script src="./shared/happy-sport-summary.js?v=61"></script>
@@ -1790,22 +1810,22 @@ html[data-happy-appearance-app="sport"] .happy-card{border-radius:24px}
 <script src="./shared/happy-energy-ring.js?v=61.6"></script>
 <script src="./energy-widget.js?v=61.6"></script>
 <script src="./shared/release-notes.js?v=61"></script>
-<script src="./release-notes.js?v=62.1"></script>
+<script src="./release-notes.js?v=62.2"></script>
 <script src="./shared/happy-links.js?v=61"></script>
 <script src="./shared/happy-settings-developer.js?v=61"></script>
 <script src="./shared/happy-sample.js?v=62"></script>
 <script src="./day-sample.js?v=62"></script>
-<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 62.1')}catch(e){}</script>
-<link rel="stylesheet" href="./diary.css?v=10">
+<script>try{document.querySelector('footer.happy-version').innerHTML=HappyReleaseNotes.footer(HappyDayReleases,'Happy Day · Update 62.2')}catch(e){}</script>
+<link rel="stylesheet" href="./diary.css?v=62.2">
 <link rel="stylesheet" href="./diary-navigation.css?v=1">
-<link rel="stylesheet" href="./diary-composer.css?v=9">
+<link rel="stylesheet" href="./diary-composer.css?v=62.2">
 <link rel="stylesheet" href="./diary-wave.css?v=4">
 <script src="./diary-media.js?v=2"></script>
 <script src="./diary-wave.js?v=2"></script>
 <script src="./diary-composer.js?v=3"></script>
 <script src="./diary-vendor/pdf-lib.min.js"></script>
 <script src="./diary-pdf.js?v=3"></script>
-<script src="./diary.js?v=11"></script>
+<script src="./diary.js?v=62.2"></script>
 <script src="./selfcare-ui.js?v=62"></script>
 <script>
 /* ═══════════ ХРАНИЛИЩЕ ═══════════

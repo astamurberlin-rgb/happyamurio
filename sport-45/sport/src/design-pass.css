@@ -49,9 +49,10 @@ body.sport-fab-x #sport-fab{transform:translate(-50%,-50%) rotate(45deg)!importa
 .hm-button,.hm-output .hm-button{font-size:14px!important;font-weight:600!important}
 
 /* Лист «Новый счётчик»: поля как поле ввода — 48, фон 16 %, рамка 34 %, поля 14, текст 16 · 400 */
-#sport-food-create input{height:48px!important;min-height:48px!important;padding:0 14px!important;border-radius:12px!important;
-  background:var(--happy-glass)!important;border:1px solid var(--happy-line)!important;font-size:16px!important;font-weight:400!important}
-#sport-food-create input::placeholder{color:rgba(255,255,255,.62)}
+.sheet:has(#sport-food-create){background:var(--hs-sheet-bg);color:var(--happy-ink)}
+#sport-food-create input{height:var(--happy-size-field)!important;min-height:var(--happy-size-field)!important;padding:0 14px!important;border-radius:var(--happy-radius-field)!important;
+  background:var(--happy-field-bg)!important;border:1px solid var(--happy-field-line)!important;color:var(--happy-ink);font-size:var(--happy-type-body-size)!important;font-weight:var(--happy-type-body-weight)!important}
+#sport-food-create input::placeholder{color:var(--happy-field-placeholder)}
 
 /* Текстовая кнопка «Редактировать» — без значка (Астамур 25.11.2026): карандаш только там, где правится одно название
    (сам текст рядом); если правится больше — только слово. Значок убран в разметке (app.js, refinements.js). */
