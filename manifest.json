@@ -134,6 +134,14 @@
       "sha256": "5010e940510cfc9d64e419090709ca8d573dfcc62da4960ab202ac872011931c",
       "foodCount": 12,
       "notes": "data/HOME.md"
+    },
+    "recipes": {
+      "url": "https://raw.githubusercontent.com/astamurberlin-rgb/happyamurio/128362f2b7ae98698a4043b65cd17900b045927d/data/recipes-1.0.json",
+      "encoding": "json",
+      "bytes": 90623,
+      "sha256": "d5dc9fa6e9ae8171732fc863f1870926284b21b86b3fb69761adfb5620c33867",
+      "version": "1.0.0",
+      "recipeCount": 22
     }
   }
 }
