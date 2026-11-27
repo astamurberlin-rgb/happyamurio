@@ -2016,21 +2016,31 @@ var MealBot=(function(){
     return NW;
   }
   var NW_VIT=['vA','vD','vC','vE','b12','b9'], NW_MIN=['fe','ca','mg','zn','k','i'];
-  function whereOne(e){
+  function whereOne(e,n){
     var m=nutrMeta(e.id); if(!m) return '';
     var rows=[]; e.sources.forEach(function(code){ if(!BLS_BY[code]) return; var v=nutrSrcVal(code,e.id); if(v==null||!(v>0)) return; rows.push([v,code]) });
     if(!rows.length) return '';
     rows.sort(function(a,b){ return b[0]-a[0] });
-    var h=p('<b>Где много '+esc(e.gen)+'</b> (на 100 г):')+'<p class="mbSum">'+rows.slice(0,8).map(function(x){ var nm=blsName(x[1]); return esc(nm.charAt(0).toLowerCase()+nm.slice(1))+' — '+nutrNum(x[0])+' '+esc(m.u) }).join('<br>')+'</p>';
+    var top=n>0?Math.min(n,rows.length):8;
+    var h=p(n>0?'<b>'+top+' '+esc(whereProd(top))+', где много '+esc(e.gen)+'</b> (на 100 г):':'<b>Где много '+esc(e.gen)+'</b> (на 100 г):')+'<p class="mbSum">'+rows.slice(0,top).map(function(x){ var nm=blsName(x[1]); return esc(nm.charAt(0).toLowerCase()+nm.slice(1))+' — '+nutrNum(x[0])+' '+esc(m.u) }).join('<br>')+'</p>';
     var t='';
     if(m.norm) t='Норма в день — '+fmt(m.norm)+' '+esc(m.u)+(m.own?' (твоя цель)':'')+'.';
     if(typeof jrCompute==='function'){ var d=null; try{ d=jrCompute({a:curDate,b:curDate}) }catch(x){}
       if(d&&!d.empty){ var v=e.id==='fib'?d.mac.fib:e.id==='p'?d.mac.p:d.v[e.id], miss=(d.miss&&d.miss[e.id])||0, wd=curDate===todayISO()?'Сегодня':'За этот день';
         if(v!=null) t+=' '+wd+' по дневнику у тебя '+nutrNum(v)+' '+esc(m.u)+(m.norm?' ('+Math.round(v/m.norm*100)+' %)':'')+(miss>=0.05?', но у части еды нет данных — на самом деле больше':'')+'.' } }
+    if(n>top) h+='<p class="mlHint">В моём списке для '+esc(e.gen)+' пока '+top+' '+esc(whereProd(top))+'.</p>';
+    if(n>0) h+='<p class="mlHint">Это обычные продукты, а не верх всей базы: там первыми идут сушёные приправы, которые столько не едят.</p>';
     return h+(t?p(t.trim()):'');
   }
-  function whereReply(list){
-    var h=list.map(whereOne).filter(Boolean).join('');
+  function whereProd(n){ return n%10===1&&n%100!==11?'продукт':n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?'продукта':'продуктов' }
+  /* «5 самых богатых магнием», «топ 10 по белку» — сколько показать (слова чисел — словарь nutrient_compare.numbers) */
+  function whereN(o){
+    var m=o.match(/(?:^|\s)(\d{1,2})(?=\s|$)/); if(m) return +m[1];
+    var N=((window.HappyMealSpeechData||{}).nutrient_compare||{}).numbers||{}, n=0;
+    o.split(' ').some(function(w){ if(N[w]){ n=N[w]; return true } return false }); return n;
+  }
+  function whereReply(list,n){
+    var h=list.map(function(e){ return whereOne(e,n) }).filter(Boolean).join('');
     if(!h) return null;
     return h+'<p class="mlHint">Числа из базы продуктов. В дневник ничего не записал.</p><p class="mlHint">Польза и вред у всех разные. Если плохо себя чувствуешь или есть болезнь, лучше спроси врача.</p>';
   }
@@ -2048,7 +2058,7 @@ var MealBot=(function(){
     if(R.medical&&R.medical.test(o)||hit.length&&ADV_MED.test(o)) return p('С вопросами о болезнях — к врачу. Я подскажу только, в каких продуктах много нужного вещества: например, «где много железа».')+HINT;
     if(hit.length){
       if(BLS_ST!=='ok'){ try{ blsLoad() }catch(x){} return p('Загружаю базу продуктов, без неё не ответить. Спроси ещё раз через пару секунд.')+HINT }
-      var r=whereReply(hit); if(r) return r;
+      var r=whereReply(hit,whereN(o)); if(r) return r;
       missLog('вопросы без ответа (не продукты)',o,o);
       return p('Пока не знаю, где много '+esc(hit[0].gen)+': списка продуктов для него ещё нет. Вопрос записал.')+HINT;
     }
@@ -2059,6 +2069,199 @@ var MealBot=(function(){
     if(R.other&&R.other.test(o)){ missLog('вопросы без ответа (не продукты)',o,o);
       return p('Пока подскажу, где много, только для этих веществ: белок, клетчатка, витамины A, D, E, C, B3, B9, B12, железо, кальций, магний, калий, цинк, йод, омега-3. Вопрос записал, чтобы добавить.')+HINT }
     return null;
+  }
+  /* Meal 34 · сравнения (решение Астамура 27.11.2026 «Да» на план из трёх частей): «сравни гречку и рис», «где больше кальция:
+     в твороге или в сыре», «что калорийнее банан или яблоко», «сколько углеводов в гречке и в рисе», «сравнительная таблица…»,
+     «сравни сегодня и вчера», «эта неделя по сравнению с прошлой», «сравни завтрак и обед». Замеры («сравни замеры») — bodyCompare.
+     Числа — из базы (на 100 г) и из дневника, тем же расчётом, что журнал. В дневник ничего не идёт. Слова — словарь nutrient_compare.
+     Оформление (Астамур 27.11.2026): одно вещество — обычным текстом; таблица из нескольких показателей — со значком «Поделиться» (CSV). */
+  var CMP=null, CMP_T={}, CMP_N=0;
+  function cmpRe(){
+    if(CMP) return CMP;
+    var W=(window.HappyMealSpeechData||{}).nutrient_compare; CMP={};
+    if(!W) return CMP;
+    ['verb','differ','diff2','more','adj','by','split','with','hint','prev','least','top'].forEach(function(k){ try{ if(W[k]) CMP[k]=new RegExp(W[k]) }catch(x){} });
+    CMP.adjKey=W.adj_key||{}; CMP.periods=(W.periods||[]).map(function(x){ try{ return {re:new RegExp('(?:^|\\s)(?:'+x.said+')(?=\\s|$)'),kind:x.kind,shift:x.shift} }catch(e){ return null } }).filter(Boolean);
+    CMP.numbers=W.numbers||{};
+    return CMP;
+  }
+  var CMP_MAC={kcal:['k','Калории','ккал'],prot:['p','Белки','г'],fat:['f','Жиры','г'],carb:['c','Углеводы','г']};
+  var CMP_HINT='<p class="mlHint">Числа из базы продуктов, на 100 г. В дневник ничего не записал.</p>';
+  function cmpCap(s){ s=String(s); return s.charAt(0).toUpperCase()+s.slice(1) }
+  function cmpLow(s){ s=String(s); return s.charAt(0).toLowerCase()+s.slice(1) }
+  function cmpParts(s,withToo){
+    var R=cmpRe(), parts=s.split(new RegExp(R.split.source,'g')).map(function(x){ return x.replace(/^(?:во?|у|из)\s+/,'').replace(/\s+$/,'').trim() }).filter(Boolean);
+    if(parts.length<2&&withToo&&R.with) parts=s.split(new RegExp(R.with.source)).map(function(x){ return x.trim() }).filter(Boolean);
+    return parts;
+  }
+  /* вещество: калории, БЖУ, клетчатка, любое из списка веществ Meal; «по составу», «по кбжу» — вся таблица */
+  function cmpKey(w){
+    w=String(w||'').replace(/^(?:количеству|содержанию|количество|содержание)\s+/,'').trim(); if(!w) return null;
+    if(/^(?:составу|кбжу|бжу|пищевой ценности|всему|всем)$/.test(w)) return 'all';
+    var k=substanceOf(w); if(k) return k;
+    if(/\s/.test(w)) return null;
+    var g=goalKey(w); return g?{k:'kcal',p:'prot',f:'fat',c:'carb',fib:'fib'}[g]:null;
+  }
+  function cmpVal(pf,key){
+    if(CMP_MAC[key]){ var s=sumOf([{fid:pf.id,g:100,q:100,u:'г'}]); return s[CMP_MAC[key][0]] }
+    return subVal(pf.f,key);
+  }
+  function cmpMeta(key){
+    if(CMP_MAC[key]) return {title:CMP_MAC[key][1],unit:CMP_MAC[key][2]};
+    var sx=typeof HappySubstances!=='undefined'?HappySubstances.get(key):null; if(!sx) return null;
+    return {title:sx.title.replace(/,\s*всего$/,''),unit:sx.unit};
+  }
+  function cmpNum(v){ return v<1&&v>0?String(Math.round(v*100)/100).replace('.',','):fmt(v<100?v:Math.round(v)) }
+  function cmpFoods(parts){
+    var got=[], bad=[];
+    parts.forEach(function(t){ var pf=productFood(t); if(pf) got.push({t:t,pf:pf,name:FOODS[pf.id].n}); else bad.push(t) });
+    return {got:got,bad:bad};
+  }
+  /* одно вещество — текстом: по убыванию (или по возрастанию для «меньше»), строка итога */
+  function cmpOne(list,key,less){
+    var M=cmpMeta(key); if(!M) return null;
+    var rows=list.map(function(x){ return {name:x.name,v:cmpVal(x.pf,key)} }), known=rows.filter(function(r){ return r.v!=null });
+    known.sort(function(a,b){ return less?a.v-b.v:b.v-a.v });
+    var no=rows.filter(function(r){ return r.v==null });
+    var h=p('<b>'+esc(M.title)+'</b>, на 100 г:')+'<p class="mbSum">'+known.concat(no).map(function(r){ return esc(r.name)+' — '+(r.v==null?'нет данных':cmpNum(r.v)+' '+esc(M.unit)) }).join('<br>')+'</p>';
+    if(known.length>=2){
+      var hi=known[0], lo=known[known.length-1], big=Math.max(hi.v,lo.v), small=Math.min(hi.v,lo.v), t;
+      if(big===small||small>0&&big/small<1.1) t='Почти одинаково.';
+      else if(small===0) t=less?'Меньше — в «'+hi.name+'»: по базе 0.':'Больше — в «'+hi.name+'»; в «'+lo.name+'» по базе 0.';
+      else { var r=big/small, rr=r<10?Math.round(r*10)/10:Math.round(r), k=r>=2?'примерно в '+String(rr).replace('.',',')+(rr%1||rr%10>=2&&rr%10<=4&&(rr%100<12||rr%100>14)?' раза':' раз'):'на '+cmpNum(big-small)+' '+M.unit;
+        t=(less?'Меньше':'Больше')+(known.length>2?' всего':'')+' — в «'+hi.name+'», '+k+(known.length>2?', чем в «'+lo.name+'»':'')+'.' }
+      h+=p(esc(t));
+    }
+    if(no.length) h+='<p class="mlHint">«Нет данных» — в базе этого показателя у продукта нет; это не ноль.</p>';
+    return h+CMP_HINT;
+  }
+  /* таблица: калории, БЖУ, клетчатка (+ названное вещество); значок «Поделиться» — CSV */
+  function cmpShareBtn(id){ return '<div class="mbChips"><button class="chip mbShare" data-bot="cmpshare:'+id+'" aria-label="Поделиться таблицей" title="Поделиться таблицей"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button></div>' }
+  function cmpTable(title,cols,rows,note){
+    var id='t'+(++CMP_N), csvq=function(s){ s=String(s); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s };
+    CMP_T[id]={title:title,csv:'﻿'+[[''].concat(cols.map(function(c){ return c[0]+(c[1]?', '+c[1]:'') }))].concat(rows.map(function(r){ return [r.name].concat(r.v.map(function(v){ return v==null?'нет данных':String(cmpNum(v)) })) })).map(function(r){ return r.map(csvq).join(';') }).join('\r\n')};
+    var body=rows.map(function(r){ if(r.empty) return '<b>'+esc(r.name)+'</b>'; return '<b>'+esc(r.name)+'</b><br>'+cols.map(function(c,i){ return esc(c[0])+' '+(r.v[i]==null?'нет данных':cmpNum(r.v[i])+(c[1]?' '+esc(c[1]):'')) }).join(' · ') }).join('<br>');
+    return p(esc(title))+'<p class="mbSum mbCmp">'+body+'</p>'+(note?p(esc(note)):'')+cmpShareBtn(id);
+  }
+  function cmpAll(list,extra){
+    var cols=[['Калории','ккал','kcal'],['Белки','г','prot'],['Жиры','г','fat'],['Углеводы','г','carb'],['Клетчатка','г','fib']];
+    if(extra&&!cols.some(function(c){ return c[2]===extra })){ var M=cmpMeta(extra); if(M) cols.push([M.title,M.unit,extra]) }
+    var rows=list.map(function(x){ return {name:x.name,v:cols.map(function(c){ return cmpVal(x.pf,c[2]) })} });
+    /* итог — где больше калорий, белка, углеводов */
+    var win={}, order=[];
+    [[0,'калорий'],[1,'белка'],[2,'жиров'],[3,'углеводов']].forEach(function(c){ var k=rows.filter(function(r){ return r.v[c[0]]!=null }).sort(function(a,b){ return b.v[c[0]]-a.v[c[0]] });
+      if(k.length>=2&&k[0].v[c[0]]>k[1].v[c[0]]*1.1){ var n=k[0].name; if(!win[n]){ win[n]=[]; order.push(n) } win[n].push(c[1]) } });
+    var note=order.length?(rows.length>2?'Больше всего ':'Больше ')+order.map(function(n){ var w=win[n]; return (w.length>1?w.slice(0,-1).join(', ')+' и '+w[w.length-1]:w[0])+' — в «'+n+'»' }).join('; ')+'.':'';
+    return cmpTable('Состав на 100 г:',cols,rows,note)+(rows.some(function(r){ return r.v.some(function(v){ return v==null }) })?'<p class="mlHint">«Нет данных» — в базе этого показателя у продукта нет; это не ноль.</p>':'')+CMP_HINT;
+  }
+  function cmpProducts(parts,key,less){
+    if(parts.length<2) return null;
+    if(parts.length>6) parts=parts.slice(0,6);
+    var F=cmpFoods(parts);
+    if(!F.got.length||F.bad.length===parts.length) return null;
+    if(F.bad.length) return p('Не понял, какой продукт: «'+esc(F.bad[0])+'». Скажи точнее, например «сравни гречку и рис по белку».')+'<p class="mlHint">Это вопрос-сравнение. В дневник ничего не записал.</p>';
+    if(BLS_ST!=='ok'&&key&&!CMP_MAC[key]){ try{ blsLoad() }catch(x){} }
+    if(key&&key!=='all'&&key!=='b3') return cmpOne(F.got,key,less);
+    return cmpAll(F.got,null);
+  }
+  /* дневник: периоды и приёмы */
+  function cmpMonday(iso,shiftW){ var d=new Date(iso+'T12:00:00'), w=(d.getDay()+6)%7; d.setDate(d.getDate()-w+7*shiftW); return d }
+  function cmpPeriod(s,prevKind){
+    var R=cmpRe(), hit=null;
+    R.periods.forEach(function(x){ if(!hit&&x.re.test(s)) hit=x });
+    if(!hit&&prevKind&&R.prev&&R.prev.test(s)) hit={kind:prevKind,shift:-1,prev:true};
+    if(!hit) return null;
+    var t=todayISO(), cd=curDate, a, b, label;
+    if(hit.kind==='day'){ var d=new Date(cd+'T12:00:00'); d.setDate(d.getDate()+hit.shift); a=b=isoOf(d); label=hit.shift===0&&cd===t?'Сегодня':hit.shift===-1&&cd===t?'Вчера':hit.shift===-2&&cd===t?'Позавчера':bodyDate(a) }
+    else if(hit.kind==='week'){ var m=cmpMonday(cd,hit.shift), e=new Date(m); e.setDate(e.getDate()+6); a=isoOf(m); b=isoOf(e); label=hit.shift===0?'Эта неделя':hit.shift===-1?'Прошлая неделя':bodyDate(a)+'–'+bodyDate(b) }
+    else { var m1=new Date(cd+'T12:00:00'); m1.setDate(1); m1.setMonth(m1.getMonth()+hit.shift); var e1=new Date(m1); e1.setMonth(e1.getMonth()+1); e1.setDate(0); a=isoOf(m1); b=isoOf(e1); label=hit.shift===0?'Этот месяц':hit.shift===-1?'Прошлый месяц':bodyDate(a)+'–'+bodyDate(b) }
+    if(b>t) b=t;
+    return {a:a,b:b,label:label,kind:hit.kind};
+  }
+  function cmpDiaryKey(w){
+    if(!w) return null; var k=goalKey(w); if(k) return {mac:k};
+    var e=nutrList().filter(function(x){ return x.re.test(' '+w+' ') })[0]; return e?{id:e.id,title:e.title}:null;
+  }
+  function cmpDiary(pers,kw){
+    if(typeof jrCompute!=='function') return null;
+    var MAC=[['k','Калории','ккал'],['p','Белки','г'],['f','Жиры','г'],['c','Углеводы','г'],['fib','Клетчатка','г']], one=null;
+    if(kw&&kw.mac) one=MAC.filter(function(m){ return m[0]===kw.mac })[0];
+    if(kw&&kw.id){ var nm=nutrMeta(kw.id); if(nm) one=[kw.id,kw.title,nm.u,true] }
+    var res=pers.map(function(P){ var d=null; try{ d=jrCompute({a:P.a,b:P.b}) }catch(e){} return {P:P,d:d} });
+    if(res.every(function(r){ return !r.d||r.d.empty })) return p('За эти дни в дневнике нет записей — сравнивать нечего.')+'<p class="mlHint">В дневник ничего не записал.</p>';
+    var avg=pers.some(function(P){ return P.kind!=='day' }), val=function(d,m){ return !d||d.empty?null:m[3]?d.v[m[0]]:d.mac[m[0]] };
+    var cols=one?[one]:MAC, h;
+    if(one){
+      h=p('<b>'+esc(one[1])+'</b>'+(avg?', в среднем в день':'')+':')+'<p class="mbSum">'+res.map(function(r){ var v=val(r.d,one); return esc(r.P.label)+' — '+(!r.d||r.d.empty?'нет записей':v==null?'нет данных':cmpNum(v)+' '+esc(one[2]))+(avg&&r.d&&!r.d.empty?' ('+r.d.days+' '+(r.d.days%10===1&&r.d.days%100!==11?'день':r.d.days%10>=2&&r.d.days%10<=4&&(r.d.days%100<12||r.d.days%100>14)?'дня':'дней')+' с записями)':'') }).join('<br>')+'</p>';
+    } else {
+      h=cmpTable((avg?'В среднем в день':'По дневнику')+':',cols.map(function(c){ return [c[1],c[2]] }),res.map(function(r){ return {name:r.P.label+(avg&&r.d&&!r.d.empty?' ('+r.d.days+' дн.)':!r.d||r.d.empty?' — нет записей':''),empty:!r.d||r.d.empty,v:cols.map(function(c){ return val(r.d,c) })} }),'');
+    }
+    var m0=one||MAC[0], a=res[0], b=res[1], va=val(a.d,m0), vb=b?val(b.d,m0):null;
+    if(res.length===2&&va!=null&&vb!=null){ var df=va-vb, r1=m0[0]==='k'?Math.round(Math.abs(df)):Math.round(Math.abs(df)*10)/10;
+      var dl=p(esc(Math.abs(df)<(m0[0]==='k'?20:0.5)?'Почти одинаково.':a.P.label+(avg?' в среднем':'')+' на '+fmt(r1)+' '+m0[2]+' '+(df>0?'больше':'меньше')+', чем '+cmpLow(b.P.label)+'.')), sb='<div class="mbChips"><button class="chip mbShare"';
+      h=one||h.indexOf(sb)<0?h+dl:h.replace(sb,dl+sb) }
+    if(res.some(function(r){ return r.d&&!r.d.empty&&r.d.energyCoverage&&r.d.energyCoverage.missing })) h+='<p class="mlHint">У части записей нет данных — на самом деле чуть больше.</p>';
+    return h+'<p class="mlHint">Из дневника, тем же расчётом, что «Журнал». В дневник ничего не записал.</p>';
+  }
+  function cmpMeals(text,kw){
+    var ms=hisMeals(text); if(ms.length<2) return null;
+    var dw=dayWords(text), d=new Date(curDate+'T12:00:00'); d.setDate(d.getDate()+dw.shift); var iso=isoOf(d), it=actItems(iso);
+    var keys=[]; ms.forEach(function(m){ if(keys.indexOf(m.k)<0) keys.push(m.k) }); if(keys.length<2) return null;
+    var rows=keys.map(function(k){ var L=it.filter(function(x){ return x.sec===k }), s=sumOf(L); return {name:hisSecName(k)+(L.length?'':' — нет записей'),empty:!L.length,v:L.length?[s.k,s.p,s.f,s.c]:[null,null,null,null],n:L.length} });
+    if(!rows.some(function(r){ return r.n })) return p('За этот день в этих приёмах нет записей — сравнивать нечего.')+'<p class="mlHint">В дневник ничего не записал.</p>';
+    var when=iso===todayISO()?'сегодня':actWhen(iso);
+    if(kw&&kw.mac&&kw.mac!=='fib'){ var i={k:0,p:1,f:2,c:3}[kw.mac], M=[['Калории','ккал'],['Белки','г'],['Жиры','г'],['Углеводы','г']][i];
+      return p('<b>'+M[0]+'</b>, '+esc(when)+':')+'<p class="mbSum">'+rows.map(function(r){ return esc(r.name)+(r.n?' — '+cmpNum(r.v[i])+' '+M[1]:'') }).join('<br>')+'</p><p class="mlHint">Из дневника. В дневник ничего не записал.</p>' }
+    return cmpTable(cmpCap(when)+':',[['Калории','ккал'],['Белки','г'],['Жиры','г'],['Углеводы','г']],rows,'')+'<p class="mlHint">Из дневника. В дневник ничего не записал.</p>';
+  }
+  function compareAsk(raw){
+    var R=cmpRe(); if(!R.verb) return null;
+    var o=nrm(raw).trim().replace(/[?!.…\s]+$/,'').replace(/[?!]/g,' ').replace(/:/g,' ').replace(/\s+/g,' ');
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*|кг)(\s|$)/.test(o)) return null;   // «гречка 200 г или рис» — запись
+    var m, key=null, less=false, body=null, withToo=false;
+    if((m=o.match(R.verb))){ body=o.slice(m[0].length).trim().replace(/^(?:между|мне|пожалуйста|продукт\S*)\s+/,'').trim(); withToo=true }
+    else if((m=o.match(R.differ))||R.diff2&&(m=o.match(R.diff2))){ body=m[1]+' , '+m[2]; key='all' }
+    else if((m=o.match(R.adj))){ key=CMP.adjKey[Object.keys(CMP.adjKey).filter(function(k){ return m[1].indexOf(k)===0 })[0]]||null; body=m[2]; if(!key) return null }
+    else if((m=o.match(R.more))){
+      less=m[1]==='меньше';
+      var ws=m[2].split(' '), cut=0;
+      for(var i=Math.min(3,ws.length-1);i>=1&&!cut;i--){ var k1=cmpKey(ws.slice(0,i).join(' ')); if(k1&&k1!=='all'){ key=k1; cut=i } }
+      if(!cut) return null;
+      body=ws.slice(cut).join(' ');
+      if(!/(^|\s)(или|либо|и)(\s|$)|,/.test(body)) return null;
+    }
+    else if((m=o.match(/^(?:а\s+)?(?:сколько|какое количество)\s+(.+?)\s+(?:содержится\s+|есть\s+)?во?\s+(.+)$/))){
+      key=cmpKey(m[1]); if(!key||key==='all') return null; body=m[2];
+      if(!/(^|\s)(или|либо|и)(\s|$)|,/.test(body)) return null;
+    }
+    var vs=o.match(/^(.*?)\s+по\s+сравнению\s+с\s+(.+)$/)||o.match(/^(.*?)\s+(?:против|vs)\s+(.+)$/);
+    if(body==null&&vs){ var p1=cmpPeriod(vs[1]); if(!p1) return null; var p2=cmpPeriod(vs[2],p1.kind); if(!p2) return null;
+      var kw0=null; vs[1].split(' ').some(function(w){ kw0=goalKey(w)?cmpDiaryKey(w):null; return kw0 }); return cmpDiary([p1,p2],kw0) }
+    if(body==null) return null;
+    /* «… по углеводам», «… по кальцию» — вещество в конце */
+    var by=body.match(R.by);
+    if(by){ var kb=cmpKey(by[1]); if(kb){ key=key&&key!=='all'?key:kb; body=body.slice(0,by.index).trim() } }
+    if(!body) return null;
+    if(R.least&&R.least.test(body)) return null;
+    var parts=cmpParts(body,withToo);
+    /* дневник: «сегодня и вчера», «эту неделю с прошлой» */
+    var pers=[], prevK=null; parts.forEach(function(x){ var P=cmpPeriod(x,prevK); if(P){ pers.push(P); prevK=P.kind } });
+    if(pers.length>=2&&pers.length===parts.length) return cmpDiary(pers.slice(0,4),by?cmpDiaryKey(by[1]):null);
+    var mm=cmpMeals(body,by?cmpDiaryKey(by[1]):null); if(mm) return mm;
+    return cmpProducts(parts,key,less);
+  }
+  /* «где меньше всего калорий из фруктов» — сортировка всей базы даёт ерунду; честно «пока не умею», вопрос — в список «без ответа» */
+  function leastAsk(raw){
+    var R=cmpRe(); if(!R.least) return null;
+    var o=nrm(raw).trim().replace(/[?!.,…\s]+$/,'');
+    if(!/^(?:а\s+)?(?:где|в\s+ч[её]м|в\s+каких|какие|что|какой|чего)(\s|$)/.test(o)||!R.least.test(o)||/\d+\s*(г|гр|мл|шт|кг)(\s|$)/.test(o)) return null;
+    missLog('вопросы без ответа (не продукты)',o,o);
+    return p('Подобрать продукты, где меньше всего чего-то, пока не умею: сортировка всей базы даёт сушёные приправы и прочее, что столько не едят. Вопрос записал.')+p('Могу сравнить продукты, которые ты назовёшь: «что калорийнее банан или яблоко».')+'<p class="mlHint">В дневник ничего не записал.</p>';
+  }
+  function cmpShare(id){
+    var t=CMP_T[id]; if(!t) return;
+    var name='happy-meal-sravnenie-'+todayISO()+'.csv';
+    if(typeof jrShareBlob==='function') jrShareBlob(name,new Blob([t.csv],{type:'text/csv'}),'text/csv','Таблица передана');
   }
   /* ── ступень 2 · «как готовить»: «сколько варить гречку», «до какой температуры жарить свинину» (решение Астамура 22.11.2026 «да»).
      Ответ — только из справочника (cooking-library.js, библиотека cooking в meal-libraries): карточка сверена по двум источникам,
@@ -2575,6 +2778,7 @@ var MealBot=(function(){
     var asked=/\?\s*$/.test(String(raw).trim());
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var jk=jokeAsk(S,raw); if(jk) return jk }   // «расскажи анекдот» — кулинарный анекдот из словаря, без ИИ (26.11.2026)
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof MealBotMine!=='undefined'){ var mn=MealBotMine.say(chat,S,raw); if(mn) return mn+(S.pend.length?askHTML(S):'') }   // Meal 34 · счётчик голосом, «мои счётчики», правка и удаление своего продукта (bot-mine.js, 24.11.2026)
+    if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var ls=leastAsk(raw); if(ls) return ls; var cq=compareAsk(raw); if(cq) return cq }   // «сравни гречку и рис», «где больше кальция: в X или Y» (27.11.2026)
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var wh=whereAsk(raw); if(wh) return wh }   // «где много железа» — обычные источники из словаря, числа из базы
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var sw=swapAsk(raw); if(sw) return sw }   // «чем заменить муку в сырниках» — замена из справочника
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var tq=tipAsk(raw); if(tq) return tq }   // «когда солить рис» — кулинарный приём
@@ -3203,6 +3407,56 @@ var MealBot=(function(){
     var a=got[got.length-1], b=got[got.length-2], nm=pl.name.charAt(0).toUpperCase()+pl.name.slice(1);
     return p(esc(actT(B.answer_last,{name:nm,v:say(a),date:bodyDate(a.date)}))+(b?' '+esc(actT(B.answer_prev,{v:say(b),date:bodyDate(b.date)})):''))+open;
   }
+  /* «сравни замеры», «как изменилась талия за месяц», «насколько я похудел», «сравни замеры за октябрь и ноябрь» (Астамур 27.11.2026).
+     По каждому месту: начало периода (последний замер до него, иначе первый в периоде) → последний замер. Слова — body_measurements.compare. */
+  function bodyCompare(text){
+    var B=bodyData(), C=B&&B.compare; if(!C) return null;
+    var t=nrm(text).trim().replace(/[?!.,…\s]+$/,'').replace(/[,?!]/g,' ').replace(/\s+/g,' ');
+    if(/\d+\s*(г|гр|грамм\S*|мл|шт\S*)(\s|$)/.test(t)) return null;
+    var rx=function(k){ try{ return C[k]?new RegExp(C[k]):null }catch(e){ return null } };
+    var cmp=rx('verb'), lost=rx('lost'), word=rx('word'), per=rx('period');
+    var tk=t.split(' '), pls=[];
+    for(var i=0;i<tk.length;i++) B.places.forEach(function(x){ var n=bodyAt(tk,i,bodyWords(x.words)); if(n&&pls.indexOf(x)<0) pls.push(x) });
+    var isLost=lost&&lost.test(t), isCmp=cmp&&cmp.test(t), hasWord=word&&word.test(t), hasPer=per&&per.test(t);
+    if(!(isLost||isCmp&&(hasWord||pls.length)||hasPer&&pls.length&&/(^|\s)(как|насколько|на сколько)(\s|$)/.test(t))) return null;
+    /* в фразе есть еда («сравни куриную грудку и бедро по белку») — не замеры */
+    if(!isLost&&!hasWord&&/(^|\s)по\s+\S+/.test(t)) return null;
+    var keys=null;
+    if(isLost) keys=['weight'];
+    else if(pls.length){ keys=[]; pls.forEach(function(x){ (x.pair||x.choose||[x.key]).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k) }) }) }
+    var d=bodyDoc(); if(!d) return actSignIn()||p(esc(actData().answer_sign_in));
+    if(d.newer) return p(esc(B.answer_newer));
+    var L=HappyMeasurements.read(d.all()).list.slice().sort(function(a,b){ return a.date<b.date?-1:a.date>b.date?1:0 });
+    if(!L.length) return p(esc(B.answer_empty));
+    /* период: «за неделю», «за 3 месяца», «за октябрь», «октябрь и ноябрь», «с октября» */
+    var now=todayISO(), from=null, to=now, base2=null, mon=C.months||{}, ms=[];
+    tk.forEach(function(w){ Object.keys(mon).forEach(function(st){ var r; try{ r=new RegExp('^(?:'+st+')') }catch(e){ return } if(r.test(w)&&ms.indexOf(mon[st])<0) ms.push(mon[st]) }) });
+    var yr=+now.slice(0,4), mIso=function(m,end){ var y=m>+now.slice(5,7)?yr-1:yr, dd=new Date(y,m-1+(end?1:0),end?0:1); return isoOf(dd) };
+    var nm=t.match(/(?:^|\s)за\s+(?:(\d{1,2}|два|две|три|четыре|пять|шесть)\s+)?(недел\S*|месяц\S*|год\S*|лет|дн\S*|день)(?=\s|$)/);
+    if(ms.length>=2){ base2=[mIso(ms[0]),mIso(ms[0],true),mIso(ms[ms.length-1]),mIso(ms[ms.length-1],true)] }
+    else if(ms.length===1){ if(/(^|\s)с\s+\S+/.test(t)) from=mIso(ms[0]); else { from=mIso(ms[0]); to=mIso(ms[0],true); if(to>now) to=now } }
+    else if(nm){ var n=nm[1]?(/^\d/.test(nm[1])?+nm[1]:{'два':2,'две':2,'три':3,'четыре':4,'пять':5,'шесть':6}[nm[1]]):1, u=nm[2], dd=new Date(now+'T12:00:00');
+      if(/^недел/.test(u)) dd.setDate(dd.getDate()-7*n); else if(/^месяц/.test(u)) dd.setMonth(dd.getMonth()-n); else if(/^(год|лет)/.test(u)) dd.setFullYear(dd.getFullYear()-n); else dd.setDate(dd.getDate()-n);
+      from=isoOf(dd) }
+    var all=keys||Object.keys(B.labels).filter(function(k){ return L.some(function(x){ return x.values[k]!=null }) });
+    var lines=[], one=[];
+    all.forEach(function(k){
+      var has=L.filter(function(x){ return x.values[k]!=null&&x.date<=to }); if(!has.length) return;
+      var cur=has[has.length-1], base;
+      if(base2){ var in1=has.filter(function(x){ return x.date>=base2[0]&&x.date<=base2[1] }), in2=has.filter(function(x){ return x.date>=base2[2]&&x.date<=base2[3] });
+        if(!in1.length||!in2.length){ one.push(k); return } base=in1[in1.length-1]; cur=in2[in2.length-1] }
+      else if(from){ var bef=has.filter(function(x){ return x.date<=from }); base=bef.length?bef[bef.length-1]:has.filter(function(x){ return x.date>=from })[0] }
+      else base=has[0];
+      if(!base||base.date===cur.date){ one.push(k); return }
+      var a=base.values[k], b=cur.values[k], df=Math.round((b-a)*10)/10, u=k==='weight'?' кг':' см';
+      lines.push(esc(cmpCap(B.labels[k]))+': '+bodyNum(a)+' → <b>'+bodyVal(k,b)+'</b> ('+(df===0?'без изменений':(df>0?'+':'−')+bodyNum(Math.abs(df))+u)+') · '+bodyDate(base.date)+' → '+bodyDate(cur.date));
+    });
+    var open=typeof helpEntry==='function'&&helpEntry('measurements')?chips([['go:measurements',B.button_open]]):'';
+    if(!lines.length){
+      var nm2=keys&&keys.length===1?B.labels[keys[0]]:'замеры';
+      return p(esc(actT(C.answer_one,{name:nm2})))+open }
+    return p(esc(C.answer_head))+'<p class="mbSum">'+lines.join('<br>')+'</p>'+(one.length?'<p class="mlHint">'+esc(actT(C.answer_one_hint,{names:one.map(function(k){ return B.labels[k] }).join(', ')}))+'</p>':'')+'<p class="mlHint">'+esc(C.hint)+'</p>'+open;
+  }
   /* фраза человека: замер, ответ на вопрос замера, вопрос о замерах — или null (дальше как обычно) */
   function bodyAct(S,text){
     var B=bodyData(); if(!B||typeof HappyMeasurements==='undefined') return null;
@@ -3213,6 +3467,7 @@ var MealBot=(function(){
       if(q.food&&/^(замер|да|это замер)$/.test(t0)){ q.food=false; return bodyGo(S) }
       if(q.food&&/^(еда|это еда|нет)$/.test(t0)){ S.bodyAsk=null; return p(esc(B.answer_food)) }
       S.bodyAsk=null }
+    var bc=bodyCompare(text); if(bc) return bc;   // «сравни замеры», «насколько я похудел» (27.11.2026)
     var r=bodyParse(text);
     if(!r) return bodyQuery(text);
     if(r.bad){ if(r.bad.pl.unit==='кг') return null; return p(esc(actT(B.answer_range,{name:r.bad.pl.name.charAt(0).toUpperCase()+r.bad.pl.name.slice(1),v:bodyVal('',r.bad.v)}))) }   // вес вне границ — как раньше
@@ -3932,6 +4187,7 @@ var MealBot=(function(){
     var S=state(chat), a=action.split(':'), h=null;
     if(a[0]==='cancelPhrase'){cancelPhrase(chat,S,a[1]);return}
     if(a[0]==='go'){ helpOpen(a[1]); return }
+    if(a[0]==='cmpshare'){ cmpShare(a[1]); return }   // таблица сравнения — «Поделиться» (CSV)
     if(a[0]==='act'&&a[1]==='day'){ actTap(S,a); return }
     if(a[0]==='help'){ var he=helpEntry(a[1]); if(!he) return; chat.msgs.push({id:'m'+(++chat.seq),who:'me',kind:'text',text:label,tapped:1}); botSay(helpReply(he),260); return }
     var latest=S.commits[S.commits.length-1];
