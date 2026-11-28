@@ -61,3 +61,6 @@
 /* Таймер открывается до самого верха, всплывающие виджеты подхода и перерыва на это время прячутся (Астамур 28.11.2026). */
 .exercise-player-sheet:has(.td-root){top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;padding-top:env(safe-area-inset-top)!important}
 body.exercise-player-open:has(.td-root) #rest-pill-root,body.exercise-player-open:has(.td-root) .floating-rest-pill{display:none!important}
+/* Полоска-ручка на виджете подхода и перерыва: смахнуть вверх — открыть таймер (Астамур 28.11.2026). Размер как у ручки листа, уменьшенный: 36 × 4. */
+#rest-pill-root .floating-rest-pill{padding-top:14px}
+#rest-pill-root .floating-rest-pill::after{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:999px;background:var(--happy-ink);opacity:.55;pointer-events:none;z-index:2}

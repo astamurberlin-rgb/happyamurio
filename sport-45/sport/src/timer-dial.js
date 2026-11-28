@@ -176,3 +176,16 @@ window.addEventListener('click',event=>{
   event.preventDefault();event.stopImmediatePropagation();tdialFromWidget(ei);
 },true);
 window.addEventListener('click',event=>{const b=event.target.closest?.('[data-action="tdial-open"]');if(!b)return;event.preventDefault();event.stopImmediatePropagation();tdialFromWidget(Number(b.dataset.ei));},true);
+// Смахнуть виджет подхода или перерыва вверх (за полоску или за любое место) — открыть таймер. Астамур 28.11.2026.
+let tdialSwipe=null;
+function tdialWidgetEi(){const set=typeof floatingSetContext==='function'?floatingSetContext():null,rest=!set&&typeof engineRestContext==='function'?engineRestContext():null;return set?set.ei:rest?.ei;}
+window.addEventListener('pointerdown',event=>{const pill=event.target.closest?.('#rest-pill-root .floating-rest-pill');if(!pill||event.button>0||event.target.closest('input'))return;tdialSwipe={id:event.pointerId,x:event.clientX,y:event.clientY,pill,moved:false};},true);
+window.addEventListener('pointermove',event=>{const g=tdialSwipe;if(!g||g.id!==event.pointerId)return;const dy=event.clientY-g.y;if(dy<-6){g.moved=true;g.pill.style.transform=`translateY(${Math.max(dy,-48)}px)`;}else g.pill.style.transform='';},true);
+function tdialSwipeEnd(event,cancel){const g=tdialSwipe;tdialSwipe=null;if(!g||g.id!==event.pointerId)return;g.pill.style.transform='';if(cancel)return;
+  const dx=event.clientX-g.x,dy=event.clientY-g.y;if(!(dy<-36&&-dy>Math.abs(dx)*1.25))return;
+  const ei=tdialWidgetEi();if(!Number.isInteger(ei))return;
+  tdialSwipeAt=Date.now();tdialFromWidget(ei);}
+let tdialSwipeAt=0;
+window.addEventListener('click',event=>{if(Date.now()-tdialSwipeAt<400){event.preventDefault();event.stopImmediatePropagation();}},true);
+window.addEventListener('pointerup',event=>tdialSwipeEnd(event,false),true);
+window.addEventListener('pointercancel',event=>tdialSwipeEnd(event,true),true);
