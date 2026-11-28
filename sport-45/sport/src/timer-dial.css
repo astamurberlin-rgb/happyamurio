@@ -61,7 +61,14 @@
 .exercise-player-sheet:has(.td-root){top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;padding-top:env(safe-area-inset-top)!important}
 body.exercise-player-open:has(.td-root) #rest-pill-root,body.exercise-player-open:has(.td-root) .floating-rest-pill{display:none!important}
 /* Полоска-ручка на виджете подхода и перерыва: смахнуть вверх — открыть таймер (Астамур 28.11.2026). Размер как у ручки листа, уменьшенный: 36 × 4. */
-#rest-pill-root .floating-rest-pill{padding-top:14px}
-#rest-pill-root .floating-rest-pill::after{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:999px;background:var(--happy-ink);opacity:.55;pointer-events:none;z-index:2}
+#rest-pill-root .floating-rest-pill,#free-timer-root .floating-rest-pill{padding-top:14px}
+#rest-pill-root .floating-rest-pill::after,#free-timer-root .floating-rest-pill::after{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:999px;background:var(--happy-ink);opacity:.55;pointer-events:none;z-index:2}
 /* ⋯ в таймере открывает настройки упражнения во весь экран (Астамур 28.11.2026). */
 #modal-root .sheet.td-full{max-height:100dvh!important;min-height:100dvh;border-radius:0!important;padding-top:env(safe-area-inset-top)}
+/* Отдельный таймер — та же плашка, что у таймера в тренировке, вместо зелёного кружка (Астамур 28.11.2026). */
+#free-timer-root{height:auto;width:calc(100% - 40px);max-width:420px}
+#free-timer-root .td-free-pill{pointer-events:auto}
+body:has(#rest-pill-root .floating-rest-pill) #free-timer-root,body:has(.td-root) #free-timer-root{display:none}
+.free-dial .td-set{grid-template-columns:84px minmax(0,1fr) auto 8px}
+.free-dial .td-set:has(.set-x){grid-template-columns:84px minmax(0,1fr) 14px minmax(0,1fr) 8px}
+.td-add-row{min-height:44px;margin:4px 0;font-size:16px}
