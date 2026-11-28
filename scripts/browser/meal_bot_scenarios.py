@@ -2384,6 +2384,27 @@ ACTS = [
  dict(id="Мж14", msgs=["можно тебе продиктовать замеры"], reply="Продиктуй, например", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
  dict(id="Мж15", msgs=["ты можешь мне помочь"], reply="Записываю еду со слов", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
  dict(id="Мж16", msgs=["ты умеешь записывать еду"], reply="Скажи, что съел", ok="()=>!Object.values(DB.days).some(d=>(d.items||[]).length)"),
+ # Meal 34 · личные слова человека: «булка — это белый хлеб», «я так называю», «мои слова», «забудь …» (решение Астамура 27.11.2026, bot-words.js); общий словарь: пышка, пшёнка, шаверма
+ dict(id="Сл01", msgs=["булка 50 г", "белый хлеб, я так называю"], reply="Запомнил: «булка» — это белый хлеб", ok="()=>(()=>!!DB.words&&Object.values(DB.words).some(e=>e.w==='булка'&&e.to==='белый хлеб'))()&&(()=>Object.values(DB.days).some(d=>(d.items||[]).some(x=>FOODS[x.fid]&&/Хлеб белый/.test(FOODS[x.fid].n)&&x.g===50)))()"),
+ dict(id="Сл02", msgs=["запомни: булка — это белый хлеб", "булку 30 г"], reply="", ok="()=>(()=>!!DB.words&&Object.values(DB.words).some(e=>e.w==='булка'&&e.to==='белый хлеб'))()&&(()=>Object.values(DB.days).some(d=>(d.items||[]).some(x=>FOODS[x.fid]&&/Хлеб белый/.test(FOODS[x.fid].n)&&x.g===30)))()"),
+ dict(id="Сл03", msgs=["булка", "я так называю", "белый хлеб"], reply="Запомнил: «булка» — это белый хлеб", ok="()=>!!DB.words&&Object.values(DB.words).some(e=>e.w==='булка'&&e.to==='белый хлеб')"),
+ dict(id="Сл04", msgs=["я называю гречку гречей", "греча 150 г"], reply="", ok="()=>(()=>!!DB.words&&Object.values(DB.words).some(e=>e.w==='греча'&&e.to==='гречка'))()&&(()=>Object.values(DB.days).some(d=>(d.items||[]).some(x=>FOODS[x.fid]&&/Гречка/.test(FOODS[x.fid].n)&&x.g===150)))()"),
+ dict(id="Сл05", msgs=["у нас кура — это курица"], reply="Запомнил: «кура» — это курица", ok="()=>!!DB.words&&Object.values(DB.words).some(e=>e.w==='кура'&&e.to==='курица')"),
+ dict(id="Сл06", msgs=["курица 150 г", "у нас это называется кура"], reply="Запомнил: «кура» — это курица", ok="()=>!!DB.words&&Object.values(DB.words).some(e=>e.w==='кура'&&e.to==='курица')"),
+ dict(id="Сл07", msgs=["запомни: ложка — это творог"], reply="занято мерой или командой", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл08", msgs=["запомни: хрючево — это вкусняшка"], reply="Не знаю, что такое «вкусняшка»", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл09", msgs=["запомни: булка — это белый хлеб", "мои слова"], reply="«булка» — белый хлеб", ok="()=>!!DB.words&&Object.values(DB.words).some(e=>e.w==='булка'&&e.to==='белый хлеб')"),
+ dict(id="Сл10", msgs=["запомни: булка — это белый хлеб", "забудь булку"], reply="Забыл «булка»", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл11", msgs=["запомни: булка — это белый хлеб", "мои слова", {"tap": "Забыть «булка»"}], reply="Забыл «булка»", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл12", msgs=["запомни: булка — это белый хлеб", {"tap": "Отменить"}], reply="Отменил", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл13", msgs=["обед это суп"], reply="", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл14", msgs=["мои слова"], reply="Своих слов пока нет", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл15", msgs=["я так называю"], reply="Какое твоё слово запомнить", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл16", msgs=["запомни: булка — это белый хлеб", "запомни: греча — это гречка", "забудь мои слова"], reply="Забыл все твои слова (2)", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл17", msgs=["сыр это сулугуни"], reply="", ok="()=>!DB.words||!Object.keys(DB.words).length"),
+ dict(id="Сл18", msgs=["пышка"], reply="", ok="()=>Object.values(DB.days).some(d=>(d.items||[]).some(x=>FOODS[x.fid]&&/Пончик/.test(FOODS[x.fid].n)&&x.q===1))"),
+ dict(id="Сл19", msgs=["пшёнка 200 г"], reply="", ok="()=>Object.values(DB.days).some(d=>(d.items||[]).some(x=>FOODS[x.fid]&&/Пшено/.test(FOODS[x.fid].n)&&x.g===200))"),
+ dict(id="Сл20", msgs=["шаверма"], reply="В базе нет: «шаурма»", ok="()=>!DB.words||!Object.keys(DB.words).length"),
 ]
 
 GOALS = [
