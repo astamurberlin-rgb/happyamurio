@@ -2818,16 +2818,16 @@ body:has(#rest-pill-root:not(:empty)) :is(.panel-body,.page){padding-bottom:calc
    путались с карточками целых тренировок на главной). */
 .sheet:has(.wf-plan) .section-title h2{font-size:16px;color:var(--happy-ink)}
 .wf-plan-title{margin:0 0 10px}
-/* Таймер-циферблат (Астамур 27.11.2026, макет «Сейчас»): верх закреплён, подходы прокручиваются под ним.
-   Отступы: переключатель → циферблат 36, циферблат → кнопки 4, кнопки → подходы 18. Круги 80, циферблат 270. */
+/* Таймер-циферблат (Астамур 27–28.11.2026): верх закреплён, подходы прокручиваются под ним.
+   Без переключателя режимов сверху: циферблат 310 сразу под названием, режим и «От старта» — выключатели между кругами 80.
+   Отступы: циферблат → кнопки 4, кнопки → подходы 18. */
 .exercise-player.td-root{display:flex;flex-direction:column;align-items:stretch;padding:0 20px;overflow:hidden;text-align:left;color:var(--happy-ink)}
 .sheet:has(.td-root) .sheet-top{display:none}
 .td-top{flex:none}
 .td-name-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin:0 0 6px}
 .td-name-row h3{margin:0;font-size:20px;font-weight:700;line-height:1.2;color:var(--happy-ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .td-more{width:44px;height:44px;margin-right:-10px;display:grid;place-items:center;flex:none}
-.segmented.td-mode{display:grid;grid-template-columns:1fr 1fr;width:100%;margin:4px 0 36px}
-.td-dial{position:relative;width:270px;height:270px;margin:0 auto}
+.td-dial{position:relative;width:310px;height:310px;margin:8px auto 0}
 .td-dial svg{position:absolute;inset:0;width:100%;height:100%}
 .td-ticks line{stroke:var(--happy-ink);opacity:.3;stroke-width:1.6;stroke-linecap:round}
 .td-ticks line.major{stroke-width:3}
@@ -2839,14 +2839,16 @@ body:has(#rest-pill-root:not(:empty)) :is(.panel-body,.page){padding-bottom:calc
 .td-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
 .td-center strong{font-size:56px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--happy-ink)}
 .td-sub{margin-top:8px;font-size:14px;color:var(--happy-dim)}
-.td-split{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--happy-muted);pointer-events:auto;min-height:44px;cursor:pointer}
+.td-switches{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:0}
+.td-split{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:14px;color:var(--happy-ink);min-height:40px;cursor:pointer;white-space:nowrap}
+.td-split.is-off{opacity:.4;cursor:default}
 .td-split input{position:absolute;opacity:0;width:1px;height:1px}
 .td-switch{position:relative;width:42px;height:25px;border-radius:999px;background:var(--happy-glass);border:1px solid var(--happy-line);box-sizing:border-box}
 .td-switch span{position:absolute;left:2px;top:2px;width:19px;height:19px;border-radius:50%;background:var(--happy-ink);transition:left .15s}
 .td-split input:checked+.td-switch{background:var(--happy-success);border-color:var(--happy-success)}
 .td-split input:checked+.td-switch span{left:19px}
 .td-split input:focus-visible+.td-switch{outline:2px solid var(--happy-ink);outline-offset:2px}
-.td-controls{display:flex;align-items:center;justify-content:space-between;margin:4px 0 18px}
+.td-controls{display:grid;grid-template-columns:80px 1fr 80px;column-gap:12px;align-items:center;justify-items:center;margin:4px 0 18px}
 .td-btn{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;padding:0;font:inherit;font-size:16px;font-weight:600;cursor:pointer}
 .td-btn-glass{border:1.5px solid rgba(255,255,255,.62);background:rgba(255,255,255,.22);color:var(--happy-ink)}
 .td-btn.button{min-height:80px;height:80px;padding:0;border-radius:50%;box-sizing:border-box}
@@ -9683,8 +9685,10 @@ function tdialBody(ei){
   const e=state.active.exercises[ei],p=playerPreview(ei),s=exercisePlayerStatus(p),running=p.running&&!workoutIsPaused(state.active),down=p.mode!=='stopwatch';
   const big=down?s.remaining:s.elapsed,whole=down?(s.workDuration||playerProgram(p)[0]?.workSeconds||0):0;
   const started=p.running||p.elapsed>0;
-  const sub=down?`<span class="td-sub" data-tdial-sub>${s.phase==='rest'?'перерыв':(started&&!p.finished?'осталось из ':'из ')+playerDisplay(whole)}</span>`
-    :`<label class="td-split"><span>От старта</span><input type="checkbox" role="switch" data-tdial-split="${ei}" ${tdialSplit(e)?'checked':''} aria-label="Писать в подход время от старта"><span class="td-switch" aria-hidden="true"><span></span></span></label>`;
+  const sub=down?`<span class="td-sub" data-tdial-sub>${s.phase==='rest'?'перерыв':(started&&!p.finished?'осталось из ':'из ')+playerDisplay(whole)}</span>`:'';
+  // Между кругами два выключателя: режим и «От старта» (живой только в секундомере). Астамур 28.11.2026.
+  const sw=(label,attr,on,off,aria)=>`<label class="td-split${off?' is-off':''}"><span>${label}</span><input type="checkbox" role="switch" ${attr} ${on?'checked':''} ${off?'disabled':''} aria-label="${aria}"><span class="td-switch" aria-hidden="true"><span></span></span></label>`;
+  const mid=`<div class="td-switches">${sw('Секундомер',`data-tdial-mode="${ei}"`,!down,false,'Секундомер вместо таймера')}${sw('От старта',`data-tdial-split="${ei}"`,!down&&tdialSplit(e),down,'Писать в подход время от старта')}</div>`;
   const left=!down&&running?`<button type="button" class="td-btn td-btn-glass" data-action="player-new-round" data-ei="${ei}" ${playerCanAddRound(p)?'':'disabled'}>Круг</button>`
     :`<button type="button" class="td-btn td-btn-glass" data-action="player-reset" data-ei="${ei}" ${started||p.finished?'':'disabled'}>Сброс</button>`;
   const right=!down&&running?`<button type="button" class="button primary td-btn td-btn-main" data-action="tdial-stop" data-ei="${ei}" aria-label="Стоп, записать в подходы">${TDIAL_ICON.stop}</button>`
@@ -9692,10 +9696,9 @@ function tdialBody(ei){
   return `<div class="exercise-player td-root" data-player-ei="${ei}" data-tdial-running="${running}" data-tdial-sign="${tdialSign(e,p)}">
 <div class="td-top">
  <div class="td-name-row"><h3>${esc(e.name)}</h3><button type="button" class="exercise-menu-button td-more" data-action="wf-ex-menu" data-ei="${ei}" aria-haspopup="menu" aria-expanded="false" aria-label="Ещё: ${esc(e.name)}">${EXERCISE_DOTS}</button></div>
- <div class="segmented td-mode" role="group" aria-label="Режим"><button type="button" class="${down?'selected':''}" data-action="tdial-mode" data-ei="${ei}" data-countdown="1" aria-pressed="${down}">Таймер</button><button type="button" class="${down?'':'selected'}" data-action="tdial-mode" data-ei="${ei}" data-countdown="0" aria-pressed="${!down}">Секундомер</button></div>
  <div class="td-dial"><svg viewBox="0 0 270 270" aria-hidden="true"><g class="td-ticks">${tdialTicks(tdialLit(p,s))}</g><g class="td-hands">${tdialHands(p,s)}</g></svg>
   <div class="td-center"><strong data-player-time role="timer">${playerDisplay(big,down)}</strong>${sub}</div></div>
- <div class="td-controls">${left}${right}</div>
+ <div class="td-controls">${left}${mid}${right}</div>
 </div>
 <div class="td-sets" role="list" aria-label="Подходы: ${esc(e.name)}">${tdialRows(e,ei,p,s)}</div>
 </div>`;
@@ -9722,12 +9725,9 @@ function tdialStop(ei,at=playerNow()){
 }
 
 document.addEventListener('click',event=>{
-  const b=event.target.closest?.('[data-action="tdial-mode"],[data-action="tdial-stop"]');if(!b)return;
+  const b=event.target.closest?.('[data-action="tdial-stop"]');if(!b)return;
   event.preventDefault();event.stopImmediatePropagation();const ei=Number(b.dataset.ei);
-  if(b.dataset.action==='tdial-mode'){
-    if(!setExercisePlayerMode(ei,b.dataset.countdown==='1')){toast('Сначала поставь на паузу');return;}
-  }
-  if(b.dataset.action==='tdial-stop'){if(tdialStop(ei))toast('Подходы записаны');}
+  if(tdialStop(ei))toast('Подходы записаны');
   persist();renderExercisePlayerView(ei);
 },true);
 // ✓ и правка значений в строке — то же, что в тренировке; после них вид таймера обновляется.
@@ -9737,6 +9737,11 @@ window.addEventListener('click',event=>{
 },true);
 window.addEventListener('change',event=>{
   const input=event.target,root=input.closest?.('.td-root');if(!root)return;
+  if(input.dataset.tdialMode!=null){
+    const ei=Number(input.dataset.tdialMode);
+    if(!setExercisePlayerMode(ei,!input.checked))toast('Сначала поставь на паузу');
+    persist();renderExercisePlayerView(ei);return;
+  }
   if(input.dataset.tdialSplit!=null){
     const ei=Number(input.dataset.tdialSplit),e=state.active?.exercises[ei];if(!e)return;
     e.timerSplit=input.checked;const p=state.active.exercisePlayer;if(p?.ei===ei)tdialWriteLaps(e,p);persist();renderExercisePlayerView(ei);return;

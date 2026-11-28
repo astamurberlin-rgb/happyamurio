@@ -1,13 +1,13 @@
-/* Таймер-циферблат (Астамур 27.11.2026, макет «Сейчас»): верх закреплён, подходы прокручиваются под ним.
-   Отступы: переключатель → циферблат 36, циферблат → кнопки 4, кнопки → подходы 18. Круги 80, циферблат 270. */
+/* Таймер-циферблат (Астамур 27–28.11.2026): верх закреплён, подходы прокручиваются под ним.
+   Без переключателя режимов сверху: циферблат 310 сразу под названием, режим и «От старта» — выключатели между кругами 80.
+   Отступы: циферблат → кнопки 4, кнопки → подходы 18. */
 .exercise-player.td-root{display:flex;flex-direction:column;align-items:stretch;padding:0 20px;overflow:hidden;text-align:left;color:var(--happy-ink)}
 .sheet:has(.td-root) .sheet-top{display:none}
 .td-top{flex:none}
 .td-name-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin:0 0 6px}
 .td-name-row h3{margin:0;font-size:20px;font-weight:700;line-height:1.2;color:var(--happy-ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .td-more{width:44px;height:44px;margin-right:-10px;display:grid;place-items:center;flex:none}
-.segmented.td-mode{display:grid;grid-template-columns:1fr 1fr;width:100%;margin:4px 0 36px}
-.td-dial{position:relative;width:270px;height:270px;margin:0 auto}
+.td-dial{position:relative;width:310px;height:310px;margin:8px auto 0}
 .td-dial svg{position:absolute;inset:0;width:100%;height:100%}
 .td-ticks line{stroke:var(--happy-ink);opacity:.3;stroke-width:1.6;stroke-linecap:round}
 .td-ticks line.major{stroke-width:3}
@@ -19,14 +19,16 @@
 .td-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
 .td-center strong{font-size:56px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--happy-ink)}
 .td-sub{margin-top:8px;font-size:14px;color:var(--happy-dim)}
-.td-split{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--happy-muted);pointer-events:auto;min-height:44px;cursor:pointer}
+.td-switches{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:0}
+.td-split{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:14px;color:var(--happy-ink);min-height:40px;cursor:pointer;white-space:nowrap}
+.td-split.is-off{opacity:.4;cursor:default}
 .td-split input{position:absolute;opacity:0;width:1px;height:1px}
 .td-switch{position:relative;width:42px;height:25px;border-radius:999px;background:var(--happy-glass);border:1px solid var(--happy-line);box-sizing:border-box}
 .td-switch span{position:absolute;left:2px;top:2px;width:19px;height:19px;border-radius:50%;background:var(--happy-ink);transition:left .15s}
 .td-split input:checked+.td-switch{background:var(--happy-success);border-color:var(--happy-success)}
 .td-split input:checked+.td-switch span{left:19px}
 .td-split input:focus-visible+.td-switch{outline:2px solid var(--happy-ink);outline-offset:2px}
-.td-controls{display:flex;align-items:center;justify-content:space-between;margin:4px 0 18px}
+.td-controls{display:grid;grid-template-columns:80px 1fr 80px;column-gap:12px;align-items:center;justify-items:center;margin:4px 0 18px}
 .td-btn{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;padding:0;font:inherit;font-size:16px;font-weight:600;cursor:pointer}
 .td-btn-glass{border:1.5px solid rgba(255,255,255,.62);background:rgba(255,255,255,.22);color:var(--happy-ink)}
 .td-btn.button{min-height:80px;height:80px;padding:0;border-radius:50%;box-sizing:border-box}
