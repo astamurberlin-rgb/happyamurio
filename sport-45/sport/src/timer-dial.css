@@ -64,3 +64,5 @@ body.exercise-player-open:has(.td-root) #rest-pill-root,body.exercise-player-ope
 /* Полоска-ручка на виджете подхода и перерыва: смахнуть вверх — открыть таймер (Астамур 28.11.2026). Размер как у ручки листа, уменьшенный: 36 × 4. */
 #rest-pill-root .floating-rest-pill{padding-top:14px}
 #rest-pill-root .floating-rest-pill::after{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:999px;background:var(--happy-ink);opacity:.55;pointer-events:none;z-index:2}
+/* Окно «Сбросить таймеры упражнения?»: был зашитый тёмно-зелёный #244737 из старого колеса действий таймера. Теперь фон листа темы и рамка/тень по правилам листа (28.11.2026). */
+.timer-reset-dialog{background:var(--hs-sheet-bg)!important;border:1px solid var(--happy-line)!important;border-radius:var(--happy-radius-card-sport)!important;box-shadow:var(--happy-shadow-sheet)!important;color:var(--happy-ink)}
