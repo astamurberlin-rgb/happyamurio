@@ -58,7 +58,7 @@
 .active-workout .exercise-name-info:has(.wf-ex-pic):has(.td-open){grid-template-columns:var(--happy-size-list-image) minmax(0,1fr) auto}
 .td-open svg,.td-open svg *{fill:none!important;stroke:currentColor!important}
 /* Таймер открывается до самого верха, всплывающие виджеты подхода и перерыва на это время прячутся (Астамур 28.11.2026). */
-.exercise-player-sheet:has(.td-root){top:0!important;border-top-left-radius:var(--td-r,0px)!important;border-top-right-radius:var(--td-r,0px)!important;padding-top:env(safe-area-inset-top)!important}
+.exercise-player-sheet:has(.td-root){top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;padding-top:env(safe-area-inset-top)!important}
 /* Полоска-ручка на виджете подхода и перерыва: смахнуть вверх — открыть таймер (Астамур 28.11.2026). Размер как у ручки листа, уменьшенный: 36 × 4. */
 #rest-pill-root .floating-rest-pill,#free-timer-root .floating-rest-pill{padding-top:14px}
 #rest-pill-root .floating-rest-pill::after,#free-timer-root .floating-rest-pill::after{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:999px;background:var(--happy-ink);opacity:.55;pointer-events:none;z-index:2}
@@ -82,10 +82,8 @@ body:has(#rest-pill-root .floating-rest-pill) #free-timer-root{display:none}
 /* Переходы «кружок ↔ плашка ↔ таймер» (Астамур 28.11.2026), логика в timer-pill.js.
    Плашка идёт за пальцем; лист таймера поднимается с её места и туда же опускается; кружок — та же плашка, обрезанная до кольца слева. */
 #rest-pill-root,#free-timer-root{transition:opacity .2s ease,bottom .22s var(--happy-ease-sheet)}
-body.exercise-player-open:has(.td-root):not(.td-closing) #rest-pill-root,body:has(.td-root):not(.td-closing) #free-timer-root{opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s .2s}
-body.td-closing #free-timer-root{visibility:visible!important}
-body.td-closing #overlay{pointer-events:none}
-body.td-closing #overlay,body.td-moving #overlay{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body.exercise-player-open:has(.td-root) #rest-pill-root,body:has(.td-root) #free-timer-root{opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s .2s}
+body.td-moving #overlay{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 #rest-pill-root .floating-rest-pill,#free-timer-root .floating-rest-pill{touch-action:none;transition:transform .28s var(--happy-ease-sheet),clip-path .32s var(--happy-ease-sheet);
  clip-path:inset(-28px -28px -28px -28px round calc(var(--happy-size-list-row) / 2 + 28px));animation:tp-enter .32s var(--happy-ease-sheet)}
 #rest-pill-root .floating-rest-pill.is-mini,#free-timer-root .floating-rest-pill.is-mini{clip-path:inset(0 calc(100% - var(--happy-size-list-row)) 0 0 round calc(var(--happy-size-list-row) / 2))}
@@ -96,3 +94,14 @@ body.td-closing #overlay,body.td-moving #overlay{background:transparent!importan
 @keyframes td-sheet-rise{from{transform:translateY(var(--td-from,100%))}}
 @keyframes td-sheet-fade{from{opacity:0}}
 @media(prefers-reduced-motion:reduce){#rest-pill-root,#free-timer-root,#rest-pill-root .floating-rest-pill,#free-timer-root .floating-rest-pill{transition:none;animation:none}#modal-root .sheet.td-rise,#modal-root .sheet.td-fade{animation:none}}
+/* Растущая плашка (timer-pill.js): копия плашки внизу, сверху ручка, фон таймера проявляется по мере роста. */
+.tp-stretch{position:fixed;z-index:79;overflow:hidden;background:var(--hs-primary);box-sizing:border-box;border:1px solid #ffffff80;box-shadow:0 6px 24px #30235835;pointer-events:none;will-change:top,height,left,width}
+.tp-stretch::after{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:999px;background:var(--happy-ink);opacity:.55;z-index:2}
+.tp-stretch-bg{position:absolute;inset:0;background:var(--sport-background);opacity:0}
+.tp-stretch .tp-face{position:absolute!important;left:50%!important;bottom:-1px;transform:translateX(-50%)!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important;animation:none!important;clip-path:none!important;backdrop-filter:none!important}
+#rest-pill-root.tp-hide,#free-timer-root.tp-hide{opacity:0!important;visibility:hidden!important;transition:none!important}
+body.tp-stretching #dock{z-index:90}
+#modal-root .sheet.td-instant{animation:none!important}
+.tp-stretch-view{position:absolute;top:0;display:flex;flex-direction:column;opacity:0;pointer-events:none}
+.tp-stretch-view .td-root{flex:1;min-height:0}
+.tp-stretch-grip{flex:0 0 30px}

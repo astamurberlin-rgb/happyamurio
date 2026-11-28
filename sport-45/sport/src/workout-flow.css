@@ -182,3 +182,12 @@ body:has(#rest-pill-root:not(:empty)) :is(.panel-body,.page){padding-bottom:calc
 .wf-plan-title{margin:0 0 10px}
 /* Лист «Добавить упражнение» в плане тренировки сразу раскрыт до верха, как остальные листы выбора: не прыгает по высоте списка (Астамур 28.11.2026). */
 .sheet:has(#wf-plan-search){height:calc(100dvh - 48px);max-height:calc(100dvh - 48px)}
+/* Плашка «Продолжить тренировку»: нажатие больше не сбрасывает центровку (общее button:active{transform:scale} уводило её вправо),
+   экран тренировки из неё проявляется, а не выезжает (Астамур 28.11.2026). */
+button.active-banner:active{transform:translateX(-50%) scale(.985)}
+.panel-screen.entering.active-panel{animation:panel-fade var(--happy-motion-screen) ease-out}
+@keyframes panel-fade{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.panel-screen.entering.active-panel{animation:none}}
+/* Подписи интерфейса не выделяются долгим нажатием (iOS «Копировать/Перевести»); поля ввода — как раньше. */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable],[contenteditable] *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
