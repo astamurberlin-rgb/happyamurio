@@ -48,8 +48,8 @@
   },
   "sport": {
     "entry": "sport-45/index.html",
-    "version": "45.21",
-    "name": "Happy Sport · Update 45.21",
+    "version": "45.22",
+    "name": "Happy Sport · Update 45.22",
     "sharedDirectory": "sport-45/shared",
     "sourceDirectory": "sport-45/sport/src",
     "sourceRelease": "sport-44",
