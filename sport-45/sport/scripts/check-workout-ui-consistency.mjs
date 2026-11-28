@@ -204,9 +204,9 @@ const activeBefore=plain(run('state.active')),markup=run('renderActive()');
 // Пункт 2 (15.11.2026): нижней карточки «Завершить тренировку» нет — «Завершить» только в шапке, она показывается и у конца страницы.
 assert.equal((markup.match(/data-action="finish"/g)||[]).length,1,'One manual finish action, in the header');
 assert.deepEqual(plain(run('state.active')),activeBefore,'Rendering all-complete sets does not finish the workout');
-assert.match(run('exercisePlayerBody(0)'),/data-action="timer-actions-open"/);
+assert.match(run('exercisePlayerBody(0)'),/data-action="timer-actions-run"/);
 run(await read('free-timer'));
-assert.match(run('freeTimerBody()'),/data-action="timer-actions-open" data-timer-kind="free"/);
+assert.match(run('freeTimerBody()'),/data-action="timer-actions-run" data-run="history" data-timer-kind="free"/);
 assert.match(run('freeTimerBody()'),/data-free-switch="mode"/);
 console.log('Passed: manual bottom Finish, no automatic completion, no inline metric switches/live rest bars, no duplicate exercise settings and standalone timer settings.');
 
