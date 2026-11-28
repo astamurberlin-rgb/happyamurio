@@ -1,13 +1,13 @@
 /* Таймер-циферблат (Астамур 27–28.11.2026): верх закреплён, подходы прокручиваются под ним.
-   Без переключателя режимов сверху: циферблат 310 сразу под названием, режим и «От старта» — выключатели между кругами 80.
-   Отступы: циферблат → кнопки 4, кнопки → подходы 18. */
+   Без переключателя режимов сверху: циферблат 270 сразу под названием, режим и «От старта» — выключатели между кругами 80.
+   Слева ▶ (на секундомере ■), справа «Круг»/«Сброс». Отступы: циферблат → кнопки 4, кнопки → подходы 18. */
 .exercise-player.td-root{display:flex;flex-direction:column;align-items:stretch;padding:0 20px;overflow:hidden;text-align:left;color:var(--happy-ink)}
 .sheet:has(.td-root) .sheet-top{display:none}
 .td-top{flex:none}
 .td-name-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin:0 0 6px}
 .td-name-row h3{margin:0;font-size:20px;font-weight:700;line-height:1.2;color:var(--happy-ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .td-more{width:44px;height:44px;margin-right:-10px;display:grid;place-items:center;flex:none}
-.td-dial{position:relative;width:310px;height:310px;margin:8px auto 0}
+.td-dial{position:relative;width:270px;height:270px;margin:8px auto 0}
 .td-dial svg{position:absolute;inset:0;width:100%;height:100%}
 .td-ticks line{stroke:var(--happy-ink);opacity:.3;stroke-width:1.6;stroke-linecap:round}
 .td-ticks line.major{stroke-width:3}

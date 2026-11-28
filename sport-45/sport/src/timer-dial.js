@@ -77,7 +77,7 @@ function tdialBody(ei){
  <div class="td-name-row"><h3>${esc(e.name)}</h3><button type="button" class="exercise-menu-button td-more" data-action="wf-ex-menu" data-ei="${ei}" aria-haspopup="menu" aria-expanded="false" aria-label="Ещё: ${esc(e.name)}">${EXERCISE_DOTS}</button></div>
  <div class="td-dial"><svg viewBox="0 0 270 270" aria-hidden="true"><g class="td-ticks">${tdialTicks(tdialLit(p,s))}</g><g class="td-hands">${tdialHands(p,s)}</g></svg>
   <div class="td-center"><strong data-player-time role="timer">${playerDisplay(big,down)}</strong>${sub}</div></div>
- <div class="td-controls">${left}${mid}${right}</div>
+ <div class="td-controls">${right}${mid}${left}</div>
 </div>
 <div class="td-sets" role="list" aria-label="Подходы: ${esc(e.name)}">${tdialRows(e,ei,p,s)}</div>
 </div>`;
