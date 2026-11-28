@@ -386,11 +386,12 @@ function grid(cur,past,chosenDate,printed,draft){
  const active=m=>draft&&draft.before.date===m.date;
  const dataCell=(g,m)=>active(m)?blank(g,draft.values):cell(g,m.values);
  const edit=m=>draft?'':`<button type="button" class="hm-edit" data-hm="edit" data-id="${m.date}" aria-label="Изменить замер ${dateLabel(m.date)}">${ICON.pencil}</button>`;
- const shown=draft?GROUPS:GROUPS.filter(g=>[cur].concat(past).some(m=>g.keys.some(k=>m.values[k]!=null)));
  const corner=printed?'Замер':cornerButton(draft?draftAction(draft):'add');
- return `<div class="hm-grid-wrap" tabindex="0" role="region" aria-label="Сравнение замеров: последние закреплены, прошлые прокручиваются"><table class="hm-grid"><thead><tr><th class="hm-label hm-corner" scope="col">${corner}</th><th class="hm-latest" scope="col"><span>${active(cur)?'Правка':'Последние'}</span>${active(cur)?dateField(draft.date):`<b>${shortDate(cur.date)}</b>`}${edit(cur)}</th>`+
+ const latest=cur?`<span>${active(cur)?'Правка':'Последние'}</span>${active(cur)?dateField(draft.date):`<b>${shortDate(cur.date)}</b>`}${edit(cur)}`:'Значение';
+ const label=cur?'Сравнение замеров: последние закреплены, прошлые прокручиваются':'Доступные замеры';
+ return `<div class="hm-grid-wrap${cur?'':' hm-no-history'}" tabindex="0" role="region" aria-label="${label}"><table class="hm-grid"><thead><tr><th class="hm-label hm-corner" scope="col">${corner}</th><th class="hm-latest" scope="col">${latest}</th>`+
   past.map(m=>`<th scope="col" class="${m.date===chosenDate?'hm-chosen':''}">${active(m)?`<span>Правка</span>${dateField(draft.date)}`:`<button type="button" data-hm="compare" data-id="${m.date}" aria-pressed="${m.date===chosenDate}"><small>${m.date.slice(0,4)}</small><b>${shortDate(m.date)}</b></button>`}${edit(m)}</th>`).join('')+
-  `</tr></thead><tbody>`+shown.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${g.keys[0]==='weight'?'кг':'см'}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest">${dataCell(g,cur)}</td>`+
+  `</tr></thead><tbody>`+GROUPS.map(g=>`<tr><th scope="row" class="hm-label">${g.name}<small>${g.keys[0]==='weight'?'кг':'см'}${g.keys.length===2?' · Л / П':''}</small></th><td class="hm-latest">${cur?dataCell(g,cur):cell(g,{})}</td>`+
    past.map(m=>`<td class="${m.date===chosenDate?'hm-chosen':''}">${dataCell(g,m)}</td>`).join('')+`</tr>`).join('')+`</tbody>${draft?`<tfoot><tr><td class="hm-label"></td>${[cur,...past].map((m,i)=>`<td class="${i===0?'hm-latest':''}">${active(m)?`<button type="button" class="hm-bin" data-hm="delete" aria-label="Удалить замер за ${dateLabel(m.date)}">${ICON.trash}</button>`:''}</td>`).join('')}</tr></tfoot>`:''}</table></div>`;
 }
 
@@ -433,7 +434,7 @@ function mount(box,options){
   const past=cur?s.list.filter(m=>m.date<cur.date).sort((a,b)=>-byDate(a,b)):[];
   if(ui.draft)return notice+top+`<form class="hm-form hm-add" novalidate>${ui.draft.before&&cur?grid(cur,past,old.date,false,ui.draft):draftGrid(s.list.filter(m=>m.date!==ui.draft.saved?.date).sort((a,b)=>-byDate(a,b)),ui.draft)}`+
    `<p class="hm-error" role="alert"></p></form>`;
-  if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p><button type="button" class="hm-button" data-hm="add">+ Замер</button>`+trash;   // пустой экран — текст без рамки, кнопка под ним (мелочи аудита 18.11.2026)
+  if(!cur)return notice+`<p class="hm-empty">Пока нет замеров.${d?'':' Войди в аккаунт Happy, чтобы записывать.'}</p>`+grid(null,[])+trash;
 
   return notice+top+
    grid(cur,past,old.date)+trash+

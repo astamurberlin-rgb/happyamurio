@@ -369,12 +369,16 @@ with sync_playwright() as p:
     a1.click(".tab[data-go=journal]")
     a1.click(".happy-measurement-tabs button:nth-child(2)")
     a1.wait_for_selector(".meal-measurements [data-hm=add]")
+    measure_labels = a1.locator(".meal-measurements tbody th[scope=row]")
+    out["empty_measure_labels"] = measure_labels.all_text_contents()
     a1.click(".meal-measurements [data-hm=add]")
     a1.wait_for_selector(".meal-measurements .hm-add .hm-new input[name=waist]")
+    out["form_measure_labels"] = measure_labels.all_text_contents()
     a1.fill(".meal-measurements .hm-add input[name=date]", "2026-10-01")
     a1.fill(".meal-measurements .hm-add input[name=waist]", "83")
     a1.click(".meal-measurements .hm-add [data-hm=save]")
     a1.wait_for_selector(".meal-measurements .hm-add", state="detached", timeout=4000)
+    out["saved_measure_labels"] = measure_labels.all_text_contents()
     out["measure_in_sport"] = until(s1, "()=>state.measurements.length===1&&state.measurements[0].values.waist", seconds=8)
 
     # на сервере только шифр, строки помечены общим модулем; Meal пишет только свои строки и общие документы (связи, замеры, нажатия на счётчики еды)
@@ -449,6 +453,8 @@ checks = [
     ("нажатие сняли в Day — порция ушла из Meal, «съедено» вернулось", bool(out["day_untap_in_meal"]) and bool(out["eaten_after_untap"])),
     ("тренировка Sport видна в Meal на том же телефоне и на втором; в документы Meal не записана", bool(out["sport_in_meal_a"]) and bool(out["sport_in_meal_b"]) and out["sport_not_stored_in_meal"]),
     ("свитч связи один на пару: выключили в Meal — выключен в Sport; начатое после не берётся; включили — видно всё", bool(out["pair_off_in_sport"]) and out["pair_off_hides"] == 1 and bool(out["pair_on_shows"])),
+    ("в пустом журнале и после одного замера видны все строки формы в том же порядке",
+     bool(out["form_measure_labels"]) and out["empty_measure_labels"] == out["form_measure_labels"] == out["saved_measure_labels"]),
     ("замер тела из Meal виден в Sport", out["measure_in_sport"] == 83),
     ("на сервере только шифр, строки общего модуля", out["cipher_only"] is True),
     ("Meal пишет только свои строки и общие документы (связи, замеры, нажатия на счётчики еды)", all(k.startswith("meal/") or k in ("day/pairs", "sport/body", "day/foodtaps", "sport/foodtaps") for k in out["meal_writes"]) and not any(k in ("meal/" + o for o in OLD) for k in out["meal_writes"])),
