@@ -1595,7 +1595,7 @@ var MealBot=(function(){
       /* Meal 33.37: «нет в базе» — можно сразу завести свой продукт; после сохранения строка запишется с ним */
       var own=typeof MealOwnProductFlow!=='undefined'&&MealOwnProductFlow?chips([['ownnew:'+id,'Завести свой продукт']]):'';
       if(unavailable)return p(esc(unavailable))+'<div data-replacement-slot="'+id+'"></div>'+skip;
-      missLog('нет в базе',heard,l.raw);
+      missLog('нет в базе',heard,l.raw); S.wordMiss={w:String(heard||'').trim(),raw:l.raw||'',turn:S.turn||0};   // для «я так называю» (bot-words.js)
       var options=similarFoods(l.spoken||l.name,l.formContext);
       var kindQ=SP&&SP.similarKind?SP.similarKind(String(l.name||'')):null;   // напиток того же вида: похожие из поиска — только того же вида, остальное из словаря (missing_similar, 24.11.2026)
       if(kindQ) options=options.filter(function(f){ return kindQ.kind.test(norm(f.n)) }).concat(kindQ.options.map(function(sx){ var r=parseText(sx).lines[0], id=r&&(r.fid||r.alts[0]); return id&&FOODS[id]?{id:id,n:FOODS[id].n}:null })).filter(function(f,i,a){ return f&&a.findIndex(function(x){ return x.id===f.id })===i }).slice(0,3);
@@ -2904,6 +2904,9 @@ var MealBot=(function(){
     /* Meal 33.9: живая речь → понятный разбору вид (числа словами, диапазон, «полбанана», поправки, пустышки, другие названия) */
     var asked=/\?\s*$/.test(String(raw).trim());
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var jk=jokeAsk(S,raw); if(jk) return jk }   // «расскажи анекдот» — кулинарный анекдот из словаря, без ИИ (26.11.2026)
+    /* Meal 34 · личные слова человека: «пышка — это пончик», «я так называю», «мои слова», «забудь пышку» (bot-words.js, 27.11.2026); из шортката не запоминаю */
+    if(!NEST&&m.kind!=='photo'&&typeof MealBotWords!=='undefined'){ var wd=MealBotWords.say(chat,S,raw,m);
+      if(wd){ if(m.dry) return {dry:1,clean:true,n:0}; if(wd.rerun){ NEST++; var rh; try{ rh=handle0(chat,S,Object.assign({},m,{text:wd.rerun})) } finally { NEST-- } return wd.html+rh } return wd.html+(S.pend.length&&!m.inbox?askHTML(S):'') } }
     if(!NEST&&!m.inbox&&!m.dry&&m.kind!=='photo'&&typeof MealBotMine!=='undefined'){ var mn=MealBotMine.say(chat,S,raw); if(mn) return mn+(S.pend.length?askHTML(S):'') }   // Meal 34 · счётчик голосом, «мои счётчики», правка и удаление своего продукта (bot-mine.js, 24.11.2026)
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var ls=leastAsk(raw); if(ls) return ls; var cq=compareAsk(raw); if(cq) return cq; var rv=reviewAsk(raw); if(rv) return rv }   // «сравни гречку и рис», «где больше кальция: в X или Y» (27.11.2026)
     if(m.kind!=='photo'&&!m.inbox&&!m.dry&&!NEST){ var wh=whereAsk(raw); if(wh) return wh }   // «где много железа» — обычные источники из словаря, числа из базы
@@ -3197,7 +3200,7 @@ var MealBot=(function(){
     var othH=others.length?'<p class="mlHint">Не записал — это не съедено тобой: «'+esc(others.join('», «').replace(MK,'').replace(/\s+/g,' ').trim())+'».</p>':'';
     if(!ready.length&&!asks.length&&othH) return othH;
     if(!ready.length&&!asks.length){
-      if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); return p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'». Ничего не записал, добавил в список недостающего.')+ownChip(miss) }
+      if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); S.wordMiss={w:String(miss[miss.length-1].name||'').trim(),raw:miss[miss.length-1].raw||'',turn:S.turn||0}; return p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'». Ничего не записал, добавил в список недостающего.')+ownChip(miss) }
       return p('Не нашёл здесь еды. Ничего не записал.');
     }
     /* то же сообщение второй раз подряд за две минуты — возможно, повтор, а не вторая порция */
@@ -3238,7 +3241,7 @@ var MealBot=(function(){
       if(c===false) return p('Чтобы записывать, войди в аккаунт.');
       h+=commitHTML(c,!!phraseId)+phrasePart(phraseId,(guessed?timeNote(guessed):'')+othH); S.last={key:key,at:+now,phraseId:phraseId}; othH='';
     }
-    if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); h+=p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'» — не записал, добавил в список недостающего.')+ownChip(miss) }
+    if(miss.length){ miss.forEach(function(l){ missLog('нет в базе',l.name,l.raw) }); S.wordMiss={w:String(miss[miss.length-1].name||'').trim(),raw:miss[miss.length-1].raw||'',turn:S.turn||0}; h+=p('В базе нет: «'+esc(miss.map(function(l){ return l.name }).join(', '))+'» — не записал, добавил в список недостающего.')+ownChip(miss) }
     /* новое неясное — вперёд: человек сейчас об этом; прежний вопрос вернётся следом */
     var waiting=S.pend.length;
     if(asks.length){ S.pend=asks.concat(S.pend) }
@@ -4377,6 +4380,7 @@ var MealBot=(function(){
     else if(a[0]==='sheet'){ openSheet(chat); return }
     else if(a[0]==='st'){ h=typeof MealBotSteps!=='undefined'?MealBotSteps.tap(chat,S,a):null }
     else if(a[0]==='mine'){ h=typeof MealBotMine!=='undefined'?MealBotMine.tap(chat,S,a):null }
+    else if(a[0]==='words'){ h=typeof MealBotWords!=='undefined'?MealBotWords.tap(chat,S,a):null }
     else if(a[0]==='ownnew'||a[0]==='ownname'){ if(typeof MealBotSteps==='undefined') return;
       var oq=a[0]==='ownnew'&&S.ask&&S.ask.id===a[1]?S.ask.q:null, onm=oq?(oq.heard||oq.line.spoken||oq.line.name||''):decodeURIComponent(a.slice(1).join(':'));
       if(a[0]==='ownnew'&&!oq) return;
