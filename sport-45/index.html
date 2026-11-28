@@ -10034,26 +10034,28 @@ function tpillPreview(pill){
   return '';
 }
 // t: 0 — плашка, 1 — полный экран. top — верхний край (при жесте под пальцем).
+// Сначала растёт только вверх (низ и бока на месте); с середины пути низ и бока доходят до размеров таймера (Астамур 28.11.2026).
 function tpillLayerAt(L,t,top=tpillLerp(L.from.top,L.to.top,t)){
-  const f=L.from,o=L.to,left=tpillLerp(f.left,o.left,t),right=tpillLerp(f.right,o.right,t),bottom=tpillLerp(f.bottom,o.bottom,t);
+  L.t=t;const g=Math.max(0,Math.min(1,(t-.5)/.5)),f=L.from,o=L.to,left=tpillLerp(f.left,o.left,g),right=tpillLerp(f.right,o.right,g),bottom=tpillLerp(f.bottom,o.bottom,g);
   const st=L.el.style;st.left=left+'px';st.width=(right-left)+'px';st.top=top+'px';st.height=Math.max(f.bottom-f.top,bottom-top)+'px';
-  const tr=tpillLerp(L.rad,0,t),br=tpillLerp(L.rad,23,t);st.borderRadius=`${tr}px ${tr}px ${br}px ${br}px`;
+  const tr=tpillLerp(L.rad,0,t),br=tpillLerp(L.rad,23,g);st.borderRadius=`${tr}px ${tr}px ${br}px ${br}px`;
   L.bg.style.opacity=String(Math.min(1,t*1.6));L.face.style.opacity=String(Math.max(0,1-t*2.4));
   if(L.view){L.view.style.opacity=String(Math.max(0,Math.min(1,(t-.15)/.45)));L.view.style.left=(L.to.left-left)+'px';}
 }
 function tpillLayerDrop(){const L=tpillLayerNow;if(!L)return;tpillLayerNow=null;clearTimeout(L.timer);L.el.remove();L.root.classList.remove('tp-hide');document.body.classList.remove('tp-stretching');}
+// Доводка по кадрам (не CSS-переходом), чтобы порядок «сначала вверх, потом вниз» сохранялся и в анимации.
 function tpillLayerRun(L,t,ms,done){
-  const ease=`${ms}ms cubic-bezier(.25,.8,.25,1)`;
-  L.el.style.transition=['left','top','width','height','border-radius'].map(k=>k+' '+ease).join(',');
-  L.bg.style.transition=L.face.style.transition='opacity '+ease;if(L.view)L.view.style.transition=`opacity ${ease},left ${ease}`;
-  requestAnimationFrame(()=>{if(tpillLayerNow!==L)return;tpillLayerAt(L,t);L.timer=setTimeout(()=>{if(tpillLayerNow===L)done();},ms+20);});
+  L.el.style.transition='none';L.bg.style.transition=L.face.style.transition='none';if(L.view)L.view.style.transition='none';
+  let start=null;const from=L.t??0,ease=x=>1-Math.pow(1-x,3);ms=Math.max(160,ms*Math.abs(t-from));
+  const step=now=>{if(tpillLayerNow!==L)return;if(start==null)start=now;const k=Math.max(0,Math.min(1,(now-start)/ms));tpillLayerAt(L,from+(t-from)*ease(k));if(k<1)requestAnimationFrame(step);else done();};
+  requestAnimationFrame(step);
 }
 // Раскрыть: доехать до полного экрана, под копией открыть таймер и убрать копию.
-function tpillGrow(L,ms=320){
+function tpillGrow(L,ms=440){
   tpillLayerRun(L,1,ms,()=>{const ok=tpillOpen(L.pill.isConnected?L.pill:document.querySelector(TPILL_SEL)||L.pill,true);
     requestAnimationFrame(()=>{L.el.style.transition='opacity .12s linear';L.el.style.opacity='0';setTimeout(()=>{if(tpillLayerNow===L)tpillLayerDrop();},130);});if(!ok)tpillLayerDrop();});
 }
-function tpillShrink(L,ms=260){tpillLayerRun(L,0,ms,()=>tpillLayerDrop());}
+function tpillShrink(L,ms=360){tpillLayerRun(L,0,ms,()=>tpillLayerDrop());}
 function tpillTapOpen(pill){if(tpillCalm()){tpillOpen(pill);return;}tpillGrow(tpillLayerMake(pill));}
 // Лист таймера: из плашки — без своей анимации; со значка — снизу; возврат из настроек — мягко проявляется.
 {const openSheetBeforePill=openSheet;
@@ -10076,7 +10078,7 @@ function tpillTapOpen(pill){if(tpillCalm()){tpillOpen(pill);return;}tpillGrow(tp
   if(!pill){sheet.style.transition='transform .26s cubic-bezier(.4,0,.6,1)';sheet.style.transform=`translateY(${innerHeight}px)`;
     setTimeout(()=>{if(document.getElementById('overlay')===overlay){if(typeof sheetMarkDismiss==='function')sheetMarkDismiss();finish();}},260);return;}
   const L=tpillLayerMake(pill);tpillLayerAt(L,1);
-  const result=finish();tpillShrink(L,300);return result;
+  const result=finish();tpillShrink(L);return result;
  };}
 // Жест: вверх — плашка растёт под пальцем; вниз на плашке таймера — свернуть в кружок.
 window.addEventListener('pointerdown',event=>{
@@ -10107,7 +10109,7 @@ function tpillEnd(event,cancel){
     // Скорость пальца в конце: быстрый взмах вверх тоже раскрывает, вниз — сжимает.
     const v=g.prev&&g.last&&g.last.t>g.prev.t?(g.last.y-g.prev.y)/(g.last.t-g.prev.t):0;
     const open=!cancel&&!(v>.3)&&(dy<-140||(dy<-24&&v<-.45));
-    if(open)tpillGrow(g.layer,260);else tpillShrink(g.layer,220);
+    if(open)tpillGrow(g.layer);else tpillShrink(g.layer);
     return;
   }
   const pill=tpillLive(g);if(!pill)return;
