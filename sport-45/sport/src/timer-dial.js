@@ -28,21 +28,26 @@ function tdialLiveSeconds(e,p,status){
   if(p.mode==='stopwatch'){const last=p.laps?.at(-1)?.elapsed||0;return tdialSplit(e)?status.elapsed:Math.max(0,status.elapsed-last);}
   return status.phase==='rest'?0:status.remaining;
 }
-function tdialLit(p,status){
-  if(p.mode==='stopwatch')return status.elapsed>0?Math.floor(status.elapsed%60)+1:0;
+// Вид циферблата как у прежнего большого таймера (Астамур 28.11.2026): тонкое кольцо, риски снаружи,
+// по кольцу идёт белая дуга с точкой; круги секундомера — жёлтые засечки на кольце с номером.
+const TDIAL_C=135,TDIAL_R=107;
+function tdialPt(sec,r){const a=(sec%60)*6*Math.PI/180;return [(TDIAL_C+Math.sin(a)*r).toFixed(1),(TDIAL_C-Math.cos(a)*r).toFixed(1)];}
+function tdialProgress(p,status){
+  if(p.mode==='stopwatch')return status.elapsed>0?(status.elapsed%60)/60:0;
   const whole=status.workDuration||playerProgram(p)[0]?.workSeconds||0;
   if(status.phase==='rest'||!whole)return 0;
-  return Math.max(0,Math.min(60,Math.round(status.remaining/whole*60)));
+  return Math.max(0,Math.min(1,1-status.remaining/whole));
 }
-function tdialTicks(lit){
-  return Array.from({length:60},(_,k)=>{const a=k*6*Math.PI/180,major=k%5===0,r1=129,r2=r1-(major?22:11);
-    return `<line class="${major?'major':''}${k<lit?' lit':''}" x1="${(135+Math.sin(a)*r1).toFixed(1)}" y1="${(135-Math.cos(a)*r1).toFixed(1)}" x2="${(135+Math.sin(a)*r2).toFixed(1)}" y2="${(135-Math.cos(a)*r2).toFixed(1)}"/>`;}).join('');
+function tdialTicks(){
+  return Array.from({length:60},(_,k)=>{const major=k%5===0,[x1,y1]=tdialPt(k,major?119:122),[x2,y2]=tdialPt(k,major?130:126);
+    return `<line class="${major?'major':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;}).join('');
 }
-// Стрелки кругов секундомера: где нажали «Круг», с номером; белая — где сейчас.
 function tdialHands(p,status){
-  if(p.mode!=='stopwatch')return '';
-  const hand=(sec,cls,label)=>{const a=(sec%60)*6*Math.PI/180,r1=89,r2=105,rl=75;return `<line class="${cls}" x1="${(135+Math.sin(a)*r1).toFixed(1)}" y1="${(135-Math.cos(a)*r1).toFixed(1)}" x2="${(135+Math.sin(a)*r2).toFixed(1)}" y2="${(135-Math.cos(a)*r2).toFixed(1)}"/>${label?`<text x="${(135+Math.sin(a)*rl).toFixed(1)}" y="${(135-Math.cos(a)*rl+5).toFixed(1)}">${label}</text>`:''}`;};
-  return (p.laps||[]).map((l,i)=>hand(l.elapsed,'lap',i+1)).join('')+(status.elapsed>0&&!p.finished?hand(status.elapsed,'now',''):'');
+  const len=2*Math.PI*TDIAL_R,f=tdialProgress(p,status),started=status.elapsed>0||p.running;
+  const arc=`<circle class="arc" cx="${TDIAL_C}" cy="${TDIAL_C}" r="${TDIAL_R}" stroke-dasharray="${(len*f).toFixed(1)} ${len.toFixed(1)}" transform="rotate(-90 ${TDIAL_C} ${TDIAL_C})"/>`;
+  const [dx,dy]=tdialPt(f*60,TDIAL_R),dot=`<circle class="dot" cx="${dx}" cy="${dy}" r="5"/>`;
+  const laps=p.mode==='stopwatch'?(p.laps||[]).map((l,i)=>{const [x1,y1]=tdialPt(l.elapsed,TDIAL_R-9),[x2,y2]=tdialPt(l.elapsed,TDIAL_R+9),[tx,ty]=tdialPt(l.elapsed,TDIAL_R-22);return `<line class="lap" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><text x="${tx}" y="${(Number(ty)+5).toFixed(1)}">${i+1}</text>`;}).join(''):'';
+  return arc+laps+dot;
 }
 const TDIAL_ICON={
   play:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
@@ -68,16 +73,17 @@ function tdialBody(ei){
   // Между кругами два выключателя: режим и «От старта» (живой только в секундомере). Астамур 28.11.2026.
   const sw=(label,attr,on,off,aria)=>`<label class="td-split${off?' is-off':''}"><span>${label}</span><input type="checkbox" role="switch" ${attr} ${on?'checked':''} ${off?'disabled':''} aria-label="${aria}"><span class="td-switch" aria-hidden="true"><span></span></span></label>`;
   const mid=`<div class="td-switches">${sw('Секундомер',`data-tdial-mode="${ei}"`,!down,false,'Секундомер вместо таймера')}${sw('От старта',`data-tdial-split="${ei}"`,!down&&tdialSplit(e),down,'Писать в подход время от старта')}</div>`;
-  const left=!down&&running?`<button type="button" class="td-btn td-btn-glass" data-action="player-new-round" data-ei="${ei}" ${playerCanAddRound(p)?'':'disabled'}>Круг</button>`
-    :`<button type="button" class="td-btn td-btn-glass" data-action="player-reset" data-ei="${ei}" ${started||p.finished?'':'disabled'}>Сброс</button>`;
-  const right=!down&&running?`<button type="button" class="button primary td-btn td-btn-main" data-action="tdial-stop" data-ei="${ei}" aria-label="Стоп, записать в подходы">${TDIAL_ICON.stop}</button>`
-    :`<button type="button" class="button primary td-btn td-btn-main" data-action="player-toggle" data-ei="${ei}" aria-label="${running?'Пауза':'Старт'}">${running?TDIAL_ICON.pause:TDIAL_ICON.play}</button>`;
+  // Кнопки — крупные слова, как в прежнем таймере (Астамур 28.11.2026): слева Старт/Пауза/Стоп, справа «+ Круг» или «Сброс».
+  const right=!down&&running?`<button type="button" class="td-tbtn td-tbtn-right" data-action="player-new-round" data-ei="${ei}" ${playerCanAddRound(p)?'':'disabled'}><span aria-hidden="true">+</span> Круг</button>`
+    :`<button type="button" class="td-tbtn td-tbtn-right" data-action="player-reset" data-ei="${ei}" ${started||p.finished?'':'disabled'}>Сброс</button>`;
+  const left=!down&&running?`<button type="button" class="td-tbtn" data-action="tdial-stop" data-ei="${ei}" aria-label="Стоп, записать в подходы">Стоп</button>`
+    :`<button type="button" class="td-tbtn" data-action="player-toggle" data-ei="${ei}">${running?'Пауза':'Старт'}</button>`;
   return `<div class="exercise-player td-root" data-player-ei="${ei}" data-tdial-running="${running}" data-tdial-sign="${tdialSign(e,p)}">
 <div class="td-top">
- <div class="td-name-row"><h3>${esc(e.name)}</h3><button type="button" class="exercise-menu-button td-more" data-action="wf-ex-menu" data-ei="${ei}" aria-haspopup="menu" aria-expanded="false" aria-label="Ещё: ${esc(e.name)}">${EXERCISE_DOTS}</button></div>
- <div class="td-dial"><svg viewBox="0 0 270 270" aria-hidden="true"><g class="td-ticks">${tdialTicks(tdialLit(p,s))}</g><g class="td-hands">${tdialHands(p,s)}</g></svg>
+ <div class="td-name-row"><h3>${esc(e.name)}</h3><button type="button" class="exercise-menu-button td-more" data-action="tdial-settings" data-ei="${ei}" aria-label="Настроить: ${esc(e.name)}">${EXERCISE_DOTS}</button></div>
+ <div class="td-dial"><svg viewBox="0 0 270 270" aria-hidden="true"><g class="td-ticks">${tdialTicks()}</g><circle class="td-ring" cx="135" cy="135" r="107"/><g class="td-hands">${tdialHands(p,s)}</g></svg>
   <div class="td-center"><strong data-player-time role="timer">${playerDisplay(big,down)}</strong>${sub}</div></div>
- <div class="td-controls">${right}${mid}${left}</div>
+ <div class="td-controls">${left}${mid}${right}</div>
 </div>
 <div class="td-sets" role="list" aria-label="Подходы: ${esc(e.name)}">${tdialRows(e,ei,p,s)}</div>
 </div>`;
@@ -139,7 +145,6 @@ function tdialRefresh(){
   const ei=Number(root.dataset.playerEi),e=state.active?.exercises[ei];if(!e)return;
   const p=playerPreview(ei),s=exercisePlayerStatus(p);
   if(root.dataset.tdialSign!==tdialSign(e,p)){if(!root.contains(document.activeElement)||document.activeElement.tagName==='BUTTON')renderExercisePlayerView(ei);return;}
-  const lit=tdialLit(p,s);root.querySelectorAll('.td-ticks line').forEach((l,k)=>l.classList.toggle('lit',k<lit));
   const hands=root.querySelector('.td-hands');if(hands)hands.innerHTML=tdialHands(p,s);
   const live=root.querySelector('[data-tdial-live]');if(live)live.textContent=playerDisplay(tdialLiveSeconds(e,p,s),p.mode!=='stopwatch');
   const sub=root.querySelector('[data-tdial-sub]');if(sub&&p.mode!=='stopwatch'){const started=p.running||p.elapsed>0,whole=s.workDuration||playerProgram(p)[0]?.workSeconds||0;sub.textContent=s.phase==='rest'?'перерыв':(started&&!p.finished?'осталось из ':'из ')+playerDisplay(whole);}
@@ -215,3 +220,6 @@ updateFloatingSet=function(root){
 };
 // Кнопки виджета таймера: после них обновить виджет (вид таймера закрыт).
 window.addEventListener('click',event=>{if(event.target.closest?.('.td-player-pill [data-action]'))setTimeout(()=>{persist();updateFloatingRest();},0);},true);
+// ⋯ в таймере — сразу страница настроек упражнения во весь экран; смахнул вниз — снова таймер (Астамур 28.11.2026).
+window.addEventListener('click',event=>{const b=event.target.closest?.('[data-action="tdial-settings"]');if(!b)return;event.preventDefault();event.stopImmediatePropagation();
+  if(runTimerAction('exercise',Number(b.dataset.ei),'settings'))document.querySelector('#modal-root .sheet')?.classList.add('td-full');},true);

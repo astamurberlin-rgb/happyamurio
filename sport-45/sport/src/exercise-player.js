@@ -151,7 +151,7 @@ function exercisePlayerBody(ei){
   const p=playerPreview(ei),s=exercisePlayerStatus(p),running=p.running&&!workoutIsPaused(state.active),down=p.mode!=='stopwatch',rows=playerLiveRows(ei);
   return `<div class="exercise-player ${s.phase==='rest'?'rest-phase':''}" data-player-ei="${ei}"><div class="player-exercise-heading"><p class="player-exercise-name">${esc(e.name)}</p></div><div class="player-face">${playerDial(p,s)}<div class="player-face-center"><strong data-player-time data-hours="${s.remaining>=3600}" role="timer">${playerDisplay(s.remaining,down)}</strong>${playerMetricControls(e,ei,down)}</div></div>
   <div class="timer-simple-controls"><button type="button" class="timer-stop-text" data-action="player-toggle" data-ei="${ei}" aria-label="${running?'Приостановить':'Запустить'} плеер упражнения"><span>${running?'Стоп':'Старт'}</span></button><button type="button" class="timer-round-text" data-action="player-new-round" data-ei="${ei}" aria-label="${down?'Добавить таймер':'Добавить круг'}" ${!playerCanAddRound(p)?'disabled':''}><span aria-hidden="true">＋</span> ${down?'Таймер':'Круг'}</button></div>
-  ${timerActionLinks('exercise',ei)}
+  
   ${playerView.history?`<div class="timer-history-controls"><button class="text-btn" data-action="player-history" data-ei="${ei}">Текущие круги</button><button class="text-btn" data-action="player-edit" data-ei="${ei}" aria-pressed="${playerView.editing}">${playerView.editing?'Готово':'Правки'}</button></div>`:''}
   <div class="player-round-list">${playerView.history?playerHistoryMarkup(ei,rows):rows.map((row,i)=>playerCurrentRow(ei,row,i,p)).join('')}</div></div>`;
 }
