@@ -270,6 +270,8 @@ function wfPlanAddPicker(id){
 window.addEventListener('click',ev=>{
  const b=ev.target.closest?.('[data-action^="wf-plan-"],[data-wf-plan-menu]');
  if(!b){if(!ev.target.closest?.('.wf-plan-menu'))wfPlanCloseMenu();if(!ev.target.closest?.('.wf-plan-swipe'))document.querySelectorAll('.wf-plan-swipe.is-open').forEach(s=>s.classList.remove('is-open'));return;}
+ // Выбор упражнения в листе добавления обрабатывается ниже, на document: не глушим его здесь (было: тап по найденному ничего не добавлял).
+ if(b.dataset.action==='wf-plan-pick')return;
  ev.preventDefault();ev.stopImmediatePropagation();
  if(Date.now()-wfPlanSwipedAt<350)return;
  const a=b.dataset.action,id=b.dataset.id,i=Number(b.dataset.i);

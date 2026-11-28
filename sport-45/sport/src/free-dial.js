@@ -33,12 +33,12 @@ function freeDialRows(){
 function freeDialSign(){const d=freeTimer(),s=freeSession();return [d.mode,s.running,s.laps.length,s.rows.length,!!s.resultId,d.metrics.join(','),freeName()].join('|');}
 freeTimerBody=function(){
   const d=freeTimer(),s=freeSession(),status=freeStatus(),down=d.mode==='timer',started=s.running||s.elapsed>0;
-  const sub=down?`<span class="td-sub">${s.resultId?'записано в журнал':started&&!status.finished?'идёт':'из '+playerDisplay(s.rows.reduce((n,r)=>n+r.target,0))}</span>`:(s.resultId?'<span class="td-sub">записано в журнал</span>':'');
+  const sub=tdialModeBlock(down,'data-free-sw="stopwatch"')+(s.resultId?'<span class="td-sub">записано в журнал</span>':'');
   const left=!down&&s.running?`<button type="button" class="td-tbtn" data-action="free-stop" aria-label="Стоп, записать в журнал">Стоп</button>`
     :`<button type="button" class="td-tbtn" data-action="free-toggle">${s.running?'Пауза':'Старт'}</button>`;
   const right=!down&&s.running?`<button type="button" class="td-tbtn td-tbtn-right" data-action="free-add"><span aria-hidden="true">+</span> Круг</button>`
     :`<button type="button" class="td-tbtn td-tbtn-right" data-action="free-reset" ${started||s.resultId?'':'disabled'}>Сброс</button>`;
-  const mid=`<div class="td-switches"><label class="td-split"><span>Секундомер</span><input type="checkbox" role="switch" data-free-sw="stopwatch" ${down?'':'checked'} aria-label="Секундомер вместо таймера"><span class="td-switch" aria-hidden="true"><span></span></span></label></div>`;
+  const mid='<span></span>';
   const add=down&&!started?`<button type="button" class="text-btn td-add-row" data-action="free-add">+ Подход</button>`:'';
   return `<div class="exercise-player td-root free-dial" data-free-timer data-free-sign="${esc(freeDialSign())}">
 <div class="td-top">
@@ -104,16 +104,5 @@ syncFreeTimerFab=function(){
   root.innerHTML=`<section class="floating-rest-pill floating-set-pill td-player-pill td-free-pill" role="region" tabindex="0" aria-label="${esc(freeTitle())}"><span class="floating-rest-progress" aria-hidden="true"></span><span class="wf-ring-box"><span class="wf-ring" aria-hidden="true"><svg viewBox="0 0 52 52"><circle class="wf-ring-track" cx="26" cy="26" r="23"/><circle class="wf-ring-fill" cx="26" cy="26" r="23" pathLength="100"/></svg></span><button type="button" class="floating-rest-toggle" data-action="free-toggle" aria-label="${running?'Пауза':'Старт'}">${icon(running?'pause':'play')}</button></span><div class="floating-rest-mid wf-mid"><label class="floating-rest-clock"><span>${esc(freeName()||(down?'Таймер':'Секундомер'))}</span><span class="sport-metric-input"><input type="text" readonly tabindex="-1" data-free-mini value="${playerDisplay(status.remaining,down)}" aria-label="${down?'Осталось':'Прошло'}"></span></label></div>${right}</section>`;
   syncFreeTimerFabTime();
 };
-// Тап по плашке (не по кнопке) или смахнуть вверх — раскрыть таймер.
-let freePillSwipe=null,freePillSwipeAt=0;
-window.addEventListener('click',event=>{
-  if(Date.now()-freePillSwipeAt<400&&event.target.closest?.('#free-timer-root')){event.preventDefault();event.stopImmediatePropagation();return;}
-  const pill=event.target.closest?.('#free-timer-root .td-free-pill');if(!pill||event.target.closest('button,input'))return;
-  event.preventDefault();event.stopImmediatePropagation();openFreeTimer();
-},true);
-window.addEventListener('pointerdown',event=>{const pill=event.target.closest?.('#free-timer-root .td-free-pill');if(!pill||event.button>0)return;freePillSwipe={id:event.pointerId,y:event.clientY,x:event.clientX,pill};},true);
-window.addEventListener('pointermove',event=>{const g=freePillSwipe;if(!g||g.id!==event.pointerId)return;const dy=event.clientY-g.y;g.pill.style.transform=dy<-6?`translateY(${Math.max(dy,-48)}px)`:'';},true);
-window.addEventListener('pointerup',event=>{const g=freePillSwipe;freePillSwipe=null;if(!g||g.id!==event.pointerId)return;g.pill.style.transform='';const dy=event.clientY-g.y,dx=event.clientX-g.x;if(dy<-36&&-dy>Math.abs(dx)*1.25){freePillSwipeAt=Date.now();openFreeTimer();}},true);
-window.addEventListener('pointercancel',()=>{if(freePillSwipe)freePillSwipe.pill.style.transform='';freePillSwipe=null;},true);
 // После кнопок в плашке — обновить её.
 window.addEventListener('click',event=>{if(event.target.closest?.('#free-timer-root [data-action]'))setTimeout(()=>{syncFreeTimerFab();},0);},true);

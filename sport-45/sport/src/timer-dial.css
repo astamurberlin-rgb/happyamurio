@@ -4,8 +4,8 @@
 .exercise-player.td-root{display:flex;flex-direction:column;align-items:stretch;padding:0 20px;overflow:hidden;text-align:left;color:var(--happy-ink)}
 .sheet:has(.td-root) .sheet-top{display:none}
 .td-top{flex:none}
-.td-name-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;margin:0 0 6px}
-.td-name-row h3{margin:0;font-size:20px;font-weight:700;line-height:1.2;color:var(--happy-ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-name-row{display:flex;align-items:flex-start;justify-content:space-between;min-height:44px;margin:4px 0 6px}
+.td-name-row h3{margin:4px 0 0;font-size:20px;font-weight:700;line-height:1.2;color:var(--happy-ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .td-more{width:44px;height:44px;margin-right:-10px;display:grid;place-items:center;flex:none}
 .td-dial{position:relative;width:270px;height:270px;margin:8px auto 0}
 .td-dial svg{position:absolute;inset:0;width:100%;height:100%}
@@ -58,8 +58,7 @@
 .active-workout .exercise-name-info:has(.wf-ex-pic):has(.td-open){grid-template-columns:var(--happy-size-list-image) minmax(0,1fr) auto}
 .td-open svg,.td-open svg *{fill:none!important;stroke:currentColor!important}
 /* Таймер открывается до самого верха, всплывающие виджеты подхода и перерыва на это время прячутся (Астамур 28.11.2026). */
-.exercise-player-sheet:has(.td-root){top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;padding-top:env(safe-area-inset-top)!important}
-body.exercise-player-open:has(.td-root) #rest-pill-root,body.exercise-player-open:has(.td-root) .floating-rest-pill{display:none!important}
+.exercise-player-sheet:has(.td-root){top:0!important;border-top-left-radius:var(--td-r,0px)!important;border-top-right-radius:var(--td-r,0px)!important;padding-top:env(safe-area-inset-top)!important}
 /* Полоска-ручка на виджете подхода и перерыва: смахнуть вверх — открыть таймер (Астамур 28.11.2026). Размер как у ручки листа, уменьшенный: 36 × 4. */
 #rest-pill-root .floating-rest-pill,#free-timer-root .floating-rest-pill{padding-top:14px}
 #rest-pill-root .floating-rest-pill::after,#free-timer-root .floating-rest-pill::after{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:999px;background:var(--happy-ink);opacity:.55;pointer-events:none;z-index:2}
@@ -68,7 +67,32 @@ body.exercise-player-open:has(.td-root) #rest-pill-root,body.exercise-player-ope
 /* Отдельный таймер — та же плашка, что у таймера в тренировке, вместо зелёного кружка (Астамур 28.11.2026). */
 #free-timer-root{height:auto;width:calc(100% - 40px);max-width:420px}
 #free-timer-root .td-free-pill{pointer-events:auto}
-body:has(#rest-pill-root .floating-rest-pill) #free-timer-root,body:has(.td-root) #free-timer-root{display:none}
+body:has(#rest-pill-root .floating-rest-pill) #free-timer-root{display:none}
 .free-dial .td-set{grid-template-columns:84px minmax(0,1fr) auto 8px}
 .free-dial .td-set:has(.set-x){grid-template-columns:84px minmax(0,1fr) 14px minmax(0,1fr) 8px}
 .td-add-row{min-height:44px;margin:4px 0;font-size:16px}
+/* Под цифрами — слова «Таймер · Секундомер» и выключатель режима под ними (Астамур 28.11.2026). */
+.td-mode{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px;pointer-events:auto}
+.td-mode-words{display:flex;gap:10px;font-size:14px;line-height:1.2}
+.td-mode-words b{font-weight:400;color:var(--happy-dim)}
+.td-mode-words b.on{font-weight:700;color:var(--happy-ink)}
+.td-mode-sw{min-height:32px;padding:0 8px}
+/* Ручка и название стоят как в обычном листе: ручка 30, название на 39 от верха листа (Астамур 28.11.2026). */
+.sheet:has(.td-root)>.grip{width:100%;height:30px;min-height:30px;flex:0 0 30px;margin:0}
+/* Переходы «кружок ↔ плашка ↔ таймер» (Астамур 28.11.2026), логика в timer-pill.js.
+   Плашка идёт за пальцем; лист таймера поднимается с её места и туда же опускается; кружок — та же плашка, обрезанная до кольца слева. */
+#rest-pill-root,#free-timer-root{transition:opacity .2s ease,bottom .22s var(--happy-ease-sheet)}
+body.exercise-player-open:has(.td-root):not(.td-closing) #rest-pill-root,body:has(.td-root):not(.td-closing) #free-timer-root{opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s .2s}
+body.td-closing #free-timer-root{visibility:visible!important}
+body.td-closing #overlay{pointer-events:none}
+body.td-closing #overlay,body.td-moving #overlay{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+#rest-pill-root .floating-rest-pill,#free-timer-root .floating-rest-pill{touch-action:none;transition:transform .28s var(--happy-ease-sheet),clip-path .32s var(--happy-ease-sheet);
+ clip-path:inset(-28px -28px -28px -28px round calc(var(--happy-size-list-row) / 2 + 28px));animation:tp-enter .32s var(--happy-ease-sheet)}
+#rest-pill-root .floating-rest-pill.is-mini,#free-timer-root .floating-rest-pill.is-mini{clip-path:inset(0 calc(100% - var(--happy-size-list-row)) 0 0 round calc(var(--happy-size-list-row) / 2))}
+@keyframes tp-enter{from{clip-path:inset(0 calc(100% - var(--happy-size-list-row)) 0 0 round calc(var(--happy-size-list-row) / 2));opacity:0}}
+#rest-pill-root .floating-rest-pill.tp-still,#free-timer-root .floating-rest-pill.tp-still{animation:none}
+#modal-root .sheet.td-rise{animation:td-sheet-rise var(--happy-motion-sheet) var(--happy-ease-sheet)}
+#modal-root .sheet.td-fade{animation:td-sheet-fade var(--happy-motion-switch) ease-out}
+@keyframes td-sheet-rise{from{transform:translateY(var(--td-from,100%))}}
+@keyframes td-sheet-fade{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){#rest-pill-root,#free-timer-root,#rest-pill-root .floating-rest-pill,#free-timer-root .floating-rest-pill{transition:none;animation:none}#modal-root .sheet.td-rise,#modal-root .sheet.td-fade{animation:none}}

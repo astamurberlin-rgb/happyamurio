@@ -180,3 +180,5 @@ body:has(#rest-pill-root:not(:empty)) :is(.panel-body,.page){padding-bottom:calc
    путались с карточками целых тренировок на главной). */
 .sheet:has(.wf-plan) .section-title h2{font-size:16px;color:var(--happy-ink)}
 .wf-plan-title{margin:0 0 10px}
+/* Лист «Добавить упражнение» в плане тренировки сразу раскрыт до верха, как остальные листы выбора: не прыгает по высоте списка (Астамур 28.11.2026). */
+.sheet:has(#wf-plan-search){height:calc(100dvh - 48px);max-height:calc(100dvh - 48px)}

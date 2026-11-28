@@ -157,7 +157,7 @@ function stackFloating(){
   }
   /* Астамур 22.11.2026: короткое сообщение без плашек — низко, над кнопкой микрофона (из CSS); есть плашка
      тренировки, перерыва или таймер посередине — сообщение над самой верхней из них с зазором 8 и её не закрывает. */
-  const mid=innerWidth/2,fab=document.querySelector('#free-timer-root .free-clock-fab');
+  const mid=innerWidth/2,fab=document.querySelector('#free-timer-root .floating-rest-pill,#free-timer-root .free-clock-fab');
   const middle=el=>{const r=el.getBoundingClientRect();return r.left<mid+120&&r.right>mid-120};
   const bars=[banner,pill,shown(fab)&&middle(fab)?fab:null].filter(shown);
   const want=bars.length&&!document.querySelector('.overlay:not(:empty)')?Math.round(height-Math.min(...bars.map(el=>el.getBoundingClientRect().top))+8)+'px':'';

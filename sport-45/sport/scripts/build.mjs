@@ -117,7 +117,7 @@ const workoutFlow=await read('src/workout-flow.js'),workoutFlowCss=await read('s
 // Аудит единообразия 18.11.2026: большой таймер — из настроек упражнения, круги = подходы, «Сохранить» отмечает подходы.
 const timerRules=await read('src/timer-rules.js');
 // Таймер-циферблат (Астамур 27.11.2026): верх закреплён, круги 80, подходы — строки упражнения.
-const timerDial=(await read('src/timer-dial.js'))+'\n'+(await read('src/free-dial.js')),timerDialCss=await read('src/timer-dial.css');
+const timerDial=(await read('src/timer-dial.js'))+'\n'+(await read('src/free-dial.js'))+'\n'+(await read('src/timer-pill.js')),timerDialCss=await read('src/timer-dial.css');
 const setLine=await read('src/set-line.js'),setLineCss=await read('src/set-line.css');
 const sportJournal=await read('src/sport-journal.js'),sportJournalCss=await read('src/sport-journal.css');
 const strongNativeCore=await read('src/strong-native-core.js'),strongNativeMappings=await read('src/strong-native-mappings.js'),strongNativeUI=await read('src/strong-native-ui.js');

@@ -65,14 +65,14 @@ function tdialRows(e,ei,p,status){
     return `<div class="td-set${isLive?' is-live':''}${s.done?' is-done':''}"><span class="td-name${isLive?' is-live':''}">${esc(name)}</span>${time}${fields}<button type="button" class="td-check${s.done?' done':''}" data-action="set-done" data-ei="${ei}" data-si="${si}" aria-pressed="${!!s.done}" aria-label="${s.done?'Снять отметку':'Отметить'}: ${esc(name)}, ${esc(e.name)}">${TDIAL_ICON.check}</button></div>`;
   }).join('');
 }
+function tdialModeBlock(down,attr){return `<div class="td-mode"><span class="td-mode-words" aria-hidden="true"><b class="${down?'on':''}">Таймер</b><b class="${down?'':'on'}">Секундомер</b></span><label class="td-split td-mode-sw"><input type="checkbox" role="switch" ${attr} ${down?'':'checked'} aria-label="Секундомер вместо таймера"><span class="td-switch" aria-hidden="true"><span></span></span></label></div>`;}
 function tdialBody(ei){
   const e=state.active.exercises[ei],p=playerPreview(ei),s=exercisePlayerStatus(p),running=p.running&&!workoutIsPaused(state.active),down=p.mode!=='stopwatch';
   const big=down?s.remaining:s.elapsed,whole=down?(s.workDuration||playerProgram(p)[0]?.workSeconds||0):0;
   const started=p.running||p.elapsed>0;
-  const sub=down?`<span class="td-sub" data-tdial-sub>${s.phase==='rest'?'перерыв':(started&&!p.finished?'осталось из ':'из ')+playerDisplay(whole)}</span>`:'';
-  // Между кругами два выключателя: режим и «От старта» (живой только в секундомере). Астамур 28.11.2026.
-  const sw=(label,attr,on,off,aria)=>`<label class="td-split${off?' is-off':''}"><span>${label}</span><input type="checkbox" role="switch" ${attr} ${on?'checked':''} ${off?'disabled':''} aria-label="${aria}"><span class="td-switch" aria-hidden="true"><span></span></span></label>`;
-  const mid=`<div class="td-switches">${sw('Секундомер',`data-tdial-mode="${ei}"`,!down,false,'Секундомер вместо таймера')}${sw('От старта',`data-tdial-split="${ei}"`,!down&&tdialSplit(e),down,'Писать в подход время от старта')}</div>`;
+  // Под цифрами — «Таймер · Секундомер» и выключатель режима; между кнопками остаётся «От старта» (Астамур 28.11.2026).
+  const sub=tdialModeBlock(down,`data-tdial-mode="${ei}"`);
+  const mid=`<div class="td-switches"><label class="td-split${down?' is-off':''}"><span>От старта</span><input type="checkbox" role="switch" data-tdial-split="${ei}" ${!down&&tdialSplit(e)?'checked':''} ${down?'disabled':''} aria-label="Писать в подход время от старта"><span class="td-switch" aria-hidden="true"><span></span></span></label></div>`;
   // Кнопки — крупные слова, как в прежнем таймере (Астамур 28.11.2026): слева Старт/Пауза/Стоп, справа «+ Круг» или «Сброс».
   const right=!down&&running?`<button type="button" class="td-tbtn td-tbtn-right" data-action="player-new-round" data-ei="${ei}" ${playerCanAddRound(p)?'':'disabled'}><span aria-hidden="true">+</span> Круг</button>`
     :`<button type="button" class="td-tbtn td-tbtn-right" data-action="player-reset" data-ei="${ei}" ${started||p.finished?'':'disabled'}>Сброс</button>`;
@@ -147,7 +147,6 @@ function tdialRefresh(){
   if(root.dataset.tdialSign!==tdialSign(e,p)){if(!root.contains(document.activeElement)||document.activeElement.tagName==='BUTTON')renderExercisePlayerView(ei);return;}
   const hands=root.querySelector('.td-hands');if(hands)hands.innerHTML=tdialHands(p,s);
   const live=root.querySelector('[data-tdial-live]');if(live)live.textContent=playerDisplay(tdialLiveSeconds(e,p,s),p.mode!=='stopwatch');
-  const sub=root.querySelector('[data-tdial-sub]');if(sub&&p.mode!=='stopwatch'){const started=p.running||p.elapsed>0,whole=s.workDuration||playerProgram(p)[0]?.workSeconds||0;sub.textContent=s.phase==='rest'?'перерыв':(started&&!p.finished?'осталось из ':'из ')+playerDisplay(whole);}
   const big=root.querySelector('[data-player-time]');if(big)big.textContent=playerDisplay(p.mode!=='stopwatch'?s.remaining:s.elapsed,p.mode!=='stopwatch');
 }
 setInterval(tdialRefresh,100);
@@ -174,25 +173,9 @@ function tdialFromWidget(ei){
   }
   openExercisePlayer(ei);
 }
-window.addEventListener('click',event=>{
-  const pill=event.target.closest?.('#rest-pill-root .floating-rest-pill');if(!pill||event.target.closest('button,input'))return;
-  const ei=tdialWidgetEi();if(!Number.isInteger(ei))return;
-  event.preventDefault();event.stopImmediatePropagation();tdialFromWidget(ei);
-},true);
+// Тап и жесты по плашке — в timer-pill.js (одно место для всех плашек).
 window.addEventListener('click',event=>{const b=event.target.closest?.('[data-action="tdial-open"]');if(!b)return;event.preventDefault();event.stopImmediatePropagation();tdialFromWidget(Number(b.dataset.ei));},true);
-// Смахнуть виджет подхода или перерыва вверх (за полоску или за любое место) — открыть таймер. Астамур 28.11.2026.
-let tdialSwipe=null;
 function tdialWidgetEi(){const own=document.querySelector('#rest-pill-root .td-player-pill')?.dataset.tdialEi;if(own!=null)return Number(own);const set=typeof floatingSetContext==='function'?floatingSetContext():null,rest=!set&&typeof engineRestContext==='function'?engineRestContext():null;return set?set.ei:rest?.ei;}
-window.addEventListener('pointerdown',event=>{const pill=event.target.closest?.('#rest-pill-root .floating-rest-pill');if(!pill||event.button>0||event.target.closest('input'))return;tdialSwipe={id:event.pointerId,x:event.clientX,y:event.clientY,pill,moved:false};},true);
-window.addEventListener('pointermove',event=>{const g=tdialSwipe;if(!g||g.id!==event.pointerId)return;const dy=event.clientY-g.y;if(dy<-6){g.moved=true;g.pill.style.transform=`translateY(${Math.max(dy,-48)}px)`;}else g.pill.style.transform='';},true);
-function tdialSwipeEnd(event,cancel){const g=tdialSwipe;tdialSwipe=null;if(!g||g.id!==event.pointerId)return;g.pill.style.transform='';if(cancel)return;
-  const dx=event.clientX-g.x,dy=event.clientY-g.y;if(!(dy<-36&&-dy>Math.abs(dx)*1.25))return;
-  const ei=tdialWidgetEi();if(!Number.isInteger(ei))return;
-  tdialSwipeAt=Date.now();tdialFromWidget(ei);}
-let tdialSwipeAt=0;
-window.addEventListener('click',event=>{if(Date.now()-tdialSwipeAt<400){event.preventDefault();event.stopImmediatePropagation();}},true);
-window.addEventListener('pointerup',event=>tdialSwipeEnd(event,false),true);
-window.addEventListener('pointercancel',event=>tdialSwipeEnd(event,true),true);
 // Свернул таймер (смахнул вниз, закрыл) — он продолжает идти в виджете над меню, а не исчезает (Астамур 28.11.2026).
 function tdialPlayerPillContext(){
   const w=state.active,p=w?.exercisePlayer;if(!p||p.finished||w.countdown?.kind==='set')return null;
