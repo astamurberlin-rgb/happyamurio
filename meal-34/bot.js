@@ -277,6 +277,11 @@ var MealBot=(function(){
           var j3=i+1; while(ws[j3]!=null&&/^[US]$/.test(kindOf(ws[j3]))) j3++;
           if(ws[j3]!=null&&kindOf(ws[j3])==='F') cut=true;
         }
+        /* «салат одна миска 165 г индейки» — после меры со счётом (миска, тарелка, стакан) число с граммами перед другим продуктом — следующая еда (диктовка id 135, 27.11.2026) */
+        if(SP&&k==='N'&&last==='U'&&lastU&&!/^(г|мл|кг|л)$/.test(lastU)&&/^(г|гр|грам+[а-я]*|мл|кг)$/.test(norm(ws[i+1]||''))){
+          var j4=i+2; while(ws[j4]!=null&&/^[US]$/.test(kindOf(ws[j4]))) j4++;
+          if(ws[j4]!=null&&kindOf(ws[j4])==='F') cut=true;
+        }
       }
       /* Meal 33.12: мера без числа тоже начинает новую еду: «щепотка соли | щепотка перца» */
       if(SP&&!cut&&k==='U'&&last==='F'&&hasF&&!hasN&&!PREP.test(norm(prevW))&&cur.some(function(x){ return kindOf(x)==='U' })) cut=true;
@@ -2482,6 +2487,9 @@ var MealBot=(function(){
       if(fids.indexOf(x.fid)>=0||(words.length&&words.every(function(w){ return nw.some(function(n){ return sim(w,n)>=1.8 }) }))) hitI=x;
     }
     if(!hitI) return p('Не нашёл такой записи за этот день. Ничего не удалил.');
+    return removeItem(S,hitI);
+  }
+  function removeItem(S,hitI){
     if(writeGuard()) return p('Чтобы менять записи, войди в аккаунт.');
     var e=day(cd()); e.items=e.items.filter(function(x){ return x!==hitI }); save();
     try{ if(typeof renderAll==='function') renderAll() }catch(err){}
@@ -2489,6 +2497,13 @@ var MealBot=(function(){
     return p('Удалил:')+'<div class="mlRows">'+row({fid:hitI.fid,q:hitI.q,u:hitI.u,g:hitI.g,name:''},true,hitI.t||'')+'</div>'+chips([['undo:'+c.id,'Вернуть']]);
   }
 
+  /* «удали» без продолжения — вопрос, что удалить, с кнопками последних записей дня (журнал ошибок, 27.11.2026) */
+  function delAsk(S){
+    var items=day(cd()).items.slice(-4).reverse();
+    if(!items.length) return p('Удалять нечего: за этот день записей нет.');
+    S.rmList=items;
+    return p('Что удалить?')+chips(items.map(function(x,i){ var f=MealProducts.forItem(x,FOODS,DB)||FOODS[x.fid]; return ['rmi:'+i,(f?f.n:'Запись')+(x.g?' · '+Math.round(x.g)+' г':'')] }));
+  }
   /* ── главный вход: сообщение человека → ответ бота (HTML) ── */
   /* Meal 33.15 · диктовка шортката: «сейчас» и «сегодня» — момент диктовки (m.at), а не момент, когда Meal её забрал */
   function atTime(m,fn){
@@ -2629,6 +2644,7 @@ var MealBot=(function(){
       var dsw=dayWords(' '+bare+' ');
       if(dsw.shift){ var dy=new Date(curDate+'T12:00:00'); dy.setDate(dy.getDate()+dsw.shift); CD=isoOf(dy); bare=dsw.text.replace(/\s+/g,' ').trim(); raw=bare }
     }
+    if(!S.pend.length&&/^(удали|убери|сотри)(\s+(?:запись|записи|что-?нибудь|продукт|еду|что-?то))?$/.test(bare)) return delAsk(S);
     var cx=bare.match(/^(?:отмени|отменить|убери|удали|сотри)\s+(.+)$/);
     if(cx&&!S.pend.length){ var cr=cx[1].replace(/(^|\s)(последн\S*|запись|записи|это|все|всё|его|ее|её|их)(?=\s|$)/g,' ').trim(); if(tokensOf(cr).length) return removeCmd(S,cr) }
     var rw=bare.match(/^(?:перепиши|запиши заново|заново|переделай)[\s,:]+(.+)$/);
@@ -2747,7 +2763,7 @@ var MealBot=(function(){
       var lastHit=null; clauses.forEach(function(c){ if(c.hit) lastHit=c.hit; else c.hit=lastHit });
       var first=clauses.filter(function(c){ return c.hit })[0]; clauses.forEach(function(c){ if(!c.hit) c.hit=first?first.hit:null });
     } else clauses=[{text:work,hit:tt.hits[0]||null,dayShift:tt.dayShift}];
-    var order=0, ready=[], asks=[], miss=[], orphan=null, today=curDate===todayISO(), others=[], guessed=null;
+    var order=0, ready=[], asks=[], miss=[], latin=[], orphan=null, today=curDate===todayISO(), others=[], guessed=null;
     /* человек не ответил на «не нашёл…», а сказал заново — прежний вопрос снимается */
     if(S.ask&&!inlinePhrase(S,S.ask.q)&&(S.ask.kind==='name'||S.ask.kind==='what')&&S.pend[0]===S.ask.q){ S.pend.shift(); S.ask=null }
     clauses.forEach(function(c){
@@ -2805,12 +2821,14 @@ var MealBot=(function(){
         if(m.kind==='photo'){ l.ask=l.ask||'photo'; asks.push(en) }
         else if(!l.ask&&needMeal){ l.ask='meal'; asks.push(en) }
         else if(!l.ask) ready.push(en);
-        else if(l.ask==='name'&&!/[а-яё]/i.test(String(l.name||''))){}   // Meal 33.12: латиница без единого русского слова — не еда, в список недостающего не идёт
+        else if(l.ask==='name'&&!/[а-яё]/i.test(String(l.name||''))){ latin.push(en) }   // Meal 33.12: латиница без единого русского слова — не еда, в список недостающего не идёт
         else if(l.ask==='name'&&(!l.explicit||l.km)&&!selected&&!(SP&&SP.similarKind&&SP.similarKind(String(l.name||'')))) miss.push(l);
         /* Meal 34.12: напитка нет в базе («компот из фейхоа») — не просто «в базе нет», а вопрос с похожими того же вида (решение Астамура 24.11.2026) */   // «пельмени 200 г» — с весом тоже «в базе нет», а не «что это?» (хвосты разборов, 22.11.2026)
         else asks.push(en);
       });
     });
+    /* латиница рядом с понятной едой («50 г хлеба и пять листиков basil») — не терять молча, а спросить название; одна латиница, как раньше, — «не нашёл еды» (диктовка id 132, 27.11.2026) */
+    if(latin.length&&(ready.length||asks.length||miss.length)) latin.forEach(function(en){ asks.push(en) });
     if(m.kind!=='photo'&&SP){
       /* килограмм и больше одного продукта без слова «съел» — это покупка или готовка, а не порция: «взвесила фарш, полтора кило» */
       var INGR=/^(фарш|мясо|говядин|свинин|баранин|телятин|куриц|курин|филе|рыба|мука|сахар|крупа|рис|гречк|макарон|масло|картофел|лук|морков|капуст|яйц|творог|сыр)/;
@@ -3975,6 +3993,7 @@ var MealBot=(function(){
   function tapInner(chat,S,a){
     var h=null;
     if(a[0]==='act') return actTap(S,a);
+    if(a[0]==='rmi'){ var rx=(S.rmList||[])[+a[1]]; if(!rx||day(cd()).items.indexOf(rx)<0) return p('Этой записи уже нет.'); S.rmList=null; return removeItem(S,rx) }
     if(a[0]==='undo'){ var c=S.commits.filter(function(x){ return x.id===a[1] })[0]; if(!c||c.undone) return;
       h=undo(S,c)?p(c.msg||(c.del?'Вернул запись.':'Отменил. Этих записей в дневнике больше нет.')):null }
     else if(a[0]==='swap'){ var c2=S.commits.filter(function(x){ return x.id===a[1] })[0], ad=c2&&!c2.undone&&c2.add[+a[2]]; if(!ad) return;
